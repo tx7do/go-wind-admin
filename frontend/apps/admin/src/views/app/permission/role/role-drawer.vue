@@ -9,7 +9,9 @@ import { notification } from 'ant-design-vue';
 import { useVbenForm } from '#/adapter/form';
 import {
   buildMenuTree,
-  convertApiToTree, orgUnitStatusList, roleDataScopeList, roleTypeList,
+  convertApiToTree,
+  roleDataScopeList,
+  roleTypeList,
   statusList,
   useApiResourceStore,
   useMenuStore,
