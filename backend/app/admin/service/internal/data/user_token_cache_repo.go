@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -12,8 +13,6 @@ import (
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	authnEngine "github.com/tx7do/kratos-authn/engine"
-
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 
 	"go-wind-admin/pkg/jwt"
 )
@@ -55,37 +54,19 @@ func NewUserTokenCacheRepo(
 // GenerateToken 创建令牌
 func (r *UserTokenCacheRepo) GenerateToken(
 	ctx context.Context,
-	username string,
-	userID uint32,
-	tenantID uint32,
-	orgUnitID *uint32,
-	roleCodes []string,
-	dataScope *userV1.Role_DataScope,
-	clientID *string,
-	deviceID *string,
-	isPlatformAdmin *bool,
-	isTenantAdmin *bool,
+	tokenPayload *authenticationV1.UserTokenPayload,
 ) (accessToken string, refreshToken string, err error) {
 	// 创建访问令牌
 	if accessToken, err = r.GenerateAccessToken(
 		ctx,
-		username,
-		userID,
-		tenantID,
-		orgUnitID,
-		roleCodes,
-		dataScope,
-		clientID,
-		deviceID,
-		isPlatformAdmin,
-		isTenantAdmin,
+		tokenPayload,
 	); accessToken == "" {
 		err = errors.New("create access token failed")
 		return
 	}
 
 	// 创建刷新令牌
-	if refreshToken, err = r.GenerateRefreshToken(ctx, userID); refreshToken == "" {
+	if refreshToken, err = r.GenerateRefreshToken(ctx, tokenPayload.UserId); refreshToken == "" {
 		err = errors.New("create refresh token failed")
 		return
 	}
@@ -96,34 +77,14 @@ func (r *UserTokenCacheRepo) GenerateToken(
 // GenerateAccessToken 创建访问令牌
 func (r *UserTokenCacheRepo) GenerateAccessToken(
 	ctx context.Context,
-	username string,
-	userID uint32,
-	tenantID uint32,
-	orgUnitID *uint32,
-	roleCodes []string,
-	dataScope *userV1.Role_DataScope,
-	clientID *string,
-	deviceID *string,
-	isPlatformAdmin *bool,
-	isTenantAdmin *bool,
+	tokenPayload *authenticationV1.UserTokenPayload,
 ) (accessToken string, err error) {
-	if accessToken = r.createAccessJwtToken(
-		username,
-		userID,
-		tenantID,
-		orgUnitID,
-		roleCodes,
-		dataScope,
-		clientID,
-		deviceID,
-		isPlatformAdmin,
-		isTenantAdmin,
-	); accessToken == "" {
+	if accessToken = r.createAccessJwtToken(tokenPayload); accessToken == "" {
 		err = errors.New("create access token failed")
 		return
 	}
 
-	if err = r.setAccessTokenToRedis(ctx, userID, accessToken, r.accessTokenExpires); err != nil {
+	if err = r.setAccessTokenToRedis(ctx, tokenPayload.GetUserId(), accessToken, r.accessTokenExpires); err != nil {
 		return
 	}
 
@@ -265,23 +226,9 @@ func (r *UserTokenCacheRepo) deleteRefreshTokenFromRedis(ctx context.Context, us
 
 // createAccessJwtToken 生成JWT访问令牌
 func (r *UserTokenCacheRepo) createAccessJwtToken(
-	username string,
-	userID uint32,
-	tenantID uint32,
-	orgUnitID *uint32,
-	roleCodes []string,
-	dataScope *userV1.Role_DataScope,
-	clientID *string,
-	deviceID *string,
-	isPlatformAdmin *bool,
-	isTenantAdmin *bool,
+	tokenPayload *authenticationV1.UserTokenPayload,
 ) string {
-	authClaims := jwt.NewUserTokenAuthClaims(
-		username, userID, tenantID, orgUnitID, roleCodes,
-		dataScope,
-		clientID, deviceID,
-		isPlatformAdmin, isTenantAdmin,
-	)
+	authClaims := jwt.NewUserTokenAuthClaims(tokenPayload)
 
 	signedToken, err := r.authenticator.CreateIdentity(*authClaims)
 	if err != nil {

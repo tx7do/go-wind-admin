@@ -60,51 +60,42 @@ func NewUserTokenPayload(
 }
 
 func NewUserTokenAuthClaims(
-	username string,
-	userID uint32,
-	tenantID uint32,
-	orgUnitID *uint32,
-	roleCodes []string,
-	dataScope *userV1.Role_DataScope,
-	clientID *string,
-	deviceID *string,
-	isPlatformAdmin *bool,
-	isTenantAdmin *bool,
+	tokenPayload *authenticationV1.UserTokenPayload,
 ) *authn.AuthClaims {
 	authClaims := authn.AuthClaims{
-		ClaimFieldUserName: username,
-		ClaimFieldUserID:   userID,
-		ClaimFieldTenantID: tenantID,
+		ClaimFieldUserName: tokenPayload.GetUsername(),
+		ClaimFieldUserID:   tokenPayload.GetUserId(),
+		ClaimFieldTenantID: tokenPayload.GetTenantId(),
 	}
 
-	if len(roleCodes) > 0 {
-		authClaims[ClaimFieldRoleCodes] = roleCodes
+	if len(tokenPayload.Roles) > 0 {
+		authClaims[ClaimFieldRoleCodes] = tokenPayload.Roles
 	}
-	if deviceID != nil {
-		authClaims[ClaimFieldDeviceID] = *deviceID
+	if tokenPayload.DeviceId != nil {
+		authClaims[ClaimFieldDeviceID] = tokenPayload.GetDeviceId()
 	}
-	if clientID != nil {
-		authClaims[ClaimFieldClientID] = *clientID
-	}
-
-	if dataScope != nil {
-		authClaims[ClaimFieldDataScope] = dataScope.String()
-	}
-	if orgUnitID != nil {
-		authClaims[ClaimFieldOrgUnitID] = *orgUnitID
+	if tokenPayload.ClientId != nil {
+		authClaims[ClaimFieldClientID] = tokenPayload.GetClientId()
 	}
 
-	if isPlatformAdmin != nil {
+	if tokenPayload.DataScope != nil {
+		authClaims[ClaimFieldDataScope] = tokenPayload.GetDataScope().String()
+	}
+	if tokenPayload.OrgUnitId != nil {
+		authClaims[ClaimFieldOrgUnitID] = tokenPayload.GetOrgUnitId()
+	}
+
+	if tokenPayload.IsPlatformAdmin != nil {
 		intValue := 0
-		if *isPlatformAdmin {
+		if tokenPayload.GetIsPlatformAdmin() {
 			intValue = 1
 		}
 		authClaims[ClaimFieldIsPlatformAdmin] = intValue
 	}
 
-	if isTenantAdmin != nil {
+	if tokenPayload.IsTenantAdmin != nil {
 		intValue := 0
-		if *isTenantAdmin {
+		if tokenPayload.GetIsTenantAdmin() {
 			intValue = 1
 		}
 		authClaims[ClaimFieldIsTenantAdmin] = intValue

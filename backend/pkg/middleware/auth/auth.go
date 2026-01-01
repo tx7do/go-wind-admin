@@ -66,7 +66,7 @@ func Server(opts ...Option) middleware.Middleware {
 
 			// 校验访问令牌是否存在
 			if op.isExistAccessToken != nil {
-				if !op.isExistAccessToken(ctx, tokenPayload.UserId) {
+				if !op.isExistAccessToken.Exists(ctx, tokenPayload.UserId) {
 					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
 					return nil, ErrAccessTokenExpired
 				}
