@@ -4,15 +4,15 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
 	"github.com/redis/go-redis/v9"
+	authnEngine "github.com/tx7do/kratos-authn/engine"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
-	authnEngine "github.com/tx7do/kratos-authn/engine"
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 
 	"go-wind-admin/pkg/jwt"
 )
@@ -228,7 +228,8 @@ func (r *UserTokenCacheRepo) deleteRefreshTokenFromRedis(ctx context.Context, us
 func (r *UserTokenCacheRepo) createAccessJwtToken(
 	tokenPayload *authenticationV1.UserTokenPayload,
 ) string {
-	authClaims := jwt.NewUserTokenAuthClaims(tokenPayload)
+	expTime := time.Now().Add(r.accessTokenExpires)
+	authClaims := jwt.NewUserTokenAuthClaims(tokenPayload, &expTime)
 
 	signedToken, err := r.authenticator.CreateIdentity(*authClaims)
 	if err != nil {

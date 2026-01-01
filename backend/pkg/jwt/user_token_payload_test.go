@@ -56,10 +56,12 @@ func TestNewUserTokenAuthClaims(t *testing.T) {
 	device := "dev"
 	ds := userV1.Role_DataScope(2)
 
-	claims := NewUserTokenAuthClaims(
+	payload := NewUserTokenPayload(
 		username, uid, tid, &ou, roleCodes,
 		&ds, &client, &device, &isP, &isT,
 	)
+
+	claims := NewUserTokenAuthClaims(payload, nil)
 	assert.NotNil(t, claims)
 
 	// subject

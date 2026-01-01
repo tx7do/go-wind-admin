@@ -17,10 +17,25 @@ func (f AccessTokenCheckerFunc) IsExistAccessToken(ctx context.Context, userID u
 	return f(ctx, userID, accessToken)
 }
 
+type AccessTokenBlocker interface {
+	IsBlockedAccessToken(ctx context.Context, userID uint32, accessToken string) bool
+}
+
+type AccessTokenBlockerFunc func(ctx context.Context, userID uint32, accessToken string) bool
+
+func (f AccessTokenBlockerFunc) IsBlockedAccessToken(ctx context.Context, userID uint32, accessToken string) bool {
+	return f(ctx, userID, accessToken)
+}
+
 type options struct {
 	log *log.Helper
 
-	accessTokenChecker AccessTokenChecker // 访问令牌检查器
+	accessTokenChecker                AccessTokenChecker // 访问令牌检查器
+	accessTokenBlocker                AccessTokenBlocker // 访问令牌阻止器
+	enableCheckTokenExpiration        bool               // 是否启用访问令牌过期检查
+	enableCheckRefreshTokenExpiration bool               // 是否启用刷新令牌过期检查
+	enableCheckScopes                 bool               // 是否启用作用域检查
+	enableCheckTokenValidity          bool               // 是否启用访问令牌有效性检查
 
 	enableAuthz bool // 是否启用鉴权
 
@@ -43,6 +58,47 @@ func WithAccessTokenChecker(checker AccessTokenChecker) Option {
 func WithAccessTokenCheckerFunc(fnc AccessTokenCheckerFunc) Option {
 	return func(opts *options) {
 		opts.accessTokenChecker = fnc
+	}
+}
+
+// WithAccessTokenBlocker 设置访问令牌阻止器
+func WithAccessTokenBlocker(blocker AccessTokenBlocker) Option {
+	return func(opts *options) {
+		opts.accessTokenBlocker = blocker
+	}
+}
+
+// WithAccessTokenBlockerFunc 设置访问令牌阻止器函数
+func WithAccessTokenBlockerFunc(fnc AccessTokenBlockerFunc) Option {
+	return func(opts *options) {
+		opts.accessTokenBlocker = fnc
+	}
+}
+
+// WithEnableCheckTokenExpiration 设置是否启用访问令牌过期检查
+func WithEnableCheckTokenExpiration(enable bool) Option {
+	return func(opts *options) {
+		opts.enableCheckTokenExpiration = enable
+	}
+}
+
+func WithEnableCheckRefreshTokenExpiration(enable bool) Option {
+	return func(opts *options) {
+		opts.enableCheckRefreshTokenExpiration = enable
+	}
+}
+
+// WithEnableCheckScopes 设置是否启用作用域检查
+func WithEnableCheckScopes(enable bool) Option {
+	return func(opts *options) {
+		opts.enableCheckScopes = enable
+	}
+}
+
+// WithEnableCheckTokenValidity 设置是否启用访问令牌有效性检查
+func WithEnableCheckTokenValidity(enable bool) Option {
+	return func(opts *options) {
+		opts.enableCheckTokenValidity = enable
 	}
 }
 

@@ -2,6 +2,7 @@ package jwt
 
 import (
 	"errors"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/golang-jwt/jwt/v5"
@@ -24,6 +25,17 @@ const (
 	ClaimFieldIsTenantAdmin   = "tad"                   // 是否为租户管理员
 	ClaimFieldDataScope       = "ds"                    // 数据范围
 	ClaimFieldOrgUnitID       = "ouid"                  // 组织单元 ID
+)
+
+const (
+	// defaultTokenLeeway 令牌时间容差，防止因时间不同步导致的验证失败
+	defaultTokenLeeway = 60 * time.Second
+
+	// DefaultTokenExpiration 默认令牌过期时间：2 小时
+	DefaultTokenExpiration = 2 * time.Hour
+
+	// DefaultRefreshTokenExpiration 默认刷新令牌过期时间：7 天
+	DefaultRefreshTokenExpiration = 7 * 24 * time.Hour
 )
 
 // NewUserTokenPayload 创建用户令牌
@@ -59,13 +71,20 @@ func NewUserTokenPayload(
 	}
 }
 
+// NewUserTokenAuthClaims 创建用户令牌认证声明
 func NewUserTokenAuthClaims(
 	tokenPayload *authenticationV1.UserTokenPayload,
+	expirationTime *time.Time,
 ) *authn.AuthClaims {
 	authClaims := authn.AuthClaims{
-		ClaimFieldUserName: tokenPayload.GetUsername(),
-		ClaimFieldUserID:   tokenPayload.GetUserId(),
-		ClaimFieldTenantID: tokenPayload.GetTenantId(),
+		ClaimFieldUserName:       tokenPayload.GetUsername(),
+		ClaimFieldUserID:         tokenPayload.GetUserId(),
+		ClaimFieldTenantID:       tokenPayload.GetTenantId(),
+		authn.ClaimFieldIssuedAt: time.Now().Unix(),
+	}
+
+	if expirationTime != nil {
+		authClaims[authn.ClaimFieldExpirationTime] = expirationTime.Unix()
 	}
 
 	if len(tokenPayload.Roles) > 0 {
@@ -104,6 +123,7 @@ func NewUserTokenAuthClaims(
 	return &authClaims
 }
 
+// NewUserTokenPayloadWithClaims 从认证声明创建用户令牌
 func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.UserTokenPayload, error) {
 	payload := &authenticationV1.UserTokenPayload{}
 
@@ -191,6 +211,7 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 	return payload, nil
 }
 
+// NewUserTokenPayloadWithJwtMapClaims 从 JWT MapClaims 创建用户令牌
 func NewUserTokenPayloadWithJwtMapClaims(claims jwt.MapClaims) (*authenticationV1.UserTokenPayload, error) {
 	payload := &authenticationV1.UserTokenPayload{}
 
@@ -272,4 +293,38 @@ func NewUserTokenPayloadWithJwtMapClaims(claims jwt.MapClaims) (*authenticationV
 	}
 
 	return payload, nil
+}
+
+// IsTokenExpired 检查令牌是否过期
+func IsTokenExpired(claims *authn.AuthClaims) bool {
+	if claims == nil {
+		return true
+	}
+
+	exp, _ := claims.GetExpirationTime()
+	now := time.Now()
+
+	// 过期：当 now > exp + leeway 时视为过期
+	if exp != nil && now.After(exp.Time.Add(defaultTokenLeeway)) {
+		return true
+	}
+
+	return false
+}
+
+// IsTokenNotValidYet 检查令牌是否未生效
+func IsTokenNotValidYet(claims *authn.AuthClaims) bool {
+	if claims == nil {
+		return true
+	}
+
+	nbf, _ := claims.GetNotBefore()
+	now := time.Now()
+
+	// 未生效：当 now + leeway < nbf 时视为未生效
+	if nbf != nil && now.Add(defaultTokenLeeway).Before(nbf.Time) {
+		return true
+	}
+
+	return false
 }

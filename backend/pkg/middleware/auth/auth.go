@@ -71,10 +71,45 @@ func Server(opts ...Option) middleware.Middleware {
 
 				if len(token) > 7 && token[0:6] == authnEngine.BearerWord {
 					token = token[7:]
+				} else {
+					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
+					return nil, ErrExtractSubjectFailed
 				}
 
 				if !op.accessTokenChecker.IsExistAccessToken(ctx, tokenPayload.UserId, token) {
 					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
+					return nil, ErrAccessTokenExpired
+				}
+			}
+
+			// 检查访问令牌是否被阻止
+			if op.accessTokenBlocker != nil {
+				token := tr.RequestHeader().Get(authnEngine.HeaderAuthorize)
+				if len(token) > 7 && token[0:6] == authnEngine.BearerWord {
+					token = token[7:]
+				} else {
+					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
+					return nil, ErrExtractSubjectFailed
+				}
+
+				if op.accessTokenBlocker.IsBlockedAccessToken(ctx, tokenPayload.UserId, token) {
+					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
+					return nil, ErrAccessTokenExpired
+				}
+			}
+
+			// 检查访问令牌是否过期
+			if op.enableCheckTokenExpiration {
+				if jwt.IsTokenExpired(authnClaims) {
+					op.log.Errorf("auth middleware: token expired for user id [%d]", tokenPayload.UserId)
+					return nil, ErrAccessTokenExpired
+				}
+			}
+
+			// 检查访问令牌是否生效
+			if op.enableCheckTokenValidity {
+				if !jwt.IsTokenNotValidYet(authnClaims) {
+					op.log.Errorf("auth middleware: token invalid for user id [%d]", tokenPayload.UserId)
 					return nil, ErrAccessTokenExpired
 				}
 			}
