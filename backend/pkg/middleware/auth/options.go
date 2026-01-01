@@ -8,12 +8,12 @@ import (
 
 // AccessTokenChecker 定义访问令牌检查接口
 type AccessTokenChecker interface {
-	Exists(ctx context.Context, userID uint32, accessToken string) bool
+	IsExistAccessToken(ctx context.Context, userID uint32, accessToken string) bool
 }
 
 type AccessTokenCheckerFunc func(ctx context.Context, userID uint32, accessToken string) bool
 
-func (f AccessTokenCheckerFunc) Exists(ctx context.Context, userID uint32, accessToken string) bool {
+func (f AccessTokenCheckerFunc) IsExistAccessToken(ctx context.Context, userID uint32, accessToken string) bool {
 	return f(ctx, userID, accessToken)
 }
 

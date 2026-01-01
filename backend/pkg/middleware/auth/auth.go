@@ -73,7 +73,7 @@ func Server(opts ...Option) middleware.Middleware {
 					token = token[7:]
 				}
 
-				if !op.accessTokenChecker.Exists(ctx, tokenPayload.UserId, token) {
+				if !op.accessTokenChecker.IsExistAccessToken(ctx, tokenPayload.UserId, token) {
 					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
 					return nil, ErrAccessTokenExpired
 				}
