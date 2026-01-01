@@ -65,8 +65,15 @@ func Server(opts ...Option) middleware.Middleware {
 			}
 
 			// 校验访问令牌是否存在
-			if op.isExistAccessToken != nil {
-				if !op.isExistAccessToken.Exists(ctx, tokenPayload.UserId) {
+			if op.accessTokenChecker != nil {
+				token := tr.RequestHeader().Get(authnEngine.HeaderAuthorize)
+				//op.log.Debug("auth middleware: processing request, method:", tr.Operation(), " token:", token)
+
+				if len(token) > 7 && token[0:6] == authnEngine.BearerWord {
+					token = token[7:]
+				}
+
+				if !op.accessTokenChecker.Exists(ctx, tokenPayload.UserId, token) {
 					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
 					return nil, ErrAccessTokenExpired
 				}

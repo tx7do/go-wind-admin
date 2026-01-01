@@ -8,19 +8,19 @@ import (
 
 // AccessTokenChecker 定义访问令牌检查接口
 type AccessTokenChecker interface {
-	Exists(ctx context.Context, userId uint32) bool
+	Exists(ctx context.Context, userID uint32, accessToken string) bool
 }
 
-type AccessTokenCheckerFunc func(ctx context.Context, userId uint32) bool
+type AccessTokenCheckerFunc func(ctx context.Context, userID uint32, accessToken string) bool
 
-func (f AccessTokenCheckerFunc) Exists(ctx context.Context, userId uint32) bool {
-	return f(ctx, userId)
+func (f AccessTokenCheckerFunc) Exists(ctx context.Context, userID uint32, accessToken string) bool {
+	return f(ctx, userID, accessToken)
 }
 
 type options struct {
 	log *log.Helper
 
-	isExistAccessToken AccessTokenChecker // 访问令牌检查器
+	accessTokenChecker AccessTokenChecker // 访问令牌检查器
 
 	enableAuthz bool // 是否启用鉴权
 
@@ -35,14 +35,14 @@ type Option func(*options)
 // WithAccessTokenChecker 设置访问令牌检查器
 func WithAccessTokenChecker(checker AccessTokenChecker) Option {
 	return func(opts *options) {
-		opts.isExistAccessToken = checker
+		opts.accessTokenChecker = checker
 	}
 }
 
 // WithAccessTokenCheckerFunc 设置访问令牌检查器函数
 func WithAccessTokenCheckerFunc(fnc AccessTokenCheckerFunc) Option {
 	return func(opts *options) {
-		opts.isExistAccessToken = fnc
+		opts.accessTokenChecker = fnc
 	}
 }
 
