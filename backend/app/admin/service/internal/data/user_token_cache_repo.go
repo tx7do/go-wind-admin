@@ -79,7 +79,7 @@ func (r *UserTokenCacheRepo) GenerateAccessToken(
 	ctx context.Context,
 	tokenPayload *authenticationV1.UserTokenPayload,
 ) (accessToken string, err error) {
-	if accessToken = r.createAccessJwtToken(tokenPayload); accessToken == "" {
+	if accessToken = r.newAccessJwtToken(tokenPayload); accessToken == "" {
 		err = errors.New("create access token failed")
 		return
 	}
@@ -93,7 +93,7 @@ func (r *UserTokenCacheRepo) GenerateAccessToken(
 
 // GenerateRefreshToken 创建刷新令牌
 func (r *UserTokenCacheRepo) GenerateRefreshToken(ctx context.Context, userID uint32) (refreshToken string, err error) {
-	if refreshToken = r.createRefreshToken(); refreshToken == "" {
+	if refreshToken = r.newRefreshToken(); refreshToken == "" {
 		err = errors.New("create refresh token failed")
 		return
 	}
@@ -103,6 +103,12 @@ func (r *UserTokenCacheRepo) GenerateRefreshToken(ctx context.Context, userID ui
 	}
 
 	return
+}
+
+// AddBlockedAccessToken 添加被阻止的访问令牌
+func (r *UserTokenCacheRepo) AddBlockedAccessToken(ctx context.Context, userId uint32, accessToken string, expires time.Duration) error {
+	key := r.makeAccessTokenBlockerKey(userId)
+	return r.set(ctx, key, accessToken, expires)
 }
 
 // GetAccessToken 获取访问令牌
@@ -143,6 +149,12 @@ func (r *UserTokenCacheRepo) RemoveRefreshToken(ctx context.Context, userId uint
 	return r.delField(ctx, key, refreshToken)
 }
 
+// RemoveBlockedAccessToken 移除被阻止的访问令牌
+func (r *UserTokenCacheRepo) RemoveBlockedAccessToken(ctx context.Context, userId uint32, accessToken string) error {
+	key := r.makeAccessTokenBlockerKey(userId)
+	return r.delField(ctx, key, accessToken)
+}
+
 // IsExistAccessToken 访问令牌是否存在
 func (r *UserTokenCacheRepo) IsExistAccessToken(ctx context.Context, userId uint32, accessToken string) bool {
 	key := r.makeAccessTokenKey(userId)
@@ -155,12 +167,19 @@ func (r *UserTokenCacheRepo) IsExistRefreshToken(ctx context.Context, userId uin
 	return r.exists(ctx, key, refreshToken)
 }
 
+// IsBlockedAccessToken 访问令牌是否被阻止
+func (r *UserTokenCacheRepo) IsBlockedAccessToken(ctx context.Context, userId uint32, accessToken string) bool {
+	key := r.makeAccessTokenBlockerKey(userId)
+	return r.exists(ctx, key, accessToken)
+}
+
 // setAccessTokenToRedis 设置访问令牌
 func (r *UserTokenCacheRepo) setAccessTokenToRedis(ctx context.Context, userId uint32, token string, expires time.Duration) error {
 	key := r.makeAccessTokenKey(userId)
 	return r.set(ctx, key, token, expires)
 }
 
+// set 设置字段
 func (r *UserTokenCacheRepo) set(ctx context.Context, key string, token string, expires time.Duration) error {
 	var err error
 	if err = r.rdb.HSet(ctx, key, token, "").Err(); err != nil {
@@ -176,6 +195,7 @@ func (r *UserTokenCacheRepo) set(ctx context.Context, key string, token string, 
 	return nil
 }
 
+// get 获取所有字段
 func (r *UserTokenCacheRepo) get(ctx context.Context, key string) []string {
 	n, err := r.rdb.HGetAll(ctx, key).Result()
 	if err != nil {
@@ -190,6 +210,7 @@ func (r *UserTokenCacheRepo) get(ctx context.Context, key string) []string {
 	return tokens
 }
 
+// exists 判断字段是否存在
 func (r *UserTokenCacheRepo) exists(ctx context.Context, key string, token string) bool {
 	n, err := r.rdb.HExists(ctx, key, token).Result()
 	if err != nil {
@@ -198,10 +219,12 @@ func (r *UserTokenCacheRepo) exists(ctx context.Context, key string, token strin
 	return n
 }
 
+// del 删除键
 func (r *UserTokenCacheRepo) del(ctx context.Context, key string) error {
 	return r.rdb.Del(ctx, key).Err()
 }
 
+// delField 删除字段
 func (r *UserTokenCacheRepo) delField(ctx context.Context, key string, token string) error {
 	return r.rdb.HDel(ctx, key, token).Err()
 }
@@ -224,8 +247,8 @@ func (r *UserTokenCacheRepo) deleteRefreshTokenFromRedis(ctx context.Context, us
 	return r.del(ctx, key)
 }
 
-// createAccessJwtToken 生成JWT访问令牌
-func (r *UserTokenCacheRepo) createAccessJwtToken(
+// newAccessJwtToken 生成JWT访问令牌
+func (r *UserTokenCacheRepo) newAccessJwtToken(
 	tokenPayload *authenticationV1.UserTokenPayload,
 ) string {
 	expTime := time.Now().Add(r.accessTokenExpires)
@@ -239,8 +262,8 @@ func (r *UserTokenCacheRepo) createAccessJwtToken(
 	return signedToken
 }
 
-// createRefreshToken 生成刷新令牌
-func (r *UserTokenCacheRepo) createRefreshToken() string {
+// newRefreshToken 生成刷新令牌
+func (r *UserTokenCacheRepo) newRefreshToken() string {
 	strUUID := uuid.New()
 	return strUUID.String()
 }
@@ -253,4 +276,9 @@ func (r *UserTokenCacheRepo) makeAccessTokenKey(userId uint32) string {
 // makeRefreshTokenKey 生成刷新令牌键
 func (r *UserTokenCacheRepo) makeRefreshTokenKey(userId uint32) string {
 	return fmt.Sprintf("%s%d", r.refreshTokenKeyPrefix, userId)
+}
+
+// makeAccessTokenBlockerKey 生成访问令牌阻止键
+func (r *UserTokenCacheRepo) makeAccessTokenBlockerKey(userId uint32) string {
+	return fmt.Sprintf("%sblocker:%d", r.accessTokenKeyPrefix, userId)
 }
