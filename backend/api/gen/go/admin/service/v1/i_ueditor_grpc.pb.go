@@ -32,7 +32,7 @@ const (
 type UEditorServiceClient interface {
 	// UEditor API
 	UEditorAPI(ctx context.Context, in *v1.UEditorRequest, opts ...grpc.CallOption) (*v1.UEditorResponse, error)
-	// 上传文件
+	// UEditor 上传文件
 	UploadFile(ctx context.Context, opts ...grpc.CallOption) (grpc.ClientStreamingClient[v1.UEditorUploadRequest, v1.UEditorUploadResponse], error)
 }
 
@@ -75,7 +75,7 @@ type UEditorService_UploadFileClient = grpc.ClientStreamingClient[v1.UEditorUplo
 type UEditorServiceServer interface {
 	// UEditor API
 	UEditorAPI(context.Context, *v1.UEditorRequest) (*v1.UEditorResponse, error)
-	// 上传文件
+	// UEditor 上传文件
 	UploadFile(grpc.ClientStreamingServer[v1.UEditorUploadRequest, v1.UEditorUploadResponse]) error
 	mustEmbedUnimplementedUEditorServiceServer()
 }

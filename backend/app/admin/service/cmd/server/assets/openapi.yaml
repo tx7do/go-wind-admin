@@ -3035,7 +3035,7 @@ paths:
         post:
             tags:
                 - UEditorService
-            description: 上传文件
+            description: UEditor 上传文件
             operationId: UEditorService_UploadFile
             requestBody:
                 content:

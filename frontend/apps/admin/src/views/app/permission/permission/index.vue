@@ -118,7 +118,7 @@ const gridOptions: VxeGridProps<Permission> = {
       slots: { default: 'type' },
       width: 95,
     },
-    { title: $t('page.permission.code'), field: 'code', width: 180 },
+    { title: $t('page.permission.code'), field: 'code', width: 200 },
     { title: $t('page.permission.path'), field: 'path' },
     { title: $t('page.permission.module'), field: 'module' },
     {
