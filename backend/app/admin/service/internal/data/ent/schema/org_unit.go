@@ -43,12 +43,6 @@ func (OrgUnit) Fields() []ent.Field {
 			Nillable().
 			Comment("树路径，如：/1/10/"),
 
-		field.Int32("sort_order").
-			Optional().
-			Nillable().
-			Default(0).
-			Comment("排序序号"),
-
 		field.Uint32("leader_id").
 			Optional().
 			Nillable().
@@ -161,6 +155,7 @@ func (OrgUnit) Mixin() []ent.Mixin {
 		mixin.TimeAt{},
 		mixin.OperatorID{},
 		mixin.SwitchStatus{},
+		mixin.SortOrder{},
 		mixin.TenantID{},
 		mixin.Remark{},
 		mixin.Description{},
@@ -170,11 +165,58 @@ func (OrgUnit) Mixin() []ent.Mixin {
 
 func (OrgUnit) Indexes() []ent.Index {
 	return []ent.Index{
+		// 租户索引
 		index.Fields("tenant_id").StorageKey("idx_org_tenant_id"),
-		//index.Fields("parent_id").StorageKey("idx_org_parent_id"),
-		// tenant + code 唯一，便于按业务租户内查找
+
+		// 在租户 + 父节点范围内保证 name 唯一（避免同级重复名称）
+		index.Fields("tenant_id", "parent_id", "name").
+			Unique().
+			StorageKey("uix_org_tenant_parent_name"),
+
+		// 在租户 + 父节点范围内保证 path 唯一（避免同级重复路径）
+		index.Fields("tenant_id", "parent_id", "path").
+			Unique().
+			StorageKey("uix_org_tenant_parent_path"),
+
+		// 全局路径索引（便于按路径定位）
+		index.Fields("tenant_id", "path").
+			StorageKey("idx_org_tenant_path"),
+
+		// 父节点索引，用于树结构查询及子节点检索
+		index.Fields("parent_id").
+			StorageKey("idx_org_parent_id"),
+
+		// 负责人/联系人索引，用于按人员聚合或过滤
+		index.Fields("leader_id").
+			StorageKey("idx_org_leader_id"),
+		index.Fields("contact_user_id").
+			StorageKey("idx_org_contact_user_id"),
+
+		// 类型、外部ID、法定主体标识等常用筛选列
+		index.Fields("type").
+			StorageKey("idx_org_type"),
+		index.Fields("external_id").
+			StorageKey("idx_org_external_id"),
+		index.Fields("is_legal_entity").
+			StorageKey("idx_org_is_legal_entity"),
+
+		// 生效/结束时间用于范围查询
+		index.Fields("start_at").
+			StorageKey("idx_org_start_at"),
+		index.Fields("end_at").
+			StorageKey("idx_org_end_at"),
+
+		// tenant + code 唯一，便于按业务租户内查找（保留原有约束）
 		index.Fields("tenant_id", "code").
 			Unique().
 			StorageKey("uix_org_tenant_code"),
+
+		// 审计与分页索引（时间列放末尾便于范围扫描）
+		index.Fields("created_by", "created_at").
+			StorageKey("idx_org_created_by_created_at"),
+		index.Fields("tenant_id", "created_at").
+			StorageKey("idx_org_tenant_created_at"),
+		index.Fields("created_at").
+			StorageKey("idx_org_created_at"),
 	}
 }

@@ -373,6 +373,26 @@ func (_u *MembershipUpdate) ClearAssignedBy() *MembershipUpdate {
 	return _u
 }
 
+// SetJoinedAt sets the "joined_at" field.
+func (_u *MembershipUpdate) SetJoinedAt(v time.Time) *MembershipUpdate {
+	_u.mutation.SetJoinedAt(v)
+	return _u
+}
+
+// SetNillableJoinedAt sets the "joined_at" field if the given value is not nil.
+func (_u *MembershipUpdate) SetNillableJoinedAt(v *time.Time) *MembershipUpdate {
+	if v != nil {
+		_u.SetJoinedAt(*v)
+	}
+	return _u
+}
+
+// ClearJoinedAt clears the value of the "joined_at" field.
+func (_u *MembershipUpdate) ClearJoinedAt() *MembershipUpdate {
+	_u.mutation.ClearJoinedAt()
+	return _u
+}
+
 // SetStatus sets the "status" field.
 func (_u *MembershipUpdate) SetStatus(v membership.Status) *MembershipUpdate {
 	_u.mutation.SetStatus(v)
@@ -566,6 +586,12 @@ func (_u *MembershipUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	}
 	if _u.mutation.AssignedByCleared() {
 		_spec.ClearField(membership.FieldAssignedBy, field.TypeUint32)
+	}
+	if value, ok := _u.mutation.JoinedAt(); ok {
+		_spec.SetField(membership.FieldJoinedAt, field.TypeTime, value)
+	}
+	if _u.mutation.JoinedAtCleared() {
+		_spec.ClearField(membership.FieldJoinedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(membership.FieldStatus, field.TypeEnum, value)
@@ -939,6 +965,26 @@ func (_u *MembershipUpdateOne) ClearAssignedBy() *MembershipUpdateOne {
 	return _u
 }
 
+// SetJoinedAt sets the "joined_at" field.
+func (_u *MembershipUpdateOne) SetJoinedAt(v time.Time) *MembershipUpdateOne {
+	_u.mutation.SetJoinedAt(v)
+	return _u
+}
+
+// SetNillableJoinedAt sets the "joined_at" field if the given value is not nil.
+func (_u *MembershipUpdateOne) SetNillableJoinedAt(v *time.Time) *MembershipUpdateOne {
+	if v != nil {
+		_u.SetJoinedAt(*v)
+	}
+	return _u
+}
+
+// ClearJoinedAt clears the value of the "joined_at" field.
+func (_u *MembershipUpdateOne) ClearJoinedAt() *MembershipUpdateOne {
+	_u.mutation.ClearJoinedAt()
+	return _u
+}
+
 // SetStatus sets the "status" field.
 func (_u *MembershipUpdateOne) SetStatus(v membership.Status) *MembershipUpdateOne {
 	_u.mutation.SetStatus(v)
@@ -1162,6 +1208,12 @@ func (_u *MembershipUpdateOne) sqlSave(ctx context.Context) (_node *Membership, 
 	}
 	if _u.mutation.AssignedByCleared() {
 		_spec.ClearField(membership.FieldAssignedBy, field.TypeUint32)
+	}
+	if value, ok := _u.mutation.JoinedAt(); ok {
+		_spec.SetField(membership.FieldJoinedAt, field.TypeTime, value)
+	}
+	if _u.mutation.JoinedAtCleared() {
+		_spec.ClearField(membership.FieldJoinedAt, field.TypeTime)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(membership.FieldStatus, field.TypeEnum, value)

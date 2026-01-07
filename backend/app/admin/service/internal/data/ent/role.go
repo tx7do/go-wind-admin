@@ -3,7 +3,6 @@
 package ent
 
 import (
-	"encoding/json"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/role"
 	"strings"
@@ -33,59 +32,21 @@ type Role struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 备注
 	Remark *string `json:"remark,omitempty"`
-	// 排序顺序，值越小越靠前
-	SortOrder *int32 `json:"sort_order,omitempty"`
-	// 父节点ID
-	ParentID *uint32 `json:"parent_id,omitempty"`
+	// 描述
+	Description *string `json:"description,omitempty"`
+	// 排序值（越小越靠前）
+	SortOrder *uint32 `json:"sort_order,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
+	// 状态
+	Status *role.Status `json:"status,omitempty"`
 	// 角色名称
 	Name *string `json:"name,omitempty"`
 	// 角色标识
 	Code *string `json:"code,omitempty"`
-	// 当 DataScope 为 SELECTED_UNITS 时关联的组织单元列表
-	CustomOrgUnitIds []uint32 `json:"custom_org_unit_ids,omitempty"`
-	// 数据权限范围
-	DataScope *role.DataScope `json:"data_scope,omitempty"`
-	// 角色状态
-	Status *role.Status `json:"status,omitempty"`
-	// 角色类型
-	Type *role.Type `json:"type,omitempty"`
-	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the RoleQuery when eager-loading is set.
-	Edges        RoleEdges `json:"edges"`
+	// 是否受保护的角色
+	IsProtected  *bool `json:"is_protected,omitempty"`
 	selectValues sql.SelectValues
-}
-
-// RoleEdges holds the relations/edges for other nodes in the graph.
-type RoleEdges struct {
-	// Parent holds the value of the parent edge.
-	Parent *Role `json:"parent,omitempty"`
-	// Children holds the value of the children edge.
-	Children []*Role `json:"children,omitempty"`
-	// loadedTypes holds the information for reporting if a
-	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
-}
-
-// ParentOrErr returns the Parent value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e RoleEdges) ParentOrErr() (*Role, error) {
-	if e.Parent != nil {
-		return e.Parent, nil
-	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: role.Label}
-	}
-	return nil, &NotLoadedError{edge: "parent"}
-}
-
-// ChildrenOrErr returns the Children value or an error if the edge
-// was not loaded in eager-loading.
-func (e RoleEdges) ChildrenOrErr() ([]*Role, error) {
-	if e.loadedTypes[1] {
-		return e.Children, nil
-	}
-	return nil, &NotLoadedError{edge: "children"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -93,11 +54,11 @@ func (*Role) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case role.FieldCustomOrgUnitIds:
-			values[i] = new([]byte)
-		case role.FieldID, role.FieldCreatedBy, role.FieldUpdatedBy, role.FieldDeletedBy, role.FieldSortOrder, role.FieldParentID, role.FieldTenantID:
+		case role.FieldIsProtected:
+			values[i] = new(sql.NullBool)
+		case role.FieldID, role.FieldCreatedBy, role.FieldUpdatedBy, role.FieldDeletedBy, role.FieldSortOrder, role.FieldTenantID:
 			values[i] = new(sql.NullInt64)
-		case role.FieldRemark, role.FieldName, role.FieldCode, role.FieldDataScope, role.FieldStatus, role.FieldType:
+		case role.FieldRemark, role.FieldDescription, role.FieldStatus, role.FieldName, role.FieldCode:
 			values[i] = new(sql.NullString)
 		case role.FieldCreatedAt, role.FieldUpdatedAt, role.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -171,19 +132,19 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 				_m.Remark = new(string)
 				*_m.Remark = value.String
 			}
+		case role.FieldDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field description", values[i])
+			} else if value.Valid {
+				_m.Description = new(string)
+				*_m.Description = value.String
+			}
 		case role.FieldSortOrder:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field sort_order", values[i])
 			} else if value.Valid {
-				_m.SortOrder = new(int32)
-				*_m.SortOrder = int32(value.Int64)
-			}
-		case role.FieldParentID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
-			} else if value.Valid {
-				_m.ParentID = new(uint32)
-				*_m.ParentID = uint32(value.Int64)
+				_m.SortOrder = new(uint32)
+				*_m.SortOrder = uint32(value.Int64)
 			}
 		case role.FieldTenantID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -191,6 +152,13 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.TenantID = new(uint32)
 				*_m.TenantID = uint32(value.Int64)
+			}
+		case role.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				_m.Status = new(role.Status)
+				*_m.Status = role.Status(value.String)
 			}
 		case role.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -206,34 +174,12 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 				_m.Code = new(string)
 				*_m.Code = value.String
 			}
-		case role.FieldCustomOrgUnitIds:
-			if value, ok := values[i].(*[]byte); !ok {
-				return fmt.Errorf("unexpected type %T for field custom_org_unit_ids", values[i])
-			} else if value != nil && len(*value) > 0 {
-				if err := json.Unmarshal(*value, &_m.CustomOrgUnitIds); err != nil {
-					return fmt.Errorf("unmarshal field custom_org_unit_ids: %w", err)
-				}
-			}
-		case role.FieldDataScope:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field data_scope", values[i])
+		case role.FieldIsProtected:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_protected", values[i])
 			} else if value.Valid {
-				_m.DataScope = new(role.DataScope)
-				*_m.DataScope = role.DataScope(value.String)
-			}
-		case role.FieldStatus:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field status", values[i])
-			} else if value.Valid {
-				_m.Status = new(role.Status)
-				*_m.Status = role.Status(value.String)
-			}
-		case role.FieldType:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field type", values[i])
-			} else if value.Valid {
-				_m.Type = new(role.Type)
-				*_m.Type = role.Type(value.String)
+				_m.IsProtected = new(bool)
+				*_m.IsProtected = value.Bool
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -246,16 +192,6 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (_m *Role) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
-}
-
-// QueryParent queries the "parent" edge of the Role entity.
-func (_m *Role) QueryParent() *RoleQuery {
-	return NewRoleClient(_m.config).QueryParent(_m)
-}
-
-// QueryChildren queries the "children" edge of the Role entity.
-func (_m *Role) QueryChildren() *RoleQuery {
-	return NewRoleClient(_m.config).QueryChildren(_m)
 }
 
 // Update returns a builder for updating this Role.
@@ -316,18 +252,23 @@ func (_m *Role) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
+	if v := _m.Description; v != nil {
+		builder.WriteString("description=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
 	if v := _m.SortOrder; v != nil {
 		builder.WriteString("sort_order=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.ParentID; v != nil {
-		builder.WriteString("parent_id=")
+	if v := _m.TenantID; v != nil {
+		builder.WriteString("tenant_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.TenantID; v != nil {
-		builder.WriteString("tenant_id=")
+	if v := _m.Status; v != nil {
+		builder.WriteString("status=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
@@ -341,21 +282,8 @@ func (_m *Role) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	builder.WriteString("custom_org_unit_ids=")
-	builder.WriteString(fmt.Sprintf("%v", _m.CustomOrgUnitIds))
-	builder.WriteString(", ")
-	if v := _m.DataScope; v != nil {
-		builder.WriteString("data_scope=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := _m.Status; v != nil {
-		builder.WriteString("status=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := _m.Type; v != nil {
-		builder.WriteString("type=")
+	if v := _m.IsProtected; v != nil {
+		builder.WriteString("is_protected=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')

@@ -41,7 +41,7 @@ option (gnostic.openapi.v3.document) = {
               flows: {
                 password: {
                   token_url: "/admin/v1/login";
-                  refresh_url: "/admin/v1/refresh_token";
+                  refresh_url: "/admin/v1/refresh-token";
                   scopes: {}
                 }
               }

@@ -95,7 +95,7 @@ func ValidColumn(column string) bool {
 
 var (
 	// DefaultSortOrder holds the default value on creation for the "sort_order" field.
-	DefaultSortOrder int32
+	DefaultSortOrder uint32
 	// DefaultIsEnabled holds the default value on creation for the "is_enabled" field.
 	DefaultIsEnabled bool
 	// EntryLabelValidator is a validator for the "entry_label" field. It is called by the builders before save.

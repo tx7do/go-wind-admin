@@ -9,7 +9,10 @@ import { LucideFilePenLine, LucideInfo, LucideTrash2 } from '@vben/icons';
 import { notification } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type userservicev1_User as User } from '#/generated/api/admin/service/v1';
+import {
+  type userservicev1_Role as Role,
+  type userservicev1_User as User,
+} from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
 import { router } from '#/router';
 import {
@@ -81,12 +84,11 @@ const formOptions: VbenFormProps = {
         afterFetch: (data: { name: string; path: string }[]) => {
           return data.map((item: any) => ({
             label: item.name,
-            value: item.id.toString(),
+            value: item.id,
           }));
         },
         api: async () => {
           const result = await roleStore.listRole(undefined, {
-            // parent_id: 0,
             status: 'ON',
           });
           return result.items;
@@ -94,19 +96,21 @@ const formOptions: VbenFormProps = {
       },
     },
     {
-      component: 'ApiTreeSelect',
+      component: 'ApiSelect',
       fieldName: 'tenantId',
       label: $t('page.user.form.tenant'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
-        numberToString: true,
-        showSearch: true,
-        treeDefaultExpandAll: true,
         allowClear: true,
-        childrenField: 'children',
-        labelField: 'name',
-        valueField: 'id',
-        treeNodeFilterProp: 'label',
+        showSearch: true,
+        filterOption: (input: string, option: any) =>
+          option.label.toLowerCase().includes(input.toLowerCase()),
+        afterFetch: (data: { name: string; path: string }[]) => {
+          return data.map((item: any) => ({
+            label: item.name,
+            value: item.id,
+          }));
+        },
         api: async () => {
           const result = await tenantStore.listTenant(undefined, {
             status: 'ON',
@@ -138,19 +142,21 @@ const formOptions: VbenFormProps = {
       },
     },
     {
-      component: 'ApiTreeSelect',
+      component: 'ApiSelect',
       fieldName: 'positionId',
       label: $t('page.user.form.position'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
-        numberToString: true,
-        showSearch: true,
-        treeDefaultExpandAll: true,
         allowClear: true,
-        childrenField: 'children',
-        labelField: 'name',
-        valueField: 'id',
-        treeNodeFilterProp: 'label',
+        showSearch: true,
+        filterOption: (input: string, option: any) =>
+          option.label.toLowerCase().includes(input.toLowerCase()),
+        afterFetch: (data: { name: string; path: string }[]) => {
+          return data.map((item: any) => ({
+            label: item.name,
+            value: item.id,
+          }));
+        },
         api: async () => {
           const result = await positionStore.listPosition(undefined, {
             status: 'ON',

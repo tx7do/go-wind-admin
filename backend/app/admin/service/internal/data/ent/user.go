@@ -60,8 +60,10 @@ type User struct {
 	LastLoginAt *time.Time `json:"last_login_at,omitempty"`
 	// 最后一次登录的IP
 	LastLoginIP *string `json:"last_login_ip,omitempty"`
-	// 是否被禁用
-	IsBanned     bool `json:"is_banned,omitempty"`
+	// 锁定截止时间
+	LockedUntil *time.Time `json:"locked_until,omitempty"`
+	// 状态
+	Status       *user.Status `json:"status,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -70,13 +72,11 @@ func (*User) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case user.FieldIsBanned:
-			values[i] = new(sql.NullBool)
 		case user.FieldID, user.FieldCreatedBy, user.FieldUpdatedBy, user.FieldDeletedBy, user.FieldTenantID:
 			values[i] = new(sql.NullInt64)
-		case user.FieldRemark, user.FieldUsername, user.FieldNickname, user.FieldRealname, user.FieldEmail, user.FieldMobile, user.FieldTelephone, user.FieldAvatar, user.FieldAddress, user.FieldRegion, user.FieldDescription, user.FieldGender, user.FieldLastLoginIP:
+		case user.FieldRemark, user.FieldUsername, user.FieldNickname, user.FieldRealname, user.FieldEmail, user.FieldMobile, user.FieldTelephone, user.FieldAvatar, user.FieldAddress, user.FieldRegion, user.FieldDescription, user.FieldGender, user.FieldLastLoginIP, user.FieldStatus:
 			values[i] = new(sql.NullString)
-		case user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldDeletedAt, user.FieldLastLoginAt:
+		case user.FieldCreatedAt, user.FieldUpdatedAt, user.FieldDeletedAt, user.FieldLastLoginAt, user.FieldLockedUntil:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -246,11 +246,19 @@ func (_m *User) assignValues(columns []string, values []any) error {
 				_m.LastLoginIP = new(string)
 				*_m.LastLoginIP = value.String
 			}
-		case user.FieldIsBanned:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field is_banned", values[i])
+		case user.FieldLockedUntil:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field locked_until", values[i])
 			} else if value.Valid {
-				_m.IsBanned = value.Bool
+				_m.LockedUntil = new(time.Time)
+				*_m.LockedUntil = value.Time
+			}
+		case user.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				_m.Status = new(user.Status)
+				*_m.Status = user.Status(value.String)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -393,8 +401,15 @@ func (_m *User) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	builder.WriteString("is_banned=")
-	builder.WriteString(fmt.Sprintf("%v", _m.IsBanned))
+	if v := _m.LockedUntil; v != nil {
+		builder.WriteString("locked_until=")
+		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.Status; v != nil {
+		builder.WriteString("status=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
 	builder.WriteByte(')')
 	return builder.String()
 }

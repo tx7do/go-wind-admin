@@ -2,13 +2,12 @@ package data
 
 import (
 	"context"
-	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/go-utils/mapper"
-	"github.com/tx7do/go-utils/trans"
+	"github.com/tx7do/go-utils/timeutil"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
@@ -52,65 +51,12 @@ func (r *MembershipPositionRepo) CleanPositions(
 	return nil
 }
 
-func (r *MembershipPositionRepo) AssignPositionWithData(ctx context.Context, operatorID *uint32, data *userV1.MembershipPosition) (err error) {
-	var startAt *time.Time
-	var endAt *time.Time
-	var assignedAt *time.Time
-	if data.StartAt != nil {
-		startAt = trans.Ptr(data.StartAt.AsTime())
-	}
-	if data.EndAt != nil {
-		endAt = trans.Ptr(data.EndAt.AsTime())
-	}
-	if data.AssignedAt != nil {
-		assignedAt = trans.Ptr(data.AssignedAt.AsTime())
-	}
-
-	var tx *ent.Tx
-	tx, err = r.entClient.Client().Tx(ctx)
-	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("start transaction failed")
-	}
-	defer func() {
-		if err != nil {
-			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
-			}
-			return
-		}
-		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = adminV1.ErrorInternalServerError("transaction commit failed")
-		}
-	}()
-
-	return r.AssignPositions(
-		ctx,
-		tx,
-		data.GetMembershipId(),
-		data.GetTenantId(),
-		[]uint32{data.GetPositionId()},
-		operatorID,
-		data.Status,
-		startAt,
-		endAt,
-		assignedAt,
-		data.AssignedBy,
-		data.GetIsPrimary(),
-	)
-}
-
 // AssignPositions 分配岗位给用户
 func (r *MembershipPositionRepo) AssignPositions(
 	ctx context.Context,
 	tx *ent.Tx,
 	membershipID, tenantID uint32,
-	positionIDs []uint32, operatorID *uint32,
-	status *userV1.MembershipPosition_Status,
-	startAt, endAt *time.Time,
-	assignedAt *time.Time, assignedBy *uint32,
-	isPrimary bool,
+	datas []*userV1.MembershipPosition,
 ) error {
 	var err error
 
@@ -120,31 +66,30 @@ func (r *MembershipPositionRepo) AssignPositions(
 	}
 
 	// 如果没有分配任何，则直接提交事务返回
-	if len(positionIDs) == 0 {
+	if len(datas) == 0 {
 		return nil
 	}
 
 	now := time.Now()
 
-	if startAt == nil {
-		startAt = &now
-	}
-
 	var membershipPositionCreates []*ent.MembershipPositionCreate
-	for _, id := range positionIDs {
+	for _, data := range datas {
+		if data.StartAt == nil {
+			data.StartAt = timeutil.TimeToTimestamppb(&now)
+		}
 		rm := tx.MembershipPosition.
 			Create().
-			SetMembershipID(membershipID).
-			SetPositionID(id).
-			SetNillableStatus(r.statusConverter.ToEntity(status)).
-			SetNillableCreatedBy(operatorID).
-			SetNillableAssignedBy(assignedBy).
-			SetNillableAssignedAt(assignedAt).
-			SetTenantID(tenantID).
-			SetIsPrimary(isPrimary).
-			SetCreatedAt(now).
-			SetNillableStartAt(startAt).
-			SetNillableEndAt(endAt)
+			SetTenantID(data.GetTenantId()).
+			SetMembershipID(data.GetMembershipId()).
+			SetPositionID(data.GetPositionId()).
+			SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
+			SetNillableAssignedBy(data.AssignedBy).
+			SetNillableAssignedAt(timeutil.TimestamppbToTime(data.AssignedAt)).
+			SetNillableIsPrimary(data.IsPrimary).
+			SetNillableStartAt(timeutil.TimestamppbToTime(data.StartAt)).
+			SetNillableEndAt(timeutil.TimestamppbToTime(data.EndAt)).
+			SetNillableCreatedBy(data.CreatedBy).
+			SetCreatedAt(now)
 		membershipPositionCreates = append(membershipPositionCreates, rm)
 	}
 
@@ -158,11 +103,10 @@ func (r *MembershipPositionRepo) AssignPositions(
 }
 
 // ListPositionIDs 获取用户的岗位ID列表
-func (r *MembershipPositionRepo) ListPositionIDs(ctx context.Context, membershipID, tenantID uint32, excludeExpired bool) ([]uint32, error) {
+func (r *MembershipPositionRepo) ListPositionIDs(ctx context.Context, membershipID uint32, excludeExpired bool) ([]uint32, error) {
 	q := r.entClient.Client().MembershipPosition.Query().
 		Where(
 			membershipposition.MembershipIDEQ(membershipID),
-			membershipposition.TenantIDEQ(tenantID),
 		)
 
 	if excludeExpired {

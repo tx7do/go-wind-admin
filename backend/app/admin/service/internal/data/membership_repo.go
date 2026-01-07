@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"go-wind-admin/pkg/utils/slice"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -62,25 +63,11 @@ func (r *MembershipRepo) init() {
 	r.mapper.AppendConverters(r.statusConverter.NewConverterPair())
 }
 
-// AssignTenantWithData 使用 Membership 数据为用户分配租户
-func (r *MembershipRepo) AssignTenantWithData(
+// AssignTenantMembership 使用 Membership 数据为用户分配租户
+func (r *MembershipRepo) AssignTenantMembership(
 	ctx context.Context,
-	operatorID *uint32,
 	data *userV1.Membership,
 ) (err error) {
-	var startAt *time.Time
-	var endAt *time.Time
-	var assignedAt *time.Time
-	if data.StartAt != nil {
-		startAt = trans.Ptr(data.StartAt.AsTime())
-	}
-	if data.EndAt != nil {
-		endAt = trans.Ptr(data.EndAt.AsTime())
-	}
-	if data.AssignedAt != nil {
-		assignedAt = trans.Ptr(data.AssignedAt.AsTime())
-	}
-
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
@@ -100,70 +87,124 @@ func (r *MembershipRepo) AssignTenantWithData(
 		}
 	}()
 
-	return r.AssignTenant(
-		ctx,
-		tx,
-		data.GetUserId(),
-		data.GetTenantId(),
-		operatorID,
-		data.Status,
-		startAt,
-		endAt,
-		assignedAt,
-		data.AssignedBy,
-		data.GetIsPrimary(),
-	)
+	var entity *ent.Membership
+	entity, err = r.upsertMembership(ctx, tx, data)
+	if err != nil {
+		return err
+	}
+
+	var roleIDs []uint32
+	if data.RoleId != nil {
+		roleIDs = append(roleIDs, data.GetRoleId())
+	}
+	if len(data.RoleIds) > 0 {
+		roleIDs = append(roleIDs, data.RoleIds...)
+	}
+	roleIDs = slice.Unique(roleIDs)
+
+	var orgUnitIDs []uint32
+	if data.OrgUnitId != nil {
+		orgUnitIDs = append(orgUnitIDs, data.GetOrgUnitId())
+	}
+	if len(data.OrgUnitIds) > 0 {
+		orgUnitIDs = append(orgUnitIDs, data.OrgUnitIds...)
+	}
+	orgUnitIDs = slice.Unique(orgUnitIDs)
+
+	var positionIDs []uint32
+	if data.PositionId != nil {
+		positionIDs = append(positionIDs, data.GetPositionId())
+	}
+	if len(data.PositionIds) > 0 {
+		positionIDs = append(positionIDs, data.PositionIds...)
+	}
+	positionIDs = slice.Unique(positionIDs)
+
+	if len(roleIDs) > 0 {
+		var roles []*userV1.MembershipRole
+		for _, roleID := range roleIDs {
+			role := &userV1.MembershipRole{
+				MembershipId: trans.Ptr(entity.ID),
+				TenantId:     data.TenantId,
+				RoleId:       trans.Ptr(roleID),
+				Status:       trans.Ptr(userV1.MembershipRole_ACTIVE),
+				CreatedBy:    data.CreatedBy,
+				AssignedBy:   data.AssignedBy,
+				AssignedAt:   data.AssignedAt,
+				StartAt:      data.StartAt,
+				EndAt:        data.EndAt,
+				//IsPrimary:    data.IsPrimary,
+			}
+			roles = append(roles, role)
+		}
+
+		if err = r.membershipRoleRepo.AssignRoles(ctx, tx, entity.ID, data.GetTenantId(), roles); err != nil {
+			return err
+		}
+	}
+
+	if len(orgUnitIDs) > 0 {
+		var orgUnits []*userV1.MembershipOrgUnit
+		for _, orgUnitID := range orgUnitIDs {
+			orgUnit := &userV1.MembershipOrgUnit{
+				MembershipId: trans.Ptr(entity.ID),
+				TenantId:     data.TenantId,
+				OrgUnitId:    trans.Ptr(orgUnitID),
+				Status:       trans.Ptr(userV1.MembershipOrgUnit_ACTIVE),
+				CreatedBy:    data.CreatedBy,
+				AssignedBy:   data.AssignedBy,
+				AssignedAt:   data.AssignedAt,
+				StartAt:      data.StartAt,
+				EndAt:        data.EndAt,
+				//IsPrimary:    data.IsPrimary,
+			}
+			orgUnits = append(orgUnits, orgUnit)
+		}
+
+		if err = r.membershipOrgUnitRepo.AssignOrgUnits(ctx, tx, entity.ID, data.GetTenantId(), orgUnits); err != nil {
+			return err
+		}
+	}
+
+	if len(positionIDs) > 0 {
+		var positions []*userV1.MembershipPosition
+		for _, positionID := range positionIDs {
+			position := &userV1.MembershipPosition{
+				MembershipId: trans.Ptr(entity.ID),
+				TenantId:     data.TenantId,
+				PositionId:   trans.Ptr(positionID),
+				Status:       trans.Ptr(userV1.MembershipPosition_ACTIVE),
+				CreatedBy:    data.CreatedBy,
+				AssignedBy:   data.AssignedBy,
+				AssignedAt:   data.AssignedAt,
+				StartAt:      data.StartAt,
+				EndAt:        data.EndAt,
+				//IsPrimary:    data.IsPrimary,
+			}
+			positions = append(positions, position)
+		}
+
+		if err = r.membershipPositionRepo.AssignPositions(ctx, tx, entity.ID, data.GetTenantId(), positions); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
-// AssignTenant 为用户分配租户
-func (r *MembershipRepo) AssignTenant(
+// AssignTenantWithTx 为用户分配租户
+func (r *MembershipRepo) AssignTenantWithTx(
 	ctx context.Context,
 	tx *ent.Tx,
-	userID, tenantID uint32,
-	operatorID *uint32,
-	status *userV1.Membership_Status,
-	startAt, endAt *time.Time,
-	assignedAt *time.Time, assignedBy *uint32,
-	isPrimary bool,
+	data *userV1.Membership,
 ) error {
-	var err error
-
-	if _, err = tx.Membership.Delete().
-		Where(
-			membership.TenantIDEQ(tenantID),
-			membership.UserIDEQ(userID),
-		).
-		Exec(ctx); err != nil {
-		r.log.Errorf("delete old membership failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old membership failed")
-	}
-
-	if _, err = r.upsertMembership(ctx, tx, &userV1.Membership{
-		TenantId:   trans.Ptr(tenantID),
-		UserId:     trans.Ptr(userID),
-		Status:     status,
-		CreatedBy:  operatorID,
-		AssignedBy: assignedBy,
-		AssignedAt: timeutil.TimeToTimestamppb(assignedAt),
-		IsPrimary:  trans.Ptr(isPrimary),
-		StartAt:    timeutil.TimeToTimestamppb(startAt),
-		EndAt:      timeutil.TimeToTimestamppb(endAt),
-	}); err != nil {
-		r.log.Errorf("create membership failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("create membership failed")
-	}
-
-	return nil
+	_, err := r.upsertMembership(ctx, tx, data)
+	return err
 }
 
-func (r *MembershipRepo) AssignRolesWithTransaction(ctx context.Context,
+func (r *MembershipRepo) AssignRoles(ctx context.Context,
 	userID, tenantID uint32,
-	roleIDs []uint32,
-	operatorID *uint32,
-	status *userV1.MembershipRole_Status,
-	startAt, endAt *time.Time,
-	assignedAt *time.Time, assignedBy *uint32,
-	isPrimary bool,
+	datas []*userV1.MembershipRole,
 ) (err error) {
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
@@ -191,30 +232,17 @@ func (r *MembershipRepo) AssignRolesWithTransaction(ctx context.Context,
 		return userV1.ErrorInternalServerError("get membership id failed")
 	}
 
-	// 调用 roleRepo 的核心方法（该方法接受 tx）
-	if err = r.membershipRoleRepo.AssignRoles(
-		ctx, tx,
-		membershipID, tenantID,
-		roleIDs, operatorID,
-		status,
-		startAt, endAt,
-		assignedAt, assignedBy, isPrimary,
-	); err != nil {
+	if err = r.membershipRoleRepo.AssignRoles(ctx, tx, membershipID, tenantID, datas); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (r *MembershipRepo) AssignPositionsWithTransaction(
+func (r *MembershipRepo) AssignPositions(
 	ctx context.Context,
 	userID, tenantID uint32,
-	positionIDs []uint32,
-	operatorID *uint32,
-	status *userV1.MembershipPosition_Status,
-	startAt, endAt *time.Time,
-	assignedAt *time.Time, assignedBy *uint32,
-	isPrimary bool,
+	datas []*userV1.MembershipPosition,
 ) (err error) {
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
@@ -242,29 +270,16 @@ func (r *MembershipRepo) AssignPositionsWithTransaction(
 		return userV1.ErrorInternalServerError("get membership id failed")
 	}
 
-	// 调用 positionRepo 的核心方法（该方法接受 tx）
-	if err = r.membershipPositionRepo.AssignPositions(
-		ctx, tx,
-		membershipID, tenantID,
-		positionIDs, operatorID,
-		status,
-		startAt, endAt,
-		assignedAt, assignedBy, isPrimary,
-	); err != nil {
+	if err = r.membershipPositionRepo.AssignPositions(ctx, tx, membershipID, tenantID, datas); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (r *MembershipRepo) AssignOrgUnitsWithTransaction(ctx context.Context,
+func (r *MembershipRepo) AssignOrgUnits(ctx context.Context,
 	userID, tenantID uint32,
-	orgUnitIDs []uint32,
-	operatorID *uint32,
-	status *userV1.MembershipOrgUnit_Status,
-	startAt, endAt *time.Time,
-	assignedAt *time.Time, assignedBy *uint32,
-	isPrimary bool,
+	datas []*userV1.MembershipOrgUnit,
 ) (err error) {
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
@@ -292,15 +307,7 @@ func (r *MembershipRepo) AssignOrgUnitsWithTransaction(ctx context.Context,
 		return userV1.ErrorInternalServerError("get membership id failed")
 	}
 
-	// 调用 orgUnitRepo 的核心方法（该方法接受 tx）
-	if err = r.membershipOrgUnitRepo.AssignOrgUnits(
-		ctx, tx,
-		membershipID, tenantID,
-		orgUnitIDs, operatorID,
-		status,
-		startAt, endAt,
-		assignedAt, assignedBy, isPrimary,
-	); err != nil {
+	if err = r.membershipOrgUnitRepo.AssignOrgUnits(ctx, tx, membershipID, tenantID, datas); err != nil {
 		return err
 	}
 
@@ -454,7 +461,8 @@ func (r *MembershipRepo) GetMembershipID(ctx context.Context, userID, tenantID u
 	return r.queryMembershipID(ctx, tx, userID, tenantID)
 }
 
-func (r *MembershipRepo) GetMembership(ctx context.Context, userID, tenantID uint32) (*userV1.Membership, error) {
+// GetMembershipByUserTenant 获取用户在租户下的 Membership 记录
+func (r *MembershipRepo) GetMembershipByUserTenant(ctx context.Context, userID, tenantID uint32) (*userV1.Membership, error) {
 	now := time.Now()
 	builder := r.entClient.Client().Membership.Query()
 	builder.Where(
@@ -475,6 +483,32 @@ func (r *MembershipRepo) GetMembership(ctx context.Context, userID, tenantID uin
 	dto := r.mapper.ToDTO(entity)
 
 	return dto, nil
+}
+
+// GetUserActiveMemberships 获取用户所有有效的 Membership 列表
+func (r *MembershipRepo) GetUserActiveMemberships(ctx context.Context, userID uint32) ([]*userV1.Membership, error) {
+	now := time.Now()
+	builder := r.entClient.Client().Membership.Query()
+	builder.Where(
+		membership.UserIDEQ(userID),
+		membership.Or(
+			membership.EndAtIsNil(),
+			membership.EndAtGT(now),
+		),
+	)
+	entities, err := builder.All(ctx)
+	if err != nil {
+		r.log.Errorf("get user active memberships failed: %s", err.Error())
+		return nil, userV1.ErrorInternalServerError("get user active memberships failed")
+	}
+
+	dtos := make([]*userV1.Membership, 0, len(entities))
+	for _, entity := range entities {
+		dto := r.mapper.ToDTO(entity)
+		dtos = append(dtos, dto)
+	}
+
+	return dtos, nil
 }
 
 // ListMembershipRoleIDs 获取 Membership 关联的角色 ID 列表
@@ -505,7 +539,12 @@ func (r *MembershipRepo) ListMembershipRoleIDs(ctx context.Context, userID, tena
 		return nil, userV1.ErrorInternalServerError("get membership id failed")
 	}
 
-	return r.membershipRoleRepo.ListRoleIDs(ctx, membershipID, tenantID, false)
+	return r.membershipRoleRepo.ListRoleIDs(ctx, membershipID, false)
+}
+
+// GetRoleIDsByMembership 根据 Membership ID 获取关联的角色 ID 列表
+func (r *MembershipRepo) GetRoleIDsByMembership(ctx context.Context, membershipID uint32) (roleIDs []uint32, err error) {
+	return r.membershipRoleRepo.ListRoleIDs(ctx, membershipID, false)
 }
 
 // ListMembershipOrgUnitIDs 获取 Membership 关联的组织单元 ID 列表
@@ -535,7 +574,7 @@ func (r *MembershipRepo) ListMembershipOrgUnitIDs(ctx context.Context, userID, t
 		return nil, userV1.ErrorInternalServerError("get membership id failed")
 	}
 
-	return r.membershipOrgUnitRepo.ListOrgUnitIDs(ctx, membershipID, tenantID, false)
+	return r.membershipOrgUnitRepo.ListOrgUnitIDs(ctx, membershipID, false)
 }
 
 // ListMembershipPositionIDs 获取 Membership 关联的职位 ID 列表
@@ -565,7 +604,7 @@ func (r *MembershipRepo) ListMembershipPositionIDs(ctx context.Context, userID, 
 		return nil, userV1.ErrorInternalServerError("get membership id failed")
 	}
 
-	return r.membershipPositionRepo.ListPositionIDs(ctx, membershipID, tenantID, false)
+	return r.membershipPositionRepo.ListPositionIDs(ctx, membershipID, false)
 }
 
 // ListMembershipAllIDs 获取 Membership 关联的所有角色、职位、组织单元 ID 列表
@@ -597,17 +636,17 @@ func (r *MembershipRepo) ListMembershipAllIDs(ctx context.Context, userID, tenan
 
 	membershipID := ms.ID
 
-	roleIDs, err = r.membershipRoleRepo.ListRoleIDs(ctx, membershipID, tenantID, false)
+	roleIDs, err = r.membershipRoleRepo.ListRoleIDs(ctx, membershipID, false)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 
-	positionIDs, err = r.membershipPositionRepo.ListPositionIDs(ctx, membershipID, tenantID, false)
+	positionIDs, err = r.membershipPositionRepo.ListPositionIDs(ctx, membershipID, false)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 
-	orgUnitIDs, err = r.membershipOrgUnitRepo.ListOrgUnitIDs(ctx, membershipID, tenantID, false)
+	orgUnitIDs, err = r.membershipOrgUnitRepo.ListOrgUnitIDs(ctx, membershipID, false)
 	if err != nil {
 		return nil, nil, nil, err
 	}
@@ -617,34 +656,7 @@ func (r *MembershipRepo) ListMembershipAllIDs(ctx context.Context, userID, tenan
 
 // createMembership 创建 Membership 记录
 func (r *MembershipRepo) createMembership(ctx context.Context, tx *ent.Tx, data *userV1.Membership) (*ent.Membership, error) {
-	now := time.Now()
-
-	if data.StartAt == nil {
-		data.StartAt = timeutil.TimeToTimestamppb(&now)
-	}
-
-	cr := tx.Membership.
-		Create().
-		SetTenantID(data.GetTenantId()).
-		SetUserID(data.GetUserId()).
-		SetNillableRoleID(data.RoleId).
-		SetNillablePositionID(data.PositionId).
-		SetNillableOrgUnitID(data.OrgUnitId).
-		SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
-		SetNillableAssignedBy(data.AssignedBy).
-		SetNillableAssignedAt(timeutil.TimestamppbToTime(data.AssignedAt)).
-		SetNillableIsPrimary(data.IsPrimary).
-		SetNillableStartAt(timeutil.TimestamppbToTime(data.StartAt)).
-		SetNillableEndAt(timeutil.TimestamppbToTime(data.EndAt)).
-		SetNillableCreatedBy(data.CreatedBy).
-		SetCreatedAt(now)
-
-	if entity, err := cr.Save(ctx); err != nil {
-		r.log.Errorf("create membership failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("create membership failed")
-	} else {
-		return entity, err
-	}
+	return r.upsertMembership(ctx, tx, data)
 }
 
 // upsertMembership 更新或插入 Membership 记录
@@ -666,6 +678,7 @@ func (r *MembershipRepo) upsertMembership(ctx context.Context, tx *ent.Tx, data 
 		SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
 		SetNillableAssignedBy(data.AssignedBy).
 		SetNillableAssignedAt(timeutil.TimestamppbToTime(data.AssignedAt)).
+		SetNillableJoinedAt(timeutil.TimestamppbToTime(data.JoinedAt)).
 		SetNillableIsPrimary(data.IsPrimary).
 		SetNillableStartAt(timeutil.TimestamppbToTime(data.StartAt)).
 		SetNillableEndAt(timeutil.TimestamppbToTime(data.EndAt)).

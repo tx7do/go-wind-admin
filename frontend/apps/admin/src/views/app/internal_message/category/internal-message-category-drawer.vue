@@ -35,31 +35,6 @@ const [BaseForm, baseFormApi] = useVbenForm({
   },
   schema: [
     {
-      component: 'ApiSelect',
-      fieldName: 'parentId',
-      label: $t('page.internalMessageCategory.parentId'),
-      rules: 'required',
-      componentProps: {
-        placeholder: $t('ui.placeholder.select'),
-        showSearch: true,
-        allowClear: false,
-        labelField: 'name',
-        valueField: 'id',
-        api: async () => {
-          const result =
-            await internalMessageCategoryStore.listInternalMessageCategory(
-              undefined,
-              {
-                is_enabled: 'true',
-              },
-            );
-          return result.items;
-        },
-        filterOption: (input: string, option: any) =>
-          option.label.toLowerCase().includes(input.toLowerCase()),
-      },
-    },
-    {
       component: 'Input',
       fieldName: 'name',
       label: $t('page.internalMessageCategory.name'),

@@ -30,12 +30,10 @@ type Position struct {
 	UpdatedBy *uint32 `json:"updated_by,omitempty"`
 	// 删除者ID
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
-	// 排序顺序，值越小越靠前
-	SortOrder *int32 `json:"sort_order,omitempty"`
+	// 排序值（越小越靠前）
+	SortOrder *uint32 `json:"sort_order,omitempty"`
 	// 备注
 	Remark *string `json:"remark,omitempty"`
-	// 父节点ID
-	ParentID *uint32 `json:"parent_id,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
 	// 状态
@@ -65,42 +63,8 @@ type Position struct {
 	// 生效时间（UTC）
 	StartAt *time.Time `json:"start_at,omitempty"`
 	// 结束有效期（UTC）
-	EndAt *time.Time `json:"end_at,omitempty"`
-	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the PositionQuery when eager-loading is set.
-	Edges        PositionEdges `json:"edges"`
+	EndAt        *time.Time `json:"end_at,omitempty"`
 	selectValues sql.SelectValues
-}
-
-// PositionEdges holds the relations/edges for other nodes in the graph.
-type PositionEdges struct {
-	// Parent holds the value of the parent edge.
-	Parent *Position `json:"parent,omitempty"`
-	// Children holds the value of the children edge.
-	Children []*Position `json:"children,omitempty"`
-	// loadedTypes holds the information for reporting if a
-	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
-}
-
-// ParentOrErr returns the Parent value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e PositionEdges) ParentOrErr() (*Position, error) {
-	if e.Parent != nil {
-		return e.Parent, nil
-	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: position.Label}
-	}
-	return nil, &NotLoadedError{edge: "parent"}
-}
-
-// ChildrenOrErr returns the Children value or an error if the edge
-// was not loaded in eager-loading.
-func (e PositionEdges) ChildrenOrErr() ([]*Position, error) {
-	if e.loadedTypes[1] {
-		return e.Children, nil
-	}
-	return nil, &NotLoadedError{edge: "children"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -110,7 +74,7 @@ func (*Position) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case position.FieldIsKeyPosition:
 			values[i] = new(sql.NullBool)
-		case position.FieldID, position.FieldCreatedBy, position.FieldUpdatedBy, position.FieldDeletedBy, position.FieldSortOrder, position.FieldParentID, position.FieldTenantID, position.FieldOrgUnitID, position.FieldReportsToPositionID, position.FieldLevel, position.FieldHeadcount:
+		case position.FieldID, position.FieldCreatedBy, position.FieldUpdatedBy, position.FieldDeletedBy, position.FieldSortOrder, position.FieldTenantID, position.FieldOrgUnitID, position.FieldReportsToPositionID, position.FieldLevel, position.FieldHeadcount:
 			values[i] = new(sql.NullInt64)
 		case position.FieldRemark, position.FieldStatus, position.FieldName, position.FieldCode, position.FieldDescription, position.FieldJobFamily, position.FieldJobGrade, position.FieldType:
 			values[i] = new(sql.NullString)
@@ -183,8 +147,8 @@ func (_m *Position) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field sort_order", values[i])
 			} else if value.Valid {
-				_m.SortOrder = new(int32)
-				*_m.SortOrder = int32(value.Int64)
+				_m.SortOrder = new(uint32)
+				*_m.SortOrder = uint32(value.Int64)
 			}
 		case position.FieldRemark:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -192,13 +156,6 @@ func (_m *Position) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Remark = new(string)
 				*_m.Remark = value.String
-			}
-		case position.FieldParentID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
-			} else if value.Valid {
-				_m.ParentID = new(uint32)
-				*_m.ParentID = uint32(value.Int64)
 			}
 		case position.FieldTenantID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -317,16 +274,6 @@ func (_m *Position) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// QueryParent queries the "parent" edge of the Position entity.
-func (_m *Position) QueryParent() *PositionQuery {
-	return NewPositionClient(_m.config).QueryParent(_m)
-}
-
-// QueryChildren queries the "children" edge of the Position entity.
-func (_m *Position) QueryChildren() *PositionQuery {
-	return NewPositionClient(_m.config).QueryChildren(_m)
-}
-
 // Update returns a builder for updating this Position.
 // Note that you need to call Position.Unwrap() before calling this method if this Position
 // was returned from a transaction, and the transaction was committed or rolled back.
@@ -388,11 +335,6 @@ func (_m *Position) String() string {
 	if v := _m.Remark; v != nil {
 		builder.WriteString("remark=")
 		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.ParentID; v != nil {
-		builder.WriteString("parent_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
 	if v := _m.TenantID; v != nil {

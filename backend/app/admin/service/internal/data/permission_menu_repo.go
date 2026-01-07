@@ -11,7 +11,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionmenu"
 
-	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
 type PermissionMenuRepo struct {
@@ -40,20 +40,69 @@ func (r *PermissionMenuRepo) CleanMenus(
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old permission menus failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("delete old permission menus failed")
+		return permissionV1.ErrorInternalServerError("delete old permission menus failed")
+	}
+	return nil
+}
+
+// CleanNotExistMenus 清理权限中不存在的菜单
+func (r *PermissionMenuRepo) CleanNotExistMenus(
+	ctx context.Context,
+	tx *ent.Tx,
+	tenantID uint32,
+	permissionID uint32,
+	menuIDs []uint32,
+) error {
+	if _, err := tx.PermissionMenu.Delete().
+		Where(
+			permissionmenu.MenuIDNotIn(menuIDs...),
+			permissionmenu.PermissionIDEQ(permissionID),
+			permissionmenu.TenantIDEQ(tenantID),
+		).
+		Exec(ctx); err != nil {
+		r.log.Errorf("clean not exists permission menus failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("clean not exists permission menus failed")
 	}
 	return nil
 }
 
 // AssignMenus 给权限分配菜单
-func (r *PermissionMenuRepo) AssignMenus(ctx context.Context, tx *ent.Tx, tenantID uint32, menus map[uint32]uint32) error {
-	if len(menus) == 0 {
+func (r *PermissionMenuRepo) AssignMenus(ctx context.Context, tenantID uint32, permissionID uint32, menuIDs []uint32) (err error) {
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = permissionV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	if err = r.CleanNotExistMenus(ctx, tx, tenantID, permissionID, menuIDs); err != nil {
+
+	}
+
+	return r.AssignMenusWithTx(ctx, tx, tenantID, permissionID, menuIDs)
+}
+
+// AssignMenusWithTx 给权限分配菜单
+func (r *PermissionMenuRepo) AssignMenusWithTx(ctx context.Context, tx *ent.Tx, tenantID uint32, permissionID uint32, menuIDs []uint32) error {
+	if len(menuIDs) == 0 {
 		return nil
 	}
 
 	now := time.Now()
 
-	for permissionID, menuID := range menus {
+	for _, menuID := range menuIDs {
 		pm := tx.PermissionMenu.
 			Create().
 			SetTenantID(tenantID).
@@ -63,12 +112,13 @@ func (r *PermissionMenuRepo) AssignMenus(ctx context.Context, tx *ent.Tx, tenant
 			OnConflictColumns(
 				permissionmenu.FieldTenantID,
 				permissionmenu.FieldPermissionID,
+				permissionmenu.FieldMenuID,
 			).
 			UpdateNewValues().
 			SetUpdatedAt(now)
 		if err := pm.Exec(ctx); err != nil {
-			r.log.Errorf("assign permission menus failed: %s", err.Error())
-			return adminV1.ErrorInternalServerError("assign permission menus failed")
+			r.log.Errorf("assign permission menuIDs failed: %s", err.Error())
+			return permissionV1.ErrorInternalServerError("assign permission menuIDs failed")
 		}
 	}
 
@@ -76,12 +126,11 @@ func (r *PermissionMenuRepo) AssignMenus(ctx context.Context, tx *ent.Tx, tenant
 }
 
 // ListMenuIDs 列出权限关联的菜单ID列表
-func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, tenantID uint32, permissionIDs []uint32) ([]uint32, error) {
+func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {
 	q := r.entClient.Client().PermissionMenu.
 		Query().
 		Where(
 			permissionmenu.PermissionIDIn(permissionIDs...),
-			permissionmenu.TenantIDEQ(tenantID),
 		)
 
 	intIDs, err := q.
@@ -89,7 +138,7 @@ func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, tenantID uint32, p
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("list permission menus by permission id failed: %s", err.Error())
-		return nil, adminV1.ErrorInternalServerError("list permission menus by permission id failed")
+		return nil, permissionV1.ErrorInternalServerError("list permission menus by permission id failed")
 	}
 
 	ids := make([]uint32, len(intIDs))
@@ -103,7 +152,7 @@ func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, tenantID uint32, p
 func (r *PermissionMenuRepo) Truncate(ctx context.Context) error {
 	if _, err := r.entClient.Client().PermissionMenu.Delete().Exec(ctx); err != nil {
 		r.log.Errorf("failed to truncate permission menu table: %s", err.Error())
-		return adminV1.ErrorInternalServerError("truncate failed")
+		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 
 	return nil
@@ -117,7 +166,7 @@ func (r *PermissionMenuRepo) Delete(ctx context.Context, permissionID uint32) er
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("failed to delete permission menu by permission id: %s", err.Error())
-		return adminV1.ErrorInternalServerError("delete failed")
+		return permissionV1.ErrorInternalServerError("delete failed")
 	}
 
 	return nil
@@ -136,7 +185,7 @@ func (r *PermissionMenuRepo) Get(ctx context.Context, tenantID, permissionID uin
 			return 0, nil
 		}
 		r.log.Errorf("get permission menu failed: %s", err.Error())
-		return 0, adminV1.ErrorInternalServerError("get permission menu failed")
+		return 0, permissionV1.ErrorInternalServerError("get permission menu failed")
 	}
 
 	if entity != nil {
@@ -163,7 +212,7 @@ func (r *PermissionMenuRepo) AssignMenu(ctx context.Context, tenantID uint32, pe
 		UpdateNewValues().
 		SetUpdatedAt(now)
 	if err := pm.Exec(ctx); err != nil {
-		return adminV1.ErrorInternalServerError("assign permission menu failed")
+		return permissionV1.ErrorInternalServerError("assign permission menu failed")
 	}
 
 	return nil

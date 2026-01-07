@@ -79,24 +79,24 @@ message Tenant {
     (gnostic.openapi.v3.property) = {description: "租户编码"}
   ];  // 租户编码
 
-  optional string logo_url = 4 [
+  optional string domain = 4 [
+    json_name = "domain",
+    (gnostic.openapi.v3.property) = {description: "租户专属域名"}
+  ];  // 租户专属域名
+
+  optional string logo_url = 5 [
     json_name = "logoUrl",
     (gnostic.openapi.v3.property) = {description: "租户logo地址"}
   ];  // 租户logo地址
 
-  optional string industry = 5 [
+  optional string industry = 6 [
     json_name = "industry",
     (gnostic.openapi.v3.property) = {description: "所属行业（如“互联网”“金融”“制造”）"}
   ];  // 所属行业
 
-  optional Status status = 6 [(gnostic.openapi.v3.property) = {description: "租户状态"}]; // 租户状态
   optional Type type = 7 [(gnostic.openapi.v3.property) = {description: "租户类型"}]; // 租户类型
-  optional AuditStatus audit_status = 8 [
-    json_name = "auditStatus",
-    (gnostic.openapi.v3.property) = {description: "审核状态"}
-  ]; // 审核状态
 
-  optional string remark = 9 [
+  optional string remark = 8 [
     json_name = "remark",
     (gnostic.openapi.v3.property) = {description: "备注"}
   ]; // 备注
@@ -133,18 +133,12 @@ message Tenant {
     (gnostic.openapi.v3.property) = {description: "成员数量"}
   ];  // 成员数量
 
-  optional google.protobuf.Timestamp last_login_at = 31 [
-    json_name = "lastLoginAt",
-    (gnostic.openapi.v3.property) = {description: "最后登录时间"}
-  ]; // 最后登录时间
+  optional Status status = 31 [(gnostic.openapi.v3.property) = {description: "租户状态"}]; // 租户状态
 
-  optional string last_login_ip = 32 [
-    json_name = "lastLoginIp",
-    (gnostic.openapi.v3.property) = {description: "最后登录IP"}
-  ]; // 最后登录IP
-
-  optional uint32 parent_id = 50 [json_name = "parentId", (gnostic.openapi.v3.property) = {description: "父节点ID"}];  // 父节点ID
-  repeated Tenant children = 51 [json_name = "children", (gnostic.openapi.v3.property) = {description: "子节点树"}];  // 子节点树
+  optional AuditStatus audit_status = 32 [
+    json_name = "auditStatus",
+    (gnostic.openapi.v3.property) = {description: "审核状态"}
+  ]; // 审核状态
 
   optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
   optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID

@@ -28,6 +28,8 @@ const (
 	FieldDeletedBy = "deleted_by"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldSortOrder holds the string denoting the sort_order field in the database.
+	FieldSortOrder = "sort_order"
 	// FieldTenantID holds the string denoting the tenant_id field in the database.
 	FieldTenantID = "tenant_id"
 	// FieldRemark holds the string denoting the remark field in the database.
@@ -42,8 +44,6 @@ const (
 	FieldCode = "code"
 	// FieldPath holds the string denoting the path field in the database.
 	FieldPath = "path"
-	// FieldSortOrder holds the string denoting the sort_order field in the database.
-	FieldSortOrder = "sort_order"
 	// FieldLeaderID holds the string denoting the leader_id field in the database.
 	FieldLeaderID = "leader_id"
 	// FieldType holds the string denoting the type field in the database.
@@ -108,6 +108,7 @@ var Columns = []string{
 	FieldUpdatedBy,
 	FieldDeletedBy,
 	FieldStatus,
+	FieldSortOrder,
 	FieldTenantID,
 	FieldRemark,
 	FieldDescription,
@@ -115,7 +116,6 @@ var Columns = []string{
 	FieldName,
 	FieldCode,
 	FieldPath,
-	FieldSortOrder,
 	FieldLeaderID,
 	FieldType,
 	FieldBusinessScopes,
@@ -148,10 +148,10 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// DefaultSortOrder holds the default value on creation for the "sort_order" field.
+	DefaultSortOrder uint32
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
-	// DefaultSortOrder holds the default value on creation for the "sort_order" field.
-	DefaultSortOrder int32
 	// DefaultIsLegalEntity holds the default value on creation for the "is_legal_entity" field.
 	DefaultIsLegalEntity bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
@@ -259,6 +259,11 @@ func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
 }
 
+// BySortOrder orders the results by the sort_order field.
+func BySortOrder(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSortOrder, opts...).ToFunc()
+}
+
 // ByTenantID orders the results by the tenant_id field.
 func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
@@ -292,11 +297,6 @@ func ByCode(opts ...sql.OrderTermOption) OrderOption {
 // ByPath orders the results by the path field.
 func ByPath(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPath, opts...).ToFunc()
-}
-
-// BySortOrder orders the results by the sort_order field.
-func BySortOrder(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSortOrder, opts...).ToFunc()
 }
 
 // ByLeaderID orders the results by the leader_id field.

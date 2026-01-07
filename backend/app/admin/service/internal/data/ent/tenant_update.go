@@ -230,6 +230,26 @@ func (_u *TenantUpdate) ClearLogoURL() *TenantUpdate {
 	return _u
 }
 
+// SetDomain sets the "domain" field.
+func (_u *TenantUpdate) SetDomain(v string) *TenantUpdate {
+	_u.mutation.SetDomain(v)
+	return _u
+}
+
+// SetNillableDomain sets the "domain" field if the given value is not nil.
+func (_u *TenantUpdate) SetNillableDomain(v *string) *TenantUpdate {
+	if v != nil {
+		_u.SetDomain(*v)
+	}
+	return _u
+}
+
+// ClearDomain clears the value of the "domain" field.
+func (_u *TenantUpdate) ClearDomain() *TenantUpdate {
+	_u.mutation.ClearDomain()
+	return _u
+}
+
 // SetIndustry sets the "industry" field.
 func (_u *TenantUpdate) SetIndustry(v string) *TenantUpdate {
 	_u.mutation.SetIndustry(v)
@@ -417,46 +437,6 @@ func (_u *TenantUpdate) ClearExpiredAt() *TenantUpdate {
 	return _u
 }
 
-// SetLastLoginAt sets the "last_login_at" field.
-func (_u *TenantUpdate) SetLastLoginAt(v time.Time) *TenantUpdate {
-	_u.mutation.SetLastLoginAt(v)
-	return _u
-}
-
-// SetNillableLastLoginAt sets the "last_login_at" field if the given value is not nil.
-func (_u *TenantUpdate) SetNillableLastLoginAt(v *time.Time) *TenantUpdate {
-	if v != nil {
-		_u.SetLastLoginAt(*v)
-	}
-	return _u
-}
-
-// ClearLastLoginAt clears the value of the "last_login_at" field.
-func (_u *TenantUpdate) ClearLastLoginAt() *TenantUpdate {
-	_u.mutation.ClearLastLoginAt()
-	return _u
-}
-
-// SetLastLoginIP sets the "last_login_ip" field.
-func (_u *TenantUpdate) SetLastLoginIP(v string) *TenantUpdate {
-	_u.mutation.SetLastLoginIP(v)
-	return _u
-}
-
-// SetNillableLastLoginIP sets the "last_login_ip" field if the given value is not nil.
-func (_u *TenantUpdate) SetNillableLastLoginIP(v *string) *TenantUpdate {
-	if v != nil {
-		_u.SetLastLoginIP(*v)
-	}
-	return _u
-}
-
-// ClearLastLoginIP clears the value of the "last_login_ip" field.
-func (_u *TenantUpdate) ClearLastLoginIP() *TenantUpdate {
-	_u.mutation.ClearLastLoginIP()
-	return _u
-}
-
 // Mutation returns the TenantMutation object of the builder.
 func (_u *TenantUpdate) Mutation() *TenantMutation {
 	return _u.mutation
@@ -603,6 +583,12 @@ func (_u *TenantUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.LogoURLCleared() {
 		_spec.ClearField(tenant.FieldLogoURL, field.TypeString)
 	}
+	if value, ok := _u.mutation.Domain(); ok {
+		_spec.SetField(tenant.FieldDomain, field.TypeString, value)
+	}
+	if _u.mutation.DomainCleared() {
+		_spec.ClearField(tenant.FieldDomain, field.TypeString)
+	}
 	if value, ok := _u.mutation.Industry(); ok {
 		_spec.SetField(tenant.FieldIndustry, field.TypeString, value)
 	}
@@ -659,18 +645,6 @@ func (_u *TenantUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.ExpiredAtCleared() {
 		_spec.ClearField(tenant.FieldExpiredAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.LastLoginAt(); ok {
-		_spec.SetField(tenant.FieldLastLoginAt, field.TypeTime, value)
-	}
-	if _u.mutation.LastLoginAtCleared() {
-		_spec.ClearField(tenant.FieldLastLoginAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.LastLoginIP(); ok {
-		_spec.SetField(tenant.FieldLastLoginIP, field.TypeString, value)
-	}
-	if _u.mutation.LastLoginIPCleared() {
-		_spec.ClearField(tenant.FieldLastLoginIP, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -895,6 +869,26 @@ func (_u *TenantUpdateOne) ClearLogoURL() *TenantUpdateOne {
 	return _u
 }
 
+// SetDomain sets the "domain" field.
+func (_u *TenantUpdateOne) SetDomain(v string) *TenantUpdateOne {
+	_u.mutation.SetDomain(v)
+	return _u
+}
+
+// SetNillableDomain sets the "domain" field if the given value is not nil.
+func (_u *TenantUpdateOne) SetNillableDomain(v *string) *TenantUpdateOne {
+	if v != nil {
+		_u.SetDomain(*v)
+	}
+	return _u
+}
+
+// ClearDomain clears the value of the "domain" field.
+func (_u *TenantUpdateOne) ClearDomain() *TenantUpdateOne {
+	_u.mutation.ClearDomain()
+	return _u
+}
+
 // SetIndustry sets the "industry" field.
 func (_u *TenantUpdateOne) SetIndustry(v string) *TenantUpdateOne {
 	_u.mutation.SetIndustry(v)
@@ -1082,46 +1076,6 @@ func (_u *TenantUpdateOne) ClearExpiredAt() *TenantUpdateOne {
 	return _u
 }
 
-// SetLastLoginAt sets the "last_login_at" field.
-func (_u *TenantUpdateOne) SetLastLoginAt(v time.Time) *TenantUpdateOne {
-	_u.mutation.SetLastLoginAt(v)
-	return _u
-}
-
-// SetNillableLastLoginAt sets the "last_login_at" field if the given value is not nil.
-func (_u *TenantUpdateOne) SetNillableLastLoginAt(v *time.Time) *TenantUpdateOne {
-	if v != nil {
-		_u.SetLastLoginAt(*v)
-	}
-	return _u
-}
-
-// ClearLastLoginAt clears the value of the "last_login_at" field.
-func (_u *TenantUpdateOne) ClearLastLoginAt() *TenantUpdateOne {
-	_u.mutation.ClearLastLoginAt()
-	return _u
-}
-
-// SetLastLoginIP sets the "last_login_ip" field.
-func (_u *TenantUpdateOne) SetLastLoginIP(v string) *TenantUpdateOne {
-	_u.mutation.SetLastLoginIP(v)
-	return _u
-}
-
-// SetNillableLastLoginIP sets the "last_login_ip" field if the given value is not nil.
-func (_u *TenantUpdateOne) SetNillableLastLoginIP(v *string) *TenantUpdateOne {
-	if v != nil {
-		_u.SetLastLoginIP(*v)
-	}
-	return _u
-}
-
-// ClearLastLoginIP clears the value of the "last_login_ip" field.
-func (_u *TenantUpdateOne) ClearLastLoginIP() *TenantUpdateOne {
-	_u.mutation.ClearLastLoginIP()
-	return _u
-}
-
 // Mutation returns the TenantMutation object of the builder.
 func (_u *TenantUpdateOne) Mutation() *TenantMutation {
 	return _u.mutation
@@ -1298,6 +1252,12 @@ func (_u *TenantUpdateOne) sqlSave(ctx context.Context) (_node *Tenant, err erro
 	if _u.mutation.LogoURLCleared() {
 		_spec.ClearField(tenant.FieldLogoURL, field.TypeString)
 	}
+	if value, ok := _u.mutation.Domain(); ok {
+		_spec.SetField(tenant.FieldDomain, field.TypeString, value)
+	}
+	if _u.mutation.DomainCleared() {
+		_spec.ClearField(tenant.FieldDomain, field.TypeString)
+	}
 	if value, ok := _u.mutation.Industry(); ok {
 		_spec.SetField(tenant.FieldIndustry, field.TypeString, value)
 	}
@@ -1354,18 +1314,6 @@ func (_u *TenantUpdateOne) sqlSave(ctx context.Context) (_node *Tenant, err erro
 	}
 	if _u.mutation.ExpiredAtCleared() {
 		_spec.ClearField(tenant.FieldExpiredAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.LastLoginAt(); ok {
-		_spec.SetField(tenant.FieldLastLoginAt, field.TypeTime, value)
-	}
-	if _u.mutation.LastLoginAtCleared() {
-		_spec.ClearField(tenant.FieldLastLoginAt, field.TypeTime)
-	}
-	if value, ok := _u.mutation.LastLoginIP(); ok {
-		_spec.SetField(tenant.FieldLastLoginIP, field.TypeString, value)
-	}
-	if _u.mutation.LastLoginIPCleared() {
-		_spec.ClearField(tenant.FieldLastLoginIP, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &Tenant{config: _u.config}

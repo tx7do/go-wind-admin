@@ -6,8 +6,8 @@ import { defineStore } from 'pinia';
 
 import {
   createMenuServiceClient,
-  type Menu,
-  type Menu_Type,
+  type permissionservicev1_Menu as Menu,
+  type permissionservicev1_Menu_Type as Menu_Type,
 } from '#/generated/api/admin/service/v1';
 import { makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';

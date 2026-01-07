@@ -89,14 +89,14 @@ func TenantID(v uint32) predicate.PermissionApiResource {
 	return predicate.PermissionApiResource(sql.FieldEQ(FieldTenantID, v))
 }
 
-// APIResourceID applies equality check predicate on the "api_resource_id" field. It's identical to APIResourceIDEQ.
-func APIResourceID(v uint32) predicate.PermissionApiResource {
-	return predicate.PermissionApiResource(sql.FieldEQ(FieldAPIResourceID, v))
-}
-
 // PermissionID applies equality check predicate on the "permission_id" field. It's identical to PermissionIDEQ.
 func PermissionID(v uint32) predicate.PermissionApiResource {
 	return predicate.PermissionApiResource(sql.FieldEQ(FieldPermissionID, v))
+}
+
+// APIResourceID applies equality check predicate on the "api_resource_id" field. It's identical to APIResourceIDEQ.
+func APIResourceID(v uint32) predicate.PermissionApiResource {
+	return predicate.PermissionApiResource(sql.FieldEQ(FieldAPIResourceID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -449,46 +449,6 @@ func TenantIDNotNil() predicate.PermissionApiResource {
 	return predicate.PermissionApiResource(sql.FieldNotNull(FieldTenantID))
 }
 
-// APIResourceIDEQ applies the EQ predicate on the "api_resource_id" field.
-func APIResourceIDEQ(v uint32) predicate.PermissionApiResource {
-	return predicate.PermissionApiResource(sql.FieldEQ(FieldAPIResourceID, v))
-}
-
-// APIResourceIDNEQ applies the NEQ predicate on the "api_resource_id" field.
-func APIResourceIDNEQ(v uint32) predicate.PermissionApiResource {
-	return predicate.PermissionApiResource(sql.FieldNEQ(FieldAPIResourceID, v))
-}
-
-// APIResourceIDIn applies the In predicate on the "api_resource_id" field.
-func APIResourceIDIn(vs ...uint32) predicate.PermissionApiResource {
-	return predicate.PermissionApiResource(sql.FieldIn(FieldAPIResourceID, vs...))
-}
-
-// APIResourceIDNotIn applies the NotIn predicate on the "api_resource_id" field.
-func APIResourceIDNotIn(vs ...uint32) predicate.PermissionApiResource {
-	return predicate.PermissionApiResource(sql.FieldNotIn(FieldAPIResourceID, vs...))
-}
-
-// APIResourceIDGT applies the GT predicate on the "api_resource_id" field.
-func APIResourceIDGT(v uint32) predicate.PermissionApiResource {
-	return predicate.PermissionApiResource(sql.FieldGT(FieldAPIResourceID, v))
-}
-
-// APIResourceIDGTE applies the GTE predicate on the "api_resource_id" field.
-func APIResourceIDGTE(v uint32) predicate.PermissionApiResource {
-	return predicate.PermissionApiResource(sql.FieldGTE(FieldAPIResourceID, v))
-}
-
-// APIResourceIDLT applies the LT predicate on the "api_resource_id" field.
-func APIResourceIDLT(v uint32) predicate.PermissionApiResource {
-	return predicate.PermissionApiResource(sql.FieldLT(FieldAPIResourceID, v))
-}
-
-// APIResourceIDLTE applies the LTE predicate on the "api_resource_id" field.
-func APIResourceIDLTE(v uint32) predicate.PermissionApiResource {
-	return predicate.PermissionApiResource(sql.FieldLTE(FieldAPIResourceID, v))
-}
-
 // PermissionIDEQ applies the EQ predicate on the "permission_id" field.
 func PermissionIDEQ(v uint32) predicate.PermissionApiResource {
 	return predicate.PermissionApiResource(sql.FieldEQ(FieldPermissionID, v))
@@ -527,6 +487,46 @@ func PermissionIDLT(v uint32) predicate.PermissionApiResource {
 // PermissionIDLTE applies the LTE predicate on the "permission_id" field.
 func PermissionIDLTE(v uint32) predicate.PermissionApiResource {
 	return predicate.PermissionApiResource(sql.FieldLTE(FieldPermissionID, v))
+}
+
+// APIResourceIDEQ applies the EQ predicate on the "api_resource_id" field.
+func APIResourceIDEQ(v uint32) predicate.PermissionApiResource {
+	return predicate.PermissionApiResource(sql.FieldEQ(FieldAPIResourceID, v))
+}
+
+// APIResourceIDNEQ applies the NEQ predicate on the "api_resource_id" field.
+func APIResourceIDNEQ(v uint32) predicate.PermissionApiResource {
+	return predicate.PermissionApiResource(sql.FieldNEQ(FieldAPIResourceID, v))
+}
+
+// APIResourceIDIn applies the In predicate on the "api_resource_id" field.
+func APIResourceIDIn(vs ...uint32) predicate.PermissionApiResource {
+	return predicate.PermissionApiResource(sql.FieldIn(FieldAPIResourceID, vs...))
+}
+
+// APIResourceIDNotIn applies the NotIn predicate on the "api_resource_id" field.
+func APIResourceIDNotIn(vs ...uint32) predicate.PermissionApiResource {
+	return predicate.PermissionApiResource(sql.FieldNotIn(FieldAPIResourceID, vs...))
+}
+
+// APIResourceIDGT applies the GT predicate on the "api_resource_id" field.
+func APIResourceIDGT(v uint32) predicate.PermissionApiResource {
+	return predicate.PermissionApiResource(sql.FieldGT(FieldAPIResourceID, v))
+}
+
+// APIResourceIDGTE applies the GTE predicate on the "api_resource_id" field.
+func APIResourceIDGTE(v uint32) predicate.PermissionApiResource {
+	return predicate.PermissionApiResource(sql.FieldGTE(FieldAPIResourceID, v))
+}
+
+// APIResourceIDLT applies the LT predicate on the "api_resource_id" field.
+func APIResourceIDLT(v uint32) predicate.PermissionApiResource {
+	return predicate.PermissionApiResource(sql.FieldLT(FieldAPIResourceID, v))
+}
+
+// APIResourceIDLTE applies the LTE predicate on the "api_resource_id" field.
+func APIResourceIDLTE(v uint32) predicate.PermissionApiResource {
+	return predicate.PermissionApiResource(sql.FieldLTE(FieldAPIResourceID, v))
 }
 
 // And groups predicates with the AND operator between them.

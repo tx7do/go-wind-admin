@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/api/annotations.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/duration.proto";
+
+import "pagination/v1/pagination.proto";
+import "permission/service/v1/permission_audit_log.proto";
+
+
+// 权限变更审计日志服务
+service PermissionAuditLogService {
+  // 查询权限变更审计日志列表
+  rpc List (pagination.PagingRequest) returns (permission.service.v1.ListPermissionAuditLogResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/permission-audit-logs"
+    };
+  }
+
+  // 查询权限变更审计日志详情
+  rpc Get (permission.service.v1.GetPermissionAuditLogRequest) returns (permission.service.v1.PermissionAuditLog) {
+    option (google.api.http) = {
+      get: "/admin/v1/permission-audit-logs/{id}"
+    };
+  }
+}

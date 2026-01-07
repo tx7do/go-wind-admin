@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/api/annotations.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+
+import "pagination/v1/pagination.proto";
+
+import "permission/service/v1/permission_group.proto";
+
+
+// 权限组管理服务
+service PermissionGroupService {
+  // 查询权限组列表
+  rpc List (pagination.PagingRequest) returns (permission.service.v1.ListPermissionGroupResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/permission-groups"
+    };
+  }
+
+  // 查询权限组详情
+  rpc Get (permission.service.v1.GetPermissionGroupRequest) returns (permission.service.v1.PermissionGroup) {
+    option (google.api.http) = {
+      get: "/admin/v1/permission-groups/{id}"
+    };
+  }
+
+  // 创建权限组
+  rpc Create (permission.service.v1.CreatePermissionGroupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/permission-groups"
+      body: "*"
+    };
+  }
+
+  // 更新权限组
+  rpc Update (permission.service.v1.UpdatePermissionGroupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/admin/v1/permission-groups/{id}"
+      body: "*"
+    };
+  }
+
+  // 删除权限组
+  rpc Delete (permission.service.v1.DeletePermissionGroupRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/permission-groups/{id}"
+    };
+  }
+}

@@ -58,14 +58,25 @@ func (InternalMessageCategory) Mixin() []ent.Mixin {
 		mixin.SortOrder{},
 		mixin.Remark{},
 		mixin.TenantID{},
-		mixin.Tree[InternalMessageCategory]{},
 	}
 }
 
 // Indexes of the InternalMessageCategory.
 func (InternalMessageCategory) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("code").Unique().StorageKey("idx_internal_message_category_code"),
-		index.Fields("name").StorageKey("idx_internal_message_category_name"),
+		// 在租户范围内保证 code 唯一
+		index.Fields("tenant_id", "code").Unique().StorageKey("idx_internal_msg_cat_tenant_code"),
+
+		// 按租户 + 名称，用于按名称检索
+		index.Fields("tenant_id", "name").StorageKey("idx_internal_msg_cat_tenant_name"),
+
+		// 按租户 + 启用状态，用于过滤启用/禁用项
+		index.Fields("tenant_id", "is_enabled").StorageKey("idx_internal_msg_cat_tenant_enabled"),
+
+		// 按租户 + 创建时间，用于时间范围查询与分页
+		index.Fields("tenant_id", "created_at").StorageKey("idx_internal_msg_cat_tenant_created_at"),
+
+		// 按租户 + 操作者，用于审计与变更追溯
+		index.Fields("tenant_id", "created_by").StorageKey("idx_internal_msg_cat_tenant_created_by"),
 	}
 }

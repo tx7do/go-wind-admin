@@ -271,6 +271,9 @@ func (_c *ApiResourceCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *ApiResourceCreate) check() error {
+	if _, ok := _c.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "ApiResource.status"`)}
+	}
 	if v, ok := _c.mutation.Status(); ok {
 		if err := apiresource.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "ApiResource.status": %w`, err)}
@@ -544,12 +547,6 @@ func (u *ApiResourceUpsert) SetStatus(v apiresource.Status) *ApiResourceUpsert {
 // UpdateStatus sets the "status" field to the value that was provided on create.
 func (u *ApiResourceUpsert) UpdateStatus() *ApiResourceUpsert {
 	u.SetExcluded(apiresource.FieldStatus)
-	return u
-}
-
-// ClearStatus clears the value of the "status" field.
-func (u *ApiResourceUpsert) ClearStatus() *ApiResourceUpsert {
-	u.SetNull(apiresource.FieldStatus)
 	return u
 }
 
@@ -867,13 +864,6 @@ func (u *ApiResourceUpsertOne) SetStatus(v apiresource.Status) *ApiResourceUpser
 func (u *ApiResourceUpsertOne) UpdateStatus() *ApiResourceUpsertOne {
 	return u.Update(func(s *ApiResourceUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// ClearStatus clears the value of the "status" field.
-func (u *ApiResourceUpsertOne) ClearStatus() *ApiResourceUpsertOne {
-	return u.Update(func(s *ApiResourceUpsert) {
-		s.ClearStatus()
 	})
 }
 
@@ -1378,13 +1368,6 @@ func (u *ApiResourceUpsertBulk) SetStatus(v apiresource.Status) *ApiResourceUpse
 func (u *ApiResourceUpsertBulk) UpdateStatus() *ApiResourceUpsertBulk {
 	return u.Update(func(s *ApiResourceUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// ClearStatus clears the value of the "status" field.
-func (u *ApiResourceUpsertBulk) ClearStatus() *ApiResourceUpsertBulk {
-	return u.Update(func(s *ApiResourceUpsert) {
-		s.ClearStatus()
 	})
 }
 

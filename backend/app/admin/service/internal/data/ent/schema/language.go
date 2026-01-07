@@ -5,6 +5,7 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"github.com/tx7do/go-crud/entgo/mixin"
 )
 
@@ -62,5 +63,35 @@ func (Language) Mixin() []ent.Mixin {
 		mixin.OperatorID{},
 		mixin.SortOrder{},
 		mixin.IsEnabled{},
+	}
+}
+
+// Indexes of the Language.
+func (Language) Indexes() []ent.Index {
+	return []ent.Index{
+		// 全局唯一：language_code 唯一
+		index.Fields("language_code").
+			Unique().
+			StorageKey("uix_sys_languages_language_code"),
+
+		// 单列索引：按 code/name/native_name 快速查询/模糊搜索
+		index.Fields("language_code").
+			StorageKey("idx_sys_languages_language_code"),
+		index.Fields("language_name").
+			StorageKey("idx_sys_languages_language_name"),
+		index.Fields("native_name").
+			StorageKey("idx_sys_languages_native_name"),
+
+		// 常用过滤字段索引
+		index.Fields("is_default").
+			StorageKey("idx_sys_languages_is_default"),
+		index.Fields("is_enabled").
+			StorageKey("idx_sys_languages_is_enabled"),
+
+		// 排序/范围查询索引
+		index.Fields("sort_order").
+			StorageKey("idx_sys_languages_sort_order"),
+		index.Fields("created_at").
+			StorageKey("idx_sys_languages_created_at"),
 	}
 }

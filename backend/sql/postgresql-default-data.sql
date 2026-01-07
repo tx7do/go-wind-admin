@@ -9,8 +9,7 @@ SET LOCAL search_path = public, pg_catalog;
 TRUNCATE TABLE public.sys_user_credentials,
                public.sys_users,
                public.sys_roles,
-               public.sys_role_api,
-               public.sys_role_menu,
+               public.sys_role_permissions,
                public.sys_tenants,
                public.sys_menus,
                public.sys_api_resources,
@@ -22,22 +21,58 @@ TRUNCATE TABLE public.sys_user_credentials,
                public.sys_org_units
 RESTART IDENTITY CASCADE;
 
+-- 权限分组
+INSERT INTO sys_permission_groups (id, parent_id, path, name, module, sort_order, created_at)
+VALUES (1, NULL, '/1/', '系统权限', 'system', 1, now())
+;
+SELECT setval('sys_permission_groups_id_seq', (SELECT MAX(id) FROM sys_permission_groups));
+
+-- 权限点
+INSERT INTO sys_permissions (id, group_id, name, code, status, created_at)
+VALUES (1, 1, '访问后台', 'system:access_backend', 'ON', now())
+;
+SELECT setval('sys_permissions_id_seq', (SELECT MAX(id) FROM sys_permissions));
+
 -- 默认的角色
-INSERT INTO public.sys_roles(id, parent_id, sort_order, name, code, type, data_scope, status, remark, created_at)
-VALUES (1, null, 1, '超级管理员', 'super', 'SYSTEM', 'ALL', 'ON',
-        '拥有系统所有功能的操作权限，可管理租户、用户、角色及所有资源', now()),
-       (2, null, 2, '租户管理员', 'tenant_admin', 'SYSTEM', 'UNIT_AND_CHILD', 'ON',
-        '管理当前租户下的用户、角色及资源，无跨租户操作权限', now()),
-       (3, null, 3, '普通用户', 'user', 'SYSTEM', 'UNIT_AND_CHILD', 'ON', '可访问和使用租户内授权的资源，无管理权限',
-        now()),
-       (4, null, 4, '访客用户', 'guest', 'SYSTEM', 'UNIT_AND_CHILD', 'ON',
-        '仅可访问公开资源，无修改和管理权限，会话过期后自动失效', now()),
-       (5, null, 5, '审计员', 'auditor', 'SYSTEM', 'UNIT_AND_CHILD', 'ON', '仅可查看系统操作日志和数据记录，无修改权限',
-        now())
+INSERT INTO public.sys_roles(id, tenant_id, sort_order, name, code, status, is_protected, description, created_at)
+VALUES (1, 0, 1, '平台管理员', 'platform_admin', 'ON', true, '拥有系统所有功能的操作权限，可管理租户、用户、角色及所有资源', now())
 ;
 SELECT setval('sys_roles_id_seq', (SELECT MAX(id) FROM sys_roles));
 
-INSERT INTO public.sys_role_api (created_at, role_id, api_id)
+-- 默认的用户
+INSERT INTO public.sys_users (id, tenant_id, username, nickname, realname, email, gender, created_at)
+VALUES
+    -- 1. 系统管理员（ADMIN）
+    (1, 0, 'admin', '鹳狸猿', '喵个咪', 'admin@gmail.com', 'MALE', now()),
+;
+SELECT setval('sys_users_id_seq', (SELECT MAX(id) FROM sys_users));
+
+-- 用户的登录凭证（密码统一为admin，哈希值与原admin一致，方便测试）
+INSERT INTO public.sys_user_credentials (user_id, identity_type, identifier, credential_type, credential, status,
+                                         is_primary, created_at)
+VALUES (1, 'USERNAME', 'admin', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
+        'ENABLED', true, now()),
+       (1, 'EMAIL', 'admin@gmail.com', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
+        'ENABLED', false, now())
+;
+SELECT setval('sys_user_credentials_id_seq', (SELECT MAX(id) FROM sys_user_credentials));
+
+-- 用户-租户关联关系
+INSERT INTO public.sys_memberships (id, tenant_id, user_id, org_unit_id, position_id, role_id, is_primary, status)
+VALUES
+    -- 系统管理员（ADMIN）
+    (1, 0, 1, null, null, 1, true, 'ACTIVE'),
+;
+SELECT setval('sys_memberships_id_seq', (SELECT MAX(id) FROM sys_memberships));
+
+-- 租户成员-角色关联关系
+INSERT INTO sys_membership_roles (id, membership_id, tenant_id, role_id, is_primary, status)
+VALUES
+    -- 系统管理员（ADMIN）;
+    (1, 1, 0, 1, true, 'ACTIVE')
+SELECT setval('sys_membership_roles_id_seq', (SELECT MAX(id) FROM sys_membership_roles));
+
+INSERT INTO public.sys_permission_api_resources (created_at, permission_id, api_resource_id)
 SELECT now(),
        1,
        unnest(ARRAY[1, 2, 3, 4, 5, 6, 7, 8, 9,
@@ -51,105 +86,21 @@ SELECT now(),
               80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
               90, 91, 92, 93, 94, 95, 96, 97, 98, 99,
               100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
-              110, 111, 112, 113, 114, 115, 116 ])
+              110, 111, 112, 113, 114, 115, 116, 117, 118, 119,
+              120, 121, 122, 123, 124, 125 ])
 ;
-INSERT INTO public.sys_role_menu (created_at, role_id, menu_id)
+
+INSERT INTO public.sys_permission_menus (created_at, permission_id, menu_id)
 SELECT now(),
        1,
        unnest(ARRAY[1, 2,
               10, 11,
               20, 21, 22, 23, 24,
-              30, 31, 32, 33, 34
+              30, 31, 32, 33, 34,
               40, 41, 42,
               50, 51, 52,
               60, 61, 62, 63, 64])
 ;
-
-INSERT INTO public.sys_role_api (created_at, role_id, api_id)
-SELECT now(),
-       2,
-       unnest(ARRAY[105, 104, 35, 34, 16, 106, 93, 14, 1, 92, 91, 85, 79, 46, 24, 23, 78, 56, 55, 8, 7, 52, 51, 6, 5, 4,
-              31, 30, 20, 19, 53, 15])
-;
-INSERT INTO public.sys_role_menu (created_at, role_id, menu_id)
-SELECT now(),
-       2,
-       unnest(ARRAY[1, 2, 20, 21, 22, 23, 24, 25, 50, 51, 52])
-;
-
--- 租户
-INSERT INTO public.sys_tenants(id, name, code, type, audit_status, status, admin_user_id, created_at)
-VALUES (1, '测试租户', 'super', 'PAID', 'APPROVED', 'ON', 2, now())
-;
-SELECT setval('sys_tenants_id_seq', (SELECT MAX(id) FROM sys_tenants));
-
--- 插入4个权限的用户
-INSERT INTO public.sys_users (id, tenant_id, username, nickname, realname, email, gender, created_at)
-VALUES
-    -- 1. 系统管理员（ADMIN）
-    (1, 0, 'admin', '鹳狸猿', '喵个咪', 'admin@gmail.com', 'MALE', now()),
-    -- 2. 租户管理员（TENANT_ADMIN）
-    (2, 1, 'tenant_admin', '租户管理', '张管理员', 'tenant@company.com', 'MALE', now()),
-    -- 3. 普通用户（USER）
-    (3, 0, 'normal_user', '普通用户', '李用户', 'user@company.com', 'FEMALE', now()),
-    -- 4. 访客（GUEST）
-    (4, 0, 'guest_user', '临时访客', '王访客', 'guest@company.com', 'SECRET', now())
-;
-SELECT setval('sys_users_id_seq', (SELECT MAX(id) FROM sys_users));
-
--- 插入4个用户的凭证（密码统一为admin，哈希值与原admin一致，方便测试）
-INSERT INTO public.sys_user_credentials (user_id, identity_type, identifier, credential_type, credential, status,
-                                         is_primary, created_at)
-VALUES (1, 'USERNAME', 'admin', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
-        'ENABLED', true, now()),
-       (1, 'EMAIL', 'admin@gmail.com', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
-        'ENABLED', false, now()),
-       -- 租户管理员（对应users表id=2）
-       (2, 'USERNAME', 'tenant_admin', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
-        'ENABLED', true, now()),
-       (2, 'EMAIL', 'tenant@company.com', 'PASSWORD_HASH',
-        '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', false, now()),
-
-       -- 普通用户（对应users表id=3）
-       (3, 'USERNAME', 'normal_user', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
-        'ENABLED', true, now()),
-       (3, 'EMAIL', 'user@company.com', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
-        'ENABLED', false, now()),
-
-       -- 访客（对应users表id=4）
-       (4, 'USERNAME', 'guest_user', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
-        'ENABLED', true, now()),
-       (4, 'EMAIL', 'guest@company.com', 'PASSWORD_HASH',
-        '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', false, now())
-;
-SELECT setval('sys_user_credentials_id_seq', (SELECT MAX(id) FROM sys_user_credentials));
-
--- 用户-租户关联关系
-INSERT INTO public.sys_memberships (id, tenant_id, user_id, org_unit_id, position_id, role_id, is_primary, status)
-VALUES
-    -- 系统管理员（ADMIN）
-    (1, 0, 1, null, null, 1, true, 'ACTIVE'),
-    -- 租户管理员（TENANT_ADMIN）
-    (2, 1, 2, null, null, 2, true, 'ACTIVE'),
-    -- 普通用户（USER）
-    (3, 0, 3, null, null, 3, true, 'ACTIVE'),
-    -- 访客（GUEST）
-    (4, 0, 4, null, null, 4, true, 'ACTIVE')
-;
-SELECT setval('sys_memberships_id_seq', (SELECT MAX(id) FROM sys_memberships));
-
--- 用户-角色关联关系
-INSERT INTO sys_membership_roles (id, membership_id, tenant_id, role_id, is_primary, status)
-VALUES
-    -- 系统管理员（ADMIN）;
-    (1, 1, 0, 1, true, 'ACTIVE'),
-    -- 租户管理员（TENANT_ADMIN）
-    (2, 2, 1, 2, true, 'ACTIVE'),
-    -- 普通用户（USER）
-    (3, 3, 0, 3, true, 'ACTIVE'),
-    -- 访客（GUEST）
-    (4, 4, 0, 4, true, 'ACTIVE')
-SELECT setval('sys_membership_roles_id_seq', (SELECT MAX(id) FROM sys_membership_roles));
 
 -- 后台目录
 INSERT INTO public.sys_menus(id, parent_id, type, name, path, redirect, component, status, created_at, meta)

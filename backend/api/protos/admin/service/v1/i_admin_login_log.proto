@@ -19,14 +19,14 @@ service AdminLoginLogService {
   // 查询后台登录日志列表
   rpc List (pagination.PagingRequest) returns (ListAdminLoginLogResponse) {
     option (google.api.http) = {
-      get: "/admin/v1/admin_login_logs"
+      get: "/admin/v1/admin-login-logs"
     };
   }
 
   // 查询后台登录日志详情
   rpc Get (GetAdminLoginLogRequest) returns (AdminLoginLog) {
     option (google.api.http) = {
-      get: "/admin/v1/admin_login_logs/{id}"
+      get: "/admin/v1/admin-login-logs/{id}"
     };
   }
 }

@@ -22,7 +22,7 @@ func (Permission) Annotations() []schema.Annotation {
 			Collation: "utf8mb4_bin",
 		},
 		entsql.WithComments(true),
-		schema.Comment("权限核心表"),
+		schema.Comment("权限点表"),
 	}
 }
 
@@ -34,39 +34,13 @@ func (Permission) Fields() []ent.Field {
 			Comment("权限名称（如：删除用户）"),
 
 		field.String("code").
+			Nillable().
+			Comment("权限编码（如：opm:user:delete、order:export）"),
+
+		field.Uint32("group_id").
 			Optional().
 			Nillable().
-			Comment("权限唯一编码（如：user.delete）"),
-
-		field.String("path").
-			Optional().
-			Nillable().
-			Comment("树路径，如：/1/10/"),
-
-		field.String("module").
-			Comment("所属业务模块（如：用户管理/订单管理）").
-			Optional().
-			Nillable(),
-
-		field.Int32("sort_order").
-			Optional().
-			Nillable().
-			Default(0).
-			Comment("排序序号"),
-
-		field.Enum("type").
-			NamedValues(
-				"Catalog", "CATALOG",
-				"Menu", "MENU",
-				"Page", "PAGE",
-				"Button", "BUTTON",
-				"Api", "API",
-				"Data", "DATA",
-				"Other", "OTHER",
-			).
-			Nillable().
-			Default("API").
-			Comment("权限类型"),
+			Comment("关联权限分组 ID"),
 	}
 }
 
@@ -75,24 +49,36 @@ func (Permission) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId{},
 		mixin.TimeAt{},
 		mixin.OperatorID{},
-		mixin.Remark{},
 		mixin.SwitchStatus{},
 		mixin.TenantID{},
-		mixin.Tree[Permission]{},
 	}
 }
 
 func (Permission) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("tenant_id").StorageKey("idx_perm_tenant_id"),
-		index.Fields("parent_id").StorageKey("idx_perm_parent_id"),
+		// 支持按租户快速筛选
+		index.Fields("tenant_id").
+			StorageKey("idx_perm_tenant_id"),
 
-		// tenant + code 唯一，便于按租户内查找/引用
+		// 唯一约束：同一租户下 code 唯一
 		index.Fields("tenant_id", "code").
 			Unique().
 			StorageKey("uix_perm_tenant_code"),
 
-		index.Fields("module", "type").
-			StorageKey("idx_perm_module_type"),
+		// 常用查询：在租户范围内按名称查询
+		index.Fields("tenant_id", "name").
+			StorageKey("idx_perm_tenant_name"),
+
+		// 单列索引：按 name 快速查询（全局或模糊搜索场景）
+		index.Fields("name").
+			StorageKey("idx_perm_name"),
+
+		// 保留并增强按租户+分组的查询
+		index.Fields("tenant_id", "group_id").
+			StorageKey("idx_perm_tenant_group"),
+
+		// 单列索引：按 group_id 快速查询
+		index.Fields("group_id").
+			StorageKey("idx_perm_group_id"),
 	}
 }

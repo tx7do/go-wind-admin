@@ -207,7 +207,7 @@ export function createAdminLoginLogServiceClient(
 ): AdminLoginLogService {
   return {
     List(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/admin_login_logs`; // eslint-disable-line quotes
+      const path = `admin/v1/admin-login-logs`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       if (request.page) {
@@ -282,7 +282,7 @@ export function createAdminLoginLogServiceClient(
       if (!request.id) {
         throw new Error("missing required field request.id");
       }
-      const path = `admin/v1/admin_login_logs/${request.id}`; // eslint-disable-line quotes
+      const path = `admin/v1/admin-login-logs/${request.id}`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       if (request.viewMask) {
@@ -677,6 +677,7 @@ export type AdminOperationLog = {
   clientName?: string;
   osName?: string;
   osVersion?: string;
+  tenantId?: number;
   createdAt?: wellKnownTimestamp;
 };
 
@@ -729,7 +730,7 @@ export function createAdminOperationLogServiceClient(
 ): AdminOperationLogService {
   return {
     List(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/admin_operation_logs`; // eslint-disable-line quotes
+      const path = `admin/v1/admin-operation-logs`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       if (request.page) {
@@ -804,7 +805,7 @@ export function createAdminOperationLogServiceClient(
       if (!request.id) {
         throw new Error("missing required field request.id");
       }
-      const path = `admin/v1/admin_operation_logs/${request.id}`; // eslint-disable-line quotes
+      const path = `admin/v1/admin-operation-logs/${request.id}`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       if (request.viewMask) {
@@ -825,80 +826,22 @@ export function createAdminOperationLogServiceClient(
     },
   };
 }
-// API资源
-export type ApiResource = {
-  id?: number;
-  operation?: string;
-  path?: string;
-  method?: string;
-  module?: string;
-  moduleDescription?: string;
-  description?: string;
-  scope?: ApiResource_Scope;
-  status?: ApiResource_Status;
-  createdBy?: number;
-  updatedBy?: number;
-  deletedBy?: number;
-  createdAt?: wellKnownTimestamp;
-  updatedAt?: wellKnownTimestamp;
-  deletedAt?: wellKnownTimestamp;
-};
-
-// API作用域
-export type ApiResource_Scope =
-  | "API_SCOPE_INVALID"
-  | "ADMIN"
-  | "APP";
-// 权限状态
-export type ApiResource_Status =
-  | "OFF"
-  | "ON";
-// 查询列表 - 回应
-export type ListApiResourceResponse = {
-  items: ApiResource[] | undefined;
-  total: number | undefined;
-};
-
-// 查询 - 请求
-export type GetApiResourceRequest = {
-  id?: number;
-  viewMask?: wellKnownFieldMask;
-};
-
-// 创建 - 请求
-export type CreateApiResourceRequest = {
-  data: ApiResource | undefined;
-};
-
-// 更新 - 请求
-export type UpdateApiResourceRequest = {
-  id: number | undefined;
-  data: ApiResource | undefined;
-  updateMask: wellKnownFieldMask | undefined;
-  allowMissing?: boolean;
-};
-
-// 删除 - 请求
-export type DeleteApiResourceRequest = {
-  id: number | undefined;
-};
-
 // API资源管理服务
 export interface ApiResourceService {
   // 查询API资源列表
-  List(request: pagination_PagingRequest): Promise<ListApiResourceResponse>;
+  List(request: pagination_PagingRequest): Promise<permissionservicev1_ListApiResourceResponse>;
   // 查询API资源详情
-  Get(request: GetApiResourceRequest): Promise<ApiResource>;
+  Get(request: permissionservicev1_GetApiResourceRequest): Promise<permissionservicev1_ApiResource>;
   // 创建API资源
-  Create(request: CreateApiResourceRequest): Promise<wellKnownEmpty>;
+  Create(request: permissionservicev1_CreateApiResourceRequest): Promise<wellKnownEmpty>;
   // 更新API资源
-  Update(request: UpdateApiResourceRequest): Promise<wellKnownEmpty>;
+  Update(request: permissionservicev1_UpdateApiResourceRequest): Promise<wellKnownEmpty>;
   // 删除API资源
-  Delete(request: DeleteApiResourceRequest): Promise<wellKnownEmpty>;
+  Delete(request: permissionservicev1_DeleteApiResourceRequest): Promise<wellKnownEmpty>;
   // 同步API资源
   SyncApiResources(request: wellKnownEmpty): Promise<wellKnownEmpty>;
   // 查询路由数据
-  GetWalkRouteData(request: wellKnownEmpty): Promise<ListApiResourceResponse>;
+  GetWalkRouteData(request: wellKnownEmpty): Promise<permissionservicev1_ListApiResourceResponse>;
 }
 
 export function createApiResourceServiceClient(
@@ -975,7 +918,7 @@ export function createApiResourceServiceClient(
       }, {
         service: "ApiResourceService",
         method: "List",
-      }) as Promise<ListApiResourceResponse>;
+      }) as Promise<permissionservicev1_ListApiResourceResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -998,7 +941,7 @@ export function createApiResourceServiceClient(
       }, {
         service: "ApiResourceService",
         method: "Get",
-      }) as Promise<ApiResource>;
+      }) as Promise<permissionservicev1_ApiResource>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/api-resources`; // eslint-disable-line quotes
@@ -1089,10 +1032,68 @@ export function createApiResourceServiceClient(
       }, {
         service: "ApiResourceService",
         method: "GetWalkRouteData",
-      }) as Promise<ListApiResourceResponse>;
+      }) as Promise<permissionservicev1_ListApiResourceResponse>;
     },
   };
 }
+// 查询列表 - 回应
+export type permissionservicev1_ListApiResourceResponse = {
+  items: permissionservicev1_ApiResource[] | undefined;
+  total: number | undefined;
+};
+
+// API资源
+export type permissionservicev1_ApiResource = {
+  id?: number;
+  operation?: string;
+  path?: string;
+  method?: string;
+  module?: string;
+  moduleDescription?: string;
+  description?: string;
+  scope?: permissionservicev1_ApiResource_Scope;
+  status?: permissionservicev1_ApiResource_Status;
+  createdBy?: number;
+  updatedBy?: number;
+  deletedBy?: number;
+  createdAt?: wellKnownTimestamp;
+  updatedAt?: wellKnownTimestamp;
+  deletedAt?: wellKnownTimestamp;
+};
+
+// API作用域
+export type permissionservicev1_ApiResource_Scope =
+  | "API_SCOPE_INVALID"
+  | "ADMIN"
+  | "APP";
+// 权限状态
+export type permissionservicev1_ApiResource_Status =
+  | "OFF"
+  | "ON";
+// 查询 - 请求
+export type permissionservicev1_GetApiResourceRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
+};
+
+// 创建 - 请求
+export type permissionservicev1_CreateApiResourceRequest = {
+  data: permissionservicev1_ApiResource | undefined;
+};
+
+// 更新 - 请求
+export type permissionservicev1_UpdateApiResourceRequest = {
+  id: number | undefined;
+  data: permissionservicev1_ApiResource | undefined;
+  updateMask: wellKnownFieldMask | undefined;
+  allowMissing?: boolean;
+};
+
+// 删除 - 请求
+export type permissionservicev1_DeleteApiResourceRequest = {
+  id: number | undefined;
+};
+
 // 用户后台登录认证服务
 export interface AuthenticationService {
   // 登录
@@ -1142,7 +1143,7 @@ export function createAuthenticationServiceClient(
       }) as Promise<wellKnownEmpty>;
     },
     RefreshToken(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/refresh_token`; // eslint-disable-line quotes
+      const path = `admin/v1/refresh-token`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;
@@ -2298,8 +2299,6 @@ export type internal_messageservicev1_InternalMessageCategory = {
   iconUrl?: string;
   sortOrder?: number;
   isEnabled?: boolean;
-  parentId?: number;
-  children: internal_messageservicev1_InternalMessageCategory[] | undefined;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -2494,255 +2493,18 @@ export type internal_messageservicev1_MarkNotificationAsReadRequest = {
   recipientIds: number[] | undefined;
 };
 
-// 路由项
-export type RouteItem = {
-  children: RouteItem[] | undefined;
-  //
-  // Behaviors: OPTIONAL
-  path?: string;
-  //
-  // Behaviors: OPTIONAL
-  redirect?: string;
-  //
-  // Behaviors: OPTIONAL
-  alias?: string;
-  //
-  // Behaviors: OPTIONAL
-  name?: string;
-  //
-  // Behaviors: OPTIONAL
-  component?: string;
-  //
-  // Behaviors: OPTIONAL
-  meta?: RouteMeta;
-};
-
-// 路由元数据
-export type RouteMeta = {
-  //
-  // Behaviors: OPTIONAL
-  activeIcon?: string;
-  //
-  // Behaviors: OPTIONAL
-  activePath?: string;
-  //
-  // Behaviors: OPTIONAL
-  affixTab?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  affixTabOrder?: number;
-  //
-  // Behaviors: OPTIONAL
-  authority: string[] | undefined;
-  //
-  // Behaviors: OPTIONAL
-  badge?: string;
-  //
-  // Behaviors: OPTIONAL
-  badgeType?: string;
-  //
-  // Behaviors: OPTIONAL
-  badgeVariants?: string;
-  //
-  // Behaviors: OPTIONAL
-  hideChildrenInMenu?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  hideInBreadcrumb?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  hideInMenu?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  hideInTab?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  icon?: string;
-  //
-  // Behaviors: OPTIONAL
-  iframeSrc?: string;
-  //
-  // Behaviors: OPTIONAL
-  ignoreAccess?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  keepAlive?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  link?: string;
-  //
-  // Behaviors: OPTIONAL
-  loaded?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  maxNumOfOpenTab?: number;
-  //
-  // Behaviors: OPTIONAL
-  menuVisibleWithForbidden?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  openInNewWindow?: boolean;
-  //
-  // Behaviors: OPTIONAL
-  order?: number;
-  //
-  // Behaviors: OPTIONAL
-  title?: string;
-};
-
-export type ListRouteRequest = {
-};
-
-// 查询路由列表 - 回应
-export type ListRouteResponse = {
-  items: RouteItem[] | undefined;
-};
-
-export type ListPermissionCodeRequest = {
-};
-
-// 查询权限码列表 - 回应
-export type ListPermissionCodeResponse = {
-  codes: string[] | undefined;
-};
-
-// 网站后台动态路由服务
-export interface RouterService {
-  // 查询路由列表
-  ListRoute(request: wellKnownEmpty): Promise<ListRouteResponse>;
-  // 查询权限码列表
-  ListPermissionCode(request: wellKnownEmpty): Promise<ListPermissionCodeResponse>;
-}
-
-export function createRouterServiceClient(
-  handler: RequestHandler
-): RouterService {
-  return {
-    ListRoute(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/routes`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "RouterService",
-        method: "ListRoute",
-      }) as Promise<ListRouteResponse>;
-    },
-    ListPermissionCode(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/perm-codes`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "RouterService",
-        method: "ListPermissionCode",
-      }) as Promise<ListPermissionCodeResponse>;
-    },
-  };
-}
-// 菜单
-export type Menu = {
-  //
-  // Behaviors: OPTIONAL
-  id?: number;
-  status?: Menu_Status;
-  type?: Menu_Type;
-  //
-  // Behaviors: OPTIONAL
-  path?: string;
-  //
-  // Behaviors: OPTIONAL
-  redirect?: string;
-  //
-  // Behaviors: OPTIONAL
-  alias?: string;
-  //
-  // Behaviors: OPTIONAL
-  name?: string;
-  //
-  // Behaviors: OPTIONAL
-  component?: string;
-  //
-  // Behaviors: OPTIONAL
-  meta?: RouteMeta;
-  parentId?: number;
-  children: Menu[] | undefined;
-  createdBy?: number;
-  updatedBy?: number;
-  deletedBy?: number;
-  createdAt?: wellKnownTimestamp;
-  updatedAt?: wellKnownTimestamp;
-  deletedAt?: wellKnownTimestamp;
-};
-
-// 菜单状态
-export type Menu_Status =
-  | "OFF"
-  | "ON";
-// 菜单类型
-export type Menu_Type =
-  | "CATALOG"
-  | "MENU"
-  | "BUTTON"
-  | "EMBEDDED"
-  | "LINK";
-// 查询菜单列表 - 回应
-export type ListMenuResponse = {
-  items: Menu[] | undefined;
-  total: number | undefined;
-};
-
-// 查询菜单详情 - 请求
-export type GetMenuRequest = {
-  id?: number;
-  viewMask?: wellKnownFieldMask;
-};
-
-// 创建菜单 - 请求
-export type CreateMenuRequest = {
-  data: Menu | undefined;
-};
-
-// 更新菜单 - 请求
-export type UpdateMenuRequest = {
-  id: number | undefined;
-  data: Menu | undefined;
-  updateMask: wellKnownFieldMask | undefined;
-  allowMissing?: boolean;
-};
-
-// 删除菜单 - 请求
-export type DeleteMenuRequest = {
-  operatorId?: number;
-  id: number | undefined;
-};
-
 // 后台菜单管理服务
 export interface MenuService {
   // 查询菜单列表
-  List(request: pagination_PagingRequest): Promise<ListMenuResponse>;
+  List(request: pagination_PagingRequest): Promise<permissionservicev1_ListMenuResponse>;
   // 查询菜单详情
-  Get(request: GetMenuRequest): Promise<Menu>;
+  Get(request: permissionservicev1_GetMenuRequest): Promise<permissionservicev1_Menu>;
   // 创建菜单
-  Create(request: CreateMenuRequest): Promise<wellKnownEmpty>;
+  Create(request: permissionservicev1_CreateMenuRequest): Promise<wellKnownEmpty>;
   // 更新菜单
-  Update(request: UpdateMenuRequest): Promise<wellKnownEmpty>;
+  Update(request: permissionservicev1_UpdateMenuRequest): Promise<wellKnownEmpty>;
   // 删除菜单
-  Delete(request: DeleteMenuRequest): Promise<wellKnownEmpty>;
+  Delete(request: permissionservicev1_DeleteMenuRequest): Promise<wellKnownEmpty>;
 }
 
 export function createMenuServiceClient(
@@ -2819,7 +2581,7 @@ export function createMenuServiceClient(
       }, {
         service: "MenuService",
         method: "List",
-      }) as Promise<ListMenuResponse>;
+      }) as Promise<permissionservicev1_ListMenuResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -2842,7 +2604,7 @@ export function createMenuServiceClient(
       }, {
         service: "MenuService",
         method: "Get",
-      }) as Promise<Menu>;
+      }) as Promise<permissionservicev1_Menu>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/menus`; // eslint-disable-line quotes
@@ -2906,6 +2668,156 @@ export function createMenuServiceClient(
     },
   };
 }
+// 查询菜单列表 - 回应
+export type permissionservicev1_ListMenuResponse = {
+  items: permissionservicev1_Menu[] | undefined;
+  total: number | undefined;
+};
+
+// 菜单
+export type permissionservicev1_Menu = {
+  //
+  // Behaviors: OPTIONAL
+  id?: number;
+  status?: permissionservicev1_Menu_Status;
+  type?: permissionservicev1_Menu_Type;
+  //
+  // Behaviors: OPTIONAL
+  path?: string;
+  //
+  // Behaviors: OPTIONAL
+  redirect?: string;
+  //
+  // Behaviors: OPTIONAL
+  alias?: string;
+  //
+  // Behaviors: OPTIONAL
+  name?: string;
+  //
+  // Behaviors: OPTIONAL
+  component?: string;
+  //
+  // Behaviors: OPTIONAL
+  meta?: permissionservicev1_RouteMeta;
+  parentId?: number;
+  children: permissionservicev1_Menu[] | undefined;
+  createdBy?: number;
+  updatedBy?: number;
+  deletedBy?: number;
+  createdAt?: wellKnownTimestamp;
+  updatedAt?: wellKnownTimestamp;
+  deletedAt?: wellKnownTimestamp;
+};
+
+// 菜单状态
+export type permissionservicev1_Menu_Status =
+  | "OFF"
+  | "ON";
+// 菜单类型
+export type permissionservicev1_Menu_Type =
+  | "CATALOG"
+  | "MENU"
+  | "BUTTON"
+  | "EMBEDDED"
+  | "LINK";
+// 路由元数据
+export type permissionservicev1_RouteMeta = {
+  //
+  // Behaviors: OPTIONAL
+  activeIcon?: string;
+  //
+  // Behaviors: OPTIONAL
+  activePath?: string;
+  //
+  // Behaviors: OPTIONAL
+  affixTab?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  affixTabOrder?: number;
+  //
+  // Behaviors: OPTIONAL
+  authority: string[] | undefined;
+  //
+  // Behaviors: OPTIONAL
+  badge?: string;
+  //
+  // Behaviors: OPTIONAL
+  badgeType?: string;
+  //
+  // Behaviors: OPTIONAL
+  badgeVariants?: string;
+  //
+  // Behaviors: OPTIONAL
+  hideChildrenInMenu?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  hideInBreadcrumb?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  hideInMenu?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  hideInTab?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  icon?: string;
+  //
+  // Behaviors: OPTIONAL
+  iframeSrc?: string;
+  //
+  // Behaviors: OPTIONAL
+  ignoreAccess?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  keepAlive?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  link?: string;
+  //
+  // Behaviors: OPTIONAL
+  loaded?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  maxNumOfOpenTab?: number;
+  //
+  // Behaviors: OPTIONAL
+  menuVisibleWithForbidden?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  openInNewWindow?: boolean;
+  //
+  // Behaviors: OPTIONAL
+  order?: number;
+  //
+  // Behaviors: OPTIONAL
+  title?: string;
+};
+
+// 查询菜单详情 - 请求
+export type permissionservicev1_GetMenuRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
+};
+
+// 创建菜单 - 请求
+export type permissionservicev1_CreateMenuRequest = {
+  data: permissionservicev1_Menu | undefined;
+};
+
+// 更新菜单 - 请求
+export type permissionservicev1_UpdateMenuRequest = {
+  id: number | undefined;
+  data: permissionservicev1_Menu | undefined;
+  updateMask: wellKnownFieldMask | undefined;
+  allowMissing?: boolean;
+};
+
+// 删除菜单 - 请求
+export type permissionservicev1_DeleteMenuRequest = {
+  operatorId?: number;
+  id: number | undefined;
+};
+
 // 组织单元服务
 export interface OrgUnitService {
   // 查询组织单元列表
@@ -2925,7 +2837,7 @@ export function createOrgUnitServiceClient(
 ): OrgUnitService {
   return {
     List(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/org_units`; // eslint-disable-line quotes
+      const path = `admin/v1/org-units`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       if (request.page) {
@@ -3000,7 +2912,7 @@ export function createOrgUnitServiceClient(
       if (!request.id) {
         throw new Error("missing required field request.id");
       }
-      const path = `admin/v1/org_units/${request.id}`; // eslint-disable-line quotes
+      const path = `admin/v1/org-units/${request.id}`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       if (request.viewMask) {
@@ -3020,7 +2932,7 @@ export function createOrgUnitServiceClient(
       }) as Promise<userservicev1_OrgUnit>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/org_units`; // eslint-disable-line quotes
+      const path = `admin/v1/org-units`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;
@@ -3040,7 +2952,7 @@ export function createOrgUnitServiceClient(
       if (!request.id) {
         throw new Error("missing required field request.id");
       }
-      const path = `admin/v1/org_units/${request.id}`; // eslint-disable-line quotes
+      const path = `admin/v1/org-units/${request.id}`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;
@@ -3060,7 +2972,7 @@ export function createOrgUnitServiceClient(
       if (!request.id) {
         throw new Error("missing required field request.id");
       }
-      const path = `admin/v1/org_units/${request.id}`; // eslint-disable-line quotes
+      const path = `admin/v1/org-units/${request.id}`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       let uri = path;
@@ -3265,100 +3177,18 @@ export type fileservicev1_UploadOssFileResponse = {
   url: string | undefined;
 };
 
-// 权限 - API 关联关系
-export type PermissionApiResource = {
-  id?: number;
-  permissionId?: number;
-  apiId?: number;
-};
-
-// 权限 - 菜单 关联关系
-export type PermissionMenu = {
-  id?: number;
-  permissionId?: number;
-  menuId?: number;
-};
-
-// 权限
-export type Permission = {
-  id?: number;
-  name?: string;
-  code?: string;
-  type?: Permission_Type;
-  path?: string;
-  module?: string;
-  sortOrder?: number;
-  remark?: string;
-  status?: Permission_Status;
-  tenantId?: number;
-  apiResourceId?: number;
-  menuId?: number;
-  parentId?: number;
-  children: Permission[] | undefined;
-  createdBy?: number;
-  updatedBy?: number;
-  deletedBy?: number;
-  createdAt?: wellKnownTimestamp;
-  updatedAt?: wellKnownTimestamp;
-  deletedAt?: wellKnownTimestamp;
-};
-
-// 权限类型
-export type Permission_Type =
-  | "CATALOG"
-  | "MENU"
-  | "PAGE"
-  | "BUTTON"
-  | "API"
-  | "DATA"
-  | "OTHER";
-// 权限状态
-export type Permission_Status =
-  | "OFF"
-  | "ON";
-// 查询列表 - 回应
-export type ListPermissionResponse = {
-  items: Permission[] | undefined;
-  total: number | undefined;
-};
-
-// 查询 - 请求
-export type GetPermissionRequest = {
-  id?: number;
-  code?: string;
-  viewMask?: wellKnownFieldMask;
-};
-
-// 创建 - 请求
-export type CreatePermissionRequest = {
-  data: Permission | undefined;
-};
-
-// 更新 - 请求
-export type UpdatePermissionRequest = {
-  id: number | undefined;
-  data: Permission | undefined;
-  updateMask: wellKnownFieldMask | undefined;
-  allowMissing?: boolean;
-};
-
-// 删除 - 请求
-export type DeletePermissionRequest = {
-  id: number | undefined;
-};
-
-// 权限管理服务
+// 权限点管理服务
 export interface PermissionService {
-  // 查询权限列表
-  List(request: pagination_PagingRequest): Promise<ListPermissionResponse>;
-  // 查询权限详情
-  Get(request: GetPermissionRequest): Promise<Permission>;
-  // 创建权限
-  Create(request: CreatePermissionRequest): Promise<wellKnownEmpty>;
-  // 更新权限
-  Update(request: UpdatePermissionRequest): Promise<wellKnownEmpty>;
-  // 删除权限
-  Delete(request: DeletePermissionRequest): Promise<wellKnownEmpty>;
+  // 查询权限点列表
+  List(request: pagination_PagingRequest): Promise<permissionservicev1_ListPermissionResponse>;
+  // 查询权限点详情
+  Get(request: permissionservicev1_GetPermissionRequest): Promise<permissionservicev1_Permission>;
+  // 创建权限点
+  Create(request: permissionservicev1_CreatePermissionRequest): Promise<wellKnownEmpty>;
+  // 更新权限点
+  Update(request: permissionservicev1_UpdatePermissionRequest): Promise<wellKnownEmpty>;
+  // 删除权限点
+  Delete(request: permissionservicev1_DeletePermissionRequest): Promise<wellKnownEmpty>;
   // 同步API资源
   SyncApiResources(request: wellKnownEmpty): Promise<wellKnownEmpty>;
   // 同步菜单资源
@@ -3439,7 +3269,7 @@ export function createPermissionServiceClient(
       }, {
         service: "PermissionService",
         method: "List",
-      }) as Promise<ListPermissionResponse>;
+      }) as Promise<permissionservicev1_ListPermissionResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -3465,7 +3295,7 @@ export function createPermissionServiceClient(
       }, {
         service: "PermissionService",
         method: "Get",
-      }) as Promise<Permission>;
+      }) as Promise<permissionservicev1_Permission>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/permissions`; // eslint-disable-line quotes
@@ -3560,6 +3390,557 @@ export function createPermissionServiceClient(
     },
   };
 }
+// 查询列表 - 回应
+export type permissionservicev1_ListPermissionResponse = {
+  items: permissionservicev1_Permission[] | undefined;
+  total: number | undefined;
+};
+
+// 权限点
+export type permissionservicev1_Permission = {
+  id?: number;
+  name?: string;
+  code?: string;
+  remark?: string;
+  status?: permissionservicev1_Permission_Status;
+  tenantId?: number;
+  groupId?: number;
+  groupName?: string;
+  menuIds: number[] | undefined;
+  apiResourceIds: number[] | undefined;
+  createdBy?: number;
+  updatedBy?: number;
+  deletedBy?: number;
+  createdAt?: wellKnownTimestamp;
+  updatedAt?: wellKnownTimestamp;
+  deletedAt?: wellKnownTimestamp;
+};
+
+// 权限点状态
+export type permissionservicev1_Permission_Status =
+  | "OFF"
+  | "ON";
+// 查询 - 请求
+export type permissionservicev1_GetPermissionRequest = {
+  id?: number;
+  code?: string;
+  viewMask?: wellKnownFieldMask;
+};
+
+// 创建 - 请求
+export type permissionservicev1_CreatePermissionRequest = {
+  data: permissionservicev1_Permission | undefined;
+};
+
+// 更新 - 请求
+export type permissionservicev1_UpdatePermissionRequest = {
+  id: number | undefined;
+  data: permissionservicev1_Permission | undefined;
+  updateMask: wellKnownFieldMask | undefined;
+  allowMissing?: boolean;
+};
+
+// 删除 - 请求
+export type permissionservicev1_DeletePermissionRequest = {
+  id: number | undefined;
+};
+
+// 权限变更审计日志服务
+export interface PermissionAuditLogService {
+  // 查询权限变更审计日志列表
+  List(request: pagination_PagingRequest): Promise<permissionservicev1_ListPermissionAuditLogResponse>;
+  // 查询权限变更审计日志详情
+  Get(request: permissionservicev1_GetPermissionAuditLogRequest): Promise<permissionservicev1_PermissionAuditLog>;
+}
+
+export function createPermissionAuditLogServiceClient(
+  handler: RequestHandler
+): PermissionAuditLogService {
+  return {
+    List(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/permission-audit-logs`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
+      }
+      if (request.pageSize) {
+        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
+      }
+      if (request.offset) {
+        queryParams.push(`offset=${encodeURIComponent(request.offset.toString())}`)
+      }
+      if (request.limit) {
+        queryParams.push(`limit=${encodeURIComponent(request.limit.toString())}`)
+      }
+      if (request.token) {
+        queryParams.push(`token=${encodeURIComponent(request.token.toString())}`)
+      }
+      if (request.noPaging) {
+        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
+      }
+      if (request.orderBy) {
+        request.orderBy.forEach((x) => {
+          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.order) {
+        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
+      }
+      if (request.query) {
+        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
+      }
+      if (request.or) {
+        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(`filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(`filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.fieldMask) {
+        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "PermissionAuditLogService",
+        method: "List",
+      }) as Promise<permissionservicev1_ListPermissionAuditLogResponse>;
+    },
+    Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/permission-audit-logs/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.viewMask) {
+        queryParams.push(`viewMask=${encodeURIComponent(request.viewMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "PermissionAuditLogService",
+        method: "Get",
+      }) as Promise<permissionservicev1_PermissionAuditLog>;
+    },
+  };
+}
+// 查询权限变更审计日志列表 - 回应
+export type permissionservicev1_ListPermissionAuditLogResponse = {
+  items: permissionservicev1_PermissionAuditLog[] | undefined;
+  total: number | undefined;
+};
+
+// 权限变更审计日志
+export type permissionservicev1_PermissionAuditLog = {
+  id?: number;
+  operatorId?: number;
+  targetType?: string;
+  targetId?: number;
+  action?: string;
+  oldValue?: string;
+  newValue?: string;
+  ipAddress?: string;
+  tenantId?: number;
+  createdAt?: wellKnownTimestamp;
+};
+
+// 查询权限变更审计日志详情 - 请求
+export type permissionservicev1_GetPermissionAuditLogRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
+};
+
+// 权限组管理服务
+export interface PermissionGroupService {
+  // 查询权限组列表
+  List(request: pagination_PagingRequest): Promise<permissionservicev1_ListPermissionGroupResponse>;
+  // 查询权限组详情
+  Get(request: permissionservicev1_GetPermissionGroupRequest): Promise<permissionservicev1_PermissionGroup>;
+  // 创建权限组
+  Create(request: permissionservicev1_CreatePermissionGroupRequest): Promise<wellKnownEmpty>;
+  // 更新权限组
+  Update(request: permissionservicev1_UpdatePermissionGroupRequest): Promise<wellKnownEmpty>;
+  // 删除权限组
+  Delete(request: permissionservicev1_DeletePermissionGroupRequest): Promise<wellKnownEmpty>;
+}
+
+export function createPermissionGroupServiceClient(
+  handler: RequestHandler
+): PermissionGroupService {
+  return {
+    List(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/permission-groups`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
+      }
+      if (request.pageSize) {
+        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
+      }
+      if (request.offset) {
+        queryParams.push(`offset=${encodeURIComponent(request.offset.toString())}`)
+      }
+      if (request.limit) {
+        queryParams.push(`limit=${encodeURIComponent(request.limit.toString())}`)
+      }
+      if (request.token) {
+        queryParams.push(`token=${encodeURIComponent(request.token.toString())}`)
+      }
+      if (request.noPaging) {
+        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
+      }
+      if (request.orderBy) {
+        request.orderBy.forEach((x) => {
+          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.order) {
+        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
+      }
+      if (request.query) {
+        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
+      }
+      if (request.or) {
+        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(`filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(`filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.fieldMask) {
+        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "PermissionGroupService",
+        method: "List",
+      }) as Promise<permissionservicev1_ListPermissionGroupResponse>;
+    },
+    Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/permission-groups/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.viewMask) {
+        queryParams.push(`viewMask=${encodeURIComponent(request.viewMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "PermissionGroupService",
+        method: "Get",
+      }) as Promise<permissionservicev1_PermissionGroup>;
+    },
+    Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/permission-groups`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "PermissionGroupService",
+        method: "Create",
+      }) as Promise<wellKnownEmpty>;
+    },
+    Update(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/permission-groups/${request.id}`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "PUT",
+        body,
+      }, {
+        service: "PermissionGroupService",
+        method: "Update",
+      }) as Promise<wellKnownEmpty>;
+    },
+    Delete(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/permission-groups/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "DELETE",
+        body,
+      }, {
+        service: "PermissionGroupService",
+        method: "Delete",
+      }) as Promise<wellKnownEmpty>;
+    },
+  };
+}
+// 查询列表 - 回应
+export type permissionservicev1_ListPermissionGroupResponse = {
+  items: permissionservicev1_PermissionGroup[] | undefined;
+  total: number | undefined;
+};
+
+// 权限组
+export type permissionservicev1_PermissionGroup = {
+  id?: number;
+  name?: string;
+  path?: string;
+  module?: string;
+  sortOrder?: number;
+  status?: permissionservicev1_PermissionGroup_Status;
+  tenantId?: number;
+  parentId?: number;
+  children: permissionservicev1_PermissionGroup[] | undefined;
+  createdBy?: number;
+  updatedBy?: number;
+  deletedBy?: number;
+  createdAt?: wellKnownTimestamp;
+  updatedAt?: wellKnownTimestamp;
+  deletedAt?: wellKnownTimestamp;
+};
+
+// 状态
+export type permissionservicev1_PermissionGroup_Status =
+  | "OFF"
+  | "ON";
+// 查询 - 请求
+export type permissionservicev1_GetPermissionGroupRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
+};
+
+// 创建 - 请求
+export type permissionservicev1_CreatePermissionGroupRequest = {
+  data: permissionservicev1_PermissionGroup | undefined;
+};
+
+// 更新 - 请求
+export type permissionservicev1_UpdatePermissionGroupRequest = {
+  id: number | undefined;
+  data: permissionservicev1_PermissionGroup | undefined;
+  updateMask: wellKnownFieldMask | undefined;
+  allowMissing?: boolean;
+};
+
+// 删除 - 请求
+export type permissionservicev1_DeletePermissionGroupRequest = {
+  id: number | undefined;
+};
+
+// 策略评估日志服务
+export interface PolicyEvaluationLogService {
+  // 查询策略评估日志列表
+  List(request: pagination_PagingRequest): Promise<permissionservicev1_ListPolicyEvaluationLogResponse>;
+  // 查询策略评估日志详情
+  Get(request: permissionservicev1_GetPolicyEvaluationLogRequest): Promise<permissionservicev1_PolicyEvaluationLog>;
+}
+
+export function createPolicyEvaluationLogServiceClient(
+  handler: RequestHandler
+): PolicyEvaluationLogService {
+  return {
+    List(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/policy-evaluation-logs`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
+      }
+      if (request.pageSize) {
+        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
+      }
+      if (request.offset) {
+        queryParams.push(`offset=${encodeURIComponent(request.offset.toString())}`)
+      }
+      if (request.limit) {
+        queryParams.push(`limit=${encodeURIComponent(request.limit.toString())}`)
+      }
+      if (request.token) {
+        queryParams.push(`token=${encodeURIComponent(request.token.toString())}`)
+      }
+      if (request.noPaging) {
+        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
+      }
+      if (request.orderBy) {
+        request.orderBy.forEach((x) => {
+          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.order) {
+        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
+      }
+      if (request.query) {
+        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
+      }
+      if (request.or) {
+        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(`filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(`filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.fieldMask) {
+        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "PolicyEvaluationLogService",
+        method: "List",
+      }) as Promise<permissionservicev1_ListPolicyEvaluationLogResponse>;
+    },
+    Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/policy-evaluation-logs/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.viewMask) {
+        queryParams.push(`viewMask=${encodeURIComponent(request.viewMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "PolicyEvaluationLogService",
+        method: "Get",
+      }) as Promise<permissionservicev1_PolicyEvaluationLog>;
+    },
+  };
+}
+// 查询策略评估日志列表 - 回应
+export type permissionservicev1_ListPolicyEvaluationLogResponse = {
+  items: permissionservicev1_PolicyEvaluationLog[] | undefined;
+  total: number | undefined;
+};
+
+// 策略评估日志
+export type permissionservicev1_PolicyEvaluationLog = {
+  id?: number;
+  userId?: number;
+  membershipId?: number;
+  permissionId?: number;
+  policyId?: number;
+  result?: boolean;
+  scopeSql?: string;
+  requestPath?: string;
+  ipAddress?: string;
+  tenantId?: number;
+  createdAt?: wellKnownTimestamp;
+};
+
+// 查询策略评估日志详情 - 请求
+export type permissionservicev1_GetPolicyEvaluationLogRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
+};
+
 // 职位管理服务
 export interface PositionService {
   // 查询职位列表
@@ -3657,6 +4038,12 @@ export function createPositionServiceClient(
       const path = `admin/v1/positions/${request.id}`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
+      if (request.name) {
+        queryParams.push(`name=${encodeURIComponent(request.name.toString())}`)
+      }
+      if (request.code) {
+        queryParams.push(`code=${encodeURIComponent(request.code.toString())}`)
+      }
       if (request.viewMask) {
         queryParams.push(`viewMask=${encodeURIComponent(request.viewMask.toString())}`)
       }
@@ -3761,8 +4148,6 @@ export type userservicev1_Position = {
   reportsToPositionName?: string;
   startAt?: wellKnownTimestamp;
   endAt?: wellKnownTimestamp;
-  parentId?: number;
-  children: userservicev1_Position[] | undefined;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -3786,6 +4171,8 @@ export type userservicev1_Position_Type =
 // 获取职位数据 - 请求
 export type userservicev1_GetPositionRequest = {
   id?: number;
+  name?: string;
+  code?: string;
   viewMask?: wellKnownFieldMask;
 };
 
@@ -3904,6 +4291,12 @@ export function createRoleServiceClient(
       const path = `admin/v1/roles/${request.id}`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
+      if (request.name) {
+        queryParams.push(`name=${encodeURIComponent(request.name.toString())}`)
+      }
+      if (request.code) {
+        queryParams.push(`code=${encodeURIComponent(request.code.toString())}`)
+      }
       if (request.viewMask) {
         queryParams.push(`viewMask=${encodeURIComponent(request.viewMask.toString())}`)
       }
@@ -3992,17 +4385,11 @@ export type userservicev1_Role = {
   code?: string;
   sortOrder?: number;
   status?: userservicev1_Role_Status;
-  type?: userservicev1_Role_Type;
-  dataScope?: userservicev1_Role_DataScope;
-  remark?: string;
-  customOrgUnitIds: number[] | undefined;
-  permissions: string[] | undefined;
-  menus: number[] | undefined;
-  apis: number[] | undefined;
+  description?: string;
+  isProtected?: boolean;
+  permissions: number[] | undefined;
   tenantId?: number;
   tenantName?: string;
-  parentId?: number;
-  children: userservicev1_Role[] | undefined;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -4015,21 +4402,11 @@ export type userservicev1_Role = {
 export type userservicev1_Role_Status =
   | "OFF"
   | "ON";
-// 角色类型
-export type userservicev1_Role_Type =
-  | "SYSTEM"
-  | "CUSTOM";
-// 数据权限范围
-export type userservicev1_Role_DataScope =
-  | "DATA_SCOPE_UNSPECIFIED"
-  | "ALL"
-  | "SELF"
-  | "UNIT_ONLY"
-  | "UNIT_AND_CHILD"
-  | "SELECTED_UNITS";
 // 角色数据 - 请求
 export type userservicev1_GetRoleRequest = {
   id?: number;
+  name?: string;
+  code?: string;
   viewMask?: wellKnownFieldMask;
 };
 
@@ -4049,6 +4426,87 @@ export type userservicev1_UpdateRoleRequest = {
 // 删除角色 - 请求
 export type userservicev1_DeleteRoleRequest = {
   id: number | undefined;
+};
+
+// 网站后台动态路由服务
+export interface RouterService {
+  // 查询路由列表
+  ListRoute(request: wellKnownEmpty): Promise<permissionservicev1_ListRouteResponse>;
+  // 查询权限码列表
+  ListPermissionCode(request: wellKnownEmpty): Promise<permissionservicev1_ListPermissionCodeResponse>;
+}
+
+export function createRouterServiceClient(
+  handler: RequestHandler
+): RouterService {
+  return {
+    ListRoute(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/routes`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "RouterService",
+        method: "ListRoute",
+      }) as Promise<permissionservicev1_ListRouteResponse>;
+    },
+    ListPermissionCode(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/perm-codes`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "RouterService",
+        method: "ListPermissionCode",
+      }) as Promise<permissionservicev1_ListPermissionCodeResponse>;
+    },
+  };
+}
+// 查询路由列表 - 回应
+export type permissionservicev1_ListRouteResponse = {
+  items: permissionservicev1_RouteItem[] | undefined;
+};
+
+// 路由项
+export type permissionservicev1_RouteItem = {
+  children: permissionservicev1_RouteItem[] | undefined;
+  //
+  // Behaviors: OPTIONAL
+  path?: string;
+  //
+  // Behaviors: OPTIONAL
+  redirect?: string;
+  //
+  // Behaviors: OPTIONAL
+  alias?: string;
+  //
+  // Behaviors: OPTIONAL
+  name?: string;
+  //
+  // Behaviors: OPTIONAL
+  component?: string;
+  //
+  // Behaviors: OPTIONAL
+  meta?: permissionservicev1_RouteMeta;
+};
+
+// 查询权限码列表 - 回应
+export type permissionservicev1_ListPermissionCodeResponse = {
+  codes: string[] | undefined;
 };
 
 // 任务选项
@@ -4455,11 +4913,10 @@ export type userservicev1_Tenant = {
   id?: number;
   name?: string;
   code?: string;
+  domain?: string;
   logoUrl?: string;
   industry?: string;
-  status?: userservicev1_Tenant_Status;
   type?: userservicev1_Tenant_Type;
-  auditStatus?: userservicev1_Tenant_AuditStatus;
   remark?: string;
   adminUserId?: number;
   adminUserName?: string;
@@ -4468,10 +4925,8 @@ export type userservicev1_Tenant = {
   expiredAt?: wellKnownTimestamp;
   subscriptionPlan?: string;
   memberCount?: number;
-  lastLoginAt?: wellKnownTimestamp;
-  lastLoginIp?: string;
-  parentId?: number;
-  children: userservicev1_Tenant[] | undefined;
+  status?: userservicev1_Tenant_Status;
+  auditStatus?: userservicev1_Tenant_AuditStatus;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -4480,12 +4935,6 @@ export type userservicev1_Tenant = {
   deletedAt?: wellKnownTimestamp;
 };
 
-// 租户状态
-export type userservicev1_Tenant_Status =
-  | "OFF"
-  | "ON"
-  | "EXPIRED"
-  | "FREEZE";
 // 租户类型
 export type userservicev1_Tenant_Type =
   | "TENANT_TYPE_UNSPECIFIED"
@@ -4494,6 +4943,12 @@ export type userservicev1_Tenant_Type =
   | "INTERNAL"
   | "PARTNER"
   | "CUSTOM";
+// 租户状态
+export type userservicev1_Tenant_Status =
+  | "OFF"
+  | "ON"
+  | "EXPIRED"
+  | "FREEZE";
 // 租户审核状态
 export type userservicev1_Tenant_AuditStatus =
   | "TENANT_AUDIT_STATUS_UNSPECIFIED"
@@ -4529,6 +4984,8 @@ export type userservicev1_User = {
   remark?: string;
   lastLoginAt?: wellKnownTimestamp;
   lastLoginIp?: string;
+  status?: userservicev1_User_Status;
+  lockedUntil?: wellKnownTimestamp;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -4542,6 +4999,14 @@ export type userservicev1_User_Gender =
   | "SECRET"
   | "MALE"
   | "FEMALE";
+// 用户状态
+export type userservicev1_User_Status =
+  | "DISABLED"
+  | "NORMAL"
+  | "PENDING"
+  | "LOCKED"
+  | "EXPIRED"
+  | "CLOSED";
 // 租户管理服务
 export interface TenantService {
   // 获取租户列表
@@ -4723,7 +5188,7 @@ export function createTenantServiceClient(
       }) as Promise<wellKnownEmpty>;
     },
     CreateTenantWithAdminUser(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/tenants_with_admin`; // eslint-disable-line quotes
+      const path = `admin/v1/tenants:with-admin`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;
@@ -4740,7 +5205,7 @@ export function createTenantServiceClient(
       }) as Promise<wellKnownEmpty>;
     },
     TenantExists(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/tenants_exists`; // eslint-disable-line quotes
+      const path = `admin/v1/tenants:exists`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       if (request.code) {

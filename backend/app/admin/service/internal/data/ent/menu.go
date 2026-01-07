@@ -5,7 +5,7 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	servicev1 "go-wind-admin/api/gen/go/admin/service/v1"
+	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"strings"
 	"time"
@@ -36,7 +36,7 @@ type Menu struct {
 	ParentID *uint32 `json:"parent_id,omitempty"`
 	// 备注
 	Remark *string `json:"remark,omitempty"`
-	// 菜单状态
+	// 状态
 	Status *menu.Status `json:"status,omitempty"`
 	// 菜单类型 CATALOG: 目录 MENU: 菜单 BUTTON: 按钮 EMBEDDED: 内嵌 LINK: 外链
 	Type *menu.Type `json:"type,omitempty"`
@@ -51,7 +51,7 @@ type Menu struct {
 	// 前端页面组件
 	Component *string `json:"component,omitempty"`
 	// 前端页面组件
-	Meta *servicev1.RouteMeta `json:"meta,omitempty"`
+	Meta *permissionpb.RouteMeta `json:"meta,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MenuQuery when eager-loading is set.
 	Edges        MenuEdges `json:"edges"`

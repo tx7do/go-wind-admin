@@ -21,6 +21,7 @@ var ProviderSet = wire.NewSet(
 	data.NewRedisClient,
 	data.NewEntClient,
 
+	data.NewAuthorizerProvider,
 	data.NewAuthenticator,
 	data.NewAuthorizer,
 
@@ -40,8 +41,6 @@ var ProviderSet = wire.NewSet(
 	data.NewTenantRepo,
 	data.NewUserCredentialRepo,
 
-	data.NewRoleApiRepo,
-	data.NewRoleMenuRepo,
 	data.NewRolePermissionRepo,
 
 	data.NewMembershipRepo,
@@ -53,8 +52,11 @@ var ProviderSet = wire.NewSet(
 	data.NewMenuRepo,
 
 	data.NewPermissionRepo,
+	data.NewPermissionGroupRepo,
 	data.NewPermissionApiResourceRepo,
 	data.NewPermissionMenuRepo,
+	data.NewPermissionAuditLogRepo,
+	data.NewPolicyEvaluationLogRepo,
 
 	data.NewAdminLoginLogRepo,
 	data.NewAdminOperationLogRepo,

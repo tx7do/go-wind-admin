@@ -25,10 +25,10 @@ const (
 	FieldDeletedBy = "deleted_by"
 	// FieldTenantID holds the string denoting the tenant_id field in the database.
 	FieldTenantID = "tenant_id"
-	// FieldMenuID holds the string denoting the menu_id field in the database.
-	FieldMenuID = "menu_id"
 	// FieldPermissionID holds the string denoting the permission_id field in the database.
 	FieldPermissionID = "permission_id"
+	// FieldMenuID holds the string denoting the menu_id field in the database.
+	FieldMenuID = "menu_id"
 	// Table holds the table name of the permissionmenu in the database.
 	Table = "sys_permission_menus"
 )
@@ -43,8 +43,8 @@ var Columns = []string{
 	FieldUpdatedBy,
 	FieldDeletedBy,
 	FieldTenantID,
-	FieldMenuID,
 	FieldPermissionID,
+	FieldMenuID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -105,12 +105,12 @@ func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
 }
 
-// ByMenuID orders the results by the menu_id field.
-func ByMenuID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldMenuID, opts...).ToFunc()
-}
-
 // ByPermissionID orders the results by the permission_id field.
 func ByPermissionID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPermissionID, opts...).ToFunc()
+}
+
+// ByMenuID orders the results by the menu_id field.
+func ByMenuID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMenuID, opts...).ToFunc()
 }

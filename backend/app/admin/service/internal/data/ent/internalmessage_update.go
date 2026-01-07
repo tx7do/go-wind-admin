@@ -211,12 +211,6 @@ func (_u *InternalMessageUpdate) AddSenderID(v int32) *InternalMessageUpdate {
 	return _u
 }
 
-// ClearSenderID clears the value of the "sender_id" field.
-func (_u *InternalMessageUpdate) ClearSenderID() *InternalMessageUpdate {
-	_u.mutation.ClearSenderID()
-	return _u
-}
-
 // SetCategoryID sets the "category_id" field.
 func (_u *InternalMessageUpdate) SetCategoryID(v uint32) *InternalMessageUpdate {
 	_u.mutation.ResetCategoryID()
@@ -411,9 +405,6 @@ func (_u *InternalMessageUpdate) sqlSave(ctx context.Context) (_node int, err er
 	}
 	if value, ok := _u.mutation.AddedSenderID(); ok {
 		_spec.AddField(internalmessage.FieldSenderID, field.TypeUint32, value)
-	}
-	if _u.mutation.SenderIDCleared() {
-		_spec.ClearField(internalmessage.FieldSenderID, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.CategoryID(); ok {
 		_spec.SetField(internalmessage.FieldCategoryID, field.TypeUint32, value)
@@ -637,12 +628,6 @@ func (_u *InternalMessageUpdateOne) SetNillableSenderID(v *uint32) *InternalMess
 // AddSenderID adds value to the "sender_id" field.
 func (_u *InternalMessageUpdateOne) AddSenderID(v int32) *InternalMessageUpdateOne {
 	_u.mutation.AddSenderID(v)
-	return _u
-}
-
-// ClearSenderID clears the value of the "sender_id" field.
-func (_u *InternalMessageUpdateOne) ClearSenderID() *InternalMessageUpdateOne {
-	_u.mutation.ClearSenderID()
 	return _u
 }
 
@@ -870,9 +855,6 @@ func (_u *InternalMessageUpdateOne) sqlSave(ctx context.Context) (_node *Interna
 	}
 	if value, ok := _u.mutation.AddedSenderID(); ok {
 		_spec.AddField(internalmessage.FieldSenderID, field.TypeUint32, value)
-	}
-	if _u.mutation.SenderIDCleared() {
-		_spec.ClearField(internalmessage.FieldSenderID, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.CategoryID(); ok {
 		_spec.SetField(internalmessage.FieldCategoryID, field.TypeUint32, value)

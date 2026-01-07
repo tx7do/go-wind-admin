@@ -88,10 +88,6 @@ func InitPositionNameSetMap(positions []*userV1.Position, orgUnitSet *name_set.U
 		if v.OrgUnitId != nil {
 			(*orgUnitSet)[v.GetOrgUnitId()] = nil
 		}
-
-		for _, c := range v.Children {
-			InitPositionNameSetMap(c.Children, orgUnitSet, deptSet)
-		}
 	}
 }
 
@@ -105,8 +101,6 @@ func FillPositionOrgUnitInfo(positions []*userV1.Position, orgSet *name_set.User
 			if positions[i].OrgUnitId != nil && positions[i].GetOrgUnitId() == k {
 				positions[i].OrgUnitName = &v.UserName
 			}
-
-			FillPositionOrgUnitInfo(positions[i].Children, orgSet)
 		}
 	}
 }

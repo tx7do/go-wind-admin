@@ -11,7 +11,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionapiresource"
 
-	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
 type PermissionApiResourceRepo struct {
@@ -27,7 +27,7 @@ func NewPermissionApiResourceRepo(ctx *bootstrap.Context, entClient *entCrud.Ent
 }
 
 // CleanApis 清理权限的所有API资源
-func (r *PermissionMenuRepo) CleanApis(
+func (r *PermissionApiResourceRepo) CleanApis(
 	ctx context.Context,
 	tx *ent.Tx,
 	tenantID uint32,
@@ -40,20 +40,77 @@ func (r *PermissionMenuRepo) CleanApis(
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old permission apis failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("delete old permission apis failed")
+		return permissionV1.ErrorInternalServerError("delete old permission apis failed")
+	}
+	return nil
+}
+
+// CleanNotExistApis 清理权限中不存在的API资源
+func (r *PermissionApiResourceRepo) CleanNotExistApis(
+	ctx context.Context,
+	tx *ent.Tx,
+	tenantID, permissionID uint32,
+	apiIDs []uint32,
+) error {
+	if _, err := tx.PermissionApiResource.Delete().
+		Where(
+			permissionapiresource.APIResourceIDNotIn(apiIDs...),
+			permissionapiresource.PermissionIDEQ(permissionID),
+			permissionapiresource.TenantIDEQ(tenantID),
+		).
+		Exec(ctx); err != nil {
+		r.log.Errorf("clean not exists permission apis failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("clean not exists permission apis failed")
 	}
 	return nil
 }
 
 // AssignApis 给权限分配API资源
-func (r *PermissionApiResourceRepo) AssignApis(ctx context.Context, tx *ent.Tx, tenantID uint32, apis map[uint32]uint32) error {
+func (r *PermissionApiResourceRepo) AssignApis(
+	ctx context.Context,
+	tenantID, permissionID uint32,
+	apiIDs []uint32,
+) (err error) {
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = permissionV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	if err = r.CleanNotExistApis(ctx, tx, tenantID, permissionID, apiIDs); err != nil {
+
+	}
+
+	return r.AssignApisWithTx(ctx, tx, tenantID, permissionID, apiIDs)
+}
+
+// AssignApisWithTx 给权限分配API资源
+func (r *PermissionApiResourceRepo) AssignApisWithTx(
+	ctx context.Context,
+	tx *ent.Tx,
+	tenantID, permissionID uint32,
+	apis []uint32,
+) error {
 	if len(apis) == 0 {
 		return nil
 	}
 
 	now := time.Now()
 
-	for permissionID, apiID := range apis {
+	for _, apiID := range apis {
 		pm := tx.PermissionApiResource.
 			Create().
 			SetTenantID(tenantID).
@@ -63,12 +120,13 @@ func (r *PermissionApiResourceRepo) AssignApis(ctx context.Context, tx *ent.Tx, 
 			OnConflictColumns(
 				permissionapiresource.FieldTenantID,
 				permissionapiresource.FieldPermissionID,
+				permissionapiresource.FieldAPIResourceID,
 			).
 			UpdateNewValues().
 			SetUpdatedAt(now)
 		if err := pm.Exec(ctx); err != nil {
 			r.log.Errorf("assign permission apis failed: %s", err.Error())
-			return adminV1.ErrorInternalServerError("assign permission apis failed")
+			return permissionV1.ErrorInternalServerError("assign permission apis failed")
 		}
 	}
 
@@ -76,12 +134,11 @@ func (r *PermissionApiResourceRepo) AssignApis(ctx context.Context, tx *ent.Tx, 
 }
 
 // ListApiIDs 列出权限关联的API资源ID列表
-func (r *PermissionApiResourceRepo) ListApiIDs(ctx context.Context, tenantID uint32, permissionIDs []uint32) ([]uint32, error) {
+func (r *PermissionApiResourceRepo) ListApiIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {
 	q := r.entClient.Client().PermissionApiResource.
 		Query().
 		Where(
 			permissionapiresource.PermissionIDIn(permissionIDs...),
-			permissionapiresource.TenantIDEQ(tenantID),
 		)
 
 	intIDs, err := q.
@@ -89,7 +146,7 @@ func (r *PermissionApiResourceRepo) ListApiIDs(ctx context.Context, tenantID uin
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("list permission apis by permission id failed: %s", err.Error())
-		return nil, adminV1.ErrorInternalServerError("list permission apis by permission id failed")
+		return nil, permissionV1.ErrorInternalServerError("list permission apis by permission id failed")
 	}
 
 	ids := make([]uint32, len(intIDs))
@@ -103,7 +160,7 @@ func (r *PermissionApiResourceRepo) ListApiIDs(ctx context.Context, tenantID uin
 func (r *PermissionApiResourceRepo) Truncate(ctx context.Context) error {
 	if _, err := r.entClient.Client().PermissionApiResource.Delete().Exec(ctx); err != nil {
 		r.log.Errorf("failed to truncate permission api-resource table: %s", err.Error())
-		return adminV1.ErrorInternalServerError("truncate failed")
+		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 
 	return nil
@@ -117,7 +174,7 @@ func (r *PermissionApiResourceRepo) Delete(ctx context.Context, permissionID uin
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete permission api-resources by permission id failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("delete permission api-resources by permission id failed")
+		return permissionV1.ErrorInternalServerError("delete permission api-resources by permission id failed")
 	}
 	return nil
 }
@@ -135,7 +192,7 @@ func (r *PermissionApiResourceRepo) Get(ctx context.Context, tenantID, permissio
 			return 0, nil
 		}
 		r.log.Errorf("get permission api-resource failed: %s", err.Error())
-		return 0, adminV1.ErrorInternalServerError("get permission api-resource failed")
+		return 0, permissionV1.ErrorInternalServerError("get permission api-resource failed")
 	}
 
 	if entity != nil {
@@ -161,7 +218,7 @@ func (r *PermissionApiResourceRepo) AssignApi(ctx context.Context, tenantID uint
 		UpdateNewValues().
 		SetUpdatedAt(now)
 	if err := pm.Exec(ctx); err != nil {
-		return adminV1.ErrorInternalServerError("assign permission api failed")
+		return permissionV1.ErrorInternalServerError("assign permission api failed")
 	}
 
 	return nil

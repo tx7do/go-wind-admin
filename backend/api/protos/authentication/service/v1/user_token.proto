@@ -4,7 +4,7 @@ package authentication.service.v1;
 
 import "gnostic/openapi/v3/annotations.proto";
 
-import "user/service/v1/role.proto";
+import "permission/service/v1/permission.proto";
 
 // 用户令牌载体
 message UserTokenPayload {
@@ -50,7 +50,7 @@ message UserTokenPayload {
     }
   ]; // 用户角色码列表
 
-  optional user.service.v1.Role.DataScope data_scope = 11 [
+  optional permission.service.v1.DataScope data_scope = 11 [
     json_name = "ds",
     (gnostic.openapi.v3.property) = {
       description: "数据权限范围"
@@ -64,17 +64,17 @@ message UserTokenPayload {
     }
   ]; // 当前组织单元ID
 
-  optional bool is_platform_admin = 20 [
-    json_name = "pad",
-    (gnostic.openapi.v3.property) = {
-      description: "是否为平台管理员"
-    }
-  ]; // 是否为平台管理员
-
-  optional bool is_tenant_admin = 21 [
-    json_name = "tad",
-    (gnostic.openapi.v3.property) = {
-      description: "是否为租户管理员（仅当 tenant_id 非 0 时生效）"
-    }
-  ]; // 是否为租户管理员（仅当 tenant_id 非 0 时生效）
+//  optional bool is_platform_admin = 20 [
+//    json_name = "pad",
+//    (gnostic.openapi.v3.property) = {
+//      description: "是否为平台管理员"
+//    }
+//  ]; // 是否为平台管理员
+//
+//  optional bool is_tenant_admin = 21 [
+//    json_name = "tad",
+//    (gnostic.openapi.v3.property) = {
+//      description: "是否为租户管理员（仅当 tenant_id 非 0 时生效）"
+//    }
+//  ]; // 是否为租户管理员（仅当 tenant_id 非 0 时生效）
 }

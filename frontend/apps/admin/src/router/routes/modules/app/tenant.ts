@@ -13,7 +13,7 @@ const tenant: RouteRecordRaw[] = [
       order: 2000,
       icon: 'lucide:building-2',
       title: $t('menu.tenant.moduleName'),
-      authority: ['super', 'admin'],
+      authority: ['platform_admin'],
     },
     children: [
       {
@@ -23,7 +23,7 @@ const tenant: RouteRecordRaw[] = [
           icon: 'lucide:building-2',
           title: $t('menu.tenant.member'),
           hideInTab: false,
-          authority: ['super', 'admin'],
+          authority: ['platform_admin'],
         },
         component: () => import('#/views/app/tenant/tenant/index.vue'),
       },

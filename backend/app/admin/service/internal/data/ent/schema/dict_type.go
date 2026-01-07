@@ -57,19 +57,40 @@ func (DictType) Mixin() []ent.Mixin {
 	}
 }
 
-// Indexes of the DictType.
-func (DictType) Indexes() []ent.Index {
-	return []ent.Index{
-		index.Fields("type_code").
-			Unique().
-			StorageKey("idx_sys_dict_types_type_code"),
-	}
-}
-
 // Edges of the DictType.
 func (DictType) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("entries", DictEntry.Type).
 			Ref("sys_dict_types"),
+	}
+}
+
+// Indexes of the DictType.
+func (DictType) Indexes() []ent.Index {
+	return []ent.Index{
+		// 租户级唯一：同一租户下 type_code 唯一
+		index.Fields("tenant_id", "type_code").
+			Unique().
+			StorageKey("uix_sys_dict_types_tenant_type_code"),
+
+		// 常用查询：在租户范围内按名称查找
+		index.Fields("tenant_id", "type_name").
+			StorageKey("idx_sys_dict_types_tenant_type_name"),
+
+		// 单列索引：按名称快速查询/模糊搜索
+		index.Fields("type_name").
+			StorageKey("idx_sys_dict_types_type_name"),
+
+		// 支持按租户快速筛选
+		index.Fields("tenant_id").
+			StorageKey("idx_sys_dict_types_tenant_id"),
+
+		// 按启用状态过滤
+		index.Fields("is_enabled").
+			StorageKey("idx_sys_dict_types_is_enabled"),
+
+		// 按排序值查询/排序优化
+		index.Fields("sort_order").
+			StorageKey("idx_sys_dict_types_sort_order"),
 	}
 }

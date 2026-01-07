@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -90,14 +89,14 @@ func Remark(v string) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldRemark, v))
 }
 
-// SortOrder applies equality check predicate on the "sort_order" field. It's identical to SortOrderEQ.
-func SortOrder(v int32) predicate.Role {
-	return predicate.Role(sql.FieldEQ(FieldSortOrder, v))
+// Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
+func Description(v string) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldDescription, v))
 }
 
-// ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
-func ParentID(v uint32) predicate.Role {
-	return predicate.Role(sql.FieldEQ(FieldParentID, v))
+// SortOrder applies equality check predicate on the "sort_order" field. It's identical to SortOrderEQ.
+func SortOrder(v uint32) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldSortOrder, v))
 }
 
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
@@ -113,6 +112,11 @@ func Name(v string) predicate.Role {
 // Code applies equality check predicate on the "code" field. It's identical to CodeEQ.
 func Code(v string) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldCode, v))
+}
+
+// IsProtected applies equality check predicate on the "is_protected" field. It's identical to IsProtectedEQ.
+func IsProtected(v bool) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldIsProtected, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -490,43 +494,118 @@ func RemarkContainsFold(v string) predicate.Role {
 	return predicate.Role(sql.FieldContainsFold(FieldRemark, v))
 }
 
+// DescriptionEQ applies the EQ predicate on the "description" field.
+func DescriptionEQ(v string) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldDescription, v))
+}
+
+// DescriptionNEQ applies the NEQ predicate on the "description" field.
+func DescriptionNEQ(v string) predicate.Role {
+	return predicate.Role(sql.FieldNEQ(FieldDescription, v))
+}
+
+// DescriptionIn applies the In predicate on the "description" field.
+func DescriptionIn(vs ...string) predicate.Role {
+	return predicate.Role(sql.FieldIn(FieldDescription, vs...))
+}
+
+// DescriptionNotIn applies the NotIn predicate on the "description" field.
+func DescriptionNotIn(vs ...string) predicate.Role {
+	return predicate.Role(sql.FieldNotIn(FieldDescription, vs...))
+}
+
+// DescriptionGT applies the GT predicate on the "description" field.
+func DescriptionGT(v string) predicate.Role {
+	return predicate.Role(sql.FieldGT(FieldDescription, v))
+}
+
+// DescriptionGTE applies the GTE predicate on the "description" field.
+func DescriptionGTE(v string) predicate.Role {
+	return predicate.Role(sql.FieldGTE(FieldDescription, v))
+}
+
+// DescriptionLT applies the LT predicate on the "description" field.
+func DescriptionLT(v string) predicate.Role {
+	return predicate.Role(sql.FieldLT(FieldDescription, v))
+}
+
+// DescriptionLTE applies the LTE predicate on the "description" field.
+func DescriptionLTE(v string) predicate.Role {
+	return predicate.Role(sql.FieldLTE(FieldDescription, v))
+}
+
+// DescriptionContains applies the Contains predicate on the "description" field.
+func DescriptionContains(v string) predicate.Role {
+	return predicate.Role(sql.FieldContains(FieldDescription, v))
+}
+
+// DescriptionHasPrefix applies the HasPrefix predicate on the "description" field.
+func DescriptionHasPrefix(v string) predicate.Role {
+	return predicate.Role(sql.FieldHasPrefix(FieldDescription, v))
+}
+
+// DescriptionHasSuffix applies the HasSuffix predicate on the "description" field.
+func DescriptionHasSuffix(v string) predicate.Role {
+	return predicate.Role(sql.FieldHasSuffix(FieldDescription, v))
+}
+
+// DescriptionIsNil applies the IsNil predicate on the "description" field.
+func DescriptionIsNil() predicate.Role {
+	return predicate.Role(sql.FieldIsNull(FieldDescription))
+}
+
+// DescriptionNotNil applies the NotNil predicate on the "description" field.
+func DescriptionNotNil() predicate.Role {
+	return predicate.Role(sql.FieldNotNull(FieldDescription))
+}
+
+// DescriptionEqualFold applies the EqualFold predicate on the "description" field.
+func DescriptionEqualFold(v string) predicate.Role {
+	return predicate.Role(sql.FieldEqualFold(FieldDescription, v))
+}
+
+// DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
+func DescriptionContainsFold(v string) predicate.Role {
+	return predicate.Role(sql.FieldContainsFold(FieldDescription, v))
+}
+
 // SortOrderEQ applies the EQ predicate on the "sort_order" field.
-func SortOrderEQ(v int32) predicate.Role {
+func SortOrderEQ(v uint32) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldSortOrder, v))
 }
 
 // SortOrderNEQ applies the NEQ predicate on the "sort_order" field.
-func SortOrderNEQ(v int32) predicate.Role {
+func SortOrderNEQ(v uint32) predicate.Role {
 	return predicate.Role(sql.FieldNEQ(FieldSortOrder, v))
 }
 
 // SortOrderIn applies the In predicate on the "sort_order" field.
-func SortOrderIn(vs ...int32) predicate.Role {
+func SortOrderIn(vs ...uint32) predicate.Role {
 	return predicate.Role(sql.FieldIn(FieldSortOrder, vs...))
 }
 
 // SortOrderNotIn applies the NotIn predicate on the "sort_order" field.
-func SortOrderNotIn(vs ...int32) predicate.Role {
+func SortOrderNotIn(vs ...uint32) predicate.Role {
 	return predicate.Role(sql.FieldNotIn(FieldSortOrder, vs...))
 }
 
 // SortOrderGT applies the GT predicate on the "sort_order" field.
-func SortOrderGT(v int32) predicate.Role {
+func SortOrderGT(v uint32) predicate.Role {
 	return predicate.Role(sql.FieldGT(FieldSortOrder, v))
 }
 
 // SortOrderGTE applies the GTE predicate on the "sort_order" field.
-func SortOrderGTE(v int32) predicate.Role {
+func SortOrderGTE(v uint32) predicate.Role {
 	return predicate.Role(sql.FieldGTE(FieldSortOrder, v))
 }
 
 // SortOrderLT applies the LT predicate on the "sort_order" field.
-func SortOrderLT(v int32) predicate.Role {
+func SortOrderLT(v uint32) predicate.Role {
 	return predicate.Role(sql.FieldLT(FieldSortOrder, v))
 }
 
 // SortOrderLTE applies the LTE predicate on the "sort_order" field.
-func SortOrderLTE(v int32) predicate.Role {
+func SortOrderLTE(v uint32) predicate.Role {
 	return predicate.Role(sql.FieldLTE(FieldSortOrder, v))
 }
 
@@ -538,36 +617,6 @@ func SortOrderIsNil() predicate.Role {
 // SortOrderNotNil applies the NotNil predicate on the "sort_order" field.
 func SortOrderNotNil() predicate.Role {
 	return predicate.Role(sql.FieldNotNull(FieldSortOrder))
-}
-
-// ParentIDEQ applies the EQ predicate on the "parent_id" field.
-func ParentIDEQ(v uint32) predicate.Role {
-	return predicate.Role(sql.FieldEQ(FieldParentID, v))
-}
-
-// ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
-func ParentIDNEQ(v uint32) predicate.Role {
-	return predicate.Role(sql.FieldNEQ(FieldParentID, v))
-}
-
-// ParentIDIn applies the In predicate on the "parent_id" field.
-func ParentIDIn(vs ...uint32) predicate.Role {
-	return predicate.Role(sql.FieldIn(FieldParentID, vs...))
-}
-
-// ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
-func ParentIDNotIn(vs ...uint32) predicate.Role {
-	return predicate.Role(sql.FieldNotIn(FieldParentID, vs...))
-}
-
-// ParentIDIsNil applies the IsNil predicate on the "parent_id" field.
-func ParentIDIsNil() predicate.Role {
-	return predicate.Role(sql.FieldIsNull(FieldParentID))
-}
-
-// ParentIDNotNil applies the NotNil predicate on the "parent_id" field.
-func ParentIDNotNil() predicate.Role {
-	return predicate.Role(sql.FieldNotNull(FieldParentID))
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
@@ -618,6 +667,26 @@ func TenantIDIsNil() predicate.Role {
 // TenantIDNotNil applies the NotNil predicate on the "tenant_id" field.
 func TenantIDNotNil() predicate.Role {
 	return predicate.Role(sql.FieldNotNull(FieldTenantID))
+}
+
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v Status) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldStatus, v))
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v Status) predicate.Role {
+	return predicate.Role(sql.FieldNEQ(FieldStatus, v))
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...Status) predicate.Role {
+	return predicate.Role(sql.FieldIn(FieldStatus, vs...))
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...Status) predicate.Role {
+	return predicate.Role(sql.FieldNotIn(FieldStatus, vs...))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -770,150 +839,14 @@ func CodeContainsFold(v string) predicate.Role {
 	return predicate.Role(sql.FieldContainsFold(FieldCode, v))
 }
 
-// CustomOrgUnitIdsIsNil applies the IsNil predicate on the "custom_org_unit_ids" field.
-func CustomOrgUnitIdsIsNil() predicate.Role {
-	return predicate.Role(sql.FieldIsNull(FieldCustomOrgUnitIds))
+// IsProtectedEQ applies the EQ predicate on the "is_protected" field.
+func IsProtectedEQ(v bool) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldIsProtected, v))
 }
 
-// CustomOrgUnitIdsNotNil applies the NotNil predicate on the "custom_org_unit_ids" field.
-func CustomOrgUnitIdsNotNil() predicate.Role {
-	return predicate.Role(sql.FieldNotNull(FieldCustomOrgUnitIds))
-}
-
-// DataScopeEQ applies the EQ predicate on the "data_scope" field.
-func DataScopeEQ(v DataScope) predicate.Role {
-	return predicate.Role(sql.FieldEQ(FieldDataScope, v))
-}
-
-// DataScopeNEQ applies the NEQ predicate on the "data_scope" field.
-func DataScopeNEQ(v DataScope) predicate.Role {
-	return predicate.Role(sql.FieldNEQ(FieldDataScope, v))
-}
-
-// DataScopeIn applies the In predicate on the "data_scope" field.
-func DataScopeIn(vs ...DataScope) predicate.Role {
-	return predicate.Role(sql.FieldIn(FieldDataScope, vs...))
-}
-
-// DataScopeNotIn applies the NotIn predicate on the "data_scope" field.
-func DataScopeNotIn(vs ...DataScope) predicate.Role {
-	return predicate.Role(sql.FieldNotIn(FieldDataScope, vs...))
-}
-
-// DataScopeIsNil applies the IsNil predicate on the "data_scope" field.
-func DataScopeIsNil() predicate.Role {
-	return predicate.Role(sql.FieldIsNull(FieldDataScope))
-}
-
-// DataScopeNotNil applies the NotNil predicate on the "data_scope" field.
-func DataScopeNotNil() predicate.Role {
-	return predicate.Role(sql.FieldNotNull(FieldDataScope))
-}
-
-// StatusEQ applies the EQ predicate on the "status" field.
-func StatusEQ(v Status) predicate.Role {
-	return predicate.Role(sql.FieldEQ(FieldStatus, v))
-}
-
-// StatusNEQ applies the NEQ predicate on the "status" field.
-func StatusNEQ(v Status) predicate.Role {
-	return predicate.Role(sql.FieldNEQ(FieldStatus, v))
-}
-
-// StatusIn applies the In predicate on the "status" field.
-func StatusIn(vs ...Status) predicate.Role {
-	return predicate.Role(sql.FieldIn(FieldStatus, vs...))
-}
-
-// StatusNotIn applies the NotIn predicate on the "status" field.
-func StatusNotIn(vs ...Status) predicate.Role {
-	return predicate.Role(sql.FieldNotIn(FieldStatus, vs...))
-}
-
-// StatusIsNil applies the IsNil predicate on the "status" field.
-func StatusIsNil() predicate.Role {
-	return predicate.Role(sql.FieldIsNull(FieldStatus))
-}
-
-// StatusNotNil applies the NotNil predicate on the "status" field.
-func StatusNotNil() predicate.Role {
-	return predicate.Role(sql.FieldNotNull(FieldStatus))
-}
-
-// TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v Type) predicate.Role {
-	return predicate.Role(sql.FieldEQ(FieldType, v))
-}
-
-// TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v Type) predicate.Role {
-	return predicate.Role(sql.FieldNEQ(FieldType, v))
-}
-
-// TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...Type) predicate.Role {
-	return predicate.Role(sql.FieldIn(FieldType, vs...))
-}
-
-// TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...Type) predicate.Role {
-	return predicate.Role(sql.FieldNotIn(FieldType, vs...))
-}
-
-// TypeIsNil applies the IsNil predicate on the "type" field.
-func TypeIsNil() predicate.Role {
-	return predicate.Role(sql.FieldIsNull(FieldType))
-}
-
-// TypeNotNil applies the NotNil predicate on the "type" field.
-func TypeNotNil() predicate.Role {
-	return predicate.Role(sql.FieldNotNull(FieldType))
-}
-
-// HasParent applies the HasEdge predicate on the "parent" edge.
-func HasParent() predicate.Role {
-	return predicate.Role(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasParentWith applies the HasEdge predicate on the "parent" edge with a given conditions (other predicates).
-func HasParentWith(preds ...predicate.Role) predicate.Role {
-	return predicate.Role(func(s *sql.Selector) {
-		step := newParentStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasChildren applies the HasEdge predicate on the "children" edge.
-func HasChildren() predicate.Role {
-	return predicate.Role(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasChildrenWith applies the HasEdge predicate on the "children" edge with a given conditions (other predicates).
-func HasChildrenWith(preds ...predicate.Role) predicate.Role {
-	return predicate.Role(func(s *sql.Selector) {
-		step := newChildrenStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
+// IsProtectedNEQ applies the NEQ predicate on the "is_protected" field.
+func IsProtectedNEQ(v bool) predicate.Role {
+	return predicate.Role(sql.FieldNEQ(FieldIsProtected, v))
 }
 
 // And groups predicates with the AND operator between them.

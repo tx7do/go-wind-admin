@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"sort"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -98,59 +97,18 @@ func (r *PositionRepo) List(ctx context.Context, req *pagination.PagingRequest) 
 
 	builder := r.entClient.Client().Position.Query()
 
-	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
-	if err != nil {
-		r.log.Errorf("parse list param error [%s]", err.Error())
-		return nil, userV1.ErrorBadRequest("invalid query parameter")
-	}
-
-	entities, err := builder.All(ctx)
-	if err != nil {
-		r.log.Errorf("query list failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query list failed")
-	}
-
-	sort.SliceStable(entities, func(i, j int) bool {
-		var sortI, sortJ int32
-		if entities[i].SortOrder != nil {
-			sortI = *entities[i].SortOrder
-		}
-		if entities[j].SortOrder != nil {
-			sortJ = *entities[j].SortOrder
-		}
-		return sortI < sortJ
-	})
-
-	dtos := make([]*userV1.Position, 0, len(entities))
-	for _, entity := range entities {
-		if entity.ParentID == nil {
-			dto := r.mapper.ToDTO(entity)
-			dtos = append(dtos, dto)
-		}
-	}
-	for _, entity := range entities {
-		if entity.ParentID != nil {
-			dto := r.mapper.ToDTO(entity)
-
-			if entCrud.TravelChild(&dtos, dto, func(parent *userV1.Position, node *userV1.Position) {
-				parent.Children = append(parent.Children, node)
-			}) {
-				continue
-			}
-
-			dtos = append(dtos, dto)
-		}
-	}
-
-	count, err := r.Count(ctx, whereSelectors)
+	ret, err := r.repository.ListWithPaging(ctx, builder, builder.Clone(), req)
 	if err != nil {
 		return nil, err
 	}
+	if ret == nil {
+		return &userV1.ListPositionResponse{Total: 0, Items: nil}, nil
+	}
 
 	return &userV1.ListPositionResponse{
-		Total: uint64(count),
-		Items: dtos,
-	}, err
+		Total: ret.Total,
+		Items: ret.Items,
+	}, nil
 }
 
 func (r *PositionRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
@@ -176,6 +134,10 @@ func (r *PositionRepo) Get(ctx context.Context, req *userV1.GetPositionRequest) 
 	default:
 	case *userV1.GetPositionRequest_Id:
 		whereCond = append(whereCond, position.IDEQ(req.GetId()))
+	case *userV1.GetPositionRequest_Name:
+		whereCond = append(whereCond, position.NameEQ(req.GetName()))
+	case *userV1.GetPositionRequest_Code:
+		whereCond = append(whereCond, position.CodeEQ(req.GetCode()))
 	}
 
 	dto, err := r.repository.Get(ctx, builder, req.GetViewMask(), whereCond...)
@@ -215,9 +177,8 @@ func (r *PositionRepo) Create(ctx context.Context, req *userV1.CreatePositionReq
 	}
 
 	builder := r.entClient.Client().Position.Create().
-		SetNillableName(req.Data.Name).
-		SetNillableCode(req.Data.Code).
-		SetNillableParentID(req.Data.ParentId).
+		SetName(req.Data.GetName()).
+		SetCode(req.Data.GetCode()).
 		SetNillableTenantID(req.Data.TenantId).
 		SetOrgUnitID(req.Data.GetOrgUnitId()).
 		SetReportsToPositionID(req.Data.GetReportsToPositionId()).
@@ -280,7 +241,6 @@ func (r *PositionRepo) Update(ctx context.Context, req *userV1.UpdatePositionReq
 			builder.
 				SetNillableName(req.Data.Name).
 				SetNillableCode(req.Data.Code).
-				SetNillableParentID(req.Data.ParentId).
 				SetNillableOrgUnitID(req.Data.OrgUnitId).
 				SetNillableReportsToPositionID(req.Data.ReportsToPositionId).
 				SetNillableSortOrder(req.Data.SortOrder).
@@ -315,19 +275,11 @@ func (r *PositionRepo) Delete(ctx context.Context, req *userV1.DeletePositionReq
 		return userV1.ErrorBadRequest("invalid parameter")
 	}
 
-	ids, err := entCrud.QueryAllChildrenIds(ctx, r.entClient, "sys_positions", req.GetId())
-	if err != nil {
-		r.log.Errorf("query child positions failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("query child positions failed")
-	}
-	ids = append(ids, req.GetId())
-
-	//r.log.Infof("child positions to delete: %+v", ids)
-
 	builder := r.entClient.Client().Debug().Position.Delete()
 
+	var err error
 	_, err = r.repository.Delete(ctx, builder, func(s *sql.Selector) {
-		s.Where(sql.In(position.FieldID, ids))
+		s.Where(sql.EQ(position.FieldID, req.GetId()))
 	})
 	if err != nil {
 		r.log.Errorf("delete position failed: %s", err.Error())

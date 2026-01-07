@@ -120,15 +120,15 @@ func (_c *PermissionMenuCreate) SetNillableTenantID(v *uint32) *PermissionMenuCr
 	return _c
 }
 
-// SetMenuID sets the "menu_id" field.
-func (_c *PermissionMenuCreate) SetMenuID(v uint32) *PermissionMenuCreate {
-	_c.mutation.SetMenuID(v)
-	return _c
-}
-
 // SetPermissionID sets the "permission_id" field.
 func (_c *PermissionMenuCreate) SetPermissionID(v uint32) *PermissionMenuCreate {
 	_c.mutation.SetPermissionID(v)
+	return _c
+}
+
+// SetMenuID sets the "menu_id" field.
+func (_c *PermissionMenuCreate) SetMenuID(v uint32) *PermissionMenuCreate {
+	_c.mutation.SetMenuID(v)
 	return _c
 }
 
@@ -172,11 +172,11 @@ func (_c *PermissionMenuCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *PermissionMenuCreate) check() error {
-	if _, ok := _c.mutation.MenuID(); !ok {
-		return &ValidationError{Name: "menu_id", err: errors.New(`ent: missing required field "PermissionMenu.menu_id"`)}
-	}
 	if _, ok := _c.mutation.PermissionID(); !ok {
 		return &ValidationError{Name: "permission_id", err: errors.New(`ent: missing required field "PermissionMenu.permission_id"`)}
+	}
+	if _, ok := _c.mutation.MenuID(); !ok {
+		return &ValidationError{Name: "menu_id", err: errors.New(`ent: missing required field "PermissionMenu.menu_id"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := permissionmenu.IDValidator(v); err != nil {
@@ -244,13 +244,13 @@ func (_c *PermissionMenuCreate) createSpec() (*PermissionMenu, *sqlgraph.CreateS
 		_spec.SetField(permissionmenu.FieldTenantID, field.TypeUint32, value)
 		_node.TenantID = &value
 	}
-	if value, ok := _c.mutation.MenuID(); ok {
-		_spec.SetField(permissionmenu.FieldMenuID, field.TypeUint32, value)
-		_node.MenuID = &value
-	}
 	if value, ok := _c.mutation.PermissionID(); ok {
 		_spec.SetField(permissionmenu.FieldPermissionID, field.TypeUint32, value)
 		_node.PermissionID = &value
+	}
+	if value, ok := _c.mutation.MenuID(); ok {
+		_spec.SetField(permissionmenu.FieldMenuID, field.TypeUint32, value)
+		_node.MenuID = &value
 	}
 	return _node, _spec
 }
@@ -412,24 +412,6 @@ func (u *PermissionMenuUpsert) ClearDeletedBy() *PermissionMenuUpsert {
 	return u
 }
 
-// SetMenuID sets the "menu_id" field.
-func (u *PermissionMenuUpsert) SetMenuID(v uint32) *PermissionMenuUpsert {
-	u.Set(permissionmenu.FieldMenuID, v)
-	return u
-}
-
-// UpdateMenuID sets the "menu_id" field to the value that was provided on create.
-func (u *PermissionMenuUpsert) UpdateMenuID() *PermissionMenuUpsert {
-	u.SetExcluded(permissionmenu.FieldMenuID)
-	return u
-}
-
-// AddMenuID adds v to the "menu_id" field.
-func (u *PermissionMenuUpsert) AddMenuID(v uint32) *PermissionMenuUpsert {
-	u.Add(permissionmenu.FieldMenuID, v)
-	return u
-}
-
 // SetPermissionID sets the "permission_id" field.
 func (u *PermissionMenuUpsert) SetPermissionID(v uint32) *PermissionMenuUpsert {
 	u.Set(permissionmenu.FieldPermissionID, v)
@@ -445,6 +427,24 @@ func (u *PermissionMenuUpsert) UpdatePermissionID() *PermissionMenuUpsert {
 // AddPermissionID adds v to the "permission_id" field.
 func (u *PermissionMenuUpsert) AddPermissionID(v uint32) *PermissionMenuUpsert {
 	u.Add(permissionmenu.FieldPermissionID, v)
+	return u
+}
+
+// SetMenuID sets the "menu_id" field.
+func (u *PermissionMenuUpsert) SetMenuID(v uint32) *PermissionMenuUpsert {
+	u.Set(permissionmenu.FieldMenuID, v)
+	return u
+}
+
+// UpdateMenuID sets the "menu_id" field to the value that was provided on create.
+func (u *PermissionMenuUpsert) UpdateMenuID() *PermissionMenuUpsert {
+	u.SetExcluded(permissionmenu.FieldMenuID)
+	return u
+}
+
+// AddMenuID adds v to the "menu_id" field.
+func (u *PermissionMenuUpsert) AddMenuID(v uint32) *PermissionMenuUpsert {
+	u.Add(permissionmenu.FieldMenuID, v)
 	return u
 }
 
@@ -628,27 +628,6 @@ func (u *PermissionMenuUpsertOne) ClearDeletedBy() *PermissionMenuUpsertOne {
 	})
 }
 
-// SetMenuID sets the "menu_id" field.
-func (u *PermissionMenuUpsertOne) SetMenuID(v uint32) *PermissionMenuUpsertOne {
-	return u.Update(func(s *PermissionMenuUpsert) {
-		s.SetMenuID(v)
-	})
-}
-
-// AddMenuID adds v to the "menu_id" field.
-func (u *PermissionMenuUpsertOne) AddMenuID(v uint32) *PermissionMenuUpsertOne {
-	return u.Update(func(s *PermissionMenuUpsert) {
-		s.AddMenuID(v)
-	})
-}
-
-// UpdateMenuID sets the "menu_id" field to the value that was provided on create.
-func (u *PermissionMenuUpsertOne) UpdateMenuID() *PermissionMenuUpsertOne {
-	return u.Update(func(s *PermissionMenuUpsert) {
-		s.UpdateMenuID()
-	})
-}
-
 // SetPermissionID sets the "permission_id" field.
 func (u *PermissionMenuUpsertOne) SetPermissionID(v uint32) *PermissionMenuUpsertOne {
 	return u.Update(func(s *PermissionMenuUpsert) {
@@ -667,6 +646,27 @@ func (u *PermissionMenuUpsertOne) AddPermissionID(v uint32) *PermissionMenuUpser
 func (u *PermissionMenuUpsertOne) UpdatePermissionID() *PermissionMenuUpsertOne {
 	return u.Update(func(s *PermissionMenuUpsert) {
 		s.UpdatePermissionID()
+	})
+}
+
+// SetMenuID sets the "menu_id" field.
+func (u *PermissionMenuUpsertOne) SetMenuID(v uint32) *PermissionMenuUpsertOne {
+	return u.Update(func(s *PermissionMenuUpsert) {
+		s.SetMenuID(v)
+	})
+}
+
+// AddMenuID adds v to the "menu_id" field.
+func (u *PermissionMenuUpsertOne) AddMenuID(v uint32) *PermissionMenuUpsertOne {
+	return u.Update(func(s *PermissionMenuUpsert) {
+		s.AddMenuID(v)
+	})
+}
+
+// UpdateMenuID sets the "menu_id" field to the value that was provided on create.
+func (u *PermissionMenuUpsertOne) UpdateMenuID() *PermissionMenuUpsertOne {
+	return u.Update(func(s *PermissionMenuUpsert) {
+		s.UpdateMenuID()
 	})
 }
 
@@ -1015,27 +1015,6 @@ func (u *PermissionMenuUpsertBulk) ClearDeletedBy() *PermissionMenuUpsertBulk {
 	})
 }
 
-// SetMenuID sets the "menu_id" field.
-func (u *PermissionMenuUpsertBulk) SetMenuID(v uint32) *PermissionMenuUpsertBulk {
-	return u.Update(func(s *PermissionMenuUpsert) {
-		s.SetMenuID(v)
-	})
-}
-
-// AddMenuID adds v to the "menu_id" field.
-func (u *PermissionMenuUpsertBulk) AddMenuID(v uint32) *PermissionMenuUpsertBulk {
-	return u.Update(func(s *PermissionMenuUpsert) {
-		s.AddMenuID(v)
-	})
-}
-
-// UpdateMenuID sets the "menu_id" field to the value that was provided on create.
-func (u *PermissionMenuUpsertBulk) UpdateMenuID() *PermissionMenuUpsertBulk {
-	return u.Update(func(s *PermissionMenuUpsert) {
-		s.UpdateMenuID()
-	})
-}
-
 // SetPermissionID sets the "permission_id" field.
 func (u *PermissionMenuUpsertBulk) SetPermissionID(v uint32) *PermissionMenuUpsertBulk {
 	return u.Update(func(s *PermissionMenuUpsert) {
@@ -1054,6 +1033,27 @@ func (u *PermissionMenuUpsertBulk) AddPermissionID(v uint32) *PermissionMenuUpse
 func (u *PermissionMenuUpsertBulk) UpdatePermissionID() *PermissionMenuUpsertBulk {
 	return u.Update(func(s *PermissionMenuUpsert) {
 		s.UpdatePermissionID()
+	})
+}
+
+// SetMenuID sets the "menu_id" field.
+func (u *PermissionMenuUpsertBulk) SetMenuID(v uint32) *PermissionMenuUpsertBulk {
+	return u.Update(func(s *PermissionMenuUpsert) {
+		s.SetMenuID(v)
+	})
+}
+
+// AddMenuID adds v to the "menu_id" field.
+func (u *PermissionMenuUpsertBulk) AddMenuID(v uint32) *PermissionMenuUpsertBulk {
+	return u.Update(func(s *PermissionMenuUpsert) {
+		s.AddMenuID(v)
+	})
+}
+
+// UpdateMenuID sets the "menu_id" field to the value that was provided on create.
+func (u *PermissionMenuUpsertBulk) UpdateMenuID() *PermissionMenuUpsertBulk {
+	return u.Update(func(s *PermissionMenuUpsert) {
+		s.UpdateMenuID()
 	})
 }
 

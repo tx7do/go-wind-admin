@@ -33,6 +33,8 @@ type OrgUnit struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 状态
 	Status *orgunit.Status `json:"status,omitempty"`
+	// 排序值（越小越靠前）
+	SortOrder *uint32 `json:"sort_order,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
 	// 备注
@@ -47,8 +49,6 @@ type OrgUnit struct {
 	Code *string `json:"code,omitempty"`
 	// 树路径，如：/1/10/
 	Path *string `json:"path,omitempty"`
-	// 排序序号
-	SortOrder *int32 `json:"sort_order,omitempty"`
 	// 负责人用户ID
 	LeaderID *uint32 `json:"leader_id,omitempty"`
 	// 组织类型
@@ -135,7 +135,7 @@ func (*OrgUnit) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullBool)
 		case orgunit.FieldLatitude, orgunit.FieldLongitude:
 			values[i] = new(sql.NullFloat64)
-		case orgunit.FieldID, orgunit.FieldCreatedBy, orgunit.FieldUpdatedBy, orgunit.FieldDeletedBy, orgunit.FieldTenantID, orgunit.FieldParentID, orgunit.FieldSortOrder, orgunit.FieldLeaderID, orgunit.FieldLegalEntityOrgID, orgunit.FieldContactUserID:
+		case orgunit.FieldID, orgunit.FieldCreatedBy, orgunit.FieldUpdatedBy, orgunit.FieldDeletedBy, orgunit.FieldSortOrder, orgunit.FieldTenantID, orgunit.FieldParentID, orgunit.FieldLeaderID, orgunit.FieldLegalEntityOrgID, orgunit.FieldContactUserID:
 			values[i] = new(sql.NullInt64)
 		case orgunit.FieldStatus, orgunit.FieldRemark, orgunit.FieldDescription, orgunit.FieldName, orgunit.FieldCode, orgunit.FieldPath, orgunit.FieldType, orgunit.FieldExternalID, orgunit.FieldRegistrationNumber, orgunit.FieldTaxID, orgunit.FieldAddress, orgunit.FieldPhone, orgunit.FieldEmail, orgunit.FieldTimezone, orgunit.FieldCountry:
 			values[i] = new(sql.NullString)
@@ -211,6 +211,13 @@ func (_m *OrgUnit) assignValues(columns []string, values []any) error {
 				_m.Status = new(orgunit.Status)
 				*_m.Status = orgunit.Status(value.String)
 			}
+		case orgunit.FieldSortOrder:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field sort_order", values[i])
+			} else if value.Valid {
+				_m.SortOrder = new(uint32)
+				*_m.SortOrder = uint32(value.Int64)
+			}
 		case orgunit.FieldTenantID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
@@ -259,13 +266,6 @@ func (_m *OrgUnit) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Path = new(string)
 				*_m.Path = value.String
-			}
-		case orgunit.FieldSortOrder:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field sort_order", values[i])
-			} else if value.Valid {
-				_m.SortOrder = new(int32)
-				*_m.SortOrder = int32(value.Int64)
 			}
 		case orgunit.FieldLeaderID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -483,6 +483,11 @@ func (_m *OrgUnit) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
+	if v := _m.SortOrder; v != nil {
+		builder.WriteString("sort_order=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
 	if v := _m.TenantID; v != nil {
 		builder.WriteString("tenant_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -516,11 +521,6 @@ func (_m *OrgUnit) String() string {
 	if v := _m.Path; v != nil {
 		builder.WriteString("path=")
 		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.SortOrder; v != nil {
-		builder.WriteString("sort_order=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
 	if v := _m.LeaderID; v != nil {

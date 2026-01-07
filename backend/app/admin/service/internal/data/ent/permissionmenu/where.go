@@ -89,14 +89,14 @@ func TenantID(v uint32) predicate.PermissionMenu {
 	return predicate.PermissionMenu(sql.FieldEQ(FieldTenantID, v))
 }
 
-// MenuID applies equality check predicate on the "menu_id" field. It's identical to MenuIDEQ.
-func MenuID(v uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldEQ(FieldMenuID, v))
-}
-
 // PermissionID applies equality check predicate on the "permission_id" field. It's identical to PermissionIDEQ.
 func PermissionID(v uint32) predicate.PermissionMenu {
 	return predicate.PermissionMenu(sql.FieldEQ(FieldPermissionID, v))
+}
+
+// MenuID applies equality check predicate on the "menu_id" field. It's identical to MenuIDEQ.
+func MenuID(v uint32) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldEQ(FieldMenuID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -449,46 +449,6 @@ func TenantIDNotNil() predicate.PermissionMenu {
 	return predicate.PermissionMenu(sql.FieldNotNull(FieldTenantID))
 }
 
-// MenuIDEQ applies the EQ predicate on the "menu_id" field.
-func MenuIDEQ(v uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldEQ(FieldMenuID, v))
-}
-
-// MenuIDNEQ applies the NEQ predicate on the "menu_id" field.
-func MenuIDNEQ(v uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldNEQ(FieldMenuID, v))
-}
-
-// MenuIDIn applies the In predicate on the "menu_id" field.
-func MenuIDIn(vs ...uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldIn(FieldMenuID, vs...))
-}
-
-// MenuIDNotIn applies the NotIn predicate on the "menu_id" field.
-func MenuIDNotIn(vs ...uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldNotIn(FieldMenuID, vs...))
-}
-
-// MenuIDGT applies the GT predicate on the "menu_id" field.
-func MenuIDGT(v uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldGT(FieldMenuID, v))
-}
-
-// MenuIDGTE applies the GTE predicate on the "menu_id" field.
-func MenuIDGTE(v uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldGTE(FieldMenuID, v))
-}
-
-// MenuIDLT applies the LT predicate on the "menu_id" field.
-func MenuIDLT(v uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldLT(FieldMenuID, v))
-}
-
-// MenuIDLTE applies the LTE predicate on the "menu_id" field.
-func MenuIDLTE(v uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldLTE(FieldMenuID, v))
-}
-
 // PermissionIDEQ applies the EQ predicate on the "permission_id" field.
 func PermissionIDEQ(v uint32) predicate.PermissionMenu {
 	return predicate.PermissionMenu(sql.FieldEQ(FieldPermissionID, v))
@@ -527,6 +487,46 @@ func PermissionIDLT(v uint32) predicate.PermissionMenu {
 // PermissionIDLTE applies the LTE predicate on the "permission_id" field.
 func PermissionIDLTE(v uint32) predicate.PermissionMenu {
 	return predicate.PermissionMenu(sql.FieldLTE(FieldPermissionID, v))
+}
+
+// MenuIDEQ applies the EQ predicate on the "menu_id" field.
+func MenuIDEQ(v uint32) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldEQ(FieldMenuID, v))
+}
+
+// MenuIDNEQ applies the NEQ predicate on the "menu_id" field.
+func MenuIDNEQ(v uint32) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldNEQ(FieldMenuID, v))
+}
+
+// MenuIDIn applies the In predicate on the "menu_id" field.
+func MenuIDIn(vs ...uint32) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldIn(FieldMenuID, vs...))
+}
+
+// MenuIDNotIn applies the NotIn predicate on the "menu_id" field.
+func MenuIDNotIn(vs ...uint32) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldNotIn(FieldMenuID, vs...))
+}
+
+// MenuIDGT applies the GT predicate on the "menu_id" field.
+func MenuIDGT(v uint32) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldGT(FieldMenuID, v))
+}
+
+// MenuIDGTE applies the GTE predicate on the "menu_id" field.
+func MenuIDGTE(v uint32) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldGTE(FieldMenuID, v))
+}
+
+// MenuIDLT applies the LT predicate on the "menu_id" field.
+func MenuIDLT(v uint32) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldLT(FieldMenuID, v))
+}
+
+// MenuIDLTE applies the LTE predicate on the "menu_id" field.
+func MenuIDLTE(v uint32) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldLTE(FieldMenuID, v))
 }
 
 // And groups predicates with the AND operator between them.

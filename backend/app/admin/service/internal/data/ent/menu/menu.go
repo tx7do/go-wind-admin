@@ -110,8 +110,8 @@ const DefaultStatus = StatusOn
 
 // Status values.
 const (
-	StatusOn  Status = "ON"
 	StatusOff Status = "OFF"
+	StatusOn  Status = "ON"
 )
 
 func (s Status) String() string {
@@ -121,7 +121,7 @@ func (s Status) String() string {
 // StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
 func StatusValidator(s Status) error {
 	switch s {
-	case StatusOn, StatusOff:
+	case StatusOff, StatusOn:
 		return nil
 	default:
 		return fmt.Errorf("menu: invalid enum value for status field: %q", s)

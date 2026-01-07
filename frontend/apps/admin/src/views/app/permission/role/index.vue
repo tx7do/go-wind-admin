@@ -12,10 +12,6 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { type userservicev1_Role as Role } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
 import {
-  dataScopeToColor,
-  roleDataScopeToName,
-  roleTypeToColor,
-  roleTypeToName,
   statusList,
   statusToColor,
   statusToName,
@@ -83,10 +79,6 @@ const gridOptions: VxeGridProps<Role> = {
   rowConfig: {
     isHover: true,
   },
-  treeConfig: {
-    childrenField: 'children',
-    rowField: 'id',
-  },
 
   proxyConfig: {
     ajax: {
@@ -106,28 +98,16 @@ const gridOptions: VxeGridProps<Role> = {
 
   columns: [
     { title: $t('ui.table.seq'), type: 'seq', width: 50 },
-    { title: $t('page.role.name'), field: 'name', treeNode: true },
+    { title: $t('page.role.name'), field: 'name' },
     { title: $t('page.role.code'), field: 'code', width: 140 },
     { title: $t('ui.table.sortOrder'), field: 'sortOrder', width: 70 },
-    {
-      title: $t('page.role.type'),
-      field: 'type',
-      slots: { default: 'type' },
-      width: 95,
-    },
-    {
-      title: $t('page.role.dataScope'),
-      field: 'dataScope',
-      slots: { default: 'dataScope' },
-      width: 120,
-    },
     {
       title: $t('ui.table.status'),
       field: 'status',
       slots: { default: 'status' },
       width: 95,
     },
-    { title: $t('ui.table.remark'), field: 'remark' },
+    { title: $t('ui.table.description'), field: 'description' },
     {
       title: $t('ui.table.createdAt'),
       field: 'createdAt',
@@ -207,19 +187,9 @@ async function handleDelete(row: any) {
           {{ $t('page.role.button.create') }}
         </a-button>
       </template>
-      <template #type="{ row }">
-        <a-tag :color="roleTypeToColor(row.type)">
-          {{ roleTypeToName(row.type) }}
-        </a-tag>
-      </template>
       <template #status="{ row }">
         <a-tag :color="statusToColor(row.status)">
           {{ statusToName(row.status) }}
-        </a-tag>
-      </template>
-      <template #dataScope="{ row }">
-        <a-tag :color="dataScopeToColor(row.dataScope)">
-          {{ roleDataScopeToName(row.dataScope) }}
         </a-tag>
       </template>
       <template #action="{ row }">

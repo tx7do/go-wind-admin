@@ -6,7 +6,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/metadata"
 
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
 func FromOperatorMetadata(ctx context.Context) *OperatorInfo {
@@ -30,15 +30,13 @@ func NewOperatorMetadataContext(
 	uid uint32,
 	tid uint32,
 	ouid uint32,
-	isPAdmin bool,
-	dataScope userV1.Role_DataScope,
+	dataScope permissionV1.DataScope,
 ) context.Context {
 	payload := OperatorInfo{
-		UserID:          &uid,
-		TenantID:        &tid,
-		OrgUnitID:       &ouid,
-		IsPlatformAdmin: &isPAdmin,
-		DataScope:       &dataScope,
+		UserID:    &uid,
+		TenantID:  &tid,
+		OrgUnitID: &ouid,
+		DataScope: &dataScope,
 	}
 	if b, err := json.Marshal(payload); err == nil {
 		ctx = metadata.AppendToClientContext(ctx, mdOperator, string(b))

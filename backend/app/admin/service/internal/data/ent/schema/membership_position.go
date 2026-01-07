@@ -97,7 +97,34 @@ func (MembershipPosition) Indexes() []ent.Index {
 			Unique().
 			StorageKey("uix_sys_membership_position_tenant_mem_pos"),
 
-		index.Fields("membership_id").StorageKey("idx_sys_membership_position_membership_id"),
-		index.Fields("position_id").StorageKey("idx_sys_membership_position_position_id"),
+		// 常用查询：在租户范围内按 membership 查所有岗位
+		index.Fields("tenant_id", "membership_id").
+			StorageKey("idx_sys_membership_position_tenant_membership"),
+
+		// 常用查询：在租户范围内按 position 查所有成员
+		index.Fields("tenant_id", "position_id").
+			StorageKey("idx_sys_membership_position_tenant_position"),
+
+		// 快速查找某成员在租户下的主岗位
+		index.Fields("tenant_id", "membership_id", "is_primary").
+			StorageKey("idx_sys_membership_position_tenant_mem_primary"),
+
+		// 按分配者查询（租户范围内或全局）
+		index.Fields("tenant_id", "assigned_by").
+			StorageKey("idx_sys_membership_position_tenant_assigned_by"),
+		index.Fields("assigned_by").
+			StorageKey("idx_sys_membership_position_assigned_by"),
+
+		// 保留/补充常用的单列索引以支持简单或模糊查询
+		index.Fields("membership_id").
+			StorageKey("idx_sys_membership_position_membership_id"),
+		index.Fields("position_id").
+			StorageKey("idx_sys_membership_position_position_id"),
+		index.Fields("tenant_id").
+			StorageKey("idx_sys_membership_position_tenant_id"),
+		index.Fields("is_primary").
+			StorageKey("idx_sys_membership_position_is_primary"),
+		index.Fields("status").
+			StorageKey("idx_sys_membership_position_status"),
 	}
 }

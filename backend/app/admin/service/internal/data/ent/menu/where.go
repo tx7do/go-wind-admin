@@ -545,16 +545,6 @@ func StatusNotIn(vs ...Status) predicate.Menu {
 	return predicate.Menu(sql.FieldNotIn(FieldStatus, vs...))
 }
 
-// StatusIsNil applies the IsNil predicate on the "status" field.
-func StatusIsNil() predicate.Menu {
-	return predicate.Menu(sql.FieldIsNull(FieldStatus))
-}
-
-// StatusNotNil applies the NotNil predicate on the "status" field.
-func StatusNotNil() predicate.Menu {
-	return predicate.Menu(sql.FieldNotNull(FieldStatus))
-}
-
 // TypeEQ applies the EQ predicate on the "type" field.
 func TypeEQ(v Type) predicate.Menu {
 	return predicate.Menu(sql.FieldEQ(FieldType, v))

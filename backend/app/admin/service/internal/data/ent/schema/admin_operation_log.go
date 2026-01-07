@@ -155,5 +155,6 @@ func (AdminOperationLog) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.AutoIncrementId{},
 		mixin.CreatedAt{},
+		mixin.TenantID{},
 	}
 }

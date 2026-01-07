@@ -12,7 +12,7 @@ import { makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 export const useAdminLoginRestrictionStore = defineStore(
-  'admin_login_restriction',
+  'admin-login-restriction',
   () => {
     const service = createAdminLoginRestrictionServiceClient(
       requestClientRequestHandler,

@@ -84,11 +84,10 @@
     "moduleName": "角色",
     "name": "角色名称",
     "code": "角色值",
-    "type": "角色类型",
-    "dataScope": "数据范围",
     "description": "角色描述",
-    "menus": "分配菜单",
+    "isProtected": "内置角色",
     "apis": "分配API",
+    "permissions": "分配权限",
     "button": {
       "create": "创建角色"
     }
@@ -97,11 +96,11 @@
     "moduleName": "权限",
     "name": "权限名称",
     "code": "权限编码",
-    "type": "权限类型",
     "path": "树路径",
-    "module": "业务模块",
-    "sortOrder": "排序序号",
-    "parentId": "上级权限",
+    "groupId": "分组",
+    "groupName": "分组名称",
+    "menuIds": "分配菜单",
+    "apiResourceIds": "分配API",
     "description": "权限描述",
     "button": {
       "create": "创建权限",
@@ -185,7 +184,7 @@
     "orgUnitName": "所属组织名称",
     "description": "职责描述",
     "code": "唯一编码",
-    "quota": "编制人数",
+    "headcount": "编制人数",
     "button": {
       "create": "创建职位"
     }

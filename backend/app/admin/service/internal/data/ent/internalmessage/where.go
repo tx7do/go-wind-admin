@@ -649,16 +649,6 @@ func SenderIDLTE(v uint32) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldLTE(FieldSenderID, v))
 }
 
-// SenderIDIsNil applies the IsNil predicate on the "sender_id" field.
-func SenderIDIsNil() predicate.InternalMessage {
-	return predicate.InternalMessage(sql.FieldIsNull(FieldSenderID))
-}
-
-// SenderIDNotNil applies the NotNil predicate on the "sender_id" field.
-func SenderIDNotNil() predicate.InternalMessage {
-	return predicate.InternalMessage(sql.FieldNotNull(FieldSenderID))
-}
-
 // CategoryIDEQ applies the EQ predicate on the "category_id" field.
 func CategoryIDEQ(v uint32) predicate.InternalMessage {
 	return predicate.InternalMessage(sql.FieldEQ(FieldCategoryID, v))

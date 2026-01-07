@@ -32,13 +32,11 @@ func (Position) Fields() []ent.Field {
 		field.String("name").
 			Comment("职位名称").
 			NotEmpty().
-			Optional().
 			Nillable(),
 
 		field.String("code").
 			Comment("唯一编码").
 			NotEmpty().
-			Optional().
 			Nillable(),
 
 		field.Uint32("org_unit_id").
@@ -73,13 +71,11 @@ func (Position) Fields() []ent.Field {
 		field.Uint32("headcount").
 			Comment("编制人数").
 			Default(0).
-			Optional().
 			Nillable(),
 
 		field.Bool("is_key_position").
 			Comment("是否关键岗位").
 			Default(false).
-			Optional().
 			Nillable(),
 
 		field.Enum("type").
@@ -114,7 +110,6 @@ func (Position) Mixin() []ent.Mixin {
 		mixin.OperatorID{},
 		mixin.SortOrder{},
 		mixin.Remark{},
-		mixin.Tree[Position]{},
 		mixin.TenantID{},
 		mixin.SwitchStatus{},
 	}
@@ -123,10 +118,63 @@ func (Position) Mixin() []ent.Mixin {
 // Indexes of the Position.
 func (Position) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("code").Unique().StorageKey("idx_sys_position_code"),
-		index.Fields("tenant_id", "code").Unique().StorageKey("uix_sys_position_tenant_code"),
-		index.Fields("name").StorageKey("idx_sys_position_name"),
-		index.Fields("org_unit_id").StorageKey("idx_sys_position_org_unit_id"),
-		index.Fields("type").StorageKey("idx_sys_position_type"),
+		// 租户维度唯一：同一租户下 code 唯一
+		index.Fields("tenant_id", "code").
+			Unique().
+			StorageKey("uix_sys_positions_tenant_code"),
+
+		// 全局快速定位 code（非唯一，跨租户查询）
+		index.Fields("code").
+			StorageKey("idx_sys_positions_code"),
+
+		// 名称查询：租户范围内按 name 搜索 + 全局 name 索引（模糊/快速搜索）
+		index.Fields("tenant_id", "name").
+			StorageKey("idx_sys_positions_tenant_name"),
+		index.Fields("name").
+			StorageKey("idx_sys_positions_name"),
+
+		// 组织单元相关查询
+		index.Fields("tenant_id", "org_unit_id").
+			StorageKey("idx_sys_positions_tenant_org_unit_id"),
+		index.Fields("org_unit_id").
+			StorageKey("idx_sys_positions_org_unit_id"),
+
+		// 汇报关系查询（上级岗位）
+		index.Fields("tenant_id", "reports_to_position_id").
+			StorageKey("idx_sys_positions_tenant_reports_to"),
+		index.Fields("reports_to_position_id").
+			StorageKey("idx_sys_positions_reports_to"),
+
+		// 按岗位类型查询（租户内与全局）
+		index.Fields("tenant_id", "type").
+			StorageKey("idx_sys_positions_tenant_type"),
+		index.Fields("type").
+			StorageKey("idx_sys_positions_type"),
+
+		// 是否关键岗位查询
+		index.Fields("tenant_id", "is_key_position").
+			StorageKey("idx_sys_positions_tenant_is_key"),
+		index.Fields("is_key_position").
+			StorageKey("idx_sys_positions_is_key"),
+
+		// 数值/排序/状态/时间相关索引，优化排序与范围查询
+		index.Fields("level").
+			StorageKey("idx_sys_positions_level"),
+		index.Fields("headcount").
+			StorageKey("idx_sys_positions_headcount"),
+		index.Fields("sort_order").
+			StorageKey("idx_sys_positions_sort_order"),
+		index.Fields("status").
+			StorageKey("idx_sys_positions_status"),
+		index.Fields("start_at").
+			StorageKey("idx_sys_positions_start_at"),
+		index.Fields("end_at").
+			StorageKey("idx_sys_positions_end_at"),
+		index.Fields("created_at").
+			StorageKey("idx_sys_positions_created_at"),
+
+		// 支持按租户快速筛选
+		index.Fields("tenant_id").
+			StorageKey("idx_sys_positions_tenant_id"),
 	}
 }

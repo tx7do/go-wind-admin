@@ -13,6 +13,7 @@ var (
 	SysAdminLoginLogsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
 		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
 		{Name: "login_ip", Type: field.TypeString, Nullable: true, Comment: "登录IP地址"},
 		{Name: "login_mac", Type: field.TypeString, Nullable: true, Comment: "登录MAC地址"},
 		{Name: "login_time", Type: field.TypeTime, Nullable: true, Comment: "登录时间"},
@@ -46,6 +47,7 @@ var (
 		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
 		{Name: "target_id", Type: field.TypeUint32, Nullable: true, Comment: "目标用户ID"},
 		{Name: "value", Type: field.TypeString, Nullable: true, Comment: "限制值（如IP地址、MAC地址或地区代码）"},
 		{Name: "reason", Type: field.TypeString, Nullable: true, Comment: "限制原因"},
@@ -62,7 +64,7 @@ var (
 			{
 				Name:    "idx_sys_admin_login_restriction_target_type_method",
 				Unique:  true,
-				Columns: []*schema.Column{SysAdminLoginRestrictionsColumns[7], SysAdminLoginRestrictionsColumns[10], SysAdminLoginRestrictionsColumns[11]},
+				Columns: []*schema.Column{SysAdminLoginRestrictionsColumns[8], SysAdminLoginRestrictionsColumns[11], SysAdminLoginRestrictionsColumns[12]},
 			},
 		},
 	}
@@ -70,6 +72,7 @@ var (
 	SysAdminOperationLogsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
 		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
 		{Name: "request_id", Type: field.TypeString, Nullable: true, Comment: "请求ID"},
 		{Name: "method", Type: field.TypeString, Nullable: true, Comment: "请求方法"},
 		{Name: "operation", Type: field.TypeString, Nullable: true, Comment: "操作方法"},
@@ -111,7 +114,7 @@ var (
 		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
-		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
+		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
 		{Name: "module", Type: field.TypeString, Nullable: true, Comment: "所属业务模块"},
 		{Name: "module_description", Type: field.TypeString, Nullable: true, Comment: "业务模块描述"},
@@ -128,9 +131,34 @@ var (
 		PrimaryKey: []*schema.Column{SysAPIResourcesColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "apiresource_status",
+				Name:    "idx_sys_api_res_module_path_method_scope",
+				Unique:  true,
+				Columns: []*schema.Column{SysAPIResourcesColumns[9], SysAPIResourcesColumns[12], SysAPIResourcesColumns[13], SysAPIResourcesColumns[14]},
+			},
+			{
+				Name:    "idx_sys_api_res_module",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIResourcesColumns[7]},
+				Columns: []*schema.Column{SysAPIResourcesColumns[9]},
+			},
+			{
+				Name:    "idx_sys_api_res_scope",
+				Unique:  false,
+				Columns: []*schema.Column{SysAPIResourcesColumns[14]},
+			},
+			{
+				Name:    "idx_sys_api_res_path_method",
+				Unique:  false,
+				Columns: []*schema.Column{SysAPIResourcesColumns[12], SysAPIResourcesColumns[13]},
+			},
+			{
+				Name:    "idx_sys_api_res_created_by_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysAPIResourcesColumns[4], SysAPIResourcesColumns[1]},
+			},
+			{
+				Name:    "idx_sys_api_res_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysAPIResourcesColumns[1]},
 			},
 		},
 	}
@@ -144,7 +172,7 @@ var (
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
-		{Name: "sort_order", Type: field.TypeInt32, Nullable: true, Comment: "排序顺序，值越小越靠前", Default: 0},
+		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
 		{Name: "is_enabled", Type: field.TypeBool, Nullable: true, Comment: "是否启用", Default: true},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
 		{Name: "entry_label", Type: field.TypeString, Nullable: true, Comment: "字典项的显示标签"},
@@ -169,19 +197,39 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "dictentry_is_enabled",
-				Unique:  false,
-				Columns: []*schema.Column{SysDictEntriesColumns[9]},
+				Name:    "uix_sys_dict_entries_tenant_type_value",
+				Unique:  true,
+				Columns: []*schema.Column{SysDictEntriesColumns[10], SysDictEntriesColumns[0], SysDictEntriesColumns[12]},
 			},
 			{
-				Name:    "dictentry_tenant_id",
+				Name:    "idx_sys_dict_entries_tenant_type",
+				Unique:  false,
+				Columns: []*schema.Column{SysDictEntriesColumns[10], SysDictEntriesColumns[0]},
+			},
+			{
+				Name:    "idx_sys_dict_entries_tenant_entry_value",
+				Unique:  false,
+				Columns: []*schema.Column{SysDictEntriesColumns[10], SysDictEntriesColumns[12]},
+			},
+			{
+				Name:    "idx_sys_dict_entries_entry_value",
+				Unique:  false,
+				Columns: []*schema.Column{SysDictEntriesColumns[12]},
+			},
+			{
+				Name:    "idx_sys_dict_entries_language_code",
+				Unique:  false,
+				Columns: []*schema.Column{SysDictEntriesColumns[14]},
+			},
+			{
+				Name:    "idx_sys_dict_entries_numeric_value",
+				Unique:  false,
+				Columns: []*schema.Column{SysDictEntriesColumns[13]},
+			},
+			{
+				Name:    "idx_sys_dict_entries_tenant_id",
 				Unique:  false,
 				Columns: []*schema.Column{SysDictEntriesColumns[10]},
-			},
-			{
-				Name:    "uk_sys_dict_entries_entry_value",
-				Unique:  true,
-				Columns: []*schema.Column{SysDictEntriesColumns[12], SysDictEntriesColumns[15]},
 			},
 		},
 	}
@@ -195,7 +243,7 @@ var (
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "is_enabled", Type: field.TypeBool, Nullable: true, Comment: "是否启用", Default: true},
-		{Name: "sort_order", Type: field.TypeInt32, Nullable: true, Comment: "排序顺序，值越小越靠前", Default: 0},
+		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
 		{Name: "type_code", Type: field.TypeString, Nullable: true, Comment: "字典类型唯一代码"},
@@ -209,19 +257,34 @@ var (
 		PrimaryKey: []*schema.Column{SysDictTypesColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "dicttype_is_enabled",
-				Unique:  false,
-				Columns: []*schema.Column{SysDictTypesColumns[7]},
+				Name:    "uix_sys_dict_types_tenant_type_code",
+				Unique:  true,
+				Columns: []*schema.Column{SysDictTypesColumns[10], SysDictTypesColumns[11]},
 			},
 			{
-				Name:    "dicttype_tenant_id",
+				Name:    "idx_sys_dict_types_tenant_type_name",
+				Unique:  false,
+				Columns: []*schema.Column{SysDictTypesColumns[10], SysDictTypesColumns[12]},
+			},
+			{
+				Name:    "idx_sys_dict_types_type_name",
+				Unique:  false,
+				Columns: []*schema.Column{SysDictTypesColumns[12]},
+			},
+			{
+				Name:    "idx_sys_dict_types_tenant_id",
 				Unique:  false,
 				Columns: []*schema.Column{SysDictTypesColumns[10]},
 			},
 			{
-				Name:    "idx_sys_dict_types_type_code",
-				Unique:  true,
-				Columns: []*schema.Column{SysDictTypesColumns[11]},
+				Name:    "idx_sys_dict_types_is_enabled",
+				Unique:  false,
+				Columns: []*schema.Column{SysDictTypesColumns[7]},
+			},
+			{
+				Name:    "idx_sys_dict_types_sort_order",
+				Unique:  false,
+				Columns: []*schema.Column{SysDictTypesColumns[8]},
 			},
 		},
 	}
@@ -256,9 +319,49 @@ var (
 		PrimaryKey: []*schema.Column{FilesColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "file_tenant_id",
+				Name:    "idx_files_tenant_id",
 				Unique:  false,
 				Columns: []*schema.Column{FilesColumns[8]},
+			},
+			{
+				Name:    "uix_files_tenant_file_guid",
+				Unique:  true,
+				Columns: []*schema.Column{FilesColumns[8], FilesColumns[12]},
+			},
+			{
+				Name:    "idx_files_tenant_md5",
+				Unique:  false,
+				Columns: []*schema.Column{FilesColumns[8], FilesColumns[19]},
+			},
+			{
+				Name:    "idx_files_md5",
+				Unique:  false,
+				Columns: []*schema.Column{FilesColumns[19]},
+			},
+			{
+				Name:    "idx_files_bucket_name",
+				Unique:  false,
+				Columns: []*schema.Column{FilesColumns[10]},
+			},
+			{
+				Name:    "idx_files_file_name",
+				Unique:  false,
+				Columns: []*schema.Column{FilesColumns[14]},
+			},
+			{
+				Name:    "idx_files_extension",
+				Unique:  false,
+				Columns: []*schema.Column{FilesColumns[15]},
+			},
+			{
+				Name:    "idx_files_size",
+				Unique:  false,
+				Columns: []*schema.Column{FilesColumns[16]},
+			},
+			{
+				Name:    "idx_files_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{FilesColumns[1]},
 			},
 		},
 	}
@@ -274,7 +377,7 @@ var (
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
 		{Name: "title", Type: field.TypeString, Nullable: true, Comment: "消息标题"},
 		{Name: "content", Type: field.TypeString, Nullable: true, Comment: "消息内容"},
-		{Name: "sender_id", Type: field.TypeUint32, Nullable: true, Comment: "发送者用户ID"},
+		{Name: "sender_id", Type: field.TypeUint32, Comment: "发送者用户ID"},
 		{Name: "category_id", Type: field.TypeUint32, Nullable: true, Comment: "分类ID"},
 		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "消息状态", Enums: []string{"DRAFT", "PUBLISHED", "SCHEDULED", "REVOKED", "ARCHIVED", "DELETED"}, Default: "DRAFT"},
 		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "消息类型", Enums: []string{"NOTIFICATION", "PRIVATE", "GROUP"}, Default: "NOTIFICATION"},
@@ -287,9 +390,29 @@ var (
 		PrimaryKey: []*schema.Column{InternalMessagesColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "internalmessage_tenant_id",
+				Name:    "idx_internal_msg_tenant_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{InternalMessagesColumns[7]},
+				Columns: []*schema.Column{InternalMessagesColumns[7], InternalMessagesColumns[1]},
+			},
+			{
+				Name:    "idx_internal_msg_tenant_status_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{InternalMessagesColumns[7], InternalMessagesColumns[12], InternalMessagesColumns[1]},
+			},
+			{
+				Name:    "idx_internal_msg_tenant_sender_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{InternalMessagesColumns[7], InternalMessagesColumns[10], InternalMessagesColumns[1]},
+			},
+			{
+				Name:    "idx_internal_msg_tenant_category",
+				Unique:  false,
+				Columns: []*schema.Column{InternalMessagesColumns[7], InternalMessagesColumns[11]},
+			},
+			{
+				Name:    "idx_internal_msg_tenant_created_by_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{InternalMessagesColumns[7], InternalMessagesColumns[4], InternalMessagesColumns[1]},
 			},
 		},
 	}
@@ -303,13 +426,12 @@ var (
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "is_enabled", Type: field.TypeBool, Nullable: true, Comment: "是否启用", Default: true},
-		{Name: "sort_order", Type: field.TypeInt32, Nullable: true, Comment: "排序顺序，值越小越靠前", Default: 0},
+		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
 		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "名称"},
 		{Name: "code", Type: field.TypeString, Nullable: true, Comment: "编码"},
 		{Name: "icon_url", Type: field.TypeString, Nullable: true, Comment: "图标URL"},
-		{Name: "parent_id", Type: field.TypeUint32, Nullable: true, Comment: "父节点ID"},
 	}
 	// InternalMessageCategoriesTable holds the schema information for the "internal_message_categories" table.
 	InternalMessageCategoriesTable = &schema.Table{
@@ -317,34 +439,31 @@ var (
 		Comment:    "站内信消息分类表",
 		Columns:    InternalMessageCategoriesColumns,
 		PrimaryKey: []*schema.Column{InternalMessageCategoriesColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "internal_message_categories_internal_message_categories_children",
-				Columns:    []*schema.Column{InternalMessageCategoriesColumns[14]},
-				RefColumns: []*schema.Column{InternalMessageCategoriesColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "internalmessagecategory_is_enabled",
-				Unique:  false,
-				Columns: []*schema.Column{InternalMessageCategoriesColumns[7]},
-			},
-			{
-				Name:    "internalmessagecategory_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{InternalMessageCategoriesColumns[10]},
-			},
-			{
-				Name:    "idx_internal_message_category_code",
+				Name:    "idx_internal_msg_cat_tenant_code",
 				Unique:  true,
-				Columns: []*schema.Column{InternalMessageCategoriesColumns[12]},
+				Columns: []*schema.Column{InternalMessageCategoriesColumns[10], InternalMessageCategoriesColumns[12]},
 			},
 			{
-				Name:    "idx_internal_message_category_name",
+				Name:    "idx_internal_msg_cat_tenant_name",
 				Unique:  false,
-				Columns: []*schema.Column{InternalMessageCategoriesColumns[11]},
+				Columns: []*schema.Column{InternalMessageCategoriesColumns[10], InternalMessageCategoriesColumns[11]},
+			},
+			{
+				Name:    "idx_internal_msg_cat_tenant_enabled",
+				Unique:  false,
+				Columns: []*schema.Column{InternalMessageCategoriesColumns[10], InternalMessageCategoriesColumns[7]},
+			},
+			{
+				Name:    "idx_internal_msg_cat_tenant_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{InternalMessageCategoriesColumns[10], InternalMessageCategoriesColumns[1]},
+			},
+			{
+				Name:    "idx_internal_msg_cat_tenant_created_by",
+				Unique:  false,
+				Columns: []*schema.Column{InternalMessageCategoriesColumns[10], InternalMessageCategoriesColumns[4]},
 			},
 		},
 	}
@@ -369,9 +488,34 @@ var (
 		PrimaryKey: []*schema.Column{InternalMessageRecipientsColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "internalmessagerecipient_tenant_id",
+				Name:    "idx_internal_msg_recipient_tenant_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{InternalMessageRecipientsColumns[4]},
+				Columns: []*schema.Column{InternalMessageRecipientsColumns[4], InternalMessageRecipientsColumns[1]},
+			},
+			{
+				Name:    "idx_internal_msg_recipient_tenant_message",
+				Unique:  false,
+				Columns: []*schema.Column{InternalMessageRecipientsColumns[4], InternalMessageRecipientsColumns[5]},
+			},
+			{
+				Name:    "idx_internal_msg_recipient_tenant_recipient_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{InternalMessageRecipientsColumns[4], InternalMessageRecipientsColumns[6], InternalMessageRecipientsColumns[1]},
+			},
+			{
+				Name:    "idx_internal_msg_recipient_tenant_status_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{InternalMessageRecipientsColumns[4], InternalMessageRecipientsColumns[7], InternalMessageRecipientsColumns[1]},
+			},
+			{
+				Name:    "idx_internal_msg_recipient_recipient_status_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{InternalMessageRecipientsColumns[6], InternalMessageRecipientsColumns[7], InternalMessageRecipientsColumns[1]},
+			},
+			{
+				Name:    "idx_internal_msg_recipient_message_recipient",
+				Unique:  false,
+				Columns: []*schema.Column{InternalMessageRecipientsColumns[5], InternalMessageRecipientsColumns[6]},
 			},
 		},
 	}
@@ -384,7 +528,7 @@ var (
 		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
-		{Name: "sort_order", Type: field.TypeInt32, Nullable: true, Comment: "排序顺序，值越小越靠前", Default: 0},
+		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
 		{Name: "is_enabled", Type: field.TypeBool, Nullable: true, Comment: "是否启用", Default: true},
 		{Name: "language_code", Type: field.TypeString, Nullable: true, Comment: "标准语言代码"},
 		{Name: "language_name", Type: field.TypeString, Nullable: true, Comment: "语言名称"},
@@ -399,9 +543,44 @@ var (
 		PrimaryKey: []*schema.Column{SysLanguagesColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "language_is_enabled",
+				Name:    "uix_sys_languages_language_code",
+				Unique:  true,
+				Columns: []*schema.Column{SysLanguagesColumns[9]},
+			},
+			{
+				Name:    "idx_sys_languages_language_code",
+				Unique:  false,
+				Columns: []*schema.Column{SysLanguagesColumns[9]},
+			},
+			{
+				Name:    "idx_sys_languages_language_name",
+				Unique:  false,
+				Columns: []*schema.Column{SysLanguagesColumns[10]},
+			},
+			{
+				Name:    "idx_sys_languages_native_name",
+				Unique:  false,
+				Columns: []*schema.Column{SysLanguagesColumns[11]},
+			},
+			{
+				Name:    "idx_sys_languages_is_default",
+				Unique:  false,
+				Columns: []*schema.Column{SysLanguagesColumns[12]},
+			},
+			{
+				Name:    "idx_sys_languages_is_enabled",
 				Unique:  false,
 				Columns: []*schema.Column{SysLanguagesColumns[8]},
+			},
+			{
+				Name:    "idx_sys_languages_sort_order",
+				Unique:  false,
+				Columns: []*schema.Column{SysLanguagesColumns[7]},
+			},
+			{
+				Name:    "idx_sys_languages_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysLanguagesColumns[1]},
 			},
 		},
 	}
@@ -425,7 +604,8 @@ var (
 		{Name: "end_at", Type: field.TypeTime, Nullable: true, Comment: "失效时间"},
 		{Name: "assigned_at", Type: field.TypeTime, Nullable: true, Comment: "分配时间（UTC）"},
 		{Name: "assigned_by", Type: field.TypeUint32, Nullable: true, Comment: "分配者用户ID"},
-		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "状态", Enums: []string{"ACTIVE", "PENDING", "INACTIVE", "SUSPENDED", "EXPIRED"}, Default: "ACTIVE"},
+		{Name: "joined_at", Type: field.TypeTime, Nullable: true, Comment: "加入时间（UTC）"},
+		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "状态", Enums: []string{"ACTIVE", "DISABLED", "PENDING", "INVITED", "EXPIRED", "REJECTED"}, Default: "ACTIVE"},
 	}
 	// SysMembershipsTable holds the schema information for the "sys_memberships" table.
 	SysMembershipsTable = &schema.Table{
@@ -435,39 +615,74 @@ var (
 		PrimaryKey: []*schema.Column{SysMembershipsColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "membership_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysMembershipsColumns[7]},
-			},
-			{
 				Name:    "uix_sys_membership_tenant_user",
 				Unique:  true,
 				Columns: []*schema.Column{SysMembershipsColumns[7], SysMembershipsColumns[9]},
 			},
 			{
-				Name:    "idx_membership_user_id",
+				Name:    "uix_sys_membership_tenant_user_primary",
+				Unique:  true,
+				Columns: []*schema.Column{SysMembershipsColumns[7], SysMembershipsColumns[9], SysMembershipsColumns[13]},
+			},
+			{
+				Name:    "idx_sys_membership_tenant_user_status_start_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipsColumns[7], SysMembershipsColumns[9], SysMembershipsColumns[19], SysMembershipsColumns[14]},
+			},
+			{
+				Name:    "idx_sys_membership_user_id",
 				Unique:  false,
 				Columns: []*schema.Column{SysMembershipsColumns[9]},
 			},
 			{
-				Name:    "idx_membership_tenant_id",
+				Name:    "idx_sys_membership_tenant_id",
 				Unique:  false,
 				Columns: []*schema.Column{SysMembershipsColumns[7]},
 			},
 			{
-				Name:    "idx_membership_org_unit_id",
+				Name:    "idx_sys_membership_org_unit_id",
 				Unique:  false,
 				Columns: []*schema.Column{SysMembershipsColumns[10]},
 			},
 			{
-				Name:    "idx_membership_position_id",
+				Name:    "idx_sys_membership_role_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipsColumns[12]},
+			},
+			{
+				Name:    "idx_sys_membership_position_id",
 				Unique:  false,
 				Columns: []*schema.Column{SysMembershipsColumns[11]},
 			},
 			{
-				Name:    "idx_membership_role_id",
+				Name:    "idx_sys_membership_assigned_by",
 				Unique:  false,
-				Columns: []*schema.Column{SysMembershipsColumns[12]},
+				Columns: []*schema.Column{SysMembershipsColumns[17]},
+			},
+			{
+				Name:    "idx_sys_membership_status",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipsColumns[19]},
+			},
+			{
+				Name:    "idx_sys_membership_start_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipsColumns[14]},
+			},
+			{
+				Name:    "idx_sys_membership_end_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipsColumns[15]},
+			},
+			{
+				Name:    "idx_sys_membership_created_by_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipsColumns[4], SysMembershipsColumns[1]},
+			},
+			{
+				Name:    "idx_sys_membership_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipsColumns[1]},
 			},
 		},
 	}
@@ -501,14 +716,24 @@ var (
 		PrimaryKey: []*schema.Column{SysMembershipOrgUnitsColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "membershiporgunit_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[7]},
+				Name:    "uix_mou_tenant_mem_org_pos_role",
+				Unique:  true,
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[7], SysMembershipOrgUnitsColumns[9], SysMembershipOrgUnitsColumns[10], SysMembershipOrgUnitsColumns[11], SysMembershipOrgUnitsColumns[12]},
 			},
 			{
-				Name:    "uix_membership_org_unit_tenant_mem_org",
+				Name:    "uix_mou_tenant_mem_is_primary",
 				Unique:  true,
-				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[7], SysMembershipOrgUnitsColumns[9], SysMembershipOrgUnitsColumns[10]},
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[7], SysMembershipOrgUnitsColumns[9], SysMembershipOrgUnitsColumns[17]},
+			},
+			{
+				Name:    "idx_mou_tenant_membership",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[7], SysMembershipOrgUnitsColumns[9]},
+			},
+			{
+				Name:    "idx_mou_tenant_org_unit",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[7], SysMembershipOrgUnitsColumns[10]},
 			},
 			{
 				Name:    "idx_mou_membership_id",
@@ -519,6 +744,61 @@ var (
 				Name:    "idx_mou_org_unit_id",
 				Unique:  false,
 				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[10]},
+			},
+			{
+				Name:    "idx_mou_position_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[11]},
+			},
+			{
+				Name:    "idx_mou_role_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[12]},
+			},
+			{
+				Name:    "idx_mou_assigned_by",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[16]},
+			},
+			{
+				Name:    "idx_mou_is_primary",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[17]},
+			},
+			{
+				Name:    "idx_mou_status",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[18]},
+			},
+			{
+				Name:    "idx_mou_start_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[13]},
+			},
+			{
+				Name:    "idx_mou_end_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[14]},
+			},
+			{
+				Name:    "idx_mou_assigned_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[15]},
+			},
+			{
+				Name:    "idx_mou_created_by_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[4], SysMembershipOrgUnitsColumns[1]},
+			},
+			{
+				Name:    "idx_mou_tenant_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[7], SysMembershipOrgUnitsColumns[1]},
+			},
+			{
+				Name:    "idx_mou_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipOrgUnitsColumns[1]},
 			},
 		},
 	}
@@ -550,14 +830,34 @@ var (
 		PrimaryKey: []*schema.Column{SysMembershipPositionsColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "membershipposition_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysMembershipPositionsColumns[7]},
-			},
-			{
 				Name:    "uix_sys_membership_position_tenant_mem_pos",
 				Unique:  true,
 				Columns: []*schema.Column{SysMembershipPositionsColumns[7], SysMembershipPositionsColumns[9], SysMembershipPositionsColumns[10]},
+			},
+			{
+				Name:    "idx_sys_membership_position_tenant_membership",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipPositionsColumns[7], SysMembershipPositionsColumns[9]},
+			},
+			{
+				Name:    "idx_sys_membership_position_tenant_position",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipPositionsColumns[7], SysMembershipPositionsColumns[10]},
+			},
+			{
+				Name:    "idx_sys_membership_position_tenant_mem_primary",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipPositionsColumns[7], SysMembershipPositionsColumns[9], SysMembershipPositionsColumns[11]},
+			},
+			{
+				Name:    "idx_sys_membership_position_tenant_assigned_by",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipPositionsColumns[7], SysMembershipPositionsColumns[15]},
+			},
+			{
+				Name:    "idx_sys_membership_position_assigned_by",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipPositionsColumns[15]},
 			},
 			{
 				Name:    "idx_sys_membership_position_membership_id",
@@ -568,6 +868,21 @@ var (
 				Name:    "idx_sys_membership_position_position_id",
 				Unique:  false,
 				Columns: []*schema.Column{SysMembershipPositionsColumns[10]},
+			},
+			{
+				Name:    "idx_sys_membership_position_tenant_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipPositionsColumns[7]},
+			},
+			{
+				Name:    "idx_sys_membership_position_is_primary",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipPositionsColumns[11]},
+			},
+			{
+				Name:    "idx_sys_membership_position_status",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipPositionsColumns[16]},
 			},
 		},
 	}
@@ -598,14 +913,34 @@ var (
 		PrimaryKey: []*schema.Column{SysMembershipRolesColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "membershiprole_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysMembershipRolesColumns[7]},
-			},
-			{
 				Name:    "uix_mem_role_tenant_memid_role",
 				Unique:  true,
 				Columns: []*schema.Column{SysMembershipRolesColumns[7], SysMembershipRolesColumns[8], SysMembershipRolesColumns[9]},
+			},
+			{
+				Name:    "idx_mem_role_tenant_membership",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipRolesColumns[7], SysMembershipRolesColumns[8]},
+			},
+			{
+				Name:    "idx_mem_role_tenant_role",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipRolesColumns[7], SysMembershipRolesColumns[9]},
+			},
+			{
+				Name:    "idx_mem_role_tenant_mem_primary",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipRolesColumns[7], SysMembershipRolesColumns[8], SysMembershipRolesColumns[14]},
+			},
+			{
+				Name:    "idx_mem_role_tenant_assigned_by",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipRolesColumns[7], SysMembershipRolesColumns[13]},
+			},
+			{
+				Name:    "idx_mem_role_assigned_by",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipRolesColumns[13]},
 			},
 			{
 				Name:    "idx_mem_role_role_id",
@@ -616,6 +951,21 @@ var (
 				Name:    "idx_mem_role_membership_id",
 				Unique:  false,
 				Columns: []*schema.Column{SysMembershipRolesColumns[8]},
+			},
+			{
+				Name:    "idx_mem_role_tenant_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipRolesColumns[7]},
+			},
+			{
+				Name:    "idx_mem_role_is_primary",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipRolesColumns[14]},
+			},
+			{
+				Name:    "idx_mem_role_status",
+				Unique:  false,
+				Columns: []*schema.Column{SysMembershipRolesColumns[15]},
 			},
 		},
 	}
@@ -629,7 +979,7 @@ var (
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
-		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "菜单状态", Enums: []string{"ON", "OFF"}, Default: "ON"},
+		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
 		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "菜单类型 CATALOG: 目录 MENU: 菜单 BUTTON: 按钮 EMBEDDED: 内嵌 LINK: 外链", Enums: []string{"CATALOG", "MENU", "BUTTON", "EMBEDDED", "LINK"}, Default: "MENU"},
 		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "路径,当其类型为'按钮'的时候对应的数据操作名,例如:/user.service.v1.UserService/Login", Default: ""},
 		{Name: "redirect", Type: field.TypeString, Nullable: true, Comment: "重定向地址"},
@@ -653,6 +1003,58 @@ var (
 				OnDelete:   schema.SetNull,
 			},
 		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_sys_menu_parent_name",
+				Unique:  true,
+				Columns: []*schema.Column{SysMenusColumns[16], SysMenusColumns[13]},
+			},
+			{
+				Name:    "idx_sys_menu_parent_path",
+				Unique:  true,
+				Columns: []*schema.Column{SysMenusColumns[16], SysMenusColumns[10]},
+			},
+			{
+				Name:    "idx_sys_menu_path",
+				Unique:  false,
+				Columns: []*schema.Column{SysMenusColumns[10]},
+			},
+			{
+				Name:    "idx_sys_menu_alias",
+				Unique:  false,
+				Columns: []*schema.Column{SysMenusColumns[12]},
+			},
+			{
+				Name:    "idx_sys_menu_component",
+				Unique:  false,
+				Columns: []*schema.Column{SysMenusColumns[14]},
+			},
+			{
+				Name:    "idx_sys_menu_type",
+				Unique:  false,
+				Columns: []*schema.Column{SysMenusColumns[9]},
+			},
+			{
+				Name:    "idx_sys_menu_status",
+				Unique:  false,
+				Columns: []*schema.Column{SysMenusColumns[8]},
+			},
+			{
+				Name:    "idx_sys_menu_parent",
+				Unique:  false,
+				Columns: []*schema.Column{SysMenusColumns[16]},
+			},
+			{
+				Name:    "idx_sys_menu_created_by_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysMenusColumns[4], SysMenusColumns[1]},
+			},
+			{
+				Name:    "idx_sys_menu_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysMenusColumns[1]},
+			},
+		},
 	}
 	// SysOrgUnitsColumns holds the columns for the "sys_org_units" table.
 	SysOrgUnitsColumns = []*schema.Column{
@@ -663,14 +1065,14 @@ var (
 		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
-		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
+		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
+		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
 		{Name: "name", Type: field.TypeString, Comment: "名称"},
 		{Name: "code", Type: field.TypeString, Nullable: true, Comment: "唯一编码（可用于导入/识别）"},
 		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "树路径，如：/1/10/"},
-		{Name: "sort_order", Type: field.TypeInt32, Nullable: true, Comment: "排序序号", Default: 0},
 		{Name: "leader_id", Type: field.TypeUint32, Nullable: true, Comment: "负责人用户ID"},
 		{Name: "type", Type: field.TypeEnum, Comment: "组织类型", Enums: []string{"COMPANY", "DIVISION", "DEPARTMENT", "TEAM", "PROJECT", "COMMITTEE", "REGION", "OTHER"}, Default: "DEPARTMENT"},
 		{Name: "business_scopes", Type: field.TypeJSON, Nullable: true, Comment: "组织的业务范围/服务条线"},
@@ -708,24 +1110,84 @@ var (
 		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "orgunit_status",
-				Unique:  false,
-				Columns: []*schema.Column{SysOrgUnitsColumns[7]},
-			},
-			{
-				Name:    "orgunit_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysOrgUnitsColumns[8]},
-			},
-			{
 				Name:    "idx_org_tenant_id",
 				Unique:  false,
-				Columns: []*schema.Column{SysOrgUnitsColumns[8]},
+				Columns: []*schema.Column{SysOrgUnitsColumns[9]},
+			},
+			{
+				Name:    "uix_org_tenant_parent_name",
+				Unique:  true,
+				Columns: []*schema.Column{SysOrgUnitsColumns[9], SysOrgUnitsColumns[34], SysOrgUnitsColumns[12]},
+			},
+			{
+				Name:    "uix_org_tenant_parent_path",
+				Unique:  true,
+				Columns: []*schema.Column{SysOrgUnitsColumns[9], SysOrgUnitsColumns[34], SysOrgUnitsColumns[14]},
+			},
+			{
+				Name:    "idx_org_tenant_path",
+				Unique:  false,
+				Columns: []*schema.Column{SysOrgUnitsColumns[9], SysOrgUnitsColumns[14]},
+			},
+			{
+				Name:    "idx_org_parent_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysOrgUnitsColumns[34]},
+			},
+			{
+				Name:    "idx_org_leader_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysOrgUnitsColumns[15]},
+			},
+			{
+				Name:    "idx_org_contact_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysOrgUnitsColumns[32]},
+			},
+			{
+				Name:    "idx_org_type",
+				Unique:  false,
+				Columns: []*schema.Column{SysOrgUnitsColumns[16]},
+			},
+			{
+				Name:    "idx_org_external_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysOrgUnitsColumns[18]},
+			},
+			{
+				Name:    "idx_org_is_legal_entity",
+				Unique:  false,
+				Columns: []*schema.Column{SysOrgUnitsColumns[19]},
+			},
+			{
+				Name:    "idx_org_start_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysOrgUnitsColumns[30]},
+			},
+			{
+				Name:    "idx_org_end_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysOrgUnitsColumns[31]},
 			},
 			{
 				Name:    "uix_org_tenant_code",
 				Unique:  true,
-				Columns: []*schema.Column{SysOrgUnitsColumns[8], SysOrgUnitsColumns[12]},
+				Columns: []*schema.Column{SysOrgUnitsColumns[9], SysOrgUnitsColumns[13]},
+			},
+			{
+				Name:    "idx_org_created_by_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysOrgUnitsColumns[4], SysOrgUnitsColumns[1]},
+			},
+			{
+				Name:    "idx_org_tenant_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysOrgUnitsColumns[9], SysOrgUnitsColumns[1]},
+			},
+			{
+				Name:    "idx_org_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysOrgUnitsColumns[1]},
 			},
 		},
 	}
@@ -738,61 +1200,48 @@ var (
 		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
-		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
-		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
+		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
 		{Name: "name", Type: field.TypeString, Comment: "权限名称（如：删除用户）"},
-		{Name: "code", Type: field.TypeString, Nullable: true, Comment: "权限唯一编码（如：user.delete）"},
-		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "树路径，如：/1/10/"},
-		{Name: "module", Type: field.TypeString, Nullable: true, Comment: "所属业务模块（如：用户管理/订单管理）"},
-		{Name: "sort_order", Type: field.TypeInt32, Nullable: true, Comment: "排序序号", Default: 0},
-		{Name: "type", Type: field.TypeEnum, Comment: "权限类型", Enums: []string{"CATALOG", "MENU", "PAGE", "BUTTON", "API", "DATA", "OTHER"}, Default: "API"},
-		{Name: "parent_id", Type: field.TypeUint32, Nullable: true, Comment: "父节点ID"},
+		{Name: "code", Type: field.TypeString, Comment: "权限编码（如：opm:user:delete、order:export）"},
+		{Name: "group_id", Type: field.TypeUint32, Nullable: true, Comment: "关联权限分组 ID"},
 	}
 	// SysPermissionsTable holds the schema information for the "sys_permissions" table.
 	SysPermissionsTable = &schema.Table{
 		Name:       "sys_permissions",
-		Comment:    "权限核心表",
+		Comment:    "权限点表",
 		Columns:    SysPermissionsColumns,
 		PrimaryKey: []*schema.Column{SysPermissionsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "sys_permissions_sys_permissions_children",
-				Columns:    []*schema.Column{SysPermissionsColumns[16]},
-				RefColumns: []*schema.Column{SysPermissionsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "permission_status",
+				Name:    "idx_perm_tenant_id",
 				Unique:  false,
 				Columns: []*schema.Column{SysPermissionsColumns[8]},
 			},
 			{
-				Name:    "permission_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysPermissionsColumns[9]},
-			},
-			{
-				Name:    "idx_perm_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysPermissionsColumns[9]},
-			},
-			{
-				Name:    "idx_perm_parent_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysPermissionsColumns[16]},
-			},
-			{
 				Name:    "uix_perm_tenant_code",
 				Unique:  true,
-				Columns: []*schema.Column{SysPermissionsColumns[9], SysPermissionsColumns[11]},
+				Columns: []*schema.Column{SysPermissionsColumns[8], SysPermissionsColumns[10]},
 			},
 			{
-				Name:    "idx_perm_module_type",
+				Name:    "idx_perm_tenant_name",
 				Unique:  false,
-				Columns: []*schema.Column{SysPermissionsColumns[13], SysPermissionsColumns[15]},
+				Columns: []*schema.Column{SysPermissionsColumns[8], SysPermissionsColumns[9]},
+			},
+			{
+				Name:    "idx_perm_name",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionsColumns[9]},
+			},
+			{
+				Name:    "idx_perm_tenant_group",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionsColumns[8], SysPermissionsColumns[11]},
+			},
+			{
+				Name:    "idx_perm_group_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionsColumns[11]},
 			},
 		},
 	}
@@ -806,25 +1255,152 @@ var (
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
-		{Name: "api_resource_id", Type: field.TypeUint32, Comment: "API资源ID（关联sys_api_resources.id）"},
 		{Name: "permission_id", Type: field.TypeUint32, Comment: "权限ID（关联sys_permissions.id）"},
+		{Name: "api_resource_id", Type: field.TypeUint32, Comment: "API资源ID（关联sys_api_resources.id）"},
 	}
 	// SysPermissionAPIResourcesTable holds the schema information for the "sys_permission_api_resources" table.
 	SysPermissionAPIResourcesTable = &schema.Table{
 		Name:       "sys_permission_api_resources",
-		Comment:    "权限点 - API接口多对多关联表",
+		Comment:    "权限点-API接口关联表",
 		Columns:    SysPermissionAPIResourcesColumns,
 		PrimaryKey: []*schema.Column{SysPermissionAPIResourcesColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "permissionapiresource_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[7]},
+				Name:    "uix_perm_api_tenant_permission_api_id",
+				Unique:  true,
+				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[7], SysPermissionAPIResourcesColumns[8], SysPermissionAPIResourcesColumns[9]},
 			},
 			{
-				Name:    "uix_perm_api_tenant",
-				Unique:  true,
+				Name:    "idx_perm_api_tenant_permission_api",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[7], SysPermissionAPIResourcesColumns[8]},
+			},
+			{
+				Name:    "idx_perm_api_tenant_api",
+				Unique:  false,
 				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[7], SysPermissionAPIResourcesColumns[9]},
+			},
+			{
+				Name:    "idx_perm_api_permission_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[8]},
+			},
+			{
+				Name:    "idx_perm_api_api_resource_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[9]},
+			},
+		},
+	}
+	// SysPermissionAuditLogsColumns holds the columns for the "sys_permission_audit_logs" table.
+	SysPermissionAuditLogsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
+		{Name: "operator_id", Type: field.TypeUint32, Nullable: true, Comment: "操作者 用户ID"},
+		{Name: "target_type", Type: field.TypeString, Nullable: true, Comment: "目标类型"},
+		{Name: "target_id", Type: field.TypeUint32, Nullable: true, Comment: "目标ID"},
+		{Name: "action", Type: field.TypeString, Nullable: true, Comment: "动作"},
+		{Name: "old_value", Type: field.TypeString, Nullable: true, Comment: "旧值（JSON）", SchemaType: map[string]string{"mysql": "json", "postgres": "jsonb"}},
+		{Name: "new_value", Type: field.TypeString, Nullable: true, Comment: "新值（JSON）", SchemaType: map[string]string{"mysql": "json", "postgres": "jsonb"}},
+		{Name: "ip_address", Type: field.TypeString, Comment: "操作者IP地址"},
+	}
+	// SysPermissionAuditLogsTable holds the schema information for the "sys_permission_audit_logs" table.
+	SysPermissionAuditLogsTable = &schema.Table{
+		Name:       "sys_permission_audit_logs",
+		Comment:    "权限变更审计日志表",
+		Columns:    SysPermissionAuditLogsColumns,
+		PrimaryKey: []*schema.Column{SysPermissionAuditLogsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_permission_audit_tenant_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionAuditLogsColumns[2], SysPermissionAuditLogsColumns[1]},
+			},
+			{
+				Name:    "idx_permission_audit_tenant_operator_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionAuditLogsColumns[2], SysPermissionAuditLogsColumns[3], SysPermissionAuditLogsColumns[1]},
+			},
+			{
+				Name:    "idx_permission_audit_tenant_target_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionAuditLogsColumns[2], SysPermissionAuditLogsColumns[4], SysPermissionAuditLogsColumns[5], SysPermissionAuditLogsColumns[1]},
+			},
+			{
+				Name:    "idx_permission_audit_target",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionAuditLogsColumns[4], SysPermissionAuditLogsColumns[5]},
+			},
+			{
+				Name:    "idx_permission_audit_tenant_action_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionAuditLogsColumns[2], SysPermissionAuditLogsColumns[6], SysPermissionAuditLogsColumns[1]},
+			},
+			{
+				Name:    "idx_permission_audit_tenant_ip",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionAuditLogsColumns[2], SysPermissionAuditLogsColumns[9]},
+			},
+		},
+	}
+	// SysPermissionGroupsColumns holds the columns for the "sys_permission_groups" table.
+	SysPermissionGroupsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
+		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
+		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
+		{Name: "name", Type: field.TypeString, Comment: "分组名称（如：用户管理、订单操作）"},
+		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "树形路径，格式：/1/10/101/（包含自身且首尾带/）"},
+		{Name: "module", Type: field.TypeString, Nullable: true, Comment: "业务模块标识（如：opm、order、pay）"},
+		{Name: "parent_id", Type: field.TypeUint32, Nullable: true, Comment: "父节点ID"},
+	}
+	// SysPermissionGroupsTable holds the schema information for the "sys_permission_groups" table.
+	SysPermissionGroupsTable = &schema.Table{
+		Name:       "sys_permission_groups",
+		Comment:    "权限分组表",
+		Columns:    SysPermissionGroupsColumns,
+		PrimaryKey: []*schema.Column{SysPermissionGroupsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "sys_permission_groups_sys_permission_groups_children",
+				Columns:    []*schema.Column{SysPermissionGroupsColumns[14]},
+				RefColumns: []*schema.Column{SysPermissionGroupsColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_perm_group_tenant_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionGroupsColumns[9]},
+			},
+			{
+				Name:    "idx_perm_group_parent_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionGroupsColumns[14]},
+			},
+			{
+				Name:    "uix_perm_group_tenant_path",
+				Unique:  true,
+				Columns: []*schema.Column{SysPermissionGroupsColumns[9], SysPermissionGroupsColumns[12]},
+			},
+			{
+				Name:    "idx_perm_group_tenant_name",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionGroupsColumns[9], SysPermissionGroupsColumns[11]},
+			},
+			{
+				Name:    "idx_perm_group_module",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionGroupsColumns[13]},
 			},
 		},
 	}
@@ -838,25 +1414,150 @@ var (
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
-		{Name: "menu_id", Type: field.TypeUint32, Comment: "菜单ID（关联sys_menus.id）"},
 		{Name: "permission_id", Type: field.TypeUint32, Comment: "权限ID（关联sys_permissions.id）"},
+		{Name: "menu_id", Type: field.TypeUint32, Comment: "菜单ID（关联sys_menus.id）"},
 	}
 	// SysPermissionMenusTable holds the schema information for the "sys_permission_menus" table.
 	SysPermissionMenusTable = &schema.Table{
 		Name:       "sys_permission_menus",
-		Comment:    "权限点 - 前端菜单多对多关联表",
+		Comment:    "权限点-前端菜单关联表",
 		Columns:    SysPermissionMenusColumns,
 		PrimaryKey: []*schema.Column{SysPermissionMenusColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "permissionmenu_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysPermissionMenusColumns[7]},
-			},
-			{
 				Name:    "uix_perm_menu_tenant",
 				Unique:  true,
+				Columns: []*schema.Column{SysPermissionMenusColumns[7], SysPermissionMenusColumns[8], SysPermissionMenusColumns[9]},
+			},
+			{
+				Name:    "idx_perm_menu_tenant_perm",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionMenusColumns[7], SysPermissionMenusColumns[8]},
+			},
+			{
+				Name:    "idx_perm_menu_tenant_menu",
+				Unique:  false,
 				Columns: []*schema.Column{SysPermissionMenusColumns[7], SysPermissionMenusColumns[9]},
+			},
+			{
+				Name:    "idx_perm_menu_permission_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionMenusColumns[8]},
+			},
+			{
+				Name:    "idx_perm_menu_menu_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionMenusColumns[9]},
+			},
+		},
+	}
+	// SysPermissionPoliciesColumns holds the columns for the "sys_permission_policies" table.
+	SysPermissionPoliciesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
+		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
+		{Name: "permission_id", Type: field.TypeUint32, Comment: "权限ID（关联sys_permissions.id）"},
+		{Name: "policy_engine", Type: field.TypeEnum, Comment: "策略引擎", Enums: []string{"CEL", "CASBIN", "OPA", "SQL"}, Default: "CASBIN"},
+		{Name: "definition", Type: field.TypeString, Nullable: true, Comment: "策略定义（动态结构）", SchemaType: map[string]string{"mysql": "json", "postgres": "jsonb"}},
+		{Name: "version", Type: field.TypeUint32, Comment: "策略版本（用于灰度/回滚）", Default: 1},
+		{Name: "eval_order", Type: field.TypeUint32, Comment: "评估优先级（越小越先执行）", Default: 0},
+		{Name: "cache_ttl", Type: field.TypeUint32, Comment: "结果缓存秒数（0=不缓存）", Default: 300},
+	}
+	// SysPermissionPoliciesTable holds the schema information for the "sys_permission_policies" table.
+	SysPermissionPoliciesTable = &schema.Table{
+		Name:       "sys_permission_policies",
+		Comment:    "权限点动态策略表（NIST RBAC+ABAC混合标准）",
+		Columns:    SysPermissionPoliciesColumns,
+		PrimaryKey: []*schema.Column{SysPermissionPoliciesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "uix_perm_policy_tenant_perm",
+				Unique:  true,
+				Columns: []*schema.Column{SysPermissionPoliciesColumns[7], SysPermissionPoliciesColumns[9]},
+			},
+			{
+				Name:    "idx_perm_policy_tenant_perm_version",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionPoliciesColumns[7], SysPermissionPoliciesColumns[9], SysPermissionPoliciesColumns[12]},
+			},
+			{
+				Name:    "idx_perm_policy_engine_tenant",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionPoliciesColumns[7], SysPermissionPoliciesColumns[10]},
+			},
+			{
+				Name:    "idx_perm_policy_perm",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionPoliciesColumns[9]},
+			},
+			{
+				Name:    "idx_perm_policy_engine",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionPoliciesColumns[10]},
+			},
+			{
+				Name:    "idx_perm_policy_version",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionPoliciesColumns[12]},
+			},
+			{
+				Name:    "idx_perm_policy_tenant",
+				Unique:  false,
+				Columns: []*schema.Column{SysPermissionPoliciesColumns[7]},
+			},
+		},
+	}
+	// SysPolicyEvaluationLogsColumns holds the columns for the "sys_policy_evaluation_logs" table.
+	SysPolicyEvaluationLogsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
+		{Name: "user_id", Type: field.TypeUint32, Comment: "用户ID"},
+		{Name: "membership_id", Type: field.TypeUint32, Comment: "成员身份ID"},
+		{Name: "permission_id", Type: field.TypeUint32, Comment: "权限点ID"},
+		{Name: "policy_id", Type: field.TypeUint32, Nullable: true, Comment: "策略ID（可能无策略）"},
+		{Name: "result", Type: field.TypeBool, Comment: "是否通过", Default: false},
+		{Name: "scope_sql", Type: field.TypeString, Nullable: true, Comment: "生成的SQL条件"},
+		{Name: "request_path", Type: field.TypeString, Nullable: true, Comment: "请求API路径"},
+		{Name: "ip_address", Type: field.TypeString, Nullable: true, Comment: "操作者IP地址"},
+	}
+	// SysPolicyEvaluationLogsTable holds the schema information for the "sys_policy_evaluation_logs" table.
+	SysPolicyEvaluationLogsTable = &schema.Table{
+		Name:       "sys_policy_evaluation_logs",
+		Comment:    "策略评估日志表",
+		Columns:    SysPolicyEvaluationLogsColumns,
+		PrimaryKey: []*schema.Column{SysPolicyEvaluationLogsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_policy_eval_tenant_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[2], SysPolicyEvaluationLogsColumns[1]},
+			},
+			{
+				Name:    "idx_policy_eval_tenant_user_permission_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[2], SysPolicyEvaluationLogsColumns[3], SysPolicyEvaluationLogsColumns[5], SysPolicyEvaluationLogsColumns[1]},
+			},
+			{
+				Name:    "idx_policy_eval_tenant_permission_result_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[2], SysPolicyEvaluationLogsColumns[5], SysPolicyEvaluationLogsColumns[7], SysPolicyEvaluationLogsColumns[1]},
+			},
+			{
+				Name:    "idx_policy_eval_request_path",
+				Unique:  false,
+				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[9]},
+			},
+			{
+				Name:    "idx_policy_eval_ip_address",
+				Unique:  false,
+				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[10]},
 			},
 		},
 	}
@@ -869,24 +1570,23 @@ var (
 		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
-		{Name: "sort_order", Type: field.TypeInt32, Nullable: true, Comment: "排序顺序，值越小越靠前", Default: 0},
+		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
-		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
-		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "职位名称"},
-		{Name: "code", Type: field.TypeString, Nullable: true, Comment: "唯一编码"},
+		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
+		{Name: "name", Type: field.TypeString, Comment: "职位名称"},
+		{Name: "code", Type: field.TypeString, Comment: "唯一编码"},
 		{Name: "org_unit_id", Type: field.TypeUint32, Comment: "所属组织单元ID"},
 		{Name: "reports_to_position_id", Type: field.TypeUint32, Nullable: true, Comment: "汇报关系"},
 		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "职位描述"},
 		{Name: "job_family", Type: field.TypeString, Nullable: true, Comment: "职类/序列"},
 		{Name: "job_grade", Type: field.TypeString, Nullable: true, Comment: "职级"},
 		{Name: "level", Type: field.TypeInt32, Nullable: true, Comment: "数值化职级"},
-		{Name: "headcount", Type: field.TypeUint32, Nullable: true, Comment: "编制人数", Default: 0},
-		{Name: "is_key_position", Type: field.TypeBool, Nullable: true, Comment: "是否关键岗位", Default: false},
+		{Name: "headcount", Type: field.TypeUint32, Comment: "编制人数", Default: 0},
+		{Name: "is_key_position", Type: field.TypeBool, Comment: "是否关键岗位", Default: false},
 		{Name: "type", Type: field.TypeEnum, Comment: "岗位类型", Enums: []string{"REGULAR", "MANAGER", "LEAD", "INTERN", "CONTRACT", "OTHER"}, Default: "REGULAR"},
 		{Name: "start_at", Type: field.TypeTime, Nullable: true, Comment: "生效时间（UTC）"},
 		{Name: "end_at", Type: field.TypeTime, Nullable: true, Comment: "结束有效期（UTC）"},
-		{Name: "parent_id", Type: field.TypeUint32, Nullable: true, Comment: "父节点ID"},
 	}
 	// SysPositionsTable holds the schema information for the "sys_positions" table.
 	SysPositionsTable = &schema.Table{
@@ -894,49 +1594,106 @@ var (
 		Comment:    "职位表",
 		Columns:    SysPositionsColumns,
 		PrimaryKey: []*schema.Column{SysPositionsColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "sys_positions_sys_positions_children",
-				Columns:    []*schema.Column{SysPositionsColumns[24]},
-				RefColumns: []*schema.Column{SysPositionsColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "position_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysPositionsColumns[9]},
-			},
-			{
-				Name:    "position_status",
-				Unique:  false,
-				Columns: []*schema.Column{SysPositionsColumns[10]},
-			},
-			{
-				Name:    "idx_sys_position_code",
-				Unique:  true,
-				Columns: []*schema.Column{SysPositionsColumns[12]},
-			},
-			{
-				Name:    "uix_sys_position_tenant_code",
+				Name:    "uix_sys_positions_tenant_code",
 				Unique:  true,
 				Columns: []*schema.Column{SysPositionsColumns[9], SysPositionsColumns[12]},
 			},
 			{
-				Name:    "idx_sys_position_name",
+				Name:    "idx_sys_positions_code",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[12]},
+			},
+			{
+				Name:    "idx_sys_positions_tenant_name",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[9], SysPositionsColumns[11]},
+			},
+			{
+				Name:    "idx_sys_positions_name",
 				Unique:  false,
 				Columns: []*schema.Column{SysPositionsColumns[11]},
 			},
 			{
-				Name:    "idx_sys_position_org_unit_id",
+				Name:    "idx_sys_positions_tenant_org_unit_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[9], SysPositionsColumns[13]},
+			},
+			{
+				Name:    "idx_sys_positions_org_unit_id",
 				Unique:  false,
 				Columns: []*schema.Column{SysPositionsColumns[13]},
 			},
 			{
-				Name:    "idx_sys_position_type",
+				Name:    "idx_sys_positions_tenant_reports_to",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[9], SysPositionsColumns[14]},
+			},
+			{
+				Name:    "idx_sys_positions_reports_to",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[14]},
+			},
+			{
+				Name:    "idx_sys_positions_tenant_type",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[9], SysPositionsColumns[21]},
+			},
+			{
+				Name:    "idx_sys_positions_type",
 				Unique:  false,
 				Columns: []*schema.Column{SysPositionsColumns[21]},
+			},
+			{
+				Name:    "idx_sys_positions_tenant_is_key",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[9], SysPositionsColumns[20]},
+			},
+			{
+				Name:    "idx_sys_positions_is_key",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[20]},
+			},
+			{
+				Name:    "idx_sys_positions_level",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[18]},
+			},
+			{
+				Name:    "idx_sys_positions_headcount",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[19]},
+			},
+			{
+				Name:    "idx_sys_positions_sort_order",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[7]},
+			},
+			{
+				Name:    "idx_sys_positions_status",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[10]},
+			},
+			{
+				Name:    "idx_sys_positions_start_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[22]},
+			},
+			{
+				Name:    "idx_sys_positions_end_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[23]},
+			},
+			{
+				Name:    "idx_sys_positions_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[1]},
+			},
+			{
+				Name:    "idx_sys_positions_tenant_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysPositionsColumns[9]},
 			},
 		},
 	}
@@ -950,15 +1707,13 @@ var (
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
-		{Name: "sort_order", Type: field.TypeInt32, Nullable: true, Comment: "排序顺序，值越小越靠前", Default: 0},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
+		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
+		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
 		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "角色名称"},
 		{Name: "code", Type: field.TypeString, Nullable: true, Comment: "角色标识"},
-		{Name: "custom_org_unit_ids", Type: field.TypeJSON, Nullable: true, Comment: "当 DataScope 为 SELECTED_UNITS 时关联的组织单元列表"},
-		{Name: "data_scope", Type: field.TypeEnum, Nullable: true, Comment: "数据权限范围", Enums: []string{"ALL", "SELF", "UNIT_ONLY", "UNIT_AND_CHILD", "SELECTED_UNITS"}},
-		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "角色状态", Enums: []string{"ON", "OFF"}, Default: "ON"},
-		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "角色类型", Enums: []string{"SYSTEM", "CUSTOM"}, Default: "SYSTEM"},
-		{Name: "parent_id", Type: field.TypeUint32, Nullable: true, Comment: "父节点ID"},
+		{Name: "is_protected", Type: field.TypeBool, Comment: "是否受保护的角色", Default: false},
 	}
 	// SysRolesTable holds the schema information for the "sys_roles" table.
 	SysRolesTable = &schema.Table{
@@ -966,29 +1721,56 @@ var (
 		Comment:    "角色表",
 		Columns:    SysRolesColumns,
 		PrimaryKey: []*schema.Column{SysRolesColumns[0]},
-		ForeignKeys: []*schema.ForeignKey{
-			{
-				Symbol:     "sys_roles_sys_roles_children",
-				Columns:    []*schema.Column{SysRolesColumns[16]},
-				RefColumns: []*schema.Column{SysRolesColumns[0]},
-				OnDelete:   schema.SetNull,
-			},
-		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "role_tenant_id",
+				Name:    "uix_sys_roles_tenant_code",
+				Unique:  true,
+				Columns: []*schema.Column{SysRolesColumns[10], SysRolesColumns[13]},
+			},
+			{
+				Name:    "idx_sys_roles_tenant_name",
+				Unique:  false,
+				Columns: []*schema.Column{SysRolesColumns[10], SysRolesColumns[12]},
+			},
+			{
+				Name:    "idx_sys_roles_name",
+				Unique:  false,
+				Columns: []*schema.Column{SysRolesColumns[12]},
+			},
+			{
+				Name:    "idx_sys_roles_code",
+				Unique:  false,
+				Columns: []*schema.Column{SysRolesColumns[13]},
+			},
+			{
+				Name:    "idx_sys_roles_tenant_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysRolesColumns[10]},
+			},
+			{
+				Name:    "idx_sys_roles_is_protected",
+				Unique:  false,
+				Columns: []*schema.Column{SysRolesColumns[14]},
+			},
+			{
+				Name:    "idx_sys_roles_status",
+				Unique:  false,
+				Columns: []*schema.Column{SysRolesColumns[11]},
+			},
+			{
+				Name:    "idx_sys_roles_sort_order",
 				Unique:  false,
 				Columns: []*schema.Column{SysRolesColumns[9]},
 			},
 			{
-				Name:    "idx_sys_role_name",
-				Unique:  true,
-				Columns: []*schema.Column{SysRolesColumns[10]},
+				Name:    "idx_sys_roles_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysRolesColumns[1]},
 			},
 			{
-				Name:    "idx_sys_role_code",
-				Unique:  true,
-				Columns: []*schema.Column{SysRolesColumns[11]},
+				Name:    "idx_sys_roles_created_by",
+				Unique:  false,
+				Columns: []*schema.Column{SysRolesColumns[4]},
 			},
 		},
 	}
@@ -1075,19 +1857,98 @@ var (
 		PrimaryKey: []*schema.Column{SysRolePermissionsColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "rolepermission_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysRolePermissionsColumns[7]},
+				Name:    "uix_sys_role_permissions_tenant_role_permission",
+				Unique:  true,
+				Columns: []*schema.Column{SysRolePermissionsColumns[7], SysRolePermissionsColumns[8], SysRolePermissionsColumns[9]},
 			},
 			{
-				Name:    "uix_perm_role",
+				Name:    "uix_sys_role_permissions_role_permission",
 				Unique:  true,
 				Columns: []*schema.Column{SysRolePermissionsColumns[8], SysRolePermissionsColumns[9]},
 			},
 			{
-				Name:    "uix_perm_role_tenant",
-				Unique:  true,
+				Name:    "idx_sys_role_permissions_tenant_role",
+				Unique:  false,
 				Columns: []*schema.Column{SysRolePermissionsColumns[7], SysRolePermissionsColumns[8]},
+			},
+			{
+				Name:    "idx_sys_role_permissions_tenant_permission",
+				Unique:  false,
+				Columns: []*schema.Column{SysRolePermissionsColumns[7], SysRolePermissionsColumns[9]},
+			},
+			{
+				Name:    "idx_sys_role_permissions_role_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysRolePermissionsColumns[8]},
+			},
+			{
+				Name:    "idx_sys_role_permissions_permission_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysRolePermissionsColumns[9]},
+			},
+			{
+				Name:    "idx_sys_role_permissions_tenant_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysRolePermissionsColumns[7]},
+			},
+			{
+				Name:    "idx_sys_role_permissions_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysRolePermissionsColumns[1]},
+			},
+			{
+				Name:    "idx_sys_role_permissions_created_by",
+				Unique:  false,
+				Columns: []*schema.Column{SysRolePermissionsColumns[4]},
+			},
+		},
+	}
+	// SysRoleTemplatesColumns holds the columns for the "sys_role_templates" table.
+	SysRoleTemplatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
+		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
+		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
+		{Name: "name", Type: field.TypeString, Comment: "角色名称"},
+		{Name: "code", Type: field.TypeString, Comment: "角色编码"},
+		{Name: "category", Type: field.TypeString, Nullable: true, Comment: "模板分类"},
+		{Name: "permissions", Type: field.TypeJSON, Nullable: true, Comment: "角色权限列表"},
+		{Name: "is_default", Type: field.TypeBool, Comment: "是否是默认模板", Default: false},
+		{Name: "is_system", Type: field.TypeBool, Comment: "是否是系统模板（不可删除）", Default: false},
+	}
+	// SysRoleTemplatesTable holds the schema information for the "sys_role_templates" table.
+	SysRoleTemplatesTable = &schema.Table{
+		Name:       "sys_role_templates",
+		Comment:    "角色模板",
+		Columns:    SysRoleTemplatesColumns,
+		PrimaryKey: []*schema.Column{SysRoleTemplatesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_sys_role_tpl_tenant_name",
+				Unique:  true,
+				Columns: []*schema.Column{SysRoleTemplatesColumns[7], SysRoleTemplatesColumns[11]},
+			},
+			{
+				Name:    "idx_sys_role_tpl_tenant_code",
+				Unique:  true,
+				Columns: []*schema.Column{SysRoleTemplatesColumns[7], SysRoleTemplatesColumns[12]},
+			},
+			{
+				Name:    "idx_sys_role_tpl_category",
+				Unique:  false,
+				Columns: []*schema.Column{SysRoleTemplatesColumns[13]},
+			},
+			{
+				Name:    "idx_sys_role_tpl_is_system",
+				Unique:  false,
+				Columns: []*schema.Column{SysRoleTemplatesColumns[16]},
 			},
 		},
 	}
@@ -1117,14 +1978,29 @@ var (
 		PrimaryKey: []*schema.Column{SysTasksColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "task_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysTasksColumns[8]},
+				Name:    "idx_sys_task_tenant_type_name",
+				Unique:  true,
+				Columns: []*schema.Column{SysTasksColumns[8], SysTasksColumns[10]},
 			},
 			{
-				Name:    "idx_sys_task_type_name",
-				Unique:  true,
-				Columns: []*schema.Column{SysTasksColumns[10]},
+				Name:    "idx_sys_task_tenant_type",
+				Unique:  false,
+				Columns: []*schema.Column{SysTasksColumns[8], SysTasksColumns[9]},
+			},
+			{
+				Name:    "idx_sys_task_tenant_enable_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysTasksColumns[8], SysTasksColumns[14], SysTasksColumns[1]},
+			},
+			{
+				Name:    "idx_sys_task_tenant_created_by_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysTasksColumns[8], SysTasksColumns[4], SysTasksColumns[1]},
+			},
+			{
+				Name:    "idx_sys_task_tenant_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysTasksColumns[8], SysTasksColumns[1]},
 			},
 		},
 	}
@@ -1141,6 +2017,7 @@ var (
 		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "租户名称"},
 		{Name: "code", Type: field.TypeString, Nullable: true, Comment: "租户编号"},
 		{Name: "logo_url", Type: field.TypeString, Nullable: true, Comment: "租户logo地址"},
+		{Name: "domain", Type: field.TypeString, Nullable: true, Comment: "租户专属域名"},
 		{Name: "industry", Type: field.TypeString, Nullable: true, Comment: "所属行业"},
 		{Name: "admin_user_id", Type: field.TypeUint32, Nullable: true, Comment: "管理员用户ID"},
 		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "租户状态", Enums: []string{"ON", "OFF", "EXPIRED", "FREEZE"}, Default: "ON"},
@@ -1150,8 +2027,6 @@ var (
 		{Name: "unsubscribe_at", Type: field.TypeTime, Nullable: true, Comment: "取消订阅时间"},
 		{Name: "subscription_plan", Type: field.TypeString, Nullable: true, Comment: "订阅套餐"},
 		{Name: "expired_at", Type: field.TypeTime, Nullable: true, Comment: "租户有效期"},
-		{Name: "last_login_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次登录的时间"},
-		{Name: "last_login_ip", Type: field.TypeString, Nullable: true, Comment: "最后一次登录的IP"},
 	}
 	// SysTenantsTable holds the schema information for the "sys_tenants" table.
 	SysTenantsTable = &schema.Table{
@@ -1171,14 +2046,44 @@ var (
 				Columns: []*schema.Column{SysTenantsColumns[9]},
 			},
 			{
+				Name:    "idx_sys_tenant_domain",
+				Unique:  false,
+				Columns: []*schema.Column{SysTenantsColumns[11]},
+			},
+			{
+				Name:    "idx_sys_tenant_admin_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysTenantsColumns[13]},
+			},
+			{
 				Name:    "idx_sys_tenant_status_audit_status",
 				Unique:  false,
-				Columns: []*schema.Column{SysTenantsColumns[13], SysTenantsColumns[15]},
+				Columns: []*schema.Column{SysTenantsColumns[14], SysTenantsColumns[16]},
+			},
+			{
+				Name:    "idx_sys_tenant_type_expired_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysTenantsColumns[15], SysTenantsColumns[20]},
+			},
+			{
+				Name:    "idx_sys_tenant_subscription_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysTenantsColumns[17]},
 			},
 			{
 				Name:    "idx_sys_tenant_expired_at",
 				Unique:  false,
-				Columns: []*schema.Column{SysTenantsColumns[19]},
+				Columns: []*schema.Column{SysTenantsColumns[20]},
+			},
+			{
+				Name:    "idx_sys_tenant_created_by_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysTenantsColumns[4], SysTenantsColumns[1]},
+			},
+			{
+				Name:    "idx_sys_tenant_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysTenantsColumns[1]},
 			},
 		},
 	}
@@ -1206,7 +2111,8 @@ var (
 		{Name: "gender", Type: field.TypeEnum, Nullable: true, Comment: "性别", Enums: []string{"SECRET", "MALE", "FEMALE"}, Default: "SECRET"},
 		{Name: "last_login_at", Type: field.TypeTime, Nullable: true, Comment: "最后一次登录的时间"},
 		{Name: "last_login_ip", Type: field.TypeString, Nullable: true, Comment: "最后一次登录的IP"},
-		{Name: "is_banned", Type: field.TypeBool, Nullable: true, Comment: "是否被禁用", Default: false},
+		{Name: "locked_until", Type: field.TypeTime, Nullable: true, Comment: "锁定截止时间"},
+		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "状态", Enums: []string{"NORMAL", "DISABLED", "PENDING", "LOCKED", "EXPIRED", "CLOSED"}, Default: "NORMAL"},
 	}
 	// SysUsersTable holds the schema information for the "sys_users" table.
 	SysUsersTable = &schema.Table{
@@ -1216,14 +2122,39 @@ var (
 		PrimaryKey: []*schema.Column{SysUsersColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "user_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysUsersColumns[8]},
+				Name:    "idx_sys_user_tenant_username",
+				Unique:  true,
+				Columns: []*schema.Column{SysUsersColumns[8], SysUsersColumns[9]},
 			},
 			{
-				Name:    "idx_sys_user_username",
+				Name:    "idx_sys_user_tenant_email",
 				Unique:  true,
-				Columns: []*schema.Column{SysUsersColumns[9]},
+				Columns: []*schema.Column{SysUsersColumns[8], SysUsersColumns[12]},
+			},
+			{
+				Name:    "idx_sys_user_tenant_mobile",
+				Unique:  false,
+				Columns: []*schema.Column{SysUsersColumns[8], SysUsersColumns[13]},
+			},
+			{
+				Name:    "idx_sys_user_tenant_last_login_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysUsersColumns[8], SysUsersColumns[20]},
+			},
+			{
+				Name:    "idx_sys_user_tenant_last_login_ip",
+				Unique:  false,
+				Columns: []*schema.Column{SysUsersColumns[8], SysUsersColumns[21]},
+			},
+			{
+				Name:    "idx_sys_user_tenant_created_by",
+				Unique:  false,
+				Columns: []*schema.Column{SysUsersColumns[8], SysUsersColumns[1]},
+			},
+			{
+				Name:    "idx_sys_user_tenant_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysUsersColumns[8], SysUsersColumns[4]},
 			},
 		},
 	}
@@ -1259,39 +2190,44 @@ var (
 		PrimaryKey: []*schema.Column{SysUserCredentialsColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "usercredential_tenant_id",
-				Unique:  false,
-				Columns: []*schema.Column{SysUserCredentialsColumns[4]},
-			},
-			{
-				Name:    "idx_sys_user_credential_uid_identity_identifier",
+				Name:    "idx_sys_user_cred_tenant_uid_identity_identifier",
 				Unique:  true,
-				Columns: []*schema.Column{SysUserCredentialsColumns[5], SysUserCredentialsColumns[6], SysUserCredentialsColumns[7]},
+				Columns: []*schema.Column{SysUserCredentialsColumns[4], SysUserCredentialsColumns[5], SysUserCredentialsColumns[6], SysUserCredentialsColumns[7]},
 			},
 			{
-				Name:    "idx_sys_user_credential_identifier",
+				Name:    "idx_sys_user_cred_tenant_identifier",
 				Unique:  false,
-				Columns: []*schema.Column{SysUserCredentialsColumns[7]},
+				Columns: []*schema.Column{SysUserCredentialsColumns[4], SysUserCredentialsColumns[7]},
 			},
 			{
-				Name:    "idx_sys_user_credential_user_id",
+				Name:    "idx_sys_user_cred_tenant_user_id",
 				Unique:  false,
-				Columns: []*schema.Column{SysUserCredentialsColumns[5]},
+				Columns: []*schema.Column{SysUserCredentialsColumns[4], SysUserCredentialsColumns[5]},
 			},
 			{
-				Name:    "idx_sys_user_credential_provider_account",
+				Name:    "idx_sys_user_cred_tenant_provider_account",
 				Unique:  true,
-				Columns: []*schema.Column{SysUserCredentialsColumns[13], SysUserCredentialsColumns[14]},
+				Columns: []*schema.Column{SysUserCredentialsColumns[4], SysUserCredentialsColumns[13], SysUserCredentialsColumns[14]},
 			},
 			{
-				Name:    "idx_sys_user_credential_provider",
+				Name:    "idx_sys_user_cred_tenant_provider",
 				Unique:  false,
-				Columns: []*schema.Column{SysUserCredentialsColumns[13]},
+				Columns: []*schema.Column{SysUserCredentialsColumns[4], SysUserCredentialsColumns[13]},
 			},
 			{
-				Name:    "idx_sys_user_credential_user_provider",
+				Name:    "idx_sys_user_cred_tenant_is_primary",
 				Unique:  false,
-				Columns: []*schema.Column{SysUserCredentialsColumns[5], SysUserCredentialsColumns[13]},
+				Columns: []*schema.Column{SysUserCredentialsColumns[4], SysUserCredentialsColumns[10]},
+			},
+			{
+				Name:    "idx_sys_user_cred_tenant_status_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysUserCredentialsColumns[4], SysUserCredentialsColumns[11], SysUserCredentialsColumns[1]},
+			},
+			{
+				Name:    "idx_sys_user_cred_tenant_activate_expires_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysUserCredentialsColumns[4], SysUserCredentialsColumns[16]},
 			},
 		},
 	}
@@ -1316,12 +2252,17 @@ var (
 		SysOrgUnitsTable,
 		SysPermissionsTable,
 		SysPermissionAPIResourcesTable,
+		SysPermissionAuditLogsTable,
+		SysPermissionGroupsTable,
 		SysPermissionMenusTable,
+		SysPermissionPoliciesTable,
+		SysPolicyEvaluationLogsTable,
 		SysPositionsTable,
 		SysRolesTable,
 		SysRoleAPITable,
 		SysRoleMenuTable,
 		SysRolePermissionsTable,
+		SysRoleTemplatesTable,
 		SysTasksTable,
 		SysTenantsTable,
 		SysUsersTable,
@@ -1371,7 +2312,6 @@ func init() {
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
-	InternalMessageCategoriesTable.ForeignKeys[0].RefTable = InternalMessageCategoriesTable
 	InternalMessageCategoriesTable.Annotation = &entsql.Annotation{
 		Table:     "internal_message_categories",
 		Charset:   "utf8mb4",
@@ -1419,7 +2359,6 @@ func init() {
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
-	SysPermissionsTable.ForeignKeys[0].RefTable = SysPermissionsTable
 	SysPermissionsTable.Annotation = &entsql.Annotation{
 		Table:     "sys_permissions",
 		Charset:   "utf8mb4",
@@ -1430,18 +2369,37 @@ func init() {
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
+	SysPermissionAuditLogsTable.Annotation = &entsql.Annotation{
+		Table:     "sys_permission_audit_logs",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	SysPermissionGroupsTable.ForeignKeys[0].RefTable = SysPermissionGroupsTable
+	SysPermissionGroupsTable.Annotation = &entsql.Annotation{
+		Table:     "sys_permission_groups",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
 	SysPermissionMenusTable.Annotation = &entsql.Annotation{
 		Table:     "sys_permission_menus",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
-	SysPositionsTable.ForeignKeys[0].RefTable = SysPositionsTable
+	SysPermissionPoliciesTable.Annotation = &entsql.Annotation{
+		Table:     "sys_permission_policies",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	SysPolicyEvaluationLogsTable.Annotation = &entsql.Annotation{
+		Table:     "sys_policy_evaluation_logs",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
 	SysPositionsTable.Annotation = &entsql.Annotation{
 		Table:     "sys_positions",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
-	SysRolesTable.ForeignKeys[0].RefTable = SysRolesTable
 	SysRolesTable.Annotation = &entsql.Annotation{
 		Table:     "sys_roles",
 		Charset:   "utf8mb4",
@@ -1459,6 +2417,11 @@ func init() {
 	}
 	SysRolePermissionsTable.Annotation = &entsql.Annotation{
 		Table:     "sys_role_permissions",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	SysRoleTemplatesTable.Annotation = &entsql.Annotation{
+		Table:     "sys_role_templates",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

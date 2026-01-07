@@ -96,6 +96,9 @@ func NewRestServer(
 	userProfileService *service.UserProfileService,
 	apiResourceService *service.ApiResourceService,
 	permissionService *service.PermissionService,
+	permissionGroupService *service.PermissionGroupService,
+	permissionAuditLogService *service.PermissionAuditLogService,
+	policyEvaluationLogService *service.PolicyEvaluationLogService,
 ) (*http.Server, error) {
 	cfg := ctx.GetConfig()
 
@@ -116,13 +119,17 @@ func NewRestServer(
 
 	adminV1.RegisterUserProfileServiceHTTPServer(srv, userProfileService)
 
-	adminV1.RegisterMenuServiceHTTPServer(srv, menuService)
 	adminV1.RegisterRouterServiceHTTPServer(srv, routerService)
 	adminV1.RegisterDictServiceHTTPServer(srv, dictService)
 	adminV1.RegisterTaskServiceHTTPServer(srv, taskService)
 	adminV1.RegisterAdminLoginRestrictionServiceHTTPServer(srv, adminLoginRestrictionService)
+
 	adminV1.RegisterApiResourceServiceHTTPServer(srv, apiResourceService)
+	adminV1.RegisterMenuServiceHTTPServer(srv, menuService)
 	adminV1.RegisterPermissionServiceHTTPServer(srv, permissionService)
+	adminV1.RegisterPermissionGroupServiceHTTPServer(srv, permissionGroupService)
+	adminV1.RegisterPolicyEvaluationLogServiceHTTPServer(srv, policyEvaluationLogService)
+	adminV1.RegisterPermissionAuditLogServiceHTTPServer(srv, permissionAuditLogService)
 
 	adminV1.RegisterUserServiceHTTPServer(srv, userService)
 	adminV1.RegisterOrgUnitServiceHTTPServer(srv, orgUnitService)
@@ -151,6 +158,12 @@ func NewRestServer(
 			swaggerUI.WithTitle("GoWind Admin"),
 			swaggerUI.WithMemoryData(assets.OpenApiData, "yaml"),
 		)
+	}
+
+	if authorizer != nil {
+		if err = authorizer.ResetPolicies(ctx.Context()); err != nil {
+			log.Errorf("reset policies error: %v", err)
+		}
 	}
 
 	return srv, nil

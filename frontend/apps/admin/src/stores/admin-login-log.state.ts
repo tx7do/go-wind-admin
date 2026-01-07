@@ -6,7 +6,7 @@ import { createAdminLoginLogServiceClient } from '#/generated/api/admin/service/
 import { makeQueryString } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
-export const useAdminLoginLogStore = defineStore('admin_login_log', () => {
+export const useAdminLoginLogStore = defineStore('admin-login-log', () => {
   const service = createAdminLoginLogServiceClient(requestClientRequestHandler);
 
   /**

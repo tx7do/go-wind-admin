@@ -2,9 +2,7 @@ package service
 
 import (
 	"context"
-	"fmt"
 	"sort"
-	"strings"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
@@ -16,6 +14,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
 	"go-wind-admin/pkg/middleware/auth"
 	"go-wind-admin/pkg/utils/converter"
@@ -65,20 +64,25 @@ func NewPermissionService(
 func (s *PermissionService) init() {
 	ctx := context.Background()
 	if count, _ := s.permissionRepo.Count(ctx, []func(s *sql.Selector){}); count == 0 {
+		_ = s.createDefaultPermissions(ctx)
+	}
+	if count, _ := s.apiResourceRepo.Count(ctx, []func(s *sql.Selector){}); count == 0 {
 		_, _ = s.SyncApiResources(ctx, &emptypb.Empty{})
+	}
+	if count, _ := s.menuRepo.Count(ctx, []func(s *sql.Selector){}); count == 0 {
 		_, _ = s.SyncMenus(ctx, &emptypb.Empty{})
 	}
 }
 
-func (s *PermissionService) List(ctx context.Context, req *pagination.PagingRequest) (*adminV1.ListPermissionResponse, error) {
+func (s *PermissionService) List(ctx context.Context, req *pagination.PagingRequest) (*permissionV1.ListPermissionResponse, error) {
 	return s.permissionRepo.List(ctx, req)
 }
 
-func (s *PermissionService) Get(ctx context.Context, req *adminV1.GetPermissionRequest) (*adminV1.Permission, error) {
+func (s *PermissionService) Get(ctx context.Context, req *permissionV1.GetPermissionRequest) (*permissionV1.Permission, error) {
 	return s.permissionRepo.Get(ctx, req)
 }
 
-func (s *PermissionService) Create(ctx context.Context, req *adminV1.CreatePermissionRequest) (*emptypb.Empty, error) {
+func (s *PermissionService) Create(ctx context.Context, req *permissionV1.CreatePermissionRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -103,7 +107,7 @@ func (s *PermissionService) Create(ctx context.Context, req *adminV1.CreatePermi
 	return &emptypb.Empty{}, nil
 }
 
-func (s *PermissionService) Update(ctx context.Context, req *adminV1.UpdatePermissionRequest) (*emptypb.Empty, error) {
+func (s *PermissionService) Update(ctx context.Context, req *permissionV1.UpdatePermissionRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -116,7 +120,7 @@ func (s *PermissionService) Update(ctx context.Context, req *adminV1.UpdatePermi
 
 	req.Data.UpdatedBy = trans.Ptr(operator.UserId)
 
-	if err = s.permissionRepo.Update(ctx, req); err != nil {
+	if err = s.permissionRepo.Update(ctx, operator.GetTenantId(), req); err != nil {
 		return nil, err
 	}
 
@@ -128,7 +132,7 @@ func (s *PermissionService) Update(ctx context.Context, req *adminV1.UpdatePermi
 	return &emptypb.Empty{}, nil
 }
 
-func (s *PermissionService) Delete(ctx context.Context, req *adminV1.DeletePermissionRequest) (*emptypb.Empty, error) {
+func (s *PermissionService) Delete(ctx context.Context, req *permissionV1.DeletePermissionRequest) (*emptypb.Empty, error) {
 	if err := s.permissionRepo.Delete(ctx, req); err != nil {
 		return nil, err
 	}
@@ -172,78 +176,60 @@ func (s *PermissionService) SyncApiResources(ctx context.Context, _ *emptypb.Emp
 		return a.GetOperation() > b.GetOperation()
 	})
 
-	rootID, _ := s.insertApiRootNode(ctx)
+	type ApiInfo struct {
+		ApiIDs      []uint32
+		Description string
+	}
 
-	var permissions []*adminV1.Permission
-	codeMap := make(map[string]struct{})
+	apiInfoMap := make(map[string]ApiInfo)
 	for _, api := range apis.Items {
 		code := s.apiPermissionConverter.ConvertCodeByOperationID(api.GetOperation())
 		if code == "" {
 			continue
 		}
 
-		if _, exists := codeMap[code]; exists {
+		if _, exists := apiInfoMap[code]; exists {
 			code = s.apiPermissionConverter.ConvertCodeByPath(api.GetMethod(), api.GetPath())
 			if code == "" {
 				continue
 			}
-			if _, exists = codeMap[code]; exists {
+			if _, exists = apiInfoMap[code]; exists {
 				s.log.Warnf("SyncApiResources: duplicate permission code for API %s - %s, skipped", api.GetOperation(), code)
 				continue
 			}
 		}
 
-		codeMap[code] = struct{}{}
-
-		permission := &adminV1.Permission{
-			Name:     api.Description,
-			Module:   api.Module,
-			Code:     trans.Ptr(code),
-			Type:     trans.Ptr(adminV1.Permission_API),
-			Status:   trans.Ptr(adminV1.Permission_ON),
-			ParentId: trans.Ptr(rootID),
-			Bind:     &adminV1.Permission_ApiResourceId{ApiResourceId: api.GetId()},
+		if _, exists := apiInfoMap[code]; !exists {
+			apiInfoMap[code] = ApiInfo{
+				Description: api.GetModuleDescription(),
+				ApiIDs:      []uint32{api.GetId()},
+			}
+		} else {
+			info := apiInfoMap[code]
+			info.ApiIDs = append(info.ApiIDs, api.GetId())
+			apiInfoMap[code] = info
 		}
-		permissions = append(permissions, permission)
 
 		//s.log.Debugf("SyncApiResources: prepared permission for API %s - %s", api.GetOperation(), code)
 	}
 
+	var permissions []*permissionV1.Permission
+	var codes []string
+	for code, info := range apiInfoMap {
+		permission := &permissionV1.Permission{
+			Name:           trans.Ptr(info.Description),
+			Code:           trans.Ptr(code),
+			Status:         trans.Ptr(permissionV1.Permission_ON),
+			ApiResourceIds: info.ApiIDs,
+		}
+		permissions = append(permissions, permission)
+		codes = append(codes, code)
+	}
+
+	//_ = s.permissionGroupRepo.CleanPermissionsByCodes(ctx, codes)
+
 	if err = s.permissionRepo.BatchCreate(ctx, operator.GetTenantId(), permissions); err != nil {
 		s.log.Errorf("batch create api permissions failed: %s", err.Error())
-		return nil, err
-	}
-
-	createdPermissions, err := s.permissionRepo.ListApiPermissions(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	// 构建 code -> createdPermission 映射
-	codeToCreatedPerm := make(map[string]*adminV1.Permission, len(createdPermissions))
-	for _, cp := range createdPermissions {
-		if cp.GetCode() != "" {
-			codeToCreatedPerm[cp.GetCode()] = cp
-		}
-	}
-
-	parentIDs := make(map[uint32]uint32)
-
-	if err = s.permissionRepo.UpdateParentIDs(ctx, parentIDs); err != nil {
-		s.log.Errorf("batch update permission parent IDs failed: %s", err.Error())
-		return nil, err
-	}
-
-	createdPermissions, err = s.permissionRepo.ListApiPermissions(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	paths := s.buildPermissionIDPaths(createdPermissions)
-	//s.log.Info("Built permission ID paths for menu permissions", paths)
-
-	if err = s.permissionRepo.UpdatePaths(ctx, paths); err != nil {
-		s.log.Errorf("batch update permission parent IDs failed: %s", err.Error())
 		return nil, err
 	}
 
@@ -265,7 +251,7 @@ func (s *PermissionService) SyncMenus(ctx context.Context, _ *emptypb.Empty) (*e
 	// 清理菜单相关权限
 	_ = s.permissionRepo.CleanMenuPermissions(ctx)
 
-	// 查询所有启用的 API 资源
+	// 查询所有启用的菜单
 	menus, err := s.menuRepo.List(ctx, &pagination.PagingRequest{
 		NoPaging: trans.Ptr(true),
 		Query:    trans.Ptr(`{"status":"ON"}`),
@@ -281,241 +267,105 @@ func (s *PermissionService) SyncMenus(ctx context.Context, _ *emptypb.Empty) (*e
 		return menus.Items[i].GetParentId() < menus.Items[j].GetParentId()
 	})
 
-	parentModules := make(map[uint32]string)
-	menuIDToCode := make(map[uint32]string, len(menus.Items))
-	var permissions []*adminV1.Permission
+	type MenuInfo struct {
+		MenuIDs     []uint32
+		Description string
+	}
+
+	menuInfoMap := make(map[string]MenuInfo)
 	for _, menu := range menus.Items {
-		code := s.menuPermissionConverter.ConvertCode(menu.GetPath(), menu.GetType())
+		var title string
+		//if menu.GetMeta() != nil && menu.GetMeta().GetTitle() != "" {
+		//	title = menu.GetMeta().GetTitle()
+		//} else {
+		//	title = menu.GetName()
+		//}
+		title = menu.GetName()
+
+		code := s.menuPermissionConverter.ConvertCode(menu.GetPath(), title, menu.GetType())
 		if code == "" {
 			continue
 		}
 
-		perType := s.menuPermissionConverter.MenuTypeToPermissionType(menu.GetType())
-
-		parentModule := parentModules[menu.GetParentId()]
-		if menu.ParentId == nil {
-			parentModule = menu.GetName()
+		if _, exists := menuInfoMap[code]; !exists {
+			menuInfoMap[code] = MenuInfo{
+				Description: title,
+				MenuIDs:     []uint32{menu.GetId()},
+			}
+		} else {
+			info := menuInfoMap[code]
+			info.MenuIDs = append(info.MenuIDs, menu.GetId())
+			menuInfoMap[code] = info
 		}
+	}
 
-		permission := &adminV1.Permission{
-			Name:   menu.Name,
-			Code:   trans.Ptr(code),
-			Type:   trans.Ptr(perType),
-			Status: trans.Ptr(adminV1.Permission_ON),
-			Bind:   &adminV1.Permission_MenuId{MenuId: menu.GetId()},
-		}
-		if parentModule != "" {
-			permission.Module = trans.Ptr(parentModule)
+	//_ = s.permissionGroupRepo.CleanPermissionsByCodes(ctx, codes)
+
+	var permissions []*permissionV1.Permission
+	var codes []string
+	for code, info := range menuInfoMap {
+		permission := &permissionV1.Permission{
+			Name:    trans.Ptr(info.Description),
+			Code:    trans.Ptr(code),
+			Status:  trans.Ptr(permissionV1.Permission_ON),
+			MenuIds: info.MenuIDs,
 		}
 		permissions = append(permissions, permission)
-
-		menuIDToCode[menu.GetId()] = code
-
-		if menu.ParentId == nil {
-			parentModules[menu.GetId()] = menu.GetName()
-			//s.log.Infof("Menu ID %d set as parent module: %s", menu.GetId(), menu.GetName())
-		}
+		codes = append(codes, code)
 	}
 
 	if err = s.permissionRepo.BatchCreate(ctx, operator.GetTenantId(), permissions); err != nil {
-		s.log.Errorf("batch create api permissions failed: %s", err.Error())
-		return nil, err
-	}
-
-	createdPermissions, err := s.permissionRepo.ListMenuPermissions(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	// 构建 code -> createdPermission 映射
-	codeToCreatedPerm := make(map[string]*adminV1.Permission, len(createdPermissions))
-	for _, cp := range createdPermissions {
-		if cp.GetCode() != "" {
-			codeToCreatedPerm[cp.GetCode()] = cp
-		}
-	}
-
-	// 遍历原始 menus，把 menu.ParentId 映射为对应 permission 的 ParentId，并逐条更新
-	parentIDs := make(map[uint32]uint32)
-	for _, menu := range menus.Items {
-		menuID := menu.GetId()
-		code, ok := menuIDToCode[menuID]
-		if !ok {
-			continue
-		}
-		createdPerm := codeToCreatedPerm[code]
-		if createdPerm == nil {
-			continue
-		}
-
-		parentMenuID := menu.GetParentId()
-		if parentMenuID == 0 {
-			// 根节点，确保 permission 的 ParentId 为 nil（可选：如果需要显式清空）
-			continue
-		}
-
-		parentCode, ok := menuIDToCode[parentMenuID]
-		if !ok {
-			continue
-		}
-		parentCreatedPerm := codeToCreatedPerm[parentCode]
-		if parentCreatedPerm == nil {
-			continue
-		}
-
-		parentIDs[createdPerm.GetId()] = parentCreatedPerm.GetId()
-	}
-
-	if err = s.permissionRepo.UpdateParentIDs(ctx, parentIDs); err != nil {
-		s.log.Errorf("batch update permission parent IDs failed: %s", err.Error())
-		return nil, err
-	}
-
-	createdPermissions, err = s.permissionRepo.ListMenuPermissions(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	paths := s.buildPermissionIDPaths(createdPermissions)
-	//s.log.Info("Built permission ID paths for menu permissions", paths)
-
-	if err = s.permissionRepo.UpdatePaths(ctx, paths); err != nil {
-		s.log.Errorf("batch update permission parent IDs failed: %s", err.Error())
+		s.log.Errorf("batch create menu permissions failed: %s", err.Error())
 		return nil, err
 	}
 
 	return &emptypb.Empty{}, nil
 }
 
-// buildPermissionIDPaths 将 permissions 转换为 id -> 树形 id 路径映射（格式 "/1/2/"）。
-// 行为：
-// - 构建 id->menu 映射加速查找。
-// - 使用递归 + 记忆化计算每个节点的路径。
-// - 若父节点为 0、缺失或出现循环引用，则将该节点视为根，路径为 "/<id>"。
-func (s *PermissionService) buildPermissionIDPaths(permissions []*adminV1.Permission) map[uint32]string {
-	// 1. 空输入防御
-	if len(permissions) == 0 {
-		//s.log.Warn("buildPermissionIDPaths: empty permissions list")
-		return make(map[uint32]string)
-	}
+func (s *PermissionService) createDefaultPermissions(ctx context.Context) error {
+	var err error
 
-	// 2. 建立ID->Permission映射（过滤无效节点）
-	mByID := make(map[uint32]*adminV1.Permission, len(permissions))
-	validIDs := make(map[uint32]struct{}, len(permissions)) // 记录所有有效ID，用于快速校验
-	for _, p := range permissions {
-		if p == nil {
-			//s.log.Warn("buildPermissionIDPaths: skip nil permission")
-			continue
-		}
-		id := p.GetId()
-		if id == 0 {
-			//s.log.Warn("buildPermissionIDPaths: skip permission with zero ID")
-			continue
-		}
-		mByID[id] = p
-		validIDs[id] = struct{}{}
-	}
-
-	// 3. 记忆化缓存（仅缓存最终路径，避免递归过程中提前写入）
-	idPathMemo := make(map[uint32]string, len(mByID))
-
-	// build 递归构建路径：核心修复父节点匹配+缓存逻辑
-	var build func(uint32, map[uint32]bool) string
-	build = func(id uint32, visiting map[uint32]bool) string {
-		// 基础防御：无效ID直接返回空
-		if id == 0 {
-			//s.log.Debug("buildPermissionIDPaths: skip zero ID")
-			return ""
-		}
-
-		// 缓存命中：直接返回（核心：仅返回已完成的路径）
-		if path, ok := idPathMemo[id]; ok {
-			//s.log.Debugf("buildPermissionIDPaths: cache hit for ID %d: %s", id, path)
-			return path
-		}
-
-		// 节点不存在：返回空
-		perm, ok := mByID[id]
-		if !ok || perm == nil {
-			//s.log.Warnf("buildPermissionIDPaths: permission ID %d not found or nil", id)
-			return ""
-		}
-
-		// 循环引用防御：发现循环则视为根节点
-		if visiting[id] {
-			path := fmt.Sprintf("/%d/", id)
-			idPathMemo[id] = path // 缓存循环节点路径
-			//s.log.Warnf("buildPermissionIDPaths: detected cycle at ID %d, treating as root", id)
-			return path
-		}
-
-		parentID := perm.GetParentId()
-
-		// 情况1：根节点（父ID=0、父ID=自身、父ID无效）
-		if parentID == 0 || parentID == id {
-			path := fmt.Sprintf("/%d/", id)
-			idPathMemo[id] = path
-			//s.log.Debugf("buildPermissionIDPaths: ID %d is root or has invalid parent, path: %s", id, path)
-			return path
-		}
-
-		// 情况2：父节点有效，递归构建父路径
-		visiting[id] = true // 标记当前节点为“正在访问”，防止循环
-		parentPath := build(parentID, visiting)
-		delete(visiting, id) // 递归完成后移除标记
-
-		// 父路径有效：拼接子节点路径（核心修复：确保父路径+子ID拼接）
-		var finalPath string
-		if parentPath != "" {
-			// 标准化父路径（确保结尾有/）
-			cleanParentPath := strings.TrimSuffix(parentPath, "/") + "/"
-			finalPath = fmt.Sprintf("%s%d/", cleanParentPath, id)
-			//s.log.Debugf("buildPermissionIDPaths: built path for ID %d: %s", id, finalPath)
-		} else {
-			// 父路径无效（理论上不会走到这里，因已校验parentID在validIDs）
-			finalPath = fmt.Sprintf("/%d/", id)
-			//s.log.Debugf("buildPermissionIDPaths: parent path empty for ID %d, set as root: %s", id, finalPath)
-		}
-
-		// 写入缓存（仅在路径构建完成后）
-		idPathMemo[id] = finalPath
-		return finalPath
-	}
-
-	// 4. 遍历所有有效节点，构建最终结果
-	results := make(map[uint32]string, len(mByID))
-	for id := range mByID {
-		path := build(id, make(map[uint32]bool)) // 每层递归用独立的循环检测map
-		if path != "" {
-			results[id] = path
-		} else {
-		}
-	}
-
-	return results
-}
-
-// insertApiRootNode 插入 API 资源根节点
-func (s *PermissionService) insertApiRootNode(ctx context.Context) (uint32, error) {
-	const rootCode = "api:root"
-
-	if err := s.permissionRepo.Update(ctx, &adminV1.UpdatePermissionRequest{
-		AllowMissing: trans.Ptr(true),
-		Data: &adminV1.Permission{
-			Name:   trans.Ptr("API资源根节点"),
-			Code:   trans.Ptr(rootCode),
-			Type:   trans.Ptr(adminV1.Permission_API),
-			Status: trans.Ptr(adminV1.Permission_ON),
+	defaultPermissions := []*permissionV1.CreatePermissionRequest{
+		{
+			Data: &permissionV1.Permission{
+				Id:      trans.Ptr(uint32(1)),
+				GroupId: trans.Ptr(uint32(1)),
+				Name:    trans.Ptr("访问后台"),
+				Code:    trans.Ptr(accessSystemPermissionCode),
+				Status:  trans.Ptr(permissionV1.Permission_ON),
+				MenuIds: []uint32{
+					1, 2,
+					10, 11,
+					20, 21, 22, 23, 24,
+					30, 31, 32, 33, 34,
+					40, 41, 42,
+					50, 51, 52,
+					60, 61, 62, 63, 64,
+				},
+				ApiResourceIds: []uint32{
+					1, 2, 3, 4, 5, 6, 7, 8, 9,
+					10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+					20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+					30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+					40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+					50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+					60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+					70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+					80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+					90, 91, 92, 93, 94, 95, 96, 97, 98, 99,
+					100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
+					110, 111, 112, 113, 114, 115, 116, 117, 118, 119,
+					120, 121, 122, 123, 124, 125,
+				},
+			},
 		},
-	}); err != nil {
-		return 0, err
+	}
+	for _, req := range defaultPermissions {
+		if err = s.permissionRepo.Create(ctx, req); err != nil {
+			s.log.Errorf("create default permission %s failed: %v", req.Data.GetCode(), err)
+			return err
+		}
 	}
 
-	perm, err := s.permissionRepo.Get(ctx, &adminV1.GetPermissionRequest{
-		QueryBy: &adminV1.GetPermissionRequest_Code{Code: rootCode},
-	})
-	if err != nil {
-		return 0, err
-	}
-	return perm.GetId(), nil
+	return nil
 }

@@ -20,6 +20,8 @@ type AdminLoginLog struct {
 	ID uint32 `json:"id,omitempty"`
 	// 创建时间
 	CreatedAt *time.Time `json:"created_at,omitempty"`
+	// 租户ID
+	TenantID *uint32 `json:"tenant_id,omitempty"`
 	// 登录IP地址
 	LoginIP *string `json:"login_ip,omitempty"`
 	// 登录MAC地址
@@ -62,7 +64,7 @@ func (*AdminLoginLog) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case adminloginlog.FieldSuccess:
 			values[i] = new(sql.NullBool)
-		case adminloginlog.FieldID, adminloginlog.FieldUserID, adminloginlog.FieldStatusCode:
+		case adminloginlog.FieldID, adminloginlog.FieldTenantID, adminloginlog.FieldUserID, adminloginlog.FieldStatusCode:
 			values[i] = new(sql.NullInt64)
 		case adminloginlog.FieldLoginIP, adminloginlog.FieldLoginMAC, adminloginlog.FieldUserAgent, adminloginlog.FieldBrowserName, adminloginlog.FieldBrowserVersion, adminloginlog.FieldClientID, adminloginlog.FieldClientName, adminloginlog.FieldOsName, adminloginlog.FieldOsVersion, adminloginlog.FieldUsername, adminloginlog.FieldReason, adminloginlog.FieldLocation:
 			values[i] = new(sql.NullString)
@@ -95,6 +97,13 @@ func (_m *AdminLoginLog) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.CreatedAt = new(time.Time)
 				*_m.CreatedAt = value.Time
+			}
+		case adminloginlog.FieldTenantID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
+			} else if value.Valid {
+				_m.TenantID = new(uint32)
+				*_m.TenantID = uint32(value.Int64)
 			}
 		case adminloginlog.FieldLoginIP:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -247,6 +256,11 @@ func (_m *AdminLoginLog) String() string {
 	if v := _m.CreatedAt; v != nil {
 		builder.WriteString("created_at=")
 		builder.WriteString(v.Format(time.ANSIC))
+	}
+	builder.WriteString(", ")
+	if v := _m.TenantID; v != nil {
+		builder.WriteString("tenant_id=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
 	if v := _m.LoginIP; v != nil {

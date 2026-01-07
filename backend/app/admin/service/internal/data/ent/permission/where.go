@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -85,19 +84,9 @@ func DeletedBy(v uint32) predicate.Permission {
 	return predicate.Permission(sql.FieldEQ(FieldDeletedBy, v))
 }
 
-// Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
-func Remark(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldEQ(FieldRemark, v))
-}
-
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
 func TenantID(v uint32) predicate.Permission {
 	return predicate.Permission(sql.FieldEQ(FieldTenantID, v))
-}
-
-// ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
-func ParentID(v uint32) predicate.Permission {
-	return predicate.Permission(sql.FieldEQ(FieldParentID, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
@@ -110,19 +99,9 @@ func Code(v string) predicate.Permission {
 	return predicate.Permission(sql.FieldEQ(FieldCode, v))
 }
 
-// Path applies equality check predicate on the "path" field. It's identical to PathEQ.
-func Path(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldEQ(FieldPath, v))
-}
-
-// Module applies equality check predicate on the "module" field. It's identical to ModuleEQ.
-func Module(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldEQ(FieldModule, v))
-}
-
-// SortOrder applies equality check predicate on the "sort_order" field. It's identical to SortOrderEQ.
-func SortOrder(v int32) predicate.Permission {
-	return predicate.Permission(sql.FieldEQ(FieldSortOrder, v))
+// GroupID applies equality check predicate on the "group_id" field. It's identical to GroupIDEQ.
+func GroupID(v uint32) predicate.Permission {
+	return predicate.Permission(sql.FieldEQ(FieldGroupID, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -425,81 +404,6 @@ func DeletedByNotNil() predicate.Permission {
 	return predicate.Permission(sql.FieldNotNull(FieldDeletedBy))
 }
 
-// RemarkEQ applies the EQ predicate on the "remark" field.
-func RemarkEQ(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldEQ(FieldRemark, v))
-}
-
-// RemarkNEQ applies the NEQ predicate on the "remark" field.
-func RemarkNEQ(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldNEQ(FieldRemark, v))
-}
-
-// RemarkIn applies the In predicate on the "remark" field.
-func RemarkIn(vs ...string) predicate.Permission {
-	return predicate.Permission(sql.FieldIn(FieldRemark, vs...))
-}
-
-// RemarkNotIn applies the NotIn predicate on the "remark" field.
-func RemarkNotIn(vs ...string) predicate.Permission {
-	return predicate.Permission(sql.FieldNotIn(FieldRemark, vs...))
-}
-
-// RemarkGT applies the GT predicate on the "remark" field.
-func RemarkGT(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldGT(FieldRemark, v))
-}
-
-// RemarkGTE applies the GTE predicate on the "remark" field.
-func RemarkGTE(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldGTE(FieldRemark, v))
-}
-
-// RemarkLT applies the LT predicate on the "remark" field.
-func RemarkLT(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldLT(FieldRemark, v))
-}
-
-// RemarkLTE applies the LTE predicate on the "remark" field.
-func RemarkLTE(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldLTE(FieldRemark, v))
-}
-
-// RemarkContains applies the Contains predicate on the "remark" field.
-func RemarkContains(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldContains(FieldRemark, v))
-}
-
-// RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
-func RemarkHasPrefix(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldHasPrefix(FieldRemark, v))
-}
-
-// RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
-func RemarkHasSuffix(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldHasSuffix(FieldRemark, v))
-}
-
-// RemarkIsNil applies the IsNil predicate on the "remark" field.
-func RemarkIsNil() predicate.Permission {
-	return predicate.Permission(sql.FieldIsNull(FieldRemark))
-}
-
-// RemarkNotNil applies the NotNil predicate on the "remark" field.
-func RemarkNotNil() predicate.Permission {
-	return predicate.Permission(sql.FieldNotNull(FieldRemark))
-}
-
-// RemarkEqualFold applies the EqualFold predicate on the "remark" field.
-func RemarkEqualFold(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldEqualFold(FieldRemark, v))
-}
-
-// RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
-func RemarkContainsFold(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldContainsFold(FieldRemark, v))
-}
-
 // StatusEQ applies the EQ predicate on the "status" field.
 func StatusEQ(v Status) predicate.Permission {
 	return predicate.Permission(sql.FieldEQ(FieldStatus, v))
@@ -518,16 +422,6 @@ func StatusIn(vs ...Status) predicate.Permission {
 // StatusNotIn applies the NotIn predicate on the "status" field.
 func StatusNotIn(vs ...Status) predicate.Permission {
 	return predicate.Permission(sql.FieldNotIn(FieldStatus, vs...))
-}
-
-// StatusIsNil applies the IsNil predicate on the "status" field.
-func StatusIsNil() predicate.Permission {
-	return predicate.Permission(sql.FieldIsNull(FieldStatus))
-}
-
-// StatusNotNil applies the NotNil predicate on the "status" field.
-func StatusNotNil() predicate.Permission {
-	return predicate.Permission(sql.FieldNotNull(FieldStatus))
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
@@ -578,36 +472,6 @@ func TenantIDIsNil() predicate.Permission {
 // TenantIDNotNil applies the NotNil predicate on the "tenant_id" field.
 func TenantIDNotNil() predicate.Permission {
 	return predicate.Permission(sql.FieldNotNull(FieldTenantID))
-}
-
-// ParentIDEQ applies the EQ predicate on the "parent_id" field.
-func ParentIDEQ(v uint32) predicate.Permission {
-	return predicate.Permission(sql.FieldEQ(FieldParentID, v))
-}
-
-// ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
-func ParentIDNEQ(v uint32) predicate.Permission {
-	return predicate.Permission(sql.FieldNEQ(FieldParentID, v))
-}
-
-// ParentIDIn applies the In predicate on the "parent_id" field.
-func ParentIDIn(vs ...uint32) predicate.Permission {
-	return predicate.Permission(sql.FieldIn(FieldParentID, vs...))
-}
-
-// ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
-func ParentIDNotIn(vs ...uint32) predicate.Permission {
-	return predicate.Permission(sql.FieldNotIn(FieldParentID, vs...))
-}
-
-// ParentIDIsNil applies the IsNil predicate on the "parent_id" field.
-func ParentIDIsNil() predicate.Permission {
-	return predicate.Permission(sql.FieldIsNull(FieldParentID))
-}
-
-// ParentIDNotNil applies the NotNil predicate on the "parent_id" field.
-func ParentIDNotNil() predicate.Permission {
-	return predicate.Permission(sql.FieldNotNull(FieldParentID))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -730,16 +594,6 @@ func CodeHasSuffix(v string) predicate.Permission {
 	return predicate.Permission(sql.FieldHasSuffix(FieldCode, v))
 }
 
-// CodeIsNil applies the IsNil predicate on the "code" field.
-func CodeIsNil() predicate.Permission {
-	return predicate.Permission(sql.FieldIsNull(FieldCode))
-}
-
-// CodeNotNil applies the NotNil predicate on the "code" field.
-func CodeNotNil() predicate.Permission {
-	return predicate.Permission(sql.FieldNotNull(FieldCode))
-}
-
 // CodeEqualFold applies the EqualFold predicate on the "code" field.
 func CodeEqualFold(v string) predicate.Permission {
 	return predicate.Permission(sql.FieldEqualFold(FieldCode, v))
@@ -750,270 +604,54 @@ func CodeContainsFold(v string) predicate.Permission {
 	return predicate.Permission(sql.FieldContainsFold(FieldCode, v))
 }
 
-// PathEQ applies the EQ predicate on the "path" field.
-func PathEQ(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldEQ(FieldPath, v))
+// GroupIDEQ applies the EQ predicate on the "group_id" field.
+func GroupIDEQ(v uint32) predicate.Permission {
+	return predicate.Permission(sql.FieldEQ(FieldGroupID, v))
 }
 
-// PathNEQ applies the NEQ predicate on the "path" field.
-func PathNEQ(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldNEQ(FieldPath, v))
+// GroupIDNEQ applies the NEQ predicate on the "group_id" field.
+func GroupIDNEQ(v uint32) predicate.Permission {
+	return predicate.Permission(sql.FieldNEQ(FieldGroupID, v))
 }
 
-// PathIn applies the In predicate on the "path" field.
-func PathIn(vs ...string) predicate.Permission {
-	return predicate.Permission(sql.FieldIn(FieldPath, vs...))
+// GroupIDIn applies the In predicate on the "group_id" field.
+func GroupIDIn(vs ...uint32) predicate.Permission {
+	return predicate.Permission(sql.FieldIn(FieldGroupID, vs...))
 }
 
-// PathNotIn applies the NotIn predicate on the "path" field.
-func PathNotIn(vs ...string) predicate.Permission {
-	return predicate.Permission(sql.FieldNotIn(FieldPath, vs...))
+// GroupIDNotIn applies the NotIn predicate on the "group_id" field.
+func GroupIDNotIn(vs ...uint32) predicate.Permission {
+	return predicate.Permission(sql.FieldNotIn(FieldGroupID, vs...))
 }
 
-// PathGT applies the GT predicate on the "path" field.
-func PathGT(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldGT(FieldPath, v))
+// GroupIDGT applies the GT predicate on the "group_id" field.
+func GroupIDGT(v uint32) predicate.Permission {
+	return predicate.Permission(sql.FieldGT(FieldGroupID, v))
 }
 
-// PathGTE applies the GTE predicate on the "path" field.
-func PathGTE(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldGTE(FieldPath, v))
+// GroupIDGTE applies the GTE predicate on the "group_id" field.
+func GroupIDGTE(v uint32) predicate.Permission {
+	return predicate.Permission(sql.FieldGTE(FieldGroupID, v))
 }
 
-// PathLT applies the LT predicate on the "path" field.
-func PathLT(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldLT(FieldPath, v))
+// GroupIDLT applies the LT predicate on the "group_id" field.
+func GroupIDLT(v uint32) predicate.Permission {
+	return predicate.Permission(sql.FieldLT(FieldGroupID, v))
 }
 
-// PathLTE applies the LTE predicate on the "path" field.
-func PathLTE(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldLTE(FieldPath, v))
+// GroupIDLTE applies the LTE predicate on the "group_id" field.
+func GroupIDLTE(v uint32) predicate.Permission {
+	return predicate.Permission(sql.FieldLTE(FieldGroupID, v))
 }
 
-// PathContains applies the Contains predicate on the "path" field.
-func PathContains(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldContains(FieldPath, v))
+// GroupIDIsNil applies the IsNil predicate on the "group_id" field.
+func GroupIDIsNil() predicate.Permission {
+	return predicate.Permission(sql.FieldIsNull(FieldGroupID))
 }
 
-// PathHasPrefix applies the HasPrefix predicate on the "path" field.
-func PathHasPrefix(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldHasPrefix(FieldPath, v))
-}
-
-// PathHasSuffix applies the HasSuffix predicate on the "path" field.
-func PathHasSuffix(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldHasSuffix(FieldPath, v))
-}
-
-// PathIsNil applies the IsNil predicate on the "path" field.
-func PathIsNil() predicate.Permission {
-	return predicate.Permission(sql.FieldIsNull(FieldPath))
-}
-
-// PathNotNil applies the NotNil predicate on the "path" field.
-func PathNotNil() predicate.Permission {
-	return predicate.Permission(sql.FieldNotNull(FieldPath))
-}
-
-// PathEqualFold applies the EqualFold predicate on the "path" field.
-func PathEqualFold(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldEqualFold(FieldPath, v))
-}
-
-// PathContainsFold applies the ContainsFold predicate on the "path" field.
-func PathContainsFold(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldContainsFold(FieldPath, v))
-}
-
-// ModuleEQ applies the EQ predicate on the "module" field.
-func ModuleEQ(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldEQ(FieldModule, v))
-}
-
-// ModuleNEQ applies the NEQ predicate on the "module" field.
-func ModuleNEQ(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldNEQ(FieldModule, v))
-}
-
-// ModuleIn applies the In predicate on the "module" field.
-func ModuleIn(vs ...string) predicate.Permission {
-	return predicate.Permission(sql.FieldIn(FieldModule, vs...))
-}
-
-// ModuleNotIn applies the NotIn predicate on the "module" field.
-func ModuleNotIn(vs ...string) predicate.Permission {
-	return predicate.Permission(sql.FieldNotIn(FieldModule, vs...))
-}
-
-// ModuleGT applies the GT predicate on the "module" field.
-func ModuleGT(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldGT(FieldModule, v))
-}
-
-// ModuleGTE applies the GTE predicate on the "module" field.
-func ModuleGTE(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldGTE(FieldModule, v))
-}
-
-// ModuleLT applies the LT predicate on the "module" field.
-func ModuleLT(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldLT(FieldModule, v))
-}
-
-// ModuleLTE applies the LTE predicate on the "module" field.
-func ModuleLTE(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldLTE(FieldModule, v))
-}
-
-// ModuleContains applies the Contains predicate on the "module" field.
-func ModuleContains(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldContains(FieldModule, v))
-}
-
-// ModuleHasPrefix applies the HasPrefix predicate on the "module" field.
-func ModuleHasPrefix(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldHasPrefix(FieldModule, v))
-}
-
-// ModuleHasSuffix applies the HasSuffix predicate on the "module" field.
-func ModuleHasSuffix(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldHasSuffix(FieldModule, v))
-}
-
-// ModuleIsNil applies the IsNil predicate on the "module" field.
-func ModuleIsNil() predicate.Permission {
-	return predicate.Permission(sql.FieldIsNull(FieldModule))
-}
-
-// ModuleNotNil applies the NotNil predicate on the "module" field.
-func ModuleNotNil() predicate.Permission {
-	return predicate.Permission(sql.FieldNotNull(FieldModule))
-}
-
-// ModuleEqualFold applies the EqualFold predicate on the "module" field.
-func ModuleEqualFold(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldEqualFold(FieldModule, v))
-}
-
-// ModuleContainsFold applies the ContainsFold predicate on the "module" field.
-func ModuleContainsFold(v string) predicate.Permission {
-	return predicate.Permission(sql.FieldContainsFold(FieldModule, v))
-}
-
-// SortOrderEQ applies the EQ predicate on the "sort_order" field.
-func SortOrderEQ(v int32) predicate.Permission {
-	return predicate.Permission(sql.FieldEQ(FieldSortOrder, v))
-}
-
-// SortOrderNEQ applies the NEQ predicate on the "sort_order" field.
-func SortOrderNEQ(v int32) predicate.Permission {
-	return predicate.Permission(sql.FieldNEQ(FieldSortOrder, v))
-}
-
-// SortOrderIn applies the In predicate on the "sort_order" field.
-func SortOrderIn(vs ...int32) predicate.Permission {
-	return predicate.Permission(sql.FieldIn(FieldSortOrder, vs...))
-}
-
-// SortOrderNotIn applies the NotIn predicate on the "sort_order" field.
-func SortOrderNotIn(vs ...int32) predicate.Permission {
-	return predicate.Permission(sql.FieldNotIn(FieldSortOrder, vs...))
-}
-
-// SortOrderGT applies the GT predicate on the "sort_order" field.
-func SortOrderGT(v int32) predicate.Permission {
-	return predicate.Permission(sql.FieldGT(FieldSortOrder, v))
-}
-
-// SortOrderGTE applies the GTE predicate on the "sort_order" field.
-func SortOrderGTE(v int32) predicate.Permission {
-	return predicate.Permission(sql.FieldGTE(FieldSortOrder, v))
-}
-
-// SortOrderLT applies the LT predicate on the "sort_order" field.
-func SortOrderLT(v int32) predicate.Permission {
-	return predicate.Permission(sql.FieldLT(FieldSortOrder, v))
-}
-
-// SortOrderLTE applies the LTE predicate on the "sort_order" field.
-func SortOrderLTE(v int32) predicate.Permission {
-	return predicate.Permission(sql.FieldLTE(FieldSortOrder, v))
-}
-
-// SortOrderIsNil applies the IsNil predicate on the "sort_order" field.
-func SortOrderIsNil() predicate.Permission {
-	return predicate.Permission(sql.FieldIsNull(FieldSortOrder))
-}
-
-// SortOrderNotNil applies the NotNil predicate on the "sort_order" field.
-func SortOrderNotNil() predicate.Permission {
-	return predicate.Permission(sql.FieldNotNull(FieldSortOrder))
-}
-
-// TypeEQ applies the EQ predicate on the "type" field.
-func TypeEQ(v Type) predicate.Permission {
-	return predicate.Permission(sql.FieldEQ(FieldType, v))
-}
-
-// TypeNEQ applies the NEQ predicate on the "type" field.
-func TypeNEQ(v Type) predicate.Permission {
-	return predicate.Permission(sql.FieldNEQ(FieldType, v))
-}
-
-// TypeIn applies the In predicate on the "type" field.
-func TypeIn(vs ...Type) predicate.Permission {
-	return predicate.Permission(sql.FieldIn(FieldType, vs...))
-}
-
-// TypeNotIn applies the NotIn predicate on the "type" field.
-func TypeNotIn(vs ...Type) predicate.Permission {
-	return predicate.Permission(sql.FieldNotIn(FieldType, vs...))
-}
-
-// HasParent applies the HasEdge predicate on the "parent" edge.
-func HasParent() predicate.Permission {
-	return predicate.Permission(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasParentWith applies the HasEdge predicate on the "parent" edge with a given conditions (other predicates).
-func HasParentWith(preds ...predicate.Permission) predicate.Permission {
-	return predicate.Permission(func(s *sql.Selector) {
-		step := newParentStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasChildren applies the HasEdge predicate on the "children" edge.
-func HasChildren() predicate.Permission {
-	return predicate.Permission(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasChildrenWith applies the HasEdge predicate on the "children" edge with a given conditions (other predicates).
-func HasChildrenWith(preds ...predicate.Permission) predicate.Permission {
-	return predicate.Permission(func(s *sql.Selector) {
-		step := newChildrenStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
+// GroupIDNotNil applies the NotNil predicate on the "group_id" field.
+func GroupIDNotNil() predicate.Permission {
+	return predicate.Permission(sql.FieldNotNull(FieldGroupID))
 }
 
 // And groups predicates with the AND operator between them.

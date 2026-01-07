@@ -12,7 +12,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -171,15 +170,35 @@ func (_u *RoleUpdate) ClearRemark() *RoleUpdate {
 	return _u
 }
 
+// SetDescription sets the "description" field.
+func (_u *RoleUpdate) SetDescription(v string) *RoleUpdate {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *RoleUpdate) SetNillableDescription(v *string) *RoleUpdate {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *RoleUpdate) ClearDescription() *RoleUpdate {
+	_u.mutation.ClearDescription()
+	return _u
+}
+
 // SetSortOrder sets the "sort_order" field.
-func (_u *RoleUpdate) SetSortOrder(v int32) *RoleUpdate {
+func (_u *RoleUpdate) SetSortOrder(v uint32) *RoleUpdate {
 	_u.mutation.ResetSortOrder()
 	_u.mutation.SetSortOrder(v)
 	return _u
 }
 
 // SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_u *RoleUpdate) SetNillableSortOrder(v *int32) *RoleUpdate {
+func (_u *RoleUpdate) SetNillableSortOrder(v *uint32) *RoleUpdate {
 	if v != nil {
 		_u.SetSortOrder(*v)
 	}
@@ -198,23 +217,17 @@ func (_u *RoleUpdate) ClearSortOrder() *RoleUpdate {
 	return _u
 }
 
-// SetParentID sets the "parent_id" field.
-func (_u *RoleUpdate) SetParentID(v uint32) *RoleUpdate {
-	_u.mutation.SetParentID(v)
+// SetStatus sets the "status" field.
+func (_u *RoleUpdate) SetStatus(v role.Status) *RoleUpdate {
+	_u.mutation.SetStatus(v)
 	return _u
 }
 
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_u *RoleUpdate) SetNillableParentID(v *uint32) *RoleUpdate {
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_u *RoleUpdate) SetNillableStatus(v *role.Status) *RoleUpdate {
 	if v != nil {
-		_u.SetParentID(*v)
+		_u.SetStatus(*v)
 	}
-	return _u
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (_u *RoleUpdate) ClearParentID() *RoleUpdate {
-	_u.mutation.ClearParentID()
 	return _u
 }
 
@@ -258,134 +271,23 @@ func (_u *RoleUpdate) ClearCode() *RoleUpdate {
 	return _u
 }
 
-// SetCustomOrgUnitIds sets the "custom_org_unit_ids" field.
-func (_u *RoleUpdate) SetCustomOrgUnitIds(v []uint32) *RoleUpdate {
-	_u.mutation.SetCustomOrgUnitIds(v)
+// SetIsProtected sets the "is_protected" field.
+func (_u *RoleUpdate) SetIsProtected(v bool) *RoleUpdate {
+	_u.mutation.SetIsProtected(v)
 	return _u
 }
 
-// AppendCustomOrgUnitIds appends value to the "custom_org_unit_ids" field.
-func (_u *RoleUpdate) AppendCustomOrgUnitIds(v []uint32) *RoleUpdate {
-	_u.mutation.AppendCustomOrgUnitIds(v)
-	return _u
-}
-
-// ClearCustomOrgUnitIds clears the value of the "custom_org_unit_ids" field.
-func (_u *RoleUpdate) ClearCustomOrgUnitIds() *RoleUpdate {
-	_u.mutation.ClearCustomOrgUnitIds()
-	return _u
-}
-
-// SetDataScope sets the "data_scope" field.
-func (_u *RoleUpdate) SetDataScope(v role.DataScope) *RoleUpdate {
-	_u.mutation.SetDataScope(v)
-	return _u
-}
-
-// SetNillableDataScope sets the "data_scope" field if the given value is not nil.
-func (_u *RoleUpdate) SetNillableDataScope(v *role.DataScope) *RoleUpdate {
+// SetNillableIsProtected sets the "is_protected" field if the given value is not nil.
+func (_u *RoleUpdate) SetNillableIsProtected(v *bool) *RoleUpdate {
 	if v != nil {
-		_u.SetDataScope(*v)
+		_u.SetIsProtected(*v)
 	}
 	return _u
-}
-
-// ClearDataScope clears the value of the "data_scope" field.
-func (_u *RoleUpdate) ClearDataScope() *RoleUpdate {
-	_u.mutation.ClearDataScope()
-	return _u
-}
-
-// SetStatus sets the "status" field.
-func (_u *RoleUpdate) SetStatus(v role.Status) *RoleUpdate {
-	_u.mutation.SetStatus(v)
-	return _u
-}
-
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *RoleUpdate) SetNillableStatus(v *role.Status) *RoleUpdate {
-	if v != nil {
-		_u.SetStatus(*v)
-	}
-	return _u
-}
-
-// ClearStatus clears the value of the "status" field.
-func (_u *RoleUpdate) ClearStatus() *RoleUpdate {
-	_u.mutation.ClearStatus()
-	return _u
-}
-
-// SetType sets the "type" field.
-func (_u *RoleUpdate) SetType(v role.Type) *RoleUpdate {
-	_u.mutation.SetType(v)
-	return _u
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (_u *RoleUpdate) SetNillableType(v *role.Type) *RoleUpdate {
-	if v != nil {
-		_u.SetType(*v)
-	}
-	return _u
-}
-
-// ClearType clears the value of the "type" field.
-func (_u *RoleUpdate) ClearType() *RoleUpdate {
-	_u.mutation.ClearType()
-	return _u
-}
-
-// SetParent sets the "parent" edge to the Role entity.
-func (_u *RoleUpdate) SetParent(v *Role) *RoleUpdate {
-	return _u.SetParentID(v.ID)
-}
-
-// AddChildIDs adds the "children" edge to the Role entity by IDs.
-func (_u *RoleUpdate) AddChildIDs(ids ...uint32) *RoleUpdate {
-	_u.mutation.AddChildIDs(ids...)
-	return _u
-}
-
-// AddChildren adds the "children" edges to the Role entity.
-func (_u *RoleUpdate) AddChildren(v ...*Role) *RoleUpdate {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddChildIDs(ids...)
 }
 
 // Mutation returns the RoleMutation object of the builder.
 func (_u *RoleUpdate) Mutation() *RoleMutation {
 	return _u.mutation
-}
-
-// ClearParent clears the "parent" edge to the Role entity.
-func (_u *RoleUpdate) ClearParent() *RoleUpdate {
-	_u.mutation.ClearParent()
-	return _u
-}
-
-// ClearChildren clears all "children" edges to the Role entity.
-func (_u *RoleUpdate) ClearChildren() *RoleUpdate {
-	_u.mutation.ClearChildren()
-	return _u
-}
-
-// RemoveChildIDs removes the "children" edge to Role entities by IDs.
-func (_u *RoleUpdate) RemoveChildIDs(ids ...uint32) *RoleUpdate {
-	_u.mutation.RemoveChildIDs(ids...)
-	return _u
-}
-
-// RemoveChildren removes "children" edges to Role entities.
-func (_u *RoleUpdate) RemoveChildren(v ...*Role) *RoleUpdate {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveChildIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -417,6 +319,11 @@ func (_u *RoleUpdate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *RoleUpdate) check() error {
+	if v, ok := _u.mutation.Status(); ok {
+		if err := role.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Role.status": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Name(); ok {
 		if err := role.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Role.name": %w`, err)}
@@ -425,21 +332,6 @@ func (_u *RoleUpdate) check() error {
 	if v, ok := _u.mutation.Code(); ok {
 		if err := role.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "Role.code": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.DataScope(); ok {
-		if err := role.DataScopeValidator(v); err != nil {
-			return &ValidationError{Name: "data_scope", err: fmt.Errorf(`ent: validator failed for field "Role.data_scope": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Status(); ok {
-		if err := role.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Role.status": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.GetType(); ok {
-		if err := role.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Role.type": %w`, err)}
 		}
 	}
 	return nil
@@ -511,17 +403,26 @@ func (_u *RoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.RemarkCleared() {
 		_spec.ClearField(role.FieldRemark, field.TypeString)
 	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(role.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(role.FieldDescription, field.TypeString)
+	}
 	if value, ok := _u.mutation.SortOrder(); ok {
-		_spec.SetField(role.FieldSortOrder, field.TypeInt32, value)
+		_spec.SetField(role.FieldSortOrder, field.TypeUint32, value)
 	}
 	if value, ok := _u.mutation.AddedSortOrder(); ok {
-		_spec.AddField(role.FieldSortOrder, field.TypeInt32, value)
+		_spec.AddField(role.FieldSortOrder, field.TypeUint32, value)
 	}
 	if _u.mutation.SortOrderCleared() {
-		_spec.ClearField(role.FieldSortOrder, field.TypeInt32)
+		_spec.ClearField(role.FieldSortOrder, field.TypeUint32)
 	}
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(role.FieldTenantID, field.TypeUint32)
+	}
+	if value, ok := _u.mutation.Status(); ok {
+		_spec.SetField(role.FieldStatus, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(role.FieldName, field.TypeString, value)
@@ -535,108 +436,8 @@ func (_u *RoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.CodeCleared() {
 		_spec.ClearField(role.FieldCode, field.TypeString)
 	}
-	if value, ok := _u.mutation.CustomOrgUnitIds(); ok {
-		_spec.SetField(role.FieldCustomOrgUnitIds, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedCustomOrgUnitIds(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, role.FieldCustomOrgUnitIds, value)
-		})
-	}
-	if _u.mutation.CustomOrgUnitIdsCleared() {
-		_spec.ClearField(role.FieldCustomOrgUnitIds, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.DataScope(); ok {
-		_spec.SetField(role.FieldDataScope, field.TypeEnum, value)
-	}
-	if _u.mutation.DataScopeCleared() {
-		_spec.ClearField(role.FieldDataScope, field.TypeEnum)
-	}
-	if value, ok := _u.mutation.Status(); ok {
-		_spec.SetField(role.FieldStatus, field.TypeEnum, value)
-	}
-	if _u.mutation.StatusCleared() {
-		_spec.ClearField(role.FieldStatus, field.TypeEnum)
-	}
-	if value, ok := _u.mutation.GetType(); ok {
-		_spec.SetField(role.FieldType, field.TypeEnum, value)
-	}
-	if _u.mutation.TypeCleared() {
-		_spec.ClearField(role.FieldType, field.TypeEnum)
-	}
-	if _u.mutation.ParentCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   role.ParentTable,
-			Columns: []string{role.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint32),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ParentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   role.ParentTable,
-			Columns: []string{role.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   role.ChildrenTable,
-			Columns: []string{role.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint32),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !_u.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   role.ChildrenTable,
-			Columns: []string{role.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ChildrenIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   role.ChildrenTable,
-			Columns: []string{role.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	if value, ok := _u.mutation.IsProtected(); ok {
+		_spec.SetField(role.FieldIsProtected, field.TypeBool, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -801,15 +602,35 @@ func (_u *RoleUpdateOne) ClearRemark() *RoleUpdateOne {
 	return _u
 }
 
+// SetDescription sets the "description" field.
+func (_u *RoleUpdateOne) SetDescription(v string) *RoleUpdateOne {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *RoleUpdateOne) SetNillableDescription(v *string) *RoleUpdateOne {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *RoleUpdateOne) ClearDescription() *RoleUpdateOne {
+	_u.mutation.ClearDescription()
+	return _u
+}
+
 // SetSortOrder sets the "sort_order" field.
-func (_u *RoleUpdateOne) SetSortOrder(v int32) *RoleUpdateOne {
+func (_u *RoleUpdateOne) SetSortOrder(v uint32) *RoleUpdateOne {
 	_u.mutation.ResetSortOrder()
 	_u.mutation.SetSortOrder(v)
 	return _u
 }
 
 // SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_u *RoleUpdateOne) SetNillableSortOrder(v *int32) *RoleUpdateOne {
+func (_u *RoleUpdateOne) SetNillableSortOrder(v *uint32) *RoleUpdateOne {
 	if v != nil {
 		_u.SetSortOrder(*v)
 	}
@@ -828,23 +649,17 @@ func (_u *RoleUpdateOne) ClearSortOrder() *RoleUpdateOne {
 	return _u
 }
 
-// SetParentID sets the "parent_id" field.
-func (_u *RoleUpdateOne) SetParentID(v uint32) *RoleUpdateOne {
-	_u.mutation.SetParentID(v)
+// SetStatus sets the "status" field.
+func (_u *RoleUpdateOne) SetStatus(v role.Status) *RoleUpdateOne {
+	_u.mutation.SetStatus(v)
 	return _u
 }
 
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_u *RoleUpdateOne) SetNillableParentID(v *uint32) *RoleUpdateOne {
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_u *RoleUpdateOne) SetNillableStatus(v *role.Status) *RoleUpdateOne {
 	if v != nil {
-		_u.SetParentID(*v)
+		_u.SetStatus(*v)
 	}
-	return _u
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (_u *RoleUpdateOne) ClearParentID() *RoleUpdateOne {
-	_u.mutation.ClearParentID()
 	return _u
 }
 
@@ -888,134 +703,23 @@ func (_u *RoleUpdateOne) ClearCode() *RoleUpdateOne {
 	return _u
 }
 
-// SetCustomOrgUnitIds sets the "custom_org_unit_ids" field.
-func (_u *RoleUpdateOne) SetCustomOrgUnitIds(v []uint32) *RoleUpdateOne {
-	_u.mutation.SetCustomOrgUnitIds(v)
+// SetIsProtected sets the "is_protected" field.
+func (_u *RoleUpdateOne) SetIsProtected(v bool) *RoleUpdateOne {
+	_u.mutation.SetIsProtected(v)
 	return _u
 }
 
-// AppendCustomOrgUnitIds appends value to the "custom_org_unit_ids" field.
-func (_u *RoleUpdateOne) AppendCustomOrgUnitIds(v []uint32) *RoleUpdateOne {
-	_u.mutation.AppendCustomOrgUnitIds(v)
-	return _u
-}
-
-// ClearCustomOrgUnitIds clears the value of the "custom_org_unit_ids" field.
-func (_u *RoleUpdateOne) ClearCustomOrgUnitIds() *RoleUpdateOne {
-	_u.mutation.ClearCustomOrgUnitIds()
-	return _u
-}
-
-// SetDataScope sets the "data_scope" field.
-func (_u *RoleUpdateOne) SetDataScope(v role.DataScope) *RoleUpdateOne {
-	_u.mutation.SetDataScope(v)
-	return _u
-}
-
-// SetNillableDataScope sets the "data_scope" field if the given value is not nil.
-func (_u *RoleUpdateOne) SetNillableDataScope(v *role.DataScope) *RoleUpdateOne {
+// SetNillableIsProtected sets the "is_protected" field if the given value is not nil.
+func (_u *RoleUpdateOne) SetNillableIsProtected(v *bool) *RoleUpdateOne {
 	if v != nil {
-		_u.SetDataScope(*v)
+		_u.SetIsProtected(*v)
 	}
 	return _u
-}
-
-// ClearDataScope clears the value of the "data_scope" field.
-func (_u *RoleUpdateOne) ClearDataScope() *RoleUpdateOne {
-	_u.mutation.ClearDataScope()
-	return _u
-}
-
-// SetStatus sets the "status" field.
-func (_u *RoleUpdateOne) SetStatus(v role.Status) *RoleUpdateOne {
-	_u.mutation.SetStatus(v)
-	return _u
-}
-
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (_u *RoleUpdateOne) SetNillableStatus(v *role.Status) *RoleUpdateOne {
-	if v != nil {
-		_u.SetStatus(*v)
-	}
-	return _u
-}
-
-// ClearStatus clears the value of the "status" field.
-func (_u *RoleUpdateOne) ClearStatus() *RoleUpdateOne {
-	_u.mutation.ClearStatus()
-	return _u
-}
-
-// SetType sets the "type" field.
-func (_u *RoleUpdateOne) SetType(v role.Type) *RoleUpdateOne {
-	_u.mutation.SetType(v)
-	return _u
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (_u *RoleUpdateOne) SetNillableType(v *role.Type) *RoleUpdateOne {
-	if v != nil {
-		_u.SetType(*v)
-	}
-	return _u
-}
-
-// ClearType clears the value of the "type" field.
-func (_u *RoleUpdateOne) ClearType() *RoleUpdateOne {
-	_u.mutation.ClearType()
-	return _u
-}
-
-// SetParent sets the "parent" edge to the Role entity.
-func (_u *RoleUpdateOne) SetParent(v *Role) *RoleUpdateOne {
-	return _u.SetParentID(v.ID)
-}
-
-// AddChildIDs adds the "children" edge to the Role entity by IDs.
-func (_u *RoleUpdateOne) AddChildIDs(ids ...uint32) *RoleUpdateOne {
-	_u.mutation.AddChildIDs(ids...)
-	return _u
-}
-
-// AddChildren adds the "children" edges to the Role entity.
-func (_u *RoleUpdateOne) AddChildren(v ...*Role) *RoleUpdateOne {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddChildIDs(ids...)
 }
 
 // Mutation returns the RoleMutation object of the builder.
 func (_u *RoleUpdateOne) Mutation() *RoleMutation {
 	return _u.mutation
-}
-
-// ClearParent clears the "parent" edge to the Role entity.
-func (_u *RoleUpdateOne) ClearParent() *RoleUpdateOne {
-	_u.mutation.ClearParent()
-	return _u
-}
-
-// ClearChildren clears all "children" edges to the Role entity.
-func (_u *RoleUpdateOne) ClearChildren() *RoleUpdateOne {
-	_u.mutation.ClearChildren()
-	return _u
-}
-
-// RemoveChildIDs removes the "children" edge to Role entities by IDs.
-func (_u *RoleUpdateOne) RemoveChildIDs(ids ...uint32) *RoleUpdateOne {
-	_u.mutation.RemoveChildIDs(ids...)
-	return _u
-}
-
-// RemoveChildren removes "children" edges to Role entities.
-func (_u *RoleUpdateOne) RemoveChildren(v ...*Role) *RoleUpdateOne {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveChildIDs(ids...)
 }
 
 // Where appends a list predicates to the RoleUpdate builder.
@@ -1060,6 +764,11 @@ func (_u *RoleUpdateOne) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_u *RoleUpdateOne) check() error {
+	if v, ok := _u.mutation.Status(); ok {
+		if err := role.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Role.status": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.Name(); ok {
 		if err := role.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Role.name": %w`, err)}
@@ -1068,21 +777,6 @@ func (_u *RoleUpdateOne) check() error {
 	if v, ok := _u.mutation.Code(); ok {
 		if err := role.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "Role.code": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.DataScope(); ok {
-		if err := role.DataScopeValidator(v); err != nil {
-			return &ValidationError{Name: "data_scope", err: fmt.Errorf(`ent: validator failed for field "Role.data_scope": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.Status(); ok {
-		if err := role.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Role.status": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.GetType(); ok {
-		if err := role.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Role.type": %w`, err)}
 		}
 	}
 	return nil
@@ -1171,17 +865,26 @@ func (_u *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) {
 	if _u.mutation.RemarkCleared() {
 		_spec.ClearField(role.FieldRemark, field.TypeString)
 	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(role.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(role.FieldDescription, field.TypeString)
+	}
 	if value, ok := _u.mutation.SortOrder(); ok {
-		_spec.SetField(role.FieldSortOrder, field.TypeInt32, value)
+		_spec.SetField(role.FieldSortOrder, field.TypeUint32, value)
 	}
 	if value, ok := _u.mutation.AddedSortOrder(); ok {
-		_spec.AddField(role.FieldSortOrder, field.TypeInt32, value)
+		_spec.AddField(role.FieldSortOrder, field.TypeUint32, value)
 	}
 	if _u.mutation.SortOrderCleared() {
-		_spec.ClearField(role.FieldSortOrder, field.TypeInt32)
+		_spec.ClearField(role.FieldSortOrder, field.TypeUint32)
 	}
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(role.FieldTenantID, field.TypeUint32)
+	}
+	if value, ok := _u.mutation.Status(); ok {
+		_spec.SetField(role.FieldStatus, field.TypeEnum, value)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(role.FieldName, field.TypeString, value)
@@ -1195,108 +898,8 @@ func (_u *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) {
 	if _u.mutation.CodeCleared() {
 		_spec.ClearField(role.FieldCode, field.TypeString)
 	}
-	if value, ok := _u.mutation.CustomOrgUnitIds(); ok {
-		_spec.SetField(role.FieldCustomOrgUnitIds, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedCustomOrgUnitIds(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, role.FieldCustomOrgUnitIds, value)
-		})
-	}
-	if _u.mutation.CustomOrgUnitIdsCleared() {
-		_spec.ClearField(role.FieldCustomOrgUnitIds, field.TypeJSON)
-	}
-	if value, ok := _u.mutation.DataScope(); ok {
-		_spec.SetField(role.FieldDataScope, field.TypeEnum, value)
-	}
-	if _u.mutation.DataScopeCleared() {
-		_spec.ClearField(role.FieldDataScope, field.TypeEnum)
-	}
-	if value, ok := _u.mutation.Status(); ok {
-		_spec.SetField(role.FieldStatus, field.TypeEnum, value)
-	}
-	if _u.mutation.StatusCleared() {
-		_spec.ClearField(role.FieldStatus, field.TypeEnum)
-	}
-	if value, ok := _u.mutation.GetType(); ok {
-		_spec.SetField(role.FieldType, field.TypeEnum, value)
-	}
-	if _u.mutation.TypeCleared() {
-		_spec.ClearField(role.FieldType, field.TypeEnum)
-	}
-	if _u.mutation.ParentCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   role.ParentTable,
-			Columns: []string{role.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint32),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ParentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   role.ParentTable,
-			Columns: []string{role.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   role.ChildrenTable,
-			Columns: []string{role.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint32),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !_u.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   role.ChildrenTable,
-			Columns: []string{role.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ChildrenIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   role.ChildrenTable,
-			Columns: []string{role.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	if value, ok := _u.mutation.IsProtected(); ok {
+		_spec.SetField(role.FieldIsProtected, field.TypeBool, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &Role{config: _u.config}

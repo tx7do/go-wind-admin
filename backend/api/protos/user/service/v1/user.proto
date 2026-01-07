@@ -44,6 +44,16 @@ message User {
     FEMALE = 2;   // 女性
   }
 
+  // 用户状态
+  enum Status {
+    DISABLED = 0; // 禁用 (被管理员手动禁用。用户无法登录系统。)
+    NORMAL = 1;  // 正常 (用户可以正常登录并使用系统。)
+    PENDING = 2; // 待激活 (账号已创建，但尚未通过邮箱/短信验证或 HR 激活。)
+    LOCKED = 3;  // 锁定 (因触发安全策略（如密码连续错误次数过多）被系统自动锁定。)
+    EXPIRED = 4; // 过期 (账号超过了设定的有效期（常用于临时工、外部顾问）。)
+    CLOSED = 9; // 注销 (用户主动注销账号。通常在数据脱敏后的软删除状态。)
+  }
+
   optional uint32 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {description: "用户ID"}
@@ -135,15 +145,25 @@ message User {
     (gnostic.openapi.v3.property) = {description: "备注"}
   ]; // 备注
 
-  optional google.protobuf.Timestamp last_login_at = 32 [
+  optional google.protobuf.Timestamp last_login_at = 50 [
     json_name = "lastLoginAt",
     (gnostic.openapi.v3.property) = {description: "最后登录时间"}
   ]; // 最后登录时间
 
-  optional string last_login_ip = 33 [
+  optional string last_login_ip = 51 [
     json_name = "lastLoginIp",
     (gnostic.openapi.v3.property) = {description: "最后登录IP"}
   ]; // 最后登录IP
+
+  optional Status status = 52 [
+    json_name = "status",
+    (gnostic.openapi.v3.property) = {description: "状态"}
+  ]; // 状态
+
+  optional google.protobuf.Timestamp locked_until = 53 [
+    json_name = "lockedUntil",
+    (gnostic.openapi.v3.property) = {description: "锁定截止时间"}
+  ];// 锁定截止时间
 
   optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
   optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID

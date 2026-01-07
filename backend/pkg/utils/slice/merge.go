@@ -59,3 +59,20 @@ func MergeAndDeduplicate(slice1, slice2 []uint32) []uint32 {
 	}
 	return result
 }
+
+// Unique 对切片进行去重，保持元素原有顺序。
+// 泛型类型 T 需要是 comparable，以便用作 map 的键。
+func Unique[T comparable](s []T) []T {
+	if len(s) == 0 {
+		return s
+	}
+	seen := make(map[T]struct{}, len(s))
+	out := make([]T, 0, len(s))
+	for _, v := range s {
+		if _, ok := seen[v]; !ok {
+			seen[v] = struct{}{}
+			out = append(out, v)
+		}
+	}
+	return out
+}

@@ -151,14 +151,14 @@ func (_u *PositionUpdate) ClearDeletedBy() *PositionUpdate {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (_u *PositionUpdate) SetSortOrder(v int32) *PositionUpdate {
+func (_u *PositionUpdate) SetSortOrder(v uint32) *PositionUpdate {
 	_u.mutation.ResetSortOrder()
 	_u.mutation.SetSortOrder(v)
 	return _u
 }
 
 // SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_u *PositionUpdate) SetNillableSortOrder(v *int32) *PositionUpdate {
+func (_u *PositionUpdate) SetNillableSortOrder(v *uint32) *PositionUpdate {
 	if v != nil {
 		_u.SetSortOrder(*v)
 	}
@@ -197,26 +197,6 @@ func (_u *PositionUpdate) ClearRemark() *PositionUpdate {
 	return _u
 }
 
-// SetParentID sets the "parent_id" field.
-func (_u *PositionUpdate) SetParentID(v uint32) *PositionUpdate {
-	_u.mutation.SetParentID(v)
-	return _u
-}
-
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_u *PositionUpdate) SetNillableParentID(v *uint32) *PositionUpdate {
-	if v != nil {
-		_u.SetParentID(*v)
-	}
-	return _u
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (_u *PositionUpdate) ClearParentID() *PositionUpdate {
-	_u.mutation.ClearParentID()
-	return _u
-}
-
 // SetStatus sets the "status" field.
 func (_u *PositionUpdate) SetStatus(v position.Status) *PositionUpdate {
 	_u.mutation.SetStatus(v)
@@ -228,12 +208,6 @@ func (_u *PositionUpdate) SetNillableStatus(v *position.Status) *PositionUpdate 
 	if v != nil {
 		_u.SetStatus(*v)
 	}
-	return _u
-}
-
-// ClearStatus clears the value of the "status" field.
-func (_u *PositionUpdate) ClearStatus() *PositionUpdate {
-	_u.mutation.ClearStatus()
 	return _u
 }
 
@@ -251,12 +225,6 @@ func (_u *PositionUpdate) SetNillableName(v *string) *PositionUpdate {
 	return _u
 }
 
-// ClearName clears the value of the "name" field.
-func (_u *PositionUpdate) ClearName() *PositionUpdate {
-	_u.mutation.ClearName()
-	return _u
-}
-
 // SetCode sets the "code" field.
 func (_u *PositionUpdate) SetCode(v string) *PositionUpdate {
 	_u.mutation.SetCode(v)
@@ -268,12 +236,6 @@ func (_u *PositionUpdate) SetNillableCode(v *string) *PositionUpdate {
 	if v != nil {
 		_u.SetCode(*v)
 	}
-	return _u
-}
-
-// ClearCode clears the value of the "code" field.
-func (_u *PositionUpdate) ClearCode() *PositionUpdate {
-	_u.mutation.ClearCode()
 	return _u
 }
 
@@ -433,12 +395,6 @@ func (_u *PositionUpdate) AddHeadcount(v int32) *PositionUpdate {
 	return _u
 }
 
-// ClearHeadcount clears the value of the "headcount" field.
-func (_u *PositionUpdate) ClearHeadcount() *PositionUpdate {
-	_u.mutation.ClearHeadcount()
-	return _u
-}
-
 // SetIsKeyPosition sets the "is_key_position" field.
 func (_u *PositionUpdate) SetIsKeyPosition(v bool) *PositionUpdate {
 	_u.mutation.SetIsKeyPosition(v)
@@ -450,12 +406,6 @@ func (_u *PositionUpdate) SetNillableIsKeyPosition(v *bool) *PositionUpdate {
 	if v != nil {
 		_u.SetIsKeyPosition(*v)
 	}
-	return _u
-}
-
-// ClearIsKeyPosition clears the value of the "is_key_position" field.
-func (_u *PositionUpdate) ClearIsKeyPosition() *PositionUpdate {
-	_u.mutation.ClearIsKeyPosition()
 	return _u
 }
 
@@ -513,56 +463,9 @@ func (_u *PositionUpdate) ClearEndAt() *PositionUpdate {
 	return _u
 }
 
-// SetParent sets the "parent" edge to the Position entity.
-func (_u *PositionUpdate) SetParent(v *Position) *PositionUpdate {
-	return _u.SetParentID(v.ID)
-}
-
-// AddChildIDs adds the "children" edge to the Position entity by IDs.
-func (_u *PositionUpdate) AddChildIDs(ids ...uint32) *PositionUpdate {
-	_u.mutation.AddChildIDs(ids...)
-	return _u
-}
-
-// AddChildren adds the "children" edges to the Position entity.
-func (_u *PositionUpdate) AddChildren(v ...*Position) *PositionUpdate {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddChildIDs(ids...)
-}
-
 // Mutation returns the PositionMutation object of the builder.
 func (_u *PositionUpdate) Mutation() *PositionMutation {
 	return _u.mutation
-}
-
-// ClearParent clears the "parent" edge to the Position entity.
-func (_u *PositionUpdate) ClearParent() *PositionUpdate {
-	_u.mutation.ClearParent()
-	return _u
-}
-
-// ClearChildren clears all "children" edges to the Position entity.
-func (_u *PositionUpdate) ClearChildren() *PositionUpdate {
-	_u.mutation.ClearChildren()
-	return _u
-}
-
-// RemoveChildIDs removes the "children" edge to Position entities by IDs.
-func (_u *PositionUpdate) RemoveChildIDs(ids ...uint32) *PositionUpdate {
-	_u.mutation.RemoveChildIDs(ids...)
-	return _u
-}
-
-// RemoveChildren removes "children" edges to Position entities.
-func (_u *PositionUpdate) RemoveChildren(v ...*Position) *PositionUpdate {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveChildIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -678,13 +581,13 @@ func (_u *PositionUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(position.FieldDeletedBy, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.SortOrder(); ok {
-		_spec.SetField(position.FieldSortOrder, field.TypeInt32, value)
+		_spec.SetField(position.FieldSortOrder, field.TypeUint32, value)
 	}
 	if value, ok := _u.mutation.AddedSortOrder(); ok {
-		_spec.AddField(position.FieldSortOrder, field.TypeInt32, value)
+		_spec.AddField(position.FieldSortOrder, field.TypeUint32, value)
 	}
 	if _u.mutation.SortOrderCleared() {
-		_spec.ClearField(position.FieldSortOrder, field.TypeInt32)
+		_spec.ClearField(position.FieldSortOrder, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(position.FieldRemark, field.TypeString, value)
@@ -698,20 +601,11 @@ func (_u *PositionUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(position.FieldStatus, field.TypeEnum, value)
 	}
-	if _u.mutation.StatusCleared() {
-		_spec.ClearField(position.FieldStatus, field.TypeEnum)
-	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(position.FieldName, field.TypeString, value)
 	}
-	if _u.mutation.NameCleared() {
-		_spec.ClearField(position.FieldName, field.TypeString)
-	}
 	if value, ok := _u.mutation.Code(); ok {
 		_spec.SetField(position.FieldCode, field.TypeString, value)
-	}
-	if _u.mutation.CodeCleared() {
-		_spec.ClearField(position.FieldCode, field.TypeString)
 	}
 	if value, ok := _u.mutation.OrgUnitID(); ok {
 		_spec.SetField(position.FieldOrgUnitID, field.TypeUint32, value)
@@ -761,14 +655,8 @@ func (_u *PositionUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.AddedHeadcount(); ok {
 		_spec.AddField(position.FieldHeadcount, field.TypeUint32, value)
 	}
-	if _u.mutation.HeadcountCleared() {
-		_spec.ClearField(position.FieldHeadcount, field.TypeUint32)
-	}
 	if value, ok := _u.mutation.IsKeyPosition(); ok {
 		_spec.SetField(position.FieldIsKeyPosition, field.TypeBool, value)
-	}
-	if _u.mutation.IsKeyPositionCleared() {
-		_spec.ClearField(position.FieldIsKeyPosition, field.TypeBool)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(position.FieldType, field.TypeEnum, value)
@@ -784,80 +672,6 @@ func (_u *PositionUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.EndAtCleared() {
 		_spec.ClearField(position.FieldEndAt, field.TypeTime)
-	}
-	if _u.mutation.ParentCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   position.ParentTable,
-			Columns: []string{position.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint32),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ParentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   position.ParentTable,
-			Columns: []string{position.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   position.ChildrenTable,
-			Columns: []string{position.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint32),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !_u.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   position.ChildrenTable,
-			Columns: []string{position.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ChildrenIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   position.ChildrenTable,
-			Columns: []string{position.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -1003,14 +817,14 @@ func (_u *PositionUpdateOne) ClearDeletedBy() *PositionUpdateOne {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (_u *PositionUpdateOne) SetSortOrder(v int32) *PositionUpdateOne {
+func (_u *PositionUpdateOne) SetSortOrder(v uint32) *PositionUpdateOne {
 	_u.mutation.ResetSortOrder()
 	_u.mutation.SetSortOrder(v)
 	return _u
 }
 
 // SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_u *PositionUpdateOne) SetNillableSortOrder(v *int32) *PositionUpdateOne {
+func (_u *PositionUpdateOne) SetNillableSortOrder(v *uint32) *PositionUpdateOne {
 	if v != nil {
 		_u.SetSortOrder(*v)
 	}
@@ -1049,26 +863,6 @@ func (_u *PositionUpdateOne) ClearRemark() *PositionUpdateOne {
 	return _u
 }
 
-// SetParentID sets the "parent_id" field.
-func (_u *PositionUpdateOne) SetParentID(v uint32) *PositionUpdateOne {
-	_u.mutation.SetParentID(v)
-	return _u
-}
-
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_u *PositionUpdateOne) SetNillableParentID(v *uint32) *PositionUpdateOne {
-	if v != nil {
-		_u.SetParentID(*v)
-	}
-	return _u
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (_u *PositionUpdateOne) ClearParentID() *PositionUpdateOne {
-	_u.mutation.ClearParentID()
-	return _u
-}
-
 // SetStatus sets the "status" field.
 func (_u *PositionUpdateOne) SetStatus(v position.Status) *PositionUpdateOne {
 	_u.mutation.SetStatus(v)
@@ -1080,12 +874,6 @@ func (_u *PositionUpdateOne) SetNillableStatus(v *position.Status) *PositionUpda
 	if v != nil {
 		_u.SetStatus(*v)
 	}
-	return _u
-}
-
-// ClearStatus clears the value of the "status" field.
-func (_u *PositionUpdateOne) ClearStatus() *PositionUpdateOne {
-	_u.mutation.ClearStatus()
 	return _u
 }
 
@@ -1103,12 +891,6 @@ func (_u *PositionUpdateOne) SetNillableName(v *string) *PositionUpdateOne {
 	return _u
 }
 
-// ClearName clears the value of the "name" field.
-func (_u *PositionUpdateOne) ClearName() *PositionUpdateOne {
-	_u.mutation.ClearName()
-	return _u
-}
-
 // SetCode sets the "code" field.
 func (_u *PositionUpdateOne) SetCode(v string) *PositionUpdateOne {
 	_u.mutation.SetCode(v)
@@ -1120,12 +902,6 @@ func (_u *PositionUpdateOne) SetNillableCode(v *string) *PositionUpdateOne {
 	if v != nil {
 		_u.SetCode(*v)
 	}
-	return _u
-}
-
-// ClearCode clears the value of the "code" field.
-func (_u *PositionUpdateOne) ClearCode() *PositionUpdateOne {
-	_u.mutation.ClearCode()
 	return _u
 }
 
@@ -1285,12 +1061,6 @@ func (_u *PositionUpdateOne) AddHeadcount(v int32) *PositionUpdateOne {
 	return _u
 }
 
-// ClearHeadcount clears the value of the "headcount" field.
-func (_u *PositionUpdateOne) ClearHeadcount() *PositionUpdateOne {
-	_u.mutation.ClearHeadcount()
-	return _u
-}
-
 // SetIsKeyPosition sets the "is_key_position" field.
 func (_u *PositionUpdateOne) SetIsKeyPosition(v bool) *PositionUpdateOne {
 	_u.mutation.SetIsKeyPosition(v)
@@ -1302,12 +1072,6 @@ func (_u *PositionUpdateOne) SetNillableIsKeyPosition(v *bool) *PositionUpdateOn
 	if v != nil {
 		_u.SetIsKeyPosition(*v)
 	}
-	return _u
-}
-
-// ClearIsKeyPosition clears the value of the "is_key_position" field.
-func (_u *PositionUpdateOne) ClearIsKeyPosition() *PositionUpdateOne {
-	_u.mutation.ClearIsKeyPosition()
 	return _u
 }
 
@@ -1365,56 +1129,9 @@ func (_u *PositionUpdateOne) ClearEndAt() *PositionUpdateOne {
 	return _u
 }
 
-// SetParent sets the "parent" edge to the Position entity.
-func (_u *PositionUpdateOne) SetParent(v *Position) *PositionUpdateOne {
-	return _u.SetParentID(v.ID)
-}
-
-// AddChildIDs adds the "children" edge to the Position entity by IDs.
-func (_u *PositionUpdateOne) AddChildIDs(ids ...uint32) *PositionUpdateOne {
-	_u.mutation.AddChildIDs(ids...)
-	return _u
-}
-
-// AddChildren adds the "children" edges to the Position entity.
-func (_u *PositionUpdateOne) AddChildren(v ...*Position) *PositionUpdateOne {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddChildIDs(ids...)
-}
-
 // Mutation returns the PositionMutation object of the builder.
 func (_u *PositionUpdateOne) Mutation() *PositionMutation {
 	return _u.mutation
-}
-
-// ClearParent clears the "parent" edge to the Position entity.
-func (_u *PositionUpdateOne) ClearParent() *PositionUpdateOne {
-	_u.mutation.ClearParent()
-	return _u
-}
-
-// ClearChildren clears all "children" edges to the Position entity.
-func (_u *PositionUpdateOne) ClearChildren() *PositionUpdateOne {
-	_u.mutation.ClearChildren()
-	return _u
-}
-
-// RemoveChildIDs removes the "children" edge to Position entities by IDs.
-func (_u *PositionUpdateOne) RemoveChildIDs(ids ...uint32) *PositionUpdateOne {
-	_u.mutation.RemoveChildIDs(ids...)
-	return _u
-}
-
-// RemoveChildren removes "children" edges to Position entities.
-func (_u *PositionUpdateOne) RemoveChildren(v ...*Position) *PositionUpdateOne {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveChildIDs(ids...)
 }
 
 // Where appends a list predicates to the PositionUpdate builder.
@@ -1560,13 +1277,13 @@ func (_u *PositionUpdateOne) sqlSave(ctx context.Context) (_node *Position, err 
 		_spec.ClearField(position.FieldDeletedBy, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.SortOrder(); ok {
-		_spec.SetField(position.FieldSortOrder, field.TypeInt32, value)
+		_spec.SetField(position.FieldSortOrder, field.TypeUint32, value)
 	}
 	if value, ok := _u.mutation.AddedSortOrder(); ok {
-		_spec.AddField(position.FieldSortOrder, field.TypeInt32, value)
+		_spec.AddField(position.FieldSortOrder, field.TypeUint32, value)
 	}
 	if _u.mutation.SortOrderCleared() {
-		_spec.ClearField(position.FieldSortOrder, field.TypeInt32)
+		_spec.ClearField(position.FieldSortOrder, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.Remark(); ok {
 		_spec.SetField(position.FieldRemark, field.TypeString, value)
@@ -1580,20 +1297,11 @@ func (_u *PositionUpdateOne) sqlSave(ctx context.Context) (_node *Position, err 
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(position.FieldStatus, field.TypeEnum, value)
 	}
-	if _u.mutation.StatusCleared() {
-		_spec.ClearField(position.FieldStatus, field.TypeEnum)
-	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(position.FieldName, field.TypeString, value)
 	}
-	if _u.mutation.NameCleared() {
-		_spec.ClearField(position.FieldName, field.TypeString)
-	}
 	if value, ok := _u.mutation.Code(); ok {
 		_spec.SetField(position.FieldCode, field.TypeString, value)
-	}
-	if _u.mutation.CodeCleared() {
-		_spec.ClearField(position.FieldCode, field.TypeString)
 	}
 	if value, ok := _u.mutation.OrgUnitID(); ok {
 		_spec.SetField(position.FieldOrgUnitID, field.TypeUint32, value)
@@ -1643,14 +1351,8 @@ func (_u *PositionUpdateOne) sqlSave(ctx context.Context) (_node *Position, err 
 	if value, ok := _u.mutation.AddedHeadcount(); ok {
 		_spec.AddField(position.FieldHeadcount, field.TypeUint32, value)
 	}
-	if _u.mutation.HeadcountCleared() {
-		_spec.ClearField(position.FieldHeadcount, field.TypeUint32)
-	}
 	if value, ok := _u.mutation.IsKeyPosition(); ok {
 		_spec.SetField(position.FieldIsKeyPosition, field.TypeBool, value)
-	}
-	if _u.mutation.IsKeyPositionCleared() {
-		_spec.ClearField(position.FieldIsKeyPosition, field.TypeBool)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(position.FieldType, field.TypeEnum, value)
@@ -1666,80 +1368,6 @@ func (_u *PositionUpdateOne) sqlSave(ctx context.Context) (_node *Position, err 
 	}
 	if _u.mutation.EndAtCleared() {
 		_spec.ClearField(position.FieldEndAt, field.TypeTime)
-	}
-	if _u.mutation.ParentCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   position.ParentTable,
-			Columns: []string{position.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint32),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ParentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   position.ParentTable,
-			Columns: []string{position.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   position.ChildrenTable,
-			Columns: []string{position.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint32),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !_u.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   position.ChildrenTable,
-			Columns: []string{position.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ChildrenIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   position.ChildrenTable,
-			Columns: []string{position.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &Position{config: _u.config}

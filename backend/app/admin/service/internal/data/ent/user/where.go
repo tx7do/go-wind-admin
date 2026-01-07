@@ -154,9 +154,9 @@ func LastLoginIP(v string) predicate.User {
 	return predicate.User(sql.FieldEQ(FieldLastLoginIP, v))
 }
 
-// IsBanned applies equality check predicate on the "is_banned" field. It's identical to IsBannedEQ.
-func IsBanned(v bool) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldIsBanned, v))
+// LockedUntil applies equality check predicate on the "locked_until" field. It's identical to LockedUntilEQ.
+func LockedUntil(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLockedUntil, v))
 }
 
 // CreatedByEQ applies the EQ predicate on the "created_by" field.
@@ -1489,24 +1489,84 @@ func LastLoginIPContainsFold(v string) predicate.User {
 	return predicate.User(sql.FieldContainsFold(FieldLastLoginIP, v))
 }
 
-// IsBannedEQ applies the EQ predicate on the "is_banned" field.
-func IsBannedEQ(v bool) predicate.User {
-	return predicate.User(sql.FieldEQ(FieldIsBanned, v))
+// LockedUntilEQ applies the EQ predicate on the "locked_until" field.
+func LockedUntilEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldLockedUntil, v))
 }
 
-// IsBannedNEQ applies the NEQ predicate on the "is_banned" field.
-func IsBannedNEQ(v bool) predicate.User {
-	return predicate.User(sql.FieldNEQ(FieldIsBanned, v))
+// LockedUntilNEQ applies the NEQ predicate on the "locked_until" field.
+func LockedUntilNEQ(v time.Time) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldLockedUntil, v))
 }
 
-// IsBannedIsNil applies the IsNil predicate on the "is_banned" field.
-func IsBannedIsNil() predicate.User {
-	return predicate.User(sql.FieldIsNull(FieldIsBanned))
+// LockedUntilIn applies the In predicate on the "locked_until" field.
+func LockedUntilIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldIn(FieldLockedUntil, vs...))
 }
 
-// IsBannedNotNil applies the NotNil predicate on the "is_banned" field.
-func IsBannedNotNil() predicate.User {
-	return predicate.User(sql.FieldNotNull(FieldIsBanned))
+// LockedUntilNotIn applies the NotIn predicate on the "locked_until" field.
+func LockedUntilNotIn(vs ...time.Time) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldLockedUntil, vs...))
+}
+
+// LockedUntilGT applies the GT predicate on the "locked_until" field.
+func LockedUntilGT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGT(FieldLockedUntil, v))
+}
+
+// LockedUntilGTE applies the GTE predicate on the "locked_until" field.
+func LockedUntilGTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldGTE(FieldLockedUntil, v))
+}
+
+// LockedUntilLT applies the LT predicate on the "locked_until" field.
+func LockedUntilLT(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLT(FieldLockedUntil, v))
+}
+
+// LockedUntilLTE applies the LTE predicate on the "locked_until" field.
+func LockedUntilLTE(v time.Time) predicate.User {
+	return predicate.User(sql.FieldLTE(FieldLockedUntil, v))
+}
+
+// LockedUntilIsNil applies the IsNil predicate on the "locked_until" field.
+func LockedUntilIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldLockedUntil))
+}
+
+// LockedUntilNotNil applies the NotNil predicate on the "locked_until" field.
+func LockedUntilNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldLockedUntil))
+}
+
+// StatusEQ applies the EQ predicate on the "status" field.
+func StatusEQ(v Status) predicate.User {
+	return predicate.User(sql.FieldEQ(FieldStatus, v))
+}
+
+// StatusNEQ applies the NEQ predicate on the "status" field.
+func StatusNEQ(v Status) predicate.User {
+	return predicate.User(sql.FieldNEQ(FieldStatus, v))
+}
+
+// StatusIn applies the In predicate on the "status" field.
+func StatusIn(vs ...Status) predicate.User {
+	return predicate.User(sql.FieldIn(FieldStatus, vs...))
+}
+
+// StatusNotIn applies the NotIn predicate on the "status" field.
+func StatusNotIn(vs ...Status) predicate.User {
+	return predicate.User(sql.FieldNotIn(FieldStatus, vs...))
+}
+
+// StatusIsNil applies the IsNil predicate on the "status" field.
+func StatusIsNil() predicate.User {
+	return predicate.User(sql.FieldIsNull(FieldStatus))
+}
+
+// StatusNotNil applies the NotNil predicate on the "status" field.
+func StatusNotNil() predicate.User {
+	return predicate.User(sql.FieldNotNull(FieldStatus))
 }
 
 // And groups predicates with the AND operator between them.

@@ -22,7 +22,6 @@ func Server() middleware.Middleware {
 				data.GetUserID(),
 				data.GetTenantID(),
 				data.GetOrgUnitID(),
-				data.GetIsPlatformAdmin(),
 				data.GetDataScope(),
 			)
 			ctx = viewer.NewContext(ctx, userViewer)

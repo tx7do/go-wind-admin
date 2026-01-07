@@ -9,11 +9,9 @@ import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
 import { notification } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type Permission } from '#/generated/api/admin/service/v1';
+import { type permissionservicev1_Permission as Permission } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
 import {
-  permissionTypeToColor,
-  permissionTypeToName,
   statusList,
   statusToColor,
   statusToName,
@@ -36,6 +34,15 @@ const formOptions: VbenFormProps = {
       component: 'Input',
       fieldName: 'name',
       label: $t('page.permission.name'),
+      componentProps: {
+        placeholder: $t('ui.placeholder.input'),
+        allowClear: true,
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'code',
+      label: $t('page.permission.code'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -77,13 +84,6 @@ const gridOptions: VxeGridProps<Permission> = {
 
   stripe: true,
 
-  treeConfig: {
-    parentField: 'parentId',
-    // childrenField: 'children',
-    rowField: 'id',
-    transform: true,
-  },
-
   proxyConfig: {
     ajax: {
       query: async ({ page }, formValues) => {
@@ -109,24 +109,15 @@ const gridOptions: VxeGridProps<Permission> = {
       field: 'name',
       fixed: 'left',
       align: 'left',
-      treeNode: true,
     },
-    { title: $t('page.permission.module'), field: 'module' },
     { title: $t('page.permission.code'), field: 'code', width: 200 },
-    {
-      title: $t('page.permission.type'),
-      field: 'type',
-      slots: { default: 'type' },
-      width: 95,
-    },
-    { title: $t('page.permission.path'), field: 'path',width: 110 },
+    { title: $t('page.permission.groupName'), field: 'groupName' },
     {
       title: $t('ui.table.status'),
       field: 'status',
       slots: { default: 'status' },
       width: 95,
     },
-    { title: $t('ui.table.sortOrder'), field: 'sortOrder', width: 70 },
     {
       title: $t('ui.table.updatedAt'),
       field: 'updatedAt',
@@ -287,11 +278,6 @@ async function handleSyncMenus() {
       <template #status="{ row }">
         <a-tag :color="statusToColor(row.status)">
           {{ statusToName(row.status) }}
-        </a-tag>
-      </template>
-      <template #type="{ row }">
-        <a-tag :color="permissionTypeToColor(row.type)">
-          {{ permissionTypeToName(row.type) }}
         </a-tag>
       </template>
       <template #action="{ row }">

@@ -12,41 +12,43 @@ import "google/protobuf/field_mask.proto";
 
 import "pagination/v1/pagination.proto";
 
+import "permission/service/v1/permission.proto";
 
-// 权限管理服务
+
+// 权限点管理服务
 service PermissionService {
-  // 查询权限列表
-  rpc List (pagination.PagingRequest) returns (ListPermissionResponse) {
+  // 查询权限点列表
+  rpc List (pagination.PagingRequest) returns (permission.service.v1.ListPermissionResponse) {
     option (google.api.http) = {
       get: "/admin/v1/permissions"
     };
   }
 
-  // 查询权限详情
-  rpc Get (GetPermissionRequest) returns (Permission) {
+  // 查询权限点详情
+  rpc Get (permission.service.v1.GetPermissionRequest) returns (permission.service.v1.Permission) {
     option (google.api.http) = {
       get: "/admin/v1/permissions/{id}"
     };
   }
 
-  // 创建权限
-  rpc Create (CreatePermissionRequest) returns (google.protobuf.Empty) {
+  // 创建权限点
+  rpc Create (permission.service.v1.CreatePermissionRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/admin/v1/permissions"
       body: "*"
     };
   }
 
-  // 更新权限
-  rpc Update (UpdatePermissionRequest) returns (google.protobuf.Empty) {
+  // 更新权限点
+  rpc Update (permission.service.v1.UpdatePermissionRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/admin/v1/permissions/{id}"
       body: "*"
     };
   }
 
-  // 删除权限
-  rpc Delete (DeletePermissionRequest) returns (google.protobuf.Empty) {
+  // 删除权限点
+  rpc Delete (permission.service.v1.DeletePermissionRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/admin/v1/permissions/{id}"
     };
@@ -67,175 +69,4 @@ service PermissionService {
       body: "*"
     };
   }
-}
-
-// 权限 - API 关联关系
-message PermissionApiResource {
-  optional uint32 id = 1 [
-    json_name = "id",
-    (gnostic.openapi.v3.property) = { description: "ID" }
-  ]; // ID
-
-  optional uint32 permission_id = 2 [
-    json_name = "permissionId",
-    (gnostic.openapi.v3.property) = { description: "权限ID" }
-  ]; // 权限ID
-
-  optional uint32 api_id = 3 [
-    json_name = "apiId",
-    (gnostic.openapi.v3.property) = { description: "API ID" }
-  ]; // API ID
-}
-
-// 权限 - 菜单 关联关系
-message PermissionMenu {
-  optional uint32 id = 1 [
-    json_name = "id",
-    (gnostic.openapi.v3.property) = { description: "ID" }
-  ]; // ID
-
-  optional uint32 permission_id = 2 [
-    json_name = "permissionId",
-    (gnostic.openapi.v3.property) = { description: "权限ID" }
-  ]; // 权限ID
-
-  optional uint32 menu_id = 3 [
-    json_name = "menuId",
-    (gnostic.openapi.v3.property) = { description: "菜单ID" }
-  ]; // 菜单ID
-}
-
-// 权限
-message Permission {
-  // 权限类型
-  enum Type {
-    CATALOG = 0;  // 目录权限，侧边栏的分类标题（无路由，仅展开）。
-    MENU = 1;     // 菜单权限，具体的导航菜单，点击后进入 PAGE。
-    PAGE = 2;     // 页面权限，独立的页面（如详情页），可能不在侧边栏显示。
-    BUTTON = 3;   // 按钮权限，页面内的操作按钮。
-    API = 4;      // 接口权限，后端接口鉴权。
-    DATA = 5;     // 数据权限，数据行级/列级过滤规则。
-
-    OTHER = 100; // 其他权限
-  }
-
-  // 权限状态
-  enum Status {
-    OFF = 0;         // 禁用
-    ON = 1;          // 启用
-  }
-
-  optional uint32 id = 1 [
-    json_name = "id",
-    (gnostic.openapi.v3.property) = { description: "权限ID" }
-  ]; // 权限ID
-
-  optional string name = 2 [
-    json_name = "name",
-    (gnostic.openapi.v3.property) = { description: "权限名称（如：删除用户）" }
-  ]; // 权限名称（如：删除用户）
-
-  optional string code = 3 [
-    json_name = "code",
-    (gnostic.openapi.v3.property) = { description: "权限唯一编码（如：user.delete）" }
-  ]; // 权限唯一编码（如：user.delete）
-
-  optional Type type = 4 [
-    json_name = "type",
-    (gnostic.openapi.v3.property) = { description: "权限类型（关联的资源类型）" }
-  ]; // 权限类型（关联的资源类型）
-
-  optional string path = 5 [json_name = "path", (gnostic.openapi.v3.property) = {description: "树路径"}];  // 树路径
-
-  optional string module = 6 [
-    json_name = "module",
-    (gnostic.openapi.v3.property) = { description: "所属业务模块（如：用户管理/订单管理）" }
-  ]; // 所属业务模块（如：用户管理/订单管理）
-
-  optional int32 sort_order = 7 [
-    json_name = "sortOrder",
-    (gnostic.openapi.v3.property) = { description: "排序序号" }
-  ]; // 排序序号
-
-  optional string remark = 8 [
-    json_name = "remark",
-    (gnostic.openapi.v3.property) = { description: "备注" }
-  ]; // 备注
-
-  optional Status status = 10 [(gnostic.openapi.v3.property) = {description: "状态"}]; // 状态
-
-  optional uint32 tenant_id = 11 [json_name = "tenantId", (gnostic.openapi.v3.property) = {description: "租户ID"}];  // 租户ID
-
-  oneof bind {
-    uint32 api_resource_id = 20 [json_name = "apiResourceId", (gnostic.openapi.v3.property) = {description: "关联的API资源ID"}]; // 关联的API资源ID
-    uint32 menu_id = 21 [json_name = "menuId", (gnostic.openapi.v3.property) = {description: "关联的菜单ID"}]; // 关联的菜单ID
-  }
-
-  optional uint32 parent_id = 50 [json_name = "parentId", (gnostic.openapi.v3.property) = {description: "父节点ID"}];  // 父节点ID
-  repeated Permission children = 51 [json_name = "children", (gnostic.openapi.v3.property) = {description: "子节点树"}];  // 子节点树
-
-  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
-  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
-  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
-
-  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
-  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
-  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];// 删除时间
-}
-
-// 查询列表 - 回应
-message ListPermissionResponse {
-  repeated Permission items = 1;
-  uint64 total = 2;
-}
-
-// 查询 - 请求
-message GetPermissionRequest {
-  oneof query_by {
-    uint32 id = 1 [
-      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
-      json_name = "id"
-    ]; // ID
-    string code = 2 [
-      (gnostic.openapi.v3.property) = {description: "权限编码", read_only: true},
-      json_name = "code"
-    ]; // 权限编码
-  }
-
-  optional google.protobuf.FieldMask view_mask = 100 [
-    json_name = "viewMask",
-    (gnostic.openapi.v3.property) = {
-      description: "视图字段过滤器，用于控制返回的字段"
-    }
-  ]; // 视图字段过滤器，用于控制返回的字段
-}
-
-// 创建 - 请求
-message CreatePermissionRequest {
-  Permission data = 1;
-}
-
-// 更新 - 请求
-message UpdatePermissionRequest {
-  uint32 id = 1;
-
-  Permission data = 2;
-
-  google.protobuf.FieldMask update_mask = 3 [
-    (gnostic.openapi.v3.property) = {
-      description: "要更新的字段列表",
-      example: {yaml : "id,realname,username"}
-    },
-    json_name = "updateMask"
-  ]; // 要更新的字段列表
-
-  optional bool allow_missing = 4 [
-    (gnostic.openapi.v3.property) = {description: "如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。"},
-    json_name = "allowMissing"
-  ]; // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
-}
-
-// 删除 - 请求
-message DeletePermissionRequest {
-  uint32 id = 1;
 }

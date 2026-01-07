@@ -6,8 +6,7 @@ import { defineStore } from 'pinia';
 
 import {
   createPermissionServiceClient,
-  type Permission,
-  type Permission_Type,
+  type permissionservicev1_Permission as Permission,
 } from '#/generated/api/admin/service/v1';
 import { makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
@@ -100,132 +99,73 @@ export const usePermissionStore = defineStore('permission', () => {
   };
 });
 
-// 权限类型-颜色映射常量
-const PERMISSION_TYPE_COLOR_MAP = {
-  CATALOG: '#4A90E2', // 目录权限
-  MENU: '#165DFF', // 菜单权限：深蓝色（核心导航、层级化属性）
-  BUTTON: '#00B42A', // 按钮权限：企业绿（操作级、功能点属性）
-  API: '#722ED1', // 接口权限：深紫色（底层、技术级属性）
-  DATA: '#FF7D00', // 数据权限：橙色（范围管控、业务核心属性）
-  PAGE: '#14C9C9', // 页面权限：天蓝色（访问级、视图层属性）
-  OTHER: '#86909C', // 其他权限：中灰色（中性、非核心属性）
-  DEFAULT: '#C9CDD4', // 未知权限：浅灰色（无语义倾向）
+export const roleDataScopeList = computed(() => [
+  { label: $t('enum.role.dataScope.ALL'), value: 'ALL' },
+  { label: $t('enum.role.dataScope.UNIT_AND_CHILD'), value: 'UNIT_AND_CHILD' },
+  { label: $t('enum.role.dataScope.UNIT_ONLY'), value: 'UNIT_ONLY' },
+  { label: $t('enum.role.dataScope.SELECTED_UNITS'), value: 'SELECTED_UNITS' },
+  { label: $t('enum.role.dataScope.SELF'), value: 'SELF' },
+]);
+
+// 数据范围-颜色映射常量（按权限范围从大到小匹配差异化色值）
+const DATA_SCOPE_COLOR_MAP = {
+  ALL: '#F53F3F', // 全部数据：红色（最大权限、高危、核心管控）
+  UNIT_AND_CHILD: '#165DFF', // 本单位及子单位：深蓝色（大范围、层级化权限）
+  UNIT_ONLY: '#FF7D00', // 仅本单位：橙色（中等范围、核心业务权限）
+  SELECTED_UNITS: '#722ED1', // 指定单位：紫色（灵活范围、自定义权限）
+  SELF: '#86909C', // 仅自己：中灰色（最小范围、基础权限）
+  DEFAULT: '#C9CDD4', // 未知数据范围：浅灰色（中性、无倾向）
 } as const;
 
 /**
- * 权限类型映射对应颜色
- * @param permissionType 权限类型（MENU/BUTTON/API/DATA/PAGE/OTHER）
+ * 数据范围映射对应颜色
+ * @param dataScope 数据范围（ALL/SELF/UNIT_ONLY/UNIT_AND_CHILD/SELECTED_UNITS）
  * @returns 标准化十六进制颜色值
  */
-export function permissionTypeToColor(permissionType: Permission_Type): string {
-  // 类型安全断言 + 兜底默认色，避免类型不匹配导致的异常
+export function dataScopeToColor(dataScope: any): string {
   return (
-    PERMISSION_TYPE_COLOR_MAP[
-      permissionType as keyof typeof PERMISSION_TYPE_COLOR_MAP
-    ] || PERMISSION_TYPE_COLOR_MAP.DEFAULT
+    DATA_SCOPE_COLOR_MAP[dataScope as keyof typeof DATA_SCOPE_COLOR_MAP] ||
+    DATA_SCOPE_COLOR_MAP.DEFAULT
   );
 }
 
-// 权限类型-名称映射常量
-export const PERMISSION_TYPE_NAME_MAP = computed(() => [
-  { label: $t('enum.permission.type.CATALOG'), value: 'CATALOG' },
-  { label: $t('enum.permission.type.MENU'), value: 'MENU' },
-  { label: $t('enum.permission.type.PAGE'), value: 'PAGE' },
-  { label: $t('enum.permission.type.BUTTON'), value: 'BUTTON' },
-  { label: $t('enum.permission.type.API'), value: 'API' },
-  { label: $t('enum.permission.type.DATA'), value: 'DATA' },
-]);
-
-export function permissionTypeToName(permissionType: Permission_Type): string {
-  const values = PERMISSION_TYPE_NAME_MAP.value;
-  const matchedItem = values.find((item) => item.value === permissionType);
+/**
+ * 角色数据范围转名称
+ * @param dataScope
+ */
+export function roleDataScopeToName(dataScope: any) {
+  const values = roleDataScopeList.value;
+  const matchedItem = values.find((item) => item.value === dataScope);
   return matchedItem ? matchedItem.label : '';
 }
 
-/** 遍历菜单子节点
- * @param nodes 节点列表
- * @param parent 父节点
- * @return 是否找到并添加
- */
-export function travelPermissionChild(
-  nodes: Permission[] | undefined,
-  parent: Permission,
-): boolean {
-  if (nodes === undefined) {
-    return false;
-  }
-
-  if (parent.parentId === 0 || parent.parentId === undefined) {
-    if (parent?.name) {
-      parent.name = $t(parent?.name ?? '');
-    }
-    nodes.push(parent);
-    return true;
-  }
-
-  for (const node of nodes) {
-    if (node === undefined) {
-      continue;
-    }
-    if (node.id === parent.parentId) {
-      if (parent?.name) {
-        parent.name = $t(parent?.name ?? '');
-      }
-      if (node.children !== undefined) {
-        node.children.push(parent);
-      }
-      return true;
-    }
-
-    if (travelPermissionChild(node.children, parent)) {
-      return true;
-    }
-  }
-
-  return false;
+interface PermissionTreeDataNode {
+  key: number | string; // 节点唯一标识（父节点用groupId，子节点用id）
+  title: string; // 节点显示文本（父节点用groupName，子节点用name）
+  children?: PermissionTreeDataNode[]; // 子节点（仅父节点有）
+  disabled?: boolean;
+  permission?: Permission;
 }
 
-/**
- * 构建菜单树
- * @param permissions 菜单列表
- * @return 菜单树
- */
-export function buildPermissionTree(permissions: Permission[]): Permission[] {
-  const tree: Permission[] = [];
-
-  for (const menu of permissions) {
-    if (!menu) {
-      continue;
+export function convertPermissionToTree(
+  rawApiList: Permission[],
+): PermissionTreeDataNode[] {
+  const permMap = new Map<string, Permission[]>();
+  rawApiList.forEach((perm) => {
+    const groupName = typeof perm.groupName === 'string' ? perm.groupName : '';
+    if (!permMap.has(groupName)) {
+      permMap.set(groupName, []);
     }
+    permMap.get(groupName)?.push(perm);
+  });
 
-    if (menu.parentId !== 0 && menu.parentId !== undefined) {
-      continue;
-    }
-
-    if (menu?.name) {
-      menu.name = $t(menu?.name ?? '');
-    }
-    tree.push(menu);
-  }
-
-  for (const menu of permissions) {
-    if (!menu) {
-      continue;
-    }
-
-    if (menu.parentId === 0 || menu.parentId === undefined) {
-      continue;
-    }
-
-    if (travelPermissionChild(tree, menu)) {
-      continue;
-    }
-
-    if (menu?.name) {
-      menu.name = $t(menu?.name ?? '');
-    }
-    tree.push(menu);
-  }
-
-  return tree;
+  return [...permMap.entries()].map(([groupName, permissionList]) => ({
+    key: `group-${groupName}`,
+    title: groupName,
+    children: permissionList.map((perm, index) => ({
+      key: perm.id ?? `perm-default-${index}`,
+      title: perm.name,
+      permission: perm,
+    })),
+  }));
 }

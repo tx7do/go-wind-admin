@@ -30,8 +30,8 @@ type Language struct {
 	UpdatedBy *uint32 `json:"updated_by,omitempty"`
 	// 删除者ID
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
-	// 排序顺序，值越小越靠前
-	SortOrder *int32 `json:"sort_order,omitempty"`
+	// 排序值（越小越靠前）
+	SortOrder *uint32 `json:"sort_order,omitempty"`
 	// 是否启用
 	IsEnabled *bool `json:"is_enabled,omitempty"`
 	// 标准语言代码
@@ -125,8 +125,8 @@ func (_m *Language) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field sort_order", values[i])
 			} else if value.Valid {
-				_m.SortOrder = new(int32)
-				*_m.SortOrder = int32(value.Int64)
+				_m.SortOrder = new(uint32)
+				*_m.SortOrder = uint32(value.Int64)
 			}
 		case language.FieldIsEnabled:
 			if value, ok := values[i].(*sql.NullBool); !ok {

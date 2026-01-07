@@ -85,6 +85,11 @@ func DeletedBy(v uint32) predicate.OrgUnit {
 	return predicate.OrgUnit(sql.FieldEQ(FieldDeletedBy, v))
 }
 
+// SortOrder applies equality check predicate on the "sort_order" field. It's identical to SortOrderEQ.
+func SortOrder(v uint32) predicate.OrgUnit {
+	return predicate.OrgUnit(sql.FieldEQ(FieldSortOrder, v))
+}
+
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
 func TenantID(v uint32) predicate.OrgUnit {
 	return predicate.OrgUnit(sql.FieldEQ(FieldTenantID, v))
@@ -118,11 +123,6 @@ func Code(v string) predicate.OrgUnit {
 // Path applies equality check predicate on the "path" field. It's identical to PathEQ.
 func Path(v string) predicate.OrgUnit {
 	return predicate.OrgUnit(sql.FieldEQ(FieldPath, v))
-}
-
-// SortOrder applies equality check predicate on the "sort_order" field. It's identical to SortOrderEQ.
-func SortOrder(v int32) predicate.OrgUnit {
-	return predicate.OrgUnit(sql.FieldEQ(FieldSortOrder, v))
 }
 
 // LeaderID applies equality check predicate on the "leader_id" field. It's identical to LeaderIDEQ.
@@ -525,14 +525,54 @@ func StatusNotIn(vs ...Status) predicate.OrgUnit {
 	return predicate.OrgUnit(sql.FieldNotIn(FieldStatus, vs...))
 }
 
-// StatusIsNil applies the IsNil predicate on the "status" field.
-func StatusIsNil() predicate.OrgUnit {
-	return predicate.OrgUnit(sql.FieldIsNull(FieldStatus))
+// SortOrderEQ applies the EQ predicate on the "sort_order" field.
+func SortOrderEQ(v uint32) predicate.OrgUnit {
+	return predicate.OrgUnit(sql.FieldEQ(FieldSortOrder, v))
 }
 
-// StatusNotNil applies the NotNil predicate on the "status" field.
-func StatusNotNil() predicate.OrgUnit {
-	return predicate.OrgUnit(sql.FieldNotNull(FieldStatus))
+// SortOrderNEQ applies the NEQ predicate on the "sort_order" field.
+func SortOrderNEQ(v uint32) predicate.OrgUnit {
+	return predicate.OrgUnit(sql.FieldNEQ(FieldSortOrder, v))
+}
+
+// SortOrderIn applies the In predicate on the "sort_order" field.
+func SortOrderIn(vs ...uint32) predicate.OrgUnit {
+	return predicate.OrgUnit(sql.FieldIn(FieldSortOrder, vs...))
+}
+
+// SortOrderNotIn applies the NotIn predicate on the "sort_order" field.
+func SortOrderNotIn(vs ...uint32) predicate.OrgUnit {
+	return predicate.OrgUnit(sql.FieldNotIn(FieldSortOrder, vs...))
+}
+
+// SortOrderGT applies the GT predicate on the "sort_order" field.
+func SortOrderGT(v uint32) predicate.OrgUnit {
+	return predicate.OrgUnit(sql.FieldGT(FieldSortOrder, v))
+}
+
+// SortOrderGTE applies the GTE predicate on the "sort_order" field.
+func SortOrderGTE(v uint32) predicate.OrgUnit {
+	return predicate.OrgUnit(sql.FieldGTE(FieldSortOrder, v))
+}
+
+// SortOrderLT applies the LT predicate on the "sort_order" field.
+func SortOrderLT(v uint32) predicate.OrgUnit {
+	return predicate.OrgUnit(sql.FieldLT(FieldSortOrder, v))
+}
+
+// SortOrderLTE applies the LTE predicate on the "sort_order" field.
+func SortOrderLTE(v uint32) predicate.OrgUnit {
+	return predicate.OrgUnit(sql.FieldLTE(FieldSortOrder, v))
+}
+
+// SortOrderIsNil applies the IsNil predicate on the "sort_order" field.
+func SortOrderIsNil() predicate.OrgUnit {
+	return predicate.OrgUnit(sql.FieldIsNull(FieldSortOrder))
+}
+
+// SortOrderNotNil applies the NotNil predicate on the "sort_order" field.
+func SortOrderNotNil() predicate.OrgUnit {
+	return predicate.OrgUnit(sql.FieldNotNull(FieldSortOrder))
 }
 
 // TenantIDEQ applies the EQ predicate on the "tenant_id" field.
@@ -978,56 +1018,6 @@ func PathEqualFold(v string) predicate.OrgUnit {
 // PathContainsFold applies the ContainsFold predicate on the "path" field.
 func PathContainsFold(v string) predicate.OrgUnit {
 	return predicate.OrgUnit(sql.FieldContainsFold(FieldPath, v))
-}
-
-// SortOrderEQ applies the EQ predicate on the "sort_order" field.
-func SortOrderEQ(v int32) predicate.OrgUnit {
-	return predicate.OrgUnit(sql.FieldEQ(FieldSortOrder, v))
-}
-
-// SortOrderNEQ applies the NEQ predicate on the "sort_order" field.
-func SortOrderNEQ(v int32) predicate.OrgUnit {
-	return predicate.OrgUnit(sql.FieldNEQ(FieldSortOrder, v))
-}
-
-// SortOrderIn applies the In predicate on the "sort_order" field.
-func SortOrderIn(vs ...int32) predicate.OrgUnit {
-	return predicate.OrgUnit(sql.FieldIn(FieldSortOrder, vs...))
-}
-
-// SortOrderNotIn applies the NotIn predicate on the "sort_order" field.
-func SortOrderNotIn(vs ...int32) predicate.OrgUnit {
-	return predicate.OrgUnit(sql.FieldNotIn(FieldSortOrder, vs...))
-}
-
-// SortOrderGT applies the GT predicate on the "sort_order" field.
-func SortOrderGT(v int32) predicate.OrgUnit {
-	return predicate.OrgUnit(sql.FieldGT(FieldSortOrder, v))
-}
-
-// SortOrderGTE applies the GTE predicate on the "sort_order" field.
-func SortOrderGTE(v int32) predicate.OrgUnit {
-	return predicate.OrgUnit(sql.FieldGTE(FieldSortOrder, v))
-}
-
-// SortOrderLT applies the LT predicate on the "sort_order" field.
-func SortOrderLT(v int32) predicate.OrgUnit {
-	return predicate.OrgUnit(sql.FieldLT(FieldSortOrder, v))
-}
-
-// SortOrderLTE applies the LTE predicate on the "sort_order" field.
-func SortOrderLTE(v int32) predicate.OrgUnit {
-	return predicate.OrgUnit(sql.FieldLTE(FieldSortOrder, v))
-}
-
-// SortOrderIsNil applies the IsNil predicate on the "sort_order" field.
-func SortOrderIsNil() predicate.OrgUnit {
-	return predicate.OrgUnit(sql.FieldIsNull(FieldSortOrder))
-}
-
-// SortOrderNotNil applies the NotNil predicate on the "sort_order" field.
-func SortOrderNotNil() predicate.OrgUnit {
-	return predicate.OrgUnit(sql.FieldNotNull(FieldSortOrder))
 }
 
 // LeaderIDEQ applies the EQ predicate on the "leader_id" field.

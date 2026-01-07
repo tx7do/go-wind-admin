@@ -36,6 +36,20 @@ func (_c *AdminLoginLogCreate) SetNillableCreatedAt(v *time.Time) *AdminLoginLog
 	return _c
 }
 
+// SetTenantID sets the "tenant_id" field.
+func (_c *AdminLoginLogCreate) SetTenantID(v uint32) *AdminLoginLogCreate {
+	_c.mutation.SetTenantID(v)
+	return _c
+}
+
+// SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
+func (_c *AdminLoginLogCreate) SetNillableTenantID(v *uint32) *AdminLoginLogCreate {
+	if v != nil {
+		_c.SetTenantID(*v)
+	}
+	return _c
+}
+
 // SetLoginIP sets the "login_ip" field.
 func (_c *AdminLoginLogCreate) SetLoginIP(v string) *AdminLoginLogCreate {
 	_c.mutation.SetLoginIP(v)
@@ -341,6 +355,10 @@ func (_c *AdminLoginLogCreate) createSpec() (*AdminLoginLog, *sqlgraph.CreateSpe
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(adminloginlog.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = &value
+	}
+	if value, ok := _c.mutation.TenantID(); ok {
+		_spec.SetField(adminloginlog.FieldTenantID, field.TypeUint32, value)
+		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.LoginIP(); ok {
 		_spec.SetField(adminloginlog.FieldLoginIP, field.TypeString, value)
@@ -777,6 +795,9 @@ func (u *AdminLoginLogUpsertOne) UpdateNewValues() *AdminLoginLogUpsertOne {
 		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(adminloginlog.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.TenantID(); exists {
+			s.SetIgnore(adminloginlog.FieldTenantID)
 		}
 	}))
 	return u
@@ -1342,6 +1363,9 @@ func (u *AdminLoginLogUpsertBulk) UpdateNewValues() *AdminLoginLogUpsertBulk {
 			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(adminloginlog.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.TenantID(); exists {
+				s.SetIgnore(adminloginlog.FieldTenantID)
 			}
 		}
 	}))

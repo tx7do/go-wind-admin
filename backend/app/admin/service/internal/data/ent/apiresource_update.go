@@ -164,12 +164,6 @@ func (_u *ApiResourceUpdate) SetNillableStatus(v *apiresource.Status) *ApiResour
 	return _u
 }
 
-// ClearStatus clears the value of the "status" field.
-func (_u *ApiResourceUpdate) ClearStatus() *ApiResourceUpdate {
-	_u.mutation.ClearStatus()
-	return _u
-}
-
 // SetDescription sets the "description" field.
 func (_u *ApiResourceUpdate) SetDescription(v string) *ApiResourceUpdate {
 	_u.mutation.SetDescription(v)
@@ -420,9 +414,6 @@ func (_u *ApiResourceUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(apiresource.FieldStatus, field.TypeEnum, value)
 	}
-	if _u.mutation.StatusCleared() {
-		_spec.ClearField(apiresource.FieldStatus, field.TypeEnum)
-	}
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(apiresource.FieldDescription, field.TypeString, value)
 	}
@@ -619,12 +610,6 @@ func (_u *ApiResourceUpdateOne) SetNillableStatus(v *apiresource.Status) *ApiRes
 	if v != nil {
 		_u.SetStatus(*v)
 	}
-	return _u
-}
-
-// ClearStatus clears the value of the "status" field.
-func (_u *ApiResourceUpdateOne) ClearStatus() *ApiResourceUpdateOne {
-	_u.mutation.ClearStatus()
 	return _u
 }
 
@@ -907,9 +892,6 @@ func (_u *ApiResourceUpdateOne) sqlSave(ctx context.Context) (_node *ApiResource
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(apiresource.FieldStatus, field.TypeEnum, value)
-	}
-	if _u.mutation.StatusCleared() {
-		_spec.ClearField(apiresource.FieldStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(apiresource.FieldDescription, field.TypeString, value)

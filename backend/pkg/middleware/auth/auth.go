@@ -137,7 +137,6 @@ func Server(opts ...Option) middleware.Middleware {
 					tokenPayload.GetUserId(),
 					tokenPayload.GetTenantId(),
 					tokenPayload.GetOrgUnitId(),
-					tokenPayload.GetIsPlatformAdmin(),
 					tokenPayload.GetDataScope(),
 				)
 				ctx = viewer.NewContext(ctx, userViewer)
@@ -148,7 +147,6 @@ func Server(opts ...Option) middleware.Middleware {
 					tokenPayload.GetUserId(),
 					tokenPayload.GetTenantId(),
 					tokenPayload.GetOrgUnitId(),
-					tokenPayload.GetIsPlatformAdmin(),
 					tokenPayload.GetDataScope(),
 				)
 			}

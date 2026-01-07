@@ -148,7 +148,7 @@ func (r *InternalMessageRepo) Create(ctx context.Context, req *internalMessageV1
 	builder := r.entClient.Client().InternalMessage.Create().
 		SetNillableTitle(req.Data.Title).
 		SetNillableContent(req.Data.Content).
-		SetNillableSenderID(req.Data.SenderId).
+		SetSenderID(req.Data.GetSenderId()).
 		SetNillableCategoryID(req.Data.CategoryId).
 		SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 		SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).

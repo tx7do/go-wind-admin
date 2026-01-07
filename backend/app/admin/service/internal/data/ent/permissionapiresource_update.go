@@ -150,27 +150,6 @@ func (_u *PermissionApiResourceUpdate) ClearDeletedBy() *PermissionApiResourceUp
 	return _u
 }
 
-// SetAPIResourceID sets the "api_resource_id" field.
-func (_u *PermissionApiResourceUpdate) SetAPIResourceID(v uint32) *PermissionApiResourceUpdate {
-	_u.mutation.ResetAPIResourceID()
-	_u.mutation.SetAPIResourceID(v)
-	return _u
-}
-
-// SetNillableAPIResourceID sets the "api_resource_id" field if the given value is not nil.
-func (_u *PermissionApiResourceUpdate) SetNillableAPIResourceID(v *uint32) *PermissionApiResourceUpdate {
-	if v != nil {
-		_u.SetAPIResourceID(*v)
-	}
-	return _u
-}
-
-// AddAPIResourceID adds value to the "api_resource_id" field.
-func (_u *PermissionApiResourceUpdate) AddAPIResourceID(v int32) *PermissionApiResourceUpdate {
-	_u.mutation.AddAPIResourceID(v)
-	return _u
-}
-
 // SetPermissionID sets the "permission_id" field.
 func (_u *PermissionApiResourceUpdate) SetPermissionID(v uint32) *PermissionApiResourceUpdate {
 	_u.mutation.ResetPermissionID()
@@ -189,6 +168,27 @@ func (_u *PermissionApiResourceUpdate) SetNillablePermissionID(v *uint32) *Permi
 // AddPermissionID adds value to the "permission_id" field.
 func (_u *PermissionApiResourceUpdate) AddPermissionID(v int32) *PermissionApiResourceUpdate {
 	_u.mutation.AddPermissionID(v)
+	return _u
+}
+
+// SetAPIResourceID sets the "api_resource_id" field.
+func (_u *PermissionApiResourceUpdate) SetAPIResourceID(v uint32) *PermissionApiResourceUpdate {
+	_u.mutation.ResetAPIResourceID()
+	_u.mutation.SetAPIResourceID(v)
+	return _u
+}
+
+// SetNillableAPIResourceID sets the "api_resource_id" field if the given value is not nil.
+func (_u *PermissionApiResourceUpdate) SetNillableAPIResourceID(v *uint32) *PermissionApiResourceUpdate {
+	if v != nil {
+		_u.SetAPIResourceID(*v)
+	}
+	return _u
+}
+
+// AddAPIResourceID adds value to the "api_resource_id" field.
+func (_u *PermissionApiResourceUpdate) AddAPIResourceID(v int32) *PermissionApiResourceUpdate {
+	_u.mutation.AddAPIResourceID(v)
 	return _u
 }
 
@@ -284,17 +284,17 @@ func (_u *PermissionApiResourceUpdate) sqlSave(ctx context.Context) (_node int, 
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(permissionapiresource.FieldTenantID, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.APIResourceID(); ok {
-		_spec.SetField(permissionapiresource.FieldAPIResourceID, field.TypeUint32, value)
-	}
-	if value, ok := _u.mutation.AddedAPIResourceID(); ok {
-		_spec.AddField(permissionapiresource.FieldAPIResourceID, field.TypeUint32, value)
-	}
 	if value, ok := _u.mutation.PermissionID(); ok {
 		_spec.SetField(permissionapiresource.FieldPermissionID, field.TypeUint32, value)
 	}
 	if value, ok := _u.mutation.AddedPermissionID(); ok {
 		_spec.AddField(permissionapiresource.FieldPermissionID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.APIResourceID(); ok {
+		_spec.SetField(permissionapiresource.FieldAPIResourceID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedAPIResourceID(); ok {
+		_spec.AddField(permissionapiresource.FieldAPIResourceID, field.TypeUint32, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -439,27 +439,6 @@ func (_u *PermissionApiResourceUpdateOne) ClearDeletedBy() *PermissionApiResourc
 	return _u
 }
 
-// SetAPIResourceID sets the "api_resource_id" field.
-func (_u *PermissionApiResourceUpdateOne) SetAPIResourceID(v uint32) *PermissionApiResourceUpdateOne {
-	_u.mutation.ResetAPIResourceID()
-	_u.mutation.SetAPIResourceID(v)
-	return _u
-}
-
-// SetNillableAPIResourceID sets the "api_resource_id" field if the given value is not nil.
-func (_u *PermissionApiResourceUpdateOne) SetNillableAPIResourceID(v *uint32) *PermissionApiResourceUpdateOne {
-	if v != nil {
-		_u.SetAPIResourceID(*v)
-	}
-	return _u
-}
-
-// AddAPIResourceID adds value to the "api_resource_id" field.
-func (_u *PermissionApiResourceUpdateOne) AddAPIResourceID(v int32) *PermissionApiResourceUpdateOne {
-	_u.mutation.AddAPIResourceID(v)
-	return _u
-}
-
 // SetPermissionID sets the "permission_id" field.
 func (_u *PermissionApiResourceUpdateOne) SetPermissionID(v uint32) *PermissionApiResourceUpdateOne {
 	_u.mutation.ResetPermissionID()
@@ -478,6 +457,27 @@ func (_u *PermissionApiResourceUpdateOne) SetNillablePermissionID(v *uint32) *Pe
 // AddPermissionID adds value to the "permission_id" field.
 func (_u *PermissionApiResourceUpdateOne) AddPermissionID(v int32) *PermissionApiResourceUpdateOne {
 	_u.mutation.AddPermissionID(v)
+	return _u
+}
+
+// SetAPIResourceID sets the "api_resource_id" field.
+func (_u *PermissionApiResourceUpdateOne) SetAPIResourceID(v uint32) *PermissionApiResourceUpdateOne {
+	_u.mutation.ResetAPIResourceID()
+	_u.mutation.SetAPIResourceID(v)
+	return _u
+}
+
+// SetNillableAPIResourceID sets the "api_resource_id" field if the given value is not nil.
+func (_u *PermissionApiResourceUpdateOne) SetNillableAPIResourceID(v *uint32) *PermissionApiResourceUpdateOne {
+	if v != nil {
+		_u.SetAPIResourceID(*v)
+	}
+	return _u
+}
+
+// AddAPIResourceID adds value to the "api_resource_id" field.
+func (_u *PermissionApiResourceUpdateOne) AddAPIResourceID(v int32) *PermissionApiResourceUpdateOne {
+	_u.mutation.AddAPIResourceID(v)
 	return _u
 }
 
@@ -603,17 +603,17 @@ func (_u *PermissionApiResourceUpdateOne) sqlSave(ctx context.Context) (_node *P
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(permissionapiresource.FieldTenantID, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.APIResourceID(); ok {
-		_spec.SetField(permissionapiresource.FieldAPIResourceID, field.TypeUint32, value)
-	}
-	if value, ok := _u.mutation.AddedAPIResourceID(); ok {
-		_spec.AddField(permissionapiresource.FieldAPIResourceID, field.TypeUint32, value)
-	}
 	if value, ok := _u.mutation.PermissionID(); ok {
 		_spec.SetField(permissionapiresource.FieldPermissionID, field.TypeUint32, value)
 	}
 	if value, ok := _u.mutation.AddedPermissionID(); ok {
 		_spec.AddField(permissionapiresource.FieldPermissionID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.APIResourceID(); ok {
+		_spec.SetField(permissionapiresource.FieldAPIResourceID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedAPIResourceID(); ok {
+		_spec.AddField(permissionapiresource.FieldAPIResourceID, field.TypeUint32, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &PermissionApiResource{config: _u.config}

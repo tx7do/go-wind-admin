@@ -19,6 +19,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"go-wind-admin/app/admin/service/internal/data/ent/role"
 
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 )
 
@@ -26,10 +27,8 @@ type RoleRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper             *mapper.CopierMapper[userV1.Role, ent.Role]
-	statusConverter    *mapper.EnumTypeConverter[userV1.Role_Status, role.Status]
-	typeConverter      *mapper.EnumTypeConverter[userV1.Role_Type, role.Type]
-	dataScopeConverter *mapper.EnumTypeConverter[userV1.Role_DataScope, role.DataScope]
+	mapper          *mapper.CopierMapper[userV1.Role, ent.Role]
+	statusConverter *mapper.EnumTypeConverter[userV1.Role_Status, role.Status]
 
 	repository *entCrud.Repository[
 		ent.RoleQuery, ent.RoleSelect,
@@ -40,17 +39,15 @@ type RoleRepo struct {
 		userV1.Role, ent.Role,
 	]
 
-	polePermissionRepo *RolePermissionRepo
-	roleApiRepo        *RoleApiRepo
-	roleMenuRepo       *RoleMenuRepo
+	rolePermissionRepo *RolePermissionRepo
+	permissionRepo     *PermissionRepo
 }
 
 func NewRoleRepo(
 	ctx *bootstrap.Context,
 	entClient *entCrud.EntClient[*ent.Client],
-	polePermissionRepo *RolePermissionRepo,
-	roleApiRepo *RoleApiRepo,
-	roleMenuRepo *RoleMenuRepo,
+	rolePermissionRepo *RolePermissionRepo,
+	permissionRepo *PermissionRepo,
 ) *RoleRepo {
 	repo := &RoleRepo{
 		log:       ctx.NewLoggerHelper("role/repo/admin-service"),
@@ -60,17 +57,8 @@ func NewRoleRepo(
 			userV1.Role_Status_name,
 			userV1.Role_Status_value,
 		),
-		typeConverter: mapper.NewEnumTypeConverter[userV1.Role_Type, role.Type](
-			userV1.Role_Type_name,
-			userV1.Role_Type_value,
-		),
-		dataScopeConverter: mapper.NewEnumTypeConverter[userV1.Role_DataScope, role.DataScope](
-			userV1.Role_DataScope_name,
-			userV1.Role_DataScope_value,
-		),
-		polePermissionRepo: polePermissionRepo,
-		roleApiRepo:        roleApiRepo,
-		roleMenuRepo:       roleMenuRepo,
+		permissionRepo:     permissionRepo,
+		rolePermissionRepo: rolePermissionRepo,
 	}
 
 	repo.init()
@@ -92,8 +80,6 @@ func (r *RoleRepo) init() {
 	r.mapper.AppendConverters(copierutil.NewTimeTimestamppbConverterPair())
 
 	r.mapper.AppendConverters(r.statusConverter.NewConverterPair())
-	r.mapper.AppendConverters(r.typeConverter.NewConverterPair())
-	r.mapper.AppendConverters(r.dataScopeConverter.NewConverterPair())
 }
 
 func (r *RoleRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
@@ -137,14 +123,24 @@ func (r *RoleRepo) List(ctx context.Context, req *pagination.PagingRequest) (*us
 		return &userV1.ListRoleResponse{Total: 0, Items: nil}, nil
 	}
 
-	if err = r.fillMenusAndApis(ctx, ret.Items); err != nil {
-		return nil, err
+	for _, item := range ret.Items {
+		_ = r.fillPermissionIDs(ctx, item)
 	}
 
 	return &userV1.ListRoleResponse{
 		Total: ret.Total,
 		Items: ret.Items,
 	}, nil
+}
+
+func (r *RoleRepo) fillPermissionIDs(ctx context.Context, dto *userV1.Role) error {
+	permissionIDs, err := r.rolePermissionRepo.ListPermissionIDs(ctx, dto.GetId())
+	if err != nil {
+		r.log.Errorf("list permission ids failed: %s", err.Error())
+		return err
+	}
+	dto.Permissions = permissionIDs
+	return nil
 }
 
 // ListRolesByRoleCodes 通过角色编码列表获取角色列表
@@ -167,8 +163,8 @@ func (r *RoleRepo) ListRolesByRoleCodes(ctx context.Context, codes []string) ([]
 		dtos = append(dtos, dto)
 	}
 
-	if err = r.fillMenusAndApis(ctx, dtos); err != nil {
-		return nil, err
+	for _, item := range dtos {
+		_ = r.fillPermissionIDs(ctx, item)
 	}
 
 	return dtos, nil
@@ -194,8 +190,8 @@ func (r *RoleRepo) ListRolesByRoleIds(ctx context.Context, ids []uint32) ([]*use
 		dtos = append(dtos, dto)
 	}
 
-	if err = r.fillMenusAndApis(ctx, dtos); err != nil {
-		return nil, err
+	for _, item := range dtos {
+		_ = r.fillPermissionIDs(ctx, item)
 	}
 
 	return dtos, nil
@@ -225,6 +221,28 @@ func (r *RoleRepo) ListRoleCodesByRoleIds(ctx context.Context, ids []uint32) ([]
 	return codes, nil
 }
 
+func (r *RoleRepo) ListRoleIDsByRoleCodes(ctx context.Context, codes []string) ([]uint32, error) {
+	if len(codes) == 0 {
+		return []uint32{}, nil
+	}
+
+	entities, err := r.entClient.Client().Role.Query().
+		Where(role.CodeIn(codes...)).
+		Select(role.FieldID).
+		All(ctx)
+	if err != nil {
+		r.log.Errorf("query role ids failed: %s", err.Error())
+		return nil, userV1.ErrorInternalServerError("query role ids failed")
+	}
+
+	ids := make([]uint32, 0, len(entities))
+	for _, entity := range entities {
+		ids = append(ids, entity.ID)
+	}
+
+	return ids, nil
+}
+
 // Get 获取角色信息
 func (r *RoleRepo) Get(ctx context.Context, req *userV1.GetRoleRequest) (*userV1.Role, error) {
 	if req == nil {
@@ -238,6 +256,10 @@ func (r *RoleRepo) Get(ctx context.Context, req *userV1.GetRoleRequest) (*userV1
 	default:
 	case *userV1.GetRoleRequest_Id:
 		whereCond = append(whereCond, role.IDEQ(req.GetId()))
+	case *userV1.GetRoleRequest_Name:
+		whereCond = append(whereCond, role.NameEQ(req.GetName()))
+	case *userV1.GetRoleRequest_Code:
+		whereCond = append(whereCond, role.CodeEQ(req.GetCode()))
 	}
 
 	dto, err := r.repository.Get(ctx, builder, req.GetViewMask(), whereCond...)
@@ -245,29 +267,44 @@ func (r *RoleRepo) Get(ctx context.Context, req *userV1.GetRoleRequest) (*userV1
 		return nil, err
 	}
 
-	if err = r.fillMenuAndApi(ctx, dto); err != nil {
-		return nil, err
-	}
+	_ = r.fillPermissionIDs(ctx, dto)
 
 	return dto, err
 }
 
 // Create 创建角色
-func (r *RoleRepo) Create(ctx context.Context, req *userV1.CreateRoleRequest) error {
+func (r *RoleRepo) Create(ctx context.Context, req *userV1.CreateRoleRequest) (err error) {
 	if req == nil || req.Data == nil {
 		return userV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().Role.Create().
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = permissionV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	builder := tx.Role.Create().
 		SetNillableName(req.Data.Name).
 		SetNillableCode(req.Data.Code).
-		SetNillableParentID(req.Data.ParentId).
 		SetNillableTenantID(req.Data.TenantId).
 		SetNillableSortOrder(req.Data.SortOrder).
+		SetNillableIsProtected(req.Data.IsProtected).
 		SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
-		SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
-		SetNillableDataScope(r.dataScopeConverter.ToEntity(req.Data.DataScope)).
-		SetNillableRemark(req.Data.Remark).
+		SetNillableDescription(req.Data.Description).
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
 
@@ -282,25 +319,16 @@ func (r *RoleRepo) Create(ctx context.Context, req *userV1.CreateRoleRequest) er
 		builder.SetID(req.GetData().GetId())
 	}
 
-	var err error
 	var ret *ent.Role
 	if ret, err = builder.Save(ctx); err != nil {
 		r.log.Errorf("insert one data failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("insert data failed")
 	}
 
-	if req.Data.Menus != nil {
-		//builder.SetMenus(req.Data.Menus)
-		if err = r.assignMenusToRole(ctx, ret.ID, req.Data.Menus, req.Data.GetCreatedBy()); err != nil {
-			r.log.Errorf("assign menus to role failed: %s", err.Error())
-			return userV1.ErrorInternalServerError("assign menus to role failed")
-		}
-	}
-	if req.Data.Apis != nil {
-		//builder.SetApis(req.Data.Apis)
-		if err = r.assignApisToRole(ctx, ret.ID, req.Data.Apis, req.Data.GetCreatedBy()); err != nil {
-			r.log.Errorf("assign apis to role failed: %s", err.Error())
-			return userV1.ErrorInternalServerError("assign apis to role failed")
+	if req.Data.Permissions != nil {
+		if err = r.assignPermissionsToRole(ctx, tx, req.Data.GetTenantId(), ret.ID, req.Data.GetCreatedBy(), req.Data.Permissions); err != nil {
+			r.log.Errorf("assign permissions to role failed: %s", err.Error())
+			return userV1.ErrorInternalServerError("assign permissions to role failed")
 		}
 	}
 
@@ -308,7 +336,7 @@ func (r *RoleRepo) Create(ctx context.Context, req *userV1.CreateRoleRequest) er
 }
 
 // Update 更新角色信息
-func (r *RoleRepo) Update(ctx context.Context, req *userV1.UpdateRoleRequest) error {
+func (r *RoleRepo) Update(ctx context.Context, req *userV1.UpdateRoleRequest) (err error) {
 	if req == nil || req.Data == nil {
 		return userV1.ErrorBadRequest("invalid parameter")
 	}
@@ -327,18 +355,35 @@ func (r *RoleRepo) Update(ctx context.Context, req *userV1.UpdateRoleRequest) er
 		}
 	}
 
-	builder := r.entClient.Client().Debug().Role.Update()
-	err := r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = permissionV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	builder := tx.Role.Update()
+	err = r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
 		func(dto *userV1.Role) {
 			builder.
 				SetNillableName(req.Data.Name).
 				SetNillableCode(req.Data.Code).
-				SetNillableParentID(req.Data.ParentId).
 				SetNillableSortOrder(req.Data.SortOrder).
+				SetNillableIsProtected(req.Data.IsProtected).
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
-				SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
-				SetNillableDataScope(r.dataScopeConverter.ToEntity(req.Data.DataScope)).
-				SetNillableRemark(req.Data.Remark).
+				SetNillableDescription(req.Data.Description).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
 
@@ -356,86 +401,115 @@ func (r *RoleRepo) Update(ctx context.Context, req *userV1.UpdateRoleRequest) er
 		return userV1.ErrorInternalServerError("update role failed")
 	}
 
-	if req.Data.Menus != nil {
-		//builder.SetMenus(req.Data.Menus)
-		if err = r.assignMenusToRole(ctx, req.GetId(), req.Data.Menus, req.Data.GetUpdatedBy()); err != nil {
-			r.log.Errorf("assign menus to role failed: %s", err.Error())
-			return userV1.ErrorInternalServerError("assign menus to role failed")
-		}
-	}
-	if req.Data.Apis != nil {
-		//builder.SetApis(req.Data.Apis)
-		if err = r.assignApisToRole(ctx, req.GetId(), req.Data.Apis, req.Data.GetUpdatedBy()); err != nil {
-			r.log.Errorf("assign apis to role failed: %s", err.Error())
-			return userV1.ErrorInternalServerError("assign apis to role failed")
+	if req.Data.Permissions != nil {
+		if err = r.assignPermissionsToRole(ctx, tx, req.Data.GetTenantId(), req.GetId(), req.Data.GetUpdatedBy(), req.Data.Permissions); err != nil {
+			r.log.Errorf("assign permissions to role failed: %s", err.Error())
+			return userV1.ErrorInternalServerError("assign permissions to role failed")
 		}
 	}
 
 	return nil
 }
 
-// Delete 删除角色，同时删除其所有子角色
-func (r *RoleRepo) Delete(ctx context.Context, req *userV1.DeleteRoleRequest) error {
+// Delete 删除角色
+func (r *RoleRepo) Delete(ctx context.Context, req *userV1.DeleteRoleRequest) (err error) {
 	if req == nil {
 		return userV1.ErrorBadRequest("invalid parameter")
 	}
 
-	ids, err := entCrud.QueryAllChildrenIds(ctx, r.entClient, "sys_roles", req.GetId())
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("query child roles failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("query child roles failed")
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("start transaction failed")
 	}
-	ids = append(ids, req.GetId())
-
-	//r.log.Info("roles ids to delete: ", ids)
-
-	if _, err = r.entClient.Client().Role.Delete().
-		Where(role.IDIn(ids...)).
-		Exec(ctx); err != nil {
-		r.log.Errorf("delete roles failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete roles failed")
-	}
-
-	return nil
-}
-
-// assignApisToRole 分配API给角色
-func (r *RoleRepo) assignApisToRole(ctx context.Context, roleId uint32, apiIds []uint32, operatorId uint32) error {
-	return r.roleApiRepo.AssignApis(ctx, roleId, apiIds, operatorId)
-}
-
-// assignMenusToRole 分配菜单给角色
-func (r *RoleRepo) assignMenusToRole(ctx context.Context, roleId uint32, menuIds []uint32, operatorId uint32) error {
-	return r.roleMenuRepo.AssignMenus(ctx, roleId, menuIds, operatorId)
-}
-
-func (r *RoleRepo) fillMenuAndApi(ctx context.Context, role *userV1.Role) error {
-	// 获取角色分配的菜单ID列表
-	menuIds, err := r.roleMenuRepo.ListMenuIdsByRoleId(ctx, role.GetId())
-	if err != nil {
-		r.log.Errorf("list menu ids by role id failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("list menu ids by role id failed")
-	}
-	role.Menus = menuIds
-
-	// 获取角色分配的API ID列表
-	apiIds, err := r.roleApiRepo.ListApiIdsByRoleId(ctx, role.GetId())
-	if err != nil {
-		r.log.Errorf("list api ids by role id failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("list api ids by role id failed")
-	}
-	role.Apis = apiIds
-
-	return nil
-}
-
-// fillMenusAndApis 填充角色的菜单和API列表
-func (r *RoleRepo) fillMenusAndApis(ctx context.Context, roles []*userV1.Role) error {
-	for _, item := range roles {
-		if err := r.fillMenuAndApi(ctx, item); err != nil {
-			return err
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
 		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = permissionV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	if _, err = tx.Role.Delete().
+		Where(role.IDEQ(req.GetId())).
+		Exec(ctx); err != nil {
+		r.log.Errorf("delete role failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("delete role failed")
+	}
+
+	if err = r.rolePermissionRepo.CleanPermissions(ctx, tx, req.GetId()); err != nil {
+		return err
 	}
 
 	return nil
+}
+
+// GetPermissionsByRoleIDs 通过角色ID列表获取权限ID列表
+func (r *RoleRepo) GetPermissionsByRoleIDs(ctx context.Context, roleIDs []uint32) ([]uint32, error) {
+	return r.rolePermissionRepo.GetPermissionsByRoleIDs(ctx, roleIDs)
+}
+
+// assignPermissionCodesToRole 分配权限编码给角色
+func (r *RoleRepo) assignPermissionCodesToRole(ctx context.Context, tx *ent.Tx, tenantID, roleID, operatorID uint32, codes []string) error {
+	ids, err := r.permissionRepo.GetPermissionIDsByCodesWithTx(ctx, tx, tenantID, codes)
+	if err != nil {
+		return err
+	}
+
+	return r.rolePermissionRepo.AssignPermissions(ctx, tx, tenantID, roleID, operatorID, ids)
+}
+
+// assignPermissionsToRole 分配权限给角色
+func (r *RoleRepo) assignPermissionsToRole(ctx context.Context, tx *ent.Tx, tenantID, roleID, operatorID uint32, permissionIDs []uint32) error {
+	return r.rolePermissionRepo.AssignPermissions(ctx, tx, tenantID, roleID, operatorID, permissionIDs)
+}
+
+// GetRolePermissionApiIDs 获取角色关联的权限API资源ID列表
+func (r *RoleRepo) GetRolePermissionApiIDs(ctx context.Context, roleID uint32) ([]uint32, error) {
+	permissionIDs, err := r.rolePermissionRepo.ListPermissionIDs(ctx, roleID)
+	if err != nil {
+		return nil, err
+	}
+
+	apiIDs, err := r.permissionRepo.ListApiIDsByPermissionIDs(ctx, permissionIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	return apiIDs, nil
+}
+
+// GetRolePermissionMenuIDs 获取角色关联的权限菜单ID列表
+func (r *RoleRepo) GetRolePermissionMenuIDs(ctx context.Context, roleID uint32) ([]uint32, error) {
+	permissionIDs, err := r.rolePermissionRepo.ListPermissionIDs(ctx, roleID)
+	if err != nil {
+		return nil, err
+	}
+
+	menuIDs, err := r.permissionRepo.ListMenuIDsByPermissionIDs(ctx, permissionIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	return menuIDs, nil
+}
+
+func (r *RoleRepo) GetRolesPermissionMenuIDs(ctx context.Context, roleIDs []uint32) ([]uint32, error) {
+	permissionIDs, err := r.rolePermissionRepo.GetPermissionsByRoleIDs(ctx, roleIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	menuIDs, err := r.permissionRepo.ListMenuIDsByPermissionIDs(ctx, permissionIDs)
+	if err != nil {
+		return nil, err
+	}
+
+	return menuIDs, nil
 }

@@ -72,7 +72,7 @@ message DictType {
     (gnostic.openapi.v3.property) = {description: "字典状态"}
   ]; // 字典状态
 
-  optional int32 sort_order = 5 [
+  optional uint32 sort_order = 5 [
     json_name = "sortOrder",
     (gnostic.openapi.v3.property) = {
       description: "排序顺序，值越小越靠前"
@@ -144,7 +144,7 @@ message DictEntry {
     (gnostic.openapi.v3.property) = {description: "字典状态"}
   ]; // 字典状态
 
-  optional int32 sort_order = 8 [
+  optional uint32 sort_order = 8 [
     json_name = "sortOrder",
     (gnostic.openapi.v3.property) = {
       description: "排序顺序，值越小越靠前"

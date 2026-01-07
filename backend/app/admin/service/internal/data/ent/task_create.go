@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	servicev1 "go-wind-admin/api/gen/go/admin/service/v1"
+	adminpb "go-wind-admin/api/gen/go/admin/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/task"
 	"time"
 
@@ -192,7 +192,7 @@ func (_c *TaskCreate) SetNillableCronSpec(v *string) *TaskCreate {
 }
 
 // SetTaskOptions sets the "task_options" field.
-func (_c *TaskCreate) SetTaskOptions(v *servicev1.TaskOption) *TaskCreate {
+func (_c *TaskCreate) SetTaskOptions(v *adminpb.TaskOption) *TaskCreate {
 	_c.mutation.SetTaskOptions(v)
 	return _c
 }
@@ -619,7 +619,7 @@ func (u *TaskUpsert) ClearCronSpec() *TaskUpsert {
 }
 
 // SetTaskOptions sets the "task_options" field.
-func (u *TaskUpsert) SetTaskOptions(v *servicev1.TaskOption) *TaskUpsert {
+func (u *TaskUpsert) SetTaskOptions(v *adminpb.TaskOption) *TaskUpsert {
 	u.Set(task.FieldTaskOptions, v)
 	return u
 }
@@ -940,7 +940,7 @@ func (u *TaskUpsertOne) ClearCronSpec() *TaskUpsertOne {
 }
 
 // SetTaskOptions sets the "task_options" field.
-func (u *TaskUpsertOne) SetTaskOptions(v *servicev1.TaskOption) *TaskUpsertOne {
+func (u *TaskUpsertOne) SetTaskOptions(v *adminpb.TaskOption) *TaskUpsertOne {
 	return u.Update(func(s *TaskUpsert) {
 		s.SetTaskOptions(v)
 	})
@@ -1433,7 +1433,7 @@ func (u *TaskUpsertBulk) ClearCronSpec() *TaskUpsertBulk {
 }
 
 // SetTaskOptions sets the "task_options" field.
-func (u *TaskUpsertBulk) SetTaskOptions(v *servicev1.TaskOption) *TaskUpsertBulk {
+func (u *TaskUpsertBulk) SetTaskOptions(v *adminpb.TaskOption) *TaskUpsertBulk {
 	return u.Update(func(s *TaskUpsert) {
 		s.SetTaskOptions(v)
 	})

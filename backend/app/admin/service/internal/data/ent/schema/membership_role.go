@@ -88,11 +88,39 @@ func (MembershipRole) Mixin() []ent.Mixin {
 
 func (MembershipRole) Indexes() []ent.Index {
 	return []ent.Index{
+		// 唯一约束：同一租户下 membership 与 role 的组合唯一
 		index.Fields("tenant_id", "membership_id", "role_id").
 			Unique().
 			StorageKey("uix_mem_role_tenant_memid_role"),
 
-		index.Fields("role_id").StorageKey("idx_mem_role_role_id"),
-		index.Fields("membership_id").StorageKey("idx_mem_role_membership_id"),
+		// 常用查询：在租户范围内按 membership 查所有角色
+		index.Fields("tenant_id", "membership_id").
+			StorageKey("idx_mem_role_tenant_membership"),
+
+		// 常用查询：在租户范围内按 role 查所有成员
+		index.Fields("tenant_id", "role_id").
+			StorageKey("idx_mem_role_tenant_role"),
+
+		// 常用查询：快速查找某成员在租户下的主角色
+		index.Fields("tenant_id", "membership_id", "is_primary").
+			StorageKey("idx_mem_role_tenant_mem_primary"),
+
+		// 按分配者查询（租户范围内或全局）
+		index.Fields("tenant_id", "assigned_by").
+			StorageKey("idx_mem_role_tenant_assigned_by"),
+		index.Fields("assigned_by").
+			StorageKey("idx_mem_role_assigned_by"),
+
+		// 保留/补充常用的单列索引以支持简单或模糊查询
+		index.Fields("role_id").
+			StorageKey("idx_mem_role_role_id"),
+		index.Fields("membership_id").
+			StorageKey("idx_mem_role_membership_id"),
+		index.Fields("tenant_id").
+			StorageKey("idx_mem_role_tenant_id"),
+		index.Fields("is_primary").
+			StorageKey("idx_mem_role_is_primary"),
+		index.Fields("status").
+			StorageKey("idx_mem_role_status"),
 	}
 }

@@ -52,6 +52,8 @@ type Membership struct {
 	AssignedAt *time.Time `json:"assigned_at,omitempty"`
 	// 分配者用户ID
 	AssignedBy *uint32 `json:"assigned_by,omitempty"`
+	// 加入时间（UTC）
+	JoinedAt *time.Time `json:"joined_at,omitempty"`
 	// 状态
 	Status       *membership.Status `json:"status,omitempty"`
 	selectValues sql.SelectValues
@@ -68,7 +70,7 @@ func (*Membership) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullInt64)
 		case membership.FieldRemark, membership.FieldStatus:
 			values[i] = new(sql.NullString)
-		case membership.FieldCreatedAt, membership.FieldUpdatedAt, membership.FieldDeletedAt, membership.FieldStartAt, membership.FieldEndAt, membership.FieldAssignedAt:
+		case membership.FieldCreatedAt, membership.FieldUpdatedAt, membership.FieldDeletedAt, membership.FieldStartAt, membership.FieldEndAt, membership.FieldAssignedAt, membership.FieldJoinedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -210,6 +212,13 @@ func (_m *Membership) assignValues(columns []string, values []any) error {
 				_m.AssignedBy = new(uint32)
 				*_m.AssignedBy = uint32(value.Int64)
 			}
+		case membership.FieldJoinedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field joined_at", values[i])
+			} else if value.Valid {
+				_m.JoinedAt = new(time.Time)
+				*_m.JoinedAt = value.Time
+			}
 		case membership.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
@@ -336,6 +345,11 @@ func (_m *Membership) String() string {
 	if v := _m.AssignedBy; v != nil {
 		builder.WriteString("assigned_by=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.JoinedAt; v != nil {
+		builder.WriteString("joined_at=")
+		builder.WriteString(v.Format(time.ANSIC))
 	}
 	builder.WriteString(", ")
 	if v := _m.Status; v != nil {

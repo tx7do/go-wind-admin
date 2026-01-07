@@ -190,25 +190,43 @@ func (UserCredential) Mixin() []ent.Mixin {
 	}
 }
 
-// Edges of the UserCredential.
-func (UserCredential) Edges() []ent.Edge {
-	return nil
-}
-
 // Indexes of the UserCredential.
 func (UserCredential) Indexes() []ent.Index {
 	return []ent.Index{
-		// 组合唯一索引：注意 identifier 可能为 NULL，视数据库行为（Postgres 多个 NULL 允许）考虑在迁移层创建 partial unique index。
-		index.Fields("user_id", "identity_type", "identifier").Unique().StorageKey("idx_sys_user_credential_uid_identity_identifier"),
-		index.Fields("identifier").StorageKey("idx_sys_user_credential_identifier"),
-		index.Fields("user_id").StorageKey("idx_sys_user_credential_user_id"),
+		// 在租户范围内保证 (user_id, identity_type, identifier) 唯一
+		// 注意：若 identifier 允许 NULL，Postgres 需要在迁移中使用 partial unique index 来严格约束
+		index.Fields("tenant_id", "user_id", "identity_type", "identifier").
+			Unique().
+			StorageKey("idx_sys_user_cred_tenant_uid_identity_identifier"),
 
-		// 联合唯一索引：确保同一第三方平台账号不重复
-		// 注意：若 provider/provider_account_id 为 NULL，Postgres 上可能允许多个 NULL。若需严格唯一，请在迁移脚本中为 Postgres 创建 partial unique index:
-		// CREATE UNIQUE INDEX idx_user_credentials_provider_account ON sys_user_credentials (provider, provider_account_id) WHERE provider IS NOT NULL AND provider_account_id IS NOT NULL;
-		index.Fields("provider", "provider_account_id").Unique().StorageKey("idx_sys_user_credential_provider_account"),
+		// 按租户 + identifier 快速查找（例如登录时按 identifier 查询）
+		index.Fields("tenant_id", "identifier").
+			StorageKey("idx_sys_user_cred_tenant_identifier"),
 
-		index.Fields("provider").StorageKey("idx_sys_user_credential_provider"),
-		index.Fields("user_id", "provider").StorageKey("idx_sys_user_credential_user_provider"),
+		// 按租户 + user_id，用于查找某用户的所有凭证
+		index.Fields("tenant_id", "user_id").
+			StorageKey("idx_sys_user_cred_tenant_user_id"),
+
+		// 在租户范围内保证第三方平台账号不重复
+		// 若 provider/provider_account_id 可为 NULL，请在迁移脚本中为 Postgres 创建 partial unique index
+		index.Fields("tenant_id", "provider", "provider_account_id").
+			Unique().
+			StorageKey("idx_sys_user_cred_tenant_provider_account"),
+
+		// 按租户 + provider，用于按平台聚合或过滤
+		index.Fields("tenant_id", "provider").
+			StorageKey("idx_sys_user_cred_tenant_provider"),
+
+		// 按租户 + 是否为主认证，用于快速定位主认证方式
+		index.Fields("tenant_id", "is_primary").
+			StorageKey("idx_sys_user_cred_tenant_is_primary"),
+
+		// 按租户 + 状态 + 创建时间，用于状态过滤与时间范围查询
+		index.Fields("tenant_id", "status", "created_at").
+			StorageKey("idx_sys_user_cred_tenant_status_created_at"),
+
+		// 按租户 + 激活/重置令牌到期时间，用于按令牌过期查询
+		index.Fields("tenant_id", "activate_token_expires_at").
+			StorageKey("idx_sys_user_cred_tenant_activate_expires_at"),
 	}
 }

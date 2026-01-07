@@ -18,6 +18,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
 	"go-wind-admin/pkg/middleware/auth"
 )
@@ -63,15 +64,15 @@ func (s *ApiResourceService) RegisterRouteWalker(routeWalker RouteWalker) {
 	s.routeWalker = routeWalker
 }
 
-func (s *ApiResourceService) List(ctx context.Context, req *pagination.PagingRequest) (*adminV1.ListApiResourceResponse, error) {
+func (s *ApiResourceService) List(ctx context.Context, req *pagination.PagingRequest) (*permissionV1.ListApiResourceResponse, error) {
 	return s.repo.List(ctx, req)
 }
 
-func (s *ApiResourceService) Get(ctx context.Context, req *adminV1.GetApiResourceRequest) (*adminV1.ApiResource, error) {
+func (s *ApiResourceService) Get(ctx context.Context, req *permissionV1.GetApiResourceRequest) (*permissionV1.ApiResource, error) {
 	return s.repo.Get(ctx, req)
 }
 
-func (s *ApiResourceService) Create(ctx context.Context, req *adminV1.CreateApiResourceRequest) (*emptypb.Empty, error) {
+func (s *ApiResourceService) Create(ctx context.Context, req *permissionV1.CreateApiResourceRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -96,7 +97,7 @@ func (s *ApiResourceService) Create(ctx context.Context, req *adminV1.CreateApiR
 	return &emptypb.Empty{}, nil
 }
 
-func (s *ApiResourceService) Update(ctx context.Context, req *adminV1.UpdateApiResourceRequest) (*emptypb.Empty, error) {
+func (s *ApiResourceService) Update(ctx context.Context, req *permissionV1.UpdateApiResourceRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -121,7 +122,7 @@ func (s *ApiResourceService) Update(ctx context.Context, req *adminV1.UpdateApiR
 	return &emptypb.Empty{}, nil
 }
 
-func (s *ApiResourceService) Delete(ctx context.Context, req *adminV1.DeleteApiResourceRequest) (*emptypb.Empty, error) {
+func (s *ApiResourceService) Delete(ctx context.Context, req *permissionV1.DeleteApiResourceRequest) (*emptypb.Empty, error) {
 	if err := s.repo.Delete(ctx, req); err != nil {
 		return nil, err
 	}
@@ -172,7 +173,7 @@ func (s *ApiResourceService) syncWithOpenAPI(ctx context.Context) error {
 	}
 
 	var count uint32 = 0
-	var apiResourceList []*adminV1.ApiResource
+	var apiResourceList []*permissionV1.ApiResource
 
 	// 遍历所有路径和操作
 	for path, pathItem := range doc.Paths.Map() {
@@ -190,7 +191,7 @@ func (s *ApiResourceService) syncWithOpenAPI(ctx context.Context) error {
 
 			count++
 
-			apiResourceList = append(apiResourceList, &adminV1.ApiResource{
+			apiResourceList = append(apiResourceList, &permissionV1.ApiResource{
 				Id:                trans.Ptr(count),
 				Path:              trans.Ptr(path),
 				Method:            trans.Ptr(method),
@@ -204,7 +205,7 @@ func (s *ApiResourceService) syncWithOpenAPI(ctx context.Context) error {
 
 	for i, res := range apiResourceList {
 		res.Id = trans.Ptr(uint32(i + 1))
-		_ = s.repo.Update(ctx, &adminV1.UpdateApiResourceRequest{
+		_ = s.repo.Update(ctx, &permissionV1.UpdateApiResourceRequest{
 			AllowMissing: trans.Ptr(true),
 			Data:         res,
 		})
@@ -221,13 +222,13 @@ func (s *ApiResourceService) syncWithWalkRoute(ctx context.Context) error {
 
 	var count uint32 = 0
 
-	var apiResourceList []*adminV1.ApiResource
+	var apiResourceList []*permissionV1.ApiResource
 
 	if err := s.routeWalker.WalkRoute(func(info http.RouteInfo) error {
 		//log.Infof("Path[%s] Method[%s]", info.Path, info.Method)
 		count++
 
-		apiResourceList = append(apiResourceList, &adminV1.ApiResource{
+		apiResourceList = append(apiResourceList, &permissionV1.ApiResource{
 			Id:     trans.Ptr(count),
 			Path:   trans.Ptr(info.Path),
 			Method: trans.Ptr(info.Method),
@@ -248,7 +249,7 @@ func (s *ApiResourceService) syncWithWalkRoute(ctx context.Context) error {
 
 	for i, res := range apiResourceList {
 		res.Id = trans.Ptr(uint32(i + 1))
-		_ = s.repo.Update(ctx, &adminV1.UpdateApiResourceRequest{
+		_ = s.repo.Update(ctx, &permissionV1.UpdateApiResourceRequest{
 			AllowMissing: trans.Ptr(true),
 			Data:         res,
 		})
@@ -258,23 +259,23 @@ func (s *ApiResourceService) syncWithWalkRoute(ctx context.Context) error {
 }
 
 // GetWalkRouteData 获取通过 WalkRoute 获取的路由数据，用于调试
-func (s *ApiResourceService) GetWalkRouteData(_ context.Context, _ *emptypb.Empty) (*adminV1.ListApiResourceResponse, error) {
+func (s *ApiResourceService) GetWalkRouteData(_ context.Context, _ *emptypb.Empty) (*permissionV1.ListApiResourceResponse, error) {
 	if s.routeWalker == nil {
 		return nil, adminV1.ErrorInternalServerError("router walker is nil")
 	}
 
-	resp := &adminV1.ListApiResourceResponse{
-		Items: []*adminV1.ApiResource{},
+	resp := &permissionV1.ListApiResourceResponse{
+		Items: []*permissionV1.ApiResource{},
 	}
 	var count uint32 = 0
 	if err := s.routeWalker.WalkRoute(func(info http.RouteInfo) error {
 		//log.Infof("Path[%s] Method[%s]", info.Path, info.Method)
 		count++
-		resp.Items = append(resp.Items, &adminV1.ApiResource{
+		resp.Items = append(resp.Items, &permissionV1.ApiResource{
 			Id:     trans.Ptr(count),
 			Path:   trans.Ptr(info.Path),
 			Method: trans.Ptr(info.Method),
-			Status: trans.Ptr(adminV1.ApiResource_ON),
+			Status: trans.Ptr(permissionV1.ApiResource_ON),
 		})
 		return nil
 	}); err != nil {

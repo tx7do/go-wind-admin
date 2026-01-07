@@ -26,6 +26,8 @@ const REFRESH_INTERVAL = 90 * 60 * 1000; // 1.5 小时
 let refreshTimer: null | ReturnType<typeof setTimeout> = null;
 let refreshCallback: null | RefreshTokenFunc = null;
 
+let isReauthenticating = false;
+
 /**
  * 认证状态管理
  */
@@ -195,15 +197,15 @@ export const useAuthStore = defineStore('auth', () => {
 
     console.log('currentRoute', router.currentRoute.value);
     // 如果当前页是登录页，则不处理
-    if ('/auth/login' === router.currentRoute.value.path) return;
+    if (router.currentRoute.value.path === '/auth/login') return;
 
     // 回登录页带上当前路由地址
     await router.replace({
       path: LOGIN_PATH,
       query: redirect
         ? {
-          redirect: encodeURIComponent(router.currentRoute.value.fullPath),
-        }
+            redirect: encodeURIComponent(router.currentRoute.value.fullPath),
+          }
         : {},
     });
   }
@@ -241,22 +243,31 @@ export const useAuthStore = defineStore('auth', () => {
    * 重新认证
    */
   async function reauthenticate(): Promise<void> {
-    console.warn('Access token or refresh token is invalid or expired. ');
+    if (isReauthenticating) {
+      return;
+    }
+    isReauthenticating = true;
 
-    // 停止定时刷新并清理回调，防止继续触发刷新请求
-    stopRefreshTimer();
+    try {
+      console.warn('Access token or refresh token is invalid or expired.');
 
-    accessStore.setAccessToken(null);
-    accessStore.setRefreshToken(null);
+      // 停止定时刷新并清理回调，防止继续触发刷新请求
+      stopRefreshTimer();
 
-    if (
-      preferences.app.loginExpiredMode === 'modal' &&
-      accessStore.isAccessChecked
-    ) {
-      accessStore.setLoginExpired(true);
-    } else {
-      // 非 modal 模式直接登出并跳转登录页
-      await logout();
+      accessStore.setAccessToken(null);
+      accessStore.setRefreshToken(null);
+
+      if (
+        preferences.app.loginExpiredMode === 'modal' &&
+        accessStore.isAccessChecked
+      ) {
+        accessStore.setLoginExpired(true);
+      } else {
+        // 非 modal 模式直接登出并跳转登录页
+        await logout();
+      }
+    } finally {
+      isReauthenticating = false;
     }
   }
 

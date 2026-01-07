@@ -121,13 +121,13 @@ func (_c *InternalMessageCategoryCreate) SetNillableIsEnabled(v *bool) *Internal
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (_c *InternalMessageCategoryCreate) SetSortOrder(v int32) *InternalMessageCategoryCreate {
+func (_c *InternalMessageCategoryCreate) SetSortOrder(v uint32) *InternalMessageCategoryCreate {
 	_c.mutation.SetSortOrder(v)
 	return _c
 }
 
 // SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_c *InternalMessageCategoryCreate) SetNillableSortOrder(v *int32) *InternalMessageCategoryCreate {
+func (_c *InternalMessageCategoryCreate) SetNillableSortOrder(v *uint32) *InternalMessageCategoryCreate {
 	if v != nil {
 		_c.SetSortOrder(*v)
 	}
@@ -158,20 +158,6 @@ func (_c *InternalMessageCategoryCreate) SetTenantID(v uint32) *InternalMessageC
 func (_c *InternalMessageCategoryCreate) SetNillableTenantID(v *uint32) *InternalMessageCategoryCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
-	}
-	return _c
-}
-
-// SetParentID sets the "parent_id" field.
-func (_c *InternalMessageCategoryCreate) SetParentID(v uint32) *InternalMessageCategoryCreate {
-	_c.mutation.SetParentID(v)
-	return _c
-}
-
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_c *InternalMessageCategoryCreate) SetNillableParentID(v *uint32) *InternalMessageCategoryCreate {
-	if v != nil {
-		_c.SetParentID(*v)
 	}
 	return _c
 }
@@ -222,26 +208,6 @@ func (_c *InternalMessageCategoryCreate) SetNillableIconURL(v *string) *Internal
 func (_c *InternalMessageCategoryCreate) SetID(v uint32) *InternalMessageCategoryCreate {
 	_c.mutation.SetID(v)
 	return _c
-}
-
-// SetParent sets the "parent" edge to the InternalMessageCategory entity.
-func (_c *InternalMessageCategoryCreate) SetParent(v *InternalMessageCategory) *InternalMessageCategoryCreate {
-	return _c.SetParentID(v.ID)
-}
-
-// AddChildIDs adds the "children" edge to the InternalMessageCategory entity by IDs.
-func (_c *InternalMessageCategoryCreate) AddChildIDs(ids ...uint32) *InternalMessageCategoryCreate {
-	_c.mutation.AddChildIDs(ids...)
-	return _c
-}
-
-// AddChildren adds the "children" edges to the InternalMessageCategory entity.
-func (_c *InternalMessageCategoryCreate) AddChildren(v ...*InternalMessageCategory) *InternalMessageCategoryCreate {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddChildIDs(ids...)
 }
 
 // Mutation returns the InternalMessageCategoryMutation object of the builder.
@@ -368,7 +334,7 @@ func (_c *InternalMessageCategoryCreate) createSpec() (*InternalMessageCategory,
 		_node.IsEnabled = &value
 	}
 	if value, ok := _c.mutation.SortOrder(); ok {
-		_spec.SetField(internalmessagecategory.FieldSortOrder, field.TypeInt32, value)
+		_spec.SetField(internalmessagecategory.FieldSortOrder, field.TypeUint32, value)
 		_node.SortOrder = &value
 	}
 	if value, ok := _c.mutation.Remark(); ok {
@@ -390,39 +356,6 @@ func (_c *InternalMessageCategoryCreate) createSpec() (*InternalMessageCategory,
 	if value, ok := _c.mutation.IconURL(); ok {
 		_spec.SetField(internalmessagecategory.FieldIconURL, field.TypeString, value)
 		_node.IconURL = &value
-	}
-	if nodes := _c.mutation.ParentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   internalmessagecategory.ParentTable,
-			Columns: []string{internalmessagecategory.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(internalmessagecategory.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.ParentID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.ChildrenIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   internalmessagecategory.ChildrenTable,
-			Columns: []string{internalmessagecategory.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(internalmessagecategory.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -603,7 +536,7 @@ func (u *InternalMessageCategoryUpsert) ClearIsEnabled() *InternalMessageCategor
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (u *InternalMessageCategoryUpsert) SetSortOrder(v int32) *InternalMessageCategoryUpsert {
+func (u *InternalMessageCategoryUpsert) SetSortOrder(v uint32) *InternalMessageCategoryUpsert {
 	u.Set(internalmessagecategory.FieldSortOrder, v)
 	return u
 }
@@ -615,7 +548,7 @@ func (u *InternalMessageCategoryUpsert) UpdateSortOrder() *InternalMessageCatego
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *InternalMessageCategoryUpsert) AddSortOrder(v int32) *InternalMessageCategoryUpsert {
+func (u *InternalMessageCategoryUpsert) AddSortOrder(v uint32) *InternalMessageCategoryUpsert {
 	u.Add(internalmessagecategory.FieldSortOrder, v)
 	return u
 }
@@ -641,24 +574,6 @@ func (u *InternalMessageCategoryUpsert) UpdateRemark() *InternalMessageCategoryU
 // ClearRemark clears the value of the "remark" field.
 func (u *InternalMessageCategoryUpsert) ClearRemark() *InternalMessageCategoryUpsert {
 	u.SetNull(internalmessagecategory.FieldRemark)
-	return u
-}
-
-// SetParentID sets the "parent_id" field.
-func (u *InternalMessageCategoryUpsert) SetParentID(v uint32) *InternalMessageCategoryUpsert {
-	u.Set(internalmessagecategory.FieldParentID, v)
-	return u
-}
-
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *InternalMessageCategoryUpsert) UpdateParentID() *InternalMessageCategoryUpsert {
-	u.SetExcluded(internalmessagecategory.FieldParentID)
-	return u
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (u *InternalMessageCategoryUpsert) ClearParentID() *InternalMessageCategoryUpsert {
-	u.SetNull(internalmessagecategory.FieldParentID)
 	return u
 }
 
@@ -918,14 +833,14 @@ func (u *InternalMessageCategoryUpsertOne) ClearIsEnabled() *InternalMessageCate
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (u *InternalMessageCategoryUpsertOne) SetSortOrder(v int32) *InternalMessageCategoryUpsertOne {
+func (u *InternalMessageCategoryUpsertOne) SetSortOrder(v uint32) *InternalMessageCategoryUpsertOne {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.SetSortOrder(v)
 	})
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *InternalMessageCategoryUpsertOne) AddSortOrder(v int32) *InternalMessageCategoryUpsertOne {
+func (u *InternalMessageCategoryUpsertOne) AddSortOrder(v uint32) *InternalMessageCategoryUpsertOne {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.AddSortOrder(v)
 	})
@@ -963,27 +878,6 @@ func (u *InternalMessageCategoryUpsertOne) UpdateRemark() *InternalMessageCatego
 func (u *InternalMessageCategoryUpsertOne) ClearRemark() *InternalMessageCategoryUpsertOne {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.ClearRemark()
-	})
-}
-
-// SetParentID sets the "parent_id" field.
-func (u *InternalMessageCategoryUpsertOne) SetParentID(v uint32) *InternalMessageCategoryUpsertOne {
-	return u.Update(func(s *InternalMessageCategoryUpsert) {
-		s.SetParentID(v)
-	})
-}
-
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *InternalMessageCategoryUpsertOne) UpdateParentID() *InternalMessageCategoryUpsertOne {
-	return u.Update(func(s *InternalMessageCategoryUpsert) {
-		s.UpdateParentID()
-	})
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (u *InternalMessageCategoryUpsertOne) ClearParentID() *InternalMessageCategoryUpsertOne {
-	return u.Update(func(s *InternalMessageCategoryUpsert) {
-		s.ClearParentID()
 	})
 }
 
@@ -1418,14 +1312,14 @@ func (u *InternalMessageCategoryUpsertBulk) ClearIsEnabled() *InternalMessageCat
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (u *InternalMessageCategoryUpsertBulk) SetSortOrder(v int32) *InternalMessageCategoryUpsertBulk {
+func (u *InternalMessageCategoryUpsertBulk) SetSortOrder(v uint32) *InternalMessageCategoryUpsertBulk {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.SetSortOrder(v)
 	})
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *InternalMessageCategoryUpsertBulk) AddSortOrder(v int32) *InternalMessageCategoryUpsertBulk {
+func (u *InternalMessageCategoryUpsertBulk) AddSortOrder(v uint32) *InternalMessageCategoryUpsertBulk {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.AddSortOrder(v)
 	})
@@ -1463,27 +1357,6 @@ func (u *InternalMessageCategoryUpsertBulk) UpdateRemark() *InternalMessageCateg
 func (u *InternalMessageCategoryUpsertBulk) ClearRemark() *InternalMessageCategoryUpsertBulk {
 	return u.Update(func(s *InternalMessageCategoryUpsert) {
 		s.ClearRemark()
-	})
-}
-
-// SetParentID sets the "parent_id" field.
-func (u *InternalMessageCategoryUpsertBulk) SetParentID(v uint32) *InternalMessageCategoryUpsertBulk {
-	return u.Update(func(s *InternalMessageCategoryUpsert) {
-		s.SetParentID(v)
-	})
-}
-
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *InternalMessageCategoryUpsertBulk) UpdateParentID() *InternalMessageCategoryUpsertBulk {
-	return u.Update(func(s *InternalMessageCategoryUpsert) {
-		s.UpdateParentID()
-	})
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (u *InternalMessageCategoryUpsertBulk) ClearParentID() *InternalMessageCategoryUpsertBulk {
-	return u.Update(func(s *InternalMessageCategoryUpsert) {
-		s.ClearParentID()
 	})
 }
 

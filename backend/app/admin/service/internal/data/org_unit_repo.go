@@ -107,7 +107,7 @@ func (r *OrgUnitRepo) List(ctx context.Context, req *pagination.PagingRequest) (
 	}
 
 	sort.SliceStable(entities, func(i, j int) bool {
-		var sortI, sortJ int32
+		var sortI, sortJ uint32
 		if entities[i].SortOrder != nil {
 			sortI = *entities[i].SortOrder
 		}

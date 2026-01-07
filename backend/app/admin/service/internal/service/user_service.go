@@ -32,10 +32,7 @@ type UserService struct {
 	orgUnitRepo  *data.OrgUnitRepo
 	tenantRepo   *data.TenantRepo
 
-	membershipRepo         *data.MembershipRepo
-	membershipRoleRepo     *data.MembershipRoleRepo
-	membershipPositionRepo *data.MembershipPositionRepo
-	membershipOrgUnitRepo  *data.MembershipOrgUnitRepo
+	membershipRepo *data.MembershipRepo
 }
 
 func NewUserService(
@@ -47,22 +44,16 @@ func NewUserService(
 	orgUnitRepo *data.OrgUnitRepo,
 	tenantRepo *data.TenantRepo,
 	membershipRepo *data.MembershipRepo,
-	membershipRoleRepo *data.MembershipRoleRepo,
-	membershipPositionRepo *data.MembershipPositionRepo,
-	membershipOrgUnitRepo *data.MembershipOrgUnitRepo,
 ) *UserService {
 	svc := &UserService{
-		log:                    ctx.NewLoggerHelper("user/service/admin-service"),
-		userRepo:               userRepo,
-		roleRepo:               roleRepo,
-		userCredentialRepo:     userCredentialRepo,
-		positionRepo:           positionRepo,
-		orgUnitRepo:            orgUnitRepo,
-		tenantRepo:             tenantRepo,
-		membershipRepo:         membershipRepo,
-		membershipRoleRepo:     membershipRoleRepo,
-		membershipPositionRepo: membershipPositionRepo,
-		membershipOrgUnitRepo:  membershipOrgUnitRepo,
+		log:                ctx.NewLoggerHelper("user/service/admin-service"),
+		userRepo:           userRepo,
+		roleRepo:           roleRepo,
+		userCredentialRepo: userCredentialRepo,
+		positionRepo:       positionRepo,
+		orgUnitRepo:        orgUnitRepo,
+		tenantRepo:         tenantRepo,
+		membershipRepo:     membershipRepo,
 	}
 
 	svc.init()
@@ -401,9 +392,11 @@ func (s *UserService) CreateDefaultUser(ctx context.Context) error {
 
 	var err error
 
+	// 创建默认用户
 	if _, err = s.userRepo.Create(ctx, &userV1.CreateUserRequest{
 		Data: &userV1.User{
 			Id:       trans.Ptr(uint32(1)),
+			TenantId: trans.Ptr(uint32(0)),
 			Username: trans.Ptr(defaultUsername),
 			Realname: trans.Ptr("喵个咪"),
 			Nickname: trans.Ptr("鹳狸猿"),
@@ -415,6 +408,7 @@ func (s *UserService) CreateDefaultUser(ctx context.Context) error {
 		return err
 	}
 
+	// 创建默认用户凭证
 	if err = s.userCredentialRepo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 		Data: &authenticationV1.UserCredential{
 			UserId:         trans.Ptr(uint32(1)),
@@ -430,24 +424,15 @@ func (s *UserService) CreateDefaultUser(ctx context.Context) error {
 		return err
 	}
 
-	if err = s.membershipRepo.AssignTenantWithData(ctx, nil, &userV1.Membership{
+	// 创建默认用户租户关联关系
+	if err = s.membershipRepo.AssignTenantMembership(ctx, &userV1.Membership{
 		UserId:    trans.Ptr(uint32(1)),
-		TenantId:  trans.Ptr(uint32(1)),
+		TenantId:  trans.Ptr(uint32(0)),
 		Status:    userV1.Membership_ACTIVE.Enum(),
 		IsPrimary: trans.Ptr(true),
+		RoleIds:   []uint32{1},
 	}); err != nil {
 		s.log.Errorf("create default user membership err: %v", err)
-		return err
-	}
-
-	if err = s.membershipRoleRepo.AssignRoleWithData(ctx, nil, &userV1.MembershipRole{
-		MembershipId: trans.Ptr(uint32(1)),
-		TenantId:     trans.Ptr(uint32(1)),
-		RoleId:       trans.Ptr(uint32(1)),
-		Status:       userV1.MembershipRole_ACTIVE.Enum(),
-		IsPrimary:    trans.Ptr(true),
-	}); err != nil {
-		s.log.Errorf("create default user membership role err: %v", err)
 		return err
 	}
 

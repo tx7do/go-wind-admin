@@ -91,7 +91,7 @@ func IsEnabled(v bool) predicate.DictType {
 }
 
 // SortOrder applies equality check predicate on the "sort_order" field. It's identical to SortOrderEQ.
-func SortOrder(v int32) predicate.DictType {
+func SortOrder(v uint32) predicate.DictType {
 	return predicate.DictType(sql.FieldEQ(FieldSortOrder, v))
 }
 
@@ -436,42 +436,42 @@ func IsEnabledNotNil() predicate.DictType {
 }
 
 // SortOrderEQ applies the EQ predicate on the "sort_order" field.
-func SortOrderEQ(v int32) predicate.DictType {
+func SortOrderEQ(v uint32) predicate.DictType {
 	return predicate.DictType(sql.FieldEQ(FieldSortOrder, v))
 }
 
 // SortOrderNEQ applies the NEQ predicate on the "sort_order" field.
-func SortOrderNEQ(v int32) predicate.DictType {
+func SortOrderNEQ(v uint32) predicate.DictType {
 	return predicate.DictType(sql.FieldNEQ(FieldSortOrder, v))
 }
 
 // SortOrderIn applies the In predicate on the "sort_order" field.
-func SortOrderIn(vs ...int32) predicate.DictType {
+func SortOrderIn(vs ...uint32) predicate.DictType {
 	return predicate.DictType(sql.FieldIn(FieldSortOrder, vs...))
 }
 
 // SortOrderNotIn applies the NotIn predicate on the "sort_order" field.
-func SortOrderNotIn(vs ...int32) predicate.DictType {
+func SortOrderNotIn(vs ...uint32) predicate.DictType {
 	return predicate.DictType(sql.FieldNotIn(FieldSortOrder, vs...))
 }
 
 // SortOrderGT applies the GT predicate on the "sort_order" field.
-func SortOrderGT(v int32) predicate.DictType {
+func SortOrderGT(v uint32) predicate.DictType {
 	return predicate.DictType(sql.FieldGT(FieldSortOrder, v))
 }
 
 // SortOrderGTE applies the GTE predicate on the "sort_order" field.
-func SortOrderGTE(v int32) predicate.DictType {
+func SortOrderGTE(v uint32) predicate.DictType {
 	return predicate.DictType(sql.FieldGTE(FieldSortOrder, v))
 }
 
 // SortOrderLT applies the LT predicate on the "sort_order" field.
-func SortOrderLT(v int32) predicate.DictType {
+func SortOrderLT(v uint32) predicate.DictType {
 	return predicate.DictType(sql.FieldLT(FieldSortOrder, v))
 }
 
 // SortOrderLTE applies the LTE predicate on the "sort_order" field.
-func SortOrderLTE(v int32) predicate.DictType {
+func SortOrderLTE(v uint32) predicate.DictType {
 	return predicate.DictType(sql.FieldLTE(FieldSortOrder, v))
 }
 

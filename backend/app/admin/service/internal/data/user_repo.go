@@ -47,6 +47,7 @@ type userRepo struct {
 
 	mapper          *mapper.CopierMapper[userV1.User, ent.User]
 	genderConverter *mapper.EnumTypeConverter[userV1.User_Gender, user.Gender]
+	statusConverter *mapper.EnumTypeConverter[userV1.User_Status, user.Status]
 
 	repository *entCrud.Repository[
 		ent.UserQuery, ent.UserSelect,
@@ -64,6 +65,7 @@ func NewUserRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Clien
 		entClient:       entClient,
 		mapper:          mapper.NewCopierMapper[userV1.User, ent.User](),
 		genderConverter: mapper.NewEnumTypeConverter[userV1.User_Gender, user.Gender](userV1.User_Gender_name, userV1.User_Gender_value),
+		statusConverter: mapper.NewEnumTypeConverter[userV1.User_Status, user.Status](userV1.User_Status_name, userV1.User_Status_value),
 	}
 
 	repo.init()
@@ -85,6 +87,7 @@ func (r *userRepo) init() {
 	r.mapper.AppendConverters(copierutil.NewTimeTimestamppbConverterPair())
 
 	r.mapper.AppendConverters(r.genderConverter.NewConverterPair())
+	r.mapper.AppendConverters(r.statusConverter.NewConverterPair())
 }
 
 func (r *userRepo) Count(ctx context.Context) (int, error) {
@@ -163,8 +166,10 @@ func (r *userRepo) Create(ctx context.Context, req *userV1.CreateUserRequest) (*
 		SetNillableDescription(req.Data.Description).
 		SetNillableRemark(req.Data.Remark).
 		SetNillableLastLoginAt(timeutil.TimestamppbToTime(req.Data.LastLoginAt)).
+		SetNillableLockedUntil(timeutil.TimestamppbToTime(req.Data.LockedUntil)).
 		SetNillableLastLoginIP(req.Data.LastLoginIp).
 		SetNillableGender(r.genderConverter.ToEntity(req.Data.Gender)).
+		SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
 
@@ -236,8 +241,10 @@ func (r *userRepo) Update(ctx context.Context, req *userV1.UpdateUserRequest) er
 				SetNillableDescription(req.Data.Description).
 				SetNillableRemark(req.Data.Remark).
 				SetNillableLastLoginAt(timeutil.TimestamppbToTime(req.Data.LastLoginAt)).
+				SetNillableLockedUntil(timeutil.TimestamppbToTime(req.Data.LockedUntil)).
 				SetNillableLastLoginIP(req.Data.LastLoginIp).
 				SetNillableGender(r.genderConverter.ToEntity(req.Data.Gender)).
+				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
 

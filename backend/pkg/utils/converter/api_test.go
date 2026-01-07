@@ -13,15 +13,15 @@ func TestApiPermissionConverter_ConvertByPath(t *testing.T) {
 		path   string
 		want   string
 	}{
-		{"get list users", "GET", "/v1/users", "users:list"},
-		{"get single user", "GET", "/v1/users/{id}", "users:get"},
-		{"create user", "POST", "/v1/users", "users:create"},
-		{"update user", "PUT", "/v1/users/{id}", "users:update"},
-		{"delete user", "DELETE", "/v1/users/{id}", "users:delete"},
-		{"nested admin settings", "GET", "/api/v1/admin/settings", "admin:settings:list"},
-		{"hyphen group", "GET", "/v1/user-groups", "user-groups:list"},
-		{"get task by typeNames", "GET", "/admin/v1/tasks:type-names", "tasks:type-names:list"},
-		{"walk route", "GET", "/admin/v1/api-resources/walk-route", "api-resources:walk-route:list"},
+		{"get list users", "GET", "/v1/users", "user:view"},
+		{"get single user", "GET", "/v1/users/{id}", "user:view"},
+		{"create user", "POST", "/v1/users", "user:create"},
+		{"update user", "PUT", "/v1/users/{id}", "user:edit"},
+		{"delete user", "DELETE", "/v1/users/{id}", "user:delete"},
+		{"nested admin settings", "GET", "/api/v1/admin/settings", "admin:view"},
+		{"hyphen group", "GET", "/v1/user-groups", "user-group:view"},
+		{"get task by typeNames", "GET", "/admin/v1/tasks:type-names", "task:view"},
+		{"walk route", "GET", "/admin/v1/api-resources/walk-route", "api-resource:view"},
 	}
 
 	for _, tc := range cases {
@@ -92,6 +92,106 @@ func TestStripVersionPrefix(t *testing.T) {
 			got := c.stripVersionPrefix(tc.in)
 			if got != tc.want {
 				t.Fatalf("stripVersionPrefix(%q) = %q, want %q", tc.in, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestRemovePathParams(t *testing.T) {
+	c := NewApiPermissionConverter()
+
+	cases := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{"empty", "", ""},
+		{"root slash", "/", ""},
+		{"only param", "/{id}", ""},
+		{"only param no slash", "{id}", ""},
+		{"param with spaces", "/{ id }/", ""},
+		{"simple resource", "/users", "users"},
+		{"resource with param", "/users/{id}", "users"},
+		{"nested resources", "/users/{id}/posts/{postId}", "users/posts"},
+		{"trailing slash", "/users/{id}/posts/", "users/posts"},
+		{"leading param", "/{id}/users", "users"},
+		{"all params", "/{id}/{pid}", ""},
+		{"double slashes", "/users//{id}//posts", "users/posts"},
+		{"colon segment", "/tasks:type-names/{id}", "tasks:type-names"},
+	}
+
+	for _, tc := range cases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			got := c.removePathParams(tc.in)
+			if got != tc.want {
+				t.Fatalf("removePathParams(%q) = %q, want %q", tc.in, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestSingularizeSegments(t *testing.T) {
+	c := NewApiPermissionConverter()
+
+	cases := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{"empty", "", ""},
+		{"already singular", "user:profile", "user:profile"},
+		{"simple plural", "tasks", "task"},
+		{"colon segments", "tasks:type-names", "task:type-name"},
+		{"hyphen segments", "tasks-users", "task-user"},
+		{"underline segments", "tasks_users", "task_user"},
+		{"slash and underscore", "tasks/type_names", "task/type_name"},
+		{"mixed separators", "tasks::names--items", "task::name--item"},
+		{"irregular plural", "statuses:passes", "status:pass"},
+		{"multiple separators preserved", "tasks--and__more::names", "task--and__more::name"},
+	}
+
+	for _, tc := range cases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			got := c.singularizeSegments(tc.in)
+			if got != tc.want {
+				t.Fatalf("singularizeSegments(%q) = %q, want %q", tc.in, got, tc.want)
+			}
+		})
+	}
+}
+
+func TestMethodToAction(t *testing.T) {
+	c := NewApiPermissionConverter()
+
+	cases := []struct {
+		name   string
+		method string
+		path   string
+		want   string
+	}{
+		{"GET -> view", "GET", "/v1/users", "view"},
+		{"get lowercase -> view", "get", "/v1/users", "view"},
+		{"POST -> create", "POST", "/v1/users", "create"},
+		{"mixed case POST -> create", "PoSt", "/v1/users", "create"},
+		{"PUT -> edit", "PUT", "/v1/users/1", "edit"},
+		{"PATCH -> edit", "PATCH", "/v1/users/1", "edit"},
+		{"DELETE -> delete", "DELETE", "/v1/users/1", "delete"},
+		{"unknown method -> lowercase", "OPTIONS", "/v1/users", "options"},
+		{"path ends with /list overrides method", "POST", "/v1/users/list", "view"},
+		{"path ends with /list and GET", "GET", "/v1/users/list", "view"},
+	}
+
+	for _, tc := range cases {
+		tc := tc
+		t.Run(tc.name, func(t *testing.T) {
+			t.Parallel()
+			got := c.methodToAction(tc.method, tc.path)
+			if got != tc.want {
+				t.Fatalf("methodToAction(%q, %q) = %q, want %q", tc.method, tc.path, got, tc.want)
 			}
 		})
 	}

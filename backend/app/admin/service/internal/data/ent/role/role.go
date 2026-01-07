@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -28,38 +27,22 @@ const (
 	FieldDeletedBy = "deleted_by"
 	// FieldRemark holds the string denoting the remark field in the database.
 	FieldRemark = "remark"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
 	// FieldSortOrder holds the string denoting the sort_order field in the database.
 	FieldSortOrder = "sort_order"
-	// FieldParentID holds the string denoting the parent_id field in the database.
-	FieldParentID = "parent_id"
 	// FieldTenantID holds the string denoting the tenant_id field in the database.
 	FieldTenantID = "tenant_id"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldCode holds the string denoting the code field in the database.
 	FieldCode = "code"
-	// FieldCustomOrgUnitIds holds the string denoting the custom_org_unit_ids field in the database.
-	FieldCustomOrgUnitIds = "custom_org_unit_ids"
-	// FieldDataScope holds the string denoting the data_scope field in the database.
-	FieldDataScope = "data_scope"
-	// FieldStatus holds the string denoting the status field in the database.
-	FieldStatus = "status"
-	// FieldType holds the string denoting the type field in the database.
-	FieldType = "type"
-	// EdgeParent holds the string denoting the parent edge name in mutations.
-	EdgeParent = "parent"
-	// EdgeChildren holds the string denoting the children edge name in mutations.
-	EdgeChildren = "children"
+	// FieldIsProtected holds the string denoting the is_protected field in the database.
+	FieldIsProtected = "is_protected"
 	// Table holds the table name of the role in the database.
 	Table = "sys_roles"
-	// ParentTable is the table that holds the parent relation/edge.
-	ParentTable = "sys_roles"
-	// ParentColumn is the table column denoting the parent relation/edge.
-	ParentColumn = "parent_id"
-	// ChildrenTable is the table that holds the children relation/edge.
-	ChildrenTable = "sys_roles"
-	// ChildrenColumn is the table column denoting the children relation/edge.
-	ChildrenColumn = "parent_id"
 )
 
 // Columns holds all SQL columns for role fields.
@@ -72,15 +55,13 @@ var Columns = []string{
 	FieldUpdatedBy,
 	FieldDeletedBy,
 	FieldRemark,
+	FieldDescription,
 	FieldSortOrder,
-	FieldParentID,
 	FieldTenantID,
+	FieldStatus,
 	FieldName,
 	FieldCode,
-	FieldCustomOrgUnitIds,
-	FieldDataScope,
-	FieldStatus,
-	FieldType,
+	FieldIsProtected,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -95,40 +76,16 @@ func ValidColumn(column string) bool {
 
 var (
 	// DefaultSortOrder holds the default value on creation for the "sort_order" field.
-	DefaultSortOrder int32
+	DefaultSortOrder uint32
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// CodeValidator is a validator for the "code" field. It is called by the builders before save.
 	CodeValidator func(string) error
+	// DefaultIsProtected holds the default value on creation for the "is_protected" field.
+	DefaultIsProtected bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
-
-// DataScope defines the type for the "data_scope" enum field.
-type DataScope string
-
-// DataScope values.
-const (
-	DataScopeAll           DataScope = "ALL"
-	DataScopeSelf          DataScope = "SELF"
-	DataScopeUnitOnly      DataScope = "UNIT_ONLY"
-	DataScopeUnitAndChild  DataScope = "UNIT_AND_CHILD"
-	DataScopeSelectedUnits DataScope = "SELECTED_UNITS"
-)
-
-func (ds DataScope) String() string {
-	return string(ds)
-}
-
-// DataScopeValidator is a validator for the "data_scope" field enum values. It is called by the builders before save.
-func DataScopeValidator(ds DataScope) error {
-	switch ds {
-	case DataScopeAll, DataScopeSelf, DataScopeUnitOnly, DataScopeUnitAndChild, DataScopeSelectedUnits:
-		return nil
-	default:
-		return fmt.Errorf("role: invalid enum value for data_scope field: %q", ds)
-	}
-}
 
 // Status defines the type for the "status" enum field.
 type Status string
@@ -138,8 +95,8 @@ const DefaultStatus = StatusOn
 
 // Status values.
 const (
-	StatusOn  Status = "ON"
 	StatusOff Status = "OFF"
+	StatusOn  Status = "ON"
 )
 
 func (s Status) String() string {
@@ -149,36 +106,10 @@ func (s Status) String() string {
 // StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
 func StatusValidator(s Status) error {
 	switch s {
-	case StatusOn, StatusOff:
+	case StatusOff, StatusOn:
 		return nil
 	default:
 		return fmt.Errorf("role: invalid enum value for status field: %q", s)
-	}
-}
-
-// Type defines the type for the "type" enum field.
-type Type string
-
-// TypeSystem is the default value of the Type enum.
-const DefaultType = TypeSystem
-
-// Type values.
-const (
-	TypeSystem Type = "SYSTEM"
-	TypeCustom Type = "CUSTOM"
-)
-
-func (_type Type) String() string {
-	return string(_type)
-}
-
-// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
-func TypeValidator(_type Type) error {
-	switch _type {
-	case TypeSystem, TypeCustom:
-		return nil
-	default:
-		return fmt.Errorf("role: invalid enum value for type field: %q", _type)
 	}
 }
 
@@ -225,19 +156,24 @@ func ByRemark(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRemark, opts...).ToFunc()
 }
 
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
+}
+
 // BySortOrder orders the results by the sort_order field.
 func BySortOrder(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSortOrder, opts...).ToFunc()
 }
 
-// ByParentID orders the results by the parent_id field.
-func ByParentID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldParentID, opts...).ToFunc()
-}
-
 // ByTenantID orders the results by the tenant_id field.
 func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.
@@ -250,52 +186,7 @@ func ByCode(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCode, opts...).ToFunc()
 }
 
-// ByDataScope orders the results by the data_scope field.
-func ByDataScope(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDataScope, opts...).ToFunc()
-}
-
-// ByStatus orders the results by the status field.
-func ByStatus(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStatus, opts...).ToFunc()
-}
-
-// ByType orders the results by the type field.
-func ByType(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldType, opts...).ToFunc()
-}
-
-// ByParentField orders the results by parent field.
-func ByParentField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newParentStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByChildrenCount orders the results by children count.
-func ByChildrenCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newChildrenStep(), opts...)
-	}
-}
-
-// ByChildren orders the results by children terms.
-func ByChildren(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newChildrenStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-func newParentStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(Table, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
-	)
-}
-func newChildrenStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(Table, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
-	)
+// ByIsProtected orders the results by the is_protected field.
+func ByIsProtected(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsProtected, opts...).ToFunc()
 }

@@ -11,37 +11,27 @@ import (
 	"github.com/tx7do/kratos-authz/engine/noop"
 	"github.com/tx7do/kratos-authz/engine/opa"
 
-	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	"github.com/tx7do/go-utils/trans"
-
 	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	"go-wind-admin/app/admin/service/cmd/server/assets"
-
-	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 )
 
 // Authorizer 权限管理器
 type Authorizer struct {
 	log *log.Helper
 
-	roleRepo        *RoleRepo
-	apiResourceRepo *ApiResourceRepo
-
-	engine authzEngine.Engine
+	engine   authzEngine.Engine
+	provider *AuthorizerProvider
 }
 
 func NewAuthorizer(
 	ctx *bootstrap.Context,
-	roleRepo *RoleRepo,
-	apiResourceRepo *ApiResourceRepo,
+	provider *AuthorizerProvider,
 ) *Authorizer {
 	a := &Authorizer{
-		log:             ctx.NewLoggerHelper("authorizer/data/admin-service"),
-		roleRepo:        roleRepo,
-		apiResourceRepo: apiResourceRepo,
+		log:      ctx.NewLoggerHelper("authorizer/data/admin-service"),
+		provider: provider,
 	}
 
 	a.init(ctx.GetConfig())
@@ -52,9 +42,9 @@ func NewAuthorizer(
 func (a *Authorizer) init(cfg *conf.Bootstrap) {
 	a.engine = a.newEngine(cfg)
 
-	if err := a.ResetPolicies(context.Background()); err != nil {
-		a.log.Errorf("reset policies error: %v", err)
-	}
+	//if err := a.ResetPolicies(context.Background()); err != nil {
+	//	a.log.Errorf("reset policies error: %v", err)
+	//}
 }
 
 func (a *Authorizer) newEngine(cfg *conf.Bootstrap) authzEngine.Engine {
@@ -119,26 +109,10 @@ func (a *Authorizer) Engine() authzEngine.Engine {
 func (a *Authorizer) ResetPolicies(ctx context.Context) error {
 	//a.log.Info("*******************reset policies")
 
-	roles, err := a.roleRepo.List(ctx, &pagination.PagingRequest{NoPaging: trans.Ptr(true)})
+	result, err := a.provider.Provide(ctx)
 	if err != nil {
-		a.log.Errorf("failed to list roles: %v", err)
+		a.log.Errorf("provide authorizer data error: %v", err)
 		return err
-	}
-
-	if roles == nil || len(roles.Items) < 1 {
-		a.log.Warnf("no roles found to set policies")
-		return nil // No roles to set policies
-	}
-
-	apis, err := a.apiResourceRepo.List(ctx, &pagination.PagingRequest{NoPaging: trans.Ptr(true)})
-	if err != nil {
-		a.log.Errorf("failed to list APIs: %v", err)
-		return err
-	}
-
-	if apis == nil || len(apis.Items) < 1 {
-		a.log.Warnf("no APIs found to set policies for roles")
-		return nil // No APIs to set policies
 	}
 
 	//a.log.Debugf("roles [%d] apis [%d]", len(roles.Items), len(apis.Items))
@@ -148,13 +122,13 @@ func (a *Authorizer) ResetPolicies(ctx context.Context) error {
 
 	switch a.engine.Name() {
 	case "casbin":
-		if policies, err = a.generateCasbinPolicies(roles, apis); err != nil {
+		if policies, err = a.generateCasbinPolicies(result); err != nil {
 			a.log.Errorf("generate casbin policies error: %v", err)
 			return err
 		}
 
 	case "opa":
-		if policies, err = a.generateOpaPolicies(roles, apis); err != nil {
+		if policies, err = a.generateOpaPolicies(result); err != nil {
 			a.log.Errorf("generate OPA policies error: %v", err)
 			return err
 		}
@@ -181,36 +155,18 @@ func (a *Authorizer) ResetPolicies(ctx context.Context) error {
 }
 
 // generateCasbinPolicies 生成 Casbin 策略
-func (a *Authorizer) generateCasbinPolicies(roles *userV1.ListRoleResponse, apis *adminV1.ListApiResourceResponse) (authzEngine.PolicyMap, error) {
+func (a *Authorizer) generateCasbinPolicies(data AuthorizerDataMap) (authzEngine.PolicyMap, error) {
 	var rules []casbin.PolicyRule
 
-	domain := "*"
-
-	for _, role := range roles.Items {
-		if role.GetId() == 0 {
-			continue // Skip if role or API ID is not set
-		}
-
-		apiSet := make(map[uint32]struct{}) // API set for current role
-
-		for _, apiId := range role.GetApis() {
-			apiSet[apiId] = struct{}{}
-		}
-
-		for _, api := range apis.Items {
-			if api.GetId() == 0 {
-				continue // Skip if role or API ID is not set
-			}
-
-			if _, exists := apiSet[api.GetId()]; exists {
-				rules = append(rules, casbin.PolicyRule{
-					PType: "p",
-					V0:    role.GetCode(),
-					V1:    api.GetPath(),
-					V2:    api.GetMethod(),
-					V3:    domain,
-				})
-			}
+	for roleCode, aRules := range data {
+		for _, api := range aRules {
+			rules = append(rules, casbin.PolicyRule{
+				PType: "p",
+				V0:    roleCode,
+				V1:    api.Path,
+				V2:    api.Method,
+				V3:    api.Domain,
+			})
 		}
 	}
 
@@ -223,44 +179,27 @@ func (a *Authorizer) generateCasbinPolicies(roles *userV1.ListRoleResponse, apis
 }
 
 // generateOpaPolicies 生成 OPA 策略
-func (a *Authorizer) generateOpaPolicies(roles *userV1.ListRoleResponse, apis *adminV1.ListApiResourceResponse) (authzEngine.PolicyMap, error) {
+func (a *Authorizer) generateOpaPolicies(data AuthorizerDataMap) (authzEngine.PolicyMap, error) {
 	type OpaPolicyPath struct {
 		Pattern string `json:"pattern"`
 		Method  string `json:"method"`
 	}
 
-	policies := make(authzEngine.PolicyMap, len(roles.Items))
+	policies := make(authzEngine.PolicyMap, len(data))
 
-	for _, role := range roles.Items {
-		if role.GetId() == 0 {
-			continue // Skip if role or API ID is not set
+	for roleCode, aRule := range data {
+		paths := make([]OpaPolicyPath, 0, len(aRule))
+
+		for _, api := range aRule {
+			paths = append(paths, OpaPolicyPath{
+				Pattern: api.Path,
+				Method:  api.Method,
+			})
+
+			//a.log.Debugf("OPA Policy - Role: [%s], Path: [%s], Method: [%s]", roleCode, api.Path, api.Method)
 		}
 
-		paths := make([]OpaPolicyPath, 0, len(apis.Items))
-		apiSet := make(map[uint32]struct{}) // API set for current role
-
-		//a.log.Debugf("Processing Role: [%s] with APIs: [%v]", role.GetCode(), role.GetApis())
-
-		for _, apiId := range role.GetApis() {
-			apiSet[apiId] = struct{}{}
-		}
-
-		for _, api := range apis.Items {
-			if api.GetId() == 0 {
-				continue // Skip if role or API ID is not set
-			}
-
-			if _, exists := apiSet[api.GetId()]; exists {
-				paths = append(paths, OpaPolicyPath{
-					Pattern: api.GetPath(),
-					Method:  api.GetMethod(),
-				})
-
-				//a.log.Debugf("OPA Policy - Role: [%s], Path: [%s], Method: [%s]", role.GetCode(), api.GetPath(), api.GetMethod())
-			}
-		}
-
-		policies[role.GetCode()] = paths
+		policies[roleCode] = paths
 	}
 
 	return policies, nil

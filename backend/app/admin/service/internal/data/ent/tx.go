@@ -50,8 +50,16 @@ type Tx struct {
 	Permission *PermissionClient
 	// PermissionApiResource is the client for interacting with the PermissionApiResource builders.
 	PermissionApiResource *PermissionApiResourceClient
+	// PermissionAuditLog is the client for interacting with the PermissionAuditLog builders.
+	PermissionAuditLog *PermissionAuditLogClient
+	// PermissionGroup is the client for interacting with the PermissionGroup builders.
+	PermissionGroup *PermissionGroupClient
 	// PermissionMenu is the client for interacting with the PermissionMenu builders.
 	PermissionMenu *PermissionMenuClient
+	// PermissionPolicy is the client for interacting with the PermissionPolicy builders.
+	PermissionPolicy *PermissionPolicyClient
+	// PolicyEvaluationLog is the client for interacting with the PolicyEvaluationLog builders.
+	PolicyEvaluationLog *PolicyEvaluationLogClient
 	// Position is the client for interacting with the Position builders.
 	Position *PositionClient
 	// Role is the client for interacting with the Role builders.
@@ -62,6 +70,8 @@ type Tx struct {
 	RoleMenu *RoleMenuClient
 	// RolePermission is the client for interacting with the RolePermission builders.
 	RolePermission *RolePermissionClient
+	// RoleTemplate is the client for interacting with the RoleTemplate builders.
+	RoleTemplate *RoleTemplateClient
 	// Task is the client for interacting with the Task builders.
 	Task *TaskClient
 	// Tenant is the client for interacting with the Tenant builders.
@@ -220,12 +230,17 @@ func (tx *Tx) init() {
 	tx.OrgUnit = NewOrgUnitClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.PermissionApiResource = NewPermissionApiResourceClient(tx.config)
+	tx.PermissionAuditLog = NewPermissionAuditLogClient(tx.config)
+	tx.PermissionGroup = NewPermissionGroupClient(tx.config)
 	tx.PermissionMenu = NewPermissionMenuClient(tx.config)
+	tx.PermissionPolicy = NewPermissionPolicyClient(tx.config)
+	tx.PolicyEvaluationLog = NewPolicyEvaluationLogClient(tx.config)
 	tx.Position = NewPositionClient(tx.config)
 	tx.Role = NewRoleClient(tx.config)
 	tx.RoleApi = NewRoleApiClient(tx.config)
 	tx.RoleMenu = NewRoleMenuClient(tx.config)
 	tx.RolePermission = NewRolePermissionClient(tx.config)
+	tx.RoleTemplate = NewRoleTemplateClient(tx.config)
 	tx.Task = NewTaskClient(tx.config)
 	tx.Tenant = NewTenantClient(tx.config)
 	tx.User = NewUserClient(tx.config)

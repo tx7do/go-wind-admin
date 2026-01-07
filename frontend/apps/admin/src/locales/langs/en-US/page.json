@@ -141,7 +141,7 @@
     "orgUnitName": "Organization Name",
     "description": "Description",
     "code": "Code",
-    "quota": "Quota",
+    "headcount": "Quota",
     "button": {
       "create": "Create"
     }

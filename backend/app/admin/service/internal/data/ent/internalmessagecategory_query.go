@@ -4,7 +4,6 @@ package ent
 
 import (
 	"context"
-	"database/sql/driver"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/internalmessagecategory"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
@@ -20,13 +19,11 @@ import (
 // InternalMessageCategoryQuery is the builder for querying InternalMessageCategory entities.
 type InternalMessageCategoryQuery struct {
 	config
-	ctx          *QueryContext
-	order        []internalmessagecategory.OrderOption
-	inters       []Interceptor
-	predicates   []predicate.InternalMessageCategory
-	withParent   *InternalMessageCategoryQuery
-	withChildren *InternalMessageCategoryQuery
-	modifiers    []func(*sql.Selector)
+	ctx        *QueryContext
+	order      []internalmessagecategory.OrderOption
+	inters     []Interceptor
+	predicates []predicate.InternalMessageCategory
+	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -61,50 +58,6 @@ func (_q *InternalMessageCategoryQuery) Unique(unique bool) *InternalMessageCate
 func (_q *InternalMessageCategoryQuery) Order(o ...internalmessagecategory.OrderOption) *InternalMessageCategoryQuery {
 	_q.order = append(_q.order, o...)
 	return _q
-}
-
-// QueryParent chains the current query on the "parent" edge.
-func (_q *InternalMessageCategoryQuery) QueryParent() *InternalMessageCategoryQuery {
-	query := (&InternalMessageCategoryClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(internalmessagecategory.Table, internalmessagecategory.FieldID, selector),
-			sqlgraph.To(internalmessagecategory.Table, internalmessagecategory.FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, internalmessagecategory.ParentTable, internalmessagecategory.ParentColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
-}
-
-// QueryChildren chains the current query on the "children" edge.
-func (_q *InternalMessageCategoryQuery) QueryChildren() *InternalMessageCategoryQuery {
-	query := (&InternalMessageCategoryClient{config: _q.config}).Query()
-	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := _q.prepareQuery(ctx); err != nil {
-			return nil, err
-		}
-		selector := _q.sqlQuery(ctx)
-		if err := selector.Err(); err != nil {
-			return nil, err
-		}
-		step := sqlgraph.NewStep(
-			sqlgraph.From(internalmessagecategory.Table, internalmessagecategory.FieldID, selector),
-			sqlgraph.To(internalmessagecategory.Table, internalmessagecategory.FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, internalmessagecategory.ChildrenTable, internalmessagecategory.ChildrenColumn),
-		)
-		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
-		return fromU, nil
-	}
-	return query
 }
 
 // First returns the first InternalMessageCategory entity from the query.
@@ -294,40 +247,16 @@ func (_q *InternalMessageCategoryQuery) Clone() *InternalMessageCategoryQuery {
 		return nil
 	}
 	return &InternalMessageCategoryQuery{
-		config:       _q.config,
-		ctx:          _q.ctx.Clone(),
-		order:        append([]internalmessagecategory.OrderOption{}, _q.order...),
-		inters:       append([]Interceptor{}, _q.inters...),
-		predicates:   append([]predicate.InternalMessageCategory{}, _q.predicates...),
-		withParent:   _q.withParent.Clone(),
-		withChildren: _q.withChildren.Clone(),
+		config:     _q.config,
+		ctx:        _q.ctx.Clone(),
+		order:      append([]internalmessagecategory.OrderOption{}, _q.order...),
+		inters:     append([]Interceptor{}, _q.inters...),
+		predicates: append([]predicate.InternalMessageCategory{}, _q.predicates...),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
 		modifiers: append([]func(*sql.Selector){}, _q.modifiers...),
 	}
-}
-
-// WithParent tells the query-builder to eager-load the nodes that are connected to
-// the "parent" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *InternalMessageCategoryQuery) WithParent(opts ...func(*InternalMessageCategoryQuery)) *InternalMessageCategoryQuery {
-	query := (&InternalMessageCategoryClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withParent = query
-	return _q
-}
-
-// WithChildren tells the query-builder to eager-load the nodes that are connected to
-// the "children" edge. The optional arguments are used to configure the query builder of the edge.
-func (_q *InternalMessageCategoryQuery) WithChildren(opts ...func(*InternalMessageCategoryQuery)) *InternalMessageCategoryQuery {
-	query := (&InternalMessageCategoryClient{config: _q.config}).Query()
-	for _, opt := range opts {
-		opt(query)
-	}
-	_q.withChildren = query
-	return _q
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -406,12 +335,8 @@ func (_q *InternalMessageCategoryQuery) prepareQuery(ctx context.Context) error 
 
 func (_q *InternalMessageCategoryQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*InternalMessageCategory, error) {
 	var (
-		nodes       = []*InternalMessageCategory{}
-		_spec       = _q.querySpec()
-		loadedTypes = [2]bool{
-			_q.withParent != nil,
-			_q.withChildren != nil,
-		}
+		nodes = []*InternalMessageCategory{}
+		_spec = _q.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*InternalMessageCategory).scanValues(nil, columns)
@@ -419,7 +344,6 @@ func (_q *InternalMessageCategoryQuery) sqlAll(ctx context.Context, hooks ...que
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &InternalMessageCategory{config: _q.config}
 		nodes = append(nodes, node)
-		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(_q.modifiers) > 0 {
@@ -434,88 +358,7 @@ func (_q *InternalMessageCategoryQuery) sqlAll(ctx context.Context, hooks ...que
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := _q.withParent; query != nil {
-		if err := _q.loadParent(ctx, query, nodes, nil,
-			func(n *InternalMessageCategory, e *InternalMessageCategory) { n.Edges.Parent = e }); err != nil {
-			return nil, err
-		}
-	}
-	if query := _q.withChildren; query != nil {
-		if err := _q.loadChildren(ctx, query, nodes,
-			func(n *InternalMessageCategory) { n.Edges.Children = []*InternalMessageCategory{} },
-			func(n *InternalMessageCategory, e *InternalMessageCategory) {
-				n.Edges.Children = append(n.Edges.Children, e)
-			}); err != nil {
-			return nil, err
-		}
-	}
 	return nodes, nil
-}
-
-func (_q *InternalMessageCategoryQuery) loadParent(ctx context.Context, query *InternalMessageCategoryQuery, nodes []*InternalMessageCategory, init func(*InternalMessageCategory), assign func(*InternalMessageCategory, *InternalMessageCategory)) error {
-	ids := make([]uint32, 0, len(nodes))
-	nodeids := make(map[uint32][]*InternalMessageCategory)
-	for i := range nodes {
-		if nodes[i].ParentID == nil {
-			continue
-		}
-		fk := *nodes[i].ParentID
-		if _, ok := nodeids[fk]; !ok {
-			ids = append(ids, fk)
-		}
-		nodeids[fk] = append(nodeids[fk], nodes[i])
-	}
-	if len(ids) == 0 {
-		return nil
-	}
-	query.Where(internalmessagecategory.IDIn(ids...))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		nodes, ok := nodeids[n.ID]
-		if !ok {
-			return fmt.Errorf(`unexpected foreign-key "parent_id" returned %v`, n.ID)
-		}
-		for i := range nodes {
-			assign(nodes[i], n)
-		}
-	}
-	return nil
-}
-func (_q *InternalMessageCategoryQuery) loadChildren(ctx context.Context, query *InternalMessageCategoryQuery, nodes []*InternalMessageCategory, init func(*InternalMessageCategory), assign func(*InternalMessageCategory, *InternalMessageCategory)) error {
-	fks := make([]driver.Value, 0, len(nodes))
-	nodeids := make(map[uint32]*InternalMessageCategory)
-	for i := range nodes {
-		fks = append(fks, nodes[i].ID)
-		nodeids[nodes[i].ID] = nodes[i]
-		if init != nil {
-			init(nodes[i])
-		}
-	}
-	if len(query.ctx.Fields) > 0 {
-		query.ctx.AppendFieldOnce(internalmessagecategory.FieldParentID)
-	}
-	query.Where(predicate.InternalMessageCategory(func(s *sql.Selector) {
-		s.Where(sql.InValues(s.C(internalmessagecategory.ChildrenColumn), fks...))
-	}))
-	neighbors, err := query.All(ctx)
-	if err != nil {
-		return err
-	}
-	for _, n := range neighbors {
-		fk := n.ParentID
-		if fk == nil {
-			return fmt.Errorf(`foreign-key "parent_id" is nil for node %v`, n.ID)
-		}
-		node, ok := nodeids[*fk]
-		if !ok {
-			return fmt.Errorf(`unexpected referenced foreign-key "parent_id" returned %v for node %v`, *fk, n.ID)
-		}
-		assign(node, n)
-	}
-	return nil
 }
 
 func (_q *InternalMessageCategoryQuery) sqlCount(ctx context.Context) (int, error) {
@@ -545,9 +388,6 @@ func (_q *InternalMessageCategoryQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != internalmessagecategory.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
-		}
-		if _q.withParent != nil {
-			_spec.Node.AddColumnOnce(internalmessagecategory.FieldParentID)
 		}
 	}
 	if ps := _q.predicates; len(ps) > 0 {

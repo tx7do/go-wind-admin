@@ -1,0 +1,97 @@
+syntax = "proto3";
+
+package permission.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/api/annotations.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/duration.proto";
+
+import "pagination/v1/pagination.proto";
+
+// 权限策略
+message PermissionPolicy {
+  // 策略引擎类型
+  enum PolicyEngine {
+    POLICY_ENGINE_UNSPECIFIED = 0; // 未指定
+
+    CASBIN = 1; // Casbin策略引擎
+    CEL = 2; // Google CEL策略引擎
+    SQL = 3; // SQL策略引擎
+    OPA = 4; // Open Policy Agent策略引擎
+  }
+
+  // 状态
+  enum Status {
+    OFF = 0;         // 禁用
+    ON = 1;          // 启用
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = {
+      description: "权限策略ID"
+    }
+  ]; // 权限策略ID
+
+  optional uint32 permission_id = 2 [
+    json_name = "permissionId",
+    (gnostic.openapi.v3.property) = {
+      description: "包含的权限点ID"
+    }
+  ]; // 包含的权限点ID
+
+  optional PolicyEngine policy_engine = 3 [
+    json_name = "policyEngine",
+    (gnostic.openapi.v3.property) = {
+      description: "策略引擎"
+    }
+  ]; // 策略引擎
+
+  optional string definition = 4 [
+    json_name = "definition",
+    (gnostic.openapi.v3.property) = {
+      description: "策略定义（动态结构）"
+    }
+  ]; // 策略定义（动态结构）
+
+  optional uint32 version = 5 [
+    json_name = "version",
+    (gnostic.openapi.v3.property) = {
+      description: "策略版本（用于灰度/回滚）"
+    }
+  ]; // 策略版本（用于灰度/回滚）
+
+  optional uint32 eval_order = 6 [
+    json_name = "evalOrder",
+    (gnostic.openapi.v3.property) = {
+      description: "评估优先级（越小越先执行）"
+    }
+  ]; // 评估优先级（越小越先执行）
+
+  optional uint32 cache_ttl = 7 [
+    json_name = "cacheTtl",
+    (gnostic.openapi.v3.property) = {
+      description: "结果缓存秒数（0=不缓存）"
+    }
+  ]; // 结果缓存秒数（0=不缓存）
+
+  optional uint32 tenant_id = 8 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+
+  optional Status status = 9 [(gnostic.openapi.v3.property) = {description: "状态"}]; // 状态
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];// 删除时间
+}

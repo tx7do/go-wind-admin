@@ -9,18 +9,18 @@ import { notification } from 'ant-design-vue';
 import { useVbenForm } from '#/adapter/form';
 import {
   buildMenuTree,
-  convertApiToTree,
-  roleDataScopeList,
-  roleTypeList,
+  convertApiToTree, convertPermissionToTree,
   statusList,
   useApiResourceStore,
-  useMenuStore,
+  useMenuStore, usePermissionStore,
   useRoleStore,
 } from '#/stores';
 import { deepClone } from '#/utils';
 
 const roleStore = useRoleStore();
 const apiStore = useApiResourceStore();
+const menuStore = useMenuStore();
+const permissionStore = usePermissionStore();
 
 const data = ref();
 
@@ -30,8 +30,6 @@ const getTitle = computed(() =>
     : $t('ui.modal.update', { moduleName: $t('page.role.moduleName') }),
 );
 // const isCreate = computed(() => data.value?.create);
-
-const menuStore = useMenuStore();
 
 const [BaseForm, baseFormApi] = useVbenForm({
   showDefaultActions: false,
@@ -64,30 +62,6 @@ const [BaseForm, baseFormApi] = useVbenForm({
       rules: 'required',
     },
     {
-      component: 'RadioGroup',
-      fieldName: 'type',
-      defaultValue: 'CUSTOM',
-      label: $t('page.role.type'),
-      rules: 'selectRequired',
-      componentProps: {
-        optionType: 'button',
-        buttonStyle: 'solid',
-        class: 'flex flex-wrap', // 如果选项过多，可以添加class来自动折叠
-        options: roleTypeList,
-      },
-    },
-    {
-      component: 'Select',
-      fieldName: 'dataScope',
-      defaultValue: 'UNIT_AND_CHILD',
-      label: $t('page.role.dataScope'),
-      rules: 'selectRequired',
-      componentProps: {
-        placeholder: $t('ui.placeholder.select'),
-        options: roleDataScopeList,
-      },
-    },
-    {
       component: 'InputNumber',
       fieldName: 'sortOrder',
       label: $t('ui.table.sortOrder'),
@@ -112,8 +86,8 @@ const [BaseForm, baseFormApi] = useVbenForm({
     },
     {
       component: 'Textarea',
-      fieldName: 'remark',
-      label: $t('ui.table.remark'),
+      fieldName: 'description',
+      label: $t('ui.table.description'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -121,40 +95,23 @@ const [BaseForm, baseFormApi] = useVbenForm({
     },
     {
       component: 'ApiTree',
-      fieldName: 'menus',
+      fieldName: 'permissions',
       componentProps: {
-        title: $t('page.role.menus'),
+        title: $t('page.role.permissions'),
         showSearch: true,
         treeDefaultExpandAll: false,
         loadingSlot: 'suffixIcon',
         childrenField: 'children',
-        labelField: 'meta.title',
+        labelField: 'name',
         valueField: 'id',
         resultField: 'items',
         api: async () => {
-          return await menuStore.listMenu(undefined, {
+          return await permissionStore.listPermission(undefined, {
             status: 'ON',
           });
         },
         afterFetch: (data: any) => {
-          return buildMenuTree(data.items);
-        },
-      },
-    },
-    {
-      component: 'ApiTree',
-      fieldName: 'apis',
-      componentProps: {
-        title: $t('page.role.apis'),
-        search: true,
-        numberToString: false,
-        loadingSlot: 'suffixIcon',
-        childrenField: 'children',
-        labelField: 'title',
-        valueField: 'key',
-        api: async () => {
-          const data = await apiStore.listApiResource(undefined, {});
-          return convertApiToTree(data.items ?? []);
+          return convertPermissionToTree(data.items);
         },
       },
     },

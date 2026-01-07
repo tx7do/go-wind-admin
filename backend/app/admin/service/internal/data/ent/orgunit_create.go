@@ -120,6 +120,20 @@ func (_c *OrgUnitCreate) SetNillableStatus(v *orgunit.Status) *OrgUnitCreate {
 	return _c
 }
 
+// SetSortOrder sets the "sort_order" field.
+func (_c *OrgUnitCreate) SetSortOrder(v uint32) *OrgUnitCreate {
+	_c.mutation.SetSortOrder(v)
+	return _c
+}
+
+// SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
+func (_c *OrgUnitCreate) SetNillableSortOrder(v *uint32) *OrgUnitCreate {
+	if v != nil {
+		_c.SetSortOrder(*v)
+	}
+	return _c
+}
+
 // SetTenantID sets the "tenant_id" field.
 func (_c *OrgUnitCreate) SetTenantID(v uint32) *OrgUnitCreate {
 	_c.mutation.SetTenantID(v)
@@ -206,20 +220,6 @@ func (_c *OrgUnitCreate) SetPath(v string) *OrgUnitCreate {
 func (_c *OrgUnitCreate) SetNillablePath(v *string) *OrgUnitCreate {
 	if v != nil {
 		_c.SetPath(*v)
-	}
-	return _c
-}
-
-// SetSortOrder sets the "sort_order" field.
-func (_c *OrgUnitCreate) SetSortOrder(v int32) *OrgUnitCreate {
-	_c.mutation.SetSortOrder(v)
-	return _c
-}
-
-// SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_c *OrgUnitCreate) SetNillableSortOrder(v *int32) *OrgUnitCreate {
-	if v != nil {
-		_c.SetSortOrder(*v)
 	}
 	return _c
 }
@@ -555,6 +555,9 @@ func (_c *OrgUnitCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *OrgUnitCreate) check() error {
+	if _, ok := _c.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "OrgUnit.status"`)}
+	}
 	if v, ok := _c.mutation.Status(); ok {
 		if err := orgunit.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "OrgUnit.status": %w`, err)}
@@ -642,6 +645,10 @@ func (_c *OrgUnitCreate) createSpec() (*OrgUnit, *sqlgraph.CreateSpec) {
 		_spec.SetField(orgunit.FieldStatus, field.TypeEnum, value)
 		_node.Status = &value
 	}
+	if value, ok := _c.mutation.SortOrder(); ok {
+		_spec.SetField(orgunit.FieldSortOrder, field.TypeUint32, value)
+		_node.SortOrder = &value
+	}
 	if value, ok := _c.mutation.TenantID(); ok {
 		_spec.SetField(orgunit.FieldTenantID, field.TypeUint32, value)
 		_node.TenantID = &value
@@ -665,10 +672,6 @@ func (_c *OrgUnitCreate) createSpec() (*OrgUnit, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Path(); ok {
 		_spec.SetField(orgunit.FieldPath, field.TypeString, value)
 		_node.Path = &value
-	}
-	if value, ok := _c.mutation.SortOrder(); ok {
-		_spec.SetField(orgunit.FieldSortOrder, field.TypeInt32, value)
-		_node.SortOrder = &value
 	}
 	if value, ok := _c.mutation.LeaderID(); ok {
 		_spec.SetField(orgunit.FieldLeaderID, field.TypeUint32, value)
@@ -951,9 +954,27 @@ func (u *OrgUnitUpsert) UpdateStatus() *OrgUnitUpsert {
 	return u
 }
 
-// ClearStatus clears the value of the "status" field.
-func (u *OrgUnitUpsert) ClearStatus() *OrgUnitUpsert {
-	u.SetNull(orgunit.FieldStatus)
+// SetSortOrder sets the "sort_order" field.
+func (u *OrgUnitUpsert) SetSortOrder(v uint32) *OrgUnitUpsert {
+	u.Set(orgunit.FieldSortOrder, v)
+	return u
+}
+
+// UpdateSortOrder sets the "sort_order" field to the value that was provided on create.
+func (u *OrgUnitUpsert) UpdateSortOrder() *OrgUnitUpsert {
+	u.SetExcluded(orgunit.FieldSortOrder)
+	return u
+}
+
+// AddSortOrder adds v to the "sort_order" field.
+func (u *OrgUnitUpsert) AddSortOrder(v uint32) *OrgUnitUpsert {
+	u.Add(orgunit.FieldSortOrder, v)
+	return u
+}
+
+// ClearSortOrder clears the value of the "sort_order" field.
+func (u *OrgUnitUpsert) ClearSortOrder() *OrgUnitUpsert {
+	u.SetNull(orgunit.FieldSortOrder)
 	return u
 }
 
@@ -1056,30 +1077,6 @@ func (u *OrgUnitUpsert) UpdatePath() *OrgUnitUpsert {
 // ClearPath clears the value of the "path" field.
 func (u *OrgUnitUpsert) ClearPath() *OrgUnitUpsert {
 	u.SetNull(orgunit.FieldPath)
-	return u
-}
-
-// SetSortOrder sets the "sort_order" field.
-func (u *OrgUnitUpsert) SetSortOrder(v int32) *OrgUnitUpsert {
-	u.Set(orgunit.FieldSortOrder, v)
-	return u
-}
-
-// UpdateSortOrder sets the "sort_order" field to the value that was provided on create.
-func (u *OrgUnitUpsert) UpdateSortOrder() *OrgUnitUpsert {
-	u.SetExcluded(orgunit.FieldSortOrder)
-	return u
-}
-
-// AddSortOrder adds v to the "sort_order" field.
-func (u *OrgUnitUpsert) AddSortOrder(v int32) *OrgUnitUpsert {
-	u.Add(orgunit.FieldSortOrder, v)
-	return u
-}
-
-// ClearSortOrder clears the value of the "sort_order" field.
-func (u *OrgUnitUpsert) ClearSortOrder() *OrgUnitUpsert {
-	u.SetNull(orgunit.FieldSortOrder)
 	return u
 }
 
@@ -1643,10 +1640,31 @@ func (u *OrgUnitUpsertOne) UpdateStatus() *OrgUnitUpsertOne {
 	})
 }
 
-// ClearStatus clears the value of the "status" field.
-func (u *OrgUnitUpsertOne) ClearStatus() *OrgUnitUpsertOne {
+// SetSortOrder sets the "sort_order" field.
+func (u *OrgUnitUpsertOne) SetSortOrder(v uint32) *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
-		s.ClearStatus()
+		s.SetSortOrder(v)
+	})
+}
+
+// AddSortOrder adds v to the "sort_order" field.
+func (u *OrgUnitUpsertOne) AddSortOrder(v uint32) *OrgUnitUpsertOne {
+	return u.Update(func(s *OrgUnitUpsert) {
+		s.AddSortOrder(v)
+	})
+}
+
+// UpdateSortOrder sets the "sort_order" field to the value that was provided on create.
+func (u *OrgUnitUpsertOne) UpdateSortOrder() *OrgUnitUpsertOne {
+	return u.Update(func(s *OrgUnitUpsert) {
+		s.UpdateSortOrder()
+	})
+}
+
+// ClearSortOrder clears the value of the "sort_order" field.
+func (u *OrgUnitUpsertOne) ClearSortOrder() *OrgUnitUpsertOne {
+	return u.Update(func(s *OrgUnitUpsert) {
+		s.ClearSortOrder()
 	})
 }
 
@@ -1766,34 +1784,6 @@ func (u *OrgUnitUpsertOne) UpdatePath() *OrgUnitUpsertOne {
 func (u *OrgUnitUpsertOne) ClearPath() *OrgUnitUpsertOne {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.ClearPath()
-	})
-}
-
-// SetSortOrder sets the "sort_order" field.
-func (u *OrgUnitUpsertOne) SetSortOrder(v int32) *OrgUnitUpsertOne {
-	return u.Update(func(s *OrgUnitUpsert) {
-		s.SetSortOrder(v)
-	})
-}
-
-// AddSortOrder adds v to the "sort_order" field.
-func (u *OrgUnitUpsertOne) AddSortOrder(v int32) *OrgUnitUpsertOne {
-	return u.Update(func(s *OrgUnitUpsert) {
-		s.AddSortOrder(v)
-	})
-}
-
-// UpdateSortOrder sets the "sort_order" field to the value that was provided on create.
-func (u *OrgUnitUpsertOne) UpdateSortOrder() *OrgUnitUpsertOne {
-	return u.Update(func(s *OrgUnitUpsert) {
-		s.UpdateSortOrder()
-	})
-}
-
-// ClearSortOrder clears the value of the "sort_order" field.
-func (u *OrgUnitUpsertOne) ClearSortOrder() *OrgUnitUpsertOne {
-	return u.Update(func(s *OrgUnitUpsert) {
-		s.ClearSortOrder()
 	})
 }
 
@@ -2584,10 +2574,31 @@ func (u *OrgUnitUpsertBulk) UpdateStatus() *OrgUnitUpsertBulk {
 	})
 }
 
-// ClearStatus clears the value of the "status" field.
-func (u *OrgUnitUpsertBulk) ClearStatus() *OrgUnitUpsertBulk {
+// SetSortOrder sets the "sort_order" field.
+func (u *OrgUnitUpsertBulk) SetSortOrder(v uint32) *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
-		s.ClearStatus()
+		s.SetSortOrder(v)
+	})
+}
+
+// AddSortOrder adds v to the "sort_order" field.
+func (u *OrgUnitUpsertBulk) AddSortOrder(v uint32) *OrgUnitUpsertBulk {
+	return u.Update(func(s *OrgUnitUpsert) {
+		s.AddSortOrder(v)
+	})
+}
+
+// UpdateSortOrder sets the "sort_order" field to the value that was provided on create.
+func (u *OrgUnitUpsertBulk) UpdateSortOrder() *OrgUnitUpsertBulk {
+	return u.Update(func(s *OrgUnitUpsert) {
+		s.UpdateSortOrder()
+	})
+}
+
+// ClearSortOrder clears the value of the "sort_order" field.
+func (u *OrgUnitUpsertBulk) ClearSortOrder() *OrgUnitUpsertBulk {
+	return u.Update(func(s *OrgUnitUpsert) {
+		s.ClearSortOrder()
 	})
 }
 
@@ -2707,34 +2718,6 @@ func (u *OrgUnitUpsertBulk) UpdatePath() *OrgUnitUpsertBulk {
 func (u *OrgUnitUpsertBulk) ClearPath() *OrgUnitUpsertBulk {
 	return u.Update(func(s *OrgUnitUpsert) {
 		s.ClearPath()
-	})
-}
-
-// SetSortOrder sets the "sort_order" field.
-func (u *OrgUnitUpsertBulk) SetSortOrder(v int32) *OrgUnitUpsertBulk {
-	return u.Update(func(s *OrgUnitUpsert) {
-		s.SetSortOrder(v)
-	})
-}
-
-// AddSortOrder adds v to the "sort_order" field.
-func (u *OrgUnitUpsertBulk) AddSortOrder(v int32) *OrgUnitUpsertBulk {
-	return u.Update(func(s *OrgUnitUpsert) {
-		s.AddSortOrder(v)
-	})
-}
-
-// UpdateSortOrder sets the "sort_order" field to the value that was provided on create.
-func (u *OrgUnitUpsertBulk) UpdateSortOrder() *OrgUnitUpsertBulk {
-	return u.Update(func(s *OrgUnitUpsert) {
-		s.UpdateSortOrder()
-	})
-}
-
-// ClearSortOrder clears the value of the "sort_order" field.
-func (u *OrgUnitUpsertBulk) ClearSortOrder() *OrgUnitUpsertBulk {
-	return u.Update(func(s *OrgUnitUpsert) {
-		s.ClearSortOrder()
 	})
 }
 

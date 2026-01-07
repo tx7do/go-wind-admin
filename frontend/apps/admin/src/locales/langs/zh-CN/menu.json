@@ -9,7 +9,7 @@
   "permission": {
     "moduleName": "权限管理",
     "role": "角色管理",
-    "permission": "权限点管理",
+    "permission": "权限管理",
     "menu": "菜单管理"
   },
   "opm": {

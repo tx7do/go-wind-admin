@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 
 import {
-  type ApiResource,
+  type permissionservicev1_ApiResource as ApiResource,
   createApiResourceServiceClient,
 } from '#/generated/api/admin/service/v1';
 import { makeQueryString, makeUpdateMask } from '#/utils/query';

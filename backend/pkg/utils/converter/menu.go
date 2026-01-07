@@ -2,11 +2,12 @@ package converter
 
 import (
 	"strings"
-
-	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	"unicode"
 
 	"github.com/jinzhu/inflection"
 	"github.com/tx7do/go-utils/trans"
+
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
 type MenuPermissionConverter struct {
@@ -16,22 +17,8 @@ func NewMenuPermissionConverter() *MenuPermissionConverter {
 	return &MenuPermissionConverter{}
 }
 
-// MenuTypeToPermissionType 将 Menu_Type 转换为 Permission_Type
-func (c *MenuPermissionConverter) MenuTypeToPermissionType(typ adminV1.Menu_Type) adminV1.Permission_Type {
-	switch typ {
-	case adminV1.Menu_CATALOG:
-		return adminV1.Permission_CATALOG
-	case adminV1.Menu_MENU:
-		return adminV1.Permission_MENU
-	case adminV1.Menu_BUTTON, adminV1.Menu_EMBEDDED, adminV1.Menu_LINK:
-		return adminV1.Permission_BUTTON
-	default:
-		return adminV1.Permission_OTHER
-	}
-}
-
 // ConvertCode 将菜单的完整路径和类型转换为权限代码
-func (c *MenuPermissionConverter) ConvertCode(fullPath string, typ adminV1.Menu_Type) string {
+func (c *MenuPermissionConverter) ConvertCode(fullPath, title string, typ permissionV1.Menu_Type) string {
 	path := strings.TrimSpace(fullPath)
 	if path == "" {
 		return ""
@@ -48,7 +35,7 @@ func (c *MenuPermissionConverter) ConvertCode(fullPath string, typ adminV1.Menu_
 	permBase = inflection.Singular(permBase)
 
 	// 根据菜单类型，决定是否添加动作后缀
-	action := c.typeToAction(typ)
+	action := c.typeToAction(title, typ)
 	if action == "" {
 		return permBase
 	}
@@ -63,9 +50,9 @@ func (c *MenuPermissionConverter) ConvertCode(fullPath string, typ adminV1.Menu_
 // 2. 用递归 + memoization 计算每个节点的完整 path（去除两端斜杠并用 '/' 连接）。
 // 3. 若父节点 id 为 0 或父节点不存在，则视为根路径（仅使用自身 path 部分）。
 // 4. 若出现自引用或循环，函数会将该节点视为只使用自身 path。
-func (c *MenuPermissionConverter) ComposeMenuPaths(menus []*adminV1.Menu) {
+func (c *MenuPermissionConverter) ComposeMenuPaths(menus []*permissionV1.Menu) {
 	// 建立 id -> menu 映射
-	m := make(map[uint32]*adminV1.Menu, len(menus))
+	m := make(map[uint32]*permissionV1.Menu, len(menus))
 	for _, mi := range menus {
 		m[mi.GetId()] = mi
 	}
@@ -132,19 +119,142 @@ func (c *MenuPermissionConverter) ComposeMenuPaths(menus []*adminV1.Menu) {
 }
 
 // typeToAction 将 Menu_Type 转换为 action 字符串
-func (c *MenuPermissionConverter) typeToAction(typ adminV1.Menu_Type) string {
+func (c *MenuPermissionConverter) typeToAction(title string, typ permissionV1.Menu_Type) string {
+
 	switch typ {
-	case adminV1.Menu_CATALOG:
-		return ""
-	case adminV1.Menu_MENU:
+	case permissionV1.Menu_CATALOG:
+		return "dir"
+	case permissionV1.Menu_MENU:
+		return "access"
+	case permissionV1.Menu_BUTTON:
+		return c.buttonAction(title)
+	case permissionV1.Menu_EMBEDDED:
 		return "view"
-	case adminV1.Menu_BUTTON:
-		return ""
-	case adminV1.Menu_EMBEDDED:
-		return "embed"
-	case adminV1.Menu_LINK:
-		return "link"
+	case permissionV1.Menu_LINK:
+		return "jump"
 	default:
 		return ""
 	}
+}
+
+// buttonAction 根据按钮标题和类型生成动作标识符
+func (c *MenuPermissionConverter) buttonAction(title string) string {
+	title = strings.TrimSpace(title)
+	if title == "" {
+		return "act"
+	}
+
+	title = strings.ToLower(title)
+
+	addKeys := []string{
+		"add",
+		"addto",
+		"add+",
+		"create",
+		"new",
+		"plus",
+		"append",
+		"新增",
+		"添加",
+		"创建",
+	}
+	editKeys := []string{
+		"edit",
+		"update",
+		"modify",
+		"save",
+		"patch",
+		"保存",
+		"修改",
+		"更新",
+		"编辑",
+	}
+	deleteKeys := []string{
+		"delete",
+		"del",
+		"remove",
+		"destroy",
+		"drop",
+		"discard",
+		"trash",
+		"删除",
+		"移除",
+		"弃用",
+		"清除",
+	}
+	exportKeys := []string{
+		"export",
+		"download",
+		"exportcsv",
+		"exportexcel",
+		"导出",
+		"下载",
+		"导出为",
+	}
+	importKeys := []string{
+		"import",
+		"importcsv",
+		"importexcel",
+		"导入",
+		"导入为",
+	}
+
+	if matchAnyKeyword(title, addKeys) {
+		return "add"
+	}
+	if matchAnyKeyword(title, editKeys) {
+		return "edit"
+	}
+	if matchAnyKeyword(title, deleteKeys) {
+		return "delete"
+	}
+	if matchAnyKeyword(title, importKeys) {
+		return "import"
+	}
+	if matchAnyKeyword(title, exportKeys) {
+		return "export"
+	}
+
+	return "act"
+}
+
+// matchAnyKeyword 先按 token 精确/前缀匹配，再回退到 substring 匹配
+func matchAnyKeyword(title string, keys []string) bool {
+	tokens := tokenize(title)
+
+	for _, k := range keys {
+		k = strings.ToLower(k)
+		for _, tk := range tokens {
+			if tk == k || strings.HasPrefix(tk, k) {
+				return true
+			}
+		}
+	}
+	// 回退：整句包含关键词
+	for _, k := range keys {
+		if strings.Contains(title, strings.ToLower(k)) {
+			return true
+		}
+	}
+	return false
+}
+
+// tokenize 按非字母数字分隔并返回小写 tokens
+func tokenize(s string) []string {
+	var buf []rune
+	var out []string
+	for _, r := range s {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			buf = append(buf, unicode.ToLower(r))
+			continue
+		}
+		if len(buf) > 0 {
+			out = append(out, string(buf))
+			buf = buf[:0]
+		}
+	}
+	if len(buf) > 0 {
+		out = append(out, string(buf))
+	}
+	return out
 }

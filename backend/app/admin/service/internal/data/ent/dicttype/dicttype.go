@@ -80,7 +80,7 @@ var (
 	// DefaultIsEnabled holds the default value on creation for the "is_enabled" field.
 	DefaultIsEnabled bool
 	// DefaultSortOrder holds the default value on creation for the "sort_order" field.
-	DefaultSortOrder int32
+	DefaultSortOrder uint32
 	// TypeCodeValidator is a validator for the "type_code" field. It is called by the builders before save.
 	TypeCodeValidator func(string) error
 	// TypeNameValidator is a validator for the "type_name" field. It is called by the builders before save.

@@ -12,6 +12,56 @@ TRUNCATE TABLE public.sys_org_units,
                public.internal_message_categories
 RESTART IDENTITY CASCADE;
 
+-- 租户
+INSERT INTO public.sys_tenants(id, name, code, type, audit_status, status, admin_user_id, created_at)
+VALUES (1, '测试租户', 'super', 'PAID', 'APPROVED', 'ON', 2, now())
+;
+SELECT setval('sys_tenants_id_seq', (SELECT MAX(id) FROM sys_tenants));
+
+-- 默认的角色
+INSERT INTO public.sys_roles(id, tenant_id, sort_order, name, code, status, description, created_at)
+VALUES 
+       (2, 0, 2, '安全审计员', 'security_auditor', 'ON', '仅可查看系统操作日志和数据记录，无修改权限', now()),
+       (3, 0, 3, '租户管理员', 'tenant_admin', 'ON', '管理当前租户下的用户、角色及资源，无跨租户操作权限', now())
+;
+SELECT setval('sys_roles_id_seq', (SELECT MAX(id) FROM sys_roles));
+
+-- 插入4个权限的用户
+INSERT INTO public.sys_users (id, tenant_id, username, nickname, realname, email, gender, created_at)
+VALUES
+    -- 2. 租户管理员（TENANT_ADMIN）
+    (2, 1, 'tenant_admin', '租户管理', '张管理员', 'tenant@company.com', 'MALE', now()),
+    -- 3. 普通用户（USER）
+    (3, 0, 'normal_user', '普通用户', '李用户', 'user@company.com', 'FEMALE', now()),
+    -- 4. 访客（GUEST）
+    (4, 0, 'guest_user', '临时访客', '王访客', 'guest@company.com', 'SECRET', now())
+;
+SELECT setval('sys_users_id_seq', (SELECT MAX(id) FROM sys_users));
+
+-- 插入4个用户的凭证（密码统一为admin，哈希值与原admin一致，方便测试）
+INSERT INTO public.sys_user_credentials (user_id, identity_type, identifier, credential_type, credential, status,
+                                         is_primary, created_at)
+VALUES
+       -- 租户管理员（对应users表id=2）
+       (2, 'USERNAME', 'tenant_admin', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
+        'ENABLED', true, now()),
+       (2, 'EMAIL', 'tenant@company.com', 'PASSWORD_HASH',
+        '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', false, now()),
+
+       -- 普通用户（对应users表id=3）
+       (3, 'USERNAME', 'normal_user', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
+        'ENABLED', true, now()),
+       (3, 'EMAIL', 'user@company.com', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
+        'ENABLED', false, now()),
+
+       -- 访客（对应users表id=4）
+       (4, 'USERNAME', 'guest_user', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
+        'ENABLED', true, now()),
+       (4, 'EMAIL', 'guest@company.com', 'PASSWORD_HASH',
+        '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', false, now())
+;
+SELECT setval('sys_user_credentials_id_seq', (SELECT MAX(id) FROM sys_user_credentials));
+
 -- 组织架构单元
 INSERT INTO public.sys_org_units (id, tenant_id, parent_id, type, name, code, description, path, sort_order, leader_id, status, created_at)
 VALUES
@@ -57,6 +107,29 @@ VALUES
     (20, 1, 8, 'REGULAR', '行政助理', 'ADMIN-ASSIST-001', 2, 8, '负责办公用品采购、会议安排等行政工作（已合并至HRBP）', 'ADMIN', 5, 5, 1, false, 'OFF', 5, now())
 ;
 SELECT setval('sys_positions_id_seq', (SELECT COALESCE(MAX(id), 1) FROM sys_positions));
+
+-- 用户-租户关联关系
+INSERT INTO public.sys_memberships (id, tenant_id, user_id, org_unit_id, position_id, role_id, is_primary, status)
+VALUES
+    -- 租户管理员（TENANT_ADMIN）
+    (2, 1, 2, null, null, 2, true, 'ACTIVE'),
+    -- 普通用户（USER）
+    (3, 0, 3, null, null, 3, true, 'ACTIVE'),
+    -- 访客（GUEST）
+    (4, 0, 4, null, null, 4, true, 'ACTIVE')
+;
+SELECT setval('sys_memberships_id_seq', (SELECT MAX(id) FROM sys_memberships));
+
+-- 租户成员-角色关联关系
+INSERT INTO sys_membership_roles (id, membership_id, tenant_id, role_id, is_primary, status)
+VALUES
+    -- 租户管理员（TENANT_ADMIN）
+    (2, 2, 1, 2, true, 'ACTIVE'),
+    -- 普通用户（USER）
+    (3, 3, 0, 3, true, 'ACTIVE'),
+    -- 访客（GUEST）
+    (4, 4, 0, 4, true, 'ACTIVE')
+SELECT setval('sys_membership_roles_id_seq', (SELECT MAX(id) FROM sys_membership_roles));
 
 -- 调度任务
 INSERT INTO public.sys_tasks(type, type_name, task_payload, cron_spec, enable, created_at)

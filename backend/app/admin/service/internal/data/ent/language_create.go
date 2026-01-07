@@ -107,13 +107,13 @@ func (_c *LanguageCreate) SetNillableDeletedBy(v *uint32) *LanguageCreate {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (_c *LanguageCreate) SetSortOrder(v int32) *LanguageCreate {
+func (_c *LanguageCreate) SetSortOrder(v uint32) *LanguageCreate {
 	_c.mutation.SetSortOrder(v)
 	return _c
 }
 
 // SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_c *LanguageCreate) SetNillableSortOrder(v *int32) *LanguageCreate {
+func (_c *LanguageCreate) SetNillableSortOrder(v *uint32) *LanguageCreate {
 	if v != nil {
 		_c.SetSortOrder(*v)
 	}
@@ -325,7 +325,7 @@ func (_c *LanguageCreate) createSpec() (*Language, *sqlgraph.CreateSpec) {
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.SortOrder(); ok {
-		_spec.SetField(language.FieldSortOrder, field.TypeInt32, value)
+		_spec.SetField(language.FieldSortOrder, field.TypeUint32, value)
 		_node.SortOrder = &value
 	}
 	if value, ok := _c.mutation.IsEnabled(); ok {
@@ -509,7 +509,7 @@ func (u *LanguageUpsert) ClearDeletedBy() *LanguageUpsert {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (u *LanguageUpsert) SetSortOrder(v int32) *LanguageUpsert {
+func (u *LanguageUpsert) SetSortOrder(v uint32) *LanguageUpsert {
 	u.Set(language.FieldSortOrder, v)
 	return u
 }
@@ -521,7 +521,7 @@ func (u *LanguageUpsert) UpdateSortOrder() *LanguageUpsert {
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *LanguageUpsert) AddSortOrder(v int32) *LanguageUpsert {
+func (u *LanguageUpsert) AddSortOrder(v uint32) *LanguageUpsert {
 	u.Add(language.FieldSortOrder, v)
 	return u
 }
@@ -800,14 +800,14 @@ func (u *LanguageUpsertOne) ClearDeletedBy() *LanguageUpsertOne {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (u *LanguageUpsertOne) SetSortOrder(v int32) *LanguageUpsertOne {
+func (u *LanguageUpsertOne) SetSortOrder(v uint32) *LanguageUpsertOne {
 	return u.Update(func(s *LanguageUpsert) {
 		s.SetSortOrder(v)
 	})
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *LanguageUpsertOne) AddSortOrder(v int32) *LanguageUpsertOne {
+func (u *LanguageUpsertOne) AddSortOrder(v uint32) *LanguageUpsertOne {
 	return u.Update(func(s *LanguageUpsert) {
 		s.AddSortOrder(v)
 	})
@@ -1276,14 +1276,14 @@ func (u *LanguageUpsertBulk) ClearDeletedBy() *LanguageUpsertBulk {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (u *LanguageUpsertBulk) SetSortOrder(v int32) *LanguageUpsertBulk {
+func (u *LanguageUpsertBulk) SetSortOrder(v uint32) *LanguageUpsertBulk {
 	return u.Update(func(s *LanguageUpsert) {
 		s.SetSortOrder(v)
 	})
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *LanguageUpsertBulk) AddSortOrder(v int32) *LanguageUpsertBulk {
+func (u *LanguageUpsertBulk) AddSortOrder(v uint32) *LanguageUpsertBulk {
 	return u.Update(func(s *LanguageUpsert) {
 		s.AddSortOrder(v)
 	})

@@ -8,7 +8,7 @@ import (
 	"github.com/go-kratos/kratos/v2/metadata"
 	"github.com/stretchr/testify/assert"
 
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
 func ptrUint32(v uint32) *uint32 { return &v }
@@ -17,13 +17,12 @@ func ptrBool(b bool) *bool       { return &b }
 func TestFromOperatorMetadata_JSON(t *testing.T) {
 	ctx := context.Background()
 
-	ds := userV1.Role_DataScope(1)
+	ds := permissionV1.DataScope(1)
 	src := OperatorInfo{
-		UserID:          ptrUint32(123),
-		TenantID:        ptrUint32(456),
-		OrgUnitID:       ptrUint32(789),
-		IsPlatformAdmin: ptrBool(true),
-		DataScope:       &ds,
+		UserID:    ptrUint32(123),
+		TenantID:  ptrUint32(456),
+		OrgUnitID: ptrUint32(789),
+		DataScope: &ds,
 	}
 	b, err := json.Marshal(src)
 	assert.NoError(t, err)
@@ -42,9 +41,6 @@ func TestFromOperatorMetadata_JSON(t *testing.T) {
 
 		assert.NotNil(t, got.OrgUnitID)
 		assert.Equal(t, uint32(789), *got.OrgUnitID)
-
-		assert.NotNil(t, got.IsPlatformAdmin)
-		assert.Equal(t, true, *got.IsPlatformAdmin)
 
 		assert.NotNil(t, got.DataScope)
 		assert.Equal(t, ds, *got.DataScope)
@@ -66,8 +62,8 @@ func TestFromOperatorMetadata_NoHeaderOrInvalid(t *testing.T) {
 func TestNewOperatorMetadataContext_WriteAndRead(t *testing.T) {
 	ctx := context.Background()
 
-	ds := userV1.Role_DataScope(2)
-	ctx = NewOperatorMetadataContext(ctx, 321, 654, 987, false, ds)
+	ds := permissionV1.DataScope(2)
+	ctx = NewOperatorMetadataContext(ctx, 321, 654, 987, ds)
 
 	md, ok := metadata.FromClientContext(ctx)
 	assert.True(t, ok)
@@ -86,9 +82,6 @@ func TestNewOperatorMetadataContext_WriteAndRead(t *testing.T) {
 	}
 	if assert.NotNil(t, got.OrgUnitID) {
 		assert.Equal(t, uint32(987), *got.OrgUnitID)
-	}
-	if assert.NotNil(t, got.IsPlatformAdmin) {
-		assert.Equal(t, false, *got.IsPlatformAdmin)
 	}
 	if assert.NotNil(t, got.DataScope) {
 		assert.Equal(t, ds, *got.DataScope)

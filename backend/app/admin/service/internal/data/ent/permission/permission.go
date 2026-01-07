@@ -6,7 +6,6 @@ import (
 	"fmt"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -26,40 +25,18 @@ const (
 	FieldUpdatedBy = "updated_by"
 	// FieldDeletedBy holds the string denoting the deleted_by field in the database.
 	FieldDeletedBy = "deleted_by"
-	// FieldRemark holds the string denoting the remark field in the database.
-	FieldRemark = "remark"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldTenantID holds the string denoting the tenant_id field in the database.
 	FieldTenantID = "tenant_id"
-	// FieldParentID holds the string denoting the parent_id field in the database.
-	FieldParentID = "parent_id"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldCode holds the string denoting the code field in the database.
 	FieldCode = "code"
-	// FieldPath holds the string denoting the path field in the database.
-	FieldPath = "path"
-	// FieldModule holds the string denoting the module field in the database.
-	FieldModule = "module"
-	// FieldSortOrder holds the string denoting the sort_order field in the database.
-	FieldSortOrder = "sort_order"
-	// FieldType holds the string denoting the type field in the database.
-	FieldType = "type"
-	// EdgeParent holds the string denoting the parent edge name in mutations.
-	EdgeParent = "parent"
-	// EdgeChildren holds the string denoting the children edge name in mutations.
-	EdgeChildren = "children"
+	// FieldGroupID holds the string denoting the group_id field in the database.
+	FieldGroupID = "group_id"
 	// Table holds the table name of the permission in the database.
 	Table = "sys_permissions"
-	// ParentTable is the table that holds the parent relation/edge.
-	ParentTable = "sys_permissions"
-	// ParentColumn is the table column denoting the parent relation/edge.
-	ParentColumn = "parent_id"
-	// ChildrenTable is the table that holds the children relation/edge.
-	ChildrenTable = "sys_permissions"
-	// ChildrenColumn is the table column denoting the children relation/edge.
-	ChildrenColumn = "parent_id"
 )
 
 // Columns holds all SQL columns for permission fields.
@@ -71,16 +48,11 @@ var Columns = []string{
 	FieldCreatedBy,
 	FieldUpdatedBy,
 	FieldDeletedBy,
-	FieldRemark,
 	FieldStatus,
 	FieldTenantID,
-	FieldParentID,
 	FieldName,
 	FieldCode,
-	FieldPath,
-	FieldModule,
-	FieldSortOrder,
-	FieldType,
+	FieldGroupID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -96,8 +68,6 @@ func ValidColumn(column string) bool {
 var (
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
-	// DefaultSortOrder holds the default value on creation for the "sort_order" field.
-	DefaultSortOrder int32
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
@@ -125,37 +95,6 @@ func StatusValidator(s Status) error {
 		return nil
 	default:
 		return fmt.Errorf("permission: invalid enum value for status field: %q", s)
-	}
-}
-
-// Type defines the type for the "type" enum field.
-type Type string
-
-// TypeApi is the default value of the Type enum.
-const DefaultType = TypeApi
-
-// Type values.
-const (
-	TypeCatalog Type = "CATALOG"
-	TypeMenu    Type = "MENU"
-	TypePage    Type = "PAGE"
-	TypeButton  Type = "BUTTON"
-	TypeApi     Type = "API"
-	TypeData    Type = "DATA"
-	TypeOther   Type = "OTHER"
-)
-
-func (_type Type) String() string {
-	return string(_type)
-}
-
-// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
-func TypeValidator(_type Type) error {
-	switch _type {
-	case TypeCatalog, TypeMenu, TypePage, TypeButton, TypeApi, TypeData, TypeOther:
-		return nil
-	default:
-		return fmt.Errorf("permission: invalid enum value for type field: %q", _type)
 	}
 }
 
@@ -197,11 +136,6 @@ func ByDeletedBy(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeletedBy, opts...).ToFunc()
 }
 
-// ByRemark orders the results by the remark field.
-func ByRemark(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRemark, opts...).ToFunc()
-}
-
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
@@ -210,11 +144,6 @@ func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 // ByTenantID orders the results by the tenant_id field.
 func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
-}
-
-// ByParentID orders the results by the parent_id field.
-func ByParentID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldParentID, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.
@@ -227,57 +156,7 @@ func ByCode(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldCode, opts...).ToFunc()
 }
 
-// ByPath orders the results by the path field.
-func ByPath(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPath, opts...).ToFunc()
-}
-
-// ByModule orders the results by the module field.
-func ByModule(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldModule, opts...).ToFunc()
-}
-
-// BySortOrder orders the results by the sort_order field.
-func BySortOrder(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSortOrder, opts...).ToFunc()
-}
-
-// ByType orders the results by the type field.
-func ByType(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldType, opts...).ToFunc()
-}
-
-// ByParentField orders the results by parent field.
-func ByParentField(field string, opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newParentStep(), sql.OrderByField(field, opts...))
-	}
-}
-
-// ByChildrenCount orders the results by children count.
-func ByChildrenCount(opts ...sql.OrderTermOption) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborsCount(s, newChildrenStep(), opts...)
-	}
-}
-
-// ByChildren orders the results by children terms.
-func ByChildren(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
-	return func(s *sql.Selector) {
-		sqlgraph.OrderByNeighborTerms(s, newChildrenStep(), append([]sql.OrderTerm{term}, terms...)...)
-	}
-}
-func newParentStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(Table, FieldID),
-		sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
-	)
-}
-func newChildrenStep() *sqlgraph.Step {
-	return sqlgraph.NewStep(
-		sqlgraph.From(Table, FieldID),
-		sqlgraph.To(Table, FieldID),
-		sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
-	)
+// ByGroupID orders the results by the group_id field.
+func ByGroupID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldGroupID, opts...).ToFunc()
 }

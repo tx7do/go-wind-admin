@@ -30,7 +30,7 @@ const initedRef = ref<boolean>(false);
 
 const ueditorHomeUrl = ref('/static/UEditorPlus/');
 
-const getUeditorConfigUrl = ref(`${baseUrl}/ueditor`);
+const getUeditorConfigUrl = ref(`${baseUrl}/admin/v1/ueditor`);
 
 const getToken = computed(() => {
   console.log('getToken');

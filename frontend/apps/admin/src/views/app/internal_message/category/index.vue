@@ -65,10 +65,6 @@ const gridOptions: VxeGridProps<InternalMessageCategory> = {
   rowConfig: {
     isHover: true,
   },
-  treeConfig: {
-    childrenField: 'children',
-    rowField: 'id',
-  },
   height: 'auto',
 
   proxyConfig: {
@@ -90,7 +86,6 @@ const gridOptions: VxeGridProps<InternalMessageCategory> = {
     {
       title: $t('page.internalMessageCategory.name'),
       field: 'name',
-      treeNode: true,
     },
     {
       title: $t('page.internalMessageCategory.code'),

@@ -120,15 +120,15 @@ func (_c *PermissionApiResourceCreate) SetNillableTenantID(v *uint32) *Permissio
 	return _c
 }
 
-// SetAPIResourceID sets the "api_resource_id" field.
-func (_c *PermissionApiResourceCreate) SetAPIResourceID(v uint32) *PermissionApiResourceCreate {
-	_c.mutation.SetAPIResourceID(v)
-	return _c
-}
-
 // SetPermissionID sets the "permission_id" field.
 func (_c *PermissionApiResourceCreate) SetPermissionID(v uint32) *PermissionApiResourceCreate {
 	_c.mutation.SetPermissionID(v)
+	return _c
+}
+
+// SetAPIResourceID sets the "api_resource_id" field.
+func (_c *PermissionApiResourceCreate) SetAPIResourceID(v uint32) *PermissionApiResourceCreate {
+	_c.mutation.SetAPIResourceID(v)
 	return _c
 }
 
@@ -172,11 +172,11 @@ func (_c *PermissionApiResourceCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *PermissionApiResourceCreate) check() error {
-	if _, ok := _c.mutation.APIResourceID(); !ok {
-		return &ValidationError{Name: "api_resource_id", err: errors.New(`ent: missing required field "PermissionApiResource.api_resource_id"`)}
-	}
 	if _, ok := _c.mutation.PermissionID(); !ok {
 		return &ValidationError{Name: "permission_id", err: errors.New(`ent: missing required field "PermissionApiResource.permission_id"`)}
+	}
+	if _, ok := _c.mutation.APIResourceID(); !ok {
+		return &ValidationError{Name: "api_resource_id", err: errors.New(`ent: missing required field "PermissionApiResource.api_resource_id"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := permissionapiresource.IDValidator(v); err != nil {
@@ -244,13 +244,13 @@ func (_c *PermissionApiResourceCreate) createSpec() (*PermissionApiResource, *sq
 		_spec.SetField(permissionapiresource.FieldTenantID, field.TypeUint32, value)
 		_node.TenantID = &value
 	}
-	if value, ok := _c.mutation.APIResourceID(); ok {
-		_spec.SetField(permissionapiresource.FieldAPIResourceID, field.TypeUint32, value)
-		_node.APIResourceID = &value
-	}
 	if value, ok := _c.mutation.PermissionID(); ok {
 		_spec.SetField(permissionapiresource.FieldPermissionID, field.TypeUint32, value)
 		_node.PermissionID = &value
+	}
+	if value, ok := _c.mutation.APIResourceID(); ok {
+		_spec.SetField(permissionapiresource.FieldAPIResourceID, field.TypeUint32, value)
+		_node.APIResourceID = &value
 	}
 	return _node, _spec
 }
@@ -412,24 +412,6 @@ func (u *PermissionApiResourceUpsert) ClearDeletedBy() *PermissionApiResourceUps
 	return u
 }
 
-// SetAPIResourceID sets the "api_resource_id" field.
-func (u *PermissionApiResourceUpsert) SetAPIResourceID(v uint32) *PermissionApiResourceUpsert {
-	u.Set(permissionapiresource.FieldAPIResourceID, v)
-	return u
-}
-
-// UpdateAPIResourceID sets the "api_resource_id" field to the value that was provided on create.
-func (u *PermissionApiResourceUpsert) UpdateAPIResourceID() *PermissionApiResourceUpsert {
-	u.SetExcluded(permissionapiresource.FieldAPIResourceID)
-	return u
-}
-
-// AddAPIResourceID adds v to the "api_resource_id" field.
-func (u *PermissionApiResourceUpsert) AddAPIResourceID(v uint32) *PermissionApiResourceUpsert {
-	u.Add(permissionapiresource.FieldAPIResourceID, v)
-	return u
-}
-
 // SetPermissionID sets the "permission_id" field.
 func (u *PermissionApiResourceUpsert) SetPermissionID(v uint32) *PermissionApiResourceUpsert {
 	u.Set(permissionapiresource.FieldPermissionID, v)
@@ -445,6 +427,24 @@ func (u *PermissionApiResourceUpsert) UpdatePermissionID() *PermissionApiResourc
 // AddPermissionID adds v to the "permission_id" field.
 func (u *PermissionApiResourceUpsert) AddPermissionID(v uint32) *PermissionApiResourceUpsert {
 	u.Add(permissionapiresource.FieldPermissionID, v)
+	return u
+}
+
+// SetAPIResourceID sets the "api_resource_id" field.
+func (u *PermissionApiResourceUpsert) SetAPIResourceID(v uint32) *PermissionApiResourceUpsert {
+	u.Set(permissionapiresource.FieldAPIResourceID, v)
+	return u
+}
+
+// UpdateAPIResourceID sets the "api_resource_id" field to the value that was provided on create.
+func (u *PermissionApiResourceUpsert) UpdateAPIResourceID() *PermissionApiResourceUpsert {
+	u.SetExcluded(permissionapiresource.FieldAPIResourceID)
+	return u
+}
+
+// AddAPIResourceID adds v to the "api_resource_id" field.
+func (u *PermissionApiResourceUpsert) AddAPIResourceID(v uint32) *PermissionApiResourceUpsert {
+	u.Add(permissionapiresource.FieldAPIResourceID, v)
 	return u
 }
 
@@ -628,27 +628,6 @@ func (u *PermissionApiResourceUpsertOne) ClearDeletedBy() *PermissionApiResource
 	})
 }
 
-// SetAPIResourceID sets the "api_resource_id" field.
-func (u *PermissionApiResourceUpsertOne) SetAPIResourceID(v uint32) *PermissionApiResourceUpsertOne {
-	return u.Update(func(s *PermissionApiResourceUpsert) {
-		s.SetAPIResourceID(v)
-	})
-}
-
-// AddAPIResourceID adds v to the "api_resource_id" field.
-func (u *PermissionApiResourceUpsertOne) AddAPIResourceID(v uint32) *PermissionApiResourceUpsertOne {
-	return u.Update(func(s *PermissionApiResourceUpsert) {
-		s.AddAPIResourceID(v)
-	})
-}
-
-// UpdateAPIResourceID sets the "api_resource_id" field to the value that was provided on create.
-func (u *PermissionApiResourceUpsertOne) UpdateAPIResourceID() *PermissionApiResourceUpsertOne {
-	return u.Update(func(s *PermissionApiResourceUpsert) {
-		s.UpdateAPIResourceID()
-	})
-}
-
 // SetPermissionID sets the "permission_id" field.
 func (u *PermissionApiResourceUpsertOne) SetPermissionID(v uint32) *PermissionApiResourceUpsertOne {
 	return u.Update(func(s *PermissionApiResourceUpsert) {
@@ -667,6 +646,27 @@ func (u *PermissionApiResourceUpsertOne) AddPermissionID(v uint32) *PermissionAp
 func (u *PermissionApiResourceUpsertOne) UpdatePermissionID() *PermissionApiResourceUpsertOne {
 	return u.Update(func(s *PermissionApiResourceUpsert) {
 		s.UpdatePermissionID()
+	})
+}
+
+// SetAPIResourceID sets the "api_resource_id" field.
+func (u *PermissionApiResourceUpsertOne) SetAPIResourceID(v uint32) *PermissionApiResourceUpsertOne {
+	return u.Update(func(s *PermissionApiResourceUpsert) {
+		s.SetAPIResourceID(v)
+	})
+}
+
+// AddAPIResourceID adds v to the "api_resource_id" field.
+func (u *PermissionApiResourceUpsertOne) AddAPIResourceID(v uint32) *PermissionApiResourceUpsertOne {
+	return u.Update(func(s *PermissionApiResourceUpsert) {
+		s.AddAPIResourceID(v)
+	})
+}
+
+// UpdateAPIResourceID sets the "api_resource_id" field to the value that was provided on create.
+func (u *PermissionApiResourceUpsertOne) UpdateAPIResourceID() *PermissionApiResourceUpsertOne {
+	return u.Update(func(s *PermissionApiResourceUpsert) {
+		s.UpdateAPIResourceID()
 	})
 }
 
@@ -1015,27 +1015,6 @@ func (u *PermissionApiResourceUpsertBulk) ClearDeletedBy() *PermissionApiResourc
 	})
 }
 
-// SetAPIResourceID sets the "api_resource_id" field.
-func (u *PermissionApiResourceUpsertBulk) SetAPIResourceID(v uint32) *PermissionApiResourceUpsertBulk {
-	return u.Update(func(s *PermissionApiResourceUpsert) {
-		s.SetAPIResourceID(v)
-	})
-}
-
-// AddAPIResourceID adds v to the "api_resource_id" field.
-func (u *PermissionApiResourceUpsertBulk) AddAPIResourceID(v uint32) *PermissionApiResourceUpsertBulk {
-	return u.Update(func(s *PermissionApiResourceUpsert) {
-		s.AddAPIResourceID(v)
-	})
-}
-
-// UpdateAPIResourceID sets the "api_resource_id" field to the value that was provided on create.
-func (u *PermissionApiResourceUpsertBulk) UpdateAPIResourceID() *PermissionApiResourceUpsertBulk {
-	return u.Update(func(s *PermissionApiResourceUpsert) {
-		s.UpdateAPIResourceID()
-	})
-}
-
 // SetPermissionID sets the "permission_id" field.
 func (u *PermissionApiResourceUpsertBulk) SetPermissionID(v uint32) *PermissionApiResourceUpsertBulk {
 	return u.Update(func(s *PermissionApiResourceUpsert) {
@@ -1054,6 +1033,27 @@ func (u *PermissionApiResourceUpsertBulk) AddPermissionID(v uint32) *PermissionA
 func (u *PermissionApiResourceUpsertBulk) UpdatePermissionID() *PermissionApiResourceUpsertBulk {
 	return u.Update(func(s *PermissionApiResourceUpsert) {
 		s.UpdatePermissionID()
+	})
+}
+
+// SetAPIResourceID sets the "api_resource_id" field.
+func (u *PermissionApiResourceUpsertBulk) SetAPIResourceID(v uint32) *PermissionApiResourceUpsertBulk {
+	return u.Update(func(s *PermissionApiResourceUpsert) {
+		s.SetAPIResourceID(v)
+	})
+}
+
+// AddAPIResourceID adds v to the "api_resource_id" field.
+func (u *PermissionApiResourceUpsertBulk) AddAPIResourceID(v uint32) *PermissionApiResourceUpsertBulk {
+	return u.Update(func(s *PermissionApiResourceUpsert) {
+		s.AddAPIResourceID(v)
+	})
+}
+
+// UpdateAPIResourceID sets the "api_resource_id" field to the value that was provided on create.
+func (u *PermissionApiResourceUpsertBulk) UpdateAPIResourceID() *PermissionApiResourceUpsertBulk {
+	return u.Update(func(s *PermissionApiResourceUpsert) {
+		s.UpdateAPIResourceID()
 	})
 }
 

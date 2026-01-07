@@ -101,11 +101,59 @@ func (MembershipOrgUnit) Mixin() []ent.Mixin {
 
 func (MembershipOrgUnit) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("tenant_id", "membership_id", "org_unit_id").
+		// 在租户范围内保证 (membership_id, org_unit_id, position_id, role_id) 组合唯一，避免重复分配记录
+		index.Fields("tenant_id", "membership_id", "org_unit_id", "position_id", "role_id").
 			Unique().
-			StorageKey("uix_membership_org_unit_tenant_mem_org"),
+			StorageKey("uix_mou_tenant_mem_org_pos_role"),
 
-		index.Fields("membership_id").StorageKey("idx_mou_membership_id"),
-		index.Fields("org_unit_id").StorageKey("idx_mou_org_unit_id"),
+		// 在租户范围内保证每个 membership 只有一个主所属（is_primary）
+		// 注意：如果希望只允许 is_primary = true 唯一（Postgres），需在迁移脚本使用 partial unique index（例如 WHERE is_primary = true）
+		index.Fields("tenant_id", "membership_id", "is_primary").
+			Unique().
+			StorageKey("uix_mou_tenant_mem_is_primary"),
+
+		// 常用复合索引：按租户 + membership 快速定位该会员所有关联
+		index.Fields("tenant_id", "membership_id").
+			StorageKey("idx_mou_tenant_membership"),
+
+		// 常用复合索引：按租户 + org_unit 快速定位某组织下的成员关联
+		index.Fields("tenant_id", "org_unit_id").
+			StorageKey("idx_mou_tenant_org_unit"),
+
+		// 单列索引，便于按 membership/org_unit/position/role 快速过滤
+		index.Fields("membership_id").
+			StorageKey("idx_mou_membership_id"),
+		index.Fields("org_unit_id").
+			StorageKey("idx_mou_org_unit_id"),
+		index.Fields("position_id").
+			StorageKey("idx_mou_position_id"),
+		index.Fields("role_id").
+			StorageKey("idx_mou_role_id"),
+
+		// 分配者索引，用于查询由谁分配
+		index.Fields("assigned_by").
+			StorageKey("idx_mou_assigned_by"),
+
+		// 主标志与状态索引
+		index.Fields("is_primary").
+			StorageKey("idx_mou_is_primary"),
+		index.Fields("status").
+			StorageKey("idx_mou_status"),
+
+		// 时间范围查询索引（生效/结束/分配时间）
+		index.Fields("start_at").
+			StorageKey("idx_mou_start_at"),
+		index.Fields("end_at").
+			StorageKey("idx_mou_end_at"),
+		index.Fields("assigned_at").
+			StorageKey("idx_mou_assigned_at"),
+
+		// 审计与分页索引（时间列放末尾便于范围扫描）
+		index.Fields("created_by", "created_at").
+			StorageKey("idx_mou_created_by_created_at"),
+		index.Fields("tenant_id", "created_at").
+			StorageKey("idx_mou_tenant_created_at"),
+		index.Fields("created_at").
+			StorageKey("idx_mou_created_at"),
 	}
 }

@@ -32,55 +32,19 @@ type InternalMessageCategory struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 是否启用
 	IsEnabled *bool `json:"is_enabled,omitempty"`
-	// 排序顺序，值越小越靠前
-	SortOrder *int32 `json:"sort_order,omitempty"`
+	// 排序值（越小越靠前）
+	SortOrder *uint32 `json:"sort_order,omitempty"`
 	// 备注
 	Remark *string `json:"remark,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
-	// 父节点ID
-	ParentID *uint32 `json:"parent_id,omitempty"`
 	// 名称
 	Name *string `json:"name,omitempty"`
 	// 编码
 	Code *string `json:"code,omitempty"`
 	// 图标URL
-	IconURL *string `json:"icon_url,omitempty"`
-	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the InternalMessageCategoryQuery when eager-loading is set.
-	Edges        InternalMessageCategoryEdges `json:"edges"`
+	IconURL      *string `json:"icon_url,omitempty"`
 	selectValues sql.SelectValues
-}
-
-// InternalMessageCategoryEdges holds the relations/edges for other nodes in the graph.
-type InternalMessageCategoryEdges struct {
-	// Parent holds the value of the parent edge.
-	Parent *InternalMessageCategory `json:"parent,omitempty"`
-	// Children holds the value of the children edge.
-	Children []*InternalMessageCategory `json:"children,omitempty"`
-	// loadedTypes holds the information for reporting if a
-	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
-}
-
-// ParentOrErr returns the Parent value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e InternalMessageCategoryEdges) ParentOrErr() (*InternalMessageCategory, error) {
-	if e.Parent != nil {
-		return e.Parent, nil
-	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: internalmessagecategory.Label}
-	}
-	return nil, &NotLoadedError{edge: "parent"}
-}
-
-// ChildrenOrErr returns the Children value or an error if the edge
-// was not loaded in eager-loading.
-func (e InternalMessageCategoryEdges) ChildrenOrErr() ([]*InternalMessageCategory, error) {
-	if e.loadedTypes[1] {
-		return e.Children, nil
-	}
-	return nil, &NotLoadedError{edge: "children"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -90,7 +54,7 @@ func (*InternalMessageCategory) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case internalmessagecategory.FieldIsEnabled:
 			values[i] = new(sql.NullBool)
-		case internalmessagecategory.FieldID, internalmessagecategory.FieldCreatedBy, internalmessagecategory.FieldUpdatedBy, internalmessagecategory.FieldDeletedBy, internalmessagecategory.FieldSortOrder, internalmessagecategory.FieldTenantID, internalmessagecategory.FieldParentID:
+		case internalmessagecategory.FieldID, internalmessagecategory.FieldCreatedBy, internalmessagecategory.FieldUpdatedBy, internalmessagecategory.FieldDeletedBy, internalmessagecategory.FieldSortOrder, internalmessagecategory.FieldTenantID:
 			values[i] = new(sql.NullInt64)
 		case internalmessagecategory.FieldRemark, internalmessagecategory.FieldName, internalmessagecategory.FieldCode, internalmessagecategory.FieldIconURL:
 			values[i] = new(sql.NullString)
@@ -170,8 +134,8 @@ func (_m *InternalMessageCategory) assignValues(columns []string, values []any) 
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field sort_order", values[i])
 			} else if value.Valid {
-				_m.SortOrder = new(int32)
-				*_m.SortOrder = int32(value.Int64)
+				_m.SortOrder = new(uint32)
+				*_m.SortOrder = uint32(value.Int64)
 			}
 		case internalmessagecategory.FieldRemark:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -186,13 +150,6 @@ func (_m *InternalMessageCategory) assignValues(columns []string, values []any) 
 			} else if value.Valid {
 				_m.TenantID = new(uint32)
 				*_m.TenantID = uint32(value.Int64)
-			}
-		case internalmessagecategory.FieldParentID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
-			} else if value.Valid {
-				_m.ParentID = new(uint32)
-				*_m.ParentID = uint32(value.Int64)
 			}
 		case internalmessagecategory.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -226,16 +183,6 @@ func (_m *InternalMessageCategory) assignValues(columns []string, values []any) 
 // This includes values selected through modifiers, order, etc.
 func (_m *InternalMessageCategory) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
-}
-
-// QueryParent queries the "parent" edge of the InternalMessageCategory entity.
-func (_m *InternalMessageCategory) QueryParent() *InternalMessageCategoryQuery {
-	return NewInternalMessageCategoryClient(_m.config).QueryParent(_m)
-}
-
-// QueryChildren queries the "children" edge of the InternalMessageCategory entity.
-func (_m *InternalMessageCategory) QueryChildren() *InternalMessageCategoryQuery {
-	return NewInternalMessageCategoryClient(_m.config).QueryChildren(_m)
 }
 
 // Update returns a builder for updating this InternalMessageCategory.
@@ -308,11 +255,6 @@ func (_m *InternalMessageCategory) String() string {
 	builder.WriteString(", ")
 	if v := _m.TenantID; v != nil {
 		builder.WriteString("tenant_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := _m.ParentID; v != nil {
-		builder.WriteString("parent_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

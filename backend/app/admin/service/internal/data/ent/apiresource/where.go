@@ -434,16 +434,6 @@ func StatusNotIn(vs ...Status) predicate.ApiResource {
 	return predicate.ApiResource(sql.FieldNotIn(FieldStatus, vs...))
 }
 
-// StatusIsNil applies the IsNil predicate on the "status" field.
-func StatusIsNil() predicate.ApiResource {
-	return predicate.ApiResource(sql.FieldIsNull(FieldStatus))
-}
-
-// StatusNotNil applies the NotNil predicate on the "status" field.
-func StatusNotNil() predicate.ApiResource {
-	return predicate.ApiResource(sql.FieldNotNull(FieldStatus))
-}
-
 // DescriptionEQ applies the EQ predicate on the "description" field.
 func DescriptionEQ(v string) predicate.ApiResource {
 	return predicate.ApiResource(sql.FieldEQ(FieldDescription, v))

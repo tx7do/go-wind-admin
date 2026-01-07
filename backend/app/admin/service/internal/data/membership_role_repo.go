@@ -2,13 +2,12 @@ package data
 
 import (
 	"context"
-	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/go-utils/mapper"
-	"github.com/tx7do/go-utils/trans"
+	"github.com/tx7do/go-utils/timeutil"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
@@ -51,63 +50,11 @@ func (r *MembershipRoleRepo) CleanRoles(
 	return nil
 }
 
-func (r *MembershipRoleRepo) AssignRoleWithData(ctx context.Context, operatorID *uint32, data *userV1.MembershipRole) (err error) {
-	var startAt *time.Time
-	var endAt *time.Time
-	var assignedAt *time.Time
-	if data.StartAt != nil {
-		startAt = trans.Ptr(data.StartAt.AsTime())
-	}
-	if data.EndAt != nil {
-		endAt = trans.Ptr(data.EndAt.AsTime())
-	}
-	if data.AssignedAt != nil {
-		assignedAt = trans.Ptr(data.AssignedAt.AsTime())
-	}
-
-	var tx *ent.Tx
-	tx, err = r.entClient.Client().Tx(ctx)
-	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("start transaction failed")
-	}
-	defer func() {
-		if err != nil {
-			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
-			}
-			return
-		}
-		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = adminV1.ErrorInternalServerError("transaction commit failed")
-		}
-	}()
-
-	return r.AssignRoles(ctx,
-		tx,
-		data.GetMembershipId(),
-		data.GetTenantId(),
-		[]uint32{data.GetRoleId()},
-		operatorID,
-		data.Status,
-		startAt,
-		endAt,
-		assignedAt,
-		data.AssignedBy,
-		data.GetIsPrimary(),
-	)
-}
-
 // AssignRoles 分配角色
 func (r *MembershipRoleRepo) AssignRoles(ctx context.Context,
 	tx *ent.Tx,
 	membershipID, tenantID uint32,
-	roleIDs []uint32, operatorID *uint32,
-	status *userV1.MembershipRole_Status,
-	startAt, endAt *time.Time,
-	assignedAt *time.Time, assignedBy *uint32,
-	isPrimary bool,
+	datas []*userV1.MembershipRole,
 ) error {
 	var err error
 
@@ -116,31 +63,31 @@ func (r *MembershipRoleRepo) AssignRoles(ctx context.Context,
 		return userV1.ErrorInternalServerError("clean old membership roles failed")
 	}
 
-	if len(roleIDs) == 0 {
+	if len(datas) == 0 {
 		return nil
 	}
 
 	now := time.Now()
 
-	if startAt == nil {
-		startAt = &now
-	}
-
 	var membershipRoleCreates []*ent.MembershipRoleCreate
-	for _, id := range roleIDs {
+	for _, data := range datas {
+		if data.StartAt == nil {
+			data.StartAt = timeutil.TimeToTimestamppb(&now)
+		}
+
 		rm := tx.MembershipRole.
 			Create().
-			SetMembershipID(membershipID).
-			SetRoleID(id).
-			SetNillableStatus(r.statusConverter.ToEntity(status)).
-			SetNillableCreatedBy(operatorID).
-			SetNillableAssignedBy(assignedBy).
-			SetNillableAssignedAt(assignedAt).
 			SetTenantID(tenantID).
-			SetIsPrimary(isPrimary).
+			SetMembershipID(data.GetMembershipId()).
+			SetRoleID(data.GetRoleId()).
+			SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
+			SetNillableAssignedBy(data.AssignedBy).
+			SetNillableAssignedAt(timeutil.TimestamppbToTime(data.AssignedAt)).
+			SetNillableIsPrimary(data.IsPrimary).
+			SetNillableStartAt(timeutil.TimestamppbToTime(data.StartAt)).
+			SetNillableEndAt(timeutil.TimestamppbToTime(data.EndAt)).
 			SetCreatedAt(now).
-			SetNillableStartAt(startAt).
-			SetNillableEndAt(endAt)
+			SetNillableCreatedBy(data.CreatedBy)
 		membershipRoleCreates = append(membershipRoleCreates, rm)
 	}
 
@@ -154,11 +101,10 @@ func (r *MembershipRoleRepo) AssignRoles(ctx context.Context,
 }
 
 // ListRoleIDs 获取用户关联的角色ID列表
-func (r *MembershipRoleRepo) ListRoleIDs(ctx context.Context, membershipID, tenantID uint32, excludeExpired bool) ([]uint32, error) {
+func (r *MembershipRoleRepo) ListRoleIDs(ctx context.Context, membershipID uint32, excludeExpired bool) ([]uint32, error) {
 	q := r.entClient.Client().MembershipRole.Query().
 		Where(
 			membershiprole.MembershipIDEQ(membershipID),
-			membershiprole.TenantIDEQ(tenantID),
 		)
 
 	if excludeExpired {

@@ -13,6 +13,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
 type AdminOperationLogService struct {
@@ -23,7 +24,7 @@ type AdminOperationLogService struct {
 	operationLogRepo *data.AdminOperationLogRepo
 	apiResourceRepo  *data.ApiResourceRepo
 
-	apis     []*adminV1.ApiResource
+	apis     []*permissionV1.ApiResource
 	apiMutex sync.RWMutex
 }
 
@@ -39,7 +40,7 @@ func NewAdminOperationLogService(
 	}
 }
 
-func (s *AdminOperationLogService) queryApiResources(ctx context.Context, path, method string) (*adminV1.ApiResource, error) {
+func (s *AdminOperationLogService) queryApiResources(ctx context.Context, path, method string) (*permissionV1.ApiResource, error) {
 	if len(s.apis) == 0 {
 		s.apiMutex.Lock()
 		apis, err := s.apiResourceRepo.List(ctx, &pagination.PagingRequest{

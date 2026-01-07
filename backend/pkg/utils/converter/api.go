@@ -3,14 +3,16 @@ package converter
 import (
 	"regexp"
 	"strings"
+	"unicode"
 
 	"github.com/jinzhu/inflection"
 	"github.com/tx7do/go-utils/stringcase"
 )
 
 var (
-	segVersionRe = regexp.MustCompile(`(?i)^v[0-9]+(?:\.[0-9]+)?$`)
-	rpcNameRe    = regexp.MustCompile(`^(?:([A-Za-z0-9]+)Service|([A-Za-z0-9]+))_([A-Za-z]+)([A-Za-z0-9_]*)$`)
+	segVersionRe   = regexp.MustCompile(`(?i)^v[0-9]+(?:\.[0-9]+)?$`)
+	rpcNameRe      = regexp.MustCompile(`^(?:([A-Za-z0-9]+)Service|([A-Za-z0-9]+))_([A-Za-z]+)([A-Za-z0-9_]*)$`)
+	paramSegmentRe = regexp.MustCompile(`^\{\s*[^/{}]+\s*}$`)
 )
 
 type ApiPermissionConverter struct {
@@ -27,41 +29,43 @@ func (c *ApiPermissionConverter) ConvertCodeByOperationID(operationID string) st
 		return ""
 	}
 
+	service = c.singularizeSegments(service)
 	resource := stringcase.KebabCase(service)
 	if name != "" {
 		resource = resource + ":" + stringcase.KebabCase(name)
 	}
 
-	return inflection.Singular(resource) + ":" + stringcase.KebabCase(action)
+	return resource + ":" + stringcase.KebabCase(action)
 }
 
 // ConvertCodeByPath 通过 HTTP 方法和路径生成 resource:action 风格的 code（如 users:delete, users:list）
 func (c *ApiPermissionConverter) ConvertCodeByPath(method, path string) string {
 	resource := c.pathToResource(path)
 	action := c.methodToAction(method, path)
-	return inflection.Singular(resource) + ":" + action
+	return (resource) + ":" + action
 }
 
 // methodToAction 将 HTTP 方法转换为动作字符串
 func (c *ApiPermissionConverter) methodToAction(method string, path string) string {
-	action := "get"
-	switch strings.ToUpper(method) {
-	case "GET":
-		if strings.Contains(path, "{") {
-			action = "get"
-		} else {
-			action = "list"
-		}
-	case "POST":
-		action = "create"
-	case "PUT", "PATCH":
-		action = "update"
-	case "DELETE":
-		action = "delete"
-	default:
-		action = strings.ToLower(method)
+	// 特殊路径处理
+	if strings.HasSuffix(path, "/list") {
+		return "view"
 	}
-	return action
+
+	// 映射常见方法到动作
+	var mapMethods = map[string]string{
+		"GET":    "view",
+		"POST":   "create",
+		"PUT":    "edit",
+		"PATCH":  "edit",
+		"DELETE": "delete",
+	}
+	if action, exists := mapMethods[strings.ToUpper(method)]; exists {
+		return action
+	}
+
+	// 默认使用小写方法名作为动作
+	return strings.ToLower(method)
 }
 
 // pathToResource 从路径中解析资源标识符
@@ -70,7 +74,9 @@ func (c *ApiPermissionConverter) pathToResource(path string) string {
 		return ""
 	}
 
+	// 预处理路径
 	path = c.stripVersionPrefix(path)
+	path = c.removePathParams(path)
 	if path == "" {
 		return ""
 	}
@@ -78,23 +84,21 @@ func (c *ApiPermissionConverter) pathToResource(path string) string {
 	parts := strings.Split(path, "/")
 	var segs []string
 
-	for _, p := range parts {
+	// 折叠多级路径为单级资源标识符
+	// 仅保留第一个路径段的主要部分
+	if len(parts) >= 1 {
+		p := parts[0]
 		raw := strings.TrimSpace(p)
 		if raw == "" {
-			continue
+			return ""
 		}
-		if strings.HasPrefix(raw, "{") && strings.HasSuffix(raw, "}") {
-			continue
+
+		raw = c.singularizeSegments(raw)
+
+		rawParts := strings.Split(raw, ":")
+		if len(rawParts) >= 1 {
+			segs = append(segs, rawParts[0])
 		}
-		clean := strings.Trim(raw, "{}")
-		clean = strings.ToLower(clean)
-		if clean == "" {
-			continue
-		}
-		if clean == "api" || (strings.HasPrefix(clean, "v") && len(clean) <= 3) {
-			continue
-		}
-		segs = append(segs, clean)
 	}
 
 	if len(segs) == 0 {
@@ -205,4 +209,64 @@ func (c *ApiPermissionConverter) stripVersionPrefix(p string) string {
 	}
 
 	return strings.Join(out, "/")
+}
+
+// removePathParams 移除路径中的参数段（形如 /{id} 或 /{id}/ ）。
+// 返回的结果不包含首尾斜杠，空或全为参数时返回空字符串。
+func (c *ApiPermissionConverter) removePathParams(p string) string {
+	if strings.TrimSpace(p) == "" {
+		return ""
+	}
+	p = strings.TrimSpace(p)
+	p = strings.Trim(p, "/")
+	if p == "" {
+		return ""
+	}
+
+	parts := strings.Split(p, "/")
+	var out []string
+	for _, seg := range parts {
+		seg = strings.TrimSpace(seg)
+		if seg == "" {
+			continue
+		}
+		// 如果是参数段则跳过
+		if paramSegmentRe.MatchString(seg) {
+			continue
+		}
+		out = append(out, seg)
+	}
+
+	return strings.Join(out, "/")
+}
+
+// singularizeSegments 将输入按非字母数字字符分段，单独对每个段使用 inflection.Singular，然后保留原始分隔符拼回。
+// 例如: `tasks:names` -> `task:name`, `tasks-users` -> `task-user`
+func (c *ApiPermissionConverter) singularizeSegments(s string) string {
+	if strings.TrimSpace(s) == "" {
+		return s
+	}
+
+	var b strings.Builder
+	var token []rune
+	flush := func() {
+		if len(token) > 0 {
+			t := string(token)
+			// 使用 inflection.Singular 对单个 token 进行单数转换
+			b.WriteString(inflection.Singular(t))
+			token = token[:0]
+		}
+	}
+
+	for _, r := range s {
+		if unicode.IsLetter(r) || unicode.IsDigit(r) {
+			token = append(token, r)
+			continue
+		}
+		// 非字母数字为分隔符，先 flush 当前 token，再写入分隔符
+		flush()
+		b.WriteRune(r)
+	}
+	flush()
+	return b.String()
 }

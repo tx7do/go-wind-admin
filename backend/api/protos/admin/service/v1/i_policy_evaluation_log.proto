@@ -1,0 +1,33 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/api/annotations.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/duration.proto";
+
+import "pagination/v1/pagination.proto";
+import "permission/service/v1/policy_evaluation_log.proto";
+
+
+// 策略评估日志服务
+service PolicyEvaluationLogService {
+  // 查询策略评估日志列表
+  rpc List (pagination.PagingRequest) returns (permission.service.v1.ListPolicyEvaluationLogResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/policy-evaluation-logs"
+    };
+  }
+
+  // 查询策略评估日志详情
+  rpc Get (permission.service.v1.GetPolicyEvaluationLogRequest) returns (permission.service.v1.PolicyEvaluationLog) {
+    option (google.api.http) = {
+      get: "/admin/v1/policy-evaluation-logs/{id}"
+    };
+  }
+}

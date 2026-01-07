@@ -252,6 +252,20 @@ func (_c *MembershipCreate) SetNillableAssignedBy(v *uint32) *MembershipCreate {
 	return _c
 }
 
+// SetJoinedAt sets the "joined_at" field.
+func (_c *MembershipCreate) SetJoinedAt(v time.Time) *MembershipCreate {
+	_c.mutation.SetJoinedAt(v)
+	return _c
+}
+
+// SetNillableJoinedAt sets the "joined_at" field if the given value is not nil.
+func (_c *MembershipCreate) SetNillableJoinedAt(v *time.Time) *MembershipCreate {
+	if v != nil {
+		_c.SetJoinedAt(*v)
+	}
+	return _c
+}
+
 // SetStatus sets the "status" field.
 func (_c *MembershipCreate) SetStatus(v membership.Status) *MembershipCreate {
 	_c.mutation.SetStatus(v)
@@ -435,6 +449,10 @@ func (_c *MembershipCreate) createSpec() (*Membership, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.AssignedBy(); ok {
 		_spec.SetField(membership.FieldAssignedBy, field.TypeUint32, value)
 		_node.AssignedBy = &value
+	}
+	if value, ok := _c.mutation.JoinedAt(); ok {
+		_spec.SetField(membership.FieldJoinedAt, field.TypeTime, value)
+		_node.JoinedAt = &value
 	}
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(membership.FieldStatus, field.TypeEnum, value)
@@ -795,6 +813,24 @@ func (u *MembershipUpsert) AddAssignedBy(v uint32) *MembershipUpsert {
 // ClearAssignedBy clears the value of the "assigned_by" field.
 func (u *MembershipUpsert) ClearAssignedBy() *MembershipUpsert {
 	u.SetNull(membership.FieldAssignedBy)
+	return u
+}
+
+// SetJoinedAt sets the "joined_at" field.
+func (u *MembershipUpsert) SetJoinedAt(v time.Time) *MembershipUpsert {
+	u.Set(membership.FieldJoinedAt, v)
+	return u
+}
+
+// UpdateJoinedAt sets the "joined_at" field to the value that was provided on create.
+func (u *MembershipUpsert) UpdateJoinedAt() *MembershipUpsert {
+	u.SetExcluded(membership.FieldJoinedAt)
+	return u
+}
+
+// ClearJoinedAt clears the value of the "joined_at" field.
+func (u *MembershipUpsert) ClearJoinedAt() *MembershipUpsert {
+	u.SetNull(membership.FieldJoinedAt)
 	return u
 }
 
@@ -1224,6 +1260,27 @@ func (u *MembershipUpsertOne) UpdateAssignedBy() *MembershipUpsertOne {
 func (u *MembershipUpsertOne) ClearAssignedBy() *MembershipUpsertOne {
 	return u.Update(func(s *MembershipUpsert) {
 		s.ClearAssignedBy()
+	})
+}
+
+// SetJoinedAt sets the "joined_at" field.
+func (u *MembershipUpsertOne) SetJoinedAt(v time.Time) *MembershipUpsertOne {
+	return u.Update(func(s *MembershipUpsert) {
+		s.SetJoinedAt(v)
+	})
+}
+
+// UpdateJoinedAt sets the "joined_at" field to the value that was provided on create.
+func (u *MembershipUpsertOne) UpdateJoinedAt() *MembershipUpsertOne {
+	return u.Update(func(s *MembershipUpsert) {
+		s.UpdateJoinedAt()
+	})
+}
+
+// ClearJoinedAt clears the value of the "joined_at" field.
+func (u *MembershipUpsertOne) ClearJoinedAt() *MembershipUpsertOne {
+	return u.Update(func(s *MembershipUpsert) {
+		s.ClearJoinedAt()
 	})
 }
 
@@ -1822,6 +1879,27 @@ func (u *MembershipUpsertBulk) UpdateAssignedBy() *MembershipUpsertBulk {
 func (u *MembershipUpsertBulk) ClearAssignedBy() *MembershipUpsertBulk {
 	return u.Update(func(s *MembershipUpsert) {
 		s.ClearAssignedBy()
+	})
+}
+
+// SetJoinedAt sets the "joined_at" field.
+func (u *MembershipUpsertBulk) SetJoinedAt(v time.Time) *MembershipUpsertBulk {
+	return u.Update(func(s *MembershipUpsert) {
+		s.SetJoinedAt(v)
+	})
+}
+
+// UpdateJoinedAt sets the "joined_at" field to the value that was provided on create.
+func (u *MembershipUpsertBulk) UpdateJoinedAt() *MembershipUpsertBulk {
+	return u.Update(func(s *MembershipUpsert) {
+		s.UpdateJoinedAt()
+	})
+}
+
+// ClearJoinedAt clears the value of the "joined_at" field.
+func (u *MembershipUpsertBulk) ClearJoinedAt() *MembershipUpsertBulk {
+	return u.Update(func(s *MembershipUpsert) {
+		s.ClearJoinedAt()
 	})
 }
 

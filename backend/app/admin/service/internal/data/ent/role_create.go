@@ -120,30 +120,30 @@ func (_c *RoleCreate) SetNillableRemark(v *string) *RoleCreate {
 	return _c
 }
 
+// SetDescription sets the "description" field.
+func (_c *RoleCreate) SetDescription(v string) *RoleCreate {
+	_c.mutation.SetDescription(v)
+	return _c
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_c *RoleCreate) SetNillableDescription(v *string) *RoleCreate {
+	if v != nil {
+		_c.SetDescription(*v)
+	}
+	return _c
+}
+
 // SetSortOrder sets the "sort_order" field.
-func (_c *RoleCreate) SetSortOrder(v int32) *RoleCreate {
+func (_c *RoleCreate) SetSortOrder(v uint32) *RoleCreate {
 	_c.mutation.SetSortOrder(v)
 	return _c
 }
 
 // SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_c *RoleCreate) SetNillableSortOrder(v *int32) *RoleCreate {
+func (_c *RoleCreate) SetNillableSortOrder(v *uint32) *RoleCreate {
 	if v != nil {
 		_c.SetSortOrder(*v)
-	}
-	return _c
-}
-
-// SetParentID sets the "parent_id" field.
-func (_c *RoleCreate) SetParentID(v uint32) *RoleCreate {
-	_c.mutation.SetParentID(v)
-	return _c
-}
-
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_c *RoleCreate) SetNillableParentID(v *uint32) *RoleCreate {
-	if v != nil {
-		_c.SetParentID(*v)
 	}
 	return _c
 }
@@ -158,6 +158,20 @@ func (_c *RoleCreate) SetTenantID(v uint32) *RoleCreate {
 func (_c *RoleCreate) SetNillableTenantID(v *uint32) *RoleCreate {
 	if v != nil {
 		_c.SetTenantID(*v)
+	}
+	return _c
+}
+
+// SetStatus sets the "status" field.
+func (_c *RoleCreate) SetStatus(v role.Status) *RoleCreate {
+	_c.mutation.SetStatus(v)
+	return _c
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_c *RoleCreate) SetNillableStatus(v *role.Status) *RoleCreate {
+	if v != nil {
+		_c.SetStatus(*v)
 	}
 	return _c
 }
@@ -190,50 +204,16 @@ func (_c *RoleCreate) SetNillableCode(v *string) *RoleCreate {
 	return _c
 }
 
-// SetCustomOrgUnitIds sets the "custom_org_unit_ids" field.
-func (_c *RoleCreate) SetCustomOrgUnitIds(v []uint32) *RoleCreate {
-	_c.mutation.SetCustomOrgUnitIds(v)
+// SetIsProtected sets the "is_protected" field.
+func (_c *RoleCreate) SetIsProtected(v bool) *RoleCreate {
+	_c.mutation.SetIsProtected(v)
 	return _c
 }
 
-// SetDataScope sets the "data_scope" field.
-func (_c *RoleCreate) SetDataScope(v role.DataScope) *RoleCreate {
-	_c.mutation.SetDataScope(v)
-	return _c
-}
-
-// SetNillableDataScope sets the "data_scope" field if the given value is not nil.
-func (_c *RoleCreate) SetNillableDataScope(v *role.DataScope) *RoleCreate {
+// SetNillableIsProtected sets the "is_protected" field if the given value is not nil.
+func (_c *RoleCreate) SetNillableIsProtected(v *bool) *RoleCreate {
 	if v != nil {
-		_c.SetDataScope(*v)
-	}
-	return _c
-}
-
-// SetStatus sets the "status" field.
-func (_c *RoleCreate) SetStatus(v role.Status) *RoleCreate {
-	_c.mutation.SetStatus(v)
-	return _c
-}
-
-// SetNillableStatus sets the "status" field if the given value is not nil.
-func (_c *RoleCreate) SetNillableStatus(v *role.Status) *RoleCreate {
-	if v != nil {
-		_c.SetStatus(*v)
-	}
-	return _c
-}
-
-// SetType sets the "type" field.
-func (_c *RoleCreate) SetType(v role.Type) *RoleCreate {
-	_c.mutation.SetType(v)
-	return _c
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (_c *RoleCreate) SetNillableType(v *role.Type) *RoleCreate {
-	if v != nil {
-		_c.SetType(*v)
+		_c.SetIsProtected(*v)
 	}
 	return _c
 }
@@ -242,26 +222,6 @@ func (_c *RoleCreate) SetNillableType(v *role.Type) *RoleCreate {
 func (_c *RoleCreate) SetID(v uint32) *RoleCreate {
 	_c.mutation.SetID(v)
 	return _c
-}
-
-// SetParent sets the "parent" edge to the Role entity.
-func (_c *RoleCreate) SetParent(v *Role) *RoleCreate {
-	return _c.SetParentID(v.ID)
-}
-
-// AddChildIDs adds the "children" edge to the Role entity by IDs.
-func (_c *RoleCreate) AddChildIDs(ids ...uint32) *RoleCreate {
-	_c.mutation.AddChildIDs(ids...)
-	return _c
-}
-
-// AddChildren adds the "children" edges to the Role entity.
-func (_c *RoleCreate) AddChildren(v ...*Role) *RoleCreate {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddChildIDs(ids...)
 }
 
 // Mutation returns the RoleMutation object of the builder.
@@ -307,14 +267,22 @@ func (_c *RoleCreate) defaults() {
 		v := role.DefaultStatus
 		_c.mutation.SetStatus(v)
 	}
-	if _, ok := _c.mutation.GetType(); !ok {
-		v := role.DefaultType
-		_c.mutation.SetType(v)
+	if _, ok := _c.mutation.IsProtected(); !ok {
+		v := role.DefaultIsProtected
+		_c.mutation.SetIsProtected(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *RoleCreate) check() error {
+	if _, ok := _c.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Role.status"`)}
+	}
+	if v, ok := _c.mutation.Status(); ok {
+		if err := role.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Role.status": %w`, err)}
+		}
+	}
 	if v, ok := _c.mutation.Name(); ok {
 		if err := role.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Role.name": %w`, err)}
@@ -325,20 +293,8 @@ func (_c *RoleCreate) check() error {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "Role.code": %w`, err)}
 		}
 	}
-	if v, ok := _c.mutation.DataScope(); ok {
-		if err := role.DataScopeValidator(v); err != nil {
-			return &ValidationError{Name: "data_scope", err: fmt.Errorf(`ent: validator failed for field "Role.data_scope": %w`, err)}
-		}
-	}
-	if v, ok := _c.mutation.Status(); ok {
-		if err := role.StatusValidator(v); err != nil {
-			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Role.status": %w`, err)}
-		}
-	}
-	if v, ok := _c.mutation.GetType(); ok {
-		if err := role.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Role.type": %w`, err)}
-		}
+	if _, ok := _c.mutation.IsProtected(); !ok {
+		return &ValidationError{Name: "is_protected", err: errors.New(`ent: missing required field "Role.is_protected"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := role.IDValidator(v); err != nil {
@@ -406,13 +362,21 @@ func (_c *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 		_spec.SetField(role.FieldRemark, field.TypeString, value)
 		_node.Remark = &value
 	}
+	if value, ok := _c.mutation.Description(); ok {
+		_spec.SetField(role.FieldDescription, field.TypeString, value)
+		_node.Description = &value
+	}
 	if value, ok := _c.mutation.SortOrder(); ok {
-		_spec.SetField(role.FieldSortOrder, field.TypeInt32, value)
+		_spec.SetField(role.FieldSortOrder, field.TypeUint32, value)
 		_node.SortOrder = &value
 	}
 	if value, ok := _c.mutation.TenantID(); ok {
 		_spec.SetField(role.FieldTenantID, field.TypeUint32, value)
 		_node.TenantID = &value
+	}
+	if value, ok := _c.mutation.Status(); ok {
+		_spec.SetField(role.FieldStatus, field.TypeEnum, value)
+		_node.Status = &value
 	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(role.FieldName, field.TypeString, value)
@@ -422,54 +386,9 @@ func (_c *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 		_spec.SetField(role.FieldCode, field.TypeString, value)
 		_node.Code = &value
 	}
-	if value, ok := _c.mutation.CustomOrgUnitIds(); ok {
-		_spec.SetField(role.FieldCustomOrgUnitIds, field.TypeJSON, value)
-		_node.CustomOrgUnitIds = value
-	}
-	if value, ok := _c.mutation.DataScope(); ok {
-		_spec.SetField(role.FieldDataScope, field.TypeEnum, value)
-		_node.DataScope = &value
-	}
-	if value, ok := _c.mutation.Status(); ok {
-		_spec.SetField(role.FieldStatus, field.TypeEnum, value)
-		_node.Status = &value
-	}
-	if value, ok := _c.mutation.GetType(); ok {
-		_spec.SetField(role.FieldType, field.TypeEnum, value)
-		_node.Type = &value
-	}
-	if nodes := _c.mutation.ParentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   role.ParentTable,
-			Columns: []string{role.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.ParentID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.ChildrenIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   role.ChildrenTable,
-			Columns: []string{role.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(role.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
+	if value, ok := _c.mutation.IsProtected(); ok {
+		_spec.SetField(role.FieldIsProtected, field.TypeBool, value)
+		_node.IsProtected = &value
 	}
 	return _node, _spec
 }
@@ -649,8 +568,26 @@ func (u *RoleUpsert) ClearRemark() *RoleUpsert {
 	return u
 }
 
+// SetDescription sets the "description" field.
+func (u *RoleUpsert) SetDescription(v string) *RoleUpsert {
+	u.Set(role.FieldDescription, v)
+	return u
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *RoleUpsert) UpdateDescription() *RoleUpsert {
+	u.SetExcluded(role.FieldDescription)
+	return u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *RoleUpsert) ClearDescription() *RoleUpsert {
+	u.SetNull(role.FieldDescription)
+	return u
+}
+
 // SetSortOrder sets the "sort_order" field.
-func (u *RoleUpsert) SetSortOrder(v int32) *RoleUpsert {
+func (u *RoleUpsert) SetSortOrder(v uint32) *RoleUpsert {
 	u.Set(role.FieldSortOrder, v)
 	return u
 }
@@ -662,7 +599,7 @@ func (u *RoleUpsert) UpdateSortOrder() *RoleUpsert {
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *RoleUpsert) AddSortOrder(v int32) *RoleUpsert {
+func (u *RoleUpsert) AddSortOrder(v uint32) *RoleUpsert {
 	u.Add(role.FieldSortOrder, v)
 	return u
 }
@@ -673,21 +610,15 @@ func (u *RoleUpsert) ClearSortOrder() *RoleUpsert {
 	return u
 }
 
-// SetParentID sets the "parent_id" field.
-func (u *RoleUpsert) SetParentID(v uint32) *RoleUpsert {
-	u.Set(role.FieldParentID, v)
+// SetStatus sets the "status" field.
+func (u *RoleUpsert) SetStatus(v role.Status) *RoleUpsert {
+	u.Set(role.FieldStatus, v)
 	return u
 }
 
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *RoleUpsert) UpdateParentID() *RoleUpsert {
-	u.SetExcluded(role.FieldParentID)
-	return u
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (u *RoleUpsert) ClearParentID() *RoleUpsert {
-	u.SetNull(role.FieldParentID)
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *RoleUpsert) UpdateStatus() *RoleUpsert {
+	u.SetExcluded(role.FieldStatus)
 	return u
 }
 
@@ -727,75 +658,15 @@ func (u *RoleUpsert) ClearCode() *RoleUpsert {
 	return u
 }
 
-// SetCustomOrgUnitIds sets the "custom_org_unit_ids" field.
-func (u *RoleUpsert) SetCustomOrgUnitIds(v []uint32) *RoleUpsert {
-	u.Set(role.FieldCustomOrgUnitIds, v)
+// SetIsProtected sets the "is_protected" field.
+func (u *RoleUpsert) SetIsProtected(v bool) *RoleUpsert {
+	u.Set(role.FieldIsProtected, v)
 	return u
 }
 
-// UpdateCustomOrgUnitIds sets the "custom_org_unit_ids" field to the value that was provided on create.
-func (u *RoleUpsert) UpdateCustomOrgUnitIds() *RoleUpsert {
-	u.SetExcluded(role.FieldCustomOrgUnitIds)
-	return u
-}
-
-// ClearCustomOrgUnitIds clears the value of the "custom_org_unit_ids" field.
-func (u *RoleUpsert) ClearCustomOrgUnitIds() *RoleUpsert {
-	u.SetNull(role.FieldCustomOrgUnitIds)
-	return u
-}
-
-// SetDataScope sets the "data_scope" field.
-func (u *RoleUpsert) SetDataScope(v role.DataScope) *RoleUpsert {
-	u.Set(role.FieldDataScope, v)
-	return u
-}
-
-// UpdateDataScope sets the "data_scope" field to the value that was provided on create.
-func (u *RoleUpsert) UpdateDataScope() *RoleUpsert {
-	u.SetExcluded(role.FieldDataScope)
-	return u
-}
-
-// ClearDataScope clears the value of the "data_scope" field.
-func (u *RoleUpsert) ClearDataScope() *RoleUpsert {
-	u.SetNull(role.FieldDataScope)
-	return u
-}
-
-// SetStatus sets the "status" field.
-func (u *RoleUpsert) SetStatus(v role.Status) *RoleUpsert {
-	u.Set(role.FieldStatus, v)
-	return u
-}
-
-// UpdateStatus sets the "status" field to the value that was provided on create.
-func (u *RoleUpsert) UpdateStatus() *RoleUpsert {
-	u.SetExcluded(role.FieldStatus)
-	return u
-}
-
-// ClearStatus clears the value of the "status" field.
-func (u *RoleUpsert) ClearStatus() *RoleUpsert {
-	u.SetNull(role.FieldStatus)
-	return u
-}
-
-// SetType sets the "type" field.
-func (u *RoleUpsert) SetType(v role.Type) *RoleUpsert {
-	u.Set(role.FieldType, v)
-	return u
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *RoleUpsert) UpdateType() *RoleUpsert {
-	u.SetExcluded(role.FieldType)
-	return u
-}
-
-// ClearType clears the value of the "type" field.
-func (u *RoleUpsert) ClearType() *RoleUpsert {
-	u.SetNull(role.FieldType)
+// UpdateIsProtected sets the "is_protected" field to the value that was provided on create.
+func (u *RoleUpsert) UpdateIsProtected() *RoleUpsert {
+	u.SetExcluded(role.FieldIsProtected)
 	return u
 }
 
@@ -1000,15 +871,36 @@ func (u *RoleUpsertOne) ClearRemark() *RoleUpsertOne {
 	})
 }
 
+// SetDescription sets the "description" field.
+func (u *RoleUpsertOne) SetDescription(v string) *RoleUpsertOne {
+	return u.Update(func(s *RoleUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *RoleUpsertOne) UpdateDescription() *RoleUpsertOne {
+	return u.Update(func(s *RoleUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *RoleUpsertOne) ClearDescription() *RoleUpsertOne {
+	return u.Update(func(s *RoleUpsert) {
+		s.ClearDescription()
+	})
+}
+
 // SetSortOrder sets the "sort_order" field.
-func (u *RoleUpsertOne) SetSortOrder(v int32) *RoleUpsertOne {
+func (u *RoleUpsertOne) SetSortOrder(v uint32) *RoleUpsertOne {
 	return u.Update(func(s *RoleUpsert) {
 		s.SetSortOrder(v)
 	})
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *RoleUpsertOne) AddSortOrder(v int32) *RoleUpsertOne {
+func (u *RoleUpsertOne) AddSortOrder(v uint32) *RoleUpsertOne {
 	return u.Update(func(s *RoleUpsert) {
 		s.AddSortOrder(v)
 	})
@@ -1028,24 +920,17 @@ func (u *RoleUpsertOne) ClearSortOrder() *RoleUpsertOne {
 	})
 }
 
-// SetParentID sets the "parent_id" field.
-func (u *RoleUpsertOne) SetParentID(v uint32) *RoleUpsertOne {
+// SetStatus sets the "status" field.
+func (u *RoleUpsertOne) SetStatus(v role.Status) *RoleUpsertOne {
 	return u.Update(func(s *RoleUpsert) {
-		s.SetParentID(v)
+		s.SetStatus(v)
 	})
 }
 
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *RoleUpsertOne) UpdateParentID() *RoleUpsertOne {
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *RoleUpsertOne) UpdateStatus() *RoleUpsertOne {
 	return u.Update(func(s *RoleUpsert) {
-		s.UpdateParentID()
-	})
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (u *RoleUpsertOne) ClearParentID() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearParentID()
+		s.UpdateStatus()
 	})
 }
 
@@ -1091,87 +976,17 @@ func (u *RoleUpsertOne) ClearCode() *RoleUpsertOne {
 	})
 }
 
-// SetCustomOrgUnitIds sets the "custom_org_unit_ids" field.
-func (u *RoleUpsertOne) SetCustomOrgUnitIds(v []uint32) *RoleUpsertOne {
+// SetIsProtected sets the "is_protected" field.
+func (u *RoleUpsertOne) SetIsProtected(v bool) *RoleUpsertOne {
 	return u.Update(func(s *RoleUpsert) {
-		s.SetCustomOrgUnitIds(v)
+		s.SetIsProtected(v)
 	})
 }
 
-// UpdateCustomOrgUnitIds sets the "custom_org_unit_ids" field to the value that was provided on create.
-func (u *RoleUpsertOne) UpdateCustomOrgUnitIds() *RoleUpsertOne {
+// UpdateIsProtected sets the "is_protected" field to the value that was provided on create.
+func (u *RoleUpsertOne) UpdateIsProtected() *RoleUpsertOne {
 	return u.Update(func(s *RoleUpsert) {
-		s.UpdateCustomOrgUnitIds()
-	})
-}
-
-// ClearCustomOrgUnitIds clears the value of the "custom_org_unit_ids" field.
-func (u *RoleUpsertOne) ClearCustomOrgUnitIds() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearCustomOrgUnitIds()
-	})
-}
-
-// SetDataScope sets the "data_scope" field.
-func (u *RoleUpsertOne) SetDataScope(v role.DataScope) *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.SetDataScope(v)
-	})
-}
-
-// UpdateDataScope sets the "data_scope" field to the value that was provided on create.
-func (u *RoleUpsertOne) UpdateDataScope() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.UpdateDataScope()
-	})
-}
-
-// ClearDataScope clears the value of the "data_scope" field.
-func (u *RoleUpsertOne) ClearDataScope() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearDataScope()
-	})
-}
-
-// SetStatus sets the "status" field.
-func (u *RoleUpsertOne) SetStatus(v role.Status) *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.SetStatus(v)
-	})
-}
-
-// UpdateStatus sets the "status" field to the value that was provided on create.
-func (u *RoleUpsertOne) UpdateStatus() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.UpdateStatus()
-	})
-}
-
-// ClearStatus clears the value of the "status" field.
-func (u *RoleUpsertOne) ClearStatus() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearStatus()
-	})
-}
-
-// SetType sets the "type" field.
-func (u *RoleUpsertOne) SetType(v role.Type) *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.SetType(v)
-	})
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *RoleUpsertOne) UpdateType() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.UpdateType()
-	})
-}
-
-// ClearType clears the value of the "type" field.
-func (u *RoleUpsertOne) ClearType() *RoleUpsertOne {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearType()
+		s.UpdateIsProtected()
 	})
 }
 
@@ -1542,15 +1357,36 @@ func (u *RoleUpsertBulk) ClearRemark() *RoleUpsertBulk {
 	})
 }
 
+// SetDescription sets the "description" field.
+func (u *RoleUpsertBulk) SetDescription(v string) *RoleUpsertBulk {
+	return u.Update(func(s *RoleUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *RoleUpsertBulk) UpdateDescription() *RoleUpsertBulk {
+	return u.Update(func(s *RoleUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *RoleUpsertBulk) ClearDescription() *RoleUpsertBulk {
+	return u.Update(func(s *RoleUpsert) {
+		s.ClearDescription()
+	})
+}
+
 // SetSortOrder sets the "sort_order" field.
-func (u *RoleUpsertBulk) SetSortOrder(v int32) *RoleUpsertBulk {
+func (u *RoleUpsertBulk) SetSortOrder(v uint32) *RoleUpsertBulk {
 	return u.Update(func(s *RoleUpsert) {
 		s.SetSortOrder(v)
 	})
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *RoleUpsertBulk) AddSortOrder(v int32) *RoleUpsertBulk {
+func (u *RoleUpsertBulk) AddSortOrder(v uint32) *RoleUpsertBulk {
 	return u.Update(func(s *RoleUpsert) {
 		s.AddSortOrder(v)
 	})
@@ -1570,24 +1406,17 @@ func (u *RoleUpsertBulk) ClearSortOrder() *RoleUpsertBulk {
 	})
 }
 
-// SetParentID sets the "parent_id" field.
-func (u *RoleUpsertBulk) SetParentID(v uint32) *RoleUpsertBulk {
+// SetStatus sets the "status" field.
+func (u *RoleUpsertBulk) SetStatus(v role.Status) *RoleUpsertBulk {
 	return u.Update(func(s *RoleUpsert) {
-		s.SetParentID(v)
+		s.SetStatus(v)
 	})
 }
 
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *RoleUpsertBulk) UpdateParentID() *RoleUpsertBulk {
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *RoleUpsertBulk) UpdateStatus() *RoleUpsertBulk {
 	return u.Update(func(s *RoleUpsert) {
-		s.UpdateParentID()
-	})
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (u *RoleUpsertBulk) ClearParentID() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearParentID()
+		s.UpdateStatus()
 	})
 }
 
@@ -1633,87 +1462,17 @@ func (u *RoleUpsertBulk) ClearCode() *RoleUpsertBulk {
 	})
 }
 
-// SetCustomOrgUnitIds sets the "custom_org_unit_ids" field.
-func (u *RoleUpsertBulk) SetCustomOrgUnitIds(v []uint32) *RoleUpsertBulk {
+// SetIsProtected sets the "is_protected" field.
+func (u *RoleUpsertBulk) SetIsProtected(v bool) *RoleUpsertBulk {
 	return u.Update(func(s *RoleUpsert) {
-		s.SetCustomOrgUnitIds(v)
+		s.SetIsProtected(v)
 	})
 }
 
-// UpdateCustomOrgUnitIds sets the "custom_org_unit_ids" field to the value that was provided on create.
-func (u *RoleUpsertBulk) UpdateCustomOrgUnitIds() *RoleUpsertBulk {
+// UpdateIsProtected sets the "is_protected" field to the value that was provided on create.
+func (u *RoleUpsertBulk) UpdateIsProtected() *RoleUpsertBulk {
 	return u.Update(func(s *RoleUpsert) {
-		s.UpdateCustomOrgUnitIds()
-	})
-}
-
-// ClearCustomOrgUnitIds clears the value of the "custom_org_unit_ids" field.
-func (u *RoleUpsertBulk) ClearCustomOrgUnitIds() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearCustomOrgUnitIds()
-	})
-}
-
-// SetDataScope sets the "data_scope" field.
-func (u *RoleUpsertBulk) SetDataScope(v role.DataScope) *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.SetDataScope(v)
-	})
-}
-
-// UpdateDataScope sets the "data_scope" field to the value that was provided on create.
-func (u *RoleUpsertBulk) UpdateDataScope() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.UpdateDataScope()
-	})
-}
-
-// ClearDataScope clears the value of the "data_scope" field.
-func (u *RoleUpsertBulk) ClearDataScope() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearDataScope()
-	})
-}
-
-// SetStatus sets the "status" field.
-func (u *RoleUpsertBulk) SetStatus(v role.Status) *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.SetStatus(v)
-	})
-}
-
-// UpdateStatus sets the "status" field to the value that was provided on create.
-func (u *RoleUpsertBulk) UpdateStatus() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.UpdateStatus()
-	})
-}
-
-// ClearStatus clears the value of the "status" field.
-func (u *RoleUpsertBulk) ClearStatus() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearStatus()
-	})
-}
-
-// SetType sets the "type" field.
-func (u *RoleUpsertBulk) SetType(v role.Type) *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.SetType(v)
-	})
-}
-
-// UpdateType sets the "type" field to the value that was provided on create.
-func (u *RoleUpsertBulk) UpdateType() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.UpdateType()
-	})
-}
-
-// ClearType clears the value of the "type" field.
-func (u *RoleUpsertBulk) ClearType() *RoleUpsertBulk {
-	return u.Update(func(s *RoleUpsert) {
-		s.ClearType()
+		s.UpdateIsProtected()
 	})
 }
 

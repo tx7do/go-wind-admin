@@ -6,7 +6,6 @@ import { defineStore } from 'pinia';
 
 import {
   createPositionServiceClient,
-  type userservicev1_Position as Position,
   type userservicev1_Position_Status as Position_Status,
   type userservicev1_Position_Type as Position_Type,
 } from '#/generated/api/admin/service/v1';
@@ -52,7 +51,6 @@ export const usePositionStore = defineStore('position', () => {
     return await service.Create({
       data: {
         ...values,
-        children: [],
       },
     });
   }
@@ -65,7 +63,6 @@ export const usePositionStore = defineStore('position', () => {
       id,
       data: {
         ...values,
-        children: [],
       },
       // @ts-ignore proto generated code is error.
       updateMask: makeUpdateMask(Object.keys(values ?? [])),
@@ -185,27 +182,3 @@ export function positionTypeToColor(
   const colorMap = POSITION_TYPE_COLOR_THEME[theme];
   return colorMap[positionType as keyof typeof colorMap] || colorMap.DEFAULT;
 }
-
-/**
- * 在职位树中查找指定ID的职位节点
- * @param list
- * @param id
- */
-export const findPosition = (
-  list: Position[],
-  id: number,
-): null | Position | undefined => {
-  for (const item of list) {
-    // eslint-disable-next-line eqeqeq
-    if (item.id == id) {
-      return item;
-    }
-
-    if (item.children && item.children.length > 0) {
-      const found = findPosition(item.children, id);
-      if (found) return found;
-    }
-  }
-
-  return null;
-};

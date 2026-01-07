@@ -165,9 +165,30 @@ func (_u *OrgUnitUpdate) SetNillableStatus(v *orgunit.Status) *OrgUnitUpdate {
 	return _u
 }
 
-// ClearStatus clears the value of the "status" field.
-func (_u *OrgUnitUpdate) ClearStatus() *OrgUnitUpdate {
-	_u.mutation.ClearStatus()
+// SetSortOrder sets the "sort_order" field.
+func (_u *OrgUnitUpdate) SetSortOrder(v uint32) *OrgUnitUpdate {
+	_u.mutation.ResetSortOrder()
+	_u.mutation.SetSortOrder(v)
+	return _u
+}
+
+// SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
+func (_u *OrgUnitUpdate) SetNillableSortOrder(v *uint32) *OrgUnitUpdate {
+	if v != nil {
+		_u.SetSortOrder(*v)
+	}
+	return _u
+}
+
+// AddSortOrder adds value to the "sort_order" field.
+func (_u *OrgUnitUpdate) AddSortOrder(v int32) *OrgUnitUpdate {
+	_u.mutation.AddSortOrder(v)
+	return _u
+}
+
+// ClearSortOrder clears the value of the "sort_order" field.
+func (_u *OrgUnitUpdate) ClearSortOrder() *OrgUnitUpdate {
+	_u.mutation.ClearSortOrder()
 	return _u
 }
 
@@ -282,33 +303,6 @@ func (_u *OrgUnitUpdate) SetNillablePath(v *string) *OrgUnitUpdate {
 // ClearPath clears the value of the "path" field.
 func (_u *OrgUnitUpdate) ClearPath() *OrgUnitUpdate {
 	_u.mutation.ClearPath()
-	return _u
-}
-
-// SetSortOrder sets the "sort_order" field.
-func (_u *OrgUnitUpdate) SetSortOrder(v int32) *OrgUnitUpdate {
-	_u.mutation.ResetSortOrder()
-	_u.mutation.SetSortOrder(v)
-	return _u
-}
-
-// SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_u *OrgUnitUpdate) SetNillableSortOrder(v *int32) *OrgUnitUpdate {
-	if v != nil {
-		_u.SetSortOrder(*v)
-	}
-	return _u
-}
-
-// AddSortOrder adds value to the "sort_order" field.
-func (_u *OrgUnitUpdate) AddSortOrder(v int32) *OrgUnitUpdate {
-	_u.mutation.AddSortOrder(v)
-	return _u
-}
-
-// ClearSortOrder clears the value of the "sort_order" field.
-func (_u *OrgUnitUpdate) ClearSortOrder() *OrgUnitUpdate {
-	_u.mutation.ClearSortOrder()
 	return _u
 }
 
@@ -879,8 +873,14 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(orgunit.FieldStatus, field.TypeEnum, value)
 	}
-	if _u.mutation.StatusCleared() {
-		_spec.ClearField(orgunit.FieldStatus, field.TypeEnum)
+	if value, ok := _u.mutation.SortOrder(); ok {
+		_spec.SetField(orgunit.FieldSortOrder, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedSortOrder(); ok {
+		_spec.AddField(orgunit.FieldSortOrder, field.TypeUint32, value)
+	}
+	if _u.mutation.SortOrderCleared() {
+		_spec.ClearField(orgunit.FieldSortOrder, field.TypeUint32)
 	}
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(orgunit.FieldTenantID, field.TypeUint32)
@@ -911,15 +911,6 @@ func (_u *OrgUnitUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if _u.mutation.PathCleared() {
 		_spec.ClearField(orgunit.FieldPath, field.TypeString)
-	}
-	if value, ok := _u.mutation.SortOrder(); ok {
-		_spec.SetField(orgunit.FieldSortOrder, field.TypeInt32, value)
-	}
-	if value, ok := _u.mutation.AddedSortOrder(); ok {
-		_spec.AddField(orgunit.FieldSortOrder, field.TypeInt32, value)
-	}
-	if _u.mutation.SortOrderCleared() {
-		_spec.ClearField(orgunit.FieldSortOrder, field.TypeInt32)
 	}
 	if value, ok := _u.mutation.LeaderID(); ok {
 		_spec.SetField(orgunit.FieldLeaderID, field.TypeUint32, value)
@@ -1288,9 +1279,30 @@ func (_u *OrgUnitUpdateOne) SetNillableStatus(v *orgunit.Status) *OrgUnitUpdateO
 	return _u
 }
 
-// ClearStatus clears the value of the "status" field.
-func (_u *OrgUnitUpdateOne) ClearStatus() *OrgUnitUpdateOne {
-	_u.mutation.ClearStatus()
+// SetSortOrder sets the "sort_order" field.
+func (_u *OrgUnitUpdateOne) SetSortOrder(v uint32) *OrgUnitUpdateOne {
+	_u.mutation.ResetSortOrder()
+	_u.mutation.SetSortOrder(v)
+	return _u
+}
+
+// SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
+func (_u *OrgUnitUpdateOne) SetNillableSortOrder(v *uint32) *OrgUnitUpdateOne {
+	if v != nil {
+		_u.SetSortOrder(*v)
+	}
+	return _u
+}
+
+// AddSortOrder adds value to the "sort_order" field.
+func (_u *OrgUnitUpdateOne) AddSortOrder(v int32) *OrgUnitUpdateOne {
+	_u.mutation.AddSortOrder(v)
+	return _u
+}
+
+// ClearSortOrder clears the value of the "sort_order" field.
+func (_u *OrgUnitUpdateOne) ClearSortOrder() *OrgUnitUpdateOne {
+	_u.mutation.ClearSortOrder()
 	return _u
 }
 
@@ -1405,33 +1417,6 @@ func (_u *OrgUnitUpdateOne) SetNillablePath(v *string) *OrgUnitUpdateOne {
 // ClearPath clears the value of the "path" field.
 func (_u *OrgUnitUpdateOne) ClearPath() *OrgUnitUpdateOne {
 	_u.mutation.ClearPath()
-	return _u
-}
-
-// SetSortOrder sets the "sort_order" field.
-func (_u *OrgUnitUpdateOne) SetSortOrder(v int32) *OrgUnitUpdateOne {
-	_u.mutation.ResetSortOrder()
-	_u.mutation.SetSortOrder(v)
-	return _u
-}
-
-// SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_u *OrgUnitUpdateOne) SetNillableSortOrder(v *int32) *OrgUnitUpdateOne {
-	if v != nil {
-		_u.SetSortOrder(*v)
-	}
-	return _u
-}
-
-// AddSortOrder adds value to the "sort_order" field.
-func (_u *OrgUnitUpdateOne) AddSortOrder(v int32) *OrgUnitUpdateOne {
-	_u.mutation.AddSortOrder(v)
-	return _u
-}
-
-// ClearSortOrder clears the value of the "sort_order" field.
-func (_u *OrgUnitUpdateOne) ClearSortOrder() *OrgUnitUpdateOne {
-	_u.mutation.ClearSortOrder()
 	return _u
 }
 
@@ -2032,8 +2017,14 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(orgunit.FieldStatus, field.TypeEnum, value)
 	}
-	if _u.mutation.StatusCleared() {
-		_spec.ClearField(orgunit.FieldStatus, field.TypeEnum)
+	if value, ok := _u.mutation.SortOrder(); ok {
+		_spec.SetField(orgunit.FieldSortOrder, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedSortOrder(); ok {
+		_spec.AddField(orgunit.FieldSortOrder, field.TypeUint32, value)
+	}
+	if _u.mutation.SortOrderCleared() {
+		_spec.ClearField(orgunit.FieldSortOrder, field.TypeUint32)
 	}
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(orgunit.FieldTenantID, field.TypeUint32)
@@ -2064,15 +2055,6 @@ func (_u *OrgUnitUpdateOne) sqlSave(ctx context.Context) (_node *OrgUnit, err er
 	}
 	if _u.mutation.PathCleared() {
 		_spec.ClearField(orgunit.FieldPath, field.TypeString)
-	}
-	if value, ok := _u.mutation.SortOrder(); ok {
-		_spec.SetField(orgunit.FieldSortOrder, field.TypeInt32, value)
-	}
-	if value, ok := _u.mutation.AddedSortOrder(); ok {
-		_spec.AddField(orgunit.FieldSortOrder, field.TypeInt32, value)
-	}
-	if _u.mutation.SortOrderCleared() {
-		_spec.ClearField(orgunit.FieldSortOrder, field.TypeInt32)
 	}
 	if value, ok := _u.mutation.LeaderID(); ok {
 		_spec.SetField(orgunit.FieldLeaderID, field.TypeUint32, value)

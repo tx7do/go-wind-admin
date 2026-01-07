@@ -33,8 +33,8 @@ type DictEntry struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 描述
 	Description *string `json:"description,omitempty"`
-	// 排序顺序，值越小越靠前
-	SortOrder *int32 `json:"sort_order,omitempty"`
+	// 排序值（越小越靠前）
+	SortOrder *uint32 `json:"sort_order,omitempty"`
 	// 是否启用
 	IsEnabled *bool `json:"is_enabled,omitempty"`
 	// 租户ID
@@ -163,8 +163,8 @@ func (_m *DictEntry) assignValues(columns []string, values []any) error {
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field sort_order", values[i])
 			} else if value.Valid {
-				_m.SortOrder = new(int32)
-				*_m.SortOrder = int32(value.Int64)
+				_m.SortOrder = new(uint32)
+				*_m.SortOrder = uint32(value.Int64)
 			}
 		case dictentry.FieldIsEnabled:
 			if value, ok := values[i].(*sql.NullBool); !ok {

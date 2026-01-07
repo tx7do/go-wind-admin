@@ -1,0 +1,146 @@
+syntax = "proto3";
+
+package permission.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/api/annotations.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/duration.proto";
+
+import "pagination/v1/pagination.proto";
+
+
+// 权限变更审计日志服务
+service PermissionAuditLogService {
+  // 查询权限变更审计日志列表
+  rpc List (pagination.PagingRequest) returns (ListPermissionAuditLogResponse) {}
+
+  // 查询权限变更审计日志详情
+  rpc Get (GetPermissionAuditLogRequest) returns (PermissionAuditLog) {}
+}
+
+// 权限变更审计日志
+message PermissionAuditLog {
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = {
+      description: "权限变更审计日志ID"
+    }
+  ]; // 权限变更审计日志ID
+
+  optional uint32 operator_id = 2 [
+    json_name = "operatorId",
+    (gnostic.openapi.v3.property) = {
+      description: "操作者用户ID"
+    }
+  ]; // 操作者用户ID
+
+  optional string target_type = 3 [
+    json_name = "targetType",
+    (gnostic.openapi.v3.property) = {
+      description: "目标类型"
+    }
+  ]; // 目标类型
+
+  optional uint32 target_id = 4 [
+    json_name = "targetId",
+    (gnostic.openapi.v3.property) = {
+      description: "目标ID"
+    }
+  ]; // 目标ID
+
+  optional string action = 5 [
+    json_name = "action",
+    (gnostic.openapi.v3.property) = {
+      description: "动作"
+    }
+  ]; // 动作
+
+  optional string old_value = 6 [
+    json_name = "oldValue",
+    (gnostic.openapi.v3.property) = {
+      description: "旧值"
+    }
+  ]; // 旧值
+
+  optional string new_value = 7 [
+    json_name = "newValue",
+    (gnostic.openapi.v3.property) = {
+      description: "新值"
+    }
+  ]; // 新值
+
+  optional string ip_address = 8 [
+    json_name = "ipAddress",
+    (gnostic.openapi.v3.property) = {
+      description: "操作者IP地址"
+    }
+  ]; // 操作者IP地址
+
+  optional uint32 tenant_id = 9 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+
+  optional google.protobuf.Timestamp created_at = 500 [
+    json_name = "createdAt",
+    (gnostic.openapi.v3.property) = {description: "创建时间"}
+  ];// 创建时间
+}
+
+// 查询权限变更审计日志列表 - 回应
+message ListPermissionAuditLogResponse {
+  repeated PermissionAuditLog items = 1;
+  uint64 total = 2;
+}
+
+// 查询权限变更审计日志详情 - 请求
+message GetPermissionAuditLogRequest {
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+      json_name = "id"
+    ]; // ID
+  }
+
+  optional google.protobuf.FieldMask view_mask = 100 [
+    json_name = "viewMask",
+    (gnostic.openapi.v3.property) = {
+      description: "视图字段过滤器，用于控制返回的字段"
+    }
+  ]; // 视图字段过滤器，用于控制返回的字段
+}
+
+// 创建权限变更审计日志 - 请求
+message CreatePermissionAuditLogRequest {
+  PermissionAuditLog data = 1;
+}
+
+// 更新权限变更审计日志 - 请求
+message UpdatePermissionAuditLogRequest {
+  uint32 id = 1;
+
+  PermissionAuditLog data = 2;
+
+  google.protobuf.FieldMask update_mask = 3 [
+    (gnostic.openapi.v3.property) = {
+      description: "要更新的字段列表",
+      example: {yaml : "id,realname,username"}
+    },
+    json_name = "updateMask"
+  ]; // 要更新的字段列表
+
+  optional bool allow_missing = 4 [
+    (gnostic.openapi.v3.property) = {description: "如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。"},
+    json_name = "allowMissing"
+  ]; // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
+}
+
+// 删除权限变更审计日志 - 请求
+message DeletePermissionAuditLogRequest {
+  uint32 id = 1;
+}

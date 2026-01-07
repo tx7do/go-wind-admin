@@ -62,7 +62,7 @@ message Position {
     (gnostic.openapi.v3.property) = {description: "编制人数（该职位最多可容纳的员工数量，0表示无限制）"}
   ];  // 编制人数（该职位最多可容纳的员工数量，0表示无限制）
 
-  optional int32 sort_order = 5 [
+  optional uint32 sort_order = 5 [
     json_name = "sortOrder",
     (gnostic.openapi.v3.property) = {description: "排序顺序，值越小越靠前"}
   ];  // 排序顺序，值越小越靠前
@@ -133,9 +133,6 @@ message Position {
     (gnostic.openapi.v3.property) = {description: "失效时间（UTC）"}
   ];// 失效时间
 
-  optional uint32 parent_id = 60 [json_name = "parentId", (gnostic.openapi.v3.property) = {description: "父节点ID"}];  // 父节点ID
-  repeated Position children = 61 [json_name = "children", (gnostic.openapi.v3.property) = {description: "子节点树"}];  // 子节点树
-
   optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
   optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
   optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
@@ -158,6 +155,16 @@ message GetPositionRequest {
       (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
       json_name = "id"
     ]; // ID
+
+    string name = 2 [
+      (gnostic.openapi.v3.property) = {description: "名称", read_only: true},
+      json_name = "name"
+    ]; // 名称
+
+    string code = 3 [
+      (gnostic.openapi.v3.property) = {description: "唯一编码", read_only: true},
+      json_name = "code"
+    ]; // 唯一编码
   }
 
   optional google.protobuf.FieldMask view_mask = 100 [

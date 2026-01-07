@@ -157,6 +157,7 @@ func (r *TenantRepo) Create(ctx context.Context, data *userV1.Tenant) (*userV1.T
 	builder := r.entClient.Client().Tenant.Create().
 		SetNillableName(data.Name).
 		SetNillableCode(data.Code).
+		SetNillableDomain(data.Domain).
 		SetNillableLogoURL(data.LogoUrl).
 		SetNillableRemark(data.Remark).
 		SetNillableIndustry(data.Industry).
@@ -164,8 +165,6 @@ func (r *TenantRepo) Create(ctx context.Context, data *userV1.Tenant) (*userV1.T
 		SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
 		SetNillableType(r.typeConverter.ToEntity(data.Type)).
 		SetNillableAuditStatus(r.auditStatusConverter.ToEntity(data.AuditStatus)).
-		SetNillableLastLoginAt(timeutil.TimestamppbToTime(data.LastLoginAt)).
-		SetNillableLastLoginIP(data.LastLoginIp).
 		SetNillableSubscriptionPlan(data.SubscriptionPlan).
 		SetNillableExpiredAt(timeutil.TimestamppbToTime(data.ExpiredAt)).
 		SetNillableSubscriptionAt(timeutil.TimestamppbToTime(data.SubscriptionAt)).
@@ -217,6 +216,7 @@ func (r *TenantRepo) Update(ctx context.Context, req *userV1.UpdateTenantRequest
 			builder.
 				SetNillableName(req.Data.Name).
 				SetNillableCode(req.Data.Code).
+				SetNillableDomain(req.Data.Domain).
 				SetNillableLogoURL(req.Data.LogoUrl).
 				SetNillableRemark(req.Data.Remark).
 				SetNillableIndustry(req.Data.Industry).
@@ -224,8 +224,6 @@ func (r *TenantRepo) Update(ctx context.Context, req *userV1.UpdateTenantRequest
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 				SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
 				SetNillableAuditStatus(r.auditStatusConverter.ToEntity(req.Data.AuditStatus)).
-				SetNillableLastLoginAt(timeutil.TimestamppbToTime(req.Data.LastLoginAt)).
-				SetNillableLastLoginIP(req.Data.LastLoginIp).
 				SetNillableSubscriptionPlan(req.Data.SubscriptionPlan).
 				SetNillableExpiredAt(timeutil.TimestamppbToTime(req.Data.ExpiredAt)).
 				SetNillableSubscriptionAt(timeutil.TimestamppbToTime(req.Data.SubscriptionAt)).

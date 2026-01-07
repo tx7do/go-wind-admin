@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 // ID filters vertices based on their ID field.
@@ -91,7 +90,7 @@ func IsEnabled(v bool) predicate.InternalMessageCategory {
 }
 
 // SortOrder applies equality check predicate on the "sort_order" field. It's identical to SortOrderEQ.
-func SortOrder(v int32) predicate.InternalMessageCategory {
+func SortOrder(v uint32) predicate.InternalMessageCategory {
 	return predicate.InternalMessageCategory(sql.FieldEQ(FieldSortOrder, v))
 }
 
@@ -103,11 +102,6 @@ func Remark(v string) predicate.InternalMessageCategory {
 // TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
 func TenantID(v uint32) predicate.InternalMessageCategory {
 	return predicate.InternalMessageCategory(sql.FieldEQ(FieldTenantID, v))
-}
-
-// ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
-func ParentID(v uint32) predicate.InternalMessageCategory {
-	return predicate.InternalMessageCategory(sql.FieldEQ(FieldParentID, v))
 }
 
 // Name applies equality check predicate on the "name" field. It's identical to NameEQ.
@@ -446,42 +440,42 @@ func IsEnabledNotNil() predicate.InternalMessageCategory {
 }
 
 // SortOrderEQ applies the EQ predicate on the "sort_order" field.
-func SortOrderEQ(v int32) predicate.InternalMessageCategory {
+func SortOrderEQ(v uint32) predicate.InternalMessageCategory {
 	return predicate.InternalMessageCategory(sql.FieldEQ(FieldSortOrder, v))
 }
 
 // SortOrderNEQ applies the NEQ predicate on the "sort_order" field.
-func SortOrderNEQ(v int32) predicate.InternalMessageCategory {
+func SortOrderNEQ(v uint32) predicate.InternalMessageCategory {
 	return predicate.InternalMessageCategory(sql.FieldNEQ(FieldSortOrder, v))
 }
 
 // SortOrderIn applies the In predicate on the "sort_order" field.
-func SortOrderIn(vs ...int32) predicate.InternalMessageCategory {
+func SortOrderIn(vs ...uint32) predicate.InternalMessageCategory {
 	return predicate.InternalMessageCategory(sql.FieldIn(FieldSortOrder, vs...))
 }
 
 // SortOrderNotIn applies the NotIn predicate on the "sort_order" field.
-func SortOrderNotIn(vs ...int32) predicate.InternalMessageCategory {
+func SortOrderNotIn(vs ...uint32) predicate.InternalMessageCategory {
 	return predicate.InternalMessageCategory(sql.FieldNotIn(FieldSortOrder, vs...))
 }
 
 // SortOrderGT applies the GT predicate on the "sort_order" field.
-func SortOrderGT(v int32) predicate.InternalMessageCategory {
+func SortOrderGT(v uint32) predicate.InternalMessageCategory {
 	return predicate.InternalMessageCategory(sql.FieldGT(FieldSortOrder, v))
 }
 
 // SortOrderGTE applies the GTE predicate on the "sort_order" field.
-func SortOrderGTE(v int32) predicate.InternalMessageCategory {
+func SortOrderGTE(v uint32) predicate.InternalMessageCategory {
 	return predicate.InternalMessageCategory(sql.FieldGTE(FieldSortOrder, v))
 }
 
 // SortOrderLT applies the LT predicate on the "sort_order" field.
-func SortOrderLT(v int32) predicate.InternalMessageCategory {
+func SortOrderLT(v uint32) predicate.InternalMessageCategory {
 	return predicate.InternalMessageCategory(sql.FieldLT(FieldSortOrder, v))
 }
 
 // SortOrderLTE applies the LTE predicate on the "sort_order" field.
-func SortOrderLTE(v int32) predicate.InternalMessageCategory {
+func SortOrderLTE(v uint32) predicate.InternalMessageCategory {
 	return predicate.InternalMessageCategory(sql.FieldLTE(FieldSortOrder, v))
 }
 
@@ -618,36 +612,6 @@ func TenantIDIsNil() predicate.InternalMessageCategory {
 // TenantIDNotNil applies the NotNil predicate on the "tenant_id" field.
 func TenantIDNotNil() predicate.InternalMessageCategory {
 	return predicate.InternalMessageCategory(sql.FieldNotNull(FieldTenantID))
-}
-
-// ParentIDEQ applies the EQ predicate on the "parent_id" field.
-func ParentIDEQ(v uint32) predicate.InternalMessageCategory {
-	return predicate.InternalMessageCategory(sql.FieldEQ(FieldParentID, v))
-}
-
-// ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
-func ParentIDNEQ(v uint32) predicate.InternalMessageCategory {
-	return predicate.InternalMessageCategory(sql.FieldNEQ(FieldParentID, v))
-}
-
-// ParentIDIn applies the In predicate on the "parent_id" field.
-func ParentIDIn(vs ...uint32) predicate.InternalMessageCategory {
-	return predicate.InternalMessageCategory(sql.FieldIn(FieldParentID, vs...))
-}
-
-// ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
-func ParentIDNotIn(vs ...uint32) predicate.InternalMessageCategory {
-	return predicate.InternalMessageCategory(sql.FieldNotIn(FieldParentID, vs...))
-}
-
-// ParentIDIsNil applies the IsNil predicate on the "parent_id" field.
-func ParentIDIsNil() predicate.InternalMessageCategory {
-	return predicate.InternalMessageCategory(sql.FieldIsNull(FieldParentID))
-}
-
-// ParentIDNotNil applies the NotNil predicate on the "parent_id" field.
-func ParentIDNotNil() predicate.InternalMessageCategory {
-	return predicate.InternalMessageCategory(sql.FieldNotNull(FieldParentID))
 }
 
 // NameEQ applies the EQ predicate on the "name" field.
@@ -873,52 +837,6 @@ func IconURLEqualFold(v string) predicate.InternalMessageCategory {
 // IconURLContainsFold applies the ContainsFold predicate on the "icon_url" field.
 func IconURLContainsFold(v string) predicate.InternalMessageCategory {
 	return predicate.InternalMessageCategory(sql.FieldContainsFold(FieldIconURL, v))
-}
-
-// HasParent applies the HasEdge predicate on the "parent" edge.
-func HasParent() predicate.InternalMessageCategory {
-	return predicate.InternalMessageCategory(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.M2O, true, ParentTable, ParentColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasParentWith applies the HasEdge predicate on the "parent" edge with a given conditions (other predicates).
-func HasParentWith(preds ...predicate.InternalMessageCategory) predicate.InternalMessageCategory {
-	return predicate.InternalMessageCategory(func(s *sql.Selector) {
-		step := newParentStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
-}
-
-// HasChildren applies the HasEdge predicate on the "children" edge.
-func HasChildren() predicate.InternalMessageCategory {
-	return predicate.InternalMessageCategory(func(s *sql.Selector) {
-		step := sqlgraph.NewStep(
-			sqlgraph.From(Table, FieldID),
-			sqlgraph.Edge(sqlgraph.O2M, false, ChildrenTable, ChildrenColumn),
-		)
-		sqlgraph.HasNeighbors(s, step)
-	})
-}
-
-// HasChildrenWith applies the HasEdge predicate on the "children" edge with a given conditions (other predicates).
-func HasChildrenWith(preds ...predicate.InternalMessageCategory) predicate.InternalMessageCategory {
-	return predicate.InternalMessageCategory(func(s *sql.Selector) {
-		step := newChildrenStep()
-		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
-			for _, p := range preds {
-				p(s)
-			}
-		})
-	})
 }
 
 // And groups predicates with the AND operator between them.

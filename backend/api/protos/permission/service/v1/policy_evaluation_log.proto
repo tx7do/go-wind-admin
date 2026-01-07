@@ -1,0 +1,153 @@
+syntax = "proto3";
+
+package permission.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/api/annotations.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/duration.proto";
+
+import "pagination/v1/pagination.proto";
+
+
+// 策略评估日志服务
+service PolicyEvaluationLogService {
+  // 查询策略评估日志列表
+  rpc List (pagination.PagingRequest) returns (ListPolicyEvaluationLogResponse) {}
+
+  // 查询策略评估日志详情
+  rpc Get (GetPolicyEvaluationLogRequest) returns (PolicyEvaluationLog) {}
+}
+
+// 策略评估日志
+message PolicyEvaluationLog {
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = {
+      description: "策略评估日志ID"
+    }
+  ]; // 策略评估日志ID
+
+  optional uint32 user_id = 2 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = {
+      description: "操作者用户ID"
+    }
+  ]; // 操作者用户ID
+
+  optional uint32 membership_id = 3 [
+    json_name = "membershipId",
+    (gnostic.openapi.v3.property) = {
+      description: "成员身份ID"
+    }
+  ]; // 成员身份ID
+
+  optional uint32 permission_id = 4 [
+    json_name = "permissionId",
+    (gnostic.openapi.v3.property) = {
+      description: "权限点ID"
+    }
+  ]; // 权限点ID
+
+  optional uint32 policy_id = 5 [
+    json_name = "policyId",
+    (gnostic.openapi.v3.property) = {
+      description: "策略ID（可能无策略）"
+    }
+  ]; // 策略ID（可能无策略）
+
+  optional bool result = 6 [
+    json_name = "result",
+    (gnostic.openapi.v3.property) = {
+      description: "是否通过"
+    }
+  ]; // 是否通过
+
+  optional string scope_sql = 7 [
+    json_name = "scopeSql",
+    (gnostic.openapi.v3.property) = {
+      description: "生成的SQL条件"
+    }
+  ]; // 生成的SQL条件
+
+  optional string request_path = 8 [
+    json_name = "requestPath",
+    (gnostic.openapi.v3.property) = {
+      description: "请求API路径"
+    }
+  ]; // 操作者IP地址
+
+  optional string ip_address = 9 [
+    json_name = "ipAddress",
+    (gnostic.openapi.v3.property) = {
+      description: "操作者IP地址"
+    }
+  ]; // 操作者IP地址
+
+  optional uint32 tenant_id = 10 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+
+  optional google.protobuf.Timestamp created_at = 500 [
+    json_name = "createdAt",
+    (gnostic.openapi.v3.property) = {description: "创建时间"}
+  ];// 创建时间
+}
+
+// 查询策略评估日志列表 - 回应
+message ListPolicyEvaluationLogResponse {
+  repeated PolicyEvaluationLog items = 1;
+  uint64 total = 2;
+}
+
+// 查询策略评估日志详情 - 请求
+message GetPolicyEvaluationLogRequest {
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+      json_name = "id"
+    ]; // ID
+  }
+
+  optional google.protobuf.FieldMask view_mask = 100 [
+    json_name = "viewMask",
+    (gnostic.openapi.v3.property) = {
+      description: "视图字段过滤器，用于控制返回的字段"
+    }
+  ]; // 视图字段过滤器，用于控制返回的字段
+}
+
+// 创建策略评估日志 - 请求
+message CreatePolicyEvaluationLogRequest {
+  PolicyEvaluationLog data = 1;
+}
+
+// 更新策略评估日志 - 请求
+message UpdatePolicyEvaluationLogRequest {
+  uint32 id = 1;
+
+  PolicyEvaluationLog data = 2;
+
+  google.protobuf.FieldMask update_mask = 3 [
+    (gnostic.openapi.v3.property) = {
+      description: "要更新的字段列表",
+      example: {yaml : "id,realname,username"}
+    },
+    json_name = "updateMask"
+  ]; // 要更新的字段列表
+
+  optional bool allow_missing = 4 [
+    (gnostic.openapi.v3.property) = {description: "如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。"},
+    json_name = "allowMissing"
+  ]; // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
+}
+
+// 删除策略评估日志 - 请求
+message DeletePolicyEvaluationLogRequest {
+  uint32 id = 1;
+}

@@ -111,10 +111,24 @@ func (User) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.Bool("is_banned").
-			Comment("是否被禁用").
-			Default(false).
-			Optional(),
+		field.Time("locked_until").
+			Comment("锁定截止时间").
+			Optional().
+			Nillable(),
+
+		field.Enum("status").
+			Comment("状态").
+			Optional().
+			Nillable().
+			Default("NORMAL").
+			NamedValues(
+				"Normal", "NORMAL",
+				"Disabled", "DISABLED",
+				"Pending", "PENDING",
+				"Locked", "LOCKED",
+				"Expired", "EXPIRED",
+				"Closed", "CLOSED",
+			),
 	}
 }
 
@@ -137,6 +151,25 @@ func (User) Edges() []ent.Edge {
 // Indexes of the User.
 func (User) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("username").Unique().StorageKey("idx_sys_user_username"),
+		// 在租户范围内保证 username 唯一
+		index.Fields("tenant_id", "username").Unique().StorageKey("idx_sys_user_tenant_username"),
+
+		// 在租户范围内保证 email 唯一（email 可为空，DB 上允许多个 NULL）
+		index.Fields("tenant_id", "email").Unique().StorageKey("idx_sys_user_tenant_email"),
+
+		// 按租户 + 手机号，用于按手机号查询（非唯一，号码可能为空/默认值）
+		index.Fields("tenant_id", "mobile").StorageKey("idx_sys_user_tenant_mobile"),
+
+		// 按租户 + 最近登录时间，用于按时间范围检索最近登录用户
+		index.Fields("tenant_id", "last_login_at").StorageKey("idx_sys_user_tenant_last_login_at"),
+
+		// 按租户 + 最后登录 IP，用于来源溯源
+		index.Fields("tenant_id", "last_login_ip").StorageKey("idx_sys_user_tenant_last_login_ip"),
+
+		// 按租户 + 操作者，用于审计与变更追溯
+		index.Fields("tenant_id", "created_by").StorageKey("idx_sys_user_tenant_created_by"),
+
+		// 按租户 + 创建时间，用于租户范围的时间区间查询与分页
+		index.Fields("tenant_id", "created_at").StorageKey("idx_sys_user_tenant_created_at"),
 	}
 }

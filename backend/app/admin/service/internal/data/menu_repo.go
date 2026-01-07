@@ -21,16 +21,16 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 
-	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
 type MenuRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper          *mapper.CopierMapper[adminV1.Menu, ent.Menu]
-	statusConverter *mapper.EnumTypeConverter[adminV1.Menu_Status, menu.Status]
-	typeConverter   *mapper.EnumTypeConverter[adminV1.Menu_Type, menu.Type]
+	mapper          *mapper.CopierMapper[permissionV1.Menu, ent.Menu]
+	statusConverter *mapper.EnumTypeConverter[permissionV1.Menu_Status, menu.Status]
+	typeConverter   *mapper.EnumTypeConverter[permissionV1.Menu_Type, menu.Type]
 
 	repository *entCrud.Repository[
 		ent.MenuQuery, ent.MenuSelect,
@@ -38,7 +38,7 @@ type MenuRepo struct {
 		ent.MenuUpdate, ent.MenuUpdateOne,
 		ent.MenuDelete,
 		predicate.Menu,
-		adminV1.Menu, ent.Menu,
+		permissionV1.Menu, ent.Menu,
 	]
 }
 
@@ -46,9 +46,9 @@ func NewMenuRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Clien
 	repo := &MenuRepo{
 		log:             ctx.NewLoggerHelper("menu/repo/admin-service"),
 		entClient:       entClient,
-		mapper:          mapper.NewCopierMapper[adminV1.Menu, ent.Menu](),
-		statusConverter: mapper.NewEnumTypeConverter[adminV1.Menu_Status, menu.Status](adminV1.Menu_Status_name, adminV1.Menu_Status_value),
-		typeConverter:   mapper.NewEnumTypeConverter[adminV1.Menu_Type, menu.Type](adminV1.Menu_Type_name, adminV1.Menu_Type_value),
+		mapper:          mapper.NewCopierMapper[permissionV1.Menu, ent.Menu](),
+		statusConverter: mapper.NewEnumTypeConverter[permissionV1.Menu_Status, menu.Status](permissionV1.Menu_Status_name, permissionV1.Menu_Status_value),
+		typeConverter:   mapper.NewEnumTypeConverter[permissionV1.Menu_Type, menu.Type](permissionV1.Menu_Type_name, permissionV1.Menu_Type_value),
 	}
 
 	repo.init()
@@ -63,7 +63,7 @@ func (r *MenuRepo) init() {
 		ent.MenuUpdate, ent.MenuUpdateOne,
 		ent.MenuDelete,
 		predicate.Menu,
-		adminV1.Menu, ent.Menu,
+		permissionV1.Menu, ent.Menu,
 	](r.mapper)
 
 	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
@@ -82,15 +82,15 @@ func (r *MenuRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector))
 	count, err := builder.Count(ctx)
 	if err != nil {
 		r.log.Errorf("query count failed: %s", err.Error())
-		return 0, adminV1.ErrorInternalServerError("query count failed")
+		return 0, permissionV1.ErrorInternalServerError("query count failed")
 	}
 
 	return count, nil
 }
 
-func (r *MenuRepo) List(ctx context.Context, req *pagination.PagingRequest, treeTravel bool) (*adminV1.ListMenuResponse, error) {
+func (r *MenuRepo) List(ctx context.Context, req *pagination.PagingRequest, treeTravel bool) (*permissionV1.ListMenuResponse, error) {
 	if req == nil {
-		return nil, adminV1.ErrorBadRequest("invalid parameter")
+		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Menu.Query()
@@ -98,16 +98,16 @@ func (r *MenuRepo) List(ctx context.Context, req *pagination.PagingRequest, tree
 	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
 	if err != nil {
 		r.log.Errorf("parse list param error [%s]", err.Error())
-		return nil, adminV1.ErrorBadRequest("invalid query parameter")
+		return nil, permissionV1.ErrorBadRequest("invalid query parameter")
 	}
 
 	entities, err := builder.All(ctx)
 	if err != nil {
 		r.log.Errorf("query list failed: %s", err.Error())
-		return nil, adminV1.ErrorInternalServerError("query list failed")
+		return nil, permissionV1.ErrorInternalServerError("query list failed")
 	}
 
-	dtos := make([]*adminV1.Menu, 0, len(entities))
+	dtos := make([]*permissionV1.Menu, 0, len(entities))
 	if treeTravel {
 		for _, entity := range entities {
 			if entity.ParentID == nil {
@@ -119,7 +119,7 @@ func (r *MenuRepo) List(ctx context.Context, req *pagination.PagingRequest, tree
 			if entity.ParentID != nil {
 				dto := r.mapper.ToDTO(entity)
 
-				if entCrud.TravelChild(&dtos, dto, func(parent *adminV1.Menu, node *adminV1.Menu) {
+				if entCrud.TravelChild(&dtos, dto, func(parent *permissionV1.Menu, node *permissionV1.Menu) {
 					parent.Children = append(parent.Children, node)
 				}) {
 					continue
@@ -140,7 +140,7 @@ func (r *MenuRepo) List(ctx context.Context, req *pagination.PagingRequest, tree
 		return nil, err
 	}
 
-	return &adminV1.ListMenuResponse{
+	return &permissionV1.ListMenuResponse{
 		Total: uint64(count),
 		Items: dtos,
 	}, nil
@@ -152,14 +152,14 @@ func (r *MenuRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Exist(ctx)
 	if err != nil {
 		r.log.Errorf("query exist failed: %s", err.Error())
-		return false, adminV1.ErrorInternalServerError("query exist failed")
+		return false, permissionV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
 }
 
-func (r *MenuRepo) Get(ctx context.Context, req *adminV1.GetMenuRequest) (*adminV1.Menu, error) {
+func (r *MenuRepo) Get(ctx context.Context, req *permissionV1.GetMenuRequest) (*permissionV1.Menu, error) {
 	if req == nil {
-		return nil, adminV1.ErrorBadRequest("invalid parameter")
+		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Menu.Query()
@@ -167,7 +167,7 @@ func (r *MenuRepo) Get(ctx context.Context, req *adminV1.GetMenuRequest) (*admin
 	var whereCond []func(s *sql.Selector)
 	switch req.QueryBy.(type) {
 	default:
-	case *adminV1.GetMenuRequest_Id:
+	case *permissionV1.GetMenuRequest_Id:
 		whereCond = append(whereCond, menu.IDEQ(req.GetId()))
 	}
 
@@ -179,9 +179,9 @@ func (r *MenuRepo) Get(ctx context.Context, req *adminV1.GetMenuRequest) (*admin
 	return dto, err
 }
 
-func (r *MenuRepo) Create(ctx context.Context, req *adminV1.CreateMenuRequest) error {
+func (r *MenuRepo) Create(ctx context.Context, req *permissionV1.CreateMenuRequest) error {
 	if req == nil || req.Data == nil {
-		return adminV1.ErrorBadRequest("invalid parameter")
+		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Menu.Create().
@@ -210,15 +210,15 @@ func (r *MenuRepo) Create(ctx context.Context, req *adminV1.CreateMenuRequest) e
 
 	if err := builder.Exec(ctx); err != nil {
 		r.log.Errorf("insert one data failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("insert data failed")
+		return permissionV1.ErrorInternalServerError("insert data failed")
 	}
 
 	return nil
 }
 
-func (r *MenuRepo) Update(ctx context.Context, req *adminV1.UpdateMenuRequest) error {
+func (r *MenuRepo) Update(ctx context.Context, req *permissionV1.UpdateMenuRequest) error {
 	if req == nil || req.Data == nil {
-		return adminV1.ErrorBadRequest("invalid parameter")
+		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	// 如果不存在则创建
@@ -228,7 +228,7 @@ func (r *MenuRepo) Update(ctx context.Context, req *adminV1.UpdateMenuRequest) e
 			return err
 		}
 		if !exist {
-			createReq := &adminV1.CreateMenuRequest{Data: req.Data}
+			createReq := &permissionV1.CreateMenuRequest{Data: req.Data}
 			createReq.Data.CreatedBy = createReq.Data.UpdatedBy
 			createReq.Data.UpdatedBy = nil
 			return r.Create(ctx, createReq)
@@ -246,7 +246,7 @@ func (r *MenuRepo) Update(ctx context.Context, req *adminV1.UpdateMenuRequest) e
 
 	builder := r.entClient.Client().Debug().Menu.Update()
 	err := r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
-		func(dto *adminV1.Menu) {
+		func(dto *permissionV1.Menu) {
 			builder.
 				SetNillableParentID(req.Data.ParentId).
 				SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
@@ -275,7 +275,7 @@ func (r *MenuRepo) Update(ctx context.Context, req *adminV1.UpdateMenuRequest) e
 	return err
 }
 
-func (r *MenuRepo) updateMetaField(builder *ent.MenuUpdate, meta *adminV1.RouteMeta, metaPaths []string) {
+func (r *MenuRepo) updateMetaField(builder *ent.MenuUpdate, meta *permissionV1.RouteMeta, metaPaths []string) {
 	//builder.SetMeta(meta)
 
 	// 删除空值
@@ -290,15 +290,15 @@ func (r *MenuRepo) updateMetaField(builder *ent.MenuUpdate, meta *adminV1.RouteM
 	}
 }
 
-func (r *MenuRepo) Delete(ctx context.Context, req *adminV1.DeleteMenuRequest) error {
+func (r *MenuRepo) Delete(ctx context.Context, req *permissionV1.DeleteMenuRequest) error {
 	if req == nil {
-		return adminV1.ErrorBadRequest("invalid parameter")
+		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	ids, err := entCrud.QueryAllChildrenIds(ctx, r.entClient, "sys_menus", req.GetId())
 	if err != nil {
 		r.log.Errorf("query child menus failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("query child menus failed")
+		return permissionV1.ErrorInternalServerError("query child menus failed")
 	}
 	ids = append(ids, req.GetId())
 
@@ -311,7 +311,7 @@ func (r *MenuRepo) Delete(ctx context.Context, req *adminV1.DeleteMenuRequest) e
 	})
 	if err != nil {
 		r.log.Errorf("delete menu failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("delete menu failed")
+		return permissionV1.ErrorInternalServerError("delete menu failed")
 	}
 
 	return nil

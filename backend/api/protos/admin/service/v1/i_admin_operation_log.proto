@@ -20,14 +20,14 @@ service AdminOperationLogService {
   // 查询后台操作日志列表
   rpc List (pagination.PagingRequest) returns (ListAdminOperationLogResponse) {
     option (google.api.http) = {
-      get: "/admin/v1/admin_operation_logs"
+      get: "/admin/v1/admin-operation-logs"
     };
   }
 
   // 查询后台操作日志详情
   rpc Get (GetAdminOperationLogRequest) returns (AdminOperationLog) {
     option (google.api.http) = {
-      get: "/admin/v1/admin_operation_logs/{id}"
+      get: "/admin/v1/admin-operation-logs/{id}"
     };
   }
 }
@@ -223,6 +223,11 @@ message AdminOperationLog {
       description: "操作系统版本"
     }
   ]; // 操作系统版本
+
+  optional uint32 tenant_id = 400 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
 
   optional google.protobuf.Timestamp created_at = 500 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
 }

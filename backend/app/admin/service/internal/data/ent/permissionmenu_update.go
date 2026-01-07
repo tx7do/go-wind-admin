@@ -150,27 +150,6 @@ func (_u *PermissionMenuUpdate) ClearDeletedBy() *PermissionMenuUpdate {
 	return _u
 }
 
-// SetMenuID sets the "menu_id" field.
-func (_u *PermissionMenuUpdate) SetMenuID(v uint32) *PermissionMenuUpdate {
-	_u.mutation.ResetMenuID()
-	_u.mutation.SetMenuID(v)
-	return _u
-}
-
-// SetNillableMenuID sets the "menu_id" field if the given value is not nil.
-func (_u *PermissionMenuUpdate) SetNillableMenuID(v *uint32) *PermissionMenuUpdate {
-	if v != nil {
-		_u.SetMenuID(*v)
-	}
-	return _u
-}
-
-// AddMenuID adds value to the "menu_id" field.
-func (_u *PermissionMenuUpdate) AddMenuID(v int32) *PermissionMenuUpdate {
-	_u.mutation.AddMenuID(v)
-	return _u
-}
-
 // SetPermissionID sets the "permission_id" field.
 func (_u *PermissionMenuUpdate) SetPermissionID(v uint32) *PermissionMenuUpdate {
 	_u.mutation.ResetPermissionID()
@@ -189,6 +168,27 @@ func (_u *PermissionMenuUpdate) SetNillablePermissionID(v *uint32) *PermissionMe
 // AddPermissionID adds value to the "permission_id" field.
 func (_u *PermissionMenuUpdate) AddPermissionID(v int32) *PermissionMenuUpdate {
 	_u.mutation.AddPermissionID(v)
+	return _u
+}
+
+// SetMenuID sets the "menu_id" field.
+func (_u *PermissionMenuUpdate) SetMenuID(v uint32) *PermissionMenuUpdate {
+	_u.mutation.ResetMenuID()
+	_u.mutation.SetMenuID(v)
+	return _u
+}
+
+// SetNillableMenuID sets the "menu_id" field if the given value is not nil.
+func (_u *PermissionMenuUpdate) SetNillableMenuID(v *uint32) *PermissionMenuUpdate {
+	if v != nil {
+		_u.SetMenuID(*v)
+	}
+	return _u
+}
+
+// AddMenuID adds value to the "menu_id" field.
+func (_u *PermissionMenuUpdate) AddMenuID(v int32) *PermissionMenuUpdate {
+	_u.mutation.AddMenuID(v)
 	return _u
 }
 
@@ -284,17 +284,17 @@ func (_u *PermissionMenuUpdate) sqlSave(ctx context.Context) (_node int, err err
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(permissionmenu.FieldTenantID, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.MenuID(); ok {
-		_spec.SetField(permissionmenu.FieldMenuID, field.TypeUint32, value)
-	}
-	if value, ok := _u.mutation.AddedMenuID(); ok {
-		_spec.AddField(permissionmenu.FieldMenuID, field.TypeUint32, value)
-	}
 	if value, ok := _u.mutation.PermissionID(); ok {
 		_spec.SetField(permissionmenu.FieldPermissionID, field.TypeUint32, value)
 	}
 	if value, ok := _u.mutation.AddedPermissionID(); ok {
 		_spec.AddField(permissionmenu.FieldPermissionID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.MenuID(); ok {
+		_spec.SetField(permissionmenu.FieldMenuID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedMenuID(); ok {
+		_spec.AddField(permissionmenu.FieldMenuID, field.TypeUint32, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -439,27 +439,6 @@ func (_u *PermissionMenuUpdateOne) ClearDeletedBy() *PermissionMenuUpdateOne {
 	return _u
 }
 
-// SetMenuID sets the "menu_id" field.
-func (_u *PermissionMenuUpdateOne) SetMenuID(v uint32) *PermissionMenuUpdateOne {
-	_u.mutation.ResetMenuID()
-	_u.mutation.SetMenuID(v)
-	return _u
-}
-
-// SetNillableMenuID sets the "menu_id" field if the given value is not nil.
-func (_u *PermissionMenuUpdateOne) SetNillableMenuID(v *uint32) *PermissionMenuUpdateOne {
-	if v != nil {
-		_u.SetMenuID(*v)
-	}
-	return _u
-}
-
-// AddMenuID adds value to the "menu_id" field.
-func (_u *PermissionMenuUpdateOne) AddMenuID(v int32) *PermissionMenuUpdateOne {
-	_u.mutation.AddMenuID(v)
-	return _u
-}
-
 // SetPermissionID sets the "permission_id" field.
 func (_u *PermissionMenuUpdateOne) SetPermissionID(v uint32) *PermissionMenuUpdateOne {
 	_u.mutation.ResetPermissionID()
@@ -478,6 +457,27 @@ func (_u *PermissionMenuUpdateOne) SetNillablePermissionID(v *uint32) *Permissio
 // AddPermissionID adds value to the "permission_id" field.
 func (_u *PermissionMenuUpdateOne) AddPermissionID(v int32) *PermissionMenuUpdateOne {
 	_u.mutation.AddPermissionID(v)
+	return _u
+}
+
+// SetMenuID sets the "menu_id" field.
+func (_u *PermissionMenuUpdateOne) SetMenuID(v uint32) *PermissionMenuUpdateOne {
+	_u.mutation.ResetMenuID()
+	_u.mutation.SetMenuID(v)
+	return _u
+}
+
+// SetNillableMenuID sets the "menu_id" field if the given value is not nil.
+func (_u *PermissionMenuUpdateOne) SetNillableMenuID(v *uint32) *PermissionMenuUpdateOne {
+	if v != nil {
+		_u.SetMenuID(*v)
+	}
+	return _u
+}
+
+// AddMenuID adds value to the "menu_id" field.
+func (_u *PermissionMenuUpdateOne) AddMenuID(v int32) *PermissionMenuUpdateOne {
+	_u.mutation.AddMenuID(v)
 	return _u
 }
 
@@ -603,17 +603,17 @@ func (_u *PermissionMenuUpdateOne) sqlSave(ctx context.Context) (_node *Permissi
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(permissionmenu.FieldTenantID, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.MenuID(); ok {
-		_spec.SetField(permissionmenu.FieldMenuID, field.TypeUint32, value)
-	}
-	if value, ok := _u.mutation.AddedMenuID(); ok {
-		_spec.AddField(permissionmenu.FieldMenuID, field.TypeUint32, value)
-	}
 	if value, ok := _u.mutation.PermissionID(); ok {
 		_spec.SetField(permissionmenu.FieldPermissionID, field.TypeUint32, value)
 	}
 	if value, ok := _u.mutation.AddedPermissionID(); ok {
 		_spec.AddField(permissionmenu.FieldPermissionID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.MenuID(); ok {
+		_spec.SetField(permissionmenu.FieldMenuID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedMenuID(); ok {
+		_spec.AddField(permissionmenu.FieldMenuID, field.TypeUint32, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &PermissionMenu{config: _u.config}

@@ -17,6 +17,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 
 	"go-wind-admin/pkg/middleware/auth"
@@ -56,9 +57,9 @@ func (s *RouterService) menuListToQueryString(menus []uint32, onlyButton bool) s
 	query := map[string]string{"id__in": idsStr}
 
 	if onlyButton {
-		query["type"] = adminV1.Menu_BUTTON.String()
+		query["type"] = permissionV1.Menu_BUTTON.String()
 	} else {
-		query["type__not"] = adminV1.Menu_BUTTON.String()
+		query["type__not"] = permissionV1.Menu_BUTTON.String()
 	}
 
 	query["status"] = "ON"
@@ -71,53 +72,38 @@ func (s *RouterService) menuListToQueryString(menus []uint32, onlyButton bool) s
 	return string(queryStr)
 }
 
-// queryOneRoleMenus 使用RoleID查询菜单，即单个角色的菜单
-func (s *RouterService) queryOneRoleMenus(ctx context.Context, roleId uint32) ([]uint32, error) {
-	role, err := s.roleRepo.Get(ctx, &userV1.GetRoleRequest{QueryBy: &userV1.GetRoleRequest_Id{Id: roleId}})
-	if err != nil {
-		s.log.Errorf("query role by role id failed[%s]", err.Error())
-		return nil, adminV1.ErrorInternalServerError("query role failed")
-	}
-	return role.GetMenus(), nil
-}
-
 // queryMultipleRolesMenusByRoleCodes 使用RoleCodes查询菜单，即多个角色的菜单
 func (s *RouterService) queryMultipleRolesMenusByRoleCodes(ctx context.Context, roleCodes []string) ([]uint32, error) {
-	roles, err := s.roleRepo.ListRolesByRoleCodes(ctx, roleCodes)
+	roleIDs, err := s.roleRepo.ListRoleIDsByRoleCodes(ctx, roleCodes)
 	if err != nil {
 		return nil, adminV1.ErrorInternalServerError("query roles failed")
 	}
 
 	var menus []uint32
-	for _, role := range roles {
-		if role == nil {
-			continue
-		}
-		menus = slice.MergeAndDeduplicate(menus, role.GetMenus())
+
+	menus, err = s.roleRepo.GetRolesPermissionMenuIDs(ctx, roleIDs)
+	if err != nil {
+		return nil, adminV1.ErrorInternalServerError("query roles menus failed")
 	}
+
+	menus = slice.Unique(menus)
 
 	return menus, nil
 }
 
 // queryMultipleRolesMenusByRoleIds 使用RoleIDs查询菜单，即多个角色的菜单
-func (s *RouterService) queryMultipleRolesMenusByRoleIds(ctx context.Context, roleIds []uint32) ([]uint32, error) {
-	roles, err := s.roleRepo.ListRolesByRoleIds(ctx, roleIds)
+func (s *RouterService) queryMultipleRolesMenusByRoleIds(ctx context.Context, roleIDs []uint32) ([]uint32, error) {
+	menus, err := s.roleRepo.GetRolesPermissionMenuIDs(ctx, roleIDs)
 	if err != nil {
-		return nil, adminV1.ErrorInternalServerError("query roles failed")
+		return nil, adminV1.ErrorInternalServerError("query roles menus failed")
 	}
 
-	var menus []uint32
-	for _, role := range roles {
-		if role == nil {
-			continue
-		}
-		menus = slice.MergeAndDeduplicate(menus, role.GetMenus())
-	}
+	menus = slice.Unique(menus)
 
 	return menus, nil
 }
 
-func (s *RouterService) ListPermissionCode(ctx context.Context, _ *emptypb.Empty) (*adminV1.ListPermissionCodeResponse, error) {
+func (s *RouterService) ListPermissionCode(ctx context.Context, _ *emptypb.Empty) (*permissionV1.ListPermissionCodeResponse, error) {
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
@@ -133,12 +119,6 @@ func (s *RouterService) ListPermissionCode(ctx context.Context, _ *emptypb.Empty
 		s.log.Errorf("query user failed[%s]", err.Error())
 		return nil, adminV1.ErrorInternalServerError("query user failed")
 	}
-
-	// 单角色的菜单
-	//roleMenus, err := s.queryOneRoleMenus(ctx, user.GetRoleId())
-	//if err != nil {
-	//	return nil, err
-	//}
 
 	// 多角色的菜单
 	roleMenus, err := s.queryMultipleRolesMenusByRoleIds(ctx, user.GetRoleIds())
@@ -170,27 +150,27 @@ func (s *RouterService) ListPermissionCode(ctx context.Context, _ *emptypb.Empty
 		codes = append(codes, menus.Items[menu].GetMeta().GetAuthority()...)
 	}
 
-	return &adminV1.ListPermissionCodeResponse{
+	return &permissionV1.ListPermissionCodeResponse{
 		Codes: codes,
 	}, nil
 }
 
-func (s *RouterService) fillRouteItem(menus []*adminV1.Menu) []*adminV1.RouteItem {
+func (s *RouterService) fillRouteItem(menus []*permissionV1.Menu) []*permissionV1.RouteItem {
 	if len(menus) == 0 {
 		return nil
 	}
 
-	var routers []*adminV1.RouteItem
+	var routers []*permissionV1.RouteItem
 
 	for _, v := range menus {
-		if v.GetStatus() != adminV1.Menu_ON {
+		if v.GetStatus() != permissionV1.Menu_ON {
 			continue
 		}
-		if v.GetType() == adminV1.Menu_BUTTON {
+		if v.GetType() == permissionV1.Menu_BUTTON {
 			continue
 		}
 
-		item := &adminV1.RouteItem{
+		item := &permissionV1.RouteItem{
 			Path:      v.Path,
 			Component: v.Component,
 			Name:      v.Name,
@@ -209,7 +189,7 @@ func (s *RouterService) fillRouteItem(menus []*adminV1.Menu) []*adminV1.RouteIte
 	return routers
 }
 
-func (s *RouterService) ListRoute(ctx context.Context, _ *emptypb.Empty) (*adminV1.ListRouteResponse, error) {
+func (s *RouterService) ListRoute(ctx context.Context, _ *emptypb.Empty) (*permissionV1.ListRouteResponse, error) {
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
@@ -247,7 +227,7 @@ func (s *RouterService) ListRoute(ctx context.Context, _ *emptypb.Empty) (*admin
 		return nil, adminV1.ErrorInternalServerError("list route failed")
 	}
 
-	resp := &adminV1.ListRouteResponse{Items: s.fillRouteItem(menuList.Items)}
+	resp := &permissionV1.ListRouteResponse{Items: s.fillRouteItem(menuList.Items)}
 
 	return resp, nil
 }

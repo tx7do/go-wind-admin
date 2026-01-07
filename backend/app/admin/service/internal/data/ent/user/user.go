@@ -55,8 +55,10 @@ const (
 	FieldLastLoginAt = "last_login_at"
 	// FieldLastLoginIP holds the string denoting the last_login_ip field in the database.
 	FieldLastLoginIP = "last_login_ip"
-	// FieldIsBanned holds the string denoting the is_banned field in the database.
-	FieldIsBanned = "is_banned"
+	// FieldLockedUntil holds the string denoting the locked_until field in the database.
+	FieldLockedUntil = "locked_until"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
 	// Table holds the table name of the user in the database.
 	Table = "sys_users"
 )
@@ -85,7 +87,8 @@ var Columns = []string{
 	FieldGender,
 	FieldLastLoginAt,
 	FieldLastLoginIP,
-	FieldIsBanned,
+	FieldLockedUntil,
+	FieldStatus,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -117,8 +120,6 @@ var (
 	DefaultRegion string
 	// DescriptionValidator is a validator for the "description" field. It is called by the builders before save.
 	DescriptionValidator func(string) error
-	// DefaultIsBanned holds the default value on creation for the "is_banned" field.
-	DefaultIsBanned bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
@@ -147,6 +148,36 @@ func GenderValidator(ge Gender) error {
 		return nil
 	default:
 		return fmt.Errorf("user: invalid enum value for gender field: %q", ge)
+	}
+}
+
+// Status defines the type for the "status" enum field.
+type Status string
+
+// StatusNormal is the default value of the Status enum.
+const DefaultStatus = StatusNormal
+
+// Status values.
+const (
+	StatusNormal   Status = "NORMAL"
+	StatusDisabled Status = "DISABLED"
+	StatusPending  Status = "PENDING"
+	StatusLocked   Status = "LOCKED"
+	StatusExpired  Status = "EXPIRED"
+	StatusClosed   Status = "CLOSED"
+)
+
+func (s Status) String() string {
+	return string(s)
+}
+
+// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
+func StatusValidator(s Status) error {
+	switch s {
+	case StatusNormal, StatusDisabled, StatusPending, StatusLocked, StatusExpired, StatusClosed:
+		return nil
+	default:
+		return fmt.Errorf("user: invalid enum value for status field: %q", s)
 	}
 }
 
@@ -263,7 +294,12 @@ func ByLastLoginIP(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastLoginIP, opts...).ToFunc()
 }
 
-// ByIsBanned orders the results by the is_banned field.
-func ByIsBanned(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldIsBanned, opts...).ToFunc()
+// ByLockedUntil orders the results by the locked_until field.
+func ByLockedUntil(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLockedUntil, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
 }

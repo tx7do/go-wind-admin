@@ -16,21 +16,21 @@ service OrgUnitService {
   // 查询组织单元列表
   rpc List (pagination.PagingRequest) returns (user.service.v1.ListOrgUnitResponse) {
     option (google.api.http) = {
-      get: "/admin/v1/org_units"
+      get: "/admin/v1/org-units"
     };
   }
 
   // 查询组织单元详情
   rpc Get (user.service.v1.GetOrgUnitRequest) returns (user.service.v1.OrgUnit) {
     option (google.api.http) = {
-      get: "/admin/v1/org_units/{id}"
+      get: "/admin/v1/org-units/{id}"
     };
   }
 
   // 创建组织单元
   rpc Create (user.service.v1.CreateOrgUnitRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      post: "/admin/v1/org_units"
+      post: "/admin/v1/org-units"
       body: "*"
     };
   }
@@ -38,7 +38,7 @@ service OrgUnitService {
   // 更新组织单元
   rpc Update (user.service.v1.UpdateOrgUnitRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      put: "/admin/v1/org_units/{id}"
+      put: "/admin/v1/org-units/{id}"
       body: "*"
     };
   }
@@ -46,7 +46,7 @@ service OrgUnitService {
   // 删除组织单元
   rpc Delete (user.service.v1.DeleteOrgUnitRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
-      delete: "/admin/v1/org_units/{id}"
+      delete: "/admin/v1/org-units/{id}"
     };
   }
 }

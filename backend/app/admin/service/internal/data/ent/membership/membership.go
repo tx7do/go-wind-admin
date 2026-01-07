@@ -47,6 +47,8 @@ const (
 	FieldAssignedAt = "assigned_at"
 	// FieldAssignedBy holds the string denoting the assigned_by field in the database.
 	FieldAssignedBy = "assigned_by"
+	// FieldJoinedAt holds the string denoting the joined_at field in the database.
+	FieldJoinedAt = "joined_at"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// Table holds the table name of the membership in the database.
@@ -73,6 +75,7 @@ var Columns = []string{
 	FieldEndAt,
 	FieldAssignedAt,
 	FieldAssignedBy,
+	FieldJoinedAt,
 	FieldStatus,
 }
 
@@ -101,11 +104,12 @@ const DefaultStatus = StatusActive
 
 // Status values.
 const (
-	StatusActive    Status = "ACTIVE"
-	StatusPending   Status = "PENDING"
-	StatusInactive  Status = "INACTIVE"
-	StatusSuspended Status = "SUSPENDED"
-	StatusExpired   Status = "EXPIRED"
+	StatusActive   Status = "ACTIVE"
+	StatusDisabled Status = "DISABLED"
+	StatusPending  Status = "PENDING"
+	StatusInvited  Status = "INVITED"
+	StatusExpired  Status = "EXPIRED"
+	StatusRejected Status = "REJECTED"
 )
 
 func (s Status) String() string {
@@ -115,7 +119,7 @@ func (s Status) String() string {
 // StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
 func StatusValidator(s Status) error {
 	switch s {
-	case StatusActive, StatusPending, StatusInactive, StatusSuspended, StatusExpired:
+	case StatusActive, StatusDisabled, StatusPending, StatusInvited, StatusExpired, StatusRejected:
 		return nil
 	default:
 		return fmt.Errorf("membership: invalid enum value for status field: %q", s)
@@ -213,6 +217,11 @@ func ByAssignedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByAssignedBy orders the results by the assigned_by field.
 func ByAssignedBy(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldAssignedBy, opts...).ToFunc()
+}
+
+// ByJoinedAt orders the results by the joined_at field.
+func ByJoinedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldJoinedAt, opts...).ToFunc()
 }
 
 // ByStatus orders the results by the status field.

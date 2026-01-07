@@ -7,6 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/go-utils/mapper"
+	"github.com/tx7do/go-utils/timeutil"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
@@ -56,11 +57,7 @@ func (r *MembershipOrgUnitRepo) AssignOrgUnits(
 	ctx context.Context,
 	tx *ent.Tx,
 	membershipID, tenantID uint32,
-	orgUnitIDs []uint32, operatorID *uint32,
-	status *userV1.MembershipOrgUnit_Status,
-	startAt, endAt *time.Time,
-	assignedAt *time.Time, assignedBy *uint32,
-	isPrimary bool,
+	datas []*userV1.MembershipOrgUnit,
 ) error {
 	var err error
 
@@ -70,49 +67,47 @@ func (r *MembershipOrgUnitRepo) AssignOrgUnits(
 	}
 
 	// 如果没有分配任何，则直接提交事务返回
-	if len(orgUnitIDs) == 0 {
+	if len(datas) == 0 {
 		return nil
 	}
 
 	now := time.Now()
 
-	if startAt == nil {
-		startAt = &now
-	}
-
 	var membershipOrgUnitCreates []*ent.MembershipOrgUnitCreate
-	for _, id := range orgUnitIDs {
+	for _, data := range datas {
+		if data.StartAt == nil {
+			data.StartAt = timeutil.TimeToTimestamppb(&now)
+		}
 		rm := tx.MembershipOrgUnit.
 			Create().
-			SetMembershipID(membershipID).
-			SetOrgUnitID(id).
-			SetNillableStatus(r.statusConverter.ToEntity(status)).
-			SetNillableCreatedBy(operatorID).
-			SetNillableAssignedBy(assignedBy).
-			SetNillableAssignedAt(assignedAt).
-			SetTenantID(tenantID).
-			SetIsPrimary(isPrimary).
-			SetCreatedAt(now).
-			SetNillableStartAt(startAt).
-			SetNillableEndAt(endAt)
+			SetTenantID(data.GetTenantId()).
+			SetMembershipID(data.GetMembershipId()).
+			SetOrgUnitID(data.GetOrgUnitId()).
+			SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
+			SetNillableAssignedBy(data.AssignedBy).
+			SetNillableAssignedAt(timeutil.TimestamppbToTime(data.AssignedAt)).
+			SetNillableIsPrimary(data.IsPrimary).
+			SetNillableStartAt(timeutil.TimestamppbToTime(data.StartAt)).
+			SetNillableEndAt(timeutil.TimestamppbToTime(data.EndAt)).
+			SetNillableCreatedBy(data.CreatedBy).
+			SetCreatedAt(now)
 		membershipOrgUnitCreates = append(membershipOrgUnitCreates, rm)
 	}
 
 	_, err = tx.MembershipOrgUnit.CreateBulk(membershipOrgUnitCreates...).Save(ctx)
 	if err != nil {
-		r.log.Errorf("assign organizations to role failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("assign organizations to role failed")
+		r.log.Errorf("assign orgUnit to membership failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("assign orgUnit to membership failed")
 	}
 
 	return nil
 }
 
 // ListOrgUnitIDs 列出角色关联的组织单元ID列表
-func (r *MembershipOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, membershipID, tenantID uint32, excludeExpired bool) ([]uint32, error) {
+func (r *MembershipOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, membershipID uint32, excludeExpired bool) ([]uint32, error) {
 	q := r.entClient.Client().MembershipOrgUnit.Query().
 		Where(
 			membershiporgunit.MembershipIDEQ(membershipID),
-			membershiporgunit.TenantIDEQ(tenantID),
 		)
 
 	if excludeExpired {

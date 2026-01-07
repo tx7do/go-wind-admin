@@ -4,17 +4,17 @@ import { createAdminLoginLogServiceClient } from '#/generated/api/admin/service/
 import { makeQueryString } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
-export const useAdminOperationLogStore = defineStore(
-  'admin_operation_log',
+export const usePermissionAuditLogStore = defineStore(
+  'permission-audit-log',
   () => {
     const service = createAdminLoginLogServiceClient(
       requestClientRequestHandler,
     );
 
     /**
-     * 查询操作日志列表
+     * 查询权限变更审计日志列表
      */
-    async function listAdminOperationLog(
+    async function listPermissionAuditLog(
       paging?: Paging,
       formValues?: null | object,
       fieldMask?: null | string,
@@ -34,9 +34,9 @@ export const useAdminOperationLogStore = defineStore(
     }
 
     /**
-     * 查询操作日志
+     * 查询权限变更审计日志日志
      */
-    async function getAdminOperationLog(id: number) {
+    async function getPermissionAuditLog(id: number) {
       return await service.Get({ id });
     }
 
@@ -44,8 +44,8 @@ export const useAdminOperationLogStore = defineStore(
 
     return {
       $reset,
-      listAdminOperationLog,
-      getAdminOperationLog,
+      listPermissionAuditLog,
+      getPermissionAuditLog,
     };
   },
 );

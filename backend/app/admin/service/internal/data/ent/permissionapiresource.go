@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// 权限点 - API接口多对多关联表
+// 权限点-API接口关联表
 type PermissionApiResource struct {
 	config `json:"-"`
 	// ID of the ent.
@@ -32,11 +32,11 @@ type PermissionApiResource struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
-	// API资源ID（关联sys_api_resources.id）
-	APIResourceID *uint32 `json:"api_resource_id,omitempty"`
 	// 权限ID（关联sys_permissions.id）
 	PermissionID *uint32 `json:"permission_id,omitempty"`
-	selectValues sql.SelectValues
+	// API资源ID（关联sys_api_resources.id）
+	APIResourceID *uint32 `json:"api_resource_id,omitempty"`
+	selectValues  sql.SelectValues
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -44,7 +44,7 @@ func (*PermissionApiResource) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case permissionapiresource.FieldID, permissionapiresource.FieldCreatedBy, permissionapiresource.FieldUpdatedBy, permissionapiresource.FieldDeletedBy, permissionapiresource.FieldTenantID, permissionapiresource.FieldAPIResourceID, permissionapiresource.FieldPermissionID:
+		case permissionapiresource.FieldID, permissionapiresource.FieldCreatedBy, permissionapiresource.FieldUpdatedBy, permissionapiresource.FieldDeletedBy, permissionapiresource.FieldTenantID, permissionapiresource.FieldPermissionID, permissionapiresource.FieldAPIResourceID:
 			values[i] = new(sql.NullInt64)
 		case permissionapiresource.FieldCreatedAt, permissionapiresource.FieldUpdatedAt, permissionapiresource.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -118,19 +118,19 @@ func (_m *PermissionApiResource) assignValues(columns []string, values []any) er
 				_m.TenantID = new(uint32)
 				*_m.TenantID = uint32(value.Int64)
 			}
-		case permissionapiresource.FieldAPIResourceID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field api_resource_id", values[i])
-			} else if value.Valid {
-				_m.APIResourceID = new(uint32)
-				*_m.APIResourceID = uint32(value.Int64)
-			}
 		case permissionapiresource.FieldPermissionID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field permission_id", values[i])
 			} else if value.Valid {
 				_m.PermissionID = new(uint32)
 				*_m.PermissionID = uint32(value.Int64)
+			}
+		case permissionapiresource.FieldAPIResourceID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field api_resource_id", values[i])
+			} else if value.Valid {
+				_m.APIResourceID = new(uint32)
+				*_m.APIResourceID = uint32(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -203,13 +203,13 @@ func (_m *PermissionApiResource) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.APIResourceID; v != nil {
-		builder.WriteString("api_resource_id=")
+	if v := _m.PermissionID; v != nil {
+		builder.WriteString("permission_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.PermissionID; v != nil {
-		builder.WriteString("permission_id=")
+	if v := _m.APIResourceID; v != nil {
+		builder.WriteString("api_resource_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')

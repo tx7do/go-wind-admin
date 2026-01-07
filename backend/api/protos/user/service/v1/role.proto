@@ -47,25 +47,6 @@ message Role {
     ON = 1;          // 启用
   }
 
-  // 角色类型
-  enum Type {
-    SYSTEM = 0; // 内置角色（不可删除、不可修改 code）
-    CUSTOM = 1; // 自定义角色
-  }
-
-  // 数据权限范围
-  enum DataScope {
-    DATA_SCOPE_UNSPECIFIED = 0;
-
-    ALL = 1;              // 全部数据：可跨租户或租户内所有 Unit (取决于 tenant_id)
-    SELF = 2;             // 仅限本人：只能看到 owner_id 等于自己的数据
-
-    UNIT_ONLY = 3;        // 仅限当前所属 OrgUnit：不含子节点
-    UNIT_AND_CHILD = 4;   // 当前所属 OrgUnit 及所有递归子节点
-
-    SELECTED_UNITS = 5;   // 自定义组织单元列表
-  }
-
   optional uint32 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {description: "角色ID"}
@@ -78,44 +59,33 @@ message Role {
 
   optional string code = 3 [
     json_name = "code",
-    (gnostic.openapi.v3.property) = {description: "角色标识码（如：ADMIN, VIEWER）"}
+    (gnostic.openapi.v3.property) = {description: "角色标识码（如：platform_admin, tenant_admin）"}
   ];  // 角色标识码（如：ADMIN, VIEWER）
 
-  optional int32 sort_order = 4 [
+  optional uint32 sort_order = 4 [
     json_name = "sortOrder",
     (gnostic.openapi.v3.property) = {description: "排序顺序，值越小越靠前"}
   ];  // 排序顺序，值越小越靠前
 
-  optional Status status = 5 [(gnostic.openapi.v3.property) = {description: "状态"}, json_name = "status"];  // 状态
+  optional Status status = 5 [
+    json_name = "status",
+    (gnostic.openapi.v3.property) = {description: "状态"}
+  ];  // 状态
 
-  optional Type type = 6 [(gnostic.openapi.v3.property) = {description: "角色类型"}, json_name = "type"];  // 角色类型
+  optional string description = 6 [
+    json_name = "description",
+    (gnostic.openapi.v3.property) = {description: "描述"}
+  ];  // 描述
 
-  optional DataScope data_scope = 7 [
-    json_name = "dataScope",
-    (gnostic.openapi.v3.property) = {description: "数据权限范围"}
-  ];  // 数据权限范围
+  optional bool is_protected = 7 [
+    json_name = "isProtected",
+    (gnostic.openapi.v3.property) = {description: "是否为系统内置保护角色，保护角色不允许删除或修改其权限"}
+  ];  // 是否为系统内置保护角色，保护角色不允许删除或修改其权限
 
-  optional string remark = 8 [json_name = "remark", (gnostic.openapi.v3.property) = {description: "备注"}];  // 备注
-
-  repeated uint32 custom_org_unit_ids = 10 [
-    json_name = "customOrgUnitIds",
-    (gnostic.openapi.v3.property) = {description: "当 DataScope 为 SELECTED_UNITS 时关联的组织单元列表"}
-  ]; // 当 DataScope 为 SELECTED_UNITS 时关联的组织单元列表
-
-  repeated string permissions = 11 [
+  repeated uint32 permissions = 11 [
     json_name = "permissions",
-    (gnostic.openapi.v3.property) = {description: "权限点列表（如：user:add, file:delete）"}
-  ]; // 权限点列表（如：user:add, file:delete）
-
-  repeated uint32 menus = 12 [
-    json_name = "menus",
-    (gnostic.openapi.v3.property) = {description: "绑定的菜单ID列表"}
-  ];  // 绑定的菜单ID列表
-
-  repeated uint32 apis = 13 [
-    json_name = "apis",
-    (gnostic.openapi.v3.property) = {description: "分配的API列表"}
-  ];  // 分配的API列表
+    (gnostic.openapi.v3.property) = {description: "绑定的权限点ID列表"}
+  ]; // 绑定的权限点ID列表
 
   optional uint32 tenant_id = 40 [
     json_name = "tenantId",
@@ -125,9 +95,6 @@ message Role {
     json_name = "tenantName",
     (gnostic.openapi.v3.property) = {description: "租户名称"}
   ];  // 租户名称
-
-  optional uint32 parent_id = 50 [json_name = "parentId", (gnostic.openapi.v3.property) = {description: "父节点ID"}];  // 父节点ID
-  repeated Role children = 51 [json_name = "children", (gnostic.openapi.v3.property) = {description: "子节点树"}];  // 子节点树
 
   optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
   optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
@@ -151,6 +118,16 @@ message GetRoleRequest {
       (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
       json_name = "id"
     ]; // ID
+
+    string name = 2 [
+      (gnostic.openapi.v3.property) = {description: "名称", read_only: true},
+      json_name = "name"
+    ]; // 名称
+
+    string code = 3 [
+      (gnostic.openapi.v3.property) = {description: "唯一编码", read_only: true},
+      json_name = "code"
+    ]; // 唯一编码
   }
 
   optional google.protobuf.FieldMask view_mask = 100 [

@@ -316,16 +316,30 @@ func (_c *UserCreate) SetNillableLastLoginIP(v *string) *UserCreate {
 	return _c
 }
 
-// SetIsBanned sets the "is_banned" field.
-func (_c *UserCreate) SetIsBanned(v bool) *UserCreate {
-	_c.mutation.SetIsBanned(v)
+// SetLockedUntil sets the "locked_until" field.
+func (_c *UserCreate) SetLockedUntil(v time.Time) *UserCreate {
+	_c.mutation.SetLockedUntil(v)
 	return _c
 }
 
-// SetNillableIsBanned sets the "is_banned" field if the given value is not nil.
-func (_c *UserCreate) SetNillableIsBanned(v *bool) *UserCreate {
+// SetNillableLockedUntil sets the "locked_until" field if the given value is not nil.
+func (_c *UserCreate) SetNillableLockedUntil(v *time.Time) *UserCreate {
 	if v != nil {
-		_c.SetIsBanned(*v)
+		_c.SetLockedUntil(*v)
+	}
+	return _c
+}
+
+// SetStatus sets the "status" field.
+func (_c *UserCreate) SetStatus(v user.Status) *UserCreate {
+	_c.mutation.SetStatus(v)
+	return _c
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_c *UserCreate) SetNillableStatus(v *user.Status) *UserCreate {
+	if v != nil {
+		_c.SetStatus(*v)
 	}
 	return _c
 }
@@ -391,9 +405,9 @@ func (_c *UserCreate) defaults() {
 		v := user.DefaultGender
 		_c.mutation.SetGender(v)
 	}
-	if _, ok := _c.mutation.IsBanned(); !ok {
-		v := user.DefaultIsBanned
-		_c.mutation.SetIsBanned(v)
+	if _, ok := _c.mutation.Status(); !ok {
+		v := user.DefaultStatus
+		_c.mutation.SetStatus(v)
 	}
 }
 
@@ -427,6 +441,11 @@ func (_c *UserCreate) check() error {
 	if v, ok := _c.mutation.Gender(); ok {
 		if err := user.GenderValidator(v); err != nil {
 			return &ValidationError{Name: "gender", err: fmt.Errorf(`ent: validator failed for field "User.gender": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.Status(); ok {
+		if err := user.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "User.status": %w`, err)}
 		}
 	}
 	if v, ok := _c.mutation.ID(); ok {
@@ -551,9 +570,13 @@ func (_c *UserCreate) createSpec() (*User, *sqlgraph.CreateSpec) {
 		_spec.SetField(user.FieldLastLoginIP, field.TypeString, value)
 		_node.LastLoginIP = &value
 	}
-	if value, ok := _c.mutation.IsBanned(); ok {
-		_spec.SetField(user.FieldIsBanned, field.TypeBool, value)
-		_node.IsBanned = value
+	if value, ok := _c.mutation.LockedUntil(); ok {
+		_spec.SetField(user.FieldLockedUntil, field.TypeTime, value)
+		_node.LockedUntil = &value
+	}
+	if value, ok := _c.mutation.Status(); ok {
+		_spec.SetField(user.FieldStatus, field.TypeEnum, value)
+		_node.Status = &value
 	}
 	return _node, _spec
 }
@@ -949,21 +972,39 @@ func (u *UserUpsert) ClearLastLoginIP() *UserUpsert {
 	return u
 }
 
-// SetIsBanned sets the "is_banned" field.
-func (u *UserUpsert) SetIsBanned(v bool) *UserUpsert {
-	u.Set(user.FieldIsBanned, v)
+// SetLockedUntil sets the "locked_until" field.
+func (u *UserUpsert) SetLockedUntil(v time.Time) *UserUpsert {
+	u.Set(user.FieldLockedUntil, v)
 	return u
 }
 
-// UpdateIsBanned sets the "is_banned" field to the value that was provided on create.
-func (u *UserUpsert) UpdateIsBanned() *UserUpsert {
-	u.SetExcluded(user.FieldIsBanned)
+// UpdateLockedUntil sets the "locked_until" field to the value that was provided on create.
+func (u *UserUpsert) UpdateLockedUntil() *UserUpsert {
+	u.SetExcluded(user.FieldLockedUntil)
 	return u
 }
 
-// ClearIsBanned clears the value of the "is_banned" field.
-func (u *UserUpsert) ClearIsBanned() *UserUpsert {
-	u.SetNull(user.FieldIsBanned)
+// ClearLockedUntil clears the value of the "locked_until" field.
+func (u *UserUpsert) ClearLockedUntil() *UserUpsert {
+	u.SetNull(user.FieldLockedUntil)
+	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *UserUpsert) SetStatus(v user.Status) *UserUpsert {
+	u.Set(user.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *UserUpsert) UpdateStatus() *UserUpsert {
+	u.SetExcluded(user.FieldStatus)
+	return u
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *UserUpsert) ClearStatus() *UserUpsert {
+	u.SetNull(user.FieldStatus)
 	return u
 }
 
@@ -1423,24 +1464,45 @@ func (u *UserUpsertOne) ClearLastLoginIP() *UserUpsertOne {
 	})
 }
 
-// SetIsBanned sets the "is_banned" field.
-func (u *UserUpsertOne) SetIsBanned(v bool) *UserUpsertOne {
+// SetLockedUntil sets the "locked_until" field.
+func (u *UserUpsertOne) SetLockedUntil(v time.Time) *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
-		s.SetIsBanned(v)
+		s.SetLockedUntil(v)
 	})
 }
 
-// UpdateIsBanned sets the "is_banned" field to the value that was provided on create.
-func (u *UserUpsertOne) UpdateIsBanned() *UserUpsertOne {
+// UpdateLockedUntil sets the "locked_until" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateLockedUntil() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
-		s.UpdateIsBanned()
+		s.UpdateLockedUntil()
 	})
 }
 
-// ClearIsBanned clears the value of the "is_banned" field.
-func (u *UserUpsertOne) ClearIsBanned() *UserUpsertOne {
+// ClearLockedUntil clears the value of the "locked_until" field.
+func (u *UserUpsertOne) ClearLockedUntil() *UserUpsertOne {
 	return u.Update(func(s *UserUpsert) {
-		s.ClearIsBanned()
+		s.ClearLockedUntil()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *UserUpsertOne) SetStatus(v user.Status) *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *UserUpsertOne) UpdateStatus() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *UserUpsertOne) ClearStatus() *UserUpsertOne {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearStatus()
 	})
 }
 
@@ -2066,24 +2128,45 @@ func (u *UserUpsertBulk) ClearLastLoginIP() *UserUpsertBulk {
 	})
 }
 
-// SetIsBanned sets the "is_banned" field.
-func (u *UserUpsertBulk) SetIsBanned(v bool) *UserUpsertBulk {
+// SetLockedUntil sets the "locked_until" field.
+func (u *UserUpsertBulk) SetLockedUntil(v time.Time) *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
-		s.SetIsBanned(v)
+		s.SetLockedUntil(v)
 	})
 }
 
-// UpdateIsBanned sets the "is_banned" field to the value that was provided on create.
-func (u *UserUpsertBulk) UpdateIsBanned() *UserUpsertBulk {
+// UpdateLockedUntil sets the "locked_until" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateLockedUntil() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
-		s.UpdateIsBanned()
+		s.UpdateLockedUntil()
 	})
 }
 
-// ClearIsBanned clears the value of the "is_banned" field.
-func (u *UserUpsertBulk) ClearIsBanned() *UserUpsertBulk {
+// ClearLockedUntil clears the value of the "locked_until" field.
+func (u *UserUpsertBulk) ClearLockedUntil() *UserUpsertBulk {
 	return u.Update(func(s *UserUpsert) {
-		s.ClearIsBanned()
+		s.ClearLockedUntil()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *UserUpsertBulk) SetStatus(v user.Status) *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *UserUpsertBulk) UpdateStatus() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *UserUpsertBulk) ClearStatus() *UserUpsertBulk {
+	return u.Update(func(s *UserUpsert) {
+		s.ClearStatus()
 	})
 }
 

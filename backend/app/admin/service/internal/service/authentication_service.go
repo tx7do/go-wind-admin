@@ -14,21 +14,27 @@ import (
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 
 	"go-wind-admin/pkg/jwt"
 	"go-wind-admin/pkg/middleware/auth"
 )
 
+// 系统访问后台权限代码
+const accessSystemPermissionCode = "system:access_backend"
+
 type AuthenticationService struct {
 	adminV1.AuthenticationServiceHTTPServer
 
 	userRepo           data.UserRepo
 	userCredentialRepo *data.UserCredentialRepo
-	roleRepo           *data.RoleRepo
-	tenantRepo         *data.TenantRepo
-	membershipRepo     *data.MembershipRepo
-	orgUnitRepo        *data.OrgUnitRepo
+
+	roleRepo       *data.RoleRepo
+	tenantRepo     *data.TenantRepo
+	membershipRepo *data.MembershipRepo
+	orgUnitRepo    *data.OrgUnitRepo
+	permissionRepo *data.PermissionRepo
 
 	userToken *data.UserTokenCacheRepo
 
@@ -45,6 +51,7 @@ func NewAuthenticationService(
 	tenantRepo *data.TenantRepo,
 	membershipRepo *data.MembershipRepo,
 	orgUnitRepo *data.OrgUnitRepo,
+	permissionRepo *data.PermissionRepo,
 	userToken *data.UserTokenCacheRepo,
 	authenticator authnEngine.Authenticator,
 ) *AuthenticationService {
@@ -56,6 +63,7 @@ func NewAuthenticationService(
 		roleRepo:           roleRepo,
 		membershipRepo:     membershipRepo,
 		orgUnitRepo:        orgUnitRepo,
+		permissionRepo:     permissionRepo,
 		userToken:          userToken,
 		authenticator:      authenticator,
 	}
@@ -78,100 +86,27 @@ func (s *AuthenticationService) Login(ctx context.Context, req *authenticationV1
 	}
 }
 
-var allowedPlatformCodes = map[string]struct{}{
-	"super":       {},
-	"super_admin": {},
-	"superadmin":  {}, // 兼容不同命名
+var priorityDataScope = map[permissionV1.DataScope]int{
+	permissionV1.DataScope_SELF:           1,
+	permissionV1.DataScope_UNIT_ONLY:      2,
+	permissionV1.DataScope_UNIT_AND_CHILD: 3,
+	permissionV1.DataScope_SELECTED_UNITS: 4,
+	permissionV1.DataScope_ALL:            5,
 }
 
-// HasPlatformAdminRole 判断用户是否拥有平台角色
-func (s *AuthenticationService) HasPlatformAdminRole(roles []*userV1.Role) bool {
-	if len(roles) == 0 {
-		return false
+// mergeDataScopes 合并角色数据权限
+func (s *AuthenticationService) mergeDataScopes(dataScopes []permissionV1.DataScope) permissionV1.DataScope {
+	if len(dataScopes) == 0 {
+		return permissionV1.DataScope_SELF
 	}
 
-	for _, role := range roles {
-		if role == nil {
-			continue
-		}
-
-		// 拥有全局数据权限
-		if role.GetDataScope() == userV1.Role_ALL &&
-			role.GetType() == userV1.Role_SYSTEM {
-			s.log.Debugf("role id [%d] has all data scope and system type, is platform admin", role.GetId())
-			return true
-		}
-
-		// 根据 code 判定（大小写不敏感）
-		if roleCode := strings.ToLower(role.GetCode()); roleCode != "" {
-			if _, ok := allowedPlatformCodes[roleCode]; ok {
-				s.log.Debugf("role code [%s] is allowed platform admin code", roleCode)
-				return true
-			}
-		}
-	}
-
-	return false
-}
-
-var tenantAdminCodes = map[string]struct{}{
-	"tenant_admin": {},
-	"tenantadmin":  {},
-	"tenant-admin": {},
-}
-
-// HasTenantAdminRole 判断用户是否拥有租户管理员角色
-func (s *AuthenticationService) HasTenantAdminRole(roles []*userV1.Role) bool {
-	if len(roles) == 0 {
-		return false
-	}
-
-	for _, role := range roles {
-		if role == nil {
-			continue
-		}
-
-		ds := role.GetDataScope()
-		if ds == userV1.Role_ALL || ds == userV1.Role_UNIT_AND_CHILD {
-			return true
-		}
-
-		if rc := strings.ToLower(role.GetCode()); rc != "" {
-			if _, ok := tenantAdminCodes[rc]; ok {
-				return true
-			}
-		}
-	}
-
-	return false
-}
-
-var priorityDataScope = map[userV1.Role_DataScope]int{
-	userV1.Role_SELF:           1,
-	userV1.Role_UNIT_ONLY:      2,
-	userV1.Role_UNIT_AND_CHILD: 3,
-	userV1.Role_SELECTED_UNITS: 4,
-	userV1.Role_ALL:            5,
-}
-
-// mergeRolesDataScope 合并角色数据权限
-func (s *AuthenticationService) mergeRolesDataScope(roles []*userV1.Role) userV1.Role_DataScope {
-	if len(roles) == 0 {
-		return userV1.Role_SELF
-	}
-
-	final := userV1.Role_SELF
+	final := permissionV1.DataScope_SELF
 	bestPrio := 0
 
-	for _, r := range roles {
-		if r == nil {
-			continue
-		}
-		ds := r.GetDataScope()
-
+	for _, ds := range dataScopes {
 		// 最优先短路
-		if ds == userV1.Role_ALL {
-			return userV1.Role_ALL
+		if ds == permissionV1.DataScope_ALL {
+			return permissionV1.DataScope_ALL
 		}
 
 		if p, ok := priorityDataScope[ds]; ok {
@@ -198,7 +133,6 @@ func (s *AuthenticationService) pickMostSpecificOrgUnit(units []*userV1.OrgUnit)
 		if u == nil {
 			continue
 		}
-		// 假设 OrgUnit 有 GetPath() 返回例如 "1/2/3" 或 "/1/2/3/"
 		p := strings.Trim(u.GetPath(), "/")
 		depth := 0
 		if p != "" {
@@ -214,74 +148,117 @@ func (s *AuthenticationService) pickMostSpecificOrgUnit(units []*userV1.OrgUnit)
 	return best
 }
 
-// enrichUserTokenPayload 填充用户令牌载荷的权限相关字段
-func (s *AuthenticationService) enrichUserTokenPayload(ctx context.Context, userID, tenantID uint32, tokenPayload *authenticationV1.UserTokenPayload) error {
-	// 初始化默认值
-	tokenPayload.DataScope = trans.Ptr(userV1.Role_SELF)
-
-	// 获取角色/岗位/组织单元 id 列表
-	roleIDs, _, orgUnitIDs, err := s.membershipRepo.ListMembershipAllIDs(ctx, userID, tenantID)
-	if err != nil {
-		s.log.Errorf("list user [%d] membership ids failed [%s]", userID, err.Error())
-		return authenticationV1.ErrorServiceUnavailable("获取用户角色失败")
-	}
-
-	// 获取角色信息并填充 role codes / data scope / admin flags
-	roles, err := s.roleRepo.ListRolesByRoleIds(ctx, roleIDs)
-	if err != nil {
-		s.log.Errorf("list roles by ids failed [%s]", err.Error())
-		// 继续：即使查角色失败也不直接返回，这与原实现一致（caller 侧应决定如何处理）
-	}
-	for _, role := range roles {
-		if role == nil {
-			continue
-		}
-		tokenPayload.Roles = append(tokenPayload.Roles, role.GetCode())
-	}
-	tokenPayload.DataScope = trans.Ptr(s.mergeRolesDataScope(roles))
-
-	if tenantID == 0 && s.HasPlatformAdminRole(roles) {
-		tokenPayload.IsPlatformAdmin = trans.Ptr(true)
-		// 平台管理员赋予全局数据权限
-		tokenPayload.DataScope = trans.Ptr(userV1.Role_ALL)
-	} else if tenantID > 0 && s.HasTenantAdminRole(roles) {
-		tokenPayload.IsTenantAdmin = trans.Ptr(true)
-	}
-
-	// 选取最具体的 org unit id
-	orgUnits, err := s.orgUnitRepo.ListOrgUnitsByIds(ctx, orgUnitIDs)
-	if err != nil {
-		s.log.Errorf("list org units failed [%s]", err.Error())
-	} else {
-		if most := s.pickMostSpecificOrgUnit(orgUnits); most != nil {
-			tokenPayload.OrgUnitId = most.Id
+// containsPermission 检查权限代码列表中是否包含指定权限代码
+func containsPermission(perms []string, target string) bool {
+	for _, p := range perms {
+		if p == target {
+			return true
 		}
 	}
-
-	return nil
+	return false
 }
 
-// validateUserAuthority 只负责基于已经填充好的 tokenPayload 做权限校验
-func (s *AuthenticationService) validateUserAuthority(userID uint32, tokenPayload *authenticationV1.UserTokenPayload) error {
-	if !tokenPayload.GetIsPlatformAdmin() && !tokenPayload.GetIsTenantAdmin() {
-		s.log.Errorf("user [%d] has no admin authority", userID)
+// authorizeAndEnrichUserTokenPayload 授权并丰富用户令牌载荷
+func (s *AuthenticationService) authorizeAndEnrichUserTokenPayload(ctx context.Context, userID, tenantID uint32, tokenPayload *authenticationV1.UserTokenPayload) error {
+	var memberships []*userV1.Membership
+	if tenantID > 0 {
+		// 指定租户
+		membership, err := s.membershipRepo.GetMembershipByUserTenant(ctx, userID, tenantID)
+		if err != nil {
+			s.log.Errorf("get user [%d] membership for tenant [%d] failed [%s]", userID, tenantID, err.Error())
+			return authenticationV1.ErrorForbidden("insufficient authority")
+		}
+		memberships = []*userV1.Membership{membership}
+	} else {
+		var err error
+		// 获取所有活跃成员身份
+		memberships, err = s.membershipRepo.GetUserActiveMemberships(ctx, userID)
+		if err != nil || len(memberships) == 0 {
+			s.log.Errorf("list user [%d] active memberships failed [%v]", userID, err)
+			return authenticationV1.ErrorForbidden("insufficient authority")
+		}
+	}
+
+	hasBackendAccess := false
+	var validMemberships []*userV1.Membership
+	var validRoleIDs []uint32
+	for _, m := range memberships {
+		if m.GetTenantId() > 0 {
+			// 检查租户状态
+			tenant, _ := s.tenantRepo.Get(ctx, &userV1.GetTenantRequest{
+				QueryBy: &userV1.GetTenantRequest_Id{Id: m.GetTenantId()},
+			})
+			if tenant == nil || tenant.GetStatus() != userV1.Tenant_ON {
+				continue
+			}
+		}
+
+		// 获取角色 ID 列表
+		roleIDs, err := s.membershipRepo.GetRoleIDsByMembership(ctx, m.GetId())
+		if err != nil || len(roleIDs) == 0 {
+			s.log.Errorf("get roles by membership [%d] failed [%v]", m.GetId(), err)
+			continue
+		}
+
+		// 获取权限 ID 列表
+		permissionIDs, err := s.roleRepo.GetPermissionsByRoleIDs(ctx, roleIDs)
+		if err != nil || len(permissionIDs) == 0 {
+			s.log.Errorf("get permissions by role ids failed [%v]", err)
+			continue
+		}
+
+		// 获取权限代码列表
+		permissionCodes, _ := s.permissionRepo.GetPermissionCodesByIDs(ctx, permissionIDs)
+
+		s.log.Infof("user [%d] membership [%d] permission codes: %v", userID, m.GetId(), permissionCodes)
+
+		// 检查是否包含系统访问后台权限
+		if containsPermission(permissionCodes, accessSystemPermissionCode) {
+			hasBackendAccess = true
+			validMemberships = append(validMemberships, m)
+			validRoleIDs = append(validRoleIDs, roleIDs...)
+		}
+	}
+
+	// 授权决策
+	if !hasBackendAccess {
+		s.log.Errorf("user [%d] has no backend access permission", userID)
 		return authenticationV1.ErrorForbidden("insufficient authority")
 	}
-	if tokenPayload.GetDataScope() == userV1.Role_SELF {
-		s.log.Errorf("user [%d] has insufficient data scope", userID)
-		return authenticationV1.ErrorForbidden("insufficient data scope")
+
+	// 获取角色代码列表
+	roleCodes, err := s.roleRepo.ListRoleCodesByRoleIds(ctx, validRoleIDs)
+	if err != nil || len(roleCodes) == 0 {
+		s.log.Errorf("list role codes by role ids failed [%v]", err)
+		return authenticationV1.ErrorServiceUnavailable("获取用户角色失败")
 	}
+	tokenPayload.Roles = roleCodes
+
+	// 选取最具体的 org unit id
+	//orgUnits, err := s.orgUnitRepo.ListOrgUnitsByIds(ctx, orgUnitIDs)
+	//if err != nil {
+	//	s.log.Errorf("list org units failed [%s]", err.Error())
+	//} else {
+	//	if most := s.pickMostSpecificOrgUnit(orgUnits); most != nil {
+	//		tokenPayload.OrgUnitId = most.Id
+	//	}
+	//}
+
 	return nil
 }
 
 // resolveUserAuthority 解析用户权限信息
-func (s *AuthenticationService) resolveUserAuthority(ctx context.Context, userID, tenantID uint32, tokenPayload *authenticationV1.UserTokenPayload) error {
-	tokenPayload.DataScope = trans.Ptr(userV1.Role_SELF)
+func (s *AuthenticationService) resolveUserAuthority(ctx context.Context, user *userV1.User, tokenPayload *authenticationV1.UserTokenPayload) error {
+	if user.GetStatus() != userV1.User_NORMAL {
+		s.log.Errorf("user [%d] is [%v]", user.GetId(), user.GetStatus())
+		return authenticationV1.ErrorForbidden("user is disabled")
+	}
 
-	if err := s.enrichUserTokenPayload(ctx, userID, tenantID, tokenPayload); err != nil {
+	if err := s.authorizeAndEnrichUserTokenPayload(ctx, user.GetId(), user.GetTenantId(), tokenPayload); err != nil {
 		return err
 	}
-	return s.validateUserAuthority(userID, tokenPayload)
+
+	return nil
 }
 
 // doGrantTypePassword 处理授权类型 - 密码
@@ -314,7 +291,7 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	}
 
 	// 解析用户权限信息
-	err = s.resolveUserAuthority(ctx, user.GetId(), user.GetTenantId(), tokenPayload)
+	err = s.resolveUserAuthority(ctx, user, tokenPayload)
 	if err != nil {
 		s.log.Errorf("resolve user [%d] authority failed [%s]", user.GetId(), err.Error())
 		return nil, err
@@ -360,7 +337,7 @@ func (s *AuthenticationService) doGrantTypeRefreshToken(ctx context.Context, req
 	}
 
 	// 解析用户权限信息
-	err = s.resolveUserAuthority(ctx, user.GetId(), user.GetTenantId(), tokenPayload)
+	err = s.resolveUserAuthority(ctx, user, tokenPayload)
 	if err != nil {
 		s.log.Errorf("resolve user [%d] authority failed [%s]", user.GetId(), err.Error())
 		return nil, err

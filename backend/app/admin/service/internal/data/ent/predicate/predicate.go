@@ -63,8 +63,20 @@ type Permission func(*sql.Selector)
 // PermissionApiResource is the predicate function for permissionapiresource builders.
 type PermissionApiResource func(*sql.Selector)
 
+// PermissionAuditLog is the predicate function for permissionauditlog builders.
+type PermissionAuditLog func(*sql.Selector)
+
+// PermissionGroup is the predicate function for permissiongroup builders.
+type PermissionGroup func(*sql.Selector)
+
 // PermissionMenu is the predicate function for permissionmenu builders.
 type PermissionMenu func(*sql.Selector)
+
+// PermissionPolicy is the predicate function for permissionpolicy builders.
+type PermissionPolicy func(*sql.Selector)
+
+// PolicyEvaluationLog is the predicate function for policyevaluationlog builders.
+type PolicyEvaluationLog func(*sql.Selector)
 
 // Position is the predicate function for position builders.
 type Position func(*sql.Selector)
@@ -80,6 +92,9 @@ type RoleMenu func(*sql.Selector)
 
 // RolePermission is the predicate function for rolepermission builders.
 type RolePermission func(*sql.Selector)
+
+// RoleTemplate is the predicate function for roletemplate builders.
+type RoleTemplate func(*sql.Selector)
 
 // Task is the predicate function for task builders.
 type Task func(*sql.Selector)

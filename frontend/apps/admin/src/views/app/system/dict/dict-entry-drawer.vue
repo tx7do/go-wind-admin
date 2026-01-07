@@ -39,8 +39,6 @@ const [BaseForm, baseFormApi] = useVbenForm({
         placeholder: $t('ui.placeholder.select'),
         showSearch: true,
         allowClear: false,
-        labelField: 'typeName',
-        valueField: 'id',
         api: async () => {
           const result = await dictStore.listDictType(undefined, {
             is_enabled: 'true',

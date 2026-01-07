@@ -92,7 +92,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
         afterFetch: (data: { name: string; path: string }[]) => {
           return data.map((item: any) => ({
             label: item.nickname,
-            value: item.id.toString(),
+            value: item.id,
           }));
         },
         api: async () => {

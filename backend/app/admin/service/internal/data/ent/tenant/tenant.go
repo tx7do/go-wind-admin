@@ -33,6 +33,8 @@ const (
 	FieldCode = "code"
 	// FieldLogoURL holds the string denoting the logo_url field in the database.
 	FieldLogoURL = "logo_url"
+	// FieldDomain holds the string denoting the domain field in the database.
+	FieldDomain = "domain"
 	// FieldIndustry holds the string denoting the industry field in the database.
 	FieldIndustry = "industry"
 	// FieldAdminUserID holds the string denoting the admin_user_id field in the database.
@@ -51,10 +53,6 @@ const (
 	FieldSubscriptionPlan = "subscription_plan"
 	// FieldExpiredAt holds the string denoting the expired_at field in the database.
 	FieldExpiredAt = "expired_at"
-	// FieldLastLoginAt holds the string denoting the last_login_at field in the database.
-	FieldLastLoginAt = "last_login_at"
-	// FieldLastLoginIP holds the string denoting the last_login_ip field in the database.
-	FieldLastLoginIP = "last_login_ip"
 	// Table holds the table name of the tenant in the database.
 	Table = "sys_tenants"
 )
@@ -72,6 +70,7 @@ var Columns = []string{
 	FieldName,
 	FieldCode,
 	FieldLogoURL,
+	FieldDomain,
 	FieldIndustry,
 	FieldAdminUserID,
 	FieldStatus,
@@ -81,8 +80,6 @@ var Columns = []string{
 	FieldUnsubscribeAt,
 	FieldSubscriptionPlan,
 	FieldExpiredAt,
-	FieldLastLoginAt,
-	FieldLastLoginIP,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -243,6 +240,11 @@ func ByLogoURL(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLogoURL, opts...).ToFunc()
 }
 
+// ByDomain orders the results by the domain field.
+func ByDomain(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDomain, opts...).ToFunc()
+}
+
 // ByIndustry orders the results by the industry field.
 func ByIndustry(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIndustry, opts...).ToFunc()
@@ -286,14 +288,4 @@ func BySubscriptionPlan(opts ...sql.OrderTermOption) OrderOption {
 // ByExpiredAt orders the results by the expired_at field.
 func ByExpiredAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldExpiredAt, opts...).ToFunc()
-}
-
-// ByLastLoginAt orders the results by the last_login_at field.
-func ByLastLoginAt(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLastLoginAt, opts...).ToFunc()
-}
-
-// ByLastLoginIP orders the results by the last_login_ip field.
-func ByLastLoginIP(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLastLoginIP, opts...).ToFunc()
 }

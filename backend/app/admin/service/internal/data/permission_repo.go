@@ -20,16 +20,15 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 
-	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
 type PermissionRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper          *mapper.CopierMapper[adminV1.Permission, ent.Permission]
-	typeConverter   *mapper.EnumTypeConverter[adminV1.Permission_Type, permission.Type]
-	statusConverter *mapper.EnumTypeConverter[adminV1.Permission_Status, permission.Status]
+	mapper          *mapper.CopierMapper[permissionV1.Permission, ent.Permission]
+	statusConverter *mapper.EnumTypeConverter[permissionV1.Permission_Status, permission.Status]
 
 	repository *entCrud.Repository[
 		ent.PermissionQuery, ent.PermissionSelect,
@@ -37,7 +36,7 @@ type PermissionRepo struct {
 		ent.PermissionUpdate, ent.PermissionUpdateOne,
 		ent.PermissionDelete,
 		predicate.Permission,
-		adminV1.Permission, ent.Permission,
+		permissionV1.Permission, ent.Permission,
 	]
 
 	permissionApiResourceRepo *PermissionApiResourceRepo
@@ -53,9 +52,8 @@ func NewPermissionRepo(
 	repo := &PermissionRepo{
 		log:                       ctx.NewLoggerHelper("permission/repo/admin-service"),
 		entClient:                 entClient,
-		mapper:                    mapper.NewCopierMapper[adminV1.Permission, ent.Permission](),
-		typeConverter:             mapper.NewEnumTypeConverter[adminV1.Permission_Type, permission.Type](adminV1.Permission_Type_name, adminV1.Permission_Type_value),
-		statusConverter:           mapper.NewEnumTypeConverter[adminV1.Permission_Status, permission.Status](adminV1.Permission_Status_name, adminV1.Permission_Status_value),
+		mapper:                    mapper.NewCopierMapper[permissionV1.Permission, ent.Permission](),
+		statusConverter:           mapper.NewEnumTypeConverter[permissionV1.Permission_Status, permission.Status](permissionV1.Permission_Status_name, permissionV1.Permission_Status_value),
 		permissionApiResourceRepo: permissionApiResourceRepo,
 		permissionMenuRepo:        permissionMenuRepo,
 	}
@@ -72,13 +70,12 @@ func (r *PermissionRepo) init() {
 		ent.PermissionUpdate, ent.PermissionUpdateOne,
 		ent.PermissionDelete,
 		predicate.Permission,
-		adminV1.Permission, ent.Permission,
+		permissionV1.Permission, ent.Permission,
 	](r.mapper)
 
 	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
 	r.mapper.AppendConverters(copierutil.NewTimeTimestamppbConverterPair())
 
-	r.mapper.AppendConverters(r.typeConverter.NewConverterPair())
 	r.mapper.AppendConverters(r.statusConverter.NewConverterPair())
 }
 
@@ -91,32 +88,15 @@ func (r *PermissionRepo) Count(ctx context.Context, whereCond []func(s *sql.Sele
 	count, err := builder.Count(ctx)
 	if err != nil {
 		r.log.Errorf("query count failed: %s", err.Error())
-		return 0, adminV1.ErrorInternalServerError("query count failed")
+		return 0, permissionV1.ErrorInternalServerError("query count failed")
 	}
 
 	return count, nil
 }
 
-func isApiPermission(typ adminV1.Permission_Type) bool {
-	if typ == adminV1.Permission_API {
-		return true
-	}
-	return false
-}
-
-func isMenuPermission(typ adminV1.Permission_Type) bool {
-	if typ == adminV1.Permission_CATALOG ||
-		typ == adminV1.Permission_MENU ||
-		typ == adminV1.Permission_BUTTON ||
-		typ == adminV1.Permission_PAGE {
-		return true
-	}
-	return false
-}
-
-func (r *PermissionRepo) List(ctx context.Context, req *pagination.PagingRequest) (*adminV1.ListPermissionResponse, error) {
+func (r *PermissionRepo) List(ctx context.Context, req *pagination.PagingRequest) (*permissionV1.ListPermissionResponse, error) {
 	if req == nil {
-		return nil, adminV1.ErrorBadRequest("invalid parameter")
+		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Permission.Query()
@@ -126,49 +106,112 @@ func (r *PermissionRepo) List(ctx context.Context, req *pagination.PagingRequest
 		return nil, err
 	}
 	if ret == nil {
-		return &adminV1.ListPermissionResponse{Total: 0, Items: nil}, nil
+		return &permissionV1.ListPermissionResponse{Total: 0, Items: nil}, nil
 	}
 
 	hasMenuID := hasPath("menu_id", req.GetFieldMask())
 	hasApiResourceID := hasPath("api_resource_id", req.GetFieldMask())
 
 	for _, dto := range ret.Items {
-		if hasMenuID && isMenuPermission(dto.GetType()) {
-			menuID, err := r.permissionMenuRepo.Get(ctx, dto.GetTenantId(), dto.GetId())
+		if hasMenuID {
+			menuIDs, err := r.permissionMenuRepo.ListMenuIDs(ctx, []uint32{dto.GetId()})
 			if err != nil {
 				return nil, err
 			}
-			dto.Bind = &adminV1.Permission_MenuId{MenuId: menuID}
+			dto.MenuIds = menuIDs
 		}
-		if hasApiResourceID && isApiPermission(dto.GetType()) {
-			apiResourceID, err := r.permissionApiResourceRepo.Get(ctx, dto.GetTenantId(), dto.GetId())
+		if hasApiResourceID {
+			apiResourceIDs, err := r.permissionApiResourceRepo.ListApiIDs(ctx, []uint32{dto.GetId()})
 			if err != nil {
 				return nil, err
 			}
-			dto.Bind = &adminV1.Permission_ApiResourceId{ApiResourceId: apiResourceID}
+			dto.ApiResourceIds = apiResourceIDs
 		}
 	}
 
-	return &adminV1.ListPermissionResponse{
+	return &permissionV1.ListPermissionResponse{
 		Total: ret.Total,
 		Items: ret.Items,
 	}, nil
 }
 
+// GetPermissionCodesByIDs 通过权限ID列表获取权限代码列表
+func (r *PermissionRepo) GetPermissionCodesByIDs(ctx context.Context, ids []uint32) ([]string, error) {
+	q := r.entClient.Client().Permission.Query().
+		Where(
+			permission.IDIn(ids...),
+		)
+
+	codes, err := q.
+		Select(permission.FieldCode).
+		Strings(ctx)
+	if err != nil {
+		r.log.Errorf("query permission codes by ids failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("query permission codes by ids failed")
+	}
+	return codes, nil
+}
+
+// GetPermissionIDsByCodes 通过权限代码列表获取权限ID列表
+func (r *PermissionRepo) GetPermissionIDsByCodes(ctx context.Context, tenantID uint32, codes []string) ([]uint32, error) {
+	q := r.entClient.Client().Permission.Query().
+		Where(
+			permission.TenantIDEQ(tenantID),
+			permission.CodeIn(codes...),
+		)
+
+	intIDs, err := q.
+		Select(permission.FieldID).
+		Ints(ctx)
+	if err != nil {
+		r.log.Errorf("query permission ids by codes failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("query permission ids by codes failed")
+	}
+	ids := make([]uint32, len(intIDs))
+	for i, v := range intIDs {
+		ids[i] = uint32(v)
+	}
+	return ids, nil
+}
+
+// GetPermissionIDsByCodesWithTx 通过权限代码列表获取权限ID列表
+func (r *PermissionRepo) GetPermissionIDsByCodesWithTx(ctx context.Context, tx *ent.Tx, tenantID uint32, codes []string) ([]uint32, error) {
+	q := tx.Permission.Query().
+		Where(
+			permission.TenantIDEQ(tenantID),
+			permission.CodeIn(codes...),
+		)
+
+	intIDs, err := q.
+		Select(permission.FieldID).
+		Ints(ctx)
+	if err != nil {
+		r.log.Errorf("query permission ids by codes failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("query permission ids by codes failed")
+	}
+	ids := make([]uint32, len(intIDs))
+	for i, v := range intIDs {
+		ids[i] = uint32(v)
+	}
+	return ids, nil
+}
+
+// IsExist 检查 Permission 是否存在
 func (r *PermissionRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 	exist, err := r.entClient.Client().Permission.Query().
 		Where(permission.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
 		r.log.Errorf("query exist failed: %s", err.Error())
-		return false, adminV1.ErrorInternalServerError("query exist failed")
+		return false, permissionV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
 }
 
-func (r *PermissionRepo) Get(ctx context.Context, req *adminV1.GetPermissionRequest) (*adminV1.Permission, error) {
+// Get 获取 Permission
+func (r *PermissionRepo) Get(ctx context.Context, req *permissionV1.GetPermissionRequest) (*permissionV1.Permission, error) {
 	if req == nil {
-		return nil, adminV1.ErrorBadRequest("invalid parameter")
+		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Permission.Query()
@@ -176,9 +219,9 @@ func (r *PermissionRepo) Get(ctx context.Context, req *adminV1.GetPermissionRequ
 	var whereCond []func(s *sql.Selector)
 	switch req.QueryBy.(type) {
 	default:
-	case *adminV1.GetPermissionRequest_Id:
+	case *permissionV1.GetPermissionRequest_Id:
 		whereCond = append(whereCond, permission.IDEQ(req.GetId()))
-	case *adminV1.GetPermissionRequest_Code:
+	case *permissionV1.GetPermissionRequest_Code:
 		whereCond = append(whereCond, permission.CodeEQ(req.GetCode()))
 	}
 
@@ -187,19 +230,19 @@ func (r *PermissionRepo) Get(ctx context.Context, req *adminV1.GetPermissionRequ
 		return nil, err
 	}
 
-	if hasPath("api_resource_id", req.GetViewMask()) && isApiPermission(dto.GetType()) {
-		apiResourceID, err := r.permissionApiResourceRepo.Get(ctx, dto.GetTenantId(), dto.GetId())
+	if hasPath("api_resource_id", req.GetViewMask()) {
+		apiResourceIDs, err := r.permissionApiResourceRepo.ListApiIDs(ctx, []uint32{dto.GetId()})
 		if err != nil {
 			return nil, err
 		}
-		dto.Bind = &adminV1.Permission_ApiResourceId{ApiResourceId: apiResourceID}
+		dto.ApiResourceIds = apiResourceIDs
 	}
-	if hasPath("menu_id", req.GetViewMask()) && isMenuPermission(dto.GetType()) {
-		menuID, err := r.permissionMenuRepo.Get(ctx, dto.GetTenantId(), dto.GetId())
+	if hasPath("menu_id", req.GetViewMask()) {
+		menuIDs, err := r.permissionMenuRepo.ListMenuIDs(ctx, []uint32{dto.GetId()})
 		if err != nil {
 			return nil, err
 		}
-		dto.Bind = &adminV1.Permission_MenuId{MenuId: menuID}
+		dto.MenuIds = menuIDs
 	}
 
 	return dto, err
@@ -218,9 +261,9 @@ func hasPath(path string, fieldMask *fieldmaskpb.FieldMask) bool {
 }
 
 // Create 创建 Permission
-func (r *PermissionRepo) Create(ctx context.Context, req *adminV1.CreatePermissionRequest) error {
+func (r *PermissionRepo) Create(ctx context.Context, req *permissionV1.CreatePermissionRequest) error {
 	if req == nil || req.Data == nil {
-		return adminV1.ErrorBadRequest("invalid parameter")
+		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.newPermissionCreate(req.Data)
@@ -229,16 +272,16 @@ func (r *PermissionRepo) Create(ctx context.Context, req *adminV1.CreatePermissi
 	var err error
 	if entity, err = builder.Save(ctx); err != nil {
 		r.log.Errorf("insert one data failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("insert data failed")
+		return permissionV1.ErrorInternalServerError("insert data failed")
 	}
 
-	switch req.Data.Bind.(type) {
-	case *adminV1.Permission_ApiResourceId:
-		if err = r.permissionApiResourceRepo.AssignApi(ctx, req.Data.GetTenantId(), entity.ID, req.Data.GetApiResourceId()); err != nil {
+	if len(req.Data.ApiResourceIds) > 0 {
+		if err = r.permissionApiResourceRepo.AssignApis(ctx, req.Data.GetTenantId(), entity.ID, req.Data.GetApiResourceIds()); err != nil {
 			return err
 		}
-	case *adminV1.Permission_MenuId:
-		if err = r.permissionMenuRepo.AssignMenu(ctx, req.Data.GetTenantId(), entity.ID, req.Data.GetMenuId()); err != nil {
+	}
+	if len(req.Data.MenuIds) > 0 {
+		if err = r.permissionMenuRepo.AssignMenus(ctx, req.Data.GetTenantId(), entity.ID, req.Data.GetMenuIds()); err != nil {
 			return err
 		}
 	}
@@ -247,9 +290,9 @@ func (r *PermissionRepo) Create(ctx context.Context, req *adminV1.CreatePermissi
 }
 
 // BatchCreate 批量创建 Permission
-func (r *PermissionRepo) BatchCreate(ctx context.Context, tenantID uint32, permissions []*adminV1.Permission) (err error) {
+func (r *PermissionRepo) BatchCreate(ctx context.Context, tenantID uint32, permissions []*permissionV1.Permission) (err error) {
 	if len(permissions) == 0 {
-		return adminV1.ErrorBadRequest("invalid parameter")
+		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	var permissionCreates []*ent.PermissionCreate
@@ -263,62 +306,32 @@ func (r *PermissionRepo) BatchCreate(ctx context.Context, tenantID uint32, permi
 	var entities []*ent.Permission
 	if entities, err = builder.Save(ctx); err != nil {
 		r.log.Errorf("batch insert data failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("batch insert data failed")
+		return permissionV1.ErrorInternalServerError("batch insert data failed")
 	}
 
-	apis := make(map[uint32]uint32)
-	menus := make(map[uint32]uint32)
 	for i, perm := range permissions {
-		switch perm.Bind.(type) {
-		case *adminV1.Permission_ApiResourceId:
-			apis[entities[i].ID] = perm.GetApiResourceId()
-		case *adminV1.Permission_MenuId:
-			menus[entities[i].ID] = perm.GetMenuId()
-		}
-	}
+		entity := entities[i]
 
-	var tx *ent.Tx
-	tx, err = r.entClient.Client().Tx(ctx)
-	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("start transaction failed")
-	}
-	defer func() {
-		if err != nil {
-			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
-			}
-			return
+		if err = r.permissionApiResourceRepo.AssignApis(ctx, tenantID, entity.ID, perm.GetApiResourceIds()); err != nil {
+			return err
 		}
-		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = adminV1.ErrorInternalServerError("transaction commit failed")
+
+		if err = r.permissionMenuRepo.AssignMenus(ctx, tenantID, entity.ID, perm.GetMenuIds()); err != nil {
+			return err
 		}
-	}()
-
-	if err = r.permissionApiResourceRepo.AssignApis(ctx, tx, tenantID, apis); err != nil {
-		return err
-	}
-
-	if err = r.permissionMenuRepo.AssignMenus(ctx, tx, tenantID, menus); err != nil {
-		return err
 	}
 
 	return nil
 }
 
 // newPermissionCreate 创建 Permission Create 构造器
-func (r *PermissionRepo) newPermissionCreate(permission *adminV1.Permission) *ent.PermissionCreate {
+func (r *PermissionRepo) newPermissionCreate(permission *permissionV1.Permission) *ent.PermissionCreate {
 	builder := r.entClient.Client().Permission.Create().
-		SetNillableCode(permission.Code).
 		SetName(permission.GetName()).
-		SetNillablePath(permission.Path).
-		SetNillableModule(permission.Module).
-		SetNillableSortOrder(permission.SortOrder).
-		SetNillableRemark(permission.Remark).
-		SetNillableParentID(permission.ParentId).
-		SetNillableType(r.typeConverter.ToEntity(permission.Type)).
+		SetCode(permission.GetCode()).
 		SetNillableStatus(r.statusConverter.ToEntity(permission.Status)).
+		SetNillableGroupID(permission.GroupId).
+		SetNillableTenantID(permission.TenantId).
 		SetNillableCreatedBy(permission.CreatedBy).
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(permission.CreatedAt))
 
@@ -337,9 +350,9 @@ func (r *PermissionRepo) newPermissionCreate(permission *adminV1.Permission) *en
 }
 
 // Update 更新 Permission
-func (r *PermissionRepo) Update(ctx context.Context, req *adminV1.UpdatePermissionRequest) error {
+func (r *PermissionRepo) Update(ctx context.Context, tenantID uint32, req *permissionV1.UpdatePermissionRequest) error {
 	if req == nil || req.Data == nil {
-		return adminV1.ErrorBadRequest("invalid parameter")
+		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	// 如果不存在则创建
@@ -349,7 +362,7 @@ func (r *PermissionRepo) Update(ctx context.Context, req *adminV1.UpdatePermissi
 			return err
 		}
 		if !exist {
-			createReq := &adminV1.CreatePermissionRequest{Data: req.Data}
+			createReq := &permissionV1.CreatePermissionRequest{Data: req.Data}
 			createReq.Data.CreatedBy = createReq.Data.UpdatedBy
 			createReq.Data.UpdatedBy = nil
 			return r.Create(ctx, createReq)
@@ -358,16 +371,11 @@ func (r *PermissionRepo) Update(ctx context.Context, req *adminV1.UpdatePermissi
 
 	builder := r.entClient.Client().Debug().Permission.UpdateOneID(req.GetId())
 	perm, err := r.repository.UpdateOne(ctx, builder, req.Data, req.GetUpdateMask(),
-		func(dto *adminV1.Permission) {
+		func(dto *permissionV1.Permission) {
 			builder.
-				SetNillableCode(req.Data.Code).
 				SetNillableName(req.Data.Name).
-				SetNillableModule(req.Data.Module).
-				SetNillablePath(req.Data.Path).
-				SetNillableSortOrder(req.Data.SortOrder).
-				SetNillableRemark(req.Data.Remark).
-				SetNillableParentID(req.Data.ParentId).
-				SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
+				SetNillableCode(req.Data.Code).
+				SetNillableGroupID(req.Data.GroupId).
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
@@ -384,115 +392,21 @@ func (r *PermissionRepo) Update(ctx context.Context, req *adminV1.UpdatePermissi
 		return err
 	}
 
-	switch req.Data.Bind.(type) {
-	case *adminV1.Permission_ApiResourceId:
-		if err = r.permissionApiResourceRepo.AssignApi(ctx, req.Data.GetTenantId(), perm.GetId(), req.Data.GetApiResourceId()); err != nil {
-			return err
-		}
-		if err = r.permissionMenuRepo.Delete(ctx, perm.GetId()); err != nil {
-			return err
-		}
-	case *adminV1.Permission_MenuId:
-		if err = r.permissionMenuRepo.AssignMenu(ctx, req.Data.GetTenantId(), perm.GetId(), req.Data.GetMenuId()); err != nil {
-			return err
-		}
-		if err = r.permissionApiResourceRepo.Delete(ctx, perm.GetId()); err != nil {
-			return err
-		}
-	default:
-		if err = r.permissionMenuRepo.Delete(ctx, perm.GetId()); err != nil {
-			return err
-		}
-		if err = r.permissionApiResourceRepo.Delete(ctx, perm.GetId()); err != nil {
-			return err
-		}
+	if err = r.permissionApiResourceRepo.AssignApis(ctx, tenantID, perm.GetId(), req.Data.GetApiResourceIds()); err != nil {
+		return err
 	}
 
-	return nil
-}
-
-// UpdateParentIDs 更新 Permission ParentID
-func (r *PermissionRepo) UpdateParentIDs(ctx context.Context, parentIDs map[uint32]uint32) (err error) {
-	if len(parentIDs) == 0 {
-		return nil
-	}
-
-	var tx *ent.Tx
-	tx, err = r.entClient.Client().Tx(ctx)
-	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("start transaction failed")
-	}
-	defer func() {
-		if err != nil {
-			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
-			}
-			return
-		}
-		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = adminV1.ErrorInternalServerError("transaction commit failed")
-		}
-	}()
-
-	for permID, parentID := range parentIDs {
-		builder := tx.Permission.Update().
-			SetParentID(parentID).
-			Where(permission.IDEQ(permID))
-
-		if err = builder.Exec(ctx); err != nil {
-			r.log.Errorf("update permission parent_id failed: %s", err.Error())
-			return adminV1.ErrorInternalServerError("update permission parent_id failed")
-		}
-	}
-
-	return nil
-}
-
-// UpdatePaths 更新 Permission Path
-func (r *PermissionRepo) UpdatePaths(ctx context.Context, paths map[uint32]string) (err error) {
-	if len(paths) == 0 {
-		return nil
-	}
-
-	var tx *ent.Tx
-	tx, err = r.entClient.Client().Tx(ctx)
-	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("start transaction failed")
-	}
-	defer func() {
-		if err != nil {
-			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
-			}
-			return
-		}
-		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = adminV1.ErrorInternalServerError("transaction commit failed")
-		}
-	}()
-
-	for permID, path := range paths {
-		builder := tx.Permission.Update().
-			SetPath(path).
-			Where(permission.IDEQ(permID))
-
-		if err = builder.Exec(ctx); err != nil {
-			r.log.Errorf("update permission path failed: %s", err.Error())
-			return adminV1.ErrorInternalServerError("update permission path failed")
-		}
+	if err = r.permissionMenuRepo.AssignMenus(ctx, tenantID, perm.GetId(), req.Data.GetMenuIds()); err != nil {
+		return err
 	}
 
 	return nil
 }
 
 // Delete 删除 Permission
-func (r *PermissionRepo) Delete(ctx context.Context, req *adminV1.DeletePermissionRequest) error {
+func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePermissionRequest) error {
 	if req == nil {
-		return adminV1.ErrorBadRequest("invalid parameter")
+		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Permission.Delete()
@@ -502,7 +416,7 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *adminV1.DeletePermissi
 	})
 	if err != nil {
 		r.log.Errorf("delete permission failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("delete permission failed")
+		return permissionV1.ErrorInternalServerError("delete permission failed")
 	}
 
 	if err = r.permissionApiResourceRepo.Delete(ctx, req.GetId()); err != nil {
@@ -520,7 +434,7 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *adminV1.DeletePermissi
 func (r *PermissionRepo) Truncate(ctx context.Context) error {
 	if _, err := r.entClient.Client().Permission.Delete().Exec(ctx); err != nil {
 		r.log.Errorf("failed to truncate permission table: %s", err.Error())
-		return adminV1.ErrorInternalServerError("truncate failed")
+		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 
 	if err := r.permissionApiResourceRepo.Truncate(ctx); err != nil {
@@ -534,83 +448,53 @@ func (r *PermissionRepo) Truncate(ctx context.Context) error {
 	return nil
 }
 
+// CleanPermissionsByCodes 清理指定权限代码的权限
+func (r *PermissionRepo) CleanPermissionsByCodes(ctx context.Context, codes []string) error {
+	builder := r.entClient.Client().Permission.Delete().
+		Where(
+			permission.CodeIn(codes...),
+		)
+
+	_, err := builder.Exec(ctx)
+	if err != nil {
+		r.log.Errorf("delete permissions by codes failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("delete permissions by codes failed")
+	}
+
+	return nil
+}
+
 // CleanApiPermissions 清理API相关权限
 func (r *PermissionRepo) CleanApiPermissions(ctx context.Context) error {
-	if _, err := r.entClient.Client().Permission.Delete().
-		Where(permission.TypeEQ(permission.TypeApi)).
-		Exec(ctx); err != nil {
-		r.log.Errorf("failed to truncate permission table: %s", err.Error())
-		return adminV1.ErrorInternalServerError("truncate failed")
-	}
-	return nil
+	return r.permissionApiResourceRepo.Truncate(ctx)
 }
 
 // CleanDataPermissions 清理数据权限
 func (r *PermissionRepo) CleanDataPermissions(ctx context.Context) error {
-	if _, err := r.entClient.Client().Permission.Delete().
-		Where(permission.TypeEQ(permission.TypeData)).
-		Exec(ctx); err != nil {
-		r.log.Errorf("failed to truncate permission table: %s", err.Error())
-		return adminV1.ErrorInternalServerError("truncate failed")
-	}
 	return nil
 }
 
 // CleanMenuPermissions 清理菜单相关权限
 func (r *PermissionRepo) CleanMenuPermissions(ctx context.Context) error {
-	if _, err := r.entClient.Client().Permission.Delete().
-		Where(permission.TypeIn(
-			permission.TypeCatalog,
-			permission.TypeMenu,
-			permission.TypeButton,
-			permission.TypePage,
-		)).
-		Exec(ctx); err != nil {
-		r.log.Errorf("failed to truncate permission table: %s", err.Error())
-		return adminV1.ErrorInternalServerError("truncate failed")
-	}
-	return nil
+	return r.permissionMenuRepo.Truncate(ctx)
 }
 
-func (r *PermissionRepo) ListMenuPermissions(ctx context.Context) ([]*adminV1.Permission, error) {
-	entities, err := r.entClient.Client().Permission.Query().
-		Where(permission.TypeIn(
-			permission.TypeCatalog,
-			permission.TypeMenu,
-			permission.TypeButton,
-			permission.TypePage,
-		)).
-		All(ctx)
+// ListApiIDsByPermissionIDs 列出权限关联的API资源ID列表
+func (r *PermissionRepo) ListApiIDsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {
+	apiIDs, err := r.permissionApiResourceRepo.ListApiIDs(ctx, permissionIDs)
 	if err != nil {
-		r.log.Errorf("query menu permissions failed: %s", err.Error())
-		return nil, adminV1.ErrorInternalServerError("query menu permissions failed")
+		return nil, err
 	}
 
-	var dtos []*adminV1.Permission
-	for _, entity := range entities {
-		dto := r.mapper.ToDTO(entity)
-		dtos = append(dtos, dto)
-	}
-
-	return dtos, nil
+	return apiIDs, nil
 }
 
-func (r *PermissionRepo) ListApiPermissions(ctx context.Context) ([]*adminV1.Permission, error) {
-	entities, err := r.entClient.Client().Permission.Query().
-		Where(permission.TypeIn(
-			permission.TypeApi,
-		)).
-		All(ctx)
+// ListMenuIDsByPermissionIDs 列出权限关联的菜单ID列表
+func (r *PermissionRepo) ListMenuIDsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {
+	apiIDs, err := r.permissionMenuRepo.ListMenuIDs(ctx, permissionIDs)
 	if err != nil {
-		r.log.Errorf("query api permissions failed: %s", err.Error())
-		return nil, adminV1.ErrorInternalServerError("query api permissions failed")
+		return nil, err
 	}
 
-	var dtos []*adminV1.Permission
-	for _, entity := range entities {
-		dto := r.mapper.ToDTO(entity)
-		dtos = append(dtos, dto)
-	}
-
-	return dtos, nil
+	return apiIDs, nil
 }

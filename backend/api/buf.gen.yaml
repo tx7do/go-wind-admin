@@ -16,8 +16,37 @@ managed:
     - module: 'buf.build/menta2k-org/redact'
 
   override:
+    # global go_package_prefix option
+    # 如果没有在各目录下单独配置go_package，则会使用该前缀。
     - file_option: go_package_prefix
       value: go-wind-admin/api/gen/go
+
+    # per-directory go_package options
+    # value第一部分是生成代码的包路径，第二部分是go包名。
+    - file_option: go_package
+      path: admin/service/v1
+      value: go-wind-admin/api/gen/go/admin/service/v1;adminpb
+    - file_option: go_package
+      path: authentication/service/v1
+      value: go-wind-admin/api/gen/go/authentication/service/v1;authenticationpb
+    - file_option: go_package
+      path: dict/service/v1
+      value: go-wind-admin/api/gen/go/dict/service/v1;dictpb
+    - file_option: go_package
+      path: file/service/v1
+      value: go-wind-admin/api/gen/go/file/service/v1;filepb
+    - file_option: go_package
+      path: internal_message/service/v1
+      value: go-wind-admin/api/gen/go/internal_message/service/v1;internalmessagepb
+    - file_option: go_package
+      path: permission/service/v1
+      value: go-wind-admin/api/gen/go/permission/service/v1;permissionpb
+    - file_option: go_package
+      path: user/service/v1
+      value: go-wind-admin/api/gen/go/user/service/v1;userpb
+    - file_option: go_package
+      path: user_profile/service/v1
+      value: go-wind-admin/api/gen/go/user_profile/service/v1;userprofilepb
 
 plugins:
   # generate go code

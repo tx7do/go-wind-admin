@@ -113,10 +113,6 @@ const gridOptions: VxeGridProps<Tenant> = {
   rowConfig: {
     isHover: true,
   },
-  treeConfig: {
-    childrenField: 'children',
-    rowField: 'id',
-  },
 
   proxyConfig: {
     ajax: {

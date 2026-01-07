@@ -410,23 +410,43 @@ func (_u *UserUpdate) ClearLastLoginIP() *UserUpdate {
 	return _u
 }
 
-// SetIsBanned sets the "is_banned" field.
-func (_u *UserUpdate) SetIsBanned(v bool) *UserUpdate {
-	_u.mutation.SetIsBanned(v)
+// SetLockedUntil sets the "locked_until" field.
+func (_u *UserUpdate) SetLockedUntil(v time.Time) *UserUpdate {
+	_u.mutation.SetLockedUntil(v)
 	return _u
 }
 
-// SetNillableIsBanned sets the "is_banned" field if the given value is not nil.
-func (_u *UserUpdate) SetNillableIsBanned(v *bool) *UserUpdate {
+// SetNillableLockedUntil sets the "locked_until" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableLockedUntil(v *time.Time) *UserUpdate {
 	if v != nil {
-		_u.SetIsBanned(*v)
+		_u.SetLockedUntil(*v)
 	}
 	return _u
 }
 
-// ClearIsBanned clears the value of the "is_banned" field.
-func (_u *UserUpdate) ClearIsBanned() *UserUpdate {
-	_u.mutation.ClearIsBanned()
+// ClearLockedUntil clears the value of the "locked_until" field.
+func (_u *UserUpdate) ClearLockedUntil() *UserUpdate {
+	_u.mutation.ClearLockedUntil()
+	return _u
+}
+
+// SetStatus sets the "status" field.
+func (_u *UserUpdate) SetStatus(v user.Status) *UserUpdate {
+	_u.mutation.SetStatus(v)
+	return _u
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_u *UserUpdate) SetNillableStatus(v *user.Status) *UserUpdate {
+	if v != nil {
+		_u.SetStatus(*v)
+	}
+	return _u
+}
+
+// ClearStatus clears the value of the "status" field.
+func (_u *UserUpdate) ClearStatus() *UserUpdate {
+	_u.mutation.ClearStatus()
 	return _u
 }
 
@@ -487,6 +507,11 @@ func (_u *UserUpdate) check() error {
 	if v, ok := _u.mutation.Gender(); ok {
 		if err := user.GenderValidator(v); err != nil {
 			return &ValidationError{Name: "gender", err: fmt.Errorf(`ent: validator failed for field "User.gender": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Status(); ok {
+		if err := user.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "User.status": %w`, err)}
 		}
 	}
 	return nil
@@ -636,11 +661,17 @@ func (_u *UserUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if _u.mutation.LastLoginIPCleared() {
 		_spec.ClearField(user.FieldLastLoginIP, field.TypeString)
 	}
-	if value, ok := _u.mutation.IsBanned(); ok {
-		_spec.SetField(user.FieldIsBanned, field.TypeBool, value)
+	if value, ok := _u.mutation.LockedUntil(); ok {
+		_spec.SetField(user.FieldLockedUntil, field.TypeTime, value)
 	}
-	if _u.mutation.IsBannedCleared() {
-		_spec.ClearField(user.FieldIsBanned, field.TypeBool)
+	if _u.mutation.LockedUntilCleared() {
+		_spec.ClearField(user.FieldLockedUntil, field.TypeTime)
+	}
+	if value, ok := _u.mutation.Status(); ok {
+		_spec.SetField(user.FieldStatus, field.TypeEnum, value)
+	}
+	if _u.mutation.StatusCleared() {
+		_spec.ClearField(user.FieldStatus, field.TypeEnum)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -1045,23 +1076,43 @@ func (_u *UserUpdateOne) ClearLastLoginIP() *UserUpdateOne {
 	return _u
 }
 
-// SetIsBanned sets the "is_banned" field.
-func (_u *UserUpdateOne) SetIsBanned(v bool) *UserUpdateOne {
-	_u.mutation.SetIsBanned(v)
+// SetLockedUntil sets the "locked_until" field.
+func (_u *UserUpdateOne) SetLockedUntil(v time.Time) *UserUpdateOne {
+	_u.mutation.SetLockedUntil(v)
 	return _u
 }
 
-// SetNillableIsBanned sets the "is_banned" field if the given value is not nil.
-func (_u *UserUpdateOne) SetNillableIsBanned(v *bool) *UserUpdateOne {
+// SetNillableLockedUntil sets the "locked_until" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableLockedUntil(v *time.Time) *UserUpdateOne {
 	if v != nil {
-		_u.SetIsBanned(*v)
+		_u.SetLockedUntil(*v)
 	}
 	return _u
 }
 
-// ClearIsBanned clears the value of the "is_banned" field.
-func (_u *UserUpdateOne) ClearIsBanned() *UserUpdateOne {
-	_u.mutation.ClearIsBanned()
+// ClearLockedUntil clears the value of the "locked_until" field.
+func (_u *UserUpdateOne) ClearLockedUntil() *UserUpdateOne {
+	_u.mutation.ClearLockedUntil()
+	return _u
+}
+
+// SetStatus sets the "status" field.
+func (_u *UserUpdateOne) SetStatus(v user.Status) *UserUpdateOne {
+	_u.mutation.SetStatus(v)
+	return _u
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_u *UserUpdateOne) SetNillableStatus(v *user.Status) *UserUpdateOne {
+	if v != nil {
+		_u.SetStatus(*v)
+	}
+	return _u
+}
+
+// ClearStatus clears the value of the "status" field.
+func (_u *UserUpdateOne) ClearStatus() *UserUpdateOne {
+	_u.mutation.ClearStatus()
 	return _u
 }
 
@@ -1135,6 +1186,11 @@ func (_u *UserUpdateOne) check() error {
 	if v, ok := _u.mutation.Gender(); ok {
 		if err := user.GenderValidator(v); err != nil {
 			return &ValidationError{Name: "gender", err: fmt.Errorf(`ent: validator failed for field "User.gender": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Status(); ok {
+		if err := user.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "User.status": %w`, err)}
 		}
 	}
 	return nil
@@ -1301,11 +1357,17 @@ func (_u *UserUpdateOne) sqlSave(ctx context.Context) (_node *User, err error) {
 	if _u.mutation.LastLoginIPCleared() {
 		_spec.ClearField(user.FieldLastLoginIP, field.TypeString)
 	}
-	if value, ok := _u.mutation.IsBanned(); ok {
-		_spec.SetField(user.FieldIsBanned, field.TypeBool, value)
+	if value, ok := _u.mutation.LockedUntil(); ok {
+		_spec.SetField(user.FieldLockedUntil, field.TypeTime, value)
 	}
-	if _u.mutation.IsBannedCleared() {
-		_spec.ClearField(user.FieldIsBanned, field.TypeBool)
+	if _u.mutation.LockedUntilCleared() {
+		_spec.ClearField(user.FieldLockedUntil, field.TypeTime)
+	}
+	if value, ok := _u.mutation.Status(); ok {
+		_spec.SetField(user.FieldStatus, field.TypeEnum, value)
+	}
+	if _u.mutation.StatusCleared() {
+		_spec.ClearField(user.FieldStatus, field.TypeEnum)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &User{config: _u.config}

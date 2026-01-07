@@ -364,6 +364,9 @@ func (_u *AdminLoginRestrictionUpdate) sqlSave(ctx context.Context) (_node int, 
 	if _u.mutation.DeletedByCleared() {
 		_spec.ClearField(adminloginrestriction.FieldDeletedBy, field.TypeUint32)
 	}
+	if _u.mutation.TenantIDCleared() {
+		_spec.ClearField(adminloginrestriction.FieldTenantID, field.TypeUint32)
+	}
 	if value, ok := _u.mutation.TargetID(); ok {
 		_spec.SetField(adminloginrestriction.FieldTargetID, field.TypeUint32, value)
 	}
@@ -783,6 +786,9 @@ func (_u *AdminLoginRestrictionUpdateOne) sqlSave(ctx context.Context) (_node *A
 	}
 	if _u.mutation.DeletedByCleared() {
 		_spec.ClearField(adminloginrestriction.FieldDeletedBy, field.TypeUint32)
+	}
+	if _u.mutation.TenantIDCleared() {
+		_spec.ClearField(adminloginrestriction.FieldTenantID, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.TargetID(); ok {
 		_spec.SetField(adminloginrestriction.FieldTargetID, field.TypeUint32, value)

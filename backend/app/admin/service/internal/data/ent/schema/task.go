@@ -89,6 +89,25 @@ func (Task) Mixin() []ent.Mixin {
 // Indexes of the Task.
 func (Task) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("type_name").Unique().StorageKey("idx_sys_task_type_name"),
+		// 在租户范围内保证 type_name 唯一
+		index.Fields("tenant_id", "type_name").
+			Unique().
+			StorageKey("idx_sys_task_tenant_type_name"),
+
+		// 按租户 + type，用于按任务类型检索
+		index.Fields("tenant_id", "type").
+			StorageKey("idx_sys_task_tenant_type"),
+
+		// 按租户 + enable + created_at，用于按启用状态过滤并按时间范围查询/分页（时间列放末尾）
+		index.Fields("tenant_id", "enable", "created_at").
+			StorageKey("idx_sys_task_tenant_enable_created_at"),
+
+		// 按租户 + 操作者 + 创建时间，用于审计回溯（时间列放末尾）
+		index.Fields("tenant_id", "created_by", "created_at").
+			StorageKey("idx_sys_task_tenant_created_by_created_at"),
+
+		// 按租户 + 创建时间，用于租户范围的时间区间查询与分页
+		index.Fields("tenant_id", "created_at").
+			StorageKey("idx_sys_task_tenant_created_at"),
 	}
 }

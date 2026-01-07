@@ -162,6 +162,20 @@ func (_c *TenantCreate) SetNillableLogoURL(v *string) *TenantCreate {
 	return _c
 }
 
+// SetDomain sets the "domain" field.
+func (_c *TenantCreate) SetDomain(v string) *TenantCreate {
+	_c.mutation.SetDomain(v)
+	return _c
+}
+
+// SetNillableDomain sets the "domain" field if the given value is not nil.
+func (_c *TenantCreate) SetNillableDomain(v *string) *TenantCreate {
+	if v != nil {
+		_c.SetDomain(*v)
+	}
+	return _c
+}
+
 // SetIndustry sets the "industry" field.
 func (_c *TenantCreate) SetIndustry(v string) *TenantCreate {
 	_c.mutation.SetIndustry(v)
@@ -284,34 +298,6 @@ func (_c *TenantCreate) SetExpiredAt(v time.Time) *TenantCreate {
 func (_c *TenantCreate) SetNillableExpiredAt(v *time.Time) *TenantCreate {
 	if v != nil {
 		_c.SetExpiredAt(*v)
-	}
-	return _c
-}
-
-// SetLastLoginAt sets the "last_login_at" field.
-func (_c *TenantCreate) SetLastLoginAt(v time.Time) *TenantCreate {
-	_c.mutation.SetLastLoginAt(v)
-	return _c
-}
-
-// SetNillableLastLoginAt sets the "last_login_at" field if the given value is not nil.
-func (_c *TenantCreate) SetNillableLastLoginAt(v *time.Time) *TenantCreate {
-	if v != nil {
-		_c.SetLastLoginAt(*v)
-	}
-	return _c
-}
-
-// SetLastLoginIP sets the "last_login_ip" field.
-func (_c *TenantCreate) SetLastLoginIP(v string) *TenantCreate {
-	_c.mutation.SetLastLoginIP(v)
-	return _c
-}
-
-// SetNillableLastLoginIP sets the "last_login_ip" field if the given value is not nil.
-func (_c *TenantCreate) SetNillableLastLoginIP(v *string) *TenantCreate {
-	if v != nil {
-		_c.SetLastLoginIP(*v)
 	}
 	return _c
 }
@@ -472,6 +458,10 @@ func (_c *TenantCreate) createSpec() (*Tenant, *sqlgraph.CreateSpec) {
 		_spec.SetField(tenant.FieldLogoURL, field.TypeString, value)
 		_node.LogoURL = &value
 	}
+	if value, ok := _c.mutation.Domain(); ok {
+		_spec.SetField(tenant.FieldDomain, field.TypeString, value)
+		_node.Domain = &value
+	}
 	if value, ok := _c.mutation.Industry(); ok {
 		_spec.SetField(tenant.FieldIndustry, field.TypeString, value)
 		_node.Industry = &value
@@ -507,14 +497,6 @@ func (_c *TenantCreate) createSpec() (*Tenant, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.ExpiredAt(); ok {
 		_spec.SetField(tenant.FieldExpiredAt, field.TypeTime, value)
 		_node.ExpiredAt = &value
-	}
-	if value, ok := _c.mutation.LastLoginAt(); ok {
-		_spec.SetField(tenant.FieldLastLoginAt, field.TypeTime, value)
-		_node.LastLoginAt = &value
-	}
-	if value, ok := _c.mutation.LastLoginIP(); ok {
-		_spec.SetField(tenant.FieldLastLoginIP, field.TypeString, value)
-		_node.LastLoginIP = &value
 	}
 	return _node, _spec
 }
@@ -748,6 +730,24 @@ func (u *TenantUpsert) ClearLogoURL() *TenantUpsert {
 	return u
 }
 
+// SetDomain sets the "domain" field.
+func (u *TenantUpsert) SetDomain(v string) *TenantUpsert {
+	u.Set(tenant.FieldDomain, v)
+	return u
+}
+
+// UpdateDomain sets the "domain" field to the value that was provided on create.
+func (u *TenantUpsert) UpdateDomain() *TenantUpsert {
+	u.SetExcluded(tenant.FieldDomain)
+	return u
+}
+
+// ClearDomain clears the value of the "domain" field.
+func (u *TenantUpsert) ClearDomain() *TenantUpsert {
+	u.SetNull(tenant.FieldDomain)
+	return u
+}
+
 // SetIndustry sets the "industry" field.
 func (u *TenantUpsert) SetIndustry(v string) *TenantUpsert {
 	u.Set(tenant.FieldIndustry, v)
@@ -913,42 +913,6 @@ func (u *TenantUpsert) UpdateExpiredAt() *TenantUpsert {
 // ClearExpiredAt clears the value of the "expired_at" field.
 func (u *TenantUpsert) ClearExpiredAt() *TenantUpsert {
 	u.SetNull(tenant.FieldExpiredAt)
-	return u
-}
-
-// SetLastLoginAt sets the "last_login_at" field.
-func (u *TenantUpsert) SetLastLoginAt(v time.Time) *TenantUpsert {
-	u.Set(tenant.FieldLastLoginAt, v)
-	return u
-}
-
-// UpdateLastLoginAt sets the "last_login_at" field to the value that was provided on create.
-func (u *TenantUpsert) UpdateLastLoginAt() *TenantUpsert {
-	u.SetExcluded(tenant.FieldLastLoginAt)
-	return u
-}
-
-// ClearLastLoginAt clears the value of the "last_login_at" field.
-func (u *TenantUpsert) ClearLastLoginAt() *TenantUpsert {
-	u.SetNull(tenant.FieldLastLoginAt)
-	return u
-}
-
-// SetLastLoginIP sets the "last_login_ip" field.
-func (u *TenantUpsert) SetLastLoginIP(v string) *TenantUpsert {
-	u.Set(tenant.FieldLastLoginIP, v)
-	return u
-}
-
-// UpdateLastLoginIP sets the "last_login_ip" field to the value that was provided on create.
-func (u *TenantUpsert) UpdateLastLoginIP() *TenantUpsert {
-	u.SetExcluded(tenant.FieldLastLoginIP)
-	return u
-}
-
-// ClearLastLoginIP clears the value of the "last_login_ip" field.
-func (u *TenantUpsert) ClearLastLoginIP() *TenantUpsert {
-	u.SetNull(tenant.FieldLastLoginIP)
 	return u
 }
 
@@ -1213,6 +1177,27 @@ func (u *TenantUpsertOne) ClearLogoURL() *TenantUpsertOne {
 	})
 }
 
+// SetDomain sets the "domain" field.
+func (u *TenantUpsertOne) SetDomain(v string) *TenantUpsertOne {
+	return u.Update(func(s *TenantUpsert) {
+		s.SetDomain(v)
+	})
+}
+
+// UpdateDomain sets the "domain" field to the value that was provided on create.
+func (u *TenantUpsertOne) UpdateDomain() *TenantUpsertOne {
+	return u.Update(func(s *TenantUpsert) {
+		s.UpdateDomain()
+	})
+}
+
+// ClearDomain clears the value of the "domain" field.
+func (u *TenantUpsertOne) ClearDomain() *TenantUpsertOne {
+	return u.Update(func(s *TenantUpsert) {
+		s.ClearDomain()
+	})
+}
+
 // SetIndustry sets the "industry" field.
 func (u *TenantUpsertOne) SetIndustry(v string) *TenantUpsertOne {
 	return u.Update(func(s *TenantUpsert) {
@@ -1406,48 +1391,6 @@ func (u *TenantUpsertOne) UpdateExpiredAt() *TenantUpsertOne {
 func (u *TenantUpsertOne) ClearExpiredAt() *TenantUpsertOne {
 	return u.Update(func(s *TenantUpsert) {
 		s.ClearExpiredAt()
-	})
-}
-
-// SetLastLoginAt sets the "last_login_at" field.
-func (u *TenantUpsertOne) SetLastLoginAt(v time.Time) *TenantUpsertOne {
-	return u.Update(func(s *TenantUpsert) {
-		s.SetLastLoginAt(v)
-	})
-}
-
-// UpdateLastLoginAt sets the "last_login_at" field to the value that was provided on create.
-func (u *TenantUpsertOne) UpdateLastLoginAt() *TenantUpsertOne {
-	return u.Update(func(s *TenantUpsert) {
-		s.UpdateLastLoginAt()
-	})
-}
-
-// ClearLastLoginAt clears the value of the "last_login_at" field.
-func (u *TenantUpsertOne) ClearLastLoginAt() *TenantUpsertOne {
-	return u.Update(func(s *TenantUpsert) {
-		s.ClearLastLoginAt()
-	})
-}
-
-// SetLastLoginIP sets the "last_login_ip" field.
-func (u *TenantUpsertOne) SetLastLoginIP(v string) *TenantUpsertOne {
-	return u.Update(func(s *TenantUpsert) {
-		s.SetLastLoginIP(v)
-	})
-}
-
-// UpdateLastLoginIP sets the "last_login_ip" field to the value that was provided on create.
-func (u *TenantUpsertOne) UpdateLastLoginIP() *TenantUpsertOne {
-	return u.Update(func(s *TenantUpsert) {
-		s.UpdateLastLoginIP()
-	})
-}
-
-// ClearLastLoginIP clears the value of the "last_login_ip" field.
-func (u *TenantUpsertOne) ClearLastLoginIP() *TenantUpsertOne {
-	return u.Update(func(s *TenantUpsert) {
-		s.ClearLastLoginIP()
 	})
 }
 
@@ -1878,6 +1821,27 @@ func (u *TenantUpsertBulk) ClearLogoURL() *TenantUpsertBulk {
 	})
 }
 
+// SetDomain sets the "domain" field.
+func (u *TenantUpsertBulk) SetDomain(v string) *TenantUpsertBulk {
+	return u.Update(func(s *TenantUpsert) {
+		s.SetDomain(v)
+	})
+}
+
+// UpdateDomain sets the "domain" field to the value that was provided on create.
+func (u *TenantUpsertBulk) UpdateDomain() *TenantUpsertBulk {
+	return u.Update(func(s *TenantUpsert) {
+		s.UpdateDomain()
+	})
+}
+
+// ClearDomain clears the value of the "domain" field.
+func (u *TenantUpsertBulk) ClearDomain() *TenantUpsertBulk {
+	return u.Update(func(s *TenantUpsert) {
+		s.ClearDomain()
+	})
+}
+
 // SetIndustry sets the "industry" field.
 func (u *TenantUpsertBulk) SetIndustry(v string) *TenantUpsertBulk {
 	return u.Update(func(s *TenantUpsert) {
@@ -2071,48 +2035,6 @@ func (u *TenantUpsertBulk) UpdateExpiredAt() *TenantUpsertBulk {
 func (u *TenantUpsertBulk) ClearExpiredAt() *TenantUpsertBulk {
 	return u.Update(func(s *TenantUpsert) {
 		s.ClearExpiredAt()
-	})
-}
-
-// SetLastLoginAt sets the "last_login_at" field.
-func (u *TenantUpsertBulk) SetLastLoginAt(v time.Time) *TenantUpsertBulk {
-	return u.Update(func(s *TenantUpsert) {
-		s.SetLastLoginAt(v)
-	})
-}
-
-// UpdateLastLoginAt sets the "last_login_at" field to the value that was provided on create.
-func (u *TenantUpsertBulk) UpdateLastLoginAt() *TenantUpsertBulk {
-	return u.Update(func(s *TenantUpsert) {
-		s.UpdateLastLoginAt()
-	})
-}
-
-// ClearLastLoginAt clears the value of the "last_login_at" field.
-func (u *TenantUpsertBulk) ClearLastLoginAt() *TenantUpsertBulk {
-	return u.Update(func(s *TenantUpsert) {
-		s.ClearLastLoginAt()
-	})
-}
-
-// SetLastLoginIP sets the "last_login_ip" field.
-func (u *TenantUpsertBulk) SetLastLoginIP(v string) *TenantUpsertBulk {
-	return u.Update(func(s *TenantUpsert) {
-		s.SetLastLoginIP(v)
-	})
-}
-
-// UpdateLastLoginIP sets the "last_login_ip" field to the value that was provided on create.
-func (u *TenantUpsertBulk) UpdateLastLoginIP() *TenantUpsertBulk {
-	return u.Update(func(s *TenantUpsert) {
-		s.UpdateLastLoginIP()
-	})
-}
-
-// ClearLastLoginIP clears the value of the "last_login_ip" field.
-func (u *TenantUpsertBulk) ClearLastLoginIP() *TenantUpsertBulk {
-	return u.Update(func(s *TenantUpsert) {
-		s.ClearLastLoginIP()
 	})
 }
 

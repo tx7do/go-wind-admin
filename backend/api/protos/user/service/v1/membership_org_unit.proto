@@ -1,0 +1,78 @@
+syntax = "proto3";
+
+package user.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+
+import "pagination/v1/pagination.proto";
+
+// 成员组织单元
+message MembershipOrgUnit {
+  // 成员状态
+  enum Status {
+    ACTIVE = 0;       // 激活状态
+    PENDING = 1;      // 待激活状态
+    INACTIVE = 2;     // 非激活状态
+    SUSPENDED = 3;    // 暂停状态
+    EXPIRED = 4;      // 已过期
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = { description: "ID" }
+  ]; // ID
+
+  optional uint32 membership_id = 2 [
+    json_name = "membershipId",
+    (gnostic.openapi.v3.property) = { description: "成员ID" }
+  ]; // 成员ID
+
+  optional uint32 tenant_id = 3 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = { description: "租户ID" }
+  ]; // 租户ID
+
+  optional uint32 org_unit_id = 4 [
+    json_name = "orgUnitId",
+    (gnostic.openapi.v3.property) = { description: "组织单元ID" }
+  ]; // 组织单元ID
+
+  optional bool is_primary = 6 [
+    json_name = "isPrimary",
+    (gnostic.openapi.v3.property) = {description: "是否主角色"}
+  ]; // 是否主角色
+
+  optional Status status = 7 [
+    (gnostic.openapi.v3.property) = { description: "岗位状态" }
+  ]; // 岗位状态
+
+  optional google.protobuf.Timestamp assigned_at = 10 [
+    json_name = "assignedAt",
+    (gnostic.openapi.v3.property) = { description: "岗位分配时间（UTC）" }
+  ];
+  optional uint32 assigned_by = 11 [
+    json_name = "assignedBy",
+    (gnostic.openapi.v3.property) = { description: "分配者用户 ID" }
+  ];
+
+  optional google.protobuf.Timestamp start_at = 50 [
+    json_name = "startAt",
+    (gnostic.openapi.v3.property) = {description: "生效时间（UTC）"}
+  ];// 生效时间
+
+  optional google.protobuf.Timestamp end_at = 51 [
+    json_name = "endAt",
+    (gnostic.openapi.v3.property) = {description: "失效时间（UTC）"}
+  ];// 失效时间
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];// 删除时间
+}

@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	entCrud "github.com/tx7do/go-crud/entgo"
@@ -29,34 +30,43 @@ func NewRolePermissionRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[
 func (r *RolePermissionRepo) CleanPermissions(
 	ctx context.Context,
 	tx *ent.Tx,
-	tenantID, roleID uint32,
+	roleID uint32,
 ) error {
 	if _, err := tx.RolePermission.Delete().
 		Where(
 			rolepermission.RoleIDEQ(roleID),
-			rolepermission.TenantIDEQ(tenantID),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete old role permissions failed: %s", err.Error())
+		r.log.Errorf("delete old role [%d] permissions failed: %s", roleID, err.Error())
 		return adminV1.ErrorInternalServerError("delete old role permissions failed")
 	}
 	return nil
 }
 
 // AssignPermissions 给角色分配权限
-func (r *RolePermissionRepo) AssignPermissions(ctx context.Context, tx *ent.Tx, tenantID, roleID uint32, permissions []uint32) error {
+func (r *RolePermissionRepo) AssignPermissions(ctx context.Context, tx *ent.Tx, tenantID, roleID, operatorID uint32, permissions []uint32) error {
 	if len(permissions) == 0 {
 		return nil
 	}
 
+	now := time.Now()
+
 	for _, permissionID := range permissions {
 		rp := tx.RolePermission.
 			Create().
-			SetRoleID(roleID).
-			SetPermissionID(permissionID).
 			SetTenantID(tenantID).
-			OnConflict().
-			UpdateNewValues()
+			SetPermissionID(permissionID).
+			SetRoleID(roleID).
+			SetCreatedBy(operatorID).
+			SetCreatedAt(now).
+			OnConflictColumns(
+				rolepermission.FieldTenantID,
+				rolepermission.FieldPermissionID,
+				rolepermission.FieldRoleID,
+			).
+			UpdateNewValues().
+			SetUpdatedBy(operatorID).
+			SetUpdatedAt(now)
 
 		if err := rp.Exec(ctx); err != nil {
 			r.log.Errorf("assign permission to role failed: %s", err.Error())
@@ -68,11 +78,10 @@ func (r *RolePermissionRepo) AssignPermissions(ctx context.Context, tx *ent.Tx, 
 }
 
 // ListPermissionIDs 列出角色的权限ID列表
-func (r *RolePermissionRepo) ListPermissionIDs(ctx context.Context, tenantID, roleID uint32) ([]uint32, error) {
+func (r *RolePermissionRepo) ListPermissionIDs(ctx context.Context, roleID uint32) ([]uint32, error) {
 	q := r.entClient.Client().RolePermission.Query().
 		Where(
 			rolepermission.RoleIDEQ(roleID),
-			rolepermission.TenantIDEQ(tenantID),
 		)
 
 	intIDs, err := q.
@@ -81,6 +90,27 @@ func (r *RolePermissionRepo) ListPermissionIDs(ctx context.Context, tenantID, ro
 	if err != nil {
 		r.log.Errorf("query permission ids by role id failed: %s", err.Error())
 		return nil, adminV1.ErrorInternalServerError("query permission ids by role id failed")
+	}
+	ids := make([]uint32, len(intIDs))
+	for i, v := range intIDs {
+		ids[i] = uint32(v)
+	}
+	return ids, nil
+}
+
+// GetPermissionsByRoleIDs 根据角色ID列表获取权限ID列表
+func (r *RolePermissionRepo) GetPermissionsByRoleIDs(ctx context.Context, roleIDs []uint32) ([]uint32, error) {
+	q := r.entClient.Client().RolePermission.Query().
+		Where(
+			rolepermission.RoleIDIn(roleIDs...),
+		)
+
+	intIDs, err := q.
+		Select(rolepermission.FieldPermissionID).
+		Ints(ctx)
+	if err != nil {
+		r.log.Errorf("query permission ids by role ids failed: %s", err.Error())
+		return nil, adminV1.ErrorInternalServerError("query permission ids by role ids failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {

@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// 权限点 - 前端菜单多对多关联表
+// 权限点-前端菜单关联表
 type PermissionMenu struct {
 	config `json:"-"`
 	// ID of the ent.
@@ -32,10 +32,10 @@ type PermissionMenu struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
-	// 菜单ID（关联sys_menus.id）
-	MenuID *uint32 `json:"menu_id,omitempty"`
 	// 权限ID（关联sys_permissions.id）
 	PermissionID *uint32 `json:"permission_id,omitempty"`
+	// 菜单ID（关联sys_menus.id）
+	MenuID       *uint32 `json:"menu_id,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -44,7 +44,7 @@ func (*PermissionMenu) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case permissionmenu.FieldID, permissionmenu.FieldCreatedBy, permissionmenu.FieldUpdatedBy, permissionmenu.FieldDeletedBy, permissionmenu.FieldTenantID, permissionmenu.FieldMenuID, permissionmenu.FieldPermissionID:
+		case permissionmenu.FieldID, permissionmenu.FieldCreatedBy, permissionmenu.FieldUpdatedBy, permissionmenu.FieldDeletedBy, permissionmenu.FieldTenantID, permissionmenu.FieldPermissionID, permissionmenu.FieldMenuID:
 			values[i] = new(sql.NullInt64)
 		case permissionmenu.FieldCreatedAt, permissionmenu.FieldUpdatedAt, permissionmenu.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -118,19 +118,19 @@ func (_m *PermissionMenu) assignValues(columns []string, values []any) error {
 				_m.TenantID = new(uint32)
 				*_m.TenantID = uint32(value.Int64)
 			}
-		case permissionmenu.FieldMenuID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field menu_id", values[i])
-			} else if value.Valid {
-				_m.MenuID = new(uint32)
-				*_m.MenuID = uint32(value.Int64)
-			}
 		case permissionmenu.FieldPermissionID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field permission_id", values[i])
 			} else if value.Valid {
 				_m.PermissionID = new(uint32)
 				*_m.PermissionID = uint32(value.Int64)
+			}
+		case permissionmenu.FieldMenuID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field menu_id", values[i])
+			} else if value.Valid {
+				_m.MenuID = new(uint32)
+				*_m.MenuID = uint32(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -203,13 +203,13 @@ func (_m *PermissionMenu) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.MenuID; v != nil {
-		builder.WriteString("menu_id=")
+	if v := _m.PermissionID; v != nil {
+		builder.WriteString("permission_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.PermissionID; v != nil {
-		builder.WriteString("permission_id=")
+	if v := _m.MenuID; v != nil {
+		builder.WriteString("menu_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')

@@ -53,12 +53,32 @@ func (RolePermission) Mixin() []ent.Mixin {
 // Indexes of the RolePermission.
 func (RolePermission) Indexes() []ent.Index {
 	return []ent.Index{
+		// 租户维度唯一：同一租户内 role + permission 唯一
+		index.Fields("tenant_id", "role_id", "permission_id").
+			Unique().
+			StorageKey("uix_sys_role_permissions_tenant_role_permission"),
+
+		// 全局 role + permission 唯一（可选，防止跨租户重复）
 		index.Fields("role_id", "permission_id").
 			Unique().
-			StorageKey("uix_perm_role"),
+			StorageKey("uix_sys_role_permissions_role_permission"),
 
+		// 常用组合/单列索引，优化按租户/角色/权限的查询
 		index.Fields("tenant_id", "role_id").
-			Unique().
-			StorageKey("uix_perm_role_tenant"),
+			StorageKey("idx_sys_role_permissions_tenant_role"),
+		index.Fields("tenant_id", "permission_id").
+			StorageKey("idx_sys_role_permissions_tenant_permission"),
+		index.Fields("role_id").
+			StorageKey("idx_sys_role_permissions_role_id"),
+		index.Fields("permission_id").
+			StorageKey("idx_sys_role_permissions_permission_id"),
+		index.Fields("tenant_id").
+			StorageKey("idx_sys_role_permissions_tenant_id"),
+
+		// 审计/时间相关索引
+		index.Fields("created_at").
+			StorageKey("idx_sys_role_permissions_created_at"),
+		index.Fields("created_by").
+			StorageKey("idx_sys_role_permissions_created_by"),
 	}
 }

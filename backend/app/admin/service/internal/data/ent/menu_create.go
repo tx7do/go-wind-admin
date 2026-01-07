@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	servicev1 "go-wind-admin/api/gen/go/admin/service/v1"
+	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"time"
 
@@ -234,7 +234,7 @@ func (_c *MenuCreate) SetNillableComponent(v *string) *MenuCreate {
 }
 
 // SetMeta sets the "meta" field.
-func (_c *MenuCreate) SetMeta(v *servicev1.RouteMeta) *MenuCreate {
+func (_c *MenuCreate) SetMeta(v *permissionpb.RouteMeta) *MenuCreate {
 	_c.mutation.SetMeta(v)
 	return _c
 }
@@ -320,6 +320,9 @@ func (_c *MenuCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *MenuCreate) check() error {
+	if _, ok := _c.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Menu.status"`)}
+	}
 	if v, ok := _c.mutation.Status(); ok {
 		if err := menu.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Menu.status": %w`, err)}
@@ -674,12 +677,6 @@ func (u *MenuUpsert) UpdateStatus() *MenuUpsert {
 	return u
 }
 
-// ClearStatus clears the value of the "status" field.
-func (u *MenuUpsert) ClearStatus() *MenuUpsert {
-	u.SetNull(menu.FieldStatus)
-	return u
-}
-
 // SetType sets the "type" field.
 func (u *MenuUpsert) SetType(v menu.Type) *MenuUpsert {
 	u.Set(menu.FieldType, v)
@@ -789,7 +786,7 @@ func (u *MenuUpsert) ClearComponent() *MenuUpsert {
 }
 
 // SetMeta sets the "meta" field.
-func (u *MenuUpsert) SetMeta(v *servicev1.RouteMeta) *MenuUpsert {
+func (u *MenuUpsert) SetMeta(v *permissionpb.RouteMeta) *MenuUpsert {
 	u.Set(menu.FieldMeta, v)
 	return u
 }
@@ -1039,13 +1036,6 @@ func (u *MenuUpsertOne) UpdateStatus() *MenuUpsertOne {
 	})
 }
 
-// ClearStatus clears the value of the "status" field.
-func (u *MenuUpsertOne) ClearStatus() *MenuUpsertOne {
-	return u.Update(func(s *MenuUpsert) {
-		s.ClearStatus()
-	})
-}
-
 // SetType sets the "type" field.
 func (u *MenuUpsertOne) SetType(v menu.Type) *MenuUpsertOne {
 	return u.Update(func(s *MenuUpsert) {
@@ -1173,7 +1163,7 @@ func (u *MenuUpsertOne) ClearComponent() *MenuUpsertOne {
 }
 
 // SetMeta sets the "meta" field.
-func (u *MenuUpsertOne) SetMeta(v *servicev1.RouteMeta) *MenuUpsertOne {
+func (u *MenuUpsertOne) SetMeta(v *permissionpb.RouteMeta) *MenuUpsertOne {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetMeta(v)
 	})
@@ -1592,13 +1582,6 @@ func (u *MenuUpsertBulk) UpdateStatus() *MenuUpsertBulk {
 	})
 }
 
-// ClearStatus clears the value of the "status" field.
-func (u *MenuUpsertBulk) ClearStatus() *MenuUpsertBulk {
-	return u.Update(func(s *MenuUpsert) {
-		s.ClearStatus()
-	})
-}
-
 // SetType sets the "type" field.
 func (u *MenuUpsertBulk) SetType(v menu.Type) *MenuUpsertBulk {
 	return u.Update(func(s *MenuUpsert) {
@@ -1726,7 +1709,7 @@ func (u *MenuUpsertBulk) ClearComponent() *MenuUpsertBulk {
 }
 
 // SetMeta sets the "meta" field.
-func (u *MenuUpsertBulk) SetMeta(v *servicev1.RouteMeta) *MenuUpsertBulk {
+func (u *MenuUpsertBulk) SetMeta(v *permissionpb.RouteMeta) *MenuUpsertBulk {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetMeta(v)
 	})

@@ -150,26 +150,6 @@ func (_u *PermissionUpdate) ClearDeletedBy() *PermissionUpdate {
 	return _u
 }
 
-// SetRemark sets the "remark" field.
-func (_u *PermissionUpdate) SetRemark(v string) *PermissionUpdate {
-	_u.mutation.SetRemark(v)
-	return _u
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (_u *PermissionUpdate) SetNillableRemark(v *string) *PermissionUpdate {
-	if v != nil {
-		_u.SetRemark(*v)
-	}
-	return _u
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (_u *PermissionUpdate) ClearRemark() *PermissionUpdate {
-	_u.mutation.ClearRemark()
-	return _u
-}
-
 // SetStatus sets the "status" field.
 func (_u *PermissionUpdate) SetStatus(v permission.Status) *PermissionUpdate {
 	_u.mutation.SetStatus(v)
@@ -181,32 +161,6 @@ func (_u *PermissionUpdate) SetNillableStatus(v *permission.Status) *PermissionU
 	if v != nil {
 		_u.SetStatus(*v)
 	}
-	return _u
-}
-
-// ClearStatus clears the value of the "status" field.
-func (_u *PermissionUpdate) ClearStatus() *PermissionUpdate {
-	_u.mutation.ClearStatus()
-	return _u
-}
-
-// SetParentID sets the "parent_id" field.
-func (_u *PermissionUpdate) SetParentID(v uint32) *PermissionUpdate {
-	_u.mutation.SetParentID(v)
-	return _u
-}
-
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_u *PermissionUpdate) SetNillableParentID(v *uint32) *PermissionUpdate {
-	if v != nil {
-		_u.SetParentID(*v)
-	}
-	return _u
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (_u *PermissionUpdate) ClearParentID() *PermissionUpdate {
-	_u.mutation.ClearParentID()
 	return _u
 }
 
@@ -238,143 +192,36 @@ func (_u *PermissionUpdate) SetNillableCode(v *string) *PermissionUpdate {
 	return _u
 }
 
-// ClearCode clears the value of the "code" field.
-func (_u *PermissionUpdate) ClearCode() *PermissionUpdate {
-	_u.mutation.ClearCode()
+// SetGroupID sets the "group_id" field.
+func (_u *PermissionUpdate) SetGroupID(v uint32) *PermissionUpdate {
+	_u.mutation.ResetGroupID()
+	_u.mutation.SetGroupID(v)
 	return _u
 }
 
-// SetPath sets the "path" field.
-func (_u *PermissionUpdate) SetPath(v string) *PermissionUpdate {
-	_u.mutation.SetPath(v)
-	return _u
-}
-
-// SetNillablePath sets the "path" field if the given value is not nil.
-func (_u *PermissionUpdate) SetNillablePath(v *string) *PermissionUpdate {
+// SetNillableGroupID sets the "group_id" field if the given value is not nil.
+func (_u *PermissionUpdate) SetNillableGroupID(v *uint32) *PermissionUpdate {
 	if v != nil {
-		_u.SetPath(*v)
+		_u.SetGroupID(*v)
 	}
 	return _u
 }
 
-// ClearPath clears the value of the "path" field.
-func (_u *PermissionUpdate) ClearPath() *PermissionUpdate {
-	_u.mutation.ClearPath()
+// AddGroupID adds value to the "group_id" field.
+func (_u *PermissionUpdate) AddGroupID(v int32) *PermissionUpdate {
+	_u.mutation.AddGroupID(v)
 	return _u
 }
 
-// SetModule sets the "module" field.
-func (_u *PermissionUpdate) SetModule(v string) *PermissionUpdate {
-	_u.mutation.SetModule(v)
+// ClearGroupID clears the value of the "group_id" field.
+func (_u *PermissionUpdate) ClearGroupID() *PermissionUpdate {
+	_u.mutation.ClearGroupID()
 	return _u
-}
-
-// SetNillableModule sets the "module" field if the given value is not nil.
-func (_u *PermissionUpdate) SetNillableModule(v *string) *PermissionUpdate {
-	if v != nil {
-		_u.SetModule(*v)
-	}
-	return _u
-}
-
-// ClearModule clears the value of the "module" field.
-func (_u *PermissionUpdate) ClearModule() *PermissionUpdate {
-	_u.mutation.ClearModule()
-	return _u
-}
-
-// SetSortOrder sets the "sort_order" field.
-func (_u *PermissionUpdate) SetSortOrder(v int32) *PermissionUpdate {
-	_u.mutation.ResetSortOrder()
-	_u.mutation.SetSortOrder(v)
-	return _u
-}
-
-// SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_u *PermissionUpdate) SetNillableSortOrder(v *int32) *PermissionUpdate {
-	if v != nil {
-		_u.SetSortOrder(*v)
-	}
-	return _u
-}
-
-// AddSortOrder adds value to the "sort_order" field.
-func (_u *PermissionUpdate) AddSortOrder(v int32) *PermissionUpdate {
-	_u.mutation.AddSortOrder(v)
-	return _u
-}
-
-// ClearSortOrder clears the value of the "sort_order" field.
-func (_u *PermissionUpdate) ClearSortOrder() *PermissionUpdate {
-	_u.mutation.ClearSortOrder()
-	return _u
-}
-
-// SetType sets the "type" field.
-func (_u *PermissionUpdate) SetType(v permission.Type) *PermissionUpdate {
-	_u.mutation.SetType(v)
-	return _u
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (_u *PermissionUpdate) SetNillableType(v *permission.Type) *PermissionUpdate {
-	if v != nil {
-		_u.SetType(*v)
-	}
-	return _u
-}
-
-// SetParent sets the "parent" edge to the Permission entity.
-func (_u *PermissionUpdate) SetParent(v *Permission) *PermissionUpdate {
-	return _u.SetParentID(v.ID)
-}
-
-// AddChildIDs adds the "children" edge to the Permission entity by IDs.
-func (_u *PermissionUpdate) AddChildIDs(ids ...uint32) *PermissionUpdate {
-	_u.mutation.AddChildIDs(ids...)
-	return _u
-}
-
-// AddChildren adds the "children" edges to the Permission entity.
-func (_u *PermissionUpdate) AddChildren(v ...*Permission) *PermissionUpdate {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddChildIDs(ids...)
 }
 
 // Mutation returns the PermissionMutation object of the builder.
 func (_u *PermissionUpdate) Mutation() *PermissionMutation {
 	return _u.mutation
-}
-
-// ClearParent clears the "parent" edge to the Permission entity.
-func (_u *PermissionUpdate) ClearParent() *PermissionUpdate {
-	_u.mutation.ClearParent()
-	return _u
-}
-
-// ClearChildren clears all "children" edges to the Permission entity.
-func (_u *PermissionUpdate) ClearChildren() *PermissionUpdate {
-	_u.mutation.ClearChildren()
-	return _u
-}
-
-// RemoveChildIDs removes the "children" edge to Permission entities by IDs.
-func (_u *PermissionUpdate) RemoveChildIDs(ids ...uint32) *PermissionUpdate {
-	_u.mutation.RemoveChildIDs(ids...)
-	return _u
-}
-
-// RemoveChildren removes "children" edges to Permission entities.
-func (_u *PermissionUpdate) RemoveChildren(v ...*Permission) *PermissionUpdate {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveChildIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -414,11 +261,6 @@ func (_u *PermissionUpdate) check() error {
 	if v, ok := _u.mutation.Name(); ok {
 		if err := permission.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Permission.name": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.GetType(); ok {
-		if err := permission.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Permission.type": %w`, err)}
 		}
 	}
 	return nil
@@ -484,17 +326,8 @@ func (_u *PermissionUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if _u.mutation.DeletedByCleared() {
 		_spec.ClearField(permission.FieldDeletedBy, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.Remark(); ok {
-		_spec.SetField(permission.FieldRemark, field.TypeString, value)
-	}
-	if _u.mutation.RemarkCleared() {
-		_spec.ClearField(permission.FieldRemark, field.TypeString)
-	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(permission.FieldStatus, field.TypeEnum, value)
-	}
-	if _u.mutation.StatusCleared() {
-		_spec.ClearField(permission.FieldStatus, field.TypeEnum)
 	}
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(permission.FieldTenantID, field.TypeUint32)
@@ -505,106 +338,14 @@ func (_u *PermissionUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	if value, ok := _u.mutation.Code(); ok {
 		_spec.SetField(permission.FieldCode, field.TypeString, value)
 	}
-	if _u.mutation.CodeCleared() {
-		_spec.ClearField(permission.FieldCode, field.TypeString)
+	if value, ok := _u.mutation.GroupID(); ok {
+		_spec.SetField(permission.FieldGroupID, field.TypeUint32, value)
 	}
-	if value, ok := _u.mutation.Path(); ok {
-		_spec.SetField(permission.FieldPath, field.TypeString, value)
+	if value, ok := _u.mutation.AddedGroupID(); ok {
+		_spec.AddField(permission.FieldGroupID, field.TypeUint32, value)
 	}
-	if _u.mutation.PathCleared() {
-		_spec.ClearField(permission.FieldPath, field.TypeString)
-	}
-	if value, ok := _u.mutation.Module(); ok {
-		_spec.SetField(permission.FieldModule, field.TypeString, value)
-	}
-	if _u.mutation.ModuleCleared() {
-		_spec.ClearField(permission.FieldModule, field.TypeString)
-	}
-	if value, ok := _u.mutation.SortOrder(); ok {
-		_spec.SetField(permission.FieldSortOrder, field.TypeInt32, value)
-	}
-	if value, ok := _u.mutation.AddedSortOrder(); ok {
-		_spec.AddField(permission.FieldSortOrder, field.TypeInt32, value)
-	}
-	if _u.mutation.SortOrderCleared() {
-		_spec.ClearField(permission.FieldSortOrder, field.TypeInt32)
-	}
-	if value, ok := _u.mutation.GetType(); ok {
-		_spec.SetField(permission.FieldType, field.TypeEnum, value)
-	}
-	if _u.mutation.ParentCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   permission.ParentTable,
-			Columns: []string{permission.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeUint32),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ParentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   permission.ParentTable,
-			Columns: []string{permission.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   permission.ChildrenTable,
-			Columns: []string{permission.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeUint32),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !_u.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   permission.ChildrenTable,
-			Columns: []string{permission.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ChildrenIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   permission.ChildrenTable,
-			Columns: []string{permission.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	if _u.mutation.GroupIDCleared() {
+		_spec.ClearField(permission.FieldGroupID, field.TypeUint32)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -749,26 +490,6 @@ func (_u *PermissionUpdateOne) ClearDeletedBy() *PermissionUpdateOne {
 	return _u
 }
 
-// SetRemark sets the "remark" field.
-func (_u *PermissionUpdateOne) SetRemark(v string) *PermissionUpdateOne {
-	_u.mutation.SetRemark(v)
-	return _u
-}
-
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (_u *PermissionUpdateOne) SetNillableRemark(v *string) *PermissionUpdateOne {
-	if v != nil {
-		_u.SetRemark(*v)
-	}
-	return _u
-}
-
-// ClearRemark clears the value of the "remark" field.
-func (_u *PermissionUpdateOne) ClearRemark() *PermissionUpdateOne {
-	_u.mutation.ClearRemark()
-	return _u
-}
-
 // SetStatus sets the "status" field.
 func (_u *PermissionUpdateOne) SetStatus(v permission.Status) *PermissionUpdateOne {
 	_u.mutation.SetStatus(v)
@@ -780,32 +501,6 @@ func (_u *PermissionUpdateOne) SetNillableStatus(v *permission.Status) *Permissi
 	if v != nil {
 		_u.SetStatus(*v)
 	}
-	return _u
-}
-
-// ClearStatus clears the value of the "status" field.
-func (_u *PermissionUpdateOne) ClearStatus() *PermissionUpdateOne {
-	_u.mutation.ClearStatus()
-	return _u
-}
-
-// SetParentID sets the "parent_id" field.
-func (_u *PermissionUpdateOne) SetParentID(v uint32) *PermissionUpdateOne {
-	_u.mutation.SetParentID(v)
-	return _u
-}
-
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_u *PermissionUpdateOne) SetNillableParentID(v *uint32) *PermissionUpdateOne {
-	if v != nil {
-		_u.SetParentID(*v)
-	}
-	return _u
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (_u *PermissionUpdateOne) ClearParentID() *PermissionUpdateOne {
-	_u.mutation.ClearParentID()
 	return _u
 }
 
@@ -837,143 +532,36 @@ func (_u *PermissionUpdateOne) SetNillableCode(v *string) *PermissionUpdateOne {
 	return _u
 }
 
-// ClearCode clears the value of the "code" field.
-func (_u *PermissionUpdateOne) ClearCode() *PermissionUpdateOne {
-	_u.mutation.ClearCode()
+// SetGroupID sets the "group_id" field.
+func (_u *PermissionUpdateOne) SetGroupID(v uint32) *PermissionUpdateOne {
+	_u.mutation.ResetGroupID()
+	_u.mutation.SetGroupID(v)
 	return _u
 }
 
-// SetPath sets the "path" field.
-func (_u *PermissionUpdateOne) SetPath(v string) *PermissionUpdateOne {
-	_u.mutation.SetPath(v)
-	return _u
-}
-
-// SetNillablePath sets the "path" field if the given value is not nil.
-func (_u *PermissionUpdateOne) SetNillablePath(v *string) *PermissionUpdateOne {
+// SetNillableGroupID sets the "group_id" field if the given value is not nil.
+func (_u *PermissionUpdateOne) SetNillableGroupID(v *uint32) *PermissionUpdateOne {
 	if v != nil {
-		_u.SetPath(*v)
+		_u.SetGroupID(*v)
 	}
 	return _u
 }
 
-// ClearPath clears the value of the "path" field.
-func (_u *PermissionUpdateOne) ClearPath() *PermissionUpdateOne {
-	_u.mutation.ClearPath()
+// AddGroupID adds value to the "group_id" field.
+func (_u *PermissionUpdateOne) AddGroupID(v int32) *PermissionUpdateOne {
+	_u.mutation.AddGroupID(v)
 	return _u
 }
 
-// SetModule sets the "module" field.
-func (_u *PermissionUpdateOne) SetModule(v string) *PermissionUpdateOne {
-	_u.mutation.SetModule(v)
+// ClearGroupID clears the value of the "group_id" field.
+func (_u *PermissionUpdateOne) ClearGroupID() *PermissionUpdateOne {
+	_u.mutation.ClearGroupID()
 	return _u
-}
-
-// SetNillableModule sets the "module" field if the given value is not nil.
-func (_u *PermissionUpdateOne) SetNillableModule(v *string) *PermissionUpdateOne {
-	if v != nil {
-		_u.SetModule(*v)
-	}
-	return _u
-}
-
-// ClearModule clears the value of the "module" field.
-func (_u *PermissionUpdateOne) ClearModule() *PermissionUpdateOne {
-	_u.mutation.ClearModule()
-	return _u
-}
-
-// SetSortOrder sets the "sort_order" field.
-func (_u *PermissionUpdateOne) SetSortOrder(v int32) *PermissionUpdateOne {
-	_u.mutation.ResetSortOrder()
-	_u.mutation.SetSortOrder(v)
-	return _u
-}
-
-// SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_u *PermissionUpdateOne) SetNillableSortOrder(v *int32) *PermissionUpdateOne {
-	if v != nil {
-		_u.SetSortOrder(*v)
-	}
-	return _u
-}
-
-// AddSortOrder adds value to the "sort_order" field.
-func (_u *PermissionUpdateOne) AddSortOrder(v int32) *PermissionUpdateOne {
-	_u.mutation.AddSortOrder(v)
-	return _u
-}
-
-// ClearSortOrder clears the value of the "sort_order" field.
-func (_u *PermissionUpdateOne) ClearSortOrder() *PermissionUpdateOne {
-	_u.mutation.ClearSortOrder()
-	return _u
-}
-
-// SetType sets the "type" field.
-func (_u *PermissionUpdateOne) SetType(v permission.Type) *PermissionUpdateOne {
-	_u.mutation.SetType(v)
-	return _u
-}
-
-// SetNillableType sets the "type" field if the given value is not nil.
-func (_u *PermissionUpdateOne) SetNillableType(v *permission.Type) *PermissionUpdateOne {
-	if v != nil {
-		_u.SetType(*v)
-	}
-	return _u
-}
-
-// SetParent sets the "parent" edge to the Permission entity.
-func (_u *PermissionUpdateOne) SetParent(v *Permission) *PermissionUpdateOne {
-	return _u.SetParentID(v.ID)
-}
-
-// AddChildIDs adds the "children" edge to the Permission entity by IDs.
-func (_u *PermissionUpdateOne) AddChildIDs(ids ...uint32) *PermissionUpdateOne {
-	_u.mutation.AddChildIDs(ids...)
-	return _u
-}
-
-// AddChildren adds the "children" edges to the Permission entity.
-func (_u *PermissionUpdateOne) AddChildren(v ...*Permission) *PermissionUpdateOne {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.AddChildIDs(ids...)
 }
 
 // Mutation returns the PermissionMutation object of the builder.
 func (_u *PermissionUpdateOne) Mutation() *PermissionMutation {
 	return _u.mutation
-}
-
-// ClearParent clears the "parent" edge to the Permission entity.
-func (_u *PermissionUpdateOne) ClearParent() *PermissionUpdateOne {
-	_u.mutation.ClearParent()
-	return _u
-}
-
-// ClearChildren clears all "children" edges to the Permission entity.
-func (_u *PermissionUpdateOne) ClearChildren() *PermissionUpdateOne {
-	_u.mutation.ClearChildren()
-	return _u
-}
-
-// RemoveChildIDs removes the "children" edge to Permission entities by IDs.
-func (_u *PermissionUpdateOne) RemoveChildIDs(ids ...uint32) *PermissionUpdateOne {
-	_u.mutation.RemoveChildIDs(ids...)
-	return _u
-}
-
-// RemoveChildren removes "children" edges to Permission entities.
-func (_u *PermissionUpdateOne) RemoveChildren(v ...*Permission) *PermissionUpdateOne {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _u.RemoveChildIDs(ids...)
 }
 
 // Where appends a list predicates to the PermissionUpdate builder.
@@ -1026,11 +614,6 @@ func (_u *PermissionUpdateOne) check() error {
 	if v, ok := _u.mutation.Name(); ok {
 		if err := permission.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Permission.name": %w`, err)}
-		}
-	}
-	if v, ok := _u.mutation.GetType(); ok {
-		if err := permission.TypeValidator(v); err != nil {
-			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Permission.type": %w`, err)}
 		}
 	}
 	return nil
@@ -1113,17 +696,8 @@ func (_u *PermissionUpdateOne) sqlSave(ctx context.Context) (_node *Permission, 
 	if _u.mutation.DeletedByCleared() {
 		_spec.ClearField(permission.FieldDeletedBy, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.Remark(); ok {
-		_spec.SetField(permission.FieldRemark, field.TypeString, value)
-	}
-	if _u.mutation.RemarkCleared() {
-		_spec.ClearField(permission.FieldRemark, field.TypeString)
-	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(permission.FieldStatus, field.TypeEnum, value)
-	}
-	if _u.mutation.StatusCleared() {
-		_spec.ClearField(permission.FieldStatus, field.TypeEnum)
 	}
 	if _u.mutation.TenantIDCleared() {
 		_spec.ClearField(permission.FieldTenantID, field.TypeUint32)
@@ -1134,106 +708,14 @@ func (_u *PermissionUpdateOne) sqlSave(ctx context.Context) (_node *Permission, 
 	if value, ok := _u.mutation.Code(); ok {
 		_spec.SetField(permission.FieldCode, field.TypeString, value)
 	}
-	if _u.mutation.CodeCleared() {
-		_spec.ClearField(permission.FieldCode, field.TypeString)
+	if value, ok := _u.mutation.GroupID(); ok {
+		_spec.SetField(permission.FieldGroupID, field.TypeUint32, value)
 	}
-	if value, ok := _u.mutation.Path(); ok {
-		_spec.SetField(permission.FieldPath, field.TypeString, value)
+	if value, ok := _u.mutation.AddedGroupID(); ok {
+		_spec.AddField(permission.FieldGroupID, field.TypeUint32, value)
 	}
-	if _u.mutation.PathCleared() {
-		_spec.ClearField(permission.FieldPath, field.TypeString)
-	}
-	if value, ok := _u.mutation.Module(); ok {
-		_spec.SetField(permission.FieldModule, field.TypeString, value)
-	}
-	if _u.mutation.ModuleCleared() {
-		_spec.ClearField(permission.FieldModule, field.TypeString)
-	}
-	if value, ok := _u.mutation.SortOrder(); ok {
-		_spec.SetField(permission.FieldSortOrder, field.TypeInt32, value)
-	}
-	if value, ok := _u.mutation.AddedSortOrder(); ok {
-		_spec.AddField(permission.FieldSortOrder, field.TypeInt32, value)
-	}
-	if _u.mutation.SortOrderCleared() {
-		_spec.ClearField(permission.FieldSortOrder, field.TypeInt32)
-	}
-	if value, ok := _u.mutation.GetType(); ok {
-		_spec.SetField(permission.FieldType, field.TypeEnum, value)
-	}
-	if _u.mutation.ParentCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   permission.ParentTable,
-			Columns: []string{permission.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeUint32),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ParentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   permission.ParentTable,
-			Columns: []string{permission.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
-	}
-	if _u.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   permission.ChildrenTable,
-			Columns: []string{permission.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeUint32),
-			},
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.RemovedChildrenIDs(); len(nodes) > 0 && !_u.mutation.ChildrenCleared() {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   permission.ChildrenTable,
-			Columns: []string{permission.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
-	}
-	if nodes := _u.mutation.ChildrenIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   permission.ChildrenTable,
-			Columns: []string{permission.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(permission.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	if _u.mutation.GroupIDCleared() {
+		_spec.ClearField(permission.FieldGroupID, field.TypeUint32)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &Permission{config: _u.config}

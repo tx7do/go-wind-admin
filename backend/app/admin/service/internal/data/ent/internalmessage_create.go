@@ -154,14 +154,6 @@ func (_c *InternalMessageCreate) SetSenderID(v uint32) *InternalMessageCreate {
 	return _c
 }
 
-// SetNillableSenderID sets the "sender_id" field if the given value is not nil.
-func (_c *InternalMessageCreate) SetNillableSenderID(v *uint32) *InternalMessageCreate {
-	if v != nil {
-		_c.SetSenderID(*v)
-	}
-	return _c
-}
-
 // SetCategoryID sets the "category_id" field.
 func (_c *InternalMessageCreate) SetCategoryID(v uint32) *InternalMessageCreate {
 	_c.mutation.SetCategoryID(v)
@@ -257,6 +249,9 @@ func (_c *InternalMessageCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *InternalMessageCreate) check() error {
+	if _, ok := _c.mutation.SenderID(); !ok {
+		return &ValidationError{Name: "sender_id", err: errors.New(`ent: missing required field "InternalMessage.sender_id"`)}
+	}
 	if v, ok := _c.mutation.Status(); ok {
 		if err := internalmessage.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "InternalMessage.status": %w`, err)}
@@ -571,12 +566,6 @@ func (u *InternalMessageUpsert) AddSenderID(v uint32) *InternalMessageUpsert {
 	return u
 }
 
-// ClearSenderID clears the value of the "sender_id" field.
-func (u *InternalMessageUpsert) ClearSenderID() *InternalMessageUpsert {
-	u.SetNull(internalmessage.FieldSenderID)
-	return u
-}
-
 // SetCategoryID sets the "category_id" field.
 func (u *InternalMessageUpsert) SetCategoryID(v uint32) *InternalMessageUpsert {
 	u.Set(internalmessage.FieldCategoryID, v)
@@ -877,13 +866,6 @@ func (u *InternalMessageUpsertOne) AddSenderID(v uint32) *InternalMessageUpsertO
 func (u *InternalMessageUpsertOne) UpdateSenderID() *InternalMessageUpsertOne {
 	return u.Update(func(s *InternalMessageUpsert) {
 		s.UpdateSenderID()
-	})
-}
-
-// ClearSenderID clears the value of the "sender_id" field.
-func (u *InternalMessageUpsertOne) ClearSenderID() *InternalMessageUpsertOne {
-	return u.Update(func(s *InternalMessageUpsert) {
-		s.ClearSenderID()
 	})
 }
 
@@ -1363,13 +1345,6 @@ func (u *InternalMessageUpsertBulk) AddSenderID(v uint32) *InternalMessageUpsert
 func (u *InternalMessageUpsertBulk) UpdateSenderID() *InternalMessageUpsertBulk {
 	return u.Update(func(s *InternalMessageUpsert) {
 		s.UpdateSenderID()
-	})
-}
-
-// ClearSenderID clears the value of the "sender_id" field.
-func (u *InternalMessageUpsertBulk) ClearSenderID() *InternalMessageUpsertBulk {
-	return u.Update(func(s *InternalMessageUpsert) {
-		s.ClearSenderID()
 	})
 }
 

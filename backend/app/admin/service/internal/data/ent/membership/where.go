@@ -139,6 +139,11 @@ func AssignedBy(v uint32) predicate.Membership {
 	return predicate.Membership(sql.FieldEQ(FieldAssignedBy, v))
 }
 
+// JoinedAt applies equality check predicate on the "joined_at" field. It's identical to JoinedAtEQ.
+func JoinedAt(v time.Time) predicate.Membership {
+	return predicate.Membership(sql.FieldEQ(FieldJoinedAt, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Membership {
 	return predicate.Membership(sql.FieldEQ(FieldCreatedAt, v))
@@ -962,6 +967,56 @@ func AssignedByIsNil() predicate.Membership {
 // AssignedByNotNil applies the NotNil predicate on the "assigned_by" field.
 func AssignedByNotNil() predicate.Membership {
 	return predicate.Membership(sql.FieldNotNull(FieldAssignedBy))
+}
+
+// JoinedAtEQ applies the EQ predicate on the "joined_at" field.
+func JoinedAtEQ(v time.Time) predicate.Membership {
+	return predicate.Membership(sql.FieldEQ(FieldJoinedAt, v))
+}
+
+// JoinedAtNEQ applies the NEQ predicate on the "joined_at" field.
+func JoinedAtNEQ(v time.Time) predicate.Membership {
+	return predicate.Membership(sql.FieldNEQ(FieldJoinedAt, v))
+}
+
+// JoinedAtIn applies the In predicate on the "joined_at" field.
+func JoinedAtIn(vs ...time.Time) predicate.Membership {
+	return predicate.Membership(sql.FieldIn(FieldJoinedAt, vs...))
+}
+
+// JoinedAtNotIn applies the NotIn predicate on the "joined_at" field.
+func JoinedAtNotIn(vs ...time.Time) predicate.Membership {
+	return predicate.Membership(sql.FieldNotIn(FieldJoinedAt, vs...))
+}
+
+// JoinedAtGT applies the GT predicate on the "joined_at" field.
+func JoinedAtGT(v time.Time) predicate.Membership {
+	return predicate.Membership(sql.FieldGT(FieldJoinedAt, v))
+}
+
+// JoinedAtGTE applies the GTE predicate on the "joined_at" field.
+func JoinedAtGTE(v time.Time) predicate.Membership {
+	return predicate.Membership(sql.FieldGTE(FieldJoinedAt, v))
+}
+
+// JoinedAtLT applies the LT predicate on the "joined_at" field.
+func JoinedAtLT(v time.Time) predicate.Membership {
+	return predicate.Membership(sql.FieldLT(FieldJoinedAt, v))
+}
+
+// JoinedAtLTE applies the LTE predicate on the "joined_at" field.
+func JoinedAtLTE(v time.Time) predicate.Membership {
+	return predicate.Membership(sql.FieldLTE(FieldJoinedAt, v))
+}
+
+// JoinedAtIsNil applies the IsNil predicate on the "joined_at" field.
+func JoinedAtIsNil() predicate.Membership {
+	return predicate.Membership(sql.FieldIsNull(FieldJoinedAt))
+}
+
+// JoinedAtNotNil applies the NotNil predicate on the "joined_at" field.
+func JoinedAtNotNil() predicate.Membership {
+	return predicate.Membership(sql.FieldNotNull(FieldJoinedAt))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.

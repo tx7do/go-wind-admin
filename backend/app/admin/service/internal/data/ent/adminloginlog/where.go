@@ -59,6 +59,11 @@ func CreatedAt(v time.Time) predicate.AdminLoginLog {
 	return predicate.AdminLoginLog(sql.FieldEQ(FieldCreatedAt, v))
 }
 
+// TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
+func TenantID(v uint32) predicate.AdminLoginLog {
+	return predicate.AdminLoginLog(sql.FieldEQ(FieldTenantID, v))
+}
+
 // LoginIP applies equality check predicate on the "login_ip" field. It's identical to LoginIPEQ.
 func LoginIP(v string) predicate.AdminLoginLog {
 	return predicate.AdminLoginLog(sql.FieldEQ(FieldLoginIP, v))
@@ -187,6 +192,56 @@ func CreatedAtIsNil() predicate.AdminLoginLog {
 // CreatedAtNotNil applies the NotNil predicate on the "created_at" field.
 func CreatedAtNotNil() predicate.AdminLoginLog {
 	return predicate.AdminLoginLog(sql.FieldNotNull(FieldCreatedAt))
+}
+
+// TenantIDEQ applies the EQ predicate on the "tenant_id" field.
+func TenantIDEQ(v uint32) predicate.AdminLoginLog {
+	return predicate.AdminLoginLog(sql.FieldEQ(FieldTenantID, v))
+}
+
+// TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
+func TenantIDNEQ(v uint32) predicate.AdminLoginLog {
+	return predicate.AdminLoginLog(sql.FieldNEQ(FieldTenantID, v))
+}
+
+// TenantIDIn applies the In predicate on the "tenant_id" field.
+func TenantIDIn(vs ...uint32) predicate.AdminLoginLog {
+	return predicate.AdminLoginLog(sql.FieldIn(FieldTenantID, vs...))
+}
+
+// TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
+func TenantIDNotIn(vs ...uint32) predicate.AdminLoginLog {
+	return predicate.AdminLoginLog(sql.FieldNotIn(FieldTenantID, vs...))
+}
+
+// TenantIDGT applies the GT predicate on the "tenant_id" field.
+func TenantIDGT(v uint32) predicate.AdminLoginLog {
+	return predicate.AdminLoginLog(sql.FieldGT(FieldTenantID, v))
+}
+
+// TenantIDGTE applies the GTE predicate on the "tenant_id" field.
+func TenantIDGTE(v uint32) predicate.AdminLoginLog {
+	return predicate.AdminLoginLog(sql.FieldGTE(FieldTenantID, v))
+}
+
+// TenantIDLT applies the LT predicate on the "tenant_id" field.
+func TenantIDLT(v uint32) predicate.AdminLoginLog {
+	return predicate.AdminLoginLog(sql.FieldLT(FieldTenantID, v))
+}
+
+// TenantIDLTE applies the LTE predicate on the "tenant_id" field.
+func TenantIDLTE(v uint32) predicate.AdminLoginLog {
+	return predicate.AdminLoginLog(sql.FieldLTE(FieldTenantID, v))
+}
+
+// TenantIDIsNil applies the IsNil predicate on the "tenant_id" field.
+func TenantIDIsNil() predicate.AdminLoginLog {
+	return predicate.AdminLoginLog(sql.FieldIsNull(FieldTenantID))
+}
+
+// TenantIDNotNil applies the NotNil predicate on the "tenant_id" field.
+func TenantIDNotNil() predicate.AdminLoginLog {
+	return predicate.AdminLoginLog(sql.FieldNotNull(FieldTenantID))
 }
 
 // LoginIPEQ applies the EQ predicate on the "login_ip" field.

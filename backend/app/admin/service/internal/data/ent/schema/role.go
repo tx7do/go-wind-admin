@@ -41,50 +41,9 @@ func (Role) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		//field.JSON("menus", []uint32{}).
-		//	Comment("分配的菜单列表").
-		//	Optional(),
-		//field.JSON("apis", []uint32{}).
-		//	Comment("分配的API列表").
-		//	Optional(),
-		//field.JSON("permissions", []uint32{}).
-		//	Comment("权限点列表").
-		//	Optional(),
-
-		field.JSON("custom_org_unit_ids", []uint32{}).
-			Comment("当 DataScope 为 SELECTED_UNITS 时关联的组织单元列表").
-			Optional(),
-
-		field.Enum("data_scope").
-			Comment("数据权限范围").
-			NamedValues(
-				"All", "ALL",
-				"Self", "SELF",
-				"UnitOnly", "UNIT_ONLY",
-				"UnitAndChild", "UNIT_AND_CHILD",
-				"SelectedUnits", "SELECTED_UNITS",
-			).
-			Optional().
-			Nillable(),
-
-		field.Enum("status").
-			Comment("角色状态").
-			NamedValues(
-				"On", "ON",
-				"Off", "OFF",
-			).
-			Default("ON").
-			Optional().
-			Nillable(),
-
-		field.Enum("type").
-			Comment("角色类型").
-			NamedValues(
-				"System", "SYSTEM",
-				"Custom", "CUSTOM",
-			).
-			Default("SYSTEM").
-			Optional().
+		field.Bool("is_protected").
+			Comment("是否受保护的角色").
+			Default(false).
 			Nillable(),
 	}
 }
@@ -96,16 +55,50 @@ func (Role) Mixin() []ent.Mixin {
 		mixin.TimeAt{},
 		mixin.OperatorID{},
 		mixin.Remark{},
+		mixin.Description{},
 		mixin.SortOrder{},
-		mixin.Tree[Role]{},
 		mixin.TenantID{},
+		mixin.SwitchStatus{},
 	}
 }
 
-// Indexes of the User.
+// Indexes of the Role.
 func (Role) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("name").Unique().StorageKey("idx_sys_role_name"),
-		index.Fields("code").Unique().StorageKey("idx_sys_role_code"),
+		// 租户维度唯一：同一租户下 code 唯一
+		index.Fields("tenant_id", "code").
+			Unique().
+			StorageKey("uix_sys_roles_tenant_code"),
+
+		// 租户范围内按 name 快速查询
+		index.Fields("tenant_id", "name").
+			StorageKey("idx_sys_roles_tenant_name"),
+		// 全局 name 索引（模糊/快速搜索）
+		index.Fields("name").
+			StorageKey("idx_sys_roles_name"),
+
+		// 全局 code 快速定位（跨租户查询）
+		index.Fields("code").
+			StorageKey("idx_sys_roles_code"),
+
+		// 支持按租户快速筛选
+		index.Fields("tenant_id").
+			StorageKey("idx_sys_roles_tenant_id"),
+
+		// 保护/启用状态查询
+		index.Fields("is_protected").
+			StorageKey("idx_sys_roles_is_protected"),
+		index.Fields("status").
+			StorageKey("idx_sys_roles_status"),
+
+		// 排序/范围查询优化
+		index.Fields("sort_order").
+			StorageKey("idx_sys_roles_sort_order"),
+		index.Fields("created_at").
+			StorageKey("idx_sys_roles_created_at"),
+
+		// 按操作人查询（audit）
+		index.Fields("created_by").
+			StorageKey("idx_sys_roles_created_by"),
 	}
 }

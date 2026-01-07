@@ -38,6 +38,8 @@ type Tenant struct {
 	Code *string `json:"code,omitempty"`
 	// 租户logo地址
 	LogoURL *string `json:"logo_url,omitempty"`
+	// 租户专属域名
+	Domain *string `json:"domain,omitempty"`
 	// 所属行业
 	Industry *string `json:"industry,omitempty"`
 	// 管理员用户ID
@@ -55,11 +57,7 @@ type Tenant struct {
 	// 订阅套餐
 	SubscriptionPlan *string `json:"subscription_plan,omitempty"`
 	// 租户有效期
-	ExpiredAt *time.Time `json:"expired_at,omitempty"`
-	// 最后一次登录的时间
-	LastLoginAt *time.Time `json:"last_login_at,omitempty"`
-	// 最后一次登录的IP
-	LastLoginIP  *string `json:"last_login_ip,omitempty"`
+	ExpiredAt    *time.Time `json:"expired_at,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -70,9 +68,9 @@ func (*Tenant) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case tenant.FieldID, tenant.FieldCreatedBy, tenant.FieldUpdatedBy, tenant.FieldDeletedBy, tenant.FieldAdminUserID:
 			values[i] = new(sql.NullInt64)
-		case tenant.FieldRemark, tenant.FieldName, tenant.FieldCode, tenant.FieldLogoURL, tenant.FieldIndustry, tenant.FieldStatus, tenant.FieldType, tenant.FieldAuditStatus, tenant.FieldSubscriptionPlan, tenant.FieldLastLoginIP:
+		case tenant.FieldRemark, tenant.FieldName, tenant.FieldCode, tenant.FieldLogoURL, tenant.FieldDomain, tenant.FieldIndustry, tenant.FieldStatus, tenant.FieldType, tenant.FieldAuditStatus, tenant.FieldSubscriptionPlan:
 			values[i] = new(sql.NullString)
-		case tenant.FieldCreatedAt, tenant.FieldUpdatedAt, tenant.FieldDeletedAt, tenant.FieldSubscriptionAt, tenant.FieldUnsubscribeAt, tenant.FieldExpiredAt, tenant.FieldLastLoginAt:
+		case tenant.FieldCreatedAt, tenant.FieldUpdatedAt, tenant.FieldDeletedAt, tenant.FieldSubscriptionAt, tenant.FieldUnsubscribeAt, tenant.FieldExpiredAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -165,6 +163,13 @@ func (_m *Tenant) assignValues(columns []string, values []any) error {
 				_m.LogoURL = new(string)
 				*_m.LogoURL = value.String
 			}
+		case tenant.FieldDomain:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field domain", values[i])
+			} else if value.Valid {
+				_m.Domain = new(string)
+				*_m.Domain = value.String
+			}
 		case tenant.FieldIndustry:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field industry", values[i])
@@ -227,20 +232,6 @@ func (_m *Tenant) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.ExpiredAt = new(time.Time)
 				*_m.ExpiredAt = value.Time
-			}
-		case tenant.FieldLastLoginAt:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field last_login_at", values[i])
-			} else if value.Valid {
-				_m.LastLoginAt = new(time.Time)
-				*_m.LastLoginAt = value.Time
-			}
-		case tenant.FieldLastLoginIP:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field last_login_ip", values[i])
-			} else if value.Valid {
-				_m.LastLoginIP = new(string)
-				*_m.LastLoginIP = value.String
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -328,6 +319,11 @@ func (_m *Tenant) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
+	if v := _m.Domain; v != nil {
+		builder.WriteString("domain=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
 	if v := _m.Industry; v != nil {
 		builder.WriteString("industry=")
 		builder.WriteString(*v)
@@ -371,16 +367,6 @@ func (_m *Tenant) String() string {
 	if v := _m.ExpiredAt; v != nil {
 		builder.WriteString("expired_at=")
 		builder.WriteString(v.Format(time.ANSIC))
-	}
-	builder.WriteString(", ")
-	if v := _m.LastLoginAt; v != nil {
-		builder.WriteString("last_login_at=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
-	builder.WriteString(", ")
-	if v := _m.LastLoginIP; v != nil {
-		builder.WriteString("last_login_ip=")
-		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')
 	return builder.String()

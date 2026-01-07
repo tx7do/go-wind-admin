@@ -102,13 +102,8 @@ const gridOptions: VxeGridProps<Position> = {
   rowConfig: {
     isHover: true,
   },
-  treeConfig: {
-    childrenField: 'children',
-    rowField: 'id',
-    // transform: true,
-  },
   height: 'auto',
-  // stripe: true,
+  stripe: true,
 
   proxyConfig: {
     ajax: {
@@ -127,7 +122,7 @@ const gridOptions: VxeGridProps<Position> = {
   },
 
   columns: [
-    { title: $t('page.position.name'), field: 'name', treeNode: true },
+    { title: $t('page.position.name'), field: 'name' },
     { title: $t('page.position.code'), field: 'code' },
     { title: $t('page.position.description'), field: 'description' },
     {
@@ -135,7 +130,7 @@ const gridOptions: VxeGridProps<Position> = {
       field: 'orgUnitName',
       width: 150,
     },
-    { title: $t('page.position.quota'), field: 'quota', width: 80 },
+    { title: $t('page.position.headcount'), field: 'headcount', width: 80 },
     {
       title: $t('ui.table.status'),
       field: 'status',

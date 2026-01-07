@@ -5,6 +5,7 @@ import (
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
+	"entgo.io/ent/schema/index"
 	"github.com/tx7do/go-crud/entgo/mixin"
 )
 
@@ -40,7 +41,6 @@ func (InternalMessage) Fields() []ent.Field {
 
 		field.Uint32("sender_id").
 			Comment("发送者用户ID").
-			Optional().
 			Nillable(),
 
 		field.Uint32("category_id").
@@ -82,5 +82,29 @@ func (InternalMessage) Mixin() []ent.Mixin {
 		mixin.TimeAt{},
 		mixin.OperatorID{},
 		mixin.TenantID{},
+	}
+}
+
+func (InternalMessage) Indexes() []ent.Index {
+	return []ent.Index{
+		// 按租户 + 创建时间，用于时间区间查询与分页
+		index.Fields("tenant_id", "created_at").
+			StorageKey("idx_internal_msg_tenant_created_at"),
+
+		// 按租户 + 状态 + 创建时间，用于状态过滤与统计
+		index.Fields("tenant_id", "status", "created_at").
+			StorageKey("idx_internal_msg_tenant_status_created_at"),
+
+		// 按租户 + 发送者 + 创建时间，用于按发送者检索
+		index.Fields("tenant_id", "sender_id", "created_at").
+			StorageKey("idx_internal_msg_tenant_sender_created_at"),
+
+		// 按租户 + 分类，用于分类筛选
+		index.Fields("tenant_id", "category_id").
+			StorageKey("idx_internal_msg_tenant_category"),
+
+		// 按租户 + 操作者 + 创建时间，用于审计回溯
+		index.Fields("tenant_id", "created_by", "created_at").
+			StorageKey("idx_internal_msg_tenant_created_by_created_at"),
 	}
 }

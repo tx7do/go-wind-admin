@@ -107,13 +107,13 @@ func (_c *PositionCreate) SetNillableDeletedBy(v *uint32) *PositionCreate {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (_c *PositionCreate) SetSortOrder(v int32) *PositionCreate {
+func (_c *PositionCreate) SetSortOrder(v uint32) *PositionCreate {
 	_c.mutation.SetSortOrder(v)
 	return _c
 }
 
 // SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_c *PositionCreate) SetNillableSortOrder(v *int32) *PositionCreate {
+func (_c *PositionCreate) SetNillableSortOrder(v *uint32) *PositionCreate {
 	if v != nil {
 		_c.SetSortOrder(*v)
 	}
@@ -130,20 +130,6 @@ func (_c *PositionCreate) SetRemark(v string) *PositionCreate {
 func (_c *PositionCreate) SetNillableRemark(v *string) *PositionCreate {
 	if v != nil {
 		_c.SetRemark(*v)
-	}
-	return _c
-}
-
-// SetParentID sets the "parent_id" field.
-func (_c *PositionCreate) SetParentID(v uint32) *PositionCreate {
-	_c.mutation.SetParentID(v)
-	return _c
-}
-
-// SetNillableParentID sets the "parent_id" field if the given value is not nil.
-func (_c *PositionCreate) SetNillableParentID(v *uint32) *PositionCreate {
-	if v != nil {
-		_c.SetParentID(*v)
 	}
 	return _c
 }
@@ -182,25 +168,9 @@ func (_c *PositionCreate) SetName(v string) *PositionCreate {
 	return _c
 }
 
-// SetNillableName sets the "name" field if the given value is not nil.
-func (_c *PositionCreate) SetNillableName(v *string) *PositionCreate {
-	if v != nil {
-		_c.SetName(*v)
-	}
-	return _c
-}
-
 // SetCode sets the "code" field.
 func (_c *PositionCreate) SetCode(v string) *PositionCreate {
 	_c.mutation.SetCode(v)
-	return _c
-}
-
-// SetNillableCode sets the "code" field if the given value is not nil.
-func (_c *PositionCreate) SetNillableCode(v *string) *PositionCreate {
-	if v != nil {
-		_c.SetCode(*v)
-	}
 	return _c
 }
 
@@ -356,26 +326,6 @@ func (_c *PositionCreate) SetID(v uint32) *PositionCreate {
 	return _c
 }
 
-// SetParent sets the "parent" edge to the Position entity.
-func (_c *PositionCreate) SetParent(v *Position) *PositionCreate {
-	return _c.SetParentID(v.ID)
-}
-
-// AddChildIDs adds the "children" edge to the Position entity by IDs.
-func (_c *PositionCreate) AddChildIDs(ids ...uint32) *PositionCreate {
-	_c.mutation.AddChildIDs(ids...)
-	return _c
-}
-
-// AddChildren adds the "children" edges to the Position entity.
-func (_c *PositionCreate) AddChildren(v ...*Position) *PositionCreate {
-	ids := make([]uint32, len(v))
-	for i := range v {
-		ids[i] = v[i].ID
-	}
-	return _c.AddChildIDs(ids...)
-}
-
 // Mutation returns the PositionMutation object of the builder.
 func (_c *PositionCreate) Mutation() *PositionMutation {
 	return _c.mutation
@@ -435,15 +385,24 @@ func (_c *PositionCreate) defaults() {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *PositionCreate) check() error {
+	if _, ok := _c.mutation.Status(); !ok {
+		return &ValidationError{Name: "status", err: errors.New(`ent: missing required field "Position.status"`)}
+	}
 	if v, ok := _c.mutation.Status(); ok {
 		if err := position.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "Position.status": %w`, err)}
 		}
 	}
+	if _, ok := _c.mutation.Name(); !ok {
+		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Position.name"`)}
+	}
 	if v, ok := _c.mutation.Name(); ok {
 		if err := position.NameValidator(v); err != nil {
 			return &ValidationError{Name: "name", err: fmt.Errorf(`ent: validator failed for field "Position.name": %w`, err)}
 		}
+	}
+	if _, ok := _c.mutation.Code(); !ok {
+		return &ValidationError{Name: "code", err: errors.New(`ent: missing required field "Position.code"`)}
 	}
 	if v, ok := _c.mutation.Code(); ok {
 		if err := position.CodeValidator(v); err != nil {
@@ -452,6 +411,12 @@ func (_c *PositionCreate) check() error {
 	}
 	if _, ok := _c.mutation.OrgUnitID(); !ok {
 		return &ValidationError{Name: "org_unit_id", err: errors.New(`ent: missing required field "Position.org_unit_id"`)}
+	}
+	if _, ok := _c.mutation.Headcount(); !ok {
+		return &ValidationError{Name: "headcount", err: errors.New(`ent: missing required field "Position.headcount"`)}
+	}
+	if _, ok := _c.mutation.IsKeyPosition(); !ok {
+		return &ValidationError{Name: "is_key_position", err: errors.New(`ent: missing required field "Position.is_key_position"`)}
 	}
 	if _, ok := _c.mutation.GetType(); !ok {
 		return &ValidationError{Name: "type", err: errors.New(`ent: missing required field "Position.type"`)}
@@ -524,7 +489,7 @@ func (_c *PositionCreate) createSpec() (*Position, *sqlgraph.CreateSpec) {
 		_node.DeletedBy = &value
 	}
 	if value, ok := _c.mutation.SortOrder(); ok {
-		_spec.SetField(position.FieldSortOrder, field.TypeInt32, value)
+		_spec.SetField(position.FieldSortOrder, field.TypeUint32, value)
 		_node.SortOrder = &value
 	}
 	if value, ok := _c.mutation.Remark(); ok {
@@ -590,39 +555,6 @@ func (_c *PositionCreate) createSpec() (*Position, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.EndAt(); ok {
 		_spec.SetField(position.FieldEndAt, field.TypeTime, value)
 		_node.EndAt = &value
-	}
-	if nodes := _c.mutation.ParentIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.M2O,
-			Inverse: true,
-			Table:   position.ParentTable,
-			Columns: []string{position.ParentColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_node.ParentID = &nodes[0]
-		_spec.Edges = append(_spec.Edges, edge)
-	}
-	if nodes := _c.mutation.ChildrenIDs(); len(nodes) > 0 {
-		edge := &sqlgraph.EdgeSpec{
-			Rel:     sqlgraph.O2M,
-			Inverse: false,
-			Table:   position.ChildrenTable,
-			Columns: []string{position.ChildrenColumn},
-			Bidi:    false,
-			Target: &sqlgraph.EdgeTarget{
-				IDSpec: sqlgraph.NewFieldSpec(position.FieldID, field.TypeUint32),
-			},
-		}
-		for _, k := range nodes {
-			edge.Target.Nodes = append(edge.Target.Nodes, k)
-		}
-		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
@@ -785,7 +717,7 @@ func (u *PositionUpsert) ClearDeletedBy() *PositionUpsert {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (u *PositionUpsert) SetSortOrder(v int32) *PositionUpsert {
+func (u *PositionUpsert) SetSortOrder(v uint32) *PositionUpsert {
 	u.Set(position.FieldSortOrder, v)
 	return u
 }
@@ -797,7 +729,7 @@ func (u *PositionUpsert) UpdateSortOrder() *PositionUpsert {
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *PositionUpsert) AddSortOrder(v int32) *PositionUpsert {
+func (u *PositionUpsert) AddSortOrder(v uint32) *PositionUpsert {
 	u.Add(position.FieldSortOrder, v)
 	return u
 }
@@ -826,24 +758,6 @@ func (u *PositionUpsert) ClearRemark() *PositionUpsert {
 	return u
 }
 
-// SetParentID sets the "parent_id" field.
-func (u *PositionUpsert) SetParentID(v uint32) *PositionUpsert {
-	u.Set(position.FieldParentID, v)
-	return u
-}
-
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *PositionUpsert) UpdateParentID() *PositionUpsert {
-	u.SetExcluded(position.FieldParentID)
-	return u
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (u *PositionUpsert) ClearParentID() *PositionUpsert {
-	u.SetNull(position.FieldParentID)
-	return u
-}
-
 // SetStatus sets the "status" field.
 func (u *PositionUpsert) SetStatus(v position.Status) *PositionUpsert {
 	u.Set(position.FieldStatus, v)
@@ -853,12 +767,6 @@ func (u *PositionUpsert) SetStatus(v position.Status) *PositionUpsert {
 // UpdateStatus sets the "status" field to the value that was provided on create.
 func (u *PositionUpsert) UpdateStatus() *PositionUpsert {
 	u.SetExcluded(position.FieldStatus)
-	return u
-}
-
-// ClearStatus clears the value of the "status" field.
-func (u *PositionUpsert) ClearStatus() *PositionUpsert {
-	u.SetNull(position.FieldStatus)
 	return u
 }
 
@@ -874,12 +782,6 @@ func (u *PositionUpsert) UpdateName() *PositionUpsert {
 	return u
 }
 
-// ClearName clears the value of the "name" field.
-func (u *PositionUpsert) ClearName() *PositionUpsert {
-	u.SetNull(position.FieldName)
-	return u
-}
-
 // SetCode sets the "code" field.
 func (u *PositionUpsert) SetCode(v string) *PositionUpsert {
 	u.Set(position.FieldCode, v)
@@ -889,12 +791,6 @@ func (u *PositionUpsert) SetCode(v string) *PositionUpsert {
 // UpdateCode sets the "code" field to the value that was provided on create.
 func (u *PositionUpsert) UpdateCode() *PositionUpsert {
 	u.SetExcluded(position.FieldCode)
-	return u
-}
-
-// ClearCode clears the value of the "code" field.
-func (u *PositionUpsert) ClearCode() *PositionUpsert {
-	u.SetNull(position.FieldCode)
 	return u
 }
 
@@ -1036,12 +932,6 @@ func (u *PositionUpsert) AddHeadcount(v uint32) *PositionUpsert {
 	return u
 }
 
-// ClearHeadcount clears the value of the "headcount" field.
-func (u *PositionUpsert) ClearHeadcount() *PositionUpsert {
-	u.SetNull(position.FieldHeadcount)
-	return u
-}
-
 // SetIsKeyPosition sets the "is_key_position" field.
 func (u *PositionUpsert) SetIsKeyPosition(v bool) *PositionUpsert {
 	u.Set(position.FieldIsKeyPosition, v)
@@ -1051,12 +941,6 @@ func (u *PositionUpsert) SetIsKeyPosition(v bool) *PositionUpsert {
 // UpdateIsKeyPosition sets the "is_key_position" field to the value that was provided on create.
 func (u *PositionUpsert) UpdateIsKeyPosition() *PositionUpsert {
 	u.SetExcluded(position.FieldIsKeyPosition)
-	return u
-}
-
-// ClearIsKeyPosition clears the value of the "is_key_position" field.
-func (u *PositionUpsert) ClearIsKeyPosition() *PositionUpsert {
-	u.SetNull(position.FieldIsKeyPosition)
 	return u
 }
 
@@ -1289,14 +1173,14 @@ func (u *PositionUpsertOne) ClearDeletedBy() *PositionUpsertOne {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (u *PositionUpsertOne) SetSortOrder(v int32) *PositionUpsertOne {
+func (u *PositionUpsertOne) SetSortOrder(v uint32) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.SetSortOrder(v)
 	})
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *PositionUpsertOne) AddSortOrder(v int32) *PositionUpsertOne {
+func (u *PositionUpsertOne) AddSortOrder(v uint32) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.AddSortOrder(v)
 	})
@@ -1337,27 +1221,6 @@ func (u *PositionUpsertOne) ClearRemark() *PositionUpsertOne {
 	})
 }
 
-// SetParentID sets the "parent_id" field.
-func (u *PositionUpsertOne) SetParentID(v uint32) *PositionUpsertOne {
-	return u.Update(func(s *PositionUpsert) {
-		s.SetParentID(v)
-	})
-}
-
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *PositionUpsertOne) UpdateParentID() *PositionUpsertOne {
-	return u.Update(func(s *PositionUpsert) {
-		s.UpdateParentID()
-	})
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (u *PositionUpsertOne) ClearParentID() *PositionUpsertOne {
-	return u.Update(func(s *PositionUpsert) {
-		s.ClearParentID()
-	})
-}
-
 // SetStatus sets the "status" field.
 func (u *PositionUpsertOne) SetStatus(v position.Status) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
@@ -1369,13 +1232,6 @@ func (u *PositionUpsertOne) SetStatus(v position.Status) *PositionUpsertOne {
 func (u *PositionUpsertOne) UpdateStatus() *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// ClearStatus clears the value of the "status" field.
-func (u *PositionUpsertOne) ClearStatus() *PositionUpsertOne {
-	return u.Update(func(s *PositionUpsert) {
-		s.ClearStatus()
 	})
 }
 
@@ -1393,13 +1249,6 @@ func (u *PositionUpsertOne) UpdateName() *PositionUpsertOne {
 	})
 }
 
-// ClearName clears the value of the "name" field.
-func (u *PositionUpsertOne) ClearName() *PositionUpsertOne {
-	return u.Update(func(s *PositionUpsert) {
-		s.ClearName()
-	})
-}
-
 // SetCode sets the "code" field.
 func (u *PositionUpsertOne) SetCode(v string) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
@@ -1411,13 +1260,6 @@ func (u *PositionUpsertOne) SetCode(v string) *PositionUpsertOne {
 func (u *PositionUpsertOne) UpdateCode() *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.UpdateCode()
-	})
-}
-
-// ClearCode clears the value of the "code" field.
-func (u *PositionUpsertOne) ClearCode() *PositionUpsertOne {
-	return u.Update(func(s *PositionUpsert) {
-		s.ClearCode()
 	})
 }
 
@@ -1582,13 +1424,6 @@ func (u *PositionUpsertOne) UpdateHeadcount() *PositionUpsertOne {
 	})
 }
 
-// ClearHeadcount clears the value of the "headcount" field.
-func (u *PositionUpsertOne) ClearHeadcount() *PositionUpsertOne {
-	return u.Update(func(s *PositionUpsert) {
-		s.ClearHeadcount()
-	})
-}
-
 // SetIsKeyPosition sets the "is_key_position" field.
 func (u *PositionUpsertOne) SetIsKeyPosition(v bool) *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
@@ -1600,13 +1435,6 @@ func (u *PositionUpsertOne) SetIsKeyPosition(v bool) *PositionUpsertOne {
 func (u *PositionUpsertOne) UpdateIsKeyPosition() *PositionUpsertOne {
 	return u.Update(func(s *PositionUpsert) {
 		s.UpdateIsKeyPosition()
-	})
-}
-
-// ClearIsKeyPosition clears the value of the "is_key_position" field.
-func (u *PositionUpsertOne) ClearIsKeyPosition() *PositionUpsertOne {
-	return u.Update(func(s *PositionUpsert) {
-		s.ClearIsKeyPosition()
 	})
 }
 
@@ -2013,14 +1841,14 @@ func (u *PositionUpsertBulk) ClearDeletedBy() *PositionUpsertBulk {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (u *PositionUpsertBulk) SetSortOrder(v int32) *PositionUpsertBulk {
+func (u *PositionUpsertBulk) SetSortOrder(v uint32) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.SetSortOrder(v)
 	})
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *PositionUpsertBulk) AddSortOrder(v int32) *PositionUpsertBulk {
+func (u *PositionUpsertBulk) AddSortOrder(v uint32) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.AddSortOrder(v)
 	})
@@ -2061,27 +1889,6 @@ func (u *PositionUpsertBulk) ClearRemark() *PositionUpsertBulk {
 	})
 }
 
-// SetParentID sets the "parent_id" field.
-func (u *PositionUpsertBulk) SetParentID(v uint32) *PositionUpsertBulk {
-	return u.Update(func(s *PositionUpsert) {
-		s.SetParentID(v)
-	})
-}
-
-// UpdateParentID sets the "parent_id" field to the value that was provided on create.
-func (u *PositionUpsertBulk) UpdateParentID() *PositionUpsertBulk {
-	return u.Update(func(s *PositionUpsert) {
-		s.UpdateParentID()
-	})
-}
-
-// ClearParentID clears the value of the "parent_id" field.
-func (u *PositionUpsertBulk) ClearParentID() *PositionUpsertBulk {
-	return u.Update(func(s *PositionUpsert) {
-		s.ClearParentID()
-	})
-}
-
 // SetStatus sets the "status" field.
 func (u *PositionUpsertBulk) SetStatus(v position.Status) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
@@ -2093,13 +1900,6 @@ func (u *PositionUpsertBulk) SetStatus(v position.Status) *PositionUpsertBulk {
 func (u *PositionUpsertBulk) UpdateStatus() *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.UpdateStatus()
-	})
-}
-
-// ClearStatus clears the value of the "status" field.
-func (u *PositionUpsertBulk) ClearStatus() *PositionUpsertBulk {
-	return u.Update(func(s *PositionUpsert) {
-		s.ClearStatus()
 	})
 }
 
@@ -2117,13 +1917,6 @@ func (u *PositionUpsertBulk) UpdateName() *PositionUpsertBulk {
 	})
 }
 
-// ClearName clears the value of the "name" field.
-func (u *PositionUpsertBulk) ClearName() *PositionUpsertBulk {
-	return u.Update(func(s *PositionUpsert) {
-		s.ClearName()
-	})
-}
-
 // SetCode sets the "code" field.
 func (u *PositionUpsertBulk) SetCode(v string) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
@@ -2135,13 +1928,6 @@ func (u *PositionUpsertBulk) SetCode(v string) *PositionUpsertBulk {
 func (u *PositionUpsertBulk) UpdateCode() *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.UpdateCode()
-	})
-}
-
-// ClearCode clears the value of the "code" field.
-func (u *PositionUpsertBulk) ClearCode() *PositionUpsertBulk {
-	return u.Update(func(s *PositionUpsert) {
-		s.ClearCode()
 	})
 }
 
@@ -2306,13 +2092,6 @@ func (u *PositionUpsertBulk) UpdateHeadcount() *PositionUpsertBulk {
 	})
 }
 
-// ClearHeadcount clears the value of the "headcount" field.
-func (u *PositionUpsertBulk) ClearHeadcount() *PositionUpsertBulk {
-	return u.Update(func(s *PositionUpsert) {
-		s.ClearHeadcount()
-	})
-}
-
 // SetIsKeyPosition sets the "is_key_position" field.
 func (u *PositionUpsertBulk) SetIsKeyPosition(v bool) *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
@@ -2324,13 +2103,6 @@ func (u *PositionUpsertBulk) SetIsKeyPosition(v bool) *PositionUpsertBulk {
 func (u *PositionUpsertBulk) UpdateIsKeyPosition() *PositionUpsertBulk {
 	return u.Update(func(s *PositionUpsert) {
 		s.UpdateIsKeyPosition()
-	})
-}
-
-// ClearIsKeyPosition clears the value of the "is_key_position" field.
-func (u *PositionUpsertBulk) ClearIsKeyPosition() *PositionUpsertBulk {
-	return u.Update(func(s *PositionUpsert) {
-		s.ClearIsKeyPosition()
 	})
 }
 

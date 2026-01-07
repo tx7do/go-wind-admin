@@ -12,7 +12,6 @@ import {
   type userservicev1_Position as Position,
 } from '#/generated/api/admin/service/v1';
 import {
-  findPosition,
   genderList,
   statusList,
   useOrgUnitStore,
@@ -134,19 +133,13 @@ const [BaseForm, baseFormApi] = useVbenForm({
       },
     },
     {
-      component: 'ApiTreeSelect',
+      component: 'ApiSelect',
       fieldName: 'positionId',
       label: $t('page.user.form.position'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
-        numberToString: true,
         showSearch: true,
-        treeDefaultExpandAll: true,
         allowClear: true,
-        childrenField: 'children',
-        labelField: 'name',
-        valueField: 'id',
-        treeNodeFilterProp: 'label',
         api: async () => {
           const result = await positionStore.listPosition(undefined, {
             status: 'ON',
@@ -154,28 +147,13 @@ const [BaseForm, baseFormApi] = useVbenForm({
           positionList.value = result.items ?? [];
           return result.items;
         },
-        onChange: async (positionId: any) => {
-          console.log('position onChange:', positionId);
-
-          if (!positionId) {
-            await baseFormApi.setValues(
-              {
-                orgUnitId: undefined,
-              },
-              false,
-            );
-          }
-
-          const selectedPosition = findPosition(positionList.value, positionId);
-          console.log('selectedPosition:', selectedPosition);
-          if (selectedPosition) {
-            await baseFormApi.setValues(
-              {
-                orgUnitId: selectedPosition.orgUnitId || undefined,
-              },
-              false,
-            );
-          }
+        filterOption: (input: string, option: any) =>
+          option.label.toLowerCase().includes(input.toLowerCase()),
+        afterFetch: (data: { name: string; path: string }[]) => {
+          return data.map((item: Position) => ({
+            label: item.name,
+            value: item.id,
+          }));
         },
       },
     },

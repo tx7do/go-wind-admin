@@ -151,14 +151,14 @@ func (_u *LanguageUpdate) ClearDeletedBy() *LanguageUpdate {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (_u *LanguageUpdate) SetSortOrder(v int32) *LanguageUpdate {
+func (_u *LanguageUpdate) SetSortOrder(v uint32) *LanguageUpdate {
 	_u.mutation.ResetSortOrder()
 	_u.mutation.SetSortOrder(v)
 	return _u
 }
 
 // SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_u *LanguageUpdate) SetNillableSortOrder(v *int32) *LanguageUpdate {
+func (_u *LanguageUpdate) SetNillableSortOrder(v *uint32) *LanguageUpdate {
 	if v != nil {
 		_u.SetSortOrder(*v)
 	}
@@ -390,13 +390,13 @@ func (_u *LanguageUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(language.FieldDeletedBy, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.SortOrder(); ok {
-		_spec.SetField(language.FieldSortOrder, field.TypeInt32, value)
+		_spec.SetField(language.FieldSortOrder, field.TypeUint32, value)
 	}
 	if value, ok := _u.mutation.AddedSortOrder(); ok {
-		_spec.AddField(language.FieldSortOrder, field.TypeInt32, value)
+		_spec.AddField(language.FieldSortOrder, field.TypeUint32, value)
 	}
 	if _u.mutation.SortOrderCleared() {
-		_spec.ClearField(language.FieldSortOrder, field.TypeInt32)
+		_spec.ClearField(language.FieldSortOrder, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(language.FieldIsEnabled, field.TypeBool, value)
@@ -572,14 +572,14 @@ func (_u *LanguageUpdateOne) ClearDeletedBy() *LanguageUpdateOne {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (_u *LanguageUpdateOne) SetSortOrder(v int32) *LanguageUpdateOne {
+func (_u *LanguageUpdateOne) SetSortOrder(v uint32) *LanguageUpdateOne {
 	_u.mutation.ResetSortOrder()
 	_u.mutation.SetSortOrder(v)
 	return _u
 }
 
 // SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_u *LanguageUpdateOne) SetNillableSortOrder(v *int32) *LanguageUpdateOne {
+func (_u *LanguageUpdateOne) SetNillableSortOrder(v *uint32) *LanguageUpdateOne {
 	if v != nil {
 		_u.SetSortOrder(*v)
 	}
@@ -841,13 +841,13 @@ func (_u *LanguageUpdateOne) sqlSave(ctx context.Context) (_node *Language, err 
 		_spec.ClearField(language.FieldDeletedBy, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.SortOrder(); ok {
-		_spec.SetField(language.FieldSortOrder, field.TypeInt32, value)
+		_spec.SetField(language.FieldSortOrder, field.TypeUint32, value)
 	}
 	if value, ok := _u.mutation.AddedSortOrder(); ok {
-		_spec.AddField(language.FieldSortOrder, field.TypeInt32, value)
+		_spec.AddField(language.FieldSortOrder, field.TypeUint32, value)
 	}
 	if _u.mutation.SortOrderCleared() {
-		_spec.ClearField(language.FieldSortOrder, field.TypeInt32)
+		_spec.ClearField(language.FieldSortOrder, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.IsEnabled(); ok {
 		_spec.SetField(language.FieldIsEnabled, field.TypeBool, value)

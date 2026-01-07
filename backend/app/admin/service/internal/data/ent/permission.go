@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// 权限核心表
+// 权限点表
 type Permission struct {
 	config `json:"-"`
 	// ID of the ent.
@@ -30,61 +30,17 @@ type Permission struct {
 	UpdatedBy *uint32 `json:"updated_by,omitempty"`
 	// 删除者ID
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
-	// 备注
-	Remark *string `json:"remark,omitempty"`
 	// 状态
 	Status *permission.Status `json:"status,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
-	// 父节点ID
-	ParentID *uint32 `json:"parent_id,omitempty"`
 	// 权限名称（如：删除用户）
 	Name *string `json:"name,omitempty"`
-	// 权限唯一编码（如：user.delete）
+	// 权限编码（如：opm:user:delete、order:export）
 	Code *string `json:"code,omitempty"`
-	// 树路径，如：/1/10/
-	Path *string `json:"path,omitempty"`
-	// 所属业务模块（如：用户管理/订单管理）
-	Module *string `json:"module,omitempty"`
-	// 排序序号
-	SortOrder *int32 `json:"sort_order,omitempty"`
-	// 权限类型
-	Type *permission.Type `json:"type,omitempty"`
-	// Edges holds the relations/edges for other nodes in the graph.
-	// The values are being populated by the PermissionQuery when eager-loading is set.
-	Edges        PermissionEdges `json:"edges"`
+	// 关联权限分组 ID
+	GroupID      *uint32 `json:"group_id,omitempty"`
 	selectValues sql.SelectValues
-}
-
-// PermissionEdges holds the relations/edges for other nodes in the graph.
-type PermissionEdges struct {
-	// Parent holds the value of the parent edge.
-	Parent *Permission `json:"parent,omitempty"`
-	// Children holds the value of the children edge.
-	Children []*Permission `json:"children,omitempty"`
-	// loadedTypes holds the information for reporting if a
-	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [2]bool
-}
-
-// ParentOrErr returns the Parent value or an error if the edge
-// was not loaded in eager-loading, or loaded but was not found.
-func (e PermissionEdges) ParentOrErr() (*Permission, error) {
-	if e.Parent != nil {
-		return e.Parent, nil
-	} else if e.loadedTypes[0] {
-		return nil, &NotFoundError{label: permission.Label}
-	}
-	return nil, &NotLoadedError{edge: "parent"}
-}
-
-// ChildrenOrErr returns the Children value or an error if the edge
-// was not loaded in eager-loading.
-func (e PermissionEdges) ChildrenOrErr() ([]*Permission, error) {
-	if e.loadedTypes[1] {
-		return e.Children, nil
-	}
-	return nil, &NotLoadedError{edge: "children"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -92,9 +48,9 @@ func (*Permission) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case permission.FieldID, permission.FieldCreatedBy, permission.FieldUpdatedBy, permission.FieldDeletedBy, permission.FieldTenantID, permission.FieldParentID, permission.FieldSortOrder:
+		case permission.FieldID, permission.FieldCreatedBy, permission.FieldUpdatedBy, permission.FieldDeletedBy, permission.FieldTenantID, permission.FieldGroupID:
 			values[i] = new(sql.NullInt64)
-		case permission.FieldRemark, permission.FieldStatus, permission.FieldName, permission.FieldCode, permission.FieldPath, permission.FieldModule, permission.FieldType:
+		case permission.FieldStatus, permission.FieldName, permission.FieldCode:
 			values[i] = new(sql.NullString)
 		case permission.FieldCreatedAt, permission.FieldUpdatedAt, permission.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -161,13 +117,6 @@ func (_m *Permission) assignValues(columns []string, values []any) error {
 				_m.DeletedBy = new(uint32)
 				*_m.DeletedBy = uint32(value.Int64)
 			}
-		case permission.FieldRemark:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field remark", values[i])
-			} else if value.Valid {
-				_m.Remark = new(string)
-				*_m.Remark = value.String
-			}
 		case permission.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field status", values[i])
@@ -181,13 +130,6 @@ func (_m *Permission) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.TenantID = new(uint32)
 				*_m.TenantID = uint32(value.Int64)
-			}
-		case permission.FieldParentID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
-			} else if value.Valid {
-				_m.ParentID = new(uint32)
-				*_m.ParentID = uint32(value.Int64)
 			}
 		case permission.FieldName:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -203,33 +145,12 @@ func (_m *Permission) assignValues(columns []string, values []any) error {
 				_m.Code = new(string)
 				*_m.Code = value.String
 			}
-		case permission.FieldPath:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field path", values[i])
-			} else if value.Valid {
-				_m.Path = new(string)
-				*_m.Path = value.String
-			}
-		case permission.FieldModule:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field module", values[i])
-			} else if value.Valid {
-				_m.Module = new(string)
-				*_m.Module = value.String
-			}
-		case permission.FieldSortOrder:
+		case permission.FieldGroupID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field sort_order", values[i])
+				return fmt.Errorf("unexpected type %T for field group_id", values[i])
 			} else if value.Valid {
-				_m.SortOrder = new(int32)
-				*_m.SortOrder = int32(value.Int64)
-			}
-		case permission.FieldType:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field type", values[i])
-			} else if value.Valid {
-				_m.Type = new(permission.Type)
-				*_m.Type = permission.Type(value.String)
+				_m.GroupID = new(uint32)
+				*_m.GroupID = uint32(value.Int64)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -242,16 +163,6 @@ func (_m *Permission) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (_m *Permission) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
-}
-
-// QueryParent queries the "parent" edge of the Permission entity.
-func (_m *Permission) QueryParent() *PermissionQuery {
-	return NewPermissionClient(_m.config).QueryParent(_m)
-}
-
-// QueryChildren queries the "children" edge of the Permission entity.
-func (_m *Permission) QueryChildren() *PermissionQuery {
-	return NewPermissionClient(_m.config).QueryChildren(_m)
 }
 
 // Update returns a builder for updating this Permission.
@@ -307,11 +218,6 @@ func (_m *Permission) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.Remark; v != nil {
-		builder.WriteString("remark=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
 	if v := _m.Status; v != nil {
 		builder.WriteString("status=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -319,11 +225,6 @@ func (_m *Permission) String() string {
 	builder.WriteString(", ")
 	if v := _m.TenantID; v != nil {
 		builder.WriteString("tenant_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := _m.ParentID; v != nil {
-		builder.WriteString("parent_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
@@ -337,23 +238,8 @@ func (_m *Permission) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.Path; v != nil {
-		builder.WriteString("path=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.Module; v != nil {
-		builder.WriteString("module=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.SortOrder; v != nil {
-		builder.WriteString("sort_order=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := _m.Type; v != nil {
-		builder.WriteString("type=")
+	if v := _m.GroupID; v != nil {
+		builder.WriteString("group_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')

@@ -14,7 +14,7 @@ const log: RouteRecordRaw[] = [
       icon: 'lucide:activity',
       title: $t('menu.log.moduleName'),
       keepAlive: true,
-      authority: ['super'],
+      authority: ['platform_admin'],
     },
     children: [
       {
@@ -23,7 +23,7 @@ const log: RouteRecordRaw[] = [
         meta: {
           icon: 'lucide:user-lock',
           title: $t('menu.log.adminLoginLog'),
-          authority: ['super'],
+          authority: ['platform_admin'],
         },
         component: () => import('#/views/app/log/admin_login_log/index.vue'),
       },
@@ -34,7 +34,7 @@ const log: RouteRecordRaw[] = [
         meta: {
           icon: 'lucide:file-clock',
           title: $t('menu.log.adminOperationLog'),
-          authority: ['super'],
+          authority: ['platform_admin'],
         },
         component: () =>
           import('#/views/app/log/admin_operation_log/index.vue'),

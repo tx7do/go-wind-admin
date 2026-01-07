@@ -36,6 +36,20 @@ func (_c *AdminOperationLogCreate) SetNillableCreatedAt(v *time.Time) *AdminOper
 	return _c
 }
 
+// SetTenantID sets the "tenant_id" field.
+func (_c *AdminOperationLogCreate) SetTenantID(v uint32) *AdminOperationLogCreate {
+	_c.mutation.SetTenantID(v)
+	return _c
+}
+
+// SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
+func (_c *AdminOperationLogCreate) SetNillableTenantID(v *uint32) *AdminOperationLogCreate {
+	if v != nil {
+		_c.SetTenantID(*v)
+	}
+	return _c
+}
+
 // SetRequestID sets the "request_id" field.
 func (_c *AdminOperationLogCreate) SetRequestID(v string) *AdminOperationLogCreate {
 	_c.mutation.SetRequestID(v)
@@ -453,6 +467,10 @@ func (_c *AdminOperationLogCreate) createSpec() (*AdminOperationLog, *sqlgraph.C
 	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(adminoperationlog.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = &value
+	}
+	if value, ok := _c.mutation.TenantID(); ok {
+		_spec.SetField(adminoperationlog.FieldTenantID, field.TypeUint32, value)
+		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.RequestID(); ok {
 		_spec.SetField(adminoperationlog.FieldRequestID, field.TypeString, value)
@@ -1071,6 +1089,9 @@ func (u *AdminOperationLogUpsertOne) UpdateNewValues() *AdminOperationLogUpsertO
 		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(adminoperationlog.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.TenantID(); exists {
+			s.SetIgnore(adminoperationlog.FieldTenantID)
 		}
 	}))
 	return u
@@ -1811,6 +1832,9 @@ func (u *AdminOperationLogUpsertBulk) UpdateNewValues() *AdminOperationLogUpsert
 			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(adminoperationlog.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.TenantID(); exists {
+				s.SetIgnore(adminoperationlog.FieldTenantID)
 			}
 		}
 	}))

@@ -74,6 +74,11 @@ func (Membership) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
+		field.Time("joined_at").
+			Comment("加入时间（UTC）").
+			Optional().
+			Nillable(),
+
 		field.Enum("status").
 			Comment("状态").
 			Optional().
@@ -81,10 +86,11 @@ func (Membership) Fields() []ent.Field {
 			Default("ACTIVE").
 			NamedValues(
 				"Active", "ACTIVE",
+				"Disabled", "DISABLED",
 				"Pending", "PENDING",
-				"Inactive", "INACTIVE",
-				"Suspended", "SUSPENDED",
+				"Invited", "INVITED",
 				"Expired", "EXPIRED",
+				"Rejected", "REJECTED",
 			),
 	}
 }
@@ -103,13 +109,50 @@ func (Membership) Mixin() []ent.Mixin {
 // Indexes of the Membership.
 func (Membership) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("tenant_id", "user_id").Unique().StorageKey("uix_sys_membership_tenant_user"),
+		// 在租户范围内保证 (user_id, org_unit_id, role_id, position_id) 组合唯一
+		// 若任一列可为 NULL，Postgres 需在迁移中使用 partial unique index
+		index.Fields("tenant_id", "user_id").
+			Unique().
+			StorageKey("uix_sys_membership_tenant_user"),
 
-		index.Fields("user_id").StorageKey("idx_membership_user_id"),
-		index.Fields("tenant_id").StorageKey("idx_membership_tenant_id"),
+		// 在租户范围内保证每个用户只有一个主身份（is_primary）
+		// 若 is_primary 可为 NULL/false，Postgres 需在迁移中使用 partial unique index（例如 WHERE is_primary = true）
+		index.Fields("tenant_id", "user_id", "is_primary").
+			Unique().
+			StorageKey("uix_sys_membership_tenant_user_primary"),
 
-		index.Fields("org_unit_id").StorageKey("idx_membership_org_unit_id"),
-		index.Fields("position_id").StorageKey("idx_membership_position_id"),
-		index.Fields("role_id").StorageKey("idx_membership_role_id"),
+		// 按租户 + 用户 + 状态 + 生效时间（时间列放末尾便于范围扫描）
+		index.Fields("tenant_id", "user_id", "status", "start_at").
+			StorageKey("idx_sys_membership_tenant_user_status_start_at"),
+
+		// 单列索引，便于按用户/租户/组织/角色/职位快速过滤
+		index.Fields("user_id").
+			StorageKey("idx_sys_membership_user_id"),
+		index.Fields("tenant_id").
+			StorageKey("idx_sys_membership_tenant_id"),
+		index.Fields("org_unit_id").
+			StorageKey("idx_sys_membership_org_unit_id"),
+		index.Fields("role_id").
+			StorageKey("idx_sys_membership_role_id"),
+		index.Fields("position_id").
+			StorageKey("idx_sys_membership_position_id"),
+
+		// 分配者索引
+		index.Fields("assigned_by").
+			StorageKey("idx_sys_membership_assigned_by"),
+
+		// 状态与时间范围查询索引
+		index.Fields("status").
+			StorageKey("idx_sys_membership_status"),
+		index.Fields("start_at").
+			StorageKey("idx_sys_membership_start_at"),
+		index.Fields("end_at").
+			StorageKey("idx_sys_membership_end_at"),
+
+		// 审计与分页（时间列放末尾以利于范围扫描）
+		index.Fields("created_by", "created_at").
+			StorageKey("idx_sys_membership_created_by_created_at"),
+		index.Fields("created_at").
+			StorageKey("idx_sys_membership_created_at"),
 	}
 }

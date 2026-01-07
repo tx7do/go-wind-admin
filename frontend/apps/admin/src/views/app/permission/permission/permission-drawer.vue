@@ -1,30 +1,28 @@
 <script lang="ts" setup>
-import type { ChangeEvent } from 'ant-design-vue/es/_util/EventInterface';
-
-import { computed, reactive, ref } from 'vue';
+import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
-import { $t, $te } from '@vben/locales';
+import { $t } from '@vben/locales';
 
-import lucide from '@iconify/json/json/lucide.json';
-import { addCollection } from '@iconify/vue';
 import { notification } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import {
-  buildPermissionTree,
-  PERMISSION_TYPE_NAME_MAP,
+  buildMenuTree,
+  convertApiToTree,
   statusList,
+  useApiResourceStore,
+  useMenuStore,
+  usePermissionGroupStore,
   usePermissionStore,
 } from '#/stores';
 
 const permissionStore = usePermissionStore();
-
-addCollection(lucide);
+const permissionGroupStore = usePermissionGroupStore();
+const apiStore = useApiResourceStore();
+const menuStore = useMenuStore();
 
 const data = ref();
-
-const titleSuffix = reactive({ title: '' });
 
 const getTitle = computed(() =>
   data.value?.create
@@ -36,26 +34,16 @@ const getTitle = computed(() =>
 
 const [BaseForm, baseFormApi] = useVbenForm({
   showDefaultActions: false,
+
   // 所有表单项共用，可单独在表单内覆盖
   commonConfig: {
-    formItemClass: 'col-span-2 md:col-span-1',
+    // 所有表单项
+    componentProps: {
+      class: 'w-full',
+    },
   },
-  wrapperClass: 'grid-cols-2 gap-x-4',
 
   schema: [
-    {
-      component: 'RadioGroup',
-      fieldName: 'type',
-      label: $t('page.permission.type'),
-      defaultValue: 'MENU',
-      formItemClass: 'col-span-2 md:col-span-2',
-      componentProps: {
-        optionType: 'button',
-        buttonStyle: 'solid',
-        options: PERMISSION_TYPE_NAME_MAP,
-      },
-    },
-
     {
       component: 'Input',
       fieldName: 'name',
@@ -65,59 +53,44 @@ const [BaseForm, baseFormApi] = useVbenForm({
         return {
           placeholder: $t('ui.placeholder.input'),
           allowClear: true,
-          addonAfter: titleSuffix.title,
-          onChange({ target: { value } }: ChangeEvent) {
-            titleSuffix.title = value && $te(value) ? $t(value) : '';
-          },
         };
       },
     },
     {
-      component: 'ApiTreeSelect',
-      fieldName: 'parentId',
-      label: $t('page.permission.parentId'),
+      component: 'Input',
+      fieldName: 'code',
+      label: $t('page.permission.code'),
+      rules: 'required',
+      componentProps() {
+        return {
+          placeholder: $t('ui.placeholder.input'),
+          allowClear: true,
+        };
+      },
+    },
+    {
+      component: 'ApiSelect',
+      fieldName: 'groupId',
+      label: $t('page.permission.groupId'),
       componentProps: {
-        placeholder: $t('ui.placeholder.select'),
-        class: 'w-full',
-        showSearch: true,
-        treeDefaultExpandAll: true,
-        numberToString: true,
         allowClear: true,
-        childrenField: 'children',
-        labelField: 'name',
-        valueField: 'id',
-        treeNodeFilterProp: 'label',
+        showSearch: true,
+        placeholder: $t('ui.placeholder.select'),
+        filterOption: (input: string, option: any) =>
+          option.label.toLowerCase().includes(input.toLowerCase()),
+        afterFetch: (data: { name: string; path: string }[]) => {
+          return data.map((item: any) => ({
+            label: item.name,
+            value: item.id,
+          }));
+        },
         api: async () => {
-          const fieldValue = baseFormApi.form.values;
-          const result = await permissionStore.listPermission(undefined, {
-            parentId: fieldValue.parentId,
-            status: 'ON',
-          });
+          const result = await permissionGroupStore.listPermissionGroup(
+            undefined,
+            {},
+          );
           return result.items;
         },
-
-        afterFetch: (data: any) => {
-          return buildPermissionTree(data);
-        },
-      },
-    },
-    {
-      component: 'InputNumber',
-      fieldName: 'sortOrder',
-      label: $t('page.permission.sortOrder'),
-      componentProps: {
-        placeholder: $t('ui.placeholder.input'),
-        allowClear: true,
-      },
-    },
-    {
-      component: 'Input',
-      fieldName: 'path',
-      label: $t('page.permission.path'),
-      rules: 'required',
-      componentProps: {
-        placeholder: $t('ui.placeholder.input'),
-        allowClear: true,
       },
     },
     {
@@ -131,6 +104,47 @@ const [BaseForm, baseFormApi] = useVbenForm({
         buttonStyle: 'solid',
         class: 'flex flex-wrap', // 如果选项过多，可以添加class来自动折叠
         options: statusList,
+      },
+    },
+    {
+      component: 'ApiTree',
+      fieldName: 'menuIds',
+      componentProps: {
+        title: $t('page.permission.menuIds'),
+        showSearch: true,
+        treeDefaultExpandAll: false,
+        loadingSlot: 'suffixIcon',
+        childrenField: 'children',
+        labelField: 'meta.title',
+        valueField: 'id',
+        resultField: 'items',
+        api: async () => {
+          return await menuStore.listMenu(undefined, {
+            status: 'ON',
+          });
+        },
+        afterFetch: (data: any) => {
+          return buildMenuTree(data.items);
+        },
+      },
+    },
+    {
+      component: 'ApiTree',
+      fieldName: 'apiResourceIds',
+      componentProps: {
+        title: $t('page.permission.apiResourceIds'),
+        toolbar: true,
+        search: true,
+        checkable: true,
+        numberToString: false,
+        loadingSlot: 'suffixIcon',
+        childrenField: 'children',
+        labelField: 'title',
+        valueField: 'key',
+        api: async () => {
+          const data = await apiStore.listApiResource(undefined, {});
+          return convertApiToTree(data.items ?? []);
+        },
       },
     },
   ],
@@ -198,7 +212,7 @@ function setLoading(loading: boolean) {
 </script>
 
 <template>
-  <Drawer :title="getTitle" class="w-full max-w-[800px]">
-    <BaseForm class="mx-4" />
+  <Drawer :title="getTitle">
+    <BaseForm />
   </Drawer>
 </template>

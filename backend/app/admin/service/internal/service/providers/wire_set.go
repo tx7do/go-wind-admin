@@ -41,4 +41,7 @@ var ProviderSet = wire.NewSet(
 	service.NewUserCredentialService,
 	service.NewApiResourceService,
 	service.NewPermissionService,
+	service.NewPermissionGroupService,
+	service.NewPolicyEvaluationLogService,
+	service.NewPermissionAuditLogService,
 )

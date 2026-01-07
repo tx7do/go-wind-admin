@@ -413,6 +413,9 @@ func (_u *AdminLoginLogUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	if _u.mutation.CreatedAtCleared() {
 		_spec.ClearField(adminloginlog.FieldCreatedAt, field.TypeTime)
 	}
+	if _u.mutation.TenantIDCleared() {
+		_spec.ClearField(adminloginlog.FieldTenantID, field.TypeUint32)
+	}
 	if value, ok := _u.mutation.LoginIP(); ok {
 		_spec.SetField(adminloginlog.FieldLoginIP, field.TypeString, value)
 	}
@@ -950,6 +953,9 @@ func (_u *AdminLoginLogUpdateOne) sqlSave(ctx context.Context) (_node *AdminLogi
 	}
 	if _u.mutation.CreatedAtCleared() {
 		_spec.ClearField(adminloginlog.FieldCreatedAt, field.TypeTime)
+	}
+	if _u.mutation.TenantIDCleared() {
+		_spec.ClearField(adminloginlog.FieldTenantID, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.LoginIP(); ok {
 		_spec.SetField(adminloginlog.FieldLoginIP, field.TypeString, value)

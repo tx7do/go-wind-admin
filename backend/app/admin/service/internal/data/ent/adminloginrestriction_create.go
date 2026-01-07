@@ -106,6 +106,20 @@ func (_c *AdminLoginRestrictionCreate) SetNillableDeletedBy(v *uint32) *AdminLog
 	return _c
 }
 
+// SetTenantID sets the "tenant_id" field.
+func (_c *AdminLoginRestrictionCreate) SetTenantID(v uint32) *AdminLoginRestrictionCreate {
+	_c.mutation.SetTenantID(v)
+	return _c
+}
+
+// SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
+func (_c *AdminLoginRestrictionCreate) SetNillableTenantID(v *uint32) *AdminLoginRestrictionCreate {
+	if v != nil {
+		_c.SetTenantID(*v)
+	}
+	return _c
+}
+
 // SetTargetID sets the "target_id" field.
 func (_c *AdminLoginRestrictionCreate) SetTargetID(v uint32) *AdminLoginRestrictionCreate {
 	_c.mutation.SetTargetID(v)
@@ -300,6 +314,10 @@ func (_c *AdminLoginRestrictionCreate) createSpec() (*AdminLoginRestriction, *sq
 	if value, ok := _c.mutation.DeletedBy(); ok {
 		_spec.SetField(adminloginrestriction.FieldDeletedBy, field.TypeUint32, value)
 		_node.DeletedBy = &value
+	}
+	if value, ok := _c.mutation.TenantID(); ok {
+		_spec.SetField(adminloginrestriction.FieldTenantID, field.TypeUint32, value)
+		_node.TenantID = &value
 	}
 	if value, ok := _c.mutation.TargetID(); ok {
 		_spec.SetField(adminloginrestriction.FieldTargetID, field.TypeUint32, value)
@@ -596,6 +614,9 @@ func (u *AdminLoginRestrictionUpsertOne) UpdateNewValues() *AdminLoginRestrictio
 		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(adminloginrestriction.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.TenantID(); exists {
+			s.SetIgnore(adminloginrestriction.FieldTenantID)
 		}
 	}))
 	return u
@@ -1050,6 +1071,9 @@ func (u *AdminLoginRestrictionUpsertBulk) UpdateNewValues() *AdminLoginRestricti
 			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(adminloginrestriction.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.TenantID(); exists {
+				s.SetIgnore(adminloginrestriction.FieldTenantID)
 			}
 		}
 	}))

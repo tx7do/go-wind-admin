@@ -122,13 +122,13 @@ func (_c *DictEntryCreate) SetNillableDescription(v *string) *DictEntryCreate {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (_c *DictEntryCreate) SetSortOrder(v int32) *DictEntryCreate {
+func (_c *DictEntryCreate) SetSortOrder(v uint32) *DictEntryCreate {
 	_c.mutation.SetSortOrder(v)
 	return _c
 }
 
 // SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_c *DictEntryCreate) SetNillableSortOrder(v *int32) *DictEntryCreate {
+func (_c *DictEntryCreate) SetNillableSortOrder(v *uint32) *DictEntryCreate {
 	if v != nil {
 		_c.SetSortOrder(*v)
 	}
@@ -363,7 +363,7 @@ func (_c *DictEntryCreate) createSpec() (*DictEntry, *sqlgraph.CreateSpec) {
 		_node.Description = &value
 	}
 	if value, ok := _c.mutation.SortOrder(); ok {
-		_spec.SetField(dictentry.FieldSortOrder, field.TypeInt32, value)
+		_spec.SetField(dictentry.FieldSortOrder, field.TypeUint32, value)
 		_node.SortOrder = &value
 	}
 	if value, ok := _c.mutation.IsEnabled(); ok {
@@ -586,7 +586,7 @@ func (u *DictEntryUpsert) ClearDescription() *DictEntryUpsert {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (u *DictEntryUpsert) SetSortOrder(v int32) *DictEntryUpsert {
+func (u *DictEntryUpsert) SetSortOrder(v uint32) *DictEntryUpsert {
 	u.Set(dictentry.FieldSortOrder, v)
 	return u
 }
@@ -598,7 +598,7 @@ func (u *DictEntryUpsert) UpdateSortOrder() *DictEntryUpsert {
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *DictEntryUpsert) AddSortOrder(v int32) *DictEntryUpsert {
+func (u *DictEntryUpsert) AddSortOrder(v uint32) *DictEntryUpsert {
 	u.Add(dictentry.FieldSortOrder, v)
 	return u
 }
@@ -907,14 +907,14 @@ func (u *DictEntryUpsertOne) ClearDescription() *DictEntryUpsertOne {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (u *DictEntryUpsertOne) SetSortOrder(v int32) *DictEntryUpsertOne {
+func (u *DictEntryUpsertOne) SetSortOrder(v uint32) *DictEntryUpsertOne {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.SetSortOrder(v)
 	})
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *DictEntryUpsertOne) AddSortOrder(v int32) *DictEntryUpsertOne {
+func (u *DictEntryUpsertOne) AddSortOrder(v uint32) *DictEntryUpsertOne {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.AddSortOrder(v)
 	})
@@ -1414,14 +1414,14 @@ func (u *DictEntryUpsertBulk) ClearDescription() *DictEntryUpsertBulk {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (u *DictEntryUpsertBulk) SetSortOrder(v int32) *DictEntryUpsertBulk {
+func (u *DictEntryUpsertBulk) SetSortOrder(v uint32) *DictEntryUpsertBulk {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.SetSortOrder(v)
 	})
 }
 
 // AddSortOrder adds v to the "sort_order" field.
-func (u *DictEntryUpsertBulk) AddSortOrder(v int32) *DictEntryUpsertBulk {
+func (u *DictEntryUpsertBulk) AddSortOrder(v uint32) *DictEntryUpsertBulk {
 	return u.Update(func(s *DictEntryUpsert) {
 		s.AddSortOrder(v)
 	})

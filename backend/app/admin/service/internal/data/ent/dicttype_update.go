@@ -172,14 +172,14 @@ func (_u *DictTypeUpdate) ClearIsEnabled() *DictTypeUpdate {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (_u *DictTypeUpdate) SetSortOrder(v int32) *DictTypeUpdate {
+func (_u *DictTypeUpdate) SetSortOrder(v uint32) *DictTypeUpdate {
 	_u.mutation.ResetSortOrder()
 	_u.mutation.SetSortOrder(v)
 	return _u
 }
 
 // SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_u *DictTypeUpdate) SetNillableSortOrder(v *int32) *DictTypeUpdate {
+func (_u *DictTypeUpdate) SetNillableSortOrder(v *uint32) *DictTypeUpdate {
 	if v != nil {
 		_u.SetSortOrder(*v)
 	}
@@ -408,13 +408,13 @@ func (_u *DictTypeUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 		_spec.ClearField(dicttype.FieldIsEnabled, field.TypeBool)
 	}
 	if value, ok := _u.mutation.SortOrder(); ok {
-		_spec.SetField(dicttype.FieldSortOrder, field.TypeInt32, value)
+		_spec.SetField(dicttype.FieldSortOrder, field.TypeUint32, value)
 	}
 	if value, ok := _u.mutation.AddedSortOrder(); ok {
-		_spec.AddField(dicttype.FieldSortOrder, field.TypeInt32, value)
+		_spec.AddField(dicttype.FieldSortOrder, field.TypeUint32, value)
 	}
 	if _u.mutation.SortOrderCleared() {
-		_spec.ClearField(dicttype.FieldSortOrder, field.TypeInt32)
+		_spec.ClearField(dicttype.FieldSortOrder, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(dicttype.FieldDescription, field.TypeString, value)
@@ -646,14 +646,14 @@ func (_u *DictTypeUpdateOne) ClearIsEnabled() *DictTypeUpdateOne {
 }
 
 // SetSortOrder sets the "sort_order" field.
-func (_u *DictTypeUpdateOne) SetSortOrder(v int32) *DictTypeUpdateOne {
+func (_u *DictTypeUpdateOne) SetSortOrder(v uint32) *DictTypeUpdateOne {
 	_u.mutation.ResetSortOrder()
 	_u.mutation.SetSortOrder(v)
 	return _u
 }
 
 // SetNillableSortOrder sets the "sort_order" field if the given value is not nil.
-func (_u *DictTypeUpdateOne) SetNillableSortOrder(v *int32) *DictTypeUpdateOne {
+func (_u *DictTypeUpdateOne) SetNillableSortOrder(v *uint32) *DictTypeUpdateOne {
 	if v != nil {
 		_u.SetSortOrder(*v)
 	}
@@ -912,13 +912,13 @@ func (_u *DictTypeUpdateOne) sqlSave(ctx context.Context) (_node *DictType, err 
 		_spec.ClearField(dicttype.FieldIsEnabled, field.TypeBool)
 	}
 	if value, ok := _u.mutation.SortOrder(); ok {
-		_spec.SetField(dicttype.FieldSortOrder, field.TypeInt32, value)
+		_spec.SetField(dicttype.FieldSortOrder, field.TypeUint32, value)
 	}
 	if value, ok := _u.mutation.AddedSortOrder(); ok {
-		_spec.AddField(dicttype.FieldSortOrder, field.TypeInt32, value)
+		_spec.AddField(dicttype.FieldSortOrder, field.TypeUint32, value)
 	}
 	if _u.mutation.SortOrderCleared() {
-		_spec.ClearField(dicttype.FieldSortOrder, field.TypeInt32)
+		_spec.ClearField(dicttype.FieldSortOrder, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.Description(); ok {
 		_spec.SetField(dicttype.FieldDescription, field.TypeString, value)

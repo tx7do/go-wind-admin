@@ -53,29 +53,6 @@ const [BaseForm, baseFormApi] = useVbenForm({
     },
     {
       component: 'ApiTreeSelect',
-      fieldName: 'parentId',
-      label: $t('page.position.parentId'),
-      componentProps: {
-        placeholder: $t('ui.placeholder.select'),
-        numberToString: true,
-        showSearch: true,
-        treeDefaultExpandAll: true,
-        allowClear: true,
-        childrenField: 'children',
-        labelField: 'name',
-        valueField: 'id',
-        treeNodeFilterProp: 'label',
-        api: async () => {
-          const result = await positionStore.listPosition(undefined, {
-            // parent_id: 0,
-            status: 'ON',
-          });
-          return result.items;
-        },
-      },
-    },
-    {
-      component: 'ApiTreeSelect',
       fieldName: 'orgUnitId',
       label: $t('page.position.orgUnit'),
       rules: 'selectRequired',
@@ -100,8 +77,8 @@ const [BaseForm, baseFormApi] = useVbenForm({
     },
     {
       component: 'InputNumber',
-      fieldName: 'quota',
-      label: $t('page.position.quota'),
+      fieldName: 'headcount',
+      label: $t('page.position.headcount'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,

@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	servicev1 "go-wind-admin/api/gen/go/admin/service/v1"
+	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"time"
@@ -205,12 +205,6 @@ func (_u *MenuUpdate) SetNillableStatus(v *menu.Status) *MenuUpdate {
 	return _u
 }
 
-// ClearStatus clears the value of the "status" field.
-func (_u *MenuUpdate) ClearStatus() *MenuUpdate {
-	_u.mutation.ClearStatus()
-	return _u
-}
-
 // SetType sets the "type" field.
 func (_u *MenuUpdate) SetType(v menu.Type) *MenuUpdate {
 	_u.mutation.SetType(v)
@@ -332,7 +326,7 @@ func (_u *MenuUpdate) ClearComponent() *MenuUpdate {
 }
 
 // SetMeta sets the "meta" field.
-func (_u *MenuUpdate) SetMeta(v *servicev1.RouteMeta) *MenuUpdate {
+func (_u *MenuUpdate) SetMeta(v *permissionpb.RouteMeta) *MenuUpdate {
 	_u.mutation.SetMeta(v)
 	return _u
 }
@@ -510,9 +504,6 @@ func (_u *MenuUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(menu.FieldStatus, field.TypeEnum, value)
-	}
-	if _u.mutation.StatusCleared() {
-		_spec.ClearField(menu.FieldStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(menu.FieldType, field.TypeEnum, value)
@@ -827,12 +818,6 @@ func (_u *MenuUpdateOne) SetNillableStatus(v *menu.Status) *MenuUpdateOne {
 	return _u
 }
 
-// ClearStatus clears the value of the "status" field.
-func (_u *MenuUpdateOne) ClearStatus() *MenuUpdateOne {
-	_u.mutation.ClearStatus()
-	return _u
-}
-
 // SetType sets the "type" field.
 func (_u *MenuUpdateOne) SetType(v menu.Type) *MenuUpdateOne {
 	_u.mutation.SetType(v)
@@ -954,7 +939,7 @@ func (_u *MenuUpdateOne) ClearComponent() *MenuUpdateOne {
 }
 
 // SetMeta sets the "meta" field.
-func (_u *MenuUpdateOne) SetMeta(v *servicev1.RouteMeta) *MenuUpdateOne {
+func (_u *MenuUpdateOne) SetMeta(v *permissionpb.RouteMeta) *MenuUpdateOne {
 	_u.mutation.SetMeta(v)
 	return _u
 }
@@ -1162,9 +1147,6 @@ func (_u *MenuUpdateOne) sqlSave(ctx context.Context) (_node *Menu, err error) {
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(menu.FieldStatus, field.TypeEnum, value)
-	}
-	if _u.mutation.StatusCleared() {
-		_spec.ClearField(menu.FieldStatus, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.GetType(); ok {
 		_spec.SetField(menu.FieldType, field.TypeEnum, value)

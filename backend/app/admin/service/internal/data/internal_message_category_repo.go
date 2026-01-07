@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"sort"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -87,58 +86,18 @@ func (r *InternalMessageCategoryRepo) List(ctx context.Context, req *pagination.
 
 	builder := r.entClient.Client().InternalMessageCategory.Query()
 
-	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
-	if err != nil {
-		r.log.Errorf("parse list param error [%s]", err.Error())
-		return nil, internalMessageV1.ErrorBadRequest("invalid query parameter")
-	}
-
-	entities, err := builder.All(ctx)
-	if err != nil {
-		r.log.Errorf("query list failed: %s", err.Error())
-		return nil, internalMessageV1.ErrorInternalServerError("query list failed")
-	}
-
-	sort.SliceStable(entities, func(i, j int) bool {
-		if entities[j].ParentID == nil {
-			return true
-		}
-		if entities[i].ParentID == nil {
-			return true
-		}
-		return *entities[i].ParentID < *entities[j].ParentID
-	})
-
-	dtos := make([]*internalMessageV1.InternalMessageCategory, 0, len(entities))
-	for _, entity := range entities {
-		if entity.ParentID == nil {
-			dto := r.mapper.ToDTO(entity)
-			dtos = append(dtos, dto)
-		}
-	}
-	for _, entity := range entities {
-		if entity.ParentID != nil {
-			dto := r.mapper.ToDTO(entity)
-
-			if entCrud.TravelChild(&dtos, dto, func(parent *internalMessageV1.InternalMessageCategory, node *internalMessageV1.InternalMessageCategory) {
-				parent.Children = append(parent.Children, node)
-			}) {
-				continue
-			}
-
-			dtos = append(dtos, dto)
-		}
-	}
-
-	count, err := r.Count(ctx, whereSelectors)
+	ret, err := r.repository.ListWithPaging(ctx, builder, builder.Clone(), req)
 	if err != nil {
 		return nil, err
 	}
+	if ret == nil {
+		return &internalMessageV1.ListInternalMessageCategoryResponse{Total: 0, Items: nil}, nil
+	}
 
 	return &internalMessageV1.ListInternalMessageCategoryResponse{
-		Total: uint64(count),
-		Items: dtos,
-	}, err
+		Total: ret.Total,
+		Items: ret.Items,
+	}, nil
 }
 
 func (r *InternalMessageCategoryRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
@@ -206,7 +165,6 @@ func (r *InternalMessageCategoryRepo) Create(ctx context.Context, req *internalM
 		SetNillableName(req.Data.Name).
 		SetNillableCode(req.Data.Code).
 		SetNillableIconURL(req.Data.IconUrl).
-		SetNillableParentID(req.Data.ParentId).
 		SetNillableSortOrder(req.Data.SortOrder).
 		SetNillableIsEnabled(req.Data.IsEnabled).
 		SetNillableCreatedBy(req.Data.CreatedBy).
@@ -254,7 +212,6 @@ func (r *InternalMessageCategoryRepo) Update(ctx context.Context, req *internalM
 				SetNillableName(req.Data.Name).
 				SetNillableCode(req.Data.Code).
 				SetNillableIconURL(req.Data.IconUrl).
-				SetNillableParentID(req.Data.ParentId).
 				SetNillableSortOrder(req.Data.SortOrder).
 				SetNillableIsEnabled(req.Data.IsEnabled).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
