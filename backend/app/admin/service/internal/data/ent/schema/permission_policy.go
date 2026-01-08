@@ -10,7 +10,7 @@ import (
 	"github.com/tx7do/go-crud/entgo/mixin"
 )
 
-// PermissionPolicy holds the schema definition for the PermissionPolicy entity.
+// PermissionPolicy 权限点动态策略表（NIST RBAC+ABAC混合标准）
 type PermissionPolicy struct {
 	ent.Schema
 }
@@ -23,7 +23,7 @@ func (PermissionPolicy) Annotations() []schema.Annotation {
 			Collation: "utf8mb4_bin",
 		},
 		entsql.WithComments(true),
-		schema.Comment("权限点动态策略表（NIST RBAC+ABAC混合标准）"),
+		schema.Comment("权限点动态策略表"),
 	}
 }
 

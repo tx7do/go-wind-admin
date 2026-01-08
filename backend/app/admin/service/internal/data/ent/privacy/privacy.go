@@ -879,6 +879,78 @@ func (f UserCredentialMutationRuleFunc) EvalMutation(ctx context.Context, m ent.
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.UserCredentialMutation", m)
 }
 
+// The UserOrgUnitQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type UserOrgUnitQueryRuleFunc func(context.Context, *ent.UserOrgUnitQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f UserOrgUnitQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.UserOrgUnitQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.UserOrgUnitQuery", q)
+}
+
+// The UserOrgUnitMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type UserOrgUnitMutationRuleFunc func(context.Context, *ent.UserOrgUnitMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f UserOrgUnitMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.UserOrgUnitMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.UserOrgUnitMutation", m)
+}
+
+// The UserPositionQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type UserPositionQueryRuleFunc func(context.Context, *ent.UserPositionQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f UserPositionQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.UserPositionQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.UserPositionQuery", q)
+}
+
+// The UserPositionMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type UserPositionMutationRuleFunc func(context.Context, *ent.UserPositionMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f UserPositionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.UserPositionMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.UserPositionMutation", m)
+}
+
+// The UserRoleQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type UserRoleQueryRuleFunc func(context.Context, *ent.UserRoleQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f UserRoleQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.UserRoleQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.UserRoleQuery", q)
+}
+
+// The UserRoleMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type UserRoleMutationRuleFunc func(context.Context, *ent.UserRoleMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f UserRoleMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.UserRoleMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.UserRoleMutation", m)
+}
+
 type (
 	// Filter is the interface that wraps the Where function
 	// for filtering nodes in queries and mutations.
@@ -978,6 +1050,12 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.UserCredentialQuery:
 		return q.Filter(), nil
+	case *ent.UserOrgUnitQuery:
+		return q.Filter(), nil
+	case *ent.UserPositionQuery:
+		return q.Filter(), nil
+	case *ent.UserRoleQuery:
+		return q.Filter(), nil
 	default:
 		return nil, Denyf("ent/privacy: unexpected query type %T for query filter", q)
 	}
@@ -1048,6 +1126,12 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.UserMutation:
 		return m.Filter(), nil
 	case *ent.UserCredentialMutation:
+		return m.Filter(), nil
+	case *ent.UserOrgUnitMutation:
+		return m.Filter(), nil
+	case *ent.UserPositionMutation:
+		return m.Filter(), nil
+	case *ent.UserRoleMutation:
 		return m.Filter(), nil
 	default:
 		return nil, Denyf("ent/privacy: unexpected mutation type %T for mutation filter", m)

@@ -36,6 +36,9 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/tenant"
 	"go-wind-admin/app/admin/service/internal/data/ent/user"
 	"go-wind-admin/app/admin/service/internal/data/ent/usercredential"
+	"go-wind-admin/app/admin/service/internal/data/ent/userorgunit"
+	"go-wind-admin/app/admin/service/internal/data/ent/userposition"
+	"go-wind-admin/app/admin/service/internal/data/ent/userrole"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -630,4 +633,43 @@ func init() {
 	usercredentialDescID := usercredentialMixinFields1[0].Descriptor()
 	// usercredential.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	usercredential.IDValidator = usercredentialDescID.Validators[0].(func(uint32) error)
+	userorgunitMixin := schema.UserOrgUnit{}.Mixin()
+	userorgunitMixinFields0 := userorgunitMixin[0].Fields()
+	_ = userorgunitMixinFields0
+	userorgunitFields := schema.UserOrgUnit{}.Fields()
+	_ = userorgunitFields
+	// userorgunitDescIsPrimary is the schema descriptor for is_primary field.
+	userorgunitDescIsPrimary := userorgunitFields[7].Descriptor()
+	// userorgunit.DefaultIsPrimary holds the default value on creation for the is_primary field.
+	userorgunit.DefaultIsPrimary = userorgunitDescIsPrimary.Default.(bool)
+	// userorgunitDescID is the schema descriptor for id field.
+	userorgunitDescID := userorgunitMixinFields0[0].Descriptor()
+	// userorgunit.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	userorgunit.IDValidator = userorgunitDescID.Validators[0].(func(uint32) error)
+	userpositionMixin := schema.UserPosition{}.Mixin()
+	userpositionMixinFields0 := userpositionMixin[0].Fields()
+	_ = userpositionMixinFields0
+	userpositionFields := schema.UserPosition{}.Fields()
+	_ = userpositionFields
+	// userpositionDescIsPrimary is the schema descriptor for is_primary field.
+	userpositionDescIsPrimary := userpositionFields[2].Descriptor()
+	// userposition.DefaultIsPrimary holds the default value on creation for the is_primary field.
+	userposition.DefaultIsPrimary = userpositionDescIsPrimary.Default.(bool)
+	// userpositionDescID is the schema descriptor for id field.
+	userpositionDescID := userpositionMixinFields0[0].Descriptor()
+	// userposition.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	userposition.IDValidator = userpositionDescID.Validators[0].(func(uint32) error)
+	userroleMixin := schema.UserRole{}.Mixin()
+	userroleMixinFields0 := userroleMixin[0].Fields()
+	_ = userroleMixinFields0
+	userroleFields := schema.UserRole{}.Fields()
+	_ = userroleFields
+	// userroleDescIsPrimary is the schema descriptor for is_primary field.
+	userroleDescIsPrimary := userroleFields[6].Descriptor()
+	// userrole.DefaultIsPrimary holds the default value on creation for the is_primary field.
+	userrole.DefaultIsPrimary = userroleDescIsPrimary.Default.(bool)
+	// userroleDescID is the schema descriptor for id field.
+	userroleDescID := userroleMixinFields0[0].Descriptor()
+	// userrole.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	userrole.IDValidator = userroleDescID.Validators[0].(func(uint32) error)
 }

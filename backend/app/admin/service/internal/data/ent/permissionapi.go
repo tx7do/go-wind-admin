@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// 权限点-API接口关联表
+// 权限点与API接口关联表
 type PermissionApi struct {
 	config `json:"-"`
 	// ID of the ent.

@@ -65,10 +65,6 @@ func (m *MembershipPosition) validate(all bool) error {
 		// no validation rules for MembershipId
 	}
 
-	if m.UserId != nil {
-		// no validation rules for UserId
-	}
-
 	if m.TenantId != nil {
 		// no validation rules for TenantId
 	}

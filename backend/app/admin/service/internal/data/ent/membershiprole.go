@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// 成员-角色 关联表（支持多角色及分配属性）
+// 成员与角色关联表
 type MembershipRole struct {
 	config `json:"-"`
 	// ID of the ent.

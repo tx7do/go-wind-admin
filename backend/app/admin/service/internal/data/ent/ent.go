@@ -38,6 +38,9 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/tenant"
 	"go-wind-admin/app/admin/service/internal/data/ent/user"
 	"go-wind-admin/app/admin/service/internal/data/ent/usercredential"
+	"go-wind-admin/app/admin/service/internal/data/ent/userorgunit"
+	"go-wind-admin/app/admin/service/internal/data/ent/userposition"
+	"go-wind-admin/app/admin/service/internal/data/ent/userrole"
 	"reflect"
 	"sync"
 
@@ -136,6 +139,9 @@ func checkColumn(t, c string) error {
 			tenant.Table:                   tenant.ValidColumn,
 			user.Table:                     user.ValidColumn,
 			usercredential.Table:           usercredential.ValidColumn,
+			userorgunit.Table:              userorgunit.ValidColumn,
+			userposition.Table:             userposition.ValidColumn,
+			userrole.Table:                 userrole.ValidColumn,
 		})
 	})
 	return columnCheck(t, c)

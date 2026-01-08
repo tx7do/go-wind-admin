@@ -9,9 +9,9 @@ import "google/protobuf/field_mask.proto";
 
 import "pagination/v1/pagination.proto";
 
-// 成员组织单元
+// 成员与组织单元关联关系
 message MembershipOrgUnit {
-  // 成员状态
+  // 状态
   enum Status {
     ACTIVE = 0;       // 激活状态
     PENDING = 1;      // 待激活状态

@@ -10,6 +10,7 @@ import (
 	"github.com/tx7do/go-crud/entgo/mixin"
 )
 
+// MembershipRole 成员与角色关联表
 type MembershipRole struct {
 	ent.Schema
 }
@@ -22,7 +23,7 @@ func (MembershipRole) Annotations() []schema.Annotation {
 			Collation: "utf8mb4_bin",
 		},
 		entsql.WithComments(true),
-		schema.Comment("成员-角色 关联表（支持多角色及分配属性）"),
+		schema.Comment("成员与角色关联表"),
 	}
 }
 
@@ -91,36 +92,36 @@ func (MembershipRole) Indexes() []ent.Index {
 		// 唯一约束：同一租户下 membership 与 role 的组合唯一
 		index.Fields("tenant_id", "membership_id", "role_id").
 			Unique().
-			StorageKey("uix_mem_role_tenant_memid_role"),
+			StorageKey("uix_mr_tenant_membership_role"),
 
 		// 常用查询：在租户范围内按 membership 查所有角色
 		index.Fields("tenant_id", "membership_id").
-			StorageKey("idx_mem_role_tenant_membership"),
+			StorageKey("idx_mr_tenant_membership"),
 
 		// 常用查询：在租户范围内按 role 查所有成员
 		index.Fields("tenant_id", "role_id").
-			StorageKey("idx_mem_role_tenant_role"),
+			StorageKey("idx_mr_tenant_role"),
 
 		// 常用查询：快速查找某成员在租户下的主角色
 		index.Fields("tenant_id", "membership_id", "is_primary").
-			StorageKey("idx_mem_role_tenant_mem_primary"),
+			StorageKey("idx_mr_tenant_membership_primary"),
 
 		// 按分配者查询（租户范围内或全局）
 		index.Fields("tenant_id", "assigned_by").
-			StorageKey("idx_mem_role_tenant_assigned_by"),
+			StorageKey("idx_mr_tenant_assigned_by"),
 		index.Fields("assigned_by").
-			StorageKey("idx_mem_role_assigned_by"),
+			StorageKey("idx_mr_assigned_by"),
 
 		// 保留/补充常用的单列索引以支持简单或模糊查询
 		index.Fields("role_id").
-			StorageKey("idx_mem_role_role_id"),
+			StorageKey("idx_mr_role_id"),
 		index.Fields("membership_id").
-			StorageKey("idx_mem_role_membership_id"),
+			StorageKey("idx_mr_membership_id"),
 		index.Fields("tenant_id").
-			StorageKey("idx_mem_role_tenant_id"),
+			StorageKey("idx_mr_tenant_id"),
 		index.Fields("is_primary").
-			StorageKey("idx_mem_role_is_primary"),
+			StorageKey("idx_mr_is_primary"),
 		index.Fields("status").
-			StorageKey("idx_mem_role_status"),
+			StorageKey("idx_mr_status"),
 	}
 }

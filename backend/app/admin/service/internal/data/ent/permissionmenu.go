@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// 权限点-前端菜单关联表
+// 权限点与前端菜单关联表
 type PermissionMenu struct {
 	config `json:"-"`
 	// ID of the ent.

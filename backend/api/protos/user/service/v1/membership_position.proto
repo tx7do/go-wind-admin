@@ -9,9 +9,9 @@ import "google/protobuf/field_mask.proto";
 
 import "pagination/v1/pagination.proto";
 
-// 成员岗位
+// 成员与岗位关联关系
 message MembershipPosition {
-  // 岗位关联状态
+  // 状态
   enum Status {
     STATUS_UNSPECIFIED = 0; // 未指定（API 层默认）
 
@@ -33,27 +33,22 @@ message MembershipPosition {
     (gnostic.openapi.v3.property) = { description: "成员ID" }
   ]; // 成员ID
 
-  optional uint32 user_id = 3 [
-    json_name = "userId",
-    (gnostic.openapi.v3.property) = { description: "用户ID" }
-  ]; // 用户ID
-
-  optional uint32 tenant_id = 4 [
+  optional uint32 tenant_id = 3 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = { description: "租户ID" }
   ]; // 租户ID
 
-  optional uint32 position_id = 5 [
+  optional uint32 position_id = 4 [
     json_name = "positionId",
     (gnostic.openapi.v3.property) = { description: "岗位ID" }
   ]; // 岗位ID
 
-  optional bool is_primary = 6 [
+  optional bool is_primary = 5 [
     json_name = "isPrimary",
     (gnostic.openapi.v3.property) = {description: "是否主岗位"}
   ]; // 是否主岗位
 
-  optional Status status = 7 [
+  optional Status status = 6 [
     (gnostic.openapi.v3.property) = { description: "岗位状态" }
   ]; // 岗位状态
 

@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// 用户与岗位关联表
+// 成员与岗位关联表
 type MembershipPosition struct {
 	config `json:"-"`
 	// ID of the ent.

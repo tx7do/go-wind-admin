@@ -14,7 +14,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// 后台目录表
+// 菜单资源表
 type Menu struct {
 	config `json:"-"`
 	// ID of the ent.

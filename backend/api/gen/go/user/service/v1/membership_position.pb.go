@@ -26,7 +26,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// 岗位关联状态
+// 状态
 type MembershipPosition_Status int32
 
 const (
@@ -88,16 +88,15 @@ func (MembershipPosition_Status) EnumDescriptor() ([]byte, []int) {
 	return file_user_service_v1_membership_position_proto_rawDescGZIP(), []int{0, 0}
 }
 
-// 成员岗位
+// 成员与岗位关联关系
 type MembershipPosition struct {
 	state         protoimpl.MessageState     `protogen:"open.v1"`
 	Id            *uint32                    `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                        // ID
 	MembershipId  *uint32                    `protobuf:"varint,2,opt,name=membership_id,json=membershipId,proto3,oneof" json:"membership_id,omitempty"`                // 成员ID
-	UserId        *uint32                    `protobuf:"varint,3,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                  // 用户ID
-	TenantId      *uint32                    `protobuf:"varint,4,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                            // 租户ID
-	PositionId    *uint32                    `protobuf:"varint,5,opt,name=position_id,json=positionId,proto3,oneof" json:"position_id,omitempty"`                      // 岗位ID
-	IsPrimary     *bool                      `protobuf:"varint,6,opt,name=is_primary,json=isPrimary,proto3,oneof" json:"is_primary,omitempty"`                         // 是否主岗位
-	Status        *MembershipPosition_Status `protobuf:"varint,7,opt,name=status,proto3,enum=user.service.v1.MembershipPosition_Status,oneof" json:"status,omitempty"` // 岗位状态
+	TenantId      *uint32                    `protobuf:"varint,3,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                            // 租户ID
+	PositionId    *uint32                    `protobuf:"varint,4,opt,name=position_id,json=positionId,proto3,oneof" json:"position_id,omitempty"`                      // 岗位ID
+	IsPrimary     *bool                      `protobuf:"varint,5,opt,name=is_primary,json=isPrimary,proto3,oneof" json:"is_primary,omitempty"`                         // 是否主岗位
+	Status        *MembershipPosition_Status `protobuf:"varint,6,opt,name=status,proto3,enum=user.service.v1.MembershipPosition_Status,oneof" json:"status,omitempty"` // 岗位状态
 	AssignedAt    *timestamppb.Timestamp     `protobuf:"bytes,10,opt,name=assigned_at,json=assignedAt,proto3,oneof" json:"assigned_at,omitempty"`
 	AssignedBy    *uint32                    `protobuf:"varint,11,opt,name=assigned_by,json=assignedBy,proto3,oneof" json:"assigned_by,omitempty"`
 	StartAt       *timestamppb.Timestamp     `protobuf:"bytes,50,opt,name=start_at,json=startAt,proto3,oneof" json:"start_at,omitempty"`         // 生效时间
@@ -152,13 +151,6 @@ func (x *MembershipPosition) GetId() uint32 {
 func (x *MembershipPosition) GetMembershipId() uint32 {
 	if x != nil && x.MembershipId != nil {
 		return *x.MembershipId
-	}
-	return 0
-}
-
-func (x *MembershipPosition) GetUserId() uint32 {
-	if x != nil && x.UserId != nil {
-		return *x.UserId
 	}
 	return 0
 }
@@ -265,37 +257,36 @@ var File_user_service_v1_membership_position_proto protoreflect.FileDescriptor
 
 const file_user_service_v1_membership_position_proto_rawDesc = "" +
 	"\n" +
-	")user/service/v1/membership_position.proto\x12\x0fuser.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xfa\v\n" +
+	")user/service/v1/membership_position.proto\x12\x0fuser.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xc0\v\n" +
 	"\x12MembershipPosition\x12\x1d\n" +
 	"\x02id\x18\x01 \x01(\rB\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x128\n" +
-	"\rmembership_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b成员IDH\x01R\fmembershipId\x88\x01\x01\x12,\n" +
-	"\auser_id\x18\x03 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDH\x02R\x06userId\x88\x01\x01\x120\n" +
-	"\ttenant_id\x18\x04 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x03R\btenantId\x88\x01\x01\x124\n" +
-	"\vposition_id\x18\x05 \x01(\rB\x0e\xbaG\v\x92\x02\b岗位IDH\x04R\n" +
+	"\rmembership_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b成员IDH\x01R\fmembershipId\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18\x03 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x02R\btenantId\x88\x01\x01\x124\n" +
+	"\vposition_id\x18\x04 \x01(\rB\x0e\xbaG\v\x92\x02\b岗位IDH\x03R\n" +
 	"positionId\x88\x01\x01\x129\n" +
 	"\n" +
-	"is_primary\x18\x06 \x01(\bB\x15\xbaG\x12\x92\x02\x0f是否主岗位H\x05R\tisPrimary\x88\x01\x01\x12[\n" +
-	"\x06status\x18\a \x01(\x0e2*.user.service.v1.MembershipPosition.StatusB\x12\xbaG\x0f\x92\x02\f岗位状态H\x06R\x06status\x88\x01\x01\x12c\n" +
+	"is_primary\x18\x05 \x01(\bB\x15\xbaG\x12\x92\x02\x0f是否主岗位H\x04R\tisPrimary\x88\x01\x01\x12[\n" +
+	"\x06status\x18\x06 \x01(\x0e2*.user.service.v1.MembershipPosition.StatusB\x12\xbaG\x0f\x92\x02\f岗位状态H\x05R\x06status\x88\x01\x01\x12c\n" +
 	"\vassigned_at\x18\n" +
-	" \x01(\v2\x1a.google.protobuf.TimestampB!\xbaG\x1e\x92\x02\x1b岗位分配时间（UTC）H\aR\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB!\xbaG\x1e\x92\x02\x1b岗位分配时间（UTC）H\x06R\n" +
 	"assignedAt\x88\x01\x01\x12>\n" +
-	"\vassigned_by\x18\v \x01(\rB\x18\xbaG\x15\x92\x02\x12分配者用户 IDH\bR\n" +
+	"\vassigned_by\x18\v \x01(\rB\x18\xbaG\x15\x92\x02\x12分配者用户 IDH\aR\n" +
 	"assignedBy\x88\x01\x01\x12W\n" +
-	"\bstart_at\x182 \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15生效时间（UTC）H\tR\astartAt\x88\x01\x01\x12S\n" +
-	"\x06end_at\x183 \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15失效时间（UTC）H\n" +
-	"R\x05endAt\x88\x01\x01\x125\n" +
+	"\bstart_at\x182 \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15生效时间（UTC）H\bR\astartAt\x88\x01\x01\x12S\n" +
+	"\x06end_at\x183 \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15失效时间（UTC）H\tR\x05endAt\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\vR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\n" +
+	"R\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\fR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\vR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\rR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\fR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x0eR\tcreatedAt\x88\x01\x01\x12S\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\rR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\x0fR\tupdatedAt\x88\x01\x01\x12S\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\x0eR\tupdatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\x10R\tdeletedAt\x88\x01\x01\"q\n" +
+	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\x0fR\tdeletedAt\x88\x01\x01\"q\n" +
 	"\x06Status\x12\x16\n" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tPROBATION\x10\x01\x12\n" +
@@ -307,9 +298,7 @@ const file_user_service_v1_membership_position_proto_rawDesc = "" +
 	"TERMINATED\x10\x05\x12\v\n" +
 	"\aEXPIRED\x10\x06B\x05\n" +
 	"\x03_idB\x10\n" +
-	"\x0e_membership_idB\n" +
-	"\n" +
-	"\b_user_idB\f\n" +
+	"\x0e_membership_idB\f\n" +
 	"\n" +
 	"_tenant_idB\x0e\n" +
 	"\f_position_idB\r\n" +

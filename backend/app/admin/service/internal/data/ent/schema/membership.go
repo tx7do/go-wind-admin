@@ -25,7 +25,7 @@ func (Membership) Annotations() []schema.Annotation {
 			Collation: "utf8mb4_bin",
 		},
 		entsql.WithComments(true),
-		schema.Comment("成员关联表。存储用户在不同租户或系统空间的身份、状态及角色。tenant_id 为 NULL 时代表全局或个人系统成员。"),
+		schema.Comment("成员关联表"),
 	}
 }
 

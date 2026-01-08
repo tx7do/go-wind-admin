@@ -26,7 +26,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// 成员状态
+// 状态
 type MembershipOrgUnit_Status int32
 
 const (
@@ -82,7 +82,7 @@ func (MembershipOrgUnit_Status) EnumDescriptor() ([]byte, []int) {
 	return file_user_service_v1_membership_org_unit_proto_rawDescGZIP(), []int{0, 0}
 }
 
-// 成员组织单元
+// 成员与组织单元关联关系
 type MembershipOrgUnit struct {
 	state         protoimpl.MessageState    `protogen:"open.v1"`
 	Id            *uint32                   `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                       // ID

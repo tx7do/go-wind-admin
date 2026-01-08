@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// 角色 - 权限多对多关联表
+// 角色与权限关联表
 type RolePermission struct {
 	config `json:"-"`
 	// ID of the ent.

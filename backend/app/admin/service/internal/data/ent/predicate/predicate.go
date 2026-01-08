@@ -101,3 +101,12 @@ type User func(*sql.Selector)
 
 // UserCredential is the predicate function for usercredential builders.
 type UserCredential func(*sql.Selector)
+
+// UserOrgUnit is the predicate function for userorgunit builders.
+type UserOrgUnit func(*sql.Selector)
+
+// UserPosition is the predicate function for userposition builders.
+type UserPosition func(*sql.Selector)
+
+// UserRole is the predicate function for userrole builders.
+type UserRole func(*sql.Selector)

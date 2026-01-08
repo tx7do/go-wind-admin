@@ -46,7 +46,7 @@ const (
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// Table holds the table name of the membershipposition in the database.
-	Table = "sys_membership_positions"
+	Table = "mps"
 )
 
 // Columns holds all SQL columns for membershipposition fields.

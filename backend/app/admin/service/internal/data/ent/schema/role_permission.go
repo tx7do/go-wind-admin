@@ -9,7 +9,7 @@ import (
 	"github.com/tx7do/go-crud/entgo/mixin"
 )
 
-// RolePermission holds the schema definition for the RolePermission entity.
+// RolePermission 角色与权限多对多关联表
 type RolePermission struct {
 	ent.Schema
 }
@@ -22,7 +22,7 @@ func (RolePermission) Annotations() []schema.Annotation {
 			Collation: "utf8mb4_bin",
 		},
 		entsql.WithComments(true),
-		schema.Comment("角色 - 权限多对多关联表"),
+		schema.Comment("角色与权限关联表"),
 	}
 }
 

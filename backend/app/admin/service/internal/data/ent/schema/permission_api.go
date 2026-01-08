@@ -22,7 +22,7 @@ func (PermissionApi) Annotations() []schema.Annotation {
 			Collation: "utf8mb4_bin",
 		},
 		entsql.WithComments(true),
-		schema.Comment("权限点-API接口关联表"),
+		schema.Comment("权限点与API接口关联表"),
 	}
 }
 

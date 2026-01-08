@@ -38,8 +38,6 @@ func (x *MembershipPosition) Redact() string {
 
 	// Safe field: MembershipId
 
-	// Safe field: UserId
-
 	// Safe field: TenantId
 
 	// Safe field: PositionId

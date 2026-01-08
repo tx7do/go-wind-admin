@@ -83,7 +83,7 @@ func (MembershipRole_Status) EnumDescriptor() ([]byte, []int) {
 	return file_user_service_v1_membership_role_proto_rawDescGZIP(), []int{0, 0}
 }
 
-// 成员角色
+// 成员与角色关联关系
 type MembershipRole struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                      // ID

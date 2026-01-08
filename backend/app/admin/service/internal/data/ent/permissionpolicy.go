@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// 权限点动态策略表（NIST RBAC+ABAC混合标准）
+// 权限点动态策略表
 type PermissionPolicy struct {
 	config `json:"-"`
 	// ID of the ent.

@@ -12,7 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// 成员关联表。存储用户在不同租户或系统空间的身份、状态及角色。tenant_id 为 NULL 时代表全局或个人系统成员。
+// 成员关联表
 type Membership struct {
 	config `json:"-"`
 	// ID of the ent.

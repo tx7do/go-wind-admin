@@ -9,7 +9,7 @@ import (
 	"github.com/tx7do/go-crud/entgo/mixin"
 )
 
-// MembershipOrgUnit 表示 membership 与组织单元的关联（多对多/冗余关系）
+// MembershipOrgUnit 成员与组织单元关联表
 type MembershipOrgUnit struct {
 	ent.Schema
 }
@@ -110,7 +110,7 @@ func (MembershipOrgUnit) Indexes() []ent.Index {
 		// 注意：如果希望只允许 is_primary = true 唯一（Postgres），需在迁移脚本使用 partial unique index（例如 WHERE is_primary = true）
 		index.Fields("tenant_id", "membership_id", "is_primary").
 			Unique().
-			StorageKey("uix_mou_tenant_mem_is_primary"),
+			StorageKey("uix_mou_tenant_membership_primary"),
 
 		// 常用复合索引：按租户 + membership 快速定位该会员所有关联
 		index.Fields("tenant_id", "membership_id").

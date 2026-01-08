@@ -10,7 +10,7 @@ import "google/protobuf/field_mask.proto";
 import "pagination/v1/pagination.proto";
 import "permission/service/v1/permission.proto";
 
-// 成员角色
+// 成员与角色关联关系
 message MembershipRole {
   // 状态
   enum Status {
