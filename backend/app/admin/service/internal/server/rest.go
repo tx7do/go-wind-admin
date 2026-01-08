@@ -94,7 +94,7 @@ func NewRestServer(
 	internalMessageRecipientService *service.InternalMessageRecipientService,
 	adminLoginRestrictionService *service.AdminLoginRestrictionService,
 	userProfileService *service.UserProfileService,
-	apiResourceService *service.ApiResourceService,
+	apiService *service.ApiService,
 	permissionService *service.PermissionService,
 	permissionGroupService *service.PermissionGroupService,
 	permissionAuditLogService *service.PermissionAuditLogService,
@@ -113,7 +113,7 @@ func NewRestServer(
 		return nil, err
 	}
 
-	apiResourceService.RegisterRouteWalker(srv)
+	apiService.RegisterRouteWalker(srv)
 
 	adminV1.RegisterAuthenticationServiceHTTPServer(srv, authenticationService)
 
@@ -124,7 +124,7 @@ func NewRestServer(
 	adminV1.RegisterTaskServiceHTTPServer(srv, taskService)
 	adminV1.RegisterAdminLoginRestrictionServiceHTTPServer(srv, adminLoginRestrictionService)
 
-	adminV1.RegisterApiResourceServiceHTTPServer(srv, apiResourceService)
+	adminV1.RegisterApiServiceHTTPServer(srv, apiService)
 	adminV1.RegisterMenuServiceHTTPServer(srv, menuService)
 	adminV1.RegisterPermissionServiceHTTPServer(srv, permissionService)
 	adminV1.RegisterPermissionGroupServiceHTTPServer(srv, permissionGroupService)

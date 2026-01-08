@@ -11,7 +11,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/adminloginlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/adminloginrestriction"
 	"go-wind-admin/app/admin/service/internal/data/ent/adminoperationlog"
-	"go-wind-admin/app/admin/service/internal/data/ent/apiresource"
+	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"go-wind-admin/app/admin/service/internal/data/ent/file"
@@ -26,7 +26,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"go-wind-admin/app/admin/service/internal/data/ent/orgunit"
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
-	"go-wind-admin/app/admin/service/internal/data/ent/permissionapiresource"
+	"go-wind-admin/app/admin/service/internal/data/ent/permissionapi"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissiongroup"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionmenu"
@@ -60,7 +60,7 @@ const (
 	TypeAdminLoginLog            = "AdminLoginLog"
 	TypeAdminLoginRestriction    = "AdminLoginRestriction"
 	TypeAdminOperationLog        = "AdminOperationLog"
-	TypeApiResource              = "ApiResource"
+	TypeAPI                      = "Api"
 	TypeDictEntry                = "DictEntry"
 	TypeDictType                 = "DictType"
 	TypeFile                     = "File"
@@ -75,7 +75,7 @@ const (
 	TypeMenu                     = "Menu"
 	TypeOrgUnit                  = "OrgUnit"
 	TypePermission               = "Permission"
-	TypePermissionApiResource    = "PermissionApiResource"
+	TypePermissionApi            = "PermissionApi"
 	TypePermissionAuditLog       = "PermissionAuditLog"
 	TypePermissionGroup          = "PermissionGroup"
 	TypePermissionMenu           = "PermissionMenu"
@@ -5439,8 +5439,8 @@ func (m *AdminOperationLogMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown AdminOperationLog edge %s", name)
 }
 
-// ApiResourceMutation represents an operation that mutates the ApiResource nodes in the graph.
-type ApiResourceMutation struct {
+// APIMutation represents an operation that mutates the Api nodes in the graph.
+type APIMutation struct {
 	config
 	op                 Op
 	typ                string
@@ -5454,31 +5454,31 @@ type ApiResourceMutation struct {
 	addupdated_by      *int32
 	deleted_by         *uint32
 	adddeleted_by      *int32
-	status             *apiresource.Status
+	status             *api.Status
 	description        *string
 	module             *string
 	module_description *string
 	operation          *string
 	_path              *string
 	method             *string
-	scope              *apiresource.Scope
+	scope              *api.Scope
 	clearedFields      map[string]struct{}
 	done               bool
-	oldValue           func(context.Context) (*ApiResource, error)
-	predicates         []predicate.ApiResource
+	oldValue           func(context.Context) (*Api, error)
+	predicates         []predicate.Api
 }
 
-var _ ent.Mutation = (*ApiResourceMutation)(nil)
+var _ ent.Mutation = (*APIMutation)(nil)
 
-// apiresourceOption allows management of the mutation configuration using functional options.
-type apiresourceOption func(*ApiResourceMutation)
+// apiOption allows management of the mutation configuration using functional options.
+type apiOption func(*APIMutation)
 
-// newApiResourceMutation creates new mutation for the ApiResource entity.
-func newApiResourceMutation(c config, op Op, opts ...apiresourceOption) *ApiResourceMutation {
-	m := &ApiResourceMutation{
+// newAPIMutation creates new mutation for the Api entity.
+func newAPIMutation(c config, op Op, opts ...apiOption) *APIMutation {
+	m := &APIMutation{
 		config:        c,
 		op:            op,
-		typ:           TypeApiResource,
+		typ:           TypeAPI,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -5487,20 +5487,20 @@ func newApiResourceMutation(c config, op Op, opts ...apiresourceOption) *ApiReso
 	return m
 }
 
-// withApiResourceID sets the ID field of the mutation.
-func withApiResourceID(id uint32) apiresourceOption {
-	return func(m *ApiResourceMutation) {
+// withApiID sets the ID field of the mutation.
+func withApiID(id uint32) apiOption {
+	return func(m *APIMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *ApiResource
+			value *Api
 		)
-		m.oldValue = func(ctx context.Context) (*ApiResource, error) {
+		m.oldValue = func(ctx context.Context) (*Api, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().ApiResource.Get(ctx, id)
+					value, err = m.Client().Api.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -5509,10 +5509,10 @@ func withApiResourceID(id uint32) apiresourceOption {
 	}
 }
 
-// withApiResource sets the old ApiResource of the mutation.
-func withApiResource(node *ApiResource) apiresourceOption {
-	return func(m *ApiResourceMutation) {
-		m.oldValue = func(context.Context) (*ApiResource, error) {
+// withApi sets the old Api of the mutation.
+func withApi(node *Api) apiOption {
+	return func(m *APIMutation) {
+		m.oldValue = func(context.Context) (*Api, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -5521,7 +5521,7 @@ func withApiResource(node *ApiResource) apiresourceOption {
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m ApiResourceMutation) Client() *Client {
+func (m APIMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -5529,7 +5529,7 @@ func (m ApiResourceMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m ApiResourceMutation) Tx() (*Tx, error) {
+func (m APIMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -5539,14 +5539,14 @@ func (m ApiResourceMutation) Tx() (*Tx, error) {
 }
 
 // SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of ApiResource entities.
-func (m *ApiResourceMutation) SetID(id uint32) {
+// operation is only accepted on creation of Api entities.
+func (m *APIMutation) SetID(id uint32) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *ApiResourceMutation) ID() (id uint32, exists bool) {
+func (m *APIMutation) ID() (id uint32, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -5557,7 +5557,7 @@ func (m *ApiResourceMutation) ID() (id uint32, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *ApiResourceMutation) IDs(ctx context.Context) ([]uint32, error) {
+func (m *APIMutation) IDs(ctx context.Context) ([]uint32, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -5566,19 +5566,19 @@ func (m *ApiResourceMutation) IDs(ctx context.Context) ([]uint32, error) {
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().ApiResource.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().Api.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (m *ApiResourceMutation) SetCreatedAt(t time.Time) {
+func (m *APIMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
 }
 
 // CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *ApiResourceMutation) CreatedAt() (r time.Time, exists bool) {
+func (m *APIMutation) CreatedAt() (r time.Time, exists bool) {
 	v := m.created_at
 	if v == nil {
 		return
@@ -5586,10 +5586,10 @@ func (m *ApiResourceMutation) CreatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldCreatedAt returns the old "created_at" field's value of the ApiResource entity.
-// If the ApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldCreatedAt returns the old "created_at" field's value of the Api entity.
+// If the Api object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiResourceMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+func (m *APIMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -5604,30 +5604,30 @@ func (m *ApiResourceMutation) OldCreatedAt(ctx context.Context) (v *time.Time, e
 }
 
 // ClearCreatedAt clears the value of the "created_at" field.
-func (m *ApiResourceMutation) ClearCreatedAt() {
+func (m *APIMutation) ClearCreatedAt() {
 	m.created_at = nil
-	m.clearedFields[apiresource.FieldCreatedAt] = struct{}{}
+	m.clearedFields[api.FieldCreatedAt] = struct{}{}
 }
 
 // CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
-func (m *ApiResourceMutation) CreatedAtCleared() bool {
-	_, ok := m.clearedFields[apiresource.FieldCreatedAt]
+func (m *APIMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[api.FieldCreatedAt]
 	return ok
 }
 
 // ResetCreatedAt resets all changes to the "created_at" field.
-func (m *ApiResourceMutation) ResetCreatedAt() {
+func (m *APIMutation) ResetCreatedAt() {
 	m.created_at = nil
-	delete(m.clearedFields, apiresource.FieldCreatedAt)
+	delete(m.clearedFields, api.FieldCreatedAt)
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (m *ApiResourceMutation) SetUpdatedAt(t time.Time) {
+func (m *APIMutation) SetUpdatedAt(t time.Time) {
 	m.updated_at = &t
 }
 
 // UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *ApiResourceMutation) UpdatedAt() (r time.Time, exists bool) {
+func (m *APIMutation) UpdatedAt() (r time.Time, exists bool) {
 	v := m.updated_at
 	if v == nil {
 		return
@@ -5635,10 +5635,10 @@ func (m *ApiResourceMutation) UpdatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldUpdatedAt returns the old "updated_at" field's value of the ApiResource entity.
-// If the ApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldUpdatedAt returns the old "updated_at" field's value of the Api entity.
+// If the Api object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiResourceMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
+func (m *APIMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
 	}
@@ -5653,30 +5653,30 @@ func (m *ApiResourceMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, e
 }
 
 // ClearUpdatedAt clears the value of the "updated_at" field.
-func (m *ApiResourceMutation) ClearUpdatedAt() {
+func (m *APIMutation) ClearUpdatedAt() {
 	m.updated_at = nil
-	m.clearedFields[apiresource.FieldUpdatedAt] = struct{}{}
+	m.clearedFields[api.FieldUpdatedAt] = struct{}{}
 }
 
 // UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
-func (m *ApiResourceMutation) UpdatedAtCleared() bool {
-	_, ok := m.clearedFields[apiresource.FieldUpdatedAt]
+func (m *APIMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[api.FieldUpdatedAt]
 	return ok
 }
 
 // ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *ApiResourceMutation) ResetUpdatedAt() {
+func (m *APIMutation) ResetUpdatedAt() {
 	m.updated_at = nil
-	delete(m.clearedFields, apiresource.FieldUpdatedAt)
+	delete(m.clearedFields, api.FieldUpdatedAt)
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (m *ApiResourceMutation) SetDeletedAt(t time.Time) {
+func (m *APIMutation) SetDeletedAt(t time.Time) {
 	m.deleted_at = &t
 }
 
 // DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *ApiResourceMutation) DeletedAt() (r time.Time, exists bool) {
+func (m *APIMutation) DeletedAt() (r time.Time, exists bool) {
 	v := m.deleted_at
 	if v == nil {
 		return
@@ -5684,10 +5684,10 @@ func (m *ApiResourceMutation) DeletedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldDeletedAt returns the old "deleted_at" field's value of the ApiResource entity.
-// If the ApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldDeletedAt returns the old "deleted_at" field's value of the Api entity.
+// If the Api object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiResourceMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+func (m *APIMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
 	}
@@ -5702,31 +5702,31 @@ func (m *ApiResourceMutation) OldDeletedAt(ctx context.Context) (v *time.Time, e
 }
 
 // ClearDeletedAt clears the value of the "deleted_at" field.
-func (m *ApiResourceMutation) ClearDeletedAt() {
+func (m *APIMutation) ClearDeletedAt() {
 	m.deleted_at = nil
-	m.clearedFields[apiresource.FieldDeletedAt] = struct{}{}
+	m.clearedFields[api.FieldDeletedAt] = struct{}{}
 }
 
 // DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
-func (m *ApiResourceMutation) DeletedAtCleared() bool {
-	_, ok := m.clearedFields[apiresource.FieldDeletedAt]
+func (m *APIMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[api.FieldDeletedAt]
 	return ok
 }
 
 // ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *ApiResourceMutation) ResetDeletedAt() {
+func (m *APIMutation) ResetDeletedAt() {
 	m.deleted_at = nil
-	delete(m.clearedFields, apiresource.FieldDeletedAt)
+	delete(m.clearedFields, api.FieldDeletedAt)
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (m *ApiResourceMutation) SetCreatedBy(u uint32) {
+func (m *APIMutation) SetCreatedBy(u uint32) {
 	m.created_by = &u
 	m.addcreated_by = nil
 }
 
 // CreatedBy returns the value of the "created_by" field in the mutation.
-func (m *ApiResourceMutation) CreatedBy() (r uint32, exists bool) {
+func (m *APIMutation) CreatedBy() (r uint32, exists bool) {
 	v := m.created_by
 	if v == nil {
 		return
@@ -5734,10 +5734,10 @@ func (m *ApiResourceMutation) CreatedBy() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldCreatedBy returns the old "created_by" field's value of the ApiResource entity.
-// If the ApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldCreatedBy returns the old "created_by" field's value of the Api entity.
+// If the Api object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiResourceMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
+func (m *APIMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
 	}
@@ -5752,7 +5752,7 @@ func (m *ApiResourceMutation) OldCreatedBy(ctx context.Context) (v *uint32, err 
 }
 
 // AddCreatedBy adds u to the "created_by" field.
-func (m *ApiResourceMutation) AddCreatedBy(u int32) {
+func (m *APIMutation) AddCreatedBy(u int32) {
 	if m.addcreated_by != nil {
 		*m.addcreated_by += u
 	} else {
@@ -5761,7 +5761,7 @@ func (m *ApiResourceMutation) AddCreatedBy(u int32) {
 }
 
 // AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
-func (m *ApiResourceMutation) AddedCreatedBy() (r int32, exists bool) {
+func (m *APIMutation) AddedCreatedBy() (r int32, exists bool) {
 	v := m.addcreated_by
 	if v == nil {
 		return
@@ -5770,33 +5770,33 @@ func (m *ApiResourceMutation) AddedCreatedBy() (r int32, exists bool) {
 }
 
 // ClearCreatedBy clears the value of the "created_by" field.
-func (m *ApiResourceMutation) ClearCreatedBy() {
+func (m *APIMutation) ClearCreatedBy() {
 	m.created_by = nil
 	m.addcreated_by = nil
-	m.clearedFields[apiresource.FieldCreatedBy] = struct{}{}
+	m.clearedFields[api.FieldCreatedBy] = struct{}{}
 }
 
 // CreatedByCleared returns if the "created_by" field was cleared in this mutation.
-func (m *ApiResourceMutation) CreatedByCleared() bool {
-	_, ok := m.clearedFields[apiresource.FieldCreatedBy]
+func (m *APIMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[api.FieldCreatedBy]
 	return ok
 }
 
 // ResetCreatedBy resets all changes to the "created_by" field.
-func (m *ApiResourceMutation) ResetCreatedBy() {
+func (m *APIMutation) ResetCreatedBy() {
 	m.created_by = nil
 	m.addcreated_by = nil
-	delete(m.clearedFields, apiresource.FieldCreatedBy)
+	delete(m.clearedFields, api.FieldCreatedBy)
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (m *ApiResourceMutation) SetUpdatedBy(u uint32) {
+func (m *APIMutation) SetUpdatedBy(u uint32) {
 	m.updated_by = &u
 	m.addupdated_by = nil
 }
 
 // UpdatedBy returns the value of the "updated_by" field in the mutation.
-func (m *ApiResourceMutation) UpdatedBy() (r uint32, exists bool) {
+func (m *APIMutation) UpdatedBy() (r uint32, exists bool) {
 	v := m.updated_by
 	if v == nil {
 		return
@@ -5804,10 +5804,10 @@ func (m *ApiResourceMutation) UpdatedBy() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldUpdatedBy returns the old "updated_by" field's value of the ApiResource entity.
-// If the ApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldUpdatedBy returns the old "updated_by" field's value of the Api entity.
+// If the Api object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiResourceMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
+func (m *APIMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
 	}
@@ -5822,7 +5822,7 @@ func (m *ApiResourceMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err 
 }
 
 // AddUpdatedBy adds u to the "updated_by" field.
-func (m *ApiResourceMutation) AddUpdatedBy(u int32) {
+func (m *APIMutation) AddUpdatedBy(u int32) {
 	if m.addupdated_by != nil {
 		*m.addupdated_by += u
 	} else {
@@ -5831,7 +5831,7 @@ func (m *ApiResourceMutation) AddUpdatedBy(u int32) {
 }
 
 // AddedUpdatedBy returns the value that was added to the "updated_by" field in this mutation.
-func (m *ApiResourceMutation) AddedUpdatedBy() (r int32, exists bool) {
+func (m *APIMutation) AddedUpdatedBy() (r int32, exists bool) {
 	v := m.addupdated_by
 	if v == nil {
 		return
@@ -5840,33 +5840,33 @@ func (m *ApiResourceMutation) AddedUpdatedBy() (r int32, exists bool) {
 }
 
 // ClearUpdatedBy clears the value of the "updated_by" field.
-func (m *ApiResourceMutation) ClearUpdatedBy() {
+func (m *APIMutation) ClearUpdatedBy() {
 	m.updated_by = nil
 	m.addupdated_by = nil
-	m.clearedFields[apiresource.FieldUpdatedBy] = struct{}{}
+	m.clearedFields[api.FieldUpdatedBy] = struct{}{}
 }
 
 // UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
-func (m *ApiResourceMutation) UpdatedByCleared() bool {
-	_, ok := m.clearedFields[apiresource.FieldUpdatedBy]
+func (m *APIMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[api.FieldUpdatedBy]
 	return ok
 }
 
 // ResetUpdatedBy resets all changes to the "updated_by" field.
-func (m *ApiResourceMutation) ResetUpdatedBy() {
+func (m *APIMutation) ResetUpdatedBy() {
 	m.updated_by = nil
 	m.addupdated_by = nil
-	delete(m.clearedFields, apiresource.FieldUpdatedBy)
+	delete(m.clearedFields, api.FieldUpdatedBy)
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (m *ApiResourceMutation) SetDeletedBy(u uint32) {
+func (m *APIMutation) SetDeletedBy(u uint32) {
 	m.deleted_by = &u
 	m.adddeleted_by = nil
 }
 
 // DeletedBy returns the value of the "deleted_by" field in the mutation.
-func (m *ApiResourceMutation) DeletedBy() (r uint32, exists bool) {
+func (m *APIMutation) DeletedBy() (r uint32, exists bool) {
 	v := m.deleted_by
 	if v == nil {
 		return
@@ -5874,10 +5874,10 @@ func (m *ApiResourceMutation) DeletedBy() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldDeletedBy returns the old "deleted_by" field's value of the ApiResource entity.
-// If the ApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldDeletedBy returns the old "deleted_by" field's value of the Api entity.
+// If the Api object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiResourceMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
+func (m *APIMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
 	}
@@ -5892,7 +5892,7 @@ func (m *ApiResourceMutation) OldDeletedBy(ctx context.Context) (v *uint32, err 
 }
 
 // AddDeletedBy adds u to the "deleted_by" field.
-func (m *ApiResourceMutation) AddDeletedBy(u int32) {
+func (m *APIMutation) AddDeletedBy(u int32) {
 	if m.adddeleted_by != nil {
 		*m.adddeleted_by += u
 	} else {
@@ -5901,7 +5901,7 @@ func (m *ApiResourceMutation) AddDeletedBy(u int32) {
 }
 
 // AddedDeletedBy returns the value that was added to the "deleted_by" field in this mutation.
-func (m *ApiResourceMutation) AddedDeletedBy() (r int32, exists bool) {
+func (m *APIMutation) AddedDeletedBy() (r int32, exists bool) {
 	v := m.adddeleted_by
 	if v == nil {
 		return
@@ -5910,32 +5910,32 @@ func (m *ApiResourceMutation) AddedDeletedBy() (r int32, exists bool) {
 }
 
 // ClearDeletedBy clears the value of the "deleted_by" field.
-func (m *ApiResourceMutation) ClearDeletedBy() {
+func (m *APIMutation) ClearDeletedBy() {
 	m.deleted_by = nil
 	m.adddeleted_by = nil
-	m.clearedFields[apiresource.FieldDeletedBy] = struct{}{}
+	m.clearedFields[api.FieldDeletedBy] = struct{}{}
 }
 
 // DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
-func (m *ApiResourceMutation) DeletedByCleared() bool {
-	_, ok := m.clearedFields[apiresource.FieldDeletedBy]
+func (m *APIMutation) DeletedByCleared() bool {
+	_, ok := m.clearedFields[api.FieldDeletedBy]
 	return ok
 }
 
 // ResetDeletedBy resets all changes to the "deleted_by" field.
-func (m *ApiResourceMutation) ResetDeletedBy() {
+func (m *APIMutation) ResetDeletedBy() {
 	m.deleted_by = nil
 	m.adddeleted_by = nil
-	delete(m.clearedFields, apiresource.FieldDeletedBy)
+	delete(m.clearedFields, api.FieldDeletedBy)
 }
 
 // SetStatus sets the "status" field.
-func (m *ApiResourceMutation) SetStatus(a apiresource.Status) {
+func (m *APIMutation) SetStatus(a api.Status) {
 	m.status = &a
 }
 
 // Status returns the value of the "status" field in the mutation.
-func (m *ApiResourceMutation) Status() (r apiresource.Status, exists bool) {
+func (m *APIMutation) Status() (r api.Status, exists bool) {
 	v := m.status
 	if v == nil {
 		return
@@ -5943,10 +5943,10 @@ func (m *ApiResourceMutation) Status() (r apiresource.Status, exists bool) {
 	return *v, true
 }
 
-// OldStatus returns the old "status" field's value of the ApiResource entity.
-// If the ApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldStatus returns the old "status" field's value of the Api entity.
+// If the Api object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiResourceMutation) OldStatus(ctx context.Context) (v *apiresource.Status, err error) {
+func (m *APIMutation) OldStatus(ctx context.Context) (v *api.Status, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldStatus is only allowed on UpdateOne operations")
 	}
@@ -5961,17 +5961,17 @@ func (m *ApiResourceMutation) OldStatus(ctx context.Context) (v *apiresource.Sta
 }
 
 // ResetStatus resets all changes to the "status" field.
-func (m *ApiResourceMutation) ResetStatus() {
+func (m *APIMutation) ResetStatus() {
 	m.status = nil
 }
 
 // SetDescription sets the "description" field.
-func (m *ApiResourceMutation) SetDescription(s string) {
+func (m *APIMutation) SetDescription(s string) {
 	m.description = &s
 }
 
 // Description returns the value of the "description" field in the mutation.
-func (m *ApiResourceMutation) Description() (r string, exists bool) {
+func (m *APIMutation) Description() (r string, exists bool) {
 	v := m.description
 	if v == nil {
 		return
@@ -5979,10 +5979,10 @@ func (m *ApiResourceMutation) Description() (r string, exists bool) {
 	return *v, true
 }
 
-// OldDescription returns the old "description" field's value of the ApiResource entity.
-// If the ApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldDescription returns the old "description" field's value of the Api entity.
+// If the Api object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiResourceMutation) OldDescription(ctx context.Context) (v *string, err error) {
+func (m *APIMutation) OldDescription(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
 	}
@@ -5997,30 +5997,30 @@ func (m *ApiResourceMutation) OldDescription(ctx context.Context) (v *string, er
 }
 
 // ClearDescription clears the value of the "description" field.
-func (m *ApiResourceMutation) ClearDescription() {
+func (m *APIMutation) ClearDescription() {
 	m.description = nil
-	m.clearedFields[apiresource.FieldDescription] = struct{}{}
+	m.clearedFields[api.FieldDescription] = struct{}{}
 }
 
 // DescriptionCleared returns if the "description" field was cleared in this mutation.
-func (m *ApiResourceMutation) DescriptionCleared() bool {
-	_, ok := m.clearedFields[apiresource.FieldDescription]
+func (m *APIMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[api.FieldDescription]
 	return ok
 }
 
 // ResetDescription resets all changes to the "description" field.
-func (m *ApiResourceMutation) ResetDescription() {
+func (m *APIMutation) ResetDescription() {
 	m.description = nil
-	delete(m.clearedFields, apiresource.FieldDescription)
+	delete(m.clearedFields, api.FieldDescription)
 }
 
 // SetModule sets the "module" field.
-func (m *ApiResourceMutation) SetModule(s string) {
+func (m *APIMutation) SetModule(s string) {
 	m.module = &s
 }
 
 // Module returns the value of the "module" field in the mutation.
-func (m *ApiResourceMutation) Module() (r string, exists bool) {
+func (m *APIMutation) Module() (r string, exists bool) {
 	v := m.module
 	if v == nil {
 		return
@@ -6028,10 +6028,10 @@ func (m *ApiResourceMutation) Module() (r string, exists bool) {
 	return *v, true
 }
 
-// OldModule returns the old "module" field's value of the ApiResource entity.
-// If the ApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldModule returns the old "module" field's value of the Api entity.
+// If the Api object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiResourceMutation) OldModule(ctx context.Context) (v *string, err error) {
+func (m *APIMutation) OldModule(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldModule is only allowed on UpdateOne operations")
 	}
@@ -6046,30 +6046,30 @@ func (m *ApiResourceMutation) OldModule(ctx context.Context) (v *string, err err
 }
 
 // ClearModule clears the value of the "module" field.
-func (m *ApiResourceMutation) ClearModule() {
+func (m *APIMutation) ClearModule() {
 	m.module = nil
-	m.clearedFields[apiresource.FieldModule] = struct{}{}
+	m.clearedFields[api.FieldModule] = struct{}{}
 }
 
 // ModuleCleared returns if the "module" field was cleared in this mutation.
-func (m *ApiResourceMutation) ModuleCleared() bool {
-	_, ok := m.clearedFields[apiresource.FieldModule]
+func (m *APIMutation) ModuleCleared() bool {
+	_, ok := m.clearedFields[api.FieldModule]
 	return ok
 }
 
 // ResetModule resets all changes to the "module" field.
-func (m *ApiResourceMutation) ResetModule() {
+func (m *APIMutation) ResetModule() {
 	m.module = nil
-	delete(m.clearedFields, apiresource.FieldModule)
+	delete(m.clearedFields, api.FieldModule)
 }
 
 // SetModuleDescription sets the "module_description" field.
-func (m *ApiResourceMutation) SetModuleDescription(s string) {
+func (m *APIMutation) SetModuleDescription(s string) {
 	m.module_description = &s
 }
 
 // ModuleDescription returns the value of the "module_description" field in the mutation.
-func (m *ApiResourceMutation) ModuleDescription() (r string, exists bool) {
+func (m *APIMutation) ModuleDescription() (r string, exists bool) {
 	v := m.module_description
 	if v == nil {
 		return
@@ -6077,10 +6077,10 @@ func (m *ApiResourceMutation) ModuleDescription() (r string, exists bool) {
 	return *v, true
 }
 
-// OldModuleDescription returns the old "module_description" field's value of the ApiResource entity.
-// If the ApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldModuleDescription returns the old "module_description" field's value of the Api entity.
+// If the Api object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiResourceMutation) OldModuleDescription(ctx context.Context) (v *string, err error) {
+func (m *APIMutation) OldModuleDescription(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldModuleDescription is only allowed on UpdateOne operations")
 	}
@@ -6095,30 +6095,30 @@ func (m *ApiResourceMutation) OldModuleDescription(ctx context.Context) (v *stri
 }
 
 // ClearModuleDescription clears the value of the "module_description" field.
-func (m *ApiResourceMutation) ClearModuleDescription() {
+func (m *APIMutation) ClearModuleDescription() {
 	m.module_description = nil
-	m.clearedFields[apiresource.FieldModuleDescription] = struct{}{}
+	m.clearedFields[api.FieldModuleDescription] = struct{}{}
 }
 
 // ModuleDescriptionCleared returns if the "module_description" field was cleared in this mutation.
-func (m *ApiResourceMutation) ModuleDescriptionCleared() bool {
-	_, ok := m.clearedFields[apiresource.FieldModuleDescription]
+func (m *APIMutation) ModuleDescriptionCleared() bool {
+	_, ok := m.clearedFields[api.FieldModuleDescription]
 	return ok
 }
 
 // ResetModuleDescription resets all changes to the "module_description" field.
-func (m *ApiResourceMutation) ResetModuleDescription() {
+func (m *APIMutation) ResetModuleDescription() {
 	m.module_description = nil
-	delete(m.clearedFields, apiresource.FieldModuleDescription)
+	delete(m.clearedFields, api.FieldModuleDescription)
 }
 
 // SetOperation sets the "operation" field.
-func (m *ApiResourceMutation) SetOperation(s string) {
+func (m *APIMutation) SetOperation(s string) {
 	m.operation = &s
 }
 
 // Operation returns the value of the "operation" field in the mutation.
-func (m *ApiResourceMutation) Operation() (r string, exists bool) {
+func (m *APIMutation) Operation() (r string, exists bool) {
 	v := m.operation
 	if v == nil {
 		return
@@ -6126,10 +6126,10 @@ func (m *ApiResourceMutation) Operation() (r string, exists bool) {
 	return *v, true
 }
 
-// OldOperation returns the old "operation" field's value of the ApiResource entity.
-// If the ApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldOperation returns the old "operation" field's value of the Api entity.
+// If the Api object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiResourceMutation) OldOperation(ctx context.Context) (v *string, err error) {
+func (m *APIMutation) OldOperation(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldOperation is only allowed on UpdateOne operations")
 	}
@@ -6144,30 +6144,30 @@ func (m *ApiResourceMutation) OldOperation(ctx context.Context) (v *string, err 
 }
 
 // ClearOperation clears the value of the "operation" field.
-func (m *ApiResourceMutation) ClearOperation() {
+func (m *APIMutation) ClearOperation() {
 	m.operation = nil
-	m.clearedFields[apiresource.FieldOperation] = struct{}{}
+	m.clearedFields[api.FieldOperation] = struct{}{}
 }
 
 // OperationCleared returns if the "operation" field was cleared in this mutation.
-func (m *ApiResourceMutation) OperationCleared() bool {
-	_, ok := m.clearedFields[apiresource.FieldOperation]
+func (m *APIMutation) OperationCleared() bool {
+	_, ok := m.clearedFields[api.FieldOperation]
 	return ok
 }
 
 // ResetOperation resets all changes to the "operation" field.
-func (m *ApiResourceMutation) ResetOperation() {
+func (m *APIMutation) ResetOperation() {
 	m.operation = nil
-	delete(m.clearedFields, apiresource.FieldOperation)
+	delete(m.clearedFields, api.FieldOperation)
 }
 
 // SetPath sets the "path" field.
-func (m *ApiResourceMutation) SetPath(s string) {
+func (m *APIMutation) SetPath(s string) {
 	m._path = &s
 }
 
 // Path returns the value of the "path" field in the mutation.
-func (m *ApiResourceMutation) Path() (r string, exists bool) {
+func (m *APIMutation) Path() (r string, exists bool) {
 	v := m._path
 	if v == nil {
 		return
@@ -6175,10 +6175,10 @@ func (m *ApiResourceMutation) Path() (r string, exists bool) {
 	return *v, true
 }
 
-// OldPath returns the old "path" field's value of the ApiResource entity.
-// If the ApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldPath returns the old "path" field's value of the Api entity.
+// If the Api object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiResourceMutation) OldPath(ctx context.Context) (v *string, err error) {
+func (m *APIMutation) OldPath(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPath is only allowed on UpdateOne operations")
 	}
@@ -6193,30 +6193,30 @@ func (m *ApiResourceMutation) OldPath(ctx context.Context) (v *string, err error
 }
 
 // ClearPath clears the value of the "path" field.
-func (m *ApiResourceMutation) ClearPath() {
+func (m *APIMutation) ClearPath() {
 	m._path = nil
-	m.clearedFields[apiresource.FieldPath] = struct{}{}
+	m.clearedFields[api.FieldPath] = struct{}{}
 }
 
 // PathCleared returns if the "path" field was cleared in this mutation.
-func (m *ApiResourceMutation) PathCleared() bool {
-	_, ok := m.clearedFields[apiresource.FieldPath]
+func (m *APIMutation) PathCleared() bool {
+	_, ok := m.clearedFields[api.FieldPath]
 	return ok
 }
 
 // ResetPath resets all changes to the "path" field.
-func (m *ApiResourceMutation) ResetPath() {
+func (m *APIMutation) ResetPath() {
 	m._path = nil
-	delete(m.clearedFields, apiresource.FieldPath)
+	delete(m.clearedFields, api.FieldPath)
 }
 
 // SetMethod sets the "method" field.
-func (m *ApiResourceMutation) SetMethod(s string) {
+func (m *APIMutation) SetMethod(s string) {
 	m.method = &s
 }
 
 // Method returns the value of the "method" field in the mutation.
-func (m *ApiResourceMutation) Method() (r string, exists bool) {
+func (m *APIMutation) Method() (r string, exists bool) {
 	v := m.method
 	if v == nil {
 		return
@@ -6224,10 +6224,10 @@ func (m *ApiResourceMutation) Method() (r string, exists bool) {
 	return *v, true
 }
 
-// OldMethod returns the old "method" field's value of the ApiResource entity.
-// If the ApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldMethod returns the old "method" field's value of the Api entity.
+// If the Api object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiResourceMutation) OldMethod(ctx context.Context) (v *string, err error) {
+func (m *APIMutation) OldMethod(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldMethod is only allowed on UpdateOne operations")
 	}
@@ -6242,30 +6242,30 @@ func (m *ApiResourceMutation) OldMethod(ctx context.Context) (v *string, err err
 }
 
 // ClearMethod clears the value of the "method" field.
-func (m *ApiResourceMutation) ClearMethod() {
+func (m *APIMutation) ClearMethod() {
 	m.method = nil
-	m.clearedFields[apiresource.FieldMethod] = struct{}{}
+	m.clearedFields[api.FieldMethod] = struct{}{}
 }
 
 // MethodCleared returns if the "method" field was cleared in this mutation.
-func (m *ApiResourceMutation) MethodCleared() bool {
-	_, ok := m.clearedFields[apiresource.FieldMethod]
+func (m *APIMutation) MethodCleared() bool {
+	_, ok := m.clearedFields[api.FieldMethod]
 	return ok
 }
 
 // ResetMethod resets all changes to the "method" field.
-func (m *ApiResourceMutation) ResetMethod() {
+func (m *APIMutation) ResetMethod() {
 	m.method = nil
-	delete(m.clearedFields, apiresource.FieldMethod)
+	delete(m.clearedFields, api.FieldMethod)
 }
 
 // SetScope sets the "scope" field.
-func (m *ApiResourceMutation) SetScope(a apiresource.Scope) {
+func (m *APIMutation) SetScope(a api.Scope) {
 	m.scope = &a
 }
 
 // Scope returns the value of the "scope" field in the mutation.
-func (m *ApiResourceMutation) Scope() (r apiresource.Scope, exists bool) {
+func (m *APIMutation) Scope() (r api.Scope, exists bool) {
 	v := m.scope
 	if v == nil {
 		return
@@ -6273,10 +6273,10 @@ func (m *ApiResourceMutation) Scope() (r apiresource.Scope, exists bool) {
 	return *v, true
 }
 
-// OldScope returns the old "scope" field's value of the ApiResource entity.
-// If the ApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldScope returns the old "scope" field's value of the Api entity.
+// If the Api object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiResourceMutation) OldScope(ctx context.Context) (v *apiresource.Scope, err error) {
+func (m *APIMutation) OldScope(ctx context.Context) (v *api.Scope, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldScope is only allowed on UpdateOne operations")
 	}
@@ -6291,32 +6291,32 @@ func (m *ApiResourceMutation) OldScope(ctx context.Context) (v *apiresource.Scop
 }
 
 // ClearScope clears the value of the "scope" field.
-func (m *ApiResourceMutation) ClearScope() {
+func (m *APIMutation) ClearScope() {
 	m.scope = nil
-	m.clearedFields[apiresource.FieldScope] = struct{}{}
+	m.clearedFields[api.FieldScope] = struct{}{}
 }
 
 // ScopeCleared returns if the "scope" field was cleared in this mutation.
-func (m *ApiResourceMutation) ScopeCleared() bool {
-	_, ok := m.clearedFields[apiresource.FieldScope]
+func (m *APIMutation) ScopeCleared() bool {
+	_, ok := m.clearedFields[api.FieldScope]
 	return ok
 }
 
 // ResetScope resets all changes to the "scope" field.
-func (m *ApiResourceMutation) ResetScope() {
+func (m *APIMutation) ResetScope() {
 	m.scope = nil
-	delete(m.clearedFields, apiresource.FieldScope)
+	delete(m.clearedFields, api.FieldScope)
 }
 
-// Where appends a list predicates to the ApiResourceMutation builder.
-func (m *ApiResourceMutation) Where(ps ...predicate.ApiResource) {
+// Where appends a list predicates to the APIMutation builder.
+func (m *APIMutation) Where(ps ...predicate.Api) {
 	m.predicates = append(m.predicates, ps...)
 }
 
-// WhereP appends storage-level predicates to the ApiResourceMutation builder. Using this method,
+// WhereP appends storage-level predicates to the APIMutation builder. Using this method,
 // users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *ApiResourceMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.ApiResource, len(ps))
+func (m *APIMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Api, len(ps))
 	for i := range ps {
 		p[i] = ps[i]
 	}
@@ -6324,66 +6324,66 @@ func (m *ApiResourceMutation) WhereP(ps ...func(*sql.Selector)) {
 }
 
 // Op returns the operation name.
-func (m *ApiResourceMutation) Op() Op {
+func (m *APIMutation) Op() Op {
 	return m.op
 }
 
 // SetOp allows setting the mutation operation.
-func (m *ApiResourceMutation) SetOp(op Op) {
+func (m *APIMutation) SetOp(op Op) {
 	m.op = op
 }
 
-// Type returns the node type of this mutation (ApiResource).
-func (m *ApiResourceMutation) Type() string {
+// Type returns the node type of this mutation (Api).
+func (m *APIMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *ApiResourceMutation) Fields() []string {
+func (m *APIMutation) Fields() []string {
 	fields := make([]string, 0, 14)
 	if m.created_at != nil {
-		fields = append(fields, apiresource.FieldCreatedAt)
+		fields = append(fields, api.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
-		fields = append(fields, apiresource.FieldUpdatedAt)
+		fields = append(fields, api.FieldUpdatedAt)
 	}
 	if m.deleted_at != nil {
-		fields = append(fields, apiresource.FieldDeletedAt)
+		fields = append(fields, api.FieldDeletedAt)
 	}
 	if m.created_by != nil {
-		fields = append(fields, apiresource.FieldCreatedBy)
+		fields = append(fields, api.FieldCreatedBy)
 	}
 	if m.updated_by != nil {
-		fields = append(fields, apiresource.FieldUpdatedBy)
+		fields = append(fields, api.FieldUpdatedBy)
 	}
 	if m.deleted_by != nil {
-		fields = append(fields, apiresource.FieldDeletedBy)
+		fields = append(fields, api.FieldDeletedBy)
 	}
 	if m.status != nil {
-		fields = append(fields, apiresource.FieldStatus)
+		fields = append(fields, api.FieldStatus)
 	}
 	if m.description != nil {
-		fields = append(fields, apiresource.FieldDescription)
+		fields = append(fields, api.FieldDescription)
 	}
 	if m.module != nil {
-		fields = append(fields, apiresource.FieldModule)
+		fields = append(fields, api.FieldModule)
 	}
 	if m.module_description != nil {
-		fields = append(fields, apiresource.FieldModuleDescription)
+		fields = append(fields, api.FieldModuleDescription)
 	}
 	if m.operation != nil {
-		fields = append(fields, apiresource.FieldOperation)
+		fields = append(fields, api.FieldOperation)
 	}
 	if m._path != nil {
-		fields = append(fields, apiresource.FieldPath)
+		fields = append(fields, api.FieldPath)
 	}
 	if m.method != nil {
-		fields = append(fields, apiresource.FieldMethod)
+		fields = append(fields, api.FieldMethod)
 	}
 	if m.scope != nil {
-		fields = append(fields, apiresource.FieldScope)
+		fields = append(fields, api.FieldScope)
 	}
 	return fields
 }
@@ -6391,35 +6391,35 @@ func (m *ApiResourceMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *ApiResourceMutation) Field(name string) (ent.Value, bool) {
+func (m *APIMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case apiresource.FieldCreatedAt:
+	case api.FieldCreatedAt:
 		return m.CreatedAt()
-	case apiresource.FieldUpdatedAt:
+	case api.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case apiresource.FieldDeletedAt:
+	case api.FieldDeletedAt:
 		return m.DeletedAt()
-	case apiresource.FieldCreatedBy:
+	case api.FieldCreatedBy:
 		return m.CreatedBy()
-	case apiresource.FieldUpdatedBy:
+	case api.FieldUpdatedBy:
 		return m.UpdatedBy()
-	case apiresource.FieldDeletedBy:
+	case api.FieldDeletedBy:
 		return m.DeletedBy()
-	case apiresource.FieldStatus:
+	case api.FieldStatus:
 		return m.Status()
-	case apiresource.FieldDescription:
+	case api.FieldDescription:
 		return m.Description()
-	case apiresource.FieldModule:
+	case api.FieldModule:
 		return m.Module()
-	case apiresource.FieldModuleDescription:
+	case api.FieldModuleDescription:
 		return m.ModuleDescription()
-	case apiresource.FieldOperation:
+	case api.FieldOperation:
 		return m.Operation()
-	case apiresource.FieldPath:
+	case api.FieldPath:
 		return m.Path()
-	case apiresource.FieldMethod:
+	case api.FieldMethod:
 		return m.Method()
-	case apiresource.FieldScope:
+	case api.FieldScope:
 		return m.Scope()
 	}
 	return nil, false
@@ -6428,159 +6428,159 @@ func (m *ApiResourceMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *ApiResourceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *APIMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case apiresource.FieldCreatedAt:
+	case api.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
-	case apiresource.FieldUpdatedAt:
+	case api.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case apiresource.FieldDeletedAt:
+	case api.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case apiresource.FieldCreatedBy:
+	case api.FieldCreatedBy:
 		return m.OldCreatedBy(ctx)
-	case apiresource.FieldUpdatedBy:
+	case api.FieldUpdatedBy:
 		return m.OldUpdatedBy(ctx)
-	case apiresource.FieldDeletedBy:
+	case api.FieldDeletedBy:
 		return m.OldDeletedBy(ctx)
-	case apiresource.FieldStatus:
+	case api.FieldStatus:
 		return m.OldStatus(ctx)
-	case apiresource.FieldDescription:
+	case api.FieldDescription:
 		return m.OldDescription(ctx)
-	case apiresource.FieldModule:
+	case api.FieldModule:
 		return m.OldModule(ctx)
-	case apiresource.FieldModuleDescription:
+	case api.FieldModuleDescription:
 		return m.OldModuleDescription(ctx)
-	case apiresource.FieldOperation:
+	case api.FieldOperation:
 		return m.OldOperation(ctx)
-	case apiresource.FieldPath:
+	case api.FieldPath:
 		return m.OldPath(ctx)
-	case apiresource.FieldMethod:
+	case api.FieldMethod:
 		return m.OldMethod(ctx)
-	case apiresource.FieldScope:
+	case api.FieldScope:
 		return m.OldScope(ctx)
 	}
-	return nil, fmt.Errorf("unknown ApiResource field %s", name)
+	return nil, fmt.Errorf("unknown Api field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *ApiResourceMutation) SetField(name string, value ent.Value) error {
+func (m *APIMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case apiresource.FieldCreatedAt:
+	case api.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
 		return nil
-	case apiresource.FieldUpdatedAt:
+	case api.FieldUpdatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case apiresource.FieldDeletedAt:
+	case api.FieldDeletedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case apiresource.FieldCreatedBy:
+	case api.FieldCreatedBy:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedBy(v)
 		return nil
-	case apiresource.FieldUpdatedBy:
+	case api.FieldUpdatedBy:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedBy(v)
 		return nil
-	case apiresource.FieldDeletedBy:
+	case api.FieldDeletedBy:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedBy(v)
 		return nil
-	case apiresource.FieldStatus:
-		v, ok := value.(apiresource.Status)
+	case api.FieldStatus:
+		v, ok := value.(api.Status)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
 		return nil
-	case apiresource.FieldDescription:
+	case api.FieldDescription:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDescription(v)
 		return nil
-	case apiresource.FieldModule:
+	case api.FieldModule:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetModule(v)
 		return nil
-	case apiresource.FieldModuleDescription:
+	case api.FieldModuleDescription:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetModuleDescription(v)
 		return nil
-	case apiresource.FieldOperation:
+	case api.FieldOperation:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetOperation(v)
 		return nil
-	case apiresource.FieldPath:
+	case api.FieldPath:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPath(v)
 		return nil
-	case apiresource.FieldMethod:
+	case api.FieldMethod:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetMethod(v)
 		return nil
-	case apiresource.FieldScope:
-		v, ok := value.(apiresource.Scope)
+	case api.FieldScope:
+		v, ok := value.(api.Scope)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetScope(v)
 		return nil
 	}
-	return fmt.Errorf("unknown ApiResource field %s", name)
+	return fmt.Errorf("unknown Api field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *ApiResourceMutation) AddedFields() []string {
+func (m *APIMutation) AddedFields() []string {
 	var fields []string
 	if m.addcreated_by != nil {
-		fields = append(fields, apiresource.FieldCreatedBy)
+		fields = append(fields, api.FieldCreatedBy)
 	}
 	if m.addupdated_by != nil {
-		fields = append(fields, apiresource.FieldUpdatedBy)
+		fields = append(fields, api.FieldUpdatedBy)
 	}
 	if m.adddeleted_by != nil {
-		fields = append(fields, apiresource.FieldDeletedBy)
+		fields = append(fields, api.FieldDeletedBy)
 	}
 	return fields
 }
@@ -6588,13 +6588,13 @@ func (m *ApiResourceMutation) AddedFields() []string {
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *ApiResourceMutation) AddedField(name string) (ent.Value, bool) {
+func (m *APIMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case apiresource.FieldCreatedBy:
+	case api.FieldCreatedBy:
 		return m.AddedCreatedBy()
-	case apiresource.FieldUpdatedBy:
+	case api.FieldUpdatedBy:
 		return m.AddedUpdatedBy()
-	case apiresource.FieldDeletedBy:
+	case api.FieldDeletedBy:
 		return m.AddedDeletedBy()
 	}
 	return nil, false
@@ -6603,23 +6603,23 @@ func (m *ApiResourceMutation) AddedField(name string) (ent.Value, bool) {
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *ApiResourceMutation) AddField(name string, value ent.Value) error {
+func (m *APIMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case apiresource.FieldCreatedBy:
+	case api.FieldCreatedBy:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddCreatedBy(v)
 		return nil
-	case apiresource.FieldUpdatedBy:
+	case api.FieldUpdatedBy:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddUpdatedBy(v)
 		return nil
-	case apiresource.FieldDeletedBy:
+	case api.FieldDeletedBy:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
@@ -6627,205 +6627,205 @@ func (m *ApiResourceMutation) AddField(name string, value ent.Value) error {
 		m.AddDeletedBy(v)
 		return nil
 	}
-	return fmt.Errorf("unknown ApiResource numeric field %s", name)
+	return fmt.Errorf("unknown Api numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *ApiResourceMutation) ClearedFields() []string {
+func (m *APIMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(apiresource.FieldCreatedAt) {
-		fields = append(fields, apiresource.FieldCreatedAt)
+	if m.FieldCleared(api.FieldCreatedAt) {
+		fields = append(fields, api.FieldCreatedAt)
 	}
-	if m.FieldCleared(apiresource.FieldUpdatedAt) {
-		fields = append(fields, apiresource.FieldUpdatedAt)
+	if m.FieldCleared(api.FieldUpdatedAt) {
+		fields = append(fields, api.FieldUpdatedAt)
 	}
-	if m.FieldCleared(apiresource.FieldDeletedAt) {
-		fields = append(fields, apiresource.FieldDeletedAt)
+	if m.FieldCleared(api.FieldDeletedAt) {
+		fields = append(fields, api.FieldDeletedAt)
 	}
-	if m.FieldCleared(apiresource.FieldCreatedBy) {
-		fields = append(fields, apiresource.FieldCreatedBy)
+	if m.FieldCleared(api.FieldCreatedBy) {
+		fields = append(fields, api.FieldCreatedBy)
 	}
-	if m.FieldCleared(apiresource.FieldUpdatedBy) {
-		fields = append(fields, apiresource.FieldUpdatedBy)
+	if m.FieldCleared(api.FieldUpdatedBy) {
+		fields = append(fields, api.FieldUpdatedBy)
 	}
-	if m.FieldCleared(apiresource.FieldDeletedBy) {
-		fields = append(fields, apiresource.FieldDeletedBy)
+	if m.FieldCleared(api.FieldDeletedBy) {
+		fields = append(fields, api.FieldDeletedBy)
 	}
-	if m.FieldCleared(apiresource.FieldDescription) {
-		fields = append(fields, apiresource.FieldDescription)
+	if m.FieldCleared(api.FieldDescription) {
+		fields = append(fields, api.FieldDescription)
 	}
-	if m.FieldCleared(apiresource.FieldModule) {
-		fields = append(fields, apiresource.FieldModule)
+	if m.FieldCleared(api.FieldModule) {
+		fields = append(fields, api.FieldModule)
 	}
-	if m.FieldCleared(apiresource.FieldModuleDescription) {
-		fields = append(fields, apiresource.FieldModuleDescription)
+	if m.FieldCleared(api.FieldModuleDescription) {
+		fields = append(fields, api.FieldModuleDescription)
 	}
-	if m.FieldCleared(apiresource.FieldOperation) {
-		fields = append(fields, apiresource.FieldOperation)
+	if m.FieldCleared(api.FieldOperation) {
+		fields = append(fields, api.FieldOperation)
 	}
-	if m.FieldCleared(apiresource.FieldPath) {
-		fields = append(fields, apiresource.FieldPath)
+	if m.FieldCleared(api.FieldPath) {
+		fields = append(fields, api.FieldPath)
 	}
-	if m.FieldCleared(apiresource.FieldMethod) {
-		fields = append(fields, apiresource.FieldMethod)
+	if m.FieldCleared(api.FieldMethod) {
+		fields = append(fields, api.FieldMethod)
 	}
-	if m.FieldCleared(apiresource.FieldScope) {
-		fields = append(fields, apiresource.FieldScope)
+	if m.FieldCleared(api.FieldScope) {
+		fields = append(fields, api.FieldScope)
 	}
 	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *ApiResourceMutation) FieldCleared(name string) bool {
+func (m *APIMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *ApiResourceMutation) ClearField(name string) error {
+func (m *APIMutation) ClearField(name string) error {
 	switch name {
-	case apiresource.FieldCreatedAt:
+	case api.FieldCreatedAt:
 		m.ClearCreatedAt()
 		return nil
-	case apiresource.FieldUpdatedAt:
+	case api.FieldUpdatedAt:
 		m.ClearUpdatedAt()
 		return nil
-	case apiresource.FieldDeletedAt:
+	case api.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
-	case apiresource.FieldCreatedBy:
+	case api.FieldCreatedBy:
 		m.ClearCreatedBy()
 		return nil
-	case apiresource.FieldUpdatedBy:
+	case api.FieldUpdatedBy:
 		m.ClearUpdatedBy()
 		return nil
-	case apiresource.FieldDeletedBy:
+	case api.FieldDeletedBy:
 		m.ClearDeletedBy()
 		return nil
-	case apiresource.FieldDescription:
+	case api.FieldDescription:
 		m.ClearDescription()
 		return nil
-	case apiresource.FieldModule:
+	case api.FieldModule:
 		m.ClearModule()
 		return nil
-	case apiresource.FieldModuleDescription:
+	case api.FieldModuleDescription:
 		m.ClearModuleDescription()
 		return nil
-	case apiresource.FieldOperation:
+	case api.FieldOperation:
 		m.ClearOperation()
 		return nil
-	case apiresource.FieldPath:
+	case api.FieldPath:
 		m.ClearPath()
 		return nil
-	case apiresource.FieldMethod:
+	case api.FieldMethod:
 		m.ClearMethod()
 		return nil
-	case apiresource.FieldScope:
+	case api.FieldScope:
 		m.ClearScope()
 		return nil
 	}
-	return fmt.Errorf("unknown ApiResource nullable field %s", name)
+	return fmt.Errorf("unknown Api nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *ApiResourceMutation) ResetField(name string) error {
+func (m *APIMutation) ResetField(name string) error {
 	switch name {
-	case apiresource.FieldCreatedAt:
+	case api.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
-	case apiresource.FieldUpdatedAt:
+	case api.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case apiresource.FieldDeletedAt:
+	case api.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case apiresource.FieldCreatedBy:
+	case api.FieldCreatedBy:
 		m.ResetCreatedBy()
 		return nil
-	case apiresource.FieldUpdatedBy:
+	case api.FieldUpdatedBy:
 		m.ResetUpdatedBy()
 		return nil
-	case apiresource.FieldDeletedBy:
+	case api.FieldDeletedBy:
 		m.ResetDeletedBy()
 		return nil
-	case apiresource.FieldStatus:
+	case api.FieldStatus:
 		m.ResetStatus()
 		return nil
-	case apiresource.FieldDescription:
+	case api.FieldDescription:
 		m.ResetDescription()
 		return nil
-	case apiresource.FieldModule:
+	case api.FieldModule:
 		m.ResetModule()
 		return nil
-	case apiresource.FieldModuleDescription:
+	case api.FieldModuleDescription:
 		m.ResetModuleDescription()
 		return nil
-	case apiresource.FieldOperation:
+	case api.FieldOperation:
 		m.ResetOperation()
 		return nil
-	case apiresource.FieldPath:
+	case api.FieldPath:
 		m.ResetPath()
 		return nil
-	case apiresource.FieldMethod:
+	case api.FieldMethod:
 		m.ResetMethod()
 		return nil
-	case apiresource.FieldScope:
+	case api.FieldScope:
 		m.ResetScope()
 		return nil
 	}
-	return fmt.Errorf("unknown ApiResource field %s", name)
+	return fmt.Errorf("unknown Api field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *ApiResourceMutation) AddedEdges() []string {
+func (m *APIMutation) AddedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *ApiResourceMutation) AddedIDs(name string) []ent.Value {
+func (m *APIMutation) AddedIDs(name string) []ent.Value {
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *ApiResourceMutation) RemovedEdges() []string {
+func (m *APIMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *ApiResourceMutation) RemovedIDs(name string) []ent.Value {
+func (m *APIMutation) RemovedIDs(name string) []ent.Value {
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *ApiResourceMutation) ClearedEdges() []string {
+func (m *APIMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *ApiResourceMutation) EdgeCleared(name string) bool {
+func (m *APIMutation) EdgeCleared(name string) bool {
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *ApiResourceMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown ApiResource unique edge %s", name)
+func (m *APIMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown Api unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *ApiResourceMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown ApiResource edge %s", name)
+func (m *APIMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown Api edge %s", name)
 }
 
 // DictEntryMutation represents an operation that mutates the DictEntry nodes in the graph.
@@ -29877,44 +29877,44 @@ func (m *PermissionMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Permission edge %s", name)
 }
 
-// PermissionApiResourceMutation represents an operation that mutates the PermissionApiResource nodes in the graph.
-type PermissionApiResourceMutation struct {
+// PermissionApiMutation represents an operation that mutates the PermissionApi nodes in the graph.
+type PermissionApiMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *uint32
-	created_at         *time.Time
-	updated_at         *time.Time
-	deleted_at         *time.Time
-	created_by         *uint32
-	addcreated_by      *int32
-	updated_by         *uint32
-	addupdated_by      *int32
-	deleted_by         *uint32
-	adddeleted_by      *int32
-	tenant_id          *uint32
-	addtenant_id       *int32
-	permission_id      *uint32
-	addpermission_id   *int32
-	api_resource_id    *uint32
-	addapi_resource_id *int32
-	clearedFields      map[string]struct{}
-	done               bool
-	oldValue           func(context.Context) (*PermissionApiResource, error)
-	predicates         []predicate.PermissionApiResource
+	op               Op
+	typ              string
+	id               *uint32
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	created_by       *uint32
+	addcreated_by    *int32
+	updated_by       *uint32
+	addupdated_by    *int32
+	deleted_by       *uint32
+	adddeleted_by    *int32
+	tenant_id        *uint32
+	addtenant_id     *int32
+	permission_id    *uint32
+	addpermission_id *int32
+	api_id           *uint32
+	addapi_id        *int32
+	clearedFields    map[string]struct{}
+	done             bool
+	oldValue         func(context.Context) (*PermissionApi, error)
+	predicates       []predicate.PermissionApi
 }
 
-var _ ent.Mutation = (*PermissionApiResourceMutation)(nil)
+var _ ent.Mutation = (*PermissionApiMutation)(nil)
 
-// permissionapiresourceOption allows management of the mutation configuration using functional options.
-type permissionapiresourceOption func(*PermissionApiResourceMutation)
+// permissionapiOption allows management of the mutation configuration using functional options.
+type permissionapiOption func(*PermissionApiMutation)
 
-// newPermissionApiResourceMutation creates new mutation for the PermissionApiResource entity.
-func newPermissionApiResourceMutation(c config, op Op, opts ...permissionapiresourceOption) *PermissionApiResourceMutation {
-	m := &PermissionApiResourceMutation{
+// newPermissionApiMutation creates new mutation for the PermissionApi entity.
+func newPermissionApiMutation(c config, op Op, opts ...permissionapiOption) *PermissionApiMutation {
+	m := &PermissionApiMutation{
 		config:        c,
 		op:            op,
-		typ:           TypePermissionApiResource,
+		typ:           TypePermissionApi,
 		clearedFields: make(map[string]struct{}),
 	}
 	for _, opt := range opts {
@@ -29923,20 +29923,20 @@ func newPermissionApiResourceMutation(c config, op Op, opts ...permissionapireso
 	return m
 }
 
-// withPermissionApiResourceID sets the ID field of the mutation.
-func withPermissionApiResourceID(id uint32) permissionapiresourceOption {
-	return func(m *PermissionApiResourceMutation) {
+// withPermissionApiID sets the ID field of the mutation.
+func withPermissionApiID(id uint32) permissionapiOption {
+	return func(m *PermissionApiMutation) {
 		var (
 			err   error
 			once  sync.Once
-			value *PermissionApiResource
+			value *PermissionApi
 		)
-		m.oldValue = func(ctx context.Context) (*PermissionApiResource, error) {
+		m.oldValue = func(ctx context.Context) (*PermissionApi, error) {
 			once.Do(func() {
 				if m.done {
 					err = errors.New("querying old values post mutation is not allowed")
 				} else {
-					value, err = m.Client().PermissionApiResource.Get(ctx, id)
+					value, err = m.Client().PermissionApi.Get(ctx, id)
 				}
 			})
 			return value, err
@@ -29945,10 +29945,10 @@ func withPermissionApiResourceID(id uint32) permissionapiresourceOption {
 	}
 }
 
-// withPermissionApiResource sets the old PermissionApiResource of the mutation.
-func withPermissionApiResource(node *PermissionApiResource) permissionapiresourceOption {
-	return func(m *PermissionApiResourceMutation) {
-		m.oldValue = func(context.Context) (*PermissionApiResource, error) {
+// withPermissionApi sets the old PermissionApi of the mutation.
+func withPermissionApi(node *PermissionApi) permissionapiOption {
+	return func(m *PermissionApiMutation) {
+		m.oldValue = func(context.Context) (*PermissionApi, error) {
 			return node, nil
 		}
 		m.id = &node.ID
@@ -29957,7 +29957,7 @@ func withPermissionApiResource(node *PermissionApiResource) permissionapiresourc
 
 // Client returns a new `ent.Client` from the mutation. If the mutation was
 // executed in a transaction (ent.Tx), a transactional client is returned.
-func (m PermissionApiResourceMutation) Client() *Client {
+func (m PermissionApiMutation) Client() *Client {
 	client := &Client{config: m.config}
 	client.init()
 	return client
@@ -29965,7 +29965,7 @@ func (m PermissionApiResourceMutation) Client() *Client {
 
 // Tx returns an `ent.Tx` for mutations that were executed in transactions;
 // it returns an error otherwise.
-func (m PermissionApiResourceMutation) Tx() (*Tx, error) {
+func (m PermissionApiMutation) Tx() (*Tx, error) {
 	if _, ok := m.driver.(*txDriver); !ok {
 		return nil, errors.New("ent: mutation is not running in a transaction")
 	}
@@ -29975,14 +29975,14 @@ func (m PermissionApiResourceMutation) Tx() (*Tx, error) {
 }
 
 // SetID sets the value of the id field. Note that this
-// operation is only accepted on creation of PermissionApiResource entities.
-func (m *PermissionApiResourceMutation) SetID(id uint32) {
+// operation is only accepted on creation of PermissionApi entities.
+func (m *PermissionApiMutation) SetID(id uint32) {
 	m.id = &id
 }
 
 // ID returns the ID value in the mutation. Note that the ID is only available
 // if it was provided to the builder or after it was returned from the database.
-func (m *PermissionApiResourceMutation) ID() (id uint32, exists bool) {
+func (m *PermissionApiMutation) ID() (id uint32, exists bool) {
 	if m.id == nil {
 		return
 	}
@@ -29993,7 +29993,7 @@ func (m *PermissionApiResourceMutation) ID() (id uint32, exists bool) {
 // That means, if the mutation is applied within a transaction with an isolation level such
 // as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
 // or updated by the mutation.
-func (m *PermissionApiResourceMutation) IDs(ctx context.Context) ([]uint32, error) {
+func (m *PermissionApiMutation) IDs(ctx context.Context) ([]uint32, error) {
 	switch {
 	case m.op.Is(OpUpdateOne | OpDeleteOne):
 		id, exists := m.ID()
@@ -30002,19 +30002,19 @@ func (m *PermissionApiResourceMutation) IDs(ctx context.Context) ([]uint32, erro
 		}
 		fallthrough
 	case m.op.Is(OpUpdate | OpDelete):
-		return m.Client().PermissionApiResource.Query().Where(m.predicates...).IDs(ctx)
+		return m.Client().PermissionApi.Query().Where(m.predicates...).IDs(ctx)
 	default:
 		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
 	}
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (m *PermissionApiResourceMutation) SetCreatedAt(t time.Time) {
+func (m *PermissionApiMutation) SetCreatedAt(t time.Time) {
 	m.created_at = &t
 }
 
 // CreatedAt returns the value of the "created_at" field in the mutation.
-func (m *PermissionApiResourceMutation) CreatedAt() (r time.Time, exists bool) {
+func (m *PermissionApiMutation) CreatedAt() (r time.Time, exists bool) {
 	v := m.created_at
 	if v == nil {
 		return
@@ -30022,10 +30022,10 @@ func (m *PermissionApiResourceMutation) CreatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldCreatedAt returns the old "created_at" field's value of the PermissionApiResource entity.
-// If the PermissionApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldCreatedAt returns the old "created_at" field's value of the PermissionApi entity.
+// If the PermissionApi object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionApiResourceMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+func (m *PermissionApiMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
 	}
@@ -30040,30 +30040,30 @@ func (m *PermissionApiResourceMutation) OldCreatedAt(ctx context.Context) (v *ti
 }
 
 // ClearCreatedAt clears the value of the "created_at" field.
-func (m *PermissionApiResourceMutation) ClearCreatedAt() {
+func (m *PermissionApiMutation) ClearCreatedAt() {
 	m.created_at = nil
-	m.clearedFields[permissionapiresource.FieldCreatedAt] = struct{}{}
+	m.clearedFields[permissionapi.FieldCreatedAt] = struct{}{}
 }
 
 // CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
-func (m *PermissionApiResourceMutation) CreatedAtCleared() bool {
-	_, ok := m.clearedFields[permissionapiresource.FieldCreatedAt]
+func (m *PermissionApiMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[permissionapi.FieldCreatedAt]
 	return ok
 }
 
 // ResetCreatedAt resets all changes to the "created_at" field.
-func (m *PermissionApiResourceMutation) ResetCreatedAt() {
+func (m *PermissionApiMutation) ResetCreatedAt() {
 	m.created_at = nil
-	delete(m.clearedFields, permissionapiresource.FieldCreatedAt)
+	delete(m.clearedFields, permissionapi.FieldCreatedAt)
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (m *PermissionApiResourceMutation) SetUpdatedAt(t time.Time) {
+func (m *PermissionApiMutation) SetUpdatedAt(t time.Time) {
 	m.updated_at = &t
 }
 
 // UpdatedAt returns the value of the "updated_at" field in the mutation.
-func (m *PermissionApiResourceMutation) UpdatedAt() (r time.Time, exists bool) {
+func (m *PermissionApiMutation) UpdatedAt() (r time.Time, exists bool) {
 	v := m.updated_at
 	if v == nil {
 		return
@@ -30071,10 +30071,10 @@ func (m *PermissionApiResourceMutation) UpdatedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldUpdatedAt returns the old "updated_at" field's value of the PermissionApiResource entity.
-// If the PermissionApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldUpdatedAt returns the old "updated_at" field's value of the PermissionApi entity.
+// If the PermissionApi object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionApiResourceMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
+func (m *PermissionApiMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
 	}
@@ -30089,30 +30089,30 @@ func (m *PermissionApiResourceMutation) OldUpdatedAt(ctx context.Context) (v *ti
 }
 
 // ClearUpdatedAt clears the value of the "updated_at" field.
-func (m *PermissionApiResourceMutation) ClearUpdatedAt() {
+func (m *PermissionApiMutation) ClearUpdatedAt() {
 	m.updated_at = nil
-	m.clearedFields[permissionapiresource.FieldUpdatedAt] = struct{}{}
+	m.clearedFields[permissionapi.FieldUpdatedAt] = struct{}{}
 }
 
 // UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
-func (m *PermissionApiResourceMutation) UpdatedAtCleared() bool {
-	_, ok := m.clearedFields[permissionapiresource.FieldUpdatedAt]
+func (m *PermissionApiMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[permissionapi.FieldUpdatedAt]
 	return ok
 }
 
 // ResetUpdatedAt resets all changes to the "updated_at" field.
-func (m *PermissionApiResourceMutation) ResetUpdatedAt() {
+func (m *PermissionApiMutation) ResetUpdatedAt() {
 	m.updated_at = nil
-	delete(m.clearedFields, permissionapiresource.FieldUpdatedAt)
+	delete(m.clearedFields, permissionapi.FieldUpdatedAt)
 }
 
 // SetDeletedAt sets the "deleted_at" field.
-func (m *PermissionApiResourceMutation) SetDeletedAt(t time.Time) {
+func (m *PermissionApiMutation) SetDeletedAt(t time.Time) {
 	m.deleted_at = &t
 }
 
 // DeletedAt returns the value of the "deleted_at" field in the mutation.
-func (m *PermissionApiResourceMutation) DeletedAt() (r time.Time, exists bool) {
+func (m *PermissionApiMutation) DeletedAt() (r time.Time, exists bool) {
 	v := m.deleted_at
 	if v == nil {
 		return
@@ -30120,10 +30120,10 @@ func (m *PermissionApiResourceMutation) DeletedAt() (r time.Time, exists bool) {
 	return *v, true
 }
 
-// OldDeletedAt returns the old "deleted_at" field's value of the PermissionApiResource entity.
-// If the PermissionApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldDeletedAt returns the old "deleted_at" field's value of the PermissionApi entity.
+// If the PermissionApi object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionApiResourceMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+func (m *PermissionApiMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
 	}
@@ -30138,31 +30138,31 @@ func (m *PermissionApiResourceMutation) OldDeletedAt(ctx context.Context) (v *ti
 }
 
 // ClearDeletedAt clears the value of the "deleted_at" field.
-func (m *PermissionApiResourceMutation) ClearDeletedAt() {
+func (m *PermissionApiMutation) ClearDeletedAt() {
 	m.deleted_at = nil
-	m.clearedFields[permissionapiresource.FieldDeletedAt] = struct{}{}
+	m.clearedFields[permissionapi.FieldDeletedAt] = struct{}{}
 }
 
 // DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
-func (m *PermissionApiResourceMutation) DeletedAtCleared() bool {
-	_, ok := m.clearedFields[permissionapiresource.FieldDeletedAt]
+func (m *PermissionApiMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[permissionapi.FieldDeletedAt]
 	return ok
 }
 
 // ResetDeletedAt resets all changes to the "deleted_at" field.
-func (m *PermissionApiResourceMutation) ResetDeletedAt() {
+func (m *PermissionApiMutation) ResetDeletedAt() {
 	m.deleted_at = nil
-	delete(m.clearedFields, permissionapiresource.FieldDeletedAt)
+	delete(m.clearedFields, permissionapi.FieldDeletedAt)
 }
 
 // SetCreatedBy sets the "created_by" field.
-func (m *PermissionApiResourceMutation) SetCreatedBy(u uint32) {
+func (m *PermissionApiMutation) SetCreatedBy(u uint32) {
 	m.created_by = &u
 	m.addcreated_by = nil
 }
 
 // CreatedBy returns the value of the "created_by" field in the mutation.
-func (m *PermissionApiResourceMutation) CreatedBy() (r uint32, exists bool) {
+func (m *PermissionApiMutation) CreatedBy() (r uint32, exists bool) {
 	v := m.created_by
 	if v == nil {
 		return
@@ -30170,10 +30170,10 @@ func (m *PermissionApiResourceMutation) CreatedBy() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldCreatedBy returns the old "created_by" field's value of the PermissionApiResource entity.
-// If the PermissionApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldCreatedBy returns the old "created_by" field's value of the PermissionApi entity.
+// If the PermissionApi object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionApiResourceMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
+func (m *PermissionApiMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
 	}
@@ -30188,7 +30188,7 @@ func (m *PermissionApiResourceMutation) OldCreatedBy(ctx context.Context) (v *ui
 }
 
 // AddCreatedBy adds u to the "created_by" field.
-func (m *PermissionApiResourceMutation) AddCreatedBy(u int32) {
+func (m *PermissionApiMutation) AddCreatedBy(u int32) {
 	if m.addcreated_by != nil {
 		*m.addcreated_by += u
 	} else {
@@ -30197,7 +30197,7 @@ func (m *PermissionApiResourceMutation) AddCreatedBy(u int32) {
 }
 
 // AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
-func (m *PermissionApiResourceMutation) AddedCreatedBy() (r int32, exists bool) {
+func (m *PermissionApiMutation) AddedCreatedBy() (r int32, exists bool) {
 	v := m.addcreated_by
 	if v == nil {
 		return
@@ -30206,33 +30206,33 @@ func (m *PermissionApiResourceMutation) AddedCreatedBy() (r int32, exists bool) 
 }
 
 // ClearCreatedBy clears the value of the "created_by" field.
-func (m *PermissionApiResourceMutation) ClearCreatedBy() {
+func (m *PermissionApiMutation) ClearCreatedBy() {
 	m.created_by = nil
 	m.addcreated_by = nil
-	m.clearedFields[permissionapiresource.FieldCreatedBy] = struct{}{}
+	m.clearedFields[permissionapi.FieldCreatedBy] = struct{}{}
 }
 
 // CreatedByCleared returns if the "created_by" field was cleared in this mutation.
-func (m *PermissionApiResourceMutation) CreatedByCleared() bool {
-	_, ok := m.clearedFields[permissionapiresource.FieldCreatedBy]
+func (m *PermissionApiMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[permissionapi.FieldCreatedBy]
 	return ok
 }
 
 // ResetCreatedBy resets all changes to the "created_by" field.
-func (m *PermissionApiResourceMutation) ResetCreatedBy() {
+func (m *PermissionApiMutation) ResetCreatedBy() {
 	m.created_by = nil
 	m.addcreated_by = nil
-	delete(m.clearedFields, permissionapiresource.FieldCreatedBy)
+	delete(m.clearedFields, permissionapi.FieldCreatedBy)
 }
 
 // SetUpdatedBy sets the "updated_by" field.
-func (m *PermissionApiResourceMutation) SetUpdatedBy(u uint32) {
+func (m *PermissionApiMutation) SetUpdatedBy(u uint32) {
 	m.updated_by = &u
 	m.addupdated_by = nil
 }
 
 // UpdatedBy returns the value of the "updated_by" field in the mutation.
-func (m *PermissionApiResourceMutation) UpdatedBy() (r uint32, exists bool) {
+func (m *PermissionApiMutation) UpdatedBy() (r uint32, exists bool) {
 	v := m.updated_by
 	if v == nil {
 		return
@@ -30240,10 +30240,10 @@ func (m *PermissionApiResourceMutation) UpdatedBy() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldUpdatedBy returns the old "updated_by" field's value of the PermissionApiResource entity.
-// If the PermissionApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldUpdatedBy returns the old "updated_by" field's value of the PermissionApi entity.
+// If the PermissionApi object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionApiResourceMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
+func (m *PermissionApiMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
 	}
@@ -30258,7 +30258,7 @@ func (m *PermissionApiResourceMutation) OldUpdatedBy(ctx context.Context) (v *ui
 }
 
 // AddUpdatedBy adds u to the "updated_by" field.
-func (m *PermissionApiResourceMutation) AddUpdatedBy(u int32) {
+func (m *PermissionApiMutation) AddUpdatedBy(u int32) {
 	if m.addupdated_by != nil {
 		*m.addupdated_by += u
 	} else {
@@ -30267,7 +30267,7 @@ func (m *PermissionApiResourceMutation) AddUpdatedBy(u int32) {
 }
 
 // AddedUpdatedBy returns the value that was added to the "updated_by" field in this mutation.
-func (m *PermissionApiResourceMutation) AddedUpdatedBy() (r int32, exists bool) {
+func (m *PermissionApiMutation) AddedUpdatedBy() (r int32, exists bool) {
 	v := m.addupdated_by
 	if v == nil {
 		return
@@ -30276,33 +30276,33 @@ func (m *PermissionApiResourceMutation) AddedUpdatedBy() (r int32, exists bool) 
 }
 
 // ClearUpdatedBy clears the value of the "updated_by" field.
-func (m *PermissionApiResourceMutation) ClearUpdatedBy() {
+func (m *PermissionApiMutation) ClearUpdatedBy() {
 	m.updated_by = nil
 	m.addupdated_by = nil
-	m.clearedFields[permissionapiresource.FieldUpdatedBy] = struct{}{}
+	m.clearedFields[permissionapi.FieldUpdatedBy] = struct{}{}
 }
 
 // UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
-func (m *PermissionApiResourceMutation) UpdatedByCleared() bool {
-	_, ok := m.clearedFields[permissionapiresource.FieldUpdatedBy]
+func (m *PermissionApiMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[permissionapi.FieldUpdatedBy]
 	return ok
 }
 
 // ResetUpdatedBy resets all changes to the "updated_by" field.
-func (m *PermissionApiResourceMutation) ResetUpdatedBy() {
+func (m *PermissionApiMutation) ResetUpdatedBy() {
 	m.updated_by = nil
 	m.addupdated_by = nil
-	delete(m.clearedFields, permissionapiresource.FieldUpdatedBy)
+	delete(m.clearedFields, permissionapi.FieldUpdatedBy)
 }
 
 // SetDeletedBy sets the "deleted_by" field.
-func (m *PermissionApiResourceMutation) SetDeletedBy(u uint32) {
+func (m *PermissionApiMutation) SetDeletedBy(u uint32) {
 	m.deleted_by = &u
 	m.adddeleted_by = nil
 }
 
 // DeletedBy returns the value of the "deleted_by" field in the mutation.
-func (m *PermissionApiResourceMutation) DeletedBy() (r uint32, exists bool) {
+func (m *PermissionApiMutation) DeletedBy() (r uint32, exists bool) {
 	v := m.deleted_by
 	if v == nil {
 		return
@@ -30310,10 +30310,10 @@ func (m *PermissionApiResourceMutation) DeletedBy() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldDeletedBy returns the old "deleted_by" field's value of the PermissionApiResource entity.
-// If the PermissionApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldDeletedBy returns the old "deleted_by" field's value of the PermissionApi entity.
+// If the PermissionApi object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionApiResourceMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
+func (m *PermissionApiMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
 	}
@@ -30328,7 +30328,7 @@ func (m *PermissionApiResourceMutation) OldDeletedBy(ctx context.Context) (v *ui
 }
 
 // AddDeletedBy adds u to the "deleted_by" field.
-func (m *PermissionApiResourceMutation) AddDeletedBy(u int32) {
+func (m *PermissionApiMutation) AddDeletedBy(u int32) {
 	if m.adddeleted_by != nil {
 		*m.adddeleted_by += u
 	} else {
@@ -30337,7 +30337,7 @@ func (m *PermissionApiResourceMutation) AddDeletedBy(u int32) {
 }
 
 // AddedDeletedBy returns the value that was added to the "deleted_by" field in this mutation.
-func (m *PermissionApiResourceMutation) AddedDeletedBy() (r int32, exists bool) {
+func (m *PermissionApiMutation) AddedDeletedBy() (r int32, exists bool) {
 	v := m.adddeleted_by
 	if v == nil {
 		return
@@ -30346,33 +30346,33 @@ func (m *PermissionApiResourceMutation) AddedDeletedBy() (r int32, exists bool) 
 }
 
 // ClearDeletedBy clears the value of the "deleted_by" field.
-func (m *PermissionApiResourceMutation) ClearDeletedBy() {
+func (m *PermissionApiMutation) ClearDeletedBy() {
 	m.deleted_by = nil
 	m.adddeleted_by = nil
-	m.clearedFields[permissionapiresource.FieldDeletedBy] = struct{}{}
+	m.clearedFields[permissionapi.FieldDeletedBy] = struct{}{}
 }
 
 // DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
-func (m *PermissionApiResourceMutation) DeletedByCleared() bool {
-	_, ok := m.clearedFields[permissionapiresource.FieldDeletedBy]
+func (m *PermissionApiMutation) DeletedByCleared() bool {
+	_, ok := m.clearedFields[permissionapi.FieldDeletedBy]
 	return ok
 }
 
 // ResetDeletedBy resets all changes to the "deleted_by" field.
-func (m *PermissionApiResourceMutation) ResetDeletedBy() {
+func (m *PermissionApiMutation) ResetDeletedBy() {
 	m.deleted_by = nil
 	m.adddeleted_by = nil
-	delete(m.clearedFields, permissionapiresource.FieldDeletedBy)
+	delete(m.clearedFields, permissionapi.FieldDeletedBy)
 }
 
 // SetTenantID sets the "tenant_id" field.
-func (m *PermissionApiResourceMutation) SetTenantID(u uint32) {
+func (m *PermissionApiMutation) SetTenantID(u uint32) {
 	m.tenant_id = &u
 	m.addtenant_id = nil
 }
 
 // TenantID returns the value of the "tenant_id" field in the mutation.
-func (m *PermissionApiResourceMutation) TenantID() (r uint32, exists bool) {
+func (m *PermissionApiMutation) TenantID() (r uint32, exists bool) {
 	v := m.tenant_id
 	if v == nil {
 		return
@@ -30380,10 +30380,10 @@ func (m *PermissionApiResourceMutation) TenantID() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldTenantID returns the old "tenant_id" field's value of the PermissionApiResource entity.
-// If the PermissionApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldTenantID returns the old "tenant_id" field's value of the PermissionApi entity.
+// If the PermissionApi object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionApiResourceMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
+func (m *PermissionApiMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
 	}
@@ -30398,7 +30398,7 @@ func (m *PermissionApiResourceMutation) OldTenantID(ctx context.Context) (v *uin
 }
 
 // AddTenantID adds u to the "tenant_id" field.
-func (m *PermissionApiResourceMutation) AddTenantID(u int32) {
+func (m *PermissionApiMutation) AddTenantID(u int32) {
 	if m.addtenant_id != nil {
 		*m.addtenant_id += u
 	} else {
@@ -30407,7 +30407,7 @@ func (m *PermissionApiResourceMutation) AddTenantID(u int32) {
 }
 
 // AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
-func (m *PermissionApiResourceMutation) AddedTenantID() (r int32, exists bool) {
+func (m *PermissionApiMutation) AddedTenantID() (r int32, exists bool) {
 	v := m.addtenant_id
 	if v == nil {
 		return
@@ -30416,33 +30416,33 @@ func (m *PermissionApiResourceMutation) AddedTenantID() (r int32, exists bool) {
 }
 
 // ClearTenantID clears the value of the "tenant_id" field.
-func (m *PermissionApiResourceMutation) ClearTenantID() {
+func (m *PermissionApiMutation) ClearTenantID() {
 	m.tenant_id = nil
 	m.addtenant_id = nil
-	m.clearedFields[permissionapiresource.FieldTenantID] = struct{}{}
+	m.clearedFields[permissionapi.FieldTenantID] = struct{}{}
 }
 
 // TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
-func (m *PermissionApiResourceMutation) TenantIDCleared() bool {
-	_, ok := m.clearedFields[permissionapiresource.FieldTenantID]
+func (m *PermissionApiMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[permissionapi.FieldTenantID]
 	return ok
 }
 
 // ResetTenantID resets all changes to the "tenant_id" field.
-func (m *PermissionApiResourceMutation) ResetTenantID() {
+func (m *PermissionApiMutation) ResetTenantID() {
 	m.tenant_id = nil
 	m.addtenant_id = nil
-	delete(m.clearedFields, permissionapiresource.FieldTenantID)
+	delete(m.clearedFields, permissionapi.FieldTenantID)
 }
 
 // SetPermissionID sets the "permission_id" field.
-func (m *PermissionApiResourceMutation) SetPermissionID(u uint32) {
+func (m *PermissionApiMutation) SetPermissionID(u uint32) {
 	m.permission_id = &u
 	m.addpermission_id = nil
 }
 
 // PermissionID returns the value of the "permission_id" field in the mutation.
-func (m *PermissionApiResourceMutation) PermissionID() (r uint32, exists bool) {
+func (m *PermissionApiMutation) PermissionID() (r uint32, exists bool) {
 	v := m.permission_id
 	if v == nil {
 		return
@@ -30450,10 +30450,10 @@ func (m *PermissionApiResourceMutation) PermissionID() (r uint32, exists bool) {
 	return *v, true
 }
 
-// OldPermissionID returns the old "permission_id" field's value of the PermissionApiResource entity.
-// If the PermissionApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldPermissionID returns the old "permission_id" field's value of the PermissionApi entity.
+// If the PermissionApi object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionApiResourceMutation) OldPermissionID(ctx context.Context) (v *uint32, err error) {
+func (m *PermissionApiMutation) OldPermissionID(ctx context.Context) (v *uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldPermissionID is only allowed on UpdateOne operations")
 	}
@@ -30468,7 +30468,7 @@ func (m *PermissionApiResourceMutation) OldPermissionID(ctx context.Context) (v 
 }
 
 // AddPermissionID adds u to the "permission_id" field.
-func (m *PermissionApiResourceMutation) AddPermissionID(u int32) {
+func (m *PermissionApiMutation) AddPermissionID(u int32) {
 	if m.addpermission_id != nil {
 		*m.addpermission_id += u
 	} else {
@@ -30477,7 +30477,7 @@ func (m *PermissionApiResourceMutation) AddPermissionID(u int32) {
 }
 
 // AddedPermissionID returns the value that was added to the "permission_id" field in this mutation.
-func (m *PermissionApiResourceMutation) AddedPermissionID() (r int32, exists bool) {
+func (m *PermissionApiMutation) AddedPermissionID() (r int32, exists bool) {
 	v := m.addpermission_id
 	if v == nil {
 		return
@@ -30486,76 +30486,76 @@ func (m *PermissionApiResourceMutation) AddedPermissionID() (r int32, exists boo
 }
 
 // ResetPermissionID resets all changes to the "permission_id" field.
-func (m *PermissionApiResourceMutation) ResetPermissionID() {
+func (m *PermissionApiMutation) ResetPermissionID() {
 	m.permission_id = nil
 	m.addpermission_id = nil
 }
 
-// SetAPIResourceID sets the "api_resource_id" field.
-func (m *PermissionApiResourceMutation) SetAPIResourceID(u uint32) {
-	m.api_resource_id = &u
-	m.addapi_resource_id = nil
+// SetAPIID sets the "api_id" field.
+func (m *PermissionApiMutation) SetAPIID(u uint32) {
+	m.api_id = &u
+	m.addapi_id = nil
 }
 
-// APIResourceID returns the value of the "api_resource_id" field in the mutation.
-func (m *PermissionApiResourceMutation) APIResourceID() (r uint32, exists bool) {
-	v := m.api_resource_id
+// APIID returns the value of the "api_id" field in the mutation.
+func (m *PermissionApiMutation) APIID() (r uint32, exists bool) {
+	v := m.api_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldAPIResourceID returns the old "api_resource_id" field's value of the PermissionApiResource entity.
-// If the PermissionApiResource object wasn't provided to the builder, the object is fetched from the database.
+// OldAPIID returns the old "api_id" field's value of the PermissionApi entity.
+// If the PermissionApi object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionApiResourceMutation) OldAPIResourceID(ctx context.Context) (v *uint32, err error) {
+func (m *PermissionApiMutation) OldAPIID(ctx context.Context) (v *uint32, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAPIResourceID is only allowed on UpdateOne operations")
+		return v, errors.New("OldAPIID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAPIResourceID requires an ID field in the mutation")
+		return v, errors.New("OldAPIID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAPIResourceID: %w", err)
+		return v, fmt.Errorf("querying old value for OldAPIID: %w", err)
 	}
-	return oldValue.APIResourceID, nil
+	return oldValue.APIID, nil
 }
 
-// AddAPIResourceID adds u to the "api_resource_id" field.
-func (m *PermissionApiResourceMutation) AddAPIResourceID(u int32) {
-	if m.addapi_resource_id != nil {
-		*m.addapi_resource_id += u
+// AddAPIID adds u to the "api_id" field.
+func (m *PermissionApiMutation) AddAPIID(u int32) {
+	if m.addapi_id != nil {
+		*m.addapi_id += u
 	} else {
-		m.addapi_resource_id = &u
+		m.addapi_id = &u
 	}
 }
 
-// AddedAPIResourceID returns the value that was added to the "api_resource_id" field in this mutation.
-func (m *PermissionApiResourceMutation) AddedAPIResourceID() (r int32, exists bool) {
-	v := m.addapi_resource_id
+// AddedAPIID returns the value that was added to the "api_id" field in this mutation.
+func (m *PermissionApiMutation) AddedAPIID() (r int32, exists bool) {
+	v := m.addapi_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetAPIResourceID resets all changes to the "api_resource_id" field.
-func (m *PermissionApiResourceMutation) ResetAPIResourceID() {
-	m.api_resource_id = nil
-	m.addapi_resource_id = nil
+// ResetAPIID resets all changes to the "api_id" field.
+func (m *PermissionApiMutation) ResetAPIID() {
+	m.api_id = nil
+	m.addapi_id = nil
 }
 
-// Where appends a list predicates to the PermissionApiResourceMutation builder.
-func (m *PermissionApiResourceMutation) Where(ps ...predicate.PermissionApiResource) {
+// Where appends a list predicates to the PermissionApiMutation builder.
+func (m *PermissionApiMutation) Where(ps ...predicate.PermissionApi) {
 	m.predicates = append(m.predicates, ps...)
 }
 
-// WhereP appends storage-level predicates to the PermissionApiResourceMutation builder. Using this method,
+// WhereP appends storage-level predicates to the PermissionApiMutation builder. Using this method,
 // users can use type-assertion to append predicates that do not depend on any generated package.
-func (m *PermissionApiResourceMutation) WhereP(ps ...func(*sql.Selector)) {
-	p := make([]predicate.PermissionApiResource, len(ps))
+func (m *PermissionApiMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.PermissionApi, len(ps))
 	for i := range ps {
 		p[i] = ps[i]
 	}
@@ -30563,51 +30563,51 @@ func (m *PermissionApiResourceMutation) WhereP(ps ...func(*sql.Selector)) {
 }
 
 // Op returns the operation name.
-func (m *PermissionApiResourceMutation) Op() Op {
+func (m *PermissionApiMutation) Op() Op {
 	return m.op
 }
 
 // SetOp allows setting the mutation operation.
-func (m *PermissionApiResourceMutation) SetOp(op Op) {
+func (m *PermissionApiMutation) SetOp(op Op) {
 	m.op = op
 }
 
-// Type returns the node type of this mutation (PermissionApiResource).
-func (m *PermissionApiResourceMutation) Type() string {
+// Type returns the node type of this mutation (PermissionApi).
+func (m *PermissionApiMutation) Type() string {
 	return m.typ
 }
 
 // Fields returns all fields that were changed during this mutation. Note that in
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
-func (m *PermissionApiResourceMutation) Fields() []string {
+func (m *PermissionApiMutation) Fields() []string {
 	fields := make([]string, 0, 9)
 	if m.created_at != nil {
-		fields = append(fields, permissionapiresource.FieldCreatedAt)
+		fields = append(fields, permissionapi.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
-		fields = append(fields, permissionapiresource.FieldUpdatedAt)
+		fields = append(fields, permissionapi.FieldUpdatedAt)
 	}
 	if m.deleted_at != nil {
-		fields = append(fields, permissionapiresource.FieldDeletedAt)
+		fields = append(fields, permissionapi.FieldDeletedAt)
 	}
 	if m.created_by != nil {
-		fields = append(fields, permissionapiresource.FieldCreatedBy)
+		fields = append(fields, permissionapi.FieldCreatedBy)
 	}
 	if m.updated_by != nil {
-		fields = append(fields, permissionapiresource.FieldUpdatedBy)
+		fields = append(fields, permissionapi.FieldUpdatedBy)
 	}
 	if m.deleted_by != nil {
-		fields = append(fields, permissionapiresource.FieldDeletedBy)
+		fields = append(fields, permissionapi.FieldDeletedBy)
 	}
 	if m.tenant_id != nil {
-		fields = append(fields, permissionapiresource.FieldTenantID)
+		fields = append(fields, permissionapi.FieldTenantID)
 	}
 	if m.permission_id != nil {
-		fields = append(fields, permissionapiresource.FieldPermissionID)
+		fields = append(fields, permissionapi.FieldPermissionID)
 	}
-	if m.api_resource_id != nil {
-		fields = append(fields, permissionapiresource.FieldAPIResourceID)
+	if m.api_id != nil {
+		fields = append(fields, permissionapi.FieldAPIID)
 	}
 	return fields
 }
@@ -30615,26 +30615,26 @@ func (m *PermissionApiResourceMutation) Fields() []string {
 // Field returns the value of a field with the given name. The second boolean
 // return value indicates that this field was not set, or was not defined in the
 // schema.
-func (m *PermissionApiResourceMutation) Field(name string) (ent.Value, bool) {
+func (m *PermissionApiMutation) Field(name string) (ent.Value, bool) {
 	switch name {
-	case permissionapiresource.FieldCreatedAt:
+	case permissionapi.FieldCreatedAt:
 		return m.CreatedAt()
-	case permissionapiresource.FieldUpdatedAt:
+	case permissionapi.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case permissionapiresource.FieldDeletedAt:
+	case permissionapi.FieldDeletedAt:
 		return m.DeletedAt()
-	case permissionapiresource.FieldCreatedBy:
+	case permissionapi.FieldCreatedBy:
 		return m.CreatedBy()
-	case permissionapiresource.FieldUpdatedBy:
+	case permissionapi.FieldUpdatedBy:
 		return m.UpdatedBy()
-	case permissionapiresource.FieldDeletedBy:
+	case permissionapi.FieldDeletedBy:
 		return m.DeletedBy()
-	case permissionapiresource.FieldTenantID:
+	case permissionapi.FieldTenantID:
 		return m.TenantID()
-	case permissionapiresource.FieldPermissionID:
+	case permissionapi.FieldPermissionID:
 		return m.PermissionID()
-	case permissionapiresource.FieldAPIResourceID:
-		return m.APIResourceID()
+	case permissionapi.FieldAPIID:
+		return m.APIID()
 	}
 	return nil, false
 }
@@ -30642,123 +30642,123 @@ func (m *PermissionApiResourceMutation) Field(name string) (ent.Value, bool) {
 // OldField returns the old value of the field from the database. An error is
 // returned if the mutation operation is not UpdateOne, or the query to the
 // database failed.
-func (m *PermissionApiResourceMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+func (m *PermissionApiMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
 	switch name {
-	case permissionapiresource.FieldCreatedAt:
+	case permissionapi.FieldCreatedAt:
 		return m.OldCreatedAt(ctx)
-	case permissionapiresource.FieldUpdatedAt:
+	case permissionapi.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case permissionapiresource.FieldDeletedAt:
+	case permissionapi.FieldDeletedAt:
 		return m.OldDeletedAt(ctx)
-	case permissionapiresource.FieldCreatedBy:
+	case permissionapi.FieldCreatedBy:
 		return m.OldCreatedBy(ctx)
-	case permissionapiresource.FieldUpdatedBy:
+	case permissionapi.FieldUpdatedBy:
 		return m.OldUpdatedBy(ctx)
-	case permissionapiresource.FieldDeletedBy:
+	case permissionapi.FieldDeletedBy:
 		return m.OldDeletedBy(ctx)
-	case permissionapiresource.FieldTenantID:
+	case permissionapi.FieldTenantID:
 		return m.OldTenantID(ctx)
-	case permissionapiresource.FieldPermissionID:
+	case permissionapi.FieldPermissionID:
 		return m.OldPermissionID(ctx)
-	case permissionapiresource.FieldAPIResourceID:
-		return m.OldAPIResourceID(ctx)
+	case permissionapi.FieldAPIID:
+		return m.OldAPIID(ctx)
 	}
-	return nil, fmt.Errorf("unknown PermissionApiResource field %s", name)
+	return nil, fmt.Errorf("unknown PermissionApi field %s", name)
 }
 
 // SetField sets the value of a field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *PermissionApiResourceMutation) SetField(name string, value ent.Value) error {
+func (m *PermissionApiMutation) SetField(name string, value ent.Value) error {
 	switch name {
-	case permissionapiresource.FieldCreatedAt:
+	case permissionapi.FieldCreatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedAt(v)
 		return nil
-	case permissionapiresource.FieldUpdatedAt:
+	case permissionapi.FieldUpdatedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case permissionapiresource.FieldDeletedAt:
+	case permissionapi.FieldDeletedAt:
 		v, ok := value.(time.Time)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedAt(v)
 		return nil
-	case permissionapiresource.FieldCreatedBy:
+	case permissionapi.FieldCreatedBy:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetCreatedBy(v)
 		return nil
-	case permissionapiresource.FieldUpdatedBy:
+	case permissionapi.FieldUpdatedBy:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetUpdatedBy(v)
 		return nil
-	case permissionapiresource.FieldDeletedBy:
+	case permissionapi.FieldDeletedBy:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDeletedBy(v)
 		return nil
-	case permissionapiresource.FieldTenantID:
+	case permissionapi.FieldTenantID:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTenantID(v)
 		return nil
-	case permissionapiresource.FieldPermissionID:
+	case permissionapi.FieldPermissionID:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetPermissionID(v)
 		return nil
-	case permissionapiresource.FieldAPIResourceID:
+	case permissionapi.FieldAPIID:
 		v, ok := value.(uint32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetAPIResourceID(v)
+		m.SetAPIID(v)
 		return nil
 	}
-	return fmt.Errorf("unknown PermissionApiResource field %s", name)
+	return fmt.Errorf("unknown PermissionApi field %s", name)
 }
 
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
-func (m *PermissionApiResourceMutation) AddedFields() []string {
+func (m *PermissionApiMutation) AddedFields() []string {
 	var fields []string
 	if m.addcreated_by != nil {
-		fields = append(fields, permissionapiresource.FieldCreatedBy)
+		fields = append(fields, permissionapi.FieldCreatedBy)
 	}
 	if m.addupdated_by != nil {
-		fields = append(fields, permissionapiresource.FieldUpdatedBy)
+		fields = append(fields, permissionapi.FieldUpdatedBy)
 	}
 	if m.adddeleted_by != nil {
-		fields = append(fields, permissionapiresource.FieldDeletedBy)
+		fields = append(fields, permissionapi.FieldDeletedBy)
 	}
 	if m.addtenant_id != nil {
-		fields = append(fields, permissionapiresource.FieldTenantID)
+		fields = append(fields, permissionapi.FieldTenantID)
 	}
 	if m.addpermission_id != nil {
-		fields = append(fields, permissionapiresource.FieldPermissionID)
+		fields = append(fields, permissionapi.FieldPermissionID)
 	}
-	if m.addapi_resource_id != nil {
-		fields = append(fields, permissionapiresource.FieldAPIResourceID)
+	if m.addapi_id != nil {
+		fields = append(fields, permissionapi.FieldAPIID)
 	}
 	return fields
 }
@@ -30766,20 +30766,20 @@ func (m *PermissionApiResourceMutation) AddedFields() []string {
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
-func (m *PermissionApiResourceMutation) AddedField(name string) (ent.Value, bool) {
+func (m *PermissionApiMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
-	case permissionapiresource.FieldCreatedBy:
+	case permissionapi.FieldCreatedBy:
 		return m.AddedCreatedBy()
-	case permissionapiresource.FieldUpdatedBy:
+	case permissionapi.FieldUpdatedBy:
 		return m.AddedUpdatedBy()
-	case permissionapiresource.FieldDeletedBy:
+	case permissionapi.FieldDeletedBy:
 		return m.AddedDeletedBy()
-	case permissionapiresource.FieldTenantID:
+	case permissionapi.FieldTenantID:
 		return m.AddedTenantID()
-	case permissionapiresource.FieldPermissionID:
+	case permissionapi.FieldPermissionID:
 		return m.AddedPermissionID()
-	case permissionapiresource.FieldAPIResourceID:
-		return m.AddedAPIResourceID()
+	case permissionapi.FieldAPIID:
+		return m.AddedAPIID()
 	}
 	return nil, false
 }
@@ -30787,199 +30787,199 @@ func (m *PermissionApiResourceMutation) AddedField(name string) (ent.Value, bool
 // AddField adds the value to the field with the given name. It returns an error if
 // the field is not defined in the schema, or if the type mismatched the field
 // type.
-func (m *PermissionApiResourceMutation) AddField(name string, value ent.Value) error {
+func (m *PermissionApiMutation) AddField(name string, value ent.Value) error {
 	switch name {
-	case permissionapiresource.FieldCreatedBy:
+	case permissionapi.FieldCreatedBy:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddCreatedBy(v)
 		return nil
-	case permissionapiresource.FieldUpdatedBy:
+	case permissionapi.FieldUpdatedBy:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddUpdatedBy(v)
 		return nil
-	case permissionapiresource.FieldDeletedBy:
+	case permissionapi.FieldDeletedBy:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDeletedBy(v)
 		return nil
-	case permissionapiresource.FieldTenantID:
+	case permissionapi.FieldTenantID:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddTenantID(v)
 		return nil
-	case permissionapiresource.FieldPermissionID:
+	case permissionapi.FieldPermissionID:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddPermissionID(v)
 		return nil
-	case permissionapiresource.FieldAPIResourceID:
+	case permissionapi.FieldAPIID:
 		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddAPIResourceID(v)
+		m.AddAPIID(v)
 		return nil
 	}
-	return fmt.Errorf("unknown PermissionApiResource numeric field %s", name)
+	return fmt.Errorf("unknown PermissionApi numeric field %s", name)
 }
 
 // ClearedFields returns all nullable fields that were cleared during this
 // mutation.
-func (m *PermissionApiResourceMutation) ClearedFields() []string {
+func (m *PermissionApiMutation) ClearedFields() []string {
 	var fields []string
-	if m.FieldCleared(permissionapiresource.FieldCreatedAt) {
-		fields = append(fields, permissionapiresource.FieldCreatedAt)
+	if m.FieldCleared(permissionapi.FieldCreatedAt) {
+		fields = append(fields, permissionapi.FieldCreatedAt)
 	}
-	if m.FieldCleared(permissionapiresource.FieldUpdatedAt) {
-		fields = append(fields, permissionapiresource.FieldUpdatedAt)
+	if m.FieldCleared(permissionapi.FieldUpdatedAt) {
+		fields = append(fields, permissionapi.FieldUpdatedAt)
 	}
-	if m.FieldCleared(permissionapiresource.FieldDeletedAt) {
-		fields = append(fields, permissionapiresource.FieldDeletedAt)
+	if m.FieldCleared(permissionapi.FieldDeletedAt) {
+		fields = append(fields, permissionapi.FieldDeletedAt)
 	}
-	if m.FieldCleared(permissionapiresource.FieldCreatedBy) {
-		fields = append(fields, permissionapiresource.FieldCreatedBy)
+	if m.FieldCleared(permissionapi.FieldCreatedBy) {
+		fields = append(fields, permissionapi.FieldCreatedBy)
 	}
-	if m.FieldCleared(permissionapiresource.FieldUpdatedBy) {
-		fields = append(fields, permissionapiresource.FieldUpdatedBy)
+	if m.FieldCleared(permissionapi.FieldUpdatedBy) {
+		fields = append(fields, permissionapi.FieldUpdatedBy)
 	}
-	if m.FieldCleared(permissionapiresource.FieldDeletedBy) {
-		fields = append(fields, permissionapiresource.FieldDeletedBy)
+	if m.FieldCleared(permissionapi.FieldDeletedBy) {
+		fields = append(fields, permissionapi.FieldDeletedBy)
 	}
-	if m.FieldCleared(permissionapiresource.FieldTenantID) {
-		fields = append(fields, permissionapiresource.FieldTenantID)
+	if m.FieldCleared(permissionapi.FieldTenantID) {
+		fields = append(fields, permissionapi.FieldTenantID)
 	}
 	return fields
 }
 
 // FieldCleared returns a boolean indicating if a field with the given name was
 // cleared in this mutation.
-func (m *PermissionApiResourceMutation) FieldCleared(name string) bool {
+func (m *PermissionApiMutation) FieldCleared(name string) bool {
 	_, ok := m.clearedFields[name]
 	return ok
 }
 
 // ClearField clears the value of the field with the given name. It returns an
 // error if the field is not defined in the schema.
-func (m *PermissionApiResourceMutation) ClearField(name string) error {
+func (m *PermissionApiMutation) ClearField(name string) error {
 	switch name {
-	case permissionapiresource.FieldCreatedAt:
+	case permissionapi.FieldCreatedAt:
 		m.ClearCreatedAt()
 		return nil
-	case permissionapiresource.FieldUpdatedAt:
+	case permissionapi.FieldUpdatedAt:
 		m.ClearUpdatedAt()
 		return nil
-	case permissionapiresource.FieldDeletedAt:
+	case permissionapi.FieldDeletedAt:
 		m.ClearDeletedAt()
 		return nil
-	case permissionapiresource.FieldCreatedBy:
+	case permissionapi.FieldCreatedBy:
 		m.ClearCreatedBy()
 		return nil
-	case permissionapiresource.FieldUpdatedBy:
+	case permissionapi.FieldUpdatedBy:
 		m.ClearUpdatedBy()
 		return nil
-	case permissionapiresource.FieldDeletedBy:
+	case permissionapi.FieldDeletedBy:
 		m.ClearDeletedBy()
 		return nil
-	case permissionapiresource.FieldTenantID:
+	case permissionapi.FieldTenantID:
 		m.ClearTenantID()
 		return nil
 	}
-	return fmt.Errorf("unknown PermissionApiResource nullable field %s", name)
+	return fmt.Errorf("unknown PermissionApi nullable field %s", name)
 }
 
 // ResetField resets all changes in the mutation for the field with the given name.
 // It returns an error if the field is not defined in the schema.
-func (m *PermissionApiResourceMutation) ResetField(name string) error {
+func (m *PermissionApiMutation) ResetField(name string) error {
 	switch name {
-	case permissionapiresource.FieldCreatedAt:
+	case permissionapi.FieldCreatedAt:
 		m.ResetCreatedAt()
 		return nil
-	case permissionapiresource.FieldUpdatedAt:
+	case permissionapi.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case permissionapiresource.FieldDeletedAt:
+	case permissionapi.FieldDeletedAt:
 		m.ResetDeletedAt()
 		return nil
-	case permissionapiresource.FieldCreatedBy:
+	case permissionapi.FieldCreatedBy:
 		m.ResetCreatedBy()
 		return nil
-	case permissionapiresource.FieldUpdatedBy:
+	case permissionapi.FieldUpdatedBy:
 		m.ResetUpdatedBy()
 		return nil
-	case permissionapiresource.FieldDeletedBy:
+	case permissionapi.FieldDeletedBy:
 		m.ResetDeletedBy()
 		return nil
-	case permissionapiresource.FieldTenantID:
+	case permissionapi.FieldTenantID:
 		m.ResetTenantID()
 		return nil
-	case permissionapiresource.FieldPermissionID:
+	case permissionapi.FieldPermissionID:
 		m.ResetPermissionID()
 		return nil
-	case permissionapiresource.FieldAPIResourceID:
-		m.ResetAPIResourceID()
+	case permissionapi.FieldAPIID:
+		m.ResetAPIID()
 		return nil
 	}
-	return fmt.Errorf("unknown PermissionApiResource field %s", name)
+	return fmt.Errorf("unknown PermissionApi field %s", name)
 }
 
 // AddedEdges returns all edge names that were set/added in this mutation.
-func (m *PermissionApiResourceMutation) AddedEdges() []string {
+func (m *PermissionApiMutation) AddedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
-func (m *PermissionApiResourceMutation) AddedIDs(name string) []ent.Value {
+func (m *PermissionApiMutation) AddedIDs(name string) []ent.Value {
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
-func (m *PermissionApiResourceMutation) RemovedEdges() []string {
+func (m *PermissionApiMutation) RemovedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
-func (m *PermissionApiResourceMutation) RemovedIDs(name string) []ent.Value {
+func (m *PermissionApiMutation) RemovedIDs(name string) []ent.Value {
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
-func (m *PermissionApiResourceMutation) ClearedEdges() []string {
+func (m *PermissionApiMutation) ClearedEdges() []string {
 	edges := make([]string, 0, 0)
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
-func (m *PermissionApiResourceMutation) EdgeCleared(name string) bool {
+func (m *PermissionApiMutation) EdgeCleared(name string) bool {
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
-func (m *PermissionApiResourceMutation) ClearEdge(name string) error {
-	return fmt.Errorf("unknown PermissionApiResource unique edge %s", name)
+func (m *PermissionApiMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown PermissionApi unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
-func (m *PermissionApiResourceMutation) ResetEdge(name string) error {
-	return fmt.Errorf("unknown PermissionApiResource edge %s", name)
+func (m *PermissionApiMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown PermissionApi edge %s", name)
 }
 
 // PermissionAuditLogMutation represents an operation that mutates the PermissionAuditLog nodes in the graph.

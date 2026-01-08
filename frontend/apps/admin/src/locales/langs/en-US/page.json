@@ -254,7 +254,7 @@
     "path": "Path",
     "method": "Method"
   },
-  "apiResource": {
+  "api": {
     "moduleName": "API Resource",
     "path": "Path",
     "method": "Method",

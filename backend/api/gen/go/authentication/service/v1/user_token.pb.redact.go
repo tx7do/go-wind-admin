@@ -19,7 +19,7 @@ var (
 	_ redact.Redactor
 	_ codes.Code
 	_ status.Status
-	_ permissionpb.PermissionApiResource
+	_ permissionpb.Permission
 )
 
 // Redact method implementation for UserTokenPayload

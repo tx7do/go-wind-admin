@@ -11,7 +11,7 @@ import {
   buildMenuTree,
   convertApiToTree,
   statusList,
-  useApiResourceStore,
+  useApiStore,
   useMenuStore,
   usePermissionGroupStore,
   usePermissionStore,
@@ -19,7 +19,7 @@ import {
 
 const permissionStore = usePermissionStore();
 const permissionGroupStore = usePermissionGroupStore();
-const apiStore = useApiResourceStore();
+const apiStore = useApiStore();
 const menuStore = useMenuStore();
 
 const data = ref();
@@ -130,9 +130,9 @@ const [BaseForm, baseFormApi] = useVbenForm({
     },
     {
       component: 'ApiTree',
-      fieldName: 'apiResourceIds',
+      fieldName: 'apiIds',
       componentProps: {
-        title: $t('page.permission.apiResourceIds'),
+        title: $t('page.permission.apiIds'),
         toolbar: true,
         search: true,
         checkable: true,
@@ -142,7 +142,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
         labelField: 'title',
         valueField: 'key',
         api: async () => {
-          const data = await apiStore.listApiResource(undefined, {});
+          const data = await apiStore.listApi(undefined, {});
           return convertApiToTree(data.items ?? []);
         },
       },

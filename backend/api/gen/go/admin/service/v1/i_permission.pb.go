@@ -31,14 +31,14 @@ var File_admin_service_v1_i_permission_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_permission_proto_rawDesc = "" +
 	"\n" +
-	"#admin/service/v1/i_permission.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a&permission/service/v1/permission.proto2\xbc\x06\n" +
+	"#admin/service/v1/i_permission.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a&permission/service/v1/permission.proto2\xb4\x06\n" +
 	"\x11PermissionService\x12o\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a-.permission.service.v1.ListPermissionResponse\"\x1d\x82\xd3\xe4\x93\x02\x17\x12\x15/admin/v1/permissions\x12y\n" +
 	"\x03Get\x12+.permission.service.v1.GetPermissionRequest\x1a!.permission.service.v1.Permission\"\"\x82\xd3\xe4\x93\x02\x1c\x12\x1a/admin/v1/permissions/{id}\x12r\n" +
 	"\x06Create\x12..permission.service.v1.CreatePermissionRequest\x1a\x16.google.protobuf.Empty\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/admin/v1/permissions\x12w\n" +
 	"\x06Update\x12..permission.service.v1.UpdatePermissionRequest\x1a\x16.google.protobuf.Empty\"%\x82\xd3\xe4\x93\x02\x1f:\x01*\x1a\x1a/admin/v1/permissions/{id}\x12t\n" +
-	"\x06Delete\x12..permission.service.v1.DeletePermissionRequest\x1a\x16.google.protobuf.Empty\"\"\x82\xd3\xe4\x93\x02\x1c*\x1a/admin/v1/permissions/{id}\x12n\n" +
-	"\x10SyncApiResources\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/admin/v1/permissions/sync:apis\x12h\n" +
+	"\x06Delete\x12..permission.service.v1.DeletePermissionRequest\x1a\x16.google.protobuf.Empty\"\"\x82\xd3\xe4\x93\x02\x1c*\x1a/admin/v1/permissions/{id}\x12f\n" +
+	"\bSyncApis\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"*\x82\xd3\xe4\x93\x02$:\x01*\"\x1f/admin/v1/permissions/sync:apis\x12h\n" +
 	"\tSyncMenus\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"+\x82\xd3\xe4\x93\x02%:\x01*\" /admin/v1/permissions/sync:menusB\xbd\x01\n" +
 	"\x14com.admin.service.v1B\x10IPermissionProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
@@ -58,14 +58,14 @@ var file_admin_service_v1_i_permission_proto_depIdxs = []int32{
 	2, // 2: admin.service.v1.PermissionService.Create:input_type -> permission.service.v1.CreatePermissionRequest
 	3, // 3: admin.service.v1.PermissionService.Update:input_type -> permission.service.v1.UpdatePermissionRequest
 	4, // 4: admin.service.v1.PermissionService.Delete:input_type -> permission.service.v1.DeletePermissionRequest
-	5, // 5: admin.service.v1.PermissionService.SyncApiResources:input_type -> google.protobuf.Empty
+	5, // 5: admin.service.v1.PermissionService.SyncApis:input_type -> google.protobuf.Empty
 	5, // 6: admin.service.v1.PermissionService.SyncMenus:input_type -> google.protobuf.Empty
 	6, // 7: admin.service.v1.PermissionService.List:output_type -> permission.service.v1.ListPermissionResponse
 	7, // 8: admin.service.v1.PermissionService.Get:output_type -> permission.service.v1.Permission
 	5, // 9: admin.service.v1.PermissionService.Create:output_type -> google.protobuf.Empty
 	5, // 10: admin.service.v1.PermissionService.Update:output_type -> google.protobuf.Empty
 	5, // 11: admin.service.v1.PermissionService.Delete:output_type -> google.protobuf.Empty
-	5, // 12: admin.service.v1.PermissionService.SyncApiResources:output_type -> google.protobuf.Empty
+	5, // 12: admin.service.v1.PermissionService.SyncApis:output_type -> google.protobuf.Empty
 	5, // 13: admin.service.v1.PermissionService.SyncMenus:output_type -> google.protobuf.Empty
 	7, // [7:14] is the sub-list for method output_type
 	0, // [0:7] is the sub-list for method input_type

@@ -2,8 +2,8 @@ package models
 
 import "github.com/tx7do/go-crud/gorm/mixin"
 
-// ApiResource 对应表 sys_api_resources
-type ApiResource struct {
+// Api 对应表 sys_apis
+type Api struct {
 	mixin.AutoIncrementID
 
 	Description       *string `gorm:"column:description;type:varchar(255);comment:描述"`
@@ -19,6 +19,6 @@ type ApiResource struct {
 }
 
 // TableName 指定表名
-func (ApiResource) TableName() string {
-	return "sys_api_resources"
+func (Api) TableName() string {
+	return "sys_apis"
 }

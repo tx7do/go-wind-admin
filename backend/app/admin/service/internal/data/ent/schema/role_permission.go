@@ -31,7 +31,7 @@ func (RolePermission) Fields() []ent.Field {
 	return []ent.Field{
 
 		field.Uint32("role_id").
-			Comment("API资源ID（关联sys_api_resources.id）").
+			Comment("API资源ID（关联sys_apis.id）").
 			Nillable(),
 
 		field.Uint32("permission_id").

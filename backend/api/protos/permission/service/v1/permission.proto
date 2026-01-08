@@ -30,7 +30,7 @@ service PermissionService {
   rpc Delete (DeletePermissionRequest) returns (google.protobuf.Empty) {}
 
   // 同步API资源
-  rpc SyncApiResources (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  rpc SyncApis (google.protobuf.Empty) returns (google.protobuf.Empty) {}
 
   // 同步菜单资源
   rpc SyncMenus (google.protobuf.Empty) returns (google.protobuf.Empty) {}
@@ -47,42 +47,6 @@ enum DataScope {
   UNIT_AND_CHILD = 4;   // 当前所属 OrgUnit 及所有递归子节点
 
   SELECTED_UNITS = 5;   // 自定义组织单元列表
-}
-
-// 权限点 - API 关联关系
-message PermissionApiResource {
-  optional uint32 id = 1 [
-    json_name = "id",
-    (gnostic.openapi.v3.property) = { description: "ID" }
-  ]; // ID
-
-  optional uint32 permission_id = 2 [
-    json_name = "permissionId",
-    (gnostic.openapi.v3.property) = { description: "权限点ID" }
-  ]; // 权限点ID
-
-  optional uint32 api_id = 3 [
-    json_name = "apiId",
-    (gnostic.openapi.v3.property) = { description: "API ID" }
-  ]; // API ID
-}
-
-// 权限点 - 菜单 关联关系
-message PermissionMenu {
-  optional uint32 id = 1 [
-    json_name = "id",
-    (gnostic.openapi.v3.property) = { description: "ID" }
-  ]; // ID
-
-  optional uint32 permission_id = 2 [
-    json_name = "permissionId",
-    (gnostic.openapi.v3.property) = { description: "权限点ID" }
-  ]; // 权限点ID
-
-  optional uint32 menu_id = 3 [
-    json_name = "menuId",
-    (gnostic.openapi.v3.property) = { description: "菜单ID" }
-  ]; // 菜单ID
 }
 
 // 权限点
@@ -135,8 +99,8 @@ message Permission {
     (gnostic.openapi.v3.property) = {description: "关联的菜单ID"}
   ]; // 关联的菜单ID
 
-  repeated uint32 api_resource_ids = 11 [
-    json_name = "apiResourceIds",
+  repeated uint32 api_ids = 11 [
+    json_name = "apiIds",
     (gnostic.openapi.v3.property) = {description: "关联的API资源ID"}
   ]; // 关联的API资源ID
 

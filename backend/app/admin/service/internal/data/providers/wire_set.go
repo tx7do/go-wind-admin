@@ -48,12 +48,12 @@ var ProviderSet = wire.NewSet(
 	data.NewMembershipPositionRepo,
 	data.NewMembershipRoleRepo,
 
-	data.NewApiResourceRepo,
+	data.NewApiRepo,
 	data.NewMenuRepo,
 
 	data.NewPermissionRepo,
 	data.NewPermissionGroupRepo,
-	data.NewPermissionApiResourceRepo,
+	data.NewPermissionApiRepo,
 	data.NewPermissionMenuRepo,
 	data.NewPermissionAuditLogRepo,
 	data.NewPolicyEvaluationLogRepo,

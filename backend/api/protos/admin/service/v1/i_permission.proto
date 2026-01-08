@@ -55,7 +55,7 @@ service PermissionService {
   }
 
   // 同步API资源
-  rpc SyncApiResources (google.protobuf.Empty) returns (google.protobuf.Empty) {
+  rpc SyncApis (google.protobuf.Empty) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/admin/v1/permissions/sync:apis"
       body: "*"

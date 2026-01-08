@@ -21,7 +21,7 @@ func TestApiPermissionConverter_ConvertByPath(t *testing.T) {
 		{"nested admin settings", "GET", "/api/v1/admin/settings", "admin:view"},
 		{"hyphen group", "GET", "/v1/user-groups", "user-group:view"},
 		{"get task by typeNames", "GET", "/admin/v1/tasks:type-names", "task:view"},
-		{"walk route", "GET", "/admin/v1/api-resources/walk-route", "api-resource:view"},
+		{"walk route", "GET", "/admin/v1/apis/walk-route", "api:view"},
 	}
 
 	for _, tc := range cases {
@@ -46,7 +46,7 @@ func TestApiPermissionConverter_ConvertByOperationID(t *testing.T) {
 	}{
 		{"rpc with service and name", "TaskService_ListTaskTypeName", "task:task-type-name:list"},
 		{"rpc without Service suffix", "Task_ListTaskTypeName", "task:task-type-name:list"},
-		{"get walk route data", "ApiResourceService_GetWalkRouteData", "api-resource:walk-route-data:get"},
+		{"get walk route data", "ApiService_GetWalkRouteData", "api:walk-route-data:get"},
 		{"rpc without name", "Task_List", "task:list"},
 		{"invalid rpc format", "GetStatus", ""},
 	}

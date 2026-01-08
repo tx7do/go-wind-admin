@@ -827,29 +827,29 @@ export function createAdminOperationLogServiceClient(
   };
 }
 // API资源管理服务
-export interface ApiResourceService {
+export interface ApiService {
   // 查询API资源列表
-  List(request: pagination_PagingRequest): Promise<permissionservicev1_ListApiResourceResponse>;
+  List(request: pagination_PagingRequest): Promise<permissionservicev1_ListApiResponse>;
   // 查询API资源详情
-  Get(request: permissionservicev1_GetApiResourceRequest): Promise<permissionservicev1_ApiResource>;
+  Get(request: permissionservicev1_GetApiRequest): Promise<permissionservicev1_Api>;
   // 创建API资源
-  Create(request: permissionservicev1_CreateApiResourceRequest): Promise<wellKnownEmpty>;
+  Create(request: permissionservicev1_CreateApiRequest): Promise<wellKnownEmpty>;
   // 更新API资源
-  Update(request: permissionservicev1_UpdateApiResourceRequest): Promise<wellKnownEmpty>;
+  Update(request: permissionservicev1_UpdateApiRequest): Promise<wellKnownEmpty>;
   // 删除API资源
-  Delete(request: permissionservicev1_DeleteApiResourceRequest): Promise<wellKnownEmpty>;
+  Delete(request: permissionservicev1_DeleteApiRequest): Promise<wellKnownEmpty>;
   // 同步API资源
-  SyncApiResources(request: wellKnownEmpty): Promise<wellKnownEmpty>;
+  SyncApis(request: wellKnownEmpty): Promise<wellKnownEmpty>;
   // 查询路由数据
-  GetWalkRouteData(request: wellKnownEmpty): Promise<permissionservicev1_ListApiResourceResponse>;
+  GetWalkRouteData(request: wellKnownEmpty): Promise<permissionservicev1_ListApiResponse>;
 }
 
-export function createApiResourceServiceClient(
+export function createApiServiceClient(
   handler: RequestHandler
-): ApiResourceService {
+): ApiService {
   return {
     List(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/api-resources`; // eslint-disable-line quotes
+      const path = `admin/v1/apis`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       if (request.page) {
@@ -916,15 +916,15 @@ export function createApiResourceServiceClient(
         method: "GET",
         body,
       }, {
-        service: "ApiResourceService",
+        service: "ApiService",
         method: "List",
-      }) as Promise<permissionservicev1_ListApiResourceResponse>;
+      }) as Promise<permissionservicev1_ListApiResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
         throw new Error("missing required field request.id");
       }
-      const path = `admin/v1/api-resources/${request.id}`; // eslint-disable-line quotes
+      const path = `admin/v1/apis/${request.id}`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       if (request.viewMask) {
@@ -939,12 +939,12 @@ export function createApiResourceServiceClient(
         method: "GET",
         body,
       }, {
-        service: "ApiResourceService",
+        service: "ApiService",
         method: "Get",
-      }) as Promise<permissionservicev1_ApiResource>;
+      }) as Promise<permissionservicev1_Api>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/api-resources`; // eslint-disable-line quotes
+      const path = `admin/v1/apis`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;
@@ -956,7 +956,7 @@ export function createApiResourceServiceClient(
         method: "POST",
         body,
       }, {
-        service: "ApiResourceService",
+        service: "ApiService",
         method: "Create",
       }) as Promise<wellKnownEmpty>;
     },
@@ -964,7 +964,7 @@ export function createApiResourceServiceClient(
       if (!request.id) {
         throw new Error("missing required field request.id");
       }
-      const path = `admin/v1/api-resources/${request.id}`; // eslint-disable-line quotes
+      const path = `admin/v1/apis/${request.id}`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;
@@ -976,7 +976,7 @@ export function createApiResourceServiceClient(
         method: "PUT",
         body,
       }, {
-        service: "ApiResourceService",
+        service: "ApiService",
         method: "Update",
       }) as Promise<wellKnownEmpty>;
     },
@@ -984,7 +984,7 @@ export function createApiResourceServiceClient(
       if (!request.id) {
         throw new Error("missing required field request.id");
       }
-      const path = `admin/v1/api-resources/${request.id}`; // eslint-disable-line quotes
+      const path = `admin/v1/apis/${request.id}`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       let uri = path;
@@ -996,12 +996,12 @@ export function createApiResourceServiceClient(
         method: "DELETE",
         body,
       }, {
-        service: "ApiResourceService",
+        service: "ApiService",
         method: "Delete",
       }) as Promise<wellKnownEmpty>;
     },
-    SyncApiResources(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/api-resources/sync`; // eslint-disable-line quotes
+    SyncApis(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/apis/sync`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
       let uri = path;
@@ -1013,12 +1013,12 @@ export function createApiResourceServiceClient(
         method: "POST",
         body,
       }, {
-        service: "ApiResourceService",
-        method: "SyncApiResources",
+        service: "ApiService",
+        method: "SyncApis",
       }) as Promise<wellKnownEmpty>;
     },
     GetWalkRouteData(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/api-resources/walk-route`; // eslint-disable-line quotes
+      const path = `admin/v1/apis/walk-route`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
       let uri = path;
@@ -1030,20 +1030,20 @@ export function createApiResourceServiceClient(
         method: "GET",
         body,
       }, {
-        service: "ApiResourceService",
+        service: "ApiService",
         method: "GetWalkRouteData",
-      }) as Promise<permissionservicev1_ListApiResourceResponse>;
+      }) as Promise<permissionservicev1_ListApiResponse>;
     },
   };
 }
 // 查询列表 - 回应
-export type permissionservicev1_ListApiResourceResponse = {
-  items: permissionservicev1_ApiResource[] | undefined;
+export type permissionservicev1_ListApiResponse = {
+  items: permissionservicev1_Api[] | undefined;
   total: number | undefined;
 };
 
 // API资源
-export type permissionservicev1_ApiResource = {
+export type permissionservicev1_Api = {
   id?: number;
   operation?: string;
   path?: string;
@@ -1051,8 +1051,8 @@ export type permissionservicev1_ApiResource = {
   module?: string;
   moduleDescription?: string;
   description?: string;
-  scope?: permissionservicev1_ApiResource_Scope;
-  status?: permissionservicev1_ApiResource_Status;
+  scope?: permissionservicev1_Api_Scope;
+  status?: permissionservicev1_Api_Status;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -1062,35 +1062,35 @@ export type permissionservicev1_ApiResource = {
 };
 
 // API作用域
-export type permissionservicev1_ApiResource_Scope =
+export type permissionservicev1_Api_Scope =
   | "API_SCOPE_INVALID"
   | "ADMIN"
   | "APP";
 // 权限状态
-export type permissionservicev1_ApiResource_Status =
+export type permissionservicev1_Api_Status =
   | "OFF"
   | "ON";
 // 查询 - 请求
-export type permissionservicev1_GetApiResourceRequest = {
+export type permissionservicev1_GetApiRequest = {
   id?: number;
   viewMask?: wellKnownFieldMask;
 };
 
 // 创建 - 请求
-export type permissionservicev1_CreateApiResourceRequest = {
-  data: permissionservicev1_ApiResource | undefined;
+export type permissionservicev1_CreateApiRequest = {
+  data: permissionservicev1_Api | undefined;
 };
 
 // 更新 - 请求
-export type permissionservicev1_UpdateApiResourceRequest = {
+export type permissionservicev1_UpdateApiRequest = {
   id: number | undefined;
-  data: permissionservicev1_ApiResource | undefined;
+  data: permissionservicev1_Api | undefined;
   updateMask: wellKnownFieldMask | undefined;
   allowMissing?: boolean;
 };
 
 // 删除 - 请求
-export type permissionservicev1_DeleteApiResourceRequest = {
+export type permissionservicev1_DeleteApiRequest = {
   id: number | undefined;
 };
 
@@ -3190,7 +3190,7 @@ export interface PermissionService {
   // 删除权限点
   Delete(request: permissionservicev1_DeletePermissionRequest): Promise<wellKnownEmpty>;
   // 同步API资源
-  SyncApiResources(request: wellKnownEmpty): Promise<wellKnownEmpty>;
+  SyncApis(request: wellKnownEmpty): Promise<wellKnownEmpty>;
   // 同步菜单资源
   SyncMenus(request: wellKnownEmpty): Promise<wellKnownEmpty>;
 }
@@ -3354,7 +3354,7 @@ export function createPermissionServiceClient(
         method: "Delete",
       }) as Promise<wellKnownEmpty>;
     },
-    SyncApiResources(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    SyncApis(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/permissions/sync:apis`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
@@ -3368,7 +3368,7 @@ export function createPermissionServiceClient(
         body,
       }, {
         service: "PermissionService",
-        method: "SyncApiResources",
+        method: "SyncApis",
       }) as Promise<wellKnownEmpty>;
     },
     SyncMenus(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
@@ -3407,7 +3407,7 @@ export type permissionservicev1_Permission = {
   groupId?: number;
   groupName?: string;
   menuIds: number[] | undefined;
-  apiResourceIds: number[] | undefined;
+  apiIds: number[] | undefined;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;

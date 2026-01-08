@@ -100,7 +100,7 @@
     "groupId": "分组",
     "groupName": "分组名称",
     "menuIds": "分配菜单",
-    "apiResourceIds": "分配API",
+    "apiIds": "分配API",
     "description": "权限描述",
     "button": {
       "create": "创建权限",
@@ -317,7 +317,7 @@
     "path": "路径",
     "method": "方法"
   },
-  "apiResource": {
+  "api": {
     "moduleName": "API资源",
     "path": "路径",
     "method": "方法",

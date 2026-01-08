@@ -10,7 +10,8 @@
     "moduleName": "权限管理",
     "role": "角色管理",
     "permission": "权限管理",
-    "menu": "菜单管理"
+    "menu": "菜单管理",
+    "api": "API管理"
   },
   "opm": {
     "moduleName": "组织人员",
@@ -28,7 +29,6 @@
     "dict": "数据字典",
     "task": "任务调度",
     "file": "文件管理",
-    "apiResource": "API  资源",
     "adminLoginRestriction": "登录限制"
   },
   "log": {

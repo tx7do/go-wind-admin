@@ -32,7 +32,7 @@ type RolePermission struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
-	// API资源ID（关联sys_api_resources.id）
+	// API资源ID（关联sys_apis.id）
 	RoleID *uint32 `json:"role_id,omitempty"`
 	// 权限ID（关联sys_permissions.id）
 	PermissionID *uint32 `json:"permission_id,omitempty"`

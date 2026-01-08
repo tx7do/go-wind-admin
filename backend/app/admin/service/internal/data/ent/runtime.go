@@ -6,7 +6,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/adminloginlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/adminloginrestriction"
 	"go-wind-admin/app/admin/service/internal/data/ent/adminoperationlog"
-	"go-wind-admin/app/admin/service/internal/data/ent/apiresource"
+	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"go-wind-admin/app/admin/service/internal/data/ent/file"
@@ -21,7 +21,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"go-wind-admin/app/admin/service/internal/data/ent/orgunit"
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
-	"go-wind-admin/app/admin/service/internal/data/ent/permissionapiresource"
+	"go-wind-admin/app/admin/service/internal/data/ent/permissionapi"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissiongroup"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionmenu"
@@ -69,17 +69,17 @@ func init() {
 	adminoperationlogDescID := adminoperationlogMixinFields0[0].Descriptor()
 	// adminoperationlog.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	adminoperationlog.IDValidator = adminoperationlogDescID.Validators[0].(func(uint32) error)
-	apiresourceMixin := schema.ApiResource{}.Mixin()
-	apiresourceMixinFields0 := apiresourceMixin[0].Fields()
-	_ = apiresourceMixinFields0
-	apiresourceMixinFields3 := apiresourceMixin[3].Fields()
-	_ = apiresourceMixinFields3
-	apiresourceFields := schema.ApiResource{}.Fields()
-	_ = apiresourceFields
-	// apiresourceDescID is the schema descriptor for id field.
-	apiresourceDescID := apiresourceMixinFields0[0].Descriptor()
-	// apiresource.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	apiresource.IDValidator = apiresourceDescID.Validators[0].(func(uint32) error)
+	apiMixin := schema.Api{}.Mixin()
+	apiMixinFields0 := apiMixin[0].Fields()
+	_ = apiMixinFields0
+	apiMixinFields3 := apiMixin[3].Fields()
+	_ = apiMixinFields3
+	apiFields := schema.Api{}.Fields()
+	_ = apiFields
+	// apiDescID is the schema descriptor for id field.
+	apiDescID := apiMixinFields0[0].Descriptor()
+	// api.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	api.IDValidator = apiDescID.Validators[0].(func(uint32) error)
 	dictentryMixin := schema.DictEntry{}.Mixin()
 	dictentryMixinFields0 := dictentryMixin[0].Fields()
 	_ = dictentryMixinFields0
@@ -342,15 +342,15 @@ func init() {
 	permissionDescID := permissionMixinFields0[0].Descriptor()
 	// permission.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	permission.IDValidator = permissionDescID.Validators[0].(func(uint32) error)
-	permissionapiresourceMixin := schema.PermissionApiResource{}.Mixin()
-	permissionapiresourceMixinFields0 := permissionapiresourceMixin[0].Fields()
-	_ = permissionapiresourceMixinFields0
-	permissionapiresourceFields := schema.PermissionApiResource{}.Fields()
-	_ = permissionapiresourceFields
-	// permissionapiresourceDescID is the schema descriptor for id field.
-	permissionapiresourceDescID := permissionapiresourceMixinFields0[0].Descriptor()
-	// permissionapiresource.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	permissionapiresource.IDValidator = permissionapiresourceDescID.Validators[0].(func(uint32) error)
+	permissionapiMixin := schema.PermissionApi{}.Mixin()
+	permissionapiMixinFields0 := permissionapiMixin[0].Fields()
+	_ = permissionapiMixinFields0
+	permissionapiFields := schema.PermissionApi{}.Fields()
+	_ = permissionapiFields
+	// permissionapiDescID is the schema descriptor for id field.
+	permissionapiDescID := permissionapiMixinFields0[0].Descriptor()
+	// permissionapi.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	permissionapi.IDValidator = permissionapiDescID.Validators[0].(func(uint32) error)
 	permissionauditlogMixin := schema.PermissionAuditLog{}.Mixin()
 	permissionauditlogMixinFields0 := permissionauditlogMixin[0].Fields()
 	_ = permissionauditlogMixinFields0

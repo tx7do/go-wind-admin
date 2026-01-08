@@ -27,7 +27,7 @@ var (
 	_ timestamppb.Timestamp
 	_ fieldmaskpb.FieldMask
 	_ pagination.Sorting
-	_ permissionpb.PermissionApiResource
+	_ permissionpb.Permission
 )
 
 // RegisterRedactedPermissionServiceServer wraps the PermissionServiceServer with the redacted server and registers the service in GRPC
@@ -103,10 +103,10 @@ func (s *redactedPermissionServiceServer) Delete(ctx context.Context, in *permis
 	return res, err
 }
 
-// SyncApiResources is the redacted wrapper for the actual PermissionServiceServer.SyncApiResources method
+// SyncApis is the redacted wrapper for the actual PermissionServiceServer.SyncApis method
 // Unary RPC
-func (s *redactedPermissionServiceServer) SyncApiResources(ctx context.Context, in *emptypb.Empty) (*emptypb.Empty, error) {
-	res, err := s.srv.SyncApiResources(ctx, in)
+func (s *redactedPermissionServiceServer) SyncApis(ctx context.Context, in *emptypb.Empty) (*emptypb.Empty, error) {
+	res, err := s.srv.SyncApis(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)

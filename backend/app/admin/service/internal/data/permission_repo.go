@@ -39,23 +39,23 @@ type PermissionRepo struct {
 		permissionV1.Permission, ent.Permission,
 	]
 
-	permissionApiResourceRepo *PermissionApiResourceRepo
-	permissionMenuRepo        *PermissionMenuRepo
+	permissionApiRepo  *PermissionApiRepo
+	permissionMenuRepo *PermissionMenuRepo
 }
 
 func NewPermissionRepo(
 	ctx *bootstrap.Context,
 	entClient *entCrud.EntClient[*ent.Client],
-	permissionApiResourceRepo *PermissionApiResourceRepo,
+	permissionApiRepo *PermissionApiRepo,
 	permissionMenuRepo *PermissionMenuRepo,
 ) *PermissionRepo {
 	repo := &PermissionRepo{
-		log:                       ctx.NewLoggerHelper("permission/repo/admin-service"),
-		entClient:                 entClient,
-		mapper:                    mapper.NewCopierMapper[permissionV1.Permission, ent.Permission](),
-		statusConverter:           mapper.NewEnumTypeConverter[permissionV1.Permission_Status, permission.Status](permissionV1.Permission_Status_name, permissionV1.Permission_Status_value),
-		permissionApiResourceRepo: permissionApiResourceRepo,
-		permissionMenuRepo:        permissionMenuRepo,
+		log:                ctx.NewLoggerHelper("permission/repo/admin-service"),
+		entClient:          entClient,
+		mapper:             mapper.NewCopierMapper[permissionV1.Permission, ent.Permission](),
+		statusConverter:    mapper.NewEnumTypeConverter[permissionV1.Permission_Status, permission.Status](permissionV1.Permission_Status_name, permissionV1.Permission_Status_value),
+		permissionApiRepo:  permissionApiRepo,
+		permissionMenuRepo: permissionMenuRepo,
 	}
 
 	repo.init()
@@ -110,7 +110,7 @@ func (r *PermissionRepo) List(ctx context.Context, req *pagination.PagingRequest
 	}
 
 	hasMenuID := hasPath("menu_id", req.GetFieldMask())
-	hasApiResourceID := hasPath("api_resource_id", req.GetFieldMask())
+	hasApiID := hasPath("api_id", req.GetFieldMask())
 
 	for _, dto := range ret.Items {
 		if hasMenuID {
@@ -120,12 +120,12 @@ func (r *PermissionRepo) List(ctx context.Context, req *pagination.PagingRequest
 			}
 			dto.MenuIds = menuIDs
 		}
-		if hasApiResourceID {
-			apiResourceIDs, err := r.permissionApiResourceRepo.ListApiIDs(ctx, []uint32{dto.GetId()})
+		if hasApiID {
+			apiIDs, err := r.permissionApiRepo.ListApiIDs(ctx, []uint32{dto.GetId()})
 			if err != nil {
 				return nil, err
 			}
-			dto.ApiResourceIds = apiResourceIDs
+			dto.ApiIds = apiIDs
 		}
 	}
 
@@ -230,12 +230,12 @@ func (r *PermissionRepo) Get(ctx context.Context, req *permissionV1.GetPermissio
 		return nil, err
 	}
 
-	if hasPath("api_resource_id", req.GetViewMask()) {
-		apiResourceIDs, err := r.permissionApiResourceRepo.ListApiIDs(ctx, []uint32{dto.GetId()})
+	if hasPath("api_id", req.GetViewMask()) {
+		apiIDs, err := r.permissionApiRepo.ListApiIDs(ctx, []uint32{dto.GetId()})
 		if err != nil {
 			return nil, err
 		}
-		dto.ApiResourceIds = apiResourceIDs
+		dto.ApiIds = apiIDs
 	}
 	if hasPath("menu_id", req.GetViewMask()) {
 		menuIDs, err := r.permissionMenuRepo.ListMenuIDs(ctx, []uint32{dto.GetId()})
@@ -275,8 +275,8 @@ func (r *PermissionRepo) Create(ctx context.Context, req *permissionV1.CreatePer
 		return permissionV1.ErrorInternalServerError("insert data failed")
 	}
 
-	if len(req.Data.ApiResourceIds) > 0 {
-		if err = r.permissionApiResourceRepo.AssignApis(ctx, req.Data.GetTenantId(), entity.ID, req.Data.GetApiResourceIds()); err != nil {
+	if len(req.Data.ApiIds) > 0 {
+		if err = r.permissionApiRepo.AssignApis(ctx, req.Data.GetTenantId(), entity.ID, req.Data.GetApiIds()); err != nil {
 			return err
 		}
 	}
@@ -312,7 +312,7 @@ func (r *PermissionRepo) BatchCreate(ctx context.Context, tenantID uint32, permi
 	for i, perm := range permissions {
 		entity := entities[i]
 
-		if err = r.permissionApiResourceRepo.AssignApis(ctx, tenantID, entity.ID, perm.GetApiResourceIds()); err != nil {
+		if err = r.permissionApiRepo.AssignApis(ctx, tenantID, entity.ID, perm.GetApiIds()); err != nil {
 			return err
 		}
 
@@ -392,7 +392,7 @@ func (r *PermissionRepo) Update(ctx context.Context, tenantID uint32, req *permi
 		return err
 	}
 
-	if err = r.permissionApiResourceRepo.AssignApis(ctx, tenantID, perm.GetId(), req.Data.GetApiResourceIds()); err != nil {
+	if err = r.permissionApiRepo.AssignApis(ctx, tenantID, perm.GetId(), req.Data.GetApiIds()); err != nil {
 		return err
 	}
 
@@ -419,7 +419,7 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 		return permissionV1.ErrorInternalServerError("delete permission failed")
 	}
 
-	if err = r.permissionApiResourceRepo.Delete(ctx, req.GetId()); err != nil {
+	if err = r.permissionApiRepo.Delete(ctx, req.GetId()); err != nil {
 		return err
 	}
 
@@ -437,7 +437,7 @@ func (r *PermissionRepo) Truncate(ctx context.Context) error {
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 
-	if err := r.permissionApiResourceRepo.Truncate(ctx); err != nil {
+	if err := r.permissionApiRepo.Truncate(ctx); err != nil {
 		return err
 	}
 
@@ -466,7 +466,7 @@ func (r *PermissionRepo) CleanPermissionsByCodes(ctx context.Context, codes []st
 
 // CleanApiPermissions 清理API相关权限
 func (r *PermissionRepo) CleanApiPermissions(ctx context.Context) error {
-	return r.permissionApiResourceRepo.Truncate(ctx)
+	return r.permissionApiRepo.Truncate(ctx)
 }
 
 // CleanDataPermissions 清理数据权限
@@ -481,7 +481,7 @@ func (r *PermissionRepo) CleanMenuPermissions(ctx context.Context) error {
 
 // ListApiIDsByPermissionIDs 列出权限关联的API资源ID列表
 func (r *PermissionRepo) ListApiIDsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {
-	apiIDs, err := r.permissionApiResourceRepo.ListApiIDs(ctx, permissionIDs)
+	apiIDs, err := r.permissionApiRepo.ListApiIDs(ctx, permissionIDs)
 	if err != nil {
 		return nil, err
 	}

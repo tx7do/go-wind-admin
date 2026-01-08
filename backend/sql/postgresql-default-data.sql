@@ -12,7 +12,7 @@ TRUNCATE TABLE public.sys_user_credentials,
                public.sys_role_permissions,
                public.sys_tenants,
                public.sys_menus,
-               public.sys_api_resources,
+               public.sys_apis,
                public.sys_permissions,
                public.sys_memberships,
                public.sys_membership_org_units,
@@ -72,7 +72,7 @@ VALUES
     (1, 1, 0, 1, true, 'ACTIVE')
 SELECT setval('sys_membership_roles_id_seq', (SELECT MAX(id) FROM sys_membership_roles));
 
-INSERT INTO public.sys_permission_api_resources (created_at, permission_id, api_resource_id)
+INSERT INTO public.sys_permission_apis (created_at, permission_id, api_id)
 SELECT now(),
        1,
        unnest(ARRAY[1, 2, 3, 4, 5, 6, 7, 8, 9,
@@ -134,8 +134,8 @@ VALUES (1, null, 'CATALOG', 'Dashboard', '/dashboard', null, 'BasicLayout', 'ON'
         '{"order":2, "title":"menu.permission.role", "icon":"lucide:shield-user", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
        (33, 30, 'MENU', 'MenuManagement', 'menus', null, 'app/permission/menu/index.vue', 'ON', now(),
         '{"order":3, "title":"menu.permission.menu", "icon":"lucide:square-menu", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (34, 30, 'MENU', 'APIResourceManagement', 'apis', null, 'app/system/api_resource/index.vue', 'ON', now(),
-        '{"order":4, "title":"menu.system.apiResource", "icon":"lucide:route", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (34, 30, 'MENU', 'APIManagement', 'apis', null, 'app/permission/api/index.vue', 'ON', now(),
+        '{"order":4, "title":"menu.permission.api", "icon":"lucide:route", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
 
        (40, null, 'CATALOG', 'InternalMessageManagement', '/internal-message', null, 'BasicLayout', 'ON', now(),
         '{"order":2003, "title":"menu.internalMessage.moduleName", "icon":"lucide:mail", "keepAlive":true, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
@@ -167,7 +167,7 @@ VALUES (1, null, 'CATALOG', 'Dashboard', '/dashboard', null, 'BasicLayout', 'ON'
 SELECT setval('sys_menus_id_seq', (SELECT MAX(id) FROM sys_menus));
 
 -- API资源表数据
-INSERT INTO public.sys_api_resources (id,
+INSERT INTO public.sys_apis (id,
                                       created_at,
                                       description,
                                       module,
@@ -192,8 +192,8 @@ VALUES (1, now(), '分页查询字典类型列表', 'DictService', '数据字典
         '/admin/v1/dict-entries/{id}', 'PUT', 'ADMIN'),
        (8, now(), '刷新认证令牌', 'AuthenticationService', '用户后台登录认证服务', 'AuthenticationService_RefreshToken',
         '/admin/v1/refresh_token', 'POST', 'ADMIN'),
-       (9, now(), '同步API资源', 'ApiResourceService', 'API资源管理服务', 'ApiResourceService_SyncApiResources',
-        '/admin/v1/api-resources/sync', 'POST', 'ADMIN'),
+       (9, now(), '同步API资源', 'ApiService', 'API资源管理服务', 'ApiService_SyncApis',
+        '/admin/v1/apis/sync', 'POST', 'ADMIN'),
        (10, now(), '删除站内信消息', 'InternalMessageService', '站内信消息管理服务',
         'InternalMessageService_DeleteMessage', '/admin/v1/internal-message/messages/{id}', 'DELETE', 'ADMIN'),
        (11, now(), '查询站内信消息详情', 'InternalMessageService', '站内信消息管理服务',
@@ -275,12 +275,12 @@ VALUES (1, now(), '分页查询字典类型列表', 'DictService', '数据字典
         'DELETE', 'ADMIN'),
        (50, now(), '停止所有的调度任务', 'TaskService', '调度任务管理服务', 'TaskService_StopAllTask',
         '/admin/v1/tasks:stop', 'POST', 'ADMIN'),
-       (51, now(), '更新API资源', 'ApiResourceService', 'API资源管理服务', 'ApiResourceService_Update',
-        '/admin/v1/api-resources/{id}', 'PUT', 'ADMIN'),
-       (52, now(), '删除API资源', 'ApiResourceService', 'API资源管理服务', 'ApiResourceService_Delete',
-        '/admin/v1/api-resources/{id}', 'DELETE', 'ADMIN'),
-       (53, now(), '查询API资源详情', 'ApiResourceService', 'API资源管理服务', 'ApiResourceService_Get',
-        '/admin/v1/api-resources/{id}', 'GET', 'ADMIN'),
+       (51, now(), '更新API资源', 'ApiService', 'API资源管理服务', 'ApiService_Update',
+        '/admin/v1/apis/{id}', 'PUT', 'ADMIN'),
+       (52, now(), '删除API资源', 'ApiService', 'API资源管理服务', 'ApiService_Delete',
+        '/admin/v1/apis/{id}', 'DELETE', 'ADMIN'),
+       (53, now(), '查询API资源详情', 'ApiService', 'API资源管理服务', 'ApiService_Get',
+        '/admin/v1/apis/{id}', 'GET', 'ADMIN'),
        (54, now(), '验证手机号码/邮箱', 'UserProfileService', '用户个人资料服务', 'UserProfileService_VerifyContact',
         '/admin/v1/me/contact/verify', 'POST', 'ADMIN'),
        (55, now(), '将通知标记为已读', 'InternalMessageRecipientService', '站内信消息管理服务',
@@ -365,10 +365,10 @@ VALUES (1, now(), '分页查询字典类型列表', 'DictService', '数据字典
         'DELETE', 'ADMIN'),
        (95, now(), '查询职位详情', 'PositionService', '职位管理服务', 'PositionService_Get', '/admin/v1/positions/{id}',
         'GET', 'ADMIN'),
-       (96, now(), '创建API资源', 'ApiResourceService', 'API资源管理服务', 'ApiResourceService_Create',
-        '/admin/v1/api-resources', 'POST', 'ADMIN'),
-       (97, now(), '查询API资源列表', 'ApiResourceService', 'API资源管理服务', 'ApiResourceService_List',
-        '/admin/v1/api-resources', 'GET', 'ADMIN'),
+       (96, now(), '创建API资源', 'ApiService', 'API资源管理服务', 'ApiService_Create',
+        '/admin/v1/apis', 'POST', 'ADMIN'),
+       (97, now(), '查询API资源列表', 'ApiService', 'API资源管理服务', 'ApiService_List',
+        '/admin/v1/apis', 'GET', 'ADMIN'),
        (98, now(), '查询调度任务列表', 'TaskService', '调度任务管理服务', 'TaskService_List', '/admin/v1/tasks', 'GET',
         'ADMIN'),
        (99, now(), '创建调度任务', 'TaskService', '调度任务管理服务', 'TaskService_Create', '/admin/v1/tasks', 'POST',
@@ -395,8 +395,8 @@ VALUES (1, now(), '分页查询字典类型列表', 'DictService', '数据字典
         'ADMIN'),
        (110, now(), '创建租户', 'TenantService', '租户管理服务', 'TenantService_Create', '/admin/v1/tenants', 'POST',
         'ADMIN'),
-       (111, now(), '查询路由数据', 'ApiResourceService', 'API资源管理服务', 'ApiResourceService_GetWalkRouteData',
-        '/admin/v1/api-resources/walk-route', 'GET', 'ADMIN'),
+       (111, now(), '查询路由数据', 'ApiService', 'API资源管理服务', 'ApiService_GetWalkRouteData',
+        '/admin/v1/apis/walk-route', 'GET', 'ADMIN'),
        (112, now(), '查询权限详情', 'PermissionService', '权限管理服务', 'PermissionService_Get',
         '/admin/v1/permissions/{id}', 'GET', 'ADMIN'),
        (113, now(), '更新权限', 'PermissionService', '权限管理服务', 'PermissionService_Update',
@@ -404,6 +404,6 @@ VALUES (1, now(), '分页查询字典类型列表', 'DictService', '数据字典
        (114, now(), '删除权限', 'PermissionService', '权限管理服务', 'PermissionService_Delete',
         '/admin/v1/permissions/{id}', 'DELETE', 'ADMIN')
 ;
-SELECT setval('sys_api_resources_id_seq', (SELECT MAX(id) FROM sys_api_resources));
+SELECT setval('sys_apis_id_seq', (SELECT MAX(id) FROM sys_apis));
 
 COMMIT;

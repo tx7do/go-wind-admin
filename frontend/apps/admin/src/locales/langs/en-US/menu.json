@@ -28,7 +28,7 @@
     "dict": "Dict Management",
     "task": "Task Management",
     "file": "File Management",
-    "apiResource": "API Resource",
+    "api": "API Resource",
     "adminLoginRestriction": "Admin Login Restriction"
   },
   "log": {

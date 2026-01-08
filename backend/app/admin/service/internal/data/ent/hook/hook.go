@@ -44,16 +44,16 @@ func (f AdminOperationLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AdminOperationLogMutation", m)
 }
 
-// The ApiResourceFunc type is an adapter to allow the use of ordinary
-// function as ApiResource mutator.
-type ApiResourceFunc func(context.Context, *ent.ApiResourceMutation) (ent.Value, error)
+// The ApiFunc type is an adapter to allow the use of ordinary
+// function as Api mutator.
+type ApiFunc func(context.Context, *ent.APIMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f ApiResourceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.ApiResourceMutation); ok {
+func (f ApiFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.APIMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ApiResourceMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.APIMutation", m)
 }
 
 // The DictEntryFunc type is an adapter to allow the use of ordinary
@@ -224,16 +224,16 @@ func (f PermissionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PermissionMutation", m)
 }
 
-// The PermissionApiResourceFunc type is an adapter to allow the use of ordinary
-// function as PermissionApiResource mutator.
-type PermissionApiResourceFunc func(context.Context, *ent.PermissionApiResourceMutation) (ent.Value, error)
+// The PermissionApiFunc type is an adapter to allow the use of ordinary
+// function as PermissionApi mutator.
+type PermissionApiFunc func(context.Context, *ent.PermissionApiMutation) (ent.Value, error)
 
 // Mutate calls f(ctx, m).
-func (f PermissionApiResourceFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
-	if mv, ok := m.(*ent.PermissionApiResourceMutation); ok {
+func (f PermissionApiFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.PermissionApiMutation); ok {
 		return f(ctx, mv)
 	}
-	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PermissionApiResourceMutation", m)
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.PermissionApiMutation", m)
 }
 
 // The PermissionAuditLogFunc type is an adapter to allow the use of ordinary

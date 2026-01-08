@@ -18,8 +18,8 @@ type Tx struct {
 	AdminLoginRestriction *AdminLoginRestrictionClient
 	// AdminOperationLog is the client for interacting with the AdminOperationLog builders.
 	AdminOperationLog *AdminOperationLogClient
-	// ApiResource is the client for interacting with the ApiResource builders.
-	ApiResource *ApiResourceClient
+	// Api is the client for interacting with the Api builders.
+	Api *APIClient
 	// DictEntry is the client for interacting with the DictEntry builders.
 	DictEntry *DictEntryClient
 	// DictType is the client for interacting with the DictType builders.
@@ -48,8 +48,8 @@ type Tx struct {
 	OrgUnit *OrgUnitClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
-	// PermissionApiResource is the client for interacting with the PermissionApiResource builders.
-	PermissionApiResource *PermissionApiResourceClient
+	// PermissionApi is the client for interacting with the PermissionApi builders.
+	PermissionApi *PermissionApiClient
 	// PermissionAuditLog is the client for interacting with the PermissionAuditLog builders.
 	PermissionAuditLog *PermissionAuditLogClient
 	// PermissionGroup is the client for interacting with the PermissionGroup builders.
@@ -210,7 +210,7 @@ func (tx *Tx) init() {
 	tx.AdminLoginLog = NewAdminLoginLogClient(tx.config)
 	tx.AdminLoginRestriction = NewAdminLoginRestrictionClient(tx.config)
 	tx.AdminOperationLog = NewAdminOperationLogClient(tx.config)
-	tx.ApiResource = NewApiResourceClient(tx.config)
+	tx.Api = NewAPIClient(tx.config)
 	tx.DictEntry = NewDictEntryClient(tx.config)
 	tx.DictType = NewDictTypeClient(tx.config)
 	tx.File = NewFileClient(tx.config)
@@ -225,7 +225,7 @@ func (tx *Tx) init() {
 	tx.Menu = NewMenuClient(tx.config)
 	tx.OrgUnit = NewOrgUnitClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
-	tx.PermissionApiResource = NewPermissionApiResourceClient(tx.config)
+	tx.PermissionApi = NewPermissionApiClient(tx.config)
 	tx.PermissionAuditLog = NewPermissionAuditLogClient(tx.config)
 	tx.PermissionGroup = NewPermissionGroupClient(tx.config)
 	tx.PermissionMenu = NewPermissionMenuClient(tx.config)

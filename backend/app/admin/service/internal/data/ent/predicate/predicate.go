@@ -15,8 +15,8 @@ type AdminLoginRestriction func(*sql.Selector)
 // AdminOperationLog is the predicate function for adminoperationlog builders.
 type AdminOperationLog func(*sql.Selector)
 
-// ApiResource is the predicate function for apiresource builders.
-type ApiResource func(*sql.Selector)
+// Api is the predicate function for api builders.
+type Api func(*sql.Selector)
 
 // DictEntry is the predicate function for dictentry builders.
 type DictEntry func(*sql.Selector)
@@ -60,8 +60,8 @@ type OrgUnit func(*sql.Selector)
 // Permission is the predicate function for permission builders.
 type Permission func(*sql.Selector)
 
-// PermissionApiResource is the predicate function for permissionapiresource builders.
-type PermissionApiResource func(*sql.Selector)
+// PermissionApi is the predicate function for permissionapi builders.
+type PermissionApi func(*sql.Selector)
 
 // PermissionAuditLog is the predicate function for permissionauditlog builders.
 type PermissionAuditLog func(*sql.Selector)

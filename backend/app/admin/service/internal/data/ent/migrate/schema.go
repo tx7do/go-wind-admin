@@ -105,8 +105,8 @@ var (
 		Columns:    SysAdminOperationLogsColumns,
 		PrimaryKey: []*schema.Column{SysAdminOperationLogsColumns[0]},
 	}
-	// SysAPIResourcesColumns holds the columns for the "sys_api_resources" table.
-	SysAPIResourcesColumns = []*schema.Column{
+	// SysApisColumns holds the columns for the "sys_apis" table.
+	SysApisColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
 		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
@@ -123,42 +123,42 @@ var (
 		{Name: "method", Type: field.TypeString, Nullable: true, Comment: "请求方法"},
 		{Name: "scope", Type: field.TypeEnum, Nullable: true, Comment: "作用域", Enums: []string{"ADMIN", "APP"}, Default: "ADMIN"},
 	}
-	// SysAPIResourcesTable holds the schema information for the "sys_api_resources" table.
-	SysAPIResourcesTable = &schema.Table{
-		Name:       "sys_api_resources",
+	// SysApisTable holds the schema information for the "sys_apis" table.
+	SysApisTable = &schema.Table{
+		Name:       "sys_apis",
 		Comment:    "API资源表",
-		Columns:    SysAPIResourcesColumns,
-		PrimaryKey: []*schema.Column{SysAPIResourcesColumns[0]},
+		Columns:    SysApisColumns,
+		PrimaryKey: []*schema.Column{SysApisColumns[0]},
 		Indexes: []*schema.Index{
 			{
 				Name:    "idx_sys_api_res_module_path_method_scope",
 				Unique:  true,
-				Columns: []*schema.Column{SysAPIResourcesColumns[9], SysAPIResourcesColumns[12], SysAPIResourcesColumns[13], SysAPIResourcesColumns[14]},
+				Columns: []*schema.Column{SysApisColumns[9], SysApisColumns[12], SysApisColumns[13], SysApisColumns[14]},
 			},
 			{
 				Name:    "idx_sys_api_res_module",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIResourcesColumns[9]},
+				Columns: []*schema.Column{SysApisColumns[9]},
 			},
 			{
 				Name:    "idx_sys_api_res_scope",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIResourcesColumns[14]},
+				Columns: []*schema.Column{SysApisColumns[14]},
 			},
 			{
 				Name:    "idx_sys_api_res_path_method",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIResourcesColumns[12], SysAPIResourcesColumns[13]},
+				Columns: []*schema.Column{SysApisColumns[12], SysApisColumns[13]},
 			},
 			{
 				Name:    "idx_sys_api_res_created_by_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIResourcesColumns[4], SysAPIResourcesColumns[1]},
+				Columns: []*schema.Column{SysApisColumns[4], SysApisColumns[1]},
 			},
 			{
 				Name:    "idx_sys_api_res_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIResourcesColumns[1]},
+				Columns: []*schema.Column{SysApisColumns[1]},
 			},
 		},
 	}
@@ -1245,8 +1245,8 @@ var (
 			},
 		},
 	}
-	// SysPermissionAPIResourcesColumns holds the columns for the "sys_permission_api_resources" table.
-	SysPermissionAPIResourcesColumns = []*schema.Column{
+	// SysPermissionApisColumns holds the columns for the "sys_permission_apis" table.
+	SysPermissionApisColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
 		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
 		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
@@ -1256,39 +1256,39 @@ var (
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
 		{Name: "permission_id", Type: field.TypeUint32, Comment: "权限ID（关联sys_permissions.id）"},
-		{Name: "api_resource_id", Type: field.TypeUint32, Comment: "API资源ID（关联sys_api_resources.id）"},
+		{Name: "api_id", Type: field.TypeUint32, Comment: "API资源ID（关联sys_apis.id）"},
 	}
-	// SysPermissionAPIResourcesTable holds the schema information for the "sys_permission_api_resources" table.
-	SysPermissionAPIResourcesTable = &schema.Table{
-		Name:       "sys_permission_api_resources",
+	// SysPermissionApisTable holds the schema information for the "sys_permission_apis" table.
+	SysPermissionApisTable = &schema.Table{
+		Name:       "sys_permission_apis",
 		Comment:    "权限点-API接口关联表",
-		Columns:    SysPermissionAPIResourcesColumns,
-		PrimaryKey: []*schema.Column{SysPermissionAPIResourcesColumns[0]},
+		Columns:    SysPermissionApisColumns,
+		PrimaryKey: []*schema.Column{SysPermissionApisColumns[0]},
 		Indexes: []*schema.Index{
 			{
 				Name:    "uix_perm_api_tenant_permission_api_id",
 				Unique:  true,
-				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[7], SysPermissionAPIResourcesColumns[8], SysPermissionAPIResourcesColumns[9]},
+				Columns: []*schema.Column{SysPermissionApisColumns[7], SysPermissionApisColumns[8], SysPermissionApisColumns[9]},
 			},
 			{
 				Name:    "idx_perm_api_tenant_permission_api",
 				Unique:  false,
-				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[7], SysPermissionAPIResourcesColumns[8]},
+				Columns: []*schema.Column{SysPermissionApisColumns[7], SysPermissionApisColumns[8]},
 			},
 			{
 				Name:    "idx_perm_api_tenant_api",
 				Unique:  false,
-				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[7], SysPermissionAPIResourcesColumns[9]},
+				Columns: []*schema.Column{SysPermissionApisColumns[7], SysPermissionApisColumns[9]},
 			},
 			{
 				Name:    "idx_perm_api_permission_id",
 				Unique:  false,
-				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[8]},
+				Columns: []*schema.Column{SysPermissionApisColumns[8]},
 			},
 			{
-				Name:    "idx_perm_api_api_resource_id",
+				Name:    "idx_perm_api_api_id",
 				Unique:  false,
-				Columns: []*schema.Column{SysPermissionAPIResourcesColumns[9]},
+				Columns: []*schema.Column{SysPermissionApisColumns[9]},
 			},
 		},
 	}
@@ -1784,7 +1784,7 @@ var (
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
-		{Name: "role_id", Type: field.TypeUint32, Comment: "API资源ID（关联sys_api_resources.id）"},
+		{Name: "role_id", Type: field.TypeUint32, Comment: "API资源ID（关联sys_apis.id）"},
 		{Name: "permission_id", Type: field.TypeUint32, Comment: "权限ID（关联sys_permissions.id）"},
 	}
 	// SysRolePermissionsTable holds the schema information for the "sys_role_permissions" table.
@@ -2174,7 +2174,7 @@ var (
 		SysAdminLoginLogsTable,
 		SysAdminLoginRestrictionsTable,
 		SysAdminOperationLogsTable,
-		SysAPIResourcesTable,
+		SysApisTable,
 		SysDictEntriesTable,
 		SysDictTypesTable,
 		FilesTable,
@@ -2189,7 +2189,7 @@ var (
 		SysMenusTable,
 		SysOrgUnitsTable,
 		SysPermissionsTable,
-		SysPermissionAPIResourcesTable,
+		SysPermissionApisTable,
 		SysPermissionAuditLogsTable,
 		SysPermissionGroupsTable,
 		SysPermissionMenusTable,
@@ -2222,8 +2222,8 @@ func init() {
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
-	SysAPIResourcesTable.Annotation = &entsql.Annotation{
-		Table:     "sys_api_resources",
+	SysApisTable.Annotation = &entsql.Annotation{
+		Table:     "sys_apis",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
@@ -2300,8 +2300,8 @@ func init() {
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
-	SysPermissionAPIResourcesTable.Annotation = &entsql.Annotation{
-		Table:     "sys_permission_api_resources",
+	SysPermissionApisTable.Annotation = &entsql.Annotation{
+		Table:     "sys_permission_apis",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

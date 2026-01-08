@@ -6,7 +6,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/adminloginlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/adminloginrestriction"
 	"go-wind-admin/app/admin/service/internal/data/ent/adminoperationlog"
-	"go-wind-admin/app/admin/service/internal/data/ent/apiresource"
+	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"go-wind-admin/app/admin/service/internal/data/ent/file"
@@ -21,7 +21,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"go-wind-admin/app/admin/service/internal/data/ent/orgunit"
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
-	"go-wind-admin/app/admin/service/internal/data/ent/permissionapiresource"
+	"go-wind-admin/app/admin/service/internal/data/ent/permissionapi"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissiongroup"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionmenu"
@@ -143,29 +143,29 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[3] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
-			Table:   apiresource.Table,
-			Columns: apiresource.Columns,
+			Table:   api.Table,
+			Columns: api.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeUint32,
-				Column: apiresource.FieldID,
+				Column: api.FieldID,
 			},
 		},
-		Type: "ApiResource",
+		Type: "Api",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			apiresource.FieldCreatedAt:         {Type: field.TypeTime, Column: apiresource.FieldCreatedAt},
-			apiresource.FieldUpdatedAt:         {Type: field.TypeTime, Column: apiresource.FieldUpdatedAt},
-			apiresource.FieldDeletedAt:         {Type: field.TypeTime, Column: apiresource.FieldDeletedAt},
-			apiresource.FieldCreatedBy:         {Type: field.TypeUint32, Column: apiresource.FieldCreatedBy},
-			apiresource.FieldUpdatedBy:         {Type: field.TypeUint32, Column: apiresource.FieldUpdatedBy},
-			apiresource.FieldDeletedBy:         {Type: field.TypeUint32, Column: apiresource.FieldDeletedBy},
-			apiresource.FieldStatus:            {Type: field.TypeEnum, Column: apiresource.FieldStatus},
-			apiresource.FieldDescription:       {Type: field.TypeString, Column: apiresource.FieldDescription},
-			apiresource.FieldModule:            {Type: field.TypeString, Column: apiresource.FieldModule},
-			apiresource.FieldModuleDescription: {Type: field.TypeString, Column: apiresource.FieldModuleDescription},
-			apiresource.FieldOperation:         {Type: field.TypeString, Column: apiresource.FieldOperation},
-			apiresource.FieldPath:              {Type: field.TypeString, Column: apiresource.FieldPath},
-			apiresource.FieldMethod:            {Type: field.TypeString, Column: apiresource.FieldMethod},
-			apiresource.FieldScope:             {Type: field.TypeEnum, Column: apiresource.FieldScope},
+			api.FieldCreatedAt:         {Type: field.TypeTime, Column: api.FieldCreatedAt},
+			api.FieldUpdatedAt:         {Type: field.TypeTime, Column: api.FieldUpdatedAt},
+			api.FieldDeletedAt:         {Type: field.TypeTime, Column: api.FieldDeletedAt},
+			api.FieldCreatedBy:         {Type: field.TypeUint32, Column: api.FieldCreatedBy},
+			api.FieldUpdatedBy:         {Type: field.TypeUint32, Column: api.FieldUpdatedBy},
+			api.FieldDeletedBy:         {Type: field.TypeUint32, Column: api.FieldDeletedBy},
+			api.FieldStatus:            {Type: field.TypeEnum, Column: api.FieldStatus},
+			api.FieldDescription:       {Type: field.TypeString, Column: api.FieldDescription},
+			api.FieldModule:            {Type: field.TypeString, Column: api.FieldModule},
+			api.FieldModuleDescription: {Type: field.TypeString, Column: api.FieldModuleDescription},
+			api.FieldOperation:         {Type: field.TypeString, Column: api.FieldOperation},
+			api.FieldPath:              {Type: field.TypeString, Column: api.FieldPath},
+			api.FieldMethod:            {Type: field.TypeString, Column: api.FieldMethod},
+			api.FieldScope:             {Type: field.TypeEnum, Column: api.FieldScope},
 		},
 	}
 	graph.Nodes[4] = &sqlgraph.Node{
@@ -573,24 +573,24 @@ var schemaGraph = func() *sqlgraph.Schema {
 	}
 	graph.Nodes[18] = &sqlgraph.Node{
 		NodeSpec: sqlgraph.NodeSpec{
-			Table:   permissionapiresource.Table,
-			Columns: permissionapiresource.Columns,
+			Table:   permissionapi.Table,
+			Columns: permissionapi.Columns,
 			ID: &sqlgraph.FieldSpec{
 				Type:   field.TypeUint32,
-				Column: permissionapiresource.FieldID,
+				Column: permissionapi.FieldID,
 			},
 		},
-		Type: "PermissionApiResource",
+		Type: "PermissionApi",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			permissionapiresource.FieldCreatedAt:     {Type: field.TypeTime, Column: permissionapiresource.FieldCreatedAt},
-			permissionapiresource.FieldUpdatedAt:     {Type: field.TypeTime, Column: permissionapiresource.FieldUpdatedAt},
-			permissionapiresource.FieldDeletedAt:     {Type: field.TypeTime, Column: permissionapiresource.FieldDeletedAt},
-			permissionapiresource.FieldCreatedBy:     {Type: field.TypeUint32, Column: permissionapiresource.FieldCreatedBy},
-			permissionapiresource.FieldUpdatedBy:     {Type: field.TypeUint32, Column: permissionapiresource.FieldUpdatedBy},
-			permissionapiresource.FieldDeletedBy:     {Type: field.TypeUint32, Column: permissionapiresource.FieldDeletedBy},
-			permissionapiresource.FieldTenantID:      {Type: field.TypeUint32, Column: permissionapiresource.FieldTenantID},
-			permissionapiresource.FieldPermissionID:  {Type: field.TypeUint32, Column: permissionapiresource.FieldPermissionID},
-			permissionapiresource.FieldAPIResourceID: {Type: field.TypeUint32, Column: permissionapiresource.FieldAPIResourceID},
+			permissionapi.FieldCreatedAt:    {Type: field.TypeTime, Column: permissionapi.FieldCreatedAt},
+			permissionapi.FieldUpdatedAt:    {Type: field.TypeTime, Column: permissionapi.FieldUpdatedAt},
+			permissionapi.FieldDeletedAt:    {Type: field.TypeTime, Column: permissionapi.FieldDeletedAt},
+			permissionapi.FieldCreatedBy:    {Type: field.TypeUint32, Column: permissionapi.FieldCreatedBy},
+			permissionapi.FieldUpdatedBy:    {Type: field.TypeUint32, Column: permissionapi.FieldUpdatedBy},
+			permissionapi.FieldDeletedBy:    {Type: field.TypeUint32, Column: permissionapi.FieldDeletedBy},
+			permissionapi.FieldTenantID:     {Type: field.TypeUint32, Column: permissionapi.FieldTenantID},
+			permissionapi.FieldPermissionID: {Type: field.TypeUint32, Column: permissionapi.FieldPermissionID},
+			permissionapi.FieldAPIID:        {Type: field.TypeUint32, Column: permissionapi.FieldAPIID},
 		},
 	}
 	graph.Nodes[19] = &sqlgraph.Node{
@@ -1463,33 +1463,33 @@ func (f *AdminOperationLogFilter) WhereOsVersion(p entql.StringP) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (_q *ApiResourceQuery) addPredicate(pred func(s *sql.Selector)) {
+func (_q *APIQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
 
-// Filter returns a Filter implementation to apply filters on the ApiResourceQuery builder.
-func (_q *ApiResourceQuery) Filter() *ApiResourceFilter {
-	return &ApiResourceFilter{config: _q.config, predicateAdder: _q}
+// Filter returns a Filter implementation to apply filters on the APIQuery builder.
+func (_q *APIQuery) Filter() *APIFilter {
+	return &APIFilter{config: _q.config, predicateAdder: _q}
 }
 
 // addPredicate implements the predicateAdder interface.
-func (m *ApiResourceMutation) addPredicate(pred func(s *sql.Selector)) {
+func (m *APIMutation) addPredicate(pred func(s *sql.Selector)) {
 	m.predicates = append(m.predicates, pred)
 }
 
-// Filter returns an entql.Where implementation to apply filters on the ApiResourceMutation builder.
-func (m *ApiResourceMutation) Filter() *ApiResourceFilter {
-	return &ApiResourceFilter{config: m.config, predicateAdder: m}
+// Filter returns an entql.Where implementation to apply filters on the APIMutation builder.
+func (m *APIMutation) Filter() *APIFilter {
+	return &APIFilter{config: m.config, predicateAdder: m}
 }
 
-// ApiResourceFilter provides a generic filtering capability at runtime for ApiResourceQuery.
-type ApiResourceFilter struct {
+// APIFilter provides a generic filtering capability at runtime for APIQuery.
+type APIFilter struct {
 	predicateAdder
 	config
 }
 
 // Where applies the entql predicate on the query filter.
-func (f *ApiResourceFilter) Where(p entql.P) {
+func (f *APIFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
 		if err := schemaGraph.EvalP(schemaGraph.Nodes[3].Type, p, s); err != nil {
 			s.AddError(err)
@@ -1498,78 +1498,78 @@ func (f *ApiResourceFilter) Where(p entql.P) {
 }
 
 // WhereID applies the entql uint32 predicate on the id field.
-func (f *ApiResourceFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(apiresource.FieldID))
+func (f *APIFilter) WhereID(p entql.Uint32P) {
+	f.Where(p.Field(api.FieldID))
 }
 
 // WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *ApiResourceFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(apiresource.FieldCreatedAt))
+func (f *APIFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(api.FieldCreatedAt))
 }
 
 // WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *ApiResourceFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(apiresource.FieldUpdatedAt))
+func (f *APIFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(api.FieldUpdatedAt))
 }
 
 // WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *ApiResourceFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(apiresource.FieldDeletedAt))
+func (f *APIFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(api.FieldDeletedAt))
 }
 
 // WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *ApiResourceFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(apiresource.FieldCreatedBy))
+func (f *APIFilter) WhereCreatedBy(p entql.Uint32P) {
+	f.Where(p.Field(api.FieldCreatedBy))
 }
 
 // WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *ApiResourceFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(apiresource.FieldUpdatedBy))
+func (f *APIFilter) WhereUpdatedBy(p entql.Uint32P) {
+	f.Where(p.Field(api.FieldUpdatedBy))
 }
 
 // WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *ApiResourceFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(apiresource.FieldDeletedBy))
+func (f *APIFilter) WhereDeletedBy(p entql.Uint32P) {
+	f.Where(p.Field(api.FieldDeletedBy))
 }
 
 // WhereStatus applies the entql string predicate on the status field.
-func (f *ApiResourceFilter) WhereStatus(p entql.StringP) {
-	f.Where(p.Field(apiresource.FieldStatus))
+func (f *APIFilter) WhereStatus(p entql.StringP) {
+	f.Where(p.Field(api.FieldStatus))
 }
 
 // WhereDescription applies the entql string predicate on the description field.
-func (f *ApiResourceFilter) WhereDescription(p entql.StringP) {
-	f.Where(p.Field(apiresource.FieldDescription))
+func (f *APIFilter) WhereDescription(p entql.StringP) {
+	f.Where(p.Field(api.FieldDescription))
 }
 
 // WhereModule applies the entql string predicate on the module field.
-func (f *ApiResourceFilter) WhereModule(p entql.StringP) {
-	f.Where(p.Field(apiresource.FieldModule))
+func (f *APIFilter) WhereModule(p entql.StringP) {
+	f.Where(p.Field(api.FieldModule))
 }
 
 // WhereModuleDescription applies the entql string predicate on the module_description field.
-func (f *ApiResourceFilter) WhereModuleDescription(p entql.StringP) {
-	f.Where(p.Field(apiresource.FieldModuleDescription))
+func (f *APIFilter) WhereModuleDescription(p entql.StringP) {
+	f.Where(p.Field(api.FieldModuleDescription))
 }
 
 // WhereOperation applies the entql string predicate on the operation field.
-func (f *ApiResourceFilter) WhereOperation(p entql.StringP) {
-	f.Where(p.Field(apiresource.FieldOperation))
+func (f *APIFilter) WhereOperation(p entql.StringP) {
+	f.Where(p.Field(api.FieldOperation))
 }
 
 // WherePath applies the entql string predicate on the path field.
-func (f *ApiResourceFilter) WherePath(p entql.StringP) {
-	f.Where(p.Field(apiresource.FieldPath))
+func (f *APIFilter) WherePath(p entql.StringP) {
+	f.Where(p.Field(api.FieldPath))
 }
 
 // WhereMethod applies the entql string predicate on the method field.
-func (f *ApiResourceFilter) WhereMethod(p entql.StringP) {
-	f.Where(p.Field(apiresource.FieldMethod))
+func (f *APIFilter) WhereMethod(p entql.StringP) {
+	f.Where(p.Field(api.FieldMethod))
 }
 
 // WhereScope applies the entql string predicate on the scope field.
-func (f *ApiResourceFilter) WhereScope(p entql.StringP) {
-	f.Where(p.Field(apiresource.FieldScope))
+func (f *APIFilter) WhereScope(p entql.StringP) {
+	f.Where(p.Field(api.FieldScope))
 }
 
 // addPredicate implements the predicateAdder interface.
@@ -3322,33 +3322,33 @@ func (f *PermissionFilter) WhereGroupID(p entql.Uint32P) {
 }
 
 // addPredicate implements the predicateAdder interface.
-func (_q *PermissionApiResourceQuery) addPredicate(pred func(s *sql.Selector)) {
+func (_q *PermissionApiQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
 }
 
-// Filter returns a Filter implementation to apply filters on the PermissionApiResourceQuery builder.
-func (_q *PermissionApiResourceQuery) Filter() *PermissionApiResourceFilter {
-	return &PermissionApiResourceFilter{config: _q.config, predicateAdder: _q}
+// Filter returns a Filter implementation to apply filters on the PermissionApiQuery builder.
+func (_q *PermissionApiQuery) Filter() *PermissionApiFilter {
+	return &PermissionApiFilter{config: _q.config, predicateAdder: _q}
 }
 
 // addPredicate implements the predicateAdder interface.
-func (m *PermissionApiResourceMutation) addPredicate(pred func(s *sql.Selector)) {
+func (m *PermissionApiMutation) addPredicate(pred func(s *sql.Selector)) {
 	m.predicates = append(m.predicates, pred)
 }
 
-// Filter returns an entql.Where implementation to apply filters on the PermissionApiResourceMutation builder.
-func (m *PermissionApiResourceMutation) Filter() *PermissionApiResourceFilter {
-	return &PermissionApiResourceFilter{config: m.config, predicateAdder: m}
+// Filter returns an entql.Where implementation to apply filters on the PermissionApiMutation builder.
+func (m *PermissionApiMutation) Filter() *PermissionApiFilter {
+	return &PermissionApiFilter{config: m.config, predicateAdder: m}
 }
 
-// PermissionApiResourceFilter provides a generic filtering capability at runtime for PermissionApiResourceQuery.
-type PermissionApiResourceFilter struct {
+// PermissionApiFilter provides a generic filtering capability at runtime for PermissionApiQuery.
+type PermissionApiFilter struct {
 	predicateAdder
 	config
 }
 
 // Where applies the entql predicate on the query filter.
-func (f *PermissionApiResourceFilter) Where(p entql.P) {
+func (f *PermissionApiFilter) Where(p entql.P) {
 	f.addPredicate(func(s *sql.Selector) {
 		if err := schemaGraph.EvalP(schemaGraph.Nodes[18].Type, p, s); err != nil {
 			s.AddError(err)
@@ -3357,53 +3357,53 @@ func (f *PermissionApiResourceFilter) Where(p entql.P) {
 }
 
 // WhereID applies the entql uint32 predicate on the id field.
-func (f *PermissionApiResourceFilter) WhereID(p entql.Uint32P) {
-	f.Where(p.Field(permissionapiresource.FieldID))
+func (f *PermissionApiFilter) WhereID(p entql.Uint32P) {
+	f.Where(p.Field(permissionapi.FieldID))
 }
 
 // WhereCreatedAt applies the entql time.Time predicate on the created_at field.
-func (f *PermissionApiResourceFilter) WhereCreatedAt(p entql.TimeP) {
-	f.Where(p.Field(permissionapiresource.FieldCreatedAt))
+func (f *PermissionApiFilter) WhereCreatedAt(p entql.TimeP) {
+	f.Where(p.Field(permissionapi.FieldCreatedAt))
 }
 
 // WhereUpdatedAt applies the entql time.Time predicate on the updated_at field.
-func (f *PermissionApiResourceFilter) WhereUpdatedAt(p entql.TimeP) {
-	f.Where(p.Field(permissionapiresource.FieldUpdatedAt))
+func (f *PermissionApiFilter) WhereUpdatedAt(p entql.TimeP) {
+	f.Where(p.Field(permissionapi.FieldUpdatedAt))
 }
 
 // WhereDeletedAt applies the entql time.Time predicate on the deleted_at field.
-func (f *PermissionApiResourceFilter) WhereDeletedAt(p entql.TimeP) {
-	f.Where(p.Field(permissionapiresource.FieldDeletedAt))
+func (f *PermissionApiFilter) WhereDeletedAt(p entql.TimeP) {
+	f.Where(p.Field(permissionapi.FieldDeletedAt))
 }
 
 // WhereCreatedBy applies the entql uint32 predicate on the created_by field.
-func (f *PermissionApiResourceFilter) WhereCreatedBy(p entql.Uint32P) {
-	f.Where(p.Field(permissionapiresource.FieldCreatedBy))
+func (f *PermissionApiFilter) WhereCreatedBy(p entql.Uint32P) {
+	f.Where(p.Field(permissionapi.FieldCreatedBy))
 }
 
 // WhereUpdatedBy applies the entql uint32 predicate on the updated_by field.
-func (f *PermissionApiResourceFilter) WhereUpdatedBy(p entql.Uint32P) {
-	f.Where(p.Field(permissionapiresource.FieldUpdatedBy))
+func (f *PermissionApiFilter) WhereUpdatedBy(p entql.Uint32P) {
+	f.Where(p.Field(permissionapi.FieldUpdatedBy))
 }
 
 // WhereDeletedBy applies the entql uint32 predicate on the deleted_by field.
-func (f *PermissionApiResourceFilter) WhereDeletedBy(p entql.Uint32P) {
-	f.Where(p.Field(permissionapiresource.FieldDeletedBy))
+func (f *PermissionApiFilter) WhereDeletedBy(p entql.Uint32P) {
+	f.Where(p.Field(permissionapi.FieldDeletedBy))
 }
 
 // WhereTenantID applies the entql uint32 predicate on the tenant_id field.
-func (f *PermissionApiResourceFilter) WhereTenantID(p entql.Uint32P) {
-	f.Where(p.Field(permissionapiresource.FieldTenantID))
+func (f *PermissionApiFilter) WhereTenantID(p entql.Uint32P) {
+	f.Where(p.Field(permissionapi.FieldTenantID))
 }
 
 // WherePermissionID applies the entql uint32 predicate on the permission_id field.
-func (f *PermissionApiResourceFilter) WherePermissionID(p entql.Uint32P) {
-	f.Where(p.Field(permissionapiresource.FieldPermissionID))
+func (f *PermissionApiFilter) WherePermissionID(p entql.Uint32P) {
+	f.Where(p.Field(permissionapi.FieldPermissionID))
 }
 
-// WhereAPIResourceID applies the entql uint32 predicate on the api_resource_id field.
-func (f *PermissionApiResourceFilter) WhereAPIResourceID(p entql.Uint32P) {
-	f.Where(p.Field(permissionapiresource.FieldAPIResourceID))
+// WhereAPIID applies the entql uint32 predicate on the api_id field.
+func (f *PermissionApiFilter) WhereAPIID(p entql.Uint32P) {
+	f.Where(p.Field(permissionapi.FieldAPIID))
 }
 
 // addPredicate implements the predicateAdder interface.

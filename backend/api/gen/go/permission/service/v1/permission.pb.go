@@ -130,157 +130,35 @@ func (x Permission_Status) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Permission_Status.Descriptor instead.
 func (Permission_Status) EnumDescriptor() ([]byte, []int) {
-	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{2, 0}
-}
-
-// 权限点 - API 关联关系
-type PermissionApiResource struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                         // ID
-	PermissionId  *uint32                `protobuf:"varint,2,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"` // 权限点ID
-	ApiId         *uint32                `protobuf:"varint,3,opt,name=api_id,json=apiId,proto3,oneof" json:"api_id,omitempty"`                      // API ID
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *PermissionApiResource) Reset() {
-	*x = PermissionApiResource{}
-	mi := &file_permission_service_v1_permission_proto_msgTypes[0]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *PermissionApiResource) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PermissionApiResource) ProtoMessage() {}
-
-func (x *PermissionApiResource) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_permission_proto_msgTypes[0]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PermissionApiResource.ProtoReflect.Descriptor instead.
-func (*PermissionApiResource) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *PermissionApiResource) GetId() uint32 {
-	if x != nil && x.Id != nil {
-		return *x.Id
-	}
-	return 0
-}
-
-func (x *PermissionApiResource) GetPermissionId() uint32 {
-	if x != nil && x.PermissionId != nil {
-		return *x.PermissionId
-	}
-	return 0
-}
-
-func (x *PermissionApiResource) GetApiId() uint32 {
-	if x != nil && x.ApiId != nil {
-		return *x.ApiId
-	}
-	return 0
-}
-
-// 权限点 - 菜单 关联关系
-type PermissionMenu struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                         // ID
-	PermissionId  *uint32                `protobuf:"varint,2,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"` // 权限点ID
-	MenuId        *uint32                `protobuf:"varint,3,opt,name=menu_id,json=menuId,proto3,oneof" json:"menu_id,omitempty"`                   // 菜单ID
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *PermissionMenu) Reset() {
-	*x = PermissionMenu{}
-	mi := &file_permission_service_v1_permission_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *PermissionMenu) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PermissionMenu) ProtoMessage() {}
-
-func (x *PermissionMenu) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_permission_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PermissionMenu.ProtoReflect.Descriptor instead.
-func (*PermissionMenu) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *PermissionMenu) GetId() uint32 {
-	if x != nil && x.Id != nil {
-		return *x.Id
-	}
-	return 0
-}
-
-func (x *PermissionMenu) GetPermissionId() uint32 {
-	if x != nil && x.PermissionId != nil {
-		return *x.PermissionId
-	}
-	return 0
-}
-
-func (x *PermissionMenu) GetMenuId() uint32 {
-	if x != nil && x.MenuId != nil {
-		return *x.MenuId
-	}
-	return 0
+	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{0, 0}
 }
 
 // 权限点
 type Permission struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	Id             *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                      // 权限点ID
-	Name           *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                                   // 权限点名称（如：删除用户）
-	Code           *string                `protobuf:"bytes,3,opt,name=code,proto3,oneof" json:"code,omitempty"`                                                   // 权限点唯一编码（如：user.delete）
-	Remark         *string                `protobuf:"bytes,4,opt,name=remark,proto3,oneof" json:"remark,omitempty"`                                               // 备注
-	Status         *Permission_Status     `protobuf:"varint,5,opt,name=status,proto3,enum=permission.service.v1.Permission_Status,oneof" json:"status,omitempty"` // 状态
-	TenantId       *uint32                `protobuf:"varint,6,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                          // 租户ID
-	GroupId        *uint32                `protobuf:"varint,7,opt,name=group_id,json=groupId,proto3,oneof" json:"group_id,omitempty"`                             // 分组ID
-	GroupName      *string                `protobuf:"bytes,8,opt,name=group_name,json=groupName,proto3,oneof" json:"group_name,omitempty"`                        // 分组名称
-	MenuIds        []uint32               `protobuf:"varint,10,rep,packed,name=menu_ids,json=menuIds,proto3" json:"menu_ids,omitempty"`                           // 关联的菜单ID
-	ApiResourceIds []uint32               `protobuf:"varint,11,rep,packed,name=api_resource_ids,json=apiResourceIds,proto3" json:"api_resource_ids,omitempty"`    // 关联的API资源ID
-	CreatedBy      *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                     // 创建者ID
-	UpdatedBy      *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                     // 更新者ID
-	DeletedBy      *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                     // 删除者用户ID
-	CreatedAt      *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                      // 创建时间
-	UpdatedAt      *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                      // 更新时间
-	DeletedAt      *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                      // 删除时间
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                      // 权限点ID
+	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                                   // 权限点名称（如：删除用户）
+	Code          *string                `protobuf:"bytes,3,opt,name=code,proto3,oneof" json:"code,omitempty"`                                                   // 权限点唯一编码（如：user.delete）
+	Remark        *string                `protobuf:"bytes,4,opt,name=remark,proto3,oneof" json:"remark,omitempty"`                                               // 备注
+	Status        *Permission_Status     `protobuf:"varint,5,opt,name=status,proto3,enum=permission.service.v1.Permission_Status,oneof" json:"status,omitempty"` // 状态
+	TenantId      *uint32                `protobuf:"varint,6,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                          // 租户ID
+	GroupId       *uint32                `protobuf:"varint,7,opt,name=group_id,json=groupId,proto3,oneof" json:"group_id,omitempty"`                             // 分组ID
+	GroupName     *string                `protobuf:"bytes,8,opt,name=group_name,json=groupName,proto3,oneof" json:"group_name,omitempty"`                        // 分组名称
+	MenuIds       []uint32               `protobuf:"varint,10,rep,packed,name=menu_ids,json=menuIds,proto3" json:"menu_ids,omitempty"`                           // 关联的菜单ID
+	ApiIds        []uint32               `protobuf:"varint,11,rep,packed,name=api_ids,json=apiIds,proto3" json:"api_ids,omitempty"`                              // 关联的API资源ID
+	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                     // 创建者ID
+	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                     // 更新者ID
+	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                     // 删除者用户ID
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                      // 创建时间
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                      // 更新时间
+	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                      // 删除时间
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Permission) Reset() {
 	*x = Permission{}
-	mi := &file_permission_service_v1_permission_proto_msgTypes[2]
+	mi := &file_permission_service_v1_permission_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -292,7 +170,7 @@ func (x *Permission) String() string {
 func (*Permission) ProtoMessage() {}
 
 func (x *Permission) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_permission_proto_msgTypes[2]
+	mi := &file_permission_service_v1_permission_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -305,7 +183,7 @@ func (x *Permission) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Permission.ProtoReflect.Descriptor instead.
 func (*Permission) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{2}
+	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Permission) GetId() uint32 {
@@ -371,9 +249,9 @@ func (x *Permission) GetMenuIds() []uint32 {
 	return nil
 }
 
-func (x *Permission) GetApiResourceIds() []uint32 {
+func (x *Permission) GetApiIds() []uint32 {
 	if x != nil {
-		return x.ApiResourceIds
+		return x.ApiIds
 	}
 	return nil
 }
@@ -431,7 +309,7 @@ type ListPermissionResponse struct {
 
 func (x *ListPermissionResponse) Reset() {
 	*x = ListPermissionResponse{}
-	mi := &file_permission_service_v1_permission_proto_msgTypes[3]
+	mi := &file_permission_service_v1_permission_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -443,7 +321,7 @@ func (x *ListPermissionResponse) String() string {
 func (*ListPermissionResponse) ProtoMessage() {}
 
 func (x *ListPermissionResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_permission_proto_msgTypes[3]
+	mi := &file_permission_service_v1_permission_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -456,7 +334,7 @@ func (x *ListPermissionResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPermissionResponse.ProtoReflect.Descriptor instead.
 func (*ListPermissionResponse) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{3}
+	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ListPermissionResponse) GetItems() []*Permission {
@@ -488,7 +366,7 @@ type GetPermissionRequest struct {
 
 func (x *GetPermissionRequest) Reset() {
 	*x = GetPermissionRequest{}
-	mi := &file_permission_service_v1_permission_proto_msgTypes[4]
+	mi := &file_permission_service_v1_permission_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -500,7 +378,7 @@ func (x *GetPermissionRequest) String() string {
 func (*GetPermissionRequest) ProtoMessage() {}
 
 func (x *GetPermissionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_permission_proto_msgTypes[4]
+	mi := &file_permission_service_v1_permission_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -513,7 +391,7 @@ func (x *GetPermissionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPermissionRequest.ProtoReflect.Descriptor instead.
 func (*GetPermissionRequest) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{4}
+	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetPermissionRequest) GetQueryBy() isGetPermissionRequest_QueryBy {
@@ -574,7 +452,7 @@ type CreatePermissionRequest struct {
 
 func (x *CreatePermissionRequest) Reset() {
 	*x = CreatePermissionRequest{}
-	mi := &file_permission_service_v1_permission_proto_msgTypes[5]
+	mi := &file_permission_service_v1_permission_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -586,7 +464,7 @@ func (x *CreatePermissionRequest) String() string {
 func (*CreatePermissionRequest) ProtoMessage() {}
 
 func (x *CreatePermissionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_permission_proto_msgTypes[5]
+	mi := &file_permission_service_v1_permission_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -599,7 +477,7 @@ func (x *CreatePermissionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePermissionRequest.ProtoReflect.Descriptor instead.
 func (*CreatePermissionRequest) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{5}
+	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreatePermissionRequest) GetData() *Permission {
@@ -622,7 +500,7 @@ type UpdatePermissionRequest struct {
 
 func (x *UpdatePermissionRequest) Reset() {
 	*x = UpdatePermissionRequest{}
-	mi := &file_permission_service_v1_permission_proto_msgTypes[6]
+	mi := &file_permission_service_v1_permission_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -634,7 +512,7 @@ func (x *UpdatePermissionRequest) String() string {
 func (*UpdatePermissionRequest) ProtoMessage() {}
 
 func (x *UpdatePermissionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_permission_proto_msgTypes[6]
+	mi := &file_permission_service_v1_permission_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -647,7 +525,7 @@ func (x *UpdatePermissionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePermissionRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePermissionRequest) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{6}
+	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *UpdatePermissionRequest) GetId() uint32 {
@@ -688,7 +566,7 @@ type DeletePermissionRequest struct {
 
 func (x *DeletePermissionRequest) Reset() {
 	*x = DeletePermissionRequest{}
-	mi := &file_permission_service_v1_permission_proto_msgTypes[7]
+	mi := &file_permission_service_v1_permission_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -700,7 +578,7 @@ func (x *DeletePermissionRequest) String() string {
 func (*DeletePermissionRequest) ProtoMessage() {}
 
 func (x *DeletePermissionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_permission_proto_msgTypes[7]
+	mi := &file_permission_service_v1_permission_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -713,7 +591,7 @@ func (x *DeletePermissionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeletePermissionRequest.ProtoReflect.Descriptor instead.
 func (*DeletePermissionRequest) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{7}
+	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *DeletePermissionRequest) GetId() uint32 {
@@ -727,22 +605,7 @@ var File_permission_service_v1_permission_proto protoreflect.FileDescriptor
 
 const file_permission_service_v1_permission_proto_rawDesc = "" +
 	"\n" +
-	"&permission/service/v1/permission.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xc1\x01\n" +
-	"\x15PermissionApiResource\x12\x1d\n" +
-	"\x02id\x18\x01 \x01(\rB\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12;\n" +
-	"\rpermission_id\x18\x02 \x01(\rB\x11\xbaG\x0e\x92\x02\v权限点IDH\x01R\fpermissionId\x88\x01\x01\x12(\n" +
-	"\x06api_id\x18\x03 \x01(\rB\f\xbaG\t\x92\x02\x06API IDH\x02R\x05apiId\x88\x01\x01B\x05\n" +
-	"\x03_idB\x10\n" +
-	"\x0e_permission_idB\t\n" +
-	"\a_api_id\"\xbf\x01\n" +
-	"\x0ePermissionMenu\x12\x1d\n" +
-	"\x02id\x18\x01 \x01(\rB\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12;\n" +
-	"\rpermission_id\x18\x02 \x01(\rB\x11\xbaG\x0e\x92\x02\v权限点IDH\x01R\fpermissionId\x88\x01\x01\x12,\n" +
-	"\amenu_id\x18\x03 \x01(\rB\x0e\xbaG\v\x92\x02\b菜单IDH\x02R\x06menuId\x88\x01\x01B\x05\n" +
-	"\x03_idB\x10\n" +
-	"\x0e_permission_idB\n" +
-	"\n" +
-	"\b_menu_id\"\xd5\t\n" +
+	"&permission/service/v1/permission.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xc4\t\n" +
 	"\n" +
 	"Permission\x12&\n" +
 	"\x02id\x18\x01 \x01(\rB\x11\xbaG\x0e\x92\x02\v权限点IDH\x00R\x02id\x88\x01\x01\x12F\n" +
@@ -755,8 +618,8 @@ const file_permission_service_v1_permission_proto_rawDesc = "" +
 	"\n" +
 	"group_name\x18\b \x01(\tB\x12\xbaG\x0f\x92\x02\f分组名称H\aR\tgroupName\x88\x01\x01\x122\n" +
 	"\bmenu_ids\x18\n" +
-	" \x03(\rB\x17\xbaG\x14\x92\x02\x11关联的菜单IDR\amenuIds\x12D\n" +
-	"\x10api_resource_ids\x18\v \x03(\rB\x1a\xbaG\x17\x92\x02\x14关联的API资源IDR\x0eapiResourceIds\x125\n" +
+	" \x03(\rB\x17\xbaG\x14\x92\x02\x11关联的菜单IDR\amenuIds\x123\n" +
+	"\aapi_ids\x18\v \x03(\rB\x1a\xbaG\x17\x92\x02\x14关联的API资源IDR\x06apiIds\x125\n" +
 	"\n" +
 	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\bR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
@@ -817,14 +680,14 @@ const file_permission_service_v1_permission_proto_rawDesc = "" +
 	"\x04SELF\x10\x02\x12\r\n" +
 	"\tUNIT_ONLY\x10\x03\x12\x12\n" +
 	"\x0eUNIT_AND_CHILD\x10\x04\x12\x12\n" +
-	"\x0eSELECTED_UNITS\x10\x052\xc1\x04\n" +
+	"\x0eSELECTED_UNITS\x10\x052\xb9\x04\n" +
 	"\x11PermissionService\x12R\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a-.permission.service.v1.ListPermissionResponse\"\x00\x12W\n" +
 	"\x03Get\x12+.permission.service.v1.GetPermissionRequest\x1a!.permission.service.v1.Permission\"\x00\x12R\n" +
 	"\x06Create\x12..permission.service.v1.CreatePermissionRequest\x1a\x16.google.protobuf.Empty\"\x00\x12R\n" +
 	"\x06Update\x12..permission.service.v1.UpdatePermissionRequest\x1a\x16.google.protobuf.Empty\"\x00\x12R\n" +
-	"\x06Delete\x12..permission.service.v1.DeletePermissionRequest\x1a\x16.google.protobuf.Empty\"\x00\x12D\n" +
-	"\x10SyncApiResources\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x00\x12=\n" +
+	"\x06Delete\x12..permission.service.v1.DeletePermissionRequest\x1a\x16.google.protobuf.Empty\"\x00\x12<\n" +
+	"\bSyncApis\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x00\x12=\n" +
 	"\tSyncMenus\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x00B\xdf\x01\n" +
 	"\x19com.permission.service.v1B\x0fPermissionProtoP\x01Z;go-wind-admin/api/gen/go/permission/service/v1;permissionpb\xa2\x02\x03PSX\xaa\x02\x15Permission.Service.V1\xca\x02\x15Permission\\Service\\V1\xe2\x02!Permission\\Service\\V1\\GPBMetadata\xea\x02\x17Permission::Service::V1b\x06proto3"
 
@@ -841,47 +704,45 @@ func file_permission_service_v1_permission_proto_rawDescGZIP() []byte {
 }
 
 var file_permission_service_v1_permission_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_permission_service_v1_permission_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_permission_service_v1_permission_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_permission_service_v1_permission_proto_goTypes = []any{
 	(DataScope)(0),                  // 0: permission.service.v1.DataScope
 	(Permission_Status)(0),          // 1: permission.service.v1.Permission.Status
-	(*PermissionApiResource)(nil),   // 2: permission.service.v1.PermissionApiResource
-	(*PermissionMenu)(nil),          // 3: permission.service.v1.PermissionMenu
-	(*Permission)(nil),              // 4: permission.service.v1.Permission
-	(*ListPermissionResponse)(nil),  // 5: permission.service.v1.ListPermissionResponse
-	(*GetPermissionRequest)(nil),    // 6: permission.service.v1.GetPermissionRequest
-	(*CreatePermissionRequest)(nil), // 7: permission.service.v1.CreatePermissionRequest
-	(*UpdatePermissionRequest)(nil), // 8: permission.service.v1.UpdatePermissionRequest
-	(*DeletePermissionRequest)(nil), // 9: permission.service.v1.DeletePermissionRequest
-	(*timestamppb.Timestamp)(nil),   // 10: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),   // 11: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),        // 12: pagination.PagingRequest
-	(*emptypb.Empty)(nil),           // 13: google.protobuf.Empty
+	(*Permission)(nil),              // 2: permission.service.v1.Permission
+	(*ListPermissionResponse)(nil),  // 3: permission.service.v1.ListPermissionResponse
+	(*GetPermissionRequest)(nil),    // 4: permission.service.v1.GetPermissionRequest
+	(*CreatePermissionRequest)(nil), // 5: permission.service.v1.CreatePermissionRequest
+	(*UpdatePermissionRequest)(nil), // 6: permission.service.v1.UpdatePermissionRequest
+	(*DeletePermissionRequest)(nil), // 7: permission.service.v1.DeletePermissionRequest
+	(*timestamppb.Timestamp)(nil),   // 8: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),   // 9: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),        // 10: pagination.PagingRequest
+	(*emptypb.Empty)(nil),           // 11: google.protobuf.Empty
 }
 var file_permission_service_v1_permission_proto_depIdxs = []int32{
 	1,  // 0: permission.service.v1.Permission.status:type_name -> permission.service.v1.Permission.Status
-	10, // 1: permission.service.v1.Permission.created_at:type_name -> google.protobuf.Timestamp
-	10, // 2: permission.service.v1.Permission.updated_at:type_name -> google.protobuf.Timestamp
-	10, // 3: permission.service.v1.Permission.deleted_at:type_name -> google.protobuf.Timestamp
-	4,  // 4: permission.service.v1.ListPermissionResponse.items:type_name -> permission.service.v1.Permission
-	11, // 5: permission.service.v1.GetPermissionRequest.view_mask:type_name -> google.protobuf.FieldMask
-	4,  // 6: permission.service.v1.CreatePermissionRequest.data:type_name -> permission.service.v1.Permission
-	4,  // 7: permission.service.v1.UpdatePermissionRequest.data:type_name -> permission.service.v1.Permission
-	11, // 8: permission.service.v1.UpdatePermissionRequest.update_mask:type_name -> google.protobuf.FieldMask
-	12, // 9: permission.service.v1.PermissionService.List:input_type -> pagination.PagingRequest
-	6,  // 10: permission.service.v1.PermissionService.Get:input_type -> permission.service.v1.GetPermissionRequest
-	7,  // 11: permission.service.v1.PermissionService.Create:input_type -> permission.service.v1.CreatePermissionRequest
-	8,  // 12: permission.service.v1.PermissionService.Update:input_type -> permission.service.v1.UpdatePermissionRequest
-	9,  // 13: permission.service.v1.PermissionService.Delete:input_type -> permission.service.v1.DeletePermissionRequest
-	13, // 14: permission.service.v1.PermissionService.SyncApiResources:input_type -> google.protobuf.Empty
-	13, // 15: permission.service.v1.PermissionService.SyncMenus:input_type -> google.protobuf.Empty
-	5,  // 16: permission.service.v1.PermissionService.List:output_type -> permission.service.v1.ListPermissionResponse
-	4,  // 17: permission.service.v1.PermissionService.Get:output_type -> permission.service.v1.Permission
-	13, // 18: permission.service.v1.PermissionService.Create:output_type -> google.protobuf.Empty
-	13, // 19: permission.service.v1.PermissionService.Update:output_type -> google.protobuf.Empty
-	13, // 20: permission.service.v1.PermissionService.Delete:output_type -> google.protobuf.Empty
-	13, // 21: permission.service.v1.PermissionService.SyncApiResources:output_type -> google.protobuf.Empty
-	13, // 22: permission.service.v1.PermissionService.SyncMenus:output_type -> google.protobuf.Empty
+	8,  // 1: permission.service.v1.Permission.created_at:type_name -> google.protobuf.Timestamp
+	8,  // 2: permission.service.v1.Permission.updated_at:type_name -> google.protobuf.Timestamp
+	8,  // 3: permission.service.v1.Permission.deleted_at:type_name -> google.protobuf.Timestamp
+	2,  // 4: permission.service.v1.ListPermissionResponse.items:type_name -> permission.service.v1.Permission
+	9,  // 5: permission.service.v1.GetPermissionRequest.view_mask:type_name -> google.protobuf.FieldMask
+	2,  // 6: permission.service.v1.CreatePermissionRequest.data:type_name -> permission.service.v1.Permission
+	2,  // 7: permission.service.v1.UpdatePermissionRequest.data:type_name -> permission.service.v1.Permission
+	9,  // 8: permission.service.v1.UpdatePermissionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	10, // 9: permission.service.v1.PermissionService.List:input_type -> pagination.PagingRequest
+	4,  // 10: permission.service.v1.PermissionService.Get:input_type -> permission.service.v1.GetPermissionRequest
+	5,  // 11: permission.service.v1.PermissionService.Create:input_type -> permission.service.v1.CreatePermissionRequest
+	6,  // 12: permission.service.v1.PermissionService.Update:input_type -> permission.service.v1.UpdatePermissionRequest
+	7,  // 13: permission.service.v1.PermissionService.Delete:input_type -> permission.service.v1.DeletePermissionRequest
+	11, // 14: permission.service.v1.PermissionService.SyncApis:input_type -> google.protobuf.Empty
+	11, // 15: permission.service.v1.PermissionService.SyncMenus:input_type -> google.protobuf.Empty
+	3,  // 16: permission.service.v1.PermissionService.List:output_type -> permission.service.v1.ListPermissionResponse
+	2,  // 17: permission.service.v1.PermissionService.Get:output_type -> permission.service.v1.Permission
+	11, // 18: permission.service.v1.PermissionService.Create:output_type -> google.protobuf.Empty
+	11, // 19: permission.service.v1.PermissionService.Update:output_type -> google.protobuf.Empty
+	11, // 20: permission.service.v1.PermissionService.Delete:output_type -> google.protobuf.Empty
+	11, // 21: permission.service.v1.PermissionService.SyncApis:output_type -> google.protobuf.Empty
+	11, // 22: permission.service.v1.PermissionService.SyncMenus:output_type -> google.protobuf.Empty
 	16, // [16:23] is the sub-list for method output_type
 	9,  // [9:16] is the sub-list for method input_type
 	9,  // [9:9] is the sub-list for extension type_name
@@ -895,20 +756,18 @@ func file_permission_service_v1_permission_proto_init() {
 		return
 	}
 	file_permission_service_v1_permission_proto_msgTypes[0].OneofWrappers = []any{}
-	file_permission_service_v1_permission_proto_msgTypes[1].OneofWrappers = []any{}
-	file_permission_service_v1_permission_proto_msgTypes[2].OneofWrappers = []any{}
-	file_permission_service_v1_permission_proto_msgTypes[4].OneofWrappers = []any{
+	file_permission_service_v1_permission_proto_msgTypes[2].OneofWrappers = []any{
 		(*GetPermissionRequest_Id)(nil),
 		(*GetPermissionRequest_Code)(nil),
 	}
-	file_permission_service_v1_permission_proto_msgTypes[6].OneofWrappers = []any{}
+	file_permission_service_v1_permission_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_permission_service_v1_permission_proto_rawDesc), len(file_permission_service_v1_permission_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   8,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

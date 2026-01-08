@@ -9,7 +9,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/adminloginlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/adminloginrestriction"
 	"go-wind-admin/app/admin/service/internal/data/ent/adminoperationlog"
-	"go-wind-admin/app/admin/service/internal/data/ent/apiresource"
+	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"go-wind-admin/app/admin/service/internal/data/ent/file"
@@ -24,7 +24,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"go-wind-admin/app/admin/service/internal/data/ent/orgunit"
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
-	"go-wind-admin/app/admin/service/internal/data/ent/permissionapiresource"
+	"go-wind-admin/app/admin/service/internal/data/ent/permissionapi"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissiongroup"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionmenu"
@@ -107,7 +107,7 @@ func checkColumn(t, c string) error {
 			adminloginlog.Table:            adminloginlog.ValidColumn,
 			adminloginrestriction.Table:    adminloginrestriction.ValidColumn,
 			adminoperationlog.Table:        adminoperationlog.ValidColumn,
-			apiresource.Table:              apiresource.ValidColumn,
+			api.Table:                      api.ValidColumn,
 			dictentry.Table:                dictentry.ValidColumn,
 			dicttype.Table:                 dicttype.ValidColumn,
 			file.Table:                     file.ValidColumn,
@@ -122,7 +122,7 @@ func checkColumn(t, c string) error {
 			menu.Table:                     menu.ValidColumn,
 			orgunit.Table:                  orgunit.ValidColumn,
 			permission.Table:               permission.ValidColumn,
-			permissionapiresource.Table:    permissionapiresource.ValidColumn,
+			permissionapi.Table:            permissionapi.ValidColumn,
 			permissionauditlog.Table:       permissionauditlog.ValidColumn,
 			permissiongroup.Table:          permissiongroup.ValidColumn,
 			permissionmenu.Table:           permissionmenu.ValidColumn,

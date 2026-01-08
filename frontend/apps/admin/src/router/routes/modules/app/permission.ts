@@ -57,14 +57,14 @@ const permission: RouteRecordRaw[] = [
 
       {
         path: 'apis',
-        name: 'APIResourceManagement',
+        name: 'APIManagement',
         meta: {
           order: 4,
           icon: 'lucide:route',
-          title: $t('menu.system.apiResource'),
+          title: $t('menu.permission.api'),
           authority: ['platform_admin'],
         },
-        component: () => import('#/views/app/permission/api_resource/index.vue'),
+        component: () => import('#/views/app/permission/api/index.vue'),
       },
     ],
   },

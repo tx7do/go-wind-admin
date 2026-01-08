@@ -27,7 +27,7 @@ var (
 	_ timestamppb.Timestamp
 	_ fieldmaskpb.FieldMask
 	_ pagination.Sorting
-	_ permissionpb.PermissionApiResource
+	_ permissionpb.Permission
 )
 
 // Redact method implementation for MembershipRole

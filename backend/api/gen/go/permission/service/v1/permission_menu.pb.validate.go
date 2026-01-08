@@ -34,3 +34,115 @@ var (
 	_ = anypb.Any{}
 	_ = sort.Sort
 )
+
+// Validate checks the field values on PermissionMenu with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *PermissionMenu) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on PermissionMenu with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in PermissionMenuMultiError,
+// or nil if none found.
+func (m *PermissionMenu) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *PermissionMenu) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.Id != nil {
+		// no validation rules for Id
+	}
+
+	if m.PermissionId != nil {
+		// no validation rules for PermissionId
+	}
+
+	if m.MenuId != nil {
+		// no validation rules for MenuId
+	}
+
+	if len(errors) > 0 {
+		return PermissionMenuMultiError(errors)
+	}
+
+	return nil
+}
+
+// PermissionMenuMultiError is an error wrapping multiple validation errors
+// returned by PermissionMenu.ValidateAll() if the designated constraints
+// aren't met.
+type PermissionMenuMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m PermissionMenuMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m PermissionMenuMultiError) AllErrors() []error { return m }
+
+// PermissionMenuValidationError is the validation error returned by
+// PermissionMenu.Validate if the designated constraints aren't met.
+type PermissionMenuValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e PermissionMenuValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e PermissionMenuValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e PermissionMenuValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e PermissionMenuValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e PermissionMenuValidationError) ErrorName() string { return "PermissionMenuValidationError" }
+
+// Error satisfies the builtin error interface
+func (e PermissionMenuValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sPermissionMenu.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = PermissionMenuValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = PermissionMenuValidationError{}

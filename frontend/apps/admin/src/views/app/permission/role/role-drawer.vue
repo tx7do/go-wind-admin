@@ -11,14 +11,14 @@ import {
   buildMenuTree,
   convertApiToTree, convertPermissionToTree,
   statusList,
-  useApiResourceStore,
+  useApiStore,
   useMenuStore, usePermissionStore,
   useRoleStore,
 } from '#/stores';
 import { deepClone } from '#/utils';
 
 const roleStore = useRoleStore();
-const apiStore = useApiResourceStore();
+const apiStore = useApiStore();
 const menuStore = useMenuStore();
 const permissionStore = usePermissionStore();
 

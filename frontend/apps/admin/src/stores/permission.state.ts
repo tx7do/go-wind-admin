@@ -77,8 +77,8 @@ export const usePermissionStore = defineStore('permission', () => {
     return await service.Delete({ id });
   }
 
-  async function syncApiResources() {
-    return await service.SyncApiResources({});
+  async function syncApis() {
+    return await service.SyncApis({});
   }
 
   async function syncMenus() {
@@ -94,7 +94,7 @@ export const usePermissionStore = defineStore('permission', () => {
     createPermission,
     updatePermission,
     deletePermission,
-    syncApiResources,
+    syncApis,
     syncMenus,
   };
 });

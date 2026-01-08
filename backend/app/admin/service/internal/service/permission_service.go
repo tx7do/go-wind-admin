@@ -25,9 +25,9 @@ type PermissionService struct {
 
 	log *log.Helper
 
-	permissionRepo  *data.PermissionRepo
-	menuRepo        *data.MenuRepo
-	apiResourceRepo *data.ApiResourceRepo
+	permissionRepo *data.PermissionRepo
+	menuRepo       *data.MenuRepo
+	apiRepo        *data.ApiRepo
 
 	membershipRepo *data.MembershipRepo
 
@@ -42,7 +42,7 @@ func NewPermissionService(
 	permissionRepo *data.PermissionRepo,
 	membershipRepo *data.MembershipRepo,
 	menuRepo *data.MenuRepo,
-	apiResourceRepo *data.ApiResourceRepo,
+	apiRepo *data.ApiRepo,
 	authorizer *data.Authorizer,
 ) *PermissionService {
 	svc := &PermissionService{
@@ -50,7 +50,7 @@ func NewPermissionService(
 		permissionRepo:          permissionRepo,
 		membershipRepo:          membershipRepo,
 		menuRepo:                menuRepo,
-		apiResourceRepo:         apiResourceRepo,
+		apiRepo:                 apiRepo,
 		authorizer:              authorizer,
 		menuPermissionConverter: converter.NewMenuPermissionConverter(),
 		apiPermissionConverter:  converter.NewApiPermissionConverter(),
@@ -66,8 +66,8 @@ func (s *PermissionService) init() {
 	if count, _ := s.permissionRepo.Count(ctx, []func(s *sql.Selector){}); count == 0 {
 		_ = s.createDefaultPermissions(ctx)
 	}
-	if count, _ := s.apiResourceRepo.Count(ctx, []func(s *sql.Selector){}); count == 0 {
-		_, _ = s.SyncApiResources(ctx, &emptypb.Empty{})
+	if count, _ := s.apiRepo.Count(ctx, []func(s *sql.Selector){}); count == 0 {
+		_, _ = s.SyncApis(ctx, &emptypb.Empty{})
 	}
 	if count, _ := s.menuRepo.Count(ctx, []func(s *sql.Selector){}); count == 0 {
 		_, _ = s.SyncMenus(ctx, &emptypb.Empty{})
@@ -145,7 +145,7 @@ func (s *PermissionService) Delete(ctx context.Context, req *permissionV1.Delete
 	return &emptypb.Empty{}, nil
 }
 
-func (s *PermissionService) SyncApiResources(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+func (s *PermissionService) SyncApis(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
@@ -156,7 +156,7 @@ func (s *PermissionService) SyncApiResources(ctx context.Context, _ *emptypb.Emp
 	_ = s.permissionRepo.CleanApiPermissions(ctx)
 
 	// 查询所有启用的 API 资源
-	apis, err := s.apiResourceRepo.List(ctx, &pagination.PagingRequest{
+	apis, err := s.apiRepo.List(ctx, &pagination.PagingRequest{
 		NoPaging: trans.Ptr(true),
 		Query:    trans.Ptr(`{"status":"ON"}`),
 		OrderBy:  []string{"operation"},
@@ -194,7 +194,7 @@ func (s *PermissionService) SyncApiResources(ctx context.Context, _ *emptypb.Emp
 				continue
 			}
 			if _, exists = apiInfoMap[code]; exists {
-				s.log.Warnf("SyncApiResources: duplicate permission code for API %s - %s, skipped", api.GetOperation(), code)
+				s.log.Warnf("SyncApis: duplicate permission code for API %s - %s, skipped", api.GetOperation(), code)
 				continue
 			}
 		}
@@ -210,17 +210,17 @@ func (s *PermissionService) SyncApiResources(ctx context.Context, _ *emptypb.Emp
 			apiInfoMap[code] = info
 		}
 
-		//s.log.Debugf("SyncApiResources: prepared permission for API %s - %s", api.GetOperation(), code)
+		//s.log.Debugf("SyncApis: prepared permission for API %s - %s", api.GetOperation(), code)
 	}
 
 	var permissions []*permissionV1.Permission
 	var codes []string
 	for code, info := range apiInfoMap {
 		permission := &permissionV1.Permission{
-			Name:           trans.Ptr(info.Description),
-			Code:           trans.Ptr(code),
-			Status:         trans.Ptr(permissionV1.Permission_ON),
-			ApiResourceIds: info.ApiIDs,
+			Name:   trans.Ptr(info.Description),
+			Code:   trans.Ptr(code),
+			Status: trans.Ptr(permissionV1.Permission_ON),
+			ApiIds: info.ApiIDs,
 		}
 		permissions = append(permissions, permission)
 		codes = append(codes, code)
@@ -342,7 +342,7 @@ func (s *PermissionService) createDefaultPermissions(ctx context.Context) error 
 					50, 51, 52,
 					60, 61, 62, 63, 64,
 				},
-				ApiResourceIds: []uint32{
+				ApiIds: []uint32{
 					1, 2, 3, 4, 5, 6, 7, 8, 9,
 					10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
 					20, 21, 22, 23, 24, 25, 26, 27, 28, 29,

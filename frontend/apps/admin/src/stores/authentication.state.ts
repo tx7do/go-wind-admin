@@ -197,7 +197,7 @@ export const useAuthStore = defineStore('auth', () => {
 
     console.log('currentRoute', router.currentRoute.value);
     // 如果当前页是登录页，则不处理
-    if (router.currentRoute.value.path === '/auth/login') return;
+    if (router.currentRoute.value.path === LOGIN_PATH) return;
 
     // 回登录页带上当前路由地址
     await router.replace({

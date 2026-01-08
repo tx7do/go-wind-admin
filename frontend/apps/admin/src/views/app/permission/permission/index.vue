@@ -196,11 +196,11 @@ const collapseAll = () => {
   gridApi.grid?.setAllTreeExpand(false);
 };
 
-async function handleSyncApiResources() {
+async function handleSyncApis() {
   console.log('同步');
 
   try {
-    await permissionStore.syncApiResources();
+    await permissionStore.syncApis();
 
     notification.success({
       message: $t('ui.notification.sync_success'),
@@ -248,7 +248,7 @@ async function handleSyncMenus() {
               moduleName: $t('page.permission.moduleName'),
             })
           "
-          @confirm="() => handleSyncApiResources()"
+          @confirm="() => handleSyncApis()"
         >
           <a-button type="primary" danger class="mr-2">
             {{ $t('page.permission.button.syncApi') }}

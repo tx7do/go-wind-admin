@@ -1,0 +1,70 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/api/annotations.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+
+import "pagination/v1/pagination.proto";
+import "permission/service/v1/api.proto";
+
+
+// API资源管理服务
+service ApiService {
+  // 查询API资源列表
+  rpc List (pagination.PagingRequest) returns (permission.service.v1.ListApiResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/apis"
+    };
+  }
+
+  // 查询API资源详情
+  rpc Get (permission.service.v1.GetApiRequest) returns (permission.service.v1.Api) {
+    option (google.api.http) = {
+      get: "/admin/v1/apis/{id}"
+    };
+  }
+
+  // 创建API资源
+  rpc Create (permission.service.v1.CreateApiRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/apis"
+      body: "*"
+    };
+  }
+
+  // 更新API资源
+  rpc Update (permission.service.v1.UpdateApiRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/admin/v1/apis/{id}"
+      body: "*"
+    };
+  }
+
+  // 删除API资源
+  rpc Delete (permission.service.v1.DeleteApiRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/apis/{id}"
+    };
+  }
+
+  // 同步API资源
+  rpc SyncApis (google.protobuf.Empty) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/apis/sync"
+      body: "*"
+    };
+  }
+
+  // 查询路由数据
+  rpc GetWalkRouteData (google.protobuf.Empty) returns (permission.service.v1.ListApiResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/apis/walk-route"
+    };
+  }
+}

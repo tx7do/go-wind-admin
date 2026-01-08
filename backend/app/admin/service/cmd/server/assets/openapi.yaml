@@ -224,12 +224,12 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/AdminOperationLog'
-    /admin/v1/api-resources:
+    /admin/v1/apis:
         get:
             tags:
-                - ApiResourceService
+                - ApiService
             description: 查询API资源列表
-            operationId: ApiResourceService_List
+            operationId: ApiService_List
             parameters:
                 - name: page
                   in: query
@@ -303,28 +303,28 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/ListApiResourceResponse'
+                                $ref: '#/components/schemas/ListApiResponse'
         post:
             tags:
-                - ApiResourceService
+                - ApiService
             description: 创建API资源
-            operationId: ApiResourceService_Create
+            operationId: ApiService_Create
             requestBody:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/CreateApiResourceRequest'
+                            $ref: '#/components/schemas/CreateApiRequest'
                 required: true
             responses:
                 "200":
                     description: OK
                     content: {}
-    /admin/v1/api-resources/sync:
+    /admin/v1/apis/sync:
         post:
             tags:
-                - ApiResourceService
+                - ApiService
             description: 同步API资源
-            operationId: ApiResourceService_SyncApiResources
+            operationId: ApiService_SyncApis
             requestBody:
                 content:
                     application/json: {}
@@ -333,25 +333,25 @@ paths:
                 "200":
                     description: OK
                     content: {}
-    /admin/v1/api-resources/walk-route:
+    /admin/v1/apis/walk-route:
         get:
             tags:
-                - ApiResourceService
+                - ApiService
             description: 查询路由数据
-            operationId: ApiResourceService_GetWalkRouteData
+            operationId: ApiService_GetWalkRouteData
             responses:
                 "200":
                     description: OK
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/ListApiResourceResponse'
-    /admin/v1/api-resources/{id}:
+                                $ref: '#/components/schemas/ListApiResponse'
+    /admin/v1/apis/{id}:
         get:
             tags:
-                - ApiResourceService
+                - ApiService
             description: 查询API资源详情
-            operationId: ApiResourceService_Get
+            operationId: ApiService_Get
             parameters:
                 - name: id
                   in: path
@@ -370,12 +370,12 @@ paths:
                     content:
                         application/json:
                             schema:
-                                $ref: '#/components/schemas/ApiResource'
+                                $ref: '#/components/schemas/Api'
         put:
             tags:
-                - ApiResourceService
+                - ApiService
             description: 更新API资源
-            operationId: ApiResourceService_Update
+            operationId: ApiService_Update
             parameters:
                 - name: id
                   in: path
@@ -387,7 +387,7 @@ paths:
                 content:
                     application/json:
                         schema:
-                            $ref: '#/components/schemas/UpdateApiResourceRequest'
+                            $ref: '#/components/schemas/UpdateApiRequest'
                 required: true
             responses:
                 "200":
@@ -395,9 +395,9 @@ paths:
                     content: {}
         delete:
             tags:
-                - ApiResourceService
+                - ApiService
             description: 删除API资源
-            operationId: ApiResourceService_Delete
+            operationId: ApiService_Delete
             parameters:
                 - name: id
                   in: path
@@ -2392,7 +2392,7 @@ paths:
             tags:
                 - PermissionService
             description: 同步API资源
-            operationId: PermissionService_SyncApiResources
+            operationId: PermissionService_SyncApis
             requestBody:
                 content:
                     application/json: {}
@@ -3950,7 +3950,7 @@ components:
                     description: 创建时间
                     format: date-time
             description: 后台操作日志
-        ApiResource:
+        Api:
             type: object
             properties:
                 id:
@@ -4071,11 +4071,11 @@ components:
                 data:
                     $ref: '#/components/schemas/AdminLoginRestriction'
             description: 创建后台登录限制 - 请求
-        CreateApiResourceRequest:
+        CreateApiRequest:
             type: object
             properties:
                 data:
-                    $ref: '#/components/schemas/ApiResource'
+                    $ref: '#/components/schemas/Api'
             description: 创建 - 请求
         CreateDictEntryRequest:
             type: object
@@ -4620,13 +4620,13 @@ components:
                 total:
                     type: string
             description: 查询后台操作日志列表 - 回应
-        ListApiResourceResponse:
+        ListApiResponse:
             type: object
             properties:
                 items:
                     type: array
                     items:
-                        $ref: '#/components/schemas/ApiResource'
+                        $ref: '#/components/schemas/Api'
                 total:
                     type: string
             description: 查询列表 - 回应
@@ -5240,7 +5240,7 @@ components:
                         type: integer
                         format: uint32
                     description: 关联的菜单ID
-                apiResourceIds:
+                apiIds:
                     type: array
                     items:
                         type: integer
@@ -6203,14 +6203,14 @@ components:
                     type: boolean
                     description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
             description: 更新后台登录限制 - 请求
-        UpdateApiResourceRequest:
+        UpdateApiRequest:
             type: object
             properties:
                 id:
                     type: integer
                     format: uint32
                 data:
-                    $ref: '#/components/schemas/ApiResource'
+                    $ref: '#/components/schemas/Api'
                 updateMask:
                     example: id,realname,username
                     type: string
@@ -6687,7 +6687,7 @@ tags:
       description: 后台登录限制管理服务
     - name: AdminOperationLogService
       description: 后台操作日志管理服务
-    - name: ApiResourceService
+    - name: ApiService
       description: API资源管理服务
     - name: AuthenticationService
       description: 用户后台登录认证服务

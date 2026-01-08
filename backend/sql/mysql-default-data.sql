@@ -59,12 +59,12 @@ VALUES (1, NULL, 'FOLDER', 'Dashboard', '/', NULL, 'BasicLayout', 'ON', NOW(), '
        (61, 60, 'MENU', 'DictManagement', 'dict', NULL, 'app/system/dict/index.vue', 'ON', NOW(), '{"order":1, "title":"menu.system.dict", "icon":"lucide:library-big", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
        (62, 60, 'MENU', 'FileManagement', 'files', NULL, 'app/system/files/index.vue', 'ON', NOW(), '{"order":2, "title":"menu.system.file", "icon":"lucide:file-search", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
        (63, 60, 'MENU', 'TaskManagement', 'tasks', NULL, 'app/system/task/index.vue', 'ON', NOW(), '{"order":3, "title":"menu.system.task", "icon":"lucide:list-todo", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
-       (64, 60, 'MENU', 'APIResourceManagement', 'apis', NULL, 'app/system/api_resource/index.vue', 'ON', NOW(), '{"order":4, "title":"menu.system.apiResource", "icon":"lucide:route", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
+       (64, 60, 'MENU', 'APIManagement', 'apis', NULL, 'app/permission/api/index.vue', 'ON', NOW(), '{"order":4, "title":"menu.permission.api", "icon":"lucide:route", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}'),
        (65, 60, 'MENU', 'AdminLoginRestrictionManagement', 'admin_login_restriction', NULL, 'app/system/admin_login_restriction/index.vue', 'ON', NOW(), '{"order":5, "title":"menu.system.adminLoginRestriction", "icon":"lucide:shield-x", "keepAlive":false, "hideInBreadcrumb":false, "hideInMenu":false, "hideInTab":false}');
 
 -- API资源表数据
-TRUNCATE TABLE `sys_api_resources`;
-INSERT INTO `sys_api_resources` (
+TRUNCATE TABLE `sys_apis`;
+INSERT INTO `sys_apis` (
     `id`, `created_at`, `updated_at`, `deleted_at`, `created_by`, `updated_by`, `deleted_by`,
     `description`, `module`, `module_description`, `operation`, `path`, `method`, `scope`
 ) VALUES
@@ -121,8 +121,8 @@ INSERT INTO `sys_api_resources` (
       (51, NOW(), NULL, NULL, NULL, NULL, NULL, '更新调度任务', 'TaskService', '调度任务管理服务', 'TaskService_Update', '/admin/v1/tasks/{id}', 'PUT', 'ADMIN'),
       (52, NOW(), NULL, NULL, NULL, NULL, NULL, '查询站内信消息分类列表', 'InternalMessageCategoryService', '站内信消息分类管理服务', 'InternalMessageCategoryService_List', '/admin/v1/internal-message/categories', 'GET', 'ADMIN'),
       (53, NOW(), NULL, NULL, NULL, NULL, NULL, '创建站内信消息分类', 'InternalMessageCategoryService', '站内信消息分类管理服务', 'InternalMessageCategoryService_Create', '/admin/v1/internal-message/categories', 'POST', 'ADMIN'),
-      (54, NOW(), NULL, NULL, NULL, NULL, NULL, '查询API资源列表', 'ApiResourceService', 'API资源管理服务', 'ApiResourceService_List', '/admin/v1/api-resources', 'GET', 'ADMIN'),
-      (55, NOW(), NULL, NULL, NULL, NULL, NULL, '创建API资源', 'ApiResourceService', 'API资源管理服务', 'ApiResourceService_Create', '/admin/v1/api-resources', 'POST', 'ADMIN'),
+      (54, NOW(), NULL, NULL, NULL, NULL, NULL, '查询API资源列表', 'ApiService', 'API资源管理服务', 'ApiService_List', '/admin/v1/apis', 'GET', 'ADMIN'),
+      (55, NOW(), NULL, NULL, NULL, NULL, NULL, '创建API资源', 'ApiService', 'API资源管理服务', 'ApiService_Create', '/admin/v1/apis', 'POST', 'ADMIN'),
       (56, NOW(), NULL, NULL, NULL, NULL, NULL, '删除用户', 'UserService', '用户管理服务', 'UserService_Delete', '/admin/v1/users/{id}', 'DELETE', 'ADMIN'),
       (57, NOW(), NULL, NULL, NULL, NULL, NULL, '获取用户数据', 'UserService', '用户管理服务', 'UserService_Get', '/admin/v1/users/{id}', 'GET', 'ADMIN'),
       (58, NOW(), NULL, NULL, NULL, NULL, NULL, '更新用户', 'UserService', '用户管理服务', 'UserService_Update', '/admin/v1/users/{id}', 'PUT', 'ADMIN'),
@@ -150,7 +150,7 @@ INSERT INTO `sys_api_resources` (
       (80, NOW(), NULL, NULL, NULL, NULL, NULL, '删除站内信消息分类', 'InternalMessageCategoryService', '站内信消息分类管理服务', 'InternalMessageCategoryService_Delete', '/admin/v1/internal-message/categories/{id}', 'DELETE', 'ADMIN'),
       (81, NOW(), NULL, NULL, NULL, NULL, NULL, '查询站内信消息分类详情', 'InternalMessageCategoryService', '站内信消息分类管理服务', 'InternalMessageCategoryService_Get', '/admin/v1/internal-message/categories/{id}', 'GET', 'ADMIN'),
       (82, NOW(), NULL, NULL, NULL, NULL, NULL, '更新站内信消息分类', 'InternalMessageCategoryService', '站内信消息分类管理服务', 'InternalMessageCategoryService_Update', '/admin/v1/internal-message/categories/{id}', 'PUT', 'ADMIN'),
-      (83, NOW(), NULL, NULL, NULL, NULL, NULL, '同步API资源', 'ApiResourceService', 'API资源管理服务', 'ApiResourceService_SyncApiResources', '/admin/v1/api-resources/sync', 'POST', 'ADMIN'),
+      (83, NOW(), NULL, NULL, NULL, NULL, NULL, '同步API资源', 'ApiService', 'API资源管理服务', 'ApiService_SyncApis', '/admin/v1/apis/sync', 'POST', 'ADMIN'),
       (84, NOW(), NULL, NULL, NULL, NULL, NULL, '查询字典类型详情', 'DictService', '数据字典管理服务', 'DictService_GetDictType', '/admin/v1/dict-types/{id}', 'GET', 'ADMIN'),
       (85, NOW(), NULL, NULL, NULL, NULL, NULL, '更新字典类型', 'DictService', '数据字典管理服务', 'DictService_UpdateDictType', '/admin/v1/dict-types/{id}', 'PUT', 'ADMIN'),
       (86, NOW(), NULL, NULL, NULL, NULL, NULL, '删除站内信消息', 'InternalMessageService', '站内信消息管理服务', 'InternalMessageService_DeleteMessage', '/admin/v1/internal-message/messages/{id}', 'DELETE', 'ADMIN'),
@@ -158,12 +158,12 @@ INSERT INTO `sys_api_resources` (
       (88, NOW(), NULL, NULL, NULL, NULL, NULL, '更新站内信消息', 'InternalMessageService', '站内信消息管理服务', 'InternalMessageService_UpdateMessage', '/admin/v1/internal-message/messages/{id}', 'PUT', 'ADMIN'),
       (89, NOW(), NULL, NULL, NULL, NULL, NULL, '查询菜单列表', 'MenuService', '后台菜单管理服务', 'MenuService_List', '/admin/v1/menus', 'GET', 'ADMIN'),
       (90, NOW(), NULL, NULL, NULL, NULL, NULL, '创建菜单', 'MenuService', '后台菜单管理服务', 'MenuService_Create', '/admin/v1/menus', 'POST', 'ADMIN'),
-      (91, NOW(), NULL, NULL, NULL, NULL, NULL, '查询路由数据', 'ApiResourceService', 'API资源管理服务', 'ApiResourceService_GetWalkRouteData', '/admin/v1/api-resources/walk-route', 'GET', 'ADMIN'),
+      (91, NOW(), NULL, NULL, NULL, NULL, NULL, '查询路由数据', 'ApiService', 'API资源管理服务', 'ApiService_GetWalkRouteData', '/admin/v1/apis/walk-route', 'GET', 'ADMIN'),
       (92, NOW(), NULL, NULL, NULL, NULL, NULL, '获取用户数据', 'UserService', '用户管理服务', 'UserService_Get', '/admin/v1/users/username/{userName}', 'GET', 'ADMIN'),
       (93, NOW(), NULL, NULL, NULL, NULL, NULL, '查询后台登录日志列表', 'AdminLoginLogService', '后台登录日志管理服务', 'AdminLoginLogService_List', '/admin/v1/admin_login_logs', 'GET', 'ADMIN'),
-      (94, NOW(), NULL, NULL, NULL, NULL, NULL, '删除API资源', 'ApiResourceService', 'API资源管理服务', 'ApiResourceService_Delete', '/admin/v1/api-resources/{id}', 'DELETE', 'ADMIN'),
-      (95, NOW(), NULL, NULL, NULL, NULL, NULL, '查询API资源详情', 'ApiResourceService', 'API资源管理服务', 'ApiResourceService_Get', '/admin/v1/api-resources/{id}', 'GET', 'ADMIN'),
-      (96, NOW(), NULL, NULL, NULL, NULL, NULL, '更新API资源', 'ApiResourceService', 'API资源管理服务', 'ApiResourceService_Update', '/admin/v1/api-resources/{id}', 'PUT', 'ADMIN'),
+      (94, NOW(), NULL, NULL, NULL, NULL, NULL, '删除API资源', 'ApiService', 'API资源管理服务', 'ApiService_Delete', '/admin/v1/apis/{id}', 'DELETE', 'ADMIN'),
+      (95, NOW(), NULL, NULL, NULL, NULL, NULL, '查询API资源详情', 'ApiService', 'API资源管理服务', 'ApiService_Get', '/admin/v1/apis/{id}', 'GET', 'ADMIN'),
+      (96, NOW(), NULL, NULL, NULL, NULL, NULL, '更新API资源', 'ApiService', 'API资源管理服务', 'ApiService_Update', '/admin/v1/apis/{id}', 'PUT', 'ADMIN'),
       (97, NOW(), NULL, NULL, NULL, NULL, NULL, '获取对象存储（OSS）上传用的预签名链接', 'OssService', 'OSS服务', 'OssService_OssUploadUrl', '/admin/v1/file:upload-url', 'POST', 'ADMIN'),
       (98, NOW(), NULL, NULL, NULL, NULL, NULL, '查询后台登录日志详情', 'AdminLoginLogService', '后台登录日志管理服务', 'AdminLoginLogService_Get', '/admin/v1/admin_login_logs/{id}', 'GET', 'ADMIN'),
       (99, NOW(), NULL, NULL, NULL, NULL, NULL, '删除头像', 'UserProfileService', '用户个人资料服务', 'UserProfileService_DeleteAvatar', '/admin/v1/me/avatar', 'DELETE', 'ADMIN'),

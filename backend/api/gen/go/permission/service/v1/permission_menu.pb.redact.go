@@ -27,3 +27,17 @@ var (
 	_ fieldmaskpb.FieldMask
 	_ pagination.Sorting
 )
+
+// Redact method implementation for PermissionMenu
+func (x *PermissionMenu) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: Id
+
+	// Safe field: PermissionId
+
+	// Safe field: MenuId
+	return x.String()
+}

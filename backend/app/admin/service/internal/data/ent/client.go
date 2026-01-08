@@ -14,7 +14,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/adminloginlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/adminloginrestriction"
 	"go-wind-admin/app/admin/service/internal/data/ent/adminoperationlog"
-	"go-wind-admin/app/admin/service/internal/data/ent/apiresource"
+	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"go-wind-admin/app/admin/service/internal/data/ent/file"
@@ -29,7 +29,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"go-wind-admin/app/admin/service/internal/data/ent/orgunit"
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
-	"go-wind-admin/app/admin/service/internal/data/ent/permissionapiresource"
+	"go-wind-admin/app/admin/service/internal/data/ent/permissionapi"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissiongroup"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionmenu"
@@ -61,8 +61,8 @@ type Client struct {
 	AdminLoginRestriction *AdminLoginRestrictionClient
 	// AdminOperationLog is the client for interacting with the AdminOperationLog builders.
 	AdminOperationLog *AdminOperationLogClient
-	// ApiResource is the client for interacting with the ApiResource builders.
-	ApiResource *ApiResourceClient
+	// Api is the client for interacting with the Api builders.
+	Api *APIClient
 	// DictEntry is the client for interacting with the DictEntry builders.
 	DictEntry *DictEntryClient
 	// DictType is the client for interacting with the DictType builders.
@@ -91,8 +91,8 @@ type Client struct {
 	OrgUnit *OrgUnitClient
 	// Permission is the client for interacting with the Permission builders.
 	Permission *PermissionClient
-	// PermissionApiResource is the client for interacting with the PermissionApiResource builders.
-	PermissionApiResource *PermissionApiResourceClient
+	// PermissionApi is the client for interacting with the PermissionApi builders.
+	PermissionApi *PermissionApiClient
 	// PermissionAuditLog is the client for interacting with the PermissionAuditLog builders.
 	PermissionAuditLog *PermissionAuditLogClient
 	// PermissionGroup is the client for interacting with the PermissionGroup builders.
@@ -133,7 +133,7 @@ func (c *Client) init() {
 	c.AdminLoginLog = NewAdminLoginLogClient(c.config)
 	c.AdminLoginRestriction = NewAdminLoginRestrictionClient(c.config)
 	c.AdminOperationLog = NewAdminOperationLogClient(c.config)
-	c.ApiResource = NewApiResourceClient(c.config)
+	c.Api = NewAPIClient(c.config)
 	c.DictEntry = NewDictEntryClient(c.config)
 	c.DictType = NewDictTypeClient(c.config)
 	c.File = NewFileClient(c.config)
@@ -148,7 +148,7 @@ func (c *Client) init() {
 	c.Menu = NewMenuClient(c.config)
 	c.OrgUnit = NewOrgUnitClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
-	c.PermissionApiResource = NewPermissionApiResourceClient(c.config)
+	c.PermissionApi = NewPermissionApiClient(c.config)
 	c.PermissionAuditLog = NewPermissionAuditLogClient(c.config)
 	c.PermissionGroup = NewPermissionGroupClient(c.config)
 	c.PermissionMenu = NewPermissionMenuClient(c.config)
@@ -257,7 +257,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		AdminLoginLog:            NewAdminLoginLogClient(cfg),
 		AdminLoginRestriction:    NewAdminLoginRestrictionClient(cfg),
 		AdminOperationLog:        NewAdminOperationLogClient(cfg),
-		ApiResource:              NewApiResourceClient(cfg),
+		Api:                      NewAPIClient(cfg),
 		DictEntry:                NewDictEntryClient(cfg),
 		DictType:                 NewDictTypeClient(cfg),
 		File:                     NewFileClient(cfg),
@@ -272,7 +272,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Menu:                     NewMenuClient(cfg),
 		OrgUnit:                  NewOrgUnitClient(cfg),
 		Permission:               NewPermissionClient(cfg),
-		PermissionApiResource:    NewPermissionApiResourceClient(cfg),
+		PermissionApi:            NewPermissionApiClient(cfg),
 		PermissionAuditLog:       NewPermissionAuditLogClient(cfg),
 		PermissionGroup:          NewPermissionGroupClient(cfg),
 		PermissionMenu:           NewPermissionMenuClient(cfg),
@@ -308,7 +308,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		AdminLoginLog:            NewAdminLoginLogClient(cfg),
 		AdminLoginRestriction:    NewAdminLoginRestrictionClient(cfg),
 		AdminOperationLog:        NewAdminOperationLogClient(cfg),
-		ApiResource:              NewApiResourceClient(cfg),
+		Api:                      NewAPIClient(cfg),
 		DictEntry:                NewDictEntryClient(cfg),
 		DictType:                 NewDictTypeClient(cfg),
 		File:                     NewFileClient(cfg),
@@ -323,7 +323,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Menu:                     NewMenuClient(cfg),
 		OrgUnit:                  NewOrgUnitClient(cfg),
 		Permission:               NewPermissionClient(cfg),
-		PermissionApiResource:    NewPermissionApiResourceClient(cfg),
+		PermissionApi:            NewPermissionApiClient(cfg),
 		PermissionAuditLog:       NewPermissionAuditLogClient(cfg),
 		PermissionGroup:          NewPermissionGroupClient(cfg),
 		PermissionMenu:           NewPermissionMenuClient(cfg),
@@ -366,14 +366,13 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.AdminLoginLog, c.AdminLoginRestriction, c.AdminOperationLog, c.ApiResource,
+		c.AdminLoginLog, c.AdminLoginRestriction, c.AdminOperationLog, c.Api,
 		c.DictEntry, c.DictType, c.File, c.InternalMessage, c.InternalMessageCategory,
 		c.InternalMessageRecipient, c.Language, c.Membership, c.MembershipOrgUnit,
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.OrgUnit, c.Permission,
-		c.PermissionApiResource, c.PermissionAuditLog, c.PermissionGroup,
-		c.PermissionMenu, c.PermissionPolicy, c.PolicyEvaluationLog, c.Position,
-		c.Role, c.RolePermission, c.RoleTemplate, c.Task, c.Tenant, c.User,
-		c.UserCredential,
+		c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup, c.PermissionMenu,
+		c.PermissionPolicy, c.PolicyEvaluationLog, c.Position, c.Role,
+		c.RolePermission, c.RoleTemplate, c.Task, c.Tenant, c.User, c.UserCredential,
 	} {
 		n.Use(hooks...)
 	}
@@ -383,14 +382,13 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.AdminLoginLog, c.AdminLoginRestriction, c.AdminOperationLog, c.ApiResource,
+		c.AdminLoginLog, c.AdminLoginRestriction, c.AdminOperationLog, c.Api,
 		c.DictEntry, c.DictType, c.File, c.InternalMessage, c.InternalMessageCategory,
 		c.InternalMessageRecipient, c.Language, c.Membership, c.MembershipOrgUnit,
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.OrgUnit, c.Permission,
-		c.PermissionApiResource, c.PermissionAuditLog, c.PermissionGroup,
-		c.PermissionMenu, c.PermissionPolicy, c.PolicyEvaluationLog, c.Position,
-		c.Role, c.RolePermission, c.RoleTemplate, c.Task, c.Tenant, c.User,
-		c.UserCredential,
+		c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup, c.PermissionMenu,
+		c.PermissionPolicy, c.PolicyEvaluationLog, c.Position, c.Role,
+		c.RolePermission, c.RoleTemplate, c.Task, c.Tenant, c.User, c.UserCredential,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -405,8 +403,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AdminLoginRestriction.mutate(ctx, m)
 	case *AdminOperationLogMutation:
 		return c.AdminOperationLog.mutate(ctx, m)
-	case *ApiResourceMutation:
-		return c.ApiResource.mutate(ctx, m)
+	case *APIMutation:
+		return c.Api.mutate(ctx, m)
 	case *DictEntryMutation:
 		return c.DictEntry.mutate(ctx, m)
 	case *DictTypeMutation:
@@ -435,8 +433,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.OrgUnit.mutate(ctx, m)
 	case *PermissionMutation:
 		return c.Permission.mutate(ctx, m)
-	case *PermissionApiResourceMutation:
-		return c.PermissionApiResource.mutate(ctx, m)
+	case *PermissionApiMutation:
+		return c.PermissionApi.mutate(ctx, m)
 	case *PermissionAuditLogMutation:
 		return c.PermissionAuditLog.mutate(ctx, m)
 	case *PermissionGroupMutation:
@@ -867,107 +865,107 @@ func (c *AdminOperationLogClient) mutate(ctx context.Context, m *AdminOperationL
 	}
 }
 
-// ApiResourceClient is a client for the ApiResource schema.
-type ApiResourceClient struct {
+// APIClient is a client for the Api schema.
+type APIClient struct {
 	config
 }
 
-// NewApiResourceClient returns a client for the ApiResource from the given config.
-func NewApiResourceClient(c config) *ApiResourceClient {
-	return &ApiResourceClient{config: c}
+// NewAPIClient returns a client for the Api from the given config.
+func NewAPIClient(c config) *APIClient {
+	return &APIClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `apiresource.Hooks(f(g(h())))`.
-func (c *ApiResourceClient) Use(hooks ...Hook) {
-	c.hooks.ApiResource = append(c.hooks.ApiResource, hooks...)
+// A call to `Use(f, g, h)` equals to `api.Hooks(f(g(h())))`.
+func (c *APIClient) Use(hooks ...Hook) {
+	c.hooks.Api = append(c.hooks.Api, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `apiresource.Intercept(f(g(h())))`.
-func (c *ApiResourceClient) Intercept(interceptors ...Interceptor) {
-	c.inters.ApiResource = append(c.inters.ApiResource, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `api.Intercept(f(g(h())))`.
+func (c *APIClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Api = append(c.inters.Api, interceptors...)
 }
 
-// Create returns a builder for creating a ApiResource entity.
-func (c *ApiResourceClient) Create() *ApiResourceCreate {
-	mutation := newApiResourceMutation(c.config, OpCreate)
-	return &ApiResourceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a Api entity.
+func (c *APIClient) Create() *APICreate {
+	mutation := newAPIMutation(c.config, OpCreate)
+	return &APICreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of ApiResource entities.
-func (c *ApiResourceClient) CreateBulk(builders ...*ApiResourceCreate) *ApiResourceCreateBulk {
-	return &ApiResourceCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of Api entities.
+func (c *APIClient) CreateBulk(builders ...*APICreate) *APICreateBulk {
+	return &APICreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *ApiResourceClient) MapCreateBulk(slice any, setFunc func(*ApiResourceCreate, int)) *ApiResourceCreateBulk {
+func (c *APIClient) MapCreateBulk(slice any, setFunc func(*APICreate, int)) *APICreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &ApiResourceCreateBulk{err: fmt.Errorf("calling to ApiResourceClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &APICreateBulk{err: fmt.Errorf("calling to APIClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*ApiResourceCreate, rv.Len())
+	builders := make([]*APICreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &ApiResourceCreateBulk{config: c.config, builders: builders}
+	return &APICreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for ApiResource.
-func (c *ApiResourceClient) Update() *ApiResourceUpdate {
-	mutation := newApiResourceMutation(c.config, OpUpdate)
-	return &ApiResourceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for Api.
+func (c *APIClient) Update() *APIUpdate {
+	mutation := newAPIMutation(c.config, OpUpdate)
+	return &APIUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *ApiResourceClient) UpdateOne(_m *ApiResource) *ApiResourceUpdateOne {
-	mutation := newApiResourceMutation(c.config, OpUpdateOne, withApiResource(_m))
-	return &ApiResourceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *APIClient) UpdateOne(_m *Api) *APIUpdateOne {
+	mutation := newAPIMutation(c.config, OpUpdateOne, withApi(_m))
+	return &APIUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *ApiResourceClient) UpdateOneID(id uint32) *ApiResourceUpdateOne {
-	mutation := newApiResourceMutation(c.config, OpUpdateOne, withApiResourceID(id))
-	return &ApiResourceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *APIClient) UpdateOneID(id uint32) *APIUpdateOne {
+	mutation := newAPIMutation(c.config, OpUpdateOne, withApiID(id))
+	return &APIUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for ApiResource.
-func (c *ApiResourceClient) Delete() *ApiResourceDelete {
-	mutation := newApiResourceMutation(c.config, OpDelete)
-	return &ApiResourceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for Api.
+func (c *APIClient) Delete() *APIDelete {
+	mutation := newAPIMutation(c.config, OpDelete)
+	return &APIDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *ApiResourceClient) DeleteOne(_m *ApiResource) *ApiResourceDeleteOne {
+func (c *APIClient) DeleteOne(_m *Api) *APIDeleteOne {
 	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *ApiResourceClient) DeleteOneID(id uint32) *ApiResourceDeleteOne {
-	builder := c.Delete().Where(apiresource.ID(id))
+func (c *APIClient) DeleteOneID(id uint32) *APIDeleteOne {
+	builder := c.Delete().Where(api.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &ApiResourceDeleteOne{builder}
+	return &APIDeleteOne{builder}
 }
 
-// Query returns a query builder for ApiResource.
-func (c *ApiResourceClient) Query() *ApiResourceQuery {
-	return &ApiResourceQuery{
+// Query returns a query builder for Api.
+func (c *APIClient) Query() *APIQuery {
+	return &APIQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypeApiResource},
+		ctx:    &QueryContext{Type: TypeAPI},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a ApiResource entity by its id.
-func (c *ApiResourceClient) Get(ctx context.Context, id uint32) (*ApiResource, error) {
-	return c.Query().Where(apiresource.ID(id)).Only(ctx)
+// Get returns a Api entity by its id.
+func (c *APIClient) Get(ctx context.Context, id uint32) (*Api, error) {
+	return c.Query().Where(api.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *ApiResourceClient) GetX(ctx context.Context, id uint32) *ApiResource {
+func (c *APIClient) GetX(ctx context.Context, id uint32) *Api {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -976,27 +974,27 @@ func (c *ApiResourceClient) GetX(ctx context.Context, id uint32) *ApiResource {
 }
 
 // Hooks returns the client hooks.
-func (c *ApiResourceClient) Hooks() []Hook {
-	return c.hooks.ApiResource
+func (c *APIClient) Hooks() []Hook {
+	return c.hooks.Api
 }
 
 // Interceptors returns the client interceptors.
-func (c *ApiResourceClient) Interceptors() []Interceptor {
-	return c.inters.ApiResource
+func (c *APIClient) Interceptors() []Interceptor {
+	return c.inters.Api
 }
 
-func (c *ApiResourceClient) mutate(ctx context.Context, m *ApiResourceMutation) (Value, error) {
+func (c *APIClient) mutate(ctx context.Context, m *APIMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&ApiResourceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&APICreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&ApiResourceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&APIUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&ApiResourceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&APIUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&ApiResourceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&APIDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown ApiResource mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown Api mutation op: %q", m.Op())
 	}
 }
 
@@ -2958,107 +2956,107 @@ func (c *PermissionClient) mutate(ctx context.Context, m *PermissionMutation) (V
 	}
 }
 
-// PermissionApiResourceClient is a client for the PermissionApiResource schema.
-type PermissionApiResourceClient struct {
+// PermissionApiClient is a client for the PermissionApi schema.
+type PermissionApiClient struct {
 	config
 }
 
-// NewPermissionApiResourceClient returns a client for the PermissionApiResource from the given config.
-func NewPermissionApiResourceClient(c config) *PermissionApiResourceClient {
-	return &PermissionApiResourceClient{config: c}
+// NewPermissionApiClient returns a client for the PermissionApi from the given config.
+func NewPermissionApiClient(c config) *PermissionApiClient {
+	return &PermissionApiClient{config: c}
 }
 
 // Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `permissionapiresource.Hooks(f(g(h())))`.
-func (c *PermissionApiResourceClient) Use(hooks ...Hook) {
-	c.hooks.PermissionApiResource = append(c.hooks.PermissionApiResource, hooks...)
+// A call to `Use(f, g, h)` equals to `permissionapi.Hooks(f(g(h())))`.
+func (c *PermissionApiClient) Use(hooks ...Hook) {
+	c.hooks.PermissionApi = append(c.hooks.PermissionApi, hooks...)
 }
 
 // Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `permissionapiresource.Intercept(f(g(h())))`.
-func (c *PermissionApiResourceClient) Intercept(interceptors ...Interceptor) {
-	c.inters.PermissionApiResource = append(c.inters.PermissionApiResource, interceptors...)
+// A call to `Intercept(f, g, h)` equals to `permissionapi.Intercept(f(g(h())))`.
+func (c *PermissionApiClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PermissionApi = append(c.inters.PermissionApi, interceptors...)
 }
 
-// Create returns a builder for creating a PermissionApiResource entity.
-func (c *PermissionApiResourceClient) Create() *PermissionApiResourceCreate {
-	mutation := newPermissionApiResourceMutation(c.config, OpCreate)
-	return &PermissionApiResourceCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Create returns a builder for creating a PermissionApi entity.
+func (c *PermissionApiClient) Create() *PermissionApiCreate {
+	mutation := newPermissionApiMutation(c.config, OpCreate)
+	return &PermissionApiCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// CreateBulk returns a builder for creating a bulk of PermissionApiResource entities.
-func (c *PermissionApiResourceClient) CreateBulk(builders ...*PermissionApiResourceCreate) *PermissionApiResourceCreateBulk {
-	return &PermissionApiResourceCreateBulk{config: c.config, builders: builders}
+// CreateBulk returns a builder for creating a bulk of PermissionApi entities.
+func (c *PermissionApiClient) CreateBulk(builders ...*PermissionApiCreate) *PermissionApiCreateBulk {
+	return &PermissionApiCreateBulk{config: c.config, builders: builders}
 }
 
 // MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
 // a builder and applies setFunc on it.
-func (c *PermissionApiResourceClient) MapCreateBulk(slice any, setFunc func(*PermissionApiResourceCreate, int)) *PermissionApiResourceCreateBulk {
+func (c *PermissionApiClient) MapCreateBulk(slice any, setFunc func(*PermissionApiCreate, int)) *PermissionApiCreateBulk {
 	rv := reflect.ValueOf(slice)
 	if rv.Kind() != reflect.Slice {
-		return &PermissionApiResourceCreateBulk{err: fmt.Errorf("calling to PermissionApiResourceClient.MapCreateBulk with wrong type %T, need slice", slice)}
+		return &PermissionApiCreateBulk{err: fmt.Errorf("calling to PermissionApiClient.MapCreateBulk with wrong type %T, need slice", slice)}
 	}
-	builders := make([]*PermissionApiResourceCreate, rv.Len())
+	builders := make([]*PermissionApiCreate, rv.Len())
 	for i := 0; i < rv.Len(); i++ {
 		builders[i] = c.Create()
 		setFunc(builders[i], i)
 	}
-	return &PermissionApiResourceCreateBulk{config: c.config, builders: builders}
+	return &PermissionApiCreateBulk{config: c.config, builders: builders}
 }
 
-// Update returns an update builder for PermissionApiResource.
-func (c *PermissionApiResourceClient) Update() *PermissionApiResourceUpdate {
-	mutation := newPermissionApiResourceMutation(c.config, OpUpdate)
-	return &PermissionApiResourceUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Update returns an update builder for PermissionApi.
+func (c *PermissionApiClient) Update() *PermissionApiUpdate {
+	mutation := newPermissionApiMutation(c.config, OpUpdate)
+	return &PermissionApiUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *PermissionApiResourceClient) UpdateOne(_m *PermissionApiResource) *PermissionApiResourceUpdateOne {
-	mutation := newPermissionApiResourceMutation(c.config, OpUpdateOne, withPermissionApiResource(_m))
-	return &PermissionApiResourceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *PermissionApiClient) UpdateOne(_m *PermissionApi) *PermissionApiUpdateOne {
+	mutation := newPermissionApiMutation(c.config, OpUpdateOne, withPermissionApi(_m))
+	return &PermissionApiUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // UpdateOneID returns an update builder for the given id.
-func (c *PermissionApiResourceClient) UpdateOneID(id uint32) *PermissionApiResourceUpdateOne {
-	mutation := newPermissionApiResourceMutation(c.config, OpUpdateOne, withPermissionApiResourceID(id))
-	return &PermissionApiResourceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+func (c *PermissionApiClient) UpdateOneID(id uint32) *PermissionApiUpdateOne {
+	mutation := newPermissionApiMutation(c.config, OpUpdateOne, withPermissionApiID(id))
+	return &PermissionApiUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
-// Delete returns a delete builder for PermissionApiResource.
-func (c *PermissionApiResourceClient) Delete() *PermissionApiResourceDelete {
-	mutation := newPermissionApiResourceMutation(c.config, OpDelete)
-	return &PermissionApiResourceDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+// Delete returns a delete builder for PermissionApi.
+func (c *PermissionApiClient) Delete() *PermissionApiDelete {
+	mutation := newPermissionApiMutation(c.config, OpDelete)
+	return &PermissionApiDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *PermissionApiResourceClient) DeleteOne(_m *PermissionApiResource) *PermissionApiResourceDeleteOne {
+func (c *PermissionApiClient) DeleteOne(_m *PermissionApi) *PermissionApiDeleteOne {
 	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *PermissionApiResourceClient) DeleteOneID(id uint32) *PermissionApiResourceDeleteOne {
-	builder := c.Delete().Where(permissionapiresource.ID(id))
+func (c *PermissionApiClient) DeleteOneID(id uint32) *PermissionApiDeleteOne {
+	builder := c.Delete().Where(permissionapi.ID(id))
 	builder.mutation.id = &id
 	builder.mutation.op = OpDeleteOne
-	return &PermissionApiResourceDeleteOne{builder}
+	return &PermissionApiDeleteOne{builder}
 }
 
-// Query returns a query builder for PermissionApiResource.
-func (c *PermissionApiResourceClient) Query() *PermissionApiResourceQuery {
-	return &PermissionApiResourceQuery{
+// Query returns a query builder for PermissionApi.
+func (c *PermissionApiClient) Query() *PermissionApiQuery {
+	return &PermissionApiQuery{
 		config: c.config,
-		ctx:    &QueryContext{Type: TypePermissionApiResource},
+		ctx:    &QueryContext{Type: TypePermissionApi},
 		inters: c.Interceptors(),
 	}
 }
 
-// Get returns a PermissionApiResource entity by its id.
-func (c *PermissionApiResourceClient) Get(ctx context.Context, id uint32) (*PermissionApiResource, error) {
-	return c.Query().Where(permissionapiresource.ID(id)).Only(ctx)
+// Get returns a PermissionApi entity by its id.
+func (c *PermissionApiClient) Get(ctx context.Context, id uint32) (*PermissionApi, error) {
+	return c.Query().Where(permissionapi.ID(id)).Only(ctx)
 }
 
 // GetX is like Get, but panics if an error occurs.
-func (c *PermissionApiResourceClient) GetX(ctx context.Context, id uint32) *PermissionApiResource {
+func (c *PermissionApiClient) GetX(ctx context.Context, id uint32) *PermissionApi {
 	obj, err := c.Get(ctx, id)
 	if err != nil {
 		panic(err)
@@ -3067,27 +3065,27 @@ func (c *PermissionApiResourceClient) GetX(ctx context.Context, id uint32) *Perm
 }
 
 // Hooks returns the client hooks.
-func (c *PermissionApiResourceClient) Hooks() []Hook {
-	return c.hooks.PermissionApiResource
+func (c *PermissionApiClient) Hooks() []Hook {
+	return c.hooks.PermissionApi
 }
 
 // Interceptors returns the client interceptors.
-func (c *PermissionApiResourceClient) Interceptors() []Interceptor {
-	return c.inters.PermissionApiResource
+func (c *PermissionApiClient) Interceptors() []Interceptor {
+	return c.inters.PermissionApi
 }
 
-func (c *PermissionApiResourceClient) mutate(ctx context.Context, m *PermissionApiResourceMutation) (Value, error) {
+func (c *PermissionApiClient) mutate(ctx context.Context, m *PermissionApiMutation) (Value, error) {
 	switch m.Op() {
 	case OpCreate:
-		return (&PermissionApiResourceCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&PermissionApiCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdate:
-		return (&PermissionApiResourceUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&PermissionApiUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpUpdateOne:
-		return (&PermissionApiResourceUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+		return (&PermissionApiUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
 	case OpDelete, OpDeleteOne:
-		return (&PermissionApiResourceDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+		return (&PermissionApiDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
-		return nil, fmt.Errorf("ent: unknown PermissionApiResource mutation op: %q", m.Op())
+		return nil, fmt.Errorf("ent: unknown PermissionApi mutation op: %q", m.Op())
 	}
 }
 
@@ -4855,21 +4853,21 @@ func (c *UserCredentialClient) mutate(ctx context.Context, m *UserCredentialMuta
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AdminLoginLog, AdminLoginRestriction, AdminOperationLog, ApiResource, DictEntry,
+		AdminLoginLog, AdminLoginRestriction, AdminOperationLog, Api, DictEntry,
 		DictType, File, InternalMessage, InternalMessageCategory,
 		InternalMessageRecipient, Language, Membership, MembershipOrgUnit,
-		MembershipPosition, MembershipRole, Menu, OrgUnit, Permission,
-		PermissionApiResource, PermissionAuditLog, PermissionGroup, PermissionMenu,
-		PermissionPolicy, PolicyEvaluationLog, Position, Role, RolePermission,
-		RoleTemplate, Task, Tenant, User, UserCredential []ent.Hook
+		MembershipPosition, MembershipRole, Menu, OrgUnit, Permission, PermissionApi,
+		PermissionAuditLog, PermissionGroup, PermissionMenu, PermissionPolicy,
+		PolicyEvaluationLog, Position, Role, RolePermission, RoleTemplate, Task,
+		Tenant, User, UserCredential []ent.Hook
 	}
 	inters struct {
-		AdminLoginLog, AdminLoginRestriction, AdminOperationLog, ApiResource, DictEntry,
+		AdminLoginLog, AdminLoginRestriction, AdminOperationLog, Api, DictEntry,
 		DictType, File, InternalMessage, InternalMessageCategory,
 		InternalMessageRecipient, Language, Membership, MembershipOrgUnit,
-		MembershipPosition, MembershipRole, Menu, OrgUnit, Permission,
-		PermissionApiResource, PermissionAuditLog, PermissionGroup, PermissionMenu,
-		PermissionPolicy, PolicyEvaluationLog, Position, Role, RolePermission,
-		RoleTemplate, Task, Tenant, User, UserCredential []ent.Interceptor
+		MembershipPosition, MembershipRole, Menu, OrgUnit, Permission, PermissionApi,
+		PermissionAuditLog, PermissionGroup, PermissionMenu, PermissionPolicy,
+		PolicyEvaluationLog, Position, Role, RolePermission, RoleTemplate, Task,
+		Tenant, User, UserCredential []ent.Interceptor
 	}
 )

@@ -1,0 +1,31 @@
+syntax = "proto3";
+
+package permission.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/api/annotations.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+
+import "pagination/v1/pagination.proto";
+
+// 权限点 - API 关联关系
+message PermissionApi {
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = { description: "ID" }
+  ]; // ID
+
+  optional uint32 permission_id = 2 [
+    json_name = "permissionId",
+    (gnostic.openapi.v3.property) = { description: "权限点ID" }
+  ]; // 权限点ID
+
+  optional uint32 api_id = 3 [
+    json_name = "apiId",
+    (gnostic.openapi.v3.property) = { description: "API ID" }
+  ]; // API ID
+}

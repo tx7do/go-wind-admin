@@ -16,7 +16,7 @@ func RegisterMigrateModels() {
 		&models.AdminLoginLog{},
 		&models.AdminLoginRestriction{},
 		&models.AdminOperationLog{},
-		&models.ApiResource{},
+		&models.Api{},
 		&models.Department{},
 		&models.DictEntry{},
 		&models.DictType{},

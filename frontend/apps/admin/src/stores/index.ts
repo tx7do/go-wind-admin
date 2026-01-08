@@ -5,7 +5,7 @@ import { $t } from '@vben/locales';
 export * from './admin-login-log.state';
 export * from './admin-login-restriction.state';
 export * from './admin-operation-log.state';
-export * from './api-resource.state';
+export * from './api.state';
 export * from './authentication.state';
 export * from './dict.state';
 export * from './file.state';
@@ -13,6 +13,7 @@ export * from './internal-message.state';
 export * from './internal-message-category.state';
 export * from './menu.state';
 export * from './org-unit.state';
+export * from './oss.state';
 export * from './permission.state';
 export * from './permission-audit-log.state';
 export * from './permission-group.state';
@@ -22,9 +23,8 @@ export * from './role.state';
 export * from './router.state';
 export * from './task.state';
 export * from './tenant.state';
-export * from './user.state';
-export * from './oss.state';
 export * from './ueditor.state';
+export * from './user.state';
 
 export const enableList = computed(() => [
   { value: 'true', label: $t('enum.enable.true') },

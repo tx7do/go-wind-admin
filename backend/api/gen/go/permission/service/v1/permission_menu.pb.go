@@ -16,6 +16,7 @@ import (
 	_ "google.golang.org/protobuf/types/known/fieldmaskpb"
 	_ "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
+	sync "sync"
 	unsafe "unsafe"
 )
 
@@ -26,14 +27,98 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// 权限点 - 菜单 关联关系
+type PermissionMenu struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                         // ID
+	PermissionId  *uint32                `protobuf:"varint,2,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"` // 权限点ID
+	MenuId        *uint32                `protobuf:"varint,3,opt,name=menu_id,json=menuId,proto3,oneof" json:"menu_id,omitempty"`                   // 菜单ID
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PermissionMenu) Reset() {
+	*x = PermissionMenu{}
+	mi := &file_permission_service_v1_permission_menu_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PermissionMenu) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PermissionMenu) ProtoMessage() {}
+
+func (x *PermissionMenu) ProtoReflect() protoreflect.Message {
+	mi := &file_permission_service_v1_permission_menu_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PermissionMenu.ProtoReflect.Descriptor instead.
+func (*PermissionMenu) Descriptor() ([]byte, []int) {
+	return file_permission_service_v1_permission_menu_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *PermissionMenu) GetId() uint32 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *PermissionMenu) GetPermissionId() uint32 {
+	if x != nil && x.PermissionId != nil {
+		return *x.PermissionId
+	}
+	return 0
+}
+
+func (x *PermissionMenu) GetMenuId() uint32 {
+	if x != nil && x.MenuId != nil {
+		return *x.MenuId
+	}
+	return 0
+}
+
 var File_permission_service_v1_permission_menu_proto protoreflect.FileDescriptor
 
 const file_permission_service_v1_permission_menu_proto_rawDesc = "" +
 	"\n" +
-	"+permission/service/v1/permission_menu.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.protoB\xe3\x01\n" +
+	"+permission/service/v1/permission_menu.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xbf\x01\n" +
+	"\x0ePermissionMenu\x12\x1d\n" +
+	"\x02id\x18\x01 \x01(\rB\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12;\n" +
+	"\rpermission_id\x18\x02 \x01(\rB\x11\xbaG\x0e\x92\x02\v权限点IDH\x01R\fpermissionId\x88\x01\x01\x12,\n" +
+	"\amenu_id\x18\x03 \x01(\rB\x0e\xbaG\v\x92\x02\b菜单IDH\x02R\x06menuId\x88\x01\x01B\x05\n" +
+	"\x03_idB\x10\n" +
+	"\x0e_permission_idB\n" +
+	"\n" +
+	"\b_menu_idB\xe3\x01\n" +
 	"\x19com.permission.service.v1B\x13PermissionMenuProtoP\x01Z;go-wind-admin/api/gen/go/permission/service/v1;permissionpb\xa2\x02\x03PSX\xaa\x02\x15Permission.Service.V1\xca\x02\x15Permission\\Service\\V1\xe2\x02!Permission\\Service\\V1\\GPBMetadata\xea\x02\x17Permission::Service::V1b\x06proto3"
 
-var file_permission_service_v1_permission_menu_proto_goTypes = []any{}
+var (
+	file_permission_service_v1_permission_menu_proto_rawDescOnce sync.Once
+	file_permission_service_v1_permission_menu_proto_rawDescData []byte
+)
+
+func file_permission_service_v1_permission_menu_proto_rawDescGZIP() []byte {
+	file_permission_service_v1_permission_menu_proto_rawDescOnce.Do(func() {
+		file_permission_service_v1_permission_menu_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_permission_service_v1_permission_menu_proto_rawDesc), len(file_permission_service_v1_permission_menu_proto_rawDesc)))
+	})
+	return file_permission_service_v1_permission_menu_proto_rawDescData
+}
+
+var file_permission_service_v1_permission_menu_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_permission_service_v1_permission_menu_proto_goTypes = []any{
+	(*PermissionMenu)(nil), // 0: permission.service.v1.PermissionMenu
+}
 var file_permission_service_v1_permission_menu_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
@@ -47,18 +132,20 @@ func file_permission_service_v1_permission_menu_proto_init() {
 	if File_permission_service_v1_permission_menu_proto != nil {
 		return
 	}
+	file_permission_service_v1_permission_menu_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_permission_service_v1_permission_menu_proto_rawDesc), len(file_permission_service_v1_permission_menu_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   0,
+			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_permission_service_v1_permission_menu_proto_goTypes,
 		DependencyIndexes: file_permission_service_v1_permission_menu_proto_depIdxs,
+		MessageInfos:      file_permission_service_v1_permission_menu_proto_msgTypes,
 	}.Build()
 	File_permission_service_v1_permission_menu_proto = out.File
 	file_permission_service_v1_permission_menu_proto_goTypes = nil

@@ -29,19 +29,19 @@ type AuthorizerDataMap map[string]AuthorizerDataArray
 type AuthorizerProvider struct {
 	log *log.Helper
 
-	roleRepo        *RoleRepo
-	apiResourceRepo *ApiResourceRepo
+	roleRepo *RoleRepo
+	apiRepo  *ApiRepo
 }
 
 func NewAuthorizerProvider(
 	ctx *bootstrap.Context,
 	roleRepo *RoleRepo,
-	apiResourceRepo *ApiResourceRepo,
+	apiRepo *ApiRepo,
 ) *AuthorizerProvider {
 	return &AuthorizerProvider{
-		log:             ctx.NewLoggerHelper("authorizer-data-provider/data/admin-service"),
-		roleRepo:        roleRepo,
-		apiResourceRepo: apiResourceRepo,
+		log:      ctx.NewLoggerHelper("authorizer-data-provider/data/admin-service"),
+		roleRepo: roleRepo,
+		apiRepo:  apiRepo,
 	}
 }
 
@@ -55,7 +55,7 @@ func (p *AuthorizerProvider) Provide(ctx context.Context) (AuthorizerDataMap, er
 
 	result := make(AuthorizerDataMap)
 	var apiIDs []uint32
-	var apiResources []*permissionV1.ApiResource
+	var apis []*permissionV1.Api
 	for _, role := range roles.Items {
 		apiIDs, err = p.roleRepo.GetRolePermissionApiIDs(ctx, role.GetId())
 		if err != nil {
@@ -63,25 +63,25 @@ func (p *AuthorizerProvider) Provide(ctx context.Context) (AuthorizerDataMap, er
 			continue
 		}
 
-		apiResources, err = p.apiResourceRepo.GetApiResourceByIDs(ctx, apiIDs)
+		apis, err = p.apiRepo.GetApiByIDs(ctx, apiIDs)
 		if err != nil {
-			p.log.Errorf("failed to list api resources by ids: %v", err)
+			p.log.Errorf("failed to list apis by ids: %v", err)
 			continue
 		}
 
 		var authorizerDataArray AuthorizerDataArray
-		for _, apiResource := range apiResources {
-			if apiResource == nil {
+		for _, api := range apis {
+			if api == nil {
 				continue
 			}
-			if apiResource.GetPath() == "" || apiResource.GetMethod() == "" {
+			if api.GetPath() == "" || api.GetMethod() == "" {
 				continue
 			}
 
 			var data = AuthorizerData{
 				Domain: defaultDomain,
-				Path:   apiResource.GetPath(),
-				Method: apiResource.GetMethod(),
+				Path:   api.GetPath(),
+				Method: api.GetMethod(),
 			}
 			authorizerDataArray = append(authorizerDataArray, data)
 		}

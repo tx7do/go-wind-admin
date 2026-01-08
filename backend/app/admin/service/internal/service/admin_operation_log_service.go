@@ -22,28 +22,28 @@ type AdminOperationLogService struct {
 	log *log.Helper
 
 	operationLogRepo *data.AdminOperationLogRepo
-	apiResourceRepo  *data.ApiResourceRepo
+	apiRepo          *data.ApiRepo
 
-	apis     []*permissionV1.ApiResource
+	apis     []*permissionV1.Api
 	apiMutex sync.RWMutex
 }
 
 func NewAdminOperationLogService(
 	ctx *bootstrap.Context,
 	operationLogRepo *data.AdminOperationLogRepo,
-	apiResourceRepo *data.ApiResourceRepo,
+	apiRepo *data.ApiRepo,
 ) *AdminOperationLogService {
 	return &AdminOperationLogService{
 		log:              ctx.NewLoggerHelper("admin-operation-log/service/admin-service"),
 		operationLogRepo: operationLogRepo,
-		apiResourceRepo:  apiResourceRepo,
+		apiRepo:          apiRepo,
 	}
 }
 
-func (s *AdminOperationLogService) queryApiResources(ctx context.Context, path, method string) (*permissionV1.ApiResource, error) {
+func (s *AdminOperationLogService) queryApis(ctx context.Context, path, method string) (*permissionV1.Api, error) {
 	if len(s.apis) == 0 {
 		s.apiMutex.Lock()
-		apis, err := s.apiResourceRepo.List(ctx, &pagination.PagingRequest{
+		apis, err := s.apiRepo.List(ctx, &pagination.PagingRequest{
 			NoPaging: trans.Ptr(true),
 		})
 		if err != nil {
@@ -55,7 +55,7 @@ func (s *AdminOperationLogService) queryApiResources(ctx context.Context, path, 
 	}
 
 	if len(s.apis) == 0 {
-		return nil, adminV1.ErrorNotFound("no API resources found")
+		return nil, adminV1.ErrorNotFound("no apis found")
 	}
 
 	for _, api := range s.apis {
@@ -78,7 +78,7 @@ func (s *AdminOperationLogService) List(ctx context.Context, req *pagination.Pag
 		if l == nil {
 			continue
 		}
-		a, _ := s.queryApiResources(ctx, l.GetPath(), l.GetMethod())
+		a, _ := s.queryApis(ctx, l.GetPath(), l.GetMethod())
 		if a != nil {
 			l.ApiDescription = a.Description
 			l.ApiModule = a.ModuleDescription
@@ -94,7 +94,7 @@ func (s *AdminOperationLogService) Get(ctx context.Context, req *adminV1.GetAdmi
 		return nil, err
 	}
 
-	a, _ := s.queryApiResources(ctx, resp.GetPath(), resp.GetMethod())
+	a, _ := s.queryApis(ctx, resp.GetPath(), resp.GetMethod())
 	if a != nil {
 		resp.ApiDescription = a.Description
 		resp.ApiModule = a.ModuleDescription

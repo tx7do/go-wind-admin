@@ -183,28 +183,28 @@ func (f AdminOperationLogMutationRuleFunc) EvalMutation(ctx context.Context, m e
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AdminOperationLogMutation", m)
 }
 
-// The ApiResourceQueryRuleFunc type is an adapter to allow the use of ordinary
+// The ApiQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
-type ApiResourceQueryRuleFunc func(context.Context, *ent.ApiResourceQuery) error
+type ApiQueryRuleFunc func(context.Context, *ent.APIQuery) error
 
 // EvalQuery return f(ctx, q).
-func (f ApiResourceQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.ApiResourceQuery); ok {
+func (f ApiQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.APIQuery); ok {
 		return f(ctx, q)
 	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.ApiResourceQuery", q)
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.APIQuery", q)
 }
 
-// The ApiResourceMutationRuleFunc type is an adapter to allow the use of ordinary
+// The ApiMutationRuleFunc type is an adapter to allow the use of ordinary
 // functions as a mutation rule.
-type ApiResourceMutationRuleFunc func(context.Context, *ent.ApiResourceMutation) error
+type ApiMutationRuleFunc func(context.Context, *ent.APIMutation) error
 
 // EvalMutation calls f(ctx, m).
-func (f ApiResourceMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.ApiResourceMutation); ok {
+func (f ApiMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.APIMutation); ok {
 		return f(ctx, m)
 	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.ApiResourceMutation", m)
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.APIMutation", m)
 }
 
 // The DictEntryQueryRuleFunc type is an adapter to allow the use of ordinary
@@ -543,28 +543,28 @@ func (f PermissionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Muta
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PermissionMutation", m)
 }
 
-// The PermissionApiResourceQueryRuleFunc type is an adapter to allow the use of ordinary
+// The PermissionApiQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
-type PermissionApiResourceQueryRuleFunc func(context.Context, *ent.PermissionApiResourceQuery) error
+type PermissionApiQueryRuleFunc func(context.Context, *ent.PermissionApiQuery) error
 
 // EvalQuery return f(ctx, q).
-func (f PermissionApiResourceQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
-	if q, ok := q.(*ent.PermissionApiResourceQuery); ok {
+func (f PermissionApiQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.PermissionApiQuery); ok {
 		return f(ctx, q)
 	}
-	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PermissionApiResourceQuery", q)
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.PermissionApiQuery", q)
 }
 
-// The PermissionApiResourceMutationRuleFunc type is an adapter to allow the use of ordinary
+// The PermissionApiMutationRuleFunc type is an adapter to allow the use of ordinary
 // functions as a mutation rule.
-type PermissionApiResourceMutationRuleFunc func(context.Context, *ent.PermissionApiResourceMutation) error
+type PermissionApiMutationRuleFunc func(context.Context, *ent.PermissionApiMutation) error
 
 // EvalMutation calls f(ctx, m).
-func (f PermissionApiResourceMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
-	if m, ok := m.(*ent.PermissionApiResourceMutation); ok {
+func (f PermissionApiMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.PermissionApiMutation); ok {
 		return f(ctx, m)
 	}
-	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PermissionApiResourceMutation", m)
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.PermissionApiMutation", m)
 }
 
 // The PermissionAuditLogQueryRuleFunc type is an adapter to allow the use of ordinary
@@ -920,7 +920,7 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.AdminOperationLogQuery:
 		return q.Filter(), nil
-	case *ent.ApiResourceQuery:
+	case *ent.APIQuery:
 		return q.Filter(), nil
 	case *ent.DictEntryQuery:
 		return q.Filter(), nil
@@ -950,7 +950,7 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.PermissionQuery:
 		return q.Filter(), nil
-	case *ent.PermissionApiResourceQuery:
+	case *ent.PermissionApiQuery:
 		return q.Filter(), nil
 	case *ent.PermissionAuditLogQuery:
 		return q.Filter(), nil
@@ -991,7 +991,7 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 		return m.Filter(), nil
 	case *ent.AdminOperationLogMutation:
 		return m.Filter(), nil
-	case *ent.ApiResourceMutation:
+	case *ent.APIMutation:
 		return m.Filter(), nil
 	case *ent.DictEntryMutation:
 		return m.Filter(), nil
@@ -1021,7 +1021,7 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 		return m.Filter(), nil
 	case *ent.PermissionMutation:
 		return m.Filter(), nil
-	case *ent.PermissionApiResourceMutation:
+	case *ent.PermissionApiMutation:
 		return m.Filter(), nil
 	case *ent.PermissionAuditLogMutation:
 		return m.Filter(), nil

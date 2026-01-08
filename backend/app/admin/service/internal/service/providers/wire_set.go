@@ -39,7 +39,7 @@ var ProviderSet = wire.NewSet(
 	service.NewAdminLoginRestrictionService,
 	service.NewUserProfileService,
 	service.NewUserCredentialService,
-	service.NewApiResourceService,
+	service.NewApiService,
 	service.NewPermissionService,
 	service.NewPermissionGroupService,
 	service.NewPolicyEvaluationLogService,
