@@ -95,6 +95,11 @@ function setupAccessGuard(router: Router) {
     const userInfo = userStore.userInfo || (await authStore.fetchUserInfo());
     const userRoles = userInfo ? (userInfo.roles ?? []) : [];
 
+    if (userInfo === null) {
+      console.warn('setupAccessGuard failed fetch user info:', userInfo);
+      return false;
+    }
+
     userStore.setUserInfo(userInfo);
 
     // 生成菜单和路由
@@ -109,6 +114,7 @@ function setupAccessGuard(router: Router) {
     accessStore.setAccessMenus(accessibleMenus);
     accessStore.setAccessRoutes(accessibleRoutes);
     accessStore.setIsAccessChecked(true);
+
     const redirectPath = (from.query.redirect ??
       (to.path === DEFAULT_HOME_PATH
         ? userInfo?.homePath || DEFAULT_HOME_PATH

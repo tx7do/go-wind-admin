@@ -47,6 +47,15 @@ interface AccessState {
  */
 export const useAccessStore = defineStore('core-access', {
   actions: {
+    $reset() {
+      this.accessToken = null;
+      this.refreshToken = null;
+      this.accessCodes = [];
+      this.accessMenus = [];
+      this.accessRoutes = [];
+      this.isAccessChecked = false;
+      this.loginExpired = false;
+    },
     setAccessCodes(codes: string[]) {
       this.accessCodes = codes;
     },
@@ -65,6 +74,7 @@ export const useAccessStore = defineStore('core-access', {
     setLoginExpired(loginExpired: boolean) {
       this.loginExpired = loginExpired;
     },
+
     setRefreshToken(token: AccessToken) {
       this.refreshToken = token;
     },

@@ -256,6 +256,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       accessStore.setAccessToken(null);
       accessStore.setRefreshToken(null);
+      accessStore.setIsAccessChecked(false);
 
       if (
         preferences.app.loginExpiredMode === 'modal' &&
@@ -278,7 +279,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       return (await userProfileService.GetUser({})) as unknown as UserInfo;
     } catch (error) {
-      console.error(error);
+      console.error('fetchUserInfo failed:', error);
       await _doLogout();
       return null;
     }
