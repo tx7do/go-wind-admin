@@ -183,8 +183,8 @@ func (r *TenantRepo) Create(ctx context.Context, data *userV1.Tenant) (*userV1.T
 	}
 
 	if ret, err := builder.Save(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert tenant failed: %s", err.Error())
+		return nil, userV1.ErrorInternalServerError("insert tenant failed")
 	} else {
 		return r.mapper.ToDTO(ret), nil
 	}

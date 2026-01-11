@@ -2478,6 +2478,15 @@ paths:
                   schema:
                     type: integer
                     format: uint32
+                - name: code
+                  in: query
+                  schema:
+                    type: string
+                - name: groupId
+                  in: query
+                  schema:
+                    type: integer
+                    format: uint32
             responses:
                 "200":
                     description: OK
@@ -5213,9 +5222,9 @@ components:
                 code:
                     type: string
                     description: 权限点唯一编码（如：user.delete）
-                remark:
+                description:
                     type: string
-                    description: 备注
+                    description: 描述
                 status:
                     enum:
                         - OFF
@@ -5333,6 +5342,9 @@ components:
                     type: string
                     description: 状态
                     format: enum
+                description:
+                    type: string
+                    description: 描述
                 parentId:
                     type: integer
                     description: 父节点ID

@@ -164,6 +164,26 @@ func (_u *PermissionUpdate) SetNillableStatus(v *permission.Status) *PermissionU
 	return _u
 }
 
+// SetDescription sets the "description" field.
+func (_u *PermissionUpdate) SetDescription(v string) *PermissionUpdate {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *PermissionUpdate) SetNillableDescription(v *string) *PermissionUpdate {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *PermissionUpdate) ClearDescription() *PermissionUpdate {
+	_u.mutation.ClearDescription()
+	return _u
+}
+
 // SetName sets the "name" field.
 func (_u *PermissionUpdate) SetName(v string) *PermissionUpdate {
 	_u.mutation.SetName(v)
@@ -328,6 +348,12 @@ func (_u *PermissionUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(permission.FieldStatus, field.TypeEnum, value)
+	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(permission.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(permission.FieldDescription, field.TypeString)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(permission.FieldName, field.TypeString, value)
@@ -498,6 +524,26 @@ func (_u *PermissionUpdateOne) SetNillableStatus(v *permission.Status) *Permissi
 	if v != nil {
 		_u.SetStatus(*v)
 	}
+	return _u
+}
+
+// SetDescription sets the "description" field.
+func (_u *PermissionUpdateOne) SetDescription(v string) *PermissionUpdateOne {
+	_u.mutation.SetDescription(v)
+	return _u
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *PermissionUpdateOne) SetNillableDescription(v *string) *PermissionUpdateOne {
+	if v != nil {
+		_u.SetDescription(*v)
+	}
+	return _u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (_u *PermissionUpdateOne) ClearDescription() *PermissionUpdateOne {
+	_u.mutation.ClearDescription()
 	return _u
 }
 
@@ -695,6 +741,12 @@ func (_u *PermissionUpdateOne) sqlSave(ctx context.Context) (_node *Permission, 
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(permission.FieldStatus, field.TypeEnum, value)
+	}
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(permission.FieldDescription, field.TypeString, value)
+	}
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(permission.FieldDescription, field.TypeString)
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(permission.FieldName, field.TypeString, value)

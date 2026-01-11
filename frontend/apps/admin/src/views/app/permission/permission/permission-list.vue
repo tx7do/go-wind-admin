@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import {h, watch} from 'vue';
+import { h, watch } from 'vue';
 
 import { useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
@@ -17,9 +17,9 @@ import {
   statusToName,
   usePermissionStore,
 } from '#/stores';
+import { usePermissionViewStore } from '#/views/app/permission/permission/permision_view.state';
 
 import PermissionDrawer from './permission-drawer.vue';
-import {usePermissionViewStore} from "#/views/app/permission/permission/permision_view.state";
 
 const permissionStore = usePermissionStore();
 const permissionViewStore = usePermissionViewStore();
@@ -108,19 +108,18 @@ const gridOptions: VxeGridProps<Permission> = {
       fixed: 'left',
       align: 'left',
     },
-    { title: $t('page.permission.code'), field: 'code', width: 200 },
+    {
+      title: $t('page.permission.code'),
+      field: 'code',
+      fixed: 'left',
+      align: 'left',
+    },
     { title: $t('page.permission.groupName'), field: 'groupName' },
     {
       title: $t('ui.table.status'),
       field: 'status',
       slots: { default: 'status' },
-      width: 95,
-    },
-    {
-      title: $t('ui.table.updatedAt'),
-      field: 'updatedAt',
-      formatter: 'formatDateTime',
-      width: 140,
+      width: 90,
     },
     {
       title: $t('ui.table.action'),
@@ -214,7 +213,7 @@ async function handleSyncMenus() {
       message: $t('ui.notification.sync_success'),
     });
 
-    await gridApi.reload();
+    permissionViewStore.reloadGroupList();
   } catch {
     notification.error({
       message: $t('ui.notification.sync_failed'),
@@ -223,8 +222,12 @@ async function handleSyncMenus() {
 }
 
 watch(
-  () => permissionViewStore.currentGroupId,
+  () => permissionViewStore.needReloadPermissionList,
   () => {
+    if (!permissionViewStore.needReloadPermissionList) {
+      return;
+    }
+    permissionViewStore.needReloadPermissionList = false;
     gridApi.reload();
   },
 );

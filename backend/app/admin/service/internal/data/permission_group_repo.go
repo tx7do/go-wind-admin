@@ -19,6 +19,8 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+
+	"go-wind-admin/pkg/constants"
 )
 
 type PermissionGroupRepo struct {
@@ -179,26 +181,29 @@ func (r *PermissionGroupRepo) Get(ctx context.Context, req *permissionV1.GetPerm
 }
 
 // Create 创建 Permission
-func (r *PermissionGroupRepo) Create(ctx context.Context, req *permissionV1.CreatePermissionGroupRequest) error {
+func (r *PermissionGroupRepo) Create(ctx context.Context, req *permissionV1.CreatePermissionGroupRequest) (*permissionV1.PermissionGroup, error) {
 	if req == nil || req.Data == nil {
-		return permissionV1.ErrorBadRequest("invalid parameter")
+		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.newPermissionCreate(req.Data)
 
 	var err error
-	if _, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("insert data failed")
+	var entity *ent.PermissionGroup
+	if entity, err = builder.Save(ctx); err != nil {
+		r.log.Errorf("insert permission group failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("insert permission group failed")
 	}
 
-	return nil
+	dto := r.mapper.ToDTO(entity)
+
+	return dto, nil
 }
 
 // BatchCreate 批量创建 Permission
-func (r *PermissionGroupRepo) BatchCreate(ctx context.Context, tenantID uint32, permissionGroups []*permissionV1.PermissionGroup) (err error) {
+func (r *PermissionGroupRepo) BatchCreate(ctx context.Context, permissionGroups []*permissionV1.PermissionGroup) (dtos []*permissionV1.PermissionGroup, err error) {
 	if len(permissionGroups) == 0 {
-		return permissionV1.ErrorBadRequest("invalid parameter")
+		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	var permissionGroupCreates []*ent.PermissionGroupCreate
@@ -209,31 +214,38 @@ func (r *PermissionGroupRepo) BatchCreate(ctx context.Context, tenantID uint32, 
 
 	builder := r.entClient.Client().PermissionGroup.CreateBulk(permissionGroupCreates...)
 
-	if _, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("batch insert data failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("batch insert data failed")
+	var entities []*ent.PermissionGroup
+	if entities, err = builder.Save(ctx); err != nil {
+		r.log.Errorf("batch insert permission groups failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("batch insert permission groups failed")
 	}
 
-	return nil
+	for _, entity := range entities {
+		dto := r.mapper.ToDTO(entity)
+		dtos = append(dtos, dto)
+	}
+
+	return dtos, nil
 }
 
 // newPermissionCreate 创建 Permission Create 构造器
-func (r *PermissionGroupRepo) newPermissionCreate(permission *permissionV1.PermissionGroup) *ent.PermissionGroupCreate {
+func (r *PermissionGroupRepo) newPermissionCreate(permissionGroup *permissionV1.PermissionGroup) *ent.PermissionGroupCreate {
 	builder := r.entClient.Client().PermissionGroup.Create().
-		SetName(permission.GetName()).
-		SetNillableStatus(r.statusConverter.ToEntity(permission.Status)).
-		SetNillableModule(permission.Module).
-		SetNillableSortOrder(permission.SortOrder).
-		SetNillableParentID(permission.ParentId).
-		SetNillableCreatedBy(permission.CreatedBy).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(permission.CreatedAt))
+		SetName(permissionGroup.GetName()).
+		SetNillableStatus(r.statusConverter.ToEntity(permissionGroup.Status)).
+		SetNillableModule(permissionGroup.Module).
+		SetNillableSortOrder(permissionGroup.SortOrder).
+		SetNillableDescription(permissionGroup.Description).
+		SetNillableParentID(permissionGroup.ParentId).
+		SetNillableCreatedBy(permissionGroup.CreatedBy).
+		SetNillableCreatedAt(timeutil.TimestamppbToTime(permissionGroup.CreatedAt))
 
-	if permission.CreatedAt == nil {
+	if permissionGroup.CreatedAt == nil {
 		builder.SetCreatedAt(time.Now())
 	}
 
-	if permission.Id != nil {
-		builder.SetID(permission.GetId())
+	if permissionGroup.Id != nil {
+		builder.SetID(permissionGroup.GetId())
 	}
 
 	return builder
@@ -255,7 +267,8 @@ func (r *PermissionGroupRepo) Update(ctx context.Context, req *permissionV1.Upda
 			createReq := &permissionV1.CreatePermissionGroupRequest{Data: req.Data}
 			createReq.Data.CreatedBy = createReq.Data.UpdatedBy
 			createReq.Data.UpdatedBy = nil
-			return r.Create(ctx, createReq)
+			_, err = r.Create(ctx, createReq)
+			return err
 		}
 	}
 
@@ -267,6 +280,7 @@ func (r *PermissionGroupRepo) Update(ctx context.Context, req *permissionV1.Upda
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 				SetNillableModule(req.Data.Module).
 				SetNillableSortOrder(req.Data.SortOrder).
+				SetNillableDescription(req.Data.Description).
 				SetNillableParentID(req.Data.ParentId).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
@@ -352,4 +366,42 @@ func (r *PermissionGroupRepo) Truncate(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+// TruncateBizGroup 清空业务表数据，保留系统内置数据
+func (r *PermissionGroupRepo) TruncateBizGroup(ctx context.Context) error {
+	builder := r.entClient.Client().PermissionGroup.Delete().
+		Where(
+			permissiongroup.ModuleNotIn(constants.SystemPermissionModule),
+		)
+
+	if _, err := builder.Exec(ctx); err != nil {
+		r.log.Errorf("failed to truncate permission group table: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("truncate failed")
+	}
+
+	return nil
+}
+
+func (r *PermissionGroupRepo) ListByIDs(ctx context.Context, ids []uint32) ([]*permissionV1.PermissionGroup, error) {
+	if len(ids) == 0 {
+		return []*permissionV1.PermissionGroup{}, nil
+	}
+
+	builder := r.entClient.Client().PermissionGroup.Query().
+		Where(permissiongroup.IDIn(ids...))
+
+	entities, err := builder.All(ctx)
+	if err != nil {
+		r.log.Errorf("query list by ids failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("query list by ids failed")
+	}
+
+	dtos := make([]*permissionV1.PermissionGroup, 0, len(entities))
+	for _, entity := range entities {
+		dto := r.mapper.ToDTO(entity)
+		dtos = append(dtos, dto)
+	}
+
+	return dtos, nil
 }

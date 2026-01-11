@@ -203,8 +203,8 @@ func (r *ApiRepo) Create(ctx context.Context, req *permissionV1.CreateApiRequest
 	builder := r.newApiCreate(req.Data)
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert api failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("insert api failed")
 	}
 
 	return nil
@@ -247,8 +247,8 @@ func (r *ApiRepo) BatchCreate(ctx context.Context, apis []*permissionV1.Api) err
 	bulkBuilder := r.entClient.Client().Api.CreateBulk(bulk...)
 
 	if err := bulkBuilder.Exec(ctx); err != nil {
-		r.log.Errorf("batch insert data failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("batch insert data failed")
+		r.log.Errorf("batch insert apis failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("batch insert apis failed")
 	}
 
 	return nil

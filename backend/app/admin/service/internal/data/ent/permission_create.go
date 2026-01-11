@@ -120,6 +120,20 @@ func (_c *PermissionCreate) SetNillableStatus(v *permission.Status) *PermissionC
 	return _c
 }
 
+// SetDescription sets the "description" field.
+func (_c *PermissionCreate) SetDescription(v string) *PermissionCreate {
+	_c.mutation.SetDescription(v)
+	return _c
+}
+
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_c *PermissionCreate) SetNillableDescription(v *string) *PermissionCreate {
+	if v != nil {
+		_c.SetDescription(*v)
+	}
+	return _c
+}
+
 // SetName sets the "name" field.
 func (_c *PermissionCreate) SetName(v string) *PermissionCreate {
 	_c.mutation.SetName(v)
@@ -279,6 +293,10 @@ func (_c *PermissionCreate) createSpec() (*Permission, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(permission.FieldStatus, field.TypeEnum, value)
 		_node.Status = &value
+	}
+	if value, ok := _c.mutation.Description(); ok {
+		_spec.SetField(permission.FieldDescription, field.TypeString, value)
+		_node.Description = &value
 	}
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(permission.FieldName, field.TypeString, value)
@@ -461,6 +479,24 @@ func (u *PermissionUpsert) SetStatus(v permission.Status) *PermissionUpsert {
 // UpdateStatus sets the "status" field to the value that was provided on create.
 func (u *PermissionUpsert) UpdateStatus() *PermissionUpsert {
 	u.SetExcluded(permission.FieldStatus)
+	return u
+}
+
+// SetDescription sets the "description" field.
+func (u *PermissionUpsert) SetDescription(v string) *PermissionUpsert {
+	u.Set(permission.FieldDescription, v)
+	return u
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *PermissionUpsert) UpdateDescription() *PermissionUpsert {
+	u.SetExcluded(permission.FieldDescription)
+	return u
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *PermissionUpsert) ClearDescription() *PermissionUpsert {
+	u.SetNull(permission.FieldDescription)
 	return u
 }
 
@@ -700,6 +736,27 @@ func (u *PermissionUpsertOne) SetStatus(v permission.Status) *PermissionUpsertOn
 func (u *PermissionUpsertOne) UpdateStatus() *PermissionUpsertOne {
 	return u.Update(func(s *PermissionUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *PermissionUpsertOne) SetDescription(v string) *PermissionUpsertOne {
+	return u.Update(func(s *PermissionUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *PermissionUpsertOne) UpdateDescription() *PermissionUpsertOne {
+	return u.Update(func(s *PermissionUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *PermissionUpsertOne) ClearDescription() *PermissionUpsertOne {
+	return u.Update(func(s *PermissionUpsert) {
+		s.ClearDescription()
 	})
 }
 
@@ -1113,6 +1170,27 @@ func (u *PermissionUpsertBulk) SetStatus(v permission.Status) *PermissionUpsertB
 func (u *PermissionUpsertBulk) UpdateStatus() *PermissionUpsertBulk {
 	return u.Update(func(s *PermissionUpsert) {
 		s.UpdateStatus()
+	})
+}
+
+// SetDescription sets the "description" field.
+func (u *PermissionUpsertBulk) SetDescription(v string) *PermissionUpsertBulk {
+	return u.Update(func(s *PermissionUpsert) {
+		s.SetDescription(v)
+	})
+}
+
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *PermissionUpsertBulk) UpdateDescription() *PermissionUpsertBulk {
+	return u.Update(func(s *PermissionUpsert) {
+		s.UpdateDescription()
+	})
+}
+
+// ClearDescription clears the value of the "description" field.
+func (u *PermissionUpsertBulk) ClearDescription() *PermissionUpsertBulk {
+	return u.Update(func(s *PermissionUpsert) {
+		s.ClearDescription()
 	})
 }
 

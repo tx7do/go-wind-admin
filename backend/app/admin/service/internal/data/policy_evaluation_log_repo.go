@@ -156,8 +156,8 @@ func (r *PolicyEvaluationLogRepo) Create(ctx context.Context, req *permissionV1.
 
 	err := builder.Exec(ctx)
 	if err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert policy evaluation log failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("insert policy evaluation log failed")
 	}
 
 	return err

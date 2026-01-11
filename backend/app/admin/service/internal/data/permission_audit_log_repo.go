@@ -155,8 +155,8 @@ func (r *PermissionAuditLogRepo) Create(ctx context.Context, req *permissionV1.C
 
 	err := builder.Exec(ctx)
 	if err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert permission audit log failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("insert permission audit log failed")
 	}
 
 	return err

@@ -69,8 +69,8 @@ func (m *Permission) validate(all bool) error {
 		// no validation rules for Code
 	}
 
-	if m.Remark != nil {
-		// no validation rules for Remark
+	if m.Description != nil {
+		// no validation rules for Description
 	}
 
 	if m.Status != nil {
@@ -894,7 +894,46 @@ func (m *DeletePermissionRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Id
+	switch v := m.DeleteBy.(type) {
+	case *DeletePermissionRequest_Id:
+		if v == nil {
+			err := DeletePermissionRequestValidationError{
+				field:  "DeleteBy",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for Id
+	case *DeletePermissionRequest_Code:
+		if v == nil {
+			err := DeletePermissionRequestValidationError{
+				field:  "DeleteBy",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for Code
+	case *DeletePermissionRequest_GroupId:
+		if v == nil {
+			err := DeletePermissionRequestValidationError{
+				field:  "DeleteBy",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for GroupId
+	default:
+		_ = v // ensures v is used
+	}
 
 	if len(errors) > 0 {
 		return DeletePermissionRequestMultiError(errors)

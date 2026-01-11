@@ -144,7 +144,12 @@ func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, permissionIDs []ui
 
 // Truncate 清空表数据
 func (r *PermissionMenuRepo) Truncate(ctx context.Context) error {
-	if _, err := r.entClient.Client().PermissionMenu.Delete().Exec(ctx); err != nil {
+	builder := r.entClient.Client().PermissionMenu.Delete().
+		Where(
+			permissionmenu.PermissionIDNotIn(1, 2, 3),
+		)
+
+	if _, err := builder.Exec(ctx); err != nil {
 		r.log.Errorf("failed to truncate permission menu table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
@@ -163,6 +168,18 @@ func (r *PermissionMenuRepo) Delete(ctx context.Context, permissionID uint32) er
 		return permissionV1.ErrorInternalServerError("delete failed")
 	}
 
+	return nil
+}
+
+func (r *PermissionMenuRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint32) error {
+	if _, err := r.entClient.Client().PermissionMenu.Delete().
+		Where(
+			permissionmenu.PermissionIDIn(permissionIDs...),
+		).
+		Exec(ctx); err != nil {
+		r.log.Errorf("delete permission menus by permission ids failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("delete permission menus by permission ids failed")
+	}
 	return nil
 }
 

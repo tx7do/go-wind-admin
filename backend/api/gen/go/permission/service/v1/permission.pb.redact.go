@@ -135,7 +135,7 @@ func (x *Permission) Redact() string {
 
 	// Safe field: Code
 
-	// Safe field: Remark
+	// Safe field: Description
 
 	// Safe field: Status
 
@@ -220,5 +220,9 @@ func (x *DeletePermissionRequest) Redact() string {
 	}
 
 	// Safe field: Id
+
+	// Safe field: Code
+
+	// Safe field: GroupId
 	return x.String()
 }

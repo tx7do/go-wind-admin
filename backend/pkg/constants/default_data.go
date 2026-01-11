@@ -14,35 +14,54 @@ const (
 	// DefaultAdminPassword 系统初始化默认管理员用户密码
 	DefaultAdminPassword = "admin"
 
+	// PlatformTenantID 平台管理员租户ID
 	PlatformTenantID = uint32(0)
 )
 
 // DefaultPermissionGroups 系统初始化默认权限组数据
 var DefaultPermissionGroups = []*permissionV1.PermissionGroup{
 	{
-		Id:        trans.Ptr(uint32(1)),
-		Name:      trans.Ptr("系统权限"),
+		//Id:        trans.Ptr(uint32(1)),
+		Name:      trans.Ptr("系统管理"),
 		Path:      trans.Ptr("/1/"),
-		Module:    trans.Ptr("system"),
+		Module:    trans.Ptr(SystemPermissionModule),
 		SortOrder: trans.Ptr(uint32(1)),
 		Status:    trans.Ptr(permissionV1.PermissionGroup_ON),
 	},
 	{
-		Id:        trans.Ptr(uint32(2)),
+		//Id:        trans.Ptr(uint32(2)),
 		ParentId:  trans.Ptr(uint32(1)),
-		Name:      trans.Ptr("API权限"),
+		Name:      trans.Ptr("系统权限"),
 		Path:      trans.Ptr("/1/2/"),
-		Module:    trans.Ptr("system"),
+		Module:    trans.Ptr(SystemPermissionModule),
 		SortOrder: trans.Ptr(uint32(1)),
 		Status:    trans.Ptr(permissionV1.PermissionGroup_ON),
 	},
 	{
-		Id:        trans.Ptr(uint32(3)),
+		//Id:        trans.Ptr(uint32(3)),
 		ParentId:  trans.Ptr(uint32(1)),
-		Name:      trans.Ptr("菜单权限"),
+		Name:      trans.Ptr("租户管理"),
 		Path:      trans.Ptr("/1/3/"),
-		Module:    trans.Ptr("system"),
+		Module:    trans.Ptr(SystemPermissionModule),
 		SortOrder: trans.Ptr(uint32(2)),
+		Status:    trans.Ptr(permissionV1.PermissionGroup_ON),
+	},
+	{
+		//Id:        trans.Ptr(uint32(4)),
+		ParentId:  trans.Ptr(uint32(1)),
+		Name:      trans.Ptr("审计管理"),
+		Path:      trans.Ptr("/1/4/"),
+		Module:    trans.Ptr(SystemPermissionModule),
+		SortOrder: trans.Ptr(uint32(3)),
+		Status:    trans.Ptr(permissionV1.PermissionGroup_ON),
+	},
+	{
+		//Id:        trans.Ptr(uint32(5)),
+		ParentId:  trans.Ptr(uint32(1)),
+		Name:      trans.Ptr("安全策略"),
+		Path:      trans.Ptr("/1/5/"),
+		Module:    trans.Ptr(SystemPermissionModule),
+		SortOrder: trans.Ptr(uint32(4)),
 		Status:    trans.Ptr(permissionV1.PermissionGroup_ON),
 	},
 }
@@ -50,11 +69,12 @@ var DefaultPermissionGroups = []*permissionV1.PermissionGroup{
 // DefaultPermissions 系统初始化默认权限数据
 var DefaultPermissions = []*permissionV1.Permission{
 	{
-		Id:      trans.Ptr(uint32(1)),
-		GroupId: trans.Ptr(uint32(1)),
-		Name:    trans.Ptr("访问后台"),
-		Code:    trans.Ptr(AccessSystemPermissionCode),
-		Status:  trans.Ptr(permissionV1.Permission_ON),
+		//Id:          trans.Ptr(uint32(1)),
+		GroupId:     trans.Ptr(uint32(2)),
+		Name:        trans.Ptr("访问后台"),
+		Description: trans.Ptr("允许用户访问系统后台管理界面"),
+		Code:        trans.Ptr(SystemAccessBackendPermissionCode),
+		Status:      trans.Ptr(permissionV1.Permission_ON),
 		MenuIds: []uint32{
 			1, 2,
 			10, 11,
@@ -80,23 +100,39 @@ var DefaultPermissions = []*permissionV1.Permission{
 			120, 121, 122, 123, 124, 125,
 		},
 	},
+	{
+		//Id:          trans.Ptr(uint32(2)),
+		GroupId:     trans.Ptr(uint32(3)),
+		Name:        trans.Ptr("管理租户"),
+		Description: trans.Ptr("允许创建/修改/删除租户"),
+		Code:        trans.Ptr(SystemManageTenantsPermissionCode),
+		Status:      trans.Ptr(permissionV1.Permission_ON),
+	},
+	{
+		//Id:          trans.Ptr(uint32(3)),
+		GroupId:     trans.Ptr(uint32(4)),
+		Name:        trans.Ptr("查看审计日志"),
+		Description: trans.Ptr("允许查看系统操作日志"),
+		Code:        trans.Ptr(SystemAuditLogsPermissionCode),
+		Status:      trans.Ptr(permissionV1.Permission_ON),
+	},
 }
 
 // DefaultRoles 系统初始化默认角色数据
 var DefaultRoles = []*userV1.Role{
 	{
-		Id:          trans.Ptr(uint32(1)),
+		//Id:          trans.Ptr(uint32(1)),
 		Name:        trans.Ptr("平台管理员"),
-		Code:        trans.Ptr("platform_admin"),
+		Code:        trans.Ptr(PlatformAdminRoleCode),
 		Status:      trans.Ptr(userV1.Role_ON),
 		Description: trans.Ptr("拥有系统所有功能的操作权限，可管理租户、用户、角色及所有资源"),
 		IsProtected: trans.Ptr(true),
 		Permissions: []uint32{1},
 	},
 	{
-		Id:          trans.Ptr(uint32(2)),
+		//Id:          trans.Ptr(uint32(2)),
 		Name:        trans.Ptr("租户管理员模板"),
-		Code:        trans.Ptr("template:tenant_admin"),
+		Code:        trans.Ptr(RoleCodeTemplatePrefix + TenantAdminRoleCode),
 		Status:      trans.Ptr(userV1.Role_ON),
 		Description: trans.Ptr("租户管理员角色，拥有租户内所有功能的操作权限，可管理用户、角色及租户内所有资源"),
 		IsProtected: trans.Ptr(true),
@@ -106,10 +142,10 @@ var DefaultRoles = []*userV1.Role{
 
 var DefaultRoleMetadata = []*userV1.RoleMetadata{
 	{
-		Id:              trans.Ptr(uint32(1)),
+		//Id:              trans.Ptr(uint32(1)),
 		RoleId:          trans.Ptr(uint32(1)),
 		IsTemplate:      trans.Ptr(true),
-		TemplateFor:     trans.Ptr("tenant_admin"),
+		TemplateFor:     trans.Ptr(TenantAdminRoleCode),
 		TemplateVersion: trans.Ptr(int32(1)),
 	},
 }
@@ -117,7 +153,7 @@ var DefaultRoleMetadata = []*userV1.RoleMetadata{
 // DefaultUsers 系统初始化默认用户数据
 var DefaultUsers = []*userV1.User{
 	{
-		Id:       trans.Ptr(uint32(1)),
+		//Id:       trans.Ptr(uint32(1)),
 		TenantId: trans.Ptr(uint32(0)),
 		Username: trans.Ptr(DefaultAdminUserName),
 		Realname: trans.Ptr("喵个咪"),

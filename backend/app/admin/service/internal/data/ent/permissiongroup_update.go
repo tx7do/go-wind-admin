@@ -150,23 +150,23 @@ func (_u *PermissionGroupUpdate) ClearDeletedBy() *PermissionGroupUpdate {
 	return _u
 }
 
-// SetRemark sets the "remark" field.
-func (_u *PermissionGroupUpdate) SetRemark(v string) *PermissionGroupUpdate {
-	_u.mutation.SetRemark(v)
+// SetDescription sets the "description" field.
+func (_u *PermissionGroupUpdate) SetDescription(v string) *PermissionGroupUpdate {
+	_u.mutation.SetDescription(v)
 	return _u
 }
 
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (_u *PermissionGroupUpdate) SetNillableRemark(v *string) *PermissionGroupUpdate {
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *PermissionGroupUpdate) SetNillableDescription(v *string) *PermissionGroupUpdate {
 	if v != nil {
-		_u.SetRemark(*v)
+		_u.SetDescription(*v)
 	}
 	return _u
 }
 
-// ClearRemark clears the value of the "remark" field.
-func (_u *PermissionGroupUpdate) ClearRemark() *PermissionGroupUpdate {
-	_u.mutation.ClearRemark()
+// ClearDescription clears the value of the "description" field.
+func (_u *PermissionGroupUpdate) ClearDescription() *PermissionGroupUpdate {
+	_u.mutation.ClearDescription()
 	return _u
 }
 
@@ -439,11 +439,11 @@ func (_u *PermissionGroupUpdate) sqlSave(ctx context.Context) (_node int, err er
 	if _u.mutation.DeletedByCleared() {
 		_spec.ClearField(permissiongroup.FieldDeletedBy, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.Remark(); ok {
-		_spec.SetField(permissiongroup.FieldRemark, field.TypeString, value)
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(permissiongroup.FieldDescription, field.TypeString, value)
 	}
-	if _u.mutation.RemarkCleared() {
-		_spec.ClearField(permissiongroup.FieldRemark, field.TypeString)
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(permissiongroup.FieldDescription, field.TypeString)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(permissiongroup.FieldStatus, field.TypeEnum, value)
@@ -689,23 +689,23 @@ func (_u *PermissionGroupUpdateOne) ClearDeletedBy() *PermissionGroupUpdateOne {
 	return _u
 }
 
-// SetRemark sets the "remark" field.
-func (_u *PermissionGroupUpdateOne) SetRemark(v string) *PermissionGroupUpdateOne {
-	_u.mutation.SetRemark(v)
+// SetDescription sets the "description" field.
+func (_u *PermissionGroupUpdateOne) SetDescription(v string) *PermissionGroupUpdateOne {
+	_u.mutation.SetDescription(v)
 	return _u
 }
 
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (_u *PermissionGroupUpdateOne) SetNillableRemark(v *string) *PermissionGroupUpdateOne {
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_u *PermissionGroupUpdateOne) SetNillableDescription(v *string) *PermissionGroupUpdateOne {
 	if v != nil {
-		_u.SetRemark(*v)
+		_u.SetDescription(*v)
 	}
 	return _u
 }
 
-// ClearRemark clears the value of the "remark" field.
-func (_u *PermissionGroupUpdateOne) ClearRemark() *PermissionGroupUpdateOne {
-	_u.mutation.ClearRemark()
+// ClearDescription clears the value of the "description" field.
+func (_u *PermissionGroupUpdateOne) ClearDescription() *PermissionGroupUpdateOne {
+	_u.mutation.ClearDescription()
 	return _u
 }
 
@@ -1008,11 +1008,11 @@ func (_u *PermissionGroupUpdateOne) sqlSave(ctx context.Context) (_node *Permiss
 	if _u.mutation.DeletedByCleared() {
 		_spec.ClearField(permissiongroup.FieldDeletedBy, field.TypeUint32)
 	}
-	if value, ok := _u.mutation.Remark(); ok {
-		_spec.SetField(permissiongroup.FieldRemark, field.TypeString, value)
+	if value, ok := _u.mutation.Description(); ok {
+		_spec.SetField(permissiongroup.FieldDescription, field.TypeString, value)
 	}
-	if _u.mutation.RemarkCleared() {
-		_spec.ClearField(permissiongroup.FieldRemark, field.TypeString)
+	if _u.mutation.DescriptionCleared() {
+		_spec.ClearField(permissiongroup.FieldDescription, field.TypeString)
 	}
 	if value, ok := _u.mutation.Status(); ok {
 		_spec.SetField(permissiongroup.FieldStatus, field.TypeEnum, value)

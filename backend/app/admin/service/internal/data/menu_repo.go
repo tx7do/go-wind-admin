@@ -209,8 +209,8 @@ func (r *MenuRepo) Create(ctx context.Context, req *permissionV1.CreateMenuReque
 	}
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert menu failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("insert menu failed")
 	}
 
 	return nil

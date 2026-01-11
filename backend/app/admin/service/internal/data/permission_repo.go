@@ -21,6 +21,8 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+
+	"go-wind-admin/pkg/constants"
 )
 
 type PermissionRepo struct {
@@ -269,8 +271,8 @@ func (r *PermissionRepo) Create(ctx context.Context, req *permissionV1.CreatePer
 	var entity *ent.Permission
 	var err error
 	if entity, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert permission failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("insert permission failed")
 	}
 
 	if len(req.Data.ApiIds) > 0 {
@@ -288,7 +290,7 @@ func (r *PermissionRepo) Create(ctx context.Context, req *permissionV1.CreatePer
 }
 
 // BatchCreate 批量创建 Permission
-func (r *PermissionRepo) BatchCreate(ctx context.Context, tenantID uint32, permissions []*permissionV1.Permission) (err error) {
+func (r *PermissionRepo) BatchCreate(ctx context.Context, permissions []*permissionV1.Permission) (err error) {
 	if len(permissions) == 0 {
 		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
@@ -303,8 +305,8 @@ func (r *PermissionRepo) BatchCreate(ctx context.Context, tenantID uint32, permi
 
 	var entities []*ent.Permission
 	if entities, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("batch insert data failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("batch insert data failed")
+		r.log.Errorf("batch insert permissions failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("batch insert permissions failed")
 	}
 
 	for i, perm := range permissions {
@@ -328,6 +330,7 @@ func (r *PermissionRepo) newPermissionCreate(permission *permissionV1.Permission
 		SetName(permission.GetName()).
 		SetCode(permission.GetCode()).
 		SetNillableStatus(r.statusConverter.ToEntity(permission.Status)).
+		SetNillableDescription(permission.Description).
 		SetNillableGroupID(permission.GroupId).
 		SetNillableCreatedBy(permission.CreatedBy).
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(permission.CreatedAt))
@@ -371,6 +374,7 @@ func (r *PermissionRepo) Update(ctx context.Context, req *permissionV1.UpdatePer
 				SetNillableCode(req.Data.Code).
 				SetNillableGroupID(req.Data.GroupId).
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
+				SetNillableDescription(req.Data.Description).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
 
@@ -398,26 +402,60 @@ func (r *PermissionRepo) Update(ctx context.Context, req *permissionV1.UpdatePer
 }
 
 // Delete 删除 Permission
-func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePermissionRequest) error {
+func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePermissionRequest) (err error) {
 	if req == nil {
 		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().Permission.Delete()
+	var permissionIDs []uint32
+	switch req.DeleteBy.(type) {
+	default:
+	case *permissionV1.DeletePermissionRequest_Id:
+		permissionIDs = append(permissionIDs, req.GetId())
 
-	_, err := r.repository.Delete(ctx, builder, func(s *sql.Selector) {
-		s.Where(sql.EQ(permission.FieldID, req.GetId()))
-	})
+	case *permissionV1.DeletePermissionRequest_Code:
+		permissionIDs, err = r.entClient.Client().Permission.Query().
+			Where(permission.CodeEQ(req.GetCode())).
+			Select(permission.FieldID).
+			IDs(ctx)
+		if err != nil {
+			r.log.Errorf("get permission ids by code failed: %s", err.Error())
+			return permissionV1.ErrorInternalServerError("get permission ids by code failed")
+		}
+
+	case *permissionV1.DeletePermissionRequest_GroupId:
+		permissionIDs, err = r.entClient.Client().Permission.Query().
+			Where(permission.GroupIDEQ(req.GetGroupId())).
+			Select(permission.FieldID).
+			IDs(ctx)
+		if err != nil {
+			r.log.Errorf("get permission ids by group id failed: %s", err.Error())
+			return permissionV1.ErrorInternalServerError("get permission ids by group id failed")
+		}
+	}
+
+	builder := r.entClient.Client().Permission.Delete()
+	switch req.DeleteBy.(type) {
+	default:
+	case *permissionV1.DeletePermissionRequest_Id:
+		builder.Where(permission.IDEQ(req.GetId()))
+	case *permissionV1.DeletePermissionRequest_Code:
+		builder.Where(permission.CodeEQ(req.GetCode()))
+	case *permissionV1.DeletePermissionRequest_GroupId:
+		builder.Where(permission.GroupIDEQ(req.GetGroupId()))
+	}
+
+	_, err = builder.Exec(ctx)
 	if err != nil {
 		r.log.Errorf("delete permission failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete permission failed")
 	}
 
-	if err = r.permissionApiRepo.Delete(ctx, req.GetId()); err != nil {
+	if err = r.permissionApiRepo.DeleteByPermissionIDs(ctx, permissionIDs); err != nil {
 		return err
 	}
 
-	if err = r.permissionMenuRepo.Delete(ctx, req.GetId()); err != nil {
+	if err = r.permissionMenuRepo.DeleteByPermissionIDs(ctx, permissionIDs); err != nil {
 		return err
 	}
 
@@ -471,6 +509,25 @@ func (r *PermissionRepo) CleanDataPermissions(ctx context.Context) error {
 // CleanMenuPermissions 清理菜单相关权限
 func (r *PermissionRepo) CleanMenuPermissions(ctx context.Context) error {
 	return r.permissionMenuRepo.Truncate(ctx)
+}
+
+// TruncateBizPermissions 清理业务权限
+func (r *PermissionRepo) TruncateBizPermissions(ctx context.Context) error {
+	builder := r.entClient.Client().Permission.Delete().
+		Where(
+			permission.Not(permission.CodeHasPrefix(constants.SystemPermissionCodePrefix)),
+		)
+
+	_, err := builder.Exec(ctx)
+	if err != nil {
+		r.log.Errorf("truncate biz permissions failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("truncate biz permissions failed")
+	}
+
+	_ = r.CleanApiPermissions(ctx)
+	_ = r.CleanMenuPermissions(ctx)
+
+	return nil
 }
 
 // ListApiIDsByPermissionIDs 列出权限关联的API资源ID列表

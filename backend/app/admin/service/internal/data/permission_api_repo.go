@@ -153,7 +153,12 @@ func (r *PermissionApiRepo) ListApiIDs(ctx context.Context, permissionIDs []uint
 
 // Truncate 清空表数据
 func (r *PermissionApiRepo) Truncate(ctx context.Context) error {
-	if _, err := r.entClient.Client().PermissionApi.Delete().Exec(ctx); err != nil {
+	builder := r.entClient.Client().PermissionApi.Delete().
+		Where(
+			permissionapi.PermissionIDNotIn(1, 2, 3),
+		)
+
+	if _, err := builder.Exec(ctx); err != nil {
 		r.log.Errorf("failed to truncate permission api table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
@@ -170,6 +175,18 @@ func (r *PermissionApiRepo) Delete(ctx context.Context, permissionID uint32) err
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete permission apis by permission id failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete permission apis by permission id failed")
+	}
+	return nil
+}
+
+func (r *PermissionApiRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint32) error {
+	if _, err := r.entClient.Client().PermissionApi.Delete().
+		Where(
+			permissionapi.PermissionIDIn(permissionIDs...),
+		).
+		Exec(ctx); err != nil {
+		r.log.Errorf("delete permission apis by permission ids failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("delete permission apis by permission ids failed")
 	}
 	return nil
 }

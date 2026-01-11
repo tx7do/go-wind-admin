@@ -158,8 +158,8 @@ func (r *DictTypeRepo) Create(ctx context.Context, req *dictV1.CreateDictTypeReq
 	}
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return dictV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert dict type failed: %s", err.Error())
+		return dictV1.ErrorInternalServerError("insert dict type failed")
 	}
 
 	return nil

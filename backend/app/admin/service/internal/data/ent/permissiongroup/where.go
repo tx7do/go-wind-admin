@@ -85,9 +85,9 @@ func DeletedBy(v uint32) predicate.PermissionGroup {
 	return predicate.PermissionGroup(sql.FieldEQ(FieldDeletedBy, v))
 }
 
-// Remark applies equality check predicate on the "remark" field. It's identical to RemarkEQ.
-func Remark(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldEQ(FieldRemark, v))
+// Description applies equality check predicate on the "description" field. It's identical to DescriptionEQ.
+func Description(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldEQ(FieldDescription, v))
 }
 
 // SortOrder applies equality check predicate on the "sort_order" field. It's identical to SortOrderEQ.
@@ -415,79 +415,79 @@ func DeletedByNotNil() predicate.PermissionGroup {
 	return predicate.PermissionGroup(sql.FieldNotNull(FieldDeletedBy))
 }
 
-// RemarkEQ applies the EQ predicate on the "remark" field.
-func RemarkEQ(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldEQ(FieldRemark, v))
+// DescriptionEQ applies the EQ predicate on the "description" field.
+func DescriptionEQ(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldEQ(FieldDescription, v))
 }
 
-// RemarkNEQ applies the NEQ predicate on the "remark" field.
-func RemarkNEQ(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldNEQ(FieldRemark, v))
+// DescriptionNEQ applies the NEQ predicate on the "description" field.
+func DescriptionNEQ(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldNEQ(FieldDescription, v))
 }
 
-// RemarkIn applies the In predicate on the "remark" field.
-func RemarkIn(vs ...string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldIn(FieldRemark, vs...))
+// DescriptionIn applies the In predicate on the "description" field.
+func DescriptionIn(vs ...string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldIn(FieldDescription, vs...))
 }
 
-// RemarkNotIn applies the NotIn predicate on the "remark" field.
-func RemarkNotIn(vs ...string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldNotIn(FieldRemark, vs...))
+// DescriptionNotIn applies the NotIn predicate on the "description" field.
+func DescriptionNotIn(vs ...string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldNotIn(FieldDescription, vs...))
 }
 
-// RemarkGT applies the GT predicate on the "remark" field.
-func RemarkGT(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldGT(FieldRemark, v))
+// DescriptionGT applies the GT predicate on the "description" field.
+func DescriptionGT(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldGT(FieldDescription, v))
 }
 
-// RemarkGTE applies the GTE predicate on the "remark" field.
-func RemarkGTE(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldGTE(FieldRemark, v))
+// DescriptionGTE applies the GTE predicate on the "description" field.
+func DescriptionGTE(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldGTE(FieldDescription, v))
 }
 
-// RemarkLT applies the LT predicate on the "remark" field.
-func RemarkLT(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldLT(FieldRemark, v))
+// DescriptionLT applies the LT predicate on the "description" field.
+func DescriptionLT(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldLT(FieldDescription, v))
 }
 
-// RemarkLTE applies the LTE predicate on the "remark" field.
-func RemarkLTE(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldLTE(FieldRemark, v))
+// DescriptionLTE applies the LTE predicate on the "description" field.
+func DescriptionLTE(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldLTE(FieldDescription, v))
 }
 
-// RemarkContains applies the Contains predicate on the "remark" field.
-func RemarkContains(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldContains(FieldRemark, v))
+// DescriptionContains applies the Contains predicate on the "description" field.
+func DescriptionContains(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldContains(FieldDescription, v))
 }
 
-// RemarkHasPrefix applies the HasPrefix predicate on the "remark" field.
-func RemarkHasPrefix(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldHasPrefix(FieldRemark, v))
+// DescriptionHasPrefix applies the HasPrefix predicate on the "description" field.
+func DescriptionHasPrefix(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldHasPrefix(FieldDescription, v))
 }
 
-// RemarkHasSuffix applies the HasSuffix predicate on the "remark" field.
-func RemarkHasSuffix(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldHasSuffix(FieldRemark, v))
+// DescriptionHasSuffix applies the HasSuffix predicate on the "description" field.
+func DescriptionHasSuffix(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldHasSuffix(FieldDescription, v))
 }
 
-// RemarkIsNil applies the IsNil predicate on the "remark" field.
-func RemarkIsNil() predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldIsNull(FieldRemark))
+// DescriptionIsNil applies the IsNil predicate on the "description" field.
+func DescriptionIsNil() predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldIsNull(FieldDescription))
 }
 
-// RemarkNotNil applies the NotNil predicate on the "remark" field.
-func RemarkNotNil() predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldNotNull(FieldRemark))
+// DescriptionNotNil applies the NotNil predicate on the "description" field.
+func DescriptionNotNil() predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldNotNull(FieldDescription))
 }
 
-// RemarkEqualFold applies the EqualFold predicate on the "remark" field.
-func RemarkEqualFold(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldEqualFold(FieldRemark, v))
+// DescriptionEqualFold applies the EqualFold predicate on the "description" field.
+func DescriptionEqualFold(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldEqualFold(FieldDescription, v))
 }
 
-// RemarkContainsFold applies the ContainsFold predicate on the "remark" field.
-func RemarkContainsFold(v string) predicate.PermissionGroup {
-	return predicate.PermissionGroup(sql.FieldContainsFold(FieldRemark, v))
+// DescriptionContainsFold applies the ContainsFold predicate on the "description" field.
+func DescriptionContainsFold(v string) predicate.PermissionGroup {
+	return predicate.PermissionGroup(sql.FieldContainsFold(FieldDescription, v))
 }
 
 // StatusEQ applies the EQ predicate on the "status" field.

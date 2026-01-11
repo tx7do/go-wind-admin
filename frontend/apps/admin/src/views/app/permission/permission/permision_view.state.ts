@@ -12,6 +12,8 @@ const permissionGroupStore = usePermissionGroupStore();
 interface PermissionViewState {
   currentGroupId: null | number; // 当前选中的分组ID
   loading: boolean; // 加载状态
+  needReloadGroupList: boolean; // 是否需要重新加载分组列表
+  needReloadPermissionList: boolean; // 是否需要重新加载权限列表
 
   groupList: ListPermissionGroupResponse; // 权限分组列表
   permList: ListPermissionResponse; // 权限列表
@@ -24,6 +26,8 @@ export const usePermissionViewStore = defineStore('permission-view', {
   state: (): PermissionViewState => ({
     currentGroupId: null,
     loading: false,
+    needReloadGroupList: false,
+    needReloadPermissionList: false,
     groupList: { items: [], total: 0 },
     permList: { items: [], total: 0 },
   }),
@@ -103,7 +107,7 @@ export const usePermissionViewStore = defineStore('permission-view', {
      */
     async setCurrentGroupId(groupId: number) {
       this.currentGroupId = groupId; // 更新当前选中的分组ID
-      await this.fetchPermissionList(groupId, 0, 10, null); // 联动刷新
+      this.needReloadPermissionList = true;
     },
 
     resetGroupList() {
@@ -112,6 +116,11 @@ export const usePermissionViewStore = defineStore('permission-view', {
 
     resetPermissionList() {
       this.permList = { items: [], total: 0 };
+    },
+
+    reloadGroupList() {
+      this.currentGroupId = null;
+      this.needReloadGroupList = true;
     },
   },
 });

@@ -166,8 +166,8 @@ func (r *InternalMessageRepo) Create(ctx context.Context, req *internalMessageV1
 	var err error
 	var entity *ent.InternalMessage
 	if entity, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return nil, internalMessageV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert internal message failed: %s", err.Error())
+		return nil, internalMessageV1.ErrorInternalServerError("insert internal message failed")
 	}
 
 	return r.mapper.ToDTO(entity), nil

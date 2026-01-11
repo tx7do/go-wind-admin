@@ -30,8 +30,18 @@ func (c *MenuPermissionConverter) ConvertCode(fullPath, title string, typ permis
 		return ""
 	}
 
+	paths := strings.Split(path, "/")
+	if len(paths) == 0 {
+		return ""
+	}
+
+	for i, p := range paths {
+		paths[i] = strings.TrimSpace(p)
+		paths[i] = inflection.Singular(p)
+	}
+
 	// 将路径段用 ':' 连接，作为权限主体
-	permBase := strings.ReplaceAll(path, "/", ":")
+	permBase := strings.Join(paths, ":")
 	permBase = inflection.Singular(permBase)
 
 	// 根据菜单类型，决定是否添加动作后缀

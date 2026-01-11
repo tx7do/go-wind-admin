@@ -139,7 +139,7 @@ type Permission struct {
 	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                      // 权限点ID
 	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                                   // 权限点名称（如：删除用户）
 	Code          *string                `protobuf:"bytes,3,opt,name=code,proto3,oneof" json:"code,omitempty"`                                                   // 权限点唯一编码（如：user.delete）
-	Remark        *string                `protobuf:"bytes,4,opt,name=remark,proto3,oneof" json:"remark,omitempty"`                                               // 备注
+	Description   *string                `protobuf:"bytes,4,opt,name=description,proto3,oneof" json:"description,omitempty"`                                     // 描述
 	Status        *Permission_Status     `protobuf:"varint,5,opt,name=status,proto3,enum=permission.service.v1.Permission_Status,oneof" json:"status,omitempty"` // 状态
 	GroupId       *uint32                `protobuf:"varint,6,opt,name=group_id,json=groupId,proto3,oneof" json:"group_id,omitempty"`                             // 分组ID
 	GroupName     *string                `protobuf:"bytes,7,opt,name=group_name,json=groupName,proto3,oneof" json:"group_name,omitempty"`                        // 分组名称
@@ -206,9 +206,9 @@ func (x *Permission) GetCode() string {
 	return ""
 }
 
-func (x *Permission) GetRemark() string {
-	if x != nil && x.Remark != nil {
-		return *x.Remark
+func (x *Permission) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
 	}
 	return ""
 }
@@ -550,8 +550,13 @@ func (x *UpdatePermissionRequest) GetAllowMissing() bool {
 
 // 删除 - 请求
 type DeletePermissionRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to DeleteBy:
+	//
+	//	*DeletePermissionRequest_Id
+	//	*DeletePermissionRequest_Code
+	//	*DeletePermissionRequest_GroupId
+	DeleteBy      isDeletePermissionRequest_DeleteBy `protobuf_oneof:"delete_by"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -586,24 +591,73 @@ func (*DeletePermissionRequest) Descriptor() ([]byte, []int) {
 	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{5}
 }
 
+func (x *DeletePermissionRequest) GetDeleteBy() isDeletePermissionRequest_DeleteBy {
+	if x != nil {
+		return x.DeleteBy
+	}
+	return nil
+}
+
 func (x *DeletePermissionRequest) GetId() uint32 {
 	if x != nil {
-		return x.Id
+		if x, ok := x.DeleteBy.(*DeletePermissionRequest_Id); ok {
+			return x.Id
+		}
 	}
 	return 0
 }
+
+func (x *DeletePermissionRequest) GetCode() string {
+	if x != nil {
+		if x, ok := x.DeleteBy.(*DeletePermissionRequest_Code); ok {
+			return x.Code
+		}
+	}
+	return ""
+}
+
+func (x *DeletePermissionRequest) GetGroupId() uint32 {
+	if x != nil {
+		if x, ok := x.DeleteBy.(*DeletePermissionRequest_GroupId); ok {
+			return x.GroupId
+		}
+	}
+	return 0
+}
+
+type isDeletePermissionRequest_DeleteBy interface {
+	isDeletePermissionRequest_DeleteBy()
+}
+
+type DeletePermissionRequest_Id struct {
+	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
+}
+
+type DeletePermissionRequest_Code struct {
+	Code string `protobuf:"bytes,2,opt,name=code,proto3,oneof"` // 权限点编码
+}
+
+type DeletePermissionRequest_GroupId struct {
+	GroupId uint32 `protobuf:"varint,3,opt,name=group_id,json=groupId,proto3,oneof"` // 权限分组
+}
+
+func (*DeletePermissionRequest_Id) isDeletePermissionRequest_DeleteBy() {}
+
+func (*DeletePermissionRequest_Code) isDeletePermissionRequest_DeleteBy() {}
+
+func (*DeletePermissionRequest_GroupId) isDeletePermissionRequest_DeleteBy() {}
 
 var File_permission_service_v1_permission_proto protoreflect.FileDescriptor
 
 const file_permission_service_v1_permission_proto_rawDesc = "" +
 	"\n" +
-	"&permission/service/v1/permission.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x84\t\n" +
+	"&permission/service/v1/permission.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x93\t\n" +
 	"\n" +
 	"Permission\x12&\n" +
 	"\x02id\x18\x01 \x01(\rB\x11\xbaG\x0e\x92\x02\v权限点IDH\x00R\x02id\x88\x01\x01\x12F\n" +
 	"\x04name\x18\x02 \x01(\tB-\xbaG*\x92\x02'权限点名称（如：删除用户）H\x01R\x04name\x88\x01\x01\x12K\n" +
-	"\x04code\x18\x03 \x01(\tB2\xbaG/\x92\x02,权限点唯一编码（如：user.delete）H\x02R\x04code\x88\x01\x01\x12)\n" +
-	"\x06remark\x18\x04 \x01(\tB\f\xbaG\t\x92\x02\x06备注H\x03R\x06remark\x88\x01\x01\x12S\n" +
+	"\x04code\x18\x03 \x01(\tB2\xbaG/\x92\x02,权限点唯一编码（如：user.delete）H\x02R\x04code\x88\x01\x01\x123\n" +
+	"\vdescription\x18\x04 \x01(\tB\f\xbaG\t\x92\x02\x06描述H\x03R\vdescription\x88\x01\x01\x12S\n" +
 	"\x06status\x18\x05 \x01(\x0e2(.permission.service.v1.Permission.StatusB\f\xbaG\t\x92\x02\x06状态H\x04R\x06status\x88\x01\x01\x12.\n" +
 	"\bgroup_id\x18\x06 \x01(\rB\x0e\xbaG\v\x92\x02\b分组IDH\x05R\agroupId\x88\x01\x01\x126\n" +
 	"\n" +
@@ -629,8 +683,8 @@ const file_permission_service_v1_permission_proto_rawDesc = "" +
 	"\x02ON\x10\x01B\x05\n" +
 	"\x03_idB\a\n" +
 	"\x05_nameB\a\n" +
-	"\x05_codeB\t\n" +
-	"\a_remarkB\t\n" +
+	"\x05_codeB\x0e\n" +
+	"\f_descriptionB\t\n" +
 	"\a_statusB\v\n" +
 	"\t_group_idB\r\n" +
 	"\v_group_nameB\r\n" +
@@ -660,9 +714,13 @@ const file_permission_service_v1_permission_proto_rawDesc = "" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
-	"\x0e_allow_missing\")\n" +
-	"\x17DeletePermissionRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id*q\n" +
+	"\x0e_allow_missing\"\xa6\x01\n" +
+	"\x17DeletePermissionRequest\x12\x1c\n" +
+	"\x02id\x18\x01 \x01(\rB\n" +
+	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12-\n" +
+	"\x04code\x18\x02 \x01(\tB\x17\xbaG\x14\x18\x01\x92\x02\x0f权限点编码H\x00R\x04code\x121\n" +
+	"\bgroup_id\x18\x03 \x01(\rB\x14\xbaG\x11\x18\x01\x92\x02\f权限分组H\x00R\agroupIdB\v\n" +
+	"\tdelete_by*q\n" +
 	"\tDataScope\x12\x1a\n" +
 	"\x16DATA_SCOPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ALL\x10\x01\x12\b\n" +
@@ -750,6 +808,11 @@ func file_permission_service_v1_permission_proto_init() {
 		(*GetPermissionRequest_Code)(nil),
 	}
 	file_permission_service_v1_permission_proto_msgTypes[4].OneofWrappers = []any{}
+	file_permission_service_v1_permission_proto_msgTypes[5].OneofWrappers = []any{
+		(*DeletePermissionRequest_Id)(nil),
+		(*DeletePermissionRequest_Code)(nil),
+		(*DeletePermissionRequest_GroupId)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

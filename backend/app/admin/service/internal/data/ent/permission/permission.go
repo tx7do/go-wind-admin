@@ -27,6 +27,8 @@ const (
 	FieldDeletedBy = "deleted_by"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
 	// FieldCode holds the string denoting the code field in the database.
@@ -47,6 +49,7 @@ var Columns = []string{
 	FieldUpdatedBy,
 	FieldDeletedBy,
 	FieldStatus,
+	FieldDescription,
 	FieldName,
 	FieldCode,
 	FieldGroupID,
@@ -136,6 +139,11 @@ func ByDeletedBy(opts ...sql.OrderTermOption) OrderOption {
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
 }
 
 // ByName orders the results by the name field.

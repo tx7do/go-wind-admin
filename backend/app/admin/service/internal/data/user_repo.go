@@ -197,8 +197,8 @@ func (r *userRepo) Create(ctx context.Context, req *userV1.CreateUserRequest) (*
 	}
 
 	if ret, err := builder.Save(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert user failed: %s", err.Error())
+		return nil, userV1.ErrorInternalServerError("insert user failed")
 	} else {
 		return r.mapper.ToDTO(ret), nil
 	}

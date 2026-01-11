@@ -115,6 +115,10 @@ func (m *PermissionGroup) validate(all bool) error {
 		// no validation rules for Status
 	}
 
+	if m.Description != nil {
+		// no validation rules for Description
+	}
+
 	if m.ParentId != nil {
 		// no validation rules for ParentId
 	}

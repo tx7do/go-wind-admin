@@ -50,6 +50,7 @@ func (Permission) Mixin() []ent.Mixin {
 		mixin.TimeAt{},
 		mixin.OperatorID{},
 		mixin.SwitchStatus{},
+		mixin.Description{},
 	}
 }
 

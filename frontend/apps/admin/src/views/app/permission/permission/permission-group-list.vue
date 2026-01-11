@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { VxeGridListeners, VxeGridProps } from '#/adapter/vxe-table';
 
-import { h } from 'vue';
+import { h, watch } from 'vue';
 
 import { useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
@@ -85,10 +85,10 @@ const gridOptions: VxeGridProps<PermissionGroup> = {
   treeConfig: {
     parentField: 'parentId',
     rowField: 'id',
+    expandAll: true,
   },
 
   height: 'auto',
-  stripe: true,
 
   proxyConfig: {
     ajax: {
@@ -112,7 +112,12 @@ const gridOptions: VxeGridProps<PermissionGroup> = {
       align: 'left',
       treeNode: true,
     },
-    { title: $t('page.permissionGroup.module'), field: 'module', width: 100 },
+    {
+      title: $t('page.permissionGroup.module'),
+      field: 'module',
+      fixed: 'left',
+      align: 'left',
+    },
     {
       title: $t('ui.table.status'),
       field: 'status',
@@ -203,6 +208,17 @@ const expandAll = () => {
 const collapseAll = () => {
   gridApi.grid?.setAllTreeExpand(false);
 };
+
+watch(
+  () => permissionViewStore.needReloadGroupList,
+  () => {
+    if (!permissionViewStore.needReloadGroupList) {
+      return;
+    }
+    permissionViewStore.needReloadGroupList = false;
+    gridApi.reload();
+  },
+);
 </script>
 
 <template>

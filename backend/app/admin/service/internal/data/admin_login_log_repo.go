@@ -165,8 +165,8 @@ func (r *AdminLoginLogRepo) Create(ctx context.Context, req *adminV1.CreateAdmin
 	}
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert admin login log failed: %s", err.Error())
+		return adminV1.ErrorInternalServerError("insert admin login log failed")
 	}
 
 	return nil

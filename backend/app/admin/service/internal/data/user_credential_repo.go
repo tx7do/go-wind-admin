@@ -167,8 +167,8 @@ func (r *UserCredentialRepo) Create(ctx context.Context, req *authenticationV1.C
 	}
 
 	if err = builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s [%v]", err.Error(), req.Data)
-		return authenticationV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert user credential failed: %s [%v]", err.Error(), req.Data)
+		return authenticationV1.ErrorInternalServerError("insert user credential failed")
 	}
 
 	return nil

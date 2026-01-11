@@ -179,8 +179,8 @@ func (r *InternalMessageCategoryRepo) Create(ctx context.Context, req *internalM
 	}
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return internalMessageV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert internal message category failed: %s", err.Error())
+		return internalMessageV1.ErrorInternalServerError("insert internal message category failed")
 	}
 
 	return nil

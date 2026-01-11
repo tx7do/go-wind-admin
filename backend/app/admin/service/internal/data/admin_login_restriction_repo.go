@@ -159,8 +159,8 @@ func (r *AdminLoginRestrictionRepo) Create(ctx context.Context, req *adminV1.Cre
 	}
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert admin login restriction failed: %s", err.Error())
+		return adminV1.ErrorInternalServerError("insert admin login restriction failed")
 	}
 
 	return nil

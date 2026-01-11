@@ -30,8 +30,8 @@ type PermissionGroup struct {
 	UpdatedBy *uint32 `json:"updated_by,omitempty"`
 	// 删除者ID
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
-	// 备注
-	Remark *string `json:"remark,omitempty"`
+	// 描述
+	Description *string `json:"description,omitempty"`
 	// 状态
 	Status *permissiongroup.Status `json:"status,omitempty"`
 	// 排序值（越小越靠前）
@@ -88,7 +88,7 @@ func (*PermissionGroup) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case permissiongroup.FieldID, permissiongroup.FieldCreatedBy, permissiongroup.FieldUpdatedBy, permissiongroup.FieldDeletedBy, permissiongroup.FieldSortOrder, permissiongroup.FieldParentID:
 			values[i] = new(sql.NullInt64)
-		case permissiongroup.FieldRemark, permissiongroup.FieldStatus, permissiongroup.FieldName, permissiongroup.FieldPath, permissiongroup.FieldModule:
+		case permissiongroup.FieldDescription, permissiongroup.FieldStatus, permissiongroup.FieldName, permissiongroup.FieldPath, permissiongroup.FieldModule:
 			values[i] = new(sql.NullString)
 		case permissiongroup.FieldCreatedAt, permissiongroup.FieldUpdatedAt, permissiongroup.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -155,12 +155,12 @@ func (_m *PermissionGroup) assignValues(columns []string, values []any) error {
 				_m.DeletedBy = new(uint32)
 				*_m.DeletedBy = uint32(value.Int64)
 			}
-		case permissiongroup.FieldRemark:
+		case permissiongroup.FieldDescription:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field remark", values[i])
+				return fmt.Errorf("unexpected type %T for field description", values[i])
 			} else if value.Valid {
-				_m.Remark = new(string)
-				*_m.Remark = value.String
+				_m.Description = new(string)
+				*_m.Description = value.String
 			}
 		case permissiongroup.FieldStatus:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -280,8 +280,8 @@ func (_m *PermissionGroup) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.Remark; v != nil {
-		builder.WriteString("remark=")
+	if v := _m.Description; v != nil {
+		builder.WriteString("description=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")

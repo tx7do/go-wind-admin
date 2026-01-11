@@ -1201,6 +1201,7 @@ var (
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
 		{Name: "name", Type: field.TypeString, Comment: "权限名称（如：删除用户）"},
 		{Name: "code", Type: field.TypeString, Comment: "权限编码（如：opm:user:delete、order:export）"},
 		{Name: "group_id", Type: field.TypeUint32, Nullable: true, Comment: "关联权限分组 ID"},
@@ -1215,17 +1216,17 @@ var (
 			{
 				Name:    "uix_perm_code",
 				Unique:  true,
-				Columns: []*schema.Column{SysPermissionsColumns[9]},
+				Columns: []*schema.Column{SysPermissionsColumns[10]},
 			},
 			{
 				Name:    "idx_perm_name",
 				Unique:  false,
-				Columns: []*schema.Column{SysPermissionsColumns[8]},
+				Columns: []*schema.Column{SysPermissionsColumns[9]},
 			},
 			{
 				Name:    "idx_perm_group_id",
 				Unique:  false,
-				Columns: []*schema.Column{SysPermissionsColumns[10]},
+				Columns: []*schema.Column{SysPermissionsColumns[11]},
 			},
 		},
 	}
@@ -1326,7 +1327,7 @@ var (
 		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
-		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
+		{Name: "description", Type: field.TypeString, Nullable: true, Comment: "描述"},
 		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
 		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
 		{Name: "name", Type: field.TypeString, Comment: "分组名称（如：用户管理、订单操作）"},

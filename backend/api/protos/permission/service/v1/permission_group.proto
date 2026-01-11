@@ -65,6 +65,11 @@ message PermissionGroup {
 
   optional Status status = 6 [(gnostic.openapi.v3.property) = {description: "状态"}]; // 状态
 
+  optional string description = 7 [
+    json_name = "description",
+    (gnostic.openapi.v3.property) = { description: "描述" }
+  ]; // 描述
+
   optional uint32 parent_id = 50 [json_name = "parentId", (gnostic.openapi.v3.property) = {description: "父节点ID"}];  // 父节点ID
   repeated PermissionGroup children = 51 [json_name = "children", (gnostic.openapi.v3.property) = {description: "子节点树"}];  // 子节点树
 

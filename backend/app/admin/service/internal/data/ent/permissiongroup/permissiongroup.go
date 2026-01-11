@@ -26,8 +26,8 @@ const (
 	FieldUpdatedBy = "updated_by"
 	// FieldDeletedBy holds the string denoting the deleted_by field in the database.
 	FieldDeletedBy = "deleted_by"
-	// FieldRemark holds the string denoting the remark field in the database.
-	FieldRemark = "remark"
+	// FieldDescription holds the string denoting the description field in the database.
+	FieldDescription = "description"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
 	// FieldSortOrder holds the string denoting the sort_order field in the database.
@@ -65,7 +65,7 @@ var Columns = []string{
 	FieldCreatedBy,
 	FieldUpdatedBy,
 	FieldDeletedBy,
-	FieldRemark,
+	FieldDescription,
 	FieldStatus,
 	FieldSortOrder,
 	FieldParentID,
@@ -157,9 +157,9 @@ func ByDeletedBy(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeletedBy, opts...).ToFunc()
 }
 
-// ByRemark orders the results by the remark field.
-func ByRemark(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRemark, opts...).ToFunc()
+// ByDescription orders the results by the description field.
+func ByDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldDescription, opts...).ToFunc()
 }
 
 // ByStatus orders the results by the status field.

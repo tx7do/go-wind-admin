@@ -209,7 +209,7 @@ func (r *PositionRepo) Create(ctx context.Context, req *userV1.CreatePositionReq
 	}
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
+		r.log.Errorf("insert position failed: %s", err.Error())
 		return userV1.ErrorInternalServerError("insert data failed")
 	}
 

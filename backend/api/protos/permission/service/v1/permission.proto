@@ -72,10 +72,10 @@ message Permission {
     (gnostic.openapi.v3.property) = { description: "权限点唯一编码（如：user.delete）" }
   ]; // 权限点唯一编码（如：user.delete）
 
-  optional string remark = 4 [
-    json_name = "remark",
-    (gnostic.openapi.v3.property) = { description: "备注" }
-  ]; // 备注
+  optional string description = 4 [
+    json_name = "description",
+    (gnostic.openapi.v3.property) = { description: "描述" }
+  ]; // 描述
 
   optional Status status = 5 [(gnostic.openapi.v3.property) = {description: "状态"}]; // 状态
 
@@ -163,5 +163,20 @@ message UpdatePermissionRequest {
 
 // 删除 - 请求
 message DeletePermissionRequest {
-  uint32 id = 1;
+  oneof delete_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+      json_name = "id"
+    ]; // ID
+
+    string code = 2 [
+      (gnostic.openapi.v3.property) = {description: "权限点编码", read_only: true},
+      json_name = "code"
+    ]; // 权限点编码
+
+    uint32 group_id = 3 [
+      (gnostic.openapi.v3.property) = {description: "权限分组", read_only: true},
+      json_name = "groupId"
+    ]; // 权限分组
+  }
 }

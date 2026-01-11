@@ -106,16 +106,16 @@ func (_c *PermissionGroupCreate) SetNillableDeletedBy(v *uint32) *PermissionGrou
 	return _c
 }
 
-// SetRemark sets the "remark" field.
-func (_c *PermissionGroupCreate) SetRemark(v string) *PermissionGroupCreate {
-	_c.mutation.SetRemark(v)
+// SetDescription sets the "description" field.
+func (_c *PermissionGroupCreate) SetDescription(v string) *PermissionGroupCreate {
+	_c.mutation.SetDescription(v)
 	return _c
 }
 
-// SetNillableRemark sets the "remark" field if the given value is not nil.
-func (_c *PermissionGroupCreate) SetNillableRemark(v *string) *PermissionGroupCreate {
+// SetNillableDescription sets the "description" field if the given value is not nil.
+func (_c *PermissionGroupCreate) SetNillableDescription(v *string) *PermissionGroupCreate {
 	if v != nil {
-		_c.SetRemark(*v)
+		_c.SetDescription(*v)
 	}
 	return _c
 }
@@ -347,9 +347,9 @@ func (_c *PermissionGroupCreate) createSpec() (*PermissionGroup, *sqlgraph.Creat
 		_spec.SetField(permissiongroup.FieldDeletedBy, field.TypeUint32, value)
 		_node.DeletedBy = &value
 	}
-	if value, ok := _c.mutation.Remark(); ok {
-		_spec.SetField(permissiongroup.FieldRemark, field.TypeString, value)
-		_node.Remark = &value
+	if value, ok := _c.mutation.Description(); ok {
+		_spec.SetField(permissiongroup.FieldDescription, field.TypeString, value)
+		_node.Description = &value
 	}
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(permissiongroup.FieldStatus, field.TypeEnum, value)
@@ -564,21 +564,21 @@ func (u *PermissionGroupUpsert) ClearDeletedBy() *PermissionGroupUpsert {
 	return u
 }
 
-// SetRemark sets the "remark" field.
-func (u *PermissionGroupUpsert) SetRemark(v string) *PermissionGroupUpsert {
-	u.Set(permissiongroup.FieldRemark, v)
+// SetDescription sets the "description" field.
+func (u *PermissionGroupUpsert) SetDescription(v string) *PermissionGroupUpsert {
+	u.Set(permissiongroup.FieldDescription, v)
 	return u
 }
 
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *PermissionGroupUpsert) UpdateRemark() *PermissionGroupUpsert {
-	u.SetExcluded(permissiongroup.FieldRemark)
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *PermissionGroupUpsert) UpdateDescription() *PermissionGroupUpsert {
+	u.SetExcluded(permissiongroup.FieldDescription)
 	return u
 }
 
-// ClearRemark clears the value of the "remark" field.
-func (u *PermissionGroupUpsert) ClearRemark() *PermissionGroupUpsert {
-	u.SetNull(permissiongroup.FieldRemark)
+// ClearDescription clears the value of the "description" field.
+func (u *PermissionGroupUpsert) ClearDescription() *PermissionGroupUpsert {
+	u.SetNull(permissiongroup.FieldDescription)
 	return u
 }
 
@@ -861,24 +861,24 @@ func (u *PermissionGroupUpsertOne) ClearDeletedBy() *PermissionGroupUpsertOne {
 	})
 }
 
-// SetRemark sets the "remark" field.
-func (u *PermissionGroupUpsertOne) SetRemark(v string) *PermissionGroupUpsertOne {
+// SetDescription sets the "description" field.
+func (u *PermissionGroupUpsertOne) SetDescription(v string) *PermissionGroupUpsertOne {
 	return u.Update(func(s *PermissionGroupUpsert) {
-		s.SetRemark(v)
+		s.SetDescription(v)
 	})
 }
 
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *PermissionGroupUpsertOne) UpdateRemark() *PermissionGroupUpsertOne {
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *PermissionGroupUpsertOne) UpdateDescription() *PermissionGroupUpsertOne {
 	return u.Update(func(s *PermissionGroupUpsert) {
-		s.UpdateRemark()
+		s.UpdateDescription()
 	})
 }
 
-// ClearRemark clears the value of the "remark" field.
-func (u *PermissionGroupUpsertOne) ClearRemark() *PermissionGroupUpsertOne {
+// ClearDescription clears the value of the "description" field.
+func (u *PermissionGroupUpsertOne) ClearDescription() *PermissionGroupUpsertOne {
 	return u.Update(func(s *PermissionGroupUpsert) {
-		s.ClearRemark()
+		s.ClearDescription()
 	})
 }
 
@@ -1344,24 +1344,24 @@ func (u *PermissionGroupUpsertBulk) ClearDeletedBy() *PermissionGroupUpsertBulk 
 	})
 }
 
-// SetRemark sets the "remark" field.
-func (u *PermissionGroupUpsertBulk) SetRemark(v string) *PermissionGroupUpsertBulk {
+// SetDescription sets the "description" field.
+func (u *PermissionGroupUpsertBulk) SetDescription(v string) *PermissionGroupUpsertBulk {
 	return u.Update(func(s *PermissionGroupUpsert) {
-		s.SetRemark(v)
+		s.SetDescription(v)
 	})
 }
 
-// UpdateRemark sets the "remark" field to the value that was provided on create.
-func (u *PermissionGroupUpsertBulk) UpdateRemark() *PermissionGroupUpsertBulk {
+// UpdateDescription sets the "description" field to the value that was provided on create.
+func (u *PermissionGroupUpsertBulk) UpdateDescription() *PermissionGroupUpsertBulk {
 	return u.Update(func(s *PermissionGroupUpsert) {
-		s.UpdateRemark()
+		s.UpdateDescription()
 	})
 }
 
-// ClearRemark clears the value of the "remark" field.
-func (u *PermissionGroupUpsertBulk) ClearRemark() *PermissionGroupUpsertBulk {
+// ClearDescription clears the value of the "description" field.
+func (u *PermissionGroupUpsertBulk) ClearDescription() *PermissionGroupUpsertBulk {
 	return u.Update(func(s *PermissionGroupUpsert) {
-		s.ClearRemark()
+		s.ClearDescription()
 	})
 }
 

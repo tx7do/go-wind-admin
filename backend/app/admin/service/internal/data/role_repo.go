@@ -371,8 +371,8 @@ func (r *RoleRepo) Create(ctx context.Context, req *userV1.CreateRoleRequest) (e
 
 	var ret *ent.Role
 	if ret, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert role failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("insert role failed")
 	}
 
 	if req.Data.Permissions != nil {

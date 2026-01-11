@@ -211,7 +211,7 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayload(ctx context.C
 		s.log.Infof("user [%d] membership [%d] permission codes: %v", userID, m.GetId(), permissionCodes)
 
 		// 检查是否包含系统访问后台权限
-		if containsPermission(permissionCodes, constants.AccessSystemPermissionCode) {
+		if containsPermission(permissionCodes, constants.SystemAccessBackendPermissionCode) {
 			hasBackendAccess = true
 			validMemberships = append(validMemberships, m)
 			validRoleIDs = append(validRoleIDs, roleIDs...)

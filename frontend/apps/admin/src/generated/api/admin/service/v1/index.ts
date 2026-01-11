@@ -3341,6 +3341,12 @@ export function createPermissionServiceClient(
       const path = `admin/v1/permissions/${request.id}`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
+      if (request.code) {
+        queryParams.push(`code=${encodeURIComponent(request.code.toString())}`)
+      }
+      if (request.groupId) {
+        queryParams.push(`groupId=${encodeURIComponent(request.groupId.toString())}`)
+      }
       let uri = path;
       if (queryParams.length > 0) {
         uri += `?${queryParams.join("&")}`
@@ -3401,7 +3407,7 @@ export type permissionservicev1_Permission = {
   id?: number;
   name?: string;
   code?: string;
-  remark?: string;
+  description?: string;
   status?: permissionservicev1_Permission_Status;
   groupId?: number;
   groupName?: string;
@@ -3441,7 +3447,9 @@ export type permissionservicev1_UpdatePermissionRequest = {
 
 // 删除 - 请求
 export type permissionservicev1_DeletePermissionRequest = {
-  id: number | undefined;
+  id?: number;
+  code?: string;
+  groupId?: number;
 };
 
 // 权限变更审计日志服务
@@ -3765,6 +3773,7 @@ export type permissionservicev1_PermissionGroup = {
   module?: string;
   sortOrder?: number;
   status?: permissionservicev1_PermissionGroup_Status;
+  description?: string;
   parentId?: number;
   children: permissionservicev1_PermissionGroup[] | undefined;
   createdBy?: number;

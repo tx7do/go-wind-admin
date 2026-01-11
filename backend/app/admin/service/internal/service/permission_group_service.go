@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"go-wind-admin/pkg/constants"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
@@ -16,6 +15,7 @@ import (
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
+	"go-wind-admin/pkg/constants"
 	"go-wind-admin/pkg/middleware/auth"
 )
 
@@ -25,15 +25,18 @@ type PermissionGroupService struct {
 	log *log.Helper
 
 	permissionGroupRepo *data.PermissionGroupRepo
+	permissionRepo      *data.PermissionRepo
 }
 
 func NewPermissionGroupService(
 	ctx *bootstrap.Context,
 	permissionGroupRepo *data.PermissionGroupRepo,
+	permissionRepo *data.PermissionRepo,
 ) *PermissionGroupService {
 	svc := &PermissionGroupService{
 		log:                 ctx.NewLoggerHelper("permission-group/service/admin-service"),
 		permissionGroupRepo: permissionGroupRepo,
+		permissionRepo:      permissionRepo,
 	}
 
 	svc.init()
@@ -69,7 +72,7 @@ func (s *PermissionGroupService) Create(ctx context.Context, req *permissionV1.C
 
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
 
-	if err = s.permissionGroupRepo.Create(ctx, req); err != nil {
+	if _, err = s.permissionGroupRepo.Create(ctx, req); err != nil {
 		return nil, err
 	}
 
@@ -97,7 +100,15 @@ func (s *PermissionGroupService) Update(ctx context.Context, req *permissionV1.U
 }
 
 func (s *PermissionGroupService) Delete(ctx context.Context, req *permissionV1.DeletePermissionGroupRequest) (*emptypb.Empty, error) {
-	if err := s.permissionGroupRepo.Delete(ctx, req); err != nil {
+	var err error
+
+	if err = s.permissionGroupRepo.Delete(ctx, req); err != nil {
+		return nil, err
+	}
+
+	if err = s.permissionRepo.Delete(ctx, &permissionV1.DeletePermissionRequest{
+		DeleteBy: &permissionV1.DeletePermissionRequest_GroupId{GroupId: req.GetId()},
+	}); err != nil {
 		return nil, err
 	}
 
@@ -107,7 +118,7 @@ func (s *PermissionGroupService) Delete(ctx context.Context, req *permissionV1.D
 func (s *PermissionGroupService) createDefaultPermissionGroups(ctx context.Context) error {
 	var err error
 	for _, d := range constants.DefaultPermissionGroups {
-		if err = s.permissionGroupRepo.Create(ctx, &permissionV1.CreatePermissionGroupRequest{
+		if _, err = s.permissionGroupRepo.Create(ctx, &permissionV1.CreatePermissionGroupRequest{
 			Data: d,
 		}); err != nil {
 			s.log.Errorf("create default permission group error: %v", err)

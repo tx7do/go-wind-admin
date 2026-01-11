@@ -50,7 +50,7 @@ func (PermissionGroup) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId{},
 		mixin.TimeAt{},
 		mixin.OperatorID{},
-		mixin.Remark{},
+		mixin.Description{},
 		mixin.SwitchStatus{},
 		mixin.SortOrder{},
 		mixin.Tree[PermissionGroup]{},

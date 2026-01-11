@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"sort"
+	"strings"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
@@ -19,6 +20,7 @@ import (
 	"go-wind-admin/pkg/constants"
 	"go-wind-admin/pkg/middleware/auth"
 	"go-wind-admin/pkg/utils/converter"
+	"go-wind-admin/pkg/utils/name_set"
 )
 
 type PermissionService struct {
@@ -26,11 +28,11 @@ type PermissionService struct {
 
 	log *log.Helper
 
-	permissionRepo *data.PermissionRepo
-	menuRepo       *data.MenuRepo
-	apiRepo        *data.ApiRepo
+	permissionRepo      *data.PermissionRepo
+	permissionGroupRepo *data.PermissionGroupRepo
 
-	membershipRepo *data.MembershipRepo
+	menuRepo *data.MenuRepo
+	apiRepo  *data.ApiRepo
 
 	authorizer *data.Authorizer
 
@@ -41,7 +43,7 @@ type PermissionService struct {
 func NewPermissionService(
 	ctx *bootstrap.Context,
 	permissionRepo *data.PermissionRepo,
-	membershipRepo *data.MembershipRepo,
+	permissionGroupRepo *data.PermissionGroupRepo,
 	menuRepo *data.MenuRepo,
 	apiRepo *data.ApiRepo,
 	authorizer *data.Authorizer,
@@ -49,7 +51,7 @@ func NewPermissionService(
 	svc := &PermissionService{
 		log:                     ctx.NewLoggerHelper("permission/service/admin-service"),
 		permissionRepo:          permissionRepo,
-		membershipRepo:          membershipRepo,
+		permissionGroupRepo:     permissionGroupRepo,
 		menuRepo:                menuRepo,
 		apiRepo:                 apiRepo,
 		authorizer:              authorizer,
@@ -75,12 +77,71 @@ func (s *PermissionService) init() {
 	}
 }
 
+func (s *PermissionService) initGroupNameSetMap(permissions []*permissionV1.Permission, groupSet *name_set.UserNameSetMap) {
+	for _, v := range permissions {
+		if v.GroupId != nil {
+			(*groupSet)[v.GetGroupId()] = nil
+		}
+	}
+}
+
+func (s *PermissionService) queryGroupInfoFromRepo(ctx context.Context, groupSet *name_set.UserNameSetMap) {
+	groupIds := make([]uint32, 0, len(*groupSet))
+	for groupId := range *groupSet {
+		groupIds = append(groupIds, groupId)
+	}
+
+	groups, err := s.permissionGroupRepo.ListByIDs(ctx, groupIds)
+	if err != nil {
+		s.log.Errorf("query permission groups err: %v", err)
+		return
+	}
+
+	for _, group := range groups {
+		(*groupSet)[group.GetId()] = &name_set.UserNameSet{
+			UserName: group.GetName(),
+		}
+	}
+}
+
 func (s *PermissionService) List(ctx context.Context, req *pagination.PagingRequest) (*permissionV1.ListPermissionResponse, error) {
-	return s.permissionRepo.List(ctx, req)
+	resp, err := s.permissionRepo.List(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	var groupSet = make(name_set.UserNameSetMap)
+	s.initGroupNameSetMap(resp.Items, &groupSet)
+	s.queryGroupInfoFromRepo(ctx, &groupSet)
+
+	for _, item := range resp.Items {
+		if item.GroupId != nil {
+			if groupInfo, exists := groupSet[item.GetGroupId()]; exists && groupInfo != nil {
+				item.GroupName = &groupInfo.UserName
+			}
+		}
+	}
+
+	return resp, nil
 }
 
 func (s *PermissionService) Get(ctx context.Context, req *permissionV1.GetPermissionRequest) (*permissionV1.Permission, error) {
-	return s.permissionRepo.Get(ctx, req)
+	resp, err := s.permissionRepo.Get(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.GroupId != nil {
+		group, err := s.permissionGroupRepo.Get(ctx, &permissionV1.GetPermissionGroupRequest{
+			QueryBy: &permissionV1.GetPermissionGroupRequest_Id{Id: resp.GetGroupId()},
+		})
+		if err != nil {
+			return nil, err
+		}
+		resp.GroupName = group.Name
+	}
+
+	return resp, nil
 }
 
 func (s *PermissionService) Create(ctx context.Context, req *permissionV1.CreatePermissionRequest) (*emptypb.Empty, error) {
@@ -218,10 +279,12 @@ func (s *PermissionService) SyncApis(ctx context.Context, _ *emptypb.Empty) (*em
 	var codes []string
 	for code, info := range apiInfoMap {
 		permission := &permissionV1.Permission{
-			Name:   trans.Ptr(info.Description),
-			Code:   trans.Ptr(code),
-			Status: trans.Ptr(permissionV1.Permission_ON),
-			ApiIds: info.ApiIDs,
+			Name:      trans.Ptr(info.Description),
+			Code:      trans.Ptr(code),
+			Status:    trans.Ptr(permissionV1.Permission_ON),
+			ApiIds:    info.ApiIDs,
+			CreatedBy: trans.Ptr(operator.UserId),
+			UpdatedBy: trans.Ptr(operator.UserId),
 		}
 		permissions = append(permissions, permission)
 		codes = append(codes, code)
@@ -229,7 +292,7 @@ func (s *PermissionService) SyncApis(ctx context.Context, _ *emptypb.Empty) (*em
 
 	//_ = s.permissionGroupRepo.CleanPermissionsByCodes(ctx, codes)
 
-	if err = s.permissionRepo.BatchCreate(ctx, operator.GetTenantId(), permissions); err != nil {
+	if err = s.permissionRepo.BatchCreate(ctx, permissions); err != nil {
 		s.log.Errorf("batch create api permissions failed: %s", err.Error())
 		return nil, err
 	}
@@ -242,6 +305,57 @@ func (s *PermissionService) SyncApis(ctx context.Context, _ *emptypb.Empty) (*em
 	return &emptypb.Empty{}, nil
 }
 
+// appendAPis 为权限追加对应的 API 资源 ID 列表
+func (s *PermissionService) appendAPis(ctx context.Context, permissions []*permissionV1.Permission) error {
+	// 查询所有启用的 API 资源
+	apis, err := s.apiRepo.List(ctx, &pagination.PagingRequest{
+		NoPaging: trans.Ptr(true),
+		Query:    trans.Ptr(`{"status":"ON"}`),
+		OrderBy:  []string{"operation"},
+	})
+	if err != nil {
+		return err
+	}
+
+	sort.SliceStable(apis.Items, func(i, j int) bool {
+		a, b := apis.Items[i], apis.Items[j]
+		if a.GetModule() != b.GetModule() {
+			return a.GetModule() < b.GetModule()
+		}
+		if a.GetPath() != b.GetPath() {
+			return a.GetPath() > b.GetPath()
+		}
+		return a.GetOperation() > b.GetOperation()
+	})
+
+	var unmatchedApis []*permissionV1.Api
+	for _, api := range apis.Items {
+		code := s.apiPermissionConverter.ConvertCodeByOperationID(api.GetOperation())
+		if code == "" {
+			continue
+		}
+
+		for _, perm := range permissions {
+			if perm.GetCode() == code {
+				perm.ApiIds = append(perm.ApiIds, api.GetId())
+				break
+			} else {
+				unmatchedApis = append(unmatchedApis, api)
+			}
+		}
+	}
+
+	for _, api := range unmatchedApis {
+		code := s.apiPermissionConverter.ConvertCodeByPath(api.GetMethod(), api.GetPath())
+		if code == "" {
+			continue
+		}
+		s.log.Debugf("appendAPis: try to match API %s - %s by path code %s", api.GetOperation(), api.GetPath(), code)
+	}
+
+	return nil
+}
+
 func (s *PermissionService) SyncMenus(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
@@ -250,7 +364,8 @@ func (s *PermissionService) SyncMenus(ctx context.Context, _ *emptypb.Empty) (*e
 	}
 
 	// 清理菜单相关权限
-	_ = s.permissionRepo.CleanMenuPermissions(ctx)
+	_ = s.permissionRepo.TruncateBizPermissions(ctx)
+	_ = s.permissionGroupRepo.TruncateBizGroup(ctx)
 
 	// 查询所有启用的菜单
 	menus, err := s.menuRepo.List(ctx, &pagination.PagingRequest{
@@ -268,12 +383,9 @@ func (s *PermissionService) SyncMenus(ctx context.Context, _ *emptypb.Empty) (*e
 		return menus.Items[i].GetParentId() < menus.Items[j].GetParentId()
 	})
 
-	type MenuInfo struct {
-		MenuIDs     []uint32
-		Description string
-	}
-
-	menuInfoMap := make(map[string]MenuInfo)
+	var permissionGroups []*permissionV1.PermissionGroup
+	var permissions []*permissionV1.Permission
+	var mapPermissions = make(map[string][]*permissionV1.Permission)
 	for _, menu := range menus.Items {
 		var title string
 		//if menu.GetMeta() != nil && menu.GetMeta().GetTitle() != "" {
@@ -283,39 +395,73 @@ func (s *PermissionService) SyncMenus(ctx context.Context, _ *emptypb.Empty) (*e
 		//}
 		title = menu.GetName()
 
-		code := s.menuPermissionConverter.ConvertCode(menu.GetPath(), title, menu.GetType())
-		if code == "" {
+		var permissionCode string
+		permissionCode = s.menuPermissionConverter.ConvertCode(menu.GetPath(), title, menu.GetType())
+		if permissionCode == "" {
 			continue
 		}
 
-		if _, exists := menuInfoMap[code]; !exists {
-			menuInfoMap[code] = MenuInfo{
-				Description: title,
-				MenuIDs:     []uint32{menu.GetId()},
-			}
-		} else {
-			info := menuInfoMap[code]
-			info.MenuIDs = append(info.MenuIDs, menu.GetId())
-			menuInfoMap[code] = info
+		var module string
+		pathParts := strings.Split(menu.GetPath(), "/")
+		if len(pathParts) > 1 {
+			module = strings.TrimSpace(pathParts[1])
+		}
+		if module == "" {
+			module = constants.DefaultBizPermissionModule
+		}
+
+		// 以目录类型的菜单作为权限组
+		if menu.GetType() == permissionV1.Menu_CATALOG {
+			permissionGroups = append(permissionGroups, &permissionV1.PermissionGroup{
+				Name:      trans.Ptr(title),
+				Module:    trans.Ptr(module),
+				Status:    trans.Ptr(permissionV1.PermissionGroup_ON),
+				SortOrder: trans.Ptr(uint32(len(permissionGroups) + 1)),
+				CreatedBy: trans.Ptr(operator.UserId),
+				UpdatedBy: trans.Ptr(operator.UserId),
+			})
+			//s.log.Debugf("SyncMenus: created permission group for menu %s - %s", menu.GetName(), permissionCode)
+		}
+
+		s.appendAPis(ctx, permissions)
+
+		perm := &permissionV1.Permission{
+			Name:      trans.Ptr(title),
+			Code:      trans.Ptr(permissionCode),
+			Status:    trans.Ptr(permissionV1.Permission_ON),
+			MenuIds:   []uint32{menu.GetId()},
+			CreatedBy: trans.Ptr(operator.UserId),
+			UpdatedBy: trans.Ptr(operator.UserId),
+		}
+
+		permissions = append(permissions, perm)
+
+		mapPermissions[module] = append(mapPermissions[module], perm)
+	}
+
+	var finalPermissionGroups []*permissionV1.PermissionGroup
+	if finalPermissionGroups, err = s.permissionGroupRepo.BatchCreate(ctx, permissionGroups); err != nil {
+		s.log.Errorf("batch create menu permission groups failed: %s", err.Error())
+		return nil, err
+	}
+	//for _, pg := range permissionGroups {
+	//	var npg *permissionV1.PermissionGroup
+	//	if npg, err = s.permissionGroupRepo.Create(ctx, &permissionV1.CreatePermissionGroupRequest{Data: pg}); err != nil {
+	//		s.log.Errorf("batch create menu permission groups failed: %s", err.Error())
+	//		return nil, err
+	//	}
+	//	finalPermissionGroups = append(finalPermissionGroups, npg)
+	//}
+
+	// 为权限分配权限组 ID
+	for _, pg := range finalPermissionGroups {
+		curPers := mapPermissions[pg.GetModule()]
+		for _, p := range curPers {
+			p.GroupId = pg.Id
 		}
 	}
 
-	//_ = s.permissionGroupRepo.CleanPermissionsByCodes(ctx, codes)
-
-	var permissions []*permissionV1.Permission
-	var codes []string
-	for code, info := range menuInfoMap {
-		permission := &permissionV1.Permission{
-			Name:    trans.Ptr(info.Description),
-			Code:    trans.Ptr(code),
-			Status:  trans.Ptr(permissionV1.Permission_ON),
-			MenuIds: info.MenuIDs,
-		}
-		permissions = append(permissions, permission)
-		codes = append(codes, code)
-	}
-
-	if err = s.permissionRepo.BatchCreate(ctx, operator.GetTenantId(), permissions); err != nil {
+	if err = s.permissionRepo.BatchCreate(ctx, permissions); err != nil {
 		s.log.Errorf("batch create menu permissions failed: %s", err.Error())
 		return nil, err
 	}

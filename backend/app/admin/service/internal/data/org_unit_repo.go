@@ -258,8 +258,8 @@ func (r *OrgUnitRepo) Create(ctx context.Context, req *userV1.CreateOrgUnitReque
 	}
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert org unit failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("insert org unit failed")
 	}
 
 	return nil

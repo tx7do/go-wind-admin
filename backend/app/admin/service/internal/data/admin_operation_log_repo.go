@@ -187,8 +187,8 @@ func (r *AdminOperationLogRepo) Create(ctx context.Context, req *adminV1.CreateA
 
 	err := builder.Exec(ctx)
 	if err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert admin operation log failed: %s", err.Error())
+		return adminV1.ErrorInternalServerError("insert admin operation log failed")
 	}
 
 	return err

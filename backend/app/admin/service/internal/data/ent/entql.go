@@ -561,16 +561,17 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "Permission",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			permission.FieldCreatedAt: {Type: field.TypeTime, Column: permission.FieldCreatedAt},
-			permission.FieldUpdatedAt: {Type: field.TypeTime, Column: permission.FieldUpdatedAt},
-			permission.FieldDeletedAt: {Type: field.TypeTime, Column: permission.FieldDeletedAt},
-			permission.FieldCreatedBy: {Type: field.TypeUint32, Column: permission.FieldCreatedBy},
-			permission.FieldUpdatedBy: {Type: field.TypeUint32, Column: permission.FieldUpdatedBy},
-			permission.FieldDeletedBy: {Type: field.TypeUint32, Column: permission.FieldDeletedBy},
-			permission.FieldStatus:    {Type: field.TypeEnum, Column: permission.FieldStatus},
-			permission.FieldName:      {Type: field.TypeString, Column: permission.FieldName},
-			permission.FieldCode:      {Type: field.TypeString, Column: permission.FieldCode},
-			permission.FieldGroupID:   {Type: field.TypeUint32, Column: permission.FieldGroupID},
+			permission.FieldCreatedAt:   {Type: field.TypeTime, Column: permission.FieldCreatedAt},
+			permission.FieldUpdatedAt:   {Type: field.TypeTime, Column: permission.FieldUpdatedAt},
+			permission.FieldDeletedAt:   {Type: field.TypeTime, Column: permission.FieldDeletedAt},
+			permission.FieldCreatedBy:   {Type: field.TypeUint32, Column: permission.FieldCreatedBy},
+			permission.FieldUpdatedBy:   {Type: field.TypeUint32, Column: permission.FieldUpdatedBy},
+			permission.FieldDeletedBy:   {Type: field.TypeUint32, Column: permission.FieldDeletedBy},
+			permission.FieldStatus:      {Type: field.TypeEnum, Column: permission.FieldStatus},
+			permission.FieldDescription: {Type: field.TypeString, Column: permission.FieldDescription},
+			permission.FieldName:        {Type: field.TypeString, Column: permission.FieldName},
+			permission.FieldCode:        {Type: field.TypeString, Column: permission.FieldCode},
+			permission.FieldGroupID:     {Type: field.TypeUint32, Column: permission.FieldGroupID},
 		},
 	}
 	graph.Nodes[18] = &sqlgraph.Node{
@@ -627,19 +628,19 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "PermissionGroup",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			permissiongroup.FieldCreatedAt: {Type: field.TypeTime, Column: permissiongroup.FieldCreatedAt},
-			permissiongroup.FieldUpdatedAt: {Type: field.TypeTime, Column: permissiongroup.FieldUpdatedAt},
-			permissiongroup.FieldDeletedAt: {Type: field.TypeTime, Column: permissiongroup.FieldDeletedAt},
-			permissiongroup.FieldCreatedBy: {Type: field.TypeUint32, Column: permissiongroup.FieldCreatedBy},
-			permissiongroup.FieldUpdatedBy: {Type: field.TypeUint32, Column: permissiongroup.FieldUpdatedBy},
-			permissiongroup.FieldDeletedBy: {Type: field.TypeUint32, Column: permissiongroup.FieldDeletedBy},
-			permissiongroup.FieldRemark:    {Type: field.TypeString, Column: permissiongroup.FieldRemark},
-			permissiongroup.FieldStatus:    {Type: field.TypeEnum, Column: permissiongroup.FieldStatus},
-			permissiongroup.FieldSortOrder: {Type: field.TypeUint32, Column: permissiongroup.FieldSortOrder},
-			permissiongroup.FieldParentID:  {Type: field.TypeUint32, Column: permissiongroup.FieldParentID},
-			permissiongroup.FieldName:      {Type: field.TypeString, Column: permissiongroup.FieldName},
-			permissiongroup.FieldPath:      {Type: field.TypeString, Column: permissiongroup.FieldPath},
-			permissiongroup.FieldModule:    {Type: field.TypeString, Column: permissiongroup.FieldModule},
+			permissiongroup.FieldCreatedAt:   {Type: field.TypeTime, Column: permissiongroup.FieldCreatedAt},
+			permissiongroup.FieldUpdatedAt:   {Type: field.TypeTime, Column: permissiongroup.FieldUpdatedAt},
+			permissiongroup.FieldDeletedAt:   {Type: field.TypeTime, Column: permissiongroup.FieldDeletedAt},
+			permissiongroup.FieldCreatedBy:   {Type: field.TypeUint32, Column: permissiongroup.FieldCreatedBy},
+			permissiongroup.FieldUpdatedBy:   {Type: field.TypeUint32, Column: permissiongroup.FieldUpdatedBy},
+			permissiongroup.FieldDeletedBy:   {Type: field.TypeUint32, Column: permissiongroup.FieldDeletedBy},
+			permissiongroup.FieldDescription: {Type: field.TypeString, Column: permissiongroup.FieldDescription},
+			permissiongroup.FieldStatus:      {Type: field.TypeEnum, Column: permissiongroup.FieldStatus},
+			permissiongroup.FieldSortOrder:   {Type: field.TypeUint32, Column: permissiongroup.FieldSortOrder},
+			permissiongroup.FieldParentID:    {Type: field.TypeUint32, Column: permissiongroup.FieldParentID},
+			permissiongroup.FieldName:        {Type: field.TypeString, Column: permissiongroup.FieldName},
+			permissiongroup.FieldPath:        {Type: field.TypeString, Column: permissiongroup.FieldPath},
+			permissiongroup.FieldModule:      {Type: field.TypeString, Column: permissiongroup.FieldModule},
 		},
 	}
 	graph.Nodes[21] = &sqlgraph.Node{
@@ -3385,6 +3386,11 @@ func (f *PermissionFilter) WhereStatus(p entql.StringP) {
 	f.Where(p.Field(permission.FieldStatus))
 }
 
+// WhereDescription applies the entql string predicate on the description field.
+func (f *PermissionFilter) WhereDescription(p entql.StringP) {
+	f.Where(p.Field(permission.FieldDescription))
+}
+
 // WhereName applies the entql string predicate on the name field.
 func (f *PermissionFilter) WhereName(p entql.StringP) {
 	f.Where(p.Field(permission.FieldName))
@@ -3635,9 +3641,9 @@ func (f *PermissionGroupFilter) WhereDeletedBy(p entql.Uint32P) {
 	f.Where(p.Field(permissiongroup.FieldDeletedBy))
 }
 
-// WhereRemark applies the entql string predicate on the remark field.
-func (f *PermissionGroupFilter) WhereRemark(p entql.StringP) {
-	f.Where(p.Field(permissiongroup.FieldRemark))
+// WhereDescription applies the entql string predicate on the description field.
+func (f *PermissionGroupFilter) WhereDescription(p entql.StringP) {
+	f.Where(p.Field(permissiongroup.FieldDescription))
 }
 
 // WhereStatus applies the entql string predicate on the status field.

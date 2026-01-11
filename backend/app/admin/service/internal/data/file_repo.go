@@ -166,8 +166,8 @@ func (r *FileRepo) Create(ctx context.Context, req *fileV1.CreateFileRequest) er
 	}
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return fileV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert file failed: %s", err.Error())
+		return fileV1.ErrorInternalServerError("insert file failed")
 	}
 
 	return nil

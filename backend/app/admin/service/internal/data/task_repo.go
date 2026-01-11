@@ -169,8 +169,8 @@ func (r *TaskRepo) Create(ctx context.Context, req *adminV1.CreateTaskRequest) (
 
 	t, err := builder.Save(ctx)
 	if err != nil {
-		r.log.Errorf("insert one data failed: %s", err.Error())
-		return nil, adminV1.ErrorInternalServerError("insert data failed")
+		r.log.Errorf("insert task failed: %s", err.Error())
+		return nil, adminV1.ErrorInternalServerError("insert task failed")
 	}
 
 	return r.mapper.ToDTO(t), nil

@@ -28699,6 +28699,7 @@ type PermissionMutation struct {
 	deleted_by    *uint32
 	adddeleted_by *int32
 	status        *permission.Status
+	description   *string
 	name          *string
 	code          *string
 	group_id      *uint32
@@ -29206,6 +29207,55 @@ func (m *PermissionMutation) ResetStatus() {
 	m.status = nil
 }
 
+// SetDescription sets the "description" field.
+func (m *PermissionMutation) SetDescription(s string) {
+	m.description = &s
+}
+
+// Description returns the value of the "description" field in the mutation.
+func (m *PermissionMutation) Description() (r string, exists bool) {
+	v := m.description
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDescription returns the old "description" field's value of the Permission entity.
+// If the Permission object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermissionMutation) OldDescription(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDescription requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
+	}
+	return oldValue.Description, nil
+}
+
+// ClearDescription clears the value of the "description" field.
+func (m *PermissionMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[permission.FieldDescription] = struct{}{}
+}
+
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *PermissionMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[permission.FieldDescription]
+	return ok
+}
+
+// ResetDescription resets all changes to the "description" field.
+func (m *PermissionMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, permission.FieldDescription)
+}
+
 // SetName sets the "name" field.
 func (m *PermissionMutation) SetName(s string) {
 	m.name = &s
@@ -29382,7 +29432,7 @@ func (m *PermissionMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PermissionMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 11)
 	if m.created_at != nil {
 		fields = append(fields, permission.FieldCreatedAt)
 	}
@@ -29403,6 +29453,9 @@ func (m *PermissionMutation) Fields() []string {
 	}
 	if m.status != nil {
 		fields = append(fields, permission.FieldStatus)
+	}
+	if m.description != nil {
+		fields = append(fields, permission.FieldDescription)
 	}
 	if m.name != nil {
 		fields = append(fields, permission.FieldName)
@@ -29435,6 +29488,8 @@ func (m *PermissionMutation) Field(name string) (ent.Value, bool) {
 		return m.DeletedBy()
 	case permission.FieldStatus:
 		return m.Status()
+	case permission.FieldDescription:
+		return m.Description()
 	case permission.FieldName:
 		return m.Name()
 	case permission.FieldCode:
@@ -29464,6 +29519,8 @@ func (m *PermissionMutation) OldField(ctx context.Context, name string) (ent.Val
 		return m.OldDeletedBy(ctx)
 	case permission.FieldStatus:
 		return m.OldStatus(ctx)
+	case permission.FieldDescription:
+		return m.OldDescription(ctx)
 	case permission.FieldName:
 		return m.OldName(ctx)
 	case permission.FieldCode:
@@ -29527,6 +29584,13 @@ func (m *PermissionMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
+		return nil
+	case permission.FieldDescription:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDescription(v)
 		return nil
 	case permission.FieldName:
 		v, ok := value.(string)
@@ -29648,6 +29712,9 @@ func (m *PermissionMutation) ClearedFields() []string {
 	if m.FieldCleared(permission.FieldDeletedBy) {
 		fields = append(fields, permission.FieldDeletedBy)
 	}
+	if m.FieldCleared(permission.FieldDescription) {
+		fields = append(fields, permission.FieldDescription)
+	}
 	if m.FieldCleared(permission.FieldGroupID) {
 		fields = append(fields, permission.FieldGroupID)
 	}
@@ -29683,6 +29750,9 @@ func (m *PermissionMutation) ClearField(name string) error {
 	case permission.FieldDeletedBy:
 		m.ClearDeletedBy()
 		return nil
+	case permission.FieldDescription:
+		m.ClearDescription()
+		return nil
 	case permission.FieldGroupID:
 		m.ClearGroupID()
 		return nil
@@ -29714,6 +29784,9 @@ func (m *PermissionMutation) ResetField(name string) error {
 		return nil
 	case permission.FieldStatus:
 		m.ResetStatus()
+		return nil
+	case permission.FieldDescription:
+		m.ResetDescription()
 		return nil
 	case permission.FieldName:
 		m.ResetName()
@@ -31813,7 +31886,7 @@ type PermissionGroupMutation struct {
 	addupdated_by   *int32
 	deleted_by      *uint32
 	adddeleted_by   *int32
-	remark          *string
+	description     *string
 	status          *permissiongroup.Status
 	sort_order      *uint32
 	addsort_order   *int32
@@ -32292,53 +32365,53 @@ func (m *PermissionGroupMutation) ResetDeletedBy() {
 	delete(m.clearedFields, permissiongroup.FieldDeletedBy)
 }
 
-// SetRemark sets the "remark" field.
-func (m *PermissionGroupMutation) SetRemark(s string) {
-	m.remark = &s
+// SetDescription sets the "description" field.
+func (m *PermissionGroupMutation) SetDescription(s string) {
+	m.description = &s
 }
 
-// Remark returns the value of the "remark" field in the mutation.
-func (m *PermissionGroupMutation) Remark() (r string, exists bool) {
-	v := m.remark
+// Description returns the value of the "description" field in the mutation.
+func (m *PermissionGroupMutation) Description() (r string, exists bool) {
+	v := m.description
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldRemark returns the old "remark" field's value of the PermissionGroup entity.
+// OldDescription returns the old "description" field's value of the PermissionGroup entity.
 // If the PermissionGroup object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionGroupMutation) OldRemark(ctx context.Context) (v *string, err error) {
+func (m *PermissionGroupMutation) OldDescription(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRemark is only allowed on UpdateOne operations")
+		return v, errors.New("OldDescription is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRemark requires an ID field in the mutation")
+		return v, errors.New("OldDescription requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRemark: %w", err)
+		return v, fmt.Errorf("querying old value for OldDescription: %w", err)
 	}
-	return oldValue.Remark, nil
+	return oldValue.Description, nil
 }
 
-// ClearRemark clears the value of the "remark" field.
-func (m *PermissionGroupMutation) ClearRemark() {
-	m.remark = nil
-	m.clearedFields[permissiongroup.FieldRemark] = struct{}{}
+// ClearDescription clears the value of the "description" field.
+func (m *PermissionGroupMutation) ClearDescription() {
+	m.description = nil
+	m.clearedFields[permissiongroup.FieldDescription] = struct{}{}
 }
 
-// RemarkCleared returns if the "remark" field was cleared in this mutation.
-func (m *PermissionGroupMutation) RemarkCleared() bool {
-	_, ok := m.clearedFields[permissiongroup.FieldRemark]
+// DescriptionCleared returns if the "description" field was cleared in this mutation.
+func (m *PermissionGroupMutation) DescriptionCleared() bool {
+	_, ok := m.clearedFields[permissiongroup.FieldDescription]
 	return ok
 }
 
-// ResetRemark resets all changes to the "remark" field.
-func (m *PermissionGroupMutation) ResetRemark() {
-	m.remark = nil
-	delete(m.clearedFields, permissiongroup.FieldRemark)
+// ResetDescription resets all changes to the "description" field.
+func (m *PermissionGroupMutation) ResetDescription() {
+	m.description = nil
+	delete(m.clearedFields, permissiongroup.FieldDescription)
 }
 
 // SetStatus sets the "status" field.
@@ -32764,8 +32837,8 @@ func (m *PermissionGroupMutation) Fields() []string {
 	if m.deleted_by != nil {
 		fields = append(fields, permissiongroup.FieldDeletedBy)
 	}
-	if m.remark != nil {
-		fields = append(fields, permissiongroup.FieldRemark)
+	if m.description != nil {
+		fields = append(fields, permissiongroup.FieldDescription)
 	}
 	if m.status != nil {
 		fields = append(fields, permissiongroup.FieldStatus)
@@ -32805,8 +32878,8 @@ func (m *PermissionGroupMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedBy()
 	case permissiongroup.FieldDeletedBy:
 		return m.DeletedBy()
-	case permissiongroup.FieldRemark:
-		return m.Remark()
+	case permissiongroup.FieldDescription:
+		return m.Description()
 	case permissiongroup.FieldStatus:
 		return m.Status()
 	case permissiongroup.FieldSortOrder:
@@ -32840,8 +32913,8 @@ func (m *PermissionGroupMutation) OldField(ctx context.Context, name string) (en
 		return m.OldUpdatedBy(ctx)
 	case permissiongroup.FieldDeletedBy:
 		return m.OldDeletedBy(ctx)
-	case permissiongroup.FieldRemark:
-		return m.OldRemark(ctx)
+	case permissiongroup.FieldDescription:
+		return m.OldDescription(ctx)
 	case permissiongroup.FieldStatus:
 		return m.OldStatus(ctx)
 	case permissiongroup.FieldSortOrder:
@@ -32905,12 +32978,12 @@ func (m *PermissionGroupMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedBy(v)
 		return nil
-	case permissiongroup.FieldRemark:
+	case permissiongroup.FieldDescription:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetRemark(v)
+		m.SetDescription(v)
 		return nil
 	case permissiongroup.FieldStatus:
 		v, ok := value.(permissiongroup.Status)
@@ -33053,8 +33126,8 @@ func (m *PermissionGroupMutation) ClearedFields() []string {
 	if m.FieldCleared(permissiongroup.FieldDeletedBy) {
 		fields = append(fields, permissiongroup.FieldDeletedBy)
 	}
-	if m.FieldCleared(permissiongroup.FieldRemark) {
-		fields = append(fields, permissiongroup.FieldRemark)
+	if m.FieldCleared(permissiongroup.FieldDescription) {
+		fields = append(fields, permissiongroup.FieldDescription)
 	}
 	if m.FieldCleared(permissiongroup.FieldSortOrder) {
 		fields = append(fields, permissiongroup.FieldSortOrder)
@@ -33100,8 +33173,8 @@ func (m *PermissionGroupMutation) ClearField(name string) error {
 	case permissiongroup.FieldDeletedBy:
 		m.ClearDeletedBy()
 		return nil
-	case permissiongroup.FieldRemark:
-		m.ClearRemark()
+	case permissiongroup.FieldDescription:
+		m.ClearDescription()
 		return nil
 	case permissiongroup.FieldSortOrder:
 		m.ClearSortOrder()
@@ -33141,8 +33214,8 @@ func (m *PermissionGroupMutation) ResetField(name string) error {
 	case permissiongroup.FieldDeletedBy:
 		m.ResetDeletedBy()
 		return nil
-	case permissiongroup.FieldRemark:
-		m.ResetRemark()
+	case permissiongroup.FieldDescription:
+		m.ResetDescription()
 		return nil
 	case permissiongroup.FieldStatus:
 		m.ResetStatus()
