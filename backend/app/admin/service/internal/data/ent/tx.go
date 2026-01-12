@@ -14,6 +14,8 @@ type Tx struct {
 	config
 	// Api is the client for interacting with the Api builders.
 	Api *APIClient
+	// ApiAuditLog is the client for interacting with the ApiAuditLog builders.
+	ApiAuditLog *ApiAuditLogClient
 	// DictEntry is the client for interacting with the DictEntry builders.
 	DictEntry *DictEntryClient
 	// DictType is the client for interacting with the DictType builders.
@@ -42,8 +44,6 @@ type Tx struct {
 	MembershipRole *MembershipRoleClient
 	// Menu is the client for interacting with the Menu builders.
 	Menu *MenuClient
-	// OperationAuditLog is the client for interacting with the OperationAuditLog builders.
-	OperationAuditLog *OperationAuditLogClient
 	// OrgUnit is the client for interacting with the OrgUnit builders.
 	OrgUnit *OrgUnitClient
 	// Permission is the client for interacting with the Permission builders.
@@ -214,6 +214,7 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Api = NewAPIClient(tx.config)
+	tx.ApiAuditLog = NewApiAuditLogClient(tx.config)
 	tx.DictEntry = NewDictEntryClient(tx.config)
 	tx.DictType = NewDictTypeClient(tx.config)
 	tx.File = NewFileClient(tx.config)
@@ -228,7 +229,6 @@ func (tx *Tx) init() {
 	tx.MembershipPosition = NewMembershipPositionClient(tx.config)
 	tx.MembershipRole = NewMembershipRoleClient(tx.config)
 	tx.Menu = NewMenuClient(tx.config)
-	tx.OperationAuditLog = NewOperationAuditLogClient(tx.config)
 	tx.OrgUnit = NewOrgUnitClient(tx.config)
 	tx.Permission = NewPermissionClient(tx.config)
 	tx.PermissionApi = NewPermissionApiClient(tx.config)

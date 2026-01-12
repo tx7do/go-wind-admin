@@ -12,10 +12,10 @@ import { router } from '#/router';
 import { useUserStore } from '#/stores';
 import { TabEnum } from '#/views/app/opm/user/detail/types';
 
+import ApiLogPage from './api-log-page.vue';
 import BasicInfoPage from './basic-info-page.vue';
 import EditPasswordModal from './components/edit-password-modal.vue';
 import InternalMessagePage from './internal-message-page.vue';
-import OperationLogPage from './operation-log-page.vue';
 
 const activeTab = ref<TabEnum>(TabEnum.BASIC_INFO);
 
@@ -123,8 +123,8 @@ function handleEditPassword() {
           :tab="$t('page.user.detail.tab.basicInfo')"
         />
         <a-tab-pane
-          :key="TabEnum.OPERATION_LOG"
-          :tab="$t('page.user.detail.tab.operationLog')"
+          :key="TabEnum.API_AUDIT_LOG"
+          :tab="$t('page.user.detail.tab.apiAuditLog')"
         />
         <a-tab-pane
           :key="TabEnum.INTERNAL_MESSAGE"
@@ -136,8 +136,8 @@ function handleEditPassword() {
     <a-card v-show="activeTab === TabEnum.BASIC_INFO">
       <BasicInfoPage :user-id="userId" />
     </a-card>
-    <a-card v-show="activeTab === TabEnum.OPERATION_LOG">
-      <OperationLogPage :user-id="userId" />
+    <a-card v-show="activeTab === TabEnum.API_AUDIT_LOG">
+      <ApiLogPage :user-id="userId" />
     </a-card>
     <a-card v-show="activeTab === TabEnum.INTERNAL_MESSAGE">
       <InternalMessagePage :user-id="userId" />

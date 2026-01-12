@@ -39,7 +39,7 @@ type PermissionAuditLogRepo struct {
 
 func NewPermissionAuditLogRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *PermissionAuditLogRepo {
 	repo := &PermissionAuditLogRepo{
-		log:       ctx.NewLoggerHelper("operation-audit-log/repo/admin-service"),
+		log:       ctx.NewLoggerHelper("permission-audit-log/repo/admin-service"),
 		entClient: entClient,
 		mapper:    mapper.NewCopierMapper[permissionV1.PermissionAuditLog, ent.PermissionAuditLog](),
 	}

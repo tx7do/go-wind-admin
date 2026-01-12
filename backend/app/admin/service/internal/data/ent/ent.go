@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/api"
+	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"go-wind-admin/app/admin/service/internal/data/ent/file"
@@ -21,7 +22,6 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/membershipposition"
 	"go-wind-admin/app/admin/service/internal/data/ent/membershiprole"
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
-	"go-wind-admin/app/admin/service/internal/data/ent/operationauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/orgunit"
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionapi"
@@ -108,6 +108,7 @@ func checkColumn(t, c string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			api.Table:                      api.ValidColumn,
+			apiauditlog.Table:              apiauditlog.ValidColumn,
 			dictentry.Table:                dictentry.ValidColumn,
 			dicttype.Table:                 dicttype.ValidColumn,
 			file.Table:                     file.ValidColumn,
@@ -122,7 +123,6 @@ func checkColumn(t, c string) error {
 			membershipposition.Table:       membershipposition.ValidColumn,
 			membershiprole.Table:           membershiprole.ValidColumn,
 			menu.Table:                     menu.ValidColumn,
-			operationauditlog.Table:        operationauditlog.ValidColumn,
 			orgunit.Table:                  orgunit.ValidColumn,
 			permission.Table:               permission.ValidColumn,
 			permissionapi.Table:            permissionapi.ValidColumn,

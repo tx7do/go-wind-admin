@@ -4,7 +4,7 @@ import { $t } from '@vben/locales';
 
 export * from './login-audit-log';
 export * from './login-policy.state';
-export * from './operation-audit-log';
+export * from './api-audit-log';
 export * from './api.state';
 export * from './authentication.state';
 export * from './dict.state';

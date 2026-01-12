@@ -14,6 +14,111 @@ info:
         url: https://github.com/tx7do/go-wind-admin/blob/master/LICENSE
     version: "1.0"
 paths:
+    /admin/v1/api-audit-logs:
+        get:
+            tags:
+                - ApiAuditLogService
+            description: 查询API审计日志列表
+            operationId: ApiAuditLogService_List
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: orderBy
+                  in: query
+                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
+                  schema:
+                    type: array
+                    items:
+                        type: string
+                - name: query
+                  in: query
+                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  schema:
+                    type: string
+                - name: or
+                  in: query
+                  description: OR过滤参数，语法同AND过滤参数。
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListApiAuditLogResponse'
+    /admin/v1/api-audit-logs/{id}:
+        get:
+            tags:
+                - ApiAuditLogService
+            description: 查询API审计日志详情
+            operationId: ApiAuditLogService_Get
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: viewMask
+                  in: query
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ApiAuditLog'
     /admin/v1/apis:
         get:
             tags:
@@ -1753,111 +1858,6 @@ paths:
                 "200":
                     description: OK
                     content: {}
-    /admin/v1/operation-audit-logs:
-        get:
-            tags:
-                - OperationAuditLogService
-            description: 查询操作审计日志列表
-            operationId: OperationAuditLogService_List
-            parameters:
-                - name: page
-                  in: query
-                  description: 当前页码（从1开始，默认1）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: pageSize
-                  in: query
-                  description: 每页条数（默认10，建议设置上限如100）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: offset
-                  in: query
-                  description: 跳过的记录数（从0开始，默认0）
-                  schema:
-                    type: string
-                - name: limit
-                  in: query
-                  description: 最多返回的记录数（默认10，建议设置上限如100）
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: token
-                  in: query
-                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
-                  schema:
-                    type: string
-                - name: noPaging
-                  in: query
-                  description: 是否不分页，如果为true，则page和pageSize参数无效。
-                  schema:
-                    type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
-                - name: query
-                  in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
-                  schema:
-                    type: string
-                - name: or
-                  in: query
-                  description: OR过滤参数，语法同AND过滤参数。
-                  schema:
-                    type: string
-                - name: filterExpr.type
-                  in: query
-                  description: 过滤表达式类型
-                  schema:
-                    enum:
-                        - EXPR_TYPE_UNSPECIFIED
-                        - AND
-                        - OR
-                    type: string
-                    format: enum
-                - name: fieldMask
-                  in: query
-                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/ListOperationAuditLogResponse'
-    /admin/v1/operation-audit-logs/{id}:
-        get:
-            tags:
-                - OperationAuditLogService
-            description: 查询操作审计日志详情
-            operationId: OperationAuditLogService_Get
-            parameters:
-                - name: id
-                  in: path
-                  required: true
-                  schema:
-                    type: integer
-                    format: uint32
-                - name: viewMask
-                  in: query
-                  schema:
-                    type: string
-                    format: field-mask
-            responses:
-                "200":
-                    description: OK
-                    content:
-                        application/json:
-                            schema:
-                                $ref: '#/components/schemas/OperationAuditLog'
     /admin/v1/org-units:
         get:
             tags:
@@ -3803,6 +3803,103 @@ components:
                     description: 删除时间
                     format: date-time
             description: API资源
+        ApiAuditLog:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: API审计日志ID
+                    format: uint32
+                costTime:
+                    pattern: ^-?(?:0|[1-9][0-9]{0,11})(?:\.[0-9]{1,9})?s$
+                    type: string
+                    description: 操作耗时
+                success:
+                    type: boolean
+                    description: 操作是否成功
+                requestId:
+                    type: string
+                    description: 请求ID
+                statusCode:
+                    type: integer
+                    description: 状态码
+                    format: int32
+                reason:
+                    type: string
+                    description: 操作失败原因
+                location:
+                    type: string
+                    description: 操作地理位置
+                operation:
+                    type: string
+                    description: 操作方法
+                method:
+                    type: string
+                    description: 请求方法
+                path:
+                    type: string
+                    description: 请求路径
+                apiModule:
+                    type: string
+                    description: API所属模块
+                apiDescription:
+                    type: string
+                    description: API操作描述
+                referer:
+                    type: string
+                    description: 请求源
+                requestUri:
+                    type: string
+                    description: 请求URI
+                requestHeader:
+                    type: string
+                    description: 请求头
+                requestBody:
+                    type: string
+                    description: 请求体
+                response:
+                    type: string
+                    description: 响应信息
+                userId:
+                    type: integer
+                    description: 操作者用户ID
+                    format: uint32
+                username:
+                    type: string
+                    description: 操作者账号名
+                clientIp:
+                    type: string
+                    description: 操作者IP
+                userAgent:
+                    type: string
+                    description: 浏览器的用户代理信息
+                browserName:
+                    type: string
+                    description: 浏览器名称
+                browserVersion:
+                    type: string
+                    description: 浏览器版本
+                clientId:
+                    type: string
+                    description: 客户端ID
+                clientName:
+                    type: string
+                    description: 客户端名称
+                osName:
+                    type: string
+                    description: 操作系统名称
+                osVersion:
+                    type: string
+                    description: 操作系统版本
+                tenantId:
+                    type: integer
+                    description: 租户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+            description: API审计日志
         BindContactRequest:
             type: object
             properties:
@@ -4378,6 +4475,16 @@ components:
                     type: object
                     description: 元数据
             description: Kratos错误返回
+        ListApiAuditLogResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/ApiAuditLog'
+                total:
+                    type: string
+            description: 查询API审计日志列表 - 回应
         ListApiResponse:
             type: object
             properties:
@@ -4468,16 +4575,6 @@ components:
                 total:
                     type: string
             description: 查询菜单列表 - 回应
-        ListOperationAuditLogResponse:
-            type: object
-            properties:
-                items:
-                    type: array
-                    items:
-                        $ref: '#/components/schemas/OperationAuditLog'
-                total:
-                    type: string
-            description: 查询操作审计日志列表 - 回应
         ListOrgUnitResponse:
             type: object
             properties:
@@ -4903,103 +5000,6 @@ components:
                     description: 删除时间
                     format: date-time
             description: 菜单
-        OperationAuditLog:
-            type: object
-            properties:
-                id:
-                    type: integer
-                    description: 操作审计日志ID
-                    format: uint32
-                costTime:
-                    pattern: ^-?(?:0|[1-9][0-9]{0,11})(?:\.[0-9]{1,9})?s$
-                    type: string
-                    description: 操作耗时
-                success:
-                    type: boolean
-                    description: 操作是否成功
-                requestId:
-                    type: string
-                    description: 请求ID
-                statusCode:
-                    type: integer
-                    description: 状态码
-                    format: int32
-                reason:
-                    type: string
-                    description: 操作失败原因
-                location:
-                    type: string
-                    description: 操作地理位置
-                operation:
-                    type: string
-                    description: 操作方法
-                method:
-                    type: string
-                    description: 请求方法
-                path:
-                    type: string
-                    description: 请求路径
-                apiModule:
-                    type: string
-                    description: API所属模块
-                apiDescription:
-                    type: string
-                    description: API操作描述
-                referer:
-                    type: string
-                    description: 请求源
-                requestUri:
-                    type: string
-                    description: 请求URI
-                requestHeader:
-                    type: string
-                    description: 请求头
-                requestBody:
-                    type: string
-                    description: 请求体
-                response:
-                    type: string
-                    description: 响应信息
-                userId:
-                    type: integer
-                    description: 操作者用户ID
-                    format: uint32
-                username:
-                    type: string
-                    description: 操作者账号名
-                clientIp:
-                    type: string
-                    description: 操作者IP
-                userAgent:
-                    type: string
-                    description: 浏览器的用户代理信息
-                browserName:
-                    type: string
-                    description: 浏览器名称
-                browserVersion:
-                    type: string
-                    description: 浏览器版本
-                clientId:
-                    type: string
-                    description: 客户端ID
-                clientName:
-                    type: string
-                    description: 客户端名称
-                osName:
-                    type: string
-                    description: 操作系统名称
-                osVersion:
-                    type: string
-                    description: 操作系统版本
-                tenantId:
-                    type: integer
-                    description: 租户ID
-                    format: uint32
-                createdAt:
-                    type: string
-                    description: 创建时间
-                    format: date-time
-            description: 操作审计日志
         OrgUnit:
             type: object
             properties:
@@ -6685,6 +6685,8 @@ components:
 security:
     - OAuth2PasswordBearer: []
 tags:
+    - name: ApiAuditLogService
+      description: API审计日志管理服务
     - name: ApiService
       description: API资源管理服务
     - name: AuthenticationService
@@ -6705,8 +6707,6 @@ tags:
       description: 登录策略管理服务
     - name: MenuService
       description: 后台菜单管理服务
-    - name: OperationAuditLogService
-      description: 操作审计日志管理服务
     - name: OrgUnitService
       description: 组织单元服务
     - name: OssService

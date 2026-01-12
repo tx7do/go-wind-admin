@@ -6,16 +6,20 @@ import { Page, type VbenFormProps } from '@vben/common-ui';
 import dayjs from 'dayjs';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type OperationAuditLog } from '#/generated/api/admin/service/v1';
+import { type ApiAuditLog } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
 import {
   methodList,
   successToColor,
   successToName,
-  useOperationAuditLogStore,
+  useApiAuditLogStore,
 } from '#/stores';
 
-const operationAuditLogStore = useOperationAuditLogStore();
+const props = defineProps({
+  userId: { type: Number, default: undefined },
+});
+
+const apiAuditLogStore = useApiAuditLogStore();
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -26,27 +30,18 @@ const formOptions: VbenFormProps = {
   submitOnEnter: true,
   schema: [
     {
-      component: 'Input',
-      fieldName: 'username',
-      label: $t('page.operationAuditLog.username'),
+      component: 'RangePicker',
+      fieldName: 'createdAt',
+      label: $t('page.apiAuditLog.createdAt'),
       componentProps: {
-        placeholder: $t('ui.placeholder.input'),
-        allowClear: true,
-      },
-    },
-    {
-      component: 'Input',
-      fieldName: 'path',
-      label: $t('page.operationAuditLog.path'),
-      componentProps: {
-        placeholder: $t('ui.placeholder.input'),
+        showTime: true,
         allowClear: true,
       },
     },
     {
       component: 'Select',
       fieldName: 'method',
-      label: $t('page.operationAuditLog.method'),
+      label: $t('page.apiAuditLog.method'),
       componentProps: {
         options: methodList,
         placeholder: $t('ui.placeholder.select'),
@@ -58,40 +53,24 @@ const formOptions: VbenFormProps = {
     },
     {
       component: 'Input',
-      fieldName: 'clientIp',
-      label: $t('page.operationAuditLog.clientIp'),
+      fieldName: 'path',
+      label: $t('page.apiAuditLog.path'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
-        allowClear: true,
-      },
-    },
-    {
-      component: 'RangePicker',
-      fieldName: 'createdAt',
-      label: $t('page.operationAuditLog.createdAt'),
-      componentProps: {
-        showTime: true,
         allowClear: true,
       },
     },
   ],
 };
 
-const gridOptions: VxeGridProps<OperationAuditLog> = {
-  toolbarConfig: {
-    custom: true,
-    export: true,
-    // import: true,
-    refresh: true,
-    zoom: true,
-  },
+const gridOptions: VxeGridProps<ApiAuditLog> = {
+  stripe: true,
   height: 'auto',
   exportConfig: {},
   pagerConfig: {},
   rowConfig: {
     isHover: true,
   },
-  stripe: true,
 
   proxyConfig: {
     ajax: {
@@ -113,16 +92,16 @@ const gridOptions: VxeGridProps<OperationAuditLog> = {
           console.log(startTime, endTime);
         }
 
-        return await operationAuditLogStore.listOperationAuditLog(
+        return await apiAuditLogStore.listApiAuditLog(
           {
             page: page.currentPage,
             pageSize: page.pageSize,
           },
           {
+            user_id: props.userId?.toString(),
             username: formValues.username,
             method: formValues.method,
             path: formValues.path,
-            clientIp: formValues.clientIp,
             created_at__gte: startTime,
             created_at__lte: endTime,
           },
@@ -133,33 +112,33 @@ const gridOptions: VxeGridProps<OperationAuditLog> = {
 
   columns: [
     { title: $t('ui.table.seq'), type: 'seq', width: 50 },
-    { title: $t('page.operationAuditLog.username'), field: 'username' },
+    { title: $t('page.apiAuditLog.username'), field: 'username' },
     {
-      title: $t('page.operationAuditLog.success'),
+      title: $t('page.apiAuditLog.success'),
       field: 'success',
       slots: { default: 'success' },
       width: 80,
     },
     {
-      title: $t('page.operationAuditLog.createdAt'),
+      title: $t('page.apiAuditLog.createdAt'),
       field: 'createdAt',
       formatter: 'formatDateTime',
       width: 140,
     },
     {
-      title: $t('page.operationAuditLog.method'),
+      title: $t('page.apiAuditLog.method'),
       field: 'method',
       width: 80,
     },
-    { title: $t('page.operationAuditLog.path'), field: 'path' },
-    { title: $t('page.operationAuditLog.location'), field: 'location' },
+    { title: $t('page.apiAuditLog.path'), field: 'path' },
+    { title: $t('page.apiAuditLog.location'), field: 'location' },
     {
-      title: $t('page.operationAuditLog.clientName'),
+      title: $t('page.apiAuditLog.clientName'),
       field: 'clientName',
       slots: { default: 'platform' },
     },
     {
-      title: $t('page.operationAuditLog.clientIp'),
+      title: $t('page.apiAuditLog.clientIp'),
       field: 'clientIp',
       width: 140,
     },
@@ -171,7 +150,7 @@ const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
 
 <template>
   <Page auto-content-height>
-    <Grid :table-title="$t('menu.log.operationAuditLog')">
+    <Grid>
       <template #success="{ row }">
         <a-tag :color="successToColor(row.success)">
           {{ successToName(row.success, row.statusCode) }}

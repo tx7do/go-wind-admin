@@ -19,33 +19,33 @@ import (
 	"github.com/tx7do/go-utils/trans"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
-	"go-wind-admin/app/admin/service/internal/data/ent/operationauditlog"
+	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 )
 
-type OperationAuditLogRepo struct {
+type ApiAuditLogRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper *mapper.CopierMapper[adminV1.OperationAuditLog, ent.OperationAuditLog]
+	mapper *mapper.CopierMapper[adminV1.ApiAuditLog, ent.ApiAuditLog]
 
 	repository *entCrud.Repository[
-		ent.OperationAuditLogQuery, ent.OperationAuditLogSelect,
-		ent.OperationAuditLogCreate, ent.OperationAuditLogCreateBulk,
-		ent.OperationAuditLogUpdate, ent.OperationAuditLogUpdateOne,
-		ent.OperationAuditLogDelete,
-		predicate.OperationAuditLog,
-		adminV1.OperationAuditLog, ent.OperationAuditLog,
+		ent.ApiAuditLogQuery, ent.ApiAuditLogSelect,
+		ent.ApiAuditLogCreate, ent.ApiAuditLogCreateBulk,
+		ent.ApiAuditLogUpdate, ent.ApiAuditLogUpdateOne,
+		ent.ApiAuditLogDelete,
+		predicate.ApiAuditLog,
+		adminV1.ApiAuditLog, ent.ApiAuditLog,
 	]
 }
 
-func NewOperationAuditLogRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *OperationAuditLogRepo {
-	repo := &OperationAuditLogRepo{
-		log:       ctx.NewLoggerHelper("operation-audit-log/repo/admin-service"),
+func NewApiAuditLogRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *ApiAuditLogRepo {
+	repo := &ApiAuditLogRepo{
+		log:       ctx.NewLoggerHelper("api-audit-log/repo/admin-service"),
 		entClient: entClient,
-		mapper:    mapper.NewCopierMapper[adminV1.OperationAuditLog, ent.OperationAuditLog](),
+		mapper:    mapper.NewCopierMapper[adminV1.ApiAuditLog, ent.ApiAuditLog](),
 	}
 
 	repo.init()
@@ -53,14 +53,14 @@ func NewOperationAuditLogRepo(ctx *bootstrap.Context, entClient *entCrud.EntClie
 	return repo
 }
 
-func (r *OperationAuditLogRepo) init() {
+func (r *ApiAuditLogRepo) init() {
 	r.repository = entCrud.NewRepository[
-		ent.OperationAuditLogQuery, ent.OperationAuditLogSelect,
-		ent.OperationAuditLogCreate, ent.OperationAuditLogCreateBulk,
-		ent.OperationAuditLogUpdate, ent.OperationAuditLogUpdateOne,
-		ent.OperationAuditLogDelete,
-		predicate.OperationAuditLog,
-		adminV1.OperationAuditLog, ent.OperationAuditLog,
+		ent.ApiAuditLogQuery, ent.ApiAuditLogSelect,
+		ent.ApiAuditLogCreate, ent.ApiAuditLogCreateBulk,
+		ent.ApiAuditLogUpdate, ent.ApiAuditLogUpdateOne,
+		ent.ApiAuditLogDelete,
+		predicate.ApiAuditLog,
+		adminV1.ApiAuditLog, ent.ApiAuditLog,
 	](r.mapper)
 
 	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
@@ -69,7 +69,7 @@ func (r *OperationAuditLogRepo) init() {
 	r.mapper.AppendConverters(r.NewFloatSecondConverterPair())
 }
 
-func (r *OperationAuditLogRepo) NewFloatSecondConverterPair() []copier.TypeConverter {
+func (r *ApiAuditLogRepo) NewFloatSecondConverterPair() []copier.TypeConverter {
 	srcType := durationpb.New(0)
 	dstType := trans.Ptr(float64(0))
 
@@ -79,8 +79,8 @@ func (r *OperationAuditLogRepo) NewFloatSecondConverterPair() []copier.TypeConve
 	return copierutil.NewGenericTypeConverterPair(srcType, dstType, fromFn, toFn)
 }
 
-func (r *OperationAuditLogRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
-	builder := r.entClient.Client().OperationAuditLog.Query()
+func (r *ApiAuditLogRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
+	builder := r.entClient.Client().ApiAuditLog.Query()
 	if len(whereCond) != 0 {
 		builder.Modify(whereCond...)
 	}
@@ -94,30 +94,30 @@ func (r *OperationAuditLogRepo) Count(ctx context.Context, whereCond []func(s *s
 	return count, nil
 }
 
-func (r *OperationAuditLogRepo) List(ctx context.Context, req *pagination.PagingRequest) (*adminV1.ListOperationAuditLogResponse, error) {
+func (r *ApiAuditLogRepo) List(ctx context.Context, req *pagination.PagingRequest) (*adminV1.ListApiAuditLogResponse, error) {
 	if req == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().OperationAuditLog.Query()
+	builder := r.entClient.Client().ApiAuditLog.Query()
 
 	ret, err := r.repository.ListWithPaging(ctx, builder, builder.Clone(), req)
 	if err != nil {
 		return nil, err
 	}
 	if ret == nil {
-		return &adminV1.ListOperationAuditLogResponse{Total: 0, Items: nil}, nil
+		return &adminV1.ListApiAuditLogResponse{Total: 0, Items: nil}, nil
 	}
 
-	return &adminV1.ListOperationAuditLogResponse{
+	return &adminV1.ListApiAuditLogResponse{
 		Total: ret.Total,
 		Items: ret.Items,
 	}, nil
 }
 
-func (r *OperationAuditLogRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
-	exist, err := r.entClient.Client().OperationAuditLog.Query().
-		Where(operationauditlog.IDEQ(id)).
+func (r *ApiAuditLogRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
+	exist, err := r.entClient.Client().ApiAuditLog.Query().
+		Where(apiauditlog.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
 		r.log.Errorf("query exist failed: %s", err.Error())
@@ -126,18 +126,18 @@ func (r *OperationAuditLogRepo) IsExist(ctx context.Context, id uint32) (bool, e
 	return exist, nil
 }
 
-func (r *OperationAuditLogRepo) Get(ctx context.Context, req *adminV1.GetOperationAuditLogRequest) (*adminV1.OperationAuditLog, error) {
+func (r *ApiAuditLogRepo) Get(ctx context.Context, req *adminV1.GetApiAuditLogRequest) (*adminV1.ApiAuditLog, error) {
 	if req == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().OperationAuditLog.Query()
+	builder := r.entClient.Client().ApiAuditLog.Query()
 
 	var whereCond []func(s *sql.Selector)
 	switch req.QueryBy.(type) {
 	default:
-	case *adminV1.GetOperationAuditLogRequest_Id:
-		whereCond = append(whereCond, operationauditlog.IDEQ(req.GetId()))
+	case *adminV1.GetApiAuditLogRequest_Id:
+		whereCond = append(whereCond, apiauditlog.IDEQ(req.GetId()))
 	}
 
 	dto, err := r.repository.Get(ctx, builder, req.GetViewMask(), whereCond...)
@@ -148,12 +148,12 @@ func (r *OperationAuditLogRepo) Get(ctx context.Context, req *adminV1.GetOperati
 	return dto, err
 }
 
-func (r *OperationAuditLogRepo) Create(ctx context.Context, req *adminV1.CreateOperationAuditLogRequest) error {
+func (r *ApiAuditLogRepo) Create(ctx context.Context, req *adminV1.CreateApiAuditLogRequest) error {
 	if req == nil || req.Data == nil {
 		return adminV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().OperationAuditLog.
+	builder := r.entClient.Client().ApiAuditLog.
 		Create().
 		SetNillableRequestID(req.Data.RequestId).
 		SetNillableMethod(req.Data.Method).
@@ -187,8 +187,8 @@ func (r *OperationAuditLogRepo) Create(ctx context.Context, req *adminV1.CreateO
 
 	err := builder.Exec(ctx)
 	if err != nil {
-		r.log.Errorf("insert admin operation log failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("insert admin operation log failed")
+		r.log.Errorf("insert api audit log failed: %s", err.Error())
+		return adminV1.ErrorInternalServerError("insert api audit log failed")
 	}
 
 	return err

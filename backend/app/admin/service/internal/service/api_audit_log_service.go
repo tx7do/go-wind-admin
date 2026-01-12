@@ -16,31 +16,31 @@ import (
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
-type OperationAuditLogService struct {
-	adminV1.OperationAuditLogServiceHTTPServer
+type ApiAuditLogService struct {
+	adminV1.ApiAuditLogServiceHTTPServer
 
 	log *log.Helper
 
-	operationLogRepo *data.OperationAuditLogRepo
-	apiRepo          *data.ApiRepo
+	apiAuditLogRepo *data.ApiAuditLogRepo
+	apiRepo         *data.ApiRepo
 
 	apis     []*permissionV1.Api
 	apiMutex sync.RWMutex
 }
 
-func NewOperationAuditLogService(
+func NewApiAuditLogService(
 	ctx *bootstrap.Context,
-	operationLogRepo *data.OperationAuditLogRepo,
+	apiAuditLogRepo *data.ApiAuditLogRepo,
 	apiRepo *data.ApiRepo,
-) *OperationAuditLogService {
-	return &OperationAuditLogService{
-		log:              ctx.NewLoggerHelper("operation-audit-log/service/admin-service"),
-		operationLogRepo: operationLogRepo,
-		apiRepo:          apiRepo,
+) *ApiAuditLogService {
+	return &ApiAuditLogService{
+		log:             ctx.NewLoggerHelper("api-audit-log/service/admin-service"),
+		apiAuditLogRepo: apiAuditLogRepo,
+		apiRepo:         apiRepo,
 	}
 }
 
-func (s *OperationAuditLogService) queryApis(ctx context.Context, path, method string) (*permissionV1.Api, error) {
+func (s *ApiAuditLogService) queryApis(ctx context.Context, path, method string) (*permissionV1.Api, error) {
 	if len(s.apis) == 0 {
 		s.apiMutex.Lock()
 		apis, err := s.apiRepo.List(ctx, &pagination.PagingRequest{
@@ -67,8 +67,8 @@ func (s *OperationAuditLogService) queryApis(ctx context.Context, path, method s
 	return nil, nil
 }
 
-func (s *OperationAuditLogService) List(ctx context.Context, req *pagination.PagingRequest) (*adminV1.ListOperationAuditLogResponse, error) {
-	resp, err := s.operationLogRepo.List(ctx, req)
+func (s *ApiAuditLogService) List(ctx context.Context, req *pagination.PagingRequest) (*adminV1.ListApiAuditLogResponse, error) {
+	resp, err := s.apiAuditLogRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -88,8 +88,8 @@ func (s *OperationAuditLogService) List(ctx context.Context, req *pagination.Pag
 	return resp, nil
 }
 
-func (s *OperationAuditLogService) Get(ctx context.Context, req *adminV1.GetOperationAuditLogRequest) (*adminV1.OperationAuditLog, error) {
-	resp, err := s.operationLogRepo.Get(ctx, req)
+func (s *ApiAuditLogService) Get(ctx context.Context, req *adminV1.GetApiAuditLogRequest) (*adminV1.ApiAuditLog, error) {
+	resp, err := s.apiAuditLogRepo.Get(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -103,12 +103,12 @@ func (s *OperationAuditLogService) Get(ctx context.Context, req *adminV1.GetOper
 	return resp, nil
 }
 
-func (s *OperationAuditLogService) Create(ctx context.Context, req *adminV1.CreateOperationAuditLogRequest) (*emptypb.Empty, error) {
+func (s *ApiAuditLogService) Create(ctx context.Context, req *adminV1.CreateApiAuditLogRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 
-	if err := s.operationLogRepo.Create(ctx, req); err != nil {
+	if err := s.apiAuditLogRepo.Create(ctx, req); err != nil {
 		return nil, err
 	}
 

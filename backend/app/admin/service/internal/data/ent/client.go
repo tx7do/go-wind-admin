@@ -12,6 +12,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/migrate"
 
 	"go-wind-admin/app/admin/service/internal/data/ent/api"
+	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"go-wind-admin/app/admin/service/internal/data/ent/file"
@@ -26,7 +27,6 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/membershipposition"
 	"go-wind-admin/app/admin/service/internal/data/ent/membershiprole"
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
-	"go-wind-admin/app/admin/service/internal/data/ent/operationauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/orgunit"
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionapi"
@@ -60,6 +60,8 @@ type Client struct {
 	Schema *migrate.Schema
 	// Api is the client for interacting with the Api builders.
 	Api *APIClient
+	// ApiAuditLog is the client for interacting with the ApiAuditLog builders.
+	ApiAuditLog *ApiAuditLogClient
 	// DictEntry is the client for interacting with the DictEntry builders.
 	DictEntry *DictEntryClient
 	// DictType is the client for interacting with the DictType builders.
@@ -88,8 +90,6 @@ type Client struct {
 	MembershipRole *MembershipRoleClient
 	// Menu is the client for interacting with the Menu builders.
 	Menu *MenuClient
-	// OperationAuditLog is the client for interacting with the OperationAuditLog builders.
-	OperationAuditLog *OperationAuditLogClient
 	// OrgUnit is the client for interacting with the OrgUnit builders.
 	OrgUnit *OrgUnitClient
 	// Permission is the client for interacting with the Permission builders.
@@ -140,6 +140,7 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Api = NewAPIClient(c.config)
+	c.ApiAuditLog = NewApiAuditLogClient(c.config)
 	c.DictEntry = NewDictEntryClient(c.config)
 	c.DictType = NewDictTypeClient(c.config)
 	c.File = NewFileClient(c.config)
@@ -154,7 +155,6 @@ func (c *Client) init() {
 	c.MembershipPosition = NewMembershipPositionClient(c.config)
 	c.MembershipRole = NewMembershipRoleClient(c.config)
 	c.Menu = NewMenuClient(c.config)
-	c.OperationAuditLog = NewOperationAuditLogClient(c.config)
 	c.OrgUnit = NewOrgUnitClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
 	c.PermissionApi = NewPermissionApiClient(c.config)
@@ -267,6 +267,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		ctx:                      ctx,
 		config:                   cfg,
 		Api:                      NewAPIClient(cfg),
+		ApiAuditLog:              NewApiAuditLogClient(cfg),
 		DictEntry:                NewDictEntryClient(cfg),
 		DictType:                 NewDictTypeClient(cfg),
 		File:                     NewFileClient(cfg),
@@ -281,7 +282,6 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		MembershipPosition:       NewMembershipPositionClient(cfg),
 		MembershipRole:           NewMembershipRoleClient(cfg),
 		Menu:                     NewMenuClient(cfg),
-		OperationAuditLog:        NewOperationAuditLogClient(cfg),
 		OrgUnit:                  NewOrgUnitClient(cfg),
 		Permission:               NewPermissionClient(cfg),
 		PermissionApi:            NewPermissionApiClient(cfg),
@@ -321,6 +321,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		ctx:                      ctx,
 		config:                   cfg,
 		Api:                      NewAPIClient(cfg),
+		ApiAuditLog:              NewApiAuditLogClient(cfg),
 		DictEntry:                NewDictEntryClient(cfg),
 		DictType:                 NewDictTypeClient(cfg),
 		File:                     NewFileClient(cfg),
@@ -335,7 +336,6 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		MembershipPosition:       NewMembershipPositionClient(cfg),
 		MembershipRole:           NewMembershipRoleClient(cfg),
 		Menu:                     NewMenuClient(cfg),
-		OperationAuditLog:        NewOperationAuditLogClient(cfg),
 		OrgUnit:                  NewOrgUnitClient(cfg),
 		Permission:               NewPermissionClient(cfg),
 		PermissionApi:            NewPermissionApiClient(cfg),
@@ -384,14 +384,14 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Api, c.DictEntry, c.DictType, c.File, c.InternalMessage,
+		c.Api, c.ApiAuditLog, c.DictEntry, c.DictType, c.File, c.InternalMessage,
 		c.InternalMessageCategory, c.InternalMessageRecipient, c.Language,
 		c.LoginAuditLog, c.LoginPolicy, c.Membership, c.MembershipOrgUnit,
-		c.MembershipPosition, c.MembershipRole, c.Menu, c.OperationAuditLog, c.OrgUnit,
-		c.Permission, c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup,
-		c.PermissionMenu, c.PermissionPolicy, c.PolicyEvaluationLog, c.Position,
-		c.Role, c.RoleMetadata, c.RolePermission, c.Task, c.Tenant, c.User,
-		c.UserCredential, c.UserOrgUnit, c.UserPosition, c.UserRole,
+		c.MembershipPosition, c.MembershipRole, c.Menu, c.OrgUnit, c.Permission,
+		c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup, c.PermissionMenu,
+		c.PermissionPolicy, c.PolicyEvaluationLog, c.Position, c.Role, c.RoleMetadata,
+		c.RolePermission, c.Task, c.Tenant, c.User, c.UserCredential, c.UserOrgUnit,
+		c.UserPosition, c.UserRole,
 	} {
 		n.Use(hooks...)
 	}
@@ -401,14 +401,14 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Api, c.DictEntry, c.DictType, c.File, c.InternalMessage,
+		c.Api, c.ApiAuditLog, c.DictEntry, c.DictType, c.File, c.InternalMessage,
 		c.InternalMessageCategory, c.InternalMessageRecipient, c.Language,
 		c.LoginAuditLog, c.LoginPolicy, c.Membership, c.MembershipOrgUnit,
-		c.MembershipPosition, c.MembershipRole, c.Menu, c.OperationAuditLog, c.OrgUnit,
-		c.Permission, c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup,
-		c.PermissionMenu, c.PermissionPolicy, c.PolicyEvaluationLog, c.Position,
-		c.Role, c.RoleMetadata, c.RolePermission, c.Task, c.Tenant, c.User,
-		c.UserCredential, c.UserOrgUnit, c.UserPosition, c.UserRole,
+		c.MembershipPosition, c.MembershipRole, c.Menu, c.OrgUnit, c.Permission,
+		c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup, c.PermissionMenu,
+		c.PermissionPolicy, c.PolicyEvaluationLog, c.Position, c.Role, c.RoleMetadata,
+		c.RolePermission, c.Task, c.Tenant, c.User, c.UserCredential, c.UserOrgUnit,
+		c.UserPosition, c.UserRole,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -419,6 +419,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *APIMutation:
 		return c.Api.mutate(ctx, m)
+	case *ApiAuditLogMutation:
+		return c.ApiAuditLog.mutate(ctx, m)
 	case *DictEntryMutation:
 		return c.DictEntry.mutate(ctx, m)
 	case *DictTypeMutation:
@@ -447,8 +449,6 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.MembershipRole.mutate(ctx, m)
 	case *MenuMutation:
 		return c.Menu.mutate(ctx, m)
-	case *OperationAuditLogMutation:
-		return c.OperationAuditLog.mutate(ctx, m)
 	case *OrgUnitMutation:
 		return c.OrgUnit.mutate(ctx, m)
 	case *PermissionMutation:
@@ -622,6 +622,139 @@ func (c *APIClient) mutate(ctx context.Context, m *APIMutation) (Value, error) {
 		return (&APIDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Api mutation op: %q", m.Op())
+	}
+}
+
+// ApiAuditLogClient is a client for the ApiAuditLog schema.
+type ApiAuditLogClient struct {
+	config
+}
+
+// NewApiAuditLogClient returns a client for the ApiAuditLog from the given config.
+func NewApiAuditLogClient(c config) *ApiAuditLogClient {
+	return &ApiAuditLogClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `apiauditlog.Hooks(f(g(h())))`.
+func (c *ApiAuditLogClient) Use(hooks ...Hook) {
+	c.hooks.ApiAuditLog = append(c.hooks.ApiAuditLog, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `apiauditlog.Intercept(f(g(h())))`.
+func (c *ApiAuditLogClient) Intercept(interceptors ...Interceptor) {
+	c.inters.ApiAuditLog = append(c.inters.ApiAuditLog, interceptors...)
+}
+
+// Create returns a builder for creating a ApiAuditLog entity.
+func (c *ApiAuditLogClient) Create() *ApiAuditLogCreate {
+	mutation := newApiAuditLogMutation(c.config, OpCreate)
+	return &ApiAuditLogCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of ApiAuditLog entities.
+func (c *ApiAuditLogClient) CreateBulk(builders ...*ApiAuditLogCreate) *ApiAuditLogCreateBulk {
+	return &ApiAuditLogCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *ApiAuditLogClient) MapCreateBulk(slice any, setFunc func(*ApiAuditLogCreate, int)) *ApiAuditLogCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &ApiAuditLogCreateBulk{err: fmt.Errorf("calling to ApiAuditLogClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*ApiAuditLogCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &ApiAuditLogCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for ApiAuditLog.
+func (c *ApiAuditLogClient) Update() *ApiAuditLogUpdate {
+	mutation := newApiAuditLogMutation(c.config, OpUpdate)
+	return &ApiAuditLogUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *ApiAuditLogClient) UpdateOne(_m *ApiAuditLog) *ApiAuditLogUpdateOne {
+	mutation := newApiAuditLogMutation(c.config, OpUpdateOne, withApiAuditLog(_m))
+	return &ApiAuditLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *ApiAuditLogClient) UpdateOneID(id uint32) *ApiAuditLogUpdateOne {
+	mutation := newApiAuditLogMutation(c.config, OpUpdateOne, withApiAuditLogID(id))
+	return &ApiAuditLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for ApiAuditLog.
+func (c *ApiAuditLogClient) Delete() *ApiAuditLogDelete {
+	mutation := newApiAuditLogMutation(c.config, OpDelete)
+	return &ApiAuditLogDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *ApiAuditLogClient) DeleteOne(_m *ApiAuditLog) *ApiAuditLogDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *ApiAuditLogClient) DeleteOneID(id uint32) *ApiAuditLogDeleteOne {
+	builder := c.Delete().Where(apiauditlog.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &ApiAuditLogDeleteOne{builder}
+}
+
+// Query returns a query builder for ApiAuditLog.
+func (c *ApiAuditLogClient) Query() *ApiAuditLogQuery {
+	return &ApiAuditLogQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeApiAuditLog},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a ApiAuditLog entity by its id.
+func (c *ApiAuditLogClient) Get(ctx context.Context, id uint32) (*ApiAuditLog, error) {
+	return c.Query().Where(apiauditlog.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *ApiAuditLogClient) GetX(ctx context.Context, id uint32) *ApiAuditLog {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *ApiAuditLogClient) Hooks() []Hook {
+	return c.hooks.ApiAuditLog
+}
+
+// Interceptors returns the client interceptors.
+func (c *ApiAuditLogClient) Interceptors() []Interceptor {
+	return c.inters.ApiAuditLog
+}
+
+func (c *ApiAuditLogClient) mutate(ctx context.Context, m *ApiAuditLogMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&ApiAuditLogCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&ApiAuditLogUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&ApiAuditLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&ApiAuditLogDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown ApiAuditLog mutation op: %q", m.Op())
 	}
 }
 
@@ -2548,139 +2681,6 @@ func (c *MenuClient) mutate(ctx context.Context, m *MenuMutation) (Value, error)
 		return (&MenuDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Menu mutation op: %q", m.Op())
-	}
-}
-
-// OperationAuditLogClient is a client for the OperationAuditLog schema.
-type OperationAuditLogClient struct {
-	config
-}
-
-// NewOperationAuditLogClient returns a client for the OperationAuditLog from the given config.
-func NewOperationAuditLogClient(c config) *OperationAuditLogClient {
-	return &OperationAuditLogClient{config: c}
-}
-
-// Use adds a list of mutation hooks to the hooks stack.
-// A call to `Use(f, g, h)` equals to `operationauditlog.Hooks(f(g(h())))`.
-func (c *OperationAuditLogClient) Use(hooks ...Hook) {
-	c.hooks.OperationAuditLog = append(c.hooks.OperationAuditLog, hooks...)
-}
-
-// Intercept adds a list of query interceptors to the interceptors stack.
-// A call to `Intercept(f, g, h)` equals to `operationauditlog.Intercept(f(g(h())))`.
-func (c *OperationAuditLogClient) Intercept(interceptors ...Interceptor) {
-	c.inters.OperationAuditLog = append(c.inters.OperationAuditLog, interceptors...)
-}
-
-// Create returns a builder for creating a OperationAuditLog entity.
-func (c *OperationAuditLogClient) Create() *OperationAuditLogCreate {
-	mutation := newOperationAuditLogMutation(c.config, OpCreate)
-	return &OperationAuditLogCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// CreateBulk returns a builder for creating a bulk of OperationAuditLog entities.
-func (c *OperationAuditLogClient) CreateBulk(builders ...*OperationAuditLogCreate) *OperationAuditLogCreateBulk {
-	return &OperationAuditLogCreateBulk{config: c.config, builders: builders}
-}
-
-// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
-// a builder and applies setFunc on it.
-func (c *OperationAuditLogClient) MapCreateBulk(slice any, setFunc func(*OperationAuditLogCreate, int)) *OperationAuditLogCreateBulk {
-	rv := reflect.ValueOf(slice)
-	if rv.Kind() != reflect.Slice {
-		return &OperationAuditLogCreateBulk{err: fmt.Errorf("calling to OperationAuditLogClient.MapCreateBulk with wrong type %T, need slice", slice)}
-	}
-	builders := make([]*OperationAuditLogCreate, rv.Len())
-	for i := 0; i < rv.Len(); i++ {
-		builders[i] = c.Create()
-		setFunc(builders[i], i)
-	}
-	return &OperationAuditLogCreateBulk{config: c.config, builders: builders}
-}
-
-// Update returns an update builder for OperationAuditLog.
-func (c *OperationAuditLogClient) Update() *OperationAuditLogUpdate {
-	mutation := newOperationAuditLogMutation(c.config, OpUpdate)
-	return &OperationAuditLogUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOne returns an update builder for the given entity.
-func (c *OperationAuditLogClient) UpdateOne(_m *OperationAuditLog) *OperationAuditLogUpdateOne {
-	mutation := newOperationAuditLogMutation(c.config, OpUpdateOne, withOperationAuditLog(_m))
-	return &OperationAuditLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// UpdateOneID returns an update builder for the given id.
-func (c *OperationAuditLogClient) UpdateOneID(id uint32) *OperationAuditLogUpdateOne {
-	mutation := newOperationAuditLogMutation(c.config, OpUpdateOne, withOperationAuditLogID(id))
-	return &OperationAuditLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// Delete returns a delete builder for OperationAuditLog.
-func (c *OperationAuditLogClient) Delete() *OperationAuditLogDelete {
-	mutation := newOperationAuditLogMutation(c.config, OpDelete)
-	return &OperationAuditLogDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
-}
-
-// DeleteOne returns a builder for deleting the given entity.
-func (c *OperationAuditLogClient) DeleteOne(_m *OperationAuditLog) *OperationAuditLogDeleteOne {
-	return c.DeleteOneID(_m.ID)
-}
-
-// DeleteOneID returns a builder for deleting the given entity by its id.
-func (c *OperationAuditLogClient) DeleteOneID(id uint32) *OperationAuditLogDeleteOne {
-	builder := c.Delete().Where(operationauditlog.ID(id))
-	builder.mutation.id = &id
-	builder.mutation.op = OpDeleteOne
-	return &OperationAuditLogDeleteOne{builder}
-}
-
-// Query returns a query builder for OperationAuditLog.
-func (c *OperationAuditLogClient) Query() *OperationAuditLogQuery {
-	return &OperationAuditLogQuery{
-		config: c.config,
-		ctx:    &QueryContext{Type: TypeOperationAuditLog},
-		inters: c.Interceptors(),
-	}
-}
-
-// Get returns a OperationAuditLog entity by its id.
-func (c *OperationAuditLogClient) Get(ctx context.Context, id uint32) (*OperationAuditLog, error) {
-	return c.Query().Where(operationauditlog.ID(id)).Only(ctx)
-}
-
-// GetX is like Get, but panics if an error occurs.
-func (c *OperationAuditLogClient) GetX(ctx context.Context, id uint32) *OperationAuditLog {
-	obj, err := c.Get(ctx, id)
-	if err != nil {
-		panic(err)
-	}
-	return obj
-}
-
-// Hooks returns the client hooks.
-func (c *OperationAuditLogClient) Hooks() []Hook {
-	return c.hooks.OperationAuditLog
-}
-
-// Interceptors returns the client interceptors.
-func (c *OperationAuditLogClient) Interceptors() []Interceptor {
-	return c.inters.OperationAuditLog
-}
-
-func (c *OperationAuditLogClient) mutate(ctx context.Context, m *OperationAuditLogMutation) (Value, error) {
-	switch m.Op() {
-	case OpCreate:
-		return (&OperationAuditLogCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdate:
-		return (&OperationAuditLogUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpUpdateOne:
-		return (&OperationAuditLogUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
-	case OpDelete, OpDeleteOne:
-		return (&OperationAuditLogDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
-	default:
-		return nil, fmt.Errorf("ent: unknown OperationAuditLog mutation op: %q", m.Op())
 	}
 }
 
@@ -5278,19 +5278,19 @@ func (c *UserRoleClient) mutate(ctx context.Context, m *UserRoleMutation) (Value
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Api, DictEntry, DictType, File, InternalMessage, InternalMessageCategory,
-		InternalMessageRecipient, Language, LoginAuditLog, LoginPolicy, Membership,
-		MembershipOrgUnit, MembershipPosition, MembershipRole, Menu, OperationAuditLog,
-		OrgUnit, Permission, PermissionApi, PermissionAuditLog, PermissionGroup,
+		Api, ApiAuditLog, DictEntry, DictType, File, InternalMessage,
+		InternalMessageCategory, InternalMessageRecipient, Language, LoginAuditLog,
+		LoginPolicy, Membership, MembershipOrgUnit, MembershipPosition, MembershipRole,
+		Menu, OrgUnit, Permission, PermissionApi, PermissionAuditLog, PermissionGroup,
 		PermissionMenu, PermissionPolicy, PolicyEvaluationLog, Position, Role,
 		RoleMetadata, RolePermission, Task, Tenant, User, UserCredential, UserOrgUnit,
 		UserPosition, UserRole []ent.Hook
 	}
 	inters struct {
-		Api, DictEntry, DictType, File, InternalMessage, InternalMessageCategory,
-		InternalMessageRecipient, Language, LoginAuditLog, LoginPolicy, Membership,
-		MembershipOrgUnit, MembershipPosition, MembershipRole, Menu, OperationAuditLog,
-		OrgUnit, Permission, PermissionApi, PermissionAuditLog, PermissionGroup,
+		Api, ApiAuditLog, DictEntry, DictType, File, InternalMessage,
+		InternalMessageCategory, InternalMessageRecipient, Language, LoginAuditLog,
+		LoginPolicy, Membership, MembershipOrgUnit, MembershipPosition, MembershipRole,
+		Menu, OrgUnit, Permission, PermissionApi, PermissionAuditLog, PermissionGroup,
 		PermissionMenu, PermissionPolicy, PolicyEvaluationLog, Position, Role,
 		RoleMetadata, RolePermission, Task, Tenant, User, UserCredential, UserOrgUnit,
 		UserPosition, UserRole []ent.Interceptor

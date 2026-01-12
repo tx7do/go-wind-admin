@@ -28,7 +28,7 @@ var ProviderSet = wire.NewSet(
 	service.NewPositionService,
 	service.NewDictService,
 	service.NewLoginAuditLogService,
-	service.NewOperationAuditLogService,
+	service.NewApiAuditLogService,
 	service.NewOssService,
 	service.NewUEditorService,
 	service.NewFileService,

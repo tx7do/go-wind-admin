@@ -2,7 +2,7 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: admin/service/v1/i_operation_audit_log.proto
+// source: admin/service/v1/i_api_audit_log.proto
 
 package adminpb
 
@@ -28,10 +28,10 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// 操作审计日志
-type OperationAuditLog struct {
+// API审计日志
+type ApiAuditLog struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
-	Id             *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                // 操作审计日志ID
+	Id             *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                // API审计日志ID
 	CostTime       *durationpb.Duration   `protobuf:"bytes,2,opt,name=cost_time,json=costTime,proto3,oneof" json:"cost_time,omitempty"`                     // 操作耗时
 	Success        *bool                  `protobuf:"varint,3,opt,name=success,proto3,oneof" json:"success,omitempty"`                                      // 操作是否成功
 	RequestId      *string                `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3,oneof" json:"request_id,omitempty"`                  // 请求ID
@@ -64,21 +64,21 @@ type OperationAuditLog struct {
 	sizeCache      protoimpl.SizeCache
 }
 
-func (x *OperationAuditLog) Reset() {
-	*x = OperationAuditLog{}
-	mi := &file_admin_service_v1_i_operation_audit_log_proto_msgTypes[0]
+func (x *ApiAuditLog) Reset() {
+	*x = ApiAuditLog{}
+	mi := &file_admin_service_v1_i_api_audit_log_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *OperationAuditLog) String() string {
+func (x *ApiAuditLog) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*OperationAuditLog) ProtoMessage() {}
+func (*ApiAuditLog) ProtoMessage() {}
 
-func (x *OperationAuditLog) ProtoReflect() protoreflect.Message {
-	mi := &file_admin_service_v1_i_operation_audit_log_proto_msgTypes[0]
+func (x *ApiAuditLog) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_service_v1_i_api_audit_log_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -89,238 +89,238 @@ func (x *OperationAuditLog) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use OperationAuditLog.ProtoReflect.Descriptor instead.
-func (*OperationAuditLog) Descriptor() ([]byte, []int) {
-	return file_admin_service_v1_i_operation_audit_log_proto_rawDescGZIP(), []int{0}
+// Deprecated: Use ApiAuditLog.ProtoReflect.Descriptor instead.
+func (*ApiAuditLog) Descriptor() ([]byte, []int) {
+	return file_admin_service_v1_i_api_audit_log_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *OperationAuditLog) GetId() uint32 {
+func (x *ApiAuditLog) GetId() uint32 {
 	if x != nil && x.Id != nil {
 		return *x.Id
 	}
 	return 0
 }
 
-func (x *OperationAuditLog) GetCostTime() *durationpb.Duration {
+func (x *ApiAuditLog) GetCostTime() *durationpb.Duration {
 	if x != nil {
 		return x.CostTime
 	}
 	return nil
 }
 
-func (x *OperationAuditLog) GetSuccess() bool {
+func (x *ApiAuditLog) GetSuccess() bool {
 	if x != nil && x.Success != nil {
 		return *x.Success
 	}
 	return false
 }
 
-func (x *OperationAuditLog) GetRequestId() string {
+func (x *ApiAuditLog) GetRequestId() string {
 	if x != nil && x.RequestId != nil {
 		return *x.RequestId
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetStatusCode() int32 {
+func (x *ApiAuditLog) GetStatusCode() int32 {
 	if x != nil && x.StatusCode != nil {
 		return *x.StatusCode
 	}
 	return 0
 }
 
-func (x *OperationAuditLog) GetReason() string {
+func (x *ApiAuditLog) GetReason() string {
 	if x != nil && x.Reason != nil {
 		return *x.Reason
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetLocation() string {
+func (x *ApiAuditLog) GetLocation() string {
 	if x != nil && x.Location != nil {
 		return *x.Location
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetOperation() string {
+func (x *ApiAuditLog) GetOperation() string {
 	if x != nil && x.Operation != nil {
 		return *x.Operation
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetMethod() string {
+func (x *ApiAuditLog) GetMethod() string {
 	if x != nil && x.Method != nil {
 		return *x.Method
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetPath() string {
+func (x *ApiAuditLog) GetPath() string {
 	if x != nil && x.Path != nil {
 		return *x.Path
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetApiModule() string {
+func (x *ApiAuditLog) GetApiModule() string {
 	if x != nil && x.ApiModule != nil {
 		return *x.ApiModule
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetApiDescription() string {
+func (x *ApiAuditLog) GetApiDescription() string {
 	if x != nil && x.ApiDescription != nil {
 		return *x.ApiDescription
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetReferer() string {
+func (x *ApiAuditLog) GetReferer() string {
 	if x != nil && x.Referer != nil {
 		return *x.Referer
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetRequestUri() string {
+func (x *ApiAuditLog) GetRequestUri() string {
 	if x != nil && x.RequestUri != nil {
 		return *x.RequestUri
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetRequestHeader() string {
+func (x *ApiAuditLog) GetRequestHeader() string {
 	if x != nil && x.RequestHeader != nil {
 		return *x.RequestHeader
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetRequestBody() string {
+func (x *ApiAuditLog) GetRequestBody() string {
 	if x != nil && x.RequestBody != nil {
 		return *x.RequestBody
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetResponse() string {
+func (x *ApiAuditLog) GetResponse() string {
 	if x != nil && x.Response != nil {
 		return *x.Response
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetUserId() uint32 {
+func (x *ApiAuditLog) GetUserId() uint32 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
 	}
 	return 0
 }
 
-func (x *OperationAuditLog) GetUsername() string {
+func (x *ApiAuditLog) GetUsername() string {
 	if x != nil && x.Username != nil {
 		return *x.Username
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetClientIp() string {
+func (x *ApiAuditLog) GetClientIp() string {
 	if x != nil && x.ClientIp != nil {
 		return *x.ClientIp
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetUserAgent() string {
+func (x *ApiAuditLog) GetUserAgent() string {
 	if x != nil && x.UserAgent != nil {
 		return *x.UserAgent
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetBrowserName() string {
+func (x *ApiAuditLog) GetBrowserName() string {
 	if x != nil && x.BrowserName != nil {
 		return *x.BrowserName
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetBrowserVersion() string {
+func (x *ApiAuditLog) GetBrowserVersion() string {
 	if x != nil && x.BrowserVersion != nil {
 		return *x.BrowserVersion
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetClientId() string {
+func (x *ApiAuditLog) GetClientId() string {
 	if x != nil && x.ClientId != nil {
 		return *x.ClientId
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetClientName() string {
+func (x *ApiAuditLog) GetClientName() string {
 	if x != nil && x.ClientName != nil {
 		return *x.ClientName
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetOsName() string {
+func (x *ApiAuditLog) GetOsName() string {
 	if x != nil && x.OsName != nil {
 		return *x.OsName
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetOsVersion() string {
+func (x *ApiAuditLog) GetOsVersion() string {
 	if x != nil && x.OsVersion != nil {
 		return *x.OsVersion
 	}
 	return ""
 }
 
-func (x *OperationAuditLog) GetTenantId() uint32 {
+func (x *ApiAuditLog) GetTenantId() uint32 {
 	if x != nil && x.TenantId != nil {
 		return *x.TenantId
 	}
 	return 0
 }
 
-func (x *OperationAuditLog) GetCreatedAt() *timestamppb.Timestamp {
+func (x *ApiAuditLog) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
 	}
 	return nil
 }
 
-// 查询操作审计日志列表 - 回应
-type ListOperationAuditLogResponse struct {
+// 查询API审计日志列表 - 回应
+type ListApiAuditLogResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Items         []*OperationAuditLog   `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Items         []*ApiAuditLog         `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
 	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *ListOperationAuditLogResponse) Reset() {
-	*x = ListOperationAuditLogResponse{}
-	mi := &file_admin_service_v1_i_operation_audit_log_proto_msgTypes[1]
+func (x *ListApiAuditLogResponse) Reset() {
+	*x = ListApiAuditLogResponse{}
+	mi := &file_admin_service_v1_i_api_audit_log_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *ListOperationAuditLogResponse) String() string {
+func (x *ListApiAuditLogResponse) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*ListOperationAuditLogResponse) ProtoMessage() {}
+func (*ListApiAuditLogResponse) ProtoMessage() {}
 
-func (x *ListOperationAuditLogResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_admin_service_v1_i_operation_audit_log_proto_msgTypes[1]
+func (x *ListApiAuditLogResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_service_v1_i_api_audit_log_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -331,52 +331,52 @@ func (x *ListOperationAuditLogResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListOperationAuditLogResponse.ProtoReflect.Descriptor instead.
-func (*ListOperationAuditLogResponse) Descriptor() ([]byte, []int) {
-	return file_admin_service_v1_i_operation_audit_log_proto_rawDescGZIP(), []int{1}
+// Deprecated: Use ListApiAuditLogResponse.ProtoReflect.Descriptor instead.
+func (*ListApiAuditLogResponse) Descriptor() ([]byte, []int) {
+	return file_admin_service_v1_i_api_audit_log_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *ListOperationAuditLogResponse) GetItems() []*OperationAuditLog {
+func (x *ListApiAuditLogResponse) GetItems() []*ApiAuditLog {
 	if x != nil {
 		return x.Items
 	}
 	return nil
 }
 
-func (x *ListOperationAuditLogResponse) GetTotal() uint64 {
+func (x *ListApiAuditLogResponse) GetTotal() uint64 {
 	if x != nil {
 		return x.Total
 	}
 	return 0
 }
 
-// 查询操作审计日志详情 - 请求
-type GetOperationAuditLogRequest struct {
+// 查询API审计日志详情 - 请求
+type GetApiAuditLogRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Types that are valid to be assigned to QueryBy:
 	//
-	//	*GetOperationAuditLogRequest_Id
-	QueryBy       isGetOperationAuditLogRequest_QueryBy `protobuf_oneof:"query_by"`
-	ViewMask      *fieldmaskpb.FieldMask                `protobuf:"bytes,100,opt,name=view_mask,json=viewMask,proto3,oneof" json:"view_mask,omitempty"` // 视图字段过滤器，用于控制返回的字段
+	//	*GetApiAuditLogRequest_Id
+	QueryBy       isGetApiAuditLogRequest_QueryBy `protobuf_oneof:"query_by"`
+	ViewMask      *fieldmaskpb.FieldMask          `protobuf:"bytes,100,opt,name=view_mask,json=viewMask,proto3,oneof" json:"view_mask,omitempty"` // 视图字段过滤器，用于控制返回的字段
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *GetOperationAuditLogRequest) Reset() {
-	*x = GetOperationAuditLogRequest{}
-	mi := &file_admin_service_v1_i_operation_audit_log_proto_msgTypes[2]
+func (x *GetApiAuditLogRequest) Reset() {
+	*x = GetApiAuditLogRequest{}
+	mi := &file_admin_service_v1_i_api_audit_log_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *GetOperationAuditLogRequest) String() string {
+func (x *GetApiAuditLogRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*GetOperationAuditLogRequest) ProtoMessage() {}
+func (*GetApiAuditLogRequest) ProtoMessage() {}
 
-func (x *GetOperationAuditLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_admin_service_v1_i_operation_audit_log_proto_msgTypes[2]
+func (x *GetApiAuditLogRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_service_v1_i_api_audit_log_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -387,67 +387,67 @@ func (x *GetOperationAuditLogRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetOperationAuditLogRequest.ProtoReflect.Descriptor instead.
-func (*GetOperationAuditLogRequest) Descriptor() ([]byte, []int) {
-	return file_admin_service_v1_i_operation_audit_log_proto_rawDescGZIP(), []int{2}
+// Deprecated: Use GetApiAuditLogRequest.ProtoReflect.Descriptor instead.
+func (*GetApiAuditLogRequest) Descriptor() ([]byte, []int) {
+	return file_admin_service_v1_i_api_audit_log_proto_rawDescGZIP(), []int{2}
 }
 
-func (x *GetOperationAuditLogRequest) GetQueryBy() isGetOperationAuditLogRequest_QueryBy {
+func (x *GetApiAuditLogRequest) GetQueryBy() isGetApiAuditLogRequest_QueryBy {
 	if x != nil {
 		return x.QueryBy
 	}
 	return nil
 }
 
-func (x *GetOperationAuditLogRequest) GetId() uint32 {
+func (x *GetApiAuditLogRequest) GetId() uint32 {
 	if x != nil {
-		if x, ok := x.QueryBy.(*GetOperationAuditLogRequest_Id); ok {
+		if x, ok := x.QueryBy.(*GetApiAuditLogRequest_Id); ok {
 			return x.Id
 		}
 	}
 	return 0
 }
 
-func (x *GetOperationAuditLogRequest) GetViewMask() *fieldmaskpb.FieldMask {
+func (x *GetApiAuditLogRequest) GetViewMask() *fieldmaskpb.FieldMask {
 	if x != nil {
 		return x.ViewMask
 	}
 	return nil
 }
 
-type isGetOperationAuditLogRequest_QueryBy interface {
-	isGetOperationAuditLogRequest_QueryBy()
+type isGetApiAuditLogRequest_QueryBy interface {
+	isGetApiAuditLogRequest_QueryBy()
 }
 
-type GetOperationAuditLogRequest_Id struct {
+type GetApiAuditLogRequest_Id struct {
 	Id uint32 `protobuf:"varint,1,opt,name=id,proto3,oneof"` // ID
 }
 
-func (*GetOperationAuditLogRequest_Id) isGetOperationAuditLogRequest_QueryBy() {}
+func (*GetApiAuditLogRequest_Id) isGetApiAuditLogRequest_QueryBy() {}
 
-// 创建操作审计日志 - 请求
-type CreateOperationAuditLogRequest struct {
+// 创建API审计日志 - 请求
+type CreateApiAuditLogRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Data          *OperationAuditLog     `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
+	Data          *ApiAuditLog           `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *CreateOperationAuditLogRequest) Reset() {
-	*x = CreateOperationAuditLogRequest{}
-	mi := &file_admin_service_v1_i_operation_audit_log_proto_msgTypes[3]
+func (x *CreateApiAuditLogRequest) Reset() {
+	*x = CreateApiAuditLogRequest{}
+	mi := &file_admin_service_v1_i_api_audit_log_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *CreateOperationAuditLogRequest) String() string {
+func (x *CreateApiAuditLogRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*CreateOperationAuditLogRequest) ProtoMessage() {}
+func (*CreateApiAuditLogRequest) ProtoMessage() {}
 
-func (x *CreateOperationAuditLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_admin_service_v1_i_operation_audit_log_proto_msgTypes[3]
+func (x *CreateApiAuditLogRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_service_v1_i_api_audit_log_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -458,44 +458,44 @@ func (x *CreateOperationAuditLogRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateOperationAuditLogRequest.ProtoReflect.Descriptor instead.
-func (*CreateOperationAuditLogRequest) Descriptor() ([]byte, []int) {
-	return file_admin_service_v1_i_operation_audit_log_proto_rawDescGZIP(), []int{3}
+// Deprecated: Use CreateApiAuditLogRequest.ProtoReflect.Descriptor instead.
+func (*CreateApiAuditLogRequest) Descriptor() ([]byte, []int) {
+	return file_admin_service_v1_i_api_audit_log_proto_rawDescGZIP(), []int{3}
 }
 
-func (x *CreateOperationAuditLogRequest) GetData() *OperationAuditLog {
+func (x *CreateApiAuditLogRequest) GetData() *ApiAuditLog {
 	if x != nil {
 		return x.Data
 	}
 	return nil
 }
 
-// 更新操作审计日志 - 请求
-type UpdateOperationAuditLogRequest struct {
+// 更新API审计日志 - 请求
+type UpdateApiAuditLogRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Data          *OperationAuditLog     `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
+	Data          *ApiAuditLog           `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
 	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *UpdateOperationAuditLogRequest) Reset() {
-	*x = UpdateOperationAuditLogRequest{}
-	mi := &file_admin_service_v1_i_operation_audit_log_proto_msgTypes[4]
+func (x *UpdateApiAuditLogRequest) Reset() {
+	*x = UpdateApiAuditLogRequest{}
+	mi := &file_admin_service_v1_i_api_audit_log_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *UpdateOperationAuditLogRequest) String() string {
+func (x *UpdateApiAuditLogRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*UpdateOperationAuditLogRequest) ProtoMessage() {}
+func (*UpdateApiAuditLogRequest) ProtoMessage() {}
 
-func (x *UpdateOperationAuditLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_admin_service_v1_i_operation_audit_log_proto_msgTypes[4]
+func (x *UpdateApiAuditLogRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_service_v1_i_api_audit_log_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -506,62 +506,62 @@ func (x *UpdateOperationAuditLogRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use UpdateOperationAuditLogRequest.ProtoReflect.Descriptor instead.
-func (*UpdateOperationAuditLogRequest) Descriptor() ([]byte, []int) {
-	return file_admin_service_v1_i_operation_audit_log_proto_rawDescGZIP(), []int{4}
+// Deprecated: Use UpdateApiAuditLogRequest.ProtoReflect.Descriptor instead.
+func (*UpdateApiAuditLogRequest) Descriptor() ([]byte, []int) {
+	return file_admin_service_v1_i_api_audit_log_proto_rawDescGZIP(), []int{4}
 }
 
-func (x *UpdateOperationAuditLogRequest) GetId() uint32 {
+func (x *UpdateApiAuditLogRequest) GetId() uint32 {
 	if x != nil {
 		return x.Id
 	}
 	return 0
 }
 
-func (x *UpdateOperationAuditLogRequest) GetData() *OperationAuditLog {
+func (x *UpdateApiAuditLogRequest) GetData() *ApiAuditLog {
 	if x != nil {
 		return x.Data
 	}
 	return nil
 }
 
-func (x *UpdateOperationAuditLogRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+func (x *UpdateApiAuditLogRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	if x != nil {
 		return x.UpdateMask
 	}
 	return nil
 }
 
-func (x *UpdateOperationAuditLogRequest) GetAllowMissing() bool {
+func (x *UpdateApiAuditLogRequest) GetAllowMissing() bool {
 	if x != nil && x.AllowMissing != nil {
 		return *x.AllowMissing
 	}
 	return false
 }
 
-// 删除操作审计日志 - 请求
-type DeleteOperationAuditLogRequest struct {
+// 删除API审计日志 - 请求
+type DeleteApiAuditLogRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
-func (x *DeleteOperationAuditLogRequest) Reset() {
-	*x = DeleteOperationAuditLogRequest{}
-	mi := &file_admin_service_v1_i_operation_audit_log_proto_msgTypes[5]
+func (x *DeleteApiAuditLogRequest) Reset() {
+	*x = DeleteApiAuditLogRequest{}
+	mi := &file_admin_service_v1_i_api_audit_log_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
 
-func (x *DeleteOperationAuditLogRequest) String() string {
+func (x *DeleteApiAuditLogRequest) String() string {
 	return protoimpl.X.MessageStringOf(x)
 }
 
-func (*DeleteOperationAuditLogRequest) ProtoMessage() {}
+func (*DeleteApiAuditLogRequest) ProtoMessage() {}
 
-func (x *DeleteOperationAuditLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_admin_service_v1_i_operation_audit_log_proto_msgTypes[5]
+func (x *DeleteApiAuditLogRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_admin_service_v1_i_api_audit_log_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -572,25 +572,25 @@ func (x *DeleteOperationAuditLogRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteOperationAuditLogRequest.ProtoReflect.Descriptor instead.
-func (*DeleteOperationAuditLogRequest) Descriptor() ([]byte, []int) {
-	return file_admin_service_v1_i_operation_audit_log_proto_rawDescGZIP(), []int{5}
+// Deprecated: Use DeleteApiAuditLogRequest.ProtoReflect.Descriptor instead.
+func (*DeleteApiAuditLogRequest) Descriptor() ([]byte, []int) {
+	return file_admin_service_v1_i_api_audit_log_proto_rawDescGZIP(), []int{5}
 }
 
-func (x *DeleteOperationAuditLogRequest) GetId() uint32 {
+func (x *DeleteApiAuditLogRequest) GetId() uint32 {
 	if x != nil {
 		return x.Id
 	}
 	return 0
 }
 
-var File_admin_service_v1_i_operation_audit_log_proto protoreflect.FileDescriptor
+var File_admin_service_v1_i_api_audit_log_proto protoreflect.FileDescriptor
 
-const file_admin_service_v1_i_operation_audit_log_proto_rawDesc = "" +
+const file_admin_service_v1_i_api_audit_log_proto_rawDesc = "" +
 	"\n" +
-	",admin/service/v1/i_operation_audit_log.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1epagination/v1/pagination.proto\"\xdc\x10\n" +
-	"\x11OperationAuditLog\x122\n" +
-	"\x02id\x18\x01 \x01(\rB\x1d\xe0A\x01\xbaG\x17\x92\x02\x14操作审计日志IDH\x00R\x02id\x88\x01\x01\x12O\n" +
+	"&admin/service/v1/i_api_audit_log.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1epagination/v1/pagination.proto\"\xd3\x10\n" +
+	"\vApiAuditLog\x12/\n" +
+	"\x02id\x18\x01 \x01(\rB\x1a\xe0A\x01\xbaG\x14\x92\x02\x11API审计日志IDH\x00R\x02id\x88\x01\x01\x12O\n" +
 	"\tcost_time\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x12\xbaG\x0f\x92\x02\f操作耗时H\x01R\bcostTime\x88\x01\x01\x127\n" +
 	"\asuccess\x18\x03 \x01(\bB\x18\xbaG\x15\x92\x02\x12操作是否成功H\x02R\asuccess\x88\x01\x01\x122\n" +
 	"\n" +
@@ -666,71 +666,71 @@ const file_admin_service_v1_i_operation_audit_log_proto_rawDesc = "" +
 	"\v_os_versionB\f\n" +
 	"\n" +
 	"_tenant_idB\r\n" +
-	"\v_created_at\"p\n" +
-	"\x1dListOperationAuditLogResponse\x129\n" +
-	"\x05items\x18\x01 \x03(\v2#.admin.service.v1.OperationAuditLogR\x05items\x12\x14\n" +
-	"\x05total\x18\x02 \x01(\x04R\x05total\"\xce\x01\n" +
-	"\x1bGetOperationAuditLogRequest\x12\x1c\n" +
+	"\v_created_at\"d\n" +
+	"\x17ListApiAuditLogResponse\x123\n" +
+	"\x05items\x18\x01 \x03(\v2\x1d.admin.service.v1.ApiAuditLogR\x05items\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x04R\x05total\"\xc8\x01\n" +
+	"\x15GetApiAuditLogRequest\x12\x1c\n" +
 	"\x02id\x18\x01 \x01(\rB\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02id\x12w\n" +
 	"\tview_mask\x18d \x01(\v2\x1a.google.protobuf.FieldMaskB9\xbaG6\x92\x023视图字段过滤器，用于控制返回的字段H\x01R\bviewMask\x88\x01\x01B\n" +
 	"\n" +
 	"\bquery_byB\f\n" +
 	"\n" +
-	"_view_mask\"Y\n" +
-	"\x1eCreateOperationAuditLogRequest\x127\n" +
-	"\x04data\x18\x01 \x01(\v2#.admin.service.v1.OperationAuditLogR\x04data\"\xa7\x03\n" +
-	"\x1eUpdateOperationAuditLogRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x127\n" +
-	"\x04data\x18\x02 \x01(\v2#.admin.service.v1.OperationAuditLogR\x04data\x12s\n" +
+	"_view_mask\"M\n" +
+	"\x18CreateApiAuditLogRequest\x121\n" +
+	"\x04data\x18\x01 \x01(\v2\x1d.admin.service.v1.ApiAuditLogR\x04data\"\x9b\x03\n" +
+	"\x18UpdateApiAuditLogRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\x121\n" +
+	"\x04data\x18\x02 \x01(\v2\x1d.admin.service.v1.ApiAuditLogR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
-	"\x0e_allow_missing\"0\n" +
-	"\x1eDeleteOperationAuditLogRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id2\x9f\x02\n" +
-	"\x18OperationAuditLogService\x12z\n" +
-	"\x04List\x12\x19.pagination.PagingRequest\x1a/.admin.service.v1.ListOperationAuditLogResponse\"&\x82\xd3\xe4\x93\x02 \x12\x1e/admin/v1/operation-audit-logs\x12\x86\x01\n" +
-	"\x03Get\x12-.admin.service.v1.GetOperationAuditLogRequest\x1a#.admin.service.v1.OperationAuditLog\"+\x82\xd3\xe4\x93\x02%\x12#/admin/v1/operation-audit-logs/{id}B\xc4\x01\n" +
-	"\x14com.admin.service.v1B\x17IOperationAuditLogProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
+	"\x0e_allow_missing\"*\n" +
+	"\x18DeleteApiAuditLogRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id2\xfa\x01\n" +
+	"\x12ApiAuditLogService\x12n\n" +
+	"\x04List\x12\x19.pagination.PagingRequest\x1a).admin.service.v1.ListApiAuditLogResponse\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/admin/v1/api-audit-logs\x12t\n" +
+	"\x03Get\x12'.admin.service.v1.GetApiAuditLogRequest\x1a\x1d.admin.service.v1.ApiAuditLog\"%\x82\xd3\xe4\x93\x02\x1f\x12\x1d/admin/v1/api-audit-logs/{id}B\xbe\x01\n" +
+	"\x14com.admin.service.v1B\x11IApiAuditLogProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var (
-	file_admin_service_v1_i_operation_audit_log_proto_rawDescOnce sync.Once
-	file_admin_service_v1_i_operation_audit_log_proto_rawDescData []byte
+	file_admin_service_v1_i_api_audit_log_proto_rawDescOnce sync.Once
+	file_admin_service_v1_i_api_audit_log_proto_rawDescData []byte
 )
 
-func file_admin_service_v1_i_operation_audit_log_proto_rawDescGZIP() []byte {
-	file_admin_service_v1_i_operation_audit_log_proto_rawDescOnce.Do(func() {
-		file_admin_service_v1_i_operation_audit_log_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_admin_service_v1_i_operation_audit_log_proto_rawDesc), len(file_admin_service_v1_i_operation_audit_log_proto_rawDesc)))
+func file_admin_service_v1_i_api_audit_log_proto_rawDescGZIP() []byte {
+	file_admin_service_v1_i_api_audit_log_proto_rawDescOnce.Do(func() {
+		file_admin_service_v1_i_api_audit_log_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_admin_service_v1_i_api_audit_log_proto_rawDesc), len(file_admin_service_v1_i_api_audit_log_proto_rawDesc)))
 	})
-	return file_admin_service_v1_i_operation_audit_log_proto_rawDescData
+	return file_admin_service_v1_i_api_audit_log_proto_rawDescData
 }
 
-var file_admin_service_v1_i_operation_audit_log_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
-var file_admin_service_v1_i_operation_audit_log_proto_goTypes = []any{
-	(*OperationAuditLog)(nil),              // 0: admin.service.v1.OperationAuditLog
-	(*ListOperationAuditLogResponse)(nil),  // 1: admin.service.v1.ListOperationAuditLogResponse
-	(*GetOperationAuditLogRequest)(nil),    // 2: admin.service.v1.GetOperationAuditLogRequest
-	(*CreateOperationAuditLogRequest)(nil), // 3: admin.service.v1.CreateOperationAuditLogRequest
-	(*UpdateOperationAuditLogRequest)(nil), // 4: admin.service.v1.UpdateOperationAuditLogRequest
-	(*DeleteOperationAuditLogRequest)(nil), // 5: admin.service.v1.DeleteOperationAuditLogRequest
-	(*durationpb.Duration)(nil),            // 6: google.protobuf.Duration
-	(*timestamppb.Timestamp)(nil),          // 7: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),          // 8: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),               // 9: pagination.PagingRequest
+var file_admin_service_v1_i_api_audit_log_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_admin_service_v1_i_api_audit_log_proto_goTypes = []any{
+	(*ApiAuditLog)(nil),              // 0: admin.service.v1.ApiAuditLog
+	(*ListApiAuditLogResponse)(nil),  // 1: admin.service.v1.ListApiAuditLogResponse
+	(*GetApiAuditLogRequest)(nil),    // 2: admin.service.v1.GetApiAuditLogRequest
+	(*CreateApiAuditLogRequest)(nil), // 3: admin.service.v1.CreateApiAuditLogRequest
+	(*UpdateApiAuditLogRequest)(nil), // 4: admin.service.v1.UpdateApiAuditLogRequest
+	(*DeleteApiAuditLogRequest)(nil), // 5: admin.service.v1.DeleteApiAuditLogRequest
+	(*durationpb.Duration)(nil),      // 6: google.protobuf.Duration
+	(*timestamppb.Timestamp)(nil),    // 7: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),    // 8: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),         // 9: pagination.PagingRequest
 }
-var file_admin_service_v1_i_operation_audit_log_proto_depIdxs = []int32{
-	6, // 0: admin.service.v1.OperationAuditLog.cost_time:type_name -> google.protobuf.Duration
-	7, // 1: admin.service.v1.OperationAuditLog.created_at:type_name -> google.protobuf.Timestamp
-	0, // 2: admin.service.v1.ListOperationAuditLogResponse.items:type_name -> admin.service.v1.OperationAuditLog
-	8, // 3: admin.service.v1.GetOperationAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
-	0, // 4: admin.service.v1.CreateOperationAuditLogRequest.data:type_name -> admin.service.v1.OperationAuditLog
-	0, // 5: admin.service.v1.UpdateOperationAuditLogRequest.data:type_name -> admin.service.v1.OperationAuditLog
-	8, // 6: admin.service.v1.UpdateOperationAuditLogRequest.update_mask:type_name -> google.protobuf.FieldMask
-	9, // 7: admin.service.v1.OperationAuditLogService.List:input_type -> pagination.PagingRequest
-	2, // 8: admin.service.v1.OperationAuditLogService.Get:input_type -> admin.service.v1.GetOperationAuditLogRequest
-	1, // 9: admin.service.v1.OperationAuditLogService.List:output_type -> admin.service.v1.ListOperationAuditLogResponse
-	0, // 10: admin.service.v1.OperationAuditLogService.Get:output_type -> admin.service.v1.OperationAuditLog
+var file_admin_service_v1_i_api_audit_log_proto_depIdxs = []int32{
+	6, // 0: admin.service.v1.ApiAuditLog.cost_time:type_name -> google.protobuf.Duration
+	7, // 1: admin.service.v1.ApiAuditLog.created_at:type_name -> google.protobuf.Timestamp
+	0, // 2: admin.service.v1.ListApiAuditLogResponse.items:type_name -> admin.service.v1.ApiAuditLog
+	8, // 3: admin.service.v1.GetApiAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
+	0, // 4: admin.service.v1.CreateApiAuditLogRequest.data:type_name -> admin.service.v1.ApiAuditLog
+	0, // 5: admin.service.v1.UpdateApiAuditLogRequest.data:type_name -> admin.service.v1.ApiAuditLog
+	8, // 6: admin.service.v1.UpdateApiAuditLogRequest.update_mask:type_name -> google.protobuf.FieldMask
+	9, // 7: admin.service.v1.ApiAuditLogService.List:input_type -> pagination.PagingRequest
+	2, // 8: admin.service.v1.ApiAuditLogService.Get:input_type -> admin.service.v1.GetApiAuditLogRequest
+	1, // 9: admin.service.v1.ApiAuditLogService.List:output_type -> admin.service.v1.ListApiAuditLogResponse
+	0, // 10: admin.service.v1.ApiAuditLogService.Get:output_type -> admin.service.v1.ApiAuditLog
 	9, // [9:11] is the sub-list for method output_type
 	7, // [7:9] is the sub-list for method input_type
 	7, // [7:7] is the sub-list for extension type_name
@@ -738,31 +738,31 @@ var file_admin_service_v1_i_operation_audit_log_proto_depIdxs = []int32{
 	0, // [0:7] is the sub-list for field type_name
 }
 
-func init() { file_admin_service_v1_i_operation_audit_log_proto_init() }
-func file_admin_service_v1_i_operation_audit_log_proto_init() {
-	if File_admin_service_v1_i_operation_audit_log_proto != nil {
+func init() { file_admin_service_v1_i_api_audit_log_proto_init() }
+func file_admin_service_v1_i_api_audit_log_proto_init() {
+	if File_admin_service_v1_i_api_audit_log_proto != nil {
 		return
 	}
-	file_admin_service_v1_i_operation_audit_log_proto_msgTypes[0].OneofWrappers = []any{}
-	file_admin_service_v1_i_operation_audit_log_proto_msgTypes[2].OneofWrappers = []any{
-		(*GetOperationAuditLogRequest_Id)(nil),
+	file_admin_service_v1_i_api_audit_log_proto_msgTypes[0].OneofWrappers = []any{}
+	file_admin_service_v1_i_api_audit_log_proto_msgTypes[2].OneofWrappers = []any{
+		(*GetApiAuditLogRequest_Id)(nil),
 	}
-	file_admin_service_v1_i_operation_audit_log_proto_msgTypes[4].OneofWrappers = []any{}
+	file_admin_service_v1_i_api_audit_log_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_admin_service_v1_i_operation_audit_log_proto_rawDesc), len(file_admin_service_v1_i_operation_audit_log_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_admin_service_v1_i_api_audit_log_proto_rawDesc), len(file_admin_service_v1_i_api_audit_log_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_admin_service_v1_i_operation_audit_log_proto_goTypes,
-		DependencyIndexes: file_admin_service_v1_i_operation_audit_log_proto_depIdxs,
-		MessageInfos:      file_admin_service_v1_i_operation_audit_log_proto_msgTypes,
+		GoTypes:           file_admin_service_v1_i_api_audit_log_proto_goTypes,
+		DependencyIndexes: file_admin_service_v1_i_api_audit_log_proto_depIdxs,
+		MessageInfos:      file_admin_service_v1_i_api_audit_log_proto_msgTypes,
 	}.Build()
-	File_admin_service_v1_i_operation_audit_log_proto = out.File
-	file_admin_service_v1_i_operation_audit_log_proto_goTypes = nil
-	file_admin_service_v1_i_operation_audit_log_proto_depIdxs = nil
+	File_admin_service_v1_i_api_audit_log_proto = out.File
+	file_admin_service_v1_i_api_audit_log_proto_goTypes = nil
+	file_admin_service_v1_i_api_audit_log_proto_depIdxs = nil
 }

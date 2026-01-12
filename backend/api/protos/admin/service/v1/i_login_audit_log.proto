@@ -33,6 +33,25 @@ service LoginAuditLogService {
 
 // 登录审计日志
 message LoginAuditLog {
+  // 事件类型
+  enum EventType {
+    EVENT_TYPE_UNSPECIFIED = 0; // 未指定
+
+    LOGIN_SUCCESS = 1; // 登录成功
+    LOGIN_FAILED = 2; // 登录失败
+    LOGOUT = 3; // 登出
+    SESSION_EXPIRED = 4; // 会话过期
+  }
+
+  // 风险因素
+  enum RiskFactor {
+    RISK_FACTOR_UNSPECIFIED = 0; // 未指定
+
+    NORMAL = 1; // 正常
+    SUSPICIOUS = 2; // 可疑
+    HIGH_RISK = 3; // 高风险
+  }
+
   optional uint32 id = 1 [
     json_name = "id",
     (google.api.field_behavior) = OPTIONAL,

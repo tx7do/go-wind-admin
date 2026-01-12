@@ -4,6 +4,7 @@ package ent
 
 import (
 	"go-wind-admin/app/admin/service/internal/data/ent/api"
+	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"go-wind-admin/app/admin/service/internal/data/ent/file"
@@ -18,7 +19,6 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/membershipposition"
 	"go-wind-admin/app/admin/service/internal/data/ent/membershiprole"
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
-	"go-wind-admin/app/admin/service/internal/data/ent/operationauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/orgunit"
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionapi"
@@ -56,6 +56,15 @@ func init() {
 	apiDescID := apiMixinFields0[0].Descriptor()
 	// api.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	api.IDValidator = apiDescID.Validators[0].(func(uint32) error)
+	apiauditlogMixin := schema.ApiAuditLog{}.Mixin()
+	apiauditlogMixinFields0 := apiauditlogMixin[0].Fields()
+	_ = apiauditlogMixinFields0
+	apiauditlogFields := schema.ApiAuditLog{}.Fields()
+	_ = apiauditlogFields
+	// apiauditlogDescID is the schema descriptor for id field.
+	apiauditlogDescID := apiauditlogMixinFields0[0].Descriptor()
+	// apiauditlog.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	apiauditlog.IDValidator = apiauditlogDescID.Validators[0].(func(uint32) error)
 	dictentryMixin := schema.DictEntry{}.Mixin()
 	dictentryMixinFields0 := dictentryMixin[0].Fields()
 	_ = dictentryMixinFields0
@@ -296,15 +305,6 @@ func init() {
 	menuDescID := menuMixinFields0[0].Descriptor()
 	// menu.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	menu.IDValidator = menuDescID.Validators[0].(func(uint32) error)
-	operationauditlogMixin := schema.OperationAuditLog{}.Mixin()
-	operationauditlogMixinFields0 := operationauditlogMixin[0].Fields()
-	_ = operationauditlogMixinFields0
-	operationauditlogFields := schema.OperationAuditLog{}.Fields()
-	_ = operationauditlogFields
-	// operationauditlogDescID is the schema descriptor for id field.
-	operationauditlogDescID := operationauditlogMixinFields0[0].Descriptor()
-	// operationauditlog.IDValidator is a validator for the "id" field. It is called by the builders before save.
-	operationauditlog.IDValidator = operationauditlogDescID.Validators[0].(func(uint32) error)
 	orgunitMixin := schema.OrgUnit{}.Mixin()
 	orgunitMixinFields0 := orgunitMixin[0].Fields()
 	_ = orgunitMixinFields0

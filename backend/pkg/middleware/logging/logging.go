@@ -34,37 +34,37 @@ func Server(opts ...Option) middleware.Middleware {
 			// 统计耗时
 			latency := time.Since(startTime).Seconds()
 
-			var operationLogData *adminV1.OperationAuditLog
-			var loginLogData *adminV1.LoginAuditLog
+			var apiAuditLog *adminV1.ApiAuditLog
+			var loginAuditLog *adminV1.LoginAuditLog
 
 			if tr, ok := transport.FromServerContext(ctx); ok {
 				var htr *http.Transport
 				if htr, ok = tr.(*http.Transport); ok {
-					loginLogData = fillLoginLog(htr)
-					operationLogData = fillOperationLog(htr)
+					loginAuditLog = fillLoginLog(htr)
+					apiAuditLog = fillApiLog(htr)
 				}
 			}
 
 			// 获取错误码和是否成功
 			statusCode, reason, success := getStatusCode(err)
 
-			if operationLogData != nil {
-				operationLogData.CostTime = timeutil.Float64ToDurationpb(latency)
-				operationLogData.StatusCode = trans.Ptr(statusCode)
-				operationLogData.Reason = trans.Ptr(reason)
-				operationLogData.Success = trans.Ptr(success)
+			if apiAuditLog != nil {
+				apiAuditLog.CostTime = timeutil.Float64ToDurationpb(latency)
+				apiAuditLog.StatusCode = trans.Ptr(statusCode)
+				apiAuditLog.Reason = trans.Ptr(reason)
+				apiAuditLog.Success = trans.Ptr(success)
 			}
-			if loginLogData != nil {
-				loginLogData.StatusCode = trans.Ptr(statusCode)
-				loginLogData.Reason = trans.Ptr(reason)
-				loginLogData.Success = trans.Ptr(success)
+			if loginAuditLog != nil {
+				loginAuditLog.StatusCode = trans.Ptr(statusCode)
+				loginAuditLog.Reason = trans.Ptr(reason)
+				loginAuditLog.Success = trans.Ptr(success)
 			}
 
-			if op.writeOperationLogFunc != nil {
-				_ = op.writeOperationLogFunc(ctx, operationLogData)
+			if op.writeApiLogFunc != nil {
+				_ = op.writeApiLogFunc(ctx, apiAuditLog)
 			}
 			if op.writeLoginLogFunc != nil {
-				_ = op.writeLoginLogFunc(ctx, loginLogData)
+				_ = op.writeLoginLogFunc(ctx, loginAuditLog)
 			}
 
 			return
@@ -117,37 +117,37 @@ func fillLoginLog(htr *http.Transport) *adminV1.LoginAuditLog {
 	return loginLogData
 }
 
-// fillOperationLog 填充操作日志
-func fillOperationLog(htr *http.Transport) *adminV1.OperationAuditLog {
+// fillApiLog 填充API日志
+func fillApiLog(htr *http.Transport) *adminV1.ApiAuditLog {
 	if htr.Operation() == adminV1.OperationAuthenticationServiceLogin {
 		return nil
 	}
 
-	operationLogData := &adminV1.OperationAuditLog{}
+	apiAuditLog := &adminV1.ApiAuditLog{}
 
 	clientIp := getClientRealIP(htr.Request())
 	referer, _ := url.QueryUnescape(htr.RequestHeader().Get(HeaderKeyReferer))
 	requestUri, _ := url.QueryUnescape(htr.Request().RequestURI)
 	bodyBytes, _ := io.ReadAll(htr.Request().Body)
 
-	operationLogData.Method = trans.Ptr(htr.Request().Method)
-	operationLogData.Operation = trans.Ptr(htr.Operation())
-	operationLogData.Path = trans.Ptr(htr.PathTemplate())
-	operationLogData.Referer = trans.Ptr(referer)
-	operationLogData.ClientIp = trans.Ptr(clientIp)
-	operationLogData.RequestId = trans.Ptr(getRequestId(htr.Request()))
-	operationLogData.RequestUri = trans.Ptr(requestUri)
-	operationLogData.RequestBody = trans.Ptr(string(bodyBytes))
-	operationLogData.Location = trans.Ptr(clientIpToLocation(clientIp))
+	apiAuditLog.Method = trans.Ptr(htr.Request().Method)
+	apiAuditLog.Operation = trans.Ptr(htr.Operation())
+	apiAuditLog.Path = trans.Ptr(htr.PathTemplate())
+	apiAuditLog.Referer = trans.Ptr(referer)
+	apiAuditLog.ClientIp = trans.Ptr(clientIp)
+	apiAuditLog.RequestId = trans.Ptr(getRequestId(htr.Request()))
+	apiAuditLog.RequestUri = trans.Ptr(requestUri)
+	apiAuditLog.RequestBody = trans.Ptr(string(bodyBytes))
+	apiAuditLog.Location = trans.Ptr(clientIpToLocation(clientIp))
 
 	ut := extractAuthToken(htr)
 	if ut != nil {
-		operationLogData.UserId = trans.Ptr(ut.UserId)
-		operationLogData.Username = ut.Username
+		apiAuditLog.UserId = trans.Ptr(ut.UserId)
+		apiAuditLog.Username = ut.Username
 	}
 
 	// 获取客户端ID
-	operationLogData.ClientId = trans.Ptr(getClientID(htr.Request(), ut))
+	apiAuditLog.ClientId = trans.Ptr(getClientID(htr.Request(), ut))
 
 	// 用户代理信息
 	strUserAgent := htr.RequestHeader().Get(HeaderKeyUserAgent)
@@ -162,12 +162,12 @@ func fillOperationLog(htr *http.Transport) *adminV1.OperationAuditLog {
 		}
 	}
 
-	operationLogData.UserAgent = trans.Ptr(ua.String)
-	operationLogData.BrowserVersion = trans.Ptr(ua.Version)
-	operationLogData.BrowserName = trans.Ptr(ua.Name)
-	operationLogData.OsName = trans.Ptr(ua.OS)
-	operationLogData.OsVersion = trans.Ptr(ua.OSVersion)
-	operationLogData.ClientName = trans.Ptr(deviceName)
+	apiAuditLog.UserAgent = trans.Ptr(ua.String)
+	apiAuditLog.BrowserVersion = trans.Ptr(ua.Version)
+	apiAuditLog.BrowserName = trans.Ptr(ua.Name)
+	apiAuditLog.OsName = trans.Ptr(ua.OS)
+	apiAuditLog.OsVersion = trans.Ptr(ua.OSVersion)
+	apiAuditLog.ClientName = trans.Ptr(deviceName)
 
-	return operationLogData
+	return apiAuditLog
 }

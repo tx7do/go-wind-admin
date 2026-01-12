@@ -59,7 +59,7 @@
       "tab": {
         "basicInfo": "基础信息",
         "permission": "权限信息",
-        "operationLog": "操作日志",
+        "apiAuditLog": "API日志",
         "internalMessage": "收件箱"
       },
       "desc": {
@@ -315,8 +315,8 @@
     "clientName": "登录平台",
     "loginIp": "登录地址"
   },
-  "operationAuditLog": {
-    "moduleName": "操作日志",
+  "apiAuditLog": {
+    "moduleName": "API日志",
     "username": "操作者名",
     "success": "操作状态",
     "location": "操作地",

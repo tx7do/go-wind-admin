@@ -4,7 +4,7 @@ package ent
 
 import (
 	"fmt"
-	"go-wind-admin/app/admin/service/internal/data/ent/operationauditlog"
+	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"strings"
 	"time"
 
@@ -12,8 +12,8 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
-// 操作审计日志表
-type OperationAuditLog struct {
+// API审计日志表
+type ApiAuditLog struct {
 	config `json:"-"`
 	// ID of the ent.
 	// id
@@ -74,19 +74,19 @@ type OperationAuditLog struct {
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
-func (*OperationAuditLog) scanValues(columns []string) ([]any, error) {
+func (*ApiAuditLog) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case operationauditlog.FieldSuccess:
+		case apiauditlog.FieldSuccess:
 			values[i] = new(sql.NullBool)
-		case operationauditlog.FieldCostTime:
+		case apiauditlog.FieldCostTime:
 			values[i] = new(sql.NullFloat64)
-		case operationauditlog.FieldID, operationauditlog.FieldTenantID, operationauditlog.FieldUserID, operationauditlog.FieldStatusCode:
+		case apiauditlog.FieldID, apiauditlog.FieldTenantID, apiauditlog.FieldUserID, apiauditlog.FieldStatusCode:
 			values[i] = new(sql.NullInt64)
-		case operationauditlog.FieldRequestID, operationauditlog.FieldMethod, operationauditlog.FieldOperation, operationauditlog.FieldPath, operationauditlog.FieldReferer, operationauditlog.FieldRequestURI, operationauditlog.FieldRequestBody, operationauditlog.FieldRequestHeader, operationauditlog.FieldResponse, operationauditlog.FieldUsername, operationauditlog.FieldClientIP, operationauditlog.FieldReason, operationauditlog.FieldLocation, operationauditlog.FieldUserAgent, operationauditlog.FieldBrowserName, operationauditlog.FieldBrowserVersion, operationauditlog.FieldClientID, operationauditlog.FieldClientName, operationauditlog.FieldOsName, operationauditlog.FieldOsVersion:
+		case apiauditlog.FieldRequestID, apiauditlog.FieldMethod, apiauditlog.FieldOperation, apiauditlog.FieldPath, apiauditlog.FieldReferer, apiauditlog.FieldRequestURI, apiauditlog.FieldRequestBody, apiauditlog.FieldRequestHeader, apiauditlog.FieldResponse, apiauditlog.FieldUsername, apiauditlog.FieldClientIP, apiauditlog.FieldReason, apiauditlog.FieldLocation, apiauditlog.FieldUserAgent, apiauditlog.FieldBrowserName, apiauditlog.FieldBrowserVersion, apiauditlog.FieldClientID, apiauditlog.FieldClientName, apiauditlog.FieldOsName, apiauditlog.FieldOsVersion:
 			values[i] = new(sql.NullString)
-		case operationauditlog.FieldCreatedAt:
+		case apiauditlog.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -96,195 +96,195 @@ func (*OperationAuditLog) scanValues(columns []string) ([]any, error) {
 }
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
-// to the OperationAuditLog fields.
-func (_m *OperationAuditLog) assignValues(columns []string, values []any) error {
+// to the ApiAuditLog fields.
+func (_m *ApiAuditLog) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
 	for i := range columns {
 		switch columns[i] {
-		case operationauditlog.FieldID:
+		case apiauditlog.FieldID:
 			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
 			_m.ID = uint32(value.Int64)
-		case operationauditlog.FieldCreatedAt:
+		case apiauditlog.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
 				_m.CreatedAt = new(time.Time)
 				*_m.CreatedAt = value.Time
 			}
-		case operationauditlog.FieldTenantID:
+		case apiauditlog.FieldTenantID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field tenant_id", values[i])
 			} else if value.Valid {
 				_m.TenantID = new(uint32)
 				*_m.TenantID = uint32(value.Int64)
 			}
-		case operationauditlog.FieldRequestID:
+		case apiauditlog.FieldRequestID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field request_id", values[i])
 			} else if value.Valid {
 				_m.RequestID = new(string)
 				*_m.RequestID = value.String
 			}
-		case operationauditlog.FieldMethod:
+		case apiauditlog.FieldMethod:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field method", values[i])
 			} else if value.Valid {
 				_m.Method = new(string)
 				*_m.Method = value.String
 			}
-		case operationauditlog.FieldOperation:
+		case apiauditlog.FieldOperation:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field operation", values[i])
 			} else if value.Valid {
 				_m.Operation = new(string)
 				*_m.Operation = value.String
 			}
-		case operationauditlog.FieldPath:
+		case apiauditlog.FieldPath:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field path", values[i])
 			} else if value.Valid {
 				_m.Path = new(string)
 				*_m.Path = value.String
 			}
-		case operationauditlog.FieldReferer:
+		case apiauditlog.FieldReferer:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field referer", values[i])
 			} else if value.Valid {
 				_m.Referer = new(string)
 				*_m.Referer = value.String
 			}
-		case operationauditlog.FieldRequestURI:
+		case apiauditlog.FieldRequestURI:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field request_uri", values[i])
 			} else if value.Valid {
 				_m.RequestURI = new(string)
 				*_m.RequestURI = value.String
 			}
-		case operationauditlog.FieldRequestBody:
+		case apiauditlog.FieldRequestBody:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field request_body", values[i])
 			} else if value.Valid {
 				_m.RequestBody = new(string)
 				*_m.RequestBody = value.String
 			}
-		case operationauditlog.FieldRequestHeader:
+		case apiauditlog.FieldRequestHeader:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field request_header", values[i])
 			} else if value.Valid {
 				_m.RequestHeader = new(string)
 				*_m.RequestHeader = value.String
 			}
-		case operationauditlog.FieldResponse:
+		case apiauditlog.FieldResponse:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field response", values[i])
 			} else if value.Valid {
 				_m.Response = new(string)
 				*_m.Response = value.String
 			}
-		case operationauditlog.FieldCostTime:
+		case apiauditlog.FieldCostTime:
 			if value, ok := values[i].(*sql.NullFloat64); !ok {
 				return fmt.Errorf("unexpected type %T for field cost_time", values[i])
 			} else if value.Valid {
 				_m.CostTime = new(float64)
 				*_m.CostTime = value.Float64
 			}
-		case operationauditlog.FieldUserID:
+		case apiauditlog.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
 			} else if value.Valid {
 				_m.UserID = new(uint32)
 				*_m.UserID = uint32(value.Int64)
 			}
-		case operationauditlog.FieldUsername:
+		case apiauditlog.FieldUsername:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field username", values[i])
 			} else if value.Valid {
 				_m.Username = new(string)
 				*_m.Username = value.String
 			}
-		case operationauditlog.FieldClientIP:
+		case apiauditlog.FieldClientIP:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field client_ip", values[i])
 			} else if value.Valid {
 				_m.ClientIP = new(string)
 				*_m.ClientIP = value.String
 			}
-		case operationauditlog.FieldStatusCode:
+		case apiauditlog.FieldStatusCode:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field status_code", values[i])
 			} else if value.Valid {
 				_m.StatusCode = new(int32)
 				*_m.StatusCode = int32(value.Int64)
 			}
-		case operationauditlog.FieldReason:
+		case apiauditlog.FieldReason:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field reason", values[i])
 			} else if value.Valid {
 				_m.Reason = new(string)
 				*_m.Reason = value.String
 			}
-		case operationauditlog.FieldSuccess:
+		case apiauditlog.FieldSuccess:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field success", values[i])
 			} else if value.Valid {
 				_m.Success = new(bool)
 				*_m.Success = value.Bool
 			}
-		case operationauditlog.FieldLocation:
+		case apiauditlog.FieldLocation:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field location", values[i])
 			} else if value.Valid {
 				_m.Location = new(string)
 				*_m.Location = value.String
 			}
-		case operationauditlog.FieldUserAgent:
+		case apiauditlog.FieldUserAgent:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field user_agent", values[i])
 			} else if value.Valid {
 				_m.UserAgent = new(string)
 				*_m.UserAgent = value.String
 			}
-		case operationauditlog.FieldBrowserName:
+		case apiauditlog.FieldBrowserName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field browser_name", values[i])
 			} else if value.Valid {
 				_m.BrowserName = new(string)
 				*_m.BrowserName = value.String
 			}
-		case operationauditlog.FieldBrowserVersion:
+		case apiauditlog.FieldBrowserVersion:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field browser_version", values[i])
 			} else if value.Valid {
 				_m.BrowserVersion = new(string)
 				*_m.BrowserVersion = value.String
 			}
-		case operationauditlog.FieldClientID:
+		case apiauditlog.FieldClientID:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field client_id", values[i])
 			} else if value.Valid {
 				_m.ClientID = new(string)
 				*_m.ClientID = value.String
 			}
-		case operationauditlog.FieldClientName:
+		case apiauditlog.FieldClientName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field client_name", values[i])
 			} else if value.Valid {
 				_m.ClientName = new(string)
 				*_m.ClientName = value.String
 			}
-		case operationauditlog.FieldOsName:
+		case apiauditlog.FieldOsName:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field os_name", values[i])
 			} else if value.Valid {
 				_m.OsName = new(string)
 				*_m.OsName = value.String
 			}
-		case operationauditlog.FieldOsVersion:
+		case apiauditlog.FieldOsVersion:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field os_version", values[i])
 			} else if value.Valid {
@@ -298,34 +298,34 @@ func (_m *OperationAuditLog) assignValues(columns []string, values []any) error 
 	return nil
 }
 
-// Value returns the ent.Value that was dynamically selected and assigned to the OperationAuditLog.
+// Value returns the ent.Value that was dynamically selected and assigned to the ApiAuditLog.
 // This includes values selected through modifiers, order, etc.
-func (_m *OperationAuditLog) Value(name string) (ent.Value, error) {
+func (_m *ApiAuditLog) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
 }
 
-// Update returns a builder for updating this OperationAuditLog.
-// Note that you need to call OperationAuditLog.Unwrap() before calling this method if this OperationAuditLog
+// Update returns a builder for updating this ApiAuditLog.
+// Note that you need to call ApiAuditLog.Unwrap() before calling this method if this ApiAuditLog
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (_m *OperationAuditLog) Update() *OperationAuditLogUpdateOne {
-	return NewOperationAuditLogClient(_m.config).UpdateOne(_m)
+func (_m *ApiAuditLog) Update() *ApiAuditLogUpdateOne {
+	return NewApiAuditLogClient(_m.config).UpdateOne(_m)
 }
 
-// Unwrap unwraps the OperationAuditLog entity that was returned from a transaction after it was closed,
+// Unwrap unwraps the ApiAuditLog entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (_m *OperationAuditLog) Unwrap() *OperationAuditLog {
+func (_m *ApiAuditLog) Unwrap() *ApiAuditLog {
 	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
-		panic("ent: OperationAuditLog is not a transactional entity")
+		panic("ent: ApiAuditLog is not a transactional entity")
 	}
 	_m.config.driver = _tx.drv
 	return _m
 }
 
 // String implements the fmt.Stringer.
-func (_m *OperationAuditLog) String() string {
+func (_m *ApiAuditLog) String() string {
 	var builder strings.Builder
-	builder.WriteString("OperationAuditLog(")
+	builder.WriteString("ApiAuditLog(")
 	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	if v := _m.CreatedAt; v != nil {
 		builder.WriteString("created_at=")
@@ -460,5 +460,5 @@ func (_m *OperationAuditLog) String() string {
 	return builder.String()
 }
 
-// OperationAuditLogs is a parsable slice of OperationAuditLog.
-type OperationAuditLogs []*OperationAuditLog
+// ApiAuditLogs is a parsable slice of ApiAuditLog.
+type ApiAuditLogs []*ApiAuditLog

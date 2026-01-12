@@ -15,32 +15,32 @@ import "google/protobuf/duration.proto";
 import "pagination/v1/pagination.proto";
 
 
-// 操作审计日志管理服务
-service OperationAuditLogService {
-  // 查询操作审计日志列表
-  rpc List (pagination.PagingRequest) returns (ListOperationAuditLogResponse) {
+// API审计日志管理服务
+service ApiAuditLogService {
+  // 查询API审计日志列表
+  rpc List (pagination.PagingRequest) returns (ListApiAuditLogResponse) {
     option (google.api.http) = {
-      get: "/admin/v1/operation-audit-logs"
+      get: "/admin/v1/api-audit-logs"
     };
   }
 
-  // 查询操作审计日志详情
-  rpc Get (GetOperationAuditLogRequest) returns (OperationAuditLog) {
+  // 查询API审计日志详情
+  rpc Get (GetApiAuditLogRequest) returns (ApiAuditLog) {
     option (google.api.http) = {
-      get: "/admin/v1/operation-audit-logs/{id}"
+      get: "/admin/v1/api-audit-logs/{id}"
     };
   }
 }
 
-// 操作审计日志
-message OperationAuditLog {
+// API审计日志
+message ApiAuditLog {
   optional uint32 id = 1 [
     json_name = "id",
     (google.api.field_behavior) = OPTIONAL,
     (gnostic.openapi.v3.property) = {
-      description: "操作审计日志ID"
+      description: "API审计日志ID"
     }
-  ]; // 操作审计日志ID
+  ]; // API审计日志ID
 
   optional google.protobuf.Duration cost_time = 2 [
     json_name = "costTime",
@@ -232,14 +232,14 @@ message OperationAuditLog {
   optional google.protobuf.Timestamp created_at = 500 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
 }
 
-// 查询操作审计日志列表 - 回应
-message ListOperationAuditLogResponse {
-  repeated OperationAuditLog items = 1;
+// 查询API审计日志列表 - 回应
+message ListApiAuditLogResponse {
+  repeated ApiAuditLog items = 1;
   uint64 total = 2;
 }
 
-// 查询操作审计日志详情 - 请求
-message GetOperationAuditLogRequest {
+// 查询API审计日志详情 - 请求
+message GetApiAuditLogRequest {
   oneof query_by {
     uint32 id = 1 [
       (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
@@ -255,16 +255,16 @@ message GetOperationAuditLogRequest {
   ]; // 视图字段过滤器，用于控制返回的字段
 }
 
-// 创建操作审计日志 - 请求
-message CreateOperationAuditLogRequest {
-  OperationAuditLog data = 1;
+// 创建API审计日志 - 请求
+message CreateApiAuditLogRequest {
+  ApiAuditLog data = 1;
 }
 
-// 更新操作审计日志 - 请求
-message UpdateOperationAuditLogRequest {
+// 更新API审计日志 - 请求
+message UpdateApiAuditLogRequest {
   uint32 id = 1;
 
-  OperationAuditLog data = 2;
+  ApiAuditLog data = 2;
 
   google.protobuf.FieldMask update_mask = 3 [
     (gnostic.openapi.v3.property) = {
@@ -280,7 +280,7 @@ message UpdateOperationAuditLogRequest {
   ]; // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
 }
 
-// 删除操作审计日志 - 请求
-message DeleteOperationAuditLogRequest {
+// 删除API审计日志 - 请求
+message DeleteApiAuditLogRequest {
   uint32 id = 1;
 }

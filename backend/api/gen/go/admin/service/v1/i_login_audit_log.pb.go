@@ -27,6 +27,115 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// 事件类型
+type LoginAuditLog_EventType int32
+
+const (
+	LoginAuditLog_EVENT_TYPE_UNSPECIFIED LoginAuditLog_EventType = 0 // 未指定
+	LoginAuditLog_LOGIN_SUCCESS          LoginAuditLog_EventType = 1 // 登录成功
+	LoginAuditLog_LOGIN_FAILED           LoginAuditLog_EventType = 2 // 登录失败
+	LoginAuditLog_LOGOUT                 LoginAuditLog_EventType = 3 // 登出
+	LoginAuditLog_SESSION_EXPIRED        LoginAuditLog_EventType = 4 // 会话过期
+)
+
+// Enum value maps for LoginAuditLog_EventType.
+var (
+	LoginAuditLog_EventType_name = map[int32]string{
+		0: "EVENT_TYPE_UNSPECIFIED",
+		1: "LOGIN_SUCCESS",
+		2: "LOGIN_FAILED",
+		3: "LOGOUT",
+		4: "SESSION_EXPIRED",
+	}
+	LoginAuditLog_EventType_value = map[string]int32{
+		"EVENT_TYPE_UNSPECIFIED": 0,
+		"LOGIN_SUCCESS":          1,
+		"LOGIN_FAILED":           2,
+		"LOGOUT":                 3,
+		"SESSION_EXPIRED":        4,
+	}
+)
+
+func (x LoginAuditLog_EventType) Enum() *LoginAuditLog_EventType {
+	p := new(LoginAuditLog_EventType)
+	*p = x
+	return p
+}
+
+func (x LoginAuditLog_EventType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (LoginAuditLog_EventType) Descriptor() protoreflect.EnumDescriptor {
+	return file_admin_service_v1_i_login_audit_log_proto_enumTypes[0].Descriptor()
+}
+
+func (LoginAuditLog_EventType) Type() protoreflect.EnumType {
+	return &file_admin_service_v1_i_login_audit_log_proto_enumTypes[0]
+}
+
+func (x LoginAuditLog_EventType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use LoginAuditLog_EventType.Descriptor instead.
+func (LoginAuditLog_EventType) EnumDescriptor() ([]byte, []int) {
+	return file_admin_service_v1_i_login_audit_log_proto_rawDescGZIP(), []int{0, 0}
+}
+
+// 风险因素
+type LoginAuditLog_RiskFactor int32
+
+const (
+	LoginAuditLog_RISK_FACTOR_UNSPECIFIED LoginAuditLog_RiskFactor = 0 // 未指定
+	LoginAuditLog_NORMAL                  LoginAuditLog_RiskFactor = 1 // 正常
+	LoginAuditLog_SUSPICIOUS              LoginAuditLog_RiskFactor = 2 // 可疑
+	LoginAuditLog_HIGH_RISK               LoginAuditLog_RiskFactor = 3 // 高风险
+)
+
+// Enum value maps for LoginAuditLog_RiskFactor.
+var (
+	LoginAuditLog_RiskFactor_name = map[int32]string{
+		0: "RISK_FACTOR_UNSPECIFIED",
+		1: "NORMAL",
+		2: "SUSPICIOUS",
+		3: "HIGH_RISK",
+	}
+	LoginAuditLog_RiskFactor_value = map[string]int32{
+		"RISK_FACTOR_UNSPECIFIED": 0,
+		"NORMAL":                  1,
+		"SUSPICIOUS":              2,
+		"HIGH_RISK":               3,
+	}
+)
+
+func (x LoginAuditLog_RiskFactor) Enum() *LoginAuditLog_RiskFactor {
+	p := new(LoginAuditLog_RiskFactor)
+	*p = x
+	return p
+}
+
+func (x LoginAuditLog_RiskFactor) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (LoginAuditLog_RiskFactor) Descriptor() protoreflect.EnumDescriptor {
+	return file_admin_service_v1_i_login_audit_log_proto_enumTypes[1].Descriptor()
+}
+
+func (LoginAuditLog_RiskFactor) Type() protoreflect.EnumType {
+	return &file_admin_service_v1_i_login_audit_log_proto_enumTypes[1]
+}
+
+func (x LoginAuditLog_RiskFactor) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use LoginAuditLog_RiskFactor.Descriptor instead.
+func (LoginAuditLog_RiskFactor) EnumDescriptor() ([]byte, []int) {
+	return file_admin_service_v1_i_login_audit_log_proto_rawDescGZIP(), []int{0, 1}
+}
+
 // 登录审计日志
 type LoginAuditLog struct {
 	state          protoimpl.MessageState `protogen:"open.v1"`
@@ -499,8 +608,7 @@ var File_admin_service_v1_i_login_audit_log_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_login_audit_log_proto_rawDesc = "" +
 	"\n" +
-	"(admin/service/v1/i_login_audit_log.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xe5\n" +
-	"\n" +
+	"(admin/service/v1/i_login_audit_log.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xaa\f\n" +
 	"\rLoginAuditLog\x122\n" +
 	"\x02id\x18\x01 \x01(\rB\x1d\xe0A\x01\xbaG\x17\x92\x02\x14登录审计日志IDH\x00R\x02id\x88\x01\x01\x124\n" +
 	"\blogin_ip\x18\x02 \x01(\tB\x14\xbaG\x11\x92\x02\x0e登录IP地址H\x01R\aloginIp\x88\x01\x01\x127\n" +
@@ -526,7 +634,22 @@ const file_admin_service_v1_i_login_audit_log_proto_rawDesc = "" +
 	"\auser_id\x18\xac\x02 \x01(\rB\x17\xbaG\x14\x92\x02\x11操作者用户IDH\x0fR\x06userId\x88\x01\x01\x12:\n" +
 	"\busername\x18\xad\x02 \x01(\tB\x18\xbaG\x15\x92\x02\x12操作者账号名H\x10R\busername\x88\x01\x01\x12S\n" +
 	"\n" +
-	"created_at\x18\x90\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x11R\tcreatedAt\x88\x01\x01B\x05\n" +
+	"created_at\x18\x90\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\x11R\tcreatedAt\x88\x01\x01\"m\n" +
+	"\tEventType\x12\x1a\n" +
+	"\x16EVENT_TYPE_UNSPECIFIED\x10\x00\x12\x11\n" +
+	"\rLOGIN_SUCCESS\x10\x01\x12\x10\n" +
+	"\fLOGIN_FAILED\x10\x02\x12\n" +
+	"\n" +
+	"\x06LOGOUT\x10\x03\x12\x13\n" +
+	"\x0fSESSION_EXPIRED\x10\x04\"T\n" +
+	"\n" +
+	"RiskFactor\x12\x1b\n" +
+	"\x17RISK_FACTOR_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06NORMAL\x10\x01\x12\x0e\n" +
+	"\n" +
+	"SUSPICIOUS\x10\x02\x12\r\n" +
+	"\tHIGH_RISK\x10\x03B\x05\n" +
 	"\x03_idB\v\n" +
 	"\t_login_ipB\f\n" +
 	"\n" +
@@ -589,35 +712,38 @@ func file_admin_service_v1_i_login_audit_log_proto_rawDescGZIP() []byte {
 	return file_admin_service_v1_i_login_audit_log_proto_rawDescData
 }
 
+var file_admin_service_v1_i_login_audit_log_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_admin_service_v1_i_login_audit_log_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_admin_service_v1_i_login_audit_log_proto_goTypes = []any{
-	(*LoginAuditLog)(nil),              // 0: admin.service.v1.LoginAuditLog
-	(*ListLoginAuditLogResponse)(nil),  // 1: admin.service.v1.ListLoginAuditLogResponse
-	(*GetLoginAuditLogRequest)(nil),    // 2: admin.service.v1.GetLoginAuditLogRequest
-	(*CreateLoginAuditLogRequest)(nil), // 3: admin.service.v1.CreateLoginAuditLogRequest
-	(*UpdateLoginAuditLogRequest)(nil), // 4: admin.service.v1.UpdateLoginAuditLogRequest
-	(*DeleteLoginAuditLogRequest)(nil), // 5: admin.service.v1.DeleteLoginAuditLogRequest
-	(*timestamppb.Timestamp)(nil),      // 6: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),      // 7: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),           // 8: pagination.PagingRequest
+	(LoginAuditLog_EventType)(0),       // 0: admin.service.v1.LoginAuditLog.EventType
+	(LoginAuditLog_RiskFactor)(0),      // 1: admin.service.v1.LoginAuditLog.RiskFactor
+	(*LoginAuditLog)(nil),              // 2: admin.service.v1.LoginAuditLog
+	(*ListLoginAuditLogResponse)(nil),  // 3: admin.service.v1.ListLoginAuditLogResponse
+	(*GetLoginAuditLogRequest)(nil),    // 4: admin.service.v1.GetLoginAuditLogRequest
+	(*CreateLoginAuditLogRequest)(nil), // 5: admin.service.v1.CreateLoginAuditLogRequest
+	(*UpdateLoginAuditLogRequest)(nil), // 6: admin.service.v1.UpdateLoginAuditLogRequest
+	(*DeleteLoginAuditLogRequest)(nil), // 7: admin.service.v1.DeleteLoginAuditLogRequest
+	(*timestamppb.Timestamp)(nil),      // 8: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),      // 9: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),           // 10: pagination.PagingRequest
 }
 var file_admin_service_v1_i_login_audit_log_proto_depIdxs = []int32{
-	6, // 0: admin.service.v1.LoginAuditLog.login_time:type_name -> google.protobuf.Timestamp
-	6, // 1: admin.service.v1.LoginAuditLog.created_at:type_name -> google.protobuf.Timestamp
-	0, // 2: admin.service.v1.ListLoginAuditLogResponse.items:type_name -> admin.service.v1.LoginAuditLog
-	7, // 3: admin.service.v1.GetLoginAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
-	0, // 4: admin.service.v1.CreateLoginAuditLogRequest.data:type_name -> admin.service.v1.LoginAuditLog
-	0, // 5: admin.service.v1.UpdateLoginAuditLogRequest.data:type_name -> admin.service.v1.LoginAuditLog
-	7, // 6: admin.service.v1.UpdateLoginAuditLogRequest.update_mask:type_name -> google.protobuf.FieldMask
-	8, // 7: admin.service.v1.LoginAuditLogService.List:input_type -> pagination.PagingRequest
-	2, // 8: admin.service.v1.LoginAuditLogService.Get:input_type -> admin.service.v1.GetLoginAuditLogRequest
-	1, // 9: admin.service.v1.LoginAuditLogService.List:output_type -> admin.service.v1.ListLoginAuditLogResponse
-	0, // 10: admin.service.v1.LoginAuditLogService.Get:output_type -> admin.service.v1.LoginAuditLog
-	9, // [9:11] is the sub-list for method output_type
-	7, // [7:9] is the sub-list for method input_type
-	7, // [7:7] is the sub-list for extension type_name
-	7, // [7:7] is the sub-list for extension extendee
-	0, // [0:7] is the sub-list for field type_name
+	8,  // 0: admin.service.v1.LoginAuditLog.login_time:type_name -> google.protobuf.Timestamp
+	8,  // 1: admin.service.v1.LoginAuditLog.created_at:type_name -> google.protobuf.Timestamp
+	2,  // 2: admin.service.v1.ListLoginAuditLogResponse.items:type_name -> admin.service.v1.LoginAuditLog
+	9,  // 3: admin.service.v1.GetLoginAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
+	2,  // 4: admin.service.v1.CreateLoginAuditLogRequest.data:type_name -> admin.service.v1.LoginAuditLog
+	2,  // 5: admin.service.v1.UpdateLoginAuditLogRequest.data:type_name -> admin.service.v1.LoginAuditLog
+	9,  // 6: admin.service.v1.UpdateLoginAuditLogRequest.update_mask:type_name -> google.protobuf.FieldMask
+	10, // 7: admin.service.v1.LoginAuditLogService.List:input_type -> pagination.PagingRequest
+	4,  // 8: admin.service.v1.LoginAuditLogService.Get:input_type -> admin.service.v1.GetLoginAuditLogRequest
+	3,  // 9: admin.service.v1.LoginAuditLogService.List:output_type -> admin.service.v1.ListLoginAuditLogResponse
+	2,  // 10: admin.service.v1.LoginAuditLogService.Get:output_type -> admin.service.v1.LoginAuditLog
+	9,  // [9:11] is the sub-list for method output_type
+	7,  // [7:9] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_admin_service_v1_i_login_audit_log_proto_init() }
@@ -635,13 +761,14 @@ func file_admin_service_v1_i_login_audit_log_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_admin_service_v1_i_login_audit_log_proto_rawDesc), len(file_admin_service_v1_i_login_audit_log_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      2,
 			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_admin_service_v1_i_login_audit_log_proto_goTypes,
 		DependencyIndexes: file_admin_service_v1_i_login_audit_log_proto_depIdxs,
+		EnumInfos:         file_admin_service_v1_i_login_audit_log_proto_enumTypes,
 		MessageInfos:      file_admin_service_v1_i_login_audit_log_proto_msgTypes,
 	}.Build()
 	File_admin_service_v1_i_login_audit_log_proto = out.File

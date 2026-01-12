@@ -34,7 +34,7 @@
   "log": {
     "moduleName": "Log Audit",
     "loginAuditLog": "Login Log",
-    "operationAuditLog": "Operation Log"
+    "apiAuditLog": "API Log"
   },
   "internalMessage": {
     "moduleName": "Internal Message",

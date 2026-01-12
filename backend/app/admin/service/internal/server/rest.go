@@ -34,16 +34,16 @@ func newRestMiddleware(
 	logger log.Logger,
 	authenticator authnEngine.Authenticator,
 	authorizer *data.Authorizer,
-	operationLogRepo *data.OperationAuditLogRepo,
+	apiAuditLogRepo *data.ApiAuditLogRepo,
 	loginLogRepo *data.LoginAuditLogRepo,
 ) []middleware.Middleware {
 	var ms []middleware.Middleware
 	ms = append(ms, logging.Server(logger))
 
 	ms = append(ms, applogging.Server(
-		applogging.WithWriteOperationLogFunc(func(ctx context.Context, data *adminV1.OperationAuditLog) error {
+		applogging.WithWriteApiLogFunc(func(ctx context.Context, data *adminV1.ApiAuditLog) error {
 			// TODO 如果系统的负载比较小，可以同步写入数据库，否则，建议使用异步方式，即投递进队列。
-			return operationLogRepo.Create(ctx, &adminV1.CreateOperationAuditLogRequest{Data: data})
+			return apiAuditLogRepo.Create(ctx, &adminV1.CreateApiAuditLogRequest{Data: data})
 		}),
 		applogging.WithWriteLoginLogFunc(func(ctx context.Context, data *adminV1.LoginAuditLog) error {
 			// TODO 如果系统的负载比较小，可以同步写入数据库，否则，建议使用异步方式，即投递进队列。
@@ -71,8 +71,8 @@ func NewRestServer(
 
 	authenticator authnEngine.Authenticator, authorizer *data.Authorizer,
 
-	operationLogRepo *data.OperationAuditLogRepo,
-	loginLogRepo *data.LoginAuditLogRepo,
+	apiAuditLogRepo *data.ApiAuditLogRepo,
+	loginAuditLogRepo *data.LoginAuditLogRepo,
 
 	authenticationService *service.AuthenticationService,
 	userService *service.UserService,
@@ -83,7 +83,7 @@ func NewRestServer(
 	positionService *service.PositionService,
 	dictService *service.DictService,
 	loginAuditLogService *service.LoginAuditLogService,
-	operationAuditLogService *service.OperationAuditLogService,
+	apiAuditLogService *service.ApiAuditLogService,
 	ossService *service.OssService,
 	uEditorService *service.UEditorService,
 	fileService *service.FileService,
@@ -107,7 +107,7 @@ func NewRestServer(
 	}
 
 	srv, err := rpc.CreateRestServer(cfg,
-		newRestMiddleware(ctx.GetLogger(), authenticator, authorizer, operationLogRepo, loginLogRepo)...,
+		newRestMiddleware(ctx.GetLogger(), authenticator, authorizer, apiAuditLogRepo, loginAuditLogRepo)...,
 	)
 	if err != nil {
 		return nil, err
@@ -138,7 +138,7 @@ func NewRestServer(
 	adminV1.RegisterTenantServiceHTTPServer(srv, tenantService)
 
 	adminV1.RegisterLoginAuditLogServiceHTTPServer(srv, loginAuditLogService)
-	adminV1.RegisterOperationAuditLogServiceHTTPServer(srv, operationAuditLogService)
+	adminV1.RegisterApiAuditLogServiceHTTPServer(srv, apiAuditLogService)
 
 	adminV1.RegisterOssServiceHTTPServer(srv, ossService)
 	adminV1.RegisterFileServiceHTTPServer(srv, fileService)

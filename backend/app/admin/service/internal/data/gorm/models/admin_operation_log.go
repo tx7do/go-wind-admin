@@ -4,8 +4,8 @@ import (
 	"github.com/tx7do/go-crud/gorm/mixin"
 )
 
-// OperationAuditLog 对应表 sys_operation_audit_logs
-type OperationAuditLog struct {
+// ApiAuditLog 对应表 sys_api_audit_logs
+type ApiAuditLog struct {
 	mixin.AutoIncrementID
 
 	RequestID      *string  `gorm:"column:request_id;type:varchar(128);comment:请求ID"`
@@ -37,6 +37,6 @@ type OperationAuditLog struct {
 }
 
 // TableName 指定表名
-func (OperationAuditLog) TableName() string {
-	return "sys_operation_audit_logs"
+func (ApiAuditLog) TableName() string {
+	return "sys_api_audit_logs"
 }

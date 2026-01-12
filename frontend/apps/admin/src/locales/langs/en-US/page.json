@@ -53,7 +53,7 @@
       "tab": {
         "basicInfo": "Basic Info",
         "permission": "Permission Info",
-        "operationLog": "Operation Log"
+        "apiAuditLog": "API Log"
       },
       "desc": {
         "username" : "Username",
@@ -243,8 +243,8 @@
     "clientName": "Platform",
     "loginIp": "Login IP"
   },
-  "operationAuditLog": {
-    "moduleName": "Operation Log",
+  "apiAuditLog": {
+    "moduleName": "API Log",
     "username": "User Name",
     "success": "Success",
     "location": "Location",

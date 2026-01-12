@@ -8,25 +8,25 @@ import (
 	"github.com/tx7do/go-crud/entgo/mixin"
 )
 
-// OperationAuditLog holds the schema definition for the OperationAuditLog entity.
-type OperationAuditLog struct {
+// ApiAuditLog holds the schema definition for the ApiAuditLog entity.
+type ApiAuditLog struct {
 	ent.Schema
 }
 
-func (OperationAuditLog) Annotations() []schema.Annotation {
+func (ApiAuditLog) Annotations() []schema.Annotation {
 	return []schema.Annotation{
 		entsql.Annotation{
-			Table:     "sys_operation_audit_logs",
+			Table:     "sys_api_audit_logs",
 			Charset:   "utf8mb4",
 			Collation: "utf8mb4_bin",
 		},
 		entsql.WithComments(true),
-		schema.Comment("操作审计日志表"),
+		schema.Comment("API审计日志表"),
 	}
 }
 
-// Fields of the OperationAuditLog.
-func (OperationAuditLog) Fields() []ent.Field {
+// Fields of the ApiAuditLog.
+func (ApiAuditLog) Fields() []ent.Field {
 	return []ent.Field{
 		field.String("request_id").
 			Comment("请求ID").
@@ -150,8 +150,8 @@ func (OperationAuditLog) Fields() []ent.Field {
 	}
 }
 
-// Mixin of the OperationAuditLog.
-func (OperationAuditLog) Mixin() []ent.Mixin {
+// Mixin of the ApiAuditLog.
+func (ApiAuditLog) Mixin() []ent.Mixin {
 	return []ent.Mixin{
 		mixin.AutoIncrementId{},
 		mixin.CreatedAt{},

@@ -42,14 +42,14 @@ type LoginPolicyServiceHTTPServer interface {
 
 func RegisterLoginPolicyServiceHTTPServer(s *http.Server, srv LoginPolicyServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/login-policies", _LoginPolicyService_List4_HTTP_Handler(srv))
-	r.GET("/admin/v1/login-policies/{id}", _LoginPolicyService_Get4_HTTP_Handler(srv))
+	r.GET("/admin/v1/login-policies", _LoginPolicyService_List5_HTTP_Handler(srv))
+	r.GET("/admin/v1/login-policies/{id}", _LoginPolicyService_Get5_HTTP_Handler(srv))
 	r.POST("/admin/v1/login-policies", _LoginPolicyService_Create3_HTTP_Handler(srv))
 	r.PUT("/admin/v1/login-policies/{id}", _LoginPolicyService_Update3_HTTP_Handler(srv))
 	r.DELETE("/admin/v1/login-policies/{id}", _LoginPolicyService_Delete3_HTTP_Handler(srv))
 }
 
-func _LoginPolicyService_List4_HTTP_Handler(srv LoginPolicyServiceHTTPServer) func(ctx http.Context) error {
+func _LoginPolicyService_List5_HTTP_Handler(srv LoginPolicyServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.PagingRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -68,7 +68,7 @@ func _LoginPolicyService_List4_HTTP_Handler(srv LoginPolicyServiceHTTPServer) fu
 	}
 }
 
-func _LoginPolicyService_Get4_HTTP_Handler(srv LoginPolicyServiceHTTPServer) func(ctx http.Context) error {
+func _LoginPolicyService_Get5_HTTP_Handler(srv LoginPolicyServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in GetLoginPolicyRequest
 		if err := ctx.BindQuery(&in); err != nil {

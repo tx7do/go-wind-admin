@@ -29,15 +29,14 @@ const log: RouteRecordRaw[] = [
       },
 
       {
-        path: 'operation-audit-logs',
-        name: 'OperationAuditLog',
+        path: 'api-audit-logs',
+        name: 'ApiAuditLog',
         meta: {
           icon: 'lucide:file-clock',
-          title: $t('menu.log.operationAuditLog'),
+          title: $t('menu.log.apiAuditLog'),
           authority: ['platform_admin'],
         },
-        component: () =>
-          import('#/views/app/log/operation_audit_log/index.vue'),
+        component: () => import('#/views/app/log/api_audit_log/index.vue'),
       },
     ],
   },

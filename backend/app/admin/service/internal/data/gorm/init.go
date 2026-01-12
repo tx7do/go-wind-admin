@@ -15,7 +15,7 @@ func RegisterMigrateModels() {
 	gorm.RegisterMigrateModels(
 		&models.LoginAuditLog{},
 		&models.LoginPolicy{},
-		&models.OperationAuditLog{},
+		&models.ApiAuditLog{},
 		&models.Api{},
 		&models.Department{},
 		&models.DictEntry{},

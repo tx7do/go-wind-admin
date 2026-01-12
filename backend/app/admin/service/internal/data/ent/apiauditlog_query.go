@@ -5,7 +5,7 @@ package ent
 import (
 	"context"
 	"fmt"
-	"go-wind-admin/app/admin/service/internal/data/ent/operationauditlog"
+	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"math"
 
@@ -16,65 +16,65 @@ import (
 	"entgo.io/ent/schema/field"
 )
 
-// OperationAuditLogQuery is the builder for querying OperationAuditLog entities.
-type OperationAuditLogQuery struct {
+// ApiAuditLogQuery is the builder for querying ApiAuditLog entities.
+type ApiAuditLogQuery struct {
 	config
 	ctx        *QueryContext
-	order      []operationauditlog.OrderOption
+	order      []apiauditlog.OrderOption
 	inters     []Interceptor
-	predicates []predicate.OperationAuditLog
+	predicates []predicate.ApiAuditLog
 	modifiers  []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
 }
 
-// Where adds a new predicate for the OperationAuditLogQuery builder.
-func (_q *OperationAuditLogQuery) Where(ps ...predicate.OperationAuditLog) *OperationAuditLogQuery {
+// Where adds a new predicate for the ApiAuditLogQuery builder.
+func (_q *ApiAuditLogQuery) Where(ps ...predicate.ApiAuditLog) *ApiAuditLogQuery {
 	_q.predicates = append(_q.predicates, ps...)
 	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (_q *OperationAuditLogQuery) Limit(limit int) *OperationAuditLogQuery {
+func (_q *ApiAuditLogQuery) Limit(limit int) *ApiAuditLogQuery {
 	_q.ctx.Limit = &limit
 	return _q
 }
 
 // Offset to start from.
-func (_q *OperationAuditLogQuery) Offset(offset int) *OperationAuditLogQuery {
+func (_q *ApiAuditLogQuery) Offset(offset int) *ApiAuditLogQuery {
 	_q.ctx.Offset = &offset
 	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (_q *OperationAuditLogQuery) Unique(unique bool) *OperationAuditLogQuery {
+func (_q *ApiAuditLogQuery) Unique(unique bool) *ApiAuditLogQuery {
 	_q.ctx.Unique = &unique
 	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (_q *OperationAuditLogQuery) Order(o ...operationauditlog.OrderOption) *OperationAuditLogQuery {
+func (_q *ApiAuditLogQuery) Order(o ...apiauditlog.OrderOption) *ApiAuditLogQuery {
 	_q.order = append(_q.order, o...)
 	return _q
 }
 
-// First returns the first OperationAuditLog entity from the query.
-// Returns a *NotFoundError when no OperationAuditLog was found.
-func (_q *OperationAuditLogQuery) First(ctx context.Context) (*OperationAuditLog, error) {
+// First returns the first ApiAuditLog entity from the query.
+// Returns a *NotFoundError when no ApiAuditLog was found.
+func (_q *ApiAuditLogQuery) First(ctx context.Context) (*ApiAuditLog, error) {
 	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
-		return nil, &NotFoundError{operationauditlog.Label}
+		return nil, &NotFoundError{apiauditlog.Label}
 	}
 	return nodes[0], nil
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (_q *OperationAuditLogQuery) FirstX(ctx context.Context) *OperationAuditLog {
+func (_q *ApiAuditLogQuery) FirstX(ctx context.Context) *ApiAuditLog {
 	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -82,22 +82,22 @@ func (_q *OperationAuditLogQuery) FirstX(ctx context.Context) *OperationAuditLog
 	return node
 }
 
-// FirstID returns the first OperationAuditLog ID from the query.
-// Returns a *NotFoundError when no OperationAuditLog ID was found.
-func (_q *OperationAuditLogQuery) FirstID(ctx context.Context) (id uint32, err error) {
+// FirstID returns the first ApiAuditLog ID from the query.
+// Returns a *NotFoundError when no ApiAuditLog ID was found.
+func (_q *ApiAuditLogQuery) FirstID(ctx context.Context) (id uint32, err error) {
 	var ids []uint32
 	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
-		err = &NotFoundError{operationauditlog.Label}
+		err = &NotFoundError{apiauditlog.Label}
 		return
 	}
 	return ids[0], nil
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (_q *OperationAuditLogQuery) FirstIDX(ctx context.Context) uint32 {
+func (_q *ApiAuditLogQuery) FirstIDX(ctx context.Context) uint32 {
 	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
@@ -105,10 +105,10 @@ func (_q *OperationAuditLogQuery) FirstIDX(ctx context.Context) uint32 {
 	return id
 }
 
-// Only returns a single OperationAuditLog entity found by the query, ensuring it only returns one.
-// Returns a *NotSingularError when more than one OperationAuditLog entity is found.
-// Returns a *NotFoundError when no OperationAuditLog entities are found.
-func (_q *OperationAuditLogQuery) Only(ctx context.Context) (*OperationAuditLog, error) {
+// Only returns a single ApiAuditLog entity found by the query, ensuring it only returns one.
+// Returns a *NotSingularError when more than one ApiAuditLog entity is found.
+// Returns a *NotFoundError when no ApiAuditLog entities are found.
+func (_q *ApiAuditLogQuery) Only(ctx context.Context) (*ApiAuditLog, error) {
 	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
@@ -117,14 +117,14 @@ func (_q *OperationAuditLogQuery) Only(ctx context.Context) (*OperationAuditLog,
 	case 1:
 		return nodes[0], nil
 	case 0:
-		return nil, &NotFoundError{operationauditlog.Label}
+		return nil, &NotFoundError{apiauditlog.Label}
 	default:
-		return nil, &NotSingularError{operationauditlog.Label}
+		return nil, &NotSingularError{apiauditlog.Label}
 	}
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (_q *OperationAuditLogQuery) OnlyX(ctx context.Context) *OperationAuditLog {
+func (_q *ApiAuditLogQuery) OnlyX(ctx context.Context) *ApiAuditLog {
 	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
@@ -132,10 +132,10 @@ func (_q *OperationAuditLogQuery) OnlyX(ctx context.Context) *OperationAuditLog 
 	return node
 }
 
-// OnlyID is like Only, but returns the only OperationAuditLog ID in the query.
-// Returns a *NotSingularError when more than one OperationAuditLog ID is found.
+// OnlyID is like Only, but returns the only ApiAuditLog ID in the query.
+// Returns a *NotSingularError when more than one ApiAuditLog ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (_q *OperationAuditLogQuery) OnlyID(ctx context.Context) (id uint32, err error) {
+func (_q *ApiAuditLogQuery) OnlyID(ctx context.Context) (id uint32, err error) {
 	var ids []uint32
 	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
@@ -144,15 +144,15 @@ func (_q *OperationAuditLogQuery) OnlyID(ctx context.Context) (id uint32, err er
 	case 1:
 		id = ids[0]
 	case 0:
-		err = &NotFoundError{operationauditlog.Label}
+		err = &NotFoundError{apiauditlog.Label}
 	default:
-		err = &NotSingularError{operationauditlog.Label}
+		err = &NotSingularError{apiauditlog.Label}
 	}
 	return
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (_q *OperationAuditLogQuery) OnlyIDX(ctx context.Context) uint32 {
+func (_q *ApiAuditLogQuery) OnlyIDX(ctx context.Context) uint32 {
 	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
@@ -160,18 +160,18 @@ func (_q *OperationAuditLogQuery) OnlyIDX(ctx context.Context) uint32 {
 	return id
 }
 
-// All executes the query and returns a list of OperationAuditLogs.
-func (_q *OperationAuditLogQuery) All(ctx context.Context) ([]*OperationAuditLog, error) {
+// All executes the query and returns a list of ApiAuditLogs.
+func (_q *ApiAuditLogQuery) All(ctx context.Context) ([]*ApiAuditLog, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
-	qr := querierAll[[]*OperationAuditLog, *OperationAuditLogQuery]()
-	return withInterceptors[[]*OperationAuditLog](ctx, _q, qr, _q.inters)
+	qr := querierAll[[]*ApiAuditLog, *ApiAuditLogQuery]()
+	return withInterceptors[[]*ApiAuditLog](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (_q *OperationAuditLogQuery) AllX(ctx context.Context) []*OperationAuditLog {
+func (_q *ApiAuditLogQuery) AllX(ctx context.Context) []*ApiAuditLog {
 	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
@@ -179,20 +179,20 @@ func (_q *OperationAuditLogQuery) AllX(ctx context.Context) []*OperationAuditLog
 	return nodes
 }
 
-// IDs executes the query and returns a list of OperationAuditLog IDs.
-func (_q *OperationAuditLogQuery) IDs(ctx context.Context) (ids []uint32, err error) {
+// IDs executes the query and returns a list of ApiAuditLog IDs.
+func (_q *ApiAuditLogQuery) IDs(ctx context.Context) (ids []uint32, err error) {
 	if _q.ctx.Unique == nil && _q.path != nil {
 		_q.Unique(true)
 	}
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
-	if err = _q.Select(operationauditlog.FieldID).Scan(ctx, &ids); err != nil {
+	if err = _q.Select(apiauditlog.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (_q *OperationAuditLogQuery) IDsX(ctx context.Context) []uint32 {
+func (_q *ApiAuditLogQuery) IDsX(ctx context.Context) []uint32 {
 	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
@@ -201,16 +201,16 @@ func (_q *OperationAuditLogQuery) IDsX(ctx context.Context) []uint32 {
 }
 
 // Count returns the count of the given query.
-func (_q *OperationAuditLogQuery) Count(ctx context.Context) (int, error) {
+func (_q *ApiAuditLogQuery) Count(ctx context.Context) (int, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
 	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, _q, querierCount[*OperationAuditLogQuery](), _q.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*ApiAuditLogQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (_q *OperationAuditLogQuery) CountX(ctx context.Context) int {
+func (_q *ApiAuditLogQuery) CountX(ctx context.Context) int {
 	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
@@ -219,7 +219,7 @@ func (_q *OperationAuditLogQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (_q *OperationAuditLogQuery) Exist(ctx context.Context) (bool, error) {
+func (_q *ApiAuditLogQuery) Exist(ctx context.Context) (bool, error) {
 	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
 	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
@@ -232,7 +232,7 @@ func (_q *OperationAuditLogQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (_q *OperationAuditLogQuery) ExistX(ctx context.Context) bool {
+func (_q *ApiAuditLogQuery) ExistX(ctx context.Context) bool {
 	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
@@ -240,18 +240,18 @@ func (_q *OperationAuditLogQuery) ExistX(ctx context.Context) bool {
 	return exist
 }
 
-// Clone returns a duplicate of the OperationAuditLogQuery builder, including all associated steps. It can be
+// Clone returns a duplicate of the ApiAuditLogQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (_q *OperationAuditLogQuery) Clone() *OperationAuditLogQuery {
+func (_q *ApiAuditLogQuery) Clone() *ApiAuditLogQuery {
 	if _q == nil {
 		return nil
 	}
-	return &OperationAuditLogQuery{
+	return &ApiAuditLogQuery{
 		config:     _q.config,
 		ctx:        _q.ctx.Clone(),
-		order:      append([]operationauditlog.OrderOption{}, _q.order...),
+		order:      append([]apiauditlog.OrderOption{}, _q.order...),
 		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.OperationAuditLog{}, _q.predicates...),
+		predicates: append([]predicate.ApiAuditLog{}, _q.predicates...),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
@@ -269,15 +269,15 @@ func (_q *OperationAuditLogQuery) Clone() *OperationAuditLogQuery {
 //		Count int `json:"count,omitempty"`
 //	}
 //
-//	client.OperationAuditLog.Query().
-//		GroupBy(operationauditlog.FieldCreatedAt).
+//	client.ApiAuditLog.Query().
+//		GroupBy(apiauditlog.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (_q *OperationAuditLogQuery) GroupBy(field string, fields ...string) *OperationAuditLogGroupBy {
+func (_q *ApiAuditLogQuery) GroupBy(field string, fields ...string) *ApiAuditLogGroupBy {
 	_q.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &OperationAuditLogGroupBy{build: _q}
+	grbuild := &ApiAuditLogGroupBy{build: _q}
 	grbuild.flds = &_q.ctx.Fields
-	grbuild.label = operationauditlog.Label
+	grbuild.label = apiauditlog.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
 }
@@ -291,23 +291,23 @@ func (_q *OperationAuditLogQuery) GroupBy(field string, fields ...string) *Opera
 //		CreatedAt time.Time `json:"created_at,omitempty"`
 //	}
 //
-//	client.OperationAuditLog.Query().
-//		Select(operationauditlog.FieldCreatedAt).
+//	client.ApiAuditLog.Query().
+//		Select(apiauditlog.FieldCreatedAt).
 //		Scan(ctx, &v)
-func (_q *OperationAuditLogQuery) Select(fields ...string) *OperationAuditLogSelect {
+func (_q *ApiAuditLogQuery) Select(fields ...string) *ApiAuditLogSelect {
 	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
-	sbuild := &OperationAuditLogSelect{OperationAuditLogQuery: _q}
-	sbuild.label = operationauditlog.Label
+	sbuild := &ApiAuditLogSelect{ApiAuditLogQuery: _q}
+	sbuild.label = apiauditlog.Label
 	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
-// Aggregate returns a OperationAuditLogSelect configured with the given aggregations.
-func (_q *OperationAuditLogQuery) Aggregate(fns ...AggregateFunc) *OperationAuditLogSelect {
+// Aggregate returns a ApiAuditLogSelect configured with the given aggregations.
+func (_q *ApiAuditLogQuery) Aggregate(fns ...AggregateFunc) *ApiAuditLogSelect {
 	return _q.Select().Aggregate(fns...)
 }
 
-func (_q *OperationAuditLogQuery) prepareQuery(ctx context.Context) error {
+func (_q *ApiAuditLogQuery) prepareQuery(ctx context.Context) error {
 	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
@@ -319,7 +319,7 @@ func (_q *OperationAuditLogQuery) prepareQuery(ctx context.Context) error {
 		}
 	}
 	for _, f := range _q.ctx.Fields {
-		if !operationauditlog.ValidColumn(f) {
+		if !apiauditlog.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
@@ -333,16 +333,16 @@ func (_q *OperationAuditLogQuery) prepareQuery(ctx context.Context) error {
 	return nil
 }
 
-func (_q *OperationAuditLogQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*OperationAuditLog, error) {
+func (_q *ApiAuditLogQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*ApiAuditLog, error) {
 	var (
-		nodes = []*OperationAuditLog{}
+		nodes = []*ApiAuditLog{}
 		_spec = _q.querySpec()
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
-		return (*OperationAuditLog).scanValues(nil, columns)
+		return (*ApiAuditLog).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &OperationAuditLog{config: _q.config}
+		node := &ApiAuditLog{config: _q.config}
 		nodes = append(nodes, node)
 		return node.assignValues(columns, values)
 	}
@@ -361,7 +361,7 @@ func (_q *OperationAuditLogQuery) sqlAll(ctx context.Context, hooks ...queryHook
 	return nodes, nil
 }
 
-func (_q *OperationAuditLogQuery) sqlCount(ctx context.Context) (int, error) {
+func (_q *ApiAuditLogQuery) sqlCount(ctx context.Context) (int, error) {
 	_spec := _q.querySpec()
 	if len(_q.modifiers) > 0 {
 		_spec.Modifiers = _q.modifiers
@@ -373,8 +373,8 @@ func (_q *OperationAuditLogQuery) sqlCount(ctx context.Context) (int, error) {
 	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (_q *OperationAuditLogQuery) querySpec() *sqlgraph.QuerySpec {
-	_spec := sqlgraph.NewQuerySpec(operationauditlog.Table, operationauditlog.Columns, sqlgraph.NewFieldSpec(operationauditlog.FieldID, field.TypeUint32))
+func (_q *ApiAuditLogQuery) querySpec() *sqlgraph.QuerySpec {
+	_spec := sqlgraph.NewQuerySpec(apiauditlog.Table, apiauditlog.Columns, sqlgraph.NewFieldSpec(apiauditlog.FieldID, field.TypeUint32))
 	_spec.From = _q.sql
 	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
@@ -383,9 +383,9 @@ func (_q *OperationAuditLogQuery) querySpec() *sqlgraph.QuerySpec {
 	}
 	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
-		_spec.Node.Columns = append(_spec.Node.Columns, operationauditlog.FieldID)
+		_spec.Node.Columns = append(_spec.Node.Columns, apiauditlog.FieldID)
 		for i := range fields {
-			if fields[i] != operationauditlog.FieldID {
+			if fields[i] != apiauditlog.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
 		}
@@ -413,12 +413,12 @@ func (_q *OperationAuditLogQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (_q *OperationAuditLogQuery) sqlQuery(ctx context.Context) *sql.Selector {
+func (_q *ApiAuditLogQuery) sqlQuery(ctx context.Context) *sql.Selector {
 	builder := sql.Dialect(_q.driver.Dialect())
-	t1 := builder.Table(operationauditlog.Table)
+	t1 := builder.Table(apiauditlog.Table)
 	columns := _q.ctx.Fields
 	if len(columns) == 0 {
-		columns = operationauditlog.Columns
+		columns = apiauditlog.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
 	if _q.sql != nil {
@@ -451,7 +451,7 @@ func (_q *OperationAuditLogQuery) sqlQuery(ctx context.Context) *sql.Selector {
 // ForUpdate locks the selected rows against concurrent updates, and prevent them from being
 // updated, deleted or "selected ... for update" by other sessions, until the transaction is
 // either committed or rolled-back.
-func (_q *OperationAuditLogQuery) ForUpdate(opts ...sql.LockOption) *OperationAuditLogQuery {
+func (_q *ApiAuditLogQuery) ForUpdate(opts ...sql.LockOption) *ApiAuditLogQuery {
 	if _q.driver.Dialect() == dialect.Postgres {
 		_q.Unique(false)
 	}
@@ -464,7 +464,7 @@ func (_q *OperationAuditLogQuery) ForUpdate(opts ...sql.LockOption) *OperationAu
 // ForShare behaves similarly to ForUpdate, except that it acquires a shared mode lock
 // on any rows that are read. Other sessions can read the rows, but cannot modify them
 // until your transaction commits.
-func (_q *OperationAuditLogQuery) ForShare(opts ...sql.LockOption) *OperationAuditLogQuery {
+func (_q *ApiAuditLogQuery) ForShare(opts ...sql.LockOption) *ApiAuditLogQuery {
 	if _q.driver.Dialect() == dialect.Postgres {
 		_q.Unique(false)
 	}
@@ -475,33 +475,33 @@ func (_q *OperationAuditLogQuery) ForShare(opts ...sql.LockOption) *OperationAud
 }
 
 // Modify adds a query modifier for attaching custom logic to queries.
-func (_q *OperationAuditLogQuery) Modify(modifiers ...func(s *sql.Selector)) *OperationAuditLogSelect {
+func (_q *ApiAuditLogQuery) Modify(modifiers ...func(s *sql.Selector)) *ApiAuditLogSelect {
 	_q.modifiers = append(_q.modifiers, modifiers...)
 	return _q.Select()
 }
 
-// OperationAuditLogGroupBy is the group-by builder for OperationAuditLog entities.
-type OperationAuditLogGroupBy struct {
+// ApiAuditLogGroupBy is the group-by builder for ApiAuditLog entities.
+type ApiAuditLogGroupBy struct {
 	selector
-	build *OperationAuditLogQuery
+	build *ApiAuditLogQuery
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (_g *OperationAuditLogGroupBy) Aggregate(fns ...AggregateFunc) *OperationAuditLogGroupBy {
+func (_g *ApiAuditLogGroupBy) Aggregate(fns ...AggregateFunc) *ApiAuditLogGroupBy {
 	_g.fns = append(_g.fns, fns...)
 	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_g *OperationAuditLogGroupBy) Scan(ctx context.Context, v any) error {
+func (_g *ApiAuditLogGroupBy) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
 	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*OperationAuditLogQuery, *OperationAuditLogGroupBy](ctx, _g.build, _g, _g.build.inters, v)
+	return scanWithInterceptors[*ApiAuditLogQuery, *ApiAuditLogGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (_g *OperationAuditLogGroupBy) sqlScan(ctx context.Context, root *OperationAuditLogQuery, v any) error {
+func (_g *ApiAuditLogGroupBy) sqlScan(ctx context.Context, root *ApiAuditLogQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
 	aggregation := make([]string, 0, len(_g.fns))
 	for _, fn := range _g.fns {
@@ -528,28 +528,28 @@ func (_g *OperationAuditLogGroupBy) sqlScan(ctx context.Context, root *Operation
 	return sql.ScanSlice(rows, v)
 }
 
-// OperationAuditLogSelect is the builder for selecting fields of OperationAuditLog entities.
-type OperationAuditLogSelect struct {
-	*OperationAuditLogQuery
+// ApiAuditLogSelect is the builder for selecting fields of ApiAuditLog entities.
+type ApiAuditLogSelect struct {
+	*ApiAuditLogQuery
 	selector
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (_s *OperationAuditLogSelect) Aggregate(fns ...AggregateFunc) *OperationAuditLogSelect {
+func (_s *ApiAuditLogSelect) Aggregate(fns ...AggregateFunc) *ApiAuditLogSelect {
 	_s.fns = append(_s.fns, fns...)
 	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (_s *OperationAuditLogSelect) Scan(ctx context.Context, v any) error {
+func (_s *ApiAuditLogSelect) Scan(ctx context.Context, v any) error {
 	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
 	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*OperationAuditLogQuery, *OperationAuditLogSelect](ctx, _s.OperationAuditLogQuery, _s, _s.inters, v)
+	return scanWithInterceptors[*ApiAuditLogQuery, *ApiAuditLogSelect](ctx, _s.ApiAuditLogQuery, _s, _s.inters, v)
 }
 
-func (_s *OperationAuditLogSelect) sqlScan(ctx context.Context, root *OperationAuditLogQuery, v any) error {
+func (_s *ApiAuditLogSelect) sqlScan(ctx context.Context, root *ApiAuditLogQuery, v any) error {
 	selector := root.sqlQuery(ctx)
 	aggregation := make([]string, 0, len(_s.fns))
 	for _, fn := range _s.fns {
@@ -571,7 +571,7 @@ func (_s *OperationAuditLogSelect) sqlScan(ctx context.Context, root *OperationA
 }
 
 // Modify adds a query modifier for attaching custom logic to queries.
-func (_s *OperationAuditLogSelect) Modify(modifiers ...func(s *sql.Selector)) *OperationAuditLogSelect {
+func (_s *ApiAuditLogSelect) Modify(modifiers ...func(s *sql.Selector)) *ApiAuditLogSelect {
 	_s.modifiers = append(_s.modifiers, modifiers...)
 	return _s
 }

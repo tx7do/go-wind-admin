@@ -39,7 +39,7 @@ type PolicyEvaluationLogRepo struct {
 
 func NewPolicyEvaluationLogRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *PolicyEvaluationLogRepo {
 	repo := &PolicyEvaluationLogRepo{
-		log:       ctx.NewLoggerHelper("operation-audit-log/repo/admin-service"),
+		log:       ctx.NewLoggerHelper("policy-evaluation-log/repo/admin-service"),
 		entClient: entClient,
 		mapper:    mapper.NewCopierMapper[permissionV1.PolicyEvaluationLog, ent.PolicyEvaluationLog](),
 	}

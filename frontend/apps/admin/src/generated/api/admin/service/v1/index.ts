@@ -518,6 +518,186 @@ export type permissionservicev1_DeleteApiRequest = {
   id: number | undefined;
 };
 
+// API审计日志
+export type ApiAuditLog = {
+  //
+  // Behaviors: OPTIONAL
+  id?: number;
+  costTime?: wellKnownDuration;
+  success?: boolean;
+  requestId?: string;
+  statusCode?: number;
+  reason?: string;
+  location?: string;
+  operation?: string;
+  method?: string;
+  path?: string;
+  apiModule?: string;
+  apiDescription?: string;
+  referer?: string;
+  requestUri?: string;
+  requestHeader?: string;
+  requestBody?: string;
+  response?: string;
+  userId?: number;
+  username?: string;
+  clientIp?: string;
+  userAgent?: string;
+  browserName?: string;
+  browserVersion?: string;
+  clientId?: string;
+  clientName?: string;
+  osName?: string;
+  osVersion?: string;
+  tenantId?: number;
+  createdAt?: wellKnownTimestamp;
+};
+
+// Generated output always contains 0, 3, 6, or 9 fractional digits,
+// depending on required precision, followed by the suffix "s".
+// Accepted are any fractional digits (also none) as long as they fit
+// into nano-seconds precision and the suffix "s" is required.
+type wellKnownDuration = string;
+
+// 查询API审计日志列表 - 回应
+export type ListApiAuditLogResponse = {
+  items: ApiAuditLog[] | undefined;
+  total: number | undefined;
+};
+
+// 查询API审计日志详情 - 请求
+export type GetApiAuditLogRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
+};
+
+// 创建API审计日志 - 请求
+export type CreateApiAuditLogRequest = {
+  data: ApiAuditLog | undefined;
+};
+
+// 更新API审计日志 - 请求
+export type UpdateApiAuditLogRequest = {
+  id: number | undefined;
+  data: ApiAuditLog | undefined;
+  updateMask: wellKnownFieldMask | undefined;
+  allowMissing?: boolean;
+};
+
+// 删除API审计日志 - 请求
+export type DeleteApiAuditLogRequest = {
+  id: number | undefined;
+};
+
+// API审计日志管理服务
+export interface ApiAuditLogService {
+  // 查询API审计日志列表
+  List(request: pagination_PagingRequest): Promise<ListApiAuditLogResponse>;
+  // 查询API审计日志详情
+  Get(request: GetApiAuditLogRequest): Promise<ApiAuditLog>;
+}
+
+export function createApiAuditLogServiceClient(
+  handler: RequestHandler
+): ApiAuditLogService {
+  return {
+    List(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/api-audit-logs`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
+      }
+      if (request.pageSize) {
+        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
+      }
+      if (request.offset) {
+        queryParams.push(`offset=${encodeURIComponent(request.offset.toString())}`)
+      }
+      if (request.limit) {
+        queryParams.push(`limit=${encodeURIComponent(request.limit.toString())}`)
+      }
+      if (request.token) {
+        queryParams.push(`token=${encodeURIComponent(request.token.toString())}`)
+      }
+      if (request.noPaging) {
+        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
+      }
+      if (request.orderBy) {
+        request.orderBy.forEach((x) => {
+          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.order) {
+        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
+      }
+      if (request.query) {
+        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
+      }
+      if (request.or) {
+        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(`filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(`filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.fieldMask) {
+        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "ApiAuditLogService",
+        method: "List",
+      }) as Promise<ListApiAuditLogResponse>;
+    },
+    Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/api-audit-logs/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.viewMask) {
+        queryParams.push(`viewMask=${encodeURIComponent(request.viewMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "ApiAuditLogService",
+        method: "Get",
+      }) as Promise<ApiAuditLog>;
+    },
+  };
+}
 // 用户后台登录认证服务
 export interface AuthenticationService {
   // 登录
@@ -1941,6 +2121,19 @@ export type LoginAuditLog = {
   createdAt?: wellKnownTimestamp;
 };
 
+// 事件类型
+export type LoginAuditLog_EventType =
+  | "EVENT_TYPE_UNSPECIFIED"
+  | "LOGIN_SUCCESS"
+  | "LOGIN_FAILED"
+  | "LOGOUT"
+  | "SESSION_EXPIRED";
+// 风险因素
+export type LoginAuditLog_RiskFactor =
+  | "RISK_FACTOR_UNSPECIFIED"
+  | "NORMAL"
+  | "SUSPICIOUS"
+  | "HIGH_RISK";
 // 查询登录审计日志列表 - 回应
 export type ListLoginAuditLogResponse = {
   items: LoginAuditLog[] | undefined;
@@ -2638,186 +2831,6 @@ export type permissionservicev1_DeleteMenuRequest = {
   id: number | undefined;
 };
 
-// 操作审计日志
-export type OperationAuditLog = {
-  //
-  // Behaviors: OPTIONAL
-  id?: number;
-  costTime?: wellKnownDuration;
-  success?: boolean;
-  requestId?: string;
-  statusCode?: number;
-  reason?: string;
-  location?: string;
-  operation?: string;
-  method?: string;
-  path?: string;
-  apiModule?: string;
-  apiDescription?: string;
-  referer?: string;
-  requestUri?: string;
-  requestHeader?: string;
-  requestBody?: string;
-  response?: string;
-  userId?: number;
-  username?: string;
-  clientIp?: string;
-  userAgent?: string;
-  browserName?: string;
-  browserVersion?: string;
-  clientId?: string;
-  clientName?: string;
-  osName?: string;
-  osVersion?: string;
-  tenantId?: number;
-  createdAt?: wellKnownTimestamp;
-};
-
-// Generated output always contains 0, 3, 6, or 9 fractional digits,
-// depending on required precision, followed by the suffix "s".
-// Accepted are any fractional digits (also none) as long as they fit
-// into nano-seconds precision and the suffix "s" is required.
-type wellKnownDuration = string;
-
-// 查询操作审计日志列表 - 回应
-export type ListOperationAuditLogResponse = {
-  items: OperationAuditLog[] | undefined;
-  total: number | undefined;
-};
-
-// 查询操作审计日志详情 - 请求
-export type GetOperationAuditLogRequest = {
-  id?: number;
-  viewMask?: wellKnownFieldMask;
-};
-
-// 创建操作审计日志 - 请求
-export type CreateOperationAuditLogRequest = {
-  data: OperationAuditLog | undefined;
-};
-
-// 更新操作审计日志 - 请求
-export type UpdateOperationAuditLogRequest = {
-  id: number | undefined;
-  data: OperationAuditLog | undefined;
-  updateMask: wellKnownFieldMask | undefined;
-  allowMissing?: boolean;
-};
-
-// 删除操作审计日志 - 请求
-export type DeleteOperationAuditLogRequest = {
-  id: number | undefined;
-};
-
-// 操作审计日志管理服务
-export interface OperationAuditLogService {
-  // 查询操作审计日志列表
-  List(request: pagination_PagingRequest): Promise<ListOperationAuditLogResponse>;
-  // 查询操作审计日志详情
-  Get(request: GetOperationAuditLogRequest): Promise<OperationAuditLog>;
-}
-
-export function createOperationAuditLogServiceClient(
-  handler: RequestHandler
-): OperationAuditLogService {
-  return {
-    List(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      const path = `admin/v1/operation-audit-logs`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.page) {
-        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
-      }
-      if (request.pageSize) {
-        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
-      }
-      if (request.offset) {
-        queryParams.push(`offset=${encodeURIComponent(request.offset.toString())}`)
-      }
-      if (request.limit) {
-        queryParams.push(`limit=${encodeURIComponent(request.limit.toString())}`)
-      }
-      if (request.token) {
-        queryParams.push(`token=${encodeURIComponent(request.token.toString())}`)
-      }
-      if (request.noPaging) {
-        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
-      }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
-      if (request.query) {
-        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
-      }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
-      }
-      if (request.filterExpr?.type) {
-        queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
-      }
-      if (request.filterExpr?.conditions?.field) {
-        queryParams.push(`filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`)
-      }
-      if (request.filterExpr?.conditions?.op) {
-        queryParams.push(`filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`)
-      }
-      if (request.filterExpr?.conditions?.value) {
-        queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
-      }
-      if (request.filterExpr?.conditions?.values) {
-        request.filterExpr.conditions.values.forEach((x) => {
-          queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.fieldMask) {
-        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "OperationAuditLogService",
-        method: "List",
-      }) as Promise<ListOperationAuditLogResponse>;
-    },
-    Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
-      if (!request.id) {
-        throw new Error("missing required field request.id");
-      }
-      const path = `admin/v1/operation-audit-logs/${request.id}`; // eslint-disable-line quotes
-      const body = null;
-      const queryParams: string[] = [];
-      if (request.viewMask) {
-        queryParams.push(`viewMask=${encodeURIComponent(request.viewMask.toString())}`)
-      }
-      let uri = path;
-      if (queryParams.length > 0) {
-        uri += `?${queryParams.join("&")}`
-      }
-      return handler({
-        path: uri,
-        method: "GET",
-        body,
-      }, {
-        service: "OperationAuditLogService",
-        method: "Get",
-      }) as Promise<OperationAuditLog>;
-    },
-  };
-}
 // 组织单元服务
 export interface OrgUnitService {
   // 查询组织单元列表
