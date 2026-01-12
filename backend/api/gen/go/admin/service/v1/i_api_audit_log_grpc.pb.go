@@ -9,6 +9,7 @@ package adminpb
 import (
 	context "context"
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	v11 "go-wind-admin/api/gen/go/audit/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -31,9 +32,9 @@ const (
 // API审计日志管理服务
 type ApiAuditLogServiceClient interface {
 	// 查询API审计日志列表
-	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListApiAuditLogResponse, error)
+	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*v11.ListApiAuditLogResponse, error)
 	// 查询API审计日志详情
-	Get(ctx context.Context, in *GetApiAuditLogRequest, opts ...grpc.CallOption) (*ApiAuditLog, error)
+	Get(ctx context.Context, in *v11.GetApiAuditLogRequest, opts ...grpc.CallOption) (*v11.ApiAuditLog, error)
 }
 
 type apiAuditLogServiceClient struct {
@@ -44,9 +45,9 @@ func NewApiAuditLogServiceClient(cc grpc.ClientConnInterface) ApiAuditLogService
 	return &apiAuditLogServiceClient{cc}
 }
 
-func (c *apiAuditLogServiceClient) List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListApiAuditLogResponse, error) {
+func (c *apiAuditLogServiceClient) List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*v11.ListApiAuditLogResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListApiAuditLogResponse)
+	out := new(v11.ListApiAuditLogResponse)
 	err := c.cc.Invoke(ctx, ApiAuditLogService_List_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -54,9 +55,9 @@ func (c *apiAuditLogServiceClient) List(ctx context.Context, in *v1.PagingReques
 	return out, nil
 }
 
-func (c *apiAuditLogServiceClient) Get(ctx context.Context, in *GetApiAuditLogRequest, opts ...grpc.CallOption) (*ApiAuditLog, error) {
+func (c *apiAuditLogServiceClient) Get(ctx context.Context, in *v11.GetApiAuditLogRequest, opts ...grpc.CallOption) (*v11.ApiAuditLog, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ApiAuditLog)
+	out := new(v11.ApiAuditLog)
 	err := c.cc.Invoke(ctx, ApiAuditLogService_Get_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -71,9 +72,9 @@ func (c *apiAuditLogServiceClient) Get(ctx context.Context, in *GetApiAuditLogRe
 // API审计日志管理服务
 type ApiAuditLogServiceServer interface {
 	// 查询API审计日志列表
-	List(context.Context, *v1.PagingRequest) (*ListApiAuditLogResponse, error)
+	List(context.Context, *v1.PagingRequest) (*v11.ListApiAuditLogResponse, error)
 	// 查询API审计日志详情
-	Get(context.Context, *GetApiAuditLogRequest) (*ApiAuditLog, error)
+	Get(context.Context, *v11.GetApiAuditLogRequest) (*v11.ApiAuditLog, error)
 	mustEmbedUnimplementedApiAuditLogServiceServer()
 }
 
@@ -84,10 +85,10 @@ type ApiAuditLogServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedApiAuditLogServiceServer struct{}
 
-func (UnimplementedApiAuditLogServiceServer) List(context.Context, *v1.PagingRequest) (*ListApiAuditLogResponse, error) {
+func (UnimplementedApiAuditLogServiceServer) List(context.Context, *v1.PagingRequest) (*v11.ListApiAuditLogResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method List not implemented")
 }
-func (UnimplementedApiAuditLogServiceServer) Get(context.Context, *GetApiAuditLogRequest) (*ApiAuditLog, error) {
+func (UnimplementedApiAuditLogServiceServer) Get(context.Context, *v11.GetApiAuditLogRequest) (*v11.ApiAuditLog, error) {
 	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
 }
 func (UnimplementedApiAuditLogServiceServer) mustEmbedUnimplementedApiAuditLogServiceServer() {}
@@ -130,7 +131,7 @@ func _ApiAuditLogService_List_Handler(srv interface{}, ctx context.Context, dec 
 }
 
 func _ApiAuditLogService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetApiAuditLogRequest)
+	in := new(v11.GetApiAuditLogRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -142,7 +143,7 @@ func _ApiAuditLogService_Get_Handler(srv interface{}, ctx context.Context, dec f
 		FullMethod: ApiAuditLogService_Get_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(ApiAuditLogServiceServer).Get(ctx, req.(*GetApiAuditLogRequest))
+		return srv.(ApiAuditLogServiceServer).Get(ctx, req.(*v11.GetApiAuditLogRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

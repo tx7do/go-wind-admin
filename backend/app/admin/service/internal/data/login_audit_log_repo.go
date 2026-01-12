@@ -20,20 +20,25 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
 )
 
 type LoginAuditLogRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper *mapper.CopierMapper[adminV1.LoginAuditLog, ent.LoginAuditLog]
+	mapper *mapper.CopierMapper[auditV1.LoginAuditLog, ent.LoginAuditLog]
+
+	statusConverter     *mapper.EnumTypeConverter[auditV1.LoginAuditLog_Status, loginauditlog.Status]
+	actionTypeConverter *mapper.EnumTypeConverter[auditV1.LoginAuditLog_ActionType, loginauditlog.ActionType]
+	riskLevelConverter  *mapper.EnumTypeConverter[auditV1.LoginAuditLog_RiskLevel, loginauditlog.RiskLevel]
 
 	repository *entCrud.Repository[
 		ent.LoginAuditLogQuery, ent.LoginAuditLogSelect,
 		ent.LoginAuditLogCreate, ent.LoginAuditLogCreateBulk,
 		ent.LoginAuditLogUpdate, ent.LoginAuditLogUpdateOne,
 		ent.LoginAuditLogDelete,
-		predicate.LoginAuditLog, adminV1.LoginAuditLog, ent.LoginAuditLog,
+		predicate.LoginAuditLog, auditV1.LoginAuditLog, ent.LoginAuditLog,
 	]
 }
 
@@ -41,7 +46,16 @@ func NewLoginAuditLogRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*
 	repo := &LoginAuditLogRepo{
 		log:       ctx.NewLoggerHelper("login-audit-log/repo/admin-service"),
 		entClient: entClient,
-		mapper:    mapper.NewCopierMapper[adminV1.LoginAuditLog, ent.LoginAuditLog](),
+		mapper:    mapper.NewCopierMapper[auditV1.LoginAuditLog, ent.LoginAuditLog](),
+		statusConverter: mapper.NewEnumTypeConverter[auditV1.LoginAuditLog_Status, loginauditlog.Status](
+			auditV1.LoginAuditLog_Status_name, auditV1.LoginAuditLog_Status_value,
+		),
+		actionTypeConverter: mapper.NewEnumTypeConverter[auditV1.LoginAuditLog_ActionType, loginauditlog.ActionType](
+			auditV1.LoginAuditLog_ActionType_name, auditV1.LoginAuditLog_ActionType_value,
+		),
+		riskLevelConverter: mapper.NewEnumTypeConverter[auditV1.LoginAuditLog_RiskLevel, loginauditlog.RiskLevel](
+			auditV1.LoginAuditLog_RiskLevel_name, auditV1.LoginAuditLog_RiskLevel_value,
+		),
 	}
 
 	repo.init()
@@ -55,11 +69,15 @@ func (r *LoginAuditLogRepo) init() {
 		ent.LoginAuditLogCreate, ent.LoginAuditLogCreateBulk,
 		ent.LoginAuditLogUpdate, ent.LoginAuditLogUpdateOne,
 		ent.LoginAuditLogDelete,
-		predicate.LoginAuditLog, adminV1.LoginAuditLog, ent.LoginAuditLog,
+		predicate.LoginAuditLog, auditV1.LoginAuditLog, ent.LoginAuditLog,
 	](r.mapper)
 
 	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
 	r.mapper.AppendConverters(copierutil.NewTimeTimestamppbConverterPair())
+
+	r.mapper.AppendConverters(r.statusConverter.NewConverterPair())
+	r.mapper.AppendConverters(r.actionTypeConverter.NewConverterPair())
+	r.mapper.AppendConverters(r.riskLevelConverter.NewConverterPair())
 }
 
 func (r *LoginAuditLogRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
@@ -77,7 +95,7 @@ func (r *LoginAuditLogRepo) Count(ctx context.Context, whereCond []func(s *sql.S
 	return count, nil
 }
 
-func (r *LoginAuditLogRepo) List(ctx context.Context, req *pagination.PagingRequest) (*adminV1.ListLoginAuditLogResponse, error) {
+func (r *LoginAuditLogRepo) List(ctx context.Context, req *pagination.PagingRequest) (*auditV1.ListLoginAuditLogResponse, error) {
 	if req == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -89,10 +107,10 @@ func (r *LoginAuditLogRepo) List(ctx context.Context, req *pagination.PagingRequ
 		return nil, err
 	}
 	if ret == nil {
-		return &adminV1.ListLoginAuditLogResponse{Total: 0, Items: nil}, nil
+		return &auditV1.ListLoginAuditLogResponse{Total: 0, Items: nil}, nil
 	}
 
-	return &adminV1.ListLoginAuditLogResponse{
+	return &auditV1.ListLoginAuditLogResponse{
 		Total: ret.Total,
 		Items: ret.Items,
 	}, nil
@@ -109,7 +127,7 @@ func (r *LoginAuditLogRepo) IsExist(ctx context.Context, id uint32) (bool, error
 	return exist, nil
 }
 
-func (r *LoginAuditLogRepo) Get(ctx context.Context, req *adminV1.GetLoginAuditLogRequest) (*adminV1.LoginAuditLog, error) {
+func (r *LoginAuditLogRepo) Get(ctx context.Context, req *auditV1.GetLoginAuditLogRequest) (*auditV1.LoginAuditLog, error) {
 	if req == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -119,7 +137,7 @@ func (r *LoginAuditLogRepo) Get(ctx context.Context, req *adminV1.GetLoginAuditL
 	var whereCond []func(s *sql.Selector)
 	switch req.QueryBy.(type) {
 	default:
-	case *adminV1.GetLoginAuditLogRequest_Id:
+	case *auditV1.GetLoginAuditLogRequest_Id:
 		whereCond = append(whereCond, loginauditlog.IDEQ(req.GetId()))
 	}
 
@@ -131,42 +149,39 @@ func (r *LoginAuditLogRepo) Get(ctx context.Context, req *adminV1.GetLoginAuditL
 	return dto, err
 }
 
-func (r *LoginAuditLogRepo) Create(ctx context.Context, req *adminV1.CreateLoginAuditLogRequest) error {
+func (r *LoginAuditLogRepo) Create(ctx context.Context, req *auditV1.CreateLoginAuditLogRequest) error {
 	if req == nil || req.Data == nil {
 		return adminV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().LoginAuditLog.
 		Create().
-		SetNillableLoginIP(req.Data.LoginIp).
-		SetNillableLoginMAC(req.Data.LoginMac).
-		SetNillableUserAgent(req.Data.UserAgent).
-		SetNillableBrowserName(req.Data.BrowserName).
-		SetNillableBrowserVersion(req.Data.BrowserVersion).
-		SetNillableClientID(req.Data.ClientId).
-		SetNillableClientName(req.Data.ClientName).
-		SetNillableOsName(req.Data.OsName).
-		SetNillableOsVersion(req.Data.OsVersion).
+		SetNillableTenantID(req.Data.TenantId).
 		SetNillableUserID(req.Data.UserId).
 		SetNillableUsername(req.Data.Username).
-		SetNillableStatusCode(req.Data.StatusCode).
-		SetNillableSuccess(req.Data.Success).
-		SetNillableReason(req.Data.Reason).
-		SetNillableLocation(req.Data.Location).
-		SetNillableLoginTime(timeutil.TimestamppbToTime(req.Data.LoginTime)).
+		SetNillableIPAddress(req.Data.IpAddress).
+		SetGeoLocation(req.Data.GeoLocation).
+		SetNillableSessionID(req.Data.SessionId).
+		SetDeviceInfo(req.Data.DeviceInfo).
+		SetNillableRequestID(req.Data.RequestId).
+		SetNillableActionType(r.actionTypeConverter.ToEntity(req.Data.ActionType)).
+		SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
+		SetNillableFailureReason(req.Data.FailureReason).
+		SetNillableMfaStatus(req.Data.MfaStatus).
+		SetNillableRiskScore(req.Data.RiskScore).
+		SetNillableRiskLevel(r.riskLevelConverter.ToEntity(req.Data.RiskLevel)).
+		SetRiskFactors(req.Data.RiskFactors).
+		SetNillableLogHash(req.Data.LogHash).
+		SetSignature(req.Data.Signature).
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
-
-	if req.Data.LoginTime == nil {
-		builder.SetLoginTime(time.Now())
-	}
 
 	if req.Data.CreatedAt == nil {
 		builder.SetCreatedAt(time.Now())
 	}
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert admin login log failed: %s", err.Error())
-		return adminV1.ErrorInternalServerError("insert admin login log failed")
+		r.log.Errorf("insert login audit log failed: %s", err.Error())
+		return adminV1.ErrorInternalServerError("insert login audit log failed")
 	}
 
 	return nil

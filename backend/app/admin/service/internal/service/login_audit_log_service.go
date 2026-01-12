@@ -12,6 +12,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
 )
 
 type LoginAuditLogService struct {
@@ -29,15 +30,15 @@ func NewLoginAuditLogService(ctx *bootstrap.Context, repo *data.LoginAuditLogRep
 	}
 }
 
-func (s *LoginAuditLogService) List(ctx context.Context, req *pagination.PagingRequest) (*adminV1.ListLoginAuditLogResponse, error) {
+func (s *LoginAuditLogService) List(ctx context.Context, req *pagination.PagingRequest) (*auditV1.ListLoginAuditLogResponse, error) {
 	return s.repo.List(ctx, req)
 }
 
-func (s *LoginAuditLogService) Get(ctx context.Context, req *adminV1.GetLoginAuditLogRequest) (*adminV1.LoginAuditLog, error) {
+func (s *LoginAuditLogService) Get(ctx context.Context, req *auditV1.GetLoginAuditLogRequest) (*auditV1.LoginAuditLog, error) {
 	return s.repo.Get(ctx, req)
 }
 
-func (s *LoginAuditLogService) Create(ctx context.Context, req *adminV1.CreateLoginAuditLogRequest) (*emptypb.Empty, error) {
+func (s *LoginAuditLogService) Create(ctx context.Context, req *auditV1.CreateLoginAuditLogRequest) (*emptypb.Empty, error) {
 	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}

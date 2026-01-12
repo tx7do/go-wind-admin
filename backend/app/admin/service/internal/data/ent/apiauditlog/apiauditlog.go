@@ -15,54 +15,50 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldTenantID holds the string denoting the tenant_id field in the database.
 	FieldTenantID = "tenant_id"
-	// FieldRequestID holds the string denoting the request_id field in the database.
-	FieldRequestID = "request_id"
-	// FieldMethod holds the string denoting the method field in the database.
-	FieldMethod = "method"
-	// FieldOperation holds the string denoting the operation field in the database.
-	FieldOperation = "operation"
-	// FieldPath holds the string denoting the path field in the database.
-	FieldPath = "path"
-	// FieldReferer holds the string denoting the referer field in the database.
-	FieldReferer = "referer"
-	// FieldRequestURI holds the string denoting the request_uri field in the database.
-	FieldRequestURI = "request_uri"
-	// FieldRequestBody holds the string denoting the request_body field in the database.
-	FieldRequestBody = "request_body"
-	// FieldRequestHeader holds the string denoting the request_header field in the database.
-	FieldRequestHeader = "request_header"
-	// FieldResponse holds the string denoting the response field in the database.
-	FieldResponse = "response"
-	// FieldCostTime holds the string denoting the cost_time field in the database.
-	FieldCostTime = "cost_time"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
 	// FieldUsername holds the string denoting the username field in the database.
 	FieldUsername = "username"
-	// FieldClientIP holds the string denoting the client_ip field in the database.
-	FieldClientIP = "client_ip"
+	// FieldIPAddress holds the string denoting the ip_address field in the database.
+	FieldIPAddress = "ip_address"
+	// FieldGeoLocation holds the string denoting the geo_location field in the database.
+	FieldGeoLocation = "geo_location"
+	// FieldDeviceInfo holds the string denoting the device_info field in the database.
+	FieldDeviceInfo = "device_info"
+	// FieldReferer holds the string denoting the referer field in the database.
+	FieldReferer = "referer"
+	// FieldHTTPMethod holds the string denoting the http_method field in the database.
+	FieldHTTPMethod = "http_method"
+	// FieldPath holds the string denoting the path field in the database.
+	FieldPath = "path"
+	// FieldRequestURI holds the string denoting the request_uri field in the database.
+	FieldRequestURI = "request_uri"
+	// FieldAPIModule holds the string denoting the api_module field in the database.
+	FieldAPIModule = "api_module"
+	// FieldAPIOperation holds the string denoting the api_operation field in the database.
+	FieldAPIOperation = "api_operation"
+	// FieldAPIDescription holds the string denoting the api_description field in the database.
+	FieldAPIDescription = "api_description"
+	// FieldRequestID holds the string denoting the request_id field in the database.
+	FieldRequestID = "request_id"
+	// FieldCostTimeMs holds the string denoting the cost_time_ms field in the database.
+	FieldCostTimeMs = "cost_time_ms"
+	// FieldSuccess holds the string denoting the success field in the database.
+	FieldSuccess = "success"
 	// FieldStatusCode holds the string denoting the status_code field in the database.
 	FieldStatusCode = "status_code"
 	// FieldReason holds the string denoting the reason field in the database.
 	FieldReason = "reason"
-	// FieldSuccess holds the string denoting the success field in the database.
-	FieldSuccess = "success"
-	// FieldLocation holds the string denoting the location field in the database.
-	FieldLocation = "location"
-	// FieldUserAgent holds the string denoting the user_agent field in the database.
-	FieldUserAgent = "user_agent"
-	// FieldBrowserName holds the string denoting the browser_name field in the database.
-	FieldBrowserName = "browser_name"
-	// FieldBrowserVersion holds the string denoting the browser_version field in the database.
-	FieldBrowserVersion = "browser_version"
-	// FieldClientID holds the string denoting the client_id field in the database.
-	FieldClientID = "client_id"
-	// FieldClientName holds the string denoting the client_name field in the database.
-	FieldClientName = "client_name"
-	// FieldOsName holds the string denoting the os_name field in the database.
-	FieldOsName = "os_name"
-	// FieldOsVersion holds the string denoting the os_version field in the database.
-	FieldOsVersion = "os_version"
+	// FieldRequestHeader holds the string denoting the request_header field in the database.
+	FieldRequestHeader = "request_header"
+	// FieldRequestBody holds the string denoting the request_body field in the database.
+	FieldRequestBody = "request_body"
+	// FieldResponse holds the string denoting the response field in the database.
+	FieldResponse = "response"
+	// FieldLogHash holds the string denoting the log_hash field in the database.
+	FieldLogHash = "log_hash"
+	// FieldSignature holds the string denoting the signature field in the database.
+	FieldSignature = "signature"
 	// Table holds the table name of the apiauditlog in the database.
 	Table = "sys_api_audit_logs"
 )
@@ -72,30 +68,28 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldTenantID,
-	FieldRequestID,
-	FieldMethod,
-	FieldOperation,
-	FieldPath,
-	FieldReferer,
-	FieldRequestURI,
-	FieldRequestBody,
-	FieldRequestHeader,
-	FieldResponse,
-	FieldCostTime,
 	FieldUserID,
 	FieldUsername,
-	FieldClientIP,
+	FieldIPAddress,
+	FieldGeoLocation,
+	FieldDeviceInfo,
+	FieldReferer,
+	FieldHTTPMethod,
+	FieldPath,
+	FieldRequestURI,
+	FieldAPIModule,
+	FieldAPIOperation,
+	FieldAPIDescription,
+	FieldRequestID,
+	FieldCostTimeMs,
+	FieldSuccess,
 	FieldStatusCode,
 	FieldReason,
-	FieldSuccess,
-	FieldLocation,
-	FieldUserAgent,
-	FieldBrowserName,
-	FieldBrowserVersion,
-	FieldClientID,
-	FieldClientName,
-	FieldOsName,
-	FieldOsVersion,
+	FieldRequestHeader,
+	FieldRequestBody,
+	FieldResponse,
+	FieldLogHash,
+	FieldSignature,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -131,56 +125,6 @@ func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
 }
 
-// ByRequestID orders the results by the request_id field.
-func ByRequestID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRequestID, opts...).ToFunc()
-}
-
-// ByMethod orders the results by the method field.
-func ByMethod(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldMethod, opts...).ToFunc()
-}
-
-// ByOperation orders the results by the operation field.
-func ByOperation(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOperation, opts...).ToFunc()
-}
-
-// ByPath orders the results by the path field.
-func ByPath(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldPath, opts...).ToFunc()
-}
-
-// ByReferer orders the results by the referer field.
-func ByReferer(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldReferer, opts...).ToFunc()
-}
-
-// ByRequestURI orders the results by the request_uri field.
-func ByRequestURI(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRequestURI, opts...).ToFunc()
-}
-
-// ByRequestBody orders the results by the request_body field.
-func ByRequestBody(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRequestBody, opts...).ToFunc()
-}
-
-// ByRequestHeader orders the results by the request_header field.
-func ByRequestHeader(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRequestHeader, opts...).ToFunc()
-}
-
-// ByResponse orders the results by the response field.
-func ByResponse(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldResponse, opts...).ToFunc()
-}
-
-// ByCostTime orders the results by the cost_time field.
-func ByCostTime(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCostTime, opts...).ToFunc()
-}
-
 // ByUserID orders the results by the user_id field.
 func ByUserID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUserID, opts...).ToFunc()
@@ -191,9 +135,59 @@ func ByUsername(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUsername, opts...).ToFunc()
 }
 
-// ByClientIP orders the results by the client_ip field.
-func ByClientIP(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldClientIP, opts...).ToFunc()
+// ByIPAddress orders the results by the ip_address field.
+func ByIPAddress(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIPAddress, opts...).ToFunc()
+}
+
+// ByReferer orders the results by the referer field.
+func ByReferer(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldReferer, opts...).ToFunc()
+}
+
+// ByHTTPMethod orders the results by the http_method field.
+func ByHTTPMethod(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldHTTPMethod, opts...).ToFunc()
+}
+
+// ByPath orders the results by the path field.
+func ByPath(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPath, opts...).ToFunc()
+}
+
+// ByRequestURI orders the results by the request_uri field.
+func ByRequestURI(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRequestURI, opts...).ToFunc()
+}
+
+// ByAPIModule orders the results by the api_module field.
+func ByAPIModule(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAPIModule, opts...).ToFunc()
+}
+
+// ByAPIOperation orders the results by the api_operation field.
+func ByAPIOperation(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAPIOperation, opts...).ToFunc()
+}
+
+// ByAPIDescription orders the results by the api_description field.
+func ByAPIDescription(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAPIDescription, opts...).ToFunc()
+}
+
+// ByRequestID orders the results by the request_id field.
+func ByRequestID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRequestID, opts...).ToFunc()
+}
+
+// ByCostTimeMs orders the results by the cost_time_ms field.
+func ByCostTimeMs(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCostTimeMs, opts...).ToFunc()
+}
+
+// BySuccess orders the results by the success field.
+func BySuccess(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSuccess, opts...).ToFunc()
 }
 
 // ByStatusCode orders the results by the status_code field.
@@ -206,47 +200,22 @@ func ByReason(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldReason, opts...).ToFunc()
 }
 
-// BySuccess orders the results by the success field.
-func BySuccess(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSuccess, opts...).ToFunc()
+// ByRequestHeader orders the results by the request_header field.
+func ByRequestHeader(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRequestHeader, opts...).ToFunc()
 }
 
-// ByLocation orders the results by the location field.
-func ByLocation(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLocation, opts...).ToFunc()
+// ByRequestBody orders the results by the request_body field.
+func ByRequestBody(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRequestBody, opts...).ToFunc()
 }
 
-// ByUserAgent orders the results by the user_agent field.
-func ByUserAgent(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUserAgent, opts...).ToFunc()
+// ByResponse orders the results by the response field.
+func ByResponse(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldResponse, opts...).ToFunc()
 }
 
-// ByBrowserName orders the results by the browser_name field.
-func ByBrowserName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBrowserName, opts...).ToFunc()
-}
-
-// ByBrowserVersion orders the results by the browser_version field.
-func ByBrowserVersion(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBrowserVersion, opts...).ToFunc()
-}
-
-// ByClientID orders the results by the client_id field.
-func ByClientID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldClientID, opts...).ToFunc()
-}
-
-// ByClientName orders the results by the client_name field.
-func ByClientName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldClientName, opts...).ToFunc()
-}
-
-// ByOsName orders the results by the os_name field.
-func ByOsName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOsName, opts...).ToFunc()
-}
-
-// ByOsVersion orders the results by the os_version field.
-func ByOsVersion(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOsVersion, opts...).ToFunc()
+// ByLogHash orders the results by the log_hash field.
+func ByLogHash(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLogHash, opts...).ToFunc()
 }

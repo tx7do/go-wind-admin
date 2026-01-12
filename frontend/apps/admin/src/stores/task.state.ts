@@ -130,15 +130,15 @@ export const useTaskStore = defineStore('task', () => {
 export const taskTypeList = computed(() => [
   {
     value: 'PERIODIC',
-    label: $t('enum.taskType.Periodic'),
+    label: $t('enum.task.type.Periodic'),
   },
   {
     value: 'DELAY',
-    label: $t('enum.taskType.Delay'),
+    label: $t('enum.task.type.Delay'),
   },
   {
     value: 'WAIT_RESULT',
-    label: $t('enum.taskType.WaitResult'),
+    label: $t('enum.task.type.WaitResult'),
   },
 ]);
 

@@ -7,13 +7,10 @@ import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
 	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	annotations "google.golang.org/genproto/googleapis/api/annotations"
+	servicev1 "go-wind-admin/api/gen/go/audit/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -23,11 +20,8 @@ var (
 	_ redact.Redactor
 	_ codes.Code
 	_ status.Status
-	_ annotations.FieldBehavior
-	_ emptypb.Empty
-	_ timestamppb.Timestamp
-	_ fieldmaskpb.FieldMask
 	_ pagination.Sorting
+	_ servicev1.LoginAuditLog
 )
 
 // RegisterRedactedLoginAuditLogServiceServer wraps the LoginAuditLogServiceServer with the redacted server and registers the service in GRPC
@@ -50,7 +44,7 @@ type redactedLoginAuditLogServiceServer struct {
 
 // List is the redacted wrapper for the actual LoginAuditLogServiceServer.List method
 // Unary RPC
-func (s *redactedLoginAuditLogServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*ListLoginAuditLogResponse, error) {
+func (s *redactedLoginAuditLogServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*servicev1.ListLoginAuditLogResponse, error) {
 	res, err := s.srv.List(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -61,115 +55,11 @@ func (s *redactedLoginAuditLogServiceServer) List(ctx context.Context, in *pagin
 
 // Get is the redacted wrapper for the actual LoginAuditLogServiceServer.Get method
 // Unary RPC
-func (s *redactedLoginAuditLogServiceServer) Get(ctx context.Context, in *GetLoginAuditLogRequest) (*LoginAuditLog, error) {
+func (s *redactedLoginAuditLogServiceServer) Get(ctx context.Context, in *servicev1.GetLoginAuditLogRequest) (*servicev1.LoginAuditLog, error) {
 	res, err := s.srv.Get(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)
 	}
 	return res, err
-}
-
-// Redact method implementation for LoginAuditLog
-func (x *LoginAuditLog) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Id
-
-	// Safe field: LoginIp
-
-	// Safe field: LoginMac
-
-	// Safe field: LoginTime
-
-	// Safe field: StatusCode
-
-	// Safe field: Success
-
-	// Safe field: Reason
-
-	// Safe field: Location
-
-	// Safe field: UserAgent
-
-	// Safe field: BrowserName
-
-	// Safe field: BrowserVersion
-
-	// Safe field: ClientId
-
-	// Safe field: ClientName
-
-	// Safe field: OsName
-
-	// Safe field: OsVersion
-
-	// Safe field: UserId
-
-	// Safe field: Username
-
-	// Safe field: CreatedAt
-	return x.String()
-}
-
-// Redact method implementation for ListLoginAuditLogResponse
-func (x *ListLoginAuditLogResponse) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Items
-
-	// Safe field: Total
-	return x.String()
-}
-
-// Redact method implementation for GetLoginAuditLogRequest
-func (x *GetLoginAuditLogRequest) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Id
-
-	// Safe field: ViewMask
-	return x.String()
-}
-
-// Redact method implementation for CreateLoginAuditLogRequest
-func (x *CreateLoginAuditLogRequest) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Data
-	return x.String()
-}
-
-// Redact method implementation for UpdateLoginAuditLogRequest
-func (x *UpdateLoginAuditLogRequest) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Id
-
-	// Safe field: Data
-
-	// Safe field: UpdateMask
-
-	// Safe field: AllowMissing
-	return x.String()
-}
-
-// Redact method implementation for DeleteLoginAuditLogRequest
-func (x *DeleteLoginAuditLogRequest) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Id
-	return x.String()
 }

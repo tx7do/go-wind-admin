@@ -88,16 +88,16 @@ export const useLoginPolicyStore = defineStore('login-policy', () => {
 });
 
 export const loginPolicyTypeList = computed(() => [
-  { value: 'BLACKLIST', label: $t('enum.loginPolicyType.BLACKLIST') },
-  { value: 'WHITELIST', label: $t('enum.loginPolicyType.WHITELIST') },
+  { value: 'BLACKLIST', label: $t('enum.loginPolicy.type.BLACKLIST') },
+  { value: 'WHITELIST', label: $t('enum.loginPolicy.type.WHITELIST') },
 ]);
 
 export const loginPolicyMethodList = computed(() => [
-  { value: 'IP', label: $t('enum.loginPolicyMethod.IP') },
-  { value: 'MAC', label: $t('enum.loginPolicyMethod.MAC') },
-  { value: 'REGION', label: $t('enum.loginPolicyMethod.REGION') },
-  { value: 'TIME', label: $t('enum.loginPolicyMethod.TIME') },
-  { value: 'DEVICE', label: $t('enum.loginPolicyMethod.DEVICE') },
+  { value: 'IP', label: $t('enum.loginPolicy.method.IP') },
+  { value: 'MAC', label: $t('enum.loginPolicy.method.MAC') },
+  { value: 'REGION', label: $t('enum.loginPolicy.method.REGION') },
+  { value: 'TIME', label: $t('enum.loginPolicy.method.TIME') },
+  { value: 'DEVICE', label: $t('enum.loginPolicy.method.DEVICE') },
 ]);
 
 export function loginPolicyTypeToName(typeName: any) {

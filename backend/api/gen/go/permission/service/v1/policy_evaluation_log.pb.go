@@ -326,120 +326,6 @@ func (x *CreatePolicyEvaluationLogRequest) GetData() *PolicyEvaluationLog {
 	return nil
 }
 
-// 更新策略评估日志 - 请求
-type UpdatePolicyEvaluationLogRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Data          *PolicyEvaluationLog   `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
-	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
-	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *UpdatePolicyEvaluationLogRequest) Reset() {
-	*x = UpdatePolicyEvaluationLogRequest{}
-	mi := &file_permission_service_v1_policy_evaluation_log_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpdatePolicyEvaluationLogRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdatePolicyEvaluationLogRequest) ProtoMessage() {}
-
-func (x *UpdatePolicyEvaluationLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_policy_evaluation_log_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdatePolicyEvaluationLogRequest.ProtoReflect.Descriptor instead.
-func (*UpdatePolicyEvaluationLogRequest) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_policy_evaluation_log_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *UpdatePolicyEvaluationLogRequest) GetId() uint32 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *UpdatePolicyEvaluationLogRequest) GetData() *PolicyEvaluationLog {
-	if x != nil {
-		return x.Data
-	}
-	return nil
-}
-
-func (x *UpdatePolicyEvaluationLogRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
-	if x != nil {
-		return x.UpdateMask
-	}
-	return nil
-}
-
-func (x *UpdatePolicyEvaluationLogRequest) GetAllowMissing() bool {
-	if x != nil && x.AllowMissing != nil {
-		return *x.AllowMissing
-	}
-	return false
-}
-
-// 删除策略评估日志 - 请求
-type DeletePolicyEvaluationLogRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *DeletePolicyEvaluationLogRequest) Reset() {
-	*x = DeletePolicyEvaluationLogRequest{}
-	mi := &file_permission_service_v1_policy_evaluation_log_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *DeletePolicyEvaluationLogRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DeletePolicyEvaluationLogRequest) ProtoMessage() {}
-
-func (x *DeletePolicyEvaluationLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_policy_evaluation_log_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DeletePolicyEvaluationLogRequest.ProtoReflect.Descriptor instead.
-func (*DeletePolicyEvaluationLogRequest) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_policy_evaluation_log_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *DeletePolicyEvaluationLogRequest) GetId() uint32 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
 var File_permission_service_v1_policy_evaluation_log_proto protoreflect.FileDescriptor
 
 const file_permission_service_v1_policy_evaluation_log_proto_rawDesc = "" +
@@ -488,16 +374,7 @@ const file_permission_service_v1_policy_evaluation_log_proto_rawDesc = "" +
 	"\n" +
 	"_view_mask\"b\n" +
 	" CreatePolicyEvaluationLogRequest\x12>\n" +
-	"\x04data\x18\x01 \x01(\v2*.permission.service.v1.PolicyEvaluationLogR\x04data\"\xb0\x03\n" +
-	" UpdatePolicyEvaluationLogRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12>\n" +
-	"\x04data\x18\x02 \x01(\v2*.permission.service.v1.PolicyEvaluationLogR\x04data\x12s\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
-	"updateMask\x12\xb4\x01\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
-	"\x0e_allow_missing\"2\n" +
-	" DeletePolicyEvaluationLogRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id2\xe4\x01\n" +
+	"\x04data\x18\x01 \x01(\v2*.permission.service.v1.PolicyEvaluationLogR\x04data2\xe4\x01\n" +
 	"\x1aPolicyEvaluationLogService\x12[\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a6.permission.service.v1.ListPolicyEvaluationLogResponse\"\x00\x12i\n" +
 	"\x03Get\x124.permission.service.v1.GetPolicyEvaluationLogRequest\x1a*.permission.service.v1.PolicyEvaluationLog\"\x00B\xe8\x01\n" +
@@ -515,34 +392,30 @@ func file_permission_service_v1_policy_evaluation_log_proto_rawDescGZIP() []byte
 	return file_permission_service_v1_policy_evaluation_log_proto_rawDescData
 }
 
-var file_permission_service_v1_policy_evaluation_log_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_permission_service_v1_policy_evaluation_log_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_permission_service_v1_policy_evaluation_log_proto_goTypes = []any{
 	(*PolicyEvaluationLog)(nil),              // 0: permission.service.v1.PolicyEvaluationLog
 	(*ListPolicyEvaluationLogResponse)(nil),  // 1: permission.service.v1.ListPolicyEvaluationLogResponse
 	(*GetPolicyEvaluationLogRequest)(nil),    // 2: permission.service.v1.GetPolicyEvaluationLogRequest
 	(*CreatePolicyEvaluationLogRequest)(nil), // 3: permission.service.v1.CreatePolicyEvaluationLogRequest
-	(*UpdatePolicyEvaluationLogRequest)(nil), // 4: permission.service.v1.UpdatePolicyEvaluationLogRequest
-	(*DeletePolicyEvaluationLogRequest)(nil), // 5: permission.service.v1.DeletePolicyEvaluationLogRequest
-	(*timestamppb.Timestamp)(nil),            // 6: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),            // 7: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),                 // 8: pagination.PagingRequest
+	(*timestamppb.Timestamp)(nil),            // 4: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),            // 5: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),                 // 6: pagination.PagingRequest
 }
 var file_permission_service_v1_policy_evaluation_log_proto_depIdxs = []int32{
-	6, // 0: permission.service.v1.PolicyEvaluationLog.created_at:type_name -> google.protobuf.Timestamp
+	4, // 0: permission.service.v1.PolicyEvaluationLog.created_at:type_name -> google.protobuf.Timestamp
 	0, // 1: permission.service.v1.ListPolicyEvaluationLogResponse.items:type_name -> permission.service.v1.PolicyEvaluationLog
-	7, // 2: permission.service.v1.GetPolicyEvaluationLogRequest.view_mask:type_name -> google.protobuf.FieldMask
+	5, // 2: permission.service.v1.GetPolicyEvaluationLogRequest.view_mask:type_name -> google.protobuf.FieldMask
 	0, // 3: permission.service.v1.CreatePolicyEvaluationLogRequest.data:type_name -> permission.service.v1.PolicyEvaluationLog
-	0, // 4: permission.service.v1.UpdatePolicyEvaluationLogRequest.data:type_name -> permission.service.v1.PolicyEvaluationLog
-	7, // 5: permission.service.v1.UpdatePolicyEvaluationLogRequest.update_mask:type_name -> google.protobuf.FieldMask
-	8, // 6: permission.service.v1.PolicyEvaluationLogService.List:input_type -> pagination.PagingRequest
-	2, // 7: permission.service.v1.PolicyEvaluationLogService.Get:input_type -> permission.service.v1.GetPolicyEvaluationLogRequest
-	1, // 8: permission.service.v1.PolicyEvaluationLogService.List:output_type -> permission.service.v1.ListPolicyEvaluationLogResponse
-	0, // 9: permission.service.v1.PolicyEvaluationLogService.Get:output_type -> permission.service.v1.PolicyEvaluationLog
-	8, // [8:10] is the sub-list for method output_type
-	6, // [6:8] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	6, // 4: permission.service.v1.PolicyEvaluationLogService.List:input_type -> pagination.PagingRequest
+	2, // 5: permission.service.v1.PolicyEvaluationLogService.Get:input_type -> permission.service.v1.GetPolicyEvaluationLogRequest
+	1, // 6: permission.service.v1.PolicyEvaluationLogService.List:output_type -> permission.service.v1.ListPolicyEvaluationLogResponse
+	0, // 7: permission.service.v1.PolicyEvaluationLogService.Get:output_type -> permission.service.v1.PolicyEvaluationLog
+	6, // [6:8] is the sub-list for method output_type
+	4, // [4:6] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_permission_service_v1_policy_evaluation_log_proto_init() }
@@ -554,14 +427,13 @@ func file_permission_service_v1_policy_evaluation_log_proto_init() {
 	file_permission_service_v1_policy_evaluation_log_proto_msgTypes[2].OneofWrappers = []any{
 		(*GetPolicyEvaluationLogRequest_Id)(nil),
 	}
-	file_permission_service_v1_policy_evaluation_log_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_permission_service_v1_policy_evaluation_log_proto_rawDesc), len(file_permission_service_v1_policy_evaluation_log_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

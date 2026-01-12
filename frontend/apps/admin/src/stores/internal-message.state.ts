@@ -159,65 +159,65 @@ export const useInternalMessageStore = defineStore('internal_message', () => {
 export const internalMessageStatusList = computed(() => [
   {
     value: 'DRAFT',
-    label: $t('enum.internalMessageStatus.DRAFT'),
+    label: $t('enum.internalMessage.status.DRAFT'),
   },
   {
     value: 'PUBLISHED',
-    label: $t('enum.internalMessageStatus.PUBLISHED'),
+    label: $t('enum.internalMessage.status.PUBLISHED'),
   },
   {
     value: 'SCHEDULED',
-    label: $t('enum.internalMessageStatus.SCHEDULED'),
+    label: $t('enum.internalMessage.status.SCHEDULED'),
   },
   {
     value: 'REVOKED',
-    label: $t('enum.internalMessageStatus.REVOKED'),
+    label: $t('enum.internalMessage.status.REVOKED'),
   },
   {
     value: 'ARCHIVED',
-    label: $t('enum.internalMessageStatus.ARCHIVED'),
+    label: $t('enum.internalMessage.status.ARCHIVED'),
   },
   {
     value: 'DELETED',
-    label: $t('enum.internalMessageStatus.DELETED'),
+    label: $t('enum.internalMessage.status.DELETED'),
   },
 ]);
 
 export const internalMessageTypeList = computed(() => [
   {
     value: 'NOTIFICATION',
-    label: $t('enum.internalMessageType.NOTIFICATION'),
+    label: $t('enum.internalMessage.type.NOTIFICATION'),
   },
   {
     value: 'PRIVATE',
-    label: $t('enum.internalMessageType.PRIVATE'),
+    label: $t('enum.internalMessage.type.PRIVATE'),
   },
   {
     value: 'GROUP',
-    label: $t('enum.internalMessageType.GROUP'),
+    label: $t('enum.internalMessage.type.GROUP'),
   },
 ]);
 
 export const internalMessageRecipientStatusList = computed(() => [
   {
     value: 'SENT',
-    label: $t('enum.internalMessageRecipientStatus.SENT'),
+    label: $t('enum.internalMessageRecipient.status.SENT'),
   },
   {
     value: 'RECEIVED',
-    label: $t('enum.internalMessageRecipientStatus.RECEIVED'),
+    label: $t('enum.internalMessageRecipient.status.RECEIVED'),
   },
   {
     value: 'READ',
-    label: $t('enum.internalMessageRecipientStatus.READ'),
+    label: $t('enum.internalMessageRecipient.status.READ'),
   },
   {
     value: 'REVOKED',
-    label: $t('enum.internalMessageRecipientStatus.REVOKED'),
+    label: $t('enum.internalMessageRecipient.status.REVOKED'),
   },
   {
     value: 'DELETED',
-    label: $t('enum.internalMessageRecipientStatus.DELETED'),
+    label: $t('enum.internalMessageRecipient.status.DELETED'),
   },
 ]);
 

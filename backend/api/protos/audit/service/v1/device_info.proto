@@ -1,0 +1,187 @@
+syntax = "proto3";
+
+package audit.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+// 设备信息
+message DeviceInfo {
+  // 设备类型枚举
+  enum DeviceType {
+    DEVICE_TYPE_UNSPECIFIED = 0; // 未指定
+
+    DESKTOP = 1; // 台式/笔记本
+    MOBILE = 2; // 手机
+    TABLET = 3; // 平板
+    BOT = 4; // 机器人/爬虫
+    OTHER = 5; // 其他
+  }
+
+  optional string client_id = 1 [
+    json_name = "clientId",
+    (gnostic.openapi.v3.property) = {
+      description: "客户端ID"
+    }
+  ]; // 客户端ID
+
+  optional string client_name = 2 [
+    json_name = "clientName",
+    (gnostic.openapi.v3.property) = {
+      description: "客户端名称"
+    }
+  ]; // 客户端名称
+
+  optional string os_name = 3 [
+    json_name = "osName",
+    (gnostic.openapi.v3.property) = {
+      description: "操作系统名称"
+    }
+  ]; // 操作系统名称
+
+  optional string os_version = 4 [
+    json_name = "osVersion",
+    (gnostic.openapi.v3.property) = {
+      description: "操作系统版本"
+    }
+  ]; // 操作系统版本
+
+  optional string device_id = 5 [
+    json_name = "deviceId",
+    (gnostic.openapi.v3.property) = {
+      description: "设备唯一标识（避免存明文敏感ID，建议哈希后保存）"
+    }
+  ]; // 设备唯一ID
+
+  optional DeviceType device_type = 6 [
+    json_name = "deviceType",
+    (gnostic.openapi.v3.property) = {
+      description: "设备类型"
+    }
+  ]; // 设备类型
+
+  optional string manufacturer = 7 [
+    json_name = "manufacturer",
+    (gnostic.openapi.v3.property) = {
+      description: "设备厂商"
+    }
+  ]; // 厂商
+
+  optional string model = 8 [
+    json_name = "model",
+    (gnostic.openapi.v3.property) = {
+      description: "设备型号"
+    }
+  ]; // 型号
+
+  optional string platform = 9 [
+    json_name = "platform",
+    (gnostic.openapi.v3.property) = {
+      description: "运行平台/渠道（如 Android/iOS/Windows）"
+    }
+  ]; // 平台
+
+  optional string os_build = 10 [
+    json_name = "osBuild",
+    (gnostic.openapi.v3.property) = {
+      description: "系统构建版本"
+    }
+  ]; // 系统构建版本
+
+  optional string app_name = 11 [
+    json_name = "appName",
+    (gnostic.openapi.v3.property) = {
+      description: "应用名称（若为 Web 可空）"
+    }
+  ]; // 应用名称
+
+  optional string app_version = 12 [
+    json_name = "appVersion",
+    (gnostic.openapi.v3.property) = {
+      description: "应用版本"
+    }
+  ]; // 应用版本
+
+  optional uint32 screen_width = 13 [
+    json_name = "screenWidth",
+    (gnostic.openapi.v3.property) = {
+      description: "屏幕宽度（像素）"
+    }
+  ]; // 屏幕宽度
+
+  optional uint32 screen_height = 14 [
+    json_name = "screenHeight",
+    (gnostic.openapi.v3.property) = {
+      description: "屏幕高度（像素）"
+    }
+  ]; // 屏幕高度
+
+  optional string locale = 15 [
+    json_name = "locale",
+    (gnostic.openapi.v3.property) = {
+      description: "语言/区域设置"
+    }
+  ]; // 区域设置
+
+  optional string timezone = 16 [
+    json_name = "timeZone",
+    (gnostic.openapi.v3.property) = {
+      description: "时区"
+    }
+  ]; // 时区
+
+  optional string network_type = 17 [
+    json_name = "networkType",
+    (gnostic.openapi.v3.property) = {
+      description: "网络类型（如 WIFI/4G/5G）"
+    }
+  ]; // 网络类型
+
+  optional string carrier = 18 [
+    json_name = "carrier",
+    (gnostic.openapi.v3.property) = {
+      description: "运营商（如适用）"
+    }
+  ]; // 运营商
+
+  optional string device_fingerprint = 19 [
+    json_name = "deviceFingerprint",
+    (gnostic.openapi.v3.property) = {
+      description: "设备指纹（建议存哈希）"
+    }
+  ]; // 设备指纹哈希
+
+  optional string user_agent = 100 [
+    json_name = "userAgent",
+    (gnostic.openapi.v3.property) = {
+      description: "浏览器的用户代理信息"
+    }
+  ]; // 浏览器的用户代理信息
+
+  optional string browser_name = 101 [
+    json_name = "browserName",
+    (gnostic.openapi.v3.property) = {
+      description: "浏览器名称"
+    }
+  ]; // 浏览器名称
+
+  optional string browser_version = 102 [
+    json_name = "browserVersion",
+    (gnostic.openapi.v3.property) = {
+      description: "浏览器版本"
+    }
+  ]; // 浏览器版本
+
+  optional string browser_engine = 103 [
+    json_name = "browserEngine",
+    (gnostic.openapi.v3.property) = {
+      description: "浏览器内核/引擎（如 Blink/WebKit）"
+    }
+  ]; // 浏览器内核
+
+  optional string engine_version = 104 [
+    json_name = "engineVersion",
+    (gnostic.openapi.v3.property) = {
+      description: "内核版本"
+    }
+  ]; // 内核版本
+}

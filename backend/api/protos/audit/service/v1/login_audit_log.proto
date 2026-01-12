@@ -1,0 +1,189 @@
+syntax = "proto3";
+
+package audit.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+
+import "pagination/v1/pagination.proto";
+
+import "audit/service/v1/geo_location.proto";
+import "audit/service/v1/device_info.proto";
+
+// 登录审计日志管理服务
+service LoginAuditLogService {
+  // 查询登录审计日志列表
+  rpc List (pagination.PagingRequest) returns (ListLoginAuditLogResponse) {}
+
+  // 查询登录审计日志详情
+  rpc Get (GetLoginAuditLogRequest) returns (LoginAuditLog) {}
+}
+
+// 登录审计日志
+message LoginAuditLog {
+  // 事件动作
+  enum ActionType {
+    ACTION_TYPE_UNSPECIFIED = 0; // 未指定
+
+    LOGIN = 1;     // 用户主动登录
+    LOGOUT = 2;    // 用户主动登出
+    SESSION_EXPIRED = 3; // 系统触发的会话过期（非用户操作）
+  }
+
+  // 操作状态
+  enum Status {
+    STATUS_UNSPECIFIED = 0;
+
+    SUCCESS = 1;   // 操作成功
+    FAILED = 2;    // 操作失败
+    PARTIAL = 3;   // 部分成功（如MFA验证中）
+  }
+
+  // 风险等级
+  enum RiskLevel {
+    RISK_LEVEL_UNSPECIFIED = 0;
+
+    LOW = 1;      // 低风险（无异常）
+    MEDIUM = 2;   // 中风险（需事后核查）
+    HIGH = 3;     // 高风险（异常登录行为）
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = {description: "登录审计日志ID"}
+  ]; // 登录审计日志ID
+
+  optional uint32 tenant_id = 2 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ]; // 租户ID
+
+  optional string tenant_name = 3 [
+    json_name = "tenantName",
+    (gnostic.openapi.v3.property) = {description: "租户名称"}
+  ]; // 租户名称
+
+  optional uint32 user_id = 4 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = {description: "用户ID"}
+  ]; // 用户ID
+
+  optional string username = 5 [
+    json_name = "username",
+    (gnostic.openapi.v3.property) = {description: "账号名"}
+  ]; // 账号名
+
+  // ========== 终端信息 ==========
+
+  optional string ip_address = 10 [
+    json_name = "ipAddress",
+    (gnostic.openapi.v3.property) = {description: "IP地址"}
+  ]; // IP地址
+
+  optional GeoLocation geo_location = 11 [
+    json_name = "geoLocation",
+    (gnostic.openapi.v3.property) = {description: "地理位置(来自IP库)"}
+  ]; // 地理位置(来自IP库)
+
+  optional string session_id = 12 [
+    json_name = "sessionId",
+    (gnostic.openapi.v3.property) = {description: "会话ID"}
+  ]; // 会话ID
+
+  optional DeviceInfo device_info = 13 [
+    json_name = "deviceInfo",
+    (gnostic.openapi.v3.property) = {description: "设备信息"}
+  ]; // 设备信息
+
+  optional string request_id = 16 [
+    json_name = "requestId",
+    (gnostic.openapi.v3.property) = {description: "全局请求ID（关联网关日志）"}
+  ]; // 全局请求ID（关联网关日志）
+
+  // ========== 操作/状态 ==========
+
+  optional ActionType action_type = 20 [
+    json_name = "actionType",
+    (gnostic.openapi.v3.property) = {description: "事件动作类型"}
+  ]; // 事件动作类型
+
+  optional Status status = 21 [
+    (gnostic.openapi.v3.property).description = "操作结果状态"
+  ]; // 操作结果状态
+
+  optional string failure_reason = 22 [
+    json_name = "failureReason",
+    (gnostic.openapi.v3.property) = {description: "失败原因：密码错误/MFA验证失败/IP黑名单等"}
+  ]; // 失败原因
+
+  optional string mfa_status = 23 [
+    json_name = "mfaStatus",
+    (gnostic.openapi.v3.property) = {description: "MFA状态：UNVERIFIED/VERIFYING/VERIFIED/FAILED"}
+  ]; // MFA状态 MFA场景必传
+
+  // ========== 风险管控 ==========
+
+  optional uint32 risk_score = 30 [
+    json_name = "riskScore",
+    (gnostic.openapi.v3.property) = {description: "风险评分（0-100，分值越高风险越大）"}
+  ]; // 风险评分（0-100，分值越高风险越大）
+
+  optional RiskLevel risk_level = 31 [
+    json_name = "riskLevel",
+    (gnostic.openapi.v3.property) = {description: "风险等级（高风险需实时告警）"}
+  ]; // 风险等级（高风险需实时告警）
+
+  repeated string risk_factors = 32 [
+    json_name = "riskFactors",
+    (gnostic.openapi.v3.property).description = "风险因素（ISO 27001标准，如：异地登录/新设备/密码尝试次数过多）"
+  ]; // 风险因素（ISO 27001标准，如：异地登录/新设备/密码尝试次数过多）
+
+  // ========== 合规校验 ==========
+
+  optional string log_hash = 40 [
+    json_name = "logHash",
+    (gnostic.openapi.v3.property).description = "日志内容哈希（SHA256，十六进制字符串）"
+  ]; // 日志内容哈希（SHA256，十六进制字符串）
+
+  optional bytes signature = 41 [
+    json_name = "signature",
+    (gnostic.openapi.v3.property).description = "日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）"
+  ]; // 日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）
+
+  // ========== 时间字段 ==========
+
+  optional google.protobuf.Timestamp created_at = 50 [
+    json_name = "createdAt",
+    (gnostic.openapi.v3.property) = {description: "日志创建时间"}
+  ];// 日志创建时间
+}
+
+// 查询登录审计日志列表 - 回应
+message ListLoginAuditLogResponse {
+  repeated LoginAuditLog items = 1;
+  uint64 total = 2;
+}
+
+// 查询登录审计日志详情 - 请求
+message GetLoginAuditLogRequest {
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+      json_name = "id"
+    ]; // ID
+  }
+
+  optional google.protobuf.FieldMask view_mask = 100 [
+    json_name = "viewMask",
+    (gnostic.openapi.v3.property) = {
+      description: "视图字段过滤器，用于控制返回的字段"
+    }
+  ]; // 视图字段过滤器，用于控制返回的字段
+}
+
+// 创建登录审计日志 - 请求
+message CreateLoginAuditLogRequest {
+  LoginAuditLog data = 1;
+}

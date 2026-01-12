@@ -23,13 +23,14 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
 )
 
 type ApiAuditLogRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper *mapper.CopierMapper[adminV1.ApiAuditLog, ent.ApiAuditLog]
+	mapper *mapper.CopierMapper[auditV1.ApiAuditLog, ent.ApiAuditLog]
 
 	repository *entCrud.Repository[
 		ent.ApiAuditLogQuery, ent.ApiAuditLogSelect,
@@ -37,7 +38,7 @@ type ApiAuditLogRepo struct {
 		ent.ApiAuditLogUpdate, ent.ApiAuditLogUpdateOne,
 		ent.ApiAuditLogDelete,
 		predicate.ApiAuditLog,
-		adminV1.ApiAuditLog, ent.ApiAuditLog,
+		auditV1.ApiAuditLog, ent.ApiAuditLog,
 	]
 }
 
@@ -45,7 +46,7 @@ func NewApiAuditLogRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*en
 	repo := &ApiAuditLogRepo{
 		log:       ctx.NewLoggerHelper("api-audit-log/repo/admin-service"),
 		entClient: entClient,
-		mapper:    mapper.NewCopierMapper[adminV1.ApiAuditLog, ent.ApiAuditLog](),
+		mapper:    mapper.NewCopierMapper[auditV1.ApiAuditLog, ent.ApiAuditLog](),
 	}
 
 	repo.init()
@@ -60,7 +61,7 @@ func (r *ApiAuditLogRepo) init() {
 		ent.ApiAuditLogUpdate, ent.ApiAuditLogUpdateOne,
 		ent.ApiAuditLogDelete,
 		predicate.ApiAuditLog,
-		adminV1.ApiAuditLog, ent.ApiAuditLog,
+		auditV1.ApiAuditLog, ent.ApiAuditLog,
 	](r.mapper)
 
 	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
@@ -94,7 +95,7 @@ func (r *ApiAuditLogRepo) Count(ctx context.Context, whereCond []func(s *sql.Sel
 	return count, nil
 }
 
-func (r *ApiAuditLogRepo) List(ctx context.Context, req *pagination.PagingRequest) (*adminV1.ListApiAuditLogResponse, error) {
+func (r *ApiAuditLogRepo) List(ctx context.Context, req *pagination.PagingRequest) (*auditV1.ListApiAuditLogResponse, error) {
 	if req == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -106,10 +107,10 @@ func (r *ApiAuditLogRepo) List(ctx context.Context, req *pagination.PagingReques
 		return nil, err
 	}
 	if ret == nil {
-		return &adminV1.ListApiAuditLogResponse{Total: 0, Items: nil}, nil
+		return &auditV1.ListApiAuditLogResponse{Total: 0, Items: nil}, nil
 	}
 
-	return &adminV1.ListApiAuditLogResponse{
+	return &auditV1.ListApiAuditLogResponse{
 		Total: ret.Total,
 		Items: ret.Items,
 	}, nil
@@ -126,7 +127,7 @@ func (r *ApiAuditLogRepo) IsExist(ctx context.Context, id uint32) (bool, error) 
 	return exist, nil
 }
 
-func (r *ApiAuditLogRepo) Get(ctx context.Context, req *adminV1.GetApiAuditLogRequest) (*adminV1.ApiAuditLog, error) {
+func (r *ApiAuditLogRepo) Get(ctx context.Context, req *auditV1.GetApiAuditLogRequest) (*auditV1.ApiAuditLog, error) {
 	if req == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -136,7 +137,7 @@ func (r *ApiAuditLogRepo) Get(ctx context.Context, req *adminV1.GetApiAuditLogRe
 	var whereCond []func(s *sql.Selector)
 	switch req.QueryBy.(type) {
 	default:
-	case *adminV1.GetApiAuditLogRequest_Id:
+	case *auditV1.GetApiAuditLogRequest_Id:
 		whereCond = append(whereCond, apiauditlog.IDEQ(req.GetId()))
 	}
 
@@ -148,37 +149,36 @@ func (r *ApiAuditLogRepo) Get(ctx context.Context, req *adminV1.GetApiAuditLogRe
 	return dto, err
 }
 
-func (r *ApiAuditLogRepo) Create(ctx context.Context, req *adminV1.CreateApiAuditLogRequest) error {
+func (r *ApiAuditLogRepo) Create(ctx context.Context, req *auditV1.CreateApiAuditLogRequest) error {
 	if req == nil || req.Data == nil {
 		return adminV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().ApiAuditLog.
 		Create().
-		SetNillableRequestID(req.Data.RequestId).
-		SetNillableMethod(req.Data.Method).
-		SetNillableOperation(req.Data.Operation).
-		SetNillablePath(req.Data.Path).
-		SetNillableReferer(req.Data.Referer).
-		SetNillableRequestURI(req.Data.RequestUri).
-		SetNillableRequestBody(req.Data.RequestBody).
-		SetNillableRequestHeader(req.Data.RequestHeader).
-		SetNillableResponse(req.Data.Response).
-		SetNillableCostTime(timeutil.DurationpbToSecond(req.Data.CostTime)).
+		SetNillableTenantID(req.Data.TenantId).
 		SetNillableUserID(req.Data.UserId).
 		SetNillableUsername(req.Data.Username).
-		SetNillableClientIP(req.Data.ClientIp).
-		SetNillableUserAgent(req.Data.UserAgent).
-		SetNillableBrowserName(req.Data.BrowserName).
-		SetNillableBrowserVersion(req.Data.BrowserVersion).
-		SetNillableClientID(req.Data.ClientId).
-		SetNillableClientName(req.Data.ClientName).
-		SetNillableOsName(req.Data.OsName).
-		SetNillableOsVersion(req.Data.OsVersion).
-		SetNillableStatusCode(req.Data.StatusCode).
+		SetNillableIPAddress(req.Data.IpAddress).
+		SetGeoLocation(req.Data.GeoLocation).
+		SetDeviceInfo(req.Data.DeviceInfo).
+		SetNillableReferer(req.Data.Referer).
+		SetNillableHTTPMethod(req.Data.HttpMethod).
+		SetNillablePath(req.Data.Path).
+		SetNillableRequestURI(req.Data.RequestUri).
+		SetNillableAPIModule(req.Data.ApiModule).
+		SetNillableAPIOperation(req.Data.ApiOperation).
+		SetNillableAPIDescription(req.Data.ApiDescription).
+		SetNillableRequestID(req.Data.RequestId).
+		SetNillableCostTimeMs(req.Data.CostTimeMs).
 		SetNillableSuccess(req.Data.Success).
+		SetNillableStatusCode(req.Data.StatusCode).
 		SetNillableReason(req.Data.Reason).
-		SetNillableLocation(req.Data.Location).
+		SetNillableRequestHeader(req.Data.RequestHeader).
+		SetNillableRequestBody(req.Data.RequestBody).
+		SetNillableResponse(req.Data.Response).
+		SetNillableLogHash(req.Data.LogHash).
+		SetSignature(req.Data.Signature).
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
 
 	if req.Data.CreatedAt == nil {

@@ -6,9 +6,17 @@ import { Page, type VbenFormProps } from '@vben/common-ui';
 import dayjs from 'dayjs';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type LoginAuditLog } from '#/generated/api/admin/service/v1';
+import { type auditservicev1_LoginAuditLog as LoginAuditLog } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
-import { successToColor, successToName, useLoginAuditLogStore } from '#/stores';
+import {
+  getLoginAuditLogActionTypeColor,
+  getLoginAuditLogRiskLevelColor,
+  getLoginAuditLogStatusColor,
+  loginAuditLogActiveTypeToName,
+  loginAuditLogRiskLevelToName,
+  loginAuditLogStatusToName,
+  useLoginAuditLogStore,
+} from '#/stores';
 
 const loginAuditLogStore = useLoginAuditLogStore();
 
@@ -31,8 +39,8 @@ const formOptions: VbenFormProps = {
     },
     {
       component: 'RangePicker',
-      fieldName: 'loginTime',
-      label: $t('page.loginAuditLog.loginTime'),
+      fieldName: 'createdAt',
+      label: $t('page.loginAuditLog.createdAt'),
       componentProps: {
         showTime: true,
         allowClear: true,
@@ -84,8 +92,8 @@ const gridOptions: VxeGridProps<LoginAuditLog> = {
           },
           {
             username: formValues.username,
-            login_time__gte: startTime,
-            login_time__lte: endTime,
+            created_at__gte: startTime,
+            created_at__lte: endTime,
           },
         );
       },
@@ -93,26 +101,43 @@ const gridOptions: VxeGridProps<LoginAuditLog> = {
   },
 
   columns: [
-    { title: $t('ui.table.seq'), type: 'seq', width: 50 },
-    { title: $t('page.loginAuditLog.username'), field: 'username' },
     {
-      title: $t('page.loginAuditLog.success'),
-      field: 'success',
-      slots: { default: 'success' },
-    },
-    {
-      title: $t('page.loginAuditLog.loginTime'),
-      field: 'loginTime',
+      title: $t('page.loginAuditLog.createdAt'),
+      field: 'createdAt',
       formatter: 'formatDateTime',
       width: 140,
     },
-    { title: $t('page.loginAuditLog.location'), field: 'location' },
+    { title: $t('page.loginAuditLog.username'), field: 'username' },
     {
-      title: $t('page.loginAuditLog.clientName'),
-      field: 'clientName',
+      title: $t('page.loginAuditLog.status'),
+      field: 'status',
+      slots: { default: 'status' },
+    },
+    {
+      title: $t('page.loginAuditLog.actionType'),
+      field: 'actionType',
+      slots: { default: 'actionType' },
+    },
+    {
+      title: $t('page.loginAuditLog.riskLevel'),
+      field: 'riskLevel',
+      slots: { default: 'riskLevel' },
+    },
+    {
+      title: $t('page.loginAuditLog.geoLocation'),
+      field: 'geoLocation',
+      slots: { default: 'geoLocation' },
+    },
+    {
+      title: $t('page.loginAuditLog.platform'),
+      field: 'deviceInfo.platform',
       slots: { default: 'platform' },
     },
-    { title: $t('page.loginAuditLog.loginIp'), field: 'loginIp', width: 140 },
+    {
+      title: $t('page.loginAuditLog.ipAddress'),
+      field: 'ipAddress',
+      width: 140,
+    },
   ],
 };
 
@@ -122,13 +147,26 @@ const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
 <template>
   <Page auto-content-height>
     <Grid :table-title="$t('menu.log.loginAuditLog')">
-      <template #success="{ row }">
-        <a-tag :color="successToColor(row.success)">
-          {{ successToName(row.success, row.statusCode) }}
+      <template #status="{ row }">
+        <a-tag :color="getLoginAuditLogStatusColor(row.status)">
+          {{ loginAuditLogStatusToName(row.status) }}
         </a-tag>
       </template>
+      <template #actionType="{ row }">
+        <a-tag :color="getLoginAuditLogActionTypeColor(row.actionType)">
+          {{ loginAuditLogActiveTypeToName(row.actionType) }}
+        </a-tag>
+      </template>
+      <template #riskLevel="{ row }">
+        <a-tag :color="getLoginAuditLogRiskLevelColor(row.riskLevel)">
+          {{ loginAuditLogRiskLevelToName(row.riskLevel) }}
+        </a-tag>
+      </template>
+      <template #geoLocation="{ row }">
+        {{ row.geoLocation.province }} {{ row.geoLocation.city }}
+      </template>
       <template #platform="{ row }">
-        <span> {{ row.osName }} {{ row.browserName }}</span>
+        {{ row.deviceInfo.osName }} {{ row.deviceInfo.browserName }}
       </template>
     </Grid>
   </Page>

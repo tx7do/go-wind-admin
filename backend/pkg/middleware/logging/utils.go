@@ -1,22 +1,32 @@
 package logging
 
 import (
+	"bytes"
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io"
+	"math/big"
 	"net"
+	"regexp"
 	"strings"
 
-	"encoding/json"
 	"net/url"
 
 	"github.com/go-kratos/kratos/v2/errors"
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/tx7do/go-utils/geoip"
+	"github.com/tx7do/go-utils/trans"
 
 	"github.com/mileusna/useragent"
 	"github.com/tx7do/go-utils/geoip/geolite"
 	"github.com/tx7do/go-utils/jwtutil"
 
+	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 
 	"go-wind-admin/pkg/jwt"
@@ -161,20 +171,21 @@ func getClientID(request *http.Request, userToken *authenticationV1.UserTokenPay
 }
 
 // getStatusCode 状态码
-func getStatusCode(err error) (int32, string, bool) {
+func getStatusCode(err error) (uint32, string, bool) {
 	// 1. 信息响应 (100–199)
 	// 2. 成功响应 (200–299)
 	// 3. 重定向消息 (300–399)
 	// 4. 客户端错误响应 (400–499)
 	// 5. 服務端错误响应 (500–599)
 	if se := errors.FromError(err); se != nil {
-		return se.Code, se.Reason, se.Code < 400
+		return uint32(se.Code), se.Reason, se.Code < 400
 	} else {
 		return 200, "", true
 	}
 }
 
-func PrintUserAgent(strUserAgent string) {
+// printUserAgent 打印User-Agent信息
+func printUserAgent(strUserAgent string) {
 	ua := useragent.Parse(strUserAgent)
 
 	fmt.Println("User-Agent", ua)
@@ -202,22 +213,41 @@ func PrintUserAgent(strUserAgent string) {
 	}
 }
 
-func BindLoginRequest(r *http.Request) (string, error) {
+var reUsername = regexp.MustCompile(`"username"\s*:\s*"([^"]+)"`)
+
+// parseUsernameFromBytes 从请求体中解析用户名
+func parseUsernameFromBytes(body []byte) (string, error) {
+	if m := reUsername.FindSubmatch(body); m != nil {
+		return string(m[1]), nil
+	}
+	if values, err := url.ParseQuery(string(body)); err == nil {
+		if u := values.Get("username"); u != "" {
+			return u, nil
+		}
+	}
+	return "", fmt.Errorf("username not found")
+}
+
+// extractUsernameFromRequest 从HTTP请求中提取用户名
+func extractUsernameFromRequest(r *http.Request) (username string, err error) {
+	if r == nil {
+		return "", fmt.Errorf("nil request")
+	}
+
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
-		fmt.Println("BindQuery ReadAll", err)
 		return "", err
 	}
-	defer r.Body.Close()
+	_ = r.Body.Close()
+	// 恢复 Body，避免影响后续处理
+	r.Body = io.NopCloser(bytes.NewReader(body))
 
-	var loginRequest authenticationV1.LoginRequest
-	if err = json.Unmarshal(body, &loginRequest); err == nil {
-		//fmt.Println("BindLoginRequest Unmarshal JSON failed", err)
-		return loginRequest.GetUsername(), nil
+	if username, err = parseUsernameFromBytes(body); err == nil {
+		return username, nil
 	}
 
 	if values, err := url.ParseQuery(string(body)); err == nil {
-		//fmt.Println("BindLoginRequest Unmarshal Query", err)
+		//fmt.Println("extractUsernameFromRequest Unmarshal Query", err)
 		return values.Get("username"), nil
 	}
 
@@ -225,10 +255,215 @@ func BindLoginRequest(r *http.Request) (string, error) {
 }
 
 // clientIpToLocation 获取客户端IP的地理位置
-func clientIpToLocation(ip string) string {
+func clientIpToLocation(ip string) *geoip.Result {
 	res, err := ipClient.Query(ip)
 	if err != nil {
-		return ""
+		return nil
 	}
-	return res.City
+	return &res
+}
+
+// TokenHash 返回 token 的 SHA-256 十六进制摘要，用于审计存储（避免存明文）
+func tokenHash(token string) string {
+	sum := sha256.Sum256([]byte(token))
+	return hex.EncodeToString(sum[:])
+}
+
+// generateECDSAKeyPair 生成 ECDSA 密钥对（secp256r1 曲线）
+func generateECDSAKeyPair() (*ecdsa.PrivateKey, *ecdsa.PublicKey, error) {
+	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	if err != nil {
+		return nil, nil, fmt.Errorf("generate ECDSA key failed: %w", err)
+	}
+	return privateKey, &privateKey.PublicKey, nil
+}
+
+// encodeDER 将 ECDSA 的 r、s 转为 DER 格式字节数组（标准签名字段）
+func encodeDER(r, s *big.Int) ([]byte, error) {
+	// DER 格式规则：0x30 + 总长度 + 0x02 + r长度 + r值 + 0x02 + s长度 + s值
+	rBytes := r.Bytes()
+	sBytes := s.Bytes()
+
+	// 确保 r/s 是正整数（补 0 前缀）
+	if len(rBytes) > 0 && rBytes[0]&0x80 != 0 {
+		rBytes = append([]byte{0x00}, rBytes...)
+	}
+	if len(sBytes) > 0 && sBytes[0]&0x80 != 0 {
+		sBytes = append([]byte{0x00}, sBytes...)
+	}
+
+	// 拼接 DER 字节
+	der := make([]byte, 0)
+	der = append(der, 0x30)                              // 序列标签
+	der = append(der, byte(2+len(rBytes)+2+len(sBytes))) // 总长度
+	der = append(der, 0x02)                              // 整数标签（r）
+	der = append(der, byte(len(rBytes)))                 // r 长度
+	der = append(der, rBytes...)
+	der = append(der, 0x02)              // 整数标签（s）
+	der = append(der, byte(len(sBytes))) // s 长度
+	der = append(der, sBytes...)
+
+	return der, nil
+}
+
+// fillDeviceInfo 填写设备信息
+func fillDeviceInfo(htr *http.Transport, ut *authenticationV1.UserTokenPayload) (info *auditV1.DeviceInfo) {
+	info = &auditV1.DeviceInfo{}
+
+	userAgent := htr.RequestHeader().Get(HeaderKeyUserAgent)
+	ua := useragent.Parse(userAgent)
+	info.UserAgent = trans.Ptr(ua.String)
+
+	var deviceName string
+	if ua.Device != "" {
+		deviceName = ua.Device
+	} else {
+		if ua.Desktop {
+			deviceName = "PC"
+		}
+	}
+	info.ClientName = trans.Ptr(deviceName)
+
+	if ua.Desktop {
+		info.DeviceType = trans.Ptr(auditV1.DeviceInfo_DESKTOP)
+	} else if ua.Tablet {
+		info.DeviceType = trans.Ptr(auditV1.DeviceInfo_TABLET)
+	} else if ua.Mobile {
+		info.DeviceType = trans.Ptr(auditV1.DeviceInfo_MOBILE)
+	} else if ua.Bot {
+		info.DeviceType = trans.Ptr(auditV1.DeviceInfo_BOT)
+	} else {
+		info.DeviceType = trans.Ptr(auditV1.DeviceInfo_OTHER)
+	}
+
+	info.BrowserVersion = trans.Ptr(ua.Version)
+	info.BrowserName = trans.Ptr(ua.Name)
+
+	info.OsName = trans.Ptr(ua.OS)
+	info.OsVersion = trans.Ptr(ua.OSVersion)
+
+	info.Platform = trans.Ptr(detectPlatformFromUA(userAgent))
+
+	info.ClientId = trans.Ptr(getClientID(htr.Request(), ut))
+
+	return
+}
+
+// fillGeoLocation 填写地理位置信息
+func fillGeoLocation(clientIp string) (info *auditV1.GeoLocation) {
+	info = &auditV1.GeoLocation{}
+
+	result := clientIpToLocation(clientIp)
+	if result == nil {
+		return
+	}
+
+	info.CountryCode = trans.Ptr(result.Country)
+	info.Province = trans.Ptr(result.Province)
+	info.City = trans.Ptr(result.City)
+	info.Isp = trans.Ptr(result.ISP)
+
+	return
+}
+
+// isPrivateIP 检查 IP 是否属于常见内网或链路本地地址
+func isPrivateIP(ipStr string) bool {
+	ip := net.ParseIP(strings.TrimSpace(ipStr))
+	if ip == nil {
+		return false
+	}
+	cidrs := []string{
+		"10.0.0.0/8",
+		"172.16.0.0/12",
+		"192.168.0.0/16",
+		"127.0.0.0/8",
+		"169.254.0.0/16",
+		"::1/128",
+		"fc00::/7",
+	}
+	for _, c := range cidrs {
+		_, n, _ := net.ParseCIDR(c)
+		if n.Contains(ip) {
+			return true
+		}
+	}
+	return false
+}
+
+const (
+	PlatformAndroidApp = "AndroidApp"
+	PlatformiOSApp     = "iOSApp"
+
+	PlatformDesktopWindows = "DesktopWindows"
+	PlatformDesktopMac     = "DesktopMac"
+	PlatformDesktopLinux   = "DesktopLinux"
+
+	PlatformWeb = "Web"
+
+	PlatformOther = "Other"
+)
+
+// detectPlatformFromUA 根据 UA 字符串启发式判断平台类型。
+// 说明：仅作为补充判断，优先使用客户端上报字段（platform/os_name）。
+func detectPlatformFromUA(ua string) string {
+	if ua == "" {
+		return PlatformOther
+	}
+	s := strings.ToLower(strings.TrimSpace(ua))
+
+	// 原生 Android app 指示器
+	if strings.Contains(s, "okhttp") || strings.Contains(s, "dalvik") || strings.Contains(s, "; wv") ||
+		strings.Contains(s, " ;wv") || strings.Contains(s, "build/") {
+		return PlatformAndroidApp
+	}
+	// 包名模式（com.xxx）且含 android
+	if strings.Contains(s, "android") {
+		if regexp.MustCompile(`\bcom\.[a-z0-9_.]+`).MatchString(s) || strings.Contains(s, "wv") {
+			return PlatformAndroidApp
+		}
+	}
+
+	// 原生 iOS 指示器
+	if strings.Contains(s, "iphone") || strings.Contains(s, "ipad") || strings.Contains(s, "ipod") ||
+		strings.Contains(s, "cfnetwork") || strings.Contains(s, "darwin") || strings.Contains(s, "cpu iphone os") {
+		return PlatformiOSApp
+	}
+
+	// 桌面原生/混合应用（例如 Electron、nwjs、desktop）
+	if strings.Contains(s, "electron") || strings.Contains(s, "nwjs") || strings.Contains(s, "node.js") || strings.Contains(s, "nodejs") ||
+		strings.Contains(s, "desktop") || strings.Contains(s, "appname") {
+		// 根据 UA 中的 OS 关键词区分具体桌面系统
+		if strings.Contains(s, "windows nt") || strings.Contains(s, "win64") || strings.Contains(s, "win32") || strings.Contains(s, "windows") {
+			return PlatformDesktopWindows
+		}
+		if strings.Contains(s, "macintosh") || strings.Contains(s, "mac os x") || strings.Contains(s, "darwin") {
+			return PlatformDesktopMac
+		}
+		if strings.Contains(s, "x11") || strings.Contains(s, "linux") || strings.Contains(s, "ubuntu") || strings.Contains(s, "debian") || strings.Contains(s, "fedora") {
+			return PlatformDesktopLinux
+		}
+		// 若未直接包含 OS 关键字，尝试从常见标识推断
+		if strings.Contains(s, "win") || strings.Contains(s, "windows") {
+			return PlatformDesktopWindows
+		}
+		if strings.Contains(s, "mac") || strings.Contains(s, "os x") {
+			return PlatformDesktopMac
+		}
+		if strings.Contains(s, "linux") || strings.Contains(s, "x11") {
+			return PlatformDesktopLinux
+		}
+		// 仍无法判定，视作桌面类但未知系统
+		return PlatformOther
+	}
+
+	// 常见 Web 浏览器识别（Mozilla+桌面/移动系统且无明显原生 app 标志）
+	if strings.Contains(s, "mozilla") && (strings.Contains(s, "windows nt") || strings.Contains(s, "macintosh") ||
+		strings.Contains(s, "x11") || strings.Contains(s, "linux") || strings.Contains(s, "android") || strings.Contains(s, "iphone")) {
+		// 排除明显的原生 app 标志
+		if !strings.Contains(s, "okhttp") && !strings.Contains(s, "dalvik") && !strings.Contains(s, "cfnetwork") && !strings.Contains(s, "electron") {
+			return PlatformWeb
+		}
+	}
+
+	return PlatformOther
 }

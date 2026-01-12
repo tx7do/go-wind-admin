@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+package audit.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+
+import "pagination/v1/pagination.proto";
+
+import "audit/service/v1/common.proto";
+
+
+// 操作审计日志管理服务
+service OperationAuditLogService {
+  // 查询操作审计日志列表
+  rpc List (pagination.PagingRequest) returns (ListOperationAuditLogResponse) {}
+
+  // 查询操作审计日志详情
+  rpc Get (GetOperationAuditLogRequest) returns (OperationAuditLog) {}
+}
+
+// 操作审计日志
+message OperationAuditLog {
+
+}
+
+// 查询操作审计日志列表 - 回应
+message ListOperationAuditLogResponse {
+  repeated OperationAuditLog items = 1;
+  uint64 total = 2;
+}
+
+// 查询操作审计日志详情 - 请求
+message GetOperationAuditLogRequest {
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+      json_name = "id"
+    ]; // ID
+  }
+
+  optional google.protobuf.FieldMask view_mask = 100 [
+    json_name = "viewMask",
+    (gnostic.openapi.v3.property) = {
+      description: "视图字段过滤器，用于控制返回的字段"
+    }
+  ]; // 视图字段过滤器，用于控制返回的字段
+}
+
+// 创建操作审计日志 - 请求
+message CreateOperationAuditLogRequest {
+  OperationAuditLog data = 1;
+}

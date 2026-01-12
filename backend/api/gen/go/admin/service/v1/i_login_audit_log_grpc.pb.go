@@ -9,6 +9,7 @@ package adminpb
 import (
 	context "context"
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	v11 "go-wind-admin/api/gen/go/audit/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -31,9 +32,9 @@ const (
 // 登录审计日志管理服务
 type LoginAuditLogServiceClient interface {
 	// 查询登录审计日志列表
-	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListLoginAuditLogResponse, error)
+	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*v11.ListLoginAuditLogResponse, error)
 	// 查询登录审计日志详情
-	Get(ctx context.Context, in *GetLoginAuditLogRequest, opts ...grpc.CallOption) (*LoginAuditLog, error)
+	Get(ctx context.Context, in *v11.GetLoginAuditLogRequest, opts ...grpc.CallOption) (*v11.LoginAuditLog, error)
 }
 
 type loginAuditLogServiceClient struct {
@@ -44,9 +45,9 @@ func NewLoginAuditLogServiceClient(cc grpc.ClientConnInterface) LoginAuditLogSer
 	return &loginAuditLogServiceClient{cc}
 }
 
-func (c *loginAuditLogServiceClient) List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListLoginAuditLogResponse, error) {
+func (c *loginAuditLogServiceClient) List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*v11.ListLoginAuditLogResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(ListLoginAuditLogResponse)
+	out := new(v11.ListLoginAuditLogResponse)
 	err := c.cc.Invoke(ctx, LoginAuditLogService_List_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -54,9 +55,9 @@ func (c *loginAuditLogServiceClient) List(ctx context.Context, in *v1.PagingRequ
 	return out, nil
 }
 
-func (c *loginAuditLogServiceClient) Get(ctx context.Context, in *GetLoginAuditLogRequest, opts ...grpc.CallOption) (*LoginAuditLog, error) {
+func (c *loginAuditLogServiceClient) Get(ctx context.Context, in *v11.GetLoginAuditLogRequest, opts ...grpc.CallOption) (*v11.LoginAuditLog, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
-	out := new(LoginAuditLog)
+	out := new(v11.LoginAuditLog)
 	err := c.cc.Invoke(ctx, LoginAuditLogService_Get_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
@@ -71,9 +72,9 @@ func (c *loginAuditLogServiceClient) Get(ctx context.Context, in *GetLoginAuditL
 // 登录审计日志管理服务
 type LoginAuditLogServiceServer interface {
 	// 查询登录审计日志列表
-	List(context.Context, *v1.PagingRequest) (*ListLoginAuditLogResponse, error)
+	List(context.Context, *v1.PagingRequest) (*v11.ListLoginAuditLogResponse, error)
 	// 查询登录审计日志详情
-	Get(context.Context, *GetLoginAuditLogRequest) (*LoginAuditLog, error)
+	Get(context.Context, *v11.GetLoginAuditLogRequest) (*v11.LoginAuditLog, error)
 	mustEmbedUnimplementedLoginAuditLogServiceServer()
 }
 
@@ -84,10 +85,10 @@ type LoginAuditLogServiceServer interface {
 // pointer dereference when methods are called.
 type UnimplementedLoginAuditLogServiceServer struct{}
 
-func (UnimplementedLoginAuditLogServiceServer) List(context.Context, *v1.PagingRequest) (*ListLoginAuditLogResponse, error) {
+func (UnimplementedLoginAuditLogServiceServer) List(context.Context, *v1.PagingRequest) (*v11.ListLoginAuditLogResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method List not implemented")
 }
-func (UnimplementedLoginAuditLogServiceServer) Get(context.Context, *GetLoginAuditLogRequest) (*LoginAuditLog, error) {
+func (UnimplementedLoginAuditLogServiceServer) Get(context.Context, *v11.GetLoginAuditLogRequest) (*v11.LoginAuditLog, error) {
 	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
 }
 func (UnimplementedLoginAuditLogServiceServer) mustEmbedUnimplementedLoginAuditLogServiceServer() {}
@@ -130,7 +131,7 @@ func _LoginAuditLogService_List_Handler(srv interface{}, ctx context.Context, de
 }
 
 func _LoginAuditLogService_Get_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(GetLoginAuditLogRequest)
+	in := new(v11.GetLoginAuditLogRequest)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
@@ -142,7 +143,7 @@ func _LoginAuditLogService_Get_Handler(srv interface{}, ctx context.Context, dec
 		FullMethod: LoginAuditLogService_Get_FullMethodName,
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(LoginAuditLogServiceServer).Get(ctx, req.(*GetLoginAuditLogRequest))
+		return srv.(LoginAuditLogServiceServer).Get(ctx, req.(*v11.GetLoginAuditLogRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }

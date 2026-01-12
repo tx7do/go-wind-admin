@@ -64,56 +64,6 @@ func TenantID(v uint32) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldEQ(FieldTenantID, v))
 }
 
-// RequestID applies equality check predicate on the "request_id" field. It's identical to RequestIDEQ.
-func RequestID(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestID, v))
-}
-
-// Method applies equality check predicate on the "method" field. It's identical to MethodEQ.
-func Method(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldMethod, v))
-}
-
-// Operation applies equality check predicate on the "operation" field. It's identical to OperationEQ.
-func Operation(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldOperation, v))
-}
-
-// Path applies equality check predicate on the "path" field. It's identical to PathEQ.
-func Path(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldPath, v))
-}
-
-// Referer applies equality check predicate on the "referer" field. It's identical to RefererEQ.
-func Referer(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldReferer, v))
-}
-
-// RequestURI applies equality check predicate on the "request_uri" field. It's identical to RequestURIEQ.
-func RequestURI(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestURI, v))
-}
-
-// RequestBody applies equality check predicate on the "request_body" field. It's identical to RequestBodyEQ.
-func RequestBody(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestBody, v))
-}
-
-// RequestHeader applies equality check predicate on the "request_header" field. It's identical to RequestHeaderEQ.
-func RequestHeader(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestHeader, v))
-}
-
-// Response applies equality check predicate on the "response" field. It's identical to ResponseEQ.
-func Response(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldResponse, v))
-}
-
-// CostTime applies equality check predicate on the "cost_time" field. It's identical to CostTimeEQ.
-func CostTime(v float64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldCostTime, v))
-}
-
 // UserID applies equality check predicate on the "user_id" field. It's identical to UserIDEQ.
 func UserID(v uint32) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldEQ(FieldUserID, v))
@@ -124,13 +74,63 @@ func Username(v string) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldEQ(FieldUsername, v))
 }
 
-// ClientIP applies equality check predicate on the "client_ip" field. It's identical to ClientIPEQ.
-func ClientIP(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldClientIP, v))
+// IPAddress applies equality check predicate on the "ip_address" field. It's identical to IPAddressEQ.
+func IPAddress(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldIPAddress, v))
+}
+
+// Referer applies equality check predicate on the "referer" field. It's identical to RefererEQ.
+func Referer(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldReferer, v))
+}
+
+// HTTPMethod applies equality check predicate on the "http_method" field. It's identical to HTTPMethodEQ.
+func HTTPMethod(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldHTTPMethod, v))
+}
+
+// Path applies equality check predicate on the "path" field. It's identical to PathEQ.
+func Path(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldPath, v))
+}
+
+// RequestURI applies equality check predicate on the "request_uri" field. It's identical to RequestURIEQ.
+func RequestURI(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestURI, v))
+}
+
+// APIModule applies equality check predicate on the "api_module" field. It's identical to APIModuleEQ.
+func APIModule(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldAPIModule, v))
+}
+
+// APIOperation applies equality check predicate on the "api_operation" field. It's identical to APIOperationEQ.
+func APIOperation(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldAPIOperation, v))
+}
+
+// APIDescription applies equality check predicate on the "api_description" field. It's identical to APIDescriptionEQ.
+func APIDescription(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldAPIDescription, v))
+}
+
+// RequestID applies equality check predicate on the "request_id" field. It's identical to RequestIDEQ.
+func RequestID(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestID, v))
+}
+
+// CostTimeMs applies equality check predicate on the "cost_time_ms" field. It's identical to CostTimeMsEQ.
+func CostTimeMs(v uint64) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldCostTimeMs, v))
+}
+
+// Success applies equality check predicate on the "success" field. It's identical to SuccessEQ.
+func Success(v bool) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldSuccess, v))
 }
 
 // StatusCode applies equality check predicate on the "status_code" field. It's identical to StatusCodeEQ.
-func StatusCode(v int32) predicate.ApiAuditLog {
+func StatusCode(v uint32) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldEQ(FieldStatusCode, v))
 }
 
@@ -139,49 +139,29 @@ func Reason(v string) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldEQ(FieldReason, v))
 }
 
-// Success applies equality check predicate on the "success" field. It's identical to SuccessEQ.
-func Success(v bool) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldSuccess, v))
+// RequestHeader applies equality check predicate on the "request_header" field. It's identical to RequestHeaderEQ.
+func RequestHeader(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestHeader, v))
 }
 
-// Location applies equality check predicate on the "location" field. It's identical to LocationEQ.
-func Location(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldLocation, v))
+// RequestBody applies equality check predicate on the "request_body" field. It's identical to RequestBodyEQ.
+func RequestBody(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestBody, v))
 }
 
-// UserAgent applies equality check predicate on the "user_agent" field. It's identical to UserAgentEQ.
-func UserAgent(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldUserAgent, v))
+// Response applies equality check predicate on the "response" field. It's identical to ResponseEQ.
+func Response(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldResponse, v))
 }
 
-// BrowserName applies equality check predicate on the "browser_name" field. It's identical to BrowserNameEQ.
-func BrowserName(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldBrowserName, v))
+// LogHash applies equality check predicate on the "log_hash" field. It's identical to LogHashEQ.
+func LogHash(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldLogHash, v))
 }
 
-// BrowserVersion applies equality check predicate on the "browser_version" field. It's identical to BrowserVersionEQ.
-func BrowserVersion(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldBrowserVersion, v))
-}
-
-// ClientID applies equality check predicate on the "client_id" field. It's identical to ClientIDEQ.
-func ClientID(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldClientID, v))
-}
-
-// ClientName applies equality check predicate on the "client_name" field. It's identical to ClientNameEQ.
-func ClientName(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldClientName, v))
-}
-
-// OsName applies equality check predicate on the "os_name" field. It's identical to OsNameEQ.
-func OsName(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldOsName, v))
-}
-
-// OsVersion applies equality check predicate on the "os_version" field. It's identical to OsVersionEQ.
-func OsVersion(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldOsVersion, v))
+// Signature applies equality check predicate on the "signature" field. It's identical to SignatureEQ.
+func Signature(v []byte) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldSignature, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -282,731 +262,6 @@ func TenantIDIsNil() predicate.ApiAuditLog {
 // TenantIDNotNil applies the NotNil predicate on the "tenant_id" field.
 func TenantIDNotNil() predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldNotNull(FieldTenantID))
-}
-
-// RequestIDEQ applies the EQ predicate on the "request_id" field.
-func RequestIDEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestID, v))
-}
-
-// RequestIDNEQ applies the NEQ predicate on the "request_id" field.
-func RequestIDNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldRequestID, v))
-}
-
-// RequestIDIn applies the In predicate on the "request_id" field.
-func RequestIDIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldRequestID, vs...))
-}
-
-// RequestIDNotIn applies the NotIn predicate on the "request_id" field.
-func RequestIDNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldRequestID, vs...))
-}
-
-// RequestIDGT applies the GT predicate on the "request_id" field.
-func RequestIDGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldRequestID, v))
-}
-
-// RequestIDGTE applies the GTE predicate on the "request_id" field.
-func RequestIDGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldRequestID, v))
-}
-
-// RequestIDLT applies the LT predicate on the "request_id" field.
-func RequestIDLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldRequestID, v))
-}
-
-// RequestIDLTE applies the LTE predicate on the "request_id" field.
-func RequestIDLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldRequestID, v))
-}
-
-// RequestIDContains applies the Contains predicate on the "request_id" field.
-func RequestIDContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldRequestID, v))
-}
-
-// RequestIDHasPrefix applies the HasPrefix predicate on the "request_id" field.
-func RequestIDHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldRequestID, v))
-}
-
-// RequestIDHasSuffix applies the HasSuffix predicate on the "request_id" field.
-func RequestIDHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldRequestID, v))
-}
-
-// RequestIDIsNil applies the IsNil predicate on the "request_id" field.
-func RequestIDIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldRequestID))
-}
-
-// RequestIDNotNil applies the NotNil predicate on the "request_id" field.
-func RequestIDNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldRequestID))
-}
-
-// RequestIDEqualFold applies the EqualFold predicate on the "request_id" field.
-func RequestIDEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldRequestID, v))
-}
-
-// RequestIDContainsFold applies the ContainsFold predicate on the "request_id" field.
-func RequestIDContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldRequestID, v))
-}
-
-// MethodEQ applies the EQ predicate on the "method" field.
-func MethodEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldMethod, v))
-}
-
-// MethodNEQ applies the NEQ predicate on the "method" field.
-func MethodNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldMethod, v))
-}
-
-// MethodIn applies the In predicate on the "method" field.
-func MethodIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldMethod, vs...))
-}
-
-// MethodNotIn applies the NotIn predicate on the "method" field.
-func MethodNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldMethod, vs...))
-}
-
-// MethodGT applies the GT predicate on the "method" field.
-func MethodGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldMethod, v))
-}
-
-// MethodGTE applies the GTE predicate on the "method" field.
-func MethodGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldMethod, v))
-}
-
-// MethodLT applies the LT predicate on the "method" field.
-func MethodLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldMethod, v))
-}
-
-// MethodLTE applies the LTE predicate on the "method" field.
-func MethodLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldMethod, v))
-}
-
-// MethodContains applies the Contains predicate on the "method" field.
-func MethodContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldMethod, v))
-}
-
-// MethodHasPrefix applies the HasPrefix predicate on the "method" field.
-func MethodHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldMethod, v))
-}
-
-// MethodHasSuffix applies the HasSuffix predicate on the "method" field.
-func MethodHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldMethod, v))
-}
-
-// MethodIsNil applies the IsNil predicate on the "method" field.
-func MethodIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldMethod))
-}
-
-// MethodNotNil applies the NotNil predicate on the "method" field.
-func MethodNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldMethod))
-}
-
-// MethodEqualFold applies the EqualFold predicate on the "method" field.
-func MethodEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldMethod, v))
-}
-
-// MethodContainsFold applies the ContainsFold predicate on the "method" field.
-func MethodContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldMethod, v))
-}
-
-// OperationEQ applies the EQ predicate on the "operation" field.
-func OperationEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldOperation, v))
-}
-
-// OperationNEQ applies the NEQ predicate on the "operation" field.
-func OperationNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldOperation, v))
-}
-
-// OperationIn applies the In predicate on the "operation" field.
-func OperationIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldOperation, vs...))
-}
-
-// OperationNotIn applies the NotIn predicate on the "operation" field.
-func OperationNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldOperation, vs...))
-}
-
-// OperationGT applies the GT predicate on the "operation" field.
-func OperationGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldOperation, v))
-}
-
-// OperationGTE applies the GTE predicate on the "operation" field.
-func OperationGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldOperation, v))
-}
-
-// OperationLT applies the LT predicate on the "operation" field.
-func OperationLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldOperation, v))
-}
-
-// OperationLTE applies the LTE predicate on the "operation" field.
-func OperationLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldOperation, v))
-}
-
-// OperationContains applies the Contains predicate on the "operation" field.
-func OperationContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldOperation, v))
-}
-
-// OperationHasPrefix applies the HasPrefix predicate on the "operation" field.
-func OperationHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldOperation, v))
-}
-
-// OperationHasSuffix applies the HasSuffix predicate on the "operation" field.
-func OperationHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldOperation, v))
-}
-
-// OperationIsNil applies the IsNil predicate on the "operation" field.
-func OperationIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldOperation))
-}
-
-// OperationNotNil applies the NotNil predicate on the "operation" field.
-func OperationNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldOperation))
-}
-
-// OperationEqualFold applies the EqualFold predicate on the "operation" field.
-func OperationEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldOperation, v))
-}
-
-// OperationContainsFold applies the ContainsFold predicate on the "operation" field.
-func OperationContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldOperation, v))
-}
-
-// PathEQ applies the EQ predicate on the "path" field.
-func PathEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldPath, v))
-}
-
-// PathNEQ applies the NEQ predicate on the "path" field.
-func PathNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldPath, v))
-}
-
-// PathIn applies the In predicate on the "path" field.
-func PathIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldPath, vs...))
-}
-
-// PathNotIn applies the NotIn predicate on the "path" field.
-func PathNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldPath, vs...))
-}
-
-// PathGT applies the GT predicate on the "path" field.
-func PathGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldPath, v))
-}
-
-// PathGTE applies the GTE predicate on the "path" field.
-func PathGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldPath, v))
-}
-
-// PathLT applies the LT predicate on the "path" field.
-func PathLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldPath, v))
-}
-
-// PathLTE applies the LTE predicate on the "path" field.
-func PathLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldPath, v))
-}
-
-// PathContains applies the Contains predicate on the "path" field.
-func PathContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldPath, v))
-}
-
-// PathHasPrefix applies the HasPrefix predicate on the "path" field.
-func PathHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldPath, v))
-}
-
-// PathHasSuffix applies the HasSuffix predicate on the "path" field.
-func PathHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldPath, v))
-}
-
-// PathIsNil applies the IsNil predicate on the "path" field.
-func PathIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldPath))
-}
-
-// PathNotNil applies the NotNil predicate on the "path" field.
-func PathNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldPath))
-}
-
-// PathEqualFold applies the EqualFold predicate on the "path" field.
-func PathEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldPath, v))
-}
-
-// PathContainsFold applies the ContainsFold predicate on the "path" field.
-func PathContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldPath, v))
-}
-
-// RefererEQ applies the EQ predicate on the "referer" field.
-func RefererEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldReferer, v))
-}
-
-// RefererNEQ applies the NEQ predicate on the "referer" field.
-func RefererNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldReferer, v))
-}
-
-// RefererIn applies the In predicate on the "referer" field.
-func RefererIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldReferer, vs...))
-}
-
-// RefererNotIn applies the NotIn predicate on the "referer" field.
-func RefererNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldReferer, vs...))
-}
-
-// RefererGT applies the GT predicate on the "referer" field.
-func RefererGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldReferer, v))
-}
-
-// RefererGTE applies the GTE predicate on the "referer" field.
-func RefererGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldReferer, v))
-}
-
-// RefererLT applies the LT predicate on the "referer" field.
-func RefererLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldReferer, v))
-}
-
-// RefererLTE applies the LTE predicate on the "referer" field.
-func RefererLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldReferer, v))
-}
-
-// RefererContains applies the Contains predicate on the "referer" field.
-func RefererContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldReferer, v))
-}
-
-// RefererHasPrefix applies the HasPrefix predicate on the "referer" field.
-func RefererHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldReferer, v))
-}
-
-// RefererHasSuffix applies the HasSuffix predicate on the "referer" field.
-func RefererHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldReferer, v))
-}
-
-// RefererIsNil applies the IsNil predicate on the "referer" field.
-func RefererIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldReferer))
-}
-
-// RefererNotNil applies the NotNil predicate on the "referer" field.
-func RefererNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldReferer))
-}
-
-// RefererEqualFold applies the EqualFold predicate on the "referer" field.
-func RefererEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldReferer, v))
-}
-
-// RefererContainsFold applies the ContainsFold predicate on the "referer" field.
-func RefererContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldReferer, v))
-}
-
-// RequestURIEQ applies the EQ predicate on the "request_uri" field.
-func RequestURIEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestURI, v))
-}
-
-// RequestURINEQ applies the NEQ predicate on the "request_uri" field.
-func RequestURINEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldRequestURI, v))
-}
-
-// RequestURIIn applies the In predicate on the "request_uri" field.
-func RequestURIIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldRequestURI, vs...))
-}
-
-// RequestURINotIn applies the NotIn predicate on the "request_uri" field.
-func RequestURINotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldRequestURI, vs...))
-}
-
-// RequestURIGT applies the GT predicate on the "request_uri" field.
-func RequestURIGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldRequestURI, v))
-}
-
-// RequestURIGTE applies the GTE predicate on the "request_uri" field.
-func RequestURIGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldRequestURI, v))
-}
-
-// RequestURILT applies the LT predicate on the "request_uri" field.
-func RequestURILT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldRequestURI, v))
-}
-
-// RequestURILTE applies the LTE predicate on the "request_uri" field.
-func RequestURILTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldRequestURI, v))
-}
-
-// RequestURIContains applies the Contains predicate on the "request_uri" field.
-func RequestURIContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldRequestURI, v))
-}
-
-// RequestURIHasPrefix applies the HasPrefix predicate on the "request_uri" field.
-func RequestURIHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldRequestURI, v))
-}
-
-// RequestURIHasSuffix applies the HasSuffix predicate on the "request_uri" field.
-func RequestURIHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldRequestURI, v))
-}
-
-// RequestURIIsNil applies the IsNil predicate on the "request_uri" field.
-func RequestURIIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldRequestURI))
-}
-
-// RequestURINotNil applies the NotNil predicate on the "request_uri" field.
-func RequestURINotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldRequestURI))
-}
-
-// RequestURIEqualFold applies the EqualFold predicate on the "request_uri" field.
-func RequestURIEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldRequestURI, v))
-}
-
-// RequestURIContainsFold applies the ContainsFold predicate on the "request_uri" field.
-func RequestURIContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldRequestURI, v))
-}
-
-// RequestBodyEQ applies the EQ predicate on the "request_body" field.
-func RequestBodyEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestBody, v))
-}
-
-// RequestBodyNEQ applies the NEQ predicate on the "request_body" field.
-func RequestBodyNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldRequestBody, v))
-}
-
-// RequestBodyIn applies the In predicate on the "request_body" field.
-func RequestBodyIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldRequestBody, vs...))
-}
-
-// RequestBodyNotIn applies the NotIn predicate on the "request_body" field.
-func RequestBodyNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldRequestBody, vs...))
-}
-
-// RequestBodyGT applies the GT predicate on the "request_body" field.
-func RequestBodyGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldRequestBody, v))
-}
-
-// RequestBodyGTE applies the GTE predicate on the "request_body" field.
-func RequestBodyGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldRequestBody, v))
-}
-
-// RequestBodyLT applies the LT predicate on the "request_body" field.
-func RequestBodyLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldRequestBody, v))
-}
-
-// RequestBodyLTE applies the LTE predicate on the "request_body" field.
-func RequestBodyLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldRequestBody, v))
-}
-
-// RequestBodyContains applies the Contains predicate on the "request_body" field.
-func RequestBodyContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldRequestBody, v))
-}
-
-// RequestBodyHasPrefix applies the HasPrefix predicate on the "request_body" field.
-func RequestBodyHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldRequestBody, v))
-}
-
-// RequestBodyHasSuffix applies the HasSuffix predicate on the "request_body" field.
-func RequestBodyHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldRequestBody, v))
-}
-
-// RequestBodyIsNil applies the IsNil predicate on the "request_body" field.
-func RequestBodyIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldRequestBody))
-}
-
-// RequestBodyNotNil applies the NotNil predicate on the "request_body" field.
-func RequestBodyNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldRequestBody))
-}
-
-// RequestBodyEqualFold applies the EqualFold predicate on the "request_body" field.
-func RequestBodyEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldRequestBody, v))
-}
-
-// RequestBodyContainsFold applies the ContainsFold predicate on the "request_body" field.
-func RequestBodyContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldRequestBody, v))
-}
-
-// RequestHeaderEQ applies the EQ predicate on the "request_header" field.
-func RequestHeaderEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestHeader, v))
-}
-
-// RequestHeaderNEQ applies the NEQ predicate on the "request_header" field.
-func RequestHeaderNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldRequestHeader, v))
-}
-
-// RequestHeaderIn applies the In predicate on the "request_header" field.
-func RequestHeaderIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldRequestHeader, vs...))
-}
-
-// RequestHeaderNotIn applies the NotIn predicate on the "request_header" field.
-func RequestHeaderNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldRequestHeader, vs...))
-}
-
-// RequestHeaderGT applies the GT predicate on the "request_header" field.
-func RequestHeaderGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldRequestHeader, v))
-}
-
-// RequestHeaderGTE applies the GTE predicate on the "request_header" field.
-func RequestHeaderGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldRequestHeader, v))
-}
-
-// RequestHeaderLT applies the LT predicate on the "request_header" field.
-func RequestHeaderLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldRequestHeader, v))
-}
-
-// RequestHeaderLTE applies the LTE predicate on the "request_header" field.
-func RequestHeaderLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldRequestHeader, v))
-}
-
-// RequestHeaderContains applies the Contains predicate on the "request_header" field.
-func RequestHeaderContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldRequestHeader, v))
-}
-
-// RequestHeaderHasPrefix applies the HasPrefix predicate on the "request_header" field.
-func RequestHeaderHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldRequestHeader, v))
-}
-
-// RequestHeaderHasSuffix applies the HasSuffix predicate on the "request_header" field.
-func RequestHeaderHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldRequestHeader, v))
-}
-
-// RequestHeaderIsNil applies the IsNil predicate on the "request_header" field.
-func RequestHeaderIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldRequestHeader))
-}
-
-// RequestHeaderNotNil applies the NotNil predicate on the "request_header" field.
-func RequestHeaderNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldRequestHeader))
-}
-
-// RequestHeaderEqualFold applies the EqualFold predicate on the "request_header" field.
-func RequestHeaderEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldRequestHeader, v))
-}
-
-// RequestHeaderContainsFold applies the ContainsFold predicate on the "request_header" field.
-func RequestHeaderContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldRequestHeader, v))
-}
-
-// ResponseEQ applies the EQ predicate on the "response" field.
-func ResponseEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldResponse, v))
-}
-
-// ResponseNEQ applies the NEQ predicate on the "response" field.
-func ResponseNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldResponse, v))
-}
-
-// ResponseIn applies the In predicate on the "response" field.
-func ResponseIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldResponse, vs...))
-}
-
-// ResponseNotIn applies the NotIn predicate on the "response" field.
-func ResponseNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldResponse, vs...))
-}
-
-// ResponseGT applies the GT predicate on the "response" field.
-func ResponseGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldResponse, v))
-}
-
-// ResponseGTE applies the GTE predicate on the "response" field.
-func ResponseGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldResponse, v))
-}
-
-// ResponseLT applies the LT predicate on the "response" field.
-func ResponseLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldResponse, v))
-}
-
-// ResponseLTE applies the LTE predicate on the "response" field.
-func ResponseLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldResponse, v))
-}
-
-// ResponseContains applies the Contains predicate on the "response" field.
-func ResponseContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldResponse, v))
-}
-
-// ResponseHasPrefix applies the HasPrefix predicate on the "response" field.
-func ResponseHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldResponse, v))
-}
-
-// ResponseHasSuffix applies the HasSuffix predicate on the "response" field.
-func ResponseHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldResponse, v))
-}
-
-// ResponseIsNil applies the IsNil predicate on the "response" field.
-func ResponseIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldResponse))
-}
-
-// ResponseNotNil applies the NotNil predicate on the "response" field.
-func ResponseNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldResponse))
-}
-
-// ResponseEqualFold applies the EqualFold predicate on the "response" field.
-func ResponseEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldResponse, v))
-}
-
-// ResponseContainsFold applies the ContainsFold predicate on the "response" field.
-func ResponseContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldResponse, v))
-}
-
-// CostTimeEQ applies the EQ predicate on the "cost_time" field.
-func CostTimeEQ(v float64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldCostTime, v))
-}
-
-// CostTimeNEQ applies the NEQ predicate on the "cost_time" field.
-func CostTimeNEQ(v float64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldCostTime, v))
-}
-
-// CostTimeIn applies the In predicate on the "cost_time" field.
-func CostTimeIn(vs ...float64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldCostTime, vs...))
-}
-
-// CostTimeNotIn applies the NotIn predicate on the "cost_time" field.
-func CostTimeNotIn(vs ...float64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldCostTime, vs...))
-}
-
-// CostTimeGT applies the GT predicate on the "cost_time" field.
-func CostTimeGT(v float64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldCostTime, v))
-}
-
-// CostTimeGTE applies the GTE predicate on the "cost_time" field.
-func CostTimeGTE(v float64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldCostTime, v))
-}
-
-// CostTimeLT applies the LT predicate on the "cost_time" field.
-func CostTimeLT(v float64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldCostTime, v))
-}
-
-// CostTimeLTE applies the LTE predicate on the "cost_time" field.
-func CostTimeLTE(v float64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldCostTime, v))
-}
-
-// CostTimeIsNil applies the IsNil predicate on the "cost_time" field.
-func CostTimeIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldCostTime))
-}
-
-// CostTimeNotNil applies the NotNil predicate on the "cost_time" field.
-func CostTimeNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldCostTime))
 }
 
 // UserIDEQ applies the EQ predicate on the "user_id" field.
@@ -1134,118 +389,808 @@ func UsernameContainsFold(v string) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldUsername, v))
 }
 
-// ClientIPEQ applies the EQ predicate on the "client_ip" field.
-func ClientIPEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldClientIP, v))
+// IPAddressEQ applies the EQ predicate on the "ip_address" field.
+func IPAddressEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldIPAddress, v))
 }
 
-// ClientIPNEQ applies the NEQ predicate on the "client_ip" field.
-func ClientIPNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldClientIP, v))
+// IPAddressNEQ applies the NEQ predicate on the "ip_address" field.
+func IPAddressNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldIPAddress, v))
 }
 
-// ClientIPIn applies the In predicate on the "client_ip" field.
-func ClientIPIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldClientIP, vs...))
+// IPAddressIn applies the In predicate on the "ip_address" field.
+func IPAddressIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldIPAddress, vs...))
 }
 
-// ClientIPNotIn applies the NotIn predicate on the "client_ip" field.
-func ClientIPNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldClientIP, vs...))
+// IPAddressNotIn applies the NotIn predicate on the "ip_address" field.
+func IPAddressNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldIPAddress, vs...))
 }
 
-// ClientIPGT applies the GT predicate on the "client_ip" field.
-func ClientIPGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldClientIP, v))
+// IPAddressGT applies the GT predicate on the "ip_address" field.
+func IPAddressGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldIPAddress, v))
 }
 
-// ClientIPGTE applies the GTE predicate on the "client_ip" field.
-func ClientIPGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldClientIP, v))
+// IPAddressGTE applies the GTE predicate on the "ip_address" field.
+func IPAddressGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldIPAddress, v))
 }
 
-// ClientIPLT applies the LT predicate on the "client_ip" field.
-func ClientIPLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldClientIP, v))
+// IPAddressLT applies the LT predicate on the "ip_address" field.
+func IPAddressLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldIPAddress, v))
 }
 
-// ClientIPLTE applies the LTE predicate on the "client_ip" field.
-func ClientIPLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldClientIP, v))
+// IPAddressLTE applies the LTE predicate on the "ip_address" field.
+func IPAddressLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldIPAddress, v))
 }
 
-// ClientIPContains applies the Contains predicate on the "client_ip" field.
-func ClientIPContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldClientIP, v))
+// IPAddressContains applies the Contains predicate on the "ip_address" field.
+func IPAddressContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldIPAddress, v))
 }
 
-// ClientIPHasPrefix applies the HasPrefix predicate on the "client_ip" field.
-func ClientIPHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldClientIP, v))
+// IPAddressHasPrefix applies the HasPrefix predicate on the "ip_address" field.
+func IPAddressHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldIPAddress, v))
 }
 
-// ClientIPHasSuffix applies the HasSuffix predicate on the "client_ip" field.
-func ClientIPHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldClientIP, v))
+// IPAddressHasSuffix applies the HasSuffix predicate on the "ip_address" field.
+func IPAddressHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldIPAddress, v))
 }
 
-// ClientIPIsNil applies the IsNil predicate on the "client_ip" field.
-func ClientIPIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldClientIP))
+// IPAddressIsNil applies the IsNil predicate on the "ip_address" field.
+func IPAddressIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldIPAddress))
 }
 
-// ClientIPNotNil applies the NotNil predicate on the "client_ip" field.
-func ClientIPNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldClientIP))
+// IPAddressNotNil applies the NotNil predicate on the "ip_address" field.
+func IPAddressNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldIPAddress))
 }
 
-// ClientIPEqualFold applies the EqualFold predicate on the "client_ip" field.
-func ClientIPEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldClientIP, v))
+// IPAddressEqualFold applies the EqualFold predicate on the "ip_address" field.
+func IPAddressEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldIPAddress, v))
 }
 
-// ClientIPContainsFold applies the ContainsFold predicate on the "client_ip" field.
-func ClientIPContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldClientIP, v))
+// IPAddressContainsFold applies the ContainsFold predicate on the "ip_address" field.
+func IPAddressContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldIPAddress, v))
+}
+
+// GeoLocationIsNil applies the IsNil predicate on the "geo_location" field.
+func GeoLocationIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldGeoLocation))
+}
+
+// GeoLocationNotNil applies the NotNil predicate on the "geo_location" field.
+func GeoLocationNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldGeoLocation))
+}
+
+// DeviceInfoIsNil applies the IsNil predicate on the "device_info" field.
+func DeviceInfoIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldDeviceInfo))
+}
+
+// DeviceInfoNotNil applies the NotNil predicate on the "device_info" field.
+func DeviceInfoNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldDeviceInfo))
+}
+
+// RefererEQ applies the EQ predicate on the "referer" field.
+func RefererEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldReferer, v))
+}
+
+// RefererNEQ applies the NEQ predicate on the "referer" field.
+func RefererNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldReferer, v))
+}
+
+// RefererIn applies the In predicate on the "referer" field.
+func RefererIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldReferer, vs...))
+}
+
+// RefererNotIn applies the NotIn predicate on the "referer" field.
+func RefererNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldReferer, vs...))
+}
+
+// RefererGT applies the GT predicate on the "referer" field.
+func RefererGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldReferer, v))
+}
+
+// RefererGTE applies the GTE predicate on the "referer" field.
+func RefererGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldReferer, v))
+}
+
+// RefererLT applies the LT predicate on the "referer" field.
+func RefererLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldReferer, v))
+}
+
+// RefererLTE applies the LTE predicate on the "referer" field.
+func RefererLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldReferer, v))
+}
+
+// RefererContains applies the Contains predicate on the "referer" field.
+func RefererContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldReferer, v))
+}
+
+// RefererHasPrefix applies the HasPrefix predicate on the "referer" field.
+func RefererHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldReferer, v))
+}
+
+// RefererHasSuffix applies the HasSuffix predicate on the "referer" field.
+func RefererHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldReferer, v))
+}
+
+// RefererIsNil applies the IsNil predicate on the "referer" field.
+func RefererIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldReferer))
+}
+
+// RefererNotNil applies the NotNil predicate on the "referer" field.
+func RefererNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldReferer))
+}
+
+// RefererEqualFold applies the EqualFold predicate on the "referer" field.
+func RefererEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldReferer, v))
+}
+
+// RefererContainsFold applies the ContainsFold predicate on the "referer" field.
+func RefererContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldReferer, v))
+}
+
+// HTTPMethodEQ applies the EQ predicate on the "http_method" field.
+func HTTPMethodEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldHTTPMethod, v))
+}
+
+// HTTPMethodNEQ applies the NEQ predicate on the "http_method" field.
+func HTTPMethodNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldHTTPMethod, v))
+}
+
+// HTTPMethodIn applies the In predicate on the "http_method" field.
+func HTTPMethodIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldHTTPMethod, vs...))
+}
+
+// HTTPMethodNotIn applies the NotIn predicate on the "http_method" field.
+func HTTPMethodNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldHTTPMethod, vs...))
+}
+
+// HTTPMethodGT applies the GT predicate on the "http_method" field.
+func HTTPMethodGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldHTTPMethod, v))
+}
+
+// HTTPMethodGTE applies the GTE predicate on the "http_method" field.
+func HTTPMethodGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldHTTPMethod, v))
+}
+
+// HTTPMethodLT applies the LT predicate on the "http_method" field.
+func HTTPMethodLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldHTTPMethod, v))
+}
+
+// HTTPMethodLTE applies the LTE predicate on the "http_method" field.
+func HTTPMethodLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldHTTPMethod, v))
+}
+
+// HTTPMethodContains applies the Contains predicate on the "http_method" field.
+func HTTPMethodContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldHTTPMethod, v))
+}
+
+// HTTPMethodHasPrefix applies the HasPrefix predicate on the "http_method" field.
+func HTTPMethodHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldHTTPMethod, v))
+}
+
+// HTTPMethodHasSuffix applies the HasSuffix predicate on the "http_method" field.
+func HTTPMethodHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldHTTPMethod, v))
+}
+
+// HTTPMethodIsNil applies the IsNil predicate on the "http_method" field.
+func HTTPMethodIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldHTTPMethod))
+}
+
+// HTTPMethodNotNil applies the NotNil predicate on the "http_method" field.
+func HTTPMethodNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldHTTPMethod))
+}
+
+// HTTPMethodEqualFold applies the EqualFold predicate on the "http_method" field.
+func HTTPMethodEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldHTTPMethod, v))
+}
+
+// HTTPMethodContainsFold applies the ContainsFold predicate on the "http_method" field.
+func HTTPMethodContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldHTTPMethod, v))
+}
+
+// PathEQ applies the EQ predicate on the "path" field.
+func PathEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldPath, v))
+}
+
+// PathNEQ applies the NEQ predicate on the "path" field.
+func PathNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldPath, v))
+}
+
+// PathIn applies the In predicate on the "path" field.
+func PathIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldPath, vs...))
+}
+
+// PathNotIn applies the NotIn predicate on the "path" field.
+func PathNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldPath, vs...))
+}
+
+// PathGT applies the GT predicate on the "path" field.
+func PathGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldPath, v))
+}
+
+// PathGTE applies the GTE predicate on the "path" field.
+func PathGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldPath, v))
+}
+
+// PathLT applies the LT predicate on the "path" field.
+func PathLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldPath, v))
+}
+
+// PathLTE applies the LTE predicate on the "path" field.
+func PathLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldPath, v))
+}
+
+// PathContains applies the Contains predicate on the "path" field.
+func PathContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldPath, v))
+}
+
+// PathHasPrefix applies the HasPrefix predicate on the "path" field.
+func PathHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldPath, v))
+}
+
+// PathHasSuffix applies the HasSuffix predicate on the "path" field.
+func PathHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldPath, v))
+}
+
+// PathIsNil applies the IsNil predicate on the "path" field.
+func PathIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldPath))
+}
+
+// PathNotNil applies the NotNil predicate on the "path" field.
+func PathNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldPath))
+}
+
+// PathEqualFold applies the EqualFold predicate on the "path" field.
+func PathEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldPath, v))
+}
+
+// PathContainsFold applies the ContainsFold predicate on the "path" field.
+func PathContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldPath, v))
+}
+
+// RequestURIEQ applies the EQ predicate on the "request_uri" field.
+func RequestURIEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestURI, v))
+}
+
+// RequestURINEQ applies the NEQ predicate on the "request_uri" field.
+func RequestURINEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldRequestURI, v))
+}
+
+// RequestURIIn applies the In predicate on the "request_uri" field.
+func RequestURIIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldRequestURI, vs...))
+}
+
+// RequestURINotIn applies the NotIn predicate on the "request_uri" field.
+func RequestURINotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldRequestURI, vs...))
+}
+
+// RequestURIGT applies the GT predicate on the "request_uri" field.
+func RequestURIGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldRequestURI, v))
+}
+
+// RequestURIGTE applies the GTE predicate on the "request_uri" field.
+func RequestURIGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldRequestURI, v))
+}
+
+// RequestURILT applies the LT predicate on the "request_uri" field.
+func RequestURILT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldRequestURI, v))
+}
+
+// RequestURILTE applies the LTE predicate on the "request_uri" field.
+func RequestURILTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldRequestURI, v))
+}
+
+// RequestURIContains applies the Contains predicate on the "request_uri" field.
+func RequestURIContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldRequestURI, v))
+}
+
+// RequestURIHasPrefix applies the HasPrefix predicate on the "request_uri" field.
+func RequestURIHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldRequestURI, v))
+}
+
+// RequestURIHasSuffix applies the HasSuffix predicate on the "request_uri" field.
+func RequestURIHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldRequestURI, v))
+}
+
+// RequestURIIsNil applies the IsNil predicate on the "request_uri" field.
+func RequestURIIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldRequestURI))
+}
+
+// RequestURINotNil applies the NotNil predicate on the "request_uri" field.
+func RequestURINotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldRequestURI))
+}
+
+// RequestURIEqualFold applies the EqualFold predicate on the "request_uri" field.
+func RequestURIEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldRequestURI, v))
+}
+
+// RequestURIContainsFold applies the ContainsFold predicate on the "request_uri" field.
+func RequestURIContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldRequestURI, v))
+}
+
+// APIModuleEQ applies the EQ predicate on the "api_module" field.
+func APIModuleEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldAPIModule, v))
+}
+
+// APIModuleNEQ applies the NEQ predicate on the "api_module" field.
+func APIModuleNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldAPIModule, v))
+}
+
+// APIModuleIn applies the In predicate on the "api_module" field.
+func APIModuleIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldAPIModule, vs...))
+}
+
+// APIModuleNotIn applies the NotIn predicate on the "api_module" field.
+func APIModuleNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldAPIModule, vs...))
+}
+
+// APIModuleGT applies the GT predicate on the "api_module" field.
+func APIModuleGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldAPIModule, v))
+}
+
+// APIModuleGTE applies the GTE predicate on the "api_module" field.
+func APIModuleGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldAPIModule, v))
+}
+
+// APIModuleLT applies the LT predicate on the "api_module" field.
+func APIModuleLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldAPIModule, v))
+}
+
+// APIModuleLTE applies the LTE predicate on the "api_module" field.
+func APIModuleLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldAPIModule, v))
+}
+
+// APIModuleContains applies the Contains predicate on the "api_module" field.
+func APIModuleContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldAPIModule, v))
+}
+
+// APIModuleHasPrefix applies the HasPrefix predicate on the "api_module" field.
+func APIModuleHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldAPIModule, v))
+}
+
+// APIModuleHasSuffix applies the HasSuffix predicate on the "api_module" field.
+func APIModuleHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldAPIModule, v))
+}
+
+// APIModuleIsNil applies the IsNil predicate on the "api_module" field.
+func APIModuleIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldAPIModule))
+}
+
+// APIModuleNotNil applies the NotNil predicate on the "api_module" field.
+func APIModuleNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldAPIModule))
+}
+
+// APIModuleEqualFold applies the EqualFold predicate on the "api_module" field.
+func APIModuleEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldAPIModule, v))
+}
+
+// APIModuleContainsFold applies the ContainsFold predicate on the "api_module" field.
+func APIModuleContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldAPIModule, v))
+}
+
+// APIOperationEQ applies the EQ predicate on the "api_operation" field.
+func APIOperationEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldAPIOperation, v))
+}
+
+// APIOperationNEQ applies the NEQ predicate on the "api_operation" field.
+func APIOperationNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldAPIOperation, v))
+}
+
+// APIOperationIn applies the In predicate on the "api_operation" field.
+func APIOperationIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldAPIOperation, vs...))
+}
+
+// APIOperationNotIn applies the NotIn predicate on the "api_operation" field.
+func APIOperationNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldAPIOperation, vs...))
+}
+
+// APIOperationGT applies the GT predicate on the "api_operation" field.
+func APIOperationGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldAPIOperation, v))
+}
+
+// APIOperationGTE applies the GTE predicate on the "api_operation" field.
+func APIOperationGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldAPIOperation, v))
+}
+
+// APIOperationLT applies the LT predicate on the "api_operation" field.
+func APIOperationLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldAPIOperation, v))
+}
+
+// APIOperationLTE applies the LTE predicate on the "api_operation" field.
+func APIOperationLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldAPIOperation, v))
+}
+
+// APIOperationContains applies the Contains predicate on the "api_operation" field.
+func APIOperationContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldAPIOperation, v))
+}
+
+// APIOperationHasPrefix applies the HasPrefix predicate on the "api_operation" field.
+func APIOperationHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldAPIOperation, v))
+}
+
+// APIOperationHasSuffix applies the HasSuffix predicate on the "api_operation" field.
+func APIOperationHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldAPIOperation, v))
+}
+
+// APIOperationIsNil applies the IsNil predicate on the "api_operation" field.
+func APIOperationIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldAPIOperation))
+}
+
+// APIOperationNotNil applies the NotNil predicate on the "api_operation" field.
+func APIOperationNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldAPIOperation))
+}
+
+// APIOperationEqualFold applies the EqualFold predicate on the "api_operation" field.
+func APIOperationEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldAPIOperation, v))
+}
+
+// APIOperationContainsFold applies the ContainsFold predicate on the "api_operation" field.
+func APIOperationContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldAPIOperation, v))
+}
+
+// APIDescriptionEQ applies the EQ predicate on the "api_description" field.
+func APIDescriptionEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldAPIDescription, v))
+}
+
+// APIDescriptionNEQ applies the NEQ predicate on the "api_description" field.
+func APIDescriptionNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldAPIDescription, v))
+}
+
+// APIDescriptionIn applies the In predicate on the "api_description" field.
+func APIDescriptionIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldAPIDescription, vs...))
+}
+
+// APIDescriptionNotIn applies the NotIn predicate on the "api_description" field.
+func APIDescriptionNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldAPIDescription, vs...))
+}
+
+// APIDescriptionGT applies the GT predicate on the "api_description" field.
+func APIDescriptionGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldAPIDescription, v))
+}
+
+// APIDescriptionGTE applies the GTE predicate on the "api_description" field.
+func APIDescriptionGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldAPIDescription, v))
+}
+
+// APIDescriptionLT applies the LT predicate on the "api_description" field.
+func APIDescriptionLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldAPIDescription, v))
+}
+
+// APIDescriptionLTE applies the LTE predicate on the "api_description" field.
+func APIDescriptionLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldAPIDescription, v))
+}
+
+// APIDescriptionContains applies the Contains predicate on the "api_description" field.
+func APIDescriptionContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldAPIDescription, v))
+}
+
+// APIDescriptionHasPrefix applies the HasPrefix predicate on the "api_description" field.
+func APIDescriptionHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldAPIDescription, v))
+}
+
+// APIDescriptionHasSuffix applies the HasSuffix predicate on the "api_description" field.
+func APIDescriptionHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldAPIDescription, v))
+}
+
+// APIDescriptionIsNil applies the IsNil predicate on the "api_description" field.
+func APIDescriptionIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldAPIDescription))
+}
+
+// APIDescriptionNotNil applies the NotNil predicate on the "api_description" field.
+func APIDescriptionNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldAPIDescription))
+}
+
+// APIDescriptionEqualFold applies the EqualFold predicate on the "api_description" field.
+func APIDescriptionEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldAPIDescription, v))
+}
+
+// APIDescriptionContainsFold applies the ContainsFold predicate on the "api_description" field.
+func APIDescriptionContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldAPIDescription, v))
+}
+
+// RequestIDEQ applies the EQ predicate on the "request_id" field.
+func RequestIDEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestID, v))
+}
+
+// RequestIDNEQ applies the NEQ predicate on the "request_id" field.
+func RequestIDNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldRequestID, v))
+}
+
+// RequestIDIn applies the In predicate on the "request_id" field.
+func RequestIDIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldRequestID, vs...))
+}
+
+// RequestIDNotIn applies the NotIn predicate on the "request_id" field.
+func RequestIDNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldRequestID, vs...))
+}
+
+// RequestIDGT applies the GT predicate on the "request_id" field.
+func RequestIDGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldRequestID, v))
+}
+
+// RequestIDGTE applies the GTE predicate on the "request_id" field.
+func RequestIDGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldRequestID, v))
+}
+
+// RequestIDLT applies the LT predicate on the "request_id" field.
+func RequestIDLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldRequestID, v))
+}
+
+// RequestIDLTE applies the LTE predicate on the "request_id" field.
+func RequestIDLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldRequestID, v))
+}
+
+// RequestIDContains applies the Contains predicate on the "request_id" field.
+func RequestIDContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldRequestID, v))
+}
+
+// RequestIDHasPrefix applies the HasPrefix predicate on the "request_id" field.
+func RequestIDHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldRequestID, v))
+}
+
+// RequestIDHasSuffix applies the HasSuffix predicate on the "request_id" field.
+func RequestIDHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldRequestID, v))
+}
+
+// RequestIDIsNil applies the IsNil predicate on the "request_id" field.
+func RequestIDIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldRequestID))
+}
+
+// RequestIDNotNil applies the NotNil predicate on the "request_id" field.
+func RequestIDNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldRequestID))
+}
+
+// RequestIDEqualFold applies the EqualFold predicate on the "request_id" field.
+func RequestIDEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldRequestID, v))
+}
+
+// RequestIDContainsFold applies the ContainsFold predicate on the "request_id" field.
+func RequestIDContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldRequestID, v))
+}
+
+// CostTimeMsEQ applies the EQ predicate on the "cost_time_ms" field.
+func CostTimeMsEQ(v uint64) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldCostTimeMs, v))
+}
+
+// CostTimeMsNEQ applies the NEQ predicate on the "cost_time_ms" field.
+func CostTimeMsNEQ(v uint64) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldCostTimeMs, v))
+}
+
+// CostTimeMsIn applies the In predicate on the "cost_time_ms" field.
+func CostTimeMsIn(vs ...uint64) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldCostTimeMs, vs...))
+}
+
+// CostTimeMsNotIn applies the NotIn predicate on the "cost_time_ms" field.
+func CostTimeMsNotIn(vs ...uint64) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldCostTimeMs, vs...))
+}
+
+// CostTimeMsGT applies the GT predicate on the "cost_time_ms" field.
+func CostTimeMsGT(v uint64) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldCostTimeMs, v))
+}
+
+// CostTimeMsGTE applies the GTE predicate on the "cost_time_ms" field.
+func CostTimeMsGTE(v uint64) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldCostTimeMs, v))
+}
+
+// CostTimeMsLT applies the LT predicate on the "cost_time_ms" field.
+func CostTimeMsLT(v uint64) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldCostTimeMs, v))
+}
+
+// CostTimeMsLTE applies the LTE predicate on the "cost_time_ms" field.
+func CostTimeMsLTE(v uint64) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldCostTimeMs, v))
+}
+
+// CostTimeMsIsNil applies the IsNil predicate on the "cost_time_ms" field.
+func CostTimeMsIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldCostTimeMs))
+}
+
+// CostTimeMsNotNil applies the NotNil predicate on the "cost_time_ms" field.
+func CostTimeMsNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldCostTimeMs))
+}
+
+// SuccessEQ applies the EQ predicate on the "success" field.
+func SuccessEQ(v bool) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldSuccess, v))
+}
+
+// SuccessNEQ applies the NEQ predicate on the "success" field.
+func SuccessNEQ(v bool) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldSuccess, v))
+}
+
+// SuccessIsNil applies the IsNil predicate on the "success" field.
+func SuccessIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldSuccess))
+}
+
+// SuccessNotNil applies the NotNil predicate on the "success" field.
+func SuccessNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldSuccess))
 }
 
 // StatusCodeEQ applies the EQ predicate on the "status_code" field.
-func StatusCodeEQ(v int32) predicate.ApiAuditLog {
+func StatusCodeEQ(v uint32) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldEQ(FieldStatusCode, v))
 }
 
 // StatusCodeNEQ applies the NEQ predicate on the "status_code" field.
-func StatusCodeNEQ(v int32) predicate.ApiAuditLog {
+func StatusCodeNEQ(v uint32) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldNEQ(FieldStatusCode, v))
 }
 
 // StatusCodeIn applies the In predicate on the "status_code" field.
-func StatusCodeIn(vs ...int32) predicate.ApiAuditLog {
+func StatusCodeIn(vs ...uint32) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldIn(FieldStatusCode, vs...))
 }
 
 // StatusCodeNotIn applies the NotIn predicate on the "status_code" field.
-func StatusCodeNotIn(vs ...int32) predicate.ApiAuditLog {
+func StatusCodeNotIn(vs ...uint32) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldNotIn(FieldStatusCode, vs...))
 }
 
 // StatusCodeGT applies the GT predicate on the "status_code" field.
-func StatusCodeGT(v int32) predicate.ApiAuditLog {
+func StatusCodeGT(v uint32) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldGT(FieldStatusCode, v))
 }
 
 // StatusCodeGTE applies the GTE predicate on the "status_code" field.
-func StatusCodeGTE(v int32) predicate.ApiAuditLog {
+func StatusCodeGTE(v uint32) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldGTE(FieldStatusCode, v))
 }
 
 // StatusCodeLT applies the LT predicate on the "status_code" field.
-func StatusCodeLT(v int32) predicate.ApiAuditLog {
+func StatusCodeLT(v uint32) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldLT(FieldStatusCode, v))
 }
 
 // StatusCodeLTE applies the LTE predicate on the "status_code" field.
-func StatusCodeLTE(v int32) predicate.ApiAuditLog {
+func StatusCodeLTE(v uint32) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldLTE(FieldStatusCode, v))
 }
 
@@ -1334,624 +1279,354 @@ func ReasonContainsFold(v string) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldReason, v))
 }
 
-// SuccessEQ applies the EQ predicate on the "success" field.
-func SuccessEQ(v bool) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldSuccess, v))
+// RequestHeaderEQ applies the EQ predicate on the "request_header" field.
+func RequestHeaderEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestHeader, v))
 }
 
-// SuccessNEQ applies the NEQ predicate on the "success" field.
-func SuccessNEQ(v bool) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldSuccess, v))
+// RequestHeaderNEQ applies the NEQ predicate on the "request_header" field.
+func RequestHeaderNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldRequestHeader, v))
 }
 
-// SuccessIsNil applies the IsNil predicate on the "success" field.
-func SuccessIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldSuccess))
+// RequestHeaderIn applies the In predicate on the "request_header" field.
+func RequestHeaderIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldRequestHeader, vs...))
 }
 
-// SuccessNotNil applies the NotNil predicate on the "success" field.
-func SuccessNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldSuccess))
+// RequestHeaderNotIn applies the NotIn predicate on the "request_header" field.
+func RequestHeaderNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldRequestHeader, vs...))
 }
 
-// LocationEQ applies the EQ predicate on the "location" field.
-func LocationEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldLocation, v))
+// RequestHeaderGT applies the GT predicate on the "request_header" field.
+func RequestHeaderGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldRequestHeader, v))
 }
 
-// LocationNEQ applies the NEQ predicate on the "location" field.
-func LocationNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldLocation, v))
+// RequestHeaderGTE applies the GTE predicate on the "request_header" field.
+func RequestHeaderGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldRequestHeader, v))
 }
 
-// LocationIn applies the In predicate on the "location" field.
-func LocationIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldLocation, vs...))
+// RequestHeaderLT applies the LT predicate on the "request_header" field.
+func RequestHeaderLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldRequestHeader, v))
 }
 
-// LocationNotIn applies the NotIn predicate on the "location" field.
-func LocationNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldLocation, vs...))
+// RequestHeaderLTE applies the LTE predicate on the "request_header" field.
+func RequestHeaderLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldRequestHeader, v))
 }
 
-// LocationGT applies the GT predicate on the "location" field.
-func LocationGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldLocation, v))
+// RequestHeaderContains applies the Contains predicate on the "request_header" field.
+func RequestHeaderContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldRequestHeader, v))
 }
 
-// LocationGTE applies the GTE predicate on the "location" field.
-func LocationGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldLocation, v))
+// RequestHeaderHasPrefix applies the HasPrefix predicate on the "request_header" field.
+func RequestHeaderHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldRequestHeader, v))
 }
 
-// LocationLT applies the LT predicate on the "location" field.
-func LocationLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldLocation, v))
+// RequestHeaderHasSuffix applies the HasSuffix predicate on the "request_header" field.
+func RequestHeaderHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldRequestHeader, v))
 }
 
-// LocationLTE applies the LTE predicate on the "location" field.
-func LocationLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldLocation, v))
+// RequestHeaderIsNil applies the IsNil predicate on the "request_header" field.
+func RequestHeaderIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldRequestHeader))
 }
 
-// LocationContains applies the Contains predicate on the "location" field.
-func LocationContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldLocation, v))
+// RequestHeaderNotNil applies the NotNil predicate on the "request_header" field.
+func RequestHeaderNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldRequestHeader))
 }
 
-// LocationHasPrefix applies the HasPrefix predicate on the "location" field.
-func LocationHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldLocation, v))
+// RequestHeaderEqualFold applies the EqualFold predicate on the "request_header" field.
+func RequestHeaderEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldRequestHeader, v))
 }
 
-// LocationHasSuffix applies the HasSuffix predicate on the "location" field.
-func LocationHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldLocation, v))
+// RequestHeaderContainsFold applies the ContainsFold predicate on the "request_header" field.
+func RequestHeaderContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldRequestHeader, v))
 }
 
-// LocationIsNil applies the IsNil predicate on the "location" field.
-func LocationIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldLocation))
+// RequestBodyEQ applies the EQ predicate on the "request_body" field.
+func RequestBodyEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestBody, v))
 }
 
-// LocationNotNil applies the NotNil predicate on the "location" field.
-func LocationNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldLocation))
+// RequestBodyNEQ applies the NEQ predicate on the "request_body" field.
+func RequestBodyNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldRequestBody, v))
 }
 
-// LocationEqualFold applies the EqualFold predicate on the "location" field.
-func LocationEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldLocation, v))
+// RequestBodyIn applies the In predicate on the "request_body" field.
+func RequestBodyIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldRequestBody, vs...))
 }
 
-// LocationContainsFold applies the ContainsFold predicate on the "location" field.
-func LocationContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldLocation, v))
+// RequestBodyNotIn applies the NotIn predicate on the "request_body" field.
+func RequestBodyNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldRequestBody, vs...))
 }
 
-// UserAgentEQ applies the EQ predicate on the "user_agent" field.
-func UserAgentEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldUserAgent, v))
+// RequestBodyGT applies the GT predicate on the "request_body" field.
+func RequestBodyGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldRequestBody, v))
 }
 
-// UserAgentNEQ applies the NEQ predicate on the "user_agent" field.
-func UserAgentNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldUserAgent, v))
+// RequestBodyGTE applies the GTE predicate on the "request_body" field.
+func RequestBodyGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldRequestBody, v))
 }
 
-// UserAgentIn applies the In predicate on the "user_agent" field.
-func UserAgentIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldUserAgent, vs...))
+// RequestBodyLT applies the LT predicate on the "request_body" field.
+func RequestBodyLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldRequestBody, v))
 }
 
-// UserAgentNotIn applies the NotIn predicate on the "user_agent" field.
-func UserAgentNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldUserAgent, vs...))
+// RequestBodyLTE applies the LTE predicate on the "request_body" field.
+func RequestBodyLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldRequestBody, v))
 }
 
-// UserAgentGT applies the GT predicate on the "user_agent" field.
-func UserAgentGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldUserAgent, v))
+// RequestBodyContains applies the Contains predicate on the "request_body" field.
+func RequestBodyContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldRequestBody, v))
 }
 
-// UserAgentGTE applies the GTE predicate on the "user_agent" field.
-func UserAgentGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldUserAgent, v))
+// RequestBodyHasPrefix applies the HasPrefix predicate on the "request_body" field.
+func RequestBodyHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldRequestBody, v))
 }
 
-// UserAgentLT applies the LT predicate on the "user_agent" field.
-func UserAgentLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldUserAgent, v))
+// RequestBodyHasSuffix applies the HasSuffix predicate on the "request_body" field.
+func RequestBodyHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldRequestBody, v))
 }
 
-// UserAgentLTE applies the LTE predicate on the "user_agent" field.
-func UserAgentLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldUserAgent, v))
+// RequestBodyIsNil applies the IsNil predicate on the "request_body" field.
+func RequestBodyIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldRequestBody))
 }
 
-// UserAgentContains applies the Contains predicate on the "user_agent" field.
-func UserAgentContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldUserAgent, v))
+// RequestBodyNotNil applies the NotNil predicate on the "request_body" field.
+func RequestBodyNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldRequestBody))
 }
 
-// UserAgentHasPrefix applies the HasPrefix predicate on the "user_agent" field.
-func UserAgentHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldUserAgent, v))
+// RequestBodyEqualFold applies the EqualFold predicate on the "request_body" field.
+func RequestBodyEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldRequestBody, v))
 }
 
-// UserAgentHasSuffix applies the HasSuffix predicate on the "user_agent" field.
-func UserAgentHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldUserAgent, v))
+// RequestBodyContainsFold applies the ContainsFold predicate on the "request_body" field.
+func RequestBodyContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldRequestBody, v))
 }
 
-// UserAgentIsNil applies the IsNil predicate on the "user_agent" field.
-func UserAgentIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldUserAgent))
+// ResponseEQ applies the EQ predicate on the "response" field.
+func ResponseEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldResponse, v))
 }
 
-// UserAgentNotNil applies the NotNil predicate on the "user_agent" field.
-func UserAgentNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldUserAgent))
+// ResponseNEQ applies the NEQ predicate on the "response" field.
+func ResponseNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldResponse, v))
 }
 
-// UserAgentEqualFold applies the EqualFold predicate on the "user_agent" field.
-func UserAgentEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldUserAgent, v))
+// ResponseIn applies the In predicate on the "response" field.
+func ResponseIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldResponse, vs...))
 }
 
-// UserAgentContainsFold applies the ContainsFold predicate on the "user_agent" field.
-func UserAgentContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldUserAgent, v))
+// ResponseNotIn applies the NotIn predicate on the "response" field.
+func ResponseNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldResponse, vs...))
 }
 
-// BrowserNameEQ applies the EQ predicate on the "browser_name" field.
-func BrowserNameEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldBrowserName, v))
+// ResponseGT applies the GT predicate on the "response" field.
+func ResponseGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldResponse, v))
 }
 
-// BrowserNameNEQ applies the NEQ predicate on the "browser_name" field.
-func BrowserNameNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldBrowserName, v))
+// ResponseGTE applies the GTE predicate on the "response" field.
+func ResponseGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldResponse, v))
 }
 
-// BrowserNameIn applies the In predicate on the "browser_name" field.
-func BrowserNameIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldBrowserName, vs...))
+// ResponseLT applies the LT predicate on the "response" field.
+func ResponseLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldResponse, v))
 }
 
-// BrowserNameNotIn applies the NotIn predicate on the "browser_name" field.
-func BrowserNameNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldBrowserName, vs...))
+// ResponseLTE applies the LTE predicate on the "response" field.
+func ResponseLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldResponse, v))
 }
 
-// BrowserNameGT applies the GT predicate on the "browser_name" field.
-func BrowserNameGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldBrowserName, v))
+// ResponseContains applies the Contains predicate on the "response" field.
+func ResponseContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldResponse, v))
 }
 
-// BrowserNameGTE applies the GTE predicate on the "browser_name" field.
-func BrowserNameGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldBrowserName, v))
+// ResponseHasPrefix applies the HasPrefix predicate on the "response" field.
+func ResponseHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldResponse, v))
 }
 
-// BrowserNameLT applies the LT predicate on the "browser_name" field.
-func BrowserNameLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldBrowserName, v))
+// ResponseHasSuffix applies the HasSuffix predicate on the "response" field.
+func ResponseHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldResponse, v))
 }
 
-// BrowserNameLTE applies the LTE predicate on the "browser_name" field.
-func BrowserNameLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldBrowserName, v))
+// ResponseIsNil applies the IsNil predicate on the "response" field.
+func ResponseIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldResponse))
 }
 
-// BrowserNameContains applies the Contains predicate on the "browser_name" field.
-func BrowserNameContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldBrowserName, v))
+// ResponseNotNil applies the NotNil predicate on the "response" field.
+func ResponseNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldResponse))
 }
 
-// BrowserNameHasPrefix applies the HasPrefix predicate on the "browser_name" field.
-func BrowserNameHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldBrowserName, v))
+// ResponseEqualFold applies the EqualFold predicate on the "response" field.
+func ResponseEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldResponse, v))
 }
 
-// BrowserNameHasSuffix applies the HasSuffix predicate on the "browser_name" field.
-func BrowserNameHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldBrowserName, v))
+// ResponseContainsFold applies the ContainsFold predicate on the "response" field.
+func ResponseContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldResponse, v))
 }
 
-// BrowserNameIsNil applies the IsNil predicate on the "browser_name" field.
-func BrowserNameIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldBrowserName))
+// LogHashEQ applies the EQ predicate on the "log_hash" field.
+func LogHashEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldLogHash, v))
 }
 
-// BrowserNameNotNil applies the NotNil predicate on the "browser_name" field.
-func BrowserNameNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldBrowserName))
+// LogHashNEQ applies the NEQ predicate on the "log_hash" field.
+func LogHashNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldLogHash, v))
 }
 
-// BrowserNameEqualFold applies the EqualFold predicate on the "browser_name" field.
-func BrowserNameEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldBrowserName, v))
+// LogHashIn applies the In predicate on the "log_hash" field.
+func LogHashIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldLogHash, vs...))
 }
 
-// BrowserNameContainsFold applies the ContainsFold predicate on the "browser_name" field.
-func BrowserNameContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldBrowserName, v))
+// LogHashNotIn applies the NotIn predicate on the "log_hash" field.
+func LogHashNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldLogHash, vs...))
 }
 
-// BrowserVersionEQ applies the EQ predicate on the "browser_version" field.
-func BrowserVersionEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldBrowserVersion, v))
+// LogHashGT applies the GT predicate on the "log_hash" field.
+func LogHashGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldLogHash, v))
 }
 
-// BrowserVersionNEQ applies the NEQ predicate on the "browser_version" field.
-func BrowserVersionNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldBrowserVersion, v))
+// LogHashGTE applies the GTE predicate on the "log_hash" field.
+func LogHashGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldLogHash, v))
 }
 
-// BrowserVersionIn applies the In predicate on the "browser_version" field.
-func BrowserVersionIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldBrowserVersion, vs...))
+// LogHashLT applies the LT predicate on the "log_hash" field.
+func LogHashLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldLogHash, v))
 }
 
-// BrowserVersionNotIn applies the NotIn predicate on the "browser_version" field.
-func BrowserVersionNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldBrowserVersion, vs...))
+// LogHashLTE applies the LTE predicate on the "log_hash" field.
+func LogHashLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldLogHash, v))
 }
 
-// BrowserVersionGT applies the GT predicate on the "browser_version" field.
-func BrowserVersionGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldBrowserVersion, v))
+// LogHashContains applies the Contains predicate on the "log_hash" field.
+func LogHashContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldLogHash, v))
 }
 
-// BrowserVersionGTE applies the GTE predicate on the "browser_version" field.
-func BrowserVersionGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldBrowserVersion, v))
+// LogHashHasPrefix applies the HasPrefix predicate on the "log_hash" field.
+func LogHashHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldLogHash, v))
 }
 
-// BrowserVersionLT applies the LT predicate on the "browser_version" field.
-func BrowserVersionLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldBrowserVersion, v))
+// LogHashHasSuffix applies the HasSuffix predicate on the "log_hash" field.
+func LogHashHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldLogHash, v))
 }
 
-// BrowserVersionLTE applies the LTE predicate on the "browser_version" field.
-func BrowserVersionLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldBrowserVersion, v))
+// LogHashIsNil applies the IsNil predicate on the "log_hash" field.
+func LogHashIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldLogHash))
 }
 
-// BrowserVersionContains applies the Contains predicate on the "browser_version" field.
-func BrowserVersionContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldBrowserVersion, v))
+// LogHashNotNil applies the NotNil predicate on the "log_hash" field.
+func LogHashNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldLogHash))
 }
 
-// BrowserVersionHasPrefix applies the HasPrefix predicate on the "browser_version" field.
-func BrowserVersionHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldBrowserVersion, v))
+// LogHashEqualFold applies the EqualFold predicate on the "log_hash" field.
+func LogHashEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldLogHash, v))
 }
 
-// BrowserVersionHasSuffix applies the HasSuffix predicate on the "browser_version" field.
-func BrowserVersionHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldBrowserVersion, v))
+// LogHashContainsFold applies the ContainsFold predicate on the "log_hash" field.
+func LogHashContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldLogHash, v))
 }
 
-// BrowserVersionIsNil applies the IsNil predicate on the "browser_version" field.
-func BrowserVersionIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldBrowserVersion))
+// SignatureEQ applies the EQ predicate on the "signature" field.
+func SignatureEQ(v []byte) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldSignature, v))
 }
 
-// BrowserVersionNotNil applies the NotNil predicate on the "browser_version" field.
-func BrowserVersionNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldBrowserVersion))
+// SignatureNEQ applies the NEQ predicate on the "signature" field.
+func SignatureNEQ(v []byte) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldSignature, v))
 }
 
-// BrowserVersionEqualFold applies the EqualFold predicate on the "browser_version" field.
-func BrowserVersionEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldBrowserVersion, v))
+// SignatureIn applies the In predicate on the "signature" field.
+func SignatureIn(vs ...[]byte) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldSignature, vs...))
 }
 
-// BrowserVersionContainsFold applies the ContainsFold predicate on the "browser_version" field.
-func BrowserVersionContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldBrowserVersion, v))
+// SignatureNotIn applies the NotIn predicate on the "signature" field.
+func SignatureNotIn(vs ...[]byte) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldSignature, vs...))
 }
 
-// ClientIDEQ applies the EQ predicate on the "client_id" field.
-func ClientIDEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldClientID, v))
+// SignatureGT applies the GT predicate on the "signature" field.
+func SignatureGT(v []byte) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldSignature, v))
 }
 
-// ClientIDNEQ applies the NEQ predicate on the "client_id" field.
-func ClientIDNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldClientID, v))
+// SignatureGTE applies the GTE predicate on the "signature" field.
+func SignatureGTE(v []byte) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldSignature, v))
 }
 
-// ClientIDIn applies the In predicate on the "client_id" field.
-func ClientIDIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldClientID, vs...))
+// SignatureLT applies the LT predicate on the "signature" field.
+func SignatureLT(v []byte) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldSignature, v))
 }
 
-// ClientIDNotIn applies the NotIn predicate on the "client_id" field.
-func ClientIDNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldClientID, vs...))
+// SignatureLTE applies the LTE predicate on the "signature" field.
+func SignatureLTE(v []byte) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldSignature, v))
 }
 
-// ClientIDGT applies the GT predicate on the "client_id" field.
-func ClientIDGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldClientID, v))
+// SignatureIsNil applies the IsNil predicate on the "signature" field.
+func SignatureIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldSignature))
 }
 
-// ClientIDGTE applies the GTE predicate on the "client_id" field.
-func ClientIDGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldClientID, v))
-}
-
-// ClientIDLT applies the LT predicate on the "client_id" field.
-func ClientIDLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldClientID, v))
-}
-
-// ClientIDLTE applies the LTE predicate on the "client_id" field.
-func ClientIDLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldClientID, v))
-}
-
-// ClientIDContains applies the Contains predicate on the "client_id" field.
-func ClientIDContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldClientID, v))
-}
-
-// ClientIDHasPrefix applies the HasPrefix predicate on the "client_id" field.
-func ClientIDHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldClientID, v))
-}
-
-// ClientIDHasSuffix applies the HasSuffix predicate on the "client_id" field.
-func ClientIDHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldClientID, v))
-}
-
-// ClientIDIsNil applies the IsNil predicate on the "client_id" field.
-func ClientIDIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldClientID))
-}
-
-// ClientIDNotNil applies the NotNil predicate on the "client_id" field.
-func ClientIDNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldClientID))
-}
-
-// ClientIDEqualFold applies the EqualFold predicate on the "client_id" field.
-func ClientIDEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldClientID, v))
-}
-
-// ClientIDContainsFold applies the ContainsFold predicate on the "client_id" field.
-func ClientIDContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldClientID, v))
-}
-
-// ClientNameEQ applies the EQ predicate on the "client_name" field.
-func ClientNameEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldClientName, v))
-}
-
-// ClientNameNEQ applies the NEQ predicate on the "client_name" field.
-func ClientNameNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldClientName, v))
-}
-
-// ClientNameIn applies the In predicate on the "client_name" field.
-func ClientNameIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldClientName, vs...))
-}
-
-// ClientNameNotIn applies the NotIn predicate on the "client_name" field.
-func ClientNameNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldClientName, vs...))
-}
-
-// ClientNameGT applies the GT predicate on the "client_name" field.
-func ClientNameGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldClientName, v))
-}
-
-// ClientNameGTE applies the GTE predicate on the "client_name" field.
-func ClientNameGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldClientName, v))
-}
-
-// ClientNameLT applies the LT predicate on the "client_name" field.
-func ClientNameLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldClientName, v))
-}
-
-// ClientNameLTE applies the LTE predicate on the "client_name" field.
-func ClientNameLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldClientName, v))
-}
-
-// ClientNameContains applies the Contains predicate on the "client_name" field.
-func ClientNameContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldClientName, v))
-}
-
-// ClientNameHasPrefix applies the HasPrefix predicate on the "client_name" field.
-func ClientNameHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldClientName, v))
-}
-
-// ClientNameHasSuffix applies the HasSuffix predicate on the "client_name" field.
-func ClientNameHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldClientName, v))
-}
-
-// ClientNameIsNil applies the IsNil predicate on the "client_name" field.
-func ClientNameIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldClientName))
-}
-
-// ClientNameNotNil applies the NotNil predicate on the "client_name" field.
-func ClientNameNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldClientName))
-}
-
-// ClientNameEqualFold applies the EqualFold predicate on the "client_name" field.
-func ClientNameEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldClientName, v))
-}
-
-// ClientNameContainsFold applies the ContainsFold predicate on the "client_name" field.
-func ClientNameContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldClientName, v))
-}
-
-// OsNameEQ applies the EQ predicate on the "os_name" field.
-func OsNameEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldOsName, v))
-}
-
-// OsNameNEQ applies the NEQ predicate on the "os_name" field.
-func OsNameNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldOsName, v))
-}
-
-// OsNameIn applies the In predicate on the "os_name" field.
-func OsNameIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldOsName, vs...))
-}
-
-// OsNameNotIn applies the NotIn predicate on the "os_name" field.
-func OsNameNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldOsName, vs...))
-}
-
-// OsNameGT applies the GT predicate on the "os_name" field.
-func OsNameGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldOsName, v))
-}
-
-// OsNameGTE applies the GTE predicate on the "os_name" field.
-func OsNameGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldOsName, v))
-}
-
-// OsNameLT applies the LT predicate on the "os_name" field.
-func OsNameLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldOsName, v))
-}
-
-// OsNameLTE applies the LTE predicate on the "os_name" field.
-func OsNameLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldOsName, v))
-}
-
-// OsNameContains applies the Contains predicate on the "os_name" field.
-func OsNameContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldOsName, v))
-}
-
-// OsNameHasPrefix applies the HasPrefix predicate on the "os_name" field.
-func OsNameHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldOsName, v))
-}
-
-// OsNameHasSuffix applies the HasSuffix predicate on the "os_name" field.
-func OsNameHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldOsName, v))
-}
-
-// OsNameIsNil applies the IsNil predicate on the "os_name" field.
-func OsNameIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldOsName))
-}
-
-// OsNameNotNil applies the NotNil predicate on the "os_name" field.
-func OsNameNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldOsName))
-}
-
-// OsNameEqualFold applies the EqualFold predicate on the "os_name" field.
-func OsNameEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldOsName, v))
-}
-
-// OsNameContainsFold applies the ContainsFold predicate on the "os_name" field.
-func OsNameContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldOsName, v))
-}
-
-// OsVersionEQ applies the EQ predicate on the "os_version" field.
-func OsVersionEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldOsVersion, v))
-}
-
-// OsVersionNEQ applies the NEQ predicate on the "os_version" field.
-func OsVersionNEQ(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldOsVersion, v))
-}
-
-// OsVersionIn applies the In predicate on the "os_version" field.
-func OsVersionIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldOsVersion, vs...))
-}
-
-// OsVersionNotIn applies the NotIn predicate on the "os_version" field.
-func OsVersionNotIn(vs ...string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldOsVersion, vs...))
-}
-
-// OsVersionGT applies the GT predicate on the "os_version" field.
-func OsVersionGT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldOsVersion, v))
-}
-
-// OsVersionGTE applies the GTE predicate on the "os_version" field.
-func OsVersionGTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldOsVersion, v))
-}
-
-// OsVersionLT applies the LT predicate on the "os_version" field.
-func OsVersionLT(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldOsVersion, v))
-}
-
-// OsVersionLTE applies the LTE predicate on the "os_version" field.
-func OsVersionLTE(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldOsVersion, v))
-}
-
-// OsVersionContains applies the Contains predicate on the "os_version" field.
-func OsVersionContains(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContains(FieldOsVersion, v))
-}
-
-// OsVersionHasPrefix applies the HasPrefix predicate on the "os_version" field.
-func OsVersionHasPrefix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldOsVersion, v))
-}
-
-// OsVersionHasSuffix applies the HasSuffix predicate on the "os_version" field.
-func OsVersionHasSuffix(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldOsVersion, v))
-}
-
-// OsVersionIsNil applies the IsNil predicate on the "os_version" field.
-func OsVersionIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldOsVersion))
-}
-
-// OsVersionNotNil applies the NotNil predicate on the "os_version" field.
-func OsVersionNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldOsVersion))
-}
-
-// OsVersionEqualFold applies the EqualFold predicate on the "os_version" field.
-func OsVersionEqualFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldOsVersion, v))
-}
-
-// OsVersionContainsFold applies the ContainsFold predicate on the "os_version" field.
-func OsVersionContainsFold(v string) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldOsVersion, v))
+// SignatureNotNil applies the NotNil predicate on the "signature" field.
+func SignatureNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldSignature))
 }
 
 // And groups predicates with the AND operator between them.

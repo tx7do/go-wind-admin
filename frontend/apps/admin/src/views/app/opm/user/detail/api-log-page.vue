@@ -11,7 +11,7 @@ import { $t } from '#/locales';
 import {
   methodList,
   successToColor,
-  successToName,
+  successToNameWithStatusCode,
   useApiAuditLogStore,
 } from '#/stores';
 
@@ -153,7 +153,7 @@ const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
     <Grid>
       <template #success="{ row }">
         <a-tag :color="successToColor(row.success)">
-          {{ successToName(row.success, row.statusCode) }}
+          {{ successToNameWithStatusCode(row.success, row.statusCode) }}
         </a-tag>
       </template>
       <template #platform="{ row }">

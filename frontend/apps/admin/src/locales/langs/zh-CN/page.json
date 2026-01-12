@@ -309,22 +309,28 @@
   "loginAuditLog": {
     "moduleName": "登录审计日志",
     "username": "登录名",
-    "success": "登录状态",
-    "loginTime": "登录时间",
-    "location": "登录地",
-    "clientName": "登录平台",
-    "loginIp": "登录地址"
+    "status": "登录状态",
+    "actionType": "事件动作",
+    "geoLocation": "登录地",
+    "platform": "登录平台",
+    "ipAddress": "登录地址",
+    "failureReason": "失败原因",
+    "riskScore": "风险评分",
+    "riskLevel": "风险等级",
+    "riskFactors": "风险因素",
+    "createdAt": "日志时间"
   },
   "apiAuditLog": {
     "moduleName": "API日志",
     "username": "操作者名",
     "success": "操作状态",
-    "location": "操作地",
-    "clientName": "操作平台",
-    "clientIp": "操作地址",
-    "createdAt": "操作时间",
+    "geoLocation": "操作地",
+    "platform": "操作平台",
+    "ipAddress": "操作地址",
+    "createdAt": "日志时间",
     "path": "路径",
-    "method": "方法"
+    "httpMethod": "方法",
+    "costTimeMs": "API耗时（毫秒）"
   },
   "api": {
     "moduleName": "API资源",

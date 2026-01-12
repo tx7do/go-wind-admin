@@ -8,23 +8,25 @@ require (
 	github.com/go-kratos/kratos/v2 v2.9.2
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/golang-jwt/jwt/v5 v5.3.0
+	github.com/google/gnostic v0.7.1
 	github.com/google/uuid v1.6.0
 	github.com/google/wire v0.7.0
 	github.com/hibiken/asynq v0.25.1
-	github.com/jackc/pgx/v5 v5.7.6
+	github.com/jackc/pgx/v5 v5.8.0
 	github.com/jinzhu/copier v0.4.0
 	github.com/jinzhu/inflection v1.0.0
 	github.com/lib/pq v1.10.9
+	github.com/menta2k/protoc-gen-redact/v3 v3.0.0-20251106150014-896cdd075ab1
 	github.com/mileusna/useragent v1.3.5
 	github.com/minio/minio-go/v7 v7.0.97
 	github.com/redis/go-redis/v9 v9.17.2
 	github.com/stretchr/testify v1.11.1
 	github.com/tx7do/go-crud v0.0.6
-	github.com/tx7do/go-crud/entgo v0.0.16
+	github.com/tx7do/go-crud/entgo v0.0.17
 	github.com/tx7do/go-crud/gorm v0.0.12
 	github.com/tx7do/go-utils v1.1.34
 	github.com/tx7do/go-utils/copierutil v0.0.6
-	github.com/tx7do/go-utils/geoip v1.1.7
+	github.com/tx7do/go-utils/geoip v1.1.8
 	github.com/tx7do/go-utils/jwtutil v0.0.2
 	github.com/tx7do/go-utils/mapper v0.0.3
 	github.com/tx7do/go-utils/password v0.0.1
@@ -44,12 +46,14 @@ require (
 	github.com/tx7do/kratos-bootstrap/rpc v0.1.1
 	github.com/tx7do/kratos-bootstrap/transport/asynq v0.0.2
 	github.com/tx7do/kratos-bootstrap/transport/sse v0.0.2
-	github.com/tx7do/kratos-swagger-ui v0.0.0-20250528131001-09c0dbdb208d
+	github.com/tx7do/kratos-swagger-ui v0.0.1
 	github.com/tx7do/kratos-transport v1.1.18
 	github.com/tx7do/kratos-transport/transport/asynq v1.2.37
 	github.com/tx7do/kratos-transport/transport/sse v1.2.25
 	github.com/yuin/gopher-lua v1.1.1
 	google.golang.org/genproto v0.0.0-20251222181119-0a764e51fe1b
+	google.golang.org/genproto/googleapis/api v0.0.0-20251222181119-0a764e51fe1b
+	google.golang.org/grpc v1.77.0
 	google.golang.org/protobuf v1.36.11
 	gorm.io/datatypes v1.2.7
 )
@@ -114,7 +118,6 @@ require (
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/google/cel-go v0.26.1 // indirect
 	github.com/google/flatbuffers v25.12.19+incompatible // indirect
-	github.com/google/gnostic v0.7.1 // indirect
 	github.com/google/gnostic-models v0.7.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
@@ -150,7 +153,6 @@ require (
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-runewidth v0.0.19 // indirect
 	github.com/mattn/go-sqlite3 v1.14.32 // indirect
-	github.com/menta2k/protoc-gen-redact/v3 v3.0.0-20251106150014-896cdd075ab1 // indirect
 	github.com/microsoft/go-mssqldb v1.9.5 // indirect
 	github.com/minio/crc64nvme v1.1.1 // indirect
 	github.com/minio/md5-simd v1.1.2 // indirect
@@ -237,20 +239,18 @@ require (
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/crypto v0.46.0 // indirect
 	golang.org/x/exp v0.0.0-20251219203646-944ab1f22d93 // indirect
-	golang.org/x/mod v0.31.0 // indirect
+	golang.org/x/mod v0.32.0 // indirect
 	golang.org/x/net v0.48.0 // indirect
 	golang.org/x/oauth2 v0.34.0 // indirect
 	golang.org/x/sync v0.19.0 // indirect
-	golang.org/x/sys v0.39.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/telemetry v0.0.0-20251222180846-3f2a21fb04ff // indirect
-	golang.org/x/text v0.32.0 // indirect
+	golang.org/x/text v0.33.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
 	golang.org/x/tools v0.40.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 	google.golang.org/api v0.258.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20251222181119-0a764e51fe1b // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20251222181119-0a764e51fe1b // indirect
-	google.golang.org/grpc v1.77.0 // indirect
 	gopkg.in/cenkalti/backoff.v1 v1.1.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/bigquery v1.2.0 // indirect
@@ -267,6 +267,6 @@ require (
 	modernc.org/libc v1.67.4 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	modernc.org/sqlite v1.42.2 // indirect
+	modernc.org/sqlite v1.43.0 // indirect
 	sigs.k8s.io/yaml v1.6.0 // indirect
 )

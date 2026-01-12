@@ -5,225 +5,25 @@ package admin.service.v1;
 import "gnostic/openapi/v3/annotations.proto";
 
 import "google/api/annotations.proto";
-import "google/api/field_behavior.proto";
-
-import "google/protobuf/empty.proto";
-import "google/protobuf/timestamp.proto";
-import "google/protobuf/field_mask.proto";
 
 import "pagination/v1/pagination.proto";
+
+import "audit/service/v1/login_audit_log.proto";
 
 
 // 登录审计日志管理服务
 service LoginAuditLogService {
   // 查询登录审计日志列表
-  rpc List (pagination.PagingRequest) returns (ListLoginAuditLogResponse) {
+  rpc List (pagination.PagingRequest) returns (audit.service.v1.ListLoginAuditLogResponse) {
     option (google.api.http) = {
       get: "/admin/v1/login-audit-logs"
     };
   }
 
   // 查询登录审计日志详情
-  rpc Get (GetLoginAuditLogRequest) returns (LoginAuditLog) {
+  rpc Get (audit.service.v1.GetLoginAuditLogRequest) returns (audit.service.v1.LoginAuditLog) {
     option (google.api.http) = {
       get: "/admin/v1/login-audit-logs/{id}"
     };
   }
-}
-
-// 登录审计日志
-message LoginAuditLog {
-  // 事件类型
-  enum EventType {
-    EVENT_TYPE_UNSPECIFIED = 0; // 未指定
-
-    LOGIN_SUCCESS = 1; // 登录成功
-    LOGIN_FAILED = 2; // 登录失败
-    LOGOUT = 3; // 登出
-    SESSION_EXPIRED = 4; // 会话过期
-  }
-
-  // 风险因素
-  enum RiskFactor {
-    RISK_FACTOR_UNSPECIFIED = 0; // 未指定
-
-    NORMAL = 1; // 正常
-    SUSPICIOUS = 2; // 可疑
-    HIGH_RISK = 3; // 高风险
-  }
-
-  optional uint32 id = 1 [
-    json_name = "id",
-    (google.api.field_behavior) = OPTIONAL,
-    (gnostic.openapi.v3.property) = {
-      description: "登录审计日志ID"
-    }
-  ]; // 登录审计日志ID
-
-  optional string login_ip = 2 [
-    json_name = "loginIp",
-    (gnostic.openapi.v3.property) = {
-      description: "登录IP地址"
-    }
-  ]; // 登录IP地址
-
-  optional string login_mac = 3 [
-    json_name = "loginMac",
-    (gnostic.openapi.v3.property) = {
-      description: "登录MAC地址"
-    }
-  ]; // 登录MAC地址
-
-  optional google.protobuf.Timestamp login_time = 4 [
-    json_name = "loginTime",
-    (gnostic.openapi.v3.property) = {
-      description: "登录时间"
-    }
-  ]; // 登录时间
-
-  optional int32 status_code = 5 [
-    json_name = "statusCode",
-    (gnostic.openapi.v3.property) = {
-      description: "状态码"
-    }
-  ]; // 状态码
-
-  optional bool success = 6 [
-    json_name = "success",
-    (gnostic.openapi.v3.property) = {
-      description: "登录是否成功"
-    }
-  ]; // 登录是否成功
-
-  optional string reason = 7 [
-    json_name = "reason",
-    (gnostic.openapi.v3.property) = {
-      description: "登录失败原因"
-    }
-  ]; // 登录失败原因
-
-  optional string location = 8 [
-    json_name = "location",
-    (gnostic.openapi.v3.property) = {
-      description: "登录地理位置"
-    }
-  ]; // 登录地理位置
-
-  optional string user_agent = 100 [
-    json_name = "userAgent",
-    (gnostic.openapi.v3.property) = {
-      description: "浏览器的用户代理信息"
-    }
-  ]; // 浏览器的用户代理信息
-
-  optional string browser_name = 101 [
-    json_name = "browserName",
-    (gnostic.openapi.v3.property) = {
-      description: "浏览器名称"
-    }
-  ]; // 浏览器名称
-
-  optional string browser_version = 102 [
-    json_name = "browserVersion",
-    (gnostic.openapi.v3.property) = {
-      description: "浏览器版本"
-    }
-  ]; // 浏览器版本
-
-  optional string client_id = 200 [
-    json_name = "clientId",
-    (gnostic.openapi.v3.property) = {
-      description: "客户端ID"
-    }
-  ]; // 客户端ID
-
-  optional string client_name = 201 [
-    json_name = "clientName",
-    (gnostic.openapi.v3.property) = {
-      description: "客户端名称"
-    }
-  ]; // 客户端名称
-
-  optional string os_name = 202 [
-    json_name = "osName",
-    (gnostic.openapi.v3.property) = {
-      description: "操作系统名称"
-    }
-  ]; // 操作系统名称
-
-  optional string os_version = 203 [
-    json_name = "osVersion",
-    (gnostic.openapi.v3.property) = {
-      description: "操作系统版本"
-    }
-  ]; // 操作系统版本
-
-  optional uint32 user_id = 300 [
-    json_name = "userId",
-    (gnostic.openapi.v3.property) = {
-      description: "操作者用户ID"
-    }
-  ]; // 操作者用户ID
-
-  optional string username = 301 [
-    json_name = "username",
-    (gnostic.openapi.v3.property) = {
-      description: "操作者账号名"
-    }
-  ]; // 操作者账号名
-
-  optional google.protobuf.Timestamp created_at = 400 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
-}
-
-// 查询登录审计日志列表 - 回应
-message ListLoginAuditLogResponse {
-  repeated LoginAuditLog items = 1;
-  uint64 total = 2;
-}
-
-// 查询登录审计日志详情 - 请求
-message GetLoginAuditLogRequest {
-  oneof query_by {
-    uint32 id = 1 [
-      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
-      json_name = "id"
-    ]; // ID
-  }
-
-  optional google.protobuf.FieldMask view_mask = 100 [
-    json_name = "viewMask",
-    (gnostic.openapi.v3.property) = {
-      description: "视图字段过滤器，用于控制返回的字段"
-    }
-  ]; // 视图字段过滤器，用于控制返回的字段
-}
-
-// 创建登录审计日志 - 请求
-message CreateLoginAuditLogRequest {
-  LoginAuditLog data = 1;
-}
-
-// 更新登录审计日志 - 请求
-message UpdateLoginAuditLogRequest {
-  uint32 id = 1;
-
-  LoginAuditLog data = 2;
-
-  google.protobuf.FieldMask update_mask = 3 [
-    (gnostic.openapi.v3.property) = {
-      description: "要更新的字段列表",
-      example: {yaml : "id,realname,username"}
-    },
-    json_name = "updateMask"
-  ]; // 要更新的字段列表
-
-  optional bool allow_missing = 4 [
-    (gnostic.openapi.v3.property) = {description: "如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。"},
-    json_name = "allowMissing"
-  ]; // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
-}
-
-// 删除登录审计日志 - 请求
-message DeleteLoginAuditLogRequest {
-  uint32 id = 1;
 }

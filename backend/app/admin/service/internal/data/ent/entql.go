@@ -89,30 +89,28 @@ var schemaGraph = func() *sqlgraph.Schema {
 		Fields: map[string]*sqlgraph.FieldSpec{
 			apiauditlog.FieldCreatedAt:      {Type: field.TypeTime, Column: apiauditlog.FieldCreatedAt},
 			apiauditlog.FieldTenantID:       {Type: field.TypeUint32, Column: apiauditlog.FieldTenantID},
-			apiauditlog.FieldRequestID:      {Type: field.TypeString, Column: apiauditlog.FieldRequestID},
-			apiauditlog.FieldMethod:         {Type: field.TypeString, Column: apiauditlog.FieldMethod},
-			apiauditlog.FieldOperation:      {Type: field.TypeString, Column: apiauditlog.FieldOperation},
-			apiauditlog.FieldPath:           {Type: field.TypeString, Column: apiauditlog.FieldPath},
-			apiauditlog.FieldReferer:        {Type: field.TypeString, Column: apiauditlog.FieldReferer},
-			apiauditlog.FieldRequestURI:     {Type: field.TypeString, Column: apiauditlog.FieldRequestURI},
-			apiauditlog.FieldRequestBody:    {Type: field.TypeString, Column: apiauditlog.FieldRequestBody},
-			apiauditlog.FieldRequestHeader:  {Type: field.TypeString, Column: apiauditlog.FieldRequestHeader},
-			apiauditlog.FieldResponse:       {Type: field.TypeString, Column: apiauditlog.FieldResponse},
-			apiauditlog.FieldCostTime:       {Type: field.TypeFloat64, Column: apiauditlog.FieldCostTime},
 			apiauditlog.FieldUserID:         {Type: field.TypeUint32, Column: apiauditlog.FieldUserID},
 			apiauditlog.FieldUsername:       {Type: field.TypeString, Column: apiauditlog.FieldUsername},
-			apiauditlog.FieldClientIP:       {Type: field.TypeString, Column: apiauditlog.FieldClientIP},
-			apiauditlog.FieldStatusCode:     {Type: field.TypeInt32, Column: apiauditlog.FieldStatusCode},
-			apiauditlog.FieldReason:         {Type: field.TypeString, Column: apiauditlog.FieldReason},
+			apiauditlog.FieldIPAddress:      {Type: field.TypeString, Column: apiauditlog.FieldIPAddress},
+			apiauditlog.FieldGeoLocation:    {Type: field.TypeJSON, Column: apiauditlog.FieldGeoLocation},
+			apiauditlog.FieldDeviceInfo:     {Type: field.TypeJSON, Column: apiauditlog.FieldDeviceInfo},
+			apiauditlog.FieldReferer:        {Type: field.TypeString, Column: apiauditlog.FieldReferer},
+			apiauditlog.FieldHTTPMethod:     {Type: field.TypeString, Column: apiauditlog.FieldHTTPMethod},
+			apiauditlog.FieldPath:           {Type: field.TypeString, Column: apiauditlog.FieldPath},
+			apiauditlog.FieldRequestURI:     {Type: field.TypeString, Column: apiauditlog.FieldRequestURI},
+			apiauditlog.FieldAPIModule:      {Type: field.TypeString, Column: apiauditlog.FieldAPIModule},
+			apiauditlog.FieldAPIOperation:   {Type: field.TypeString, Column: apiauditlog.FieldAPIOperation},
+			apiauditlog.FieldAPIDescription: {Type: field.TypeString, Column: apiauditlog.FieldAPIDescription},
+			apiauditlog.FieldRequestID:      {Type: field.TypeString, Column: apiauditlog.FieldRequestID},
+			apiauditlog.FieldCostTimeMs:     {Type: field.TypeUint64, Column: apiauditlog.FieldCostTimeMs},
 			apiauditlog.FieldSuccess:        {Type: field.TypeBool, Column: apiauditlog.FieldSuccess},
-			apiauditlog.FieldLocation:       {Type: field.TypeString, Column: apiauditlog.FieldLocation},
-			apiauditlog.FieldUserAgent:      {Type: field.TypeString, Column: apiauditlog.FieldUserAgent},
-			apiauditlog.FieldBrowserName:    {Type: field.TypeString, Column: apiauditlog.FieldBrowserName},
-			apiauditlog.FieldBrowserVersion: {Type: field.TypeString, Column: apiauditlog.FieldBrowserVersion},
-			apiauditlog.FieldClientID:       {Type: field.TypeString, Column: apiauditlog.FieldClientID},
-			apiauditlog.FieldClientName:     {Type: field.TypeString, Column: apiauditlog.FieldClientName},
-			apiauditlog.FieldOsName:         {Type: field.TypeString, Column: apiauditlog.FieldOsName},
-			apiauditlog.FieldOsVersion:      {Type: field.TypeString, Column: apiauditlog.FieldOsVersion},
+			apiauditlog.FieldStatusCode:     {Type: field.TypeUint32, Column: apiauditlog.FieldStatusCode},
+			apiauditlog.FieldReason:         {Type: field.TypeString, Column: apiauditlog.FieldReason},
+			apiauditlog.FieldRequestHeader:  {Type: field.TypeString, Column: apiauditlog.FieldRequestHeader},
+			apiauditlog.FieldRequestBody:    {Type: field.TypeString, Column: apiauditlog.FieldRequestBody},
+			apiauditlog.FieldResponse:       {Type: field.TypeString, Column: apiauditlog.FieldResponse},
+			apiauditlog.FieldLogHash:        {Type: field.TypeString, Column: apiauditlog.FieldLogHash},
+			apiauditlog.FieldSignature:      {Type: field.TypeBytes, Column: apiauditlog.FieldSignature},
 		},
 	}
 	graph.Nodes[2] = &sqlgraph.Node{
@@ -309,24 +307,24 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "LoginAuditLog",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			loginauditlog.FieldCreatedAt:      {Type: field.TypeTime, Column: loginauditlog.FieldCreatedAt},
-			loginauditlog.FieldTenantID:       {Type: field.TypeUint32, Column: loginauditlog.FieldTenantID},
-			loginauditlog.FieldLoginIP:        {Type: field.TypeString, Column: loginauditlog.FieldLoginIP},
-			loginauditlog.FieldLoginMAC:       {Type: field.TypeString, Column: loginauditlog.FieldLoginMAC},
-			loginauditlog.FieldLoginTime:      {Type: field.TypeTime, Column: loginauditlog.FieldLoginTime},
-			loginauditlog.FieldUserAgent:      {Type: field.TypeString, Column: loginauditlog.FieldUserAgent},
-			loginauditlog.FieldBrowserName:    {Type: field.TypeString, Column: loginauditlog.FieldBrowserName},
-			loginauditlog.FieldBrowserVersion: {Type: field.TypeString, Column: loginauditlog.FieldBrowserVersion},
-			loginauditlog.FieldClientID:       {Type: field.TypeString, Column: loginauditlog.FieldClientID},
-			loginauditlog.FieldClientName:     {Type: field.TypeString, Column: loginauditlog.FieldClientName},
-			loginauditlog.FieldOsName:         {Type: field.TypeString, Column: loginauditlog.FieldOsName},
-			loginauditlog.FieldOsVersion:      {Type: field.TypeString, Column: loginauditlog.FieldOsVersion},
-			loginauditlog.FieldUserID:         {Type: field.TypeUint32, Column: loginauditlog.FieldUserID},
-			loginauditlog.FieldUsername:       {Type: field.TypeString, Column: loginauditlog.FieldUsername},
-			loginauditlog.FieldStatusCode:     {Type: field.TypeInt32, Column: loginauditlog.FieldStatusCode},
-			loginauditlog.FieldSuccess:        {Type: field.TypeBool, Column: loginauditlog.FieldSuccess},
-			loginauditlog.FieldReason:         {Type: field.TypeString, Column: loginauditlog.FieldReason},
-			loginauditlog.FieldLocation:       {Type: field.TypeString, Column: loginauditlog.FieldLocation},
+			loginauditlog.FieldCreatedAt:     {Type: field.TypeTime, Column: loginauditlog.FieldCreatedAt},
+			loginauditlog.FieldTenantID:      {Type: field.TypeUint32, Column: loginauditlog.FieldTenantID},
+			loginauditlog.FieldUserID:        {Type: field.TypeUint32, Column: loginauditlog.FieldUserID},
+			loginauditlog.FieldUsername:      {Type: field.TypeString, Column: loginauditlog.FieldUsername},
+			loginauditlog.FieldIPAddress:     {Type: field.TypeString, Column: loginauditlog.FieldIPAddress},
+			loginauditlog.FieldGeoLocation:   {Type: field.TypeJSON, Column: loginauditlog.FieldGeoLocation},
+			loginauditlog.FieldSessionID:     {Type: field.TypeString, Column: loginauditlog.FieldSessionID},
+			loginauditlog.FieldDeviceInfo:    {Type: field.TypeJSON, Column: loginauditlog.FieldDeviceInfo},
+			loginauditlog.FieldRequestID:     {Type: field.TypeString, Column: loginauditlog.FieldRequestID},
+			loginauditlog.FieldActionType:    {Type: field.TypeEnum, Column: loginauditlog.FieldActionType},
+			loginauditlog.FieldStatus:        {Type: field.TypeEnum, Column: loginauditlog.FieldStatus},
+			loginauditlog.FieldFailureReason: {Type: field.TypeString, Column: loginauditlog.FieldFailureReason},
+			loginauditlog.FieldMfaStatus:     {Type: field.TypeString, Column: loginauditlog.FieldMfaStatus},
+			loginauditlog.FieldRiskScore:     {Type: field.TypeUint32, Column: loginauditlog.FieldRiskScore},
+			loginauditlog.FieldRiskLevel:     {Type: field.TypeEnum, Column: loginauditlog.FieldRiskLevel},
+			loginauditlog.FieldRiskFactors:   {Type: field.TypeJSON, Column: loginauditlog.FieldRiskFactors},
+			loginauditlog.FieldLogHash:       {Type: field.TypeString, Column: loginauditlog.FieldLogHash},
+			loginauditlog.FieldSignature:     {Type: field.TypeBytes, Column: loginauditlog.FieldSignature},
 		},
 	}
 	graph.Nodes[10] = &sqlgraph.Node{
@@ -1307,56 +1305,6 @@ func (f *ApiAuditLogFilter) WhereTenantID(p entql.Uint32P) {
 	f.Where(p.Field(apiauditlog.FieldTenantID))
 }
 
-// WhereRequestID applies the entql string predicate on the request_id field.
-func (f *ApiAuditLogFilter) WhereRequestID(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldRequestID))
-}
-
-// WhereMethod applies the entql string predicate on the method field.
-func (f *ApiAuditLogFilter) WhereMethod(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldMethod))
-}
-
-// WhereOperation applies the entql string predicate on the operation field.
-func (f *ApiAuditLogFilter) WhereOperation(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldOperation))
-}
-
-// WherePath applies the entql string predicate on the path field.
-func (f *ApiAuditLogFilter) WherePath(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldPath))
-}
-
-// WhereReferer applies the entql string predicate on the referer field.
-func (f *ApiAuditLogFilter) WhereReferer(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldReferer))
-}
-
-// WhereRequestURI applies the entql string predicate on the request_uri field.
-func (f *ApiAuditLogFilter) WhereRequestURI(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldRequestURI))
-}
-
-// WhereRequestBody applies the entql string predicate on the request_body field.
-func (f *ApiAuditLogFilter) WhereRequestBody(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldRequestBody))
-}
-
-// WhereRequestHeader applies the entql string predicate on the request_header field.
-func (f *ApiAuditLogFilter) WhereRequestHeader(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldRequestHeader))
-}
-
-// WhereResponse applies the entql string predicate on the response field.
-func (f *ApiAuditLogFilter) WhereResponse(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldResponse))
-}
-
-// WhereCostTime applies the entql float64 predicate on the cost_time field.
-func (f *ApiAuditLogFilter) WhereCostTime(p entql.Float64P) {
-	f.Where(p.Field(apiauditlog.FieldCostTime))
-}
-
 // WhereUserID applies the entql uint32 predicate on the user_id field.
 func (f *ApiAuditLogFilter) WhereUserID(p entql.Uint32P) {
 	f.Where(p.Field(apiauditlog.FieldUserID))
@@ -1367,13 +1315,73 @@ func (f *ApiAuditLogFilter) WhereUsername(p entql.StringP) {
 	f.Where(p.Field(apiauditlog.FieldUsername))
 }
 
-// WhereClientIP applies the entql string predicate on the client_ip field.
-func (f *ApiAuditLogFilter) WhereClientIP(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldClientIP))
+// WhereIPAddress applies the entql string predicate on the ip_address field.
+func (f *ApiAuditLogFilter) WhereIPAddress(p entql.StringP) {
+	f.Where(p.Field(apiauditlog.FieldIPAddress))
 }
 
-// WhereStatusCode applies the entql int32 predicate on the status_code field.
-func (f *ApiAuditLogFilter) WhereStatusCode(p entql.Int32P) {
+// WhereGeoLocation applies the entql json.RawMessage predicate on the geo_location field.
+func (f *ApiAuditLogFilter) WhereGeoLocation(p entql.BytesP) {
+	f.Where(p.Field(apiauditlog.FieldGeoLocation))
+}
+
+// WhereDeviceInfo applies the entql json.RawMessage predicate on the device_info field.
+func (f *ApiAuditLogFilter) WhereDeviceInfo(p entql.BytesP) {
+	f.Where(p.Field(apiauditlog.FieldDeviceInfo))
+}
+
+// WhereReferer applies the entql string predicate on the referer field.
+func (f *ApiAuditLogFilter) WhereReferer(p entql.StringP) {
+	f.Where(p.Field(apiauditlog.FieldReferer))
+}
+
+// WhereHTTPMethod applies the entql string predicate on the http_method field.
+func (f *ApiAuditLogFilter) WhereHTTPMethod(p entql.StringP) {
+	f.Where(p.Field(apiauditlog.FieldHTTPMethod))
+}
+
+// WherePath applies the entql string predicate on the path field.
+func (f *ApiAuditLogFilter) WherePath(p entql.StringP) {
+	f.Where(p.Field(apiauditlog.FieldPath))
+}
+
+// WhereRequestURI applies the entql string predicate on the request_uri field.
+func (f *ApiAuditLogFilter) WhereRequestURI(p entql.StringP) {
+	f.Where(p.Field(apiauditlog.FieldRequestURI))
+}
+
+// WhereAPIModule applies the entql string predicate on the api_module field.
+func (f *ApiAuditLogFilter) WhereAPIModule(p entql.StringP) {
+	f.Where(p.Field(apiauditlog.FieldAPIModule))
+}
+
+// WhereAPIOperation applies the entql string predicate on the api_operation field.
+func (f *ApiAuditLogFilter) WhereAPIOperation(p entql.StringP) {
+	f.Where(p.Field(apiauditlog.FieldAPIOperation))
+}
+
+// WhereAPIDescription applies the entql string predicate on the api_description field.
+func (f *ApiAuditLogFilter) WhereAPIDescription(p entql.StringP) {
+	f.Where(p.Field(apiauditlog.FieldAPIDescription))
+}
+
+// WhereRequestID applies the entql string predicate on the request_id field.
+func (f *ApiAuditLogFilter) WhereRequestID(p entql.StringP) {
+	f.Where(p.Field(apiauditlog.FieldRequestID))
+}
+
+// WhereCostTimeMs applies the entql uint64 predicate on the cost_time_ms field.
+func (f *ApiAuditLogFilter) WhereCostTimeMs(p entql.Uint64P) {
+	f.Where(p.Field(apiauditlog.FieldCostTimeMs))
+}
+
+// WhereSuccess applies the entql bool predicate on the success field.
+func (f *ApiAuditLogFilter) WhereSuccess(p entql.BoolP) {
+	f.Where(p.Field(apiauditlog.FieldSuccess))
+}
+
+// WhereStatusCode applies the entql uint32 predicate on the status_code field.
+func (f *ApiAuditLogFilter) WhereStatusCode(p entql.Uint32P) {
 	f.Where(p.Field(apiauditlog.FieldStatusCode))
 }
 
@@ -1382,49 +1390,29 @@ func (f *ApiAuditLogFilter) WhereReason(p entql.StringP) {
 	f.Where(p.Field(apiauditlog.FieldReason))
 }
 
-// WhereSuccess applies the entql bool predicate on the success field.
-func (f *ApiAuditLogFilter) WhereSuccess(p entql.BoolP) {
-	f.Where(p.Field(apiauditlog.FieldSuccess))
+// WhereRequestHeader applies the entql string predicate on the request_header field.
+func (f *ApiAuditLogFilter) WhereRequestHeader(p entql.StringP) {
+	f.Where(p.Field(apiauditlog.FieldRequestHeader))
 }
 
-// WhereLocation applies the entql string predicate on the location field.
-func (f *ApiAuditLogFilter) WhereLocation(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldLocation))
+// WhereRequestBody applies the entql string predicate on the request_body field.
+func (f *ApiAuditLogFilter) WhereRequestBody(p entql.StringP) {
+	f.Where(p.Field(apiauditlog.FieldRequestBody))
 }
 
-// WhereUserAgent applies the entql string predicate on the user_agent field.
-func (f *ApiAuditLogFilter) WhereUserAgent(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldUserAgent))
+// WhereResponse applies the entql string predicate on the response field.
+func (f *ApiAuditLogFilter) WhereResponse(p entql.StringP) {
+	f.Where(p.Field(apiauditlog.FieldResponse))
 }
 
-// WhereBrowserName applies the entql string predicate on the browser_name field.
-func (f *ApiAuditLogFilter) WhereBrowserName(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldBrowserName))
+// WhereLogHash applies the entql string predicate on the log_hash field.
+func (f *ApiAuditLogFilter) WhereLogHash(p entql.StringP) {
+	f.Where(p.Field(apiauditlog.FieldLogHash))
 }
 
-// WhereBrowserVersion applies the entql string predicate on the browser_version field.
-func (f *ApiAuditLogFilter) WhereBrowserVersion(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldBrowserVersion))
-}
-
-// WhereClientID applies the entql string predicate on the client_id field.
-func (f *ApiAuditLogFilter) WhereClientID(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldClientID))
-}
-
-// WhereClientName applies the entql string predicate on the client_name field.
-func (f *ApiAuditLogFilter) WhereClientName(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldClientName))
-}
-
-// WhereOsName applies the entql string predicate on the os_name field.
-func (f *ApiAuditLogFilter) WhereOsName(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldOsName))
-}
-
-// WhereOsVersion applies the entql string predicate on the os_version field.
-func (f *ApiAuditLogFilter) WhereOsVersion(p entql.StringP) {
-	f.Where(p.Field(apiauditlog.FieldOsVersion))
+// WhereSignature applies the entql []byte predicate on the signature field.
+func (f *ApiAuditLogFilter) WhereSignature(p entql.BytesP) {
+	f.Where(p.Field(apiauditlog.FieldSignature))
 }
 
 // addPredicate implements the predicateAdder interface.
@@ -2245,56 +2233,6 @@ func (f *LoginAuditLogFilter) WhereTenantID(p entql.Uint32P) {
 	f.Where(p.Field(loginauditlog.FieldTenantID))
 }
 
-// WhereLoginIP applies the entql string predicate on the login_ip field.
-func (f *LoginAuditLogFilter) WhereLoginIP(p entql.StringP) {
-	f.Where(p.Field(loginauditlog.FieldLoginIP))
-}
-
-// WhereLoginMAC applies the entql string predicate on the login_mac field.
-func (f *LoginAuditLogFilter) WhereLoginMAC(p entql.StringP) {
-	f.Where(p.Field(loginauditlog.FieldLoginMAC))
-}
-
-// WhereLoginTime applies the entql time.Time predicate on the login_time field.
-func (f *LoginAuditLogFilter) WhereLoginTime(p entql.TimeP) {
-	f.Where(p.Field(loginauditlog.FieldLoginTime))
-}
-
-// WhereUserAgent applies the entql string predicate on the user_agent field.
-func (f *LoginAuditLogFilter) WhereUserAgent(p entql.StringP) {
-	f.Where(p.Field(loginauditlog.FieldUserAgent))
-}
-
-// WhereBrowserName applies the entql string predicate on the browser_name field.
-func (f *LoginAuditLogFilter) WhereBrowserName(p entql.StringP) {
-	f.Where(p.Field(loginauditlog.FieldBrowserName))
-}
-
-// WhereBrowserVersion applies the entql string predicate on the browser_version field.
-func (f *LoginAuditLogFilter) WhereBrowserVersion(p entql.StringP) {
-	f.Where(p.Field(loginauditlog.FieldBrowserVersion))
-}
-
-// WhereClientID applies the entql string predicate on the client_id field.
-func (f *LoginAuditLogFilter) WhereClientID(p entql.StringP) {
-	f.Where(p.Field(loginauditlog.FieldClientID))
-}
-
-// WhereClientName applies the entql string predicate on the client_name field.
-func (f *LoginAuditLogFilter) WhereClientName(p entql.StringP) {
-	f.Where(p.Field(loginauditlog.FieldClientName))
-}
-
-// WhereOsName applies the entql string predicate on the os_name field.
-func (f *LoginAuditLogFilter) WhereOsName(p entql.StringP) {
-	f.Where(p.Field(loginauditlog.FieldOsName))
-}
-
-// WhereOsVersion applies the entql string predicate on the os_version field.
-func (f *LoginAuditLogFilter) WhereOsVersion(p entql.StringP) {
-	f.Where(p.Field(loginauditlog.FieldOsVersion))
-}
-
 // WhereUserID applies the entql uint32 predicate on the user_id field.
 func (f *LoginAuditLogFilter) WhereUserID(p entql.Uint32P) {
 	f.Where(p.Field(loginauditlog.FieldUserID))
@@ -2305,24 +2243,74 @@ func (f *LoginAuditLogFilter) WhereUsername(p entql.StringP) {
 	f.Where(p.Field(loginauditlog.FieldUsername))
 }
 
-// WhereStatusCode applies the entql int32 predicate on the status_code field.
-func (f *LoginAuditLogFilter) WhereStatusCode(p entql.Int32P) {
-	f.Where(p.Field(loginauditlog.FieldStatusCode))
+// WhereIPAddress applies the entql string predicate on the ip_address field.
+func (f *LoginAuditLogFilter) WhereIPAddress(p entql.StringP) {
+	f.Where(p.Field(loginauditlog.FieldIPAddress))
 }
 
-// WhereSuccess applies the entql bool predicate on the success field.
-func (f *LoginAuditLogFilter) WhereSuccess(p entql.BoolP) {
-	f.Where(p.Field(loginauditlog.FieldSuccess))
+// WhereGeoLocation applies the entql json.RawMessage predicate on the geo_location field.
+func (f *LoginAuditLogFilter) WhereGeoLocation(p entql.BytesP) {
+	f.Where(p.Field(loginauditlog.FieldGeoLocation))
 }
 
-// WhereReason applies the entql string predicate on the reason field.
-func (f *LoginAuditLogFilter) WhereReason(p entql.StringP) {
-	f.Where(p.Field(loginauditlog.FieldReason))
+// WhereSessionID applies the entql string predicate on the session_id field.
+func (f *LoginAuditLogFilter) WhereSessionID(p entql.StringP) {
+	f.Where(p.Field(loginauditlog.FieldSessionID))
 }
 
-// WhereLocation applies the entql string predicate on the location field.
-func (f *LoginAuditLogFilter) WhereLocation(p entql.StringP) {
-	f.Where(p.Field(loginauditlog.FieldLocation))
+// WhereDeviceInfo applies the entql json.RawMessage predicate on the device_info field.
+func (f *LoginAuditLogFilter) WhereDeviceInfo(p entql.BytesP) {
+	f.Where(p.Field(loginauditlog.FieldDeviceInfo))
+}
+
+// WhereRequestID applies the entql string predicate on the request_id field.
+func (f *LoginAuditLogFilter) WhereRequestID(p entql.StringP) {
+	f.Where(p.Field(loginauditlog.FieldRequestID))
+}
+
+// WhereActionType applies the entql string predicate on the action_type field.
+func (f *LoginAuditLogFilter) WhereActionType(p entql.StringP) {
+	f.Where(p.Field(loginauditlog.FieldActionType))
+}
+
+// WhereStatus applies the entql string predicate on the status field.
+func (f *LoginAuditLogFilter) WhereStatus(p entql.StringP) {
+	f.Where(p.Field(loginauditlog.FieldStatus))
+}
+
+// WhereFailureReason applies the entql string predicate on the failure_reason field.
+func (f *LoginAuditLogFilter) WhereFailureReason(p entql.StringP) {
+	f.Where(p.Field(loginauditlog.FieldFailureReason))
+}
+
+// WhereMfaStatus applies the entql string predicate on the mfa_status field.
+func (f *LoginAuditLogFilter) WhereMfaStatus(p entql.StringP) {
+	f.Where(p.Field(loginauditlog.FieldMfaStatus))
+}
+
+// WhereRiskScore applies the entql uint32 predicate on the risk_score field.
+func (f *LoginAuditLogFilter) WhereRiskScore(p entql.Uint32P) {
+	f.Where(p.Field(loginauditlog.FieldRiskScore))
+}
+
+// WhereRiskLevel applies the entql string predicate on the risk_level field.
+func (f *LoginAuditLogFilter) WhereRiskLevel(p entql.StringP) {
+	f.Where(p.Field(loginauditlog.FieldRiskLevel))
+}
+
+// WhereRiskFactors applies the entql json.RawMessage predicate on the risk_factors field.
+func (f *LoginAuditLogFilter) WhereRiskFactors(p entql.BytesP) {
+	f.Where(p.Field(loginauditlog.FieldRiskFactors))
+}
+
+// WhereLogHash applies the entql string predicate on the log_hash field.
+func (f *LoginAuditLogFilter) WhereLogHash(p entql.StringP) {
+	f.Where(p.Field(loginauditlog.FieldLogHash))
+}
+
+// WhereSignature applies the entql []byte predicate on the signature field.
+func (f *LoginAuditLogFilter) WhereSignature(p entql.BytesP) {
+	f.Where(p.Field(loginauditlog.FieldSignature))
 }
 
 // addPredicate implements the predicateAdder interface.

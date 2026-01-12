@@ -119,28 +119,3 @@ message GetPermissionAuditLogRequest {
 message CreatePermissionAuditLogRequest {
   PermissionAuditLog data = 1;
 }
-
-// 更新权限变更审计日志 - 请求
-message UpdatePermissionAuditLogRequest {
-  uint32 id = 1;
-
-  PermissionAuditLog data = 2;
-
-  google.protobuf.FieldMask update_mask = 3 [
-    (gnostic.openapi.v3.property) = {
-      description: "要更新的字段列表",
-      example: {yaml : "id,realname,username"}
-    },
-    json_name = "updateMask"
-  ]; // 要更新的字段列表
-
-  optional bool allow_missing = 4 [
-    (gnostic.openapi.v3.property) = {description: "如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。"},
-    json_name = "allowMissing"
-  ]; // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
-}
-
-// 删除权限变更审计日志 - 请求
-message DeletePermissionAuditLogRequest {
-  uint32 id = 1;
-}

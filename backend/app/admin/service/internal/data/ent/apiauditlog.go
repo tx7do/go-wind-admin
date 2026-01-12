@@ -3,7 +3,9 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
+	servicev1 "go-wind-admin/api/gen/go/audit/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"strings"
 	"time"
@@ -22,54 +24,50 @@ type ApiAuditLog struct {
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
-	// 请求ID
-	RequestID *string `json:"request_id,omitempty"`
-	// 请求方法
-	Method *string `json:"method,omitempty"`
-	// 操作方法
-	Operation *string `json:"operation,omitempty"`
-	// 请求路径
-	Path *string `json:"path,omitempty"`
-	// 请求源
-	Referer *string `json:"referer,omitempty"`
-	// 请求URI
-	RequestURI *string `json:"request_uri,omitempty"`
-	// 请求体
-	RequestBody *string `json:"request_body,omitempty"`
-	// 请求头
-	RequestHeader *string `json:"request_header,omitempty"`
-	// 响应信息
-	Response *string `json:"response,omitempty"`
-	// 操作耗时
-	CostTime *float64 `json:"cost_time,omitempty"`
 	// 操作者用户ID
 	UserID *uint32 `json:"user_id,omitempty"`
 	// 操作者账号名
 	Username *string `json:"username,omitempty"`
-	// 操作者IP
-	ClientIP *string `json:"client_ip,omitempty"`
-	// 状态码
-	StatusCode *int32 `json:"status_code,omitempty"`
+	// IP地址
+	IPAddress *string `json:"ip_address,omitempty"`
+	// 地理位置(来自IP库)
+	GeoLocation *servicev1.GeoLocation `json:"geo_location,omitempty"`
+	// 设备信息
+	DeviceInfo *servicev1.DeviceInfo `json:"device_info,omitempty"`
+	// 请求来源URL
+	Referer *string `json:"referer,omitempty"`
+	// HTTP请求方法
+	HTTPMethod *string `json:"http_method,omitempty"`
+	// 请求路径
+	Path *string `json:"path,omitempty"`
+	// 完整请求URI
+	RequestURI *string `json:"request_uri,omitempty"`
+	// API所属业务模块
+	APIModule *string `json:"api_module,omitempty"`
+	// API业务操作
+	APIOperation *string `json:"api_operation,omitempty"`
+	// API功能描述
+	APIDescription *string `json:"api_description,omitempty"`
+	// 请求ID
+	RequestID *string `json:"request_id,omitempty"`
+	// 操作耗时
+	CostTimeMs *uint64 `json:"cost_time_ms,omitempty"`
+	// 操作结果
+	Success *bool `json:"success,omitempty"`
+	// HTTP状态码
+	StatusCode *uint32 `json:"status_code,omitempty"`
 	// 操作失败原因
 	Reason *string `json:"reason,omitempty"`
-	// 操作成功
-	Success *bool `json:"success,omitempty"`
-	// 操作地理位置
-	Location *string `json:"location,omitempty"`
-	// 浏览器的用户代理信息
-	UserAgent *string `json:"user_agent,omitempty"`
-	// 浏览器名称
-	BrowserName *string `json:"browser_name,omitempty"`
-	// 浏览器版本
-	BrowserVersion *string `json:"browser_version,omitempty"`
-	// 客户端ID
-	ClientID *string `json:"client_id,omitempty"`
-	// 客户端名称
-	ClientName *string `json:"client_name,omitempty"`
-	// 操作系统名称
-	OsName *string `json:"os_name,omitempty"`
-	// 操作系统版本
-	OsVersion    *string `json:"os_version,omitempty"`
+	// 请求头
+	RequestHeader *string `json:"request_header,omitempty"`
+	// 请求体
+	RequestBody *string `json:"request_body,omitempty"`
+	// 响应信息
+	Response *string `json:"response,omitempty"`
+	// 日志内容哈希（SHA256，十六进制字符串）
+	LogHash *string `json:"log_hash,omitempty"`
+	// 日志数字签名
+	Signature    *[]byte `json:"signature,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -78,13 +76,13 @@ func (*ApiAuditLog) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case apiauditlog.FieldGeoLocation, apiauditlog.FieldDeviceInfo, apiauditlog.FieldSignature:
+			values[i] = new([]byte)
 		case apiauditlog.FieldSuccess:
 			values[i] = new(sql.NullBool)
-		case apiauditlog.FieldCostTime:
-			values[i] = new(sql.NullFloat64)
-		case apiauditlog.FieldID, apiauditlog.FieldTenantID, apiauditlog.FieldUserID, apiauditlog.FieldStatusCode:
+		case apiauditlog.FieldID, apiauditlog.FieldTenantID, apiauditlog.FieldUserID, apiauditlog.FieldCostTimeMs, apiauditlog.FieldStatusCode:
 			values[i] = new(sql.NullInt64)
-		case apiauditlog.FieldRequestID, apiauditlog.FieldMethod, apiauditlog.FieldOperation, apiauditlog.FieldPath, apiauditlog.FieldReferer, apiauditlog.FieldRequestURI, apiauditlog.FieldRequestBody, apiauditlog.FieldRequestHeader, apiauditlog.FieldResponse, apiauditlog.FieldUsername, apiauditlog.FieldClientIP, apiauditlog.FieldReason, apiauditlog.FieldLocation, apiauditlog.FieldUserAgent, apiauditlog.FieldBrowserName, apiauditlog.FieldBrowserVersion, apiauditlog.FieldClientID, apiauditlog.FieldClientName, apiauditlog.FieldOsName, apiauditlog.FieldOsVersion:
+		case apiauditlog.FieldUsername, apiauditlog.FieldIPAddress, apiauditlog.FieldReferer, apiauditlog.FieldHTTPMethod, apiauditlog.FieldPath, apiauditlog.FieldRequestURI, apiauditlog.FieldAPIModule, apiauditlog.FieldAPIOperation, apiauditlog.FieldAPIDescription, apiauditlog.FieldRequestID, apiauditlog.FieldReason, apiauditlog.FieldRequestHeader, apiauditlog.FieldRequestBody, apiauditlog.FieldResponse, apiauditlog.FieldLogHash:
 			values[i] = new(sql.NullString)
 		case apiauditlog.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -123,76 +121,6 @@ func (_m *ApiAuditLog) assignValues(columns []string, values []any) error {
 				_m.TenantID = new(uint32)
 				*_m.TenantID = uint32(value.Int64)
 			}
-		case apiauditlog.FieldRequestID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field request_id", values[i])
-			} else if value.Valid {
-				_m.RequestID = new(string)
-				*_m.RequestID = value.String
-			}
-		case apiauditlog.FieldMethod:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field method", values[i])
-			} else if value.Valid {
-				_m.Method = new(string)
-				*_m.Method = value.String
-			}
-		case apiauditlog.FieldOperation:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field operation", values[i])
-			} else if value.Valid {
-				_m.Operation = new(string)
-				*_m.Operation = value.String
-			}
-		case apiauditlog.FieldPath:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field path", values[i])
-			} else if value.Valid {
-				_m.Path = new(string)
-				*_m.Path = value.String
-			}
-		case apiauditlog.FieldReferer:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field referer", values[i])
-			} else if value.Valid {
-				_m.Referer = new(string)
-				*_m.Referer = value.String
-			}
-		case apiauditlog.FieldRequestURI:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field request_uri", values[i])
-			} else if value.Valid {
-				_m.RequestURI = new(string)
-				*_m.RequestURI = value.String
-			}
-		case apiauditlog.FieldRequestBody:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field request_body", values[i])
-			} else if value.Valid {
-				_m.RequestBody = new(string)
-				*_m.RequestBody = value.String
-			}
-		case apiauditlog.FieldRequestHeader:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field request_header", values[i])
-			} else if value.Valid {
-				_m.RequestHeader = new(string)
-				*_m.RequestHeader = value.String
-			}
-		case apiauditlog.FieldResponse:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field response", values[i])
-			} else if value.Valid {
-				_m.Response = new(string)
-				*_m.Response = value.String
-			}
-		case apiauditlog.FieldCostTime:
-			if value, ok := values[i].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field cost_time", values[i])
-			} else if value.Valid {
-				_m.CostTime = new(float64)
-				*_m.CostTime = value.Float64
-			}
 		case apiauditlog.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
@@ -207,26 +135,91 @@ func (_m *ApiAuditLog) assignValues(columns []string, values []any) error {
 				_m.Username = new(string)
 				*_m.Username = value.String
 			}
-		case apiauditlog.FieldClientIP:
+		case apiauditlog.FieldIPAddress:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field client_ip", values[i])
+				return fmt.Errorf("unexpected type %T for field ip_address", values[i])
 			} else if value.Valid {
-				_m.ClientIP = new(string)
-				*_m.ClientIP = value.String
+				_m.IPAddress = new(string)
+				*_m.IPAddress = value.String
 			}
-		case apiauditlog.FieldStatusCode:
+		case apiauditlog.FieldGeoLocation:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field geo_location", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.GeoLocation); err != nil {
+					return fmt.Errorf("unmarshal field geo_location: %w", err)
+				}
+			}
+		case apiauditlog.FieldDeviceInfo:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field device_info", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.DeviceInfo); err != nil {
+					return fmt.Errorf("unmarshal field device_info: %w", err)
+				}
+			}
+		case apiauditlog.FieldReferer:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field referer", values[i])
+			} else if value.Valid {
+				_m.Referer = new(string)
+				*_m.Referer = value.String
+			}
+		case apiauditlog.FieldHTTPMethod:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field http_method", values[i])
+			} else if value.Valid {
+				_m.HTTPMethod = new(string)
+				*_m.HTTPMethod = value.String
+			}
+		case apiauditlog.FieldPath:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field path", values[i])
+			} else if value.Valid {
+				_m.Path = new(string)
+				*_m.Path = value.String
+			}
+		case apiauditlog.FieldRequestURI:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field request_uri", values[i])
+			} else if value.Valid {
+				_m.RequestURI = new(string)
+				*_m.RequestURI = value.String
+			}
+		case apiauditlog.FieldAPIModule:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field api_module", values[i])
+			} else if value.Valid {
+				_m.APIModule = new(string)
+				*_m.APIModule = value.String
+			}
+		case apiauditlog.FieldAPIOperation:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field api_operation", values[i])
+			} else if value.Valid {
+				_m.APIOperation = new(string)
+				*_m.APIOperation = value.String
+			}
+		case apiauditlog.FieldAPIDescription:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field api_description", values[i])
+			} else if value.Valid {
+				_m.APIDescription = new(string)
+				*_m.APIDescription = value.String
+			}
+		case apiauditlog.FieldRequestID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field request_id", values[i])
+			} else if value.Valid {
+				_m.RequestID = new(string)
+				*_m.RequestID = value.String
+			}
+		case apiauditlog.FieldCostTimeMs:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field status_code", values[i])
+				return fmt.Errorf("unexpected type %T for field cost_time_ms", values[i])
 			} else if value.Valid {
-				_m.StatusCode = new(int32)
-				*_m.StatusCode = int32(value.Int64)
-			}
-		case apiauditlog.FieldReason:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field reason", values[i])
-			} else if value.Valid {
-				_m.Reason = new(string)
-				*_m.Reason = value.String
+				_m.CostTimeMs = new(uint64)
+				*_m.CostTimeMs = uint64(value.Int64)
 			}
 		case apiauditlog.FieldSuccess:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -235,61 +228,53 @@ func (_m *ApiAuditLog) assignValues(columns []string, values []any) error {
 				_m.Success = new(bool)
 				*_m.Success = value.Bool
 			}
-		case apiauditlog.FieldLocation:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field location", values[i])
+		case apiauditlog.FieldStatusCode:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field status_code", values[i])
 			} else if value.Valid {
-				_m.Location = new(string)
-				*_m.Location = value.String
+				_m.StatusCode = new(uint32)
+				*_m.StatusCode = uint32(value.Int64)
 			}
-		case apiauditlog.FieldUserAgent:
+		case apiauditlog.FieldReason:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field user_agent", values[i])
+				return fmt.Errorf("unexpected type %T for field reason", values[i])
 			} else if value.Valid {
-				_m.UserAgent = new(string)
-				*_m.UserAgent = value.String
+				_m.Reason = new(string)
+				*_m.Reason = value.String
 			}
-		case apiauditlog.FieldBrowserName:
+		case apiauditlog.FieldRequestHeader:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field browser_name", values[i])
+				return fmt.Errorf("unexpected type %T for field request_header", values[i])
 			} else if value.Valid {
-				_m.BrowserName = new(string)
-				*_m.BrowserName = value.String
+				_m.RequestHeader = new(string)
+				*_m.RequestHeader = value.String
 			}
-		case apiauditlog.FieldBrowserVersion:
+		case apiauditlog.FieldRequestBody:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field browser_version", values[i])
+				return fmt.Errorf("unexpected type %T for field request_body", values[i])
 			} else if value.Valid {
-				_m.BrowserVersion = new(string)
-				*_m.BrowserVersion = value.String
+				_m.RequestBody = new(string)
+				*_m.RequestBody = value.String
 			}
-		case apiauditlog.FieldClientID:
+		case apiauditlog.FieldResponse:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field client_id", values[i])
+				return fmt.Errorf("unexpected type %T for field response", values[i])
 			} else if value.Valid {
-				_m.ClientID = new(string)
-				*_m.ClientID = value.String
+				_m.Response = new(string)
+				*_m.Response = value.String
 			}
-		case apiauditlog.FieldClientName:
+		case apiauditlog.FieldLogHash:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field client_name", values[i])
+				return fmt.Errorf("unexpected type %T for field log_hash", values[i])
 			} else if value.Valid {
-				_m.ClientName = new(string)
-				*_m.ClientName = value.String
+				_m.LogHash = new(string)
+				*_m.LogHash = value.String
 			}
-		case apiauditlog.FieldOsName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field os_name", values[i])
-			} else if value.Valid {
-				_m.OsName = new(string)
-				*_m.OsName = value.String
-			}
-		case apiauditlog.FieldOsVersion:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field os_version", values[i])
-			} else if value.Valid {
-				_m.OsVersion = new(string)
-				*_m.OsVersion = value.String
+		case apiauditlog.FieldSignature:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field signature", values[i])
+			} else if value != nil {
+				_m.Signature = value
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -337,56 +322,6 @@ func (_m *ApiAuditLog) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.RequestID; v != nil {
-		builder.WriteString("request_id=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.Method; v != nil {
-		builder.WriteString("method=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.Operation; v != nil {
-		builder.WriteString("operation=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.Path; v != nil {
-		builder.WriteString("path=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.Referer; v != nil {
-		builder.WriteString("referer=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.RequestURI; v != nil {
-		builder.WriteString("request_uri=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.RequestBody; v != nil {
-		builder.WriteString("request_body=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.RequestHeader; v != nil {
-		builder.WriteString("request_header=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.Response; v != nil {
-		builder.WriteString("response=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.CostTime; v != nil {
-		builder.WriteString("cost_time=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
 	if v := _m.UserID; v != nil {
 		builder.WriteString("user_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -397,9 +332,65 @@ func (_m *ApiAuditLog) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.ClientIP; v != nil {
-		builder.WriteString("client_ip=")
+	if v := _m.IPAddress; v != nil {
+		builder.WriteString("ip_address=")
 		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	builder.WriteString("geo_location=")
+	builder.WriteString(fmt.Sprintf("%v", _m.GeoLocation))
+	builder.WriteString(", ")
+	builder.WriteString("device_info=")
+	builder.WriteString(fmt.Sprintf("%v", _m.DeviceInfo))
+	builder.WriteString(", ")
+	if v := _m.Referer; v != nil {
+		builder.WriteString("referer=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.HTTPMethod; v != nil {
+		builder.WriteString("http_method=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.Path; v != nil {
+		builder.WriteString("path=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.RequestURI; v != nil {
+		builder.WriteString("request_uri=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.APIModule; v != nil {
+		builder.WriteString("api_module=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.APIOperation; v != nil {
+		builder.WriteString("api_operation=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.APIDescription; v != nil {
+		builder.WriteString("api_description=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.RequestID; v != nil {
+		builder.WriteString("request_id=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.CostTimeMs; v != nil {
+		builder.WriteString("cost_time_ms=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.Success; v != nil {
+		builder.WriteString("success=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
 	if v := _m.StatusCode; v != nil {
@@ -412,49 +403,29 @@ func (_m *ApiAuditLog) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.Success; v != nil {
-		builder.WriteString("success=")
+	if v := _m.RequestHeader; v != nil {
+		builder.WriteString("request_header=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.RequestBody; v != nil {
+		builder.WriteString("request_body=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.Response; v != nil {
+		builder.WriteString("response=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.LogHash; v != nil {
+		builder.WriteString("log_hash=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.Signature; v != nil {
+		builder.WriteString("signature=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := _m.Location; v != nil {
-		builder.WriteString("location=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.UserAgent; v != nil {
-		builder.WriteString("user_agent=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.BrowserName; v != nil {
-		builder.WriteString("browser_name=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.BrowserVersion; v != nil {
-		builder.WriteString("browser_version=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.ClientID; v != nil {
-		builder.WriteString("client_id=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.ClientName; v != nil {
-		builder.WriteString("client_name=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.OsName; v != nil {
-		builder.WriteString("os_name=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.OsVersion; v != nil {
-		builder.WriteString("os_version=")
-		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')
 	return builder.String()

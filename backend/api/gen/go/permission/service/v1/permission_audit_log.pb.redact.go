@@ -131,29 +131,3 @@ func (x *CreatePermissionAuditLogRequest) Redact() string {
 	// Safe field: Data
 	return x.String()
 }
-
-// Redact method implementation for UpdatePermissionAuditLogRequest
-func (x *UpdatePermissionAuditLogRequest) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Id
-
-	// Safe field: Data
-
-	// Safe field: UpdateMask
-
-	// Safe field: AllowMissing
-	return x.String()
-}
-
-// Redact method implementation for DeletePermissionAuditLogRequest
-func (x *DeletePermissionAuditLogRequest) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Id
-	return x.String()
-}

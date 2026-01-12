@@ -7,14 +7,10 @@ import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
 	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	annotations "google.golang.org/genproto/googleapis/api/annotations"
+	servicev1 "go-wind-admin/api/gen/go/audit/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
-	durationpb "google.golang.org/protobuf/types/known/durationpb"
-	emptypb "google.golang.org/protobuf/types/known/emptypb"
-	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
-	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -24,12 +20,8 @@ var (
 	_ redact.Redactor
 	_ codes.Code
 	_ status.Status
-	_ annotations.FieldBehavior
-	_ emptypb.Empty
-	_ timestamppb.Timestamp
-	_ fieldmaskpb.FieldMask
-	_ durationpb.Duration
 	_ pagination.Sorting
+	_ servicev1.ApiAuditLog
 )
 
 // RegisterRedactedApiAuditLogServiceServer wraps the ApiAuditLogServiceServer with the redacted server and registers the service in GRPC
@@ -52,7 +44,7 @@ type redactedApiAuditLogServiceServer struct {
 
 // List is the redacted wrapper for the actual ApiAuditLogServiceServer.List method
 // Unary RPC
-func (s *redactedApiAuditLogServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*ListApiAuditLogResponse, error) {
+func (s *redactedApiAuditLogServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*servicev1.ListApiAuditLogResponse, error) {
 	res, err := s.srv.List(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -63,137 +55,11 @@ func (s *redactedApiAuditLogServiceServer) List(ctx context.Context, in *paginat
 
 // Get is the redacted wrapper for the actual ApiAuditLogServiceServer.Get method
 // Unary RPC
-func (s *redactedApiAuditLogServiceServer) Get(ctx context.Context, in *GetApiAuditLogRequest) (*ApiAuditLog, error) {
+func (s *redactedApiAuditLogServiceServer) Get(ctx context.Context, in *servicev1.GetApiAuditLogRequest) (*servicev1.ApiAuditLog, error) {
 	res, err := s.srv.Get(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)
 	}
 	return res, err
-}
-
-// Redact method implementation for ApiAuditLog
-func (x *ApiAuditLog) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Id
-
-	// Safe field: CostTime
-
-	// Safe field: Success
-
-	// Safe field: RequestId
-
-	// Safe field: StatusCode
-
-	// Safe field: Reason
-
-	// Safe field: Location
-
-	// Safe field: Operation
-
-	// Safe field: Method
-
-	// Safe field: Path
-
-	// Safe field: ApiModule
-
-	// Safe field: ApiDescription
-
-	// Safe field: Referer
-
-	// Safe field: RequestUri
-
-	// Safe field: RequestHeader
-
-	// Safe field: RequestBody
-
-	// Safe field: Response
-
-	// Safe field: UserId
-
-	// Safe field: Username
-
-	// Safe field: ClientIp
-
-	// Safe field: UserAgent
-
-	// Safe field: BrowserName
-
-	// Safe field: BrowserVersion
-
-	// Safe field: ClientId
-
-	// Safe field: ClientName
-
-	// Safe field: OsName
-
-	// Safe field: OsVersion
-
-	// Safe field: TenantId
-
-	// Safe field: CreatedAt
-	return x.String()
-}
-
-// Redact method implementation for ListApiAuditLogResponse
-func (x *ListApiAuditLogResponse) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Items
-
-	// Safe field: Total
-	return x.String()
-}
-
-// Redact method implementation for GetApiAuditLogRequest
-func (x *GetApiAuditLogRequest) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Id
-
-	// Safe field: ViewMask
-	return x.String()
-}
-
-// Redact method implementation for CreateApiAuditLogRequest
-func (x *CreateApiAuditLogRequest) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Data
-	return x.String()
-}
-
-// Redact method implementation for UpdateApiAuditLogRequest
-func (x *UpdateApiAuditLogRequest) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Id
-
-	// Safe field: Data
-
-	// Safe field: UpdateMask
-
-	// Safe field: AllowMissing
-	return x.String()
-}
-
-// Redact method implementation for DeleteApiAuditLogRequest
-func (x *DeleteApiAuditLogRequest) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Id
-	return x.String()
 }

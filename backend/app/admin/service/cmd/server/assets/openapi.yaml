@@ -3810,94 +3810,83 @@ components:
                     type: integer
                     description: API审计日志ID
                     format: uint32
-                costTime:
-                    pattern: ^-?(?:0|[1-9][0-9]{0,11})(?:\.[0-9]{1,9})?s$
-                    type: string
-                    description: 操作耗时
-                success:
-                    type: boolean
-                    description: 操作是否成功
-                requestId:
-                    type: string
-                    description: 请求ID
-                statusCode:
-                    type: integer
-                    description: 状态码
-                    format: int32
-                reason:
-                    type: string
-                    description: 操作失败原因
-                location:
-                    type: string
-                    description: 操作地理位置
-                operation:
-                    type: string
-                    description: 操作方法
-                method:
-                    type: string
-                    description: 请求方法
-                path:
-                    type: string
-                    description: 请求路径
-                apiModule:
-                    type: string
-                    description: API所属模块
-                apiDescription:
-                    type: string
-                    description: API操作描述
-                referer:
-                    type: string
-                    description: 请求源
-                requestUri:
-                    type: string
-                    description: 请求URI
-                requestHeader:
-                    type: string
-                    description: 请求头
-                requestBody:
-                    type: string
-                    description: 请求体
-                response:
-                    type: string
-                    description: 响应信息
-                userId:
-                    type: integer
-                    description: 操作者用户ID
-                    format: uint32
-                username:
-                    type: string
-                    description: 操作者账号名
-                clientIp:
-                    type: string
-                    description: 操作者IP
-                userAgent:
-                    type: string
-                    description: 浏览器的用户代理信息
-                browserName:
-                    type: string
-                    description: 浏览器名称
-                browserVersion:
-                    type: string
-                    description: 浏览器版本
-                clientId:
-                    type: string
-                    description: 客户端ID
-                clientName:
-                    type: string
-                    description: 客户端名称
-                osName:
-                    type: string
-                    description: 操作系统名称
-                osVersion:
-                    type: string
-                    description: 操作系统版本
                 tenantId:
                     type: integer
                     description: 租户ID
                     format: uint32
+                tenantName:
+                    type: string
+                    description: 租户名称
+                userId:
+                    type: integer
+                    description: 用户ID
+                    format: uint32
+                username:
+                    type: string
+                    description: 账号名
+                ipAddress:
+                    type: string
+                    description: IP地址
+                geoLocation:
+                    $ref: '#/components/schemas/GeoLocation'
+                deviceInfo:
+                    $ref: '#/components/schemas/DeviceInfo'
+                referer:
+                    type: string
+                    description: 请求来源URL
+                httpMethod:
+                    type: string
+                    description: HTTP请求方法（GET/POST/PUT/DELETE）
+                path:
+                    type: string
+                    description: 请求路径（不含参数，如/api/v1/users）
+                requestUri:
+                    type: string
+                    description: 完整请求URI（含参数，如/api/v1/users?id=1）
+                apiModule:
+                    type: string
+                    description: API所属业务模块（如user/permission/order）
+                apiOperation:
+                    type: string
+                    description: API业务操作（如查询用户/创建订单，非HTTP方法）
+                apiDescription:
+                    type: string
+                    description: API功能描述（如“根据ID查询单个用户信息”）
+                requestId:
+                    type: string
+                    description: 全局请求ID（关联网关日志）
+                costTimeMs:
+                    type: string
+                    description: API耗时（毫秒）
+                success:
+                    type: boolean
+                    description: 操作是否成功
+                statusCode:
+                    type: integer
+                    description: HTTP状态码（200/403/500）
+                    format: uint32
+                reason:
+                    type: string
+                    description: 操作失败原因（仅success=false时填充）
+                requestHeader:
+                    type: string
+                    description: 请求头（JSON格式，敏感字段脱敏后）
+                requestBody:
+                    type: string
+                    description: 请求体（JSON格式，敏感字段脱敏后）
+                response:
+                    type: string
+                    description: 响应信息（JSON格式，敏感字段脱敏后）
+                logHash:
+                    type: string
+                    description: 日志内容哈希（SHA256，十六进制字符串）
+                signature:
+                    type: string
+                    description: 日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）
+                    format: bytes
                 createdAt:
                     type: string
-                    description: 创建时间
+                    description: 日志创建时间
                     format: date-time
             description: API审计日志
         BindContactRequest:
@@ -4067,6 +4056,92 @@ components:
                         type: integer
                         format: uint32
                     description: 收件箱记录ID列表
+        DeviceInfo:
+            type: object
+            properties:
+                clientId:
+                    type: string
+                    description: 客户端ID
+                clientName:
+                    type: string
+                    description: 客户端名称
+                osName:
+                    type: string
+                    description: 操作系统名称
+                osVersion:
+                    type: string
+                    description: 操作系统版本
+                deviceId:
+                    type: string
+                    description: 设备唯一标识（避免存明文敏感ID，建议哈希后保存）
+                deviceType:
+                    enum:
+                        - DEVICE_TYPE_UNSPECIFIED
+                        - DESKTOP
+                        - MOBILE
+                        - TABLET
+                        - BOT
+                        - OTHER
+                    type: string
+                    description: 设备类型
+                    format: enum
+                manufacturer:
+                    type: string
+                    description: 设备厂商
+                model:
+                    type: string
+                    description: 设备型号
+                platform:
+                    type: string
+                    description: 运行平台/渠道（如 Android/iOS/Windows）
+                osBuild:
+                    type: string
+                    description: 系统构建版本
+                appName:
+                    type: string
+                    description: 应用名称（若为 Web 可空）
+                appVersion:
+                    type: string
+                    description: 应用版本
+                screenWidth:
+                    type: integer
+                    description: 屏幕宽度（像素）
+                    format: uint32
+                screenHeight:
+                    type: integer
+                    description: 屏幕高度（像素）
+                    format: uint32
+                locale:
+                    type: string
+                    description: 语言/区域设置
+                timeZone:
+                    type: string
+                    description: 时区
+                networkType:
+                    type: string
+                    description: 网络类型（如 WIFI/4G/5G）
+                carrier:
+                    type: string
+                    description: 运营商（如适用）
+                deviceFingerprint:
+                    type: string
+                    description: 设备指纹（建议存哈希）
+                userAgent:
+                    type: string
+                    description: 浏览器的用户代理信息
+                browserName:
+                    type: string
+                    description: 浏览器名称
+                browserVersion:
+                    type: string
+                    description: 浏览器版本
+                browserEngine:
+                    type: string
+                    description: 浏览器内核/引擎（如 Blink/WebKit）
+                engineVersion:
+                    type: string
+                    description: 内核版本
+            description: 设备信息
         DictEntry:
             type: object
             properties:
@@ -4275,6 +4350,31 @@ components:
                     description: 删除时间
                     format: date-time
             description: 文件
+        GeoLocation:
+            type: object
+            properties:
+                countryCode:
+                    type: string
+                    description: 国家代码（CN/US），遵循ISO 3166-1 alpha-2标准
+                province:
+                    type: string
+                    description: 省份/州（中文：北京市，英文：California）
+                city:
+                    type: string
+                    description: 城市（中文：上海市，英文：New York）
+                isp:
+                    type: string
+                    description: 网络运营商（如：中国移动/中国电信/AT&T）
+                addressRemark:
+                    type: string
+                    description: 地址备注（如：内网IP/无法解析/海外IP）
+                latitude:
+                    type: string
+                    description: 纬度（微度）
+                longitude:
+                    type: string
+                    description: 经度（微度）
+            description: 地理位置
         InternalMessage:
             type: object
             properties:
@@ -4716,60 +4816,85 @@ components:
                     type: integer
                     description: 登录审计日志ID
                     format: uint32
-                loginIp:
-                    type: string
-                    description: 登录IP地址
-                loginMac:
-                    type: string
-                    description: 登录MAC地址
-                loginTime:
-                    type: string
-                    description: 登录时间
-                    format: date-time
-                statusCode:
+                tenantId:
                     type: integer
-                    description: 状态码
-                    format: int32
-                success:
-                    type: boolean
-                    description: 登录是否成功
-                reason:
+                    description: 租户ID
+                    format: uint32
+                tenantName:
                     type: string
-                    description: 登录失败原因
-                location:
-                    type: string
-                    description: 登录地理位置
-                userAgent:
-                    type: string
-                    description: 浏览器的用户代理信息
-                browserName:
-                    type: string
-                    description: 浏览器名称
-                browserVersion:
-                    type: string
-                    description: 浏览器版本
-                clientId:
-                    type: string
-                    description: 客户端ID
-                clientName:
-                    type: string
-                    description: 客户端名称
-                osName:
-                    type: string
-                    description: 操作系统名称
-                osVersion:
-                    type: string
-                    description: 操作系统版本
+                    description: 租户名称
                 userId:
                     type: integer
-                    description: 操作者用户ID
+                    description: 用户ID
                     format: uint32
                 username:
                     type: string
-                    description: 操作者账号名
+                    description: 账号名
+                ipAddress:
+                    type: string
+                    description: IP地址
+                geoLocation:
+                    $ref: '#/components/schemas/GeoLocation'
+                sessionId:
+                    type: string
+                    description: 会话ID
+                deviceInfo:
+                    $ref: '#/components/schemas/DeviceInfo'
+                requestId:
+                    type: string
+                    description: 全局请求ID（关联网关日志）
+                actionType:
+                    enum:
+                        - ACTION_TYPE_UNSPECIFIED
+                        - LOGIN
+                        - LOGOUT
+                        - SESSION_EXPIRED
+                    type: string
+                    description: 事件动作类型
+                    format: enum
+                status:
+                    enum:
+                        - STATUS_UNSPECIFIED
+                        - SUCCESS
+                        - FAILED
+                        - PARTIAL
+                    type: string
+                    description: 操作结果状态
+                    format: enum
+                failureReason:
+                    type: string
+                    description: 失败原因：密码错误/MFA验证失败/IP黑名单等
+                mfaStatus:
+                    type: string
+                    description: MFA状态：UNVERIFIED/VERIFYING/VERIFIED/FAILED
+                riskScore:
+                    type: integer
+                    description: 风险评分（0-100，分值越高风险越大）
+                    format: uint32
+                riskLevel:
+                    enum:
+                        - RISK_LEVEL_UNSPECIFIED
+                        - LOW
+                        - MEDIUM
+                        - HIGH
+                    type: string
+                    description: 风险等级（高风险需实时告警）
+                    format: enum
+                riskFactors:
+                    type: array
+                    items:
+                        type: string
+                    description: 风险因素（ISO 27001标准，如：异地登录/新设备/密码尝试次数过多）
+                logHash:
+                    type: string
+                    description: 日志内容哈希（SHA256，十六进制字符串）
+                signature:
+                    type: string
+                    description: 日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）
+                    format: bytes
                 createdAt:
                     type: string
-                    description: 创建时间
+                    description: 日志创建时间
                     format: date-time
             description: 登录审计日志
         LoginPolicy:

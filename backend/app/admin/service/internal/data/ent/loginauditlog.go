@@ -3,7 +3,9 @@
 package ent
 
 import (
+	"encoding/json"
 	"fmt"
+	servicev1 "go-wind-admin/api/gen/go/audit/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/loginauditlog"
 	"strings"
 	"time"
@@ -22,38 +24,38 @@ type LoginAuditLog struct {
 	CreatedAt *time.Time `json:"created_at,omitempty"`
 	// 租户ID
 	TenantID *uint32 `json:"tenant_id,omitempty"`
-	// 登录IP地址
-	LoginIP *string `json:"login_ip,omitempty"`
-	// 登录MAC地址
-	LoginMAC *string `json:"login_mac,omitempty"`
-	// 登录时间
-	LoginTime *time.Time `json:"login_time,omitempty"`
-	// 浏览器的用户代理信息
-	UserAgent *string `json:"user_agent,omitempty"`
-	// 浏览器名称
-	BrowserName *string `json:"browser_name,omitempty"`
-	// 浏览器版本
-	BrowserVersion *string `json:"browser_version,omitempty"`
-	// 客户端ID
-	ClientID *string `json:"client_id,omitempty"`
-	// 客户端名称
-	ClientName *string `json:"client_name,omitempty"`
-	// 操作系统名称
-	OsName *string `json:"os_name,omitempty"`
-	// 操作系统版本
-	OsVersion *string `json:"os_version,omitempty"`
 	// 操作者用户ID
 	UserID *uint32 `json:"user_id,omitempty"`
 	// 操作者账号名
 	Username *string `json:"username,omitempty"`
-	// 状态码
-	StatusCode *int32 `json:"status_code,omitempty"`
-	// 操作成功
-	Success *bool `json:"success,omitempty"`
-	// 登录失败原因
-	Reason *string `json:"reason,omitempty"`
-	// 登录地理位置
-	Location     *string `json:"location,omitempty"`
+	// IP地址
+	IPAddress *string `json:"ip_address,omitempty"`
+	// 地理位置(来自IP库)
+	GeoLocation *servicev1.GeoLocation `json:"geo_location,omitempty"`
+	// 会话ID
+	SessionID *string `json:"session_id,omitempty"`
+	// 设备信息
+	DeviceInfo *servicev1.DeviceInfo `json:"device_info,omitempty"`
+	// 全局请求ID
+	RequestID *string `json:"request_id,omitempty"`
+	// 事件动作类型
+	ActionType *loginauditlog.ActionType `json:"action_type,omitempty"`
+	// 操作结果状态
+	Status *loginauditlog.Status `json:"status,omitempty"`
+	// 失败原因
+	FailureReason *string `json:"failure_reason,omitempty"`
+	// MFA状态
+	MfaStatus *string `json:"mfa_status,omitempty"`
+	// 风险评分（0-100，分值越高风险越大）
+	RiskScore *uint32 `json:"risk_score,omitempty"`
+	// 风险等级（高风险需实时告警）
+	RiskLevel *loginauditlog.RiskLevel `json:"risk_level,omitempty"`
+	// 风险因素（ISO 27001标准，如：异地登录/新设备/密码尝试次数过多）
+	RiskFactors []string `json:"risk_factors,omitempty"`
+	// 日志内容哈希（SHA256，十六进制字符串）
+	LogHash *string `json:"log_hash,omitempty"`
+	// 日志数字签名
+	Signature    *[]byte `json:"signature,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -62,13 +64,13 @@ func (*LoginAuditLog) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case loginauditlog.FieldSuccess:
-			values[i] = new(sql.NullBool)
-		case loginauditlog.FieldID, loginauditlog.FieldTenantID, loginauditlog.FieldUserID, loginauditlog.FieldStatusCode:
+		case loginauditlog.FieldGeoLocation, loginauditlog.FieldDeviceInfo, loginauditlog.FieldRiskFactors, loginauditlog.FieldSignature:
+			values[i] = new([]byte)
+		case loginauditlog.FieldID, loginauditlog.FieldTenantID, loginauditlog.FieldUserID, loginauditlog.FieldRiskScore:
 			values[i] = new(sql.NullInt64)
-		case loginauditlog.FieldLoginIP, loginauditlog.FieldLoginMAC, loginauditlog.FieldUserAgent, loginauditlog.FieldBrowserName, loginauditlog.FieldBrowserVersion, loginauditlog.FieldClientID, loginauditlog.FieldClientName, loginauditlog.FieldOsName, loginauditlog.FieldOsVersion, loginauditlog.FieldUsername, loginauditlog.FieldReason, loginauditlog.FieldLocation:
+		case loginauditlog.FieldUsername, loginauditlog.FieldIPAddress, loginauditlog.FieldSessionID, loginauditlog.FieldRequestID, loginauditlog.FieldActionType, loginauditlog.FieldStatus, loginauditlog.FieldFailureReason, loginauditlog.FieldMfaStatus, loginauditlog.FieldRiskLevel, loginauditlog.FieldLogHash:
 			values[i] = new(sql.NullString)
-		case loginauditlog.FieldCreatedAt, loginauditlog.FieldLoginTime:
+		case loginauditlog.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -105,76 +107,6 @@ func (_m *LoginAuditLog) assignValues(columns []string, values []any) error {
 				_m.TenantID = new(uint32)
 				*_m.TenantID = uint32(value.Int64)
 			}
-		case loginauditlog.FieldLoginIP:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field login_ip", values[i])
-			} else if value.Valid {
-				_m.LoginIP = new(string)
-				*_m.LoginIP = value.String
-			}
-		case loginauditlog.FieldLoginMAC:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field login_mac", values[i])
-			} else if value.Valid {
-				_m.LoginMAC = new(string)
-				*_m.LoginMAC = value.String
-			}
-		case loginauditlog.FieldLoginTime:
-			if value, ok := values[i].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field login_time", values[i])
-			} else if value.Valid {
-				_m.LoginTime = new(time.Time)
-				*_m.LoginTime = value.Time
-			}
-		case loginauditlog.FieldUserAgent:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field user_agent", values[i])
-			} else if value.Valid {
-				_m.UserAgent = new(string)
-				*_m.UserAgent = value.String
-			}
-		case loginauditlog.FieldBrowserName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field browser_name", values[i])
-			} else if value.Valid {
-				_m.BrowserName = new(string)
-				*_m.BrowserName = value.String
-			}
-		case loginauditlog.FieldBrowserVersion:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field browser_version", values[i])
-			} else if value.Valid {
-				_m.BrowserVersion = new(string)
-				*_m.BrowserVersion = value.String
-			}
-		case loginauditlog.FieldClientID:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field client_id", values[i])
-			} else if value.Valid {
-				_m.ClientID = new(string)
-				*_m.ClientID = value.String
-			}
-		case loginauditlog.FieldClientName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field client_name", values[i])
-			} else if value.Valid {
-				_m.ClientName = new(string)
-				*_m.ClientName = value.String
-			}
-		case loginauditlog.FieldOsName:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field os_name", values[i])
-			} else if value.Valid {
-				_m.OsName = new(string)
-				*_m.OsName = value.String
-			}
-		case loginauditlog.FieldOsVersion:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field os_version", values[i])
-			} else if value.Valid {
-				_m.OsVersion = new(string)
-				*_m.OsVersion = value.String
-			}
 		case loginauditlog.FieldUserID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field user_id", values[i])
@@ -189,33 +121,105 @@ func (_m *LoginAuditLog) assignValues(columns []string, values []any) error {
 				_m.Username = new(string)
 				*_m.Username = value.String
 			}
-		case loginauditlog.FieldStatusCode:
+		case loginauditlog.FieldIPAddress:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field ip_address", values[i])
+			} else if value.Valid {
+				_m.IPAddress = new(string)
+				*_m.IPAddress = value.String
+			}
+		case loginauditlog.FieldGeoLocation:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field geo_location", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.GeoLocation); err != nil {
+					return fmt.Errorf("unmarshal field geo_location: %w", err)
+				}
+			}
+		case loginauditlog.FieldSessionID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field session_id", values[i])
+			} else if value.Valid {
+				_m.SessionID = new(string)
+				*_m.SessionID = value.String
+			}
+		case loginauditlog.FieldDeviceInfo:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field device_info", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.DeviceInfo); err != nil {
+					return fmt.Errorf("unmarshal field device_info: %w", err)
+				}
+			}
+		case loginauditlog.FieldRequestID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field request_id", values[i])
+			} else if value.Valid {
+				_m.RequestID = new(string)
+				*_m.RequestID = value.String
+			}
+		case loginauditlog.FieldActionType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field action_type", values[i])
+			} else if value.Valid {
+				_m.ActionType = new(loginauditlog.ActionType)
+				*_m.ActionType = loginauditlog.ActionType(value.String)
+			}
+		case loginauditlog.FieldStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field status", values[i])
+			} else if value.Valid {
+				_m.Status = new(loginauditlog.Status)
+				*_m.Status = loginauditlog.Status(value.String)
+			}
+		case loginauditlog.FieldFailureReason:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field failure_reason", values[i])
+			} else if value.Valid {
+				_m.FailureReason = new(string)
+				*_m.FailureReason = value.String
+			}
+		case loginauditlog.FieldMfaStatus:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field mfa_status", values[i])
+			} else if value.Valid {
+				_m.MfaStatus = new(string)
+				*_m.MfaStatus = value.String
+			}
+		case loginauditlog.FieldRiskScore:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field status_code", values[i])
+				return fmt.Errorf("unexpected type %T for field risk_score", values[i])
 			} else if value.Valid {
-				_m.StatusCode = new(int32)
-				*_m.StatusCode = int32(value.Int64)
+				_m.RiskScore = new(uint32)
+				*_m.RiskScore = uint32(value.Int64)
 			}
-		case loginauditlog.FieldSuccess:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field success", values[i])
-			} else if value.Valid {
-				_m.Success = new(bool)
-				*_m.Success = value.Bool
-			}
-		case loginauditlog.FieldReason:
+		case loginauditlog.FieldRiskLevel:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field reason", values[i])
+				return fmt.Errorf("unexpected type %T for field risk_level", values[i])
 			} else if value.Valid {
-				_m.Reason = new(string)
-				*_m.Reason = value.String
+				_m.RiskLevel = new(loginauditlog.RiskLevel)
+				*_m.RiskLevel = loginauditlog.RiskLevel(value.String)
 			}
-		case loginauditlog.FieldLocation:
+		case loginauditlog.FieldRiskFactors:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field risk_factors", values[i])
+			} else if value != nil && len(*value) > 0 {
+				if err := json.Unmarshal(*value, &_m.RiskFactors); err != nil {
+					return fmt.Errorf("unmarshal field risk_factors: %w", err)
+				}
+			}
+		case loginauditlog.FieldLogHash:
 			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field location", values[i])
+				return fmt.Errorf("unexpected type %T for field log_hash", values[i])
 			} else if value.Valid {
-				_m.Location = new(string)
-				*_m.Location = value.String
+				_m.LogHash = new(string)
+				*_m.LogHash = value.String
+			}
+		case loginauditlog.FieldSignature:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field signature", values[i])
+			} else if value != nil {
+				_m.Signature = value
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -263,56 +267,6 @@ func (_m *LoginAuditLog) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.LoginIP; v != nil {
-		builder.WriteString("login_ip=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.LoginMAC; v != nil {
-		builder.WriteString("login_mac=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.LoginTime; v != nil {
-		builder.WriteString("login_time=")
-		builder.WriteString(v.Format(time.ANSIC))
-	}
-	builder.WriteString(", ")
-	if v := _m.UserAgent; v != nil {
-		builder.WriteString("user_agent=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.BrowserName; v != nil {
-		builder.WriteString("browser_name=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.BrowserVersion; v != nil {
-		builder.WriteString("browser_version=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.ClientID; v != nil {
-		builder.WriteString("client_id=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.ClientName; v != nil {
-		builder.WriteString("client_name=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.OsName; v != nil {
-		builder.WriteString("os_name=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
-	if v := _m.OsVersion; v != nil {
-		builder.WriteString("os_version=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
 	if v := _m.UserID; v != nil {
 		builder.WriteString("user_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -323,24 +277,68 @@ func (_m *LoginAuditLog) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.StatusCode; v != nil {
-		builder.WriteString("status_code=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := _m.Success; v != nil {
-		builder.WriteString("success=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
-	}
-	builder.WriteString(", ")
-	if v := _m.Reason; v != nil {
-		builder.WriteString("reason=")
+	if v := _m.IPAddress; v != nil {
+		builder.WriteString("ip_address=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.Location; v != nil {
-		builder.WriteString("location=")
+	builder.WriteString("geo_location=")
+	builder.WriteString(fmt.Sprintf("%v", _m.GeoLocation))
+	builder.WriteString(", ")
+	if v := _m.SessionID; v != nil {
+		builder.WriteString("session_id=")
 		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	builder.WriteString("device_info=")
+	builder.WriteString(fmt.Sprintf("%v", _m.DeviceInfo))
+	builder.WriteString(", ")
+	if v := _m.RequestID; v != nil {
+		builder.WriteString("request_id=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.ActionType; v != nil {
+		builder.WriteString("action_type=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.Status; v != nil {
+		builder.WriteString("status=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.FailureReason; v != nil {
+		builder.WriteString("failure_reason=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.MfaStatus; v != nil {
+		builder.WriteString("mfa_status=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.RiskScore; v != nil {
+		builder.WriteString("risk_score=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.RiskLevel; v != nil {
+		builder.WriteString("risk_level=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	builder.WriteString("risk_factors=")
+	builder.WriteString(fmt.Sprintf("%v", _m.RiskFactors))
+	builder.WriteString(", ")
+	if v := _m.LogHash; v != nil {
+		builder.WriteString("log_hash=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.Signature; v != nil {
+		builder.WriteString("signature=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')
 	return builder.String()

@@ -7,37 +7,43 @@
     "true": "启用",
     "false": "禁用"
   },
-  "menuType": {
-    "CATALOG": "目录",
-    "MENU": "菜单",
-    "BUTTON": "按钮",
-    "EMBEDDED": "内嵌",
-    "LINK": "外链"
-  },
-  "successStatus": {
-    "success": "成功",
-    "failed": "失败"
-  },
-  "taskType" : {
-    "Periodic": "周期性",
-    "Delay": "延时任务",
-    "WaitResult": "等待结果"
-  },
   "gender": {
     "SECRET": "保密",
     "MALE": "男性",
     "FEMALE": "女性"
   },
-  "loginPolicyType": {
-    "BLACKLIST": "黑名单",
-    "WHITELIST": "白名单"
+  "menu": {
+    "type": {
+      "CATALOG": "目录",
+      "MENU": "菜单",
+      "BUTTON": "按钮",
+      "EMBEDDED": "内嵌",
+      "LINK": "外链"
+    }
   },
-  "loginPolicyMethod": {
-    "IP": "IP地址限制",
-    "MAC": "MAC地址限制",
-    "REGION": "地区限制",
-    "TIME": "时间限制",
-    "DEVICE": "设备限制"
+  "successStatus": {
+    "success": "成功",
+    "failed": "失败"
+  },
+  "task": {
+    "type": {
+      "Periodic": "周期性",
+      "Delay": "延时任务",
+      "WaitResult": "等待结果"
+    }
+  },
+  "loginPolicy": {
+    "type": {
+      "BLACKLIST": "黑名单",
+      "WHITELIST": "白名单"
+    },
+    "method": {
+      "IP": "IP地址限制",
+      "MAC": "MAC地址限制",
+      "REGION": "地区限制",
+      "TIME": "时间限制",
+      "DEVICE": "设备限制"
+    }
   },
   "orgUnit": {
     "type": {
@@ -120,24 +126,45 @@
       "DATA": "数据权限"
     }
   },
-  "internalMessageStatus" : {
-    "DRAFT": "草稿",
-    "PUBLISHED": "已发布",
-    "SCHEDULED": "定时发布",
-    "REVOKED": "已撤销",
-    "ARCHIVED": "已归档",
-    "DELETED": "已删除"
+  "loginAuditLog": {
+    "status": {
+      "SUCCESS": "成功",
+      "FAILED": "失败",
+      "PARTIAL": "部分成功"
+    },
+    "actionType": {
+      "LOGIN": "用户登录",
+      "LOGOUT": "用户登出",
+      "SESSION_EXPIRED": "会话过期"
+    },
+    "riskLevel": {
+      "LOW": "低风险",
+      "MEDIUM": "中风险",
+      "HIGH": "高风险"
+    }
   },
-  "internalMessageType" : {
-    "NOTIFICATION": "通知",
-    "PRIVATE": "私信",
-    "GROUP": "群聊"
+  "internalMessage": {
+    "status": {
+      "DRAFT": "草稿",
+      "PUBLISHED": "已发布",
+      "SCHEDULED": "定时发布",
+      "REVOKED": "已撤销",
+      "ARCHIVED": "已归档",
+      "DELETED": "已删除"
+    },
+    "type": {
+      "NOTIFICATION": "通知",
+      "PRIVATE": "私信",
+      "GROUP": "群聊"
+    }
   },
-  "internalMessageRecipientStatus" : {
-    "SENT": "已发送",
-    "RECEIVED": "已接收",
-    "READ": "已阅读",
-    "REVOKED": "已撤回",
-    "DELETED": "已删除"
+  "internalMessageRecipient": {
+    "status": {
+      "SENT": "已发送",
+      "RECEIVED": "已接收",
+      "READ": "已阅读",
+      "REVOKED": "已撤回",
+      "DELETED": "已删除"
+    }
   }
 }

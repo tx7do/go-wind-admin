@@ -24,6 +24,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/service"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
 
 	"go-wind-admin/pkg/middleware/auth"
 	applogging "go-wind-admin/pkg/middleware/logging"
@@ -41,13 +42,13 @@ func newRestMiddleware(
 	ms = append(ms, logging.Server(logger))
 
 	ms = append(ms, applogging.Server(
-		applogging.WithWriteApiLogFunc(func(ctx context.Context, data *adminV1.ApiAuditLog) error {
+		applogging.WithWriteApiLogFunc(func(ctx context.Context, data *auditV1.ApiAuditLog) error {
 			// TODO 如果系统的负载比较小，可以同步写入数据库，否则，建议使用异步方式，即投递进队列。
-			return apiAuditLogRepo.Create(ctx, &adminV1.CreateApiAuditLogRequest{Data: data})
+			return apiAuditLogRepo.Create(ctx, &auditV1.CreateApiAuditLogRequest{Data: data})
 		}),
-		applogging.WithWriteLoginLogFunc(func(ctx context.Context, data *adminV1.LoginAuditLog) error {
+		applogging.WithWriteLoginLogFunc(func(ctx context.Context, data *auditV1.LoginAuditLog) error {
 			// TODO 如果系统的负载比较小，可以同步写入数据库，否则，建议使用异步方式，即投递进队列。
-			return loginLogRepo.Create(ctx, &adminV1.CreateLoginAuditLogRequest{Data: data})
+			return loginLogRepo.Create(ctx, &auditV1.CreateLoginAuditLogRequest{Data: data})
 		}),
 	))
 

@@ -6,12 +6,12 @@ import { Page, type VbenFormProps } from '@vben/common-ui';
 import dayjs from 'dayjs';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type ApiAuditLog } from '#/generated/api/admin/service/v1';
+import { type auditservicev1_ApiAuditLog as ApiAuditLog } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
 import {
   methodList,
   successToColor,
-  successToName,
+  successToNameWithStatusCode,
   useApiAuditLogStore,
 } from '#/stores';
 
@@ -45,8 +45,8 @@ const formOptions: VbenFormProps = {
     },
     {
       component: 'Select',
-      fieldName: 'method',
-      label: $t('page.apiAuditLog.method'),
+      fieldName: 'httpMethod',
+      label: $t('page.apiAuditLog.httpMethod'),
       componentProps: {
         options: methodList,
         placeholder: $t('ui.placeholder.select'),
@@ -58,8 +58,8 @@ const formOptions: VbenFormProps = {
     },
     {
       component: 'Input',
-      fieldName: 'clientIp',
-      label: $t('page.apiAuditLog.clientIp'),
+      fieldName: 'ipAddress',
+      label: $t('page.apiAuditLog.ipAddress'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -120,9 +120,9 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
           },
           {
             username: formValues.username,
-            method: formValues.method,
+            httpMethod: formValues.httpMethod,
             path: formValues.path,
-            clientIp: formValues.clientIp,
+            ipAddress: formValues.ipAddress,
             created_at__gte: startTime,
             created_at__lte: endTime,
           },
@@ -132,7 +132,12 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
   },
 
   columns: [
-    { title: $t('ui.table.seq'), type: 'seq', width: 50 },
+    {
+      title: $t('page.apiAuditLog.createdAt'),
+      field: 'createdAt',
+      formatter: 'formatDateTime',
+      width: 140,
+    },
     { title: $t('page.apiAuditLog.username'), field: 'username' },
     {
       title: $t('page.apiAuditLog.success'),
@@ -140,27 +145,27 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
       slots: { default: 'success' },
       width: 80,
     },
+
     {
-      title: $t('page.apiAuditLog.createdAt'),
-      field: 'createdAt',
-      formatter: 'formatDateTime',
-      width: 140,
-    },
-    {
-      title: $t('page.apiAuditLog.method'),
-      field: 'method',
+      title: $t('page.apiAuditLog.httpMethod'),
+      field: 'httpMethod',
       width: 80,
     },
     { title: $t('page.apiAuditLog.path'), field: 'path' },
-    { title: $t('page.apiAuditLog.location'), field: 'location' },
+    { title: $t('page.apiAuditLog.costTimeMs'), field: 'costTimeMs' },
     {
-      title: $t('page.apiAuditLog.clientName'),
-      field: 'clientName',
+      title: $t('page.apiAuditLog.geoLocation'),
+      field: 'geoLocation',
+      slots: { default: 'geoLocation' },
+    },
+    {
+      title: $t('page.apiAuditLog.platform'),
+      field: 'deviceInfo.platform',
       slots: { default: 'platform' },
     },
     {
-      title: $t('page.apiAuditLog.clientIp'),
-      field: 'clientIp',
+      title: $t('page.apiAuditLog.ipAddress'),
+      field: 'ipAddress',
       width: 140,
     },
   ],
@@ -174,11 +179,14 @@ const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
     <Grid :table-title="$t('menu.log.apiAuditLog')">
       <template #success="{ row }">
         <a-tag :color="successToColor(row.success)">
-          {{ successToName(row.success, row.statusCode) }}
+          {{ successToNameWithStatusCode(row.success, row.statusCode) }}
         </a-tag>
       </template>
+      <template #geoLocation="{ row }">
+        {{ row.geoLocation.province }} {{ row.geoLocation.city }}
+      </template>
       <template #platform="{ row }">
-        <span> {{ row.osName }} {{ row.browserName }}</span>
+        {{ row.deviceInfo.osName }} {{ row.deviceInfo.browserName }}
       </template>
     </Grid>
   </Page>

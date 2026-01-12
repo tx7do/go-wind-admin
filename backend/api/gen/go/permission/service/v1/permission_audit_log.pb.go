@@ -318,120 +318,6 @@ func (x *CreatePermissionAuditLogRequest) GetData() *PermissionAuditLog {
 	return nil
 }
 
-// 更新权限变更审计日志 - 请求
-type UpdatePermissionAuditLogRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Data          *PermissionAuditLog    `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
-	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`              // 要更新的字段列表
-	AllowMissing  *bool                  `protobuf:"varint,4,opt,name=allow_missing,json=allowMissing,proto3,oneof" json:"allow_missing,omitempty"` // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *UpdatePermissionAuditLogRequest) Reset() {
-	*x = UpdatePermissionAuditLogRequest{}
-	mi := &file_permission_service_v1_permission_audit_log_proto_msgTypes[4]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *UpdatePermissionAuditLogRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*UpdatePermissionAuditLogRequest) ProtoMessage() {}
-
-func (x *UpdatePermissionAuditLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_permission_audit_log_proto_msgTypes[4]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use UpdatePermissionAuditLogRequest.ProtoReflect.Descriptor instead.
-func (*UpdatePermissionAuditLogRequest) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_permission_audit_log_proto_rawDescGZIP(), []int{4}
-}
-
-func (x *UpdatePermissionAuditLogRequest) GetId() uint32 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
-func (x *UpdatePermissionAuditLogRequest) GetData() *PermissionAuditLog {
-	if x != nil {
-		return x.Data
-	}
-	return nil
-}
-
-func (x *UpdatePermissionAuditLogRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
-	if x != nil {
-		return x.UpdateMask
-	}
-	return nil
-}
-
-func (x *UpdatePermissionAuditLogRequest) GetAllowMissing() bool {
-	if x != nil && x.AllowMissing != nil {
-		return *x.AllowMissing
-	}
-	return false
-}
-
-// 删除权限变更审计日志 - 请求
-type DeletePermissionAuditLogRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
-}
-
-func (x *DeletePermissionAuditLogRequest) Reset() {
-	*x = DeletePermissionAuditLogRequest{}
-	mi := &file_permission_service_v1_permission_audit_log_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *DeletePermissionAuditLogRequest) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*DeletePermissionAuditLogRequest) ProtoMessage() {}
-
-func (x *DeletePermissionAuditLogRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_permission_service_v1_permission_audit_log_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use DeletePermissionAuditLogRequest.ProtoReflect.Descriptor instead.
-func (*DeletePermissionAuditLogRequest) Descriptor() ([]byte, []int) {
-	return file_permission_service_v1_permission_audit_log_proto_rawDescGZIP(), []int{5}
-}
-
-func (x *DeletePermissionAuditLogRequest) GetId() uint32 {
-	if x != nil {
-		return x.Id
-	}
-	return 0
-}
-
 var File_permission_service_v1_permission_audit_log_proto protoreflect.FileDescriptor
 
 const file_permission_service_v1_permission_audit_log_proto_rawDesc = "" +
@@ -478,16 +364,7 @@ const file_permission_service_v1_permission_audit_log_proto_rawDesc = "" +
 	"\n" +
 	"_view_mask\"`\n" +
 	"\x1fCreatePermissionAuditLogRequest\x12=\n" +
-	"\x04data\x18\x01 \x01(\v2).permission.service.v1.PermissionAuditLogR\x04data\"\xae\x03\n" +
-	"\x1fUpdatePermissionAuditLogRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12=\n" +
-	"\x04data\x18\x02 \x01(\v2).permission.service.v1.PermissionAuditLogR\x04data\x12s\n" +
-	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
-	"updateMask\x12\xb4\x01\n" +
-	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
-	"\x0e_allow_missing\"1\n" +
-	"\x1fDeletePermissionAuditLogRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id2\xe0\x01\n" +
+	"\x04data\x18\x01 \x01(\v2).permission.service.v1.PermissionAuditLogR\x04data2\xe0\x01\n" +
 	"\x19PermissionAuditLogService\x12Z\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a5.permission.service.v1.ListPermissionAuditLogResponse\"\x00\x12g\n" +
 	"\x03Get\x123.permission.service.v1.GetPermissionAuditLogRequest\x1a).permission.service.v1.PermissionAuditLog\"\x00B\xe7\x01\n" +
@@ -505,34 +382,30 @@ func file_permission_service_v1_permission_audit_log_proto_rawDescGZIP() []byte 
 	return file_permission_service_v1_permission_audit_log_proto_rawDescData
 }
 
-var file_permission_service_v1_permission_audit_log_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_permission_service_v1_permission_audit_log_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_permission_service_v1_permission_audit_log_proto_goTypes = []any{
 	(*PermissionAuditLog)(nil),              // 0: permission.service.v1.PermissionAuditLog
 	(*ListPermissionAuditLogResponse)(nil),  // 1: permission.service.v1.ListPermissionAuditLogResponse
 	(*GetPermissionAuditLogRequest)(nil),    // 2: permission.service.v1.GetPermissionAuditLogRequest
 	(*CreatePermissionAuditLogRequest)(nil), // 3: permission.service.v1.CreatePermissionAuditLogRequest
-	(*UpdatePermissionAuditLogRequest)(nil), // 4: permission.service.v1.UpdatePermissionAuditLogRequest
-	(*DeletePermissionAuditLogRequest)(nil), // 5: permission.service.v1.DeletePermissionAuditLogRequest
-	(*timestamppb.Timestamp)(nil),           // 6: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),           // 7: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),                // 8: pagination.PagingRequest
+	(*timestamppb.Timestamp)(nil),           // 4: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),           // 5: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),                // 6: pagination.PagingRequest
 }
 var file_permission_service_v1_permission_audit_log_proto_depIdxs = []int32{
-	6, // 0: permission.service.v1.PermissionAuditLog.created_at:type_name -> google.protobuf.Timestamp
+	4, // 0: permission.service.v1.PermissionAuditLog.created_at:type_name -> google.protobuf.Timestamp
 	0, // 1: permission.service.v1.ListPermissionAuditLogResponse.items:type_name -> permission.service.v1.PermissionAuditLog
-	7, // 2: permission.service.v1.GetPermissionAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
+	5, // 2: permission.service.v1.GetPermissionAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
 	0, // 3: permission.service.v1.CreatePermissionAuditLogRequest.data:type_name -> permission.service.v1.PermissionAuditLog
-	0, // 4: permission.service.v1.UpdatePermissionAuditLogRequest.data:type_name -> permission.service.v1.PermissionAuditLog
-	7, // 5: permission.service.v1.UpdatePermissionAuditLogRequest.update_mask:type_name -> google.protobuf.FieldMask
-	8, // 6: permission.service.v1.PermissionAuditLogService.List:input_type -> pagination.PagingRequest
-	2, // 7: permission.service.v1.PermissionAuditLogService.Get:input_type -> permission.service.v1.GetPermissionAuditLogRequest
-	1, // 8: permission.service.v1.PermissionAuditLogService.List:output_type -> permission.service.v1.ListPermissionAuditLogResponse
-	0, // 9: permission.service.v1.PermissionAuditLogService.Get:output_type -> permission.service.v1.PermissionAuditLog
-	8, // [8:10] is the sub-list for method output_type
-	6, // [6:8] is the sub-list for method input_type
-	6, // [6:6] is the sub-list for extension type_name
-	6, // [6:6] is the sub-list for extension extendee
-	0, // [0:6] is the sub-list for field type_name
+	6, // 4: permission.service.v1.PermissionAuditLogService.List:input_type -> pagination.PagingRequest
+	2, // 5: permission.service.v1.PermissionAuditLogService.Get:input_type -> permission.service.v1.GetPermissionAuditLogRequest
+	1, // 6: permission.service.v1.PermissionAuditLogService.List:output_type -> permission.service.v1.ListPermissionAuditLogResponse
+	0, // 7: permission.service.v1.PermissionAuditLogService.Get:output_type -> permission.service.v1.PermissionAuditLog
+	6, // [6:8] is the sub-list for method output_type
+	4, // [4:6] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_permission_service_v1_permission_audit_log_proto_init() }
@@ -544,14 +417,13 @@ func file_permission_service_v1_permission_audit_log_proto_init() {
 	file_permission_service_v1_permission_audit_log_proto_msgTypes[2].OneofWrappers = []any{
 		(*GetPermissionAuditLogRequest_Id)(nil),
 	}
-	file_permission_service_v1_permission_audit_log_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_permission_service_v1_permission_audit_log_proto_rawDesc), len(file_permission_service_v1_permission_audit_log_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

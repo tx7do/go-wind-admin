@@ -129,11 +129,11 @@ export const useMenuStore = defineStore('menu', () => {
 });
 
 export const menuTypeList = computed(() => [
-  { value: 'CATALOG', label: $t('enum.menuType.CATALOG') },
-  { value: 'MENU', label: $t('enum.menuType.MENU') },
-  { value: 'BUTTON', label: $t('enum.menuType.BUTTON') },
-  { value: 'EMBEDDED', label: $t('enum.menuType.EMBEDDED') },
-  { value: 'LINK', label: $t('enum.menuType.LINK') },
+  { value: 'CATALOG', label: $t('enum.menu.type.CATALOG') },
+  { value: 'MENU', label: $t('enum.menu.type.MENU') },
+  { value: 'BUTTON', label: $t('enum.menu.type.BUTTON') },
+  { value: 'EMBEDDED', label: $t('enum.menu.type.EMBEDDED') },
+  { value: 'LINK', label: $t('enum.menu.type.LINK') },
 ]);
 
 /**

@@ -1,0 +1,51 @@
+syntax = "proto3";
+
+package audit.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+// 地理位置
+message GeoLocation {
+  optional string country_code = 1 [
+    json_name = "countryCode",
+    (gnostic.openapi.v3.property) = {
+      description: "国家代码（CN/US），遵循ISO 3166-1 alpha-2标准"
+    }
+  ]; // 国家代码（CN/US），遵循ISO 3166-1 alpha-2标准
+
+  optional string province = 2 [
+    json_name = "province",
+    (gnostic.openapi.v3.property) = {
+      description: "省份/州（中文：北京市，英文：California）"
+    }
+  ]; // 省份/州（中文：北京市，英文：California）
+
+  optional string city = 3 [
+    json_name = "city",
+    (gnostic.openapi.v3.property) = {
+      description: "城市（中文：上海市，英文：New York）"
+    }
+  ]; // 城市（中文：上海市，英文：New York）
+
+  optional string isp = 4 [
+    json_name = "isp",
+    (gnostic.openapi.v3.property) = {
+      description: "网络运营商（如：中国移动/中国电信/AT&T）"
+    }
+  ]; // 网络运营商（如：中国移动/中国电信/AT&T）
+
+  optional string address_remark = 5 [
+    json_name = "addressRemark",
+    (gnostic.openapi.v3.property) = {
+      description: "地址备注（如：内网IP/无法解析/海外IP）"
+    }
+  ]; // 地址备注（如：内网IP/无法解析/海外IP）
+
+  optional sint64 latitude = 10 [ // 有符号整型
+    (gnostic.openapi.v3.property).description = "纬度（微度）"
+  ];
+
+  optional sint64 longitude = 11 [
+    (gnostic.openapi.v3.property).description = "经度（微度）"
+  ];
+}

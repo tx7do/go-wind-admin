@@ -13,6 +13,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
@@ -67,7 +68,7 @@ func (s *ApiAuditLogService) queryApis(ctx context.Context, path, method string)
 	return nil, nil
 }
 
-func (s *ApiAuditLogService) List(ctx context.Context, req *pagination.PagingRequest) (*adminV1.ListApiAuditLogResponse, error) {
+func (s *ApiAuditLogService) List(ctx context.Context, req *pagination.PagingRequest) (*auditV1.ListApiAuditLogResponse, error) {
 	resp, err := s.apiAuditLogRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
@@ -78,7 +79,7 @@ func (s *ApiAuditLogService) List(ctx context.Context, req *pagination.PagingReq
 		if l == nil {
 			continue
 		}
-		a, _ := s.queryApis(ctx, l.GetPath(), l.GetMethod())
+		a, _ := s.queryApis(ctx, l.GetPath(), l.GetHttpMethod())
 		if a != nil {
 			l.ApiDescription = a.Description
 			l.ApiModule = a.ModuleDescription
@@ -88,13 +89,13 @@ func (s *ApiAuditLogService) List(ctx context.Context, req *pagination.PagingReq
 	return resp, nil
 }
 
-func (s *ApiAuditLogService) Get(ctx context.Context, req *adminV1.GetApiAuditLogRequest) (*adminV1.ApiAuditLog, error) {
+func (s *ApiAuditLogService) Get(ctx context.Context, req *auditV1.GetApiAuditLogRequest) (*auditV1.ApiAuditLog, error) {
 	resp, err := s.apiAuditLogRepo.Get(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	a, _ := s.queryApis(ctx, resp.GetPath(), resp.GetMethod())
+	a, _ := s.queryApis(ctx, resp.GetPath(), resp.GetHttpMethod())
 	if a != nil {
 		resp.ApiDescription = a.Description
 		resp.ApiModule = a.ModuleDescription
@@ -103,7 +104,7 @@ func (s *ApiAuditLogService) Get(ctx context.Context, req *adminV1.GetApiAuditLo
 	return resp, nil
 }
 
-func (s *ApiAuditLogService) Create(ctx context.Context, req *adminV1.CreateApiAuditLogRequest) (*emptypb.Empty, error) {
+func (s *ApiAuditLogService) Create(ctx context.Context, req *auditV1.CreateApiAuditLogRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}

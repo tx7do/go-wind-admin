@@ -1,0 +1,192 @@
+syntax = "proto3";
+
+package audit.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/duration.proto";
+
+import "pagination/v1/pagination.proto";
+
+import "audit/service/v1/geo_location.proto";
+import "audit/service/v1/device_info.proto";
+
+// API审计日志管理服务
+service ApiAuditLogService {
+  // 查询API审计日志列表
+  rpc List (pagination.PagingRequest) returns (ListApiAuditLogResponse) {}
+
+  // 查询API审计日志详情
+  rpc Get (GetApiAuditLogRequest) returns (ApiAuditLog) {}
+}
+
+// API审计日志
+message ApiAuditLog {
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = {description: "API审计日志ID"}
+  ]; // API审计日志ID
+
+  optional uint32 tenant_id = 2 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+
+  optional string tenant_name = 3 [
+    json_name = "tenantName",
+    (gnostic.openapi.v3.property) = {description: "租户名称"}
+  ]; // 租户名称
+
+  optional uint32 user_id = 4 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = {description: "用户ID"}
+  ]; // 用户ID
+
+  optional string username = 5 [
+    json_name = "username",
+    (gnostic.openapi.v3.property) = {description: "账号名"}
+  ]; // 账号名
+
+  // ========== 终端信息 ==========
+
+  optional string ip_address = 10 [
+    json_name = "ipAddress",
+    (gnostic.openapi.v3.property) = {description: "IP地址"}
+  ]; // IP地址
+
+  optional GeoLocation geo_location = 11 [
+    json_name = "geoLocation",
+    (gnostic.openapi.v3.property) = {description: "地理位置(来自IP库)"}
+  ]; // 地理位置(来自IP库)
+
+  optional DeviceInfo device_info = 12 [
+    json_name = "deviceInfo",
+    (gnostic.openapi.v3.property) = {description: "设备信息"}
+  ]; // 设备信息
+
+  optional string referer = 13 [
+    json_name = "referer",
+    (gnostic.openapi.v3.property) = {description: "请求来源URL"}
+  ]; // 请求来源URL
+
+  // ========== API请求/响应信息 ==========
+
+  optional string http_method = 20 [
+    json_name = "httpMethod",
+    (gnostic.openapi.v3.property) = {description: "HTTP请求方法（GET/POST/PUT/DELETE）"}
+  ]; // HTTP请求方法
+
+  optional string path = 21 [
+    json_name = "path",
+    (gnostic.openapi.v3.property) = {description: "请求路径（不含参数，如/api/v1/users）"}
+  ]; // 请求路径
+
+  optional string request_uri = 22 [
+    json_name = "requestUri",
+    (gnostic.openapi.v3.property) = {description: "完整请求URI（含参数，如/api/v1/users?id=1）"}
+  ]; // 完整请求URI
+
+  optional string api_module = 23 [
+    json_name = "apiModule",
+    (gnostic.openapi.v3.property) = {description: "API所属业务模块（如user/permission/order）"}
+  ]; // API所属业务模块
+
+  optional string api_operation = 24 [
+    json_name = "apiOperation",
+    (gnostic.openapi.v3.property) = {description: "API业务操作（如查询用户/创建订单，非HTTP方法）"}
+  ]; // API业务操作
+
+  optional string api_description = 25 [
+    json_name = "apiDescription",
+    (gnostic.openapi.v3.property) = {description: "API功能描述（如“根据ID查询单个用户信息”）"}
+  ]; // API功能描述
+
+  optional string request_id = 26 [
+    json_name = "requestId",
+    (gnostic.openapi.v3.property) = {description: "全局请求ID（关联网关日志）"}
+  ]; // 请求ID
+
+  optional uint64 cost_time_ms = 27 [
+    json_name = "costTimeMs",
+    (gnostic.openapi.v3.property) = {description: "API耗时（毫秒）"}
+  ]; // API耗时
+
+  optional bool success = 28 [
+    json_name = "success",
+    (gnostic.openapi.v3.property) = {description: "操作是否成功"}
+  ]; // 操作结果
+
+  optional uint32 status_code = 29 [
+    json_name = "statusCode",
+    (gnostic.openapi.v3.property) = {description: "HTTP状态码（200/403/500）"}
+  ]; // HTTP状态码
+
+  optional string reason = 30 [
+    json_name = "reason",
+    (gnostic.openapi.v3.property) = {description: "操作失败原因（仅success=false时填充）"}
+  ]; // 操作失败原因
+
+  optional string request_header = 31 [
+    json_name = "requestHeader",
+    (gnostic.openapi.v3.property) = {description: "请求头（JSON格式，敏感字段脱敏后）"}
+  ]; // 请求头
+
+  optional string request_body = 32 [
+    json_name = "requestBody",
+    (gnostic.openapi.v3.property) = {description: "请求体（JSON格式，敏感字段脱敏后）"}
+  ]; // 请求体
+
+  optional string response = 33 [
+    json_name = "response",
+    (gnostic.openapi.v3.property) = {description: "响应信息（JSON格式，敏感字段脱敏后）"}
+  ]; // 响应信息
+
+  // ========== 合规校验 ==========
+
+  optional string log_hash = 40 [
+    json_name = "logHash",
+    (gnostic.openapi.v3.property).description = "日志内容哈希（SHA256，十六进制字符串）"
+  ]; // 日志哈希
+
+  optional bytes signature = 41 [
+    json_name = "signature",
+    (gnostic.openapi.v3.property).description = "日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）"
+  ]; // 日志数字签名
+
+  // ========== 时间字段 ==========
+
+  optional google.protobuf.Timestamp created_at = 50 [
+    json_name = "createdAt",
+    (gnostic.openapi.v3.property) = {description: "日志创建时间"}
+  ];// 日志创建时间
+}
+
+// 查询API审计日志列表 - 回应
+message ListApiAuditLogResponse {
+  repeated ApiAuditLog items = 1;
+  uint64 total = 2;
+}
+
+// 查询API审计日志详情 - 请求
+message GetApiAuditLogRequest {
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+      json_name = "id"
+    ]; // ID
+  }
+
+  optional google.protobuf.FieldMask view_mask = 100 [
+    json_name = "viewMask",
+    (gnostic.openapi.v3.property) = {
+      description: "视图字段过滤器，用于控制返回的字段"
+    }
+  ]; // 视图字段过滤器，用于控制返回的字段
+}
+
+// 创建API审计日志 - 请求
+message CreateApiAuditLogRequest {
+  ApiAuditLog data = 1;
+}

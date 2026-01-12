@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	servicev1 "go-wind-admin/api/gen/go/audit/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/loginauditlog"
 	"time"
 
@@ -50,146 +51,6 @@ func (_c *LoginAuditLogCreate) SetNillableTenantID(v *uint32) *LoginAuditLogCrea
 	return _c
 }
 
-// SetLoginIP sets the "login_ip" field.
-func (_c *LoginAuditLogCreate) SetLoginIP(v string) *LoginAuditLogCreate {
-	_c.mutation.SetLoginIP(v)
-	return _c
-}
-
-// SetNillableLoginIP sets the "login_ip" field if the given value is not nil.
-func (_c *LoginAuditLogCreate) SetNillableLoginIP(v *string) *LoginAuditLogCreate {
-	if v != nil {
-		_c.SetLoginIP(*v)
-	}
-	return _c
-}
-
-// SetLoginMAC sets the "login_mac" field.
-func (_c *LoginAuditLogCreate) SetLoginMAC(v string) *LoginAuditLogCreate {
-	_c.mutation.SetLoginMAC(v)
-	return _c
-}
-
-// SetNillableLoginMAC sets the "login_mac" field if the given value is not nil.
-func (_c *LoginAuditLogCreate) SetNillableLoginMAC(v *string) *LoginAuditLogCreate {
-	if v != nil {
-		_c.SetLoginMAC(*v)
-	}
-	return _c
-}
-
-// SetLoginTime sets the "login_time" field.
-func (_c *LoginAuditLogCreate) SetLoginTime(v time.Time) *LoginAuditLogCreate {
-	_c.mutation.SetLoginTime(v)
-	return _c
-}
-
-// SetNillableLoginTime sets the "login_time" field if the given value is not nil.
-func (_c *LoginAuditLogCreate) SetNillableLoginTime(v *time.Time) *LoginAuditLogCreate {
-	if v != nil {
-		_c.SetLoginTime(*v)
-	}
-	return _c
-}
-
-// SetUserAgent sets the "user_agent" field.
-func (_c *LoginAuditLogCreate) SetUserAgent(v string) *LoginAuditLogCreate {
-	_c.mutation.SetUserAgent(v)
-	return _c
-}
-
-// SetNillableUserAgent sets the "user_agent" field if the given value is not nil.
-func (_c *LoginAuditLogCreate) SetNillableUserAgent(v *string) *LoginAuditLogCreate {
-	if v != nil {
-		_c.SetUserAgent(*v)
-	}
-	return _c
-}
-
-// SetBrowserName sets the "browser_name" field.
-func (_c *LoginAuditLogCreate) SetBrowserName(v string) *LoginAuditLogCreate {
-	_c.mutation.SetBrowserName(v)
-	return _c
-}
-
-// SetNillableBrowserName sets the "browser_name" field if the given value is not nil.
-func (_c *LoginAuditLogCreate) SetNillableBrowserName(v *string) *LoginAuditLogCreate {
-	if v != nil {
-		_c.SetBrowserName(*v)
-	}
-	return _c
-}
-
-// SetBrowserVersion sets the "browser_version" field.
-func (_c *LoginAuditLogCreate) SetBrowserVersion(v string) *LoginAuditLogCreate {
-	_c.mutation.SetBrowserVersion(v)
-	return _c
-}
-
-// SetNillableBrowserVersion sets the "browser_version" field if the given value is not nil.
-func (_c *LoginAuditLogCreate) SetNillableBrowserVersion(v *string) *LoginAuditLogCreate {
-	if v != nil {
-		_c.SetBrowserVersion(*v)
-	}
-	return _c
-}
-
-// SetClientID sets the "client_id" field.
-func (_c *LoginAuditLogCreate) SetClientID(v string) *LoginAuditLogCreate {
-	_c.mutation.SetClientID(v)
-	return _c
-}
-
-// SetNillableClientID sets the "client_id" field if the given value is not nil.
-func (_c *LoginAuditLogCreate) SetNillableClientID(v *string) *LoginAuditLogCreate {
-	if v != nil {
-		_c.SetClientID(*v)
-	}
-	return _c
-}
-
-// SetClientName sets the "client_name" field.
-func (_c *LoginAuditLogCreate) SetClientName(v string) *LoginAuditLogCreate {
-	_c.mutation.SetClientName(v)
-	return _c
-}
-
-// SetNillableClientName sets the "client_name" field if the given value is not nil.
-func (_c *LoginAuditLogCreate) SetNillableClientName(v *string) *LoginAuditLogCreate {
-	if v != nil {
-		_c.SetClientName(*v)
-	}
-	return _c
-}
-
-// SetOsName sets the "os_name" field.
-func (_c *LoginAuditLogCreate) SetOsName(v string) *LoginAuditLogCreate {
-	_c.mutation.SetOsName(v)
-	return _c
-}
-
-// SetNillableOsName sets the "os_name" field if the given value is not nil.
-func (_c *LoginAuditLogCreate) SetNillableOsName(v *string) *LoginAuditLogCreate {
-	if v != nil {
-		_c.SetOsName(*v)
-	}
-	return _c
-}
-
-// SetOsVersion sets the "os_version" field.
-func (_c *LoginAuditLogCreate) SetOsVersion(v string) *LoginAuditLogCreate {
-	_c.mutation.SetOsVersion(v)
-	return _c
-}
-
-// SetNillableOsVersion sets the "os_version" field if the given value is not nil.
-func (_c *LoginAuditLogCreate) SetNillableOsVersion(v *string) *LoginAuditLogCreate {
-	if v != nil {
-		_c.SetOsVersion(*v)
-	}
-	return _c
-}
-
 // SetUserID sets the "user_id" field.
 func (_c *LoginAuditLogCreate) SetUserID(v uint32) *LoginAuditLogCreate {
 	_c.mutation.SetUserID(v)
@@ -218,59 +79,167 @@ func (_c *LoginAuditLogCreate) SetNillableUsername(v *string) *LoginAuditLogCrea
 	return _c
 }
 
-// SetStatusCode sets the "status_code" field.
-func (_c *LoginAuditLogCreate) SetStatusCode(v int32) *LoginAuditLogCreate {
-	_c.mutation.SetStatusCode(v)
+// SetIPAddress sets the "ip_address" field.
+func (_c *LoginAuditLogCreate) SetIPAddress(v string) *LoginAuditLogCreate {
+	_c.mutation.SetIPAddress(v)
 	return _c
 }
 
-// SetNillableStatusCode sets the "status_code" field if the given value is not nil.
-func (_c *LoginAuditLogCreate) SetNillableStatusCode(v *int32) *LoginAuditLogCreate {
+// SetNillableIPAddress sets the "ip_address" field if the given value is not nil.
+func (_c *LoginAuditLogCreate) SetNillableIPAddress(v *string) *LoginAuditLogCreate {
 	if v != nil {
-		_c.SetStatusCode(*v)
+		_c.SetIPAddress(*v)
 	}
 	return _c
 }
 
-// SetSuccess sets the "success" field.
-func (_c *LoginAuditLogCreate) SetSuccess(v bool) *LoginAuditLogCreate {
-	_c.mutation.SetSuccess(v)
+// SetGeoLocation sets the "geo_location" field.
+func (_c *LoginAuditLogCreate) SetGeoLocation(v *servicev1.GeoLocation) *LoginAuditLogCreate {
+	_c.mutation.SetGeoLocation(v)
 	return _c
 }
 
-// SetNillableSuccess sets the "success" field if the given value is not nil.
-func (_c *LoginAuditLogCreate) SetNillableSuccess(v *bool) *LoginAuditLogCreate {
+// SetSessionID sets the "session_id" field.
+func (_c *LoginAuditLogCreate) SetSessionID(v string) *LoginAuditLogCreate {
+	_c.mutation.SetSessionID(v)
+	return _c
+}
+
+// SetNillableSessionID sets the "session_id" field if the given value is not nil.
+func (_c *LoginAuditLogCreate) SetNillableSessionID(v *string) *LoginAuditLogCreate {
 	if v != nil {
-		_c.SetSuccess(*v)
+		_c.SetSessionID(*v)
 	}
 	return _c
 }
 
-// SetReason sets the "reason" field.
-func (_c *LoginAuditLogCreate) SetReason(v string) *LoginAuditLogCreate {
-	_c.mutation.SetReason(v)
+// SetDeviceInfo sets the "device_info" field.
+func (_c *LoginAuditLogCreate) SetDeviceInfo(v *servicev1.DeviceInfo) *LoginAuditLogCreate {
+	_c.mutation.SetDeviceInfo(v)
 	return _c
 }
 
-// SetNillableReason sets the "reason" field if the given value is not nil.
-func (_c *LoginAuditLogCreate) SetNillableReason(v *string) *LoginAuditLogCreate {
+// SetRequestID sets the "request_id" field.
+func (_c *LoginAuditLogCreate) SetRequestID(v string) *LoginAuditLogCreate {
+	_c.mutation.SetRequestID(v)
+	return _c
+}
+
+// SetNillableRequestID sets the "request_id" field if the given value is not nil.
+func (_c *LoginAuditLogCreate) SetNillableRequestID(v *string) *LoginAuditLogCreate {
 	if v != nil {
-		_c.SetReason(*v)
+		_c.SetRequestID(*v)
 	}
 	return _c
 }
 
-// SetLocation sets the "location" field.
-func (_c *LoginAuditLogCreate) SetLocation(v string) *LoginAuditLogCreate {
-	_c.mutation.SetLocation(v)
+// SetActionType sets the "action_type" field.
+func (_c *LoginAuditLogCreate) SetActionType(v loginauditlog.ActionType) *LoginAuditLogCreate {
+	_c.mutation.SetActionType(v)
 	return _c
 }
 
-// SetNillableLocation sets the "location" field if the given value is not nil.
-func (_c *LoginAuditLogCreate) SetNillableLocation(v *string) *LoginAuditLogCreate {
+// SetNillableActionType sets the "action_type" field if the given value is not nil.
+func (_c *LoginAuditLogCreate) SetNillableActionType(v *loginauditlog.ActionType) *LoginAuditLogCreate {
 	if v != nil {
-		_c.SetLocation(*v)
+		_c.SetActionType(*v)
 	}
+	return _c
+}
+
+// SetStatus sets the "status" field.
+func (_c *LoginAuditLogCreate) SetStatus(v loginauditlog.Status) *LoginAuditLogCreate {
+	_c.mutation.SetStatus(v)
+	return _c
+}
+
+// SetNillableStatus sets the "status" field if the given value is not nil.
+func (_c *LoginAuditLogCreate) SetNillableStatus(v *loginauditlog.Status) *LoginAuditLogCreate {
+	if v != nil {
+		_c.SetStatus(*v)
+	}
+	return _c
+}
+
+// SetFailureReason sets the "failure_reason" field.
+func (_c *LoginAuditLogCreate) SetFailureReason(v string) *LoginAuditLogCreate {
+	_c.mutation.SetFailureReason(v)
+	return _c
+}
+
+// SetNillableFailureReason sets the "failure_reason" field if the given value is not nil.
+func (_c *LoginAuditLogCreate) SetNillableFailureReason(v *string) *LoginAuditLogCreate {
+	if v != nil {
+		_c.SetFailureReason(*v)
+	}
+	return _c
+}
+
+// SetMfaStatus sets the "mfa_status" field.
+func (_c *LoginAuditLogCreate) SetMfaStatus(v string) *LoginAuditLogCreate {
+	_c.mutation.SetMfaStatus(v)
+	return _c
+}
+
+// SetNillableMfaStatus sets the "mfa_status" field if the given value is not nil.
+func (_c *LoginAuditLogCreate) SetNillableMfaStatus(v *string) *LoginAuditLogCreate {
+	if v != nil {
+		_c.SetMfaStatus(*v)
+	}
+	return _c
+}
+
+// SetRiskScore sets the "risk_score" field.
+func (_c *LoginAuditLogCreate) SetRiskScore(v uint32) *LoginAuditLogCreate {
+	_c.mutation.SetRiskScore(v)
+	return _c
+}
+
+// SetNillableRiskScore sets the "risk_score" field if the given value is not nil.
+func (_c *LoginAuditLogCreate) SetNillableRiskScore(v *uint32) *LoginAuditLogCreate {
+	if v != nil {
+		_c.SetRiskScore(*v)
+	}
+	return _c
+}
+
+// SetRiskLevel sets the "risk_level" field.
+func (_c *LoginAuditLogCreate) SetRiskLevel(v loginauditlog.RiskLevel) *LoginAuditLogCreate {
+	_c.mutation.SetRiskLevel(v)
+	return _c
+}
+
+// SetNillableRiskLevel sets the "risk_level" field if the given value is not nil.
+func (_c *LoginAuditLogCreate) SetNillableRiskLevel(v *loginauditlog.RiskLevel) *LoginAuditLogCreate {
+	if v != nil {
+		_c.SetRiskLevel(*v)
+	}
+	return _c
+}
+
+// SetRiskFactors sets the "risk_factors" field.
+func (_c *LoginAuditLogCreate) SetRiskFactors(v []string) *LoginAuditLogCreate {
+	_c.mutation.SetRiskFactors(v)
+	return _c
+}
+
+// SetLogHash sets the "log_hash" field.
+func (_c *LoginAuditLogCreate) SetLogHash(v string) *LoginAuditLogCreate {
+	_c.mutation.SetLogHash(v)
+	return _c
+}
+
+// SetNillableLogHash sets the "log_hash" field if the given value is not nil.
+func (_c *LoginAuditLogCreate) SetNillableLogHash(v *string) *LoginAuditLogCreate {
+	if v != nil {
+		_c.SetLogHash(*v)
+	}
+	return _c
+}
+
+// SetSignature sets the "signature" field.
+func (_c *LoginAuditLogCreate) SetSignature(v []byte) *LoginAuditLogCreate {
+	_c.mutation.SetSignature(v)
 	return _c
 }
 
@@ -314,6 +283,31 @@ func (_c *LoginAuditLogCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *LoginAuditLogCreate) check() error {
+	if v, ok := _c.mutation.GeoLocation(); ok {
+		if err := v.Validate(); err != nil {
+			return &ValidationError{Name: "geo_location", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.geo_location": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.DeviceInfo(); ok {
+		if err := v.Validate(); err != nil {
+			return &ValidationError{Name: "device_info", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.device_info": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.ActionType(); ok {
+		if err := loginauditlog.ActionTypeValidator(v); err != nil {
+			return &ValidationError{Name: "action_type", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.action_type": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.Status(); ok {
+		if err := loginauditlog.StatusValidator(v); err != nil {
+			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.status": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.RiskLevel(); ok {
+		if err := loginauditlog.RiskLevelValidator(v); err != nil {
+			return &ValidationError{Name: "risk_level", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.risk_level": %w`, err)}
+		}
+	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := loginauditlog.IDValidator(v); err != nil {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.id": %w`, err)}
@@ -360,46 +354,6 @@ func (_c *LoginAuditLogCreate) createSpec() (*LoginAuditLog, *sqlgraph.CreateSpe
 		_spec.SetField(loginauditlog.FieldTenantID, field.TypeUint32, value)
 		_node.TenantID = &value
 	}
-	if value, ok := _c.mutation.LoginIP(); ok {
-		_spec.SetField(loginauditlog.FieldLoginIP, field.TypeString, value)
-		_node.LoginIP = &value
-	}
-	if value, ok := _c.mutation.LoginMAC(); ok {
-		_spec.SetField(loginauditlog.FieldLoginMAC, field.TypeString, value)
-		_node.LoginMAC = &value
-	}
-	if value, ok := _c.mutation.LoginTime(); ok {
-		_spec.SetField(loginauditlog.FieldLoginTime, field.TypeTime, value)
-		_node.LoginTime = &value
-	}
-	if value, ok := _c.mutation.UserAgent(); ok {
-		_spec.SetField(loginauditlog.FieldUserAgent, field.TypeString, value)
-		_node.UserAgent = &value
-	}
-	if value, ok := _c.mutation.BrowserName(); ok {
-		_spec.SetField(loginauditlog.FieldBrowserName, field.TypeString, value)
-		_node.BrowserName = &value
-	}
-	if value, ok := _c.mutation.BrowserVersion(); ok {
-		_spec.SetField(loginauditlog.FieldBrowserVersion, field.TypeString, value)
-		_node.BrowserVersion = &value
-	}
-	if value, ok := _c.mutation.ClientID(); ok {
-		_spec.SetField(loginauditlog.FieldClientID, field.TypeString, value)
-		_node.ClientID = &value
-	}
-	if value, ok := _c.mutation.ClientName(); ok {
-		_spec.SetField(loginauditlog.FieldClientName, field.TypeString, value)
-		_node.ClientName = &value
-	}
-	if value, ok := _c.mutation.OsName(); ok {
-		_spec.SetField(loginauditlog.FieldOsName, field.TypeString, value)
-		_node.OsName = &value
-	}
-	if value, ok := _c.mutation.OsVersion(); ok {
-		_spec.SetField(loginauditlog.FieldOsVersion, field.TypeString, value)
-		_node.OsVersion = &value
-	}
 	if value, ok := _c.mutation.UserID(); ok {
 		_spec.SetField(loginauditlog.FieldUserID, field.TypeUint32, value)
 		_node.UserID = &value
@@ -408,21 +362,61 @@ func (_c *LoginAuditLogCreate) createSpec() (*LoginAuditLog, *sqlgraph.CreateSpe
 		_spec.SetField(loginauditlog.FieldUsername, field.TypeString, value)
 		_node.Username = &value
 	}
-	if value, ok := _c.mutation.StatusCode(); ok {
-		_spec.SetField(loginauditlog.FieldStatusCode, field.TypeInt32, value)
-		_node.StatusCode = &value
+	if value, ok := _c.mutation.IPAddress(); ok {
+		_spec.SetField(loginauditlog.FieldIPAddress, field.TypeString, value)
+		_node.IPAddress = &value
 	}
-	if value, ok := _c.mutation.Success(); ok {
-		_spec.SetField(loginauditlog.FieldSuccess, field.TypeBool, value)
-		_node.Success = &value
+	if value, ok := _c.mutation.GeoLocation(); ok {
+		_spec.SetField(loginauditlog.FieldGeoLocation, field.TypeJSON, value)
+		_node.GeoLocation = value
 	}
-	if value, ok := _c.mutation.Reason(); ok {
-		_spec.SetField(loginauditlog.FieldReason, field.TypeString, value)
-		_node.Reason = &value
+	if value, ok := _c.mutation.SessionID(); ok {
+		_spec.SetField(loginauditlog.FieldSessionID, field.TypeString, value)
+		_node.SessionID = &value
 	}
-	if value, ok := _c.mutation.Location(); ok {
-		_spec.SetField(loginauditlog.FieldLocation, field.TypeString, value)
-		_node.Location = &value
+	if value, ok := _c.mutation.DeviceInfo(); ok {
+		_spec.SetField(loginauditlog.FieldDeviceInfo, field.TypeJSON, value)
+		_node.DeviceInfo = value
+	}
+	if value, ok := _c.mutation.RequestID(); ok {
+		_spec.SetField(loginauditlog.FieldRequestID, field.TypeString, value)
+		_node.RequestID = &value
+	}
+	if value, ok := _c.mutation.ActionType(); ok {
+		_spec.SetField(loginauditlog.FieldActionType, field.TypeEnum, value)
+		_node.ActionType = &value
+	}
+	if value, ok := _c.mutation.Status(); ok {
+		_spec.SetField(loginauditlog.FieldStatus, field.TypeEnum, value)
+		_node.Status = &value
+	}
+	if value, ok := _c.mutation.FailureReason(); ok {
+		_spec.SetField(loginauditlog.FieldFailureReason, field.TypeString, value)
+		_node.FailureReason = &value
+	}
+	if value, ok := _c.mutation.MfaStatus(); ok {
+		_spec.SetField(loginauditlog.FieldMfaStatus, field.TypeString, value)
+		_node.MfaStatus = &value
+	}
+	if value, ok := _c.mutation.RiskScore(); ok {
+		_spec.SetField(loginauditlog.FieldRiskScore, field.TypeUint32, value)
+		_node.RiskScore = &value
+	}
+	if value, ok := _c.mutation.RiskLevel(); ok {
+		_spec.SetField(loginauditlog.FieldRiskLevel, field.TypeEnum, value)
+		_node.RiskLevel = &value
+	}
+	if value, ok := _c.mutation.RiskFactors(); ok {
+		_spec.SetField(loginauditlog.FieldRiskFactors, field.TypeJSON, value)
+		_node.RiskFactors = value
+	}
+	if value, ok := _c.mutation.LogHash(); ok {
+		_spec.SetField(loginauditlog.FieldLogHash, field.TypeString, value)
+		_node.LogHash = &value
+	}
+	if value, ok := _c.mutation.Signature(); ok {
+		_spec.SetField(loginauditlog.FieldSignature, field.TypeBytes, value)
+		_node.Signature = &value
 	}
 	return _node, _spec
 }
@@ -476,186 +470,6 @@ type (
 	}
 )
 
-// SetLoginIP sets the "login_ip" field.
-func (u *LoginAuditLogUpsert) SetLoginIP(v string) *LoginAuditLogUpsert {
-	u.Set(loginauditlog.FieldLoginIP, v)
-	return u
-}
-
-// UpdateLoginIP sets the "login_ip" field to the value that was provided on create.
-func (u *LoginAuditLogUpsert) UpdateLoginIP() *LoginAuditLogUpsert {
-	u.SetExcluded(loginauditlog.FieldLoginIP)
-	return u
-}
-
-// ClearLoginIP clears the value of the "login_ip" field.
-func (u *LoginAuditLogUpsert) ClearLoginIP() *LoginAuditLogUpsert {
-	u.SetNull(loginauditlog.FieldLoginIP)
-	return u
-}
-
-// SetLoginMAC sets the "login_mac" field.
-func (u *LoginAuditLogUpsert) SetLoginMAC(v string) *LoginAuditLogUpsert {
-	u.Set(loginauditlog.FieldLoginMAC, v)
-	return u
-}
-
-// UpdateLoginMAC sets the "login_mac" field to the value that was provided on create.
-func (u *LoginAuditLogUpsert) UpdateLoginMAC() *LoginAuditLogUpsert {
-	u.SetExcluded(loginauditlog.FieldLoginMAC)
-	return u
-}
-
-// ClearLoginMAC clears the value of the "login_mac" field.
-func (u *LoginAuditLogUpsert) ClearLoginMAC() *LoginAuditLogUpsert {
-	u.SetNull(loginauditlog.FieldLoginMAC)
-	return u
-}
-
-// SetLoginTime sets the "login_time" field.
-func (u *LoginAuditLogUpsert) SetLoginTime(v time.Time) *LoginAuditLogUpsert {
-	u.Set(loginauditlog.FieldLoginTime, v)
-	return u
-}
-
-// UpdateLoginTime sets the "login_time" field to the value that was provided on create.
-func (u *LoginAuditLogUpsert) UpdateLoginTime() *LoginAuditLogUpsert {
-	u.SetExcluded(loginauditlog.FieldLoginTime)
-	return u
-}
-
-// ClearLoginTime clears the value of the "login_time" field.
-func (u *LoginAuditLogUpsert) ClearLoginTime() *LoginAuditLogUpsert {
-	u.SetNull(loginauditlog.FieldLoginTime)
-	return u
-}
-
-// SetUserAgent sets the "user_agent" field.
-func (u *LoginAuditLogUpsert) SetUserAgent(v string) *LoginAuditLogUpsert {
-	u.Set(loginauditlog.FieldUserAgent, v)
-	return u
-}
-
-// UpdateUserAgent sets the "user_agent" field to the value that was provided on create.
-func (u *LoginAuditLogUpsert) UpdateUserAgent() *LoginAuditLogUpsert {
-	u.SetExcluded(loginauditlog.FieldUserAgent)
-	return u
-}
-
-// ClearUserAgent clears the value of the "user_agent" field.
-func (u *LoginAuditLogUpsert) ClearUserAgent() *LoginAuditLogUpsert {
-	u.SetNull(loginauditlog.FieldUserAgent)
-	return u
-}
-
-// SetBrowserName sets the "browser_name" field.
-func (u *LoginAuditLogUpsert) SetBrowserName(v string) *LoginAuditLogUpsert {
-	u.Set(loginauditlog.FieldBrowserName, v)
-	return u
-}
-
-// UpdateBrowserName sets the "browser_name" field to the value that was provided on create.
-func (u *LoginAuditLogUpsert) UpdateBrowserName() *LoginAuditLogUpsert {
-	u.SetExcluded(loginauditlog.FieldBrowserName)
-	return u
-}
-
-// ClearBrowserName clears the value of the "browser_name" field.
-func (u *LoginAuditLogUpsert) ClearBrowserName() *LoginAuditLogUpsert {
-	u.SetNull(loginauditlog.FieldBrowserName)
-	return u
-}
-
-// SetBrowserVersion sets the "browser_version" field.
-func (u *LoginAuditLogUpsert) SetBrowserVersion(v string) *LoginAuditLogUpsert {
-	u.Set(loginauditlog.FieldBrowserVersion, v)
-	return u
-}
-
-// UpdateBrowserVersion sets the "browser_version" field to the value that was provided on create.
-func (u *LoginAuditLogUpsert) UpdateBrowserVersion() *LoginAuditLogUpsert {
-	u.SetExcluded(loginauditlog.FieldBrowserVersion)
-	return u
-}
-
-// ClearBrowserVersion clears the value of the "browser_version" field.
-func (u *LoginAuditLogUpsert) ClearBrowserVersion() *LoginAuditLogUpsert {
-	u.SetNull(loginauditlog.FieldBrowserVersion)
-	return u
-}
-
-// SetClientID sets the "client_id" field.
-func (u *LoginAuditLogUpsert) SetClientID(v string) *LoginAuditLogUpsert {
-	u.Set(loginauditlog.FieldClientID, v)
-	return u
-}
-
-// UpdateClientID sets the "client_id" field to the value that was provided on create.
-func (u *LoginAuditLogUpsert) UpdateClientID() *LoginAuditLogUpsert {
-	u.SetExcluded(loginauditlog.FieldClientID)
-	return u
-}
-
-// ClearClientID clears the value of the "client_id" field.
-func (u *LoginAuditLogUpsert) ClearClientID() *LoginAuditLogUpsert {
-	u.SetNull(loginauditlog.FieldClientID)
-	return u
-}
-
-// SetClientName sets the "client_name" field.
-func (u *LoginAuditLogUpsert) SetClientName(v string) *LoginAuditLogUpsert {
-	u.Set(loginauditlog.FieldClientName, v)
-	return u
-}
-
-// UpdateClientName sets the "client_name" field to the value that was provided on create.
-func (u *LoginAuditLogUpsert) UpdateClientName() *LoginAuditLogUpsert {
-	u.SetExcluded(loginauditlog.FieldClientName)
-	return u
-}
-
-// ClearClientName clears the value of the "client_name" field.
-func (u *LoginAuditLogUpsert) ClearClientName() *LoginAuditLogUpsert {
-	u.SetNull(loginauditlog.FieldClientName)
-	return u
-}
-
-// SetOsName sets the "os_name" field.
-func (u *LoginAuditLogUpsert) SetOsName(v string) *LoginAuditLogUpsert {
-	u.Set(loginauditlog.FieldOsName, v)
-	return u
-}
-
-// UpdateOsName sets the "os_name" field to the value that was provided on create.
-func (u *LoginAuditLogUpsert) UpdateOsName() *LoginAuditLogUpsert {
-	u.SetExcluded(loginauditlog.FieldOsName)
-	return u
-}
-
-// ClearOsName clears the value of the "os_name" field.
-func (u *LoginAuditLogUpsert) ClearOsName() *LoginAuditLogUpsert {
-	u.SetNull(loginauditlog.FieldOsName)
-	return u
-}
-
-// SetOsVersion sets the "os_version" field.
-func (u *LoginAuditLogUpsert) SetOsVersion(v string) *LoginAuditLogUpsert {
-	u.Set(loginauditlog.FieldOsVersion, v)
-	return u
-}
-
-// UpdateOsVersion sets the "os_version" field to the value that was provided on create.
-func (u *LoginAuditLogUpsert) UpdateOsVersion() *LoginAuditLogUpsert {
-	u.SetExcluded(loginauditlog.FieldOsVersion)
-	return u
-}
-
-// ClearOsVersion clears the value of the "os_version" field.
-func (u *LoginAuditLogUpsert) ClearOsVersion() *LoginAuditLogUpsert {
-	u.SetNull(loginauditlog.FieldOsVersion)
-	return u
-}
-
 // SetUserID sets the "user_id" field.
 func (u *LoginAuditLogUpsert) SetUserID(v uint32) *LoginAuditLogUpsert {
 	u.Set(loginauditlog.FieldUserID, v)
@@ -698,81 +512,261 @@ func (u *LoginAuditLogUpsert) ClearUsername() *LoginAuditLogUpsert {
 	return u
 }
 
-// SetStatusCode sets the "status_code" field.
-func (u *LoginAuditLogUpsert) SetStatusCode(v int32) *LoginAuditLogUpsert {
-	u.Set(loginauditlog.FieldStatusCode, v)
+// SetIPAddress sets the "ip_address" field.
+func (u *LoginAuditLogUpsert) SetIPAddress(v string) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldIPAddress, v)
 	return u
 }
 
-// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
-func (u *LoginAuditLogUpsert) UpdateStatusCode() *LoginAuditLogUpsert {
-	u.SetExcluded(loginauditlog.FieldStatusCode)
+// UpdateIPAddress sets the "ip_address" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateIPAddress() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldIPAddress)
 	return u
 }
 
-// AddStatusCode adds v to the "status_code" field.
-func (u *LoginAuditLogUpsert) AddStatusCode(v int32) *LoginAuditLogUpsert {
-	u.Add(loginauditlog.FieldStatusCode, v)
+// ClearIPAddress clears the value of the "ip_address" field.
+func (u *LoginAuditLogUpsert) ClearIPAddress() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldIPAddress)
 	return u
 }
 
-// ClearStatusCode clears the value of the "status_code" field.
-func (u *LoginAuditLogUpsert) ClearStatusCode() *LoginAuditLogUpsert {
-	u.SetNull(loginauditlog.FieldStatusCode)
+// SetGeoLocation sets the "geo_location" field.
+func (u *LoginAuditLogUpsert) SetGeoLocation(v *servicev1.GeoLocation) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldGeoLocation, v)
 	return u
 }
 
-// SetSuccess sets the "success" field.
-func (u *LoginAuditLogUpsert) SetSuccess(v bool) *LoginAuditLogUpsert {
-	u.Set(loginauditlog.FieldSuccess, v)
+// UpdateGeoLocation sets the "geo_location" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateGeoLocation() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldGeoLocation)
 	return u
 }
 
-// UpdateSuccess sets the "success" field to the value that was provided on create.
-func (u *LoginAuditLogUpsert) UpdateSuccess() *LoginAuditLogUpsert {
-	u.SetExcluded(loginauditlog.FieldSuccess)
+// ClearGeoLocation clears the value of the "geo_location" field.
+func (u *LoginAuditLogUpsert) ClearGeoLocation() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldGeoLocation)
 	return u
 }
 
-// ClearSuccess clears the value of the "success" field.
-func (u *LoginAuditLogUpsert) ClearSuccess() *LoginAuditLogUpsert {
-	u.SetNull(loginauditlog.FieldSuccess)
+// SetSessionID sets the "session_id" field.
+func (u *LoginAuditLogUpsert) SetSessionID(v string) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldSessionID, v)
 	return u
 }
 
-// SetReason sets the "reason" field.
-func (u *LoginAuditLogUpsert) SetReason(v string) *LoginAuditLogUpsert {
-	u.Set(loginauditlog.FieldReason, v)
+// UpdateSessionID sets the "session_id" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateSessionID() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldSessionID)
 	return u
 }
 
-// UpdateReason sets the "reason" field to the value that was provided on create.
-func (u *LoginAuditLogUpsert) UpdateReason() *LoginAuditLogUpsert {
-	u.SetExcluded(loginauditlog.FieldReason)
+// ClearSessionID clears the value of the "session_id" field.
+func (u *LoginAuditLogUpsert) ClearSessionID() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldSessionID)
 	return u
 }
 
-// ClearReason clears the value of the "reason" field.
-func (u *LoginAuditLogUpsert) ClearReason() *LoginAuditLogUpsert {
-	u.SetNull(loginauditlog.FieldReason)
+// SetDeviceInfo sets the "device_info" field.
+func (u *LoginAuditLogUpsert) SetDeviceInfo(v *servicev1.DeviceInfo) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldDeviceInfo, v)
 	return u
 }
 
-// SetLocation sets the "location" field.
-func (u *LoginAuditLogUpsert) SetLocation(v string) *LoginAuditLogUpsert {
-	u.Set(loginauditlog.FieldLocation, v)
+// UpdateDeviceInfo sets the "device_info" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateDeviceInfo() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldDeviceInfo)
 	return u
 }
 
-// UpdateLocation sets the "location" field to the value that was provided on create.
-func (u *LoginAuditLogUpsert) UpdateLocation() *LoginAuditLogUpsert {
-	u.SetExcluded(loginauditlog.FieldLocation)
+// ClearDeviceInfo clears the value of the "device_info" field.
+func (u *LoginAuditLogUpsert) ClearDeviceInfo() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldDeviceInfo)
 	return u
 }
 
-// ClearLocation clears the value of the "location" field.
-func (u *LoginAuditLogUpsert) ClearLocation() *LoginAuditLogUpsert {
-	u.SetNull(loginauditlog.FieldLocation)
+// SetRequestID sets the "request_id" field.
+func (u *LoginAuditLogUpsert) SetRequestID(v string) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldRequestID, v)
+	return u
+}
+
+// UpdateRequestID sets the "request_id" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateRequestID() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldRequestID)
+	return u
+}
+
+// ClearRequestID clears the value of the "request_id" field.
+func (u *LoginAuditLogUpsert) ClearRequestID() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldRequestID)
+	return u
+}
+
+// SetActionType sets the "action_type" field.
+func (u *LoginAuditLogUpsert) SetActionType(v loginauditlog.ActionType) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldActionType, v)
+	return u
+}
+
+// UpdateActionType sets the "action_type" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateActionType() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldActionType)
+	return u
+}
+
+// ClearActionType clears the value of the "action_type" field.
+func (u *LoginAuditLogUpsert) ClearActionType() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldActionType)
+	return u
+}
+
+// SetStatus sets the "status" field.
+func (u *LoginAuditLogUpsert) SetStatus(v loginauditlog.Status) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldStatus, v)
+	return u
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateStatus() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldStatus)
+	return u
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *LoginAuditLogUpsert) ClearStatus() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldStatus)
+	return u
+}
+
+// SetFailureReason sets the "failure_reason" field.
+func (u *LoginAuditLogUpsert) SetFailureReason(v string) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldFailureReason, v)
+	return u
+}
+
+// UpdateFailureReason sets the "failure_reason" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateFailureReason() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldFailureReason)
+	return u
+}
+
+// ClearFailureReason clears the value of the "failure_reason" field.
+func (u *LoginAuditLogUpsert) ClearFailureReason() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldFailureReason)
+	return u
+}
+
+// SetMfaStatus sets the "mfa_status" field.
+func (u *LoginAuditLogUpsert) SetMfaStatus(v string) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldMfaStatus, v)
+	return u
+}
+
+// UpdateMfaStatus sets the "mfa_status" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateMfaStatus() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldMfaStatus)
+	return u
+}
+
+// ClearMfaStatus clears the value of the "mfa_status" field.
+func (u *LoginAuditLogUpsert) ClearMfaStatus() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldMfaStatus)
+	return u
+}
+
+// SetRiskScore sets the "risk_score" field.
+func (u *LoginAuditLogUpsert) SetRiskScore(v uint32) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldRiskScore, v)
+	return u
+}
+
+// UpdateRiskScore sets the "risk_score" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateRiskScore() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldRiskScore)
+	return u
+}
+
+// AddRiskScore adds v to the "risk_score" field.
+func (u *LoginAuditLogUpsert) AddRiskScore(v uint32) *LoginAuditLogUpsert {
+	u.Add(loginauditlog.FieldRiskScore, v)
+	return u
+}
+
+// ClearRiskScore clears the value of the "risk_score" field.
+func (u *LoginAuditLogUpsert) ClearRiskScore() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldRiskScore)
+	return u
+}
+
+// SetRiskLevel sets the "risk_level" field.
+func (u *LoginAuditLogUpsert) SetRiskLevel(v loginauditlog.RiskLevel) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldRiskLevel, v)
+	return u
+}
+
+// UpdateRiskLevel sets the "risk_level" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateRiskLevel() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldRiskLevel)
+	return u
+}
+
+// ClearRiskLevel clears the value of the "risk_level" field.
+func (u *LoginAuditLogUpsert) ClearRiskLevel() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldRiskLevel)
+	return u
+}
+
+// SetRiskFactors sets the "risk_factors" field.
+func (u *LoginAuditLogUpsert) SetRiskFactors(v []string) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldRiskFactors, v)
+	return u
+}
+
+// UpdateRiskFactors sets the "risk_factors" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateRiskFactors() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldRiskFactors)
+	return u
+}
+
+// ClearRiskFactors clears the value of the "risk_factors" field.
+func (u *LoginAuditLogUpsert) ClearRiskFactors() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldRiskFactors)
+	return u
+}
+
+// SetLogHash sets the "log_hash" field.
+func (u *LoginAuditLogUpsert) SetLogHash(v string) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldLogHash, v)
+	return u
+}
+
+// UpdateLogHash sets the "log_hash" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateLogHash() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldLogHash)
+	return u
+}
+
+// ClearLogHash clears the value of the "log_hash" field.
+func (u *LoginAuditLogUpsert) ClearLogHash() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldLogHash)
+	return u
+}
+
+// SetSignature sets the "signature" field.
+func (u *LoginAuditLogUpsert) SetSignature(v []byte) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldSignature, v)
+	return u
+}
+
+// UpdateSignature sets the "signature" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateSignature() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldSignature)
+	return u
+}
+
+// ClearSignature clears the value of the "signature" field.
+func (u *LoginAuditLogUpsert) ClearSignature() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldSignature)
 	return u
 }
 
@@ -830,216 +824,6 @@ func (u *LoginAuditLogUpsertOne) Update(set func(*LoginAuditLogUpsert)) *LoginAu
 	return u
 }
 
-// SetLoginIP sets the "login_ip" field.
-func (u *LoginAuditLogUpsertOne) SetLoginIP(v string) *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetLoginIP(v)
-	})
-}
-
-// UpdateLoginIP sets the "login_ip" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertOne) UpdateLoginIP() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateLoginIP()
-	})
-}
-
-// ClearLoginIP clears the value of the "login_ip" field.
-func (u *LoginAuditLogUpsertOne) ClearLoginIP() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearLoginIP()
-	})
-}
-
-// SetLoginMAC sets the "login_mac" field.
-func (u *LoginAuditLogUpsertOne) SetLoginMAC(v string) *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetLoginMAC(v)
-	})
-}
-
-// UpdateLoginMAC sets the "login_mac" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertOne) UpdateLoginMAC() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateLoginMAC()
-	})
-}
-
-// ClearLoginMAC clears the value of the "login_mac" field.
-func (u *LoginAuditLogUpsertOne) ClearLoginMAC() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearLoginMAC()
-	})
-}
-
-// SetLoginTime sets the "login_time" field.
-func (u *LoginAuditLogUpsertOne) SetLoginTime(v time.Time) *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetLoginTime(v)
-	})
-}
-
-// UpdateLoginTime sets the "login_time" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertOne) UpdateLoginTime() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateLoginTime()
-	})
-}
-
-// ClearLoginTime clears the value of the "login_time" field.
-func (u *LoginAuditLogUpsertOne) ClearLoginTime() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearLoginTime()
-	})
-}
-
-// SetUserAgent sets the "user_agent" field.
-func (u *LoginAuditLogUpsertOne) SetUserAgent(v string) *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetUserAgent(v)
-	})
-}
-
-// UpdateUserAgent sets the "user_agent" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertOne) UpdateUserAgent() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateUserAgent()
-	})
-}
-
-// ClearUserAgent clears the value of the "user_agent" field.
-func (u *LoginAuditLogUpsertOne) ClearUserAgent() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearUserAgent()
-	})
-}
-
-// SetBrowserName sets the "browser_name" field.
-func (u *LoginAuditLogUpsertOne) SetBrowserName(v string) *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetBrowserName(v)
-	})
-}
-
-// UpdateBrowserName sets the "browser_name" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertOne) UpdateBrowserName() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateBrowserName()
-	})
-}
-
-// ClearBrowserName clears the value of the "browser_name" field.
-func (u *LoginAuditLogUpsertOne) ClearBrowserName() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearBrowserName()
-	})
-}
-
-// SetBrowserVersion sets the "browser_version" field.
-func (u *LoginAuditLogUpsertOne) SetBrowserVersion(v string) *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetBrowserVersion(v)
-	})
-}
-
-// UpdateBrowserVersion sets the "browser_version" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertOne) UpdateBrowserVersion() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateBrowserVersion()
-	})
-}
-
-// ClearBrowserVersion clears the value of the "browser_version" field.
-func (u *LoginAuditLogUpsertOne) ClearBrowserVersion() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearBrowserVersion()
-	})
-}
-
-// SetClientID sets the "client_id" field.
-func (u *LoginAuditLogUpsertOne) SetClientID(v string) *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetClientID(v)
-	})
-}
-
-// UpdateClientID sets the "client_id" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertOne) UpdateClientID() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateClientID()
-	})
-}
-
-// ClearClientID clears the value of the "client_id" field.
-func (u *LoginAuditLogUpsertOne) ClearClientID() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearClientID()
-	})
-}
-
-// SetClientName sets the "client_name" field.
-func (u *LoginAuditLogUpsertOne) SetClientName(v string) *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetClientName(v)
-	})
-}
-
-// UpdateClientName sets the "client_name" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertOne) UpdateClientName() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateClientName()
-	})
-}
-
-// ClearClientName clears the value of the "client_name" field.
-func (u *LoginAuditLogUpsertOne) ClearClientName() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearClientName()
-	})
-}
-
-// SetOsName sets the "os_name" field.
-func (u *LoginAuditLogUpsertOne) SetOsName(v string) *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetOsName(v)
-	})
-}
-
-// UpdateOsName sets the "os_name" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertOne) UpdateOsName() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateOsName()
-	})
-}
-
-// ClearOsName clears the value of the "os_name" field.
-func (u *LoginAuditLogUpsertOne) ClearOsName() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearOsName()
-	})
-}
-
-// SetOsVersion sets the "os_version" field.
-func (u *LoginAuditLogUpsertOne) SetOsVersion(v string) *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetOsVersion(v)
-	})
-}
-
-// UpdateOsVersion sets the "os_version" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertOne) UpdateOsVersion() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateOsVersion()
-	})
-}
-
-// ClearOsVersion clears the value of the "os_version" field.
-func (u *LoginAuditLogUpsertOne) ClearOsVersion() *LoginAuditLogUpsertOne {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearOsVersion()
-	})
-}
-
 // SetUserID sets the "user_id" field.
 func (u *LoginAuditLogUpsertOne) SetUserID(v uint32) *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
@@ -1089,94 +873,304 @@ func (u *LoginAuditLogUpsertOne) ClearUsername() *LoginAuditLogUpsertOne {
 	})
 }
 
-// SetStatusCode sets the "status_code" field.
-func (u *LoginAuditLogUpsertOne) SetStatusCode(v int32) *LoginAuditLogUpsertOne {
+// SetIPAddress sets the "ip_address" field.
+func (u *LoginAuditLogUpsertOne) SetIPAddress(v string) *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetStatusCode(v)
+		s.SetIPAddress(v)
 	})
 }
 
-// AddStatusCode adds v to the "status_code" field.
-func (u *LoginAuditLogUpsertOne) AddStatusCode(v int32) *LoginAuditLogUpsertOne {
+// UpdateIPAddress sets the "ip_address" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateIPAddress() *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.AddStatusCode(v)
+		s.UpdateIPAddress()
 	})
 }
 
-// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertOne) UpdateStatusCode() *LoginAuditLogUpsertOne {
+// ClearIPAddress clears the value of the "ip_address" field.
+func (u *LoginAuditLogUpsertOne) ClearIPAddress() *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateStatusCode()
+		s.ClearIPAddress()
 	})
 }
 
-// ClearStatusCode clears the value of the "status_code" field.
-func (u *LoginAuditLogUpsertOne) ClearStatusCode() *LoginAuditLogUpsertOne {
+// SetGeoLocation sets the "geo_location" field.
+func (u *LoginAuditLogUpsertOne) SetGeoLocation(v *servicev1.GeoLocation) *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearStatusCode()
+		s.SetGeoLocation(v)
 	})
 }
 
-// SetSuccess sets the "success" field.
-func (u *LoginAuditLogUpsertOne) SetSuccess(v bool) *LoginAuditLogUpsertOne {
+// UpdateGeoLocation sets the "geo_location" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateGeoLocation() *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetSuccess(v)
+		s.UpdateGeoLocation()
 	})
 }
 
-// UpdateSuccess sets the "success" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertOne) UpdateSuccess() *LoginAuditLogUpsertOne {
+// ClearGeoLocation clears the value of the "geo_location" field.
+func (u *LoginAuditLogUpsertOne) ClearGeoLocation() *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateSuccess()
+		s.ClearGeoLocation()
 	})
 }
 
-// ClearSuccess clears the value of the "success" field.
-func (u *LoginAuditLogUpsertOne) ClearSuccess() *LoginAuditLogUpsertOne {
+// SetSessionID sets the "session_id" field.
+func (u *LoginAuditLogUpsertOne) SetSessionID(v string) *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearSuccess()
+		s.SetSessionID(v)
 	})
 }
 
-// SetReason sets the "reason" field.
-func (u *LoginAuditLogUpsertOne) SetReason(v string) *LoginAuditLogUpsertOne {
+// UpdateSessionID sets the "session_id" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateSessionID() *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetReason(v)
+		s.UpdateSessionID()
 	})
 }
 
-// UpdateReason sets the "reason" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertOne) UpdateReason() *LoginAuditLogUpsertOne {
+// ClearSessionID clears the value of the "session_id" field.
+func (u *LoginAuditLogUpsertOne) ClearSessionID() *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateReason()
+		s.ClearSessionID()
 	})
 }
 
-// ClearReason clears the value of the "reason" field.
-func (u *LoginAuditLogUpsertOne) ClearReason() *LoginAuditLogUpsertOne {
+// SetDeviceInfo sets the "device_info" field.
+func (u *LoginAuditLogUpsertOne) SetDeviceInfo(v *servicev1.DeviceInfo) *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearReason()
+		s.SetDeviceInfo(v)
 	})
 }
 
-// SetLocation sets the "location" field.
-func (u *LoginAuditLogUpsertOne) SetLocation(v string) *LoginAuditLogUpsertOne {
+// UpdateDeviceInfo sets the "device_info" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateDeviceInfo() *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetLocation(v)
+		s.UpdateDeviceInfo()
 	})
 }
 
-// UpdateLocation sets the "location" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertOne) UpdateLocation() *LoginAuditLogUpsertOne {
+// ClearDeviceInfo clears the value of the "device_info" field.
+func (u *LoginAuditLogUpsertOne) ClearDeviceInfo() *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateLocation()
+		s.ClearDeviceInfo()
 	})
 }
 
-// ClearLocation clears the value of the "location" field.
-func (u *LoginAuditLogUpsertOne) ClearLocation() *LoginAuditLogUpsertOne {
+// SetRequestID sets the "request_id" field.
+func (u *LoginAuditLogUpsertOne) SetRequestID(v string) *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearLocation()
+		s.SetRequestID(v)
+	})
+}
+
+// UpdateRequestID sets the "request_id" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateRequestID() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateRequestID()
+	})
+}
+
+// ClearRequestID clears the value of the "request_id" field.
+func (u *LoginAuditLogUpsertOne) ClearRequestID() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearRequestID()
+	})
+}
+
+// SetActionType sets the "action_type" field.
+func (u *LoginAuditLogUpsertOne) SetActionType(v loginauditlog.ActionType) *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetActionType(v)
+	})
+}
+
+// UpdateActionType sets the "action_type" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateActionType() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateActionType()
+	})
+}
+
+// ClearActionType clears the value of the "action_type" field.
+func (u *LoginAuditLogUpsertOne) ClearActionType() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearActionType()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *LoginAuditLogUpsertOne) SetStatus(v loginauditlog.Status) *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateStatus() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *LoginAuditLogUpsertOne) ClearStatus() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearStatus()
+	})
+}
+
+// SetFailureReason sets the "failure_reason" field.
+func (u *LoginAuditLogUpsertOne) SetFailureReason(v string) *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetFailureReason(v)
+	})
+}
+
+// UpdateFailureReason sets the "failure_reason" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateFailureReason() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateFailureReason()
+	})
+}
+
+// ClearFailureReason clears the value of the "failure_reason" field.
+func (u *LoginAuditLogUpsertOne) ClearFailureReason() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearFailureReason()
+	})
+}
+
+// SetMfaStatus sets the "mfa_status" field.
+func (u *LoginAuditLogUpsertOne) SetMfaStatus(v string) *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetMfaStatus(v)
+	})
+}
+
+// UpdateMfaStatus sets the "mfa_status" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateMfaStatus() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateMfaStatus()
+	})
+}
+
+// ClearMfaStatus clears the value of the "mfa_status" field.
+func (u *LoginAuditLogUpsertOne) ClearMfaStatus() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearMfaStatus()
+	})
+}
+
+// SetRiskScore sets the "risk_score" field.
+func (u *LoginAuditLogUpsertOne) SetRiskScore(v uint32) *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetRiskScore(v)
+	})
+}
+
+// AddRiskScore adds v to the "risk_score" field.
+func (u *LoginAuditLogUpsertOne) AddRiskScore(v uint32) *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.AddRiskScore(v)
+	})
+}
+
+// UpdateRiskScore sets the "risk_score" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateRiskScore() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateRiskScore()
+	})
+}
+
+// ClearRiskScore clears the value of the "risk_score" field.
+func (u *LoginAuditLogUpsertOne) ClearRiskScore() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearRiskScore()
+	})
+}
+
+// SetRiskLevel sets the "risk_level" field.
+func (u *LoginAuditLogUpsertOne) SetRiskLevel(v loginauditlog.RiskLevel) *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetRiskLevel(v)
+	})
+}
+
+// UpdateRiskLevel sets the "risk_level" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateRiskLevel() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateRiskLevel()
+	})
+}
+
+// ClearRiskLevel clears the value of the "risk_level" field.
+func (u *LoginAuditLogUpsertOne) ClearRiskLevel() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearRiskLevel()
+	})
+}
+
+// SetRiskFactors sets the "risk_factors" field.
+func (u *LoginAuditLogUpsertOne) SetRiskFactors(v []string) *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetRiskFactors(v)
+	})
+}
+
+// UpdateRiskFactors sets the "risk_factors" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateRiskFactors() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateRiskFactors()
+	})
+}
+
+// ClearRiskFactors clears the value of the "risk_factors" field.
+func (u *LoginAuditLogUpsertOne) ClearRiskFactors() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearRiskFactors()
+	})
+}
+
+// SetLogHash sets the "log_hash" field.
+func (u *LoginAuditLogUpsertOne) SetLogHash(v string) *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetLogHash(v)
+	})
+}
+
+// UpdateLogHash sets the "log_hash" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateLogHash() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateLogHash()
+	})
+}
+
+// ClearLogHash clears the value of the "log_hash" field.
+func (u *LoginAuditLogUpsertOne) ClearLogHash() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearLogHash()
+	})
+}
+
+// SetSignature sets the "signature" field.
+func (u *LoginAuditLogUpsertOne) SetSignature(v []byte) *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetSignature(v)
+	})
+}
+
+// UpdateSignature sets the "signature" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateSignature() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateSignature()
+	})
+}
+
+// ClearSignature clears the value of the "signature" field.
+func (u *LoginAuditLogUpsertOne) ClearSignature() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearSignature()
 	})
 }
 
@@ -1399,216 +1393,6 @@ func (u *LoginAuditLogUpsertBulk) Update(set func(*LoginAuditLogUpsert)) *LoginA
 	return u
 }
 
-// SetLoginIP sets the "login_ip" field.
-func (u *LoginAuditLogUpsertBulk) SetLoginIP(v string) *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetLoginIP(v)
-	})
-}
-
-// UpdateLoginIP sets the "login_ip" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertBulk) UpdateLoginIP() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateLoginIP()
-	})
-}
-
-// ClearLoginIP clears the value of the "login_ip" field.
-func (u *LoginAuditLogUpsertBulk) ClearLoginIP() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearLoginIP()
-	})
-}
-
-// SetLoginMAC sets the "login_mac" field.
-func (u *LoginAuditLogUpsertBulk) SetLoginMAC(v string) *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetLoginMAC(v)
-	})
-}
-
-// UpdateLoginMAC sets the "login_mac" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertBulk) UpdateLoginMAC() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateLoginMAC()
-	})
-}
-
-// ClearLoginMAC clears the value of the "login_mac" field.
-func (u *LoginAuditLogUpsertBulk) ClearLoginMAC() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearLoginMAC()
-	})
-}
-
-// SetLoginTime sets the "login_time" field.
-func (u *LoginAuditLogUpsertBulk) SetLoginTime(v time.Time) *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetLoginTime(v)
-	})
-}
-
-// UpdateLoginTime sets the "login_time" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertBulk) UpdateLoginTime() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateLoginTime()
-	})
-}
-
-// ClearLoginTime clears the value of the "login_time" field.
-func (u *LoginAuditLogUpsertBulk) ClearLoginTime() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearLoginTime()
-	})
-}
-
-// SetUserAgent sets the "user_agent" field.
-func (u *LoginAuditLogUpsertBulk) SetUserAgent(v string) *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetUserAgent(v)
-	})
-}
-
-// UpdateUserAgent sets the "user_agent" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertBulk) UpdateUserAgent() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateUserAgent()
-	})
-}
-
-// ClearUserAgent clears the value of the "user_agent" field.
-func (u *LoginAuditLogUpsertBulk) ClearUserAgent() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearUserAgent()
-	})
-}
-
-// SetBrowserName sets the "browser_name" field.
-func (u *LoginAuditLogUpsertBulk) SetBrowserName(v string) *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetBrowserName(v)
-	})
-}
-
-// UpdateBrowserName sets the "browser_name" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertBulk) UpdateBrowserName() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateBrowserName()
-	})
-}
-
-// ClearBrowserName clears the value of the "browser_name" field.
-func (u *LoginAuditLogUpsertBulk) ClearBrowserName() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearBrowserName()
-	})
-}
-
-// SetBrowserVersion sets the "browser_version" field.
-func (u *LoginAuditLogUpsertBulk) SetBrowserVersion(v string) *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetBrowserVersion(v)
-	})
-}
-
-// UpdateBrowserVersion sets the "browser_version" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertBulk) UpdateBrowserVersion() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateBrowserVersion()
-	})
-}
-
-// ClearBrowserVersion clears the value of the "browser_version" field.
-func (u *LoginAuditLogUpsertBulk) ClearBrowserVersion() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearBrowserVersion()
-	})
-}
-
-// SetClientID sets the "client_id" field.
-func (u *LoginAuditLogUpsertBulk) SetClientID(v string) *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetClientID(v)
-	})
-}
-
-// UpdateClientID sets the "client_id" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertBulk) UpdateClientID() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateClientID()
-	})
-}
-
-// ClearClientID clears the value of the "client_id" field.
-func (u *LoginAuditLogUpsertBulk) ClearClientID() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearClientID()
-	})
-}
-
-// SetClientName sets the "client_name" field.
-func (u *LoginAuditLogUpsertBulk) SetClientName(v string) *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetClientName(v)
-	})
-}
-
-// UpdateClientName sets the "client_name" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertBulk) UpdateClientName() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateClientName()
-	})
-}
-
-// ClearClientName clears the value of the "client_name" field.
-func (u *LoginAuditLogUpsertBulk) ClearClientName() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearClientName()
-	})
-}
-
-// SetOsName sets the "os_name" field.
-func (u *LoginAuditLogUpsertBulk) SetOsName(v string) *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetOsName(v)
-	})
-}
-
-// UpdateOsName sets the "os_name" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertBulk) UpdateOsName() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateOsName()
-	})
-}
-
-// ClearOsName clears the value of the "os_name" field.
-func (u *LoginAuditLogUpsertBulk) ClearOsName() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearOsName()
-	})
-}
-
-// SetOsVersion sets the "os_version" field.
-func (u *LoginAuditLogUpsertBulk) SetOsVersion(v string) *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetOsVersion(v)
-	})
-}
-
-// UpdateOsVersion sets the "os_version" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertBulk) UpdateOsVersion() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateOsVersion()
-	})
-}
-
-// ClearOsVersion clears the value of the "os_version" field.
-func (u *LoginAuditLogUpsertBulk) ClearOsVersion() *LoginAuditLogUpsertBulk {
-	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearOsVersion()
-	})
-}
-
 // SetUserID sets the "user_id" field.
 func (u *LoginAuditLogUpsertBulk) SetUserID(v uint32) *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
@@ -1658,94 +1442,304 @@ func (u *LoginAuditLogUpsertBulk) ClearUsername() *LoginAuditLogUpsertBulk {
 	})
 }
 
-// SetStatusCode sets the "status_code" field.
-func (u *LoginAuditLogUpsertBulk) SetStatusCode(v int32) *LoginAuditLogUpsertBulk {
+// SetIPAddress sets the "ip_address" field.
+func (u *LoginAuditLogUpsertBulk) SetIPAddress(v string) *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetStatusCode(v)
+		s.SetIPAddress(v)
 	})
 }
 
-// AddStatusCode adds v to the "status_code" field.
-func (u *LoginAuditLogUpsertBulk) AddStatusCode(v int32) *LoginAuditLogUpsertBulk {
+// UpdateIPAddress sets the "ip_address" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateIPAddress() *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.AddStatusCode(v)
+		s.UpdateIPAddress()
 	})
 }
 
-// UpdateStatusCode sets the "status_code" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertBulk) UpdateStatusCode() *LoginAuditLogUpsertBulk {
+// ClearIPAddress clears the value of the "ip_address" field.
+func (u *LoginAuditLogUpsertBulk) ClearIPAddress() *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateStatusCode()
+		s.ClearIPAddress()
 	})
 }
 
-// ClearStatusCode clears the value of the "status_code" field.
-func (u *LoginAuditLogUpsertBulk) ClearStatusCode() *LoginAuditLogUpsertBulk {
+// SetGeoLocation sets the "geo_location" field.
+func (u *LoginAuditLogUpsertBulk) SetGeoLocation(v *servicev1.GeoLocation) *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearStatusCode()
+		s.SetGeoLocation(v)
 	})
 }
 
-// SetSuccess sets the "success" field.
-func (u *LoginAuditLogUpsertBulk) SetSuccess(v bool) *LoginAuditLogUpsertBulk {
+// UpdateGeoLocation sets the "geo_location" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateGeoLocation() *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetSuccess(v)
+		s.UpdateGeoLocation()
 	})
 }
 
-// UpdateSuccess sets the "success" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertBulk) UpdateSuccess() *LoginAuditLogUpsertBulk {
+// ClearGeoLocation clears the value of the "geo_location" field.
+func (u *LoginAuditLogUpsertBulk) ClearGeoLocation() *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateSuccess()
+		s.ClearGeoLocation()
 	})
 }
 
-// ClearSuccess clears the value of the "success" field.
-func (u *LoginAuditLogUpsertBulk) ClearSuccess() *LoginAuditLogUpsertBulk {
+// SetSessionID sets the "session_id" field.
+func (u *LoginAuditLogUpsertBulk) SetSessionID(v string) *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearSuccess()
+		s.SetSessionID(v)
 	})
 }
 
-// SetReason sets the "reason" field.
-func (u *LoginAuditLogUpsertBulk) SetReason(v string) *LoginAuditLogUpsertBulk {
+// UpdateSessionID sets the "session_id" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateSessionID() *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetReason(v)
+		s.UpdateSessionID()
 	})
 }
 
-// UpdateReason sets the "reason" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertBulk) UpdateReason() *LoginAuditLogUpsertBulk {
+// ClearSessionID clears the value of the "session_id" field.
+func (u *LoginAuditLogUpsertBulk) ClearSessionID() *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateReason()
+		s.ClearSessionID()
 	})
 }
 
-// ClearReason clears the value of the "reason" field.
-func (u *LoginAuditLogUpsertBulk) ClearReason() *LoginAuditLogUpsertBulk {
+// SetDeviceInfo sets the "device_info" field.
+func (u *LoginAuditLogUpsertBulk) SetDeviceInfo(v *servicev1.DeviceInfo) *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearReason()
+		s.SetDeviceInfo(v)
 	})
 }
 
-// SetLocation sets the "location" field.
-func (u *LoginAuditLogUpsertBulk) SetLocation(v string) *LoginAuditLogUpsertBulk {
+// UpdateDeviceInfo sets the "device_info" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateDeviceInfo() *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.SetLocation(v)
+		s.UpdateDeviceInfo()
 	})
 }
 
-// UpdateLocation sets the "location" field to the value that was provided on create.
-func (u *LoginAuditLogUpsertBulk) UpdateLocation() *LoginAuditLogUpsertBulk {
+// ClearDeviceInfo clears the value of the "device_info" field.
+func (u *LoginAuditLogUpsertBulk) ClearDeviceInfo() *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.UpdateLocation()
+		s.ClearDeviceInfo()
 	})
 }
 
-// ClearLocation clears the value of the "location" field.
-func (u *LoginAuditLogUpsertBulk) ClearLocation() *LoginAuditLogUpsertBulk {
+// SetRequestID sets the "request_id" field.
+func (u *LoginAuditLogUpsertBulk) SetRequestID(v string) *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
-		s.ClearLocation()
+		s.SetRequestID(v)
+	})
+}
+
+// UpdateRequestID sets the "request_id" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateRequestID() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateRequestID()
+	})
+}
+
+// ClearRequestID clears the value of the "request_id" field.
+func (u *LoginAuditLogUpsertBulk) ClearRequestID() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearRequestID()
+	})
+}
+
+// SetActionType sets the "action_type" field.
+func (u *LoginAuditLogUpsertBulk) SetActionType(v loginauditlog.ActionType) *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetActionType(v)
+	})
+}
+
+// UpdateActionType sets the "action_type" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateActionType() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateActionType()
+	})
+}
+
+// ClearActionType clears the value of the "action_type" field.
+func (u *LoginAuditLogUpsertBulk) ClearActionType() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearActionType()
+	})
+}
+
+// SetStatus sets the "status" field.
+func (u *LoginAuditLogUpsertBulk) SetStatus(v loginauditlog.Status) *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetStatus(v)
+	})
+}
+
+// UpdateStatus sets the "status" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateStatus() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateStatus()
+	})
+}
+
+// ClearStatus clears the value of the "status" field.
+func (u *LoginAuditLogUpsertBulk) ClearStatus() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearStatus()
+	})
+}
+
+// SetFailureReason sets the "failure_reason" field.
+func (u *LoginAuditLogUpsertBulk) SetFailureReason(v string) *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetFailureReason(v)
+	})
+}
+
+// UpdateFailureReason sets the "failure_reason" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateFailureReason() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateFailureReason()
+	})
+}
+
+// ClearFailureReason clears the value of the "failure_reason" field.
+func (u *LoginAuditLogUpsertBulk) ClearFailureReason() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearFailureReason()
+	})
+}
+
+// SetMfaStatus sets the "mfa_status" field.
+func (u *LoginAuditLogUpsertBulk) SetMfaStatus(v string) *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetMfaStatus(v)
+	})
+}
+
+// UpdateMfaStatus sets the "mfa_status" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateMfaStatus() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateMfaStatus()
+	})
+}
+
+// ClearMfaStatus clears the value of the "mfa_status" field.
+func (u *LoginAuditLogUpsertBulk) ClearMfaStatus() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearMfaStatus()
+	})
+}
+
+// SetRiskScore sets the "risk_score" field.
+func (u *LoginAuditLogUpsertBulk) SetRiskScore(v uint32) *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetRiskScore(v)
+	})
+}
+
+// AddRiskScore adds v to the "risk_score" field.
+func (u *LoginAuditLogUpsertBulk) AddRiskScore(v uint32) *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.AddRiskScore(v)
+	})
+}
+
+// UpdateRiskScore sets the "risk_score" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateRiskScore() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateRiskScore()
+	})
+}
+
+// ClearRiskScore clears the value of the "risk_score" field.
+func (u *LoginAuditLogUpsertBulk) ClearRiskScore() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearRiskScore()
+	})
+}
+
+// SetRiskLevel sets the "risk_level" field.
+func (u *LoginAuditLogUpsertBulk) SetRiskLevel(v loginauditlog.RiskLevel) *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetRiskLevel(v)
+	})
+}
+
+// UpdateRiskLevel sets the "risk_level" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateRiskLevel() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateRiskLevel()
+	})
+}
+
+// ClearRiskLevel clears the value of the "risk_level" field.
+func (u *LoginAuditLogUpsertBulk) ClearRiskLevel() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearRiskLevel()
+	})
+}
+
+// SetRiskFactors sets the "risk_factors" field.
+func (u *LoginAuditLogUpsertBulk) SetRiskFactors(v []string) *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetRiskFactors(v)
+	})
+}
+
+// UpdateRiskFactors sets the "risk_factors" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateRiskFactors() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateRiskFactors()
+	})
+}
+
+// ClearRiskFactors clears the value of the "risk_factors" field.
+func (u *LoginAuditLogUpsertBulk) ClearRiskFactors() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearRiskFactors()
+	})
+}
+
+// SetLogHash sets the "log_hash" field.
+func (u *LoginAuditLogUpsertBulk) SetLogHash(v string) *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetLogHash(v)
+	})
+}
+
+// UpdateLogHash sets the "log_hash" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateLogHash() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateLogHash()
+	})
+}
+
+// ClearLogHash clears the value of the "log_hash" field.
+func (u *LoginAuditLogUpsertBulk) ClearLogHash() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearLogHash()
+	})
+}
+
+// SetSignature sets the "signature" field.
+func (u *LoginAuditLogUpsertBulk) SetSignature(v []byte) *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetSignature(v)
+	})
+}
+
+// UpdateSignature sets the "signature" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateSignature() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateSignature()
+	})
+}
+
+// ClearSignature clears the value of the "signature" field.
+func (u *LoginAuditLogUpsertBulk) ClearSignature() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearSignature()
 	})
 }
 

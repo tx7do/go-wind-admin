@@ -518,83 +518,12 @@ export type permissionservicev1_DeleteApiRequest = {
   id: number | undefined;
 };
 
-// API审计日志
-export type ApiAuditLog = {
-  //
-  // Behaviors: OPTIONAL
-  id?: number;
-  costTime?: wellKnownDuration;
-  success?: boolean;
-  requestId?: string;
-  statusCode?: number;
-  reason?: string;
-  location?: string;
-  operation?: string;
-  method?: string;
-  path?: string;
-  apiModule?: string;
-  apiDescription?: string;
-  referer?: string;
-  requestUri?: string;
-  requestHeader?: string;
-  requestBody?: string;
-  response?: string;
-  userId?: number;
-  username?: string;
-  clientIp?: string;
-  userAgent?: string;
-  browserName?: string;
-  browserVersion?: string;
-  clientId?: string;
-  clientName?: string;
-  osName?: string;
-  osVersion?: string;
-  tenantId?: number;
-  createdAt?: wellKnownTimestamp;
-};
-
-// Generated output always contains 0, 3, 6, or 9 fractional digits,
-// depending on required precision, followed by the suffix "s".
-// Accepted are any fractional digits (also none) as long as they fit
-// into nano-seconds precision and the suffix "s" is required.
-type wellKnownDuration = string;
-
-// 查询API审计日志列表 - 回应
-export type ListApiAuditLogResponse = {
-  items: ApiAuditLog[] | undefined;
-  total: number | undefined;
-};
-
-// 查询API审计日志详情 - 请求
-export type GetApiAuditLogRequest = {
-  id?: number;
-  viewMask?: wellKnownFieldMask;
-};
-
-// 创建API审计日志 - 请求
-export type CreateApiAuditLogRequest = {
-  data: ApiAuditLog | undefined;
-};
-
-// 更新API审计日志 - 请求
-export type UpdateApiAuditLogRequest = {
-  id: number | undefined;
-  data: ApiAuditLog | undefined;
-  updateMask: wellKnownFieldMask | undefined;
-  allowMissing?: boolean;
-};
-
-// 删除API审计日志 - 请求
-export type DeleteApiAuditLogRequest = {
-  id: number | undefined;
-};
-
 // API审计日志管理服务
 export interface ApiAuditLogService {
   // 查询API审计日志列表
-  List(request: pagination_PagingRequest): Promise<ListApiAuditLogResponse>;
+  List(request: pagination_PagingRequest): Promise<auditservicev1_ListApiAuditLogResponse>;
   // 查询API审计日志详情
-  Get(request: GetApiAuditLogRequest): Promise<ApiAuditLog>;
+  Get(request: auditservicev1_GetApiAuditLogRequest): Promise<auditservicev1_ApiAuditLog>;
 }
 
 export function createApiAuditLogServiceClient(
@@ -671,7 +600,7 @@ export function createApiAuditLogServiceClient(
       }, {
         service: "ApiAuditLogService",
         method: "List",
-      }) as Promise<ListApiAuditLogResponse>;
+      }) as Promise<auditservicev1_ListApiAuditLogResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -694,10 +623,99 @@ export function createApiAuditLogServiceClient(
       }, {
         service: "ApiAuditLogService",
         method: "Get",
-      }) as Promise<ApiAuditLog>;
+      }) as Promise<auditservicev1_ApiAuditLog>;
     },
   };
 }
+// 查询API审计日志列表 - 回应
+export type auditservicev1_ListApiAuditLogResponse = {
+  items: auditservicev1_ApiAuditLog[] | undefined;
+  total: number | undefined;
+};
+
+// API审计日志
+export type auditservicev1_ApiAuditLog = {
+  id?: number;
+  tenantId?: number;
+  tenantName?: string;
+  userId?: number;
+  username?: string;
+  ipAddress?: string;
+  geoLocation?: auditservicev1_GeoLocation;
+  deviceInfo?: auditservicev1_DeviceInfo;
+  referer?: string;
+  httpMethod?: string;
+  path?: string;
+  requestUri?: string;
+  apiModule?: string;
+  apiOperation?: string;
+  apiDescription?: string;
+  requestId?: string;
+  costTimeMs?: number;
+  success?: boolean;
+  statusCode?: number;
+  reason?: string;
+  requestHeader?: string;
+  requestBody?: string;
+  response?: string;
+  logHash?: string;
+  signature?: string;
+  createdAt?: wellKnownTimestamp;
+};
+
+// 地理位置
+export type auditservicev1_GeoLocation = {
+  countryCode?: string;
+  province?: string;
+  city?: string;
+  isp?: string;
+  addressRemark?: string;
+  latitude?: number;
+  longitude?: number;
+};
+
+// 设备信息
+export type auditservicev1_DeviceInfo = {
+  clientId?: string;
+  clientName?: string;
+  osName?: string;
+  osVersion?: string;
+  deviceId?: string;
+  deviceType?: auditservicev1_DeviceInfo_DeviceType;
+  manufacturer?: string;
+  model?: string;
+  platform?: string;
+  osBuild?: string;
+  appName?: string;
+  appVersion?: string;
+  screenWidth?: number;
+  screenHeight?: number;
+  locale?: string;
+  timeZone?: string;
+  networkType?: string;
+  carrier?: string;
+  deviceFingerprint?: string;
+  userAgent?: string;
+  browserName?: string;
+  browserVersion?: string;
+  browserEngine?: string;
+  engineVersion?: string;
+};
+
+// 设备类型枚举
+export type auditservicev1_DeviceInfo_DeviceType =
+  | "DEVICE_TYPE_UNSPECIFIED"
+  | "DESKTOP"
+  | "MOBILE"
+  | "TABLET"
+  | "BOT"
+  | "OTHER";
+// 查询API审计日志详情 - 请求
+export type auditservicev1_GetApiAuditLogRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
+};
+
 // 用户后台登录认证服务
 export interface AuthenticationService {
   // 登录
@@ -2097,79 +2115,12 @@ export type internal_messageservicev1_MarkNotificationAsReadRequest = {
   recipientIds: number[] | undefined;
 };
 
-// 登录审计日志
-export type LoginAuditLog = {
-  //
-  // Behaviors: OPTIONAL
-  id?: number;
-  loginIp?: string;
-  loginMac?: string;
-  loginTime?: wellKnownTimestamp;
-  statusCode?: number;
-  success?: boolean;
-  reason?: string;
-  location?: string;
-  userAgent?: string;
-  browserName?: string;
-  browserVersion?: string;
-  clientId?: string;
-  clientName?: string;
-  osName?: string;
-  osVersion?: string;
-  userId?: number;
-  username?: string;
-  createdAt?: wellKnownTimestamp;
-};
-
-// 事件类型
-export type LoginAuditLog_EventType =
-  | "EVENT_TYPE_UNSPECIFIED"
-  | "LOGIN_SUCCESS"
-  | "LOGIN_FAILED"
-  | "LOGOUT"
-  | "SESSION_EXPIRED";
-// 风险因素
-export type LoginAuditLog_RiskFactor =
-  | "RISK_FACTOR_UNSPECIFIED"
-  | "NORMAL"
-  | "SUSPICIOUS"
-  | "HIGH_RISK";
-// 查询登录审计日志列表 - 回应
-export type ListLoginAuditLogResponse = {
-  items: LoginAuditLog[] | undefined;
-  total: number | undefined;
-};
-
-// 查询登录审计日志详情 - 请求
-export type GetLoginAuditLogRequest = {
-  id?: number;
-  viewMask?: wellKnownFieldMask;
-};
-
-// 创建登录审计日志 - 请求
-export type CreateLoginAuditLogRequest = {
-  data: LoginAuditLog | undefined;
-};
-
-// 更新登录审计日志 - 请求
-export type UpdateLoginAuditLogRequest = {
-  id: number | undefined;
-  data: LoginAuditLog | undefined;
-  updateMask: wellKnownFieldMask | undefined;
-  allowMissing?: boolean;
-};
-
-// 删除登录审计日志 - 请求
-export type DeleteLoginAuditLogRequest = {
-  id: number | undefined;
-};
-
 // 登录审计日志管理服务
 export interface LoginAuditLogService {
   // 查询登录审计日志列表
-  List(request: pagination_PagingRequest): Promise<ListLoginAuditLogResponse>;
+  List(request: pagination_PagingRequest): Promise<auditservicev1_ListLoginAuditLogResponse>;
   // 查询登录审计日志详情
-  Get(request: GetLoginAuditLogRequest): Promise<LoginAuditLog>;
+  Get(request: auditservicev1_GetLoginAuditLogRequest): Promise<auditservicev1_LoginAuditLog>;
 }
 
 export function createLoginAuditLogServiceClient(
@@ -2246,7 +2197,7 @@ export function createLoginAuditLogServiceClient(
       }, {
         service: "LoginAuditLogService",
         method: "List",
-      }) as Promise<ListLoginAuditLogResponse>;
+      }) as Promise<auditservicev1_ListLoginAuditLogResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -2269,10 +2220,64 @@ export function createLoginAuditLogServiceClient(
       }, {
         service: "LoginAuditLogService",
         method: "Get",
-      }) as Promise<LoginAuditLog>;
+      }) as Promise<auditservicev1_LoginAuditLog>;
     },
   };
 }
+// 查询登录审计日志列表 - 回应
+export type auditservicev1_ListLoginAuditLogResponse = {
+  items: auditservicev1_LoginAuditLog[] | undefined;
+  total: number | undefined;
+};
+
+// 登录审计日志
+export type auditservicev1_LoginAuditLog = {
+  id?: number;
+  tenantId?: number;
+  tenantName?: string;
+  userId?: number;
+  username?: string;
+  ipAddress?: string;
+  geoLocation?: auditservicev1_GeoLocation;
+  sessionId?: string;
+  deviceInfo?: auditservicev1_DeviceInfo;
+  requestId?: string;
+  actionType?: auditservicev1_LoginAuditLog_ActionType;
+  status?: auditservicev1_LoginAuditLog_Status;
+  failureReason?: string;
+  mfaStatus?: string;
+  riskScore?: number;
+  riskLevel?: auditservicev1_LoginAuditLog_RiskLevel;
+  riskFactors: string[] | undefined;
+  logHash?: string;
+  signature?: string;
+  createdAt?: wellKnownTimestamp;
+};
+
+// 事件动作
+export type auditservicev1_LoginAuditLog_ActionType =
+  | "ACTION_TYPE_UNSPECIFIED"
+  | "LOGIN"
+  | "LOGOUT"
+  | "SESSION_EXPIRED";
+// 操作状态
+export type auditservicev1_LoginAuditLog_Status =
+  | "STATUS_UNSPECIFIED"
+  | "SUCCESS"
+  | "FAILED"
+  | "PARTIAL";
+// 风险等级
+export type auditservicev1_LoginAuditLog_RiskLevel =
+  | "RISK_LEVEL_UNSPECIFIED"
+  | "LOW"
+  | "MEDIUM"
+  | "HIGH";
+// 查询登录审计日志详情 - 请求
+export type auditservicev1_GetLoginAuditLogRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
+};
+
 // 登录策略
 export type LoginPolicy = {
   //
@@ -4559,6 +4564,12 @@ export type TaskOption = {
   // Behaviors: OPTIONAL
   taskID?: string;
 };
+
+// Generated output always contains 0, 3, 6, or 9 fractional digits,
+// depending on required precision, followed by the suffix "s".
+// Accepted are any fractional digits (also none) as long as they fit
+// into nano-seconds precision and the suffix "s" is required.
+type wellKnownDuration = string;
 
 // 调度任务
 export type Task = {

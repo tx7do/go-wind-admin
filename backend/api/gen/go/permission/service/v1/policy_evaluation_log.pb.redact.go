@@ -133,29 +133,3 @@ func (x *CreatePolicyEvaluationLogRequest) Redact() string {
 	// Safe field: Data
 	return x.String()
 }
-
-// Redact method implementation for UpdatePolicyEvaluationLogRequest
-func (x *UpdatePolicyEvaluationLogRequest) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Id
-
-	// Safe field: Data
-
-	// Safe field: UpdateMask
-
-	// Safe field: AllowMissing
-	return x.String()
-}
-
-// Redact method implementation for DeletePolicyEvaluationLogRequest
-func (x *DeletePolicyEvaluationLogRequest) Redact() string {
-	if x == nil {
-		return ""
-	}
-
-	// Safe field: Id
-	return x.String()
-}

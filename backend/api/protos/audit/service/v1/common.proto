@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package audit.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+// 敏感级别
+enum SensitiveLevel {
+  SENSITIVE_LEVEL_UNSPECIFIED = 0;
+
+  PUBLIC = 1;      // 公开数据
+  INTERNAL = 2;    // 内部数据
+  CONFIDENTIAL = 3; // 机密数据（个人身份信息）
+  SECRET = 4;      // 秘密数据（金融交易）
+}
+
+// 新增保留策略
+enum RetentionPolicy {
+  RETENTION_POLICY_UNSPECIFIED = 0;
+
+  DAYS_90 = 1;   // 90天（普通操作）
+  DAYS_180 = 2;  // 180天（等保2.0最低要求）
+  DAYS_365 = 3;  // 365天（金融核心）
+  PERMANENT = 4; // 永久（法律要求）
+}

@@ -11,6 +11,7 @@ import (
 	http "github.com/go-kratos/kratos/v2/transport/http"
 	binding "github.com/go-kratos/kratos/v2/transport/http/binding"
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	v11 "go-wind-admin/api/gen/go/audit/service/v1"
 )
 
 // This is a compile-time assertion to ensure that this generated file
@@ -25,9 +26,9 @@ const OperationApiAuditLogServiceList = "/admin.service.v1.ApiAuditLogService/Li
 
 type ApiAuditLogServiceHTTPServer interface {
 	// Get 查询API审计日志详情
-	Get(context.Context, *GetApiAuditLogRequest) (*ApiAuditLog, error)
+	Get(context.Context, *v11.GetApiAuditLogRequest) (*v11.ApiAuditLog, error)
 	// List 查询API审计日志列表
-	List(context.Context, *v1.PagingRequest) (*ListApiAuditLogResponse, error)
+	List(context.Context, *v1.PagingRequest) (*v11.ListApiAuditLogResponse, error)
 }
 
 func RegisterApiAuditLogServiceHTTPServer(s *http.Server, srv ApiAuditLogServiceHTTPServer) {
@@ -50,14 +51,14 @@ func _ApiAuditLogService_List1_HTTP_Handler(srv ApiAuditLogServiceHTTPServer) fu
 		if err != nil {
 			return err
 		}
-		reply := out.(*ListApiAuditLogResponse)
+		reply := out.(*v11.ListApiAuditLogResponse)
 		return ctx.Result(200, reply)
 	}
 }
 
 func _ApiAuditLogService_Get1_HTTP_Handler(srv ApiAuditLogServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
-		var in GetApiAuditLogRequest
+		var in v11.GetApiAuditLogRequest
 		if err := ctx.BindQuery(&in); err != nil {
 			return err
 		}
@@ -66,22 +67,22 @@ func _ApiAuditLogService_Get1_HTTP_Handler(srv ApiAuditLogServiceHTTPServer) fun
 		}
 		http.SetOperation(ctx, OperationApiAuditLogServiceGet)
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			return srv.Get(ctx, req.(*GetApiAuditLogRequest))
+			return srv.Get(ctx, req.(*v11.GetApiAuditLogRequest))
 		})
 		out, err := h(ctx, &in)
 		if err != nil {
 			return err
 		}
-		reply := out.(*ApiAuditLog)
+		reply := out.(*v11.ApiAuditLog)
 		return ctx.Result(200, reply)
 	}
 }
 
 type ApiAuditLogServiceHTTPClient interface {
 	// Get 查询API审计日志详情
-	Get(ctx context.Context, req *GetApiAuditLogRequest, opts ...http.CallOption) (rsp *ApiAuditLog, err error)
+	Get(ctx context.Context, req *v11.GetApiAuditLogRequest, opts ...http.CallOption) (rsp *v11.ApiAuditLog, err error)
 	// List 查询API审计日志列表
-	List(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *ListApiAuditLogResponse, err error)
+	List(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListApiAuditLogResponse, err error)
 }
 
 type ApiAuditLogServiceHTTPClientImpl struct {
@@ -93,8 +94,8 @@ func NewApiAuditLogServiceHTTPClient(client *http.Client) ApiAuditLogServiceHTTP
 }
 
 // Get 查询API审计日志详情
-func (c *ApiAuditLogServiceHTTPClientImpl) Get(ctx context.Context, in *GetApiAuditLogRequest, opts ...http.CallOption) (*ApiAuditLog, error) {
-	var out ApiAuditLog
+func (c *ApiAuditLogServiceHTTPClientImpl) Get(ctx context.Context, in *v11.GetApiAuditLogRequest, opts ...http.CallOption) (*v11.ApiAuditLog, error) {
+	var out v11.ApiAuditLog
 	pattern := "/admin/v1/api-audit-logs/{id}"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationApiAuditLogServiceGet))
@@ -107,8 +108,8 @@ func (c *ApiAuditLogServiceHTTPClientImpl) Get(ctx context.Context, in *GetApiAu
 }
 
 // List 查询API审计日志列表
-func (c *ApiAuditLogServiceHTTPClientImpl) List(ctx context.Context, in *v1.PagingRequest, opts ...http.CallOption) (*ListApiAuditLogResponse, error) {
-	var out ListApiAuditLogResponse
+func (c *ApiAuditLogServiceHTTPClientImpl) List(ctx context.Context, in *v1.PagingRequest, opts ...http.CallOption) (*v11.ListApiAuditLogResponse, error) {
+	var out v11.ListApiAuditLogResponse
 	pattern := "/admin/v1/api-audit-logs"
 	path := binding.EncodeURL(pattern, in, true)
 	opts = append(opts, http.Operation(OperationApiAuditLogServiceList))

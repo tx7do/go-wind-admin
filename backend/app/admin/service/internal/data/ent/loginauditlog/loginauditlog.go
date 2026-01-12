@@ -3,6 +3,8 @@
 package loginauditlog
 
 import (
+	"fmt"
+
 	"entgo.io/ent/dialect/sql"
 )
 
@@ -15,38 +17,38 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldTenantID holds the string denoting the tenant_id field in the database.
 	FieldTenantID = "tenant_id"
-	// FieldLoginIP holds the string denoting the login_ip field in the database.
-	FieldLoginIP = "login_ip"
-	// FieldLoginMAC holds the string denoting the login_mac field in the database.
-	FieldLoginMAC = "login_mac"
-	// FieldLoginTime holds the string denoting the login_time field in the database.
-	FieldLoginTime = "login_time"
-	// FieldUserAgent holds the string denoting the user_agent field in the database.
-	FieldUserAgent = "user_agent"
-	// FieldBrowserName holds the string denoting the browser_name field in the database.
-	FieldBrowserName = "browser_name"
-	// FieldBrowserVersion holds the string denoting the browser_version field in the database.
-	FieldBrowserVersion = "browser_version"
-	// FieldClientID holds the string denoting the client_id field in the database.
-	FieldClientID = "client_id"
-	// FieldClientName holds the string denoting the client_name field in the database.
-	FieldClientName = "client_name"
-	// FieldOsName holds the string denoting the os_name field in the database.
-	FieldOsName = "os_name"
-	// FieldOsVersion holds the string denoting the os_version field in the database.
-	FieldOsVersion = "os_version"
 	// FieldUserID holds the string denoting the user_id field in the database.
 	FieldUserID = "user_id"
 	// FieldUsername holds the string denoting the username field in the database.
 	FieldUsername = "username"
-	// FieldStatusCode holds the string denoting the status_code field in the database.
-	FieldStatusCode = "status_code"
-	// FieldSuccess holds the string denoting the success field in the database.
-	FieldSuccess = "success"
-	// FieldReason holds the string denoting the reason field in the database.
-	FieldReason = "reason"
-	// FieldLocation holds the string denoting the location field in the database.
-	FieldLocation = "location"
+	// FieldIPAddress holds the string denoting the ip_address field in the database.
+	FieldIPAddress = "ip_address"
+	// FieldGeoLocation holds the string denoting the geo_location field in the database.
+	FieldGeoLocation = "geo_location"
+	// FieldSessionID holds the string denoting the session_id field in the database.
+	FieldSessionID = "session_id"
+	// FieldDeviceInfo holds the string denoting the device_info field in the database.
+	FieldDeviceInfo = "device_info"
+	// FieldRequestID holds the string denoting the request_id field in the database.
+	FieldRequestID = "request_id"
+	// FieldActionType holds the string denoting the action_type field in the database.
+	FieldActionType = "action_type"
+	// FieldStatus holds the string denoting the status field in the database.
+	FieldStatus = "status"
+	// FieldFailureReason holds the string denoting the failure_reason field in the database.
+	FieldFailureReason = "failure_reason"
+	// FieldMfaStatus holds the string denoting the mfa_status field in the database.
+	FieldMfaStatus = "mfa_status"
+	// FieldRiskScore holds the string denoting the risk_score field in the database.
+	FieldRiskScore = "risk_score"
+	// FieldRiskLevel holds the string denoting the risk_level field in the database.
+	FieldRiskLevel = "risk_level"
+	// FieldRiskFactors holds the string denoting the risk_factors field in the database.
+	FieldRiskFactors = "risk_factors"
+	// FieldLogHash holds the string denoting the log_hash field in the database.
+	FieldLogHash = "log_hash"
+	// FieldSignature holds the string denoting the signature field in the database.
+	FieldSignature = "signature"
 	// Table holds the table name of the loginauditlog in the database.
 	Table = "sys_login_audit_logs"
 )
@@ -56,22 +58,22 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldTenantID,
-	FieldLoginIP,
-	FieldLoginMAC,
-	FieldLoginTime,
-	FieldUserAgent,
-	FieldBrowserName,
-	FieldBrowserVersion,
-	FieldClientID,
-	FieldClientName,
-	FieldOsName,
-	FieldOsVersion,
 	FieldUserID,
 	FieldUsername,
-	FieldStatusCode,
-	FieldSuccess,
-	FieldReason,
-	FieldLocation,
+	FieldIPAddress,
+	FieldGeoLocation,
+	FieldSessionID,
+	FieldDeviceInfo,
+	FieldRequestID,
+	FieldActionType,
+	FieldStatus,
+	FieldFailureReason,
+	FieldMfaStatus,
+	FieldRiskScore,
+	FieldRiskLevel,
+	FieldRiskFactors,
+	FieldLogHash,
+	FieldSignature,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -88,6 +90,78 @@ var (
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
+
+// ActionType defines the type for the "action_type" enum field.
+type ActionType string
+
+// ActionType values.
+const (
+	ActionTypeLogin          ActionType = "LOGIN"
+	ActionTypeLogout         ActionType = "LOGOUT"
+	ActionTypeSessionExpired ActionType = "SESSION_EXPIRED"
+)
+
+func (at ActionType) String() string {
+	return string(at)
+}
+
+// ActionTypeValidator is a validator for the "action_type" field enum values. It is called by the builders before save.
+func ActionTypeValidator(at ActionType) error {
+	switch at {
+	case ActionTypeLogin, ActionTypeLogout, ActionTypeSessionExpired:
+		return nil
+	default:
+		return fmt.Errorf("loginauditlog: invalid enum value for action_type field: %q", at)
+	}
+}
+
+// Status defines the type for the "status" enum field.
+type Status string
+
+// Status values.
+const (
+	StatusSuccess Status = "SUCCESS"
+	StatusFailed  Status = "FAILED"
+	StatusPartial Status = "PARTIAL"
+)
+
+func (s Status) String() string {
+	return string(s)
+}
+
+// StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
+func StatusValidator(s Status) error {
+	switch s {
+	case StatusSuccess, StatusFailed, StatusPartial:
+		return nil
+	default:
+		return fmt.Errorf("loginauditlog: invalid enum value for status field: %q", s)
+	}
+}
+
+// RiskLevel defines the type for the "risk_level" enum field.
+type RiskLevel string
+
+// RiskLevel values.
+const (
+	RiskLevelLow    RiskLevel = "LOW"
+	RiskLevelMedium RiskLevel = "MEDIUM"
+	RiskLevelHigh   RiskLevel = "HIGH"
+)
+
+func (rl RiskLevel) String() string {
+	return string(rl)
+}
+
+// RiskLevelValidator is a validator for the "risk_level" field enum values. It is called by the builders before save.
+func RiskLevelValidator(rl RiskLevel) error {
+	switch rl {
+	case RiskLevelLow, RiskLevelMedium, RiskLevelHigh:
+		return nil
+	default:
+		return fmt.Errorf("loginauditlog: invalid enum value for risk_level field: %q", rl)
+	}
+}
 
 // OrderOption defines the ordering options for the LoginAuditLog queries.
 type OrderOption func(*sql.Selector)
@@ -107,56 +181,6 @@ func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
 }
 
-// ByLoginIP orders the results by the login_ip field.
-func ByLoginIP(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLoginIP, opts...).ToFunc()
-}
-
-// ByLoginMAC orders the results by the login_mac field.
-func ByLoginMAC(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLoginMAC, opts...).ToFunc()
-}
-
-// ByLoginTime orders the results by the login_time field.
-func ByLoginTime(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLoginTime, opts...).ToFunc()
-}
-
-// ByUserAgent orders the results by the user_agent field.
-func ByUserAgent(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUserAgent, opts...).ToFunc()
-}
-
-// ByBrowserName orders the results by the browser_name field.
-func ByBrowserName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBrowserName, opts...).ToFunc()
-}
-
-// ByBrowserVersion orders the results by the browser_version field.
-func ByBrowserVersion(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBrowserVersion, opts...).ToFunc()
-}
-
-// ByClientID orders the results by the client_id field.
-func ByClientID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldClientID, opts...).ToFunc()
-}
-
-// ByClientName orders the results by the client_name field.
-func ByClientName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldClientName, opts...).ToFunc()
-}
-
-// ByOsName orders the results by the os_name field.
-func ByOsName(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOsName, opts...).ToFunc()
-}
-
-// ByOsVersion orders the results by the os_version field.
-func ByOsVersion(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldOsVersion, opts...).ToFunc()
-}
-
 // ByUserID orders the results by the user_id field.
 func ByUserID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUserID, opts...).ToFunc()
@@ -167,22 +191,52 @@ func ByUsername(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUsername, opts...).ToFunc()
 }
 
-// ByStatusCode orders the results by the status_code field.
-func ByStatusCode(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldStatusCode, opts...).ToFunc()
+// ByIPAddress orders the results by the ip_address field.
+func ByIPAddress(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIPAddress, opts...).ToFunc()
 }
 
-// BySuccess orders the results by the success field.
-func BySuccess(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldSuccess, opts...).ToFunc()
+// BySessionID orders the results by the session_id field.
+func BySessionID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSessionID, opts...).ToFunc()
 }
 
-// ByReason orders the results by the reason field.
-func ByReason(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldReason, opts...).ToFunc()
+// ByRequestID orders the results by the request_id field.
+func ByRequestID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRequestID, opts...).ToFunc()
 }
 
-// ByLocation orders the results by the location field.
-func ByLocation(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldLocation, opts...).ToFunc()
+// ByActionType orders the results by the action_type field.
+func ByActionType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldActionType, opts...).ToFunc()
+}
+
+// ByStatus orders the results by the status field.
+func ByStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByFailureReason orders the results by the failure_reason field.
+func ByFailureReason(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFailureReason, opts...).ToFunc()
+}
+
+// ByMfaStatus orders the results by the mfa_status field.
+func ByMfaStatus(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMfaStatus, opts...).ToFunc()
+}
+
+// ByRiskScore orders the results by the risk_score field.
+func ByRiskScore(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRiskScore, opts...).ToFunc()
+}
+
+// ByRiskLevel orders the results by the risk_level field.
+func ByRiskLevel(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRiskLevel, opts...).ToFunc()
+}
+
+// ByLogHash orders the results by the log_hash field.
+func ByLogHash(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLogHash, opts...).ToFunc()
 }
