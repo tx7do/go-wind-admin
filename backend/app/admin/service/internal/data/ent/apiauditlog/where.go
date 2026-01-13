@@ -84,6 +84,11 @@ func Referer(v string) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldEQ(FieldReferer, v))
 }
 
+// AppVersion applies equality check predicate on the "app_version" field. It's identical to AppVersionEQ.
+func AppVersion(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldAppVersion, v))
+}
+
 // HTTPMethod applies equality check predicate on the "http_method" field. It's identical to HTTPMethodEQ.
 func HTTPMethod(v string) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldEQ(FieldHTTPMethod, v))
@@ -119,9 +124,19 @@ func RequestID(v string) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldEQ(FieldRequestID, v))
 }
 
-// CostTimeMs applies equality check predicate on the "cost_time_ms" field. It's identical to CostTimeMsEQ.
-func CostTimeMs(v uint64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldCostTimeMs, v))
+// TraceID applies equality check predicate on the "trace_id" field. It's identical to TraceIDEQ.
+func TraceID(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldTraceID, v))
+}
+
+// SpanID applies equality check predicate on the "span_id" field. It's identical to SpanIDEQ.
+func SpanID(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldSpanID, v))
+}
+
+// LatencyMs applies equality check predicate on the "latency_ms" field. It's identical to LatencyMsEQ.
+func LatencyMs(v uint32) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldLatencyMs, v))
 }
 
 // Success applies equality check predicate on the "success" field. It's identical to SuccessEQ.
@@ -557,6 +572,81 @@ func RefererEqualFold(v string) predicate.ApiAuditLog {
 // RefererContainsFold applies the ContainsFold predicate on the "referer" field.
 func RefererContainsFold(v string) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldReferer, v))
+}
+
+// AppVersionEQ applies the EQ predicate on the "app_version" field.
+func AppVersionEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldAppVersion, v))
+}
+
+// AppVersionNEQ applies the NEQ predicate on the "app_version" field.
+func AppVersionNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldAppVersion, v))
+}
+
+// AppVersionIn applies the In predicate on the "app_version" field.
+func AppVersionIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldAppVersion, vs...))
+}
+
+// AppVersionNotIn applies the NotIn predicate on the "app_version" field.
+func AppVersionNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldAppVersion, vs...))
+}
+
+// AppVersionGT applies the GT predicate on the "app_version" field.
+func AppVersionGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldAppVersion, v))
+}
+
+// AppVersionGTE applies the GTE predicate on the "app_version" field.
+func AppVersionGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldAppVersion, v))
+}
+
+// AppVersionLT applies the LT predicate on the "app_version" field.
+func AppVersionLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldAppVersion, v))
+}
+
+// AppVersionLTE applies the LTE predicate on the "app_version" field.
+func AppVersionLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldAppVersion, v))
+}
+
+// AppVersionContains applies the Contains predicate on the "app_version" field.
+func AppVersionContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldAppVersion, v))
+}
+
+// AppVersionHasPrefix applies the HasPrefix predicate on the "app_version" field.
+func AppVersionHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldAppVersion, v))
+}
+
+// AppVersionHasSuffix applies the HasSuffix predicate on the "app_version" field.
+func AppVersionHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldAppVersion, v))
+}
+
+// AppVersionIsNil applies the IsNil predicate on the "app_version" field.
+func AppVersionIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldAppVersion))
+}
+
+// AppVersionNotNil applies the NotNil predicate on the "app_version" field.
+func AppVersionNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldAppVersion))
+}
+
+// AppVersionEqualFold applies the EqualFold predicate on the "app_version" field.
+func AppVersionEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldAppVersion, v))
+}
+
+// AppVersionContainsFold applies the ContainsFold predicate on the "app_version" field.
+func AppVersionContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldAppVersion, v))
 }
 
 // HTTPMethodEQ applies the EQ predicate on the "http_method" field.
@@ -1084,54 +1174,204 @@ func RequestIDContainsFold(v string) predicate.ApiAuditLog {
 	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldRequestID, v))
 }
 
-// CostTimeMsEQ applies the EQ predicate on the "cost_time_ms" field.
-func CostTimeMsEQ(v uint64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldEQ(FieldCostTimeMs, v))
+// TraceIDEQ applies the EQ predicate on the "trace_id" field.
+func TraceIDEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldTraceID, v))
 }
 
-// CostTimeMsNEQ applies the NEQ predicate on the "cost_time_ms" field.
-func CostTimeMsNEQ(v uint64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNEQ(FieldCostTimeMs, v))
+// TraceIDNEQ applies the NEQ predicate on the "trace_id" field.
+func TraceIDNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldTraceID, v))
 }
 
-// CostTimeMsIn applies the In predicate on the "cost_time_ms" field.
-func CostTimeMsIn(vs ...uint64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIn(FieldCostTimeMs, vs...))
+// TraceIDIn applies the In predicate on the "trace_id" field.
+func TraceIDIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldTraceID, vs...))
 }
 
-// CostTimeMsNotIn applies the NotIn predicate on the "cost_time_ms" field.
-func CostTimeMsNotIn(vs ...uint64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotIn(FieldCostTimeMs, vs...))
+// TraceIDNotIn applies the NotIn predicate on the "trace_id" field.
+func TraceIDNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldTraceID, vs...))
 }
 
-// CostTimeMsGT applies the GT predicate on the "cost_time_ms" field.
-func CostTimeMsGT(v uint64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGT(FieldCostTimeMs, v))
+// TraceIDGT applies the GT predicate on the "trace_id" field.
+func TraceIDGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldTraceID, v))
 }
 
-// CostTimeMsGTE applies the GTE predicate on the "cost_time_ms" field.
-func CostTimeMsGTE(v uint64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldGTE(FieldCostTimeMs, v))
+// TraceIDGTE applies the GTE predicate on the "trace_id" field.
+func TraceIDGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldTraceID, v))
 }
 
-// CostTimeMsLT applies the LT predicate on the "cost_time_ms" field.
-func CostTimeMsLT(v uint64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLT(FieldCostTimeMs, v))
+// TraceIDLT applies the LT predicate on the "trace_id" field.
+func TraceIDLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldTraceID, v))
 }
 
-// CostTimeMsLTE applies the LTE predicate on the "cost_time_ms" field.
-func CostTimeMsLTE(v uint64) predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldLTE(FieldCostTimeMs, v))
+// TraceIDLTE applies the LTE predicate on the "trace_id" field.
+func TraceIDLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldTraceID, v))
 }
 
-// CostTimeMsIsNil applies the IsNil predicate on the "cost_time_ms" field.
-func CostTimeMsIsNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldIsNull(FieldCostTimeMs))
+// TraceIDContains applies the Contains predicate on the "trace_id" field.
+func TraceIDContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldTraceID, v))
 }
 
-// CostTimeMsNotNil applies the NotNil predicate on the "cost_time_ms" field.
-func CostTimeMsNotNil() predicate.ApiAuditLog {
-	return predicate.ApiAuditLog(sql.FieldNotNull(FieldCostTimeMs))
+// TraceIDHasPrefix applies the HasPrefix predicate on the "trace_id" field.
+func TraceIDHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldTraceID, v))
+}
+
+// TraceIDHasSuffix applies the HasSuffix predicate on the "trace_id" field.
+func TraceIDHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldTraceID, v))
+}
+
+// TraceIDIsNil applies the IsNil predicate on the "trace_id" field.
+func TraceIDIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldTraceID))
+}
+
+// TraceIDNotNil applies the NotNil predicate on the "trace_id" field.
+func TraceIDNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldTraceID))
+}
+
+// TraceIDEqualFold applies the EqualFold predicate on the "trace_id" field.
+func TraceIDEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldTraceID, v))
+}
+
+// TraceIDContainsFold applies the ContainsFold predicate on the "trace_id" field.
+func TraceIDContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldTraceID, v))
+}
+
+// SpanIDEQ applies the EQ predicate on the "span_id" field.
+func SpanIDEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldSpanID, v))
+}
+
+// SpanIDNEQ applies the NEQ predicate on the "span_id" field.
+func SpanIDNEQ(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldSpanID, v))
+}
+
+// SpanIDIn applies the In predicate on the "span_id" field.
+func SpanIDIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldSpanID, vs...))
+}
+
+// SpanIDNotIn applies the NotIn predicate on the "span_id" field.
+func SpanIDNotIn(vs ...string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldSpanID, vs...))
+}
+
+// SpanIDGT applies the GT predicate on the "span_id" field.
+func SpanIDGT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldSpanID, v))
+}
+
+// SpanIDGTE applies the GTE predicate on the "span_id" field.
+func SpanIDGTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldSpanID, v))
+}
+
+// SpanIDLT applies the LT predicate on the "span_id" field.
+func SpanIDLT(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldSpanID, v))
+}
+
+// SpanIDLTE applies the LTE predicate on the "span_id" field.
+func SpanIDLTE(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldSpanID, v))
+}
+
+// SpanIDContains applies the Contains predicate on the "span_id" field.
+func SpanIDContains(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContains(FieldSpanID, v))
+}
+
+// SpanIDHasPrefix applies the HasPrefix predicate on the "span_id" field.
+func SpanIDHasPrefix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasPrefix(FieldSpanID, v))
+}
+
+// SpanIDHasSuffix applies the HasSuffix predicate on the "span_id" field.
+func SpanIDHasSuffix(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldHasSuffix(FieldSpanID, v))
+}
+
+// SpanIDIsNil applies the IsNil predicate on the "span_id" field.
+func SpanIDIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldSpanID))
+}
+
+// SpanIDNotNil applies the NotNil predicate on the "span_id" field.
+func SpanIDNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldSpanID))
+}
+
+// SpanIDEqualFold applies the EqualFold predicate on the "span_id" field.
+func SpanIDEqualFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEqualFold(FieldSpanID, v))
+}
+
+// SpanIDContainsFold applies the ContainsFold predicate on the "span_id" field.
+func SpanIDContainsFold(v string) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldContainsFold(FieldSpanID, v))
+}
+
+// LatencyMsEQ applies the EQ predicate on the "latency_ms" field.
+func LatencyMsEQ(v uint32) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldEQ(FieldLatencyMs, v))
+}
+
+// LatencyMsNEQ applies the NEQ predicate on the "latency_ms" field.
+func LatencyMsNEQ(v uint32) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNEQ(FieldLatencyMs, v))
+}
+
+// LatencyMsIn applies the In predicate on the "latency_ms" field.
+func LatencyMsIn(vs ...uint32) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIn(FieldLatencyMs, vs...))
+}
+
+// LatencyMsNotIn applies the NotIn predicate on the "latency_ms" field.
+func LatencyMsNotIn(vs ...uint32) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotIn(FieldLatencyMs, vs...))
+}
+
+// LatencyMsGT applies the GT predicate on the "latency_ms" field.
+func LatencyMsGT(v uint32) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGT(FieldLatencyMs, v))
+}
+
+// LatencyMsGTE applies the GTE predicate on the "latency_ms" field.
+func LatencyMsGTE(v uint32) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldGTE(FieldLatencyMs, v))
+}
+
+// LatencyMsLT applies the LT predicate on the "latency_ms" field.
+func LatencyMsLT(v uint32) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLT(FieldLatencyMs, v))
+}
+
+// LatencyMsLTE applies the LTE predicate on the "latency_ms" field.
+func LatencyMsLTE(v uint32) predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldLTE(FieldLatencyMs, v))
+}
+
+// LatencyMsIsNil applies the IsNil predicate on the "latency_ms" field.
+func LatencyMsIsNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldIsNull(FieldLatencyMs))
+}
+
+// LatencyMsNotNil applies the NotNil predicate on the "latency_ms" field.
+func LatencyMsNotNil() predicate.ApiAuditLog {
+	return predicate.ApiAuditLog(sql.FieldNotNull(FieldLatencyMs))
 }
 
 // SuccessEQ applies the EQ predicate on the "success" field.

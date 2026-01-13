@@ -69,7 +69,7 @@ func (a *ApiAuditLogMiddleware) Handle(ctx context.Context, htr *http.Transport,
 	// 获取错误码和是否成功
 	statusCode, reason, success := getStatusCode(middleErr)
 
-	apiAuditLog.CostTimeMs = trans.Ptr(uint64(latencyMs))
+	apiAuditLog.LatencyMs = trans.Ptr(uint32(latencyMs))
 	apiAuditLog.StatusCode = trans.Ptr(statusCode)
 	apiAuditLog.Reason = trans.Ptr(reason)
 	apiAuditLog.Success = trans.Ptr(success)

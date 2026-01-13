@@ -155,6 +155,10 @@ func (m *LoginAuditLog) validate(all bool) error {
 		// no validation rules for RequestId
 	}
 
+	if m.TraceId != nil {
+		// no validation rules for TraceId
+	}
+
 	if m.ActionType != nil {
 		// no validation rules for ActionType
 	}
@@ -169,6 +173,10 @@ func (m *LoginAuditLog) validate(all bool) error {
 
 	if m.MfaStatus != nil {
 		// no validation rules for MfaStatus
+	}
+
+	if m.LoginMethod != nil {
+		// no validation rules for LoginMethod
 	}
 
 	if m.RiskScore != nil {

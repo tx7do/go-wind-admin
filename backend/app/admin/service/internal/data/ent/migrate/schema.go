@@ -77,6 +77,7 @@ var (
 		{Name: "geo_location", Type: field.TypeJSON, Nullable: true, Comment: "地理位置(来自IP库)"},
 		{Name: "device_info", Type: field.TypeJSON, Nullable: true, Comment: "设备信息"},
 		{Name: "referer", Type: field.TypeString, Nullable: true, Comment: "请求来源URL"},
+		{Name: "app_version", Type: field.TypeString, Nullable: true, Comment: "客户端版本号"},
 		{Name: "http_method", Type: field.TypeString, Nullable: true, Comment: "HTTP请求方法"},
 		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "请求路径"},
 		{Name: "request_uri", Type: field.TypeString, Nullable: true, Comment: "完整请求URI"},
@@ -84,7 +85,9 @@ var (
 		{Name: "api_operation", Type: field.TypeString, Nullable: true, Comment: "API业务操作"},
 		{Name: "api_description", Type: field.TypeString, Nullable: true, Comment: "API功能描述"},
 		{Name: "request_id", Type: field.TypeString, Nullable: true, Comment: "请求ID"},
-		{Name: "cost_time_ms", Type: field.TypeUint64, Nullable: true, Comment: "操作耗时"},
+		{Name: "trace_id", Type: field.TypeString, Nullable: true, Comment: "全局链路追踪ID"},
+		{Name: "span_id", Type: field.TypeString, Nullable: true, Comment: "当前跨度ID"},
+		{Name: "latency_ms", Type: field.TypeUint32, Nullable: true, Comment: "操作耗时"},
 		{Name: "success", Type: field.TypeBool, Nullable: true, Comment: "操作结果"},
 		{Name: "status_code", Type: field.TypeUint32, Nullable: true, Comment: "HTTP状态码"},
 		{Name: "reason", Type: field.TypeString, Nullable: true, Comment: "操作失败原因"},
@@ -144,52 +147,166 @@ var (
 			{
 				Name:    "apiauditlog_request_id",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIAuditLogsColumns[15]},
+				Columns: []*schema.Column{SysAPIAuditLogsColumns[16]},
 			},
 			{
 				Name:    "apiauditlog_log_hash",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIAuditLogsColumns[23]},
+				Columns: []*schema.Column{SysAPIAuditLogsColumns[26]},
 			},
 			{
 				Name:    "apiauditlog_api_module",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIAuditLogsColumns[12]},
+				Columns: []*schema.Column{SysAPIAuditLogsColumns[13]},
 			},
 			{
 				Name:    "apiauditlog_api_operation",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIAuditLogsColumns[13]},
+				Columns: []*schema.Column{SysAPIAuditLogsColumns[14]},
 			},
 			{
 				Name:    "apiauditlog_api_module_api_operation",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIAuditLogsColumns[12], SysAPIAuditLogsColumns[13]},
+				Columns: []*schema.Column{SysAPIAuditLogsColumns[13], SysAPIAuditLogsColumns[14]},
 			},
 			{
 				Name:    "apiauditlog_path",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIAuditLogsColumns[10]},
+				Columns: []*schema.Column{SysAPIAuditLogsColumns[11]},
 			},
 			{
 				Name:    "apiauditlog_http_method",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIAuditLogsColumns[9]},
+				Columns: []*schema.Column{SysAPIAuditLogsColumns[10]},
 			},
 			{
 				Name:    "apiauditlog_path_http_method",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIAuditLogsColumns[10], SysAPIAuditLogsColumns[9]},
+				Columns: []*schema.Column{SysAPIAuditLogsColumns[11], SysAPIAuditLogsColumns[10]},
 			},
 			{
 				Name:    "apiauditlog_status_code",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIAuditLogsColumns[18]},
+				Columns: []*schema.Column{SysAPIAuditLogsColumns[21]},
 			},
 			{
 				Name:    "apiauditlog_success",
 				Unique:  false,
-				Columns: []*schema.Column{SysAPIAuditLogsColumns[17]},
+				Columns: []*schema.Column{SysAPIAuditLogsColumns[20]},
+			},
+		},
+	}
+	// SysDataAccessAuditLogsColumns holds the columns for the "sys_data_access_audit_logs" table.
+	SysDataAccessAuditLogsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
+		{Name: "user_id", Type: field.TypeUint32, Nullable: true, Comment: "操作者用户ID"},
+		{Name: "username", Type: field.TypeString, Nullable: true, Comment: "操作者账号名"},
+		{Name: "ip_address", Type: field.TypeString, Nullable: true, Comment: "IP地址"},
+		{Name: "geo_location", Type: field.TypeJSON, Nullable: true, Comment: "地理位置(来自IP库)"},
+		{Name: "device_info", Type: field.TypeJSON, Nullable: true, Comment: "设备信息"},
+		{Name: "request_id", Type: field.TypeString, Nullable: true, Comment: "全局请求ID"},
+		{Name: "trace_id", Type: field.TypeString, Nullable: true, Comment: "全局链路追踪ID"},
+		{Name: "data_source", Type: field.TypeString, Nullable: true, Comment: "数据源类型"},
+		{Name: "table_name", Type: field.TypeString, Nullable: true, Comment: "数据表名"},
+		{Name: "data_id", Type: field.TypeString, Nullable: true, Comment: "数据主键ID"},
+		{Name: "access_type", Type: field.TypeEnum, Nullable: true, Comment: "数据访问类型", Enums: []string{"SELECT", "INSERT", "UPDATE", "DELETE", "VIEW", "EXPORT", "BULK_READ", "OTHER"}},
+		{Name: "sql_digest", Type: field.TypeString, Nullable: true, Comment: "执行的SQL语句摘要"},
+		{Name: "sql_text", Type: field.TypeString, Nullable: true, Comment: "执行的SQL语句"},
+		{Name: "affected_rows", Type: field.TypeUint32, Nullable: true, Comment: "影响行数"},
+		{Name: "latency_ms", Type: field.TypeUint32, Nullable: true, Comment: "延迟时间（毫秒）"},
+		{Name: "success", Type: field.TypeBool, Nullable: true, Comment: "操作结果"},
+		{Name: "sensitive_level", Type: field.TypeEnum, Nullable: true, Comment: "数据敏感级别", Enums: []string{"PUBLIC", "INTERNAL", "CONFIDENTIAL", "SECRET"}},
+		{Name: "data_masked", Type: field.TypeBool, Nullable: true, Comment: "是否已脱敏"},
+		{Name: "masking_rules", Type: field.TypeString, Nullable: true, Comment: "脱敏规则"},
+		{Name: "business_purpose", Type: field.TypeString, Nullable: true, Comment: "业务处理目的"},
+		{Name: "data_category", Type: field.TypeString, Nullable: true, Comment: "数据分类标签"},
+		{Name: "db_user", Type: field.TypeString, Nullable: true, Comment: "数据库用户"},
+		{Name: "log_hash", Type: field.TypeString, Nullable: true, Comment: "日志内容哈希（SHA256，十六进制字符串）"},
+		{Name: "signature", Type: field.TypeBytes, Nullable: true, Comment: "日志数字签名"},
+	}
+	// SysDataAccessAuditLogsTable holds the schema information for the "sys_data_access_audit_logs" table.
+	SysDataAccessAuditLogsTable = &schema.Table{
+		Name:       "sys_data_access_audit_logs",
+		Comment:    "数据访问审计日志表",
+		Columns:    SysDataAccessAuditLogsColumns,
+		PrimaryKey: []*schema.Column{SysDataAccessAuditLogsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "dataaccessauditlog_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[3]},
+			},
+			{
+				Name:    "dataaccessauditlog_username",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[4]},
+			},
+			{
+				Name:    "dataaccessauditlog_request_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[8]},
+			},
+			{
+				Name:    "dataaccessauditlog_trace_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[9]},
+			},
+			{
+				Name:    "dataaccessauditlog_ip_address",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[5]},
+			},
+			{
+				Name:    "dataaccessauditlog_ip_address_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[5], SysDataAccessAuditLogsColumns[1]},
+			},
+			{
+				Name:    "dataaccessauditlog_tenant_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[2]},
+			},
+			{
+				Name:    "dataaccessauditlog_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[1]},
+			},
+			{
+				Name:    "dataaccessauditlog_tenant_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[2], SysDataAccessAuditLogsColumns[1]},
+			},
+			{
+				Name:    "dataaccessauditlog_tenant_id_user_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[2], SysDataAccessAuditLogsColumns[3], SysDataAccessAuditLogsColumns[1]},
+			},
+			{
+				Name:    "dataaccessauditlog_data_source_table_name_data_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[10], SysDataAccessAuditLogsColumns[11], SysDataAccessAuditLogsColumns[12]},
+			},
+			{
+				Name:    "dataaccessauditlog_access_type",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[13]},
+			},
+			{
+				Name:    "dataaccessauditlog_access_type_success_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[13], SysDataAccessAuditLogsColumns[18], SysDataAccessAuditLogsColumns[1]},
+			},
+			{
+				Name:    "dataaccessauditlog_sql_digest",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[14]},
+			},
+			{
+				Name:    "dataaccessauditlog_data_masked",
+				Unique:  false,
+				Columns: []*schema.Column{SysDataAccessAuditLogsColumns[20]},
 			},
 		},
 	}
@@ -627,8 +744,10 @@ var (
 		{Name: "session_id", Type: field.TypeString, Nullable: true, Comment: "会话ID"},
 		{Name: "device_info", Type: field.TypeJSON, Nullable: true, Comment: "设备信息"},
 		{Name: "request_id", Type: field.TypeString, Nullable: true, Comment: "全局请求ID"},
-		{Name: "action_type", Type: field.TypeEnum, Nullable: true, Comment: "事件动作类型", Enums: []string{"LOGIN", "LOGOUT", "SESSION_EXPIRED"}},
-		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "操作结果状态", Enums: []string{"SUCCESS", "FAILED", "PARTIAL"}},
+		{Name: "trace_id", Type: field.TypeString, Nullable: true, Comment: "全局链路追踪ID"},
+		{Name: "action_type", Type: field.TypeEnum, Nullable: true, Comment: "事件动作类型", Enums: []string{"LOGIN", "LOGOUT", "SESSION_EXPIRED", "KICKED_OUT", "PASSWORD_RESET"}},
+		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "操作结果状态", Enums: []string{"SUCCESS", "FAILED", "PARTIAL", "LOCKED"}},
+		{Name: "login_method", Type: field.TypeEnum, Nullable: true, Comment: "登录方式", Enums: []string{"PASSWORD", "SMS_CODE", "QR_CODE", "OIDC_SOCIAL", "BIOMETRIC", "FIDO2"}},
 		{Name: "failure_reason", Type: field.TypeString, Nullable: true, Comment: "失败原因"},
 		{Name: "mfa_status", Type: field.TypeString, Nullable: true, Comment: "MFA状态"},
 		{Name: "risk_score", Type: field.TypeUint32, Nullable: true, Comment: "风险评分（0-100，分值越高风险越大）"},
@@ -677,12 +796,12 @@ var (
 			{
 				Name:    "loginauditlog_action_type",
 				Unique:  false,
-				Columns: []*schema.Column{SysLoginAuditLogsColumns[10]},
+				Columns: []*schema.Column{SysLoginAuditLogsColumns[11]},
 			},
 			{
 				Name:    "loginauditlog_status",
 				Unique:  false,
-				Columns: []*schema.Column{SysLoginAuditLogsColumns[11]},
+				Columns: []*schema.Column{SysLoginAuditLogsColumns[12]},
 			},
 			{
 				Name:    "loginauditlog_tenant_id",
@@ -1200,6 +1319,118 @@ var (
 				Name:    "idx_sys_menu_created_at",
 				Unique:  false,
 				Columns: []*schema.Column{SysMenusColumns[1]},
+			},
+		},
+	}
+	// SysOperationAuditLogsColumns holds the columns for the "sys_operation_audit_logs" table.
+	SysOperationAuditLogsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
+		{Name: "user_id", Type: field.TypeUint32, Nullable: true, Comment: "操作者用户ID"},
+		{Name: "username", Type: field.TypeString, Nullable: true, Comment: "操作者账号名"},
+		{Name: "resource_type", Type: field.TypeString, Nullable: true, Comment: "资源类型"},
+		{Name: "resource_id", Type: field.TypeString, Nullable: true, Comment: "资源ID"},
+		{Name: "action", Type: field.TypeEnum, Nullable: true, Comment: "动作", Enums: []string{"CREATE", "UPDATE", "DELETE", "READ", "ASSIGN", "UNASSIGN", "EXPORT", "OTHER"}},
+		{Name: "before_data", Type: field.TypeString, Nullable: true, Comment: "操作前数据", SchemaType: map[string]string{"mysql": "json", "postgres": "jsonb"}},
+		{Name: "after_data", Type: field.TypeString, Nullable: true, Comment: "操作后数据", SchemaType: map[string]string{"mysql": "json", "postgres": "jsonb"}},
+		{Name: "sensitive_level", Type: field.TypeEnum, Nullable: true, Comment: "数据敏感级别", Enums: []string{"PUBLIC", "INTERNAL", "CONFIDENTIAL", "SECRET"}},
+		{Name: "request_id", Type: field.TypeString, Nullable: true, Comment: "全局请求ID"},
+		{Name: "trace_id", Type: field.TypeString, Nullable: true, Comment: "全局链路追踪ID"},
+		{Name: "success", Type: field.TypeBool, Nullable: true, Comment: "操作结果"},
+		{Name: "failure_reason", Type: field.TypeString, Nullable: true, Comment: "失败原因"},
+		{Name: "ip_address", Type: field.TypeString, Nullable: true, Comment: "IP地址"},
+		{Name: "geo_location", Type: field.TypeJSON, Nullable: true, Comment: "地理位置(来自IP库)"},
+		{Name: "device_info", Type: field.TypeJSON, Nullable: true, Comment: "设备信息"},
+		{Name: "log_hash", Type: field.TypeString, Nullable: true, Comment: "日志内容哈希（SHA256，十六进制字符串）"},
+		{Name: "signature", Type: field.TypeBytes, Nullable: true, Comment: "日志数字签名"},
+	}
+	// SysOperationAuditLogsTable holds the schema information for the "sys_operation_audit_logs" table.
+	SysOperationAuditLogsTable = &schema.Table{
+		Name:       "sys_operation_audit_logs",
+		Comment:    "操作审计日志表",
+		Columns:    SysOperationAuditLogsColumns,
+		PrimaryKey: []*schema.Column{SysOperationAuditLogsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "operationauditlog_user_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[3]},
+			},
+			{
+				Name:    "operationauditlog_username",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[4]},
+			},
+			{
+				Name:    "operationauditlog_request_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[11]},
+			},
+			{
+				Name:    "operationauditlog_trace_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[12]},
+			},
+			{
+				Name:    "operationauditlog_ip_address",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[15]},
+			},
+			{
+				Name:    "operationauditlog_ip_address_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[15], SysOperationAuditLogsColumns[1]},
+			},
+			{
+				Name:    "operationauditlog_tenant_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[2]},
+			},
+			{
+				Name:    "operationauditlog_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[1]},
+			},
+			{
+				Name:    "operationauditlog_tenant_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[2], SysOperationAuditLogsColumns[1]},
+			},
+			{
+				Name:    "operationauditlog_tenant_id_user_id_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[2], SysOperationAuditLogsColumns[3], SysOperationAuditLogsColumns[1]},
+			},
+			{
+				Name:    "operationauditlog_resource_type_resource_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[5], SysOperationAuditLogsColumns[6]},
+			},
+			{
+				Name:    "operationauditlog_action",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[7]},
+			},
+			{
+				Name:    "operationauditlog_action_success_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[7], SysOperationAuditLogsColumns[13], SysOperationAuditLogsColumns[1]},
+			},
+			{
+				Name:    "operationauditlog_sensitive_level",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[10]},
+			},
+			{
+				Name:    "operationauditlog_success",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[13]},
+			},
+			{
+				Name:    "operationauditlog_log_hash",
+				Unique:  false,
+				Columns: []*schema.Column{SysOperationAuditLogsColumns[18]},
 			},
 		},
 	}
@@ -2527,6 +2758,7 @@ var (
 	Tables = []*schema.Table{
 		SysApisTable,
 		SysAPIAuditLogsTable,
+		SysDataAccessAuditLogsTable,
 		SysDictEntriesTable,
 		SysDictTypesTable,
 		FilesTable,
@@ -2541,6 +2773,7 @@ var (
 		SysMembershipPositionsTable,
 		SysMembershipRolesTable,
 		SysMenusTable,
+		SysOperationAuditLogsTable,
 		SysOrgUnitsTable,
 		SysPermissionsTable,
 		SysPermissionApisTable,
@@ -2571,6 +2804,11 @@ func init() {
 	}
 	SysAPIAuditLogsTable.Annotation = &entsql.Annotation{
 		Table:     "sys_api_audit_logs",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	SysDataAccessAuditLogsTable.Annotation = &entsql.Annotation{
+		Table:     "sys_data_access_audit_logs",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}
@@ -2643,6 +2881,11 @@ func init() {
 	SysMenusTable.ForeignKeys[0].RefTable = SysMenusTable
 	SysMenusTable.Annotation = &entsql.Annotation{
 		Table:     "sys_menus",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	SysOperationAuditLogsTable.Annotation = &entsql.Annotation{
+		Table:     "sys_operation_audit_logs",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

@@ -43,14 +43,14 @@ type FileServiceHTTPServer interface {
 
 func RegisterFileServiceHTTPServer(s *http.Server, srv FileServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/files", _FileService_List2_HTTP_Handler(srv))
-	r.GET("/admin/v1/files/{id}", _FileService_Get2_HTTP_Handler(srv))
+	r.GET("/admin/v1/files", _FileService_List3_HTTP_Handler(srv))
+	r.GET("/admin/v1/files/{id}", _FileService_Get3_HTTP_Handler(srv))
 	r.POST("/admin/v1/files", _FileService_Create1_HTTP_Handler(srv))
 	r.PUT("/admin/v1/files/{id}", _FileService_Update1_HTTP_Handler(srv))
 	r.DELETE("/admin/v1/files/{id}", _FileService_Delete1_HTTP_Handler(srv))
 }
 
-func _FileService_List2_HTTP_Handler(srv FileServiceHTTPServer) func(ctx http.Context) error {
+func _FileService_List3_HTTP_Handler(srv FileServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.PagingRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -69,7 +69,7 @@ func _FileService_List2_HTTP_Handler(srv FileServiceHTTPServer) func(ctx http.Co
 	}
 }
 
-func _FileService_Get2_HTTP_Handler(srv FileServiceHTTPServer) func(ctx http.Context) error {
+func _FileService_Get3_HTTP_Handler(srv FileServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.GetFileRequest
 		if err := ctx.BindQuery(&in); err != nil {

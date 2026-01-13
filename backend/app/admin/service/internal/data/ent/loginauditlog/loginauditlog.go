@@ -31,10 +31,14 @@ const (
 	FieldDeviceInfo = "device_info"
 	// FieldRequestID holds the string denoting the request_id field in the database.
 	FieldRequestID = "request_id"
+	// FieldTraceID holds the string denoting the trace_id field in the database.
+	FieldTraceID = "trace_id"
 	// FieldActionType holds the string denoting the action_type field in the database.
 	FieldActionType = "action_type"
 	// FieldStatus holds the string denoting the status field in the database.
 	FieldStatus = "status"
+	// FieldLoginMethod holds the string denoting the login_method field in the database.
+	FieldLoginMethod = "login_method"
 	// FieldFailureReason holds the string denoting the failure_reason field in the database.
 	FieldFailureReason = "failure_reason"
 	// FieldMfaStatus holds the string denoting the mfa_status field in the database.
@@ -65,8 +69,10 @@ var Columns = []string{
 	FieldSessionID,
 	FieldDeviceInfo,
 	FieldRequestID,
+	FieldTraceID,
 	FieldActionType,
 	FieldStatus,
+	FieldLoginMethod,
 	FieldFailureReason,
 	FieldMfaStatus,
 	FieldRiskScore,
@@ -99,6 +105,8 @@ const (
 	ActionTypeLogin          ActionType = "LOGIN"
 	ActionTypeLogout         ActionType = "LOGOUT"
 	ActionTypeSessionExpired ActionType = "SESSION_EXPIRED"
+	ActionTypeKickedOut      ActionType = "KICKED_OUT"
+	ActionTypePasswordReset  ActionType = "PASSWORD_RESET"
 )
 
 func (at ActionType) String() string {
@@ -108,7 +116,7 @@ func (at ActionType) String() string {
 // ActionTypeValidator is a validator for the "action_type" field enum values. It is called by the builders before save.
 func ActionTypeValidator(at ActionType) error {
 	switch at {
-	case ActionTypeLogin, ActionTypeLogout, ActionTypeSessionExpired:
+	case ActionTypeLogin, ActionTypeLogout, ActionTypeSessionExpired, ActionTypeKickedOut, ActionTypePasswordReset:
 		return nil
 	default:
 		return fmt.Errorf("loginauditlog: invalid enum value for action_type field: %q", at)
@@ -123,6 +131,7 @@ const (
 	StatusSuccess Status = "SUCCESS"
 	StatusFailed  Status = "FAILED"
 	StatusPartial Status = "PARTIAL"
+	StatusLocked  Status = "LOCKED"
 )
 
 func (s Status) String() string {
@@ -132,10 +141,37 @@ func (s Status) String() string {
 // StatusValidator is a validator for the "status" field enum values. It is called by the builders before save.
 func StatusValidator(s Status) error {
 	switch s {
-	case StatusSuccess, StatusFailed, StatusPartial:
+	case StatusSuccess, StatusFailed, StatusPartial, StatusLocked:
 		return nil
 	default:
 		return fmt.Errorf("loginauditlog: invalid enum value for status field: %q", s)
+	}
+}
+
+// LoginMethod defines the type for the "login_method" enum field.
+type LoginMethod string
+
+// LoginMethod values.
+const (
+	LoginMethodPassword   LoginMethod = "PASSWORD"
+	LoginMethodSmsCode    LoginMethod = "SMS_CODE"
+	LoginMethodQrCode     LoginMethod = "QR_CODE"
+	LoginMethodOidcSocial LoginMethod = "OIDC_SOCIAL"
+	LoginMethodBiometric  LoginMethod = "BIOMETRIC"
+	LoginMethodFido2      LoginMethod = "FIDO2"
+)
+
+func (lm LoginMethod) String() string {
+	return string(lm)
+}
+
+// LoginMethodValidator is a validator for the "login_method" field enum values. It is called by the builders before save.
+func LoginMethodValidator(lm LoginMethod) error {
+	switch lm {
+	case LoginMethodPassword, LoginMethodSmsCode, LoginMethodQrCode, LoginMethodOidcSocial, LoginMethodBiometric, LoginMethodFido2:
+		return nil
+	default:
+		return fmt.Errorf("loginauditlog: invalid enum value for login_method field: %q", lm)
 	}
 }
 
@@ -206,6 +242,11 @@ func ByRequestID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRequestID, opts...).ToFunc()
 }
 
+// ByTraceID orders the results by the trace_id field.
+func ByTraceID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTraceID, opts...).ToFunc()
+}
+
 // ByActionType orders the results by the action_type field.
 func ByActionType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldActionType, opts...).ToFunc()
@@ -214,6 +255,11 @@ func ByActionType(opts ...sql.OrderTermOption) OrderOption {
 // ByStatus orders the results by the status field.
 func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldStatus, opts...).ToFunc()
+}
+
+// ByLoginMethod orders the results by the login_method field.
+func ByLoginMethod(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLoginMethod, opts...).ToFunc()
 }
 
 // ByFailureReason orders the results by the failure_reason field.

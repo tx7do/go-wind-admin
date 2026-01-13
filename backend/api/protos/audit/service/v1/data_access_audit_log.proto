@@ -7,12 +7,14 @@ import "gnostic/openapi/v3/annotations.proto";
 import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";
 
+import "validate/validate.proto";
+
 import "pagination/v1/pagination.proto";
 
 import "audit/service/v1/common.proto";
 
 
-// 数据访问审计日志管理服务
+// 数据访问审计日志服务
 service DataAccessAuditLogService {
   // 查询数据访问审计日志列表
   rpc List (pagination.PagingRequest) returns (ListDataAccessAuditLogResponse) {}
@@ -23,7 +25,154 @@ service DataAccessAuditLogService {
 
 // 数据访问审计日志
 message DataAccessAuditLog {
+  // 数据访问类型
+  enum AccessType {
+    ACCESS_TYPE_UNSPECIFIED = 0;
 
+    SELECT = 1;   // 读取数据
+    INSERT = 2;   // 插入数据
+    UPDATE = 3;   // 更新数据
+    DELETE = 4;   // 删除数据
+    VIEW = 5;     // 查看数据
+    EXPORT = 6;   // 导出数据
+    BULK_READ = 7; // 批量读取数据
+
+    OTHER = 8;    // 其他
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = {description: "API审计日志ID"}
+  ]; // 数据访问审计日志ID
+
+  optional uint32 tenant_id = 2 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+
+  optional string tenant_name = 3 [
+    json_name = "tenantName",
+    (gnostic.openapi.v3.property) = {description: "租户名称"}
+  ]; // 租户名称
+
+  optional uint32 user_id = 4 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = {description: "用户ID"}
+  ]; // 用户ID
+
+  optional string username = 5 [
+    json_name = "username",
+    (gnostic.openapi.v3.property) = {description: "账号名"}
+  ]; // 账号名
+
+  optional string ip_address = 10 [
+    json_name = "ipAddress",
+    (gnostic.openapi.v3.property) = {description: "操作IP地址（IPv4/IPv6）"}
+  ]; // 操作IP地址（IPv4/IPv6）
+
+  optional string request_id = 11 [
+    json_name = "requestId",
+    (gnostic.openapi.v3.property) = {description: "全局请求ID（关联网关日志）"}
+  ]; // 请求ID
+
+  optional string data_source = 12 [
+    json_name = "dataSource",
+    (gnostic.openapi.v3.property) = {description: "数据源类型（mysql/redis/mongodb/es）"}
+  ]; // 数据源类型（mysql/redis/mongodb/es）
+
+  optional string table_name = 13 [
+    json_name = "tableName",
+    (gnostic.openapi.v3.property) = {description: "数据表名（如sys_users/order_info，Redis为key前缀）"}
+  ]; // 数据表名（如sys_users/order_info，Redis为key前缀）
+
+  optional string data_id = 14 [
+    json_name = "dataId",
+    (gnostic.openapi.v3.property) = {description: "数据主键ID（如用户ID/订单ID，兼容不同表主键类型）"}
+  ]; // 数据主键ID（如用户ID/订单ID，兼容不同表主键类型）
+
+  optional AccessType access_type = 20 [
+    json_name = "accessType",
+    (gnostic.openapi.v3.property) = {description: "数据访问类型（SELECT/INSERT/UPDATE/DELETE）"}
+  ]; // 数据访问类型（SELECT/INSERT/UPDATE/DELETE）
+
+  optional string sql_digest = 21 [
+    json_name = "sqlDigest",
+    (gnostic.openapi.v3.property) = {description: "执行的SQL语句摘要（MD5）"}
+  ]; // 执行的SQL语句摘要
+
+  optional string sql_text = 22 [
+    json_name = "sqlText",
+    (gnostic.openapi.v3.property) = {description: "执行的SQL语句（脱敏后，Redis为命令）"}
+  ]; // 执行的SQL语句（脱敏后，Redis为命令）
+
+  optional uint32 affected_rows = 23 [
+    json_name = "affectedRows",
+    (gnostic.openapi.v3.property) = {description: "影响行数（Redis为影响key数量）"}
+  ]; // 影响行数（Redis为影响key数量）
+
+  optional uint32 latency_ms = 24 [
+    json_name = "latencyMs",
+    (gnostic.openapi.v3.property) = {description: "延迟时间（毫秒）"},
+    (validate.rules).uint32.lte = 3600000 // 1小时
+  ]; // 延迟时间
+
+  optional bool success = 25 [
+    json_name = "success",
+    (gnostic.openapi.v3.property) = {description: "操作是否成功"}
+  ]; // 操作结果
+
+  optional SensitiveLevel sensitive_level = 26 [
+    json_name = "sensitiveLevel",
+    (gnostic.openapi.v3.property) = {description: "数据敏感级别"}
+  ]; // 数据敏感级别
+
+  optional bool data_masked = 30 [
+    json_name = "dataMasked",
+    (gnostic.openapi.v3.property).description = "是否已脱敏"
+  ]; // 是否已脱敏
+
+  optional string masking_rules = 31 [
+    json_name = "maskingRules",
+    (gnostic.openapi.v3.property).description = "脱敏规则（JSON：{\"phone\":\"mask_last_4\"}）"
+  ]; // 脱敏规则
+
+  optional string business_purpose = 32 [
+    json_name = "businessPurpose",
+    (gnostic.openapi.v3.property).description = "业务处理目的",
+    (validate.rules).string = {
+      min_len: 5,
+      pattern: "^\\w+:[a-z0-9_-]+$" // 标准化格式：hr:annual_review
+    }
+  ]; // 业务处理目的
+
+  optional string data_category = 34 [
+    json_name = "dataCategory",
+    (gnostic.openapi.v3.property).description = "数据分类标签"
+  ];
+
+  optional string db_user = 35 [
+    json_name = "dbUser",
+    (gnostic.openapi.v3.property).description = "数据库用户"
+  ];
+
+  // ========== 合规校验 ==========
+
+  optional string log_hash = 40 [
+    json_name = "logHash",
+    (gnostic.openapi.v3.property).description = "日志内容哈希（SHA256，十六进制字符串）"
+  ]; // 日志哈希
+
+  optional bytes signature = 41 [
+    json_name = "signature",
+    (gnostic.openapi.v3.property).description = "日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）"
+  ]; // 日志数字签名
+
+  // ========== 时间字段 ==========
+
+  optional google.protobuf.Timestamp created_at = 50 [
+    json_name = "createdAt",
+    (gnostic.openapi.v3.property) = {description: "日志创建时间"}
+  ];// 日志创建时间
 }
 
 // 查询数据访问审计日志列表 - 回应

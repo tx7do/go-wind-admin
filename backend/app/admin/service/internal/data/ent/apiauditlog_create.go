@@ -119,6 +119,20 @@ func (_c *ApiAuditLogCreate) SetNillableReferer(v *string) *ApiAuditLogCreate {
 	return _c
 }
 
+// SetAppVersion sets the "app_version" field.
+func (_c *ApiAuditLogCreate) SetAppVersion(v string) *ApiAuditLogCreate {
+	_c.mutation.SetAppVersion(v)
+	return _c
+}
+
+// SetNillableAppVersion sets the "app_version" field if the given value is not nil.
+func (_c *ApiAuditLogCreate) SetNillableAppVersion(v *string) *ApiAuditLogCreate {
+	if v != nil {
+		_c.SetAppVersion(*v)
+	}
+	return _c
+}
+
 // SetHTTPMethod sets the "http_method" field.
 func (_c *ApiAuditLogCreate) SetHTTPMethod(v string) *ApiAuditLogCreate {
 	_c.mutation.SetHTTPMethod(v)
@@ -217,16 +231,44 @@ func (_c *ApiAuditLogCreate) SetNillableRequestID(v *string) *ApiAuditLogCreate 
 	return _c
 }
 
-// SetCostTimeMs sets the "cost_time_ms" field.
-func (_c *ApiAuditLogCreate) SetCostTimeMs(v uint64) *ApiAuditLogCreate {
-	_c.mutation.SetCostTimeMs(v)
+// SetTraceID sets the "trace_id" field.
+func (_c *ApiAuditLogCreate) SetTraceID(v string) *ApiAuditLogCreate {
+	_c.mutation.SetTraceID(v)
 	return _c
 }
 
-// SetNillableCostTimeMs sets the "cost_time_ms" field if the given value is not nil.
-func (_c *ApiAuditLogCreate) SetNillableCostTimeMs(v *uint64) *ApiAuditLogCreate {
+// SetNillableTraceID sets the "trace_id" field if the given value is not nil.
+func (_c *ApiAuditLogCreate) SetNillableTraceID(v *string) *ApiAuditLogCreate {
 	if v != nil {
-		_c.SetCostTimeMs(*v)
+		_c.SetTraceID(*v)
+	}
+	return _c
+}
+
+// SetSpanID sets the "span_id" field.
+func (_c *ApiAuditLogCreate) SetSpanID(v string) *ApiAuditLogCreate {
+	_c.mutation.SetSpanID(v)
+	return _c
+}
+
+// SetNillableSpanID sets the "span_id" field if the given value is not nil.
+func (_c *ApiAuditLogCreate) SetNillableSpanID(v *string) *ApiAuditLogCreate {
+	if v != nil {
+		_c.SetSpanID(*v)
+	}
+	return _c
+}
+
+// SetLatencyMs sets the "latency_ms" field.
+func (_c *ApiAuditLogCreate) SetLatencyMs(v uint32) *ApiAuditLogCreate {
+	_c.mutation.SetLatencyMs(v)
+	return _c
+}
+
+// SetNillableLatencyMs sets the "latency_ms" field if the given value is not nil.
+func (_c *ApiAuditLogCreate) SetNillableLatencyMs(v *uint32) *ApiAuditLogCreate {
+	if v != nil {
+		_c.SetLatencyMs(*v)
 	}
 	return _c
 }
@@ -455,6 +497,10 @@ func (_c *ApiAuditLogCreate) createSpec() (*ApiAuditLog, *sqlgraph.CreateSpec) {
 		_spec.SetField(apiauditlog.FieldReferer, field.TypeString, value)
 		_node.Referer = &value
 	}
+	if value, ok := _c.mutation.AppVersion(); ok {
+		_spec.SetField(apiauditlog.FieldAppVersion, field.TypeString, value)
+		_node.AppVersion = &value
+	}
 	if value, ok := _c.mutation.HTTPMethod(); ok {
 		_spec.SetField(apiauditlog.FieldHTTPMethod, field.TypeString, value)
 		_node.HTTPMethod = &value
@@ -483,9 +529,17 @@ func (_c *ApiAuditLogCreate) createSpec() (*ApiAuditLog, *sqlgraph.CreateSpec) {
 		_spec.SetField(apiauditlog.FieldRequestID, field.TypeString, value)
 		_node.RequestID = &value
 	}
-	if value, ok := _c.mutation.CostTimeMs(); ok {
-		_spec.SetField(apiauditlog.FieldCostTimeMs, field.TypeUint64, value)
-		_node.CostTimeMs = &value
+	if value, ok := _c.mutation.TraceID(); ok {
+		_spec.SetField(apiauditlog.FieldTraceID, field.TypeString, value)
+		_node.TraceID = &value
+	}
+	if value, ok := _c.mutation.SpanID(); ok {
+		_spec.SetField(apiauditlog.FieldSpanID, field.TypeString, value)
+		_node.SpanID = &value
+	}
+	if value, ok := _c.mutation.LatencyMs(); ok {
+		_spec.SetField(apiauditlog.FieldLatencyMs, field.TypeUint32, value)
+		_node.LatencyMs = &value
 	}
 	if value, ok := _c.mutation.Success(); ok {
 		_spec.SetField(apiauditlog.FieldSuccess, field.TypeBool, value)
@@ -685,6 +739,24 @@ func (u *ApiAuditLogUpsert) ClearReferer() *ApiAuditLogUpsert {
 	return u
 }
 
+// SetAppVersion sets the "app_version" field.
+func (u *ApiAuditLogUpsert) SetAppVersion(v string) *ApiAuditLogUpsert {
+	u.Set(apiauditlog.FieldAppVersion, v)
+	return u
+}
+
+// UpdateAppVersion sets the "app_version" field to the value that was provided on create.
+func (u *ApiAuditLogUpsert) UpdateAppVersion() *ApiAuditLogUpsert {
+	u.SetExcluded(apiauditlog.FieldAppVersion)
+	return u
+}
+
+// ClearAppVersion clears the value of the "app_version" field.
+func (u *ApiAuditLogUpsert) ClearAppVersion() *ApiAuditLogUpsert {
+	u.SetNull(apiauditlog.FieldAppVersion)
+	return u
+}
+
 // SetHTTPMethod sets the "http_method" field.
 func (u *ApiAuditLogUpsert) SetHTTPMethod(v string) *ApiAuditLogUpsert {
 	u.Set(apiauditlog.FieldHTTPMethod, v)
@@ -811,27 +883,63 @@ func (u *ApiAuditLogUpsert) ClearRequestID() *ApiAuditLogUpsert {
 	return u
 }
 
-// SetCostTimeMs sets the "cost_time_ms" field.
-func (u *ApiAuditLogUpsert) SetCostTimeMs(v uint64) *ApiAuditLogUpsert {
-	u.Set(apiauditlog.FieldCostTimeMs, v)
+// SetTraceID sets the "trace_id" field.
+func (u *ApiAuditLogUpsert) SetTraceID(v string) *ApiAuditLogUpsert {
+	u.Set(apiauditlog.FieldTraceID, v)
 	return u
 }
 
-// UpdateCostTimeMs sets the "cost_time_ms" field to the value that was provided on create.
-func (u *ApiAuditLogUpsert) UpdateCostTimeMs() *ApiAuditLogUpsert {
-	u.SetExcluded(apiauditlog.FieldCostTimeMs)
+// UpdateTraceID sets the "trace_id" field to the value that was provided on create.
+func (u *ApiAuditLogUpsert) UpdateTraceID() *ApiAuditLogUpsert {
+	u.SetExcluded(apiauditlog.FieldTraceID)
 	return u
 }
 
-// AddCostTimeMs adds v to the "cost_time_ms" field.
-func (u *ApiAuditLogUpsert) AddCostTimeMs(v uint64) *ApiAuditLogUpsert {
-	u.Add(apiauditlog.FieldCostTimeMs, v)
+// ClearTraceID clears the value of the "trace_id" field.
+func (u *ApiAuditLogUpsert) ClearTraceID() *ApiAuditLogUpsert {
+	u.SetNull(apiauditlog.FieldTraceID)
 	return u
 }
 
-// ClearCostTimeMs clears the value of the "cost_time_ms" field.
-func (u *ApiAuditLogUpsert) ClearCostTimeMs() *ApiAuditLogUpsert {
-	u.SetNull(apiauditlog.FieldCostTimeMs)
+// SetSpanID sets the "span_id" field.
+func (u *ApiAuditLogUpsert) SetSpanID(v string) *ApiAuditLogUpsert {
+	u.Set(apiauditlog.FieldSpanID, v)
+	return u
+}
+
+// UpdateSpanID sets the "span_id" field to the value that was provided on create.
+func (u *ApiAuditLogUpsert) UpdateSpanID() *ApiAuditLogUpsert {
+	u.SetExcluded(apiauditlog.FieldSpanID)
+	return u
+}
+
+// ClearSpanID clears the value of the "span_id" field.
+func (u *ApiAuditLogUpsert) ClearSpanID() *ApiAuditLogUpsert {
+	u.SetNull(apiauditlog.FieldSpanID)
+	return u
+}
+
+// SetLatencyMs sets the "latency_ms" field.
+func (u *ApiAuditLogUpsert) SetLatencyMs(v uint32) *ApiAuditLogUpsert {
+	u.Set(apiauditlog.FieldLatencyMs, v)
+	return u
+}
+
+// UpdateLatencyMs sets the "latency_ms" field to the value that was provided on create.
+func (u *ApiAuditLogUpsert) UpdateLatencyMs() *ApiAuditLogUpsert {
+	u.SetExcluded(apiauditlog.FieldLatencyMs)
+	return u
+}
+
+// AddLatencyMs adds v to the "latency_ms" field.
+func (u *ApiAuditLogUpsert) AddLatencyMs(v uint32) *ApiAuditLogUpsert {
+	u.Add(apiauditlog.FieldLatencyMs, v)
+	return u
+}
+
+// ClearLatencyMs clears the value of the "latency_ms" field.
+func (u *ApiAuditLogUpsert) ClearLatencyMs() *ApiAuditLogUpsert {
+	u.SetNull(apiauditlog.FieldLatencyMs)
 	return u
 }
 
@@ -1172,6 +1280,27 @@ func (u *ApiAuditLogUpsertOne) ClearReferer() *ApiAuditLogUpsertOne {
 	})
 }
 
+// SetAppVersion sets the "app_version" field.
+func (u *ApiAuditLogUpsertOne) SetAppVersion(v string) *ApiAuditLogUpsertOne {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.SetAppVersion(v)
+	})
+}
+
+// UpdateAppVersion sets the "app_version" field to the value that was provided on create.
+func (u *ApiAuditLogUpsertOne) UpdateAppVersion() *ApiAuditLogUpsertOne {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.UpdateAppVersion()
+	})
+}
+
+// ClearAppVersion clears the value of the "app_version" field.
+func (u *ApiAuditLogUpsertOne) ClearAppVersion() *ApiAuditLogUpsertOne {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.ClearAppVersion()
+	})
+}
+
 // SetHTTPMethod sets the "http_method" field.
 func (u *ApiAuditLogUpsertOne) SetHTTPMethod(v string) *ApiAuditLogUpsertOne {
 	return u.Update(func(s *ApiAuditLogUpsert) {
@@ -1319,31 +1448,73 @@ func (u *ApiAuditLogUpsertOne) ClearRequestID() *ApiAuditLogUpsertOne {
 	})
 }
 
-// SetCostTimeMs sets the "cost_time_ms" field.
-func (u *ApiAuditLogUpsertOne) SetCostTimeMs(v uint64) *ApiAuditLogUpsertOne {
+// SetTraceID sets the "trace_id" field.
+func (u *ApiAuditLogUpsertOne) SetTraceID(v string) *ApiAuditLogUpsertOne {
 	return u.Update(func(s *ApiAuditLogUpsert) {
-		s.SetCostTimeMs(v)
+		s.SetTraceID(v)
 	})
 }
 
-// AddCostTimeMs adds v to the "cost_time_ms" field.
-func (u *ApiAuditLogUpsertOne) AddCostTimeMs(v uint64) *ApiAuditLogUpsertOne {
+// UpdateTraceID sets the "trace_id" field to the value that was provided on create.
+func (u *ApiAuditLogUpsertOne) UpdateTraceID() *ApiAuditLogUpsertOne {
 	return u.Update(func(s *ApiAuditLogUpsert) {
-		s.AddCostTimeMs(v)
+		s.UpdateTraceID()
 	})
 }
 
-// UpdateCostTimeMs sets the "cost_time_ms" field to the value that was provided on create.
-func (u *ApiAuditLogUpsertOne) UpdateCostTimeMs() *ApiAuditLogUpsertOne {
+// ClearTraceID clears the value of the "trace_id" field.
+func (u *ApiAuditLogUpsertOne) ClearTraceID() *ApiAuditLogUpsertOne {
 	return u.Update(func(s *ApiAuditLogUpsert) {
-		s.UpdateCostTimeMs()
+		s.ClearTraceID()
 	})
 }
 
-// ClearCostTimeMs clears the value of the "cost_time_ms" field.
-func (u *ApiAuditLogUpsertOne) ClearCostTimeMs() *ApiAuditLogUpsertOne {
+// SetSpanID sets the "span_id" field.
+func (u *ApiAuditLogUpsertOne) SetSpanID(v string) *ApiAuditLogUpsertOne {
 	return u.Update(func(s *ApiAuditLogUpsert) {
-		s.ClearCostTimeMs()
+		s.SetSpanID(v)
+	})
+}
+
+// UpdateSpanID sets the "span_id" field to the value that was provided on create.
+func (u *ApiAuditLogUpsertOne) UpdateSpanID() *ApiAuditLogUpsertOne {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.UpdateSpanID()
+	})
+}
+
+// ClearSpanID clears the value of the "span_id" field.
+func (u *ApiAuditLogUpsertOne) ClearSpanID() *ApiAuditLogUpsertOne {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.ClearSpanID()
+	})
+}
+
+// SetLatencyMs sets the "latency_ms" field.
+func (u *ApiAuditLogUpsertOne) SetLatencyMs(v uint32) *ApiAuditLogUpsertOne {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.SetLatencyMs(v)
+	})
+}
+
+// AddLatencyMs adds v to the "latency_ms" field.
+func (u *ApiAuditLogUpsertOne) AddLatencyMs(v uint32) *ApiAuditLogUpsertOne {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.AddLatencyMs(v)
+	})
+}
+
+// UpdateLatencyMs sets the "latency_ms" field to the value that was provided on create.
+func (u *ApiAuditLogUpsertOne) UpdateLatencyMs() *ApiAuditLogUpsertOne {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.UpdateLatencyMs()
+	})
+}
+
+// ClearLatencyMs clears the value of the "latency_ms" field.
+func (u *ApiAuditLogUpsertOne) ClearLatencyMs() *ApiAuditLogUpsertOne {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.ClearLatencyMs()
 	})
 }
 
@@ -1874,6 +2045,27 @@ func (u *ApiAuditLogUpsertBulk) ClearReferer() *ApiAuditLogUpsertBulk {
 	})
 }
 
+// SetAppVersion sets the "app_version" field.
+func (u *ApiAuditLogUpsertBulk) SetAppVersion(v string) *ApiAuditLogUpsertBulk {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.SetAppVersion(v)
+	})
+}
+
+// UpdateAppVersion sets the "app_version" field to the value that was provided on create.
+func (u *ApiAuditLogUpsertBulk) UpdateAppVersion() *ApiAuditLogUpsertBulk {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.UpdateAppVersion()
+	})
+}
+
+// ClearAppVersion clears the value of the "app_version" field.
+func (u *ApiAuditLogUpsertBulk) ClearAppVersion() *ApiAuditLogUpsertBulk {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.ClearAppVersion()
+	})
+}
+
 // SetHTTPMethod sets the "http_method" field.
 func (u *ApiAuditLogUpsertBulk) SetHTTPMethod(v string) *ApiAuditLogUpsertBulk {
 	return u.Update(func(s *ApiAuditLogUpsert) {
@@ -2021,31 +2213,73 @@ func (u *ApiAuditLogUpsertBulk) ClearRequestID() *ApiAuditLogUpsertBulk {
 	})
 }
 
-// SetCostTimeMs sets the "cost_time_ms" field.
-func (u *ApiAuditLogUpsertBulk) SetCostTimeMs(v uint64) *ApiAuditLogUpsertBulk {
+// SetTraceID sets the "trace_id" field.
+func (u *ApiAuditLogUpsertBulk) SetTraceID(v string) *ApiAuditLogUpsertBulk {
 	return u.Update(func(s *ApiAuditLogUpsert) {
-		s.SetCostTimeMs(v)
+		s.SetTraceID(v)
 	})
 }
 
-// AddCostTimeMs adds v to the "cost_time_ms" field.
-func (u *ApiAuditLogUpsertBulk) AddCostTimeMs(v uint64) *ApiAuditLogUpsertBulk {
+// UpdateTraceID sets the "trace_id" field to the value that was provided on create.
+func (u *ApiAuditLogUpsertBulk) UpdateTraceID() *ApiAuditLogUpsertBulk {
 	return u.Update(func(s *ApiAuditLogUpsert) {
-		s.AddCostTimeMs(v)
+		s.UpdateTraceID()
 	})
 }
 
-// UpdateCostTimeMs sets the "cost_time_ms" field to the value that was provided on create.
-func (u *ApiAuditLogUpsertBulk) UpdateCostTimeMs() *ApiAuditLogUpsertBulk {
+// ClearTraceID clears the value of the "trace_id" field.
+func (u *ApiAuditLogUpsertBulk) ClearTraceID() *ApiAuditLogUpsertBulk {
 	return u.Update(func(s *ApiAuditLogUpsert) {
-		s.UpdateCostTimeMs()
+		s.ClearTraceID()
 	})
 }
 
-// ClearCostTimeMs clears the value of the "cost_time_ms" field.
-func (u *ApiAuditLogUpsertBulk) ClearCostTimeMs() *ApiAuditLogUpsertBulk {
+// SetSpanID sets the "span_id" field.
+func (u *ApiAuditLogUpsertBulk) SetSpanID(v string) *ApiAuditLogUpsertBulk {
 	return u.Update(func(s *ApiAuditLogUpsert) {
-		s.ClearCostTimeMs()
+		s.SetSpanID(v)
+	})
+}
+
+// UpdateSpanID sets the "span_id" field to the value that was provided on create.
+func (u *ApiAuditLogUpsertBulk) UpdateSpanID() *ApiAuditLogUpsertBulk {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.UpdateSpanID()
+	})
+}
+
+// ClearSpanID clears the value of the "span_id" field.
+func (u *ApiAuditLogUpsertBulk) ClearSpanID() *ApiAuditLogUpsertBulk {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.ClearSpanID()
+	})
+}
+
+// SetLatencyMs sets the "latency_ms" field.
+func (u *ApiAuditLogUpsertBulk) SetLatencyMs(v uint32) *ApiAuditLogUpsertBulk {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.SetLatencyMs(v)
+	})
+}
+
+// AddLatencyMs adds v to the "latency_ms" field.
+func (u *ApiAuditLogUpsertBulk) AddLatencyMs(v uint32) *ApiAuditLogUpsertBulk {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.AddLatencyMs(v)
+	})
+}
+
+// UpdateLatencyMs sets the "latency_ms" field to the value that was provided on create.
+func (u *ApiAuditLogUpsertBulk) UpdateLatencyMs() *ApiAuditLogUpsertBulk {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.UpdateLatencyMs()
+	})
+}
+
+// ClearLatencyMs clears the value of the "latency_ms" field.
+func (u *ApiAuditLogUpsertBulk) ClearLatencyMs() *ApiAuditLogUpsertBulk {
+	return u.Update(func(s *ApiAuditLogUpsert) {
+		s.ClearLatencyMs()
 	})
 }
 

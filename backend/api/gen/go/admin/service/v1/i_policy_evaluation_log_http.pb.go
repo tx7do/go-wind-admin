@@ -33,11 +33,11 @@ type PolicyEvaluationLogServiceHTTPServer interface {
 
 func RegisterPolicyEvaluationLogServiceHTTPServer(s *http.Server, srv PolicyEvaluationLogServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/policy-evaluation-logs", _PolicyEvaluationLogService_List11_HTTP_Handler(srv))
-	r.GET("/admin/v1/policy-evaluation-logs/{id}", _PolicyEvaluationLogService_Get11_HTTP_Handler(srv))
+	r.GET("/admin/v1/policy-evaluation-logs", _PolicyEvaluationLogService_List13_HTTP_Handler(srv))
+	r.GET("/admin/v1/policy-evaluation-logs/{id}", _PolicyEvaluationLogService_Get13_HTTP_Handler(srv))
 }
 
-func _PolicyEvaluationLogService_List11_HTTP_Handler(srv PolicyEvaluationLogServiceHTTPServer) func(ctx http.Context) error {
+func _PolicyEvaluationLogService_List13_HTTP_Handler(srv PolicyEvaluationLogServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.PagingRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -56,7 +56,7 @@ func _PolicyEvaluationLogService_List11_HTTP_Handler(srv PolicyEvaluationLogServ
 	}
 }
 
-func _PolicyEvaluationLogService_Get11_HTTP_Handler(srv PolicyEvaluationLogServiceHTTPServer) func(ctx http.Context) error {
+func _PolicyEvaluationLogService_Get13_HTTP_Handler(srv PolicyEvaluationLogServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.GetPolicyEvaluationLogRequest
 		if err := ctx.BindQuery(&in); err != nil {

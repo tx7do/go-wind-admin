@@ -11,6 +11,7 @@ import (
 	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
+	"go-wind-admin/app/admin/service/internal/data/ent/dataaccessauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"go-wind-admin/app/admin/service/internal/data/ent/file"
@@ -25,6 +26,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/membershipposition"
 	"go-wind-admin/app/admin/service/internal/data/ent/membershiprole"
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
+	"go-wind-admin/app/admin/service/internal/data/ent/operationauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/orgunit"
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionapi"
@@ -63,6 +65,7 @@ const (
 	// Node types.
 	TypeAPI                      = "Api"
 	TypeApiAuditLog              = "ApiAuditLog"
+	TypeDataAccessAuditLog       = "DataAccessAuditLog"
 	TypeDictEntry                = "DictEntry"
 	TypeDictType                 = "DictType"
 	TypeFile                     = "File"
@@ -77,6 +80,7 @@ const (
 	TypeMembershipPosition       = "MembershipPosition"
 	TypeMembershipRole           = "MembershipRole"
 	TypeMenu                     = "Menu"
+	TypeOperationAuditLog        = "OperationAuditLog"
 	TypeOrgUnit                  = "OrgUnit"
 	TypePermission               = "Permission"
 	TypePermissionApi            = "PermissionApi"
@@ -1503,6 +1507,7 @@ type ApiAuditLogMutation struct {
 	geo_location    **servicev1.GeoLocation
 	device_info     **servicev1.DeviceInfo
 	referer         *string
+	app_version     *string
 	http_method     *string
 	_path           *string
 	request_uri     *string
@@ -1510,8 +1515,10 @@ type ApiAuditLogMutation struct {
 	api_operation   *string
 	api_description *string
 	request_id      *string
-	cost_time_ms    *uint64
-	addcost_time_ms *int64
+	trace_id        *string
+	span_id         *string
+	latency_ms      *uint32
+	addlatency_ms   *int32
 	success         *bool
 	status_code     *uint32
 	addstatus_code  *int32
@@ -2065,6 +2072,55 @@ func (m *ApiAuditLogMutation) ResetReferer() {
 	delete(m.clearedFields, apiauditlog.FieldReferer)
 }
 
+// SetAppVersion sets the "app_version" field.
+func (m *ApiAuditLogMutation) SetAppVersion(s string) {
+	m.app_version = &s
+}
+
+// AppVersion returns the value of the "app_version" field in the mutation.
+func (m *ApiAuditLogMutation) AppVersion() (r string, exists bool) {
+	v := m.app_version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAppVersion returns the old "app_version" field's value of the ApiAuditLog entity.
+// If the ApiAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ApiAuditLogMutation) OldAppVersion(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAppVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAppVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAppVersion: %w", err)
+	}
+	return oldValue.AppVersion, nil
+}
+
+// ClearAppVersion clears the value of the "app_version" field.
+func (m *ApiAuditLogMutation) ClearAppVersion() {
+	m.app_version = nil
+	m.clearedFields[apiauditlog.FieldAppVersion] = struct{}{}
+}
+
+// AppVersionCleared returns if the "app_version" field was cleared in this mutation.
+func (m *ApiAuditLogMutation) AppVersionCleared() bool {
+	_, ok := m.clearedFields[apiauditlog.FieldAppVersion]
+	return ok
+}
+
+// ResetAppVersion resets all changes to the "app_version" field.
+func (m *ApiAuditLogMutation) ResetAppVersion() {
+	m.app_version = nil
+	delete(m.clearedFields, apiauditlog.FieldAppVersion)
+}
+
 // SetHTTPMethod sets the "http_method" field.
 func (m *ApiAuditLogMutation) SetHTTPMethod(s string) {
 	m.http_method = &s
@@ -2408,74 +2464,172 @@ func (m *ApiAuditLogMutation) ResetRequestID() {
 	delete(m.clearedFields, apiauditlog.FieldRequestID)
 }
 
-// SetCostTimeMs sets the "cost_time_ms" field.
-func (m *ApiAuditLogMutation) SetCostTimeMs(u uint64) {
-	m.cost_time_ms = &u
-	m.addcost_time_ms = nil
+// SetTraceID sets the "trace_id" field.
+func (m *ApiAuditLogMutation) SetTraceID(s string) {
+	m.trace_id = &s
 }
 
-// CostTimeMs returns the value of the "cost_time_ms" field in the mutation.
-func (m *ApiAuditLogMutation) CostTimeMs() (r uint64, exists bool) {
-	v := m.cost_time_ms
+// TraceID returns the value of the "trace_id" field in the mutation.
+func (m *ApiAuditLogMutation) TraceID() (r string, exists bool) {
+	v := m.trace_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldCostTimeMs returns the old "cost_time_ms" field's value of the ApiAuditLog entity.
+// OldTraceID returns the old "trace_id" field's value of the ApiAuditLog entity.
 // If the ApiAuditLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *ApiAuditLogMutation) OldCostTimeMs(ctx context.Context) (v *uint64, err error) {
+func (m *ApiAuditLogMutation) OldTraceID(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldCostTimeMs is only allowed on UpdateOne operations")
+		return v, errors.New("OldTraceID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldCostTimeMs requires an ID field in the mutation")
+		return v, errors.New("OldTraceID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldCostTimeMs: %w", err)
+		return v, fmt.Errorf("querying old value for OldTraceID: %w", err)
 	}
-	return oldValue.CostTimeMs, nil
+	return oldValue.TraceID, nil
 }
 
-// AddCostTimeMs adds u to the "cost_time_ms" field.
-func (m *ApiAuditLogMutation) AddCostTimeMs(u int64) {
-	if m.addcost_time_ms != nil {
-		*m.addcost_time_ms += u
-	} else {
-		m.addcost_time_ms = &u
-	}
+// ClearTraceID clears the value of the "trace_id" field.
+func (m *ApiAuditLogMutation) ClearTraceID() {
+	m.trace_id = nil
+	m.clearedFields[apiauditlog.FieldTraceID] = struct{}{}
 }
 
-// AddedCostTimeMs returns the value that was added to the "cost_time_ms" field in this mutation.
-func (m *ApiAuditLogMutation) AddedCostTimeMs() (r int64, exists bool) {
-	v := m.addcost_time_ms
+// TraceIDCleared returns if the "trace_id" field was cleared in this mutation.
+func (m *ApiAuditLogMutation) TraceIDCleared() bool {
+	_, ok := m.clearedFields[apiauditlog.FieldTraceID]
+	return ok
+}
+
+// ResetTraceID resets all changes to the "trace_id" field.
+func (m *ApiAuditLogMutation) ResetTraceID() {
+	m.trace_id = nil
+	delete(m.clearedFields, apiauditlog.FieldTraceID)
+}
+
+// SetSpanID sets the "span_id" field.
+func (m *ApiAuditLogMutation) SetSpanID(s string) {
+	m.span_id = &s
+}
+
+// SpanID returns the value of the "span_id" field in the mutation.
+func (m *ApiAuditLogMutation) SpanID() (r string, exists bool) {
+	v := m.span_id
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ClearCostTimeMs clears the value of the "cost_time_ms" field.
-func (m *ApiAuditLogMutation) ClearCostTimeMs() {
-	m.cost_time_ms = nil
-	m.addcost_time_ms = nil
-	m.clearedFields[apiauditlog.FieldCostTimeMs] = struct{}{}
+// OldSpanID returns the old "span_id" field's value of the ApiAuditLog entity.
+// If the ApiAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ApiAuditLogMutation) OldSpanID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSpanID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSpanID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSpanID: %w", err)
+	}
+	return oldValue.SpanID, nil
 }
 
-// CostTimeMsCleared returns if the "cost_time_ms" field was cleared in this mutation.
-func (m *ApiAuditLogMutation) CostTimeMsCleared() bool {
-	_, ok := m.clearedFields[apiauditlog.FieldCostTimeMs]
+// ClearSpanID clears the value of the "span_id" field.
+func (m *ApiAuditLogMutation) ClearSpanID() {
+	m.span_id = nil
+	m.clearedFields[apiauditlog.FieldSpanID] = struct{}{}
+}
+
+// SpanIDCleared returns if the "span_id" field was cleared in this mutation.
+func (m *ApiAuditLogMutation) SpanIDCleared() bool {
+	_, ok := m.clearedFields[apiauditlog.FieldSpanID]
 	return ok
 }
 
-// ResetCostTimeMs resets all changes to the "cost_time_ms" field.
-func (m *ApiAuditLogMutation) ResetCostTimeMs() {
-	m.cost_time_ms = nil
-	m.addcost_time_ms = nil
-	delete(m.clearedFields, apiauditlog.FieldCostTimeMs)
+// ResetSpanID resets all changes to the "span_id" field.
+func (m *ApiAuditLogMutation) ResetSpanID() {
+	m.span_id = nil
+	delete(m.clearedFields, apiauditlog.FieldSpanID)
+}
+
+// SetLatencyMs sets the "latency_ms" field.
+func (m *ApiAuditLogMutation) SetLatencyMs(u uint32) {
+	m.latency_ms = &u
+	m.addlatency_ms = nil
+}
+
+// LatencyMs returns the value of the "latency_ms" field in the mutation.
+func (m *ApiAuditLogMutation) LatencyMs() (r uint32, exists bool) {
+	v := m.latency_ms
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLatencyMs returns the old "latency_ms" field's value of the ApiAuditLog entity.
+// If the ApiAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *ApiAuditLogMutation) OldLatencyMs(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLatencyMs is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLatencyMs requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLatencyMs: %w", err)
+	}
+	return oldValue.LatencyMs, nil
+}
+
+// AddLatencyMs adds u to the "latency_ms" field.
+func (m *ApiAuditLogMutation) AddLatencyMs(u int32) {
+	if m.addlatency_ms != nil {
+		*m.addlatency_ms += u
+	} else {
+		m.addlatency_ms = &u
+	}
+}
+
+// AddedLatencyMs returns the value that was added to the "latency_ms" field in this mutation.
+func (m *ApiAuditLogMutation) AddedLatencyMs() (r int32, exists bool) {
+	v := m.addlatency_ms
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearLatencyMs clears the value of the "latency_ms" field.
+func (m *ApiAuditLogMutation) ClearLatencyMs() {
+	m.latency_ms = nil
+	m.addlatency_ms = nil
+	m.clearedFields[apiauditlog.FieldLatencyMs] = struct{}{}
+}
+
+// LatencyMsCleared returns if the "latency_ms" field was cleared in this mutation.
+func (m *ApiAuditLogMutation) LatencyMsCleared() bool {
+	_, ok := m.clearedFields[apiauditlog.FieldLatencyMs]
+	return ok
+}
+
+// ResetLatencyMs resets all changes to the "latency_ms" field.
+func (m *ApiAuditLogMutation) ResetLatencyMs() {
+	m.latency_ms = nil
+	m.addlatency_ms = nil
+	delete(m.clearedFields, apiauditlog.FieldLatencyMs)
 }
 
 // SetSuccess sets the "success" field.
@@ -2925,7 +3079,7 @@ func (m *ApiAuditLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *ApiAuditLogMutation) Fields() []string {
-	fields := make([]string, 0, 24)
+	fields := make([]string, 0, 27)
 	if m.created_at != nil {
 		fields = append(fields, apiauditlog.FieldCreatedAt)
 	}
@@ -2950,6 +3104,9 @@ func (m *ApiAuditLogMutation) Fields() []string {
 	if m.referer != nil {
 		fields = append(fields, apiauditlog.FieldReferer)
 	}
+	if m.app_version != nil {
+		fields = append(fields, apiauditlog.FieldAppVersion)
+	}
 	if m.http_method != nil {
 		fields = append(fields, apiauditlog.FieldHTTPMethod)
 	}
@@ -2971,8 +3128,14 @@ func (m *ApiAuditLogMutation) Fields() []string {
 	if m.request_id != nil {
 		fields = append(fields, apiauditlog.FieldRequestID)
 	}
-	if m.cost_time_ms != nil {
-		fields = append(fields, apiauditlog.FieldCostTimeMs)
+	if m.trace_id != nil {
+		fields = append(fields, apiauditlog.FieldTraceID)
+	}
+	if m.span_id != nil {
+		fields = append(fields, apiauditlog.FieldSpanID)
+	}
+	if m.latency_ms != nil {
+		fields = append(fields, apiauditlog.FieldLatencyMs)
 	}
 	if m.success != nil {
 		fields = append(fields, apiauditlog.FieldSuccess)
@@ -3022,6 +3185,8 @@ func (m *ApiAuditLogMutation) Field(name string) (ent.Value, bool) {
 		return m.DeviceInfo()
 	case apiauditlog.FieldReferer:
 		return m.Referer()
+	case apiauditlog.FieldAppVersion:
+		return m.AppVersion()
 	case apiauditlog.FieldHTTPMethod:
 		return m.HTTPMethod()
 	case apiauditlog.FieldPath:
@@ -3036,8 +3201,12 @@ func (m *ApiAuditLogMutation) Field(name string) (ent.Value, bool) {
 		return m.APIDescription()
 	case apiauditlog.FieldRequestID:
 		return m.RequestID()
-	case apiauditlog.FieldCostTimeMs:
-		return m.CostTimeMs()
+	case apiauditlog.FieldTraceID:
+		return m.TraceID()
+	case apiauditlog.FieldSpanID:
+		return m.SpanID()
+	case apiauditlog.FieldLatencyMs:
+		return m.LatencyMs()
 	case apiauditlog.FieldSuccess:
 		return m.Success()
 	case apiauditlog.FieldStatusCode:
@@ -3079,6 +3248,8 @@ func (m *ApiAuditLogMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldDeviceInfo(ctx)
 	case apiauditlog.FieldReferer:
 		return m.OldReferer(ctx)
+	case apiauditlog.FieldAppVersion:
+		return m.OldAppVersion(ctx)
 	case apiauditlog.FieldHTTPMethod:
 		return m.OldHTTPMethod(ctx)
 	case apiauditlog.FieldPath:
@@ -3093,8 +3264,12 @@ func (m *ApiAuditLogMutation) OldField(ctx context.Context, name string) (ent.Va
 		return m.OldAPIDescription(ctx)
 	case apiauditlog.FieldRequestID:
 		return m.OldRequestID(ctx)
-	case apiauditlog.FieldCostTimeMs:
-		return m.OldCostTimeMs(ctx)
+	case apiauditlog.FieldTraceID:
+		return m.OldTraceID(ctx)
+	case apiauditlog.FieldSpanID:
+		return m.OldSpanID(ctx)
+	case apiauditlog.FieldLatencyMs:
+		return m.OldLatencyMs(ctx)
 	case apiauditlog.FieldSuccess:
 		return m.OldSuccess(ctx)
 	case apiauditlog.FieldStatusCode:
@@ -3176,6 +3351,13 @@ func (m *ApiAuditLogMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetReferer(v)
 		return nil
+	case apiauditlog.FieldAppVersion:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAppVersion(v)
+		return nil
 	case apiauditlog.FieldHTTPMethod:
 		v, ok := value.(string)
 		if !ok {
@@ -3225,12 +3407,26 @@ func (m *ApiAuditLogMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRequestID(v)
 		return nil
-	case apiauditlog.FieldCostTimeMs:
-		v, ok := value.(uint64)
+	case apiauditlog.FieldTraceID:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetCostTimeMs(v)
+		m.SetTraceID(v)
+		return nil
+	case apiauditlog.FieldSpanID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSpanID(v)
+		return nil
+	case apiauditlog.FieldLatencyMs:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLatencyMs(v)
 		return nil
 	case apiauditlog.FieldSuccess:
 		v, ok := value.(bool)
@@ -3302,8 +3498,8 @@ func (m *ApiAuditLogMutation) AddedFields() []string {
 	if m.adduser_id != nil {
 		fields = append(fields, apiauditlog.FieldUserID)
 	}
-	if m.addcost_time_ms != nil {
-		fields = append(fields, apiauditlog.FieldCostTimeMs)
+	if m.addlatency_ms != nil {
+		fields = append(fields, apiauditlog.FieldLatencyMs)
 	}
 	if m.addstatus_code != nil {
 		fields = append(fields, apiauditlog.FieldStatusCode)
@@ -3320,8 +3516,8 @@ func (m *ApiAuditLogMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedTenantID()
 	case apiauditlog.FieldUserID:
 		return m.AddedUserID()
-	case apiauditlog.FieldCostTimeMs:
-		return m.AddedCostTimeMs()
+	case apiauditlog.FieldLatencyMs:
+		return m.AddedLatencyMs()
 	case apiauditlog.FieldStatusCode:
 		return m.AddedStatusCode()
 	}
@@ -3347,12 +3543,12 @@ func (m *ApiAuditLogMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddUserID(v)
 		return nil
-	case apiauditlog.FieldCostTimeMs:
-		v, ok := value.(int64)
+	case apiauditlog.FieldLatencyMs:
+		v, ok := value.(int32)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.AddCostTimeMs(v)
+		m.AddLatencyMs(v)
 		return nil
 	case apiauditlog.FieldStatusCode:
 		v, ok := value.(int32)
@@ -3393,6 +3589,9 @@ func (m *ApiAuditLogMutation) ClearedFields() []string {
 	if m.FieldCleared(apiauditlog.FieldReferer) {
 		fields = append(fields, apiauditlog.FieldReferer)
 	}
+	if m.FieldCleared(apiauditlog.FieldAppVersion) {
+		fields = append(fields, apiauditlog.FieldAppVersion)
+	}
 	if m.FieldCleared(apiauditlog.FieldHTTPMethod) {
 		fields = append(fields, apiauditlog.FieldHTTPMethod)
 	}
@@ -3414,8 +3613,14 @@ func (m *ApiAuditLogMutation) ClearedFields() []string {
 	if m.FieldCleared(apiauditlog.FieldRequestID) {
 		fields = append(fields, apiauditlog.FieldRequestID)
 	}
-	if m.FieldCleared(apiauditlog.FieldCostTimeMs) {
-		fields = append(fields, apiauditlog.FieldCostTimeMs)
+	if m.FieldCleared(apiauditlog.FieldTraceID) {
+		fields = append(fields, apiauditlog.FieldTraceID)
+	}
+	if m.FieldCleared(apiauditlog.FieldSpanID) {
+		fields = append(fields, apiauditlog.FieldSpanID)
+	}
+	if m.FieldCleared(apiauditlog.FieldLatencyMs) {
+		fields = append(fields, apiauditlog.FieldLatencyMs)
 	}
 	if m.FieldCleared(apiauditlog.FieldSuccess) {
 		fields = append(fields, apiauditlog.FieldSuccess)
@@ -3479,6 +3684,9 @@ func (m *ApiAuditLogMutation) ClearField(name string) error {
 	case apiauditlog.FieldReferer:
 		m.ClearReferer()
 		return nil
+	case apiauditlog.FieldAppVersion:
+		m.ClearAppVersion()
+		return nil
 	case apiauditlog.FieldHTTPMethod:
 		m.ClearHTTPMethod()
 		return nil
@@ -3500,8 +3708,14 @@ func (m *ApiAuditLogMutation) ClearField(name string) error {
 	case apiauditlog.FieldRequestID:
 		m.ClearRequestID()
 		return nil
-	case apiauditlog.FieldCostTimeMs:
-		m.ClearCostTimeMs()
+	case apiauditlog.FieldTraceID:
+		m.ClearTraceID()
+		return nil
+	case apiauditlog.FieldSpanID:
+		m.ClearSpanID()
+		return nil
+	case apiauditlog.FieldLatencyMs:
+		m.ClearLatencyMs()
 		return nil
 	case apiauditlog.FieldSuccess:
 		m.ClearSuccess()
@@ -3559,6 +3773,9 @@ func (m *ApiAuditLogMutation) ResetField(name string) error {
 	case apiauditlog.FieldReferer:
 		m.ResetReferer()
 		return nil
+	case apiauditlog.FieldAppVersion:
+		m.ResetAppVersion()
+		return nil
 	case apiauditlog.FieldHTTPMethod:
 		m.ResetHTTPMethod()
 		return nil
@@ -3580,8 +3797,14 @@ func (m *ApiAuditLogMutation) ResetField(name string) error {
 	case apiauditlog.FieldRequestID:
 		m.ResetRequestID()
 		return nil
-	case apiauditlog.FieldCostTimeMs:
-		m.ResetCostTimeMs()
+	case apiauditlog.FieldTraceID:
+		m.ResetTraceID()
+		return nil
+	case apiauditlog.FieldSpanID:
+		m.ResetSpanID()
+		return nil
+	case apiauditlog.FieldLatencyMs:
+		m.ResetLatencyMs()
 		return nil
 	case apiauditlog.FieldSuccess:
 		m.ResetSuccess()
@@ -3657,6 +3880,2324 @@ func (m *ApiAuditLogMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *ApiAuditLogMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown ApiAuditLog edge %s", name)
+}
+
+// DataAccessAuditLogMutation represents an operation that mutates the DataAccessAuditLog nodes in the graph.
+type DataAccessAuditLogMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *uint32
+	created_at       *time.Time
+	tenant_id        *uint32
+	addtenant_id     *int32
+	user_id          *uint32
+	adduser_id       *int32
+	username         *string
+	ip_address       *string
+	geo_location     **servicev1.GeoLocation
+	device_info      **servicev1.DeviceInfo
+	request_id       *string
+	trace_id         *string
+	data_source      *string
+	table_name       *string
+	data_id          *string
+	access_type      *dataaccessauditlog.AccessType
+	sql_digest       *string
+	sql_text         *string
+	affected_rows    *uint32
+	addaffected_rows *int32
+	latency_ms       *uint32
+	addlatency_ms    *int32
+	success          *bool
+	sensitive_level  *dataaccessauditlog.SensitiveLevel
+	data_masked      *bool
+	masking_rules    *string
+	business_purpose *string
+	data_category    *string
+	db_user          *string
+	log_hash         *string
+	signature        *[]byte
+	clearedFields    map[string]struct{}
+	done             bool
+	oldValue         func(context.Context) (*DataAccessAuditLog, error)
+	predicates       []predicate.DataAccessAuditLog
+}
+
+var _ ent.Mutation = (*DataAccessAuditLogMutation)(nil)
+
+// dataaccessauditlogOption allows management of the mutation configuration using functional options.
+type dataaccessauditlogOption func(*DataAccessAuditLogMutation)
+
+// newDataAccessAuditLogMutation creates new mutation for the DataAccessAuditLog entity.
+func newDataAccessAuditLogMutation(c config, op Op, opts ...dataaccessauditlogOption) *DataAccessAuditLogMutation {
+	m := &DataAccessAuditLogMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeDataAccessAuditLog,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withDataAccessAuditLogID sets the ID field of the mutation.
+func withDataAccessAuditLogID(id uint32) dataaccessauditlogOption {
+	return func(m *DataAccessAuditLogMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *DataAccessAuditLog
+		)
+		m.oldValue = func(ctx context.Context) (*DataAccessAuditLog, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().DataAccessAuditLog.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withDataAccessAuditLog sets the old DataAccessAuditLog of the mutation.
+func withDataAccessAuditLog(node *DataAccessAuditLog) dataaccessauditlogOption {
+	return func(m *DataAccessAuditLogMutation) {
+		m.oldValue = func(context.Context) (*DataAccessAuditLog, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m DataAccessAuditLogMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m DataAccessAuditLogMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of DataAccessAuditLog entities.
+func (m *DataAccessAuditLogMutation) SetID(id uint32) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *DataAccessAuditLogMutation) ID() (id uint32, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *DataAccessAuditLogMutation) IDs(ctx context.Context) ([]uint32, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint32{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().DataAccessAuditLog.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *DataAccessAuditLogMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *DataAccessAuditLogMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *DataAccessAuditLogMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[dataaccessauditlog.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldCreatedAt]
+	return ok
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *DataAccessAuditLogMutation) ResetCreatedAt() {
+	m.created_at = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldCreatedAt)
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (m *DataAccessAuditLogMutation) SetTenantID(u uint32) {
+	m.tenant_id = &u
+	m.addtenant_id = nil
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *DataAccessAuditLogMutation) TenantID() (r uint32, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// AddTenantID adds u to the "tenant_id" field.
+func (m *DataAccessAuditLogMutation) AddTenantID(u int32) {
+	if m.addtenant_id != nil {
+		*m.addtenant_id += u
+	} else {
+		m.addtenant_id = &u
+	}
+}
+
+// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
+func (m *DataAccessAuditLogMutation) AddedTenantID() (r int32, exists bool) {
+	v := m.addtenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *DataAccessAuditLogMutation) ClearTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	m.clearedFields[dataaccessauditlog.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldTenantID]
+	return ok
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *DataAccessAuditLogMutation) ResetTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldTenantID)
+}
+
+// SetUserID sets the "user_id" field.
+func (m *DataAccessAuditLogMutation) SetUserID(u uint32) {
+	m.user_id = &u
+	m.adduser_id = nil
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *DataAccessAuditLogMutation) UserID() (r uint32, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldUserID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// AddUserID adds u to the "user_id" field.
+func (m *DataAccessAuditLogMutation) AddUserID(u int32) {
+	if m.adduser_id != nil {
+		*m.adduser_id += u
+	} else {
+		m.adduser_id = &u
+	}
+}
+
+// AddedUserID returns the value that was added to the "user_id" field in this mutation.
+func (m *DataAccessAuditLogMutation) AddedUserID() (r int32, exists bool) {
+	v := m.adduser_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *DataAccessAuditLogMutation) ClearUserID() {
+	m.user_id = nil
+	m.adduser_id = nil
+	m.clearedFields[dataaccessauditlog.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *DataAccessAuditLogMutation) ResetUserID() {
+	m.user_id = nil
+	m.adduser_id = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldUserID)
+}
+
+// SetUsername sets the "username" field.
+func (m *DataAccessAuditLogMutation) SetUsername(s string) {
+	m.username = &s
+}
+
+// Username returns the value of the "username" field in the mutation.
+func (m *DataAccessAuditLogMutation) Username() (r string, exists bool) {
+	v := m.username
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUsername returns the old "username" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldUsername(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUsername is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUsername requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUsername: %w", err)
+	}
+	return oldValue.Username, nil
+}
+
+// ClearUsername clears the value of the "username" field.
+func (m *DataAccessAuditLogMutation) ClearUsername() {
+	m.username = nil
+	m.clearedFields[dataaccessauditlog.FieldUsername] = struct{}{}
+}
+
+// UsernameCleared returns if the "username" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) UsernameCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldUsername]
+	return ok
+}
+
+// ResetUsername resets all changes to the "username" field.
+func (m *DataAccessAuditLogMutation) ResetUsername() {
+	m.username = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldUsername)
+}
+
+// SetIPAddress sets the "ip_address" field.
+func (m *DataAccessAuditLogMutation) SetIPAddress(s string) {
+	m.ip_address = &s
+}
+
+// IPAddress returns the value of the "ip_address" field in the mutation.
+func (m *DataAccessAuditLogMutation) IPAddress() (r string, exists bool) {
+	v := m.ip_address
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIPAddress returns the old "ip_address" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldIPAddress(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIPAddress is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIPAddress requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIPAddress: %w", err)
+	}
+	return oldValue.IPAddress, nil
+}
+
+// ClearIPAddress clears the value of the "ip_address" field.
+func (m *DataAccessAuditLogMutation) ClearIPAddress() {
+	m.ip_address = nil
+	m.clearedFields[dataaccessauditlog.FieldIPAddress] = struct{}{}
+}
+
+// IPAddressCleared returns if the "ip_address" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) IPAddressCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldIPAddress]
+	return ok
+}
+
+// ResetIPAddress resets all changes to the "ip_address" field.
+func (m *DataAccessAuditLogMutation) ResetIPAddress() {
+	m.ip_address = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldIPAddress)
+}
+
+// SetGeoLocation sets the "geo_location" field.
+func (m *DataAccessAuditLogMutation) SetGeoLocation(sl *servicev1.GeoLocation) {
+	m.geo_location = &sl
+}
+
+// GeoLocation returns the value of the "geo_location" field in the mutation.
+func (m *DataAccessAuditLogMutation) GeoLocation() (r *servicev1.GeoLocation, exists bool) {
+	v := m.geo_location
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGeoLocation returns the old "geo_location" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldGeoLocation(ctx context.Context) (v *servicev1.GeoLocation, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGeoLocation is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGeoLocation requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGeoLocation: %w", err)
+	}
+	return oldValue.GeoLocation, nil
+}
+
+// ClearGeoLocation clears the value of the "geo_location" field.
+func (m *DataAccessAuditLogMutation) ClearGeoLocation() {
+	m.geo_location = nil
+	m.clearedFields[dataaccessauditlog.FieldGeoLocation] = struct{}{}
+}
+
+// GeoLocationCleared returns if the "geo_location" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) GeoLocationCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldGeoLocation]
+	return ok
+}
+
+// ResetGeoLocation resets all changes to the "geo_location" field.
+func (m *DataAccessAuditLogMutation) ResetGeoLocation() {
+	m.geo_location = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldGeoLocation)
+}
+
+// SetDeviceInfo sets the "device_info" field.
+func (m *DataAccessAuditLogMutation) SetDeviceInfo(si *servicev1.DeviceInfo) {
+	m.device_info = &si
+}
+
+// DeviceInfo returns the value of the "device_info" field in the mutation.
+func (m *DataAccessAuditLogMutation) DeviceInfo() (r *servicev1.DeviceInfo, exists bool) {
+	v := m.device_info
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeviceInfo returns the old "device_info" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldDeviceInfo(ctx context.Context) (v *servicev1.DeviceInfo, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeviceInfo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeviceInfo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeviceInfo: %w", err)
+	}
+	return oldValue.DeviceInfo, nil
+}
+
+// ClearDeviceInfo clears the value of the "device_info" field.
+func (m *DataAccessAuditLogMutation) ClearDeviceInfo() {
+	m.device_info = nil
+	m.clearedFields[dataaccessauditlog.FieldDeviceInfo] = struct{}{}
+}
+
+// DeviceInfoCleared returns if the "device_info" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) DeviceInfoCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldDeviceInfo]
+	return ok
+}
+
+// ResetDeviceInfo resets all changes to the "device_info" field.
+func (m *DataAccessAuditLogMutation) ResetDeviceInfo() {
+	m.device_info = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldDeviceInfo)
+}
+
+// SetRequestID sets the "request_id" field.
+func (m *DataAccessAuditLogMutation) SetRequestID(s string) {
+	m.request_id = &s
+}
+
+// RequestID returns the value of the "request_id" field in the mutation.
+func (m *DataAccessAuditLogMutation) RequestID() (r string, exists bool) {
+	v := m.request_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestID returns the old "request_id" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldRequestID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestID: %w", err)
+	}
+	return oldValue.RequestID, nil
+}
+
+// ClearRequestID clears the value of the "request_id" field.
+func (m *DataAccessAuditLogMutation) ClearRequestID() {
+	m.request_id = nil
+	m.clearedFields[dataaccessauditlog.FieldRequestID] = struct{}{}
+}
+
+// RequestIDCleared returns if the "request_id" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) RequestIDCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldRequestID]
+	return ok
+}
+
+// ResetRequestID resets all changes to the "request_id" field.
+func (m *DataAccessAuditLogMutation) ResetRequestID() {
+	m.request_id = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldRequestID)
+}
+
+// SetTraceID sets the "trace_id" field.
+func (m *DataAccessAuditLogMutation) SetTraceID(s string) {
+	m.trace_id = &s
+}
+
+// TraceID returns the value of the "trace_id" field in the mutation.
+func (m *DataAccessAuditLogMutation) TraceID() (r string, exists bool) {
+	v := m.trace_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTraceID returns the old "trace_id" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldTraceID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTraceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTraceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTraceID: %w", err)
+	}
+	return oldValue.TraceID, nil
+}
+
+// ClearTraceID clears the value of the "trace_id" field.
+func (m *DataAccessAuditLogMutation) ClearTraceID() {
+	m.trace_id = nil
+	m.clearedFields[dataaccessauditlog.FieldTraceID] = struct{}{}
+}
+
+// TraceIDCleared returns if the "trace_id" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) TraceIDCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldTraceID]
+	return ok
+}
+
+// ResetTraceID resets all changes to the "trace_id" field.
+func (m *DataAccessAuditLogMutation) ResetTraceID() {
+	m.trace_id = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldTraceID)
+}
+
+// SetDataSource sets the "data_source" field.
+func (m *DataAccessAuditLogMutation) SetDataSource(s string) {
+	m.data_source = &s
+}
+
+// DataSource returns the value of the "data_source" field in the mutation.
+func (m *DataAccessAuditLogMutation) DataSource() (r string, exists bool) {
+	v := m.data_source
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDataSource returns the old "data_source" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldDataSource(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDataSource is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDataSource requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDataSource: %w", err)
+	}
+	return oldValue.DataSource, nil
+}
+
+// ClearDataSource clears the value of the "data_source" field.
+func (m *DataAccessAuditLogMutation) ClearDataSource() {
+	m.data_source = nil
+	m.clearedFields[dataaccessauditlog.FieldDataSource] = struct{}{}
+}
+
+// DataSourceCleared returns if the "data_source" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) DataSourceCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldDataSource]
+	return ok
+}
+
+// ResetDataSource resets all changes to the "data_source" field.
+func (m *DataAccessAuditLogMutation) ResetDataSource() {
+	m.data_source = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldDataSource)
+}
+
+// SetTableName sets the "table_name" field.
+func (m *DataAccessAuditLogMutation) SetTableName(s string) {
+	m.table_name = &s
+}
+
+// TableName returns the value of the "table_name" field in the mutation.
+func (m *DataAccessAuditLogMutation) TableName() (r string, exists bool) {
+	v := m.table_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTableName returns the old "table_name" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldTableName(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTableName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTableName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTableName: %w", err)
+	}
+	return oldValue.TableName, nil
+}
+
+// ClearTableName clears the value of the "table_name" field.
+func (m *DataAccessAuditLogMutation) ClearTableName() {
+	m.table_name = nil
+	m.clearedFields[dataaccessauditlog.FieldTableName] = struct{}{}
+}
+
+// TableNameCleared returns if the "table_name" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) TableNameCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldTableName]
+	return ok
+}
+
+// ResetTableName resets all changes to the "table_name" field.
+func (m *DataAccessAuditLogMutation) ResetTableName() {
+	m.table_name = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldTableName)
+}
+
+// SetDataID sets the "data_id" field.
+func (m *DataAccessAuditLogMutation) SetDataID(s string) {
+	m.data_id = &s
+}
+
+// DataID returns the value of the "data_id" field in the mutation.
+func (m *DataAccessAuditLogMutation) DataID() (r string, exists bool) {
+	v := m.data_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDataID returns the old "data_id" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldDataID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDataID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDataID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDataID: %w", err)
+	}
+	return oldValue.DataID, nil
+}
+
+// ClearDataID clears the value of the "data_id" field.
+func (m *DataAccessAuditLogMutation) ClearDataID() {
+	m.data_id = nil
+	m.clearedFields[dataaccessauditlog.FieldDataID] = struct{}{}
+}
+
+// DataIDCleared returns if the "data_id" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) DataIDCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldDataID]
+	return ok
+}
+
+// ResetDataID resets all changes to the "data_id" field.
+func (m *DataAccessAuditLogMutation) ResetDataID() {
+	m.data_id = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldDataID)
+}
+
+// SetAccessType sets the "access_type" field.
+func (m *DataAccessAuditLogMutation) SetAccessType(dt dataaccessauditlog.AccessType) {
+	m.access_type = &dt
+}
+
+// AccessType returns the value of the "access_type" field in the mutation.
+func (m *DataAccessAuditLogMutation) AccessType() (r dataaccessauditlog.AccessType, exists bool) {
+	v := m.access_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAccessType returns the old "access_type" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldAccessType(ctx context.Context) (v *dataaccessauditlog.AccessType, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAccessType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAccessType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAccessType: %w", err)
+	}
+	return oldValue.AccessType, nil
+}
+
+// ClearAccessType clears the value of the "access_type" field.
+func (m *DataAccessAuditLogMutation) ClearAccessType() {
+	m.access_type = nil
+	m.clearedFields[dataaccessauditlog.FieldAccessType] = struct{}{}
+}
+
+// AccessTypeCleared returns if the "access_type" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) AccessTypeCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldAccessType]
+	return ok
+}
+
+// ResetAccessType resets all changes to the "access_type" field.
+func (m *DataAccessAuditLogMutation) ResetAccessType() {
+	m.access_type = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldAccessType)
+}
+
+// SetSQLDigest sets the "sql_digest" field.
+func (m *DataAccessAuditLogMutation) SetSQLDigest(s string) {
+	m.sql_digest = &s
+}
+
+// SQLDigest returns the value of the "sql_digest" field in the mutation.
+func (m *DataAccessAuditLogMutation) SQLDigest() (r string, exists bool) {
+	v := m.sql_digest
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSQLDigest returns the old "sql_digest" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldSQLDigest(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSQLDigest is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSQLDigest requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSQLDigest: %w", err)
+	}
+	return oldValue.SQLDigest, nil
+}
+
+// ClearSQLDigest clears the value of the "sql_digest" field.
+func (m *DataAccessAuditLogMutation) ClearSQLDigest() {
+	m.sql_digest = nil
+	m.clearedFields[dataaccessauditlog.FieldSQLDigest] = struct{}{}
+}
+
+// SQLDigestCleared returns if the "sql_digest" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) SQLDigestCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldSQLDigest]
+	return ok
+}
+
+// ResetSQLDigest resets all changes to the "sql_digest" field.
+func (m *DataAccessAuditLogMutation) ResetSQLDigest() {
+	m.sql_digest = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldSQLDigest)
+}
+
+// SetSQLText sets the "sql_text" field.
+func (m *DataAccessAuditLogMutation) SetSQLText(s string) {
+	m.sql_text = &s
+}
+
+// SQLText returns the value of the "sql_text" field in the mutation.
+func (m *DataAccessAuditLogMutation) SQLText() (r string, exists bool) {
+	v := m.sql_text
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSQLText returns the old "sql_text" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldSQLText(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSQLText is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSQLText requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSQLText: %w", err)
+	}
+	return oldValue.SQLText, nil
+}
+
+// ClearSQLText clears the value of the "sql_text" field.
+func (m *DataAccessAuditLogMutation) ClearSQLText() {
+	m.sql_text = nil
+	m.clearedFields[dataaccessauditlog.FieldSQLText] = struct{}{}
+}
+
+// SQLTextCleared returns if the "sql_text" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) SQLTextCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldSQLText]
+	return ok
+}
+
+// ResetSQLText resets all changes to the "sql_text" field.
+func (m *DataAccessAuditLogMutation) ResetSQLText() {
+	m.sql_text = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldSQLText)
+}
+
+// SetAffectedRows sets the "affected_rows" field.
+func (m *DataAccessAuditLogMutation) SetAffectedRows(u uint32) {
+	m.affected_rows = &u
+	m.addaffected_rows = nil
+}
+
+// AffectedRows returns the value of the "affected_rows" field in the mutation.
+func (m *DataAccessAuditLogMutation) AffectedRows() (r uint32, exists bool) {
+	v := m.affected_rows
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAffectedRows returns the old "affected_rows" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldAffectedRows(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAffectedRows is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAffectedRows requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAffectedRows: %w", err)
+	}
+	return oldValue.AffectedRows, nil
+}
+
+// AddAffectedRows adds u to the "affected_rows" field.
+func (m *DataAccessAuditLogMutation) AddAffectedRows(u int32) {
+	if m.addaffected_rows != nil {
+		*m.addaffected_rows += u
+	} else {
+		m.addaffected_rows = &u
+	}
+}
+
+// AddedAffectedRows returns the value that was added to the "affected_rows" field in this mutation.
+func (m *DataAccessAuditLogMutation) AddedAffectedRows() (r int32, exists bool) {
+	v := m.addaffected_rows
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearAffectedRows clears the value of the "affected_rows" field.
+func (m *DataAccessAuditLogMutation) ClearAffectedRows() {
+	m.affected_rows = nil
+	m.addaffected_rows = nil
+	m.clearedFields[dataaccessauditlog.FieldAffectedRows] = struct{}{}
+}
+
+// AffectedRowsCleared returns if the "affected_rows" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) AffectedRowsCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldAffectedRows]
+	return ok
+}
+
+// ResetAffectedRows resets all changes to the "affected_rows" field.
+func (m *DataAccessAuditLogMutation) ResetAffectedRows() {
+	m.affected_rows = nil
+	m.addaffected_rows = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldAffectedRows)
+}
+
+// SetLatencyMs sets the "latency_ms" field.
+func (m *DataAccessAuditLogMutation) SetLatencyMs(u uint32) {
+	m.latency_ms = &u
+	m.addlatency_ms = nil
+}
+
+// LatencyMs returns the value of the "latency_ms" field in the mutation.
+func (m *DataAccessAuditLogMutation) LatencyMs() (r uint32, exists bool) {
+	v := m.latency_ms
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLatencyMs returns the old "latency_ms" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldLatencyMs(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLatencyMs is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLatencyMs requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLatencyMs: %w", err)
+	}
+	return oldValue.LatencyMs, nil
+}
+
+// AddLatencyMs adds u to the "latency_ms" field.
+func (m *DataAccessAuditLogMutation) AddLatencyMs(u int32) {
+	if m.addlatency_ms != nil {
+		*m.addlatency_ms += u
+	} else {
+		m.addlatency_ms = &u
+	}
+}
+
+// AddedLatencyMs returns the value that was added to the "latency_ms" field in this mutation.
+func (m *DataAccessAuditLogMutation) AddedLatencyMs() (r int32, exists bool) {
+	v := m.addlatency_ms
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearLatencyMs clears the value of the "latency_ms" field.
+func (m *DataAccessAuditLogMutation) ClearLatencyMs() {
+	m.latency_ms = nil
+	m.addlatency_ms = nil
+	m.clearedFields[dataaccessauditlog.FieldLatencyMs] = struct{}{}
+}
+
+// LatencyMsCleared returns if the "latency_ms" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) LatencyMsCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldLatencyMs]
+	return ok
+}
+
+// ResetLatencyMs resets all changes to the "latency_ms" field.
+func (m *DataAccessAuditLogMutation) ResetLatencyMs() {
+	m.latency_ms = nil
+	m.addlatency_ms = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldLatencyMs)
+}
+
+// SetSuccess sets the "success" field.
+func (m *DataAccessAuditLogMutation) SetSuccess(b bool) {
+	m.success = &b
+}
+
+// Success returns the value of the "success" field in the mutation.
+func (m *DataAccessAuditLogMutation) Success() (r bool, exists bool) {
+	v := m.success
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSuccess returns the old "success" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldSuccess(ctx context.Context) (v *bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSuccess is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSuccess requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSuccess: %w", err)
+	}
+	return oldValue.Success, nil
+}
+
+// ClearSuccess clears the value of the "success" field.
+func (m *DataAccessAuditLogMutation) ClearSuccess() {
+	m.success = nil
+	m.clearedFields[dataaccessauditlog.FieldSuccess] = struct{}{}
+}
+
+// SuccessCleared returns if the "success" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) SuccessCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldSuccess]
+	return ok
+}
+
+// ResetSuccess resets all changes to the "success" field.
+func (m *DataAccessAuditLogMutation) ResetSuccess() {
+	m.success = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldSuccess)
+}
+
+// SetSensitiveLevel sets the "sensitive_level" field.
+func (m *DataAccessAuditLogMutation) SetSensitiveLevel(dl dataaccessauditlog.SensitiveLevel) {
+	m.sensitive_level = &dl
+}
+
+// SensitiveLevel returns the value of the "sensitive_level" field in the mutation.
+func (m *DataAccessAuditLogMutation) SensitiveLevel() (r dataaccessauditlog.SensitiveLevel, exists bool) {
+	v := m.sensitive_level
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSensitiveLevel returns the old "sensitive_level" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldSensitiveLevel(ctx context.Context) (v *dataaccessauditlog.SensitiveLevel, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSensitiveLevel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSensitiveLevel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSensitiveLevel: %w", err)
+	}
+	return oldValue.SensitiveLevel, nil
+}
+
+// ClearSensitiveLevel clears the value of the "sensitive_level" field.
+func (m *DataAccessAuditLogMutation) ClearSensitiveLevel() {
+	m.sensitive_level = nil
+	m.clearedFields[dataaccessauditlog.FieldSensitiveLevel] = struct{}{}
+}
+
+// SensitiveLevelCleared returns if the "sensitive_level" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) SensitiveLevelCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldSensitiveLevel]
+	return ok
+}
+
+// ResetSensitiveLevel resets all changes to the "sensitive_level" field.
+func (m *DataAccessAuditLogMutation) ResetSensitiveLevel() {
+	m.sensitive_level = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldSensitiveLevel)
+}
+
+// SetDataMasked sets the "data_masked" field.
+func (m *DataAccessAuditLogMutation) SetDataMasked(b bool) {
+	m.data_masked = &b
+}
+
+// DataMasked returns the value of the "data_masked" field in the mutation.
+func (m *DataAccessAuditLogMutation) DataMasked() (r bool, exists bool) {
+	v := m.data_masked
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDataMasked returns the old "data_masked" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldDataMasked(ctx context.Context) (v *bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDataMasked is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDataMasked requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDataMasked: %w", err)
+	}
+	return oldValue.DataMasked, nil
+}
+
+// ClearDataMasked clears the value of the "data_masked" field.
+func (m *DataAccessAuditLogMutation) ClearDataMasked() {
+	m.data_masked = nil
+	m.clearedFields[dataaccessauditlog.FieldDataMasked] = struct{}{}
+}
+
+// DataMaskedCleared returns if the "data_masked" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) DataMaskedCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldDataMasked]
+	return ok
+}
+
+// ResetDataMasked resets all changes to the "data_masked" field.
+func (m *DataAccessAuditLogMutation) ResetDataMasked() {
+	m.data_masked = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldDataMasked)
+}
+
+// SetMaskingRules sets the "masking_rules" field.
+func (m *DataAccessAuditLogMutation) SetMaskingRules(s string) {
+	m.masking_rules = &s
+}
+
+// MaskingRules returns the value of the "masking_rules" field in the mutation.
+func (m *DataAccessAuditLogMutation) MaskingRules() (r string, exists bool) {
+	v := m.masking_rules
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldMaskingRules returns the old "masking_rules" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldMaskingRules(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMaskingRules is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMaskingRules requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMaskingRules: %w", err)
+	}
+	return oldValue.MaskingRules, nil
+}
+
+// ClearMaskingRules clears the value of the "masking_rules" field.
+func (m *DataAccessAuditLogMutation) ClearMaskingRules() {
+	m.masking_rules = nil
+	m.clearedFields[dataaccessauditlog.FieldMaskingRules] = struct{}{}
+}
+
+// MaskingRulesCleared returns if the "masking_rules" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) MaskingRulesCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldMaskingRules]
+	return ok
+}
+
+// ResetMaskingRules resets all changes to the "masking_rules" field.
+func (m *DataAccessAuditLogMutation) ResetMaskingRules() {
+	m.masking_rules = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldMaskingRules)
+}
+
+// SetBusinessPurpose sets the "business_purpose" field.
+func (m *DataAccessAuditLogMutation) SetBusinessPurpose(s string) {
+	m.business_purpose = &s
+}
+
+// BusinessPurpose returns the value of the "business_purpose" field in the mutation.
+func (m *DataAccessAuditLogMutation) BusinessPurpose() (r string, exists bool) {
+	v := m.business_purpose
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBusinessPurpose returns the old "business_purpose" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldBusinessPurpose(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBusinessPurpose is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBusinessPurpose requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBusinessPurpose: %w", err)
+	}
+	return oldValue.BusinessPurpose, nil
+}
+
+// ClearBusinessPurpose clears the value of the "business_purpose" field.
+func (m *DataAccessAuditLogMutation) ClearBusinessPurpose() {
+	m.business_purpose = nil
+	m.clearedFields[dataaccessauditlog.FieldBusinessPurpose] = struct{}{}
+}
+
+// BusinessPurposeCleared returns if the "business_purpose" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) BusinessPurposeCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldBusinessPurpose]
+	return ok
+}
+
+// ResetBusinessPurpose resets all changes to the "business_purpose" field.
+func (m *DataAccessAuditLogMutation) ResetBusinessPurpose() {
+	m.business_purpose = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldBusinessPurpose)
+}
+
+// SetDataCategory sets the "data_category" field.
+func (m *DataAccessAuditLogMutation) SetDataCategory(s string) {
+	m.data_category = &s
+}
+
+// DataCategory returns the value of the "data_category" field in the mutation.
+func (m *DataAccessAuditLogMutation) DataCategory() (r string, exists bool) {
+	v := m.data_category
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDataCategory returns the old "data_category" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldDataCategory(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDataCategory is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDataCategory requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDataCategory: %w", err)
+	}
+	return oldValue.DataCategory, nil
+}
+
+// ClearDataCategory clears the value of the "data_category" field.
+func (m *DataAccessAuditLogMutation) ClearDataCategory() {
+	m.data_category = nil
+	m.clearedFields[dataaccessauditlog.FieldDataCategory] = struct{}{}
+}
+
+// DataCategoryCleared returns if the "data_category" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) DataCategoryCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldDataCategory]
+	return ok
+}
+
+// ResetDataCategory resets all changes to the "data_category" field.
+func (m *DataAccessAuditLogMutation) ResetDataCategory() {
+	m.data_category = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldDataCategory)
+}
+
+// SetDbUser sets the "db_user" field.
+func (m *DataAccessAuditLogMutation) SetDbUser(s string) {
+	m.db_user = &s
+}
+
+// DbUser returns the value of the "db_user" field in the mutation.
+func (m *DataAccessAuditLogMutation) DbUser() (r string, exists bool) {
+	v := m.db_user
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDbUser returns the old "db_user" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldDbUser(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDbUser is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDbUser requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDbUser: %w", err)
+	}
+	return oldValue.DbUser, nil
+}
+
+// ClearDbUser clears the value of the "db_user" field.
+func (m *DataAccessAuditLogMutation) ClearDbUser() {
+	m.db_user = nil
+	m.clearedFields[dataaccessauditlog.FieldDbUser] = struct{}{}
+}
+
+// DbUserCleared returns if the "db_user" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) DbUserCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldDbUser]
+	return ok
+}
+
+// ResetDbUser resets all changes to the "db_user" field.
+func (m *DataAccessAuditLogMutation) ResetDbUser() {
+	m.db_user = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldDbUser)
+}
+
+// SetLogHash sets the "log_hash" field.
+func (m *DataAccessAuditLogMutation) SetLogHash(s string) {
+	m.log_hash = &s
+}
+
+// LogHash returns the value of the "log_hash" field in the mutation.
+func (m *DataAccessAuditLogMutation) LogHash() (r string, exists bool) {
+	v := m.log_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLogHash returns the old "log_hash" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldLogHash(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLogHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLogHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLogHash: %w", err)
+	}
+	return oldValue.LogHash, nil
+}
+
+// ClearLogHash clears the value of the "log_hash" field.
+func (m *DataAccessAuditLogMutation) ClearLogHash() {
+	m.log_hash = nil
+	m.clearedFields[dataaccessauditlog.FieldLogHash] = struct{}{}
+}
+
+// LogHashCleared returns if the "log_hash" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) LogHashCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldLogHash]
+	return ok
+}
+
+// ResetLogHash resets all changes to the "log_hash" field.
+func (m *DataAccessAuditLogMutation) ResetLogHash() {
+	m.log_hash = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldLogHash)
+}
+
+// SetSignature sets the "signature" field.
+func (m *DataAccessAuditLogMutation) SetSignature(b []byte) {
+	m.signature = &b
+}
+
+// Signature returns the value of the "signature" field in the mutation.
+func (m *DataAccessAuditLogMutation) Signature() (r []byte, exists bool) {
+	v := m.signature
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSignature returns the old "signature" field's value of the DataAccessAuditLog entity.
+// If the DataAccessAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *DataAccessAuditLogMutation) OldSignature(ctx context.Context) (v *[]byte, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSignature is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSignature requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSignature: %w", err)
+	}
+	return oldValue.Signature, nil
+}
+
+// ClearSignature clears the value of the "signature" field.
+func (m *DataAccessAuditLogMutation) ClearSignature() {
+	m.signature = nil
+	m.clearedFields[dataaccessauditlog.FieldSignature] = struct{}{}
+}
+
+// SignatureCleared returns if the "signature" field was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) SignatureCleared() bool {
+	_, ok := m.clearedFields[dataaccessauditlog.FieldSignature]
+	return ok
+}
+
+// ResetSignature resets all changes to the "signature" field.
+func (m *DataAccessAuditLogMutation) ResetSignature() {
+	m.signature = nil
+	delete(m.clearedFields, dataaccessauditlog.FieldSignature)
+}
+
+// Where appends a list predicates to the DataAccessAuditLogMutation builder.
+func (m *DataAccessAuditLogMutation) Where(ps ...predicate.DataAccessAuditLog) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the DataAccessAuditLogMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *DataAccessAuditLogMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.DataAccessAuditLog, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *DataAccessAuditLogMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *DataAccessAuditLogMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (DataAccessAuditLog).
+func (m *DataAccessAuditLogMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *DataAccessAuditLogMutation) Fields() []string {
+	fields := make([]string, 0, 26)
+	if m.created_at != nil {
+		fields = append(fields, dataaccessauditlog.FieldCreatedAt)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, dataaccessauditlog.FieldTenantID)
+	}
+	if m.user_id != nil {
+		fields = append(fields, dataaccessauditlog.FieldUserID)
+	}
+	if m.username != nil {
+		fields = append(fields, dataaccessauditlog.FieldUsername)
+	}
+	if m.ip_address != nil {
+		fields = append(fields, dataaccessauditlog.FieldIPAddress)
+	}
+	if m.geo_location != nil {
+		fields = append(fields, dataaccessauditlog.FieldGeoLocation)
+	}
+	if m.device_info != nil {
+		fields = append(fields, dataaccessauditlog.FieldDeviceInfo)
+	}
+	if m.request_id != nil {
+		fields = append(fields, dataaccessauditlog.FieldRequestID)
+	}
+	if m.trace_id != nil {
+		fields = append(fields, dataaccessauditlog.FieldTraceID)
+	}
+	if m.data_source != nil {
+		fields = append(fields, dataaccessauditlog.FieldDataSource)
+	}
+	if m.table_name != nil {
+		fields = append(fields, dataaccessauditlog.FieldTableName)
+	}
+	if m.data_id != nil {
+		fields = append(fields, dataaccessauditlog.FieldDataID)
+	}
+	if m.access_type != nil {
+		fields = append(fields, dataaccessauditlog.FieldAccessType)
+	}
+	if m.sql_digest != nil {
+		fields = append(fields, dataaccessauditlog.FieldSQLDigest)
+	}
+	if m.sql_text != nil {
+		fields = append(fields, dataaccessauditlog.FieldSQLText)
+	}
+	if m.affected_rows != nil {
+		fields = append(fields, dataaccessauditlog.FieldAffectedRows)
+	}
+	if m.latency_ms != nil {
+		fields = append(fields, dataaccessauditlog.FieldLatencyMs)
+	}
+	if m.success != nil {
+		fields = append(fields, dataaccessauditlog.FieldSuccess)
+	}
+	if m.sensitive_level != nil {
+		fields = append(fields, dataaccessauditlog.FieldSensitiveLevel)
+	}
+	if m.data_masked != nil {
+		fields = append(fields, dataaccessauditlog.FieldDataMasked)
+	}
+	if m.masking_rules != nil {
+		fields = append(fields, dataaccessauditlog.FieldMaskingRules)
+	}
+	if m.business_purpose != nil {
+		fields = append(fields, dataaccessauditlog.FieldBusinessPurpose)
+	}
+	if m.data_category != nil {
+		fields = append(fields, dataaccessauditlog.FieldDataCategory)
+	}
+	if m.db_user != nil {
+		fields = append(fields, dataaccessauditlog.FieldDbUser)
+	}
+	if m.log_hash != nil {
+		fields = append(fields, dataaccessauditlog.FieldLogHash)
+	}
+	if m.signature != nil {
+		fields = append(fields, dataaccessauditlog.FieldSignature)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *DataAccessAuditLogMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case dataaccessauditlog.FieldCreatedAt:
+		return m.CreatedAt()
+	case dataaccessauditlog.FieldTenantID:
+		return m.TenantID()
+	case dataaccessauditlog.FieldUserID:
+		return m.UserID()
+	case dataaccessauditlog.FieldUsername:
+		return m.Username()
+	case dataaccessauditlog.FieldIPAddress:
+		return m.IPAddress()
+	case dataaccessauditlog.FieldGeoLocation:
+		return m.GeoLocation()
+	case dataaccessauditlog.FieldDeviceInfo:
+		return m.DeviceInfo()
+	case dataaccessauditlog.FieldRequestID:
+		return m.RequestID()
+	case dataaccessauditlog.FieldTraceID:
+		return m.TraceID()
+	case dataaccessauditlog.FieldDataSource:
+		return m.DataSource()
+	case dataaccessauditlog.FieldTableName:
+		return m.TableName()
+	case dataaccessauditlog.FieldDataID:
+		return m.DataID()
+	case dataaccessauditlog.FieldAccessType:
+		return m.AccessType()
+	case dataaccessauditlog.FieldSQLDigest:
+		return m.SQLDigest()
+	case dataaccessauditlog.FieldSQLText:
+		return m.SQLText()
+	case dataaccessauditlog.FieldAffectedRows:
+		return m.AffectedRows()
+	case dataaccessauditlog.FieldLatencyMs:
+		return m.LatencyMs()
+	case dataaccessauditlog.FieldSuccess:
+		return m.Success()
+	case dataaccessauditlog.FieldSensitiveLevel:
+		return m.SensitiveLevel()
+	case dataaccessauditlog.FieldDataMasked:
+		return m.DataMasked()
+	case dataaccessauditlog.FieldMaskingRules:
+		return m.MaskingRules()
+	case dataaccessauditlog.FieldBusinessPurpose:
+		return m.BusinessPurpose()
+	case dataaccessauditlog.FieldDataCategory:
+		return m.DataCategory()
+	case dataaccessauditlog.FieldDbUser:
+		return m.DbUser()
+	case dataaccessauditlog.FieldLogHash:
+		return m.LogHash()
+	case dataaccessauditlog.FieldSignature:
+		return m.Signature()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *DataAccessAuditLogMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case dataaccessauditlog.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case dataaccessauditlog.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case dataaccessauditlog.FieldUserID:
+		return m.OldUserID(ctx)
+	case dataaccessauditlog.FieldUsername:
+		return m.OldUsername(ctx)
+	case dataaccessauditlog.FieldIPAddress:
+		return m.OldIPAddress(ctx)
+	case dataaccessauditlog.FieldGeoLocation:
+		return m.OldGeoLocation(ctx)
+	case dataaccessauditlog.FieldDeviceInfo:
+		return m.OldDeviceInfo(ctx)
+	case dataaccessauditlog.FieldRequestID:
+		return m.OldRequestID(ctx)
+	case dataaccessauditlog.FieldTraceID:
+		return m.OldTraceID(ctx)
+	case dataaccessauditlog.FieldDataSource:
+		return m.OldDataSource(ctx)
+	case dataaccessauditlog.FieldTableName:
+		return m.OldTableName(ctx)
+	case dataaccessauditlog.FieldDataID:
+		return m.OldDataID(ctx)
+	case dataaccessauditlog.FieldAccessType:
+		return m.OldAccessType(ctx)
+	case dataaccessauditlog.FieldSQLDigest:
+		return m.OldSQLDigest(ctx)
+	case dataaccessauditlog.FieldSQLText:
+		return m.OldSQLText(ctx)
+	case dataaccessauditlog.FieldAffectedRows:
+		return m.OldAffectedRows(ctx)
+	case dataaccessauditlog.FieldLatencyMs:
+		return m.OldLatencyMs(ctx)
+	case dataaccessauditlog.FieldSuccess:
+		return m.OldSuccess(ctx)
+	case dataaccessauditlog.FieldSensitiveLevel:
+		return m.OldSensitiveLevel(ctx)
+	case dataaccessauditlog.FieldDataMasked:
+		return m.OldDataMasked(ctx)
+	case dataaccessauditlog.FieldMaskingRules:
+		return m.OldMaskingRules(ctx)
+	case dataaccessauditlog.FieldBusinessPurpose:
+		return m.OldBusinessPurpose(ctx)
+	case dataaccessauditlog.FieldDataCategory:
+		return m.OldDataCategory(ctx)
+	case dataaccessauditlog.FieldDbUser:
+		return m.OldDbUser(ctx)
+	case dataaccessauditlog.FieldLogHash:
+		return m.OldLogHash(ctx)
+	case dataaccessauditlog.FieldSignature:
+		return m.OldSignature(ctx)
+	}
+	return nil, fmt.Errorf("unknown DataAccessAuditLog field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DataAccessAuditLogMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case dataaccessauditlog.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case dataaccessauditlog.FieldTenantID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case dataaccessauditlog.FieldUserID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case dataaccessauditlog.FieldUsername:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUsername(v)
+		return nil
+	case dataaccessauditlog.FieldIPAddress:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIPAddress(v)
+		return nil
+	case dataaccessauditlog.FieldGeoLocation:
+		v, ok := value.(*servicev1.GeoLocation)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGeoLocation(v)
+		return nil
+	case dataaccessauditlog.FieldDeviceInfo:
+		v, ok := value.(*servicev1.DeviceInfo)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeviceInfo(v)
+		return nil
+	case dataaccessauditlog.FieldRequestID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestID(v)
+		return nil
+	case dataaccessauditlog.FieldTraceID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTraceID(v)
+		return nil
+	case dataaccessauditlog.FieldDataSource:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDataSource(v)
+		return nil
+	case dataaccessauditlog.FieldTableName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTableName(v)
+		return nil
+	case dataaccessauditlog.FieldDataID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDataID(v)
+		return nil
+	case dataaccessauditlog.FieldAccessType:
+		v, ok := value.(dataaccessauditlog.AccessType)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAccessType(v)
+		return nil
+	case dataaccessauditlog.FieldSQLDigest:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSQLDigest(v)
+		return nil
+	case dataaccessauditlog.FieldSQLText:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSQLText(v)
+		return nil
+	case dataaccessauditlog.FieldAffectedRows:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAffectedRows(v)
+		return nil
+	case dataaccessauditlog.FieldLatencyMs:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLatencyMs(v)
+		return nil
+	case dataaccessauditlog.FieldSuccess:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSuccess(v)
+		return nil
+	case dataaccessauditlog.FieldSensitiveLevel:
+		v, ok := value.(dataaccessauditlog.SensitiveLevel)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSensitiveLevel(v)
+		return nil
+	case dataaccessauditlog.FieldDataMasked:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDataMasked(v)
+		return nil
+	case dataaccessauditlog.FieldMaskingRules:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMaskingRules(v)
+		return nil
+	case dataaccessauditlog.FieldBusinessPurpose:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBusinessPurpose(v)
+		return nil
+	case dataaccessauditlog.FieldDataCategory:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDataCategory(v)
+		return nil
+	case dataaccessauditlog.FieldDbUser:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDbUser(v)
+		return nil
+	case dataaccessauditlog.FieldLogHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLogHash(v)
+		return nil
+	case dataaccessauditlog.FieldSignature:
+		v, ok := value.([]byte)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSignature(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DataAccessAuditLog field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *DataAccessAuditLogMutation) AddedFields() []string {
+	var fields []string
+	if m.addtenant_id != nil {
+		fields = append(fields, dataaccessauditlog.FieldTenantID)
+	}
+	if m.adduser_id != nil {
+		fields = append(fields, dataaccessauditlog.FieldUserID)
+	}
+	if m.addaffected_rows != nil {
+		fields = append(fields, dataaccessauditlog.FieldAffectedRows)
+	}
+	if m.addlatency_ms != nil {
+		fields = append(fields, dataaccessauditlog.FieldLatencyMs)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *DataAccessAuditLogMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case dataaccessauditlog.FieldTenantID:
+		return m.AddedTenantID()
+	case dataaccessauditlog.FieldUserID:
+		return m.AddedUserID()
+	case dataaccessauditlog.FieldAffectedRows:
+		return m.AddedAffectedRows()
+	case dataaccessauditlog.FieldLatencyMs:
+		return m.AddedLatencyMs()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *DataAccessAuditLogMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case dataaccessauditlog.FieldTenantID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTenantID(v)
+		return nil
+	case dataaccessauditlog.FieldUserID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUserID(v)
+		return nil
+	case dataaccessauditlog.FieldAffectedRows:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddAffectedRows(v)
+		return nil
+	case dataaccessauditlog.FieldLatencyMs:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddLatencyMs(v)
+		return nil
+	}
+	return fmt.Errorf("unknown DataAccessAuditLog numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *DataAccessAuditLogMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(dataaccessauditlog.FieldCreatedAt) {
+		fields = append(fields, dataaccessauditlog.FieldCreatedAt)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldTenantID) {
+		fields = append(fields, dataaccessauditlog.FieldTenantID)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldUserID) {
+		fields = append(fields, dataaccessauditlog.FieldUserID)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldUsername) {
+		fields = append(fields, dataaccessauditlog.FieldUsername)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldIPAddress) {
+		fields = append(fields, dataaccessauditlog.FieldIPAddress)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldGeoLocation) {
+		fields = append(fields, dataaccessauditlog.FieldGeoLocation)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldDeviceInfo) {
+		fields = append(fields, dataaccessauditlog.FieldDeviceInfo)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldRequestID) {
+		fields = append(fields, dataaccessauditlog.FieldRequestID)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldTraceID) {
+		fields = append(fields, dataaccessauditlog.FieldTraceID)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldDataSource) {
+		fields = append(fields, dataaccessauditlog.FieldDataSource)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldTableName) {
+		fields = append(fields, dataaccessauditlog.FieldTableName)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldDataID) {
+		fields = append(fields, dataaccessauditlog.FieldDataID)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldAccessType) {
+		fields = append(fields, dataaccessauditlog.FieldAccessType)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldSQLDigest) {
+		fields = append(fields, dataaccessauditlog.FieldSQLDigest)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldSQLText) {
+		fields = append(fields, dataaccessauditlog.FieldSQLText)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldAffectedRows) {
+		fields = append(fields, dataaccessauditlog.FieldAffectedRows)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldLatencyMs) {
+		fields = append(fields, dataaccessauditlog.FieldLatencyMs)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldSuccess) {
+		fields = append(fields, dataaccessauditlog.FieldSuccess)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldSensitiveLevel) {
+		fields = append(fields, dataaccessauditlog.FieldSensitiveLevel)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldDataMasked) {
+		fields = append(fields, dataaccessauditlog.FieldDataMasked)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldMaskingRules) {
+		fields = append(fields, dataaccessauditlog.FieldMaskingRules)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldBusinessPurpose) {
+		fields = append(fields, dataaccessauditlog.FieldBusinessPurpose)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldDataCategory) {
+		fields = append(fields, dataaccessauditlog.FieldDataCategory)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldDbUser) {
+		fields = append(fields, dataaccessauditlog.FieldDbUser)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldLogHash) {
+		fields = append(fields, dataaccessauditlog.FieldLogHash)
+	}
+	if m.FieldCleared(dataaccessauditlog.FieldSignature) {
+		fields = append(fields, dataaccessauditlog.FieldSignature)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *DataAccessAuditLogMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *DataAccessAuditLogMutation) ClearField(name string) error {
+	switch name {
+	case dataaccessauditlog.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case dataaccessauditlog.FieldTenantID:
+		m.ClearTenantID()
+		return nil
+	case dataaccessauditlog.FieldUserID:
+		m.ClearUserID()
+		return nil
+	case dataaccessauditlog.FieldUsername:
+		m.ClearUsername()
+		return nil
+	case dataaccessauditlog.FieldIPAddress:
+		m.ClearIPAddress()
+		return nil
+	case dataaccessauditlog.FieldGeoLocation:
+		m.ClearGeoLocation()
+		return nil
+	case dataaccessauditlog.FieldDeviceInfo:
+		m.ClearDeviceInfo()
+		return nil
+	case dataaccessauditlog.FieldRequestID:
+		m.ClearRequestID()
+		return nil
+	case dataaccessauditlog.FieldTraceID:
+		m.ClearTraceID()
+		return nil
+	case dataaccessauditlog.FieldDataSource:
+		m.ClearDataSource()
+		return nil
+	case dataaccessauditlog.FieldTableName:
+		m.ClearTableName()
+		return nil
+	case dataaccessauditlog.FieldDataID:
+		m.ClearDataID()
+		return nil
+	case dataaccessauditlog.FieldAccessType:
+		m.ClearAccessType()
+		return nil
+	case dataaccessauditlog.FieldSQLDigest:
+		m.ClearSQLDigest()
+		return nil
+	case dataaccessauditlog.FieldSQLText:
+		m.ClearSQLText()
+		return nil
+	case dataaccessauditlog.FieldAffectedRows:
+		m.ClearAffectedRows()
+		return nil
+	case dataaccessauditlog.FieldLatencyMs:
+		m.ClearLatencyMs()
+		return nil
+	case dataaccessauditlog.FieldSuccess:
+		m.ClearSuccess()
+		return nil
+	case dataaccessauditlog.FieldSensitiveLevel:
+		m.ClearSensitiveLevel()
+		return nil
+	case dataaccessauditlog.FieldDataMasked:
+		m.ClearDataMasked()
+		return nil
+	case dataaccessauditlog.FieldMaskingRules:
+		m.ClearMaskingRules()
+		return nil
+	case dataaccessauditlog.FieldBusinessPurpose:
+		m.ClearBusinessPurpose()
+		return nil
+	case dataaccessauditlog.FieldDataCategory:
+		m.ClearDataCategory()
+		return nil
+	case dataaccessauditlog.FieldDbUser:
+		m.ClearDbUser()
+		return nil
+	case dataaccessauditlog.FieldLogHash:
+		m.ClearLogHash()
+		return nil
+	case dataaccessauditlog.FieldSignature:
+		m.ClearSignature()
+		return nil
+	}
+	return fmt.Errorf("unknown DataAccessAuditLog nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *DataAccessAuditLogMutation) ResetField(name string) error {
+	switch name {
+	case dataaccessauditlog.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case dataaccessauditlog.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case dataaccessauditlog.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case dataaccessauditlog.FieldUsername:
+		m.ResetUsername()
+		return nil
+	case dataaccessauditlog.FieldIPAddress:
+		m.ResetIPAddress()
+		return nil
+	case dataaccessauditlog.FieldGeoLocation:
+		m.ResetGeoLocation()
+		return nil
+	case dataaccessauditlog.FieldDeviceInfo:
+		m.ResetDeviceInfo()
+		return nil
+	case dataaccessauditlog.FieldRequestID:
+		m.ResetRequestID()
+		return nil
+	case dataaccessauditlog.FieldTraceID:
+		m.ResetTraceID()
+		return nil
+	case dataaccessauditlog.FieldDataSource:
+		m.ResetDataSource()
+		return nil
+	case dataaccessauditlog.FieldTableName:
+		m.ResetTableName()
+		return nil
+	case dataaccessauditlog.FieldDataID:
+		m.ResetDataID()
+		return nil
+	case dataaccessauditlog.FieldAccessType:
+		m.ResetAccessType()
+		return nil
+	case dataaccessauditlog.FieldSQLDigest:
+		m.ResetSQLDigest()
+		return nil
+	case dataaccessauditlog.FieldSQLText:
+		m.ResetSQLText()
+		return nil
+	case dataaccessauditlog.FieldAffectedRows:
+		m.ResetAffectedRows()
+		return nil
+	case dataaccessauditlog.FieldLatencyMs:
+		m.ResetLatencyMs()
+		return nil
+	case dataaccessauditlog.FieldSuccess:
+		m.ResetSuccess()
+		return nil
+	case dataaccessauditlog.FieldSensitiveLevel:
+		m.ResetSensitiveLevel()
+		return nil
+	case dataaccessauditlog.FieldDataMasked:
+		m.ResetDataMasked()
+		return nil
+	case dataaccessauditlog.FieldMaskingRules:
+		m.ResetMaskingRules()
+		return nil
+	case dataaccessauditlog.FieldBusinessPurpose:
+		m.ResetBusinessPurpose()
+		return nil
+	case dataaccessauditlog.FieldDataCategory:
+		m.ResetDataCategory()
+		return nil
+	case dataaccessauditlog.FieldDbUser:
+		m.ResetDbUser()
+		return nil
+	case dataaccessauditlog.FieldLogHash:
+		m.ResetLogHash()
+		return nil
+	case dataaccessauditlog.FieldSignature:
+		m.ResetSignature()
+		return nil
+	}
+	return fmt.Errorf("unknown DataAccessAuditLog field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *DataAccessAuditLogMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *DataAccessAuditLogMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *DataAccessAuditLogMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *DataAccessAuditLogMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *DataAccessAuditLogMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *DataAccessAuditLogMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *DataAccessAuditLogMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown DataAccessAuditLog unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *DataAccessAuditLogMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown DataAccessAuditLog edge %s", name)
 }
 
 // DictEntryMutation represents an operation that mutates the DictEntry nodes in the graph.
@@ -13676,8 +16217,10 @@ type LoginAuditLogMutation struct {
 	session_id         *string
 	device_info        **servicev1.DeviceInfo
 	request_id         *string
+	trace_id           *string
 	action_type        *loginauditlog.ActionType
 	status             *loginauditlog.Status
+	login_method       *loginauditlog.LoginMethod
 	failure_reason     *string
 	mfa_status         *string
 	risk_score         *uint32
@@ -14280,6 +16823,55 @@ func (m *LoginAuditLogMutation) ResetRequestID() {
 	delete(m.clearedFields, loginauditlog.FieldRequestID)
 }
 
+// SetTraceID sets the "trace_id" field.
+func (m *LoginAuditLogMutation) SetTraceID(s string) {
+	m.trace_id = &s
+}
+
+// TraceID returns the value of the "trace_id" field in the mutation.
+func (m *LoginAuditLogMutation) TraceID() (r string, exists bool) {
+	v := m.trace_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTraceID returns the old "trace_id" field's value of the LoginAuditLog entity.
+// If the LoginAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LoginAuditLogMutation) OldTraceID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTraceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTraceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTraceID: %w", err)
+	}
+	return oldValue.TraceID, nil
+}
+
+// ClearTraceID clears the value of the "trace_id" field.
+func (m *LoginAuditLogMutation) ClearTraceID() {
+	m.trace_id = nil
+	m.clearedFields[loginauditlog.FieldTraceID] = struct{}{}
+}
+
+// TraceIDCleared returns if the "trace_id" field was cleared in this mutation.
+func (m *LoginAuditLogMutation) TraceIDCleared() bool {
+	_, ok := m.clearedFields[loginauditlog.FieldTraceID]
+	return ok
+}
+
+// ResetTraceID resets all changes to the "trace_id" field.
+func (m *LoginAuditLogMutation) ResetTraceID() {
+	m.trace_id = nil
+	delete(m.clearedFields, loginauditlog.FieldTraceID)
+}
+
 // SetActionType sets the "action_type" field.
 func (m *LoginAuditLogMutation) SetActionType(lt loginauditlog.ActionType) {
 	m.action_type = &lt
@@ -14376,6 +16968,55 @@ func (m *LoginAuditLogMutation) StatusCleared() bool {
 func (m *LoginAuditLogMutation) ResetStatus() {
 	m.status = nil
 	delete(m.clearedFields, loginauditlog.FieldStatus)
+}
+
+// SetLoginMethod sets the "login_method" field.
+func (m *LoginAuditLogMutation) SetLoginMethod(lm loginauditlog.LoginMethod) {
+	m.login_method = &lm
+}
+
+// LoginMethod returns the value of the "login_method" field in the mutation.
+func (m *LoginAuditLogMutation) LoginMethod() (r loginauditlog.LoginMethod, exists bool) {
+	v := m.login_method
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLoginMethod returns the old "login_method" field's value of the LoginAuditLog entity.
+// If the LoginAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *LoginAuditLogMutation) OldLoginMethod(ctx context.Context) (v *loginauditlog.LoginMethod, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLoginMethod is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLoginMethod requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLoginMethod: %w", err)
+	}
+	return oldValue.LoginMethod, nil
+}
+
+// ClearLoginMethod clears the value of the "login_method" field.
+func (m *LoginAuditLogMutation) ClearLoginMethod() {
+	m.login_method = nil
+	m.clearedFields[loginauditlog.FieldLoginMethod] = struct{}{}
+}
+
+// LoginMethodCleared returns if the "login_method" field was cleared in this mutation.
+func (m *LoginAuditLogMutation) LoginMethodCleared() bool {
+	_, ok := m.clearedFields[loginauditlog.FieldLoginMethod]
+	return ok
+}
+
+// ResetLoginMethod resets all changes to the "login_method" field.
+func (m *LoginAuditLogMutation) ResetLoginMethod() {
+	m.login_method = nil
+	delete(m.clearedFields, loginauditlog.FieldLoginMethod)
 }
 
 // SetFailureReason sets the "failure_reason" field.
@@ -14792,7 +17433,7 @@ func (m *LoginAuditLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *LoginAuditLogMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, loginauditlog.FieldCreatedAt)
 	}
@@ -14820,11 +17461,17 @@ func (m *LoginAuditLogMutation) Fields() []string {
 	if m.request_id != nil {
 		fields = append(fields, loginauditlog.FieldRequestID)
 	}
+	if m.trace_id != nil {
+		fields = append(fields, loginauditlog.FieldTraceID)
+	}
 	if m.action_type != nil {
 		fields = append(fields, loginauditlog.FieldActionType)
 	}
 	if m.status != nil {
 		fields = append(fields, loginauditlog.FieldStatus)
+	}
+	if m.login_method != nil {
+		fields = append(fields, loginauditlog.FieldLoginMethod)
 	}
 	if m.failure_reason != nil {
 		fields = append(fields, loginauditlog.FieldFailureReason)
@@ -14873,10 +17520,14 @@ func (m *LoginAuditLogMutation) Field(name string) (ent.Value, bool) {
 		return m.DeviceInfo()
 	case loginauditlog.FieldRequestID:
 		return m.RequestID()
+	case loginauditlog.FieldTraceID:
+		return m.TraceID()
 	case loginauditlog.FieldActionType:
 		return m.ActionType()
 	case loginauditlog.FieldStatus:
 		return m.Status()
+	case loginauditlog.FieldLoginMethod:
+		return m.LoginMethod()
 	case loginauditlog.FieldFailureReason:
 		return m.FailureReason()
 	case loginauditlog.FieldMfaStatus:
@@ -14918,10 +17569,14 @@ func (m *LoginAuditLogMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldDeviceInfo(ctx)
 	case loginauditlog.FieldRequestID:
 		return m.OldRequestID(ctx)
+	case loginauditlog.FieldTraceID:
+		return m.OldTraceID(ctx)
 	case loginauditlog.FieldActionType:
 		return m.OldActionType(ctx)
 	case loginauditlog.FieldStatus:
 		return m.OldStatus(ctx)
+	case loginauditlog.FieldLoginMethod:
+		return m.OldLoginMethod(ctx)
 	case loginauditlog.FieldFailureReason:
 		return m.OldFailureReason(ctx)
 	case loginauditlog.FieldMfaStatus:
@@ -15008,6 +17663,13 @@ func (m *LoginAuditLogMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetRequestID(v)
 		return nil
+	case loginauditlog.FieldTraceID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTraceID(v)
+		return nil
 	case loginauditlog.FieldActionType:
 		v, ok := value.(loginauditlog.ActionType)
 		if !ok {
@@ -15021,6 +17683,13 @@ func (m *LoginAuditLogMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetStatus(v)
+		return nil
+	case loginauditlog.FieldLoginMethod:
+		v, ok := value.(loginauditlog.LoginMethod)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLoginMethod(v)
 		return nil
 	case loginauditlog.FieldFailureReason:
 		v, ok := value.(string)
@@ -15167,11 +17836,17 @@ func (m *LoginAuditLogMutation) ClearedFields() []string {
 	if m.FieldCleared(loginauditlog.FieldRequestID) {
 		fields = append(fields, loginauditlog.FieldRequestID)
 	}
+	if m.FieldCleared(loginauditlog.FieldTraceID) {
+		fields = append(fields, loginauditlog.FieldTraceID)
+	}
 	if m.FieldCleared(loginauditlog.FieldActionType) {
 		fields = append(fields, loginauditlog.FieldActionType)
 	}
 	if m.FieldCleared(loginauditlog.FieldStatus) {
 		fields = append(fields, loginauditlog.FieldStatus)
+	}
+	if m.FieldCleared(loginauditlog.FieldLoginMethod) {
+		fields = append(fields, loginauditlog.FieldLoginMethod)
 	}
 	if m.FieldCleared(loginauditlog.FieldFailureReason) {
 		fields = append(fields, loginauditlog.FieldFailureReason)
@@ -15235,11 +17910,17 @@ func (m *LoginAuditLogMutation) ClearField(name string) error {
 	case loginauditlog.FieldRequestID:
 		m.ClearRequestID()
 		return nil
+	case loginauditlog.FieldTraceID:
+		m.ClearTraceID()
+		return nil
 	case loginauditlog.FieldActionType:
 		m.ClearActionType()
 		return nil
 	case loginauditlog.FieldStatus:
 		m.ClearStatus()
+		return nil
+	case loginauditlog.FieldLoginMethod:
+		m.ClearLoginMethod()
 		return nil
 	case loginauditlog.FieldFailureReason:
 		m.ClearFailureReason()
@@ -15297,11 +17978,17 @@ func (m *LoginAuditLogMutation) ResetField(name string) error {
 	case loginauditlog.FieldRequestID:
 		m.ResetRequestID()
 		return nil
+	case loginauditlog.FieldTraceID:
+		m.ResetTraceID()
+		return nil
 	case loginauditlog.FieldActionType:
 		m.ResetActionType()
 		return nil
 	case loginauditlog.FieldStatus:
 		m.ResetStatus()
+		return nil
+	case loginauditlog.FieldLoginMethod:
+		m.ResetLoginMethod()
 		return nil
 	case loginauditlog.FieldFailureReason:
 		m.ResetFailureReason()
@@ -25331,6 +28018,1745 @@ func (m *MenuMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Menu edge %s", name)
+}
+
+// OperationAuditLogMutation represents an operation that mutates the OperationAuditLog nodes in the graph.
+type OperationAuditLogMutation struct {
+	config
+	op              Op
+	typ             string
+	id              *uint32
+	created_at      *time.Time
+	tenant_id       *uint32
+	addtenant_id    *int32
+	user_id         *uint32
+	adduser_id      *int32
+	username        *string
+	resource_type   *string
+	resource_id     *string
+	action          *operationauditlog.Action
+	before_data     *string
+	after_data      *string
+	sensitive_level *operationauditlog.SensitiveLevel
+	request_id      *string
+	trace_id        *string
+	success         *bool
+	failure_reason  *string
+	ip_address      *string
+	geo_location    **servicev1.GeoLocation
+	device_info     **servicev1.DeviceInfo
+	log_hash        *string
+	signature       *[]byte
+	clearedFields   map[string]struct{}
+	done            bool
+	oldValue        func(context.Context) (*OperationAuditLog, error)
+	predicates      []predicate.OperationAuditLog
+}
+
+var _ ent.Mutation = (*OperationAuditLogMutation)(nil)
+
+// operationauditlogOption allows management of the mutation configuration using functional options.
+type operationauditlogOption func(*OperationAuditLogMutation)
+
+// newOperationAuditLogMutation creates new mutation for the OperationAuditLog entity.
+func newOperationAuditLogMutation(c config, op Op, opts ...operationauditlogOption) *OperationAuditLogMutation {
+	m := &OperationAuditLogMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeOperationAuditLog,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withOperationAuditLogID sets the ID field of the mutation.
+func withOperationAuditLogID(id uint32) operationauditlogOption {
+	return func(m *OperationAuditLogMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *OperationAuditLog
+		)
+		m.oldValue = func(ctx context.Context) (*OperationAuditLog, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().OperationAuditLog.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withOperationAuditLog sets the old OperationAuditLog of the mutation.
+func withOperationAuditLog(node *OperationAuditLog) operationauditlogOption {
+	return func(m *OperationAuditLogMutation) {
+		m.oldValue = func(context.Context) (*OperationAuditLog, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m OperationAuditLogMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m OperationAuditLogMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of OperationAuditLog entities.
+func (m *OperationAuditLogMutation) SetID(id uint32) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *OperationAuditLogMutation) ID() (id uint32, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *OperationAuditLogMutation) IDs(ctx context.Context) ([]uint32, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint32{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().OperationAuditLog.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *OperationAuditLogMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *OperationAuditLogMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *OperationAuditLogMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[operationauditlog.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldCreatedAt]
+	return ok
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *OperationAuditLogMutation) ResetCreatedAt() {
+	m.created_at = nil
+	delete(m.clearedFields, operationauditlog.FieldCreatedAt)
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (m *OperationAuditLogMutation) SetTenantID(u uint32) {
+	m.tenant_id = &u
+	m.addtenant_id = nil
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *OperationAuditLogMutation) TenantID() (r uint32, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// AddTenantID adds u to the "tenant_id" field.
+func (m *OperationAuditLogMutation) AddTenantID(u int32) {
+	if m.addtenant_id != nil {
+		*m.addtenant_id += u
+	} else {
+		m.addtenant_id = &u
+	}
+}
+
+// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
+func (m *OperationAuditLogMutation) AddedTenantID() (r int32, exists bool) {
+	v := m.addtenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *OperationAuditLogMutation) ClearTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	m.clearedFields[operationauditlog.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldTenantID]
+	return ok
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *OperationAuditLogMutation) ResetTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	delete(m.clearedFields, operationauditlog.FieldTenantID)
+}
+
+// SetUserID sets the "user_id" field.
+func (m *OperationAuditLogMutation) SetUserID(u uint32) {
+	m.user_id = &u
+	m.adduser_id = nil
+}
+
+// UserID returns the value of the "user_id" field in the mutation.
+func (m *OperationAuditLogMutation) UserID() (r uint32, exists bool) {
+	v := m.user_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUserID returns the old "user_id" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldUserID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUserID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUserID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUserID: %w", err)
+	}
+	return oldValue.UserID, nil
+}
+
+// AddUserID adds u to the "user_id" field.
+func (m *OperationAuditLogMutation) AddUserID(u int32) {
+	if m.adduser_id != nil {
+		*m.adduser_id += u
+	} else {
+		m.adduser_id = &u
+	}
+}
+
+// AddedUserID returns the value that was added to the "user_id" field in this mutation.
+func (m *OperationAuditLogMutation) AddedUserID() (r int32, exists bool) {
+	v := m.adduser_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUserID clears the value of the "user_id" field.
+func (m *OperationAuditLogMutation) ClearUserID() {
+	m.user_id = nil
+	m.adduser_id = nil
+	m.clearedFields[operationauditlog.FieldUserID] = struct{}{}
+}
+
+// UserIDCleared returns if the "user_id" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) UserIDCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldUserID]
+	return ok
+}
+
+// ResetUserID resets all changes to the "user_id" field.
+func (m *OperationAuditLogMutation) ResetUserID() {
+	m.user_id = nil
+	m.adduser_id = nil
+	delete(m.clearedFields, operationauditlog.FieldUserID)
+}
+
+// SetUsername sets the "username" field.
+func (m *OperationAuditLogMutation) SetUsername(s string) {
+	m.username = &s
+}
+
+// Username returns the value of the "username" field in the mutation.
+func (m *OperationAuditLogMutation) Username() (r string, exists bool) {
+	v := m.username
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUsername returns the old "username" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldUsername(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUsername is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUsername requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUsername: %w", err)
+	}
+	return oldValue.Username, nil
+}
+
+// ClearUsername clears the value of the "username" field.
+func (m *OperationAuditLogMutation) ClearUsername() {
+	m.username = nil
+	m.clearedFields[operationauditlog.FieldUsername] = struct{}{}
+}
+
+// UsernameCleared returns if the "username" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) UsernameCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldUsername]
+	return ok
+}
+
+// ResetUsername resets all changes to the "username" field.
+func (m *OperationAuditLogMutation) ResetUsername() {
+	m.username = nil
+	delete(m.clearedFields, operationauditlog.FieldUsername)
+}
+
+// SetResourceType sets the "resource_type" field.
+func (m *OperationAuditLogMutation) SetResourceType(s string) {
+	m.resource_type = &s
+}
+
+// ResourceType returns the value of the "resource_type" field in the mutation.
+func (m *OperationAuditLogMutation) ResourceType() (r string, exists bool) {
+	v := m.resource_type
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResourceType returns the old "resource_type" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldResourceType(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResourceType is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResourceType requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResourceType: %w", err)
+	}
+	return oldValue.ResourceType, nil
+}
+
+// ClearResourceType clears the value of the "resource_type" field.
+func (m *OperationAuditLogMutation) ClearResourceType() {
+	m.resource_type = nil
+	m.clearedFields[operationauditlog.FieldResourceType] = struct{}{}
+}
+
+// ResourceTypeCleared returns if the "resource_type" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) ResourceTypeCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldResourceType]
+	return ok
+}
+
+// ResetResourceType resets all changes to the "resource_type" field.
+func (m *OperationAuditLogMutation) ResetResourceType() {
+	m.resource_type = nil
+	delete(m.clearedFields, operationauditlog.FieldResourceType)
+}
+
+// SetResourceID sets the "resource_id" field.
+func (m *OperationAuditLogMutation) SetResourceID(s string) {
+	m.resource_id = &s
+}
+
+// ResourceID returns the value of the "resource_id" field in the mutation.
+func (m *OperationAuditLogMutation) ResourceID() (r string, exists bool) {
+	v := m.resource_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResourceID returns the old "resource_id" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldResourceID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResourceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResourceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResourceID: %w", err)
+	}
+	return oldValue.ResourceID, nil
+}
+
+// ClearResourceID clears the value of the "resource_id" field.
+func (m *OperationAuditLogMutation) ClearResourceID() {
+	m.resource_id = nil
+	m.clearedFields[operationauditlog.FieldResourceID] = struct{}{}
+}
+
+// ResourceIDCleared returns if the "resource_id" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) ResourceIDCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldResourceID]
+	return ok
+}
+
+// ResetResourceID resets all changes to the "resource_id" field.
+func (m *OperationAuditLogMutation) ResetResourceID() {
+	m.resource_id = nil
+	delete(m.clearedFields, operationauditlog.FieldResourceID)
+}
+
+// SetAction sets the "action" field.
+func (m *OperationAuditLogMutation) SetAction(o operationauditlog.Action) {
+	m.action = &o
+}
+
+// Action returns the value of the "action" field in the mutation.
+func (m *OperationAuditLogMutation) Action() (r operationauditlog.Action, exists bool) {
+	v := m.action
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAction returns the old "action" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldAction(ctx context.Context) (v *operationauditlog.Action, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAction is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAction requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAction: %w", err)
+	}
+	return oldValue.Action, nil
+}
+
+// ClearAction clears the value of the "action" field.
+func (m *OperationAuditLogMutation) ClearAction() {
+	m.action = nil
+	m.clearedFields[operationauditlog.FieldAction] = struct{}{}
+}
+
+// ActionCleared returns if the "action" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) ActionCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldAction]
+	return ok
+}
+
+// ResetAction resets all changes to the "action" field.
+func (m *OperationAuditLogMutation) ResetAction() {
+	m.action = nil
+	delete(m.clearedFields, operationauditlog.FieldAction)
+}
+
+// SetBeforeData sets the "before_data" field.
+func (m *OperationAuditLogMutation) SetBeforeData(s string) {
+	m.before_data = &s
+}
+
+// BeforeData returns the value of the "before_data" field in the mutation.
+func (m *OperationAuditLogMutation) BeforeData() (r string, exists bool) {
+	v := m.before_data
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBeforeData returns the old "before_data" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldBeforeData(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBeforeData is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBeforeData requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBeforeData: %w", err)
+	}
+	return oldValue.BeforeData, nil
+}
+
+// ClearBeforeData clears the value of the "before_data" field.
+func (m *OperationAuditLogMutation) ClearBeforeData() {
+	m.before_data = nil
+	m.clearedFields[operationauditlog.FieldBeforeData] = struct{}{}
+}
+
+// BeforeDataCleared returns if the "before_data" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) BeforeDataCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldBeforeData]
+	return ok
+}
+
+// ResetBeforeData resets all changes to the "before_data" field.
+func (m *OperationAuditLogMutation) ResetBeforeData() {
+	m.before_data = nil
+	delete(m.clearedFields, operationauditlog.FieldBeforeData)
+}
+
+// SetAfterData sets the "after_data" field.
+func (m *OperationAuditLogMutation) SetAfterData(s string) {
+	m.after_data = &s
+}
+
+// AfterData returns the value of the "after_data" field in the mutation.
+func (m *OperationAuditLogMutation) AfterData() (r string, exists bool) {
+	v := m.after_data
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAfterData returns the old "after_data" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldAfterData(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAfterData is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAfterData requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAfterData: %w", err)
+	}
+	return oldValue.AfterData, nil
+}
+
+// ClearAfterData clears the value of the "after_data" field.
+func (m *OperationAuditLogMutation) ClearAfterData() {
+	m.after_data = nil
+	m.clearedFields[operationauditlog.FieldAfterData] = struct{}{}
+}
+
+// AfterDataCleared returns if the "after_data" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) AfterDataCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldAfterData]
+	return ok
+}
+
+// ResetAfterData resets all changes to the "after_data" field.
+func (m *OperationAuditLogMutation) ResetAfterData() {
+	m.after_data = nil
+	delete(m.clearedFields, operationauditlog.FieldAfterData)
+}
+
+// SetSensitiveLevel sets the "sensitive_level" field.
+func (m *OperationAuditLogMutation) SetSensitiveLevel(ol operationauditlog.SensitiveLevel) {
+	m.sensitive_level = &ol
+}
+
+// SensitiveLevel returns the value of the "sensitive_level" field in the mutation.
+func (m *OperationAuditLogMutation) SensitiveLevel() (r operationauditlog.SensitiveLevel, exists bool) {
+	v := m.sensitive_level
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSensitiveLevel returns the old "sensitive_level" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldSensitiveLevel(ctx context.Context) (v *operationauditlog.SensitiveLevel, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSensitiveLevel is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSensitiveLevel requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSensitiveLevel: %w", err)
+	}
+	return oldValue.SensitiveLevel, nil
+}
+
+// ClearSensitiveLevel clears the value of the "sensitive_level" field.
+func (m *OperationAuditLogMutation) ClearSensitiveLevel() {
+	m.sensitive_level = nil
+	m.clearedFields[operationauditlog.FieldSensitiveLevel] = struct{}{}
+}
+
+// SensitiveLevelCleared returns if the "sensitive_level" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) SensitiveLevelCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldSensitiveLevel]
+	return ok
+}
+
+// ResetSensitiveLevel resets all changes to the "sensitive_level" field.
+func (m *OperationAuditLogMutation) ResetSensitiveLevel() {
+	m.sensitive_level = nil
+	delete(m.clearedFields, operationauditlog.FieldSensitiveLevel)
+}
+
+// SetRequestID sets the "request_id" field.
+func (m *OperationAuditLogMutation) SetRequestID(s string) {
+	m.request_id = &s
+}
+
+// RequestID returns the value of the "request_id" field in the mutation.
+func (m *OperationAuditLogMutation) RequestID() (r string, exists bool) {
+	v := m.request_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestID returns the old "request_id" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldRequestID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestID: %w", err)
+	}
+	return oldValue.RequestID, nil
+}
+
+// ClearRequestID clears the value of the "request_id" field.
+func (m *OperationAuditLogMutation) ClearRequestID() {
+	m.request_id = nil
+	m.clearedFields[operationauditlog.FieldRequestID] = struct{}{}
+}
+
+// RequestIDCleared returns if the "request_id" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) RequestIDCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldRequestID]
+	return ok
+}
+
+// ResetRequestID resets all changes to the "request_id" field.
+func (m *OperationAuditLogMutation) ResetRequestID() {
+	m.request_id = nil
+	delete(m.clearedFields, operationauditlog.FieldRequestID)
+}
+
+// SetTraceID sets the "trace_id" field.
+func (m *OperationAuditLogMutation) SetTraceID(s string) {
+	m.trace_id = &s
+}
+
+// TraceID returns the value of the "trace_id" field in the mutation.
+func (m *OperationAuditLogMutation) TraceID() (r string, exists bool) {
+	v := m.trace_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTraceID returns the old "trace_id" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldTraceID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTraceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTraceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTraceID: %w", err)
+	}
+	return oldValue.TraceID, nil
+}
+
+// ClearTraceID clears the value of the "trace_id" field.
+func (m *OperationAuditLogMutation) ClearTraceID() {
+	m.trace_id = nil
+	m.clearedFields[operationauditlog.FieldTraceID] = struct{}{}
+}
+
+// TraceIDCleared returns if the "trace_id" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) TraceIDCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldTraceID]
+	return ok
+}
+
+// ResetTraceID resets all changes to the "trace_id" field.
+func (m *OperationAuditLogMutation) ResetTraceID() {
+	m.trace_id = nil
+	delete(m.clearedFields, operationauditlog.FieldTraceID)
+}
+
+// SetSuccess sets the "success" field.
+func (m *OperationAuditLogMutation) SetSuccess(b bool) {
+	m.success = &b
+}
+
+// Success returns the value of the "success" field in the mutation.
+func (m *OperationAuditLogMutation) Success() (r bool, exists bool) {
+	v := m.success
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSuccess returns the old "success" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldSuccess(ctx context.Context) (v *bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSuccess is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSuccess requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSuccess: %w", err)
+	}
+	return oldValue.Success, nil
+}
+
+// ClearSuccess clears the value of the "success" field.
+func (m *OperationAuditLogMutation) ClearSuccess() {
+	m.success = nil
+	m.clearedFields[operationauditlog.FieldSuccess] = struct{}{}
+}
+
+// SuccessCleared returns if the "success" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) SuccessCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldSuccess]
+	return ok
+}
+
+// ResetSuccess resets all changes to the "success" field.
+func (m *OperationAuditLogMutation) ResetSuccess() {
+	m.success = nil
+	delete(m.clearedFields, operationauditlog.FieldSuccess)
+}
+
+// SetFailureReason sets the "failure_reason" field.
+func (m *OperationAuditLogMutation) SetFailureReason(s string) {
+	m.failure_reason = &s
+}
+
+// FailureReason returns the value of the "failure_reason" field in the mutation.
+func (m *OperationAuditLogMutation) FailureReason() (r string, exists bool) {
+	v := m.failure_reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldFailureReason returns the old "failure_reason" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldFailureReason(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldFailureReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldFailureReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldFailureReason: %w", err)
+	}
+	return oldValue.FailureReason, nil
+}
+
+// ClearFailureReason clears the value of the "failure_reason" field.
+func (m *OperationAuditLogMutation) ClearFailureReason() {
+	m.failure_reason = nil
+	m.clearedFields[operationauditlog.FieldFailureReason] = struct{}{}
+}
+
+// FailureReasonCleared returns if the "failure_reason" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) FailureReasonCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldFailureReason]
+	return ok
+}
+
+// ResetFailureReason resets all changes to the "failure_reason" field.
+func (m *OperationAuditLogMutation) ResetFailureReason() {
+	m.failure_reason = nil
+	delete(m.clearedFields, operationauditlog.FieldFailureReason)
+}
+
+// SetIPAddress sets the "ip_address" field.
+func (m *OperationAuditLogMutation) SetIPAddress(s string) {
+	m.ip_address = &s
+}
+
+// IPAddress returns the value of the "ip_address" field in the mutation.
+func (m *OperationAuditLogMutation) IPAddress() (r string, exists bool) {
+	v := m.ip_address
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIPAddress returns the old "ip_address" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldIPAddress(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIPAddress is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIPAddress requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIPAddress: %w", err)
+	}
+	return oldValue.IPAddress, nil
+}
+
+// ClearIPAddress clears the value of the "ip_address" field.
+func (m *OperationAuditLogMutation) ClearIPAddress() {
+	m.ip_address = nil
+	m.clearedFields[operationauditlog.FieldIPAddress] = struct{}{}
+}
+
+// IPAddressCleared returns if the "ip_address" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) IPAddressCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldIPAddress]
+	return ok
+}
+
+// ResetIPAddress resets all changes to the "ip_address" field.
+func (m *OperationAuditLogMutation) ResetIPAddress() {
+	m.ip_address = nil
+	delete(m.clearedFields, operationauditlog.FieldIPAddress)
+}
+
+// SetGeoLocation sets the "geo_location" field.
+func (m *OperationAuditLogMutation) SetGeoLocation(sl *servicev1.GeoLocation) {
+	m.geo_location = &sl
+}
+
+// GeoLocation returns the value of the "geo_location" field in the mutation.
+func (m *OperationAuditLogMutation) GeoLocation() (r *servicev1.GeoLocation, exists bool) {
+	v := m.geo_location
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGeoLocation returns the old "geo_location" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldGeoLocation(ctx context.Context) (v *servicev1.GeoLocation, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGeoLocation is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGeoLocation requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGeoLocation: %w", err)
+	}
+	return oldValue.GeoLocation, nil
+}
+
+// ClearGeoLocation clears the value of the "geo_location" field.
+func (m *OperationAuditLogMutation) ClearGeoLocation() {
+	m.geo_location = nil
+	m.clearedFields[operationauditlog.FieldGeoLocation] = struct{}{}
+}
+
+// GeoLocationCleared returns if the "geo_location" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) GeoLocationCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldGeoLocation]
+	return ok
+}
+
+// ResetGeoLocation resets all changes to the "geo_location" field.
+func (m *OperationAuditLogMutation) ResetGeoLocation() {
+	m.geo_location = nil
+	delete(m.clearedFields, operationauditlog.FieldGeoLocation)
+}
+
+// SetDeviceInfo sets the "device_info" field.
+func (m *OperationAuditLogMutation) SetDeviceInfo(si *servicev1.DeviceInfo) {
+	m.device_info = &si
+}
+
+// DeviceInfo returns the value of the "device_info" field in the mutation.
+func (m *OperationAuditLogMutation) DeviceInfo() (r *servicev1.DeviceInfo, exists bool) {
+	v := m.device_info
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeviceInfo returns the old "device_info" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldDeviceInfo(ctx context.Context) (v *servicev1.DeviceInfo, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeviceInfo is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeviceInfo requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeviceInfo: %w", err)
+	}
+	return oldValue.DeviceInfo, nil
+}
+
+// ClearDeviceInfo clears the value of the "device_info" field.
+func (m *OperationAuditLogMutation) ClearDeviceInfo() {
+	m.device_info = nil
+	m.clearedFields[operationauditlog.FieldDeviceInfo] = struct{}{}
+}
+
+// DeviceInfoCleared returns if the "device_info" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) DeviceInfoCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldDeviceInfo]
+	return ok
+}
+
+// ResetDeviceInfo resets all changes to the "device_info" field.
+func (m *OperationAuditLogMutation) ResetDeviceInfo() {
+	m.device_info = nil
+	delete(m.clearedFields, operationauditlog.FieldDeviceInfo)
+}
+
+// SetLogHash sets the "log_hash" field.
+func (m *OperationAuditLogMutation) SetLogHash(s string) {
+	m.log_hash = &s
+}
+
+// LogHash returns the value of the "log_hash" field in the mutation.
+func (m *OperationAuditLogMutation) LogHash() (r string, exists bool) {
+	v := m.log_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLogHash returns the old "log_hash" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldLogHash(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLogHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLogHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLogHash: %w", err)
+	}
+	return oldValue.LogHash, nil
+}
+
+// ClearLogHash clears the value of the "log_hash" field.
+func (m *OperationAuditLogMutation) ClearLogHash() {
+	m.log_hash = nil
+	m.clearedFields[operationauditlog.FieldLogHash] = struct{}{}
+}
+
+// LogHashCleared returns if the "log_hash" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) LogHashCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldLogHash]
+	return ok
+}
+
+// ResetLogHash resets all changes to the "log_hash" field.
+func (m *OperationAuditLogMutation) ResetLogHash() {
+	m.log_hash = nil
+	delete(m.clearedFields, operationauditlog.FieldLogHash)
+}
+
+// SetSignature sets the "signature" field.
+func (m *OperationAuditLogMutation) SetSignature(b []byte) {
+	m.signature = &b
+}
+
+// Signature returns the value of the "signature" field in the mutation.
+func (m *OperationAuditLogMutation) Signature() (r []byte, exists bool) {
+	v := m.signature
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSignature returns the old "signature" field's value of the OperationAuditLog entity.
+// If the OperationAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *OperationAuditLogMutation) OldSignature(ctx context.Context) (v *[]byte, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSignature is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSignature requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSignature: %w", err)
+	}
+	return oldValue.Signature, nil
+}
+
+// ClearSignature clears the value of the "signature" field.
+func (m *OperationAuditLogMutation) ClearSignature() {
+	m.signature = nil
+	m.clearedFields[operationauditlog.FieldSignature] = struct{}{}
+}
+
+// SignatureCleared returns if the "signature" field was cleared in this mutation.
+func (m *OperationAuditLogMutation) SignatureCleared() bool {
+	_, ok := m.clearedFields[operationauditlog.FieldSignature]
+	return ok
+}
+
+// ResetSignature resets all changes to the "signature" field.
+func (m *OperationAuditLogMutation) ResetSignature() {
+	m.signature = nil
+	delete(m.clearedFields, operationauditlog.FieldSignature)
+}
+
+// Where appends a list predicates to the OperationAuditLogMutation builder.
+func (m *OperationAuditLogMutation) Where(ps ...predicate.OperationAuditLog) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the OperationAuditLogMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *OperationAuditLogMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.OperationAuditLog, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *OperationAuditLogMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *OperationAuditLogMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (OperationAuditLog).
+func (m *OperationAuditLogMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *OperationAuditLogMutation) Fields() []string {
+	fields := make([]string, 0, 19)
+	if m.created_at != nil {
+		fields = append(fields, operationauditlog.FieldCreatedAt)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, operationauditlog.FieldTenantID)
+	}
+	if m.user_id != nil {
+		fields = append(fields, operationauditlog.FieldUserID)
+	}
+	if m.username != nil {
+		fields = append(fields, operationauditlog.FieldUsername)
+	}
+	if m.resource_type != nil {
+		fields = append(fields, operationauditlog.FieldResourceType)
+	}
+	if m.resource_id != nil {
+		fields = append(fields, operationauditlog.FieldResourceID)
+	}
+	if m.action != nil {
+		fields = append(fields, operationauditlog.FieldAction)
+	}
+	if m.before_data != nil {
+		fields = append(fields, operationauditlog.FieldBeforeData)
+	}
+	if m.after_data != nil {
+		fields = append(fields, operationauditlog.FieldAfterData)
+	}
+	if m.sensitive_level != nil {
+		fields = append(fields, operationauditlog.FieldSensitiveLevel)
+	}
+	if m.request_id != nil {
+		fields = append(fields, operationauditlog.FieldRequestID)
+	}
+	if m.trace_id != nil {
+		fields = append(fields, operationauditlog.FieldTraceID)
+	}
+	if m.success != nil {
+		fields = append(fields, operationauditlog.FieldSuccess)
+	}
+	if m.failure_reason != nil {
+		fields = append(fields, operationauditlog.FieldFailureReason)
+	}
+	if m.ip_address != nil {
+		fields = append(fields, operationauditlog.FieldIPAddress)
+	}
+	if m.geo_location != nil {
+		fields = append(fields, operationauditlog.FieldGeoLocation)
+	}
+	if m.device_info != nil {
+		fields = append(fields, operationauditlog.FieldDeviceInfo)
+	}
+	if m.log_hash != nil {
+		fields = append(fields, operationauditlog.FieldLogHash)
+	}
+	if m.signature != nil {
+		fields = append(fields, operationauditlog.FieldSignature)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *OperationAuditLogMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case operationauditlog.FieldCreatedAt:
+		return m.CreatedAt()
+	case operationauditlog.FieldTenantID:
+		return m.TenantID()
+	case operationauditlog.FieldUserID:
+		return m.UserID()
+	case operationauditlog.FieldUsername:
+		return m.Username()
+	case operationauditlog.FieldResourceType:
+		return m.ResourceType()
+	case operationauditlog.FieldResourceID:
+		return m.ResourceID()
+	case operationauditlog.FieldAction:
+		return m.Action()
+	case operationauditlog.FieldBeforeData:
+		return m.BeforeData()
+	case operationauditlog.FieldAfterData:
+		return m.AfterData()
+	case operationauditlog.FieldSensitiveLevel:
+		return m.SensitiveLevel()
+	case operationauditlog.FieldRequestID:
+		return m.RequestID()
+	case operationauditlog.FieldTraceID:
+		return m.TraceID()
+	case operationauditlog.FieldSuccess:
+		return m.Success()
+	case operationauditlog.FieldFailureReason:
+		return m.FailureReason()
+	case operationauditlog.FieldIPAddress:
+		return m.IPAddress()
+	case operationauditlog.FieldGeoLocation:
+		return m.GeoLocation()
+	case operationauditlog.FieldDeviceInfo:
+		return m.DeviceInfo()
+	case operationauditlog.FieldLogHash:
+		return m.LogHash()
+	case operationauditlog.FieldSignature:
+		return m.Signature()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *OperationAuditLogMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case operationauditlog.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case operationauditlog.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case operationauditlog.FieldUserID:
+		return m.OldUserID(ctx)
+	case operationauditlog.FieldUsername:
+		return m.OldUsername(ctx)
+	case operationauditlog.FieldResourceType:
+		return m.OldResourceType(ctx)
+	case operationauditlog.FieldResourceID:
+		return m.OldResourceID(ctx)
+	case operationauditlog.FieldAction:
+		return m.OldAction(ctx)
+	case operationauditlog.FieldBeforeData:
+		return m.OldBeforeData(ctx)
+	case operationauditlog.FieldAfterData:
+		return m.OldAfterData(ctx)
+	case operationauditlog.FieldSensitiveLevel:
+		return m.OldSensitiveLevel(ctx)
+	case operationauditlog.FieldRequestID:
+		return m.OldRequestID(ctx)
+	case operationauditlog.FieldTraceID:
+		return m.OldTraceID(ctx)
+	case operationauditlog.FieldSuccess:
+		return m.OldSuccess(ctx)
+	case operationauditlog.FieldFailureReason:
+		return m.OldFailureReason(ctx)
+	case operationauditlog.FieldIPAddress:
+		return m.OldIPAddress(ctx)
+	case operationauditlog.FieldGeoLocation:
+		return m.OldGeoLocation(ctx)
+	case operationauditlog.FieldDeviceInfo:
+		return m.OldDeviceInfo(ctx)
+	case operationauditlog.FieldLogHash:
+		return m.OldLogHash(ctx)
+	case operationauditlog.FieldSignature:
+		return m.OldSignature(ctx)
+	}
+	return nil, fmt.Errorf("unknown OperationAuditLog field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *OperationAuditLogMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case operationauditlog.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case operationauditlog.FieldTenantID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case operationauditlog.FieldUserID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUserID(v)
+		return nil
+	case operationauditlog.FieldUsername:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUsername(v)
+		return nil
+	case operationauditlog.FieldResourceType:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResourceType(v)
+		return nil
+	case operationauditlog.FieldResourceID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResourceID(v)
+		return nil
+	case operationauditlog.FieldAction:
+		v, ok := value.(operationauditlog.Action)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAction(v)
+		return nil
+	case operationauditlog.FieldBeforeData:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBeforeData(v)
+		return nil
+	case operationauditlog.FieldAfterData:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAfterData(v)
+		return nil
+	case operationauditlog.FieldSensitiveLevel:
+		v, ok := value.(operationauditlog.SensitiveLevel)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSensitiveLevel(v)
+		return nil
+	case operationauditlog.FieldRequestID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestID(v)
+		return nil
+	case operationauditlog.FieldTraceID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTraceID(v)
+		return nil
+	case operationauditlog.FieldSuccess:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSuccess(v)
+		return nil
+	case operationauditlog.FieldFailureReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetFailureReason(v)
+		return nil
+	case operationauditlog.FieldIPAddress:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIPAddress(v)
+		return nil
+	case operationauditlog.FieldGeoLocation:
+		v, ok := value.(*servicev1.GeoLocation)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGeoLocation(v)
+		return nil
+	case operationauditlog.FieldDeviceInfo:
+		v, ok := value.(*servicev1.DeviceInfo)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeviceInfo(v)
+		return nil
+	case operationauditlog.FieldLogHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLogHash(v)
+		return nil
+	case operationauditlog.FieldSignature:
+		v, ok := value.([]byte)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSignature(v)
+		return nil
+	}
+	return fmt.Errorf("unknown OperationAuditLog field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *OperationAuditLogMutation) AddedFields() []string {
+	var fields []string
+	if m.addtenant_id != nil {
+		fields = append(fields, operationauditlog.FieldTenantID)
+	}
+	if m.adduser_id != nil {
+		fields = append(fields, operationauditlog.FieldUserID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *OperationAuditLogMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case operationauditlog.FieldTenantID:
+		return m.AddedTenantID()
+	case operationauditlog.FieldUserID:
+		return m.AddedUserID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *OperationAuditLogMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case operationauditlog.FieldTenantID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTenantID(v)
+		return nil
+	case operationauditlog.FieldUserID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUserID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown OperationAuditLog numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *OperationAuditLogMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(operationauditlog.FieldCreatedAt) {
+		fields = append(fields, operationauditlog.FieldCreatedAt)
+	}
+	if m.FieldCleared(operationauditlog.FieldTenantID) {
+		fields = append(fields, operationauditlog.FieldTenantID)
+	}
+	if m.FieldCleared(operationauditlog.FieldUserID) {
+		fields = append(fields, operationauditlog.FieldUserID)
+	}
+	if m.FieldCleared(operationauditlog.FieldUsername) {
+		fields = append(fields, operationauditlog.FieldUsername)
+	}
+	if m.FieldCleared(operationauditlog.FieldResourceType) {
+		fields = append(fields, operationauditlog.FieldResourceType)
+	}
+	if m.FieldCleared(operationauditlog.FieldResourceID) {
+		fields = append(fields, operationauditlog.FieldResourceID)
+	}
+	if m.FieldCleared(operationauditlog.FieldAction) {
+		fields = append(fields, operationauditlog.FieldAction)
+	}
+	if m.FieldCleared(operationauditlog.FieldBeforeData) {
+		fields = append(fields, operationauditlog.FieldBeforeData)
+	}
+	if m.FieldCleared(operationauditlog.FieldAfterData) {
+		fields = append(fields, operationauditlog.FieldAfterData)
+	}
+	if m.FieldCleared(operationauditlog.FieldSensitiveLevel) {
+		fields = append(fields, operationauditlog.FieldSensitiveLevel)
+	}
+	if m.FieldCleared(operationauditlog.FieldRequestID) {
+		fields = append(fields, operationauditlog.FieldRequestID)
+	}
+	if m.FieldCleared(operationauditlog.FieldTraceID) {
+		fields = append(fields, operationauditlog.FieldTraceID)
+	}
+	if m.FieldCleared(operationauditlog.FieldSuccess) {
+		fields = append(fields, operationauditlog.FieldSuccess)
+	}
+	if m.FieldCleared(operationauditlog.FieldFailureReason) {
+		fields = append(fields, operationauditlog.FieldFailureReason)
+	}
+	if m.FieldCleared(operationauditlog.FieldIPAddress) {
+		fields = append(fields, operationauditlog.FieldIPAddress)
+	}
+	if m.FieldCleared(operationauditlog.FieldGeoLocation) {
+		fields = append(fields, operationauditlog.FieldGeoLocation)
+	}
+	if m.FieldCleared(operationauditlog.FieldDeviceInfo) {
+		fields = append(fields, operationauditlog.FieldDeviceInfo)
+	}
+	if m.FieldCleared(operationauditlog.FieldLogHash) {
+		fields = append(fields, operationauditlog.FieldLogHash)
+	}
+	if m.FieldCleared(operationauditlog.FieldSignature) {
+		fields = append(fields, operationauditlog.FieldSignature)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *OperationAuditLogMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *OperationAuditLogMutation) ClearField(name string) error {
+	switch name {
+	case operationauditlog.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case operationauditlog.FieldTenantID:
+		m.ClearTenantID()
+		return nil
+	case operationauditlog.FieldUserID:
+		m.ClearUserID()
+		return nil
+	case operationauditlog.FieldUsername:
+		m.ClearUsername()
+		return nil
+	case operationauditlog.FieldResourceType:
+		m.ClearResourceType()
+		return nil
+	case operationauditlog.FieldResourceID:
+		m.ClearResourceID()
+		return nil
+	case operationauditlog.FieldAction:
+		m.ClearAction()
+		return nil
+	case operationauditlog.FieldBeforeData:
+		m.ClearBeforeData()
+		return nil
+	case operationauditlog.FieldAfterData:
+		m.ClearAfterData()
+		return nil
+	case operationauditlog.FieldSensitiveLevel:
+		m.ClearSensitiveLevel()
+		return nil
+	case operationauditlog.FieldRequestID:
+		m.ClearRequestID()
+		return nil
+	case operationauditlog.FieldTraceID:
+		m.ClearTraceID()
+		return nil
+	case operationauditlog.FieldSuccess:
+		m.ClearSuccess()
+		return nil
+	case operationauditlog.FieldFailureReason:
+		m.ClearFailureReason()
+		return nil
+	case operationauditlog.FieldIPAddress:
+		m.ClearIPAddress()
+		return nil
+	case operationauditlog.FieldGeoLocation:
+		m.ClearGeoLocation()
+		return nil
+	case operationauditlog.FieldDeviceInfo:
+		m.ClearDeviceInfo()
+		return nil
+	case operationauditlog.FieldLogHash:
+		m.ClearLogHash()
+		return nil
+	case operationauditlog.FieldSignature:
+		m.ClearSignature()
+		return nil
+	}
+	return fmt.Errorf("unknown OperationAuditLog nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *OperationAuditLogMutation) ResetField(name string) error {
+	switch name {
+	case operationauditlog.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case operationauditlog.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case operationauditlog.FieldUserID:
+		m.ResetUserID()
+		return nil
+	case operationauditlog.FieldUsername:
+		m.ResetUsername()
+		return nil
+	case operationauditlog.FieldResourceType:
+		m.ResetResourceType()
+		return nil
+	case operationauditlog.FieldResourceID:
+		m.ResetResourceID()
+		return nil
+	case operationauditlog.FieldAction:
+		m.ResetAction()
+		return nil
+	case operationauditlog.FieldBeforeData:
+		m.ResetBeforeData()
+		return nil
+	case operationauditlog.FieldAfterData:
+		m.ResetAfterData()
+		return nil
+	case operationauditlog.FieldSensitiveLevel:
+		m.ResetSensitiveLevel()
+		return nil
+	case operationauditlog.FieldRequestID:
+		m.ResetRequestID()
+		return nil
+	case operationauditlog.FieldTraceID:
+		m.ResetTraceID()
+		return nil
+	case operationauditlog.FieldSuccess:
+		m.ResetSuccess()
+		return nil
+	case operationauditlog.FieldFailureReason:
+		m.ResetFailureReason()
+		return nil
+	case operationauditlog.FieldIPAddress:
+		m.ResetIPAddress()
+		return nil
+	case operationauditlog.FieldGeoLocation:
+		m.ResetGeoLocation()
+		return nil
+	case operationauditlog.FieldDeviceInfo:
+		m.ResetDeviceInfo()
+		return nil
+	case operationauditlog.FieldLogHash:
+		m.ResetLogHash()
+		return nil
+	case operationauditlog.FieldSignature:
+		m.ResetSignature()
+		return nil
+	}
+	return fmt.Errorf("unknown OperationAuditLog field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *OperationAuditLogMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *OperationAuditLogMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *OperationAuditLogMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *OperationAuditLogMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *OperationAuditLogMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *OperationAuditLogMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *OperationAuditLogMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown OperationAuditLog unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *OperationAuditLogMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown OperationAuditLog edge %s", name)
 }
 
 // OrgUnitMutation represents an operation that mutates the OrgUnit nodes in the graph.

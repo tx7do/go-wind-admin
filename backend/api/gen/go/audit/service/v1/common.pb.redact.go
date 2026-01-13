@@ -5,6 +5,7 @@ package servicev1
 
 import (
 	context "context"
+	validate "github.com/envoyproxy/protoc-gen-validate/validate"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -18,4 +19,31 @@ var (
 	_ redact.Redactor
 	_ codes.Code
 	_ status.Status
+	_ validate.FieldRules
 )
+
+// Redact method implementation for BusinessResource
+func (x *BusinessResource) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: ResourceType
+
+	// Safe field: ResourceKey
+
+	// Safe field: AccessedFields
+	return x.String()
+}
+
+// Redact method implementation for DigitalSignature
+func (x *DigitalSignature) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: Algorithm
+
+	// Safe field: Value
+	return x.String()
+}

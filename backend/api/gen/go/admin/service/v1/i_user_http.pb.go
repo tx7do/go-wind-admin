@@ -49,9 +49,9 @@ type UserServiceHTTPServer interface {
 
 func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/users", _UserService_List16_HTTP_Handler(srv))
-	r.GET("/admin/v1/users/username/{username}", _UserService_Get17_HTTP_Handler(srv))
-	r.GET("/admin/v1/users/{id}", _UserService_Get18_HTTP_Handler(srv))
+	r.GET("/admin/v1/users", _UserService_List18_HTTP_Handler(srv))
+	r.GET("/admin/v1/users/username/{username}", _UserService_Get19_HTTP_Handler(srv))
+	r.GET("/admin/v1/users/{id}", _UserService_Get20_HTTP_Handler(srv))
 	r.POST("/admin/v1/users", _UserService_Create12_HTTP_Handler(srv))
 	r.PUT("/admin/v1/users/{id}", _UserService_Update12_HTTP_Handler(srv))
 	r.DELETE("/admin/v1/users/username/{username}", _UserService_Delete12_HTTP_Handler(srv))
@@ -60,7 +60,7 @@ func RegisterUserServiceHTTPServer(s *http.Server, srv UserServiceHTTPServer) {
 	r.POST("/admin/v1/users/{user_id}/password", _UserService_EditUserPassword0_HTTP_Handler(srv))
 }
 
-func _UserService_List16_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+func _UserService_List18_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.PagingRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -79,7 +79,7 @@ func _UserService_List16_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.C
 	}
 }
 
-func _UserService_Get17_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+func _UserService_Get19_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.GetUserRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -101,7 +101,7 @@ func _UserService_Get17_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Co
 	}
 }
 
-func _UserService_Get18_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
+func _UserService_Get20_HTTP_Handler(srv UserServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.GetUserRequest
 		if err := ctx.BindQuery(&in); err != nil {

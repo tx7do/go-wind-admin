@@ -64,12 +64,19 @@ func (LoginAuditLog) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
+		field.String("trace_id").
+			Comment("全局链路追踪ID").
+			Optional().
+			Nillable(),
+
 		field.Enum("action_type").
 			Comment("事件动作类型").
 			NamedValues(
 				"Login", "LOGIN",
 				"Logout", "LOGOUT",
 				"SessionExpired", "SESSION_EXPIRED",
+				"KickedOut", "KICKED_OUT",
+				"PasswordReset", "PASSWORD_RESET",
 			).
 			Optional().
 			Nillable(),
@@ -80,6 +87,20 @@ func (LoginAuditLog) Fields() []ent.Field {
 				"Success", "SUCCESS",
 				"Failed", "FAILED",
 				"Partial", "PARTIAL",
+				"Locked", "LOCKED",
+			).
+			Optional().
+			Nillable(),
+
+		field.Enum("login_method").
+			Comment("登录方式").
+			NamedValues(
+				"Password", "PASSWORD",
+				"SmsCode", "SMS_CODE",
+				"QrCode", "QR_CODE",
+				"OidcSocial", "OIDC_SOCIAL",
+				"Biometric", "BIOMETRIC",
+				"Fido2", "FIDO2",
 			).
 			Optional().
 			Nillable(),

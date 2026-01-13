@@ -57,6 +57,144 @@ func (m *OperationAuditLog) validate(all bool) error {
 
 	var errors []error
 
+	if m.Id != nil {
+		// no validation rules for Id
+	}
+
+	if m.TenantId != nil {
+		// no validation rules for TenantId
+	}
+
+	if m.TenantName != nil {
+		// no validation rules for TenantName
+	}
+
+	if m.UserId != nil {
+		// no validation rules for UserId
+	}
+
+	if m.Username != nil {
+		// no validation rules for Username
+	}
+
+	if m.ResourceType != nil {
+		// no validation rules for ResourceType
+	}
+
+	if m.ResourceId != nil {
+		// no validation rules for ResourceId
+	}
+
+	if m.Action != nil {
+		// no validation rules for Action
+	}
+
+	if m.BeforeData != nil {
+		// no validation rules for BeforeData
+	}
+
+	if m.AfterData != nil {
+		// no validation rules for AfterData
+	}
+
+	if m.SensitiveLevel != nil {
+		// no validation rules for SensitiveLevel
+	}
+
+	if m.RequestId != nil {
+		// no validation rules for RequestId
+	}
+
+	if m.TraceId != nil {
+		// no validation rules for TraceId
+	}
+
+	if m.Success != nil {
+		// no validation rules for Success
+	}
+
+	if m.FailureReason != nil {
+		// no validation rules for FailureReason
+	}
+
+	if m.IpAddress != nil {
+		// no validation rules for IpAddress
+	}
+
+	if m.GeoLocation != nil {
+
+		if all {
+			switch v := interface{}(m.GetGeoLocation()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, OperationAuditLogValidationError{
+						field:  "GeoLocation",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, OperationAuditLogValidationError{
+						field:  "GeoLocation",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetGeoLocation()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return OperationAuditLogValidationError{
+					field:  "GeoLocation",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if m.LogHash != nil {
+		// no validation rules for LogHash
+	}
+
+	if m.Signature != nil {
+		// no validation rules for Signature
+	}
+
+	if m.CreatedAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetCreatedAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, OperationAuditLogValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, OperationAuditLogValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return OperationAuditLogValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	if len(errors) > 0 {
 		return OperationAuditLogMultiError(errors)
 	}

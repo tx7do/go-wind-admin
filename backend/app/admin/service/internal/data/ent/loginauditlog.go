@@ -38,10 +38,14 @@ type LoginAuditLog struct {
 	DeviceInfo *servicev1.DeviceInfo `json:"device_info,omitempty"`
 	// 全局请求ID
 	RequestID *string `json:"request_id,omitempty"`
+	// 全局链路追踪ID
+	TraceID *string `json:"trace_id,omitempty"`
 	// 事件动作类型
 	ActionType *loginauditlog.ActionType `json:"action_type,omitempty"`
 	// 操作结果状态
 	Status *loginauditlog.Status `json:"status,omitempty"`
+	// 登录方式
+	LoginMethod *loginauditlog.LoginMethod `json:"login_method,omitempty"`
 	// 失败原因
 	FailureReason *string `json:"failure_reason,omitempty"`
 	// MFA状态
@@ -68,7 +72,7 @@ func (*LoginAuditLog) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case loginauditlog.FieldID, loginauditlog.FieldTenantID, loginauditlog.FieldUserID, loginauditlog.FieldRiskScore:
 			values[i] = new(sql.NullInt64)
-		case loginauditlog.FieldUsername, loginauditlog.FieldIPAddress, loginauditlog.FieldSessionID, loginauditlog.FieldRequestID, loginauditlog.FieldActionType, loginauditlog.FieldStatus, loginauditlog.FieldFailureReason, loginauditlog.FieldMfaStatus, loginauditlog.FieldRiskLevel, loginauditlog.FieldLogHash:
+		case loginauditlog.FieldUsername, loginauditlog.FieldIPAddress, loginauditlog.FieldSessionID, loginauditlog.FieldRequestID, loginauditlog.FieldTraceID, loginauditlog.FieldActionType, loginauditlog.FieldStatus, loginauditlog.FieldLoginMethod, loginauditlog.FieldFailureReason, loginauditlog.FieldMfaStatus, loginauditlog.FieldRiskLevel, loginauditlog.FieldLogHash:
 			values[i] = new(sql.NullString)
 		case loginauditlog.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -158,6 +162,13 @@ func (_m *LoginAuditLog) assignValues(columns []string, values []any) error {
 				_m.RequestID = new(string)
 				*_m.RequestID = value.String
 			}
+		case loginauditlog.FieldTraceID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field trace_id", values[i])
+			} else if value.Valid {
+				_m.TraceID = new(string)
+				*_m.TraceID = value.String
+			}
 		case loginauditlog.FieldActionType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field action_type", values[i])
@@ -171,6 +182,13 @@ func (_m *LoginAuditLog) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.Status = new(loginauditlog.Status)
 				*_m.Status = loginauditlog.Status(value.String)
+			}
+		case loginauditlog.FieldLoginMethod:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field login_method", values[i])
+			} else if value.Valid {
+				_m.LoginMethod = new(loginauditlog.LoginMethod)
+				*_m.LoginMethod = loginauditlog.LoginMethod(value.String)
 			}
 		case loginauditlog.FieldFailureReason:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -298,6 +316,11 @@ func (_m *LoginAuditLog) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
+	if v := _m.TraceID; v != nil {
+		builder.WriteString("trace_id=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
 	if v := _m.ActionType; v != nil {
 		builder.WriteString("action_type=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
@@ -305,6 +328,11 @@ func (_m *LoginAuditLog) String() string {
 	builder.WriteString(", ")
 	if v := _m.Status; v != nil {
 		builder.WriteString("status=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.LoginMethod; v != nil {
+		builder.WriteString("login_method=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

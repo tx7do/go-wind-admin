@@ -5,6 +5,7 @@ package servicev1
 
 import (
 	context "context"
+	validate "github.com/envoyproxy/protoc-gen-validate/validate"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
 	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	grpc "google.golang.org/grpc"
@@ -23,6 +24,7 @@ var (
 	_ status.Status
 	_ timestamppb.Timestamp
 	_ fieldmaskpb.FieldMask
+	_ validate.FieldRules
 	_ pagination.Sorting
 )
 
@@ -71,6 +73,56 @@ func (x *DataAccessAuditLog) Redact() string {
 	if x == nil {
 		return ""
 	}
+
+	// Safe field: Id
+
+	// Safe field: TenantId
+
+	// Safe field: TenantName
+
+	// Safe field: UserId
+
+	// Safe field: Username
+
+	// Safe field: IpAddress
+
+	// Safe field: RequestId
+
+	// Safe field: DataSource
+
+	// Safe field: TableName
+
+	// Safe field: DataId
+
+	// Safe field: AccessType
+
+	// Safe field: SqlDigest
+
+	// Safe field: SqlText
+
+	// Safe field: AffectedRows
+
+	// Safe field: LatencyMs
+
+	// Safe field: Success
+
+	// Safe field: SensitiveLevel
+
+	// Safe field: DataMasked
+
+	// Safe field: MaskingRules
+
+	// Safe field: BusinessPurpose
+
+	// Safe field: DataCategory
+
+	// Safe field: DbUser
+
+	// Safe field: LogHash
+
+	// Safe field: Signature
+
+	// Safe field: CreatedAt
 	return x.String()
 }
 

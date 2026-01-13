@@ -59,6 +59,11 @@ func (ApiAuditLog) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
+		field.String("app_version").
+			Comment("客户端版本号").
+			Optional().
+			Nillable(),
+
 		field.String("http_method").
 			Comment("HTTP请求方法").
 			Optional().
@@ -94,7 +99,17 @@ func (ApiAuditLog) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.Uint64("cost_time_ms").
+		field.String("trace_id").
+			Comment("全局链路追踪ID").
+			Optional().
+			Nillable(),
+
+		field.String("span_id").
+			Comment("当前跨度ID").
+			Optional().
+			Nillable(),
+
+		field.Uint32("latency_ms").
 			Comment("操作耗时").
 			Optional().
 			Nillable(),

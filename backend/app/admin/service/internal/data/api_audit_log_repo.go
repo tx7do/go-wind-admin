@@ -163,6 +163,7 @@ func (r *ApiAuditLogRepo) Create(ctx context.Context, req *auditV1.CreateApiAudi
 		SetGeoLocation(req.Data.GeoLocation).
 		SetDeviceInfo(req.Data.DeviceInfo).
 		SetNillableReferer(req.Data.Referer).
+		SetNillableAppVersion(req.Data.AppVersion).
 		SetNillableHTTPMethod(req.Data.HttpMethod).
 		SetNillablePath(req.Data.Path).
 		SetNillableRequestURI(req.Data.RequestUri).
@@ -170,7 +171,9 @@ func (r *ApiAuditLogRepo) Create(ctx context.Context, req *auditV1.CreateApiAudi
 		SetNillableAPIOperation(req.Data.ApiOperation).
 		SetNillableAPIDescription(req.Data.ApiDescription).
 		SetNillableRequestID(req.Data.RequestId).
-		SetNillableCostTimeMs(req.Data.CostTimeMs).
+		SetNillableTraceID(req.Data.TraceId).
+		SetNillableSpanID(req.Data.SpanId).
+		SetNillableLatencyMs(req.Data.LatencyMs).
 		SetNillableSuccess(req.Data.Success).
 		SetNillableStatusCode(req.Data.StatusCode).
 		SetNillableReason(req.Data.Reason).

@@ -133,6 +133,20 @@ func (_c *LoginAuditLogCreate) SetNillableRequestID(v *string) *LoginAuditLogCre
 	return _c
 }
 
+// SetTraceID sets the "trace_id" field.
+func (_c *LoginAuditLogCreate) SetTraceID(v string) *LoginAuditLogCreate {
+	_c.mutation.SetTraceID(v)
+	return _c
+}
+
+// SetNillableTraceID sets the "trace_id" field if the given value is not nil.
+func (_c *LoginAuditLogCreate) SetNillableTraceID(v *string) *LoginAuditLogCreate {
+	if v != nil {
+		_c.SetTraceID(*v)
+	}
+	return _c
+}
+
 // SetActionType sets the "action_type" field.
 func (_c *LoginAuditLogCreate) SetActionType(v loginauditlog.ActionType) *LoginAuditLogCreate {
 	_c.mutation.SetActionType(v)
@@ -157,6 +171,20 @@ func (_c *LoginAuditLogCreate) SetStatus(v loginauditlog.Status) *LoginAuditLogC
 func (_c *LoginAuditLogCreate) SetNillableStatus(v *loginauditlog.Status) *LoginAuditLogCreate {
 	if v != nil {
 		_c.SetStatus(*v)
+	}
+	return _c
+}
+
+// SetLoginMethod sets the "login_method" field.
+func (_c *LoginAuditLogCreate) SetLoginMethod(v loginauditlog.LoginMethod) *LoginAuditLogCreate {
+	_c.mutation.SetLoginMethod(v)
+	return _c
+}
+
+// SetNillableLoginMethod sets the "login_method" field if the given value is not nil.
+func (_c *LoginAuditLogCreate) SetNillableLoginMethod(v *loginauditlog.LoginMethod) *LoginAuditLogCreate {
+	if v != nil {
+		_c.SetLoginMethod(*v)
 	}
 	return _c
 }
@@ -303,6 +331,11 @@ func (_c *LoginAuditLogCreate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.status": %w`, err)}
 		}
 	}
+	if v, ok := _c.mutation.LoginMethod(); ok {
+		if err := loginauditlog.LoginMethodValidator(v); err != nil {
+			return &ValidationError{Name: "login_method", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.login_method": %w`, err)}
+		}
+	}
 	if v, ok := _c.mutation.RiskLevel(); ok {
 		if err := loginauditlog.RiskLevelValidator(v); err != nil {
 			return &ValidationError{Name: "risk_level", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.risk_level": %w`, err)}
@@ -382,6 +415,10 @@ func (_c *LoginAuditLogCreate) createSpec() (*LoginAuditLog, *sqlgraph.CreateSpe
 		_spec.SetField(loginauditlog.FieldRequestID, field.TypeString, value)
 		_node.RequestID = &value
 	}
+	if value, ok := _c.mutation.TraceID(); ok {
+		_spec.SetField(loginauditlog.FieldTraceID, field.TypeString, value)
+		_node.TraceID = &value
+	}
 	if value, ok := _c.mutation.ActionType(); ok {
 		_spec.SetField(loginauditlog.FieldActionType, field.TypeEnum, value)
 		_node.ActionType = &value
@@ -389,6 +426,10 @@ func (_c *LoginAuditLogCreate) createSpec() (*LoginAuditLog, *sqlgraph.CreateSpe
 	if value, ok := _c.mutation.Status(); ok {
 		_spec.SetField(loginauditlog.FieldStatus, field.TypeEnum, value)
 		_node.Status = &value
+	}
+	if value, ok := _c.mutation.LoginMethod(); ok {
+		_spec.SetField(loginauditlog.FieldLoginMethod, field.TypeEnum, value)
+		_node.LoginMethod = &value
 	}
 	if value, ok := _c.mutation.FailureReason(); ok {
 		_spec.SetField(loginauditlog.FieldFailureReason, field.TypeString, value)
@@ -602,6 +643,24 @@ func (u *LoginAuditLogUpsert) ClearRequestID() *LoginAuditLogUpsert {
 	return u
 }
 
+// SetTraceID sets the "trace_id" field.
+func (u *LoginAuditLogUpsert) SetTraceID(v string) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldTraceID, v)
+	return u
+}
+
+// UpdateTraceID sets the "trace_id" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateTraceID() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldTraceID)
+	return u
+}
+
+// ClearTraceID clears the value of the "trace_id" field.
+func (u *LoginAuditLogUpsert) ClearTraceID() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldTraceID)
+	return u
+}
+
 // SetActionType sets the "action_type" field.
 func (u *LoginAuditLogUpsert) SetActionType(v loginauditlog.ActionType) *LoginAuditLogUpsert {
 	u.Set(loginauditlog.FieldActionType, v)
@@ -635,6 +694,24 @@ func (u *LoginAuditLogUpsert) UpdateStatus() *LoginAuditLogUpsert {
 // ClearStatus clears the value of the "status" field.
 func (u *LoginAuditLogUpsert) ClearStatus() *LoginAuditLogUpsert {
 	u.SetNull(loginauditlog.FieldStatus)
+	return u
+}
+
+// SetLoginMethod sets the "login_method" field.
+func (u *LoginAuditLogUpsert) SetLoginMethod(v loginauditlog.LoginMethod) *LoginAuditLogUpsert {
+	u.Set(loginauditlog.FieldLoginMethod, v)
+	return u
+}
+
+// UpdateLoginMethod sets the "login_method" field to the value that was provided on create.
+func (u *LoginAuditLogUpsert) UpdateLoginMethod() *LoginAuditLogUpsert {
+	u.SetExcluded(loginauditlog.FieldLoginMethod)
+	return u
+}
+
+// ClearLoginMethod clears the value of the "login_method" field.
+func (u *LoginAuditLogUpsert) ClearLoginMethod() *LoginAuditLogUpsert {
+	u.SetNull(loginauditlog.FieldLoginMethod)
 	return u
 }
 
@@ -978,6 +1055,27 @@ func (u *LoginAuditLogUpsertOne) ClearRequestID() *LoginAuditLogUpsertOne {
 	})
 }
 
+// SetTraceID sets the "trace_id" field.
+func (u *LoginAuditLogUpsertOne) SetTraceID(v string) *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetTraceID(v)
+	})
+}
+
+// UpdateTraceID sets the "trace_id" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateTraceID() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateTraceID()
+	})
+}
+
+// ClearTraceID clears the value of the "trace_id" field.
+func (u *LoginAuditLogUpsertOne) ClearTraceID() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearTraceID()
+	})
+}
+
 // SetActionType sets the "action_type" field.
 func (u *LoginAuditLogUpsertOne) SetActionType(v loginauditlog.ActionType) *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
@@ -1017,6 +1115,27 @@ func (u *LoginAuditLogUpsertOne) UpdateStatus() *LoginAuditLogUpsertOne {
 func (u *LoginAuditLogUpsertOne) ClearStatus() *LoginAuditLogUpsertOne {
 	return u.Update(func(s *LoginAuditLogUpsert) {
 		s.ClearStatus()
+	})
+}
+
+// SetLoginMethod sets the "login_method" field.
+func (u *LoginAuditLogUpsertOne) SetLoginMethod(v loginauditlog.LoginMethod) *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetLoginMethod(v)
+	})
+}
+
+// UpdateLoginMethod sets the "login_method" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertOne) UpdateLoginMethod() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateLoginMethod()
+	})
+}
+
+// ClearLoginMethod clears the value of the "login_method" field.
+func (u *LoginAuditLogUpsertOne) ClearLoginMethod() *LoginAuditLogUpsertOne {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearLoginMethod()
 	})
 }
 
@@ -1547,6 +1666,27 @@ func (u *LoginAuditLogUpsertBulk) ClearRequestID() *LoginAuditLogUpsertBulk {
 	})
 }
 
+// SetTraceID sets the "trace_id" field.
+func (u *LoginAuditLogUpsertBulk) SetTraceID(v string) *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetTraceID(v)
+	})
+}
+
+// UpdateTraceID sets the "trace_id" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateTraceID() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateTraceID()
+	})
+}
+
+// ClearTraceID clears the value of the "trace_id" field.
+func (u *LoginAuditLogUpsertBulk) ClearTraceID() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearTraceID()
+	})
+}
+
 // SetActionType sets the "action_type" field.
 func (u *LoginAuditLogUpsertBulk) SetActionType(v loginauditlog.ActionType) *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
@@ -1586,6 +1726,27 @@ func (u *LoginAuditLogUpsertBulk) UpdateStatus() *LoginAuditLogUpsertBulk {
 func (u *LoginAuditLogUpsertBulk) ClearStatus() *LoginAuditLogUpsertBulk {
 	return u.Update(func(s *LoginAuditLogUpsert) {
 		s.ClearStatus()
+	})
+}
+
+// SetLoginMethod sets the "login_method" field.
+func (u *LoginAuditLogUpsertBulk) SetLoginMethod(v loginauditlog.LoginMethod) *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.SetLoginMethod(v)
+	})
+}
+
+// UpdateLoginMethod sets the "login_method" field to the value that was provided on create.
+func (u *LoginAuditLogUpsertBulk) UpdateLoginMethod() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.UpdateLoginMethod()
+	})
+}
+
+// ClearLoginMethod clears the value of the "login_method" field.
+func (u *LoginAuditLogUpsertBulk) ClearLoginMethod() *LoginAuditLogUpsertBulk {
+	return u.Update(func(s *LoginAuditLogUpsert) {
+		s.ClearLoginMethod()
 	})
 }
 

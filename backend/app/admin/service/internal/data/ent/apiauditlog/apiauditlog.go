@@ -27,6 +27,8 @@ const (
 	FieldDeviceInfo = "device_info"
 	// FieldReferer holds the string denoting the referer field in the database.
 	FieldReferer = "referer"
+	// FieldAppVersion holds the string denoting the app_version field in the database.
+	FieldAppVersion = "app_version"
 	// FieldHTTPMethod holds the string denoting the http_method field in the database.
 	FieldHTTPMethod = "http_method"
 	// FieldPath holds the string denoting the path field in the database.
@@ -41,8 +43,12 @@ const (
 	FieldAPIDescription = "api_description"
 	// FieldRequestID holds the string denoting the request_id field in the database.
 	FieldRequestID = "request_id"
-	// FieldCostTimeMs holds the string denoting the cost_time_ms field in the database.
-	FieldCostTimeMs = "cost_time_ms"
+	// FieldTraceID holds the string denoting the trace_id field in the database.
+	FieldTraceID = "trace_id"
+	// FieldSpanID holds the string denoting the span_id field in the database.
+	FieldSpanID = "span_id"
+	// FieldLatencyMs holds the string denoting the latency_ms field in the database.
+	FieldLatencyMs = "latency_ms"
 	// FieldSuccess holds the string denoting the success field in the database.
 	FieldSuccess = "success"
 	// FieldStatusCode holds the string denoting the status_code field in the database.
@@ -74,6 +80,7 @@ var Columns = []string{
 	FieldGeoLocation,
 	FieldDeviceInfo,
 	FieldReferer,
+	FieldAppVersion,
 	FieldHTTPMethod,
 	FieldPath,
 	FieldRequestURI,
@@ -81,7 +88,9 @@ var Columns = []string{
 	FieldAPIOperation,
 	FieldAPIDescription,
 	FieldRequestID,
-	FieldCostTimeMs,
+	FieldTraceID,
+	FieldSpanID,
+	FieldLatencyMs,
 	FieldSuccess,
 	FieldStatusCode,
 	FieldReason,
@@ -145,6 +154,11 @@ func ByReferer(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldReferer, opts...).ToFunc()
 }
 
+// ByAppVersion orders the results by the app_version field.
+func ByAppVersion(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAppVersion, opts...).ToFunc()
+}
+
 // ByHTTPMethod orders the results by the http_method field.
 func ByHTTPMethod(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldHTTPMethod, opts...).ToFunc()
@@ -180,9 +194,19 @@ func ByRequestID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRequestID, opts...).ToFunc()
 }
 
-// ByCostTimeMs orders the results by the cost_time_ms field.
-func ByCostTimeMs(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldCostTimeMs, opts...).ToFunc()
+// ByTraceID orders the results by the trace_id field.
+func ByTraceID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTraceID, opts...).ToFunc()
+}
+
+// BySpanID orders the results by the span_id field.
+func BySpanID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSpanID, opts...).ToFunc()
+}
+
+// ByLatencyMs orders the results by the latency_ms field.
+func ByLatencyMs(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLatencyMs, opts...).ToFunc()
 }
 
 // BySuccess orders the results by the success field.

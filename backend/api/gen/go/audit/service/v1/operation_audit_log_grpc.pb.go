@@ -28,7 +28,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// 操作审计日志管理服务
+// 操作审计日志服务
 type OperationAuditLogServiceClient interface {
 	// 查询操作审计日志列表
 	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListOperationAuditLogResponse, error)
@@ -68,7 +68,7 @@ func (c *operationAuditLogServiceClient) Get(ctx context.Context, in *GetOperati
 // All implementations must embed UnimplementedOperationAuditLogServiceServer
 // for forward compatibility.
 //
-// 操作审计日志管理服务
+// 操作审计日志服务
 type OperationAuditLogServiceServer interface {
 	// 查询操作审计日志列表
 	List(context.Context, *v1.PagingRequest) (*ListOperationAuditLogResponse, error)

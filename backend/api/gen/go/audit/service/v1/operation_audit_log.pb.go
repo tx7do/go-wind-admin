@@ -12,7 +12,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -25,11 +25,99 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// 动作类型
+type OperationAuditLog_ActionType int32
+
+const (
+	OperationAuditLog_ACTION_TYPE_UNSPECIFIED OperationAuditLog_ActionType = 0
+	OperationAuditLog_CREATE                  OperationAuditLog_ActionType = 1 // 创建
+	OperationAuditLog_UPDATE                  OperationAuditLog_ActionType = 2 // 更新
+	OperationAuditLog_DELETE                  OperationAuditLog_ActionType = 3 // 删除
+	OperationAuditLog_READ                    OperationAuditLog_ActionType = 4 // 读取
+	OperationAuditLog_ASSIGN                  OperationAuditLog_ActionType = 5 // 分配
+	OperationAuditLog_UNASSIGN                OperationAuditLog_ActionType = 6 // 取消分配
+	OperationAuditLog_EXPORT                  OperationAuditLog_ActionType = 8 // 导出
+	OperationAuditLog_OTHER                   OperationAuditLog_ActionType = 7 // 其他
+)
+
+// Enum value maps for OperationAuditLog_ActionType.
+var (
+	OperationAuditLog_ActionType_name = map[int32]string{
+		0: "ACTION_TYPE_UNSPECIFIED",
+		1: "CREATE",
+		2: "UPDATE",
+		3: "DELETE",
+		4: "READ",
+		5: "ASSIGN",
+		6: "UNASSIGN",
+		8: "EXPORT",
+		7: "OTHER",
+	}
+	OperationAuditLog_ActionType_value = map[string]int32{
+		"ACTION_TYPE_UNSPECIFIED": 0,
+		"CREATE":                  1,
+		"UPDATE":                  2,
+		"DELETE":                  3,
+		"READ":                    4,
+		"ASSIGN":                  5,
+		"UNASSIGN":                6,
+		"EXPORT":                  8,
+		"OTHER":                   7,
+	}
+)
+
+func (x OperationAuditLog_ActionType) Enum() *OperationAuditLog_ActionType {
+	p := new(OperationAuditLog_ActionType)
+	*p = x
+	return p
+}
+
+func (x OperationAuditLog_ActionType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (OperationAuditLog_ActionType) Descriptor() protoreflect.EnumDescriptor {
+	return file_audit_service_v1_operation_audit_log_proto_enumTypes[0].Descriptor()
+}
+
+func (OperationAuditLog_ActionType) Type() protoreflect.EnumType {
+	return &file_audit_service_v1_operation_audit_log_proto_enumTypes[0]
+}
+
+func (x OperationAuditLog_ActionType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use OperationAuditLog_ActionType.Descriptor instead.
+func (OperationAuditLog_ActionType) EnumDescriptor() ([]byte, []int) {
+	return file_audit_service_v1_operation_audit_log_proto_rawDescGZIP(), []int{0, 0}
+}
+
 // 操作审计日志
 type OperationAuditLog struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state          protoimpl.MessageState        `protogen:"open.v1"`
+	Id             *uint32                       `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                     // 用户操作审计日志ID
+	TenantId       *uint32                       `protobuf:"varint,2,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                         // 租户ID
+	TenantName     *string                       `protobuf:"bytes,3,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`                                                    // 租户名称
+	UserId         *uint32                       `protobuf:"varint,4,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                                               // 用户ID
+	Username       *string                       `protobuf:"bytes,5,opt,name=username,proto3,oneof" json:"username,omitempty"`                                                                          // 账号名
+	ResourceType   *string                       `protobuf:"bytes,10,opt,name=resource_type,json=resourceType,proto3,oneof" json:"resource_type,omitempty"`                                             // 资源类型
+	ResourceId     *string                       `protobuf:"bytes,11,opt,name=resource_id,json=resourceId,proto3,oneof" json:"resource_id,omitempty"`                                                   // 资源ID
+	Action         *OperationAuditLog_ActionType `protobuf:"varint,12,opt,name=action,proto3,enum=audit.service.v1.OperationAuditLog_ActionType,oneof" json:"action,omitempty"`                         // 动作
+	BeforeData     *string                       `protobuf:"bytes,13,opt,name=before_data,json=beforeData,proto3,oneof" json:"before_data,omitempty"`                                                   // 操作前数据
+	AfterData      *string                       `protobuf:"bytes,14,opt,name=after_data,json=afterData,proto3,oneof" json:"after_data,omitempty"`                                                      // 操作后数据
+	SensitiveLevel *SensitiveLevel               `protobuf:"varint,15,opt,name=sensitive_level,json=sensitiveLevel,proto3,enum=audit.service.v1.SensitiveLevel,oneof" json:"sensitive_level,omitempty"` // 敏感等级
+	RequestId      *string                       `protobuf:"bytes,16,opt,name=request_id,json=requestId,proto3,oneof" json:"request_id,omitempty"`                                                      // 请求ID
+	TraceId        *string                       `protobuf:"bytes,17,opt,name=trace_id,json=traceId,proto3,oneof" json:"trace_id,omitempty"`                                                            // 全局链路追踪ID
+	Success        *bool                         `protobuf:"varint,18,opt,name=success,proto3,oneof" json:"success,omitempty"`                                                                          // 操作结果
+	FailureReason  *string                       `protobuf:"bytes,19,opt,name=failure_reason,json=failureReason,proto3,oneof" json:"failure_reason,omitempty"`                                          // 失败原因
+	IpAddress      *string                       `protobuf:"bytes,20,opt,name=ip_address,json=ipAddress,proto3,oneof" json:"ip_address,omitempty"`                                                      // IP地址
+	GeoLocation    *GeoLocation                  `protobuf:"bytes,21,opt,name=geo_location,json=geoLocation,proto3,oneof" json:"geo_location,omitempty"`                                                // 地理位置(来自IP库)
+	LogHash        *string                       `protobuf:"bytes,40,opt,name=log_hash,json=logHash,proto3,oneof" json:"log_hash,omitempty"`                                                            // 日志哈希
+	Signature      []byte                        `protobuf:"bytes,41,opt,name=signature,proto3,oneof" json:"signature,omitempty"`                                                                       // 日志数字签名
+	CreatedAt      *timestamppb.Timestamp        `protobuf:"bytes,50,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                                      // 日志创建时间
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *OperationAuditLog) Reset() {
@@ -60,6 +148,146 @@ func (x *OperationAuditLog) ProtoReflect() protoreflect.Message {
 // Deprecated: Use OperationAuditLog.ProtoReflect.Descriptor instead.
 func (*OperationAuditLog) Descriptor() ([]byte, []int) {
 	return file_audit_service_v1_operation_audit_log_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *OperationAuditLog) GetId() uint32 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *OperationAuditLog) GetTenantId() uint32 {
+	if x != nil && x.TenantId != nil {
+		return *x.TenantId
+	}
+	return 0
+}
+
+func (x *OperationAuditLog) GetTenantName() string {
+	if x != nil && x.TenantName != nil {
+		return *x.TenantName
+	}
+	return ""
+}
+
+func (x *OperationAuditLog) GetUserId() uint32 {
+	if x != nil && x.UserId != nil {
+		return *x.UserId
+	}
+	return 0
+}
+
+func (x *OperationAuditLog) GetUsername() string {
+	if x != nil && x.Username != nil {
+		return *x.Username
+	}
+	return ""
+}
+
+func (x *OperationAuditLog) GetResourceType() string {
+	if x != nil && x.ResourceType != nil {
+		return *x.ResourceType
+	}
+	return ""
+}
+
+func (x *OperationAuditLog) GetResourceId() string {
+	if x != nil && x.ResourceId != nil {
+		return *x.ResourceId
+	}
+	return ""
+}
+
+func (x *OperationAuditLog) GetAction() OperationAuditLog_ActionType {
+	if x != nil && x.Action != nil {
+		return *x.Action
+	}
+	return OperationAuditLog_ACTION_TYPE_UNSPECIFIED
+}
+
+func (x *OperationAuditLog) GetBeforeData() string {
+	if x != nil && x.BeforeData != nil {
+		return *x.BeforeData
+	}
+	return ""
+}
+
+func (x *OperationAuditLog) GetAfterData() string {
+	if x != nil && x.AfterData != nil {
+		return *x.AfterData
+	}
+	return ""
+}
+
+func (x *OperationAuditLog) GetSensitiveLevel() SensitiveLevel {
+	if x != nil && x.SensitiveLevel != nil {
+		return *x.SensitiveLevel
+	}
+	return SensitiveLevel_SENSITIVE_LEVEL_UNSPECIFIED
+}
+
+func (x *OperationAuditLog) GetRequestId() string {
+	if x != nil && x.RequestId != nil {
+		return *x.RequestId
+	}
+	return ""
+}
+
+func (x *OperationAuditLog) GetTraceId() string {
+	if x != nil && x.TraceId != nil {
+		return *x.TraceId
+	}
+	return ""
+}
+
+func (x *OperationAuditLog) GetSuccess() bool {
+	if x != nil && x.Success != nil {
+		return *x.Success
+	}
+	return false
+}
+
+func (x *OperationAuditLog) GetFailureReason() string {
+	if x != nil && x.FailureReason != nil {
+		return *x.FailureReason
+	}
+	return ""
+}
+
+func (x *OperationAuditLog) GetIpAddress() string {
+	if x != nil && x.IpAddress != nil {
+		return *x.IpAddress
+	}
+	return ""
+}
+
+func (x *OperationAuditLog) GetGeoLocation() *GeoLocation {
+	if x != nil {
+		return x.GeoLocation
+	}
+	return nil
+}
+
+func (x *OperationAuditLog) GetLogHash() string {
+	if x != nil && x.LogHash != nil {
+		return *x.LogHash
+	}
+	return ""
+}
+
+func (x *OperationAuditLog) GetSignature() []byte {
+	if x != nil {
+		return x.Signature
+	}
+	return nil
+}
+
+func (x *OperationAuditLog) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
 }
 
 // 查询操作审计日志列表 - 回应
@@ -239,8 +467,77 @@ var File_audit_service_v1_operation_audit_log_proto protoreflect.FileDescriptor
 
 const file_audit_service_v1_operation_audit_log_proto_rawDesc = "" +
 	"\n" +
-	"*audit/service/v1/operation_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1daudit/service/v1/common.proto\"\x13\n" +
-	"\x11OperationAuditLog\"p\n" +
+	"*audit/service/v1/operation_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1daudit/service/v1/common.proto\x1a#audit/service/v1/geo_location.proto\"\xe2\x0e\n" +
+	"\x11OperationAuditLog\x12,\n" +
+	"\x02id\x18\x01 \x01(\rB\x17\xbaG\x14\x92\x02\x11API审计日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x128\n" +
+	"\vtenant_name\x18\x03 \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\x02R\n" +
+	"tenantName\x88\x01\x01\x12,\n" +
+	"\auser_id\x18\x04 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDH\x03R\x06userId\x88\x01\x01\x120\n" +
+	"\busername\x18\x05 \x01(\tB\x0f\xbaG\f\x92\x02\t账号名H\x04R\busername\x88\x01\x01\x12<\n" +
+	"\rresource_type\x18\n" +
+	" \x01(\tB\x12\xbaG\x0f\x92\x02\f资源类型H\x05R\fresourceType\x88\x01\x01\x124\n" +
+	"\vresource_id\x18\v \x01(\tB\x0e\xbaG\v\x92\x02\b资源IDH\x06R\n" +
+	"resourceId\x88\x01\x01\x12Y\n" +
+	"\x06action\x18\f \x01(\x0e2..audit.service.v1.OperationAuditLog.ActionTypeB\f\xbaG\t\x92\x02\x06动作H\aR\x06action\x88\x01\x01\x12;\n" +
+	"\vbefore_data\x18\r \x01(\tB\x15\xbaG\x12\x92\x02\x0f操作前数据H\bR\n" +
+	"beforeData\x88\x01\x01\x129\n" +
+	"\n" +
+	"after_data\x18\x0e \x01(\tB\x15\xbaG\x12\x92\x02\x0f操作后数据H\tR\tafterData\x88\x01\x01\x12b\n" +
+	"\x0fsensitive_level\x18\x0f \x01(\x0e2 .audit.service.v1.SensitiveLevelB\x12\xbaG\x0f\x92\x02\f敏感等级H\n" +
+	"R\x0esensitiveLevel\x88\x01\x01\x12P\n" +
+	"\n" +
+	"request_id\x18\x10 \x01(\tB,\xbaG)\x92\x02&全局请求ID（关联网关日志）H\vR\trequestId\x88\x01\x01\x12\\\n" +
+	"\btrace_id\x18\x11 \x01(\tB<\xbaG9\x92\x026全局链路追踪ID（符合W3C TraceContext标准）H\fR\atraceId\x88\x01\x01\x127\n" +
+	"\asuccess\x18\x12 \x01(\bB\x18\xbaG\x15\x92\x02\x12操作是否成功H\rR\asuccess\x88\x01\x01\x12>\n" +
+	"\x0efailure_reason\x18\x13 \x01(\tB\x12\xbaG\x0f\x92\x02\f失败原因H\x0eR\rfailureReason\x88\x01\x01\x122\n" +
+	"\n" +
+	"ip_address\x18\x14 \x01(\tB\x0e\xbaG\v\x92\x02\bIP地址H\x0fR\tipAddress\x88\x01\x01\x12f\n" +
+	"\fgeo_location\x18\x15 \x01(\v2\x1d.audit.service.v1.GeoLocationB\x1f\xbaG\x1c\x92\x02\x19地理位置(来自IP库)H\x10R\vgeoLocation\x88\x01\x01\x12\\\n" +
+	"\blog_hash\x18( \x01(\tB<\xbaG9\x92\x026日志内容哈希（SHA256，十六进制字符串）H\x11R\alogHash\x88\x01\x01\x12}\n" +
+	"\tsignature\x18) \x01(\fBZ\xbaGW\x92\x02T日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）H\x12R\tsignature\x88\x01\x01\x12X\n" +
+	"\n" +
+	"created_at\x182 \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12日志创建时间H\x13R\tcreatedAt\x88\x01\x01\"\x88\x01\n" +
+	"\n" +
+	"ActionType\x12\x1b\n" +
+	"\x17ACTION_TYPE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06CREATE\x10\x01\x12\n" +
+	"\n" +
+	"\x06UPDATE\x10\x02\x12\n" +
+	"\n" +
+	"\x06DELETE\x10\x03\x12\b\n" +
+	"\x04READ\x10\x04\x12\n" +
+	"\n" +
+	"\x06ASSIGN\x10\x05\x12\f\n" +
+	"\bUNASSIGN\x10\x06\x12\n" +
+	"\n" +
+	"\x06EXPORT\x10\b\x12\t\n" +
+	"\x05OTHER\x10\aB\x05\n" +
+	"\x03_idB\f\n" +
+	"\n" +
+	"_tenant_idB\x0e\n" +
+	"\f_tenant_nameB\n" +
+	"\n" +
+	"\b_user_idB\v\n" +
+	"\t_usernameB\x10\n" +
+	"\x0e_resource_typeB\x0e\n" +
+	"\f_resource_idB\t\n" +
+	"\a_actionB\x0e\n" +
+	"\f_before_dataB\r\n" +
+	"\v_after_dataB\x12\n" +
+	"\x10_sensitive_levelB\r\n" +
+	"\v_request_idB\v\n" +
+	"\t_trace_idB\n" +
+	"\n" +
+	"\b_successB\x11\n" +
+	"\x0f_failure_reasonB\r\n" +
+	"\v_ip_addressB\x0f\n" +
+	"\r_geo_locationB\v\n" +
+	"\t_log_hashB\f\n" +
+	"\n" +
+	"_signatureB\r\n" +
+	"\v_created_at\"p\n" +
 	"\x1dListOperationAuditLogResponse\x129\n" +
 	"\x05items\x18\x01 \x03(\v2#.audit.service.v1.OperationAuditLogR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xce\x01\n" +
@@ -271,28 +568,37 @@ func file_audit_service_v1_operation_audit_log_proto_rawDescGZIP() []byte {
 	return file_audit_service_v1_operation_audit_log_proto_rawDescData
 }
 
+var file_audit_service_v1_operation_audit_log_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_audit_service_v1_operation_audit_log_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_audit_service_v1_operation_audit_log_proto_goTypes = []any{
-	(*OperationAuditLog)(nil),              // 0: audit.service.v1.OperationAuditLog
-	(*ListOperationAuditLogResponse)(nil),  // 1: audit.service.v1.ListOperationAuditLogResponse
-	(*GetOperationAuditLogRequest)(nil),    // 2: audit.service.v1.GetOperationAuditLogRequest
-	(*CreateOperationAuditLogRequest)(nil), // 3: audit.service.v1.CreateOperationAuditLogRequest
-	(*fieldmaskpb.FieldMask)(nil),          // 4: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),               // 5: pagination.PagingRequest
+	(OperationAuditLog_ActionType)(0),      // 0: audit.service.v1.OperationAuditLog.ActionType
+	(*OperationAuditLog)(nil),              // 1: audit.service.v1.OperationAuditLog
+	(*ListOperationAuditLogResponse)(nil),  // 2: audit.service.v1.ListOperationAuditLogResponse
+	(*GetOperationAuditLogRequest)(nil),    // 3: audit.service.v1.GetOperationAuditLogRequest
+	(*CreateOperationAuditLogRequest)(nil), // 4: audit.service.v1.CreateOperationAuditLogRequest
+	(SensitiveLevel)(0),                    // 5: audit.service.v1.SensitiveLevel
+	(*GeoLocation)(nil),                    // 6: audit.service.v1.GeoLocation
+	(*timestamppb.Timestamp)(nil),          // 7: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),          // 8: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),               // 9: pagination.PagingRequest
 }
 var file_audit_service_v1_operation_audit_log_proto_depIdxs = []int32{
-	0, // 0: audit.service.v1.ListOperationAuditLogResponse.items:type_name -> audit.service.v1.OperationAuditLog
-	4, // 1: audit.service.v1.GetOperationAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
-	0, // 2: audit.service.v1.CreateOperationAuditLogRequest.data:type_name -> audit.service.v1.OperationAuditLog
-	5, // 3: audit.service.v1.OperationAuditLogService.List:input_type -> pagination.PagingRequest
-	2, // 4: audit.service.v1.OperationAuditLogService.Get:input_type -> audit.service.v1.GetOperationAuditLogRequest
-	1, // 5: audit.service.v1.OperationAuditLogService.List:output_type -> audit.service.v1.ListOperationAuditLogResponse
-	0, // 6: audit.service.v1.OperationAuditLogService.Get:output_type -> audit.service.v1.OperationAuditLog
-	5, // [5:7] is the sub-list for method output_type
-	3, // [3:5] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	0, // 0: audit.service.v1.OperationAuditLog.action:type_name -> audit.service.v1.OperationAuditLog.ActionType
+	5, // 1: audit.service.v1.OperationAuditLog.sensitive_level:type_name -> audit.service.v1.SensitiveLevel
+	6, // 2: audit.service.v1.OperationAuditLog.geo_location:type_name -> audit.service.v1.GeoLocation
+	7, // 3: audit.service.v1.OperationAuditLog.created_at:type_name -> google.protobuf.Timestamp
+	1, // 4: audit.service.v1.ListOperationAuditLogResponse.items:type_name -> audit.service.v1.OperationAuditLog
+	8, // 5: audit.service.v1.GetOperationAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
+	1, // 6: audit.service.v1.CreateOperationAuditLogRequest.data:type_name -> audit.service.v1.OperationAuditLog
+	9, // 7: audit.service.v1.OperationAuditLogService.List:input_type -> pagination.PagingRequest
+	3, // 8: audit.service.v1.OperationAuditLogService.Get:input_type -> audit.service.v1.GetOperationAuditLogRequest
+	2, // 9: audit.service.v1.OperationAuditLogService.List:output_type -> audit.service.v1.ListOperationAuditLogResponse
+	1, // 10: audit.service.v1.OperationAuditLogService.Get:output_type -> audit.service.v1.OperationAuditLog
+	9, // [9:11] is the sub-list for method output_type
+	7, // [7:9] is the sub-list for method input_type
+	7, // [7:7] is the sub-list for extension type_name
+	7, // [7:7] is the sub-list for extension extendee
+	0, // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_audit_service_v1_operation_audit_log_proto_init() }
@@ -301,6 +607,8 @@ func file_audit_service_v1_operation_audit_log_proto_init() {
 		return
 	}
 	file_audit_service_v1_common_proto_init()
+	file_audit_service_v1_geo_location_proto_init()
+	file_audit_service_v1_operation_audit_log_proto_msgTypes[0].OneofWrappers = []any{}
 	file_audit_service_v1_operation_audit_log_proto_msgTypes[2].OneofWrappers = []any{
 		(*GetOperationAuditLogRequest_Id)(nil),
 	}
@@ -309,13 +617,14 @@ func file_audit_service_v1_operation_audit_log_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_audit_service_v1_operation_audit_log_proto_rawDesc), len(file_audit_service_v1_operation_audit_log_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      1,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_audit_service_v1_operation_audit_log_proto_goTypes,
 		DependencyIndexes: file_audit_service_v1_operation_audit_log_proto_depIdxs,
+		EnumInfos:         file_audit_service_v1_operation_audit_log_proto_enumTypes,
 		MessageInfos:      file_audit_service_v1_operation_audit_log_proto_msgTypes,
 	}.Build()
 	File_audit_service_v1_operation_audit_log_proto = out.File

@@ -57,6 +57,168 @@ func (m *DataAccessAuditLog) validate(all bool) error {
 
 	var errors []error
 
+	if m.Id != nil {
+		// no validation rules for Id
+	}
+
+	if m.TenantId != nil {
+		// no validation rules for TenantId
+	}
+
+	if m.TenantName != nil {
+		// no validation rules for TenantName
+	}
+
+	if m.UserId != nil {
+		// no validation rules for UserId
+	}
+
+	if m.Username != nil {
+		// no validation rules for Username
+	}
+
+	if m.IpAddress != nil {
+		// no validation rules for IpAddress
+	}
+
+	if m.RequestId != nil {
+		// no validation rules for RequestId
+	}
+
+	if m.DataSource != nil {
+		// no validation rules for DataSource
+	}
+
+	if m.TableName != nil {
+		// no validation rules for TableName
+	}
+
+	if m.DataId != nil {
+		// no validation rules for DataId
+	}
+
+	if m.AccessType != nil {
+		// no validation rules for AccessType
+	}
+
+	if m.SqlDigest != nil {
+		// no validation rules for SqlDigest
+	}
+
+	if m.SqlText != nil {
+		// no validation rules for SqlText
+	}
+
+	if m.AffectedRows != nil {
+		// no validation rules for AffectedRows
+	}
+
+	if m.LatencyMs != nil {
+
+		if m.GetLatencyMs() > 3600000 {
+			err := DataAccessAuditLogValidationError{
+				field:  "LatencyMs",
+				reason: "value must be less than or equal to 3600000",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.Success != nil {
+		// no validation rules for Success
+	}
+
+	if m.SensitiveLevel != nil {
+		// no validation rules for SensitiveLevel
+	}
+
+	if m.DataMasked != nil {
+		// no validation rules for DataMasked
+	}
+
+	if m.MaskingRules != nil {
+		// no validation rules for MaskingRules
+	}
+
+	if m.BusinessPurpose != nil {
+
+		if utf8.RuneCountInString(m.GetBusinessPurpose()) < 5 {
+			err := DataAccessAuditLogValidationError{
+				field:  "BusinessPurpose",
+				reason: "value length must be at least 5 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+		if !_DataAccessAuditLog_BusinessPurpose_Pattern.MatchString(m.GetBusinessPurpose()) {
+			err := DataAccessAuditLogValidationError{
+				field:  "BusinessPurpose",
+				reason: "value does not match regex pattern \"^\\\\w+:[a-z0-9_-]+$\"",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+	}
+
+	if m.DataCategory != nil {
+		// no validation rules for DataCategory
+	}
+
+	if m.DbUser != nil {
+		// no validation rules for DbUser
+	}
+
+	if m.LogHash != nil {
+		// no validation rules for LogHash
+	}
+
+	if m.Signature != nil {
+		// no validation rules for Signature
+	}
+
+	if m.CreatedAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetCreatedAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, DataAccessAuditLogValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, DataAccessAuditLogValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return DataAccessAuditLogValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
 	if len(errors) > 0 {
 		return DataAccessAuditLogMultiError(errors)
 	}
@@ -136,6 +298,8 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = DataAccessAuditLogValidationError{}
+
+var _DataAccessAuditLog_BusinessPurpose_Pattern = regexp.MustCompile("^\\w+:[a-z0-9_-]+$")
 
 // Validate checks the field values on ListDataAccessAuditLogResponse with the
 // rules defined in the proto definition for this message. If any rules are

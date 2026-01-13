@@ -633,7 +633,7 @@ export type auditservicev1_ListApiAuditLogResponse = {
   total: number | undefined;
 };
 
-// API审计日志
+// 接口审计日志
 export type auditservicev1_ApiAuditLog = {
   id?: number;
   tenantId?: number;
@@ -644,6 +644,7 @@ export type auditservicev1_ApiAuditLog = {
   geoLocation?: auditservicev1_GeoLocation;
   deviceInfo?: auditservicev1_DeviceInfo;
   referer?: string;
+  appVersion?: string;
   httpMethod?: string;
   path?: string;
   requestUri?: string;
@@ -651,7 +652,9 @@ export type auditservicev1_ApiAuditLog = {
   apiOperation?: string;
   apiDescription?: string;
   requestId?: string;
-  costTimeMs?: number;
+  traceId?: string;
+  spanId?: string;
+  latencyMs?: number;
   success?: boolean;
   statusCode?: number;
   reason?: string;
@@ -825,6 +828,174 @@ export type authenticationservicev1_LoginResponse = {
 export type authenticationservicev1_TokenType =
   | "bearer"
   | "mac";
+// 数据访问审计日志管理服务
+export interface DataAccessAuditLogService {
+  // 查询数据访问审计日志列表
+  List(request: pagination_PagingRequest): Promise<auditservicev1_ListDataAccessAuditLogResponse>;
+  // 查询数据访问审计日志详情
+  Get(request: auditservicev1_GetDataAccessAuditLogRequest): Promise<auditservicev1_DataAccessAuditLog>;
+}
+
+export function createDataAccessAuditLogServiceClient(
+  handler: RequestHandler
+): DataAccessAuditLogService {
+  return {
+    List(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/data-access-audit-logs`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
+      }
+      if (request.pageSize) {
+        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
+      }
+      if (request.offset) {
+        queryParams.push(`offset=${encodeURIComponent(request.offset.toString())}`)
+      }
+      if (request.limit) {
+        queryParams.push(`limit=${encodeURIComponent(request.limit.toString())}`)
+      }
+      if (request.token) {
+        queryParams.push(`token=${encodeURIComponent(request.token.toString())}`)
+      }
+      if (request.noPaging) {
+        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
+      }
+      if (request.orderBy) {
+        request.orderBy.forEach((x) => {
+          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.order) {
+        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
+      }
+      if (request.query) {
+        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
+      }
+      if (request.or) {
+        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(`filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(`filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.fieldMask) {
+        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "DataAccessAuditLogService",
+        method: "List",
+      }) as Promise<auditservicev1_ListDataAccessAuditLogResponse>;
+    },
+    Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/data-access-audit-logs/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.viewMask) {
+        queryParams.push(`viewMask=${encodeURIComponent(request.viewMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "DataAccessAuditLogService",
+        method: "Get",
+      }) as Promise<auditservicev1_DataAccessAuditLog>;
+    },
+  };
+}
+// 查询数据访问审计日志列表 - 回应
+export type auditservicev1_ListDataAccessAuditLogResponse = {
+  items: auditservicev1_DataAccessAuditLog[] | undefined;
+  total: number | undefined;
+};
+
+// 数据访问审计日志
+export type auditservicev1_DataAccessAuditLog = {
+  id?: number;
+  tenantId?: number;
+  tenantName?: string;
+  userId?: number;
+  username?: string;
+  ipAddress?: string;
+  requestId?: string;
+  dataSource?: string;
+  tableName?: string;
+  dataId?: string;
+  accessType?: auditservicev1_DataAccessAuditLog_AccessType;
+  sqlDigest?: string;
+  sqlText?: string;
+  affectedRows?: number;
+  latencyMs?: number;
+  success?: boolean;
+  sensitiveLevel?: auditservicev1_SensitiveLevel;
+  dataMasked?: boolean;
+  maskingRules?: string;
+  businessPurpose?: string;
+  dataCategory?: string;
+  dbUser?: string;
+  logHash?: string;
+  signature?: string;
+  createdAt?: wellKnownTimestamp;
+};
+
+// 数据访问类型
+export type auditservicev1_DataAccessAuditLog_AccessType =
+  | "ACCESS_TYPE_UNSPECIFIED"
+  | "SELECT"
+  | "INSERT"
+  | "UPDATE"
+  | "DELETE"
+  | "VIEW"
+  | "EXPORT"
+  | "BULK_READ"
+  | "OTHER";
+// 敏感级别
+export type auditservicev1_SensitiveLevel =
+  | "SENSITIVE_LEVEL_UNSPECIFIED"
+  | "PUBLIC"
+  | "INTERNAL"
+  | "CONFIDENTIAL"
+  | "SECRET";
+// 查询数据访问审计日志详情 - 请求
+export type auditservicev1_GetDataAccessAuditLogRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
+};
+
 // 数据字典管理服务
 export interface DictService {
   // 分页查询字典类型列表
@@ -2242,10 +2413,12 @@ export type auditservicev1_LoginAuditLog = {
   sessionId?: string;
   deviceInfo?: auditservicev1_DeviceInfo;
   requestId?: string;
+  traceId?: string;
   actionType?: auditservicev1_LoginAuditLog_ActionType;
   status?: auditservicev1_LoginAuditLog_Status;
   failureReason?: string;
   mfaStatus?: string;
+  loginMethod?: auditservicev1_LoginAuditLog_LoginMethod;
   riskScore?: number;
   riskLevel?: auditservicev1_LoginAuditLog_RiskLevel;
   riskFactors: string[] | undefined;
@@ -2259,13 +2432,25 @@ export type auditservicev1_LoginAuditLog_ActionType =
   | "ACTION_TYPE_UNSPECIFIED"
   | "LOGIN"
   | "LOGOUT"
-  | "SESSION_EXPIRED";
+  | "SESSION_EXPIRED"
+  | "KICKED_OUT"
+  | "PASSWORD_RESET";
 // 操作状态
 export type auditservicev1_LoginAuditLog_Status =
   | "STATUS_UNSPECIFIED"
   | "SUCCESS"
   | "FAILED"
-  | "PARTIAL";
+  | "PARTIAL"
+  | "LOCKED";
+// 登录方式
+export type auditservicev1_LoginAuditLog_LoginMethod =
+  | "LOGIN_METHOD_UNSPECIFIED"
+  | "PASSWORD"
+  | "SMS_CODE"
+  | "QR_CODE"
+  | "OIDC_SOCIAL"
+  | "BIOMETRIC"
+  | "FIDO2";
 // 风险等级
 export type auditservicev1_LoginAuditLog_RiskLevel =
   | "RISK_LEVEL_UNSPECIFIED"
@@ -2834,6 +3019,162 @@ export type permissionservicev1_UpdateMenuRequest = {
 export type permissionservicev1_DeleteMenuRequest = {
   operatorId?: number;
   id: number | undefined;
+};
+
+// 操作审计日志管理服务
+export interface OperationAuditLogService {
+  // 查询操作审计日志列表
+  List(request: pagination_PagingRequest): Promise<auditservicev1_ListOperationAuditLogResponse>;
+  // 查询操作审计日志详情
+  Get(request: auditservicev1_GetOperationAuditLogRequest): Promise<auditservicev1_OperationAuditLog>;
+}
+
+export function createOperationAuditLogServiceClient(
+  handler: RequestHandler
+): OperationAuditLogService {
+  return {
+    List(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/operation-audit-logs`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(`page=${encodeURIComponent(request.page.toString())}`)
+      }
+      if (request.pageSize) {
+        queryParams.push(`pageSize=${encodeURIComponent(request.pageSize.toString())}`)
+      }
+      if (request.offset) {
+        queryParams.push(`offset=${encodeURIComponent(request.offset.toString())}`)
+      }
+      if (request.limit) {
+        queryParams.push(`limit=${encodeURIComponent(request.limit.toString())}`)
+      }
+      if (request.token) {
+        queryParams.push(`token=${encodeURIComponent(request.token.toString())}`)
+      }
+      if (request.noPaging) {
+        queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
+      }
+      if (request.orderBy) {
+        request.orderBy.forEach((x) => {
+          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.order) {
+        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
+      }
+      if (request.query) {
+        queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
+      }
+      if (request.or) {
+        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(`filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(`filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(`filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`)
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(`filterExpr.conditions.values=${encodeURIComponent(x.toString())}`)
+        })
+      }
+      if (request.fieldMask) {
+        queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "OperationAuditLogService",
+        method: "List",
+      }) as Promise<auditservicev1_ListOperationAuditLogResponse>;
+    },
+    Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      if (!request.id) {
+        throw new Error("missing required field request.id");
+      }
+      const path = `admin/v1/operation-audit-logs/${request.id}`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.viewMask) {
+        queryParams.push(`viewMask=${encodeURIComponent(request.viewMask.toString())}`)
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "OperationAuditLogService",
+        method: "Get",
+      }) as Promise<auditservicev1_OperationAuditLog>;
+    },
+  };
+}
+// 查询操作审计日志列表 - 回应
+export type auditservicev1_ListOperationAuditLogResponse = {
+  items: auditservicev1_OperationAuditLog[] | undefined;
+  total: number | undefined;
+};
+
+// 操作审计日志
+export type auditservicev1_OperationAuditLog = {
+  id?: number;
+  tenantId?: number;
+  tenantName?: string;
+  userId?: number;
+  username?: string;
+  resourceType?: string;
+  resourceId?: string;
+  action?: auditservicev1_OperationAuditLog_ActionType;
+  beforeData?: string;
+  afterData?: string;
+  sensitiveLevel?: auditservicev1_SensitiveLevel;
+  requestId?: string;
+  traceId?: string;
+  success?: boolean;
+  failureReason?: string;
+  ipAddress?: string;
+  geoLocation?: auditservicev1_GeoLocation;
+  logHash?: string;
+  signature?: string;
+  createdAt?: wellKnownTimestamp;
+};
+
+// 动作类型
+export type auditservicev1_OperationAuditLog_ActionType =
+  | "ACTION_TYPE_UNSPECIFIED"
+  | "CREATE"
+  | "UPDATE"
+  | "DELETE"
+  | "READ"
+  | "ASSIGN"
+  | "UNASSIGN"
+  | "EXPORT"
+  | "OTHER";
+// 查询操作审计日志详情 - 请求
+export type auditservicev1_GetOperationAuditLogRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
 };
 
 // 组织单元服务

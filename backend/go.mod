@@ -4,6 +4,7 @@ go 1.25.4
 
 require (
 	entgo.io/ent v0.14.5
+	github.com/envoyproxy/protoc-gen-validate v1.2.1
 	github.com/getkin/kin-openapi v0.133.0
 	github.com/go-kratos/kratos/v2 v2.9.2
 	github.com/go-sql-driver/mysql v1.9.3

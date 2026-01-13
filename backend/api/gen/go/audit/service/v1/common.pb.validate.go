@@ -34,3 +34,228 @@ var (
 	_ = anypb.Any{}
 	_ = sort.Sort
 )
+
+// Validate checks the field values on BusinessResource with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *BusinessResource) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on BusinessResource with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// BusinessResourceMultiError, or nil if none found.
+func (m *BusinessResource) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *BusinessResource) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.ResourceType != nil {
+		// no validation rules for ResourceType
+	}
+
+	if m.ResourceKey != nil {
+		// no validation rules for ResourceKey
+	}
+
+	if len(errors) > 0 {
+		return BusinessResourceMultiError(errors)
+	}
+
+	return nil
+}
+
+// BusinessResourceMultiError is an error wrapping multiple validation errors
+// returned by BusinessResource.ValidateAll() if the designated constraints
+// aren't met.
+type BusinessResourceMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m BusinessResourceMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m BusinessResourceMultiError) AllErrors() []error { return m }
+
+// BusinessResourceValidationError is the validation error returned by
+// BusinessResource.Validate if the designated constraints aren't met.
+type BusinessResourceValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e BusinessResourceValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e BusinessResourceValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e BusinessResourceValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e BusinessResourceValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e BusinessResourceValidationError) ErrorName() string { return "BusinessResourceValidationError" }
+
+// Error satisfies the builtin error interface
+func (e BusinessResourceValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sBusinessResource.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = BusinessResourceValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = BusinessResourceValidationError{}
+
+// Validate checks the field values on DigitalSignature with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *DigitalSignature) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DigitalSignature with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DigitalSignatureMultiError, or nil if none found.
+func (m *DigitalSignature) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DigitalSignature) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if _, ok := _DigitalSignature_Algorithm_InLookup[m.GetAlgorithm()]; !ok {
+		err := DigitalSignatureValidationError{
+			field:  "Algorithm",
+			reason: "value must be in list [ECDSA_P256_SHA256,RSA_2048_PKCS1_V1_5_SHA256]",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
+
+	// no validation rules for Value
+
+	if len(errors) > 0 {
+		return DigitalSignatureMultiError(errors)
+	}
+
+	return nil
+}
+
+// DigitalSignatureMultiError is an error wrapping multiple validation errors
+// returned by DigitalSignature.ValidateAll() if the designated constraints
+// aren't met.
+type DigitalSignatureMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DigitalSignatureMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DigitalSignatureMultiError) AllErrors() []error { return m }
+
+// DigitalSignatureValidationError is the validation error returned by
+// DigitalSignature.Validate if the designated constraints aren't met.
+type DigitalSignatureValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DigitalSignatureValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DigitalSignatureValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DigitalSignatureValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DigitalSignatureValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DigitalSignatureValidationError) ErrorName() string { return "DigitalSignatureValidationError" }
+
+// Error satisfies the builtin error interface
+func (e DigitalSignatureValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDigitalSignature.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DigitalSignatureValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DigitalSignatureValidationError{}
+
+var _DigitalSignature_Algorithm_InLookup = map[string]struct{}{
+	"ECDSA_P256_SHA256,RSA_2048_PKCS1_V1_5_SHA256": {},
+}

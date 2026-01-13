@@ -161,6 +161,26 @@ func (_u *LoginAuditLogUpdate) ClearRequestID() *LoginAuditLogUpdate {
 	return _u
 }
 
+// SetTraceID sets the "trace_id" field.
+func (_u *LoginAuditLogUpdate) SetTraceID(v string) *LoginAuditLogUpdate {
+	_u.mutation.SetTraceID(v)
+	return _u
+}
+
+// SetNillableTraceID sets the "trace_id" field if the given value is not nil.
+func (_u *LoginAuditLogUpdate) SetNillableTraceID(v *string) *LoginAuditLogUpdate {
+	if v != nil {
+		_u.SetTraceID(*v)
+	}
+	return _u
+}
+
+// ClearTraceID clears the value of the "trace_id" field.
+func (_u *LoginAuditLogUpdate) ClearTraceID() *LoginAuditLogUpdate {
+	_u.mutation.ClearTraceID()
+	return _u
+}
+
 // SetActionType sets the "action_type" field.
 func (_u *LoginAuditLogUpdate) SetActionType(v loginauditlog.ActionType) *LoginAuditLogUpdate {
 	_u.mutation.SetActionType(v)
@@ -198,6 +218,26 @@ func (_u *LoginAuditLogUpdate) SetNillableStatus(v *loginauditlog.Status) *Login
 // ClearStatus clears the value of the "status" field.
 func (_u *LoginAuditLogUpdate) ClearStatus() *LoginAuditLogUpdate {
 	_u.mutation.ClearStatus()
+	return _u
+}
+
+// SetLoginMethod sets the "login_method" field.
+func (_u *LoginAuditLogUpdate) SetLoginMethod(v loginauditlog.LoginMethod) *LoginAuditLogUpdate {
+	_u.mutation.SetLoginMethod(v)
+	return _u
+}
+
+// SetNillableLoginMethod sets the "login_method" field if the given value is not nil.
+func (_u *LoginAuditLogUpdate) SetNillableLoginMethod(v *loginauditlog.LoginMethod) *LoginAuditLogUpdate {
+	if v != nil {
+		_u.SetLoginMethod(*v)
+	}
+	return _u
+}
+
+// ClearLoginMethod clears the value of the "login_method" field.
+func (_u *LoginAuditLogUpdate) ClearLoginMethod() *LoginAuditLogUpdate {
+	_u.mutation.ClearLoginMethod()
 	return _u
 }
 
@@ -392,6 +432,11 @@ func (_u *LoginAuditLogUpdate) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.status": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.LoginMethod(); ok {
+		if err := loginauditlog.LoginMethodValidator(v); err != nil {
+			return &ValidationError{Name: "login_method", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.login_method": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.RiskLevel(); ok {
 		if err := loginauditlog.RiskLevelValidator(v); err != nil {
 			return &ValidationError{Name: "risk_level", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.risk_level": %w`, err)}
@@ -469,6 +514,12 @@ func (_u *LoginAuditLogUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	if _u.mutation.RequestIDCleared() {
 		_spec.ClearField(loginauditlog.FieldRequestID, field.TypeString)
 	}
+	if value, ok := _u.mutation.TraceID(); ok {
+		_spec.SetField(loginauditlog.FieldTraceID, field.TypeString, value)
+	}
+	if _u.mutation.TraceIDCleared() {
+		_spec.ClearField(loginauditlog.FieldTraceID, field.TypeString)
+	}
 	if value, ok := _u.mutation.ActionType(); ok {
 		_spec.SetField(loginauditlog.FieldActionType, field.TypeEnum, value)
 	}
@@ -480,6 +531,12 @@ func (_u *LoginAuditLogUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	}
 	if _u.mutation.StatusCleared() {
 		_spec.ClearField(loginauditlog.FieldStatus, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.LoginMethod(); ok {
+		_spec.SetField(loginauditlog.FieldLoginMethod, field.TypeEnum, value)
+	}
+	if _u.mutation.LoginMethodCleared() {
+		_spec.ClearField(loginauditlog.FieldLoginMethod, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.FailureReason(); ok {
 		_spec.SetField(loginauditlog.FieldFailureReason, field.TypeString, value)
@@ -684,6 +741,26 @@ func (_u *LoginAuditLogUpdateOne) ClearRequestID() *LoginAuditLogUpdateOne {
 	return _u
 }
 
+// SetTraceID sets the "trace_id" field.
+func (_u *LoginAuditLogUpdateOne) SetTraceID(v string) *LoginAuditLogUpdateOne {
+	_u.mutation.SetTraceID(v)
+	return _u
+}
+
+// SetNillableTraceID sets the "trace_id" field if the given value is not nil.
+func (_u *LoginAuditLogUpdateOne) SetNillableTraceID(v *string) *LoginAuditLogUpdateOne {
+	if v != nil {
+		_u.SetTraceID(*v)
+	}
+	return _u
+}
+
+// ClearTraceID clears the value of the "trace_id" field.
+func (_u *LoginAuditLogUpdateOne) ClearTraceID() *LoginAuditLogUpdateOne {
+	_u.mutation.ClearTraceID()
+	return _u
+}
+
 // SetActionType sets the "action_type" field.
 func (_u *LoginAuditLogUpdateOne) SetActionType(v loginauditlog.ActionType) *LoginAuditLogUpdateOne {
 	_u.mutation.SetActionType(v)
@@ -721,6 +798,26 @@ func (_u *LoginAuditLogUpdateOne) SetNillableStatus(v *loginauditlog.Status) *Lo
 // ClearStatus clears the value of the "status" field.
 func (_u *LoginAuditLogUpdateOne) ClearStatus() *LoginAuditLogUpdateOne {
 	_u.mutation.ClearStatus()
+	return _u
+}
+
+// SetLoginMethod sets the "login_method" field.
+func (_u *LoginAuditLogUpdateOne) SetLoginMethod(v loginauditlog.LoginMethod) *LoginAuditLogUpdateOne {
+	_u.mutation.SetLoginMethod(v)
+	return _u
+}
+
+// SetNillableLoginMethod sets the "login_method" field if the given value is not nil.
+func (_u *LoginAuditLogUpdateOne) SetNillableLoginMethod(v *loginauditlog.LoginMethod) *LoginAuditLogUpdateOne {
+	if v != nil {
+		_u.SetLoginMethod(*v)
+	}
+	return _u
+}
+
+// ClearLoginMethod clears the value of the "login_method" field.
+func (_u *LoginAuditLogUpdateOne) ClearLoginMethod() *LoginAuditLogUpdateOne {
+	_u.mutation.ClearLoginMethod()
 	return _u
 }
 
@@ -928,6 +1025,11 @@ func (_u *LoginAuditLogUpdateOne) check() error {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.status": %w`, err)}
 		}
 	}
+	if v, ok := _u.mutation.LoginMethod(); ok {
+		if err := loginauditlog.LoginMethodValidator(v); err != nil {
+			return &ValidationError{Name: "login_method", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.login_method": %w`, err)}
+		}
+	}
 	if v, ok := _u.mutation.RiskLevel(); ok {
 		if err := loginauditlog.RiskLevelValidator(v); err != nil {
 			return &ValidationError{Name: "risk_level", err: fmt.Errorf(`ent: validator failed for field "LoginAuditLog.risk_level": %w`, err)}
@@ -1022,6 +1124,12 @@ func (_u *LoginAuditLogUpdateOne) sqlSave(ctx context.Context) (_node *LoginAudi
 	if _u.mutation.RequestIDCleared() {
 		_spec.ClearField(loginauditlog.FieldRequestID, field.TypeString)
 	}
+	if value, ok := _u.mutation.TraceID(); ok {
+		_spec.SetField(loginauditlog.FieldTraceID, field.TypeString, value)
+	}
+	if _u.mutation.TraceIDCleared() {
+		_spec.ClearField(loginauditlog.FieldTraceID, field.TypeString)
+	}
 	if value, ok := _u.mutation.ActionType(); ok {
 		_spec.SetField(loginauditlog.FieldActionType, field.TypeEnum, value)
 	}
@@ -1033,6 +1141,12 @@ func (_u *LoginAuditLogUpdateOne) sqlSave(ctx context.Context) (_node *LoginAudi
 	}
 	if _u.mutation.StatusCleared() {
 		_spec.ClearField(loginauditlog.FieldStatus, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.LoginMethod(); ok {
+		_spec.SetField(loginauditlog.FieldLoginMethod, field.TypeEnum, value)
+	}
+	if _u.mutation.LoginMethodCleared() {
+		_spec.ClearField(loginauditlog.FieldLoginMethod, field.TypeEnum)
 	}
 	if value, ok := _u.mutation.FailureReason(); ok {
 		_spec.SetField(loginauditlog.FieldFailureReason, field.TypeString, value)

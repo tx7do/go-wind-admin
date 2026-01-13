@@ -27,18 +27,21 @@ message LoginAuditLog {
   enum ActionType {
     ACTION_TYPE_UNSPECIFIED = 0; // 未指定
 
-    LOGIN = 1;     // 用户主动登录
-    LOGOUT = 2;    // 用户主动登出
-    SESSION_EXPIRED = 3; // 系统触发的会话过期（非用户操作）
+    LOGIN = 1;            // 用户主动登录
+    LOGOUT = 2;           // 用户主动登出
+    SESSION_EXPIRED = 3;  // 系统触发的会话过期（非用户操作）
+    KICKED_OUT = 4;       // 用户被强制下线
+    PASSWORD_RESET = 5;   // 密码重置后强制登出
   }
 
   // 操作状态
   enum Status {
     STATUS_UNSPECIFIED = 0;
 
-    SUCCESS = 1;   // 操作成功
-    FAILED = 2;    // 操作失败
-    PARTIAL = 3;   // 部分成功（如MFA验证中）
+    SUCCESS = 1;  // 操作成功
+    FAILED = 2;   // 操作失败
+    PARTIAL = 3;  // 部分成功（如MFA验证中）
+    LOCKED = 4;   // 账号锁定
   }
 
   // 风险等级
@@ -48,6 +51,18 @@ message LoginAuditLog {
     LOW = 1;      // 低风险（无异常）
     MEDIUM = 2;   // 中风险（需事后核查）
     HIGH = 3;     // 高风险（异常登录行为）
+  }
+
+  // 登录方式
+  enum LoginMethod {
+    LOGIN_METHOD_UNSPECIFIED = 0;
+
+    PASSWORD = 1; // 密码
+    SMS_CODE = 2; // 短信验证码
+    QR_CODE = 3; // 二维码
+    OIDC_SOCIAL = 4; // 第三方登录
+    BIOMETRIC = 5;   // 指纹/面部
+    FIDO2 = 6;       // 硬件密钥
   }
 
   optional uint32 id = 1 [
@@ -102,6 +117,11 @@ message LoginAuditLog {
     (gnostic.openapi.v3.property) = {description: "全局请求ID（关联网关日志）"}
   ]; // 全局请求ID（关联网关日志）
 
+  optional string trace_id = 17 [
+    json_name = "traceId",
+    (gnostic.openapi.v3.property) = {description: "全局链路追踪ID"}
+  ]; // 全局链路追踪ID
+
   // ========== 操作/状态 ==========
 
   optional ActionType action_type = 20 [
@@ -122,6 +142,11 @@ message LoginAuditLog {
     json_name = "mfaStatus",
     (gnostic.openapi.v3.property) = {description: "MFA状态：UNVERIFIED/VERIFYING/VERIFIED/FAILED"}
   ]; // MFA状态 MFA场景必传
+
+  optional LoginMethod login_method = 24 [
+    json_name = "loginMethod",
+    (gnostic.openapi.v3.property) = {description: "登录方式"}
+  ];
 
   // ========== 风险管控 ==========
 

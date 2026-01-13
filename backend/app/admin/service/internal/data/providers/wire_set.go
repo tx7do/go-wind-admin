@@ -65,6 +65,8 @@ var ProviderSet = wire.NewSet(
 
 	data.NewLoginAuditLogRepo,
 	data.NewApiAuditLogRepo,
+	data.NewOperationAuditLogRepo,
+	data.NewDataAccessAuditLogRepo,
 
 	data.NewFileRepo,
 

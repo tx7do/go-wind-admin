@@ -12,6 +12,9 @@ type Api func(*sql.Selector)
 // ApiAuditLog is the predicate function for apiauditlog builders.
 type ApiAuditLog func(*sql.Selector)
 
+// DataAccessAuditLog is the predicate function for dataaccessauditlog builders.
+type DataAccessAuditLog func(*sql.Selector)
+
 // DictEntry is the predicate function for dictentry builders.
 type DictEntry func(*sql.Selector)
 
@@ -53,6 +56,9 @@ type MembershipRole func(*sql.Selector)
 
 // Menu is the predicate function for menu builders.
 type Menu func(*sql.Selector)
+
+// OperationAuditLog is the predicate function for operationauditlog builders.
+type OperationAuditLog func(*sql.Selector)
 
 // OrgUnit is the predicate function for orgunit builders.
 type OrgUnit func(*sql.Selector)

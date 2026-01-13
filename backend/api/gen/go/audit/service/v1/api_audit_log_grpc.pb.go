@@ -28,11 +28,11 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// API审计日志管理服务
+// 接口审计日志管理服务
 type ApiAuditLogServiceClient interface {
-	// 查询API审计日志列表
+	// 查询接口审计日志列表
 	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListApiAuditLogResponse, error)
-	// 查询API审计日志详情
+	// 查询接口审计日志详情
 	Get(ctx context.Context, in *GetApiAuditLogRequest, opts ...grpc.CallOption) (*ApiAuditLog, error)
 }
 
@@ -68,11 +68,11 @@ func (c *apiAuditLogServiceClient) Get(ctx context.Context, in *GetApiAuditLogRe
 // All implementations must embed UnimplementedApiAuditLogServiceServer
 // for forward compatibility.
 //
-// API审计日志管理服务
+// 接口审计日志管理服务
 type ApiAuditLogServiceServer interface {
-	// 查询API审计日志列表
+	// 查询接口审计日志列表
 	List(context.Context, *v1.PagingRequest) (*ListApiAuditLogResponse, error)
-	// 查询API审计日志详情
+	// 查询接口审计日志详情
 	Get(context.Context, *GetApiAuditLogRequest) (*ApiAuditLog, error)
 	mustEmbedUnimplementedApiAuditLogServiceServer()
 }

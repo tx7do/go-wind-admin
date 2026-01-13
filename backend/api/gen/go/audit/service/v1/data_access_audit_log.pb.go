@@ -7,12 +7,13 @@
 package servicev1
 
 import (
+	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	_ "github.com/google/gnostic/openapiv3"
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
-	_ "google.golang.org/protobuf/types/known/timestamppb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -25,11 +26,104 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// 数据访问类型
+type DataAccessAuditLog_AccessType int32
+
+const (
+	DataAccessAuditLog_ACCESS_TYPE_UNSPECIFIED DataAccessAuditLog_AccessType = 0
+	DataAccessAuditLog_SELECT                  DataAccessAuditLog_AccessType = 1 // 读取数据
+	DataAccessAuditLog_INSERT                  DataAccessAuditLog_AccessType = 2 // 插入数据
+	DataAccessAuditLog_UPDATE                  DataAccessAuditLog_AccessType = 3 // 更新数据
+	DataAccessAuditLog_DELETE                  DataAccessAuditLog_AccessType = 4 // 删除数据
+	DataAccessAuditLog_VIEW                    DataAccessAuditLog_AccessType = 5 // 查看数据
+	DataAccessAuditLog_EXPORT                  DataAccessAuditLog_AccessType = 6 // 导出数据
+	DataAccessAuditLog_BULK_READ               DataAccessAuditLog_AccessType = 7 // 批量读取数据
+	DataAccessAuditLog_OTHER                   DataAccessAuditLog_AccessType = 8 // 其他
+)
+
+// Enum value maps for DataAccessAuditLog_AccessType.
+var (
+	DataAccessAuditLog_AccessType_name = map[int32]string{
+		0: "ACCESS_TYPE_UNSPECIFIED",
+		1: "SELECT",
+		2: "INSERT",
+		3: "UPDATE",
+		4: "DELETE",
+		5: "VIEW",
+		6: "EXPORT",
+		7: "BULK_READ",
+		8: "OTHER",
+	}
+	DataAccessAuditLog_AccessType_value = map[string]int32{
+		"ACCESS_TYPE_UNSPECIFIED": 0,
+		"SELECT":                  1,
+		"INSERT":                  2,
+		"UPDATE":                  3,
+		"DELETE":                  4,
+		"VIEW":                    5,
+		"EXPORT":                  6,
+		"BULK_READ":               7,
+		"OTHER":                   8,
+	}
+)
+
+func (x DataAccessAuditLog_AccessType) Enum() *DataAccessAuditLog_AccessType {
+	p := new(DataAccessAuditLog_AccessType)
+	*p = x
+	return p
+}
+
+func (x DataAccessAuditLog_AccessType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DataAccessAuditLog_AccessType) Descriptor() protoreflect.EnumDescriptor {
+	return file_audit_service_v1_data_access_audit_log_proto_enumTypes[0].Descriptor()
+}
+
+func (DataAccessAuditLog_AccessType) Type() protoreflect.EnumType {
+	return &file_audit_service_v1_data_access_audit_log_proto_enumTypes[0]
+}
+
+func (x DataAccessAuditLog_AccessType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DataAccessAuditLog_AccessType.Descriptor instead.
+func (DataAccessAuditLog_AccessType) EnumDescriptor() ([]byte, []int) {
+	return file_audit_service_v1_data_access_audit_log_proto_rawDescGZIP(), []int{0, 0}
+}
+
 // 数据访问审计日志
 type DataAccessAuditLog struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState         `protogen:"open.v1"`
+	Id              *uint32                        `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                        // 数据访问审计日志ID
+	TenantId        *uint32                        `protobuf:"varint,2,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                            // 租户ID
+	TenantName      *string                        `protobuf:"bytes,3,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`                                                       // 租户名称
+	UserId          *uint32                        `protobuf:"varint,4,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                                                  // 用户ID
+	Username        *string                        `protobuf:"bytes,5,opt,name=username,proto3,oneof" json:"username,omitempty"`                                                                             // 账号名
+	IpAddress       *string                        `protobuf:"bytes,10,opt,name=ip_address,json=ipAddress,proto3,oneof" json:"ip_address,omitempty"`                                                         // 操作IP地址（IPv4/IPv6）
+	RequestId       *string                        `protobuf:"bytes,11,opt,name=request_id,json=requestId,proto3,oneof" json:"request_id,omitempty"`                                                         // 请求ID
+	DataSource      *string                        `protobuf:"bytes,12,opt,name=data_source,json=dataSource,proto3,oneof" json:"data_source,omitempty"`                                                      // 数据源类型（mysql/redis/mongodb/es）
+	TableName       *string                        `protobuf:"bytes,13,opt,name=table_name,json=tableName,proto3,oneof" json:"table_name,omitempty"`                                                         // 数据表名（如sys_users/order_info，Redis为key前缀）
+	DataId          *string                        `protobuf:"bytes,14,opt,name=data_id,json=dataId,proto3,oneof" json:"data_id,omitempty"`                                                                  // 数据主键ID（如用户ID/订单ID，兼容不同表主键类型）
+	AccessType      *DataAccessAuditLog_AccessType `protobuf:"varint,20,opt,name=access_type,json=accessType,proto3,enum=audit.service.v1.DataAccessAuditLog_AccessType,oneof" json:"access_type,omitempty"` // 数据访问类型（SELECT/INSERT/UPDATE/DELETE）
+	SqlDigest       *string                        `protobuf:"bytes,21,opt,name=sql_digest,json=sqlDigest,proto3,oneof" json:"sql_digest,omitempty"`                                                         // 执行的SQL语句摘要
+	SqlText         *string                        `protobuf:"bytes,22,opt,name=sql_text,json=sqlText,proto3,oneof" json:"sql_text,omitempty"`                                                               // 执行的SQL语句（脱敏后，Redis为命令）
+	AffectedRows    *uint32                        `protobuf:"varint,23,opt,name=affected_rows,json=affectedRows,proto3,oneof" json:"affected_rows,omitempty"`                                               // 影响行数（Redis为影响key数量）
+	LatencyMs       *uint32                        `protobuf:"varint,24,opt,name=latency_ms,json=latencyMs,proto3,oneof" json:"latency_ms,omitempty"`                                                        // 延迟时间
+	Success         *bool                          `protobuf:"varint,25,opt,name=success,proto3,oneof" json:"success,omitempty"`                                                                             // 操作结果
+	SensitiveLevel  *SensitiveLevel                `protobuf:"varint,26,opt,name=sensitive_level,json=sensitiveLevel,proto3,enum=audit.service.v1.SensitiveLevel,oneof" json:"sensitive_level,omitempty"`    // 数据敏感级别
+	DataMasked      *bool                          `protobuf:"varint,30,opt,name=data_masked,json=dataMasked,proto3,oneof" json:"data_masked,omitempty"`                                                     // 是否已脱敏
+	MaskingRules    *string                        `protobuf:"bytes,31,opt,name=masking_rules,json=maskingRules,proto3,oneof" json:"masking_rules,omitempty"`                                                // 脱敏规则
+	BusinessPurpose *string                        `protobuf:"bytes,32,opt,name=business_purpose,json=businessPurpose,proto3,oneof" json:"business_purpose,omitempty"`                                       // 业务处理目的
+	DataCategory    *string                        `protobuf:"bytes,34,opt,name=data_category,json=dataCategory,proto3,oneof" json:"data_category,omitempty"`
+	DbUser          *string                        `protobuf:"bytes,35,opt,name=db_user,json=dbUser,proto3,oneof" json:"db_user,omitempty"`
+	LogHash         *string                        `protobuf:"bytes,40,opt,name=log_hash,json=logHash,proto3,oneof" json:"log_hash,omitempty"`       // 日志哈希
+	Signature       []byte                         `protobuf:"bytes,41,opt,name=signature,proto3,oneof" json:"signature,omitempty"`                  // 日志数字签名
+	CreatedAt       *timestamppb.Timestamp         `protobuf:"bytes,50,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"` // 日志创建时间
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *DataAccessAuditLog) Reset() {
@@ -60,6 +154,181 @@ func (x *DataAccessAuditLog) ProtoReflect() protoreflect.Message {
 // Deprecated: Use DataAccessAuditLog.ProtoReflect.Descriptor instead.
 func (*DataAccessAuditLog) Descriptor() ([]byte, []int) {
 	return file_audit_service_v1_data_access_audit_log_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *DataAccessAuditLog) GetId() uint32 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *DataAccessAuditLog) GetTenantId() uint32 {
+	if x != nil && x.TenantId != nil {
+		return *x.TenantId
+	}
+	return 0
+}
+
+func (x *DataAccessAuditLog) GetTenantName() string {
+	if x != nil && x.TenantName != nil {
+		return *x.TenantName
+	}
+	return ""
+}
+
+func (x *DataAccessAuditLog) GetUserId() uint32 {
+	if x != nil && x.UserId != nil {
+		return *x.UserId
+	}
+	return 0
+}
+
+func (x *DataAccessAuditLog) GetUsername() string {
+	if x != nil && x.Username != nil {
+		return *x.Username
+	}
+	return ""
+}
+
+func (x *DataAccessAuditLog) GetIpAddress() string {
+	if x != nil && x.IpAddress != nil {
+		return *x.IpAddress
+	}
+	return ""
+}
+
+func (x *DataAccessAuditLog) GetRequestId() string {
+	if x != nil && x.RequestId != nil {
+		return *x.RequestId
+	}
+	return ""
+}
+
+func (x *DataAccessAuditLog) GetDataSource() string {
+	if x != nil && x.DataSource != nil {
+		return *x.DataSource
+	}
+	return ""
+}
+
+func (x *DataAccessAuditLog) GetTableName() string {
+	if x != nil && x.TableName != nil {
+		return *x.TableName
+	}
+	return ""
+}
+
+func (x *DataAccessAuditLog) GetDataId() string {
+	if x != nil && x.DataId != nil {
+		return *x.DataId
+	}
+	return ""
+}
+
+func (x *DataAccessAuditLog) GetAccessType() DataAccessAuditLog_AccessType {
+	if x != nil && x.AccessType != nil {
+		return *x.AccessType
+	}
+	return DataAccessAuditLog_ACCESS_TYPE_UNSPECIFIED
+}
+
+func (x *DataAccessAuditLog) GetSqlDigest() string {
+	if x != nil && x.SqlDigest != nil {
+		return *x.SqlDigest
+	}
+	return ""
+}
+
+func (x *DataAccessAuditLog) GetSqlText() string {
+	if x != nil && x.SqlText != nil {
+		return *x.SqlText
+	}
+	return ""
+}
+
+func (x *DataAccessAuditLog) GetAffectedRows() uint32 {
+	if x != nil && x.AffectedRows != nil {
+		return *x.AffectedRows
+	}
+	return 0
+}
+
+func (x *DataAccessAuditLog) GetLatencyMs() uint32 {
+	if x != nil && x.LatencyMs != nil {
+		return *x.LatencyMs
+	}
+	return 0
+}
+
+func (x *DataAccessAuditLog) GetSuccess() bool {
+	if x != nil && x.Success != nil {
+		return *x.Success
+	}
+	return false
+}
+
+func (x *DataAccessAuditLog) GetSensitiveLevel() SensitiveLevel {
+	if x != nil && x.SensitiveLevel != nil {
+		return *x.SensitiveLevel
+	}
+	return SensitiveLevel_SENSITIVE_LEVEL_UNSPECIFIED
+}
+
+func (x *DataAccessAuditLog) GetDataMasked() bool {
+	if x != nil && x.DataMasked != nil {
+		return *x.DataMasked
+	}
+	return false
+}
+
+func (x *DataAccessAuditLog) GetMaskingRules() string {
+	if x != nil && x.MaskingRules != nil {
+		return *x.MaskingRules
+	}
+	return ""
+}
+
+func (x *DataAccessAuditLog) GetBusinessPurpose() string {
+	if x != nil && x.BusinessPurpose != nil {
+		return *x.BusinessPurpose
+	}
+	return ""
+}
+
+func (x *DataAccessAuditLog) GetDataCategory() string {
+	if x != nil && x.DataCategory != nil {
+		return *x.DataCategory
+	}
+	return ""
+}
+
+func (x *DataAccessAuditLog) GetDbUser() string {
+	if x != nil && x.DbUser != nil {
+		return *x.DbUser
+	}
+	return ""
+}
+
+func (x *DataAccessAuditLog) GetLogHash() string {
+	if x != nil && x.LogHash != nil {
+		return *x.LogHash
+	}
+	return ""
+}
+
+func (x *DataAccessAuditLog) GetSignature() []byte {
+	if x != nil {
+		return x.Signature
+	}
+	return nil
+}
+
+func (x *DataAccessAuditLog) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
 }
 
 // 查询数据访问审计日志列表 - 回应
@@ -239,8 +508,92 @@ var File_audit_service_v1_data_access_audit_log_proto protoreflect.FileDescripto
 
 const file_audit_service_v1_data_access_audit_log_proto_rawDesc = "" +
 	"\n" +
-	",audit/service/v1/data_access_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1daudit/service/v1/common.proto\"\x14\n" +
-	"\x12DataAccessAuditLog\"r\n" +
+	",audit/service/v1/data_access_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x17validate/validate.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1daudit/service/v1/common.proto\"\x8c\x14\n" +
+	"\x12DataAccessAuditLog\x12,\n" +
+	"\x02id\x18\x01 \x01(\rB\x17\xbaG\x14\x92\x02\x11API审计日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x128\n" +
+	"\vtenant_name\x18\x03 \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\x02R\n" +
+	"tenantName\x88\x01\x01\x12,\n" +
+	"\auser_id\x18\x04 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDH\x03R\x06userId\x88\x01\x01\x120\n" +
+	"\busername\x18\x05 \x01(\tB\x0f\xbaG\f\x92\x02\t账号名H\x04R\busername\x88\x01\x01\x12G\n" +
+	"\n" +
+	"ip_address\x18\n" +
+	" \x01(\tB#\xbaG \x92\x02\x1d操作IP地址（IPv4/IPv6）H\x05R\tipAddress\x88\x01\x01\x12P\n" +
+	"\n" +
+	"request_id\x18\v \x01(\tB,\xbaG)\x92\x02&全局请求ID（关联网关日志）H\x06R\trequestId\x88\x01\x01\x12W\n" +
+	"\vdata_source\x18\f \x01(\tB1\xbaG.\x92\x02+数据源类型（mysql/redis/mongodb/es）H\aR\n" +
+	"dataSource\x88\x01\x01\x12g\n" +
+	"\n" +
+	"table_name\x18\r \x01(\tBC\xbaG@\x92\x02=数据表名（如sys_users/order_info，Redis为key前缀）H\bR\ttableName\x88\x01\x01\x12j\n" +
+	"\adata_id\x18\x0e \x01(\tBL\xbaGI\x92\x02F数据主键ID（如用户ID/订单ID，兼容不同表主键类型）H\tR\x06dataId\x88\x01\x01\x12\x90\x01\n" +
+	"\vaccess_type\x18\x14 \x01(\x0e2/.audit.service.v1.DataAccessAuditLog.AccessTypeB9\xbaG6\x92\x023数据访问类型（SELECT/INSERT/UPDATE/DELETE）H\n" +
+	"R\n" +
+	"accessType\x88\x01\x01\x12K\n" +
+	"\n" +
+	"sql_digest\x18\x15 \x01(\tB'\xbaG$\x92\x02!执行的SQL语句摘要（MD5）H\vR\tsqlDigest\x88\x01\x01\x12X\n" +
+	"\bsql_text\x18\x16 \x01(\tB8\xbaG5\x92\x022执行的SQL语句（脱敏后，Redis为命令）H\fR\asqlText\x88\x01\x01\x12Y\n" +
+	"\raffected_rows\x18\x17 \x01(\rB/\xbaG,\x92\x02)影响行数（Redis为影响key数量）H\rR\faffectedRows\x88\x01\x01\x12I\n" +
+	"\n" +
+	"latency_ms\x18\x18 \x01(\rB%\xfaB\a*\x05\x18\x80\xdd\xdb\x01\xbaG\x18\x92\x02\x15延迟时间（毫秒H\x0eR\tlatencyMs\x88\x01\x01\x127\n" +
+	"\asuccess\x18\x19 \x01(\bB\x18\xbaG\x15\x92\x02\x12操作是否成功H\x0fR\asuccess\x88\x01\x01\x12h\n" +
+	"\x0fsensitive_level\x18\x1a \x01(\x0e2 .audit.service.v1.SensitiveLevelB\x18\xbaG\x15\x92\x02\x12数据敏感级别H\x10R\x0esensitiveLevel\x88\x01\x01\x12;\n" +
+	"\vdata_masked\x18\x1e \x01(\bB\x15\xbaG\x12\x92\x02\x0f是否已脱敏H\x11R\n" +
+	"dataMasked\x88\x01\x01\x12`\n" +
+	"\rmasking_rules\x18\x1f \x01(\tB6\xbaG3\x92\x020脱敏规则（JSON：{\"phone\":\"mask_last_4\"}）H\x12R\fmaskingRules\x88\x01\x01\x12b\n" +
+	"\x10business_purpose\x18  \x01(\tB2\xfaB\x17r\x15\x10\x052\x11^\\w+:[a-z0-9_-]+$\xbaG\x15\x92\x02\x12业务处理目的H\x13R\x0fbusinessPurpose\x88\x01\x01\x12B\n" +
+	"\rdata_category\x18\" \x01(\tB\x18\xbaG\x15\x92\x02\x12数据分类标签H\x14R\fdataCategory\x88\x01\x01\x123\n" +
+	"\adb_user\x18# \x01(\tB\x15\xbaG\x12\x92\x02\x0f数据库用户H\x15R\x06dbUser\x88\x01\x01\x12\\\n" +
+	"\blog_hash\x18( \x01(\tB<\xbaG9\x92\x026日志内容哈希（SHA256，十六进制字符串）H\x16R\alogHash\x88\x01\x01\x12}\n" +
+	"\tsignature\x18) \x01(\fBZ\xbaGW\x92\x02T日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）H\x17R\tsignature\x88\x01\x01\x12X\n" +
+	"\n" +
+	"created_at\x182 \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12日志创建时间H\x18R\tcreatedAt\x88\x01\x01\"\x89\x01\n" +
+	"\n" +
+	"AccessType\x12\x1b\n" +
+	"\x17ACCESS_TYPE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06SELECT\x10\x01\x12\n" +
+	"\n" +
+	"\x06INSERT\x10\x02\x12\n" +
+	"\n" +
+	"\x06UPDATE\x10\x03\x12\n" +
+	"\n" +
+	"\x06DELETE\x10\x04\x12\b\n" +
+	"\x04VIEW\x10\x05\x12\n" +
+	"\n" +
+	"\x06EXPORT\x10\x06\x12\r\n" +
+	"\tBULK_READ\x10\a\x12\t\n" +
+	"\x05OTHER\x10\bB\x05\n" +
+	"\x03_idB\f\n" +
+	"\n" +
+	"_tenant_idB\x0e\n" +
+	"\f_tenant_nameB\n" +
+	"\n" +
+	"\b_user_idB\v\n" +
+	"\t_usernameB\r\n" +
+	"\v_ip_addressB\r\n" +
+	"\v_request_idB\x0e\n" +
+	"\f_data_sourceB\r\n" +
+	"\v_table_nameB\n" +
+	"\n" +
+	"\b_data_idB\x0e\n" +
+	"\f_access_typeB\r\n" +
+	"\v_sql_digestB\v\n" +
+	"\t_sql_textB\x10\n" +
+	"\x0e_affected_rowsB\r\n" +
+	"\v_latency_msB\n" +
+	"\n" +
+	"\b_successB\x12\n" +
+	"\x10_sensitive_levelB\x0e\n" +
+	"\f_data_maskedB\x10\n" +
+	"\x0e_masking_rulesB\x13\n" +
+	"\x11_business_purposeB\x10\n" +
+	"\x0e_data_categoryB\n" +
+	"\n" +
+	"\b_db_userB\v\n" +
+	"\t_log_hashB\f\n" +
+	"\n" +
+	"_signatureB\r\n" +
+	"\v_created_at\"r\n" +
 	"\x1eListDataAccessAuditLogResponse\x12:\n" +
 	"\x05items\x18\x01 \x03(\v2$.audit.service.v1.DataAccessAuditLogR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xcf\x01\n" +
@@ -271,28 +624,35 @@ func file_audit_service_v1_data_access_audit_log_proto_rawDescGZIP() []byte {
 	return file_audit_service_v1_data_access_audit_log_proto_rawDescData
 }
 
+var file_audit_service_v1_data_access_audit_log_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_audit_service_v1_data_access_audit_log_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_audit_service_v1_data_access_audit_log_proto_goTypes = []any{
-	(*DataAccessAuditLog)(nil),              // 0: audit.service.v1.DataAccessAuditLog
-	(*ListDataAccessAuditLogResponse)(nil),  // 1: audit.service.v1.ListDataAccessAuditLogResponse
-	(*GetDataAccessAuditLogRequest)(nil),    // 2: audit.service.v1.GetDataAccessAuditLogRequest
-	(*CreateDataAccessAuditLogRequest)(nil), // 3: audit.service.v1.CreateDataAccessAuditLogRequest
-	(*fieldmaskpb.FieldMask)(nil),           // 4: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),                // 5: pagination.PagingRequest
+	(DataAccessAuditLog_AccessType)(0),      // 0: audit.service.v1.DataAccessAuditLog.AccessType
+	(*DataAccessAuditLog)(nil),              // 1: audit.service.v1.DataAccessAuditLog
+	(*ListDataAccessAuditLogResponse)(nil),  // 2: audit.service.v1.ListDataAccessAuditLogResponse
+	(*GetDataAccessAuditLogRequest)(nil),    // 3: audit.service.v1.GetDataAccessAuditLogRequest
+	(*CreateDataAccessAuditLogRequest)(nil), // 4: audit.service.v1.CreateDataAccessAuditLogRequest
+	(SensitiveLevel)(0),                     // 5: audit.service.v1.SensitiveLevel
+	(*timestamppb.Timestamp)(nil),           // 6: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),           // 7: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),                // 8: pagination.PagingRequest
 }
 var file_audit_service_v1_data_access_audit_log_proto_depIdxs = []int32{
-	0, // 0: audit.service.v1.ListDataAccessAuditLogResponse.items:type_name -> audit.service.v1.DataAccessAuditLog
-	4, // 1: audit.service.v1.GetDataAccessAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
-	0, // 2: audit.service.v1.CreateDataAccessAuditLogRequest.data:type_name -> audit.service.v1.DataAccessAuditLog
-	5, // 3: audit.service.v1.DataAccessAuditLogService.List:input_type -> pagination.PagingRequest
-	2, // 4: audit.service.v1.DataAccessAuditLogService.Get:input_type -> audit.service.v1.GetDataAccessAuditLogRequest
-	1, // 5: audit.service.v1.DataAccessAuditLogService.List:output_type -> audit.service.v1.ListDataAccessAuditLogResponse
-	0, // 6: audit.service.v1.DataAccessAuditLogService.Get:output_type -> audit.service.v1.DataAccessAuditLog
-	5, // [5:7] is the sub-list for method output_type
-	3, // [3:5] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	0, // 0: audit.service.v1.DataAccessAuditLog.access_type:type_name -> audit.service.v1.DataAccessAuditLog.AccessType
+	5, // 1: audit.service.v1.DataAccessAuditLog.sensitive_level:type_name -> audit.service.v1.SensitiveLevel
+	6, // 2: audit.service.v1.DataAccessAuditLog.created_at:type_name -> google.protobuf.Timestamp
+	1, // 3: audit.service.v1.ListDataAccessAuditLogResponse.items:type_name -> audit.service.v1.DataAccessAuditLog
+	7, // 4: audit.service.v1.GetDataAccessAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
+	1, // 5: audit.service.v1.CreateDataAccessAuditLogRequest.data:type_name -> audit.service.v1.DataAccessAuditLog
+	8, // 6: audit.service.v1.DataAccessAuditLogService.List:input_type -> pagination.PagingRequest
+	3, // 7: audit.service.v1.DataAccessAuditLogService.Get:input_type -> audit.service.v1.GetDataAccessAuditLogRequest
+	2, // 8: audit.service.v1.DataAccessAuditLogService.List:output_type -> audit.service.v1.ListDataAccessAuditLogResponse
+	1, // 9: audit.service.v1.DataAccessAuditLogService.Get:output_type -> audit.service.v1.DataAccessAuditLog
+	8, // [8:10] is the sub-list for method output_type
+	6, // [6:8] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_audit_service_v1_data_access_audit_log_proto_init() }
@@ -301,6 +661,7 @@ func file_audit_service_v1_data_access_audit_log_proto_init() {
 		return
 	}
 	file_audit_service_v1_common_proto_init()
+	file_audit_service_v1_data_access_audit_log_proto_msgTypes[0].OneofWrappers = []any{}
 	file_audit_service_v1_data_access_audit_log_proto_msgTypes[2].OneofWrappers = []any{
 		(*GetDataAccessAuditLogRequest_Id)(nil),
 	}
@@ -309,13 +670,14 @@ func file_audit_service_v1_data_access_audit_log_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_audit_service_v1_data_access_audit_log_proto_rawDesc), len(file_audit_service_v1_data_access_audit_log_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      1,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_audit_service_v1_data_access_audit_log_proto_goTypes,
 		DependencyIndexes: file_audit_service_v1_data_access_audit_log_proto_depIdxs,
+		EnumInfos:         file_audit_service_v1_data_access_audit_log_proto_enumTypes,
 		MessageInfos:      file_audit_service_v1_data_access_audit_log_proto_msgTypes,
 	}.Build()
 	File_audit_service_v1_data_access_audit_log_proto = out.File

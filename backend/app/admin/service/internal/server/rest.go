@@ -101,6 +101,8 @@ func NewRestServer(
 
 	loginAuditLogService *service.LoginAuditLogService,
 	apiAuditLogService *service.ApiAuditLogService,
+	operationAuditLogService *service.OperationAuditLogService,
+	dataAccessAuditLogService *service.DataAccessAuditLogService,
 
 	internalMessageService *service.InternalMessageService,
 	internalMessageCategoryService *service.InternalMessageCategoryService,
@@ -146,6 +148,8 @@ func NewRestServer(
 
 	adminV1.RegisterLoginAuditLogServiceHTTPServer(srv, loginAuditLogService)
 	adminV1.RegisterApiAuditLogServiceHTTPServer(srv, apiAuditLogService)
+	adminV1.RegisterOperationAuditLogServiceHTTPServer(srv, operationAuditLogService)
+	adminV1.RegisterDataAccessAuditLogServiceHTTPServer(srv, dataAccessAuditLogService)
 
 	adminV1.RegisterOssServiceHTTPServer(srv, ossService)
 	adminV1.RegisterFileServiceHTTPServer(srv, fileService)

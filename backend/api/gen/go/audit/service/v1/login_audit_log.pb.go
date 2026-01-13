@@ -33,6 +33,8 @@ const (
 	LoginAuditLog_LOGIN                   LoginAuditLog_ActionType = 1 // 用户主动登录
 	LoginAuditLog_LOGOUT                  LoginAuditLog_ActionType = 2 // 用户主动登出
 	LoginAuditLog_SESSION_EXPIRED         LoginAuditLog_ActionType = 3 // 系统触发的会话过期（非用户操作）
+	LoginAuditLog_KICKED_OUT              LoginAuditLog_ActionType = 4 // 用户被强制下线
+	LoginAuditLog_PASSWORD_RESET          LoginAuditLog_ActionType = 5 // 密码重置后强制登出
 )
 
 // Enum value maps for LoginAuditLog_ActionType.
@@ -42,12 +44,16 @@ var (
 		1: "LOGIN",
 		2: "LOGOUT",
 		3: "SESSION_EXPIRED",
+		4: "KICKED_OUT",
+		5: "PASSWORD_RESET",
 	}
 	LoginAuditLog_ActionType_value = map[string]int32{
 		"ACTION_TYPE_UNSPECIFIED": 0,
 		"LOGIN":                   1,
 		"LOGOUT":                  2,
 		"SESSION_EXPIRED":         3,
+		"KICKED_OUT":              4,
+		"PASSWORD_RESET":          5,
 	}
 )
 
@@ -86,6 +92,7 @@ const (
 	LoginAuditLog_SUCCESS            LoginAuditLog_Status = 1 // 操作成功
 	LoginAuditLog_FAILED             LoginAuditLog_Status = 2 // 操作失败
 	LoginAuditLog_PARTIAL            LoginAuditLog_Status = 3 // 部分成功（如MFA验证中）
+	LoginAuditLog_LOCKED             LoginAuditLog_Status = 4 // 账号锁定
 )
 
 // Enum value maps for LoginAuditLog_Status.
@@ -95,12 +102,14 @@ var (
 		1: "SUCCESS",
 		2: "FAILED",
 		3: "PARTIAL",
+		4: "LOCKED",
 	}
 	LoginAuditLog_Status_value = map[string]int32{
 		"STATUS_UNSPECIFIED": 0,
 		"SUCCESS":            1,
 		"FAILED":             2,
 		"PARTIAL":            3,
+		"LOCKED":             4,
 	}
 )
 
@@ -184,29 +193,93 @@ func (LoginAuditLog_RiskLevel) EnumDescriptor() ([]byte, []int) {
 	return file_audit_service_v1_login_audit_log_proto_rawDescGZIP(), []int{0, 2}
 }
 
+// 登录方式
+type LoginAuditLog_LoginMethod int32
+
+const (
+	LoginAuditLog_LOGIN_METHOD_UNSPECIFIED LoginAuditLog_LoginMethod = 0
+	LoginAuditLog_PASSWORD                 LoginAuditLog_LoginMethod = 1 // 密码
+	LoginAuditLog_SMS_CODE                 LoginAuditLog_LoginMethod = 2 // 短信验证码
+	LoginAuditLog_QR_CODE                  LoginAuditLog_LoginMethod = 3 // 二维码
+	LoginAuditLog_OIDC_SOCIAL              LoginAuditLog_LoginMethod = 4 // 第三方登录
+	LoginAuditLog_BIOMETRIC                LoginAuditLog_LoginMethod = 5 // 指纹/面部
+	LoginAuditLog_FIDO2                    LoginAuditLog_LoginMethod = 6 // 硬件密钥
+)
+
+// Enum value maps for LoginAuditLog_LoginMethod.
+var (
+	LoginAuditLog_LoginMethod_name = map[int32]string{
+		0: "LOGIN_METHOD_UNSPECIFIED",
+		1: "PASSWORD",
+		2: "SMS_CODE",
+		3: "QR_CODE",
+		4: "OIDC_SOCIAL",
+		5: "BIOMETRIC",
+		6: "FIDO2",
+	}
+	LoginAuditLog_LoginMethod_value = map[string]int32{
+		"LOGIN_METHOD_UNSPECIFIED": 0,
+		"PASSWORD":                 1,
+		"SMS_CODE":                 2,
+		"QR_CODE":                  3,
+		"OIDC_SOCIAL":              4,
+		"BIOMETRIC":                5,
+		"FIDO2":                    6,
+	}
+)
+
+func (x LoginAuditLog_LoginMethod) Enum() *LoginAuditLog_LoginMethod {
+	p := new(LoginAuditLog_LoginMethod)
+	*p = x
+	return p
+}
+
+func (x LoginAuditLog_LoginMethod) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (LoginAuditLog_LoginMethod) Descriptor() protoreflect.EnumDescriptor {
+	return file_audit_service_v1_login_audit_log_proto_enumTypes[3].Descriptor()
+}
+
+func (LoginAuditLog_LoginMethod) Type() protoreflect.EnumType {
+	return &file_audit_service_v1_login_audit_log_proto_enumTypes[3]
+}
+
+func (x LoginAuditLog_LoginMethod) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use LoginAuditLog_LoginMethod.Descriptor instead.
+func (LoginAuditLog_LoginMethod) EnumDescriptor() ([]byte, []int) {
+	return file_audit_service_v1_login_audit_log_proto_rawDescGZIP(), []int{0, 3}
+}
+
 // 登录审计日志
 type LoginAuditLog struct {
-	state         protoimpl.MessageState    `protogen:"open.v1"`
-	Id            *uint32                   `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                   // 登录审计日志ID
-	TenantId      *uint32                   `protobuf:"varint,2,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                       // 租户ID
-	TenantName    *string                   `protobuf:"bytes,3,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`                                                  // 租户名称
-	UserId        *uint32                   `protobuf:"varint,4,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                                             // 用户ID
-	Username      *string                   `protobuf:"bytes,5,opt,name=username,proto3,oneof" json:"username,omitempty"`                                                                        // 账号名
-	IpAddress     *string                   `protobuf:"bytes,10,opt,name=ip_address,json=ipAddress,proto3,oneof" json:"ip_address,omitempty"`                                                    // IP地址
-	GeoLocation   *GeoLocation              `protobuf:"bytes,11,opt,name=geo_location,json=geoLocation,proto3,oneof" json:"geo_location,omitempty"`                                              // 地理位置(来自IP库)
-	SessionId     *string                   `protobuf:"bytes,12,opt,name=session_id,json=sessionId,proto3,oneof" json:"session_id,omitempty"`                                                    // 会话ID
-	DeviceInfo    *DeviceInfo               `protobuf:"bytes,13,opt,name=device_info,json=deviceInfo,proto3,oneof" json:"device_info,omitempty"`                                                 // 设备信息
-	RequestId     *string                   `protobuf:"bytes,16,opt,name=request_id,json=requestId,proto3,oneof" json:"request_id,omitempty"`                                                    // 全局请求ID（关联网关日志）
-	ActionType    *LoginAuditLog_ActionType `protobuf:"varint,20,opt,name=action_type,json=actionType,proto3,enum=audit.service.v1.LoginAuditLog_ActionType,oneof" json:"action_type,omitempty"` // 事件动作类型
-	Status        *LoginAuditLog_Status     `protobuf:"varint,21,opt,name=status,proto3,enum=audit.service.v1.LoginAuditLog_Status,oneof" json:"status,omitempty"`                               // 操作结果状态
-	FailureReason *string                   `protobuf:"bytes,22,opt,name=failure_reason,json=failureReason,proto3,oneof" json:"failure_reason,omitempty"`                                        // 失败原因
-	MfaStatus     *string                   `protobuf:"bytes,23,opt,name=mfa_status,json=mfaStatus,proto3,oneof" json:"mfa_status,omitempty"`                                                    // MFA状态 MFA场景必传
-	RiskScore     *uint32                   `protobuf:"varint,30,opt,name=risk_score,json=riskScore,proto3,oneof" json:"risk_score,omitempty"`                                                   // 风险评分（0-100，分值越高风险越大）
-	RiskLevel     *LoginAuditLog_RiskLevel  `protobuf:"varint,31,opt,name=risk_level,json=riskLevel,proto3,enum=audit.service.v1.LoginAuditLog_RiskLevel,oneof" json:"risk_level,omitempty"`     // 风险等级（高风险需实时告警）
-	RiskFactors   []string                  `protobuf:"bytes,32,rep,name=risk_factors,json=riskFactors,proto3" json:"risk_factors,omitempty"`                                                    // 风险因素（ISO 27001标准，如：异地登录/新设备/密码尝试次数过多）
-	LogHash       *string                   `protobuf:"bytes,40,opt,name=log_hash,json=logHash,proto3,oneof" json:"log_hash,omitempty"`                                                          // 日志内容哈希（SHA256，十六进制字符串）
-	Signature     []byte                    `protobuf:"bytes,41,opt,name=signature,proto3,oneof" json:"signature,omitempty"`                                                                     // 日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）
-	CreatedAt     *timestamppb.Timestamp    `protobuf:"bytes,50,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                                    // 日志创建时间
+	state         protoimpl.MessageState     `protogen:"open.v1"`
+	Id            *uint32                    `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                   // 登录审计日志ID
+	TenantId      *uint32                    `protobuf:"varint,2,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                       // 租户ID
+	TenantName    *string                    `protobuf:"bytes,3,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`                                                  // 租户名称
+	UserId        *uint32                    `protobuf:"varint,4,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                                             // 用户ID
+	Username      *string                    `protobuf:"bytes,5,opt,name=username,proto3,oneof" json:"username,omitempty"`                                                                        // 账号名
+	IpAddress     *string                    `protobuf:"bytes,10,opt,name=ip_address,json=ipAddress,proto3,oneof" json:"ip_address,omitempty"`                                                    // IP地址
+	GeoLocation   *GeoLocation               `protobuf:"bytes,11,opt,name=geo_location,json=geoLocation,proto3,oneof" json:"geo_location,omitempty"`                                              // 地理位置(来自IP库)
+	SessionId     *string                    `protobuf:"bytes,12,opt,name=session_id,json=sessionId,proto3,oneof" json:"session_id,omitempty"`                                                    // 会话ID
+	DeviceInfo    *DeviceInfo                `protobuf:"bytes,13,opt,name=device_info,json=deviceInfo,proto3,oneof" json:"device_info,omitempty"`                                                 // 设备信息
+	RequestId     *string                    `protobuf:"bytes,16,opt,name=request_id,json=requestId,proto3,oneof" json:"request_id,omitempty"`                                                    // 全局请求ID（关联网关日志）
+	TraceId       *string                    `protobuf:"bytes,17,opt,name=trace_id,json=traceId,proto3,oneof" json:"trace_id,omitempty"`                                                          // 全局链路追踪ID
+	ActionType    *LoginAuditLog_ActionType  `protobuf:"varint,20,opt,name=action_type,json=actionType,proto3,enum=audit.service.v1.LoginAuditLog_ActionType,oneof" json:"action_type,omitempty"` // 事件动作类型
+	Status        *LoginAuditLog_Status      `protobuf:"varint,21,opt,name=status,proto3,enum=audit.service.v1.LoginAuditLog_Status,oneof" json:"status,omitempty"`                               // 操作结果状态
+	FailureReason *string                    `protobuf:"bytes,22,opt,name=failure_reason,json=failureReason,proto3,oneof" json:"failure_reason,omitempty"`                                        // 失败原因
+	MfaStatus     *string                    `protobuf:"bytes,23,opt,name=mfa_status,json=mfaStatus,proto3,oneof" json:"mfa_status,omitempty"`                                                    // MFA状态 MFA场景必传
+	LoginMethod   *LoginAuditLog_LoginMethod `protobuf:"varint,24,opt,name=login_method,json=loginMethod,proto3,enum=audit.service.v1.LoginAuditLog_LoginMethod,oneof" json:"login_method,omitempty"`
+	RiskScore     *uint32                    `protobuf:"varint,30,opt,name=risk_score,json=riskScore,proto3,oneof" json:"risk_score,omitempty"`                                               // 风险评分（0-100，分值越高风险越大）
+	RiskLevel     *LoginAuditLog_RiskLevel   `protobuf:"varint,31,opt,name=risk_level,json=riskLevel,proto3,enum=audit.service.v1.LoginAuditLog_RiskLevel,oneof" json:"risk_level,omitempty"` // 风险等级（高风险需实时告警）
+	RiskFactors   []string                   `protobuf:"bytes,32,rep,name=risk_factors,json=riskFactors,proto3" json:"risk_factors,omitempty"`                                                // 风险因素（ISO 27001标准，如：异地登录/新设备/密码尝试次数过多）
+	LogHash       *string                    `protobuf:"bytes,40,opt,name=log_hash,json=logHash,proto3,oneof" json:"log_hash,omitempty"`                                                      // 日志内容哈希（SHA256，十六进制字符串）
+	Signature     []byte                     `protobuf:"bytes,41,opt,name=signature,proto3,oneof" json:"signature,omitempty"`                                                                 // 日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）
+	CreatedAt     *timestamppb.Timestamp     `protobuf:"bytes,50,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                                // 日志创建时间
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -311,6 +384,13 @@ func (x *LoginAuditLog) GetRequestId() string {
 	return ""
 }
 
+func (x *LoginAuditLog) GetTraceId() string {
+	if x != nil && x.TraceId != nil {
+		return *x.TraceId
+	}
+	return ""
+}
+
 func (x *LoginAuditLog) GetActionType() LoginAuditLog_ActionType {
 	if x != nil && x.ActionType != nil {
 		return *x.ActionType
@@ -337,6 +417,13 @@ func (x *LoginAuditLog) GetMfaStatus() string {
 		return *x.MfaStatus
 	}
 	return ""
+}
+
+func (x *LoginAuditLog) GetLoginMethod() LoginAuditLog_LoginMethod {
+	if x != nil && x.LoginMethod != nil {
+		return *x.LoginMethod
+	}
+	return LoginAuditLog_LOGIN_METHOD_UNSPECIFIED
 }
 
 func (x *LoginAuditLog) GetRiskScore() uint32 {
@@ -558,7 +645,7 @@ var File_audit_service_v1_login_audit_log_proto protoreflect.FileDescriptor
 
 const file_audit_service_v1_login_audit_log_proto_rawDesc = "" +
 	"\n" +
-	"&audit/service/v1/login_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a#audit/service/v1/geo_location.proto\x1a\"audit/service/v1/device_info.proto\"\xae\x11\n" +
+	"&audit/service/v1/login_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a#audit/service/v1/geo_location.proto\x1a\"audit/service/v1/device_info.proto\"\xa2\x14\n" +
 	"\rLoginAuditLog\x12/\n" +
 	"\x02id\x18\x01 \x01(\rB\x1a\xbaG\x17\x92\x02\x14登录审计日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
 	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x128\n" +
@@ -575,42 +662,57 @@ const file_audit_service_v1_login_audit_log_proto_rawDesc = "" +
 	"\vdevice_info\x18\r \x01(\v2\x1c.audit.service.v1.DeviceInfoB\x12\xbaG\x0f\x92\x02\f设备信息H\bR\n" +
 	"deviceInfo\x88\x01\x01\x12P\n" +
 	"\n" +
-	"request_id\x18\x10 \x01(\tB,\xbaG)\x92\x02&全局请求ID（关联网关日志）H\tR\trequestId\x88\x01\x01\x12j\n" +
-	"\vaction_type\x18\x14 \x01(\x0e2*.audit.service.v1.LoginAuditLog.ActionTypeB\x18\xbaG\x15\x92\x02\x12事件动作类型H\n" +
-	"R\n" +
+	"request_id\x18\x10 \x01(\tB,\xbaG)\x92\x02&全局请求ID（关联网关日志）H\tR\trequestId\x88\x01\x01\x12:\n" +
+	"\btrace_id\x18\x11 \x01(\tB\x1a\xbaG\x17\x92\x02\x14全局链路追踪IDH\n" +
+	"R\atraceId\x88\x01\x01\x12j\n" +
+	"\vaction_type\x18\x14 \x01(\x0e2*.audit.service.v1.LoginAuditLog.ActionTypeB\x18\xbaG\x15\x92\x02\x12事件动作类型H\vR\n" +
 	"actionType\x88\x01\x01\x12]\n" +
-	"\x06status\x18\x15 \x01(\x0e2&.audit.service.v1.LoginAuditLog.StatusB\x18\xbaG\x15\x92\x02\x12操作结果状态H\vR\x06status\x88\x01\x01\x12l\n" +
-	"\x0efailure_reason\x18\x16 \x01(\tB@\xbaG=\x92\x02:失败原因：密码错误/MFA验证失败/IP黑名单等H\fR\rfailureReason\x88\x01\x01\x12Z\n" +
+	"\x06status\x18\x15 \x01(\x0e2&.audit.service.v1.LoginAuditLog.StatusB\x18\xbaG\x15\x92\x02\x12操作结果状态H\fR\x06status\x88\x01\x01\x12l\n" +
+	"\x0efailure_reason\x18\x16 \x01(\tB@\xbaG=\x92\x02:失败原因：密码错误/MFA验证失败/IP黑名单等H\rR\rfailureReason\x88\x01\x01\x12Z\n" +
 	"\n" +
-	"mfa_status\x18\x17 \x01(\tB6\xbaG3\x92\x020MFA状态：UNVERIFIED/VERIFYING/VERIFIED/FAILEDH\rR\tmfaStatus\x88\x01\x01\x12\\\n" +
+	"mfa_status\x18\x17 \x01(\tB6\xbaG3\x92\x020MFA状态：UNVERIFIED/VERIFYING/VERIFIED/FAILEDH\x0eR\tmfaStatus\x88\x01\x01\x12g\n" +
+	"\flogin_method\x18\x18 \x01(\x0e2+.audit.service.v1.LoginAuditLog.LoginMethodB\x12\xbaG\x0f\x92\x02\f登录方式H\x0fR\vloginMethod\x88\x01\x01\x12\\\n" +
 	"\n" +
-	"risk_score\x18\x1e \x01(\rB8\xbaG5\x92\x022风险评分（0-100，分值越高风险越大）H\x0eR\triskScore\x88\x01\x01\x12\x7f\n" +
+	"risk_score\x18\x1e \x01(\rB8\xbaG5\x92\x022风险评分（0-100，分值越高风险越大）H\x10R\triskScore\x88\x01\x01\x12\x7f\n" +
 	"\n" +
-	"risk_level\x18\x1f \x01(\x0e2).audit.service.v1.LoginAuditLog.RiskLevelB0\xbaG-\x92\x02*风险等级（高风险需实时告警）H\x0fR\triskLevel\x88\x01\x01\x12\x82\x01\n" +
+	"risk_level\x18\x1f \x01(\x0e2).audit.service.v1.LoginAuditLog.RiskLevelB0\xbaG-\x92\x02*风险等级（高风险需实时告警）H\x11R\triskLevel\x88\x01\x01\x12\x82\x01\n" +
 	"\frisk_factors\x18  \x03(\tB_\xbaG\\\x92\x02Y风险因素（ISO 27001标准，如：异地登录/新设备/密码尝试次数过多）R\vriskFactors\x12\\\n" +
-	"\blog_hash\x18( \x01(\tB<\xbaG9\x92\x026日志内容哈希（SHA256，十六进制字符串）H\x10R\alogHash\x88\x01\x01\x12}\n" +
-	"\tsignature\x18) \x01(\fBZ\xbaGW\x92\x02T日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）H\x11R\tsignature\x88\x01\x01\x12X\n" +
+	"\blog_hash\x18( \x01(\tB<\xbaG9\x92\x026日志内容哈希（SHA256，十六进制字符串）H\x12R\alogHash\x88\x01\x01\x12}\n" +
+	"\tsignature\x18) \x01(\fBZ\xbaGW\x92\x02T日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）H\x13R\tsignature\x88\x01\x01\x12X\n" +
 	"\n" +
-	"created_at\x182 \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12日志创建时间H\x12R\tcreatedAt\x88\x01\x01\"U\n" +
+	"created_at\x182 \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12日志创建时间H\x14R\tcreatedAt\x88\x01\x01\"y\n" +
 	"\n" +
 	"ActionType\x12\x1b\n" +
 	"\x17ACTION_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05LOGIN\x10\x01\x12\n" +
 	"\n" +
 	"\x06LOGOUT\x10\x02\x12\x13\n" +
-	"\x0fSESSION_EXPIRED\x10\x03\"F\n" +
+	"\x0fSESSION_EXPIRED\x10\x03\x12\x0e\n" +
+	"\n" +
+	"KICKED_OUT\x10\x04\x12\x12\n" +
+	"\x0ePASSWORD_RESET\x10\x05\"R\n" +
 	"\x06Status\x12\x16\n" +
 	"\x12STATUS_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aSUCCESS\x10\x01\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x02\x12\v\n" +
-	"\aPARTIAL\x10\x03\"F\n" +
+	"\aPARTIAL\x10\x03\x12\n" +
+	"\n" +
+	"\x06LOCKED\x10\x04\"F\n" +
 	"\tRiskLevel\x12\x1a\n" +
 	"\x16RISK_LEVEL_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03LOW\x10\x01\x12\n" +
 	"\n" +
 	"\x06MEDIUM\x10\x02\x12\b\n" +
-	"\x04HIGH\x10\x03B\x05\n" +
+	"\x04HIGH\x10\x03\"\x7f\n" +
+	"\vLoginMethod\x12\x1c\n" +
+	"\x18LOGIN_METHOD_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bPASSWORD\x10\x01\x12\f\n" +
+	"\bSMS_CODE\x10\x02\x12\v\n" +
+	"\aQR_CODE\x10\x03\x12\x0f\n" +
+	"\vOIDC_SOCIAL\x10\x04\x12\r\n" +
+	"\tBIOMETRIC\x10\x05\x12\t\n" +
+	"\x05FIDO2\x10\x06B\x05\n" +
 	"\x03_idB\f\n" +
 	"\n" +
 	"_tenant_idB\x0e\n" +
@@ -622,11 +724,13 @@ const file_audit_service_v1_login_audit_log_proto_rawDesc = "" +
 	"\r_geo_locationB\r\n" +
 	"\v_session_idB\x0e\n" +
 	"\f_device_infoB\r\n" +
-	"\v_request_idB\x0e\n" +
+	"\v_request_idB\v\n" +
+	"\t_trace_idB\x0e\n" +
 	"\f_action_typeB\t\n" +
 	"\a_statusB\x11\n" +
 	"\x0f_failure_reasonB\r\n" +
-	"\v_mfa_statusB\r\n" +
+	"\v_mfa_statusB\x0f\n" +
+	"\r_login_methodB\r\n" +
 	"\v_risk_scoreB\r\n" +
 	"\v_risk_levelB\v\n" +
 	"\t_log_hashB\f\n" +
@@ -663,41 +767,43 @@ func file_audit_service_v1_login_audit_log_proto_rawDescGZIP() []byte {
 	return file_audit_service_v1_login_audit_log_proto_rawDescData
 }
 
-var file_audit_service_v1_login_audit_log_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_audit_service_v1_login_audit_log_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
 var file_audit_service_v1_login_audit_log_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_audit_service_v1_login_audit_log_proto_goTypes = []any{
 	(LoginAuditLog_ActionType)(0),      // 0: audit.service.v1.LoginAuditLog.ActionType
 	(LoginAuditLog_Status)(0),          // 1: audit.service.v1.LoginAuditLog.Status
 	(LoginAuditLog_RiskLevel)(0),       // 2: audit.service.v1.LoginAuditLog.RiskLevel
-	(*LoginAuditLog)(nil),              // 3: audit.service.v1.LoginAuditLog
-	(*ListLoginAuditLogResponse)(nil),  // 4: audit.service.v1.ListLoginAuditLogResponse
-	(*GetLoginAuditLogRequest)(nil),    // 5: audit.service.v1.GetLoginAuditLogRequest
-	(*CreateLoginAuditLogRequest)(nil), // 6: audit.service.v1.CreateLoginAuditLogRequest
-	(*GeoLocation)(nil),                // 7: audit.service.v1.GeoLocation
-	(*DeviceInfo)(nil),                 // 8: audit.service.v1.DeviceInfo
-	(*timestamppb.Timestamp)(nil),      // 9: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),      // 10: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),           // 11: pagination.PagingRequest
+	(LoginAuditLog_LoginMethod)(0),     // 3: audit.service.v1.LoginAuditLog.LoginMethod
+	(*LoginAuditLog)(nil),              // 4: audit.service.v1.LoginAuditLog
+	(*ListLoginAuditLogResponse)(nil),  // 5: audit.service.v1.ListLoginAuditLogResponse
+	(*GetLoginAuditLogRequest)(nil),    // 6: audit.service.v1.GetLoginAuditLogRequest
+	(*CreateLoginAuditLogRequest)(nil), // 7: audit.service.v1.CreateLoginAuditLogRequest
+	(*GeoLocation)(nil),                // 8: audit.service.v1.GeoLocation
+	(*DeviceInfo)(nil),                 // 9: audit.service.v1.DeviceInfo
+	(*timestamppb.Timestamp)(nil),      // 10: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),      // 11: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),           // 12: pagination.PagingRequest
 }
 var file_audit_service_v1_login_audit_log_proto_depIdxs = []int32{
-	7,  // 0: audit.service.v1.LoginAuditLog.geo_location:type_name -> audit.service.v1.GeoLocation
-	8,  // 1: audit.service.v1.LoginAuditLog.device_info:type_name -> audit.service.v1.DeviceInfo
+	8,  // 0: audit.service.v1.LoginAuditLog.geo_location:type_name -> audit.service.v1.GeoLocation
+	9,  // 1: audit.service.v1.LoginAuditLog.device_info:type_name -> audit.service.v1.DeviceInfo
 	0,  // 2: audit.service.v1.LoginAuditLog.action_type:type_name -> audit.service.v1.LoginAuditLog.ActionType
 	1,  // 3: audit.service.v1.LoginAuditLog.status:type_name -> audit.service.v1.LoginAuditLog.Status
-	2,  // 4: audit.service.v1.LoginAuditLog.risk_level:type_name -> audit.service.v1.LoginAuditLog.RiskLevel
-	9,  // 5: audit.service.v1.LoginAuditLog.created_at:type_name -> google.protobuf.Timestamp
-	3,  // 6: audit.service.v1.ListLoginAuditLogResponse.items:type_name -> audit.service.v1.LoginAuditLog
-	10, // 7: audit.service.v1.GetLoginAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
-	3,  // 8: audit.service.v1.CreateLoginAuditLogRequest.data:type_name -> audit.service.v1.LoginAuditLog
-	11, // 9: audit.service.v1.LoginAuditLogService.List:input_type -> pagination.PagingRequest
-	5,  // 10: audit.service.v1.LoginAuditLogService.Get:input_type -> audit.service.v1.GetLoginAuditLogRequest
-	4,  // 11: audit.service.v1.LoginAuditLogService.List:output_type -> audit.service.v1.ListLoginAuditLogResponse
-	3,  // 12: audit.service.v1.LoginAuditLogService.Get:output_type -> audit.service.v1.LoginAuditLog
-	11, // [11:13] is the sub-list for method output_type
-	9,  // [9:11] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	3,  // 4: audit.service.v1.LoginAuditLog.login_method:type_name -> audit.service.v1.LoginAuditLog.LoginMethod
+	2,  // 5: audit.service.v1.LoginAuditLog.risk_level:type_name -> audit.service.v1.LoginAuditLog.RiskLevel
+	10, // 6: audit.service.v1.LoginAuditLog.created_at:type_name -> google.protobuf.Timestamp
+	4,  // 7: audit.service.v1.ListLoginAuditLogResponse.items:type_name -> audit.service.v1.LoginAuditLog
+	11, // 8: audit.service.v1.GetLoginAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
+	4,  // 9: audit.service.v1.CreateLoginAuditLogRequest.data:type_name -> audit.service.v1.LoginAuditLog
+	12, // 10: audit.service.v1.LoginAuditLogService.List:input_type -> pagination.PagingRequest
+	6,  // 11: audit.service.v1.LoginAuditLogService.Get:input_type -> audit.service.v1.GetLoginAuditLogRequest
+	5,  // 12: audit.service.v1.LoginAuditLogService.List:output_type -> audit.service.v1.ListLoginAuditLogResponse
+	4,  // 13: audit.service.v1.LoginAuditLogService.Get:output_type -> audit.service.v1.LoginAuditLog
+	12, // [12:14] is the sub-list for method output_type
+	10, // [10:12] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_audit_service_v1_login_audit_log_proto_init() }
@@ -716,7 +822,7 @@ func file_audit_service_v1_login_audit_log_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_audit_service_v1_login_audit_log_proto_rawDesc), len(file_audit_service_v1_login_audit_log_proto_rawDesc)),
-			NumEnums:      3,
+			NumEnums:      4,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,

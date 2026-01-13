@@ -92,6 +92,8 @@ func (x *LoginAuditLog) Redact() string {
 
 	// Safe field: RequestId
 
+	// Safe field: TraceId
+
 	// Safe field: ActionType
 
 	// Safe field: Status
@@ -99,6 +101,8 @@ func (x *LoginAuditLog) Redact() string {
 	// Safe field: FailureReason
 
 	// Safe field: MfaStatus
+
+	// Safe field: LoginMethod
 
 	// Safe field: RiskScore
 

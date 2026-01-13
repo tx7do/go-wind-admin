@@ -14,6 +14,7 @@ deps:
   - 'buf.build/gnostic/gnostic'
   - 'buf.build/tx7do/pagination'
   - 'buf.build/menta2k-org/redact'
+  - 'buf.build/envoyproxy/protoc-gen-validate'
 
 breaking:
   use:

@@ -304,6 +304,111 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/data-access-audit-logs:
+        get:
+            tags:
+                - DataAccessAuditLogService
+            description: 查询数据访问审计日志列表
+            operationId: DataAccessAuditLogService_List
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: orderBy
+                  in: query
+                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
+                  schema:
+                    type: array
+                    items:
+                        type: string
+                - name: query
+                  in: query
+                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  schema:
+                    type: string
+                - name: or
+                  in: query
+                  description: OR过滤参数，语法同AND过滤参数。
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListDataAccessAuditLogResponse'
+    /admin/v1/data-access-audit-logs/{id}:
+        get:
+            tags:
+                - DataAccessAuditLogService
+            description: 查询数据访问审计日志详情
+            operationId: DataAccessAuditLogService_Get
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: viewMask
+                  in: query
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DataAccessAuditLog'
     /admin/v1/dict-entries:
         get:
             tags:
@@ -1858,6 +1963,111 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/operation-audit-logs:
+        get:
+            tags:
+                - OperationAuditLogService
+            description: 查询操作审计日志列表
+            operationId: OperationAuditLogService_List
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: orderBy
+                  in: query
+                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
+                  schema:
+                    type: array
+                    items:
+                        type: string
+                - name: query
+                  in: query
+                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  schema:
+                    type: string
+                - name: or
+                  in: query
+                  description: OR过滤参数，语法同AND过滤参数。
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListOperationAuditLogResponse'
+    /admin/v1/operation-audit-logs/{id}:
+        get:
+            tags:
+                - OperationAuditLogService
+            description: 查询操作审计日志详情
+            operationId: OperationAuditLogService_Get
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: viewMask
+                  in: query
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/OperationAuditLog'
     /admin/v1/org-units:
         get:
             tags:
@@ -3808,7 +4018,7 @@ components:
             properties:
                 id:
                     type: integer
-                    description: API审计日志ID
+                    description: 接口审计日志ID
                     format: uint32
                 tenantId:
                     type: integer
@@ -3834,6 +4044,9 @@ components:
                 referer:
                     type: string
                     description: 请求来源URL
+                appVersion:
+                    type: string
+                    description: 客户端版本号
                 httpMethod:
                     type: string
                     description: HTTP请求方法（GET/POST/PUT/DELETE）
@@ -3855,9 +4068,16 @@ components:
                 requestId:
                     type: string
                     description: 全局请求ID（关联网关日志）
-                costTimeMs:
+                traceId:
                     type: string
+                    description: 全局链路追踪ID（符合W3C TraceContext标准）
+                spanId:
+                    type: string
+                    description: 当前跨度ID
+                latencyMs:
+                    type: integer
                     description: API耗时（毫秒）
+                    format: uint32
                 success:
                     type: boolean
                     description: 操作是否成功
@@ -3888,7 +4108,7 @@ components:
                     type: string
                     description: 日志创建时间
                     format: date-time
-            description: API审计日志
+            description: 接口审计日志
         BindContactRequest:
             type: object
             properties:
@@ -4043,6 +4263,110 @@ components:
                     type: string
                     description: 用户登录密码
             description: 创建用户 - 请求
+        DataAccessAuditLog:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: API审计日志ID
+                    format: uint32
+                tenantId:
+                    type: integer
+                    description: 租户ID
+                    format: uint32
+                tenantName:
+                    type: string
+                    description: 租户名称
+                userId:
+                    type: integer
+                    description: 用户ID
+                    format: uint32
+                username:
+                    type: string
+                    description: 账号名
+                ipAddress:
+                    type: string
+                    description: 操作IP地址（IPv4/IPv6）
+                requestId:
+                    type: string
+                    description: 全局请求ID（关联网关日志）
+                dataSource:
+                    type: string
+                    description: 数据源类型（mysql/redis/mongodb/es）
+                tableName:
+                    type: string
+                    description: 数据表名（如sys_users/order_info，Redis为key前缀）
+                dataId:
+                    type: string
+                    description: 数据主键ID（如用户ID/订单ID，兼容不同表主键类型）
+                accessType:
+                    enum:
+                        - ACCESS_TYPE_UNSPECIFIED
+                        - SELECT
+                        - INSERT
+                        - UPDATE
+                        - DELETE
+                        - VIEW
+                        - EXPORT
+                        - BULK_READ
+                        - OTHER
+                    type: string
+                    description: 数据访问类型（SELECT/INSERT/UPDATE/DELETE）
+                    format: enum
+                sqlDigest:
+                    type: string
+                    description: 执行的SQL语句摘要（MD5）
+                sqlText:
+                    type: string
+                    description: 执行的SQL语句（脱敏后，Redis为命令）
+                affectedRows:
+                    type: integer
+                    description: 影响行数（Redis为影响key数量）
+                    format: uint32
+                latencyMs:
+                    type: integer
+                    description: 延迟时间（毫秒
+                    format: uint32
+                success:
+                    type: boolean
+                    description: 操作是否成功
+                sensitiveLevel:
+                    enum:
+                        - SENSITIVE_LEVEL_UNSPECIFIED
+                        - PUBLIC
+                        - INTERNAL
+                        - CONFIDENTIAL
+                        - SECRET
+                    type: string
+                    description: 数据敏感级别
+                    format: enum
+                dataMasked:
+                    type: boolean
+                    description: 是否已脱敏
+                maskingRules:
+                    type: string
+                    description: 脱敏规则（JSON：{"phone":"mask_last_4"}）
+                businessPurpose:
+                    type: string
+                    description: 业务处理目的
+                dataCategory:
+                    type: string
+                    description: 数据分类标签
+                dbUser:
+                    type: string
+                    description: 数据库用户
+                logHash:
+                    type: string
+                    description: 日志内容哈希（SHA256，十六进制字符串）
+                signature:
+                    type: string
+                    description: 日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）
+                    format: bytes
+                createdAt:
+                    type: string
+                    description: 日志创建时间
+                    format: date-time
+            description: 数据访问审计日志
         DeleteNotificationFromInboxRequest:
             type: object
             properties:
@@ -4595,6 +4919,16 @@ components:
                 total:
                     type: string
             description: 查询列表 - 回应
+        ListDataAccessAuditLogResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/DataAccessAuditLog'
+                total:
+                    type: string
+            description: 查询数据访问审计日志列表 - 回应
         ListDictEntryResponse:
             type: object
             properties:
@@ -4675,6 +5009,16 @@ components:
                 total:
                     type: string
             description: 查询菜单列表 - 回应
+        ListOperationAuditLogResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/OperationAuditLog'
+                total:
+                    type: string
+            description: 查询操作审计日志列表 - 回应
         ListOrgUnitResponse:
             type: object
             properties:
@@ -4843,12 +5187,17 @@ components:
                 requestId:
                     type: string
                     description: 全局请求ID（关联网关日志）
+                traceId:
+                    type: string
+                    description: 全局链路追踪ID
                 actionType:
                     enum:
                         - ACTION_TYPE_UNSPECIFIED
                         - LOGIN
                         - LOGOUT
                         - SESSION_EXPIRED
+                        - KICKED_OUT
+                        - PASSWORD_RESET
                     type: string
                     description: 事件动作类型
                     format: enum
@@ -4858,6 +5207,7 @@ components:
                         - SUCCESS
                         - FAILED
                         - PARTIAL
+                        - LOCKED
                     type: string
                     description: 操作结果状态
                     format: enum
@@ -4867,6 +5217,18 @@ components:
                 mfaStatus:
                     type: string
                     description: MFA状态：UNVERIFIED/VERIFYING/VERIFIED/FAILED
+                loginMethod:
+                    enum:
+                        - LOGIN_METHOD_UNSPECIFIED
+                        - PASSWORD
+                        - SMS_CODE
+                        - QR_CODE
+                        - OIDC_SOCIAL
+                        - BIOMETRIC
+                        - FIDO2
+                    type: string
+                    description: 登录方式
+                    format: enum
                 riskScore:
                     type: integer
                     description: 风险评分（0-100，分值越高风险越大）
@@ -5125,6 +5487,92 @@ components:
                     description: 删除时间
                     format: date-time
             description: 菜单
+        OperationAuditLog:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: API审计日志ID
+                    format: uint32
+                tenantId:
+                    type: integer
+                    description: 租户ID
+                    format: uint32
+                tenantName:
+                    type: string
+                    description: 租户名称
+                userId:
+                    type: integer
+                    description: 用户ID
+                    format: uint32
+                username:
+                    type: string
+                    description: 账号名
+                resourceType:
+                    type: string
+                    description: 资源类型
+                resourceId:
+                    type: string
+                    description: 资源ID
+                action:
+                    enum:
+                        - ACTION_TYPE_UNSPECIFIED
+                        - CREATE
+                        - UPDATE
+                        - DELETE
+                        - READ
+                        - ASSIGN
+                        - UNASSIGN
+                        - EXPORT
+                        - OTHER
+                    type: string
+                    description: 动作
+                    format: enum
+                beforeData:
+                    type: string
+                    description: 操作前数据
+                afterData:
+                    type: string
+                    description: 操作后数据
+                sensitiveLevel:
+                    enum:
+                        - SENSITIVE_LEVEL_UNSPECIFIED
+                        - PUBLIC
+                        - INTERNAL
+                        - CONFIDENTIAL
+                        - SECRET
+                    type: string
+                    description: 敏感等级
+                    format: enum
+                requestId:
+                    type: string
+                    description: 全局请求ID（关联网关日志）
+                traceId:
+                    type: string
+                    description: 全局链路追踪ID（符合W3C TraceContext标准）
+                success:
+                    type: boolean
+                    description: 操作是否成功
+                failureReason:
+                    type: string
+                    description: 失败原因
+                ipAddress:
+                    type: string
+                    description: IP地址
+                geoLocation:
+                    $ref: '#/components/schemas/GeoLocation'
+                logHash:
+                    type: string
+                    description: 日志内容哈希（SHA256，十六进制字符串）
+                signature:
+                    type: string
+                    description: 日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）
+                    format: bytes
+                createdAt:
+                    type: string
+                    description: 日志创建时间
+                    format: date-time
+            description: 操作审计日志
         OrgUnit:
             type: object
             properties:
@@ -6816,6 +7264,8 @@ tags:
       description: API资源管理服务
     - name: AuthenticationService
       description: 用户后台登录认证服务
+    - name: DataAccessAuditLogService
+      description: 数据访问审计日志管理服务
     - name: DictService
       description: 数据字典管理服务
     - name: FileService
@@ -6832,6 +7282,8 @@ tags:
       description: 登录策略管理服务
     - name: MenuService
       description: 后台菜单管理服务
+    - name: OperationAuditLogService
+      description: 操作审计日志管理服务
     - name: OrgUnitService
       description: 组织单元服务
     - name: OssService

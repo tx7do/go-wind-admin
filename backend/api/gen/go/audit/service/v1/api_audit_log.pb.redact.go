@@ -5,6 +5,7 @@ package servicev1
 
 import (
 	context "context"
+	validate "github.com/envoyproxy/protoc-gen-validate/validate"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
 	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	grpc "google.golang.org/grpc"
@@ -25,6 +26,7 @@ var (
 	_ timestamppb.Timestamp
 	_ fieldmaskpb.FieldMask
 	_ durationpb.Duration
+	_ validate.FieldRules
 	_ pagination.Sorting
 )
 
@@ -92,6 +94,8 @@ func (x *ApiAuditLog) Redact() string {
 
 	// Safe field: Referer
 
+	// Safe field: AppVersion
+
 	// Safe field: HttpMethod
 
 	// Safe field: Path
@@ -106,7 +110,11 @@ func (x *ApiAuditLog) Redact() string {
 
 	// Safe field: RequestId
 
-	// Safe field: CostTimeMs
+	// Safe field: TraceId
+
+	// Safe field: SpanId
+
+	// Safe field: LatencyMs
 
 	// Safe field: Success
 

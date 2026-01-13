@@ -140,6 +140,26 @@ func (_u *ApiAuditLogUpdate) ClearReferer() *ApiAuditLogUpdate {
 	return _u
 }
 
+// SetAppVersion sets the "app_version" field.
+func (_u *ApiAuditLogUpdate) SetAppVersion(v string) *ApiAuditLogUpdate {
+	_u.mutation.SetAppVersion(v)
+	return _u
+}
+
+// SetNillableAppVersion sets the "app_version" field if the given value is not nil.
+func (_u *ApiAuditLogUpdate) SetNillableAppVersion(v *string) *ApiAuditLogUpdate {
+	if v != nil {
+		_u.SetAppVersion(*v)
+	}
+	return _u
+}
+
+// ClearAppVersion clears the value of the "app_version" field.
+func (_u *ApiAuditLogUpdate) ClearAppVersion() *ApiAuditLogUpdate {
+	_u.mutation.ClearAppVersion()
+	return _u
+}
+
 // SetHTTPMethod sets the "http_method" field.
 func (_u *ApiAuditLogUpdate) SetHTTPMethod(v string) *ApiAuditLogUpdate {
 	_u.mutation.SetHTTPMethod(v)
@@ -280,30 +300,70 @@ func (_u *ApiAuditLogUpdate) ClearRequestID() *ApiAuditLogUpdate {
 	return _u
 }
 
-// SetCostTimeMs sets the "cost_time_ms" field.
-func (_u *ApiAuditLogUpdate) SetCostTimeMs(v uint64) *ApiAuditLogUpdate {
-	_u.mutation.ResetCostTimeMs()
-	_u.mutation.SetCostTimeMs(v)
+// SetTraceID sets the "trace_id" field.
+func (_u *ApiAuditLogUpdate) SetTraceID(v string) *ApiAuditLogUpdate {
+	_u.mutation.SetTraceID(v)
 	return _u
 }
 
-// SetNillableCostTimeMs sets the "cost_time_ms" field if the given value is not nil.
-func (_u *ApiAuditLogUpdate) SetNillableCostTimeMs(v *uint64) *ApiAuditLogUpdate {
+// SetNillableTraceID sets the "trace_id" field if the given value is not nil.
+func (_u *ApiAuditLogUpdate) SetNillableTraceID(v *string) *ApiAuditLogUpdate {
 	if v != nil {
-		_u.SetCostTimeMs(*v)
+		_u.SetTraceID(*v)
 	}
 	return _u
 }
 
-// AddCostTimeMs adds value to the "cost_time_ms" field.
-func (_u *ApiAuditLogUpdate) AddCostTimeMs(v int64) *ApiAuditLogUpdate {
-	_u.mutation.AddCostTimeMs(v)
+// ClearTraceID clears the value of the "trace_id" field.
+func (_u *ApiAuditLogUpdate) ClearTraceID() *ApiAuditLogUpdate {
+	_u.mutation.ClearTraceID()
 	return _u
 }
 
-// ClearCostTimeMs clears the value of the "cost_time_ms" field.
-func (_u *ApiAuditLogUpdate) ClearCostTimeMs() *ApiAuditLogUpdate {
-	_u.mutation.ClearCostTimeMs()
+// SetSpanID sets the "span_id" field.
+func (_u *ApiAuditLogUpdate) SetSpanID(v string) *ApiAuditLogUpdate {
+	_u.mutation.SetSpanID(v)
+	return _u
+}
+
+// SetNillableSpanID sets the "span_id" field if the given value is not nil.
+func (_u *ApiAuditLogUpdate) SetNillableSpanID(v *string) *ApiAuditLogUpdate {
+	if v != nil {
+		_u.SetSpanID(*v)
+	}
+	return _u
+}
+
+// ClearSpanID clears the value of the "span_id" field.
+func (_u *ApiAuditLogUpdate) ClearSpanID() *ApiAuditLogUpdate {
+	_u.mutation.ClearSpanID()
+	return _u
+}
+
+// SetLatencyMs sets the "latency_ms" field.
+func (_u *ApiAuditLogUpdate) SetLatencyMs(v uint32) *ApiAuditLogUpdate {
+	_u.mutation.ResetLatencyMs()
+	_u.mutation.SetLatencyMs(v)
+	return _u
+}
+
+// SetNillableLatencyMs sets the "latency_ms" field if the given value is not nil.
+func (_u *ApiAuditLogUpdate) SetNillableLatencyMs(v *uint32) *ApiAuditLogUpdate {
+	if v != nil {
+		_u.SetLatencyMs(*v)
+	}
+	return _u
+}
+
+// AddLatencyMs adds value to the "latency_ms" field.
+func (_u *ApiAuditLogUpdate) AddLatencyMs(v int32) *ApiAuditLogUpdate {
+	_u.mutation.AddLatencyMs(v)
+	return _u
+}
+
+// ClearLatencyMs clears the value of the "latency_ms" field.
+func (_u *ApiAuditLogUpdate) ClearLatencyMs() *ApiAuditLogUpdate {
+	_u.mutation.ClearLatencyMs()
 	return _u
 }
 
@@ -558,6 +618,12 @@ func (_u *ApiAuditLogUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if _u.mutation.RefererCleared() {
 		_spec.ClearField(apiauditlog.FieldReferer, field.TypeString)
 	}
+	if value, ok := _u.mutation.AppVersion(); ok {
+		_spec.SetField(apiauditlog.FieldAppVersion, field.TypeString, value)
+	}
+	if _u.mutation.AppVersionCleared() {
+		_spec.ClearField(apiauditlog.FieldAppVersion, field.TypeString)
+	}
 	if value, ok := _u.mutation.HTTPMethod(); ok {
 		_spec.SetField(apiauditlog.FieldHTTPMethod, field.TypeString, value)
 	}
@@ -600,14 +666,26 @@ func (_u *ApiAuditLogUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	if _u.mutation.RequestIDCleared() {
 		_spec.ClearField(apiauditlog.FieldRequestID, field.TypeString)
 	}
-	if value, ok := _u.mutation.CostTimeMs(); ok {
-		_spec.SetField(apiauditlog.FieldCostTimeMs, field.TypeUint64, value)
+	if value, ok := _u.mutation.TraceID(); ok {
+		_spec.SetField(apiauditlog.FieldTraceID, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.AddedCostTimeMs(); ok {
-		_spec.AddField(apiauditlog.FieldCostTimeMs, field.TypeUint64, value)
+	if _u.mutation.TraceIDCleared() {
+		_spec.ClearField(apiauditlog.FieldTraceID, field.TypeString)
 	}
-	if _u.mutation.CostTimeMsCleared() {
-		_spec.ClearField(apiauditlog.FieldCostTimeMs, field.TypeUint64)
+	if value, ok := _u.mutation.SpanID(); ok {
+		_spec.SetField(apiauditlog.FieldSpanID, field.TypeString, value)
+	}
+	if _u.mutation.SpanIDCleared() {
+		_spec.ClearField(apiauditlog.FieldSpanID, field.TypeString)
+	}
+	if value, ok := _u.mutation.LatencyMs(); ok {
+		_spec.SetField(apiauditlog.FieldLatencyMs, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedLatencyMs(); ok {
+		_spec.AddField(apiauditlog.FieldLatencyMs, field.TypeUint32, value)
+	}
+	if _u.mutation.LatencyMsCleared() {
+		_spec.ClearField(apiauditlog.FieldLatencyMs, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.Success(); ok {
 		_spec.SetField(apiauditlog.FieldSuccess, field.TypeBool, value)
@@ -793,6 +871,26 @@ func (_u *ApiAuditLogUpdateOne) ClearReferer() *ApiAuditLogUpdateOne {
 	return _u
 }
 
+// SetAppVersion sets the "app_version" field.
+func (_u *ApiAuditLogUpdateOne) SetAppVersion(v string) *ApiAuditLogUpdateOne {
+	_u.mutation.SetAppVersion(v)
+	return _u
+}
+
+// SetNillableAppVersion sets the "app_version" field if the given value is not nil.
+func (_u *ApiAuditLogUpdateOne) SetNillableAppVersion(v *string) *ApiAuditLogUpdateOne {
+	if v != nil {
+		_u.SetAppVersion(*v)
+	}
+	return _u
+}
+
+// ClearAppVersion clears the value of the "app_version" field.
+func (_u *ApiAuditLogUpdateOne) ClearAppVersion() *ApiAuditLogUpdateOne {
+	_u.mutation.ClearAppVersion()
+	return _u
+}
+
 // SetHTTPMethod sets the "http_method" field.
 func (_u *ApiAuditLogUpdateOne) SetHTTPMethod(v string) *ApiAuditLogUpdateOne {
 	_u.mutation.SetHTTPMethod(v)
@@ -933,30 +1031,70 @@ func (_u *ApiAuditLogUpdateOne) ClearRequestID() *ApiAuditLogUpdateOne {
 	return _u
 }
 
-// SetCostTimeMs sets the "cost_time_ms" field.
-func (_u *ApiAuditLogUpdateOne) SetCostTimeMs(v uint64) *ApiAuditLogUpdateOne {
-	_u.mutation.ResetCostTimeMs()
-	_u.mutation.SetCostTimeMs(v)
+// SetTraceID sets the "trace_id" field.
+func (_u *ApiAuditLogUpdateOne) SetTraceID(v string) *ApiAuditLogUpdateOne {
+	_u.mutation.SetTraceID(v)
 	return _u
 }
 
-// SetNillableCostTimeMs sets the "cost_time_ms" field if the given value is not nil.
-func (_u *ApiAuditLogUpdateOne) SetNillableCostTimeMs(v *uint64) *ApiAuditLogUpdateOne {
+// SetNillableTraceID sets the "trace_id" field if the given value is not nil.
+func (_u *ApiAuditLogUpdateOne) SetNillableTraceID(v *string) *ApiAuditLogUpdateOne {
 	if v != nil {
-		_u.SetCostTimeMs(*v)
+		_u.SetTraceID(*v)
 	}
 	return _u
 }
 
-// AddCostTimeMs adds value to the "cost_time_ms" field.
-func (_u *ApiAuditLogUpdateOne) AddCostTimeMs(v int64) *ApiAuditLogUpdateOne {
-	_u.mutation.AddCostTimeMs(v)
+// ClearTraceID clears the value of the "trace_id" field.
+func (_u *ApiAuditLogUpdateOne) ClearTraceID() *ApiAuditLogUpdateOne {
+	_u.mutation.ClearTraceID()
 	return _u
 }
 
-// ClearCostTimeMs clears the value of the "cost_time_ms" field.
-func (_u *ApiAuditLogUpdateOne) ClearCostTimeMs() *ApiAuditLogUpdateOne {
-	_u.mutation.ClearCostTimeMs()
+// SetSpanID sets the "span_id" field.
+func (_u *ApiAuditLogUpdateOne) SetSpanID(v string) *ApiAuditLogUpdateOne {
+	_u.mutation.SetSpanID(v)
+	return _u
+}
+
+// SetNillableSpanID sets the "span_id" field if the given value is not nil.
+func (_u *ApiAuditLogUpdateOne) SetNillableSpanID(v *string) *ApiAuditLogUpdateOne {
+	if v != nil {
+		_u.SetSpanID(*v)
+	}
+	return _u
+}
+
+// ClearSpanID clears the value of the "span_id" field.
+func (_u *ApiAuditLogUpdateOne) ClearSpanID() *ApiAuditLogUpdateOne {
+	_u.mutation.ClearSpanID()
+	return _u
+}
+
+// SetLatencyMs sets the "latency_ms" field.
+func (_u *ApiAuditLogUpdateOne) SetLatencyMs(v uint32) *ApiAuditLogUpdateOne {
+	_u.mutation.ResetLatencyMs()
+	_u.mutation.SetLatencyMs(v)
+	return _u
+}
+
+// SetNillableLatencyMs sets the "latency_ms" field if the given value is not nil.
+func (_u *ApiAuditLogUpdateOne) SetNillableLatencyMs(v *uint32) *ApiAuditLogUpdateOne {
+	if v != nil {
+		_u.SetLatencyMs(*v)
+	}
+	return _u
+}
+
+// AddLatencyMs adds value to the "latency_ms" field.
+func (_u *ApiAuditLogUpdateOne) AddLatencyMs(v int32) *ApiAuditLogUpdateOne {
+	_u.mutation.AddLatencyMs(v)
+	return _u
+}
+
+// ClearLatencyMs clears the value of the "latency_ms" field.
+func (_u *ApiAuditLogUpdateOne) ClearLatencyMs() *ApiAuditLogUpdateOne {
+	_u.mutation.ClearLatencyMs()
 	return _u
 }
 
@@ -1241,6 +1379,12 @@ func (_u *ApiAuditLogUpdateOne) sqlSave(ctx context.Context) (_node *ApiAuditLog
 	if _u.mutation.RefererCleared() {
 		_spec.ClearField(apiauditlog.FieldReferer, field.TypeString)
 	}
+	if value, ok := _u.mutation.AppVersion(); ok {
+		_spec.SetField(apiauditlog.FieldAppVersion, field.TypeString, value)
+	}
+	if _u.mutation.AppVersionCleared() {
+		_spec.ClearField(apiauditlog.FieldAppVersion, field.TypeString)
+	}
 	if value, ok := _u.mutation.HTTPMethod(); ok {
 		_spec.SetField(apiauditlog.FieldHTTPMethod, field.TypeString, value)
 	}
@@ -1283,14 +1427,26 @@ func (_u *ApiAuditLogUpdateOne) sqlSave(ctx context.Context) (_node *ApiAuditLog
 	if _u.mutation.RequestIDCleared() {
 		_spec.ClearField(apiauditlog.FieldRequestID, field.TypeString)
 	}
-	if value, ok := _u.mutation.CostTimeMs(); ok {
-		_spec.SetField(apiauditlog.FieldCostTimeMs, field.TypeUint64, value)
+	if value, ok := _u.mutation.TraceID(); ok {
+		_spec.SetField(apiauditlog.FieldTraceID, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.AddedCostTimeMs(); ok {
-		_spec.AddField(apiauditlog.FieldCostTimeMs, field.TypeUint64, value)
+	if _u.mutation.TraceIDCleared() {
+		_spec.ClearField(apiauditlog.FieldTraceID, field.TypeString)
 	}
-	if _u.mutation.CostTimeMsCleared() {
-		_spec.ClearField(apiauditlog.FieldCostTimeMs, field.TypeUint64)
+	if value, ok := _u.mutation.SpanID(); ok {
+		_spec.SetField(apiauditlog.FieldSpanID, field.TypeString, value)
+	}
+	if _u.mutation.SpanIDCleared() {
+		_spec.ClearField(apiauditlog.FieldSpanID, field.TypeString)
+	}
+	if value, ok := _u.mutation.LatencyMs(); ok {
+		_spec.SetField(apiauditlog.FieldLatencyMs, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedLatencyMs(); ok {
+		_spec.AddField(apiauditlog.FieldLatencyMs, field.TypeUint32, value)
+	}
+	if _u.mutation.LatencyMsCleared() {
+		_spec.ClearField(apiauditlog.FieldLatencyMs, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.Success(); ok {
 		_spec.SetField(apiauditlog.FieldSuccess, field.TypeBool, value)

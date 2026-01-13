@@ -32,6 +32,18 @@ func (f ApiAuditLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value,
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.ApiAuditLogMutation", m)
 }
 
+// The DataAccessAuditLogFunc type is an adapter to allow the use of ordinary
+// function as DataAccessAuditLog mutator.
+type DataAccessAuditLogFunc func(context.Context, *ent.DataAccessAuditLogMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f DataAccessAuditLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.DataAccessAuditLogMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.DataAccessAuditLogMutation", m)
+}
+
 // The DictEntryFunc type is an adapter to allow the use of ordinary
 // function as DictEntry mutator.
 type DictEntryFunc func(context.Context, *ent.DictEntryMutation) (ent.Value, error)
@@ -198,6 +210,18 @@ func (f MenuFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.MenuMutation", m)
+}
+
+// The OperationAuditLogFunc type is an adapter to allow the use of ordinary
+// function as OperationAuditLog mutator.
+type OperationAuditLogFunc func(context.Context, *ent.OperationAuditLogMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f OperationAuditLogFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.OperationAuditLogMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.OperationAuditLogMutation", m)
 }
 
 // The OrgUnitFunc type is an adapter to allow the use of ordinary

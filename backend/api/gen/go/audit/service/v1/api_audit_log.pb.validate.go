@@ -151,6 +151,10 @@ func (m *ApiAuditLog) validate(all bool) error {
 		// no validation rules for Referer
 	}
 
+	if m.AppVersion != nil {
+		// no validation rules for AppVersion
+	}
+
 	if m.HttpMethod != nil {
 		// no validation rules for HttpMethod
 	}
@@ -179,8 +183,27 @@ func (m *ApiAuditLog) validate(all bool) error {
 		// no validation rules for RequestId
 	}
 
-	if m.CostTimeMs != nil {
-		// no validation rules for CostTimeMs
+	if m.TraceId != nil {
+		// no validation rules for TraceId
+	}
+
+	if m.SpanId != nil {
+		// no validation rules for SpanId
+	}
+
+	if m.LatencyMs != nil {
+
+		if m.GetLatencyMs() > 3600000 {
+			err := ApiAuditLogValidationError{
+				field:  "LatencyMs",
+				reason: "value must be less than or equal to 3600000",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
 	}
 
 	if m.Success != nil {

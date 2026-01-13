@@ -29,9 +29,10 @@ type LoginAuditLogRepo struct {
 
 	mapper *mapper.CopierMapper[auditV1.LoginAuditLog, ent.LoginAuditLog]
 
-	statusConverter     *mapper.EnumTypeConverter[auditV1.LoginAuditLog_Status, loginauditlog.Status]
-	actionTypeConverter *mapper.EnumTypeConverter[auditV1.LoginAuditLog_ActionType, loginauditlog.ActionType]
-	riskLevelConverter  *mapper.EnumTypeConverter[auditV1.LoginAuditLog_RiskLevel, loginauditlog.RiskLevel]
+	statusConverter      *mapper.EnumTypeConverter[auditV1.LoginAuditLog_Status, loginauditlog.Status]
+	actionTypeConverter  *mapper.EnumTypeConverter[auditV1.LoginAuditLog_ActionType, loginauditlog.ActionType]
+	riskLevelConverter   *mapper.EnumTypeConverter[auditV1.LoginAuditLog_RiskLevel, loginauditlog.RiskLevel]
+	loginMethodConverter *mapper.EnumTypeConverter[auditV1.LoginAuditLog_LoginMethod, loginauditlog.LoginMethod]
 
 	repository *entCrud.Repository[
 		ent.LoginAuditLogQuery, ent.LoginAuditLogSelect,
@@ -55,6 +56,9 @@ func NewLoginAuditLogRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*
 		),
 		riskLevelConverter: mapper.NewEnumTypeConverter[auditV1.LoginAuditLog_RiskLevel, loginauditlog.RiskLevel](
 			auditV1.LoginAuditLog_RiskLevel_name, auditV1.LoginAuditLog_RiskLevel_value,
+		),
+		loginMethodConverter: mapper.NewEnumTypeConverter[auditV1.LoginAuditLog_LoginMethod, loginauditlog.LoginMethod](
+			auditV1.LoginAuditLog_LoginMethod_name, auditV1.LoginAuditLog_LoginMethod_value,
 		),
 	}
 
@@ -164,8 +168,10 @@ func (r *LoginAuditLogRepo) Create(ctx context.Context, req *auditV1.CreateLogin
 		SetNillableSessionID(req.Data.SessionId).
 		SetDeviceInfo(req.Data.DeviceInfo).
 		SetNillableRequestID(req.Data.RequestId).
+		SetNillableTraceID(req.Data.TraceId).
 		SetNillableActionType(r.actionTypeConverter.ToEntity(req.Data.ActionType)).
 		SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
+		SetNillableLoginMethod(r.loginMethodConverter.ToEntity(req.Data.LoginMethod)).
 		SetNillableFailureReason(req.Data.FailureReason).
 		SetNillableMfaStatus(req.Data.MfaStatus).
 		SetNillableRiskScore(req.Data.RiskScore).

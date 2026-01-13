@@ -36,6 +36,8 @@ type ApiAuditLog struct {
 	DeviceInfo *servicev1.DeviceInfo `json:"device_info,omitempty"`
 	// 请求来源URL
 	Referer *string `json:"referer,omitempty"`
+	// 客户端版本号
+	AppVersion *string `json:"app_version,omitempty"`
 	// HTTP请求方法
 	HTTPMethod *string `json:"http_method,omitempty"`
 	// 请求路径
@@ -50,8 +52,12 @@ type ApiAuditLog struct {
 	APIDescription *string `json:"api_description,omitempty"`
 	// 请求ID
 	RequestID *string `json:"request_id,omitempty"`
+	// 全局链路追踪ID
+	TraceID *string `json:"trace_id,omitempty"`
+	// 当前跨度ID
+	SpanID *string `json:"span_id,omitempty"`
 	// 操作耗时
-	CostTimeMs *uint64 `json:"cost_time_ms,omitempty"`
+	LatencyMs *uint32 `json:"latency_ms,omitempty"`
 	// 操作结果
 	Success *bool `json:"success,omitempty"`
 	// HTTP状态码
@@ -80,9 +86,9 @@ func (*ApiAuditLog) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case apiauditlog.FieldSuccess:
 			values[i] = new(sql.NullBool)
-		case apiauditlog.FieldID, apiauditlog.FieldTenantID, apiauditlog.FieldUserID, apiauditlog.FieldCostTimeMs, apiauditlog.FieldStatusCode:
+		case apiauditlog.FieldID, apiauditlog.FieldTenantID, apiauditlog.FieldUserID, apiauditlog.FieldLatencyMs, apiauditlog.FieldStatusCode:
 			values[i] = new(sql.NullInt64)
-		case apiauditlog.FieldUsername, apiauditlog.FieldIPAddress, apiauditlog.FieldReferer, apiauditlog.FieldHTTPMethod, apiauditlog.FieldPath, apiauditlog.FieldRequestURI, apiauditlog.FieldAPIModule, apiauditlog.FieldAPIOperation, apiauditlog.FieldAPIDescription, apiauditlog.FieldRequestID, apiauditlog.FieldReason, apiauditlog.FieldRequestHeader, apiauditlog.FieldRequestBody, apiauditlog.FieldResponse, apiauditlog.FieldLogHash:
+		case apiauditlog.FieldUsername, apiauditlog.FieldIPAddress, apiauditlog.FieldReferer, apiauditlog.FieldAppVersion, apiauditlog.FieldHTTPMethod, apiauditlog.FieldPath, apiauditlog.FieldRequestURI, apiauditlog.FieldAPIModule, apiauditlog.FieldAPIOperation, apiauditlog.FieldAPIDescription, apiauditlog.FieldRequestID, apiauditlog.FieldTraceID, apiauditlog.FieldSpanID, apiauditlog.FieldReason, apiauditlog.FieldRequestHeader, apiauditlog.FieldRequestBody, apiauditlog.FieldResponse, apiauditlog.FieldLogHash:
 			values[i] = new(sql.NullString)
 		case apiauditlog.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -165,6 +171,13 @@ func (_m *ApiAuditLog) assignValues(columns []string, values []any) error {
 				_m.Referer = new(string)
 				*_m.Referer = value.String
 			}
+		case apiauditlog.FieldAppVersion:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field app_version", values[i])
+			} else if value.Valid {
+				_m.AppVersion = new(string)
+				*_m.AppVersion = value.String
+			}
 		case apiauditlog.FieldHTTPMethod:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field http_method", values[i])
@@ -214,12 +227,26 @@ func (_m *ApiAuditLog) assignValues(columns []string, values []any) error {
 				_m.RequestID = new(string)
 				*_m.RequestID = value.String
 			}
-		case apiauditlog.FieldCostTimeMs:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field cost_time_ms", values[i])
+		case apiauditlog.FieldTraceID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field trace_id", values[i])
 			} else if value.Valid {
-				_m.CostTimeMs = new(uint64)
-				*_m.CostTimeMs = uint64(value.Int64)
+				_m.TraceID = new(string)
+				*_m.TraceID = value.String
+			}
+		case apiauditlog.FieldSpanID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field span_id", values[i])
+			} else if value.Valid {
+				_m.SpanID = new(string)
+				*_m.SpanID = value.String
+			}
+		case apiauditlog.FieldLatencyMs:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field latency_ms", values[i])
+			} else if value.Valid {
+				_m.LatencyMs = new(uint32)
+				*_m.LatencyMs = uint32(value.Int64)
 			}
 		case apiauditlog.FieldSuccess:
 			if value, ok := values[i].(*sql.NullBool); !ok {
@@ -348,6 +375,11 @@ func (_m *ApiAuditLog) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
+	if v := _m.AppVersion; v != nil {
+		builder.WriteString("app_version=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
 	if v := _m.HTTPMethod; v != nil {
 		builder.WriteString("http_method=")
 		builder.WriteString(*v)
@@ -383,8 +415,18 @@ func (_m *ApiAuditLog) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.CostTimeMs; v != nil {
-		builder.WriteString("cost_time_ms=")
+	if v := _m.TraceID; v != nil {
+		builder.WriteString("trace_id=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.SpanID; v != nil {
+		builder.WriteString("span_id=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.LatencyMs; v != nil {
+		builder.WriteString("latency_ms=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")

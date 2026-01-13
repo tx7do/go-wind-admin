@@ -10,9 +10,9 @@ import "google/protobuf/field_mask.proto";
 import "pagination/v1/pagination.proto";
 
 import "audit/service/v1/common.proto";
+import "audit/service/v1/geo_location.proto";
 
-
-// 操作审计日志管理服务
+// 操作审计日志服务
 service OperationAuditLogService {
   // 查询操作审计日志列表
   rpc List (pagination.PagingRequest) returns (ListOperationAuditLogResponse) {}
@@ -23,7 +23,125 @@ service OperationAuditLogService {
 
 // 操作审计日志
 message OperationAuditLog {
+  // 动作类型
+  enum ActionType {
+    ACTION_TYPE_UNSPECIFIED = 0;
 
+    CREATE = 1;     // 创建
+    UPDATE = 2;     // 更新
+    DELETE = 3;     // 删除
+    READ = 4;       // 读取
+    ASSIGN = 5;     // 分配
+    UNASSIGN = 6;   // 取消分配
+    EXPORT = 8;     // 导出
+
+    OTHER = 7;      // 其他
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = {description: "API审计日志ID"}
+  ]; // 用户操作审计日志ID
+
+  optional uint32 tenant_id = 2 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+
+  optional string tenant_name = 3 [
+    json_name = "tenantName",
+    (gnostic.openapi.v3.property) = {description: "租户名称"}
+  ]; // 租户名称
+
+  optional uint32 user_id = 4 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = {description: "用户ID"}
+  ]; // 用户ID
+
+  optional string username = 5 [
+    json_name = "username",
+    (gnostic.openapi.v3.property) = {description: "账号名"}
+  ]; // 账号名
+
+
+  optional string resource_type = 10 [
+    json_name = "resourceType",
+    (gnostic.openapi.v3.property) = {description: "资源类型"}
+  ]; // 资源类型
+
+  optional string resource_id = 11 [
+    json_name = "resourceId",
+    (gnostic.openapi.v3.property) = {description: "资源ID"}
+  ]; // 资源ID
+
+  optional ActionType action = 12 [
+    json_name = "action",
+    (gnostic.openapi.v3.property) = {description: "动作"}
+  ]; // 动作
+
+  optional string before_data = 13 [
+    json_name = "beforeData",
+    (gnostic.openapi.v3.property) = {description: "操作前数据"}
+  ]; // 操作前数据
+
+  optional string after_data = 14 [
+    json_name = "afterData",
+    (gnostic.openapi.v3.property) = {description: "操作后数据"}
+  ]; // 操作后数据
+
+  optional SensitiveLevel sensitive_level = 15 [
+    json_name = "sensitiveLevel",
+    (gnostic.openapi.v3.property) = {description: "敏感等级"}
+  ]; // 敏感等级
+
+  optional string request_id = 16 [
+    json_name = "requestId",
+    (gnostic.openapi.v3.property) = {description: "全局请求ID（关联网关日志）"}
+  ]; // 请求ID
+
+  optional string trace_id = 17 [
+    json_name = "traceId",
+    (gnostic.openapi.v3.property) = {description: "全局链路追踪ID（符合W3C TraceContext标准）"}
+  ]; // 全局链路追踪ID
+
+  optional bool success = 18 [
+    json_name = "success",
+    (gnostic.openapi.v3.property) = {description: "操作是否成功"}
+  ]; // 操作结果
+
+  optional string failure_reason = 19 [
+    json_name = "failureReason",
+    (gnostic.openapi.v3.property) = {description: "失败原因"}
+  ]; // 失败原因
+
+  optional string ip_address = 20 [
+    json_name = "ipAddress",
+    (gnostic.openapi.v3.property) = {description: "IP地址"}
+  ]; // IP地址
+
+  optional GeoLocation geo_location = 21 [
+    json_name = "geoLocation",
+    (gnostic.openapi.v3.property) = {description: "地理位置(来自IP库)"}
+  ]; // 地理位置(来自IP库)
+
+  // ========== 合规校验 ==========
+
+  optional string log_hash = 40 [
+    json_name = "logHash",
+    (gnostic.openapi.v3.property).description = "日志内容哈希（SHA256，十六进制字符串）"
+  ]; // 日志哈希
+
+  optional bytes signature = 41 [
+    json_name = "signature",
+    (gnostic.openapi.v3.property).description = "日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）"
+  ]; // 日志数字签名
+
+  // ========== 时间字段 ==========
+
+  optional google.protobuf.Timestamp created_at = 50 [
+    json_name = "createdAt",
+    (gnostic.openapi.v3.property) = {description: "日志创建时间"}
+  ];// 日志创建时间
 }
 
 // 查询操作审计日志列表 - 回应

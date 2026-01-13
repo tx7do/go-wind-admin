@@ -8,26 +8,28 @@ import "google/protobuf/timestamp.proto";
 import "google/protobuf/field_mask.proto";
 import "google/protobuf/duration.proto";
 
+import "validate/validate.proto";
+
 import "pagination/v1/pagination.proto";
 
 import "audit/service/v1/geo_location.proto";
 import "audit/service/v1/device_info.proto";
 
-// API审计日志管理服务
+// 接口审计日志管理服务
 service ApiAuditLogService {
-  // 查询API审计日志列表
+  // 查询接口审计日志列表
   rpc List (pagination.PagingRequest) returns (ListApiAuditLogResponse) {}
 
-  // 查询API审计日志详情
+  // 查询接口审计日志详情
   rpc Get (GetApiAuditLogRequest) returns (ApiAuditLog) {}
 }
 
-// API审计日志
+// 接口审计日志
 message ApiAuditLog {
   optional uint32 id = 1 [
     json_name = "id",
-    (gnostic.openapi.v3.property) = {description: "API审计日志ID"}
-  ]; // API审计日志ID
+    (gnostic.openapi.v3.property) = {description: "接口审计日志ID"}
+  ]; // 接口审计日志ID
 
   optional uint32 tenant_id = 2 [
     json_name = "tenantId",
@@ -71,6 +73,11 @@ message ApiAuditLog {
     (gnostic.openapi.v3.property) = {description: "请求来源URL"}
   ]; // 请求来源URL
 
+  optional string app_version = 14 [
+    json_name = "appVersion",
+    (gnostic.openapi.v3.property) = {description: "客户端版本号"}
+  ]; // 客户端版本号
+
   // ========== API请求/响应信息 ==========
 
   optional string http_method = 20 [
@@ -108,37 +115,48 @@ message ApiAuditLog {
     (gnostic.openapi.v3.property) = {description: "全局请求ID（关联网关日志）"}
   ]; // 请求ID
 
-  optional uint64 cost_time_ms = 27 [
-    json_name = "costTimeMs",
-    (gnostic.openapi.v3.property) = {description: "API耗时（毫秒）"}
+  optional string trace_id = 27 [
+    json_name = "traceId",
+    (gnostic.openapi.v3.property) = {description: "全局链路追踪ID（符合W3C TraceContext标准）"}
+  ]; // 全局链路追踪ID
+
+  optional string span_id = 28 [
+    json_name = "spanId",
+    (gnostic.openapi.v3.property) = {description: "当前跨度ID"}
+  ]; // 当前跨度ID
+
+  optional uint32 latency_ms = 29 [
+    json_name = "latencyMs",
+    (gnostic.openapi.v3.property) = {description: "API耗时（毫秒）"},
+    (validate.rules).uint32.lte = 3600000 // 1小时
   ]; // API耗时
 
-  optional bool success = 28 [
+  optional bool success = 30 [
     json_name = "success",
     (gnostic.openapi.v3.property) = {description: "操作是否成功"}
   ]; // 操作结果
 
-  optional uint32 status_code = 29 [
+  optional uint32 status_code = 31 [
     json_name = "statusCode",
     (gnostic.openapi.v3.property) = {description: "HTTP状态码（200/403/500）"}
   ]; // HTTP状态码
 
-  optional string reason = 30 [
+  optional string reason = 32 [
     json_name = "reason",
     (gnostic.openapi.v3.property) = {description: "操作失败原因（仅success=false时填充）"}
   ]; // 操作失败原因
 
-  optional string request_header = 31 [
+  optional string request_header = 33 [
     json_name = "requestHeader",
     (gnostic.openapi.v3.property) = {description: "请求头（JSON格式，敏感字段脱敏后）"}
   ]; // 请求头
 
-  optional string request_body = 32 [
+  optional string request_body = 34 [
     json_name = "requestBody",
     (gnostic.openapi.v3.property) = {description: "请求体（JSON格式，敏感字段脱敏后）"}
   ]; // 请求体
 
-  optional string response = 33 [
+  optional string response = 35 [
     json_name = "response",
     (gnostic.openapi.v3.property) = {description: "响应信息（JSON格式，敏感字段脱敏后）"}
   ]; // 响应信息

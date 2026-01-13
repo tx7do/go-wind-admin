@@ -71,6 +71,46 @@ func (x *OperationAuditLog) Redact() string {
 	if x == nil {
 		return ""
 	}
+
+	// Safe field: Id
+
+	// Safe field: TenantId
+
+	// Safe field: TenantName
+
+	// Safe field: UserId
+
+	// Safe field: Username
+
+	// Safe field: ResourceType
+
+	// Safe field: ResourceId
+
+	// Safe field: Action
+
+	// Safe field: BeforeData
+
+	// Safe field: AfterData
+
+	// Safe field: SensitiveLevel
+
+	// Safe field: RequestId
+
+	// Safe field: TraceId
+
+	// Safe field: Success
+
+	// Safe field: FailureReason
+
+	// Safe field: IpAddress
+
+	// Safe field: GeoLocation
+
+	// Safe field: LogHash
+
+	// Safe field: Signature
+
+	// Safe field: CreatedAt
 	return x.String()
 }
 

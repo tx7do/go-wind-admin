@@ -7,6 +7,7 @@
 package servicev1
 
 import (
+	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	_ "github.com/google/gnostic/openapiv3"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -134,11 +135,134 @@ func (RetentionPolicy) EnumDescriptor() ([]byte, []int) {
 	return file_audit_service_v1_common_proto_rawDescGZIP(), []int{1}
 }
 
+// 业务资源信息
+type BusinessResource struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	ResourceType   *string                `protobuf:"bytes,1,opt,name=resource_type,json=resourceType,proto3,oneof" json:"resource_type,omitempty"` // 资源类型
+	ResourceKey    *uint32                `protobuf:"varint,2,opt,name=resource_key,json=resourceKey,proto3,oneof" json:"resource_key,omitempty"`   // 业务键
+	AccessedFields []string               `protobuf:"bytes,3,rep,name=accessed_fields,json=accessedFields,proto3" json:"accessed_fields,omitempty"` // 访问字段列表
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *BusinessResource) Reset() {
+	*x = BusinessResource{}
+	mi := &file_audit_service_v1_common_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BusinessResource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BusinessResource) ProtoMessage() {}
+
+func (x *BusinessResource) ProtoReflect() protoreflect.Message {
+	mi := &file_audit_service_v1_common_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BusinessResource.ProtoReflect.Descriptor instead.
+func (*BusinessResource) Descriptor() ([]byte, []int) {
+	return file_audit_service_v1_common_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *BusinessResource) GetResourceType() string {
+	if x != nil && x.ResourceType != nil {
+		return *x.ResourceType
+	}
+	return ""
+}
+
+func (x *BusinessResource) GetResourceKey() uint32 {
+	if x != nil && x.ResourceKey != nil {
+		return *x.ResourceKey
+	}
+	return 0
+}
+
+func (x *BusinessResource) GetAccessedFields() []string {
+	if x != nil {
+		return x.AccessedFields
+	}
+	return nil
+}
+
+// 数字签名
+type DigitalSignature struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Algorithm     string                 `protobuf:"bytes,1,opt,name=algorithm,proto3" json:"algorithm,omitempty"`
+	Value         []byte                 `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"` // 签名值
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DigitalSignature) Reset() {
+	*x = DigitalSignature{}
+	mi := &file_audit_service_v1_common_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DigitalSignature) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DigitalSignature) ProtoMessage() {}
+
+func (x *DigitalSignature) ProtoReflect() protoreflect.Message {
+	mi := &file_audit_service_v1_common_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DigitalSignature.ProtoReflect.Descriptor instead.
+func (*DigitalSignature) Descriptor() ([]byte, []int) {
+	return file_audit_service_v1_common_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *DigitalSignature) GetAlgorithm() string {
+	if x != nil {
+		return x.Algorithm
+	}
+	return ""
+}
+
+func (x *DigitalSignature) GetValue() []byte {
+	if x != nil {
+		return x.Value
+	}
+	return nil
+}
+
 var File_audit_service_v1_common_proto protoreflect.FileDescriptor
 
 const file_audit_service_v1_common_proto_rawDesc = "" +
 	"\n" +
-	"\x1daudit/service/v1/common.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto*i\n" +
+	"\x1daudit/service/v1/common.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x17validate/validate.proto\"\xef\x01\n" +
+	"\x10BusinessResource\x12<\n" +
+	"\rresource_type\x18\x01 \x01(\tB\x12\xbaG\x0f\x92\x02\f资源类型H\x00R\fresourceType\x88\x01\x01\x127\n" +
+	"\fresource_key\x18\x02 \x01(\rB\x0f\xbaG\f\x92\x02\t业务键H\x01R\vresourceKey\x88\x01\x01\x12A\n" +
+	"\x0faccessed_fields\x18\x03 \x03(\tB\x18\xbaG\x15\x92\x02\x12访问字段列表R\x0eaccessedFieldsB\x10\n" +
+	"\x0e_resource_typeB\x0f\n" +
+	"\r_resource_key\"{\n" +
+	"\x10DigitalSignature\x12Q\n" +
+	"\talgorithm\x18\x01 \x01(\tB3\xfaB0r.R,ECDSA_P256_SHA256,RSA_2048_PKCS1_V1_5_SHA256R\talgorithm\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\fR\x05value*i\n" +
 	"\x0eSensitiveLevel\x12\x1f\n" +
 	"\x1bSENSITIVE_LEVEL_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -168,9 +292,12 @@ func file_audit_service_v1_common_proto_rawDescGZIP() []byte {
 }
 
 var file_audit_service_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_audit_service_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_audit_service_v1_common_proto_goTypes = []any{
-	(SensitiveLevel)(0),  // 0: audit.service.v1.SensitiveLevel
-	(RetentionPolicy)(0), // 1: audit.service.v1.RetentionPolicy
+	(SensitiveLevel)(0),      // 0: audit.service.v1.SensitiveLevel
+	(RetentionPolicy)(0),     // 1: audit.service.v1.RetentionPolicy
+	(*BusinessResource)(nil), // 2: audit.service.v1.BusinessResource
+	(*DigitalSignature)(nil), // 3: audit.service.v1.DigitalSignature
 }
 var file_audit_service_v1_common_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
@@ -185,19 +312,21 @@ func file_audit_service_v1_common_proto_init() {
 	if File_audit_service_v1_common_proto != nil {
 		return
 	}
+	file_audit_service_v1_common_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_audit_service_v1_common_proto_rawDesc), len(file_audit_service_v1_common_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   0,
+			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_audit_service_v1_common_proto_goTypes,
 		DependencyIndexes: file_audit_service_v1_common_proto_depIdxs,
 		EnumInfos:         file_audit_service_v1_common_proto_enumTypes,
+		MessageInfos:      file_audit_service_v1_common_proto_msgTypes,
 	}.Build()
 	File_audit_service_v1_common_proto = out.File
 	file_audit_service_v1_common_proto_goTypes = nil

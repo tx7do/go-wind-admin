@@ -3,6 +3,7 @@ syntax = "proto3";
 package audit.service.v1;
 
 import "gnostic/openapi/v3/annotations.proto";
+import "validate/validate.proto";
 
 // 敏感级别
 enum SensitiveLevel {
@@ -22,4 +23,32 @@ enum RetentionPolicy {
   DAYS_180 = 2;  // 180天（等保2.0最低要求）
   DAYS_365 = 3;  // 365天（金融核心）
   PERMANENT = 4; // 永久（法律要求）
+}
+
+// 业务资源信息
+message BusinessResource {
+  optional string resource_type = 1 [
+    json_name = "resourceType",
+    (gnostic.openapi.v3.property) = {description: "资源类型"}
+  ]; // 资源类型
+
+  optional uint32 resource_key = 2 [
+    json_name = "resourceKey",
+    (gnostic.openapi.v3.property) = {description: "业务键"}
+  ]; // 业务键
+
+  repeated string accessed_fields = 3 [
+    json_name = "accessedFields",
+    (gnostic.openapi.v3.property) = {description: "访问字段列表"}
+  ]; // 访问字段列表
+}
+
+// 数字签名
+message DigitalSignature {
+  string algorithm = 1 [ // 算法标识
+    (validate.rules).string = {
+      in: "ECDSA_P256_SHA256,RSA_2048_PKCS1_V1_5_SHA256"
+    }
+  ];
+  bytes value = 2; // 签名值
 }
