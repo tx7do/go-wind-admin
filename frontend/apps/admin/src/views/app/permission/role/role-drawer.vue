@@ -7,9 +7,11 @@ import { $t } from '@vben/locales';
 import { notification } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
+import { type permissionservicev1_PermissionGroup as PermissionGroup } from '#/generated/api/admin/service/v1';
 import {
-  convertPermissionToTree,
+  buildPermissionTree,
   statusList,
+  usePermissionGroupStore,
   usePermissionStore,
   useRoleStore,
 } from '#/stores';
@@ -17,8 +19,10 @@ import { deepClone } from '#/utils';
 
 const roleStore = useRoleStore();
 const permissionStore = usePermissionStore();
+const permissionGroupStore = usePermissionGroupStore();
 
 const data = ref();
+const groups = ref<PermissionGroup[]>([]);
 
 const getTitle = computed(() =>
   data.value?.create
@@ -99,16 +103,24 @@ const [BaseForm, baseFormApi] = useVbenForm({
         treeDefaultExpandAll: false,
         loadingSlot: 'suffixIcon',
         childrenField: 'children',
-        labelField: 'name',
-        valueField: 'id',
+        labelField: 'title',
+        valueField: 'key',
         resultField: 'items',
         api: async () => {
+          const groupData = await permissionGroupStore.listPermissionGroup(
+            undefined,
+            {
+              status: 'ON',
+            },
+          );
+          groups.value = groupData.items ?? [];
+
           return await permissionStore.listPermission(undefined, {
             status: 'ON',
           });
         },
         afterFetch: (data: any) => {
-          return convertPermissionToTree(data.items);
+          return buildPermissionTree(groups.value, data.items);
         },
       },
     },

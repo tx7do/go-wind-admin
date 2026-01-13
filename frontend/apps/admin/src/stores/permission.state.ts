@@ -7,6 +7,7 @@ import { defineStore } from 'pinia';
 import {
   createPermissionServiceClient,
   type permissionservicev1_Permission as Permission,
+  type permissionservicev1_PermissionGroup as PermissionGroup,
 } from '#/generated/api/admin/service/v1';
 import { makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
@@ -141,31 +142,110 @@ interface PermissionTreeDataNode {
   permission?: Permission;
 }
 
-export function convertPermissionToTree(
-  rawApiList: Permission[],
+export function buildPermissionTree(
+  permissionGroups: PermissionGroup[],
+  permissions: Permission[],
 ): PermissionTreeDataNode[] {
-  const permMap = new Map<string, Permission[]>();
-  rawApiList.forEach((perm) => {
-    const groupName = typeof perm.groupName === 'string' ? perm.groupName : '';
-    if (!permMap.has(groupName)) {
-      permMap.set(groupName, []);
+  const groupNodes: Map<string, PermissionTreeDataNode> = new Map();
+  const idToKey: Map<number | string, string> = new Map();
+  const nameToKey: Map<string, string> = new Map();
+
+  const defaultKey = 'group-default';
+  groupNodes.set(defaultKey, { key: defaultKey, title: '', children: [] });
+
+  function processGroup(
+    g: PermissionGroup,
+    idxPath: string[],
+  ): PermissionTreeDataNode {
+    const idPart = g.id ?? `idx-${idxPath.join('-')}`;
+    const key = `group-${idPart}`;
+    const title =
+      typeof (g as any).name === 'string'
+        ? (g as any).name
+        : String(g.id ?? '');
+    const node: PermissionTreeDataNode = { key, title, children: [] };
+
+    groupNodes.set(key, node);
+    if (g.id !== undefined && g.id !== null) {
+      idToKey.set(g.id as any, key);
     }
-    permMap.get(groupName)?.push(perm);
+    if (typeof (g as any).name === 'string' && (g as any).name) {
+      nameToKey.set((g as any).name, key);
+    }
+
+    const children = (g as any).children;
+    if (Array.isArray(children) && children.length > 0) {
+      children.forEach((child: PermissionGroup, idx) => {
+        const childNode = processGroup(child, [...idxPath, String(idx)]);
+        node.children = node.children ?? [];
+        node.children.push(childNode);
+      });
+    }
+
+    return node;
+  }
+
+  // 递归建立所有分组节点（保留原始传入顺序的根节点 key）
+  permissionGroups.forEach((g, idx) => {
+    processGroup(g, [String(idx)]);
   });
 
-  return [...permMap.entries()].map(([groupName, permissionList]) => {
-    const children: PermissionTreeDataNode[] = permissionList.map(
-      (perm, index) => ({
-        key: perm.id ?? `perm-default-${index}`,
-        title: typeof perm.name === 'string' ? perm.name : '',
-        permission: perm,
-      }),
-    );
+  // 将 permissions 作为叶子挂到对应分组（优先 groupId，其次 groupName，最后默认组）
+  permissions.forEach((perm, idx) => {
+    let targetKey: string | undefined;
 
-    return {
-      key: `group-${groupName || 'default'}`,
-      title: groupName || '',
-      children,
+    if (
+      perm &&
+      (perm as any).groupId !== undefined &&
+      (perm as any).groupId !== null
+    ) {
+      targetKey =
+        idToKey.get((perm as any).groupId) ?? `group-${(perm as any).groupId}`;
+    }
+
+    if (!targetKey && typeof (perm as any).groupName === 'string') {
+      targetKey =
+        nameToKey.get((perm as any).groupName) ??
+        `group-${(perm as any).groupName}`;
+    }
+
+    if (!targetKey || !groupNodes.has(targetKey)) {
+      targetKey = defaultKey;
+    }
+
+    const childNode: PermissionTreeDataNode = {
+      key: perm.id ?? `perm-${idx}`,
+      title:
+        typeof (perm as any).name === 'string'
+          ? `${(perm as any).name} (${(perm as any).code})`
+          : '',
+      permission: perm,
     };
+
+    const parent = groupNodes.get(targetKey);
+    if (parent) {
+      parent.children = parent.children ?? [];
+      parent.children.push(childNode);
+    }
   });
+
+  // 按传入分组顺序输出根节点，保留其递归 children；默认组放最后（有子节点时）
+  const result: PermissionTreeDataNode[] = permissionGroups.map((g, idx) => {
+    const idPart = g.id ?? `idx-${idx}`;
+    const key = `group-${idPart}`;
+    return (
+      groupNodes.get(key) ?? {
+        key,
+        title: typeof (g as any).name === 'string' ? (g as any).name : '',
+        children: [],
+      }
+    );
+  });
+
+  const defaultNode = groupNodes.get(defaultKey);
+  if (defaultNode && (defaultNode.children?.length ?? 0) > 0) {
+    result.push(defaultNode);
+  }
+
+  return result;
 }
