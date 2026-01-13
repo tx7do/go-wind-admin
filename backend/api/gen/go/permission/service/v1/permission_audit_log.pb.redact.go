@@ -78,11 +78,17 @@ func (x *PermissionAuditLog) Redact() string {
 
 	// Safe field: Id
 
+	// Safe field: TenantId
+
 	// Safe field: OperatorId
+
+	// Safe field: OperatorName
 
 	// Safe field: TargetType
 
 	// Safe field: TargetId
+
+	// Safe field: TargetName
 
 	// Safe field: Action
 
@@ -92,7 +98,13 @@ func (x *PermissionAuditLog) Redact() string {
 
 	// Safe field: IpAddress
 
-	// Safe field: TenantId
+	// Safe field: RequestId
+
+	// Safe field: Reason
+
+	// Safe field: LogHash
+
+	// Safe field: Signature
 
 	// Safe field: CreatedAt
 	return x.String()

@@ -30,20 +30,26 @@ const (
 
 // 策略评估日志
 type PolicyEvaluationLog struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                         // 策略评估日志ID
-	UserId        *uint32                `protobuf:"varint,2,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                   // 操作者用户ID
-	MembershipId  *uint32                `protobuf:"varint,3,opt,name=membership_id,json=membershipId,proto3,oneof" json:"membership_id,omitempty"` // 成员身份ID
-	PermissionId  *uint32                `protobuf:"varint,4,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"` // 权限点ID
-	PolicyId      *uint32                `protobuf:"varint,5,opt,name=policy_id,json=policyId,proto3,oneof" json:"policy_id,omitempty"`             // 策略ID（可能无策略）
-	Result        *bool                  `protobuf:"varint,6,opt,name=result,proto3,oneof" json:"result,omitempty"`                                 // 是否通过
-	ScopeSql      *string                `protobuf:"bytes,7,opt,name=scope_sql,json=scopeSql,proto3,oneof" json:"scope_sql,omitempty"`              // 生成的SQL条件
-	RequestPath   *string                `protobuf:"bytes,8,opt,name=request_path,json=requestPath,proto3,oneof" json:"request_path,omitempty"`     // 操作者IP地址
-	IpAddress     *string                `protobuf:"bytes,9,opt,name=ip_address,json=ipAddress,proto3,oneof" json:"ip_address,omitempty"`           // 操作者IP地址
-	TenantId      *uint32                `protobuf:"varint,10,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`            // 租户ID
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,500,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`         // 创建时间
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"open.v1"`
+	Id                *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                        // 策略评估日志ID
+	TenantId          *uint32                `protobuf:"varint,2,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                            // 租户ID
+	UserId            *uint32                `protobuf:"varint,3,opt,name=user_id,json=userId,proto3,oneof" json:"user_id,omitempty"`                                  // 操作者用户ID
+	MembershipId      *uint32                `protobuf:"varint,4,opt,name=membership_id,json=membershipId,proto3,oneof" json:"membership_id,omitempty"`                // 成员身份ID
+	PermissionId      *uint32                `protobuf:"varint,10,opt,name=permission_id,json=permissionId,proto3,oneof" json:"permission_id,omitempty"`               // 权限点ID
+	PolicyId          *uint32                `protobuf:"varint,11,opt,name=policy_id,json=policyId,proto3,oneof" json:"policy_id,omitempty"`                           // 策略ID（可能无策略）
+	RequestPath       *string                `protobuf:"bytes,12,opt,name=request_path,json=requestPath,proto3,oneof" json:"request_path,omitempty"`                   // 请求API路径
+	RequestMethod     *string                `protobuf:"bytes,13,opt,name=request_method,json=requestMethod,proto3,oneof" json:"request_method,omitempty"`             // 请求HTTP方法
+	Result            *bool                  `protobuf:"varint,20,opt,name=result,proto3,oneof" json:"result,omitempty"`                                               // 是否通过
+	EffectDetails     *string                `protobuf:"bytes,21,opt,name=effect_details,json=effectDetails,proto3,oneof" json:"effect_details,omitempty"`             // 评估详情/拒绝原因
+	ScopeSql          *string                `protobuf:"bytes,30,opt,name=scope_sql,json=scopeSql,proto3,oneof" json:"scope_sql,omitempty"`                            // 生成的SQL条件
+	IpAddress         *string                `protobuf:"bytes,40,opt,name=ip_address,json=ipAddress,proto3,oneof" json:"ip_address,omitempty"`                         // 操作者IP地址
+	TraceId           *string                `protobuf:"bytes,41,opt,name=trace_id,json=traceId,proto3,oneof" json:"trace_id,omitempty"`                               // 全局链路追踪ID
+	EvaluationContext *string                `protobuf:"bytes,50,opt,name=evaluation_context,json=evaluationContext,proto3,oneof" json:"evaluation_context,omitempty"` // 决策上下文快照
+	LogHash           *string                `protobuf:"bytes,60,opt,name=log_hash,json=logHash,proto3,oneof" json:"log_hash,omitempty"`                               // 日志哈希
+	Signature         []byte                 `protobuf:"bytes,61,opt,name=signature,proto3,oneof" json:"signature,omitempty"`                                          // 日志数字签名
+	CreatedAt         *timestamppb.Timestamp `protobuf:"bytes,70,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                         // 日志创建时间
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *PolicyEvaluationLog) Reset() {
@@ -83,6 +89,13 @@ func (x *PolicyEvaluationLog) GetId() uint32 {
 	return 0
 }
 
+func (x *PolicyEvaluationLog) GetTenantId() uint32 {
+	if x != nil && x.TenantId != nil {
+		return *x.TenantId
+	}
+	return 0
+}
+
 func (x *PolicyEvaluationLog) GetUserId() uint32 {
 	if x != nil && x.UserId != nil {
 		return *x.UserId
@@ -111,6 +124,20 @@ func (x *PolicyEvaluationLog) GetPolicyId() uint32 {
 	return 0
 }
 
+func (x *PolicyEvaluationLog) GetRequestPath() string {
+	if x != nil && x.RequestPath != nil {
+		return *x.RequestPath
+	}
+	return ""
+}
+
+func (x *PolicyEvaluationLog) GetRequestMethod() string {
+	if x != nil && x.RequestMethod != nil {
+		return *x.RequestMethod
+	}
+	return ""
+}
+
 func (x *PolicyEvaluationLog) GetResult() bool {
 	if x != nil && x.Result != nil {
 		return *x.Result
@@ -118,16 +145,16 @@ func (x *PolicyEvaluationLog) GetResult() bool {
 	return false
 }
 
-func (x *PolicyEvaluationLog) GetScopeSql() string {
-	if x != nil && x.ScopeSql != nil {
-		return *x.ScopeSql
+func (x *PolicyEvaluationLog) GetEffectDetails() string {
+	if x != nil && x.EffectDetails != nil {
+		return *x.EffectDetails
 	}
 	return ""
 }
 
-func (x *PolicyEvaluationLog) GetRequestPath() string {
-	if x != nil && x.RequestPath != nil {
-		return *x.RequestPath
+func (x *PolicyEvaluationLog) GetScopeSql() string {
+	if x != nil && x.ScopeSql != nil {
+		return *x.ScopeSql
 	}
 	return ""
 }
@@ -139,11 +166,32 @@ func (x *PolicyEvaluationLog) GetIpAddress() string {
 	return ""
 }
 
-func (x *PolicyEvaluationLog) GetTenantId() uint32 {
-	if x != nil && x.TenantId != nil {
-		return *x.TenantId
+func (x *PolicyEvaluationLog) GetTraceId() string {
+	if x != nil && x.TraceId != nil {
+		return *x.TraceId
 	}
-	return 0
+	return ""
+}
+
+func (x *PolicyEvaluationLog) GetEvaluationContext() string {
+	if x != nil && x.EvaluationContext != nil {
+		return *x.EvaluationContext
+	}
+	return ""
+}
+
+func (x *PolicyEvaluationLog) GetLogHash() string {
+	if x != nil && x.LogHash != nil {
+		return *x.LogHash
+	}
+	return ""
+}
+
+func (x *PolicyEvaluationLog) GetSignature() []byte {
+	if x != nil {
+		return x.Signature
+	}
+	return nil
 }
 
 func (x *PolicyEvaluationLog) GetCreatedAt() *timestamppb.Timestamp {
@@ -330,37 +378,50 @@ var File_permission_service_v1_policy_evaluation_log_proto protoreflect.FileDesc
 
 const file_permission_service_v1_policy_evaluation_log_proto_rawDesc = "" +
 	"\n" +
-	"1permission/service/v1/policy_evaluation_log.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1epagination/v1/pagination.proto\"\xcc\x06\n" +
+	"1permission/service/v1/policy_evaluation_log.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1epagination/v1/pagination.proto\"\xf3\v\n" +
 	"\x13PolicyEvaluationLog\x12/\n" +
-	"\x02id\x18\x01 \x01(\rB\x1a\xbaG\x17\x92\x02\x14策略评估日志IDH\x00R\x02id\x88\x01\x01\x125\n" +
-	"\auser_id\x18\x02 \x01(\rB\x17\xbaG\x14\x92\x02\x11操作者用户IDH\x01R\x06userId\x88\x01\x01\x12>\n" +
-	"\rmembership_id\x18\x03 \x01(\rB\x14\xbaG\x11\x92\x02\x0e成员身份IDH\x02R\fmembershipId\x88\x01\x01\x12;\n" +
-	"\rpermission_id\x18\x04 \x01(\rB\x11\xbaG\x0e\x92\x02\v权限点IDH\x03R\fpermissionId\x88\x01\x01\x12E\n" +
-	"\tpolicy_id\x18\x05 \x01(\rB#\xbaG \x92\x02\x1d策略ID（可能无策略）H\x04R\bpolicyId\x88\x01\x01\x12/\n" +
-	"\x06result\x18\x06 \x01(\bB\x12\xbaG\x0f\x92\x02\f是否通过H\x05R\x06result\x88\x01\x01\x12:\n" +
-	"\tscope_sql\x18\a \x01(\tB\x18\xbaG\x15\x92\x02\x12生成的SQL条件H\x06R\bscopeSql\x88\x01\x01\x12=\n" +
-	"\frequest_path\x18\b \x01(\tB\x15\xbaG\x12\x92\x02\x0f请求API路径H\aR\vrequestPath\x88\x01\x01\x12;\n" +
+	"\x02id\x18\x01 \x01(\rB\x1a\xbaG\x17\x92\x02\x14策略评估日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x125\n" +
+	"\auser_id\x18\x03 \x01(\rB\x17\xbaG\x14\x92\x02\x11操作者用户IDH\x02R\x06userId\x88\x01\x01\x12>\n" +
+	"\rmembership_id\x18\x04 \x01(\rB\x14\xbaG\x11\x92\x02\x0e成员身份IDH\x03R\fmembershipId\x88\x01\x01\x12;\n" +
+	"\rpermission_id\x18\n" +
+	" \x01(\rB\x11\xbaG\x0e\x92\x02\v权限点IDH\x04R\fpermissionId\x88\x01\x01\x12E\n" +
+	"\tpolicy_id\x18\v \x01(\rB#\xbaG \x92\x02\x1d策略ID（可能无策略）H\x05R\bpolicyId\x88\x01\x01\x12=\n" +
+	"\frequest_path\x18\f \x01(\tB\x15\xbaG\x12\x92\x02\x0f请求API路径H\x06R\vrequestPath\x88\x01\x01\x12B\n" +
+	"\x0erequest_method\x18\r \x01(\tB\x16\xbaG\x13\x92\x02\x10请求HTTP方法H\aR\rrequestMethod\x88\x01\x01\x12/\n" +
+	"\x06result\x18\x14 \x01(\bB\x12\xbaG\x0f\x92\x02\f是否通过H\bR\x06result\x88\x01\x01\x12K\n" +
+	"\x0eeffect_details\x18\x15 \x01(\tB\x1f\xbaG\x1c\x92\x02\x19评估详情/拒绝原因H\tR\reffectDetails\x88\x01\x01\x12:\n" +
+	"\tscope_sql\x18\x1e \x01(\tB\x18\xbaG\x15\x92\x02\x12生成的SQL条件H\n" +
+	"R\bscopeSql\x88\x01\x01\x12;\n" +
 	"\n" +
-	"ip_address\x18\t \x01(\tB\x17\xbaG\x14\x92\x02\x11操作者IP地址H\bR\tipAddress\x88\x01\x01\x120\n" +
-	"\ttenant_id\x18\n" +
-	" \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\tR\btenantId\x88\x01\x01\x12S\n" +
+	"ip_address\x18( \x01(\tB\x17\xbaG\x14\x92\x02\x11操作者IP地址H\vR\tipAddress\x88\x01\x01\x12\\\n" +
+	"\btrace_id\x18) \x01(\tB<\xbaG9\x92\x026全局链路追踪ID（符合W3C TraceContext标准）H\fR\atraceId\x88\x01\x01\x12o\n" +
+	"\x12evaluation_context\x182 \x01(\tB;\xbaG8\x92\x025决策上下文快照(如用户属性、环境属性)H\rR\x11evaluationContext\x88\x01\x01\x12\\\n" +
+	"\blog_hash\x18< \x01(\tB<\xbaG9\x92\x026日志内容哈希（SHA256，十六进制字符串）H\x0eR\alogHash\x88\x01\x01\x12}\n" +
+	"\tsignature\x18= \x01(\fBZ\xbaGW\x92\x02T日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）H\x0fR\tsignature\x88\x01\x01\x12X\n" +
 	"\n" +
-	"created_at\x18\xf4\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\n" +
-	"R\tcreatedAt\x88\x01\x01B\x05\n" +
-	"\x03_idB\n" +
+	"created_at\x18F \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12日志创建时间H\x10R\tcreatedAt\x88\x01\x01B\x05\n" +
+	"\x03_idB\f\n" +
+	"\n" +
+	"_tenant_idB\n" +
 	"\n" +
 	"\b_user_idB\x10\n" +
 	"\x0e_membership_idB\x10\n" +
 	"\x0e_permission_idB\f\n" +
 	"\n" +
-	"_policy_idB\t\n" +
-	"\a_resultB\f\n" +
+	"_policy_idB\x0f\n" +
+	"\r_request_pathB\x11\n" +
+	"\x0f_request_methodB\t\n" +
+	"\a_resultB\x11\n" +
+	"\x0f_effect_detailsB\f\n" +
 	"\n" +
-	"_scope_sqlB\x0f\n" +
-	"\r_request_pathB\r\n" +
-	"\v_ip_addressB\f\n" +
+	"_scope_sqlB\r\n" +
+	"\v_ip_addressB\v\n" +
+	"\t_trace_idB\x15\n" +
+	"\x13_evaluation_contextB\v\n" +
+	"\t_log_hashB\f\n" +
 	"\n" +
-	"_tenant_idB\r\n" +
+	"_signatureB\r\n" +
 	"\v_created_at\"y\n" +
 	"\x1fListPolicyEvaluationLogResponse\x12@\n" +
 	"\x05items\x18\x01 \x03(\v2*.permission.service.v1.PolicyEvaluationLogR\x05items\x12\x14\n" +

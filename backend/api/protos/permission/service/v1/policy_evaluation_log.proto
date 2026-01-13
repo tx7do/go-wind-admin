@@ -27,76 +27,98 @@ service PolicyEvaluationLogService {
 message PolicyEvaluationLog {
   optional uint32 id = 1 [
     json_name = "id",
-    (gnostic.openapi.v3.property) = {
-      description: "策略评估日志ID"
-    }
+    (gnostic.openapi.v3.property) = {description: "策略评估日志ID"}
   ]; // 策略评估日志ID
 
-  optional uint32 user_id = 2 [
-    json_name = "userId",
-    (gnostic.openapi.v3.property) = {
-      description: "操作者用户ID"
-    }
-  ]; // 操作者用户ID
-
-  optional uint32 membership_id = 3 [
-    json_name = "membershipId",
-    (gnostic.openapi.v3.property) = {
-      description: "成员身份ID"
-    }
-  ]; // 成员身份ID
-
-  optional uint32 permission_id = 4 [
-    json_name = "permissionId",
-    (gnostic.openapi.v3.property) = {
-      description: "权限点ID"
-    }
-  ]; // 权限点ID
-
-  optional uint32 policy_id = 5 [
-    json_name = "policyId",
-    (gnostic.openapi.v3.property) = {
-      description: "策略ID（可能无策略）"
-    }
-  ]; // 策略ID（可能无策略）
-
-  optional bool result = 6 [
-    json_name = "result",
-    (gnostic.openapi.v3.property) = {
-      description: "是否通过"
-    }
-  ]; // 是否通过
-
-  optional string scope_sql = 7 [
-    json_name = "scopeSql",
-    (gnostic.openapi.v3.property) = {
-      description: "生成的SQL条件"
-    }
-  ]; // 生成的SQL条件
-
-  optional string request_path = 8 [
-    json_name = "requestPath",
-    (gnostic.openapi.v3.property) = {
-      description: "请求API路径"
-    }
-  ]; // 操作者IP地址
-
-  optional string ip_address = 9 [
-    json_name = "ipAddress",
-    (gnostic.openapi.v3.property) = {
-      description: "操作者IP地址"
-    }
-  ]; // 操作者IP地址
-
-  optional uint32 tenant_id = 10 [
+  optional uint32 tenant_id = 2 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ];  // 租户ID
 
-  optional google.protobuf.Timestamp created_at = 500 [
+  optional uint32 user_id = 3 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = {description: "操作者用户ID"}
+  ]; // 操作者用户ID
+
+  optional uint32 membership_id = 4 [
+    json_name = "membershipId",
+    (gnostic.openapi.v3.property) = {description: "成员身份ID"}
+  ]; // 成员身份ID
+
+
+  optional uint32 permission_id = 10 [
+    json_name = "permissionId",
+    (gnostic.openapi.v3.property) = {description: "权限点ID"}
+  ]; // 权限点ID
+
+  optional uint32 policy_id = 11 [
+    json_name = "policyId",
+    (gnostic.openapi.v3.property) = {description: "策略ID（可能无策略）"}
+  ]; // 策略ID（可能无策略）
+
+  optional string request_path = 12 [
+    json_name = "requestPath",
+    (gnostic.openapi.v3.property) = {description: "请求API路径"}
+  ]; // 请求API路径
+
+  optional string request_method = 13 [
+    json_name = "requestMethod",
+    (gnostic.openapi.v3.property) = {description: "请求HTTP方法"}
+  ]; // 请求HTTP方法
+
+
+  optional bool result = 20 [
+    json_name = "result",
+    (gnostic.openapi.v3.property) = {description: "是否通过"}
+  ]; // 是否通过
+
+  optional string effect_details = 21 [
+    json_name = "effectDetails",
+    (gnostic.openapi.v3.property) = {description: "评估详情/拒绝原因"}
+  ]; // 评估详情/拒绝原因
+
+
+  optional string scope_sql = 30 [
+    json_name = "scopeSql",
+    (gnostic.openapi.v3.property) = {description: "生成的SQL条件"}
+  ]; // 生成的SQL条件
+
+
+  optional string ip_address = 40 [
+    json_name = "ipAddress",
+    (gnostic.openapi.v3.property) = {description: "操作者IP地址"}
+  ]; // 操作者IP地址
+
+  optional string trace_id = 41 [
+    json_name = "traceId",
+    (gnostic.openapi.v3.property) = {description: "全局链路追踪ID（符合W3C TraceContext标准）"}
+  ]; // 全局链路追踪ID
+
+
+  optional string evaluation_context = 50 [
+    json_name = "evaluationContext",
+    (gnostic.openapi.v3.property) = {description: "决策上下文快照(如用户属性、环境属性)"}
+  ]; // 决策上下文快照
+
+
+  // ========== 合规校验 ==========
+
+  optional string log_hash = 60 [
+    json_name = "logHash",
+    (gnostic.openapi.v3.property).description = "日志内容哈希（SHA256，十六进制字符串）"
+  ]; // 日志哈希
+
+  optional bytes signature = 61 [
+    json_name = "signature",
+    (gnostic.openapi.v3.property).description = "日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）"
+  ]; // 日志数字签名
+
+  // ========== 时间字段 ==========
+
+  optional google.protobuf.Timestamp created_at = 70 [
     json_name = "createdAt",
-    (gnostic.openapi.v3.property) = {description: "创建时间"}
-  ];// 创建时间
+    (gnostic.openapi.v3.property) = {description: "日志创建时间"}
+  ];// 日志创建时间
 }
 
 // 查询策略评估日志列表 - 回应

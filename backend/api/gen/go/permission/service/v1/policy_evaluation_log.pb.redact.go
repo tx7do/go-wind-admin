@@ -78,6 +78,8 @@ func (x *PolicyEvaluationLog) Redact() string {
 
 	// Safe field: Id
 
+	// Safe field: TenantId
+
 	// Safe field: UserId
 
 	// Safe field: MembershipId
@@ -86,15 +88,25 @@ func (x *PolicyEvaluationLog) Redact() string {
 
 	// Safe field: PolicyId
 
+	// Safe field: RequestPath
+
+	// Safe field: RequestMethod
+
 	// Safe field: Result
+
+	// Safe field: EffectDetails
 
 	// Safe field: ScopeSql
 
-	// Safe field: RequestPath
-
 	// Safe field: IpAddress
 
-	// Safe field: TenantId
+	// Safe field: TraceId
+
+	// Safe field: EvaluationContext
+
+	// Safe field: LogHash
+
+	// Safe field: Signature
 
 	// Safe field: CreatedAt
 	return x.String()

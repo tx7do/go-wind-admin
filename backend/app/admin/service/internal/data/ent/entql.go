@@ -686,11 +686,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permissionauditlog.FieldTenantID:   {Type: field.TypeUint32, Column: permissionauditlog.FieldTenantID},
 			permissionauditlog.FieldOperatorID: {Type: field.TypeUint32, Column: permissionauditlog.FieldOperatorID},
 			permissionauditlog.FieldTargetType: {Type: field.TypeString, Column: permissionauditlog.FieldTargetType},
-			permissionauditlog.FieldTargetID:   {Type: field.TypeUint32, Column: permissionauditlog.FieldTargetID},
-			permissionauditlog.FieldAction:     {Type: field.TypeString, Column: permissionauditlog.FieldAction},
+			permissionauditlog.FieldTargetID:   {Type: field.TypeString, Column: permissionauditlog.FieldTargetID},
+			permissionauditlog.FieldAction:     {Type: field.TypeEnum, Column: permissionauditlog.FieldAction},
 			permissionauditlog.FieldOldValue:   {Type: field.TypeString, Column: permissionauditlog.FieldOldValue},
 			permissionauditlog.FieldNewValue:   {Type: field.TypeString, Column: permissionauditlog.FieldNewValue},
 			permissionauditlog.FieldIPAddress:  {Type: field.TypeString, Column: permissionauditlog.FieldIPAddress},
+			permissionauditlog.FieldRequestID:  {Type: field.TypeString, Column: permissionauditlog.FieldRequestID},
+			permissionauditlog.FieldReason:     {Type: field.TypeString, Column: permissionauditlog.FieldReason},
+			permissionauditlog.FieldLogHash:    {Type: field.TypeString, Column: permissionauditlog.FieldLogHash},
+			permissionauditlog.FieldSignature:  {Type: field.TypeBytes, Column: permissionauditlog.FieldSignature},
 		},
 	}
 	graph.Nodes[22] = &sqlgraph.Node{
@@ -777,16 +781,22 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "PolicyEvaluationLog",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			policyevaluationlog.FieldCreatedAt:    {Type: field.TypeTime, Column: policyevaluationlog.FieldCreatedAt},
-			policyevaluationlog.FieldTenantID:     {Type: field.TypeUint32, Column: policyevaluationlog.FieldTenantID},
-			policyevaluationlog.FieldUserID:       {Type: field.TypeUint32, Column: policyevaluationlog.FieldUserID},
-			policyevaluationlog.FieldMembershipID: {Type: field.TypeUint32, Column: policyevaluationlog.FieldMembershipID},
-			policyevaluationlog.FieldPermissionID: {Type: field.TypeUint32, Column: policyevaluationlog.FieldPermissionID},
-			policyevaluationlog.FieldPolicyID:     {Type: field.TypeUint32, Column: policyevaluationlog.FieldPolicyID},
-			policyevaluationlog.FieldResult:       {Type: field.TypeBool, Column: policyevaluationlog.FieldResult},
-			policyevaluationlog.FieldScopeSQL:     {Type: field.TypeString, Column: policyevaluationlog.FieldScopeSQL},
-			policyevaluationlog.FieldRequestPath:  {Type: field.TypeString, Column: policyevaluationlog.FieldRequestPath},
-			policyevaluationlog.FieldIPAddress:    {Type: field.TypeString, Column: policyevaluationlog.FieldIPAddress},
+			policyevaluationlog.FieldCreatedAt:         {Type: field.TypeTime, Column: policyevaluationlog.FieldCreatedAt},
+			policyevaluationlog.FieldTenantID:          {Type: field.TypeUint32, Column: policyevaluationlog.FieldTenantID},
+			policyevaluationlog.FieldUserID:            {Type: field.TypeUint32, Column: policyevaluationlog.FieldUserID},
+			policyevaluationlog.FieldMembershipID:      {Type: field.TypeUint32, Column: policyevaluationlog.FieldMembershipID},
+			policyevaluationlog.FieldPermissionID:      {Type: field.TypeUint32, Column: policyevaluationlog.FieldPermissionID},
+			policyevaluationlog.FieldPolicyID:          {Type: field.TypeUint32, Column: policyevaluationlog.FieldPolicyID},
+			policyevaluationlog.FieldRequestPath:       {Type: field.TypeString, Column: policyevaluationlog.FieldRequestPath},
+			policyevaluationlog.FieldRequestMethod:     {Type: field.TypeString, Column: policyevaluationlog.FieldRequestMethod},
+			policyevaluationlog.FieldResult:            {Type: field.TypeBool, Column: policyevaluationlog.FieldResult},
+			policyevaluationlog.FieldEffectDetails:     {Type: field.TypeString, Column: policyevaluationlog.FieldEffectDetails},
+			policyevaluationlog.FieldScopeSQL:          {Type: field.TypeString, Column: policyevaluationlog.FieldScopeSQL},
+			policyevaluationlog.FieldIPAddress:         {Type: field.TypeString, Column: policyevaluationlog.FieldIPAddress},
+			policyevaluationlog.FieldTraceID:           {Type: field.TypeString, Column: policyevaluationlog.FieldTraceID},
+			policyevaluationlog.FieldEvaluationContext: {Type: field.TypeString, Column: policyevaluationlog.FieldEvaluationContext},
+			policyevaluationlog.FieldLogHash:           {Type: field.TypeString, Column: policyevaluationlog.FieldLogHash},
+			policyevaluationlog.FieldSignature:         {Type: field.TypeBytes, Column: policyevaluationlog.FieldSignature},
 		},
 	}
 	graph.Nodes[26] = &sqlgraph.Node{
@@ -3942,8 +3952,8 @@ func (f *PermissionAuditLogFilter) WhereTargetType(p entql.StringP) {
 	f.Where(p.Field(permissionauditlog.FieldTargetType))
 }
 
-// WhereTargetID applies the entql uint32 predicate on the target_id field.
-func (f *PermissionAuditLogFilter) WhereTargetID(p entql.Uint32P) {
+// WhereTargetID applies the entql string predicate on the target_id field.
+func (f *PermissionAuditLogFilter) WhereTargetID(p entql.StringP) {
 	f.Where(p.Field(permissionauditlog.FieldTargetID))
 }
 
@@ -3965,6 +3975,26 @@ func (f *PermissionAuditLogFilter) WhereNewValue(p entql.StringP) {
 // WhereIPAddress applies the entql string predicate on the ip_address field.
 func (f *PermissionAuditLogFilter) WhereIPAddress(p entql.StringP) {
 	f.Where(p.Field(permissionauditlog.FieldIPAddress))
+}
+
+// WhereRequestID applies the entql string predicate on the request_id field.
+func (f *PermissionAuditLogFilter) WhereRequestID(p entql.StringP) {
+	f.Where(p.Field(permissionauditlog.FieldRequestID))
+}
+
+// WhereReason applies the entql string predicate on the reason field.
+func (f *PermissionAuditLogFilter) WhereReason(p entql.StringP) {
+	f.Where(p.Field(permissionauditlog.FieldReason))
+}
+
+// WhereLogHash applies the entql string predicate on the log_hash field.
+func (f *PermissionAuditLogFilter) WhereLogHash(p entql.StringP) {
+	f.Where(p.Field(permissionauditlog.FieldLogHash))
+}
+
+// WhereSignature applies the entql []byte predicate on the signature field.
+func (f *PermissionAuditLogFilter) WhereSignature(p entql.BytesP) {
+	f.Where(p.Field(permissionauditlog.FieldSignature))
 }
 
 // addPredicate implements the predicateAdder interface.
@@ -4355,9 +4385,24 @@ func (f *PolicyEvaluationLogFilter) WherePolicyID(p entql.Uint32P) {
 	f.Where(p.Field(policyevaluationlog.FieldPolicyID))
 }
 
+// WhereRequestPath applies the entql string predicate on the request_path field.
+func (f *PolicyEvaluationLogFilter) WhereRequestPath(p entql.StringP) {
+	f.Where(p.Field(policyevaluationlog.FieldRequestPath))
+}
+
+// WhereRequestMethod applies the entql string predicate on the request_method field.
+func (f *PolicyEvaluationLogFilter) WhereRequestMethod(p entql.StringP) {
+	f.Where(p.Field(policyevaluationlog.FieldRequestMethod))
+}
+
 // WhereResult applies the entql bool predicate on the result field.
 func (f *PolicyEvaluationLogFilter) WhereResult(p entql.BoolP) {
 	f.Where(p.Field(policyevaluationlog.FieldResult))
+}
+
+// WhereEffectDetails applies the entql string predicate on the effect_details field.
+func (f *PolicyEvaluationLogFilter) WhereEffectDetails(p entql.StringP) {
+	f.Where(p.Field(policyevaluationlog.FieldEffectDetails))
 }
 
 // WhereScopeSQL applies the entql string predicate on the scope_sql field.
@@ -4365,14 +4410,29 @@ func (f *PolicyEvaluationLogFilter) WhereScopeSQL(p entql.StringP) {
 	f.Where(p.Field(policyevaluationlog.FieldScopeSQL))
 }
 
-// WhereRequestPath applies the entql string predicate on the request_path field.
-func (f *PolicyEvaluationLogFilter) WhereRequestPath(p entql.StringP) {
-	f.Where(p.Field(policyevaluationlog.FieldRequestPath))
-}
-
 // WhereIPAddress applies the entql string predicate on the ip_address field.
 func (f *PolicyEvaluationLogFilter) WhereIPAddress(p entql.StringP) {
 	f.Where(p.Field(policyevaluationlog.FieldIPAddress))
+}
+
+// WhereTraceID applies the entql string predicate on the trace_id field.
+func (f *PolicyEvaluationLogFilter) WhereTraceID(p entql.StringP) {
+	f.Where(p.Field(policyevaluationlog.FieldTraceID))
+}
+
+// WhereEvaluationContext applies the entql string predicate on the evaluation_context field.
+func (f *PolicyEvaluationLogFilter) WhereEvaluationContext(p entql.StringP) {
+	f.Where(p.Field(policyevaluationlog.FieldEvaluationContext))
+}
+
+// WhereLogHash applies the entql string predicate on the log_hash field.
+func (f *PolicyEvaluationLogFilter) WhereLogHash(p entql.StringP) {
+	f.Where(p.Field(policyevaluationlog.FieldLogHash))
+}
+
+// WhereSignature applies the entql []byte predicate on the signature field.
+func (f *PolicyEvaluationLogFilter) WhereSignature(p entql.BytesP) {
+	f.Where(p.Field(policyevaluationlog.FieldSignature))
 }
 
 // addPredicate implements the predicateAdder interface.

@@ -25,7 +25,8 @@ type PermissionAuditLogRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper *mapper.CopierMapper[permissionV1.PermissionAuditLog, ent.PermissionAuditLog]
+	mapper              *mapper.CopierMapper[permissionV1.PermissionAuditLog, ent.PermissionAuditLog]
+	actionTypeConverter *mapper.EnumTypeConverter[permissionV1.PermissionAuditLog_ActionType, permissionauditlog.Action]
 
 	repository *entCrud.Repository[
 		ent.PermissionAuditLogQuery, ent.PermissionAuditLogSelect,
@@ -42,6 +43,9 @@ func NewPermissionAuditLogRepo(ctx *bootstrap.Context, entClient *entCrud.EntCli
 		log:       ctx.NewLoggerHelper("permission-audit-log/repo/admin-service"),
 		entClient: entClient,
 		mapper:    mapper.NewCopierMapper[permissionV1.PermissionAuditLog, ent.PermissionAuditLog](),
+		actionTypeConverter: mapper.NewEnumTypeConverter[permissionV1.PermissionAuditLog_ActionType, permissionauditlog.Action](
+			permissionV1.PermissionAuditLog_ActionType_name, permissionV1.PermissionAuditLog_ActionType_value,
+		),
 	}
 
 	repo.init()
@@ -61,6 +65,8 @@ func (r *PermissionAuditLogRepo) init() {
 
 	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
 	r.mapper.AppendConverters(copierutil.NewTimeTimestamppbConverterPair())
+
+	r.mapper.AppendConverters(r.actionTypeConverter.NewConverterPair())
 }
 
 func (r *PermissionAuditLogRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
@@ -137,16 +143,19 @@ func (r *PermissionAuditLogRepo) Create(ctx context.Context, req *permissionV1.C
 		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().PermissionAuditLog.
-		Create().
+	builder := r.entClient.Client().PermissionAuditLog.Create().
+		SetNillableTenantID(req.Data.TenantId).
 		SetNillableOperatorID(req.Data.OperatorId).
 		SetNillableTargetID(req.Data.TargetId).
 		SetNillableTargetType(req.Data.TargetType).
-		SetNillableAction(req.Data.Action).
+		SetNillableAction(r.actionTypeConverter.ToEntity(req.Data.Action)).
 		SetNillableOldValue(req.Data.OldValue).
 		SetNillableNewValue(req.Data.NewValue).
 		SetIPAddress(req.Data.GetIpAddress()).
-		SetNillableTenantID(req.Data.TenantId).
+		SetRequestID(req.Data.GetRequestId()).
+		SetReason(req.Data.GetReason()).
+		SetNillableLogHash(req.Data.LogHash).
+		SetSignature(req.Data.Signature).
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
 
 	if req.Data.CreatedAt == nil {

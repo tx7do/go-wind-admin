@@ -139,15 +139,21 @@ func (r *PolicyEvaluationLogRepo) Create(ctx context.Context, req *permissionV1.
 
 	builder := r.entClient.Client().PolicyEvaluationLog.
 		Create().
+		SetNillableTenantID(req.Data.TenantId).
 		SetUserID(req.Data.GetUserId()).
 		SetMembershipID(req.Data.GetMembershipId()).
 		SetPermissionID(req.Data.GetPermissionId()).
 		SetNillablePolicyID(req.Data.PolicyId).
-		SetNillableResult(req.Data.Result).
-		SetNillableScopeSQL(req.Data.ScopeSql).
 		SetNillableRequestPath(req.Data.RequestPath).
+		SetNillableRequestMethod(req.Data.RequestMethod).
+		SetNillableResult(req.Data.Result).
+		SetNillableEffectDetails(req.Data.EffectDetails).
+		SetNillableScopeSQL(req.Data.ScopeSql).
 		SetIPAddress(req.Data.GetIpAddress()).
-		SetNillableTenantID(req.Data.TenantId).
+		SetNillableTraceID(req.Data.TraceId).
+		SetNillableEvaluationContext(req.Data.EvaluationContext).
+		SetNillableLogHash(req.Data.LogHash).
+		SetSignature(req.Data.Signature).
 		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
 
 	if req.Data.CreatedAt == nil {

@@ -44,9 +44,24 @@ func (PolicyEvaluationLog) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
+		field.String("request_path").
+			Comment("请求API路径").
+			Optional().
+			Nillable(),
+
+		field.String("request_method").
+			Comment("请求HTTP方法").
+			Optional().
+			Nillable(),
+
 		field.Bool("result").
 			Comment("是否通过").
 			Default(false).
+			Nillable(),
+
+		field.String("effect_details").
+			Comment("评估详情/拒绝原因").
+			Optional().
 			Nillable(),
 
 		field.String("scope_sql").
@@ -54,13 +69,28 @@ func (PolicyEvaluationLog) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.String("request_path").
-			Comment("请求API路径").
+		field.String("ip_address").
+			Comment("操作者IP地址").
 			Optional().
 			Nillable(),
 
-		field.String("ip_address").
-			Comment("操作者IP地址").
+		field.String("trace_id").
+			Comment("全局链路追踪ID").
+			Optional().
+			Nillable(),
+
+		field.String("evaluation_context").
+			Comment("决策上下文快照").
+			Optional().
+			Nillable(),
+
+		field.String("log_hash").
+			Comment("日志内容哈希（SHA256，十六进制字符串）").
+			Optional().
+			Nillable(),
+
+		field.Bytes("signature").
+			Comment("日志数字签名").
 			Optional().
 			Nillable(),
 	}
@@ -76,24 +106,40 @@ func (PolicyEvaluationLog) Mixin() []ent.Mixin {
 
 func (PolicyEvaluationLog) Indexes() []ent.Index {
 	return []ent.Index{
-		// 按租户 + 时间，用于时间区间查询（分页/历史检索）
+		// 多租户 + 时间（分页/范围检索）
 		index.Fields("tenant_id", "created_at").
 			StorageKey("idx_policy_eval_tenant_created_at"),
 
-		// 按租户 + 用户 + 权限 + 时间，用于定位某用户某权限的评估记录
+		// 多租户 + 用户 + 权限 + 时间（定位某用户某权限评估记录）
 		index.Fields("tenant_id", "user_id", "permission_id", "created_at").
 			StorageKey("idx_policy_eval_tenant_user_permission_created_at"),
 
-		// 按租户 + 权限 + 结果 + 时间，用于统计 / 过滤通过/未通过的记录
+		// 多租户 + 策略 + 时间（按策略统计/检索）
+		index.Fields("tenant_id", "policy_id", "created_at").
+			StorageKey("idx_policy_eval_tenant_policy_created_at"),
+
+		// 多租户 + 成员身份 + 时间（按成员身份查询）
+		index.Fields("tenant_id", "membership_id", "created_at").
+			StorageKey("idx_policy_eval_tenant_membership_created_at"),
+
+		// 多租户 + 权限 + 结果 + 时间（统计通过/未通过）
 		index.Fields("tenant_id", "permission_id", "result", "created_at").
 			StorageKey("idx_policy_eval_tenant_permission_result_created_at"),
 
-		// 请求路径检索（注意：如为长文本，考虑仅索引前缀或使用全文索引）
+		// 请求路径与方法（注意：如 request_path 很长，考虑在迁移中用前缀索引或全文索引）
 		index.Fields("request_path").
 			StorageKey("idx_policy_eval_request_path"),
+		index.Fields("request_method").
+			StorageKey("idx_policy_eval_request_method"),
 
-		// 按 IP 检索（追溯来源）
-		index.Fields("ip_address").
-			StorageKey("idx_policy_eval_ip_address"),
+		// 追踪与回溯字段
+		index.Fields("trace_id").
+			StorageKey("idx_policy_eval_trace_id"),
+		index.Fields("ip_address", "created_at").
+			StorageKey("idx_policy_eval_ip_address_created_at"),
+
+		// 日志哈希与签名检索（防篡改/去重）
+		index.Fields("log_hash").
+			StorageKey("idx_policy_eval_log_hash"),
 	}
 }

@@ -84,9 +84,24 @@ func PolicyID(v uint32) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldPolicyID, v))
 }
 
+// RequestPath applies equality check predicate on the "request_path" field. It's identical to RequestPathEQ.
+func RequestPath(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldRequestPath, v))
+}
+
+// RequestMethod applies equality check predicate on the "request_method" field. It's identical to RequestMethodEQ.
+func RequestMethod(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldRequestMethod, v))
+}
+
 // Result applies equality check predicate on the "result" field. It's identical to ResultEQ.
 func Result(v bool) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldResult, v))
+}
+
+// EffectDetails applies equality check predicate on the "effect_details" field. It's identical to EffectDetailsEQ.
+func EffectDetails(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldEffectDetails, v))
 }
 
 // ScopeSQL applies equality check predicate on the "scope_sql" field. It's identical to ScopeSQLEQ.
@@ -94,14 +109,29 @@ func ScopeSQL(v string) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldScopeSQL, v))
 }
 
-// RequestPath applies equality check predicate on the "request_path" field. It's identical to RequestPathEQ.
-func RequestPath(v string) predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldRequestPath, v))
-}
-
 // IPAddress applies equality check predicate on the "ip_address" field. It's identical to IPAddressEQ.
 func IPAddress(v string) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldIPAddress, v))
+}
+
+// TraceID applies equality check predicate on the "trace_id" field. It's identical to TraceIDEQ.
+func TraceID(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldTraceID, v))
+}
+
+// EvaluationContext applies equality check predicate on the "evaluation_context" field. It's identical to EvaluationContextEQ.
+func EvaluationContext(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldEvaluationContext, v))
+}
+
+// LogHash applies equality check predicate on the "log_hash" field. It's identical to LogHashEQ.
+func LogHash(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldLogHash, v))
+}
+
+// Signature applies equality check predicate on the "signature" field. It's identical to SignatureEQ.
+func Signature(v []byte) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldSignature, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -374,6 +404,156 @@ func PolicyIDNotNil() predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldNotNull(FieldPolicyID))
 }
 
+// RequestPathEQ applies the EQ predicate on the "request_path" field.
+func RequestPathEQ(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldRequestPath, v))
+}
+
+// RequestPathNEQ applies the NEQ predicate on the "request_path" field.
+func RequestPathNEQ(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldRequestPath, v))
+}
+
+// RequestPathIn applies the In predicate on the "request_path" field.
+func RequestPathIn(vs ...string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldIn(FieldRequestPath, vs...))
+}
+
+// RequestPathNotIn applies the NotIn predicate on the "request_path" field.
+func RequestPathNotIn(vs ...string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNotIn(FieldRequestPath, vs...))
+}
+
+// RequestPathGT applies the GT predicate on the "request_path" field.
+func RequestPathGT(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldGT(FieldRequestPath, v))
+}
+
+// RequestPathGTE applies the GTE predicate on the "request_path" field.
+func RequestPathGTE(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldGTE(FieldRequestPath, v))
+}
+
+// RequestPathLT applies the LT predicate on the "request_path" field.
+func RequestPathLT(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldLT(FieldRequestPath, v))
+}
+
+// RequestPathLTE applies the LTE predicate on the "request_path" field.
+func RequestPathLTE(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldLTE(FieldRequestPath, v))
+}
+
+// RequestPathContains applies the Contains predicate on the "request_path" field.
+func RequestPathContains(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldContains(FieldRequestPath, v))
+}
+
+// RequestPathHasPrefix applies the HasPrefix predicate on the "request_path" field.
+func RequestPathHasPrefix(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldHasPrefix(FieldRequestPath, v))
+}
+
+// RequestPathHasSuffix applies the HasSuffix predicate on the "request_path" field.
+func RequestPathHasSuffix(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldHasSuffix(FieldRequestPath, v))
+}
+
+// RequestPathIsNil applies the IsNil predicate on the "request_path" field.
+func RequestPathIsNil() predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldIsNull(FieldRequestPath))
+}
+
+// RequestPathNotNil applies the NotNil predicate on the "request_path" field.
+func RequestPathNotNil() predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNotNull(FieldRequestPath))
+}
+
+// RequestPathEqualFold applies the EqualFold predicate on the "request_path" field.
+func RequestPathEqualFold(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEqualFold(FieldRequestPath, v))
+}
+
+// RequestPathContainsFold applies the ContainsFold predicate on the "request_path" field.
+func RequestPathContainsFold(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldContainsFold(FieldRequestPath, v))
+}
+
+// RequestMethodEQ applies the EQ predicate on the "request_method" field.
+func RequestMethodEQ(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldRequestMethod, v))
+}
+
+// RequestMethodNEQ applies the NEQ predicate on the "request_method" field.
+func RequestMethodNEQ(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldRequestMethod, v))
+}
+
+// RequestMethodIn applies the In predicate on the "request_method" field.
+func RequestMethodIn(vs ...string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldIn(FieldRequestMethod, vs...))
+}
+
+// RequestMethodNotIn applies the NotIn predicate on the "request_method" field.
+func RequestMethodNotIn(vs ...string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNotIn(FieldRequestMethod, vs...))
+}
+
+// RequestMethodGT applies the GT predicate on the "request_method" field.
+func RequestMethodGT(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldGT(FieldRequestMethod, v))
+}
+
+// RequestMethodGTE applies the GTE predicate on the "request_method" field.
+func RequestMethodGTE(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldGTE(FieldRequestMethod, v))
+}
+
+// RequestMethodLT applies the LT predicate on the "request_method" field.
+func RequestMethodLT(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldLT(FieldRequestMethod, v))
+}
+
+// RequestMethodLTE applies the LTE predicate on the "request_method" field.
+func RequestMethodLTE(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldLTE(FieldRequestMethod, v))
+}
+
+// RequestMethodContains applies the Contains predicate on the "request_method" field.
+func RequestMethodContains(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldContains(FieldRequestMethod, v))
+}
+
+// RequestMethodHasPrefix applies the HasPrefix predicate on the "request_method" field.
+func RequestMethodHasPrefix(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldHasPrefix(FieldRequestMethod, v))
+}
+
+// RequestMethodHasSuffix applies the HasSuffix predicate on the "request_method" field.
+func RequestMethodHasSuffix(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldHasSuffix(FieldRequestMethod, v))
+}
+
+// RequestMethodIsNil applies the IsNil predicate on the "request_method" field.
+func RequestMethodIsNil() predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldIsNull(FieldRequestMethod))
+}
+
+// RequestMethodNotNil applies the NotNil predicate on the "request_method" field.
+func RequestMethodNotNil() predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNotNull(FieldRequestMethod))
+}
+
+// RequestMethodEqualFold applies the EqualFold predicate on the "request_method" field.
+func RequestMethodEqualFold(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEqualFold(FieldRequestMethod, v))
+}
+
+// RequestMethodContainsFold applies the ContainsFold predicate on the "request_method" field.
+func RequestMethodContainsFold(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldContainsFold(FieldRequestMethod, v))
+}
+
 // ResultEQ applies the EQ predicate on the "result" field.
 func ResultEQ(v bool) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldResult, v))
@@ -382,6 +562,81 @@ func ResultEQ(v bool) predicate.PolicyEvaluationLog {
 // ResultNEQ applies the NEQ predicate on the "result" field.
 func ResultNEQ(v bool) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldResult, v))
+}
+
+// EffectDetailsEQ applies the EQ predicate on the "effect_details" field.
+func EffectDetailsEQ(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldEffectDetails, v))
+}
+
+// EffectDetailsNEQ applies the NEQ predicate on the "effect_details" field.
+func EffectDetailsNEQ(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldEffectDetails, v))
+}
+
+// EffectDetailsIn applies the In predicate on the "effect_details" field.
+func EffectDetailsIn(vs ...string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldIn(FieldEffectDetails, vs...))
+}
+
+// EffectDetailsNotIn applies the NotIn predicate on the "effect_details" field.
+func EffectDetailsNotIn(vs ...string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNotIn(FieldEffectDetails, vs...))
+}
+
+// EffectDetailsGT applies the GT predicate on the "effect_details" field.
+func EffectDetailsGT(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldGT(FieldEffectDetails, v))
+}
+
+// EffectDetailsGTE applies the GTE predicate on the "effect_details" field.
+func EffectDetailsGTE(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldGTE(FieldEffectDetails, v))
+}
+
+// EffectDetailsLT applies the LT predicate on the "effect_details" field.
+func EffectDetailsLT(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldLT(FieldEffectDetails, v))
+}
+
+// EffectDetailsLTE applies the LTE predicate on the "effect_details" field.
+func EffectDetailsLTE(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldLTE(FieldEffectDetails, v))
+}
+
+// EffectDetailsContains applies the Contains predicate on the "effect_details" field.
+func EffectDetailsContains(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldContains(FieldEffectDetails, v))
+}
+
+// EffectDetailsHasPrefix applies the HasPrefix predicate on the "effect_details" field.
+func EffectDetailsHasPrefix(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldHasPrefix(FieldEffectDetails, v))
+}
+
+// EffectDetailsHasSuffix applies the HasSuffix predicate on the "effect_details" field.
+func EffectDetailsHasSuffix(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldHasSuffix(FieldEffectDetails, v))
+}
+
+// EffectDetailsIsNil applies the IsNil predicate on the "effect_details" field.
+func EffectDetailsIsNil() predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldIsNull(FieldEffectDetails))
+}
+
+// EffectDetailsNotNil applies the NotNil predicate on the "effect_details" field.
+func EffectDetailsNotNil() predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNotNull(FieldEffectDetails))
+}
+
+// EffectDetailsEqualFold applies the EqualFold predicate on the "effect_details" field.
+func EffectDetailsEqualFold(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEqualFold(FieldEffectDetails, v))
+}
+
+// EffectDetailsContainsFold applies the ContainsFold predicate on the "effect_details" field.
+func EffectDetailsContainsFold(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldContainsFold(FieldEffectDetails, v))
 }
 
 // ScopeSQLEQ applies the EQ predicate on the "scope_sql" field.
@@ -459,81 +714,6 @@ func ScopeSQLContainsFold(v string) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldContainsFold(FieldScopeSQL, v))
 }
 
-// RequestPathEQ applies the EQ predicate on the "request_path" field.
-func RequestPathEQ(v string) predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldRequestPath, v))
-}
-
-// RequestPathNEQ applies the NEQ predicate on the "request_path" field.
-func RequestPathNEQ(v string) predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldRequestPath, v))
-}
-
-// RequestPathIn applies the In predicate on the "request_path" field.
-func RequestPathIn(vs ...string) predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldIn(FieldRequestPath, vs...))
-}
-
-// RequestPathNotIn applies the NotIn predicate on the "request_path" field.
-func RequestPathNotIn(vs ...string) predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldNotIn(FieldRequestPath, vs...))
-}
-
-// RequestPathGT applies the GT predicate on the "request_path" field.
-func RequestPathGT(v string) predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldGT(FieldRequestPath, v))
-}
-
-// RequestPathGTE applies the GTE predicate on the "request_path" field.
-func RequestPathGTE(v string) predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldGTE(FieldRequestPath, v))
-}
-
-// RequestPathLT applies the LT predicate on the "request_path" field.
-func RequestPathLT(v string) predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldLT(FieldRequestPath, v))
-}
-
-// RequestPathLTE applies the LTE predicate on the "request_path" field.
-func RequestPathLTE(v string) predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldLTE(FieldRequestPath, v))
-}
-
-// RequestPathContains applies the Contains predicate on the "request_path" field.
-func RequestPathContains(v string) predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldContains(FieldRequestPath, v))
-}
-
-// RequestPathHasPrefix applies the HasPrefix predicate on the "request_path" field.
-func RequestPathHasPrefix(v string) predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldHasPrefix(FieldRequestPath, v))
-}
-
-// RequestPathHasSuffix applies the HasSuffix predicate on the "request_path" field.
-func RequestPathHasSuffix(v string) predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldHasSuffix(FieldRequestPath, v))
-}
-
-// RequestPathIsNil applies the IsNil predicate on the "request_path" field.
-func RequestPathIsNil() predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldIsNull(FieldRequestPath))
-}
-
-// RequestPathNotNil applies the NotNil predicate on the "request_path" field.
-func RequestPathNotNil() predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldNotNull(FieldRequestPath))
-}
-
-// RequestPathEqualFold applies the EqualFold predicate on the "request_path" field.
-func RequestPathEqualFold(v string) predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldEqualFold(FieldRequestPath, v))
-}
-
-// RequestPathContainsFold applies the ContainsFold predicate on the "request_path" field.
-func RequestPathContainsFold(v string) predicate.PolicyEvaluationLog {
-	return predicate.PolicyEvaluationLog(sql.FieldContainsFold(FieldRequestPath, v))
-}
-
 // IPAddressEQ applies the EQ predicate on the "ip_address" field.
 func IPAddressEQ(v string) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldIPAddress, v))
@@ -607,6 +787,281 @@ func IPAddressEqualFold(v string) predicate.PolicyEvaluationLog {
 // IPAddressContainsFold applies the ContainsFold predicate on the "ip_address" field.
 func IPAddressContainsFold(v string) predicate.PolicyEvaluationLog {
 	return predicate.PolicyEvaluationLog(sql.FieldContainsFold(FieldIPAddress, v))
+}
+
+// TraceIDEQ applies the EQ predicate on the "trace_id" field.
+func TraceIDEQ(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldTraceID, v))
+}
+
+// TraceIDNEQ applies the NEQ predicate on the "trace_id" field.
+func TraceIDNEQ(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldTraceID, v))
+}
+
+// TraceIDIn applies the In predicate on the "trace_id" field.
+func TraceIDIn(vs ...string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldIn(FieldTraceID, vs...))
+}
+
+// TraceIDNotIn applies the NotIn predicate on the "trace_id" field.
+func TraceIDNotIn(vs ...string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNotIn(FieldTraceID, vs...))
+}
+
+// TraceIDGT applies the GT predicate on the "trace_id" field.
+func TraceIDGT(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldGT(FieldTraceID, v))
+}
+
+// TraceIDGTE applies the GTE predicate on the "trace_id" field.
+func TraceIDGTE(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldGTE(FieldTraceID, v))
+}
+
+// TraceIDLT applies the LT predicate on the "trace_id" field.
+func TraceIDLT(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldLT(FieldTraceID, v))
+}
+
+// TraceIDLTE applies the LTE predicate on the "trace_id" field.
+func TraceIDLTE(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldLTE(FieldTraceID, v))
+}
+
+// TraceIDContains applies the Contains predicate on the "trace_id" field.
+func TraceIDContains(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldContains(FieldTraceID, v))
+}
+
+// TraceIDHasPrefix applies the HasPrefix predicate on the "trace_id" field.
+func TraceIDHasPrefix(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldHasPrefix(FieldTraceID, v))
+}
+
+// TraceIDHasSuffix applies the HasSuffix predicate on the "trace_id" field.
+func TraceIDHasSuffix(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldHasSuffix(FieldTraceID, v))
+}
+
+// TraceIDIsNil applies the IsNil predicate on the "trace_id" field.
+func TraceIDIsNil() predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldIsNull(FieldTraceID))
+}
+
+// TraceIDNotNil applies the NotNil predicate on the "trace_id" field.
+func TraceIDNotNil() predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNotNull(FieldTraceID))
+}
+
+// TraceIDEqualFold applies the EqualFold predicate on the "trace_id" field.
+func TraceIDEqualFold(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEqualFold(FieldTraceID, v))
+}
+
+// TraceIDContainsFold applies the ContainsFold predicate on the "trace_id" field.
+func TraceIDContainsFold(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldContainsFold(FieldTraceID, v))
+}
+
+// EvaluationContextEQ applies the EQ predicate on the "evaluation_context" field.
+func EvaluationContextEQ(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldEvaluationContext, v))
+}
+
+// EvaluationContextNEQ applies the NEQ predicate on the "evaluation_context" field.
+func EvaluationContextNEQ(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldEvaluationContext, v))
+}
+
+// EvaluationContextIn applies the In predicate on the "evaluation_context" field.
+func EvaluationContextIn(vs ...string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldIn(FieldEvaluationContext, vs...))
+}
+
+// EvaluationContextNotIn applies the NotIn predicate on the "evaluation_context" field.
+func EvaluationContextNotIn(vs ...string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNotIn(FieldEvaluationContext, vs...))
+}
+
+// EvaluationContextGT applies the GT predicate on the "evaluation_context" field.
+func EvaluationContextGT(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldGT(FieldEvaluationContext, v))
+}
+
+// EvaluationContextGTE applies the GTE predicate on the "evaluation_context" field.
+func EvaluationContextGTE(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldGTE(FieldEvaluationContext, v))
+}
+
+// EvaluationContextLT applies the LT predicate on the "evaluation_context" field.
+func EvaluationContextLT(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldLT(FieldEvaluationContext, v))
+}
+
+// EvaluationContextLTE applies the LTE predicate on the "evaluation_context" field.
+func EvaluationContextLTE(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldLTE(FieldEvaluationContext, v))
+}
+
+// EvaluationContextContains applies the Contains predicate on the "evaluation_context" field.
+func EvaluationContextContains(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldContains(FieldEvaluationContext, v))
+}
+
+// EvaluationContextHasPrefix applies the HasPrefix predicate on the "evaluation_context" field.
+func EvaluationContextHasPrefix(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldHasPrefix(FieldEvaluationContext, v))
+}
+
+// EvaluationContextHasSuffix applies the HasSuffix predicate on the "evaluation_context" field.
+func EvaluationContextHasSuffix(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldHasSuffix(FieldEvaluationContext, v))
+}
+
+// EvaluationContextIsNil applies the IsNil predicate on the "evaluation_context" field.
+func EvaluationContextIsNil() predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldIsNull(FieldEvaluationContext))
+}
+
+// EvaluationContextNotNil applies the NotNil predicate on the "evaluation_context" field.
+func EvaluationContextNotNil() predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNotNull(FieldEvaluationContext))
+}
+
+// EvaluationContextEqualFold applies the EqualFold predicate on the "evaluation_context" field.
+func EvaluationContextEqualFold(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEqualFold(FieldEvaluationContext, v))
+}
+
+// EvaluationContextContainsFold applies the ContainsFold predicate on the "evaluation_context" field.
+func EvaluationContextContainsFold(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldContainsFold(FieldEvaluationContext, v))
+}
+
+// LogHashEQ applies the EQ predicate on the "log_hash" field.
+func LogHashEQ(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldLogHash, v))
+}
+
+// LogHashNEQ applies the NEQ predicate on the "log_hash" field.
+func LogHashNEQ(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldLogHash, v))
+}
+
+// LogHashIn applies the In predicate on the "log_hash" field.
+func LogHashIn(vs ...string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldIn(FieldLogHash, vs...))
+}
+
+// LogHashNotIn applies the NotIn predicate on the "log_hash" field.
+func LogHashNotIn(vs ...string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNotIn(FieldLogHash, vs...))
+}
+
+// LogHashGT applies the GT predicate on the "log_hash" field.
+func LogHashGT(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldGT(FieldLogHash, v))
+}
+
+// LogHashGTE applies the GTE predicate on the "log_hash" field.
+func LogHashGTE(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldGTE(FieldLogHash, v))
+}
+
+// LogHashLT applies the LT predicate on the "log_hash" field.
+func LogHashLT(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldLT(FieldLogHash, v))
+}
+
+// LogHashLTE applies the LTE predicate on the "log_hash" field.
+func LogHashLTE(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldLTE(FieldLogHash, v))
+}
+
+// LogHashContains applies the Contains predicate on the "log_hash" field.
+func LogHashContains(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldContains(FieldLogHash, v))
+}
+
+// LogHashHasPrefix applies the HasPrefix predicate on the "log_hash" field.
+func LogHashHasPrefix(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldHasPrefix(FieldLogHash, v))
+}
+
+// LogHashHasSuffix applies the HasSuffix predicate on the "log_hash" field.
+func LogHashHasSuffix(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldHasSuffix(FieldLogHash, v))
+}
+
+// LogHashIsNil applies the IsNil predicate on the "log_hash" field.
+func LogHashIsNil() predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldIsNull(FieldLogHash))
+}
+
+// LogHashNotNil applies the NotNil predicate on the "log_hash" field.
+func LogHashNotNil() predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNotNull(FieldLogHash))
+}
+
+// LogHashEqualFold applies the EqualFold predicate on the "log_hash" field.
+func LogHashEqualFold(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEqualFold(FieldLogHash, v))
+}
+
+// LogHashContainsFold applies the ContainsFold predicate on the "log_hash" field.
+func LogHashContainsFold(v string) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldContainsFold(FieldLogHash, v))
+}
+
+// SignatureEQ applies the EQ predicate on the "signature" field.
+func SignatureEQ(v []byte) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldEQ(FieldSignature, v))
+}
+
+// SignatureNEQ applies the NEQ predicate on the "signature" field.
+func SignatureNEQ(v []byte) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNEQ(FieldSignature, v))
+}
+
+// SignatureIn applies the In predicate on the "signature" field.
+func SignatureIn(vs ...[]byte) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldIn(FieldSignature, vs...))
+}
+
+// SignatureNotIn applies the NotIn predicate on the "signature" field.
+func SignatureNotIn(vs ...[]byte) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNotIn(FieldSignature, vs...))
+}
+
+// SignatureGT applies the GT predicate on the "signature" field.
+func SignatureGT(v []byte) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldGT(FieldSignature, v))
+}
+
+// SignatureGTE applies the GTE predicate on the "signature" field.
+func SignatureGTE(v []byte) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldGTE(FieldSignature, v))
+}
+
+// SignatureLT applies the LT predicate on the "signature" field.
+func SignatureLT(v []byte) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldLT(FieldSignature, v))
+}
+
+// SignatureLTE applies the LTE predicate on the "signature" field.
+func SignatureLTE(v []byte) predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldLTE(FieldSignature, v))
+}
+
+// SignatureIsNil applies the IsNil predicate on the "signature" field.
+func SignatureIsNil() predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldIsNull(FieldSignature))
+}
+
+// SignatureNotNil applies the NotNil predicate on the "signature" field.
+func SignatureNotNil() predicate.PolicyEvaluationLog {
+	return predicate.PolicyEvaluationLog(sql.FieldNotNull(FieldSignature))
 }
 
 // And groups predicates with the AND operator between them.

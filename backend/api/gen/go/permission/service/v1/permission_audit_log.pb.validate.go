@@ -61,8 +61,16 @@ func (m *PermissionAuditLog) validate(all bool) error {
 		// no validation rules for Id
 	}
 
+	if m.TenantId != nil {
+		// no validation rules for TenantId
+	}
+
 	if m.OperatorId != nil {
 		// no validation rules for OperatorId
+	}
+
+	if m.OperatorName != nil {
+		// no validation rules for OperatorName
 	}
 
 	if m.TargetType != nil {
@@ -71,6 +79,10 @@ func (m *PermissionAuditLog) validate(all bool) error {
 
 	if m.TargetId != nil {
 		// no validation rules for TargetId
+	}
+
+	if m.TargetName != nil {
+		// no validation rules for TargetName
 	}
 
 	if m.Action != nil {
@@ -89,8 +101,20 @@ func (m *PermissionAuditLog) validate(all bool) error {
 		// no validation rules for IpAddress
 	}
 
-	if m.TenantId != nil {
-		// no validation rules for TenantId
+	if m.RequestId != nil {
+		// no validation rules for RequestId
+	}
+
+	if m.Reason != nil {
+		// no validation rules for Reason
+	}
+
+	if m.LogHash != nil {
+		// no validation rules for LogHash
+	}
+
+	if m.Signature != nil {
+		// no validation rules for Signature
 	}
 
 	if m.CreatedAt != nil {

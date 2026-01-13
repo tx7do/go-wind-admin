@@ -28,19 +28,81 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// 变更动作
+type PermissionAuditLog_ActionType int32
+
+const (
+	PermissionAuditLog_ACTION_TYPE_UNSPECIFIED PermissionAuditLog_ActionType = 0
+	PermissionAuditLog_GRANT                   PermissionAuditLog_ActionType = 1 // 授予权限/角色
+	PermissionAuditLog_REVOKE                  PermissionAuditLog_ActionType = 2 // 回收权限/角色
+	PermissionAuditLog_UPDATE                  PermissionAuditLog_ActionType = 3 // 修改权限属性(如过期时间、条件约束)
+	PermissionAuditLog_RESET                   PermissionAuditLog_ActionType = 4 // 重置权限
+)
+
+// Enum value maps for PermissionAuditLog_ActionType.
+var (
+	PermissionAuditLog_ActionType_name = map[int32]string{
+		0: "ACTION_TYPE_UNSPECIFIED",
+		1: "GRANT",
+		2: "REVOKE",
+		3: "UPDATE",
+		4: "RESET",
+	}
+	PermissionAuditLog_ActionType_value = map[string]int32{
+		"ACTION_TYPE_UNSPECIFIED": 0,
+		"GRANT":                   1,
+		"REVOKE":                  2,
+		"UPDATE":                  3,
+		"RESET":                   4,
+	}
+)
+
+func (x PermissionAuditLog_ActionType) Enum() *PermissionAuditLog_ActionType {
+	p := new(PermissionAuditLog_ActionType)
+	*p = x
+	return p
+}
+
+func (x PermissionAuditLog_ActionType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (PermissionAuditLog_ActionType) Descriptor() protoreflect.EnumDescriptor {
+	return file_permission_service_v1_permission_audit_log_proto_enumTypes[0].Descriptor()
+}
+
+func (PermissionAuditLog_ActionType) Type() protoreflect.EnumType {
+	return &file_permission_service_v1_permission_audit_log_proto_enumTypes[0]
+}
+
+func (x PermissionAuditLog_ActionType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use PermissionAuditLog_ActionType.Descriptor instead.
+func (PermissionAuditLog_ActionType) EnumDescriptor() ([]byte, []int) {
+	return file_permission_service_v1_permission_audit_log_proto_rawDescGZIP(), []int{0, 0}
+}
+
 // 权限变更审计日志
 type PermissionAuditLog struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                   // 权限变更审计日志ID
-	OperatorId    *uint32                `protobuf:"varint,2,opt,name=operator_id,json=operatorId,proto3,oneof" json:"operator_id,omitempty"` // 操作者用户ID
-	TargetType    *string                `protobuf:"bytes,3,opt,name=target_type,json=targetType,proto3,oneof" json:"target_type,omitempty"`  // 目标类型
-	TargetId      *uint32                `protobuf:"varint,4,opt,name=target_id,json=targetId,proto3,oneof" json:"target_id,omitempty"`       // 目标ID
-	Action        *string                `protobuf:"bytes,5,opt,name=action,proto3,oneof" json:"action,omitempty"`                            // 动作
-	OldValue      *string                `protobuf:"bytes,6,opt,name=old_value,json=oldValue,proto3,oneof" json:"old_value,omitempty"`        // 旧值
-	NewValue      *string                `protobuf:"bytes,7,opt,name=new_value,json=newValue,proto3,oneof" json:"new_value,omitempty"`        // 新值
-	IpAddress     *string                `protobuf:"bytes,8,opt,name=ip_address,json=ipAddress,proto3,oneof" json:"ip_address,omitempty"`     // 操作者IP地址
-	TenantId      *uint32                `protobuf:"varint,9,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`       // 租户ID
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,500,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`   // 创建时间
+	state         protoimpl.MessageState         `protogen:"open.v1"`
+	Id            *uint32                        `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                   // 权限变更审计日志ID
+	TenantId      *uint32                        `protobuf:"varint,2,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                       // 租户ID
+	OperatorId    *uint32                        `protobuf:"varint,3,opt,name=operator_id,json=operatorId,proto3,oneof" json:"operator_id,omitempty"`                                 // 操作者用户ID
+	OperatorName  *string                        `protobuf:"bytes,4,opt,name=operator_name,json=operatorName,proto3,oneof" json:"operator_name,omitempty"`                            // 操作者用户名
+	TargetType    *string                        `protobuf:"bytes,10,opt,name=target_type,json=targetType,proto3,oneof" json:"target_type,omitempty"`                                 // 目标类型
+	TargetId      *string                        `protobuf:"bytes,11,opt,name=target_id,json=targetId,proto3,oneof" json:"target_id,omitempty"`                                       // 目标ID
+	TargetName    *string                        `protobuf:"bytes,12,opt,name=target_name,json=targetName,proto3,oneof" json:"target_name,omitempty"`                                 // 目标名称
+	Action        *PermissionAuditLog_ActionType `protobuf:"varint,20,opt,name=action,proto3,enum=permission.service.v1.PermissionAuditLog_ActionType,oneof" json:"action,omitempty"` // 变更动作
+	OldValue      *string                        `protobuf:"bytes,30,opt,name=old_value,json=oldValue,proto3,oneof" json:"old_value,omitempty"`                                       // 旧值
+	NewValue      *string                        `protobuf:"bytes,31,opt,name=new_value,json=newValue,proto3,oneof" json:"new_value,omitempty"`                                       // 新值
+	IpAddress     *string                        `protobuf:"bytes,40,opt,name=ip_address,json=ipAddress,proto3,oneof" json:"ip_address,omitempty"`                                    // 操作者IP地址
+	RequestId     *string                        `protobuf:"bytes,41,opt,name=request_id,json=requestId,proto3,oneof" json:"request_id,omitempty"`                                    // 关联全局请求ID
+	Reason        *string                        `protobuf:"bytes,42,opt,name=reason,proto3,oneof" json:"reason,omitempty"`                                                           // 变更原因
+	LogHash       *string                        `protobuf:"bytes,50,opt,name=log_hash,json=logHash,proto3,oneof" json:"log_hash,omitempty"`                                          // 日志哈希
+	Signature     []byte                         `protobuf:"bytes,51,opt,name=signature,proto3,oneof" json:"signature,omitempty"`                                                     // 日志数字签名
+	CreatedAt     *timestamppb.Timestamp         `protobuf:"bytes,60,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                    // 日志创建时间
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -82,11 +144,25 @@ func (x *PermissionAuditLog) GetId() uint32 {
 	return 0
 }
 
+func (x *PermissionAuditLog) GetTenantId() uint32 {
+	if x != nil && x.TenantId != nil {
+		return *x.TenantId
+	}
+	return 0
+}
+
 func (x *PermissionAuditLog) GetOperatorId() uint32 {
 	if x != nil && x.OperatorId != nil {
 		return *x.OperatorId
 	}
 	return 0
+}
+
+func (x *PermissionAuditLog) GetOperatorName() string {
+	if x != nil && x.OperatorName != nil {
+		return *x.OperatorName
+	}
+	return ""
 }
 
 func (x *PermissionAuditLog) GetTargetType() string {
@@ -96,18 +172,25 @@ func (x *PermissionAuditLog) GetTargetType() string {
 	return ""
 }
 
-func (x *PermissionAuditLog) GetTargetId() uint32 {
+func (x *PermissionAuditLog) GetTargetId() string {
 	if x != nil && x.TargetId != nil {
 		return *x.TargetId
 	}
-	return 0
+	return ""
 }
 
-func (x *PermissionAuditLog) GetAction() string {
+func (x *PermissionAuditLog) GetTargetName() string {
+	if x != nil && x.TargetName != nil {
+		return *x.TargetName
+	}
+	return ""
+}
+
+func (x *PermissionAuditLog) GetAction() PermissionAuditLog_ActionType {
 	if x != nil && x.Action != nil {
 		return *x.Action
 	}
-	return ""
+	return PermissionAuditLog_ACTION_TYPE_UNSPECIFIED
 }
 
 func (x *PermissionAuditLog) GetOldValue() string {
@@ -131,11 +214,32 @@ func (x *PermissionAuditLog) GetIpAddress() string {
 	return ""
 }
 
-func (x *PermissionAuditLog) GetTenantId() uint32 {
-	if x != nil && x.TenantId != nil {
-		return *x.TenantId
+func (x *PermissionAuditLog) GetRequestId() string {
+	if x != nil && x.RequestId != nil {
+		return *x.RequestId
 	}
-	return 0
+	return ""
+}
+
+func (x *PermissionAuditLog) GetReason() string {
+	if x != nil && x.Reason != nil {
+		return *x.Reason
+	}
+	return ""
+}
+
+func (x *PermissionAuditLog) GetLogHash() string {
+	if x != nil && x.LogHash != nil {
+		return *x.LogHash
+	}
+	return ""
+}
+
+func (x *PermissionAuditLog) GetSignature() []byte {
+	if x != nil {
+		return x.Signature
+	}
+	return nil
 }
 
 func (x *PermissionAuditLog) GetCreatedAt() *timestamppb.Timestamp {
@@ -322,35 +426,61 @@ var File_permission_service_v1_permission_audit_log_proto protoreflect.FileDescr
 
 const file_permission_service_v1_permission_audit_log_proto_rawDesc = "" +
 	"\n" +
-	"0permission/service/v1/permission_audit_log.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1epagination/v1/pagination.proto\"\xcd\x05\n" +
+	"0permission/service/v1/permission_audit_log.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1epagination/v1/pagination.proto\"\x8a\v\n" +
 	"\x12PermissionAuditLog\x125\n" +
-	"\x02id\x18\x01 \x01(\rB \xbaG\x1d\x92\x02\x1a权限变更审计日志IDH\x00R\x02id\x88\x01\x01\x12=\n" +
-	"\voperator_id\x18\x02 \x01(\rB\x17\xbaG\x14\x92\x02\x11操作者用户IDH\x01R\n" +
-	"operatorId\x88\x01\x01\x128\n" +
-	"\vtarget_type\x18\x03 \x01(\tB\x12\xbaG\x0f\x92\x02\f目标类型H\x02R\n" +
+	"\x02id\x18\x01 \x01(\rB \xbaG\x1d\x92\x02\x1a权限变更审计日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
+	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x12=\n" +
+	"\voperator_id\x18\x03 \x01(\rB\x17\xbaG\x14\x92\x02\x11操作者用户IDH\x02R\n" +
+	"operatorId\x88\x01\x01\x12B\n" +
+	"\roperator_name\x18\x04 \x01(\tB\x18\xbaG\x15\x92\x02\x12操作者用户名H\x03R\foperatorName\x88\x01\x01\x128\n" +
+	"\vtarget_type\x18\n" +
+	" \x01(\tB\x12\xbaG\x0f\x92\x02\f目标类型H\x04R\n" +
 	"targetType\x88\x01\x01\x120\n" +
-	"\ttarget_id\x18\x04 \x01(\rB\x0e\xbaG\v\x92\x02\b目标IDH\x03R\btargetId\x88\x01\x01\x12)\n" +
-	"\x06action\x18\x05 \x01(\tB\f\xbaG\t\x92\x02\x06动作H\x04R\x06action\x88\x01\x01\x12.\n" +
-	"\told_value\x18\x06 \x01(\tB\f\xbaG\t\x92\x02\x06旧值H\x05R\boldValue\x88\x01\x01\x12.\n" +
-	"\tnew_value\x18\a \x01(\tB\f\xbaG\t\x92\x02\x06新值H\x06R\bnewValue\x88\x01\x01\x12;\n" +
+	"\ttarget_id\x18\v \x01(\tB\x0e\xbaG\v\x92\x02\b目标IDH\x05R\btargetId\x88\x01\x01\x128\n" +
+	"\vtarget_name\x18\f \x01(\tB\x12\xbaG\x0f\x92\x02\f目标名称H\x06R\n" +
+	"targetName\x88\x01\x01\x12e\n" +
+	"\x06action\x18\x14 \x01(\x0e24.permission.service.v1.PermissionAuditLog.ActionTypeB\x12\xbaG\x0f\x92\x02\f变更动作H\aR\x06action\x88\x01\x01\x12.\n" +
+	"\told_value\x18\x1e \x01(\tB\f\xbaG\t\x92\x02\x06旧值H\bR\boldValue\x88\x01\x01\x12.\n" +
+	"\tnew_value\x18\x1f \x01(\tB\f\xbaG\t\x92\x02\x06新值H\tR\bnewValue\x88\x01\x01\x12;\n" +
 	"\n" +
-	"ip_address\x18\b \x01(\tB\x17\xbaG\x14\x92\x02\x11操作者IP地址H\aR\tipAddress\x88\x01\x01\x120\n" +
-	"\ttenant_id\x18\t \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\bR\btenantId\x88\x01\x01\x12S\n" +
+	"ip_address\x18( \x01(\tB\x17\xbaG\x14\x92\x02\x11操作者IP地址H\n" +
+	"R\tipAddress\x88\x01\x01\x12>\n" +
 	"\n" +
-	"created_at\x18\xf4\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\tR\tcreatedAt\x88\x01\x01B\x05\n" +
-	"\x03_idB\x0e\n" +
-	"\f_operator_idB\x0e\n" +
+	"request_id\x18) \x01(\tB\x1a\xbaG\x17\x92\x02\x14关联全局请求IDH\vR\trequestId\x88\x01\x01\x12/\n" +
+	"\x06reason\x18* \x01(\tB\x12\xbaG\x0f\x92\x02\f变更原因H\fR\x06reason\x88\x01\x01\x12\\\n" +
+	"\blog_hash\x182 \x01(\tB<\xbaG9\x92\x026日志内容哈希（SHA256，十六进制字符串）H\rR\alogHash\x88\x01\x01\x12}\n" +
+	"\tsignature\x183 \x01(\fBZ\xbaGW\x92\x02T日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）H\x0eR\tsignature\x88\x01\x01\x12X\n" +
+	"\n" +
+	"created_at\x18< \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12日志创建时间H\x0fR\tcreatedAt\x88\x01\x01\"W\n" +
+	"\n" +
+	"ActionType\x12\x1b\n" +
+	"\x17ACTION_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
+	"\x05GRANT\x10\x01\x12\n" +
+	"\n" +
+	"\x06REVOKE\x10\x02\x12\n" +
+	"\n" +
+	"\x06UPDATE\x10\x03\x12\t\n" +
+	"\x05RESET\x10\x04B\x05\n" +
+	"\x03_idB\f\n" +
+	"\n" +
+	"_tenant_idB\x0e\n" +
+	"\f_operator_idB\x10\n" +
+	"\x0e_operator_nameB\x0e\n" +
 	"\f_target_typeB\f\n" +
 	"\n" +
-	"_target_idB\t\n" +
+	"_target_idB\x0e\n" +
+	"\f_target_nameB\t\n" +
 	"\a_actionB\f\n" +
 	"\n" +
 	"_old_valueB\f\n" +
 	"\n" +
 	"_new_valueB\r\n" +
-	"\v_ip_addressB\f\n" +
+	"\v_ip_addressB\r\n" +
+	"\v_request_idB\t\n" +
+	"\a_reasonB\v\n" +
+	"\t_log_hashB\f\n" +
 	"\n" +
-	"_tenant_idB\r\n" +
+	"_signatureB\r\n" +
 	"\v_created_at\"w\n" +
 	"\x1eListPermissionAuditLogResponse\x12?\n" +
 	"\x05items\x18\x01 \x03(\v2).permission.service.v1.PermissionAuditLogR\x05items\x12\x14\n" +
@@ -382,30 +512,33 @@ func file_permission_service_v1_permission_audit_log_proto_rawDescGZIP() []byte 
 	return file_permission_service_v1_permission_audit_log_proto_rawDescData
 }
 
+var file_permission_service_v1_permission_audit_log_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_permission_service_v1_permission_audit_log_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_permission_service_v1_permission_audit_log_proto_goTypes = []any{
-	(*PermissionAuditLog)(nil),              // 0: permission.service.v1.PermissionAuditLog
-	(*ListPermissionAuditLogResponse)(nil),  // 1: permission.service.v1.ListPermissionAuditLogResponse
-	(*GetPermissionAuditLogRequest)(nil),    // 2: permission.service.v1.GetPermissionAuditLogRequest
-	(*CreatePermissionAuditLogRequest)(nil), // 3: permission.service.v1.CreatePermissionAuditLogRequest
-	(*timestamppb.Timestamp)(nil),           // 4: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),           // 5: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),                // 6: pagination.PagingRequest
+	(PermissionAuditLog_ActionType)(0),      // 0: permission.service.v1.PermissionAuditLog.ActionType
+	(*PermissionAuditLog)(nil),              // 1: permission.service.v1.PermissionAuditLog
+	(*ListPermissionAuditLogResponse)(nil),  // 2: permission.service.v1.ListPermissionAuditLogResponse
+	(*GetPermissionAuditLogRequest)(nil),    // 3: permission.service.v1.GetPermissionAuditLogRequest
+	(*CreatePermissionAuditLogRequest)(nil), // 4: permission.service.v1.CreatePermissionAuditLogRequest
+	(*timestamppb.Timestamp)(nil),           // 5: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),           // 6: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),                // 7: pagination.PagingRequest
 }
 var file_permission_service_v1_permission_audit_log_proto_depIdxs = []int32{
-	4, // 0: permission.service.v1.PermissionAuditLog.created_at:type_name -> google.protobuf.Timestamp
-	0, // 1: permission.service.v1.ListPermissionAuditLogResponse.items:type_name -> permission.service.v1.PermissionAuditLog
-	5, // 2: permission.service.v1.GetPermissionAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
-	0, // 3: permission.service.v1.CreatePermissionAuditLogRequest.data:type_name -> permission.service.v1.PermissionAuditLog
-	6, // 4: permission.service.v1.PermissionAuditLogService.List:input_type -> pagination.PagingRequest
-	2, // 5: permission.service.v1.PermissionAuditLogService.Get:input_type -> permission.service.v1.GetPermissionAuditLogRequest
-	1, // 6: permission.service.v1.PermissionAuditLogService.List:output_type -> permission.service.v1.ListPermissionAuditLogResponse
-	0, // 7: permission.service.v1.PermissionAuditLogService.Get:output_type -> permission.service.v1.PermissionAuditLog
-	6, // [6:8] is the sub-list for method output_type
-	4, // [4:6] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	0, // 0: permission.service.v1.PermissionAuditLog.action:type_name -> permission.service.v1.PermissionAuditLog.ActionType
+	5, // 1: permission.service.v1.PermissionAuditLog.created_at:type_name -> google.protobuf.Timestamp
+	1, // 2: permission.service.v1.ListPermissionAuditLogResponse.items:type_name -> permission.service.v1.PermissionAuditLog
+	6, // 3: permission.service.v1.GetPermissionAuditLogRequest.view_mask:type_name -> google.protobuf.FieldMask
+	1, // 4: permission.service.v1.CreatePermissionAuditLogRequest.data:type_name -> permission.service.v1.PermissionAuditLog
+	7, // 5: permission.service.v1.PermissionAuditLogService.List:input_type -> pagination.PagingRequest
+	3, // 6: permission.service.v1.PermissionAuditLogService.Get:input_type -> permission.service.v1.GetPermissionAuditLogRequest
+	2, // 7: permission.service.v1.PermissionAuditLogService.List:output_type -> permission.service.v1.ListPermissionAuditLogResponse
+	1, // 8: permission.service.v1.PermissionAuditLogService.Get:output_type -> permission.service.v1.PermissionAuditLog
+	7, // [7:9] is the sub-list for method output_type
+	5, // [5:7] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_permission_service_v1_permission_audit_log_proto_init() }
@@ -422,13 +555,14 @@ func file_permission_service_v1_permission_audit_log_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_permission_service_v1_permission_audit_log_proto_rawDesc), len(file_permission_service_v1_permission_audit_log_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      1,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
 		GoTypes:           file_permission_service_v1_permission_audit_log_proto_goTypes,
 		DependencyIndexes: file_permission_service_v1_permission_audit_log_proto_depIdxs,
+		EnumInfos:         file_permission_service_v1_permission_audit_log_proto_enumTypes,
 		MessageInfos:      file_permission_service_v1_permission_audit_log_proto_msgTypes,
 	}.Build()
 	File_permission_service_v1_permission_audit_log_proto = out.File

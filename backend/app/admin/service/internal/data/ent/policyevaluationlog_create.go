@@ -82,6 +82,34 @@ func (_c *PolicyEvaluationLogCreate) SetNillablePolicyID(v *uint32) *PolicyEvalu
 	return _c
 }
 
+// SetRequestPath sets the "request_path" field.
+func (_c *PolicyEvaluationLogCreate) SetRequestPath(v string) *PolicyEvaluationLogCreate {
+	_c.mutation.SetRequestPath(v)
+	return _c
+}
+
+// SetNillableRequestPath sets the "request_path" field if the given value is not nil.
+func (_c *PolicyEvaluationLogCreate) SetNillableRequestPath(v *string) *PolicyEvaluationLogCreate {
+	if v != nil {
+		_c.SetRequestPath(*v)
+	}
+	return _c
+}
+
+// SetRequestMethod sets the "request_method" field.
+func (_c *PolicyEvaluationLogCreate) SetRequestMethod(v string) *PolicyEvaluationLogCreate {
+	_c.mutation.SetRequestMethod(v)
+	return _c
+}
+
+// SetNillableRequestMethod sets the "request_method" field if the given value is not nil.
+func (_c *PolicyEvaluationLogCreate) SetNillableRequestMethod(v *string) *PolicyEvaluationLogCreate {
+	if v != nil {
+		_c.SetRequestMethod(*v)
+	}
+	return _c
+}
+
 // SetResult sets the "result" field.
 func (_c *PolicyEvaluationLogCreate) SetResult(v bool) *PolicyEvaluationLogCreate {
 	_c.mutation.SetResult(v)
@@ -92,6 +120,20 @@ func (_c *PolicyEvaluationLogCreate) SetResult(v bool) *PolicyEvaluationLogCreat
 func (_c *PolicyEvaluationLogCreate) SetNillableResult(v *bool) *PolicyEvaluationLogCreate {
 	if v != nil {
 		_c.SetResult(*v)
+	}
+	return _c
+}
+
+// SetEffectDetails sets the "effect_details" field.
+func (_c *PolicyEvaluationLogCreate) SetEffectDetails(v string) *PolicyEvaluationLogCreate {
+	_c.mutation.SetEffectDetails(v)
+	return _c
+}
+
+// SetNillableEffectDetails sets the "effect_details" field if the given value is not nil.
+func (_c *PolicyEvaluationLogCreate) SetNillableEffectDetails(v *string) *PolicyEvaluationLogCreate {
+	if v != nil {
+		_c.SetEffectDetails(*v)
 	}
 	return _c
 }
@@ -110,20 +152,6 @@ func (_c *PolicyEvaluationLogCreate) SetNillableScopeSQL(v *string) *PolicyEvalu
 	return _c
 }
 
-// SetRequestPath sets the "request_path" field.
-func (_c *PolicyEvaluationLogCreate) SetRequestPath(v string) *PolicyEvaluationLogCreate {
-	_c.mutation.SetRequestPath(v)
-	return _c
-}
-
-// SetNillableRequestPath sets the "request_path" field if the given value is not nil.
-func (_c *PolicyEvaluationLogCreate) SetNillableRequestPath(v *string) *PolicyEvaluationLogCreate {
-	if v != nil {
-		_c.SetRequestPath(*v)
-	}
-	return _c
-}
-
 // SetIPAddress sets the "ip_address" field.
 func (_c *PolicyEvaluationLogCreate) SetIPAddress(v string) *PolicyEvaluationLogCreate {
 	_c.mutation.SetIPAddress(v)
@@ -135,6 +163,54 @@ func (_c *PolicyEvaluationLogCreate) SetNillableIPAddress(v *string) *PolicyEval
 	if v != nil {
 		_c.SetIPAddress(*v)
 	}
+	return _c
+}
+
+// SetTraceID sets the "trace_id" field.
+func (_c *PolicyEvaluationLogCreate) SetTraceID(v string) *PolicyEvaluationLogCreate {
+	_c.mutation.SetTraceID(v)
+	return _c
+}
+
+// SetNillableTraceID sets the "trace_id" field if the given value is not nil.
+func (_c *PolicyEvaluationLogCreate) SetNillableTraceID(v *string) *PolicyEvaluationLogCreate {
+	if v != nil {
+		_c.SetTraceID(*v)
+	}
+	return _c
+}
+
+// SetEvaluationContext sets the "evaluation_context" field.
+func (_c *PolicyEvaluationLogCreate) SetEvaluationContext(v string) *PolicyEvaluationLogCreate {
+	_c.mutation.SetEvaluationContext(v)
+	return _c
+}
+
+// SetNillableEvaluationContext sets the "evaluation_context" field if the given value is not nil.
+func (_c *PolicyEvaluationLogCreate) SetNillableEvaluationContext(v *string) *PolicyEvaluationLogCreate {
+	if v != nil {
+		_c.SetEvaluationContext(*v)
+	}
+	return _c
+}
+
+// SetLogHash sets the "log_hash" field.
+func (_c *PolicyEvaluationLogCreate) SetLogHash(v string) *PolicyEvaluationLogCreate {
+	_c.mutation.SetLogHash(v)
+	return _c
+}
+
+// SetNillableLogHash sets the "log_hash" field if the given value is not nil.
+func (_c *PolicyEvaluationLogCreate) SetNillableLogHash(v *string) *PolicyEvaluationLogCreate {
+	if v != nil {
+		_c.SetLogHash(*v)
+	}
+	return _c
+}
+
+// SetSignature sets the "signature" field.
+func (_c *PolicyEvaluationLogCreate) SetSignature(v []byte) *PolicyEvaluationLogCreate {
+	_c.mutation.SetSignature(v)
 	return _c
 }
 
@@ -261,21 +337,45 @@ func (_c *PolicyEvaluationLogCreate) createSpec() (*PolicyEvaluationLog, *sqlgra
 		_spec.SetField(policyevaluationlog.FieldPolicyID, field.TypeUint32, value)
 		_node.PolicyID = &value
 	}
+	if value, ok := _c.mutation.RequestPath(); ok {
+		_spec.SetField(policyevaluationlog.FieldRequestPath, field.TypeString, value)
+		_node.RequestPath = &value
+	}
+	if value, ok := _c.mutation.RequestMethod(); ok {
+		_spec.SetField(policyevaluationlog.FieldRequestMethod, field.TypeString, value)
+		_node.RequestMethod = &value
+	}
 	if value, ok := _c.mutation.Result(); ok {
 		_spec.SetField(policyevaluationlog.FieldResult, field.TypeBool, value)
 		_node.Result = &value
+	}
+	if value, ok := _c.mutation.EffectDetails(); ok {
+		_spec.SetField(policyevaluationlog.FieldEffectDetails, field.TypeString, value)
+		_node.EffectDetails = &value
 	}
 	if value, ok := _c.mutation.ScopeSQL(); ok {
 		_spec.SetField(policyevaluationlog.FieldScopeSQL, field.TypeString, value)
 		_node.ScopeSQL = &value
 	}
-	if value, ok := _c.mutation.RequestPath(); ok {
-		_spec.SetField(policyevaluationlog.FieldRequestPath, field.TypeString, value)
-		_node.RequestPath = &value
-	}
 	if value, ok := _c.mutation.IPAddress(); ok {
 		_spec.SetField(policyevaluationlog.FieldIPAddress, field.TypeString, value)
 		_node.IPAddress = &value
+	}
+	if value, ok := _c.mutation.TraceID(); ok {
+		_spec.SetField(policyevaluationlog.FieldTraceID, field.TypeString, value)
+		_node.TraceID = &value
+	}
+	if value, ok := _c.mutation.EvaluationContext(); ok {
+		_spec.SetField(policyevaluationlog.FieldEvaluationContext, field.TypeString, value)
+		_node.EvaluationContext = &value
+	}
+	if value, ok := _c.mutation.LogHash(); ok {
+		_spec.SetField(policyevaluationlog.FieldLogHash, field.TypeString, value)
+		_node.LogHash = &value
+	}
+	if value, ok := _c.mutation.Signature(); ok {
+		_spec.SetField(policyevaluationlog.FieldSignature, field.TypeBytes, value)
+		_node.Signature = &value
 	}
 	return _node, _spec
 }
@@ -407,6 +507,42 @@ func (u *PolicyEvaluationLogUpsert) ClearPolicyID() *PolicyEvaluationLogUpsert {
 	return u
 }
 
+// SetRequestPath sets the "request_path" field.
+func (u *PolicyEvaluationLogUpsert) SetRequestPath(v string) *PolicyEvaluationLogUpsert {
+	u.Set(policyevaluationlog.FieldRequestPath, v)
+	return u
+}
+
+// UpdateRequestPath sets the "request_path" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsert) UpdateRequestPath() *PolicyEvaluationLogUpsert {
+	u.SetExcluded(policyevaluationlog.FieldRequestPath)
+	return u
+}
+
+// ClearRequestPath clears the value of the "request_path" field.
+func (u *PolicyEvaluationLogUpsert) ClearRequestPath() *PolicyEvaluationLogUpsert {
+	u.SetNull(policyevaluationlog.FieldRequestPath)
+	return u
+}
+
+// SetRequestMethod sets the "request_method" field.
+func (u *PolicyEvaluationLogUpsert) SetRequestMethod(v string) *PolicyEvaluationLogUpsert {
+	u.Set(policyevaluationlog.FieldRequestMethod, v)
+	return u
+}
+
+// UpdateRequestMethod sets the "request_method" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsert) UpdateRequestMethod() *PolicyEvaluationLogUpsert {
+	u.SetExcluded(policyevaluationlog.FieldRequestMethod)
+	return u
+}
+
+// ClearRequestMethod clears the value of the "request_method" field.
+func (u *PolicyEvaluationLogUpsert) ClearRequestMethod() *PolicyEvaluationLogUpsert {
+	u.SetNull(policyevaluationlog.FieldRequestMethod)
+	return u
+}
+
 // SetResult sets the "result" field.
 func (u *PolicyEvaluationLogUpsert) SetResult(v bool) *PolicyEvaluationLogUpsert {
 	u.Set(policyevaluationlog.FieldResult, v)
@@ -416,6 +552,24 @@ func (u *PolicyEvaluationLogUpsert) SetResult(v bool) *PolicyEvaluationLogUpsert
 // UpdateResult sets the "result" field to the value that was provided on create.
 func (u *PolicyEvaluationLogUpsert) UpdateResult() *PolicyEvaluationLogUpsert {
 	u.SetExcluded(policyevaluationlog.FieldResult)
+	return u
+}
+
+// SetEffectDetails sets the "effect_details" field.
+func (u *PolicyEvaluationLogUpsert) SetEffectDetails(v string) *PolicyEvaluationLogUpsert {
+	u.Set(policyevaluationlog.FieldEffectDetails, v)
+	return u
+}
+
+// UpdateEffectDetails sets the "effect_details" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsert) UpdateEffectDetails() *PolicyEvaluationLogUpsert {
+	u.SetExcluded(policyevaluationlog.FieldEffectDetails)
+	return u
+}
+
+// ClearEffectDetails clears the value of the "effect_details" field.
+func (u *PolicyEvaluationLogUpsert) ClearEffectDetails() *PolicyEvaluationLogUpsert {
+	u.SetNull(policyevaluationlog.FieldEffectDetails)
 	return u
 }
 
@@ -437,24 +591,6 @@ func (u *PolicyEvaluationLogUpsert) ClearScopeSQL() *PolicyEvaluationLogUpsert {
 	return u
 }
 
-// SetRequestPath sets the "request_path" field.
-func (u *PolicyEvaluationLogUpsert) SetRequestPath(v string) *PolicyEvaluationLogUpsert {
-	u.Set(policyevaluationlog.FieldRequestPath, v)
-	return u
-}
-
-// UpdateRequestPath sets the "request_path" field to the value that was provided on create.
-func (u *PolicyEvaluationLogUpsert) UpdateRequestPath() *PolicyEvaluationLogUpsert {
-	u.SetExcluded(policyevaluationlog.FieldRequestPath)
-	return u
-}
-
-// ClearRequestPath clears the value of the "request_path" field.
-func (u *PolicyEvaluationLogUpsert) ClearRequestPath() *PolicyEvaluationLogUpsert {
-	u.SetNull(policyevaluationlog.FieldRequestPath)
-	return u
-}
-
 // SetIPAddress sets the "ip_address" field.
 func (u *PolicyEvaluationLogUpsert) SetIPAddress(v string) *PolicyEvaluationLogUpsert {
 	u.Set(policyevaluationlog.FieldIPAddress, v)
@@ -470,6 +606,78 @@ func (u *PolicyEvaluationLogUpsert) UpdateIPAddress() *PolicyEvaluationLogUpsert
 // ClearIPAddress clears the value of the "ip_address" field.
 func (u *PolicyEvaluationLogUpsert) ClearIPAddress() *PolicyEvaluationLogUpsert {
 	u.SetNull(policyevaluationlog.FieldIPAddress)
+	return u
+}
+
+// SetTraceID sets the "trace_id" field.
+func (u *PolicyEvaluationLogUpsert) SetTraceID(v string) *PolicyEvaluationLogUpsert {
+	u.Set(policyevaluationlog.FieldTraceID, v)
+	return u
+}
+
+// UpdateTraceID sets the "trace_id" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsert) UpdateTraceID() *PolicyEvaluationLogUpsert {
+	u.SetExcluded(policyevaluationlog.FieldTraceID)
+	return u
+}
+
+// ClearTraceID clears the value of the "trace_id" field.
+func (u *PolicyEvaluationLogUpsert) ClearTraceID() *PolicyEvaluationLogUpsert {
+	u.SetNull(policyevaluationlog.FieldTraceID)
+	return u
+}
+
+// SetEvaluationContext sets the "evaluation_context" field.
+func (u *PolicyEvaluationLogUpsert) SetEvaluationContext(v string) *PolicyEvaluationLogUpsert {
+	u.Set(policyevaluationlog.FieldEvaluationContext, v)
+	return u
+}
+
+// UpdateEvaluationContext sets the "evaluation_context" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsert) UpdateEvaluationContext() *PolicyEvaluationLogUpsert {
+	u.SetExcluded(policyevaluationlog.FieldEvaluationContext)
+	return u
+}
+
+// ClearEvaluationContext clears the value of the "evaluation_context" field.
+func (u *PolicyEvaluationLogUpsert) ClearEvaluationContext() *PolicyEvaluationLogUpsert {
+	u.SetNull(policyevaluationlog.FieldEvaluationContext)
+	return u
+}
+
+// SetLogHash sets the "log_hash" field.
+func (u *PolicyEvaluationLogUpsert) SetLogHash(v string) *PolicyEvaluationLogUpsert {
+	u.Set(policyevaluationlog.FieldLogHash, v)
+	return u
+}
+
+// UpdateLogHash sets the "log_hash" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsert) UpdateLogHash() *PolicyEvaluationLogUpsert {
+	u.SetExcluded(policyevaluationlog.FieldLogHash)
+	return u
+}
+
+// ClearLogHash clears the value of the "log_hash" field.
+func (u *PolicyEvaluationLogUpsert) ClearLogHash() *PolicyEvaluationLogUpsert {
+	u.SetNull(policyevaluationlog.FieldLogHash)
+	return u
+}
+
+// SetSignature sets the "signature" field.
+func (u *PolicyEvaluationLogUpsert) SetSignature(v []byte) *PolicyEvaluationLogUpsert {
+	u.Set(policyevaluationlog.FieldSignature, v)
+	return u
+}
+
+// UpdateSignature sets the "signature" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsert) UpdateSignature() *PolicyEvaluationLogUpsert {
+	u.SetExcluded(policyevaluationlog.FieldSignature)
+	return u
+}
+
+// ClearSignature clears the value of the "signature" field.
+func (u *PolicyEvaluationLogUpsert) ClearSignature() *PolicyEvaluationLogUpsert {
+	u.SetNull(policyevaluationlog.FieldSignature)
 	return u
 }
 
@@ -618,6 +826,48 @@ func (u *PolicyEvaluationLogUpsertOne) ClearPolicyID() *PolicyEvaluationLogUpser
 	})
 }
 
+// SetRequestPath sets the "request_path" field.
+func (u *PolicyEvaluationLogUpsertOne) SetRequestPath(v string) *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.SetRequestPath(v)
+	})
+}
+
+// UpdateRequestPath sets the "request_path" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsertOne) UpdateRequestPath() *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.UpdateRequestPath()
+	})
+}
+
+// ClearRequestPath clears the value of the "request_path" field.
+func (u *PolicyEvaluationLogUpsertOne) ClearRequestPath() *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.ClearRequestPath()
+	})
+}
+
+// SetRequestMethod sets the "request_method" field.
+func (u *PolicyEvaluationLogUpsertOne) SetRequestMethod(v string) *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.SetRequestMethod(v)
+	})
+}
+
+// UpdateRequestMethod sets the "request_method" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsertOne) UpdateRequestMethod() *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.UpdateRequestMethod()
+	})
+}
+
+// ClearRequestMethod clears the value of the "request_method" field.
+func (u *PolicyEvaluationLogUpsertOne) ClearRequestMethod() *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.ClearRequestMethod()
+	})
+}
+
 // SetResult sets the "result" field.
 func (u *PolicyEvaluationLogUpsertOne) SetResult(v bool) *PolicyEvaluationLogUpsertOne {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
@@ -629,6 +879,27 @@ func (u *PolicyEvaluationLogUpsertOne) SetResult(v bool) *PolicyEvaluationLogUps
 func (u *PolicyEvaluationLogUpsertOne) UpdateResult() *PolicyEvaluationLogUpsertOne {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.UpdateResult()
+	})
+}
+
+// SetEffectDetails sets the "effect_details" field.
+func (u *PolicyEvaluationLogUpsertOne) SetEffectDetails(v string) *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.SetEffectDetails(v)
+	})
+}
+
+// UpdateEffectDetails sets the "effect_details" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsertOne) UpdateEffectDetails() *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.UpdateEffectDetails()
+	})
+}
+
+// ClearEffectDetails clears the value of the "effect_details" field.
+func (u *PolicyEvaluationLogUpsertOne) ClearEffectDetails() *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.ClearEffectDetails()
 	})
 }
 
@@ -653,27 +924,6 @@ func (u *PolicyEvaluationLogUpsertOne) ClearScopeSQL() *PolicyEvaluationLogUpser
 	})
 }
 
-// SetRequestPath sets the "request_path" field.
-func (u *PolicyEvaluationLogUpsertOne) SetRequestPath(v string) *PolicyEvaluationLogUpsertOne {
-	return u.Update(func(s *PolicyEvaluationLogUpsert) {
-		s.SetRequestPath(v)
-	})
-}
-
-// UpdateRequestPath sets the "request_path" field to the value that was provided on create.
-func (u *PolicyEvaluationLogUpsertOne) UpdateRequestPath() *PolicyEvaluationLogUpsertOne {
-	return u.Update(func(s *PolicyEvaluationLogUpsert) {
-		s.UpdateRequestPath()
-	})
-}
-
-// ClearRequestPath clears the value of the "request_path" field.
-func (u *PolicyEvaluationLogUpsertOne) ClearRequestPath() *PolicyEvaluationLogUpsertOne {
-	return u.Update(func(s *PolicyEvaluationLogUpsert) {
-		s.ClearRequestPath()
-	})
-}
-
 // SetIPAddress sets the "ip_address" field.
 func (u *PolicyEvaluationLogUpsertOne) SetIPAddress(v string) *PolicyEvaluationLogUpsertOne {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
@@ -692,6 +942,90 @@ func (u *PolicyEvaluationLogUpsertOne) UpdateIPAddress() *PolicyEvaluationLogUps
 func (u *PolicyEvaluationLogUpsertOne) ClearIPAddress() *PolicyEvaluationLogUpsertOne {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.ClearIPAddress()
+	})
+}
+
+// SetTraceID sets the "trace_id" field.
+func (u *PolicyEvaluationLogUpsertOne) SetTraceID(v string) *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.SetTraceID(v)
+	})
+}
+
+// UpdateTraceID sets the "trace_id" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsertOne) UpdateTraceID() *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.UpdateTraceID()
+	})
+}
+
+// ClearTraceID clears the value of the "trace_id" field.
+func (u *PolicyEvaluationLogUpsertOne) ClearTraceID() *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.ClearTraceID()
+	})
+}
+
+// SetEvaluationContext sets the "evaluation_context" field.
+func (u *PolicyEvaluationLogUpsertOne) SetEvaluationContext(v string) *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.SetEvaluationContext(v)
+	})
+}
+
+// UpdateEvaluationContext sets the "evaluation_context" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsertOne) UpdateEvaluationContext() *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.UpdateEvaluationContext()
+	})
+}
+
+// ClearEvaluationContext clears the value of the "evaluation_context" field.
+func (u *PolicyEvaluationLogUpsertOne) ClearEvaluationContext() *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.ClearEvaluationContext()
+	})
+}
+
+// SetLogHash sets the "log_hash" field.
+func (u *PolicyEvaluationLogUpsertOne) SetLogHash(v string) *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.SetLogHash(v)
+	})
+}
+
+// UpdateLogHash sets the "log_hash" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsertOne) UpdateLogHash() *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.UpdateLogHash()
+	})
+}
+
+// ClearLogHash clears the value of the "log_hash" field.
+func (u *PolicyEvaluationLogUpsertOne) ClearLogHash() *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.ClearLogHash()
+	})
+}
+
+// SetSignature sets the "signature" field.
+func (u *PolicyEvaluationLogUpsertOne) SetSignature(v []byte) *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.SetSignature(v)
+	})
+}
+
+// UpdateSignature sets the "signature" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsertOne) UpdateSignature() *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.UpdateSignature()
+	})
+}
+
+// ClearSignature clears the value of the "signature" field.
+func (u *PolicyEvaluationLogUpsertOne) ClearSignature() *PolicyEvaluationLogUpsertOne {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.ClearSignature()
 	})
 }
 
@@ -1006,6 +1340,48 @@ func (u *PolicyEvaluationLogUpsertBulk) ClearPolicyID() *PolicyEvaluationLogUpse
 	})
 }
 
+// SetRequestPath sets the "request_path" field.
+func (u *PolicyEvaluationLogUpsertBulk) SetRequestPath(v string) *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.SetRequestPath(v)
+	})
+}
+
+// UpdateRequestPath sets the "request_path" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsertBulk) UpdateRequestPath() *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.UpdateRequestPath()
+	})
+}
+
+// ClearRequestPath clears the value of the "request_path" field.
+func (u *PolicyEvaluationLogUpsertBulk) ClearRequestPath() *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.ClearRequestPath()
+	})
+}
+
+// SetRequestMethod sets the "request_method" field.
+func (u *PolicyEvaluationLogUpsertBulk) SetRequestMethod(v string) *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.SetRequestMethod(v)
+	})
+}
+
+// UpdateRequestMethod sets the "request_method" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsertBulk) UpdateRequestMethod() *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.UpdateRequestMethod()
+	})
+}
+
+// ClearRequestMethod clears the value of the "request_method" field.
+func (u *PolicyEvaluationLogUpsertBulk) ClearRequestMethod() *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.ClearRequestMethod()
+	})
+}
+
 // SetResult sets the "result" field.
 func (u *PolicyEvaluationLogUpsertBulk) SetResult(v bool) *PolicyEvaluationLogUpsertBulk {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
@@ -1017,6 +1393,27 @@ func (u *PolicyEvaluationLogUpsertBulk) SetResult(v bool) *PolicyEvaluationLogUp
 func (u *PolicyEvaluationLogUpsertBulk) UpdateResult() *PolicyEvaluationLogUpsertBulk {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.UpdateResult()
+	})
+}
+
+// SetEffectDetails sets the "effect_details" field.
+func (u *PolicyEvaluationLogUpsertBulk) SetEffectDetails(v string) *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.SetEffectDetails(v)
+	})
+}
+
+// UpdateEffectDetails sets the "effect_details" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsertBulk) UpdateEffectDetails() *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.UpdateEffectDetails()
+	})
+}
+
+// ClearEffectDetails clears the value of the "effect_details" field.
+func (u *PolicyEvaluationLogUpsertBulk) ClearEffectDetails() *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.ClearEffectDetails()
 	})
 }
 
@@ -1041,27 +1438,6 @@ func (u *PolicyEvaluationLogUpsertBulk) ClearScopeSQL() *PolicyEvaluationLogUpse
 	})
 }
 
-// SetRequestPath sets the "request_path" field.
-func (u *PolicyEvaluationLogUpsertBulk) SetRequestPath(v string) *PolicyEvaluationLogUpsertBulk {
-	return u.Update(func(s *PolicyEvaluationLogUpsert) {
-		s.SetRequestPath(v)
-	})
-}
-
-// UpdateRequestPath sets the "request_path" field to the value that was provided on create.
-func (u *PolicyEvaluationLogUpsertBulk) UpdateRequestPath() *PolicyEvaluationLogUpsertBulk {
-	return u.Update(func(s *PolicyEvaluationLogUpsert) {
-		s.UpdateRequestPath()
-	})
-}
-
-// ClearRequestPath clears the value of the "request_path" field.
-func (u *PolicyEvaluationLogUpsertBulk) ClearRequestPath() *PolicyEvaluationLogUpsertBulk {
-	return u.Update(func(s *PolicyEvaluationLogUpsert) {
-		s.ClearRequestPath()
-	})
-}
-
 // SetIPAddress sets the "ip_address" field.
 func (u *PolicyEvaluationLogUpsertBulk) SetIPAddress(v string) *PolicyEvaluationLogUpsertBulk {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
@@ -1080,6 +1456,90 @@ func (u *PolicyEvaluationLogUpsertBulk) UpdateIPAddress() *PolicyEvaluationLogUp
 func (u *PolicyEvaluationLogUpsertBulk) ClearIPAddress() *PolicyEvaluationLogUpsertBulk {
 	return u.Update(func(s *PolicyEvaluationLogUpsert) {
 		s.ClearIPAddress()
+	})
+}
+
+// SetTraceID sets the "trace_id" field.
+func (u *PolicyEvaluationLogUpsertBulk) SetTraceID(v string) *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.SetTraceID(v)
+	})
+}
+
+// UpdateTraceID sets the "trace_id" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsertBulk) UpdateTraceID() *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.UpdateTraceID()
+	})
+}
+
+// ClearTraceID clears the value of the "trace_id" field.
+func (u *PolicyEvaluationLogUpsertBulk) ClearTraceID() *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.ClearTraceID()
+	})
+}
+
+// SetEvaluationContext sets the "evaluation_context" field.
+func (u *PolicyEvaluationLogUpsertBulk) SetEvaluationContext(v string) *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.SetEvaluationContext(v)
+	})
+}
+
+// UpdateEvaluationContext sets the "evaluation_context" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsertBulk) UpdateEvaluationContext() *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.UpdateEvaluationContext()
+	})
+}
+
+// ClearEvaluationContext clears the value of the "evaluation_context" field.
+func (u *PolicyEvaluationLogUpsertBulk) ClearEvaluationContext() *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.ClearEvaluationContext()
+	})
+}
+
+// SetLogHash sets the "log_hash" field.
+func (u *PolicyEvaluationLogUpsertBulk) SetLogHash(v string) *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.SetLogHash(v)
+	})
+}
+
+// UpdateLogHash sets the "log_hash" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsertBulk) UpdateLogHash() *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.UpdateLogHash()
+	})
+}
+
+// ClearLogHash clears the value of the "log_hash" field.
+func (u *PolicyEvaluationLogUpsertBulk) ClearLogHash() *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.ClearLogHash()
+	})
+}
+
+// SetSignature sets the "signature" field.
+func (u *PolicyEvaluationLogUpsertBulk) SetSignature(v []byte) *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.SetSignature(v)
+	})
+}
+
+// UpdateSignature sets the "signature" field to the value that was provided on create.
+func (u *PolicyEvaluationLogUpsertBulk) UpdateSignature() *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.UpdateSignature()
+	})
+}
+
+// ClearSignature clears the value of the "signature" field.
+func (u *PolicyEvaluationLogUpsertBulk) ClearSignature() *PolicyEvaluationLogUpsertBulk {
+	return u.Update(func(s *PolicyEvaluationLogUpsert) {
+		s.ClearSignature()
 	})
 }
 

@@ -3,6 +3,8 @@
 package permissionauditlog
 
 import (
+	"fmt"
+
 	"entgo.io/ent/dialect/sql"
 )
 
@@ -29,6 +31,14 @@ const (
 	FieldNewValue = "new_value"
 	// FieldIPAddress holds the string denoting the ip_address field in the database.
 	FieldIPAddress = "ip_address"
+	// FieldRequestID holds the string denoting the request_id field in the database.
+	FieldRequestID = "request_id"
+	// FieldReason holds the string denoting the reason field in the database.
+	FieldReason = "reason"
+	// FieldLogHash holds the string denoting the log_hash field in the database.
+	FieldLogHash = "log_hash"
+	// FieldSignature holds the string denoting the signature field in the database.
+	FieldSignature = "signature"
 	// Table holds the table name of the permissionauditlog in the database.
 	Table = "sys_permission_audit_logs"
 )
@@ -45,6 +55,10 @@ var Columns = []string{
 	FieldOldValue,
 	FieldNewValue,
 	FieldIPAddress,
+	FieldRequestID,
+	FieldReason,
+	FieldLogHash,
+	FieldSignature,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -61,6 +75,31 @@ var (
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
+
+// Action defines the type for the "action" enum field.
+type Action string
+
+// Action values.
+const (
+	ActionGrant  Action = "GRANT"
+	ActionRevoke Action = "REVOKE"
+	ActionUpdate Action = "UPDATE"
+	ActionReset  Action = "RESET"
+)
+
+func (a Action) String() string {
+	return string(a)
+}
+
+// ActionValidator is a validator for the "action" field enum values. It is called by the builders before save.
+func ActionValidator(a Action) error {
+	switch a {
+	case ActionGrant, ActionRevoke, ActionUpdate, ActionReset:
+		return nil
+	default:
+		return fmt.Errorf("permissionauditlog: invalid enum value for action field: %q", a)
+	}
+}
 
 // OrderOption defines the ordering options for the PermissionAuditLog queries.
 type OrderOption func(*sql.Selector)
@@ -113,4 +152,19 @@ func ByNewValue(opts ...sql.OrderTermOption) OrderOption {
 // ByIPAddress orders the results by the ip_address field.
 func ByIPAddress(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIPAddress, opts...).ToFunc()
+}
+
+// ByRequestID orders the results by the request_id field.
+func ByRequestID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRequestID, opts...).ToFunc()
+}
+
+// ByReason orders the results by the reason field.
+func ByReason(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldReason, opts...).ToFunc()
+}
+
+// ByLogHash orders the results by the log_hash field.
+func ByLogHash(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLogHash, opts...).ToFunc()
 }

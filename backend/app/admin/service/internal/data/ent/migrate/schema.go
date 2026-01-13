@@ -1651,11 +1651,15 @@ var (
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID"},
 		{Name: "operator_id", Type: field.TypeUint32, Nullable: true, Comment: "操作者 用户ID"},
 		{Name: "target_type", Type: field.TypeString, Nullable: true, Comment: "目标类型"},
-		{Name: "target_id", Type: field.TypeUint32, Nullable: true, Comment: "目标ID"},
-		{Name: "action", Type: field.TypeString, Nullable: true, Comment: "动作"},
+		{Name: "target_id", Type: field.TypeString, Nullable: true, Comment: "目标ID"},
+		{Name: "action", Type: field.TypeEnum, Nullable: true, Comment: "动作", Enums: []string{"GRANT", "REVOKE", "UPDATE", "RESET"}},
 		{Name: "old_value", Type: field.TypeString, Nullable: true, Comment: "旧值（JSON）", SchemaType: map[string]string{"mysql": "json", "postgres": "jsonb"}},
 		{Name: "new_value", Type: field.TypeString, Nullable: true, Comment: "新值（JSON）", SchemaType: map[string]string{"mysql": "json", "postgres": "jsonb"}},
 		{Name: "ip_address", Type: field.TypeString, Comment: "操作者IP地址"},
+		{Name: "request_id", Type: field.TypeString, Comment: "关联全局请求ID"},
+		{Name: "reason", Type: field.TypeString, Comment: "变更原因"},
+		{Name: "log_hash", Type: field.TypeString, Nullable: true, Comment: "日志内容哈希（SHA256，十六进制字符串）"},
+		{Name: "signature", Type: field.TypeBytes, Nullable: true, Comment: "日志数字签名"},
 	}
 	// SysPermissionAuditLogsTable holds the schema information for the "sys_permission_audit_logs" table.
 	SysPermissionAuditLogsTable = &schema.Table{
@@ -1836,10 +1840,16 @@ var (
 		{Name: "membership_id", Type: field.TypeUint32, Comment: "成员身份ID"},
 		{Name: "permission_id", Type: field.TypeUint32, Comment: "权限点ID"},
 		{Name: "policy_id", Type: field.TypeUint32, Nullable: true, Comment: "策略ID（可能无策略）"},
-		{Name: "result", Type: field.TypeBool, Comment: "是否通过", Default: false},
-		{Name: "scope_sql", Type: field.TypeString, Nullable: true, Comment: "生成的SQL条件"},
 		{Name: "request_path", Type: field.TypeString, Nullable: true, Comment: "请求API路径"},
+		{Name: "request_method", Type: field.TypeString, Nullable: true, Comment: "请求HTTP方法"},
+		{Name: "result", Type: field.TypeBool, Comment: "是否通过", Default: false},
+		{Name: "effect_details", Type: field.TypeString, Nullable: true, Comment: "评估详情/拒绝原因"},
+		{Name: "scope_sql", Type: field.TypeString, Nullable: true, Comment: "生成的SQL条件"},
 		{Name: "ip_address", Type: field.TypeString, Nullable: true, Comment: "操作者IP地址"},
+		{Name: "trace_id", Type: field.TypeString, Nullable: true, Comment: "全局链路追踪ID"},
+		{Name: "evaluation_context", Type: field.TypeString, Nullable: true, Comment: "决策上下文快照"},
+		{Name: "log_hash", Type: field.TypeString, Nullable: true, Comment: "日志内容哈希（SHA256，十六进制字符串）"},
+		{Name: "signature", Type: field.TypeBytes, Nullable: true, Comment: "日志数字签名"},
 	}
 	// SysPolicyEvaluationLogsTable holds the schema information for the "sys_policy_evaluation_logs" table.
 	SysPolicyEvaluationLogsTable = &schema.Table{
@@ -1859,19 +1869,44 @@ var (
 				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[2], SysPolicyEvaluationLogsColumns[3], SysPolicyEvaluationLogsColumns[5], SysPolicyEvaluationLogsColumns[1]},
 			},
 			{
+				Name:    "idx_policy_eval_tenant_policy_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[2], SysPolicyEvaluationLogsColumns[6], SysPolicyEvaluationLogsColumns[1]},
+			},
+			{
+				Name:    "idx_policy_eval_tenant_membership_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[2], SysPolicyEvaluationLogsColumns[4], SysPolicyEvaluationLogsColumns[1]},
+			},
+			{
 				Name:    "idx_policy_eval_tenant_permission_result_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[2], SysPolicyEvaluationLogsColumns[5], SysPolicyEvaluationLogsColumns[7], SysPolicyEvaluationLogsColumns[1]},
+				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[2], SysPolicyEvaluationLogsColumns[5], SysPolicyEvaluationLogsColumns[9], SysPolicyEvaluationLogsColumns[1]},
 			},
 			{
 				Name:    "idx_policy_eval_request_path",
 				Unique:  false,
-				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[9]},
+				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[7]},
 			},
 			{
-				Name:    "idx_policy_eval_ip_address",
+				Name:    "idx_policy_eval_request_method",
 				Unique:  false,
-				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[10]},
+				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[8]},
+			},
+			{
+				Name:    "idx_policy_eval_trace_id",
+				Unique:  false,
+				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[13]},
+			},
+			{
+				Name:    "idx_policy_eval_ip_address_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[12], SysPolicyEvaluationLogsColumns[1]},
+			},
+			{
+				Name:    "idx_policy_eval_log_hash",
+				Unique:  false,
+				Columns: []*schema.Column{SysPolicyEvaluationLogsColumns[15]},
 			},
 		},
 	}

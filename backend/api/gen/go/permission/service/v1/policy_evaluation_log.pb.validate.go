@@ -61,6 +61,10 @@ func (m *PolicyEvaluationLog) validate(all bool) error {
 		// no validation rules for Id
 	}
 
+	if m.TenantId != nil {
+		// no validation rules for TenantId
+	}
+
 	if m.UserId != nil {
 		// no validation rules for UserId
 	}
@@ -77,24 +81,44 @@ func (m *PolicyEvaluationLog) validate(all bool) error {
 		// no validation rules for PolicyId
 	}
 
+	if m.RequestPath != nil {
+		// no validation rules for RequestPath
+	}
+
+	if m.RequestMethod != nil {
+		// no validation rules for RequestMethod
+	}
+
 	if m.Result != nil {
 		// no validation rules for Result
+	}
+
+	if m.EffectDetails != nil {
+		// no validation rules for EffectDetails
 	}
 
 	if m.ScopeSql != nil {
 		// no validation rules for ScopeSql
 	}
 
-	if m.RequestPath != nil {
-		// no validation rules for RequestPath
-	}
-
 	if m.IpAddress != nil {
 		// no validation rules for IpAddress
 	}
 
-	if m.TenantId != nil {
-		// no validation rules for TenantId
+	if m.TraceId != nil {
+		// no validation rules for TraceId
+	}
+
+	if m.EvaluationContext != nil {
+		// no validation rules for EvaluationContext
+	}
+
+	if m.LogHash != nil {
+		// no validation rules for LogHash
+	}
+
+	if m.Signature != nil {
+		// no validation rules for Signature
 	}
 
 	if m.CreatedAt != nil {

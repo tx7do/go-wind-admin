@@ -30,14 +30,26 @@ type PolicyEvaluationLog struct {
 	PermissionID *uint32 `json:"permission_id,omitempty"`
 	// 策略ID（可能无策略）
 	PolicyID *uint32 `json:"policy_id,omitempty"`
-	// 是否通过
-	Result *bool `json:"result,omitempty"`
-	// 生成的SQL条件
-	ScopeSQL *string `json:"scope_sql,omitempty"`
 	// 请求API路径
 	RequestPath *string `json:"request_path,omitempty"`
+	// 请求HTTP方法
+	RequestMethod *string `json:"request_method,omitempty"`
+	// 是否通过
+	Result *bool `json:"result,omitempty"`
+	// 评估详情/拒绝原因
+	EffectDetails *string `json:"effect_details,omitempty"`
+	// 生成的SQL条件
+	ScopeSQL *string `json:"scope_sql,omitempty"`
 	// 操作者IP地址
-	IPAddress    *string `json:"ip_address,omitempty"`
+	IPAddress *string `json:"ip_address,omitempty"`
+	// 全局链路追踪ID
+	TraceID *string `json:"trace_id,omitempty"`
+	// 决策上下文快照
+	EvaluationContext *string `json:"evaluation_context,omitempty"`
+	// 日志内容哈希（SHA256，十六进制字符串）
+	LogHash *string `json:"log_hash,omitempty"`
+	// 日志数字签名
+	Signature    *[]byte `json:"signature,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -46,11 +58,13 @@ func (*PolicyEvaluationLog) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
+		case policyevaluationlog.FieldSignature:
+			values[i] = new([]byte)
 		case policyevaluationlog.FieldResult:
 			values[i] = new(sql.NullBool)
 		case policyevaluationlog.FieldID, policyevaluationlog.FieldTenantID, policyevaluationlog.FieldUserID, policyevaluationlog.FieldMembershipID, policyevaluationlog.FieldPermissionID, policyevaluationlog.FieldPolicyID:
 			values[i] = new(sql.NullInt64)
-		case policyevaluationlog.FieldScopeSQL, policyevaluationlog.FieldRequestPath, policyevaluationlog.FieldIPAddress:
+		case policyevaluationlog.FieldRequestPath, policyevaluationlog.FieldRequestMethod, policyevaluationlog.FieldEffectDetails, policyevaluationlog.FieldScopeSQL, policyevaluationlog.FieldIPAddress, policyevaluationlog.FieldTraceID, policyevaluationlog.FieldEvaluationContext, policyevaluationlog.FieldLogHash:
 			values[i] = new(sql.NullString)
 		case policyevaluationlog.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -117,12 +131,33 @@ func (_m *PolicyEvaluationLog) assignValues(columns []string, values []any) erro
 				_m.PolicyID = new(uint32)
 				*_m.PolicyID = uint32(value.Int64)
 			}
+		case policyevaluationlog.FieldRequestPath:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field request_path", values[i])
+			} else if value.Valid {
+				_m.RequestPath = new(string)
+				*_m.RequestPath = value.String
+			}
+		case policyevaluationlog.FieldRequestMethod:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field request_method", values[i])
+			} else if value.Valid {
+				_m.RequestMethod = new(string)
+				*_m.RequestMethod = value.String
+			}
 		case policyevaluationlog.FieldResult:
 			if value, ok := values[i].(*sql.NullBool); !ok {
 				return fmt.Errorf("unexpected type %T for field result", values[i])
 			} else if value.Valid {
 				_m.Result = new(bool)
 				*_m.Result = value.Bool
+			}
+		case policyevaluationlog.FieldEffectDetails:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field effect_details", values[i])
+			} else if value.Valid {
+				_m.EffectDetails = new(string)
+				*_m.EffectDetails = value.String
 			}
 		case policyevaluationlog.FieldScopeSQL:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -131,19 +166,39 @@ func (_m *PolicyEvaluationLog) assignValues(columns []string, values []any) erro
 				_m.ScopeSQL = new(string)
 				*_m.ScopeSQL = value.String
 			}
-		case policyevaluationlog.FieldRequestPath:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field request_path", values[i])
-			} else if value.Valid {
-				_m.RequestPath = new(string)
-				*_m.RequestPath = value.String
-			}
 		case policyevaluationlog.FieldIPAddress:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field ip_address", values[i])
 			} else if value.Valid {
 				_m.IPAddress = new(string)
 				*_m.IPAddress = value.String
+			}
+		case policyevaluationlog.FieldTraceID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field trace_id", values[i])
+			} else if value.Valid {
+				_m.TraceID = new(string)
+				*_m.TraceID = value.String
+			}
+		case policyevaluationlog.FieldEvaluationContext:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field evaluation_context", values[i])
+			} else if value.Valid {
+				_m.EvaluationContext = new(string)
+				*_m.EvaluationContext = value.String
+			}
+		case policyevaluationlog.FieldLogHash:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field log_hash", values[i])
+			} else if value.Valid {
+				_m.LogHash = new(string)
+				*_m.LogHash = value.String
+			}
+		case policyevaluationlog.FieldSignature:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field signature", values[i])
+			} else if value != nil {
+				_m.Signature = value
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -211,9 +266,24 @@ func (_m *PolicyEvaluationLog) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
+	if v := _m.RequestPath; v != nil {
+		builder.WriteString("request_path=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.RequestMethod; v != nil {
+		builder.WriteString("request_method=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
 	if v := _m.Result; v != nil {
 		builder.WriteString("result=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.EffectDetails; v != nil {
+		builder.WriteString("effect_details=")
+		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	if v := _m.ScopeSQL; v != nil {
@@ -221,14 +291,29 @@ func (_m *PolicyEvaluationLog) String() string {
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
-	if v := _m.RequestPath; v != nil {
-		builder.WriteString("request_path=")
-		builder.WriteString(*v)
-	}
-	builder.WriteString(", ")
 	if v := _m.IPAddress; v != nil {
 		builder.WriteString("ip_address=")
 		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.TraceID; v != nil {
+		builder.WriteString("trace_id=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.EvaluationContext; v != nil {
+		builder.WriteString("evaluation_context=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.LogHash; v != nil {
+		builder.WriteString("log_hash=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.Signature; v != nil {
+		builder.WriteString("signature=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')
 	return builder.String()

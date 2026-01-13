@@ -442,7 +442,7 @@ func init() {
 	policyevaluationlogFields := schema.PolicyEvaluationLog{}.Fields()
 	_ = policyevaluationlogFields
 	// policyevaluationlogDescResult is the schema descriptor for result field.
-	policyevaluationlogDescResult := policyevaluationlogFields[4].Descriptor()
+	policyevaluationlogDescResult := policyevaluationlogFields[6].Descriptor()
 	// policyevaluationlog.DefaultResult holds the default value on creation for the result field.
 	policyevaluationlog.DefaultResult = policyevaluationlogDescResult.Default.(bool)
 	// policyevaluationlogDescID is the schema descriptor for id field.

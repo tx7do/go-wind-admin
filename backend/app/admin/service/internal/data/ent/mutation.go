@@ -35157,12 +35157,15 @@ type PermissionAuditLogMutation struct {
 	operator_id    *uint32
 	addoperator_id *int32
 	target_type    *string
-	target_id      *uint32
-	addtarget_id   *int32
-	action         *string
+	target_id      *string
+	action         *permissionauditlog.Action
 	old_value      *string
 	new_value      *string
 	ip_address     *string
+	request_id     *string
+	reason         *string
+	log_hash       *string
+	signature      *[]byte
 	clearedFields  map[string]struct{}
 	done           bool
 	oldValue       func(context.Context) (*PermissionAuditLog, error)
@@ -35512,13 +35515,12 @@ func (m *PermissionAuditLogMutation) ResetTargetType() {
 }
 
 // SetTargetID sets the "target_id" field.
-func (m *PermissionAuditLogMutation) SetTargetID(u uint32) {
-	m.target_id = &u
-	m.addtarget_id = nil
+func (m *PermissionAuditLogMutation) SetTargetID(s string) {
+	m.target_id = &s
 }
 
 // TargetID returns the value of the "target_id" field in the mutation.
-func (m *PermissionAuditLogMutation) TargetID() (r uint32, exists bool) {
+func (m *PermissionAuditLogMutation) TargetID() (r string, exists bool) {
 	v := m.target_id
 	if v == nil {
 		return
@@ -35529,7 +35531,7 @@ func (m *PermissionAuditLogMutation) TargetID() (r uint32, exists bool) {
 // OldTargetID returns the old "target_id" field's value of the PermissionAuditLog entity.
 // If the PermissionAuditLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionAuditLogMutation) OldTargetID(ctx context.Context) (v *uint32, err error) {
+func (m *PermissionAuditLogMutation) OldTargetID(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldTargetID is only allowed on UpdateOne operations")
 	}
@@ -35543,28 +35545,9 @@ func (m *PermissionAuditLogMutation) OldTargetID(ctx context.Context) (v *uint32
 	return oldValue.TargetID, nil
 }
 
-// AddTargetID adds u to the "target_id" field.
-func (m *PermissionAuditLogMutation) AddTargetID(u int32) {
-	if m.addtarget_id != nil {
-		*m.addtarget_id += u
-	} else {
-		m.addtarget_id = &u
-	}
-}
-
-// AddedTargetID returns the value that was added to the "target_id" field in this mutation.
-func (m *PermissionAuditLogMutation) AddedTargetID() (r int32, exists bool) {
-	v := m.addtarget_id
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
 // ClearTargetID clears the value of the "target_id" field.
 func (m *PermissionAuditLogMutation) ClearTargetID() {
 	m.target_id = nil
-	m.addtarget_id = nil
 	m.clearedFields[permissionauditlog.FieldTargetID] = struct{}{}
 }
 
@@ -35577,17 +35560,16 @@ func (m *PermissionAuditLogMutation) TargetIDCleared() bool {
 // ResetTargetID resets all changes to the "target_id" field.
 func (m *PermissionAuditLogMutation) ResetTargetID() {
 	m.target_id = nil
-	m.addtarget_id = nil
 	delete(m.clearedFields, permissionauditlog.FieldTargetID)
 }
 
 // SetAction sets the "action" field.
-func (m *PermissionAuditLogMutation) SetAction(s string) {
-	m.action = &s
+func (m *PermissionAuditLogMutation) SetAction(pe permissionauditlog.Action) {
+	m.action = &pe
 }
 
 // Action returns the value of the "action" field in the mutation.
-func (m *PermissionAuditLogMutation) Action() (r string, exists bool) {
+func (m *PermissionAuditLogMutation) Action() (r permissionauditlog.Action, exists bool) {
 	v := m.action
 	if v == nil {
 		return
@@ -35598,7 +35580,7 @@ func (m *PermissionAuditLogMutation) Action() (r string, exists bool) {
 // OldAction returns the old "action" field's value of the PermissionAuditLog entity.
 // If the PermissionAuditLog object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionAuditLogMutation) OldAction(ctx context.Context) (v *string, err error) {
+func (m *PermissionAuditLogMutation) OldAction(ctx context.Context) (v *permissionauditlog.Action, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldAction is only allowed on UpdateOne operations")
 	}
@@ -35764,6 +35746,176 @@ func (m *PermissionAuditLogMutation) ResetIPAddress() {
 	m.ip_address = nil
 }
 
+// SetRequestID sets the "request_id" field.
+func (m *PermissionAuditLogMutation) SetRequestID(s string) {
+	m.request_id = &s
+}
+
+// RequestID returns the value of the "request_id" field in the mutation.
+func (m *PermissionAuditLogMutation) RequestID() (r string, exists bool) {
+	v := m.request_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestID returns the old "request_id" field's value of the PermissionAuditLog entity.
+// If the PermissionAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermissionAuditLogMutation) OldRequestID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestID: %w", err)
+	}
+	return oldValue.RequestID, nil
+}
+
+// ResetRequestID resets all changes to the "request_id" field.
+func (m *PermissionAuditLogMutation) ResetRequestID() {
+	m.request_id = nil
+}
+
+// SetReason sets the "reason" field.
+func (m *PermissionAuditLogMutation) SetReason(s string) {
+	m.reason = &s
+}
+
+// Reason returns the value of the "reason" field in the mutation.
+func (m *PermissionAuditLogMutation) Reason() (r string, exists bool) {
+	v := m.reason
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldReason returns the old "reason" field's value of the PermissionAuditLog entity.
+// If the PermissionAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermissionAuditLogMutation) OldReason(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldReason is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldReason requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldReason: %w", err)
+	}
+	return oldValue.Reason, nil
+}
+
+// ResetReason resets all changes to the "reason" field.
+func (m *PermissionAuditLogMutation) ResetReason() {
+	m.reason = nil
+}
+
+// SetLogHash sets the "log_hash" field.
+func (m *PermissionAuditLogMutation) SetLogHash(s string) {
+	m.log_hash = &s
+}
+
+// LogHash returns the value of the "log_hash" field in the mutation.
+func (m *PermissionAuditLogMutation) LogHash() (r string, exists bool) {
+	v := m.log_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLogHash returns the old "log_hash" field's value of the PermissionAuditLog entity.
+// If the PermissionAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermissionAuditLogMutation) OldLogHash(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLogHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLogHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLogHash: %w", err)
+	}
+	return oldValue.LogHash, nil
+}
+
+// ClearLogHash clears the value of the "log_hash" field.
+func (m *PermissionAuditLogMutation) ClearLogHash() {
+	m.log_hash = nil
+	m.clearedFields[permissionauditlog.FieldLogHash] = struct{}{}
+}
+
+// LogHashCleared returns if the "log_hash" field was cleared in this mutation.
+func (m *PermissionAuditLogMutation) LogHashCleared() bool {
+	_, ok := m.clearedFields[permissionauditlog.FieldLogHash]
+	return ok
+}
+
+// ResetLogHash resets all changes to the "log_hash" field.
+func (m *PermissionAuditLogMutation) ResetLogHash() {
+	m.log_hash = nil
+	delete(m.clearedFields, permissionauditlog.FieldLogHash)
+}
+
+// SetSignature sets the "signature" field.
+func (m *PermissionAuditLogMutation) SetSignature(b []byte) {
+	m.signature = &b
+}
+
+// Signature returns the value of the "signature" field in the mutation.
+func (m *PermissionAuditLogMutation) Signature() (r []byte, exists bool) {
+	v := m.signature
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSignature returns the old "signature" field's value of the PermissionAuditLog entity.
+// If the PermissionAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermissionAuditLogMutation) OldSignature(ctx context.Context) (v *[]byte, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSignature is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSignature requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSignature: %w", err)
+	}
+	return oldValue.Signature, nil
+}
+
+// ClearSignature clears the value of the "signature" field.
+func (m *PermissionAuditLogMutation) ClearSignature() {
+	m.signature = nil
+	m.clearedFields[permissionauditlog.FieldSignature] = struct{}{}
+}
+
+// SignatureCleared returns if the "signature" field was cleared in this mutation.
+func (m *PermissionAuditLogMutation) SignatureCleared() bool {
+	_, ok := m.clearedFields[permissionauditlog.FieldSignature]
+	return ok
+}
+
+// ResetSignature resets all changes to the "signature" field.
+func (m *PermissionAuditLogMutation) ResetSignature() {
+	m.signature = nil
+	delete(m.clearedFields, permissionauditlog.FieldSignature)
+}
+
 // Where appends a list predicates to the PermissionAuditLogMutation builder.
 func (m *PermissionAuditLogMutation) Where(ps ...predicate.PermissionAuditLog) {
 	m.predicates = append(m.predicates, ps...)
@@ -35798,7 +35950,7 @@ func (m *PermissionAuditLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PermissionAuditLogMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 13)
 	if m.created_at != nil {
 		fields = append(fields, permissionauditlog.FieldCreatedAt)
 	}
@@ -35826,6 +35978,18 @@ func (m *PermissionAuditLogMutation) Fields() []string {
 	if m.ip_address != nil {
 		fields = append(fields, permissionauditlog.FieldIPAddress)
 	}
+	if m.request_id != nil {
+		fields = append(fields, permissionauditlog.FieldRequestID)
+	}
+	if m.reason != nil {
+		fields = append(fields, permissionauditlog.FieldReason)
+	}
+	if m.log_hash != nil {
+		fields = append(fields, permissionauditlog.FieldLogHash)
+	}
+	if m.signature != nil {
+		fields = append(fields, permissionauditlog.FieldSignature)
+	}
 	return fields
 }
 
@@ -35852,6 +36016,14 @@ func (m *PermissionAuditLogMutation) Field(name string) (ent.Value, bool) {
 		return m.NewValue()
 	case permissionauditlog.FieldIPAddress:
 		return m.IPAddress()
+	case permissionauditlog.FieldRequestID:
+		return m.RequestID()
+	case permissionauditlog.FieldReason:
+		return m.Reason()
+	case permissionauditlog.FieldLogHash:
+		return m.LogHash()
+	case permissionauditlog.FieldSignature:
+		return m.Signature()
 	}
 	return nil, false
 }
@@ -35879,6 +36051,14 @@ func (m *PermissionAuditLogMutation) OldField(ctx context.Context, name string) 
 		return m.OldNewValue(ctx)
 	case permissionauditlog.FieldIPAddress:
 		return m.OldIPAddress(ctx)
+	case permissionauditlog.FieldRequestID:
+		return m.OldRequestID(ctx)
+	case permissionauditlog.FieldReason:
+		return m.OldReason(ctx)
+	case permissionauditlog.FieldLogHash:
+		return m.OldLogHash(ctx)
+	case permissionauditlog.FieldSignature:
+		return m.OldSignature(ctx)
 	}
 	return nil, fmt.Errorf("unknown PermissionAuditLog field %s", name)
 }
@@ -35917,14 +36097,14 @@ func (m *PermissionAuditLogMutation) SetField(name string, value ent.Value) erro
 		m.SetTargetType(v)
 		return nil
 	case permissionauditlog.FieldTargetID:
-		v, ok := value.(uint32)
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTargetID(v)
 		return nil
 	case permissionauditlog.FieldAction:
-		v, ok := value.(string)
+		v, ok := value.(permissionauditlog.Action)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -35951,6 +36131,34 @@ func (m *PermissionAuditLogMutation) SetField(name string, value ent.Value) erro
 		}
 		m.SetIPAddress(v)
 		return nil
+	case permissionauditlog.FieldRequestID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestID(v)
+		return nil
+	case permissionauditlog.FieldReason:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetReason(v)
+		return nil
+	case permissionauditlog.FieldLogHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLogHash(v)
+		return nil
+	case permissionauditlog.FieldSignature:
+		v, ok := value.([]byte)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSignature(v)
+		return nil
 	}
 	return fmt.Errorf("unknown PermissionAuditLog field %s", name)
 }
@@ -35965,9 +36173,6 @@ func (m *PermissionAuditLogMutation) AddedFields() []string {
 	if m.addoperator_id != nil {
 		fields = append(fields, permissionauditlog.FieldOperatorID)
 	}
-	if m.addtarget_id != nil {
-		fields = append(fields, permissionauditlog.FieldTargetID)
-	}
 	return fields
 }
 
@@ -35980,8 +36185,6 @@ func (m *PermissionAuditLogMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedTenantID()
 	case permissionauditlog.FieldOperatorID:
 		return m.AddedOperatorID()
-	case permissionauditlog.FieldTargetID:
-		return m.AddedTargetID()
 	}
 	return nil, false
 }
@@ -36004,13 +36207,6 @@ func (m *PermissionAuditLogMutation) AddField(name string, value ent.Value) erro
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddOperatorID(v)
-		return nil
-	case permissionauditlog.FieldTargetID:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddTargetID(v)
 		return nil
 	}
 	return fmt.Errorf("unknown PermissionAuditLog numeric field %s", name)
@@ -36043,6 +36239,12 @@ func (m *PermissionAuditLogMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(permissionauditlog.FieldNewValue) {
 		fields = append(fields, permissionauditlog.FieldNewValue)
+	}
+	if m.FieldCleared(permissionauditlog.FieldLogHash) {
+		fields = append(fields, permissionauditlog.FieldLogHash)
+	}
+	if m.FieldCleared(permissionauditlog.FieldSignature) {
+		fields = append(fields, permissionauditlog.FieldSignature)
 	}
 	return fields
 }
@@ -36082,6 +36284,12 @@ func (m *PermissionAuditLogMutation) ClearField(name string) error {
 	case permissionauditlog.FieldNewValue:
 		m.ClearNewValue()
 		return nil
+	case permissionauditlog.FieldLogHash:
+		m.ClearLogHash()
+		return nil
+	case permissionauditlog.FieldSignature:
+		m.ClearSignature()
+		return nil
 	}
 	return fmt.Errorf("unknown PermissionAuditLog nullable field %s", name)
 }
@@ -36116,6 +36324,18 @@ func (m *PermissionAuditLogMutation) ResetField(name string) error {
 		return nil
 	case permissionauditlog.FieldIPAddress:
 		m.ResetIPAddress()
+		return nil
+	case permissionauditlog.FieldRequestID:
+		m.ResetRequestID()
+		return nil
+	case permissionauditlog.FieldReason:
+		m.ResetReason()
+		return nil
+	case permissionauditlog.FieldLogHash:
+		m.ResetLogHash()
+		return nil
+	case permissionauditlog.FieldSignature:
+		m.ResetSignature()
 		return nil
 	}
 	return fmt.Errorf("unknown PermissionAuditLog field %s", name)
@@ -39993,28 +40213,34 @@ func (m *PermissionPolicyMutation) ResetEdge(name string) error {
 // PolicyEvaluationLogMutation represents an operation that mutates the PolicyEvaluationLog nodes in the graph.
 type PolicyEvaluationLogMutation struct {
 	config
-	op               Op
-	typ              string
-	id               *uint32
-	created_at       *time.Time
-	tenant_id        *uint32
-	addtenant_id     *int32
-	user_id          *uint32
-	adduser_id       *int32
-	membership_id    *uint32
-	addmembership_id *int32
-	permission_id    *uint32
-	addpermission_id *int32
-	policy_id        *uint32
-	addpolicy_id     *int32
-	result           *bool
-	scope_sql        *string
-	request_path     *string
-	ip_address       *string
-	clearedFields    map[string]struct{}
-	done             bool
-	oldValue         func(context.Context) (*PolicyEvaluationLog, error)
-	predicates       []predicate.PolicyEvaluationLog
+	op                 Op
+	typ                string
+	id                 *uint32
+	created_at         *time.Time
+	tenant_id          *uint32
+	addtenant_id       *int32
+	user_id            *uint32
+	adduser_id         *int32
+	membership_id      *uint32
+	addmembership_id   *int32
+	permission_id      *uint32
+	addpermission_id   *int32
+	policy_id          *uint32
+	addpolicy_id       *int32
+	request_path       *string
+	request_method     *string
+	result             *bool
+	effect_details     *string
+	scope_sql          *string
+	ip_address         *string
+	trace_id           *string
+	evaluation_context *string
+	log_hash           *string
+	signature          *[]byte
+	clearedFields      map[string]struct{}
+	done               bool
+	oldValue           func(context.Context) (*PolicyEvaluationLog, error)
+	predicates         []predicate.PolicyEvaluationLog
 }
 
 var _ ent.Mutation = (*PolicyEvaluationLogMutation)(nil)
@@ -40478,6 +40704,104 @@ func (m *PolicyEvaluationLogMutation) ResetPolicyID() {
 	delete(m.clearedFields, policyevaluationlog.FieldPolicyID)
 }
 
+// SetRequestPath sets the "request_path" field.
+func (m *PolicyEvaluationLogMutation) SetRequestPath(s string) {
+	m.request_path = &s
+}
+
+// RequestPath returns the value of the "request_path" field in the mutation.
+func (m *PolicyEvaluationLogMutation) RequestPath() (r string, exists bool) {
+	v := m.request_path
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestPath returns the old "request_path" field's value of the PolicyEvaluationLog entity.
+// If the PolicyEvaluationLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PolicyEvaluationLogMutation) OldRequestPath(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestPath is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestPath requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestPath: %w", err)
+	}
+	return oldValue.RequestPath, nil
+}
+
+// ClearRequestPath clears the value of the "request_path" field.
+func (m *PolicyEvaluationLogMutation) ClearRequestPath() {
+	m.request_path = nil
+	m.clearedFields[policyevaluationlog.FieldRequestPath] = struct{}{}
+}
+
+// RequestPathCleared returns if the "request_path" field was cleared in this mutation.
+func (m *PolicyEvaluationLogMutation) RequestPathCleared() bool {
+	_, ok := m.clearedFields[policyevaluationlog.FieldRequestPath]
+	return ok
+}
+
+// ResetRequestPath resets all changes to the "request_path" field.
+func (m *PolicyEvaluationLogMutation) ResetRequestPath() {
+	m.request_path = nil
+	delete(m.clearedFields, policyevaluationlog.FieldRequestPath)
+}
+
+// SetRequestMethod sets the "request_method" field.
+func (m *PolicyEvaluationLogMutation) SetRequestMethod(s string) {
+	m.request_method = &s
+}
+
+// RequestMethod returns the value of the "request_method" field in the mutation.
+func (m *PolicyEvaluationLogMutation) RequestMethod() (r string, exists bool) {
+	v := m.request_method
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldRequestMethod returns the old "request_method" field's value of the PolicyEvaluationLog entity.
+// If the PolicyEvaluationLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PolicyEvaluationLogMutation) OldRequestMethod(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldRequestMethod is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldRequestMethod requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldRequestMethod: %w", err)
+	}
+	return oldValue.RequestMethod, nil
+}
+
+// ClearRequestMethod clears the value of the "request_method" field.
+func (m *PolicyEvaluationLogMutation) ClearRequestMethod() {
+	m.request_method = nil
+	m.clearedFields[policyevaluationlog.FieldRequestMethod] = struct{}{}
+}
+
+// RequestMethodCleared returns if the "request_method" field was cleared in this mutation.
+func (m *PolicyEvaluationLogMutation) RequestMethodCleared() bool {
+	_, ok := m.clearedFields[policyevaluationlog.FieldRequestMethod]
+	return ok
+}
+
+// ResetRequestMethod resets all changes to the "request_method" field.
+func (m *PolicyEvaluationLogMutation) ResetRequestMethod() {
+	m.request_method = nil
+	delete(m.clearedFields, policyevaluationlog.FieldRequestMethod)
+}
+
 // SetResult sets the "result" field.
 func (m *PolicyEvaluationLogMutation) SetResult(b bool) {
 	m.result = &b
@@ -40512,6 +40836,55 @@ func (m *PolicyEvaluationLogMutation) OldResult(ctx context.Context) (v *bool, e
 // ResetResult resets all changes to the "result" field.
 func (m *PolicyEvaluationLogMutation) ResetResult() {
 	m.result = nil
+}
+
+// SetEffectDetails sets the "effect_details" field.
+func (m *PolicyEvaluationLogMutation) SetEffectDetails(s string) {
+	m.effect_details = &s
+}
+
+// EffectDetails returns the value of the "effect_details" field in the mutation.
+func (m *PolicyEvaluationLogMutation) EffectDetails() (r string, exists bool) {
+	v := m.effect_details
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEffectDetails returns the old "effect_details" field's value of the PolicyEvaluationLog entity.
+// If the PolicyEvaluationLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PolicyEvaluationLogMutation) OldEffectDetails(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEffectDetails is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEffectDetails requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEffectDetails: %w", err)
+	}
+	return oldValue.EffectDetails, nil
+}
+
+// ClearEffectDetails clears the value of the "effect_details" field.
+func (m *PolicyEvaluationLogMutation) ClearEffectDetails() {
+	m.effect_details = nil
+	m.clearedFields[policyevaluationlog.FieldEffectDetails] = struct{}{}
+}
+
+// EffectDetailsCleared returns if the "effect_details" field was cleared in this mutation.
+func (m *PolicyEvaluationLogMutation) EffectDetailsCleared() bool {
+	_, ok := m.clearedFields[policyevaluationlog.FieldEffectDetails]
+	return ok
+}
+
+// ResetEffectDetails resets all changes to the "effect_details" field.
+func (m *PolicyEvaluationLogMutation) ResetEffectDetails() {
+	m.effect_details = nil
+	delete(m.clearedFields, policyevaluationlog.FieldEffectDetails)
 }
 
 // SetScopeSQL sets the "scope_sql" field.
@@ -40563,55 +40936,6 @@ func (m *PolicyEvaluationLogMutation) ResetScopeSQL() {
 	delete(m.clearedFields, policyevaluationlog.FieldScopeSQL)
 }
 
-// SetRequestPath sets the "request_path" field.
-func (m *PolicyEvaluationLogMutation) SetRequestPath(s string) {
-	m.request_path = &s
-}
-
-// RequestPath returns the value of the "request_path" field in the mutation.
-func (m *PolicyEvaluationLogMutation) RequestPath() (r string, exists bool) {
-	v := m.request_path
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldRequestPath returns the old "request_path" field's value of the PolicyEvaluationLog entity.
-// If the PolicyEvaluationLog object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PolicyEvaluationLogMutation) OldRequestPath(ctx context.Context) (v *string, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldRequestPath is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldRequestPath requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldRequestPath: %w", err)
-	}
-	return oldValue.RequestPath, nil
-}
-
-// ClearRequestPath clears the value of the "request_path" field.
-func (m *PolicyEvaluationLogMutation) ClearRequestPath() {
-	m.request_path = nil
-	m.clearedFields[policyevaluationlog.FieldRequestPath] = struct{}{}
-}
-
-// RequestPathCleared returns if the "request_path" field was cleared in this mutation.
-func (m *PolicyEvaluationLogMutation) RequestPathCleared() bool {
-	_, ok := m.clearedFields[policyevaluationlog.FieldRequestPath]
-	return ok
-}
-
-// ResetRequestPath resets all changes to the "request_path" field.
-func (m *PolicyEvaluationLogMutation) ResetRequestPath() {
-	m.request_path = nil
-	delete(m.clearedFields, policyevaluationlog.FieldRequestPath)
-}
-
 // SetIPAddress sets the "ip_address" field.
 func (m *PolicyEvaluationLogMutation) SetIPAddress(s string) {
 	m.ip_address = &s
@@ -40661,6 +40985,202 @@ func (m *PolicyEvaluationLogMutation) ResetIPAddress() {
 	delete(m.clearedFields, policyevaluationlog.FieldIPAddress)
 }
 
+// SetTraceID sets the "trace_id" field.
+func (m *PolicyEvaluationLogMutation) SetTraceID(s string) {
+	m.trace_id = &s
+}
+
+// TraceID returns the value of the "trace_id" field in the mutation.
+func (m *PolicyEvaluationLogMutation) TraceID() (r string, exists bool) {
+	v := m.trace_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTraceID returns the old "trace_id" field's value of the PolicyEvaluationLog entity.
+// If the PolicyEvaluationLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PolicyEvaluationLogMutation) OldTraceID(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTraceID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTraceID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTraceID: %w", err)
+	}
+	return oldValue.TraceID, nil
+}
+
+// ClearTraceID clears the value of the "trace_id" field.
+func (m *PolicyEvaluationLogMutation) ClearTraceID() {
+	m.trace_id = nil
+	m.clearedFields[policyevaluationlog.FieldTraceID] = struct{}{}
+}
+
+// TraceIDCleared returns if the "trace_id" field was cleared in this mutation.
+func (m *PolicyEvaluationLogMutation) TraceIDCleared() bool {
+	_, ok := m.clearedFields[policyevaluationlog.FieldTraceID]
+	return ok
+}
+
+// ResetTraceID resets all changes to the "trace_id" field.
+func (m *PolicyEvaluationLogMutation) ResetTraceID() {
+	m.trace_id = nil
+	delete(m.clearedFields, policyevaluationlog.FieldTraceID)
+}
+
+// SetEvaluationContext sets the "evaluation_context" field.
+func (m *PolicyEvaluationLogMutation) SetEvaluationContext(s string) {
+	m.evaluation_context = &s
+}
+
+// EvaluationContext returns the value of the "evaluation_context" field in the mutation.
+func (m *PolicyEvaluationLogMutation) EvaluationContext() (r string, exists bool) {
+	v := m.evaluation_context
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldEvaluationContext returns the old "evaluation_context" field's value of the PolicyEvaluationLog entity.
+// If the PolicyEvaluationLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PolicyEvaluationLogMutation) OldEvaluationContext(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldEvaluationContext is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldEvaluationContext requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldEvaluationContext: %w", err)
+	}
+	return oldValue.EvaluationContext, nil
+}
+
+// ClearEvaluationContext clears the value of the "evaluation_context" field.
+func (m *PolicyEvaluationLogMutation) ClearEvaluationContext() {
+	m.evaluation_context = nil
+	m.clearedFields[policyevaluationlog.FieldEvaluationContext] = struct{}{}
+}
+
+// EvaluationContextCleared returns if the "evaluation_context" field was cleared in this mutation.
+func (m *PolicyEvaluationLogMutation) EvaluationContextCleared() bool {
+	_, ok := m.clearedFields[policyevaluationlog.FieldEvaluationContext]
+	return ok
+}
+
+// ResetEvaluationContext resets all changes to the "evaluation_context" field.
+func (m *PolicyEvaluationLogMutation) ResetEvaluationContext() {
+	m.evaluation_context = nil
+	delete(m.clearedFields, policyevaluationlog.FieldEvaluationContext)
+}
+
+// SetLogHash sets the "log_hash" field.
+func (m *PolicyEvaluationLogMutation) SetLogHash(s string) {
+	m.log_hash = &s
+}
+
+// LogHash returns the value of the "log_hash" field in the mutation.
+func (m *PolicyEvaluationLogMutation) LogHash() (r string, exists bool) {
+	v := m.log_hash
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLogHash returns the old "log_hash" field's value of the PolicyEvaluationLog entity.
+// If the PolicyEvaluationLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PolicyEvaluationLogMutation) OldLogHash(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLogHash is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLogHash requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLogHash: %w", err)
+	}
+	return oldValue.LogHash, nil
+}
+
+// ClearLogHash clears the value of the "log_hash" field.
+func (m *PolicyEvaluationLogMutation) ClearLogHash() {
+	m.log_hash = nil
+	m.clearedFields[policyevaluationlog.FieldLogHash] = struct{}{}
+}
+
+// LogHashCleared returns if the "log_hash" field was cleared in this mutation.
+func (m *PolicyEvaluationLogMutation) LogHashCleared() bool {
+	_, ok := m.clearedFields[policyevaluationlog.FieldLogHash]
+	return ok
+}
+
+// ResetLogHash resets all changes to the "log_hash" field.
+func (m *PolicyEvaluationLogMutation) ResetLogHash() {
+	m.log_hash = nil
+	delete(m.clearedFields, policyevaluationlog.FieldLogHash)
+}
+
+// SetSignature sets the "signature" field.
+func (m *PolicyEvaluationLogMutation) SetSignature(b []byte) {
+	m.signature = &b
+}
+
+// Signature returns the value of the "signature" field in the mutation.
+func (m *PolicyEvaluationLogMutation) Signature() (r []byte, exists bool) {
+	v := m.signature
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSignature returns the old "signature" field's value of the PolicyEvaluationLog entity.
+// If the PolicyEvaluationLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PolicyEvaluationLogMutation) OldSignature(ctx context.Context) (v *[]byte, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSignature is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSignature requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSignature: %w", err)
+	}
+	return oldValue.Signature, nil
+}
+
+// ClearSignature clears the value of the "signature" field.
+func (m *PolicyEvaluationLogMutation) ClearSignature() {
+	m.signature = nil
+	m.clearedFields[policyevaluationlog.FieldSignature] = struct{}{}
+}
+
+// SignatureCleared returns if the "signature" field was cleared in this mutation.
+func (m *PolicyEvaluationLogMutation) SignatureCleared() bool {
+	_, ok := m.clearedFields[policyevaluationlog.FieldSignature]
+	return ok
+}
+
+// ResetSignature resets all changes to the "signature" field.
+func (m *PolicyEvaluationLogMutation) ResetSignature() {
+	m.signature = nil
+	delete(m.clearedFields, policyevaluationlog.FieldSignature)
+}
+
 // Where appends a list predicates to the PolicyEvaluationLogMutation builder.
 func (m *PolicyEvaluationLogMutation) Where(ps ...predicate.PolicyEvaluationLog) {
 	m.predicates = append(m.predicates, ps...)
@@ -40695,7 +41215,7 @@ func (m *PolicyEvaluationLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PolicyEvaluationLogMutation) Fields() []string {
-	fields := make([]string, 0, 10)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, policyevaluationlog.FieldCreatedAt)
 	}
@@ -40714,17 +41234,35 @@ func (m *PolicyEvaluationLogMutation) Fields() []string {
 	if m.policy_id != nil {
 		fields = append(fields, policyevaluationlog.FieldPolicyID)
 	}
+	if m.request_path != nil {
+		fields = append(fields, policyevaluationlog.FieldRequestPath)
+	}
+	if m.request_method != nil {
+		fields = append(fields, policyevaluationlog.FieldRequestMethod)
+	}
 	if m.result != nil {
 		fields = append(fields, policyevaluationlog.FieldResult)
+	}
+	if m.effect_details != nil {
+		fields = append(fields, policyevaluationlog.FieldEffectDetails)
 	}
 	if m.scope_sql != nil {
 		fields = append(fields, policyevaluationlog.FieldScopeSQL)
 	}
-	if m.request_path != nil {
-		fields = append(fields, policyevaluationlog.FieldRequestPath)
-	}
 	if m.ip_address != nil {
 		fields = append(fields, policyevaluationlog.FieldIPAddress)
+	}
+	if m.trace_id != nil {
+		fields = append(fields, policyevaluationlog.FieldTraceID)
+	}
+	if m.evaluation_context != nil {
+		fields = append(fields, policyevaluationlog.FieldEvaluationContext)
+	}
+	if m.log_hash != nil {
+		fields = append(fields, policyevaluationlog.FieldLogHash)
+	}
+	if m.signature != nil {
+		fields = append(fields, policyevaluationlog.FieldSignature)
 	}
 	return fields
 }
@@ -40746,14 +41284,26 @@ func (m *PolicyEvaluationLogMutation) Field(name string) (ent.Value, bool) {
 		return m.PermissionID()
 	case policyevaluationlog.FieldPolicyID:
 		return m.PolicyID()
-	case policyevaluationlog.FieldResult:
-		return m.Result()
-	case policyevaluationlog.FieldScopeSQL:
-		return m.ScopeSQL()
 	case policyevaluationlog.FieldRequestPath:
 		return m.RequestPath()
+	case policyevaluationlog.FieldRequestMethod:
+		return m.RequestMethod()
+	case policyevaluationlog.FieldResult:
+		return m.Result()
+	case policyevaluationlog.FieldEffectDetails:
+		return m.EffectDetails()
+	case policyevaluationlog.FieldScopeSQL:
+		return m.ScopeSQL()
 	case policyevaluationlog.FieldIPAddress:
 		return m.IPAddress()
+	case policyevaluationlog.FieldTraceID:
+		return m.TraceID()
+	case policyevaluationlog.FieldEvaluationContext:
+		return m.EvaluationContext()
+	case policyevaluationlog.FieldLogHash:
+		return m.LogHash()
+	case policyevaluationlog.FieldSignature:
+		return m.Signature()
 	}
 	return nil, false
 }
@@ -40775,14 +41325,26 @@ func (m *PolicyEvaluationLogMutation) OldField(ctx context.Context, name string)
 		return m.OldPermissionID(ctx)
 	case policyevaluationlog.FieldPolicyID:
 		return m.OldPolicyID(ctx)
-	case policyevaluationlog.FieldResult:
-		return m.OldResult(ctx)
-	case policyevaluationlog.FieldScopeSQL:
-		return m.OldScopeSQL(ctx)
 	case policyevaluationlog.FieldRequestPath:
 		return m.OldRequestPath(ctx)
+	case policyevaluationlog.FieldRequestMethod:
+		return m.OldRequestMethod(ctx)
+	case policyevaluationlog.FieldResult:
+		return m.OldResult(ctx)
+	case policyevaluationlog.FieldEffectDetails:
+		return m.OldEffectDetails(ctx)
+	case policyevaluationlog.FieldScopeSQL:
+		return m.OldScopeSQL(ctx)
 	case policyevaluationlog.FieldIPAddress:
 		return m.OldIPAddress(ctx)
+	case policyevaluationlog.FieldTraceID:
+		return m.OldTraceID(ctx)
+	case policyevaluationlog.FieldEvaluationContext:
+		return m.OldEvaluationContext(ctx)
+	case policyevaluationlog.FieldLogHash:
+		return m.OldLogHash(ctx)
+	case policyevaluationlog.FieldSignature:
+		return m.OldSignature(ctx)
 	}
 	return nil, fmt.Errorf("unknown PolicyEvaluationLog field %s", name)
 }
@@ -40834,12 +41396,33 @@ func (m *PolicyEvaluationLogMutation) SetField(name string, value ent.Value) err
 		}
 		m.SetPolicyID(v)
 		return nil
+	case policyevaluationlog.FieldRequestPath:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestPath(v)
+		return nil
+	case policyevaluationlog.FieldRequestMethod:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetRequestMethod(v)
+		return nil
 	case policyevaluationlog.FieldResult:
 		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetResult(v)
+		return nil
+	case policyevaluationlog.FieldEffectDetails:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEffectDetails(v)
 		return nil
 	case policyevaluationlog.FieldScopeSQL:
 		v, ok := value.(string)
@@ -40848,19 +41431,40 @@ func (m *PolicyEvaluationLogMutation) SetField(name string, value ent.Value) err
 		}
 		m.SetScopeSQL(v)
 		return nil
-	case policyevaluationlog.FieldRequestPath:
-		v, ok := value.(string)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetRequestPath(v)
-		return nil
 	case policyevaluationlog.FieldIPAddress:
 		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIPAddress(v)
+		return nil
+	case policyevaluationlog.FieldTraceID:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTraceID(v)
+		return nil
+	case policyevaluationlog.FieldEvaluationContext:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetEvaluationContext(v)
+		return nil
+	case policyevaluationlog.FieldLogHash:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLogHash(v)
+		return nil
+	case policyevaluationlog.FieldSignature:
+		v, ok := value.([]byte)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSignature(v)
 		return nil
 	}
 	return fmt.Errorf("unknown PolicyEvaluationLog field %s", name)
@@ -40964,14 +41568,32 @@ func (m *PolicyEvaluationLogMutation) ClearedFields() []string {
 	if m.FieldCleared(policyevaluationlog.FieldPolicyID) {
 		fields = append(fields, policyevaluationlog.FieldPolicyID)
 	}
-	if m.FieldCleared(policyevaluationlog.FieldScopeSQL) {
-		fields = append(fields, policyevaluationlog.FieldScopeSQL)
-	}
 	if m.FieldCleared(policyevaluationlog.FieldRequestPath) {
 		fields = append(fields, policyevaluationlog.FieldRequestPath)
 	}
+	if m.FieldCleared(policyevaluationlog.FieldRequestMethod) {
+		fields = append(fields, policyevaluationlog.FieldRequestMethod)
+	}
+	if m.FieldCleared(policyevaluationlog.FieldEffectDetails) {
+		fields = append(fields, policyevaluationlog.FieldEffectDetails)
+	}
+	if m.FieldCleared(policyevaluationlog.FieldScopeSQL) {
+		fields = append(fields, policyevaluationlog.FieldScopeSQL)
+	}
 	if m.FieldCleared(policyevaluationlog.FieldIPAddress) {
 		fields = append(fields, policyevaluationlog.FieldIPAddress)
+	}
+	if m.FieldCleared(policyevaluationlog.FieldTraceID) {
+		fields = append(fields, policyevaluationlog.FieldTraceID)
+	}
+	if m.FieldCleared(policyevaluationlog.FieldEvaluationContext) {
+		fields = append(fields, policyevaluationlog.FieldEvaluationContext)
+	}
+	if m.FieldCleared(policyevaluationlog.FieldLogHash) {
+		fields = append(fields, policyevaluationlog.FieldLogHash)
+	}
+	if m.FieldCleared(policyevaluationlog.FieldSignature) {
+		fields = append(fields, policyevaluationlog.FieldSignature)
 	}
 	return fields
 }
@@ -40996,14 +41618,32 @@ func (m *PolicyEvaluationLogMutation) ClearField(name string) error {
 	case policyevaluationlog.FieldPolicyID:
 		m.ClearPolicyID()
 		return nil
-	case policyevaluationlog.FieldScopeSQL:
-		m.ClearScopeSQL()
-		return nil
 	case policyevaluationlog.FieldRequestPath:
 		m.ClearRequestPath()
 		return nil
+	case policyevaluationlog.FieldRequestMethod:
+		m.ClearRequestMethod()
+		return nil
+	case policyevaluationlog.FieldEffectDetails:
+		m.ClearEffectDetails()
+		return nil
+	case policyevaluationlog.FieldScopeSQL:
+		m.ClearScopeSQL()
+		return nil
 	case policyevaluationlog.FieldIPAddress:
 		m.ClearIPAddress()
+		return nil
+	case policyevaluationlog.FieldTraceID:
+		m.ClearTraceID()
+		return nil
+	case policyevaluationlog.FieldEvaluationContext:
+		m.ClearEvaluationContext()
+		return nil
+	case policyevaluationlog.FieldLogHash:
+		m.ClearLogHash()
+		return nil
+	case policyevaluationlog.FieldSignature:
+		m.ClearSignature()
 		return nil
 	}
 	return fmt.Errorf("unknown PolicyEvaluationLog nullable field %s", name)
@@ -41031,17 +41671,35 @@ func (m *PolicyEvaluationLogMutation) ResetField(name string) error {
 	case policyevaluationlog.FieldPolicyID:
 		m.ResetPolicyID()
 		return nil
+	case policyevaluationlog.FieldRequestPath:
+		m.ResetRequestPath()
+		return nil
+	case policyevaluationlog.FieldRequestMethod:
+		m.ResetRequestMethod()
+		return nil
 	case policyevaluationlog.FieldResult:
 		m.ResetResult()
+		return nil
+	case policyevaluationlog.FieldEffectDetails:
+		m.ResetEffectDetails()
 		return nil
 	case policyevaluationlog.FieldScopeSQL:
 		m.ResetScopeSQL()
 		return nil
-	case policyevaluationlog.FieldRequestPath:
-		m.ResetRequestPath()
-		return nil
 	case policyevaluationlog.FieldIPAddress:
 		m.ResetIPAddress()
+		return nil
+	case policyevaluationlog.FieldTraceID:
+		m.ResetTraceID()
+		return nil
+	case policyevaluationlog.FieldEvaluationContext:
+		m.ResetEvaluationContext()
+		return nil
+	case policyevaluationlog.FieldLogHash:
+		m.ResetLogHash()
+		return nil
+	case policyevaluationlog.FieldSignature:
+		m.ResetSignature()
 		return nil
 	}
 	return fmt.Errorf("unknown PolicyEvaluationLog field %s", name)

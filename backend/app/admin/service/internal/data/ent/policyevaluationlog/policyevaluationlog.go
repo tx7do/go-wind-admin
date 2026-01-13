@@ -23,14 +23,26 @@ const (
 	FieldPermissionID = "permission_id"
 	// FieldPolicyID holds the string denoting the policy_id field in the database.
 	FieldPolicyID = "policy_id"
-	// FieldResult holds the string denoting the result field in the database.
-	FieldResult = "result"
-	// FieldScopeSQL holds the string denoting the scope_sql field in the database.
-	FieldScopeSQL = "scope_sql"
 	// FieldRequestPath holds the string denoting the request_path field in the database.
 	FieldRequestPath = "request_path"
+	// FieldRequestMethod holds the string denoting the request_method field in the database.
+	FieldRequestMethod = "request_method"
+	// FieldResult holds the string denoting the result field in the database.
+	FieldResult = "result"
+	// FieldEffectDetails holds the string denoting the effect_details field in the database.
+	FieldEffectDetails = "effect_details"
+	// FieldScopeSQL holds the string denoting the scope_sql field in the database.
+	FieldScopeSQL = "scope_sql"
 	// FieldIPAddress holds the string denoting the ip_address field in the database.
 	FieldIPAddress = "ip_address"
+	// FieldTraceID holds the string denoting the trace_id field in the database.
+	FieldTraceID = "trace_id"
+	// FieldEvaluationContext holds the string denoting the evaluation_context field in the database.
+	FieldEvaluationContext = "evaluation_context"
+	// FieldLogHash holds the string denoting the log_hash field in the database.
+	FieldLogHash = "log_hash"
+	// FieldSignature holds the string denoting the signature field in the database.
+	FieldSignature = "signature"
 	// Table holds the table name of the policyevaluationlog in the database.
 	Table = "sys_policy_evaluation_logs"
 )
@@ -44,10 +56,16 @@ var Columns = []string{
 	FieldMembershipID,
 	FieldPermissionID,
 	FieldPolicyID,
-	FieldResult,
-	FieldScopeSQL,
 	FieldRequestPath,
+	FieldRequestMethod,
+	FieldResult,
+	FieldEffectDetails,
+	FieldScopeSQL,
 	FieldIPAddress,
+	FieldTraceID,
+	FieldEvaluationContext,
+	FieldLogHash,
+	FieldSignature,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -105,9 +123,24 @@ func ByPolicyID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPolicyID, opts...).ToFunc()
 }
 
+// ByRequestPath orders the results by the request_path field.
+func ByRequestPath(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRequestPath, opts...).ToFunc()
+}
+
+// ByRequestMethod orders the results by the request_method field.
+func ByRequestMethod(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRequestMethod, opts...).ToFunc()
+}
+
 // ByResult orders the results by the result field.
 func ByResult(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldResult, opts...).ToFunc()
+}
+
+// ByEffectDetails orders the results by the effect_details field.
+func ByEffectDetails(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEffectDetails, opts...).ToFunc()
 }
 
 // ByScopeSQL orders the results by the scope_sql field.
@@ -115,12 +148,22 @@ func ByScopeSQL(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldScopeSQL, opts...).ToFunc()
 }
 
-// ByRequestPath orders the results by the request_path field.
-func ByRequestPath(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldRequestPath, opts...).ToFunc()
-}
-
 // ByIPAddress orders the results by the ip_address field.
 func ByIPAddress(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIPAddress, opts...).ToFunc()
+}
+
+// ByTraceID orders the results by the trace_id field.
+func ByTraceID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTraceID, opts...).ToFunc()
+}
+
+// ByEvaluationContext orders the results by the evaluation_context field.
+func ByEvaluationContext(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldEvaluationContext, opts...).ToFunc()
+}
+
+// ByLogHash orders the results by the log_hash field.
+func ByLogHash(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLogHash, opts...).ToFunc()
 }

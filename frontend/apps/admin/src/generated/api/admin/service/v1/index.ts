@@ -3929,17 +3929,30 @@ export type permissionservicev1_ListPermissionAuditLogResponse = {
 // 权限变更审计日志
 export type permissionservicev1_PermissionAuditLog = {
   id?: number;
+  tenantId?: number;
   operatorId?: number;
+  operatorName?: string;
   targetType?: string;
-  targetId?: number;
-  action?: string;
+  targetId?: string;
+  targetName?: string;
+  action?: permissionservicev1_PermissionAuditLog_ActionType;
   oldValue?: string;
   newValue?: string;
   ipAddress?: string;
-  tenantId?: number;
+  requestId?: string;
+  reason?: string;
+  logHash?: string;
+  signature?: string;
   createdAt?: wellKnownTimestamp;
 };
 
+// 变更动作
+export type permissionservicev1_PermissionAuditLog_ActionType =
+  | "ACTION_TYPE_UNSPECIFIED"
+  | "GRANT"
+  | "REVOKE"
+  | "UPDATE"
+  | "RESET";
 // 查询权限变更审计日志详情 - 请求
 export type permissionservicev1_GetPermissionAuditLogRequest = {
   id?: number;
@@ -4289,15 +4302,21 @@ export type permissionservicev1_ListPolicyEvaluationLogResponse = {
 // 策略评估日志
 export type permissionservicev1_PolicyEvaluationLog = {
   id?: number;
+  tenantId?: number;
   userId?: number;
   membershipId?: number;
   permissionId?: number;
   policyId?: number;
-  result?: boolean;
-  scopeSql?: string;
   requestPath?: string;
+  requestMethod?: string;
+  result?: boolean;
+  effectDetails?: string;
+  scopeSql?: string;
   ipAddress?: string;
-  tenantId?: number;
+  traceId?: string;
+  evaluationContext?: string;
+  logHash?: string;
+  signature?: string;
   createdAt?: wellKnownTimestamp;
 };
 

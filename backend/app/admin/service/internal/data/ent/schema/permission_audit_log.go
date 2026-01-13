@@ -39,13 +39,19 @@ func (PermissionAuditLog) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.Uint32("target_id").
+		field.String("target_id").
 			Comment("目标ID").
 			Optional().
 			Nillable(),
 
-		field.String("action").
+		field.Enum("action").
 			Comment("动作").
+			NamedValues(
+				"Grant", "GRANT",
+				"Revoke", "REVOKE",
+				"Update", "UPDATE",
+				"Reset", "RESET",
+			).
 			Optional().
 			Nillable(),
 
@@ -69,6 +75,24 @@ func (PermissionAuditLog) Fields() []ent.Field {
 
 		field.String("ip_address").
 			Comment("操作者IP地址").
+			Nillable(),
+
+		field.String("request_id").
+			Comment("关联全局请求ID").
+			Nillable(),
+
+		field.String("reason").
+			Comment("变更原因").
+			Nillable(),
+
+		field.String("log_hash").
+			Comment("日志内容哈希（SHA256，十六进制字符串）").
+			Optional().
+			Nillable(),
+
+		field.Bytes("signature").
+			Comment("日志数字签名").
+			Optional().
 			Nillable(),
 	}
 }

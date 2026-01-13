@@ -79,13 +79,13 @@ func (_c *PermissionAuditLogCreate) SetNillableTargetType(v *string) *Permission
 }
 
 // SetTargetID sets the "target_id" field.
-func (_c *PermissionAuditLogCreate) SetTargetID(v uint32) *PermissionAuditLogCreate {
+func (_c *PermissionAuditLogCreate) SetTargetID(v string) *PermissionAuditLogCreate {
 	_c.mutation.SetTargetID(v)
 	return _c
 }
 
 // SetNillableTargetID sets the "target_id" field if the given value is not nil.
-func (_c *PermissionAuditLogCreate) SetNillableTargetID(v *uint32) *PermissionAuditLogCreate {
+func (_c *PermissionAuditLogCreate) SetNillableTargetID(v *string) *PermissionAuditLogCreate {
 	if v != nil {
 		_c.SetTargetID(*v)
 	}
@@ -93,13 +93,13 @@ func (_c *PermissionAuditLogCreate) SetNillableTargetID(v *uint32) *PermissionAu
 }
 
 // SetAction sets the "action" field.
-func (_c *PermissionAuditLogCreate) SetAction(v string) *PermissionAuditLogCreate {
+func (_c *PermissionAuditLogCreate) SetAction(v permissionauditlog.Action) *PermissionAuditLogCreate {
 	_c.mutation.SetAction(v)
 	return _c
 }
 
 // SetNillableAction sets the "action" field if the given value is not nil.
-func (_c *PermissionAuditLogCreate) SetNillableAction(v *string) *PermissionAuditLogCreate {
+func (_c *PermissionAuditLogCreate) SetNillableAction(v *permissionauditlog.Action) *PermissionAuditLogCreate {
 	if v != nil {
 		_c.SetAction(*v)
 	}
@@ -137,6 +137,38 @@ func (_c *PermissionAuditLogCreate) SetNillableNewValue(v *string) *PermissionAu
 // SetIPAddress sets the "ip_address" field.
 func (_c *PermissionAuditLogCreate) SetIPAddress(v string) *PermissionAuditLogCreate {
 	_c.mutation.SetIPAddress(v)
+	return _c
+}
+
+// SetRequestID sets the "request_id" field.
+func (_c *PermissionAuditLogCreate) SetRequestID(v string) *PermissionAuditLogCreate {
+	_c.mutation.SetRequestID(v)
+	return _c
+}
+
+// SetReason sets the "reason" field.
+func (_c *PermissionAuditLogCreate) SetReason(v string) *PermissionAuditLogCreate {
+	_c.mutation.SetReason(v)
+	return _c
+}
+
+// SetLogHash sets the "log_hash" field.
+func (_c *PermissionAuditLogCreate) SetLogHash(v string) *PermissionAuditLogCreate {
+	_c.mutation.SetLogHash(v)
+	return _c
+}
+
+// SetNillableLogHash sets the "log_hash" field if the given value is not nil.
+func (_c *PermissionAuditLogCreate) SetNillableLogHash(v *string) *PermissionAuditLogCreate {
+	if v != nil {
+		_c.SetLogHash(*v)
+	}
+	return _c
+}
+
+// SetSignature sets the "signature" field.
+func (_c *PermissionAuditLogCreate) SetSignature(v []byte) *PermissionAuditLogCreate {
+	_c.mutation.SetSignature(v)
 	return _c
 }
 
@@ -180,8 +212,19 @@ func (_c *PermissionAuditLogCreate) ExecX(ctx context.Context) {
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *PermissionAuditLogCreate) check() error {
+	if v, ok := _c.mutation.Action(); ok {
+		if err := permissionauditlog.ActionValidator(v); err != nil {
+			return &ValidationError{Name: "action", err: fmt.Errorf(`ent: validator failed for field "PermissionAuditLog.action": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.IPAddress(); !ok {
 		return &ValidationError{Name: "ip_address", err: errors.New(`ent: missing required field "PermissionAuditLog.ip_address"`)}
+	}
+	if _, ok := _c.mutation.RequestID(); !ok {
+		return &ValidationError{Name: "request_id", err: errors.New(`ent: missing required field "PermissionAuditLog.request_id"`)}
+	}
+	if _, ok := _c.mutation.Reason(); !ok {
+		return &ValidationError{Name: "reason", err: errors.New(`ent: missing required field "PermissionAuditLog.reason"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := permissionauditlog.IDValidator(v); err != nil {
@@ -238,11 +281,11 @@ func (_c *PermissionAuditLogCreate) createSpec() (*PermissionAuditLog, *sqlgraph
 		_node.TargetType = &value
 	}
 	if value, ok := _c.mutation.TargetID(); ok {
-		_spec.SetField(permissionauditlog.FieldTargetID, field.TypeUint32, value)
+		_spec.SetField(permissionauditlog.FieldTargetID, field.TypeString, value)
 		_node.TargetID = &value
 	}
 	if value, ok := _c.mutation.Action(); ok {
-		_spec.SetField(permissionauditlog.FieldAction, field.TypeString, value)
+		_spec.SetField(permissionauditlog.FieldAction, field.TypeEnum, value)
 		_node.Action = &value
 	}
 	if value, ok := _c.mutation.OldValue(); ok {
@@ -256,6 +299,22 @@ func (_c *PermissionAuditLogCreate) createSpec() (*PermissionAuditLog, *sqlgraph
 	if value, ok := _c.mutation.IPAddress(); ok {
 		_spec.SetField(permissionauditlog.FieldIPAddress, field.TypeString, value)
 		_node.IPAddress = &value
+	}
+	if value, ok := _c.mutation.RequestID(); ok {
+		_spec.SetField(permissionauditlog.FieldRequestID, field.TypeString, value)
+		_node.RequestID = &value
+	}
+	if value, ok := _c.mutation.Reason(); ok {
+		_spec.SetField(permissionauditlog.FieldReason, field.TypeString, value)
+		_node.Reason = &value
+	}
+	if value, ok := _c.mutation.LogHash(); ok {
+		_spec.SetField(permissionauditlog.FieldLogHash, field.TypeString, value)
+		_node.LogHash = &value
+	}
+	if value, ok := _c.mutation.Signature(); ok {
+		_spec.SetField(permissionauditlog.FieldSignature, field.TypeBytes, value)
+		_node.Signature = &value
 	}
 	return _node, _spec
 }
@@ -352,7 +411,7 @@ func (u *PermissionAuditLogUpsert) ClearTargetType() *PermissionAuditLogUpsert {
 }
 
 // SetTargetID sets the "target_id" field.
-func (u *PermissionAuditLogUpsert) SetTargetID(v uint32) *PermissionAuditLogUpsert {
+func (u *PermissionAuditLogUpsert) SetTargetID(v string) *PermissionAuditLogUpsert {
 	u.Set(permissionauditlog.FieldTargetID, v)
 	return u
 }
@@ -363,12 +422,6 @@ func (u *PermissionAuditLogUpsert) UpdateTargetID() *PermissionAuditLogUpsert {
 	return u
 }
 
-// AddTargetID adds v to the "target_id" field.
-func (u *PermissionAuditLogUpsert) AddTargetID(v uint32) *PermissionAuditLogUpsert {
-	u.Add(permissionauditlog.FieldTargetID, v)
-	return u
-}
-
 // ClearTargetID clears the value of the "target_id" field.
 func (u *PermissionAuditLogUpsert) ClearTargetID() *PermissionAuditLogUpsert {
 	u.SetNull(permissionauditlog.FieldTargetID)
@@ -376,7 +429,7 @@ func (u *PermissionAuditLogUpsert) ClearTargetID() *PermissionAuditLogUpsert {
 }
 
 // SetAction sets the "action" field.
-func (u *PermissionAuditLogUpsert) SetAction(v string) *PermissionAuditLogUpsert {
+func (u *PermissionAuditLogUpsert) SetAction(v permissionauditlog.Action) *PermissionAuditLogUpsert {
 	u.Set(permissionauditlog.FieldAction, v)
 	return u
 }
@@ -438,6 +491,66 @@ func (u *PermissionAuditLogUpsert) SetIPAddress(v string) *PermissionAuditLogUps
 // UpdateIPAddress sets the "ip_address" field to the value that was provided on create.
 func (u *PermissionAuditLogUpsert) UpdateIPAddress() *PermissionAuditLogUpsert {
 	u.SetExcluded(permissionauditlog.FieldIPAddress)
+	return u
+}
+
+// SetRequestID sets the "request_id" field.
+func (u *PermissionAuditLogUpsert) SetRequestID(v string) *PermissionAuditLogUpsert {
+	u.Set(permissionauditlog.FieldRequestID, v)
+	return u
+}
+
+// UpdateRequestID sets the "request_id" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsert) UpdateRequestID() *PermissionAuditLogUpsert {
+	u.SetExcluded(permissionauditlog.FieldRequestID)
+	return u
+}
+
+// SetReason sets the "reason" field.
+func (u *PermissionAuditLogUpsert) SetReason(v string) *PermissionAuditLogUpsert {
+	u.Set(permissionauditlog.FieldReason, v)
+	return u
+}
+
+// UpdateReason sets the "reason" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsert) UpdateReason() *PermissionAuditLogUpsert {
+	u.SetExcluded(permissionauditlog.FieldReason)
+	return u
+}
+
+// SetLogHash sets the "log_hash" field.
+func (u *PermissionAuditLogUpsert) SetLogHash(v string) *PermissionAuditLogUpsert {
+	u.Set(permissionauditlog.FieldLogHash, v)
+	return u
+}
+
+// UpdateLogHash sets the "log_hash" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsert) UpdateLogHash() *PermissionAuditLogUpsert {
+	u.SetExcluded(permissionauditlog.FieldLogHash)
+	return u
+}
+
+// ClearLogHash clears the value of the "log_hash" field.
+func (u *PermissionAuditLogUpsert) ClearLogHash() *PermissionAuditLogUpsert {
+	u.SetNull(permissionauditlog.FieldLogHash)
+	return u
+}
+
+// SetSignature sets the "signature" field.
+func (u *PermissionAuditLogUpsert) SetSignature(v []byte) *PermissionAuditLogUpsert {
+	u.Set(permissionauditlog.FieldSignature, v)
+	return u
+}
+
+// UpdateSignature sets the "signature" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsert) UpdateSignature() *PermissionAuditLogUpsert {
+	u.SetExcluded(permissionauditlog.FieldSignature)
+	return u
+}
+
+// ClearSignature clears the value of the "signature" field.
+func (u *PermissionAuditLogUpsert) ClearSignature() *PermissionAuditLogUpsert {
+	u.SetNull(permissionauditlog.FieldSignature)
 	return u
 }
 
@@ -545,16 +658,9 @@ func (u *PermissionAuditLogUpsertOne) ClearTargetType() *PermissionAuditLogUpser
 }
 
 // SetTargetID sets the "target_id" field.
-func (u *PermissionAuditLogUpsertOne) SetTargetID(v uint32) *PermissionAuditLogUpsertOne {
+func (u *PermissionAuditLogUpsertOne) SetTargetID(v string) *PermissionAuditLogUpsertOne {
 	return u.Update(func(s *PermissionAuditLogUpsert) {
 		s.SetTargetID(v)
-	})
-}
-
-// AddTargetID adds v to the "target_id" field.
-func (u *PermissionAuditLogUpsertOne) AddTargetID(v uint32) *PermissionAuditLogUpsertOne {
-	return u.Update(func(s *PermissionAuditLogUpsert) {
-		s.AddTargetID(v)
 	})
 }
 
@@ -573,7 +679,7 @@ func (u *PermissionAuditLogUpsertOne) ClearTargetID() *PermissionAuditLogUpsertO
 }
 
 // SetAction sets the "action" field.
-func (u *PermissionAuditLogUpsertOne) SetAction(v string) *PermissionAuditLogUpsertOne {
+func (u *PermissionAuditLogUpsertOne) SetAction(v permissionauditlog.Action) *PermissionAuditLogUpsertOne {
 	return u.Update(func(s *PermissionAuditLogUpsert) {
 		s.SetAction(v)
 	})
@@ -646,6 +752,76 @@ func (u *PermissionAuditLogUpsertOne) SetIPAddress(v string) *PermissionAuditLog
 func (u *PermissionAuditLogUpsertOne) UpdateIPAddress() *PermissionAuditLogUpsertOne {
 	return u.Update(func(s *PermissionAuditLogUpsert) {
 		s.UpdateIPAddress()
+	})
+}
+
+// SetRequestID sets the "request_id" field.
+func (u *PermissionAuditLogUpsertOne) SetRequestID(v string) *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.SetRequestID(v)
+	})
+}
+
+// UpdateRequestID sets the "request_id" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsertOne) UpdateRequestID() *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.UpdateRequestID()
+	})
+}
+
+// SetReason sets the "reason" field.
+func (u *PermissionAuditLogUpsertOne) SetReason(v string) *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.SetReason(v)
+	})
+}
+
+// UpdateReason sets the "reason" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsertOne) UpdateReason() *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.UpdateReason()
+	})
+}
+
+// SetLogHash sets the "log_hash" field.
+func (u *PermissionAuditLogUpsertOne) SetLogHash(v string) *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.SetLogHash(v)
+	})
+}
+
+// UpdateLogHash sets the "log_hash" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsertOne) UpdateLogHash() *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.UpdateLogHash()
+	})
+}
+
+// ClearLogHash clears the value of the "log_hash" field.
+func (u *PermissionAuditLogUpsertOne) ClearLogHash() *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.ClearLogHash()
+	})
+}
+
+// SetSignature sets the "signature" field.
+func (u *PermissionAuditLogUpsertOne) SetSignature(v []byte) *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.SetSignature(v)
+	})
+}
+
+// UpdateSignature sets the "signature" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsertOne) UpdateSignature() *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.UpdateSignature()
+	})
+}
+
+// ClearSignature clears the value of the "signature" field.
+func (u *PermissionAuditLogUpsertOne) ClearSignature() *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.ClearSignature()
 	})
 }
 
@@ -918,16 +1094,9 @@ func (u *PermissionAuditLogUpsertBulk) ClearTargetType() *PermissionAuditLogUpse
 }
 
 // SetTargetID sets the "target_id" field.
-func (u *PermissionAuditLogUpsertBulk) SetTargetID(v uint32) *PermissionAuditLogUpsertBulk {
+func (u *PermissionAuditLogUpsertBulk) SetTargetID(v string) *PermissionAuditLogUpsertBulk {
 	return u.Update(func(s *PermissionAuditLogUpsert) {
 		s.SetTargetID(v)
-	})
-}
-
-// AddTargetID adds v to the "target_id" field.
-func (u *PermissionAuditLogUpsertBulk) AddTargetID(v uint32) *PermissionAuditLogUpsertBulk {
-	return u.Update(func(s *PermissionAuditLogUpsert) {
-		s.AddTargetID(v)
 	})
 }
 
@@ -946,7 +1115,7 @@ func (u *PermissionAuditLogUpsertBulk) ClearTargetID() *PermissionAuditLogUpsert
 }
 
 // SetAction sets the "action" field.
-func (u *PermissionAuditLogUpsertBulk) SetAction(v string) *PermissionAuditLogUpsertBulk {
+func (u *PermissionAuditLogUpsertBulk) SetAction(v permissionauditlog.Action) *PermissionAuditLogUpsertBulk {
 	return u.Update(func(s *PermissionAuditLogUpsert) {
 		s.SetAction(v)
 	})
@@ -1019,6 +1188,76 @@ func (u *PermissionAuditLogUpsertBulk) SetIPAddress(v string) *PermissionAuditLo
 func (u *PermissionAuditLogUpsertBulk) UpdateIPAddress() *PermissionAuditLogUpsertBulk {
 	return u.Update(func(s *PermissionAuditLogUpsert) {
 		s.UpdateIPAddress()
+	})
+}
+
+// SetRequestID sets the "request_id" field.
+func (u *PermissionAuditLogUpsertBulk) SetRequestID(v string) *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.SetRequestID(v)
+	})
+}
+
+// UpdateRequestID sets the "request_id" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsertBulk) UpdateRequestID() *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.UpdateRequestID()
+	})
+}
+
+// SetReason sets the "reason" field.
+func (u *PermissionAuditLogUpsertBulk) SetReason(v string) *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.SetReason(v)
+	})
+}
+
+// UpdateReason sets the "reason" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsertBulk) UpdateReason() *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.UpdateReason()
+	})
+}
+
+// SetLogHash sets the "log_hash" field.
+func (u *PermissionAuditLogUpsertBulk) SetLogHash(v string) *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.SetLogHash(v)
+	})
+}
+
+// UpdateLogHash sets the "log_hash" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsertBulk) UpdateLogHash() *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.UpdateLogHash()
+	})
+}
+
+// ClearLogHash clears the value of the "log_hash" field.
+func (u *PermissionAuditLogUpsertBulk) ClearLogHash() *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.ClearLogHash()
+	})
+}
+
+// SetSignature sets the "signature" field.
+func (u *PermissionAuditLogUpsertBulk) SetSignature(v []byte) *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.SetSignature(v)
+	})
+}
+
+// UpdateSignature sets the "signature" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsertBulk) UpdateSignature() *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.UpdateSignature()
+	})
+}
+
+// ClearSignature clears the value of the "signature" field.
+func (u *PermissionAuditLogUpsertBulk) ClearSignature() *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.ClearSignature()
 	})
 }
 

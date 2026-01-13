@@ -27,15 +27,23 @@ type PermissionAuditLog struct {
 	// 目标类型
 	TargetType *string `json:"target_type,omitempty"`
 	// 目标ID
-	TargetID *uint32 `json:"target_id,omitempty"`
+	TargetID *string `json:"target_id,omitempty"`
 	// 动作
-	Action *string `json:"action,omitempty"`
+	Action *permissionauditlog.Action `json:"action,omitempty"`
 	// 旧值（JSON）
 	OldValue *string `json:"old_value,omitempty"`
 	// 新值（JSON）
 	NewValue *string `json:"new_value,omitempty"`
 	// 操作者IP地址
-	IPAddress    *string `json:"ip_address,omitempty"`
+	IPAddress *string `json:"ip_address,omitempty"`
+	// 关联全局请求ID
+	RequestID *string `json:"request_id,omitempty"`
+	// 变更原因
+	Reason *string `json:"reason,omitempty"`
+	// 日志内容哈希（SHA256，十六进制字符串）
+	LogHash *string `json:"log_hash,omitempty"`
+	// 日志数字签名
+	Signature    *[]byte `json:"signature,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -44,9 +52,11 @@ func (*PermissionAuditLog) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case permissionauditlog.FieldID, permissionauditlog.FieldTenantID, permissionauditlog.FieldOperatorID, permissionauditlog.FieldTargetID:
+		case permissionauditlog.FieldSignature:
+			values[i] = new([]byte)
+		case permissionauditlog.FieldID, permissionauditlog.FieldTenantID, permissionauditlog.FieldOperatorID:
 			values[i] = new(sql.NullInt64)
-		case permissionauditlog.FieldTargetType, permissionauditlog.FieldAction, permissionauditlog.FieldOldValue, permissionauditlog.FieldNewValue, permissionauditlog.FieldIPAddress:
+		case permissionauditlog.FieldTargetType, permissionauditlog.FieldTargetID, permissionauditlog.FieldAction, permissionauditlog.FieldOldValue, permissionauditlog.FieldNewValue, permissionauditlog.FieldIPAddress, permissionauditlog.FieldRequestID, permissionauditlog.FieldReason, permissionauditlog.FieldLogHash:
 			values[i] = new(sql.NullString)
 		case permissionauditlog.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -100,18 +110,18 @@ func (_m *PermissionAuditLog) assignValues(columns []string, values []any) error
 				*_m.TargetType = value.String
 			}
 		case permissionauditlog.FieldTargetID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
+			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field target_id", values[i])
 			} else if value.Valid {
-				_m.TargetID = new(uint32)
-				*_m.TargetID = uint32(value.Int64)
+				_m.TargetID = new(string)
+				*_m.TargetID = value.String
 			}
 		case permissionauditlog.FieldAction:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field action", values[i])
 			} else if value.Valid {
-				_m.Action = new(string)
-				*_m.Action = value.String
+				_m.Action = new(permissionauditlog.Action)
+				*_m.Action = permissionauditlog.Action(value.String)
 			}
 		case permissionauditlog.FieldOldValue:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -133,6 +143,33 @@ func (_m *PermissionAuditLog) assignValues(columns []string, values []any) error
 			} else if value.Valid {
 				_m.IPAddress = new(string)
 				*_m.IPAddress = value.String
+			}
+		case permissionauditlog.FieldRequestID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field request_id", values[i])
+			} else if value.Valid {
+				_m.RequestID = new(string)
+				*_m.RequestID = value.String
+			}
+		case permissionauditlog.FieldReason:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field reason", values[i])
+			} else if value.Valid {
+				_m.Reason = new(string)
+				*_m.Reason = value.String
+			}
+		case permissionauditlog.FieldLogHash:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field log_hash", values[i])
+			} else if value.Valid {
+				_m.LogHash = new(string)
+				*_m.LogHash = value.String
+			}
+		case permissionauditlog.FieldSignature:
+			if value, ok := values[i].(*[]byte); !ok {
+				return fmt.Errorf("unexpected type %T for field signature", values[i])
+			} else if value != nil {
+				_m.Signature = value
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -192,12 +229,12 @@ func (_m *PermissionAuditLog) String() string {
 	builder.WriteString(", ")
 	if v := _m.TargetID; v != nil {
 		builder.WriteString("target_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
+		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")
 	if v := _m.Action; v != nil {
 		builder.WriteString("action=")
-		builder.WriteString(*v)
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
 	if v := _m.OldValue; v != nil {
@@ -213,6 +250,26 @@ func (_m *PermissionAuditLog) String() string {
 	if v := _m.IPAddress; v != nil {
 		builder.WriteString("ip_address=")
 		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.RequestID; v != nil {
+		builder.WriteString("request_id=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.Reason; v != nil {
+		builder.WriteString("reason=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.LogHash; v != nil {
+		builder.WriteString("log_hash=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.Signature; v != nil {
+		builder.WriteString("signature=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')
 	return builder.String()

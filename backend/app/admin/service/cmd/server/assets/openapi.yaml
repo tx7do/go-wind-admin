@@ -5856,20 +5856,36 @@ components:
                     type: integer
                     description: 权限变更审计日志ID
                     format: uint32
+                tenantId:
+                    type: integer
+                    description: 租户ID
+                    format: uint32
                 operatorId:
                     type: integer
                     description: 操作者用户ID
                     format: uint32
+                operatorName:
+                    type: string
+                    description: 操作者用户名
                 targetType:
                     type: string
                     description: 目标类型
                 targetId:
-                    type: integer
-                    description: 目标ID
-                    format: uint32
-                action:
                     type: string
-                    description: 动作
+                    description: 目标ID
+                targetName:
+                    type: string
+                    description: 目标名称
+                action:
+                    enum:
+                        - ACTION_TYPE_UNSPECIFIED
+                        - GRANT
+                        - REVOKE
+                        - UPDATE
+                        - RESET
+                    type: string
+                    description: 变更动作
+                    format: enum
                 oldValue:
                     type: string
                     description: 旧值
@@ -5879,13 +5895,22 @@ components:
                 ipAddress:
                     type: string
                     description: 操作者IP地址
-                tenantId:
-                    type: integer
-                    description: 租户ID
-                    format: uint32
+                requestId:
+                    type: string
+                    description: 关联全局请求ID
+                reason:
+                    type: string
+                    description: 变更原因
+                logHash:
+                    type: string
+                    description: 日志内容哈希（SHA256，十六进制字符串）
+                signature:
+                    type: string
+                    description: 日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）
+                    format: bytes
                 createdAt:
                     type: string
-                    description: 创建时间
+                    description: 日志创建时间
                     format: date-time
             description: 权限变更审计日志
         PermissionGroup:
@@ -5971,6 +5996,10 @@ components:
                     type: integer
                     description: 策略评估日志ID
                     format: uint32
+                tenantId:
+                    type: integer
+                    description: 租户ID
+                    format: uint32
                 userId:
                     type: integer
                     description: 操作者用户ID
@@ -5987,25 +6016,40 @@ components:
                     type: integer
                     description: 策略ID（可能无策略）
                     format: uint32
-                result:
-                    type: boolean
-                    description: 是否通过
-                scopeSql:
-                    type: string
-                    description: 生成的SQL条件
                 requestPath:
                     type: string
                     description: 请求API路径
+                requestMethod:
+                    type: string
+                    description: 请求HTTP方法
+                result:
+                    type: boolean
+                    description: 是否通过
+                effectDetails:
+                    type: string
+                    description: 评估详情/拒绝原因
+                scopeSql:
+                    type: string
+                    description: 生成的SQL条件
                 ipAddress:
                     type: string
                     description: 操作者IP地址
-                tenantId:
-                    type: integer
-                    description: 租户ID
-                    format: uint32
+                traceId:
+                    type: string
+                    description: 全局链路追踪ID（符合W3C TraceContext标准）
+                evaluationContext:
+                    type: string
+                    description: 决策上下文快照(如用户属性、环境属性)
+                logHash:
+                    type: string
+                    description: 日志内容哈希（SHA256，十六进制字符串）
+                signature:
+                    type: string
+                    description: 日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）
+                    format: bytes
                 createdAt:
                     type: string
-                    description: 创建时间
+                    description: 日志创建时间
                     format: date-time
             description: 策略评估日志
         Position:

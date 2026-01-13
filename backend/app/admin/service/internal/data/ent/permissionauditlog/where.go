@@ -75,13 +75,8 @@ func TargetType(v string) predicate.PermissionAuditLog {
 }
 
 // TargetID applies equality check predicate on the "target_id" field. It's identical to TargetIDEQ.
-func TargetID(v uint32) predicate.PermissionAuditLog {
+func TargetID(v string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldEQ(FieldTargetID, v))
-}
-
-// Action applies equality check predicate on the "action" field. It's identical to ActionEQ.
-func Action(v string) predicate.PermissionAuditLog {
-	return predicate.PermissionAuditLog(sql.FieldEQ(FieldAction, v))
 }
 
 // OldValue applies equality check predicate on the "old_value" field. It's identical to OldValueEQ.
@@ -97,6 +92,26 @@ func NewValue(v string) predicate.PermissionAuditLog {
 // IPAddress applies equality check predicate on the "ip_address" field. It's identical to IPAddressEQ.
 func IPAddress(v string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldEQ(FieldIPAddress, v))
+}
+
+// RequestID applies equality check predicate on the "request_id" field. It's identical to RequestIDEQ.
+func RequestID(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEQ(FieldRequestID, v))
+}
+
+// Reason applies equality check predicate on the "reason" field. It's identical to ReasonEQ.
+func Reason(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEQ(FieldReason, v))
+}
+
+// LogHash applies equality check predicate on the "log_hash" field. It's identical to LogHashEQ.
+func LogHash(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEQ(FieldLogHash, v))
+}
+
+// Signature applies equality check predicate on the "signature" field. It's identical to SignatureEQ.
+func Signature(v []byte) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEQ(FieldSignature, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -325,43 +340,58 @@ func TargetTypeContainsFold(v string) predicate.PermissionAuditLog {
 }
 
 // TargetIDEQ applies the EQ predicate on the "target_id" field.
-func TargetIDEQ(v uint32) predicate.PermissionAuditLog {
+func TargetIDEQ(v string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldEQ(FieldTargetID, v))
 }
 
 // TargetIDNEQ applies the NEQ predicate on the "target_id" field.
-func TargetIDNEQ(v uint32) predicate.PermissionAuditLog {
+func TargetIDNEQ(v string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldNEQ(FieldTargetID, v))
 }
 
 // TargetIDIn applies the In predicate on the "target_id" field.
-func TargetIDIn(vs ...uint32) predicate.PermissionAuditLog {
+func TargetIDIn(vs ...string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldIn(FieldTargetID, vs...))
 }
 
 // TargetIDNotIn applies the NotIn predicate on the "target_id" field.
-func TargetIDNotIn(vs ...uint32) predicate.PermissionAuditLog {
+func TargetIDNotIn(vs ...string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldNotIn(FieldTargetID, vs...))
 }
 
 // TargetIDGT applies the GT predicate on the "target_id" field.
-func TargetIDGT(v uint32) predicate.PermissionAuditLog {
+func TargetIDGT(v string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldGT(FieldTargetID, v))
 }
 
 // TargetIDGTE applies the GTE predicate on the "target_id" field.
-func TargetIDGTE(v uint32) predicate.PermissionAuditLog {
+func TargetIDGTE(v string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldGTE(FieldTargetID, v))
 }
 
 // TargetIDLT applies the LT predicate on the "target_id" field.
-func TargetIDLT(v uint32) predicate.PermissionAuditLog {
+func TargetIDLT(v string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldLT(FieldTargetID, v))
 }
 
 // TargetIDLTE applies the LTE predicate on the "target_id" field.
-func TargetIDLTE(v uint32) predicate.PermissionAuditLog {
+func TargetIDLTE(v string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldLTE(FieldTargetID, v))
+}
+
+// TargetIDContains applies the Contains predicate on the "target_id" field.
+func TargetIDContains(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldContains(FieldTargetID, v))
+}
+
+// TargetIDHasPrefix applies the HasPrefix predicate on the "target_id" field.
+func TargetIDHasPrefix(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldHasPrefix(FieldTargetID, v))
+}
+
+// TargetIDHasSuffix applies the HasSuffix predicate on the "target_id" field.
+func TargetIDHasSuffix(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldHasSuffix(FieldTargetID, v))
 }
 
 // TargetIDIsNil applies the IsNil predicate on the "target_id" field.
@@ -374,59 +404,34 @@ func TargetIDNotNil() predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldNotNull(FieldTargetID))
 }
 
+// TargetIDEqualFold applies the EqualFold predicate on the "target_id" field.
+func TargetIDEqualFold(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEqualFold(FieldTargetID, v))
+}
+
+// TargetIDContainsFold applies the ContainsFold predicate on the "target_id" field.
+func TargetIDContainsFold(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldContainsFold(FieldTargetID, v))
+}
+
 // ActionEQ applies the EQ predicate on the "action" field.
-func ActionEQ(v string) predicate.PermissionAuditLog {
+func ActionEQ(v Action) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldEQ(FieldAction, v))
 }
 
 // ActionNEQ applies the NEQ predicate on the "action" field.
-func ActionNEQ(v string) predicate.PermissionAuditLog {
+func ActionNEQ(v Action) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldNEQ(FieldAction, v))
 }
 
 // ActionIn applies the In predicate on the "action" field.
-func ActionIn(vs ...string) predicate.PermissionAuditLog {
+func ActionIn(vs ...Action) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldIn(FieldAction, vs...))
 }
 
 // ActionNotIn applies the NotIn predicate on the "action" field.
-func ActionNotIn(vs ...string) predicate.PermissionAuditLog {
+func ActionNotIn(vs ...Action) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldNotIn(FieldAction, vs...))
-}
-
-// ActionGT applies the GT predicate on the "action" field.
-func ActionGT(v string) predicate.PermissionAuditLog {
-	return predicate.PermissionAuditLog(sql.FieldGT(FieldAction, v))
-}
-
-// ActionGTE applies the GTE predicate on the "action" field.
-func ActionGTE(v string) predicate.PermissionAuditLog {
-	return predicate.PermissionAuditLog(sql.FieldGTE(FieldAction, v))
-}
-
-// ActionLT applies the LT predicate on the "action" field.
-func ActionLT(v string) predicate.PermissionAuditLog {
-	return predicate.PermissionAuditLog(sql.FieldLT(FieldAction, v))
-}
-
-// ActionLTE applies the LTE predicate on the "action" field.
-func ActionLTE(v string) predicate.PermissionAuditLog {
-	return predicate.PermissionAuditLog(sql.FieldLTE(FieldAction, v))
-}
-
-// ActionContains applies the Contains predicate on the "action" field.
-func ActionContains(v string) predicate.PermissionAuditLog {
-	return predicate.PermissionAuditLog(sql.FieldContains(FieldAction, v))
-}
-
-// ActionHasPrefix applies the HasPrefix predicate on the "action" field.
-func ActionHasPrefix(v string) predicate.PermissionAuditLog {
-	return predicate.PermissionAuditLog(sql.FieldHasPrefix(FieldAction, v))
-}
-
-// ActionHasSuffix applies the HasSuffix predicate on the "action" field.
-func ActionHasSuffix(v string) predicate.PermissionAuditLog {
-	return predicate.PermissionAuditLog(sql.FieldHasSuffix(FieldAction, v))
 }
 
 // ActionIsNil applies the IsNil predicate on the "action" field.
@@ -437,16 +442,6 @@ func ActionIsNil() predicate.PermissionAuditLog {
 // ActionNotNil applies the NotNil predicate on the "action" field.
 func ActionNotNil() predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldNotNull(FieldAction))
-}
-
-// ActionEqualFold applies the EqualFold predicate on the "action" field.
-func ActionEqualFold(v string) predicate.PermissionAuditLog {
-	return predicate.PermissionAuditLog(sql.FieldEqualFold(FieldAction, v))
-}
-
-// ActionContainsFold applies the ContainsFold predicate on the "action" field.
-func ActionContainsFold(v string) predicate.PermissionAuditLog {
-	return predicate.PermissionAuditLog(sql.FieldContainsFold(FieldAction, v))
 }
 
 // OldValueEQ applies the EQ predicate on the "old_value" field.
@@ -662,6 +657,261 @@ func IPAddressEqualFold(v string) predicate.PermissionAuditLog {
 // IPAddressContainsFold applies the ContainsFold predicate on the "ip_address" field.
 func IPAddressContainsFold(v string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldContainsFold(FieldIPAddress, v))
+}
+
+// RequestIDEQ applies the EQ predicate on the "request_id" field.
+func RequestIDEQ(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEQ(FieldRequestID, v))
+}
+
+// RequestIDNEQ applies the NEQ predicate on the "request_id" field.
+func RequestIDNEQ(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNEQ(FieldRequestID, v))
+}
+
+// RequestIDIn applies the In predicate on the "request_id" field.
+func RequestIDIn(vs ...string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldIn(FieldRequestID, vs...))
+}
+
+// RequestIDNotIn applies the NotIn predicate on the "request_id" field.
+func RequestIDNotIn(vs ...string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNotIn(FieldRequestID, vs...))
+}
+
+// RequestIDGT applies the GT predicate on the "request_id" field.
+func RequestIDGT(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldGT(FieldRequestID, v))
+}
+
+// RequestIDGTE applies the GTE predicate on the "request_id" field.
+func RequestIDGTE(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldGTE(FieldRequestID, v))
+}
+
+// RequestIDLT applies the LT predicate on the "request_id" field.
+func RequestIDLT(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldLT(FieldRequestID, v))
+}
+
+// RequestIDLTE applies the LTE predicate on the "request_id" field.
+func RequestIDLTE(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldLTE(FieldRequestID, v))
+}
+
+// RequestIDContains applies the Contains predicate on the "request_id" field.
+func RequestIDContains(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldContains(FieldRequestID, v))
+}
+
+// RequestIDHasPrefix applies the HasPrefix predicate on the "request_id" field.
+func RequestIDHasPrefix(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldHasPrefix(FieldRequestID, v))
+}
+
+// RequestIDHasSuffix applies the HasSuffix predicate on the "request_id" field.
+func RequestIDHasSuffix(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldHasSuffix(FieldRequestID, v))
+}
+
+// RequestIDEqualFold applies the EqualFold predicate on the "request_id" field.
+func RequestIDEqualFold(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEqualFold(FieldRequestID, v))
+}
+
+// RequestIDContainsFold applies the ContainsFold predicate on the "request_id" field.
+func RequestIDContainsFold(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldContainsFold(FieldRequestID, v))
+}
+
+// ReasonEQ applies the EQ predicate on the "reason" field.
+func ReasonEQ(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEQ(FieldReason, v))
+}
+
+// ReasonNEQ applies the NEQ predicate on the "reason" field.
+func ReasonNEQ(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNEQ(FieldReason, v))
+}
+
+// ReasonIn applies the In predicate on the "reason" field.
+func ReasonIn(vs ...string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldIn(FieldReason, vs...))
+}
+
+// ReasonNotIn applies the NotIn predicate on the "reason" field.
+func ReasonNotIn(vs ...string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNotIn(FieldReason, vs...))
+}
+
+// ReasonGT applies the GT predicate on the "reason" field.
+func ReasonGT(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldGT(FieldReason, v))
+}
+
+// ReasonGTE applies the GTE predicate on the "reason" field.
+func ReasonGTE(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldGTE(FieldReason, v))
+}
+
+// ReasonLT applies the LT predicate on the "reason" field.
+func ReasonLT(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldLT(FieldReason, v))
+}
+
+// ReasonLTE applies the LTE predicate on the "reason" field.
+func ReasonLTE(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldLTE(FieldReason, v))
+}
+
+// ReasonContains applies the Contains predicate on the "reason" field.
+func ReasonContains(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldContains(FieldReason, v))
+}
+
+// ReasonHasPrefix applies the HasPrefix predicate on the "reason" field.
+func ReasonHasPrefix(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldHasPrefix(FieldReason, v))
+}
+
+// ReasonHasSuffix applies the HasSuffix predicate on the "reason" field.
+func ReasonHasSuffix(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldHasSuffix(FieldReason, v))
+}
+
+// ReasonEqualFold applies the EqualFold predicate on the "reason" field.
+func ReasonEqualFold(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEqualFold(FieldReason, v))
+}
+
+// ReasonContainsFold applies the ContainsFold predicate on the "reason" field.
+func ReasonContainsFold(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldContainsFold(FieldReason, v))
+}
+
+// LogHashEQ applies the EQ predicate on the "log_hash" field.
+func LogHashEQ(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEQ(FieldLogHash, v))
+}
+
+// LogHashNEQ applies the NEQ predicate on the "log_hash" field.
+func LogHashNEQ(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNEQ(FieldLogHash, v))
+}
+
+// LogHashIn applies the In predicate on the "log_hash" field.
+func LogHashIn(vs ...string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldIn(FieldLogHash, vs...))
+}
+
+// LogHashNotIn applies the NotIn predicate on the "log_hash" field.
+func LogHashNotIn(vs ...string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNotIn(FieldLogHash, vs...))
+}
+
+// LogHashGT applies the GT predicate on the "log_hash" field.
+func LogHashGT(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldGT(FieldLogHash, v))
+}
+
+// LogHashGTE applies the GTE predicate on the "log_hash" field.
+func LogHashGTE(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldGTE(FieldLogHash, v))
+}
+
+// LogHashLT applies the LT predicate on the "log_hash" field.
+func LogHashLT(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldLT(FieldLogHash, v))
+}
+
+// LogHashLTE applies the LTE predicate on the "log_hash" field.
+func LogHashLTE(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldLTE(FieldLogHash, v))
+}
+
+// LogHashContains applies the Contains predicate on the "log_hash" field.
+func LogHashContains(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldContains(FieldLogHash, v))
+}
+
+// LogHashHasPrefix applies the HasPrefix predicate on the "log_hash" field.
+func LogHashHasPrefix(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldHasPrefix(FieldLogHash, v))
+}
+
+// LogHashHasSuffix applies the HasSuffix predicate on the "log_hash" field.
+func LogHashHasSuffix(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldHasSuffix(FieldLogHash, v))
+}
+
+// LogHashIsNil applies the IsNil predicate on the "log_hash" field.
+func LogHashIsNil() predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldIsNull(FieldLogHash))
+}
+
+// LogHashNotNil applies the NotNil predicate on the "log_hash" field.
+func LogHashNotNil() predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNotNull(FieldLogHash))
+}
+
+// LogHashEqualFold applies the EqualFold predicate on the "log_hash" field.
+func LogHashEqualFold(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEqualFold(FieldLogHash, v))
+}
+
+// LogHashContainsFold applies the ContainsFold predicate on the "log_hash" field.
+func LogHashContainsFold(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldContainsFold(FieldLogHash, v))
+}
+
+// SignatureEQ applies the EQ predicate on the "signature" field.
+func SignatureEQ(v []byte) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEQ(FieldSignature, v))
+}
+
+// SignatureNEQ applies the NEQ predicate on the "signature" field.
+func SignatureNEQ(v []byte) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNEQ(FieldSignature, v))
+}
+
+// SignatureIn applies the In predicate on the "signature" field.
+func SignatureIn(vs ...[]byte) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldIn(FieldSignature, vs...))
+}
+
+// SignatureNotIn applies the NotIn predicate on the "signature" field.
+func SignatureNotIn(vs ...[]byte) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNotIn(FieldSignature, vs...))
+}
+
+// SignatureGT applies the GT predicate on the "signature" field.
+func SignatureGT(v []byte) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldGT(FieldSignature, v))
+}
+
+// SignatureGTE applies the GTE predicate on the "signature" field.
+func SignatureGTE(v []byte) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldGTE(FieldSignature, v))
+}
+
+// SignatureLT applies the LT predicate on the "signature" field.
+func SignatureLT(v []byte) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldLT(FieldSignature, v))
+}
+
+// SignatureLTE applies the LTE predicate on the "signature" field.
+func SignatureLTE(v []byte) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldLTE(FieldSignature, v))
+}
+
+// SignatureIsNil applies the IsNil predicate on the "signature" field.
+func SignatureIsNil() predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldIsNull(FieldSignature))
+}
+
+// SignatureNotNil applies the NotNil predicate on the "signature" field.
+func SignatureNotNil() predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNotNull(FieldSignature))
 }
 
 // And groups predicates with the AND operator between them.
