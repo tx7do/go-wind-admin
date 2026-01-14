@@ -14,8 +14,15 @@
   "user": {
     "moduleName": "User",
     "form": {
+      "username": "Username",
+      "nickname": "Nickname",
       "realName": "UserName",
+      "email": "Email",
       "mobile": "Phone",
+      "tenant": "Tenant",
+      "role": "Role",
+      "orgUnit": "Organization",
+      "position": "Position",
       "roleId": "Role",
       "oldPassword": "Old Password",
       "newPassword": "New Password",
@@ -53,19 +60,25 @@
       "tab": {
         "basicInfo": "Basic Info",
         "permission": "Permission Info",
-        "apiAuditLog": "API Log"
+        "apiAuditLog": "API Log",
+        "internalMessage": "Inbox"
       },
       "desc": {
-        "username" : "Username",
-        "realname" : "Real Name",
-        "nickname" : "Nick Name",
-        "gender" : "Gender",
-        "mobile" : "Mobile",
-        "email" : "Email",
-        "orgUnitName" : "Organization",
-        "positionName" : "Position",
-        "lastLoginAt" : "Last Login Time",
-        "lastLoginIp" : "Last Login IP"
+        "username": "Username",
+        "realname": "Real Name",
+        "nickname": "Nick Name",
+        "gender": "Gender",
+        "mobile": "Mobile",
+        "email": "Email",
+        "region": "Region",
+        "address": "Address",
+        "roleNames": "Roles",
+        "tenantName": "Tenant",
+        "orgName": "Organization",
+        "orgUnitName": "Organization",
+        "positionName": "Position",
+        "lastLoginAt": "Last Login Time",
+        "lastLoginIp": "Last Login IP"
       }
     }
   },
@@ -73,14 +86,51 @@
     "moduleName": "Role",
     "name": "Name",
     "code": "Code",
+    "description": "Description",
+    "isProtected": "Protected Role",
     "menus": "Assign Menu",
     "apis": "Assign API",
+    "permissions": "Assign Permissions",
     "button": {
       "create": "Create"
     }
   },
+  "permission": {
+    "moduleName": "Permission",
+    "name": "Permission Name",
+    "code": "Permission Code",
+    "path": "Tree Path",
+    "groupId": "Group",
+    "groupName": "Group Name",
+    "menuIds": "Assign Menu",
+    "apiIds": "Assign API",
+    "description": "Description",
+    "button": {
+      "create": "Create Permission",
+      "syncPermissions": "Sync Permissions"
+    }
+  },
+  "permissionGroup": {
+    "moduleName": "Permission Group",
+    "name": "Group Name",
+    "module": "Business Module",
+    "parentId": "Parent Group",
+    "button": {
+      "create": "Create Group"
+    }
+  },
   "dict": {
-    "moduleName": "Dict",
+    "moduleName": "Dictionary",
+    "dictType": "Dictionary Type",
+    "dictEntry": "Dictionary Entry",
+    "dictTypeList": "Dictionary Type List",
+    "dictEntryList": "Dictionary Entry List",
+    "typeCode": "Code",
+    "typeName": "Name",
+    "entryLabel": "Label",
+    "entryValue": "Entry Value",
+    "numericValue": "Numeric Value",
+    "typeId": "Dictionary Type",
     "key": "Key",
     "category": "Category",
     "categoryDesc": "Category Desc",
@@ -100,13 +150,13 @@
     "show": "Show",
     "isExt": "Is Ext",
     "keepAlive": "Keep Alive",
-    "hideInTab": "Hide In Tab",
+    "affixTab": "Affix Tab",
     "hideInMenu": "Hide In Menu",
-    "hideInBreadcrumb": "Hide In Breadcrumb",
     "hideChildrenInMenu": "Hide Children In Menu",
+    "hideInTab": "Hide In Tab",
+    "hideInBreadcrumb": "Hide In Breadcrumb",
     "parentId": "Parent Menu",
     "authority": "Authority",
-    "affixTab": "Affix Tab",
     "order": "Order",
     "title": "Title",
     "advancedSettings": "Advanced Settings",
@@ -120,14 +170,27 @@
   "orgUnit": {
     "moduleName": "Organization",
     "name": "Organization Name",
+    "code": "Unique Code",
     "parentId": "Parent Organization",
+    "type": "Organization Type",
     "organizationType": "Organization Type",
     "isLegalEntity": "Is Legal Entity",
     "businessScope": "Business Scope",
+    "registrationNumber": "Registration Number",
+    "taxId": "Tax ID",
     "creditCode": "Credit Code",
     "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "timezone": "Timezone",
+    "country": "Country Code",
+    "leaderId": "Leader ID",
+    "leaderName": "Leader Name",
+    "contactUserId": "Contact User ID",
+    "contactUserName": "Contact User Name",
     "managerId": "Manager ID",
     "managerName": "Manager Name",
+    "description": "Description",
     "button": {
       "create": "Create"
     }
@@ -153,8 +216,8 @@
     "type": "Tenant Type",
     "auditStatus": "Audit Status",
     "adminSetting": "Tenant Admin Setting",
-    "lastLoginAt" : "Last Login Time",
-    "lastLoginIp" : "Last Login IP",
+    "lastLoginAt": "Last Login Time",
+    "lastLoginIp": "Last Login IP",
     "logoUrl": "Logo URL",
     "industry": "Industry",
     "subscriptionPlan": "Subscription Plan",
@@ -163,8 +226,16 @@
     "subscriptionAt": "Subscription At",
     "unsubscribeAt": "Unsubscribe At",
     "adminUserName": "Admin User Name",
+    "adminPassword": "Initial Password",
+    "adminPasswordConfirm": "Confirm Password",
+    "adminMobile": "Mobile",
+    "adminEmail": "Email",
     "button": {
       "create": "Create"
+    },
+    "notification": {
+      "tenant_code_exists": "Tenant code already exists, please change and try again!",
+      "user_username_exists": "Admin username already exists, please change and try again!"
     }
   },
   "file": {
@@ -214,15 +285,28 @@
   },
   "internalMessage": {
     "moduleName": "Notification",
+    "title": "Subject",
     "subject": "Subject",
+    "content": "Content",
+    "type": "Message Type",
+    "status": "Message Status",
     "categoryName": "Category",
+    "senderName": "Sender",
+    "categoryId": "Category",
+    "readAt": "Read At",
     "button": {
       "create": "Create"
+    },
+    "drawer": {
+      "create": "Publish Message",
+      "update": "Edit Message"
     }
   },
   "internalMessageCategory": {
-    "moduleName": "Notification Message Category",
+    "moduleName": "Message Category",
     "name": "Name",
+    "code": "Category Code",
+    "parentId": "Parent",
     "button": {
       "create": "Create"
     }
@@ -235,30 +319,46 @@
     }
   },
   "loginAuditLog": {
-    "moduleName": "Login Log",
+    "moduleName": "Login Audit Log",
     "username": "User Name",
+    "status": "Login Status",
+    "actionType": "Action Type",
     "success": "Success",
     "loginTime": "Login Time",
+    "geoLocation": "Location",
     "location": "Location",
+    "platform": "Platform",
     "clientName": "Platform",
-    "loginIp": "Login IP"
+    "ipAddress": "IP Address",
+    "loginIp": "Login IP",
+    "failureReason": "Failure Reason",
+    "riskScore": "Risk Score",
+    "riskLevel": "Risk Level",
+    "riskFactors": "Risk Factors",
+    "createdAt": "Log Time"
   },
   "apiAuditLog": {
     "moduleName": "API Log",
     "username": "User Name",
-    "success": "Success",
+    "success": "Status",
+    "geoLocation": "Location",
     "location": "Location",
+    "platform": "Platform",
     "clientName": "Platform",
+    "ipAddress": "IP Address",
     "clientIp": "Client IP",
     "createdAt": "Operation Time",
     "path": "Path",
-    "method": "Method"
+    "httpMethod": "Method",
+    "method": "Method",
+    "latencyMs": "Latency (ms)"
   },
   "api": {
     "moduleName": "API Resource",
     "path": "Path",
     "method": "Method",
     "module": "Module",
+    "moduleDescription": "Module Description",
     "operation": "Operation",
     "button": {
       "create": "Create API",
