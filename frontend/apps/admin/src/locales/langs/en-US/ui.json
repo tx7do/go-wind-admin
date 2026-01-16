@@ -18,7 +18,8 @@
     "status": "Status",
     "action": "Action",
     "sortOrder": "Sort ID",
-    "remark": "Remark"
+    "remark": "Remark",
+    "description": "Description"
   },
   "switch": {
     "on": "ON",

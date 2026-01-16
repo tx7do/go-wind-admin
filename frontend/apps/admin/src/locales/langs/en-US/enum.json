@@ -20,14 +20,30 @@
     "EMBEDDED": "Embedded",
     "LINK": "Link"
   },
+  "menu": {
+    "type": {
+      "CATALOG": "Catalog",
+      "MENU": "Menu",
+      "BUTTON": "Button",
+      "EMBEDDED": "Embedded",
+      "LINK": "Link"
+    }
+  },
   "successStatus": {
     "success": "Success",
     "failed": "Failed"
   },
-  "taskType" : {
+  "taskType": {
     "Periodic": "Periodic",
     "Delay": "Delay",
     "WaitResult": "Wait Result"
+  },
+  "task": {
+    "type": {
+      "Periodic": "Periodic",
+      "Delay": "Delay",
+      "WaitResult": "Wait Result"
+    }
   },
   "gender": {
     "SECRET": "Secret",
@@ -44,6 +60,19 @@
     "REGION": "Region",
     "TIME": "Time",
     "DEVICE": "Device"
+  },
+  "loginPolicy": {
+    "type": {
+      "BLACKLIST": "Blacklist",
+      "WHITELIST": "Whitelist"
+    },
+    "method": {
+      "IP": "IP Address",
+      "MAC": "MAC Address",
+      "REGION": "Region",
+      "TIME": "Time",
+      "DEVICE": "Device"
+    }
   },
   "tenant": {
     "status": {
@@ -98,10 +127,10 @@
   },
   "position": {
     "status": {
-      "ACTIVE": "ACTIVE",
-      "INACTIVE": "INACTIVE",
-      "ON_LEAVE": "ON_LEAVE",
-      "RESIGNED": "RESIGNED"
+      "ACTIVE": "Active",
+      "INACTIVE": "Inactive",
+      "ON_LEAVE": "On Leave",
+      "RESIGNED": "Resigned"
     },
     "type": {
       "REGULAR": "Regular Position",
@@ -110,6 +139,67 @@
       "INTERN": "Intern Position",
       "CONTRACT": "Contract Position",
       "OTHER": "Other Position"
+    }
+  },
+  "memberPosition": {
+    "status": {
+      "PROBATION": "Probation",
+      "ACTIVE": "Active",
+      "LEAVE": "On Leave",
+      "RESIGNED": "Resigned",
+      "TERMINATED": "Terminated",
+      "EXPIRED": "Expired"
+    }
+  },
+  "permission": {
+    "type": {
+      "CATALOG": "Catalog Permission",
+      "MENU": "Menu Permission",
+      "PAGE": "Page Permission",
+      "BUTTON": "Button Permission",
+      "API": "API Permission",
+      "DATA": "Data Permission"
+    }
+  },
+  "loginAuditLog": {
+    "status": {
+      "SUCCESS": "Success",
+      "FAILED": "Failed",
+      "PARTIAL": "Partial"
+    },
+    "actionType": {
+      "LOGIN": "Login",
+      "LOGOUT": "Logout",
+      "SESSION_EXPIRED": "Session Expired"
+    },
+    "riskLevel": {
+      "LOW": "Low Risk",
+      "MEDIUM": "Medium Risk",
+      "HIGH": "High Risk"
+    }
+  },
+  "internalMessage": {
+    "status": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published",
+      "SCHEDULED": "Scheduled",
+      "REVOKED": "Revoked",
+      "ARCHIVED": "Archived",
+      "DELETED": "Deleted"
+    },
+    "type": {
+      "NOTIFICATION": "Notification",
+      "PRIVATE": "Private",
+      "GROUP": "Group"
+    }
+  },
+  "internalMessageRecipient": {
+    "status": {
+      "SENT": "Sent",
+      "RECEIVED": "Received",
+      "READ": "Read",
+      "REVOKED": "Revoked",
+      "DELETED": "Deleted"
     }
   }
 }

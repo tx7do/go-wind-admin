@@ -3,7 +3,7 @@
 ##################################
 
 # 使用官方的 Go 基础镜像作为构建环境
-FROM golang:1.24.6 AS builder
+FROM golang:1.25.4 AS builder
 
 ARG SERVICE_NAME=app
 ARG APP_VERSION=1.0.0
