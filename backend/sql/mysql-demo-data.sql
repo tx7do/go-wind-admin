@@ -62,8 +62,8 @@ VALUES
     ('PERIODIC', 'backup', '{ "name": "test"}', '0 * * * *', 1, NOW());
 
 -- 登录策略
-TRUNCATE TABLE `sys_admin_login_restrictions`;
-INSERT INTO `sys_admin_login_restrictions`(id, target_id, type, method, value, reason, created_at)
+TRUNCATE TABLE `sys_login_policies`;
+INSERT INTO `sys_login_policies`(id, target_id, type, method, value, reason, created_at)
 VALUES
     (1, 1, 'BLACKLIST', 'IP', '127.0.0.1', '无理由', NOW()),
     (2, 1, 'WHITELIST', 'MAC', '00:1B:44:11:3A:B7', '无理由', NOW());

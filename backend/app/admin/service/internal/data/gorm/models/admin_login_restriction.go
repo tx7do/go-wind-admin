@@ -4,7 +4,7 @@ import (
 	"github.com/tx7do/go-crud/gorm/mixin"
 )
 
-// LoginPolicy 对应表 sys_admin_login_restrictions
+// LoginPolicy 对应表 sys_login_policies
 type LoginPolicy struct {
 	mixin.AutoIncrementID
 	mixin.TimeAt
@@ -20,5 +20,5 @@ type LoginPolicy struct {
 }
 
 func (LoginPolicy) TableName() string {
-	return "sys_admin_login_restrictions"
+	return "sys_login_policies"
 }

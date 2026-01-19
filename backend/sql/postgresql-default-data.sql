@@ -8,17 +8,26 @@ SET LOCAL search_path = public, pg_catalog;
 -- 一次性清理相关表并重置自增（包含外键依赖）
 TRUNCATE TABLE public.sys_user_credentials,
                public.sys_users,
+               public.sys_user_org_units,
+               public.sys_user_positions,
+               public.sys_user_roles,
+               public.sys_tenants,
+               public.sys_org_units,
+               public.sys_positions,
                public.sys_roles,
                public.sys_role_permissions,
-               public.sys_tenants,
                public.sys_menus,
                public.sys_apis,
+               public.sys_permissions,
+               public.sys_permission_groups,
+               public.sys_permission_apis,
+               public.sys_permission_menus,
+               public.sys_permission_policies,
                public.sys_permissions,
                public.sys_memberships,
                public.sys_membership_org_units,
                public.sys_membership_positions,
-               public.sys_membership_roles,
-               public.sys_org_units
+               public.sys_membership_roles
 RESTART IDENTITY CASCADE;
 
 -- 权限分组
@@ -168,14 +177,14 @@ SELECT setval('sys_menus_id_seq', (SELECT MAX(id) FROM sys_menus));
 
 -- API资源表数据
 INSERT INTO public.sys_apis (id,
-                                      created_at,
-                                      description,
-                                      module,
-                                      module_description,
-                                      operation,
-                                      path,
-                                      method,
-                                      scope)
+                              created_at,
+                              description,
+                              module,
+                              module_description,
+                              operation,
+                              path,
+                              method,
+                              scope)
 VALUES (1, now(), '分页查询字典类型列表', 'DictService', '数据字典管理服务', 'DictService_ListDictType',
         '/admin/v1/dict-types', 'GET', 'ADMIN'),
        (2, now(), '创建字典类型', 'DictService', '数据字典管理服务', 'DictService_CreateDictType',

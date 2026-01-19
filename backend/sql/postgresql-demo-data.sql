@@ -6,7 +6,7 @@ SET LOCAL search_path = public, pg_catalog;
 TRUNCATE TABLE public.sys_org_units,
                public.sys_positions,
                public.sys_tasks,
-               public.sys_admin_login_restrictions,
+               public.sys_login_policies,
                public.sys_dict_types,
                public.sys_dict_entries,
                public.internal_message_categories
@@ -139,12 +139,12 @@ VALUES
 SELECT setval('sys_tasks_id_seq', (SELECT MAX(id) FROM sys_tasks));
 
 -- 登录策略
-INSERT INTO public.sys_admin_login_restrictions(id, target_id, type, method, value, reason, created_at)
+INSERT INTO public.sys_login_policies(id, target_id, type, method, value, reason, created_at)
 VALUES
 (1, 1, 'BLACKLIST', 'IP', '127.0.0.1', '无理由', now()),
 (2, 1, 'WHITELIST', 'MAC', '00:1B:44:11:3A:B7 ', '无理由', now())
 ;
-SELECT setval('sys_admin_login_restrictions_id_seq', (SELECT MAX(id) FROM sys_admin_login_restrictions));
+SELECT setval('sys_login_policies_id_seq', (SELECT MAX(id) FROM sys_login_policies));
 
 -- 字典类型
 ALTER SEQUENCE public.sys_dict_types_id_seq RESTART WITH 1;
