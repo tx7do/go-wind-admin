@@ -159,8 +159,7 @@ func (r *UserOrgUnitRepo) AssignUserOrgUnit(
 
 // AssignUserOrgUnits 分配组织单元给用户
 func (r *UserOrgUnitRepo) AssignUserOrgUnits(
-	ctx context.Context,
-	tx *ent.Tx,
+	ctx context.Context, tx *ent.Tx,
 	userID uint32,
 	datas []*userV1.UserOrgUnit,
 ) error {
@@ -184,6 +183,7 @@ func (r *UserOrgUnitRepo) AssignUserOrgUnits(
 		}
 		rm := tx.UserOrgUnit.
 			Create().
+			SetNillableTenantID(data.TenantId).
 			SetUserID(data.GetUserId()).
 			SetOrgUnitID(data.GetOrgUnitId()).
 			SetNillableStatus(r.statusConverter.ToEntity(data.Status)).

@@ -218,6 +218,20 @@ func (_c *RoleCreate) SetNillableIsProtected(v *bool) *RoleCreate {
 	return _c
 }
 
+// SetIsSystem sets the "is_system" field.
+func (_c *RoleCreate) SetIsSystem(v bool) *RoleCreate {
+	_c.mutation.SetIsSystem(v)
+	return _c
+}
+
+// SetNillableIsSystem sets the "is_system" field if the given value is not nil.
+func (_c *RoleCreate) SetNillableIsSystem(v *bool) *RoleCreate {
+	if v != nil {
+		_c.SetIsSystem(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *RoleCreate) SetID(v uint32) *RoleCreate {
 	_c.mutation.SetID(v)
@@ -231,7 +245,9 @@ func (_c *RoleCreate) Mutation() *RoleMutation {
 
 // Save creates the Role in the database.
 func (_c *RoleCreate) Save(ctx context.Context) (*Role, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -258,10 +274,14 @@ func (_c *RoleCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *RoleCreate) defaults() {
+func (_c *RoleCreate) defaults() error {
 	if _, ok := _c.mutation.SortOrder(); !ok {
 		v := role.DefaultSortOrder
 		_c.mutation.SetSortOrder(v)
+	}
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := role.DefaultTenantID
+		_c.mutation.SetTenantID(v)
 	}
 	if _, ok := _c.mutation.Status(); !ok {
 		v := role.DefaultStatus
@@ -271,6 +291,11 @@ func (_c *RoleCreate) defaults() {
 		v := role.DefaultIsProtected
 		_c.mutation.SetIsProtected(v)
 	}
+	if _, ok := _c.mutation.IsSystem(); !ok {
+		v := role.DefaultIsSystem
+		_c.mutation.SetIsSystem(v)
+	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -295,6 +320,9 @@ func (_c *RoleCreate) check() error {
 	}
 	if _, ok := _c.mutation.IsProtected(); !ok {
 		return &ValidationError{Name: "is_protected", err: errors.New(`ent: missing required field "Role.is_protected"`)}
+	}
+	if _, ok := _c.mutation.IsSystem(); !ok {
+		return &ValidationError{Name: "is_system", err: errors.New(`ent: missing required field "Role.is_system"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := role.IDValidator(v); err != nil {
@@ -389,6 +417,10 @@ func (_c *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.IsProtected(); ok {
 		_spec.SetField(role.FieldIsProtected, field.TypeBool, value)
 		_node.IsProtected = &value
+	}
+	if value, ok := _c.mutation.IsSystem(); ok {
+		_spec.SetField(role.FieldIsSystem, field.TypeBool, value)
+		_node.IsSystem = &value
 	}
 	return _node, _spec
 }
@@ -667,6 +699,18 @@ func (u *RoleUpsert) SetIsProtected(v bool) *RoleUpsert {
 // UpdateIsProtected sets the "is_protected" field to the value that was provided on create.
 func (u *RoleUpsert) UpdateIsProtected() *RoleUpsert {
 	u.SetExcluded(role.FieldIsProtected)
+	return u
+}
+
+// SetIsSystem sets the "is_system" field.
+func (u *RoleUpsert) SetIsSystem(v bool) *RoleUpsert {
+	u.Set(role.FieldIsSystem, v)
+	return u
+}
+
+// UpdateIsSystem sets the "is_system" field to the value that was provided on create.
+func (u *RoleUpsert) UpdateIsSystem() *RoleUpsert {
+	u.SetExcluded(role.FieldIsSystem)
 	return u
 }
 
@@ -987,6 +1031,20 @@ func (u *RoleUpsertOne) SetIsProtected(v bool) *RoleUpsertOne {
 func (u *RoleUpsertOne) UpdateIsProtected() *RoleUpsertOne {
 	return u.Update(func(s *RoleUpsert) {
 		s.UpdateIsProtected()
+	})
+}
+
+// SetIsSystem sets the "is_system" field.
+func (u *RoleUpsertOne) SetIsSystem(v bool) *RoleUpsertOne {
+	return u.Update(func(s *RoleUpsert) {
+		s.SetIsSystem(v)
+	})
+}
+
+// UpdateIsSystem sets the "is_system" field to the value that was provided on create.
+func (u *RoleUpsertOne) UpdateIsSystem() *RoleUpsertOne {
+	return u.Update(func(s *RoleUpsert) {
+		s.UpdateIsSystem()
 	})
 }
 
@@ -1473,6 +1531,20 @@ func (u *RoleUpsertBulk) SetIsProtected(v bool) *RoleUpsertBulk {
 func (u *RoleUpsertBulk) UpdateIsProtected() *RoleUpsertBulk {
 	return u.Update(func(s *RoleUpsert) {
 		s.UpdateIsProtected()
+	})
+}
+
+// SetIsSystem sets the "is_system" field.
+func (u *RoleUpsertBulk) SetIsSystem(v bool) *RoleUpsertBulk {
+	return u.Update(func(s *RoleUpsert) {
+		s.SetIsSystem(v)
+	})
+}
+
+// UpdateIsSystem sets the "is_system" field to the value that was provided on create.
+func (u *RoleUpsertBulk) UpdateIsSystem() *RoleUpsertBulk {
+	return u.Update(func(s *RoleUpsert) {
+		s.UpdateIsSystem()
 	})
 }
 

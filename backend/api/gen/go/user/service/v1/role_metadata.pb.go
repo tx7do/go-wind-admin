@@ -26,29 +26,209 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// 同步策略
+type RoleMetadata_SyncPolicy int32
+
+const (
+	RoleMetadata_AUTO    RoleMetadata_SyncPolicy = 0 // 自动同步
+	RoleMetadata_MANUAL  RoleMetadata_SyncPolicy = 1 // 手动同步
+	RoleMetadata_BLOCKED RoleMetadata_SyncPolicy = 2 // 阻止同步
+)
+
+// Enum value maps for RoleMetadata_SyncPolicy.
+var (
+	RoleMetadata_SyncPolicy_name = map[int32]string{
+		0: "AUTO",
+		1: "MANUAL",
+		2: "BLOCKED",
+	}
+	RoleMetadata_SyncPolicy_value = map[string]int32{
+		"AUTO":    0,
+		"MANUAL":  1,
+		"BLOCKED": 2,
+	}
+)
+
+func (x RoleMetadata_SyncPolicy) Enum() *RoleMetadata_SyncPolicy {
+	p := new(RoleMetadata_SyncPolicy)
+	*p = x
+	return p
+}
+
+func (x RoleMetadata_SyncPolicy) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RoleMetadata_SyncPolicy) Descriptor() protoreflect.EnumDescriptor {
+	return file_user_service_v1_role_metadata_proto_enumTypes[0].Descriptor()
+}
+
+func (RoleMetadata_SyncPolicy) Type() protoreflect.EnumType {
+	return &file_user_service_v1_role_metadata_proto_enumTypes[0]
+}
+
+func (x RoleMetadata_SyncPolicy) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use RoleMetadata_SyncPolicy.Descriptor instead.
+func (RoleMetadata_SyncPolicy) EnumDescriptor() ([]byte, []int) {
+	return file_user_service_v1_role_metadata_proto_rawDescGZIP(), []int{1, 0}
+}
+
+// 作用域
+type RoleMetadata_Scope int32
+
+const (
+	RoleMetadata_PLATFORM RoleMetadata_Scope = 0 // 平台级
+	RoleMetadata_TENANT   RoleMetadata_Scope = 1 // 租户级
+)
+
+// Enum value maps for RoleMetadata_Scope.
+var (
+	RoleMetadata_Scope_name = map[int32]string{
+		0: "PLATFORM",
+		1: "TENANT",
+	}
+	RoleMetadata_Scope_value = map[string]int32{
+		"PLATFORM": 0,
+		"TENANT":   1,
+	}
+)
+
+func (x RoleMetadata_Scope) Enum() *RoleMetadata_Scope {
+	p := new(RoleMetadata_Scope)
+	*p = x
+	return p
+}
+
+func (x RoleMetadata_Scope) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (RoleMetadata_Scope) Descriptor() protoreflect.EnumDescriptor {
+	return file_user_service_v1_role_metadata_proto_enumTypes[1].Descriptor()
+}
+
+func (RoleMetadata_Scope) Type() protoreflect.EnumType {
+	return &file_user_service_v1_role_metadata_proto_enumTypes[1]
+}
+
+func (x RoleMetadata_Scope) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use RoleMetadata_Scope.Descriptor instead.
+func (RoleMetadata_Scope) EnumDescriptor() ([]byte, []int) {
+	return file_user_service_v1_role_metadata_proto_rawDescGZIP(), []int{1, 1}
+}
+
+// 角色权限覆盖
+type RoleOverride struct {
+	state       protoimpl.MessageState        `protogen:"open.v1"`
+	Permissions *RoleOverride_PermissionDelta `protobuf:"bytes,1,opt,name=permissions,proto3" json:"permissions,omitempty"`
+	// 基础字段修改（如果为空则沿用模板）
+	DisplayName *string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3,oneof" json:"display_name,omitempty"`
+	Description *string `protobuf:"bytes,3,opt,name=description,proto3,oneof" json:"description,omitempty"`
+	// 扩展配置
+	ExtendedSettings map[string]string            `protobuf:"bytes,4,rep,name=extended_settings,json=extendedSettings,proto3" json:"extended_settings,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"` // 存储如 "ui_color": "#FF0000"
+	SecurityPolicy   *RoleOverride_SecurityPolicy `protobuf:"bytes,5,opt,name=security_policy,json=securityPolicy,proto3" json:"security_policy,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *RoleOverride) Reset() {
+	*x = RoleOverride{}
+	mi := &file_user_service_v1_role_metadata_proto_msgTypes[0]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RoleOverride) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoleOverride) ProtoMessage() {}
+
+func (x *RoleOverride) ProtoReflect() protoreflect.Message {
+	mi := &file_user_service_v1_role_metadata_proto_msgTypes[0]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoleOverride.ProtoReflect.Descriptor instead.
+func (*RoleOverride) Descriptor() ([]byte, []int) {
+	return file_user_service_v1_role_metadata_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *RoleOverride) GetPermissions() *RoleOverride_PermissionDelta {
+	if x != nil {
+		return x.Permissions
+	}
+	return nil
+}
+
+func (x *RoleOverride) GetDisplayName() string {
+	if x != nil && x.DisplayName != nil {
+		return *x.DisplayName
+	}
+	return ""
+}
+
+func (x *RoleOverride) GetDescription() string {
+	if x != nil && x.Description != nil {
+		return *x.Description
+	}
+	return ""
+}
+
+func (x *RoleOverride) GetExtendedSettings() map[string]string {
+	if x != nil {
+		return x.ExtendedSettings
+	}
+	return nil
+}
+
+func (x *RoleOverride) GetSecurityPolicy() *RoleOverride_SecurityPolicy {
+	if x != nil {
+		return x.SecurityPolicy
+	}
+	return nil
+}
+
 // 角色元数据
 type RoleMetadata struct {
-	state             protoimpl.MessageState `protogen:"open.v1"`
-	Id                *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                          // 角色元数据ID
-	RoleId            *uint32                `protobuf:"varint,2,opt,name=role_id,json=roleId,proto3,oneof" json:"role_id,omitempty"`                                    // 角色ID
-	IsTemplate        *bool                  `protobuf:"varint,3,opt,name=is_template,json=isTemplate,proto3,oneof" json:"is_template,omitempty"`                        // 是否是模版
-	TemplateFor       *string                `protobuf:"bytes,4,opt,name=template_for,json=templateFor,proto3,oneof" json:"template_for,omitempty"`                      // 模板适用对象
-	TemplateVersion   *int32                 `protobuf:"varint,5,opt,name=template_version,json=templateVersion,proto3,oneof" json:"template_version,omitempty"`         // 模板版本号
-	LastSyncedVersion *int32                 `protobuf:"varint,6,opt,name=last_synced_version,json=lastSyncedVersion,proto3,oneof" json:"last_synced_version,omitempty"` // 上次同步的版本号
-	CustomOverrides   []string               `protobuf:"bytes,7,rep,name=custom_overrides,json=customOverrides,proto3" json:"custom_overrides,omitempty"`                // 自定义覆盖项
-	CreatedBy         *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                         // 创建者ID
-	UpdatedBy         *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                         // 更新者ID
-	DeletedBy         *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                         // 删除者用户ID
-	CreatedAt         *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                          // 创建时间
-	UpdatedAt         *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                          // 更新时间
-	DeletedAt         *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                          // 删除时间
+	state             protoimpl.MessageState   `protogen:"open.v1"`
+	Id                *uint32                  `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                // 角色元数据ID
+	RoleId            *uint32                  `protobuf:"varint,2,opt,name=role_id,json=roleId,proto3,oneof" json:"role_id,omitempty"`                                                          // 角色ID
+	IsTemplate        *bool                    `protobuf:"varint,3,opt,name=is_template,json=isTemplate,proto3,oneof" json:"is_template,omitempty"`                                              // 是否是模版
+	TemplateFor       *string                  `protobuf:"bytes,4,opt,name=template_for,json=templateFor,proto3,oneof" json:"template_for,omitempty"`                                            // 模板适用对象
+	TemplateVersion   *int32                   `protobuf:"varint,5,opt,name=template_version,json=templateVersion,proto3,oneof" json:"template_version,omitempty"`                               // 模板版本号
+	LastSyncedVersion *int32                   `protobuf:"varint,6,opt,name=last_synced_version,json=lastSyncedVersion,proto3,oneof" json:"last_synced_version,omitempty"`                       // 上次同步的版本号
+	LastSyncedAt      *timestamppb.Timestamp   `protobuf:"bytes,7,opt,name=last_synced_at,json=lastSyncedAt,proto3,oneof" json:"last_synced_at,omitempty"`                                       // 最后同步时间
+	SyncPolicy        *RoleMetadata_SyncPolicy `protobuf:"varint,8,opt,name=sync_policy,json=syncPolicy,proto3,enum=user.service.v1.RoleMetadata_SyncPolicy,oneof" json:"sync_policy,omitempty"` // 同步策略
+	Scope             *RoleMetadata_Scope      `protobuf:"varint,9,opt,name=scope,proto3,enum=user.service.v1.RoleMetadata_Scope,oneof" json:"scope,omitempty"`                                  // 作用域
+	CustomOverrides   *RoleOverride            `protobuf:"bytes,10,opt,name=custom_overrides,json=customOverrides,proto3" json:"custom_overrides,omitempty"`                                     // 租户自定义覆盖项
+	TenantId          *uint32                  `protobuf:"varint,20,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                   // 租户ID，0代表系统全局角色
+	CreatedBy         *uint32                  `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                               // 创建者ID
+	UpdatedBy         *uint32                  `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                               // 更新者ID
+	DeletedBy         *uint32                  `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                               // 删除者用户ID
+	CreatedAt         *timestamppb.Timestamp   `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                                // 创建时间
+	UpdatedAt         *timestamppb.Timestamp   `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                                // 更新时间
+	DeletedAt         *timestamppb.Timestamp   `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                                // 删除时间
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
 
 func (x *RoleMetadata) Reset() {
 	*x = RoleMetadata{}
-	mi := &file_user_service_v1_role_metadata_proto_msgTypes[0]
+	mi := &file_user_service_v1_role_metadata_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -60,7 +240,7 @@ func (x *RoleMetadata) String() string {
 func (*RoleMetadata) ProtoMessage() {}
 
 func (x *RoleMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_user_service_v1_role_metadata_proto_msgTypes[0]
+	mi := &file_user_service_v1_role_metadata_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -73,7 +253,7 @@ func (x *RoleMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoleMetadata.ProtoReflect.Descriptor instead.
 func (*RoleMetadata) Descriptor() ([]byte, []int) {
-	return file_user_service_v1_role_metadata_proto_rawDescGZIP(), []int{0}
+	return file_user_service_v1_role_metadata_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *RoleMetadata) GetId() uint32 {
@@ -118,11 +298,39 @@ func (x *RoleMetadata) GetLastSyncedVersion() int32 {
 	return 0
 }
 
-func (x *RoleMetadata) GetCustomOverrides() []string {
+func (x *RoleMetadata) GetLastSyncedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.LastSyncedAt
+	}
+	return nil
+}
+
+func (x *RoleMetadata) GetSyncPolicy() RoleMetadata_SyncPolicy {
+	if x != nil && x.SyncPolicy != nil {
+		return *x.SyncPolicy
+	}
+	return RoleMetadata_AUTO
+}
+
+func (x *RoleMetadata) GetScope() RoleMetadata_Scope {
+	if x != nil && x.Scope != nil {
+		return *x.Scope
+	}
+	return RoleMetadata_PLATFORM
+}
+
+func (x *RoleMetadata) GetCustomOverrides() *RoleOverride {
 	if x != nil {
 		return x.CustomOverrides
 	}
 	return nil
+}
+
+func (x *RoleMetadata) GetTenantId() uint32 {
+	if x != nil && x.TenantId != nil {
+		return *x.TenantId
+	}
+	return 0
 }
 
 func (x *RoleMetadata) GetCreatedBy() uint32 {
@@ -167,11 +375,134 @@ func (x *RoleMetadata) GetDeletedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+// 权限点覆盖
+type RoleOverride_PermissionDelta struct {
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	AddedPermissions   []string               `protobuf:"bytes,1,rep,name=added_permissions,json=addedPermissions,proto3" json:"added_permissions,omitempty"`       // 租户额外增加的权限
+	RemovedPermissions []string               `protobuf:"bytes,2,rep,name=removed_permissions,json=removedPermissions,proto3" json:"removed_permissions,omitempty"` // 租户明确禁用的权限（即便模板有，也禁用）
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *RoleOverride_PermissionDelta) Reset() {
+	*x = RoleOverride_PermissionDelta{}
+	mi := &file_user_service_v1_role_metadata_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RoleOverride_PermissionDelta) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoleOverride_PermissionDelta) ProtoMessage() {}
+
+func (x *RoleOverride_PermissionDelta) ProtoReflect() protoreflect.Message {
+	mi := &file_user_service_v1_role_metadata_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoleOverride_PermissionDelta.ProtoReflect.Descriptor instead.
+func (*RoleOverride_PermissionDelta) Descriptor() ([]byte, []int) {
+	return file_user_service_v1_role_metadata_proto_rawDescGZIP(), []int{0, 0}
+}
+
+func (x *RoleOverride_PermissionDelta) GetAddedPermissions() []string {
+	if x != nil {
+		return x.AddedPermissions
+	}
+	return nil
+}
+
+func (x *RoleOverride_PermissionDelta) GetRemovedPermissions() []string {
+	if x != nil {
+		return x.RemovedPermissions
+	}
+	return nil
+}
+
+// 策略覆盖
+type RoleOverride_SecurityPolicy struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ForceMfa      bool                   `protobuf:"varint,1,opt,name=force_mfa,json=forceMfa,proto3" json:"force_mfa,omitempty"`
+	IpAllowList   []string               `protobuf:"bytes,2,rep,name=ip_allow_list,json=ipAllowList,proto3" json:"ip_allow_list,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RoleOverride_SecurityPolicy) Reset() {
+	*x = RoleOverride_SecurityPolicy{}
+	mi := &file_user_service_v1_role_metadata_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RoleOverride_SecurityPolicy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RoleOverride_SecurityPolicy) ProtoMessage() {}
+
+func (x *RoleOverride_SecurityPolicy) ProtoReflect() protoreflect.Message {
+	mi := &file_user_service_v1_role_metadata_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RoleOverride_SecurityPolicy.ProtoReflect.Descriptor instead.
+func (*RoleOverride_SecurityPolicy) Descriptor() ([]byte, []int) {
+	return file_user_service_v1_role_metadata_proto_rawDescGZIP(), []int{0, 2}
+}
+
+func (x *RoleOverride_SecurityPolicy) GetForceMfa() bool {
+	if x != nil {
+		return x.ForceMfa
+	}
+	return false
+}
+
+func (x *RoleOverride_SecurityPolicy) GetIpAllowList() []string {
+	if x != nil {
+		return x.IpAllowList
+	}
+	return nil
+}
+
 var File_user_service_v1_role_metadata_proto protoreflect.FileDescriptor
 
 const file_user_service_v1_role_metadata_proto_rawDesc = "" +
 	"\n" +
-	"#user/service/v1/role_metadata.proto\x12\x0fuser.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xaf\b\n" +
+	"#user/service/v1/role_metadata.proto\x12\x0fuser.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x91\x05\n" +
+	"\fRoleOverride\x12O\n" +
+	"\vpermissions\x18\x01 \x01(\v2-.user.service.v1.RoleOverride.PermissionDeltaR\vpermissions\x12&\n" +
+	"\fdisplay_name\x18\x02 \x01(\tH\x00R\vdisplayName\x88\x01\x01\x12%\n" +
+	"\vdescription\x18\x03 \x01(\tH\x01R\vdescription\x88\x01\x01\x12`\n" +
+	"\x11extended_settings\x18\x04 \x03(\v23.user.service.v1.RoleOverride.ExtendedSettingsEntryR\x10extendedSettings\x12U\n" +
+	"\x0fsecurity_policy\x18\x05 \x01(\v2,.user.service.v1.RoleOverride.SecurityPolicyR\x0esecurityPolicy\x1ao\n" +
+	"\x0fPermissionDelta\x12+\n" +
+	"\x11added_permissions\x18\x01 \x03(\tR\x10addedPermissions\x12/\n" +
+	"\x13removed_permissions\x18\x02 \x03(\tR\x12removedPermissions\x1aC\n" +
+	"\x15ExtendedSettingsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\x1aQ\n" +
+	"\x0eSecurityPolicy\x12\x1b\n" +
+	"\tforce_mfa\x18\x01 \x01(\bR\bforceMfa\x12\"\n" +
+	"\rip_allow_list\x18\x02 \x03(\tR\vipAllowListB\x0f\n" +
+	"\r_display_nameB\x0e\n" +
+	"\f_description\"\xc7\f\n" +
 	"\fRoleMetadata\x12,\n" +
 	"\x02id\x18\x01 \x01(\rB\x17\xbaG\x14\x92\x02\x11角色元数据IDH\x00R\x02id\x88\x01\x01\x12,\n" +
 	"\arole_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b角色IDH\x01R\x06roleId\x88\x01\x01\x12;\n" +
@@ -179,28 +510,49 @@ const file_user_service_v1_role_metadata_proto_rawDesc = "" +
 	"isTemplate\x88\x01\x01\x12@\n" +
 	"\ftemplate_for\x18\x04 \x01(\tB\x18\xbaG\x15\x92\x02\x12模板适用对象H\x03R\vtemplateFor\x88\x01\x01\x12E\n" +
 	"\x10template_version\x18\x05 \x01(\x05B\x15\xbaG\x12\x92\x02\x0f模板版本号H\x04R\x0ftemplateVersion\x88\x01\x01\x12S\n" +
-	"\x13last_synced_version\x18\x06 \x01(\x05B\x1e\xbaG\x1b\x92\x02\x18上次同步的版本号H\x05R\x11lastSyncedVersion\x88\x01\x01\x12C\n" +
-	"\x10custom_overrides\x18\a \x03(\tB\x18\xbaG\x15\x92\x02\x12自定义覆盖项R\x0fcustomOverrides\x125\n" +
+	"\x13last_synced_version\x18\x06 \x01(\x05B\x1e\xbaG\x1b\x92\x02\x18上次同步的版本号H\x05R\x11lastSyncedVersion\x88\x01\x01\x12_\n" +
+	"\x0elast_synced_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12最后同步时间H\x06R\flastSyncedAt\x88\x01\x01\x12b\n" +
+	"\vsync_policy\x18\b \x01(\x0e2(.user.service.v1.RoleMetadata.SyncPolicyB\x12\xbaG\x0f\x92\x02\f同步策略H\aR\n" +
+	"syncPolicy\x88\x01\x01\x12O\n" +
+	"\x05scope\x18\t \x01(\x0e2#.user.service.v1.RoleMetadata.ScopeB\x0f\xbaG\f\x92\x02\t作用域H\bR\x05scope\x88\x01\x01\x12h\n" +
+	"\x10custom_overrides\x18\n" +
+	" \x01(\v2\x1d.user.service.v1.RoleOverrideB\x1e\xbaG\x1b\x92\x02\x18租户自定义覆盖项R\x0fcustomOverrides\x12L\n" +
+	"\ttenant_id\x18\x14 \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\tR\btenantId\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\x06R\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\n" +
+	"R\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\aR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\vR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\bR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\fR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\tR\tcreatedAt\x88\x01\x01\x12S\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\rR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\n" +
-	"R\tupdatedAt\x88\x01\x01\x12S\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\x0eR\tupdatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\vR\tdeletedAt\x88\x01\x01B\x05\n" +
+	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\x0fR\tdeletedAt\x88\x01\x01\"/\n" +
+	"\n" +
+	"SyncPolicy\x12\b\n" +
+	"\x04AUTO\x10\x00\x12\n" +
+	"\n" +
+	"\x06MANUAL\x10\x01\x12\v\n" +
+	"\aBLOCKED\x10\x02\"!\n" +
+	"\x05Scope\x12\f\n" +
+	"\bPLATFORM\x10\x00\x12\n" +
+	"\n" +
+	"\x06TENANT\x10\x01B\x05\n" +
 	"\x03_idB\n" +
 	"\n" +
 	"\b_role_idB\x0e\n" +
 	"\f_is_templateB\x0f\n" +
 	"\r_template_forB\x13\n" +
 	"\x11_template_versionB\x16\n" +
-	"\x14_last_synced_versionB\r\n" +
+	"\x14_last_synced_versionB\x11\n" +
+	"\x0f_last_synced_atB\x0e\n" +
+	"\f_sync_policyB\b\n" +
+	"\x06_scopeB\f\n" +
+	"\n" +
+	"_tenant_idB\r\n" +
 	"\v_created_byB\r\n" +
 	"\v_updated_byB\r\n" +
 	"\v_deleted_byB\r\n" +
@@ -221,20 +573,34 @@ func file_user_service_v1_role_metadata_proto_rawDescGZIP() []byte {
 	return file_user_service_v1_role_metadata_proto_rawDescData
 }
 
-var file_user_service_v1_role_metadata_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_user_service_v1_role_metadata_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_user_service_v1_role_metadata_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_user_service_v1_role_metadata_proto_goTypes = []any{
-	(*RoleMetadata)(nil),          // 0: user.service.v1.RoleMetadata
-	(*timestamppb.Timestamp)(nil), // 1: google.protobuf.Timestamp
+	(RoleMetadata_SyncPolicy)(0),         // 0: user.service.v1.RoleMetadata.SyncPolicy
+	(RoleMetadata_Scope)(0),              // 1: user.service.v1.RoleMetadata.Scope
+	(*RoleOverride)(nil),                 // 2: user.service.v1.RoleOverride
+	(*RoleMetadata)(nil),                 // 3: user.service.v1.RoleMetadata
+	(*RoleOverride_PermissionDelta)(nil), // 4: user.service.v1.RoleOverride.PermissionDelta
+	nil,                                  // 5: user.service.v1.RoleOverride.ExtendedSettingsEntry
+	(*RoleOverride_SecurityPolicy)(nil),  // 6: user.service.v1.RoleOverride.SecurityPolicy
+	(*timestamppb.Timestamp)(nil),        // 7: google.protobuf.Timestamp
 }
 var file_user_service_v1_role_metadata_proto_depIdxs = []int32{
-	1, // 0: user.service.v1.RoleMetadata.created_at:type_name -> google.protobuf.Timestamp
-	1, // 1: user.service.v1.RoleMetadata.updated_at:type_name -> google.protobuf.Timestamp
-	1, // 2: user.service.v1.RoleMetadata.deleted_at:type_name -> google.protobuf.Timestamp
-	3, // [3:3] is the sub-list for method output_type
-	3, // [3:3] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	4,  // 0: user.service.v1.RoleOverride.permissions:type_name -> user.service.v1.RoleOverride.PermissionDelta
+	5,  // 1: user.service.v1.RoleOverride.extended_settings:type_name -> user.service.v1.RoleOverride.ExtendedSettingsEntry
+	6,  // 2: user.service.v1.RoleOverride.security_policy:type_name -> user.service.v1.RoleOverride.SecurityPolicy
+	7,  // 3: user.service.v1.RoleMetadata.last_synced_at:type_name -> google.protobuf.Timestamp
+	0,  // 4: user.service.v1.RoleMetadata.sync_policy:type_name -> user.service.v1.RoleMetadata.SyncPolicy
+	1,  // 5: user.service.v1.RoleMetadata.scope:type_name -> user.service.v1.RoleMetadata.Scope
+	2,  // 6: user.service.v1.RoleMetadata.custom_overrides:type_name -> user.service.v1.RoleOverride
+	7,  // 7: user.service.v1.RoleMetadata.created_at:type_name -> google.protobuf.Timestamp
+	7,  // 8: user.service.v1.RoleMetadata.updated_at:type_name -> google.protobuf.Timestamp
+	7,  // 9: user.service.v1.RoleMetadata.deleted_at:type_name -> google.protobuf.Timestamp
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_user_service_v1_role_metadata_proto_init() }
@@ -243,18 +609,20 @@ func file_user_service_v1_role_metadata_proto_init() {
 		return
 	}
 	file_user_service_v1_role_metadata_proto_msgTypes[0].OneofWrappers = []any{}
+	file_user_service_v1_role_metadata_proto_msgTypes[1].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_service_v1_role_metadata_proto_rawDesc), len(file_user_service_v1_role_metadata_proto_rawDesc)),
-			NumEnums:      0,
-			NumMessages:   1,
+			NumEnums:      2,
+			NumMessages:   5,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_user_service_v1_role_metadata_proto_goTypes,
 		DependencyIndexes: file_user_service_v1_role_metadata_proto_depIdxs,
+		EnumInfos:         file_user_service_v1_role_metadata_proto_enumTypes,
 		MessageInfos:      file_user_service_v1_role_metadata_proto_msgTypes,
 	}.Build()
 	File_user_service_v1_role_metadata_proto = out.File

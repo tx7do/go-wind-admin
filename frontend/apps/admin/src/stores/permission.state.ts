@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 
 import { $t } from '@vben/locales';
+import { useUserStore } from '@vben/stores';
 
 import { defineStore } from 'pinia';
 
@@ -9,11 +10,12 @@ import {
   type permissionservicev1_Permission as Permission,
   type permissionservicev1_PermissionGroup as PermissionGroup,
 } from '#/generated/api/admin/service/v1';
-import { makeQueryString, makeUpdateMask } from '#/utils/query';
+import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 export const usePermissionStore = defineStore('permission', () => {
   const service = createPermissionServiceClient(requestClientRequestHandler);
+  const userStore = useUserStore();
 
   /**
    * 查询权限列表
@@ -29,8 +31,8 @@ export const usePermissionStore = defineStore('permission', () => {
     return await service.List({
       // @ts-ignore proto generated code is error.
       fieldMask,
-      orderBy: orderBy ?? [],
-      query: makeQueryString(formValues ?? null),
+      orderBy: makeOrderBy(orderBy),
+      query: makeQueryString(formValues, userStore.isTenantUser()),
       page: paging?.page,
       pageSize: paging?.pageSize,
       noPaging,

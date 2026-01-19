@@ -751,7 +751,8 @@ func (c *ApiAuditLogClient) GetX(ctx context.Context, id uint32) *ApiAuditLog {
 
 // Hooks returns the client hooks.
 func (c *ApiAuditLogClient) Hooks() []Hook {
-	return c.hooks.ApiAuditLog
+	hooks := c.hooks.ApiAuditLog
+	return append(hooks[:len(hooks):len(hooks)], apiauditlog.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -884,7 +885,8 @@ func (c *DataAccessAuditLogClient) GetX(ctx context.Context, id uint32) *DataAcc
 
 // Hooks returns the client hooks.
 func (c *DataAccessAuditLogClient) Hooks() []Hook {
-	return c.hooks.DataAccessAuditLog
+	hooks := c.hooks.DataAccessAuditLog
+	return append(hooks[:len(hooks):len(hooks)], dataaccessauditlog.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -1033,7 +1035,8 @@ func (c *DictEntryClient) QuerySysDictTypes(_m *DictEntry) *DictTypeQuery {
 
 // Hooks returns the client hooks.
 func (c *DictEntryClient) Hooks() []Hook {
-	return c.hooks.DictEntry
+	hooks := c.hooks.DictEntry
+	return append(hooks[:len(hooks):len(hooks)], dictentry.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -1182,7 +1185,8 @@ func (c *DictTypeClient) QueryEntries(_m *DictType) *DictEntryQuery {
 
 // Hooks returns the client hooks.
 func (c *DictTypeClient) Hooks() []Hook {
-	return c.hooks.DictType
+	hooks := c.hooks.DictType
+	return append(hooks[:len(hooks):len(hooks)], dicttype.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -1315,7 +1319,8 @@ func (c *FileClient) GetX(ctx context.Context, id uint32) *File {
 
 // Hooks returns the client hooks.
 func (c *FileClient) Hooks() []Hook {
-	return c.hooks.File
+	hooks := c.hooks.File
+	return append(hooks[:len(hooks):len(hooks)], file.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -1448,7 +1453,8 @@ func (c *InternalMessageClient) GetX(ctx context.Context, id uint32) *InternalMe
 
 // Hooks returns the client hooks.
 func (c *InternalMessageClient) Hooks() []Hook {
-	return c.hooks.InternalMessage
+	hooks := c.hooks.InternalMessage
+	return append(hooks[:len(hooks):len(hooks)], internalmessage.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -1581,7 +1587,8 @@ func (c *InternalMessageCategoryClient) GetX(ctx context.Context, id uint32) *In
 
 // Hooks returns the client hooks.
 func (c *InternalMessageCategoryClient) Hooks() []Hook {
-	return c.hooks.InternalMessageCategory
+	hooks := c.hooks.InternalMessageCategory
+	return append(hooks[:len(hooks):len(hooks)], internalmessagecategory.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -1714,7 +1721,8 @@ func (c *InternalMessageRecipientClient) GetX(ctx context.Context, id uint32) *I
 
 // Hooks returns the client hooks.
 func (c *InternalMessageRecipientClient) Hooks() []Hook {
-	return c.hooks.InternalMessageRecipient
+	hooks := c.hooks.InternalMessageRecipient
+	return append(hooks[:len(hooks):len(hooks)], internalmessagerecipient.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -1980,7 +1988,8 @@ func (c *LoginAuditLogClient) GetX(ctx context.Context, id uint32) *LoginAuditLo
 
 // Hooks returns the client hooks.
 func (c *LoginAuditLogClient) Hooks() []Hook {
-	return c.hooks.LoginAuditLog
+	hooks := c.hooks.LoginAuditLog
+	return append(hooks[:len(hooks):len(hooks)], loginauditlog.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -2113,7 +2122,8 @@ func (c *LoginPolicyClient) GetX(ctx context.Context, id uint32) *LoginPolicy {
 
 // Hooks returns the client hooks.
 func (c *LoginPolicyClient) Hooks() []Hook {
-	return c.hooks.LoginPolicy
+	hooks := c.hooks.LoginPolicy
+	return append(hooks[:len(hooks):len(hooks)], loginpolicy.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -2246,7 +2256,8 @@ func (c *MembershipClient) GetX(ctx context.Context, id uint32) *Membership {
 
 // Hooks returns the client hooks.
 func (c *MembershipClient) Hooks() []Hook {
-	return c.hooks.Membership
+	hooks := c.hooks.Membership
+	return append(hooks[:len(hooks):len(hooks)], membership.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -2379,7 +2390,8 @@ func (c *MembershipOrgUnitClient) GetX(ctx context.Context, id uint32) *Membersh
 
 // Hooks returns the client hooks.
 func (c *MembershipOrgUnitClient) Hooks() []Hook {
-	return c.hooks.MembershipOrgUnit
+	hooks := c.hooks.MembershipOrgUnit
+	return append(hooks[:len(hooks):len(hooks)], membershiporgunit.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -2512,7 +2524,8 @@ func (c *MembershipPositionClient) GetX(ctx context.Context, id uint32) *Members
 
 // Hooks returns the client hooks.
 func (c *MembershipPositionClient) Hooks() []Hook {
-	return c.hooks.MembershipPosition
+	hooks := c.hooks.MembershipPosition
+	return append(hooks[:len(hooks):len(hooks)], membershipposition.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -2645,7 +2658,8 @@ func (c *MembershipRoleClient) GetX(ctx context.Context, id uint32) *MembershipR
 
 // Hooks returns the client hooks.
 func (c *MembershipRoleClient) Hooks() []Hook {
-	return c.hooks.MembershipRole
+	hooks := c.hooks.MembershipRole
+	return append(hooks[:len(hooks):len(hooks)], membershiprole.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -2943,7 +2957,8 @@ func (c *OperationAuditLogClient) GetX(ctx context.Context, id uint32) *Operatio
 
 // Hooks returns the client hooks.
 func (c *OperationAuditLogClient) Hooks() []Hook {
-	return c.hooks.OperationAuditLog
+	hooks := c.hooks.OperationAuditLog
+	return append(hooks[:len(hooks):len(hooks)], operationauditlog.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -3108,7 +3123,8 @@ func (c *OrgUnitClient) QueryChildren(_m *OrgUnit) *OrgUnitQuery {
 
 // Hooks returns the client hooks.
 func (c *OrgUnitClient) Hooks() []Hook {
-	return c.hooks.OrgUnit
+	hooks := c.hooks.OrgUnit
+	return append(hooks[:len(hooks):len(hooks)], orgunit.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -3507,7 +3523,8 @@ func (c *PermissionAuditLogClient) GetX(ctx context.Context, id uint32) *Permiss
 
 // Hooks returns the client hooks.
 func (c *PermissionAuditLogClient) Hooks() []Hook {
-	return c.hooks.PermissionAuditLog
+	hooks := c.hooks.PermissionAuditLog
+	return append(hooks[:len(hooks):len(hooks)], permissionauditlog.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -4071,7 +4088,8 @@ func (c *PolicyEvaluationLogClient) GetX(ctx context.Context, id uint32) *Policy
 
 // Hooks returns the client hooks.
 func (c *PolicyEvaluationLogClient) Hooks() []Hook {
-	return c.hooks.PolicyEvaluationLog
+	hooks := c.hooks.PolicyEvaluationLog
+	return append(hooks[:len(hooks):len(hooks)], policyevaluationlog.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -4204,7 +4222,8 @@ func (c *PositionClient) GetX(ctx context.Context, id uint32) *Position {
 
 // Hooks returns the client hooks.
 func (c *PositionClient) Hooks() []Hook {
-	return c.hooks.Position
+	hooks := c.hooks.Position
+	return append(hooks[:len(hooks):len(hooks)], position.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -4337,7 +4356,8 @@ func (c *RoleClient) GetX(ctx context.Context, id uint32) *Role {
 
 // Hooks returns the client hooks.
 func (c *RoleClient) Hooks() []Hook {
-	return c.hooks.Role
+	hooks := c.hooks.Role
+	return append(hooks[:len(hooks):len(hooks)], role.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -4470,7 +4490,8 @@ func (c *RoleMetadataClient) GetX(ctx context.Context, id uint32) *RoleMetadata 
 
 // Hooks returns the client hooks.
 func (c *RoleMetadataClient) Hooks() []Hook {
-	return c.hooks.RoleMetadata
+	hooks := c.hooks.RoleMetadata
+	return append(hooks[:len(hooks):len(hooks)], rolemetadata.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -4603,7 +4624,8 @@ func (c *RolePermissionClient) GetX(ctx context.Context, id uint32) *RolePermiss
 
 // Hooks returns the client hooks.
 func (c *RolePermissionClient) Hooks() []Hook {
-	return c.hooks.RolePermission
+	hooks := c.hooks.RolePermission
+	return append(hooks[:len(hooks):len(hooks)], rolepermission.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -4736,7 +4758,8 @@ func (c *TaskClient) GetX(ctx context.Context, id uint32) *Task {
 
 // Hooks returns the client hooks.
 func (c *TaskClient) Hooks() []Hook {
-	return c.hooks.Task
+	hooks := c.hooks.Task
+	return append(hooks[:len(hooks):len(hooks)], task.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -5002,7 +5025,8 @@ func (c *UserClient) GetX(ctx context.Context, id uint32) *User {
 
 // Hooks returns the client hooks.
 func (c *UserClient) Hooks() []Hook {
-	return c.hooks.User
+	hooks := c.hooks.User
+	return append(hooks[:len(hooks):len(hooks)], user.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -5135,7 +5159,8 @@ func (c *UserCredentialClient) GetX(ctx context.Context, id uint32) *UserCredent
 
 // Hooks returns the client hooks.
 func (c *UserCredentialClient) Hooks() []Hook {
-	return c.hooks.UserCredential
+	hooks := c.hooks.UserCredential
+	return append(hooks[:len(hooks):len(hooks)], usercredential.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -5268,7 +5293,8 @@ func (c *UserOrgUnitClient) GetX(ctx context.Context, id uint32) *UserOrgUnit {
 
 // Hooks returns the client hooks.
 func (c *UserOrgUnitClient) Hooks() []Hook {
-	return c.hooks.UserOrgUnit
+	hooks := c.hooks.UserOrgUnit
+	return append(hooks[:len(hooks):len(hooks)], userorgunit.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -5401,7 +5427,8 @@ func (c *UserPositionClient) GetX(ctx context.Context, id uint32) *UserPosition 
 
 // Hooks returns the client hooks.
 func (c *UserPositionClient) Hooks() []Hook {
-	return c.hooks.UserPosition
+	hooks := c.hooks.UserPosition
+	return append(hooks[:len(hooks):len(hooks)], userposition.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.
@@ -5534,7 +5561,8 @@ func (c *UserRoleClient) GetX(ctx context.Context, id uint32) *UserRole {
 
 // Hooks returns the client hooks.
 func (c *UserRoleClient) Hooks() []Hook {
-	return c.hooks.UserRole
+	hooks := c.hooks.UserRole
+	return append(hooks[:len(hooks):len(hooks)], userrole.Hooks[:]...)
 }
 
 // Interceptors returns the client interceptors.

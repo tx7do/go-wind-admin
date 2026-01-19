@@ -7,12 +7,12 @@ import (
 	"strings"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
+	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	"go-wind-admin/app/admin/service/internal/data"
 
@@ -128,7 +128,9 @@ func (s *RouterService) ListPermissionCode(ctx context.Context, _ *emptypb.Empty
 
 	menus, err := s.menuRepo.List(ctx, &paginationV1.PagingRequest{
 		NoPaging: trans.Ptr(true),
-		Query:    trans.Ptr(s.menuListToQueryString(roleMenus, true)),
+		FilteringType: &paginationV1.PagingRequest_Query{
+			Query: s.menuListToQueryString(roleMenus, true),
+		},
 		FieldMask: &fieldmaskpb.FieldMask{
 			Paths: []string{"id", "meta"},
 		},
@@ -220,7 +222,9 @@ func (s *RouterService) ListRoute(ctx context.Context, _ *emptypb.Empty) (*permi
 
 	menuList, err := s.menuRepo.List(ctx, &paginationV1.PagingRequest{
 		NoPaging: trans.Ptr(true),
-		Query:    trans.Ptr(s.menuListToQueryString(roleMenus, false)),
+		FilteringType: &paginationV1.PagingRequest_Query{
+			Query: s.menuListToQueryString(roleMenus, false),
+		},
 	}, true)
 	if err != nil {
 		s.log.Errorf("list route failed [%s]", err.Error())

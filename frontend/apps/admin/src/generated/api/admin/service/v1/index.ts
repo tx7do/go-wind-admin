@@ -151,22 +151,11 @@ export function createApiServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -194,8 +183,14 @@ export function createApiServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -345,33 +340,20 @@ export type pagination_PagingRequest = {
   token?: string;
   // 是否不分页，如果为true，则page和pageSize参数无效。
   noPaging?: boolean;
-  // 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-  orderBy: string[] | undefined;
-  // 排序规则（可选，建议必传以保证分页结果稳定）
-  sorting: pagination_Sorting[] | undefined;
-  // AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+  // JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
   query?: string;
-  // OR过滤参数，语法同AND过滤参数。
-  or?: string;
-  // 复杂过滤表达式
-  filterExpr?: pagination_FilterExpr;
-  // 过滤字符串，基于AIP规范的过滤表达式。
+  // Google AIP规范字符串过滤条件
   filter?: string;
+  // 复杂过滤表达式（优先使用）
+  filterExpr?: pagination_FilterExpr;
+  // 排序条件
+  orderBy?: string;
+  // 排序规则
+  sorting: pagination_Sorting[] | undefined;
   // 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
   fieldMask?: wellKnownFieldMask;
 };
 
-// 排序规则（分页场景通常需配合排序保证结果稳定）
-export type pagination_Sorting = {
-  // 排序字段（如"id"、"create_time"）
-  field: string | undefined;
-  order: pagination_Sorting_Order | undefined;
-};
-
-// 排序方向（ASC/DESC，默认ASC）
-export type pagination_Sorting_Order =
-  | "ASC"
-  | "DESC";
 // 过滤表达式
 export type pagination_FilterExpr = {
   // 过滤表达式类型
@@ -465,6 +447,18 @@ export type pagination_DatePart =
   | "MINUTE"
   | "SECOND"
   | "MICROSECOND";
+// 排序规则（分页场景通常需配合排序保证结果稳定）
+export type pagination_Sorting = {
+  // 排序字段（如"id"、"create_time"）
+  field: string | undefined;
+  // 排序方向
+  direction: pagination_Sorting_Direction | undefined;
+};
+
+// 排序方向（ASC/DESC，默认ASC）
+export type pagination_Sorting_Direction =
+  | "ASC"
+  | "DESC";
 // In JSON, a field mask is encoded as a single string where paths are
 // separated by a comma. Fields name in each path are converted
 // to/from lower-camel naming conventions.
@@ -593,22 +587,11 @@ export function createApiAuditLogServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -636,8 +619,14 @@ export function createApiAuditLogServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -915,22 +904,11 @@ export function createDataAccessAuditLogServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -958,8 +936,14 @@ export function createDataAccessAuditLogServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -1109,22 +1093,11 @@ export function createDictServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -1152,8 +1125,14 @@ export function createDictServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -1278,22 +1257,11 @@ export function createDictServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -1321,8 +1289,14 @@ export function createDictServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -1415,6 +1389,8 @@ export type dictservicev1_DictType = {
   isEnabled?: boolean;
   sortOrder?: number;
   description?: string;
+  tenantId?: number;
+  tenantName?: string;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -1465,6 +1441,8 @@ export type dictservicev1_DictEntry = {
   isEnabled?: boolean;
   sortOrder?: number;
   description?: string;
+  tenantId?: number;
+  tenantName?: string;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -1526,22 +1504,11 @@ export function createFileServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -1569,8 +1536,14 @@ export function createFileServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -1692,6 +1665,8 @@ export type fileservicev1_File = {
   sizeFormat?: string;
   linkUrl?: string;
   md5?: string;
+  tenantId?: number;
+  tenantName?: string;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -1779,22 +1754,11 @@ export function createInternalMessageServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -1822,8 +1786,14 @@ export function createInternalMessageServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -1959,6 +1929,8 @@ export type internal_messageservicev1_InternalMessage = {
   senderName?: string;
   categoryId?: number;
   categoryName?: string;
+  tenantId?: number;
+  tenantName?: string;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -2059,22 +2031,11 @@ export function createInternalMessageCategoryServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -2102,8 +2063,14 @@ export function createInternalMessageCategoryServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -2217,6 +2184,8 @@ export type internal_messageservicev1_InternalMessageCategory = {
   iconUrl?: string;
   sortOrder?: number;
   isEnabled?: boolean;
+  tenantId?: number;
+  tenantName?: string;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -2285,22 +2254,11 @@ export function createInternalMessageRecipientServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -2328,8 +2286,14 @@ export function createInternalMessageRecipientServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -2398,6 +2362,8 @@ export type internal_messageservicev1_InternalMessageRecipient = {
   readAt?: wellKnownTimestamp;
   title?: string;
   content?: string;
+  tenantId?: number;
+  tenantName?: string;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -2457,22 +2423,11 @@ export function createLoginAuditLogServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -2500,8 +2455,14 @@ export function createLoginAuditLogServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -2622,6 +2583,8 @@ export type LoginPolicy = {
   method?: LoginPolicy_Method;
   value?: string;
   reason?: string;
+  tenantId?: number;
+  tenantName?: string;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -2713,22 +2676,11 @@ export function createLoginPolicyServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -2756,8 +2708,14 @@ export function createLoginPolicyServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -2897,22 +2855,11 @@ export function createMenuServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -2940,8 +2887,14 @@ export function createMenuServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -3228,22 +3181,11 @@ export function createOperationAuditLogServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -3271,8 +3213,14 @@ export function createOperationAuditLogServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -3402,22 +3350,11 @@ export function createOrgUnitServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -3445,8 +3382,14 @@ export function createOrgUnitServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -3775,22 +3718,11 @@ export function createPermissionServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -3818,8 +3750,14 @@ export function createPermissionServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -4035,22 +3973,11 @@ export function createPermissionAuditLogServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -4078,8 +4005,14 @@ export function createPermissionAuditLogServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -4201,22 +4134,11 @@ export function createPermissionGroupServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -4244,8 +4166,14 @@ export function createPermissionGroupServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -4432,22 +4360,11 @@ export function createPolicyEvaluationLogServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -4475,8 +4392,14 @@ export function createPolicyEvaluationLogServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -4592,22 +4515,11 @@ export function createPositionServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -4635,8 +4547,14 @@ export function createPositionServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -4857,22 +4775,11 @@ export function createRoleServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -4900,8 +4807,14 @@ export function createRoleServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -5022,6 +4935,7 @@ export type userservicev1_Role = {
   status?: userservicev1_Role_Status;
   description?: string;
   isProtected?: boolean;
+  isSystem?: boolean;
   permissions: number[] | undefined;
   tenantId?: number;
   tenantName?: string;
@@ -5203,6 +5117,7 @@ export type Task = {
   taskOptions?: TaskOption;
   enable?: boolean;
   remark?: string;
+  tenantId?: number;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -5322,22 +5237,11 @@ export function createTaskServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -5365,8 +5269,14 @@ export function createTaskServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -5706,22 +5616,11 @@ export function createTenantServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -5749,8 +5648,14 @@ export function createTenantServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)
@@ -5878,6 +5783,9 @@ export function createTenantServiceClient(
       if (request.code) {
         queryParams.push(`code=${encodeURIComponent(request.code.toString())}`)
       }
+      if (request.name) {
+        queryParams.push(`name=${encodeURIComponent(request.name.toString())}`)
+      }
       let uri = path;
       if (queryParams.length > 0) {
         uri += `?${queryParams.join("&")}`
@@ -5928,6 +5836,7 @@ export type userservicev1_DeleteTenantRequest = {
 // 租户是否存在 - 请求
 export type userservicev1_TenantExistsRequest = {
   code: string | undefined;
+  name: string | undefined;
 };
 
 // 租户是否存在 - 答复
@@ -6136,22 +6045,11 @@ export function createUserServiceClient(
       if (request.noPaging) {
         queryParams.push(`noPaging=${encodeURIComponent(request.noPaging.toString())}`)
       }
-      if (request.orderBy) {
-        request.orderBy.forEach((x) => {
-          queryParams.push(`orderBy=${encodeURIComponent(x.toString())}`)
-        })
-      }
-      if (request.sorting?.field) {
-        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
-      }
-      if (request.sorting?.order) {
-        queryParams.push(`sorting.order=${encodeURIComponent(request.sorting.order.toString())}`)
-      }
       if (request.query) {
         queryParams.push(`query=${encodeURIComponent(request.query.toString())}`)
       }
-      if (request.or) {
-        queryParams.push(`or=${encodeURIComponent(request.or.toString())}`)
+      if (request.filter) {
+        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
       }
       if (request.filterExpr?.type) {
         queryParams.push(`filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`)
@@ -6179,8 +6077,14 @@ export function createUserServiceClient(
       if (request.filterExpr?.conditions?.jsonPath) {
         queryParams.push(`filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`)
       }
-      if (request.filter) {
-        queryParams.push(`filter=${encodeURIComponent(request.filter.toString())}`)
+      if (request.orderBy) {
+        queryParams.push(`orderBy=${encodeURIComponent(request.orderBy.toString())}`)
+      }
+      if (request.sorting?.field) {
+        queryParams.push(`sorting.field=${encodeURIComponent(request.sorting.field.toString())}`)
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(`sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`)
       }
       if (request.fieldMask) {
         queryParams.push(`fieldMask=${encodeURIComponent(request.fieldMask.toString())}`)

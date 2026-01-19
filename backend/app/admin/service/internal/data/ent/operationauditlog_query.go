@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/operationauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
@@ -329,6 +330,12 @@ func (_q *OperationAuditLogQuery) prepareQuery(ctx context.Context) error {
 			return err
 		}
 		_q.sql = prev
+	}
+	if operationauditlog.Policy == nil {
+		return errors.New("ent: uninitialized operationauditlog.Policy (forgotten import ent/runtime?)")
+	}
+	if err := operationauditlog.Policy.EvalQuery(ctx, _q); err != nil {
+		return err
 	}
 	return nil
 }

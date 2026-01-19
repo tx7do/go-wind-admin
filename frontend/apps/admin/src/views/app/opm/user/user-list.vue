@@ -3,7 +3,7 @@ import type { VxeGridListeners, VxeGridProps } from '#/adapter/vxe-table';
 
 import { h, watch } from 'vue';
 
-import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
+import { useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideInfo, LucideTrash2 } from '@vben/icons';
 import { isEqual } from '@vben/utils';
 
@@ -169,7 +169,6 @@ const gridOptions: VxeGridProps<User> = {
     { title: $t('page.user.table.nickname'), field: 'nickname', width: 100 },
     { title: $t('page.user.table.email'), field: 'email', width: 160 },
     { title: $t('page.user.table.mobile'), field: 'mobile', width: 130 },
-    { title: $t('page.user.table.tenantId'), field: 'tenantName', width: 130 },
     {
       title: $t('page.user.table.orgUnitId'),
       field: 'orgUnitName',
@@ -295,67 +294,65 @@ watch(
 </script>
 
 <template>
-  <Page auto-content-height>
-    <Grid :table-title="$t('menu.opm.user')">
-      <template #toolbar-tools>
-        <a-button type="primary" @click="handleCreate">
-          {{ $t('page.user.button.create') }}
-        </a-button>
-      </template>
-      <template #status="{ row }">
-        <a-tag :color="statusToColor(row.status)">
-          {{ statusToName(row.status) }}
-        </a-tag>
-      </template>
-      <template #gender="{ row }">
-        <a-tag :color="genderToColor(row.gender)">
-          {{ genderToName(row.gender) }}
-        </a-tag>
-      </template>
-      <template #role="{ row }">
-        <div>
-          <a-tag
-            v-for="role in row.roleNames"
-            :key="role"
-            class="mb-1 mr-1"
-            :style="{
-              backgroundColor: getRandomColor(role), // 随机背景色
-              color: '#333', // 深色文字（适配浅色背景）
-              border: 'none', // 可选：去掉边框更美观
-            }"
-          >
-            {{ role }}
-          </a-tag>
-        </div>
-      </template>
-      <template #action="{ row }">
-        <a-button
-          type="link"
-          :icon="h(LucideInfo)"
-          @click.stop="handleDetail(row)"
-        />
-
-        <a-button
-          type="link"
-          :icon="h(LucideFilePenLine)"
-          @click.stop="handleEdit(row)"
-        />
-        <a-popconfirm
-          :cancel-text="$t('ui.button.cancel')"
-          :ok-text="$t('ui.button.ok')"
-          :title="
-            $t('ui.text.do_you_want_delete', {
-              moduleName: $t('page.user.moduleName'),
-            })
-          "
-          @confirm="handleDelete(row)"
+  <Grid :table-title="$t('menu.opm.user')">
+    <template #toolbar-tools>
+      <a-button type="primary" @click="handleCreate">
+        {{ $t('page.user.button.create') }}
+      </a-button>
+    </template>
+    <template #status="{ row }">
+      <a-tag :color="statusToColor(row.status)">
+        {{ statusToName(row.status) }}
+      </a-tag>
+    </template>
+    <template #gender="{ row }">
+      <a-tag :color="genderToColor(row.gender)">
+        {{ genderToName(row.gender) }}
+      </a-tag>
+    </template>
+    <template #role="{ row }">
+      <div>
+        <a-tag
+          v-for="role in row.roleNames"
+          :key="role"
+          class="mb-1 mr-1"
+          :style="{
+            backgroundColor: getRandomColor(role), // 随机背景色
+            color: '#333', // 深色文字（适配浅色背景）
+            border: 'none', // 可选：去掉边框更美观
+          }"
         >
-          <a-button danger type="link" :icon="h(LucideTrash2)" />
-        </a-popconfirm>
-      </template>
-    </Grid>
-    <Drawer />
-  </Page>
+          {{ role }}
+        </a-tag>
+      </div>
+    </template>
+    <template #action="{ row }">
+      <a-button
+        type="link"
+        :icon="h(LucideInfo)"
+        @click.stop="handleDetail(row)"
+      />
+
+      <a-button
+        type="link"
+        :icon="h(LucideFilePenLine)"
+        @click.stop="handleEdit(row)"
+      />
+      <a-popconfirm
+        :cancel-text="$t('ui.button.cancel')"
+        :ok-text="$t('ui.button.ok')"
+        :title="
+          $t('ui.text.do_you_want_delete', {
+            moduleName: $t('page.user.moduleName'),
+          })
+        "
+        @confirm="handleDelete(row)"
+      >
+        <a-button danger type="link" :icon="h(LucideTrash2)" />
+      </a-popconfirm>
+    </template>
+  </Grid>
+  <Drawer />
 </template>
 
 <style scoped></style>

@@ -6,7 +6,11 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+
 	"github.com/tx7do/go-crud/entgo/mixin"
+
+	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
+	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // Role holds the schema definition for the Role entity.
@@ -45,6 +49,11 @@ func (Role) Fields() []ent.Field {
 			Comment("是否受保护的角色").
 			Default(false).
 			Nillable(),
+
+		field.Bool("is_system").
+			Comment("是否系统角色（平台预置，不可删除）").
+			Default(false).
+			Nillable(),
 	}
 }
 
@@ -59,6 +68,13 @@ func (Role) Mixin() []ent.Mixin {
 		mixin.SortOrder{},
 		mixin.TenantID{},
 		mixin.SwitchStatus{},
+	}
+}
+
+// Policy for all schemas that embed Role.
+func (Role) Policy() ent.Policy {
+	return privacy.Policy{
+		Query: rule.TenantQueryPolicy(),
 	}
 }
 

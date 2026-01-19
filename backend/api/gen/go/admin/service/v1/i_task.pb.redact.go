@@ -208,6 +208,8 @@ func (x *Task) Redact() string {
 
 	// Safe field: Remark
 
+	// Safe field: TenantId
+
 	// Safe field: CreatedBy
 
 	// Safe field: UpdatedBy

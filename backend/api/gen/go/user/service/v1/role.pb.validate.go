@@ -84,6 +84,10 @@ func (m *Role) validate(all bool) error {
 		// no validation rules for IsProtected
 	}
 
+	if m.IsSystem != nil {
+		// no validation rules for IsSystem
+	}
+
 	if m.TenantId != nil {
 		// no validation rules for TenantId
 	}

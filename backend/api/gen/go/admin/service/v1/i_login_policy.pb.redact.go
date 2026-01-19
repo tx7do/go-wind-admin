@@ -121,6 +121,10 @@ func (x *LoginPolicy) Redact() string {
 
 	// Safe field: Reason
 
+	// Safe field: TenantId
+
+	// Safe field: TenantName
+
 	// Safe field: CreatedBy
 
 	// Safe field: UpdatedBy

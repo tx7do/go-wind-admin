@@ -18,6 +18,21 @@ import { useAuthStore } from '#/stores';
 
 const { apiURL } = useAppConfig(import.meta.env, import.meta.env.PROD);
 
+/**
+ * 默认的请求 ID 生成器
+ */
+function defaultIdGenerator(): string {
+  try {
+    // 优先使用标准 API
+    const rnd = (globalThis as any)?.crypto?.randomUUID?.();
+    if (typeof rnd === 'string' && rnd.length > 0) return rnd;
+  } catch {
+    // ignore
+  }
+  // 降级方案
+  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
+
 function createRequestClient(baseURL: string) {
   const client = new RequestClient({
     baseURL,
@@ -52,8 +67,13 @@ function createRequestClient(baseURL: string) {
     fulfilled: async (config) => {
       const accessStore = useAccessStore();
 
+      const requestId = config.headers['X-Request-ID'] || defaultIdGenerator();
+      (config as any)._requestId = requestId;
+
       config.headers.Authorization = formatToken(accessStore.accessToken);
       config.headers['Accept-Language'] = preferences.app.locale;
+      config.headers['X-Request-ID'] = requestId;
+      config.headers['X-Requested-With'] = 'XMLHttpRequest';
       return config;
     },
   });

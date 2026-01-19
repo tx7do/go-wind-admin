@@ -84,6 +84,11 @@ func DeletedBy(v uint32) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldDeletedBy, v))
 }
 
+// TenantID applies equality check predicate on the "tenant_id" field. It's identical to TenantIDEQ.
+func TenantID(v uint32) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldEQ(FieldTenantID, v))
+}
+
 // RoleID applies equality check predicate on the "role_id" field. It's identical to RoleIDEQ.
 func RoleID(v uint32) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldRoleID, v))
@@ -107,6 +112,11 @@ func TemplateVersion(v int32) predicate.RoleMetadata {
 // LastSyncedVersion applies equality check predicate on the "last_synced_version" field. It's identical to LastSyncedVersionEQ.
 func LastSyncedVersion(v int32) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldLastSyncedVersion, v))
+}
+
+// LastSyncedAt applies equality check predicate on the "last_synced_at" field. It's identical to LastSyncedAtEQ.
+func LastSyncedAt(v time.Time) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldEQ(FieldLastSyncedAt, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -409,6 +419,56 @@ func DeletedByNotNil() predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldNotNull(FieldDeletedBy))
 }
 
+// TenantIDEQ applies the EQ predicate on the "tenant_id" field.
+func TenantIDEQ(v uint32) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldEQ(FieldTenantID, v))
+}
+
+// TenantIDNEQ applies the NEQ predicate on the "tenant_id" field.
+func TenantIDNEQ(v uint32) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldNEQ(FieldTenantID, v))
+}
+
+// TenantIDIn applies the In predicate on the "tenant_id" field.
+func TenantIDIn(vs ...uint32) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldIn(FieldTenantID, vs...))
+}
+
+// TenantIDNotIn applies the NotIn predicate on the "tenant_id" field.
+func TenantIDNotIn(vs ...uint32) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldNotIn(FieldTenantID, vs...))
+}
+
+// TenantIDGT applies the GT predicate on the "tenant_id" field.
+func TenantIDGT(v uint32) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldGT(FieldTenantID, v))
+}
+
+// TenantIDGTE applies the GTE predicate on the "tenant_id" field.
+func TenantIDGTE(v uint32) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldGTE(FieldTenantID, v))
+}
+
+// TenantIDLT applies the LT predicate on the "tenant_id" field.
+func TenantIDLT(v uint32) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldLT(FieldTenantID, v))
+}
+
+// TenantIDLTE applies the LTE predicate on the "tenant_id" field.
+func TenantIDLTE(v uint32) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldLTE(FieldTenantID, v))
+}
+
+// TenantIDIsNil applies the IsNil predicate on the "tenant_id" field.
+func TenantIDIsNil() predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldIsNull(FieldTenantID))
+}
+
+// TenantIDNotNil applies the NotNil predicate on the "tenant_id" field.
+func TenantIDNotNil() predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldNotNull(FieldTenantID))
+}
+
 // RoleIDEQ applies the EQ predicate on the "role_id" field.
 func RoleIDEQ(v uint32) predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldEQ(FieldRoleID, v))
@@ -652,6 +712,116 @@ func LastSyncedVersionIsNil() predicate.RoleMetadata {
 // LastSyncedVersionNotNil applies the NotNil predicate on the "last_synced_version" field.
 func LastSyncedVersionNotNil() predicate.RoleMetadata {
 	return predicate.RoleMetadata(sql.FieldNotNull(FieldLastSyncedVersion))
+}
+
+// LastSyncedAtEQ applies the EQ predicate on the "last_synced_at" field.
+func LastSyncedAtEQ(v time.Time) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldEQ(FieldLastSyncedAt, v))
+}
+
+// LastSyncedAtNEQ applies the NEQ predicate on the "last_synced_at" field.
+func LastSyncedAtNEQ(v time.Time) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldNEQ(FieldLastSyncedAt, v))
+}
+
+// LastSyncedAtIn applies the In predicate on the "last_synced_at" field.
+func LastSyncedAtIn(vs ...time.Time) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldIn(FieldLastSyncedAt, vs...))
+}
+
+// LastSyncedAtNotIn applies the NotIn predicate on the "last_synced_at" field.
+func LastSyncedAtNotIn(vs ...time.Time) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldNotIn(FieldLastSyncedAt, vs...))
+}
+
+// LastSyncedAtGT applies the GT predicate on the "last_synced_at" field.
+func LastSyncedAtGT(v time.Time) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldGT(FieldLastSyncedAt, v))
+}
+
+// LastSyncedAtGTE applies the GTE predicate on the "last_synced_at" field.
+func LastSyncedAtGTE(v time.Time) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldGTE(FieldLastSyncedAt, v))
+}
+
+// LastSyncedAtLT applies the LT predicate on the "last_synced_at" field.
+func LastSyncedAtLT(v time.Time) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldLT(FieldLastSyncedAt, v))
+}
+
+// LastSyncedAtLTE applies the LTE predicate on the "last_synced_at" field.
+func LastSyncedAtLTE(v time.Time) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldLTE(FieldLastSyncedAt, v))
+}
+
+// LastSyncedAtIsNil applies the IsNil predicate on the "last_synced_at" field.
+func LastSyncedAtIsNil() predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldIsNull(FieldLastSyncedAt))
+}
+
+// LastSyncedAtNotNil applies the NotNil predicate on the "last_synced_at" field.
+func LastSyncedAtNotNil() predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldNotNull(FieldLastSyncedAt))
+}
+
+// SyncPolicyEQ applies the EQ predicate on the "sync_policy" field.
+func SyncPolicyEQ(v SyncPolicy) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldEQ(FieldSyncPolicy, v))
+}
+
+// SyncPolicyNEQ applies the NEQ predicate on the "sync_policy" field.
+func SyncPolicyNEQ(v SyncPolicy) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldNEQ(FieldSyncPolicy, v))
+}
+
+// SyncPolicyIn applies the In predicate on the "sync_policy" field.
+func SyncPolicyIn(vs ...SyncPolicy) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldIn(FieldSyncPolicy, vs...))
+}
+
+// SyncPolicyNotIn applies the NotIn predicate on the "sync_policy" field.
+func SyncPolicyNotIn(vs ...SyncPolicy) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldNotIn(FieldSyncPolicy, vs...))
+}
+
+// SyncPolicyIsNil applies the IsNil predicate on the "sync_policy" field.
+func SyncPolicyIsNil() predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldIsNull(FieldSyncPolicy))
+}
+
+// SyncPolicyNotNil applies the NotNil predicate on the "sync_policy" field.
+func SyncPolicyNotNil() predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldNotNull(FieldSyncPolicy))
+}
+
+// ScopeEQ applies the EQ predicate on the "scope" field.
+func ScopeEQ(v Scope) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldEQ(FieldScope, v))
+}
+
+// ScopeNEQ applies the NEQ predicate on the "scope" field.
+func ScopeNEQ(v Scope) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldNEQ(FieldScope, v))
+}
+
+// ScopeIn applies the In predicate on the "scope" field.
+func ScopeIn(vs ...Scope) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldIn(FieldScope, vs...))
+}
+
+// ScopeNotIn applies the NotIn predicate on the "scope" field.
+func ScopeNotIn(vs ...Scope) predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldNotIn(FieldScope, vs...))
+}
+
+// ScopeIsNil applies the IsNil predicate on the "scope" field.
+func ScopeIsNil() predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldIsNull(FieldScope))
+}
+
+// ScopeNotNil applies the NotNil predicate on the "scope" field.
+func ScopeNotNil() predicate.RoleMetadata {
+	return predicate.RoleMetadata(sql.FieldNotNull(FieldScope))
 }
 
 // And groups predicates with the AND operator between them.

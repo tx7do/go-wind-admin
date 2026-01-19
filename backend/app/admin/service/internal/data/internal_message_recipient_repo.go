@@ -144,6 +144,7 @@ func (r *InternalMessageRecipientRepo) Create(ctx context.Context, req *internal
 	}
 
 	builder := r.entClient.Client().InternalMessageRecipient.Create().
+		SetNillableTenantID(req.TenantId).
 		SetNillableMessageID(req.MessageId).
 		SetNillableRecipientUserID(req.RecipientUserId).
 		SetNillableStatus(r.statusConverter.ToEntity(req.Status)).

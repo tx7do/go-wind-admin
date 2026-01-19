@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 
 import { $t } from '@vben/locales';
+import { useUserStore } from '@vben/stores';
 
 import { defineStore } from 'pinia';
 
@@ -9,11 +10,12 @@ import {
   type userservicev1_Position_Status as Position_Status,
   type userservicev1_Position_Type as Position_Type,
 } from '#/generated/api/admin/service/v1';
-import { makeQueryString, makeUpdateMask } from '#/utils/query';
+import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 export const usePositionStore = defineStore('position', () => {
   const service = createPositionServiceClient(requestClientRequestHandler);
+  const userStore = useUserStore();
 
   /**
    * 查询职位列表
@@ -29,8 +31,8 @@ export const usePositionStore = defineStore('position', () => {
     return await service.List({
       // @ts-ignore proto generated code is error.
       fieldMask,
-      orderBy: orderBy ?? [],
-      query: makeQueryString(formValues ?? null),
+      orderBy: makeOrderBy(orderBy),
+      query: makeQueryString(formValues, userStore.isTenantUser()),
       page: paging?.page,
       pageSize: paging?.pageSize,
       noPaging,

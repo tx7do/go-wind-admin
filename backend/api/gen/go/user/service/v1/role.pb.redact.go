@@ -165,6 +165,8 @@ func (x *Role) Redact() string {
 
 	// Safe field: IsProtected
 
+	// Safe field: IsSystem
+
 	// Safe field: Permissions
 
 	// Safe field: TenantId

@@ -119,6 +119,11 @@ func IsProtected(v bool) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldIsProtected, v))
 }
 
+// IsSystem applies equality check predicate on the "is_system" field. It's identical to IsSystemEQ.
+func IsSystem(v bool) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldIsSystem, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldCreatedAt, v))
@@ -847,6 +852,16 @@ func IsProtectedEQ(v bool) predicate.Role {
 // IsProtectedNEQ applies the NEQ predicate on the "is_protected" field.
 func IsProtectedNEQ(v bool) predicate.Role {
 	return predicate.Role(sql.FieldNEQ(FieldIsProtected, v))
+}
+
+// IsSystemEQ applies the EQ predicate on the "is_system" field.
+func IsSystemEQ(v bool) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldIsSystem, v))
+}
+
+// IsSystemNEQ applies the NEQ predicate on the "is_system" field.
+func IsSystemNEQ(v bool) predicate.Role {
+	return predicate.Role(sql.FieldNEQ(FieldIsSystem, v))
 }
 
 // And groups predicates with the AND operator between them.

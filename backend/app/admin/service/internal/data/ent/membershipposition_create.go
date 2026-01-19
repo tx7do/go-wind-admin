@@ -243,7 +243,9 @@ func (_c *MembershipPositionCreate) Mutation() *MembershipPositionMutation {
 
 // Save creates the MembershipPosition in the database.
 func (_c *MembershipPositionCreate) Save(ctx context.Context) (*MembershipPosition, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -270,7 +272,11 @@ func (_c *MembershipPositionCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *MembershipPositionCreate) defaults() {
+func (_c *MembershipPositionCreate) defaults() error {
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := membershipposition.DefaultTenantID
+		_c.mutation.SetTenantID(v)
+	}
 	if _, ok := _c.mutation.IsPrimary(); !ok {
 		v := membershipposition.DefaultIsPrimary
 		_c.mutation.SetIsPrimary(v)
@@ -279,6 +285,7 @@ func (_c *MembershipPositionCreate) defaults() {
 		v := membershipposition.DefaultStatus
 		_c.mutation.SetStatus(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

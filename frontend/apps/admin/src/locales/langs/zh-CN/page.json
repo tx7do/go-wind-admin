@@ -88,6 +88,7 @@
     "isProtected": "内置角色",
     "apis": "分配API",
     "permissions": "分配权限",
+    "tenantName": "所属租户",
     "button": {
       "create": "创建角色"
     }
@@ -217,7 +218,7 @@
     "adminPassword": "初始密码",
     "adminPasswordConfirm": "确认密码",
     "adminMobile": "手机号",
-    "adminEmail": "邮箱",
+    "adminEmail": "电子邮箱",
     "button": {
       "create": "创建租户"
     },

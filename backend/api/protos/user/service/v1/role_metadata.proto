@@ -9,9 +9,46 @@ import "google/protobuf/field_mask.proto";
 
 import "pagination/v1/pagination.proto";
 
+// 角色权限覆盖
+message RoleOverride {
+  // 权限点覆盖
+  message PermissionDelta {
+    repeated string added_permissions = 1;   // 租户额外增加的权限
+    repeated string removed_permissions = 2; // 租户明确禁用的权限（即便模板有，也禁用）
+  }
+
+  PermissionDelta permissions = 1;
+
+  // 基础字段修改（如果为空则沿用模板）
+  optional string display_name = 2;
+  optional string description = 3;
+
+  // 扩展配置
+  map<string, string> extended_settings = 4; // 存储如 "ui_color": "#FF0000"
+
+  // 策略覆盖
+  message SecurityPolicy {
+    bool force_mfa = 1;
+    repeated string ip_allow_list = 2;
+  }
+  SecurityPolicy security_policy = 5;
+}
 
 // 角色元数据
 message RoleMetadata {
+  // 同步策略
+  enum SyncPolicy {
+    AUTO = 0;        // 自动同步
+    MANUAL = 1;      // 手动同步
+    BLOCKED = 2;     // 阻止同步
+  }
+
+  // 作用域
+  enum Scope {
+    PLATFORM = 0;     // 平台级
+    TENANT = 1;       // 租户级
+  }
+
   optional uint32 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {description: "角色元数据ID"}
@@ -42,10 +79,30 @@ message RoleMetadata {
     (gnostic.openapi.v3.property) = {description: "上次同步的版本号"}
   ];  // 上次同步的版本号
 
-  repeated string custom_overrides = 7 [
+  optional google.protobuf.Timestamp last_synced_at = 7 [
+    json_name = "lastSyncedAt",
+    (gnostic.openapi.v3.property) = {description: "最后同步时间"}
+  ];  // 最后同步时间
+
+  optional SyncPolicy sync_policy = 8 [
+    json_name = "syncPolicy",
+    (gnostic.openapi.v3.property) = {description: "同步策略"}
+  ];  // 同步策略
+
+  optional Scope scope = 9 [
+    json_name = "scope",
+    (gnostic.openapi.v3.property) = {description: "作用域"}
+  ];  // 作用域
+
+  RoleOverride custom_overrides = 10 [
     json_name = "customOverrides",
-    (gnostic.openapi.v3.property) = {description: "自定义覆盖项"}
-  ];  // 自定义覆盖项
+    (gnostic.openapi.v3.property) = {description: "租户自定义覆盖项"}
+  ];  // 租户自定义覆盖项
+
+  optional uint32 tenant_id = 20 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID，0代表系统全局角色"}
+  ];  // 租户ID，0代表系统全局角色
 
   optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
   optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID

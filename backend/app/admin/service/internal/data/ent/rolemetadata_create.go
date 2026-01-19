@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	userpb "go-wind-admin/api/gen/go/user/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolemetadata"
 	"time"
 
@@ -106,6 +107,20 @@ func (_c *RoleMetadataCreate) SetNillableDeletedBy(v *uint32) *RoleMetadataCreat
 	return _c
 }
 
+// SetTenantID sets the "tenant_id" field.
+func (_c *RoleMetadataCreate) SetTenantID(v uint32) *RoleMetadataCreate {
+	_c.mutation.SetTenantID(v)
+	return _c
+}
+
+// SetNillableTenantID sets the "tenant_id" field if the given value is not nil.
+func (_c *RoleMetadataCreate) SetNillableTenantID(v *uint32) *RoleMetadataCreate {
+	if v != nil {
+		_c.SetTenantID(*v)
+	}
+	return _c
+}
+
 // SetRoleID sets the "role_id" field.
 func (_c *RoleMetadataCreate) SetRoleID(v uint32) *RoleMetadataCreate {
 	_c.mutation.SetRoleID(v)
@@ -176,8 +191,50 @@ func (_c *RoleMetadataCreate) SetNillableLastSyncedVersion(v *int32) *RoleMetada
 	return _c
 }
 
+// SetLastSyncedAt sets the "last_synced_at" field.
+func (_c *RoleMetadataCreate) SetLastSyncedAt(v time.Time) *RoleMetadataCreate {
+	_c.mutation.SetLastSyncedAt(v)
+	return _c
+}
+
+// SetNillableLastSyncedAt sets the "last_synced_at" field if the given value is not nil.
+func (_c *RoleMetadataCreate) SetNillableLastSyncedAt(v *time.Time) *RoleMetadataCreate {
+	if v != nil {
+		_c.SetLastSyncedAt(*v)
+	}
+	return _c
+}
+
+// SetSyncPolicy sets the "sync_policy" field.
+func (_c *RoleMetadataCreate) SetSyncPolicy(v rolemetadata.SyncPolicy) *RoleMetadataCreate {
+	_c.mutation.SetSyncPolicy(v)
+	return _c
+}
+
+// SetNillableSyncPolicy sets the "sync_policy" field if the given value is not nil.
+func (_c *RoleMetadataCreate) SetNillableSyncPolicy(v *rolemetadata.SyncPolicy) *RoleMetadataCreate {
+	if v != nil {
+		_c.SetSyncPolicy(*v)
+	}
+	return _c
+}
+
+// SetScope sets the "scope" field.
+func (_c *RoleMetadataCreate) SetScope(v rolemetadata.Scope) *RoleMetadataCreate {
+	_c.mutation.SetScope(v)
+	return _c
+}
+
+// SetNillableScope sets the "scope" field if the given value is not nil.
+func (_c *RoleMetadataCreate) SetNillableScope(v *rolemetadata.Scope) *RoleMetadataCreate {
+	if v != nil {
+		_c.SetScope(*v)
+	}
+	return _c
+}
+
 // SetCustomOverrides sets the "custom_overrides" field.
-func (_c *RoleMetadataCreate) SetCustomOverrides(v []string) *RoleMetadataCreate {
+func (_c *RoleMetadataCreate) SetCustomOverrides(v *userpb.RoleOverride) *RoleMetadataCreate {
 	_c.mutation.SetCustomOverrides(v)
 	return _c
 }
@@ -195,7 +252,9 @@ func (_c *RoleMetadataCreate) Mutation() *RoleMetadataMutation {
 
 // Save creates the RoleMetadata in the database.
 func (_c *RoleMetadataCreate) Save(ctx context.Context) (*RoleMetadata, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -222,7 +281,11 @@ func (_c *RoleMetadataCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *RoleMetadataCreate) defaults() {
+func (_c *RoleMetadataCreate) defaults() error {
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := rolemetadata.DefaultTenantID
+		_c.mutation.SetTenantID(v)
+	}
 	if _, ok := _c.mutation.IsTemplate(); !ok {
 		v := rolemetadata.DefaultIsTemplate
 		_c.mutation.SetIsTemplate(v)
@@ -231,16 +294,40 @@ func (_c *RoleMetadataCreate) defaults() {
 		v := rolemetadata.DefaultTemplateVersion
 		_c.mutation.SetTemplateVersion(v)
 	}
-	if _, ok := _c.mutation.LastSyncedVersion(); !ok {
-		v := rolemetadata.DefaultLastSyncedVersion
-		_c.mutation.SetLastSyncedVersion(v)
+	if _, ok := _c.mutation.SyncPolicy(); !ok {
+		v := rolemetadata.DefaultSyncPolicy
+		_c.mutation.SetSyncPolicy(v)
 	}
+	if _, ok := _c.mutation.Scope(); !ok {
+		v := rolemetadata.DefaultScope
+		_c.mutation.SetScope(v)
+	}
+	if _, ok := _c.mutation.CustomOverrides(); !ok {
+		v := rolemetadata.DefaultCustomOverrides
+		_c.mutation.SetCustomOverrides(v)
+	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
 func (_c *RoleMetadataCreate) check() error {
+	if v, ok := _c.mutation.SyncPolicy(); ok {
+		if err := rolemetadata.SyncPolicyValidator(v); err != nil {
+			return &ValidationError{Name: "sync_policy", err: fmt.Errorf(`ent: validator failed for field "RoleMetadata.sync_policy": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.Scope(); ok {
+		if err := rolemetadata.ScopeValidator(v); err != nil {
+			return &ValidationError{Name: "scope", err: fmt.Errorf(`ent: validator failed for field "RoleMetadata.scope": %w`, err)}
+		}
+	}
 	if _, ok := _c.mutation.CustomOverrides(); !ok {
 		return &ValidationError{Name: "custom_overrides", err: errors.New(`ent: missing required field "RoleMetadata.custom_overrides"`)}
+	}
+	if v, ok := _c.mutation.CustomOverrides(); ok {
+		if err := v.Validate(); err != nil {
+			return &ValidationError{Name: "custom_overrides", err: fmt.Errorf(`ent: validator failed for field "RoleMetadata.custom_overrides": %w`, err)}
+		}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := rolemetadata.IDValidator(v); err != nil {
@@ -304,6 +391,10 @@ func (_c *RoleMetadataCreate) createSpec() (*RoleMetadata, *sqlgraph.CreateSpec)
 		_spec.SetField(rolemetadata.FieldDeletedBy, field.TypeUint32, value)
 		_node.DeletedBy = &value
 	}
+	if value, ok := _c.mutation.TenantID(); ok {
+		_spec.SetField(rolemetadata.FieldTenantID, field.TypeUint32, value)
+		_node.TenantID = &value
+	}
 	if value, ok := _c.mutation.RoleID(); ok {
 		_spec.SetField(rolemetadata.FieldRoleID, field.TypeUint32, value)
 		_node.RoleID = &value
@@ -323,6 +414,18 @@ func (_c *RoleMetadataCreate) createSpec() (*RoleMetadata, *sqlgraph.CreateSpec)
 	if value, ok := _c.mutation.LastSyncedVersion(); ok {
 		_spec.SetField(rolemetadata.FieldLastSyncedVersion, field.TypeInt32, value)
 		_node.LastSyncedVersion = &value
+	}
+	if value, ok := _c.mutation.LastSyncedAt(); ok {
+		_spec.SetField(rolemetadata.FieldLastSyncedAt, field.TypeTime, value)
+		_node.LastSyncedAt = &value
+	}
+	if value, ok := _c.mutation.SyncPolicy(); ok {
+		_spec.SetField(rolemetadata.FieldSyncPolicy, field.TypeEnum, value)
+		_node.SyncPolicy = &value
+	}
+	if value, ok := _c.mutation.Scope(); ok {
+		_spec.SetField(rolemetadata.FieldScope, field.TypeEnum, value)
+		_node.Scope = &value
 	}
 	if value, ok := _c.mutation.CustomOverrides(); ok {
 		_spec.SetField(rolemetadata.FieldCustomOverrides, field.TypeJSON, value)
@@ -596,8 +699,62 @@ func (u *RoleMetadataUpsert) ClearLastSyncedVersion() *RoleMetadataUpsert {
 	return u
 }
 
+// SetLastSyncedAt sets the "last_synced_at" field.
+func (u *RoleMetadataUpsert) SetLastSyncedAt(v time.Time) *RoleMetadataUpsert {
+	u.Set(rolemetadata.FieldLastSyncedAt, v)
+	return u
+}
+
+// UpdateLastSyncedAt sets the "last_synced_at" field to the value that was provided on create.
+func (u *RoleMetadataUpsert) UpdateLastSyncedAt() *RoleMetadataUpsert {
+	u.SetExcluded(rolemetadata.FieldLastSyncedAt)
+	return u
+}
+
+// ClearLastSyncedAt clears the value of the "last_synced_at" field.
+func (u *RoleMetadataUpsert) ClearLastSyncedAt() *RoleMetadataUpsert {
+	u.SetNull(rolemetadata.FieldLastSyncedAt)
+	return u
+}
+
+// SetSyncPolicy sets the "sync_policy" field.
+func (u *RoleMetadataUpsert) SetSyncPolicy(v rolemetadata.SyncPolicy) *RoleMetadataUpsert {
+	u.Set(rolemetadata.FieldSyncPolicy, v)
+	return u
+}
+
+// UpdateSyncPolicy sets the "sync_policy" field to the value that was provided on create.
+func (u *RoleMetadataUpsert) UpdateSyncPolicy() *RoleMetadataUpsert {
+	u.SetExcluded(rolemetadata.FieldSyncPolicy)
+	return u
+}
+
+// ClearSyncPolicy clears the value of the "sync_policy" field.
+func (u *RoleMetadataUpsert) ClearSyncPolicy() *RoleMetadataUpsert {
+	u.SetNull(rolemetadata.FieldSyncPolicy)
+	return u
+}
+
+// SetScope sets the "scope" field.
+func (u *RoleMetadataUpsert) SetScope(v rolemetadata.Scope) *RoleMetadataUpsert {
+	u.Set(rolemetadata.FieldScope, v)
+	return u
+}
+
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *RoleMetadataUpsert) UpdateScope() *RoleMetadataUpsert {
+	u.SetExcluded(rolemetadata.FieldScope)
+	return u
+}
+
+// ClearScope clears the value of the "scope" field.
+func (u *RoleMetadataUpsert) ClearScope() *RoleMetadataUpsert {
+	u.SetNull(rolemetadata.FieldScope)
+	return u
+}
+
 // SetCustomOverrides sets the "custom_overrides" field.
-func (u *RoleMetadataUpsert) SetCustomOverrides(v []string) *RoleMetadataUpsert {
+func (u *RoleMetadataUpsert) SetCustomOverrides(v *userpb.RoleOverride) *RoleMetadataUpsert {
 	u.Set(rolemetadata.FieldCustomOverrides, v)
 	return u
 }
@@ -627,6 +784,9 @@ func (u *RoleMetadataUpsertOne) UpdateNewValues() *RoleMetadataUpsertOne {
 		}
 		if _, exists := u.create.mutation.CreatedAt(); exists {
 			s.SetIgnore(rolemetadata.FieldCreatedAt)
+		}
+		if _, exists := u.create.mutation.TenantID(); exists {
+			s.SetIgnore(rolemetadata.FieldTenantID)
 		}
 	}))
 	return u
@@ -911,8 +1071,71 @@ func (u *RoleMetadataUpsertOne) ClearLastSyncedVersion() *RoleMetadataUpsertOne 
 	})
 }
 
+// SetLastSyncedAt sets the "last_synced_at" field.
+func (u *RoleMetadataUpsertOne) SetLastSyncedAt(v time.Time) *RoleMetadataUpsertOne {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.SetLastSyncedAt(v)
+	})
+}
+
+// UpdateLastSyncedAt sets the "last_synced_at" field to the value that was provided on create.
+func (u *RoleMetadataUpsertOne) UpdateLastSyncedAt() *RoleMetadataUpsertOne {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.UpdateLastSyncedAt()
+	})
+}
+
+// ClearLastSyncedAt clears the value of the "last_synced_at" field.
+func (u *RoleMetadataUpsertOne) ClearLastSyncedAt() *RoleMetadataUpsertOne {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.ClearLastSyncedAt()
+	})
+}
+
+// SetSyncPolicy sets the "sync_policy" field.
+func (u *RoleMetadataUpsertOne) SetSyncPolicy(v rolemetadata.SyncPolicy) *RoleMetadataUpsertOne {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.SetSyncPolicy(v)
+	})
+}
+
+// UpdateSyncPolicy sets the "sync_policy" field to the value that was provided on create.
+func (u *RoleMetadataUpsertOne) UpdateSyncPolicy() *RoleMetadataUpsertOne {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.UpdateSyncPolicy()
+	})
+}
+
+// ClearSyncPolicy clears the value of the "sync_policy" field.
+func (u *RoleMetadataUpsertOne) ClearSyncPolicy() *RoleMetadataUpsertOne {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.ClearSyncPolicy()
+	})
+}
+
+// SetScope sets the "scope" field.
+func (u *RoleMetadataUpsertOne) SetScope(v rolemetadata.Scope) *RoleMetadataUpsertOne {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.SetScope(v)
+	})
+}
+
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *RoleMetadataUpsertOne) UpdateScope() *RoleMetadataUpsertOne {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.UpdateScope()
+	})
+}
+
+// ClearScope clears the value of the "scope" field.
+func (u *RoleMetadataUpsertOne) ClearScope() *RoleMetadataUpsertOne {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.ClearScope()
+	})
+}
+
 // SetCustomOverrides sets the "custom_overrides" field.
-func (u *RoleMetadataUpsertOne) SetCustomOverrides(v []string) *RoleMetadataUpsertOne {
+func (u *RoleMetadataUpsertOne) SetCustomOverrides(v *userpb.RoleOverride) *RoleMetadataUpsertOne {
 	return u.Update(func(s *RoleMetadataUpsert) {
 		s.SetCustomOverrides(v)
 	})
@@ -1109,6 +1332,9 @@ func (u *RoleMetadataUpsertBulk) UpdateNewValues() *RoleMetadataUpsertBulk {
 			}
 			if _, exists := b.mutation.CreatedAt(); exists {
 				s.SetIgnore(rolemetadata.FieldCreatedAt)
+			}
+			if _, exists := b.mutation.TenantID(); exists {
+				s.SetIgnore(rolemetadata.FieldTenantID)
 			}
 		}
 	}))
@@ -1394,8 +1620,71 @@ func (u *RoleMetadataUpsertBulk) ClearLastSyncedVersion() *RoleMetadataUpsertBul
 	})
 }
 
+// SetLastSyncedAt sets the "last_synced_at" field.
+func (u *RoleMetadataUpsertBulk) SetLastSyncedAt(v time.Time) *RoleMetadataUpsertBulk {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.SetLastSyncedAt(v)
+	})
+}
+
+// UpdateLastSyncedAt sets the "last_synced_at" field to the value that was provided on create.
+func (u *RoleMetadataUpsertBulk) UpdateLastSyncedAt() *RoleMetadataUpsertBulk {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.UpdateLastSyncedAt()
+	})
+}
+
+// ClearLastSyncedAt clears the value of the "last_synced_at" field.
+func (u *RoleMetadataUpsertBulk) ClearLastSyncedAt() *RoleMetadataUpsertBulk {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.ClearLastSyncedAt()
+	})
+}
+
+// SetSyncPolicy sets the "sync_policy" field.
+func (u *RoleMetadataUpsertBulk) SetSyncPolicy(v rolemetadata.SyncPolicy) *RoleMetadataUpsertBulk {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.SetSyncPolicy(v)
+	})
+}
+
+// UpdateSyncPolicy sets the "sync_policy" field to the value that was provided on create.
+func (u *RoleMetadataUpsertBulk) UpdateSyncPolicy() *RoleMetadataUpsertBulk {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.UpdateSyncPolicy()
+	})
+}
+
+// ClearSyncPolicy clears the value of the "sync_policy" field.
+func (u *RoleMetadataUpsertBulk) ClearSyncPolicy() *RoleMetadataUpsertBulk {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.ClearSyncPolicy()
+	})
+}
+
+// SetScope sets the "scope" field.
+func (u *RoleMetadataUpsertBulk) SetScope(v rolemetadata.Scope) *RoleMetadataUpsertBulk {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.SetScope(v)
+	})
+}
+
+// UpdateScope sets the "scope" field to the value that was provided on create.
+func (u *RoleMetadataUpsertBulk) UpdateScope() *RoleMetadataUpsertBulk {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.UpdateScope()
+	})
+}
+
+// ClearScope clears the value of the "scope" field.
+func (u *RoleMetadataUpsertBulk) ClearScope() *RoleMetadataUpsertBulk {
+	return u.Update(func(s *RoleMetadataUpsert) {
+		s.ClearScope()
+	})
+}
+
 // SetCustomOverrides sets the "custom_overrides" field.
-func (u *RoleMetadataUpsertBulk) SetCustomOverrides(v []string) *RoleMetadataUpsertBulk {
+func (u *RoleMetadataUpsertBulk) SetCustomOverrides(v *userpb.RoleOverride) *RoleMetadataUpsertBulk {
 	return u.Update(func(s *RoleMetadataUpsert) {
 		s.SetCustomOverrides(v)
 	})

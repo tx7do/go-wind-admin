@@ -82,8 +82,9 @@ type Role struct {
 	SortOrder     *uint32                `protobuf:"varint,4,opt,name=sort_order,json=sortOrder,proto3,oneof" json:"sort_order,omitempty"`           // 排序顺序，值越小越靠前
 	Status        *Role_Status           `protobuf:"varint,5,opt,name=status,proto3,enum=user.service.v1.Role_Status,oneof" json:"status,omitempty"` // 状态
 	Description   *string                `protobuf:"bytes,6,opt,name=description,proto3,oneof" json:"description,omitempty"`                         // 描述
-	IsProtected   *bool                  `protobuf:"varint,7,opt,name=is_protected,json=isProtected,proto3,oneof" json:"is_protected,omitempty"`     // 是否为系统内置保护角色，保护角色不允许删除或修改其权限
-	Permissions   []uint32               `protobuf:"varint,11,rep,packed,name=permissions,proto3" json:"permissions,omitempty"`                      // 绑定的权限点ID列表
+	IsProtected   *bool                  `protobuf:"varint,7,opt,name=is_protected,json=isProtected,proto3,oneof" json:"is_protected,omitempty"`     // 受保护角色，仅平台管理员可修改
+	IsSystem      *bool                  `protobuf:"varint,8,opt,name=is_system,json=isSystem,proto3,oneof" json:"is_system,omitempty"`              // 系统内置角色
+	Permissions   []uint32               `protobuf:"varint,10,rep,packed,name=permissions,proto3" json:"permissions,omitempty"`                      // 绑定的权限点ID列表
 	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`             // 租户ID，0代表系统全局角色
 	TenantName    *string                `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`        // 租户名称
 	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`         // 创建者ID
@@ -171,6 +172,13 @@ func (x *Role) GetDescription() string {
 func (x *Role) GetIsProtected() bool {
 	if x != nil && x.IsProtected != nil {
 		return *x.IsProtected
+	}
+	return false
+}
+
+func (x *Role) GetIsSystem() bool {
+	if x != nil && x.IsSystem != nil {
+		return *x.IsSystem
 	}
 	return false
 }
@@ -841,34 +849,35 @@ var File_user_service_v1_role_proto protoreflect.FileDescriptor
 
 const file_user_service_v1_role_proto_rawDesc = "" +
 	"\n" +
-	"\x1auser/service/v1/role.proto\x12\x0fuser.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xd9\n" +
-	"\n" +
+	"\x1auser/service/v1/role.proto\x12\x0fuser.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x9d\v\n" +
 	"\x04Role\x12#\n" +
 	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b角色IDH\x00R\x02id\x88\x01\x01\x12+\n" +
 	"\x04name\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f角色名称H\x01R\x04name\x88\x01\x01\x12V\n" +
-	"\x04code\x18\x03 \x01(\tB=\xbaG:\x92\x027角色标识码（如：platform_admin, tenant_admin）H\x02R\x04code\x88\x01\x01\x12K\n" +
+	"\x04code\x18\x03 \x01(\tB=\xbaG:\x92\x027角色标识码（如：platform:admin, tenant:admin）H\x02R\x04code\x88\x01\x01\x12K\n" +
 	"\n" +
 	"sort_order\x18\x04 \x01(\rB'\xbaG$\x92\x02!排序顺序，值越小越靠前H\x03R\tsortOrder\x88\x01\x01\x12G\n" +
 	"\x06status\x18\x05 \x01(\x0e2\x1c.user.service.v1.Role.StatusB\f\xbaG\t\x92\x02\x06状态H\x04R\x06status\x88\x01\x01\x123\n" +
-	"\vdescription\x18\x06 \x01(\tB\f\xbaG\t\x92\x02\x06描述H\x05R\vdescription\x88\x01\x01\x12\x7f\n" +
-	"\fis_protected\x18\a \x01(\bBW\xbaGT\x92\x02Q是否为系统内置保护角色，保护角色不允许删除或修改其权限H\x06R\visProtected\x88\x01\x01\x12B\n" +
-	"\vpermissions\x18\v \x03(\rB \xbaG\x1d\x92\x02\x1a绑定的权限点ID列表R\vpermissions\x12L\n" +
-	"\ttenant_id\x18( \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\aR\btenantId\x88\x01\x01\x128\n" +
-	"\vtenant_name\x18) \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\bR\n" +
+	"\vdescription\x18\x06 \x01(\tB\f\xbaG\t\x92\x02\x06描述H\x05R\vdescription\x88\x01\x01\x12[\n" +
+	"\fis_protected\x18\a \x01(\bB3\xbaG0\x92\x02-受保护角色，仅平台管理员可修改H\x06R\visProtected\x88\x01\x01\x12X\n" +
+	"\tis_system\x18\b \x01(\bB6\xbaG3\x92\x020系统内置角色，仅平台管理员可修改H\aR\bisSystem\x88\x01\x01\x12B\n" +
+	"\vpermissions\x18\n" +
+	" \x03(\rB \xbaG\x1d\x92\x02\x1a绑定的权限点ID列表R\vpermissions\x12L\n" +
+	"\ttenant_id\x18( \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\bR\btenantId\x88\x01\x01\x128\n" +
+	"\vtenant_name\x18) \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\tR\n" +
 	"tenantName\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\tR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\n" +
+	"R\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\n" +
-	"R\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\vR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\vR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\fR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\fR\tcreatedAt\x88\x01\x01\x12S\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\rR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\rR\tupdatedAt\x88\x01\x01\x12S\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\x0eR\tupdatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\x0eR\tdeletedAt\x88\x01\x01\"\x19\n" +
+	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\x0fR\tdeletedAt\x88\x01\x01\"\x19\n" +
 	"\x06Status\x12\a\n" +
 	"\x03OFF\x10\x00\x12\x06\n" +
 	"\x02ON\x10\x01B\x05\n" +
@@ -879,6 +888,8 @@ const file_user_service_v1_role_proto_rawDesc = "" +
 	"\a_statusB\x0e\n" +
 	"\f_descriptionB\x0f\n" +
 	"\r_is_protectedB\f\n" +
+	"\n" +
+	"_is_systemB\f\n" +
 	"\n" +
 	"_tenant_idB\x0e\n" +
 	"\f_tenant_nameB\r\n" +

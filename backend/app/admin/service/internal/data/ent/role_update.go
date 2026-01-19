@@ -285,6 +285,20 @@ func (_u *RoleUpdate) SetNillableIsProtected(v *bool) *RoleUpdate {
 	return _u
 }
 
+// SetIsSystem sets the "is_system" field.
+func (_u *RoleUpdate) SetIsSystem(v bool) *RoleUpdate {
+	_u.mutation.SetIsSystem(v)
+	return _u
+}
+
+// SetNillableIsSystem sets the "is_system" field if the given value is not nil.
+func (_u *RoleUpdate) SetNillableIsSystem(v *bool) *RoleUpdate {
+	if v != nil {
+		_u.SetIsSystem(*v)
+	}
+	return _u
+}
+
 // Mutation returns the RoleMutation object of the builder.
 func (_u *RoleUpdate) Mutation() *RoleMutation {
 	return _u.mutation
@@ -438,6 +452,9 @@ func (_u *RoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.IsProtected(); ok {
 		_spec.SetField(role.FieldIsProtected, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.IsSystem(); ok {
+		_spec.SetField(role.FieldIsSystem, field.TypeBool, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -717,6 +734,20 @@ func (_u *RoleUpdateOne) SetNillableIsProtected(v *bool) *RoleUpdateOne {
 	return _u
 }
 
+// SetIsSystem sets the "is_system" field.
+func (_u *RoleUpdateOne) SetIsSystem(v bool) *RoleUpdateOne {
+	_u.mutation.SetIsSystem(v)
+	return _u
+}
+
+// SetNillableIsSystem sets the "is_system" field if the given value is not nil.
+func (_u *RoleUpdateOne) SetNillableIsSystem(v *bool) *RoleUpdateOne {
+	if v != nil {
+		_u.SetIsSystem(*v)
+	}
+	return _u
+}
+
 // Mutation returns the RoleMutation object of the builder.
 func (_u *RoleUpdateOne) Mutation() *RoleMutation {
 	return _u.mutation
@@ -900,6 +931,9 @@ func (_u *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) {
 	}
 	if value, ok := _u.mutation.IsProtected(); ok {
 		_spec.SetField(role.FieldIsProtected, field.TypeBool, value)
+	}
+	if value, ok := _u.mutation.IsSystem(); ok {
+		_spec.SetField(role.FieldIsSystem, field.TypeBool, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &Role{config: _u.config}

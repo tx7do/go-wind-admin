@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"go-wind-admin/app/admin/service/internal/data/ent/task"
@@ -329,6 +330,12 @@ func (_q *TaskQuery) prepareQuery(ctx context.Context) error {
 			return err
 		}
 		_q.sql = prev
+	}
+	if task.Policy == nil {
+		return errors.New("ent: uninitialized task.Policy (forgotten import ent/runtime?)")
+	}
+	if err := task.Policy.EvalQuery(ctx, _q); err != nil {
+		return err
 	}
 	return nil
 }

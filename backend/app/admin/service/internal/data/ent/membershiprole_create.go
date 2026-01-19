@@ -229,7 +229,9 @@ func (_c *MembershipRoleCreate) Mutation() *MembershipRoleMutation {
 
 // Save creates the MembershipRole in the database.
 func (_c *MembershipRoleCreate) Save(ctx context.Context) (*MembershipRole, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -256,7 +258,11 @@ func (_c *MembershipRoleCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *MembershipRoleCreate) defaults() {
+func (_c *MembershipRoleCreate) defaults() error {
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := membershiprole.DefaultTenantID
+		_c.mutation.SetTenantID(v)
+	}
 	if _, ok := _c.mutation.IsPrimary(); !ok {
 		v := membershiprole.DefaultIsPrimary
 		_c.mutation.SetIsPrimary(v)
@@ -265,6 +271,7 @@ func (_c *MembershipRoleCreate) defaults() {
 		v := membershiprole.DefaultStatus
 		_c.mutation.SetStatus(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

@@ -268,6 +268,8 @@ func (x *TenantExistsRequest) Redact() string {
 	}
 
 	// Safe field: Code
+
+	// Safe field: Name
 	return x.String()
 }
 

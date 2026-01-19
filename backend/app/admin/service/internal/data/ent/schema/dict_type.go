@@ -7,7 +7,11 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+
 	"github.com/tx7do/go-crud/entgo/mixin"
+
+	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
+	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // DictType holds the schema definition for the DictType entity.
@@ -62,6 +66,13 @@ func (DictType) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.From("entries", DictEntry.Type).
 			Ref("sys_dict_types"),
+	}
+}
+
+// Policy for all schemas that embed DictType.
+func (DictType) Policy() ent.Policy {
+	return privacy.Policy{
+		Query: rule.TenantQueryPolicy(),
 	}
 }
 

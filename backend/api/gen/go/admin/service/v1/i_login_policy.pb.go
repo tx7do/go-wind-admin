@@ -145,6 +145,8 @@ type LoginPolicy struct {
 	Method        *LoginPolicy_Method    `protobuf:"varint,4,opt,name=method,proto3,enum=admin.service.v1.LoginPolicy_Method,oneof" json:"method,omitempty"` // 限制方式
 	Value         *string                `protobuf:"bytes,5,opt,name=value,proto3,oneof" json:"value,omitempty"`                                             // 限制值（如IP地址、MAC地址或地区代码）
 	Reason        *string                `protobuf:"bytes,6,opt,name=reason,proto3,oneof" json:"reason,omitempty"`                                           // 限制原因
+	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                     // 租户ID，0代表系统全局角色
+	TenantName    *string                `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`                // 租户名称
 	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                 // 创建者ID
 	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                 // 更新者ID
 	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                 // 删除者用户ID
@@ -223,6 +225,20 @@ func (x *LoginPolicy) GetValue() string {
 func (x *LoginPolicy) GetReason() string {
 	if x != nil && x.Reason != nil {
 		return *x.Reason
+	}
+	return ""
+}
+
+func (x *LoginPolicy) GetTenantId() uint32 {
+	if x != nil && x.TenantId != nil {
+		return *x.TenantId
+	}
+	return 0
+}
+
+func (x *LoginPolicy) GetTenantName() string {
+	if x != nil && x.TenantName != nil {
+		return *x.TenantName
 	}
 	return ""
 }
@@ -560,27 +576,31 @@ var File_admin_service_v1_i_login_policy_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_login_policy_proto_rawDesc = "" +
 	"\n" +
-	"%admin/service/v1/i_login_policy.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x9b\t\n" +
+	"%admin/service/v1/i_login_policy.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xc1\n" +
+	"\n" +
 	"\vLoginPolicy\x12,\n" +
 	"\x02id\x18\x01 \x01(\rB\x17\xe0A\x01\xbaG\x11\x92\x02\x0e登录策略IDH\x00R\x02id\x88\x01\x01\x126\n" +
 	"\ttarget_id\x18\x02 \x01(\rB\x14\xbaG\x11\x92\x02\x0e目标用户IDH\x01R\btargetId\x88\x01\x01\x12O\n" +
 	"\x04type\x18\x03 \x01(\x0e2\".admin.service.v1.LoginPolicy.TypeB\x12\xbaG\x0f\x92\x02\f限制类型H\x02R\x04type\x88\x01\x01\x12U\n" +
 	"\x06method\x18\x04 \x01(\x0e2$.admin.service.v1.LoginPolicy.MethodB\x12\xbaG\x0f\x92\x02\f限制方式H\x03R\x06method\x88\x01\x01\x12V\n" +
 	"\x05value\x18\x05 \x01(\tB;\xbaG8\x92\x025限制值（如IP地址、MAC地址或地区代码）H\x04R\x05value\x88\x01\x01\x12/\n" +
-	"\x06reason\x18\x06 \x01(\tB\x12\xbaG\x0f\x92\x02\f限制原因H\x05R\x06reason\x88\x01\x01\x125\n" +
+	"\x06reason\x18\x06 \x01(\tB\x12\xbaG\x0f\x92\x02\f限制原因H\x05R\x06reason\x88\x01\x01\x12L\n" +
+	"\ttenant_id\x18( \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\x06R\btenantId\x88\x01\x01\x128\n" +
+	"\vtenant_name\x18) \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\aR\n" +
+	"tenantName\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\x06R\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\bR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\aR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\tR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\bR\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\n" +
+	"R\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\tR\tcreatedAt\x88\x01\x01\x12S\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\vR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\n" +
-	"R\tupdatedAt\x88\x01\x01\x12S\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\fR\tupdatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\vR\tdeletedAt\x88\x01\x01\"L\n" +
+	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\rR\tdeletedAt\x88\x01\x01\"L\n" +
 	"\x04Type\x12&\n" +
 	"\"LOGIN_RESTRICTION_TYPE_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tBLACKLIST\x10\x01\x12\r\n" +
@@ -600,7 +620,10 @@ const file_admin_service_v1_i_login_policy_proto_rawDesc = "" +
 	"\x05_typeB\t\n" +
 	"\a_methodB\b\n" +
 	"\x06_valueB\t\n" +
-	"\a_reasonB\r\n" +
+	"\a_reasonB\f\n" +
+	"\n" +
+	"_tenant_idB\x0e\n" +
+	"\f_tenant_nameB\r\n" +
 	"\v_created_byB\r\n" +
 	"\v_updated_byB\r\n" +
 	"\v_deleted_byB\r\n" +

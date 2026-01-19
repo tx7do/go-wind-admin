@@ -78,6 +78,14 @@ var DefaultPermissions = []*permissionV1.Permission{
 		Description: trans.Ptr("允许用户访问系统后台管理界面"),
 		Code:        trans.Ptr(SystemAccessBackendPermissionCode),
 		Status:      trans.Ptr(permissionV1.Permission_ON),
+	},
+	{
+		//Id:          trans.Ptr(uint32(2)),
+		GroupId:     trans.Ptr(uint32(2)),
+		Name:        trans.Ptr("平台管理员权限"),
+		Description: trans.Ptr("拥有系统所有功能的操作权限，可管理租户、用户、角色及所有资源"),
+		Code:        trans.Ptr(SystemPlatformAdminPermissionCode),
+		Status:      trans.Ptr(permissionV1.Permission_ON),
 		MenuIds: []uint32{
 			1, 2,
 			10, 11,
@@ -104,7 +112,39 @@ var DefaultPermissions = []*permissionV1.Permission{
 		},
 	},
 	{
-		//Id:          trans.Ptr(uint32(2)),
+		//Id:          trans.Ptr(uint32(3)),
+		GroupId:     trans.Ptr(uint32(3)),
+		Name:        trans.Ptr("租户管理员权限"),
+		Description: trans.Ptr("拥有租户内所有功能的操作权限，可管理用户、角色及租户内所有资源"),
+		Code:        trans.Ptr(SystemTenantManagerPermissionCode),
+		Status:      trans.Ptr(permissionV1.Permission_ON),
+		MenuIds: []uint32{
+			1, 2,
+			20, 21, 22, 23, 24,
+			30, 32,
+			40, 41,
+			50, 51,
+			60, 61, 62, 63, 64,
+		},
+		ApiIds: []uint32{
+			1, 2, 3, 4, 5, 6, 7, 8, 9,
+			10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
+			20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
+			30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
+			40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
+			50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+			60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
+			70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
+			80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
+			90, 91, 92, 93, 94, 95, 96, 97, 98, 99,
+			100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
+			110, 111, 112, 113, 114, 115, 116, 117, 118, 119,
+			120, 121, 122, 123, 124, 125, 126, 127, 128,
+		},
+	},
+
+	{
+		//Id:          trans.Ptr(uint32(4)),
 		GroupId:     trans.Ptr(uint32(3)),
 		Name:        trans.Ptr("管理租户"),
 		Description: trans.Ptr("允许创建/修改/删除租户"),
@@ -112,7 +152,7 @@ var DefaultPermissions = []*permissionV1.Permission{
 		Status:      trans.Ptr(permissionV1.Permission_ON),
 	},
 	{
-		//Id:          trans.Ptr(uint32(3)),
+		//Id:          trans.Ptr(uint32(5)),
 		GroupId:     trans.Ptr(uint32(4)),
 		Name:        trans.Ptr("查看审计日志"),
 		Description: trans.Ptr("允许查看系统操作日志"),
@@ -125,31 +165,46 @@ var DefaultPermissions = []*permissionV1.Permission{
 var DefaultRoles = []*userV1.Role{
 	{
 		//Id:          trans.Ptr(uint32(1)),
-		Name:        trans.Ptr("平台管理员"),
+		Name:        trans.Ptr(DefaultPlatformAdminRoleName),
 		Code:        trans.Ptr(PlatformAdminRoleCode),
 		Status:      trans.Ptr(userV1.Role_ON),
 		Description: trans.Ptr("拥有系统所有功能的操作权限，可管理租户、用户、角色及所有资源"),
 		IsProtected: trans.Ptr(true),
-		Permissions: []uint32{1},
+		IsSystem:    trans.Ptr(true),
+		SortOrder:   trans.Ptr(uint32(1)),
+		Permissions: []uint32{1, 2, 4},
 	},
 	{
 		//Id:          trans.Ptr(uint32(2)),
-		Name:        trans.Ptr("租户管理员模板"),
-		Code:        trans.Ptr(RoleCodeTemplatePrefix + TenantAdminRoleCode),
+		Name:        trans.Ptr(DefaultTenantManagerRoleName + "模板"),
+		Code:        trans.Ptr(TenantAdminTemplateRoleCode),
 		Status:      trans.Ptr(userV1.Role_ON),
 		Description: trans.Ptr("租户管理员角色，拥有租户内所有功能的操作权限，可管理用户、角色及租户内所有资源"),
 		IsProtected: trans.Ptr(true),
-		Permissions: []uint32{1},
+		IsSystem:    trans.Ptr(true),
+		SortOrder:   trans.Ptr(uint32(2)),
+		Permissions: []uint32{1, 3},
 	},
 }
 
+// DefaultRoleMetadata 系统初始化默认角色元数据
 var DefaultRoleMetadata = []*userV1.RoleMetadata{
 	{
 		//Id:              trans.Ptr(uint32(1)),
 		RoleId:          trans.Ptr(uint32(1)),
+		IsTemplate:      trans.Ptr(false),
+		TemplateVersion: trans.Ptr(int32(1)),
+		Scope:           userV1.RoleMetadata_PLATFORM.Enum(),
+		SyncPolicy:      userV1.RoleMetadata_AUTO.Enum(),
+	},
+	{
+		//Id:              trans.Ptr(uint32(2)),
+		RoleId:          trans.Ptr(uint32(2)),
 		IsTemplate:      trans.Ptr(true),
 		TemplateFor:     trans.Ptr(TenantAdminRoleCode),
 		TemplateVersion: trans.Ptr(int32(1)),
+		Scope:           userV1.RoleMetadata_TENANT.Enum(),
+		SyncPolicy:      userV1.RoleMetadata_AUTO.Enum(),
 	},
 }
 

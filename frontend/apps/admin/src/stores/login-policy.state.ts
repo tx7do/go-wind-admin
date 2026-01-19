@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 
 import { $t } from '@vben/locales';
+import { useUserStore } from '@vben/stores';
 
 import { defineStore } from 'pinia';
 
@@ -8,11 +9,12 @@ import {
   createLoginPolicyServiceClient,
   type LoginPolicy_Type,
 } from '#/generated/api/admin/service/v1';
-import { makeQueryString, makeUpdateMask } from '#/utils/query';
+import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 export const useLoginPolicyStore = defineStore('login-policy', () => {
   const service = createLoginPolicyServiceClient(requestClientRequestHandler);
+  const userStore = useUserStore();
 
   /**
    * 查询登录策略列表
@@ -28,8 +30,8 @@ export const useLoginPolicyStore = defineStore('login-policy', () => {
     return await service.List({
       // @ts-ignore proto generated code is error.
       fieldMask,
-      orderBy: orderBy ?? [],
-      query: makeQueryString(formValues ?? null),
+      orderBy: makeOrderBy(orderBy),
+      query: makeQueryString(formValues, userStore.isTenantUser()),
       page: paging?.page,
       pageSize: paging?.pageSize,
       noPaging,

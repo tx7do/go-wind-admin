@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 
 import { $t } from '@vben/locales';
+import { useUserStore } from '@vben/stores';
 
 import { defineStore } from 'pinia';
 
@@ -12,7 +13,7 @@ import {
   type internal_messageservicev1_InternalMessageRecipient_Status as InternalMessageRecipient_Status,
   type internal_messageservicev1_SendMessageRequest as SendMessageRequest,
 } from '#/generated/api/admin/service/v1';
-import { makeQueryString, makeUpdateMask } from '#/utils/query';
+import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 export const useInternalMessageStore = defineStore('internal_message', () => {
@@ -22,6 +23,8 @@ export const useInternalMessageStore = defineStore('internal_message', () => {
 
   const internalMessageRecipientService =
     createInternalMessageRecipientServiceClient(requestClientRequestHandler);
+
+  const userStore = useUserStore();
 
   /**
    * 查询消息列表
@@ -37,8 +40,8 @@ export const useInternalMessageStore = defineStore('internal_message', () => {
     return await internalMessageService.ListMessage({
       // @ts-ignore proto generated code is error.
       fieldMask,
-      orderBy: orderBy ?? [],
-      query: makeQueryString(formValues ?? null),
+      orderBy: makeOrderBy(orderBy),
+      query: makeQueryString(formValues, userStore.isTenantUser()),
       page: paging?.page,
       pageSize: paging?.pageSize,
       noPaging,
@@ -89,8 +92,8 @@ export const useInternalMessageStore = defineStore('internal_message', () => {
     return await internalMessageRecipientService.ListUserInbox({
       // @ts-ignore proto generated code is error.
       fieldMask,
-      orderBy: orderBy ?? [],
-      query: makeQueryString(formValues ?? null),
+      orderBy: makeOrderBy(orderBy),
+      query: makeQueryString(formValues, userStore.isTenantUser()),
       page: paging?.page,
       pageSize: paging?.pageSize,
       noPaging,

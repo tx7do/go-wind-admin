@@ -93,6 +93,14 @@ func (m *InternalMessage) validate(all bool) error {
 		// no validation rules for CategoryName
 	}
 
+	if m.TenantId != nil {
+		// no validation rules for TenantId
+	}
+
+	if m.TenantName != nil {
+		// no validation rules for TenantName
+	}
+
 	if m.CreatedBy != nil {
 		// no validation rules for CreatedBy
 	}

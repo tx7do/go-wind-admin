@@ -14,7 +14,7 @@ const internal_message: RouteRecordRaw[] = [
       icon: 'lucide:mail',
       title: $t('menu.internalMessage.moduleName'),
       keepAlive: true,
-      authority: ['platform_admin'],
+      authority: ['platform:admin', 'tenant:manager'],
     },
     children: [
       {
@@ -23,7 +23,7 @@ const internal_message: RouteRecordRaw[] = [
         meta: {
           icon: 'lucide:message-circle-more',
           title: $t('menu.internalMessage.internalMessage'),
-          authority: ['platform_admin'],
+          authority: ['platform:admin', 'tenant:manager'],
         },
         component: () =>
           import('#/views/app/internal_message/message/index.vue'),
@@ -35,7 +35,7 @@ const internal_message: RouteRecordRaw[] = [
         meta: {
           icon: 'lucide:calendar-check',
           title: $t('menu.internalMessage.internalMessageCategory'),
-          authority: ['platform_admin'],
+          authority: ['platform:admin'],
         },
         component: () =>
           import('#/views/app/internal_message/category/index.vue'),

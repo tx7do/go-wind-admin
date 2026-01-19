@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"entgo.io/ent/dialect/sql"
-
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	_ "github.com/lib/pq"
@@ -16,6 +15,7 @@ import (
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/migrate"
+	_ "go-wind-admin/app/admin/service/internal/data/ent/runtime"
 )
 
 // NewEntClient 创建Ent ORM数据库客户端

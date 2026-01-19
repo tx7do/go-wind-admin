@@ -10,16 +10,16 @@ const (
 
 // OperatorInfo is a struct for operator metadata.
 type OperatorInfo struct {
-	UserID    *uint32                 `json:"uid,omitempty"`
-	TenantID  *uint32                 `json:"tid,omitempty"`
-	OrgUnitID *uint32                 `json:"ouid,omitempty"`
+	UserID    *uint64                 `json:"uid,omitempty"`
+	TenantID  *uint64                 `json:"tid,omitempty"`
+	OrgUnitID *uint64                 `json:"ouid,omitempty"`
 	DataScope *permissionV1.DataScope `json:"ds,omitempty"`
 }
 
 func NewOperatorInfo(
-	uid uint32,
-	tid uint32,
-	ouid uint32,
+	uid uint64,
+	tid uint64,
+	ouid uint64,
 	dataScope permissionV1.DataScope,
 ) *OperatorInfo {
 	return &OperatorInfo{
@@ -30,21 +30,21 @@ func NewOperatorInfo(
 	}
 }
 
-func (oi *OperatorInfo) GetUserID() uint32 {
+func (oi *OperatorInfo) GetUserID() uint64 {
 	if oi != nil && oi.UserID != nil {
 		return *oi.UserID
 	}
 	return 0
 }
 
-func (oi *OperatorInfo) GetTenantID() uint32 {
+func (oi *OperatorInfo) GetTenantID() uint64 {
 	if oi != nil && oi.TenantID != nil {
 		return *oi.TenantID
 	}
 	return 0
 }
 
-func (oi *OperatorInfo) GetOrgUnitID() uint32 {
+func (oi *OperatorInfo) GetOrgUnitID() uint64 {
 	if oi != nil && oi.OrgUnitID != nil {
 		return *oi.OrgUnitID
 	}

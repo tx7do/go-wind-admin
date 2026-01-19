@@ -135,10 +135,14 @@ func (Tenant) Mixin() []ent.Mixin {
 func (Tenant) Indexes() []ent.Index {
 	return []ent.Index{
 		// 保持 name 唯一
-		index.Fields("name").Unique().StorageKey("idx_sys_tenant_name"),
+		index.Fields("name").
+			Unique().
+			StorageKey("idx_sys_tenant_name"),
 
 		// 保持 code 唯一
-		index.Fields("code").Unique().StorageKey("idx_sys_tenant_code"),
+		index.Fields("code").
+			Unique().
+			StorageKey("idx_sys_tenant_code"),
 
 		// 按域名快速定位租户
 		index.Fields("domain").StorageKey("idx_sys_tenant_domain"),

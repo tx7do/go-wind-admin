@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
@@ -329,6 +330,12 @@ func (_q *PermissionAuditLogQuery) prepareQuery(ctx context.Context) error {
 			return err
 		}
 		_q.sql = prev
+	}
+	if permissionauditlog.Policy == nil {
+		return errors.New("ent: uninitialized permissionauditlog.Policy (forgotten import ent/runtime?)")
+	}
+	if err := permissionauditlog.Policy.EvalQuery(ctx, _q); err != nil {
+		return err
 	}
 	return nil
 }

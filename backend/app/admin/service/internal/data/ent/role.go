@@ -45,7 +45,9 @@ type Role struct {
 	// 角色标识
 	Code *string `json:"code,omitempty"`
 	// 是否受保护的角色
-	IsProtected  *bool `json:"is_protected,omitempty"`
+	IsProtected *bool `json:"is_protected,omitempty"`
+	// 是否系统角色（平台预置，不可删除）
+	IsSystem     *bool `json:"is_system,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -54,7 +56,7 @@ func (*Role) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case role.FieldIsProtected:
+		case role.FieldIsProtected, role.FieldIsSystem:
 			values[i] = new(sql.NullBool)
 		case role.FieldID, role.FieldCreatedBy, role.FieldUpdatedBy, role.FieldDeletedBy, role.FieldSortOrder, role.FieldTenantID:
 			values[i] = new(sql.NullInt64)
@@ -181,6 +183,13 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 				_m.IsProtected = new(bool)
 				*_m.IsProtected = value.Bool
 			}
+		case role.FieldIsSystem:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field is_system", values[i])
+			} else if value.Valid {
+				_m.IsSystem = new(bool)
+				*_m.IsSystem = value.Bool
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -284,6 +293,11 @@ func (_m *Role) String() string {
 	builder.WriteString(", ")
 	if v := _m.IsProtected; v != nil {
 		builder.WriteString("is_protected=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.IsSystem; v != nil {
+		builder.WriteString("is_system=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')

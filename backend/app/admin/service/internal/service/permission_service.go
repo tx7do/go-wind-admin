@@ -7,11 +7,12 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
+	"google.golang.org/protobuf/types/known/emptypb"
+
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/stringcase"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
-	"google.golang.org/protobuf/types/known/emptypb"
 
 	"go-wind-admin/app/admin/service/internal/data"
 
@@ -19,6 +20,7 @@ import (
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
 	"go-wind-admin/pkg/constants"
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
 	"go-wind-admin/pkg/utils/converter"
 	"go-wind-admin/pkg/utils/name_set"
@@ -66,7 +68,7 @@ func NewPermissionService(
 }
 
 func (s *PermissionService) init() {
-	ctx := context.Background()
+	ctx := appViewer.NewSystemViewerContext(context.Background())
 	if count, _ := s.permissionRepo.Count(ctx, []func(s *sql.Selector){}); count == 0 {
 		_ = s.createDefaultPermissions(ctx)
 
@@ -223,8 +225,10 @@ func (s *PermissionService) appendAPis(
 	// 查询所有启用的 API 资源
 	apis, err := s.apiRepo.List(ctx, &paginationV1.PagingRequest{
 		NoPaging: trans.Ptr(true),
-		Query:    trans.Ptr(`{"status":"ON"}`),
-		OrderBy:  []string{"operation"},
+		FilteringType: &paginationV1.PagingRequest_Query{
+			Query: `{"status":"ON"}`,
+		},
+		OrderBy: trans.Ptr("operation"),
 	})
 	if err != nil {
 		return err
@@ -347,8 +351,10 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 	// 查询所有启用的菜单
 	menus, err := s.menuRepo.List(ctx, &paginationV1.PagingRequest{
 		NoPaging: trans.Ptr(true),
-		Query:    trans.Ptr(`{"status":"ON"}`),
-		OrderBy:  []string{"-id"},
+		FilteringType: &paginationV1.PagingRequest_Query{
+			Query: `{"status":"ON"}`,
+		},
+		OrderBy: trans.Ptr("id desc"),
 	}, false)
 	if err != nil {
 		return nil, err

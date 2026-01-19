@@ -1,11 +1,14 @@
+import { useUserStore } from '@vben/stores';
+
 import { defineStore } from 'pinia';
 
 import { createApiAuditLogServiceClient } from '#/generated/api/admin/service/v1';
-import { makeQueryString } from '#/utils/query';
+import { makeOrderBy, makeQueryString } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 export const useApiAuditLogStore = defineStore('api-audit-log', () => {
   const service = createApiAuditLogServiceClient(requestClientRequestHandler);
+  const userStore = useUserStore();
 
   /**
    * 查询API日志列表
@@ -21,8 +24,8 @@ export const useApiAuditLogStore = defineStore('api-audit-log', () => {
     return await service.List({
       // @ts-ignore proto generated code is error.
       fieldMask,
-      orderBy: orderBy ?? [],
-      query: makeQueryString(formValues ?? null),
+      orderBy: makeOrderBy(orderBy),
+      query: makeQueryString(formValues, userStore.isTenantUser()),
       page: paging?.page,
       pageSize: paging?.pageSize,
       noPaging,

@@ -150,6 +150,7 @@ func (r *MembershipOrgUnitRepo) AssignMembershipOrgUnits(
 		}
 		rm := tx.MembershipOrgUnit.
 			Create().
+			SetNillableTenantID(data.TenantId).
 			SetMembershipID(data.GetMembershipId()).
 			SetOrgUnitID(data.GetOrgUnitId()).
 			SetNillableStatus(r.statusConverter.ToEntity(data.Status)).

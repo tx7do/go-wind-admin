@@ -54,21 +54,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -81,9 +74,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -164,21 +157,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -191,9 +177,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -354,21 +340,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -381,9 +360,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -464,21 +443,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -491,9 +463,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -604,21 +576,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -631,9 +596,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -857,21 +822,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -884,9 +842,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -1020,21 +978,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -1047,9 +998,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -1183,21 +1134,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -1210,9 +1154,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -1284,21 +1228,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -1311,9 +1248,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -1504,21 +1441,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -1531,9 +1461,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -1614,21 +1544,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -1641,9 +1564,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -1895,21 +1818,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -1922,9 +1838,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -2063,21 +1979,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -2090,9 +1999,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -2173,21 +2082,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -2200,9 +2102,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -2349,21 +2251,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -2376,9 +2271,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -2459,21 +2354,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -2486,9 +2374,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -2622,21 +2510,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -2649,9 +2530,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -2812,21 +2693,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -2839,9 +2713,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -2922,21 +2796,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -2949,9 +2816,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -3112,21 +2979,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -3139,9 +2999,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -3296,21 +3156,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -3323,9 +3176,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -3566,21 +3419,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -3593,9 +3439,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -3705,6 +3551,10 @@ paths:
             operationId: TenantService_TenantExists
             parameters:
                 - name: code
+                  in: query
+                  schema:
+                    type: string
+                - name: name
                   in: query
                   schema:
                     type: string
@@ -3821,21 +3671,14 @@ paths:
                   description: 是否不分页，如果为true，则page和pageSize参数无效。
                   schema:
                     type: boolean
-                - name: orderBy
-                  in: query
-                  description: 排序条件，其语法为JSON字符串，例如：{"val1", "-val2"}。字段名前加'-'为降序，否则为升序。
-                  schema:
-                    type: array
-                    items:
-                        type: string
                 - name: query
                   in: query
-                  description: AND过滤参数，其语法为json格式的字符串，如：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-utils/tree/main/entgo/query/README.md
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
                   schema:
                     type: string
-                - name: or
+                - name: filter
                   in: query
-                  description: OR过滤参数，语法同AND过滤参数。
+                  description: Google AIP规范字符串过滤条件
                   schema:
                     type: string
                 - name: filterExpr.type
@@ -3848,9 +3691,9 @@ paths:
                         - OR
                     type: string
                     format: enum
-                - name: filter
+                - name: orderBy
                   in: query
-                  description: 过滤字符串，基于AIP规范的过滤表达式。
+                  description: 排序条件
                   schema:
                     type: string
                 - name: fieldMask
@@ -4601,6 +4444,13 @@ components:
                 description:
                     type: string
                     description: 描述
+                tenantId:
+                    type: integer
+                    description: 租户ID，0代表系统全局角色
+                    format: uint32
+                tenantName:
+                    type: string
+                    description: 租户名称
                 createdBy:
                     type: integer
                     description: 创建者ID
@@ -4649,6 +4499,13 @@ components:
                 description:
                     type: string
                     description: 描述
+                tenantId:
+                    type: integer
+                    description: 租户ID，0代表系统全局角色
+                    format: uint32
+                tenantName:
+                    type: string
+                    description: 租户名称
                 createdBy:
                     type: integer
                     description: 创建者用户ID
@@ -4750,6 +4607,13 @@ components:
                 md5:
                     type: string
                     description: md5码，防止上传重复文件
+                tenantId:
+                    type: integer
+                    description: 租户ID，0代表系统全局角色
+                    format: uint32
+                tenantName:
+                    type: string
+                    description: 租户名称
                 createdBy:
                     type: integer
                     description: 创建者ID
@@ -4846,6 +4710,13 @@ components:
                 categoryName:
                     type: string
                     description: 分类名称
+                tenantId:
+                    type: integer
+                    description: 租户ID，0代表系统全局角色
+                    format: uint32
+                tenantName:
+                    type: string
+                    description: 租户名称
                 createdBy:
                     type: integer
                     description: 创建者ID
@@ -4894,6 +4765,13 @@ components:
                 isEnabled:
                     type: boolean
                     description: 是否启用
+                tenantId:
+                    type: integer
+                    description: 租户ID，0代表系统全局角色
+                    format: uint32
+                tenantName:
+                    type: string
+                    description: 租户名称
                 createdBy:
                     type: integer
                     description: 创建者ID
@@ -4958,6 +4836,13 @@ components:
                 content:
                     type: string
                     description: 消息内容
+                tenantId:
+                    type: integer
+                    description: 租户ID，0代表系统全局角色
+                    format: uint32
+                tenantName:
+                    type: string
+                    description: 租户名称
                 createdBy:
                     type: integer
                     description: 创建者ID
@@ -5396,6 +5281,13 @@ components:
                 reason:
                     type: string
                     description: 限制原因
+                tenantId:
+                    type: integer
+                    description: 租户ID，0代表系统全局角色
+                    format: uint32
+                tenantName:
+                    type: string
+                    description: 租户名称
                 createdBy:
                     type: integer
                     description: 创建者ID
@@ -6295,7 +6187,7 @@ components:
                     description: 角色名称
                 code:
                     type: string
-                    description: 角色标识码（如：platform_admin, tenant_admin）
+                    description: 角色标识码（如：platform:admin, tenant:admin）
                 sortOrder:
                     type: integer
                     description: 排序顺序，值越小越靠前
@@ -6312,7 +6204,10 @@ components:
                     description: 描述
                 isProtected:
                     type: boolean
-                    description: 是否为系统内置保护角色，保护角色不允许删除或修改其权限
+                    description: 受保护角色，仅平台管理员可修改
+                isSystem:
+                    type: boolean
+                    description: 系统内置角色，仅平台管理员可修改
                 permissions:
                     type: array
                     items:
@@ -6541,6 +6436,10 @@ components:
                 remark:
                     type: string
                     description: 备注
+                tenantId:
+                    type: integer
+                    description: 租户ID，0代表系统全局角色
+                    format: uint32
                 createdBy:
                     type: integer
                     description: 创建者ID

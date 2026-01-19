@@ -426,6 +426,10 @@ func (m *Task) validate(all bool) error {
 		// no validation rules for Remark
 	}
 
+	if m.TenantId != nil {
+		// no validation rules for TenantId
+	}
+
 	if m.CreatedBy != nil {
 		// no validation rules for CreatedBy
 	}

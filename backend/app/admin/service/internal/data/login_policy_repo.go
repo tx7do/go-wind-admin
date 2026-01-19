@@ -146,6 +146,7 @@ func (r *LoginPolicyRepo) Create(ctx context.Context, req *adminV1.CreateLoginPo
 	}
 
 	builder := r.entClient.Client().LoginPolicy.Create().
+		SetNillableTenantID(req.Data.TenantId).
 		SetNillableTargetID(req.Data.TargetId).
 		SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
 		SetNillableMethod(r.methodConverter.ToEntity(req.Data.Method)).

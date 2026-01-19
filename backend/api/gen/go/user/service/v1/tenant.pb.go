@@ -823,6 +823,7 @@ func (x *BatchCreateTenantsResponse) GetCreatedIds() []int32 {
 type TenantExistsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Code          string                 `protobuf:"bytes,1,opt,name=code,proto3" json:"code,omitempty"` // 租户编码
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"` // 租户名称
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -860,6 +861,13 @@ func (*TenantExistsRequest) Descriptor() ([]byte, []int) {
 func (x *TenantExistsRequest) GetCode() string {
 	if x != nil {
 		return x.Code
+	}
+	return ""
+}
+
+func (x *TenantExistsRequest) GetName() string {
+	if x != nil {
+		return x.Name
 	}
 	return ""
 }
@@ -1017,9 +1025,10 @@ const file_user_service_v1_tenant_proto_rawDesc = "" +
 	"\x04data\x18\x01 \x03(\v2\x17.user.service.v1.TenantR\x04data\"b\n" +
 	"\x1aBatchCreateTenantsResponse\x12D\n" +
 	"\vcreated_ids\x18\x01 \x03(\x05B#\xbaG \x92\x02\x1d创建成功的租户ID列表R\n" +
-	"createdIds\"?\n" +
+	"createdIds\"i\n" +
 	"\x13TenantExistsRequest\x12(\n" +
-	"\x04code\x18\x01 \x01(\tB\x14\xbaG\x11\x18\x01\x92\x02\f租户编码R\x04code\",\n" +
+	"\x04code\x18\x01 \x01(\tB\x14\xbaG\x11\x18\x01\x92\x02\f租户编码R\x04code\x12(\n" +
+	"\x04name\x18\x02 \x01(\tB\x14\xbaG\x11\x18\x01\x92\x02\f租户名称R\x04name\",\n" +
 	"\x14TenantExistsResponse\x12\x14\n" +
 	"\x05exist\x18\x01 \x01(\bR\x05exist2\xc5\x04\n" +
 	"\rTenantService\x12H\n" +

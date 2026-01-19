@@ -1,11 +1,14 @@
+import { useUserStore } from '@vben/stores';
+
 import { defineStore } from 'pinia';
 
 import { createFileServiceClient } from '#/generated/api/admin/service/v1';
-import { makeQueryString, makeUpdateMask } from '#/utils/query';
+import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 export const useFileStore = defineStore('file', () => {
   const service = createFileServiceClient(requestClientRequestHandler);
+  const userStore = useUserStore();
 
   /**
    * 查询文件列表
@@ -21,8 +24,8 @@ export const useFileStore = defineStore('file', () => {
     return await service.List({
       // @ts-ignore proto generated code is error.
       fieldMask,
-      orderBy: orderBy ?? [],
-      query: makeQueryString(formValues ?? null),
+      orderBy: makeOrderBy(orderBy),
+      query: makeQueryString(formValues, userStore.isTenantUser()),
       page: paging?.page,
       pageSize: paging?.pageSize,
       noPaging,

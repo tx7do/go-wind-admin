@@ -156,8 +156,7 @@ func (r *UserPositionRepo) AssignUserPosition(
 
 // AssignUserPositions 分配岗位给用户
 func (r *UserPositionRepo) AssignUserPositions(
-	ctx context.Context,
-	tx *ent.Tx,
+	ctx context.Context, tx *ent.Tx,
 	userID uint32,
 	datas []*userV1.UserPosition,
 ) error {
@@ -181,6 +180,7 @@ func (r *UserPositionRepo) AssignUserPositions(
 		}
 		rm := tx.UserPosition.
 			Create().
+			SetNillableTenantID(data.TenantId).
 			SetUserID(userID).
 			SetPositionID(data.GetPositionId()).
 			SetNillableStatus(r.statusConverter.ToEntity(data.Status)).

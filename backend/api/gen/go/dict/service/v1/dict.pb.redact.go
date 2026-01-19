@@ -165,6 +165,10 @@ func (x *DictType) Redact() string {
 
 	// Safe field: Description
 
+	// Safe field: TenantId
+
+	// Safe field: TenantName
+
 	// Safe field: CreatedBy
 
 	// Safe field: UpdatedBy
@@ -202,6 +206,10 @@ func (x *DictEntry) Redact() string {
 	// Safe field: SortOrder
 
 	// Safe field: Description
+
+	// Safe field: TenantId
+
+	// Safe field: TenantName
 
 	// Safe field: CreatedBy
 

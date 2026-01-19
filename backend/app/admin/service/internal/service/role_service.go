@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"go-wind-admin/pkg/utils/name_set"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
@@ -16,6 +17,7 @@ import (
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 
 	"go-wind-admin/pkg/constants"
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
 )
 
@@ -26,25 +28,21 @@ type RoleService struct {
 
 	authorizer *data.Authorizer
 
-	roleRepo *data.RoleRepo
-
-	membershipOrgUnitRepo *data.MembershipOrgUnitRepo
-	membershipRepo        *data.MembershipRepo
+	roleRepo   *data.RoleRepo
+	tenantRepo *data.TenantRepo
 }
 
 func NewRoleService(
 	ctx *bootstrap.Context,
 	authorizer *data.Authorizer,
 	roleRepo *data.RoleRepo,
-	membershipOrgUnitRepo *data.MembershipOrgUnitRepo,
-	membershipRepo *data.MembershipRepo,
+	tenantRepo *data.TenantRepo,
 ) *RoleService {
 	svc := &RoleService{
-		log:                   ctx.NewLoggerHelper("role/service/admin-service"),
-		authorizer:            authorizer,
-		roleRepo:              roleRepo,
-		membershipOrgUnitRepo: membershipOrgUnitRepo,
-		membershipRepo:        membershipRepo,
+		log:        ctx.NewLoggerHelper("role/service/admin-service"),
+		authorizer: authorizer,
+		roleRepo:   roleRepo,
+		tenantRepo: tenantRepo,
 	}
 
 	svc.init()
@@ -53,18 +51,56 @@ func NewRoleService(
 }
 
 func (s *RoleService) init() {
-	ctx := context.Background()
+	ctx := appViewer.NewSystemViewerContext(context.Background())
 	if count, _ := s.roleRepo.Count(ctx, []func(s *sql.Selector){}); count == 0 {
 		_ = s.createDefaultRoles(ctx)
 	}
 }
 
 func (s *RoleService) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListRoleResponse, error) {
-	return s.roleRepo.List(ctx, req)
+	resp, err := s.roleRepo.List(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	var tenantSet = make(name_set.UserNameSetMap)
+
+	for _, v := range resp.Items {
+		if v.TenantId != nil {
+			tenantSet[v.GetTenantId()] = nil
+		}
+	}
+
+	QueryTenantInfoFromRepo(ctx, s.tenantRepo, &tenantSet)
+
+	for _, v := range resp.Items {
+		if v.TenantId != nil {
+			if tenantInfo, ok := tenantSet[v.GetTenantId()]; ok && tenantInfo != nil {
+				v.TenantName = &tenantInfo.UserName
+			}
+		}
+	}
+
+	return resp, nil
 }
 
 func (s *RoleService) Get(ctx context.Context, req *userV1.GetRoleRequest) (*userV1.Role, error) {
-	return s.roleRepo.Get(ctx, req)
+	resp, err := s.roleRepo.Get(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	if resp.TenantId != nil {
+		var aTenant *userV1.Tenant
+		aTenant, err = s.tenantRepo.Get(ctx, &userV1.GetTenantRequest{QueryBy: &userV1.GetTenantRequest_Id{Id: resp.GetTenantId()}})
+		if err == nil && aTenant != nil {
+			resp.TenantName = aTenant.Name
+		} else {
+			s.log.Warnf("Get role tenant failed: %v", err)
+		}
+	}
+
+	return resp, nil
 }
 
 func (s *RoleService) Create(ctx context.Context, req *userV1.CreateRoleRequest) (*emptypb.Empty, error) {
@@ -79,6 +115,10 @@ func (s *RoleService) Create(ctx context.Context, req *userV1.CreateRoleRequest)
 	}
 
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
+
+	if operator.GetTenantId() == 0 {
+		req.Data.IsSystem = nil
+	}
 
 	if err = s.roleRepo.Create(ctx, req); err != nil {
 		return nil, err
@@ -104,6 +144,9 @@ func (s *RoleService) Update(ctx context.Context, req *userV1.UpdateRoleRequest)
 	}
 
 	req.Data.UpdatedBy = trans.Ptr(operator.UserId)
+	if operator.GetTenantId() == 0 {
+		req.Data.IsSystem = nil
+	}
 
 	if err = s.roleRepo.Update(ctx, req); err != nil {
 		s.log.Errorf("update role error: %v", err)

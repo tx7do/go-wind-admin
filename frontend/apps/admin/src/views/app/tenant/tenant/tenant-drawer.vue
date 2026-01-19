@@ -214,38 +214,6 @@ const [BaseForm, baseFormApi] = useVbenForm({
         triggerFields: ['type'],
       },
     },
-
-    {
-      component: 'ApiTreeSelect',
-      fieldName: 'user.roleIds',
-      label: $t('page.user.form.role'),
-      componentProps: {
-        placeholder: $t('ui.placeholder.select'),
-        showSearch: true,
-        multiple: true,
-        treeDefaultExpandAll: false,
-        allowClear: true,
-        loadingSlot: 'suffixIcon',
-        childrenField: 'children',
-        labelField: 'name',
-        valueField: 'id',
-        treeNodeFilterProp: 'label',
-        api: async () => {
-          const result = await roleStore.listRole(undefined, {
-            // parent_id: 0,
-            status: 'ON',
-          });
-
-          return result.items;
-        },
-      },
-      dependencies: {
-        show: (_values) => {
-          return data.value?.create;
-        },
-        triggerFields: ['type'],
-      },
-    },
   ],
 });
 

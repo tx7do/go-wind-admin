@@ -5,6 +5,7 @@ package role
 import (
 	"fmt"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 )
 
@@ -41,6 +42,8 @@ const (
 	FieldCode = "code"
 	// FieldIsProtected holds the string denoting the is_protected field in the database.
 	FieldIsProtected = "is_protected"
+	// FieldIsSystem holds the string denoting the is_system field in the database.
+	FieldIsSystem = "is_system"
 	// Table holds the table name of the role in the database.
 	Table = "sys_roles"
 )
@@ -62,6 +65,7 @@ var Columns = []string{
 	FieldName,
 	FieldCode,
 	FieldIsProtected,
+	FieldIsSystem,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -74,15 +78,26 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "go-wind-admin/app/admin/service/internal/data/ent/runtime"
 var (
+	Hooks  [2]ent.Hook
+	Policy ent.Policy
 	// DefaultSortOrder holds the default value on creation for the "sort_order" field.
 	DefaultSortOrder uint32
+	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
+	DefaultTenantID uint32
 	// NameValidator is a validator for the "name" field. It is called by the builders before save.
 	NameValidator func(string) error
 	// CodeValidator is a validator for the "code" field. It is called by the builders before save.
 	CodeValidator func(string) error
 	// DefaultIsProtected holds the default value on creation for the "is_protected" field.
 	DefaultIsProtected bool
+	// DefaultIsSystem holds the default value on creation for the "is_system" field.
+	DefaultIsSystem bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
@@ -189,4 +204,9 @@ func ByCode(opts ...sql.OrderTermOption) OrderOption {
 // ByIsProtected orders the results by the is_protected field.
 func ByIsProtected(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsProtected, opts...).ToFunc()
+}
+
+// ByIsSystem orders the results by the is_system field.
+func ByIsSystem(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIsSystem, opts...).ToFunc()
 }

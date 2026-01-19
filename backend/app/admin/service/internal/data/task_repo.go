@@ -146,6 +146,7 @@ func (r *TaskRepo) Create(ctx context.Context, req *adminV1.CreateTaskRequest) (
 	}
 
 	builder := r.entClient.Client().Task.Create().
+		SetNillableTenantID(req.Data.TenantId).
 		SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
 		SetNillableTypeName(req.Data.TypeName).
 		SetNillableTaskPayload(req.Data.TaskPayload).

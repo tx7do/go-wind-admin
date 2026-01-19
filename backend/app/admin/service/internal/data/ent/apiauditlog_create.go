@@ -390,6 +390,9 @@ func (_c *ApiAuditLogCreate) Mutation() *ApiAuditLogMutation {
 
 // Save creates the ApiAuditLog in the database.
 func (_c *ApiAuditLogCreate) Save(ctx context.Context) (*ApiAuditLog, error) {
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -413,6 +416,15 @@ func (_c *ApiAuditLogCreate) ExecX(ctx context.Context) {
 	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// defaults sets the default values of the builder before save.
+func (_c *ApiAuditLogCreate) defaults() error {
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := apiauditlog.DefaultTenantID
+		_c.mutation.SetTenantID(v)
+	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -1745,6 +1757,7 @@ func (_c *ApiAuditLogCreateBulk) Save(ctx context.Context) ([]*ApiAuditLog, erro
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*ApiAuditLogMutation)
 				if !ok {

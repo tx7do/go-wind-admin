@@ -3,6 +3,7 @@
 package dicttype
 
 import (
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 )
@@ -76,11 +77,20 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "go-wind-admin/app/admin/service/internal/data/ent/runtime"
 var (
+	Hooks  [2]ent.Hook
+	Policy ent.Policy
 	// DefaultIsEnabled holds the default value on creation for the "is_enabled" field.
 	DefaultIsEnabled bool
 	// DefaultSortOrder holds the default value on creation for the "sort_order" field.
 	DefaultSortOrder uint32
+	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
+	DefaultTenantID uint32
 	// TypeCodeValidator is a validator for the "type_code" field. It is called by the builders before save.
 	TypeCodeValidator func(string) error
 	// TypeNameValidator is a validator for the "type_name" field. It is called by the builders before save.

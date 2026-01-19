@@ -180,6 +180,10 @@ func (x *InternalMessageRecipient) Redact() string {
 
 	// Safe field: Content
 
+	// Safe field: TenantId
+
+	// Safe field: TenantName
+
 	// Safe field: CreatedBy
 
 	// Safe field: UpdatedBy

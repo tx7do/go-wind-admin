@@ -104,8 +104,8 @@ func (r *PermissionGroupRepo) List(ctx context.Context, req *paginationV1.Paging
 
 	entities, err := builder.All(ctx)
 	if err != nil {
-		r.log.Errorf("query list failed: %s", err.Error())
-		return nil, permissionV1.ErrorInternalServerError("query list failed")
+		r.log.Errorf("query permission group list failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("query permission group list failed")
 	}
 
 	dtos := make([]*permissionV1.PermissionGroup, 0, len(entities))

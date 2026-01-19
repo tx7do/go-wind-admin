@@ -8,7 +8,6 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -17,10 +16,10 @@ import (
 	"github.com/tx7do/go-utils/copierutil"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/timeutil"
+	"github.com/tx7do/go-utils/trans"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
-	_ "go-wind-admin/app/admin/service/internal/data/ent/runtime"
 	"go-wind-admin/app/admin/service/internal/data/ent/user"
 
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
@@ -35,6 +34,7 @@ type UserRepo interface {
 	Get(ctx context.Context, req *userV1.GetUserRequest) (*userV1.User, error)
 
 	Create(ctx context.Context, req *userV1.CreateUserRequest) (*userV1.User, error)
+	CreateWithTx(ctx context.Context, tx *ent.Tx, data *userV1.User) (*userV1.User, error)
 
 	Update(ctx context.Context, req *userV1.UpdateUserRequest) error
 
@@ -130,6 +130,7 @@ func (r *userRepo) init() {
 	r.mapper.AppendConverters(r.statusConverter.NewConverterPair())
 }
 
+// Count 统计用户数量
 func (r *userRepo) Count(ctx context.Context) (int, error) {
 	builder := r.entClient.Client().User.Query()
 
@@ -309,12 +310,13 @@ func (r *userRepo) queryUserIDsByRelationIDsUserTenantRelationOneToOne(ctx conte
 	return result, nil
 }
 
+// List 列出用户
 func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListUserResponse, error) {
 	if req == nil {
 		return nil, userV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().User.Query()
+	builder := r.entClient.Client().Debug().User.Query()
 
 	filterExpr, err := r.repository.ConvertFilterByPagingRequest(req)
 	if err != nil {
@@ -412,10 +414,7 @@ func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 		})
 	}
 
-	req.FilterExpr = filterExpr
-	req.Query = nil
-	req.OrQuery = nil
-	req.Filter = nil
+	req.FilteringType = &paginationV1.PagingRequest_FilterExpr{FilterExpr: filterExpr}
 
 	ret, err := r.repository.ListWithPaging(ctx, builder, builder.Clone(), req)
 	if err != nil {
@@ -444,6 +443,7 @@ func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 	return resp, nil
 }
 
+// Get 获取用户
 func (r *userRepo) Get(ctx context.Context, req *userV1.GetUserRequest) (*userV1.User, error) {
 	if req == nil {
 		return nil, userV1.ErrorBadRequest("invalid parameter")
@@ -477,6 +477,7 @@ func (r *userRepo) Get(ctx context.Context, req *userV1.GetUserRequest) (*userV1
 	return dto, err
 }
 
+// Create 创建用户
 func (r *userRepo) Create(ctx context.Context, req *userV1.CreateUserRequest) (dto *userV1.User, err error) {
 	if req == nil || req.Data == nil {
 		return nil, userV1.ErrorBadRequest("invalid parameter")
@@ -501,42 +502,42 @@ func (r *userRepo) Create(ctx context.Context, req *userV1.CreateUserRequest) (d
 		}
 	}()
 
-	builder := r.entClient.Client().User.Create().
-		SetNillableUsername(req.Data.Username).
-		SetNillableNickname(req.Data.Nickname).
-		SetNillableRealname(req.Data.Realname).
-		SetNillableAvatar(req.Data.Avatar).
-		SetNillableEmail(req.Data.Email).
-		SetNillableMobile(req.Data.Mobile).
-		SetNillableTelephone(req.Data.Telephone).
-		SetNillableRegion(req.Data.Region).
-		SetNillableAddress(req.Data.Address).
-		SetNillableDescription(req.Data.Description).
-		SetNillableRemark(req.Data.Remark).
-		SetNillableLastLoginAt(timeutil.TimestamppbToTime(req.Data.LastLoginAt)).
-		SetNillableLockedUntil(timeutil.TimestamppbToTime(req.Data.LockedUntil)).
-		SetNillableLastLoginIP(req.Data.LastLoginIp).
-		SetNillableGender(r.genderConverter.ToEntity(req.Data.Gender)).
-		SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
-		SetNillableCreatedBy(req.Data.CreatedBy).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
+	return r.CreateWithTx(ctx, tx, req.GetData())
+}
 
-	if req.Data.TenantId == nil {
-		builder.SetTenantID(req.Data.GetTenantId())
+// CreateWithTx 在事务中创建用户
+func (r *userRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *userV1.User) (dto *userV1.User, err error) {
+	if data == nil {
+		return nil, userV1.ErrorBadRequest("invalid parameter")
 	}
-	if req.Data.CreatedAt == nil {
+
+	builder := tx.User.Create().
+		SetNillableTenantID(data.TenantId).
+		SetNillableUsername(data.Username).
+		SetNillableNickname(data.Nickname).
+		SetNillableRealname(data.Realname).
+		SetNillableAvatar(data.Avatar).
+		SetNillableEmail(data.Email).
+		SetNillableMobile(data.Mobile).
+		SetNillableTelephone(data.Telephone).
+		SetNillableRegion(data.Region).
+		SetNillableAddress(data.Address).
+		SetNillableDescription(data.Description).
+		SetNillableRemark(data.Remark).
+		SetNillableLastLoginAt(timeutil.TimestamppbToTime(data.LastLoginAt)).
+		SetNillableLockedUntil(timeutil.TimestamppbToTime(data.LockedUntil)).
+		SetNillableLastLoginIP(data.LastLoginIp).
+		SetNillableGender(r.genderConverter.ToEntity(data.Gender)).
+		SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
+		SetNillableCreatedBy(data.CreatedBy).
+		SetNillableCreatedAt(timeutil.TimestamppbToTime(data.CreatedAt))
+
+	if data.CreatedAt == nil {
 		builder.SetCreatedAt(time.Now())
 	}
 
-	if req.Data.Id != nil {
-		builder.SetID(req.GetData().GetId())
-	}
-
-	if req.Data.RoleIds != nil {
-		var roleIds []int
-		for _, roleId := range req.Data.GetRoleIds() {
-			roleIds = append(roleIds, int(roleId))
-		}
+	if data.Id != nil {
+		builder.SetID(data.GetId())
 	}
 
 	var entity *ent.User
@@ -545,19 +546,31 @@ func (r *userRepo) Create(ctx context.Context, req *userV1.CreateUserRequest) (d
 		return nil, userV1.ErrorInternalServerError("insert user failed")
 	}
 
+	if data.RoleId != nil {
+		data.RoleIds = append(data.RoleIds, data.GetRoleId())
+	}
+	if data.OrgUnitId != nil {
+		data.OrgUnitIds = append(data.OrgUnitIds, data.GetOrgUnitId())
+	}
+	if data.PositionId != nil {
+		data.PositionIds = append(data.PositionIds, data.GetPositionId())
+	}
+
 	switch constants.DefaultUserTenantRelationType {
 	case constants.UserTenantRelationNone, constants.UserTenantRelationOneToOne:
-		if err = r.assignUserRelations(ctx, tx, entity.ID,
-			req.GetData().GetRoleIds(),
-			req.GetData().GetOrgUnitIds(),
-			req.GetData().GetPositionIds()); err != nil {
+		if err = r.assignUserRelations(ctx, tx,
+			data.GetTenantId(), entity.ID,
+			data.GetRoleIds(),
+			data.GetOrgUnitIds(),
+			data.GetPositionIds()); err != nil {
 			return nil, err
 		}
 	case constants.UserTenantRelationOneToMany:
-		if err = r.assignMembershipRelations(ctx, tx, entity.ID,
-			req.GetData().GetRoleIds(),
-			req.GetData().GetOrgUnitIds(),
-			req.GetData().GetPositionIds()); err != nil {
+		if err = r.assignMembershipRelations(ctx, tx,
+			data.GetTenantId(), entity.ID,
+			data.GetRoleIds(),
+			data.GetOrgUnitIds(),
+			data.GetPositionIds()); err != nil {
 			return nil, err
 		}
 	}
@@ -565,81 +578,7 @@ func (r *userRepo) Create(ctx context.Context, req *userV1.CreateUserRequest) (d
 	return r.mapper.ToDTO(entity), nil
 }
 
-func (r *userRepo) assignMembershipRelations(ctx context.Context, tx *ent.Tx, userID uint32, roleIDs, orgUnitIDs, positionIDs []uint32) error {
-	now := time.Now()
-	err := r.membershipRepo.AssignTenantMembershipWithTx(ctx, tx, &userV1.Membership{
-		UserId:     trans.Ptr(userID),
-		Status:     userV1.Membership_ACTIVE.Enum(),
-		IsPrimary:  trans.Ptr(true),
-		AssignedAt: timeutil.TimeToTimestamppb(&now),
-
-		RoleIds:     roleIDs,
-		OrgUnitIds:  orgUnitIDs,
-		PositionIds: positionIDs,
-	})
-	if err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func (r *userRepo) assignUserRelations(ctx context.Context, tx *ent.Tx, userID uint32, roleIDs, orgUnitIDs, positionIDs []uint32) (err error) {
-	if len(roleIDs) == 0 && len(orgUnitIDs) == 0 && len(positionIDs) == 0 {
-		return nil
-	}
-
-	now := time.Now()
-
-	if len(roleIDs) > 0 {
-		var userRoles []*userV1.UserRole
-		for _, roleID := range roleIDs {
-			userRoles = append(userRoles, &userV1.UserRole{
-				UserId:     trans.Ptr(userID),
-				RoleId:     trans.Ptr(roleID),
-				Status:     userV1.UserRole_ACTIVE.Enum(),
-				IsPrimary:  trans.Ptr(true),
-				AssignedAt: timeutil.TimeToTimestamppb(&now),
-			})
-		}
-		if err = r.userRoleRepo.AssignUserRoles(ctx, tx, userID, userRoles); err != nil {
-			return err
-		}
-	}
-	if len(orgUnitIDs) > 0 {
-		var userOrgUnits []*userV1.UserOrgUnit
-		for _, orgUnitID := range orgUnitIDs {
-			userOrgUnits = append(userOrgUnits, &userV1.UserOrgUnit{
-				UserId:     trans.Ptr(userID),
-				OrgUnitId:  trans.Ptr(orgUnitID),
-				Status:     userV1.UserOrgUnit_ACTIVE.Enum(),
-				IsPrimary:  trans.Ptr(true),
-				AssignedAt: timeutil.TimeToTimestamppb(&now),
-			})
-		}
-		if err = r.userOrgUnitRepo.AssignUserOrgUnits(ctx, tx, userID, userOrgUnits); err != nil {
-			return err
-		}
-	}
-	if len(positionIDs) > 0 {
-		var userPositions []*userV1.UserPosition
-		for _, positionID := range positionIDs {
-			userPositions = append(userPositions, &userV1.UserPosition{
-				UserId:     trans.Ptr(userID),
-				PositionId: trans.Ptr(positionID),
-				Status:     userV1.UserPosition_ACTIVE.Enum(),
-				IsPrimary:  trans.Ptr(true),
-				AssignedAt: timeutil.TimeToTimestamppb(&now),
-			})
-		}
-		if err = r.userPositionRepo.AssignUserPositions(ctx, tx, userID, userPositions); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
+// Update 更新用户
 func (r *userRepo) Update(ctx context.Context, req *userV1.UpdateUserRequest) (err error) {
 	if req == nil || req.Data == nil {
 		return userV1.ErrorBadRequest("invalid parameter")
@@ -682,8 +621,9 @@ func (r *userRepo) Update(ctx context.Context, req *userV1.UpdateUserRequest) (e
 		}
 	}()
 
-	builder := tx.User.Update()
-	err = r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
+	var entitiy *userV1.User
+	builder := tx.User.UpdateOneID(req.GetId())
+	entitiy, err = r.repository.UpdateOne(ctx, builder, req.Data, req.GetUpdateMask(),
 		func(dto *userV1.User) {
 			builder.
 				SetNillableNickname(req.Data.Nickname).
@@ -723,14 +663,18 @@ func (r *userRepo) Update(ctx context.Context, req *userV1.UpdateUserRequest) (e
 
 	switch constants.DefaultUserTenantRelationType {
 	case constants.UserTenantRelationNone, constants.UserTenantRelationOneToOne:
-		if err = r.assignUserRelations(ctx, tx, req.GetId(),
+		if err = r.assignUserRelations(ctx, tx,
+			entitiy.GetTenantId(),
+			req.GetId(),
 			req.GetData().GetRoleIds(),
 			req.GetData().GetOrgUnitIds(),
 			req.GetData().GetPositionIds()); err != nil {
 			return err
 		}
 	case constants.UserTenantRelationOneToMany:
-		if err = r.assignMembershipRelations(ctx, tx, req.GetId(),
+		if err = r.assignMembershipRelations(ctx, tx,
+			entitiy.GetTenantId(),
+			req.GetId(),
 			req.GetData().GetRoleIds(),
 			req.GetData().GetOrgUnitIds(),
 			req.GetData().GetPositionIds()); err != nil {
@@ -741,6 +685,7 @@ func (r *userRepo) Update(ctx context.Context, req *userV1.UpdateUserRequest) (e
 	return err
 }
 
+// Delete 删除用户
 func (r *userRepo) Delete(ctx context.Context, req *userV1.DeleteUserRequest) (err error) {
 	var existResp *userV1.UserExistsResponse
 	existReq := &userV1.UserExistsRequest{}
@@ -813,6 +758,7 @@ func (r *userRepo) Delete(ctx context.Context, req *userV1.DeleteUserRequest) (e
 	return nil
 }
 
+// removeUserRelations 移除用户关联关系
 func (r *userRepo) removeUserRelations(ctx context.Context, tx *ent.Tx, userID uint32) (err error) {
 	if err = r.userRoleRepo.CleanRelationsByUserID(ctx, tx, userID); err != nil {
 		r.log.Errorf("clean user role relations failed: %s", err.Error())
@@ -827,35 +773,13 @@ func (r *userRepo) removeUserRelations(ctx context.Context, tx *ent.Tx, userID u
 	return
 }
 
+// removeMembershipRelations 移除用户关联关系（通过 Membership 关联）
 func (r *userRepo) removeMembershipRelations(ctx context.Context, tx *ent.Tx, userID uint32) error {
 	if err := r.membershipRepo.CleanRelationsByUserID(ctx, tx, userID); err != nil {
 		r.log.Errorf("clean user membership relations failed: %s", err.Error())
 		return err
 	}
 	return nil
-}
-
-// ListUsersByIds 根据ID列表获取用户列表
-func (r *userRepo) ListUsersByIds(ctx context.Context, ids []uint32) ([]*userV1.User, error) {
-	if len(ids) == 0 {
-		return []*userV1.User{}, nil
-	}
-
-	entities, err := r.entClient.Client().User.Query().
-		Where(user.IDIn(ids...)).
-		All(ctx)
-	if err != nil {
-		r.log.Errorf("query user by ids failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query user by ids failed")
-	}
-
-	dtos := make([]*userV1.User, 0, len(entities))
-	for _, entity := range entities {
-		dto := r.mapper.ToDTO(entity)
-		dtos = append(dtos, dto)
-	}
-
-	return dtos, nil
 }
 
 // UserExists 检查用户是否存在
@@ -886,6 +810,94 @@ func (r *userRepo) UserExists(ctx context.Context, req *userV1.UserExistsRequest
 	}, nil
 }
 
+// assignMembershipRelations 分配用户关联关系（通过 Membership 关联）
+func (r *userRepo) assignMembershipRelations(ctx context.Context, tx *ent.Tx,
+	tenantID, userID uint32,
+	roleIDs, orgUnitIDs, positionIDs []uint32,
+) error {
+	now := time.Now()
+	err := r.membershipRepo.AssignTenantMembershipWithTx(ctx, tx, &userV1.Membership{
+		TenantId:   trans.Ptr(tenantID),
+		UserId:     trans.Ptr(userID),
+		Status:     userV1.Membership_ACTIVE.Enum(),
+		IsPrimary:  trans.Ptr(true),
+		AssignedAt: timeutil.TimeToTimestamppb(&now),
+
+		RoleIds:     roleIDs,
+		OrgUnitIds:  orgUnitIDs,
+		PositionIds: positionIDs,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+// assignUserRelations 分配用户关联关系
+func (r *userRepo) assignUserRelations(ctx context.Context, tx *ent.Tx,
+	tenantID, userID uint32,
+	roleIDs, orgUnitIDs, positionIDs []uint32,
+) (err error) {
+	if len(roleIDs) == 0 && len(orgUnitIDs) == 0 && len(positionIDs) == 0 {
+		return nil
+	}
+
+	now := time.Now()
+
+	if len(roleIDs) > 0 {
+		roleIDs = slice.Unique(roleIDs)
+		var userRoles []*userV1.UserRole
+		for _, roleID := range roleIDs {
+			userRoles = append(userRoles, &userV1.UserRole{
+				TenantId:   trans.Ptr(tenantID),
+				UserId:     trans.Ptr(userID),
+				RoleId:     trans.Ptr(roleID),
+				Status:     userV1.UserRole_ACTIVE.Enum(),
+				IsPrimary:  trans.Ptr(true),
+				AssignedAt: timeutil.TimeToTimestamppb(&now),
+			})
+		}
+		if err = r.userRoleRepo.AssignUserRoles(ctx, tx, userID, userRoles); err != nil {
+			return err
+		}
+	}
+	if len(orgUnitIDs) > 0 {
+		orgUnitIDs = slice.Unique(orgUnitIDs)
+		var userOrgUnits []*userV1.UserOrgUnit
+		for _, orgUnitID := range orgUnitIDs {
+			userOrgUnits = append(userOrgUnits, &userV1.UserOrgUnit{
+				UserId:     trans.Ptr(userID),
+				OrgUnitId:  trans.Ptr(orgUnitID),
+				Status:     userV1.UserOrgUnit_ACTIVE.Enum(),
+				IsPrimary:  trans.Ptr(true),
+				AssignedAt: timeutil.TimeToTimestamppb(&now),
+			})
+		}
+		if err = r.userOrgUnitRepo.AssignUserOrgUnits(ctx, tx, userID, userOrgUnits); err != nil {
+			return err
+		}
+	}
+	if len(positionIDs) > 0 {
+		positionIDs = slice.Unique(positionIDs)
+		var userPositions []*userV1.UserPosition
+		for _, positionID := range positionIDs {
+			userPositions = append(userPositions, &userV1.UserPosition{
+				UserId:     trans.Ptr(userID),
+				PositionId: trans.Ptr(positionID),
+				Status:     userV1.UserPosition_ACTIVE.Enum(),
+				IsPrimary:  trans.Ptr(true),
+				AssignedAt: timeutil.TimeToTimestamppb(&now),
+			})
+		}
+		if err = r.userPositionRepo.AssignUserPositions(ctx, tx, userID, userPositions); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 // AssignUserRole 分配角色
 func (r *userRepo) AssignUserRole(ctx context.Context, data *userV1.UserRole) error {
 	var tx *ent.Tx
@@ -910,6 +922,7 @@ func (r *userRepo) AssignUserRole(ctx context.Context, data *userV1.UserRole) er
 	return r.userRoleRepo.AssignUserRole(ctx, tx, data)
 }
 
+// AssignUserRoles 分配角色
 func (r *userRepo) AssignUserRoles(ctx context.Context, userID uint32, datas []*userV1.UserRole) error {
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
@@ -957,6 +970,7 @@ func (r *userRepo) AssignUserOrgUnit(ctx context.Context, data *userV1.UserOrgUn
 	return r.userOrgUnitRepo.AssignUserOrgUnit(ctx, tx, data)
 }
 
+// AssignUserOrgUnits 分配组织单元给用户
 func (r *userRepo) AssignUserOrgUnits(ctx context.Context, userID uint32, datas []*userV1.UserOrgUnit) error {
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
@@ -980,7 +994,7 @@ func (r *userRepo) AssignUserOrgUnits(ctx context.Context, userID uint32, datas 
 	return r.userOrgUnitRepo.AssignUserOrgUnits(ctx, tx, userID, datas)
 }
 
-// AssignUserPosition 分配岗位
+// AssignUserPosition 分配岗位给用户
 func (r *userRepo) AssignUserPosition(ctx context.Context, data *userV1.UserPosition) error {
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
@@ -1004,6 +1018,7 @@ func (r *userRepo) AssignUserPosition(ctx context.Context, data *userV1.UserPosi
 	return r.userPositionRepo.AssignUserPosition(ctx, tx, data)
 }
 
+// AssignUserPositions 分配岗位给用户
 func (r *userRepo) AssignUserPositions(ctx context.Context, userID uint32, datas []*userV1.UserPosition) error {
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
@@ -1025,6 +1040,29 @@ func (r *userRepo) AssignUserPositions(ctx context.Context, userID uint32, datas
 	}()
 
 	return r.userPositionRepo.AssignUserPositions(ctx, tx, userID, datas)
+}
+
+// ListUsersByIds 根据ID列表获取用户列表
+func (r *userRepo) ListUsersByIds(ctx context.Context, ids []uint32) ([]*userV1.User, error) {
+	if len(ids) == 0 {
+		return []*userV1.User{}, nil
+	}
+
+	entities, err := r.entClient.Client().User.Query().
+		Where(user.IDIn(ids...)).
+		All(ctx)
+	if err != nil {
+		r.log.Errorf("query user by ids failed: %s", err.Error())
+		return nil, userV1.ErrorInternalServerError("query user by ids failed")
+	}
+
+	dtos := make([]*userV1.User, 0, len(entities))
+	for _, entity := range entities {
+		dto := r.mapper.ToDTO(entity)
+		dtos = append(dtos, dto)
+	}
+
+	return dtos, nil
 }
 
 func (r *userRepo) ListRoleIDsByUserID(ctx context.Context, userID uint32) ([]uint32, error) {

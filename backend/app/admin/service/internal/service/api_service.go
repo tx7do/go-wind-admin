@@ -20,6 +20,7 @@ import (
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
 )
 
@@ -54,7 +55,7 @@ func NewApiService(
 }
 
 func (s *ApiService) init() {
-	ctx := context.Background()
+	ctx := appViewer.NewSystemViewerContext(context.Background())
 	if count, _ := s.repo.Count(ctx, []func(s *sql.Selector){}); count == 0 {
 		_, _ = s.SyncApis(ctx, &emptypb.Empty{})
 	}

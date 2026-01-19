@@ -507,7 +507,9 @@ func (_c *OrgUnitCreate) Mutation() *OrgUnitMutation {
 
 // Save creates the OrgUnit in the database.
 func (_c *OrgUnitCreate) Save(ctx context.Context) (*OrgUnit, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -534,7 +536,7 @@ func (_c *OrgUnitCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *OrgUnitCreate) defaults() {
+func (_c *OrgUnitCreate) defaults() error {
 	if _, ok := _c.mutation.Status(); !ok {
 		v := orgunit.DefaultStatus
 		_c.mutation.SetStatus(v)
@@ -542,6 +544,10 @@ func (_c *OrgUnitCreate) defaults() {
 	if _, ok := _c.mutation.SortOrder(); !ok {
 		v := orgunit.DefaultSortOrder
 		_c.mutation.SetSortOrder(v)
+	}
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := orgunit.DefaultTenantID
+		_c.mutation.SetTenantID(v)
 	}
 	if _, ok := _c.mutation.GetType(); !ok {
 		v := orgunit.DefaultType
@@ -551,6 +557,7 @@ func (_c *OrgUnitCreate) defaults() {
 		v := orgunit.DefaultIsLegalEntity
 		_c.mutation.SetIsLegalEntity(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

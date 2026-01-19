@@ -95,7 +95,7 @@ func (r *PositionRepo) List(ctx context.Context, req *paginationV1.PagingRequest
 		return nil, userV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().Position.Query()
+	builder := r.entClient.Client().Debug().Position.Query()
 
 	ret, err := r.repository.ListWithPaging(ctx, builder, builder.Clone(), req)
 	if err != nil {
@@ -177,9 +177,9 @@ func (r *PositionRepo) Create(ctx context.Context, req *userV1.CreatePositionReq
 	}
 
 	builder := r.entClient.Client().Position.Create().
+		SetNillableTenantID(req.Data.TenantId).
 		SetName(req.Data.GetName()).
 		SetCode(req.Data.GetCode()).
-		SetNillableTenantID(req.Data.TenantId).
 		SetOrgUnitID(req.Data.GetOrgUnitId()).
 		SetReportsToPositionID(req.Data.GetReportsToPositionId()).
 		SetNillableSortOrder(req.Data.SortOrder).

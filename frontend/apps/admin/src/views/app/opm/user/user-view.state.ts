@@ -136,14 +136,18 @@ export const useUserViewStore = defineStore('user-view', {
       this.currentOrgUnitId = orgUnitId;
     },
 
+    getCurrentTenantId(): number {
+      if (userStore.isTenantUser()) {
+        return userStore.tenantId as number;
+      }
+      return this.currentTenantId ?? 0;
+    },
+
     /**
      * 当前用户是否为租户用户
      */
     isTenantUser(): boolean {
-      if (userStore.userInfo === null) {
-        return false;
-      }
-      return userStore.userInfo?.tenantId > 0;
+      return userStore.isTenantUser();
     },
   },
 });

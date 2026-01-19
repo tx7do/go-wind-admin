@@ -1,6 +1,9 @@
 package schema
 
 import (
+	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
+	"go-wind-admin/app/admin/service/internal/data/ent/rule"
+
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
@@ -92,6 +95,13 @@ func (UserOrgUnit) Mixin() []ent.Mixin {
 		mixin.OperatorID{},
 		mixin.TenantID{},
 		mixin.Remark{},
+	}
+}
+
+// Policy for all schemas that embed UserOrgUnit.
+func (UserOrgUnit) Policy() ent.Policy {
+	return privacy.Policy{
+		Query: rule.TenantQueryPolicy(),
 	}
 }
 

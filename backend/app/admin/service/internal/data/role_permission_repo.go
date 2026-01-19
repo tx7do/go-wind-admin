@@ -82,6 +82,7 @@ func (r *RolePermissionRepo) BatchCreate(ctx context.Context, tx *ent.Tx, datas 
 	builders := make([]*ent.RolePermissionCreate, 0, len(datas))
 	for _, data := range datas {
 		builder := tx.RolePermission.Create().
+			SetNillableTenantID(data.TenantId).
 			SetRoleID(data.GetRoleId()).
 			SetPermissionID(data.GetPermissionId()).
 			SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
@@ -128,6 +129,7 @@ func (r *RolePermissionRepo) Upsert(ctx context.Context, tx *ent.Tx, data *userV
 	}
 
 	builder := tx.RolePermission.Create().
+		SetNillableTenantID(data.TenantId).
 		SetRoleID(data.GetRoleId()).
 		SetPermissionID(data.GetPermissionId()).
 		SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
@@ -164,17 +166,20 @@ func (r *RolePermissionRepo) Upsert(ctx context.Context, tx *ent.Tx, data *userV
 }
 
 // AssignPermissions 给角色分配权限
-func (r *RolePermissionRepo) AssignPermissions(ctx context.Context, tx *ent.Tx, roleID, operatorID uint32, permissions []uint32) error {
-	if len(permissions) == 0 {
+func (r *RolePermissionRepo) AssignPermissions(ctx context.Context, tx *ent.Tx,
+	tenantID, operatorID uint32,
+	roleID uint32, permissionIDs []uint32,
+) error {
+	if len(permissionIDs) == 0 {
 		return nil
 	}
 
 	now := time.Now()
 
-	for _, permissionID := range permissions {
+	for _, permissionID := range permissionIDs {
 		rp := tx.RolePermission.
 			Create().
-			//SetTenantID(tenantID).
+			SetTenantID(tenantID).
 			SetPermissionID(permissionID).
 			SetRoleID(roleID).
 			SetCreatedBy(operatorID).

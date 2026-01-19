@@ -9,6 +9,7 @@ import (
 	adminpb "go-wind-admin/api/gen/go/admin/service/v1"
 	servicev1 "go-wind-admin/api/gen/go/audit/service/v1"
 	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
+	userpb "go-wind-admin/api/gen/go/user/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/dataaccessauditlog"
@@ -43912,6 +43913,7 @@ type RoleMutation struct {
 	name          *string
 	code          *string
 	is_protected  *bool
+	is_system     *bool
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Role, error)
@@ -44787,6 +44789,42 @@ func (m *RoleMutation) ResetIsProtected() {
 	m.is_protected = nil
 }
 
+// SetIsSystem sets the "is_system" field.
+func (m *RoleMutation) SetIsSystem(b bool) {
+	m.is_system = &b
+}
+
+// IsSystem returns the value of the "is_system" field in the mutation.
+func (m *RoleMutation) IsSystem() (r bool, exists bool) {
+	v := m.is_system
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsSystem returns the old "is_system" field's value of the Role entity.
+// If the Role object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoleMutation) OldIsSystem(ctx context.Context) (v *bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsSystem is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsSystem requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsSystem: %w", err)
+	}
+	return oldValue.IsSystem, nil
+}
+
+// ResetIsSystem resets all changes to the "is_system" field.
+func (m *RoleMutation) ResetIsSystem() {
+	m.is_system = nil
+}
+
 // Where appends a list predicates to the RoleMutation builder.
 func (m *RoleMutation) Where(ps ...predicate.Role) {
 	m.predicates = append(m.predicates, ps...)
@@ -44821,7 +44859,7 @@ func (m *RoleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RoleMutation) Fields() []string {
-	fields := make([]string, 0, 14)
+	fields := make([]string, 0, 15)
 	if m.created_at != nil {
 		fields = append(fields, role.FieldCreatedAt)
 	}
@@ -44864,6 +44902,9 @@ func (m *RoleMutation) Fields() []string {
 	if m.is_protected != nil {
 		fields = append(fields, role.FieldIsProtected)
 	}
+	if m.is_system != nil {
+		fields = append(fields, role.FieldIsSystem)
+	}
 	return fields
 }
 
@@ -44900,6 +44941,8 @@ func (m *RoleMutation) Field(name string) (ent.Value, bool) {
 		return m.Code()
 	case role.FieldIsProtected:
 		return m.IsProtected()
+	case role.FieldIsSystem:
+		return m.IsSystem()
 	}
 	return nil, false
 }
@@ -44937,6 +44980,8 @@ func (m *RoleMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldCode(ctx)
 	case role.FieldIsProtected:
 		return m.OldIsProtected(ctx)
+	case role.FieldIsSystem:
+		return m.OldIsSystem(ctx)
 	}
 	return nil, fmt.Errorf("unknown Role field %s", name)
 }
@@ -45043,6 +45088,13 @@ func (m *RoleMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetIsProtected(v)
+		return nil
+	case role.FieldIsSystem:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsSystem(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Role field %s", name)
@@ -45273,6 +45325,9 @@ func (m *RoleMutation) ResetField(name string) error {
 	case role.FieldIsProtected:
 		m.ResetIsProtected()
 		return nil
+	case role.FieldIsSystem:
+		m.ResetIsSystem()
+		return nil
 	}
 	return fmt.Errorf("unknown Role field %s", name)
 }
@@ -45340,6 +45395,8 @@ type RoleMetadataMutation struct {
 	addupdated_by          *int32
 	deleted_by             *uint32
 	adddeleted_by          *int32
+	tenant_id              *uint32
+	addtenant_id           *int32
 	role_id                *uint32
 	addrole_id             *int32
 	is_template            *bool
@@ -45348,8 +45405,10 @@ type RoleMetadataMutation struct {
 	addtemplate_version    *int32
 	last_synced_version    *int32
 	addlast_synced_version *int32
-	custom_overrides       *[]string
-	appendcustom_overrides []string
+	last_synced_at         *time.Time
+	sync_policy            *rolemetadata.SyncPolicy
+	scope                  *rolemetadata.Scope
+	custom_overrides       **userpb.RoleOverride
 	clearedFields          map[string]struct{}
 	done                   bool
 	oldValue               func(context.Context) (*RoleMetadata, error)
@@ -45817,6 +45876,76 @@ func (m *RoleMetadataMutation) ResetDeletedBy() {
 	delete(m.clearedFields, rolemetadata.FieldDeletedBy)
 }
 
+// SetTenantID sets the "tenant_id" field.
+func (m *RoleMetadataMutation) SetTenantID(u uint32) {
+	m.tenant_id = &u
+	m.addtenant_id = nil
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *RoleMetadataMutation) TenantID() (r uint32, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the RoleMetadata entity.
+// If the RoleMetadata object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoleMetadataMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// AddTenantID adds u to the "tenant_id" field.
+func (m *RoleMetadataMutation) AddTenantID(u int32) {
+	if m.addtenant_id != nil {
+		*m.addtenant_id += u
+	} else {
+		m.addtenant_id = &u
+	}
+}
+
+// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
+func (m *RoleMetadataMutation) AddedTenantID() (r int32, exists bool) {
+	v := m.addtenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *RoleMetadataMutation) ClearTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	m.clearedFields[rolemetadata.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *RoleMetadataMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[rolemetadata.FieldTenantID]
+	return ok
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *RoleMetadataMutation) ResetTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	delete(m.clearedFields, rolemetadata.FieldTenantID)
+}
+
 // SetRoleID sets the "role_id" field.
 func (m *RoleMetadataMutation) SetRoleID(u uint32) {
 	m.role_id = &u
@@ -46125,14 +46254,160 @@ func (m *RoleMetadataMutation) ResetLastSyncedVersion() {
 	delete(m.clearedFields, rolemetadata.FieldLastSyncedVersion)
 }
 
+// SetLastSyncedAt sets the "last_synced_at" field.
+func (m *RoleMetadataMutation) SetLastSyncedAt(t time.Time) {
+	m.last_synced_at = &t
+}
+
+// LastSyncedAt returns the value of the "last_synced_at" field in the mutation.
+func (m *RoleMetadataMutation) LastSyncedAt() (r time.Time, exists bool) {
+	v := m.last_synced_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastSyncedAt returns the old "last_synced_at" field's value of the RoleMetadata entity.
+// If the RoleMetadata object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoleMetadataMutation) OldLastSyncedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastSyncedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastSyncedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastSyncedAt: %w", err)
+	}
+	return oldValue.LastSyncedAt, nil
+}
+
+// ClearLastSyncedAt clears the value of the "last_synced_at" field.
+func (m *RoleMetadataMutation) ClearLastSyncedAt() {
+	m.last_synced_at = nil
+	m.clearedFields[rolemetadata.FieldLastSyncedAt] = struct{}{}
+}
+
+// LastSyncedAtCleared returns if the "last_synced_at" field was cleared in this mutation.
+func (m *RoleMetadataMutation) LastSyncedAtCleared() bool {
+	_, ok := m.clearedFields[rolemetadata.FieldLastSyncedAt]
+	return ok
+}
+
+// ResetLastSyncedAt resets all changes to the "last_synced_at" field.
+func (m *RoleMetadataMutation) ResetLastSyncedAt() {
+	m.last_synced_at = nil
+	delete(m.clearedFields, rolemetadata.FieldLastSyncedAt)
+}
+
+// SetSyncPolicy sets the "sync_policy" field.
+func (m *RoleMetadataMutation) SetSyncPolicy(rp rolemetadata.SyncPolicy) {
+	m.sync_policy = &rp
+}
+
+// SyncPolicy returns the value of the "sync_policy" field in the mutation.
+func (m *RoleMetadataMutation) SyncPolicy() (r rolemetadata.SyncPolicy, exists bool) {
+	v := m.sync_policy
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSyncPolicy returns the old "sync_policy" field's value of the RoleMetadata entity.
+// If the RoleMetadata object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoleMetadataMutation) OldSyncPolicy(ctx context.Context) (v *rolemetadata.SyncPolicy, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSyncPolicy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSyncPolicy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSyncPolicy: %w", err)
+	}
+	return oldValue.SyncPolicy, nil
+}
+
+// ClearSyncPolicy clears the value of the "sync_policy" field.
+func (m *RoleMetadataMutation) ClearSyncPolicy() {
+	m.sync_policy = nil
+	m.clearedFields[rolemetadata.FieldSyncPolicy] = struct{}{}
+}
+
+// SyncPolicyCleared returns if the "sync_policy" field was cleared in this mutation.
+func (m *RoleMetadataMutation) SyncPolicyCleared() bool {
+	_, ok := m.clearedFields[rolemetadata.FieldSyncPolicy]
+	return ok
+}
+
+// ResetSyncPolicy resets all changes to the "sync_policy" field.
+func (m *RoleMetadataMutation) ResetSyncPolicy() {
+	m.sync_policy = nil
+	delete(m.clearedFields, rolemetadata.FieldSyncPolicy)
+}
+
+// SetScope sets the "scope" field.
+func (m *RoleMetadataMutation) SetScope(r rolemetadata.Scope) {
+	m.scope = &r
+}
+
+// Scope returns the value of the "scope" field in the mutation.
+func (m *RoleMetadataMutation) Scope() (r rolemetadata.Scope, exists bool) {
+	v := m.scope
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldScope returns the old "scope" field's value of the RoleMetadata entity.
+// If the RoleMetadata object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoleMetadataMutation) OldScope(ctx context.Context) (v *rolemetadata.Scope, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldScope is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldScope requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldScope: %w", err)
+	}
+	return oldValue.Scope, nil
+}
+
+// ClearScope clears the value of the "scope" field.
+func (m *RoleMetadataMutation) ClearScope() {
+	m.scope = nil
+	m.clearedFields[rolemetadata.FieldScope] = struct{}{}
+}
+
+// ScopeCleared returns if the "scope" field was cleared in this mutation.
+func (m *RoleMetadataMutation) ScopeCleared() bool {
+	_, ok := m.clearedFields[rolemetadata.FieldScope]
+	return ok
+}
+
+// ResetScope resets all changes to the "scope" field.
+func (m *RoleMetadataMutation) ResetScope() {
+	m.scope = nil
+	delete(m.clearedFields, rolemetadata.FieldScope)
+}
+
 // SetCustomOverrides sets the "custom_overrides" field.
-func (m *RoleMetadataMutation) SetCustomOverrides(s []string) {
-	m.custom_overrides = &s
-	m.appendcustom_overrides = nil
+func (m *RoleMetadataMutation) SetCustomOverrides(uo *userpb.RoleOverride) {
+	m.custom_overrides = &uo
 }
 
 // CustomOverrides returns the value of the "custom_overrides" field in the mutation.
-func (m *RoleMetadataMutation) CustomOverrides() (r []string, exists bool) {
+func (m *RoleMetadataMutation) CustomOverrides() (r *userpb.RoleOverride, exists bool) {
 	v := m.custom_overrides
 	if v == nil {
 		return
@@ -46143,7 +46418,7 @@ func (m *RoleMetadataMutation) CustomOverrides() (r []string, exists bool) {
 // OldCustomOverrides returns the old "custom_overrides" field's value of the RoleMetadata entity.
 // If the RoleMetadata object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RoleMetadataMutation) OldCustomOverrides(ctx context.Context) (v []string, err error) {
+func (m *RoleMetadataMutation) OldCustomOverrides(ctx context.Context) (v *userpb.RoleOverride, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCustomOverrides is only allowed on UpdateOne operations")
 	}
@@ -46157,23 +46432,9 @@ func (m *RoleMetadataMutation) OldCustomOverrides(ctx context.Context) (v []stri
 	return oldValue.CustomOverrides, nil
 }
 
-// AppendCustomOverrides adds s to the "custom_overrides" field.
-func (m *RoleMetadataMutation) AppendCustomOverrides(s []string) {
-	m.appendcustom_overrides = append(m.appendcustom_overrides, s...)
-}
-
-// AppendedCustomOverrides returns the list of values that were appended to the "custom_overrides" field in this mutation.
-func (m *RoleMetadataMutation) AppendedCustomOverrides() ([]string, bool) {
-	if len(m.appendcustom_overrides) == 0 {
-		return nil, false
-	}
-	return m.appendcustom_overrides, true
-}
-
 // ResetCustomOverrides resets all changes to the "custom_overrides" field.
 func (m *RoleMetadataMutation) ResetCustomOverrides() {
 	m.custom_overrides = nil
-	m.appendcustom_overrides = nil
 }
 
 // Where appends a list predicates to the RoleMetadataMutation builder.
@@ -46210,7 +46471,7 @@ func (m *RoleMetadataMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RoleMetadataMutation) Fields() []string {
-	fields := make([]string, 0, 12)
+	fields := make([]string, 0, 16)
 	if m.created_at != nil {
 		fields = append(fields, rolemetadata.FieldCreatedAt)
 	}
@@ -46229,6 +46490,9 @@ func (m *RoleMetadataMutation) Fields() []string {
 	if m.deleted_by != nil {
 		fields = append(fields, rolemetadata.FieldDeletedBy)
 	}
+	if m.tenant_id != nil {
+		fields = append(fields, rolemetadata.FieldTenantID)
+	}
 	if m.role_id != nil {
 		fields = append(fields, rolemetadata.FieldRoleID)
 	}
@@ -46243,6 +46507,15 @@ func (m *RoleMetadataMutation) Fields() []string {
 	}
 	if m.last_synced_version != nil {
 		fields = append(fields, rolemetadata.FieldLastSyncedVersion)
+	}
+	if m.last_synced_at != nil {
+		fields = append(fields, rolemetadata.FieldLastSyncedAt)
+	}
+	if m.sync_policy != nil {
+		fields = append(fields, rolemetadata.FieldSyncPolicy)
+	}
+	if m.scope != nil {
+		fields = append(fields, rolemetadata.FieldScope)
 	}
 	if m.custom_overrides != nil {
 		fields = append(fields, rolemetadata.FieldCustomOverrides)
@@ -46267,6 +46540,8 @@ func (m *RoleMetadataMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedBy()
 	case rolemetadata.FieldDeletedBy:
 		return m.DeletedBy()
+	case rolemetadata.FieldTenantID:
+		return m.TenantID()
 	case rolemetadata.FieldRoleID:
 		return m.RoleID()
 	case rolemetadata.FieldIsTemplate:
@@ -46277,6 +46552,12 @@ func (m *RoleMetadataMutation) Field(name string) (ent.Value, bool) {
 		return m.TemplateVersion()
 	case rolemetadata.FieldLastSyncedVersion:
 		return m.LastSyncedVersion()
+	case rolemetadata.FieldLastSyncedAt:
+		return m.LastSyncedAt()
+	case rolemetadata.FieldSyncPolicy:
+		return m.SyncPolicy()
+	case rolemetadata.FieldScope:
+		return m.Scope()
 	case rolemetadata.FieldCustomOverrides:
 		return m.CustomOverrides()
 	}
@@ -46300,6 +46581,8 @@ func (m *RoleMetadataMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldUpdatedBy(ctx)
 	case rolemetadata.FieldDeletedBy:
 		return m.OldDeletedBy(ctx)
+	case rolemetadata.FieldTenantID:
+		return m.OldTenantID(ctx)
 	case rolemetadata.FieldRoleID:
 		return m.OldRoleID(ctx)
 	case rolemetadata.FieldIsTemplate:
@@ -46310,6 +46593,12 @@ func (m *RoleMetadataMutation) OldField(ctx context.Context, name string) (ent.V
 		return m.OldTemplateVersion(ctx)
 	case rolemetadata.FieldLastSyncedVersion:
 		return m.OldLastSyncedVersion(ctx)
+	case rolemetadata.FieldLastSyncedAt:
+		return m.OldLastSyncedAt(ctx)
+	case rolemetadata.FieldSyncPolicy:
+		return m.OldSyncPolicy(ctx)
+	case rolemetadata.FieldScope:
+		return m.OldScope(ctx)
 	case rolemetadata.FieldCustomOverrides:
 		return m.OldCustomOverrides(ctx)
 	}
@@ -46363,6 +46652,13 @@ func (m *RoleMetadataMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDeletedBy(v)
 		return nil
+	case rolemetadata.FieldTenantID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
 	case rolemetadata.FieldRoleID:
 		v, ok := value.(uint32)
 		if !ok {
@@ -46398,8 +46694,29 @@ func (m *RoleMetadataMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetLastSyncedVersion(v)
 		return nil
+	case rolemetadata.FieldLastSyncedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastSyncedAt(v)
+		return nil
+	case rolemetadata.FieldSyncPolicy:
+		v, ok := value.(rolemetadata.SyncPolicy)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSyncPolicy(v)
+		return nil
+	case rolemetadata.FieldScope:
+		v, ok := value.(rolemetadata.Scope)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetScope(v)
+		return nil
 	case rolemetadata.FieldCustomOverrides:
-		v, ok := value.([]string)
+		v, ok := value.(*userpb.RoleOverride)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -46421,6 +46738,9 @@ func (m *RoleMetadataMutation) AddedFields() []string {
 	}
 	if m.adddeleted_by != nil {
 		fields = append(fields, rolemetadata.FieldDeletedBy)
+	}
+	if m.addtenant_id != nil {
+		fields = append(fields, rolemetadata.FieldTenantID)
 	}
 	if m.addrole_id != nil {
 		fields = append(fields, rolemetadata.FieldRoleID)
@@ -46445,6 +46765,8 @@ func (m *RoleMetadataMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedUpdatedBy()
 	case rolemetadata.FieldDeletedBy:
 		return m.AddedDeletedBy()
+	case rolemetadata.FieldTenantID:
+		return m.AddedTenantID()
 	case rolemetadata.FieldRoleID:
 		return m.AddedRoleID()
 	case rolemetadata.FieldTemplateVersion:
@@ -46480,6 +46802,13 @@ func (m *RoleMetadataMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddDeletedBy(v)
+		return nil
+	case rolemetadata.FieldTenantID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTenantID(v)
 		return nil
 	case rolemetadata.FieldRoleID:
 		v, ok := value.(int32)
@@ -46528,6 +46857,9 @@ func (m *RoleMetadataMutation) ClearedFields() []string {
 	if m.FieldCleared(rolemetadata.FieldDeletedBy) {
 		fields = append(fields, rolemetadata.FieldDeletedBy)
 	}
+	if m.FieldCleared(rolemetadata.FieldTenantID) {
+		fields = append(fields, rolemetadata.FieldTenantID)
+	}
 	if m.FieldCleared(rolemetadata.FieldRoleID) {
 		fields = append(fields, rolemetadata.FieldRoleID)
 	}
@@ -46542,6 +46874,15 @@ func (m *RoleMetadataMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(rolemetadata.FieldLastSyncedVersion) {
 		fields = append(fields, rolemetadata.FieldLastSyncedVersion)
+	}
+	if m.FieldCleared(rolemetadata.FieldLastSyncedAt) {
+		fields = append(fields, rolemetadata.FieldLastSyncedAt)
+	}
+	if m.FieldCleared(rolemetadata.FieldSyncPolicy) {
+		fields = append(fields, rolemetadata.FieldSyncPolicy)
+	}
+	if m.FieldCleared(rolemetadata.FieldScope) {
+		fields = append(fields, rolemetadata.FieldScope)
 	}
 	return fields
 }
@@ -46575,6 +46916,9 @@ func (m *RoleMetadataMutation) ClearField(name string) error {
 	case rolemetadata.FieldDeletedBy:
 		m.ClearDeletedBy()
 		return nil
+	case rolemetadata.FieldTenantID:
+		m.ClearTenantID()
+		return nil
 	case rolemetadata.FieldRoleID:
 		m.ClearRoleID()
 		return nil
@@ -46589,6 +46933,15 @@ func (m *RoleMetadataMutation) ClearField(name string) error {
 		return nil
 	case rolemetadata.FieldLastSyncedVersion:
 		m.ClearLastSyncedVersion()
+		return nil
+	case rolemetadata.FieldLastSyncedAt:
+		m.ClearLastSyncedAt()
+		return nil
+	case rolemetadata.FieldSyncPolicy:
+		m.ClearSyncPolicy()
+		return nil
+	case rolemetadata.FieldScope:
+		m.ClearScope()
 		return nil
 	}
 	return fmt.Errorf("unknown RoleMetadata nullable field %s", name)
@@ -46616,6 +46969,9 @@ func (m *RoleMetadataMutation) ResetField(name string) error {
 	case rolemetadata.FieldDeletedBy:
 		m.ResetDeletedBy()
 		return nil
+	case rolemetadata.FieldTenantID:
+		m.ResetTenantID()
+		return nil
 	case rolemetadata.FieldRoleID:
 		m.ResetRoleID()
 		return nil
@@ -46630,6 +46986,15 @@ func (m *RoleMetadataMutation) ResetField(name string) error {
 		return nil
 	case rolemetadata.FieldLastSyncedVersion:
 		m.ResetLastSyncedVersion()
+		return nil
+	case rolemetadata.FieldLastSyncedAt:
+		m.ResetLastSyncedAt()
+		return nil
+	case rolemetadata.FieldSyncPolicy:
+		m.ResetSyncPolicy()
+		return nil
+	case rolemetadata.FieldScope:
+		m.ResetScope()
 		return nil
 	case rolemetadata.FieldCustomOverrides:
 		m.ResetCustomOverrides()

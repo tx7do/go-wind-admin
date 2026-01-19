@@ -147,6 +147,14 @@ func (m *InternalMessageRecipient) validate(all bool) error {
 		// no validation rules for Content
 	}
 
+	if m.TenantId != nil {
+		// no validation rules for TenantId
+	}
+
+	if m.TenantName != nil {
+		// no validation rules for TenantName
+	}
+
 	if m.CreatedBy != nil {
 		// no validation rules for CreatedBy
 	}

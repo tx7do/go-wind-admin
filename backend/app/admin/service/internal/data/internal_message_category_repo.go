@@ -162,6 +162,7 @@ func (r *InternalMessageCategoryRepo) Create(ctx context.Context, req *internalM
 	}
 
 	builder := r.entClient.Client().InternalMessageCategory.Create().
+		SetNillableTenantID(req.Data.TenantId).
 		SetNillableName(req.Data.Name).
 		SetNillableCode(req.Data.Code).
 		SetNillableIconURL(req.Data.IconUrl).

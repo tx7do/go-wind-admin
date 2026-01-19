@@ -1,14 +1,18 @@
 package schema
 
 import (
-	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
-
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+
 	"github.com/tx7do/go-crud/entgo/mixin"
+
+	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
+	"go-wind-admin/app/admin/service/internal/data/ent/rule"
+
+	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
 )
 
 // ApiAuditLog holds the schema definition for the ApiAuditLog entity.
@@ -165,39 +169,60 @@ func (ApiAuditLog) Mixin() []ent.Mixin {
 	}
 }
 
+// Policy for all schemas that embed ApiAuditLog.
+func (ApiAuditLog) Policy() ent.Policy {
+	return privacy.Policy{
+		Query: rule.TenantQueryPolicy(),
+	}
+}
+
 // Indexes 索引定义
 func (ApiAuditLog) Indexes() []ent.Index {
 	return []ent.Index{
-		// 按租户与时间范围查询
-		index.Fields("tenant_id"),
-		index.Fields("created_at"),
-		index.Fields("tenant_id", "created_at"),
+		// 去重：租户维度下 request_id 唯一，防止重复记录
+		index.Fields("tenant_id", "request_id").
+			Unique().
+			StorageKey("uidx_sys_api_audit_logs_tenant_request_id"),
 
-		// 常用按用户查询
-		index.Fields("user_id"),
-		index.Fields("username"),
-		index.Fields("tenant_id", "user_id", "created_at"), // 多租户下按用户的时间范围查询
+		// 去重：租户维度下 log_hash 唯一（内容指纹去重）
+		index.Fields("tenant_id", "log_hash").
+			Unique().
+			StorageKey("uidx_sys_api_audit_logs_tenant_log_hash"),
 
-		// 按 IP 查询与追踪
-		index.Fields("ip_address"),
-		index.Fields("ip_address", "created_at"),
+		// 常用：按租户 + 时间范围 查询（范围扫描）
+		index.Fields("tenant_id", "created_at").
+			StorageKey("idx_sys_api_audit_logs_tenant_created_at"),
 
-		// 请求追踪与去重
-		index.Fields("request_id"),
-		index.Fields("log_hash"),
+		// 全局按时间查询（跨租户聚合/清理）
+		index.Fields("created_at").
+			StorageKey("idx_sys_api_audit_logs_created_at"),
 
-		// API 维度的筛选
-		index.Fields("api_module"),
-		index.Fields("api_operation"),
-		index.Fields("api_module", "api_operation"),
+		// 常用按用户查询：租户 + 用户 + 时间范围
+		index.Fields("tenant_id", "user_id", "created_at").
+			StorageKey("idx_sys_api_audit_logs_tenant_user_created_at"),
 
-		// 路径与方法
-		index.Fields("path"),
-		index.Fields("http_method"),
-		index.Fields("path", "http_method"),
+		// 按用户名检索（兼容无 user_id 场景）
+		index.Fields("tenant_id", "username", "created_at").
+			StorageKey("idx_sys_api_audit_logs_tenant_username_created_at"),
 
-		// 状态相关
-		index.Fields("status_code"),
-		index.Fields("success"),
+		// IP 相关查询与溯源：租户 + IP + 时间
+		index.Fields("tenant_id", "ip_address", "created_at").
+			StorageKey("idx_sys_api_audit_logs_tenant_ip_created_at"),
+
+		// 链路追踪与请求追溯：租户 + trace_id / request_id
+		index.Fields("tenant_id", "trace_id").
+			StorageKey("idx_sys_api_audit_logs_tenant_trace_id"),
+
+		// API 维度筛选：租户 + 模块 + 操作 + 时间
+		index.Fields("tenant_id", "api_module", "api_operation", "created_at").
+			StorageKey("idx_sys_api_audit_logs_tenant_api_created_at"),
+
+		// 路径与方法检索：租户 + 路径 + 方法 + 时间
+		index.Fields("tenant_id", "path", "http_method", "created_at").
+			StorageKey("idx_sys_api_audit_logs_tenant_path_method_created_at"),
+
+		// 状态类过滤：租户 + 状态码 + 成功标志 + 时间（便于统计/报警）
+		index.Fields("tenant_id", "status_code", "success", "created_at").
+			StorageKey("idx_sys_api_audit_logs_tenant_status_created_at"),
 	}
 }

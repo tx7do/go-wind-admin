@@ -149,12 +149,62 @@ func (r *TenantRepo) Get(ctx context.Context, req *userV1.GetTenantRequest) (*us
 	return dto, err
 }
 
-func (r *TenantRepo) Create(ctx context.Context, data *userV1.Tenant) (*userV1.Tenant, error) {
+func (r *TenantRepo) BeginTx(ctx context.Context) (tx *ent.Tx, cleanup func(), err error) {
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return nil, nil, userV1.ErrorInternalServerError("start transaction failed")
+	}
+
+	cleanup = func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}
+
+	return tx, cleanup, nil
+}
+
+func (r *TenantRepo) Create(ctx context.Context, data *userV1.Tenant) (tenant *userV1.Tenant, err error) {
 	if data == nil {
 		return nil, userV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().Tenant.Create().
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return nil, userV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	return r.CreateWithTx(ctx, tx, data)
+}
+
+func (r *TenantRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *userV1.Tenant) (*userV1.Tenant, error) {
+	if data == nil {
+		return nil, userV1.ErrorBadRequest("invalid parameter")
+	}
+
+	builder := tx.Tenant.Create().
 		SetNillableName(data.Name).
 		SetNillableCode(data.Code).
 		SetNillableDomain(data.Domain).
@@ -244,6 +294,20 @@ func (r *TenantRepo) Update(ctx context.Context, req *userV1.UpdateTenantRequest
 	return err
 }
 
+// AssignTenantAdmin assigns an admin user to a tenant within a transaction.
+func (r *TenantRepo) AssignTenantAdmin(ctx context.Context, tx *ent.Tx, tenantId uint32, userId uint32) error {
+	_, err := tx.Tenant.Update().
+		Where(tenant.IDEQ(tenantId)).
+		SetAdminUserID(userId).
+		Save(ctx)
+	if err != nil {
+		r.log.Errorf("assign tenant admin failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("assign tenant admin failed")
+	}
+
+	return nil
+}
+
 func (r *TenantRepo) Delete(ctx context.Context, req *userV1.DeleteTenantRequest) error {
 	if req == nil {
 		return userV1.ErrorBadRequest("invalid parameter")
@@ -265,7 +329,10 @@ func (r *TenantRepo) Delete(ctx context.Context, req *userV1.DeleteTenantRequest
 // TenantExists checks if a tenant with the given username exists.
 func (r *TenantRepo) TenantExists(ctx context.Context, req *userV1.TenantExistsRequest) (*userV1.TenantExistsResponse, error) {
 	exist, err := r.entClient.Client().Tenant.Query().
-		Where(tenant.CodeEQ(req.GetCode())).
+		Where(
+			tenant.CodeEQ(req.GetCode()),
+			tenant.NameEQ(req.GetName()),
+		).
 		Exist(ctx)
 	if err != nil {
 		r.log.Errorf("query exist failed: %s", err.Error())

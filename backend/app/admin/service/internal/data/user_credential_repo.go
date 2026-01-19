@@ -3,6 +3,7 @@ package data
 import (
 	"context"
 	"encoding/base64"
+	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -128,46 +129,74 @@ func (r *UserCredentialRepo) List(ctx context.Context, req *paginationV1.PagingR
 	}, nil
 }
 
-func (r *UserCredentialRepo) Create(ctx context.Context, req *authenticationV1.CreateUserCredentialRequest) error {
+func (r *UserCredentialRepo) Create(ctx context.Context, req *authenticationV1.CreateUserCredentialRequest) (err error) {
 	if req == nil || req.Data == nil {
+		return userV1.ErrorBadRequest("invalid parameter")
+	}
+
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf("start transaction failed: %s", err.Error())
+		return userV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			err = userV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	return r.CreateWithTx(ctx, tx, req.GetData())
+}
+
+func (r *UserCredentialRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *authenticationV1.UserCredential) error {
+	if data == nil {
 		return authenticationV1.ErrorBadRequest("invalid request")
 	}
 
 	var err error
 
-	if req.Data.Credential != nil {
+	if data.Credential != nil {
 		var newCredential string
-		newCredential, err = r.prepareCredential(r.credentialTypeConverter.ToEntity(req.Data.CredentialType), req.Data.GetCredential())
+		newCredential, err = r.prepareCredential(r.credentialTypeConverter.ToEntity(data.CredentialType), data.GetCredential())
 		if err != nil {
 			r.log.Errorf("prepare new credential failed: %s", err.Error())
 			return authenticationV1.ErrorBadRequest("prepare new credential failed")
 		}
-		req.Data.Credential = trans.Ptr(newCredential)
+		data.Credential = trans.Ptr(newCredential)
 	}
 
-	builder := r.entClient.Client().UserCredential.Create()
+	builder := tx.UserCredential.Create()
 	builder.
-		SetUserID(req.Data.GetUserId()).
-		SetNillableIdentityType(r.identityTypeConverter.ToEntity(req.Data.IdentityType)).
-		SetNillableIdentifier(req.Data.Identifier).
-		SetNillableCredentialType(r.credentialTypeConverter.ToEntity(req.Data.CredentialType)).
-		SetNillableCredential(req.Data.Credential).
-		SetNillableIsPrimary(req.Data.IsPrimary).
-		SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
-		SetNillableExtraInfo(req.Data.ExtraInfo).
-		SetNillableProvider(req.Data.Provider).
-		SetNillableProviderAccountID(req.Data.ProviderAccountId).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
+		SetUserID(data.GetUserId()).
+		SetNillableTenantID(data.TenantId).
+		SetNillableIdentityType(r.identityTypeConverter.ToEntity(data.IdentityType)).
+		SetNillableIdentifier(data.Identifier).
+		SetNillableCredentialType(r.credentialTypeConverter.ToEntity(data.CredentialType)).
+		SetNillableCredential(data.Credential).
+		SetNillableIsPrimary(data.IsPrimary).
+		SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
+		SetNillableExtraInfo(data.ExtraInfo).
+		SetNillableProvider(data.Provider).
+		SetNillableProviderAccountID(data.ProviderAccountId).
+		SetNillableCreatedAt(timeutil.TimestamppbToTime(data.CreatedAt))
 
-	if req.Data.TenantId == nil {
-		builder.SetTenantID(req.Data.GetTenantId())
+	if data.TenantId == nil {
+		builder.SetTenantID(data.GetTenantId())
 	}
-	if req.Data.CreatedAt == nil {
+	if data.CreatedAt == nil {
 		builder.SetCreatedAt(time.Now())
 	}
 
 	if err = builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert user credential failed: %s [%v]", err.Error(), req.Data)
+		r.log.Errorf("insert user credential failed: %s [%v]", err.Error(), data)
 		return authenticationV1.ErrorInternalServerError("insert user credential failed")
 	}
 

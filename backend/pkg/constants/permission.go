@@ -13,20 +13,26 @@ const (
 	// SystemAuditLogsPermissionCode 系统审计日志权限代码
 	SystemAuditLogsPermissionCode = SystemPermissionCodePrefix + "audit_logs"
 
+	// SystemPlatformAdminPermissionCode 系统平台管理员权限代码
+	SystemPlatformAdminPermissionCode = SystemPermissionCodePrefix + "platform_admin"
+	// SystemTenantManagerPermissionCode 系统租户管理员权限代码
+	SystemTenantManagerPermissionCode = SystemPermissionCodePrefix + "tenant_manager"
+
 	// SystemPermissionModule 系统权限模块标识
 	SystemPermissionModule = "sys"
 
 	// DefaultBizPermissionModule 业务权限模块标识
 	DefaultBizPermissionModule = "biz"
 
-	// RoleCodeTemplatePrefix 角色代码模板前缀
-	RoleCodeTemplatePrefix = "template:"
-
-	// PlatformAdminRoleCode 平台管理员角色代码
-	PlatformAdminRoleCode = "platform_admin"
-
-	// TenantAdminRoleCode 租户管理员角色代码
-	TenantAdminRoleCode = "tenant_admin"
-
+	// UncategorizedPermissionGroup 未分类权限组标识
 	UncategorizedPermissionGroup = "uncategorized"
 )
+
+// ProtectedPermissionCodes 受保护的权限代码列表，禁止删除
+var ProtectedPermissionCodes = []string{
+	SystemAccessBackendPermissionCode,
+	SystemManageTenantsPermissionCode,
+	SystemAuditLogsPermissionCode,
+	SystemPlatformAdminPermissionCode,
+	SystemTenantManagerPermissionCode,
+}

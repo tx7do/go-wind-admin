@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolepermission"
@@ -329,6 +330,12 @@ func (_q *RolePermissionQuery) prepareQuery(ctx context.Context) error {
 			return err
 		}
 		_q.sql = prev
+	}
+	if rolepermission.Policy == nil {
+		return errors.New("ent: uninitialized rolepermission.Policy (forgotten import ent/runtime?)")
+	}
+	if err := rolepermission.Policy.EvalQuery(ctx, _q); err != nil {
+		return err
 	}
 	return nil
 }

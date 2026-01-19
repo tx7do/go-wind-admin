@@ -5,6 +5,7 @@ package ent
 import (
 	"context"
 	"database/sql/driver"
+	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/orgunit"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
@@ -400,6 +401,12 @@ func (_q *OrgUnitQuery) prepareQuery(ctx context.Context) error {
 			return err
 		}
 		_q.sql = prev
+	}
+	if orgunit.Policy == nil {
+		return errors.New("ent: uninitialized orgunit.Policy (forgotten import ent/runtime?)")
+	}
+	if err := orgunit.Policy.EvalQuery(ctx, _q); err != nil {
+		return err
 	}
 	return nil
 }

@@ -16,6 +16,7 @@ import (
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 
 	"go-wind-admin/pkg/constants"
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
 	"go-wind-admin/pkg/utils/name_set"
 )
@@ -63,7 +64,7 @@ func NewUserService(
 }
 
 func (s *UserService) init() {
-	ctx := context.Background()
+	ctx := appViewer.NewSystemViewerContext(context.Background())
 	if count, _ := s.userRepo.Count(ctx); count == 0 {
 		_ = s.createDefaultUser(ctx)
 	}

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"go-wind-admin/app/admin/service/internal/data/ent/usercredential"
@@ -329,6 +330,12 @@ func (_q *UserCredentialQuery) prepareQuery(ctx context.Context) error {
 			return err
 		}
 		_q.sql = prev
+	}
+	if usercredential.Policy == nil {
+		return errors.New("ent: uninitialized usercredential.Policy (forgotten import ent/runtime?)")
+	}
+	if err := usercredential.Policy.EvalQuery(ctx, _q); err != nil {
+		return err
 	}
 	return nil
 }

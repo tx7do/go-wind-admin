@@ -217,7 +217,9 @@ func (_c *InternalMessageCategoryCreate) Mutation() *InternalMessageCategoryMuta
 
 // Save creates the InternalMessageCategory in the database.
 func (_c *InternalMessageCategoryCreate) Save(ctx context.Context) (*InternalMessageCategory, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -244,7 +246,7 @@ func (_c *InternalMessageCategoryCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *InternalMessageCategoryCreate) defaults() {
+func (_c *InternalMessageCategoryCreate) defaults() error {
 	if _, ok := _c.mutation.IsEnabled(); !ok {
 		v := internalmessagecategory.DefaultIsEnabled
 		_c.mutation.SetIsEnabled(v)
@@ -253,6 +255,11 @@ func (_c *InternalMessageCategoryCreate) defaults() {
 		v := internalmessagecategory.DefaultSortOrder
 		_c.mutation.SetSortOrder(v)
 	}
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := internalmessagecategory.DefaultTenantID
+		_c.mutation.SetTenantID(v)
+	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

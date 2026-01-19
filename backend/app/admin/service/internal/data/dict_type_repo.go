@@ -141,6 +141,7 @@ func (r *DictTypeRepo) Create(ctx context.Context, req *dictV1.CreateDictTypeReq
 	}
 
 	builder := r.entClient.Client().DictType.Create().
+		SetNillableTenantID(req.Data.TenantId).
 		SetNillableTypeCode(req.Data.TypeCode).
 		SetNillableTypeName(req.Data.TypeName).
 		SetNillableSortOrder(req.Data.SortOrder).

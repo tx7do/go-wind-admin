@@ -6,7 +6,11 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+
 	"github.com/tx7do/go-crud/entgo/mixin"
+
+	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
+	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // RolePermission 角色与权限多对多关联表
@@ -64,6 +68,13 @@ func (RolePermission) Mixin() []ent.Mixin {
 		mixin.OperatorID{},
 		mixin.TenantID{},
 		mixin.SwitchStatus{},
+	}
+}
+
+// Policy for all schemas that embed RolePermission.
+func (RolePermission) Policy() ent.Policy {
+	return privacy.Policy{
+		Query: rule.TenantQueryPolicy(),
 	}
 }
 

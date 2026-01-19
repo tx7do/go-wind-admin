@@ -671,6 +671,7 @@ func (r *MembershipRepo) upsertMembership(ctx context.Context, tx *ent.Tx, data 
 	builder := tx.Membership.Create()
 
 	builder.
+		SetNillableTenantID(data.TenantId).
 		SetUserID(data.GetUserId()).
 		SetNillableRoleID(data.RoleId).
 		SetNillablePositionID(data.PositionId).

@@ -213,7 +213,6 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 
 	resp, err := s.List(ctx, &paginationV1.PagingRequest{
 		NoPaging: trans.Ptr(true),
-		Query:    trans.Ptr(""),
 	})
 	if err != nil {
 		s.log.Errorf("获取任务列表失败[%s]", err.Error())

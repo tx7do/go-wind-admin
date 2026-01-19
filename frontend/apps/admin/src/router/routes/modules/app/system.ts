@@ -14,7 +14,7 @@ const system: RouteRecordRaw[] = [
       icon: 'lucide:settings',
       title: $t('menu.system.moduleName'),
       keepAlive: true,
-      authority: ['platform_admin'],
+      authority: ['platform:admin', 'tenant:manager'],
     },
     children: [
       {
@@ -23,7 +23,7 @@ const system: RouteRecordRaw[] = [
         meta: {
           icon: 'lucide:library-big',
           title: $t('menu.system.dict'),
-          authority: ['platform_admin'],
+          authority: ['platform:admin', 'tenant:manager'],
         },
         component: () => import('#/views/app/system/dict/index.vue'),
       },
@@ -34,7 +34,7 @@ const system: RouteRecordRaw[] = [
         meta: {
           icon: 'lucide:file-search',
           title: $t('menu.system.file'),
-          authority: ['platform_admin'],
+          authority: ['platform:admin', 'tenant:manager'],
         },
         component: () => import('#/views/app/system/file/index.vue'),
       },
@@ -45,7 +45,7 @@ const system: RouteRecordRaw[] = [
         meta: {
           icon: 'lucide:list-todo',
           title: $t('menu.system.task'),
-          authority: ['platform_admin'],
+          authority: ['platform:admin', 'tenant:manager'],
         },
         component: () => import('#/views/app/system/task/index.vue'),
       },
@@ -56,7 +56,7 @@ const system: RouteRecordRaw[] = [
         meta: {
           icon: 'lucide:shield-x',
           title: $t('menu.system.loginPolicy'),
-          authority: ['platform_admin'],
+          authority: ['platform:admin'],
         },
         component: () => import('#/views/app/system/login_policy/index.vue'),
       },

@@ -6,7 +6,11 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+
 	"github.com/tx7do/go-crud/entgo/mixin"
+
+	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
+	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // MembershipOrgUnit 成员与组织单元关联表
@@ -96,6 +100,13 @@ func (MembershipOrgUnit) Mixin() []ent.Mixin {
 		mixin.OperatorID{},
 		mixin.TenantID{},
 		mixin.Remark{},
+	}
+}
+
+// Policy for all schemas that embed MembershipOrgUnit.
+func (MembershipOrgUnit) Policy() ent.Policy {
+	return privacy.Policy{
+		Query: rule.TenantQueryPolicy(),
 	}
 }
 

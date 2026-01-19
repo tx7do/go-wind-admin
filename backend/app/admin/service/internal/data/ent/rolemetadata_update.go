@@ -6,13 +6,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	userpb "go-wind-admin/api/gen/go/user/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolemetadata"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
-	"entgo.io/ent/dialect/sql/sqljson"
 	"entgo.io/ent/schema/field"
 )
 
@@ -272,15 +272,69 @@ func (_u *RoleMetadataUpdate) ClearLastSyncedVersion() *RoleMetadataUpdate {
 	return _u
 }
 
-// SetCustomOverrides sets the "custom_overrides" field.
-func (_u *RoleMetadataUpdate) SetCustomOverrides(v []string) *RoleMetadataUpdate {
-	_u.mutation.SetCustomOverrides(v)
+// SetLastSyncedAt sets the "last_synced_at" field.
+func (_u *RoleMetadataUpdate) SetLastSyncedAt(v time.Time) *RoleMetadataUpdate {
+	_u.mutation.SetLastSyncedAt(v)
 	return _u
 }
 
-// AppendCustomOverrides appends value to the "custom_overrides" field.
-func (_u *RoleMetadataUpdate) AppendCustomOverrides(v []string) *RoleMetadataUpdate {
-	_u.mutation.AppendCustomOverrides(v)
+// SetNillableLastSyncedAt sets the "last_synced_at" field if the given value is not nil.
+func (_u *RoleMetadataUpdate) SetNillableLastSyncedAt(v *time.Time) *RoleMetadataUpdate {
+	if v != nil {
+		_u.SetLastSyncedAt(*v)
+	}
+	return _u
+}
+
+// ClearLastSyncedAt clears the value of the "last_synced_at" field.
+func (_u *RoleMetadataUpdate) ClearLastSyncedAt() *RoleMetadataUpdate {
+	_u.mutation.ClearLastSyncedAt()
+	return _u
+}
+
+// SetSyncPolicy sets the "sync_policy" field.
+func (_u *RoleMetadataUpdate) SetSyncPolicy(v rolemetadata.SyncPolicy) *RoleMetadataUpdate {
+	_u.mutation.SetSyncPolicy(v)
+	return _u
+}
+
+// SetNillableSyncPolicy sets the "sync_policy" field if the given value is not nil.
+func (_u *RoleMetadataUpdate) SetNillableSyncPolicy(v *rolemetadata.SyncPolicy) *RoleMetadataUpdate {
+	if v != nil {
+		_u.SetSyncPolicy(*v)
+	}
+	return _u
+}
+
+// ClearSyncPolicy clears the value of the "sync_policy" field.
+func (_u *RoleMetadataUpdate) ClearSyncPolicy() *RoleMetadataUpdate {
+	_u.mutation.ClearSyncPolicy()
+	return _u
+}
+
+// SetScope sets the "scope" field.
+func (_u *RoleMetadataUpdate) SetScope(v rolemetadata.Scope) *RoleMetadataUpdate {
+	_u.mutation.SetScope(v)
+	return _u
+}
+
+// SetNillableScope sets the "scope" field if the given value is not nil.
+func (_u *RoleMetadataUpdate) SetNillableScope(v *rolemetadata.Scope) *RoleMetadataUpdate {
+	if v != nil {
+		_u.SetScope(*v)
+	}
+	return _u
+}
+
+// ClearScope clears the value of the "scope" field.
+func (_u *RoleMetadataUpdate) ClearScope() *RoleMetadataUpdate {
+	_u.mutation.ClearScope()
+	return _u
+}
+
+// SetCustomOverrides sets the "custom_overrides" field.
+func (_u *RoleMetadataUpdate) SetCustomOverrides(v *userpb.RoleOverride) *RoleMetadataUpdate {
+	_u.mutation.SetCustomOverrides(v)
 	return _u
 }
 
@@ -316,6 +370,26 @@ func (_u *RoleMetadataUpdate) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *RoleMetadataUpdate) check() error {
+	if v, ok := _u.mutation.SyncPolicy(); ok {
+		if err := rolemetadata.SyncPolicyValidator(v); err != nil {
+			return &ValidationError{Name: "sync_policy", err: fmt.Errorf(`ent: validator failed for field "RoleMetadata.sync_policy": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Scope(); ok {
+		if err := rolemetadata.ScopeValidator(v); err != nil {
+			return &ValidationError{Name: "scope", err: fmt.Errorf(`ent: validator failed for field "RoleMetadata.scope": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.CustomOverrides(); ok {
+		if err := v.Validate(); err != nil {
+			return &ValidationError{Name: "custom_overrides", err: fmt.Errorf(`ent: validator failed for field "RoleMetadata.custom_overrides": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *RoleMetadataUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *RoleMetadataUpdate {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -323,6 +397,9 @@ func (_u *RoleMetadataUpdate) Modify(modifiers ...func(u *sql.UpdateBuilder)) *R
 }
 
 func (_u *RoleMetadataUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(rolemetadata.Table, rolemetadata.Columns, sqlgraph.NewFieldSpec(rolemetadata.FieldID, field.TypeUint32))
 	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -373,6 +450,9 @@ func (_u *RoleMetadataUpdate) sqlSave(ctx context.Context) (_node int, err error
 	if _u.mutation.DeletedByCleared() {
 		_spec.ClearField(rolemetadata.FieldDeletedBy, field.TypeUint32)
 	}
+	if _u.mutation.TenantIDCleared() {
+		_spec.ClearField(rolemetadata.FieldTenantID, field.TypeUint32)
+	}
 	if value, ok := _u.mutation.RoleID(); ok {
 		_spec.SetField(rolemetadata.FieldRoleID, field.TypeUint32, value)
 	}
@@ -412,13 +492,26 @@ func (_u *RoleMetadataUpdate) sqlSave(ctx context.Context) (_node int, err error
 	if _u.mutation.LastSyncedVersionCleared() {
 		_spec.ClearField(rolemetadata.FieldLastSyncedVersion, field.TypeInt32)
 	}
+	if value, ok := _u.mutation.LastSyncedAt(); ok {
+		_spec.SetField(rolemetadata.FieldLastSyncedAt, field.TypeTime, value)
+	}
+	if _u.mutation.LastSyncedAtCleared() {
+		_spec.ClearField(rolemetadata.FieldLastSyncedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.SyncPolicy(); ok {
+		_spec.SetField(rolemetadata.FieldSyncPolicy, field.TypeEnum, value)
+	}
+	if _u.mutation.SyncPolicyCleared() {
+		_spec.ClearField(rolemetadata.FieldSyncPolicy, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.Scope(); ok {
+		_spec.SetField(rolemetadata.FieldScope, field.TypeEnum, value)
+	}
+	if _u.mutation.ScopeCleared() {
+		_spec.ClearField(rolemetadata.FieldScope, field.TypeEnum)
+	}
 	if value, ok := _u.mutation.CustomOverrides(); ok {
 		_spec.SetField(rolemetadata.FieldCustomOverrides, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedCustomOverrides(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, rolemetadata.FieldCustomOverrides, value)
-		})
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -684,15 +777,69 @@ func (_u *RoleMetadataUpdateOne) ClearLastSyncedVersion() *RoleMetadataUpdateOne
 	return _u
 }
 
-// SetCustomOverrides sets the "custom_overrides" field.
-func (_u *RoleMetadataUpdateOne) SetCustomOverrides(v []string) *RoleMetadataUpdateOne {
-	_u.mutation.SetCustomOverrides(v)
+// SetLastSyncedAt sets the "last_synced_at" field.
+func (_u *RoleMetadataUpdateOne) SetLastSyncedAt(v time.Time) *RoleMetadataUpdateOne {
+	_u.mutation.SetLastSyncedAt(v)
 	return _u
 }
 
-// AppendCustomOverrides appends value to the "custom_overrides" field.
-func (_u *RoleMetadataUpdateOne) AppendCustomOverrides(v []string) *RoleMetadataUpdateOne {
-	_u.mutation.AppendCustomOverrides(v)
+// SetNillableLastSyncedAt sets the "last_synced_at" field if the given value is not nil.
+func (_u *RoleMetadataUpdateOne) SetNillableLastSyncedAt(v *time.Time) *RoleMetadataUpdateOne {
+	if v != nil {
+		_u.SetLastSyncedAt(*v)
+	}
+	return _u
+}
+
+// ClearLastSyncedAt clears the value of the "last_synced_at" field.
+func (_u *RoleMetadataUpdateOne) ClearLastSyncedAt() *RoleMetadataUpdateOne {
+	_u.mutation.ClearLastSyncedAt()
+	return _u
+}
+
+// SetSyncPolicy sets the "sync_policy" field.
+func (_u *RoleMetadataUpdateOne) SetSyncPolicy(v rolemetadata.SyncPolicy) *RoleMetadataUpdateOne {
+	_u.mutation.SetSyncPolicy(v)
+	return _u
+}
+
+// SetNillableSyncPolicy sets the "sync_policy" field if the given value is not nil.
+func (_u *RoleMetadataUpdateOne) SetNillableSyncPolicy(v *rolemetadata.SyncPolicy) *RoleMetadataUpdateOne {
+	if v != nil {
+		_u.SetSyncPolicy(*v)
+	}
+	return _u
+}
+
+// ClearSyncPolicy clears the value of the "sync_policy" field.
+func (_u *RoleMetadataUpdateOne) ClearSyncPolicy() *RoleMetadataUpdateOne {
+	_u.mutation.ClearSyncPolicy()
+	return _u
+}
+
+// SetScope sets the "scope" field.
+func (_u *RoleMetadataUpdateOne) SetScope(v rolemetadata.Scope) *RoleMetadataUpdateOne {
+	_u.mutation.SetScope(v)
+	return _u
+}
+
+// SetNillableScope sets the "scope" field if the given value is not nil.
+func (_u *RoleMetadataUpdateOne) SetNillableScope(v *rolemetadata.Scope) *RoleMetadataUpdateOne {
+	if v != nil {
+		_u.SetScope(*v)
+	}
+	return _u
+}
+
+// ClearScope clears the value of the "scope" field.
+func (_u *RoleMetadataUpdateOne) ClearScope() *RoleMetadataUpdateOne {
+	_u.mutation.ClearScope()
+	return _u
+}
+
+// SetCustomOverrides sets the "custom_overrides" field.
+func (_u *RoleMetadataUpdateOne) SetCustomOverrides(v *userpb.RoleOverride) *RoleMetadataUpdateOne {
+	_u.mutation.SetCustomOverrides(v)
 	return _u
 }
 
@@ -741,6 +888,26 @@ func (_u *RoleMetadataUpdateOne) ExecX(ctx context.Context) {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (_u *RoleMetadataUpdateOne) check() error {
+	if v, ok := _u.mutation.SyncPolicy(); ok {
+		if err := rolemetadata.SyncPolicyValidator(v); err != nil {
+			return &ValidationError{Name: "sync_policy", err: fmt.Errorf(`ent: validator failed for field "RoleMetadata.sync_policy": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.Scope(); ok {
+		if err := rolemetadata.ScopeValidator(v); err != nil {
+			return &ValidationError{Name: "scope", err: fmt.Errorf(`ent: validator failed for field "RoleMetadata.scope": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.CustomOverrides(); ok {
+		if err := v.Validate(); err != nil {
+			return &ValidationError{Name: "custom_overrides", err: fmt.Errorf(`ent: validator failed for field "RoleMetadata.custom_overrides": %w`, err)}
+		}
+	}
+	return nil
+}
+
 // Modify adds a statement modifier for attaching custom logic to the UPDATE statement.
 func (_u *RoleMetadataUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder)) *RoleMetadataUpdateOne {
 	_u.modifiers = append(_u.modifiers, modifiers...)
@@ -748,6 +915,9 @@ func (_u *RoleMetadataUpdateOne) Modify(modifiers ...func(u *sql.UpdateBuilder))
 }
 
 func (_u *RoleMetadataUpdateOne) sqlSave(ctx context.Context) (_node *RoleMetadata, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(rolemetadata.Table, rolemetadata.Columns, sqlgraph.NewFieldSpec(rolemetadata.FieldID, field.TypeUint32))
 	id, ok := _u.mutation.ID()
 	if !ok {
@@ -815,6 +985,9 @@ func (_u *RoleMetadataUpdateOne) sqlSave(ctx context.Context) (_node *RoleMetada
 	if _u.mutation.DeletedByCleared() {
 		_spec.ClearField(rolemetadata.FieldDeletedBy, field.TypeUint32)
 	}
+	if _u.mutation.TenantIDCleared() {
+		_spec.ClearField(rolemetadata.FieldTenantID, field.TypeUint32)
+	}
 	if value, ok := _u.mutation.RoleID(); ok {
 		_spec.SetField(rolemetadata.FieldRoleID, field.TypeUint32, value)
 	}
@@ -854,13 +1027,26 @@ func (_u *RoleMetadataUpdateOne) sqlSave(ctx context.Context) (_node *RoleMetada
 	if _u.mutation.LastSyncedVersionCleared() {
 		_spec.ClearField(rolemetadata.FieldLastSyncedVersion, field.TypeInt32)
 	}
+	if value, ok := _u.mutation.LastSyncedAt(); ok {
+		_spec.SetField(rolemetadata.FieldLastSyncedAt, field.TypeTime, value)
+	}
+	if _u.mutation.LastSyncedAtCleared() {
+		_spec.ClearField(rolemetadata.FieldLastSyncedAt, field.TypeTime)
+	}
+	if value, ok := _u.mutation.SyncPolicy(); ok {
+		_spec.SetField(rolemetadata.FieldSyncPolicy, field.TypeEnum, value)
+	}
+	if _u.mutation.SyncPolicyCleared() {
+		_spec.ClearField(rolemetadata.FieldSyncPolicy, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.Scope(); ok {
+		_spec.SetField(rolemetadata.FieldScope, field.TypeEnum, value)
+	}
+	if _u.mutation.ScopeCleared() {
+		_spec.ClearField(rolemetadata.FieldScope, field.TypeEnum)
+	}
 	if value, ok := _u.mutation.CustomOverrides(); ok {
 		_spec.SetField(rolemetadata.FieldCustomOverrides, field.TypeJSON, value)
-	}
-	if value, ok := _u.mutation.AppendedCustomOverrides(); ok {
-		_spec.AddModifier(func(u *sql.UpdateBuilder) {
-			sqljson.Append(u, rolemetadata.FieldCustomOverrides, value)
-		})
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &RoleMetadata{config: _u.config}

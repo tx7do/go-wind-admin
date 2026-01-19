@@ -6,7 +6,11 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+
 	"github.com/tx7do/go-crud/entgo/mixin"
+
+	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
+	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // LoginPolicy holds the schema definition for the LoginPolicy entity.
@@ -69,14 +73,6 @@ func (LoginPolicy) Fields() []ent.Field {
 	}
 }
 
-// Indexes of the LoginPolicy.
-func (LoginPolicy) Indexes() []ent.Index {
-	return []ent.Index{
-		index.Fields("target_id", "type", "method").Unique().
-			StorageKey("idx_sys_login_policy_target_type_method"),
-	}
-}
-
 // Mixin of the LoginPolicy.
 func (LoginPolicy) Mixin() []ent.Mixin {
 	return []ent.Mixin{
@@ -84,5 +80,29 @@ func (LoginPolicy) Mixin() []ent.Mixin {
 		mixin.TimeAt{},
 		mixin.OperatorID{},
 		mixin.TenantID{},
+	}
+}
+
+// Policy for all schemas that embed LoginPolicy.
+func (LoginPolicy) Policy() ent.Policy {
+	return privacy.Policy{
+		Query: rule.TenantQueryPolicy(),
+	}
+}
+
+// Indexes of the LoginPolicy.
+func (LoginPolicy) Indexes() []ent.Index {
+	return []ent.Index{
+		// 在租户维度上保证同一目标 + 类型 + 方式 的唯一性，防止重复策略
+		index.Fields("tenant_id", "target_id", "type", "method").Unique().
+			StorageKey("uidx_sys_login_policy_tenant_target_type_method"),
+
+		// 常用查询：按租户 + 类型 + 方式 列表策略
+		index.Fields("tenant_id", "type", "method").
+			StorageKey("idx_sys_login_policy_tenant_type_method"),
+
+		// 按 value 查询（如按 IP、MAC、地区查找），按租户分区可加速检索
+		index.Fields("tenant_id", "value").
+			StorageKey("idx_sys_login_policy_tenant_value"),
 	}
 }

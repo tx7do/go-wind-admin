@@ -143,6 +143,7 @@ func (r *FileRepo) Create(ctx context.Context, req *fileV1.CreateFileRequest) er
 	}
 
 	builder := r.entClient.Client().File.Create().
+		SetNillableTenantID(req.Data.TenantId).
 		SetNillableProvider(r.providerConverter.ToEntity(req.Data.Provider)).
 		SetNillableBucketName(req.Data.BucketName).
 		SetNillableFileDirectory(req.Data.FileDirectory).

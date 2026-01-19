@@ -257,7 +257,9 @@ func (_c *UserOrgUnitCreate) Mutation() *UserOrgUnitMutation {
 
 // Save creates the UserOrgUnit in the database.
 func (_c *UserOrgUnitCreate) Save(ctx context.Context) (*UserOrgUnit, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -284,7 +286,11 @@ func (_c *UserOrgUnitCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *UserOrgUnitCreate) defaults() {
+func (_c *UserOrgUnitCreate) defaults() error {
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := userorgunit.DefaultTenantID
+		_c.mutation.SetTenantID(v)
+	}
 	if _, ok := _c.mutation.IsPrimary(); !ok {
 		v := userorgunit.DefaultIsPrimary
 		_c.mutation.SetIsPrimary(v)
@@ -293,6 +299,7 @@ func (_c *UserOrgUnitCreate) defaults() {
 		v := userorgunit.DefaultStatus
 		_c.mutation.SetStatus(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

@@ -154,8 +154,7 @@ func (r *ApiAuditLogRepo) Create(ctx context.Context, req *auditV1.CreateApiAudi
 		return adminV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().ApiAuditLog.
-		Create().
+	builder := r.entClient.Client().ApiAuditLog.Create().
 		SetNillableTenantID(req.Data.TenantId).
 		SetNillableUserID(req.Data.UserId).
 		SetNillableUsername(req.Data.Username).

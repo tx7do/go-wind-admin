@@ -35,6 +35,173 @@ var (
 	_ = sort.Sort
 )
 
+// Validate checks the field values on RoleOverride with the rules defined in
+// the proto definition for this message. If any rules are violated, the first
+// error encountered is returned, or nil if there are no violations.
+func (m *RoleOverride) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on RoleOverride with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// result is a list of violation errors wrapped in RoleOverrideMultiError, or
+// nil if none found.
+func (m *RoleOverride) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *RoleOverride) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetPermissions()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, RoleOverrideValidationError{
+					field:  "Permissions",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, RoleOverrideValidationError{
+					field:  "Permissions",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPermissions()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return RoleOverrideValidationError{
+				field:  "Permissions",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	// no validation rules for ExtendedSettings
+
+	if all {
+		switch v := interface{}(m.GetSecurityPolicy()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, RoleOverrideValidationError{
+					field:  "SecurityPolicy",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, RoleOverrideValidationError{
+					field:  "SecurityPolicy",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetSecurityPolicy()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return RoleOverrideValidationError{
+				field:  "SecurityPolicy",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if m.DisplayName != nil {
+		// no validation rules for DisplayName
+	}
+
+	if m.Description != nil {
+		// no validation rules for Description
+	}
+
+	if len(errors) > 0 {
+		return RoleOverrideMultiError(errors)
+	}
+
+	return nil
+}
+
+// RoleOverrideMultiError is an error wrapping multiple validation errors
+// returned by RoleOverride.ValidateAll() if the designated constraints aren't met.
+type RoleOverrideMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RoleOverrideMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RoleOverrideMultiError) AllErrors() []error { return m }
+
+// RoleOverrideValidationError is the validation error returned by
+// RoleOverride.Validate if the designated constraints aren't met.
+type RoleOverrideValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RoleOverrideValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RoleOverrideValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RoleOverrideValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RoleOverrideValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RoleOverrideValidationError) ErrorName() string { return "RoleOverrideValidationError" }
+
+// Error satisfies the builtin error interface
+func (e RoleOverrideValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRoleOverride.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RoleOverrideValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RoleOverrideValidationError{}
+
 // Validate checks the field values on RoleMetadata with the rules defined in
 // the proto definition for this message. If any rules are violated, the first
 // error encountered is returned, or nil if there are no violations.
@@ -56,6 +223,35 @@ func (m *RoleMetadata) validate(all bool) error {
 	}
 
 	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetCustomOverrides()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, RoleMetadataValidationError{
+					field:  "CustomOverrides",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, RoleMetadataValidationError{
+					field:  "CustomOverrides",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetCustomOverrides()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return RoleMetadataValidationError{
+				field:  "CustomOverrides",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
 
 	if m.Id != nil {
 		// no validation rules for Id
@@ -79,6 +275,51 @@ func (m *RoleMetadata) validate(all bool) error {
 
 	if m.LastSyncedVersion != nil {
 		// no validation rules for LastSyncedVersion
+	}
+
+	if m.LastSyncedAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetLastSyncedAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, RoleMetadataValidationError{
+						field:  "LastSyncedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, RoleMetadataValidationError{
+						field:  "LastSyncedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetLastSyncedAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return RoleMetadataValidationError{
+					field:  "LastSyncedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if m.SyncPolicy != nil {
+		// no validation rules for SyncPolicy
+	}
+
+	if m.Scope != nil {
+		// no validation rules for Scope
+	}
+
+	if m.TenantId != nil {
+		// no validation rules for TenantId
 	}
 
 	if m.CreatedBy != nil {
@@ -268,3 +509,211 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = RoleMetadataValidationError{}
+
+// Validate checks the field values on RoleOverride_PermissionDelta with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *RoleOverride_PermissionDelta) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on RoleOverride_PermissionDelta with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// RoleOverride_PermissionDeltaMultiError, or nil if none found.
+func (m *RoleOverride_PermissionDelta) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *RoleOverride_PermissionDelta) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return RoleOverride_PermissionDeltaMultiError(errors)
+	}
+
+	return nil
+}
+
+// RoleOverride_PermissionDeltaMultiError is an error wrapping multiple
+// validation errors returned by RoleOverride_PermissionDelta.ValidateAll() if
+// the designated constraints aren't met.
+type RoleOverride_PermissionDeltaMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RoleOverride_PermissionDeltaMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RoleOverride_PermissionDeltaMultiError) AllErrors() []error { return m }
+
+// RoleOverride_PermissionDeltaValidationError is the validation error returned
+// by RoleOverride_PermissionDelta.Validate if the designated constraints
+// aren't met.
+type RoleOverride_PermissionDeltaValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RoleOverride_PermissionDeltaValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RoleOverride_PermissionDeltaValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RoleOverride_PermissionDeltaValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RoleOverride_PermissionDeltaValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RoleOverride_PermissionDeltaValidationError) ErrorName() string {
+	return "RoleOverride_PermissionDeltaValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e RoleOverride_PermissionDeltaValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRoleOverride_PermissionDelta.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RoleOverride_PermissionDeltaValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RoleOverride_PermissionDeltaValidationError{}
+
+// Validate checks the field values on RoleOverride_SecurityPolicy with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *RoleOverride_SecurityPolicy) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on RoleOverride_SecurityPolicy with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// RoleOverride_SecurityPolicyMultiError, or nil if none found.
+func (m *RoleOverride_SecurityPolicy) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *RoleOverride_SecurityPolicy) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for ForceMfa
+
+	if len(errors) > 0 {
+		return RoleOverride_SecurityPolicyMultiError(errors)
+	}
+
+	return nil
+}
+
+// RoleOverride_SecurityPolicyMultiError is an error wrapping multiple
+// validation errors returned by RoleOverride_SecurityPolicy.ValidateAll() if
+// the designated constraints aren't met.
+type RoleOverride_SecurityPolicyMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RoleOverride_SecurityPolicyMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RoleOverride_SecurityPolicyMultiError) AllErrors() []error { return m }
+
+// RoleOverride_SecurityPolicyValidationError is the validation error returned
+// by RoleOverride_SecurityPolicy.Validate if the designated constraints
+// aren't met.
+type RoleOverride_SecurityPolicyValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RoleOverride_SecurityPolicyValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RoleOverride_SecurityPolicyValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RoleOverride_SecurityPolicyValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RoleOverride_SecurityPolicyValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RoleOverride_SecurityPolicyValidationError) ErrorName() string {
+	return "RoleOverride_SecurityPolicyValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e RoleOverride_SecurityPolicyValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRoleOverride_SecurityPolicy.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RoleOverride_SecurityPolicyValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RoleOverride_SecurityPolicyValidationError{}

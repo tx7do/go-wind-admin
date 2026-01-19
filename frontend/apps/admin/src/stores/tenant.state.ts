@@ -11,7 +11,7 @@ import {
   type userservicev1_Tenant_Status as Tenant_Status,
   type userservicev1_Tenant_Type as Tenant_Type,
 } from '#/generated/api/admin/service/v1';
-import { makeQueryString, makeUpdateMask } from '#/utils/query';
+import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 export const useTenantStore = defineStore('tenant', () => {
@@ -31,8 +31,8 @@ export const useTenantStore = defineStore('tenant', () => {
     return await service.List({
       // @ts-ignore proto generated code is error.
       fieldMask,
-      orderBy: orderBy ?? [],
-      query: makeQueryString(formValues ?? null),
+      orderBy: makeOrderBy(orderBy),
+      query: makeQueryString(formValues),
       page: paging?.page,
       pageSize: paging?.pageSize,
       noPaging,
@@ -93,9 +93,10 @@ export const useTenantStore = defineStore('tenant', () => {
   /**
    * 租户是否存在
    * @param code 租户编码
+   * @param name 租户名称
    */
-  async function tenantExists(code: string) {
-    return await service.TenantExists({ code });
+  async function tenantExists(code: string, name: string) {
+    return await service.TenantExists({ code, name });
   }
 
   function $reset() {}

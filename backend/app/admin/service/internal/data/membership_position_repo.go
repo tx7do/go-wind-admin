@@ -149,6 +149,7 @@ func (r *MembershipPositionRepo) AssignMembershipPositions(
 		}
 		rm := tx.MembershipPosition.
 			Create().
+			SetNillableTenantID(data.TenantId).
 			SetMembershipID(data.GetMembershipId()).
 			SetPositionID(data.GetPositionId()).
 			SetNillableStatus(r.statusConverter.ToEntity(data.Status)).

@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/loginpolicy"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
@@ -329,6 +330,12 @@ func (_q *LoginPolicyQuery) prepareQuery(ctx context.Context) error {
 			return err
 		}
 		_q.sql = prev
+	}
+	if loginpolicy.Policy == nil {
+		return errors.New("ent: uninitialized loginpolicy.Policy (forgotten import ent/runtime?)")
+	}
+	if err := loginpolicy.Policy.EvalQuery(ctx, _q); err != nil {
+		return err
 	}
 	return nil
 }

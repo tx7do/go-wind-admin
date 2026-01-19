@@ -174,6 +174,7 @@ func (r *UserRoleRepo) AssignUserRoles(ctx context.Context, tx *ent.Tx, userID u
 
 		rm := tx.UserRole.
 			Create().
+			SetNillableTenantID(data.TenantId).
 			SetUserID(userID).
 			SetRoleID(data.GetRoleId()).
 			SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
@@ -202,7 +203,7 @@ func (r *UserRoleRepo) ListRoleIDs(ctx context.Context, userID uint32, excludeEx
 		return []uint32{}, nil
 	}
 
-	q := r.entClient.Client().UserRole.Query().
+	q := r.entClient.Client().Debug().UserRole.Query().
 		Where(
 			userrole.UserIDEQ(userID),
 		)

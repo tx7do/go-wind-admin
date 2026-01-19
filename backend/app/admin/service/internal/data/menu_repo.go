@@ -103,8 +103,8 @@ func (r *MenuRepo) List(ctx context.Context, req *paginationV1.PagingRequest, tr
 
 	entities, err := builder.All(ctx)
 	if err != nil {
-		r.log.Errorf("query list failed: %s", err.Error())
-		return nil, permissionV1.ErrorInternalServerError("query list failed")
+		r.log.Errorf("query menu list failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("query menu list failed")
 	}
 
 	dtos := make([]*permissionV1.Menu, 0, len(entities))

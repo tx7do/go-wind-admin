@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
@@ -366,6 +367,12 @@ func (_q *DictEntryQuery) prepareQuery(ctx context.Context) error {
 			return err
 		}
 		_q.sql = prev
+	}
+	if dictentry.Policy == nil {
+		return errors.New("ent: uninitialized dictentry.Policy (forgotten import ent/runtime?)")
+	}
+	if err := dictentry.Policy.EvalQuery(ctx, _q); err != nil {
+		return err
 	}
 	return nil
 }

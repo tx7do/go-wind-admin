@@ -149,8 +149,7 @@ func (r *DataAccessAuditLogRepo) Create(ctx context.Context, req *auditV1.Create
 		return adminV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().DataAccessAuditLog.
-		Create().
+	builder := r.entClient.Client().DataAccessAuditLog.Create().
 		SetNillableTenantID(req.Data.TenantId).
 		SetNillableUserID(req.Data.UserId).
 		SetNillableUsername(req.Data.Username).

@@ -16,6 +16,8 @@ import (
 	"google.golang.org/protobuf/proto"
 
 	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
+
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 )
 
 type ApiAuditLogMiddleware struct {
@@ -80,6 +82,7 @@ func (a *ApiAuditLogMiddleware) Handle(ctx context.Context, htr *http.Transport,
 
 	// 写入日志
 	if a.op.writeApiLogFunc != nil {
+		ctx = appViewer.NewSystemViewerContext(ctx)
 		_ = a.op.writeApiLogFunc(ctx, apiAuditLog)
 	}
 }

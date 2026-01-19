@@ -5,12 +5,14 @@ import (
 	"strings"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/tx7do/go-crud/viewer"
 	"github.com/tx7do/go-utils/trans"
 	authnEngine "github.com/tx7do/kratos-authn/engine"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"go-wind-admin/app/admin/service/internal/data"
+	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
@@ -69,6 +71,11 @@ func NewAuthenticationService(
 
 // Login 登录
 func (s *AuthenticationService) Login(ctx context.Context, req *authenticationV1.LoginRequest) (*authenticationV1.LoginResponse, error) {
+	// 没有 viewer 信息，使用空的 NoopContext
+	ctx = viewer.WithContext(ctx, viewer.NewNoopContext())
+	// 绕过隐私保护中间件
+	ctx = privacy.DecisionContext(ctx, privacy.Allow)
+
 	switch req.GetGrantType() {
 	case authenticationV1.GrantType_password:
 		return s.doGrantTypePassword(ctx, req)
@@ -288,16 +295,6 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 		return authenticationV1.ErrorForbidden("insufficient authority")
 	}
 	tokenPayload.Roles = roleCodes
-
-	// 选取最具体的 org unit id
-	//orgUnits, err := s.orgUnitRepo.ListOrgUnitsByIds(ctx, orgUnitIDs)
-	//if err != nil {
-	//	s.log.Errorf("list org units failed [%s]", err.Error())
-	//} else {
-	//	if most := s.pickMostSpecificOrgUnit(orgUnits); most != nil {
-	//		tokenPayload.OrgUnitId = most.Id
-	//	}
-	//}
 
 	return nil
 }

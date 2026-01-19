@@ -248,6 +248,7 @@ type Task struct {
 	TaskOptions   *TaskOption            `protobuf:"bytes,6,opt,name=task_options,json=taskOptions,proto3,oneof" json:"task_options,omitempty"` // 任务选项
 	Enable        *bool                  `protobuf:"varint,10,opt,name=enable,proto3,oneof" json:"enable,omitempty"`                            // 启用/禁用任务
 	Remark        *string                `protobuf:"bytes,11,opt,name=remark,proto3,oneof" json:"remark,omitempty"`                             // 备注
+	TenantId      *uint32                `protobuf:"varint,20,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`        // 租户ID，0代表系统全局角色
 	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`    // 创建者ID
 	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`    // 更新者ID
 	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`    // 删除者用户ID
@@ -342,6 +343,13 @@ func (x *Task) GetRemark() string {
 		return *x.Remark
 	}
 	return ""
+}
+
+func (x *Task) GetTenantId() uint32 {
+	if x != nil && x.TenantId != nil {
+		return *x.TenantId
+	}
+	return 0
 }
 
 func (x *Task) GetCreatedBy() uint32 {
@@ -863,7 +871,7 @@ const file_admin_service_v1_i_task_proto_rawDesc = "" +
 	"_retentionB\b\n" +
 	"\x06_groupB\n" +
 	"\n" +
-	"\b_task_id\"\x93\v\n" +
+	"\b_task_id\"\xef\v\n" +
 	"\x04Task\x12&\n" +
 	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b任务IDH\x00R\x02id\x88\x01\x01\x12K\n" +
 	"\x04type\x18\x02 \x01(\x0e2\x1b.admin.service.v1.Task.TypeB\x15\xe0A\x01\xbaG\x0f\x92\x02\f任务类型H\x01R\x04type\x88\x01\x01\x12\x92\x01\n" +
@@ -873,20 +881,21 @@ const file_admin_service_v1_i_task_proto_rawDesc = "" +
 	"\ftask_options\x18\x06 \x01(\v2\x1c.admin.service.v1.TaskOptionBZ\xe0A\x01\xbaGT\x92\x02Q任务选项，以 JSON 格式存储，方便存储不同类型和数量的选项H\x05R\vtaskOptions\x88\x01\x01\x126\n" +
 	"\x06enable\x18\n" +
 	" \x01(\bB\x19\xbaG\x16\x92\x02\x13启用/禁用任务H\x06R\x06enable\x88\x01\x01\x12)\n" +
-	"\x06remark\x18\v \x01(\tB\f\xbaG\t\x92\x02\x06备注H\aR\x06remark\x88\x01\x01\x125\n" +
+	"\x06remark\x18\v \x01(\tB\f\xbaG\t\x92\x02\x06备注H\aR\x06remark\x88\x01\x01\x12L\n" +
+	"\ttenant_id\x18\x14 \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\bR\btenantId\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\bR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\tR\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\tR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\n" +
+	"R\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\n" +
-	"R\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\vR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\vR\tcreatedAt\x88\x01\x01\x12S\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\fR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\fR\tupdatedAt\x88\x01\x01\x12S\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\rR\tupdatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\rR\tdeletedAt\x88\x01\x01\"0\n" +
+	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\x0eR\tdeletedAt\x88\x01\x01\"0\n" +
 	"\x04Type\x12\f\n" +
 	"\bPERIODIC\x10\x00\x12\t\n" +
 	"\x05DELAY\x10\x01\x12\x0f\n" +
@@ -900,7 +909,9 @@ const file_admin_service_v1_i_task_proto_rawDesc = "" +
 	"_cron_specB\x0f\n" +
 	"\r_task_optionsB\t\n" +
 	"\a_enableB\t\n" +
-	"\a_remarkB\r\n" +
+	"\a_remarkB\f\n" +
+	"\n" +
+	"_tenant_idB\r\n" +
 	"\v_created_byB\r\n" +
 	"\v_updated_byB\r\n" +
 	"\v_deleted_byB\r\n" +

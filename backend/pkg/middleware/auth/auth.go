@@ -3,12 +3,12 @@ package auth
 import (
 	"context"
 	"reflect"
-	"strconv"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/transport"
 	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/tx7do/go-crud/viewer"
 
 	authnEngine "github.com/tx7do/kratos-authn/engine"
 	authn "github.com/tx7do/kratos-authn/middleware"
@@ -16,13 +16,11 @@ import (
 	authzEngine "github.com/tx7do/kratos-authz/engine"
 	authz "github.com/tx7do/kratos-authz/middleware"
 
-	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	"github.com/tx7do/go-utils/stringutil"
 	"github.com/tx7do/go-utils/trans"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 
-	"go-wind-admin/pkg/entgo/viewer"
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/jwt"
 	"go-wind-admin/pkg/metadata"
 )
@@ -125,28 +123,23 @@ func Server(opts ...Option) middleware.Middleware {
 					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
 					return nil, err
 				}
-
-				if err = ensurePagingRequestTenantId(req, tokenPayload); err != nil {
-					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
-					return nil, err
-				}
 			}
 
 			if op.injectEnt {
-				userViewer := viewer.NewUserViewer(
-					tokenPayload.GetUserId(),
-					tokenPayload.GetTenantId(),
-					tokenPayload.GetOrgUnitId(),
+				userViewer := appViewer.NewUserViewer(
+					uint64(tokenPayload.GetUserId()),
+					uint64(tokenPayload.GetTenantId()),
+					uint64(tokenPayload.GetOrgUnitId()),
 					tokenPayload.GetDataScope(),
 				)
-				ctx = viewer.NewContext(ctx, userViewer)
+				ctx = viewer.WithContext(ctx, userViewer)
 			}
 
 			if op.injectMetadata {
 				ctx = metadata.NewOperatorMetadataContext(ctx,
-					tokenPayload.GetUserId(),
-					tokenPayload.GetTenantId(),
-					tokenPayload.GetOrgUnitId(),
+					uint64(tokenPayload.GetUserId()),
+					uint64(tokenPayload.GetTenantId()),
+					uint64(tokenPayload.GetOrgUnitId()),
 					tokenPayload.GetDataScope(),
 				)
 			}
@@ -228,19 +221,5 @@ func setRequestTenantId(req interface{}, payload *authenticationV1.UserTokenPayl
 		field.Set(reflect.ValueOf(&payload.TenantId))
 	}
 
-	return nil
-}
-
-func ensurePagingRequestTenantId(req interface{}, payload *authenticationV1.UserTokenPayload) error {
-	if paging, ok := req.(*paginationV1.PagingRequest); ok && payload.GetTenantId() > 0 {
-		if paging.Query != nil {
-			newStr := stringutil.ReplaceJSONField("tenantId|tenant_id", strconv.Itoa(int(payload.GetTenantId())), paging.GetQuery())
-			paging.Query = trans.Ptr(newStr)
-		}
-		if paging.OrQuery != nil {
-			newStr := stringutil.ReplaceJSONField("tenantId|tenant_id", strconv.Itoa(int(payload.GetTenantId())), paging.GetOrQuery())
-			paging.OrQuery = trans.Ptr(newStr)
-		}
-	}
 	return nil
 }

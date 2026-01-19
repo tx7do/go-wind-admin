@@ -10,6 +10,7 @@ import (
 
 	"go-wind-admin/app/admin/service/internal/service"
 
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/task"
 )
 
@@ -34,7 +35,7 @@ func NewAsynqServer(ctx *bootstrap.Context, taskService *service.TaskService) (*
 	}
 
 	// 启动所有的任务
-	if _, err = taskService.StartAllTask(ctx.Context(), &emptypb.Empty{}); err != nil {
+	if _, err = taskService.StartAllTask(appViewer.NewSystemViewerContext(ctx.Context()), &emptypb.Empty{}); err != nil {
 		log.Error(err)
 		return nil, err
 	}

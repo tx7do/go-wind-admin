@@ -27,9 +27,9 @@ func FromOperatorMetadata(ctx context.Context) *OperatorInfo {
 
 func NewOperatorMetadataContext(
 	ctx context.Context,
-	uid uint32,
-	tid uint32,
-	ouid uint32,
+	uid uint64,
+	tid uint64,
+	ouid uint64,
 	dataScope permissionV1.DataScope,
 ) context.Context {
 	payload := OperatorInfo{

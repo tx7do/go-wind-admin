@@ -59,7 +59,7 @@ message Role {
 
   optional string code = 3 [
     json_name = "code",
-    (gnostic.openapi.v3.property) = {description: "角色标识码（如：platform_admin, tenant_admin）"}
+    (gnostic.openapi.v3.property) = {description: "角色标识码（如：platform:admin, tenant:admin）"}
   ];  // 角色标识码（如：ADMIN, VIEWER）
 
   optional uint32 sort_order = 4 [
@@ -79,10 +79,15 @@ message Role {
 
   optional bool is_protected = 7 [
     json_name = "isProtected",
-    (gnostic.openapi.v3.property) = {description: "是否为系统内置保护角色，保护角色不允许删除或修改其权限"}
-  ];  // 是否为系统内置保护角色，保护角色不允许删除或修改其权限
+    (gnostic.openapi.v3.property) = {description: "受保护角色，仅平台管理员可修改"}
+  ];  // 受保护角色，仅平台管理员可修改
 
-  repeated uint32 permissions = 11 [
+  optional bool is_system = 8 [
+    json_name = "isSystem",
+    (gnostic.openapi.v3.property) = {description: "系统内置角色，仅平台管理员可修改"}
+  ];  // 系统内置角色
+
+  repeated uint32 permissions = 10 [
     json_name = "permissions",
     (gnostic.openapi.v3.property) = {description: "绑定的权限点ID列表"}
   ]; // 绑定的权限点ID列表

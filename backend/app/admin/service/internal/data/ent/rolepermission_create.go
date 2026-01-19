@@ -187,7 +187,9 @@ func (_c *RolePermissionCreate) Mutation() *RolePermissionMutation {
 
 // Save creates the RolePermission in the database.
 func (_c *RolePermissionCreate) Save(ctx context.Context) (*RolePermission, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -214,7 +216,11 @@ func (_c *RolePermissionCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *RolePermissionCreate) defaults() {
+func (_c *RolePermissionCreate) defaults() error {
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := rolepermission.DefaultTenantID
+		_c.mutation.SetTenantID(v)
+	}
 	if _, ok := _c.mutation.Status(); !ok {
 		v := rolepermission.DefaultStatus
 		_c.mutation.SetStatus(v)
@@ -227,6 +233,7 @@ func (_c *RolePermissionCreate) defaults() {
 		v := rolepermission.DefaultPriority
 		_c.mutation.SetPriority(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

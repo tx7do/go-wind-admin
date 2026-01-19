@@ -7,7 +7,11 @@ import (
 	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+
 	"github.com/tx7do/go-crud/entgo/mixin"
+
+	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
+	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 )
 
 // DictEntry holds the schema definition for the DictEntry entity.
@@ -75,6 +79,13 @@ func (DictEntry) Edges() []ent.Edge {
 			Required().
 			Annotations(entsql.OnDelete(entsql.Cascade)).
 			StorageKey(edge.Column("type_id")),
+	}
+}
+
+// Policy for all schemas that embed DictEntry.
+func (DictEntry) Policy() ent.Policy {
+	return privacy.Policy{
+		Query: rule.TenantQueryPolicy(),
 	}
 }
 

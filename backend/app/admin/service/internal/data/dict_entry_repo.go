@@ -117,6 +117,7 @@ func (r *DictEntryRepo) Create(ctx context.Context, req *dictV1.CreateDictEntryR
 	}
 
 	builder := r.entClient.Client().DictEntry.Create().
+		SetNillableTenantID(req.Data.TenantId).
 		SetNillableEntryLabel(req.Data.EntryLabel).
 		SetNillableEntryValue(req.Data.EntryValue).
 		SetNillableNumericValue(req.Data.NumericValue).

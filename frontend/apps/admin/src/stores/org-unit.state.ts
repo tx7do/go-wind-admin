@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 
 import { $t } from '@vben/locales';
+import { useUserStore } from '@vben/stores';
 
 import { defineStore } from 'pinia';
 
@@ -10,11 +11,12 @@ import {
   type userservicev1_OrgUnit_Status as OrgUnit_Status,
   type userservicev1_OrgUnit_Type as OrgUnit_Type,
 } from '#/generated/api/admin/service/v1';
-import { makeQueryString, makeUpdateMask } from '#/utils/query';
+import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 export const useOrgUnitStore = defineStore('org-unit', () => {
   const service = createOrgUnitServiceClient(requestClientRequestHandler);
+  const userStore = useUserStore();
 
   /**
    * 查询组织单位列表
@@ -30,8 +32,8 @@ export const useOrgUnitStore = defineStore('org-unit', () => {
     return await service.List({
       // @ts-ignore proto generated code is error.
       fieldMask,
-      orderBy: orderBy ?? [],
-      query: makeQueryString(formValues ?? null),
+      orderBy: makeOrderBy(orderBy),
+      query: makeQueryString(formValues, userStore.isTenantUser()),
       page: paging?.page,
       pageSize: paging?.pageSize,
       noPaging,

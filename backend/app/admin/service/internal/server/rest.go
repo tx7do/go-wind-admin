@@ -26,6 +26,7 @@ import (
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
 
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
 	applogging "go-wind-admin/pkg/middleware/logging"
 )
@@ -59,7 +60,9 @@ func NewRestMiddleware(
 
 	ms = append(ms, selector.Server(
 		authn.Server(authenticator),
-		auth.Server(),
+		auth.Server(
+			auth.WithInjectEnt(true),
+		),
 		authz.Server(authorizer.Engine()),
 	).
 		Match(rpc.NewRestWhiteListMatcher()).
@@ -172,7 +175,7 @@ func NewRestServer(
 	}
 
 	if authorizer != nil {
-		if err = authorizer.ResetPolicies(ctx.Context()); err != nil {
+		if err = authorizer.ResetPolicies(appViewer.NewSystemViewerContext(ctx.Context())); err != nil {
 			log.Errorf("reset policies error: %v", err)
 		}
 	}

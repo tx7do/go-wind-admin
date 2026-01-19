@@ -376,6 +376,9 @@ func (_c *DataAccessAuditLogCreate) Mutation() *DataAccessAuditLogMutation {
 
 // Save creates the DataAccessAuditLog in the database.
 func (_c *DataAccessAuditLogCreate) Save(ctx context.Context) (*DataAccessAuditLog, error) {
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -399,6 +402,15 @@ func (_c *DataAccessAuditLogCreate) ExecX(ctx context.Context) {
 	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// defaults sets the default values of the builder before save.
+func (_c *DataAccessAuditLogCreate) defaults() error {
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := dataaccessauditlog.DefaultTenantID
+		_c.mutation.SetTenantID(v)
+	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -1698,6 +1710,7 @@ func (_c *DataAccessAuditLogCreateBulk) Save(ctx context.Context) ([]*DataAccess
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*DataAccessAuditLogMutation)
 				if !ok {

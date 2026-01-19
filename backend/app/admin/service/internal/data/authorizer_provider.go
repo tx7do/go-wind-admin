@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"go-wind-admin/pkg/constants"
 
 	"github.com/go-kratos/kratos/v2/log"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -57,6 +58,17 @@ func (p *AuthorizerProvider) Provide(ctx context.Context) (AuthorizerDataMap, er
 	var apiIDs []uint32
 	var apis []*permissionV1.Api
 	for _, role := range roles.Items {
+		//p.log.Infof("processing role: %s", role.GetCode())
+		if role == nil {
+			continue
+		}
+		if role.GetCode() == "" {
+			continue
+		}
+		if constants.IsTemplateRoleCode(role.GetCode()) {
+			continue
+		}
+
 		apiIDs, err = p.roleRepo.GetRolePermissionApiIDs(ctx, role.GetId())
 		if err != nil {
 			p.log.Errorf("failed to get role [%d] permission api ids: %v", role.GetId(), err)

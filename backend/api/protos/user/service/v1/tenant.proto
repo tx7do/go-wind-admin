@@ -230,6 +230,11 @@ message TenantExistsRequest {
     (gnostic.openapi.v3.property) = {description: "租户编码", read_only: true},
     json_name = "code"
   ]; // 租户编码
+
+  string name = 2 [
+    (gnostic.openapi.v3.property) = {description: "租户名称", read_only: true},
+    json_name = "name"
+  ]; // 租户名称
 }
 // 租户是否存在 - 答复
 message TenantExistsResponse {

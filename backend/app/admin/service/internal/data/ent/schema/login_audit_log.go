@@ -1,14 +1,17 @@
 package schema
 
 import (
-	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
-
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"github.com/tx7do/go-crud/entgo/mixin"
+
+	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
+	"go-wind-admin/app/admin/service/internal/data/ent/rule"
+
+	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
 )
 
 // LoginAuditLog holds the schema definition for the LoginAuditLog entity.
@@ -152,6 +155,13 @@ func (LoginAuditLog) Mixin() []ent.Mixin {
 		mixin.AutoIncrementId{},
 		mixin.CreatedAt{},
 		mixin.TenantID{},
+	}
+}
+
+// Policy for all schemas that embed LoginAuditLog.
+func (LoginAuditLog) Policy() ent.Policy {
+	return privacy.Policy{
+		Query: rule.TenantQueryPolicy(),
 	}
 }
 

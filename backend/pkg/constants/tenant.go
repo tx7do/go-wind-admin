@@ -18,4 +18,7 @@ const (
 	// DefaultUserTenantRelationType 用户与租户的默认关联关系
 	// 如果启用多租户，推荐使用 UserTenantRelationOneToOne；默认一对一。
 	DefaultUserTenantRelationType UserTenantRelationType = UserTenantRelationOneToOne
+
+	// IsTenantModeEnabled 是否启用租户模式
+	IsTenantModeEnabled = DefaultUserTenantRelationType == UserTenantRelationOneToOne || DefaultUserTenantRelationType == UserTenantRelationOneToMany
 )

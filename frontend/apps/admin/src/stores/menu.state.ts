@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 
 import { $t } from '@vben/locales';
+import { useUserStore } from '@vben/stores';
 
 import { defineStore } from 'pinia';
 
@@ -9,7 +10,7 @@ import {
   type permissionservicev1_Menu as Menu,
   type permissionservicev1_Menu_Type as Menu_Type,
 } from '#/generated/api/admin/service/v1';
-import { makeQueryString, makeUpdateMask } from '#/utils/query';
+import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 const parseToArray = (str: string | string[] | undefined): string[] => {
@@ -28,6 +29,7 @@ const parseToArray = (str: string | string[] | undefined): string[] => {
 
 export const useMenuStore = defineStore('menu', () => {
   const service = createMenuServiceClient(requestClientRequestHandler);
+  const userStore = useUserStore();
 
   /**
    * 查询菜单列表
@@ -43,8 +45,8 @@ export const useMenuStore = defineStore('menu', () => {
     return await service.List({
       // @ts-ignore proto generated code is error.
       fieldMask,
-      orderBy: orderBy ?? [],
-      query: makeQueryString(formValues ?? null),
+      orderBy: makeOrderBy(orderBy),
+      query: makeQueryString(formValues, userStore.isTenantUser()),
       page: paging?.page,
       pageSize: paging?.pageSize,
       noPaging,

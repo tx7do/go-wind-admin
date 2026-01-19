@@ -1,7 +1,9 @@
+import { useUserStore } from '@vben/stores';
+
 import { defineStore } from 'pinia';
 
 import { createInternalMessageCategoryServiceClient } from '#/generated/api/admin/service/v1';
-import { makeQueryString, makeUpdateMask } from '#/utils/query';
+import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 export const useInternalMessageCategoryStore = defineStore(
@@ -10,6 +12,8 @@ export const useInternalMessageCategoryStore = defineStore(
     const service = createInternalMessageCategoryServiceClient(
       requestClientRequestHandler,
     );
+
+    const userStore = useUserStore();
 
     /**
      * 查询通知消息列表
@@ -25,8 +29,8 @@ export const useInternalMessageCategoryStore = defineStore(
       return await service.List({
         // @ts-ignore proto generated code is error.
         fieldMask,
-        orderBy: orderBy ?? [],
-        query: makeQueryString(formValues ?? null),
+        orderBy: makeOrderBy(orderBy),
+        query: makeQueryString(formValues, userStore.isTenantUser()),
         page: paging?.page,
         pageSize: paging?.pageSize,
         noPaging,

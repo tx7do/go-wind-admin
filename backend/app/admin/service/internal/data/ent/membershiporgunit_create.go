@@ -271,7 +271,9 @@ func (_c *MembershipOrgUnitCreate) Mutation() *MembershipOrgUnitMutation {
 
 // Save creates the MembershipOrgUnit in the database.
 func (_c *MembershipOrgUnitCreate) Save(ctx context.Context) (*MembershipOrgUnit, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -298,7 +300,11 @@ func (_c *MembershipOrgUnitCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *MembershipOrgUnitCreate) defaults() {
+func (_c *MembershipOrgUnitCreate) defaults() error {
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := membershiporgunit.DefaultTenantID
+		_c.mutation.SetTenantID(v)
+	}
 	if _, ok := _c.mutation.IsPrimary(); !ok {
 		v := membershiporgunit.DefaultIsPrimary
 		_c.mutation.SetIsPrimary(v)
@@ -307,6 +313,7 @@ func (_c *MembershipOrgUnitCreate) defaults() {
 		v := membershiporgunit.DefaultStatus
 		_c.mutation.SetStatus(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

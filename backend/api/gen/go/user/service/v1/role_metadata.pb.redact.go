@@ -28,6 +28,24 @@ var (
 	_ pagination.Sorting
 )
 
+// Redact method implementation for RoleOverride
+func (x *RoleOverride) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: Permissions
+
+	// Safe field: DisplayName
+
+	// Safe field: Description
+
+	// Safe field: ExtendedSettings
+
+	// Safe field: SecurityPolicy
+	return x.String()
+}
+
 // Redact method implementation for RoleMetadata
 func (x *RoleMetadata) Redact() string {
 	if x == nil {
@@ -46,7 +64,15 @@ func (x *RoleMetadata) Redact() string {
 
 	// Safe field: LastSyncedVersion
 
+	// Safe field: LastSyncedAt
+
+	// Safe field: SyncPolicy
+
+	// Safe field: Scope
+
 	// Safe field: CustomOverrides
+
+	// Safe field: TenantId
 
 	// Safe field: CreatedBy
 
@@ -59,5 +85,29 @@ func (x *RoleMetadata) Redact() string {
 	// Safe field: UpdatedAt
 
 	// Safe field: DeletedAt
+	return x.String()
+}
+
+// Redact method implementation for RoleOverride_PermissionDelta
+func (x *RoleOverride_PermissionDelta) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: AddedPermissions
+
+	// Safe field: RemovedPermissions
+	return x.String()
+}
+
+// Redact method implementation for RoleOverride_SecurityPolicy
+func (x *RoleOverride_SecurityPolicy) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: ForceMfa
+
+	// Safe field: IpAllowList
 	return x.String()
 }

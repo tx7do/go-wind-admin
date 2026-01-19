@@ -16,6 +16,7 @@ import (
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
 	"go-wind-admin/pkg/constants"
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
 )
 
@@ -45,7 +46,7 @@ func NewPermissionGroupService(
 }
 
 func (s *PermissionGroupService) init() {
-	ctx := context.Background()
+	ctx := appViewer.NewSystemViewerContext(context.Background())
 	if count, _ := s.permissionGroupRepo.Count(ctx, []func(s *sql.Selector){}); count == 0 {
 		_ = s.createDefaultPermissionGroups(ctx)
 	}

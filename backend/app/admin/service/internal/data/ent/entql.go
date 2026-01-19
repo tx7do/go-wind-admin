@@ -860,6 +860,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			role.FieldName:        {Type: field.TypeString, Column: role.FieldName},
 			role.FieldCode:        {Type: field.TypeString, Column: role.FieldCode},
 			role.FieldIsProtected: {Type: field.TypeBool, Column: role.FieldIsProtected},
+			role.FieldIsSystem:    {Type: field.TypeBool, Column: role.FieldIsSystem},
 		},
 	}
 	graph.Nodes[28] = &sqlgraph.Node{
@@ -879,11 +880,15 @@ var schemaGraph = func() *sqlgraph.Schema {
 			rolemetadata.FieldCreatedBy:         {Type: field.TypeUint32, Column: rolemetadata.FieldCreatedBy},
 			rolemetadata.FieldUpdatedBy:         {Type: field.TypeUint32, Column: rolemetadata.FieldUpdatedBy},
 			rolemetadata.FieldDeletedBy:         {Type: field.TypeUint32, Column: rolemetadata.FieldDeletedBy},
+			rolemetadata.FieldTenantID:          {Type: field.TypeUint32, Column: rolemetadata.FieldTenantID},
 			rolemetadata.FieldRoleID:            {Type: field.TypeUint32, Column: rolemetadata.FieldRoleID},
 			rolemetadata.FieldIsTemplate:        {Type: field.TypeBool, Column: rolemetadata.FieldIsTemplate},
 			rolemetadata.FieldTemplateFor:       {Type: field.TypeString, Column: rolemetadata.FieldTemplateFor},
 			rolemetadata.FieldTemplateVersion:   {Type: field.TypeInt32, Column: rolemetadata.FieldTemplateVersion},
 			rolemetadata.FieldLastSyncedVersion: {Type: field.TypeInt32, Column: rolemetadata.FieldLastSyncedVersion},
+			rolemetadata.FieldLastSyncedAt:      {Type: field.TypeTime, Column: rolemetadata.FieldLastSyncedAt},
+			rolemetadata.FieldSyncPolicy:        {Type: field.TypeEnum, Column: rolemetadata.FieldSyncPolicy},
+			rolemetadata.FieldScope:             {Type: field.TypeEnum, Column: rolemetadata.FieldScope},
 			rolemetadata.FieldCustomOverrides:   {Type: field.TypeJSON, Column: rolemetadata.FieldCustomOverrides},
 		},
 	}
@@ -4700,6 +4705,11 @@ func (f *RoleFilter) WhereIsProtected(p entql.BoolP) {
 	f.Where(p.Field(role.FieldIsProtected))
 }
 
+// WhereIsSystem applies the entql bool predicate on the is_system field.
+func (f *RoleFilter) WhereIsSystem(p entql.BoolP) {
+	f.Where(p.Field(role.FieldIsSystem))
+}
+
 // addPredicate implements the predicateAdder interface.
 func (_q *RoleMetadataQuery) addPredicate(pred func(s *sql.Selector)) {
 	_q.predicates = append(_q.predicates, pred)
@@ -4770,6 +4780,11 @@ func (f *RoleMetadataFilter) WhereDeletedBy(p entql.Uint32P) {
 	f.Where(p.Field(rolemetadata.FieldDeletedBy))
 }
 
+// WhereTenantID applies the entql uint32 predicate on the tenant_id field.
+func (f *RoleMetadataFilter) WhereTenantID(p entql.Uint32P) {
+	f.Where(p.Field(rolemetadata.FieldTenantID))
+}
+
 // WhereRoleID applies the entql uint32 predicate on the role_id field.
 func (f *RoleMetadataFilter) WhereRoleID(p entql.Uint32P) {
 	f.Where(p.Field(rolemetadata.FieldRoleID))
@@ -4793,6 +4808,21 @@ func (f *RoleMetadataFilter) WhereTemplateVersion(p entql.Int32P) {
 // WhereLastSyncedVersion applies the entql int32 predicate on the last_synced_version field.
 func (f *RoleMetadataFilter) WhereLastSyncedVersion(p entql.Int32P) {
 	f.Where(p.Field(rolemetadata.FieldLastSyncedVersion))
+}
+
+// WhereLastSyncedAt applies the entql time.Time predicate on the last_synced_at field.
+func (f *RoleMetadataFilter) WhereLastSyncedAt(p entql.TimeP) {
+	f.Where(p.Field(rolemetadata.FieldLastSyncedAt))
+}
+
+// WhereSyncPolicy applies the entql string predicate on the sync_policy field.
+func (f *RoleMetadataFilter) WhereSyncPolicy(p entql.StringP) {
+	f.Where(p.Field(rolemetadata.FieldSyncPolicy))
+}
+
+// WhereScope applies the entql string predicate on the scope field.
+func (f *RoleMetadataFilter) WhereScope(p entql.StringP) {
+	f.Where(p.Field(rolemetadata.FieldScope))
 }
 
 // WhereCustomOverrides applies the entql json.RawMessage predicate on the custom_overrides field.

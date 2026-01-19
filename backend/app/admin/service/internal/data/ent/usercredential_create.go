@@ -315,7 +315,9 @@ func (_c *UserCredentialCreate) Mutation() *UserCredentialMutation {
 
 // Save creates the UserCredential in the database.
 func (_c *UserCredentialCreate) Save(ctx context.Context) (*UserCredential, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -342,7 +344,11 @@ func (_c *UserCredentialCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *UserCredentialCreate) defaults() {
+func (_c *UserCredentialCreate) defaults() error {
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := usercredential.DefaultTenantID
+		_c.mutation.SetTenantID(v)
+	}
 	if _, ok := _c.mutation.IdentityType(); !ok {
 		v := usercredential.DefaultIdentityType
 		_c.mutation.SetIdentityType(v)
@@ -359,6 +365,7 @@ func (_c *UserCredentialCreate) defaults() {
 		v := usercredential.DefaultStatus
 		_c.mutation.SetStatus(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

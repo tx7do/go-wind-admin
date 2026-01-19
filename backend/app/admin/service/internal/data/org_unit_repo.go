@@ -102,8 +102,8 @@ func (r *OrgUnitRepo) List(ctx context.Context, req *paginationV1.PagingRequest)
 
 	entities, err := builder.All(ctx)
 	if err != nil {
-		r.log.Errorf("query list failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query list failed")
+		r.log.Errorf("query org unit list failed: %s", err.Error())
+		return nil, userV1.ErrorInternalServerError("query org unit list failed")
 	}
 
 	sort.SliceStable(entities, func(i, j int) bool {
@@ -211,13 +211,13 @@ func (r *OrgUnitRepo) Create(ctx context.Context, req *userV1.CreateOrgUnitReque
 	}
 
 	builder := r.entClient.Client().OrgUnit.Create().
+		SetNillableTenantID(req.Data.TenantId).
 		SetName(req.Data.GetName()).
 		SetNillableCode(req.Data.Code).
 		SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 		SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
 		SetNillablePath(req.Data.Path).
 		SetNillableParentID(req.Data.ParentId).
-		SetNillableTenantID(req.Data.TenantId).
 		SetNillableSortOrder(req.Data.SortOrder).
 		SetNillableLeaderID(req.Data.LeaderId).
 		SetNillableDescription(req.Data.Description).

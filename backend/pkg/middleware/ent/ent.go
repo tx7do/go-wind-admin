@@ -4,8 +4,9 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/middleware"
+	"github.com/tx7do/go-crud/viewer"
 
-	"go-wind-admin/pkg/entgo/viewer"
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/metadata"
 )
 
@@ -18,13 +19,13 @@ func Server() middleware.Middleware {
 				return handler(ctx, req)
 			}
 
-			userViewer := viewer.NewUserViewer(
+			userViewer := appViewer.NewUserViewer(
 				data.GetUserID(),
 				data.GetTenantID(),
 				data.GetOrgUnitID(),
 				data.GetDataScope(),
 			)
-			ctx = viewer.NewContext(ctx, userViewer)
+			ctx = viewer.WithContext(ctx, userViewer)
 
 			return handler(ctx, req)
 		}

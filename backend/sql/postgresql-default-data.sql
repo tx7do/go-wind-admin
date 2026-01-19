@@ -35,7 +35,7 @@ SELECT setval('sys_permissions_id_seq', (SELECT MAX(id) FROM sys_permissions));
 
 -- 默认的角色
 INSERT INTO public.sys_roles(id, tenant_id, sort_order, name, code, status, is_protected, description, created_at)
-VALUES (1, 0, 1, '平台管理员', 'platform_admin', 'ON', true, '拥有系统所有功能的操作权限，可管理租户、用户、角色及所有资源', now())
+VALUES (1, 0, 1, '平台管理员', 'platform:admin', 'ON', true, '拥有系统所有功能的操作权限，可管理租户、用户、角色及所有资源', now())
 ;
 SELECT setval('sys_roles_id_seq', (SELECT MAX(id) FROM sys_roles));
 

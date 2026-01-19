@@ -219,7 +219,9 @@ func (_c *DictTypeCreate) Mutation() *DictTypeMutation {
 
 // Save creates the DictType in the database.
 func (_c *DictTypeCreate) Save(ctx context.Context) (*DictType, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -246,7 +248,7 @@ func (_c *DictTypeCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *DictTypeCreate) defaults() {
+func (_c *DictTypeCreate) defaults() error {
 	if _, ok := _c.mutation.IsEnabled(); !ok {
 		v := dicttype.DefaultIsEnabled
 		_c.mutation.SetIsEnabled(v)
@@ -255,6 +257,11 @@ func (_c *DictTypeCreate) defaults() {
 		v := dicttype.DefaultSortOrder
 		_c.mutation.SetSortOrder(v)
 	}
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := dicttype.DefaultTenantID
+		_c.mutation.SetTenantID(v)
+	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

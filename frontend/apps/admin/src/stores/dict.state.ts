@@ -1,11 +1,14 @@
+import { useUserStore } from '@vben/stores';
+
 import { defineStore } from 'pinia';
 
 import { createDictServiceClient } from '#/generated/api/admin/service/v1';
-import { makeQueryString, makeUpdateMask } from '#/utils/query';
+import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 export const useDictStore = defineStore('dict', () => {
   const service = createDictServiceClient(requestClientRequestHandler);
+  const userStore = useUserStore();
 
   /**
    * 查询字典类型列表
@@ -21,8 +24,8 @@ export const useDictStore = defineStore('dict', () => {
     return await service.ListDictType({
       // @ts-ignore proto generated code is error.
       fieldMask,
-      orderBy: orderBy ?? [],
-      query: makeQueryString(formValues ?? null),
+      orderBy: makeOrderBy(orderBy),
+      query: makeQueryString(formValues, userStore.isTenantUser()),
       page: paging?.page,
       pageSize: paging?.pageSize,
       noPaging,
@@ -43,8 +46,8 @@ export const useDictStore = defineStore('dict', () => {
     return await service.ListDictEntry({
       // @ts-ignore proto generated code is error.
       fieldMask,
-      orderBy: orderBy ?? [],
-      query: makeQueryString(formValues ?? null),
+      orderBy: makeOrderBy(orderBy),
+      query: makeQueryString(formValues, userStore.isTenantUser()),
       page: paging?.page,
       pageSize: paging?.pageSize,
       noPaging,

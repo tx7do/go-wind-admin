@@ -224,7 +224,9 @@ func (_c *TaskCreate) Mutation() *TaskMutation {
 
 // Save creates the Task in the database.
 func (_c *TaskCreate) Save(ctx context.Context) (*Task, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -251,7 +253,11 @@ func (_c *TaskCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *TaskCreate) defaults() {
+func (_c *TaskCreate) defaults() error {
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := task.DefaultTenantID
+		_c.mutation.SetTenantID(v)
+	}
 	if _, ok := _c.mutation.GetType(); !ok {
 		v := task.DefaultType
 		_c.mutation.SetType(v)
@@ -260,6 +266,7 @@ func (_c *TaskCreate) defaults() {
 		v := task.DefaultEnable
 		_c.mutation.SetEnable(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

@@ -149,6 +149,7 @@ func (r *MembershipRoleRepo) AssignMembershipRoles(ctx context.Context,
 
 		rm := tx.MembershipRole.
 			Create().
+			SetNillableTenantID(data.TenantId).
 			SetMembershipID(data.GetMembershipId()).
 			SetRoleID(data.GetRoleId()).
 			SetNillableStatus(r.statusConverter.ToEntity(data.Status)).

@@ -1,6 +1,7 @@
 import { computed } from 'vue';
 
 import { $t } from '@vben/locales';
+import { useUserStore } from '@vben/stores';
 
 import { defineStore } from 'pinia';
 
@@ -10,11 +11,12 @@ import {
   type auditservicev1_LoginAuditLog_RiskLevel as LoginAuditLog_RiskLevel,
   type auditservicev1_LoginAuditLog_Status as LoginAuditLog_Status,
 } from '#/generated/api/admin/service/v1';
-import { makeQueryString } from '#/utils/query';
+import { makeOrderBy, makeQueryString } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 export const useLoginAuditLogStore = defineStore('login-audit-log', () => {
   const service = createLoginAuditLogServiceClient(requestClientRequestHandler);
+  const userStore = useUserStore();
 
   /**
    * 查询登录审计日志列表
@@ -30,8 +32,8 @@ export const useLoginAuditLogStore = defineStore('login-audit-log', () => {
     return await service.List({
       // @ts-ignore proto generated code is error.
       fieldMask,
-      orderBy: orderBy ?? [],
-      query: makeQueryString(formValues ?? null),
+      orderBy: makeOrderBy(orderBy),
+      query: makeQueryString(formValues, userStore.isTenantUser()),
       page: paging?.page,
       pageSize: paging?.pageSize,
       noPaging,
@@ -80,38 +82,44 @@ export function successToNameWithStatusCode(
 
 // 通用色值常量
 const COLORS = {
-  neutral: '#6c757d', // 中性灰（未知/默认）
-  success: '#28a745', // 成功绿（低风险/登录成功）
-  warning: '#fd7e14', // 警告橙（验证中/会话过期/中风险）
-  danger: '#dc3545', // 危险红（失败/高风险）
-  info: '#17a2b8', // 信息蓝（登出等正常操作）
+  neutral: '#86909C', // 中性灰（未知/默认）
+  success: '#1F7A34', // 成功绿（低风险/登录成功）
+  warning: '#FA8C16', // 警告橙（验证中/会话过期/中风险）
+  danger: '#D32F2F', // 危险红（失败/高风险）
+  info: '#1890FF', // 信息蓝（登出等正常操作）
 };
 
+// 登录审计日志状态-颜色映射（语义严格对齐，视觉统一）
 const LOGIN_AUDIT_LOG_STATUS_COLOR_MAP: Record<LoginAuditLog_Status, string> = {
-  STATUS_UNSPECIFIED: COLORS.neutral,
-  SUCCESS: COLORS.success,
-  FAILED: COLORS.danger,
-  PARTIAL: COLORS.warning,
+  STATUS_UNSPECIFIED: COLORS.neutral, // 未定义状态：中性灰兜底
+  SUCCESS: COLORS.success, // 登录成功：成功绿
+  FAILED: COLORS.danger, // 登录失败：危险红（高风险明确标识）
+  PARTIAL: COLORS.warning, // 部分成功（如权限部分授予）：警告橙
+  LOCKED: COLORS.warning, // 账号锁定：警告橙（中风险，与其他警告状态统一）
 };
 
+// 登录审计日志操作类型-颜色映射（按操作风险等级分类）
 const LOGIN_AUDIT_LOG_ACTION_TYPE_COLOR_MAP: Record<
   LoginAuditLog_ActionType,
   string
 > = {
-  ACTION_TYPE_UNSPECIFIED: COLORS.neutral,
-  LOGIN: COLORS.success,
-  LOGOUT: COLORS.info,
-  SESSION_EXPIRED: COLORS.warning,
+  ACTION_TYPE_UNSPECIFIED: COLORS.neutral, // 未定义操作：中性灰兜底
+  LOGIN: COLORS.success, // 登录操作（成功）：成功绿
+  LOGOUT: COLORS.info, // 登出操作（正常）：信息蓝
+  SESSION_EXPIRED: COLORS.warning, // 会话过期（需注意）：警告橙
+  KICKED_OUT: COLORS.warning, // 被踢出（异常操作）：警告橙
+  PASSWORD_RESET: COLORS.warning, // 密码重置（敏感操作）：警告橙
 };
 
+// 登录审计日志风险等级-颜色映射（按风险等级语义绑定，直观区分风险程度）
 const LOGIN_AUDIT_LOG_RISK_LEVEL_COLOR_MAP: Record<
   LoginAuditLog_RiskLevel,
   string
 > = {
-  RISK_LEVEL_UNSPECIFIED: COLORS.neutral,
-  LOW: COLORS.success,
-  MEDIUM: COLORS.warning,
-  HIGH: COLORS.danger,
+  RISK_LEVEL_UNSPECIFIED: COLORS.neutral, // 未定义风险：中性灰兜底
+  LOW: COLORS.success, // 低风险：成功绿（与低风险操作语义一致）
+  MEDIUM: COLORS.warning, // 中风险：警告橙（需关注但非紧急）
+  HIGH: COLORS.danger, // 高风险：危险红（需立即处理）
 };
 
 /**

@@ -3,6 +3,10 @@
 package rolemetadata
 
 import (
+	"fmt"
+	userpb "go-wind-admin/api/gen/go/user/service/v1"
+
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 )
 
@@ -23,6 +27,8 @@ const (
 	FieldUpdatedBy = "updated_by"
 	// FieldDeletedBy holds the string denoting the deleted_by field in the database.
 	FieldDeletedBy = "deleted_by"
+	// FieldTenantID holds the string denoting the tenant_id field in the database.
+	FieldTenantID = "tenant_id"
 	// FieldRoleID holds the string denoting the role_id field in the database.
 	FieldRoleID = "role_id"
 	// FieldIsTemplate holds the string denoting the is_template field in the database.
@@ -33,6 +39,12 @@ const (
 	FieldTemplateVersion = "template_version"
 	// FieldLastSyncedVersion holds the string denoting the last_synced_version field in the database.
 	FieldLastSyncedVersion = "last_synced_version"
+	// FieldLastSyncedAt holds the string denoting the last_synced_at field in the database.
+	FieldLastSyncedAt = "last_synced_at"
+	// FieldSyncPolicy holds the string denoting the sync_policy field in the database.
+	FieldSyncPolicy = "sync_policy"
+	// FieldScope holds the string denoting the scope field in the database.
+	FieldScope = "scope"
 	// FieldCustomOverrides holds the string denoting the custom_overrides field in the database.
 	FieldCustomOverrides = "custom_overrides"
 	// Table holds the table name of the rolemetadata in the database.
@@ -48,11 +60,15 @@ var Columns = []string{
 	FieldCreatedBy,
 	FieldUpdatedBy,
 	FieldDeletedBy,
+	FieldTenantID,
 	FieldRoleID,
 	FieldIsTemplate,
 	FieldTemplateFor,
 	FieldTemplateVersion,
 	FieldLastSyncedVersion,
+	FieldLastSyncedAt,
+	FieldSyncPolicy,
+	FieldScope,
 	FieldCustomOverrides,
 }
 
@@ -66,16 +82,78 @@ func ValidColumn(column string) bool {
 	return false
 }
 
+// Note that the variables below are initialized by the runtime
+// package on the initialization of the application. Therefore,
+// it should be imported in the main as follows:
+//
+//	import _ "go-wind-admin/app/admin/service/internal/data/ent/runtime"
 var (
+	Hooks  [2]ent.Hook
+	Policy ent.Policy
+	// DefaultTenantID holds the default value on creation for the "tenant_id" field.
+	DefaultTenantID uint32
 	// DefaultIsTemplate holds the default value on creation for the "is_template" field.
 	DefaultIsTemplate bool
 	// DefaultTemplateVersion holds the default value on creation for the "template_version" field.
 	DefaultTemplateVersion int32
-	// DefaultLastSyncedVersion holds the default value on creation for the "last_synced_version" field.
-	DefaultLastSyncedVersion int32
+	// DefaultCustomOverrides holds the default value on creation for the "custom_overrides" field.
+	DefaultCustomOverrides *userpb.RoleOverride
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
+
+// SyncPolicy defines the type for the "sync_policy" enum field.
+type SyncPolicy string
+
+// SyncPolicyAuto is the default value of the SyncPolicy enum.
+const DefaultSyncPolicy = SyncPolicyAuto
+
+// SyncPolicy values.
+const (
+	SyncPolicyAuto    SyncPolicy = "AUTO"
+	SyncPolicyManual  SyncPolicy = "MANUAL"
+	SyncPolicyBlocked SyncPolicy = "BLOCKED"
+)
+
+func (sp SyncPolicy) String() string {
+	return string(sp)
+}
+
+// SyncPolicyValidator is a validator for the "sync_policy" field enum values. It is called by the builders before save.
+func SyncPolicyValidator(sp SyncPolicy) error {
+	switch sp {
+	case SyncPolicyAuto, SyncPolicyManual, SyncPolicyBlocked:
+		return nil
+	default:
+		return fmt.Errorf("rolemetadata: invalid enum value for sync_policy field: %q", sp)
+	}
+}
+
+// Scope defines the type for the "scope" enum field.
+type Scope string
+
+// ScopeTenant is the default value of the Scope enum.
+const DefaultScope = ScopeTenant
+
+// Scope values.
+const (
+	ScopePlatform Scope = "PLATFORM"
+	ScopeTenant   Scope = "TENANT"
+)
+
+func (s Scope) String() string {
+	return string(s)
+}
+
+// ScopeValidator is a validator for the "scope" field enum values. It is called by the builders before save.
+func ScopeValidator(s Scope) error {
+	switch s {
+	case ScopePlatform, ScopeTenant:
+		return nil
+	default:
+		return fmt.Errorf("rolemetadata: invalid enum value for scope field: %q", s)
+	}
+}
 
 // OrderOption defines the ordering options for the RoleMetadata queries.
 type OrderOption func(*sql.Selector)
@@ -115,6 +193,11 @@ func ByDeletedBy(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDeletedBy, opts...).ToFunc()
 }
 
+// ByTenantID orders the results by the tenant_id field.
+func ByTenantID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTenantID, opts...).ToFunc()
+}
+
 // ByRoleID orders the results by the role_id field.
 func ByRoleID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldRoleID, opts...).ToFunc()
@@ -138,4 +221,19 @@ func ByTemplateVersion(opts ...sql.OrderTermOption) OrderOption {
 // ByLastSyncedVersion orders the results by the last_synced_version field.
 func ByLastSyncedVersion(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastSyncedVersion, opts...).ToFunc()
+}
+
+// ByLastSyncedAt orders the results by the last_synced_at field.
+func ByLastSyncedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastSyncedAt, opts...).ToFunc()
+}
+
+// BySyncPolicy orders the results by the sync_policy field.
+func BySyncPolicy(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSyncPolicy, opts...).ToFunc()
+}
+
+// ByScope orders the results by the scope field.
+func ByScope(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldScope, opts...).ToFunc()
 }

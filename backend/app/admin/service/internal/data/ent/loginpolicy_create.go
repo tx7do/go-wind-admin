@@ -203,7 +203,9 @@ func (_c *LoginPolicyCreate) Mutation() *LoginPolicyMutation {
 
 // Save creates the LoginPolicy in the database.
 func (_c *LoginPolicyCreate) Save(ctx context.Context) (*LoginPolicy, error) {
-	_c.defaults()
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -230,7 +232,11 @@ func (_c *LoginPolicyCreate) ExecX(ctx context.Context) {
 }
 
 // defaults sets the default values of the builder before save.
-func (_c *LoginPolicyCreate) defaults() {
+func (_c *LoginPolicyCreate) defaults() error {
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := loginpolicy.DefaultTenantID
+		_c.mutation.SetTenantID(v)
+	}
 	if _, ok := _c.mutation.GetType(); !ok {
 		v := loginpolicy.DefaultType
 		_c.mutation.SetType(v)
@@ -239,6 +245,7 @@ func (_c *LoginPolicyCreate) defaults() {
 		v := loginpolicy.DefaultMethod
 		_c.mutation.SetMethod(v)
 	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.

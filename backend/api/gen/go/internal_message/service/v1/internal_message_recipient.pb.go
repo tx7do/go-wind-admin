@@ -94,6 +94,8 @@ type InternalMessageRecipient struct {
 	ReadAt          *timestamppb.Timestamp           `protobuf:"bytes,6,opt,name=read_at,json=readAt,proto3,oneof" json:"read_at,omitempty"`                                                     // 用户阅读消息的时间
 	Title           *string                          `protobuf:"bytes,10,opt,name=title,proto3,oneof" json:"title,omitempty"`                                                                    // 消息标题
 	Content         *string                          `protobuf:"bytes,11,opt,name=content,proto3,oneof" json:"content,omitempty"`                                                                // 消息内容
+	TenantId        *uint32                          `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                             // 租户ID，0代表系统全局角色
+	TenantName      *string                          `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`                                        // 租户名称
 	CreatedBy       *uint32                          `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                         // 创建者ID
 	UpdatedBy       *uint32                          `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                         // 更新者ID
 	DeletedBy       *uint32                          `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                         // 删除者用户ID
@@ -186,6 +188,20 @@ func (x *InternalMessageRecipient) GetTitle() string {
 func (x *InternalMessageRecipient) GetContent() string {
 	if x != nil && x.Content != nil {
 		return *x.Content
+	}
+	return ""
+}
+
+func (x *InternalMessageRecipient) GetTenantId() uint32 {
+	if x != nil && x.TenantId != nil {
+		return *x.TenantId
+	}
+	return 0
+}
+
+func (x *InternalMessageRecipient) GetTenantName() string {
+	if x != nil && x.TenantName != nil {
+		return *x.TenantName
 	}
 	return ""
 }
@@ -784,8 +800,7 @@ var File_internal_message_service_v1_internal_message_recipient_proto protorefle
 
 const file_internal_message_service_v1_internal_message_recipient_proto_rawDesc = "" +
 	"\n" +
-	"<internal_message/service/v1/internal_message_recipient.proto\x12\x1binternal_message.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x95\n" +
-	"\n" +
+	"<internal_message/service/v1/internal_message_recipient.proto\x12\x1binternal_message.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xbb\v\n" +
 	"\x18InternalMessageRecipient\x12#\n" +
 	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b记录IDH\x00R\x02id\x88\x01\x01\x12;\n" +
 	"\n" +
@@ -797,20 +812,23 @@ const file_internal_message_service_v1_internal_message_recipient_proto_rawDesc 
 	"\aread_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB!\xbaG\x1e\x92\x02\x1b用户阅读消息的时间H\x05R\x06readAt\x88\x01\x01\x12-\n" +
 	"\x05title\x18\n" +
 	" \x01(\tB\x12\xbaG\x0f\x92\x02\f消息标题H\x06R\x05title\x88\x01\x01\x121\n" +
-	"\acontent\x18\v \x01(\tB\x12\xbaG\x0f\x92\x02\f消息内容H\aR\acontent\x88\x01\x01\x125\n" +
+	"\acontent\x18\v \x01(\tB\x12\xbaG\x0f\x92\x02\f消息内容H\aR\acontent\x88\x01\x01\x12L\n" +
+	"\ttenant_id\x18( \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\bR\btenantId\x88\x01\x01\x128\n" +
+	"\vtenant_name\x18) \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\tR\n" +
+	"tenantName\x88\x01\x01\x125\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\bR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\n" +
+	"R\tcreatedBy\x88\x01\x01\x125\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\tR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\vR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\n" +
-	"R\tdeletedBy\x88\x01\x01\x12S\n" +
+	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\fR\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\vR\tcreatedAt\x88\x01\x01\x12S\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f创建时间H\rR\tcreatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\fR\tupdatedAt\x88\x01\x01\x12S\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f更新时间H\x0eR\tupdatedAt\x88\x01\x01\x12S\n" +
 	"\n" +
-	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\rR\tdeletedAt\x88\x01\x01\"D\n" +
+	"deleted_at\x18\xca\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x12\xbaG\x0f\x92\x02\f删除时间H\x0fR\tdeletedAt\x88\x01\x01\"D\n" +
 	"\x06Status\x12\b\n" +
 	"\x04SENT\x10\x00\x12\f\n" +
 	"\bRECEIVED\x10\x01\x12\b\n" +
@@ -826,7 +844,10 @@ const file_internal_message_service_v1_internal_message_recipient_proto_rawDesc 
 	"\b_read_atB\b\n" +
 	"\x06_titleB\n" +
 	"\n" +
-	"\b_contentB\r\n" +
+	"\b_contentB\f\n" +
+	"\n" +
+	"_tenant_idB\x0e\n" +
+	"\f_tenant_nameB\r\n" +
 	"\v_created_byB\r\n" +
 	"\v_updated_byB\r\n" +
 	"\v_deleted_byB\r\n" +

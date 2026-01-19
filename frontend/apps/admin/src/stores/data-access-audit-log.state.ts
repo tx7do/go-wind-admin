@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
 
 import { createDataAccessAuditLogServiceClient } from '#/generated/api/admin/service/v1';
-import { makeQueryString } from '#/utils/query';
+import { makeOrderBy, makeQueryString } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
+import {useUserStore} from "@vben/stores";
 
 export const useDataAccessAuditLogStore = defineStore(
   'data-access-audit-log',
@@ -10,6 +11,8 @@ export const useDataAccessAuditLogStore = defineStore(
     const service = createDataAccessAuditLogServiceClient(
       requestClientRequestHandler,
     );
+
+    const userStore = useUserStore();
 
     /**
      * 查询数据访问审计日志列表
@@ -25,8 +28,8 @@ export const useDataAccessAuditLogStore = defineStore(
       return await service.List({
         // @ts-ignore proto generated code is error.
         fieldMask,
-        orderBy: orderBy ?? [],
-        query: makeQueryString(formValues ?? null),
+        orderBy: makeOrderBy(orderBy),
+        query: makeQueryString(formValues, userStore.isTenantUser()),
         page: paging?.page,
         pageSize: paging?.pageSize,
         noPaging,

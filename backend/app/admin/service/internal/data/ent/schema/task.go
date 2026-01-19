@@ -7,7 +7,11 @@ import (
 	"entgo.io/ent/schema"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
+
 	"github.com/tx7do/go-crud/entgo/mixin"
+
+	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
+	"go-wind-admin/app/admin/service/internal/data/ent/rule"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 )
@@ -83,6 +87,13 @@ func (Task) Mixin() []ent.Mixin {
 		mixin.OperatorID{},
 		mixin.Remark{},
 		mixin.TenantID{},
+	}
+}
+
+// Policy for all schemas that embed Task.
+func (Task) Policy() ent.Policy {
+	return privacy.Policy{
+		Query: rule.TenantQueryPolicy(),
 	}
 }
 

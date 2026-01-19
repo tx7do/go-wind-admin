@@ -4,6 +4,7 @@ package ent
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/internalmessagerecipient"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
@@ -329,6 +330,12 @@ func (_q *InternalMessageRecipientQuery) prepareQuery(ctx context.Context) error
 			return err
 		}
 		_q.sql = prev
+	}
+	if internalmessagerecipient.Policy == nil {
+		return errors.New("ent: uninitialized internalmessagerecipient.Policy (forgotten import ent/runtime?)")
+	}
+	if err := internalmessagerecipient.Policy.EvalQuery(ctx, _q); err != nil {
+		return err
 	}
 	return nil
 }

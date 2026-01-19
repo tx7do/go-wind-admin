@@ -185,6 +185,9 @@ func (_c *PermissionAuditLogCreate) Mutation() *PermissionAuditLogMutation {
 
 // Save creates the PermissionAuditLog in the database.
 func (_c *PermissionAuditLogCreate) Save(ctx context.Context) (*PermissionAuditLog, error) {
+	if err := _c.defaults(); err != nil {
+		return nil, err
+	}
 	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
@@ -208,6 +211,15 @@ func (_c *PermissionAuditLogCreate) ExecX(ctx context.Context) {
 	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
+}
+
+// defaults sets the default values of the builder before save.
+func (_c *PermissionAuditLogCreate) defaults() error {
+	if _, ok := _c.mutation.TenantID(); !ok {
+		v := permissionauditlog.DefaultTenantID
+		_c.mutation.SetTenantID(v)
+	}
+	return nil
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -877,6 +889,7 @@ func (_c *PermissionAuditLogCreateBulk) Save(ctx context.Context) ([]*Permission
 	for i := range _c.builders {
 		func(i int, root context.Context) {
 			builder := _c.builders[i]
+			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*PermissionAuditLogMutation)
 				if !ok {
