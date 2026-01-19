@@ -73,7 +73,7 @@
         "address": "住址",
         "roleNames": "角色列表",
         "tenantName": "所属租户",
-        "orgName": "所属组织",
+        "orgUnitName": "所属组织",
         "positionName": "所属岗位",
         "lastLoginAt": "最后登录时间",
         "lastLoginIp": "最后登录IP"

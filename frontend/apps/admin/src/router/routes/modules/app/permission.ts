@@ -14,7 +14,7 @@ const permission: RouteRecordRaw[] = [
       icon: 'lucide:shield-check',
       title: $t('menu.permission.moduleName'),
       keepAlive: true,
-      authority: ['platform:admin'],
+      authority: ['platform:admin', 'tenant:manager'],
     },
     children: [
       {
@@ -38,7 +38,7 @@ const permission: RouteRecordRaw[] = [
           icon: 'lucide:shield-user',
           title: $t('menu.permission.role'),
           hideInTab: false,
-          authority: ['platform:admin'],
+          authority: ['platform:admin', 'tenant:manager'],
         },
         component: () => import('#/views/app/permission/role/index.vue'),
       },

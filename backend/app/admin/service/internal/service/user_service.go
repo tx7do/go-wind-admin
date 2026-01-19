@@ -81,12 +81,25 @@ func (s *UserService) initUserNameSetMap(
 		if v.TenantId != nil {
 			(*tenantSet)[v.GetTenantId()] = nil
 		}
+
 		if v.OrgUnitId != nil {
 			(*orgUnitSet)[v.GetOrgUnitId()] = nil
 		}
+		if len(v.OrgUnitIds) > 0 {
+			for _, orgID := range v.OrgUnitIds {
+				(*orgUnitSet)[orgID] = nil
+			}
+		}
+
 		if v.PositionId != nil {
 			(*posSet)[v.GetPositionId()] = nil
 		}
+		if len(v.PositionIds) > 0 {
+			for _, posID := range v.PositionIds {
+				(*posSet)[posID] = nil
+			}
+		}
+
 		for _, roleId := range v.RoleIds {
 			(*roleSet)[roleId] = nil
 		}
@@ -132,6 +145,11 @@ func (s *UserService) List(ctx context.Context, req *paginationV1.PagingRequest)
 			if resp.Items[i].OrgUnitId != nil && resp.Items[i].GetOrgUnitId() == k {
 				resp.Items[i].OrgUnitName = &v.UserName
 			}
+			for _, orgIDs := range resp.Items[i].OrgUnitIds {
+				if orgIDs == k {
+					resp.Items[i].OrgUnitNames = append(resp.Items[i].OrgUnitNames, v.UserName)
+				}
+			}
 		}
 	}
 
@@ -143,6 +161,11 @@ func (s *UserService) List(ctx context.Context, req *paginationV1.PagingRequest)
 		for i := 0; i < len(resp.Items); i++ {
 			if resp.Items[i].PositionId != nil && resp.Items[i].GetPositionId() == k {
 				resp.Items[i].PositionName = &v.UserName
+			}
+			for _, posID := range resp.Items[i].PositionIds {
+				if posID == k {
+					resp.Items[i].PositionNames = append(resp.Items[i].PositionNames, v.UserName)
+				}
 			}
 		}
 	}
@@ -183,6 +206,18 @@ func (s *UserService) fillUserInfo(ctx context.Context, user *userV1.User) error
 			s.log.Warnf("Get user orgUnit failed: %v", err)
 		}
 	}
+	if len(user.OrgUnitIds) > 0 {
+		orgUnits, err := s.orgUnitRepo.ListOrgUnitsByIds(ctx, user.OrgUnitIds)
+		if err == nil && orgUnits != nil {
+			var orgUnitNames []string
+			for _, orgUnit := range orgUnits {
+				orgUnitNames = append(orgUnitNames, orgUnit.GetName())
+			}
+			user.OrgUnitNames = orgUnitNames
+		} else {
+			s.log.Warnf("Get user orgUnits failed: %v", err)
+		}
+	}
 
 	if user.PositionId != nil {
 		position, err := s.positionRepo.Get(ctx, &userV1.GetPositionRequest{QueryBy: &userV1.GetPositionRequest_Id{Id: user.GetPositionId()}})
@@ -190,6 +225,18 @@ func (s *UserService) fillUserInfo(ctx context.Context, user *userV1.User) error
 			user.PositionName = position.Name
 		} else {
 			s.log.Warnf("Get user position failed: %v", err)
+		}
+	}
+	if len(user.PositionIds) > 0 {
+		positions, err := s.positionRepo.ListPositionByIds(ctx, user.PositionIds)
+		if err == nil && positions != nil {
+			var positionNames []string
+			for _, position := range positions {
+				positionNames = append(positionNames, position.GetName())
+			}
+			user.PositionNames = positionNames
+		} else {
+			s.log.Warnf("Get user positions failed: %v", err)
 		}
 	}
 

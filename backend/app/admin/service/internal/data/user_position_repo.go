@@ -209,7 +209,7 @@ func (r *UserPositionRepo) ListPositionIDs(ctx context.Context, userID uint32, e
 		return []uint32{}, nil
 	}
 
-	q := r.entClient.Client().UserPosition.Query().
+	q := r.entClient.Client().Debug().UserPosition.Query().
 		Where(
 			userposition.UserIDEQ(userID),
 		)

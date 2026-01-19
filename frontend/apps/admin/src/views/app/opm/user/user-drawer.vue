@@ -98,7 +98,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     },
     {
       component: 'ApiTreeSelect',
-      fieldName: 'orgId',
+      fieldName: 'orgUnitId',
       label: $t('page.user.form.orgUnit'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
@@ -117,10 +117,10 @@ const [BaseForm, baseFormApi] = useVbenForm({
           orgUnitList.value = result.items ?? [];
           return result.items;
         },
-        onChange: async (orgId: any) => {
-          console.log('org onChange:', orgId);
+        onChange: async (orgUnitId: any) => {
+          console.log('org onChange:', orgUnitId);
 
-          if (!orgId) {
+          if (!orgUnitId) {
             await baseFormApi.setValues(
               {
                 orgUnitId: undefined,
@@ -290,8 +290,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
       // 为表单赋值
       if (data.value.row !== undefined) {
-        if (data.value?.row?.orgId !== undefined) {
-          data.value.row.orgId = data.value?.row?.orgId.toString();
+        if (data.value?.row?.orgUnitId !== undefined) {
+          data.value.row.orgUnitId = data.value?.row?.orgUnitId.toString();
         }
         baseFormApi.setValues(data.value?.row);
       }

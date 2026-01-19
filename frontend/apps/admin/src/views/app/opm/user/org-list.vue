@@ -28,6 +28,11 @@ const toolbarList = [
     label: $t('ui.tree.collapse_all'),
     handler: handleMenuCollapseAll,
   },
+  {
+    value: TreeActionEnum.UNSELECT_ALL,
+    label: $t('ui.tree.unselect_all'),
+    handler: handleMenuUnselectedAll,
+  },
 ];
 
 const expandedKeys = ref<(number | string)[]>([]);
@@ -36,6 +41,7 @@ const searchValue = ref<string>('');
 const autoExpandParent = ref<boolean>(true);
 
 const treeData = ref<TreeProps['treeData']>([]);
+const selectedKeys = ref<(number | string)[]>([]);
 
 const tenantOptions = computed<DefaultOptionType[]>(() =>
   (userViewStore.tenantList.items ?? []).map((t: any) => ({
@@ -110,6 +116,13 @@ function handleMenuCollapseAll(_data: any) {
 }
 
 /**
+ * 取消选中所有节点
+ */
+function handleMenuUnselectedAll(_data: any) {
+  clearSelection();
+}
+
+/**
  * 展开单个节点
  * @param keys
  */
@@ -124,13 +137,15 @@ const handleExpandNode = (keys: string[]) => {
  */
 function handleSelectOrgUnit(node: any) {
   console.log('selected node:', node);
-  userViewStore.setCurrentOrgUnitId(node.id);
+  userViewStore.setCurrentOrgUnitId(node ? node.id || null : null);
 }
 
 /**
  * 选中单个节点
  */
 function handleSelectNode(keys: (number | string)[], e?: any) {
+  selectedKeys.value = keys as (number | string)[];
+
   const key = keys && keys.length > 0 ? keys[0] : undefined;
   if (key === undefined) {
     handleSelectOrgUnit(null);
@@ -170,6 +185,11 @@ function handleTenantChanged(value: any) {
   console.log('Selected tenant ID:', selectedValue.value);
   userViewStore.setCurrentTenantId(value);
   fetchOrgUnits();
+}
+
+function clearSelection() {
+  selectedKeys.value = [];
+  handleSelectOrgUnit(null);
 }
 
 onMounted(async () => {
@@ -228,6 +248,8 @@ onMounted(async () => {
       :expanded-keys="expandedKeys"
       :auto-expand-parent="autoExpandParent"
       :tree-data="treeData"
+      :blockNode="true"
+      :selected-keys="selectedKeys"
       @expand="handleExpandNode"
       @select="handleSelectNode"
       class="h-full w-full"

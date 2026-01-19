@@ -438,6 +438,8 @@ func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 		item.RoleIds = roleIDs
 		item.PositionIds = positionIDs
 		item.OrgUnitIds = orgUnitIDs
+
+		//r.log.Debugf("user id=%d role_ids=%v position_ids=%v org_unit_ids=%v", item.GetId(), roleIDs, positionIDs, orgUnitIDs)
 	}
 
 	return resp, nil
@@ -864,9 +866,11 @@ func (r *userRepo) assignUserRelations(ctx context.Context, tx *ent.Tx,
 	}
 	if len(orgUnitIDs) > 0 {
 		orgUnitIDs = slice.Unique(orgUnitIDs)
+		//r.log.Debugf("assigning org unit ids: %v", orgUnitIDs)
 		var userOrgUnits []*userV1.UserOrgUnit
 		for _, orgUnitID := range orgUnitIDs {
 			userOrgUnits = append(userOrgUnits, &userV1.UserOrgUnit{
+				TenantId:   trans.Ptr(tenantID),
 				UserId:     trans.Ptr(userID),
 				OrgUnitId:  trans.Ptr(orgUnitID),
 				Status:     userV1.UserOrgUnit_ACTIVE.Enum(),
@@ -880,9 +884,11 @@ func (r *userRepo) assignUserRelations(ctx context.Context, tx *ent.Tx,
 	}
 	if len(positionIDs) > 0 {
 		positionIDs = slice.Unique(positionIDs)
+		//r.log.Debugf("assigning position ids: %v", positionIDs)
 		var userPositions []*userV1.UserPosition
 		for _, positionID := range positionIDs {
 			userPositions = append(userPositions, &userV1.UserPosition{
+				TenantId:   trans.Ptr(tenantID),
 				UserId:     trans.Ptr(userID),
 				PositionId: trans.Ptr(positionID),
 				Status:     userV1.UserPosition_ACTIVE.Enum(),

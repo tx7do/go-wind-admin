@@ -171,12 +171,14 @@ const gridOptions: VxeGridProps<User> = {
     { title: $t('page.user.table.mobile'), field: 'mobile', width: 130 },
     {
       title: $t('page.user.table.orgUnitId'),
-      field: 'orgUnitName',
+      field: 'orgUnitNames',
+      slots: { default: 'orgUnit' },
       width: 130,
     },
     {
       title: $t('page.user.table.positionId'),
-      field: 'positionName',
+      field: 'positionNames',
+      slots: { default: 'position' },
       width: 130,
     },
     {
@@ -323,6 +325,38 @@ watch(
           }"
         >
           {{ role }}
+        </a-tag>
+      </div>
+    </template>
+    <template #orgUnit="{ row }">
+      <div>
+        <a-tag
+          v-for="orgUnit in row.orgUnitNames"
+          :key="orgUnit"
+          class="mb-1 mr-1"
+          :style="{
+            backgroundColor: getRandomColor(orgUnit), // 随机背景色
+            color: '#333', // 深色文字（适配浅色背景）
+            border: 'none', // 可选：去掉边框更美观
+          }"
+        >
+          {{ orgUnit }}
+        </a-tag>
+      </div>
+    </template>
+    <template #position="{ row }">
+      <div>
+        <a-tag
+          v-for="position in row.positionNames"
+          :key="position"
+          class="mb-1 mr-1"
+          :style="{
+            backgroundColor: getRandomColor(position), // 随机背景色
+            color: '#333', // 深色文字（适配浅色背景）
+            border: 'none', // 可选：去掉边框更美观
+          }"
+        >
+          {{ position }}
         </a-tag>
       </div>
     </template>
