@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: audit/service/v1/common.proto
 
-package servicev1
+package auditpb
 
 import (
 	_ "github.com/envoyproxy/protoc-gen-validate/validate"
@@ -276,8 +276,8 @@ const file_audit_service_v1_common_proto_rawDesc = "" +
 	"\aDAYS_90\x10\x01\x12\f\n" +
 	"\bDAYS_180\x10\x02\x12\f\n" +
 	"\bDAYS_365\x10\x03\x12\r\n" +
-	"\tPERMANENT\x10\x04B\xba\x01\n" +
-	"\x14com.audit.service.v1B\vCommonProtoP\x01Z3go-wind-admin/api/gen/go/audit/service/v1;servicev1\xa2\x02\x03ASX\xaa\x02\x10Audit.Service.V1\xca\x02\x10Audit\\Service\\V1\xe2\x02\x1cAudit\\Service\\V1\\GPBMetadata\xea\x02\x12Audit::Service::V1b\x06proto3"
+	"\tPERMANENT\x10\x04B\xb8\x01\n" +
+	"\x14com.audit.service.v1B\vCommonProtoP\x01Z1go-wind-admin/api/gen/go/audit/service/v1;auditpb\xa2\x02\x03ASX\xaa\x02\x10Audit.Service.V1\xca\x02\x10Audit\\Service\\V1\xe2\x02\x1cAudit\\Service\\V1\\GPBMetadata\xea\x02\x12Audit::Service::V1b\x06proto3"
 
 var (
 	file_audit_service_v1_common_proto_rawDescOnce sync.Once

@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: audit/service/v1/operation_audit_log.proto
 
-package servicev1
+package auditpb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
@@ -553,8 +553,8 @@ const file_audit_service_v1_operation_audit_log_proto_rawDesc = "" +
 	"\x04data\x18\x01 \x01(\v2#.audit.service.v1.OperationAuditLogR\x04data2\xcd\x01\n" +
 	"\x18OperationAuditLogService\x12T\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a/.audit.service.v1.ListOperationAuditLogResponse\"\x00\x12[\n" +
-	"\x03Get\x12-.audit.service.v1.GetOperationAuditLogRequest\x1a#.audit.service.v1.OperationAuditLog\"\x00B\xc5\x01\n" +
-	"\x14com.audit.service.v1B\x16OperationAuditLogProtoP\x01Z3go-wind-admin/api/gen/go/audit/service/v1;servicev1\xa2\x02\x03ASX\xaa\x02\x10Audit.Service.V1\xca\x02\x10Audit\\Service\\V1\xe2\x02\x1cAudit\\Service\\V1\\GPBMetadata\xea\x02\x12Audit::Service::V1b\x06proto3"
+	"\x03Get\x12-.audit.service.v1.GetOperationAuditLogRequest\x1a#.audit.service.v1.OperationAuditLog\"\x00B\xc3\x01\n" +
+	"\x14com.audit.service.v1B\x16OperationAuditLogProtoP\x01Z1go-wind-admin/api/gen/go/audit/service/v1;auditpb\xa2\x02\x03ASX\xaa\x02\x10Audit.Service.V1\xca\x02\x10Audit\\Service\\V1\xe2\x02\x1cAudit\\Service\\V1\\GPBMetadata\xea\x02\x12Audit::Service::V1b\x06proto3"
 
 var (
 	file_audit_service_v1_operation_audit_log_proto_rawDescOnce sync.Once

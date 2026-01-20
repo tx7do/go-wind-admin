@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: audit/service/v1/data_access_audit_log.proto
 
-package servicev1
+package auditpb
 
 import (
 	_ "github.com/envoyproxy/protoc-gen-validate/validate"
@@ -609,8 +609,8 @@ const file_audit_service_v1_data_access_audit_log_proto_rawDesc = "" +
 	"\x04data\x18\x01 \x01(\v2$.audit.service.v1.DataAccessAuditLogR\x04data2\xd1\x01\n" +
 	"\x19DataAccessAuditLogService\x12U\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a0.audit.service.v1.ListDataAccessAuditLogResponse\"\x00\x12]\n" +
-	"\x03Get\x12..audit.service.v1.GetDataAccessAuditLogRequest\x1a$.audit.service.v1.DataAccessAuditLog\"\x00B\xc6\x01\n" +
-	"\x14com.audit.service.v1B\x17DataAccessAuditLogProtoP\x01Z3go-wind-admin/api/gen/go/audit/service/v1;servicev1\xa2\x02\x03ASX\xaa\x02\x10Audit.Service.V1\xca\x02\x10Audit\\Service\\V1\xe2\x02\x1cAudit\\Service\\V1\\GPBMetadata\xea\x02\x12Audit::Service::V1b\x06proto3"
+	"\x03Get\x12..audit.service.v1.GetDataAccessAuditLogRequest\x1a$.audit.service.v1.DataAccessAuditLog\"\x00B\xc4\x01\n" +
+	"\x14com.audit.service.v1B\x17DataAccessAuditLogProtoP\x01Z1go-wind-admin/api/gen/go/audit/service/v1;auditpb\xa2\x02\x03ASX\xaa\x02\x10Audit.Service.V1\xca\x02\x10Audit\\Service\\V1\xe2\x02\x1cAudit\\Service\\V1\\GPBMetadata\xea\x02\x12Audit::Service::V1b\x06proto3"
 
 var (
 	file_audit_service_v1_data_access_audit_log_proto_rawDescOnce sync.Once

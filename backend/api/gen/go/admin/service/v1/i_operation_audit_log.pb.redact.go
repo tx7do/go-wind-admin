@@ -7,7 +7,7 @@ import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
 	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	servicev1 "go-wind-admin/api/gen/go/audit/service/v1"
+	auditpb "go-wind-admin/api/gen/go/audit/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -21,7 +21,7 @@ var (
 	_ codes.Code
 	_ status.Status
 	_ pagination.Sorting
-	_ servicev1.OperationAuditLog
+	_ auditpb.OperationAuditLog
 )
 
 // RegisterRedactedOperationAuditLogServiceServer wraps the OperationAuditLogServiceServer with the redacted server and registers the service in GRPC
@@ -44,7 +44,7 @@ type redactedOperationAuditLogServiceServer struct {
 
 // List is the redacted wrapper for the actual OperationAuditLogServiceServer.List method
 // Unary RPC
-func (s *redactedOperationAuditLogServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*servicev1.ListOperationAuditLogResponse, error) {
+func (s *redactedOperationAuditLogServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*auditpb.ListOperationAuditLogResponse, error) {
 	res, err := s.srv.List(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -55,7 +55,7 @@ func (s *redactedOperationAuditLogServiceServer) List(ctx context.Context, in *p
 
 // Get is the redacted wrapper for the actual OperationAuditLogServiceServer.Get method
 // Unary RPC
-func (s *redactedOperationAuditLogServiceServer) Get(ctx context.Context, in *servicev1.GetOperationAuditLogRequest) (*servicev1.OperationAuditLog, error) {
+func (s *redactedOperationAuditLogServiceServer) Get(ctx context.Context, in *auditpb.GetOperationAuditLogRequest) (*auditpb.OperationAuditLog, error) {
 	res, err := s.srv.Get(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response

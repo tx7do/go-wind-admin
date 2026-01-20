@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: audit/service/v1/api_audit_log.proto
 
-package servicev1
+package auditpb
 
 import (
 	context "context"
