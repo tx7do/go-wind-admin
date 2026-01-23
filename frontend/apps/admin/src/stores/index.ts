@@ -12,6 +12,7 @@ export * from './file.state';
 export * from './file-transfer.state';
 export * from './internal-message.state';
 export * from './internal-message-category.state';
+export * from './language.state';
 export * from './login-audit-log';
 export * from './login-policy.state';
 export * from './menu.state';
