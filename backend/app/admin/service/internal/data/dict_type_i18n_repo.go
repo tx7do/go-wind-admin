@@ -92,9 +92,7 @@ func (r *DictTypeI18nRepo) Upsert(ctx context.Context,
 // Get 获取字典类型多语言数据
 func (r *DictTypeI18nRepo) Get(ctx context.Context, typeID uint32) (map[string]*dictV1.DictTypeI18N, error) {
 	entities, err := r.entClient.Client().DictTypeI18n.Query().
-		WithSysDictTypes(func(query *ent.DictTypeQuery) {
-			query.Where(dicttype.IDEQ(typeID))
-		}).
+		Where(dicttypei18n.HasSysDictTypesWith(dicttype.IDEQ(typeID))).
 		All(ctx)
 	if err != nil {
 		r.log.Errorf("query dict type i18n failed: %s", err.Error())

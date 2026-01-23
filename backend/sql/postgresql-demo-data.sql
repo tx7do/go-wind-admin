@@ -30,11 +30,9 @@ SELECT setval('sys_users_id_seq', (SELECT MAX(id) FROM sys_users));
 INSERT INTO public.sys_user_credentials (user_id, identity_type, identifier, credential_type, credential, status,
                                          is_primary, created_at)
 VALUES
-       -- 租户管理员（对应users表id=2）
-       (2, 'USERNAME', 'tenant_admin', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a',
-        'ENABLED', true, now()),
-       (2, 'EMAIL', 'tenant@company.com', 'PASSWORD_HASH',
-        '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', false, now()),
+    -- 租户管理员（对应users表id=2）
+    (2, 'USERNAME', 'tenant_admin', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', true, now()),
+    (2, 'EMAIL', 'tenant@company.com', 'PASSWORD_HASH', '$2a$10$yajZDX20Y40FkG0Bu4N19eXNqRizez/S9fK63.JxGkfLq.RoNKR/a', 'ENABLED', false, now()),
 ;
 SELECT setval('sys_user_credentials_id_seq', (SELECT MAX(id) FROM sys_user_credentials));
 
@@ -109,8 +107,8 @@ SELECT setval('sys_tasks_id_seq', (SELECT MAX(id) FROM sys_tasks));
 -- 登录策略
 INSERT INTO public.sys_login_policies(id, target_id, type, method, value, reason, created_at)
 VALUES
-(1, 1, 'BLACKLIST', 'IP', '127.0.0.1', '无理由', now()),
-(2, 1, 'WHITELIST', 'MAC', '00:1B:44:11:3A:B7 ', '无理由', now())
+    (1, 1, 'BLACKLIST', 'IP', '127.0.0.1', '无理由', now()),
+    (2, 1, 'WHITELIST', 'MAC', '00:1B:44:11:3A:B7 ', '无理由', now())
 ;
 SELECT setval('sys_login_policies_id_seq', (SELECT MAX(id) FROM sys_login_policies));
 
@@ -122,7 +120,8 @@ INSERT INTO public.sys_dict_types (
       (2, 'DEVICE_TYPE', 20, true, now(), now()),
       (3, 'ORDER_STATUS', 30, true, now(), now()),
       (4, 'GENDER', 40, true, now(), now()),
-      (5, 'PAYMENT_METHOD', 50, true, now(), now());
+      (5, 'PAYMENT_METHOD', 50, true, now(), now())
+;
 SELECT setval('sys_dict_types_id_seq', (SELECT MAX(id) FROM sys_dict_types));
 
 -- 插入字典类型国际化（zh-CN）
@@ -133,7 +132,14 @@ INSERT INTO public.sys_dict_type_i18n (
       (2, 'zh-CN', '设备类型', 'IoT平台接入的设备品类，新增需同步至设备接入模块', 0, now(), now()),
       (3, 'zh-CN', '订单状态', '电商订单的全生命周期状态', 0, now(), now()),
       (4, 'zh-CN', '性别', '用户性别枚举，默认未知', 0, now(), now()),
-      (5, 'zh-CN', '支付方式', '支持的支付渠道，含第三方支付和自有渠道', 0, now(), now());
+      (5, 'zh-CN', '支付方式', '支持的支付渠道，含第三方支付和自有渠道', 0, now(), now()),
+
+      (1, 'en-US', 'User Status', 'System user status management, including normal, frozen, and canceled', 0, now(), now()),
+      (2, 'en-US', 'Device Type', 'IoT device categories connected to the platform; new types must be synchronized with the device access module', 0, now(), now()),
+      (3, 'en-US', 'Order Status', 'Full lifecycle statuses for e-commerce orders', 0, now(), now()),
+      (4, 'en-US', 'Gender', 'User gender enumeration, defaulting to unknown', 0, now(), now()),
+      (5, 'en-US', 'Payment Method', 'Supported payment channels, including third-party and proprietary options', 0, now(), now())
+;
 SELECT setval('sys_dict_type_i18n_id_seq', (SELECT MAX(id) FROM sys_dict_type_i18n));
 
 -- 插入字典条目
@@ -162,7 +168,8 @@ INSERT INTO public.sys_dict_entries (
       (15, 5, 'ALIPAY', 1, 1, true, now(), now(), 0),
       (16, 5, 'WECHAT', 2, 2, true, now(), now(), 0),
       (17, 5, 'UNIONPAY', 3, 3, true, now(), now(), 0),
-      (18, 5, 'CASH', 4, 4, false, now(), now(), 0);
+      (18, 5, 'CASH', 4, 4, false, now(), now(), 0)
+;
 SELECT setval('sys_dict_entries_id_seq', (SELECT MAX(id) FROM sys_dict_entries));
 
 -- 插入字典条目国际化（zh-CN）
@@ -191,7 +198,36 @@ INSERT INTO public.sys_dict_entry_i18n (
       (15, 'zh-CN', '支付宝', '支持花呗、余额宝', 1, 0, now(), now()),
       (16, 'zh-CN', '微信支付', '需绑定微信', 2, 0, now(), now()),
       (17, 'zh-CN', '银联支付', '支持信用卡、储蓄卡', 3, 0, now(), now()),
-      (18, 'zh-CN', '现金支付', '线下支付，已废弃（2025-01停用）', 4, 0, now(), now());
+      (18, 'zh-CN', '现金支付', '线下支付，已废弃（2025-01停用）', 4, 0, now(), now()),
+
+      -- User Status
+      (1, 'en-US', 'Normal', 'User can log in and operate normally', 1, 0, now(), now()),
+      (2, 'en-US', 'Frozen', 'Temporarily frozen due to violation; requires admin to unfreeze', 2, 0, now(), now()),
+      (3, 'en-US', 'Canceled', 'User voluntarily canceled; data retained but login disabled', 3, 0, now(), now()),
+
+      -- Device Type
+      (4, 'en-US', 'Temperature & Humidity Sensor', 'Supports temperature (-20~80°C) and humidity (0~100% RH) measurement', 1, 0, now(), now()),
+      (5, 'en-US', 'Current Meter', 'Measures AC/DC current with 0.5-class accuracy', 2, 0, now(), now()),
+      (6, 'en-US', 'Gas Detector', 'Not supported yet; hardware integration planned for Q4 2025', 3, 0, now(), now()),
+
+      -- Order Status
+      (7, 'en-US', 'Pending Payment', 'Order placed but not paid; auto-canceled if timeout', 1, 0, now(), now()),
+      (8, 'en-US', 'Paid', 'Payment successful; awaiting shipment', 2, 0, now(), now()),
+      (9, 'en-US', 'Shipped', 'Item has left warehouse; in transit', 3, 0, now(), now()),
+      (10, 'en-US', 'Completed', 'User confirmed receipt; order closed', 4, 0, now(), now()),
+      (11, 'en-US', 'Canceled', 'Order canceled by user or system', 5, 0, now(), now()),
+
+      -- Gender
+      (12, 'en-US', 'Male', '', 1, 0, now(), now()),
+      (13, 'en-US', 'Female', '', 2, 0, now(), now()),
+      (14, 'en-US', 'Unknown', 'Default value when user does not specify', 3, 0, now(), now()),
+
+      -- Payment Method
+      (15, 'en-US', 'Alipay', 'Supports Huabei and Yu’ebao', 1, 0, now(), now()),
+      (16, 'en-US', 'WeChat Pay', 'Requires WeChat account binding', 2, 0, now(), now()),
+      (17, 'en-US', 'UnionPay', 'Supports credit and debit cards', 3, 0, now(), now()),
+      (18, 'en-US', 'Cash', 'Offline payment; deprecated as of Jan 2025', 4, 0, now(), now())
+;
 SELECT setval('sys_dict_entry_i18n_id_seq', (SELECT MAX(id) FROM sys_dict_entry_i18n));
 
 -- 站内信分类

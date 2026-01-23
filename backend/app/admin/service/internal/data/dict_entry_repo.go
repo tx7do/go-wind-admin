@@ -101,6 +101,14 @@ func (r *DictEntryRepo) List(ctx context.Context, req *paginationV1.PagingReques
 		return &dictV1.ListDictEntryResponse{Total: 0, Items: nil}, nil
 	}
 
+	for _, item := range ret.Items {
+		i18ns, err := r.i18n.Get(ctx, item.GetId())
+		if err != nil {
+			return nil, err
+		}
+		item.I18N = i18ns
+	}
+
 	return &dictV1.ListDictEntryResponse{
 		Total: ret.Total,
 		Items: ret.Items,

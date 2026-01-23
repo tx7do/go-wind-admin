@@ -5,6 +5,7 @@ import { h, watch } from 'vue';
 
 import { useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
+import { preferences } from '@vben/preferences';
 
 import { notification } from 'ant-design-vue';
 
@@ -72,7 +73,11 @@ const gridOptions: VxeGridProps<DictEntry> = {
   },
 
   columns: [
-    { title: $t('page.dict.entryLabel'), field: 'entryLabel' },
+    {
+      title: $t('page.dict.entryLabel'),
+      field: 'entryLabel',
+      slots: { default: 'entryLabel' },
+    },
     { title: $t('page.dict.entryValue'), field: 'entryValue' },
     { title: $t('page.dict.numericValue'), field: 'numericValue' },
     { title: $t('ui.table.sortOrder'), field: 'sortOrder' },
@@ -145,6 +150,14 @@ async function handleDelete(row: any) {
   }
 }
 
+function getEntryLabel(row: DictEntry) {
+  const currentI18n = row.i18n?.[preferences.app.locale];
+  if (currentI18n === undefined) {
+    return '';
+  }
+  return currentI18n.entryLabel;
+}
+
 watch(
   () => dictViewStore.currentTypeId,
   () => {
@@ -164,6 +177,9 @@ watch(
       <a-tag :color="enableBoolToColor(row.isEnabled)">
         {{ enableBoolToName(row.isEnabled) }}
       </a-tag>
+    </template>
+    <template #entryLabel="{ row }">
+      {{ getEntryLabel(row) }}
     </template>
     <template #action="{ row }">
       <a-button

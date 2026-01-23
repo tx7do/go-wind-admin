@@ -5,6 +5,7 @@ import { h } from 'vue';
 
 import { useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
 import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
+import { preferences } from '@vben/preferences';
 
 import { notification } from 'ant-design-vue';
 
@@ -73,9 +74,12 @@ const gridOptions: VxeGridProps<DictType> = {
   },
 
   columns: [
-    { title: $t('page.dict.typeName'), field: 'typeName' },
+    {
+      title: $t('page.dict.typeName'),
+      field: 'typeName',
+      slots: { default: 'typeName' },
+    },
     { title: $t('page.dict.typeCode'), field: 'typeCode' },
-    { title: $t('ui.table.sortOrder'), field: 'sortOrder' },
     {
       title: $t('ui.table.status'),
       field: 'isEnabled',
@@ -159,6 +163,14 @@ async function handleDelete(row: any) {
     });
   }
 }
+
+function getTypeName(row: DictType) {
+  const currentI18n = row.i18n?.[preferences.app.locale];
+  if (currentI18n === undefined) {
+    return '';
+  }
+  return currentI18n.typeName;
+}
 </script>
 
 <template>
@@ -172,6 +184,9 @@ async function handleDelete(row: any) {
       <a-tag :color="enableBoolToColor(row.isEnabled)">
         {{ enableBoolToName(row.isEnabled) }}
       </a-tag>
+    </template>
+    <template #typeName="{ row }">
+      {{ getTypeName(row) }}
     </template>
     <template #action="{ row }">
       <a-button

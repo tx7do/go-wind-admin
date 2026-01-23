@@ -48,6 +48,9 @@ export const useDictViewStore = defineStore('dict-view', {
           },
           formValues,
         );
+
+        await this.setCurrentTypeId(null);
+
         return this.typeList;
       } catch (error) {
         console.error('获取字典类型失败:', error);
@@ -103,9 +106,8 @@ export const useDictViewStore = defineStore('dict-view', {
      * 点击字典类型时触发：设置当前字典类型ID + 刷新字典条目列表
      * @param typeId 字典类型ID
      */
-    async setCurrentTypeId(typeId: number) {
+    async setCurrentTypeId(typeId: null | number) {
       this.currentTypeId = typeId; // 更新当前选中的字典类型ID
-      await this.fetchEntryList(typeId, 0, 10, null); // 联动刷新字典条目
     },
 
     resetTypeList() {

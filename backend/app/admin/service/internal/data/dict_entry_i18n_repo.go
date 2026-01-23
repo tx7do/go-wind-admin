@@ -96,6 +96,7 @@ func (r *DictEntryI18nRepo) Get(ctx context.Context, entryID uint32) (map[string
 		WithSysDictEntries(func(query *ent.DictEntryQuery) {
 			query.Where(dictentry.IDEQ(entryID))
 		}).
+		Where(dictentryi18n.HasSysDictEntriesWith(dictentry.IDEQ(entryID))).
 		All(ctx)
 	if err != nil {
 		return nil, err
