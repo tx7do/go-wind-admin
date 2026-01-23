@@ -102,6 +102,8 @@ function setupAccessGuard(router: Router) {
 
     userStore.setUserInfo(userInfo);
 
+    authStore.startRefreshTimer();
+
     // 生成菜单和路由
     const { accessibleMenus, accessibleRoutes } = await generateAccess({
       roles: userRoles,

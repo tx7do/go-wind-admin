@@ -301,12 +301,16 @@ export const useAuthStore = defineStore('auth', () => {
    * @param cb 刷新回调函数
    */
   function _startRefreshTimer(cb?: RefreshTokenFunc): void {
-    if (cb) refreshCallback = cb;
-
     // 先停止已存在的调度
     _stopRefreshTimer();
 
-    if (!refreshCallback) return;
+    if (cb) {
+      refreshCallback = cb;
+    }
+
+    if (refreshCallback === null) {
+      return;
+    }
 
     // 使用 self-scheduling 的 setTimeout，避免并发刷新
     const schedule = async () => {
@@ -340,9 +344,13 @@ export const useAuthStore = defineStore('auth', () => {
     if (refreshTimer !== null) {
       globalThis.clearTimeout(refreshTimer);
       refreshTimer = null;
+      // 清除回调，防止后续意外触发
+      refreshCallback = null;
     }
-    // 清除回调，防止后续意外触发
-    refreshCallback = null;
+  }
+
+  function startRefreshTimer() {
+    _startRefreshTimer(refreshToken);
   }
 
   function $reset() {
@@ -358,5 +366,6 @@ export const useAuthStore = defineStore('auth', () => {
     logout,
     refreshToken,
     reauthenticate,
+    startRefreshTimer,
   };
 });
