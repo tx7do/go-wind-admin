@@ -75,6 +75,9 @@ func (s *DictTypeService) UpdateDictType(ctx context.Context, req *dictV1.Update
 	}
 
 	req.Data.UpdatedBy = trans.Ptr(operator.UserId)
+	if req.UpdateMask != nil {
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
+	}
 
 	if err = s.dictTypeRepo.Update(ctx, req); err != nil {
 		return nil, err

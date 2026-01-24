@@ -1,5 +1,9 @@
 <script lang="ts" setup>
-import type { dictservicev1_DictType as DictType } from '#/generated/api/admin/service/v1';
+import type { VxeGridProps } from '#/adapter/vxe-table';
+import type {
+  dictservicev1_DictEntryI18n as DictEntryI18n,
+  dictservicev1_DictType as DictType,
+} from '#/generated/api/admin/service/v1';
 
 import { computed, ref } from 'vue';
 
@@ -9,6 +13,7 @@ import { $t } from '@vben/locales';
 import { notification } from 'ant-design-vue';
 
 import { useVbenForm, z } from '#/adapter/form';
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { enableBoolList, useDictStore } from '#/stores';
 import {
   getTypeName,
@@ -50,7 +55,6 @@ const [BaseForm, baseFormApi] = useVbenForm({
         filterOption: (input: string, option: any) =>
           option.label.toLowerCase().includes(input.toLowerCase()),
         afterFetch: (data: DictType[]) => {
-          console.log('dddd', dictViewStore.currentTypeId);
           return data.map((item: DictType) => ({
             label: getTypeName(item),
             value: item.id,
@@ -108,6 +112,95 @@ const [BaseForm, baseFormApi] = useVbenForm({
     },
   ],
 });
+
+const gridOptions: VxeGridProps<DictEntryI18n> = {
+  height: 'auto',
+  stripe: true,
+  toolbarConfig: {
+    custom: false,
+    export: false,
+    import: false,
+    refresh: false,
+    zoom: false,
+  },
+  exportConfig: {},
+  pagerConfig: {},
+  rowConfig: {
+    isHover: true,
+    isCurrent: true,
+  },
+  editConfig: {
+    mode: 'row',
+    trigger: 'click',
+  },
+
+  proxyConfig: {
+    ajax: {
+      query: async ({ page }, formValues) => {
+        const gridData = [];
+        const language = await dictViewStore.fetchLanguageList(
+          page.currentPage,
+          page.pageSize,
+          formValues,
+        );
+
+        const i18nMap = (data.value?.row?.i18n ?? {}) as Record<
+          string,
+          { description?: string; entryLabel?: string }
+        >;
+
+        for (const lang of language.items || []) {
+          const languageCode = lang.languageCode || '';
+          if (languageCode === '') {
+            continue;
+          }
+
+          gridData.push({
+            languageCode,
+            languageName: lang.nativeName,
+            entryLabel: i18nMap[languageCode]?.entryLabel ?? '',
+            description: i18nMap[languageCode]?.description ?? '',
+          });
+        }
+
+        return { items: gridData, total: gridData.length };
+      },
+    },
+  },
+
+  columns: [
+    {
+      title: $t('page.dict.languageCode'),
+      field: 'languageCode',
+      fixed: 'left',
+      width: 85,
+    },
+    {
+      title: $t('page.dict.languageName'),
+      field: 'languageName',
+      width: 85,
+    },
+    {
+      title: $t('page.dict.entryLabel'),
+      field: 'entryLabel',
+      editRender: { name: 'input' },
+    },
+    {
+      title: $t('ui.table.description'),
+      field: 'description',
+      editRender: { name: 'input' },
+    },
+    {
+      title: $t('ui.table.action'),
+      field: 'action',
+      fixed: 'right',
+      slots: { default: 'action' },
+      width: 140,
+    },
+  ],
+};
+
+const [Grid, gridApi] = useVbenVxeGrid({ gridOptions });
 
 const [Drawer, drawerApi] = useVbenDrawer({
   onCancel() {
@@ -177,10 +270,73 @@ const [Drawer, drawerApi] = useVbenDrawer({
 function setLoading(loading: boolean) {
   drawerApi.setState({ confirmLoading: loading });
 }
+
+function hasEditStatus(row: DictEntryI18n) {
+  return gridApi.grid?.isEditByRow(row);
+}
+
+function editRowEvent(row: DictEntryI18n) {
+  gridApi.grid?.setEditRow(row);
+}
+
+async function saveRowEvent(row: DictEntryI18n) {
+  await gridApi.grid?.clearEdit();
+
+  if (row.languageCode !== undefined) {
+    data.value.row.i18n[row.languageCode] = {
+      languageCode: row.languageCode,
+      entryLabel: row.entryLabel,
+      description: row.description,
+    };
+  }
+
+  gridApi.setLoading(true);
+
+  try {
+    const values = await baseFormApi.getValues();
+    await dictStore.updateDictEntry(data.value.row.id, {
+      ...values,
+      i18n: data.value.row.i18n,
+    });
+
+    notification.success({
+      message: $t('ui.notification.save_success'),
+    });
+  } catch {
+    notification.error({
+      message: $t('ui.notification.update_failed'),
+    });
+    return;
+  } finally {
+    gridApi.setLoading(false);
+    await gridApi.reload();
+  }
+}
+
+const cancelRowEvent = (_row: DictEntryI18n) => {
+  gridApi.grid?.clearEdit();
+};
 </script>
 
 <template>
-  <Drawer :title="getTitle">
-    <BaseForm />
+  <Drawer :title="getTitle" class="w-full max-w-[800px]">
+    <BaseForm class="mx-0" />
+    <Grid>
+      <template #action="{ row }">
+        <template v-if="hasEditStatus(row)">
+          <a-button type="link" @click="saveRowEvent(row)">
+            {{ $t('ui.button.save') }}
+          </a-button>
+          <a-button type="link" @click="cancelRowEvent(row)">
+            {{ $t('ui.button.cancel') }}
+          </a-button>
+        </template>
+        <template v-else>
+          <a-button type="link" @click="editRowEvent(row)">
+            {{ $t('ui.button.edit') }}
+          </a-button>
+        </template>
+      </template>
+    </Grid>
   </Drawer>
 </template>

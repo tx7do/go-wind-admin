@@ -91,7 +91,7 @@ message DictType {
 
 // 字典类型多语言信息
 message DictTypeI18n {
-  optional string type_name = 1 [
+  string type_name = 1 [
     json_name = "typeName",
     (gnostic.openapi.v3.property) = {description: "类型名称"}
   ]; // 类型名称
@@ -100,6 +100,16 @@ message DictTypeI18n {
     json_name = "description",
     (gnostic.openapi.v3.property) = {description: "描述信息"}
   ]; // 描述信息
+
+  optional string language_code = 3 [
+    json_name = "languageCode",
+    (gnostic.openapi.v3.property) = {description: "语言代码，如 zh-CN、en-US 等"}
+  ]; // 语言代码，如 zh-CN、en-US 等
+
+  optional string language_name = 4 [
+    json_name = "languageName",
+    (gnostic.openapi.v3.property) = {description: "语言名称"}
+  ]; // 语言名称
 }
 
 // 查询字典类型列表 - 回应

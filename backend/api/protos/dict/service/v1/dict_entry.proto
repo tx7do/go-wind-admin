@@ -106,7 +106,7 @@ message DictEntry {
 
 // 字典项多语言信息
 message DictEntryI18n {
-  optional string entry_label = 1 [
+  string entry_label = 1 [
     json_name = "entryLabel",
     (gnostic.openapi.v3.property) = {description: "显示标签"}
   ]; // 显示标签
@@ -115,6 +115,16 @@ message DictEntryI18n {
     json_name = "description",
     (gnostic.openapi.v3.property) = {description: "描述信息"}
   ]; // 描述信息
+
+  optional string language_code = 3 [
+    json_name = "languageCode",
+    (gnostic.openapi.v3.property) = {description: "语言代码，如 zh-CN、en-US 等"}
+  ]; // 语言代码，如 zh-CN、en-US 等
+
+  optional string language_name = 4 [
+    json_name = "languageName",
+    (gnostic.openapi.v3.property) = {description: "语言名称"}
+  ]; // 语言名称
 }
 
 // 查询字典项列表 - 回应

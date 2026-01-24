@@ -4747,6 +4747,12 @@ components:
                 description:
                     type: string
                     description: 描述信息
+                languageCode:
+                    type: string
+                    description: 语言代码，如 zh-CN、en-US 等
+                languageName:
+                    type: string
+                    description: 语言名称
             description: 字典项多语言信息
         DictType:
             type: object
@@ -4814,6 +4820,12 @@ components:
                 description:
                     type: string
                     description: 描述信息
+                languageCode:
+                    type: string
+                    description: 语言代码，如 zh-CN、en-US 等
+                languageName:
+                    type: string
+                    description: 语言名称
             description: 字典类型多语言信息
         DownloadFileResponse:
             type: object
@@ -5761,12 +5773,6 @@ components:
         LoginResponse:
             type: object
             properties:
-                access_token:
-                    type: string
-                    description: 访问令牌，必选项。授权服务器颁发的访问令牌字符串。
-                refresh_token:
-                    type: string
-                    description: 更新令牌，用来获取下一次的访问令牌，可选项。如果访问令牌将过期，则返回刷新令牌很有用，应用程序可以使用该刷新令牌来获取另一个访问令牌。但是，通过隐式授予颁发的令牌不能颁发刷新令牌。
                 token_type:
                     enum:
                         - bearer
@@ -5775,12 +5781,24 @@ components:
                     default: Bearer
                     description: 令牌的类型，该值大小写不敏感，必选项，可以是bearer类型或mac类型，通常只是字符串“Bearer”。
                     format: enum
+                access_token:
+                    type: string
+                    description: 访问令牌，必选项。授权服务器颁发的访问令牌字符串。
                 expires_in:
                     type: string
-                    description: 令牌有效时间，单位为秒。如果访问令牌过期，服务器应回复授予访问令牌的持续时间。如果省略该参数，必须其他方式设置过期时间。
+                    description: 访问令牌过期时间（秒）
+                refresh_token:
+                    type: string
+                    description: 更新令牌，用来获取下一次的访问令牌，可选项。如果访问令牌将过期，则返回刷新令牌很有用，应用程序可以使用该刷新令牌来获取另一个访问令牌。但是，通过隐式授予颁发的令牌不能颁发刷新令牌。
                 scope:
                     type: string
                     description: 以空格分隔的用户授予范围列表。如果未提供，scope则授权任何范围，默认为空列表。
+                refresh_expires_in:
+                    type: string
+                    description: 刷新令牌过期时间（秒）
+                id_token:
+                    type: string
+                    description: ID 令牌，OpenID Connect 扩展中定义的 JWT 格式令牌
             description: 用户后台登录 - 回应
         MarkNotificationAsReadRequest:
             type: object

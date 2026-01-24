@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -11,13 +12,12 @@ import (
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
 
-	"github.com/tx7do/go-utils/copierutil"
-	"github.com/tx7do/go-utils/mapper"
-	"github.com/tx7do/go-utils/timeutil"
-
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/dicttype"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
+
+	"github.com/tx7do/go-utils/copierutil"
+	"github.com/tx7do/go-utils/mapper"
 
 	dictV1 "go-wind-admin/api/gen/go/dict/service/v1"
 )
@@ -186,11 +186,7 @@ func (r *DictTypeRepo) Create(ctx context.Context, req *dictV1.CreateDictTypeReq
 		SetNillableSortOrder(req.Data.SortOrder).
 		SetNillableIsEnabled(req.Data.IsEnabled).
 		SetNillableCreatedBy(req.Data.CreatedBy).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
-
-	if req.Data.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	}
+		SetCreatedAt(time.Now())
 
 	if req.Data.Id != nil {
 		builder.SetID(req.GetData().GetId())
@@ -202,7 +198,7 @@ func (r *DictTypeRepo) Create(ctx context.Context, req *dictV1.CreateDictTypeReq
 		return dictV1.ErrorInternalServerError("insert dict type failed")
 	}
 
-	if req.Data.I18N != nil {
+	if len(req.Data.I18N) > 0 {
 		if err = r.i18n.ReplaceByTypeID(
 			ctx,
 			tx,
@@ -257,6 +253,17 @@ func (r *DictTypeRepo) Update(ctx context.Context, req *dictV1.UpdateDictTypeReq
 		}
 	}()
 
+	var hasI18n bool
+	var i18n map[string]*dictV1.DictTypeI18N
+	for n, p := range req.GetUpdateMask().GetPaths() {
+		if strings.ToLower(p) == "i18n" {
+			hasI18n = true
+			req.GetUpdateMask().Paths = append(req.GetUpdateMask().GetPaths()[:n], req.GetUpdateMask().GetPaths()[n+1:]...)
+			i18n = req.Data.I18N
+			break
+		}
+	}
+
 	builder := tx.DictType.UpdateOneID(req.GetId())
 	dto, err := r.repository.UpdateOne(ctx, builder, req.Data, req.GetUpdateMask(),
 		func(dto *dictV1.DictType) {
@@ -265,11 +272,7 @@ func (r *DictTypeRepo) Update(ctx context.Context, req *dictV1.UpdateDictTypeReq
 				SetNillableSortOrder(req.Data.SortOrder).
 				SetNillableIsEnabled(req.Data.IsEnabled).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
-				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
-
-			if req.Data.UpdatedAt == nil {
-				builder.SetUpdatedAt(time.Now())
-			}
+				SetUpdatedAt(time.Now())
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(dicttype.FieldID, req.GetId()))
@@ -280,15 +283,17 @@ func (r *DictTypeRepo) Update(ctx context.Context, req *dictV1.UpdateDictTypeReq
 		return dictV1.ErrorInternalServerError("update dict type failed")
 	}
 
-	if err = r.i18n.ReplaceByTypeID(
-		ctx,
-		tx,
-		req.Data.GetTenantId(),
-		req.Data.GetCreatedBy(),
-		dto.GetId(),
-		req.Data.I18N,
-	); err != nil {
-		return err
+	if hasI18n && len(i18n) > 0 {
+		if err = r.i18n.ReplaceByTypeID(
+			ctx,
+			tx,
+			req.Data.GetTenantId(),
+			req.Data.GetUpdatedBy(),
+			dto.GetId(),
+			i18n,
+		); err != nil {
+			return err
+		}
 	}
 
 	return err

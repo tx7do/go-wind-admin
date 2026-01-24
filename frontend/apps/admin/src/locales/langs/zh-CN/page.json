@@ -126,11 +126,13 @@
     "dictTypeList": "字典类型列表",
     "dictEntryList": "字典项列表",
     "typeCode": "编码",
-    "typeName": "名称",
+    "typeName": "类型名称",
     "entryLabel": "标签",
     "entryValue": "值",
     "numericValue": "数值",
     "typeId": "字典类型",
+    "languageCode": "语言代码",
+    "languageName": "语言名称",
     "button": {
       "create": "新增"
     }

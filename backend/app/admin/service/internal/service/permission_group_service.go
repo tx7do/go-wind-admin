@@ -92,6 +92,9 @@ func (s *PermissionGroupService) Update(ctx context.Context, req *permissionV1.U
 	}
 
 	req.Data.UpdatedBy = trans.Ptr(operator.UserId)
+	if req.UpdateMask != nil {
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
+	}
 
 	if err = s.permissionGroupRepo.Update(ctx, req); err != nil {
 		return nil, err

@@ -181,11 +181,7 @@ func (r *ApiAuditLogRepo) Create(ctx context.Context, req *auditV1.CreateApiAudi
 		SetNillableResponse(req.Data.Response).
 		SetNillableLogHash(req.Data.LogHash).
 		SetSignature(req.Data.Signature).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
-
-	if req.Data.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	}
+		SetCreatedAt(time.Now())
 
 	err := builder.Exec(ctx)
 	if err != nil {

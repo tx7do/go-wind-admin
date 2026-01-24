@@ -99,6 +99,9 @@ func (s *LanguageService) Update(ctx context.Context, req *dictV1.UpdateLanguage
 	}
 
 	req.Data.UpdatedBy = trans.Ptr(operator.UserId)
+	if req.UpdateMask != nil {
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
+	}
 
 	if err = s.languageRepo.Update(ctx, req); err != nil {
 		return nil, err

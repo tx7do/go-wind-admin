@@ -257,11 +257,8 @@ func (r *OrgUnitRepo) Create(ctx context.Context, req *userV1.CreateOrgUnitReque
 		SetNillableEndAt(timeutil.TimestamppbToTime(req.Data.EndAt)).
 		SetNillableContactUserID(req.Data.ContactUserId).
 		SetNillableCreatedBy(req.Data.CreatedBy).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
+		SetCreatedAt(time.Now())
 
-	if req.Data.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	}
 	if req.Data.BusinessScopes == nil {
 		builder.SetBusinessScopes(req.Data.GetBusinessScopes())
 	}
@@ -335,17 +332,13 @@ func (r *OrgUnitRepo) Update(ctx context.Context, req *userV1.UpdateOrgUnitReque
 				SetNillableEndAt(timeutil.TimestamppbToTime(req.Data.EndAt)).
 				SetNillableContactUserID(req.Data.ContactUserId).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
-				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
+				SetUpdatedAt(time.Now())
 
 			if req.Data.BusinessScopes == nil {
 				builder.SetBusinessScopes(req.Data.GetBusinessScopes())
 			}
 			if req.Data.PermissionTags == nil {
 				builder.SetPermissionTags(req.Data.GetPermissionTags())
-			}
-
-			if req.Data.UpdatedAt == nil {
-				builder.SetUpdatedAt(time.Now())
 			}
 		},
 		func(s *sql.Selector) {

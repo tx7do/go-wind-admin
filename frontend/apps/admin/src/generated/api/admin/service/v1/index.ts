@@ -1037,11 +1037,13 @@ export type authenticationservicev1_ClientType =
   | "app";
 // 用户后台登录 - 回应
 export type authenticationservicev1_LoginResponse = {
-  access_token: string | undefined;
-  refresh_token: string | undefined;
   token_type: authenticationservicev1_TokenType | undefined;
-  expires_in?: number;
+  access_token: string | undefined;
+  expires_in: number | undefined;
+  refresh_token?: string;
   scope?: string;
+  refresh_expires_in?: number;
+  id_token?: string;
 };
 
 // 令牌类型
@@ -1407,8 +1409,10 @@ export type dictservicev1_DictEntry = {
 
 // 字典项多语言信息
 export type dictservicev1_DictEntryI18n = {
-  entryLabel?: string;
+  entryLabel: string | undefined;
   description?: string;
+  languageCode?: string;
+  languageName?: string;
 };
 
 // 创建字典项 - 请求
@@ -1639,8 +1643,10 @@ export type dictservicev1_DictType = {
 
 // 字典类型多语言信息
 export type dictservicev1_DictTypeI18n = {
-  typeName?: string;
+  typeName: string | undefined;
   description?: string;
+  languageCode?: string;
+  languageName?: string;
 };
 
 // 查询字典类型详情 - 请求

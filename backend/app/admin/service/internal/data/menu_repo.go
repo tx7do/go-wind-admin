@@ -13,13 +13,12 @@ import (
 	entCrud "github.com/tx7do/go-crud/entgo"
 	entgoUpdate "github.com/tx7do/go-crud/entgo/update"
 
-	"github.com/tx7do/go-utils/copierutil"
-	"github.com/tx7do/go-utils/mapper"
-	"github.com/tx7do/go-utils/timeutil"
-
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
+
+	"github.com/tx7do/go-utils/copierutil"
+	"github.com/tx7do/go-utils/mapper"
 
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
@@ -194,11 +193,7 @@ func (r *MenuRepo) Create(ctx context.Context, req *permissionV1.CreateMenuReque
 		SetNillableComponent(req.Data.Component).
 		SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 		SetNillableCreatedBy(req.Data.CreatedBy).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
-
-	if req.Data.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	}
+		SetCreatedAt(time.Now())
 
 	if req.Data.Meta != nil {
 		builder.SetMeta(req.Data.Meta)
@@ -257,11 +252,7 @@ func (r *MenuRepo) Update(ctx context.Context, req *permissionV1.UpdateMenuReque
 				SetNillableComponent(req.Data.Component).
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
-				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
-
-			if req.Data.UpdatedAt == nil {
-				builder.SetUpdatedAt(time.Now())
-			}
+				SetUpdatedAt(time.Now())
 
 			if req.Data.Meta != nil {
 				r.updateMetaField(builder, req.Data.Meta, metaPaths)

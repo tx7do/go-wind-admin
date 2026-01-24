@@ -371,9 +371,11 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	}
 
 	return &authenticationV1.LoginResponse{
-		TokenType:    authenticationV1.TokenType_bearer,
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
+		TokenType:        authenticationV1.TokenType_bearer,
+		AccessToken:      accessToken,
+		RefreshToken:     trans.Ptr(refreshToken),
+		ExpiresIn:        int64(s.userToken.GetAccessTokenExpires().Seconds()),
+		RefreshExpiresIn: trans.Ptr(int64(s.userToken.GetRefreshTokenExpires().Seconds())),
 	}, nil
 }
 
@@ -392,7 +394,7 @@ func (s *AuthenticationService) doGrantTypeRefreshToken(ctx context.Context, req
 		},
 	})
 	if err != nil {
-		return &authenticationV1.LoginResponse{}, err
+		return nil, err
 	}
 
 	tokenPayload := &authenticationV1.UserTokenPayload{
@@ -426,9 +428,11 @@ func (s *AuthenticationService) doGrantTypeRefreshToken(ctx context.Context, req
 	}
 
 	return &authenticationV1.LoginResponse{
-		TokenType:    authenticationV1.TokenType_bearer,
-		AccessToken:  accessToken,
-		RefreshToken: refreshToken,
+		TokenType:        authenticationV1.TokenType_bearer,
+		AccessToken:      accessToken,
+		RefreshToken:     trans.Ptr(refreshToken),
+		ExpiresIn:        int64(s.userToken.GetAccessTokenExpires().Seconds()),
+		RefreshExpiresIn: trans.Ptr(int64(s.userToken.GetRefreshTokenExpires().Seconds())),
 	}, nil
 }
 

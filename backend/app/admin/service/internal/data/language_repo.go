@@ -11,13 +11,12 @@ import (
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
 
-	"github.com/tx7do/go-utils/copierutil"
-	"github.com/tx7do/go-utils/mapper"
-	"github.com/tx7do/go-utils/timeutil"
-
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/language"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
+
+	"github.com/tx7do/go-utils/copierutil"
+	"github.com/tx7do/go-utils/mapper"
 
 	dictV1 "go-wind-admin/api/gen/go/dict/service/v1"
 )
@@ -171,11 +170,7 @@ func (r *LanguageRepo) Create(ctx context.Context, req *dictV1.CreateLanguageReq
 		SetNillableIsDefault(req.Data.IsDefault).
 		SetNillableSortOrder(req.Data.SortOrder).
 		SetNillableCreatedBy(req.Data.CreatedBy).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
-
-	if req.Data.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	}
+		SetCreatedAt(time.Now())
 
 	if req.Data.Id != nil {
 		builder.SetID(req.GetData().GetId())
@@ -219,11 +214,7 @@ func (r *LanguageRepo) Update(ctx context.Context, req *dictV1.UpdateLanguageReq
 				SetNillableIsDefault(req.Data.IsDefault).
 				SetNillableSortOrder(req.Data.SortOrder).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
-				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
-
-			if req.Data.UpdatedAt == nil {
-				builder.SetUpdatedAt(time.Now())
-			}
+				SetUpdatedAt(time.Now())
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(language.FieldID, req.GetId()))

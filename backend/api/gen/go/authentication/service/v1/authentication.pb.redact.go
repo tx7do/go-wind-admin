@@ -11,7 +11,9 @@ import (
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -22,6 +24,8 @@ var (
 	_ codes.Code
 	_ status.Status
 	_ emptypb.Empty
+	_ timestamppb.Timestamp
+	_ durationpb.Duration
 	_ annotations.FieldBehavior
 	_ redact.FieldRules
 	_ userpb.User
@@ -163,15 +167,19 @@ func (x *LoginResponse) Redact() string {
 		return ""
 	}
 
-	// Safe field: AccessToken
-
-	// Safe field: RefreshToken
-
 	// Safe field: TokenType
+
+	// Safe field: AccessToken
 
 	// Safe field: ExpiresIn
 
+	// Safe field: RefreshToken
+
 	// Safe field: Scope
+
+	// Safe field: RefreshExpiresIn
+
+	// Safe field: IdToken
 	return x.String()
 }
 

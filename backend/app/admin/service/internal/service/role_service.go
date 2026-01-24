@@ -144,6 +144,10 @@ func (s *RoleService) Update(ctx context.Context, req *userV1.UpdateRoleRequest)
 	}
 
 	req.Data.UpdatedBy = trans.Ptr(operator.UserId)
+	if req.UpdateMask != nil {
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
+	}
+
 	if operator.GetTenantId() == 0 {
 		req.Data.IsSystem = nil
 	}

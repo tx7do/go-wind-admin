@@ -13,7 +13,6 @@ import (
 
 	"github.com/tx7do/go-utils/copierutil"
 	"github.com/tx7do/go-utils/mapper"
-	"github.com/tx7do/go-utils/timeutil"
 	"github.com/tx7do/go-utils/trans"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
@@ -386,11 +385,7 @@ func (r *RoleRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *userV1.Ro
 		SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
 		SetNillableDescription(data.Description).
 		SetNillableCreatedBy(data.CreatedBy).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(data.CreatedAt))
-
-	if data.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	}
+		SetCreatedAt(time.Now())
 
 	if data.Id != nil {
 		builder.SetID(data.GetId())
@@ -492,12 +487,7 @@ func (r *RoleRepo) Update(ctx context.Context, req *userV1.UpdateRoleRequest) (e
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 				SetNillableDescription(req.Data.Description).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
-				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
-
-			if req.Data.UpdatedAt == nil {
-				builder.SetUpdatedAt(time.Now())
-			}
-
+				SetUpdatedAt(time.Now())
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(role.FieldID, req.GetId()))

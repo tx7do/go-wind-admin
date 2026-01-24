@@ -17,7 +17,6 @@ import (
 	"github.com/tx7do/go-utils/crypto"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/password"
-	"github.com/tx7do/go-utils/timeutil"
 	"github.com/tx7do/go-utils/trans"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
@@ -186,11 +185,7 @@ func (r *UserCredentialRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data 
 		SetNillableExtraInfo(data.ExtraInfo).
 		SetNillableProvider(data.Provider).
 		SetNillableProviderAccountID(data.ProviderAccountId).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(data.CreatedAt))
-
-	if data.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	}
+		SetCreatedAt(time.Now())
 
 	if err = builder.Exec(ctx); err != nil {
 		r.log.Errorf("insert user credential failed: %s [%v]", err.Error(), data)
@@ -242,11 +237,7 @@ func (r *UserCredentialRepo) Update(ctx context.Context, req *authenticationV1.U
 				SetNillableExtraInfo(req.Data.ExtraInfo).
 				SetNillableProvider(req.Data.Provider).
 				SetNillableProviderAccountID(req.Data.ProviderAccountId).
-				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
-
-			if req.Data.UpdatedAt == nil {
-				builder.SetUpdatedAt(time.Now())
-			}
+				SetUpdatedAt(time.Now())
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(usercredential.FieldID, req.GetId()))

@@ -10,13 +10,12 @@ import (
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
-	"github.com/tx7do/go-utils/copierutil"
-	"github.com/tx7do/go-utils/mapper"
-	"github.com/tx7do/go-utils/timeutil"
-
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissiongroup"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
+
+	"github.com/tx7do/go-utils/copierutil"
+	"github.com/tx7do/go-utils/mapper"
 
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
@@ -265,11 +264,7 @@ func (r *PermissionGroupRepo) newPermissionCreateWithBuilder(builder *ent.Permis
 		SetNillableDescription(permissionGroup.Description).
 		SetNillableParentID(permissionGroup.ParentId).
 		SetNillableCreatedBy(permissionGroup.CreatedBy).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(permissionGroup.CreatedAt))
-
-	if permissionGroup.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	}
+		SetCreatedAt(time.Now())
 
 	if permissionGroup.Id != nil {
 		builder.SetID(permissionGroup.GetId())
@@ -310,11 +305,7 @@ func (r *PermissionGroupRepo) Update(ctx context.Context, req *permissionV1.Upda
 				SetNillableDescription(req.Data.Description).
 				SetNillableParentID(req.Data.ParentId).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
-				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
-
-			if req.Data.UpdatedAt == nil {
-				builder.SetUpdatedAt(time.Now())
-			}
+				SetUpdatedAt(time.Now())
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(permissiongroup.FieldID, req.GetId()))

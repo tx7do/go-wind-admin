@@ -195,11 +195,7 @@ func (r *PositionRepo) Create(ctx context.Context, req *userV1.CreatePositionReq
 		SetNillableStartAt(timeutil.TimestamppbToTime(req.Data.StartAt)).
 		SetNillableEndAt(timeutil.TimestamppbToTime(req.Data.EndAt)).
 		SetNillableCreatedBy(req.Data.CreatedBy).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
-
-	if req.Data.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	}
+		SetCreatedAt(time.Now())
 
 	if req.Data.Id != nil {
 		builder.SetID(req.GetData().GetId())
@@ -253,11 +249,7 @@ func (r *PositionRepo) Update(ctx context.Context, req *userV1.UpdatePositionReq
 				SetNillableStartAt(timeutil.TimestamppbToTime(req.Data.StartAt)).
 				SetNillableEndAt(timeutil.TimestamppbToTime(req.Data.EndAt)).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
-				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
-
-			if req.Data.UpdatedAt == nil {
-				builder.SetUpdatedAt(time.Now())
-			}
+				SetUpdatedAt(time.Now())
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(position.FieldID, req.GetId()))

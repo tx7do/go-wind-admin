@@ -13,7 +13,9 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/known/durationpb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
+	_ "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -361,14 +363,16 @@ func (x *LoginRequest) GetDeviceId() string {
 
 // 用户后台登录 - 回应
 type LoginResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,proto3" json:"access_token,omitempty"`                                       // 访问令牌，必选项。
-	RefreshToken  string                 `protobuf:"bytes,2,opt,name=refresh_token,proto3" json:"refresh_token,omitempty"`                                     // 更新令牌，用来获取下一次的访问令牌，可选项。
-	TokenType     TokenType              `protobuf:"varint,3,opt,name=token_type,proto3,enum=authentication.service.v1.TokenType" json:"token_type,omitempty"` // 令牌类型，该值大小写不敏感，必选项，可以是bearer类型或mac类型。
-	ExpiresIn     *int64                 `protobuf:"varint,4,opt,name=expires_in,proto3,oneof" json:"expires_in,omitempty"`                                    // 令牌有效时间，单位为秒。如果访问令牌过期，服务器应回复授予访问令牌的持续时间。如果省略该参数，必须其他方式设置过期时间。
-	Scope         *string                `protobuf:"bytes,5,opt,name=scope,proto3,oneof" json:"scope,omitempty"`                                               // 以空格分隔的用户授予范围列表。如果未提供，scope则授权任何范围，默认为空列表。
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	TokenType        TokenType              `protobuf:"varint,1,opt,name=token_type,proto3,enum=authentication.service.v1.TokenType" json:"token_type,omitempty"` // 令牌类型，该值大小写不敏感，必选项，可以是bearer类型或mac类型。
+	AccessToken      string                 `protobuf:"bytes,2,opt,name=access_token,proto3" json:"access_token,omitempty"`                                       // 访问令牌，必选项。
+	ExpiresIn        int64                  `protobuf:"varint,3,opt,name=expires_in,proto3" json:"expires_in,omitempty"`                                          // 访问令牌过期时间（秒）
+	RefreshToken     *string                `protobuf:"bytes,4,opt,name=refresh_token,proto3,oneof" json:"refresh_token,omitempty"`                               // 更新令牌，用来获取下一次的访问令牌，可选项。
+	Scope            *string                `protobuf:"bytes,5,opt,name=scope,proto3,oneof" json:"scope,omitempty"`                                               // 以空格分隔的用户授予范围列表。如果未提供，scope则授权任何范围，默认为空列表。
+	RefreshExpiresIn *int64                 `protobuf:"varint,6,opt,name=refresh_expires_in,proto3,oneof" json:"refresh_expires_in,omitempty"`                    // 刷新令牌过期时间（秒）
+	IdToken          *string                `protobuf:"bytes,7,opt,name=id_token,proto3,oneof" json:"id_token,omitempty"`                                         // ID 令牌，OpenID Connect 扩展中定义的 JWT 格式令牌
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *LoginResponse) Reset() {
@@ -401,20 +405,6 @@ func (*LoginResponse) Descriptor() ([]byte, []int) {
 	return file_authentication_service_v1_authentication_proto_rawDescGZIP(), []int{1}
 }
 
-func (x *LoginResponse) GetAccessToken() string {
-	if x != nil {
-		return x.AccessToken
-	}
-	return ""
-}
-
-func (x *LoginResponse) GetRefreshToken() string {
-	if x != nil {
-		return x.RefreshToken
-	}
-	return ""
-}
-
 func (x *LoginResponse) GetTokenType() TokenType {
 	if x != nil {
 		return x.TokenType
@@ -422,16 +412,44 @@ func (x *LoginResponse) GetTokenType() TokenType {
 	return TokenType_bearer
 }
 
+func (x *LoginResponse) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
+}
+
 func (x *LoginResponse) GetExpiresIn() int64 {
-	if x != nil && x.ExpiresIn != nil {
-		return *x.ExpiresIn
+	if x != nil {
+		return x.ExpiresIn
 	}
 	return 0
+}
+
+func (x *LoginResponse) GetRefreshToken() string {
+	if x != nil && x.RefreshToken != nil {
+		return *x.RefreshToken
+	}
+	return ""
 }
 
 func (x *LoginResponse) GetScope() string {
 	if x != nil && x.Scope != nil {
 		return *x.Scope
+	}
+	return ""
+}
+
+func (x *LoginResponse) GetRefreshExpiresIn() int64 {
+	if x != nil && x.RefreshExpiresIn != nil {
+		return *x.RefreshExpiresIn
+	}
+	return 0
+}
+
+func (x *LoginResponse) GetIdToken() string {
+	if x != nil && x.IdToken != nil {
+		return *x.IdToken
 	}
 	return ""
 }
@@ -876,7 +894,7 @@ var File_authentication_service_v1_authentication_proto protoreflect.FileDescrip
 
 const file_authentication_service_v1_authentication_proto_rawDesc = "" +
 	"\n" +
-	".authentication/service/v1/authentication.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x16redact/v3/redact.proto\x1a\x1auser/service/v1/user.proto\x1a\x1auser/service/v1/role.proto\x1a*authentication/service/v1/user_token.proto\"\xbc\v\n" +
+	".authentication/service/v1/authentication.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x16redact/v3/redact.proto\x1a\x1auser/service/v1/user.proto\x1a\x1auser/service/v1/role.proto\x1a*authentication/service/v1/user_token.proto\"\xbc\v\n" +
 	"\fLoginRequest\x12\x99\x01\n" +
 	"\n" +
 	"grant_type\x18\x01 \x01(\x0e2$.authentication.service.v1.GrantTypeBS\xe0A\x02\xbaGM\x8a\x02\n" +
@@ -908,19 +926,23 @@ const file_authentication_service_v1_authentication_proto_rawDesc = "" +
 	"\x05_codeB\x0e\n" +
 	"\f_client_typeB\f\n" +
 	"\n" +
-	"_device_id\"\xb7\b\n" +
-	"\rLoginResponse\x12u\n" +
-	"\faccess_token\x18\x01 \x01(\tBQ\xbaGN\x92\x02K访问令牌，必选项。授权服务器颁发的访问令牌字符串。R\faccess_token\x12\xbd\x02\n" +
-	"\rrefresh_token\x18\x02 \x01(\tB\x96\x02\xbaG\x92\x02\x92\x02\x8e\x02更新令牌，用来获取下一次的访问令牌，可选项。如果访问令牌将过期，则返回刷新令牌很有用，应用程序可以使用该刷新令牌来获取另一个访问令牌。但是，通过隐式授予颁发的令牌不能颁发刷新令牌。R\rrefresh_token\x12\xdb\x01\n" +
+	"_device_id\"\x8c\t\n" +
+	"\rLoginResponse\x12\xdb\x01\n" +
 	"\n" +
-	"token_type\x18\x03 \x01(\x0e2$.authentication.service.v1.TokenTypeB\x94\x01\xbaG\x90\x01\x8a\x02\b\x1a\x06Bearer\x92\x02\x81\x01令牌的类型，该值大小写不敏感，必选项，可以是bearer类型或mac类型，通常只是字符串“Bearer”。R\n" +
-	"token_type\x12\xe2\x01\n" +
+	"token_type\x18\x01 \x01(\x0e2$.authentication.service.v1.TokenTypeB\x94\x01\xbaG\x90\x01\x8a\x02\b\x1a\x06Bearer\x92\x02\x81\x01令牌的类型，该值大小写不敏感，必选项，可以是bearer类型或mac类型，通常只是字符串“Bearer”。R\n" +
+	"token_type\x12u\n" +
+	"\faccess_token\x18\x02 \x01(\tBQ\xbaGN\x92\x02K访问令牌，必选项。授权服务器颁发的访问令牌字符串。R\faccess_token\x12G\n" +
 	"\n" +
-	"expires_in\x18\x04 \x01(\x03B\xbc\x01\xbaG\xb8\x01\x92\x02\xb4\x01令牌有效时间，单位为秒。如果访问令牌过期，服务器应回复授予访问令牌的持续时间。如果省略该参数，必须其他方式设置过期时间。H\x00R\n" +
-	"expires_in\x88\x01\x01\x12\x92\x01\n" +
-	"\x05scope\x18\x05 \x01(\tBw\xbaGt\x92\x02q以空格分隔的用户授予范围列表。如果未提供，scope则授权任何范围，默认为空列表。H\x01R\x05scope\x88\x01\x01B\r\n" +
-	"\v_expires_inB\b\n" +
-	"\x06_scope\"\x97\x01\n" +
+	"expires_in\x18\x03 \x01(\x03B'\xbaG$\x92\x02!访问令牌过期时间（秒）R\n" +
+	"expires_in\x12\xc2\x02\n" +
+	"\rrefresh_token\x18\x04 \x01(\tB\x96\x02\xbaG\x92\x02\x92\x02\x8e\x02更新令牌，用来获取下一次的访问令牌，可选项。如果访问令牌将过期，则返回刷新令牌很有用，应用程序可以使用该刷新令牌来获取另一个访问令牌。但是，通过隐式授予颁发的令牌不能颁发刷新令牌。H\x00R\rrefresh_token\x88\x01\x01\x12\x92\x01\n" +
+	"\x05scope\x18\x05 \x01(\tBw\xbaGt\x92\x02q以空格分隔的用户授予范围列表。如果未提供，scope则授权任何范围，默认为空列表。H\x01R\x05scope\x88\x01\x01\x12\\\n" +
+	"\x12refresh_expires_in\x18\x06 \x01(\x03B'\xbaG$\x92\x02!刷新令牌过期时间（秒）H\x02R\x12refresh_expires_in\x88\x01\x01\x12e\n" +
+	"\bid_token\x18\a \x01(\tBD\xbaGA\x92\x02>ID 令牌，OpenID Connect 扩展中定义的 JWT 格式令牌H\x03R\bid_token\x88\x01\x01B\x10\n" +
+	"\x0e_refresh_tokenB\b\n" +
+	"\x06_scopeB\x15\n" +
+	"\x13_refresh_expires_inB\v\n" +
+	"\t_id_token\"\x97\x01\n" +
 	"\rLogoutRequest\x12'\n" +
 	"\auser_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12]\n" +
 	"\vclient_type\x18\x02 \x01(\x0e2%.authentication.service.v1.ClientTypeB\x15\xbaG\x12\x92\x02\x0f客户端类型R\n" +

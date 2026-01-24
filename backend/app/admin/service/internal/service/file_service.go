@@ -79,6 +79,9 @@ func (s *FileService) Update(ctx context.Context, req *fileV1.UpdateFileRequest)
 	}
 
 	req.Data.UpdatedBy = trans.Ptr(operator.UserId)
+	if req.UpdateMask != nil {
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
+	}
 
 	if err = s.fileRepo.Update(ctx, req); err != nil {
 		return nil, err

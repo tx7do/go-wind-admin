@@ -378,12 +378,18 @@ func (m *DictEntryI18N) validate(all bool) error {
 
 	var errors []error
 
-	if m.EntryLabel != nil {
-		// no validation rules for EntryLabel
-	}
+	// no validation rules for EntryLabel
 
 	if m.Description != nil {
 		// no validation rules for Description
+	}
+
+	if m.LanguageCode != nil {
+		// no validation rules for LanguageCode
+	}
+
+	if m.LanguageName != nil {
+		// no validation rules for LanguageName
 	}
 
 	if len(errors) > 0 {

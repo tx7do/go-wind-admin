@@ -12,13 +12,12 @@ import (
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
 
-	"github.com/tx7do/go-utils/copierutil"
-	"github.com/tx7do/go-utils/mapper"
-	"github.com/tx7do/go-utils/timeutil"
-
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
+
+	"github.com/tx7do/go-utils/copierutil"
+	"github.com/tx7do/go-utils/mapper"
 
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
@@ -220,11 +219,7 @@ func (r *ApiRepo) newApiCreate(api *permissionV1.Api) *ent.APICreate {
 		SetNillableMethod(api.Method).
 		SetNillableScope(r.scopeConverter.ToEntity(api.Scope)).
 		SetNillableCreatedBy(api.CreatedBy).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(api.CreatedAt))
-
-	if api.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	}
+		SetCreatedAt(time.Now())
 
 	if api.Id != nil {
 		builder.SetID(api.GetId())
@@ -285,11 +280,7 @@ func (r *ApiRepo) Update(ctx context.Context, req *permissionV1.UpdateApiRequest
 				SetNillableMethod(req.Data.Method).
 				SetNillableScope(r.scopeConverter.ToEntity(req.Data.Scope)).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
-				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
-
-			if req.Data.UpdatedAt == nil {
-				builder.SetUpdatedAt(time.Now())
-			}
+				SetUpdatedAt(time.Now())
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(api.FieldID, req.GetId()))

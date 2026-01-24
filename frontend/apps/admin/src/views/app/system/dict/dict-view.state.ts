@@ -7,10 +7,12 @@ import {
   type dictservicev1_DictType as DictType,
   type dictservicev1_ListDictEntryResponse as ListDictEntryResponse,
   type dictservicev1_ListDictTypeResponse as ListDictTypeResponse,
+  type dictservicev1_ListLanguageResponse as ListLanguageResponse,
 } from '#/generated/api/admin/service/v1';
-import { useDictStore } from '#/stores';
+import { useDictStore, useLanguageStore } from '#/stores';
 
 const dictStore = useDictStore();
+const languageStore = useLanguageStore();
 
 /**
  * 字典视图状态接口
@@ -21,6 +23,7 @@ interface DictViewState {
   currentTypeId: null | number; // 当前选中的字典类型ID
   typeList: ListDictTypeResponse; // 字典类型列表
   entryList: ListDictEntryResponse; // 字典项列表
+  languageList: ListLanguageResponse; // 语言列表
 }
 
 /**
@@ -32,9 +35,44 @@ export const useDictViewStore = defineStore('dict-view', {
     loading: false,
     typeList: { items: [], total: 0 },
     entryList: { items: [], total: 0 },
+    languageList: { items: [], total: 0 },
   }),
 
   actions: {
+    /**
+     * 获取语言列表
+     * @param currentPage
+     * @param pageSize
+     * @param formValues
+     */
+    async fetchLanguageList(
+      currentPage: number,
+      pageSize: number,
+      formValues: any,
+    ) {
+      this.loading = true;
+      try {
+        this.languageList = await languageStore.listLanguage(
+          {
+            page: currentPage,
+            pageSize,
+          },
+          formValues,
+        );
+
+        await this.setCurrentTypeId(null);
+
+        return this.languageList;
+      } catch (error) {
+        console.error('获取语言列表失败:', error);
+        this.resetTypeList();
+      } finally {
+        this.loading = false;
+      }
+
+      return this.languageList;
+    },
+
     /**
      * 获取字典类型列表
      */
@@ -57,7 +95,7 @@ export const useDictViewStore = defineStore('dict-view', {
 
         return this.typeList;
       } catch (error) {
-        console.error('获取字典类型失败:', error);
+        console.error('获取字典类型列表失败:', error);
         this.resetTypeList();
       } finally {
         this.loading = false;
@@ -97,7 +135,7 @@ export const useDictViewStore = defineStore('dict-view', {
           },
         );
       } catch (error) {
-        console.error(`获取字典类型[${typeId}]的项失败:`, error);
+        console.error(`获取字典类型[${typeId}]的字典项列表失败:`, error);
         this.resetEntryList();
       } finally {
         this.loading = false;

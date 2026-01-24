@@ -14,11 +14,10 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/policyevaluationlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+
 	"github.com/tx7do/go-utils/copierutil"
 	"github.com/tx7do/go-utils/mapper"
-	"github.com/tx7do/go-utils/timeutil"
-
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
 type PolicyEvaluationLogRepo struct {
@@ -154,11 +153,7 @@ func (r *PolicyEvaluationLogRepo) Create(ctx context.Context, req *permissionV1.
 		SetNillableEvaluationContext(req.Data.EvaluationContext).
 		SetNillableLogHash(req.Data.LogHash).
 		SetSignature(req.Data.Signature).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
-
-	if req.Data.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	}
+		SetCreatedAt(time.Now())
 
 	err := builder.Exec(ctx)
 	if err != nil {

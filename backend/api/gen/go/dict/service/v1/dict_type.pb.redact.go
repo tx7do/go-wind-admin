@@ -148,6 +148,10 @@ func (x *DictTypeI18N) Redact() string {
 	// Safe field: TypeName
 
 	// Safe field: Description
+
+	// Safe field: LanguageCode
+
+	// Safe field: LanguageName
 	return x.String()
 }
 

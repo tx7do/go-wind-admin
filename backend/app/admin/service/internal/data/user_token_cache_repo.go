@@ -17,6 +17,14 @@ import (
 	"go-wind-admin/pkg/jwt"
 )
 
+const (
+	// DefaultAccessTokenExpires  默认访问令牌过期时间
+	DefaultAccessTokenExpires = time.Minute * 15
+
+	// DefaultRefreshTokenExpires 默认刷新令牌过期时间
+	DefaultRefreshTokenExpires = time.Hour * 24 * 7
+)
+
 type UserTokenCacheRepo struct {
 	log *log.Helper
 
@@ -51,11 +59,21 @@ func NewUserTokenCacheRepo(
 	}
 }
 
+// GetAccessTokenExpires 获取访问令牌过期时间
+func (r *UserTokenCacheRepo) GetAccessTokenExpires() time.Duration {
+	return r.accessTokenExpires
+}
+
+// GetRefreshTokenExpires 获取刷新令牌过期时间
+func (r *UserTokenCacheRepo) GetRefreshTokenExpires() time.Duration {
+	return r.refreshTokenExpires
+}
+
 // GenerateToken 创建令牌
 func (r *UserTokenCacheRepo) GenerateToken(
 	ctx context.Context,
 	tokenPayload *authenticationV1.UserTokenPayload,
-) (accessToken string, refreshToken string, err error) {
+) (accessToken, refreshToken string, err error) {
 	// 创建访问令牌
 	if accessToken, err = r.GenerateAccessToken(
 		ctx,

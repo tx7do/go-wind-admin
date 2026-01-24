@@ -11,13 +11,12 @@ import (
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
 
-	"github.com/tx7do/go-utils/copierutil"
-	"github.com/tx7do/go-utils/mapper"
-	"github.com/tx7do/go-utils/timeutil"
-
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"go-wind-admin/app/admin/service/internal/data/ent/task"
+
+	"github.com/tx7do/go-utils/copierutil"
+	"github.com/tx7do/go-utils/mapper"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	taskV1 "go-wind-admin/api/gen/go/task/service/v1"
@@ -155,11 +154,7 @@ func (r *TaskRepo) Create(ctx context.Context, req *taskV1.CreateTaskRequest) (*
 		SetNillableEnable(req.Data.Enable).
 		SetNillableRemark(req.Data.Remark).
 		SetNillableCreatedBy(req.Data.CreatedBy).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.Data.CreatedAt))
-
-	if req.Data.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	}
+		SetCreatedAt(time.Now())
 
 	if req.Data.TaskOptions != nil {
 		builder.SetTaskOptions(req.Data.TaskOptions)
@@ -208,14 +203,10 @@ func (r *TaskRepo) Update(ctx context.Context, req *taskV1.UpdateTaskRequest) (*
 				SetNillableEnable(req.Data.Enable).
 				SetNillableRemark(req.Data.Remark).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
-				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
+				SetUpdatedAt(time.Now())
 
 			if req.Data.TaskOptions != nil {
 				builder.SetTaskOptions(req.Data.TaskOptions)
-			}
-
-			if req.Data.UpdatedAt == nil {
-				builder.SetUpdatedAt(time.Now())
 			}
 		},
 		func(s *sql.Selector) {

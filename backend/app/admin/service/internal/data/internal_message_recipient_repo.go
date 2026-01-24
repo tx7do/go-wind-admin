@@ -150,11 +150,7 @@ func (r *InternalMessageRecipientRepo) Create(ctx context.Context, req *internal
 		SetNillableStatus(r.statusConverter.ToEntity(req.Status)).
 		SetNillableReceivedAt(timeutil.TimestamppbToTime(req.ReceivedAt)).
 		SetNillableReadAt(timeutil.TimestamppbToTime(req.ReadAt)).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(req.CreatedAt))
-
-	if req.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	}
+		SetCreatedAt(time.Now())
 
 	var err error
 	var entity *ent.InternalMessageRecipient
@@ -194,11 +190,7 @@ func (r *InternalMessageRecipientRepo) Update(ctx context.Context, req *internal
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 				SetNillableReceivedAt(timeutil.TimestamppbToTime(req.Data.ReceivedAt)).
 				SetNillableReadAt(timeutil.TimestamppbToTime(req.Data.ReadAt)).
-				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
-
-			if req.Data.UpdatedAt == nil {
-				builder.SetUpdatedAt(time.Now())
-			}
+				SetUpdatedAt(time.Now())
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(internalmessagerecipient.FieldID, req.GetId()))

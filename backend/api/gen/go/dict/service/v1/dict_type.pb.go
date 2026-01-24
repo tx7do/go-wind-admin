@@ -179,8 +179,10 @@ func (x *DictType) GetDeletedAt() *timestamppb.Timestamp {
 // 字典类型多语言信息
 type DictTypeI18N struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	TypeName      *string                `protobuf:"bytes,1,opt,name=type_name,json=typeName,proto3,oneof" json:"type_name,omitempty"` // 类型名称
-	Description   *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`           // 描述信息
+	TypeName      string                 `protobuf:"bytes,1,opt,name=type_name,json=typeName,proto3" json:"type_name,omitempty"`                   // 类型名称
+	Description   *string                `protobuf:"bytes,2,opt,name=description,proto3,oneof" json:"description,omitempty"`                       // 描述信息
+	LanguageCode  *string                `protobuf:"bytes,3,opt,name=language_code,json=languageCode,proto3,oneof" json:"language_code,omitempty"` // 语言代码，如 zh-CN、en-US 等
+	LanguageName  *string                `protobuf:"bytes,4,opt,name=language_name,json=languageName,proto3,oneof" json:"language_name,omitempty"` // 语言名称
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -216,8 +218,8 @@ func (*DictTypeI18N) Descriptor() ([]byte, []int) {
 }
 
 func (x *DictTypeI18N) GetTypeName() string {
-	if x != nil && x.TypeName != nil {
-		return *x.TypeName
+	if x != nil {
+		return x.TypeName
 	}
 	return ""
 }
@@ -225,6 +227,20 @@ func (x *DictTypeI18N) GetTypeName() string {
 func (x *DictTypeI18N) GetDescription() string {
 	if x != nil && x.Description != nil {
 		return *x.Description
+	}
+	return ""
+}
+
+func (x *DictTypeI18N) GetLanguageCode() string {
+	if x != nil && x.LanguageCode != nil {
+		return *x.LanguageCode
+	}
+	return ""
+}
+
+func (x *DictTypeI18N) GetLanguageName() string {
+	if x != nil && x.LanguageName != nil {
+		return *x.LanguageName
 	}
 	return ""
 }
@@ -579,13 +595,15 @@ const file_dict_service_v1_dict_type_proto_rawDesc = "" +
 	"\v_deleted_byB\r\n" +
 	"\v_created_atB\r\n" +
 	"\v_updated_atB\r\n" +
-	"\v_deleted_at\"\x9d\x01\n" +
-	"\fDictTypeI18n\x124\n" +
-	"\ttype_name\x18\x01 \x01(\tB\x12\xbaG\x0f\x92\x02\f类型名称H\x00R\btypeName\x88\x01\x01\x129\n" +
-	"\vdescription\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f描述信息H\x01R\vdescription\x88\x01\x01B\f\n" +
-	"\n" +
-	"_type_nameB\x0e\n" +
-	"\f_description\"]\n" +
+	"\v_deleted_at\"\xc2\x02\n" +
+	"\fDictTypeI18n\x12/\n" +
+	"\ttype_name\x18\x01 \x01(\tB\x12\xbaG\x0f\x92\x02\f类型名称R\btypeName\x129\n" +
+	"\vdescription\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f描述信息H\x00R\vdescription\x88\x01\x01\x12T\n" +
+	"\rlanguage_code\x18\x03 \x01(\tB*\xbaG'\x92\x02$语言代码，如 zh-CN、en-US 等H\x01R\flanguageCode\x88\x01\x01\x12<\n" +
+	"\rlanguage_name\x18\x04 \x01(\tB\x12\xbaG\x0f\x92\x02\f语言名称H\x02R\flanguageName\x88\x01\x01B\x0e\n" +
+	"\f_descriptionB\x10\n" +
+	"\x0e_language_codeB\x10\n" +
+	"\x0e_language_name\"]\n" +
 	"\x14ListDictTypeResponse\x12/\n" +
 	"\x05items\x18\x01 \x03(\v2\x19.dict.service.v1.DictTypeR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xcf\x01\n" +

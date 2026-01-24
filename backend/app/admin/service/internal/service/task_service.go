@@ -117,6 +117,9 @@ func (s *TaskService) Update(ctx context.Context, req *taskV1.UpdateTaskRequest)
 	}
 
 	req.Data.UpdatedBy = trans.Ptr(operator.UserId)
+	if req.UpdateMask != nil {
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
+	}
 
 	var t *taskV1.Task
 	if t, err = s.taskRepo.Update(ctx, req); err != nil {

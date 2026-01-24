@@ -218,15 +218,9 @@ func (r *TenantRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *userV1.
 		SetNillableSubscriptionPlan(data.SubscriptionPlan).
 		SetNillableExpiredAt(timeutil.TimestamppbToTime(data.ExpiredAt)).
 		SetNillableSubscriptionAt(timeutil.TimestamppbToTime(data.SubscriptionAt)).
-		SetNillableUnsubscribeAt(timeutil.TimestamppbToTime(data.UnsubscribeAt))
-
-	builder.SetNillableCreatedBy(data.CreatedBy)
-
-	if data.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	} else {
-		builder.SetNillableCreatedAt(timeutil.TimestamppbToTime(data.CreatedAt))
-	}
+		SetNillableUnsubscribeAt(timeutil.TimestamppbToTime(data.UnsubscribeAt)).
+		SetNillableCreatedBy(data.CreatedBy).
+		SetCreatedAt(time.Now())
 
 	if data.Id != nil {
 		builder.SetID(data.GetId())
@@ -278,13 +272,8 @@ func (r *TenantRepo) Update(ctx context.Context, req *userV1.UpdateTenantRequest
 				SetNillableExpiredAt(timeutil.TimestamppbToTime(req.Data.ExpiredAt)).
 				SetNillableSubscriptionAt(timeutil.TimestamppbToTime(req.Data.SubscriptionAt)).
 				SetNillableUnsubscribeAt(timeutil.TimestamppbToTime(req.Data.UnsubscribeAt)).
-				SetNillableUpdatedBy(req.Data.UpdatedBy)
-
-			if req.Data.UpdatedAt == nil {
-				builder.SetUpdatedAt(time.Now())
-			} else {
-				builder.SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
-			}
+				SetNillableUpdatedBy(req.Data.UpdatedBy).
+				SetUpdatedAt(time.Now())
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(tenant.FieldID, req.GetId()))

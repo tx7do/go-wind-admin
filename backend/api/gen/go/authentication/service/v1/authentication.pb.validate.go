@@ -202,18 +202,26 @@ func (m *LoginResponse) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for AccessToken
-
-	// no validation rules for RefreshToken
-
 	// no validation rules for TokenType
 
-	if m.ExpiresIn != nil {
-		// no validation rules for ExpiresIn
+	// no validation rules for AccessToken
+
+	// no validation rules for ExpiresIn
+
+	if m.RefreshToken != nil {
+		// no validation rules for RefreshToken
 	}
 
 	if m.Scope != nil {
 		// no validation rules for Scope
+	}
+
+	if m.RefreshExpiresIn != nil {
+		// no validation rules for RefreshExpiresIn
+	}
+
+	if m.IdToken != nil {
+		// no validation rules for IdToken
 	}
 
 	if len(errors) > 0 {

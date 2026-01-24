@@ -532,11 +532,7 @@ func (r *userRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *userV1.Us
 		SetNillableGender(r.genderConverter.ToEntity(data.Gender)).
 		SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
 		SetNillableCreatedBy(data.CreatedBy).
-		SetNillableCreatedAt(timeutil.TimestamppbToTime(data.CreatedAt))
-
-	if data.CreatedAt == nil {
-		builder.SetCreatedAt(time.Now())
-	}
+		SetCreatedAt(time.Now())
 
 	if data.Id != nil {
 		builder.SetID(data.GetId())
@@ -644,11 +640,7 @@ func (r *userRepo) Update(ctx context.Context, req *userV1.UpdateUserRequest) (e
 				SetNillableGender(r.genderConverter.ToEntity(req.Data.Gender)).
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
-				SetNillableUpdatedAt(timeutil.TimestamppbToTime(req.Data.UpdatedAt))
-
-			if req.Data.UpdatedAt == nil {
-				builder.SetUpdatedAt(time.Now())
-			}
+				SetUpdatedAt(time.Now())
 
 			if req.Data.RoleIds != nil {
 				var roleIds []int

@@ -370,12 +370,18 @@ func (m *DictTypeI18N) validate(all bool) error {
 
 	var errors []error
 
-	if m.TypeName != nil {
-		// no validation rules for TypeName
-	}
+	// no validation rules for TypeName
 
 	if m.Description != nil {
 		// no validation rules for Description
+	}
+
+	if m.LanguageCode != nil {
+		// no validation rules for LanguageCode
+	}
+
+	if m.LanguageName != nil {
+		// no validation rules for LanguageName
 	}
 
 	if len(errors) > 0 {

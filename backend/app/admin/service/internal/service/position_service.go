@@ -107,6 +107,9 @@ func (s *PositionService) Update(ctx context.Context, req *userV1.UpdatePosition
 	}
 
 	req.Data.UpdatedBy = trans.Ptr(operator.UserId)
+	if req.UpdateMask != nil {
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
+	}
 
 	if err = s.positionRepo.Update(ctx, req); err != nil {
 		return nil, err
