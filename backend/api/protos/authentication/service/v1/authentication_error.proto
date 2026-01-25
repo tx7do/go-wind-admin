@@ -34,6 +34,8 @@ enum AuthenticationErrorReason {
     // 404
     NOT_FOUND = 400 [(errors.code) = 404]; // 找不到资源
     USER_NOT_FOUND = 401 [(errors.code) = 404]; // 用户不存在
+    ACCESS_TOKEN_NOT_FOUND = 402 [(errors.code) = 404]; // 访问令牌不存在
+    REFRESH_TOKEN_NOT_FOUND = 403 [(errors.code) = 404]; // 刷新令牌不存在
 
     // 405
     METHOD_NOT_ALLOWED = 500 [(errors.code) = 405]; // 方法不允许

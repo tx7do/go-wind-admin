@@ -259,6 +259,8 @@ github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf/go.mod h1:ybxpYRF
 github.com/alecthomas/units v0.0.0-20190717042225-c3de453c63f4/go.mod h1:ybxpYRFXyAe+OPACYpWeL0wqObRcbAqCMya13uyzqw0=
 github.com/alecthomas/units v0.0.0-20190924025748-f65c72e2690d/go.mod h1:rBZYJk541a8SKzHPHnH3zbiI+7dagKZ0cgpgrD7Fyho=
 github.com/alecthomas/units v0.0.0-20211218093645-b94a6e3cc137/go.mod h1:OMCwj8VM1Kc9e19TLln2VL61YJF0x1XFtfdL4JdbSyE=
+github.com/alicebob/miniredis/v2 v2.36.1 h1:Dvc5oAnNOr7BIfPn7tF269U8DvRW1dBG2D5n0WrfYMI=
+github.com/alicebob/miniredis/v2 v2.36.1/go.mod h1:TcL7YfarKPGDAthEtl5NBeHZfeUQj6OXMm/+iu5cLMM=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883 h1:bvNMNQO63//z+xNgfBlViaCIJKLlCJ6/fmUseuG0wVQ=
 github.com/andreyvit/diff v0.0.0-20170406064948-c7f18ee00883/go.mod h1:rCTlJbsFo29Kk6CurOXKm700vrz8f0KW0JNfpkRJY/8=
 github.com/andybalholm/brotli v1.2.0 h1:ukwgCxwYrmACq68yiUqwIWnGY0cTPox/M94sVwToPjQ=
@@ -908,8 +910,8 @@ github.com/tx7do/go-utils/geoip v1.1.8 h1:8t5xei9UIlEO4wPDRpgk3ZTOA6CBPc+JyxPr+B
 github.com/tx7do/go-utils/geoip v1.1.8/go.mod h1:0K8YEDGtvOLJtdwRbiILEtIWiYnGwi6dN9tkOvcr3G8=
 github.com/tx7do/go-utils/id v0.0.2 h1:mV5kyr+G9bB5obPWeZHxRiaFRVr7P0IznaSrM/D6B5U=
 github.com/tx7do/go-utils/id v0.0.2/go.mod h1:qf2dJiX8/5GnD3TE21g9+gWX9+lU3csKZU9l6NpCpno=
-github.com/tx7do/go-utils/jwtutil v0.0.2 h1:Vn6UGvZ3i+MKqHVFOpDNrnJC+kYWO+WgEinyBY7tiFg=
-github.com/tx7do/go-utils/jwtutil v0.0.2/go.mod h1:QwnbwYVyYY5wMYh7Z/T0jnMWiFu1tiF+wrQigwdcq+0=
+github.com/tx7do/go-utils/jwtutil v0.0.3 h1:HaNjYY9NjskvbKlrGli5hPPxoL1JLBOJsOM03WF11Zg=
+github.com/tx7do/go-utils/jwtutil v0.0.3/go.mod h1:ds6CFEDu7tz3NEI6daDkcLwZ5ZD/FMOE8EBaSouId3E=
 github.com/tx7do/go-utils/mapper v0.0.3 h1:Z7YoPVsa6I3lfWGSUoa9atujHWeF3kP+yKfS6Rkx5SM=
 github.com/tx7do/go-utils/mapper v0.0.3/go.mod h1:zziBbtoqCt8pRw+jmK9Ic9sRD7a2yCLWG40Hy2UCSCs=
 github.com/tx7do/go-utils/password v0.0.1 h1:AAnGdAIxgSZww0XpQQgoyvxQT5v5gXIpc0flWRMik5c=

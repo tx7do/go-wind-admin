@@ -4,27 +4,29 @@ import (
 	"context"
 
 	"github.com/go-kratos/kratos/v2/log"
+
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 )
 
 // AccessTokenChecker 定义访问令牌检查接口
 type AccessTokenChecker interface {
 	// IsValidAccessToken 检查访问令牌是否有效
-	IsValidAccessToken(ctx context.Context, userID uint32, accessToken string) bool
+	IsValidAccessToken(ctx context.Context, accessToken string, skipRedis bool) (valid bool, payload *authenticationV1.UserTokenPayload)
 
 	// IsBlockedAccessToken 检查访问令牌是否被阻止
-	IsBlockedAccessToken(ctx context.Context, userID uint32, accessToken string) bool
+	IsBlockedAccessToken(ctx context.Context, accessToken string) (blocked bool)
 }
 
-type AccessTokenCheckerFunc func(ctx context.Context, userID uint32, accessToken string) bool
+type AccessTokenCheckerFunc func(ctx context.Context, accessToken string, skipRedis bool) (bool, *authenticationV1.UserTokenPayload)
 
-func (f AccessTokenCheckerFunc) IsValidAccessToken(ctx context.Context, userID uint32, accessToken string) bool {
-	return f(ctx, userID, accessToken)
+func (f AccessTokenCheckerFunc) IsValidAccessToken(ctx context.Context, accessToken string, skipRedis bool) (bool, *authenticationV1.UserTokenPayload) {
+	return f(ctx, accessToken, skipRedis)
 }
 
-type AccessTokenBlockerFunc func(ctx context.Context, userID uint32, accessToken string) bool
+type AccessTokenBlockerFunc func(ctx context.Context, accessToken string) bool
 
-func (f AccessTokenBlockerFunc) IsBlockedAccessToken(ctx context.Context, userID uint32, accessToken string) bool {
-	return f(ctx, userID, accessToken)
+func (f AccessTokenBlockerFunc) IsBlockedAccessToken(ctx context.Context, accessToken string) bool {
+	return f(ctx, accessToken)
 }
 
 // composedChecker 将单独的 valid/block 函数组合成一个 AccessTokenChecker
@@ -41,30 +43,28 @@ func NewAccessTokenCheckerFromFuncs(valid AccessTokenCheckerFunc, blocker Access
 	}
 }
 
-func (c *composedChecker) IsValidAccessToken(ctx context.Context, userID uint32, accessToken string) bool {
+func (c *composedChecker) IsValidAccessToken(ctx context.Context, accessToken string, skipRedis bool) (bool, *authenticationV1.UserTokenPayload) {
 	if c.valid == nil {
 		// 默认认为有效（或根据需要返回 false）
-		return true
+		return true, nil
 	}
-	return c.valid(ctx, userID, accessToken)
+	return c.valid(ctx, accessToken, skipRedis)
 }
 
-func (c *composedChecker) IsBlockedAccessToken(ctx context.Context, userID uint32, accessToken string) bool {
+func (c *composedChecker) IsBlockedAccessToken(ctx context.Context, accessToken string) bool {
 	if c.blocker == nil {
 		// 默认不被阻止
 		return false
 	}
-	return c.blocker(ctx, userID, accessToken)
+	return c.blocker(ctx, accessToken)
 }
 
 type options struct {
 	log *log.Helper
 
 	accessTokenChecker                AccessTokenChecker // 访问令牌检查器
-	enableCheckTokenExpiration        bool               // 是否启用访问令牌过期检查
 	enableCheckRefreshTokenExpiration bool               // 是否启用刷新令牌过期检查
 	enableCheckScopes                 bool               // 是否启用作用域检查
-	enableCheckTokenValidity          bool               // 是否启用访问令牌有效性检查
 
 	enableAuthz bool // 是否启用鉴权
 
@@ -89,13 +89,6 @@ func WithAccessTokenCheckerFromFuncs(valid AccessTokenCheckerFunc, blocker Acces
 	}
 }
 
-// WithEnableCheckTokenExpiration 设置是否启用访问令牌过期检查
-func WithEnableCheckTokenExpiration(enable bool) Option {
-	return func(opts *options) {
-		opts.enableCheckTokenExpiration = enable
-	}
-}
-
 func WithEnableCheckRefreshTokenExpiration(enable bool) Option {
 	return func(opts *options) {
 		opts.enableCheckRefreshTokenExpiration = enable
@@ -106,13 +99,6 @@ func WithEnableCheckRefreshTokenExpiration(enable bool) Option {
 func WithEnableCheckScopes(enable bool) Option {
 	return func(opts *options) {
 		opts.enableCheckScopes = enable
-	}
-}
-
-// WithEnableCheckTokenValidity 设置是否启用访问令牌有效性检查
-func WithEnableCheckTokenValidity(enable bool) Option {
-	return func(opts *options) {
-		opts.enableCheckTokenValidity = enable
 	}
 }
 

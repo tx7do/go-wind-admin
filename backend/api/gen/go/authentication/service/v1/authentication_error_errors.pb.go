@@ -249,6 +249,34 @@ func ErrorUserNotFound(format string, args ...interface{}) *errors.Error {
 	return errors.New(404, AuthenticationErrorReason_USER_NOT_FOUND.String(), fmt.Sprintf(format, args...))
 }
 
+// 访问令牌不存在
+func IsAccessTokenNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == AuthenticationErrorReason_ACCESS_TOKEN_NOT_FOUND.String() && e.Code == 404
+}
+
+// 访问令牌不存在
+func ErrorAccessTokenNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, AuthenticationErrorReason_ACCESS_TOKEN_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}
+
+// 刷新令牌不存在
+func IsRefreshTokenNotFound(err error) bool {
+	if err == nil {
+		return false
+	}
+	e := errors.FromError(err)
+	return e.Reason == AuthenticationErrorReason_REFRESH_TOKEN_NOT_FOUND.String() && e.Code == 404
+}
+
+// 刷新令牌不存在
+func ErrorRefreshTokenNotFound(format string, args ...interface{}) *errors.Error {
+	return errors.New(404, AuthenticationErrorReason_REFRESH_TOKEN_NOT_FOUND.String(), fmt.Sprintf(format, args...))
+}
+
 // 405
 func IsMethodNotAllowed(err error) bool {
 	if err == nil {

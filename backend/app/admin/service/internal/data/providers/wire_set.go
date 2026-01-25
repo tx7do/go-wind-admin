@@ -21,13 +21,18 @@ var ProviderSet = wire.NewSet(
 	data.NewRedisClient,
 	data.NewEntClient,
 
+	data.NewClientType,
+
 	data.NewAuthorizerProvider,
 	data.NewAuthenticator,
 	data.NewAuthorizer,
+	data.NewTokenChecker,
 
 	data.NewPasswordCrypto,
 
 	data.NewMinIoClient,
+
+	data.NewUserTokenCache,
 
 	data.NewDictTypeRepo,
 	data.NewDictTypeI18nRepo,
@@ -77,6 +82,4 @@ var ProviderSet = wire.NewSet(
 	data.NewInternalMessageRepo,
 	data.NewInternalMessageCategoryRepo,
 	data.NewInternalMessageRecipientRepo,
-
-	data.NewUserTokenRepo,
 )

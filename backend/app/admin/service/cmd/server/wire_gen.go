@@ -27,9 +27,17 @@ import (
 //   - func(): 应用关闭时的清理函数 / func(): cleanup function to run on shutdown
 //   - error: 构建过程中可能发生的错误 / error: possible construction error
 func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
-	authenticator := data.NewAuthenticator(context)
-	entClient, cleanup, err := data.NewEntClient(context)
+	client, cleanup, err := data.NewRedisClient(context)
 	if err != nil {
+		return nil, nil, err
+	}
+	userTokenCache := data.NewUserTokenCache(context, client)
+	authenticator := data.NewAuthenticator(context, userTokenCache)
+	clientType := data.NewClientType()
+	accessTokenChecker := data.NewTokenChecker(context, authenticator, clientType)
+	entClient, cleanup2, err := data.NewEntClient(context)
+	if err != nil {
+		cleanup()
 		return nil, nil, err
 	}
 	rolePermissionRepo := data.NewRolePermissionRepo(context, entClient)
@@ -43,7 +51,7 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	authorizer := data.NewAuthorizer(context, authorizerProvider)
 	apiAuditLogRepo := data.NewApiAuditLogRepo(context, entClient)
 	loginAuditLogRepo := data.NewLoginAuditLogRepo(context, entClient)
-	v := server.NewRestMiddleware(context, authenticator, authorizer, apiAuditLogRepo, loginAuditLogRepo)
+	v := server.NewRestMiddleware(context, accessTokenChecker, authorizer, apiAuditLogRepo, loginAuditLogRepo)
 	userRoleRepo := data.NewUserRoleRepo(context, entClient)
 	userOrgUnitRepo := data.NewUserOrgUnitRepo(context, entClient)
 	userPositionRepo := data.NewUserPositionRepo(context, entClient)
@@ -56,13 +64,7 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	userCredentialRepo := data.NewUserCredentialRepo(context, entClient, crypto)
 	tenantRepo := data.NewTenantRepo(context, entClient)
 	orgUnitRepo := data.NewOrgUnitRepo(context, entClient)
-	client, cleanup2, err := data.NewRedisClient(context)
-	if err != nil {
-		cleanup()
-		return nil, nil, err
-	}
-	userTokenCacheRepo := data.NewUserTokenRepo(context, client, authenticator)
-	authenticationService := service.NewAuthenticationService(context, userRepo, userCredentialRepo, roleRepo, tenantRepo, membershipRepo, orgUnitRepo, permissionRepo, userTokenCacheRepo, authenticator)
+	authenticationService := service.NewAuthenticationService(context, userRepo, userCredentialRepo, roleRepo, tenantRepo, membershipRepo, orgUnitRepo, permissionRepo, authenticator, clientType)
 	loginPolicyRepo := data.NewLoginPolicyRepo(context, entClient)
 	loginPolicyService := service.NewLoginPolicyService(context, loginPolicyRepo)
 	menuRepo := data.NewMenuRepo(context, entClient)
@@ -85,7 +87,7 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	tenantService := service.NewTenantService(context, tenantRepo, userRepo, userCredentialRepo, roleRepo, authorizer)
 	positionRepo := data.NewPositionRepo(context, entClient)
 	userService := service.NewUserService(context, userRepo, roleRepo, userCredentialRepo, positionRepo, orgUnitRepo, tenantRepo, membershipRepo)
-	userProfileService := service.NewUserProfileService(context, userRepo, userTokenCacheRepo, roleRepo, userCredentialRepo)
+	userProfileService := service.NewUserProfileService(context, userRepo, roleRepo, userCredentialRepo)
 	roleService := service.NewRoleService(context, authorizer, roleRepo, tenantRepo)
 	positionService := service.NewPositionService(context, positionRepo, orgUnitRepo)
 	orgUnitService := service.NewOrgUnitService(context, orgUnitRepo, userRepo)
@@ -108,7 +110,7 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	internalMessageCategoryRepo := data.NewInternalMessageCategoryRepo(context, entClient)
 	internalMessageRecipientRepo := data.NewInternalMessageRecipientRepo(context, entClient)
 	sseServer := server.NewSseServer(context)
-	internalMessageService := service.NewInternalMessageService(context, internalMessageRepo, internalMessageCategoryRepo, internalMessageRecipientRepo, userRepo, sseServer, userTokenCacheRepo)
+	internalMessageService := service.NewInternalMessageService(context, internalMessageRepo, internalMessageCategoryRepo, internalMessageRecipientRepo, userRepo, sseServer, authenticator, clientType)
 	internalMessageCategoryService := service.NewInternalMessageCategoryService(context, internalMessageCategoryRepo)
 	internalMessageRecipientService := service.NewInternalMessageRecipientService(context, internalMessageRepo, internalMessageRecipientRepo)
 	httpServer, err := server.NewRestServer(context, v, authorizer, authenticationService, loginPolicyService, adminPortalService, taskService, uEditorService, fileService, fileTransferService, dictTypeService, dictEntryService, languageService, tenantService, userService, userProfileService, roleService, positionService, orgUnitService, menuService, apiService, permissionService, permissionGroupService, permissionAuditLogService, policyEvaluationLogService, loginAuditLogService, apiAuditLogService, operationAuditLogService, dataAccessAuditLogService, internalMessageService, internalMessageCategoryService, internalMessageRecipientService)

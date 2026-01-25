@@ -7,7 +7,6 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/go-crud/viewer"
 	"github.com/tx7do/go-utils/trans"
-	authnEngine "github.com/tx7do/kratos-authn/engine"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -20,7 +19,6 @@ import (
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 
 	"go-wind-admin/pkg/constants"
-	"go-wind-admin/pkg/jwt"
 	"go-wind-admin/pkg/middleware/auth"
 )
 
@@ -36,9 +34,8 @@ type AuthenticationService struct {
 	orgUnitRepo    *data.OrgUnitRepo
 	permissionRepo *data.PermissionRepo
 
-	userToken *data.UserTokenCacheRepo
-
-	authenticator authnEngine.Authenticator
+	authenticator *data.Authenticator
+	clientType    authenticationV1.ClientType
 
 	log *log.Helper
 }
@@ -52,8 +49,8 @@ func NewAuthenticationService(
 	membershipRepo *data.MembershipRepo,
 	orgUnitRepo *data.OrgUnitRepo,
 	permissionRepo *data.PermissionRepo,
-	userToken *data.UserTokenCacheRepo,
-	authenticator authnEngine.Authenticator,
+	authenticator *data.Authenticator,
+	clientType authenticationV1.ClientType,
 ) *AuthenticationService {
 	return &AuthenticationService{
 		log:                ctx.NewLoggerHelper("authn/service/admin-service"),
@@ -64,8 +61,8 @@ func NewAuthenticationService(
 		membershipRepo:     membershipRepo,
 		orgUnitRepo:        orgUnitRepo,
 		permissionRepo:     permissionRepo,
-		userToken:          userToken,
 		authenticator:      authenticator,
+		clientType:         clientType,
 	}
 }
 
@@ -365,7 +362,7 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	}
 
 	// 生成令牌
-	accessToken, refreshToken, err := s.userToken.GenerateToken(ctx, tokenPayload)
+	accessToken, refreshToken, err := s.authenticator.CreateUserToken(ctx, req.GetClientType(), tokenPayload)
 	if err != nil {
 		return nil, err
 	}
@@ -374,8 +371,8 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 		TokenType:        authenticationV1.TokenType_bearer,
 		AccessToken:      accessToken,
 		RefreshToken:     trans.Ptr(refreshToken),
-		ExpiresIn:        int64(s.userToken.GetAccessTokenExpires().Seconds()),
-		RefreshExpiresIn: trans.Ptr(int64(s.userToken.GetRefreshTokenExpires().Seconds())),
+		ExpiresIn:        int64(s.authenticator.GetAccessTokenExpires(req.GetClientType()).Seconds()),
+		RefreshExpiresIn: trans.Ptr(int64(s.authenticator.GetRefreshTokenExpires(req.GetClientType()).Seconds())),
 	}, nil
 }
 
@@ -412,27 +409,24 @@ func (s *AuthenticationService) doGrantTypeRefreshToken(ctx context.Context, req
 		return nil, err
 	}
 
-	// 校验刷新令牌
-	if !s.userToken.IsExistRefreshToken(ctx, operator.UserId, req.GetRefreshToken()) {
+	// 验证刷新令牌
+	if err = s.authenticator.VerifyRefreshToken(ctx, req.GetClientType(), req.GetUserId(), operator.GetJti(), req.GetRefreshToken()); err != nil {
+		s.log.Errorf("verify refresh token failed for user [%d]: [%s]", req.GetUserId(), err)
 		return nil, authenticationV1.ErrorIncorrectRefreshToken("invalid refresh token")
 	}
 
-	if err = s.userToken.RemoveRefreshToken(ctx, operator.UserId, req.GetRefreshToken()); err != nil {
-		s.log.Errorf("remove refresh token failed [%s]", err.Error())
-	}
-
 	// 生成令牌
-	accessToken, refreshToken, err := s.userToken.GenerateToken(ctx, tokenPayload)
+	accessToken, refreshToken, err := s.authenticator.CreateUserToken(ctx, req.GetClientType(), tokenPayload)
 	if err != nil {
-		return nil, authenticationV1.ErrorServiceUnavailable("generate token failed")
+		return nil, err
 	}
 
 	return &authenticationV1.LoginResponse{
 		TokenType:        authenticationV1.TokenType_bearer,
 		AccessToken:      accessToken,
 		RefreshToken:     trans.Ptr(refreshToken),
-		ExpiresIn:        int64(s.userToken.GetAccessTokenExpires().Seconds()),
-		RefreshExpiresIn: trans.Ptr(int64(s.userToken.GetRefreshTokenExpires().Seconds())),
+		ExpiresIn:        int64(s.authenticator.GetAccessTokenExpires(req.GetClientType()).Seconds()),
+		RefreshExpiresIn: trans.Ptr(int64(s.authenticator.GetRefreshTokenExpires(req.GetClientType()).Seconds())),
 	}, nil
 }
 
@@ -449,7 +443,7 @@ func (s *AuthenticationService) Logout(ctx context.Context, _ *emptypb.Empty) (*
 		return nil, err
 	}
 
-	if err = s.userToken.RemoveToken(ctx, operator.UserId); err != nil {
+	if err = s.authenticator.RevokeUserToken(ctx, s.clientType, operator.GetUserId()); err != nil {
 		return nil, err
 	}
 
@@ -467,25 +461,8 @@ func (s *AuthenticationService) RefreshToken(ctx context.Context, req *authentic
 }
 
 // ValidateToken 验证令牌
-func (s *AuthenticationService) ValidateToken(_ context.Context, req *authenticationV1.ValidateTokenRequest) (*authenticationV1.ValidateTokenResponse, error) {
-	ret, err := s.authenticator.AuthenticateToken(req.GetToken())
-	if err != nil {
-		return &authenticationV1.ValidateTokenResponse{
-			IsValid: false,
-		}, err
-	}
-
-	claims, err := jwt.NewUserTokenPayloadWithClaims(ret)
-	if err != nil {
-		return &authenticationV1.ValidateTokenResponse{
-			IsValid: false,
-		}, err
-	}
-
-	return &authenticationV1.ValidateTokenResponse{
-		IsValid: true,
-		Payload: claims,
-	}, nil
+func (s *AuthenticationService) ValidateToken(ctx context.Context, req *authenticationV1.ValidateTokenRequest) (*authenticationV1.ValidateTokenResponse, error) {
+	return s.authenticator.Authenticate(ctx, req)
 }
 
 // RegisterUser 注册前台用户

@@ -46,8 +46,10 @@ const (
 	// 403
 	AuthenticationErrorReason_FORBIDDEN AuthenticationErrorReason = 300 // 禁止访问
 	// 404
-	AuthenticationErrorReason_NOT_FOUND      AuthenticationErrorReason = 400 // 找不到资源
-	AuthenticationErrorReason_USER_NOT_FOUND AuthenticationErrorReason = 401 // 用户不存在
+	AuthenticationErrorReason_NOT_FOUND               AuthenticationErrorReason = 400 // 找不到资源
+	AuthenticationErrorReason_USER_NOT_FOUND          AuthenticationErrorReason = 401 // 用户不存在
+	AuthenticationErrorReason_ACCESS_TOKEN_NOT_FOUND  AuthenticationErrorReason = 402 // 访问令牌不存在
+	AuthenticationErrorReason_REFRESH_TOKEN_NOT_FOUND AuthenticationErrorReason = 403 // 刷新令牌不存在
 	// 405
 	AuthenticationErrorReason_METHOD_NOT_ALLOWED AuthenticationErrorReason = 500 // 方法不允许
 	// 406
@@ -144,6 +146,8 @@ var (
 		300:  "FORBIDDEN",
 		400:  "NOT_FOUND",
 		401:  "USER_NOT_FOUND",
+		402:  "ACCESS_TOKEN_NOT_FOUND",
+		403:  "REFRESH_TOKEN_NOT_FOUND",
 		500:  "METHOD_NOT_ALLOWED",
 		600:  "NOT_ACCEPTABLE",
 		700:  "PROXY_AUTHENTICATION_REQUIRED",
@@ -200,6 +204,8 @@ var (
 		"FORBIDDEN":                       300,
 		"NOT_FOUND":                       400,
 		"USER_NOT_FOUND":                  401,
+		"ACCESS_TOKEN_NOT_FOUND":          402,
+		"REFRESH_TOKEN_NOT_FOUND":         403,
 		"METHOD_NOT_ALLOWED":              500,
 		"NOT_ACCEPTABLE":                  600,
 		"PROXY_AUTHENTICATION_REQUIRED":   700,
@@ -271,7 +277,7 @@ var File_authentication_service_v1_authentication_error_proto protoreflect.FileD
 
 const file_authentication_service_v1_authentication_error_proto_rawDesc = "" +
 	"\n" +
-	"4authentication/service/v1/authentication_error.proto\x12\x19authentication.service.v1\x1a\x13errors/errors.proto*\xed\f\n" +
+	"4authentication/service/v1/authentication_error.proto\x12\x19authentication.service.v1\x1a\x13errors/errors.proto*\xb4\r\n" +
 	"\x19AuthenticationErrorReason\x12\x15\n" +
 	"\vBAD_REQUEST\x10\x00\x1a\x04\xa8E\x90\x03\x12\x1c\n" +
 	"\x12INVALID_GRANT_TYPE\x10\x01\x1a\x04\xa8E\x90\x03\x12\x18\n" +
@@ -289,7 +295,9 @@ const file_authentication_service_v1_authentication_error_proto_rawDesc = "" +
 	"\x10PAYMENT_REQUIRED\x10\xc8\x01\x1a\x04\xa8E\x92\x03\x12\x14\n" +
 	"\tFORBIDDEN\x10\xac\x02\x1a\x04\xa8E\x93\x03\x12\x14\n" +
 	"\tNOT_FOUND\x10\x90\x03\x1a\x04\xa8E\x94\x03\x12\x19\n" +
-	"\x0eUSER_NOT_FOUND\x10\x91\x03\x1a\x04\xa8E\x94\x03\x12\x1d\n" +
+	"\x0eUSER_NOT_FOUND\x10\x91\x03\x1a\x04\xa8E\x94\x03\x12!\n" +
+	"\x16ACCESS_TOKEN_NOT_FOUND\x10\x92\x03\x1a\x04\xa8E\x94\x03\x12\"\n" +
+	"\x17REFRESH_TOKEN_NOT_FOUND\x10\x93\x03\x1a\x04\xa8E\x94\x03\x12\x1d\n" +
 	"\x12METHOD_NOT_ALLOWED\x10\xf4\x03\x1a\x04\xa8E\x95\x03\x12\x19\n" +
 	"\x0eNOT_ACCEPTABLE\x10\xd8\x04\x1a\x04\xa8E\x96\x03\x12(\n" +
 	"\x1dPROXY_AUTHENTICATION_REQUIRED\x10\xbc\x05\x1a\x04\xa8E\x97\x03\x12\x1a\n" +

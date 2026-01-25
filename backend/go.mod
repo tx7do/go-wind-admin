@@ -4,6 +4,7 @@ go 1.25.4
 
 require (
 	entgo.io/ent v0.14.5
+	github.com/alicebob/miniredis/v2 v2.36.1
 	github.com/envoyproxy/protoc-gen-validate v1.3.0
 	github.com/getkin/kin-openapi v0.133.0
 	github.com/go-kratos/kratos/v2 v2.9.2
@@ -29,7 +30,7 @@ require (
 	github.com/tx7do/go-utils v1.1.34
 	github.com/tx7do/go-utils/copierutil v0.0.6
 	github.com/tx7do/go-utils/geoip v1.1.8
-	github.com/tx7do/go-utils/jwtutil v0.0.2
+	github.com/tx7do/go-utils/jwtutil v0.0.3
 	github.com/tx7do/go-utils/mapper v0.0.3
 	github.com/tx7do/go-utils/password v0.0.1
 	github.com/tx7do/kratos-authn v1.1.9
@@ -53,6 +54,7 @@ require (
 	github.com/tx7do/kratos-transport/transport/asynq v1.2.37
 	github.com/tx7do/kratos-transport/transport/sse v1.2.25
 	github.com/yuin/gopher-lua v1.1.1
+	go.opentelemetry.io/otel/trace v1.39.0
 	google.golang.org/genproto v0.0.0-20260120221211-b8f7ae30c516
 	google.golang.org/genproto/googleapis/api v0.0.0-20260120221211-b8f7ae30c516
 	google.golang.org/grpc v1.78.0
@@ -238,7 +240,6 @@ require (
 	go.opentelemetry.io/otel/exporters/zipkin v1.39.0 // indirect
 	go.opentelemetry.io/otel/metric v1.39.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.39.0 // indirect
-	go.opentelemetry.io/otel/trace v1.39.0 // indirect
 	go.opentelemetry.io/proto/otlp v1.9.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.3 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect

@@ -26,13 +26,6 @@ server:
       enable_validate: true
       enable_circuit_breaker: true
       enable_metadata: true
-      auth:
-        method: "HS256"
-        key: "some_api_key"
-        access_token_expires: 7200s # 2 hours
-        refresh_token_expires: 604800s # 7 days
-        access_token_key_prefix: "uat_"
-        refresh_token_key_prefix: "urt_"
 
   asynq:
     uri: "redis://:*Abcd123456@redis:6379/1"

@@ -22,7 +22,6 @@ type UserProfileService struct {
 	adminV1.UserProfileServiceHTTPServer
 
 	userRepo           data.UserRepo
-	userToken          *data.UserTokenCacheRepo
 	roleRepo           *data.RoleRepo
 	userCredentialRepo *data.UserCredentialRepo
 
@@ -32,14 +31,12 @@ type UserProfileService struct {
 func NewUserProfileService(
 	ctx *bootstrap.Context,
 	userRepo data.UserRepo,
-	userToken *data.UserTokenCacheRepo,
 	roleRepo *data.RoleRepo,
 	userCredentialRepo *data.UserCredentialRepo,
 ) *UserProfileService {
 	return &UserProfileService{
 		log:                ctx.NewLoggerHelper("user-profile/service/admin-service"),
 		userRepo:           userRepo,
-		userToken:          userToken,
 		roleRepo:           roleRepo,
 		userCredentialRepo: userCredentialRepo,
 	}

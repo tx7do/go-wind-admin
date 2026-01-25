@@ -9,9 +9,6 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/selector"
 	"github.com/go-kratos/kratos/v2/transport/http"
 
-	authnEngine "github.com/tx7do/kratos-authn/engine"
-	authn "github.com/tx7do/kratos-authn/middleware"
-
 	authz "github.com/tx7do/kratos-authz/middleware"
 
 	swaggerUI "github.com/tx7do/kratos-swagger-ui"
@@ -34,7 +31,7 @@ import (
 // NewRestMiddleware 创建中间件
 func NewRestMiddleware(
 	ctx *bootstrap.Context,
-	authenticator authnEngine.Authenticator,
+	accessTokenChecker auth.AccessTokenChecker,
 	authorizer *data.Authorizer,
 	apiAuditLogRepo *data.ApiAuditLogRepo,
 	loginLogRepo *data.LoginAuditLogRepo,
@@ -62,8 +59,9 @@ func NewRestMiddleware(
 	)
 
 	ms = append(ms, selector.Server(
-		authn.Server(authenticator),
 		auth.Server(
+			auth.WithAccessTokenChecker(accessTokenChecker),
+			auth.WithInjectMetadata(false),
 			auth.WithInjectEnt(true),
 		),
 		authz.Server(authorizer.Engine()),

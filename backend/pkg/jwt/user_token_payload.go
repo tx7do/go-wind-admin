@@ -75,6 +75,10 @@ func NewUserTokenAuthClaims(
 		authClaims[authn.ClaimFieldExpirationTime] = expirationTime.Unix()
 	}
 
+	if tokenPayload.Jti != nil {
+		authClaims[authn.ClaimFieldJwtID] = tokenPayload.GetJti()
+	}
+
 	if len(tokenPayload.Roles) > 0 {
 		authClaims[ClaimFieldRoleCodes] = tokenPayload.Roles
 	}
@@ -105,6 +109,14 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 	}
 	if sub != "" {
 		payload.Username = trans.Ptr(sub)
+	}
+
+	jti, err := claims.GetJwtID()
+	if err != nil {
+		log.Errorf("GetJwtID failed: %v", err)
+	}
+	if jti != "" {
+		payload.Jti = trans.Ptr(jti)
 	}
 
 	userId, err := claims.GetUint32(ClaimFieldUserID)
@@ -240,14 +252,13 @@ func IsTokenExpired(claims *authn.AuthClaims) bool {
 	}
 
 	exp, _ := claims.GetExpirationTime()
-	now := time.Now()
-
-	// 过期：当 now > exp + leeway 时视为过期
-	if exp != nil && now.After(exp.Time.Add(defaultTokenLeeway)) {
-		return true
+	if exp == nil {
+		// 没有 exp 声明时不认为是过期（按原逻辑）
+		return false
 	}
 
-	return false
+	now := time.Now().UTC()
+	return now.After(exp.Time.UTC().Add(defaultTokenLeeway))
 }
 
 // IsTokenNotValidYet 检查令牌是否未生效
@@ -257,12 +268,11 @@ func IsTokenNotValidYet(claims *authn.AuthClaims) bool {
 	}
 
 	nbf, _ := claims.GetNotBefore()
-	now := time.Now()
-
-	// 未生效：当 now + leeway < nbf 时视为未生效
-	if nbf != nil && now.Add(defaultTokenLeeway).Before(nbf.Time) {
-		return true
+	if nbf == nil {
+		// 没有 nbf 声明时不认为是未生效
+		return false
 	}
 
-	return false
+	now := time.Now().UTC()
+	return now.Add(defaultTokenLeeway).Before(nbf.Time.UTC())
 }

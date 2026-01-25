@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 	"encoding/json"
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
@@ -33,8 +34,9 @@ type InternalMessageService struct {
 	internalMessageRecipientRepo *data.InternalMessageRecipientRepo
 	userRepo                     data.UserRepo
 
-	sseServer *sse.Server
-	userToken *data.UserTokenCacheRepo
+	sseServer     *sse.Server
+	authenticator *data.Authenticator
+	clientType    authenticationV1.ClientType
 }
 
 func NewInternalMessageService(
@@ -44,7 +46,8 @@ func NewInternalMessageService(
 	internalMessageRecipientRepo *data.InternalMessageRecipientRepo,
 	userRepo data.UserRepo,
 	sseServer *sse.Server,
-	userToken *data.UserTokenCacheRepo,
+	authenticator *data.Authenticator,
+	clientType authenticationV1.ClientType,
 ) *InternalMessageService {
 	return &InternalMessageService{
 		log:                          ctx.NewLoggerHelper("internal-message/service/admin-service"),
@@ -53,7 +56,8 @@ func NewInternalMessageService(
 		internalMessageRecipientRepo: internalMessageRecipientRepo,
 		userRepo:                     userRepo,
 		sseServer:                    sseServer,
-		userToken:                    userToken,
+		authenticator:                authenticator,
+		clientType:                   clientType,
 	}
 }
 
@@ -258,7 +262,7 @@ func (s *InternalMessageService) sendNotification(ctx context.Context, messageId
 
 	recipientJson, _ := json.Marshal(recipient)
 
-	recipientStreamIds := s.userToken.GetAccessTokens(ctx, recipientUserId)
+	recipientStreamIds := s.authenticator.GetAccessTokens(ctx, s.clientType, recipientUserId)
 	for _, streamId := range recipientStreamIds {
 		s.sseServer.Publish(ctx, sse.StreamID(streamId), &sse.Event{
 			ID:    []byte(uuid.New().String()),

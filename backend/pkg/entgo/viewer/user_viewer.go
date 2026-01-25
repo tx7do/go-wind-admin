@@ -1,9 +1,9 @@
 package viewer
 
 import (
-	"github.com/tx7do/go-crud/viewer"
-
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+
+	"github.com/tx7do/go-crud/viewer"
 )
 
 // UserViewer describes a user-viewer.
