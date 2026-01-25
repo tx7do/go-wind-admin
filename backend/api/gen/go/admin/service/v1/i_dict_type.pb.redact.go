@@ -50,10 +50,10 @@ type redactedDictTypeServiceServer struct {
 	bypass redact.Bypass
 }
 
-// ListDictType is the redacted wrapper for the actual DictTypeServiceServer.ListDictType method
+// List is the redacted wrapper for the actual DictTypeServiceServer.List method
 // Unary RPC
-func (s *redactedDictTypeServiceServer) ListDictType(ctx context.Context, in *pagination.PagingRequest) (*dictpb.ListDictTypeResponse, error) {
-	res, err := s.srv.ListDictType(ctx, in)
+func (s *redactedDictTypeServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*dictpb.ListDictTypeResponse, error) {
+	res, err := s.srv.List(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)
@@ -61,10 +61,10 @@ func (s *redactedDictTypeServiceServer) ListDictType(ctx context.Context, in *pa
 	return res, err
 }
 
-// GetDictType is the redacted wrapper for the actual DictTypeServiceServer.GetDictType method
+// Get is the redacted wrapper for the actual DictTypeServiceServer.Get method
 // Unary RPC
-func (s *redactedDictTypeServiceServer) GetDictType(ctx context.Context, in *dictpb.GetDictTypeRequest) (*dictpb.DictType, error) {
-	res, err := s.srv.GetDictType(ctx, in)
+func (s *redactedDictTypeServiceServer) Get(ctx context.Context, in *dictpb.GetDictTypeRequest) (*dictpb.DictType, error) {
+	res, err := s.srv.Get(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)
@@ -72,10 +72,10 @@ func (s *redactedDictTypeServiceServer) GetDictType(ctx context.Context, in *dic
 	return res, err
 }
 
-// CreateDictType is the redacted wrapper for the actual DictTypeServiceServer.CreateDictType method
+// Create is the redacted wrapper for the actual DictTypeServiceServer.Create method
 // Unary RPC
-func (s *redactedDictTypeServiceServer) CreateDictType(ctx context.Context, in *dictpb.CreateDictTypeRequest) (*emptypb.Empty, error) {
-	res, err := s.srv.CreateDictType(ctx, in)
+func (s *redactedDictTypeServiceServer) Create(ctx context.Context, in *dictpb.CreateDictTypeRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.Create(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)
@@ -83,10 +83,10 @@ func (s *redactedDictTypeServiceServer) CreateDictType(ctx context.Context, in *
 	return res, err
 }
 
-// UpdateDictType is the redacted wrapper for the actual DictTypeServiceServer.UpdateDictType method
+// Update is the redacted wrapper for the actual DictTypeServiceServer.Update method
 // Unary RPC
-func (s *redactedDictTypeServiceServer) UpdateDictType(ctx context.Context, in *dictpb.UpdateDictTypeRequest) (*emptypb.Empty, error) {
-	res, err := s.srv.UpdateDictType(ctx, in)
+func (s *redactedDictTypeServiceServer) Update(ctx context.Context, in *dictpb.UpdateDictTypeRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.Update(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)
@@ -94,10 +94,10 @@ func (s *redactedDictTypeServiceServer) UpdateDictType(ctx context.Context, in *
 	return res, err
 }
 
-// DeleteDictType is the redacted wrapper for the actual DictTypeServiceServer.DeleteDictType method
+// Delete is the redacted wrapper for the actual DictTypeServiceServer.Delete method
 // Unary RPC
-func (s *redactedDictTypeServiceServer) DeleteDictType(ctx context.Context, in *dictpb.DeleteDictTypeRequest) (*emptypb.Empty, error) {
-	res, err := s.srv.DeleteDictType(ctx, in)
+func (s *redactedDictTypeServiceServer) Delete(ctx context.Context, in *dictpb.DeleteDictTypeRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.Delete(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)

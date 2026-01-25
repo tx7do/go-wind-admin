@@ -46,15 +46,15 @@ type PermissionServiceHTTPServer interface {
 
 func RegisterPermissionServiceHTTPServer(s *http.Server, srv PermissionServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/permissions", _PermissionService_List11_HTTP_Handler(srv))
-	r.GET("/admin/v1/permissions/{id}", _PermissionService_Get11_HTTP_Handler(srv))
-	r.POST("/admin/v1/permissions", _PermissionService_Create7_HTTP_Handler(srv))
-	r.PUT("/admin/v1/permissions/{id}", _PermissionService_Update7_HTTP_Handler(srv))
-	r.DELETE("/admin/v1/permissions/{id}", _PermissionService_Delete7_HTTP_Handler(srv))
+	r.GET("/admin/v1/permissions", _PermissionService_List13_HTTP_Handler(srv))
+	r.GET("/admin/v1/permissions/{id}", _PermissionService_Get13_HTTP_Handler(srv))
+	r.POST("/admin/v1/permissions", _PermissionService_Create9_HTTP_Handler(srv))
+	r.PUT("/admin/v1/permissions/{id}", _PermissionService_Update9_HTTP_Handler(srv))
+	r.DELETE("/admin/v1/permissions/{id}", _PermissionService_Delete9_HTTP_Handler(srv))
 	r.POST("/admin/v1/permissions/sync:perms", _PermissionService_SyncPermissions0_HTTP_Handler(srv))
 }
 
-func _PermissionService_List11_HTTP_Handler(srv PermissionServiceHTTPServer) func(ctx http.Context) error {
+func _PermissionService_List13_HTTP_Handler(srv PermissionServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.PagingRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -73,7 +73,7 @@ func _PermissionService_List11_HTTP_Handler(srv PermissionServiceHTTPServer) fun
 	}
 }
 
-func _PermissionService_Get11_HTTP_Handler(srv PermissionServiceHTTPServer) func(ctx http.Context) error {
+func _PermissionService_Get13_HTTP_Handler(srv PermissionServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.GetPermissionRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -95,7 +95,7 @@ func _PermissionService_Get11_HTTP_Handler(srv PermissionServiceHTTPServer) func
 	}
 }
 
-func _PermissionService_Create7_HTTP_Handler(srv PermissionServiceHTTPServer) func(ctx http.Context) error {
+func _PermissionService_Create9_HTTP_Handler(srv PermissionServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.CreatePermissionRequest
 		if err := ctx.Bind(&in); err != nil {
@@ -117,7 +117,7 @@ func _PermissionService_Create7_HTTP_Handler(srv PermissionServiceHTTPServer) fu
 	}
 }
 
-func _PermissionService_Update7_HTTP_Handler(srv PermissionServiceHTTPServer) func(ctx http.Context) error {
+func _PermissionService_Update9_HTTP_Handler(srv PermissionServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.UpdatePermissionRequest
 		if err := ctx.Bind(&in); err != nil {
@@ -142,7 +142,7 @@ func _PermissionService_Update7_HTTP_Handler(srv PermissionServiceHTTPServer) fu
 	}
 }
 
-func _PermissionService_Delete7_HTTP_Handler(srv PermissionServiceHTTPServer) func(ctx http.Context) error {
+func _PermissionService_Delete9_HTTP_Handler(srv PermissionServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.DeletePermissionRequest
 		if err := ctx.BindQuery(&in); err != nil {

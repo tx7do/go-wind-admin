@@ -29,7 +29,7 @@ export const useDictStore = defineStore('dict', () => {
   ) {
     const noPaging =
       paging?.page === undefined && paging?.pageSize === undefined;
-    return await dictTypeService.ListDictType({
+    return await dictTypeService.List({
       // @ts-ignore proto generated code is error.
       fieldMask,
       orderBy: makeOrderBy(orderBy),
@@ -51,7 +51,7 @@ export const useDictStore = defineStore('dict', () => {
   ) {
     const noPaging =
       paging?.page === undefined && paging?.pageSize === undefined;
-    return await dictEntryService.ListDictEntry({
+    return await dictEntryService.List({
       // @ts-ignore proto generated code is error.
       fieldMask,
       orderBy: makeOrderBy(orderBy),
@@ -66,7 +66,7 @@ export const useDictStore = defineStore('dict', () => {
    * 获取字典类型
    */
   async function getDictType(id: number) {
-    return await dictTypeService.GetDictType({
+    return await dictTypeService.Get({
       id,
     });
   }
@@ -75,7 +75,7 @@ export const useDictStore = defineStore('dict', () => {
    * 获取字典类型
    */
   async function getDictTypeByCode(code: string) {
-    return await dictTypeService.GetDictType({
+    return await dictTypeService.Get({
       code,
     });
   }
@@ -84,7 +84,7 @@ export const useDictStore = defineStore('dict', () => {
    * 创建字典类型
    */
   async function createDictType(values: object) {
-    return await dictTypeService.CreateDictType({
+    return await dictTypeService.Create({
       data: {
         ...values,
       },
@@ -95,7 +95,7 @@ export const useDictStore = defineStore('dict', () => {
    * 创建字典项
    */
   async function createDictEntry(values: object) {
-    return await dictEntryService.CreateDictEntry({
+    return await dictEntryService.Create({
       data: {
         ...values,
       },
@@ -106,7 +106,7 @@ export const useDictStore = defineStore('dict', () => {
    * 更新字典类型
    */
   async function updateDictType(id: number, values: object) {
-    return await dictTypeService.UpdateDictType({
+    return await dictTypeService.Update({
       id,
       data: {
         ...values,
@@ -120,7 +120,7 @@ export const useDictStore = defineStore('dict', () => {
    * 更新字典项
    */
   async function updateDictEntry(id: number, values: object) {
-    return await dictEntryService.UpdateDictEntry({
+    return await dictEntryService.Update({
       id,
       data: {
         ...values,
@@ -134,14 +134,14 @@ export const useDictStore = defineStore('dict', () => {
    * 删除字典类型
    */
   async function deleteDictType(ids: number[]) {
-    return await dictTypeService.DeleteDictType({ ids });
+    return await dictTypeService.Delete({ ids });
   }
 
   /**
    * 删除字典项
    */
   async function deleteDictEntry(ids: number[]) {
-    return await dictEntryService.DeleteDictEntry({ ids });
+    return await dictEntryService.Delete({ ids });
   }
 
   function $reset() {}

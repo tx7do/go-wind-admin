@@ -17,14 +17,14 @@ import "dict/service/v1/dict_entry.proto";
 // 数据字典条目管理服务
 service DictEntryService {
    // 分页查询字典条目列表
-  rpc ListDictEntry (pagination.PagingRequest) returns (dict.service.v1.ListDictEntryResponse) {
+  rpc List (pagination.PagingRequest) returns (dict.service.v1.ListDictEntryResponse) {
     option (google.api.http) = {
       get: "/admin/v1/dict/entries"
     };
   }
 
   // 创建字典条目
-  rpc CreateDictEntry (dict.service.v1.CreateDictEntryRequest) returns (google.protobuf.Empty) {
+  rpc Create (dict.service.v1.CreateDictEntryRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/admin/v1/dict/entries"
       body: "*"
@@ -32,7 +32,7 @@ service DictEntryService {
   }
 
   // 更新字典条目
-  rpc UpdateDictEntry (dict.service.v1.UpdateDictEntryRequest) returns (google.protobuf.Empty) {
+  rpc Update (dict.service.v1.UpdateDictEntryRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/admin/v1/dict/entries/{id}"
       body: "*"
@@ -40,7 +40,7 @@ service DictEntryService {
   }
 
   // 删除字典条目
-  rpc DeleteDictEntry (dict.service.v1.DeleteDictEntryRequest) returns (google.protobuf.Empty) {
+  rpc Delete (dict.service.v1.DeleteDictEntryRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/admin/v1/dict/entries"
     };

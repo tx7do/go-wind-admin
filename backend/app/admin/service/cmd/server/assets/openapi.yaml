@@ -408,7 +408,7 @@ paths:
             tags:
                 - DictEntryService
             description: 分页查询字典条目列表
-            operationId: DictEntryService_ListDictEntry
+            operationId: DictEntryService_List
             parameters:
                 - name: page
                   in: query
@@ -485,7 +485,7 @@ paths:
             tags:
                 - DictEntryService
             description: 创建字典条目
-            operationId: DictEntryService_CreateDictEntry
+            operationId: DictEntryService_Create
             requestBody:
                 content:
                     application/json:
@@ -500,7 +500,7 @@ paths:
             tags:
                 - DictEntryService
             description: 删除字典条目
-            operationId: DictEntryService_DeleteDictEntry
+            operationId: DictEntryService_Delete
             parameters:
                 - name: ids
                   in: query
@@ -518,7 +518,7 @@ paths:
             tags:
                 - DictEntryService
             description: 更新字典条目
-            operationId: DictEntryService_UpdateDictEntry
+            operationId: DictEntryService_Update
             parameters:
                 - name: id
                   in: path
@@ -716,7 +716,7 @@ paths:
             tags:
                 - DictTypeService
             description: 分页查询字典类型列表
-            operationId: DictTypeService_ListDictType
+            operationId: DictTypeService_List
             parameters:
                 - name: page
                   in: query
@@ -793,7 +793,7 @@ paths:
             tags:
                 - DictTypeService
             description: 创建字典类型
-            operationId: DictTypeService_CreateDictType
+            operationId: DictTypeService_Create
             requestBody:
                 content:
                     application/json:
@@ -808,7 +808,7 @@ paths:
             tags:
                 - DictTypeService
             description: 删除字典类型
-            operationId: DictTypeService_DeleteDictType
+            operationId: DictTypeService_Delete
             parameters:
                 - name: ids
                   in: query
@@ -826,7 +826,7 @@ paths:
             tags:
                 - DictTypeService
             description: 查询字典类型详情
-            operationId: DictTypeService_GetDictType
+            operationId: DictTypeService_Get
             parameters:
                 - name: code
                   in: path
@@ -855,7 +855,7 @@ paths:
             tags:
                 - DictTypeService
             description: 查询字典类型详情
-            operationId: DictTypeService_GetDictType
+            operationId: DictTypeService_Get
             parameters:
                 - name: id
                   in: path
@@ -883,7 +883,7 @@ paths:
             tags:
                 - DictTypeService
             description: 更新字典类型
-            operationId: DictTypeService_UpdateDictType
+            operationId: DictTypeService_Update
             parameters:
                 - name: id
                   in: path

@@ -50,10 +50,10 @@ type redactedDictEntryServiceServer struct {
 	bypass redact.Bypass
 }
 
-// ListDictEntry is the redacted wrapper for the actual DictEntryServiceServer.ListDictEntry method
+// List is the redacted wrapper for the actual DictEntryServiceServer.List method
 // Unary RPC
-func (s *redactedDictEntryServiceServer) ListDictEntry(ctx context.Context, in *pagination.PagingRequest) (*dictpb.ListDictEntryResponse, error) {
-	res, err := s.srv.ListDictEntry(ctx, in)
+func (s *redactedDictEntryServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*dictpb.ListDictEntryResponse, error) {
+	res, err := s.srv.List(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)
@@ -61,10 +61,10 @@ func (s *redactedDictEntryServiceServer) ListDictEntry(ctx context.Context, in *
 	return res, err
 }
 
-// CreateDictEntry is the redacted wrapper for the actual DictEntryServiceServer.CreateDictEntry method
+// Create is the redacted wrapper for the actual DictEntryServiceServer.Create method
 // Unary RPC
-func (s *redactedDictEntryServiceServer) CreateDictEntry(ctx context.Context, in *dictpb.CreateDictEntryRequest) (*emptypb.Empty, error) {
-	res, err := s.srv.CreateDictEntry(ctx, in)
+func (s *redactedDictEntryServiceServer) Create(ctx context.Context, in *dictpb.CreateDictEntryRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.Create(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)
@@ -72,10 +72,10 @@ func (s *redactedDictEntryServiceServer) CreateDictEntry(ctx context.Context, in
 	return res, err
 }
 
-// UpdateDictEntry is the redacted wrapper for the actual DictEntryServiceServer.UpdateDictEntry method
+// Update is the redacted wrapper for the actual DictEntryServiceServer.Update method
 // Unary RPC
-func (s *redactedDictEntryServiceServer) UpdateDictEntry(ctx context.Context, in *dictpb.UpdateDictEntryRequest) (*emptypb.Empty, error) {
-	res, err := s.srv.UpdateDictEntry(ctx, in)
+func (s *redactedDictEntryServiceServer) Update(ctx context.Context, in *dictpb.UpdateDictEntryRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.Update(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)
@@ -83,10 +83,10 @@ func (s *redactedDictEntryServiceServer) UpdateDictEntry(ctx context.Context, in
 	return res, err
 }
 
-// DeleteDictEntry is the redacted wrapper for the actual DictEntryServiceServer.DeleteDictEntry method
+// Delete is the redacted wrapper for the actual DictEntryServiceServer.Delete method
 // Unary RPC
-func (s *redactedDictEntryServiceServer) DeleteDictEntry(ctx context.Context, in *dictpb.DeleteDictEntryRequest) (*emptypb.Empty, error) {
-	res, err := s.srv.DeleteDictEntry(ctx, in)
+func (s *redactedDictEntryServiceServer) Delete(ctx context.Context, in *dictpb.DeleteDictEntryRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.Delete(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
 		redact.Apply(res)

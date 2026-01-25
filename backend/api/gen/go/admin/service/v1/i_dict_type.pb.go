@@ -31,13 +31,13 @@ var File_admin_service_v1_i_dict_type_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_dict_type_proto_rawDesc = "" +
 	"\n" +
-	"\"admin/service/v1/i_dict_type.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1fdict/service/v1/dict_type.proto2\xf3\x04\n" +
-	"\x0fDictTypeService\x12n\n" +
-	"\fListDictType\x12\x19.pagination.PagingRequest\x1a%.dict.service.v1.ListDictTypeResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/admin/v1/dict/types\x12\x94\x01\n" +
-	"\vGetDictType\x12#.dict.service.v1.GetDictTypeRequest\x1a\x19.dict.service.v1.DictType\"E\x82\xd3\xe4\x93\x02?Z\"\x12 /admin/v1/dict/types/code/{code}\x12\x19/admin/v1/dict/types/{id}\x12q\n" +
-	"\x0eCreateDictType\x12&.dict.service.v1.CreateDictTypeRequest\x1a\x16.google.protobuf.Empty\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/admin/v1/dict/types\x12v\n" +
-	"\x0eUpdateDictType\x12&.dict.service.v1.UpdateDictTypeRequest\x1a\x16.google.protobuf.Empty\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\x1a\x19/admin/v1/dict/types/{id}\x12n\n" +
-	"\x0eDeleteDictType\x12&.dict.service.v1.DeleteDictTypeRequest\x1a\x16.google.protobuf.Empty\"\x1c\x82\xd3\xe4\x93\x02\x16*\x14/admin/v1/dict/typesB\xbb\x01\n" +
+	"\"admin/service/v1/i_dict_type.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1fdict/service/v1/dict_type.proto2\xcb\x04\n" +
+	"\x0fDictTypeService\x12f\n" +
+	"\x04List\x12\x19.pagination.PagingRequest\x1a%.dict.service.v1.ListDictTypeResponse\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/admin/v1/dict/types\x12\x8c\x01\n" +
+	"\x03Get\x12#.dict.service.v1.GetDictTypeRequest\x1a\x19.dict.service.v1.DictType\"E\x82\xd3\xe4\x93\x02?Z\"\x12 /admin/v1/dict/types/code/{code}\x12\x19/admin/v1/dict/types/{id}\x12i\n" +
+	"\x06Create\x12&.dict.service.v1.CreateDictTypeRequest\x1a\x16.google.protobuf.Empty\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\"\x14/admin/v1/dict/types\x12n\n" +
+	"\x06Update\x12&.dict.service.v1.UpdateDictTypeRequest\x1a\x16.google.protobuf.Empty\"$\x82\xd3\xe4\x93\x02\x1e:\x01*\x1a\x19/admin/v1/dict/types/{id}\x12f\n" +
+	"\x06Delete\x12&.dict.service.v1.DeleteDictTypeRequest\x1a\x16.google.protobuf.Empty\"\x1c\x82\xd3\xe4\x93\x02\x16*\x14/admin/v1/dict/typesB\xbb\x01\n" +
 	"\x14com.admin.service.v1B\x0eIDictTypeProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_dict_type_proto_goTypes = []any{
@@ -51,16 +51,16 @@ var file_admin_service_v1_i_dict_type_proto_goTypes = []any{
 	(*emptypb.Empty)(nil),             // 7: google.protobuf.Empty
 }
 var file_admin_service_v1_i_dict_type_proto_depIdxs = []int32{
-	0, // 0: admin.service.v1.DictTypeService.ListDictType:input_type -> pagination.PagingRequest
-	1, // 1: admin.service.v1.DictTypeService.GetDictType:input_type -> dict.service.v1.GetDictTypeRequest
-	2, // 2: admin.service.v1.DictTypeService.CreateDictType:input_type -> dict.service.v1.CreateDictTypeRequest
-	3, // 3: admin.service.v1.DictTypeService.UpdateDictType:input_type -> dict.service.v1.UpdateDictTypeRequest
-	4, // 4: admin.service.v1.DictTypeService.DeleteDictType:input_type -> dict.service.v1.DeleteDictTypeRequest
-	5, // 5: admin.service.v1.DictTypeService.ListDictType:output_type -> dict.service.v1.ListDictTypeResponse
-	6, // 6: admin.service.v1.DictTypeService.GetDictType:output_type -> dict.service.v1.DictType
-	7, // 7: admin.service.v1.DictTypeService.CreateDictType:output_type -> google.protobuf.Empty
-	7, // 8: admin.service.v1.DictTypeService.UpdateDictType:output_type -> google.protobuf.Empty
-	7, // 9: admin.service.v1.DictTypeService.DeleteDictType:output_type -> google.protobuf.Empty
+	0, // 0: admin.service.v1.DictTypeService.List:input_type -> pagination.PagingRequest
+	1, // 1: admin.service.v1.DictTypeService.Get:input_type -> dict.service.v1.GetDictTypeRequest
+	2, // 2: admin.service.v1.DictTypeService.Create:input_type -> dict.service.v1.CreateDictTypeRequest
+	3, // 3: admin.service.v1.DictTypeService.Update:input_type -> dict.service.v1.UpdateDictTypeRequest
+	4, // 4: admin.service.v1.DictTypeService.Delete:input_type -> dict.service.v1.DeleteDictTypeRequest
+	5, // 5: admin.service.v1.DictTypeService.List:output_type -> dict.service.v1.ListDictTypeResponse
+	6, // 6: admin.service.v1.DictTypeService.Get:output_type -> dict.service.v1.DictType
+	7, // 7: admin.service.v1.DictTypeService.Create:output_type -> google.protobuf.Empty
+	7, // 8: admin.service.v1.DictTypeService.Update:output_type -> google.protobuf.Empty
+	7, // 9: admin.service.v1.DictTypeService.Delete:output_type -> google.protobuf.Empty
 	5, // [5:10] is the sub-list for method output_type
 	0, // [0:5] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

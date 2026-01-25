@@ -1228,20 +1228,20 @@ export type auditservicev1_GetDataAccessAuditLogRequest = {
 // 数据字典条目管理服务
 export interface DictEntryService {
   // 分页查询字典条目列表
-  ListDictEntry(request: pagination_PagingRequest): Promise<dictservicev1_ListDictEntryResponse>;
+  List(request: pagination_PagingRequest): Promise<dictservicev1_ListDictEntryResponse>;
   // 创建字典条目
-  CreateDictEntry(request: dictservicev1_CreateDictEntryRequest): Promise<wellKnownEmpty>;
+  Create(request: dictservicev1_CreateDictEntryRequest): Promise<wellKnownEmpty>;
   // 更新字典条目
-  UpdateDictEntry(request: dictservicev1_UpdateDictEntryRequest): Promise<wellKnownEmpty>;
+  Update(request: dictservicev1_UpdateDictEntryRequest): Promise<wellKnownEmpty>;
   // 删除字典条目
-  DeleteDictEntry(request: dictservicev1_DeleteDictEntryRequest): Promise<wellKnownEmpty>;
+  Delete(request: dictservicev1_DeleteDictEntryRequest): Promise<wellKnownEmpty>;
 }
 
 export function createDictEntryServiceClient(
   handler: RequestHandler
 ): DictEntryService {
   return {
-    ListDictEntry(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    List(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/dict/entries`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
@@ -1317,10 +1317,10 @@ export function createDictEntryServiceClient(
         body,
       }, {
         service: "DictEntryService",
-        method: "ListDictEntry",
+        method: "List",
       }) as Promise<dictservicev1_ListDictEntryResponse>;
     },
-    CreateDictEntry(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/dict/entries`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
@@ -1334,10 +1334,10 @@ export function createDictEntryServiceClient(
         body,
       }, {
         service: "DictEntryService",
-        method: "CreateDictEntry",
+        method: "Create",
       }) as Promise<wellKnownEmpty>;
     },
-    UpdateDictEntry(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    Update(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
         throw new Error("missing required field request.id");
       }
@@ -1354,10 +1354,10 @@ export function createDictEntryServiceClient(
         body,
       }, {
         service: "DictEntryService",
-        method: "UpdateDictEntry",
+        method: "Update",
       }) as Promise<wellKnownEmpty>;
     },
-    DeleteDictEntry(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    Delete(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/dict/entries`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
@@ -1376,7 +1376,7 @@ export function createDictEntryServiceClient(
         body,
       }, {
         service: "DictEntryService",
-        method: "DeleteDictEntry",
+        method: "Delete",
       }) as Promise<wellKnownEmpty>;
     },
   };
@@ -1436,22 +1436,22 @@ export type dictservicev1_DeleteDictEntryRequest = {
 // 数据字典分类管理服务
 export interface DictTypeService {
   // 分页查询字典类型列表
-  ListDictType(request: pagination_PagingRequest): Promise<dictservicev1_ListDictTypeResponse>;
+  List(request: pagination_PagingRequest): Promise<dictservicev1_ListDictTypeResponse>;
   // 查询字典类型详情
-  GetDictType(request: dictservicev1_GetDictTypeRequest): Promise<dictservicev1_DictType>;
+  Get(request: dictservicev1_GetDictTypeRequest): Promise<dictservicev1_DictType>;
   // 创建字典类型
-  CreateDictType(request: dictservicev1_CreateDictTypeRequest): Promise<wellKnownEmpty>;
+  Create(request: dictservicev1_CreateDictTypeRequest): Promise<wellKnownEmpty>;
   // 更新字典类型
-  UpdateDictType(request: dictservicev1_UpdateDictTypeRequest): Promise<wellKnownEmpty>;
+  Update(request: dictservicev1_UpdateDictTypeRequest): Promise<wellKnownEmpty>;
   // 删除字典类型
-  DeleteDictType(request: dictservicev1_DeleteDictTypeRequest): Promise<wellKnownEmpty>;
+  Delete(request: dictservicev1_DeleteDictTypeRequest): Promise<wellKnownEmpty>;
 }
 
 export function createDictTypeServiceClient(
   handler: RequestHandler
 ): DictTypeService {
   return {
-    ListDictType(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    List(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/dict/types`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
@@ -1527,10 +1527,10 @@ export function createDictTypeServiceClient(
         body,
       }, {
         service: "DictTypeService",
-        method: "ListDictType",
+        method: "List",
       }) as Promise<dictservicev1_ListDictTypeResponse>;
     },
-    GetDictType(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
         throw new Error("missing required field request.id");
       }
@@ -1553,10 +1553,10 @@ export function createDictTypeServiceClient(
         body,
       }, {
         service: "DictTypeService",
-        method: "GetDictType",
+        method: "Get",
       }) as Promise<dictservicev1_DictType>;
     },
-    CreateDictType(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/dict/types`; // eslint-disable-line quotes
       const body = JSON.stringify(request);
       const queryParams: string[] = [];
@@ -1570,10 +1570,10 @@ export function createDictTypeServiceClient(
         body,
       }, {
         service: "DictTypeService",
-        method: "CreateDictType",
+        method: "Create",
       }) as Promise<wellKnownEmpty>;
     },
-    UpdateDictType(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    Update(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
         throw new Error("missing required field request.id");
       }
@@ -1590,10 +1590,10 @@ export function createDictTypeServiceClient(
         body,
       }, {
         service: "DictTypeService",
-        method: "UpdateDictType",
+        method: "Update",
       }) as Promise<wellKnownEmpty>;
     },
-    DeleteDictType(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+    Delete(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/dict/types`; // eslint-disable-line quotes
       const body = null;
       const queryParams: string[] = [];
@@ -1612,7 +1612,7 @@ export function createDictTypeServiceClient(
         body,
       }, {
         service: "DictTypeService",
-        method: "DeleteDictType",
+        method: "Delete",
       }) as Promise<wellKnownEmpty>;
     },
   };

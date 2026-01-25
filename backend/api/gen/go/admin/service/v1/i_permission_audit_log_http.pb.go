@@ -33,11 +33,11 @@ type PermissionAuditLogServiceHTTPServer interface {
 
 func RegisterPermissionAuditLogServiceHTTPServer(s *http.Server, srv PermissionAuditLogServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/permission-audit-logs", _PermissionAuditLogService_List12_HTTP_Handler(srv))
-	r.GET("/admin/v1/permission-audit-logs/{id}", _PermissionAuditLogService_Get12_HTTP_Handler(srv))
+	r.GET("/admin/v1/permission-audit-logs", _PermissionAuditLogService_List14_HTTP_Handler(srv))
+	r.GET("/admin/v1/permission-audit-logs/{id}", _PermissionAuditLogService_Get14_HTTP_Handler(srv))
 }
 
-func _PermissionAuditLogService_List12_HTTP_Handler(srv PermissionAuditLogServiceHTTPServer) func(ctx http.Context) error {
+func _PermissionAuditLogService_List14_HTTP_Handler(srv PermissionAuditLogServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.PagingRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -56,7 +56,7 @@ func _PermissionAuditLogService_List12_HTTP_Handler(srv PermissionAuditLogServic
 	}
 }
 
-func _PermissionAuditLogService_Get12_HTTP_Handler(srv PermissionAuditLogServiceHTTPServer) func(ctx http.Context) error {
+func _PermissionAuditLogService_Get14_HTTP_Handler(srv PermissionAuditLogServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.GetPermissionAuditLogRequest
 		if err := ctx.BindQuery(&in); err != nil {

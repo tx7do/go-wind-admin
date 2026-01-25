@@ -31,12 +31,12 @@ var File_admin_service_v1_i_dict_entry_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_dict_entry_proto_rawDesc = "" +
 	"\n" +
-	"#admin/service/v1/i_dict_entry.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a dict/service/v1/dict_entry.proto2\xed\x03\n" +
-	"\x10DictEntryService\x12r\n" +
-	"\rListDictEntry\x12\x19.pagination.PagingRequest\x1a&.dict.service.v1.ListDictEntryResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/admin/v1/dict/entries\x12u\n" +
-	"\x0fCreateDictEntry\x12'.dict.service.v1.CreateDictEntryRequest\x1a\x16.google.protobuf.Empty\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/admin/v1/dict/entries\x12z\n" +
-	"\x0fUpdateDictEntry\x12'.dict.service.v1.UpdateDictEntryRequest\x1a\x16.google.protobuf.Empty\"&\x82\xd3\xe4\x93\x02 :\x01*\x1a\x1b/admin/v1/dict/entries/{id}\x12r\n" +
-	"\x0fDeleteDictEntry\x12'.dict.service.v1.DeleteDictEntryRequest\x1a\x16.google.protobuf.Empty\"\x1e\x82\xd3\xe4\x93\x02\x18*\x16/admin/v1/dict/entriesB\xbc\x01\n" +
+	"#admin/service/v1/i_dict_entry.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a dict/service/v1/dict_entry.proto2\xc9\x03\n" +
+	"\x10DictEntryService\x12i\n" +
+	"\x04List\x12\x19.pagination.PagingRequest\x1a&.dict.service.v1.ListDictEntryResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/admin/v1/dict/entries\x12l\n" +
+	"\x06Create\x12'.dict.service.v1.CreateDictEntryRequest\x1a\x16.google.protobuf.Empty\"!\x82\xd3\xe4\x93\x02\x1b:\x01*\"\x16/admin/v1/dict/entries\x12q\n" +
+	"\x06Update\x12'.dict.service.v1.UpdateDictEntryRequest\x1a\x16.google.protobuf.Empty\"&\x82\xd3\xe4\x93\x02 :\x01*\x1a\x1b/admin/v1/dict/entries/{id}\x12i\n" +
+	"\x06Delete\x12'.dict.service.v1.DeleteDictEntryRequest\x1a\x16.google.protobuf.Empty\"\x1e\x82\xd3\xe4\x93\x02\x18*\x16/admin/v1/dict/entriesB\xbc\x01\n" +
 	"\x14com.admin.service.v1B\x0fIDictEntryProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_dict_entry_proto_goTypes = []any{
@@ -48,14 +48,14 @@ var file_admin_service_v1_i_dict_entry_proto_goTypes = []any{
 	(*emptypb.Empty)(nil),              // 5: google.protobuf.Empty
 }
 var file_admin_service_v1_i_dict_entry_proto_depIdxs = []int32{
-	0, // 0: admin.service.v1.DictEntryService.ListDictEntry:input_type -> pagination.PagingRequest
-	1, // 1: admin.service.v1.DictEntryService.CreateDictEntry:input_type -> dict.service.v1.CreateDictEntryRequest
-	2, // 2: admin.service.v1.DictEntryService.UpdateDictEntry:input_type -> dict.service.v1.UpdateDictEntryRequest
-	3, // 3: admin.service.v1.DictEntryService.DeleteDictEntry:input_type -> dict.service.v1.DeleteDictEntryRequest
-	4, // 4: admin.service.v1.DictEntryService.ListDictEntry:output_type -> dict.service.v1.ListDictEntryResponse
-	5, // 5: admin.service.v1.DictEntryService.CreateDictEntry:output_type -> google.protobuf.Empty
-	5, // 6: admin.service.v1.DictEntryService.UpdateDictEntry:output_type -> google.protobuf.Empty
-	5, // 7: admin.service.v1.DictEntryService.DeleteDictEntry:output_type -> google.protobuf.Empty
+	0, // 0: admin.service.v1.DictEntryService.List:input_type -> pagination.PagingRequest
+	1, // 1: admin.service.v1.DictEntryService.Create:input_type -> dict.service.v1.CreateDictEntryRequest
+	2, // 2: admin.service.v1.DictEntryService.Update:input_type -> dict.service.v1.UpdateDictEntryRequest
+	3, // 3: admin.service.v1.DictEntryService.Delete:input_type -> dict.service.v1.DeleteDictEntryRequest
+	4, // 4: admin.service.v1.DictEntryService.List:output_type -> dict.service.v1.ListDictEntryResponse
+	5, // 5: admin.service.v1.DictEntryService.Create:output_type -> google.protobuf.Empty
+	5, // 6: admin.service.v1.DictEntryService.Update:output_type -> google.protobuf.Empty
+	5, // 7: admin.service.v1.DictEntryService.Delete:output_type -> google.protobuf.Empty
 	4, // [4:8] is the sub-list for method output_type
 	0, // [0:4] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
