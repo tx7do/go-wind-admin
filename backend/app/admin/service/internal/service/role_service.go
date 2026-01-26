@@ -6,6 +6,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	"github.com/tx7do/go-utils/aggregator"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -19,7 +20,6 @@ import (
 	"go-wind-admin/pkg/constants"
 	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
-	"go-wind-admin/pkg/utils/name_set"
 )
 
 type RoleService struct {
@@ -58,29 +58,65 @@ func (s *RoleService) init() {
 	}
 }
 
+func (s *RoleService) extractRelationIDs(
+	roles []*userV1.Role,
+	tenantSet aggregator.ResourceMap[uint32, *userV1.Tenant],
+) {
+	for _, p := range roles {
+		if p.GetTenantId() > 0 {
+			tenantSet[p.GetTenantId()] = nil
+		}
+	}
+}
+
+func (s *RoleService) fetchRelationInfo(
+	ctx context.Context,
+	tenantSet aggregator.ResourceMap[uint32, *userV1.Tenant],
+) error {
+	if len(tenantSet) > 0 {
+		tenantIds := make([]uint32, 0, len(tenantSet))
+		for id := range tenantSet {
+			tenantIds = append(tenantIds, id)
+		}
+
+		tenants, err := s.tenantRepo.ListTenantsByIds(ctx, tenantIds)
+		if err != nil {
+			s.log.Errorf("query tenants err: %v", err)
+			return err
+		}
+
+		for _, tenant := range tenants {
+			tenantSet[tenant.GetId()] = tenant
+		}
+	}
+
+	return nil
+}
+
+func (s *RoleService) populateRelationInfos(
+	roles []*userV1.Role,
+	tenantSet aggregator.ResourceMap[uint32, *userV1.Tenant],
+) {
+	aggregator.Populate(
+		roles,
+		tenantSet,
+		func(ou *userV1.Role) uint32 { return ou.GetTenantId() },
+		func(ou *userV1.Role, r *userV1.Tenant) {
+			ou.TenantName = r.Name
+		},
+	)
+}
+
 func (s *RoleService) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListRoleResponse, error) {
 	resp, err := s.roleRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	var tenantSet = make(name_set.UserNameSetMap)
-
-	for _, v := range resp.Items {
-		if v.GetTenantId() > 0 {
-			tenantSet[v.GetTenantId()] = nil
-		}
-	}
-
-	QueryTenantInfoFromRepo(ctx, s.tenantRepo, &tenantSet)
-
-	for _, v := range resp.Items {
-		if v.GetTenantId() > 0 {
-			if tenantInfo, ok := tenantSet[v.GetTenantId()]; ok && tenantInfo != nil {
-				v.TenantName = &tenantInfo.UserName
-			}
-		}
-	}
+	var tenantSet = make(aggregator.ResourceMap[uint32, *userV1.Tenant])
+	s.extractRelationIDs(resp.Items, tenantSet)
+	_ = s.fetchRelationInfo(ctx, tenantSet)
+	s.populateRelationInfos(resp.Items, tenantSet)
 
 	return resp, nil
 }
@@ -91,15 +127,11 @@ func (s *RoleService) Get(ctx context.Context, req *userV1.GetRoleRequest) (*use
 		return nil, err
 	}
 
-	if resp.GetTenantId() > 0 {
-		var aTenant *userV1.Tenant
-		aTenant, err = s.tenantRepo.Get(ctx, &userV1.GetTenantRequest{QueryBy: &userV1.GetTenantRequest_Id{Id: resp.GetTenantId()}})
-		if err == nil && aTenant != nil {
-			resp.TenantName = aTenant.Name
-		} else {
-			s.log.Warnf("Get role tenant failed: %v", err)
-		}
-	}
+	fakeItems := []*userV1.Role{resp}
+	var tenantSet = make(aggregator.ResourceMap[uint32, *userV1.Tenant])
+	s.extractRelationIDs(fakeItems, tenantSet)
+	_ = s.fetchRelationInfo(ctx, tenantSet)
+	s.populateRelationInfos(fakeItems, tenantSet)
 
 	return resp, nil
 }

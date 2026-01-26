@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	"github.com/tx7do/go-utils/aggregator"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -15,7 +16,6 @@ import (
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 
 	"go-wind-admin/pkg/middleware/auth"
-	"go-wind-admin/pkg/utils/name_set"
 )
 
 type OrgUnitService struct {
@@ -39,19 +39,91 @@ func NewOrgUnitService(
 	}
 }
 
+func (s *OrgUnitService) extractRelationIDs(
+	orgUnits []*userV1.OrgUnit,
+	userSet aggregator.ResourceMap[uint32, *userV1.User],
+) {
+	for _, ou := range orgUnits {
+		if ou == nil {
+			continue
+		}
+		if id := ou.GetLeaderId(); id > 0 {
+			userSet[id] = nil
+		}
+		if id := ou.GetContactUserId(); id > 0 {
+			userSet[id] = nil
+		}
+
+		if len(ou.Children) > 0 {
+			s.extractRelationIDs(ou.Children, userSet)
+		}
+	}
+}
+
+func (s *OrgUnitService) fetchRelationInfo(
+	ctx context.Context,
+	userSet aggregator.ResourceMap[uint32, *userV1.User],
+) error {
+	if len(userSet) == 0 {
+		return nil
+	}
+
+	userIds := make([]uint32, 0, len(userSet))
+	for id := range userSet {
+		userIds = append(userIds, id)
+	}
+
+	users, err := s.userRepo.ListUsersByIds(ctx, userIds)
+	if err != nil {
+		log.Errorf("query users err: %v", err)
+		return err
+	}
+
+	for _, user := range users {
+		userSet[user.GetId()] = user
+	}
+	return nil
+}
+
+func (s *OrgUnitService) populateRelationInfos(
+	orgUnits []*userV1.OrgUnit,
+	userSet aggregator.ResourceMap[uint32, *userV1.User],
+) {
+	childrenFunc := func(ou *userV1.OrgUnit) []*userV1.OrgUnit { return ou.GetChildren() }
+
+	// 回填 LeaderName
+	aggregator.PopulateTree(
+		orgUnits,
+		userSet,
+		func(ou *userV1.OrgUnit) uint32 { return ou.GetLeaderId() },
+		func(ou *userV1.OrgUnit, user *userV1.User) {
+			ou.LeaderName = trans.Ptr(user.GetUsername())
+		},
+		childrenFunc,
+	)
+
+	// 回填 ContactUserName
+	aggregator.PopulateTree(
+		orgUnits,
+		userSet,
+		func(ou *userV1.OrgUnit) uint32 { return ou.GetContactUserId() },
+		func(ou *userV1.OrgUnit, user *userV1.User) {
+			ou.ContactUserName = trans.Ptr(user.GetUsername())
+		},
+		childrenFunc,
+	)
+}
+
 func (s *OrgUnitService) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListOrgUnitResponse, error) {
 	resp, err := s.orgUnitRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	var userSet = make(name_set.UserNameSetMap)
-
-	InitOrgUnitNameSetMap(resp.Items, &userSet)
-
-	QueryUserInfoFromRepo(ctx, s.userRepo, &userSet)
-
-	FillOrgUnitInfo(resp.Items, &userSet)
+	var userSet = make(aggregator.ResourceMap[uint32, *userV1.User])
+	s.extractRelationIDs(resp.Items, userSet)
+	_ = s.fetchRelationInfo(ctx, userSet)
+	s.populateRelationInfos(resp.Items, userSet)
 
 	return resp, nil
 }
@@ -62,18 +134,23 @@ func (s *OrgUnitService) Get(ctx context.Context, req *userV1.GetOrgUnitRequest)
 		return nil, err
 	}
 
-	if resp.LeaderId != nil {
-		manager, err := s.userRepo.Get(ctx, &userV1.GetUserRequest{
-			QueryBy: &userV1.GetUserRequest_Id{
-				Id: resp.GetLeaderId(),
-			},
-		})
-		if err == nil && manager != nil {
-			resp.LeaderName = manager.Nickname
-		} else {
-			s.log.Warnf("Get orgUnit leader user failed: %v", err)
-		}
-	}
+	fakeItems := []*userV1.OrgUnit{resp}
+	var userSet = make(aggregator.ResourceMap[uint32, *userV1.User])
+
+	s.extractRelationIDs(fakeItems, userSet)
+	_ = s.fetchRelationInfo(ctx, userSet)
+
+	// 回填 LeaderName
+	aggregator.PopulateOne(resp, userSet,
+		func(r *userV1.OrgUnit) uint32 { return r.GetLeaderId() },
+		func(r *userV1.OrgUnit, u *userV1.User) { r.LeaderName = u.Username },
+	)
+
+	// 回填 ContactUser
+	aggregator.PopulateOne(resp, userSet,
+		func(r *userV1.OrgUnit) uint32 { return r.GetContactUserId() },
+		func(r *userV1.OrgUnit, u *userV1.User) { r.ContactUserName = u.Username },
+	)
 
 	return resp, nil
 }

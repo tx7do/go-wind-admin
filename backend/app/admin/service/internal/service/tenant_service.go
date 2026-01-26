@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	"github.com/tx7do/go-utils/aggregator"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -17,7 +18,6 @@ import (
 
 	"go-wind-admin/pkg/authorizer"
 	"go-wind-admin/pkg/middleware/auth"
-	"go-wind-admin/pkg/utils/name_set"
 )
 
 type TenantService struct {
@@ -51,29 +51,65 @@ func NewTenantService(
 	}
 }
 
+func (s *TenantService) extractRelationIDs(
+	tenants []*userV1.Tenant,
+	userSet aggregator.ResourceMap[uint32, *userV1.User],
+) {
+	for _, t := range tenants {
+		if t.GetAdminUserId() > 0 {
+			userSet[t.GetAdminUserId()] = nil
+		}
+	}
+}
+
+func (s *TenantService) fetchRelationInfo(
+	ctx context.Context,
+	userSet aggregator.ResourceMap[uint32, *userV1.User],
+) error {
+	if len(userSet) > 0 {
+		userIds := make([]uint32, 0, len(userSet))
+		for id := range userSet {
+			userIds = append(userIds, id)
+		}
+
+		users, err := s.userRepo.ListUsersByIds(ctx, userIds)
+		if err != nil {
+			s.log.Errorf("query users err: %v", err)
+			return err
+		}
+
+		for _, u := range users {
+			userSet[u.GetId()] = u
+		}
+	}
+
+	return nil
+}
+
+func (s *TenantService) populateRelationInfos(
+	tenants []*userV1.Tenant,
+	userSet aggregator.ResourceMap[uint32, *userV1.User],
+) {
+	aggregator.Populate(
+		tenants,
+		userSet,
+		func(ou *userV1.Tenant) uint32 { return ou.GetAdminUserId() },
+		func(ou *userV1.Tenant, r *userV1.User) {
+			ou.AdminUserName = r.Username
+		},
+	)
+}
+
 func (s *TenantService) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListTenantResponse, error) {
 	resp, err := s.tenantRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	var userSet = make(name_set.UserNameSetMap)
-
-	for _, v := range resp.Items {
-		if v.AdminUserId != nil {
-			userSet[v.GetAdminUserId()] = nil
-		}
-	}
-
-	QueryUserInfoFromRepo(ctx, s.userRepo, &userSet)
-
-	for _, v := range resp.Items {
-		if v.AdminUserId != nil {
-			if userInfo, ok := userSet[v.GetAdminUserId()]; ok && userInfo != nil {
-				v.AdminUserName = &userInfo.UserName
-			}
-		}
-	}
+	var userSet = make(aggregator.ResourceMap[uint32, *userV1.User])
+	s.extractRelationIDs(resp.Items, userSet)
+	_ = s.fetchRelationInfo(ctx, userSet)
+	s.populateRelationInfos(resp.Items, userSet)
 
 	return resp, nil
 }
@@ -84,18 +120,12 @@ func (s *TenantService) Get(ctx context.Context, req *userV1.GetTenantRequest) (
 		return nil, err
 	}
 
-	if resp.AdminUserId != nil {
-		userResp, err := s.userRepo.Get(ctx, &userV1.GetUserRequest{
-			QueryBy: &userV1.GetUserRequest_Id{
-				Id: resp.GetAdminUserId(),
-			},
-		})
-		if err != nil {
-			s.log.Errorf("failed to get admin user info: %v", err)
-		} else {
-			resp.AdminUserName = userResp.Username
-		}
-	}
+	fakeItems := []*userV1.Tenant{resp}
+	var userSet = make(aggregator.ResourceMap[uint32, *userV1.User])
+
+	s.extractRelationIDs(fakeItems, userSet)
+	_ = s.fetchRelationInfo(ctx, userSet)
+	s.populateRelationInfos(fakeItems, userSet)
 
 	return resp, nil
 }

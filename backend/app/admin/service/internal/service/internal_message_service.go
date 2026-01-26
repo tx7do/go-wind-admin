@@ -3,12 +3,12 @@ package service
 import (
 	"context"
 	"encoding/json"
-	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/uuid"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	"github.com/tx7do/go-utils/aggregator"
 	"github.com/tx7do/go-utils/timeutil"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -18,10 +18,10 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	internalMessageV1 "go-wind-admin/api/gen/go/internal_message/service/v1"
 
 	"go-wind-admin/pkg/middleware/auth"
-	"go-wind-admin/pkg/utils/name_set"
 )
 
 type InternalMessageService struct {
@@ -61,45 +61,65 @@ func NewInternalMessageService(
 	}
 }
 
+func (s *InternalMessageService) extractRelationIDs(
+	messages []*internalMessageV1.InternalMessage,
+	categorySet aggregator.ResourceMap[uint32, *internalMessageV1.InternalMessageCategory],
+) {
+	for _, p := range messages {
+		if p.GetCategoryId() > 0 {
+			categorySet[p.GetCategoryId()] = nil
+		}
+	}
+}
+
+func (s *InternalMessageService) fetchRelationInfo(
+	ctx context.Context,
+	categorySet aggregator.ResourceMap[uint32, *internalMessageV1.InternalMessageCategory],
+) error {
+	if len(categorySet) > 0 {
+		categoryIds := make([]uint32, 0, len(categorySet))
+		for id := range categorySet {
+			categoryIds = append(categoryIds, id)
+		}
+
+		categories, err := s.internalMessageCategoryRepo.ListCategoriesByIds(ctx, categoryIds)
+		if err != nil {
+			s.log.Errorf("query internal message category err: %v", err)
+			return err
+		}
+
+		for _, g := range categories {
+			categorySet[g.GetId()] = g
+		}
+	}
+
+	return nil
+}
+
+func (s *InternalMessageService) populateRelationInfos(
+	messages []*internalMessageV1.InternalMessage,
+	categorySet aggregator.ResourceMap[uint32, *internalMessageV1.InternalMessageCategory],
+) {
+	aggregator.Populate(
+		messages,
+		categorySet,
+		func(ou *internalMessageV1.InternalMessage) uint32 { return ou.GetCategoryId() },
+		func(ou *internalMessageV1.InternalMessage, c *internalMessageV1.InternalMessageCategory) {
+			ou.CategoryName = c.Name
+		},
+	)
+}
+
 func (s *InternalMessageService) ListMessage(ctx context.Context, req *paginationV1.PagingRequest) (*internalMessageV1.ListInternalMessageResponse, error) {
 	resp, err := s.internalMessageRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	var categorySet = make(name_set.UserNameSetMap)
-
-	for _, v := range resp.Items {
-		if v.CategoryId != nil {
-			categorySet[v.GetCategoryId()] = nil
-		}
-	}
-
-	ids := make([]uint32, 0, len(categorySet))
-	for id := range categorySet {
-		ids = append(ids, id)
-	}
-
-	categories, err := s.internalMessageCategoryRepo.ListCategoriesByIds(ctx, ids)
-	if err == nil {
-		for _, c := range categories {
-			categorySet[c.GetId()] = &name_set.UserNameSet{
-				UserName: c.GetName(),
-			}
-		}
-
-		for k, v := range categorySet {
-			if v == nil {
-				continue
-			}
-
-			for i := 0; i < len(resp.Items); i++ {
-				if resp.Items[i].CategoryId != nil && resp.Items[i].GetCategoryId() == k {
-					resp.Items[i].CategoryName = &v.UserName
-				}
-			}
-		}
-	}
+	var categorySet = make(aggregator.ResourceMap[uint32, *internalMessageV1.InternalMessageCategory])
+	s.extractRelationIDs(resp.Items, categorySet)
+	_ = s.fetchRelationInfo(ctx, categorySet)
+	s.populateRelationInfos(resp.Items, categorySet)
 
 	return resp, nil
 }
@@ -110,16 +130,11 @@ func (s *InternalMessageService) GetMessage(ctx context.Context, req *internalMe
 		return nil, err
 	}
 
-	if resp.CategoryId != nil {
-		category, err := s.internalMessageCategoryRepo.Get(ctx, &internalMessageV1.GetInternalMessageCategoryRequest{
-			QueryBy: &internalMessageV1.GetInternalMessageCategoryRequest_Id{Id: resp.GetCategoryId()},
-		})
-		if err == nil && category != nil {
-			resp.CategoryName = category.Name
-		} else {
-			s.log.Warnf("Get internal message category failed: %v", err)
-		}
-	}
+	fakeItems := []*internalMessageV1.InternalMessage{resp}
+	var categorySet = make(aggregator.ResourceMap[uint32, *internalMessageV1.InternalMessageCategory])
+	s.extractRelationIDs(fakeItems, categorySet)
+	_ = s.fetchRelationInfo(ctx, categorySet)
+	s.populateRelationInfos(fakeItems, categorySet)
 
 	return resp, nil
 }

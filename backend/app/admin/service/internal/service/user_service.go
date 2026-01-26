@@ -5,6 +5,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	"github.com/tx7do/go-utils/aggregator"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -18,7 +19,6 @@ import (
 	"go-wind-admin/pkg/constants"
 	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
-	"go-wind-admin/pkg/utils/name_set"
 )
 
 type UserService struct {
@@ -70,46 +70,205 @@ func (s *UserService) init() {
 	}
 }
 
-func (s *UserService) initUserNameSetMap(
+func (s *UserService) extractRelationIDs(
 	users []*userV1.User,
-	tenantSet *name_set.UserNameSetMap,
-	orgUnitSet *name_set.UserNameSetMap,
-	posSet *name_set.UserNameSetMap,
-	roleSet *name_set.UserNameSetMap,
+	roleSet aggregator.ResourceMap[uint32, *userV1.Role],
+	tenantSet aggregator.ResourceMap[uint32, *userV1.Tenant],
+	orgUnitSet aggregator.ResourceMap[uint32, *userV1.OrgUnit],
+	posSet aggregator.ResourceMap[uint32, *userV1.Position],
 ) {
 	for _, v := range users {
-		if v.GetTenantId() > 0 {
-			(*tenantSet)[v.GetTenantId()] = nil
+		if v == nil {
+			continue
+		}
+
+		if id := v.GetTenantId(); id > 0 {
+			tenantSet[id] = nil
+		}
+
+		for _, roleId := range v.RoleIds {
+			if roleId > 0 {
+				roleSet[roleId] = nil
+			}
 		}
 
 		if v.GetOrgUnitId() > 0 {
-			(*orgUnitSet)[v.GetOrgUnitId()] = nil
+			orgUnitSet[v.GetOrgUnitId()] = nil
 		}
 		if len(v.OrgUnitIds) > 0 {
 			for _, orgID := range v.OrgUnitIds {
 				if orgID > 0 {
-					(*orgUnitSet)[orgID] = nil
+					orgUnitSet[orgID] = nil
 				}
 			}
 		}
 
 		if v.GetPositionId() > 0 {
-			(*posSet)[v.GetPositionId()] = nil
+			posSet[v.GetPositionId()] = nil
 		}
 		if len(v.PositionIds) > 0 {
 			for _, posID := range v.PositionIds {
 				if posID > 0 {
-					(*posSet)[posID] = nil
+					posSet[posID] = nil
 				}
 			}
 		}
 
-		for _, roleId := range v.RoleIds {
-			if roleId > 0 {
-				(*roleSet)[roleId] = nil
-			}
+	}
+}
+
+func (s *UserService) fetchRelationInfo(
+	ctx context.Context,
+	roleSet aggregator.ResourceMap[uint32, *userV1.Role],
+	tenantSet aggregator.ResourceMap[uint32, *userV1.Tenant],
+	orgUnitSet aggregator.ResourceMap[uint32, *userV1.OrgUnit],
+	posSet aggregator.ResourceMap[uint32, *userV1.Position],
+) error {
+	if len(roleSet) > 0 {
+		roleIds := make([]uint32, 0, len(roleSet))
+		for id := range roleSet {
+			roleIds = append(roleIds, id)
+		}
+
+		roles, err := s.roleRepo.ListRolesByRoleIds(ctx, roleIds)
+		if err != nil {
+			s.log.Errorf("query roles err: %v", err)
+			return err
+		}
+
+		for _, role := range roles {
+			roleSet[role.GetId()] = role
 		}
 	}
+
+	if len(tenantSet) > 0 {
+		tenantIds := make([]uint32, 0, len(tenantSet))
+		for id := range tenantSet {
+			tenantIds = append(tenantIds, id)
+		}
+
+		tenants, err := s.tenantRepo.ListTenantsByIds(ctx, tenantIds)
+		if err != nil {
+			s.log.Errorf("query tenants err: %v", err)
+			return err
+		}
+
+		for _, tenant := range tenants {
+			tenantSet[tenant.GetId()] = tenant
+		}
+	}
+
+	if len(orgUnitSet) > 0 {
+		orgUnitIds := make([]uint32, 0, len(orgUnitSet))
+		for id := range orgUnitSet {
+			orgUnitIds = append(orgUnitIds, id)
+		}
+
+		orgUnits, err := s.orgUnitRepo.ListOrgUnitsByIds(ctx, orgUnitIds)
+		if err != nil {
+			s.log.Errorf("query orgUnits err: %v", err)
+			return err
+		}
+
+		for _, orgUnit := range orgUnits {
+			orgUnitSet[orgUnit.GetId()] = orgUnit
+		}
+	}
+
+	if len(posSet) > 0 {
+		posIds := make([]uint32, 0, len(posSet))
+		for id := range posSet {
+			posIds = append(posIds, id)
+		}
+
+		positions, err := s.positionRepo.ListPositionByIds(ctx, posIds)
+		if err != nil {
+			s.log.Errorf("query positions err: %v", err)
+			return err
+		}
+
+		for _, position := range positions {
+			posSet[position.GetId()] = position
+		}
+	}
+
+	return nil
+}
+
+func (s *UserService) populateRelationInfos(
+	users []*userV1.User,
+	roleSet aggregator.ResourceMap[uint32, *userV1.Role],
+	tenantSet aggregator.ResourceMap[uint32, *userV1.Tenant],
+	orgUnitSet aggregator.ResourceMap[uint32, *userV1.OrgUnit],
+	posSet aggregator.ResourceMap[uint32, *userV1.Position],
+) {
+	aggregator.PopulateMulti(
+		users,
+		roleSet,
+		func(ou *userV1.User) []uint32 { return ou.GetRoleIds() },
+		func(ou *userV1.User, r []*userV1.Role) {
+			for _, role := range r {
+				ou.RoleNames = append(ou.RoleNames, role.GetName())
+				ou.Roles = append(ou.Roles, role.GetCode())
+			}
+		},
+	)
+	aggregator.Populate(
+		users,
+		roleSet,
+		func(ou *userV1.User) uint32 { return ou.GetRoleId() },
+		func(ou *userV1.User, r *userV1.Role) {
+			ou.RoleNames = append(ou.RoleNames, r.GetName())
+			ou.Roles = append(ou.Roles, r.GetCode())
+		},
+	)
+
+	aggregator.Populate(
+		users,
+		tenantSet,
+		func(ou *userV1.User) uint32 { return ou.GetTenantId() },
+		func(ou *userV1.User, r *userV1.Tenant) {
+			ou.TenantName = r.Name
+		},
+	)
+
+	aggregator.PopulateMulti(
+		users,
+		posSet,
+		func(ou *userV1.User) []uint32 { return ou.GetPositionIds() },
+		func(ou *userV1.User, r []*userV1.Position) {
+			for _, pos := range r {
+				ou.PositionNames = append(ou.PositionNames, pos.GetName())
+			}
+		},
+	)
+	aggregator.Populate(
+		users,
+		posSet,
+		func(ou *userV1.User) uint32 { return ou.GetPositionId() },
+		func(ou *userV1.User, r *userV1.Position) {
+			ou.PositionName = r.Name
+		},
+	)
+
+	aggregator.PopulateMulti(
+		users,
+		orgUnitSet,
+		func(ou *userV1.User) []uint32 { return ou.GetOrgUnitIds() },
+		func(ou *userV1.User, orgs []*userV1.OrgUnit) {
+			for _, org := range orgs {
+				ou.OrgUnitNames = append(ou.OrgUnitNames, org.GetName())
+			}
+		},
+	)
+	aggregator.Populate(
+		users,
+		orgUnitSet,
+		func(ou *userV1.User) uint32 { return ou.GetOrgUnitId() },
+		func(ou *userV1.User, org *userV1.OrgUnit) {
+			ou.OrgUnitName = org.Name
+		},
+	)
 }
 
 func (s *UserService) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListUserResponse, error) {
@@ -118,151 +277,16 @@ func (s *UserService) List(ctx context.Context, req *paginationV1.PagingRequest)
 		return nil, err
 	}
 
-	var roleSet = make(name_set.UserNameSetMap)
-	var tenantSet = make(name_set.UserNameSetMap)
-	var orgUnitSet = make(name_set.UserNameSetMap)
-	var posSet = make(name_set.UserNameSetMap)
+	var roleSet = make(aggregator.ResourceMap[uint32, *userV1.Role])
+	var tenantSet = make(aggregator.ResourceMap[uint32, *userV1.Tenant])
+	var orgUnitSet = make(aggregator.ResourceMap[uint32, *userV1.OrgUnit])
+	var posSet = make(aggregator.ResourceMap[uint32, *userV1.Position])
 
-	s.initUserNameSetMap(resp.Items, &tenantSet, &orgUnitSet, &posSet, &roleSet)
-
-	QueryTenantInfoFromRepo(ctx, s.tenantRepo, &tenantSet)
-	QueryOrgUnitInfoFromRepo(ctx, s.orgUnitRepo, &orgUnitSet)
-	QueryPositionInfoFromRepo(ctx, s.positionRepo, &posSet)
-	QueryRoleInfoFromRepo(ctx, s.roleRepo, &roleSet)
-
-	for k, v := range tenantSet {
-		if v == nil {
-			continue
-		}
-
-		for i := 0; i < len(resp.Items); i++ {
-			if resp.Items[i].TenantId != nil && resp.Items[i].GetTenantId() == k {
-				resp.Items[i].TenantName = &v.UserName
-			}
-		}
-	}
-
-	for k, v := range orgUnitSet {
-		if v == nil {
-			continue
-		}
-
-		for i := 0; i < len(resp.Items); i++ {
-			if resp.Items[i].OrgUnitId != nil && resp.Items[i].GetOrgUnitId() == k {
-				resp.Items[i].OrgUnitName = &v.UserName
-			}
-			for _, orgIDs := range resp.Items[i].OrgUnitIds {
-				if orgIDs == k {
-					resp.Items[i].OrgUnitNames = append(resp.Items[i].OrgUnitNames, v.UserName)
-				}
-			}
-		}
-	}
-
-	for k, v := range posSet {
-		if v == nil {
-			continue
-		}
-
-		for i := 0; i < len(resp.Items); i++ {
-			if resp.Items[i].PositionId != nil && resp.Items[i].GetPositionId() == k {
-				resp.Items[i].PositionName = &v.UserName
-			}
-			for _, posID := range resp.Items[i].PositionIds {
-				if posID == k {
-					resp.Items[i].PositionNames = append(resp.Items[i].PositionNames, v.UserName)
-				}
-			}
-		}
-	}
-
-	for k, v := range roleSet {
-		if v == nil {
-			continue
-		}
-
-		for i := 0; i < len(resp.Items); i++ {
-			for _, roleId := range resp.Items[i].RoleIds {
-				if roleId == k {
-					resp.Items[i].RoleNames = append(resp.Items[i].RoleNames, v.UserName)
-					resp.Items[i].Roles = append(resp.Items[i].Roles, v.Code)
-				}
-			}
-		}
-	}
+	s.extractRelationIDs(resp.Items, roleSet, tenantSet, orgUnitSet, posSet)
+	_ = s.fetchRelationInfo(ctx, roleSet, tenantSet, orgUnitSet, posSet)
+	s.populateRelationInfos(resp.Items, roleSet, tenantSet, orgUnitSet, posSet)
 
 	return resp, nil
-}
-
-func (s *UserService) fillUserInfo(ctx context.Context, user *userV1.User) error {
-	if user.GetTenantId() > 0 {
-		tenant, err := s.tenantRepo.Get(ctx, &userV1.GetTenantRequest{QueryBy: &userV1.GetTenantRequest_Id{Id: user.GetTenantId()}})
-		if err == nil && tenant != nil {
-			user.TenantName = tenant.Name
-		} else {
-			s.log.Warnf("Get user tenant failed: %v", err)
-		}
-	}
-
-	if user.GetOrgUnitId() > 0 {
-		organization, err := s.orgUnitRepo.Get(ctx, &userV1.GetOrgUnitRequest{QueryBy: &userV1.GetOrgUnitRequest_Id{Id: user.GetOrgUnitId()}})
-		if err == nil && organization != nil {
-			user.OrgUnitName = organization.Name
-		} else {
-			s.log.Warnf("Get user orgUnit failed: %v", err)
-		}
-	}
-	if len(user.OrgUnitIds) > 0 {
-		orgUnits, err := s.orgUnitRepo.ListOrgUnitsByIds(ctx, user.OrgUnitIds)
-		if err == nil && orgUnits != nil {
-			var orgUnitNames []string
-			for _, orgUnit := range orgUnits {
-				orgUnitNames = append(orgUnitNames, orgUnit.GetName())
-			}
-			user.OrgUnitNames = orgUnitNames
-		} else {
-			s.log.Warnf("Get user orgUnits failed: %v", err)
-		}
-	}
-
-	if user.GetPositionId() > 0 {
-		position, err := s.positionRepo.Get(ctx, &userV1.GetPositionRequest{QueryBy: &userV1.GetPositionRequest_Id{Id: user.GetPositionId()}})
-		if err == nil && position != nil {
-			user.PositionName = position.Name
-		} else {
-			s.log.Warnf("Get user position failed: %v", err)
-		}
-	}
-	if len(user.PositionIds) > 0 {
-		positions, err := s.positionRepo.ListPositionByIds(ctx, user.PositionIds)
-		if err == nil && positions != nil {
-			var positionNames []string
-			for _, position := range positions {
-				positionNames = append(positionNames, position.GetName())
-			}
-			user.PositionNames = positionNames
-		} else {
-			s.log.Warnf("Get user positions failed: %v", err)
-		}
-	}
-
-	if len(user.RoleIds) > 0 {
-		roles, err := s.roleRepo.ListRolesByRoleIds(ctx, user.RoleIds)
-		if err == nil && roles != nil {
-			var roleNames []string
-			var roleCodes []string
-			for _, role := range roles {
-				roleNames = append(roleNames, role.GetName())
-				roleCodes = append(roleCodes, role.GetCode())
-			}
-			user.RoleNames = roleNames
-			user.Roles = roleCodes
-		} else {
-			s.log.Warnf("Get user roles failed: %v", err)
-		}
-	}
-
-	return nil
 }
 
 func (s *UserService) Get(ctx context.Context, req *userV1.GetUserRequest) (*userV1.User, error) {
@@ -271,7 +295,16 @@ func (s *UserService) Get(ctx context.Context, req *userV1.GetUserRequest) (*use
 		return nil, err
 	}
 
-	_ = s.fillUserInfo(ctx, resp)
+	fakeItems := []*userV1.User{resp}
+
+	var roleSet = make(aggregator.ResourceMap[uint32, *userV1.Role])
+	var tenantSet = make(aggregator.ResourceMap[uint32, *userV1.Tenant])
+	var orgUnitSet = make(aggregator.ResourceMap[uint32, *userV1.OrgUnit])
+	var posSet = make(aggregator.ResourceMap[uint32, *userV1.Position])
+
+	s.extractRelationIDs(fakeItems, roleSet, tenantSet, orgUnitSet, posSet)
+	_ = s.fetchRelationInfo(ctx, roleSet, tenantSet, orgUnitSet, posSet)
+	s.populateRelationInfos(fakeItems, roleSet, tenantSet, orgUnitSet, posSet)
 
 	return resp, nil
 }

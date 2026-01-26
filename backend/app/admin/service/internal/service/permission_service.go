@@ -7,6 +7,7 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/tx7do/go-utils/aggregator"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -24,7 +25,6 @@ import (
 	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
 	"go-wind-admin/pkg/utils/converter"
-	"go-wind-admin/pkg/utils/name_set"
 )
 
 type PermissionService struct {
@@ -89,31 +89,53 @@ func (s *PermissionService) init() {
 	}
 }
 
-func (s *PermissionService) initGroupNameSetMap(permissions []*permissionV1.Permission, groupSet *name_set.UserNameSetMap) {
-	for _, v := range permissions {
-		if v.GroupId != nil {
-			(*groupSet)[v.GetGroupId()] = nil
+func (s *PermissionService) extractRelationIDs(
+	permissions []*permissionV1.Permission,
+	groupSet aggregator.ResourceMap[uint32, *permissionV1.PermissionGroup],
+) {
+	for _, p := range permissions {
+		if p.GetGroupId() > 0 {
+			groupSet[p.GetGroupId()] = nil
 		}
 	}
 }
 
-func (s *PermissionService) queryGroupInfoFromRepo(ctx context.Context, groupSet *name_set.UserNameSetMap) {
-	groupIds := make([]uint32, 0, len(*groupSet))
-	for groupId := range *groupSet {
-		groupIds = append(groupIds, groupId)
-	}
+func (s *PermissionService) fetchRelationInfo(
+	ctx context.Context,
+	groupSet aggregator.ResourceMap[uint32, *permissionV1.PermissionGroup],
+) error {
+	if len(groupSet) > 0 {
+		groupIds := make([]uint32, 0, len(groupSet))
+		for id := range groupSet {
+			groupIds = append(groupIds, id)
+		}
 
-	groups, err := s.permissionGroupRepo.ListByIDs(ctx, groupIds)
-	if err != nil {
-		s.log.Errorf("query permission groups err: %v", err)
-		return
-	}
+		groups, err := s.permissionGroupRepo.ListByIDs(ctx, groupIds)
+		if err != nil {
+			s.log.Errorf("query permission group err: %v", err)
+			return err
+		}
 
-	for _, group := range groups {
-		(*groupSet)[group.GetId()] = &name_set.UserNameSet{
-			UserName: group.GetName(),
+		for _, g := range groups {
+			groupSet[g.GetId()] = g
 		}
 	}
+
+	return nil
+}
+
+func (s *PermissionService) populateRelationInfos(
+	permissions []*permissionV1.Permission,
+	groupSet aggregator.ResourceMap[uint32, *permissionV1.PermissionGroup],
+) {
+	aggregator.Populate(
+		permissions,
+		groupSet,
+		func(ou *permissionV1.Permission) uint32 { return ou.GetGroupId() },
+		func(ou *permissionV1.Permission, g *permissionV1.PermissionGroup) {
+			ou.GroupName = g.Name
+		},
+	)
 }
 
 func (s *PermissionService) List(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.ListPermissionResponse, error) {
@@ -144,17 +166,10 @@ func (s *PermissionService) List(ctx context.Context, req *paginationV1.PagingRe
 		return nil, err
 	}
 
-	var groupSet = make(name_set.UserNameSetMap)
-	s.initGroupNameSetMap(resp.Items, &groupSet)
-	s.queryGroupInfoFromRepo(ctx, &groupSet)
-
-	for _, item := range resp.Items {
-		if item.GroupId != nil {
-			if groupInfo, exists := groupSet[item.GetGroupId()]; exists && groupInfo != nil {
-				item.GroupName = &groupInfo.UserName
-			}
-		}
-	}
+	var groupSet = make(aggregator.ResourceMap[uint32, *permissionV1.PermissionGroup])
+	s.extractRelationIDs(resp.Items, groupSet)
+	_ = s.fetchRelationInfo(ctx, groupSet)
+	s.populateRelationInfos(resp.Items, groupSet)
 
 	return resp, nil
 }
@@ -189,16 +204,11 @@ func (s *PermissionService) Get(ctx context.Context, req *permissionV1.GetPermis
 		}
 	}
 
-	if resp.GroupId != nil {
-		var group *permissionV1.PermissionGroup
-		group, err = s.permissionGroupRepo.Get(ctx, &permissionV1.GetPermissionGroupRequest{
-			QueryBy: &permissionV1.GetPermissionGroupRequest_Id{Id: resp.GetGroupId()},
-		})
-		if err != nil {
-			return nil, err
-		}
-		resp.GroupName = group.Name
-	}
+	fakeItems := []*permissionV1.Permission{resp}
+	var groupSet = make(aggregator.ResourceMap[uint32, *permissionV1.PermissionGroup])
+	s.extractRelationIDs(fakeItems, groupSet)
+	_ = s.fetchRelationInfo(ctx, groupSet)
+	s.populateRelationInfos(fakeItems, groupSet)
 
 	return resp, nil
 }
