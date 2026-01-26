@@ -2,13 +2,13 @@ package data
 
 import (
 	"context"
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/log"
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/go-utils/copierutil"
 	"github.com/tx7do/go-utils/mapper"
+	"github.com/tx7do/go-utils/sliceutil"
 	"github.com/tx7do/go-utils/timeutil"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -16,9 +16,8 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/membership"
 
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
-
-	"go-wind-admin/pkg/utils/slice"
 )
 
 type MembershipRepo struct {
@@ -103,7 +102,7 @@ func (r *MembershipRepo) AssignTenantMembershipWithTx(ctx context.Context, tx *e
 	if len(data.RoleIds) > 0 {
 		roleIDs = append(roleIDs, data.RoleIds...)
 	}
-	roleIDs = slice.Unique(roleIDs)
+	roleIDs = sliceutil.Unique(roleIDs)
 
 	var orgUnitIDs []uint32
 	if data.OrgUnitId != nil {
@@ -112,7 +111,7 @@ func (r *MembershipRepo) AssignTenantMembershipWithTx(ctx context.Context, tx *e
 	if len(data.OrgUnitIds) > 0 {
 		orgUnitIDs = append(orgUnitIDs, data.OrgUnitIds...)
 	}
-	orgUnitIDs = slice.Unique(orgUnitIDs)
+	orgUnitIDs = sliceutil.Unique(orgUnitIDs)
 
 	var positionIDs []uint32
 	if data.PositionId != nil {
@@ -121,7 +120,7 @@ func (r *MembershipRepo) AssignTenantMembershipWithTx(ctx context.Context, tx *e
 	if len(data.PositionIds) > 0 {
 		positionIDs = append(positionIDs, data.PositionIds...)
 	}
-	positionIDs = slice.Unique(positionIDs)
+	positionIDs = sliceutil.Unique(positionIDs)
 
 	if len(roleIDs) > 0 {
 		var roles []*userV1.MembershipRole

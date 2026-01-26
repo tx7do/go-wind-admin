@@ -15,6 +15,7 @@ import (
 
 	"github.com/tx7do/go-utils/copierutil"
 	"github.com/tx7do/go-utils/mapper"
+	"github.com/tx7do/go-utils/sliceutil"
 	"github.com/tx7do/go-utils/timeutil"
 	"github.com/tx7do/go-utils/trans"
 
@@ -25,7 +26,6 @@ import (
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 
 	"go-wind-admin/pkg/constants"
-	"go-wind-admin/pkg/utils/slice"
 )
 
 type UserRepo interface {
@@ -242,7 +242,7 @@ func (r *userRepo) queryUserIDsByRelationIDsUserTenantRelationOneToMany(ctx cont
 	// 逐步求交集
 	result := lists[0]
 	for i := 1; i < len(lists); i++ {
-		result = slice.Intersect(result, lists[i])
+		result = sliceutil.Intersection(result, lists[i])
 		if len(result) == 0 {
 			break
 		}
@@ -301,7 +301,7 @@ func (r *userRepo) queryUserIDsByRelationIDsUserTenantRelationOneToOne(ctx conte
 	// 逐步求交集
 	result := lists[0]
 	for i := 1; i < len(lists); i++ {
-		result = slice.Intersect(result, lists[i])
+		result = sliceutil.Intersection(result, lists[i])
 		if len(result) == 0 {
 			break
 		}
@@ -840,7 +840,7 @@ func (r *userRepo) assignUserRelations(ctx context.Context, tx *ent.Tx,
 	now := time.Now()
 
 	if len(roleIDs) > 0 {
-		roleIDs = slice.Unique(roleIDs)
+		roleIDs = sliceutil.Unique(roleIDs)
 		var userRoles []*userV1.UserRole
 		for _, roleID := range roleIDs {
 			userRoles = append(userRoles, &userV1.UserRole{
@@ -857,7 +857,7 @@ func (r *userRepo) assignUserRelations(ctx context.Context, tx *ent.Tx,
 		}
 	}
 	if len(orgUnitIDs) > 0 {
-		orgUnitIDs = slice.Unique(orgUnitIDs)
+		orgUnitIDs = sliceutil.Unique(orgUnitIDs)
 		//r.log.Debugf("assigning org unit ids: %v", orgUnitIDs)
 		var userOrgUnits []*userV1.UserOrgUnit
 		for _, orgUnitID := range orgUnitIDs {
@@ -875,7 +875,7 @@ func (r *userRepo) assignUserRelations(ctx context.Context, tx *ent.Tx,
 		}
 	}
 	if len(positionIDs) > 0 {
-		positionIDs = slice.Unique(positionIDs)
+		positionIDs = sliceutil.Unique(positionIDs)
 		//r.log.Debugf("assigning position ids: %v", positionIDs)
 		var userPositions []*userV1.UserPosition
 		for _, positionID := range positionIDs {

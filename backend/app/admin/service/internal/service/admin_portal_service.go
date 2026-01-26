@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/tx7do/go-utils/sliceutil"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
@@ -21,7 +22,6 @@ import (
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 
 	"go-wind-admin/pkg/middleware/auth"
-	"go-wind-admin/pkg/utils/slice"
 )
 
 type AdminPortalService struct {
@@ -86,7 +86,7 @@ func (s *AdminPortalService) queryMultipleRolesMenusByRoleCodes(ctx context.Cont
 		return nil, adminV1.ErrorInternalServerError("query roles menus failed")
 	}
 
-	menus = slice.Unique(menus)
+	menus = sliceutil.Unique(menus)
 
 	return menus, nil
 }
@@ -98,7 +98,7 @@ func (s *AdminPortalService) queryMultipleRolesMenusByRoleIds(ctx context.Contex
 		return nil, adminV1.ErrorInternalServerError("query roles menus failed")
 	}
 
-	menus = slice.Unique(menus)
+	menus = sliceutil.Unique(menus)
 
 	return menus, nil
 }
