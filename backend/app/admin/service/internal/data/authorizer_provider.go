@@ -2,29 +2,21 @@ package data
 
 import (
 	"context"
-	"go-wind-admin/pkg/constants"
 
 	"github.com/go-kratos/kratos/v2/log"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
+	"go-wind-admin/app/admin/service/cmd/server/assets"
+
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+
+	"go-wind-admin/pkg/authorizer"
+	"go-wind-admin/pkg/constants"
 )
 
 const defaultDomain = "*"
-
-// AuthorizerData 权限数据
-type AuthorizerData struct {
-	Path   string
-	Method string
-	Domain string
-}
-
-type AuthorizerDataArray []AuthorizerData
-
-// AuthorizerDataMap 权限数据映射
-type AuthorizerDataMap map[string]AuthorizerDataArray
 
 // AuthorizerProvider 权限数据提供者
 type AuthorizerProvider struct {
@@ -38,7 +30,7 @@ func NewAuthorizerProvider(
 	ctx *bootstrap.Context,
 	roleRepo *RoleRepo,
 	apiRepo *ApiRepo,
-) *AuthorizerProvider {
+) authorizer.Provider {
 	return &AuthorizerProvider{
 		log:      ctx.NewLoggerHelper("authorizer-data-provider/data/admin-service"),
 		roleRepo: roleRepo,
@@ -46,15 +38,28 @@ func NewAuthorizerProvider(
 	}
 }
 
-// Provide 提供权限数据
-func (p *AuthorizerProvider) Provide(ctx context.Context) (AuthorizerDataMap, error) {
+// ProvideModels 提供模型数据
+func (p *AuthorizerProvider) ProvideModels(engineName string) authorizer.ModelDataMap {
+	switch engineName {
+	case "casbin":
+		return make(map[string][]byte)
+	case "opa":
+		return map[string][]byte{
+			"rbac.rego": assets.OpaRbacRego,
+		}
+	}
+	return nil
+}
+
+// ProvidePolicies 提供策略数据
+func (p *AuthorizerProvider) ProvidePolicies(ctx context.Context) (authorizer.PermissionDataMap, error) {
 	roles, err := p.roleRepo.List(ctx, &paginationV1.PagingRequest{NoPaging: trans.Ptr(true)})
 	if err != nil {
 		p.log.Errorf("failed to list roles: %v", err)
 		return nil, err
 	}
 
-	result := make(AuthorizerDataMap)
+	result := make(authorizer.PermissionDataMap)
 	var apiIDs []uint32
 	var apis []*permissionV1.Api
 	for _, role := range roles.Items {
@@ -81,7 +86,7 @@ func (p *AuthorizerProvider) Provide(ctx context.Context) (AuthorizerDataMap, er
 			continue
 		}
 
-		var authorizerDataArray AuthorizerDataArray
+		var authorizerDataArray authorizer.PermissionDataArray
 		for _, api := range apis {
 			if api == nil {
 				continue
@@ -90,7 +95,7 @@ func (p *AuthorizerProvider) Provide(ctx context.Context) (AuthorizerDataMap, er
 				continue
 			}
 
-			var data = AuthorizerData{
+			var data = authorizer.PermissionData{
 				Domain: defaultDomain,
 				Path:   api.GetPath(),
 				Method: api.GetMethod(),

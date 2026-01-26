@@ -15,6 +15,7 @@ import (
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 
+	"go-wind-admin/pkg/authorizer"
 	"go-wind-admin/pkg/middleware/auth"
 	"go-wind-admin/pkg/utils/name_set"
 )
@@ -29,7 +30,7 @@ type TenantService struct {
 	userCredentialsRepo *data.UserCredentialRepo
 	roleRepo            *data.RoleRepo
 
-	authorizer *data.Authorizer
+	authorizer *authorizer.Authorizer
 }
 
 func NewTenantService(
@@ -38,7 +39,7 @@ func NewTenantService(
 	userRepo data.UserRepo,
 	userCredentialsRepo *data.UserCredentialRepo,
 	roleRepo *data.RoleRepo,
-	authorizer *data.Authorizer,
+	authorizer *authorizer.Authorizer,
 ) *TenantService {
 	return &TenantService{
 		log:                 ctx.NewLoggerHelper("tenant/service/admin-service"),

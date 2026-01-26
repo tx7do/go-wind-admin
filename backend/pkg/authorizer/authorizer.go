@@ -1,4 +1,4 @@
-package data
+package authorizer
 
 import (
 	"context"
@@ -11,10 +11,7 @@ import (
 	"github.com/tx7do/kratos-authz/engine/noop"
 	"github.com/tx7do/kratos-authz/engine/opa"
 
-	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
-
-	"go-wind-admin/app/admin/service/cmd/server/assets"
 )
 
 // Authorizer 权限管理器
@@ -22,83 +19,29 @@ type Authorizer struct {
 	log *log.Helper
 
 	engine   authzEngine.Engine
-	provider *AuthorizerProvider
+	provider Provider
 }
 
 func NewAuthorizer(
 	ctx *bootstrap.Context,
-	provider *AuthorizerProvider,
+	provider Provider,
 ) *Authorizer {
 	a := &Authorizer{
-		log:      ctx.NewLoggerHelper("authorizer/data/admin-service"),
+		log:      ctx.NewLoggerHelper("authorizer"),
 		provider: provider,
 	}
 
-	a.init(ctx.GetConfig())
+	a.init(ctx)
 
 	return a
 }
 
-func (a *Authorizer) init(cfg *conf.Bootstrap) {
-	a.engine = a.newEngine(cfg)
+func (a *Authorizer) init(ctx *bootstrap.Context) {
+	a.engine = a.newEngine(ctx)
 
 	//if err := a.ResetPolicies(context.Background()); err != nil {
 	//	a.log.Errorf("reset policies error: %v", err)
 	//}
-}
-
-func (a *Authorizer) newEngine(cfg *conf.Bootstrap) authzEngine.Engine {
-	if cfg.Authz == nil {
-		return nil
-	}
-
-	ctx := context.Background()
-
-	switch cfg.GetAuthz().GetType() {
-	default:
-		fallthrough
-	case "noop":
-		state, err := noop.NewEngine(ctx)
-		if err != nil {
-			a.log.Errorf("new noop engine error: %v", err)
-			return nil
-		}
-		return state
-
-	case "casbin":
-		state, err := casbin.NewEngine(ctx, casbin.WithStringModel(string(assets.OpaRbacRego)))
-		if err != nil {
-			a.log.Errorf("init casbin engine error: %v", err)
-			return nil
-		}
-		return state
-
-	case "opa":
-		state, err := opa.NewEngine(ctx,
-			opa.WithModulesFromString(map[string]string{
-				"rbac.rego": string(assets.OpaRbacRego),
-			}),
-		)
-		if err != nil {
-			a.log.Errorf("init opa engine error: %v", err)
-			return nil
-		}
-
-		if err = state.InitModulesFromString(map[string]string{
-			"rbac.rego": string(assets.OpaRbacRego),
-		}); err != nil {
-			a.log.Errorf("init opa modules error: %v", err)
-		}
-
-		return state
-
-		//case "zanzibar":
-		//	state, err := zanzibar.NewEngine(ctx)
-		//	if err != nil {
-		//		return nil
-		//	}
-		//	return state
-	}
 }
 
 func (a *Authorizer) Engine() authzEngine.Engine {
@@ -109,7 +52,7 @@ func (a *Authorizer) Engine() authzEngine.Engine {
 func (a *Authorizer) ResetPolicies(ctx context.Context) error {
 	//a.log.Info("*******************reset policies")
 
-	result, err := a.provider.Provide(ctx)
+	result, err := a.provider.ProvidePolicies(ctx)
 	if err != nil {
 		a.log.Errorf("provide authorizer data error: %v", err)
 		return err
@@ -155,7 +98,7 @@ func (a *Authorizer) ResetPolicies(ctx context.Context) error {
 }
 
 // generateCasbinPolicies 生成 Casbin 策略
-func (a *Authorizer) generateCasbinPolicies(data AuthorizerDataMap) (authzEngine.PolicyMap, error) {
+func (a *Authorizer) generateCasbinPolicies(data PermissionDataMap) (authzEngine.PolicyMap, error) {
 	var rules []casbin.PolicyRule
 
 	for roleCode, aRules := range data {
@@ -179,7 +122,7 @@ func (a *Authorizer) generateCasbinPolicies(data AuthorizerDataMap) (authzEngine
 }
 
 // generateOpaPolicies 生成 OPA 策略
-func (a *Authorizer) generateOpaPolicies(data AuthorizerDataMap) (authzEngine.PolicyMap, error) {
+func (a *Authorizer) generateOpaPolicies(data PermissionDataMap) (authzEngine.PolicyMap, error) {
 	type OpaPolicyPath struct {
 		Pattern string `json:"pattern"`
 		Method  string `json:"method"`
@@ -203,4 +146,89 @@ func (a *Authorizer) generateOpaPolicies(data AuthorizerDataMap) (authzEngine.Po
 	}
 
 	return policies, nil
+}
+
+// newEngine 创建权限引擎
+func (a *Authorizer) newEngine(ctx *bootstrap.Context) authzEngine.Engine {
+	cfg := ctx.GetConfig()
+	if cfg == nil {
+		return nil
+	}
+
+	if cfg.Authz == nil {
+		return nil
+	}
+
+	switch cfg.GetAuthz().GetType() {
+	default:
+		fallthrough
+	case "noop":
+		return a.newEngineNoop(ctx)
+
+	case "casbin":
+		return a.newEngineCasbin(ctx)
+
+	case "opa":
+		return a.newEngineOPA(ctx)
+
+	case "zanzibar":
+		return a.newEngineZanzibar(ctx)
+	}
+}
+
+// newEngineZanzibar 创建 Zanzibar 引擎（未实现）
+func (a *Authorizer) newEngineZanzibar(_ *bootstrap.Context) authzEngine.Engine {
+	return nil
+}
+
+// newEngineNoop 创建 Noop 引擎
+func (a *Authorizer) newEngineNoop(ctx *bootstrap.Context) authzEngine.Engine {
+	state, err := noop.NewEngine(ctx.Context())
+	if err != nil {
+		a.log.Errorf("new noop engine error: %v", err)
+		return nil
+	}
+	return state
+}
+
+// newEngineCasbin 创建 Casbin 引擎
+func (a *Authorizer) newEngineCasbin(ctx *bootstrap.Context) authzEngine.Engine {
+	state, err := casbin.NewEngine(ctx.Context())
+	if err != nil {
+		a.log.Errorf("init casbin engine error: %v", err)
+		return nil
+	}
+	return state
+}
+
+// newEngineOPA 创建 OPA 引擎
+func (a *Authorizer) newEngineOPA(ctx *bootstrap.Context) authzEngine.Engine {
+	modelName := "rbac.rego"
+	models := a.provider.ProvideModels("opa")
+	var model []byte
+	var ok bool
+	if model, ok = models[modelName]; ok {
+		a.log.Infof("load custom OPA model: %s", modelName)
+	} else {
+		a.log.Errorf("OPA model not found: %s", modelName)
+		return nil
+	}
+
+	state, err := opa.NewEngine(ctx.Context(),
+		opa.WithModulesFromString(map[string]string{
+			modelName: string(model),
+		}),
+	)
+	if err != nil {
+		a.log.Errorf("init opa engine error: %v", err)
+		return nil
+	}
+
+	if err = state.InitModulesFromString(map[string]string{
+		modelName: string(model),
+	}); err != nil {
+		a.log.Errorf("init opa modules error: %v", err)
+	}
+
+	return state
 }

@@ -12,6 +12,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/server"
 	"go-wind-admin/app/admin/service/internal/service"
+	"go-wind-admin/pkg/authorizer"
 )
 
 // Injectors from wire.go:
@@ -47,11 +48,11 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	roleMetadataRepo := data.NewRoleMetadataRepo(context, entClient)
 	roleRepo := data.NewRoleRepo(context, entClient, rolePermissionRepo, permissionRepo, roleMetadataRepo)
 	apiRepo := data.NewApiRepo(context, entClient)
-	authorizerProvider := data.NewAuthorizerProvider(context, roleRepo, apiRepo)
-	authorizer := data.NewAuthorizer(context, authorizerProvider)
+	provider := data.NewAuthorizerProvider(context, roleRepo, apiRepo)
+	authorizerAuthorizer := authorizer.NewAuthorizer(context, provider)
 	apiAuditLogRepo := data.NewApiAuditLogRepo(context, entClient)
 	loginAuditLogRepo := data.NewLoginAuditLogRepo(context, entClient)
-	v := server.NewRestMiddleware(context, accessTokenChecker, authorizer, apiAuditLogRepo, loginAuditLogRepo)
+	v := server.NewRestMiddleware(context, accessTokenChecker, authorizerAuthorizer, apiAuditLogRepo, loginAuditLogRepo)
 	userRoleRepo := data.NewUserRoleRepo(context, entClient)
 	userOrgUnitRepo := data.NewUserOrgUnitRepo(context, entClient)
 	userPositionRepo := data.NewUserPositionRepo(context, entClient)
@@ -84,17 +85,17 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	dictEntryService := service.NewDictEntryService(context, dictEntryRepo)
 	languageRepo := data.NewLanguageRepo(context, entClient)
 	languageService := service.NewLanguageService(context, languageRepo)
-	tenantService := service.NewTenantService(context, tenantRepo, userRepo, userCredentialRepo, roleRepo, authorizer)
+	tenantService := service.NewTenantService(context, tenantRepo, userRepo, userCredentialRepo, roleRepo, authorizerAuthorizer)
 	positionRepo := data.NewPositionRepo(context, entClient)
 	userService := service.NewUserService(context, userRepo, roleRepo, userCredentialRepo, positionRepo, orgUnitRepo, tenantRepo, membershipRepo)
 	userProfileService := service.NewUserProfileService(context, userRepo, roleRepo, userCredentialRepo)
-	roleService := service.NewRoleService(context, authorizer, roleRepo, tenantRepo)
+	roleService := service.NewRoleService(context, authorizerAuthorizer, roleRepo, tenantRepo)
 	positionService := service.NewPositionService(context, positionRepo, orgUnitRepo)
 	orgUnitService := service.NewOrgUnitService(context, orgUnitRepo, userRepo)
 	menuService := service.NewMenuService(context, menuRepo)
-	apiService := service.NewApiService(context, apiRepo, authorizer)
+	apiService := service.NewApiService(context, apiRepo, authorizerAuthorizer)
 	permissionGroupRepo := data.NewPermissionGroupRepo(context, entClient)
-	permissionService := service.NewPermissionService(context, permissionRepo, permissionGroupRepo, menuRepo, apiRepo, roleRepo, authorizer)
+	permissionService := service.NewPermissionService(context, permissionRepo, permissionGroupRepo, menuRepo, apiRepo, roleRepo, authorizerAuthorizer)
 	permissionGroupService := service.NewPermissionGroupService(context, permissionGroupRepo, permissionRepo)
 	permissionAuditLogRepo := data.NewPermissionAuditLogRepo(context, entClient)
 	permissionAuditLogService := service.NewPermissionAuditLogService(context, permissionAuditLogRepo)
@@ -113,7 +114,7 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 	internalMessageService := service.NewInternalMessageService(context, internalMessageRepo, internalMessageCategoryRepo, internalMessageRecipientRepo, userRepo, sseServer, authenticator, clientType)
 	internalMessageCategoryService := service.NewInternalMessageCategoryService(context, internalMessageCategoryRepo)
 	internalMessageRecipientService := service.NewInternalMessageRecipientService(context, internalMessageRepo, internalMessageRecipientRepo)
-	httpServer, err := server.NewRestServer(context, v, authorizer, authenticationService, loginPolicyService, adminPortalService, taskService, uEditorService, fileService, fileTransferService, dictTypeService, dictEntryService, languageService, tenantService, userService, userProfileService, roleService, positionService, orgUnitService, menuService, apiService, permissionService, permissionGroupService, permissionAuditLogService, policyEvaluationLogService, loginAuditLogService, apiAuditLogService, operationAuditLogService, dataAccessAuditLogService, internalMessageService, internalMessageCategoryService, internalMessageRecipientService)
+	httpServer, err := server.NewRestServer(context, v, authorizerAuthorizer, authenticationService, loginPolicyService, adminPortalService, taskService, uEditorService, fileService, fileTransferService, dictTypeService, dictEntryService, languageService, tenantService, userService, userProfileService, roleService, positionService, orgUnitService, menuService, apiService, permissionService, permissionGroupService, permissionAuditLogService, policyEvaluationLogService, loginAuditLogService, apiAuditLogService, operationAuditLogService, dataAccessAuditLogService, internalMessageService, internalMessageCategoryService, internalMessageRecipientService)
 	if err != nil {
 		cleanup2()
 		cleanup()

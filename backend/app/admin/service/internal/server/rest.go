@@ -23,6 +23,7 @@ import (
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
 
+	"go-wind-admin/pkg/authorizer"
 	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
 	applogging "go-wind-admin/pkg/middleware/logging"
@@ -32,7 +33,7 @@ import (
 func NewRestMiddleware(
 	ctx *bootstrap.Context,
 	accessTokenChecker auth.AccessTokenChecker,
-	authorizer *data.Authorizer,
+	authorizer *authorizer.Authorizer,
 	apiAuditLogRepo *data.ApiAuditLogRepo,
 	loginLogRepo *data.LoginAuditLogRepo,
 ) []middleware.Middleware {
@@ -78,7 +79,7 @@ func NewRestServer(
 	ctx *bootstrap.Context,
 
 	middlewares []middleware.Middleware,
-	authorizer *data.Authorizer,
+	authorizer *authorizer.Authorizer,
 
 	authenticationService *service.AuthenticationService,
 	loginPolicyService *service.LoginPolicyService,

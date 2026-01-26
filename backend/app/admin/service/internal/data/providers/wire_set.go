@@ -14,6 +14,8 @@ import (
 	"github.com/google/wire"
 
 	"go-wind-admin/app/admin/service/internal/data"
+
+	"go-wind-admin/pkg/authorizer"
 )
 
 // ProviderSet is the Wire provider set for data layer.
@@ -25,7 +27,7 @@ var ProviderSet = wire.NewSet(
 
 	data.NewAuthorizerProvider,
 	data.NewAuthenticator,
-	data.NewAuthorizer,
+	authorizer.NewAuthorizer,
 	data.NewTokenChecker,
 
 	data.NewPasswordCrypto,

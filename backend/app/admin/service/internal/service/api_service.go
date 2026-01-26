@@ -20,6 +20,7 @@ import (
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
+	"go-wind-admin/pkg/authorizer"
 	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
 )
@@ -34,14 +35,14 @@ type ApiService struct {
 	log *log.Helper
 
 	repo        *data.ApiRepo
-	authorizer  *data.Authorizer
+	authorizer  *authorizer.Authorizer
 	routeWalker RouteWalker
 }
 
 func NewApiService(
 	ctx *bootstrap.Context,
 	repo *data.ApiRepo,
-	authorizer *data.Authorizer,
+	authorizer *authorizer.Authorizer,
 ) *ApiService {
 	svc := &ApiService{
 		log:        ctx.NewLoggerHelper("api/service/admin-service"),

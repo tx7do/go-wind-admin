@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"go-wind-admin/pkg/utils/name_set"
 
 	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
@@ -16,9 +15,11 @@ import (
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 
+	"go-wind-admin/pkg/authorizer"
 	"go-wind-admin/pkg/constants"
 	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
+	"go-wind-admin/pkg/utils/name_set"
 )
 
 type RoleService struct {
@@ -26,7 +27,7 @@ type RoleService struct {
 
 	log *log.Helper
 
-	authorizer *data.Authorizer
+	authorizer *authorizer.Authorizer
 
 	roleRepo   *data.RoleRepo
 	tenantRepo *data.TenantRepo
@@ -34,7 +35,7 @@ type RoleService struct {
 
 func NewRoleService(
 	ctx *bootstrap.Context,
-	authorizer *data.Authorizer,
+	authorizer *authorizer.Authorizer,
 	roleRepo *data.RoleRepo,
 	tenantRepo *data.TenantRepo,
 ) *RoleService {
