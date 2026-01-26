@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/go-kratos/kratos/v2/log"
+	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
 
 	authzEngine "github.com/tx7do/kratos-authz/engine"
 	"github.com/tx7do/kratos-authz/engine/casbin"
@@ -31,15 +32,25 @@ func NewAuthorizer(
 		provider: provider,
 	}
 
-	a.init(ctx)
+	if ctx == nil {
+		a.log.Warn("bootstrap context is nil")
+		return a
+	}
+
+	if ctx.GetConfig() == nil || ctx.GetConfig().Authz == nil {
+		a.log.Warn("authorization config is nil")
+		return a
+	}
+
+	a.init(ctx.Context(), ctx.GetConfig().Authz)
 
 	return a
 }
 
-func (a *Authorizer) init(ctx *bootstrap.Context) {
-	a.engine = a.newEngine(ctx)
+func (a *Authorizer) init(ctx context.Context, cfg *conf.Authorization) {
+	a.engine = a.newEngine(ctx, cfg)
 
-	//if err := a.ResetPolicies(context.Background()); err != nil {
+	//if err := a.ResetPolicies(ctx); err != nil {
 	//	a.log.Errorf("reset policies error: %v", err)
 	//}
 }
@@ -149,17 +160,12 @@ func (a *Authorizer) generateOpaPolicies(data PermissionDataMap) (authzEngine.Po
 }
 
 // newEngine 创建权限引擎
-func (a *Authorizer) newEngine(ctx *bootstrap.Context) authzEngine.Engine {
-	cfg := ctx.GetConfig()
+func (a *Authorizer) newEngine(ctx context.Context, cfg *conf.Authorization) authzEngine.Engine {
 	if cfg == nil {
 		return nil
 	}
 
-	if cfg.Authz == nil {
-		return nil
-	}
-
-	switch cfg.GetAuthz().GetType() {
+	switch cfg.GetType() {
 	default:
 		fallthrough
 	case "noop":
@@ -177,13 +183,13 @@ func (a *Authorizer) newEngine(ctx *bootstrap.Context) authzEngine.Engine {
 }
 
 // newEngineZanzibar 创建 Zanzibar 引擎（未实现）
-func (a *Authorizer) newEngineZanzibar(_ *bootstrap.Context) authzEngine.Engine {
+func (a *Authorizer) newEngineZanzibar(_ context.Context) authzEngine.Engine {
 	return nil
 }
 
 // newEngineNoop 创建 Noop 引擎
-func (a *Authorizer) newEngineNoop(ctx *bootstrap.Context) authzEngine.Engine {
-	state, err := noop.NewEngine(ctx.Context())
+func (a *Authorizer) newEngineNoop(ctx context.Context) authzEngine.Engine {
+	state, err := noop.NewEngine(ctx)
 	if err != nil {
 		a.log.Errorf("new noop engine error: %v", err)
 		return nil
@@ -192,8 +198,8 @@ func (a *Authorizer) newEngineNoop(ctx *bootstrap.Context) authzEngine.Engine {
 }
 
 // newEngineCasbin 创建 Casbin 引擎
-func (a *Authorizer) newEngineCasbin(ctx *bootstrap.Context) authzEngine.Engine {
-	state, err := casbin.NewEngine(ctx.Context())
+func (a *Authorizer) newEngineCasbin(ctx context.Context) authzEngine.Engine {
+	state, err := casbin.NewEngine(ctx)
 	if err != nil {
 		a.log.Errorf("init casbin engine error: %v", err)
 		return nil
@@ -202,7 +208,7 @@ func (a *Authorizer) newEngineCasbin(ctx *bootstrap.Context) authzEngine.Engine 
 }
 
 // newEngineOPA 创建 OPA 引擎
-func (a *Authorizer) newEngineOPA(ctx *bootstrap.Context) authzEngine.Engine {
+func (a *Authorizer) newEngineOPA(ctx context.Context) authzEngine.Engine {
 	modelName := "rbac.rego"
 	models := a.provider.ProvideModels("opa")
 	var model []byte
@@ -214,7 +220,7 @@ func (a *Authorizer) newEngineOPA(ctx *bootstrap.Context) authzEngine.Engine {
 		return nil
 	}
 
-	state, err := opa.NewEngine(ctx.Context(),
+	state, err := opa.NewEngine(ctx,
 		opa.WithModulesFromString(map[string]string{
 			modelName: string(model),
 		}),
