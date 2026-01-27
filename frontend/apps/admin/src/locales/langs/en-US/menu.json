@@ -3,21 +3,22 @@
     "index": "Data Center",
     "dashboard": "Dashboard",
     "analysis": "Analysis",
-    "workbench": "workbench",
+    "workbench": "Workbench",
     "about": "About"
   },
   "permission": {
     "moduleName": "Permission Management",
     "role": "Role Management",
     "permission": "Permission Management",
-    "menu": "Menu Management"
+    "menu": "Menu Management",
+    "api": "API Management"
   },
   "opm": {
-    "moduleName": "Organizational Personnel Management",
+    "moduleName": "Organization & Personnel",
+    "orgUnit": "Organization Management",
     "position": "Position Management",
     "user": "User Management",
-    "userDetail": "User Detail",
-    "orgUnit": "Organization Unit Management"
+    "userDetail": "User Details"
   },
   "tenant": {
     "moduleName": "Tenant Management",
@@ -25,20 +26,19 @@
   },
   "system": {
     "moduleName": "System Management",
-    "dict": "Dict Management",
-    "task": "Task Management",
+    "dict": "Data Dictionary",
+    "task": "Task Scheduler",
     "file": "File Management",
-    "api": "API Resource",
-    "loginPolicy": "Admin Login Restriction"
+    "loginPolicy": "Login Policy"
   },
   "log": {
-    "moduleName": "Log Audit",
-    "loginAuditLog": "Login Log",
-    "apiAuditLog": "API Log"
+    "moduleName": "Audit Logs",
+    "loginAuditLog": "Login Logs",
+    "apiAuditLog": "API Logs"
   },
   "internalMessage": {
-    "moduleName": "Internal Message",
+    "moduleName": "Internal Messages",
     "internalMessage": "Message Management",
-    "internalMessageCategory": "Message Category"
+    "internalMessageCategory": "Message Categories"
   }
 }

@@ -1,81 +1,58 @@
 {
   "status": {
-    "ON": "ON",
-    "OFF": "OFF"
+    "ON": "Active",
+    "OFF": "Disabled"
   },
   "enable": {
-    "true": "Enable",
-    "false": "Disable"
-  },
-  "authority": {
-    "GUEST": "Guest",
-    "CUSTOMER_USER": "Customer",
-    "TENANT_ADMIN": "Tenant Admin",
-    "SYS_ADMIN": "Admin"
-  },
-  "menuType": {
-    "CATALOG": "Catalog",
-    "MENU": "Menu",
-    "BUTTON": "Button",
-    "EMBEDDED": "Embedded",
-    "LINK": "Link"
-  },
-  "successStatus": {
-    "success": "Success",
-    "failed": "Failed"
-  },
-  "taskType" : {
-    "Periodic": "Periodic",
-    "Delay": "Delay",
-    "WaitResult": "Wait Result"
+    "true": "Enabled",
+    "false": "Disabled"
   },
   "gender": {
     "SECRET": "Secret",
     "MALE": "Male",
     "FEMALE": "Female"
   },
-  "loginPolicyType": {
-    "BLACKLIST": "Blacklist",
-    "WHITELIST": "Whitelist"
+  "successStatus": {
+    "success": "Success",
+    "failed": "Failed"
   },
-  "loginPolicyMethod": {
-    "IP": "IP Address",
-    "MAC": "MAC Address",
-    "REGION": "Region",
-    "TIME": "Time",
-    "DEVICE": "Device"
-  },
-  "tenant": {
+  "user": {
     "status": {
-      "ON": "ON",
-      "OFF": "OFF",
+      "DISABLED": "Disabled",
+      "NORMAL": "Normal",
+      "PENDING": "Pending Activation",
+      "LOCKED": "Locked",
       "EXPIRED": "Expired",
-      "FREEZE": "Freeze"
-    },
-    "type": {
-      "TRIAL": "Trial",
-      "PAID": "Paid",
-      "INTERNAL": "Internal",
-      "PARTNER": "Partner",
-      "CUSTOM": "Custom"
-    },
-    "auditStatus": {
-      "PENDING": "Pending",
-      "APPROVED": "Approved",
-      "REJECTED": "Rejected"
+      "CLOSED": "Closed"
     }
   },
-  "role": {
+  "menu": {
     "type": {
-      "SYSTEM": "System Role",
-      "CUSTOM": "Custom Role"
+      "CATALOG": "Catalog",
+      "MENU": "Menu",
+      "BUTTON": "Button",
+      "EMBEDDED": "Embedded",
+      "LINK": "External Link"
+    }
+  },
+  "task": {
+    "type": {
+      "Periodic": "Periodic",
+      "Delay": "Delayed",
+      "WaitResult": "Wait for Result"
+    }
+  },
+  "loginPolicy": {
+    "type": {
+      "BLACKLIST": "Blacklist",
+      "WHITELIST": "Whitelist"
     },
-    "dataScope": {
-      "ALL": "All Data Permissions",
-      "SELECTED_UNITS": "Custom Data Permissions",
-      "UNIT_AND_CHILD": "Department and Sub-departments Data Permissions",
-      "UNIT_ONLY": "Department Data Permissions",
-      "SELF": "Self Data Permissions"
+    "method": {
+      "IP": "IP Restriction",
+      "MAC": "MAC Restriction",
+      "REGION": "Region Restriction",
+      "TIME": "Time Restriction",
+      "DEVICE": "Device Restriction"
     }
   },
   "orgUnit": {
@@ -86,34 +63,130 @@
       "DIVISION": "Division",
       "PROJECT": "Project",
       "COMMITTEE": "Committee",
-      "REGION": "Region",
+      "REGION": "Regional Center",
       "SUBSIDIARY": "Subsidiary",
       "BRANCH": "Branch",
       "OTHER": "Other"
     },
     "status": {
-      "ON": "ON",
-      "OFF": "OFF"
+      "ON": "Enabled",
+      "OFF": "Disabled"
+    }
+  },
+  "tenant": {
+    "status": {
+      "ON": "Enabled",
+      "OFF": "Disabled",
+      "EXPIRED": "Expired",
+      "FREEZE": "Frozen"
+    },
+    "type": {
+      "TRIAL": "Trial",
+      "PAID": "Paid",
+      "INTERNAL": "Internal",
+      "PARTNER": "Partner",
+      "CUSTOM": "Custom"
+    },
+    "auditStatus": {
+      "PENDING": "Pending Review",
+      "APPROVED": "Approved",
+      "REJECTED": "Rejected"
+    }
+  },
+  "role": {
+    "type": {
+      "SYSTEM": "Built-in Role",
+      "CUSTOM": "Custom Role"
+    },
+    "dataScope": {
+      "ALL": "All",
+      "SELECTED_UNITS": "Custom",
+      "UNIT_AND_CHILD": "Department and Subordinates",
+      "UNIT_ONLY": "Department Only",
+      "SELF": "Self Only"
+    }
+  },
+  "membershipPosition": {
+    "status": {
+      "PROBATION": "Probation",
+      "ACTIVE": "Active",
+      "LEAVE": "Left",
+      "RESIGNED": "Resigned",
+      "TERMINATED": "Terminated",
+      "EXPIRED": "Expired"
     }
   },
   "position": {
+    "type": {
+      "REGULAR": "Regular",
+      "LEADER": "Leader",
+      "MANAGER": "Manager",
+      "INTERN": "Intern",
+      "CONTRACT": "Contract",
+      "OTHER": "Other"
+    }
+  },
+  "permission": {
+    "type": {
+      "CATALOG": "Catalog Permission",
+      "MENU": "Menu Permission",
+      "PAGE": "Page Permission",
+      "BUTTON": "Button Permission",
+      "API": "API Permission",
+      "DATA": "Data Permission"
+    }
+  },
+  "loginAuditLog": {
     "status": {
-      "ACTIVE": "ACTIVE",
-      "INACTIVE": "INACTIVE",
-      "ON_LEAVE": "ON_LEAVE",
-      "RESIGNED": "RESIGNED"
+      "SUCCESS": "Success",
+      "FAILED": "Failed",
+      "PARTIAL": "Partial Success"
+    },
+    "actionType": {
+      "LOGIN": "User Login",
+      "LOGOUT": "User Logout",
+      "SESSION_EXPIRED": "Session Expired"
+    },
+    "riskLevel": {
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High"
+    }
+  },
+  "internalMessage": {
+    "status": {
+      "DRAFT": "Draft",
+      "PUBLISHED": "Published",
+      "SCHEDULED": "Scheduled",
+      "REVOKED": "Revoked",
+      "ARCHIVED": "Archived",
+      "DELETED": "Deleted"
     },
     "type": {
-      "REGULAR": "Regular Position",
-      "LEADER": "Leader Position",
-      "MANAGER": "Manager Position",
-      "INTERN": "Intern Position",
-      "CONTRACT": "Contract Position",
-      "OTHER": "Other Position"
+      "NOTIFICATION": "Notification",
+      "PRIVATE": "Private Message",
+      "GROUP": "Group"
+    }
+  },
+  "internalMessageRecipient": {
+    "status": {
+      "SENT": "Sent",
+      "RECEIVED": "Received",
+      "READ": "Read",
+      "REVOKED": "Revoked",
+      "DELETED": "Deleted"
     }
   },
   "ossProvider": {
     "LOCAL": "Local Storage",
-    "ALIYUN": "Aliyun OSS",
+    "MINIO": "MinIO",
+    "ALIYUN": "Alibaba Cloud OSS",
+    "QINIU": "Qiniu Cloud Storage",
+    "TENCENT": "Tencent COS",
+    "BAIDU": "Baidu BOS",
+    "HUAWEI": "Huawei OBS",
+    "AWS": "Amazon S3",
+    "AZURE": "Azure Blob Storage",
+    "GOOGLE": "Google Cloud Storage"
   }
 }

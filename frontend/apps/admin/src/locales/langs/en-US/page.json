@@ -2,134 +2,190 @@
   "auth": {
     "login": "Login",
     "register": "Register",
-    "codeLogin": "Code Login",
-    "qrcodeLogin": "Qr Code Login",
-    "forgetPassword": "Forget Password"
+    "codeLogin": "Verification Code Login",
+    "qrcodeLogin": "QR Code Login",
+    "forgetPassword": "Forgot Password"
   },
   "dashboard": {
-    "title": "Dashboard",
+    "title": "Overview",
     "analytics": "Analytics",
-    "workspace": "Workspace"
+    "workspace": "Workbench"
   },
   "user": {
     "moduleName": "User",
     "form": {
-      "realName": "UserName",
-      "mobile": "Phone",
-      "roleId": "Role",
-      "oldPassword": "Old Password",
+      "username": "Username",
+      "nickname": "Nickname",
+      "realname": "Real Name",
+      "email": "Email",
+      "mobile": "Mobile",
+      "tenant": "Tenant",
+      "role": "Role",
+      "orgUnit": "Organization",
+      "position": "Position",
+      "oldPassword": "Current Password",
       "newPassword": "New Password",
-      "confirmPassword": "Confirm Password"
+      "confirmPassword": "Confirm Password",
+      "status": "Status"
     },
     "table": {
-      "seq": "Seq",
-      "username": "User Name",
-      "nickname": "Nick Name",
-      "realname": "Real Name",
+      "seq": "No.",
+      "username": "Username",
+      "nickname": "Nickname",
+      "realname": "Name",
       "password": "Password",
       "avatar": "Avatar",
       "email": "Email",
-      "mobile": "Phone",
+      "mobile": "Mobile",
       "telephone": "Telephone",
       "gender": "Gender",
       "address": "Address",
       "region": "Region",
       "description": "Description",
-      "lastLoginAt": "Last Login Time",
+      "lastLoginAt": "Last Login At",
       "lastLoginIp": "Last Login IP",
       "roleId": "Role",
       "tenantId": "Tenant",
       "orgUnitId": "Organization",
       "positionId": "Position",
-      "workId": "Work ID"
+      "workId": "Employee ID",
+      "status": "Status"
     },
     "button": {
-      "create": "Create",
-      "editPassword": "Edit Password",
-      "banAccount": "Ban Account"
+      "create": "Create Account",
+      "editPassword": "Change Password",
+      "banAccount": "Disable Account"
     },
     "detail": {
-      "title": "User Detail",
+      "title": "Profile of User {userId}",
       "tab": {
         "basicInfo": "Basic Info",
-        "permission": "Permission Info",
-        "apiAuditLog": "API Log"
+        "permission": "Permissions",
+        "apiAuditLog": "API Logs",
+        "internalMessage": "Inbox"
       },
       "desc": {
-        "username" : "Username",
-        "realname" : "Real Name",
-        "nickname" : "Nick Name",
-        "gender" : "Gender",
-        "mobile" : "Mobile",
-        "email" : "Email",
-        "orgUnitName" : "Organization",
-        "positionName" : "Position",
-        "lastLoginAt" : "Last Login Time",
-        "lastLoginIp" : "Last Login IP"
+        "username": "Username",
+        "realname": "Real Name",
+        "nickname": "Nickname",
+        "gender": "Gender",
+        "mobile": "Mobile",
+        "email": "Email",
+        "region": "Region",
+        "address": "Address",
+        "roleNames": "Role List",
+        "tenantName": "Tenant",
+        "orgUnitName": "Organization",
+        "positionName": "Position",
+        "lastLoginAt": "Last Login At",
+        "lastLoginIp": "Last Login IP"
       }
     }
   },
   "role": {
     "moduleName": "Role",
-    "name": "Name",
-    "code": "Code",
-    "menus": "Assign Menu",
-    "apis": "Assign API",
+    "name": "Role Name",
+    "code": "Role Value",
+    "description": "Role Description",
+    "isProtected": "Built-in Role",
+    "apis": "Assigned APIs",
+    "permissions": "Assigned Permissions",
+    "tenantName": "Tenant",
     "button": {
-      "create": "Create"
+      "create": "Create Role"
+    }
+  },
+  "permission": {
+    "moduleName": "Permission",
+    "name": "Permission Name",
+    "code": "Permission Code",
+    "path": "Tree Path",
+    "groupId": "Group",
+    "groupName": "Group Name",
+    "menuIds": "Assigned Menus",
+    "apiIds": "Assigned APIs",
+    "description": "Permission Description",
+    "button": {
+      "create": "Create Permission",
+      "syncPermissions": "Sync Permissions"
+    }
+  },
+  "permissionGroup": {
+    "moduleName": "Permission Groups",
+    "name": "Group Name",
+    "module": "Module",
+    "parentId": "Parent Group",
+    "button": {
+      "create": "Create Group"
     }
   },
   "dict": {
-    "moduleName": "Dict",
-    "key": "Key",
-    "category": "Category",
-    "categoryDesc": "Category Desc",
-    "value": "value",
-    "valueDesc": "Value Desc",
+    "moduleName": "Dictionary",
+    "dictType": "Dictionary Type",
+    "dictEntry": "Dictionary Entry",
+    "dictTypeList": "Dictionary Type List",
+    "dictEntryList": "Dictionary Entry List",
+    "typeCode": "Code",
+    "typeName": "Type Name",
+    "entryLabel": "Label",
+    "entryValue": "Value",
+    "numericValue": "Numeric Value",
+    "typeId": "Dictionary Type",
+    "languageCode": "Language Code",
+    "languageName": "Language Name",
     "button": {
       "create": "Create"
     }
   },
   "menu": {
     "moduleName": "Menu",
-    "name": "Menu Name",
-    "type": "Menu Type",
+    "name": "Title",
+    "type": "Type",
     "icon": "Icon",
-    "path": "Path",
-    "component": "Component",
+    "path": "Route",
+    "component": "Component Path",
     "show": "Show",
-    "isExt": "Is Ext",
+    "isExt": "External Link",
     "keepAlive": "Keep Alive",
-    "hideInTab": "Hide In Tab",
-    "hideInMenu": "Hide In Menu",
-    "hideInBreadcrumb": "Hide In Breadcrumb",
-    "hideChildrenInMenu": "Hide Children In Menu",
-    "parentId": "Parent Menu",
-    "authority": "Authority",
     "affixTab": "Affix Tab",
+    "hideInMenu": "Hide in Menu",
+    "hideChildrenInMenu": "Hide Child Menus",
+    "hideInTab": "Hide in Tab Bar",
+    "hideInBreadcrumb": "Hide in Breadcrumb",
+    "parentId": "Parent Menu",
+    "authority": "Permission Identifier",
     "order": "Order",
-    "title": "Title",
+    "title": "Menu Title",
     "advancedSettings": "Advanced Settings",
     "tips": {
-      "authority": "Multiple permissions separated by commas, e.g., 'sys:user:add,sys:user:edit'"
+      "authority": "Multiple permissions separated by commas, e.g.: sys:user:add,sys:user:edit"
     },
     "button": {
-      "create": "Create"
+      "create": "Create Menu"
     }
   },
   "orgUnit": {
-    "moduleName": "Organization",
+    "moduleName": "Organization List",
     "name": "Organization Name",
+    "code": "Unique Code",
     "parentId": "Parent Organization",
-    "organizationType": "Organization Type",
+    "type": "Organization Type",
     "isLegalEntity": "Is Legal Entity",
     "businessScope": "Business Scope",
-    "creditCode": "Credit Code",
+    "registrationNumber": "Registration Number",
+    "taxId": "Tax ID",
     "address": "Address",
-    "managerId": "Manager ID",
-    "managerName": "Manager Name",
+    "phone": "Phone",
+    "email": "Contact Email",
+    "timezone": "Timezone",
+    "country": "Country Code",
+    "leaderId": "Leader ID",
+    "leaderName": "Leader Name",
+    "contactUserId": "Contact User ID",
+    "contactUserName": "Contact User Name",
+    "description": "Description",
     "button": {
-      "create": "Create"
+      "create": "Create Organization"
     }
   },
   "position": {
@@ -140,10 +196,11 @@
     "orgUnitId": "Organization ID",
     "orgUnitName": "Organization Name",
     "description": "Description",
-    "code": "Code",
-    "headcount": "Quota",
+    "type": "Position Type",
+    "code": "Unique Code",
+    "headcount": "Headcount",
     "button": {
-      "create": "Create"
+      "create": "Create Position"
     }
   },
   "tenant": {
@@ -152,50 +209,62 @@
     "code": "Tenant Code",
     "type": "Tenant Type",
     "auditStatus": "Audit Status",
-    "adminSetting": "Tenant Admin Setting",
-    "lastLoginAt" : "Last Login Time",
-    "lastLoginIp" : "Last Login IP",
+    "adminSetting": "Admin Account Settings",
+    "lastLoginAt": "Last Login At",
+    "lastLoginIp": "Last Login IP",
     "logoUrl": "Logo URL",
     "industry": "Industry",
     "subscriptionPlan": "Subscription Plan",
-    "expiredAt": "Expired At",
+    "expiredAt": "Expiration Date",
     "memberCount": "Member Count",
-    "subscriptionAt": "Subscription At",
-    "unsubscribeAt": "Unsubscribe At",
-    "adminUserName": "Admin User Name",
+    "subscriptionAt": "Subscription Date",
+    "unsubscribeAt": "Unsubscribe Date",
+    "adminUserName": "Admin Username",
+    "adminPassword": "Initial Password",
+    "adminPasswordConfirm": "Confirm Password",
+    "adminMobile": "Admin Mobile",
+    "adminEmail": "Admin Email",
     "button": {
-      "create": "Create"
+      "create": "Create Tenant"
+    },
+    "notification": {
+      "tenant_code_exists": "Tenant code already exists, please change and try again!",
+      "user_username_exists": "Admin username already exists, please change and try again!"
     }
   },
   "file": {
     "moduleName": "File",
-    "fileName": "File Name",
-    "saveFileName": "Save File Name",
-    "bucketName": "Bucket Name",
+    "fileName": "Original Filename",
+    "saveFileName": "Saved Filename",
+    "bucketName": "Bucket",
     "fileDirectory": "Directory",
-    "provider": "Provider",
+    "provider": "OSS Provider",
     "fileGuid": "GUID",
+    "extension": "Extension",
     "size": "Size",
-    "uploader": "Uploader",
+    "createdBy": "Uploaded By",
+    "createdAt": "Uploaded At",
     "button": {
-      "create": "Create"
+      "create": "Create File",
+      "upload": "Upload File",
+      "download": "Download File"
     }
   },
   "task": {
     "moduleName": "Task",
-    "type": "Type",
-    "typeName": "Type Name",
-    "taskPayload": "Task Payload",
+    "type": "Schedule Type",
+    "typeName": "Schedule Method",
+    "taskPayload": "Task Data",
     "taskOptions": "Task Options",
-    "taskOptionsMaxRetry": "Retry Count",
+    "taskOptionsMaxRetry": "Max Retries",
     "taskOptionsTimeout": "Timeout",
     "taskOptionsDeadline": "Deadline",
-    "taskOptionsProcessIn": "Process In",
-    "taskOptionsProcessAt": "Process At",
-    "cronSpec": "Cron Spec",
-    "enable": "Enable",
+    "taskOptionsProcessIn": "Delay",
+    "taskOptionsProcessAt": "Execute At",
+    "cronSpec": "Cron Expression",
+    "enable": "Enabled",
     "button": {
-      "create": "Create",
+      "create": "Create Task",
       "start": "Start Task",
       "restart": "Restart Task",
       "stop": "Stop Task",
@@ -213,52 +282,71 @@
     }
   },
   "internalMessage": {
-    "moduleName": "Notification",
-    "subject": "Subject",
+    "moduleName": "Message Management",
+    "title": "Message Subject",
+    "content": "Message Content",
+    "type": "Message Type",
+    "status": "Message Status",
     "categoryName": "Category",
+    "senderName": "Sender",
+    "categoryId": "Category",
+    "readAt": "Read At",
     "button": {
-      "create": "Create"
+      "create": "Publish Message"
+    },
+    "drawer": {
+      "create": "Publish Message",
+      "update": "Update Message"
     }
   },
   "internalMessageCategory": {
-    "moduleName": "Notification Message Category",
-    "name": "Name",
+    "moduleName": "Message Categories",
+    "name": "Category Name",
+    "code": "Category Code",
+    "parentId": "Parent",
     "button": {
-      "create": "Create"
+      "create": "Create Category"
     }
   },
   "privateMessage": {
-    "moduleName": "Private Message",
+    "moduleName": "Private Messages",
     "subject": "Subject",
     "button": {
-      "create": "Create"
+      "create": "Create Private Message"
     }
   },
   "loginAuditLog": {
-    "moduleName": "Login Log",
-    "username": "User Name",
-    "success": "Success",
-    "loginTime": "Login Time",
-    "location": "Location",
-    "clientName": "Platform",
-    "loginIp": "Login IP"
+    "moduleName": "Login Audit Logs",
+    "username": "Username",
+    "status": "Status",
+    "actionType": "Action Type",
+    "geoLocation": "Geolocation",
+    "platform": "Platform",
+    "ipAddress": "IP Address",
+    "failureReason": "Failure Reason",
+    "riskScore": "Risk Score",
+    "riskLevel": "Risk Level",
+    "riskFactors": "Risk Factors",
+    "createdAt": "Logged At"
   },
   "apiAuditLog": {
-    "moduleName": "API Log",
-    "username": "User Name",
-    "success": "Success",
-    "location": "Location",
-    "clientName": "Platform",
-    "clientIp": "Client IP",
-    "createdAt": "Operation Time",
-    "path": "Path",
-    "method": "Method"
+    "moduleName": "API Logs",
+    "username": "Operator",
+    "success": "Status",
+    "geoLocation": "Geolocation",
+    "platform": "Platform",
+    "ipAddress": "IP Address",
+    "createdAt": "Logged At",
+    "path": "Request Path",
+    "httpMethod": "HTTP Method",
+    "latencyMs": "API Latency (ms)"
   },
   "api": {
-    "moduleName": "API Resource",
+    "moduleName": "API Resources",
     "path": "Path",
     "method": "Method",
     "module": "Module",
+    "moduleDescription": "Module Description",
     "operation": "Operation",
     "button": {
       "create": "Create API",
@@ -266,14 +354,14 @@
     }
   },
   "loginPolicy": {
-    "moduleName": "Login Restriction",
+    "moduleName": "Login Policy",
     "targetId": "Target User ID",
     "type": "Restriction Type",
     "method": "Restriction Method",
     "value": "Restriction Value",
     "reason": "Restriction Reason",
     "button": {
-      "create": "Create"
+      "create": "Create Policy"
     }
   }
 }
