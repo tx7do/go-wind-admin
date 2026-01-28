@@ -10,7 +10,6 @@ import (
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
-	"github.com/tx7do/kratos-transport/broker"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"go-wind-admin/app/admin/service/internal/data"
@@ -27,9 +26,9 @@ type TaskScheduler interface {
 	TaskTypeExists(taskType string) bool
 	GetRegisteredTaskTypes() []string
 
-	NewTask(typeName string, msg broker.Any, opts ...asynq.Option) error
-	NewWaitResultTask(typeName string, msg broker.Any, opts ...asynq.Option) error
-	NewPeriodicTask(cronSpec, taskId, typeName string, msg broker.Any, opts ...asynq.Option) (string, error)
+	NewTask(typeName string, msg any, opts ...asynq.Option) error
+	NewWaitResultTask(typeName string, msg any, opts ...asynq.Option) error
+	NewPeriodicTask(cronSpec, typeName string, msg any, opts ...asynq.Option) (string, error)
 
 	RemovePeriodicTask(id string) error
 	RemoveAllPeriodicTask()
@@ -273,7 +272,7 @@ func (s *TaskService) stopTask(t *taskV1.Task) error {
 }
 
 // convertTaskOption 转换任务选项
-func (s *TaskService) convertTaskOption(t *taskV1.Task) (opts []asynq.Option, payload broker.Any) {
+func (s *TaskService) convertTaskOption(t *taskV1.Task) (opts []asynq.Option, payload any) {
 	if t == nil {
 		return
 	}
@@ -326,13 +325,13 @@ func (s *TaskService) startTask(t *taskV1.Task) error {
 	}
 
 	var opts []asynq.Option
-	var payload broker.Any
+	var payload any
 	var err error
 
 	switch t.GetType() {
 	case taskV1.Task_PERIODIC:
 		opts, payload = s.convertTaskOption(t)
-		if _, err = s.taskScheduler.NewPeriodicTask(t.GetCronSpec(), task.CreateBackupTaskID(t.GetId()), t.GetTypeName(), payload, opts...); err != nil {
+		if _, err = s.taskScheduler.NewPeriodicTask(t.GetCronSpec(), t.GetTypeName(), payload, opts...); err != nil {
 			s.log.Errorf("[%s] 创建定时任务失败[%s]", t.GetTypeName(), err.Error())
 			return err
 		}
