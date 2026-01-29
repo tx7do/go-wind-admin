@@ -9,7 +9,7 @@ require (
 	github.com/getkin/kin-openapi v0.133.0
 	github.com/go-kratos/kratos/v2 v2.9.2
 	github.com/go-sql-driver/mysql v1.9.3
-	github.com/golang-jwt/jwt/v5 v5.3.0
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/google/gnostic v0.7.1
 	github.com/google/uuid v1.6.0
 	github.com/google/wire v0.7.0
@@ -17,7 +17,7 @@ require (
 	github.com/jackc/pgx/v5 v5.8.0
 	github.com/jinzhu/copier v0.4.0
 	github.com/jinzhu/inflection v1.0.0
-	github.com/lib/pq v1.10.9
+	github.com/lib/pq v1.11.0
 	github.com/menta2k/protoc-gen-redact/v3 v3.0.0-20251106150014-896cdd075ab1
 	github.com/mileusna/useragent v1.3.5
 	github.com/minio/minio-go/v7 v7.0.98
@@ -50,11 +50,11 @@ require (
 	github.com/tx7do/kratos-bootstrap/transport/asynq v0.0.2
 	github.com/tx7do/kratos-bootstrap/transport/sse v0.0.2
 	github.com/tx7do/kratos-swagger-ui v0.0.1
-	github.com/tx7do/kratos-transport/transport/asynq v1.3.1
-	github.com/tx7do/kratos-transport/transport/sse v1.3.1
+	github.com/tx7do/kratos-transport/transport/asynq v1.3.2
+	github.com/tx7do/kratos-transport/transport/sse v1.3.2
 	github.com/yuin/gopher-lua v1.1.1
 	go.opentelemetry.io/otel/trace v1.39.0
-	google.golang.org/genproto v0.0.0-20260126211449-d11affda4bed
+	google.golang.org/genproto v0.0.0-20260128011058-8636f8732409
 	google.golang.org/genproto/googleapis/api v0.0.0-20260128011058-8636f8732409
 	google.golang.org/grpc v1.78.0
 	google.golang.org/protobuf v1.36.11
@@ -131,7 +131,7 @@ require (
 	github.com/gorilla/mux v1.8.1 // indirect
 	github.com/graph-gophers/dataloader/v7 v7.1.3 // indirect
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0 // indirect
-	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.5 // indirect
+	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.6 // indirect
 	github.com/hashicorp/go-version v1.8.0 // indirect
 	github.com/hashicorp/hcl/v2 v2.24.0 // indirect
 	github.com/inconshreveable/mousetrap v1.1.0 // indirect
@@ -215,10 +215,10 @@ require (
 	github.com/tx7do/kratos-bootstrap/logger v0.1.2 // indirect
 	github.com/tx7do/kratos-bootstrap/registry v0.2.2 // indirect
 	github.com/tx7do/kratos-bootstrap/tracer v0.1.3 // indirect
-	github.com/tx7do/kratos-transport/broker v1.3.1 // indirect
+	github.com/tx7do/kratos-transport/broker v1.3.2 // indirect
 	github.com/tx7do/kratos-transport/tracing v1.1.1 // indirect
-	github.com/tx7do/kratos-transport/transport v1.3.2 // indirect
-	github.com/tx7do/kratos-transport/transport/keepalive v1.3.2 // indirect
+	github.com/tx7do/kratos-transport/transport v1.3.3 // indirect
+	github.com/tx7do/kratos-transport/transport/keepalive v1.3.3 // indirect
 	github.com/valyala/fastjson v1.6.7 // indirect
 	github.com/vearutop/statigz v1.5.0 // indirect
 	github.com/vektah/gqlparser/v2 v2.5.31 // indirect
