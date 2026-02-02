@@ -81,19 +81,23 @@ func (r *PermissionRepo) init() {
 	r.mapper.AppendConverters(r.statusConverter.NewConverterPair())
 }
 
-func (r *PermissionRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
+func (r *PermissionRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.CountPermissionResponse, error) {
 	builder := r.entClient.Client().Permission.Query()
-	if len(whereCond) != 0 {
-		builder.Modify(whereCond...)
+
+	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
+	if len(whereSelectors) != 0 {
+		builder.Modify(whereSelectors...)
 	}
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
-		return 0, permissionV1.ErrorInternalServerError("query count failed")
+		r.log.Errorf("query permission count failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("query permission count failed")
 	}
 
-	return count, nil
+	return &permissionV1.CountPermissionResponse{
+		Count: uint64(count),
+	}, nil
 }
 
 func clearFilterExprByFieldNames(expr *paginationV1.FilterExpr, fieldName string) {

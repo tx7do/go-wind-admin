@@ -88,7 +88,7 @@ func (r *RoleRepo) init() {
 }
 
 // Count 统计角色数量
-func (r *RoleRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
+func (r *RoleRepo) count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
 	builder := r.entClient.Client().Role.Query()
 	if len(whereCond) != 0 {
 		builder.Modify(whereCond...)
@@ -97,6 +97,23 @@ func (r *RoleRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector))
 	count, err := builder.Count(ctx)
 	if err != nil {
 		r.log.Errorf("query count failed: %s", err.Error())
+		return 0, userV1.ErrorInternalServerError("query count failed")
+	}
+
+	return count, nil
+}
+
+func (r *RoleRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (int, error) {
+	builder := r.entClient.Client().Role.Query()
+
+	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
+	if len(whereSelectors) != 0 {
+		builder.Modify(whereSelectors...)
+	}
+
+	count, err := builder.Count(ctx)
+	if err != nil {
+		r.log.Errorf("query role count failed: %s", err.Error())
 		return 0, userV1.ErrorInternalServerError("query count failed")
 	}
 

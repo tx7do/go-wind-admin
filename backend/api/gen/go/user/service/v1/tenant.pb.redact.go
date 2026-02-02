@@ -134,6 +134,17 @@ func (s *redactedTenantServiceServer) TenantExists(ctx context.Context, in *Tena
 	return res, err
 }
 
+// AssignTenantAdmin is the redacted wrapper for the actual TenantServiceServer.AssignTenantAdmin method
+// Unary RPC
+func (s *redactedTenantServiceServer) AssignTenantAdmin(ctx context.Context, in *AssignTenantAdminRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.AssignTenantAdmin(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
+}
+
 // Redact method implementation for Tenant
 func (x *Tenant) Redact() string {
 	if x == nil {
@@ -315,5 +326,17 @@ func (x *CountTenantResponse) Redact() string {
 	}
 
 	// Safe field: Count
+	return x.String()
+}
+
+// Redact method implementation for AssignTenantAdminRequest
+func (x *AssignTenantAdminRequest) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: TenantId
+
+	// Safe field: UserId
 	return x.String()
 }

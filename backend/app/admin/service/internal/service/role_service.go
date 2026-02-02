@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 
-	"entgo.io/ent/dialect/sql"
 	"github.com/go-kratos/kratos/v2/log"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/aggregator"
@@ -53,7 +52,7 @@ func NewRoleService(
 
 func (s *RoleService) init() {
 	ctx := appViewer.NewSystemViewerContext(context.Background())
-	if count, _ := s.roleRepo.Count(ctx, []func(s *sql.Selector){}); count == 0 {
+	if count, _ := s.roleRepo.Count(ctx, nil); count == 0 {
 		_ = s.createDefaultRoles(ctx)
 	}
 }
@@ -126,6 +125,17 @@ func (s *RoleService) List(ctx context.Context, req *paginationV1.PagingRequest)
 	_ = s.enrichRelations(ctx, resp.Items)
 
 	return resp, nil
+}
+
+func (s *RoleService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.CountRoleResponse, error) {
+	count, err := s.roleRepo.Count(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &userV1.CountRoleResponse{
+		Count: uint64(count),
+	}, nil
 }
 
 func (s *RoleService) Get(ctx context.Context, req *userV1.GetRoleRequest) (*userV1.Role, error) {

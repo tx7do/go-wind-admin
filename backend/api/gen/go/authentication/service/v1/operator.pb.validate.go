@@ -61,6 +61,8 @@ func (m *OperatorMetadata) validate(all bool) error {
 
 	var errors []error
 
+	// no validation rules for Type
+
 	// no validation rules for UserId
 
 	// no validation rules for TenantId
@@ -68,6 +70,14 @@ func (m *OperatorMetadata) validate(all bool) error {
 	// no validation rules for OrgUnitId
 
 	// no validation rules for DataScope
+
+	if m.ServiceName != nil {
+		// no validation rules for ServiceName
+	}
+
+	if m.HostName != nil {
+		// no validation rules for HostName
+	}
 
 	if len(errors) > 0 {
 		return OperatorMetadataMultiError(errors)

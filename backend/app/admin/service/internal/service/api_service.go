@@ -8,7 +8,6 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
-	"entgo.io/ent/dialect/sql"
 	"github.com/getkin/kin-openapi/openapi3"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
@@ -57,7 +56,7 @@ func NewApiService(
 
 func (s *ApiService) init() {
 	ctx := appViewer.NewSystemViewerContext(context.Background())
-	if count, _ := s.repo.Count(ctx, []func(s *sql.Selector){}); count == 0 {
+	if count, _ := s.repo.Count(ctx, nil); count.Count == 0 {
 		_, _ = s.SyncApis(ctx, &emptypb.Empty{})
 	}
 }

@@ -28,6 +28,8 @@ func (x *OperatorMetadata) Redact() string {
 		return ""
 	}
 
+	// Safe field: Type
+
 	// Safe field: UserId
 
 	// Safe field: TenantId
@@ -37,6 +39,10 @@ func (x *OperatorMetadata) Redact() string {
 	// Safe field: DataScope
 
 	// Safe field: RoleIds
+
+	// Safe field: ServiceName
+
+	// Safe field: HostName
 	return x.String()
 }
 

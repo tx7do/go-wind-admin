@@ -40,7 +40,7 @@ type UserRepo interface {
 
 	Delete(ctx context.Context, req *userV1.DeleteUserRequest) error
 
-	Count(ctx context.Context) (int, error)
+	Count(ctx context.Context, req *paginationV1.PagingRequest) (int, error)
 
 	UserExists(ctx context.Context, req *userV1.UserExistsRequest) (*userV1.UserExistsResponse, error)
 
@@ -131,8 +131,13 @@ func (r *userRepo) init() {
 }
 
 // Count 统计用户数量
-func (r *userRepo) Count(ctx context.Context) (int, error) {
+func (r *userRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (int, error) {
 	builder := r.entClient.Client().User.Query()
+
+	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
+	if len(whereSelectors) != 0 {
+		builder.Modify(whereSelectors...)
+	}
 
 	count, err := builder.Count(ctx)
 	if err != nil {

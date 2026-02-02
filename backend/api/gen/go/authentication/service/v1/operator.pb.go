@@ -23,14 +23,66 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+type OperatorMetadata_OperatorType int32
+
+const (
+	OperatorMetadata_USER    OperatorMetadata_OperatorType = 0 // 普通用户
+	OperatorMetadata_SYSTEM  OperatorMetadata_OperatorType = 1 // 系统/后台任务
+	OperatorMetadata_SERVICE OperatorMetadata_OperatorType = 2 // 微服务间的自动调用
+)
+
+// Enum value maps for OperatorMetadata_OperatorType.
+var (
+	OperatorMetadata_OperatorType_name = map[int32]string{
+		0: "USER",
+		1: "SYSTEM",
+		2: "SERVICE",
+	}
+	OperatorMetadata_OperatorType_value = map[string]int32{
+		"USER":    0,
+		"SYSTEM":  1,
+		"SERVICE": 2,
+	}
+)
+
+func (x OperatorMetadata_OperatorType) Enum() *OperatorMetadata_OperatorType {
+	p := new(OperatorMetadata_OperatorType)
+	*p = x
+	return p
+}
+
+func (x OperatorMetadata_OperatorType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (OperatorMetadata_OperatorType) Descriptor() protoreflect.EnumDescriptor {
+	return file_authentication_service_v1_operator_proto_enumTypes[0].Descriptor()
+}
+
+func (OperatorMetadata_OperatorType) Type() protoreflect.EnumType {
+	return &file_authentication_service_v1_operator_proto_enumTypes[0]
+}
+
+func (x OperatorMetadata_OperatorType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use OperatorMetadata_OperatorType.Descriptor instead.
+func (OperatorMetadata_OperatorType) EnumDescriptor() ([]byte, []int) {
+	return file_authentication_service_v1_operator_proto_rawDescGZIP(), []int{0, 0}
+}
+
 // 操作者元数据
 type OperatorMetadata struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        uint64                 `protobuf:"varint,1,opt,name=user_id,json=uid,proto3" json:"user_id,omitempty"`                                           // 用户ID
-	TenantId      uint64                 `protobuf:"varint,2,opt,name=tenant_id,json=tid,proto3" json:"tenant_id,omitempty"`                                       // 租户ID
-	OrgUnitId     uint64                 `protobuf:"varint,3,opt,name=org_unit_id,json=ouid,proto3" json:"org_unit_id,omitempty"`                                  // 当前操作所属的组织单元
-	DataScope     v1.DataScope           `protobuf:"varint,4,opt,name=data_scope,json=ds,proto3,enum=permission.service.v1.DataScope" json:"data_scope,omitempty"` // 数据权限范围策略
-	RoleIds       []uint64               `protobuf:"varint,5,rep,packed,name=role_ids,json=rids,proto3" json:"role_ids,omitempty"`                                 // 用于存放少量的核心角色 ID 或标记位
+	state         protoimpl.MessageState        `protogen:"open.v1"`
+	Type          OperatorMetadata_OperatorType `protobuf:"varint,1,opt,name=type,json=t,proto3,enum=authentication.service.v1.OperatorMetadata_OperatorType" json:"type,omitempty"` // 操作者类型
+	UserId        uint64                        `protobuf:"varint,2,opt,name=user_id,json=uid,proto3" json:"user_id,omitempty"`                                                      // 用户ID
+	TenantId      uint64                        `protobuf:"varint,3,opt,name=tenant_id,json=tid,proto3" json:"tenant_id,omitempty"`                                                  // 租户ID
+	OrgUnitId     uint64                        `protobuf:"varint,4,opt,name=org_unit_id,json=ouid,proto3" json:"org_unit_id,omitempty"`                                             // 当前操作所属的组织单元
+	DataScope     v1.DataScope                  `protobuf:"varint,5,opt,name=data_scope,json=ds,proto3,enum=permission.service.v1.DataScope" json:"data_scope,omitempty"`            // 数据权限范围策略
+	RoleIds       []uint64                      `protobuf:"varint,6,rep,packed,name=role_ids,json=rids,proto3" json:"role_ids,omitempty"`                                            // 用于存放少量的核心角色 ID 或标记位
+	ServiceName   *string                       `protobuf:"bytes,7,opt,name=service_name,json=sn,proto3,oneof" json:"service_name,omitempty"`                                        // 发起操作的服务名称
+	HostName      *string                       `protobuf:"bytes,8,opt,name=host_name,json=hn,proto3,oneof" json:"host_name,omitempty"`                                              // 发起操作的主机名称
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -63,6 +115,13 @@ func (x *OperatorMetadata) ProtoReflect() protoreflect.Message {
 // Deprecated: Use OperatorMetadata.ProtoReflect.Descriptor instead.
 func (*OperatorMetadata) Descriptor() ([]byte, []int) {
 	return file_authentication_service_v1_operator_proto_rawDescGZIP(), []int{0}
+}
+
+func (x *OperatorMetadata) GetType() OperatorMetadata_OperatorType {
+	if x != nil {
+		return x.Type
+	}
+	return OperatorMetadata_USER
 }
 
 func (x *OperatorMetadata) GetUserId() uint64 {
@@ -98,6 +157,20 @@ func (x *OperatorMetadata) GetRoleIds() []uint64 {
 		return x.RoleIds
 	}
 	return nil
+}
+
+func (x *OperatorMetadata) GetServiceName() string {
+	if x != nil && x.ServiceName != nil {
+		return *x.ServiceName
+	}
+	return ""
+}
+
+func (x *OperatorMetadata) GetHostName() string {
+	if x != nil && x.HostName != nil {
+		return *x.HostName
+	}
+	return ""
 }
 
 // 签名的元数据
@@ -157,14 +230,25 @@ var File_authentication_service_v1_operator_proto protoreflect.FileDescriptor
 
 const file_authentication_service_v1_operator_proto_rawDesc = "" +
 	"\n" +
-	"(authentication/service/v1/operator.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a&permission/service/v1/permission.proto\"\xcf\x02\n" +
-	"\x10OperatorMetadata\x12$\n" +
-	"\auser_id\x18\x01 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDR\x03uid\x12&\n" +
-	"\ttenant_id\x18\x02 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDR\x03tid\x12B\n" +
-	"\vorg_unit_id\x18\x03 \x01(\x04B'\xbaG$\x92\x02!当前操作所属的组织单元R\x04ouid\x12X\n" +
+	"(authentication/service/v1/operator.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a&permission/service/v1/permission.proto\"\x84\x05\n" +
+	"\x10OperatorMetadata\x12`\n" +
+	"\x04type\x18\x01 \x01(\x0e28.authentication.service.v1.OperatorMetadata.OperatorTypeB\x15\xbaG\x12\x92\x02\x0f操作者类型R\x01t\x12$\n" +
+	"\auser_id\x18\x02 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDR\x03uid\x12&\n" +
+	"\ttenant_id\x18\x03 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDR\x03tid\x12B\n" +
+	"\vorg_unit_id\x18\x04 \x01(\x04B'\xbaG$\x92\x02!当前操作所属的组织单元R\x04ouid\x12X\n" +
 	"\n" +
-	"data_scope\x18\x04 \x01(\x0e2 .permission.service.v1.DataScopeB\x1e\xbaG\x1b\x92\x02\x18数据权限范围策略R\x02ds\x12O\n" +
-	"\brole_ids\x18\x05 \x03(\x04B7\xbaG4\x92\x021用于存放少量的核心角色 ID 或标记位R\x04rids\"O\n" +
+	"data_scope\x18\x05 \x01(\x0e2 .permission.service.v1.DataScopeB\x1e\xbaG\x1b\x92\x02\x18数据权限范围策略R\x02ds\x12O\n" +
+	"\brole_ids\x18\x06 \x03(\x04B7\xbaG4\x92\x021用于存放少量的核心角色 ID 或标记位R\x04rids\x12@\n" +
+	"\fservice_name\x18\a \x01(\tB!\xbaG\x1e\x92\x02\x1b发起操作的服务名称H\x00R\x02sn\x88\x01\x01\x12=\n" +
+	"\thost_name\x18\b \x01(\tB!\xbaG\x1e\x92\x02\x1b发起操作的主机名称H\x01R\x02hn\x88\x01\x01\"1\n" +
+	"\fOperatorType\x12\b\n" +
+	"\x04USER\x10\x00\x12\n" +
+	"\n" +
+	"\x06SYSTEM\x10\x01\x12\v\n" +
+	"\aSERVICE\x10\x02B\x0f\n" +
+	"\r_service_nameB\f\n" +
+	"\n" +
+	"_host_name\"O\n" +
 	"\x15SignedOperatorPayload\x12\x18\n" +
 	"\apayload\x18\x01 \x01(\fR\apayload\x12\x1c\n" +
 	"\tsignature\x18\x02 \x01(\fR\tsignatureB\xf9\x01\n" +
@@ -182,19 +266,22 @@ func file_authentication_service_v1_operator_proto_rawDescGZIP() []byte {
 	return file_authentication_service_v1_operator_proto_rawDescData
 }
 
+var file_authentication_service_v1_operator_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_authentication_service_v1_operator_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_authentication_service_v1_operator_proto_goTypes = []any{
-	(*OperatorMetadata)(nil),      // 0: authentication.service.v1.OperatorMetadata
-	(*SignedOperatorPayload)(nil), // 1: authentication.service.v1.SignedOperatorPayload
-	(v1.DataScope)(0),             // 2: permission.service.v1.DataScope
+	(OperatorMetadata_OperatorType)(0), // 0: authentication.service.v1.OperatorMetadata.OperatorType
+	(*OperatorMetadata)(nil),           // 1: authentication.service.v1.OperatorMetadata
+	(*SignedOperatorPayload)(nil),      // 2: authentication.service.v1.SignedOperatorPayload
+	(v1.DataScope)(0),                  // 3: permission.service.v1.DataScope
 }
 var file_authentication_service_v1_operator_proto_depIdxs = []int32{
-	2, // 0: authentication.service.v1.OperatorMetadata.data_scope:type_name -> permission.service.v1.DataScope
-	1, // [1:1] is the sub-list for method output_type
-	1, // [1:1] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	0, // 0: authentication.service.v1.OperatorMetadata.type:type_name -> authentication.service.v1.OperatorMetadata.OperatorType
+	3, // 1: authentication.service.v1.OperatorMetadata.data_scope:type_name -> permission.service.v1.DataScope
+	2, // [2:2] is the sub-list for method output_type
+	2, // [2:2] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_authentication_service_v1_operator_proto_init() }
@@ -202,18 +289,20 @@ func file_authentication_service_v1_operator_proto_init() {
 	if File_authentication_service_v1_operator_proto != nil {
 		return
 	}
+	file_authentication_service_v1_operator_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_authentication_service_v1_operator_proto_rawDesc), len(file_authentication_service_v1_operator_proto_rawDesc)),
-			NumEnums:      0,
+			NumEnums:      1,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
 		GoTypes:           file_authentication_service_v1_operator_proto_goTypes,
 		DependencyIndexes: file_authentication_service_v1_operator_proto_depIdxs,
+		EnumInfos:         file_authentication_service_v1_operator_proto_enumTypes,
 		MessageInfos:      file_authentication_service_v1_operator_proto_msgTypes,
 	}.Build()
 	File_authentication_service_v1_operator_proto = out.File

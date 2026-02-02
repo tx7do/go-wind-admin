@@ -7,30 +7,51 @@ import "permission/service/v1/permission.proto";
 
 // 操作者元数据
 message OperatorMetadata {
-  uint64 user_id = 1 [
+  enum OperatorType {
+    USER = 0;   // 普通用户
+    SYSTEM = 1; // 系统/后台任务
+    SERVICE = 2; // 微服务间的自动调用
+  }
+
+  OperatorType type = 1 [
+    json_name = "t",
+    (gnostic.openapi.v3.property) = {description: "操作者类型"}
+  ]; // 操作者类型
+
+  uint64 user_id = 2 [
     json_name = "uid",
     (gnostic.openapi.v3.property) = {description: "用户ID"}
   ]; // 用户ID
 
-  uint64 tenant_id = 2 [
+  uint64 tenant_id = 3 [
     json_name = "tid",
     (gnostic.openapi.v3.property) = {description: "租户ID"}
   ]; // 租户ID
 
-  uint64 org_unit_id = 3 [
+  uint64 org_unit_id = 4 [
     json_name = "ouid",
     (gnostic.openapi.v3.property) = {description: "当前操作所属的组织单元"}
   ]; // 当前操作所属的组织单元
 
-  permission.service.v1.DataScope data_scope = 4 [
+  permission.service.v1.DataScope data_scope = 5 [
     json_name = "ds",
     (gnostic.openapi.v3.property) = {description: "数据权限范围策略"}
   ]; // 数据权限范围策略
 
-  repeated uint64 role_ids = 5 [
+  repeated uint64 role_ids = 6 [
     json_name = "rids",
     (gnostic.openapi.v3.property) = {description: "用于存放少量的核心角色 ID 或标记位"}
   ]; // 用于存放少量的核心角色 ID 或标记位
+
+  optional string service_name = 7 [
+    json_name = "sn",
+    (gnostic.openapi.v3.property) = {description: "发起操作的服务名称"}
+  ];// 发起操作的服务名称
+
+  optional string host_name = 8 [
+    json_name = "hn",
+    (gnostic.openapi.v3.property) = {description: "发起操作的主机名称"}
+  ]; // 发起操作的主机名称
 }
 
 // 签名的元数据

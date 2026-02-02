@@ -121,6 +121,17 @@ func (s *TenantService) List(ctx context.Context, req *paginationV1.PagingReques
 	return resp, nil
 }
 
+func (s *TenantService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.CountTenantResponse, error) {
+	count, err := s.tenantRepo.Count(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &userV1.CountTenantResponse{
+		Count: uint64(count),
+	}, nil
+}
+
 func (s *TenantService) Get(ctx context.Context, req *userV1.GetTenantRequest) (*userV1.Tenant, error) {
 	resp, err := s.tenantRepo.Get(ctx, req)
 	if err != nil {

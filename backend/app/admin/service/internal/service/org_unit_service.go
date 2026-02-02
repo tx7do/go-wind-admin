@@ -139,6 +139,17 @@ func (s *OrgUnitService) List(ctx context.Context, req *paginationV1.PagingReque
 	return resp, nil
 }
 
+func (s *OrgUnitService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.CountOrgUnitResponse, error) {
+	count, err := s.orgUnitRepo.Count(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &userV1.CountOrgUnitResponse{
+		Count: uint64(count),
+	}, nil
+}
+
 func (s *OrgUnitService) Get(ctx context.Context, req *userV1.GetOrgUnitRequest) (*userV1.OrgUnit, error) {
 	resp, err := s.orgUnitRepo.Get(ctx, req)
 	if err != nil {

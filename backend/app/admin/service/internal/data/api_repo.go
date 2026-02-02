@@ -70,19 +70,23 @@ func (r *ApiRepo) init() {
 	r.mapper.AppendConverters(r.scopeConverter.NewConverterPair())
 }
 
-func (r *ApiRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
+func (r *ApiRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.CountApiResponse, error) {
 	builder := r.entClient.Client().Api.Query()
-	if len(whereCond) != 0 {
-		builder.Modify(whereCond...)
+
+	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
+	if len(whereSelectors) != 0 {
+		builder.Modify(whereSelectors...)
 	}
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
-		return 0, permissionV1.ErrorInternalServerError("query count failed")
+		r.log.Errorf("query api count failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("query api count failed")
 	}
 
-	return count, nil
+	return &permissionV1.CountApiResponse{
+		Count: uint64(count),
+	}, nil
 }
 
 func (r *ApiRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.ListApiResponse, error) {

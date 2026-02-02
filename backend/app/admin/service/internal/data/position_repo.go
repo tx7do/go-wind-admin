@@ -75,7 +75,7 @@ func (r *PositionRepo) init() {
 	r.mapper.AppendConverters(r.typeConverter.NewConverterPair())
 }
 
-func (r *PositionRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
+func (r *PositionRepo) count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
 	builder := r.entClient.Client().Position.Query()
 	if len(whereCond) != 0 {
 		builder.Modify(whereCond...)
@@ -84,6 +84,23 @@ func (r *PositionRepo) Count(ctx context.Context, whereCond []func(s *sql.Select
 	count, err := builder.Count(ctx)
 	if err != nil {
 		r.log.Errorf("query count failed: %s", err.Error())
+		return 0, userV1.ErrorInternalServerError("query count failed")
+	}
+
+	return count, nil
+}
+
+func (r *PositionRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (int, error) {
+	builder := r.entClient.Client().Position.Query()
+
+	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
+	if len(whereSelectors) != 0 {
+		builder.Modify(whereSelectors...)
+	}
+
+	count, err := builder.Count(ctx)
+	if err != nil {
+		r.log.Errorf("query position count failed: %s", err.Error())
 		return 0, userV1.ErrorInternalServerError("query count failed")
 	}
 

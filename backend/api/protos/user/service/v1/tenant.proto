@@ -35,6 +35,9 @@ service TenantService {
 
   // 租户是否存在
   rpc TenantExists (TenantExistsRequest) returns (TenantExistsResponse) {}
+
+  // 分配租户管理员
+  rpc AssignTenantAdmin(AssignTenantAdminRequest) returns (google.protobuf.Empty) {}
 }
 
 // 租户
@@ -254,4 +257,16 @@ message CreateTenantWithAdminUserRequest {
 
 message CountTenantResponse {
   uint64 count = 1;
+}
+
+message AssignTenantAdminRequest {
+  uint32 tenant_id = 1 [
+    (gnostic.openapi.v3.property) = {description: "租户ID"},
+    json_name = "tenantId"
+  ]; // 租户ID
+
+  uint32 user_id = 2 [
+    (gnostic.openapi.v3.property) = {description: "用户ID"},
+    json_name = "userId"
+  ]; // 用户ID
 }

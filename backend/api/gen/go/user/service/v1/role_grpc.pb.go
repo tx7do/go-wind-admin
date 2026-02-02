@@ -41,6 +41,7 @@ const (
 type RoleServiceClient interface {
 	// 查询角色列表
 	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListRoleResponse, error)
+	// 统计角色数量
 	Count(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*CountRoleResponse, error)
 	// 查询角色详情
 	Get(ctx context.Context, in *GetRoleRequest, opts ...grpc.CallOption) (*Role, error)
@@ -176,6 +177,7 @@ func (c *roleServiceClient) GetRolesByRoleIds(ctx context.Context, in *GetRolesB
 type RoleServiceServer interface {
 	// 查询角色列表
 	List(context.Context, *v1.PagingRequest) (*ListRoleResponse, error)
+	// 统计角色数量
 	Count(context.Context, *v1.PagingRequest) (*CountRoleResponse, error)
 	// 查询角色详情
 	Get(context.Context, *GetRoleRequest) (*Role, error)

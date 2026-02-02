@@ -14,6 +14,7 @@ service RoleService {
   // 查询角色列表
   rpc List (pagination.PagingRequest) returns (ListRoleResponse) {}
 
+  // 统计角色数量
   rpc Count (pagination.PagingRequest) returns (CountRoleResponse) {}
 
   // 查询角色详情

@@ -72,7 +72,7 @@ func (r *OrgUnitRepo) init() {
 	r.mapper.AppendConverters(r.statusConverter.NewConverterPair())
 }
 
-func (r *OrgUnitRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
+func (r *OrgUnitRepo) count(ctx context.Context, whereCond []func(s *sql.Selector)) (int, error) {
 	builder := r.entClient.Client().OrgUnit.Query()
 	if len(whereCond) != 0 {
 		builder.Modify(whereCond...)
@@ -81,6 +81,23 @@ func (r *OrgUnitRepo) Count(ctx context.Context, whereCond []func(s *sql.Selecto
 	count, err := builder.Count(ctx)
 	if err != nil {
 		r.log.Errorf("query count failed: %s", err.Error())
+		return 0, userV1.ErrorInternalServerError("query count failed")
+	}
+
+	return count, nil
+}
+
+func (r *OrgUnitRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (int, error) {
+	builder := r.entClient.Client().OrgUnit.Query()
+
+	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
+	if len(whereSelectors) != 0 {
+		builder.Modify(whereSelectors...)
+	}
+
+	count, err := builder.Count(ctx)
+	if err != nil {
+		r.log.Errorf("query org-unit count failed: %s", err.Error())
 		return 0, userV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -138,7 +155,7 @@ func (r *OrgUnitRepo) List(ctx context.Context, req *paginationV1.PagingRequest)
 		}
 	}
 
-	count, err := r.Count(ctx, whereSelectors)
+	count, err := r.count(ctx, whereSelectors)
 	if err != nil {
 		return nil, err
 	}

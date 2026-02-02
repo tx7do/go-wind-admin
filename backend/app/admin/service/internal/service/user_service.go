@@ -65,7 +65,7 @@ func NewUserService(
 
 func (s *UserService) init() {
 	ctx := appViewer.NewSystemViewerContext(context.Background())
-	if count, _ := s.userRepo.Count(ctx); count == 0 {
+	if count, _ := s.userRepo.Count(ctx, nil); count == 0 {
 		_ = s.createDefaultUser(ctx)
 	}
 }
@@ -294,6 +294,17 @@ func (s *UserService) List(ctx context.Context, req *paginationV1.PagingRequest)
 	_ = s.enrichRelations(ctx, resp.Items)
 
 	return resp, nil
+}
+
+func (s *UserService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.CountUserResponse, error) {
+	count, err := s.userRepo.Count(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &userV1.CountUserResponse{
+		Count: uint64(count),
+	}, nil
 }
 
 func (s *UserService) Get(ctx context.Context, req *userV1.GetUserRequest) (*userV1.User, error) {

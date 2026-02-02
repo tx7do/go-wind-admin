@@ -109,6 +109,17 @@ func (s *PositionService) List(ctx context.Context, req *paginationV1.PagingRequ
 	return resp, nil
 }
 
+func (s *PositionService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.CountPositionResponse, error) {
+	count, err := s.positionRepo.Count(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &userV1.CountPositionResponse{
+		Count: uint64(count),
+	}, nil
+}
+
 func (s *PositionService) Get(ctx context.Context, req *userV1.GetPositionRequest) (*userV1.Position, error) {
 	resp, err := s.positionRepo.Get(ctx, req)
 	if err != nil {

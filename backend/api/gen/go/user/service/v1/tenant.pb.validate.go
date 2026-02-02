@@ -1828,3 +1828,109 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CountTenantResponseValidationError{}
+
+// Validate checks the field values on AssignTenantAdminRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AssignTenantAdminRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AssignTenantAdminRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AssignTenantAdminRequestMultiError, or nil if none found.
+func (m *AssignTenantAdminRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AssignTenantAdminRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for TenantId
+
+	// no validation rules for UserId
+
+	if len(errors) > 0 {
+		return AssignTenantAdminRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// AssignTenantAdminRequestMultiError is an error wrapping multiple validation
+// errors returned by AssignTenantAdminRequest.ValidateAll() if the designated
+// constraints aren't met.
+type AssignTenantAdminRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AssignTenantAdminRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AssignTenantAdminRequestMultiError) AllErrors() []error { return m }
+
+// AssignTenantAdminRequestValidationError is the validation error returned by
+// AssignTenantAdminRequest.Validate if the designated constraints aren't met.
+type AssignTenantAdminRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AssignTenantAdminRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AssignTenantAdminRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AssignTenantAdminRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AssignTenantAdminRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AssignTenantAdminRequestValidationError) ErrorName() string {
+	return "AssignTenantAdminRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AssignTenantAdminRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAssignTenantAdminRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AssignTenantAdminRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AssignTenantAdminRequestValidationError{}

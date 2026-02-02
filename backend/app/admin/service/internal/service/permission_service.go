@@ -74,16 +74,15 @@ func NewPermissionService(
 
 func (s *PermissionService) init() {
 	ctx := appViewer.NewSystemViewerContext(context.Background())
-	if count, _ := s.permissionRepo.Count(ctx, []func(s *sql.Selector){}); count == 0 {
+	if count, _ := s.permissionRepo.Count(ctx, nil); count.Count == 0 {
 		_ = s.createDefaultPermissions(ctx)
 
-		var apiCount int
-		apiCount, _ = s.apiRepo.Count(ctx, []func(s *sql.Selector){})
+		apiCount, _ := s.apiRepo.Count(ctx, nil)
 
 		var menusCount int
 		menusCount, _ = s.menuRepo.Count(ctx, []func(s *sql.Selector){})
 
-		if apiCount > 0 && menusCount > 0 {
+		if apiCount.Count > 0 && menusCount > 0 {
 			_, _ = s.SyncPermissions(ctx, &emptypb.Empty{})
 		}
 	}
@@ -179,6 +178,10 @@ func (s *PermissionService) List(ctx context.Context, req *paginationV1.PagingRe
 	_ = s.enrichRelations(ctx, resp.Items)
 
 	return resp, nil
+}
+
+func (s *PermissionService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.CountPermissionResponse, error) {
+	return s.permissionRepo.Count(ctx, req)
 }
 
 func (s *PermissionService) Get(ctx context.Context, req *permissionV1.GetPermissionRequest) (*permissionV1.Permission, error) {
