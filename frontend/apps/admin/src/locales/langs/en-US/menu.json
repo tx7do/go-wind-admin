@@ -9,9 +9,7 @@
   "permission": {
     "moduleName": "Permission Management",
     "role": "Role Management",
-    "permission": "Permission Management",
-    "menu": "Menu Management",
-    "api": "API Management"
+    "permission": "Permission Management"
   },
   "opm": {
     "moduleName": "Organization & Personnel",
@@ -29,7 +27,9 @@
     "dict": "Data Dictionary",
     "task": "Task Scheduler",
     "file": "File Management",
-    "loginPolicy": "Login Policy"
+    "loginPolicy": "Login Policy",
+    "menu": "Menu Management",
+    "api": "API Management"
   },
   "log": {
     "moduleName": "Audit Logs",

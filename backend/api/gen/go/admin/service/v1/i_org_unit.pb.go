@@ -9,7 +9,7 @@ package adminpb
 import (
 	_ "github.com/google/gnostic/openapiv3"
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	v11 "go-wind-admin/api/gen/go/user/service/v1"
+	v11 "go-wind-admin/api/gen/go/identity/service/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -31,33 +31,33 @@ var File_admin_service_v1_i_org_unit_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_org_unit_proto_rawDesc = "" +
 	"\n" +
-	"!admin/service/v1/i_org_unit.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1euser/service/v1/org_unit.proto2\x9f\x04\n" +
-	"\x0eOrgUnitService\x12d\n" +
-	"\x04List\x12\x19.pagination.PagingRequest\x1a$.user.service.v1.ListOrgUnitResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/admin/v1/org-units\x12e\n" +
-	"\x03Get\x12\".user.service.v1.GetOrgUnitRequest\x1a\x18.user.service.v1.OrgUnit\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/admin/v1/org-units/{id}\x12g\n" +
-	"\x06Create\x12%.user.service.v1.CreateOrgUnitRequest\x1a\x16.google.protobuf.Empty\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/admin/v1/org-units\x12l\n" +
-	"\x06Update\x12%.user.service.v1.UpdateOrgUnitRequest\x1a\x16.google.protobuf.Empty\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\x1a\x18/admin/v1/org-units/{id}\x12i\n" +
-	"\x06Delete\x12%.user.service.v1.DeleteOrgUnitRequest\x1a\x16.google.protobuf.Empty\" \x82\xd3\xe4\x93\x02\x1a*\x18/admin/v1/org-units/{id}B\xba\x01\n" +
+	"!admin/service/v1/i_org_unit.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a\"identity/service/v1/org_unit.proto2\xb7\x04\n" +
+	"\x0eOrgUnitService\x12h\n" +
+	"\x04List\x12\x19.pagination.PagingRequest\x1a(.identity.service.v1.ListOrgUnitResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/admin/v1/org-units\x12m\n" +
+	"\x03Get\x12&.identity.service.v1.GetOrgUnitRequest\x1a\x1c.identity.service.v1.OrgUnit\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/admin/v1/org-units/{id}\x12k\n" +
+	"\x06Create\x12).identity.service.v1.CreateOrgUnitRequest\x1a\x16.google.protobuf.Empty\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/admin/v1/org-units\x12p\n" +
+	"\x06Update\x12).identity.service.v1.UpdateOrgUnitRequest\x1a\x16.google.protobuf.Empty\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\x1a\x18/admin/v1/org-units/{id}\x12m\n" +
+	"\x06Delete\x12).identity.service.v1.DeleteOrgUnitRequest\x1a\x16.google.protobuf.Empty\" \x82\xd3\xe4\x93\x02\x1a*\x18/admin/v1/org-units/{id}B\xba\x01\n" +
 	"\x14com.admin.service.v1B\rIOrgUnitProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_org_unit_proto_goTypes = []any{
 	(*v1.PagingRequest)(nil),         // 0: pagination.PagingRequest
-	(*v11.GetOrgUnitRequest)(nil),    // 1: user.service.v1.GetOrgUnitRequest
-	(*v11.CreateOrgUnitRequest)(nil), // 2: user.service.v1.CreateOrgUnitRequest
-	(*v11.UpdateOrgUnitRequest)(nil), // 3: user.service.v1.UpdateOrgUnitRequest
-	(*v11.DeleteOrgUnitRequest)(nil), // 4: user.service.v1.DeleteOrgUnitRequest
-	(*v11.ListOrgUnitResponse)(nil),  // 5: user.service.v1.ListOrgUnitResponse
-	(*v11.OrgUnit)(nil),              // 6: user.service.v1.OrgUnit
+	(*v11.GetOrgUnitRequest)(nil),    // 1: identity.service.v1.GetOrgUnitRequest
+	(*v11.CreateOrgUnitRequest)(nil), // 2: identity.service.v1.CreateOrgUnitRequest
+	(*v11.UpdateOrgUnitRequest)(nil), // 3: identity.service.v1.UpdateOrgUnitRequest
+	(*v11.DeleteOrgUnitRequest)(nil), // 4: identity.service.v1.DeleteOrgUnitRequest
+	(*v11.ListOrgUnitResponse)(nil),  // 5: identity.service.v1.ListOrgUnitResponse
+	(*v11.OrgUnit)(nil),              // 6: identity.service.v1.OrgUnit
 	(*emptypb.Empty)(nil),            // 7: google.protobuf.Empty
 }
 var file_admin_service_v1_i_org_unit_proto_depIdxs = []int32{
 	0, // 0: admin.service.v1.OrgUnitService.List:input_type -> pagination.PagingRequest
-	1, // 1: admin.service.v1.OrgUnitService.Get:input_type -> user.service.v1.GetOrgUnitRequest
-	2, // 2: admin.service.v1.OrgUnitService.Create:input_type -> user.service.v1.CreateOrgUnitRequest
-	3, // 3: admin.service.v1.OrgUnitService.Update:input_type -> user.service.v1.UpdateOrgUnitRequest
-	4, // 4: admin.service.v1.OrgUnitService.Delete:input_type -> user.service.v1.DeleteOrgUnitRequest
-	5, // 5: admin.service.v1.OrgUnitService.List:output_type -> user.service.v1.ListOrgUnitResponse
-	6, // 6: admin.service.v1.OrgUnitService.Get:output_type -> user.service.v1.OrgUnit
+	1, // 1: admin.service.v1.OrgUnitService.Get:input_type -> identity.service.v1.GetOrgUnitRequest
+	2, // 2: admin.service.v1.OrgUnitService.Create:input_type -> identity.service.v1.CreateOrgUnitRequest
+	3, // 3: admin.service.v1.OrgUnitService.Update:input_type -> identity.service.v1.UpdateOrgUnitRequest
+	4, // 4: admin.service.v1.OrgUnitService.Delete:input_type -> identity.service.v1.DeleteOrgUnitRequest
+	5, // 5: admin.service.v1.OrgUnitService.List:output_type -> identity.service.v1.ListOrgUnitResponse
+	6, // 6: admin.service.v1.OrgUnitService.Get:output_type -> identity.service.v1.OrgUnit
 	7, // 7: admin.service.v1.OrgUnitService.Create:output_type -> google.protobuf.Empty
 	7, // 8: admin.service.v1.OrgUnitService.Update:output_type -> google.protobuf.Empty
 	7, // 9: admin.service.v1.OrgUnitService.Delete:output_type -> google.protobuf.Empty

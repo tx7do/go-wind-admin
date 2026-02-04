@@ -8,8 +8,7 @@ import (
 	"github.com/tx7do/go-utils/trans"
 	authn "github.com/tx7do/kratos-authn/engine"
 
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
 
 func TestNewUserTokenPayload(t *testing.T) {
@@ -20,7 +19,7 @@ func TestNewUserTokenPayload(t *testing.T) {
 	roleCodes := []string{"admin"}
 	client := "client_123"
 	device := "device_1"
-	ds := permissionV1.DataScope(1)
+	ds := identityV1.DataScope(1)
 
 	payload := NewUserTokenPayload(
 		username, uid, tid, &ou, roleCodes,
@@ -49,7 +48,7 @@ func TestNewUserTokenAuthClaims(t *testing.T) {
 	roleCodes := []string{"editor"}
 	client := "cli"
 	device := "dev"
-	ds := permissionV1.DataScope(2)
+	ds := identityV1.DataScope(2)
 
 	payload := NewUserTokenPayload(
 		username, uid, tid, &ou, roleCodes,
@@ -75,7 +74,7 @@ func TestNewUserTokenAuthClaims(t *testing.T) {
 }
 
 func TestNewUserTokenPayloadWithClaims(t *testing.T) {
-	user := userV1.User{
+	user := identityV1.User{
 		Id:       trans.Ptr(uint32(5)),
 		TenantId: trans.Ptr(uint32(6)),
 		Username: trans.Ptr("bob"),
@@ -84,7 +83,7 @@ func TestNewUserTokenPayloadWithClaims(t *testing.T) {
 
 	client := "cid"
 	device := "did"
-	ds := permissionV1.DataScope(3)
+	ds := identityV1.DataScope(3)
 	ou := uint32(9)
 
 	claims := &authn.AuthClaims{
@@ -116,7 +115,7 @@ func TestNewUserTokenPayloadWithClaims(t *testing.T) {
 }
 
 func TestNewUserTokenPayloadWithJwtMapClaims(t *testing.T) {
-	user := userV1.User{
+	user := identityV1.User{
 		Id:       trans.Ptr(uint32(10)),
 		TenantId: trans.Ptr(uint32(11)),
 		Username: trans.Ptr("eve"),
@@ -125,7 +124,7 @@ func TestNewUserTokenPayloadWithJwtMapClaims(t *testing.T) {
 
 	client := "c1"
 	device := "d1"
-	ds := permissionV1.DataScope(4)
+	ds := identityV1.DataScope(4)
 	ou := uint32(21)
 
 	// jwt.MapClaims uses float64 for numeric JSON numbers

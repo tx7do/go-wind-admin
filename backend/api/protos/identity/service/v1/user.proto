@@ -1,0 +1,438 @@
+syntax = "proto3";
+
+package identity.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/field_mask.proto";
+import "google/protobuf/timestamp.proto";
+import "google/api/field_behavior.proto";
+import "redact/v3/redact.proto";
+
+import "pagination/v1/pagination.proto";
+
+// 用户服务
+service UserService {
+  // 查询用户列表
+  rpc List (pagination.PagingRequest) returns (ListUserResponse) {}
+
+  // 统计用户数量
+  rpc Count (pagination.PagingRequest) returns (CountUserResponse) {}
+
+  // 查询用户详情
+  rpc Get (GetUserRequest) returns (User) {}
+
+  // 创建用户
+  rpc Create (CreateUserRequest) returns (google.protobuf.Empty) {}
+  // 批量创建用户
+  rpc BatchCreate (BatchCreateUsersRequest) returns (BatchCreateUsersResponse) {}
+
+  // 更新用户
+  rpc Update (UpdateUserRequest) returns (google.protobuf.Empty) {}
+
+  // 删除用户
+  rpc Delete (DeleteUserRequest) returns (google.protobuf.Empty) {}
+
+  // 用户是否存在
+  rpc UserExists (UserExistsRequest) returns (UserExistsResponse) {}
+}
+
+// 用户
+message User {
+  // 用户性别
+  enum Gender {
+    SECRET = 0;  // 未知
+    MALE = 1;     // 男性
+    FEMALE = 2;   // 女性
+  }
+
+  // 用户状态
+  enum Status {
+    DISABLED = 0; // 禁用 (被管理员手动禁用。用户无法登录系统。)
+    NORMAL = 1;  // 正常 (用户可以正常登录并使用系统。)
+    PENDING = 2; // 待激活 (账号已创建，但尚未通过邮箱/短信验证或 HR 激活。)
+    LOCKED = 3;  // 锁定 (因触发安全策略（如密码连续错误次数过多）被系统自动锁定。)
+    EXPIRED = 4; // 过期 (账号超过了设定的有效期（常用于临时工、外部顾问）。)
+    CLOSED = 9; // 注销 (用户主动注销账号。通常在数据脱敏后的软删除状态。)
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = {description: "用户ID"}
+  ];  // 用户ID
+
+  optional uint32 tenant_id = 2 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+  optional string tenant_name = 3 [
+    json_name = "tenantName",
+    (gnostic.openapi.v3.property) = {description: "租户名称"}
+  ];  // 租户名称
+
+  optional uint32 org_unit_id = 4 [
+    json_name = "orgUnitId",
+    (gnostic.openapi.v3.property) = {description: "组织ID"}
+  ]; // 组织ID
+  repeated uint32 org_unit_ids = 5 [
+    json_name = "orgUnitIds",
+    (gnostic.openapi.v3.property) = {description: "归属组织ID列表"}
+  ]; // 归属组织ID列表
+  optional string org_unit_name = 6 [
+    json_name = "orgUnitName",
+    (gnostic.openapi.v3.property) = {description: "组织名称"}
+  ]; // 组织名称
+  repeated string org_unit_names = 7 [
+    json_name = "orgUnitNames",
+    (gnostic.openapi.v3.property) = {description: "组织名称列表"}
+  ]; // 组织名称列表
+
+  optional uint32 position_id = 8 [
+    json_name = "positionId",
+    (gnostic.openapi.v3.property) = {description: "职位ID"}
+  ];  // 职位ID
+  repeated uint32 position_ids = 9 [
+    json_name = "positionIds",
+    (gnostic.openapi.v3.property) = {description: "职位列表"}
+  ]; // 职位列表
+  optional string position_name = 10 [
+    json_name = "positionName",
+    (gnostic.openapi.v3.property) = {description: "职位名称"}
+  ];  // 职位名称
+  repeated string position_names = 11 [
+    json_name = "positionNames",
+    (gnostic.openapi.v3.property) = {description: "职位名称列表"}
+  ];  // 职位名称列表
+
+  optional uint32 role_id = 12 [
+    json_name = "roleId",
+    (gnostic.openapi.v3.property) = {description: "角色ID"}
+  ];  // 角色ID
+  repeated uint32 role_ids = 13 [
+    json_name = "roleIds",
+    (gnostic.openapi.v3.property) = {description: "角色ID列表"}
+  ];  // 角色ID列表
+  repeated string roles = 14 [
+    (gnostic.openapi.v3.property) = {description: "角色码列表"}
+  ]; // 角色码列表
+  repeated string role_names = 15 [
+    json_name = "roleNames",
+    (gnostic.openapi.v3.property) = { description: "角色名称列表"}
+  ]; // 角色名称列表
+
+  optional string username = 20 [
+    json_name = "username",
+    (gnostic.openapi.v3.property) = {description: "用户名"}
+  ]; // 用户名
+
+  optional string nickname = 21 [
+    json_name = "nickname",
+    (gnostic.openapi.v3.property) = {description: "昵称"}
+  ]; // 昵称
+
+  optional string realname = 22 [
+    json_name = "realname",
+    (gnostic.openapi.v3.property) = {description: "真实姓名"}
+  ]; // 真实姓名
+
+  optional string avatar = 23 [
+    json_name = "avatar",
+    (gnostic.openapi.v3.property) = {description: "头像"}
+  ]; // 头像
+
+  optional string email = 24 [
+    (redact.v3.value).string = "r*d@ct*d",
+    json_name = "email",
+    (gnostic.openapi.v3.property) = {description: "邮箱"}
+  ]; // 邮箱
+
+  optional string mobile = 25 [
+    json_name = "mobile",
+    (gnostic.openapi.v3.property) = {description: "手机号"}
+  ]; // 手机号
+
+  optional string telephone = 26 [
+    json_name = "telephone",
+    (gnostic.openapi.v3.property) = {description: "座机号"}
+  ]; // 座机号
+
+  optional Gender gender = 27 [
+    json_name = "gender",
+    (gnostic.openapi.v3.property) = {description: "性别"}
+  ]; // 性别
+
+  optional string address = 28 [
+    json_name = "address",
+    (gnostic.openapi.v3.property) = {description: "住址"}
+  ]; // 住址
+
+  optional string region = 29 [
+    json_name = "region",
+    (gnostic.openapi.v3.property) = {description: "国家地区"}
+  ]; // 国家地区
+
+  optional string description = 30 [
+    json_name = "description",
+    (gnostic.openapi.v3.property) = {description: "个人描述"}
+  ]; // 个人描述
+
+  optional string remark = 31 [
+    json_name = "remark",
+    (gnostic.openapi.v3.property) = {description: "备注"}
+  ]; // 备注
+
+  optional google.protobuf.Timestamp last_login_at = 50 [
+    json_name = "lastLoginAt",
+    (gnostic.openapi.v3.property) = {description: "最后登录时间"}
+  ]; // 最后登录时间
+
+  optional string last_login_ip = 51 [
+    json_name = "lastLoginIp",
+    (gnostic.openapi.v3.property) = {description: "最后登录IP"}
+  ]; // 最后登录IP
+
+  optional Status status = 52 [
+    json_name = "status",
+    (gnostic.openapi.v3.property) = {description: "状态"}
+  ]; // 状态
+
+  optional google.protobuf.Timestamp locked_until = 53 [
+    json_name = "lockedUntil",
+    (gnostic.openapi.v3.property) = {description: "锁定截止时间"}
+  ];// 锁定截止时间
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];// 删除时间
+}
+
+// 获取用户列表 - 答复
+message ListUserResponse {
+  repeated User items = 1;
+  uint64 total = 2;
+}
+
+// 获取用户数据 - 请求
+message GetUserRequest {
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "用户ID", read_only: true},
+      json_name = "id"
+    ]; // 用户ID
+
+    string username = 2 [
+      (gnostic.openapi.v3.property) = {description: "用户登录名", read_only: true},
+      json_name = "username"
+    ]; // 用户登录名
+  }
+
+  optional google.protobuf.FieldMask view_mask = 100 [
+    json_name = "viewMask",
+    (gnostic.openapi.v3.property) = {
+      description: "视图字段过滤器，用于控制返回的字段"
+    }
+  ]; // 视图字段过滤器，用于控制返回的字段
+}
+
+// 创建用户 - 请求
+message CreateUserRequest {
+  User data = 1;
+
+  optional string password = 2 [
+    (gnostic.openapi.v3.property) = {description: "用户登录密码", read_only: true},
+    json_name = "password"
+  ]; // 用户登录密码
+}
+
+// 更新用户 - 请求
+message UpdateUserRequest {
+  uint32 id = 1;
+
+  User data = 2 [
+    json_name = "data",
+    (google.api.field_behavior) = REQUIRED,
+    (gnostic.openapi.v3.property) = {description: "用户的数据"}
+  ]; // 用户的数据
+
+  optional string password = 3 [
+    (gnostic.openapi.v3.property) = {description: "用户登录密码", read_only: true},
+    json_name = "password"
+  ]; // 用户登录密码
+
+  google.protobuf.FieldMask update_mask = 4 [
+    json_name = "updateMask",
+    (gnostic.openapi.v3.property) = {
+      description: "要更新的字段列表",
+      example: {yaml : "id,realname,username"}
+    }
+  ]; // 要更新的字段列表
+
+  optional bool allow_missing = 5 [
+    json_name = "allowMissing",
+    (gnostic.openapi.v3.property) = {description: "如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。"}
+  ]; // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
+}
+
+// 删除用户 - 请求
+message DeleteUserRequest {
+  oneof delete_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "用户ID", read_only: true},
+      json_name = "id"
+    ]; // 用户ID
+
+    string username = 2 [
+      (gnostic.openapi.v3.property) = {description: "用户登录名", read_only: true},
+      json_name = "username"
+    ]; // 用户登录名
+  }
+}
+
+// 用户是否存在 - 请求
+message UserExistsRequest {
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "用户ID", read_only: true},
+      json_name = "id"
+    ]; // 用户ID
+
+    string username = 2 [
+      (gnostic.openapi.v3.property) = {description: "用户登录名", read_only: true},
+      json_name = "username"
+    ]; // 用户登录名
+  }
+}
+// 用户是否存在 - 答复
+message UserExistsResponse {
+  bool exist = 1;
+}
+
+message BatchCreateUsersRequest {
+  repeated User data = 1;
+}
+message BatchCreateUsersResponse {
+  repeated int32 created_ids = 1 [
+    json_name = "createdIds",
+    (gnostic.openapi.v3.property) = {
+      description: "创建成功的用户ID列表"
+    }
+  ]; // 创建成功的用户ID列表
+}
+
+message GetUsersByIdsRequest {
+  repeated uint32 ids = 1;
+}
+
+// 强制修改用户密码（不验证） - 请求
+message EditUserPasswordRequest {
+  uint32 user_id = 1 [
+    json_name = "userId",
+    (gnostic.openapi.v3.property) = {
+      description: "用户ID"
+    }
+  ]; // 用户ID
+
+  string new_password = 2 [
+    json_name = "newPassword",
+    (gnostic.openapi.v3.property) = {
+      description: "新密码"
+    }
+  ]; // 新密码
+}
+
+
+// 修改用户密码（需要验证旧密码） - 请求
+message ChangePasswordRequest {
+  string old_password = 1 [
+    json_name = "oldPassword",
+    (gnostic.openapi.v3.property) = {
+      description: "旧密码"
+    }
+  ]; // 旧密码
+
+  string new_password = 2 [
+    json_name = "newPassword",
+    (gnostic.openapi.v3.property) = {
+      description: "新密码"
+    }
+  ]; // 新密码
+}
+
+message UploadAvatarRequest {
+  oneof source {
+    string image_base64 = 1;
+    string image_url = 2;
+  }
+}
+message UploadAvatarResponse {
+  string url = 1;
+}
+
+message BindContactRequest {
+  oneof contact {
+    BindPhoneRequest phone = 1;
+    BindEmailRequest email = 2;
+  }
+}
+message BindPhoneRequest {
+  string phone = 1 [(gnostic.openapi.v3.property) = { description: "手机号码" }];
+  string code = 2 [(gnostic.openapi.v3.property) = { description: "验证码" }];
+}
+message BindEmailRequest {
+  string email = 1 [(gnostic.openapi.v3.property) = { description: "邮箱地址" }];
+
+  optional string verification_code = 2 [
+    json_name = "verificationCode",
+    (gnostic.openapi.v3.property) = { description: "邮箱验证码（可选）" }
+  ];
+}
+
+
+message VerifyContactRequest {
+  oneof contact {
+    PhoneVerification phone = 1;
+    EmailVerification email = 2;
+  }
+
+  // 可选：服务端生成的验证码会话 id（用于多步骤或回调验证）
+  optional string verification_id = 3 [
+    json_name = "verificationId",
+    (gnostic.openapi.v3.property) = { description: "服务端生成的验证码会话ID（可选）" }
+  ];
+}
+
+// 手机验证
+message PhoneVerification {
+  string phone = 1 [
+    json_name = "phone",
+    (gnostic.openapi.v3.property) = { description: "手机号码，带国家码" }
+  ];
+
+  string code = 2 [
+    json_name = "code",
+    (google.api.field_behavior) = REQUIRED,
+    (gnostic.openapi.v3.property) = { description: "短信验证码" }
+  ];
+}
+
+// 邮箱验证
+message EmailVerification {
+  string email = 1 [
+    json_name = "email",
+    (gnostic.openapi.v3.property) = { description: "邮箱地址" }
+  ];
+
+  string code = 2 [
+    json_name = "code",
+    (google.api.field_behavior) = REQUIRED,
+    (gnostic.openapi.v3.property) = { description: "邮箱验证码" }
+  ];
+}
+
+message CountUserResponse {
+  uint64 count = 1;
+}

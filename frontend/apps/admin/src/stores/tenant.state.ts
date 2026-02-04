@@ -6,10 +6,10 @@ import { defineStore } from 'pinia';
 
 import {
   createTenantServiceClient,
-  type userservicev1_CreateTenantWithAdminUserRequest as CreateTenantWithAdminUserRequest,
-  type userservicev1_Tenant_AuditStatus as Tenant_AuditStatus,
-  type userservicev1_Tenant_Status as Tenant_Status,
-  type userservicev1_Tenant_Type as Tenant_Type,
+  type identityservicev1_CreateTenantWithAdminUserRequest as CreateTenantWithAdminUserRequest,
+  type identityservicev1_Tenant_AuditStatus as Tenant_AuditStatus,
+  type identityservicev1_Tenant_Status as Tenant_Status,
+  type identityservicev1_Tenant_Type as Tenant_Type,
 } from '#/generated/api/admin/service/v1';
 import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';

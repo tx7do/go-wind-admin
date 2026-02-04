@@ -4,7 +4,7 @@ package authentication.service.v1;
 
 import "gnostic/openapi/v3/annotations.proto";
 
-import "permission/service/v1/permission.proto";
+import "identity/service/v1/types.proto";
 
 // 用户令牌载体
 message UserTokenPayload {
@@ -50,7 +50,7 @@ message UserTokenPayload {
     }
   ]; // 用户角色码列表
 
-  optional permission.service.v1.DataScope data_scope = 11 [
+  optional identity.service.v1.DataScope data_scope = 11 [
     json_name = "ds",
     (gnostic.openapi.v3.property) = {
       description: "数据权限范围"

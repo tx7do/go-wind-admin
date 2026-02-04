@@ -16,16 +16,15 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/membership"
 
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
 
 type MembershipRepo struct {
 	log *log.Helper
 
 	entClient       *entCrud.EntClient[*ent.Client]
-	mapper          *mapper.CopierMapper[userV1.Membership, ent.Membership]
-	statusConverter *mapper.EnumTypeConverter[userV1.Membership_Status, membership.Status]
+	mapper          *mapper.CopierMapper[identityV1.Membership, ent.Membership]
+	statusConverter *mapper.EnumTypeConverter[identityV1.Membership_Status, membership.Status]
 
 	membershipRoleRepo     *MembershipRoleRepo
 	membershipPositionRepo *MembershipPositionRepo
@@ -42,10 +41,10 @@ func NewMembershipRepo(
 	repo := &MembershipRepo{
 		log:       ctx.NewLoggerHelper("membership/repo/admin-service"),
 		entClient: entClient,
-		mapper:    mapper.NewCopierMapper[userV1.Membership, ent.Membership](),
-		statusConverter: mapper.NewEnumTypeConverter[userV1.Membership_Status, membership.Status](
-			userV1.Membership_Status_name,
-			userV1.Membership_Status_value,
+		mapper:    mapper.NewCopierMapper[identityV1.Membership, ent.Membership](),
+		statusConverter: mapper.NewEnumTypeConverter[identityV1.Membership_Status, membership.Status](
+			identityV1.Membership_Status_name,
+			identityV1.Membership_Status_value,
 		),
 		membershipRoleRepo:     membershipRoleRepo,
 		membershipPositionRepo: membershipPositionRepo,
@@ -64,12 +63,12 @@ func (r *MembershipRepo) init() {
 	r.mapper.AppendConverters(r.statusConverter.NewConverterPair())
 }
 
-func (r *MembershipRepo) AssignTenantMembershipWith(ctx context.Context, data *userV1.Membership) (err error) {
+func (r *MembershipRepo) AssignTenantMembershipWith(ctx context.Context, data *identityV1.Membership) (err error) {
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("start transaction failed")
+		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -80,7 +79,7 @@ func (r *MembershipRepo) AssignTenantMembershipWith(ctx context.Context, data *u
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = permissionV1.ErrorInternalServerError("transaction commit failed")
+			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
@@ -88,7 +87,7 @@ func (r *MembershipRepo) AssignTenantMembershipWith(ctx context.Context, data *u
 }
 
 // AssignTenantMembershipWithTx 使用 Membership 数据为用户分配租户
-func (r *MembershipRepo) AssignTenantMembershipWithTx(ctx context.Context, tx *ent.Tx, data *userV1.Membership) (err error) {
+func (r *MembershipRepo) AssignTenantMembershipWithTx(ctx context.Context, tx *ent.Tx, data *identityV1.Membership) (err error) {
 	var entity *ent.Membership
 	entity, err = r.upsertMembership(ctx, tx, data)
 	if err != nil {
@@ -123,13 +122,13 @@ func (r *MembershipRepo) AssignTenantMembershipWithTx(ctx context.Context, tx *e
 	positionIDs = sliceutil.Unique(positionIDs)
 
 	if len(roleIDs) > 0 {
-		var roles []*userV1.MembershipRole
+		var roles []*identityV1.MembershipRole
 		for _, roleID := range roleIDs {
-			role := &userV1.MembershipRole{
+			role := &identityV1.MembershipRole{
 				MembershipId: trans.Ptr(entity.ID),
 				TenantId:     data.TenantId,
 				RoleId:       trans.Ptr(roleID),
-				Status:       trans.Ptr(userV1.MembershipRole_ACTIVE),
+				Status:       trans.Ptr(identityV1.MembershipRole_ACTIVE),
 				CreatedBy:    data.CreatedBy,
 				AssignedBy:   data.AssignedBy,
 				AssignedAt:   data.AssignedAt,
@@ -146,13 +145,13 @@ func (r *MembershipRepo) AssignTenantMembershipWithTx(ctx context.Context, tx *e
 	}
 
 	if len(orgUnitIDs) > 0 {
-		var orgUnits []*userV1.MembershipOrgUnit
+		var orgUnits []*identityV1.MembershipOrgUnit
 		for _, orgUnitID := range orgUnitIDs {
-			orgUnit := &userV1.MembershipOrgUnit{
+			orgUnit := &identityV1.MembershipOrgUnit{
 				MembershipId: trans.Ptr(entity.ID),
 				TenantId:     data.TenantId,
 				OrgUnitId:    trans.Ptr(orgUnitID),
-				Status:       trans.Ptr(userV1.MembershipOrgUnit_ACTIVE),
+				Status:       trans.Ptr(identityV1.MembershipOrgUnit_ACTIVE),
 				CreatedBy:    data.CreatedBy,
 				AssignedBy:   data.AssignedBy,
 				AssignedAt:   data.AssignedAt,
@@ -169,13 +168,13 @@ func (r *MembershipRepo) AssignTenantMembershipWithTx(ctx context.Context, tx *e
 	}
 
 	if len(positionIDs) > 0 {
-		var positions []*userV1.MembershipPosition
+		var positions []*identityV1.MembershipPosition
 		for _, positionID := range positionIDs {
-			position := &userV1.MembershipPosition{
+			position := &identityV1.MembershipPosition{
 				MembershipId: trans.Ptr(entity.ID),
 				TenantId:     data.TenantId,
 				PositionId:   trans.Ptr(positionID),
-				Status:       trans.Ptr(userV1.MembershipPosition_ACTIVE),
+				Status:       trans.Ptr(identityV1.MembershipPosition_ACTIVE),
 				CreatedBy:    data.CreatedBy,
 				AssignedBy:   data.AssignedBy,
 				AssignedAt:   data.AssignedAt,
@@ -196,13 +195,13 @@ func (r *MembershipRepo) AssignTenantMembershipWithTx(ctx context.Context, tx *e
 
 func (r *MembershipRepo) AssignMembershipRoles(ctx context.Context,
 	userID uint32,
-	datas []*userV1.MembershipRole,
+	datas []*identityV1.MembershipRole,
 ) (err error) {
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("start transaction failed")
+		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -213,7 +212,7 @@ func (r *MembershipRepo) AssignMembershipRoles(ctx context.Context,
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = userV1.ErrorInternalServerError("transaction commit failed")
+			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
@@ -221,7 +220,7 @@ func (r *MembershipRepo) AssignMembershipRoles(ctx context.Context,
 	membershipID, err = r.queryMembershipID(ctx, tx, userID)
 	if err != nil {
 		r.log.Errorf("get membership id failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("get membership id failed")
+		return identityV1.ErrorInternalServerError("get membership id failed")
 	}
 
 	if err = r.membershipRoleRepo.AssignMembershipRoles(ctx, tx, membershipID, datas); err != nil {
@@ -235,13 +234,13 @@ func (r *MembershipRepo) AssignMembershipRoles(ctx context.Context,
 func (r *MembershipRepo) AssignMembershipPositions(
 	ctx context.Context,
 	userID uint32,
-	datas []*userV1.MembershipPosition,
+	datas []*identityV1.MembershipPosition,
 ) (err error) {
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("start transaction failed")
+		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -252,7 +251,7 @@ func (r *MembershipRepo) AssignMembershipPositions(
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = userV1.ErrorInternalServerError("transaction commit failed")
+			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
@@ -260,7 +259,7 @@ func (r *MembershipRepo) AssignMembershipPositions(
 	membershipID, err = r.queryMembershipID(ctx, tx, userID)
 	if err != nil {
 		r.log.Errorf("get membership id failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("get membership id failed")
+		return identityV1.ErrorInternalServerError("get membership id failed")
 	}
 
 	if err = r.membershipPositionRepo.AssignMembershipPositions(ctx, tx, membershipID, datas); err != nil {
@@ -273,13 +272,13 @@ func (r *MembershipRepo) AssignMembershipPositions(
 // AssignMembershipOrgUnits 分配组织单元给用户
 func (r *MembershipRepo) AssignMembershipOrgUnits(ctx context.Context,
 	userID uint32,
-	datas []*userV1.MembershipOrgUnit,
+	datas []*identityV1.MembershipOrgUnit,
 ) (err error) {
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("start transaction failed")
+		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -290,7 +289,7 @@ func (r *MembershipRepo) AssignMembershipOrgUnits(ctx context.Context,
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = userV1.ErrorInternalServerError("transaction commit failed")
+			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
@@ -298,7 +297,7 @@ func (r *MembershipRepo) AssignMembershipOrgUnits(ctx context.Context,
 	membershipID, err = r.queryMembershipID(ctx, tx, userID)
 	if err != nil {
 		r.log.Errorf("get membership id failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("get membership id failed")
+		return identityV1.ErrorInternalServerError("get membership id failed")
 	}
 
 	if err = r.membershipOrgUnitRepo.AssignMembershipOrgUnits(ctx, tx, membershipID, datas); err != nil {
@@ -320,14 +319,14 @@ func (r *MembershipRepo) SetUserOrgUnitID(ctx context.Context, userID uint32, or
 	if orgUnitID == 0 {
 		if _, err := up.ClearOrgUnitID().Save(ctx); err != nil {
 			r.log.Errorf("update membership org_unit_id failed: %s", err.Error())
-			return userV1.ErrorInternalServerError("update membership org_unit_id failed")
+			return identityV1.ErrorInternalServerError("update membership org_unit_id failed")
 		}
 		return nil
 	}
 
 	if _, err := up.SetOrgUnitID(orgUnitID).Save(ctx); err != nil {
 		r.log.Errorf("update membership org_unit_id failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("update membership org_unit_id failed")
+		return identityV1.ErrorInternalServerError("update membership org_unit_id failed")
 	}
 	return nil
 }
@@ -344,14 +343,14 @@ func (r *MembershipRepo) SetUserRoleID(ctx context.Context, userID uint32, roleI
 	if roleID == 0 {
 		if _, err := up.ClearRoleID().Save(ctx); err != nil {
 			r.log.Errorf("update membership role_id failed: %s", err.Error())
-			return userV1.ErrorInternalServerError("update membership role_id failed")
+			return identityV1.ErrorInternalServerError("update membership role_id failed")
 		}
 		return nil
 	}
 
 	if _, err := up.SetRoleID(roleID).Save(ctx); err != nil {
 		r.log.Errorf("update membership role_id failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("update membership role_id failed")
+		return identityV1.ErrorInternalServerError("update membership role_id failed")
 	}
 	return nil
 }
@@ -368,20 +367,20 @@ func (r *MembershipRepo) SetUserPositionID(ctx context.Context, userID uint32, p
 	if positionID == 0 {
 		if _, err := up.ClearPositionID().Save(ctx); err != nil {
 			r.log.Errorf("update membership position_id failed: %s", err.Error())
-			return userV1.ErrorInternalServerError("update membership position_id failed")
+			return identityV1.ErrorInternalServerError("update membership position_id failed")
 		}
 		return nil
 	}
 
 	if _, err := up.SetPositionID(positionID).Save(ctx); err != nil {
 		r.log.Errorf("update membership position_id failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("update membership position_id failed")
+		return identityV1.ErrorInternalServerError("update membership position_id failed")
 	}
 	return nil
 }
 
 // SetUserStatus 设置用户的状态
-func (r *MembershipRepo) SetUserStatus(ctx context.Context, userID uint32, status *userV1.Membership_Status) error {
+func (r *MembershipRepo) SetUserStatus(ctx context.Context, userID uint32, status *identityV1.Membership_Status) error {
 	up := r.entClient.Client().Membership.
 		Update().
 		Where(
@@ -391,14 +390,14 @@ func (r *MembershipRepo) SetUserStatus(ctx context.Context, userID uint32, statu
 	if status == nil {
 		if _, err := up.ClearStatus().Save(ctx); err != nil {
 			r.log.Errorf("update membership status failed: %s", err.Error())
-			return userV1.ErrorInternalServerError("update membership status failed")
+			return identityV1.ErrorInternalServerError("update membership status failed")
 		}
 		return nil
 	}
 
 	if _, err := up.SetStatus(*r.statusConverter.ToEntity(status)).Save(ctx); err != nil {
 		r.log.Errorf("update membership status failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("update membership status failed")
+		return identityV1.ErrorInternalServerError("update membership status failed")
 	}
 	return nil
 }
@@ -414,14 +413,14 @@ func (r *MembershipRepo) SetUserEndAt(ctx context.Context, userID uint32, endAt 
 	if endAt == nil {
 		if _, err := up.ClearEndAt().Save(ctx); err != nil {
 			r.log.Errorf("update membership end_at failed: %s", err.Error())
-			return userV1.ErrorInternalServerError("update membership end_at failed")
+			return identityV1.ErrorInternalServerError("update membership end_at failed")
 		}
 		return nil
 	}
 
 	if _, err := up.SetEndAt(*endAt).Save(ctx); err != nil {
 		r.log.Errorf("update membership end_at failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("update membership end_at failed")
+		return identityV1.ErrorInternalServerError("update membership end_at failed")
 	}
 	return nil
 }
@@ -432,7 +431,7 @@ func (r *MembershipRepo) GetMembershipID(ctx context.Context, userID uint32) (me
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return uint32(0), userV1.ErrorInternalServerError("start transaction failed")
+		return uint32(0), identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -443,7 +442,7 @@ func (r *MembershipRepo) GetMembershipID(ctx context.Context, userID uint32) (me
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = userV1.ErrorInternalServerError("transaction commit failed")
+			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
@@ -451,7 +450,7 @@ func (r *MembershipRepo) GetMembershipID(ctx context.Context, userID uint32) (me
 }
 
 // GetMembershipByUserTenant 获取用户在租户下的 Membership 记录
-func (r *MembershipRepo) GetMembershipByUserTenant(ctx context.Context, userID uint32) (*userV1.Membership, error) {
+func (r *MembershipRepo) GetMembershipByUserTenant(ctx context.Context, userID uint32) (*identityV1.Membership, error) {
 	now := time.Now()
 	builder := r.entClient.Client().Membership.Query()
 	builder.Where(
@@ -465,7 +464,7 @@ func (r *MembershipRepo) GetMembershipByUserTenant(ctx context.Context, userID u
 	entity, err := builder.Only(ctx)
 	if err != nil {
 		r.log.Errorf("get membership failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("get membership failed")
+		return nil, identityV1.ErrorInternalServerError("get membership failed")
 	}
 
 	dto := r.mapper.ToDTO(entity)
@@ -474,7 +473,7 @@ func (r *MembershipRepo) GetMembershipByUserTenant(ctx context.Context, userID u
 }
 
 // GetUserActiveMemberships 获取用户所有有效的 Membership 列表
-func (r *MembershipRepo) GetUserActiveMemberships(ctx context.Context, userID uint32) ([]*userV1.Membership, error) {
+func (r *MembershipRepo) GetUserActiveMemberships(ctx context.Context, userID uint32) ([]*identityV1.Membership, error) {
 	now := time.Now()
 	builder := r.entClient.Client().Membership.Query()
 	builder.Where(
@@ -487,10 +486,10 @@ func (r *MembershipRepo) GetUserActiveMemberships(ctx context.Context, userID ui
 	entities, err := builder.All(ctx)
 	if err != nil {
 		r.log.Errorf("get user active memberships failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("get user active memberships failed")
+		return nil, identityV1.ErrorInternalServerError("get user active memberships failed")
 	}
 
-	dtos := make([]*userV1.Membership, 0, len(entities))
+	dtos := make([]*identityV1.Membership, 0, len(entities))
 	for _, entity := range entities {
 		dto := r.mapper.ToDTO(entity)
 		dtos = append(dtos, dto)
@@ -505,7 +504,7 @@ func (r *MembershipRepo) ListMembershipRoleIDs(ctx context.Context, userID uint3
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("start transaction failed")
+		return nil, identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -516,7 +515,7 @@ func (r *MembershipRepo) ListMembershipRoleIDs(ctx context.Context, userID uint3
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = userV1.ErrorInternalServerError("transaction commit failed")
+			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
@@ -524,7 +523,7 @@ func (r *MembershipRepo) ListMembershipRoleIDs(ctx context.Context, userID uint3
 	membershipID, err = r.queryMembershipID(ctx, tx, userID)
 	if err != nil {
 		r.log.Errorf("get membership id failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("get membership id failed")
+		return nil, identityV1.ErrorInternalServerError("get membership id failed")
 	}
 
 	return r.membershipRoleRepo.ListRoleIDs(ctx, membershipID, false)
@@ -541,7 +540,7 @@ func (r *MembershipRepo) ListMembershipOrgUnitIDs(ctx context.Context, userID ui
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("start transaction failed")
+		return nil, identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -552,14 +551,14 @@ func (r *MembershipRepo) ListMembershipOrgUnitIDs(ctx context.Context, userID ui
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = userV1.ErrorInternalServerError("transaction commit failed")
+			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
 	membershipID, err := r.queryMembershipID(ctx, tx, userID)
 	if err != nil {
 		r.log.Errorf("get membership id failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("get membership id failed")
+		return nil, identityV1.ErrorInternalServerError("get membership id failed")
 	}
 
 	return r.membershipOrgUnitRepo.ListOrgUnitIDs(ctx, membershipID, false)
@@ -571,7 +570,7 @@ func (r *MembershipRepo) ListMembershipPositionIDs(ctx context.Context, userID u
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("start transaction failed")
+		return nil, identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -582,14 +581,14 @@ func (r *MembershipRepo) ListMembershipPositionIDs(ctx context.Context, userID u
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = userV1.ErrorInternalServerError("transaction commit failed")
+			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
 	membershipID, err := r.queryMembershipID(ctx, tx, userID)
 	if err != nil {
 		r.log.Errorf("get membership id failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("get membership id failed")
+		return nil, identityV1.ErrorInternalServerError("get membership id failed")
 	}
 
 	return r.membershipPositionRepo.ListPositionIDs(ctx, membershipID, false)
@@ -614,11 +613,11 @@ func (r *MembershipRepo) GetMembershipIDByUserID(ctx context.Context, userID uin
 	ms, err := builder.Only(ctx)
 	if err != nil {
 		r.log.Errorf("get membership failed: %s", err.Error())
-		return 0, userV1.ErrorInternalServerError("get membership failed")
+		return 0, identityV1.ErrorInternalServerError("get membership failed")
 	}
 	if ms == nil {
 		r.log.Errorf("membership not found for user %d", userID)
-		return 0, userV1.ErrorNotFound("membership not found")
+		return 0, identityV1.ErrorNotFound("membership not found")
 	}
 
 	membershipID = ms.ID
@@ -655,12 +654,12 @@ func (r *MembershipRepo) ListMembershipRelationIDs(ctx context.Context, userID u
 }
 
 // createMembership 创建 Membership 记录
-func (r *MembershipRepo) createMembership(ctx context.Context, tx *ent.Tx, data *userV1.Membership) (*ent.Membership, error) {
+func (r *MembershipRepo) createMembership(ctx context.Context, tx *ent.Tx, data *identityV1.Membership) (*ent.Membership, error) {
 	return r.upsertMembership(ctx, tx, data)
 }
 
 // upsertMembership 更新或插入 Membership 记录
-func (r *MembershipRepo) upsertMembership(ctx context.Context, tx *ent.Tx, data *userV1.Membership) (*ent.Membership, error) {
+func (r *MembershipRepo) upsertMembership(ctx context.Context, tx *ent.Tx, data *identityV1.Membership) (*ent.Membership, error) {
 	now := time.Now()
 
 	if data.StartAt == nil {
@@ -694,7 +693,7 @@ func (r *MembershipRepo) upsertMembership(ctx context.Context, tx *ent.Tx, data 
 
 	if entity, err := builder.Save(ctx); err != nil {
 		r.log.Errorf("upsert membership failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("upsert membership failed")
+		return nil, identityV1.ErrorInternalServerError("upsert membership failed")
 	} else {
 		return entity, err
 	}
@@ -717,7 +716,7 @@ func (r *MembershipRepo) queryMembershipID(
 		OnlyID(ctx)
 	if err != nil {
 		r.log.Errorf("get membership id failed: %s", err.Error())
-		return 0, userV1.ErrorInternalServerError("get membership id failed")
+		return 0, identityV1.ErrorInternalServerError("get membership id failed")
 	}
 	return membershipID, nil
 }
@@ -744,7 +743,7 @@ func (r *MembershipRepo) ListUserIDs(ctx context.Context, membershipID uint32, e
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query user ids by membership id failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query user ids by membership id failed")
+		return nil, identityV1.ErrorInternalServerError("query user ids by membership id failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {
@@ -775,7 +774,7 @@ func (r *MembershipRepo) ListUserIDsByMembershipIDs(ctx context.Context, members
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query user ids by membership ids failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query user ids by membership ids failed")
+		return nil, identityV1.ErrorInternalServerError("query user ids by membership ids failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {

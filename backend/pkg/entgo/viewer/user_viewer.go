@@ -1,7 +1,7 @@
 package viewer
 
 import (
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 
 	"github.com/tx7do/go-crud/viewer"
 )
@@ -22,7 +22,7 @@ func NewUserViewer(
 	tid uint64,
 	ouid uint64,
 	traceID string,
-	dataScope permissionV1.DataScope,
+	dataScope identityV1.DataScope,
 ) viewer.Context {
 	uv := UserViewer{
 		uid:        uid,
@@ -94,17 +94,17 @@ func (v UserViewer) ShouldAudit() bool {
 	return false
 }
 
-func convertDataScope(dataScope permissionV1.DataScope) viewer.DataScope {
+func convertDataScope(dataScope identityV1.DataScope) viewer.DataScope {
 	switch dataScope {
-	case permissionV1.DataScope_ALL:
+	case identityV1.DataScope_ALL:
 		return viewer.DataScope{
 			ScopeType: viewer.ScopeTypeAll,
 		}
-	case permissionV1.DataScope_UNIT_ONLY, permissionV1.DataScope_UNIT_AND_CHILD:
+	case identityV1.DataScope_UNIT_ONLY, identityV1.DataScope_UNIT_AND_CHILD:
 		return viewer.DataScope{
 			ScopeType: viewer.ScopeTypeUnit,
 		}
-	case permissionV1.DataScope_SELF:
+	case identityV1.DataScope_SELF:
 		return viewer.DataScope{
 			ScopeType: viewer.ScopeTypeSelf,
 		}

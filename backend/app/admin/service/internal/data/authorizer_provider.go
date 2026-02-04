@@ -10,7 +10,7 @@ import (
 
 	"go-wind-admin/app/admin/service/cmd/server/assets"
 
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+	resourceV1 "go-wind-admin/api/gen/go/resource/service/v1"
 
 	"go-wind-admin/pkg/authorizer"
 	"go-wind-admin/pkg/constants"
@@ -61,7 +61,7 @@ func (p *AuthorizerProvider) ProvidePolicies(ctx context.Context) (authorizer.Pe
 
 	result := make(authorizer.PermissionDataMap)
 	var apiIDs []uint32
-	var apis []*permissionV1.Api
+	var apis []*resourceV1.Api
 	for _, role := range roles.Items {
 		//p.log.Infof("processing role: %s", role.GetCode())
 		if role == nil {

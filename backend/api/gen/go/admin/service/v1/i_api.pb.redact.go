@@ -7,7 +7,7 @@ import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
 	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
+	resourcepb "go-wind-admin/api/gen/go/resource/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -27,7 +27,7 @@ var (
 	_ timestamppb.Timestamp
 	_ fieldmaskpb.FieldMask
 	_ pagination.Sorting
-	_ permissionpb.Api
+	_ resourcepb.Api
 )
 
 // RegisterRedactedApiServiceServer wraps the ApiServiceServer with the redacted server and registers the service in GRPC
@@ -50,7 +50,7 @@ type redactedApiServiceServer struct {
 
 // List is the redacted wrapper for the actual ApiServiceServer.List method
 // Unary RPC
-func (s *redactedApiServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*permissionpb.ListApiResponse, error) {
+func (s *redactedApiServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*resourcepb.ListApiResponse, error) {
 	res, err := s.srv.List(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -61,7 +61,7 @@ func (s *redactedApiServiceServer) List(ctx context.Context, in *pagination.Pagi
 
 // Get is the redacted wrapper for the actual ApiServiceServer.Get method
 // Unary RPC
-func (s *redactedApiServiceServer) Get(ctx context.Context, in *permissionpb.GetApiRequest) (*permissionpb.Api, error) {
+func (s *redactedApiServiceServer) Get(ctx context.Context, in *resourcepb.GetApiRequest) (*resourcepb.Api, error) {
 	res, err := s.srv.Get(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -72,7 +72,7 @@ func (s *redactedApiServiceServer) Get(ctx context.Context, in *permissionpb.Get
 
 // Create is the redacted wrapper for the actual ApiServiceServer.Create method
 // Unary RPC
-func (s *redactedApiServiceServer) Create(ctx context.Context, in *permissionpb.CreateApiRequest) (*emptypb.Empty, error) {
+func (s *redactedApiServiceServer) Create(ctx context.Context, in *resourcepb.CreateApiRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Create(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -83,7 +83,7 @@ func (s *redactedApiServiceServer) Create(ctx context.Context, in *permissionpb.
 
 // Update is the redacted wrapper for the actual ApiServiceServer.Update method
 // Unary RPC
-func (s *redactedApiServiceServer) Update(ctx context.Context, in *permissionpb.UpdateApiRequest) (*emptypb.Empty, error) {
+func (s *redactedApiServiceServer) Update(ctx context.Context, in *resourcepb.UpdateApiRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Update(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -94,7 +94,7 @@ func (s *redactedApiServiceServer) Update(ctx context.Context, in *permissionpb.
 
 // Delete is the redacted wrapper for the actual ApiServiceServer.Delete method
 // Unary RPC
-func (s *redactedApiServiceServer) Delete(ctx context.Context, in *permissionpb.DeleteApiRequest) (*emptypb.Empty, error) {
+func (s *redactedApiServiceServer) Delete(ctx context.Context, in *resourcepb.DeleteApiRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Delete(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -116,7 +116,7 @@ func (s *redactedApiServiceServer) SyncApis(ctx context.Context, in *emptypb.Emp
 
 // GetWalkRouteData is the redacted wrapper for the actual ApiServiceServer.GetWalkRouteData method
 // Unary RPC
-func (s *redactedApiServiceServer) GetWalkRouteData(ctx context.Context, in *emptypb.Empty) (*permissionpb.ListApiResponse, error) {
+func (s *redactedApiServiceServer) GetWalkRouteData(ctx context.Context, in *emptypb.Empty) (*resourcepb.ListApiResponse, error) {
 	res, err := s.srv.GetWalkRouteData(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response

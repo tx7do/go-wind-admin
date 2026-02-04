@@ -12,7 +12,7 @@ import { mapTree } from '@vben-core/shared/utils';
 import { Select } from 'ant-design-vue';
 
 import { TreeActionEnum } from '#/constants/tree';
-import { type userservicev1_OrgUnit as OrgUnit } from '#/generated/api/admin/service/v1';
+import { type identityservicev1_OrgUnit as OrgUnit } from '#/generated/api/admin/service/v1';
 import { useUserViewStore } from '#/views/app/opm/user/user-view.state';
 
 const userViewStore = useUserViewStore();

@@ -9,7 +9,7 @@ package adminpb
 import (
 	context "context"
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	v11 "go-wind-admin/api/gen/go/user/service/v1"
+	v11 "go-wind-admin/api/gen/go/identity/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

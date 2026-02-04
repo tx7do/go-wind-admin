@@ -19,17 +19,17 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"go-wind-admin/app/admin/service/internal/data/ent/tenant"
 
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
 
 type TenantRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper               *mapper.CopierMapper[userV1.Tenant, ent.Tenant]
-	statusConverter      *mapper.EnumTypeConverter[userV1.Tenant_Status, tenant.Status]
-	typeConverter        *mapper.EnumTypeConverter[userV1.Tenant_Type, tenant.Type]
-	auditStatusConverter *mapper.EnumTypeConverter[userV1.Tenant_AuditStatus, tenant.AuditStatus]
+	mapper               *mapper.CopierMapper[identityV1.Tenant, ent.Tenant]
+	statusConverter      *mapper.EnumTypeConverter[identityV1.Tenant_Status, tenant.Status]
+	typeConverter        *mapper.EnumTypeConverter[identityV1.Tenant_Type, tenant.Type]
+	auditStatusConverter *mapper.EnumTypeConverter[identityV1.Tenant_AuditStatus, tenant.AuditStatus]
 
 	repository *entCrud.Repository[
 		ent.TenantQuery, ent.TenantSelect,
@@ -37,7 +37,7 @@ type TenantRepo struct {
 		ent.TenantUpdate, ent.TenantUpdateOne,
 		ent.TenantDelete,
 		predicate.Tenant,
-		userV1.Tenant, ent.Tenant,
+		identityV1.Tenant, ent.Tenant,
 	]
 }
 
@@ -45,10 +45,10 @@ func NewTenantRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Cli
 	repo := &TenantRepo{
 		log:                  ctx.NewLoggerHelper("tenant/repo/admin-service"),
 		entClient:            entClient,
-		mapper:               mapper.NewCopierMapper[userV1.Tenant, ent.Tenant](),
-		statusConverter:      mapper.NewEnumTypeConverter[userV1.Tenant_Status, tenant.Status](userV1.Tenant_Status_name, userV1.Tenant_Status_value),
-		typeConverter:        mapper.NewEnumTypeConverter[userV1.Tenant_Type, tenant.Type](userV1.Tenant_Type_name, userV1.Tenant_Type_value),
-		auditStatusConverter: mapper.NewEnumTypeConverter[userV1.Tenant_AuditStatus, tenant.AuditStatus](userV1.Tenant_AuditStatus_name, userV1.Tenant_AuditStatus_value),
+		mapper:               mapper.NewCopierMapper[identityV1.Tenant, ent.Tenant](),
+		statusConverter:      mapper.NewEnumTypeConverter[identityV1.Tenant_Status, tenant.Status](identityV1.Tenant_Status_name, identityV1.Tenant_Status_value),
+		typeConverter:        mapper.NewEnumTypeConverter[identityV1.Tenant_Type, tenant.Type](identityV1.Tenant_Type_name, identityV1.Tenant_Type_value),
+		auditStatusConverter: mapper.NewEnumTypeConverter[identityV1.Tenant_AuditStatus, tenant.AuditStatus](identityV1.Tenant_AuditStatus_name, identityV1.Tenant_AuditStatus_value),
 	}
 
 	repo.init()
@@ -63,7 +63,7 @@ func (r *TenantRepo) init() {
 		ent.TenantUpdate, ent.TenantUpdateOne,
 		ent.TenantDelete,
 		predicate.Tenant,
-		userV1.Tenant, ent.Tenant,
+		identityV1.Tenant, ent.Tenant,
 	](r.mapper)
 
 	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
@@ -85,7 +85,7 @@ func (r *TenantRepo) Count(ctx context.Context, req *paginationV1.PagingRequest)
 	count, err := builder.Count(ctx)
 	if err != nil {
 		r.log.Errorf("query tenant count failed: %s", err.Error())
-		return 0, userV1.ErrorInternalServerError("query count failed")
+		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
 	return count, nil
@@ -100,15 +100,15 @@ func (r *TenantRepo) count(ctx context.Context, whereCond []func(s *sql.Selector
 	count, err := builder.Count(ctx)
 	if err != nil {
 		r.log.Errorf("query tenant count failed: %s", err.Error())
-		return 0, userV1.ErrorInternalServerError("query count failed")
+		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
 	return count, nil
 }
 
-func (r *TenantRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListTenantResponse, error) {
+func (r *TenantRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.ListTenantResponse, error) {
 	if req == nil {
-		return nil, userV1.ErrorBadRequest("invalid parameter")
+		return nil, identityV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Tenant.Query()
@@ -118,10 +118,10 @@ func (r *TenantRepo) List(ctx context.Context, req *paginationV1.PagingRequest) 
 		return nil, err
 	}
 	if ret == nil {
-		return &userV1.ListTenantResponse{Total: 0, Items: nil}, nil
+		return &identityV1.ListTenantResponse{Total: 0, Items: nil}, nil
 	}
 
-	return &userV1.ListTenantResponse{
+	return &identityV1.ListTenantResponse{
 		Total: ret.Total,
 		Items: ret.Items,
 	}, nil
@@ -133,14 +133,14 @@ func (r *TenantRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Exist(ctx)
 	if err != nil {
 		r.log.Errorf("query exist failed: %s", err.Error())
-		return false, userV1.ErrorInternalServerError("query exist failed")
+		return false, identityV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
 }
 
-func (r *TenantRepo) Get(ctx context.Context, req *userV1.GetTenantRequest) (*userV1.Tenant, error) {
+func (r *TenantRepo) Get(ctx context.Context, req *identityV1.GetTenantRequest) (*identityV1.Tenant, error) {
 	if req == nil {
-		return nil, userV1.ErrorBadRequest("invalid parameter")
+		return nil, identityV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Tenant.Query()
@@ -148,13 +148,13 @@ func (r *TenantRepo) Get(ctx context.Context, req *userV1.GetTenantRequest) (*us
 	var whereCond []func(s *sql.Selector)
 	switch req.QueryBy.(type) {
 	default:
-	case *userV1.GetTenantRequest_Id:
+	case *identityV1.GetTenantRequest_Id:
 		whereCond = append(whereCond, tenant.IDEQ(req.GetId()))
 
-	case *userV1.GetTenantRequest_Code:
+	case *identityV1.GetTenantRequest_Code:
 		whereCond = append(whereCond, tenant.CodeEQ(req.GetCode()))
 
-	case *userV1.GetTenantRequest_Name:
+	case *identityV1.GetTenantRequest_Name:
 		whereCond = append(whereCond, tenant.NameEQ(req.GetName()))
 	}
 
@@ -170,7 +170,7 @@ func (r *TenantRepo) BeginTx(ctx context.Context) (tx *ent.Tx, cleanup func(), e
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return nil, nil, userV1.ErrorInternalServerError("start transaction failed")
+		return nil, nil, identityV1.ErrorInternalServerError("start transaction failed")
 	}
 
 	cleanup = func() {
@@ -182,23 +182,23 @@ func (r *TenantRepo) BeginTx(ctx context.Context) (tx *ent.Tx, cleanup func(), e
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = userV1.ErrorInternalServerError("transaction commit failed")
+			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}
 
 	return tx, cleanup, nil
 }
 
-func (r *TenantRepo) Create(ctx context.Context, data *userV1.Tenant) (tenant *userV1.Tenant, err error) {
+func (r *TenantRepo) Create(ctx context.Context, data *identityV1.Tenant) (tenant *identityV1.Tenant, err error) {
 	if data == nil {
-		return nil, userV1.ErrorBadRequest("invalid parameter")
+		return nil, identityV1.ErrorBadRequest("invalid parameter")
 	}
 
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("start transaction failed")
+		return nil, identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -209,16 +209,16 @@ func (r *TenantRepo) Create(ctx context.Context, data *userV1.Tenant) (tenant *u
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = userV1.ErrorInternalServerError("transaction commit failed")
+			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
 	return r.CreateWithTx(ctx, tx, data)
 }
 
-func (r *TenantRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *userV1.Tenant) (*userV1.Tenant, error) {
+func (r *TenantRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *identityV1.Tenant) (*identityV1.Tenant, error) {
 	if data == nil {
-		return nil, userV1.ErrorBadRequest("invalid parameter")
+		return nil, identityV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := tx.Tenant.Create().
@@ -245,15 +245,15 @@ func (r *TenantRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *userV1.
 
 	if ret, err := builder.Save(ctx); err != nil {
 		r.log.Errorf("insert tenant failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("insert tenant failed")
+		return nil, identityV1.ErrorInternalServerError("insert tenant failed")
 	} else {
 		return r.mapper.ToDTO(ret), nil
 	}
 }
 
-func (r *TenantRepo) Update(ctx context.Context, req *userV1.UpdateTenantRequest) error {
+func (r *TenantRepo) Update(ctx context.Context, req *identityV1.UpdateTenantRequest) error {
 	if req == nil || req.Data == nil {
-		return userV1.ErrorBadRequest("invalid parameter")
+		return identityV1.ErrorBadRequest("invalid parameter")
 	}
 
 	// 如果不存在则创建
@@ -263,7 +263,7 @@ func (r *TenantRepo) Update(ctx context.Context, req *userV1.UpdateTenantRequest
 			return err
 		}
 		if !exist {
-			createReq := &userV1.CreateTenantRequest{Data: req.Data}
+			createReq := &identityV1.CreateTenantRequest{Data: req.Data}
 			createReq.Data.CreatedBy = createReq.Data.UpdatedBy
 			createReq.Data.UpdatedBy = nil
 			_, err = r.Create(ctx, createReq.Data)
@@ -273,7 +273,7 @@ func (r *TenantRepo) Update(ctx context.Context, req *userV1.UpdateTenantRequest
 
 	builder := r.entClient.Client().Debug().Tenant.Update()
 	err := r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
-		func(dto *userV1.Tenant) {
+		func(dto *identityV1.Tenant) {
 			builder.
 				SetNillableName(req.Data.Name).
 				SetNillableCode(req.Data.Code).
@@ -308,32 +308,32 @@ func (r *TenantRepo) AssignTenantAdmin(ctx context.Context, tx *ent.Tx, tenantId
 		Save(ctx)
 	if err != nil {
 		r.log.Errorf("assign tenant admin failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("assign tenant admin failed")
+		return identityV1.ErrorInternalServerError("assign tenant admin failed")
 	}
 
 	return nil
 }
 
-func (r *TenantRepo) Delete(ctx context.Context, req *userV1.DeleteTenantRequest) error {
+func (r *TenantRepo) Delete(ctx context.Context, req *identityV1.DeleteTenantRequest) error {
 	if req == nil {
-		return userV1.ErrorBadRequest("invalid parameter")
+		return identityV1.ErrorBadRequest("invalid parameter")
 	}
 
 	if err := r.entClient.Client().Tenant.DeleteOneID(req.GetId()).Exec(ctx); err != nil {
 		if ent.IsNotFound(err) {
-			return userV1.ErrorNotFound("tenant not found")
+			return identityV1.ErrorNotFound("tenant not found")
 		}
 
 		r.log.Errorf("delete one data failed: %s", err.Error())
 
-		return userV1.ErrorInternalServerError("delete failed")
+		return identityV1.ErrorInternalServerError("delete failed")
 	}
 
 	return nil
 }
 
 // TenantExists checks if a tenant with the given username exists.
-func (r *TenantRepo) TenantExists(ctx context.Context, req *userV1.TenantExistsRequest) (*userV1.TenantExistsResponse, error) {
+func (r *TenantRepo) TenantExists(ctx context.Context, req *identityV1.TenantExistsRequest) (*identityV1.TenantExistsResponse, error) {
 	exist, err := r.entClient.Client().Tenant.Query().
 		Where(
 			tenant.CodeEQ(req.GetCode()),
@@ -342,18 +342,18 @@ func (r *TenantRepo) TenantExists(ctx context.Context, req *userV1.TenantExistsR
 		Exist(ctx)
 	if err != nil {
 		r.log.Errorf("query exist failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query exist failed")
+		return nil, identityV1.ErrorInternalServerError("query exist failed")
 	}
 
-	return &userV1.TenantExistsResponse{
+	return &identityV1.TenantExistsResponse{
 		Exist: exist,
 	}, nil
 }
 
 // ListTenantsByIds gets tenants by a list of IDs.
-func (r *TenantRepo) ListTenantsByIds(ctx context.Context, ids []uint32) ([]*userV1.Tenant, error) {
+func (r *TenantRepo) ListTenantsByIds(ctx context.Context, ids []uint32) ([]*identityV1.Tenant, error) {
 	if len(ids) == 0 {
-		return []*userV1.Tenant{}, nil
+		return []*identityV1.Tenant{}, nil
 	}
 
 	entities, err := r.entClient.Client().Tenant.Query().
@@ -361,10 +361,10 @@ func (r *TenantRepo) ListTenantsByIds(ctx context.Context, ids []uint32) ([]*use
 		All(ctx)
 	if err != nil {
 		r.log.Errorf("query tenant by ids failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query tenant by ids failed")
+		return nil, identityV1.ErrorInternalServerError("query tenant by ids failed")
 	}
 
-	dtos := make([]*userV1.Tenant, 0, len(entities))
+	dtos := make([]*identityV1.Tenant, 0, len(entities))
 	for _, entity := range entities {
 		dto := r.mapper.ToDTO(entity)
 		dtos = append(dtos, dto)

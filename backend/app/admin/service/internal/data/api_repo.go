@@ -19,15 +19,15 @@ import (
 	"github.com/tx7do/go-utils/copierutil"
 	"github.com/tx7do/go-utils/mapper"
 
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+	resourceV1 "go-wind-admin/api/gen/go/resource/service/v1"
 )
 
 type ApiRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper         *mapper.CopierMapper[permissionV1.Api, ent.Api]
-	scopeConverter *mapper.EnumTypeConverter[permissionV1.Api_Scope, api.Scope]
+	mapper         *mapper.CopierMapper[resourceV1.Api, ent.Api]
+	scopeConverter *mapper.EnumTypeConverter[resourceV1.Api_Scope, api.Scope]
 
 	repository *entCrud.Repository[
 		ent.APIQuery, ent.APISelect,
@@ -35,7 +35,7 @@ type ApiRepo struct {
 		ent.APIUpdate, ent.APIUpdateOne,
 		ent.APIDelete,
 		predicate.Api,
-		permissionV1.Api, ent.Api,
+		resourceV1.Api, ent.Api,
 	]
 }
 
@@ -43,9 +43,9 @@ func NewApiRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client
 	repo := &ApiRepo{
 		log:       ctx.NewLoggerHelper("api/repo/admin-service"),
 		entClient: entClient,
-		mapper:    mapper.NewCopierMapper[permissionV1.Api, ent.Api](),
-		scopeConverter: mapper.NewEnumTypeConverter[permissionV1.Api_Scope, api.Scope](
-			permissionV1.Api_Scope_name, permissionV1.Api_Scope_value,
+		mapper:    mapper.NewCopierMapper[resourceV1.Api, ent.Api](),
+		scopeConverter: mapper.NewEnumTypeConverter[resourceV1.Api_Scope, api.Scope](
+			resourceV1.Api_Scope_name, resourceV1.Api_Scope_value,
 		),
 	}
 
@@ -61,7 +61,7 @@ func (r *ApiRepo) init() {
 		ent.APIUpdate, ent.APIUpdateOne,
 		ent.APIDelete,
 		predicate.Api,
-		permissionV1.Api, ent.Api,
+		resourceV1.Api, ent.Api,
 	](r.mapper)
 
 	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
@@ -70,7 +70,7 @@ func (r *ApiRepo) init() {
 	r.mapper.AppendConverters(r.scopeConverter.NewConverterPair())
 }
 
-func (r *ApiRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.CountApiResponse, error) {
+func (r *ApiRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (*resourceV1.CountApiResponse, error) {
 	builder := r.entClient.Client().Api.Query()
 
 	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
@@ -81,17 +81,17 @@ func (r *ApiRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (*
 	count, err := builder.Count(ctx)
 	if err != nil {
 		r.log.Errorf("query api count failed: %s", err.Error())
-		return nil, permissionV1.ErrorInternalServerError("query api count failed")
+		return nil, resourceV1.ErrorInternalServerError("query api count failed")
 	}
 
-	return &permissionV1.CountApiResponse{
+	return &resourceV1.CountApiResponse{
 		Count: uint64(count),
 	}, nil
 }
 
-func (r *ApiRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.ListApiResponse, error) {
+func (r *ApiRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*resourceV1.ListApiResponse, error) {
 	if req == nil {
-		return nil, permissionV1.ErrorBadRequest("invalid parameter")
+		return nil, resourceV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Api.Query()
@@ -101,10 +101,10 @@ func (r *ApiRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*p
 		return nil, err
 	}
 	if ret == nil {
-		return &permissionV1.ListApiResponse{Total: 0, Items: nil}, nil
+		return &resourceV1.ListApiResponse{Total: 0, Items: nil}, nil
 	}
 
-	return &permissionV1.ListApiResponse{
+	return &resourceV1.ListApiResponse{
 		Total: ret.Total,
 		Items: ret.Items,
 	}, nil
@@ -116,14 +116,14 @@ func (r *ApiRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Exist(ctx)
 	if err != nil {
 		r.log.Errorf("query exist failed: %s", err.Error())
-		return false, permissionV1.ErrorInternalServerError("query exist failed")
+		return false, resourceV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
 }
 
-func (r *ApiRepo) Get(ctx context.Context, req *permissionV1.GetApiRequest) (*permissionV1.Api, error) {
+func (r *ApiRepo) Get(ctx context.Context, req *resourceV1.GetApiRequest) (*resourceV1.Api, error) {
 	if req == nil {
-		return nil, permissionV1.ErrorBadRequest("invalid parameter")
+		return nil, resourceV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Api.Query()
@@ -131,7 +131,7 @@ func (r *ApiRepo) Get(ctx context.Context, req *permissionV1.GetApiRequest) (*pe
 	var whereCond []func(s *sql.Selector)
 	switch req.QueryBy.(type) {
 	default:
-	case *permissionV1.GetApiRequest_Id:
+	case *resourceV1.GetApiRequest_Id:
 		whereCond = append(whereCond, api.IDEQ(req.GetId()))
 	}
 
@@ -144,9 +144,9 @@ func (r *ApiRepo) Get(ctx context.Context, req *permissionV1.GetApiRequest) (*pe
 }
 
 // GetApiByEndpoint 根据路径和方法获取API资源
-func (r *ApiRepo) GetApiByEndpoint(ctx context.Context, path, method string) (*permissionV1.Api, error) {
+func (r *ApiRepo) GetApiByEndpoint(ctx context.Context, path, method string) (*resourceV1.Api, error) {
 	if path == "" || method == "" {
-		return nil, permissionV1.ErrorBadRequest("invalid parameter")
+		return nil, resourceV1.ErrorBadRequest("invalid parameter")
 	}
 
 	entity, err := r.entClient.Client().Api.Query().
@@ -157,21 +157,21 @@ func (r *ApiRepo) GetApiByEndpoint(ctx context.Context, path, method string) (*p
 		Only(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, permissionV1.ErrorNotFound("api not found")
+			return nil, resourceV1.ErrorNotFound("api not found")
 		}
 
 		r.log.Errorf("query one data failed: %s", err.Error())
 
-		return nil, permissionV1.ErrorInternalServerError("query data failed")
+		return nil, resourceV1.ErrorInternalServerError("query data failed")
 	}
 
 	return r.mapper.ToDTO(entity), nil
 }
 
 // GetApiByIDs 根据ID列表获取API资源
-func (r *ApiRepo) GetApiByIDs(ctx context.Context, ids []uint32) ([]*permissionV1.Api, error) {
+func (r *ApiRepo) GetApiByIDs(ctx context.Context, ids []uint32) ([]*resourceV1.Api, error) {
 	if len(ids) == 0 {
-		return nil, permissionV1.ErrorBadRequest("invalid parameter")
+		return nil, resourceV1.ErrorBadRequest("invalid parameter")
 	}
 
 	entities, err := r.entClient.Client().Api.Query().
@@ -181,15 +181,15 @@ func (r *ApiRepo) GetApiByIDs(ctx context.Context, ids []uint32) ([]*permissionV
 		All(ctx)
 	if err != nil {
 		if ent.IsNotFound(err) {
-			return nil, permissionV1.ErrorNotFound("api not found")
+			return nil, resourceV1.ErrorNotFound("api not found")
 		}
 
 		r.log.Errorf("query one data failed: %s", err.Error())
 
-		return nil, permissionV1.ErrorInternalServerError("query data failed")
+		return nil, resourceV1.ErrorInternalServerError("query data failed")
 	}
 
-	dtos := make([]*permissionV1.Api, 0, len(entities))
+	dtos := make([]*resourceV1.Api, 0, len(entities))
 	for _, entity := range entities {
 		dto := r.mapper.ToDTO(entity)
 		dtos = append(dtos, dto)
@@ -198,22 +198,22 @@ func (r *ApiRepo) GetApiByIDs(ctx context.Context, ids []uint32) ([]*permissionV
 	return dtos, nil
 }
 
-func (r *ApiRepo) Create(ctx context.Context, req *permissionV1.CreateApiRequest) error {
+func (r *ApiRepo) Create(ctx context.Context, req *resourceV1.CreateApiRequest) error {
 	if req == nil || req.Data == nil {
-		return permissionV1.ErrorBadRequest("invalid parameter")
+		return resourceV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.newApiCreate(req.Data)
 
 	if err := builder.Exec(ctx); err != nil {
 		r.log.Errorf("insert api failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("insert api failed")
+		return resourceV1.ErrorInternalServerError("insert api failed")
 	}
 
 	return nil
 }
 
-func (r *ApiRepo) newApiCreate(api *permissionV1.Api) *ent.APICreate {
+func (r *ApiRepo) newApiCreate(api *resourceV1.Api) *ent.APICreate {
 	builder := r.entClient.Client().Api.Create().
 		SetNillableDescription(api.Description).
 		SetNillableModule(api.Module).
@@ -232,7 +232,7 @@ func (r *ApiRepo) newApiCreate(api *permissionV1.Api) *ent.APICreate {
 	return builder
 }
 
-func (r *ApiRepo) BatchCreate(ctx context.Context, apis []*permissionV1.Api) error {
+func (r *ApiRepo) BatchCreate(ctx context.Context, apis []*resourceV1.Api) error {
 	if len(apis) == 0 {
 		return nil
 	}
@@ -247,15 +247,15 @@ func (r *ApiRepo) BatchCreate(ctx context.Context, apis []*permissionV1.Api) err
 
 	if err := bulkBuilder.Exec(ctx); err != nil {
 		r.log.Errorf("batch insert apis failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("batch insert apis failed")
+		return resourceV1.ErrorInternalServerError("batch insert apis failed")
 	}
 
 	return nil
 }
 
-func (r *ApiRepo) Update(ctx context.Context, req *permissionV1.UpdateApiRequest) error {
+func (r *ApiRepo) Update(ctx context.Context, req *resourceV1.UpdateApiRequest) error {
 	if req == nil || req.Data == nil {
-		return permissionV1.ErrorBadRequest("invalid parameter")
+		return resourceV1.ErrorBadRequest("invalid parameter")
 	}
 
 	// 如果不存在则创建
@@ -265,7 +265,7 @@ func (r *ApiRepo) Update(ctx context.Context, req *permissionV1.UpdateApiRequest
 			return err
 		}
 		if !exist {
-			createReq := &permissionV1.CreateApiRequest{Data: req.Data}
+			createReq := &resourceV1.CreateApiRequest{Data: req.Data}
 			createReq.Data.CreatedBy = createReq.Data.UpdatedBy
 			createReq.Data.UpdatedBy = nil
 			return r.Create(ctx, createReq)
@@ -274,7 +274,7 @@ func (r *ApiRepo) Update(ctx context.Context, req *permissionV1.UpdateApiRequest
 
 	builder := r.entClient.Client().Debug().Api.Update()
 	err := r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
-		func(dto *permissionV1.Api) {
+		func(dto *resourceV1.Api) {
 			builder.
 				SetNillableDescription(req.Data.Description).
 				SetNillableModule(req.Data.Module).
@@ -294,9 +294,9 @@ func (r *ApiRepo) Update(ctx context.Context, req *permissionV1.UpdateApiRequest
 	return err
 }
 
-func (r *ApiRepo) Delete(ctx context.Context, req *permissionV1.DeleteApiRequest) error {
+func (r *ApiRepo) Delete(ctx context.Context, req *resourceV1.DeleteApiRequest) error {
 	if req == nil {
-		return permissionV1.ErrorBadRequest("invalid parameter")
+		return resourceV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Debug().Api.Delete()
@@ -306,7 +306,7 @@ func (r *ApiRepo) Delete(ctx context.Context, req *permissionV1.DeleteApiRequest
 	})
 	if err != nil {
 		r.log.Errorf("delete api failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("delete api failed")
+		return resourceV1.ErrorInternalServerError("delete api failed")
 	}
 
 	return nil
@@ -316,7 +316,7 @@ func (r *ApiRepo) Delete(ctx context.Context, req *permissionV1.DeleteApiRequest
 func (r *ApiRepo) Truncate(ctx context.Context) error {
 	if _, err := r.entClient.Client().Api.Delete().Exec(ctx); err != nil {
 		r.log.Errorf("failed to truncate apis table: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("truncate failed")
+		return resourceV1.ErrorInternalServerError("truncate failed")
 	}
 	return nil
 }

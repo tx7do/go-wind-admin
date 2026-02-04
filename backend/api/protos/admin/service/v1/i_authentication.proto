@@ -6,7 +6,7 @@ import "gnostic/openapi/v3/annotations.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
-import "user/service/v1/user.proto";
+import "identity/service/v1/user.proto";
 import "authentication/service/v1/authentication.proto";
 
 // 用户后台登录认证服务

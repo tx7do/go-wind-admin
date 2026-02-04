@@ -6,7 +6,7 @@ package adminpb
 import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
-	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
+	resourcepb "go-wind-admin/api/gen/go/resource/service/v1"
 	annotations "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -27,7 +27,7 @@ var (
 	_ emptypb.Empty
 	_ timestamppb.Timestamp
 	_ fieldmaskpb.FieldMask
-	_ permissionpb.Menu
+	_ resourcepb.Menu
 )
 
 // RegisterRedactedAdminPortalServiceServer wraps the AdminPortalServiceServer with the redacted server and registers the service in GRPC

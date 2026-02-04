@@ -15,8 +15,7 @@ import (
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 
 	"go-wind-admin/pkg/constants"
 	"go-wind-admin/pkg/middleware/auth"
@@ -88,27 +87,27 @@ func (s *AuthenticationService) Login(ctx context.Context, req *authenticationV1
 	}
 }
 
-var priorityDataScope = map[permissionV1.DataScope]int{
-	permissionV1.DataScope_SELF:           1,
-	permissionV1.DataScope_UNIT_ONLY:      2,
-	permissionV1.DataScope_UNIT_AND_CHILD: 3,
-	permissionV1.DataScope_SELECTED_UNITS: 4,
-	permissionV1.DataScope_ALL:            5,
+var priorityDataScope = map[identityV1.DataScope]int{
+	identityV1.DataScope_SELF:           1,
+	identityV1.DataScope_UNIT_ONLY:      2,
+	identityV1.DataScope_UNIT_AND_CHILD: 3,
+	identityV1.DataScope_SELECTED_UNITS: 4,
+	identityV1.DataScope_ALL:            5,
 }
 
 // mergeDataScopes 合并角色数据权限
-func (s *AuthenticationService) mergeDataScopes(dataScopes []permissionV1.DataScope) permissionV1.DataScope {
+func (s *AuthenticationService) mergeDataScopes(dataScopes []identityV1.DataScope) identityV1.DataScope {
 	if len(dataScopes) == 0 {
-		return permissionV1.DataScope_SELF
+		return identityV1.DataScope_SELF
 	}
 
-	final := permissionV1.DataScope_SELF
+	final := identityV1.DataScope_SELF
 	bestPrio := 0
 
 	for _, ds := range dataScopes {
 		// 最优先短路
-		if ds == permissionV1.DataScope_ALL {
-			return permissionV1.DataScope_ALL
+		if ds == identityV1.DataScope_ALL {
+			return identityV1.DataScope_ALL
 		}
 
 		if p, ok := priorityDataScope[ds]; ok {
@@ -123,12 +122,12 @@ func (s *AuthenticationService) mergeDataScopes(dataScopes []permissionV1.DataSc
 }
 
 // pickMostSpecificOrgUnit 从多个组织单元中选择最具体的一个
-func (s *AuthenticationService) pickMostSpecificOrgUnit(units []*userV1.OrgUnit) *userV1.OrgUnit {
+func (s *AuthenticationService) pickMostSpecificOrgUnit(units []*identityV1.OrgUnit) *identityV1.OrgUnit {
 	if len(units) == 0 {
 		return nil
 	}
 
-	var best *userV1.OrgUnit
+	var best *identityV1.OrgUnit
 	bestDepth := -1
 
 	for _, u := range units {
@@ -166,10 +165,10 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 
 	if tenantID > 0 {
 		// 检查租户状态
-		tenant, _ := s.tenantRepo.Get(ctx, &userV1.GetTenantRequest{
-			QueryBy: &userV1.GetTenantRequest_Id{Id: tenantID},
+		tenant, _ := s.tenantRepo.Get(ctx, &identityV1.GetTenantRequest{
+			QueryBy: &identityV1.GetTenantRequest_Id{Id: tenantID},
 		})
-		if tenant == nil || tenant.GetStatus() != userV1.Tenant_ON {
+		if tenant == nil || tenant.GetStatus() != identityV1.Tenant_ON {
 			return authenticationV1.ErrorForbidden("insufficient authority")
 		}
 	}
@@ -219,7 +218,7 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 
 // authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToMany 一对多用户-租户关系的授权与丰富
 func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToMany(ctx context.Context, userID, tenantID uint32, tokenPayload *authenticationV1.UserTokenPayload) error {
-	var memberships []*userV1.Membership
+	var memberships []*identityV1.Membership
 	if tenantID > 0 {
 		// 指定租户
 		membership, err := s.membershipRepo.GetMembershipByUserTenant(ctx, userID)
@@ -227,7 +226,7 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 			s.log.Errorf("get user [%d] membership for tenant [%d] failed [%s]", userID, tenantID, err.Error())
 			return authenticationV1.ErrorForbidden("insufficient authority")
 		}
-		memberships = []*userV1.Membership{membership}
+		memberships = []*identityV1.Membership{membership}
 	} else {
 		var err error
 		// 获取所有活跃成员身份
@@ -239,15 +238,15 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 	}
 
 	hasBackendAccess := false
-	var validMemberships []*userV1.Membership
+	var validMemberships []*identityV1.Membership
 	var validRoleIDs []uint32
 	for _, m := range memberships {
 		if m.GetTenantId() > 0 {
 			// 检查租户状态
-			tenant, _ := s.tenantRepo.Get(ctx, &userV1.GetTenantRequest{
-				QueryBy: &userV1.GetTenantRequest_Id{Id: m.GetTenantId()},
+			tenant, _ := s.tenantRepo.Get(ctx, &identityV1.GetTenantRequest{
+				QueryBy: &identityV1.GetTenantRequest_Id{Id: m.GetTenantId()},
 			})
-			if tenant == nil || tenant.GetStatus() != userV1.Tenant_ON {
+			if tenant == nil || tenant.GetStatus() != identityV1.Tenant_ON {
 				continue
 			}
 		}
@@ -312,8 +311,8 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayload(ctx context.C
 }
 
 // resolveUserAuthority 解析用户权限信息
-func (s *AuthenticationService) resolveUserAuthority(ctx context.Context, user *userV1.User, tokenPayload *authenticationV1.UserTokenPayload) error {
-	if user.GetStatus() != userV1.User_NORMAL {
+func (s *AuthenticationService) resolveUserAuthority(ctx context.Context, user *identityV1.User, tokenPayload *authenticationV1.UserTokenPayload) error {
+	if user.GetStatus() != identityV1.User_NORMAL {
 		s.log.Errorf("user [%d] is [%v]", user.GetId(), user.GetStatus())
 		return authenticationV1.ErrorForbidden("user is disabled")
 	}
@@ -339,8 +338,8 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	}
 
 	// 获取用户信息
-	var user *userV1.User
-	user, err = s.userRepo.Get(ctx, &userV1.GetUserRequest{QueryBy: &userV1.GetUserRequest_Username{Username: req.GetUsername()}})
+	var user *identityV1.User
+	user, err = s.userRepo.Get(ctx, &identityV1.GetUserRequest{QueryBy: &identityV1.GetUserRequest_Username{Username: req.GetUsername()}})
 	if err != nil {
 		s.log.Errorf("get user by username [%s] failed [%s]", req.GetUsername(), err.Error())
 		return nil, err
@@ -385,8 +384,8 @@ func (s *AuthenticationService) doGrantTypeRefreshToken(ctx context.Context, req
 	}
 
 	// 获取用户信息
-	user, err := s.userRepo.Get(ctx, &userV1.GetUserRequest{
-		QueryBy: &userV1.GetUserRequest_Id{
+	user, err := s.userRepo.Get(ctx, &identityV1.GetUserRequest{
+		QueryBy: &identityV1.GetUserRequest_Id{
 			Id: operator.UserId,
 		},
 	})
@@ -470,13 +469,13 @@ func (s *AuthenticationService) RegisterUser(ctx context.Context, req *authentic
 	var err error
 
 	var tenantId *uint32
-	tenant, err := s.tenantRepo.Get(ctx, &userV1.GetTenantRequest{QueryBy: &userV1.GetTenantRequest_Code{Code: req.GetTenantCode()}})
+	tenant, err := s.tenantRepo.Get(ctx, &identityV1.GetTenantRequest{QueryBy: &identityV1.GetTenantRequest_Code{Code: req.GetTenantCode()}})
 	if tenant != nil {
 		tenantId = tenant.Id
 	}
 
-	user, err := s.userRepo.Create(ctx, &userV1.CreateUserRequest{
-		Data: &userV1.User{
+	user, err := s.userRepo.Create(ctx, &identityV1.CreateUserRequest{
+		Data: &identityV1.User{
 			TenantId: tenantId,
 			Username: trans.Ptr(req.Username),
 			Email:    req.Email,

@@ -7,7 +7,7 @@ import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
 	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	userpb "go-wind-admin/api/gen/go/user/service/v1"
+	servicev1 "go-wind-admin/api/gen/go/identity/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -23,8 +23,8 @@ var (
 	_ status.Status
 	_ emptypb.Empty
 	_ pagination.Sorting
-	_ userpb.Tenant
-	_ userpb.User
+	_ servicev1.Tenant
+	_ servicev1.User
 )
 
 // RegisterRedactedTenantServiceServer wraps the TenantServiceServer with the redacted server and registers the service in GRPC
@@ -47,7 +47,7 @@ type redactedTenantServiceServer struct {
 
 // List is the redacted wrapper for the actual TenantServiceServer.List method
 // Unary RPC
-func (s *redactedTenantServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*userpb.ListTenantResponse, error) {
+func (s *redactedTenantServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*servicev1.ListTenantResponse, error) {
 	res, err := s.srv.List(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -58,7 +58,7 @@ func (s *redactedTenantServiceServer) List(ctx context.Context, in *pagination.P
 
 // Get is the redacted wrapper for the actual TenantServiceServer.Get method
 // Unary RPC
-func (s *redactedTenantServiceServer) Get(ctx context.Context, in *userpb.GetTenantRequest) (*userpb.Tenant, error) {
+func (s *redactedTenantServiceServer) Get(ctx context.Context, in *servicev1.GetTenantRequest) (*servicev1.Tenant, error) {
 	res, err := s.srv.Get(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -69,7 +69,7 @@ func (s *redactedTenantServiceServer) Get(ctx context.Context, in *userpb.GetTen
 
 // Create is the redacted wrapper for the actual TenantServiceServer.Create method
 // Unary RPC
-func (s *redactedTenantServiceServer) Create(ctx context.Context, in *userpb.CreateTenantRequest) (*emptypb.Empty, error) {
+func (s *redactedTenantServiceServer) Create(ctx context.Context, in *servicev1.CreateTenantRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Create(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -80,7 +80,7 @@ func (s *redactedTenantServiceServer) Create(ctx context.Context, in *userpb.Cre
 
 // Update is the redacted wrapper for the actual TenantServiceServer.Update method
 // Unary RPC
-func (s *redactedTenantServiceServer) Update(ctx context.Context, in *userpb.UpdateTenantRequest) (*emptypb.Empty, error) {
+func (s *redactedTenantServiceServer) Update(ctx context.Context, in *servicev1.UpdateTenantRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Update(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -91,7 +91,7 @@ func (s *redactedTenantServiceServer) Update(ctx context.Context, in *userpb.Upd
 
 // Delete is the redacted wrapper for the actual TenantServiceServer.Delete method
 // Unary RPC
-func (s *redactedTenantServiceServer) Delete(ctx context.Context, in *userpb.DeleteTenantRequest) (*emptypb.Empty, error) {
+func (s *redactedTenantServiceServer) Delete(ctx context.Context, in *servicev1.DeleteTenantRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Delete(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -102,7 +102,7 @@ func (s *redactedTenantServiceServer) Delete(ctx context.Context, in *userpb.Del
 
 // CreateTenantWithAdminUser is the redacted wrapper for the actual TenantServiceServer.CreateTenantWithAdminUser method
 // Unary RPC
-func (s *redactedTenantServiceServer) CreateTenantWithAdminUser(ctx context.Context, in *userpb.CreateTenantWithAdminUserRequest) (*emptypb.Empty, error) {
+func (s *redactedTenantServiceServer) CreateTenantWithAdminUser(ctx context.Context, in *servicev1.CreateTenantWithAdminUserRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.CreateTenantWithAdminUser(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -113,7 +113,7 @@ func (s *redactedTenantServiceServer) CreateTenantWithAdminUser(ctx context.Cont
 
 // TenantExists is the redacted wrapper for the actual TenantServiceServer.TenantExists method
 // Unary RPC
-func (s *redactedTenantServiceServer) TenantExists(ctx context.Context, in *userpb.TenantExistsRequest) (*userpb.TenantExistsResponse, error) {
+func (s *redactedTenantServiceServer) TenantExists(ctx context.Context, in *servicev1.TenantExistsRequest) (*servicev1.TenantExistsResponse, error) {
 	res, err := s.srv.TenantExists(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response

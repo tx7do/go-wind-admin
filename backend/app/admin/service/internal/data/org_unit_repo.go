@@ -20,16 +20,16 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/orgunit"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
 
 type OrgUnitRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper          *mapper.CopierMapper[userV1.OrgUnit, ent.OrgUnit]
-	typeConverter   *mapper.EnumTypeConverter[userV1.OrgUnit_Type, orgunit.Type]
-	statusConverter *mapper.EnumTypeConverter[userV1.OrgUnit_Status, orgunit.Status]
+	mapper          *mapper.CopierMapper[identityV1.OrgUnit, ent.OrgUnit]
+	typeConverter   *mapper.EnumTypeConverter[identityV1.OrgUnit_Type, orgunit.Type]
+	statusConverter *mapper.EnumTypeConverter[identityV1.OrgUnit_Status, orgunit.Status]
 
 	repository *entCrud.Repository[
 		ent.OrgUnitQuery, ent.OrgUnitSelect,
@@ -37,7 +37,7 @@ type OrgUnitRepo struct {
 		ent.OrgUnitUpdate, ent.OrgUnitUpdateOne,
 		ent.OrgUnitDelete,
 		predicate.OrgUnit,
-		userV1.OrgUnit, ent.OrgUnit,
+		identityV1.OrgUnit, ent.OrgUnit,
 	]
 }
 
@@ -45,9 +45,9 @@ func NewOrgUnitRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Cl
 	repo := &OrgUnitRepo{
 		log:             ctx.NewLoggerHelper("org-unit/repo/admin-service"),
 		entClient:       entClient,
-		mapper:          mapper.NewCopierMapper[userV1.OrgUnit, ent.OrgUnit](),
-		typeConverter:   mapper.NewEnumTypeConverter[userV1.OrgUnit_Type, orgunit.Type](userV1.OrgUnit_Type_name, userV1.OrgUnit_Type_value),
-		statusConverter: mapper.NewEnumTypeConverter[userV1.OrgUnit_Status, orgunit.Status](userV1.OrgUnit_Status_name, userV1.OrgUnit_Status_value),
+		mapper:          mapper.NewCopierMapper[identityV1.OrgUnit, ent.OrgUnit](),
+		typeConverter:   mapper.NewEnumTypeConverter[identityV1.OrgUnit_Type, orgunit.Type](identityV1.OrgUnit_Type_name, identityV1.OrgUnit_Type_value),
+		statusConverter: mapper.NewEnumTypeConverter[identityV1.OrgUnit_Status, orgunit.Status](identityV1.OrgUnit_Status_name, identityV1.OrgUnit_Status_value),
 	}
 
 	repo.init()
@@ -62,7 +62,7 @@ func (r *OrgUnitRepo) init() {
 		ent.OrgUnitUpdate, ent.OrgUnitUpdateOne,
 		ent.OrgUnitDelete,
 		predicate.OrgUnit,
-		userV1.OrgUnit, ent.OrgUnit,
+		identityV1.OrgUnit, ent.OrgUnit,
 	](r.mapper)
 
 	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
@@ -81,7 +81,7 @@ func (r *OrgUnitRepo) count(ctx context.Context, whereCond []func(s *sql.Selecto
 	count, err := builder.Count(ctx)
 	if err != nil {
 		r.log.Errorf("query count failed: %s", err.Error())
-		return 0, userV1.ErrorInternalServerError("query count failed")
+		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
 	return count, nil
@@ -98,15 +98,15 @@ func (r *OrgUnitRepo) Count(ctx context.Context, req *paginationV1.PagingRequest
 	count, err := builder.Count(ctx)
 	if err != nil {
 		r.log.Errorf("query org-unit count failed: %s", err.Error())
-		return 0, userV1.ErrorInternalServerError("query count failed")
+		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
 	return count, nil
 }
 
-func (r *OrgUnitRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListOrgUnitResponse, error) {
+func (r *OrgUnitRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.ListOrgUnitResponse, error) {
 	if req == nil {
-		return nil, userV1.ErrorBadRequest("invalid parameter")
+		return nil, identityV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().OrgUnit.Query()
@@ -114,13 +114,13 @@ func (r *OrgUnitRepo) List(ctx context.Context, req *paginationV1.PagingRequest)
 	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
 	if err != nil {
 		r.log.Errorf("parse list param error [%s]", err.Error())
-		return nil, userV1.ErrorBadRequest("invalid query parameter")
+		return nil, identityV1.ErrorBadRequest("invalid query parameter")
 	}
 
 	entities, err := builder.All(ctx)
 	if err != nil {
 		r.log.Errorf("query org unit list failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query org unit list failed")
+		return nil, identityV1.ErrorInternalServerError("query org unit list failed")
 	}
 
 	sort.SliceStable(entities, func(i, j int) bool {
@@ -134,7 +134,7 @@ func (r *OrgUnitRepo) List(ctx context.Context, req *paginationV1.PagingRequest)
 		return sortI < sortJ
 	})
 
-	dtos := make([]*userV1.OrgUnit, 0, len(entities))
+	dtos := make([]*identityV1.OrgUnit, 0, len(entities))
 	for _, entity := range entities {
 		if entity.ParentID == nil {
 			dto := r.mapper.ToDTO(entity)
@@ -145,7 +145,7 @@ func (r *OrgUnitRepo) List(ctx context.Context, req *paginationV1.PagingRequest)
 		if entity.ParentID != nil {
 			dto := r.mapper.ToDTO(entity)
 
-			if entCrud.TravelChild(&dtos, dto, func(parent *userV1.OrgUnit, node *userV1.OrgUnit) {
+			if entCrud.TravelChild(&dtos, dto, func(parent *identityV1.OrgUnit, node *identityV1.OrgUnit) {
 				parent.Children = append(parent.Children, node)
 			}) {
 				continue
@@ -160,7 +160,7 @@ func (r *OrgUnitRepo) List(ctx context.Context, req *paginationV1.PagingRequest)
 		return nil, err
 	}
 
-	return &userV1.ListOrgUnitResponse{
+	return &identityV1.ListOrgUnitResponse{
 		Total: uint64(count),
 		Items: dtos,
 	}, err
@@ -172,14 +172,14 @@ func (r *OrgUnitRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Exist(ctx)
 	if err != nil {
 		r.log.Errorf("query exist failed: %s", err.Error())
-		return false, userV1.ErrorInternalServerError("query exist failed")
+		return false, identityV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
 }
 
-func (r *OrgUnitRepo) Get(ctx context.Context, req *userV1.GetOrgUnitRequest) (*userV1.OrgUnit, error) {
+func (r *OrgUnitRepo) Get(ctx context.Context, req *identityV1.GetOrgUnitRequest) (*identityV1.OrgUnit, error) {
 	if req == nil {
-		return nil, userV1.ErrorBadRequest("invalid parameter")
+		return nil, identityV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().OrgUnit.Query()
@@ -187,7 +187,7 @@ func (r *OrgUnitRepo) Get(ctx context.Context, req *userV1.GetOrgUnitRequest) (*
 	var whereCond []func(s *sql.Selector)
 	switch req.QueryBy.(type) {
 	default:
-	case *userV1.GetOrgUnitRequest_Id:
+	case *identityV1.GetOrgUnitRequest_Id:
 		whereCond = append(whereCond, orgunit.IDEQ(req.GetId()))
 	}
 
@@ -200,9 +200,9 @@ func (r *OrgUnitRepo) Get(ctx context.Context, req *userV1.GetOrgUnitRequest) (*
 }
 
 // ListOrgUnitsByIds 通过多个ID获取组织列表
-func (r *OrgUnitRepo) ListOrgUnitsByIds(ctx context.Context, ids []uint32) ([]*userV1.OrgUnit, error) {
+func (r *OrgUnitRepo) ListOrgUnitsByIds(ctx context.Context, ids []uint32) ([]*identityV1.OrgUnit, error) {
 	if len(ids) == 0 {
-		return []*userV1.OrgUnit{}, nil
+		return []*identityV1.OrgUnit{}, nil
 	}
 
 	entities, err := r.entClient.Client().OrgUnit.Query().
@@ -210,10 +210,10 @@ func (r *OrgUnitRepo) ListOrgUnitsByIds(ctx context.Context, ids []uint32) ([]*u
 		All(ctx)
 	if err != nil {
 		r.log.Errorf("query orgUnit by ids failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query orgUnit by ids failed")
+		return nil, identityV1.ErrorInternalServerError("query orgUnit by ids failed")
 	}
 
-	dtos := make([]*userV1.OrgUnit, 0, len(entities))
+	dtos := make([]*identityV1.OrgUnit, 0, len(entities))
 	for _, entity := range entities {
 		dto := r.mapper.ToDTO(entity)
 		dtos = append(dtos, dto)
@@ -222,16 +222,16 @@ func (r *OrgUnitRepo) ListOrgUnitsByIds(ctx context.Context, ids []uint32) ([]*u
 	return dtos, nil
 }
 
-func (r *OrgUnitRepo) Create(ctx context.Context, req *userV1.CreateOrgUnitRequest) (err error) {
+func (r *OrgUnitRepo) Create(ctx context.Context, req *identityV1.CreateOrgUnitRequest) (err error) {
 	if req == nil || req.Data == nil {
-		return userV1.ErrorBadRequest("invalid parameter")
+		return identityV1.ErrorBadRequest("invalid parameter")
 	}
 
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("start transaction failed")
+		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -242,7 +242,7 @@ func (r *OrgUnitRepo) Create(ctx context.Context, req *userV1.CreateOrgUnitReque
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = userV1.ErrorInternalServerError("transaction commit failed")
+			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
@@ -290,7 +290,7 @@ func (r *OrgUnitRepo) Create(ctx context.Context, req *userV1.CreateOrgUnitReque
 	var entity *ent.OrgUnit
 	if entity, err = builder.Save(ctx); err != nil {
 		r.log.Errorf("insert org unit failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("insert org unit failed")
+		return identityV1.ErrorInternalServerError("insert org unit failed")
 	}
 
 	if err = r.setTreePath(ctx, tx, entity); err != nil {
@@ -300,9 +300,9 @@ func (r *OrgUnitRepo) Create(ctx context.Context, req *userV1.CreateOrgUnitReque
 	return nil
 }
 
-func (r *OrgUnitRepo) Update(ctx context.Context, req *userV1.UpdateOrgUnitRequest) error {
+func (r *OrgUnitRepo) Update(ctx context.Context, req *identityV1.UpdateOrgUnitRequest) error {
 	if req == nil || req.Data == nil {
-		return userV1.ErrorBadRequest("invalid parameter")
+		return identityV1.ErrorBadRequest("invalid parameter")
 	}
 
 	// 如果不存在则创建
@@ -312,7 +312,7 @@ func (r *OrgUnitRepo) Update(ctx context.Context, req *userV1.UpdateOrgUnitReque
 			return err
 		}
 		if !exist {
-			createReq := &userV1.CreateOrgUnitRequest{Data: req.Data}
+			createReq := &identityV1.CreateOrgUnitRequest{Data: req.Data}
 			createReq.Data.CreatedBy = createReq.Data.UpdatedBy
 			createReq.Data.UpdatedBy = nil
 			return r.Create(ctx, createReq)
@@ -321,7 +321,7 @@ func (r *OrgUnitRepo) Update(ctx context.Context, req *userV1.UpdateOrgUnitReque
 
 	builder := r.entClient.Client().Debug().OrgUnit.Update()
 	err := r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
-		func(dto *userV1.OrgUnit) {
+		func(dto *identityV1.OrgUnit) {
 			builder.
 				SetNillableName(req.Data.Name).
 				SetNillableCode(req.Data.Code).
@@ -366,15 +366,15 @@ func (r *OrgUnitRepo) Update(ctx context.Context, req *userV1.UpdateOrgUnitReque
 	return err
 }
 
-func (r *OrgUnitRepo) Delete(ctx context.Context, req *userV1.DeleteOrgUnitRequest) error {
+func (r *OrgUnitRepo) Delete(ctx context.Context, req *identityV1.DeleteOrgUnitRequest) error {
 	if req == nil {
-		return userV1.ErrorBadRequest("invalid parameter")
+		return identityV1.ErrorBadRequest("invalid parameter")
 	}
 
 	ids, err := entCrud.QueryAllChildrenIds(ctx, r.entClient, "sys_org_units", req.GetId())
 	if err != nil {
 		r.log.Errorf("query child orgUnits failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("query child orgUnits failed")
+		return identityV1.ErrorInternalServerError("query child orgUnits failed")
 	}
 	ids = append(ids, req.GetId())
 
@@ -387,7 +387,7 @@ func (r *OrgUnitRepo) Delete(ctx context.Context, req *userV1.DeleteOrgUnitReque
 	})
 	if err != nil {
 		r.log.Errorf("delete orgUnit failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete orgUnit failed")
+		return identityV1.ErrorInternalServerError("delete orgUnit failed")
 	}
 
 	return nil

@@ -19,6 +19,7 @@ import (
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+	resourceV1 "go-wind-admin/api/gen/go/resource/service/v1"
 
 	"go-wind-admin/pkg/authorizer"
 	"go-wind-admin/pkg/constants"
@@ -468,7 +469,7 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 		module := menuPathToModuleName(menu.GetPath())
 
 		// 以目录类型的菜单作为权限组
-		if menu.GetType() == permissionV1.Menu_CATALOG {
+		if menu.GetType() == resourceV1.Menu_CATALOG {
 			permissionGroups = append(permissionGroups, &permissionV1.PermissionGroup{
 				Name:      trans.Ptr(title),
 				Module:    trans.Ptr(module),

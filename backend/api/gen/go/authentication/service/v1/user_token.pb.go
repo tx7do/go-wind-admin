@@ -8,7 +8,7 @@ package authenticationpb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
-	v1 "go-wind-admin/api/gen/go/permission/service/v1"
+	v1 "go-wind-admin/api/gen/go/identity/service/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -26,17 +26,17 @@ const (
 // 用户令牌载体
 type UserTokenPayload struct {
 	state           protoimpl.MessageState `protogen:"open.v1"`
-	UserId          uint32                 `protobuf:"varint,1,opt,name=user_id,json=uid,proto3" json:"user_id,omitempty"`                                                  // 用户ID
-	TenantId        *uint32                `protobuf:"varint,2,opt,name=tenant_id,json=tid,proto3,oneof" json:"tenant_id,omitempty"`                                        // 租户ID
-	ClientId        *string                `protobuf:"bytes,3,opt,name=client_id,json=cid,proto3,oneof" json:"client_id,omitempty"`                                         // 客户端ID
-	DeviceId        *string                `protobuf:"bytes,4,opt,name=device_id,json=did,proto3,oneof" json:"device_id,omitempty"`                                         // 设备ID
-	Username        *string                `protobuf:"bytes,5,opt,name=username,json=sub,proto3,oneof" json:"username,omitempty"`                                           // 用户名
-	Roles           []string               `protobuf:"bytes,10,rep,name=roles,json=roc,proto3" json:"roles,omitempty"`                                                      // 用户角色码列表
-	DataScope       *v1.DataScope          `protobuf:"varint,11,opt,name=data_scope,json=ds,proto3,enum=permission.service.v1.DataScope,oneof" json:"data_scope,omitempty"` // 数据权限范围
-	OrgUnitId       *uint32                `protobuf:"varint,12,opt,name=org_unit_id,json=ouid,proto3,oneof" json:"org_unit_id,omitempty"`                                  // 当前组织单元ID
-	IsPlatformAdmin *bool                  `protobuf:"varint,20,opt,name=is_platform_admin,json=ipa,proto3,oneof" json:"is_platform_admin,omitempty"`                       // 是否平台超级管理员
-	IsTenantAdmin   *bool                  `protobuf:"varint,21,opt,name=is_tenant_admin,json=ita,proto3,oneof" json:"is_tenant_admin,omitempty"`                           // 是否租户管理员
-	Jti             *string                `protobuf:"bytes,100,opt,name=jti,proto3,oneof" json:"jti,omitempty"`                                                            // 令牌唯一标识(JWT ID)
+	UserId          uint32                 `protobuf:"varint,1,opt,name=user_id,json=uid,proto3" json:"user_id,omitempty"`                                                // 用户ID
+	TenantId        *uint32                `protobuf:"varint,2,opt,name=tenant_id,json=tid,proto3,oneof" json:"tenant_id,omitempty"`                                      // 租户ID
+	ClientId        *string                `protobuf:"bytes,3,opt,name=client_id,json=cid,proto3,oneof" json:"client_id,omitempty"`                                       // 客户端ID
+	DeviceId        *string                `protobuf:"bytes,4,opt,name=device_id,json=did,proto3,oneof" json:"device_id,omitempty"`                                       // 设备ID
+	Username        *string                `protobuf:"bytes,5,opt,name=username,json=sub,proto3,oneof" json:"username,omitempty"`                                         // 用户名
+	Roles           []string               `protobuf:"bytes,10,rep,name=roles,json=roc,proto3" json:"roles,omitempty"`                                                    // 用户角色码列表
+	DataScope       *v1.DataScope          `protobuf:"varint,11,opt,name=data_scope,json=ds,proto3,enum=identity.service.v1.DataScope,oneof" json:"data_scope,omitempty"` // 数据权限范围
+	OrgUnitId       *uint32                `protobuf:"varint,12,opt,name=org_unit_id,json=ouid,proto3,oneof" json:"org_unit_id,omitempty"`                                // 当前组织单元ID
+	IsPlatformAdmin *bool                  `protobuf:"varint,20,opt,name=is_platform_admin,json=ipa,proto3,oneof" json:"is_platform_admin,omitempty"`                     // 是否平台超级管理员
+	IsTenantAdmin   *bool                  `protobuf:"varint,21,opt,name=is_tenant_admin,json=ita,proto3,oneof" json:"is_tenant_admin,omitempty"`                         // 是否租户管理员
+	Jti             *string                `protobuf:"bytes,100,opt,name=jti,proto3,oneof" json:"jti,omitempty"`                                                          // 令牌唯一标识(JWT ID)
 	unknownFields   protoimpl.UnknownFields
 	sizeCache       protoimpl.SizeCache
 }
@@ -152,7 +152,7 @@ var File_authentication_service_v1_user_token_proto protoreflect.FileDescriptor
 
 const file_authentication_service_v1_user_token_proto_rawDesc = "" +
 	"\n" +
-	"*authentication/service/v1/user_token.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a&permission/service/v1/permission.proto\"\xfe\x05\n" +
+	"*authentication/service/v1/user_token.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fidentity/service/v1/types.proto\"\xfc\x05\n" +
 	"\x10UserTokenPayload\x12$\n" +
 	"\auser_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x03uid\x12+\n" +
 	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x00R\x03tid\x88\x01\x01\x12.\n" +
@@ -160,9 +160,9 @@ const file_authentication_service_v1_user_token_proto_rawDesc = "" +
 	"\tdevice_id\x18\x04 \x01(\tB\x0e\xbaG\v\x92\x02\b设备IDH\x02R\x03did\x88\x01\x01\x12+\n" +
 	"\busername\x18\x05 \x01(\tB\x0f\xbaG\f\x92\x02\t用户名H\x03R\x03sub\x88\x01\x01\x12/\n" +
 	"\x05roles\x18\n" +
-	" \x03(\tB\x1b\xbaG\x18\x92\x02\x15用户角色码列表R\x03roc\x12W\n" +
+	" \x03(\tB\x1b\xbaG\x18\x92\x02\x15用户角色码列表R\x03roc\x12U\n" +
 	"\n" +
-	"data_scope\x18\v \x01(\x0e2 .permission.service.v1.DataScopeB\x18\xbaG\x15\x92\x02\x12数据权限范围H\x04R\x02ds\x88\x01\x01\x12:\n" +
+	"data_scope\x18\v \x01(\x0e2\x1e.identity.service.v1.DataScopeB\x18\xbaG\x15\x92\x02\x12数据权限范围H\x04R\x02ds\x88\x01\x01\x12:\n" +
 	"\vorg_unit_id\x18\f \x01(\rB\x1a\xbaG\x17\x92\x02\x14当前组织单元IDH\x05R\x04ouid\x88\x01\x01\x12F\n" +
 	"\x11is_platform_admin\x18\x14 \x01(\bB!\xbaG\x1e\x92\x02\x1b是否平台超级管理员H\x06R\x03ipa\x88\x01\x01\x12>\n" +
 	"\x0fis_tenant_admin\x18\x15 \x01(\bB\x1b\xbaG\x18\x92\x02\x15是否租户管理员H\aR\x03ita\x88\x01\x01\x127\n" +
@@ -196,10 +196,10 @@ func file_authentication_service_v1_user_token_proto_rawDescGZIP() []byte {
 var file_authentication_service_v1_user_token_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
 var file_authentication_service_v1_user_token_proto_goTypes = []any{
 	(*UserTokenPayload)(nil), // 0: authentication.service.v1.UserTokenPayload
-	(v1.DataScope)(0),        // 1: permission.service.v1.DataScope
+	(v1.DataScope)(0),        // 1: identity.service.v1.DataScope
 }
 var file_authentication_service_v1_user_token_proto_depIdxs = []int32{
-	1, // 0: authentication.service.v1.UserTokenPayload.data_scope:type_name -> permission.service.v1.DataScope
+	1, // 0: authentication.service.v1.UserTokenPayload.data_scope:type_name -> identity.service.v1.DataScope
 	1, // [1:1] is the sub-list for method output_type
 	1, // [1:1] is the sub-list for method input_type
 	1, // [1:1] is the sub-list for extension type_name

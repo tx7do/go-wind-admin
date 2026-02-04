@@ -7,27 +7,27 @@ import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 import "pagination/v1/pagination.proto";
 
-import "user/service/v1/tenant.proto";
-import "user/service/v1/user.proto";
+import "identity/service/v1/tenant.proto";
+import "identity/service/v1/user.proto";
 
 // 租户管理服务
 service TenantService {
   // 获取租户列表
-  rpc List (pagination.PagingRequest) returns (user.service.v1.ListTenantResponse) {
+  rpc List (pagination.PagingRequest) returns (identity.service.v1.ListTenantResponse) {
     option (google.api.http) = {
       get: "/admin/v1/tenants"
     };
   }
 
   // 获取租户数据
-  rpc Get (user.service.v1.GetTenantRequest) returns (user.service.v1.Tenant) {
+  rpc Get (identity.service.v1.GetTenantRequest) returns (identity.service.v1.Tenant) {
     option (google.api.http) = {
       get: "/admin/v1/tenants/{id}"
     };
   }
 
   // 创建租户
-  rpc Create (user.service.v1.CreateTenantRequest) returns (google.protobuf.Empty) {
+  rpc Create (identity.service.v1.CreateTenantRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/admin/v1/tenants"
       body: "*"
@@ -35,7 +35,7 @@ service TenantService {
   }
 
   // 更新租户
-  rpc Update (user.service.v1.UpdateTenantRequest) returns (google.protobuf.Empty) {
+  rpc Update (identity.service.v1.UpdateTenantRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/admin/v1/tenants/{id}"
       body: "*"
@@ -43,14 +43,14 @@ service TenantService {
   }
 
   // 删除租户
-  rpc Delete (user.service.v1.DeleteTenantRequest) returns (google.protobuf.Empty) {
+  rpc Delete (identity.service.v1.DeleteTenantRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/admin/v1/tenants/{id}"
     };
   }
 
   // 创建租户及管理员用户
-  rpc CreateTenantWithAdminUser (user.service.v1.CreateTenantWithAdminUserRequest) returns (google.protobuf.Empty) {
+  rpc CreateTenantWithAdminUser (identity.service.v1.CreateTenantWithAdminUserRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/admin/v1/tenants:with-admin"
       body: "*"
@@ -58,7 +58,7 @@ service TenantService {
   }
 
   // 租户是否存在
-  rpc TenantExists (user.service.v1.TenantExistsRequest) returns (user.service.v1.TenantExistsResponse) {
+  rpc TenantExists (identity.service.v1.TenantExistsRequest) returns (identity.service.v1.TenantExistsResponse) {
     option (google.api.http) = {
       get: "/admin/v1/tenants:exists"
     };

@@ -6,8 +6,8 @@ import (
 	"github.com/tx7do/go-utils/trans"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
 )
 
 const (
@@ -165,12 +165,12 @@ var DefaultPermissions = []*permissionV1.Permission{
 }
 
 // DefaultRoles 系统初始化默认角色数据
-var DefaultRoles = []*userV1.Role{
+var DefaultRoles = []*identityV1.Role{
 	{
 		//Id:          trans.Ptr(uint32(1)),
 		Name:        trans.Ptr(DefaultPlatformAdminRoleName),
 		Code:        trans.Ptr(PlatformAdminRoleCode),
-		Status:      trans.Ptr(userV1.Role_ON),
+		Status:      trans.Ptr(identityV1.Role_ON),
 		Description: trans.Ptr("拥有系统所有功能的操作权限，可管理租户、用户、角色及所有资源"),
 		IsProtected: trans.Ptr(true),
 		IsSystem:    trans.Ptr(true),
@@ -181,7 +181,7 @@ var DefaultRoles = []*userV1.Role{
 		//Id:          trans.Ptr(uint32(2)),
 		Name:        trans.Ptr(DefaultTenantManagerRoleName + "模板"),
 		Code:        trans.Ptr(TenantAdminTemplateRoleCode),
-		Status:      trans.Ptr(userV1.Role_ON),
+		Status:      trans.Ptr(identityV1.Role_ON),
 		Description: trans.Ptr("租户管理员角色，拥有租户内所有功能的操作权限，可管理用户、角色及租户内所有资源"),
 		IsProtected: trans.Ptr(true),
 		IsSystem:    trans.Ptr(true),
@@ -191,14 +191,14 @@ var DefaultRoles = []*userV1.Role{
 }
 
 // DefaultRoleMetadata 系统初始化默认角色元数据
-var DefaultRoleMetadata = []*userV1.RoleMetadata{
+var DefaultRoleMetadata = []*identityV1.RoleMetadata{
 	{
 		//Id:              trans.Ptr(uint32(1)),
 		RoleId:          trans.Ptr(uint32(1)),
 		IsTemplate:      trans.Ptr(false),
 		TemplateVersion: trans.Ptr(int32(1)),
-		Scope:           userV1.RoleMetadata_PLATFORM.Enum(),
-		SyncPolicy:      userV1.RoleMetadata_AUTO.Enum(),
+		Scope:           identityV1.RoleMetadata_PLATFORM.Enum(),
+		SyncPolicy:      identityV1.RoleMetadata_AUTO.Enum(),
 	},
 	{
 		//Id:              trans.Ptr(uint32(2)),
@@ -206,13 +206,13 @@ var DefaultRoleMetadata = []*userV1.RoleMetadata{
 		IsTemplate:      trans.Ptr(true),
 		TemplateFor:     trans.Ptr(TenantAdminRoleCode),
 		TemplateVersion: trans.Ptr(int32(1)),
-		Scope:           userV1.RoleMetadata_TENANT.Enum(),
-		SyncPolicy:      userV1.RoleMetadata_AUTO.Enum(),
+		Scope:           identityV1.RoleMetadata_TENANT.Enum(),
+		SyncPolicy:      identityV1.RoleMetadata_AUTO.Enum(),
 	},
 }
 
 // DefaultUsers 系统初始化默认用户数据
-var DefaultUsers = []*userV1.User{
+var DefaultUsers = []*identityV1.User{
 	{
 		//Id:       trans.Ptr(uint32(1)),
 		TenantId: trans.Ptr(uint32(0)),
@@ -239,22 +239,22 @@ var DefaultUserCredentials = []*authenticationV1.UserCredential{
 }
 
 // DefaultUserRoles 系统初始化默认用户角色关系数据
-var DefaultUserRoles = []*userV1.UserRole{
+var DefaultUserRoles = []*identityV1.UserRole{
 	{
 		UserId:    trans.Ptr(uint32(1)),
 		TenantId:  trans.Ptr(uint32(0)),
 		RoleId:    trans.Ptr(uint32(1)),
 		IsPrimary: trans.Ptr(true),
-		Status:    userV1.UserRole_ACTIVE.Enum(),
+		Status:    identityV1.UserRole_ACTIVE.Enum(),
 	},
 }
 
 // DefaultMemberships 系统初始化默认用户成员关系数据
-var DefaultMemberships = []*userV1.Membership{
+var DefaultMemberships = []*identityV1.Membership{
 	{
 		UserId:    trans.Ptr(uint32(1)),
 		TenantId:  trans.Ptr(uint32(0)),
-		Status:    userV1.Membership_ACTIVE.Enum(),
+		Status:    identityV1.Membership_ACTIVE.Enum(),
 		IsPrimary: trans.Ptr(true),
 		RoleIds:   []uint32{1},
 	},

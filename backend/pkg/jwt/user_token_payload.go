@@ -11,7 +11,7 @@ import (
 	authn "github.com/tx7do/kratos-authn/engine"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
 
 const (
@@ -43,7 +43,7 @@ func NewUserTokenPayload(
 	tenantID uint32,
 	orgUnitID *uint32,
 	roleCodes []string,
-	dataScope *permissionV1.DataScope,
+	dataScope *identityV1.DataScope,
 	clientID *string,
 	deviceID *string,
 ) *authenticationV1.UserTokenPayload {
@@ -164,9 +164,9 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 		log.Errorf("GetString ClaimFieldDataScope failed: %v", err)
 	}
 	if dataScope != "" {
-		v, ok := permissionV1.DataScope_value[dataScope]
+		v, ok := identityV1.DataScope_value[dataScope]
 		if ok {
-			payload.DataScope = trans.Ptr(permissionV1.DataScope(v))
+			payload.DataScope = trans.Ptr(identityV1.DataScope(v))
 		}
 	}
 
@@ -215,9 +215,9 @@ func NewUserTokenPayloadWithJwtMapClaims(claims jwt.MapClaims) (*authenticationV
 
 	dataScope, _ := claims[ClaimFieldDataScope]
 	if dataScope != nil {
-		v, ok := permissionV1.DataScope_value[dataScope.(string)]
+		v, ok := identityV1.DataScope_value[dataScope.(string)]
 		if ok {
-			payload.DataScope = trans.Ptr(permissionV1.DataScope(v))
+			payload.DataScope = trans.Ptr(identityV1.DataScope(v))
 		}
 	}
 

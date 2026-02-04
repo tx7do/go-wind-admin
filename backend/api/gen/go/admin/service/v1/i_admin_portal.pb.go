@@ -8,7 +8,7 @@ package adminpb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
-	v1 "go-wind-admin/api/gen/go/permission/service/v1"
+	v1 "go-wind-admin/api/gen/go/resource/service/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -173,13 +173,13 @@ var File_admin_service_v1_i_admin_portal_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_admin_portal_proto_rawDesc = "" +
 	"\n" +
-	"%admin/service/v1/i_admin_portal.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a permission/service/v1/menu.proto\"O\n" +
-	"\x11ListRouteResponse\x12:\n" +
-	"\x05items\x18\x01 \x03(\v2$.permission.service.v1.MenuRouteItemR\x05items\"2\n" +
+	"%admin/service/v1/i_admin_portal.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1eresource/service/v1/menu.proto\"M\n" +
+	"\x11ListRouteResponse\x128\n" +
+	"\x05items\x18\x01 \x03(\v2\".resource.service.v1.MenuRouteItemR\x05items\"2\n" +
 	"\x1aListPermissionCodeResponse\x12\x14\n" +
-	"\x05codes\x18\x01 \x03(\tR\x05codes\"v\n" +
-	"\x16InitialContextResponse\x12:\n" +
-	"\x05menus\x18\x01 \x03(\v2$.permission.service.v1.MenuRouteItemR\x05menus\x12 \n" +
+	"\x05codes\x18\x01 \x03(\tR\x05codes\"t\n" +
+	"\x16InitialContextResponse\x128\n" +
+	"\x05menus\x18\x01 \x03(\v2\".resource.service.v1.MenuRouteItemR\x05menus\x12 \n" +
 	"\vpermissions\x18\x02 \x03(\tR\vpermissions2\xf1\x02\n" +
 	"\x12AdminPortalService\x12f\n" +
 	"\rGetNavigation\x12\x16.google.protobuf.Empty\x1a#.admin.service.v1.ListRouteResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/admin/v1/routes\x12y\n" +
@@ -204,12 +204,12 @@ var file_admin_service_v1_i_admin_portal_proto_goTypes = []any{
 	(*ListRouteResponse)(nil),          // 0: admin.service.v1.ListRouteResponse
 	(*ListPermissionCodeResponse)(nil), // 1: admin.service.v1.ListPermissionCodeResponse
 	(*InitialContextResponse)(nil),     // 2: admin.service.v1.InitialContextResponse
-	(*v1.MenuRouteItem)(nil),           // 3: permission.service.v1.MenuRouteItem
+	(*v1.MenuRouteItem)(nil),           // 3: resource.service.v1.MenuRouteItem
 	(*emptypb.Empty)(nil),              // 4: google.protobuf.Empty
 }
 var file_admin_service_v1_i_admin_portal_proto_depIdxs = []int32{
-	3, // 0: admin.service.v1.ListRouteResponse.items:type_name -> permission.service.v1.MenuRouteItem
-	3, // 1: admin.service.v1.InitialContextResponse.menus:type_name -> permission.service.v1.MenuRouteItem
+	3, // 0: admin.service.v1.ListRouteResponse.items:type_name -> resource.service.v1.MenuRouteItem
+	3, // 1: admin.service.v1.InitialContextResponse.menus:type_name -> resource.service.v1.MenuRouteItem
 	4, // 2: admin.service.v1.AdminPortalService.GetNavigation:input_type -> google.protobuf.Empty
 	4, // 3: admin.service.v1.AdminPortalService.GetMyPermissionCode:input_type -> google.protobuf.Empty
 	4, // 4: admin.service.v1.AdminPortalService.GetInitialContext:input_type -> google.protobuf.Empty

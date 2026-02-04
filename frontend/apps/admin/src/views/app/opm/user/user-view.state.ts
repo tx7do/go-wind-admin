@@ -3,9 +3,9 @@ import { useUserStore } from '@vben/stores';
 import { defineStore } from 'pinia';
 
 import {
-  type userservicev1_ListOrgUnitResponse as ListOrgUnitResponse,
-  type userservicev1_ListTenantResponse as ListTenantResponse,
-  type userservicev1_ListUserResponse as ListUserResponse,
+  type identityservicev1_ListOrgUnitResponse as ListOrgUnitResponse,
+  type identityservicev1_ListTenantResponse as ListTenantResponse,
+  type identityservicev1_ListUserResponse as ListUserResponse,
 } from '#/generated/api/admin/service/v1';
 import { useOrgUnitStore, useTenantStore, useUserListStore } from '#/stores';
 

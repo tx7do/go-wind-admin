@@ -27,65 +27,6 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// 数据权限范围
-type DataScope int32
-
-const (
-	DataScope_DATA_SCOPE_UNSPECIFIED DataScope = 0
-	DataScope_ALL                    DataScope = 1 // 全部数据：可跨租户或租户内所有 Unit (取决于 tenant_id)
-	DataScope_SELF                   DataScope = 2 // 仅限本人：只能看到 owner_id 等于自己的数据
-	DataScope_UNIT_ONLY              DataScope = 3 // 仅限当前所属 OrgUnit：不含子节点
-	DataScope_UNIT_AND_CHILD         DataScope = 4 // 当前所属 OrgUnit 及所有递归子节点
-	DataScope_SELECTED_UNITS         DataScope = 5 // 自定义组织单元列表
-)
-
-// Enum value maps for DataScope.
-var (
-	DataScope_name = map[int32]string{
-		0: "DATA_SCOPE_UNSPECIFIED",
-		1: "ALL",
-		2: "SELF",
-		3: "UNIT_ONLY",
-		4: "UNIT_AND_CHILD",
-		5: "SELECTED_UNITS",
-	}
-	DataScope_value = map[string]int32{
-		"DATA_SCOPE_UNSPECIFIED": 0,
-		"ALL":                    1,
-		"SELF":                   2,
-		"UNIT_ONLY":              3,
-		"UNIT_AND_CHILD":         4,
-		"SELECTED_UNITS":         5,
-	}
-)
-
-func (x DataScope) Enum() *DataScope {
-	p := new(DataScope)
-	*p = x
-	return p
-}
-
-func (x DataScope) String() string {
-	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
-}
-
-func (DataScope) Descriptor() protoreflect.EnumDescriptor {
-	return file_permission_service_v1_permission_proto_enumTypes[0].Descriptor()
-}
-
-func (DataScope) Type() protoreflect.EnumType {
-	return &file_permission_service_v1_permission_proto_enumTypes[0]
-}
-
-func (x DataScope) Number() protoreflect.EnumNumber {
-	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use DataScope.Descriptor instead.
-func (DataScope) EnumDescriptor() ([]byte, []int) {
-	return file_permission_service_v1_permission_proto_rawDescGZIP(), []int{0}
-}
-
 // 权限点状态
 type Permission_Status int32
 
@@ -117,11 +58,11 @@ func (x Permission_Status) String() string {
 }
 
 func (Permission_Status) Descriptor() protoreflect.EnumDescriptor {
-	return file_permission_service_v1_permission_proto_enumTypes[1].Descriptor()
+	return file_permission_service_v1_permission_proto_enumTypes[0].Descriptor()
 }
 
 func (Permission_Status) Type() protoreflect.EnumType {
-	return &file_permission_service_v1_permission_proto_enumTypes[1]
+	return &file_permission_service_v1_permission_proto_enumTypes[0]
 }
 
 func (x Permission_Status) Number() protoreflect.EnumNumber {
@@ -766,14 +707,7 @@ const file_permission_service_v1_permission_proto_rawDesc = "" +
 	"\bgroup_id\x18\x03 \x01(\rB\x14\xbaG\x11\x18\x01\x92\x02\f权限分组H\x00R\agroupIdB\v\n" +
 	"\tdelete_by\"/\n" +
 	"\x17CountPermissionResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count*q\n" +
-	"\tDataScope\x12\x1a\n" +
-	"\x16DATA_SCOPE_UNSPECIFIED\x10\x00\x12\a\n" +
-	"\x03ALL\x10\x01\x12\b\n" +
-	"\x04SELF\x10\x02\x12\r\n" +
-	"\tUNIT_ONLY\x10\x03\x12\x12\n" +
-	"\x0eUNIT_AND_CHILD\x10\x04\x12\x12\n" +
-	"\x0eSELECTED_UNITS\x10\x052\xd7\x04\n" +
+	"\x05count\x18\x01 \x01(\x04R\x05count2\xd7\x04\n" +
 	"\x11PermissionService\x12R\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a-.permission.service.v1.ListPermissionResponse\"\x00\x12T\n" +
 	"\x05Count\x12\x19.pagination.PagingRequest\x1a..permission.service.v1.CountPermissionResponse\"\x00\x12W\n" +
@@ -796,47 +730,46 @@ func file_permission_service_v1_permission_proto_rawDescGZIP() []byte {
 	return file_permission_service_v1_permission_proto_rawDescData
 }
 
-var file_permission_service_v1_permission_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_permission_service_v1_permission_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_permission_service_v1_permission_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_permission_service_v1_permission_proto_goTypes = []any{
-	(DataScope)(0),                  // 0: permission.service.v1.DataScope
-	(Permission_Status)(0),          // 1: permission.service.v1.Permission.Status
-	(*Permission)(nil),              // 2: permission.service.v1.Permission
-	(*ListPermissionResponse)(nil),  // 3: permission.service.v1.ListPermissionResponse
-	(*GetPermissionRequest)(nil),    // 4: permission.service.v1.GetPermissionRequest
-	(*CreatePermissionRequest)(nil), // 5: permission.service.v1.CreatePermissionRequest
-	(*UpdatePermissionRequest)(nil), // 6: permission.service.v1.UpdatePermissionRequest
-	(*DeletePermissionRequest)(nil), // 7: permission.service.v1.DeletePermissionRequest
-	(*CountPermissionResponse)(nil), // 8: permission.service.v1.CountPermissionResponse
-	(*timestamppb.Timestamp)(nil),   // 9: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),   // 10: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),        // 11: pagination.PagingRequest
-	(*emptypb.Empty)(nil),           // 12: google.protobuf.Empty
+	(Permission_Status)(0),          // 0: permission.service.v1.Permission.Status
+	(*Permission)(nil),              // 1: permission.service.v1.Permission
+	(*ListPermissionResponse)(nil),  // 2: permission.service.v1.ListPermissionResponse
+	(*GetPermissionRequest)(nil),    // 3: permission.service.v1.GetPermissionRequest
+	(*CreatePermissionRequest)(nil), // 4: permission.service.v1.CreatePermissionRequest
+	(*UpdatePermissionRequest)(nil), // 5: permission.service.v1.UpdatePermissionRequest
+	(*DeletePermissionRequest)(nil), // 6: permission.service.v1.DeletePermissionRequest
+	(*CountPermissionResponse)(nil), // 7: permission.service.v1.CountPermissionResponse
+	(*timestamppb.Timestamp)(nil),   // 8: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),   // 9: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),        // 10: pagination.PagingRequest
+	(*emptypb.Empty)(nil),           // 11: google.protobuf.Empty
 }
 var file_permission_service_v1_permission_proto_depIdxs = []int32{
-	1,  // 0: permission.service.v1.Permission.status:type_name -> permission.service.v1.Permission.Status
-	9,  // 1: permission.service.v1.Permission.created_at:type_name -> google.protobuf.Timestamp
-	9,  // 2: permission.service.v1.Permission.updated_at:type_name -> google.protobuf.Timestamp
-	9,  // 3: permission.service.v1.Permission.deleted_at:type_name -> google.protobuf.Timestamp
-	2,  // 4: permission.service.v1.ListPermissionResponse.items:type_name -> permission.service.v1.Permission
-	10, // 5: permission.service.v1.GetPermissionRequest.view_mask:type_name -> google.protobuf.FieldMask
-	2,  // 6: permission.service.v1.CreatePermissionRequest.data:type_name -> permission.service.v1.Permission
-	2,  // 7: permission.service.v1.UpdatePermissionRequest.data:type_name -> permission.service.v1.Permission
-	10, // 8: permission.service.v1.UpdatePermissionRequest.update_mask:type_name -> google.protobuf.FieldMask
-	11, // 9: permission.service.v1.PermissionService.List:input_type -> pagination.PagingRequest
-	11, // 10: permission.service.v1.PermissionService.Count:input_type -> pagination.PagingRequest
-	4,  // 11: permission.service.v1.PermissionService.Get:input_type -> permission.service.v1.GetPermissionRequest
-	5,  // 12: permission.service.v1.PermissionService.Create:input_type -> permission.service.v1.CreatePermissionRequest
-	6,  // 13: permission.service.v1.PermissionService.Update:input_type -> permission.service.v1.UpdatePermissionRequest
-	7,  // 14: permission.service.v1.PermissionService.Delete:input_type -> permission.service.v1.DeletePermissionRequest
-	12, // 15: permission.service.v1.PermissionService.SyncPermissions:input_type -> google.protobuf.Empty
-	3,  // 16: permission.service.v1.PermissionService.List:output_type -> permission.service.v1.ListPermissionResponse
-	8,  // 17: permission.service.v1.PermissionService.Count:output_type -> permission.service.v1.CountPermissionResponse
-	2,  // 18: permission.service.v1.PermissionService.Get:output_type -> permission.service.v1.Permission
-	12, // 19: permission.service.v1.PermissionService.Create:output_type -> google.protobuf.Empty
-	12, // 20: permission.service.v1.PermissionService.Update:output_type -> google.protobuf.Empty
-	12, // 21: permission.service.v1.PermissionService.Delete:output_type -> google.protobuf.Empty
-	12, // 22: permission.service.v1.PermissionService.SyncPermissions:output_type -> google.protobuf.Empty
+	0,  // 0: permission.service.v1.Permission.status:type_name -> permission.service.v1.Permission.Status
+	8,  // 1: permission.service.v1.Permission.created_at:type_name -> google.protobuf.Timestamp
+	8,  // 2: permission.service.v1.Permission.updated_at:type_name -> google.protobuf.Timestamp
+	8,  // 3: permission.service.v1.Permission.deleted_at:type_name -> google.protobuf.Timestamp
+	1,  // 4: permission.service.v1.ListPermissionResponse.items:type_name -> permission.service.v1.Permission
+	9,  // 5: permission.service.v1.GetPermissionRequest.view_mask:type_name -> google.protobuf.FieldMask
+	1,  // 6: permission.service.v1.CreatePermissionRequest.data:type_name -> permission.service.v1.Permission
+	1,  // 7: permission.service.v1.UpdatePermissionRequest.data:type_name -> permission.service.v1.Permission
+	9,  // 8: permission.service.v1.UpdatePermissionRequest.update_mask:type_name -> google.protobuf.FieldMask
+	10, // 9: permission.service.v1.PermissionService.List:input_type -> pagination.PagingRequest
+	10, // 10: permission.service.v1.PermissionService.Count:input_type -> pagination.PagingRequest
+	3,  // 11: permission.service.v1.PermissionService.Get:input_type -> permission.service.v1.GetPermissionRequest
+	4,  // 12: permission.service.v1.PermissionService.Create:input_type -> permission.service.v1.CreatePermissionRequest
+	5,  // 13: permission.service.v1.PermissionService.Update:input_type -> permission.service.v1.UpdatePermissionRequest
+	6,  // 14: permission.service.v1.PermissionService.Delete:input_type -> permission.service.v1.DeletePermissionRequest
+	11, // 15: permission.service.v1.PermissionService.SyncPermissions:input_type -> google.protobuf.Empty
+	2,  // 16: permission.service.v1.PermissionService.List:output_type -> permission.service.v1.ListPermissionResponse
+	7,  // 17: permission.service.v1.PermissionService.Count:output_type -> permission.service.v1.CountPermissionResponse
+	1,  // 18: permission.service.v1.PermissionService.Get:output_type -> permission.service.v1.Permission
+	11, // 19: permission.service.v1.PermissionService.Create:output_type -> google.protobuf.Empty
+	11, // 20: permission.service.v1.PermissionService.Update:output_type -> google.protobuf.Empty
+	11, // 21: permission.service.v1.PermissionService.Delete:output_type -> google.protobuf.Empty
+	11, // 22: permission.service.v1.PermissionService.SyncPermissions:output_type -> google.protobuf.Empty
 	16, // [16:23] is the sub-list for method output_type
 	9,  // [9:16] is the sub-list for method input_type
 	9,  // [9:9] is the sub-list for extension type_name
@@ -865,7 +798,7 @@ func file_permission_service_v1_permission_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_permission_service_v1_permission_proto_rawDesc), len(file_permission_service_v1_permission_proto_rawDesc)),
-			NumEnums:      2,
+			NumEnums:      1,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,

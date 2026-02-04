@@ -53,6 +53,9 @@ managed:
     - file_option: go_package
       path: user_profile/service/v1
       value: go-wind-admin/api/gen/go/user_profile/service/v1;userprofilepb
+    - file_option: go_package
+      path: resource/service/v1
+      value: go-wind-admin/api/gen/go/resource/service/v1;resourcepb
 
 plugins:
   # generate go code

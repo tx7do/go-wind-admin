@@ -8,7 +8,7 @@ import (
 	"entgo.io/ent/schema/index"
 	"github.com/tx7do/go-crud/entgo/mixin"
 
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+	resourceV1 "go-wind-admin/api/gen/go/resource/service/v1"
 )
 
 // Menu holds the schema definition for the Menu entity.
@@ -45,7 +45,7 @@ func (Menu) Fields() []ent.Field {
 			Nillable(),
 
 		field.String("path").
-			Comment("路径,当其类型为'按钮'的时候对应的数据操作名,例如:/user.service.v1.UserService/Login").
+			Comment("路径,当其类型为'按钮'的时候对应的数据操作名,例如:/identity.service.v1.UserService/Login").
 			Default("").
 			Optional().
 			Nillable(),
@@ -71,8 +71,8 @@ func (Menu) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.JSON("meta", &permissionV1.MenuMeta{}).
-			Comment("前端页面组件").
+		field.JSON("meta", &resourceV1.MenuMeta{}).
+			Comment("路由元信息").
 			Optional().
 			Annotations(
 				entsql.Annotation{ /* 选填 */ },

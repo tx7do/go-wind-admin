@@ -4,7 +4,7 @@ package runtime
 
 import (
 	"context"
-	userpb "go-wind-admin/api/gen/go/user/service/v1"
+	servicev1 "go-wind-admin/api/gen/go/identity/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/dataaccessauditlog"
@@ -927,7 +927,7 @@ func init() {
 	// rolemetadataDescCustomOverrides is the schema descriptor for custom_overrides field.
 	rolemetadataDescCustomOverrides := rolemetadataFields[8].Descriptor()
 	// rolemetadata.DefaultCustomOverrides holds the default value on creation for the custom_overrides field.
-	rolemetadata.DefaultCustomOverrides = rolemetadataDescCustomOverrides.Default.(*userpb.RoleOverride)
+	rolemetadata.DefaultCustomOverrides = rolemetadataDescCustomOverrides.Default.(*servicev1.RoleOverride)
 	// rolemetadataDescID is the schema descriptor for id field.
 	rolemetadataDescID := rolemetadataMixinFields0[0].Descriptor()
 	// rolemetadata.IDValidator is a validator for the "id" field. It is called by the builders before save.

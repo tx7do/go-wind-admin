@@ -9,12 +9,12 @@ import "redact/v3/redact.proto";
 
 import "pagination/v1/pagination.proto";
 
-import "user/service/v1/user.proto";
+import "identity/service/v1/user.proto";
 
 // 用户管理服务
 service UserService {
   // 获取用户列表
-  rpc List (pagination.PagingRequest) returns (user.service.v1.ListUserResponse) {
+  rpc List (pagination.PagingRequest) returns (identity.service.v1.ListUserResponse) {
     option (redact.v3.internal_method) = true;
     option (google.api.http) = {
       get: "/admin/v1/users"
@@ -22,7 +22,7 @@ service UserService {
   }
 
   // 获取用户数据
-  rpc Get (user.service.v1.GetUserRequest) returns (user.service.v1.User) {
+  rpc Get (identity.service.v1.GetUserRequest) returns (identity.service.v1.User) {
     option (redact.v3.internal_method) = true;
     option (google.api.http) = {
       get: "/admin/v1/users/{id}"
@@ -33,7 +33,7 @@ service UserService {
   }
 
   // 创建用户
-  rpc Create (user.service.v1.CreateUserRequest) returns (google.protobuf.Empty) {
+  rpc Create (identity.service.v1.CreateUserRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/admin/v1/users"
       body: "*"
@@ -41,7 +41,7 @@ service UserService {
   }
 
   // 更新用户
-  rpc Update (user.service.v1.UpdateUserRequest) returns (google.protobuf.Empty) {
+  rpc Update (identity.service.v1.UpdateUserRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/admin/v1/users/{id}"
       body: "*"
@@ -49,7 +49,7 @@ service UserService {
   }
 
   // 删除用户
-  rpc Delete (user.service.v1.DeleteUserRequest) returns (google.protobuf.Empty) {
+  rpc Delete (identity.service.v1.DeleteUserRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/admin/v1/users/{id}"
       additional_bindings {
@@ -59,14 +59,14 @@ service UserService {
   }
 
   // 用户是否存在
-  rpc UserExists (user.service.v1.UserExistsRequest) returns (user.service.v1.UserExistsResponse) {
+  rpc UserExists (identity.service.v1.UserExistsRequest) returns (identity.service.v1.UserExistsResponse) {
     option (google.api.http) = {
       get: "/admin/v1/users:exists"
     };
   }
 
   // 修改用户密码
-  rpc EditUserPassword(user.service.v1.EditUserPasswordRequest) returns (google.protobuf.Empty) {
+  rpc EditUserPassword(identity.service.v1.EditUserPasswordRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/admin/v1/users/{user_id}/password"
       body: "*"

@@ -7,8 +7,8 @@ import { defineStore } from 'pinia';
 
 import {
   createMenuServiceClient,
-  type permissionservicev1_Menu as Menu,
-  type permissionservicev1_Menu_Type as Menu_Type,
+  type resourceservicev1_Menu as Menu,
+  type resourceservicev1_Menu_Type as Menu_Type,
 } from '#/generated/api/admin/service/v1';
 import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';

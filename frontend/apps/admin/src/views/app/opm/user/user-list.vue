@@ -10,7 +10,7 @@ import { isEqual } from '@vben/utils';
 import { notification } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type userservicev1_User as User } from '#/generated/api/admin/service/v1';
+import { type identityservicev1_User as User } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
 import { router } from '#/router';
 import {

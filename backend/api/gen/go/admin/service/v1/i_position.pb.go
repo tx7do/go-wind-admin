@@ -9,7 +9,7 @@ package adminpb
 import (
 	_ "github.com/google/gnostic/openapiv3"
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	v11 "go-wind-admin/api/gen/go/user/service/v1"
+	v11 "go-wind-admin/api/gen/go/identity/service/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -29,33 +29,33 @@ var File_admin_service_v1_i_position_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_position_proto_rawDesc = "" +
 	"\n" +
-	"!admin/service/v1/i_position.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1euser/service/v1/position.proto2\xa6\x04\n" +
-	"\x0fPositionService\x12e\n" +
-	"\x04List\x12\x19.pagination.PagingRequest\x1a%.user.service.v1.ListPositionResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/admin/v1/positions\x12g\n" +
-	"\x03Get\x12#.user.service.v1.GetPositionRequest\x1a\x19.user.service.v1.Position\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/admin/v1/positions/{id}\x12h\n" +
-	"\x06Create\x12&.user.service.v1.CreatePositionRequest\x1a\x16.google.protobuf.Empty\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/admin/v1/positions\x12m\n" +
-	"\x06Update\x12&.user.service.v1.UpdatePositionRequest\x1a\x16.google.protobuf.Empty\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\x1a\x18/admin/v1/positions/{id}\x12j\n" +
-	"\x06Delete\x12&.user.service.v1.DeletePositionRequest\x1a\x16.google.protobuf.Empty\" \x82\xd3\xe4\x93\x02\x1a*\x18/admin/v1/positions/{id}B\xbb\x01\n" +
+	"!admin/service/v1/i_position.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1epagination/v1/pagination.proto\x1a\"identity/service/v1/position.proto2\xbe\x04\n" +
+	"\x0fPositionService\x12i\n" +
+	"\x04List\x12\x19.pagination.PagingRequest\x1a).identity.service.v1.ListPositionResponse\"\x1b\x82\xd3\xe4\x93\x02\x15\x12\x13/admin/v1/positions\x12o\n" +
+	"\x03Get\x12'.identity.service.v1.GetPositionRequest\x1a\x1d.identity.service.v1.Position\" \x82\xd3\xe4\x93\x02\x1a\x12\x18/admin/v1/positions/{id}\x12l\n" +
+	"\x06Create\x12*.identity.service.v1.CreatePositionRequest\x1a\x16.google.protobuf.Empty\"\x1e\x82\xd3\xe4\x93\x02\x18:\x01*\"\x13/admin/v1/positions\x12q\n" +
+	"\x06Update\x12*.identity.service.v1.UpdatePositionRequest\x1a\x16.google.protobuf.Empty\"#\x82\xd3\xe4\x93\x02\x1d:\x01*\x1a\x18/admin/v1/positions/{id}\x12n\n" +
+	"\x06Delete\x12*.identity.service.v1.DeletePositionRequest\x1a\x16.google.protobuf.Empty\" \x82\xd3\xe4\x93\x02\x1a*\x18/admin/v1/positions/{id}B\xbb\x01\n" +
 	"\x14com.admin.service.v1B\x0eIPositionProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_position_proto_goTypes = []any{
 	(*v1.PagingRequest)(nil),          // 0: pagination.PagingRequest
-	(*v11.GetPositionRequest)(nil),    // 1: user.service.v1.GetPositionRequest
-	(*v11.CreatePositionRequest)(nil), // 2: user.service.v1.CreatePositionRequest
-	(*v11.UpdatePositionRequest)(nil), // 3: user.service.v1.UpdatePositionRequest
-	(*v11.DeletePositionRequest)(nil), // 4: user.service.v1.DeletePositionRequest
-	(*v11.ListPositionResponse)(nil),  // 5: user.service.v1.ListPositionResponse
-	(*v11.Position)(nil),              // 6: user.service.v1.Position
+	(*v11.GetPositionRequest)(nil),    // 1: identity.service.v1.GetPositionRequest
+	(*v11.CreatePositionRequest)(nil), // 2: identity.service.v1.CreatePositionRequest
+	(*v11.UpdatePositionRequest)(nil), // 3: identity.service.v1.UpdatePositionRequest
+	(*v11.DeletePositionRequest)(nil), // 4: identity.service.v1.DeletePositionRequest
+	(*v11.ListPositionResponse)(nil),  // 5: identity.service.v1.ListPositionResponse
+	(*v11.Position)(nil),              // 6: identity.service.v1.Position
 	(*emptypb.Empty)(nil),             // 7: google.protobuf.Empty
 }
 var file_admin_service_v1_i_position_proto_depIdxs = []int32{
 	0, // 0: admin.service.v1.PositionService.List:input_type -> pagination.PagingRequest
-	1, // 1: admin.service.v1.PositionService.Get:input_type -> user.service.v1.GetPositionRequest
-	2, // 2: admin.service.v1.PositionService.Create:input_type -> user.service.v1.CreatePositionRequest
-	3, // 3: admin.service.v1.PositionService.Update:input_type -> user.service.v1.UpdatePositionRequest
-	4, // 4: admin.service.v1.PositionService.Delete:input_type -> user.service.v1.DeletePositionRequest
-	5, // 5: admin.service.v1.PositionService.List:output_type -> user.service.v1.ListPositionResponse
-	6, // 6: admin.service.v1.PositionService.Get:output_type -> user.service.v1.Position
+	1, // 1: admin.service.v1.PositionService.Get:input_type -> identity.service.v1.GetPositionRequest
+	2, // 2: admin.service.v1.PositionService.Create:input_type -> identity.service.v1.CreatePositionRequest
+	3, // 3: admin.service.v1.PositionService.Update:input_type -> identity.service.v1.UpdatePositionRequest
+	4, // 4: admin.service.v1.PositionService.Delete:input_type -> identity.service.v1.DeletePositionRequest
+	5, // 5: admin.service.v1.PositionService.List:output_type -> identity.service.v1.ListPositionResponse
+	6, // 6: admin.service.v1.PositionService.Get:output_type -> identity.service.v1.Position
 	7, // 7: admin.service.v1.PositionService.Create:output_type -> google.protobuf.Empty
 	7, // 8: admin.service.v1.PositionService.Update:output_type -> google.protobuf.Empty
 	7, // 9: admin.service.v1.PositionService.Delete:output_type -> google.protobuf.Empty

@@ -7,7 +7,7 @@ import (
 	"github.com/jinzhu/inflection"
 	"github.com/tx7do/go-utils/trans"
 
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+	resourceV1 "go-wind-admin/api/gen/go/resource/service/v1"
 )
 
 type MenuPermissionConverter struct {
@@ -18,7 +18,7 @@ func NewMenuPermissionConverter() *MenuPermissionConverter {
 }
 
 // ConvertCode 将菜单的完整路径和类型转换为权限代码
-func (c *MenuPermissionConverter) ConvertCode(path, title string, typ permissionV1.Menu_Type) string {
+func (c *MenuPermissionConverter) ConvertCode(path, title string, typ resourceV1.Menu_Type) string {
 	path = strings.TrimSpace(path)
 	if path == "" {
 		return ""
@@ -72,9 +72,9 @@ func (c *MenuPermissionConverter) ConvertCode(path, title string, typ permission
 // 2. 用递归 + memoization 计算每个节点的完整 path（去除两端斜杠并用 '/' 连接）。
 // 3. 若父节点 id 为 0 或父节点不存在，则视为根路径（仅使用自身 path 部分）。
 // 4. 若出现自引用或循环，函数会将该节点视为只使用自身 path。
-func (c *MenuPermissionConverter) ComposeMenuPaths(menus []*permissionV1.Menu) {
+func (c *MenuPermissionConverter) ComposeMenuPaths(menus []*resourceV1.Menu) {
 	// 建立 id -> menu 映射
-	m := make(map[uint32]*permissionV1.Menu, len(menus))
+	m := make(map[uint32]*resourceV1.Menu, len(menus))
 	for _, mi := range menus {
 		m[mi.GetId()] = mi
 	}
@@ -140,18 +140,18 @@ func (c *MenuPermissionConverter) ComposeMenuPaths(menus []*permissionV1.Menu) {
 }
 
 // typeToAction 将 Menu_Type 转换为 action 字符串
-func (c *MenuPermissionConverter) typeToAction(title string, typ permissionV1.Menu_Type) string {
+func (c *MenuPermissionConverter) typeToAction(title string, typ resourceV1.Menu_Type) string {
 
 	switch typ {
-	case permissionV1.Menu_CATALOG:
+	case resourceV1.Menu_CATALOG:
 		return "dir"
-	case permissionV1.Menu_MENU:
+	case resourceV1.Menu_MENU:
 		return "view"
-	case permissionV1.Menu_BUTTON:
+	case resourceV1.Menu_BUTTON:
 		return c.buttonAction(title)
-	case permissionV1.Menu_EMBEDDED:
+	case resourceV1.Menu_EMBEDDED:
 		return "view"
-	case permissionV1.Menu_LINK:
+	case resourceV1.Menu_LINK:
 		return "jump"
 	default:
 		return ""

@@ -5,7 +5,7 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
+	resourcepb "go-wind-admin/api/gen/go/resource/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"strings"
 	"time"
@@ -40,7 +40,7 @@ type Menu struct {
 	Status *menu.Status `json:"status,omitempty"`
 	// 菜单类型 CATALOG: 目录 MENU: 菜单 BUTTON: 按钮 EMBEDDED: 内嵌 LINK: 外链
 	Type *menu.Type `json:"type,omitempty"`
-	// 路径,当其类型为'按钮'的时候对应的数据操作名,例如:/user.service.v1.UserService/Login
+	// 路径,当其类型为'按钮'的时候对应的数据操作名,例如:/identity.service.v1.UserService/Login
 	Path *string `json:"path,omitempty"`
 	// 重定向地址
 	Redirect *string `json:"redirect,omitempty"`
@@ -50,8 +50,8 @@ type Menu struct {
 	Name *string `json:"name,omitempty"`
 	// 前端页面组件
 	Component *string `json:"component,omitempty"`
-	// 前端页面组件
-	Meta *permissionpb.MenuMeta `json:"meta,omitempty"`
+	// 路由元信息
+	Meta *resourcepb.MenuMeta `json:"meta,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the MenuQuery when eager-loading is set.
 	Edges        MenuEdges `json:"edges"`

@@ -13,23 +13,23 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/userorgunit"
 
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
 
 type UserOrgUnitRepo struct {
 	log *log.Helper
 
 	entClient       *entCrud.EntClient[*ent.Client]
-	statusConverter *mapper.EnumTypeConverter[userV1.UserOrgUnit_Status, userorgunit.Status]
+	statusConverter *mapper.EnumTypeConverter[identityV1.UserOrgUnit_Status, userorgunit.Status]
 }
 
 func NewUserOrgUnitRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *UserOrgUnitRepo {
 	return &UserOrgUnitRepo{
 		log:       ctx.NewLoggerHelper("user-org-unit/repo/admin-service"),
 		entClient: entClient,
-		statusConverter: mapper.NewEnumTypeConverter[userV1.UserOrgUnit_Status, userorgunit.Status](
-			userV1.UserOrgUnit_Status_name,
-			userV1.UserOrgUnit_Status_value,
+		statusConverter: mapper.NewEnumTypeConverter[identityV1.UserOrgUnit_Status, userorgunit.Status](
+			identityV1.UserOrgUnit_Status_name,
+			identityV1.UserOrgUnit_Status_value,
 		),
 	}
 }
@@ -46,7 +46,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByUserID(ctx context.Context, tx *ent.Tx
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old user orgUnits failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old user orgUnits failed")
+		return identityV1.ErrorInternalServerError("delete old user orgUnits failed")
 	}
 	return nil
 }
@@ -63,7 +63,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByUserIDs(ctx context.Context, tx *ent.T
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old user orgUnits by user ids failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old user orgUnits by user ids failed")
+		return identityV1.ErrorInternalServerError("delete old user orgUnits by user ids failed")
 	}
 	return nil
 }
@@ -80,7 +80,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByOrgUnitID(ctx context.Context, tx *ent
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old user orgUnits by orgUnit id failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old user orgUnits by orgUnit id failed")
+		return identityV1.ErrorInternalServerError("delete old user orgUnits by orgUnit id failed")
 	}
 	return nil
 }
@@ -97,7 +97,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByOrgUnitIDs(ctx context.Context, tx *en
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old user orgUnits by orgUnit ids failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old user orgUnits by orgUnit ids failed")
+		return identityV1.ErrorInternalServerError("delete old user orgUnits by orgUnit ids failed")
 	}
 	return nil
 }
@@ -118,7 +118,7 @@ func (r *UserOrgUnitRepo) RemoveOrgUnitsFromUser(ctx context.Context, userID uin
 		Exec(ctx)
 	if err != nil {
 		r.log.Errorf("remove user orgUnits failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("remove user orgUnits failed")
+		return identityV1.ErrorInternalServerError("remove user orgUnits failed")
 	}
 	return nil
 }
@@ -127,7 +127,7 @@ func (r *UserOrgUnitRepo) RemoveOrgUnitsFromUser(ctx context.Context, userID uin
 func (r *UserOrgUnitRepo) AssignUserOrgUnit(
 	ctx context.Context,
 	tx *ent.Tx,
-	data *userV1.UserOrgUnit,
+	data *identityV1.UserOrgUnit,
 ) error {
 	if data == nil {
 		return nil
@@ -152,7 +152,7 @@ func (r *UserOrgUnitRepo) AssignUserOrgUnit(
 		Save(ctx)
 	if err != nil {
 		r.log.Errorf("assign orgUnit to user failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("assign orgUnit to user failed")
+		return identityV1.ErrorInternalServerError("assign orgUnit to user failed")
 	}
 	return nil
 }
@@ -161,7 +161,7 @@ func (r *UserOrgUnitRepo) AssignUserOrgUnit(
 func (r *UserOrgUnitRepo) AssignUserOrgUnits(
 	ctx context.Context, tx *ent.Tx,
 	userID uint32,
-	datas []*userV1.UserOrgUnit,
+	datas []*identityV1.UserOrgUnit,
 ) error {
 	if len(datas) == 0 || userID == 0 {
 		return nil
@@ -171,7 +171,7 @@ func (r *UserOrgUnitRepo) AssignUserOrgUnits(
 
 	// 删除该角色的所有旧关联
 	if err = r.CleanRelationsByUserID(ctx, tx, userID); err != nil {
-		return userV1.ErrorInternalServerError("clean old user orgUnits failed")
+		return identityV1.ErrorInternalServerError("clean old user orgUnits failed")
 	}
 
 	now := time.Now()
@@ -200,7 +200,7 @@ func (r *UserOrgUnitRepo) AssignUserOrgUnits(
 	_, err = tx.UserOrgUnit.CreateBulk(userOrgUnitCreates...).Save(ctx)
 	if err != nil {
 		r.log.Errorf("assign orgUnit to user failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("assign orgUnit to user failed")
+		return identityV1.ErrorInternalServerError("assign orgUnit to user failed")
 	}
 
 	return nil
@@ -232,7 +232,7 @@ func (r *UserOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, userID uint32, exc
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query orgUnit ids by user id failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query orgUnit ids by user id failed")
+		return nil, identityV1.ErrorInternalServerError("query orgUnit ids by user id failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {
@@ -267,7 +267,7 @@ func (r *UserOrgUnitRepo) ListUserIDs(ctx context.Context, orgUnitID uint32, exc
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query user ids by orgUnit id failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query user ids by orgUnit id failed")
+		return nil, identityV1.ErrorInternalServerError("query user ids by orgUnit id failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {
@@ -302,7 +302,7 @@ func (r *UserOrgUnitRepo) ListUserIDsByOrgUnitIDs(ctx context.Context, orgUnitID
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query user ids by orgUnit ids failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query user ids by orgUnit ids failed")
+		return nil, identityV1.ErrorInternalServerError("query user ids by orgUnit ids failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {

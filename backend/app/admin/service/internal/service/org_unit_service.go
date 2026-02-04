@@ -13,7 +13,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 
 	"go-wind-admin/pkg/middleware/auth"
 )
@@ -41,8 +41,8 @@ func NewOrgUnitService(
 
 // extractRelationIDs 提取关联数据ID
 func (s *OrgUnitService) extractRelationIDs(
-	orgUnits []*userV1.OrgUnit,
-	userSet aggregator.ResourceMap[uint32, *userV1.User],
+	orgUnits []*identityV1.OrgUnit,
+	userSet aggregator.ResourceMap[uint32, *identityV1.User],
 ) {
 	for _, ou := range orgUnits {
 		if ou == nil {
@@ -64,7 +64,7 @@ func (s *OrgUnitService) extractRelationIDs(
 // fetchRelationInfo 获取关联数据
 func (s *OrgUnitService) fetchRelationInfo(
 	ctx context.Context,
-	userSet aggregator.ResourceMap[uint32, *userV1.User],
+	userSet aggregator.ResourceMap[uint32, *identityV1.User],
 ) error {
 	if len(userSet) == 0 {
 		return nil
@@ -89,17 +89,17 @@ func (s *OrgUnitService) fetchRelationInfo(
 
 // bindRelations 绑定关联数据
 func (s *OrgUnitService) bindRelations(
-	orgUnits []*userV1.OrgUnit,
-	userSet aggregator.ResourceMap[uint32, *userV1.User],
+	orgUnits []*identityV1.OrgUnit,
+	userSet aggregator.ResourceMap[uint32, *identityV1.User],
 ) {
-	childrenFunc := func(ou *userV1.OrgUnit) []*userV1.OrgUnit { return ou.GetChildren() }
+	childrenFunc := func(ou *identityV1.OrgUnit) []*identityV1.OrgUnit { return ou.GetChildren() }
 
 	// 回填 LeaderName
 	aggregator.PopulateTree(
 		orgUnits,
 		userSet,
-		func(ou *userV1.OrgUnit) uint32 { return ou.GetLeaderId() },
-		func(ou *userV1.OrgUnit, user *userV1.User) {
+		func(ou *identityV1.OrgUnit) uint32 { return ou.GetLeaderId() },
+		func(ou *identityV1.OrgUnit, user *identityV1.User) {
 			ou.LeaderName = trans.Ptr(user.GetUsername())
 		},
 		childrenFunc,
@@ -109,8 +109,8 @@ func (s *OrgUnitService) bindRelations(
 	aggregator.PopulateTree(
 		orgUnits,
 		userSet,
-		func(ou *userV1.OrgUnit) uint32 { return ou.GetContactUserId() },
-		func(ou *userV1.OrgUnit, user *userV1.User) {
+		func(ou *identityV1.OrgUnit) uint32 { return ou.GetContactUserId() },
+		func(ou *identityV1.OrgUnit, user *identityV1.User) {
 			ou.ContactUserName = trans.Ptr(user.GetUsername())
 		},
 		childrenFunc,
@@ -118,8 +118,8 @@ func (s *OrgUnitService) bindRelations(
 }
 
 // enrichRelations 填充关联数据
-func (s *OrgUnitService) enrichRelations(ctx context.Context, orgUnits []*userV1.OrgUnit) error {
-	var userSet = make(aggregator.ResourceMap[uint32, *userV1.User])
+func (s *OrgUnitService) enrichRelations(ctx context.Context, orgUnits []*identityV1.OrgUnit) error {
+	var userSet = make(aggregator.ResourceMap[uint32, *identityV1.User])
 	s.extractRelationIDs(orgUnits, userSet)
 	if err := s.fetchRelationInfo(ctx, userSet); err != nil {
 		return err
@@ -128,7 +128,7 @@ func (s *OrgUnitService) enrichRelations(ctx context.Context, orgUnits []*userV1
 	return nil
 }
 
-func (s *OrgUnitService) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListOrgUnitResponse, error) {
+func (s *OrgUnitService) List(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.ListOrgUnitResponse, error) {
 	resp, err := s.orgUnitRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
@@ -139,30 +139,30 @@ func (s *OrgUnitService) List(ctx context.Context, req *paginationV1.PagingReque
 	return resp, nil
 }
 
-func (s *OrgUnitService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.CountOrgUnitResponse, error) {
+func (s *OrgUnitService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.CountOrgUnitResponse, error) {
 	count, err := s.orgUnitRepo.Count(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	return &userV1.CountOrgUnitResponse{
+	return &identityV1.CountOrgUnitResponse{
 		Count: uint64(count),
 	}, nil
 }
 
-func (s *OrgUnitService) Get(ctx context.Context, req *userV1.GetOrgUnitRequest) (*userV1.OrgUnit, error) {
+func (s *OrgUnitService) Get(ctx context.Context, req *identityV1.GetOrgUnitRequest) (*identityV1.OrgUnit, error) {
 	resp, err := s.orgUnitRepo.Get(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	fakeItems := []*userV1.OrgUnit{resp}
+	fakeItems := []*identityV1.OrgUnit{resp}
 	_ = s.enrichRelations(ctx, fakeItems)
 
 	return resp, nil
 }
 
-func (s *OrgUnitService) Create(ctx context.Context, req *userV1.CreateOrgUnitRequest) (*emptypb.Empty, error) {
+func (s *OrgUnitService) Create(ctx context.Context, req *identityV1.CreateOrgUnitRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -182,7 +182,7 @@ func (s *OrgUnitService) Create(ctx context.Context, req *userV1.CreateOrgUnitRe
 	return &emptypb.Empty{}, nil
 }
 
-func (s *OrgUnitService) Update(ctx context.Context, req *userV1.UpdateOrgUnitRequest) (*emptypb.Empty, error) {
+func (s *OrgUnitService) Update(ctx context.Context, req *identityV1.UpdateOrgUnitRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -205,7 +205,7 @@ func (s *OrgUnitService) Update(ctx context.Context, req *userV1.UpdateOrgUnitRe
 	return &emptypb.Empty{}, nil
 }
 
-func (s *OrgUnitService) Delete(ctx context.Context, req *userV1.DeleteOrgUnitRequest) (*emptypb.Empty, error) {
+func (s *OrgUnitService) Delete(ctx context.Context, req *identityV1.DeleteOrgUnitRequest) (*emptypb.Empty, error) {
 	if err := s.orgUnitRepo.Delete(ctx, req); err != nil {
 		return nil, err
 	}

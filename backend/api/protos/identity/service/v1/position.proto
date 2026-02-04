@@ -1,0 +1,224 @@
+syntax = "proto3";
+
+package identity.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+
+import "pagination/v1/pagination.proto";
+
+// 职位服务
+service PositionService {
+  // 查询职位列表
+  rpc List (pagination.PagingRequest) returns (ListPositionResponse) {}
+
+  // 统计职位数量
+  rpc Count (pagination.PagingRequest) returns (CountPositionResponse) {}
+
+  // 查询职位详情
+  rpc Get (GetPositionRequest) returns (Position) {}
+
+  // 创建职位
+  rpc Create (CreatePositionRequest) returns (google.protobuf.Empty) {}
+  // 批量创建职位
+  rpc BatchCreate (BatchCreatePositionsRequest) returns (BatchCreatePositionsResponse) {}
+
+  // 更新职位
+  rpc Update (UpdatePositionRequest) returns (google.protobuf.Empty) {}
+
+  // 删除职位
+  rpc Delete (DeletePositionRequest) returns (google.protobuf.Empty) {}
+}
+
+// 职位
+message Position {
+  // 职位状态
+  enum Status {
+    OFF = 0;     // 打开
+    ON = 1;   // 关闭
+  }
+
+  // 职位类型
+  enum Type {
+    REGULAR = 0;    // 普通职位
+    LEADER = 1;     // 领导职位
+    MANAGER = 2;    // 管理职位
+    INTERN = 3;     // 实习职位
+    CONTRACT = 4;   // 合同职位
+
+    OTHER = 100;     // 其他职位
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = {description: "职位ID"}
+  ];  // 职位ID
+
+  optional string name = 2 [json_name = "name", (gnostic.openapi.v3.property) = {description: "职位名称"}];  // 职位名称
+  optional string code = 3 [json_name = "code", (gnostic.openapi.v3.property) = {description: "唯一编码（建议规则：部门编码 + 职位类型 + 序号，如 “FIN-LEADER-001”），用于数据同步和快速识别"}];  // 唯一编码（建议规则：部门编码 + 职位类型 + 序号，如 “FIN-LEADER-001”），用于数据同步和快速识别
+
+  optional uint32 headcount = 4 [
+    json_name = "headcount",
+    (gnostic.openapi.v3.property) = {description: "编制人数（该职位最多可容纳的员工数量，0表示无限制）"}
+  ];  // 编制人数（该职位最多可容纳的员工数量，0表示无限制）
+
+  optional uint32 sort_order = 5 [
+    json_name = "sortOrder",
+    (gnostic.openapi.v3.property) = {description: "排序顺序，值越小越靠前"}
+  ];  // 排序顺序，值越小越靠前
+
+  optional Status status = 6 [(gnostic.openapi.v3.property) = {description: "状态"}]; // 状态
+  optional Type type = 7 [json_name = "type", (gnostic.openapi.v3.property) = {description: "职位类型"}];  // 职位类型
+
+  optional string remark = 8 [
+    json_name = "remark",
+    (gnostic.openapi.v3.property) = {description: "备注"}
+  ];  // 备注
+  optional string description = 9 [
+    json_name = "description",
+    (gnostic.openapi.v3.property) = {description: "职位描述"}
+  ];  // 职位描述
+
+  optional string job_family = 10 [
+    json_name = "jobFamily",
+    (gnostic.openapi.v3.property) = {description: "职类/序列"}
+  ];  // 职类/序列
+  optional string job_grade = 11 [
+    json_name = "jobGrade",
+    (gnostic.openapi.v3.property) = {description: "职级"}
+  ];  // 职级
+  optional int32 level = 12 [
+    json_name = "level",
+    (gnostic.openapi.v3.property) = {description: "数值化职级"}
+  ];  // 数值化职级
+  optional bool is_key_position = 13 [
+    json_name = "isKeyPosition",
+    (gnostic.openapi.v3.property) = {description: "是否关键岗位"}
+  ];  // 是否关键岗位
+
+  optional uint32 tenant_id = 20 [
+    json_name = "tenantId",
+    (gnostic.openapi.v3.property) = {description: "租户ID"}
+  ];  // 租户ID
+  optional string tenant_name = 21 [
+    json_name = "tenantName",
+    (gnostic.openapi.v3.property) = {description: "租户名称"}
+  ];  // 租户名称
+
+  optional uint32 org_unit_id = 22 [
+    json_name = "orgUnitId",
+    (gnostic.openapi.v3.property) = {description: "所属组织单元ID"}
+  ];  // 所属组织单元ID
+  optional string org_unit_name = 23 [
+    json_name = "orgUnitName",
+    (gnostic.openapi.v3.property) = {description: "所属组织单元名称"}
+  ];  // 所属组织单元名称
+
+  optional uint32 reports_to_position_id = 24 [
+    json_name = "reportsToPositionId",
+    (gnostic.openapi.v3.property) = {description: "汇报关系用户ID"}
+  ];  // 汇报关系用户ID
+  optional string reports_to_position_name = 25 [
+    json_name = "reportsToPositionName",
+    (gnostic.openapi.v3.property) = {description: "汇报关系用户名称"}
+  ];  // 汇报关系用户名称
+
+  optional google.protobuf.Timestamp start_at = 50 [
+    json_name = "startAt",
+    (gnostic.openapi.v3.property) = {description: "生效时间（UTC）"}
+  ];// 生效时间
+
+  optional google.protobuf.Timestamp end_at = 51 [
+    json_name = "endAt",
+    (gnostic.openapi.v3.property) = {description: "失效时间（UTC）"}
+  ];// 失效时间
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];// 删除时间
+}
+
+// 获取职位列表 - 答复
+message ListPositionResponse {
+  repeated Position items = 1;
+  uint64 total = 2;
+}
+
+// 获取职位数据 - 请求
+message GetPositionRequest {
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+      json_name = "id"
+    ]; // ID
+
+    string name = 2 [
+      (gnostic.openapi.v3.property) = {description: "名称", read_only: true},
+      json_name = "name"
+    ]; // 名称
+
+    string code = 3 [
+      (gnostic.openapi.v3.property) = {description: "唯一编码", read_only: true},
+      json_name = "code"
+    ]; // 唯一编码
+  }
+
+  optional google.protobuf.FieldMask view_mask = 100 [
+    json_name = "viewMask",
+    (gnostic.openapi.v3.property) = {
+      description: "视图字段过滤器，用于控制返回的字段"
+    }
+  ]; // 视图字段过滤器，用于控制返回的字段
+}
+
+// 创建职位 - 请求
+message CreatePositionRequest {
+  Position data = 1;
+}
+
+// 更新职位 - 请求
+message UpdatePositionRequest {
+  uint32 id = 1;
+
+  Position data = 2;
+
+  google.protobuf.FieldMask update_mask = 3 [
+    (gnostic.openapi.v3.property) = {
+      description: "要更新的字段列表",
+      example: {yaml : "id,realname,username"}
+    },
+    json_name = "updateMask"
+  ]; // 要更新的字段列表
+
+  optional bool allow_missing = 4 [
+    (gnostic.openapi.v3.property) = {description: "如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。"},
+    json_name = "allowMissing"
+  ]; // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
+}
+
+// 删除职位 - 请求
+message DeletePositionRequest {
+  uint32 id = 1;
+}
+
+message BatchCreatePositionsRequest {
+  repeated Position data = 1;
+}
+message BatchCreatePositionsResponse {
+  repeated int32 created_ids = 1 [
+    json_name = "createdIds",
+    (gnostic.openapi.v3.property) = {
+      description: "创建成功的职位ID列表"
+    }
+  ]; // 创建成功的职位ID列表
+}
+
+message CountPositionResponse {
+  uint64 count = 1;
+}

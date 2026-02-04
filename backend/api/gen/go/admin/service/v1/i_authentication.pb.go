@@ -9,7 +9,7 @@ package adminpb
 import (
 	_ "github.com/google/gnostic/openapiv3"
 	v1 "go-wind-admin/api/gen/go/authentication/service/v1"
-	_ "go-wind-admin/api/gen/go/user/service/v1"
+	_ "go-wind-admin/api/gen/go/identity/service/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -29,7 +29,7 @@ var File_admin_service_v1_i_authentication_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_authentication_proto_rawDesc = "" +
 	"\n" +
-	"'admin/service/v1/i_authentication.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1auser/service/v1/user.proto\x1a.authentication/service/v1/authentication.proto2\xf3\x02\n" +
+	"'admin/service/v1/i_authentication.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1eidentity/service/v1/user.proto\x1a.authentication/service/v1/authentication.proto2\xf3\x02\n" +
 	"\x15AuthenticationService\x12{\n" +
 	"\x05Login\x12'.authentication.service.v1.LoginRequest\x1a(.authentication.service.v1.LoginResponse\"\x1f\xbaG\x02Z\x00\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/admin/v1/login\x12U\n" +
 	"\x06Logout\x12\x16.google.protobuf.Empty\x1a\x16.google.protobuf.Empty\"\x1b\x82\xd3\xe4\x93\x02\x15:\x01*\"\x10/admin/v1/logout\x12\x85\x01\n" +

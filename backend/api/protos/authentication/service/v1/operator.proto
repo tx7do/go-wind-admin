@@ -3,7 +3,7 @@ syntax = "proto3";
 package authentication.service.v1;
 
 import "gnostic/openapi/v3/annotations.proto";
-import "permission/service/v1/permission.proto";
+import "identity/service/v1/types.proto";
 
 // 操作者元数据
 message OperatorMetadata {
@@ -33,7 +33,7 @@ message OperatorMetadata {
     (gnostic.openapi.v3.property) = {description: "当前操作所属的组织单元"}
   ]; // 当前操作所属的组织单元
 
-  permission.service.v1.DataScope data_scope = 5 [
+  identity.service.v1.DataScope data_scope = 5 [
     json_name = "ds",
     (gnostic.openapi.v3.property) = {description: "数据权限范围策略"}
   ]; // 数据权限范围策略

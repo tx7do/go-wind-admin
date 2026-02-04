@@ -6,7 +6,7 @@ package authenticationpb
 import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
-	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
+	servicev1 "go-wind-admin/api/gen/go/identity/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -19,7 +19,7 @@ var (
 	_ redact.Redactor
 	_ codes.Code
 	_ status.Status
-	_ permissionpb.Permission
+	_ servicev1.DataScope
 )
 
 // Redact method implementation for OperatorMetadata

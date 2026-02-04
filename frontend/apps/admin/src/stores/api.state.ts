@@ -3,7 +3,7 @@ import { useUserStore } from '@vben/stores';
 import { defineStore } from 'pinia';
 
 import {
-  type permissionservicev1_Api as Api,
+  type resourceservicev1_Api as Api,
   createApiServiceClient,
 } from '#/generated/api/admin/service/v1';
 import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';

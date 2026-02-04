@@ -18,7 +18,7 @@ import (
 
 	"google.golang.org/protobuf/types/known/anypb"
 
-	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
+	servicev1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
 
 // ensure the imports are used
@@ -36,7 +36,7 @@ var (
 	_ = anypb.Any{}
 	_ = sort.Sort
 
-	_ = permissionpb.DataScope(0)
+	_ = servicev1.DataScope(0)
 )
 
 // Validate checks the field values on OperatorMetadata with the rules defined

@@ -7,7 +7,7 @@ import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
 	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
+	resourcepb "go-wind-admin/api/gen/go/resource/service/v1"
 	annotations "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -29,7 +29,7 @@ var (
 	_ timestamppb.Timestamp
 	_ fieldmaskpb.FieldMask
 	_ pagination.Sorting
-	_ permissionpb.Menu
+	_ resourcepb.Menu
 )
 
 // RegisterRedactedMenuServiceServer wraps the MenuServiceServer with the redacted server and registers the service in GRPC
@@ -52,7 +52,7 @@ type redactedMenuServiceServer struct {
 
 // List is the redacted wrapper for the actual MenuServiceServer.List method
 // Unary RPC
-func (s *redactedMenuServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*permissionpb.ListMenuResponse, error) {
+func (s *redactedMenuServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*resourcepb.ListMenuResponse, error) {
 	res, err := s.srv.List(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -63,7 +63,7 @@ func (s *redactedMenuServiceServer) List(ctx context.Context, in *pagination.Pag
 
 // Get is the redacted wrapper for the actual MenuServiceServer.Get method
 // Unary RPC
-func (s *redactedMenuServiceServer) Get(ctx context.Context, in *permissionpb.GetMenuRequest) (*permissionpb.Menu, error) {
+func (s *redactedMenuServiceServer) Get(ctx context.Context, in *resourcepb.GetMenuRequest) (*resourcepb.Menu, error) {
 	res, err := s.srv.Get(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -74,7 +74,7 @@ func (s *redactedMenuServiceServer) Get(ctx context.Context, in *permissionpb.Ge
 
 // Create is the redacted wrapper for the actual MenuServiceServer.Create method
 // Unary RPC
-func (s *redactedMenuServiceServer) Create(ctx context.Context, in *permissionpb.CreateMenuRequest) (*emptypb.Empty, error) {
+func (s *redactedMenuServiceServer) Create(ctx context.Context, in *resourcepb.CreateMenuRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Create(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -85,7 +85,7 @@ func (s *redactedMenuServiceServer) Create(ctx context.Context, in *permissionpb
 
 // Update is the redacted wrapper for the actual MenuServiceServer.Update method
 // Unary RPC
-func (s *redactedMenuServiceServer) Update(ctx context.Context, in *permissionpb.UpdateMenuRequest) (*emptypb.Empty, error) {
+func (s *redactedMenuServiceServer) Update(ctx context.Context, in *resourcepb.UpdateMenuRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Update(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -96,7 +96,7 @@ func (s *redactedMenuServiceServer) Update(ctx context.Context, in *permissionpb
 
 // Delete is the redacted wrapper for the actual MenuServiceServer.Delete method
 // Unary RPC
-func (s *redactedMenuServiceServer) Delete(ctx context.Context, in *permissionpb.DeleteMenuRequest) (*emptypb.Empty, error) {
+func (s *redactedMenuServiceServer) Delete(ctx context.Context, in *resourcepb.DeleteMenuRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Delete(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response

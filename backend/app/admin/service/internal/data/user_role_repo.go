@@ -13,22 +13,22 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/userrole"
 
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
 
 type UserRoleRepo struct {
 	log             *log.Helper
 	entClient       *entCrud.EntClient[*ent.Client]
-	statusConverter *mapper.EnumTypeConverter[userV1.UserRole_Status, userrole.Status]
+	statusConverter *mapper.EnumTypeConverter[identityV1.UserRole_Status, userrole.Status]
 }
 
 func NewUserRoleRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *UserRoleRepo {
 	return &UserRoleRepo{
 		log:       ctx.NewLoggerHelper("user-role/repo/admin-service"),
 		entClient: entClient,
-		statusConverter: mapper.NewEnumTypeConverter[userV1.UserRole_Status, userrole.Status](
-			userV1.UserRole_Status_name,
-			userV1.UserRole_Status_value,
+		statusConverter: mapper.NewEnumTypeConverter[identityV1.UserRole_Status, userrole.Status](
+			identityV1.UserRole_Status_name,
+			identityV1.UserRole_Status_value,
 		),
 	}
 }
@@ -45,7 +45,7 @@ func (r *UserRoleRepo) CleanRelationsByUserID(ctx context.Context, tx *ent.Tx, u
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old user roles failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old user roles failed")
+		return identityV1.ErrorInternalServerError("delete old user roles failed")
 	}
 	return nil
 }
@@ -62,7 +62,7 @@ func (r *UserRoleRepo) CleanRelationsByUserIDs(ctx context.Context, tx *ent.Tx, 
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old user roles by user ids failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old user roles by user ids failed")
+		return identityV1.ErrorInternalServerError("delete old user roles by user ids failed")
 	}
 	return nil
 }
@@ -79,7 +79,7 @@ func (r *UserRoleRepo) CleanRelationsByRoleID(ctx context.Context, tx *ent.Tx, r
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old user roles by role id failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old user roles by role id failed")
+		return identityV1.ErrorInternalServerError("delete old user roles by role id failed")
 	}
 	return nil
 }
@@ -96,7 +96,7 @@ func (r *UserRoleRepo) CleanRelationsByRoleIDs(ctx context.Context, tx *ent.Tx, 
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old user roles by role ids failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old user roles by role ids failed")
+		return identityV1.ErrorInternalServerError("delete old user roles by role ids failed")
 	}
 	return nil
 }
@@ -117,13 +117,13 @@ func (r *UserRoleRepo) RemoveRolesFromUser(ctx context.Context, userID uint32, r
 		Exec(ctx)
 	if err != nil {
 		r.log.Errorf("remove roles from user failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("remove roles from user failed")
+		return identityV1.ErrorInternalServerError("remove roles from user failed")
 	}
 	return nil
 }
 
 // AssignUserRole 分配角色
-func (r *UserRoleRepo) AssignUserRole(ctx context.Context, tx *ent.Tx, data *userV1.UserRole) error {
+func (r *UserRoleRepo) AssignUserRole(ctx context.Context, tx *ent.Tx, data *identityV1.UserRole) error {
 	if data == nil {
 		return nil
 	}
@@ -145,14 +145,14 @@ func (r *UserRoleRepo) AssignUserRole(ctx context.Context, tx *ent.Tx, data *use
 		Save(ctx)
 	if err != nil {
 		r.log.Errorf("assign role to user failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("assign role to user failed")
+		return identityV1.ErrorInternalServerError("assign role to user failed")
 	}
 
 	return nil
 }
 
 // AssignUserRoles 分配角色
-func (r *UserRoleRepo) AssignUserRoles(ctx context.Context, tx *ent.Tx, userID uint32, datas []*userV1.UserRole) error {
+func (r *UserRoleRepo) AssignUserRoles(ctx context.Context, tx *ent.Tx, userID uint32, datas []*identityV1.UserRole) error {
 	if len(datas) == 0 || userID == 0 {
 		return nil
 	}
@@ -161,7 +161,7 @@ func (r *UserRoleRepo) AssignUserRoles(ctx context.Context, tx *ent.Tx, userID u
 
 	// 删除该用户的所有旧关联
 	if err = r.CleanRelationsByUserID(ctx, tx, userID); err != nil {
-		return userV1.ErrorInternalServerError("clean old user roles failed")
+		return identityV1.ErrorInternalServerError("clean old user roles failed")
 	}
 
 	now := time.Now()
@@ -191,7 +191,7 @@ func (r *UserRoleRepo) AssignUserRoles(ctx context.Context, tx *ent.Tx, userID u
 	_, err = tx.UserRole.CreateBulk(userRoleCreates...).Save(ctx)
 	if err != nil {
 		r.log.Errorf("assign roles to user failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("assign roles to user failed")
+		return identityV1.ErrorInternalServerError("assign roles to user failed")
 	}
 
 	return nil
@@ -223,7 +223,7 @@ func (r *UserRoleRepo) ListRoleIDs(ctx context.Context, userID uint32, excludeEx
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query role ids by user id failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query role ids by user id failed")
+		return nil, identityV1.ErrorInternalServerError("query role ids by user id failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {
@@ -258,7 +258,7 @@ func (r *UserRoleRepo) ListUserIDs(ctx context.Context, roleID uint32, excludeEx
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query user ids by role id failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query user ids by role id failed")
+		return nil, identityV1.ErrorInternalServerError("query user ids by role id failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {
@@ -293,7 +293,7 @@ func (r *UserRoleRepo) ListUserIDsByRoleIDs(ctx context.Context, roleIDs []uint3
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query user ids by role ids failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query user ids by role ids failed")
+		return nil, identityV1.ErrorInternalServerError("query user ids by role ids failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {

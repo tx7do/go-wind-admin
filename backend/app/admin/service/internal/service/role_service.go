@@ -13,7 +13,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 
 	"go-wind-admin/pkg/authorizer"
 	"go-wind-admin/pkg/constants"
@@ -58,8 +58,8 @@ func (s *RoleService) init() {
 }
 
 func (s *RoleService) extractRelationIDs(
-	roles []*userV1.Role,
-	tenantSet aggregator.ResourceMap[uint32, *userV1.Tenant],
+	roles []*identityV1.Role,
+	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
 ) {
 	for _, p := range roles {
 		if p.GetTenantId() > 0 {
@@ -70,7 +70,7 @@ func (s *RoleService) extractRelationIDs(
 
 func (s *RoleService) fetchRelationInfo(
 	ctx context.Context,
-	tenantSet aggregator.ResourceMap[uint32, *userV1.Tenant],
+	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
 ) error {
 	if len(tenantSet) > 0 {
 		tenantIds := make([]uint32, 0, len(tenantSet))
@@ -93,21 +93,21 @@ func (s *RoleService) fetchRelationInfo(
 }
 
 func (s *RoleService) bindRelations(
-	roles []*userV1.Role,
-	tenantSet aggregator.ResourceMap[uint32, *userV1.Tenant],
+	roles []*identityV1.Role,
+	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
 ) {
 	aggregator.Populate(
 		roles,
 		tenantSet,
-		func(ou *userV1.Role) uint32 { return ou.GetTenantId() },
-		func(ou *userV1.Role, r *userV1.Tenant) {
+		func(ou *identityV1.Role) uint32 { return ou.GetTenantId() },
+		func(ou *identityV1.Role, r *identityV1.Tenant) {
 			ou.TenantName = r.Name
 		},
 	)
 }
 
-func (s *RoleService) enrichRelations(ctx context.Context, roles []*userV1.Role) error {
-	var tenantSet = make(aggregator.ResourceMap[uint32, *userV1.Tenant])
+func (s *RoleService) enrichRelations(ctx context.Context, roles []*identityV1.Role) error {
+	var tenantSet = make(aggregator.ResourceMap[uint32, *identityV1.Tenant])
 	s.extractRelationIDs(roles, tenantSet)
 	if err := s.fetchRelationInfo(ctx, tenantSet); err != nil {
 		return err
@@ -116,7 +116,7 @@ func (s *RoleService) enrichRelations(ctx context.Context, roles []*userV1.Role)
 	return nil
 }
 
-func (s *RoleService) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListRoleResponse, error) {
+func (s *RoleService) List(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.ListRoleResponse, error) {
 	resp, err := s.roleRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
@@ -127,30 +127,30 @@ func (s *RoleService) List(ctx context.Context, req *paginationV1.PagingRequest)
 	return resp, nil
 }
 
-func (s *RoleService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.CountRoleResponse, error) {
+func (s *RoleService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.CountRoleResponse, error) {
 	count, err := s.roleRepo.Count(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	return &userV1.CountRoleResponse{
+	return &identityV1.CountRoleResponse{
 		Count: uint64(count),
 	}, nil
 }
 
-func (s *RoleService) Get(ctx context.Context, req *userV1.GetRoleRequest) (*userV1.Role, error) {
+func (s *RoleService) Get(ctx context.Context, req *identityV1.GetRoleRequest) (*identityV1.Role, error) {
 	resp, err := s.roleRepo.Get(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	fakeItems := []*userV1.Role{resp}
+	fakeItems := []*identityV1.Role{resp}
 	_ = s.enrichRelations(ctx, fakeItems)
 
 	return resp, nil
 }
 
-func (s *RoleService) Create(ctx context.Context, req *userV1.CreateRoleRequest) (*emptypb.Empty, error) {
+func (s *RoleService) Create(ctx context.Context, req *identityV1.CreateRoleRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -178,7 +178,7 @@ func (s *RoleService) Create(ctx context.Context, req *userV1.CreateRoleRequest)
 	return &emptypb.Empty{}, nil
 }
 
-func (s *RoleService) Update(ctx context.Context, req *userV1.UpdateRoleRequest) (*emptypb.Empty, error) {
+func (s *RoleService) Update(ctx context.Context, req *identityV1.UpdateRoleRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -211,7 +211,7 @@ func (s *RoleService) Update(ctx context.Context, req *userV1.UpdateRoleRequest)
 	return &emptypb.Empty{}, nil
 }
 
-func (s *RoleService) Delete(ctx context.Context, req *userV1.DeleteRoleRequest) (*emptypb.Empty, error) {
+func (s *RoleService) Delete(ctx context.Context, req *identityV1.DeleteRoleRequest) (*emptypb.Empty, error) {
 	var err error
 
 	if err = s.roleRepo.Delete(ctx, req); err != nil {
@@ -225,36 +225,36 @@ func (s *RoleService) Delete(ctx context.Context, req *userV1.DeleteRoleRequest)
 	return &emptypb.Empty{}, nil
 }
 
-func (s *RoleService) GetRoleCodesByRoleIds(ctx context.Context, req *userV1.GetRoleCodesByRoleIdsRequest) (*userV1.GetRoleCodesByRoleIdsResponse, error) {
+func (s *RoleService) GetRoleCodesByRoleIds(ctx context.Context, req *identityV1.GetRoleCodesByRoleIdsRequest) (*identityV1.GetRoleCodesByRoleIdsResponse, error) {
 	ids, err := s.roleRepo.ListRoleCodesByRoleIds(ctx, req.GetRoleIds())
 	if err != nil {
 		return nil, err
 	}
 
-	return &userV1.GetRoleCodesByRoleIdsResponse{
+	return &identityV1.GetRoleCodesByRoleIdsResponse{
 		RoleCodes: ids,
 	}, nil
 }
 
-func (s *RoleService) GetRolesByRoleCodes(ctx context.Context, req *userV1.GetRolesByRoleCodesRequest) (*userV1.ListRoleResponse, error) {
+func (s *RoleService) GetRolesByRoleCodes(ctx context.Context, req *identityV1.GetRolesByRoleCodesRequest) (*identityV1.ListRoleResponse, error) {
 	roles, err := s.roleRepo.ListRolesByRoleCodes(ctx, req.GetRoleCodes())
 	if err != nil {
 		return nil, err
 	}
 
-	return &userV1.ListRoleResponse{
+	return &identityV1.ListRoleResponse{
 		Items: roles,
 		Total: uint64(len(roles)),
 	}, nil
 }
 
-func (s *RoleService) GetRolesByRoleIds(ctx context.Context, req *userV1.GetRolesByRoleIdsRequest) (*userV1.ListRoleResponse, error) {
+func (s *RoleService) GetRolesByRoleIds(ctx context.Context, req *identityV1.GetRolesByRoleIdsRequest) (*identityV1.ListRoleResponse, error) {
 	roles, err := s.roleRepo.ListRolesByRoleIds(ctx, req.GetRoleIds())
 	if err != nil {
 		return nil, err
 	}
 
-	return &userV1.ListRoleResponse{
+	return &identityV1.ListRoleResponse{
 		Items: roles,
 		Total: uint64(len(roles)),
 	}, nil
@@ -265,7 +265,7 @@ func (s *RoleService) createDefaultRoles(ctx context.Context) error {
 	var err error
 
 	for _, d := range constants.DefaultRoles {
-		err = s.roleRepo.Create(ctx, &userV1.CreateRoleRequest{
+		err = s.roleRepo.Create(ctx, &identityV1.CreateRoleRequest{
 			Data: d,
 		})
 		if err != nil {

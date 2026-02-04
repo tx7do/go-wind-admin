@@ -7,8 +7,8 @@ import { defineStore } from 'pinia';
 
 import {
   createUserServiceClient,
-  type userservicev1_User_Gender as User_Gender,
-  type userservicev1_User_Status as User_Status,
+  type identityservicev1_User_Gender as User_Gender,
+  type identityservicev1_User_Status as User_Status,
 } from '#/generated/api/admin/service/v1';
 import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';

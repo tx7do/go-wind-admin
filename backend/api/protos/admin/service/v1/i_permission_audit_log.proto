@@ -12,20 +12,20 @@ import "google/protobuf/field_mask.proto";
 import "google/protobuf/duration.proto";
 
 import "pagination/v1/pagination.proto";
-import "permission/service/v1/permission_audit_log.proto";
+import "audit/service/v1/permission_audit_log.proto";
 
 
 // 权限变更审计日志服务
 service PermissionAuditLogService {
   // 查询权限变更审计日志列表
-  rpc List (pagination.PagingRequest) returns (permission.service.v1.ListPermissionAuditLogResponse) {
+  rpc List (pagination.PagingRequest) returns (audit.service.v1.ListPermissionAuditLogResponse) {
     option (google.api.http) = {
       get: "/admin/v1/permission-audit-logs"
     };
   }
 
   // 查询权限变更审计日志详情
-  rpc Get (permission.service.v1.GetPermissionAuditLogRequest) returns (permission.service.v1.PermissionAuditLog) {
+  rpc Get (audit.service.v1.GetPermissionAuditLogRequest) returns (audit.service.v1.PermissionAuditLog) {
     option (google.api.http) = {
       get: "/admin/v1/permission-audit-logs/{id}"
     };

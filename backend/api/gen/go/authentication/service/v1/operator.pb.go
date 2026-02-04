@@ -8,7 +8,7 @@ package authenticationpb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
-	v1 "go-wind-admin/api/gen/go/permission/service/v1"
+	v1 "go-wind-admin/api/gen/go/identity/service/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -79,7 +79,7 @@ type OperatorMetadata struct {
 	UserId        uint64                        `protobuf:"varint,2,opt,name=user_id,json=uid,proto3" json:"user_id,omitempty"`                                                      // 用户ID
 	TenantId      uint64                        `protobuf:"varint,3,opt,name=tenant_id,json=tid,proto3" json:"tenant_id,omitempty"`                                                  // 租户ID
 	OrgUnitId     uint64                        `protobuf:"varint,4,opt,name=org_unit_id,json=ouid,proto3" json:"org_unit_id,omitempty"`                                             // 当前操作所属的组织单元
-	DataScope     v1.DataScope                  `protobuf:"varint,5,opt,name=data_scope,json=ds,proto3,enum=permission.service.v1.DataScope" json:"data_scope,omitempty"`            // 数据权限范围策略
+	DataScope     v1.DataScope                  `protobuf:"varint,5,opt,name=data_scope,json=ds,proto3,enum=identity.service.v1.DataScope" json:"data_scope,omitempty"`              // 数据权限范围策略
 	RoleIds       []uint64                      `protobuf:"varint,6,rep,packed,name=role_ids,json=rids,proto3" json:"role_ids,omitempty"`                                            // 用于存放少量的核心角色 ID 或标记位
 	ServiceName   *string                       `protobuf:"bytes,7,opt,name=service_name,json=sn,proto3,oneof" json:"service_name,omitempty"`                                        // 发起操作的服务名称
 	HostName      *string                       `protobuf:"bytes,8,opt,name=host_name,json=hn,proto3,oneof" json:"host_name,omitempty"`                                              // 发起操作的主机名称
@@ -230,14 +230,14 @@ var File_authentication_service_v1_operator_proto protoreflect.FileDescriptor
 
 const file_authentication_service_v1_operator_proto_rawDesc = "" +
 	"\n" +
-	"(authentication/service/v1/operator.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a&permission/service/v1/permission.proto\"\x84\x05\n" +
+	"(authentication/service/v1/operator.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fidentity/service/v1/types.proto\"\x82\x05\n" +
 	"\x10OperatorMetadata\x12`\n" +
 	"\x04type\x18\x01 \x01(\x0e28.authentication.service.v1.OperatorMetadata.OperatorTypeB\x15\xbaG\x12\x92\x02\x0f操作者类型R\x01t\x12$\n" +
 	"\auser_id\x18\x02 \x01(\x04B\x0e\xbaG\v\x92\x02\b用户IDR\x03uid\x12&\n" +
 	"\ttenant_id\x18\x03 \x01(\x04B\x0e\xbaG\v\x92\x02\b租户IDR\x03tid\x12B\n" +
-	"\vorg_unit_id\x18\x04 \x01(\x04B'\xbaG$\x92\x02!当前操作所属的组织单元R\x04ouid\x12X\n" +
+	"\vorg_unit_id\x18\x04 \x01(\x04B'\xbaG$\x92\x02!当前操作所属的组织单元R\x04ouid\x12V\n" +
 	"\n" +
-	"data_scope\x18\x05 \x01(\x0e2 .permission.service.v1.DataScopeB\x1e\xbaG\x1b\x92\x02\x18数据权限范围策略R\x02ds\x12O\n" +
+	"data_scope\x18\x05 \x01(\x0e2\x1e.identity.service.v1.DataScopeB\x1e\xbaG\x1b\x92\x02\x18数据权限范围策略R\x02ds\x12O\n" +
 	"\brole_ids\x18\x06 \x03(\x04B7\xbaG4\x92\x021用于存放少量的核心角色 ID 或标记位R\x04rids\x12@\n" +
 	"\fservice_name\x18\a \x01(\tB!\xbaG\x1e\x92\x02\x1b发起操作的服务名称H\x00R\x02sn\x88\x01\x01\x12=\n" +
 	"\thost_name\x18\b \x01(\tB!\xbaG\x1e\x92\x02\x1b发起操作的主机名称H\x01R\x02hn\x88\x01\x01\"1\n" +
@@ -272,11 +272,11 @@ var file_authentication_service_v1_operator_proto_goTypes = []any{
 	(OperatorMetadata_OperatorType)(0), // 0: authentication.service.v1.OperatorMetadata.OperatorType
 	(*OperatorMetadata)(nil),           // 1: authentication.service.v1.OperatorMetadata
 	(*SignedOperatorPayload)(nil),      // 2: authentication.service.v1.SignedOperatorPayload
-	(v1.DataScope)(0),                  // 3: permission.service.v1.DataScope
+	(v1.DataScope)(0),                  // 3: identity.service.v1.DataScope
 }
 var file_authentication_service_v1_operator_proto_depIdxs = []int32{
 	0, // 0: authentication.service.v1.OperatorMetadata.type:type_name -> authentication.service.v1.OperatorMetadata.OperatorType
-	3, // 1: authentication.service.v1.OperatorMetadata.data_scope:type_name -> permission.service.v1.DataScope
+	3, // 1: authentication.service.v1.OperatorMetadata.data_scope:type_name -> identity.service.v1.DataScope
 	2, // [2:2] is the sub-list for method output_type
 	2, // [2:2] is the sub-list for method input_type
 	2, // [2:2] is the sub-list for extension type_name

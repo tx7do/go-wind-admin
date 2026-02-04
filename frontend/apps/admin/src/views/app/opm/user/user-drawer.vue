@@ -8,8 +8,8 @@ import { notification } from 'ant-design-vue';
 
 import { useVbenForm, z } from '#/adapter/form';
 import {
-  type userservicev1_OrgUnit as OrgUnit,
-  type userservicev1_Position as Position,
+  type identityservicev1_OrgUnit as OrgUnit,
+  type identityservicev1_Position as Position,
 } from '#/generated/api/admin/service/v1';
 import {
   genderList,

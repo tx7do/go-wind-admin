@@ -6,7 +6,7 @@ import (
 	"testing"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 
 	"github.com/go-kratos/kratos/v2/metadata"
 	"github.com/stretchr/testify/assert"
@@ -50,7 +50,7 @@ func TestNewContext_FromContext_InvalidData(t *testing.T) {
 		UserId:    uint64(123),
 		TenantId:  uint64(456),
 		OrgUnitId: uint64(789),
-		DataScope: permissionV1.DataScope_ALL,
+		DataScope: identityV1.DataScope_ALL,
 		RoleIds:   []uint64{1},
 	}
 	b, err := encodeOperatorMetadata(info)
@@ -73,7 +73,7 @@ func TestNewOperatorMetadataContext_WriteAndRead(t *testing.T) {
 		UserId:    uint64(123),
 		TenantId:  uint64(456),
 		OrgUnitId: uint64(789),
-		DataScope: permissionV1.DataScope_ALL,
+		DataScope: identityV1.DataScope_ALL,
 		RoleIds:   []uint64{1},
 	}
 	ctx, err := NewContext(context.Background(), info)

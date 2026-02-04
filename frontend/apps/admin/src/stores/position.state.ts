@@ -7,8 +7,8 @@ import { defineStore } from 'pinia';
 
 import {
   createPositionServiceClient,
-  type userservicev1_Position_Status as Position_Status,
-  type userservicev1_Position_Type as Position_Type,
+  type identityservicev1_Position_Status as Position_Status,
+  type identityservicev1_Position_Type as Position_Type,
 } from '#/generated/api/admin/service/v1';
 import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';

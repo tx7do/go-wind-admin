@@ -13,7 +13,7 @@ import (
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 
 	"go-wind-admin/pkg/middleware/auth"
 )
@@ -42,15 +42,15 @@ func NewUserProfileService(
 	}
 }
 
-func (s *UserProfileService) GetUser(ctx context.Context, _ *emptypb.Empty) (*userV1.User, error) {
+func (s *UserProfileService) GetUser(ctx context.Context, _ *emptypb.Empty) (*identityV1.User, error) {
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	user, err := s.userRepo.Get(ctx, &userV1.GetUserRequest{
-		QueryBy: &userV1.GetUserRequest_Id{
+	user, err := s.userRepo.Get(ctx, &identityV1.GetUserRequest{
+		QueryBy: &identityV1.GetUserRequest_Id{
 			Id: operator.UserId,
 		},
 	})
@@ -70,7 +70,7 @@ func (s *UserProfileService) GetUser(ctx context.Context, _ *emptypb.Empty) (*us
 	return user, err
 }
 
-func (s *UserProfileService) UpdateUser(ctx context.Context, req *userV1.UpdateUserRequest) (*emptypb.Empty, error) {
+func (s *UserProfileService) UpdateUser(ctx context.Context, req *identityV1.UpdateUserRequest) (*emptypb.Empty, error) {
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
@@ -86,7 +86,7 @@ func (s *UserProfileService) UpdateUser(ctx context.Context, req *userV1.UpdateU
 	return &emptypb.Empty{}, nil
 }
 
-func (s *UserProfileService) ChangePassword(ctx context.Context, req *userV1.ChangePasswordRequest) (*emptypb.Empty, error) {
+func (s *UserProfileService) ChangePassword(ctx context.Context, req *identityV1.ChangePasswordRequest) (*emptypb.Empty, error) {
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
@@ -110,8 +110,8 @@ func (s *UserProfileService) DeleteAvatar(ctx context.Context, _ *emptypb.Empty)
 		return nil, err
 	}
 
-	if err = s.userRepo.Update(ctx, &userV1.UpdateUserRequest{
-		Data: &userV1.User{
+	if err = s.userRepo.Update(ctx, &identityV1.UpdateUserRequest{
+		Data: &identityV1.User{
 			Id:     trans.Ptr(operator.UserId),
 			Avatar: trans.Ptr(""),
 		},
@@ -127,7 +127,7 @@ func (s *UserProfileService) DeleteAvatar(ctx context.Context, _ *emptypb.Empty)
 }
 
 // UploadAvatar 上传头像
-func (s *UserProfileService) UploadAvatar(ctx context.Context, req *userV1.UploadAvatarRequest) (*userV1.UploadAvatarResponse, error) {
+func (s *UserProfileService) UploadAvatar(ctx context.Context, req *identityV1.UploadAvatarRequest) (*identityV1.UploadAvatarResponse, error) {
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
@@ -136,16 +136,16 @@ func (s *UserProfileService) UploadAvatar(ctx context.Context, req *userV1.Uploa
 
 	var avatarURL string
 	switch req.GetSource().(type) {
-	case *userV1.UploadAvatarRequest_ImageBase64:
-	case *userV1.UploadAvatarRequest_ImageUrl:
+	case *identityV1.UploadAvatarRequest_ImageBase64:
+	case *identityV1.UploadAvatarRequest_ImageUrl:
 		avatarURL = req.GetImageUrl()
 	default:
 		s.log.Errorf("upload avatar failed, invalid avatar source")
 		return nil, authenticationV1.ErrorBadRequest("invalid avatar source")
 	}
 
-	if err = s.userRepo.Update(ctx, &userV1.UpdateUserRequest{
-		Data: &userV1.User{
+	if err = s.userRepo.Update(ctx, &identityV1.UpdateUserRequest{
+		Data: &identityV1.User{
 			Id:     trans.Ptr(operator.UserId),
 			Avatar: trans.Ptr(avatarURL),
 		},
@@ -157,17 +157,17 @@ func (s *UserProfileService) UploadAvatar(ctx context.Context, req *userV1.Uploa
 		return nil, err
 	}
 
-	return &userV1.UploadAvatarResponse{
+	return &identityV1.UploadAvatarResponse{
 		Url: avatarURL,
 	}, nil
 }
 
 // BindContact 绑定手机号码/邮箱
-func (s *UserProfileService) BindContact(context.Context, *userV1.BindContactRequest) (*emptypb.Empty, error) {
+func (s *UserProfileService) BindContact(context.Context, *identityV1.BindContactRequest) (*emptypb.Empty, error) {
 	return nil, nil
 }
 
 // VerifyContact 验证手机号码/邮箱
-func (s *UserProfileService) VerifyContact(context.Context, *userV1.VerifyContactRequest) (*emptypb.Empty, error) {
+func (s *UserProfileService) VerifyContact(context.Context, *identityV1.VerifyContactRequest) (*emptypb.Empty, error) {
 	return nil, nil
 }

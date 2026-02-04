@@ -137,9 +137,7 @@ function transformData(data: OptionsItem[]): OptionsItem[] {
       // 确保key有效：优先用value，否则用临时key
       key:
         value !== undefined && value !== null
-          ? (numberToString
-            ? `${value}`
-            : value)
+          ? (numberToString ? `${value}` : value)
           : `temp-key-${index}-${Date.now()}`,
       ...(childrenField && item[childrenField]
         ? { children: transformData(item[childrenField]) }

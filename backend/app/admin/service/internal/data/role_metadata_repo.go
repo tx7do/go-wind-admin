@@ -15,16 +15,16 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolemetadata"
 
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
 
 type RoleMetadataRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper              *mapper.CopierMapper[userV1.RoleMetadata, ent.RoleMetadata]
-	syncPolicyConverter *mapper.EnumTypeConverter[userV1.RoleMetadata_SyncPolicy, rolemetadata.SyncPolicy]
-	scopeConverter      *mapper.EnumTypeConverter[userV1.RoleMetadata_Scope, rolemetadata.Scope]
+	mapper              *mapper.CopierMapper[identityV1.RoleMetadata, ent.RoleMetadata]
+	syncPolicyConverter *mapper.EnumTypeConverter[identityV1.RoleMetadata_SyncPolicy, rolemetadata.SyncPolicy]
+	scopeConverter      *mapper.EnumTypeConverter[identityV1.RoleMetadata_Scope, rolemetadata.Scope]
 
 	repository *entCrud.Repository[
 		ent.RoleMetadataQuery, ent.RoleMetadataSelect,
@@ -32,7 +32,7 @@ type RoleMetadataRepo struct {
 		ent.RoleMetadataUpdate, ent.RoleMetadataUpdateOne,
 		ent.RoleMetadataDelete,
 		predicate.RoleMetadata,
-		userV1.RoleMetadata, ent.RoleMetadata,
+		identityV1.RoleMetadata, ent.RoleMetadata,
 	]
 }
 
@@ -43,12 +43,12 @@ func NewRoleMetadataRepo(
 	repo := &RoleMetadataRepo{
 		log:       ctx.NewLoggerHelper("role-metadata/repo/admin-service"),
 		entClient: entClient,
-		mapper:    mapper.NewCopierMapper[userV1.RoleMetadata, ent.RoleMetadata](),
-		syncPolicyConverter: mapper.NewEnumTypeConverter[userV1.RoleMetadata_SyncPolicy, rolemetadata.SyncPolicy](
-			userV1.RoleMetadata_SyncPolicy_name, userV1.RoleMetadata_SyncPolicy_value,
+		mapper:    mapper.NewCopierMapper[identityV1.RoleMetadata, ent.RoleMetadata](),
+		syncPolicyConverter: mapper.NewEnumTypeConverter[identityV1.RoleMetadata_SyncPolicy, rolemetadata.SyncPolicy](
+			identityV1.RoleMetadata_SyncPolicy_name, identityV1.RoleMetadata_SyncPolicy_value,
 		),
-		scopeConverter: mapper.NewEnumTypeConverter[userV1.RoleMetadata_Scope, rolemetadata.Scope](
-			userV1.RoleMetadata_Scope_name, userV1.RoleMetadata_Scope_value,
+		scopeConverter: mapper.NewEnumTypeConverter[identityV1.RoleMetadata_Scope, rolemetadata.Scope](
+			identityV1.RoleMetadata_Scope_name, identityV1.RoleMetadata_Scope_value,
 		),
 	}
 
@@ -64,7 +64,7 @@ func (r *RoleMetadataRepo) init() {
 		ent.RoleMetadataUpdate, ent.RoleMetadataUpdateOne,
 		ent.RoleMetadataDelete,
 		predicate.RoleMetadata,
-		userV1.RoleMetadata, ent.RoleMetadata,
+		identityV1.RoleMetadata, ent.RoleMetadata,
 	](r.mapper)
 
 	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
@@ -74,7 +74,7 @@ func (r *RoleMetadataRepo) init() {
 	r.mapper.AppendConverters(r.scopeConverter.NewConverterPair())
 }
 
-func (r *RoleMetadataRepo) Create(ctx context.Context, tx *ent.Tx, data *userV1.RoleMetadata) error {
+func (r *RoleMetadataRepo) Create(ctx context.Context, tx *ent.Tx, data *identityV1.RoleMetadata) error {
 	err := tx.RoleMetadata.Create().
 		SetNillableTenantID(data.TenantId).
 		SetRoleID(data.GetRoleId()).
@@ -93,7 +93,7 @@ func (r *RoleMetadataRepo) Create(ctx context.Context, tx *ent.Tx, data *userV1.
 }
 
 // Upsert 插入或更新角色元数据
-func (r *RoleMetadataRepo) Upsert(ctx context.Context, data *userV1.RoleMetadata) error {
+func (r *RoleMetadataRepo) Upsert(ctx context.Context, data *identityV1.RoleMetadata) error {
 	now := time.Now()
 	builder := r.entClient.Client().RoleMetadata.Create().
 		SetNillableTenantID(data.TenantId).
@@ -133,7 +133,7 @@ func (r *RoleMetadataRepo) Upsert(ctx context.Context, data *userV1.RoleMetadata
 }
 
 // Get 获取角色元数据
-func (r *RoleMetadataRepo) Get(ctx context.Context, roleID uint32) (*userV1.RoleMetadata, error) {
+func (r *RoleMetadataRepo) Get(ctx context.Context, roleID uint32) (*identityV1.RoleMetadata, error) {
 	rm, err := r.entClient.Client().RoleMetadata.Query().
 		Where(
 			rolemetadata.RoleIDEQ(roleID),

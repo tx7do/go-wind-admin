@@ -101,12 +101,12 @@ export type AdminErrorReason =
   | "NETWORK_CONNECT_TIMEOUT_ERROR";
 // 查询路由列表 - 回应
 export type ListRouteResponse = {
-  items: permissionservicev1_MenuRouteItem[] | undefined;
+  items: resourceservicev1_MenuRouteItem[] | undefined;
 };
 
 // 路由项
-export type permissionservicev1_MenuRouteItem = {
-  children: permissionservicev1_MenuRouteItem[] | undefined;
+export type resourceservicev1_MenuRouteItem = {
+  children: resourceservicev1_MenuRouteItem[] | undefined;
   //
   // Behaviors: OPTIONAL
   path?: string;
@@ -124,11 +124,11 @@ export type permissionservicev1_MenuRouteItem = {
   component?: string;
   //
   // Behaviors: OPTIONAL
-  meta?: permissionservicev1_MenuMeta;
+  meta?: resourceservicev1_MenuMeta;
 };
 
 // 路由元信息
-export type permissionservicev1_MenuMeta = {
+export type resourceservicev1_MenuMeta = {
   //
   // Behaviors: OPTIONAL
   activeIcon?: string;
@@ -206,7 +206,7 @@ export type ListPermissionCodeResponse = {
 };
 
 export type InitialContextResponse = {
-  menus: permissionservicev1_MenuRouteItem[] | undefined;
+  menus: resourceservicev1_MenuRouteItem[] | undefined;
   permissions: string[] | undefined;
 };
 
@@ -291,19 +291,19 @@ type wellKnownEmpty = Record<never, never>;
 // API资源管理服务
 export interface ApiService {
   // 查询API资源列表
-  List(request: pagination_PagingRequest): Promise<permissionservicev1_ListApiResponse>;
+  List(request: pagination_PagingRequest): Promise<resourceservicev1_ListApiResponse>;
   // 查询API资源详情
-  Get(request: permissionservicev1_GetApiRequest): Promise<permissionservicev1_Api>;
+  Get(request: resourceservicev1_GetApiRequest): Promise<resourceservicev1_Api>;
   // 创建API资源
-  Create(request: permissionservicev1_CreateApiRequest): Promise<wellKnownEmpty>;
+  Create(request: resourceservicev1_CreateApiRequest): Promise<wellKnownEmpty>;
   // 更新API资源
-  Update(request: permissionservicev1_UpdateApiRequest): Promise<wellKnownEmpty>;
+  Update(request: resourceservicev1_UpdateApiRequest): Promise<wellKnownEmpty>;
   // 删除API资源
-  Delete(request: permissionservicev1_DeleteApiRequest): Promise<wellKnownEmpty>;
+  Delete(request: resourceservicev1_DeleteApiRequest): Promise<wellKnownEmpty>;
   // 同步API资源
   SyncApis(request: wellKnownEmpty): Promise<wellKnownEmpty>;
   // 查询路由数据
-  GetWalkRouteData(request: wellKnownEmpty): Promise<permissionservicev1_ListApiResponse>;
+  GetWalkRouteData(request: wellKnownEmpty): Promise<resourceservicev1_ListApiResponse>;
 }
 
 export function createApiServiceClient(
@@ -387,7 +387,7 @@ export function createApiServiceClient(
       }, {
         service: "ApiService",
         method: "List",
-      }) as Promise<permissionservicev1_ListApiResponse>;
+      }) as Promise<resourceservicev1_ListApiResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -410,7 +410,7 @@ export function createApiServiceClient(
       }, {
         service: "ApiService",
         method: "Get",
-      }) as Promise<permissionservicev1_Api>;
+      }) as Promise<resourceservicev1_Api>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/apis`; // eslint-disable-line quotes
@@ -501,7 +501,7 @@ export function createApiServiceClient(
       }, {
         service: "ApiService",
         method: "GetWalkRouteData",
-      }) as Promise<permissionservicev1_ListApiResponse>;
+      }) as Promise<resourceservicev1_ListApiResponse>;
     },
   };
 }
@@ -669,13 +669,13 @@ export type pagination_Sorting_Direction =
 type wellKnownFieldMask = string;
 
 // 查询列表 - 回应
-export type permissionservicev1_ListApiResponse = {
-  items: permissionservicev1_Api[] | undefined;
+export type resourceservicev1_ListApiResponse = {
+  items: resourceservicev1_Api[] | undefined;
   total: number | undefined;
 };
 
 // API资源
-export type permissionservicev1_Api = {
+export type resourceservicev1_Api = {
   id?: number;
   operation?: string;
   path?: string;
@@ -683,8 +683,8 @@ export type permissionservicev1_Api = {
   module?: string;
   moduleDescription?: string;
   description?: string;
-  scope?: permissionservicev1_Api_Scope;
-  status?: permissionservicev1_Api_Status;
+  scope?: resourceservicev1_Api_Scope;
+  status?: resourceservicev1_Api_Status;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -694,12 +694,12 @@ export type permissionservicev1_Api = {
 };
 
 // API作用域
-export type permissionservicev1_Api_Scope =
+export type resourceservicev1_Api_Scope =
   | "API_SCOPE_INVALID"
   | "ADMIN"
   | "APP";
 // 权限状态
-export type permissionservicev1_Api_Status =
+export type resourceservicev1_Api_Status =
   | "OFF"
   | "ON";
 // Encoded using RFC 3339, where generated output will always be Z-normalized
@@ -708,26 +708,26 @@ export type permissionservicev1_Api_Status =
 type wellKnownTimestamp = string;
 
 // 查询 - 请求
-export type permissionservicev1_GetApiRequest = {
+export type resourceservicev1_GetApiRequest = {
   id?: number;
   viewMask?: wellKnownFieldMask;
 };
 
 // 创建 - 请求
-export type permissionservicev1_CreateApiRequest = {
-  data: permissionservicev1_Api | undefined;
+export type resourceservicev1_CreateApiRequest = {
+  data: resourceservicev1_Api | undefined;
 };
 
 // 更新 - 请求
-export type permissionservicev1_UpdateApiRequest = {
+export type resourceservicev1_UpdateApiRequest = {
   id: number | undefined;
-  data: permissionservicev1_Api | undefined;
+  data: resourceservicev1_Api | undefined;
   updateMask: wellKnownFieldMask | undefined;
   allowMissing?: boolean;
 };
 
 // 删除 - 请求
-export type permissionservicev1_DeleteApiRequest = {
+export type resourceservicev1_DeleteApiRequest = {
   id: number | undefined;
 };
 
@@ -3494,15 +3494,15 @@ export type authenticationservicev1_DeleteLoginPolicyRequest = {
 // 后台菜单管理服务
 export interface MenuService {
   // 查询菜单列表
-  List(request: pagination_PagingRequest): Promise<permissionservicev1_ListMenuResponse>;
+  List(request: pagination_PagingRequest): Promise<resourceservicev1_ListMenuResponse>;
   // 查询菜单详情
-  Get(request: permissionservicev1_GetMenuRequest): Promise<permissionservicev1_Menu>;
+  Get(request: resourceservicev1_GetMenuRequest): Promise<resourceservicev1_Menu>;
   // 创建菜单
-  Create(request: permissionservicev1_CreateMenuRequest): Promise<wellKnownEmpty>;
+  Create(request: resourceservicev1_CreateMenuRequest): Promise<wellKnownEmpty>;
   // 更新菜单
-  Update(request: permissionservicev1_UpdateMenuRequest): Promise<wellKnownEmpty>;
+  Update(request: resourceservicev1_UpdateMenuRequest): Promise<wellKnownEmpty>;
   // 删除菜单
-  Delete(request: permissionservicev1_DeleteMenuRequest): Promise<wellKnownEmpty>;
+  Delete(request: resourceservicev1_DeleteMenuRequest): Promise<wellKnownEmpty>;
 }
 
 export function createMenuServiceClient(
@@ -3586,7 +3586,7 @@ export function createMenuServiceClient(
       }, {
         service: "MenuService",
         method: "List",
-      }) as Promise<permissionservicev1_ListMenuResponse>;
+      }) as Promise<resourceservicev1_ListMenuResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -3609,7 +3609,7 @@ export function createMenuServiceClient(
       }, {
         service: "MenuService",
         method: "Get",
-      }) as Promise<permissionservicev1_Menu>;
+      }) as Promise<resourceservicev1_Menu>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/menus`; // eslint-disable-line quotes
@@ -3674,18 +3674,18 @@ export function createMenuServiceClient(
   };
 }
 // 查询菜单列表 - 回应
-export type permissionservicev1_ListMenuResponse = {
-  items: permissionservicev1_Menu[] | undefined;
+export type resourceservicev1_ListMenuResponse = {
+  items: resourceservicev1_Menu[] | undefined;
   total: number | undefined;
 };
 
 // 菜单
-export type permissionservicev1_Menu = {
+export type resourceservicev1_Menu = {
   //
   // Behaviors: OPTIONAL
   id?: number;
-  status?: permissionservicev1_Menu_Status;
-  type?: permissionservicev1_Menu_Type;
+  status?: resourceservicev1_Menu_Status;
+  type?: resourceservicev1_Menu_Type;
   //
   // Behaviors: OPTIONAL
   path?: string;
@@ -3703,9 +3703,9 @@ export type permissionservicev1_Menu = {
   component?: string;
   //
   // Behaviors: OPTIONAL
-  meta?: permissionservicev1_MenuMeta;
+  meta?: resourceservicev1_MenuMeta;
   parentId?: number;
-  children: permissionservicev1_Menu[] | undefined;
+  children: resourceservicev1_Menu[] | undefined;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -3715,37 +3715,37 @@ export type permissionservicev1_Menu = {
 };
 
 // 菜单状态
-export type permissionservicev1_Menu_Status =
+export type resourceservicev1_Menu_Status =
   | "OFF"
   | "ON";
 // 菜单类型
-export type permissionservicev1_Menu_Type =
+export type resourceservicev1_Menu_Type =
   | "CATALOG"
   | "MENU"
   | "BUTTON"
   | "EMBEDDED"
   | "LINK";
 // 查询菜单详情 - 请求
-export type permissionservicev1_GetMenuRequest = {
+export type resourceservicev1_GetMenuRequest = {
   id?: number;
   viewMask?: wellKnownFieldMask;
 };
 
 // 创建菜单 - 请求
-export type permissionservicev1_CreateMenuRequest = {
-  data: permissionservicev1_Menu | undefined;
+export type resourceservicev1_CreateMenuRequest = {
+  data: resourceservicev1_Menu | undefined;
 };
 
 // 更新菜单 - 请求
-export type permissionservicev1_UpdateMenuRequest = {
+export type resourceservicev1_UpdateMenuRequest = {
   id: number | undefined;
-  data: permissionservicev1_Menu | undefined;
+  data: resourceservicev1_Menu | undefined;
   updateMask: wellKnownFieldMask | undefined;
   allowMissing?: boolean;
 };
 
 // 删除菜单 - 请求
-export type permissionservicev1_DeleteMenuRequest = {
+export type resourceservicev1_DeleteMenuRequest = {
   operatorId?: number;
   id: number | undefined;
 };
@@ -3916,15 +3916,15 @@ export type auditservicev1_GetOperationAuditLogRequest = {
 // 组织单元服务
 export interface OrgUnitService {
   // 查询组织单元列表
-  List(request: pagination_PagingRequest): Promise<userservicev1_ListOrgUnitResponse>;
+  List(request: pagination_PagingRequest): Promise<identityservicev1_ListOrgUnitResponse>;
   // 查询组织单元详情
-  Get(request: userservicev1_GetOrgUnitRequest): Promise<userservicev1_OrgUnit>;
+  Get(request: identityservicev1_GetOrgUnitRequest): Promise<identityservicev1_OrgUnit>;
   // 创建组织单元
-  Create(request: userservicev1_CreateOrgUnitRequest): Promise<wellKnownEmpty>;
+  Create(request: identityservicev1_CreateOrgUnitRequest): Promise<wellKnownEmpty>;
   // 更新组织单元
-  Update(request: userservicev1_UpdateOrgUnitRequest): Promise<wellKnownEmpty>;
+  Update(request: identityservicev1_UpdateOrgUnitRequest): Promise<wellKnownEmpty>;
   // 删除组织单元
-  Delete(request: userservicev1_DeleteOrgUnitRequest): Promise<wellKnownEmpty>;
+  Delete(request: identityservicev1_DeleteOrgUnitRequest): Promise<wellKnownEmpty>;
 }
 
 export function createOrgUnitServiceClient(
@@ -4008,7 +4008,7 @@ export function createOrgUnitServiceClient(
       }, {
         service: "OrgUnitService",
         method: "List",
-      }) as Promise<userservicev1_ListOrgUnitResponse>;
+      }) as Promise<identityservicev1_ListOrgUnitResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -4031,7 +4031,7 @@ export function createOrgUnitServiceClient(
       }, {
         service: "OrgUnitService",
         method: "Get",
-      }) as Promise<userservicev1_OrgUnit>;
+      }) as Promise<identityservicev1_OrgUnit>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/org-units`; // eslint-disable-line quotes
@@ -4093,19 +4093,19 @@ export function createOrgUnitServiceClient(
   };
 }
 // 获取组织单元列表 - 答复
-export type userservicev1_ListOrgUnitResponse = {
-  items: userservicev1_OrgUnit[] | undefined;
+export type identityservicev1_ListOrgUnitResponse = {
+  items: identityservicev1_OrgUnit[] | undefined;
   total: number | undefined;
 };
 
 // 组织单元
-export type userservicev1_OrgUnit = {
+export type identityservicev1_OrgUnit = {
   id?: number;
   name?: string;
   code?: string;
-  type?: userservicev1_OrgUnit_Type;
+  type?: identityservicev1_OrgUnit_Type;
   path?: string;
-  status?: userservicev1_OrgUnit_Status;
+  status?: identityservicev1_OrgUnit_Status;
   sortOrder?: number;
   leaderId?: number;
   leaderName?: string;
@@ -4133,7 +4133,7 @@ export type userservicev1_OrgUnit = {
   contactUserId?: number;
   contactUserName?: string;
   parentId?: number;
-  children: userservicev1_OrgUnit[] | undefined;
+  children: identityservicev1_OrgUnit[] | undefined;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -4143,7 +4143,7 @@ export type userservicev1_OrgUnit = {
 };
 
 // 组织单元类型
-export type userservicev1_OrgUnit_Type =
+export type identityservicev1_OrgUnit_Type =
   | "COMPANY"
   | "DIVISION"
   | "DEPARTMENT"
@@ -4155,30 +4155,30 @@ export type userservicev1_OrgUnit_Type =
   | "BRANCH"
   | "OTHER";
 // 组织单元状态
-export type userservicev1_OrgUnit_Status =
+export type identityservicev1_OrgUnit_Status =
   | "OFF"
   | "ON";
 // 获取组织单元数据 - 请求
-export type userservicev1_GetOrgUnitRequest = {
+export type identityservicev1_GetOrgUnitRequest = {
   id?: number;
   viewMask?: wellKnownFieldMask;
 };
 
 // 创建组织单元 - 请求
-export type userservicev1_CreateOrgUnitRequest = {
-  data: userservicev1_OrgUnit | undefined;
+export type identityservicev1_CreateOrgUnitRequest = {
+  data: identityservicev1_OrgUnit | undefined;
 };
 
 // 更新组织单元 - 请求
-export type userservicev1_UpdateOrgUnitRequest = {
+export type identityservicev1_UpdateOrgUnitRequest = {
   id: number | undefined;
-  data: userservicev1_OrgUnit | undefined;
+  data: identityservicev1_OrgUnit | undefined;
   updateMask: wellKnownFieldMask | undefined;
   allowMissing?: boolean;
 };
 
 // 删除组织单元 - 请求
-export type userservicev1_DeleteOrgUnitRequest = {
+export type identityservicev1_DeleteOrgUnitRequest = {
   id: number | undefined;
 };
 
@@ -4448,9 +4448,9 @@ export type permissionservicev1_DeletePermissionRequest = {
 // 权限变更审计日志服务
 export interface PermissionAuditLogService {
   // 查询权限变更审计日志列表
-  List(request: pagination_PagingRequest): Promise<permissionservicev1_ListPermissionAuditLogResponse>;
+  List(request: pagination_PagingRequest): Promise<auditservicev1_ListPermissionAuditLogResponse>;
   // 查询权限变更审计日志详情
-  Get(request: permissionservicev1_GetPermissionAuditLogRequest): Promise<permissionservicev1_PermissionAuditLog>;
+  Get(request: auditservicev1_GetPermissionAuditLogRequest): Promise<auditservicev1_PermissionAuditLog>;
 }
 
 export function createPermissionAuditLogServiceClient(
@@ -4534,7 +4534,7 @@ export function createPermissionAuditLogServiceClient(
       }, {
         service: "PermissionAuditLogService",
         method: "List",
-      }) as Promise<permissionservicev1_ListPermissionAuditLogResponse>;
+      }) as Promise<auditservicev1_ListPermissionAuditLogResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -4557,18 +4557,18 @@ export function createPermissionAuditLogServiceClient(
       }, {
         service: "PermissionAuditLogService",
         method: "Get",
-      }) as Promise<permissionservicev1_PermissionAuditLog>;
+      }) as Promise<auditservicev1_PermissionAuditLog>;
     },
   };
 }
 // 查询权限变更审计日志列表 - 回应
-export type permissionservicev1_ListPermissionAuditLogResponse = {
-  items: permissionservicev1_PermissionAuditLog[] | undefined;
+export type auditservicev1_ListPermissionAuditLogResponse = {
+  items: auditservicev1_PermissionAuditLog[] | undefined;
   total: number | undefined;
 };
 
 // 权限变更审计日志
-export type permissionservicev1_PermissionAuditLog = {
+export type auditservicev1_PermissionAuditLog = {
   id?: number;
   tenantId?: number;
   operatorId?: number;
@@ -4576,7 +4576,7 @@ export type permissionservicev1_PermissionAuditLog = {
   targetType?: string;
   targetId?: string;
   targetName?: string;
-  action?: permissionservicev1_PermissionAuditLog_ActionType;
+  action?: auditservicev1_PermissionAuditLog_ActionType;
   oldValue?: string;
   newValue?: string;
   ipAddress?: string;
@@ -4588,14 +4588,14 @@ export type permissionservicev1_PermissionAuditLog = {
 };
 
 // 变更动作
-export type permissionservicev1_PermissionAuditLog_ActionType =
+export type auditservicev1_PermissionAuditLog_ActionType =
   | "ACTION_TYPE_UNSPECIFIED"
   | "GRANT"
   | "REVOKE"
   | "UPDATE"
   | "RESET";
 // 查询权限变更审计日志详情 - 请求
-export type permissionservicev1_GetPermissionAuditLogRequest = {
+export type auditservicev1_GetPermissionAuditLogRequest = {
   id?: number;
   viewMask?: wellKnownFieldMask;
 };
@@ -4984,15 +4984,15 @@ export type permissionservicev1_GetPolicyEvaluationLogRequest = {
 // 职位管理服务
 export interface PositionService {
   // 查询职位列表
-  List(request: pagination_PagingRequest): Promise<userservicev1_ListPositionResponse>;
+  List(request: pagination_PagingRequest): Promise<identityservicev1_ListPositionResponse>;
   // 查询职位详情
-  Get(request: userservicev1_GetPositionRequest): Promise<userservicev1_Position>;
+  Get(request: identityservicev1_GetPositionRequest): Promise<identityservicev1_Position>;
   // 创建职位
-  Create(request: userservicev1_CreatePositionRequest): Promise<wellKnownEmpty>;
+  Create(request: identityservicev1_CreatePositionRequest): Promise<wellKnownEmpty>;
   // 更新职位
-  Update(request: userservicev1_UpdatePositionRequest): Promise<wellKnownEmpty>;
+  Update(request: identityservicev1_UpdatePositionRequest): Promise<wellKnownEmpty>;
   // 删除职位
-  Delete(request: userservicev1_DeletePositionRequest): Promise<wellKnownEmpty>;
+  Delete(request: identityservicev1_DeletePositionRequest): Promise<wellKnownEmpty>;
 }
 
 export function createPositionServiceClient(
@@ -5076,7 +5076,7 @@ export function createPositionServiceClient(
       }, {
         service: "PositionService",
         method: "List",
-      }) as Promise<userservicev1_ListPositionResponse>;
+      }) as Promise<identityservicev1_ListPositionResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -5105,7 +5105,7 @@ export function createPositionServiceClient(
       }, {
         service: "PositionService",
         method: "Get",
-      }) as Promise<userservicev1_Position>;
+      }) as Promise<identityservicev1_Position>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/positions`; // eslint-disable-line quotes
@@ -5167,20 +5167,20 @@ export function createPositionServiceClient(
   };
 }
 // 获取职位列表 - 答复
-export type userservicev1_ListPositionResponse = {
-  items: userservicev1_Position[] | undefined;
+export type identityservicev1_ListPositionResponse = {
+  items: identityservicev1_Position[] | undefined;
   total: number | undefined;
 };
 
 // 职位
-export type userservicev1_Position = {
+export type identityservicev1_Position = {
   id?: number;
   name?: string;
   code?: string;
   headcount?: number;
   sortOrder?: number;
-  status?: userservicev1_Position_Status;
-  type?: userservicev1_Position_Type;
+  status?: identityservicev1_Position_Status;
+  type?: identityservicev1_Position_Type;
   remark?: string;
   description?: string;
   jobFamily?: string;
@@ -5204,11 +5204,11 @@ export type userservicev1_Position = {
 };
 
 // 职位状态
-export type userservicev1_Position_Status =
+export type identityservicev1_Position_Status =
   | "OFF"
   | "ON";
 // 职位类型
-export type userservicev1_Position_Type =
+export type identityservicev1_Position_Type =
   | "REGULAR"
   | "LEADER"
   | "MANAGER"
@@ -5216,7 +5216,7 @@ export type userservicev1_Position_Type =
   | "CONTRACT"
   | "OTHER";
 // 获取职位数据 - 请求
-export type userservicev1_GetPositionRequest = {
+export type identityservicev1_GetPositionRequest = {
   id?: number;
   name?: string;
   code?: string;
@@ -5224,35 +5224,35 @@ export type userservicev1_GetPositionRequest = {
 };
 
 // 创建职位 - 请求
-export type userservicev1_CreatePositionRequest = {
-  data: userservicev1_Position | undefined;
+export type identityservicev1_CreatePositionRequest = {
+  data: identityservicev1_Position | undefined;
 };
 
 // 更新职位 - 请求
-export type userservicev1_UpdatePositionRequest = {
+export type identityservicev1_UpdatePositionRequest = {
   id: number | undefined;
-  data: userservicev1_Position | undefined;
+  data: identityservicev1_Position | undefined;
   updateMask: wellKnownFieldMask | undefined;
   allowMissing?: boolean;
 };
 
 // 删除职位 - 请求
-export type userservicev1_DeletePositionRequest = {
+export type identityservicev1_DeletePositionRequest = {
   id: number | undefined;
 };
 
 // 角色管理服务
 export interface RoleService {
   // 查询角色列表
-  List(request: pagination_PagingRequest): Promise<userservicev1_ListRoleResponse>;
+  List(request: pagination_PagingRequest): Promise<identityservicev1_ListRoleResponse>;
   // 查询角色详情
-  Get(request: userservicev1_GetRoleRequest): Promise<userservicev1_Role>;
+  Get(request: identityservicev1_GetRoleRequest): Promise<identityservicev1_Role>;
   // 创建角色
-  Create(request: userservicev1_CreateRoleRequest): Promise<wellKnownEmpty>;
+  Create(request: identityservicev1_CreateRoleRequest): Promise<wellKnownEmpty>;
   // 更新角色
-  Update(request: userservicev1_UpdateRoleRequest): Promise<wellKnownEmpty>;
+  Update(request: identityservicev1_UpdateRoleRequest): Promise<wellKnownEmpty>;
   // 删除角色
-  Delete(request: userservicev1_DeleteRoleRequest): Promise<wellKnownEmpty>;
+  Delete(request: identityservicev1_DeleteRoleRequest): Promise<wellKnownEmpty>;
 }
 
 export function createRoleServiceClient(
@@ -5336,7 +5336,7 @@ export function createRoleServiceClient(
       }, {
         service: "RoleService",
         method: "List",
-      }) as Promise<userservicev1_ListRoleResponse>;
+      }) as Promise<identityservicev1_ListRoleResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -5365,7 +5365,7 @@ export function createRoleServiceClient(
       }, {
         service: "RoleService",
         method: "Get",
-      }) as Promise<userservicev1_Role>;
+      }) as Promise<identityservicev1_Role>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/roles`; // eslint-disable-line quotes
@@ -5427,18 +5427,18 @@ export function createRoleServiceClient(
   };
 }
 // 角色列表 - 答复
-export type userservicev1_ListRoleResponse = {
-  items: userservicev1_Role[] | undefined;
+export type identityservicev1_ListRoleResponse = {
+  items: identityservicev1_Role[] | undefined;
   total: number | undefined;
 };
 
 // 角色
-export type userservicev1_Role = {
+export type identityservicev1_Role = {
   id?: number;
   name?: string;
   code?: string;
   sortOrder?: number;
-  status?: userservicev1_Role_Status;
+  status?: identityservicev1_Role_Status;
   description?: string;
   isProtected?: boolean;
   isSystem?: boolean;
@@ -5454,11 +5454,11 @@ export type userservicev1_Role = {
 };
 
 // 角色状态
-export type userservicev1_Role_Status =
+export type identityservicev1_Role_Status =
   | "OFF"
   | "ON";
 // 角色数据 - 请求
-export type userservicev1_GetRoleRequest = {
+export type identityservicev1_GetRoleRequest = {
   id?: number;
   name?: string;
   code?: string;
@@ -5466,20 +5466,20 @@ export type userservicev1_GetRoleRequest = {
 };
 
 // 创建角色 - 请求
-export type userservicev1_CreateRoleRequest = {
-  data: userservicev1_Role | undefined;
+export type identityservicev1_CreateRoleRequest = {
+  data: identityservicev1_Role | undefined;
 };
 
 // 更新角色 - 请求
-export type userservicev1_UpdateRoleRequest = {
+export type identityservicev1_UpdateRoleRequest = {
   id: number | undefined;
-  data: userservicev1_Role | undefined;
+  data: identityservicev1_Role | undefined;
   updateMask: wellKnownFieldMask | undefined;
   allowMissing?: boolean;
 };
 
 // 删除角色 - 请求
-export type userservicev1_DeleteRoleRequest = {
+export type identityservicev1_DeleteRoleRequest = {
   id: number | undefined;
 };
 
@@ -5892,19 +5892,19 @@ export type taskservicev1_ControlTaskRequest_ControlType =
 // 租户管理服务
 export interface TenantService {
   // 获取租户列表
-  List(request: pagination_PagingRequest): Promise<userservicev1_ListTenantResponse>;
+  List(request: pagination_PagingRequest): Promise<identityservicev1_ListTenantResponse>;
   // 获取租户数据
-  Get(request: userservicev1_GetTenantRequest): Promise<userservicev1_Tenant>;
+  Get(request: identityservicev1_GetTenantRequest): Promise<identityservicev1_Tenant>;
   // 创建租户
-  Create(request: userservicev1_CreateTenantRequest): Promise<wellKnownEmpty>;
+  Create(request: identityservicev1_CreateTenantRequest): Promise<wellKnownEmpty>;
   // 更新租户
-  Update(request: userservicev1_UpdateTenantRequest): Promise<wellKnownEmpty>;
+  Update(request: identityservicev1_UpdateTenantRequest): Promise<wellKnownEmpty>;
   // 删除租户
-  Delete(request: userservicev1_DeleteTenantRequest): Promise<wellKnownEmpty>;
+  Delete(request: identityservicev1_DeleteTenantRequest): Promise<wellKnownEmpty>;
   // 创建租户及管理员用户
-  CreateTenantWithAdminUser(request: userservicev1_CreateTenantWithAdminUserRequest): Promise<wellKnownEmpty>;
+  CreateTenantWithAdminUser(request: identityservicev1_CreateTenantWithAdminUserRequest): Promise<wellKnownEmpty>;
   // 租户是否存在
-  TenantExists(request: userservicev1_TenantExistsRequest): Promise<userservicev1_TenantExistsResponse>;
+  TenantExists(request: identityservicev1_TenantExistsRequest): Promise<identityservicev1_TenantExistsResponse>;
 }
 
 export function createTenantServiceClient(
@@ -5988,7 +5988,7 @@ export function createTenantServiceClient(
       }, {
         service: "TenantService",
         method: "List",
-      }) as Promise<userservicev1_ListTenantResponse>;
+      }) as Promise<identityservicev1_ListTenantResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -6017,7 +6017,7 @@ export function createTenantServiceClient(
       }, {
         service: "TenantService",
         method: "Get",
-      }) as Promise<userservicev1_Tenant>;
+      }) as Promise<identityservicev1_Tenant>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/tenants`; // eslint-disable-line quotes
@@ -6114,25 +6114,25 @@ export function createTenantServiceClient(
       }, {
         service: "TenantService",
         method: "TenantExists",
-      }) as Promise<userservicev1_TenantExistsResponse>;
+      }) as Promise<identityservicev1_TenantExistsResponse>;
     },
   };
 }
 // 租户列表 - 答复
-export type userservicev1_ListTenantResponse = {
-  items: userservicev1_Tenant[] | undefined;
+export type identityservicev1_ListTenantResponse = {
+  items: identityservicev1_Tenant[] | undefined;
   total: number | undefined;
 };
 
 // 租户
-export type userservicev1_Tenant = {
+export type identityservicev1_Tenant = {
   id?: number;
   name?: string;
   code?: string;
   domain?: string;
   logoUrl?: string;
   industry?: string;
-  type?: userservicev1_Tenant_Type;
+  type?: identityservicev1_Tenant_Type;
   remark?: string;
   adminUserId?: number;
   adminUserName?: string;
@@ -6141,8 +6141,8 @@ export type userservicev1_Tenant = {
   expiredAt?: wellKnownTimestamp;
   subscriptionPlan?: string;
   memberCount?: number;
-  status?: userservicev1_Tenant_Status;
-  auditStatus?: userservicev1_Tenant_AuditStatus;
+  status?: identityservicev1_Tenant_Status;
+  auditStatus?: identityservicev1_Tenant_AuditStatus;
   createdBy?: number;
   updatedBy?: number;
   deletedBy?: number;
@@ -6152,7 +6152,7 @@ export type userservicev1_Tenant = {
 };
 
 // 租户类型
-export type userservicev1_Tenant_Type =
+export type identityservicev1_Tenant_Type =
   | "TENANT_TYPE_UNSPECIFIED"
   | "TRIAL"
   | "PAID"
@@ -6160,19 +6160,19 @@ export type userservicev1_Tenant_Type =
   | "PARTNER"
   | "CUSTOM";
 // 租户状态
-export type userservicev1_Tenant_Status =
+export type identityservicev1_Tenant_Status =
   | "OFF"
   | "ON"
   | "EXPIRED"
   | "FREEZE";
 // 租户审核状态
-export type userservicev1_Tenant_AuditStatus =
+export type identityservicev1_Tenant_AuditStatus =
   | "TENANT_AUDIT_STATUS_UNSPECIFIED"
   | "PENDING"
   | "APPROVED"
   | "REJECTED";
 // 租户数据 - 请求
-export type userservicev1_GetTenantRequest = {
+export type identityservicev1_GetTenantRequest = {
   id?: number;
   code?: string;
   name?: string;
@@ -6180,32 +6180,32 @@ export type userservicev1_GetTenantRequest = {
 };
 
 // 创建租户 - 请求
-export type userservicev1_CreateTenantRequest = {
-  data: userservicev1_Tenant | undefined;
+export type identityservicev1_CreateTenantRequest = {
+  data: identityservicev1_Tenant | undefined;
 };
 
 // 更新租户 -请求
-export type userservicev1_UpdateTenantRequest = {
+export type identityservicev1_UpdateTenantRequest = {
   id: number | undefined;
-  data: userservicev1_Tenant | undefined;
+  data: identityservicev1_Tenant | undefined;
   updateMask: wellKnownFieldMask | undefined;
   allowMissing?: boolean;
 };
 
 // 删除租户 - 请求
-export type userservicev1_DeleteTenantRequest = {
+export type identityservicev1_DeleteTenantRequest = {
   id: number | undefined;
 };
 
 // 创建租户及管理员用户 - 请求
-export type userservicev1_CreateTenantWithAdminUserRequest = {
-  tenant: userservicev1_Tenant | undefined;
-  user: userservicev1_User | undefined;
+export type identityservicev1_CreateTenantWithAdminUserRequest = {
+  tenant: identityservicev1_Tenant | undefined;
+  user: identityservicev1_User | undefined;
   password: string | undefined;
 };
 
 // 用户
-export type userservicev1_User = {
+export type identityservicev1_User = {
   id?: number;
   tenantId?: number;
   tenantName?: string;
@@ -6228,14 +6228,14 @@ export type userservicev1_User = {
   email?: string;
   mobile?: string;
   telephone?: string;
-  gender?: userservicev1_User_Gender;
+  gender?: identityservicev1_User_Gender;
   address?: string;
   region?: string;
   description?: string;
   remark?: string;
   lastLoginAt?: wellKnownTimestamp;
   lastLoginIp?: string;
-  status?: userservicev1_User_Status;
+  status?: identityservicev1_User_Status;
   lockedUntil?: wellKnownTimestamp;
   createdBy?: number;
   updatedBy?: number;
@@ -6246,12 +6246,12 @@ export type userservicev1_User = {
 };
 
 // 用户性别
-export type userservicev1_User_Gender =
+export type identityservicev1_User_Gender =
   | "SECRET"
   | "MALE"
   | "FEMALE";
 // 用户状态
-export type userservicev1_User_Status =
+export type identityservicev1_User_Status =
   | "DISABLED"
   | "NORMAL"
   | "PENDING"
@@ -6259,13 +6259,13 @@ export type userservicev1_User_Status =
   | "EXPIRED"
   | "CLOSED";
 // 租户是否存在 - 请求
-export type userservicev1_TenantExistsRequest = {
+export type identityservicev1_TenantExistsRequest = {
   code: string | undefined;
   name: string | undefined;
 };
 
 // 租户是否存在 - 答复
-export type userservicev1_TenantExistsResponse = {
+export type identityservicev1_TenantExistsResponse = {
   exist: boolean | undefined;
 };
 
@@ -6386,19 +6386,19 @@ export type fileservicev1_UEditorResponse_Item = {
 // 用户管理服务
 export interface UserService {
   // 获取用户列表
-  List(request: pagination_PagingRequest): Promise<userservicev1_ListUserResponse>;
+  List(request: pagination_PagingRequest): Promise<identityservicev1_ListUserResponse>;
   // 获取用户数据
-  Get(request: userservicev1_GetUserRequest): Promise<userservicev1_User>;
+  Get(request: identityservicev1_GetUserRequest): Promise<identityservicev1_User>;
   // 创建用户
-  Create(request: userservicev1_CreateUserRequest): Promise<wellKnownEmpty>;
+  Create(request: identityservicev1_CreateUserRequest): Promise<wellKnownEmpty>;
   // 更新用户
-  Update(request: userservicev1_UpdateUserRequest): Promise<wellKnownEmpty>;
+  Update(request: identityservicev1_UpdateUserRequest): Promise<wellKnownEmpty>;
   // 删除用户
-  Delete(request: userservicev1_DeleteUserRequest): Promise<wellKnownEmpty>;
+  Delete(request: identityservicev1_DeleteUserRequest): Promise<wellKnownEmpty>;
   // 用户是否存在
-  UserExists(request: userservicev1_UserExistsRequest): Promise<userservicev1_UserExistsResponse>;
+  UserExists(request: identityservicev1_UserExistsRequest): Promise<identityservicev1_UserExistsResponse>;
   // 修改用户密码
-  EditUserPassword(request: userservicev1_EditUserPasswordRequest): Promise<wellKnownEmpty>;
+  EditUserPassword(request: identityservicev1_EditUserPasswordRequest): Promise<wellKnownEmpty>;
 }
 
 export function createUserServiceClient(
@@ -6482,7 +6482,7 @@ export function createUserServiceClient(
       }, {
         service: "UserService",
         method: "List",
-      }) as Promise<userservicev1_ListUserResponse>;
+      }) as Promise<identityservicev1_ListUserResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -6508,7 +6508,7 @@ export function createUserServiceClient(
       }, {
         service: "UserService",
         method: "Get",
-      }) as Promise<userservicev1_User>;
+      }) as Promise<identityservicev1_User>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/users`; // eslint-disable-line quotes
@@ -6591,7 +6591,7 @@ export function createUserServiceClient(
       }, {
         service: "UserService",
         method: "UserExists",
-      }) as Promise<userservicev1_UserExistsResponse>;
+      }) as Promise<identityservicev1_UserExistsResponse>;
     },
     EditUserPassword(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.userId) {
@@ -6616,54 +6616,54 @@ export function createUserServiceClient(
   };
 }
 // 获取用户列表 - 答复
-export type userservicev1_ListUserResponse = {
-  items: userservicev1_User[] | undefined;
+export type identityservicev1_ListUserResponse = {
+  items: identityservicev1_User[] | undefined;
   total: number | undefined;
 };
 
 // 获取用户数据 - 请求
-export type userservicev1_GetUserRequest = {
+export type identityservicev1_GetUserRequest = {
   id?: number;
   username?: string;
   viewMask?: wellKnownFieldMask;
 };
 
 // 创建用户 - 请求
-export type userservicev1_CreateUserRequest = {
-  data: userservicev1_User | undefined;
+export type identityservicev1_CreateUserRequest = {
+  data: identityservicev1_User | undefined;
   password?: string;
 };
 
 // 更新用户 - 请求
-export type userservicev1_UpdateUserRequest = {
+export type identityservicev1_UpdateUserRequest = {
   id: number | undefined;
   //
   // Behaviors: REQUIRED
-  data: userservicev1_User | undefined;
+  data: identityservicev1_User | undefined;
   password?: string;
   updateMask: wellKnownFieldMask | undefined;
   allowMissing?: boolean;
 };
 
 // 删除用户 - 请求
-export type userservicev1_DeleteUserRequest = {
+export type identityservicev1_DeleteUserRequest = {
   id?: number;
   username?: string;
 };
 
 // 用户是否存在 - 请求
-export type userservicev1_UserExistsRequest = {
+export type identityservicev1_UserExistsRequest = {
   id?: number;
   username?: string;
 };
 
 // 用户是否存在 - 答复
-export type userservicev1_UserExistsResponse = {
+export type identityservicev1_UserExistsResponse = {
   exist: boolean | undefined;
 };
 
 // 强制修改用户密码（不验证） - 请求
-export type userservicev1_EditUserPasswordRequest = {
+export type identityservicev1_EditUserPasswordRequest = {
   userId: number | undefined;
   newPassword: string | undefined;
 };
@@ -6671,19 +6671,19 @@ export type userservicev1_EditUserPasswordRequest = {
 // 用户个人资料服务
 export interface UserProfileService {
   // 获取用户资料
-  GetUser(request: wellKnownEmpty): Promise<userservicev1_User>;
+  GetUser(request: wellKnownEmpty): Promise<identityservicev1_User>;
   // 更新用户资料
-  UpdateUser(request: userservicev1_UpdateUserRequest): Promise<wellKnownEmpty>;
+  UpdateUser(request: identityservicev1_UpdateUserRequest): Promise<wellKnownEmpty>;
   // 修改用户密码
-  ChangePassword(request: userservicev1_ChangePasswordRequest): Promise<wellKnownEmpty>;
+  ChangePassword(request: identityservicev1_ChangePasswordRequest): Promise<wellKnownEmpty>;
   // 上传头像
-  UploadAvatar(request: userservicev1_UploadAvatarRequest): Promise<userservicev1_UploadAvatarResponse>;
+  UploadAvatar(request: identityservicev1_UploadAvatarRequest): Promise<identityservicev1_UploadAvatarResponse>;
   // 删除头像
   DeleteAvatar(request: wellKnownEmpty): Promise<wellKnownEmpty>;
   // 绑定手机号码/邮箱
-  BindContact(request: userservicev1_BindContactRequest): Promise<wellKnownEmpty>;
+  BindContact(request: identityservicev1_BindContactRequest): Promise<wellKnownEmpty>;
   // 验证手机号码/邮箱
-  VerifyContact(request: userservicev1_VerifyContactRequest): Promise<wellKnownEmpty>;
+  VerifyContact(request: identityservicev1_VerifyContactRequest): Promise<wellKnownEmpty>;
 }
 
 export function createUserProfileServiceClient(
@@ -6705,7 +6705,7 @@ export function createUserProfileServiceClient(
       }, {
         service: "UserProfileService",
         method: "GetUser",
-      }) as Promise<userservicev1_User>;
+      }) as Promise<identityservicev1_User>;
     },
     UpdateUser(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/me`; // eslint-disable-line quotes
@@ -6756,7 +6756,7 @@ export function createUserProfileServiceClient(
       }, {
         service: "UserProfileService",
         method: "UploadAvatar",
-      }) as Promise<userservicev1_UploadAvatarResponse>;
+      }) as Promise<identityservicev1_UploadAvatarResponse>;
     },
     DeleteAvatar(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/me/avatar`; // eslint-disable-line quotes
@@ -6812,44 +6812,44 @@ export function createUserProfileServiceClient(
   };
 }
 // 修改用户密码（需要验证旧密码） - 请求
-export type userservicev1_ChangePasswordRequest = {
+export type identityservicev1_ChangePasswordRequest = {
   oldPassword: string | undefined;
   newPassword: string | undefined;
 };
 
-export type userservicev1_UploadAvatarRequest = {
+export type identityservicev1_UploadAvatarRequest = {
   imageBase64?: string;
   imageUrl?: string;
 };
 
-export type userservicev1_UploadAvatarResponse = {
+export type identityservicev1_UploadAvatarResponse = {
   url: string | undefined;
 };
 
-export type userservicev1_BindContactRequest = {
-  phone?: userservicev1_BindPhoneRequest;
-  email?: userservicev1_BindEmailRequest;
+export type identityservicev1_BindContactRequest = {
+  phone?: identityservicev1_BindPhoneRequest;
+  email?: identityservicev1_BindEmailRequest;
 };
 
-export type userservicev1_BindPhoneRequest = {
+export type identityservicev1_BindPhoneRequest = {
   phone: string | undefined;
   code: string | undefined;
 };
 
-export type userservicev1_BindEmailRequest = {
+export type identityservicev1_BindEmailRequest = {
   email: string | undefined;
   verificationCode?: string;
 };
 
-export type userservicev1_VerifyContactRequest = {
-  phone?: userservicev1_PhoneVerification;
-  email?: userservicev1_EmailVerification;
+export type identityservicev1_VerifyContactRequest = {
+  phone?: identityservicev1_PhoneVerification;
+  email?: identityservicev1_EmailVerification;
   // 可选：服务端生成的验证码会话 id（用于多步骤或回调验证）
   verificationId?: string;
 };
 
 // 手机验证
-export type userservicev1_PhoneVerification = {
+export type identityservicev1_PhoneVerification = {
   phone: string | undefined;
   //
   // Behaviors: REQUIRED
@@ -6857,7 +6857,7 @@ export type userservicev1_PhoneVerification = {
 };
 
 // 邮箱验证
-export type userservicev1_EmailVerification = {
+export type identityservicev1_EmailVerification = {
   email: string | undefined;
   //
   // Behaviors: REQUIRED

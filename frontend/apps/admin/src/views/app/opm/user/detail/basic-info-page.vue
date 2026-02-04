@@ -7,7 +7,7 @@ import { formatDateTime } from '@vben/utils';
 
 import { Avatar, Descriptions, DescriptionsItem } from 'ant-design-vue';
 
-import { type userservicev1_User as User } from '#/generated/api/admin/service/v1';
+import { type identityservicev1_User as User } from '#/generated/api/admin/service/v1';
 import { genderToColor, genderToName, useUserListStore } from '#/stores';
 import { getCharColor, getRandomColor } from '#/utils/color';
 

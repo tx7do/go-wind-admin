@@ -8,7 +8,7 @@ package userprofilepb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
-	v1 "go-wind-admin/api/gen/go/user/service/v1"
+	v1 "go-wind-admin/api/gen/go/identity/service/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -28,22 +28,22 @@ var File_user_profile_service_v1_user_profile_proto protoreflect.FileDescriptor
 
 const file_user_profile_service_v1_user_profile_proto_rawDesc = "" +
 	"\n" +
-	"*user_profile/service/v1/user_profile.proto\x12\x17user_profile.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1auser/service/v1/user.proto2\x9c\x01\n" +
-	"\x12UserProfileService\x12:\n" +
-	"\aGetUser\x12\x16.google.protobuf.Empty\x1a\x15.user.service.v1.User\"\x00\x12J\n" +
+	"*user_profile/service/v1/user_profile.proto\x12\x17user_profile.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1eidentity/service/v1/user.proto2\xa4\x01\n" +
+	"\x12UserProfileService\x12>\n" +
+	"\aGetUser\x12\x16.google.protobuf.Empty\x1a\x19.identity.service.v1.User\"\x00\x12N\n" +
 	"\n" +
-	"UpdateUser\x12\".user.service.v1.UpdateUserRequest\x1a\x16.google.protobuf.Empty\"\x00B\xe9\x01\n" +
+	"UpdateUser\x12&.identity.service.v1.UpdateUserRequest\x1a\x16.google.protobuf.Empty\"\x00B\xe9\x01\n" +
 	"\x1bcom.user_profile.service.v1B\x10UserProfileProtoP\x01Z>go-wind-admin/api/gen/go/user_profile/service/v1;userprofilepb\xa2\x02\x03USX\xaa\x02\x16UserProfile.Service.V1\xca\x02\x16UserProfile\\Service\\V1\xe2\x02\"UserProfile\\Service\\V1\\GPBMetadata\xea\x02\x18UserProfile::Service::V1b\x06proto3"
 
 var file_user_profile_service_v1_user_profile_proto_goTypes = []any{
 	(*emptypb.Empty)(nil),        // 0: google.protobuf.Empty
-	(*v1.UpdateUserRequest)(nil), // 1: user.service.v1.UpdateUserRequest
-	(*v1.User)(nil),              // 2: user.service.v1.User
+	(*v1.UpdateUserRequest)(nil), // 1: identity.service.v1.UpdateUserRequest
+	(*v1.User)(nil),              // 2: identity.service.v1.User
 }
 var file_user_profile_service_v1_user_profile_proto_depIdxs = []int32{
 	0, // 0: user_profile.service.v1.UserProfileService.GetUser:input_type -> google.protobuf.Empty
-	1, // 1: user_profile.service.v1.UserProfileService.UpdateUser:input_type -> user.service.v1.UpdateUserRequest
-	2, // 2: user_profile.service.v1.UserProfileService.GetUser:output_type -> user.service.v1.User
+	1, // 1: user_profile.service.v1.UserProfileService.UpdateUser:input_type -> identity.service.v1.UpdateUserRequest
+	2, // 2: user_profile.service.v1.UserProfileService.GetUser:output_type -> identity.service.v1.User
 	0, // 3: user_profile.service.v1.UserProfileService.UpdateUser:output_type -> google.protobuf.Empty
 	2, // [2:4] is the sub-list for method output_type
 	0, // [0:2] is the sub-list for method input_type

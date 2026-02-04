@@ -9,7 +9,7 @@ package adminpb
 import (
 	_ "github.com/google/gnostic/openapiv3"
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	v11 "go-wind-admin/api/gen/go/permission/service/v1"
+	v11 "go-wind-admin/api/gen/go/resource/service/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -31,34 +31,34 @@ var File_admin_service_v1_i_menu_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_menu_proto_rawDesc = "" +
 	"\n" +
-	"\x1dadmin/service/v1/i_menu.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a permission/service/v1/menu.proto2\x9a\x04\n" +
-	"\vMenuService\x12c\n" +
-	"\x04List\x12\x19.pagination.PagingRequest\x1a'.permission.service.v1.ListMenuResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/admin/v1/menus\x12g\n" +
-	"\x03Get\x12%.permission.service.v1.GetMenuRequest\x1a\x1b.permission.service.v1.Menu\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/admin/v1/menus/{id}\x12f\n" +
-	"\x06Create\x12(.permission.service.v1.CreateMenuRequest\x1a\x16.google.protobuf.Empty\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/admin/v1/menus\x12k\n" +
-	"\x06Update\x12(.permission.service.v1.UpdateMenuRequest\x1a\x16.google.protobuf.Empty\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\x1a\x14/admin/v1/menus/{id}\x12h\n" +
-	"\x06Delete\x12(.permission.service.v1.DeleteMenuRequest\x1a\x16.google.protobuf.Empty\"\x1c\x82\xd3\xe4\x93\x02\x16*\x14/admin/v1/menus/{id}B\xb7\x01\n" +
+	"\x1dadmin/service/v1/i_menu.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1eresource/service/v1/menu.proto2\x8e\x04\n" +
+	"\vMenuService\x12a\n" +
+	"\x04List\x12\x19.pagination.PagingRequest\x1a%.resource.service.v1.ListMenuResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/admin/v1/menus\x12c\n" +
+	"\x03Get\x12#.resource.service.v1.GetMenuRequest\x1a\x19.resource.service.v1.Menu\"\x1c\x82\xd3\xe4\x93\x02\x16\x12\x14/admin/v1/menus/{id}\x12d\n" +
+	"\x06Create\x12&.resource.service.v1.CreateMenuRequest\x1a\x16.google.protobuf.Empty\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/admin/v1/menus\x12i\n" +
+	"\x06Update\x12&.resource.service.v1.UpdateMenuRequest\x1a\x16.google.protobuf.Empty\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\x1a\x14/admin/v1/menus/{id}\x12f\n" +
+	"\x06Delete\x12&.resource.service.v1.DeleteMenuRequest\x1a\x16.google.protobuf.Empty\"\x1c\x82\xd3\xe4\x93\x02\x16*\x14/admin/v1/menus/{id}B\xb7\x01\n" +
 	"\x14com.admin.service.v1B\n" +
 	"IMenuProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_menu_proto_goTypes = []any{
 	(*v1.PagingRequest)(nil),      // 0: pagination.PagingRequest
-	(*v11.GetMenuRequest)(nil),    // 1: permission.service.v1.GetMenuRequest
-	(*v11.CreateMenuRequest)(nil), // 2: permission.service.v1.CreateMenuRequest
-	(*v11.UpdateMenuRequest)(nil), // 3: permission.service.v1.UpdateMenuRequest
-	(*v11.DeleteMenuRequest)(nil), // 4: permission.service.v1.DeleteMenuRequest
-	(*v11.ListMenuResponse)(nil),  // 5: permission.service.v1.ListMenuResponse
-	(*v11.Menu)(nil),              // 6: permission.service.v1.Menu
+	(*v11.GetMenuRequest)(nil),    // 1: resource.service.v1.GetMenuRequest
+	(*v11.CreateMenuRequest)(nil), // 2: resource.service.v1.CreateMenuRequest
+	(*v11.UpdateMenuRequest)(nil), // 3: resource.service.v1.UpdateMenuRequest
+	(*v11.DeleteMenuRequest)(nil), // 4: resource.service.v1.DeleteMenuRequest
+	(*v11.ListMenuResponse)(nil),  // 5: resource.service.v1.ListMenuResponse
+	(*v11.Menu)(nil),              // 6: resource.service.v1.Menu
 	(*emptypb.Empty)(nil),         // 7: google.protobuf.Empty
 }
 var file_admin_service_v1_i_menu_proto_depIdxs = []int32{
 	0, // 0: admin.service.v1.MenuService.List:input_type -> pagination.PagingRequest
-	1, // 1: admin.service.v1.MenuService.Get:input_type -> permission.service.v1.GetMenuRequest
-	2, // 2: admin.service.v1.MenuService.Create:input_type -> permission.service.v1.CreateMenuRequest
-	3, // 3: admin.service.v1.MenuService.Update:input_type -> permission.service.v1.UpdateMenuRequest
-	4, // 4: admin.service.v1.MenuService.Delete:input_type -> permission.service.v1.DeleteMenuRequest
-	5, // 5: admin.service.v1.MenuService.List:output_type -> permission.service.v1.ListMenuResponse
-	6, // 6: admin.service.v1.MenuService.Get:output_type -> permission.service.v1.Menu
+	1, // 1: admin.service.v1.MenuService.Get:input_type -> resource.service.v1.GetMenuRequest
+	2, // 2: admin.service.v1.MenuService.Create:input_type -> resource.service.v1.CreateMenuRequest
+	3, // 3: admin.service.v1.MenuService.Update:input_type -> resource.service.v1.UpdateMenuRequest
+	4, // 4: admin.service.v1.MenuService.Delete:input_type -> resource.service.v1.DeleteMenuRequest
+	5, // 5: admin.service.v1.MenuService.List:output_type -> resource.service.v1.ListMenuResponse
+	6, // 6: admin.service.v1.MenuService.Get:output_type -> resource.service.v1.Menu
 	7, // 7: admin.service.v1.MenuService.Create:output_type -> google.protobuf.Empty
 	7, // 8: admin.service.v1.MenuService.Update:output_type -> google.protobuf.Empty
 	7, // 9: admin.service.v1.MenuService.Delete:output_type -> google.protobuf.Empty

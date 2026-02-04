@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+package identity.service.v1;
+
+// 数据权限范围
+enum DataScope {
+  DATA_SCOPE_UNSPECIFIED = 0;
+
+  ALL = 1;              // 全部数据：可跨租户或租户内所有 Unit (取决于 tenant_id)
+  SELF = 2;             // 仅限本人：只能看到 owner_id 等于自己的数据
+
+  UNIT_ONLY = 3;        // 仅限当前所属 OrgUnit：不含子节点
+  UNIT_AND_CHILD = 4;   // 当前所属 OrgUnit 及所有递归子节点
+
+  SELECTED_UNITS = 5;   // 自定义组织单元列表
+}

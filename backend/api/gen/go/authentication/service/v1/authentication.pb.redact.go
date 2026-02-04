@@ -6,7 +6,7 @@ package authenticationpb
 import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
-	userpb "go-wind-admin/api/gen/go/user/service/v1"
+	servicev1 "go-wind-admin/api/gen/go/identity/service/v1"
 	annotations "google.golang.org/genproto/googleapis/api/annotations"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -28,8 +28,7 @@ var (
 	_ durationpb.Duration
 	_ annotations.FieldBehavior
 	_ redact.FieldRules
-	_ userpb.User
-	_ userpb.Role
+	_ servicev1.User
 )
 
 // RegisterRedactedAuthenticationServiceServer wraps the AuthenticationServiceServer with the redacted server and registers the service in GRPC

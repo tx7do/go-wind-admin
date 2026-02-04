@@ -13,7 +13,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 
 	"go-wind-admin/pkg/middleware/auth"
 )
@@ -40,8 +40,8 @@ func NewPositionService(
 }
 
 func (s *PositionService) extractRelationIDs(
-	positions []*userV1.Position,
-	orgUnitSet aggregator.ResourceMap[uint32, *userV1.OrgUnit],
+	positions []*identityV1.Position,
+	orgUnitSet aggregator.ResourceMap[uint32, *identityV1.OrgUnit],
 ) {
 	for _, p := range positions {
 		if p.GetOrgUnitId() > 0 {
@@ -52,7 +52,7 @@ func (s *PositionService) extractRelationIDs(
 
 func (s *PositionService) fetchRelationInfo(
 	ctx context.Context,
-	orgUnitSet aggregator.ResourceMap[uint32, *userV1.OrgUnit],
+	orgUnitSet aggregator.ResourceMap[uint32, *identityV1.OrgUnit],
 ) error {
 	if len(orgUnitSet) > 0 {
 		orgUnitIds := make([]uint32, 0, len(orgUnitSet))
@@ -75,21 +75,21 @@ func (s *PositionService) fetchRelationInfo(
 }
 
 func (s *PositionService) bindRelations(
-	positions []*userV1.Position,
-	orgUnitSet aggregator.ResourceMap[uint32, *userV1.OrgUnit],
+	positions []*identityV1.Position,
+	orgUnitSet aggregator.ResourceMap[uint32, *identityV1.OrgUnit],
 ) {
 	aggregator.Populate(
 		positions,
 		orgUnitSet,
-		func(ou *userV1.Position) uint32 { return ou.GetOrgUnitId() },
-		func(ou *userV1.Position, org *userV1.OrgUnit) {
+		func(ou *identityV1.Position) uint32 { return ou.GetOrgUnitId() },
+		func(ou *identityV1.Position, org *identityV1.OrgUnit) {
 			ou.OrgUnitName = org.Name
 		},
 	)
 }
 
-func (s *PositionService) enrichRelations(ctx context.Context, positions []*userV1.Position) error {
-	var orgUnitSet = make(aggregator.ResourceMap[uint32, *userV1.OrgUnit])
+func (s *PositionService) enrichRelations(ctx context.Context, positions []*identityV1.Position) error {
+	var orgUnitSet = make(aggregator.ResourceMap[uint32, *identityV1.OrgUnit])
 	s.extractRelationIDs(positions, orgUnitSet)
 	if err := s.fetchRelationInfo(ctx, orgUnitSet); err != nil {
 		return err
@@ -98,7 +98,7 @@ func (s *PositionService) enrichRelations(ctx context.Context, positions []*user
 	return nil
 }
 
-func (s *PositionService) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListPositionResponse, error) {
+func (s *PositionService) List(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.ListPositionResponse, error) {
 	resp, err := s.positionRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
@@ -109,30 +109,30 @@ func (s *PositionService) List(ctx context.Context, req *paginationV1.PagingRequ
 	return resp, nil
 }
 
-func (s *PositionService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.CountPositionResponse, error) {
+func (s *PositionService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.CountPositionResponse, error) {
 	count, err := s.positionRepo.Count(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	return &userV1.CountPositionResponse{
+	return &identityV1.CountPositionResponse{
 		Count: uint64(count),
 	}, nil
 }
 
-func (s *PositionService) Get(ctx context.Context, req *userV1.GetPositionRequest) (*userV1.Position, error) {
+func (s *PositionService) Get(ctx context.Context, req *identityV1.GetPositionRequest) (*identityV1.Position, error) {
 	resp, err := s.positionRepo.Get(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	fakeItems := []*userV1.Position{resp}
+	fakeItems := []*identityV1.Position{resp}
 	_ = s.enrichRelations(ctx, fakeItems)
 
 	return resp, nil
 }
 
-func (s *PositionService) Create(ctx context.Context, req *userV1.CreatePositionRequest) (*emptypb.Empty, error) {
+func (s *PositionService) Create(ctx context.Context, req *identityV1.CreatePositionRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -152,7 +152,7 @@ func (s *PositionService) Create(ctx context.Context, req *userV1.CreatePosition
 	return &emptypb.Empty{}, nil
 }
 
-func (s *PositionService) Update(ctx context.Context, req *userV1.UpdatePositionRequest) (*emptypb.Empty, error) {
+func (s *PositionService) Update(ctx context.Context, req *identityV1.UpdatePositionRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -175,7 +175,7 @@ func (s *PositionService) Update(ctx context.Context, req *userV1.UpdatePosition
 	return &emptypb.Empty{}, nil
 }
 
-func (s *PositionService) Delete(ctx context.Context, req *userV1.DeletePositionRequest) (*emptypb.Empty, error) {
+func (s *PositionService) Delete(ctx context.Context, req *identityV1.DeletePositionRequest) (*emptypb.Empty, error) {
 	if err := s.positionRepo.Delete(ctx, req); err != nil {
 		return nil, err
 	}

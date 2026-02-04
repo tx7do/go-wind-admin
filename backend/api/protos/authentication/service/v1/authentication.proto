@@ -13,8 +13,7 @@ import "google/api/field_behavior.proto";
 
 import "redact/v3/redact.proto";
 
-import "user/service/v1/user.proto";
-import "user/service/v1/role.proto";
+import "identity/service/v1/user.proto";
 
 import "authentication/service/v1/user_token.proto";
 

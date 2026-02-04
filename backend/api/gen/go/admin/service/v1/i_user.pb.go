@@ -10,7 +10,7 @@ import (
 	_ "github.com/google/gnostic/openapiv3"
 	_ "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	v11 "go-wind-admin/api/gen/go/user/service/v1"
+	v11 "go-wind-admin/api/gen/go/identity/service/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -30,46 +30,46 @@ var File_admin_service_v1_i_user_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_user_proto_rawDesc = "" +
 	"\n" +
-	"\x1dadmin/service/v1/i_user.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x16redact/v3/redact.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1auser/service/v1/user.proto2\xcb\x06\n" +
-	"\vUserService\x12a\n" +
-	"\x04List\x12\x19.pagination.PagingRequest\x1a!.user.service.v1.ListUserResponse\"\x1b\xe0\xb6\x1a\x01\x82\xd3\xe4\x93\x02\x11\x12\x0f/admin/v1/users\x12\x86\x01\n" +
-	"\x03Get\x12\x1f.user.service.v1.GetUserRequest\x1a\x15.user.service.v1.User\"G\xe0\xb6\x1a\x01\x82\xd3\xe4\x93\x02=Z%\x12#/admin/v1/users/username/{username}\x12\x14/admin/v1/users/{id}\x12`\n" +
-	"\x06Create\x12\".user.service.v1.CreateUserRequest\x1a\x16.google.protobuf.Empty\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/admin/v1/users\x12e\n" +
-	"\x06Update\x12\".user.service.v1.UpdateUserRequest\x1a\x16.google.protobuf.Empty\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\x1a\x14/admin/v1/users/{id}\x12\x89\x01\n" +
-	"\x06Delete\x12\".user.service.v1.DeleteUserRequest\x1a\x16.google.protobuf.Empty\"C\x82\xd3\xe4\x93\x02=Z%*#/admin/v1/users/username/{username}*\x14/admin/v1/users/{id}\x12u\n" +
+	"\x1dadmin/service/v1/i_user.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x16redact/v3/redact.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1eidentity/service/v1/user.proto2\xef\x06\n" +
+	"\vUserService\x12e\n" +
+	"\x04List\x12\x19.pagination.PagingRequest\x1a%.identity.service.v1.ListUserResponse\"\x1b\xe0\xb6\x1a\x01\x82\xd3\xe4\x93\x02\x11\x12\x0f/admin/v1/users\x12\x8e\x01\n" +
+	"\x03Get\x12#.identity.service.v1.GetUserRequest\x1a\x19.identity.service.v1.User\"G\xe0\xb6\x1a\x01\x82\xd3\xe4\x93\x02=Z%\x12#/admin/v1/users/username/{username}\x12\x14/admin/v1/users/{id}\x12d\n" +
+	"\x06Create\x12&.identity.service.v1.CreateUserRequest\x1a\x16.google.protobuf.Empty\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/admin/v1/users\x12i\n" +
+	"\x06Update\x12&.identity.service.v1.UpdateUserRequest\x1a\x16.google.protobuf.Empty\"\x1f\x82\xd3\xe4\x93\x02\x19:\x01*\x1a\x14/admin/v1/users/{id}\x12\x8d\x01\n" +
+	"\x06Delete\x12&.identity.service.v1.DeleteUserRequest\x1a\x16.google.protobuf.Empty\"C\x82\xd3\xe4\x93\x02=Z%*#/admin/v1/users/username/{username}*\x14/admin/v1/users/{id}\x12}\n" +
 	"\n" +
-	"UserExists\x12\".user.service.v1.UserExistsRequest\x1a#.user.service.v1.UserExistsResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/admin/v1/users:exists\x12\x83\x01\n" +
-	"\x10EditUserPassword\x12(.user.service.v1.EditUserPasswordRequest\x1a\x16.google.protobuf.Empty\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/admin/v1/users/{user_id}/passwordB\xb7\x01\n" +
+	"UserExists\x12&.identity.service.v1.UserExistsRequest\x1a'.identity.service.v1.UserExistsResponse\"\x1e\x82\xd3\xe4\x93\x02\x18\x12\x16/admin/v1/users:exists\x12\x87\x01\n" +
+	"\x10EditUserPassword\x12,.identity.service.v1.EditUserPasswordRequest\x1a\x16.google.protobuf.Empty\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/admin/v1/users/{user_id}/passwordB\xb7\x01\n" +
 	"\x14com.admin.service.v1B\n" +
 	"IUserProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_user_proto_goTypes = []any{
 	(*v1.PagingRequest)(nil),            // 0: pagination.PagingRequest
-	(*v11.GetUserRequest)(nil),          // 1: user.service.v1.GetUserRequest
-	(*v11.CreateUserRequest)(nil),       // 2: user.service.v1.CreateUserRequest
-	(*v11.UpdateUserRequest)(nil),       // 3: user.service.v1.UpdateUserRequest
-	(*v11.DeleteUserRequest)(nil),       // 4: user.service.v1.DeleteUserRequest
-	(*v11.UserExistsRequest)(nil),       // 5: user.service.v1.UserExistsRequest
-	(*v11.EditUserPasswordRequest)(nil), // 6: user.service.v1.EditUserPasswordRequest
-	(*v11.ListUserResponse)(nil),        // 7: user.service.v1.ListUserResponse
-	(*v11.User)(nil),                    // 8: user.service.v1.User
+	(*v11.GetUserRequest)(nil),          // 1: identity.service.v1.GetUserRequest
+	(*v11.CreateUserRequest)(nil),       // 2: identity.service.v1.CreateUserRequest
+	(*v11.UpdateUserRequest)(nil),       // 3: identity.service.v1.UpdateUserRequest
+	(*v11.DeleteUserRequest)(nil),       // 4: identity.service.v1.DeleteUserRequest
+	(*v11.UserExistsRequest)(nil),       // 5: identity.service.v1.UserExistsRequest
+	(*v11.EditUserPasswordRequest)(nil), // 6: identity.service.v1.EditUserPasswordRequest
+	(*v11.ListUserResponse)(nil),        // 7: identity.service.v1.ListUserResponse
+	(*v11.User)(nil),                    // 8: identity.service.v1.User
 	(*emptypb.Empty)(nil),               // 9: google.protobuf.Empty
-	(*v11.UserExistsResponse)(nil),      // 10: user.service.v1.UserExistsResponse
+	(*v11.UserExistsResponse)(nil),      // 10: identity.service.v1.UserExistsResponse
 }
 var file_admin_service_v1_i_user_proto_depIdxs = []int32{
 	0,  // 0: admin.service.v1.UserService.List:input_type -> pagination.PagingRequest
-	1,  // 1: admin.service.v1.UserService.Get:input_type -> user.service.v1.GetUserRequest
-	2,  // 2: admin.service.v1.UserService.Create:input_type -> user.service.v1.CreateUserRequest
-	3,  // 3: admin.service.v1.UserService.Update:input_type -> user.service.v1.UpdateUserRequest
-	4,  // 4: admin.service.v1.UserService.Delete:input_type -> user.service.v1.DeleteUserRequest
-	5,  // 5: admin.service.v1.UserService.UserExists:input_type -> user.service.v1.UserExistsRequest
-	6,  // 6: admin.service.v1.UserService.EditUserPassword:input_type -> user.service.v1.EditUserPasswordRequest
-	7,  // 7: admin.service.v1.UserService.List:output_type -> user.service.v1.ListUserResponse
-	8,  // 8: admin.service.v1.UserService.Get:output_type -> user.service.v1.User
+	1,  // 1: admin.service.v1.UserService.Get:input_type -> identity.service.v1.GetUserRequest
+	2,  // 2: admin.service.v1.UserService.Create:input_type -> identity.service.v1.CreateUserRequest
+	3,  // 3: admin.service.v1.UserService.Update:input_type -> identity.service.v1.UpdateUserRequest
+	4,  // 4: admin.service.v1.UserService.Delete:input_type -> identity.service.v1.DeleteUserRequest
+	5,  // 5: admin.service.v1.UserService.UserExists:input_type -> identity.service.v1.UserExistsRequest
+	6,  // 6: admin.service.v1.UserService.EditUserPassword:input_type -> identity.service.v1.EditUserPasswordRequest
+	7,  // 7: admin.service.v1.UserService.List:output_type -> identity.service.v1.ListUserResponse
+	8,  // 8: admin.service.v1.UserService.Get:output_type -> identity.service.v1.User
 	9,  // 9: admin.service.v1.UserService.Create:output_type -> google.protobuf.Empty
 	9,  // 10: admin.service.v1.UserService.Update:output_type -> google.protobuf.Empty
 	9,  // 11: admin.service.v1.UserService.Delete:output_type -> google.protobuf.Empty
-	10, // 12: admin.service.v1.UserService.UserExists:output_type -> user.service.v1.UserExistsResponse
+	10, // 12: admin.service.v1.UserService.UserExists:output_type -> identity.service.v1.UserExistsResponse
 	9,  // 13: admin.service.v1.UserService.EditUserPassword:output_type -> google.protobuf.Empty
 	7,  // [7:14] is the sub-list for method output_type
 	0,  // [0:7] is the sub-list for method input_type

@@ -1,0 +1,165 @@
+syntax = "proto3";
+
+package resource.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/api/annotations.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+
+import "pagination/v1/pagination.proto";
+
+
+// API资源服务
+service ApiService {
+  // 查询API资源列表
+  rpc List (pagination.PagingRequest) returns (ListApiResponse) {}
+
+  // 统计API资源数量
+  rpc Count (pagination.PagingRequest) returns (CountApiResponse) {}
+
+  // 查询API资源详情
+  rpc Get (GetApiRequest) returns (Api) {}
+
+  // 创建API资源
+  rpc Create (CreateApiRequest) returns (google.protobuf.Empty) {}
+
+  // 更新API资源
+  rpc Update (UpdateApiRequest) returns (google.protobuf.Empty) {}
+
+  // 删除API资源
+  rpc Delete (DeleteApiRequest) returns (google.protobuf.Empty) {}
+
+  // 同步API资源
+  rpc SyncApis (google.protobuf.Empty) returns (google.protobuf.Empty) {}
+
+  // 查询路由数据
+  rpc GetWalkRouteData (google.protobuf.Empty) returns (ListApiResponse) {}
+}
+
+// API资源
+message Api {
+  // API作用域
+  enum Scope {
+    API_SCOPE_INVALID = 0; // 无效
+
+    ADMIN = 1; // 管理后台API
+    APP = 2; // 前台应用API
+  }
+
+  // 权限状态
+  enum Status {
+    OFF = 0;         // 禁用
+    ON = 1;          // 启用
+  }
+
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = { description: "资源ID" }
+  ]; // 资源ID
+
+  optional string operation = 2 [
+    json_name = "operation",
+    (gnostic.openapi.v3.property) = { description: "接口操作名" }
+  ]; // 接口操作名
+
+  optional string path = 3 [
+    json_name = "path",
+    (gnostic.openapi.v3.property) = { description: "接口路径" }
+  ]; // 接口路径
+
+  optional string method = 4 [
+    json_name = "method",
+    (gnostic.openapi.v3.property) = { description: "请求方法（GET/POST/PUT/DELETE）" }
+  ]; // 请求方法
+
+  optional string module = 5 [
+    json_name = "module",
+    (gnostic.openapi.v3.property) = { description: "所属业务模块（如 “用户管理”“支付系统”）" }
+  ]; // 所属业务模块
+
+  optional string module_description = 6 [
+    json_name = "moduleDescription",
+    (gnostic.openapi.v3.property) = { description: "模块描述" }
+  ]; // 模块描述
+
+  optional string description = 7 [
+    json_name = "description",
+    (gnostic.openapi.v3.property) = { description: "描述" }
+  ]; // 描述
+
+  optional Scope scope = 8 [
+    json_name = "scope",
+    (gnostic.openapi.v3.property) = { description: "作用域" }
+  ]; // 作用域
+
+  optional Status status = 10 [(gnostic.openapi.v3.property) = {description: "状态"}]; // 状态
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];// 删除时间
+}
+
+// 查询列表 - 回应
+message ListApiResponse {
+  repeated Api items = 1;
+  uint64 total = 2;
+}
+
+// 查询 - 请求
+message GetApiRequest {
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+      json_name = "id"
+    ]; // ID
+  }
+
+  optional google.protobuf.FieldMask view_mask = 100 [
+    json_name = "viewMask",
+    (gnostic.openapi.v3.property) = {
+      description: "视图字段过滤器，用于控制返回的字段"
+    }
+  ]; // 视图字段过滤器，用于控制返回的字段
+}
+
+// 创建 - 请求
+message CreateApiRequest {
+  Api data = 1;
+}
+
+// 更新 - 请求
+message UpdateApiRequest {
+  uint32 id = 1;
+
+  Api data = 2;
+
+  google.protobuf.FieldMask update_mask = 3 [
+    (gnostic.openapi.v3.property) = {
+      description: "要更新的字段列表",
+      example: {yaml : "id,realname,username"}
+    },
+    json_name = "updateMask"
+  ]; // 要更新的字段列表
+
+  optional bool allow_missing = 4 [
+    (gnostic.openapi.v3.property) = {description: "如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。"},
+    json_name = "allowMissing"
+  ]; // 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
+}
+
+// 删除 - 请求
+message DeleteApiRequest {
+  uint32 id = 1;
+}
+
+message CountApiResponse {
+  uint64 count = 1;
+}

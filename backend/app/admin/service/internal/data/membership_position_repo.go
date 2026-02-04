@@ -13,22 +13,22 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/membershipposition"
 
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
 
 type MembershipPositionRepo struct {
 	log             *log.Helper
 	entClient       *entCrud.EntClient[*ent.Client]
-	statusConverter *mapper.EnumTypeConverter[userV1.MembershipPosition_Status, membershipposition.Status]
+	statusConverter *mapper.EnumTypeConverter[identityV1.MembershipPosition_Status, membershipposition.Status]
 }
 
 func NewMembershipPositionRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *MembershipPositionRepo {
 	return &MembershipPositionRepo{
 		log:       ctx.NewLoggerHelper("membership-position/repo/admin-service"),
 		entClient: entClient,
-		statusConverter: mapper.NewEnumTypeConverter[userV1.MembershipPosition_Status, membershipposition.Status](
-			userV1.MembershipPosition_Status_name,
-			userV1.MembershipPosition_Status_value,
+		statusConverter: mapper.NewEnumTypeConverter[identityV1.MembershipPosition_Status, membershipposition.Status](
+			identityV1.MembershipPosition_Status_name,
+			identityV1.MembershipPosition_Status_value,
 		),
 	}
 }
@@ -45,7 +45,7 @@ func (r *MembershipPositionRepo) CleanRelationsByMembershipID(ctx context.Contex
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old membership positions failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old membership positions failed")
+		return identityV1.ErrorInternalServerError("delete old membership positions failed")
 	}
 	return nil
 }
@@ -62,7 +62,7 @@ func (r *MembershipPositionRepo) CleanRelationsByMembershipIDs(ctx context.Conte
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old membership positions by membership ids failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old membership positions by membership ids failed")
+		return identityV1.ErrorInternalServerError("delete old membership positions by membership ids failed")
 	}
 	return nil
 }
@@ -79,7 +79,7 @@ func (r *MembershipPositionRepo) CleanRelationsByPositionID(ctx context.Context,
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old membership positions by position id failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old membership positions by position id failed")
+		return identityV1.ErrorInternalServerError("delete old membership positions by position id failed")
 	}
 	return nil
 }
@@ -96,7 +96,7 @@ func (r *MembershipPositionRepo) CleanRelationsByPositionIDs(ctx context.Context
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old membership positions by position ids failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old membership positions by position ids failed")
+		return identityV1.ErrorInternalServerError("delete old membership positions by position ids failed")
 	}
 	return nil
 }
@@ -117,7 +117,7 @@ func (r *MembershipPositionRepo) RemovePositionsFromMembership(ctx context.Conte
 		Exec(ctx)
 	if err != nil {
 		r.log.Errorf("remove positions from membership failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("remove positions from membership failed")
+		return identityV1.ErrorInternalServerError("remove positions from membership failed")
 	}
 	return nil
 }
@@ -127,7 +127,7 @@ func (r *MembershipPositionRepo) AssignMembershipPositions(
 	ctx context.Context,
 	tx *ent.Tx,
 	membershipID uint32,
-	datas []*userV1.MembershipPosition,
+	datas []*identityV1.MembershipPosition,
 ) error {
 	if len(datas) == 0 || membershipID == 0 {
 		return nil
@@ -137,7 +137,7 @@ func (r *MembershipPositionRepo) AssignMembershipPositions(
 
 	// 删除该用户的所有旧关联
 	if err = r.CleanRelationsByMembershipID(ctx, tx, membershipID); err != nil {
-		return userV1.ErrorInternalServerError("clean old membership positions failed")
+		return identityV1.ErrorInternalServerError("clean old membership positions failed")
 	}
 
 	now := time.Now()
@@ -166,7 +166,7 @@ func (r *MembershipPositionRepo) AssignMembershipPositions(
 	_, err = tx.MembershipPosition.CreateBulk(membershipPositionCreates...).Save(ctx)
 	if err != nil {
 		r.log.Errorf("assign positions to membership failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("assign positions to membership failed")
+		return identityV1.ErrorInternalServerError("assign positions to membership failed")
 	}
 
 	return nil
@@ -198,7 +198,7 @@ func (r *MembershipPositionRepo) ListPositionIDs(ctx context.Context, membership
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query position ids by membership id failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query position ids by membership id failed")
+		return nil, identityV1.ErrorInternalServerError("query position ids by membership id failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {
@@ -233,7 +233,7 @@ func (r *MembershipPositionRepo) ListMembershipIDs(ctx context.Context, position
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query membership ids by position id failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query membership ids by position id failed")
+		return nil, identityV1.ErrorInternalServerError("query membership ids by position id failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {
@@ -268,7 +268,7 @@ func (r *MembershipPositionRepo) ListMembershipIDsByPositionIDs(ctx context.Cont
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query membership ids by position ids failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query membership ids by position ids failed")
+		return nil, identityV1.ErrorInternalServerError("query membership ids by position ids failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {

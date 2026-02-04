@@ -3,7 +3,7 @@ package data
 import (
 	"context"
 	"encoding/base64"
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -130,14 +130,14 @@ func (r *UserCredentialRepo) List(ctx context.Context, req *paginationV1.PagingR
 
 func (r *UserCredentialRepo) Create(ctx context.Context, req *authenticationV1.CreateUserCredentialRequest) (err error) {
 	if req == nil || req.Data == nil {
-		return userV1.ErrorBadRequest("invalid parameter")
+		return identityV1.ErrorBadRequest("invalid parameter")
 	}
 
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("start transaction failed")
+		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -148,7 +148,7 @@ func (r *UserCredentialRepo) Create(ctx context.Context, req *authenticationV1.C
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = userV1.ErrorInternalServerError("transaction commit failed")
+			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 

@@ -11,7 +11,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
 )
 
 type PermissionAuditLogService struct {
@@ -32,7 +32,7 @@ func NewPermissionAuditLogService(
 	}
 }
 
-func (s *PermissionAuditLogService) List(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.ListPermissionAuditLogResponse, error) {
+func (s *PermissionAuditLogService) List(ctx context.Context, req *paginationV1.PagingRequest) (*auditV1.ListPermissionAuditLogResponse, error) {
 	resp, err := s.policyEvaluationLogRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
@@ -41,7 +41,7 @@ func (s *PermissionAuditLogService) List(ctx context.Context, req *paginationV1.
 	return resp, nil
 }
 
-func (s *PermissionAuditLogService) Get(ctx context.Context, req *permissionV1.GetPermissionAuditLogRequest) (*permissionV1.PermissionAuditLog, error) {
+func (s *PermissionAuditLogService) Get(ctx context.Context, req *auditV1.GetPermissionAuditLogRequest) (*auditV1.PermissionAuditLog, error) {
 	resp, err := s.policyEvaluationLogRepo.Get(ctx, req)
 	if err != nil {
 		return nil, err
@@ -50,7 +50,7 @@ func (s *PermissionAuditLogService) Get(ctx context.Context, req *permissionV1.G
 	return resp, nil
 }
 
-func (s *PermissionAuditLogService) Create(ctx context.Context, req *permissionV1.CreatePermissionAuditLogRequest) (*emptypb.Empty, error) {
+func (s *PermissionAuditLogService) Create(ctx context.Context, req *auditV1.CreatePermissionAuditLogRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}

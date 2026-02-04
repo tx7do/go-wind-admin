@@ -12,13 +12,13 @@ import (
 	"github.com/tx7do/go-utils/fieldmaskutil"
 	"github.com/tx7do/go-utils/trans"
 
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+	resourceV1 "go-wind-admin/api/gen/go/resource/service/v1"
 )
 
 func TestMenuMetaFieldMask(t *testing.T) {
-	updateMenuReq := &permissionV1.UpdateMenuRequest{
-		Data: &permissionV1.Menu{
-			Meta: &permissionV1.MenuMeta{
+	updateMenuReq := &resourceV1.UpdateMenuRequest{
+		Data: &resourceV1.Menu{
+			Meta: &resourceV1.MenuMeta{
 				Title: trans.Ptr("标题1"),
 				Order: trans.Ptr(int32(1)),
 			},

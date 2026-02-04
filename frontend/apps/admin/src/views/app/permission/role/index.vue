@@ -9,7 +9,7 @@ import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
 import { notification } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type userservicev1_Role as Role } from '#/generated/api/admin/service/v1';
+import { type permissionservicev1_Role as Role } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
 import {
   statusList,

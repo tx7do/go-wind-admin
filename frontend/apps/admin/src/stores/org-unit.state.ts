@@ -7,9 +7,9 @@ import { defineStore } from 'pinia';
 
 import {
   createOrgUnitServiceClient,
-  type userservicev1_OrgUnit as OrgUnit,
-  type userservicev1_OrgUnit_Status as OrgUnit_Status,
-  type userservicev1_OrgUnit_Type as OrgUnit_Type,
+  type identityservicev1_OrgUnit as OrgUnit,
+  type identityservicev1_OrgUnit_Status as OrgUnit_Status,
+  type identityservicev1_OrgUnit_Type as OrgUnit_Type,
 } from '#/generated/api/admin/service/v1';
 import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';

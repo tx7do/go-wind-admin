@@ -14,7 +14,7 @@ import (
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 
 	"go-wind-admin/pkg/constants"
 	appViewer "go-wind-admin/pkg/entgo/viewer"
@@ -71,11 +71,11 @@ func (s *UserService) init() {
 }
 
 func (s *UserService) extractRelationIDs(
-	users []*userV1.User,
-	roleSet aggregator.ResourceMap[uint32, *userV1.Role],
-	tenantSet aggregator.ResourceMap[uint32, *userV1.Tenant],
-	orgUnitSet aggregator.ResourceMap[uint32, *userV1.OrgUnit],
-	posSet aggregator.ResourceMap[uint32, *userV1.Position],
+	users []*identityV1.User,
+	roleSet aggregator.ResourceMap[uint32, *identityV1.Role],
+	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
+	orgUnitSet aggregator.ResourceMap[uint32, *identityV1.OrgUnit],
+	posSet aggregator.ResourceMap[uint32, *identityV1.Position],
 ) {
 	for _, v := range users {
 		if v == nil {
@@ -119,10 +119,10 @@ func (s *UserService) extractRelationIDs(
 
 func (s *UserService) fetchRelationInfo(
 	ctx context.Context,
-	roleSet aggregator.ResourceMap[uint32, *userV1.Role],
-	tenantSet aggregator.ResourceMap[uint32, *userV1.Tenant],
-	orgUnitSet aggregator.ResourceMap[uint32, *userV1.OrgUnit],
-	posSet aggregator.ResourceMap[uint32, *userV1.Position],
+	roleSet aggregator.ResourceMap[uint32, *identityV1.Role],
+	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
+	orgUnitSet aggregator.ResourceMap[uint32, *identityV1.OrgUnit],
+	posSet aggregator.ResourceMap[uint32, *identityV1.Position],
 ) error {
 	if len(roleSet) > 0 {
 		roleIds := make([]uint32, 0, len(roleSet))
@@ -196,17 +196,17 @@ func (s *UserService) fetchRelationInfo(
 }
 
 func (s *UserService) bindRelations(
-	users []*userV1.User,
-	roleSet aggregator.ResourceMap[uint32, *userV1.Role],
-	tenantSet aggregator.ResourceMap[uint32, *userV1.Tenant],
-	orgUnitSet aggregator.ResourceMap[uint32, *userV1.OrgUnit],
-	posSet aggregator.ResourceMap[uint32, *userV1.Position],
+	users []*identityV1.User,
+	roleSet aggregator.ResourceMap[uint32, *identityV1.Role],
+	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
+	orgUnitSet aggregator.ResourceMap[uint32, *identityV1.OrgUnit],
+	posSet aggregator.ResourceMap[uint32, *identityV1.Position],
 ) {
 	aggregator.PopulateMulti(
 		users,
 		roleSet,
-		func(ou *userV1.User) []uint32 { return ou.GetRoleIds() },
-		func(ou *userV1.User, r []*userV1.Role) {
+		func(ou *identityV1.User) []uint32 { return ou.GetRoleIds() },
+		func(ou *identityV1.User, r []*identityV1.Role) {
 			for _, role := range r {
 				ou.RoleNames = append(ou.RoleNames, role.GetName())
 				ou.Roles = append(ou.Roles, role.GetCode())
@@ -216,8 +216,8 @@ func (s *UserService) bindRelations(
 	aggregator.Populate(
 		users,
 		roleSet,
-		func(ou *userV1.User) uint32 { return ou.GetRoleId() },
-		func(ou *userV1.User, r *userV1.Role) {
+		func(ou *identityV1.User) uint32 { return ou.GetRoleId() },
+		func(ou *identityV1.User, r *identityV1.Role) {
 			ou.RoleNames = append(ou.RoleNames, r.GetName())
 			ou.Roles = append(ou.Roles, r.GetCode())
 		},
@@ -226,8 +226,8 @@ func (s *UserService) bindRelations(
 	aggregator.Populate(
 		users,
 		tenantSet,
-		func(ou *userV1.User) uint32 { return ou.GetTenantId() },
-		func(ou *userV1.User, r *userV1.Tenant) {
+		func(ou *identityV1.User) uint32 { return ou.GetTenantId() },
+		func(ou *identityV1.User, r *identityV1.Tenant) {
 			ou.TenantName = r.Name
 		},
 	)
@@ -235,8 +235,8 @@ func (s *UserService) bindRelations(
 	aggregator.PopulateMulti(
 		users,
 		posSet,
-		func(ou *userV1.User) []uint32 { return ou.GetPositionIds() },
-		func(ou *userV1.User, r []*userV1.Position) {
+		func(ou *identityV1.User) []uint32 { return ou.GetPositionIds() },
+		func(ou *identityV1.User, r []*identityV1.Position) {
 			for _, pos := range r {
 				ou.PositionNames = append(ou.PositionNames, pos.GetName())
 			}
@@ -245,8 +245,8 @@ func (s *UserService) bindRelations(
 	aggregator.Populate(
 		users,
 		posSet,
-		func(ou *userV1.User) uint32 { return ou.GetPositionId() },
-		func(ou *userV1.User, r *userV1.Position) {
+		func(ou *identityV1.User) uint32 { return ou.GetPositionId() },
+		func(ou *identityV1.User, r *identityV1.Position) {
 			ou.PositionName = r.Name
 		},
 	)
@@ -254,8 +254,8 @@ func (s *UserService) bindRelations(
 	aggregator.PopulateMulti(
 		users,
 		orgUnitSet,
-		func(ou *userV1.User) []uint32 { return ou.GetOrgUnitIds() },
-		func(ou *userV1.User, orgs []*userV1.OrgUnit) {
+		func(ou *identityV1.User) []uint32 { return ou.GetOrgUnitIds() },
+		func(ou *identityV1.User, orgs []*identityV1.OrgUnit) {
 			for _, org := range orgs {
 				ou.OrgUnitNames = append(ou.OrgUnitNames, org.GetName())
 			}
@@ -264,18 +264,18 @@ func (s *UserService) bindRelations(
 	aggregator.Populate(
 		users,
 		orgUnitSet,
-		func(ou *userV1.User) uint32 { return ou.GetOrgUnitId() },
-		func(ou *userV1.User, org *userV1.OrgUnit) {
+		func(ou *identityV1.User) uint32 { return ou.GetOrgUnitId() },
+		func(ou *identityV1.User, org *identityV1.OrgUnit) {
 			ou.OrgUnitName = org.Name
 		},
 	)
 }
 
-func (s *UserService) enrichRelations(ctx context.Context, users []*userV1.User) error {
-	var roleSet = make(aggregator.ResourceMap[uint32, *userV1.Role])
-	var tenantSet = make(aggregator.ResourceMap[uint32, *userV1.Tenant])
-	var orgUnitSet = make(aggregator.ResourceMap[uint32, *userV1.OrgUnit])
-	var posSet = make(aggregator.ResourceMap[uint32, *userV1.Position])
+func (s *UserService) enrichRelations(ctx context.Context, users []*identityV1.User) error {
+	var roleSet = make(aggregator.ResourceMap[uint32, *identityV1.Role])
+	var tenantSet = make(aggregator.ResourceMap[uint32, *identityV1.Tenant])
+	var orgUnitSet = make(aggregator.ResourceMap[uint32, *identityV1.OrgUnit])
+	var posSet = make(aggregator.ResourceMap[uint32, *identityV1.Position])
 
 	s.extractRelationIDs(users, roleSet, tenantSet, orgUnitSet, posSet)
 	if err := s.fetchRelationInfo(ctx, roleSet, tenantSet, orgUnitSet, posSet); err != nil {
@@ -285,7 +285,7 @@ func (s *UserService) enrichRelations(ctx context.Context, users []*userV1.User)
 	return nil
 }
 
-func (s *UserService) List(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.ListUserResponse, error) {
+func (s *UserService) List(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.ListUserResponse, error) {
 	resp, err := s.userRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
@@ -296,30 +296,30 @@ func (s *UserService) List(ctx context.Context, req *paginationV1.PagingRequest)
 	return resp, nil
 }
 
-func (s *UserService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*userV1.CountUserResponse, error) {
+func (s *UserService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.CountUserResponse, error) {
 	count, err := s.userRepo.Count(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	return &userV1.CountUserResponse{
+	return &identityV1.CountUserResponse{
 		Count: uint64(count),
 	}, nil
 }
 
-func (s *UserService) Get(ctx context.Context, req *userV1.GetUserRequest) (*userV1.User, error) {
+func (s *UserService) Get(ctx context.Context, req *identityV1.GetUserRequest) (*identityV1.User, error) {
 	resp, err := s.userRepo.Get(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	fakeItems := []*userV1.User{resp}
+	fakeItems := []*identityV1.User{resp}
 	_ = s.enrichRelations(ctx, fakeItems)
 
 	return resp, nil
 }
 
-func (s *UserService) Create(ctx context.Context, req *userV1.CreateUserRequest) (*emptypb.Empty, error) {
+func (s *UserService) Create(ctx context.Context, req *identityV1.CreateUserRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -331,8 +331,8 @@ func (s *UserService) Create(ctx context.Context, req *userV1.CreateUserRequest)
 	}
 
 	// 获取操作者的用户信息
-	_, err = s.userRepo.Get(ctx, &userV1.GetUserRequest{
-		QueryBy: &userV1.GetUserRequest_Id{
+	_, err = s.userRepo.Get(ctx, &identityV1.GetUserRequest{
+		QueryBy: &identityV1.GetUserRequest_Id{
 			Id: operator.UserId,
 		},
 	})
@@ -344,7 +344,7 @@ func (s *UserService) Create(ctx context.Context, req *userV1.CreateUserRequest)
 	req.Data.TenantId = operator.TenantId
 
 	// 创建用户
-	var user *userV1.User
+	var user *identityV1.User
 	if user, err = s.userRepo.Create(ctx, req); err != nil {
 		return nil, err
 	}
@@ -377,7 +377,7 @@ func (s *UserService) Create(ctx context.Context, req *userV1.CreateUserRequest)
 	return &emptypb.Empty{}, nil
 }
 
-func (s *UserService) Update(ctx context.Context, req *userV1.UpdateUserRequest) (*emptypb.Empty, error) {
+func (s *UserService) Update(ctx context.Context, req *identityV1.UpdateUserRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -389,8 +389,8 @@ func (s *UserService) Update(ctx context.Context, req *userV1.UpdateUserRequest)
 	}
 
 	// 获取操作者的用户信息
-	_, err = s.userRepo.Get(ctx, &userV1.GetUserRequest{
-		QueryBy: &userV1.GetUserRequest_Id{
+	_, err = s.userRepo.Get(ctx, &identityV1.GetUserRequest{
+		QueryBy: &identityV1.GetUserRequest_Id{
 			Id: operator.UserId,
 		},
 	})
@@ -422,7 +422,7 @@ func (s *UserService) Update(ctx context.Context, req *userV1.UpdateUserRequest)
 	return &emptypb.Empty{}, nil
 }
 
-func (s *UserService) Delete(ctx context.Context, req *userV1.DeleteUserRequest) (*emptypb.Empty, error) {
+func (s *UserService) Delete(ctx context.Context, req *identityV1.DeleteUserRequest) (*emptypb.Empty, error) {
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
@@ -430,8 +430,8 @@ func (s *UserService) Delete(ctx context.Context, req *userV1.DeleteUserRequest)
 	}
 
 	// 获取操作者的用户信息
-	_, err = s.userRepo.Get(ctx, &userV1.GetUserRequest{
-		QueryBy: &userV1.GetUserRequest_Id{
+	_, err = s.userRepo.Get(ctx, &identityV1.GetUserRequest{
+		QueryBy: &identityV1.GetUserRequest_Id{
 			Id: operator.UserId,
 		},
 	})
@@ -440,8 +440,8 @@ func (s *UserService) Delete(ctx context.Context, req *userV1.DeleteUserRequest)
 	}
 
 	// 获取将被删除的用户信息
-	_, err = s.userRepo.Get(ctx, &userV1.GetUserRequest{
-		QueryBy: &userV1.GetUserRequest_Id{
+	_, err = s.userRepo.Get(ctx, &identityV1.GetUserRequest{
+		QueryBy: &identityV1.GetUserRequest_Id{
 			Id: req.GetId(),
 		},
 	})
@@ -455,15 +455,15 @@ func (s *UserService) Delete(ctx context.Context, req *userV1.DeleteUserRequest)
 	return &emptypb.Empty{}, err
 }
 
-func (s *UserService) UserExists(ctx context.Context, req *userV1.UserExistsRequest) (*userV1.UserExistsResponse, error) {
+func (s *UserService) UserExists(ctx context.Context, req *identityV1.UserExistsRequest) (*identityV1.UserExistsResponse, error) {
 	return s.userRepo.UserExists(ctx, req)
 }
 
 // EditUserPassword 修改用户密码
-func (s *UserService) EditUserPassword(ctx context.Context, req *userV1.EditUserPasswordRequest) (*emptypb.Empty, error) {
+func (s *UserService) EditUserPassword(ctx context.Context, req *identityV1.EditUserPasswordRequest) (*emptypb.Empty, error) {
 	// 获取操作者的用户信息
-	u, err := s.userRepo.Get(ctx, &userV1.GetUserRequest{
-		QueryBy: &userV1.GetUserRequest_Id{
+	u, err := s.userRepo.Get(ctx, &identityV1.GetUserRequest{
+		QueryBy: &identityV1.GetUserRequest_Id{
 			Id: req.GetUserId(),
 		},
 	})
@@ -490,7 +490,7 @@ func (s *UserService) createDefaultUser(ctx context.Context) error {
 
 	// 创建默认用户
 	for _, user := range constants.DefaultUsers {
-		if _, err = s.userRepo.Create(ctx, &userV1.CreateUserRequest{
+		if _, err = s.userRepo.Create(ctx, &identityV1.CreateUserRequest{
 			Data: user,
 		}); err != nil {
 			s.log.Errorf("create default user err: %v", err)

@@ -7,9 +7,9 @@ import (
 	"errors"
 	"fmt"
 	auditpb "go-wind-admin/api/gen/go/audit/service/v1"
-	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
+	servicev1 "go-wind-admin/api/gen/go/identity/service/v1"
+	resourcepb "go-wind-admin/api/gen/go/resource/service/v1"
 	taskpb "go-wind-admin/api/gen/go/task/service/v1"
-	userpb "go-wind-admin/api/gen/go/user/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/dataaccessauditlog"
@@ -28699,7 +28699,7 @@ type MenuMutation struct {
 	alias           *string
 	name            *string
 	component       *string
-	meta            **permissionpb.MenuMeta
+	meta            **resourcepb.MenuMeta
 	clearedFields   map[string]struct{}
 	parent          *uint32
 	clearedparent   bool
@@ -29601,12 +29601,12 @@ func (m *MenuMutation) ResetComponent() {
 }
 
 // SetMeta sets the "meta" field.
-func (m *MenuMutation) SetMeta(pm *permissionpb.MenuMeta) {
-	m.meta = &pm
+func (m *MenuMutation) SetMeta(rm *resourcepb.MenuMeta) {
+	m.meta = &rm
 }
 
 // Meta returns the value of the "meta" field in the mutation.
-func (m *MenuMutation) Meta() (r *permissionpb.MenuMeta, exists bool) {
+func (m *MenuMutation) Meta() (r *resourcepb.MenuMeta, exists bool) {
 	v := m.meta
 	if v == nil {
 		return
@@ -29617,7 +29617,7 @@ func (m *MenuMutation) Meta() (r *permissionpb.MenuMeta, exists bool) {
 // OldMeta returns the old "meta" field's value of the Menu entity.
 // If the Menu object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *MenuMutation) OldMeta(ctx context.Context) (v *permissionpb.MenuMeta, err error) {
+func (m *MenuMutation) OldMeta(ctx context.Context) (v *resourcepb.MenuMeta, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldMeta is only allowed on UpdateOne operations")
 	}
@@ -30009,7 +30009,7 @@ func (m *MenuMutation) SetField(name string, value ent.Value) error {
 		m.SetComponent(v)
 		return nil
 	case menu.FieldMeta:
-		v, ok := value.(*permissionpb.MenuMeta)
+		v, ok := value.(*resourcepb.MenuMeta)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
@@ -47737,7 +47737,7 @@ type RoleMetadataMutation struct {
 	last_synced_at         *time.Time
 	sync_policy            *rolemetadata.SyncPolicy
 	scope                  *rolemetadata.Scope
-	custom_overrides       **userpb.RoleOverride
+	custom_overrides       **servicev1.RoleOverride
 	clearedFields          map[string]struct{}
 	done                   bool
 	oldValue               func(context.Context) (*RoleMetadata, error)
@@ -48731,12 +48731,12 @@ func (m *RoleMetadataMutation) ResetScope() {
 }
 
 // SetCustomOverrides sets the "custom_overrides" field.
-func (m *RoleMetadataMutation) SetCustomOverrides(uo *userpb.RoleOverride) {
-	m.custom_overrides = &uo
+func (m *RoleMetadataMutation) SetCustomOverrides(so *servicev1.RoleOverride) {
+	m.custom_overrides = &so
 }
 
 // CustomOverrides returns the value of the "custom_overrides" field in the mutation.
-func (m *RoleMetadataMutation) CustomOverrides() (r *userpb.RoleOverride, exists bool) {
+func (m *RoleMetadataMutation) CustomOverrides() (r *servicev1.RoleOverride, exists bool) {
 	v := m.custom_overrides
 	if v == nil {
 		return
@@ -48747,7 +48747,7 @@ func (m *RoleMetadataMutation) CustomOverrides() (r *userpb.RoleOverride, exists
 // OldCustomOverrides returns the old "custom_overrides" field's value of the RoleMetadata entity.
 // If the RoleMetadata object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RoleMetadataMutation) OldCustomOverrides(ctx context.Context) (v *userpb.RoleOverride, err error) {
+func (m *RoleMetadataMutation) OldCustomOverrides(ctx context.Context) (v *servicev1.RoleOverride, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCustomOverrides is only allowed on UpdateOne operations")
 	}
@@ -49045,7 +49045,7 @@ func (m *RoleMetadataMutation) SetField(name string, value ent.Value) error {
 		m.SetScope(v)
 		return nil
 	case rolemetadata.FieldCustomOverrides:
-		v, ok := value.(*userpb.RoleOverride)
+		v, ok := value.(*servicev1.RoleOverride)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

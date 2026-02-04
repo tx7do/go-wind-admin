@@ -18,7 +18,7 @@ import (
 	"github.com/tx7do/go-utils/trans"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
 )
@@ -26,15 +26,15 @@ import (
 var reSpaces = regexp.MustCompile(`\s+`)
 
 func TestUserFieldMask(t *testing.T) {
-	u := &userV1.User{
+	u := &identityV1.User{
 		Username: trans.String("UserName"),
 		Realname: trans.String("RealName"),
 		//Avatar:   trans.String("Avatar"),
 		Address: trans.String("Address"),
 	}
 
-	updateUserReq := &userV1.UpdateUserRequest{
-		Data: &userV1.User{
+	updateUserReq := &identityV1.UpdateUserRequest{
+		Data: &identityV1.User{
 			Username: trans.String("UserName1"),
 			Realname: trans.String("RealName1"),
 			//Avatar:   trans.String("Avatar1"),
@@ -57,7 +57,7 @@ func TestUserFieldMask(t *testing.T) {
 }
 
 func TestFilterReuseMask(t *testing.T) {
-	users := []*userV1.User{
+	users := []*identityV1.User{
 		{
 			Id:       trans.Ptr(uint32(1)),
 			Username: trans.String("name 1"),
@@ -78,7 +78,7 @@ func TestFilterReuseMask(t *testing.T) {
 }
 
 func TestNilValuePaths(t *testing.T) {
-	u := &userV1.User{
+	u := &identityV1.User{
 		Id:       trans.Ptr(uint32(2)),
 		Username: trans.String("name 2"),
 		//RealName: trans.String(""),
@@ -90,7 +90,7 @@ func TestNilValuePaths(t *testing.T) {
 }
 
 func TestMessageNil(t *testing.T) {
-	u := &userV1.User{
+	u := &identityV1.User{
 		Id:       trans.Ptr(uint32(2)),
 		Username: trans.String("name 2"),
 	}
@@ -149,7 +149,7 @@ func TestDecryptAES(t *testing.T) {
 func TestCopier(t *testing.T) {
 	{
 		var entMsg ent.User
-		var protoMsg userV1.User
+		var protoMsg identityV1.User
 
 		entMsg.ID = 1
 		entMsg.Username = trans.Ptr("Username")
@@ -169,7 +169,7 @@ func TestCopier(t *testing.T) {
 
 	{
 		var entMsg ent.User
-		var protoMsg userV1.User
+		var protoMsg identityV1.User
 
 		_ = copier.Copy(&entMsg, &protoMsg)
 	}
@@ -210,7 +210,7 @@ func TestCopier(t *testing.T) {
 
 	{
 		var entMsg ent.User
-		var protoMsg userV1.User
+		var protoMsg identityV1.User
 
 		entMsg.ID = 1
 		entMsg.Username = trans.Ptr("Username")

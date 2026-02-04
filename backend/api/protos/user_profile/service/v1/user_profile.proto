@@ -6,13 +6,13 @@ import "gnostic/openapi/v3/annotations.proto";
 import "google/api/annotations.proto";
 import "google/protobuf/empty.proto";
 
-import "user/service/v1/user.proto";
+import "identity/service/v1/user.proto";
 
 // 用户个人资料服务
 service UserProfileService {
   // 获取用户资料
-  rpc GetUser (google.protobuf.Empty) returns (user.service.v1.User) {}
+  rpc GetUser (google.protobuf.Empty) returns (identity.service.v1.User) {}
 
   // 更新用户资料
-  rpc UpdateUser (user.service.v1.UpdateUserRequest) returns (google.protobuf.Empty) {}
+  rpc UpdateUser (identity.service.v1.UpdateUserRequest) returns (google.protobuf.Empty) {}
 }

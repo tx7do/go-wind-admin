@@ -13,22 +13,22 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/userposition"
 
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
 
 type UserPositionRepo struct {
 	log             *log.Helper
 	entClient       *entCrud.EntClient[*ent.Client]
-	statusConverter *mapper.EnumTypeConverter[userV1.UserPosition_Status, userposition.Status]
+	statusConverter *mapper.EnumTypeConverter[identityV1.UserPosition_Status, userposition.Status]
 }
 
 func NewUserPositionRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *UserPositionRepo {
 	return &UserPositionRepo{
 		log:       ctx.NewLoggerHelper("user-position/repo/admin-service"),
 		entClient: entClient,
-		statusConverter: mapper.NewEnumTypeConverter[userV1.UserPosition_Status, userposition.Status](
-			userV1.UserPosition_Status_name,
-			userV1.UserPosition_Status_value,
+		statusConverter: mapper.NewEnumTypeConverter[identityV1.UserPosition_Status, userposition.Status](
+			identityV1.UserPosition_Status_name,
+			identityV1.UserPosition_Status_value,
 		),
 	}
 }
@@ -45,7 +45,7 @@ func (r *UserPositionRepo) CleanRelationsByUserID(ctx context.Context, tx *ent.T
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old user positions failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old user positions failed")
+		return identityV1.ErrorInternalServerError("delete old user positions failed")
 	}
 	return nil
 }
@@ -62,7 +62,7 @@ func (r *UserPositionRepo) CleanRelationsByUserIDs(ctx context.Context, tx *ent.
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old user positions by user ids failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old user positions by user ids failed")
+		return identityV1.ErrorInternalServerError("delete old user positions by user ids failed")
 	}
 	return nil
 }
@@ -79,7 +79,7 @@ func (r *UserPositionRepo) CleanRelationsByPositionID(ctx context.Context, tx *e
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old user positions by position id failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old user positions by position id failed")
+		return identityV1.ErrorInternalServerError("delete old user positions by position id failed")
 	}
 	return nil
 }
@@ -96,7 +96,7 @@ func (r *UserPositionRepo) CleanRelationsByPositionIDs(ctx context.Context, tx *
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old user positions by position ids failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("delete old user positions by position ids failed")
+		return identityV1.ErrorInternalServerError("delete old user positions by position ids failed")
 	}
 	return nil
 }
@@ -117,14 +117,14 @@ func (r *UserPositionRepo) RemovePositionsFromUser(ctx context.Context, userID u
 		Exec(ctx)
 	if err != nil {
 		r.log.Errorf("remove positions from user failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("remove positions from user failed")
+		return identityV1.ErrorInternalServerError("remove positions from user failed")
 	}
 	return nil
 }
 func (r *UserPositionRepo) AssignUserPosition(
 	ctx context.Context,
 	tx *ent.Tx,
-	data *userV1.UserPosition,
+	data *identityV1.UserPosition,
 ) error {
 	if data == nil {
 		return nil
@@ -148,7 +148,7 @@ func (r *UserPositionRepo) AssignUserPosition(
 	_, err := rm.Save(ctx)
 	if err != nil {
 		r.log.Errorf("assign position to user failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("assign position to user failed")
+		return identityV1.ErrorInternalServerError("assign position to user failed")
 	}
 
 	return nil
@@ -158,7 +158,7 @@ func (r *UserPositionRepo) AssignUserPosition(
 func (r *UserPositionRepo) AssignUserPositions(
 	ctx context.Context, tx *ent.Tx,
 	userID uint32,
-	datas []*userV1.UserPosition,
+	datas []*identityV1.UserPosition,
 ) error {
 	if len(datas) == 0 || userID == 0 {
 		return nil
@@ -168,7 +168,7 @@ func (r *UserPositionRepo) AssignUserPositions(
 
 	// 删除该用户的所有旧关联
 	if err = r.CleanRelationsByUserID(ctx, tx, userID); err != nil {
-		return userV1.ErrorInternalServerError("clean old user positions failed")
+		return identityV1.ErrorInternalServerError("clean old user positions failed")
 	}
 
 	now := time.Now()
@@ -197,7 +197,7 @@ func (r *UserPositionRepo) AssignUserPositions(
 	_, err = tx.UserPosition.CreateBulk(userPositionCreates...).Save(ctx)
 	if err != nil {
 		r.log.Errorf("assign positions to user failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("assign positions to user failed")
+		return identityV1.ErrorInternalServerError("assign positions to user failed")
 	}
 
 	return nil
@@ -229,7 +229,7 @@ func (r *UserPositionRepo) ListPositionIDs(ctx context.Context, userID uint32, e
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query position ids by user id failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query position ids by user id failed")
+		return nil, identityV1.ErrorInternalServerError("query position ids by user id failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {
@@ -264,7 +264,7 @@ func (r *UserPositionRepo) ListUserIDs(ctx context.Context, positionID uint32, e
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query user ids by position id failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query user ids by position id failed")
+		return nil, identityV1.ErrorInternalServerError("query user ids by position id failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {
@@ -299,7 +299,7 @@ func (r *UserPositionRepo) ListUserIDsByPositionIDs(ctx context.Context, positio
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query user ids by position ids failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query user ids by position ids failed")
+		return nil, identityV1.ErrorInternalServerError("query user ids by position ids failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {

@@ -1277,12 +1277,12 @@ var (
 		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
 		{Name: "status", Type: field.TypeEnum, Comment: "状态", Enums: []string{"OFF", "ON"}, Default: "ON"},
 		{Name: "type", Type: field.TypeEnum, Nullable: true, Comment: "菜单类型 CATALOG: 目录 MENU: 菜单 BUTTON: 按钮 EMBEDDED: 内嵌 LINK: 外链", Enums: []string{"CATALOG", "MENU", "BUTTON", "EMBEDDED", "LINK"}, Default: "MENU"},
-		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "路径,当其类型为'按钮'的时候对应的数据操作名,例如:/user.service.v1.UserService/Login", Default: ""},
+		{Name: "path", Type: field.TypeString, Nullable: true, Comment: "路径,当其类型为'按钮'的时候对应的数据操作名,例如:/identity.service.v1.UserService/Login", Default: ""},
 		{Name: "redirect", Type: field.TypeString, Nullable: true, Comment: "重定向地址"},
 		{Name: "alias", Type: field.TypeString, Nullable: true, Comment: "路由别名"},
 		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "路由命名，然后我们可以使用 name 而不是 path 来传递 to 属性给 <router-link>。"},
 		{Name: "component", Type: field.TypeString, Nullable: true, Comment: "前端页面组件", Default: ""},
-		{Name: "meta", Type: field.TypeJSON, Nullable: true, Comment: "前端页面组件"},
+		{Name: "meta", Type: field.TypeJSON, Nullable: true, Comment: "路由元信息"},
 		{Name: "parent_id", Type: field.TypeUint32, Nullable: true, Comment: "父节点ID"},
 	}
 	// SysMenusTable holds the schema information for the "sys_menus" table.

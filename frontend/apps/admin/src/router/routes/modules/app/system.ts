@@ -18,9 +18,34 @@ const system: RouteRecordRaw[] = [
     },
     children: [
       {
+        path: 'menus',
+        name: 'MenuManagement',
+        meta: {
+          order: 1,
+          icon: 'lucide:square-menu',
+          title: $t('menu.system.menu'),
+          authority: ['platform:admin'],
+        },
+        component: () => import('#/views/app/system/menu/index.vue'),
+      },
+
+      {
+        path: 'apis',
+        name: 'APIManagement',
+        meta: {
+          order: 2,
+          icon: 'lucide:route',
+          title: $t('menu.system.api'),
+          authority: ['platform:admin'],
+        },
+        component: () => import('#/views/app/system/api/index.vue'),
+      },
+
+      {
         path: 'dict',
         name: 'DictManagement',
         meta: {
+          order: 3,
           icon: 'lucide:library-big',
           title: $t('menu.system.dict'),
           authority: ['platform:admin', 'tenant:manager'],
@@ -32,6 +57,7 @@ const system: RouteRecordRaw[] = [
         path: 'files',
         name: 'FileManagement',
         meta: {
+          order: 4,
           icon: 'lucide:file-search',
           title: $t('menu.system.file'),
           authority: ['platform:admin', 'tenant:manager'],
@@ -43,6 +69,7 @@ const system: RouteRecordRaw[] = [
         path: 'tasks',
         name: 'TaskManagement',
         meta: {
+          order: 5,
           icon: 'lucide:list-todo',
           title: $t('menu.system.task'),
           authority: ['platform:admin', 'tenant:manager'],
@@ -54,6 +81,7 @@ const system: RouteRecordRaw[] = [
         path: 'login-policies',
         name: 'LoginPolicyManagement',
         meta: {
+          order: 6,
           icon: 'lucide:shield-x',
           title: $t('menu.system.loginPolicy'),
           authority: ['platform:admin'],

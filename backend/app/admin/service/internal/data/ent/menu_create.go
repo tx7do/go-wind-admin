@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
+	resourcepb "go-wind-admin/api/gen/go/resource/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"time"
 
@@ -234,7 +234,7 @@ func (_c *MenuCreate) SetNillableComponent(v *string) *MenuCreate {
 }
 
 // SetMeta sets the "meta" field.
-func (_c *MenuCreate) SetMeta(v *permissionpb.MenuMeta) *MenuCreate {
+func (_c *MenuCreate) SetMeta(v *resourcepb.MenuMeta) *MenuCreate {
 	_c.mutation.SetMeta(v)
 	return _c
 }
@@ -786,7 +786,7 @@ func (u *MenuUpsert) ClearComponent() *MenuUpsert {
 }
 
 // SetMeta sets the "meta" field.
-func (u *MenuUpsert) SetMeta(v *permissionpb.MenuMeta) *MenuUpsert {
+func (u *MenuUpsert) SetMeta(v *resourcepb.MenuMeta) *MenuUpsert {
 	u.Set(menu.FieldMeta, v)
 	return u
 }
@@ -1163,7 +1163,7 @@ func (u *MenuUpsertOne) ClearComponent() *MenuUpsertOne {
 }
 
 // SetMeta sets the "meta" field.
-func (u *MenuUpsertOne) SetMeta(v *permissionpb.MenuMeta) *MenuUpsertOne {
+func (u *MenuUpsertOne) SetMeta(v *resourcepb.MenuMeta) *MenuUpsertOne {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetMeta(v)
 	})
@@ -1709,7 +1709,7 @@ func (u *MenuUpsertBulk) ClearComponent() *MenuUpsertBulk {
 }
 
 // SetMeta sets the "meta" field.
-func (u *MenuUpsertBulk) SetMeta(v *permissionpb.MenuMeta) *MenuUpsertBulk {
+func (u *MenuUpsertBulk) SetMeta(v *resourcepb.MenuMeta) *MenuUpsertBulk {
 	return u.Update(func(s *MenuUpsert) {
 		s.SetMeta(v)
 	})

@@ -9,7 +9,7 @@ package adminpb
 import (
 	_ "github.com/google/gnostic/openapiv3"
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	v11 "go-wind-admin/api/gen/go/permission/service/v1"
+	v11 "go-wind-admin/api/gen/go/audit/service/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
@@ -32,23 +32,23 @@ var File_admin_service_v1_i_permission_audit_log_proto protoreflect.FileDescript
 
 const file_admin_service_v1_i_permission_audit_log_proto_rawDesc = "" +
 	"\n" +
-	"-admin/service/v1/i_permission_audit_log.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1epagination/v1/pagination.proto\x1a0permission/service/v1/permission_audit_log.proto2\xb5\x02\n" +
-	"\x19PermissionAuditLogService\x12\x81\x01\n" +
-	"\x04List\x12\x19.pagination.PagingRequest\x1a5.permission.service.v1.ListPermissionAuditLogResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/admin/v1/permission-audit-logs\x12\x93\x01\n" +
-	"\x03Get\x123.permission.service.v1.GetPermissionAuditLogRequest\x1a).permission.service.v1.PermissionAuditLog\",\x82\xd3\xe4\x93\x02&\x12$/admin/v1/permission-audit-logs/{id}B\xc5\x01\n" +
+	"-admin/service/v1/i_permission_audit_log.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1epagination/v1/pagination.proto\x1a+audit/service/v1/permission_audit_log.proto2\xa5\x02\n" +
+	"\x19PermissionAuditLogService\x12|\n" +
+	"\x04List\x12\x19.pagination.PagingRequest\x1a0.audit.service.v1.ListPermissionAuditLogResponse\"'\x82\xd3\xe4\x93\x02!\x12\x1f/admin/v1/permission-audit-logs\x12\x89\x01\n" +
+	"\x03Get\x12..audit.service.v1.GetPermissionAuditLogRequest\x1a$.audit.service.v1.PermissionAuditLog\",\x82\xd3\xe4\x93\x02&\x12$/admin/v1/permission-audit-logs/{id}B\xc5\x01\n" +
 	"\x14com.admin.service.v1B\x18IPermissionAuditLogProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_permission_audit_log_proto_goTypes = []any{
 	(*v1.PagingRequest)(nil),                   // 0: pagination.PagingRequest
-	(*v11.GetPermissionAuditLogRequest)(nil),   // 1: permission.service.v1.GetPermissionAuditLogRequest
-	(*v11.ListPermissionAuditLogResponse)(nil), // 2: permission.service.v1.ListPermissionAuditLogResponse
-	(*v11.PermissionAuditLog)(nil),             // 3: permission.service.v1.PermissionAuditLog
+	(*v11.GetPermissionAuditLogRequest)(nil),   // 1: audit.service.v1.GetPermissionAuditLogRequest
+	(*v11.ListPermissionAuditLogResponse)(nil), // 2: audit.service.v1.ListPermissionAuditLogResponse
+	(*v11.PermissionAuditLog)(nil),             // 3: audit.service.v1.PermissionAuditLog
 }
 var file_admin_service_v1_i_permission_audit_log_proto_depIdxs = []int32{
 	0, // 0: admin.service.v1.PermissionAuditLogService.List:input_type -> pagination.PagingRequest
-	1, // 1: admin.service.v1.PermissionAuditLogService.Get:input_type -> permission.service.v1.GetPermissionAuditLogRequest
-	2, // 2: admin.service.v1.PermissionAuditLogService.List:output_type -> permission.service.v1.ListPermissionAuditLogResponse
-	3, // 3: admin.service.v1.PermissionAuditLogService.Get:output_type -> permission.service.v1.PermissionAuditLog
+	1, // 1: admin.service.v1.PermissionAuditLogService.Get:input_type -> audit.service.v1.GetPermissionAuditLogRequest
+	2, // 2: admin.service.v1.PermissionAuditLogService.List:output_type -> audit.service.v1.ListPermissionAuditLogResponse
+	3, // 3: admin.service.v1.PermissionAuditLogService.Get:output_type -> audit.service.v1.PermissionAuditLog
 	2, // [2:4] is the sub-list for method output_type
 	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

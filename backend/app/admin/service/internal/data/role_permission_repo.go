@@ -15,30 +15,30 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolepermission"
 
-	userV1 "go-wind-admin/api/gen/go/user/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
 type RolePermissionRepo struct {
 	log       *log.Helper
 	entClient *entCrud.EntClient[*ent.Client]
 
-	mapper          *mapper.CopierMapper[userV1.RolePermission, ent.RolePermission]
-	statusConverter *mapper.EnumTypeConverter[userV1.RolePermission_Status, rolepermission.Status]
-	effectConverter *mapper.EnumTypeConverter[userV1.RolePermission_EffectiveStatus, rolepermission.Effect]
+	mapper          *mapper.CopierMapper[permissionV1.RolePermission, ent.RolePermission]
+	statusConverter *mapper.EnumTypeConverter[permissionV1.RolePermission_Status, rolepermission.Status]
+	effectConverter *mapper.EnumTypeConverter[permissionV1.RolePermission_EffectiveStatus, rolepermission.Effect]
 }
 
 func NewRolePermissionRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *RolePermissionRepo {
 	repo := &RolePermissionRepo{
 		log:       ctx.NewLoggerHelper("role-permission/repo/admin-service"),
 		entClient: entClient,
-		mapper:    mapper.NewCopierMapper[userV1.RolePermission, ent.RolePermission](),
-		statusConverter: mapper.NewEnumTypeConverter[userV1.RolePermission_Status, rolepermission.Status](
-			userV1.RolePermission_Status_name,
-			userV1.RolePermission_Status_value,
+		mapper:    mapper.NewCopierMapper[permissionV1.RolePermission, ent.RolePermission](),
+		statusConverter: mapper.NewEnumTypeConverter[permissionV1.RolePermission_Status, rolepermission.Status](
+			permissionV1.RolePermission_Status_name,
+			permissionV1.RolePermission_Status_value,
 		),
-		effectConverter: mapper.NewEnumTypeConverter[userV1.RolePermission_EffectiveStatus, rolepermission.Effect](
-			userV1.RolePermission_EffectiveStatus_name,
-			userV1.RolePermission_EffectiveStatus_value,
+		effectConverter: mapper.NewEnumTypeConverter[permissionV1.RolePermission_EffectiveStatus, rolepermission.Effect](
+			permissionV1.RolePermission_EffectiveStatus_name,
+			permissionV1.RolePermission_EffectiveStatus_value,
 		),
 	}
 
@@ -67,12 +67,12 @@ func (r *RolePermissionRepo) CleanPermissions(
 		).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete old role [%d] permissions failed: %s", roleID, err.Error())
-		return userV1.ErrorInternalServerError("delete old role permissions failed")
+		return permissionV1.ErrorInternalServerError("delete old role permissions failed")
 	}
 	return nil
 }
 
-func (r *RolePermissionRepo) BatchCreate(ctx context.Context, tx *ent.Tx, datas []*userV1.RolePermission) error {
+func (r *RolePermissionRepo) BatchCreate(ctx context.Context, tx *ent.Tx, datas []*permissionV1.RolePermission) error {
 	if len(datas) == 0 {
 		return nil
 	}
@@ -97,14 +97,14 @@ func (r *RolePermissionRepo) BatchCreate(ctx context.Context, tx *ent.Tx, datas 
 	err := tx.RolePermission.CreateBulk(builders...).Exec(ctx)
 	if err != nil {
 		r.log.Errorf("batch create role permissions failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("batch create role permissions failed")
+		return permissionV1.ErrorInternalServerError("batch create role permissions failed")
 	}
 
 	return nil
 }
 
 // Upsert 创建或更新角色权限关联
-func (r *RolePermissionRepo) Upsert(ctx context.Context, tx *ent.Tx, data *userV1.RolePermission) error {
+func (r *RolePermissionRepo) Upsert(ctx context.Context, tx *ent.Tx, data *permissionV1.RolePermission) error {
 	var operatorID *uint32
 	if data.UpdatedBy != nil {
 		operatorID = data.UpdatedBy
@@ -113,7 +113,7 @@ func (r *RolePermissionRepo) Upsert(ctx context.Context, tx *ent.Tx, data *userV
 	}
 	if operatorID == nil {
 		r.log.Errorf("operator ID is nil for upsert role permission")
-		return userV1.ErrorInternalServerError("operator ID is required for upsert role permission")
+		return permissionV1.ErrorInternalServerError("operator ID is required for upsert role permission")
 	}
 
 	var now *time.Time
@@ -159,7 +159,7 @@ func (r *RolePermissionRepo) Upsert(ctx context.Context, tx *ent.Tx, data *userV
 	err := builder.Exec(ctx)
 	if err != nil {
 		r.log.Errorf("create role permission failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("create role permission failed")
+		return permissionV1.ErrorInternalServerError("create role permission failed")
 	}
 
 	return nil
@@ -195,7 +195,7 @@ func (r *RolePermissionRepo) AssignPermissions(ctx context.Context, tx *ent.Tx,
 
 		if err := rp.Exec(ctx); err != nil {
 			r.log.Errorf("assign permission to role failed: %s", err.Error())
-			return userV1.ErrorInternalServerError("assign permission to role failed")
+			return permissionV1.ErrorInternalServerError("assign permission to role failed")
 		}
 	}
 
@@ -214,7 +214,7 @@ func (r *RolePermissionRepo) ListPermissionIDs(ctx context.Context, roleID uint3
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query permission ids by role id failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query permission ids by role id failed")
+		return nil, permissionV1.ErrorInternalServerError("query permission ids by role id failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {
@@ -235,7 +235,7 @@ func (r *RolePermissionRepo) ListPermissionIDsByRoleIDs(ctx context.Context, rol
 		Ints(ctx)
 	if err != nil {
 		r.log.Errorf("query permission ids by role ids failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("query permission ids by role ids failed")
+		return nil, permissionV1.ErrorInternalServerError("query permission ids by role ids failed")
 	}
 	ids := make([]uint32, len(intIDs))
 	for i, v := range intIDs {
@@ -257,12 +257,12 @@ func (r *RolePermissionRepo) RemovePermissions(ctx context.Context, tenantID, ro
 		Exec(ctx)
 	if err != nil {
 		r.log.Errorf("remove roles by role id failed: %s", err.Error())
-		return userV1.ErrorInternalServerError("remove roles by role id failed")
+		return permissionV1.ErrorInternalServerError("remove roles by role id failed")
 	}
 	return nil
 }
 
-func (r *RolePermissionRepo) ListPermissionsByRoleID(ctx context.Context, roleID uint32) ([]*userV1.RolePermission, error) {
+func (r *RolePermissionRepo) ListPermissionsByRoleID(ctx context.Context, roleID uint32) ([]*permissionV1.RolePermission, error) {
 	entities, err := r.entClient.Client().RolePermission.Query().
 		Where(
 			rolepermission.RoleIDEQ(roleID),
@@ -270,10 +270,10 @@ func (r *RolePermissionRepo) ListPermissionsByRoleID(ctx context.Context, roleID
 		All(ctx)
 	if err != nil {
 		r.log.Errorf("list role permissions by role id failed: %s", err.Error())
-		return nil, userV1.ErrorInternalServerError("list role permissions by role id failed")
+		return nil, permissionV1.ErrorInternalServerError("list role permissions by role id failed")
 	}
 
-	results := make([]*userV1.RolePermission, 0, len(entities))
+	results := make([]*permissionV1.RolePermission, 0, len(entities))
 	for _, entity := range entities {
 		results = append(results, r.mapper.ToDTO(entity))
 	}

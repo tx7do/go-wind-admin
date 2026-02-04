@@ -11,7 +11,7 @@ import (
 	http "github.com/go-kratos/kratos/v2/transport/http"
 	binding "github.com/go-kratos/kratos/v2/transport/http/binding"
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	v11 "go-wind-admin/api/gen/go/permission/service/v1"
+	v11 "go-wind-admin/api/gen/go/audit/service/v1"
 )
 
 // This is a compile-time assertion to ensure that this generated file

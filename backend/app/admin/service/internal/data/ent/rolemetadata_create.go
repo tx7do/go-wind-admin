@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	userpb "go-wind-admin/api/gen/go/user/service/v1"
+	servicev1 "go-wind-admin/api/gen/go/identity/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolemetadata"
 	"time"
 
@@ -234,7 +234,7 @@ func (_c *RoleMetadataCreate) SetNillableScope(v *rolemetadata.Scope) *RoleMetad
 }
 
 // SetCustomOverrides sets the "custom_overrides" field.
-func (_c *RoleMetadataCreate) SetCustomOverrides(v *userpb.RoleOverride) *RoleMetadataCreate {
+func (_c *RoleMetadataCreate) SetCustomOverrides(v *servicev1.RoleOverride) *RoleMetadataCreate {
 	_c.mutation.SetCustomOverrides(v)
 	return _c
 }
@@ -754,7 +754,7 @@ func (u *RoleMetadataUpsert) ClearScope() *RoleMetadataUpsert {
 }
 
 // SetCustomOverrides sets the "custom_overrides" field.
-func (u *RoleMetadataUpsert) SetCustomOverrides(v *userpb.RoleOverride) *RoleMetadataUpsert {
+func (u *RoleMetadataUpsert) SetCustomOverrides(v *servicev1.RoleOverride) *RoleMetadataUpsert {
 	u.Set(rolemetadata.FieldCustomOverrides, v)
 	return u
 }
@@ -1135,7 +1135,7 @@ func (u *RoleMetadataUpsertOne) ClearScope() *RoleMetadataUpsertOne {
 }
 
 // SetCustomOverrides sets the "custom_overrides" field.
-func (u *RoleMetadataUpsertOne) SetCustomOverrides(v *userpb.RoleOverride) *RoleMetadataUpsertOne {
+func (u *RoleMetadataUpsertOne) SetCustomOverrides(v *servicev1.RoleOverride) *RoleMetadataUpsertOne {
 	return u.Update(func(s *RoleMetadataUpsert) {
 		s.SetCustomOverrides(v)
 	})
@@ -1684,7 +1684,7 @@ func (u *RoleMetadataUpsertBulk) ClearScope() *RoleMetadataUpsertBulk {
 }
 
 // SetCustomOverrides sets the "custom_overrides" field.
-func (u *RoleMetadataUpsertBulk) SetCustomOverrides(v *userpb.RoleOverride) *RoleMetadataUpsertBulk {
+func (u *RoleMetadataUpsertBulk) SetCustomOverrides(v *servicev1.RoleOverride) *RoleMetadataUpsertBulk {
 	return u.Update(func(s *RoleMetadataUpsert) {
 		s.SetCustomOverrides(v)
 	})

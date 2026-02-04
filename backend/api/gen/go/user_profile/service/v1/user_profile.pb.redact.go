@@ -6,7 +6,7 @@ package userprofilepb
 import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
-	userpb "go-wind-admin/api/gen/go/user/service/v1"
+	servicev1 "go-wind-admin/api/gen/go/identity/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -21,7 +21,7 @@ var (
 	_ codes.Code
 	_ status.Status
 	_ emptypb.Empty
-	_ userpb.User
+	_ servicev1.User
 )
 
 // RegisterRedactedUserProfileServiceServer wraps the UserProfileServiceServer with the redacted server and registers the service in GRPC
@@ -44,7 +44,7 @@ type redactedUserProfileServiceServer struct {
 
 // GetUser is the redacted wrapper for the actual UserProfileServiceServer.GetUser method
 // Unary RPC
-func (s *redactedUserProfileServiceServer) GetUser(ctx context.Context, in *emptypb.Empty) (*userpb.User, error) {
+func (s *redactedUserProfileServiceServer) GetUser(ctx context.Context, in *emptypb.Empty) (*servicev1.User, error) {
 	res, err := s.srv.GetUser(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -55,7 +55,7 @@ func (s *redactedUserProfileServiceServer) GetUser(ctx context.Context, in *empt
 
 // UpdateUser is the redacted wrapper for the actual UserProfileServiceServer.UpdateUser method
 // Unary RPC
-func (s *redactedUserProfileServiceServer) UpdateUser(ctx context.Context, in *userpb.UpdateUserRequest) (*emptypb.Empty, error) {
+func (s *redactedUserProfileServiceServer) UpdateUser(ctx context.Context, in *servicev1.UpdateUserRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.UpdateUser(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response

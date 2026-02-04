@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
+	resourcepb "go-wind-admin/api/gen/go/resource/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"time"
@@ -326,7 +326,7 @@ func (_u *MenuUpdate) ClearComponent() *MenuUpdate {
 }
 
 // SetMeta sets the "meta" field.
-func (_u *MenuUpdate) SetMeta(v *permissionpb.MenuMeta) *MenuUpdate {
+func (_u *MenuUpdate) SetMeta(v *resourcepb.MenuMeta) *MenuUpdate {
 	_u.mutation.SetMeta(v)
 	return _u
 }
@@ -939,7 +939,7 @@ func (_u *MenuUpdateOne) ClearComponent() *MenuUpdateOne {
 }
 
 // SetMeta sets the "meta" field.
-func (_u *MenuUpdateOne) SetMeta(v *permissionpb.MenuMeta) *MenuUpdateOne {
+func (_u *MenuUpdateOne) SetMeta(v *resourcepb.MenuMeta) *MenuUpdateOne {
 	_u.mutation.SetMeta(v)
 	return _u
 }

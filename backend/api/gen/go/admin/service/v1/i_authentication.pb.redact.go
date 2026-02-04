@@ -7,7 +7,7 @@ import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
 	authenticationpb "go-wind-admin/api/gen/go/authentication/service/v1"
-	userpb "go-wind-admin/api/gen/go/user/service/v1"
+	servicev1 "go-wind-admin/api/gen/go/identity/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -22,7 +22,7 @@ var (
 	_ codes.Code
 	_ status.Status
 	_ emptypb.Empty
-	_ userpb.User
+	_ servicev1.User
 	_ authenticationpb.LoginRequest
 )
 
