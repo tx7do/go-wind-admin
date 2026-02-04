@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: identity/service/v1/tenant.proto
 
-package servicev1
+package identitypb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
@@ -1206,8 +1206,8 @@ const file_identity_service_v1_tenant_proto_rawDesc = "" +
 	"\x06Update\x12(.identity.service.v1.UpdateTenantRequest\x1a\x16.google.protobuf.Empty\"\x00\x12L\n" +
 	"\x06Delete\x12(.identity.service.v1.DeleteTenantRequest\x1a\x16.google.protobuf.Empty\"\x00\x12e\n" +
 	"\fTenantExists\x12(.identity.service.v1.TenantExistsRequest\x1a).identity.service.v1.TenantExistsResponse\"\x00\x12\\\n" +
-	"\x11AssignTenantAdmin\x12-.identity.service.v1.AssignTenantAdminRequest\x1a\x16.google.protobuf.Empty\"\x00B\xcc\x01\n" +
-	"\x17com.identity.service.v1B\vTenantProtoP\x01Z6go-wind-admin/api/gen/go/identity/service/v1;servicev1\xa2\x02\x03ISX\xaa\x02\x13Identity.Service.V1\xca\x02\x13Identity\\Service\\V1\xe2\x02\x1fIdentity\\Service\\V1\\GPBMetadata\xea\x02\x15Identity::Service::V1b\x06proto3"
+	"\x11AssignTenantAdmin\x12-.identity.service.v1.AssignTenantAdminRequest\x1a\x16.google.protobuf.Empty\"\x00B\xcd\x01\n" +
+	"\x17com.identity.service.v1B\vTenantProtoP\x01Z7go-wind-admin/api/gen/go/identity/service/v1;identitypb\xa2\x02\x03ISX\xaa\x02\x13Identity.Service.V1\xca\x02\x13Identity\\Service\\V1\xe2\x02\x1fIdentity\\Service\\V1\\GPBMetadata\xea\x02\x15Identity::Service::V1b\x06proto3"
 
 var (
 	file_identity_service_v1_tenant_proto_rawDescOnce sync.Once

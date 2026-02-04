@@ -48,11 +48,8 @@ managed:
       path: task/service/v1
       value: go-wind-admin/api/gen/go/task/service/v1;taskpb
     - file_option: go_package
-      path: user/service/v1
-      value: go-wind-admin/api/gen/go/user/service/v1;userpb
-    - file_option: go_package
-      path: user_profile/service/v1
-      value: go-wind-admin/api/gen/go/user_profile/service/v1;userprofilepb
+      path: identity/service/v1
+      value: go-wind-admin/api/gen/go/identity/service/v1;identitypb
     - file_option: go_package
       path: resource/service/v1
       value: go-wind-admin/api/gen/go/resource/service/v1;resourcepb

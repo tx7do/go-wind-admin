@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: identity/service/v1/org_unit.proto
 
-package servicev1
+package identitypb
 
 import (
 	context "context"

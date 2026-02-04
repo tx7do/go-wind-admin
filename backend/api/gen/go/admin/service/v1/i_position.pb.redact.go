@@ -7,7 +7,7 @@ import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
 	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	servicev1 "go-wind-admin/api/gen/go/identity/service/v1"
+	identitypb "go-wind-admin/api/gen/go/identity/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -23,7 +23,7 @@ var (
 	_ status.Status
 	_ emptypb.Empty
 	_ pagination.Sorting
-	_ servicev1.Position
+	_ identitypb.Position
 )
 
 // RegisterRedactedPositionServiceServer wraps the PositionServiceServer with the redacted server and registers the service in GRPC
@@ -46,7 +46,7 @@ type redactedPositionServiceServer struct {
 
 // List is the redacted wrapper for the actual PositionServiceServer.List method
 // Unary RPC
-func (s *redactedPositionServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*servicev1.ListPositionResponse, error) {
+func (s *redactedPositionServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*identitypb.ListPositionResponse, error) {
 	res, err := s.srv.List(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -57,7 +57,7 @@ func (s *redactedPositionServiceServer) List(ctx context.Context, in *pagination
 
 // Get is the redacted wrapper for the actual PositionServiceServer.Get method
 // Unary RPC
-func (s *redactedPositionServiceServer) Get(ctx context.Context, in *servicev1.GetPositionRequest) (*servicev1.Position, error) {
+func (s *redactedPositionServiceServer) Get(ctx context.Context, in *identitypb.GetPositionRequest) (*identitypb.Position, error) {
 	res, err := s.srv.Get(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -68,7 +68,7 @@ func (s *redactedPositionServiceServer) Get(ctx context.Context, in *servicev1.G
 
 // Create is the redacted wrapper for the actual PositionServiceServer.Create method
 // Unary RPC
-func (s *redactedPositionServiceServer) Create(ctx context.Context, in *servicev1.CreatePositionRequest) (*emptypb.Empty, error) {
+func (s *redactedPositionServiceServer) Create(ctx context.Context, in *identitypb.CreatePositionRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Create(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -79,7 +79,7 @@ func (s *redactedPositionServiceServer) Create(ctx context.Context, in *servicev
 
 // Update is the redacted wrapper for the actual PositionServiceServer.Update method
 // Unary RPC
-func (s *redactedPositionServiceServer) Update(ctx context.Context, in *servicev1.UpdatePositionRequest) (*emptypb.Empty, error) {
+func (s *redactedPositionServiceServer) Update(ctx context.Context, in *identitypb.UpdatePositionRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Update(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -90,7 +90,7 @@ func (s *redactedPositionServiceServer) Update(ctx context.Context, in *servicev
 
 // Delete is the redacted wrapper for the actual PositionServiceServer.Delete method
 // Unary RPC
-func (s *redactedPositionServiceServer) Delete(ctx context.Context, in *servicev1.DeletePositionRequest) (*emptypb.Empty, error) {
+func (s *redactedPositionServiceServer) Delete(ctx context.Context, in *identitypb.DeletePositionRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Delete(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response

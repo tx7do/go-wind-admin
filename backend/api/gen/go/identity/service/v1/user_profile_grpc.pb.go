@@ -4,7 +4,7 @@
 // - protoc             (unknown)
 // source: identity/service/v1/user_profile.proto
 
-package servicev1
+package identitypb
 
 import (
 	context "context"

@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: identity/service/v1/user_profile.proto
 
-package servicev1
+package identitypb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
@@ -31,8 +31,8 @@ const file_identity_service_v1_user_profile_proto_rawDesc = "" +
 	"\x12UserProfileService\x12>\n" +
 	"\aGetUser\x12\x16.google.protobuf.Empty\x1a\x19.identity.service.v1.User\"\x00\x12N\n" +
 	"\n" +
-	"UpdateUser\x12&.identity.service.v1.UpdateUserRequest\x1a\x16.google.protobuf.Empty\"\x00B\xd1\x01\n" +
-	"\x17com.identity.service.v1B\x10UserProfileProtoP\x01Z6go-wind-admin/api/gen/go/identity/service/v1;servicev1\xa2\x02\x03ISX\xaa\x02\x13Identity.Service.V1\xca\x02\x13Identity\\Service\\V1\xe2\x02\x1fIdentity\\Service\\V1\\GPBMetadata\xea\x02\x15Identity::Service::V1b\x06proto3"
+	"UpdateUser\x12&.identity.service.v1.UpdateUserRequest\x1a\x16.google.protobuf.Empty\"\x00B\xd2\x01\n" +
+	"\x17com.identity.service.v1B\x10UserProfileProtoP\x01Z7go-wind-admin/api/gen/go/identity/service/v1;identitypb\xa2\x02\x03ISX\xaa\x02\x13Identity.Service.V1\xca\x02\x13Identity\\Service\\V1\xe2\x02\x1fIdentity\\Service\\V1\\GPBMetadata\xea\x02\x15Identity::Service::V1b\x06proto3"
 
 var file_identity_service_v1_user_profile_proto_goTypes = []any{
 	(*emptypb.Empty)(nil),     // 0: google.protobuf.Empty

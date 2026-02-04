@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: identity/service/v1/membership_org_unit.proto
 
-package servicev1
+package identitypb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
@@ -303,8 +303,8 @@ const file_identity_service_v1_membership_org_unit_proto_rawDesc = "" +
 	"\v_deleted_byB\r\n" +
 	"\v_created_atB\r\n" +
 	"\v_updated_atB\r\n" +
-	"\v_deleted_atB\xd7\x01\n" +
-	"\x17com.identity.service.v1B\x16MembershipOrgUnitProtoP\x01Z6go-wind-admin/api/gen/go/identity/service/v1;servicev1\xa2\x02\x03ISX\xaa\x02\x13Identity.Service.V1\xca\x02\x13Identity\\Service\\V1\xe2\x02\x1fIdentity\\Service\\V1\\GPBMetadata\xea\x02\x15Identity::Service::V1b\x06proto3"
+	"\v_deleted_atB\xd8\x01\n" +
+	"\x17com.identity.service.v1B\x16MembershipOrgUnitProtoP\x01Z7go-wind-admin/api/gen/go/identity/service/v1;identitypb\xa2\x02\x03ISX\xaa\x02\x13Identity.Service.V1\xca\x02\x13Identity\\Service\\V1\xe2\x02\x1fIdentity\\Service\\V1\\GPBMetadata\xea\x02\x15Identity::Service::V1b\x06proto3"
 
 var (
 	file_identity_service_v1_membership_org_unit_proto_rawDescOnce sync.Once

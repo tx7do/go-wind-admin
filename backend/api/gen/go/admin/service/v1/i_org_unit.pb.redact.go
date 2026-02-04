@@ -7,7 +7,7 @@ import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
 	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	servicev1 "go-wind-admin/api/gen/go/identity/service/v1"
+	identitypb "go-wind-admin/api/gen/go/identity/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -27,7 +27,7 @@ var (
 	_ timestamppb.Timestamp
 	_ fieldmaskpb.FieldMask
 	_ pagination.Sorting
-	_ servicev1.OrgUnit
+	_ identitypb.OrgUnit
 )
 
 // RegisterRedactedOrgUnitServiceServer wraps the OrgUnitServiceServer with the redacted server and registers the service in GRPC
@@ -50,7 +50,7 @@ type redactedOrgUnitServiceServer struct {
 
 // List is the redacted wrapper for the actual OrgUnitServiceServer.List method
 // Unary RPC
-func (s *redactedOrgUnitServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*servicev1.ListOrgUnitResponse, error) {
+func (s *redactedOrgUnitServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*identitypb.ListOrgUnitResponse, error) {
 	res, err := s.srv.List(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -61,7 +61,7 @@ func (s *redactedOrgUnitServiceServer) List(ctx context.Context, in *pagination.
 
 // Get is the redacted wrapper for the actual OrgUnitServiceServer.Get method
 // Unary RPC
-func (s *redactedOrgUnitServiceServer) Get(ctx context.Context, in *servicev1.GetOrgUnitRequest) (*servicev1.OrgUnit, error) {
+func (s *redactedOrgUnitServiceServer) Get(ctx context.Context, in *identitypb.GetOrgUnitRequest) (*identitypb.OrgUnit, error) {
 	res, err := s.srv.Get(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -72,7 +72,7 @@ func (s *redactedOrgUnitServiceServer) Get(ctx context.Context, in *servicev1.Ge
 
 // Create is the redacted wrapper for the actual OrgUnitServiceServer.Create method
 // Unary RPC
-func (s *redactedOrgUnitServiceServer) Create(ctx context.Context, in *servicev1.CreateOrgUnitRequest) (*emptypb.Empty, error) {
+func (s *redactedOrgUnitServiceServer) Create(ctx context.Context, in *identitypb.CreateOrgUnitRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Create(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -83,7 +83,7 @@ func (s *redactedOrgUnitServiceServer) Create(ctx context.Context, in *servicev1
 
 // Update is the redacted wrapper for the actual OrgUnitServiceServer.Update method
 // Unary RPC
-func (s *redactedOrgUnitServiceServer) Update(ctx context.Context, in *servicev1.UpdateOrgUnitRequest) (*emptypb.Empty, error) {
+func (s *redactedOrgUnitServiceServer) Update(ctx context.Context, in *identitypb.UpdateOrgUnitRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Update(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -94,7 +94,7 @@ func (s *redactedOrgUnitServiceServer) Update(ctx context.Context, in *servicev1
 
 // Delete is the redacted wrapper for the actual OrgUnitServiceServer.Delete method
 // Unary RPC
-func (s *redactedOrgUnitServiceServer) Delete(ctx context.Context, in *servicev1.DeleteOrgUnitRequest) (*emptypb.Empty, error) {
+func (s *redactedOrgUnitServiceServer) Delete(ctx context.Context, in *identitypb.DeleteOrgUnitRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Delete(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response

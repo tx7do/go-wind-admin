@@ -4,7 +4,7 @@
 // 	protoc        (unknown)
 // source: identity/service/v1/position.proto
 
-package servicev1
+package identitypb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
@@ -960,8 +960,8 @@ const file_identity_service_v1_position_proto_rawDesc = "" +
 	"\x06Create\x12*.identity.service.v1.CreatePositionRequest\x1a\x16.google.protobuf.Empty\"\x00\x12t\n" +
 	"\vBatchCreate\x120.identity.service.v1.BatchCreatePositionsRequest\x1a1.identity.service.v1.BatchCreatePositionsResponse\"\x00\x12N\n" +
 	"\x06Update\x12*.identity.service.v1.UpdatePositionRequest\x1a\x16.google.protobuf.Empty\"\x00\x12N\n" +
-	"\x06Delete\x12*.identity.service.v1.DeletePositionRequest\x1a\x16.google.protobuf.Empty\"\x00B\xce\x01\n" +
-	"\x17com.identity.service.v1B\rPositionProtoP\x01Z6go-wind-admin/api/gen/go/identity/service/v1;servicev1\xa2\x02\x03ISX\xaa\x02\x13Identity.Service.V1\xca\x02\x13Identity\\Service\\V1\xe2\x02\x1fIdentity\\Service\\V1\\GPBMetadata\xea\x02\x15Identity::Service::V1b\x06proto3"
+	"\x06Delete\x12*.identity.service.v1.DeletePositionRequest\x1a\x16.google.protobuf.Empty\"\x00B\xcf\x01\n" +
+	"\x17com.identity.service.v1B\rPositionProtoP\x01Z7go-wind-admin/api/gen/go/identity/service/v1;identitypb\xa2\x02\x03ISX\xaa\x02\x13Identity.Service.V1\xca\x02\x13Identity\\Service\\V1\xe2\x02\x1fIdentity\\Service\\V1\\GPBMetadata\xea\x02\x15Identity::Service::V1b\x06proto3"
 
 var (
 	file_identity_service_v1_position_proto_rawDescOnce sync.Once
