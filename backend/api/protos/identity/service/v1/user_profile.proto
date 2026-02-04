@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package user_profile.service.v1;
+package identity.service.v1;
 
 import "gnostic/openapi/v3/annotations.proto";
 import "google/api/annotations.proto";
