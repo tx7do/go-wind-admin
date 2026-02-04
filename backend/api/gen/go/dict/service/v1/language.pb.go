@@ -473,7 +473,7 @@ func (x *DeleteLanguageRequest) GetId() uint32 {
 
 type BatchCreateLanguagesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Data          []*Language            `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+	Items         []*Language            `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -508,9 +508,9 @@ func (*BatchCreateLanguagesRequest) Descriptor() ([]byte, []int) {
 	return file_dict_service_v1_language_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *BatchCreateLanguagesRequest) GetData() []*Language {
+func (x *BatchCreateLanguagesRequest) GetItems() []*Language {
 	if x != nil {
-		return x.Data
+		return x.Items
 	}
 	return nil
 }
@@ -668,9 +668,9 @@ const file_dict_service_v1_language_proto_rawDesc = "" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"'\n" +
 	"\x15DeleteLanguageRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\"L\n" +
-	"\x1bBatchCreateLanguagesRequest\x12-\n" +
-	"\x04data\x18\x01 \x03(\v2\x19.dict.service.v1.LanguageR\x04data\"d\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\"N\n" +
+	"\x1bBatchCreateLanguagesRequest\x12/\n" +
+	"\x05items\x18\x01 \x03(\v2\x19.dict.service.v1.LanguageR\x05items\"d\n" +
 	"\x1cBatchCreateLanguagesResponse\x12D\n" +
 	"\vcreated_ids\x18\x01 \x03(\x05B#\xbaG \x92\x02\x1d创建成功的语言ID列表R\n" +
 	"createdIds\"-\n" +
@@ -723,7 +723,7 @@ var file_dict_service_v1_language_proto_depIdxs = []int32{
 	0,  // 5: dict.service.v1.CreateLanguageRequest.data:type_name -> dict.service.v1.Language
 	0,  // 6: dict.service.v1.UpdateLanguageRequest.data:type_name -> dict.service.v1.Language
 	10, // 7: dict.service.v1.UpdateLanguageRequest.update_mask:type_name -> google.protobuf.FieldMask
-	0,  // 8: dict.service.v1.BatchCreateLanguagesRequest.data:type_name -> dict.service.v1.Language
+	0,  // 8: dict.service.v1.BatchCreateLanguagesRequest.items:type_name -> dict.service.v1.Language
 	11, // 9: dict.service.v1.LanguageService.List:input_type -> pagination.PagingRequest
 	11, // 10: dict.service.v1.LanguageService.Count:input_type -> pagination.PagingRequest
 	2,  // 11: dict.service.v1.LanguageService.Get:input_type -> dict.service.v1.GetLanguageRequest

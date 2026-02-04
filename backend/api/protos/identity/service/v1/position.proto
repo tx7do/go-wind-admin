@@ -208,7 +208,7 @@ message DeletePositionRequest {
 }
 
 message BatchCreatePositionsRequest {
-  repeated Position data = 1;
+  repeated Position items = 1;
 }
 message BatchCreatePositionsResponse {
   repeated int32 created_ids = 1 [

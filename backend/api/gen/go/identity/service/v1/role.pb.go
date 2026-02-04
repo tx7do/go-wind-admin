@@ -916,7 +916,7 @@ func (x *DeleteRoleRequest) GetId() uint32 {
 
 type BatchCreateRolesRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Data          []*Role                `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+	Items         []*Role                `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -951,9 +951,9 @@ func (*BatchCreateRolesRequest) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *BatchCreateRolesRequest) GetData() []*Role {
+func (x *BatchCreateRolesRequest) GetItems() []*Role {
 	if x != nil {
-		return x.Data
+		return x.Items
 	}
 	return nil
 }
@@ -1494,9 +1494,9 @@ const file_identity_service_v1_role_proto_rawDesc = "" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"#\n" +
 	"\x11DeleteRoleRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\"H\n" +
-	"\x17BatchCreateRolesRequest\x12-\n" +
-	"\x04data\x18\x01 \x03(\v2\x19.identity.service.v1.RoleR\x04data\"`\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\"J\n" +
+	"\x17BatchCreateRolesRequest\x12/\n" +
+	"\x05items\x18\x01 \x03(\v2\x19.identity.service.v1.RoleR\x05items\"`\n" +
 	"\x18BatchCreateRolesResponse\x12D\n" +
 	"\vcreated_ids\x18\x01 \x03(\x05B#\xbaG \x92\x02\x1d创建成功的角色ID列表R\n" +
 	"createdIds\"O\n" +
@@ -1592,7 +1592,7 @@ var file_identity_service_v1_role_proto_depIdxs = []int32{
 	3,  // 16: identity.service.v1.CreateRoleRequest.data:type_name -> identity.service.v1.Role
 	3,  // 17: identity.service.v1.UpdateRoleRequest.data:type_name -> identity.service.v1.Role
 	22, // 18: identity.service.v1.UpdateRoleRequest.update_mask:type_name -> google.protobuf.FieldMask
-	3,  // 19: identity.service.v1.BatchCreateRolesRequest.data:type_name -> identity.service.v1.Role
+	3,  // 19: identity.service.v1.BatchCreateRolesRequest.items:type_name -> identity.service.v1.Role
 	22, // 20: identity.service.v1.GetRolesByRoleCodesRequest.view_mask:type_name -> google.protobuf.FieldMask
 	22, // 21: identity.service.v1.GetRolesByRoleIdsRequest.view_mask:type_name -> google.protobuf.FieldMask
 	23, // 22: identity.service.v1.RoleService.List:input_type -> pagination.PagingRequest

@@ -957,7 +957,7 @@ func (x *UserExistsResponse) GetExist() bool {
 
 type BatchCreateUsersRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Data          []*User                `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+	Items         []*User                `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -992,9 +992,9 @@ func (*BatchCreateUsersRequest) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_user_proto_rawDescGZIP(), []int{8}
 }
 
-func (x *BatchCreateUsersRequest) GetData() []*User {
+func (x *BatchCreateUsersRequest) GetItems() []*User {
 	if x != nil {
-		return x.Data
+		return x.Items
 	}
 	return nil
 }
@@ -1886,9 +1886,9 @@ const file_identity_service_v1_user_proto_rawDesc = "" +
 	"\n" +
 	"\bquery_by\"*\n" +
 	"\x12UserExistsResponse\x12\x14\n" +
-	"\x05exist\x18\x01 \x01(\bR\x05exist\"H\n" +
-	"\x17BatchCreateUsersRequest\x12-\n" +
-	"\x04data\x18\x01 \x03(\v2\x19.identity.service.v1.UserR\x04data\"`\n" +
+	"\x05exist\x18\x01 \x01(\bR\x05exist\"J\n" +
+	"\x17BatchCreateUsersRequest\x12/\n" +
+	"\x05items\x18\x01 \x03(\v2\x19.identity.service.v1.UserR\x05items\"`\n" +
 	"\x18BatchCreateUsersResponse\x12D\n" +
 	"\vcreated_ids\x18\x01 \x03(\x05B#\xbaG \x92\x02\x1d创建成功的用户ID列表R\n" +
 	"createdIds\"(\n" +
@@ -2000,7 +2000,7 @@ var file_identity_service_v1_user_proto_depIdxs = []int32{
 	2,  // 9: identity.service.v1.CreateUserRequest.data:type_name -> identity.service.v1.User
 	2,  // 10: identity.service.v1.UpdateUserRequest.data:type_name -> identity.service.v1.User
 	25, // 11: identity.service.v1.UpdateUserRequest.update_mask:type_name -> google.protobuf.FieldMask
-	2,  // 12: identity.service.v1.BatchCreateUsersRequest.data:type_name -> identity.service.v1.User
+	2,  // 12: identity.service.v1.BatchCreateUsersRequest.items:type_name -> identity.service.v1.User
 	18, // 13: identity.service.v1.BindContactRequest.phone:type_name -> identity.service.v1.BindPhoneRequest
 	19, // 14: identity.service.v1.BindContactRequest.email:type_name -> identity.service.v1.BindEmailRequest
 	21, // 15: identity.service.v1.VerifyContactRequest.phone:type_name -> identity.service.v1.PhoneVerification

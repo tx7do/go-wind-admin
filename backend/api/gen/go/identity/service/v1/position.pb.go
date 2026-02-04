@@ -706,7 +706,7 @@ func (x *DeletePositionRequest) GetId() uint32 {
 
 type BatchCreatePositionsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Data          []*Position            `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+	Items         []*Position            `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -741,9 +741,9 @@ func (*BatchCreatePositionsRequest) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_position_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *BatchCreatePositionsRequest) GetData() []*Position {
+func (x *BatchCreatePositionsRequest) GetItems() []*Position {
 	if x != nil {
-		return x.Data
+		return x.Items
 	}
 	return nil
 }
@@ -945,9 +945,9 @@ const file_identity_service_v1_position_proto_rawDesc = "" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"'\n" +
 	"\x15DeletePositionRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\"P\n" +
-	"\x1bBatchCreatePositionsRequest\x121\n" +
-	"\x04data\x18\x01 \x03(\v2\x1d.identity.service.v1.PositionR\x04data\"d\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\"R\n" +
+	"\x1bBatchCreatePositionsRequest\x123\n" +
+	"\x05items\x18\x01 \x03(\v2\x1d.identity.service.v1.PositionR\x05items\"d\n" +
 	"\x1cBatchCreatePositionsResponse\x12D\n" +
 	"\vcreated_ids\x18\x01 \x03(\x05B#\xbaG \x92\x02\x1d创建成功的职位ID列表R\n" +
 	"createdIds\"-\n" +
@@ -1007,7 +1007,7 @@ var file_identity_service_v1_position_proto_depIdxs = []int32{
 	2,  // 9: identity.service.v1.CreatePositionRequest.data:type_name -> identity.service.v1.Position
 	2,  // 10: identity.service.v1.UpdatePositionRequest.data:type_name -> identity.service.v1.Position
 	12, // 11: identity.service.v1.UpdatePositionRequest.update_mask:type_name -> google.protobuf.FieldMask
-	2,  // 12: identity.service.v1.BatchCreatePositionsRequest.data:type_name -> identity.service.v1.Position
+	2,  // 12: identity.service.v1.BatchCreatePositionsRequest.items:type_name -> identity.service.v1.Position
 	13, // 13: identity.service.v1.PositionService.List:input_type -> pagination.PagingRequest
 	13, // 14: identity.service.v1.PositionService.Count:input_type -> pagination.PagingRequest
 	4,  // 15: identity.service.v1.PositionService.Get:input_type -> identity.service.v1.GetPositionRequest

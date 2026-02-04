@@ -4304,7 +4304,7 @@ components:
         BatchCreateLanguagesRequest:
             type: object
             properties:
-                data:
+                items:
                     type: array
                     items:
                         $ref: '#/components/schemas/Language'

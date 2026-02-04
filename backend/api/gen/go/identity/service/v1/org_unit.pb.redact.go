@@ -277,7 +277,7 @@ func (x *BatchCreateOrgUnitsRequest) Redact() string {
 		return ""
 	}
 
-	// Safe field: Data
+	// Safe field: Items
 	return x.String()
 }
 

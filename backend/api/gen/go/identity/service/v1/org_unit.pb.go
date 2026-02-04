@@ -790,7 +790,7 @@ func (x *DeleteOrgUnitRequest) GetId() uint32 {
 
 type BatchCreateOrgUnitsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Data          []*OrgUnit             `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+	Items         []*OrgUnit             `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -825,9 +825,9 @@ func (*BatchCreateOrgUnitsRequest) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_org_unit_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *BatchCreateOrgUnitsRequest) GetData() []*OrgUnit {
+func (x *BatchCreateOrgUnitsRequest) GetItems() []*OrgUnit {
 	if x != nil {
-		return x.Data
+		return x.Items
 	}
 	return nil
 }
@@ -1064,9 +1064,9 @@ const file_identity_service_v1_org_unit_proto_rawDesc = "" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"&\n" +
 	"\x14DeleteOrgUnitRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\"N\n" +
-	"\x1aBatchCreateOrgUnitsRequest\x120\n" +
-	"\x04data\x18\x01 \x03(\v2\x1c.identity.service.v1.OrgUnitR\x04data\"i\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\"P\n" +
+	"\x1aBatchCreateOrgUnitsRequest\x122\n" +
+	"\x05items\x18\x01 \x03(\v2\x1c.identity.service.v1.OrgUnitR\x05items\"i\n" +
 	"\x1bBatchCreateOrgUnitsResponse\x12J\n" +
 	"\vcreated_ids\x18\x01 \x03(\x05B)\xbaG&\x92\x02#创建成功的组织单元ID列表R\n" +
 	"createdIds\",\n" +
@@ -1129,7 +1129,7 @@ var file_identity_service_v1_org_unit_proto_depIdxs = []int32{
 	2,  // 11: identity.service.v1.CreateOrgUnitRequest.data:type_name -> identity.service.v1.OrgUnit
 	2,  // 12: identity.service.v1.UpdateOrgUnitRequest.data:type_name -> identity.service.v1.OrgUnit
 	13, // 13: identity.service.v1.UpdateOrgUnitRequest.update_mask:type_name -> google.protobuf.FieldMask
-	2,  // 14: identity.service.v1.BatchCreateOrgUnitsRequest.data:type_name -> identity.service.v1.OrgUnit
+	2,  // 14: identity.service.v1.BatchCreateOrgUnitsRequest.items:type_name -> identity.service.v1.OrgUnit
 	14, // 15: identity.service.v1.OrgUnitService.List:input_type -> pagination.PagingRequest
 	14, // 16: identity.service.v1.OrgUnitService.Count:input_type -> pagination.PagingRequest
 	4,  // 17: identity.service.v1.OrgUnitService.Get:input_type -> identity.service.v1.GetOrgUnitRequest

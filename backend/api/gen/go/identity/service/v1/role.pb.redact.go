@@ -328,7 +328,7 @@ func (x *BatchCreateRolesRequest) Redact() string {
 		return ""
 	}
 
-	// Safe field: Data
+	// Safe field: Items
 	return x.String()
 }
 

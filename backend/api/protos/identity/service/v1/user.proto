@@ -312,7 +312,7 @@ message UserExistsResponse {
 }
 
 message BatchCreateUsersRequest {
-  repeated User data = 1;
+  repeated User items = 1;
 }
 message BatchCreateUsersResponse {
   repeated int32 created_ids = 1 [

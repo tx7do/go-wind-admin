@@ -286,7 +286,7 @@ message DeleteRoleRequest {
 }
 
 message BatchCreateRolesRequest {
-  repeated Role data = 1;
+  repeated Role items = 1;
 }
 message BatchCreateRolesResponse {
   repeated int32 created_ids = 1 [

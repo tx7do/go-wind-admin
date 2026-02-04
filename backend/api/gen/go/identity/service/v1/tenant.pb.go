@@ -733,7 +733,7 @@ func (x *DeleteTenantRequest) GetId() uint32 {
 
 type BatchCreateTenantsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Data          []*Tenant              `protobuf:"bytes,1,rep,name=data,proto3" json:"data,omitempty"`
+	Items         []*Tenant              `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -768,9 +768,9 @@ func (*BatchCreateTenantsRequest) Descriptor() ([]byte, []int) {
 	return file_identity_service_v1_tenant_proto_rawDescGZIP(), []int{6}
 }
 
-func (x *BatchCreateTenantsRequest) GetData() []*Tenant {
+func (x *BatchCreateTenantsRequest) GetItems() []*Tenant {
 	if x != nil {
-		return x.Data
+		return x.Items
 	}
 	return nil
 }
@@ -1177,9 +1177,9 @@ const file_identity_service_v1_tenant_proto_rawDesc = "" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"%\n" +
 	"\x13DeleteTenantRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\"L\n" +
-	"\x19BatchCreateTenantsRequest\x12/\n" +
-	"\x04data\x18\x01 \x03(\v2\x1b.identity.service.v1.TenantR\x04data\"b\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\"N\n" +
+	"\x19BatchCreateTenantsRequest\x121\n" +
+	"\x05items\x18\x01 \x03(\v2\x1b.identity.service.v1.TenantR\x05items\"b\n" +
 	"\x1aBatchCreateTenantsResponse\x12D\n" +
 	"\vcreated_ids\x18\x01 \x03(\x05B#\xbaG \x92\x02\x1d创建成功的租户ID列表R\n" +
 	"createdIds\"i\n" +
@@ -1261,7 +1261,7 @@ var file_identity_service_v1_tenant_proto_depIdxs = []int32{
 	3,  // 11: identity.service.v1.CreateTenantRequest.data:type_name -> identity.service.v1.Tenant
 	3,  // 12: identity.service.v1.UpdateTenantRequest.data:type_name -> identity.service.v1.Tenant
 	17, // 13: identity.service.v1.UpdateTenantRequest.update_mask:type_name -> google.protobuf.FieldMask
-	3,  // 14: identity.service.v1.BatchCreateTenantsRequest.data:type_name -> identity.service.v1.Tenant
+	3,  // 14: identity.service.v1.BatchCreateTenantsRequest.items:type_name -> identity.service.v1.Tenant
 	3,  // 15: identity.service.v1.CreateTenantWithAdminUserRequest.tenant:type_name -> identity.service.v1.Tenant
 	18, // 16: identity.service.v1.CreateTenantWithAdminUserRequest.user:type_name -> identity.service.v1.User
 	19, // 17: identity.service.v1.TenantService.List:input_type -> pagination.PagingRequest

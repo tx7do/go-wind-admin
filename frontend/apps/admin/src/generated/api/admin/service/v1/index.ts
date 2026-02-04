@@ -3062,7 +3062,7 @@ export type dictservicev1_DeleteLanguageRequest = {
 };
 
 export type dictservicev1_BatchCreateLanguagesRequest = {
-  data: dictservicev1_Language[] | undefined;
+  items: dictservicev1_Language[] | undefined;
 };
 
 // 登录审计日志管理服务

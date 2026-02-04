@@ -235,7 +235,7 @@ message DeleteOrgUnitRequest {
 }
 
 message BatchCreateOrgUnitsRequest {
-  repeated OrgUnit data = 1;
+  repeated OrgUnit items = 1;
 }
 message BatchCreateOrgUnitsResponse {
   repeated int32 created_ids = 1 [

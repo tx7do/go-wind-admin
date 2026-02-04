@@ -317,7 +317,7 @@ func (x *BatchCreateUsersRequest) Redact() string {
 		return ""
 	}
 
-	// Safe field: Data
+	// Safe field: Items
 	return x.String()
 }
 

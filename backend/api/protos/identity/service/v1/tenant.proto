@@ -219,7 +219,7 @@ message DeleteTenantRequest {
 }
 
 message BatchCreateTenantsRequest {
-  repeated Tenant data = 1;
+  repeated Tenant items = 1;
 }
 message BatchCreateTenantsResponse {
   repeated int32 created_ids = 1 [
