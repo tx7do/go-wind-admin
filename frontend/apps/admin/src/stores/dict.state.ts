@@ -85,6 +85,7 @@ export const useDictStore = defineStore('dict', () => {
    */
   async function createDictType(values: object) {
     return await dictTypeService.Create({
+      // @ts-ignore proto generated code is error.
       data: {
         ...values,
       },
@@ -96,6 +97,7 @@ export const useDictStore = defineStore('dict', () => {
    */
   async function createDictEntry(values: object) {
     return await dictEntryService.Create({
+      // @ts-ignore proto generated code is error.
       data: {
         ...values,
       },
@@ -108,6 +110,7 @@ export const useDictStore = defineStore('dict', () => {
   async function updateDictType(id: number, values: object) {
     return await dictTypeService.Update({
       id,
+      // @ts-ignore proto generated code is error.
       data: {
         ...values,
       },
@@ -122,6 +125,7 @@ export const useDictStore = defineStore('dict', () => {
   async function updateDictEntry(id: number, values: object) {
     return await dictEntryService.Update({
       id,
+      // @ts-ignore proto generated code is error.
       data: {
         ...values,
       },

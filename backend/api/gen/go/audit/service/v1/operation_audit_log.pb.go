@@ -31,28 +31,30 @@ type OperationAuditLog_ActionType int32
 
 const (
 	OperationAuditLog_ACTION_TYPE_UNSPECIFIED OperationAuditLog_ActionType = 0
-	OperationAuditLog_CREATE                  OperationAuditLog_ActionType = 1 // 创建
-	OperationAuditLog_UPDATE                  OperationAuditLog_ActionType = 2 // 更新
-	OperationAuditLog_DELETE                  OperationAuditLog_ActionType = 3 // 删除
-	OperationAuditLog_READ                    OperationAuditLog_ActionType = 4 // 读取
-	OperationAuditLog_ASSIGN                  OperationAuditLog_ActionType = 5 // 分配
-	OperationAuditLog_UNASSIGN                OperationAuditLog_ActionType = 6 // 取消分配
-	OperationAuditLog_EXPORT                  OperationAuditLog_ActionType = 8 // 导出
-	OperationAuditLog_OTHER                   OperationAuditLog_ActionType = 7 // 其他
+	OperationAuditLog_CREATE                  OperationAuditLog_ActionType = 1   // 创建
+	OperationAuditLog_UPDATE                  OperationAuditLog_ActionType = 2   // 更新
+	OperationAuditLog_DELETE                  OperationAuditLog_ActionType = 3   // 删除
+	OperationAuditLog_READ                    OperationAuditLog_ActionType = 4   // 读取
+	OperationAuditLog_ASSIGN                  OperationAuditLog_ActionType = 5   // 分配
+	OperationAuditLog_UNASSIGN                OperationAuditLog_ActionType = 6   // 取消分配
+	OperationAuditLog_EXPORT                  OperationAuditLog_ActionType = 7   // 导出
+	OperationAuditLog_IMPORT                  OperationAuditLog_ActionType = 8   // 导入
+	OperationAuditLog_OTHER                   OperationAuditLog_ActionType = 100 // 其他
 )
 
 // Enum value maps for OperationAuditLog_ActionType.
 var (
 	OperationAuditLog_ActionType_name = map[int32]string{
-		0: "ACTION_TYPE_UNSPECIFIED",
-		1: "CREATE",
-		2: "UPDATE",
-		3: "DELETE",
-		4: "READ",
-		5: "ASSIGN",
-		6: "UNASSIGN",
-		8: "EXPORT",
-		7: "OTHER",
+		0:   "ACTION_TYPE_UNSPECIFIED",
+		1:   "CREATE",
+		2:   "UPDATE",
+		3:   "DELETE",
+		4:   "READ",
+		5:   "ASSIGN",
+		6:   "UNASSIGN",
+		7:   "EXPORT",
+		8:   "IMPORT",
+		100: "OTHER",
 	}
 	OperationAuditLog_ActionType_value = map[string]int32{
 		"ACTION_TYPE_UNSPECIFIED": 0,
@@ -62,8 +64,9 @@ var (
 		"READ":                    4,
 		"ASSIGN":                  5,
 		"UNASSIGN":                6,
-		"EXPORT":                  8,
-		"OTHER":                   7,
+		"EXPORT":                  7,
+		"IMPORT":                  8,
+		"OTHER":                   100,
 	}
 )
 
@@ -468,7 +471,7 @@ var File_audit_service_v1_operation_audit_log_proto protoreflect.FileDescriptor
 
 const file_audit_service_v1_operation_audit_log_proto_rawDesc = "" +
 	"\n" +
-	"*audit/service/v1/operation_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1daudit/service/v1/common.proto\x1a#audit/service/v1/geo_location.proto\"\xe2\x0e\n" +
+	"*audit/service/v1/operation_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1daudit/service/v1/common.proto\x1a#audit/service/v1/geo_location.proto\"\xee\x0e\n" +
 	"\x11OperationAuditLog\x12,\n" +
 	"\x02id\x18\x01 \x01(\rB\x17\xbaG\x14\x92\x02\x11API审计日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
 	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x128\n" +
@@ -498,7 +501,7 @@ const file_audit_service_v1_operation_audit_log_proto_rawDesc = "" +
 	"\blog_hash\x18( \x01(\tB<\xbaG9\x92\x026日志内容哈希（SHA256，十六进制字符串）H\x11R\alogHash\x88\x01\x01\x12}\n" +
 	"\tsignature\x18) \x01(\fBZ\xbaGW\x92\x02T日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）H\x12R\tsignature\x88\x01\x01\x12X\n" +
 	"\n" +
-	"created_at\x182 \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12日志创建时间H\x13R\tcreatedAt\x88\x01\x01\"\x88\x01\n" +
+	"created_at\x182 \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12日志创建时间H\x13R\tcreatedAt\x88\x01\x01\"\x94\x01\n" +
 	"\n" +
 	"ActionType\x12\x1b\n" +
 	"\x17ACTION_TYPE_UNSPECIFIED\x10\x00\x12\n" +
@@ -513,8 +516,10 @@ const file_audit_service_v1_operation_audit_log_proto_rawDesc = "" +
 	"\x06ASSIGN\x10\x05\x12\f\n" +
 	"\bUNASSIGN\x10\x06\x12\n" +
 	"\n" +
-	"\x06EXPORT\x10\b\x12\t\n" +
-	"\x05OTHER\x10\aB\x05\n" +
+	"\x06EXPORT\x10\a\x12\n" +
+	"\n" +
+	"\x06IMPORT\x10\b\x12\t\n" +
+	"\x05OTHER\x10dB\x05\n" +
 	"\x03_idB\f\n" +
 	"\n" +
 	"_tenant_idB\x0e\n" +

@@ -153,6 +153,57 @@
       "HIGH": "High"
     }
   },
+  "operationAuditLog": {
+    "action": {
+      "CREATE": "CREATE",
+      "UPDATE": "UPDATE",
+      "DELETE": "DELETE",
+      "READ": "READ",
+      "ASSIGN": "ASSIGN",
+      "UNASSIGN": "UNASSIGN",
+      "EXPORT": "EXPORT",
+      "IMPORT": "IMPORT",
+      "OTHER": "OTHER"
+    }
+  },
+  "dataAccessAuditLog": {
+    "accessType": {
+      "SELECT": "SELECT",
+      "INSERT": "INSERT",
+      "UPDATE": "UPDATE",
+      "DELETE": "DELETE",
+      "VIEW": "VIEW",
+      "BULK_READ": "BULK READ",
+      "EXPORT": "EXPORT",
+      "IMPORT": "IMPORT",
+      "DDL_CREATE": "CREATE TABLE",
+      "DDL_ALTER": "ALTER TABLE",
+      "DDL_DROP": "DROP TABLE",
+      "METADATA_READ": "METADATA READ",
+      "SCAN": "SCAN",
+      "ADMIN_OPERATION": "ADMIN OPERATION",
+      "OTHER": "OTHER"
+    }
+  },
+  "permissionAuditLog": {
+    "action": {
+      "GRANT": "Grant Permission",
+      "REVOKE": "Revoke Permission",
+      "UPDATE": "Update Permission",
+      "RESET": "Reset Permission",
+      "CREATE": "Create Permission",
+      "DELETE": "Delete Permission",
+      "ASSIGN": "Assign Permission",
+      "UNASSIGN": "Unassign Permission",
+      "BULK_GRANT": "Bulk Grant",
+      "BULK_REVOKE": "Bulk Revoke",
+      "EXPIRE": "Expire Permission",
+      "SUSPEND": "Suspend Permission",
+      "RESUME": "Resume Permission",
+      "ROLLBACK": "Rollback Change",
+      "OTHER": "Other"
+    }
+  },
   "internalMessage": {
     "status": {
       "DRAFT": "Draft",

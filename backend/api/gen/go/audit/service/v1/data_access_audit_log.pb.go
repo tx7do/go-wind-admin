@@ -32,28 +32,45 @@ type DataAccessAuditLog_AccessType int32
 
 const (
 	DataAccessAuditLog_ACCESS_TYPE_UNSPECIFIED DataAccessAuditLog_AccessType = 0
-	DataAccessAuditLog_SELECT                  DataAccessAuditLog_AccessType = 1 // 读取数据
-	DataAccessAuditLog_INSERT                  DataAccessAuditLog_AccessType = 2 // 插入数据
-	DataAccessAuditLog_UPDATE                  DataAccessAuditLog_AccessType = 3 // 更新数据
-	DataAccessAuditLog_DELETE                  DataAccessAuditLog_AccessType = 4 // 删除数据
-	DataAccessAuditLog_VIEW                    DataAccessAuditLog_AccessType = 5 // 查看数据
-	DataAccessAuditLog_EXPORT                  DataAccessAuditLog_AccessType = 6 // 导出数据
-	DataAccessAuditLog_BULK_READ               DataAccessAuditLog_AccessType = 7 // 批量读取数据
-	DataAccessAuditLog_OTHER                   DataAccessAuditLog_AccessType = 8 // 其他
+	DataAccessAuditLog_SELECT                  DataAccessAuditLog_AccessType = 1  // 读取数据
+	DataAccessAuditLog_INSERT                  DataAccessAuditLog_AccessType = 2  // 插入数据
+	DataAccessAuditLog_UPDATE                  DataAccessAuditLog_AccessType = 3  // 更新数据
+	DataAccessAuditLog_DELETE                  DataAccessAuditLog_AccessType = 4  // 删除数据
+	DataAccessAuditLog_VIEW                    DataAccessAuditLog_AccessType = 5  // 查看数据
+	DataAccessAuditLog_BULK_READ               DataAccessAuditLog_AccessType = 6  // 批量读取数据
+	DataAccessAuditLog_EXPORT                  DataAccessAuditLog_AccessType = 7  // 导出数据
+	DataAccessAuditLog_IMPORT                  DataAccessAuditLog_AccessType = 8  // 导入数据
+	DataAccessAuditLog_DDL_CREATE              DataAccessAuditLog_AccessType = 9  // 创建表/索引等结构性变更
+	DataAccessAuditLog_DDL_ALTER               DataAccessAuditLog_AccessType = 10 // 修改表/索引等
+	DataAccessAuditLog_DDL_DROP                DataAccessAuditLog_AccessType = 11 // 删除表/索引等
+	// 元数据 / 描述类操作（DESCRIBE/SHOW 等）
+	DataAccessAuditLog_METADATA_READ DataAccessAuditLog_AccessType = 12
+	// 扫描/流式读取（例如 Redis SCAN、Elasticsearch scroll/scan）
+	DataAccessAuditLog_SCAN DataAccessAuditLog_AccessType = 13
+	// 管理类操作（权限/角色/审计设置变更等）
+	DataAccessAuditLog_ADMIN_OPERATION DataAccessAuditLog_AccessType = 14
+	DataAccessAuditLog_OTHER           DataAccessAuditLog_AccessType = 100 // 其他
 )
 
 // Enum value maps for DataAccessAuditLog_AccessType.
 var (
 	DataAccessAuditLog_AccessType_name = map[int32]string{
-		0: "ACCESS_TYPE_UNSPECIFIED",
-		1: "SELECT",
-		2: "INSERT",
-		3: "UPDATE",
-		4: "DELETE",
-		5: "VIEW",
-		6: "EXPORT",
-		7: "BULK_READ",
-		8: "OTHER",
+		0:   "ACCESS_TYPE_UNSPECIFIED",
+		1:   "SELECT",
+		2:   "INSERT",
+		3:   "UPDATE",
+		4:   "DELETE",
+		5:   "VIEW",
+		6:   "BULK_READ",
+		7:   "EXPORT",
+		8:   "IMPORT",
+		9:   "DDL_CREATE",
+		10:  "DDL_ALTER",
+		11:  "DDL_DROP",
+		12:  "METADATA_READ",
+		13:  "SCAN",
+		14:  "ADMIN_OPERATION",
+		100: "OTHER",
 	}
 	DataAccessAuditLog_AccessType_value = map[string]int32{
 		"ACCESS_TYPE_UNSPECIFIED": 0,
@@ -62,9 +79,16 @@ var (
 		"UPDATE":                  3,
 		"DELETE":                  4,
 		"VIEW":                    5,
-		"EXPORT":                  6,
-		"BULK_READ":               7,
-		"OTHER":                   8,
+		"BULK_READ":               6,
+		"EXPORT":                  7,
+		"IMPORT":                  8,
+		"DDL_CREATE":              9,
+		"DDL_ALTER":               10,
+		"DDL_DROP":                11,
+		"METADATA_READ":           12,
+		"SCAN":                    13,
+		"ADMIN_OPERATION":         14,
+		"OTHER":                   100,
 	}
 )
 
@@ -509,7 +533,7 @@ var File_audit_service_v1_data_access_audit_log_proto protoreflect.FileDescripto
 
 const file_audit_service_v1_data_access_audit_log_proto_rawDesc = "" +
 	"\n" +
-	",audit/service/v1/data_access_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x17validate/validate.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1daudit/service/v1/common.proto\"\x8f\x14\n" +
+	",audit/service/v1/data_access_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x17validate/validate.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1daudit/service/v1/common.proto\"\xfa\x14\n" +
 	"\x12DataAccessAuditLog\x12,\n" +
 	"\x02id\x18\x01 \x01(\rB\x17\xbaG\x14\x92\x02\x11API审计日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
 	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x128\n" +
@@ -547,7 +571,7 @@ const file_audit_service_v1_data_access_audit_log_proto_rawDesc = "" +
 	"\blog_hash\x18( \x01(\tB<\xbaG9\x92\x026日志内容哈希（SHA256，十六进制字符串）H\x16R\alogHash\x88\x01\x01\x12}\n" +
 	"\tsignature\x18) \x01(\fBZ\xbaGW\x92\x02T日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）H\x17R\tsignature\x88\x01\x01\x12X\n" +
 	"\n" +
-	"created_at\x182 \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12日志创建时间H\x18R\tcreatedAt\x88\x01\x01\"\x89\x01\n" +
+	"created_at\x182 \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12日志创建时间H\x18R\tcreatedAt\x88\x01\x01\"\xf4\x01\n" +
 	"\n" +
 	"AccessType\x12\x1b\n" +
 	"\x17ACCESS_TYPE_UNSPECIFIED\x10\x00\x12\n" +
@@ -559,11 +583,21 @@ const file_audit_service_v1_data_access_audit_log_proto_rawDesc = "" +
 	"\x06UPDATE\x10\x03\x12\n" +
 	"\n" +
 	"\x06DELETE\x10\x04\x12\b\n" +
-	"\x04VIEW\x10\x05\x12\n" +
+	"\x04VIEW\x10\x05\x12\r\n" +
+	"\tBULK_READ\x10\x06\x12\n" +
 	"\n" +
-	"\x06EXPORT\x10\x06\x12\r\n" +
-	"\tBULK_READ\x10\a\x12\t\n" +
-	"\x05OTHER\x10\bB\x05\n" +
+	"\x06EXPORT\x10\a\x12\n" +
+	"\n" +
+	"\x06IMPORT\x10\b\x12\x0e\n" +
+	"\n" +
+	"DDL_CREATE\x10\t\x12\r\n" +
+	"\tDDL_ALTER\x10\n" +
+	"\x12\f\n" +
+	"\bDDL_DROP\x10\v\x12\x11\n" +
+	"\rMETADATA_READ\x10\f\x12\b\n" +
+	"\x04SCAN\x10\r\x12\x13\n" +
+	"\x0fADMIN_OPERATION\x10\x0e\x12\t\n" +
+	"\x05OTHER\x10dB\x05\n" +
 	"\x03_idB\f\n" +
 	"\n" +
 	"_tenant_idB\x0e\n" +

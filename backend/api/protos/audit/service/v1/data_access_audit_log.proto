@@ -38,10 +38,25 @@ message DataAccessAuditLog {
     UPDATE = 3;   // 更新数据
     DELETE = 4;   // 删除数据
     VIEW = 5;     // 查看数据
-    EXPORT = 6;   // 导出数据
-    BULK_READ = 7; // 批量读取数据
+    BULK_READ = 6; // 批量读取数据
 
-    OTHER = 8;    // 其他
+    EXPORT = 7;   // 导出数据
+    IMPORT = 8;   // 导入数据
+
+    DDL_CREATE = 9; // 创建表/索引等结构性变更
+    DDL_ALTER = 10; // 修改表/索引等
+    DDL_DROP = 11;  // 删除表/索引等
+
+    // 元数据 / 描述类操作（DESCRIBE/SHOW 等）
+    METADATA_READ = 12;
+
+    // 扫描/流式读取（例如 Redis SCAN、Elasticsearch scroll/scan）
+    SCAN = 13;
+
+    // 管理类操作（权限/角色/审计设置变更等）
+    ADMIN_OPERATION = 14;
+
+    OTHER = 100;    // 其他
   }
 
   optional uint32 id = 1 [

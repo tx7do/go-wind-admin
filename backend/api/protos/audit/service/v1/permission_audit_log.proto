@@ -36,6 +36,19 @@ message PermissionAuditLog {
     REVOKE = 2;   // 回收权限/角色
     UPDATE = 3;   // 修改权限属性(如过期时间、条件约束)
     RESET = 4;    // 重置权限
+
+    CREATE = 5;       // 创建角色/权限模板等资源
+    DELETE = 6;       // 删除角色/权限资源
+    ASSIGN = 7;       // 分配（将角色/权限指派给用户/组）
+    UNASSIGN = 8;     // 取消分配
+    BULK_GRANT = 9;   // 批量授予
+    BULK_REVOKE = 10; // 批量回收
+    EXPIRE = 11;      // 权限到期失效（系统自动）
+    SUSPEND = 12;     // 暂停/冻结权限
+    RESUME = 13;      // 恢复已暂停的权限
+    ROLLBACK = 14;    // 回滚先前的变更
+
+    OTHER = 100;      // 其他未分类操作
   }
 
   optional uint32 id = 1 [

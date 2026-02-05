@@ -34,7 +34,10 @@
   "log": {
     "moduleName": "Audit Logs",
     "loginAuditLog": "Login Logs",
-    "apiAuditLog": "API Logs"
+    "apiAuditLog": "API Logs",
+    "dataAccessAuditLog": "Data Logs",
+    "operationAuditLog": "Operation Logs",
+    "permissionAuditLog": "Permission Logs"
   },
   "internalMessage": {
     "moduleName": "Internal Messages",

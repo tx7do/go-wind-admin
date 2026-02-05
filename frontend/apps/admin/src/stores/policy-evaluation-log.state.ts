@@ -2,14 +2,14 @@ import { useUserStore } from '@vben/stores';
 
 import { defineStore } from 'pinia';
 
-import { createLoginAuditLogServiceClient } from '#/generated/api/admin/service/v1';
+import { createPolicyEvaluationLogServiceClient } from '#/generated/api/admin/service/v1';
 import { makeOrderBy, makeQueryString } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 export const usePolicyEvaluationLogStore = defineStore(
   'policy-evaluation-log',
   () => {
-    const service = createLoginAuditLogServiceClient(
+    const service = createPolicyEvaluationLogServiceClient(
       requestClientRequestHandler,
     );
 

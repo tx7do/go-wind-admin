@@ -37,9 +37,10 @@ message OperationAuditLog {
     READ = 4;       // 读取
     ASSIGN = 5;     // 分配
     UNASSIGN = 6;   // 取消分配
-    EXPORT = 8;     // 导出
+    EXPORT = 7;     // 导出
+    IMPORT = 8;     // 导入
 
-    OTHER = 7;      // 其他
+    OTHER = 100;      // 其他
   }
 
   optional uint32 id = 1 [

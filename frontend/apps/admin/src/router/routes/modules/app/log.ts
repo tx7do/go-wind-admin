@@ -11,7 +11,7 @@ const log: RouteRecordRaw[] = [
     redirect: '/log/login',
     meta: {
       order: 2004,
-      icon: 'lucide:activity',
+      icon: 'lucide:logs',
       title: $t('menu.log.moduleName'),
       keepAlive: true,
       authority: ['platform:admin'],
@@ -37,6 +37,42 @@ const log: RouteRecordRaw[] = [
           authority: ['platform:admin'],
         },
         component: () => import('#/views/app/log/api_audit_log/index.vue'),
+      },
+
+      {
+        path: 'operation-audit-logs',
+        name: 'OperationAuditLog',
+        meta: {
+          icon: 'lucide:shield-ellipsis',
+          title: $t('menu.log.operationAuditLog'),
+          authority: ['platform:admin'],
+        },
+        component: () =>
+          import('#/views/app/log/operation_audit_log/index.vue'),
+      },
+
+      {
+        path: 'data-access-audit-logs',
+        name: 'DataAccessAuditLog',
+        meta: {
+          icon: 'lucide:shield-check',
+          title: $t('menu.log.dataAccessAuditLog'),
+          authority: ['platform:admin'],
+        },
+        component: () =>
+          import('#/views/app/log/data_access_audit_log/index.vue'),
+      },
+
+      {
+        path: 'permission-audit-logs',
+        name: 'PermissionAuditLog',
+        meta: {
+          icon: 'lucide:shield-alert',
+          title: $t('menu.log.permissionAuditLog'),
+          authority: ['platform:admin'],
+        },
+        component: () =>
+          import('#/views/app/log/permission_audit_log/index.vue'),
       },
     ],
   },

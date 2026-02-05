@@ -33,20 +33,42 @@ type PermissionAuditLog_ActionType int32
 
 const (
 	PermissionAuditLog_ACTION_TYPE_UNSPECIFIED PermissionAuditLog_ActionType = 0
-	PermissionAuditLog_GRANT                   PermissionAuditLog_ActionType = 1 // 授予权限/角色
-	PermissionAuditLog_REVOKE                  PermissionAuditLog_ActionType = 2 // 回收权限/角色
-	PermissionAuditLog_UPDATE                  PermissionAuditLog_ActionType = 3 // 修改权限属性(如过期时间、条件约束)
-	PermissionAuditLog_RESET                   PermissionAuditLog_ActionType = 4 // 重置权限
+	PermissionAuditLog_GRANT                   PermissionAuditLog_ActionType = 1   // 授予权限/角色
+	PermissionAuditLog_REVOKE                  PermissionAuditLog_ActionType = 2   // 回收权限/角色
+	PermissionAuditLog_UPDATE                  PermissionAuditLog_ActionType = 3   // 修改权限属性(如过期时间、条件约束)
+	PermissionAuditLog_RESET                   PermissionAuditLog_ActionType = 4   // 重置权限
+	PermissionAuditLog_CREATE                  PermissionAuditLog_ActionType = 5   // 创建角色/权限模板等资源
+	PermissionAuditLog_DELETE                  PermissionAuditLog_ActionType = 6   // 删除角色/权限资源
+	PermissionAuditLog_ASSIGN                  PermissionAuditLog_ActionType = 7   // 分配（将角色/权限指派给用户/组）
+	PermissionAuditLog_UNASSIGN                PermissionAuditLog_ActionType = 8   // 取消分配
+	PermissionAuditLog_BULK_GRANT              PermissionAuditLog_ActionType = 9   // 批量授予
+	PermissionAuditLog_BULK_REVOKE             PermissionAuditLog_ActionType = 10  // 批量回收
+	PermissionAuditLog_EXPIRE                  PermissionAuditLog_ActionType = 11  // 权限到期失效（系统自动）
+	PermissionAuditLog_SUSPEND                 PermissionAuditLog_ActionType = 12  // 暂停/冻结权限
+	PermissionAuditLog_RESUME                  PermissionAuditLog_ActionType = 13  // 恢复已暂停的权限
+	PermissionAuditLog_ROLLBACK                PermissionAuditLog_ActionType = 14  // 回滚先前的变更
+	PermissionAuditLog_OTHER                   PermissionAuditLog_ActionType = 100 // 其他未分类操作
 )
 
 // Enum value maps for PermissionAuditLog_ActionType.
 var (
 	PermissionAuditLog_ActionType_name = map[int32]string{
-		0: "ACTION_TYPE_UNSPECIFIED",
-		1: "GRANT",
-		2: "REVOKE",
-		3: "UPDATE",
-		4: "RESET",
+		0:   "ACTION_TYPE_UNSPECIFIED",
+		1:   "GRANT",
+		2:   "REVOKE",
+		3:   "UPDATE",
+		4:   "RESET",
+		5:   "CREATE",
+		6:   "DELETE",
+		7:   "ASSIGN",
+		8:   "UNASSIGN",
+		9:   "BULK_GRANT",
+		10:  "BULK_REVOKE",
+		11:  "EXPIRE",
+		12:  "SUSPEND",
+		13:  "RESUME",
+		14:  "ROLLBACK",
+		100: "OTHER",
 	}
 	PermissionAuditLog_ActionType_value = map[string]int32{
 		"ACTION_TYPE_UNSPECIFIED": 0,
@@ -54,6 +76,17 @@ var (
 		"REVOKE":                  2,
 		"UPDATE":                  3,
 		"RESET":                   4,
+		"CREATE":                  5,
+		"DELETE":                  6,
+		"ASSIGN":                  7,
+		"UNASSIGN":                8,
+		"BULK_GRANT":              9,
+		"BULK_REVOKE":             10,
+		"EXPIRE":                  11,
+		"SUSPEND":                 12,
+		"RESUME":                  13,
+		"ROLLBACK":                14,
+		"OTHER":                   100,
 	}
 )
 
@@ -426,7 +459,7 @@ var File_audit_service_v1_permission_audit_log_proto protoreflect.FileDescriptor
 
 const file_audit_service_v1_permission_audit_log_proto_rawDesc = "" +
 	"\n" +
-	"+audit/service/v1/permission_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1epagination/v1/pagination.proto\"\x85\v\n" +
+	"+audit/service/v1/permission_audit_log.proto\x12\x10audit.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1epagination/v1/pagination.proto\"\x97\f\n" +
 	"\x12PermissionAuditLog\x125\n" +
 	"\x02id\x18\x01 \x01(\rB \xbaG\x1d\x92\x02\x1a权限变更审计日志IDH\x00R\x02id\x88\x01\x01\x120\n" +
 	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x12=\n" +
@@ -451,7 +484,7 @@ const file_audit_service_v1_permission_audit_log_proto_rawDesc = "" +
 	"\blog_hash\x182 \x01(\tB<\xbaG9\x92\x026日志内容哈希（SHA256，十六进制字符串）H\rR\alogHash\x88\x01\x01\x12}\n" +
 	"\tsignature\x183 \x01(\fBZ\xbaGW\x92\x02T日志数字签名（ECDSA，签名内容：tenant_id+user_id+created_at+log_hash）H\x0eR\tsignature\x88\x01\x01\x12X\n" +
 	"\n" +
-	"created_at\x18< \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12日志创建时间H\x0fR\tcreatedAt\x88\x01\x01\"W\n" +
+	"created_at\x18< \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12日志创建时间H\x0fR\tcreatedAt\x88\x01\x01\"\xe8\x01\n" +
 	"\n" +
 	"ActionType\x12\x1b\n" +
 	"\x17ACTION_TYPE_UNSPECIFIED\x10\x00\x12\t\n" +
@@ -460,7 +493,25 @@ const file_audit_service_v1_permission_audit_log_proto_rawDesc = "" +
 	"\x06REVOKE\x10\x02\x12\n" +
 	"\n" +
 	"\x06UPDATE\x10\x03\x12\t\n" +
-	"\x05RESET\x10\x04B\x05\n" +
+	"\x05RESET\x10\x04\x12\n" +
+	"\n" +
+	"\x06CREATE\x10\x05\x12\n" +
+	"\n" +
+	"\x06DELETE\x10\x06\x12\n" +
+	"\n" +
+	"\x06ASSIGN\x10\a\x12\f\n" +
+	"\bUNASSIGN\x10\b\x12\x0e\n" +
+	"\n" +
+	"BULK_GRANT\x10\t\x12\x0f\n" +
+	"\vBULK_REVOKE\x10\n" +
+	"\x12\n" +
+	"\n" +
+	"\x06EXPIRE\x10\v\x12\v\n" +
+	"\aSUSPEND\x10\f\x12\n" +
+	"\n" +
+	"\x06RESUME\x10\r\x12\f\n" +
+	"\bROLLBACK\x10\x0e\x12\t\n" +
+	"\x05OTHER\x10dB\x05\n" +
 	"\x03_idB\f\n" +
 	"\n" +
 	"_tenant_idB\x0e\n" +

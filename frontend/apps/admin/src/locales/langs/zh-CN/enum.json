@@ -153,6 +153,57 @@
       "HIGH": "高风险"
     }
   },
+  "operationAuditLog": {
+    "action": {
+      "CREATE": "创建",
+      "UPDATE": "更新",
+      "DELETE": "删除",
+      "READ": "读取",
+      "ASSIGN": "分配",
+      "UNASSIGN": "取消分配",
+      "EXPORT": "导出",
+      "IMPORT": "导入",
+      "OTHER": "其他"
+    }
+  },
+  "dataAccessAuditLog": {
+    "accessType": {
+      "SELECT": "读取",
+      "INSERT": "插入",
+      "UPDATE": "更新",
+      "DELETE": "删除",
+      "VIEW": "查看",
+      "BULK_READ": "批量读取",
+      "EXPORT": "导入",
+      "IMPORT": "导入",
+      "DDL_CREATE": "创建表",
+      "DDL_ALTER": "修改表",
+      "DDL_DROP": "删除表",
+      "METADATA_READ": "元数据",
+      "SCAN": "扫描",
+      "ADMIN_OPERATION": "管理类操作",
+      "OTHER": "其他"
+    }
+  },
+  "permissionAuditLog": {
+    "action": {
+      "GRANT": "授予权限",
+      "REVOKE": "回收权限",
+      "UPDATE": "修改权限",
+      "RESET": "重置权限",
+      "CREATE": "创建权限",
+      "DELETE": "删除权限",
+      "ASSIGN": "分配权限",
+      "UNASSIGN": "取消权限",
+      "BULK_GRANT": "批量授予",
+      "BULK_REVOKE": "批量回收",
+      "EXPIRE": "权限到期",
+      "SUSPEND": "冻结权限",
+      "RESUME": "恢复权限",
+      "ROLLBACK": "回滚变更",
+      "OTHER": "其他"
+    }
+  },
   "internalMessage": {
     "status": {
       "DRAFT": "草稿",

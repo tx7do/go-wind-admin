@@ -4512,8 +4512,15 @@ components:
                         - UPDATE
                         - DELETE
                         - VIEW
-                        - EXPORT
                         - BULK_READ
+                        - EXPORT
+                        - IMPORT
+                        - DDL_CREATE
+                        - DDL_ALTER
+                        - DDL_DROP
+                        - METADATA_READ
+                        - SCAN
+                        - ADMIN_OPERATION
                         - OTHER
                     type: string
                     description: 数据访问类型（SELECT/INSERT/UPDATE/DELETE）
@@ -6038,6 +6045,7 @@ components:
                         - ASSIGN
                         - UNASSIGN
                         - EXPORT
+                        - IMPORT
                         - OTHER
                     type: string
                     description: 动作
@@ -6353,6 +6361,17 @@ components:
                         - REVOKE
                         - UPDATE
                         - RESET
+                        - CREATE
+                        - DELETE
+                        - ASSIGN
+                        - UNASSIGN
+                        - BULK_GRANT
+                        - BULK_REVOKE
+                        - EXPIRE
+                        - SUSPEND
+                        - RESUME
+                        - ROLLBACK
+                        - OTHER
                     type: string
                     description: 变更动作
                     format: enum

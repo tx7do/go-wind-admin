@@ -13,6 +13,7 @@ import { type authenticationservicev1_LoginPolicy as LoginPolicy } from '#/gener
 import { $t } from '#/locales';
 import {
   loginPolicyMethodList,
+  loginPolicyMethodToColor,
   loginPolicyMethodToName,
   loginPolicyTypeList,
   loginPolicyTypeToColor,
@@ -194,7 +195,7 @@ async function handleDelete(row: any) {
         </a-tag>
       </template>
       <template #method="{ row }">
-        <a-tag color="cyan">
+        <a-tag :color="loginPolicyMethodToColor(row.method)">
           {{ loginPolicyMethodToName(row.method) }}
         </a-tag>
       </template>

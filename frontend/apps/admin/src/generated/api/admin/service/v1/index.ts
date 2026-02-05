@@ -1209,8 +1209,18 @@ export type auditservicev1_DataAccessAuditLog_AccessType =
   | "UPDATE"
   | "DELETE"
   | "VIEW"
-  | "EXPORT"
   | "BULK_READ"
+  | "EXPORT"
+  | "IMPORT"
+  | "DDL_CREATE"
+  | "DDL_ALTER"
+  | "DDL_DROP"
+  // 元数据 / 描述类操作（DESCRIBE/SHOW 等）
+  | "METADATA_READ"
+  // 扫描/流式读取（例如 Redis SCAN、Elasticsearch scroll/scan）
+  | "SCAN"
+  // 管理类操作（权限/角色/审计设置变更等）
+  | "ADMIN_OPERATION"
   | "OTHER";
 // 敏感级别
 export type auditservicev1_SensitiveLevel =
@@ -3906,6 +3916,7 @@ export type auditservicev1_OperationAuditLog_ActionType =
   | "ASSIGN"
   | "UNASSIGN"
   | "EXPORT"
+  | "IMPORT"
   | "OTHER";
 // 查询操作审计日志详情 - 请求
 export type auditservicev1_GetOperationAuditLogRequest = {
@@ -4593,7 +4604,18 @@ export type auditservicev1_PermissionAuditLog_ActionType =
   | "GRANT"
   | "REVOKE"
   | "UPDATE"
-  | "RESET";
+  | "RESET"
+  | "CREATE"
+  | "DELETE"
+  | "ASSIGN"
+  | "UNASSIGN"
+  | "BULK_GRANT"
+  | "BULK_REVOKE"
+  | "EXPIRE"
+  | "SUSPEND"
+  | "RESUME"
+  | "ROLLBACK"
+  | "OTHER";
 // 查询权限变更审计日志详情 - 请求
 export type auditservicev1_GetPermissionAuditLogRequest = {
   id?: number;

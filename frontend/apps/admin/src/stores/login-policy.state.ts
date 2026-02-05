@@ -7,7 +7,8 @@ import { defineStore } from 'pinia';
 
 import {
   createLoginPolicyServiceClient,
-  type LoginPolicy_Type,
+  type authenticationservicev1_LoginPolicy_Method as LoginPolicy_Method,
+  type authenticationservicev1_LoginPolicy_Type as LoginPolicy_Type,
 } from '#/generated/api/admin/service/v1';
 import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
@@ -102,7 +103,24 @@ export const loginPolicyMethodList = computed(() => [
   { value: 'DEVICE', label: $t('enum.loginPolicy.method.DEVICE') },
 ]);
 
-export function loginPolicyTypeToName(typeName: any) {
+const LOGIN_POLICY_METHOD_COLOR_MAP = {
+  IP: '#4096FF',
+  MAC: '#909399',
+  REGION: '#FF9A2E',
+  TIME: '#F56C6C',
+  DEVICE: '#86909C',
+  DEFAULT: '#86909C',
+} as const;
+
+export function loginPolicyMethodToColor(methodName: LoginPolicy_Method) {
+  return (
+    LOGIN_POLICY_METHOD_COLOR_MAP[
+      methodName as keyof typeof LOGIN_POLICY_METHOD_COLOR_MAP
+    ] || LOGIN_POLICY_METHOD_COLOR_MAP.DEFAULT
+  );
+}
+
+export function loginPolicyTypeToName(typeName: LoginPolicy_Type) {
   const values = loginPolicyTypeList.value;
   const matchedItem = values.find((item) => item.value === typeName);
   return matchedItem ? matchedItem.label : '';
@@ -123,7 +141,7 @@ export function loginPolicyTypeToColor(typeName: LoginPolicy_Type) {
   }
 }
 
-export function loginPolicyMethodToName(methodName: any) {
+export function loginPolicyMethodToName(methodName: LoginPolicy_Method) {
   const values = loginPolicyMethodList.value;
   const matchedItem = values.find((item) => item.value === methodName);
   return matchedItem ? matchedItem.label : '';
