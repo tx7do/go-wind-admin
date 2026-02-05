@@ -88,8 +88,15 @@ func (DataAccessAuditLog) Fields() []ent.Field {
 				"Update", "UPDATE",
 				"Delete", "DELETE",
 				"View", "VIEW",
-				"Export", "EXPORT",
 				"BulkRead", "BULK_READ",
+				"Export", "EXPORT",
+				"import", "IMPORT",
+				"DDLCreate", "DDL_CREATE",
+				"DDLAlter", "DDL_ALTER",
+				"DDLDrop", "DDL_DROP",
+				"MetadataRead", "METADATA_READ",
+				"Scan", "SCAN",
+				"AdminOperation", "ADMIN_OPERATION",
 				"Other", "OTHER",
 			).
 			Optional().

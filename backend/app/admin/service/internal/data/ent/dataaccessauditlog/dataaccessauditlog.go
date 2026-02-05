@@ -130,14 +130,21 @@ type AccessType string
 
 // AccessType values.
 const (
-	AccessTypeSelect   AccessType = "SELECT"
-	AccessTypeInsert   AccessType = "INSERT"
-	AccessTypeUpdate   AccessType = "UPDATE"
-	AccessTypeDelete   AccessType = "DELETE"
-	AccessTypeView     AccessType = "VIEW"
-	AccessTypeExport   AccessType = "EXPORT"
-	AccessTypeBulkRead AccessType = "BULK_READ"
-	AccessTypeOther    AccessType = "OTHER"
+	AccessTypeSelect         AccessType = "SELECT"
+	AccessTypeInsert         AccessType = "INSERT"
+	AccessTypeUpdate         AccessType = "UPDATE"
+	AccessTypeDelete         AccessType = "DELETE"
+	AccessTypeView           AccessType = "VIEW"
+	AccessTypeBulkRead       AccessType = "BULK_READ"
+	AccessTypeExport         AccessType = "EXPORT"
+	AccessTypeImport         AccessType = "IMPORT"
+	AccessTypeDDLCreate      AccessType = "DDL_CREATE"
+	AccessTypeDDLAlter       AccessType = "DDL_ALTER"
+	AccessTypeDDLDrop        AccessType = "DDL_DROP"
+	AccessTypeMetadataRead   AccessType = "METADATA_READ"
+	AccessTypeScan           AccessType = "SCAN"
+	AccessTypeAdminOperation AccessType = "ADMIN_OPERATION"
+	AccessTypeOther          AccessType = "OTHER"
 )
 
 func (at AccessType) String() string {
@@ -147,7 +154,7 @@ func (at AccessType) String() string {
 // AccessTypeValidator is a validator for the "access_type" field enum values. It is called by the builders before save.
 func AccessTypeValidator(at AccessType) error {
 	switch at {
-	case AccessTypeSelect, AccessTypeInsert, AccessTypeUpdate, AccessTypeDelete, AccessTypeView, AccessTypeExport, AccessTypeBulkRead, AccessTypeOther:
+	case AccessTypeSelect, AccessTypeInsert, AccessTypeUpdate, AccessTypeDelete, AccessTypeView, AccessTypeBulkRead, AccessTypeExport, AccessTypeImport, AccessTypeDDLCreate, AccessTypeDDLAlter, AccessTypeDDLDrop, AccessTypeMetadataRead, AccessTypeScan, AccessTypeAdminOperation, AccessTypeOther:
 		return nil
 	default:
 		return fmt.Errorf("dataaccessauditlog: invalid enum value for access_type field: %q", at)

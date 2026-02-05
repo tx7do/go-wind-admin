@@ -63,6 +63,7 @@ func (OperationAuditLog) Fields() []ent.Field {
 				"Assign", "ASSIGN",
 				"Unassign", "UNASSIGN",
 				"Export", "EXPORT",
+				"Import", "IMPORT",
 				"Other", "OTHER",
 			).
 			Optional().

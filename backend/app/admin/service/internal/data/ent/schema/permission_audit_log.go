@@ -51,6 +51,17 @@ func (PermissionAuditLog) Fields() []ent.Field {
 				"Revoke", "REVOKE",
 				"Update", "UPDATE",
 				"Reset", "RESET",
+				"Create", "CREATE",
+				"Delete", "DELETE",
+				"Assign", "ASSIGN",
+				"Unassign", "UNASSIGN",
+				"BulkGrant", "BULK_GRANT",
+				"BulkRevoke", "BULK_REVOKE",
+				"Expire", "EXPIRE",
+				"Suspend", "SUSPEND",
+				"Resume", "RESUME",
+				"Rollback", "ROLLBACK",
+				"Other", "OTHER",
 			).
 			Optional().
 			Nillable(),

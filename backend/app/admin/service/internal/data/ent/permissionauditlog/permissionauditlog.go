@@ -91,10 +91,21 @@ type Action string
 
 // Action values.
 const (
-	ActionGrant  Action = "GRANT"
-	ActionRevoke Action = "REVOKE"
-	ActionUpdate Action = "UPDATE"
-	ActionReset  Action = "RESET"
+	ActionGrant      Action = "GRANT"
+	ActionRevoke     Action = "REVOKE"
+	ActionUpdate     Action = "UPDATE"
+	ActionReset      Action = "RESET"
+	ActionCreate     Action = "CREATE"
+	ActionDelete     Action = "DELETE"
+	ActionAssign     Action = "ASSIGN"
+	ActionUnassign   Action = "UNASSIGN"
+	ActionBulkGrant  Action = "BULK_GRANT"
+	ActionBulkRevoke Action = "BULK_REVOKE"
+	ActionExpire     Action = "EXPIRE"
+	ActionSuspend    Action = "SUSPEND"
+	ActionResume     Action = "RESUME"
+	ActionRollback   Action = "ROLLBACK"
+	ActionOther      Action = "OTHER"
 )
 
 func (a Action) String() string {
@@ -104,7 +115,7 @@ func (a Action) String() string {
 // ActionValidator is a validator for the "action" field enum values. It is called by the builders before save.
 func ActionValidator(a Action) error {
 	switch a {
-	case ActionGrant, ActionRevoke, ActionUpdate, ActionReset:
+	case ActionGrant, ActionRevoke, ActionUpdate, ActionReset, ActionCreate, ActionDelete, ActionAssign, ActionUnassign, ActionBulkGrant, ActionBulkRevoke, ActionExpire, ActionSuspend, ActionResume, ActionRollback, ActionOther:
 		return nil
 	default:
 		return fmt.Errorf("permissionauditlog: invalid enum value for action field: %q", a)

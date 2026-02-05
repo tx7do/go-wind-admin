@@ -6,7 +6,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	servicev1 "go-wind-admin/api/gen/go/identity/service/v1"
+	identitypb "go-wind-admin/api/gen/go/identity/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolemetadata"
 	"time"
@@ -333,7 +333,7 @@ func (_u *RoleMetadataUpdate) ClearScope() *RoleMetadataUpdate {
 }
 
 // SetCustomOverrides sets the "custom_overrides" field.
-func (_u *RoleMetadataUpdate) SetCustomOverrides(v *servicev1.RoleOverride) *RoleMetadataUpdate {
+func (_u *RoleMetadataUpdate) SetCustomOverrides(v *identitypb.RoleOverride) *RoleMetadataUpdate {
 	_u.mutation.SetCustomOverrides(v)
 	return _u
 }
@@ -838,7 +838,7 @@ func (_u *RoleMetadataUpdateOne) ClearScope() *RoleMetadataUpdateOne {
 }
 
 // SetCustomOverrides sets the "custom_overrides" field.
-func (_u *RoleMetadataUpdateOne) SetCustomOverrides(v *servicev1.RoleOverride) *RoleMetadataUpdateOne {
+func (_u *RoleMetadataUpdateOne) SetCustomOverrides(v *identitypb.RoleOverride) *RoleMetadataUpdateOne {
 	_u.mutation.SetCustomOverrides(v)
 	return _u
 }
