@@ -8,26 +8,26 @@ import "google/protobuf/empty.proto";
 
 import "pagination/v1/pagination.proto";
 
-import "identity/service/v1/role.proto";
+import "permission/service/v1/role.proto";
 
 // 角色管理服务
 service RoleService {
   // 查询角色列表
-  rpc List (pagination.PagingRequest) returns (identity.service.v1.ListRoleResponse) {
+  rpc List (pagination.PagingRequest) returns (permission.service.v1.ListRoleResponse) {
     option (google.api.http) = {
       get: "/admin/v1/roles"
     };
   }
 
   // 查询角色详情
-  rpc Get (identity.service.v1.GetRoleRequest) returns (identity.service.v1.Role) {
+  rpc Get (permission.service.v1.GetRoleRequest) returns (permission.service.v1.Role) {
     option (google.api.http) = {
       get: "/admin/v1/roles/{id}"
     };
   }
 
   // 创建角色
-  rpc Create (identity.service.v1.CreateRoleRequest) returns (google.protobuf.Empty) {
+  rpc Create (permission.service.v1.CreateRoleRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/admin/v1/roles"
       body: "*"
@@ -35,7 +35,7 @@ service RoleService {
   }
 
   // 更新角色
-  rpc Update (identity.service.v1.UpdateRoleRequest) returns (google.protobuf.Empty) {
+  rpc Update (permission.service.v1.UpdateRoleRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/admin/v1/roles/{id}"
       body: "*"
@@ -43,7 +43,7 @@ service RoleService {
   }
 
   // 删除角色
-  rpc Delete (identity.service.v1.DeleteRoleRequest) returns (google.protobuf.Empty) {
+  rpc Delete (permission.service.v1.DeleteRoleRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/admin/v1/roles/{id}"
     };

@@ -5266,15 +5266,15 @@ export type identityservicev1_DeletePositionRequest = {
 // 角色管理服务
 export interface RoleService {
   // 查询角色列表
-  List(request: pagination_PagingRequest): Promise<identityservicev1_ListRoleResponse>;
+  List(request: pagination_PagingRequest): Promise<permissionservicev1_ListRoleResponse>;
   // 查询角色详情
-  Get(request: identityservicev1_GetRoleRequest): Promise<identityservicev1_Role>;
+  Get(request: permissionservicev1_GetRoleRequest): Promise<permissionservicev1_Role>;
   // 创建角色
-  Create(request: identityservicev1_CreateRoleRequest): Promise<wellKnownEmpty>;
+  Create(request: permissionservicev1_CreateRoleRequest): Promise<wellKnownEmpty>;
   // 更新角色
-  Update(request: identityservicev1_UpdateRoleRequest): Promise<wellKnownEmpty>;
+  Update(request: permissionservicev1_UpdateRoleRequest): Promise<wellKnownEmpty>;
   // 删除角色
-  Delete(request: identityservicev1_DeleteRoleRequest): Promise<wellKnownEmpty>;
+  Delete(request: permissionservicev1_DeleteRoleRequest): Promise<wellKnownEmpty>;
 }
 
 export function createRoleServiceClient(
@@ -5358,7 +5358,7 @@ export function createRoleServiceClient(
       }, {
         service: "RoleService",
         method: "List",
-      }) as Promise<identityservicev1_ListRoleResponse>;
+      }) as Promise<permissionservicev1_ListRoleResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -5387,7 +5387,7 @@ export function createRoleServiceClient(
       }, {
         service: "RoleService",
         method: "Get",
-      }) as Promise<identityservicev1_Role>;
+      }) as Promise<permissionservicev1_Role>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/roles`; // eslint-disable-line quotes
@@ -5449,18 +5449,18 @@ export function createRoleServiceClient(
   };
 }
 // 角色列表 - 答复
-export type identityservicev1_ListRoleResponse = {
-  items: identityservicev1_Role[] | undefined;
+export type permissionservicev1_ListRoleResponse = {
+  items: permissionservicev1_Role[] | undefined;
   total: number | undefined;
 };
 
 // 角色
-export type identityservicev1_Role = {
+export type permissionservicev1_Role = {
   id?: number;
   name?: string;
   code?: string;
   sortOrder?: number;
-  status?: identityservicev1_Role_Status;
+  status?: permissionservicev1_Role_Status;
   description?: string;
   isProtected?: boolean;
   isSystem?: boolean;
@@ -5476,11 +5476,11 @@ export type identityservicev1_Role = {
 };
 
 // 角色状态
-export type identityservicev1_Role_Status =
+export type permissionservicev1_Role_Status =
   | "OFF"
   | "ON";
 // 角色数据 - 请求
-export type identityservicev1_GetRoleRequest = {
+export type permissionservicev1_GetRoleRequest = {
   id?: number;
   name?: string;
   code?: string;
@@ -5488,20 +5488,20 @@ export type identityservicev1_GetRoleRequest = {
 };
 
 // 创建角色 - 请求
-export type identityservicev1_CreateRoleRequest = {
-  data: identityservicev1_Role | undefined;
+export type permissionservicev1_CreateRoleRequest = {
+  data: permissionservicev1_Role | undefined;
 };
 
 // 更新角色 - 请求
-export type identityservicev1_UpdateRoleRequest = {
+export type permissionservicev1_UpdateRoleRequest = {
   id: number | undefined;
-  data: identityservicev1_Role | undefined;
+  data: permissionservicev1_Role | undefined;
   updateMask: wellKnownFieldMask | undefined;
   allowMissing?: boolean;
 };
 
 // 删除角色 - 请求
-export type identityservicev1_DeleteRoleRequest = {
+export type permissionservicev1_DeleteRoleRequest = {
   id: number | undefined;
 };
 

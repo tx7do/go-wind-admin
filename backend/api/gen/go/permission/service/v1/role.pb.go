@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: identity/service/v1/role.proto
+// source: permission/service/v1/role.proto
 
-package identitypb
+package permissionpb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
@@ -57,11 +57,11 @@ func (x Role_Status) String() string {
 }
 
 func (Role_Status) Descriptor() protoreflect.EnumDescriptor {
-	return file_identity_service_v1_role_proto_enumTypes[0].Descriptor()
+	return file_permission_service_v1_role_proto_enumTypes[0].Descriptor()
 }
 
 func (Role_Status) Type() protoreflect.EnumType {
-	return &file_identity_service_v1_role_proto_enumTypes[0]
+	return &file_permission_service_v1_role_proto_enumTypes[0]
 }
 
 func (x Role_Status) Number() protoreflect.EnumNumber {
@@ -70,7 +70,7 @@ func (x Role_Status) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Role_Status.Descriptor instead.
 func (Role_Status) EnumDescriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{0, 0}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{0, 0}
 }
 
 // 同步策略
@@ -107,11 +107,11 @@ func (x RoleMetadata_SyncPolicy) String() string {
 }
 
 func (RoleMetadata_SyncPolicy) Descriptor() protoreflect.EnumDescriptor {
-	return file_identity_service_v1_role_proto_enumTypes[1].Descriptor()
+	return file_permission_service_v1_role_proto_enumTypes[1].Descriptor()
 }
 
 func (RoleMetadata_SyncPolicy) Type() protoreflect.EnumType {
-	return &file_identity_service_v1_role_proto_enumTypes[1]
+	return &file_permission_service_v1_role_proto_enumTypes[1]
 }
 
 func (x RoleMetadata_SyncPolicy) Number() protoreflect.EnumNumber {
@@ -120,7 +120,7 @@ func (x RoleMetadata_SyncPolicy) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use RoleMetadata_SyncPolicy.Descriptor instead.
 func (RoleMetadata_SyncPolicy) EnumDescriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{2, 0}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{2, 0}
 }
 
 // 作用域
@@ -154,11 +154,11 @@ func (x RoleMetadata_Scope) String() string {
 }
 
 func (RoleMetadata_Scope) Descriptor() protoreflect.EnumDescriptor {
-	return file_identity_service_v1_role_proto_enumTypes[2].Descriptor()
+	return file_permission_service_v1_role_proto_enumTypes[2].Descriptor()
 }
 
 func (RoleMetadata_Scope) Type() protoreflect.EnumType {
-	return &file_identity_service_v1_role_proto_enumTypes[2]
+	return &file_permission_service_v1_role_proto_enumTypes[2]
 }
 
 func (x RoleMetadata_Scope) Number() protoreflect.EnumNumber {
@@ -167,36 +167,36 @@ func (x RoleMetadata_Scope) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use RoleMetadata_Scope.Descriptor instead.
 func (RoleMetadata_Scope) EnumDescriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{2, 1}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{2, 1}
 }
 
 // 角色
 type Role struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                              // 角色ID
-	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                           // 角色名称
-	Code          *string                `protobuf:"bytes,3,opt,name=code,proto3,oneof" json:"code,omitempty"`                                           // 角色标识码（如：ADMIN, VIEWER）
-	SortOrder     *uint32                `protobuf:"varint,4,opt,name=sort_order,json=sortOrder,proto3,oneof" json:"sort_order,omitempty"`               // 排序顺序，值越小越靠前
-	Status        *Role_Status           `protobuf:"varint,5,opt,name=status,proto3,enum=identity.service.v1.Role_Status,oneof" json:"status,omitempty"` // 状态
-	Description   *string                `protobuf:"bytes,6,opt,name=description,proto3,oneof" json:"description,omitempty"`                             // 描述
-	IsProtected   *bool                  `protobuf:"varint,7,opt,name=is_protected,json=isProtected,proto3,oneof" json:"is_protected,omitempty"`         // 受保护角色，仅平台管理员可修改
-	IsSystem      *bool                  `protobuf:"varint,8,opt,name=is_system,json=isSystem,proto3,oneof" json:"is_system,omitempty"`                  // 系统内置角色
-	Permissions   []uint32               `protobuf:"varint,10,rep,packed,name=permissions,proto3" json:"permissions,omitempty"`                          // 绑定的权限点ID列表
-	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                 // 租户ID，0代表系统全局角色
-	TenantName    *string                `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`            // 租户名称
-	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`             // 创建者ID
-	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`             // 更新者ID
-	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`             // 删除者用户ID
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`              // 创建时间
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`              // 更新时间
-	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`              // 删除时间
+	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                // 角色ID
+	Name          *string                `protobuf:"bytes,2,opt,name=name,proto3,oneof" json:"name,omitempty"`                                             // 角色名称
+	Code          *string                `protobuf:"bytes,3,opt,name=code,proto3,oneof" json:"code,omitempty"`                                             // 角色标识码（如：ADMIN, VIEWER）
+	SortOrder     *uint32                `protobuf:"varint,4,opt,name=sort_order,json=sortOrder,proto3,oneof" json:"sort_order,omitempty"`                 // 排序顺序，值越小越靠前
+	Status        *Role_Status           `protobuf:"varint,5,opt,name=status,proto3,enum=permission.service.v1.Role_Status,oneof" json:"status,omitempty"` // 状态
+	Description   *string                `protobuf:"bytes,6,opt,name=description,proto3,oneof" json:"description,omitempty"`                               // 描述
+	IsProtected   *bool                  `protobuf:"varint,7,opt,name=is_protected,json=isProtected,proto3,oneof" json:"is_protected,omitempty"`           // 受保护角色，仅平台管理员可修改
+	IsSystem      *bool                  `protobuf:"varint,8,opt,name=is_system,json=isSystem,proto3,oneof" json:"is_system,omitempty"`                    // 系统内置角色
+	Permissions   []uint32               `protobuf:"varint,10,rep,packed,name=permissions,proto3" json:"permissions,omitempty"`                            // 绑定的权限点ID列表
+	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                   // 租户ID，0代表系统全局角色
+	TenantName    *string                `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`              // 租户名称
+	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`               // 创建者ID
+	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`               // 更新者ID
+	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`               // 删除者用户ID
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                // 创建时间
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                // 更新时间
+	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                // 删除时间
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Role) Reset() {
 	*x = Role{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[0]
+	mi := &file_permission_service_v1_role_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -208,7 +208,7 @@ func (x *Role) String() string {
 func (*Role) ProtoMessage() {}
 
 func (x *Role) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[0]
+	mi := &file_permission_service_v1_role_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -221,7 +221,7 @@ func (x *Role) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Role.ProtoReflect.Descriptor instead.
 func (*Role) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{0}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *Role) GetId() uint32 {
@@ -359,7 +359,7 @@ type RoleOverride struct {
 
 func (x *RoleOverride) Reset() {
 	*x = RoleOverride{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[1]
+	mi := &file_permission_service_v1_role_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -371,7 +371,7 @@ func (x *RoleOverride) String() string {
 func (*RoleOverride) ProtoMessage() {}
 
 func (x *RoleOverride) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[1]
+	mi := &file_permission_service_v1_role_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -384,7 +384,7 @@ func (x *RoleOverride) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoleOverride.ProtoReflect.Descriptor instead.
 func (*RoleOverride) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{1}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *RoleOverride) GetPermissions() *RoleOverride_PermissionDelta {
@@ -425,30 +425,30 @@ func (x *RoleOverride) GetSecurityPolicy() *RoleOverride_SecurityPolicy {
 // 角色元数据
 type RoleMetadata struct {
 	state             protoimpl.MessageState   `protogen:"open.v1"`
-	Id                *uint32                  `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                    // 角色元数据ID
-	RoleId            *uint32                  `protobuf:"varint,2,opt,name=role_id,json=roleId,proto3,oneof" json:"role_id,omitempty"`                                                              // 角色ID
-	IsTemplate        *bool                    `protobuf:"varint,3,opt,name=is_template,json=isTemplate,proto3,oneof" json:"is_template,omitempty"`                                                  // 是否是模版
-	TemplateFor       *string                  `protobuf:"bytes,4,opt,name=template_for,json=templateFor,proto3,oneof" json:"template_for,omitempty"`                                                // 模板适用对象
-	TemplateVersion   *int32                   `protobuf:"varint,5,opt,name=template_version,json=templateVersion,proto3,oneof" json:"template_version,omitempty"`                                   // 模板版本号
-	LastSyncedVersion *int32                   `protobuf:"varint,6,opt,name=last_synced_version,json=lastSyncedVersion,proto3,oneof" json:"last_synced_version,omitempty"`                           // 上次同步的版本号
-	LastSyncedAt      *timestamppb.Timestamp   `protobuf:"bytes,7,opt,name=last_synced_at,json=lastSyncedAt,proto3,oneof" json:"last_synced_at,omitempty"`                                           // 最后同步时间
-	SyncPolicy        *RoleMetadata_SyncPolicy `protobuf:"varint,8,opt,name=sync_policy,json=syncPolicy,proto3,enum=identity.service.v1.RoleMetadata_SyncPolicy,oneof" json:"sync_policy,omitempty"` // 同步策略
-	Scope             *RoleMetadata_Scope      `protobuf:"varint,9,opt,name=scope,proto3,enum=identity.service.v1.RoleMetadata_Scope,oneof" json:"scope,omitempty"`                                  // 作用域
-	CustomOverrides   *RoleOverride            `protobuf:"bytes,10,opt,name=custom_overrides,json=customOverrides,proto3" json:"custom_overrides,omitempty"`                                         // 租户自定义覆盖项
-	TenantId          *uint32                  `protobuf:"varint,20,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                       // 租户ID，0代表系统全局角色
-	CreatedBy         *uint32                  `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                                   // 创建者ID
-	UpdatedBy         *uint32                  `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                                   // 更新者ID
-	DeletedBy         *uint32                  `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                                   // 删除者用户ID
-	CreatedAt         *timestamppb.Timestamp   `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                                    // 创建时间
-	UpdatedAt         *timestamppb.Timestamp   `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                                    // 更新时间
-	DeletedAt         *timestamppb.Timestamp   `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                                    // 删除时间
+	Id                *uint32                  `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                                                      // 角色元数据ID
+	RoleId            *uint32                  `protobuf:"varint,2,opt,name=role_id,json=roleId,proto3,oneof" json:"role_id,omitempty"`                                                                // 角色ID
+	IsTemplate        *bool                    `protobuf:"varint,3,opt,name=is_template,json=isTemplate,proto3,oneof" json:"is_template,omitempty"`                                                    // 是否是模版
+	TemplateFor       *string                  `protobuf:"bytes,4,opt,name=template_for,json=templateFor,proto3,oneof" json:"template_for,omitempty"`                                                  // 模板适用对象
+	TemplateVersion   *int32                   `protobuf:"varint,5,opt,name=template_version,json=templateVersion,proto3,oneof" json:"template_version,omitempty"`                                     // 模板版本号
+	LastSyncedVersion *int32                   `protobuf:"varint,6,opt,name=last_synced_version,json=lastSyncedVersion,proto3,oneof" json:"last_synced_version,omitempty"`                             // 上次同步的版本号
+	LastSyncedAt      *timestamppb.Timestamp   `protobuf:"bytes,7,opt,name=last_synced_at,json=lastSyncedAt,proto3,oneof" json:"last_synced_at,omitempty"`                                             // 最后同步时间
+	SyncPolicy        *RoleMetadata_SyncPolicy `protobuf:"varint,8,opt,name=sync_policy,json=syncPolicy,proto3,enum=permission.service.v1.RoleMetadata_SyncPolicy,oneof" json:"sync_policy,omitempty"` // 同步策略
+	Scope             *RoleMetadata_Scope      `protobuf:"varint,9,opt,name=scope,proto3,enum=permission.service.v1.RoleMetadata_Scope,oneof" json:"scope,omitempty"`                                  // 作用域
+	CustomOverrides   *RoleOverride            `protobuf:"bytes,10,opt,name=custom_overrides,json=customOverrides,proto3" json:"custom_overrides,omitempty"`                                           // 租户自定义覆盖项
+	TenantId          *uint32                  `protobuf:"varint,20,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                                         // 租户ID，0代表系统全局角色
+	CreatedBy         *uint32                  `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                                     // 创建者ID
+	UpdatedBy         *uint32                  `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                                     // 更新者ID
+	DeletedBy         *uint32                  `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                                     // 删除者用户ID
+	CreatedAt         *timestamppb.Timestamp   `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                                                      // 创建时间
+	UpdatedAt         *timestamppb.Timestamp   `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                                                      // 更新时间
+	DeletedAt         *timestamppb.Timestamp   `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                                                      // 删除时间
 	unknownFields     protoimpl.UnknownFields
 	sizeCache         protoimpl.SizeCache
 }
 
 func (x *RoleMetadata) Reset() {
 	*x = RoleMetadata{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[2]
+	mi := &file_permission_service_v1_role_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -460,7 +460,7 @@ func (x *RoleMetadata) String() string {
 func (*RoleMetadata) ProtoMessage() {}
 
 func (x *RoleMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[2]
+	mi := &file_permission_service_v1_role_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -473,7 +473,7 @@ func (x *RoleMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoleMetadata.ProtoReflect.Descriptor instead.
 func (*RoleMetadata) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{2}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *RoleMetadata) GetId() uint32 {
@@ -606,7 +606,7 @@ type ListRoleResponse struct {
 
 func (x *ListRoleResponse) Reset() {
 	*x = ListRoleResponse{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[3]
+	mi := &file_permission_service_v1_role_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -618,7 +618,7 @@ func (x *ListRoleResponse) String() string {
 func (*ListRoleResponse) ProtoMessage() {}
 
 func (x *ListRoleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[3]
+	mi := &file_permission_service_v1_role_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -631,7 +631,7 @@ func (x *ListRoleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRoleResponse.ProtoReflect.Descriptor instead.
 func (*ListRoleResponse) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{3}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *ListRoleResponse) GetItems() []*Role {
@@ -664,7 +664,7 @@ type GetRoleRequest struct {
 
 func (x *GetRoleRequest) Reset() {
 	*x = GetRoleRequest{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[4]
+	mi := &file_permission_service_v1_role_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -676,7 +676,7 @@ func (x *GetRoleRequest) String() string {
 func (*GetRoleRequest) ProtoMessage() {}
 
 func (x *GetRoleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[4]
+	mi := &file_permission_service_v1_role_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -689,7 +689,7 @@ func (x *GetRoleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRoleRequest.ProtoReflect.Descriptor instead.
 func (*GetRoleRequest) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{4}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetRoleRequest) GetQueryBy() isGetRoleRequest_QueryBy {
@@ -765,7 +765,7 @@ type CreateRoleRequest struct {
 
 func (x *CreateRoleRequest) Reset() {
 	*x = CreateRoleRequest{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[5]
+	mi := &file_permission_service_v1_role_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -777,7 +777,7 @@ func (x *CreateRoleRequest) String() string {
 func (*CreateRoleRequest) ProtoMessage() {}
 
 func (x *CreateRoleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[5]
+	mi := &file_permission_service_v1_role_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -790,7 +790,7 @@ func (x *CreateRoleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRoleRequest.ProtoReflect.Descriptor instead.
 func (*CreateRoleRequest) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{5}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CreateRoleRequest) GetData() *Role {
@@ -813,7 +813,7 @@ type UpdateRoleRequest struct {
 
 func (x *UpdateRoleRequest) Reset() {
 	*x = UpdateRoleRequest{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[6]
+	mi := &file_permission_service_v1_role_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -825,7 +825,7 @@ func (x *UpdateRoleRequest) String() string {
 func (*UpdateRoleRequest) ProtoMessage() {}
 
 func (x *UpdateRoleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[6]
+	mi := &file_permission_service_v1_role_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -838,7 +838,7 @@ func (x *UpdateRoleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRoleRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRoleRequest) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{6}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *UpdateRoleRequest) GetId() uint32 {
@@ -879,7 +879,7 @@ type DeleteRoleRequest struct {
 
 func (x *DeleteRoleRequest) Reset() {
 	*x = DeleteRoleRequest{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[7]
+	mi := &file_permission_service_v1_role_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -891,7 +891,7 @@ func (x *DeleteRoleRequest) String() string {
 func (*DeleteRoleRequest) ProtoMessage() {}
 
 func (x *DeleteRoleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[7]
+	mi := &file_permission_service_v1_role_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -904,7 +904,7 @@ func (x *DeleteRoleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRoleRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRoleRequest) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{7}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *DeleteRoleRequest) GetId() uint32 {
@@ -923,7 +923,7 @@ type BatchCreateRolesRequest struct {
 
 func (x *BatchCreateRolesRequest) Reset() {
 	*x = BatchCreateRolesRequest{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[8]
+	mi := &file_permission_service_v1_role_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -935,7 +935,7 @@ func (x *BatchCreateRolesRequest) String() string {
 func (*BatchCreateRolesRequest) ProtoMessage() {}
 
 func (x *BatchCreateRolesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[8]
+	mi := &file_permission_service_v1_role_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -948,7 +948,7 @@ func (x *BatchCreateRolesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchCreateRolesRequest.ProtoReflect.Descriptor instead.
 func (*BatchCreateRolesRequest) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{8}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *BatchCreateRolesRequest) GetItems() []*Role {
@@ -967,7 +967,7 @@ type BatchCreateRolesResponse struct {
 
 func (x *BatchCreateRolesResponse) Reset() {
 	*x = BatchCreateRolesResponse{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[9]
+	mi := &file_permission_service_v1_role_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -979,7 +979,7 @@ func (x *BatchCreateRolesResponse) String() string {
 func (*BatchCreateRolesResponse) ProtoMessage() {}
 
 func (x *BatchCreateRolesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[9]
+	mi := &file_permission_service_v1_role_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -992,7 +992,7 @@ func (x *BatchCreateRolesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BatchCreateRolesResponse.ProtoReflect.Descriptor instead.
 func (*BatchCreateRolesResponse) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{9}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *BatchCreateRolesResponse) GetCreatedIds() []int32 {
@@ -1011,7 +1011,7 @@ type GetRoleCodesByRoleIdsRequest struct {
 
 func (x *GetRoleCodesByRoleIdsRequest) Reset() {
 	*x = GetRoleCodesByRoleIdsRequest{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[10]
+	mi := &file_permission_service_v1_role_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1023,7 +1023,7 @@ func (x *GetRoleCodesByRoleIdsRequest) String() string {
 func (*GetRoleCodesByRoleIdsRequest) ProtoMessage() {}
 
 func (x *GetRoleCodesByRoleIdsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[10]
+	mi := &file_permission_service_v1_role_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1036,7 +1036,7 @@ func (x *GetRoleCodesByRoleIdsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRoleCodesByRoleIdsRequest.ProtoReflect.Descriptor instead.
 func (*GetRoleCodesByRoleIdsRequest) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{10}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GetRoleCodesByRoleIdsRequest) GetRoleIds() []uint32 {
@@ -1055,7 +1055,7 @@ type GetRoleCodesByRoleIdsResponse struct {
 
 func (x *GetRoleCodesByRoleIdsResponse) Reset() {
 	*x = GetRoleCodesByRoleIdsResponse{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[11]
+	mi := &file_permission_service_v1_role_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1067,7 +1067,7 @@ func (x *GetRoleCodesByRoleIdsResponse) String() string {
 func (*GetRoleCodesByRoleIdsResponse) ProtoMessage() {}
 
 func (x *GetRoleCodesByRoleIdsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[11]
+	mi := &file_permission_service_v1_role_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1080,7 +1080,7 @@ func (x *GetRoleCodesByRoleIdsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRoleCodesByRoleIdsResponse.ProtoReflect.Descriptor instead.
 func (*GetRoleCodesByRoleIdsResponse) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{11}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetRoleCodesByRoleIdsResponse) GetRoleCodes() []string {
@@ -1100,7 +1100,7 @@ type GetRolesByRoleCodesRequest struct {
 
 func (x *GetRolesByRoleCodesRequest) Reset() {
 	*x = GetRolesByRoleCodesRequest{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[12]
+	mi := &file_permission_service_v1_role_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1112,7 +1112,7 @@ func (x *GetRolesByRoleCodesRequest) String() string {
 func (*GetRolesByRoleCodesRequest) ProtoMessage() {}
 
 func (x *GetRolesByRoleCodesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[12]
+	mi := &file_permission_service_v1_role_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1125,7 +1125,7 @@ func (x *GetRolesByRoleCodesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRolesByRoleCodesRequest.ProtoReflect.Descriptor instead.
 func (*GetRolesByRoleCodesRequest) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{12}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetRolesByRoleCodesRequest) GetRoleCodes() []string {
@@ -1152,7 +1152,7 @@ type GetRolesByRoleIdsRequest struct {
 
 func (x *GetRolesByRoleIdsRequest) Reset() {
 	*x = GetRolesByRoleIdsRequest{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[13]
+	mi := &file_permission_service_v1_role_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1164,7 +1164,7 @@ func (x *GetRolesByRoleIdsRequest) String() string {
 func (*GetRolesByRoleIdsRequest) ProtoMessage() {}
 
 func (x *GetRolesByRoleIdsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[13]
+	mi := &file_permission_service_v1_role_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1177,7 +1177,7 @@ func (x *GetRolesByRoleIdsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRolesByRoleIdsRequest.ProtoReflect.Descriptor instead.
 func (*GetRolesByRoleIdsRequest) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{13}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetRolesByRoleIdsRequest) GetRoleIds() []uint32 {
@@ -1203,7 +1203,7 @@ type CountRoleResponse struct {
 
 func (x *CountRoleResponse) Reset() {
 	*x = CountRoleResponse{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[14]
+	mi := &file_permission_service_v1_role_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1215,7 +1215,7 @@ func (x *CountRoleResponse) String() string {
 func (*CountRoleResponse) ProtoMessage() {}
 
 func (x *CountRoleResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[14]
+	mi := &file_permission_service_v1_role_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1228,7 +1228,7 @@ func (x *CountRoleResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CountRoleResponse.ProtoReflect.Descriptor instead.
 func (*CountRoleResponse) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{14}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *CountRoleResponse) GetCount() uint64 {
@@ -1249,7 +1249,7 @@ type RoleOverride_PermissionDelta struct {
 
 func (x *RoleOverride_PermissionDelta) Reset() {
 	*x = RoleOverride_PermissionDelta{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[15]
+	mi := &file_permission_service_v1_role_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1261,7 +1261,7 @@ func (x *RoleOverride_PermissionDelta) String() string {
 func (*RoleOverride_PermissionDelta) ProtoMessage() {}
 
 func (x *RoleOverride_PermissionDelta) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[15]
+	mi := &file_permission_service_v1_role_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1274,7 +1274,7 @@ func (x *RoleOverride_PermissionDelta) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoleOverride_PermissionDelta.ProtoReflect.Descriptor instead.
 func (*RoleOverride_PermissionDelta) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{1, 0}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{1, 0}
 }
 
 func (x *RoleOverride_PermissionDelta) GetAddedPermissions() []string {
@@ -1302,7 +1302,7 @@ type RoleOverride_SecurityPolicy struct {
 
 func (x *RoleOverride_SecurityPolicy) Reset() {
 	*x = RoleOverride_SecurityPolicy{}
-	mi := &file_identity_service_v1_role_proto_msgTypes[17]
+	mi := &file_permission_service_v1_role_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1314,7 +1314,7 @@ func (x *RoleOverride_SecurityPolicy) String() string {
 func (*RoleOverride_SecurityPolicy) ProtoMessage() {}
 
 func (x *RoleOverride_SecurityPolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_role_proto_msgTypes[17]
+	mi := &file_permission_service_v1_role_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1327,7 +1327,7 @@ func (x *RoleOverride_SecurityPolicy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RoleOverride_SecurityPolicy.ProtoReflect.Descriptor instead.
 func (*RoleOverride_SecurityPolicy) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_role_proto_rawDescGZIP(), []int{1, 2}
+	return file_permission_service_v1_role_proto_rawDescGZIP(), []int{1, 2}
 }
 
 func (x *RoleOverride_SecurityPolicy) GetForceMfa() bool {
@@ -1344,18 +1344,18 @@ func (x *RoleOverride_SecurityPolicy) GetIpAllowList() []string {
 	return nil
 }
 
-var File_identity_service_v1_role_proto protoreflect.FileDescriptor
+var File_permission_service_v1_role_proto protoreflect.FileDescriptor
 
-const file_identity_service_v1_role_proto_rawDesc = "" +
+const file_permission_service_v1_role_proto_rawDesc = "" +
 	"\n" +
-	"\x1eidentity/service/v1/role.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x9a\v\n" +
+	" permission/service/v1/role.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x9c\v\n" +
 	"\x04Role\x12#\n" +
 	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b角色IDH\x00R\x02id\x88\x01\x01\x12+\n" +
 	"\x04name\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f角色名称H\x01R\x04name\x88\x01\x01\x12O\n" +
 	"\x04code\x18\x03 \x01(\tB6\xbaG3:\x1f\x12\x1dplatform:admin, tenant:admin1\x92\x02\x0f角色标识码H\x02R\x04code\x88\x01\x01\x12K\n" +
 	"\n" +
-	"sort_order\x18\x04 \x01(\rB'\xbaG$\x92\x02!排序顺序，值越小越靠前H\x03R\tsortOrder\x88\x01\x01\x12K\n" +
-	"\x06status\x18\x05 \x01(\x0e2 .identity.service.v1.Role.StatusB\f\xbaG\t\x92\x02\x06状态H\x04R\x06status\x88\x01\x01\x123\n" +
+	"sort_order\x18\x04 \x01(\rB'\xbaG$\x92\x02!排序顺序，值越小越靠前H\x03R\tsortOrder\x88\x01\x01\x12M\n" +
+	"\x06status\x18\x05 \x01(\x0e2\".permission.service.v1.Role.StatusB\f\xbaG\t\x92\x02\x06状态H\x04R\x06status\x88\x01\x01\x123\n" +
 	"\vdescription\x18\x06 \x01(\tB\f\xbaG\t\x92\x02\x06描述H\x05R\vdescription\x88\x01\x01\x12[\n" +
 	"\fis_protected\x18\a \x01(\bB3\xbaG0\x92\x02-受保护角色，仅平台管理员可修改H\x06R\visProtected\x88\x01\x01\x12X\n" +
 	"\tis_system\x18\b \x01(\bB6\xbaG3\x92\x020系统内置角色，仅平台管理员可修改H\aR\bisSystem\x88\x01\x01\x12B\n" +
@@ -1397,13 +1397,13 @@ const file_identity_service_v1_role_proto_rawDesc = "" +
 	"\v_deleted_byB\r\n" +
 	"\v_created_atB\r\n" +
 	"\v_updated_atB\r\n" +
-	"\v_deleted_at\"\x9d\x05\n" +
-	"\fRoleOverride\x12S\n" +
-	"\vpermissions\x18\x01 \x01(\v21.identity.service.v1.RoleOverride.PermissionDeltaR\vpermissions\x12&\n" +
+	"\v_deleted_at\"\xa3\x05\n" +
+	"\fRoleOverride\x12U\n" +
+	"\vpermissions\x18\x01 \x01(\v23.permission.service.v1.RoleOverride.PermissionDeltaR\vpermissions\x12&\n" +
 	"\fdisplay_name\x18\x02 \x01(\tH\x00R\vdisplayName\x88\x01\x01\x12%\n" +
-	"\vdescription\x18\x03 \x01(\tH\x01R\vdescription\x88\x01\x01\x12d\n" +
-	"\x11extended_settings\x18\x04 \x03(\v27.identity.service.v1.RoleOverride.ExtendedSettingsEntryR\x10extendedSettings\x12Y\n" +
-	"\x0fsecurity_policy\x18\x05 \x01(\v20.identity.service.v1.RoleOverride.SecurityPolicyR\x0esecurityPolicy\x1ao\n" +
+	"\vdescription\x18\x03 \x01(\tH\x01R\vdescription\x88\x01\x01\x12f\n" +
+	"\x11extended_settings\x18\x04 \x03(\v29.permission.service.v1.RoleOverride.ExtendedSettingsEntryR\x10extendedSettings\x12[\n" +
+	"\x0fsecurity_policy\x18\x05 \x01(\v22.permission.service.v1.RoleOverride.SecurityPolicyR\x0esecurityPolicy\x1ao\n" +
 	"\x0fPermissionDelta\x12+\n" +
 	"\x11added_permissions\x18\x01 \x03(\tR\x10addedPermissions\x12/\n" +
 	"\x13removed_permissions\x18\x02 \x03(\tR\x12removedPermissions\x1aC\n" +
@@ -1414,7 +1414,7 @@ const file_identity_service_v1_role_proto_rawDesc = "" +
 	"\tforce_mfa\x18\x01 \x01(\bR\bforceMfa\x12\"\n" +
 	"\rip_allow_list\x18\x02 \x03(\tR\vipAllowListB\x0f\n" +
 	"\r_display_nameB\x0e\n" +
-	"\f_description\"\xd3\f\n" +
+	"\f_description\"\xd9\f\n" +
 	"\fRoleMetadata\x12,\n" +
 	"\x02id\x18\x01 \x01(\rB\x17\xbaG\x14\x92\x02\x11角色元数据IDH\x00R\x02id\x88\x01\x01\x12,\n" +
 	"\arole_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b角色IDH\x01R\x06roleId\x88\x01\x01\x12;\n" +
@@ -1423,12 +1423,12 @@ const file_identity_service_v1_role_proto_rawDesc = "" +
 	"\ftemplate_for\x18\x04 \x01(\tB\x18\xbaG\x15\x92\x02\x12模板适用对象H\x03R\vtemplateFor\x88\x01\x01\x12E\n" +
 	"\x10template_version\x18\x05 \x01(\x05B\x15\xbaG\x12\x92\x02\x0f模板版本号H\x04R\x0ftemplateVersion\x88\x01\x01\x12S\n" +
 	"\x13last_synced_version\x18\x06 \x01(\x05B\x1e\xbaG\x1b\x92\x02\x18上次同步的版本号H\x05R\x11lastSyncedVersion\x88\x01\x01\x12_\n" +
-	"\x0elast_synced_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12最后同步时间H\x06R\flastSyncedAt\x88\x01\x01\x12f\n" +
-	"\vsync_policy\x18\b \x01(\x0e2,.identity.service.v1.RoleMetadata.SyncPolicyB\x12\xbaG\x0f\x92\x02\f同步策略H\aR\n" +
-	"syncPolicy\x88\x01\x01\x12S\n" +
-	"\x05scope\x18\t \x01(\x0e2'.identity.service.v1.RoleMetadata.ScopeB\x0f\xbaG\f\x92\x02\t作用域H\bR\x05scope\x88\x01\x01\x12l\n" +
+	"\x0elast_synced_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12最后同步时间H\x06R\flastSyncedAt\x88\x01\x01\x12h\n" +
+	"\vsync_policy\x18\b \x01(\x0e2..permission.service.v1.RoleMetadata.SyncPolicyB\x12\xbaG\x0f\x92\x02\f同步策略H\aR\n" +
+	"syncPolicy\x88\x01\x01\x12U\n" +
+	"\x05scope\x18\t \x01(\x0e2).permission.service.v1.RoleMetadata.ScopeB\x0f\xbaG\f\x92\x02\t作用域H\bR\x05scope\x88\x01\x01\x12n\n" +
 	"\x10custom_overrides\x18\n" +
-	" \x01(\v2!.identity.service.v1.RoleOverrideB\x1e\xbaG\x1b\x92\x02\x18租户自定义覆盖项R\x0fcustomOverrides\x12L\n" +
+	" \x01(\v2#.permission.service.v1.RoleOverrideB\x1e\xbaG\x1b\x92\x02\x18租户自定义覆盖项R\x0fcustomOverrides\x12L\n" +
 	"\ttenant_id\x18\x14 \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\tR\btenantId\x88\x01\x01\x125\n" +
 	"\n" +
 	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\n" +
@@ -1470,9 +1470,9 @@ const file_identity_service_v1_role_proto_rawDesc = "" +
 	"\v_deleted_byB\r\n" +
 	"\v_created_atB\r\n" +
 	"\v_updated_atB\r\n" +
-	"\v_deleted_at\"Y\n" +
-	"\x10ListRoleResponse\x12/\n" +
-	"\x05items\x18\x01 \x03(\v2\x19.identity.service.v1.RoleR\x05items\x12\x14\n" +
+	"\v_deleted_at\"[\n" +
+	"\x10ListRoleResponse\x121\n" +
+	"\x05items\x18\x01 \x03(\v2\x1b.permission.service.v1.RoleR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\x93\x02\n" +
 	"\x0eGetRoleRequest\x12\x1c\n" +
 	"\x02id\x18\x01 \x01(\rB\n" +
@@ -1483,20 +1483,20 @@ const file_identity_service_v1_role_proto_rawDesc = "" +
 	"\n" +
 	"\bquery_byB\f\n" +
 	"\n" +
-	"_view_mask\"B\n" +
-	"\x11CreateRoleRequest\x12-\n" +
-	"\x04data\x18\x01 \x01(\v2\x19.identity.service.v1.RoleR\x04data\"\x90\x03\n" +
+	"_view_mask\"D\n" +
+	"\x11CreateRoleRequest\x12/\n" +
+	"\x04data\x18\x01 \x01(\v2\x1b.permission.service.v1.RoleR\x04data\"\x92\x03\n" +
 	"\x11UpdateRoleRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12-\n" +
-	"\x04data\x18\x02 \x01(\v2\x19.identity.service.v1.RoleR\x04data\x12s\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\x12/\n" +
+	"\x04data\x18\x02 \x01(\v2\x1b.permission.service.v1.RoleR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
 	"\x0e_allow_missing\"#\n" +
 	"\x11DeleteRoleRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\"J\n" +
-	"\x17BatchCreateRolesRequest\x12/\n" +
-	"\x05items\x18\x01 \x03(\v2\x19.identity.service.v1.RoleR\x05items\"`\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\"L\n" +
+	"\x17BatchCreateRolesRequest\x121\n" +
+	"\x05items\x18\x01 \x03(\v2\x1b.permission.service.v1.RoleR\x05items\"`\n" +
 	"\x18BatchCreateRolesResponse\x12D\n" +
 	"\vcreated_ids\x18\x01 \x03(\x05B#\xbaG \x92\x02\x1d创建成功的角色ID列表R\n" +
 	"createdIds\"O\n" +
@@ -1517,104 +1517,104 @@ const file_identity_service_v1_role_proto_rawDesc = "" +
 	"\n" +
 	"_view_mask\")\n" +
 	"\x11CountRoleResponse\x12\x14\n" +
-	"\x05count\x18\x01 \x01(\x04R\x05count2\xa3\a\n" +
-	"\vRoleService\x12J\n" +
-	"\x04List\x12\x19.pagination.PagingRequest\x1a%.identity.service.v1.ListRoleResponse\"\x00\x12L\n" +
-	"\x05Count\x12\x19.pagination.PagingRequest\x1a&.identity.service.v1.CountRoleResponse\"\x00\x12G\n" +
-	"\x03Get\x12#.identity.service.v1.GetRoleRequest\x1a\x19.identity.service.v1.Role\"\x00\x12J\n" +
-	"\x06Create\x12&.identity.service.v1.CreateRoleRequest\x1a\x16.google.protobuf.Empty\"\x00\x12l\n" +
-	"\vBatchCreate\x12,.identity.service.v1.BatchCreateRolesRequest\x1a-.identity.service.v1.BatchCreateRolesResponse\"\x00\x12J\n" +
-	"\x06Update\x12&.identity.service.v1.UpdateRoleRequest\x1a\x16.google.protobuf.Empty\"\x00\x12J\n" +
-	"\x06Delete\x12&.identity.service.v1.DeleteRoleRequest\x1a\x16.google.protobuf.Empty\"\x00\x12\x80\x01\n" +
-	"\x15GetRoleCodesByRoleIds\x121.identity.service.v1.GetRoleCodesByRoleIdsRequest\x1a2.identity.service.v1.GetRoleCodesByRoleIdsResponse\"\x00\x12o\n" +
-	"\x13GetRolesByRoleCodes\x12/.identity.service.v1.GetRolesByRoleCodesRequest\x1a%.identity.service.v1.ListRoleResponse\"\x00\x12k\n" +
-	"\x11GetRolesByRoleIds\x12-.identity.service.v1.GetRolesByRoleIdsRequest\x1a%.identity.service.v1.ListRoleResponse\"\x00B\xcb\x01\n" +
-	"\x17com.identity.service.v1B\tRoleProtoP\x01Z7go-wind-admin/api/gen/go/identity/service/v1;identitypb\xa2\x02\x03ISX\xaa\x02\x13Identity.Service.V1\xca\x02\x13Identity\\Service\\V1\xe2\x02\x1fIdentity\\Service\\V1\\GPBMetadata\xea\x02\x15Identity::Service::V1b\x06proto3"
+	"\x05count\x18\x01 \x01(\x04R\x05count2\xc1\a\n" +
+	"\vRoleService\x12L\n" +
+	"\x04List\x12\x19.pagination.PagingRequest\x1a'.permission.service.v1.ListRoleResponse\"\x00\x12N\n" +
+	"\x05Count\x12\x19.pagination.PagingRequest\x1a(.permission.service.v1.CountRoleResponse\"\x00\x12K\n" +
+	"\x03Get\x12%.permission.service.v1.GetRoleRequest\x1a\x1b.permission.service.v1.Role\"\x00\x12L\n" +
+	"\x06Create\x12(.permission.service.v1.CreateRoleRequest\x1a\x16.google.protobuf.Empty\"\x00\x12p\n" +
+	"\vBatchCreate\x12..permission.service.v1.BatchCreateRolesRequest\x1a/.permission.service.v1.BatchCreateRolesResponse\"\x00\x12L\n" +
+	"\x06Update\x12(.permission.service.v1.UpdateRoleRequest\x1a\x16.google.protobuf.Empty\"\x00\x12L\n" +
+	"\x06Delete\x12(.permission.service.v1.DeleteRoleRequest\x1a\x16.google.protobuf.Empty\"\x00\x12\x84\x01\n" +
+	"\x15GetRoleCodesByRoleIds\x123.permission.service.v1.GetRoleCodesByRoleIdsRequest\x1a4.permission.service.v1.GetRoleCodesByRoleIdsResponse\"\x00\x12s\n" +
+	"\x13GetRolesByRoleCodes\x121.permission.service.v1.GetRolesByRoleCodesRequest\x1a'.permission.service.v1.ListRoleResponse\"\x00\x12o\n" +
+	"\x11GetRolesByRoleIds\x12/.permission.service.v1.GetRolesByRoleIdsRequest\x1a'.permission.service.v1.ListRoleResponse\"\x00B\xd9\x01\n" +
+	"\x19com.permission.service.v1B\tRoleProtoP\x01Z;go-wind-admin/api/gen/go/permission/service/v1;permissionpb\xa2\x02\x03PSX\xaa\x02\x15Permission.Service.V1\xca\x02\x15Permission\\Service\\V1\xe2\x02!Permission\\Service\\V1\\GPBMetadata\xea\x02\x17Permission::Service::V1b\x06proto3"
 
 var (
-	file_identity_service_v1_role_proto_rawDescOnce sync.Once
-	file_identity_service_v1_role_proto_rawDescData []byte
+	file_permission_service_v1_role_proto_rawDescOnce sync.Once
+	file_permission_service_v1_role_proto_rawDescData []byte
 )
 
-func file_identity_service_v1_role_proto_rawDescGZIP() []byte {
-	file_identity_service_v1_role_proto_rawDescOnce.Do(func() {
-		file_identity_service_v1_role_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_identity_service_v1_role_proto_rawDesc), len(file_identity_service_v1_role_proto_rawDesc)))
+func file_permission_service_v1_role_proto_rawDescGZIP() []byte {
+	file_permission_service_v1_role_proto_rawDescOnce.Do(func() {
+		file_permission_service_v1_role_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_permission_service_v1_role_proto_rawDesc), len(file_permission_service_v1_role_proto_rawDesc)))
 	})
-	return file_identity_service_v1_role_proto_rawDescData
+	return file_permission_service_v1_role_proto_rawDescData
 }
 
-var file_identity_service_v1_role_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_identity_service_v1_role_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
-var file_identity_service_v1_role_proto_goTypes = []any{
-	(Role_Status)(0),                      // 0: identity.service.v1.Role.Status
-	(RoleMetadata_SyncPolicy)(0),          // 1: identity.service.v1.RoleMetadata.SyncPolicy
-	(RoleMetadata_Scope)(0),               // 2: identity.service.v1.RoleMetadata.Scope
-	(*Role)(nil),                          // 3: identity.service.v1.Role
-	(*RoleOverride)(nil),                  // 4: identity.service.v1.RoleOverride
-	(*RoleMetadata)(nil),                  // 5: identity.service.v1.RoleMetadata
-	(*ListRoleResponse)(nil),              // 6: identity.service.v1.ListRoleResponse
-	(*GetRoleRequest)(nil),                // 7: identity.service.v1.GetRoleRequest
-	(*CreateRoleRequest)(nil),             // 8: identity.service.v1.CreateRoleRequest
-	(*UpdateRoleRequest)(nil),             // 9: identity.service.v1.UpdateRoleRequest
-	(*DeleteRoleRequest)(nil),             // 10: identity.service.v1.DeleteRoleRequest
-	(*BatchCreateRolesRequest)(nil),       // 11: identity.service.v1.BatchCreateRolesRequest
-	(*BatchCreateRolesResponse)(nil),      // 12: identity.service.v1.BatchCreateRolesResponse
-	(*GetRoleCodesByRoleIdsRequest)(nil),  // 13: identity.service.v1.GetRoleCodesByRoleIdsRequest
-	(*GetRoleCodesByRoleIdsResponse)(nil), // 14: identity.service.v1.GetRoleCodesByRoleIdsResponse
-	(*GetRolesByRoleCodesRequest)(nil),    // 15: identity.service.v1.GetRolesByRoleCodesRequest
-	(*GetRolesByRoleIdsRequest)(nil),      // 16: identity.service.v1.GetRolesByRoleIdsRequest
-	(*CountRoleResponse)(nil),             // 17: identity.service.v1.CountRoleResponse
-	(*RoleOverride_PermissionDelta)(nil),  // 18: identity.service.v1.RoleOverride.PermissionDelta
-	nil,                                   // 19: identity.service.v1.RoleOverride.ExtendedSettingsEntry
-	(*RoleOverride_SecurityPolicy)(nil),   // 20: identity.service.v1.RoleOverride.SecurityPolicy
+var file_permission_service_v1_role_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
+var file_permission_service_v1_role_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_permission_service_v1_role_proto_goTypes = []any{
+	(Role_Status)(0),                      // 0: permission.service.v1.Role.Status
+	(RoleMetadata_SyncPolicy)(0),          // 1: permission.service.v1.RoleMetadata.SyncPolicy
+	(RoleMetadata_Scope)(0),               // 2: permission.service.v1.RoleMetadata.Scope
+	(*Role)(nil),                          // 3: permission.service.v1.Role
+	(*RoleOverride)(nil),                  // 4: permission.service.v1.RoleOverride
+	(*RoleMetadata)(nil),                  // 5: permission.service.v1.RoleMetadata
+	(*ListRoleResponse)(nil),              // 6: permission.service.v1.ListRoleResponse
+	(*GetRoleRequest)(nil),                // 7: permission.service.v1.GetRoleRequest
+	(*CreateRoleRequest)(nil),             // 8: permission.service.v1.CreateRoleRequest
+	(*UpdateRoleRequest)(nil),             // 9: permission.service.v1.UpdateRoleRequest
+	(*DeleteRoleRequest)(nil),             // 10: permission.service.v1.DeleteRoleRequest
+	(*BatchCreateRolesRequest)(nil),       // 11: permission.service.v1.BatchCreateRolesRequest
+	(*BatchCreateRolesResponse)(nil),      // 12: permission.service.v1.BatchCreateRolesResponse
+	(*GetRoleCodesByRoleIdsRequest)(nil),  // 13: permission.service.v1.GetRoleCodesByRoleIdsRequest
+	(*GetRoleCodesByRoleIdsResponse)(nil), // 14: permission.service.v1.GetRoleCodesByRoleIdsResponse
+	(*GetRolesByRoleCodesRequest)(nil),    // 15: permission.service.v1.GetRolesByRoleCodesRequest
+	(*GetRolesByRoleIdsRequest)(nil),      // 16: permission.service.v1.GetRolesByRoleIdsRequest
+	(*CountRoleResponse)(nil),             // 17: permission.service.v1.CountRoleResponse
+	(*RoleOverride_PermissionDelta)(nil),  // 18: permission.service.v1.RoleOverride.PermissionDelta
+	nil,                                   // 19: permission.service.v1.RoleOverride.ExtendedSettingsEntry
+	(*RoleOverride_SecurityPolicy)(nil),   // 20: permission.service.v1.RoleOverride.SecurityPolicy
 	(*timestamppb.Timestamp)(nil),         // 21: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil),         // 22: google.protobuf.FieldMask
 	(*v1.PagingRequest)(nil),              // 23: pagination.PagingRequest
 	(*emptypb.Empty)(nil),                 // 24: google.protobuf.Empty
 }
-var file_identity_service_v1_role_proto_depIdxs = []int32{
-	0,  // 0: identity.service.v1.Role.status:type_name -> identity.service.v1.Role.Status
-	21, // 1: identity.service.v1.Role.created_at:type_name -> google.protobuf.Timestamp
-	21, // 2: identity.service.v1.Role.updated_at:type_name -> google.protobuf.Timestamp
-	21, // 3: identity.service.v1.Role.deleted_at:type_name -> google.protobuf.Timestamp
-	18, // 4: identity.service.v1.RoleOverride.permissions:type_name -> identity.service.v1.RoleOverride.PermissionDelta
-	19, // 5: identity.service.v1.RoleOverride.extended_settings:type_name -> identity.service.v1.RoleOverride.ExtendedSettingsEntry
-	20, // 6: identity.service.v1.RoleOverride.security_policy:type_name -> identity.service.v1.RoleOverride.SecurityPolicy
-	21, // 7: identity.service.v1.RoleMetadata.last_synced_at:type_name -> google.protobuf.Timestamp
-	1,  // 8: identity.service.v1.RoleMetadata.sync_policy:type_name -> identity.service.v1.RoleMetadata.SyncPolicy
-	2,  // 9: identity.service.v1.RoleMetadata.scope:type_name -> identity.service.v1.RoleMetadata.Scope
-	4,  // 10: identity.service.v1.RoleMetadata.custom_overrides:type_name -> identity.service.v1.RoleOverride
-	21, // 11: identity.service.v1.RoleMetadata.created_at:type_name -> google.protobuf.Timestamp
-	21, // 12: identity.service.v1.RoleMetadata.updated_at:type_name -> google.protobuf.Timestamp
-	21, // 13: identity.service.v1.RoleMetadata.deleted_at:type_name -> google.protobuf.Timestamp
-	3,  // 14: identity.service.v1.ListRoleResponse.items:type_name -> identity.service.v1.Role
-	22, // 15: identity.service.v1.GetRoleRequest.view_mask:type_name -> google.protobuf.FieldMask
-	3,  // 16: identity.service.v1.CreateRoleRequest.data:type_name -> identity.service.v1.Role
-	3,  // 17: identity.service.v1.UpdateRoleRequest.data:type_name -> identity.service.v1.Role
-	22, // 18: identity.service.v1.UpdateRoleRequest.update_mask:type_name -> google.protobuf.FieldMask
-	3,  // 19: identity.service.v1.BatchCreateRolesRequest.items:type_name -> identity.service.v1.Role
-	22, // 20: identity.service.v1.GetRolesByRoleCodesRequest.view_mask:type_name -> google.protobuf.FieldMask
-	22, // 21: identity.service.v1.GetRolesByRoleIdsRequest.view_mask:type_name -> google.protobuf.FieldMask
-	23, // 22: identity.service.v1.RoleService.List:input_type -> pagination.PagingRequest
-	23, // 23: identity.service.v1.RoleService.Count:input_type -> pagination.PagingRequest
-	7,  // 24: identity.service.v1.RoleService.Get:input_type -> identity.service.v1.GetRoleRequest
-	8,  // 25: identity.service.v1.RoleService.Create:input_type -> identity.service.v1.CreateRoleRequest
-	11, // 26: identity.service.v1.RoleService.BatchCreate:input_type -> identity.service.v1.BatchCreateRolesRequest
-	9,  // 27: identity.service.v1.RoleService.Update:input_type -> identity.service.v1.UpdateRoleRequest
-	10, // 28: identity.service.v1.RoleService.Delete:input_type -> identity.service.v1.DeleteRoleRequest
-	13, // 29: identity.service.v1.RoleService.GetRoleCodesByRoleIds:input_type -> identity.service.v1.GetRoleCodesByRoleIdsRequest
-	15, // 30: identity.service.v1.RoleService.GetRolesByRoleCodes:input_type -> identity.service.v1.GetRolesByRoleCodesRequest
-	16, // 31: identity.service.v1.RoleService.GetRolesByRoleIds:input_type -> identity.service.v1.GetRolesByRoleIdsRequest
-	6,  // 32: identity.service.v1.RoleService.List:output_type -> identity.service.v1.ListRoleResponse
-	17, // 33: identity.service.v1.RoleService.Count:output_type -> identity.service.v1.CountRoleResponse
-	3,  // 34: identity.service.v1.RoleService.Get:output_type -> identity.service.v1.Role
-	24, // 35: identity.service.v1.RoleService.Create:output_type -> google.protobuf.Empty
-	12, // 36: identity.service.v1.RoleService.BatchCreate:output_type -> identity.service.v1.BatchCreateRolesResponse
-	24, // 37: identity.service.v1.RoleService.Update:output_type -> google.protobuf.Empty
-	24, // 38: identity.service.v1.RoleService.Delete:output_type -> google.protobuf.Empty
-	14, // 39: identity.service.v1.RoleService.GetRoleCodesByRoleIds:output_type -> identity.service.v1.GetRoleCodesByRoleIdsResponse
-	6,  // 40: identity.service.v1.RoleService.GetRolesByRoleCodes:output_type -> identity.service.v1.ListRoleResponse
-	6,  // 41: identity.service.v1.RoleService.GetRolesByRoleIds:output_type -> identity.service.v1.ListRoleResponse
+var file_permission_service_v1_role_proto_depIdxs = []int32{
+	0,  // 0: permission.service.v1.Role.status:type_name -> permission.service.v1.Role.Status
+	21, // 1: permission.service.v1.Role.created_at:type_name -> google.protobuf.Timestamp
+	21, // 2: permission.service.v1.Role.updated_at:type_name -> google.protobuf.Timestamp
+	21, // 3: permission.service.v1.Role.deleted_at:type_name -> google.protobuf.Timestamp
+	18, // 4: permission.service.v1.RoleOverride.permissions:type_name -> permission.service.v1.RoleOverride.PermissionDelta
+	19, // 5: permission.service.v1.RoleOverride.extended_settings:type_name -> permission.service.v1.RoleOverride.ExtendedSettingsEntry
+	20, // 6: permission.service.v1.RoleOverride.security_policy:type_name -> permission.service.v1.RoleOverride.SecurityPolicy
+	21, // 7: permission.service.v1.RoleMetadata.last_synced_at:type_name -> google.protobuf.Timestamp
+	1,  // 8: permission.service.v1.RoleMetadata.sync_policy:type_name -> permission.service.v1.RoleMetadata.SyncPolicy
+	2,  // 9: permission.service.v1.RoleMetadata.scope:type_name -> permission.service.v1.RoleMetadata.Scope
+	4,  // 10: permission.service.v1.RoleMetadata.custom_overrides:type_name -> permission.service.v1.RoleOverride
+	21, // 11: permission.service.v1.RoleMetadata.created_at:type_name -> google.protobuf.Timestamp
+	21, // 12: permission.service.v1.RoleMetadata.updated_at:type_name -> google.protobuf.Timestamp
+	21, // 13: permission.service.v1.RoleMetadata.deleted_at:type_name -> google.protobuf.Timestamp
+	3,  // 14: permission.service.v1.ListRoleResponse.items:type_name -> permission.service.v1.Role
+	22, // 15: permission.service.v1.GetRoleRequest.view_mask:type_name -> google.protobuf.FieldMask
+	3,  // 16: permission.service.v1.CreateRoleRequest.data:type_name -> permission.service.v1.Role
+	3,  // 17: permission.service.v1.UpdateRoleRequest.data:type_name -> permission.service.v1.Role
+	22, // 18: permission.service.v1.UpdateRoleRequest.update_mask:type_name -> google.protobuf.FieldMask
+	3,  // 19: permission.service.v1.BatchCreateRolesRequest.items:type_name -> permission.service.v1.Role
+	22, // 20: permission.service.v1.GetRolesByRoleCodesRequest.view_mask:type_name -> google.protobuf.FieldMask
+	22, // 21: permission.service.v1.GetRolesByRoleIdsRequest.view_mask:type_name -> google.protobuf.FieldMask
+	23, // 22: permission.service.v1.RoleService.List:input_type -> pagination.PagingRequest
+	23, // 23: permission.service.v1.RoleService.Count:input_type -> pagination.PagingRequest
+	7,  // 24: permission.service.v1.RoleService.Get:input_type -> permission.service.v1.GetRoleRequest
+	8,  // 25: permission.service.v1.RoleService.Create:input_type -> permission.service.v1.CreateRoleRequest
+	11, // 26: permission.service.v1.RoleService.BatchCreate:input_type -> permission.service.v1.BatchCreateRolesRequest
+	9,  // 27: permission.service.v1.RoleService.Update:input_type -> permission.service.v1.UpdateRoleRequest
+	10, // 28: permission.service.v1.RoleService.Delete:input_type -> permission.service.v1.DeleteRoleRequest
+	13, // 29: permission.service.v1.RoleService.GetRoleCodesByRoleIds:input_type -> permission.service.v1.GetRoleCodesByRoleIdsRequest
+	15, // 30: permission.service.v1.RoleService.GetRolesByRoleCodes:input_type -> permission.service.v1.GetRolesByRoleCodesRequest
+	16, // 31: permission.service.v1.RoleService.GetRolesByRoleIds:input_type -> permission.service.v1.GetRolesByRoleIdsRequest
+	6,  // 32: permission.service.v1.RoleService.List:output_type -> permission.service.v1.ListRoleResponse
+	17, // 33: permission.service.v1.RoleService.Count:output_type -> permission.service.v1.CountRoleResponse
+	3,  // 34: permission.service.v1.RoleService.Get:output_type -> permission.service.v1.Role
+	24, // 35: permission.service.v1.RoleService.Create:output_type -> google.protobuf.Empty
+	12, // 36: permission.service.v1.RoleService.BatchCreate:output_type -> permission.service.v1.BatchCreateRolesResponse
+	24, // 37: permission.service.v1.RoleService.Update:output_type -> google.protobuf.Empty
+	24, // 38: permission.service.v1.RoleService.Delete:output_type -> google.protobuf.Empty
+	14, // 39: permission.service.v1.RoleService.GetRoleCodesByRoleIds:output_type -> permission.service.v1.GetRoleCodesByRoleIdsResponse
+	6,  // 40: permission.service.v1.RoleService.GetRolesByRoleCodes:output_type -> permission.service.v1.ListRoleResponse
+	6,  // 41: permission.service.v1.RoleService.GetRolesByRoleIds:output_type -> permission.service.v1.ListRoleResponse
 	32, // [32:42] is the sub-list for method output_type
 	22, // [22:32] is the sub-list for method input_type
 	22, // [22:22] is the sub-list for extension type_name
@@ -1622,38 +1622,38 @@ var file_identity_service_v1_role_proto_depIdxs = []int32{
 	0,  // [0:22] is the sub-list for field type_name
 }
 
-func init() { file_identity_service_v1_role_proto_init() }
-func file_identity_service_v1_role_proto_init() {
-	if File_identity_service_v1_role_proto != nil {
+func init() { file_permission_service_v1_role_proto_init() }
+func file_permission_service_v1_role_proto_init() {
+	if File_permission_service_v1_role_proto != nil {
 		return
 	}
-	file_identity_service_v1_role_proto_msgTypes[0].OneofWrappers = []any{}
-	file_identity_service_v1_role_proto_msgTypes[1].OneofWrappers = []any{}
-	file_identity_service_v1_role_proto_msgTypes[2].OneofWrappers = []any{}
-	file_identity_service_v1_role_proto_msgTypes[4].OneofWrappers = []any{
+	file_permission_service_v1_role_proto_msgTypes[0].OneofWrappers = []any{}
+	file_permission_service_v1_role_proto_msgTypes[1].OneofWrappers = []any{}
+	file_permission_service_v1_role_proto_msgTypes[2].OneofWrappers = []any{}
+	file_permission_service_v1_role_proto_msgTypes[4].OneofWrappers = []any{
 		(*GetRoleRequest_Id)(nil),
 		(*GetRoleRequest_Name)(nil),
 		(*GetRoleRequest_Code)(nil),
 	}
-	file_identity_service_v1_role_proto_msgTypes[6].OneofWrappers = []any{}
-	file_identity_service_v1_role_proto_msgTypes[12].OneofWrappers = []any{}
-	file_identity_service_v1_role_proto_msgTypes[13].OneofWrappers = []any{}
+	file_permission_service_v1_role_proto_msgTypes[6].OneofWrappers = []any{}
+	file_permission_service_v1_role_proto_msgTypes[12].OneofWrappers = []any{}
+	file_permission_service_v1_role_proto_msgTypes[13].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_identity_service_v1_role_proto_rawDesc), len(file_identity_service_v1_role_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_permission_service_v1_role_proto_rawDesc), len(file_permission_service_v1_role_proto_rawDesc)),
 			NumEnums:      3,
 			NumMessages:   18,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_identity_service_v1_role_proto_goTypes,
-		DependencyIndexes: file_identity_service_v1_role_proto_depIdxs,
-		EnumInfos:         file_identity_service_v1_role_proto_enumTypes,
-		MessageInfos:      file_identity_service_v1_role_proto_msgTypes,
+		GoTypes:           file_permission_service_v1_role_proto_goTypes,
+		DependencyIndexes: file_permission_service_v1_role_proto_depIdxs,
+		EnumInfos:         file_permission_service_v1_role_proto_enumTypes,
+		MessageInfos:      file_permission_service_v1_role_proto_msgTypes,
 	}.Build()
-	File_identity_service_v1_role_proto = out.File
-	file_identity_service_v1_role_proto_goTypes = nil
-	file_identity_service_v1_role_proto_depIdxs = nil
+	File_permission_service_v1_role_proto = out.File
+	file_permission_service_v1_role_proto_goTypes = nil
+	file_permission_service_v1_role_proto_depIdxs = nil
 }

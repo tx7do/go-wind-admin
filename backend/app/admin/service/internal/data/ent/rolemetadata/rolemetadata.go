@@ -4,7 +4,7 @@ package rolemetadata
 
 import (
 	"fmt"
-	identitypb "go-wind-admin/api/gen/go/identity/service/v1"
+	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
@@ -97,7 +97,7 @@ var (
 	// DefaultTemplateVersion holds the default value on creation for the "template_version" field.
 	DefaultTemplateVersion int32
 	// DefaultCustomOverrides holds the default value on creation for the "custom_overrides" field.
-	DefaultCustomOverrides *identitypb.RoleOverride
+	DefaultCustomOverrides *permissionpb.RoleOverride
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )

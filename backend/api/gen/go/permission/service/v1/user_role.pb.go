@@ -2,13 +2,14 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: identity/service/v1/user_role.proto
+// source: permission/service/v1/user_role.proto
 
-package identitypb
+package permissionpb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
 	_ "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	v1 "go-wind-admin/api/gen/go/identity/service/v1"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	_ "google.golang.org/protobuf/types/known/emptypb"
@@ -66,11 +67,11 @@ func (x UserRole_Status) String() string {
 }
 
 func (UserRole_Status) Descriptor() protoreflect.EnumDescriptor {
-	return file_identity_service_v1_user_role_proto_enumTypes[0].Descriptor()
+	return file_permission_service_v1_user_role_proto_enumTypes[0].Descriptor()
 }
 
 func (UserRole_Status) Type() protoreflect.EnumType {
-	return &file_identity_service_v1_user_role_proto_enumTypes[0]
+	return &file_permission_service_v1_user_role_proto_enumTypes[0]
 }
 
 func (x UserRole_Status) Number() protoreflect.EnumNumber {
@@ -79,7 +80,7 @@ func (x UserRole_Status) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use UserRole_Status.Descriptor instead.
 func (UserRole_Status) EnumDescriptor() ([]byte, []int) {
-	return file_identity_service_v1_user_role_proto_rawDescGZIP(), []int{0, 0}
+	return file_permission_service_v1_user_role_proto_rawDescGZIP(), []int{0, 0}
 }
 
 // 用户与角色关联关系
@@ -90,12 +91,12 @@ type UserRole struct {
 	TenantId      *uint32                `protobuf:"varint,3,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                                        // 租户ID
 	RoleId        *uint32                `protobuf:"varint,4,opt,name=role_id,json=roleId,proto3,oneof" json:"role_id,omitempty"`                                              // 角色ID
 	IsPrimary     *bool                  `protobuf:"varint,6,opt,name=is_primary,json=isPrimary,proto3,oneof" json:"is_primary,omitempty"`                                     // 是否主角色
-	Status        *UserRole_Status       `protobuf:"varint,7,opt,name=status,proto3,enum=identity.service.v1.UserRole_Status,oneof" json:"status,omitempty"`                   // 状态
+	Status        *UserRole_Status       `protobuf:"varint,7,opt,name=status,proto3,enum=permission.service.v1.UserRole_Status,oneof" json:"status,omitempty"`                 // 状态
 	AssignedAt    *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=assigned_at,json=assignedAt,proto3,oneof" json:"assigned_at,omitempty"`                                  // 分配时间（UTC）
 	AssignedBy    *uint32                `protobuf:"varint,11,opt,name=assigned_by,json=assignedBy,proto3,oneof" json:"assigned_by,omitempty"`                                 // 分配者用户 ID
 	StartAt       *timestamppb.Timestamp `protobuf:"bytes,50,opt,name=start_at,json=startAt,proto3,oneof" json:"start_at,omitempty"`                                           // 生效时间
 	EndAt         *timestamppb.Timestamp `protobuf:"bytes,51,opt,name=end_at,json=endAt,proto3,oneof" json:"end_at,omitempty"`                                                 // 失效时间
-	DataScope     *DataScope             `protobuf:"varint,80,opt,name=data_scope,json=dataScope,proto3,enum=identity.service.v1.DataScope,oneof" json:"data_scope,omitempty"` // 数据权限范围
+	DataScope     *v1.DataScope          `protobuf:"varint,80,opt,name=data_scope,json=dataScope,proto3,enum=identity.service.v1.DataScope,oneof" json:"data_scope,omitempty"` // 数据权限范围
 	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                                   // 创建者ID
 	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                                   // 更新者ID
 	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                                   // 删除者用户ID
@@ -108,7 +109,7 @@ type UserRole struct {
 
 func (x *UserRole) Reset() {
 	*x = UserRole{}
-	mi := &file_identity_service_v1_user_role_proto_msgTypes[0]
+	mi := &file_permission_service_v1_user_role_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -120,7 +121,7 @@ func (x *UserRole) String() string {
 func (*UserRole) ProtoMessage() {}
 
 func (x *UserRole) ProtoReflect() protoreflect.Message {
-	mi := &file_identity_service_v1_user_role_proto_msgTypes[0]
+	mi := &file_permission_service_v1_user_role_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -133,7 +134,7 @@ func (x *UserRole) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UserRole.ProtoReflect.Descriptor instead.
 func (*UserRole) Descriptor() ([]byte, []int) {
-	return file_identity_service_v1_user_role_proto_rawDescGZIP(), []int{0}
+	return file_permission_service_v1_user_role_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *UserRole) GetId() uint32 {
@@ -206,11 +207,11 @@ func (x *UserRole) GetEndAt() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *UserRole) GetDataScope() DataScope {
+func (x *UserRole) GetDataScope() v1.DataScope {
 	if x != nil && x.DataScope != nil {
 		return *x.DataScope
 	}
-	return DataScope_DATA_SCOPE_UNSPECIFIED
+	return v1.DataScope(0)
 }
 
 func (x *UserRole) GetCreatedBy() uint32 {
@@ -255,19 +256,19 @@ func (x *UserRole) GetDeletedAt() *timestamppb.Timestamp {
 	return nil
 }
 
-var File_identity_service_v1_user_role_proto protoreflect.FileDescriptor
+var File_permission_service_v1_user_role_proto protoreflect.FileDescriptor
 
-const file_identity_service_v1_user_role_proto_rawDesc = "" +
+const file_permission_service_v1_user_role_proto_rawDesc = "" +
 	"\n" +
-	"#identity/service/v1/user_role.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1fidentity/service/v1/types.proto\"\xd6\v\n" +
+	"%permission/service/v1/user_role.proto\x12\x15permission.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\x1a\x1fidentity/service/v1/types.proto\"\xd8\v\n" +
 	"\bUserRole\x12\x1d\n" +
 	"\x02id\x18\x01 \x01(\rB\b\xbaG\x05\x92\x02\x02IDH\x00R\x02id\x88\x01\x01\x12,\n" +
 	"\auser_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDH\x01R\x06userId\x88\x01\x01\x120\n" +
 	"\ttenant_id\x18\x03 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x02R\btenantId\x88\x01\x01\x12,\n" +
 	"\arole_id\x18\x04 \x01(\rB\x0e\xbaG\v\x92\x02\b角色IDH\x03R\x06roleId\x88\x01\x01\x129\n" +
 	"\n" +
-	"is_primary\x18\x06 \x01(\bB\x15\xbaG\x12\x92\x02\x0f是否主角色H\x04R\tisPrimary\x88\x01\x01\x12O\n" +
-	"\x06status\x18\a \x01(\x0e2$.identity.service.v1.UserRole.StatusB\f\xbaG\t\x92\x02\x06状态H\x05R\x06status\x88\x01\x01\x12]\n" +
+	"is_primary\x18\x06 \x01(\bB\x15\xbaG\x12\x92\x02\x0f是否主角色H\x04R\tisPrimary\x88\x01\x01\x12Q\n" +
+	"\x06status\x18\a \x01(\x0e2&.permission.service.v1.UserRole.StatusB\f\xbaG\t\x92\x02\x06状态H\x05R\x06status\x88\x01\x01\x12]\n" +
 	"\vassigned_at\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampB\x1b\xbaG\x18\x92\x02\x15分配时间（UTC）H\x06R\n" +
 	"assignedAt\x88\x01\x01\x12>\n" +
@@ -316,38 +317,38 @@ const file_identity_service_v1_user_role_proto_rawDesc = "" +
 	"\v_deleted_byB\r\n" +
 	"\v_created_atB\r\n" +
 	"\v_updated_atB\r\n" +
-	"\v_deleted_atB\xcf\x01\n" +
-	"\x17com.identity.service.v1B\rUserRoleProtoP\x01Z7go-wind-admin/api/gen/go/identity/service/v1;identitypb\xa2\x02\x03ISX\xaa\x02\x13Identity.Service.V1\xca\x02\x13Identity\\Service\\V1\xe2\x02\x1fIdentity\\Service\\V1\\GPBMetadata\xea\x02\x15Identity::Service::V1b\x06proto3"
+	"\v_deleted_atB\xdd\x01\n" +
+	"\x19com.permission.service.v1B\rUserRoleProtoP\x01Z;go-wind-admin/api/gen/go/permission/service/v1;permissionpb\xa2\x02\x03PSX\xaa\x02\x15Permission.Service.V1\xca\x02\x15Permission\\Service\\V1\xe2\x02!Permission\\Service\\V1\\GPBMetadata\xea\x02\x17Permission::Service::V1b\x06proto3"
 
 var (
-	file_identity_service_v1_user_role_proto_rawDescOnce sync.Once
-	file_identity_service_v1_user_role_proto_rawDescData []byte
+	file_permission_service_v1_user_role_proto_rawDescOnce sync.Once
+	file_permission_service_v1_user_role_proto_rawDescData []byte
 )
 
-func file_identity_service_v1_user_role_proto_rawDescGZIP() []byte {
-	file_identity_service_v1_user_role_proto_rawDescOnce.Do(func() {
-		file_identity_service_v1_user_role_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_identity_service_v1_user_role_proto_rawDesc), len(file_identity_service_v1_user_role_proto_rawDesc)))
+func file_permission_service_v1_user_role_proto_rawDescGZIP() []byte {
+	file_permission_service_v1_user_role_proto_rawDescOnce.Do(func() {
+		file_permission_service_v1_user_role_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_permission_service_v1_user_role_proto_rawDesc), len(file_permission_service_v1_user_role_proto_rawDesc)))
 	})
-	return file_identity_service_v1_user_role_proto_rawDescData
+	return file_permission_service_v1_user_role_proto_rawDescData
 }
 
-var file_identity_service_v1_user_role_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_identity_service_v1_user_role_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
-var file_identity_service_v1_user_role_proto_goTypes = []any{
-	(UserRole_Status)(0),          // 0: identity.service.v1.UserRole.Status
-	(*UserRole)(nil),              // 1: identity.service.v1.UserRole
+var file_permission_service_v1_user_role_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_permission_service_v1_user_role_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_permission_service_v1_user_role_proto_goTypes = []any{
+	(UserRole_Status)(0),          // 0: permission.service.v1.UserRole.Status
+	(*UserRole)(nil),              // 1: permission.service.v1.UserRole
 	(*timestamppb.Timestamp)(nil), // 2: google.protobuf.Timestamp
-	(DataScope)(0),                // 3: identity.service.v1.DataScope
+	(v1.DataScope)(0),             // 3: identity.service.v1.DataScope
 }
-var file_identity_service_v1_user_role_proto_depIdxs = []int32{
-	0, // 0: identity.service.v1.UserRole.status:type_name -> identity.service.v1.UserRole.Status
-	2, // 1: identity.service.v1.UserRole.assigned_at:type_name -> google.protobuf.Timestamp
-	2, // 2: identity.service.v1.UserRole.start_at:type_name -> google.protobuf.Timestamp
-	2, // 3: identity.service.v1.UserRole.end_at:type_name -> google.protobuf.Timestamp
-	3, // 4: identity.service.v1.UserRole.data_scope:type_name -> identity.service.v1.DataScope
-	2, // 5: identity.service.v1.UserRole.created_at:type_name -> google.protobuf.Timestamp
-	2, // 6: identity.service.v1.UserRole.updated_at:type_name -> google.protobuf.Timestamp
-	2, // 7: identity.service.v1.UserRole.deleted_at:type_name -> google.protobuf.Timestamp
+var file_permission_service_v1_user_role_proto_depIdxs = []int32{
+	0, // 0: permission.service.v1.UserRole.status:type_name -> permission.service.v1.UserRole.Status
+	2, // 1: permission.service.v1.UserRole.assigned_at:type_name -> google.protobuf.Timestamp
+	2, // 2: permission.service.v1.UserRole.start_at:type_name -> google.protobuf.Timestamp
+	2, // 3: permission.service.v1.UserRole.end_at:type_name -> google.protobuf.Timestamp
+	3, // 4: permission.service.v1.UserRole.data_scope:type_name -> identity.service.v1.DataScope
+	2, // 5: permission.service.v1.UserRole.created_at:type_name -> google.protobuf.Timestamp
+	2, // 6: permission.service.v1.UserRole.updated_at:type_name -> google.protobuf.Timestamp
+	2, // 7: permission.service.v1.UserRole.deleted_at:type_name -> google.protobuf.Timestamp
 	8, // [8:8] is the sub-list for method output_type
 	8, // [8:8] is the sub-list for method input_type
 	8, // [8:8] is the sub-list for extension type_name
@@ -355,29 +356,28 @@ var file_identity_service_v1_user_role_proto_depIdxs = []int32{
 	0, // [0:8] is the sub-list for field type_name
 }
 
-func init() { file_identity_service_v1_user_role_proto_init() }
-func file_identity_service_v1_user_role_proto_init() {
-	if File_identity_service_v1_user_role_proto != nil {
+func init() { file_permission_service_v1_user_role_proto_init() }
+func file_permission_service_v1_user_role_proto_init() {
+	if File_permission_service_v1_user_role_proto != nil {
 		return
 	}
-	file_identity_service_v1_types_proto_init()
-	file_identity_service_v1_user_role_proto_msgTypes[0].OneofWrappers = []any{}
+	file_permission_service_v1_user_role_proto_msgTypes[0].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_identity_service_v1_user_role_proto_rawDesc), len(file_identity_service_v1_user_role_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_permission_service_v1_user_role_proto_rawDesc), len(file_permission_service_v1_user_role_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   1,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_identity_service_v1_user_role_proto_goTypes,
-		DependencyIndexes: file_identity_service_v1_user_role_proto_depIdxs,
-		EnumInfos:         file_identity_service_v1_user_role_proto_enumTypes,
-		MessageInfos:      file_identity_service_v1_user_role_proto_msgTypes,
+		GoTypes:           file_permission_service_v1_user_role_proto_goTypes,
+		DependencyIndexes: file_permission_service_v1_user_role_proto_depIdxs,
+		EnumInfos:         file_permission_service_v1_user_role_proto_enumTypes,
+		MessageInfos:      file_permission_service_v1_user_role_proto_msgTypes,
 	}.Build()
-	File_identity_service_v1_user_role_proto = out.File
-	file_identity_service_v1_user_role_proto_goTypes = nil
-	file_identity_service_v1_user_role_proto_depIdxs = nil
+	File_permission_service_v1_user_role_proto = out.File
+	file_permission_service_v1_user_role_proto_goTypes = nil
+	file_permission_service_v1_user_role_proto_depIdxs = nil
 }

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package identity.service.v1;
+package permission.service.v1;
 
 import "gnostic/openapi/v3/annotations.proto";
 import "google/protobuf/empty.proto";
@@ -70,7 +70,7 @@ message UserRole {
     (gnostic.openapi.v3.property) = {description: "失效时间（UTC）"}
   ];// 失效时间
 
-  optional DataScope data_scope = 80 [
+  optional identity.service.v1.DataScope data_scope = 80 [
     json_name = "dataScope",
     (gnostic.openapi.v3.property) = {description: "数据权限范围"}
   ];// 数据权限范围

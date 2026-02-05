@@ -5,7 +5,7 @@ package ent
 import (
 	"encoding/json"
 	"fmt"
-	identitypb "go-wind-admin/api/gen/go/identity/service/v1"
+	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolemetadata"
 	"strings"
 	"time"
@@ -51,7 +51,7 @@ type RoleMetadata struct {
 	// 作用域
 	Scope *rolemetadata.Scope `json:"scope,omitempty"`
 	// 租户自定义覆盖项
-	CustomOverrides *identitypb.RoleOverride `json:"custom_overrides,omitempty"`
+	CustomOverrides *permissionpb.RoleOverride `json:"custom_overrides,omitempty"`
 	selectValues    sql.SelectValues
 }
 

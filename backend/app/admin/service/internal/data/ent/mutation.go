@@ -7,7 +7,7 @@ import (
 	"errors"
 	"fmt"
 	auditpb "go-wind-admin/api/gen/go/audit/service/v1"
-	identitypb "go-wind-admin/api/gen/go/identity/service/v1"
+	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
 	resourcepb "go-wind-admin/api/gen/go/resource/service/v1"
 	taskpb "go-wind-admin/api/gen/go/task/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/api"
@@ -47737,7 +47737,7 @@ type RoleMetadataMutation struct {
 	last_synced_at         *time.Time
 	sync_policy            *rolemetadata.SyncPolicy
 	scope                  *rolemetadata.Scope
-	custom_overrides       **identitypb.RoleOverride
+	custom_overrides       **permissionpb.RoleOverride
 	clearedFields          map[string]struct{}
 	done                   bool
 	oldValue               func(context.Context) (*RoleMetadata, error)
@@ -48731,12 +48731,12 @@ func (m *RoleMetadataMutation) ResetScope() {
 }
 
 // SetCustomOverrides sets the "custom_overrides" field.
-func (m *RoleMetadataMutation) SetCustomOverrides(io *identitypb.RoleOverride) {
-	m.custom_overrides = &io
+func (m *RoleMetadataMutation) SetCustomOverrides(po *permissionpb.RoleOverride) {
+	m.custom_overrides = &po
 }
 
 // CustomOverrides returns the value of the "custom_overrides" field in the mutation.
-func (m *RoleMetadataMutation) CustomOverrides() (r *identitypb.RoleOverride, exists bool) {
+func (m *RoleMetadataMutation) CustomOverrides() (r *permissionpb.RoleOverride, exists bool) {
 	v := m.custom_overrides
 	if v == nil {
 		return
@@ -48747,7 +48747,7 @@ func (m *RoleMetadataMutation) CustomOverrides() (r *identitypb.RoleOverride, ex
 // OldCustomOverrides returns the old "custom_overrides" field's value of the RoleMetadata entity.
 // If the RoleMetadata object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RoleMetadataMutation) OldCustomOverrides(ctx context.Context) (v *identitypb.RoleOverride, err error) {
+func (m *RoleMetadataMutation) OldCustomOverrides(ctx context.Context) (v *permissionpb.RoleOverride, err error) {
 	if !m.op.Is(OpUpdateOne) {
 		return v, errors.New("OldCustomOverrides is only allowed on UpdateOne operations")
 	}
@@ -49045,7 +49045,7 @@ func (m *RoleMetadataMutation) SetField(name string, value ent.Value) error {
 		m.SetScope(v)
 		return nil
 	case rolemetadata.FieldCustomOverrides:
-		v, ok := value.(*identitypb.RoleOverride)
+		v, ok := value.(*permissionpb.RoleOverride)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}

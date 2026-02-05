@@ -14,6 +14,7 @@ import (
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
 	"go-wind-admin/pkg/authorizer"
 	"go-wind-admin/pkg/constants"
@@ -58,7 +59,7 @@ func (s *RoleService) init() {
 }
 
 func (s *RoleService) extractRelationIDs(
-	roles []*identityV1.Role,
+	roles []*permissionV1.Role,
 	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
 ) {
 	for _, p := range roles {
@@ -93,20 +94,20 @@ func (s *RoleService) fetchRelationInfo(
 }
 
 func (s *RoleService) bindRelations(
-	roles []*identityV1.Role,
+	roles []*permissionV1.Role,
 	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
 ) {
 	aggregator.Populate(
 		roles,
 		tenantSet,
-		func(ou *identityV1.Role) uint32 { return ou.GetTenantId() },
-		func(ou *identityV1.Role, r *identityV1.Tenant) {
+		func(ou *permissionV1.Role) uint32 { return ou.GetTenantId() },
+		func(ou *permissionV1.Role, r *identityV1.Tenant) {
 			ou.TenantName = r.Name
 		},
 	)
 }
 
-func (s *RoleService) enrichRelations(ctx context.Context, roles []*identityV1.Role) error {
+func (s *RoleService) enrichRelations(ctx context.Context, roles []*permissionV1.Role) error {
 	var tenantSet = make(aggregator.ResourceMap[uint32, *identityV1.Tenant])
 	s.extractRelationIDs(roles, tenantSet)
 	if err := s.fetchRelationInfo(ctx, tenantSet); err != nil {
@@ -116,7 +117,7 @@ func (s *RoleService) enrichRelations(ctx context.Context, roles []*identityV1.R
 	return nil
 }
 
-func (s *RoleService) List(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.ListRoleResponse, error) {
+func (s *RoleService) List(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.ListRoleResponse, error) {
 	resp, err := s.roleRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
@@ -127,30 +128,30 @@ func (s *RoleService) List(ctx context.Context, req *paginationV1.PagingRequest)
 	return resp, nil
 }
 
-func (s *RoleService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.CountRoleResponse, error) {
+func (s *RoleService) Count(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.CountRoleResponse, error) {
 	count, err := s.roleRepo.Count(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	return &identityV1.CountRoleResponse{
+	return &permissionV1.CountRoleResponse{
 		Count: uint64(count),
 	}, nil
 }
 
-func (s *RoleService) Get(ctx context.Context, req *identityV1.GetRoleRequest) (*identityV1.Role, error) {
+func (s *RoleService) Get(ctx context.Context, req *permissionV1.GetRoleRequest) (*permissionV1.Role, error) {
 	resp, err := s.roleRepo.Get(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	fakeItems := []*identityV1.Role{resp}
+	fakeItems := []*permissionV1.Role{resp}
 	_ = s.enrichRelations(ctx, fakeItems)
 
 	return resp, nil
 }
 
-func (s *RoleService) Create(ctx context.Context, req *identityV1.CreateRoleRequest) (*emptypb.Empty, error) {
+func (s *RoleService) Create(ctx context.Context, req *permissionV1.CreateRoleRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -178,7 +179,7 @@ func (s *RoleService) Create(ctx context.Context, req *identityV1.CreateRoleRequ
 	return &emptypb.Empty{}, nil
 }
 
-func (s *RoleService) Update(ctx context.Context, req *identityV1.UpdateRoleRequest) (*emptypb.Empty, error) {
+func (s *RoleService) Update(ctx context.Context, req *permissionV1.UpdateRoleRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -211,7 +212,7 @@ func (s *RoleService) Update(ctx context.Context, req *identityV1.UpdateRoleRequ
 	return &emptypb.Empty{}, nil
 }
 
-func (s *RoleService) Delete(ctx context.Context, req *identityV1.DeleteRoleRequest) (*emptypb.Empty, error) {
+func (s *RoleService) Delete(ctx context.Context, req *permissionV1.DeleteRoleRequest) (*emptypb.Empty, error) {
 	var err error
 
 	if err = s.roleRepo.Delete(ctx, req); err != nil {
@@ -225,36 +226,36 @@ func (s *RoleService) Delete(ctx context.Context, req *identityV1.DeleteRoleRequ
 	return &emptypb.Empty{}, nil
 }
 
-func (s *RoleService) GetRoleCodesByRoleIds(ctx context.Context, req *identityV1.GetRoleCodesByRoleIdsRequest) (*identityV1.GetRoleCodesByRoleIdsResponse, error) {
+func (s *RoleService) GetRoleCodesByRoleIds(ctx context.Context, req *permissionV1.GetRoleCodesByRoleIdsRequest) (*permissionV1.GetRoleCodesByRoleIdsResponse, error) {
 	ids, err := s.roleRepo.ListRoleCodesByRoleIds(ctx, req.GetRoleIds())
 	if err != nil {
 		return nil, err
 	}
 
-	return &identityV1.GetRoleCodesByRoleIdsResponse{
+	return &permissionV1.GetRoleCodesByRoleIdsResponse{
 		RoleCodes: ids,
 	}, nil
 }
 
-func (s *RoleService) GetRolesByRoleCodes(ctx context.Context, req *identityV1.GetRolesByRoleCodesRequest) (*identityV1.ListRoleResponse, error) {
+func (s *RoleService) GetRolesByRoleCodes(ctx context.Context, req *permissionV1.GetRolesByRoleCodesRequest) (*permissionV1.ListRoleResponse, error) {
 	roles, err := s.roleRepo.ListRolesByRoleCodes(ctx, req.GetRoleCodes())
 	if err != nil {
 		return nil, err
 	}
 
-	return &identityV1.ListRoleResponse{
+	return &permissionV1.ListRoleResponse{
 		Items: roles,
 		Total: uint64(len(roles)),
 	}, nil
 }
 
-func (s *RoleService) GetRolesByRoleIds(ctx context.Context, req *identityV1.GetRolesByRoleIdsRequest) (*identityV1.ListRoleResponse, error) {
+func (s *RoleService) GetRolesByRoleIds(ctx context.Context, req *permissionV1.GetRolesByRoleIdsRequest) (*permissionV1.ListRoleResponse, error) {
 	roles, err := s.roleRepo.ListRolesByRoleIds(ctx, req.GetRoleIds())
 	if err != nil {
 		return nil, err
 	}
 
-	return &identityV1.ListRoleResponse{
+	return &permissionV1.ListRoleResponse{
 		Items: roles,
 		Total: uint64(len(roles)),
 	}, nil
@@ -265,7 +266,7 @@ func (s *RoleService) createDefaultRoles(ctx context.Context) error {
 	var err error
 
 	for _, d := range constants.DefaultRoles {
-		err = s.roleRepo.Create(ctx, &identityV1.CreateRoleRequest{
+		err = s.roleRepo.Create(ctx, &permissionV1.CreateRoleRequest{
 			Data: d,
 		})
 		if err != nil {

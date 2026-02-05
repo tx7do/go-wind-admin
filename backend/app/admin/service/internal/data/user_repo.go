@@ -24,6 +24,8 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/user"
 
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+
 	"go-wind-admin/pkg/constants"
 )
 
@@ -43,8 +45,8 @@ type UserRepo interface {
 
 	UserExists(ctx context.Context, req *identityV1.UserExistsRequest) (*identityV1.UserExistsResponse, error)
 
-	AssignUserRole(ctx context.Context, data *identityV1.UserRole) error
-	AssignUserRoles(ctx context.Context, userID uint32, datas []*identityV1.UserRole) error
+	AssignUserRole(ctx context.Context, data *permissionV1.UserRole) error
+	AssignUserRoles(ctx context.Context, userID uint32, datas []*permissionV1.UserRole) error
 
 	AssignUserOrgUnit(ctx context.Context, data *identityV1.UserOrgUnit) error
 	AssignUserOrgUnits(ctx context.Context, userID uint32, datas []*identityV1.UserOrgUnit) error
@@ -845,13 +847,13 @@ func (r *userRepo) assignUserRelations(ctx context.Context, tx *ent.Tx,
 
 	if len(roleIDs) > 0 {
 		roleIDs = sliceutil.Unique(roleIDs)
-		var userRoles []*identityV1.UserRole
+		var userRoles []*permissionV1.UserRole
 		for _, roleID := range roleIDs {
-			userRoles = append(userRoles, &identityV1.UserRole{
+			userRoles = append(userRoles, &permissionV1.UserRole{
 				TenantId:   trans.Ptr(tenantID),
 				UserId:     trans.Ptr(userID),
 				RoleId:     trans.Ptr(roleID),
-				Status:     identityV1.UserRole_ACTIVE.Enum(),
+				Status:     permissionV1.UserRole_ACTIVE.Enum(),
 				IsPrimary:  trans.Ptr(true),
 				AssignedAt: timeutil.TimeToTimestamppb(&now),
 			})
@@ -901,7 +903,7 @@ func (r *userRepo) assignUserRelations(ctx context.Context, tx *ent.Tx,
 }
 
 // AssignUserRole 分配角色
-func (r *userRepo) AssignUserRole(ctx context.Context, data *identityV1.UserRole) error {
+func (r *userRepo) AssignUserRole(ctx context.Context, data *permissionV1.UserRole) error {
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
 	if err != nil {
@@ -925,7 +927,7 @@ func (r *userRepo) AssignUserRole(ctx context.Context, data *identityV1.UserRole
 }
 
 // AssignUserRoles 分配角色
-func (r *userRepo) AssignUserRoles(ctx context.Context, userID uint32, datas []*identityV1.UserRole) error {
+func (r *userRepo) AssignUserRoles(ctx context.Context, userID uint32, datas []*permissionV1.UserRole) error {
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
 	if err != nil {

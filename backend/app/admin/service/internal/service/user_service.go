@@ -15,6 +15,7 @@ import (
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
 	"go-wind-admin/pkg/constants"
 	appViewer "go-wind-admin/pkg/entgo/viewer"
@@ -72,7 +73,7 @@ func (s *UserService) init() {
 
 func (s *UserService) extractRelationIDs(
 	users []*identityV1.User,
-	roleSet aggregator.ResourceMap[uint32, *identityV1.Role],
+	roleSet aggregator.ResourceMap[uint32, *permissionV1.Role],
 	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
 	orgUnitSet aggregator.ResourceMap[uint32, *identityV1.OrgUnit],
 	posSet aggregator.ResourceMap[uint32, *identityV1.Position],
@@ -119,7 +120,7 @@ func (s *UserService) extractRelationIDs(
 
 func (s *UserService) fetchRelationInfo(
 	ctx context.Context,
-	roleSet aggregator.ResourceMap[uint32, *identityV1.Role],
+	roleSet aggregator.ResourceMap[uint32, *permissionV1.Role],
 	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
 	orgUnitSet aggregator.ResourceMap[uint32, *identityV1.OrgUnit],
 	posSet aggregator.ResourceMap[uint32, *identityV1.Position],
@@ -197,7 +198,7 @@ func (s *UserService) fetchRelationInfo(
 
 func (s *UserService) bindRelations(
 	users []*identityV1.User,
-	roleSet aggregator.ResourceMap[uint32, *identityV1.Role],
+	roleSet aggregator.ResourceMap[uint32, *permissionV1.Role],
 	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
 	orgUnitSet aggregator.ResourceMap[uint32, *identityV1.OrgUnit],
 	posSet aggregator.ResourceMap[uint32, *identityV1.Position],
@@ -206,7 +207,7 @@ func (s *UserService) bindRelations(
 		users,
 		roleSet,
 		func(ou *identityV1.User) []uint32 { return ou.GetRoleIds() },
-		func(ou *identityV1.User, r []*identityV1.Role) {
+		func(ou *identityV1.User, r []*permissionV1.Role) {
 			for _, role := range r {
 				ou.RoleNames = append(ou.RoleNames, role.GetName())
 				ou.Roles = append(ou.Roles, role.GetCode())
@@ -217,7 +218,7 @@ func (s *UserService) bindRelations(
 		users,
 		roleSet,
 		func(ou *identityV1.User) uint32 { return ou.GetRoleId() },
-		func(ou *identityV1.User, r *identityV1.Role) {
+		func(ou *identityV1.User, r *permissionV1.Role) {
 			ou.RoleNames = append(ou.RoleNames, r.GetName())
 			ou.Roles = append(ou.Roles, r.GetCode())
 		},
@@ -272,7 +273,7 @@ func (s *UserService) bindRelations(
 }
 
 func (s *UserService) enrichRelations(ctx context.Context, users []*identityV1.User) error {
-	var roleSet = make(aggregator.ResourceMap[uint32, *identityV1.Role])
+	var roleSet = make(aggregator.ResourceMap[uint32, *permissionV1.Role])
 	var tenantSet = make(aggregator.ResourceMap[uint32, *identityV1.Tenant])
 	var orgUnitSet = make(aggregator.ResourceMap[uint32, *identityV1.OrgUnit])
 	var posSet = make(aggregator.ResourceMap[uint32, *identityV1.Position])

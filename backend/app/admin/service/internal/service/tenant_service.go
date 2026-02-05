@@ -15,6 +15,7 @@ import (
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
 	"go-wind-admin/pkg/authorizer"
 	"go-wind-admin/pkg/middleware/auth"
@@ -257,7 +258,7 @@ func (s *TenantService) CreateTenantWithAdminUser(ctx context.Context, req *iden
 	req.User.TenantId = tenant.Id
 
 	// copy tenant manager role to tenant
-	var role *identityV1.Role
+	var role *permissionV1.Role
 	if role, err = s.roleRepo.CreateTenantRoleFromTemplate(ctx, tx, tenant.GetId(), operator.GetUserId()); err != nil {
 		s.log.Errorf("copy tenant admin role template to tenant err: %v", err)
 		return nil, err

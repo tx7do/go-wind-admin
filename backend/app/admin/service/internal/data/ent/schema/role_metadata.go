@@ -9,7 +9,7 @@ import (
 
 	"github.com/tx7do/go-crud/entgo/mixin"
 
-	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
 // RoleMetadata 角色元数据（模板标记/覆盖项/版本控制）
@@ -85,9 +85,9 @@ func (RoleMetadata) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
-		field.JSON("custom_overrides", &identityV1.RoleOverride{}).
+		field.JSON("custom_overrides", &permissionV1.RoleOverride{}).
 			Comment("租户自定义覆盖项").
-			Default(&identityV1.RoleOverride{}),
+			Default(&permissionV1.RoleOverride{}),
 	}
 }
 

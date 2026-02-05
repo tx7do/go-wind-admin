@@ -17,6 +17,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/membership"
 
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
 type MembershipRepo struct {
@@ -122,13 +123,13 @@ func (r *MembershipRepo) AssignTenantMembershipWithTx(ctx context.Context, tx *e
 	positionIDs = sliceutil.Unique(positionIDs)
 
 	if len(roleIDs) > 0 {
-		var roles []*identityV1.MembershipRole
+		var roles []*permissionV1.MembershipRole
 		for _, roleID := range roleIDs {
-			role := &identityV1.MembershipRole{
+			role := &permissionV1.MembershipRole{
 				MembershipId: trans.Ptr(entity.ID),
 				TenantId:     data.TenantId,
 				RoleId:       trans.Ptr(roleID),
-				Status:       trans.Ptr(identityV1.MembershipRole_ACTIVE),
+				Status:       trans.Ptr(permissionV1.MembershipRole_ACTIVE),
 				CreatedBy:    data.CreatedBy,
 				AssignedBy:   data.AssignedBy,
 				AssignedAt:   data.AssignedAt,
@@ -195,7 +196,7 @@ func (r *MembershipRepo) AssignTenantMembershipWithTx(ctx context.Context, tx *e
 
 func (r *MembershipRepo) AssignMembershipRoles(ctx context.Context,
 	userID uint32,
-	datas []*identityV1.MembershipRole,
+	datas []*permissionV1.MembershipRole,
 ) (err error) {
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)

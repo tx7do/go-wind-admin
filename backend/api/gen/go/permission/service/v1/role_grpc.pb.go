@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             (unknown)
-// source: identity/service/v1/role.proto
+// source: permission/service/v1/role.proto
 
-package identitypb
+package permissionpb
 
 import (
 	context "context"
@@ -21,16 +21,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	RoleService_List_FullMethodName                  = "/identity.service.v1.RoleService/List"
-	RoleService_Count_FullMethodName                 = "/identity.service.v1.RoleService/Count"
-	RoleService_Get_FullMethodName                   = "/identity.service.v1.RoleService/Get"
-	RoleService_Create_FullMethodName                = "/identity.service.v1.RoleService/Create"
-	RoleService_BatchCreate_FullMethodName           = "/identity.service.v1.RoleService/BatchCreate"
-	RoleService_Update_FullMethodName                = "/identity.service.v1.RoleService/Update"
-	RoleService_Delete_FullMethodName                = "/identity.service.v1.RoleService/Delete"
-	RoleService_GetRoleCodesByRoleIds_FullMethodName = "/identity.service.v1.RoleService/GetRoleCodesByRoleIds"
-	RoleService_GetRolesByRoleCodes_FullMethodName   = "/identity.service.v1.RoleService/GetRolesByRoleCodes"
-	RoleService_GetRolesByRoleIds_FullMethodName     = "/identity.service.v1.RoleService/GetRolesByRoleIds"
+	RoleService_List_FullMethodName                  = "/permission.service.v1.RoleService/List"
+	RoleService_Count_FullMethodName                 = "/permission.service.v1.RoleService/Count"
+	RoleService_Get_FullMethodName                   = "/permission.service.v1.RoleService/Get"
+	RoleService_Create_FullMethodName                = "/permission.service.v1.RoleService/Create"
+	RoleService_BatchCreate_FullMethodName           = "/permission.service.v1.RoleService/BatchCreate"
+	RoleService_Update_FullMethodName                = "/permission.service.v1.RoleService/Update"
+	RoleService_Delete_FullMethodName                = "/permission.service.v1.RoleService/Delete"
+	RoleService_GetRoleCodesByRoleIds_FullMethodName = "/permission.service.v1.RoleService/GetRoleCodesByRoleIds"
+	RoleService_GetRolesByRoleCodes_FullMethodName   = "/permission.service.v1.RoleService/GetRolesByRoleCodes"
+	RoleService_GetRolesByRoleIds_FullMethodName     = "/permission.service.v1.RoleService/GetRolesByRoleIds"
 )
 
 // RoleServiceClient is the client API for RoleService service.
@@ -440,7 +440,7 @@ func _RoleService_GetRolesByRoleIds_Handler(srv interface{}, ctx context.Context
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var RoleService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "identity.service.v1.RoleService",
+	ServiceName: "permission.service.v1.RoleService",
 	HandlerType: (*RoleServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -485,5 +485,5 @@ var RoleService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "identity/service/v1/role.proto",
+	Metadata: "permission/service/v1/role.proto",
 }

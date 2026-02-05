@@ -19,7 +19,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"go-wind-admin/app/admin/service/internal/data/ent/role"
 
-	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
 	"go-wind-admin/pkg/constants"
 )
@@ -28,8 +28,8 @@ type RoleRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper          *mapper.CopierMapper[identityV1.Role, ent.Role]
-	statusConverter *mapper.EnumTypeConverter[identityV1.Role_Status, role.Status]
+	mapper          *mapper.CopierMapper[permissionV1.Role, ent.Role]
+	statusConverter *mapper.EnumTypeConverter[permissionV1.Role_Status, role.Status]
 
 	repository *entCrud.Repository[
 		ent.RoleQuery, ent.RoleSelect,
@@ -37,7 +37,7 @@ type RoleRepo struct {
 		ent.RoleUpdate, ent.RoleUpdateOne,
 		ent.RoleDelete,
 		predicate.Role,
-		identityV1.Role, ent.Role,
+		permissionV1.Role, ent.Role,
 	]
 
 	rolePermissionRepo *RolePermissionRepo
@@ -55,10 +55,10 @@ func NewRoleRepo(
 	repo := &RoleRepo{
 		log:       ctx.NewLoggerHelper("role/repo/admin-service"),
 		entClient: entClient,
-		mapper:    mapper.NewCopierMapper[identityV1.Role, ent.Role](),
-		statusConverter: mapper.NewEnumTypeConverter[identityV1.Role_Status, role.Status](
-			identityV1.Role_Status_name,
-			identityV1.Role_Status_value,
+		mapper:    mapper.NewCopierMapper[permissionV1.Role, ent.Role](),
+		statusConverter: mapper.NewEnumTypeConverter[permissionV1.Role_Status, role.Status](
+			permissionV1.Role_Status_name,
+			permissionV1.Role_Status_value,
 		),
 		permissionRepo:     permissionRepo,
 		rolePermissionRepo: rolePermissionRepo,
@@ -77,7 +77,7 @@ func (r *RoleRepo) init() {
 		ent.RoleUpdate, ent.RoleUpdateOne,
 		ent.RoleDelete,
 		predicate.Role,
-		identityV1.Role, ent.Role,
+		permissionV1.Role, ent.Role,
 	](r.mapper)
 
 	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
@@ -96,7 +96,7 @@ func (r *RoleRepo) count(ctx context.Context, whereCond []func(s *sql.Selector))
 	count, err := builder.Count(ctx)
 	if err != nil {
 		r.log.Errorf("query count failed: %s", err.Error())
-		return 0, identityV1.ErrorInternalServerError("query count failed")
+		return 0, permissionV1.ErrorInternalServerError("query count failed")
 	}
 
 	return count, nil
@@ -113,7 +113,7 @@ func (r *RoleRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (
 	count, err := builder.Count(ctx)
 	if err != nil {
 		r.log.Errorf("query role count failed: %s", err.Error())
-		return 0, identityV1.ErrorInternalServerError("query count failed")
+		return 0, permissionV1.ErrorInternalServerError("query count failed")
 	}
 
 	return count, nil
@@ -126,15 +126,15 @@ func (r *RoleRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Exist(ctx)
 	if err != nil {
 		r.log.Errorf("query exist failed: %s", err.Error())
-		return false, identityV1.ErrorInternalServerError("query exist failed")
+		return false, permissionV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
 }
 
 // List 列表角色信息
-func (r *RoleRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.ListRoleResponse, error) {
+func (r *RoleRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.ListRoleResponse, error) {
 	if req == nil {
-		return nil, identityV1.ErrorBadRequest("invalid parameter")
+		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Role.Query()
@@ -144,21 +144,21 @@ func (r *RoleRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 		return nil, err
 	}
 	if ret == nil {
-		return &identityV1.ListRoleResponse{Total: 0, Items: nil}, nil
+		return &permissionV1.ListRoleResponse{Total: 0, Items: nil}, nil
 	}
 
 	for _, item := range ret.Items {
 		_ = r.fillPermissionIDs(ctx, item)
 	}
 
-	return &identityV1.ListRoleResponse{
+	return &permissionV1.ListRoleResponse{
 		Total: ret.Total,
 		Items: ret.Items,
 	}, nil
 }
 
 // fillPermissionIDs 填充角色权限ID列表
-func (r *RoleRepo) fillPermissionIDs(ctx context.Context, dto *identityV1.Role) error {
+func (r *RoleRepo) fillPermissionIDs(ctx context.Context, dto *permissionV1.Role) error {
 	permissionIDs, err := r.rolePermissionRepo.ListPermissionIDs(ctx, dto.GetId())
 	if err != nil {
 		r.log.Errorf("list permission ids failed: %s", err.Error())
@@ -169,9 +169,9 @@ func (r *RoleRepo) fillPermissionIDs(ctx context.Context, dto *identityV1.Role) 
 }
 
 // ListRolesByRoleCodes 通过角色编码列表获取角色列表
-func (r *RoleRepo) ListRolesByRoleCodes(ctx context.Context, codes []string) ([]*identityV1.Role, error) {
+func (r *RoleRepo) ListRolesByRoleCodes(ctx context.Context, codes []string) ([]*permissionV1.Role, error) {
 	if len(codes) == 0 {
-		return []*identityV1.Role{}, nil
+		return []*permissionV1.Role{}, nil
 	}
 
 	entities, err := r.entClient.Client().Role.Query().
@@ -179,10 +179,10 @@ func (r *RoleRepo) ListRolesByRoleCodes(ctx context.Context, codes []string) ([]
 		All(ctx)
 	if err != nil {
 		r.log.Errorf("query roles by codes failed: %s", err.Error())
-		return nil, identityV1.ErrorInternalServerError("query roles by codes failed")
+		return nil, permissionV1.ErrorInternalServerError("query roles by codes failed")
 	}
 
-	dtos := make([]*identityV1.Role, 0, len(entities))
+	dtos := make([]*permissionV1.Role, 0, len(entities))
 	for _, entity := range entities {
 		dto := r.mapper.ToDTO(entity)
 		dtos = append(dtos, dto)
@@ -196,9 +196,9 @@ func (r *RoleRepo) ListRolesByRoleCodes(ctx context.Context, codes []string) ([]
 }
 
 // ListRolesByRoleIds 通过角色ID列表获取角色列表
-func (r *RoleRepo) ListRolesByRoleIds(ctx context.Context, ids []uint32) ([]*identityV1.Role, error) {
+func (r *RoleRepo) ListRolesByRoleIds(ctx context.Context, ids []uint32) ([]*permissionV1.Role, error) {
 	if len(ids) == 0 {
-		return []*identityV1.Role{}, nil
+		return []*permissionV1.Role{}, nil
 	}
 
 	entities, err := r.entClient.Client().Role.Query().
@@ -206,10 +206,10 @@ func (r *RoleRepo) ListRolesByRoleIds(ctx context.Context, ids []uint32) ([]*ide
 		All(ctx)
 	if err != nil {
 		r.log.Errorf("query roles by ids failed: %s", err.Error())
-		return nil, identityV1.ErrorInternalServerError("query roles by ids failed")
+		return nil, permissionV1.ErrorInternalServerError("query roles by ids failed")
 	}
 
-	dtos := make([]*identityV1.Role, 0, len(entities))
+	dtos := make([]*permissionV1.Role, 0, len(entities))
 	for _, entity := range entities {
 		dto := r.mapper.ToDTO(entity)
 		dtos = append(dtos, dto)
@@ -233,7 +233,7 @@ func (r *RoleRepo) ListRoleCodesByRoleIds(ctx context.Context, ids []uint32) ([]
 		All(ctx)
 	if err != nil {
 		r.log.Errorf("query role codes failed: %s", err.Error())
-		return nil, identityV1.ErrorInternalServerError("query role codes failed")
+		return nil, permissionV1.ErrorInternalServerError("query role codes failed")
 	}
 
 	codes := make([]string, 0, len(entities))
@@ -258,7 +258,7 @@ func (r *RoleRepo) ListRoleIDsByRoleCodes(ctx context.Context, codes []string) (
 		All(ctx)
 	if err != nil {
 		r.log.Errorf("query role ids failed: %s", err.Error())
-		return nil, identityV1.ErrorInternalServerError("query role ids failed")
+		return nil, permissionV1.ErrorInternalServerError("query role ids failed")
 	}
 
 	ids := make([]uint32, 0, len(entities))
@@ -270,9 +270,9 @@ func (r *RoleRepo) ListRoleIDsByRoleCodes(ctx context.Context, codes []string) (
 }
 
 // Get 获取角色信息
-func (r *RoleRepo) Get(ctx context.Context, req *identityV1.GetRoleRequest) (*identityV1.Role, error) {
+func (r *RoleRepo) Get(ctx context.Context, req *permissionV1.GetRoleRequest) (*permissionV1.Role, error) {
 	if req == nil {
-		return nil, identityV1.ErrorBadRequest("invalid parameter")
+		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Role.Query()
@@ -280,11 +280,11 @@ func (r *RoleRepo) Get(ctx context.Context, req *identityV1.GetRoleRequest) (*id
 	var whereCond []func(s *sql.Selector)
 	switch req.QueryBy.(type) {
 	default:
-	case *identityV1.GetRoleRequest_Id:
+	case *permissionV1.GetRoleRequest_Id:
 		whereCond = append(whereCond, role.IDEQ(req.GetId()))
-	case *identityV1.GetRoleRequest_Name:
+	case *permissionV1.GetRoleRequest_Name:
 		whereCond = append(whereCond, role.NameEQ(req.GetName()))
-	case *identityV1.GetRoleRequest_Code:
+	case *permissionV1.GetRoleRequest_Code:
 		whereCond = append(whereCond, role.CodeEQ(req.GetCode()))
 	}
 
@@ -299,9 +299,9 @@ func (r *RoleRepo) Get(ctx context.Context, req *identityV1.GetRoleRequest) (*id
 }
 
 // GetTemplateRole 获取角色模板信息
-func (r *RoleRepo) GetTemplateRole(ctx context.Context, templateCode string) (*identityV1.Role, error) {
+func (r *RoleRepo) GetTemplateRole(ctx context.Context, templateCode string) (*permissionV1.Role, error) {
 	if templateCode == "" {
-		return nil, identityV1.ErrorBadRequest("invalid parameter")
+		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	code := constants.TemplateRoleCodePrefix + templateCode
@@ -327,9 +327,9 @@ func (r *RoleRepo) GetTemplateRole(ctx context.Context, templateCode string) (*i
 }
 
 // CreateTenantRoleFromTemplate 从模版创建租户角色
-func (r *RoleRepo) CreateTenantRoleFromTemplate(ctx context.Context, tx *ent.Tx, tenantID, operatorID uint32) (dto *identityV1.Role, err error) {
-	roleTemplate, err := r.Get(ctx, &identityV1.GetRoleRequest{
-		QueryBy: &identityV1.GetRoleRequest_Code{
+func (r *RoleRepo) CreateTenantRoleFromTemplate(ctx context.Context, tx *ent.Tx, tenantID, operatorID uint32) (dto *permissionV1.Role, err error) {
+	roleTemplate, err := r.Get(ctx, &permissionV1.GetRoleRequest{
+		QueryBy: &permissionV1.GetRoleRequest_Code{
 			Code: constants.TenantAdminTemplateRoleCode,
 		}},
 	)
@@ -357,16 +357,16 @@ func (r *RoleRepo) CreateTenantRoleFromTemplate(ctx context.Context, tx *ent.Tx,
 }
 
 // Create 创建角色
-func (r *RoleRepo) Create(ctx context.Context, req *identityV1.CreateRoleRequest) (err error) {
+func (r *RoleRepo) Create(ctx context.Context, req *permissionV1.CreateRoleRequest) (err error) {
 	if req == nil || req.Data == nil {
-		return identityV1.ErrorBadRequest("invalid parameter")
+		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return identityV1.ErrorInternalServerError("start transaction failed")
+		return permissionV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -377,7 +377,7 @@ func (r *RoleRepo) Create(ctx context.Context, req *identityV1.CreateRoleRequest
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = identityV1.ErrorInternalServerError("transaction commit failed")
+			err = permissionV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
@@ -386,9 +386,9 @@ func (r *RoleRepo) Create(ctx context.Context, req *identityV1.CreateRoleRequest
 }
 
 // CreateWithTx 创建角色
-func (r *RoleRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *identityV1.Role) (dto *identityV1.Role, err error) {
+func (r *RoleRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *permissionV1.Role) (dto *permissionV1.Role, err error) {
 	if data == nil {
-		return nil, identityV1.ErrorBadRequest("invalid parameter")
+		return nil, permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := tx.Role.Create().
@@ -410,32 +410,32 @@ func (r *RoleRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *identityV
 	var ret *ent.Role
 	if ret, err = builder.Save(ctx); err != nil {
 		r.log.Errorf("insert role failed: %s", err.Error())
-		return nil, identityV1.ErrorInternalServerError("insert role failed")
+		return nil, permissionV1.ErrorInternalServerError("insert role failed")
 	}
 
 	// 创建角色元数据
-	var scope *identityV1.RoleMetadata_Scope
+	var scope *permissionV1.RoleMetadata_Scope
 	if data.GetIsSystem() {
-		scope = identityV1.RoleMetadata_PLATFORM.Enum()
+		scope = permissionV1.RoleMetadata_PLATFORM.Enum()
 	} else {
-		scope = identityV1.RoleMetadata_TENANT.Enum()
+		scope = permissionV1.RoleMetadata_TENANT.Enum()
 	}
 	isTemplate := constants.IsTemplateRoleCode(data.GetCode())
 	var templateFor string
 	if isTemplate {
 		templateFor = constants.ExtractRoleCodeFromTemplate(data.GetCode())
 	}
-	if err = r.roleMetadataRepo.Create(ctx, tx, &identityV1.RoleMetadata{
+	if err = r.roleMetadataRepo.Create(ctx, tx, &permissionV1.RoleMetadata{
 		RoleId:      trans.Ptr(ret.ID),
 		TenantId:    data.TenantId,
 		CreatedBy:   data.CreatedBy,
 		IsTemplate:  trans.Ptr(isTemplate),
 		TemplateFor: trans.Ptr(templateFor),
-		SyncPolicy:  identityV1.RoleMetadata_AUTO.Enum(),
+		SyncPolicy:  permissionV1.RoleMetadata_AUTO.Enum(),
 		Scope:       scope,
 	}); err != nil {
 		r.log.Errorf("create role metadata failed: %s", err.Error())
-		return nil, identityV1.ErrorInternalServerError("create role metadata failed")
+		return nil, permissionV1.ErrorInternalServerError("create role metadata failed")
 	}
 
 	// 分配权限到角色
@@ -444,7 +444,7 @@ func (r *RoleRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *identityV
 			data.GetTenantId(), data.GetCreatedBy(),
 			ret.ID, data.Permissions); err != nil {
 			r.log.Errorf("assign permissions to role failed: %s", err.Error())
-			return nil, identityV1.ErrorInternalServerError("assign permissions to role failed")
+			return nil, permissionV1.ErrorInternalServerError("assign permissions to role failed")
 		}
 	}
 
@@ -452,9 +452,9 @@ func (r *RoleRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *identityV
 }
 
 // Update 更新角色信息
-func (r *RoleRepo) Update(ctx context.Context, req *identityV1.UpdateRoleRequest) (err error) {
+func (r *RoleRepo) Update(ctx context.Context, req *permissionV1.UpdateRoleRequest) (err error) {
 	if req == nil || req.Data == nil {
-		return identityV1.ErrorBadRequest("invalid parameter")
+		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	// 如果不存在则创建
@@ -464,7 +464,7 @@ func (r *RoleRepo) Update(ctx context.Context, req *identityV1.UpdateRoleRequest
 			return err
 		}
 		if !exist {
-			createReq := &identityV1.CreateRoleRequest{Data: req.Data}
+			createReq := &permissionV1.CreateRoleRequest{Data: req.Data}
 			createReq.Data.CreatedBy = createReq.Data.UpdatedBy
 			createReq.Data.UpdatedBy = nil
 			return r.Create(ctx, createReq)
@@ -475,7 +475,7 @@ func (r *RoleRepo) Update(ctx context.Context, req *identityV1.UpdateRoleRequest
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return identityV1.ErrorInternalServerError("start transaction failed")
+		return permissionV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -486,14 +486,14 @@ func (r *RoleRepo) Update(ctx context.Context, req *identityV1.UpdateRoleRequest
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = identityV1.ErrorInternalServerError("transaction commit failed")
+			err = permissionV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
-	var entity *identityV1.Role
+	var entity *permissionV1.Role
 	builder := tx.Role.UpdateOneID(req.GetId())
 	entity, err = r.repository.UpdateOne(ctx, builder, req.Data, req.GetUpdateMask(),
-		func(dto *identityV1.Role) {
+		func(dto *permissionV1.Role) {
 			builder.
 				SetNillableName(req.Data.Name).
 				SetNillableCode(req.Data.Code).
@@ -511,13 +511,13 @@ func (r *RoleRepo) Update(ctx context.Context, req *identityV1.UpdateRoleRequest
 	)
 	if err != nil {
 		r.log.Errorf("update role failed: %s", err.Error())
-		return identityV1.ErrorInternalServerError("update role failed")
+		return permissionV1.ErrorInternalServerError("update role failed")
 	}
 
 	// 升级角色元数据模板版本
 	if err = r.roleMetadataRepo.UpgradeTemplateVersion(ctx, tx, req.GetId()); err != nil {
 		r.log.Errorf("upgrade role metadata template version failed: %s", err.Error())
-		return identityV1.ErrorInternalServerError("upgrade role metadata template version failed")
+		return permissionV1.ErrorInternalServerError("upgrade role metadata template version failed")
 	}
 
 	if len(req.Data.Permissions) > 0 {
@@ -525,7 +525,7 @@ func (r *RoleRepo) Update(ctx context.Context, req *identityV1.UpdateRoleRequest
 			*entity.TenantId, req.Data.GetUpdatedBy(),
 			req.GetId(), req.Data.Permissions); err != nil {
 			r.log.Errorf("assign permissions to role failed: %s", err.Error())
-			return identityV1.ErrorInternalServerError("assign permissions to role failed")
+			return permissionV1.ErrorInternalServerError("assign permissions to role failed")
 		}
 	}
 
@@ -533,16 +533,16 @@ func (r *RoleRepo) Update(ctx context.Context, req *identityV1.UpdateRoleRequest
 }
 
 // Delete 删除角色
-func (r *RoleRepo) Delete(ctx context.Context, req *identityV1.DeleteRoleRequest) (err error) {
+func (r *RoleRepo) Delete(ctx context.Context, req *permissionV1.DeleteRoleRequest) (err error) {
 	if req == nil {
-		return identityV1.ErrorBadRequest("invalid parameter")
+		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
 		r.log.Errorf("start transaction failed: %s", err.Error())
-		return identityV1.ErrorInternalServerError("start transaction failed")
+		return permissionV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
@@ -553,22 +553,22 @@ func (r *RoleRepo) Delete(ctx context.Context, req *identityV1.DeleteRoleRequest
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
 			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
-			err = identityV1.ErrorInternalServerError("transaction commit failed")
+			err = permissionV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
 	ret, err := tx.Role.Query().Where(role.IDEQ(req.GetId())).Only(ctx)
 	if err != nil {
 		r.log.Errorf("get role failed: %s", err.Error())
-		return identityV1.ErrorInternalServerError("get role failed")
+		return permissionV1.ErrorInternalServerError("get role failed")
 	}
 
 	// 保护角色禁止删除
 	if ret.IsProtected != nil && *ret.IsProtected {
-		return identityV1.ErrorForbidden("protected role cannot be deleted")
+		return permissionV1.ErrorForbidden("protected role cannot be deleted")
 	}
 	if ret.IsSystem != nil && *ret.IsSystem {
-		return identityV1.ErrorForbidden("protected role cannot be deleted")
+		return permissionV1.ErrorForbidden("protected role cannot be deleted")
 	}
 
 	// 删除角色记录
@@ -576,7 +576,7 @@ func (r *RoleRepo) Delete(ctx context.Context, req *identityV1.DeleteRoleRequest
 		Where(role.IDEQ(req.GetId())).
 		Exec(ctx); err != nil {
 		r.log.Errorf("delete role failed: %s", err.Error())
-		return identityV1.ErrorInternalServerError("delete role failed")
+		return permissionV1.ErrorInternalServerError("delete role failed")
 	}
 
 	if err = r.rolePermissionRepo.CleanPermissions(ctx, tx, req.GetId()); err != nil {
@@ -671,14 +671,14 @@ func (r *RoleRepo) GetRolesPermissionMenuIDs(ctx context.Context, roleIDs []uint
 
 // CanAssignRole 判断角色是否可以被分配（非保护且启用状态）
 func (r *RoleRepo) CanAssignRole(ctx context.Context, roleID uint32) (bool, error) {
-	aRole, err := r.Get(ctx, &identityV1.GetRoleRequest{QueryBy: &identityV1.GetRoleRequest_Id{Id: roleID}})
+	aRole, err := r.Get(ctx, &permissionV1.GetRoleRequest{QueryBy: &permissionV1.GetRoleRequest_Id{Id: roleID}})
 	if err != nil {
 		return false, err
 	}
 
 	// 确认角色是否为开启状态
-	if aRole.GetStatus() != identityV1.Role_ON {
-		return false, identityV1.ErrorForbidden("角色未启用，禁止分配")
+	if aRole.GetStatus() != permissionV1.Role_ON {
+		return false, permissionV1.ErrorForbidden("角色未启用，禁止分配")
 	}
 
 	metadata, err := r.roleMetadataRepo.Get(ctx, roleID)
@@ -688,17 +688,17 @@ func (r *RoleRepo) CanAssignRole(ctx context.Context, roleID uint32) (bool, erro
 
 	// 确认角色是否为模板角色
 	if metadata.GetIsTemplate() {
-		return false, identityV1.ErrorForbidden("角色模板不可分配")
+		return false, permissionV1.ErrorForbidden("角色模板不可分配")
 	}
 
 	// 确认角色是否为阻断同步角色
-	if metadata.GetSyncPolicy() == identityV1.RoleMetadata_BLOCKED {
-		return false, identityV1.ErrorForbidden("该角色为阻断同步角色，禁止分配")
+	if metadata.GetSyncPolicy() == permissionV1.RoleMetadata_BLOCKED {
+		return false, permissionV1.ErrorForbidden("该角色为阻断同步角色，禁止分配")
 	}
 
 	// 确认角色是否为平台管理员模板角色
 	if metadata.GetTemplateFor() == constants.PlatformAdminRoleCode {
-		return false, identityV1.ErrorForbidden("平台管理员模板角色禁止分配")
+		return false, permissionV1.ErrorForbidden("平台管理员模板角色禁止分配")
 	}
 
 	return true, nil
