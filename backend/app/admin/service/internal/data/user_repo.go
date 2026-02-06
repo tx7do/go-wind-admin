@@ -625,9 +625,9 @@ func (r *userRepo) Update(ctx context.Context, req *identityV1.UpdateUserRequest
 		}
 	}()
 
-	var entitiy *identityV1.User
+	var entity *identityV1.User
 	builder := tx.User.UpdateOneID(req.GetId())
-	entitiy, err = r.repository.UpdateOne(ctx, builder, req.Data, req.GetUpdateMask(),
+	entity, err = r.repository.UpdateOne(ctx, builder, req.Data, req.GetUpdateMask(),
 		func(dto *identityV1.User) {
 			builder.
 				SetNillableNickname(req.Data.Nickname).
@@ -664,7 +664,7 @@ func (r *userRepo) Update(ctx context.Context, req *identityV1.UpdateUserRequest
 	switch constants.DefaultUserTenantRelationType {
 	case constants.UserTenantRelationNone, constants.UserTenantRelationOneToOne:
 		if err = r.assignUserRelations(ctx, tx,
-			entitiy.GetTenantId(),
+			entity.GetTenantId(),
 			req.GetId(),
 			req.GetData().GetRoleIds(),
 			req.GetData().GetOrgUnitIds(),
@@ -673,7 +673,7 @@ func (r *userRepo) Update(ctx context.Context, req *identityV1.UpdateUserRequest
 		}
 	case constants.UserTenantRelationOneToMany:
 		if err = r.assignMembershipRelations(ctx, tx,
-			entitiy.GetTenantId(),
+			entity.GetTenantId(),
 			req.GetId(),
 			req.GetData().GetRoleIds(),
 			req.GetData().GetOrgUnitIds(),
