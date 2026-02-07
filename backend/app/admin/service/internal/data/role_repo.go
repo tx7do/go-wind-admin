@@ -30,6 +30,7 @@ type RoleRepo struct {
 
 	mapper          *mapper.CopierMapper[permissionV1.Role, ent.Role]
 	statusConverter *mapper.EnumTypeConverter[permissionV1.Role_Status, role.Status]
+	typeConverter   *mapper.EnumTypeConverter[permissionV1.Role_Type, role.Type]
 
 	repository *entCrud.Repository[
 		ent.RoleQuery, ent.RoleSelect,
@@ -60,6 +61,10 @@ func NewRoleRepo(
 			permissionV1.Role_Status_name,
 			permissionV1.Role_Status_value,
 		),
+		typeConverter: mapper.NewEnumTypeConverter[permissionV1.Role_Type, role.Type](
+			permissionV1.Role_Type_name,
+			permissionV1.Role_Type_value,
+		),
 		permissionRepo:     permissionRepo,
 		rolePermissionRepo: rolePermissionRepo,
 		roleMetadataRepo:   roleMetadataRepo,
@@ -84,6 +89,7 @@ func (r *RoleRepo) init() {
 	r.mapper.AppendConverters(copierutil.NewTimeTimestamppbConverterPair())
 
 	r.mapper.AppendConverters(r.statusConverter.NewConverterPair())
+	r.mapper.AppendConverters(r.typeConverter.NewConverterPair())
 }
 
 // Count 统计角色数量
@@ -340,6 +346,8 @@ func (r *RoleRepo) CreateTenantRoleFromTemplate(ctx context.Context, tx *ent.Tx,
 	roleTemplate.Id = nil
 	roleTemplate.Name = trans.Ptr(constants.DefaultTenantManagerRoleName)
 	roleTemplate.Code = trans.Ptr(constants.ExtractRoleCodeFromTemplate(roleTemplate.GetCode()))
+	roleTemplate.Type = trans.Ptr(permissionV1.Role_TENANT)
+	roleTemplate.IsProtected = trans.Ptr(true)
 	roleTemplate.TenantId = trans.Ptr(tenantID)
 	roleTemplate.CreatedBy = trans.Ptr(operatorID)
 	roleTemplate.CreatedAt = nil
@@ -397,7 +405,7 @@ func (r *RoleRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *permissio
 		SetNillableCode(data.Code).
 		SetNillableSortOrder(data.SortOrder).
 		SetNillableIsProtected(data.IsProtected).
-		SetNillableIsSystem(data.IsSystem).
+		SetNillableType(r.typeConverter.ToEntity(data.Type)).
 		SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
 		SetNillableDescription(data.Description).
 		SetNillableCreatedBy(data.CreatedBy).
@@ -414,13 +422,18 @@ func (r *RoleRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *permissio
 	}
 
 	// 创建角色元数据
+	var isTemplate bool
 	var scope *permissionV1.RoleMetadata_Scope
-	if data.GetIsSystem() {
+	switch data.GetType() {
+	case permissionV1.Role_SYSTEM:
 		scope = permissionV1.RoleMetadata_PLATFORM.Enum()
-	} else {
+	case permissionV1.Role_TEMPLATE:
+		scope = permissionV1.RoleMetadata_PLATFORM.Enum()
+		isTemplate = true
+	case permissionV1.Role_TENANT:
 		scope = permissionV1.RoleMetadata_TENANT.Enum()
 	}
-	isTemplate := constants.IsTemplateRoleCode(data.GetCode())
+
 	var templateFor string
 	if isTemplate {
 		templateFor = constants.ExtractRoleCodeFromTemplate(data.GetCode())
@@ -499,7 +512,7 @@ func (r *RoleRepo) Update(ctx context.Context, req *permissionV1.UpdateRoleReque
 				SetNillableCode(req.Data.Code).
 				SetNillableSortOrder(req.Data.SortOrder).
 				SetNillableIsProtected(req.Data.IsProtected).
-				SetNillableIsSystem(req.Data.IsSystem).
+				SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 				SetNillableDescription(req.Data.Description).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
@@ -565,9 +578,6 @@ func (r *RoleRepo) Delete(ctx context.Context, req *permissionV1.DeleteRoleReque
 
 	// 保护角色禁止删除
 	if ret.IsProtected != nil && *ret.IsProtected {
-		return permissionV1.ErrorForbidden("protected role cannot be deleted")
-	}
-	if ret.IsSystem != nil && *ret.IsSystem {
 		return permissionV1.ErrorForbidden("protected role cannot be deleted")
 	}
 

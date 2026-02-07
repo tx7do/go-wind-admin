@@ -20,6 +20,7 @@ import (
 	"go-wind-admin/pkg/constants"
 	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
+	"go-wind-admin/pkg/utils"
 )
 
 type RoleService struct {
@@ -164,8 +165,8 @@ func (s *RoleService) Create(ctx context.Context, req *permissionV1.CreateRoleRe
 
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
 
-	if operator.GetTenantId() == 0 {
-		req.Data.IsSystem = nil
+	if operator.GetTenantId() > 0 && req.Data.GetType() != permissionV1.Role_TENANT {
+		req.Data.Type = trans.Ptr(permissionV1.Role_TENANT)
 	}
 
 	if err = s.roleRepo.Create(ctx, req); err != nil {
@@ -196,8 +197,39 @@ func (s *RoleService) Update(ctx context.Context, req *permissionV1.UpdateRoleRe
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}
 
-	if operator.GetTenantId() == 0 {
-		req.Data.IsSystem = nil
+	if operator.GetTenantId() > 0 && req.Data.GetType() != permissionV1.Role_TENANT {
+		req.Data.Type = trans.Ptr(permissionV1.Role_TENANT)
+	}
+
+	r, err := s.roleRepo.Get(ctx, &permissionV1.GetRoleRequest{
+		QueryBy: &permissionV1.GetRoleRequest_Id{
+			Id: req.Data.GetId(),
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// 非系统管理员禁止修改系统角色
+	if r.GetType() == permissionV1.Role_SYSTEM && operator.GetTenantId() > 0 {
+		return nil, adminV1.ErrorForbidden("no permission to update system role")
+	}
+
+	// 保护角色字段不可修改
+	if r.GetIsProtected() {
+		if len(req.GetUpdateMask().Paths) > 0 {
+			req.GetUpdateMask().Paths = utils.FilterBlacklist(req.GetUpdateMask().Paths, []string{
+				"is_protected",
+				"type",
+				"status",
+				"code",
+			})
+		} else {
+			req.Data.IsProtected = nil
+			req.Data.Type = nil
+			req.Data.Status = nil
+			req.Data.Code = nil
+		}
 	}
 
 	if err = s.roleRepo.Update(ctx, req); err != nil {

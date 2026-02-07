@@ -50,6 +50,13 @@ message Role {
     ON = 1;          // 启用
   }
 
+  // 角色类型
+  enum Type {
+    SYSTEM = 0;     // 系统内置角色
+    TEMPLATE = 1;   // 角色模板
+    TENANT = 2;     // 租户角色
+  }
+
   optional uint32 id = 1 [
     json_name = "id",
     (gnostic.openapi.v3.property) = {description: "角色ID"}
@@ -88,10 +95,10 @@ message Role {
     (gnostic.openapi.v3.property) = {description: "受保护角色，仅平台管理员可修改"}
   ];  // 受保护角色，仅平台管理员可修改
 
-  optional bool is_system = 8 [
-    json_name = "isSystem",
-    (gnostic.openapi.v3.property) = {description: "系统内置角色，仅平台管理员可修改"}
-  ];  // 系统内置角色
+  optional Type type = 8 [
+    json_name = "type",
+    (gnostic.openapi.v3.property) = {description: "角色类型"}
+  ];  // 角色类型
 
   repeated uint32 permissions = 10 [
     json_name = "permissions",
@@ -121,25 +128,53 @@ message Role {
 message RoleOverride {
   // 权限点覆盖
   message PermissionDelta {
-    repeated string added_permissions = 1;   // 租户额外增加的权限
-    repeated string removed_permissions = 2; // 租户明确禁用的权限（即便模板有，也禁用）
+    repeated string added_permissions = 1 [
+      json_name = "addedPermissions",
+      (gnostic.openapi.v3.property) = {description: "租户额外增加的权限"}
+    ]; // 租户额外增加的权限
+
+    repeated string removed_permissions = 2 [
+      json_name = "removedPermissions",
+      (gnostic.openapi.v3.property) = {description: "租户明确禁用的权限（即便模板有，也禁用）"}
+    ]; // 租户明确禁用的权限（即便模板有，也禁用）
   }
 
-  PermissionDelta permissions = 1;
+  PermissionDelta permissions = 1; // 权限点覆盖
 
   // 基础字段修改（如果为空则沿用模板）
-  optional string display_name = 2;
-  optional string description = 3;
+  optional string display_name = 2 [
+    json_name = "displayName",
+    (gnostic.openapi.v3.property) = {description: "显示名称"}
+  ]; // 显示名称
+
+  optional string description = 3 [
+    json_name = "description",
+    (gnostic.openapi.v3.property) = {description: "描述"}
+  ]; // 描述
 
   // 扩展配置
-  map<string, string> extended_settings = 4; // 存储如 "ui_color": "#FF0000"
+  map<string, string> extended_settings = 4 [
+    json_name = "extendedSettings",
+    (gnostic.openapi.v3.property) = {description: "扩展配置，存储如 ui_color: #FF0000"}
+  ]; // 存储如 "ui_color": "#FF0000"
 
   // 策略覆盖
   message SecurityPolicy {
-    bool force_mfa = 1;
-    repeated string ip_allow_list = 2;
+    bool force_mfa = 1 [
+      json_name = "forceMfa",
+      (gnostic.openapi.v3.property) = {description: "强制多因素认证"}
+    ]; // 强制多因素认证
+
+    repeated string ip_allow_list = 2 [
+      json_name = "ipAllowList",
+      (gnostic.openapi.v3.property) = {description: "IP 允许列表"}
+    ]; // IP 允许列表
   }
-  SecurityPolicy security_policy = 5;
+
+  SecurityPolicy security_policy = 5 [
+    json_name = "securityPolicy",
+    (gnostic.openapi.v3.property) = {description: "安全策略覆盖"}
+  ]; // 安全策略覆盖
 }
 
 // 角色元数据

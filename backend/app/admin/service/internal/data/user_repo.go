@@ -27,6 +27,7 @@ import (
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
 	"go-wind-admin/pkg/constants"
+	"go-wind-admin/pkg/utils"
 )
 
 type UserRepo interface {
@@ -582,22 +583,6 @@ func (r *userRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *identityV
 	return r.mapper.ToDTO(entity), nil
 }
 
-func FilterBlacklist(data []string, blacklist []string) []string {
-	bm := make(map[string]struct{}, len(blacklist))
-	for _, s := range blacklist {
-		bm[s] = struct{}{}
-	}
-
-	n := 0
-	for _, x := range data {
-		if _, found := bm[x]; !found {
-			data[n] = x
-			n++
-		}
-	}
-	return data[:n]
-}
-
 // Update 更新用户
 func (r *userRepo) Update(ctx context.Context, req *identityV1.UpdateUserRequest) (err error) {
 	if req == nil || req.Data == nil {
@@ -668,7 +653,7 @@ func (r *userRepo) Update(ctx context.Context, req *identityV1.UpdateUserRequest
 	}
 	positionIds = sliceutil.Unique(positionIds)
 
-	req.GetUpdateMask().Paths = FilterBlacklist(req.GetUpdateMask().Paths, []string{
+	req.GetUpdateMask().Paths = utils.FilterBlacklist(req.GetUpdateMask().Paths, []string{
 		"role_ids",
 		"position_ids",
 		"org_unit_ids",

@@ -42,8 +42,8 @@ const (
 	FieldCode = "code"
 	// FieldIsProtected holds the string denoting the is_protected field in the database.
 	FieldIsProtected = "is_protected"
-	// FieldIsSystem holds the string denoting the is_system field in the database.
-	FieldIsSystem = "is_system"
+	// FieldType holds the string denoting the type field in the database.
+	FieldType = "type"
 	// Table holds the table name of the role in the database.
 	Table = "sys_roles"
 )
@@ -65,7 +65,7 @@ var Columns = []string{
 	FieldName,
 	FieldCode,
 	FieldIsProtected,
-	FieldIsSystem,
+	FieldType,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -96,8 +96,6 @@ var (
 	CodeValidator func(string) error
 	// DefaultIsProtected holds the default value on creation for the "is_protected" field.
 	DefaultIsProtected bool
-	// DefaultIsSystem holds the default value on creation for the "is_system" field.
-	DefaultIsSystem bool
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
@@ -125,6 +123,33 @@ func StatusValidator(s Status) error {
 		return nil
 	default:
 		return fmt.Errorf("role: invalid enum value for status field: %q", s)
+	}
+}
+
+// Type defines the type for the "type" enum field.
+type Type string
+
+// TypeTenant is the default value of the Type enum.
+const DefaultType = TypeTenant
+
+// Type values.
+const (
+	TypeSystem   Type = "SYSTEM"
+	TypeTemplate Type = "TEMPLATE"
+	TypeTenant   Type = "TENANT"
+)
+
+func (_type Type) String() string {
+	return string(_type)
+}
+
+// TypeValidator is a validator for the "type" field enum values. It is called by the builders before save.
+func TypeValidator(_type Type) error {
+	switch _type {
+	case TypeSystem, TypeTemplate, TypeTenant:
+		return nil
+	default:
+		return fmt.Errorf("role: invalid enum value for type field: %q", _type)
 	}
 }
 
@@ -206,7 +231,7 @@ func ByIsProtected(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIsProtected, opts...).ToFunc()
 }
 
-// ByIsSystem orders the results by the is_system field.
-func ByIsSystem(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldIsSystem, opts...).ToFunc()
+// ByType orders the results by the type field.
+func ByType(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldType, opts...).ToFunc()
 }

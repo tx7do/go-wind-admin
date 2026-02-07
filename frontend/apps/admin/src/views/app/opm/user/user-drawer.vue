@@ -93,6 +93,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
             // parent_id: 0,
             status: 'ON',
             tenant_id: userViewStore.currentTenantId ?? 0,
+            type__not: 'TEMPLATE',
           });
 
           return result.items;

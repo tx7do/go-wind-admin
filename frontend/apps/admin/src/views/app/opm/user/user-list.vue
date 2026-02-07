@@ -100,6 +100,8 @@ const formOptions: VbenFormProps = {
         api: async () => {
           const result = await roleStore.listRole(undefined, {
             status: 'ON',
+            type__not: 'TEMPLATE',
+            tenant_id: userViewStore.currentTenantId ?? 0,
           });
           return result.items;
         },
@@ -127,6 +129,7 @@ const formOptions: VbenFormProps = {
           const result = await positionStore.listPosition(undefined, {
             status: 'ON',
             org_unit_id: userViewStore.currentOrgUnitId,
+            tenant_id: userViewStore.currentTenantId ?? 0,
           });
           return result.items;
         },

@@ -888,10 +888,6 @@ func init() {
 	roleDescIsProtected := roleFields[2].Descriptor()
 	// role.DefaultIsProtected holds the default value on creation for the is_protected field.
 	role.DefaultIsProtected = roleDescIsProtected.Default.(bool)
-	// roleDescIsSystem is the schema descriptor for is_system field.
-	roleDescIsSystem := roleFields[3].Descriptor()
-	// role.DefaultIsSystem holds the default value on creation for the is_system field.
-	role.DefaultIsSystem = roleDescIsSystem.Default.(bool)
 	// roleDescID is the schema descriptor for id field.
 	roleDescID := roleMixinFields0[0].Descriptor()
 	// role.IDValidator is a validator for the "id" field. It is called by the builders before save.

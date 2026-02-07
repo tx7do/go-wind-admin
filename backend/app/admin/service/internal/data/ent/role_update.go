@@ -285,16 +285,16 @@ func (_u *RoleUpdate) SetNillableIsProtected(v *bool) *RoleUpdate {
 	return _u
 }
 
-// SetIsSystem sets the "is_system" field.
-func (_u *RoleUpdate) SetIsSystem(v bool) *RoleUpdate {
-	_u.mutation.SetIsSystem(v)
+// SetType sets the "type" field.
+func (_u *RoleUpdate) SetType(v role.Type) *RoleUpdate {
+	_u.mutation.SetType(v)
 	return _u
 }
 
-// SetNillableIsSystem sets the "is_system" field if the given value is not nil.
-func (_u *RoleUpdate) SetNillableIsSystem(v *bool) *RoleUpdate {
+// SetNillableType sets the "type" field if the given value is not nil.
+func (_u *RoleUpdate) SetNillableType(v *role.Type) *RoleUpdate {
 	if v != nil {
-		_u.SetIsSystem(*v)
+		_u.SetType(*v)
 	}
 	return _u
 }
@@ -346,6 +346,11 @@ func (_u *RoleUpdate) check() error {
 	if v, ok := _u.mutation.Code(); ok {
 		if err := role.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "Role.code": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.GetType(); ok {
+		if err := role.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Role.type": %w`, err)}
 		}
 	}
 	return nil
@@ -453,8 +458,8 @@ func (_u *RoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.IsProtected(); ok {
 		_spec.SetField(role.FieldIsProtected, field.TypeBool, value)
 	}
-	if value, ok := _u.mutation.IsSystem(); ok {
-		_spec.SetField(role.FieldIsSystem, field.TypeBool, value)
+	if value, ok := _u.mutation.GetType(); ok {
+		_spec.SetField(role.FieldType, field.TypeEnum, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -734,16 +739,16 @@ func (_u *RoleUpdateOne) SetNillableIsProtected(v *bool) *RoleUpdateOne {
 	return _u
 }
 
-// SetIsSystem sets the "is_system" field.
-func (_u *RoleUpdateOne) SetIsSystem(v bool) *RoleUpdateOne {
-	_u.mutation.SetIsSystem(v)
+// SetType sets the "type" field.
+func (_u *RoleUpdateOne) SetType(v role.Type) *RoleUpdateOne {
+	_u.mutation.SetType(v)
 	return _u
 }
 
-// SetNillableIsSystem sets the "is_system" field if the given value is not nil.
-func (_u *RoleUpdateOne) SetNillableIsSystem(v *bool) *RoleUpdateOne {
+// SetNillableType sets the "type" field if the given value is not nil.
+func (_u *RoleUpdateOne) SetNillableType(v *role.Type) *RoleUpdateOne {
 	if v != nil {
-		_u.SetIsSystem(*v)
+		_u.SetType(*v)
 	}
 	return _u
 }
@@ -808,6 +813,11 @@ func (_u *RoleUpdateOne) check() error {
 	if v, ok := _u.mutation.Code(); ok {
 		if err := role.CodeValidator(v); err != nil {
 			return &ValidationError{Name: "code", err: fmt.Errorf(`ent: validator failed for field "Role.code": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.GetType(); ok {
+		if err := role.TypeValidator(v); err != nil {
+			return &ValidationError{Name: "type", err: fmt.Errorf(`ent: validator failed for field "Role.type": %w`, err)}
 		}
 	}
 	return nil
@@ -932,8 +942,8 @@ func (_u *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) {
 	if value, ok := _u.mutation.IsProtected(); ok {
 		_spec.SetField(role.FieldIsProtected, field.TypeBool, value)
 	}
-	if value, ok := _u.mutation.IsSystem(); ok {
-		_spec.SetField(role.FieldIsSystem, field.TypeBool, value)
+	if value, ok := _u.mutation.GetType(); ok {
+		_spec.SetField(role.FieldType, field.TypeEnum, value)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &Role{config: _u.config}

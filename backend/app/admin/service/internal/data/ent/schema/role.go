@@ -47,9 +47,14 @@ func (Role) Fields() []ent.Field {
 			Default(false).
 			Nillable(),
 
-		field.Bool("is_system").
-			Comment("是否系统角色（平台预置，不可删除）").
-			Default(false).
+		field.Enum("type").
+			Comment("角色类型").
+			NamedValues(
+				"System", "SYSTEM",
+				"Template", "TEMPLATE",
+				"Tenant", "TENANT",
+			).
+			Default("TENANT").
 			Nillable(),
 	}
 }

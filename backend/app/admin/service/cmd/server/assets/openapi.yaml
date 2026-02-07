@@ -6716,9 +6716,14 @@ components:
                 isProtected:
                     type: boolean
                     description: 受保护角色，仅平台管理员可修改
-                isSystem:
-                    type: boolean
-                    description: 系统内置角色，仅平台管理员可修改
+                type:
+                    enum:
+                        - SYSTEM
+                        - TEMPLATE
+                        - TENANT
+                    type: string
+                    description: 角色类型
+                    format: enum
                 permissions:
                     type: array
                     items:

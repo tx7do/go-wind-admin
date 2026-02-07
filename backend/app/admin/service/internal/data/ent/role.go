@@ -46,8 +46,8 @@ type Role struct {
 	Code *string `json:"code,omitempty"`
 	// 是否受保护的角色
 	IsProtected *bool `json:"is_protected,omitempty"`
-	// 是否系统角色（平台预置，不可删除）
-	IsSystem     *bool `json:"is_system,omitempty"`
+	// 角色类型
+	Type         *role.Type `json:"type,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -56,11 +56,11 @@ func (*Role) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case role.FieldIsProtected, role.FieldIsSystem:
+		case role.FieldIsProtected:
 			values[i] = new(sql.NullBool)
 		case role.FieldID, role.FieldCreatedBy, role.FieldUpdatedBy, role.FieldDeletedBy, role.FieldSortOrder, role.FieldTenantID:
 			values[i] = new(sql.NullInt64)
-		case role.FieldRemark, role.FieldDescription, role.FieldStatus, role.FieldName, role.FieldCode:
+		case role.FieldRemark, role.FieldDescription, role.FieldStatus, role.FieldName, role.FieldCode, role.FieldType:
 			values[i] = new(sql.NullString)
 		case role.FieldCreatedAt, role.FieldUpdatedAt, role.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
@@ -183,12 +183,12 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 				_m.IsProtected = new(bool)
 				*_m.IsProtected = value.Bool
 			}
-		case role.FieldIsSystem:
-			if value, ok := values[i].(*sql.NullBool); !ok {
-				return fmt.Errorf("unexpected type %T for field is_system", values[i])
+		case role.FieldType:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field type", values[i])
 			} else if value.Valid {
-				_m.IsSystem = new(bool)
-				*_m.IsSystem = value.Bool
+				_m.Type = new(role.Type)
+				*_m.Type = role.Type(value.String)
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -296,8 +296,8 @@ func (_m *Role) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.IsSystem; v != nil {
-		builder.WriteString("is_system=")
+	if v := _m.Type; v != nil {
+		builder.WriteString("type=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')

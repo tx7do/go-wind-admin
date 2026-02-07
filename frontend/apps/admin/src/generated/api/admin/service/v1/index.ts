@@ -5463,7 +5463,7 @@ export type permissionservicev1_Role = {
   status?: permissionservicev1_Role_Status;
   description?: string;
   isProtected?: boolean;
-  isSystem?: boolean;
+  type?: permissionservicev1_Role_Type;
   permissions: number[] | undefined;
   tenantId?: number;
   tenantName?: string;
@@ -5479,6 +5479,11 @@ export type permissionservicev1_Role = {
 export type permissionservicev1_Role_Status =
   | "OFF"
   | "ON";
+// 角色类型
+export type permissionservicev1_Role_Type =
+  | "SYSTEM"
+  | "TEMPLATE"
+  | "TENANT";
 // 角色数据 - 请求
 export type permissionservicev1_GetRoleRequest = {
   id?: number;

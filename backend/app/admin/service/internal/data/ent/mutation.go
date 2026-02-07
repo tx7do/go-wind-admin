@@ -46242,7 +46242,7 @@ type RoleMutation struct {
 	name          *string
 	code          *string
 	is_protected  *bool
-	is_system     *bool
+	_type         *role.Type
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Role, error)
@@ -47118,40 +47118,40 @@ func (m *RoleMutation) ResetIsProtected() {
 	m.is_protected = nil
 }
 
-// SetIsSystem sets the "is_system" field.
-func (m *RoleMutation) SetIsSystem(b bool) {
-	m.is_system = &b
+// SetType sets the "type" field.
+func (m *RoleMutation) SetType(r role.Type) {
+	m._type = &r
 }
 
-// IsSystem returns the value of the "is_system" field in the mutation.
-func (m *RoleMutation) IsSystem() (r bool, exists bool) {
-	v := m.is_system
+// GetType returns the value of the "type" field in the mutation.
+func (m *RoleMutation) GetType() (r role.Type, exists bool) {
+	v := m._type
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIsSystem returns the old "is_system" field's value of the Role entity.
+// OldType returns the old "type" field's value of the Role entity.
 // If the Role object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *RoleMutation) OldIsSystem(ctx context.Context) (v *bool, err error) {
+func (m *RoleMutation) OldType(ctx context.Context) (v *role.Type, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIsSystem is only allowed on UpdateOne operations")
+		return v, errors.New("OldType is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIsSystem requires an ID field in the mutation")
+		return v, errors.New("OldType requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIsSystem: %w", err)
+		return v, fmt.Errorf("querying old value for OldType: %w", err)
 	}
-	return oldValue.IsSystem, nil
+	return oldValue.Type, nil
 }
 
-// ResetIsSystem resets all changes to the "is_system" field.
-func (m *RoleMutation) ResetIsSystem() {
-	m.is_system = nil
+// ResetType resets all changes to the "type" field.
+func (m *RoleMutation) ResetType() {
+	m._type = nil
 }
 
 // Where appends a list predicates to the RoleMutation builder.
@@ -47231,8 +47231,8 @@ func (m *RoleMutation) Fields() []string {
 	if m.is_protected != nil {
 		fields = append(fields, role.FieldIsProtected)
 	}
-	if m.is_system != nil {
-		fields = append(fields, role.FieldIsSystem)
+	if m._type != nil {
+		fields = append(fields, role.FieldType)
 	}
 	return fields
 }
@@ -47270,8 +47270,8 @@ func (m *RoleMutation) Field(name string) (ent.Value, bool) {
 		return m.Code()
 	case role.FieldIsProtected:
 		return m.IsProtected()
-	case role.FieldIsSystem:
-		return m.IsSystem()
+	case role.FieldType:
+		return m.GetType()
 	}
 	return nil, false
 }
@@ -47309,8 +47309,8 @@ func (m *RoleMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldCode(ctx)
 	case role.FieldIsProtected:
 		return m.OldIsProtected(ctx)
-	case role.FieldIsSystem:
-		return m.OldIsSystem(ctx)
+	case role.FieldType:
+		return m.OldType(ctx)
 	}
 	return nil, fmt.Errorf("unknown Role field %s", name)
 }
@@ -47418,12 +47418,12 @@ func (m *RoleMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIsProtected(v)
 		return nil
-	case role.FieldIsSystem:
-		v, ok := value.(bool)
+	case role.FieldType:
+		v, ok := value.(role.Type)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetIsSystem(v)
+		m.SetType(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Role field %s", name)
@@ -47654,8 +47654,8 @@ func (m *RoleMutation) ResetField(name string) error {
 	case role.FieldIsProtected:
 		m.ResetIsProtected()
 		return nil
-	case role.FieldIsSystem:
-		m.ResetIsSystem()
+	case role.FieldType:
+		m.ResetType()
 		return nil
 	}
 	return fmt.Errorf("unknown Role field %s", name)

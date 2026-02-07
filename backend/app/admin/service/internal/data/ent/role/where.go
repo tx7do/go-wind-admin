@@ -119,11 +119,6 @@ func IsProtected(v bool) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldIsProtected, v))
 }
 
-// IsSystem applies equality check predicate on the "is_system" field. It's identical to IsSystemEQ.
-func IsSystem(v bool) predicate.Role {
-	return predicate.Role(sql.FieldEQ(FieldIsSystem, v))
-}
-
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldCreatedAt, v))
@@ -854,14 +849,24 @@ func IsProtectedNEQ(v bool) predicate.Role {
 	return predicate.Role(sql.FieldNEQ(FieldIsProtected, v))
 }
 
-// IsSystemEQ applies the EQ predicate on the "is_system" field.
-func IsSystemEQ(v bool) predicate.Role {
-	return predicate.Role(sql.FieldEQ(FieldIsSystem, v))
+// TypeEQ applies the EQ predicate on the "type" field.
+func TypeEQ(v Type) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldType, v))
 }
 
-// IsSystemNEQ applies the NEQ predicate on the "is_system" field.
-func IsSystemNEQ(v bool) predicate.Role {
-	return predicate.Role(sql.FieldNEQ(FieldIsSystem, v))
+// TypeNEQ applies the NEQ predicate on the "type" field.
+func TypeNEQ(v Type) predicate.Role {
+	return predicate.Role(sql.FieldNEQ(FieldType, v))
+}
+
+// TypeIn applies the In predicate on the "type" field.
+func TypeIn(vs ...Type) predicate.Role {
+	return predicate.Role(sql.FieldIn(FieldType, vs...))
+}
+
+// TypeNotIn applies the NotIn predicate on the "type" field.
+func TypeNotIn(vs ...Type) predicate.Role {
+	return predicate.Role(sql.FieldNotIn(FieldType, vs...))
 }
 
 // And groups predicates with the AND operator between them.

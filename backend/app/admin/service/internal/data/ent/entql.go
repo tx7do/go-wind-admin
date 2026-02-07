@@ -904,7 +904,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			role.FieldName:        {Type: field.TypeString, Column: role.FieldName},
 			role.FieldCode:        {Type: field.TypeString, Column: role.FieldCode},
 			role.FieldIsProtected: {Type: field.TypeBool, Column: role.FieldIsProtected},
-			role.FieldIsSystem:    {Type: field.TypeBool, Column: role.FieldIsSystem},
+			role.FieldType:        {Type: field.TypeEnum, Column: role.FieldType},
 		},
 	}
 	graph.Nodes[30] = &sqlgraph.Node{
@@ -5013,9 +5013,9 @@ func (f *RoleFilter) WhereIsProtected(p entql.BoolP) {
 	f.Where(p.Field(role.FieldIsProtected))
 }
 
-// WhereIsSystem applies the entql bool predicate on the is_system field.
-func (f *RoleFilter) WhereIsSystem(p entql.BoolP) {
-	f.Where(p.Field(role.FieldIsSystem))
+// WhereType applies the entql string predicate on the type field.
+func (f *RoleFilter) WhereType(p entql.StringP) {
+	f.Where(p.Field(role.FieldType))
 }
 
 // addPredicate implements the predicateAdder interface.
