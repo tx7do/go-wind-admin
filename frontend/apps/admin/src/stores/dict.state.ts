@@ -83,7 +83,7 @@ export const useDictStore = defineStore('dict', () => {
   /**
    * 创建字典类型
    */
-  async function createDictType(values: object) {
+  async function createDictType(values: Record<string, any> = {}) {
     return await dictTypeService.Create({
       // @ts-ignore proto generated code is error.
       data: {
@@ -95,7 +95,7 @@ export const useDictStore = defineStore('dict', () => {
   /**
    * 创建字典项
    */
-  async function createDictEntry(values: object) {
+  async function createDictEntry(values: Record<string, any> = {}) {
     return await dictEntryService.Create({
       // @ts-ignore proto generated code is error.
       data: {
@@ -107,7 +107,7 @@ export const useDictStore = defineStore('dict', () => {
   /**
    * 更新字典类型
    */
-  async function updateDictType(id: number, values: object) {
+  async function updateDictType(id: number, values: Record<string, any> = {}) {
     return await dictTypeService.Update({
       id,
       // @ts-ignore proto generated code is error.
@@ -122,7 +122,7 @@ export const useDictStore = defineStore('dict', () => {
   /**
    * 更新字典项
    */
-  async function updateDictEntry(id: number, values: object) {
+  async function updateDictEntry(id: number, values: Record<string, any> = {}) {
     return await dictEntryService.Update({
       id,
       // @ts-ignore proto generated code is error.

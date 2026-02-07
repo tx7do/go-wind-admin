@@ -58,7 +58,7 @@ export const useInternalMessageStore = defineStore('internal_message', () => {
   /**
    * 更新消息
    */
-  async function updateMessage(id: number, values: object) {
+  async function updateMessage(id: number, values: Record<string, any> = {}) {
     return await internalMessageService.UpdateMessage({
       id,
       data: {

@@ -49,7 +49,7 @@ export const usePermissionGroupStore = defineStore('permission-group', () => {
   /**
    * 创建权限点分组
    */
-  async function createPermissionGroup(values: object) {
+  async function createPermissionGroup(values: Record<string, any> = {}) {
     return await service.Create({
       // @ts-ignore proto generated code is error.
       data: {
@@ -61,7 +61,10 @@ export const usePermissionGroupStore = defineStore('permission-group', () => {
   /**
    * 更新权限点分组
    */
-  async function updatePermissionGroup(id: number, values: object) {
+  async function updatePermissionGroup(
+    id: number,
+    values: Record<string, any> = {},
+  ) {
     return await service.Update({
       id,
       // @ts-ignore proto generated code is error.

@@ -49,7 +49,7 @@ export const usePositionStore = defineStore('position', () => {
   /**
    * 创建职位
    */
-  async function createPosition(values: object) {
+  async function createPosition(values: Record<string, any> = {}) {
     return await service.Create({
       data: {
         ...values,
@@ -60,7 +60,7 @@ export const usePositionStore = defineStore('position', () => {
   /**
    * 更新职位
    */
-  async function updatePosition(id: number, values: object) {
+  async function updatePosition(id: number, values: Record<string, any> = {}) {
     return await service.Update({
       id,
       data: {

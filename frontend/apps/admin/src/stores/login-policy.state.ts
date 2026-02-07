@@ -49,7 +49,7 @@ export const useLoginPolicyStore = defineStore('login-policy', () => {
   /**
    * 创建登录策略
    */
-  async function createLoginPolicy(values: object) {
+  async function createLoginPolicy(values: Record<string, any> = {}) {
     return await service.Create({
       data: {
         ...values,
@@ -60,7 +60,10 @@ export const useLoginPolicyStore = defineStore('login-policy', () => {
   /**
    * 更新登录策略
    */
-  async function updateLoginPolicy(id: number, values: object) {
+  async function updateLoginPolicy(
+    id: number,
+    values: Record<string, any> = {},
+  ) {
     return await service.Update({
       id,
       data: {

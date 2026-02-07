@@ -48,7 +48,7 @@ export const useTaskStore = defineStore('task', () => {
   /**
    * 创建任务
    */
-  async function createTask(values: object) {
+  async function createTask(values: Record<string, any> = {}) {
     return await service.Create({
       data: {
         ...values,
@@ -59,7 +59,7 @@ export const useTaskStore = defineStore('task', () => {
   /**
    * 更新任务
    */
-  async function updateTask(id: number, values: object) {
+  async function updateTask(id: number, values: Record<string, any> = {}) {
     return await service.Update({
       id,
       data: {

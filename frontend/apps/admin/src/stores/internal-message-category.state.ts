@@ -47,7 +47,9 @@ export const useInternalMessageCategoryStore = defineStore(
     /**
      * 创建通知消息
      */
-    async function createInternalMessageCategory(values: object) {
+    async function createInternalMessageCategory(
+      values: Record<string, any> = {},
+    ) {
       return await service.Create({
         // @ts-ignore proto generated code is error.
         data: {
@@ -59,7 +61,10 @@ export const useInternalMessageCategoryStore = defineStore(
     /**
      * 更新通知消息
      */
-    async function updateInternalMessageCategory(id: number, values: object) {
+    async function updateInternalMessageCategory(
+      id: number,
+      values: Record<string, any> = {},
+    ) {
       return await service.Update({
         id,
         // @ts-ignore proto generated code is error.

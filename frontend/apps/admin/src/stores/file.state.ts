@@ -48,7 +48,7 @@ export const useFileStore = defineStore('file', () => {
   /**
    * 创建文件
    */
-  async function createFile(values: object) {
+  async function createFile(values: Record<string, any> = {}) {
     return await service.Create({
       data: {
         ...values,
@@ -59,7 +59,7 @@ export const useFileStore = defineStore('file', () => {
   /**
    * 更新文件
    */
-  async function updateFile(id: number, values: object) {
+  async function updateFile(id: number, values: Record<string, any> = {}) {
     return await service.Update({
       id,
       data: {

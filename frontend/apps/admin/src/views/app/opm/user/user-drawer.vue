@@ -19,11 +19,13 @@ import {
   userStatusList,
   useUserListStore,
 } from '#/stores';
+import { useUserViewStore } from '#/views/app/opm/user/user-view.state';
 
 const userListStore = useUserListStore();
 const roleStore = useRoleStore();
 const orgUnitStore = useOrgUnitStore();
 const positionStore = usePositionStore();
+const userViewStore = useUserViewStore();
 
 const data = ref();
 
@@ -90,6 +92,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
           const result = await roleStore.listRole(undefined, {
             // parent_id: 0,
             status: 'ON',
+            tenant_id: userViewStore.currentTenantId ?? 0,
           });
 
           return result.items;
@@ -114,6 +117,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
         api: async () => {
           const result = await orgUnitStore.listOrgUnit(undefined, {
             status: 'ON',
+            tenant_id: userViewStore.currentTenantId ?? 0,
           });
           orgUnitList.value = result.items ?? [];
           return result.items;

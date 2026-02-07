@@ -70,6 +70,7 @@ const [Modal, modalApi] = useVbenModal({
       });
 
       setLoading(false);
+      modalApi.close();
       return;
     }
 
@@ -79,10 +80,15 @@ const [Modal, modalApi] = useVbenModal({
         values.new_password,
       );
 
+      setLoading(false);
+      modalApi.close();
+
       notification.success({
         message: $t('ui.notification.update_status_success'),
       });
     } catch {
+      setLoading(false);
+
       notification.error({
         message: $t('ui.notification.update_status_failed'),
       });

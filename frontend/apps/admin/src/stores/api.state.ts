@@ -46,7 +46,7 @@ export const useApiStore = defineStore('api', () => {
   /**
    * 创建API
    */
-  async function createApi(values: object) {
+  async function createApi(values: Record<string, any> = {}) {
     return await service.Create({
       data: {
         ...values,
@@ -57,7 +57,7 @@ export const useApiStore = defineStore('api', () => {
   /**
    * 更新API
    */
-  async function updateApi(id: number, values: object) {
+  async function updateApi(id: number, values: Record<string, any> = {}) {
     return await service.Update({
       id,
       data: {

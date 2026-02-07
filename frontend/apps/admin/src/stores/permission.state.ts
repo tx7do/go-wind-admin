@@ -49,7 +49,7 @@ export const usePermissionStore = defineStore('permission', () => {
   /**
    * 创建权限
    */
-  async function createPermission(values: object) {
+  async function createPermission(values: Record<string, any> = {}) {
     return await service.Create({
       // @ts-ignore proto generated code is error.
       data: {
@@ -61,7 +61,10 @@ export const usePermissionStore = defineStore('permission', () => {
   /**
    * 更新权限
    */
-  async function updatePermission(id: number, values: object) {
+  async function updatePermission(
+    id: number,
+    values: Record<string, any> = {},
+  ) {
     return await service.Update({
       id,
       // @ts-ignore proto generated code is error.

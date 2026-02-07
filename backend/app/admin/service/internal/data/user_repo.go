@@ -582,6 +582,22 @@ func (r *userRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *identityV
 	return r.mapper.ToDTO(entity), nil
 }
 
+func FilterBlacklist(data []string, blacklist []string) []string {
+	bm := make(map[string]struct{}, len(blacklist))
+	for _, s := range blacklist {
+		bm[s] = struct{}{}
+	}
+
+	n := 0
+	for _, x := range data {
+		if _, found := bm[x]; !found {
+			data[n] = x
+			n++
+		}
+	}
+	return data[:n]
+}
+
 // Update 更新用户
 func (r *userRepo) Update(ctx context.Context, req *identityV1.UpdateUserRequest) (err error) {
 	if req == nil || req.Data == nil {
@@ -625,6 +641,39 @@ func (r *userRepo) Update(ctx context.Context, req *identityV1.UpdateUserRequest
 		}
 	}()
 
+	var roleIds []uint32
+	if len(req.Data.GetRoleIds()) > 0 {
+		roleIds = req.Data.GetRoleIds()
+	}
+	if req.Data.RoleId != nil && *req.Data.RoleId > 0 {
+		roleIds = append(roleIds, *req.Data.RoleId)
+	}
+	roleIds = sliceutil.Unique(roleIds)
+
+	var orgUnitIds []uint32
+	if len(req.Data.GetOrgUnitIds()) > 0 {
+		orgUnitIds = req.Data.GetOrgUnitIds()
+	}
+	if req.Data.OrgUnitId != nil && *req.Data.OrgUnitId > 0 {
+		orgUnitIds = append(orgUnitIds, *req.Data.OrgUnitId)
+	}
+	orgUnitIds = sliceutil.Unique(orgUnitIds)
+
+	var positionIds []uint32
+	if len(req.Data.GetPositionIds()) > 0 {
+		positionIds = req.Data.GetPositionIds()
+	}
+	if req.Data.PositionId != nil && *req.Data.PositionId > 0 {
+		positionIds = append(positionIds, *req.Data.PositionId)
+	}
+	positionIds = sliceutil.Unique(positionIds)
+
+	req.GetUpdateMask().Paths = FilterBlacklist(req.GetUpdateMask().Paths, []string{
+		"role_ids",
+		"position_ids",
+		"org_unit_ids",
+	})
+
 	var entity *identityV1.User
 	builder := tx.User.UpdateOneID(req.GetId())
 	entity, err = r.repository.UpdateOne(ctx, builder, req.Data, req.GetUpdateMask(),
@@ -647,14 +696,6 @@ func (r *userRepo) Update(ctx context.Context, req *identityV1.UpdateUserRequest
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetUpdatedAt(time.Now())
-
-			if req.Data.RoleIds != nil {
-				var roleIds []int
-				for _, roleId := range req.Data.GetRoleIds() {
-					roleIds = append(roleIds, int(roleId))
-				}
-				//builder.SetRoleIds(roleIds)
-			}
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(user.FieldID, req.GetId()))
@@ -666,18 +707,18 @@ func (r *userRepo) Update(ctx context.Context, req *identityV1.UpdateUserRequest
 		if err = r.assignUserRelations(ctx, tx,
 			entity.GetTenantId(),
 			req.GetId(),
-			req.GetData().GetRoleIds(),
-			req.GetData().GetOrgUnitIds(),
-			req.GetData().GetPositionIds()); err != nil {
+			roleIds,
+			orgUnitIds,
+			positionIds); err != nil {
 			return err
 		}
 	case constants.UserTenantRelationOneToMany:
 		if err = r.assignMembershipRelations(ctx, tx,
 			entity.GetTenantId(),
 			req.GetId(),
-			req.GetData().GetRoleIds(),
-			req.GetData().GetOrgUnitIds(),
-			req.GetData().GetPositionIds()); err != nil {
+			roleIds,
+			orgUnitIds,
+			positionIds); err != nil {
 			return err
 		}
 	}

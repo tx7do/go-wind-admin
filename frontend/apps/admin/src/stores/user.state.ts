@@ -10,7 +10,12 @@ import {
   type identityservicev1_User_Gender as User_Gender,
   type identityservicev1_User_Status as User_Status,
 } from '#/generated/api/admin/service/v1';
-import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
+import {
+  makeOrderBy,
+  makeQueryString,
+  makeUpdateMask,
+  omit,
+} from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
 
 export const useUserListStore = defineStore('user-list', () => {
@@ -39,6 +44,13 @@ export const useUserListStore = defineStore('user-list', () => {
     });
   }
 
+  async function countUser(formValues?: null | object) {
+    // @ts-ignore proto generated code is error.
+    return await service.Count({
+      query: makeQueryString(formValues, userStore.isTenantUser()),
+    });
+  }
+
   /**
    * 获取用户
    */
@@ -49,30 +61,32 @@ export const useUserListStore = defineStore('user-list', () => {
   /**
    * 创建用户
    */
-  async function createUser(values: object) {
+  async function createUser(values: Record<string, any> = {}) {
+    const password = values.password ?? null;
+    const cleaned = omit(values, 'password');
     return await service.Create({
       // @ts-ignore proto generated code is error.
       data: {
-        ...values,
+        ...cleaned,
       },
-      // @ts-ignore proto generated code is error.
-      password: values.password ?? null,
+      password,
     });
   }
 
   /**
    * 更新用户
    */
-  async function updateUser(id: number, values: object) {
-    const updateMask = makeUpdateMask(Object.keys(values ?? []));
+  async function updateUser(id: number, values: Record<string, any> = {}) {
+    const password = values.password ?? null;
+    const cleaned = omit(values, 'password');
+    const updateMask = makeUpdateMask(Object.keys(cleaned ?? []));
     return await service.Update({
       id,
       // @ts-ignore proto generated code is error.
       data: {
-        ...values,
+        ...cleaned,
       },
-      // @ts-ignore proto generated code is error.
-      password: values.password ?? null,
+      password,
       // @ts-ignore proto generated code is error.
       updateMask,
     });
@@ -115,6 +129,7 @@ export const useUserListStore = defineStore('user-list', () => {
     updateUser,
     deleteUser,
     editUserPassword,
+    countUser,
     userExists,
   };
 });

@@ -60,7 +60,7 @@ export const useMenuStore = defineStore('menu', () => {
     return await service.Get({ id });
   }
 
-  function prepareMenuData(values: object): Menu {
+  function prepareMenuData(values: Record<string, any> = {}): Menu {
     // eslint-disable-next-line unicorn/prefer-structured-clone
     const copyData: Menu = JSON.parse(JSON.stringify(values));
 
@@ -81,7 +81,7 @@ export const useMenuStore = defineStore('menu', () => {
   /**
    * 创建菜单
    */
-  async function createMenu(values: object) {
+  async function createMenu(values: Record<string, any> = {}) {
     const copyData = prepareMenuData(values);
 
     return await service.Create({
@@ -95,7 +95,7 @@ export const useMenuStore = defineStore('menu', () => {
   /**
    * 更新菜单
    */
-  async function updateMenu(id: number, values: object) {
+  async function updateMenu(id: number, values: Record<string, any> = {}) {
     const copyData = prepareMenuData(values);
 
     console.log('updateMenu', copyData);

@@ -215,3 +215,28 @@ export function makeUpdateMask(keys: string[]): string {
   }
   return keys.join(',');
 }
+
+/**
+ * 从对象中省略指定键，返回新对象
+ * @example 用法示例
+ * const original = { a: 1, b: 2, c: 3 };
+ * const result = omit(original, ['b', 'c']);
+ * // result 的值为 { a: 1 }
+ * @param obj 原始对象
+ * @param keys 需要省略的键或键数组
+ */
+export function omit<T extends Record<string, any>, K extends string>(
+  obj: null | T | undefined,
+  keys: K | K[],
+): Omit<T, K> {
+  if (obj === null || typeof obj !== 'object') return obj as any;
+  const result = { ...obj } as Record<string, any>;
+  const keysArr = Array.isArray(keys) ? keys : [keys];
+  for (const key of keysArr) {
+    if (Object.prototype.hasOwnProperty.call(result, key)) {
+      // eslint-disable-next-line @typescript-eslint/no-dynamic-delete
+      delete result[key];
+    }
+  }
+  return result as Omit<T, K>;
+}

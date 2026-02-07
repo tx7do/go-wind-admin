@@ -43,7 +43,7 @@ export const useLanguageStore = defineStore('language', () => {
   /**
    * 创建语言
    */
-  async function createLanguage(values: object) {
+  async function createLanguage(values: Record<string, any> = {}) {
     return await service.Create({
       data: {
         ...values,
@@ -54,7 +54,7 @@ export const useLanguageStore = defineStore('language', () => {
   /**
    * 更新语言
    */
-  async function updateLanguage(id: number, values: object) {
+  async function updateLanguage(id: number, values: Record<string, any> = {}) {
     return await service.Update({
       id,
       data: {

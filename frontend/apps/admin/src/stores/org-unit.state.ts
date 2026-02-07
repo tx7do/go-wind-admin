@@ -50,7 +50,7 @@ export const useOrgUnitStore = defineStore('org-unit', () => {
   /**
    * 创建组织单位
    */
-  async function createOrgUnit(values: object) {
+  async function createOrgUnit(values: Record<string, any> = {}) {
     return await service.Create({
       // @ts-ignore proto generated code is error.
       data: {
@@ -63,7 +63,7 @@ export const useOrgUnitStore = defineStore('org-unit', () => {
   /**
    * 更新组织单位
    */
-  async function updateOrgUnit(id: number, values: object) {
+  async function updateOrgUnit(id: number, values: Record<string, any> = {}) {
     return await service.Update({
       id,
       // @ts-ignore proto generated code is error.

@@ -49,7 +49,7 @@ export const useTenantStore = defineStore('tenant', () => {
   /**
    * 创建租户
    */
-  async function createTenant(values: object) {
+  async function createTenant(values: Record<string, any> = {}) {
     return await service.Create({
       // @ts-ignore proto generated code is error.
       data: {
@@ -62,7 +62,7 @@ export const useTenantStore = defineStore('tenant', () => {
    * 创建租户及管理员用户
    * @param values
    */
-  async function createTenantWithAdminUser(values: object) {
+  async function createTenantWithAdminUser(values: Record<string, any> = {}) {
     return await service.CreateTenantWithAdminUser(
       <CreateTenantWithAdminUserRequest>values,
     );
@@ -71,7 +71,7 @@ export const useTenantStore = defineStore('tenant', () => {
   /**
    * 更新租户
    */
-  async function updateTenant(id: number, values: object) {
+  async function updateTenant(id: number, values: Record<string, any> = {}) {
     return await service.Update({
       id,
       // @ts-ignore proto generated code is error.
