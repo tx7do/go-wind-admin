@@ -36,7 +36,7 @@ import (
 
 	//_ "github.com/tx7do/kratos-bootstrap/tracer"
 
-	"go-wind-admin/pkg/service"
+	"go-wind-admin/pkg/serviceid"
 )
 
 var version = "1.0.0"
@@ -60,8 +60,8 @@ func runApp() error {
 	ctx := bootstrap.NewContext(
 		context.Background(),
 		&conf.AppInfo{
-			Project: service.Project,
-			AppId:   service.AdminService,
+			Project: serviceid.ProjectName,
+			AppId:   serviceid.AdminService,
 			Version: version,
 		},
 	)
