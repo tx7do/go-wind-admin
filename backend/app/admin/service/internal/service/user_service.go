@@ -2,10 +2,12 @@ package service
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/go-kratos/kratos/v2/log"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/aggregator"
+	"github.com/tx7do/go-utils/sliceutil"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -20,6 +22,7 @@ import (
 	"go-wind-admin/pkg/constants"
 	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
+	"go-wind-admin/pkg/utils"
 )
 
 type UserService struct {
@@ -342,7 +345,56 @@ func (s *UserService) Create(ctx context.Context, req *identityV1.CreateUserRequ
 	}
 
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
-	req.Data.TenantId = operator.TenantId
+	if operator.GetTenantId() > 0 {
+		req.Data.TenantId = operator.TenantId
+	}
+
+	var roleIds []uint32
+	if len(req.Data.GetRoleIds()) > 0 {
+		roleIds = req.Data.GetRoleIds()
+	}
+	if req.Data.RoleId != nil && *req.Data.RoleId > 0 {
+		roleIds = append(roleIds, *req.Data.RoleId)
+	}
+	roleIds = sliceutil.Unique(roleIds)
+	if len(roleIds) == 0 {
+		s.log.Errorf("role_ids is required")
+		return nil, adminV1.ErrorBadRequest("role_ids is required")
+	}
+
+	var queryString string
+	if operator.GetTenantId() > 0 || req.Data.GetTenantId() > 0 {
+		queryString = fmt.Sprintf(`{"id__in": "[%s]", "type": "TENANT", "tenant_id": %d}`,
+			utils.NumberSliceToString(roleIds),
+			req.Data.GetTenantId(),
+		)
+	} else {
+		queryString = fmt.Sprintf(`{"id__in": "[%s]", "type": "SYSTEM"}`,
+			utils.NumberSliceToString(roleIds),
+		)
+	}
+	roles, err := s.roleRepo.List(ctx, &paginationV1.PagingRequest{
+		NoPaging: trans.Ptr(true),
+		FilteringType: &paginationV1.PagingRequest_Query{
+			Query: queryString,
+		},
+	})
+	if err != nil {
+		s.log.Errorf("query roles err: %v", err)
+		return nil, err
+	}
+
+	if len(roles.Items) != len(roleIds) {
+		s.log.Errorf("some roles not found, requested role ids: %v", roleIds)
+		return nil, adminV1.ErrorBadRequest("some roles not found")
+	}
+	if len(roles.Items) == 0 {
+		s.log.Errorf("at least one role is required")
+		return nil, adminV1.ErrorBadRequest("at least one role is required")
+	}
+
+	req.Data.RoleId = nil
+	req.Data.RoleIds = roleIds
 
 	// 创建用户
 	var user *identityV1.User
@@ -403,6 +455,57 @@ func (s *UserService) Update(ctx context.Context, req *identityV1.UpdateUserRequ
 	if req.UpdateMask != nil {
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}
+
+	if operator.GetTenantId() > 0 {
+		req.Data.TenantId = operator.TenantId
+	}
+
+	var roleIds []uint32
+	if len(req.Data.GetRoleIds()) > 0 {
+		roleIds = req.Data.GetRoleIds()
+	}
+	if req.Data.RoleId != nil && *req.Data.RoleId > 0 {
+		roleIds = append(roleIds, *req.Data.RoleId)
+	}
+	roleIds = sliceutil.Unique(roleIds)
+	if len(roleIds) == 0 {
+		s.log.Errorf("role_ids is required")
+		return nil, adminV1.ErrorBadRequest("role_ids is required")
+	}
+
+	var queryString string
+	if operator.GetTenantId() > 0 || req.Data.GetTenantId() > 0 {
+		queryString = fmt.Sprintf(`{"id__in": "[%s]", "type": "TENANT", "tenant_id": %d}`,
+			utils.NumberSliceToString(roleIds),
+			req.Data.GetTenantId(),
+		)
+	} else {
+		queryString = fmt.Sprintf(`{"id__in": "[%s]", "type": "SYSTEM"}`,
+			utils.NumberSliceToString(roleIds),
+		)
+	}
+	roles, err := s.roleRepo.List(ctx, &paginationV1.PagingRequest{
+		NoPaging: trans.Ptr(true),
+		FilteringType: &paginationV1.PagingRequest_Query{
+			Query: queryString,
+		},
+	})
+	if err != nil {
+		s.log.Errorf("query roles err: %v", err)
+		return nil, err
+	}
+
+	if len(roles.Items) != len(roleIds) {
+		s.log.Errorf("some roles not found, requested role ids: %v", roleIds)
+		return nil, adminV1.ErrorBadRequest("some roles not found")
+	}
+	if len(roles.Items) == 0 {
+		s.log.Errorf("at least one role is required")
+		return nil, adminV1.ErrorBadRequest("at least one role is required")
+	}
+
+	req.Data.RoleId = nil
+	req.Data.RoleIds = roleIds
 
 	// 更新用户
 	if err = s.userRepo.Update(ctx, req); err != nil {
