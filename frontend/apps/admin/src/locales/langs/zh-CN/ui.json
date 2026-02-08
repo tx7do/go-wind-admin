@@ -89,7 +89,10 @@
     "upload_failed": "上传失败",
     "download_success": "下载成功",
     "download_failed": "下载失败",
-    "password_mismatch": "两次输入的密码不一致"
+    "password_mismatch": "两次输入的密码不一致",
+    "input_old_password": "请输入旧密码",
+    "input_new_password": "请输入新密码",
+    "input_confirm_password": "请确认新密码"
   },
   "text": {
     "do_you_want_delete": "你是否要删除掉该{moduleName}？",

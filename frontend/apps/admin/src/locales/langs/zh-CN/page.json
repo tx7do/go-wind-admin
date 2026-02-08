@@ -44,7 +44,7 @@
       "role": "角色",
       "orgUnit": "所属组织",
       "position": "所属岗位",
-      "oldPassword": "当前密码",
+      "oldPassword": "旧密码",
       "newPassword": "新密码",
       "confirmPassword": "确认密码",
       "status": "状态"
@@ -76,12 +76,14 @@
       "create": "创建账号",
       "editPassword": "修改密码",
       "banAccount": "禁用账号",
-      "updateUserInfo": "更新基本信息"
+      "updateUserInfo": "更新基本信息",
+      "updatePassword": "更新密码"
     },
     "profile": {
       "tab": {
         "basicSettings": "基本设置",
         "securitySettings": "安全设置",
+        "editPassword": "修改密码",
         "accountBind": "账号绑定",
         "notification": "消息通知"
       }

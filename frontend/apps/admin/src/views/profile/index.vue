@@ -4,6 +4,7 @@ import { $t } from '@vben/locales';
 
 import AccountBindPage from './account-bind-page.vue';
 import BaseSettingPage from './base-setting-page.vue';
+import EditPasswordPage from './edit-password-page.vue';
 import MsgNotifyPage from './msg-notify-page.vue';
 import SecureSettingPage from './secure-setting-page.vue';
 
@@ -15,16 +16,21 @@ const settingList = [
   },
   {
     key: '2',
+    name: $t('page.user.profile.tab.editPassword'),
+    component: EditPasswordPage,
+  },
+  {
+    key: '3',
     name: $t('page.user.profile.tab.securitySettings'),
     component: SecureSettingPage,
   },
   {
-    key: '3',
+    key: '4',
     name: $t('page.user.profile.tab.accountBind'),
     component: AccountBindPage,
   },
   {
-    key: '4',
+    key: '5',
     name: $t('page.user.profile.tab.notification'),
     component: MsgNotifyPage,
   },

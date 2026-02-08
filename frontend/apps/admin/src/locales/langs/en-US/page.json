@@ -76,7 +76,17 @@
       "create": "Create Account",
       "editPassword": "Change Password",
       "banAccount": "Disable Account",
-      "updateUserInfo": "Update Profile"
+      "updateUserInfo": "Update Profile",
+      "updatePassword": "Change Password"
+    },
+    "profile": {
+      "tab": {
+        "basicSettings": "Basic Settings",
+        "securitySettings": "Security Settings",
+        "editPassword": "Change Password",
+        "accountBind": "Account Bindings",
+        "notification": "Notifications"
+      }
     },
     "detail": {
       "title": "Profile of User {userId}",
