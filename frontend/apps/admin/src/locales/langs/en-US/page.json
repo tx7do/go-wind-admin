@@ -75,7 +75,8 @@
     "button": {
       "create": "Create Account",
       "editPassword": "Change Password",
-      "banAccount": "Disable Account"
+      "banAccount": "Disable Account",
+      "updateUserInfo": "Update Profile"
     },
     "detail": {
       "title": "Profile of User {userId}",

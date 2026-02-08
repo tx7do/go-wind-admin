@@ -78,6 +78,7 @@ func (s *UserProfileService) UpdateUser(ctx context.Context, req *identityV1.Upd
 	}
 
 	req.Data.Id = trans.Ptr(operator.UserId)
+	req.Id = operator.UserId
 
 	if err = s.userRepo.Update(ctx, req); err != nil {
 		return nil, err

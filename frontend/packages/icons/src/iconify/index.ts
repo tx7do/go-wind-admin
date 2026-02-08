@@ -52,3 +52,6 @@ export const LucideRefreshCw = createIconifyIcon('lucide:refresh-cw');
 export const LucideDownload = createIconifyIcon('lucide:download');
 export const LucideCloudDownload = createIconifyIcon('lucide:cloud-download');
 export const LucideFileDownload = createIconifyIcon('lucide:file-down');
+
+export const LucideUserRoundPen = createIconifyIcon('lucide:user-round-pen');
+export const LucideInbox = createIconifyIcon('lucide:inbox');

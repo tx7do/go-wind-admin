@@ -1264,11 +1264,11 @@ type isUploadAvatarRequest_Source interface {
 }
 
 type UploadAvatarRequest_ImageBase64 struct {
-	ImageBase64 string `protobuf:"bytes,1,opt,name=image_base64,json=imageBase64,proto3,oneof"`
+	ImageBase64 string `protobuf:"bytes,1,opt,name=image_base64,json=imageBase64,proto3,oneof"` // 图片的Base64编码
 }
 
 type UploadAvatarRequest_ImageUrl struct {
-	ImageUrl string `protobuf:"bytes,2,opt,name=image_url,json=imageUrl,proto3,oneof"`
+	ImageUrl string `protobuf:"bytes,2,opt,name=image_url,json=imageUrl,proto3,oneof"` // 图片的URL地址
 }
 
 func (*UploadAvatarRequest_ImageBase64) isUploadAvatarRequest_Source() {}
@@ -1899,10 +1899,10 @@ const file_identity_service_v1_user_proto_rawDesc = "" +
 	"\fnew_password\x18\x02 \x01(\tB\x0f\xbaG\f\x92\x02\t新密码R\vnewPassword\"\x7f\n" +
 	"\x15ChangePasswordRequest\x122\n" +
 	"\fold_password\x18\x01 \x01(\tB\x0f\xbaG\f\x92\x02\t旧密码R\voldPassword\x122\n" +
-	"\fnew_password\x18\x02 \x01(\tB\x0f\xbaG\f\x92\x02\t新密码R\vnewPassword\"c\n" +
-	"\x13UploadAvatarRequest\x12#\n" +
-	"\fimage_base64\x18\x01 \x01(\tH\x00R\vimageBase64\x12\x1d\n" +
-	"\timage_url\x18\x02 \x01(\tH\x00R\bimageUrlB\b\n" +
+	"\fnew_password\x18\x02 \x01(\tB\x0f\xbaG\f\x92\x02\t新密码R\vnewPassword\"\x9a\x01\n" +
+	"\x13UploadAvatarRequest\x12@\n" +
+	"\fimage_base64\x18\x01 \x01(\tB\x1b\xbaG\x18\x92\x02\x15图片的Base64编码H\x00R\vimageBase64\x127\n" +
+	"\timage_url\x18\x02 \x01(\tB\x18\xbaG\x15\x92\x02\x12图片的URL地址H\x00R\bimageUrlB\b\n" +
 	"\x06source\"(\n" +
 	"\x14UploadAvatarResponse\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\"\x9d\x01\n" +

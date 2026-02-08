@@ -6,6 +6,15 @@
     "workbench": "工作台",
     "about": "关于"
   },
+  "profile": {
+    "moduleName": "个人中心",
+    "profile": "个人资料",
+    "settings": "个人设置",
+    "security": "安全设置",
+    "customize": "界面定制",
+    "notification": "消息通知",
+    "internalMessage": "站内消息"
+  },
   "permission": {
     "moduleName": "权限管理",
     "role": "角色管理",

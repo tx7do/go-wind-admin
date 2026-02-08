@@ -6,6 +6,15 @@
     "workbench": "Workbench",
     "about": "About"
   },
+  "profile": {
+    "moduleName": "Personal Center",
+    "profile": "Personal Information",
+    "settings": "Personal Settings",
+    "security": "Security Settings",
+    "customize": "Interface Customization",
+    "notification": "Notifications",
+    "internalMessage": "Internal Messages"
+  },
   "permission": {
     "moduleName": "Permission Management",
     "role": "Role Management",

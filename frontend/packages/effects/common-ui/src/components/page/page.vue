@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { StyleValue } from 'vue';
-
 import type { PageProps } from './types';
 
+import type { StyleValue } from 'vue';
 import { computed, nextTick, onMounted, ref, useTemplateRef } from 'vue';
 
 import { CSS_VARIABLE_LAYOUT_CONTENT_HEIGHT } from '@vben-core/shared/constants';

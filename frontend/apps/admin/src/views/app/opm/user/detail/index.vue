@@ -55,7 +55,7 @@ function goBack() {
  */
 async function handleBanAccount() {
   try {
-    await userListStore.updateUser(userId.value, { status: 'OFF' });
+    await userListStore.updateUser(userId.value, { status: 'DISABLED' });
 
     notification.success({
       message: $t('ui.notification.update_status_success'),

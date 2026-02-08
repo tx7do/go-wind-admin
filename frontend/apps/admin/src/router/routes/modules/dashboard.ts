@@ -5,6 +5,8 @@ import { $t } from '#/locales';
 
 const routes: RouteRecordRaw[] = [
   {
+    name: 'Dashboard',
+    path: '/dashboard',
     component: BasicLayout,
     meta: {
       icon: 'lucide:layout-dashboard',
@@ -12,8 +14,7 @@ const routes: RouteRecordRaw[] = [
       title: $t('page.dashboard.title'),
       authority: ['platform:admin', 'tenant:manager'],
     },
-    name: 'Dashboard',
-    path: '/dashboard',
+
     children: [
       {
         name: 'Analytics',

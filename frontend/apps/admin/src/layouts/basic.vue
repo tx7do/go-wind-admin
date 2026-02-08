@@ -4,9 +4,8 @@ import type { NotificationItem } from '@vben/layouts';
 import { computed, ref, watch } from 'vue';
 
 import { AuthenticationLoginExpiredModal } from '@vben/common-ui';
-import { VBEN_DOC_URL, VBEN_GITHUB_URL } from '@vben/constants';
 import { useWatermark } from '@vben/hooks';
-import { BookOpenText, CircleHelp, MdiGithub } from '@vben/icons';
+import { LucideInbox, LucideUserRoundPen } from '@vben/icons';
 import {
   BasicLayout,
   LockScreen,
@@ -15,12 +14,13 @@ import {
 } from '@vben/layouts';
 import { preferences } from '@vben/preferences';
 import { useAccessStore, useUserStore } from '@vben/stores';
-import { dateUtil, openWindow } from '@vben/utils';
+import { dateUtil } from '@vben/utils';
 
 import { notification } from 'ant-design-vue';
 
 import { type internal_messageservicev1_InternalMessageRecipient as InternalMessageRecipient } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
+import { router } from '#/router';
 import { useAuthStore, useInternalMessageStore } from '#/stores';
 import { SSEClient } from '#/transport/sse';
 import LoginForm from '#/views/_core/authentication/login.vue';
@@ -40,31 +40,14 @@ const { destroyWatermark, updateWatermark } = useWatermark();
 
 const menus = computed(() => [
   {
-    handler: () => {
-      openWindow(VBEN_DOC_URL, {
-        target: '_blank',
-      });
-    },
-    icon: BookOpenText,
-    text: $t('ui.widgets.document'),
+    handler: () => router.push('/profile'),
+    icon: LucideUserRoundPen,
+    text: $t('menu.profile.settings'),
   },
   {
-    handler: () => {
-      openWindow(VBEN_GITHUB_URL, {
-        target: '_blank',
-      });
-    },
-    icon: MdiGithub,
-    text: 'GitHub',
-  },
-  {
-    handler: () => {
-      openWindow(`${VBEN_GITHUB_URL}/issues`, {
-        target: '_blank',
-      });
-    },
-    icon: CircleHelp,
-    text: $t('ui.widgets.qa'),
+    handler: () => router.push('/inbox'),
+    icon: LucideInbox,
+    text: $t('menu.profile.internalMessage'),
   },
 ]);
 

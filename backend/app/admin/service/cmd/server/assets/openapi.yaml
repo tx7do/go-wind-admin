@@ -7525,8 +7525,10 @@ components:
             properties:
                 imageBase64:
                     type: string
+                    description: 图片的Base64编码
                 imageUrl:
                     type: string
+                    description: 图片的URL地址
         UploadAvatarResponse:
             type: object
             properties:

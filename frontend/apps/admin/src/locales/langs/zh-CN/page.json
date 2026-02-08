@@ -57,7 +57,7 @@
       "password": "密码",
       "avatar": "头像",
       "email": "邮箱",
-      "mobile": "手机",
+      "mobile": "手机号",
       "telephone": "座机号",
       "gender": "性别",
       "address": "住址",
@@ -75,7 +75,16 @@
     "button": {
       "create": "创建账号",
       "editPassword": "修改密码",
-      "banAccount": "禁用账号"
+      "banAccount": "禁用账号",
+      "updateUserInfo": "更新基本信息"
+    },
+    "profile": {
+      "tab": {
+        "basicSettings": "基本设置",
+        "securitySettings": "安全设置",
+        "accountBind": "账号绑定",
+        "notification": "消息通知"
+      }
     },
     "detail": {
       "title": "用户{userId}的资料",

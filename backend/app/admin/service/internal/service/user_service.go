@@ -456,6 +456,8 @@ func (s *UserService) Update(ctx context.Context, req *identityV1.UpdateUserRequ
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}
 
+	req.Data.Id = trans.Ptr(req.GetId())
+
 	if operator.GetTenantId() > 0 {
 		req.Data.TenantId = operator.TenantId
 	}

@@ -45,107 +45,105 @@ reload();
 <template>
   <Page>
     <!-- 基本信息卡片 -->
-    <a-card class="mt-4">
-      <div class="basic-info-container">
-        <!-- 头像与状态 -->
-        <div class="avatar-section">
-          <Avatar
-            :src="data?.avatar ?? ''"
-            class="avatar"
-            :style="!data?.avatar ? { backgroundColor: getAvatarColor() } : {}"
-          >
-            <!-- 头像加载失败/无头像时显示姓名首字母，添加占位样式 -->
-            <span class="avatar-placeholder">
-              {{ data?.username?.substring(0, 1) || '?' }}
-            </span>
-          </Avatar>
-        </div>
-
-        <!-- 详细信息列表 -->
-        <Descriptions class="info-list">
-          <DescriptionsItem :label="$t('page.user.detail.desc.username')">
-            {{ data?.username }}
-          </DescriptionsItem>
-          <DescriptionsItem :label="$t('page.user.detail.desc.realname')">
-            {{ data?.realname }}
-          </DescriptionsItem>
-          <DescriptionsItem :label="$t('page.user.detail.desc.nickname')">
-            {{ data?.nickname }}
-          </DescriptionsItem>
-          <DescriptionsItem :label="$t('page.user.detail.desc.gender')">
-            <a-tag :color="genderToColor(data?.gender)">
-              {{ genderToName(data?.gender) }}
-            </a-tag>
-          </DescriptionsItem>
-          <DescriptionsItem :label="$t('page.user.detail.desc.roleNames')">
-            <a-tag
-              v-for="role in data?.roleNames"
-              :key="role"
-              class="mb-1 mr-1"
-              :style="{
-                backgroundColor: getRandomColor(role), // 随机背景色
-                color: '#333', // 深色文字（适配浅色背景）
-                border: 'none', // 可选：去掉边框更美观
-              }"
-            >
-              {{ role }}
-            </a-tag>
-          </DescriptionsItem>
-          <DescriptionsItem :label="$t('page.user.detail.desc.mobile')">
-            {{ data?.mobile }}
-          </DescriptionsItem>
-          <DescriptionsItem :label="$t('page.user.detail.desc.email')">
-            {{ data?.email }}
-          </DescriptionsItem>
-          <DescriptionsItem :label="$t('page.user.detail.desc.region')">
-            {{ data?.region }}
-          </DescriptionsItem>
-          <DescriptionsItem :label="$t('page.user.detail.desc.address')">
-            {{ data?.address }}
-          </DescriptionsItem>
-          <DescriptionsItem :label="$t('page.user.detail.desc.tenantName')">
-            {{ data?.tenantName }}
-          </DescriptionsItem>
-          <DescriptionsItem :label="$t('page.user.detail.desc.orgUnitName')">
-            <a-tag
-              v-for="orgUnit in data?.orgUnitNames"
-              :key="orgUnit"
-              class="mb-1 mr-1"
-              :style="{
-                backgroundColor: getRandomColor(orgUnit), // 随机背景色
-                color: '#333', // 深色文字（适配浅色背景）
-                border: 'none', // 可选：去掉边框更美观
-              }"
-            >
-              {{ orgUnit }}
-            </a-tag>
-          </DescriptionsItem>
-          <DescriptionsItem :label="$t('page.user.detail.desc.positionName')">
-            <a-tag
-              v-for="position in data?.positionNames"
-              :key="position"
-              class="mb-1 mr-1"
-              :style="{
-                backgroundColor: getRandomColor(position), // 随机背景色
-                color: '#333', // 深色文字（适配浅色背景）
-                border: 'none', // 可选：去掉边框更美观
-              }"
-            >
-              {{ position }}
-            </a-tag>
-          </DescriptionsItem>
-          <DescriptionsItem :label="$t('ui.table.createdAt')">
-            {{ formatDateTime(data?.createdAt ?? '') }}
-          </DescriptionsItem>
-          <DescriptionsItem :label="$t('page.user.detail.desc.lastLoginAt')">
-            {{ data?.lastLoginAt }}
-          </DescriptionsItem>
-          <DescriptionsItem :label="$t('page.user.detail.desc.lastLoginIp')">
-            {{ data?.lastLoginIp }}
-          </DescriptionsItem>
-        </Descriptions>
+    <div class="basic-info-container">
+      <!-- 头像与状态 -->
+      <div class="avatar-section">
+        <Avatar
+          :src="data?.avatar ?? ''"
+          class="avatar"
+          :style="!data?.avatar ? { backgroundColor: getAvatarColor() } : {}"
+        >
+          <!-- 头像加载失败/无头像时显示姓名首字母，添加占位样式 -->
+          <span class="avatar-placeholder">
+            {{ data?.username?.substring(0, 1) || '?' }}
+          </span>
+        </Avatar>
       </div>
-    </a-card>
+
+      <!-- 详细信息列表 -->
+      <Descriptions class="info-list">
+        <DescriptionsItem :label="$t('page.user.detail.desc.username')">
+          {{ data?.username }}
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('page.user.detail.desc.realname')">
+          {{ data?.realname }}
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('page.user.detail.desc.nickname')">
+          {{ data?.nickname }}
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('page.user.detail.desc.gender')">
+          <a-tag :color="genderToColor(data?.gender)">
+            {{ genderToName(data?.gender) }}
+          </a-tag>
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('page.user.detail.desc.roleNames')">
+          <a-tag
+            v-for="role in data?.roleNames"
+            :key="role"
+            class="mb-1 mr-1"
+            :style="{
+              backgroundColor: getRandomColor(role), // 随机背景色
+              color: '#333', // 深色文字（适配浅色背景）
+              border: 'none', // 可选：去掉边框更美观
+            }"
+          >
+            {{ role }}
+          </a-tag>
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('page.user.detail.desc.mobile')">
+          {{ data?.mobile }}
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('page.user.detail.desc.email')">
+          {{ data?.email }}
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('page.user.detail.desc.region')">
+          {{ data?.region }}
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('page.user.detail.desc.address')">
+          {{ data?.address }}
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('page.user.detail.desc.tenantName')">
+          {{ data?.tenantName }}
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('page.user.detail.desc.orgUnitName')">
+          <a-tag
+            v-for="orgUnit in data?.orgUnitNames"
+            :key="orgUnit"
+            class="mb-1 mr-1"
+            :style="{
+              backgroundColor: getRandomColor(orgUnit), // 随机背景色
+              color: '#333', // 深色文字（适配浅色背景）
+              border: 'none', // 可选：去掉边框更美观
+            }"
+          >
+            {{ orgUnit }}
+          </a-tag>
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('page.user.detail.desc.positionName')">
+          <a-tag
+            v-for="position in data?.positionNames"
+            :key="position"
+            class="mb-1 mr-1"
+            :style="{
+              backgroundColor: getRandomColor(position), // 随机背景色
+              color: '#333', // 深色文字（适配浅色背景）
+              border: 'none', // 可选：去掉边框更美观
+            }"
+          >
+            {{ position }}
+          </a-tag>
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('ui.table.createdAt')">
+          {{ formatDateTime(data?.createdAt ?? '') }}
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('page.user.detail.desc.lastLoginAt')">
+          {{ data?.lastLoginAt }}
+        </DescriptionsItem>
+        <DescriptionsItem :label="$t('page.user.detail.desc.lastLoginIp')">
+          {{ data?.lastLoginIp }}
+        </DescriptionsItem>
+      </Descriptions>
+    </div>
   </Page>
 </template>
 
