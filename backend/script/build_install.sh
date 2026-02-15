@@ -110,6 +110,19 @@ for app_dir in "${apps[@]}"; do
   fi
 
   pushd "$app_install_root/service/bin" >/dev/null
+
+  # If a process with the same name exists in the given namespace, remove it first
+  # to avoid: [PM2][ERROR] Script already launched, add -f option to force re-execution
+  if pm2 info "$app" --namespace "$project_name" >/dev/null 2>&1; then
+    echo "PM2 process '$app' already exists in namespace '$project_name', deleting before start"
+    if ! pm2 delete "$app" --namespace "$project_name" >/dev/null 2>&1; then
+      echo "warning: failed to delete existing pm2 process '$app'; attempting force start (-f)"
+      pm2 start -f "$bin_path" --name "$app" --namespace "$project_name" -- -c "$configs_rel"
+      popd >/dev/null
+      continue
+    fi
+  fi
+
   pm2 start "$bin_path" --name "$app" --namespace "$project_name" -- -c "$configs_rel"
   popd >/dev/null
 done

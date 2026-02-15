@@ -95,6 +95,7 @@ INSERT INTO sys_membership_roles (id, membership_id, tenant_id, role_id, is_prim
 VALUES
     -- 租户管理员（TENANT_ADMIN）
     (2, 2, 1, 2, true, 'ACTIVE')
+;
 SELECT setval('sys_membership_roles_id_seq', (SELECT MAX(id) FROM sys_membership_roles));
 
 -- 调度任务
