@@ -298,7 +298,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("Analytics"),
 		Path:      trans.Ptr("/analytics"),
-		Component: trans.Ptr("#/views/dashboard/analytics/index.vue"),
+		Component: trans.Ptr("dashboard/analytics/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Order:     trans.Ptr(int32(-1)),
@@ -328,7 +328,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("ProfilePage"),
 		Path:      trans.Ptr("/profile"),
-		Component: trans.Ptr("#/views/profile/index.vue"),
+		Component: trans.Ptr("profile/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:      trans.Ptr("menu.profile.settings"),
@@ -356,7 +356,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("InboxPage"),
 		Path:      trans.Ptr("/inbox"),
-		Component: trans.Ptr("#/views/message/index.vue"),
+		Component: trans.Ptr("message/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:      trans.Ptr("menu.profile.internalMessage"),
@@ -387,7 +387,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("TenantMemberManagement"),
 		Path:      trans.Ptr("members"),
-		Component: trans.Ptr("#/views/app/tenant/tenant/index.vue"),
+		Component: trans.Ptr("app/tenant/tenant/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Order:     trans.Ptr(int32(1)),
@@ -421,7 +421,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("OrgUnitManagement"),
 		Path:      trans.Ptr("org-units"),
-		Component: trans.Ptr("#/views/app/opm/org_unit/index.vue"),
+		Component: trans.Ptr("app/opm/org_unit/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Order:     trans.Ptr(int32(1)),
@@ -436,7 +436,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("PositionManagement"),
 		Path:      trans.Ptr("positions"),
-		Component: trans.Ptr("#/views/app/opm/position/index.vue"),
+		Component: trans.Ptr("app/opm/position/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Order:     trans.Ptr(int32(2)),
@@ -451,7 +451,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("UserManagement"),
 		Path:      trans.Ptr("users"),
-		Component: trans.Ptr("#/views/app/opm/position/index.vue"),
+		Component: trans.Ptr("app/opm/position/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Order:     trans.Ptr(int32(3)),
@@ -466,7 +466,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("UserDetail"),
 		Path:      trans.Ptr("users/detail/:id"),
-		Component: trans.Ptr("#/views/app/opm/user/detail/index.vue"),
+		Component: trans.Ptr("app/opm/user/detail/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:      trans.Ptr("menu.opm.userDetail"),
@@ -498,7 +498,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("PermissionPointManagement"),
 		Path:      trans.Ptr("codes"),
-		Component: trans.Ptr("#/views/app/permission/permission/index.vue"),
+		Component: trans.Ptr("app/permission/permission/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.permission.permission"),
@@ -513,7 +513,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("RoleManagement"),
 		Path:      trans.Ptr("roles"),
-		Component: trans.Ptr("#/views/app/permission/role/index.vue"),
+		Component: trans.Ptr("app/permission/role/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.permission.role"),
@@ -546,7 +546,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("InternalMessageList"),
 		Path:      trans.Ptr("messages"),
-		Component: trans.Ptr("#/views/app/internal_message/message/index.vue"),
+		Component: trans.Ptr("app/internal_message/message/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.internalMessage.internalMessage"),
@@ -561,7 +561,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("InternalMessageCategoryManagement"),
 		Path:      trans.Ptr("categories"),
-		Component: trans.Ptr("#/views/app/internal_message/category/index.vue"),
+		Component: trans.Ptr("app/internal_message/category/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.internalMessage.internalMessageCategory"),
@@ -594,7 +594,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("LoginAuditLog"),
 		Path:      trans.Ptr("login-audit-logs"),
-		Component: trans.Ptr("#/views/app/log/login_audit_log/index.vue"),
+		Component: trans.Ptr("app/log/login_audit_log/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.log.loginAuditLog"),
@@ -609,7 +609,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("ApiAuditLog"),
 		Path:      trans.Ptr("api-audit-logs"),
-		Component: trans.Ptr("#/views/app/log/api_audit_log/index.vue"),
+		Component: trans.Ptr("app/log/api_audit_log/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.log.apiAuditLog"),
@@ -624,7 +624,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("OperationAuditLog"),
 		Path:      trans.Ptr("operation-audit-logs"),
-		Component: trans.Ptr("#/views/app/log/operation_audit_log/index.vue"),
+		Component: trans.Ptr("app/log/operation_audit_log/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.log.operationAuditLog"),
@@ -639,7 +639,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("DataAccessAuditLog"),
 		Path:      trans.Ptr("data-access-audit-logs"),
-		Component: trans.Ptr("#/views/app/log/data_access_audit_log/index.vue"),
+		Component: trans.Ptr("app/log/data_access_audit_log/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.log.dataAccessAuditLog"),
@@ -654,7 +654,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("PermissionAuditLog"),
 		Path:      trans.Ptr("permission-audit-logs"),
-		Component: trans.Ptr("#/views/app/log/permission_audit_log/index.vue"),
+		Component: trans.Ptr("app/log/permission_audit_log/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.log.permissionAuditLog"),
@@ -687,7 +687,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("MenuManagement"),
 		Path:      trans.Ptr("menus"),
-		Component: trans.Ptr("#/views/app/system/menu/index.vue"),
+		Component: trans.Ptr("app/system/menu/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.system.menu"),
@@ -702,7 +702,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("APIManagement"),
 		Path:      trans.Ptr("apis"),
-		Component: trans.Ptr("#/views/app/system/api/index.vue"),
+		Component: trans.Ptr("app/system/api/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.system.api"),
@@ -717,7 +717,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("DictManagement"),
 		Path:      trans.Ptr("dict"),
-		Component: trans.Ptr("#/views/app/system/dict/index.vue"),
+		Component: trans.Ptr("app/system/dict/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.system.dict"),
@@ -732,7 +732,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("FileManagement"),
 		Path:      trans.Ptr("files"),
-		Component: trans.Ptr("#/views/app/system/file/index.vue"),
+		Component: trans.Ptr("app/system/file/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.system.file"),
@@ -747,7 +747,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("TaskManagement"),
 		Path:      trans.Ptr("tasks"),
-		Component: trans.Ptr("#/views/app/system/task/index.vue"),
+		Component: trans.Ptr("app/system/task/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.system.task"),
@@ -762,7 +762,7 @@ var DefaultMenus = []*resourceV1.Menu{
 		Type:      resourceV1.Menu_MENU.Enum(),
 		Name:      trans.Ptr("LoginPolicyManagement"),
 		Path:      trans.Ptr("login-policies"),
-		Component: trans.Ptr("#/views/app/system/login_policy/index.vue"),
+		Component: trans.Ptr("app/system/login_policy/index.vue"),
 		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
 		Meta: &resourceV1.MenuMeta{
 			Title:     trans.Ptr("menu.system.loginPolicy"),
