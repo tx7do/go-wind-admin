@@ -21,6 +21,7 @@ const internal_message: RouteRecordRaw[] = [
         path: 'messages',
         name: 'InternalMessageList',
         meta: {
+          order: 1,
           icon: 'lucide:message-circle-more',
           title: $t('menu.internalMessage.internalMessage'),
           authority: ['platform:admin', 'tenant:manager'],
@@ -33,6 +34,7 @@ const internal_message: RouteRecordRaw[] = [
         path: 'categories',
         name: 'InternalMessageCategoryManagement',
         meta: {
+          order: 2,
           icon: 'lucide:calendar-check',
           title: $t('menu.internalMessage.internalMessageCategory'),
           authority: ['platform:admin'],

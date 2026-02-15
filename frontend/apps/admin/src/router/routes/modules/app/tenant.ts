@@ -17,12 +17,12 @@ const tenant: RouteRecordRaw[] = [
     },
     children: [
       {
-        path: 'tenant',
+        path: 'members',
         name: 'TenantMemberManagement',
         meta: {
-          icon: 'lucide:building-2',
+          order: 1,
+          icon: 'lucide:users',
           title: $t('menu.tenant.member'),
-          hideInTab: false,
           authority: ['platform:admin'],
         },
         component: () => import('#/views/app/tenant/tenant/index.vue'),

@@ -33,10 +33,9 @@ const opm: RouteRecordRaw[] = [
         path: 'positions',
         name: 'PositionManagement',
         meta: {
-          order: 3,
+          order: 2,
           icon: 'lucide:briefcase',
           title: $t('menu.opm.position'),
-          hideInTab: false,
           authority: ['platform:admin', 'tenant:manager'],
         },
         component: () => import('#/views/app/opm/position/index.vue'),
@@ -46,7 +45,7 @@ const opm: RouteRecordRaw[] = [
         path: 'users',
         name: 'UserManagement',
         meta: {
-          order: 4,
+          order: 3,
           icon: 'lucide:user',
           title: $t('menu.opm.user'),
           authority: ['platform:admin', 'tenant:manager'],
@@ -57,7 +56,6 @@ const opm: RouteRecordRaw[] = [
         path: 'users/detail/:id',
         name: 'UserDetail',
         meta: {
-          hideInTab: false,
           hideInMenu: true,
           title: $t('menu.opm.userDetail'),
           authority: ['platform:admin', 'tenant:manager'],

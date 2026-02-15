@@ -97,6 +97,8 @@ const gridOptions: VxeGridProps<Menu> = {
             'meta.title': formValues.name,
             status: formValues.status,
           },
+          null,
+          ['id'],
         );
       },
     },

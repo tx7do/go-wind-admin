@@ -8,7 +8,7 @@ const system: RouteRecordRaw[] = [
     path: '/system',
     name: 'System',
     component: BasicLayout,
-    redirect: '/system/dict',
+    redirect: '/system/menus',
     meta: {
       order: 2005,
       icon: 'lucide:settings',

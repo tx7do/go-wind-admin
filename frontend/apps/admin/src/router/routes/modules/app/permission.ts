@@ -8,7 +8,7 @@ const permission: RouteRecordRaw[] = [
     path: '/permission',
     name: 'PermissionManagement',
     component: BasicLayout,
-    redirect: '/permission/permissions',
+    redirect: '/permission/codes',
     meta: {
       order: 2002,
       icon: 'lucide:shield-check',
@@ -18,13 +18,12 @@ const permission: RouteRecordRaw[] = [
     },
     children: [
       {
-        path: 'permissions',
-        name: 'PermissionPointsManagement',
+        path: 'codes',
+        name: 'PermissionPointManagement',
         meta: {
           order: 1,
           icon: 'lucide:shield-ellipsis',
           title: $t('menu.permission.permission'),
-          hideInTab: false,
           authority: ['platform:admin'],
         },
         component: () => import('#/views/app/permission/permission/index.vue'),
@@ -37,7 +36,6 @@ const permission: RouteRecordRaw[] = [
           order: 2,
           icon: 'lucide:shield-user',
           title: $t('menu.permission.role'),
-          hideInTab: false,
           authority: ['platform:admin', 'tenant:manager'],
         },
         component: () => import('#/views/app/permission/role/index.vue'),

@@ -11,8 +11,6 @@ const messageRoutes: RouteRecordRaw[] = [
     component: BasicLayout,
     meta: {
       title: $t('menu.profile.internalMessage'),
-      requiresAuth: true,
-      hideInTab: false,
       hideInMenu: true,
     },
     children: [
@@ -22,8 +20,7 @@ const messageRoutes: RouteRecordRaw[] = [
         component: () => import('#/views/message/index.vue'),
         meta: {
           title: $t('menu.profile.internalMessage'),
-          requiresAuth: true,
-          hideInTab: false,
+          icon: 'lucide:message-circle-more',
           hideInMenu: true,
         },
       },

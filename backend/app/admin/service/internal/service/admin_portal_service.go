@@ -7,11 +7,12 @@ import (
 	"strings"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"github.com/tx7do/go-utils/sliceutil"
+
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	"github.com/tx7do/go-utils/sliceutil"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
@@ -119,6 +120,8 @@ func (s *AdminPortalService) GetMyPermissionCode(ctx context.Context, _ *emptypb
 		s.log.Errorf("query user failed[%s]", err.Error())
 		return nil, adminV1.ErrorInternalServerError("query user failed")
 	}
+
+	s.log.Debugf("user info: %+v", user.GetRoleIds())
 
 	// 多角色的菜单
 	roleMenus, err := s.queryMultipleRolesMenusByRoleIds(ctx, user.GetRoleIds())

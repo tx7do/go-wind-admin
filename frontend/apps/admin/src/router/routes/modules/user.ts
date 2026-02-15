@@ -11,8 +11,6 @@ const userRoutes: RouteRecordRaw[] = [
     component: BasicLayout,
     meta: {
       title: $t('menu.profile.settings'),
-      requiresAuth: true,
-      hideInTab: false,
       hideInMenu: true,
     },
 
@@ -23,8 +21,7 @@ const userRoutes: RouteRecordRaw[] = [
         component: () => import('#/views/profile/index.vue'),
         meta: {
           title: $t('menu.profile.settings'),
-          requiresAuth: true,
-          hideInTab: false,
+          icon: 'lucide:user-pen',
           hideInMenu: true,
         },
       },
