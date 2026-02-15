@@ -12,7 +12,7 @@ const routes: RouteRecordRaw[] = [
       icon: 'lucide:layout-dashboard',
       order: -1,
       title: $t('page.dashboard.title'),
-      authority: ['platform:admin', 'tenant:manager'],
+      authority: ['sys:platform_admin', 'sys:tenant_manager'],
     },
 
     children: [
@@ -24,7 +24,7 @@ const routes: RouteRecordRaw[] = [
           affixTab: true,
           icon: 'lucide:area-chart',
           title: $t('page.dashboard.analytics'),
-          authority: ['platform:admin', 'tenant:manager'],
+          authority: ['sys:platform_admin', 'sys:tenant_manager'],
         },
       },
     ],

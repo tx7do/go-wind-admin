@@ -92,21 +92,42 @@ function setupAccessGuard(router: Router) {
 
     // 生成路由表
     // 当前登录用户拥有的角色标识列表
-    const userInfo = userStore.userInfo || (await authStore.fetchUserInfo());
-    const userRoles = userInfo ? (userInfo.roles ?? []) : [];
 
-    if (userInfo === null) {
-      console.warn('setupAccessGuard failed fetch user info:', userInfo);
-      return false;
+    let userPermissionCodes: string[] = [];
+    if (userStore.userInfo === null || accessStore.accessCodes === null) {
+      const [fetchUserInfoResult, fetchAccessCodeResult] = await Promise.all([
+        authStore.fetchUserInfo(),
+        authStore.fetchAccessCodes(),
+      ]);
+      if (fetchUserInfoResult === null || fetchAccessCodeResult === null) {
+        console.warn(
+          'setupAccessGuard failed fetch user info:',
+          fetchUserInfoResult,
+        );
+        return false;
+      }
+      userStore.setUserInfo(fetchUserInfoResult);
+
+      const roles = fetchUserInfoResult
+        ? (fetchUserInfoResult.roles ?? [])
+        : [];
+      const codes = fetchAccessCodeResult
+        ? (fetchAccessCodeResult.codes ?? [])
+        : [];
+      userPermissionCodes = [...roles, ...codes];
+      accessStore.setAccessCodes(userPermissionCodes);
+    } else {
+      userPermissionCodes = [
+        ...(userStore.userInfo.roles || []),
+        ...accessStore.accessCodes,
+      ];
     }
-
-    userStore.setUserInfo(userInfo);
 
     authStore.startRefreshTimer();
 
     // 生成菜单和路由
     const { accessibleMenus, accessibleRoutes } = await generateAccess({
-      roles: userRoles,
+      roles: userPermissionCodes,
       router,
       // 则会在菜单中显示，但是访问会被重定向到403
       routes: accessRoutes,
@@ -119,7 +140,7 @@ function setupAccessGuard(router: Router) {
 
     const redirectPath = (from.query.redirect ??
       (to.path === DEFAULT_HOME_PATH
-        ? userInfo?.homePath || DEFAULT_HOME_PATH
+        ? userStore.userInfo?.homePath || DEFAULT_HOME_PATH
         : to.fullPath)) as string;
 
     return {

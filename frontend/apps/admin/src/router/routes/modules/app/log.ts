@@ -14,7 +14,7 @@ const log: RouteRecordRaw[] = [
       icon: 'lucide:logs',
       title: $t('menu.log.moduleName'),
       keepAlive: true,
-      authority: ['platform:admin'],
+      authority: ['sys:platform_admin'],
     },
     children: [
       {
@@ -23,7 +23,7 @@ const log: RouteRecordRaw[] = [
         meta: {
           icon: 'lucide:user-lock',
           title: $t('menu.log.loginAuditLog'),
-          authority: ['platform:admin'],
+          authority: ['sys:platform_admin'],
         },
         component: () => import('#/views/app/log/login_audit_log/index.vue'),
       },
@@ -34,7 +34,7 @@ const log: RouteRecordRaw[] = [
         meta: {
           icon: 'lucide:file-clock',
           title: $t('menu.log.apiAuditLog'),
-          authority: ['platform:admin'],
+          authority: ['sys:platform_admin'],
         },
         component: () => import('#/views/app/log/api_audit_log/index.vue'),
       },
@@ -45,7 +45,7 @@ const log: RouteRecordRaw[] = [
         meta: {
           icon: 'lucide:shield-ellipsis',
           title: $t('menu.log.operationAuditLog'),
-          authority: ['platform:admin'],
+          authority: ['sys:platform_admin'],
         },
         component: () =>
           import('#/views/app/log/operation_audit_log/index.vue'),
@@ -57,7 +57,7 @@ const log: RouteRecordRaw[] = [
         meta: {
           icon: 'lucide:shield-check',
           title: $t('menu.log.dataAccessAuditLog'),
-          authority: ['platform:admin'],
+          authority: ['sys:platform_admin'],
         },
         component: () =>
           import('#/views/app/log/data_access_audit_log/index.vue'),
@@ -69,7 +69,7 @@ const log: RouteRecordRaw[] = [
         meta: {
           icon: 'lucide:shield-alert',
           title: $t('menu.log.permissionAuditLog'),
-          authority: ['platform:admin'],
+          authority: ['sys:platform_admin'],
         },
         component: () =>
           import('#/views/app/log/permission_audit_log/index.vue'),

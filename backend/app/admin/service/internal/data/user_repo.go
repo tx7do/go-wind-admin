@@ -483,6 +483,8 @@ func (r *userRepo) Get(ctx context.Context, req *identityV1.GetUserRequest) (*id
 	dto.PositionIds = positionIDs
 	dto.OrgUnitIds = orgUnitIDs
 
+	r.log.Debugf("get user id=%d role_ids=%v position_ids=%v org_unit_ids=%v", dto.GetId(), roleIDs, positionIDs, orgUnitIDs)
+
 	return dto, err
 }
 
@@ -1126,20 +1128,26 @@ func (r *userRepo) ListUserRelationIDs(ctx context.Context, userID uint32) (role
 // listUserRelationIDsOneToOne 列出用户关联的角色、岗位、组织单元ID列表（一对一关系）
 func (r *userRepo) listUserRelationIDs(ctx context.Context, userID uint32) (roleIDs []uint32, positionIDs []uint32, orgUnitIDs []uint32, err error) {
 	if userID == 0 {
+		r.log.Errorf("invalid user id: %d", userID)
 		return
 	}
 
 	if roleIDs, err = r.userRoleRepo.ListRoleIDs(ctx, userID, false); err != nil {
+		r.log.Errorf("list user role ids failed: %s", err.Error())
 		return
 	}
 
 	if positionIDs, err = r.userPositionRepo.ListPositionIDs(ctx, userID, false); err != nil {
+		r.log.Errorf("list user position ids failed: %s", err.Error())
 		return
 	}
 
 	if orgUnitIDs, err = r.userOrgUnitRepo.ListOrgUnitIDs(ctx, userID, false); err != nil {
+		r.log.Errorf("list user org unit ids failed: %s", err.Error())
 		return
 	}
+
+	r.log.Debugf("list user relation ids: user_id=%d role_ids=%v position_ids=%v org_unit_ids=%v", userID, roleIDs, positionIDs, orgUnitIDs)
 
 	return
 }

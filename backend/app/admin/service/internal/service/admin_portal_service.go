@@ -8,13 +8,11 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 
-	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/fieldmaskpb"
-
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/sliceutil"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"go-wind-admin/app/admin/service/internal/data"
 
@@ -30,9 +28,10 @@ type AdminPortalService struct {
 
 	log *log.Helper
 
-	menuRepo *data.MenuRepo
-	roleRepo *data.RoleRepo
-	userRepo data.UserRepo
+	menuRepo       *data.MenuRepo
+	roleRepo       *data.RoleRepo
+	userRepo       data.UserRepo
+	permissionRepo *data.PermissionRepo
 }
 
 func NewAdminPortalService(
@@ -40,12 +39,14 @@ func NewAdminPortalService(
 	menuRepo *data.MenuRepo,
 	roleRepo *data.RoleRepo,
 	userRepo data.UserRepo,
+	permissionRepo *data.PermissionRepo,
 ) *AdminPortalService {
 	return &AdminPortalService{
-		log:      ctx.NewLoggerHelper("admin-portal/service/admin-service"),
-		menuRepo: menuRepo,
-		roleRepo: roleRepo,
-		userRepo: userRepo,
+		log:            ctx.NewLoggerHelper("admin-portal/service/admin-service"),
+		menuRepo:       menuRepo,
+		roleRepo:       roleRepo,
+		userRepo:       userRepo,
+		permissionRepo: permissionRepo,
 	}
 }
 
@@ -74,22 +75,19 @@ func (s *AdminPortalService) menuListToQueryString(menus []uint32, onlyButton bo
 }
 
 // queryMultipleRolesMenusByRoleCodes 使用RoleCodes查询菜单，即多个角色的菜单
-func (s *AdminPortalService) queryMultipleRolesMenusByRoleCodes(ctx context.Context, roleCodes []string) ([]uint32, error) {
-	roleIDs, err := s.roleRepo.ListRoleIDsByRoleCodes(ctx, roleCodes)
+func (s *AdminPortalService) queryMultipleRolesMenusByRoleCodes(ctx context.Context, roleIDs []uint32) ([]uint32, error) {
+	var menuIDs []uint32
+	var err error
+	menuIDs, err = s.roleRepo.GetRolesPermissionMenuIDs(ctx, roleIDs)
 	if err != nil {
-		return nil, adminV1.ErrorInternalServerError("query roles failed")
+		return nil, adminV1.ErrorInternalServerError("query roles menuIDs failed")
 	}
 
-	var menus []uint32
+	s.log.Infof("queryMultipleRolesMenusByRoleCodes menuIDs: %+v", menuIDs)
 
-	menus, err = s.roleRepo.GetRolesPermissionMenuIDs(ctx, roleIDs)
-	if err != nil {
-		return nil, adminV1.ErrorInternalServerError("query roles menus failed")
-	}
+	menuIDs = sliceutil.Unique(menuIDs)
 
-	menus = sliceutil.Unique(menus)
-
-	return menus, nil
+	return menuIDs, nil
 }
 
 // queryMultipleRolesMenusByRoleIds 使用RoleIDs查询菜单，即多个角色的菜单
@@ -121,42 +119,19 @@ func (s *AdminPortalService) GetMyPermissionCode(ctx context.Context, _ *emptypb
 		return nil, adminV1.ErrorInternalServerError("query user failed")
 	}
 
-	s.log.Debugf("user info: %+v", user.GetRoleIds())
-
-	// 多角色的菜单
-	roleMenus, err := s.queryMultipleRolesMenusByRoleIds(ctx, user.GetRoleIds())
+	permissionIDs, err := s.roleRepo.ListPermissionIDsByRoleIDs(ctx, user.GetRoleIds())
 	if err != nil {
 		return nil, err
 	}
 
-	menus, err := s.menuRepo.List(ctx, &paginationV1.PagingRequest{
-		NoPaging: trans.Ptr(true),
-		FilteringType: &paginationV1.PagingRequest_Query{
-			Query: s.menuListToQueryString(roleMenus, true),
-		},
-		FieldMask: &fieldmaskpb.FieldMask{
-			Paths: []string{"id", "meta"},
-		},
-	}, false)
+	var permissionCodes []string
+	permissionCodes, err = s.permissionRepo.GetPermissionCodesByIDs(ctx, permissionIDs)
 	if err != nil {
-		s.log.Errorf("list permission code failed [%s]", err.Error())
-		return nil, adminV1.ErrorInternalServerError("list permission code failed")
-	}
-
-	var codes []string
-	for menu := range menus.Items {
-		if menus.Items[menu].GetMeta() == nil {
-			continue
-		}
-		if len(menus.Items[menu].GetMeta().GetAuthority()) == 0 {
-			continue
-		}
-
-		codes = append(codes, menus.Items[menu].GetMeta().GetAuthority()...)
+		return nil, err
 	}
 
 	return &adminV1.ListPermissionCodeResponse{
-		Codes: codes,
+		Codes: permissionCodes,
 	}, nil
 }
 
@@ -211,14 +186,8 @@ func (s *AdminPortalService) GetNavigation(ctx context.Context, _ *emptypb.Empty
 		return nil, adminV1.ErrorInternalServerError("query user failed")
 	}
 
-	// 单角色的菜单
-	//roleMenus, err := s.queryOneRoleMenus(ctx, user.GetRoleId())
-	//if err != nil {
-	//	return nil, err
-	//}
-
 	// 多角色的菜单
-	roleMenus, err := s.queryMultipleRolesMenusByRoleCodes(ctx, user.GetRoles())
+	roleMenus, err := s.queryMultipleRolesMenusByRoleCodes(ctx, user.GetRoleIds())
 	if err != nil {
 		return nil, err
 	}
@@ -234,7 +203,5 @@ func (s *AdminPortalService) GetNavigation(ctx context.Context, _ *emptypb.Empty
 		return nil, adminV1.ErrorInternalServerError("list route failed")
 	}
 
-	resp := &adminV1.ListRouteResponse{Items: s.fillRouteItem(menuList.Items)}
-
-	return resp, nil
+	return &adminV1.ListRouteResponse{Items: s.fillRouteItem(menuList.Items)}, nil
 }
