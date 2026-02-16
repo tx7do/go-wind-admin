@@ -20,6 +20,7 @@ import {
   statusToName,
   useMenuStore,
 } from '#/stores';
+import { getRandomColor } from '#/utils/color';
 
 import MenuDrawer from './menu-drawer.vue';
 
@@ -109,7 +110,7 @@ const gridOptions: VxeGridProps<Menu> = {
       title: $t('page.menu.name'),
       field: 'meta.title',
       slots: { default: 'title' },
-      width: 250,
+      width: 180,
       fixed: 'left',
       align: 'left',
       treeNode: true,
@@ -120,9 +121,14 @@ const gridOptions: VxeGridProps<Menu> = {
       slots: { default: 'type' },
       width: 95,
     },
-    { title: $t('page.menu.authority'), field: 'meta.authority', width: 100 },
-    { title: $t('page.menu.path'), field: 'path' },
-    { title: $t('page.menu.component'), field: 'component' },
+    {
+      title: $t('page.menu.authority'),
+      field: 'meta.authority',
+      align: 'left',
+      slots: { default: 'authority' },
+    },
+    { title: $t('page.menu.path'), field: 'path', align: 'left' },
+    { title: $t('page.menu.component'), field: 'component', align: 'left' },
     {
       title: $t('ui.table.status'),
       field: 'status',
@@ -130,12 +136,6 @@ const gridOptions: VxeGridProps<Menu> = {
       width: 95,
     },
     { title: $t('ui.table.sortOrder'), field: 'meta.order', width: 70 },
-    {
-      title: $t('ui.table.updatedAt'),
-      field: 'updatedAt',
-      formatter: 'formatDateTime',
-      width: 140,
-    },
     {
       title: $t('ui.table.action'),
       field: 'action',
@@ -256,6 +256,20 @@ const collapseAll = () => {
       <template #type="{ row }">
         <a-tag :color="menuTypeToColor(row.type)">
           {{ menuTypeToName(row.type) }}
+        </a-tag>
+      </template>
+      <template #authority="{ row }">
+        <a-tag
+          v-for="auth in row.meta.authority"
+          :key="auth"
+          class="mb-1 mr-1"
+          :style="{
+            backgroundColor: getRandomColor(auth), // 随机背景色
+            color: '#333', // 深色文字（适配浅色背景）
+            border: 'none', // 可选：去掉边框更美观
+          }"
+        >
+          {{ auth }}
         </a-tag>
       </template>
       <template #action="{ row }">
