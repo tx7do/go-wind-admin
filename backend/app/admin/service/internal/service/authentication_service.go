@@ -469,9 +469,19 @@ func (s *AuthenticationService) RegisterUser(ctx context.Context, req *authentic
 	var err error
 
 	var tenantId *uint32
-	tenant, err := s.tenantRepo.Get(ctx, &identityV1.GetTenantRequest{QueryBy: &identityV1.GetTenantRequest_Code{Code: req.GetTenantCode()}})
-	if tenant != nil {
-		tenantId = tenant.Id
+	if constants.IsTenantModeEnabled {
+		var tenant *identityV1.Tenant
+		tenant, err = s.tenantRepo.Get(ctx, &identityV1.GetTenantRequest{
+			QueryBy: &identityV1.GetTenantRequest_Code{Code: req.GetTenantCode()},
+		})
+		if err != nil {
+			s.log.Errorf("get tenant by code [%s] failed [%s]", req.GetTenantCode(), err.Error())
+			return nil, err
+		}
+
+		if tenant != nil {
+			tenantId = tenant.Id
+		}
 	}
 
 	user, err := s.userRepo.Create(ctx, &identityV1.CreateUserRequest{
