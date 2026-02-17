@@ -2,6 +2,7 @@
 /* eslint-disable camelcase */
 // @ts-nocheck
 
+// 后台错误定义
 export type AdminErrorReason =
   // 400
   | "BAD_REQUEST"
