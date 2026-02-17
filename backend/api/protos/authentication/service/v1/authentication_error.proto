@@ -4,7 +4,7 @@ package authentication.service.v1;
 
 import "errors/errors.proto";
 
-// AuthenticationErrorReason 是身份认证系统错误定义
+// 身份认证系统错误定义
 enum AuthenticationErrorReason {
     option (errors.default_code) = 500;
 

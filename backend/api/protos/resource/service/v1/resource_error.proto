@@ -4,7 +4,7 @@ package resource.service.v1;
 
 import "errors/errors.proto";
 
-// ResourceErrorReason 资源系统错误定义
+// 资源系统错误定义
 enum ResourceErrorReason {
   option (errors.default_code) = 500;
 

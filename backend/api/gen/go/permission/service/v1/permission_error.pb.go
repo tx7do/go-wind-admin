@@ -22,7 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// PermissionErrorReason 权限系统错误定义
+// 权限系统错误定义
 type PermissionErrorReason int32
 
 const (

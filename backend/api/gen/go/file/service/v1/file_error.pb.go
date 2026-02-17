@@ -22,7 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// FileErrorReason 是文件系统错误定义
+// 文件系统错误定义
 type FileErrorReason int32
 
 const (

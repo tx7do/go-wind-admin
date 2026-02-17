@@ -4,7 +4,7 @@ package identity.service.v1;
 
 import "errors/errors.proto";
 
-// 用户服务相关错误码
+// 身份系统错误定义
 enum IdentityErrorReason {
   option (errors.default_code) = 500;
 

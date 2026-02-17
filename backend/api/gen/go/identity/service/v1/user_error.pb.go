@@ -22,7 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// 用户服务相关错误码
+// 身份系统错误定义
 type IdentityErrorReason int32
 
 const (

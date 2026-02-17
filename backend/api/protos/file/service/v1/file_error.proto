@@ -4,7 +4,7 @@ package file.service.v1;
 
 import "errors/errors.proto";
 
-// FileErrorReason 是文件系统错误定义
+// 文件系统错误定义
 enum FileErrorReason {
     option (errors.default_code) = 500;
 

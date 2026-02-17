@@ -4,7 +4,7 @@ package permission.service.v1;
 
 import "errors/errors.proto";
 
-// PermissionErrorReason 权限系统错误定义
+// 权限系统错误定义
 enum PermissionErrorReason {
   option (errors.default_code) = 500;
 

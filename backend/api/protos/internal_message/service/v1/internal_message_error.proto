@@ -4,7 +4,7 @@ package internal_message.service.v1;
 
 import "errors/errors.proto";
 
-// 站内信错误码
+// 站内信系统错误定义
 enum InternalMessageErrorReason {
   option (errors.default_code) = 500;
 

@@ -22,7 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// TaskErrorReason 分布式任务系统错误定义
+// 分布式任务系统错误定义
 type TaskErrorReason int32
 
 const (

@@ -4,7 +4,7 @@ package task.service.v1;
 
 import "errors/errors.proto";
 
-// TaskErrorReason 分布式任务系统错误定义
+// 分布式任务系统错误定义
 enum TaskErrorReason {
   option (errors.default_code) = 500;
 

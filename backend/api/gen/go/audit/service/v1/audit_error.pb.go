@@ -22,7 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// AuditErrorReason 审计系统错误定义
+// 审计系统错误定义
 type AuditErrorReason int32
 
 const (

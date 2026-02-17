@@ -22,7 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// 站内信错误码
+// 站内信系统错误定义
 type InternalMessageErrorReason int32
 
 const (

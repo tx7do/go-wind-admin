@@ -22,7 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// DictErrorReason 数据字典系统错误定义
+// 数据字典系统错误定义
 type DictErrorReason int32
 
 const (

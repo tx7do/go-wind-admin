@@ -4,7 +4,7 @@ package dict.service.v1;
 
 import "errors/errors.proto";
 
-// DictErrorReason 数据字典系统错误定义
+// 数据字典系统错误定义
 enum DictErrorReason {
     option (errors.default_code) = 500;
 

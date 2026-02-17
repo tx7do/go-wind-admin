@@ -22,7 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// AuthenticationErrorReason 是身份认证系统错误定义
+// 身份认证系统错误定义
 type AuthenticationErrorReason int32
 
 const (

@@ -22,7 +22,7 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// ResourceErrorReason 资源系统错误定义
+// 资源系统错误定义
 type ResourceErrorReason int32
 
 const (

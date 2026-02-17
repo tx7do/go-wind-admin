@@ -4,6 +4,7 @@ package admin.service.v1;
 
 import "errors/errors.proto";
 
+// 后台错误定义
 enum AdminErrorReason {
     option (errors.default_code) = 500;
 
