@@ -8,26 +8,26 @@ import "google/protobuf/empty.proto";
 
 import "pagination/v1/pagination.proto";
 
-import "file/service/v1/file.proto";
+import "storage/service/v1/file.proto";
 
 // 文件管理服务
 service FileService {
   // 查询文件列表
-  rpc List (pagination.PagingRequest) returns (file.service.v1.ListFileResponse) {
+  rpc List (pagination.PagingRequest) returns (storage.service.v1.ListFileResponse) {
     option (google.api.http) = {
       get: "/admin/v1/files"
     };
   }
 
   // 查询文件详情
-  rpc Get (file.service.v1.GetFileRequest) returns (file.service.v1.File) {
+  rpc Get (storage.service.v1.GetFileRequest) returns (storage.service.v1.File) {
     option (google.api.http) = {
       get: "/admin/v1/files/{id}"
     };
   }
 
   // 创建文件
-  rpc Create (file.service.v1.CreateFileRequest) returns (google.protobuf.Empty) {
+  rpc Create (storage.service.v1.CreateFileRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       post: "/admin/v1/files"
       body: "*"
@@ -35,7 +35,7 @@ service FileService {
   }
 
   // 更新文件
-  rpc Update (file.service.v1.UpdateFileRequest) returns (google.protobuf.Empty) {
+  rpc Update (storage.service.v1.UpdateFileRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       put: "/admin/v1/files/{id}"
       body: "*"
@@ -43,7 +43,7 @@ service FileService {
   }
 
   // 删除文件
-  rpc Delete (file.service.v1.DeleteFileRequest) returns (google.protobuf.Empty) {
+  rpc Delete (storage.service.v1.DeleteFileRequest) returns (google.protobuf.Empty) {
     option (google.api.http) = {
       delete: "/admin/v1/files/{id}"
     };

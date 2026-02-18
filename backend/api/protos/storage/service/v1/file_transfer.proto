@@ -1,12 +1,12 @@
 syntax = "proto3";
 
-package file.service.v1;
+package storage.service.v1;
 
 import "gnostic/openapi/v3/annotations.proto";
 import "google/api/httpbody.proto";
 import "google/protobuf/timestamp.proto";
 
-import "file/service/v1/oss.proto";
+import "storage/service/v1/oss.proto";
 
 // 文件传输服务
 service FileTransferService {

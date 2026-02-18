@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: file/service/v1/ueditor.proto
+// source: storage/service/v1/ueditor.proto
 
-package filepb
+package storagepb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
@@ -73,11 +73,11 @@ func (x UEditorAction) String() string {
 }
 
 func (UEditorAction) Descriptor() protoreflect.EnumDescriptor {
-	return file_file_service_v1_ueditor_proto_enumTypes[0].Descriptor()
+	return file_storage_service_v1_ueditor_proto_enumTypes[0].Descriptor()
 }
 
 func (UEditorAction) Type() protoreflect.EnumType {
-	return &file_file_service_v1_ueditor_proto_enumTypes[0]
+	return &file_storage_service_v1_ueditor_proto_enumTypes[0]
 }
 
 func (x UEditorAction) Number() protoreflect.EnumNumber {
@@ -86,7 +86,7 @@ func (x UEditorAction) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use UEditorAction.Descriptor instead.
 func (UEditorAction) EnumDescriptor() ([]byte, []int) {
-	return file_file_service_v1_ueditor_proto_rawDescGZIP(), []int{0}
+	return file_storage_service_v1_ueditor_proto_rawDescGZIP(), []int{0}
 }
 
 type UEditorRequest struct {
@@ -101,7 +101,7 @@ type UEditorRequest struct {
 
 func (x *UEditorRequest) Reset() {
 	*x = UEditorRequest{}
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[0]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -113,7 +113,7 @@ func (x *UEditorRequest) String() string {
 func (*UEditorRequest) ProtoMessage() {}
 
 func (x *UEditorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[0]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -126,7 +126,7 @@ func (x *UEditorRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UEditorRequest.ProtoReflect.Descriptor instead.
 func (*UEditorRequest) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_ueditor_proto_rawDescGZIP(), []int{0}
+	return file_storage_service_v1_ueditor_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *UEditorRequest) GetAction() string {
@@ -219,7 +219,7 @@ type UEditorResponse struct {
 
 func (x *UEditorResponse) Reset() {
 	*x = UEditorResponse{}
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[1]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -231,7 +231,7 @@ func (x *UEditorResponse) String() string {
 func (*UEditorResponse) ProtoMessage() {}
 
 func (x *UEditorResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[1]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -244,7 +244,7 @@ func (x *UEditorResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UEditorResponse.ProtoReflect.Descriptor instead.
 func (*UEditorResponse) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_ueditor_proto_rawDescGZIP(), []int{1}
+	return file_storage_service_v1_ueditor_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *UEditorResponse) GetImageActionName() string {
@@ -637,7 +637,7 @@ type UEditorUploadRequest struct {
 
 func (x *UEditorUploadRequest) Reset() {
 	*x = UEditorUploadRequest{}
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[2]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -649,7 +649,7 @@ func (x *UEditorUploadRequest) String() string {
 func (*UEditorUploadRequest) ProtoMessage() {}
 
 func (x *UEditorUploadRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[2]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -662,7 +662,7 @@ func (x *UEditorUploadRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UEditorUploadRequest.ProtoReflect.Descriptor instead.
 func (*UEditorUploadRequest) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_ueditor_proto_rawDescGZIP(), []int{2}
+	return file_storage_service_v1_ueditor_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *UEditorUploadRequest) GetAction() string {
@@ -708,7 +708,7 @@ type UEditorUploadResponse struct {
 
 func (x *UEditorUploadResponse) Reset() {
 	*x = UEditorUploadResponse{}
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[3]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -720,7 +720,7 @@ func (x *UEditorUploadResponse) String() string {
 func (*UEditorUploadResponse) ProtoMessage() {}
 
 func (x *UEditorUploadResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[3]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -733,7 +733,7 @@ func (x *UEditorUploadResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UEditorUploadResponse.ProtoReflect.Descriptor instead.
 func (*UEditorUploadResponse) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_ueditor_proto_rawDescGZIP(), []int{3}
+	return file_storage_service_v1_ueditor_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *UEditorUploadResponse) GetState() string {
@@ -797,7 +797,7 @@ type UEditorListResponse struct {
 
 func (x *UEditorListResponse) Reset() {
 	*x = UEditorListResponse{}
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[4]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -809,7 +809,7 @@ func (x *UEditorListResponse) String() string {
 func (*UEditorListResponse) ProtoMessage() {}
 
 func (x *UEditorListResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[4]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -822,7 +822,7 @@ func (x *UEditorListResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UEditorListResponse.ProtoReflect.Descriptor instead.
 func (*UEditorListResponse) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_ueditor_proto_rawDescGZIP(), []int{4}
+	return file_storage_service_v1_ueditor_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *UEditorListResponse) GetState() string {
@@ -862,7 +862,7 @@ type UEditorResponse_FormulaConfig struct {
 
 func (x *UEditorResponse_FormulaConfig) Reset() {
 	*x = UEditorResponse_FormulaConfig{}
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[5]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -874,7 +874,7 @@ func (x *UEditorResponse_FormulaConfig) String() string {
 func (*UEditorResponse_FormulaConfig) ProtoMessage() {}
 
 func (x *UEditorResponse_FormulaConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[5]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -887,7 +887,7 @@ func (x *UEditorResponse_FormulaConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UEditorResponse_FormulaConfig.ProtoReflect.Descriptor instead.
 func (*UEditorResponse_FormulaConfig) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_ueditor_proto_rawDescGZIP(), []int{1, 0}
+	return file_storage_service_v1_ueditor_proto_rawDescGZIP(), []int{1, 0}
 }
 
 func (x *UEditorResponse_FormulaConfig) GetImageUrlTemplate() string {
@@ -907,7 +907,7 @@ type UEditorResponse_Item struct {
 
 func (x *UEditorResponse_Item) Reset() {
 	*x = UEditorResponse_Item{}
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[6]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -919,7 +919,7 @@ func (x *UEditorResponse_Item) String() string {
 func (*UEditorResponse_Item) ProtoMessage() {}
 
 func (x *UEditorResponse_Item) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[6]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -932,7 +932,7 @@ func (x *UEditorResponse_Item) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UEditorResponse_Item.ProtoReflect.Descriptor instead.
 func (*UEditorResponse_Item) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_ueditor_proto_rawDescGZIP(), []int{1, 1}
+	return file_storage_service_v1_ueditor_proto_rawDescGZIP(), []int{1, 1}
 }
 
 func (x *UEditorResponse_Item) GetUrl() string {
@@ -963,7 +963,7 @@ type UEditorUploadResponse_Item struct {
 
 func (x *UEditorUploadResponse_Item) Reset() {
 	*x = UEditorUploadResponse_Item{}
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[7]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -975,7 +975,7 @@ func (x *UEditorUploadResponse_Item) String() string {
 func (*UEditorUploadResponse_Item) ProtoMessage() {}
 
 func (x *UEditorUploadResponse_Item) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[7]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -988,7 +988,7 @@ func (x *UEditorUploadResponse_Item) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UEditorUploadResponse_Item.ProtoReflect.Descriptor instead.
 func (*UEditorUploadResponse_Item) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_ueditor_proto_rawDescGZIP(), []int{3, 0}
+	return file_storage_service_v1_ueditor_proto_rawDescGZIP(), []int{3, 0}
 }
 
 func (x *UEditorUploadResponse_Item) GetState() string {
@@ -1043,7 +1043,7 @@ type UEditorListResponse_Item struct {
 
 func (x *UEditorListResponse_Item) Reset() {
 	*x = UEditorListResponse_Item{}
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[8]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1055,7 +1055,7 @@ func (x *UEditorListResponse_Item) String() string {
 func (*UEditorListResponse_Item) ProtoMessage() {}
 
 func (x *UEditorListResponse_Item) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_ueditor_proto_msgTypes[8]
+	mi := &file_storage_service_v1_ueditor_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1068,7 +1068,7 @@ func (x *UEditorListResponse_Item) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UEditorListResponse_Item.ProtoReflect.Descriptor instead.
 func (*UEditorListResponse_Item) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_ueditor_proto_rawDescGZIP(), []int{4, 0}
+	return file_storage_service_v1_ueditor_proto_rawDescGZIP(), []int{4, 0}
 }
 
 func (x *UEditorListResponse_Item) GetUrl() string {
@@ -1085,16 +1085,16 @@ func (x *UEditorListResponse_Item) GetMtime() int64 {
 	return 0
 }
 
-var File_file_service_v1_ueditor_proto protoreflect.FileDescriptor
+var File_storage_service_v1_ueditor_proto protoreflect.FileDescriptor
 
-const file_file_service_v1_ueditor_proto_rawDesc = "" +
+const file_storage_service_v1_ueditor_proto_rawDesc = "" +
 	"\n" +
-	"\x1dfile/service/v1/ueditor.proto\x12\x0ffile.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x19google/api/httpbody.proto\"j\n" +
+	" storage/service/v1/ueditor.proto\x12\x12storage.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x19google/api/httpbody.proto\"j\n" +
 	"\x0eUEditorRequest\x12\x16\n" +
 	"\x06action\x18\x01 \x01(\tR\x06action\x12\x16\n" +
 	"\x06encode\x18\x02 \x01(\tR\x06encode\x12\x14\n" +
 	"\x05start\x18\x03 \x01(\x05R\x05start\x12\x12\n" +
-	"\x04size\x18\x04 \x01(\x05R\x04size\"\xa1\x1d\n" +
+	"\x04size\x18\x04 \x01(\x05R\x04size\"\xa7\x1d\n" +
 	"\x0fUEditorResponse\x12-\n" +
 	"\x0fimageActionName\x18\x01 \x01(\tH\x00R\x0fimageActionName\x88\x01\x01\x12+\n" +
 	"\x0eimageFieldName\x18\x02 \x01(\tH\x01R\x0eimageFieldName\x88\x01\x01\x12'\n" +
@@ -1146,12 +1146,12 @@ const file_file_service_v1_ueditor_proto_rawDesc = "" +
 	"\x14fileManagerUrlPrefix\x18G \x01(\tH'R\x14fileManagerUrlPrefix\x88\x01\x01\x125\n" +
 	"\x13fileManagerListSize\x18H \x01(\x03H(R\x13fileManagerListSize\x88\x01\x01\x124\n" +
 	"\x15fileManagerAllowFiles\x18I \x03(\tR\x15fileManagerAllowFiles\x125\n" +
-	"\x13FileManagerListPath\x18J \x01(\tH)R\x13FileManagerListPath\x88\x01\x01\x12Y\n" +
-	"\rformulaConfig\x18P \x01(\v2..file.service.v1.UEditorResponse.FormulaConfigH*R\rformulaConfig\x88\x01\x01\x12\x19\n" +
+	"\x13FileManagerListPath\x18J \x01(\tH)R\x13FileManagerListPath\x88\x01\x01\x12\\\n" +
+	"\rformulaConfig\x18P \x01(\v21.storage.service.v1.UEditorResponse.FormulaConfigH*R\rformulaConfig\x88\x01\x01\x12\x19\n" +
 	"\x05state\x18d \x01(\tH+R\x05state\x88\x01\x01\x12\x19\n" +
 	"\x05start\x18e \x01(\x05H,R\x05start\x88\x01\x01\x12\x19\n" +
-	"\x05total\x18f \x01(\x05H-R\x05total\x88\x01\x01\x129\n" +
-	"\x04list\x18g \x03(\v2%.file.service.v1.UEditorResponse.ItemR\x04list\x1a;\n" +
+	"\x05total\x18f \x01(\x05H-R\x05total\x88\x01\x01\x12<\n" +
+	"\x04list\x18g \x03(\v2(.storage.service.v1.UEditorResponse.ItemR\x04list\x1a;\n" +
 	"\rFormulaConfig\x12*\n" +
 	"\x10imageUrlTemplate\x18\x01 \x01(\tR\x10imageUrlTemplate\x1a.\n" +
 	"\x04Item\x12\x10\n" +
@@ -1211,16 +1211,16 @@ const file_file_service_v1_ueditor_proto_rawDesc = "" +
 	"\a_actionB\a\n" +
 	"\x05_fileB\x13\n" +
 	"\x11_source_file_nameB\a\n" +
-	"\x05_mime\"\x88\x04\n" +
+	"\x05_mime\"\x8b\x04\n" +
 	"\x15UEditorUploadResponse\x12\x19\n" +
 	"\x05state\x18\x01 \x01(\tH\x00R\x05state\x88\x01\x01\x12\x15\n" +
 	"\x03url\x18\x02 \x01(\tH\x01R\x03url\x88\x01\x01\x12\x19\n" +
 	"\x05title\x18\x03 \x01(\tH\x02R\x05title\x88\x01\x01\x12\x1f\n" +
 	"\boriginal\x18\x04 \x01(\tH\x03R\boriginal\x88\x01\x01\x12\x17\n" +
 	"\x04type\x18\x05 \x01(\tH\x04R\x04type\x88\x01\x01\x12\x17\n" +
-	"\x04size\x18\x06 \x01(\x05H\x05R\x04size\x88\x01\x01\x12?\n" +
+	"\x04size\x18\x06 \x01(\x05H\x05R\x04size\x88\x01\x01\x12B\n" +
 	"\x04list\x18\n" +
-	" \x03(\v2+.file.service.v1.UEditorUploadResponse.ItemR\x04list\x1a\xd2\x01\n" +
+	" \x03(\v2..storage.service.v1.UEditorUploadResponse.ItemR\x04list\x1a\xd2\x01\n" +
 	"\x04Item\x12\x14\n" +
 	"\x05state\x18\x01 \x01(\tR\x05state\x12\x15\n" +
 	"\x03url\x18\x02 \x01(\tH\x00R\x03url\x88\x01\x01\x12\x19\n" +
@@ -1238,13 +1238,13 @@ const file_file_service_v1_ueditor_proto_rawDesc = "" +
 	"\x06_titleB\v\n" +
 	"\t_originalB\a\n" +
 	"\x05_typeB\a\n" +
-	"\x05_size\"\xc6\x01\n" +
+	"\x05_size\"\xc9\x01\n" +
 	"\x13UEditorListResponse\x12\x14\n" +
 	"\x05state\x18\x01 \x01(\tR\x05state\x12\x14\n" +
 	"\x05start\x18\x02 \x01(\x05R\x05start\x12\x14\n" +
-	"\x05total\x18\x03 \x01(\x05R\x05total\x12=\n" +
+	"\x05total\x18\x03 \x01(\x05R\x05total\x12@\n" +
 	"\x04list\x18\n" +
-	" \x03(\v2).file.service.v1.UEditorListResponse.ItemR\x04list\x1a.\n" +
+	" \x03(\v2,.storage.service.v1.UEditorListResponse.ItemR\x04list\x1a.\n" +
 	"\x04Item\x12\x10\n" +
 	"\x03url\x18\x01 \x01(\tR\x03url\x12\x14\n" +
 	"\x05mtime\x18\x02 \x01(\x03R\x05mtime*\x8c\x01\n" +
@@ -1260,49 +1260,49 @@ const file_file_service_v1_ueditor_proto_rawDesc = "" +
 	"\vuploadVideo\x10\f\x12\x10\n" +
 	"\fuploadScrawl\x10\r\x12\x0e\n" +
 	"\n" +
-	"catchImage\x10\x0e2\xc2\x01\n" +
-	"\x0eUEditorService\x12Q\n" +
+	"catchImage\x10\x0e2\xce\x01\n" +
+	"\x0eUEditorService\x12W\n" +
 	"\n" +
-	"UEditorAPI\x12\x1f.file.service.v1.UEditorRequest\x1a .file.service.v1.UEditorResponse\"\x00\x12]\n" +
+	"UEditorAPI\x12\".storage.service.v1.UEditorRequest\x1a#.storage.service.v1.UEditorResponse\"\x00\x12c\n" +
 	"\n" +
-	"UploadFile\x12%.file.service.v1.UEditorUploadRequest\x1a&.file.service.v1.UEditorUploadResponse\"\x00B\xb2\x01\n" +
-	"\x13com.file.service.v1B\fUeditorProtoP\x01Z/go-wind-admin/api/gen/go/file/service/v1;filepb\xa2\x02\x03FSX\xaa\x02\x0fFile.Service.V1\xca\x02\x0fFile\\Service\\V1\xe2\x02\x1bFile\\Service\\V1\\GPBMetadata\xea\x02\x11File::Service::V1b\x06proto3"
+	"UploadFile\x12(.storage.service.v1.UEditorUploadRequest\x1a).storage.service.v1.UEditorUploadResponse\"\x00B\xc7\x01\n" +
+	"\x16com.storage.service.v1B\fUeditorProtoP\x01Z5go-wind-admin/api/gen/go/storage/service/v1;storagepb\xa2\x02\x03SSX\xaa\x02\x12Storage.Service.V1\xca\x02\x12Storage\\Service\\V1\xe2\x02\x1eStorage\\Service\\V1\\GPBMetadata\xea\x02\x14Storage::Service::V1b\x06proto3"
 
 var (
-	file_file_service_v1_ueditor_proto_rawDescOnce sync.Once
-	file_file_service_v1_ueditor_proto_rawDescData []byte
+	file_storage_service_v1_ueditor_proto_rawDescOnce sync.Once
+	file_storage_service_v1_ueditor_proto_rawDescData []byte
 )
 
-func file_file_service_v1_ueditor_proto_rawDescGZIP() []byte {
-	file_file_service_v1_ueditor_proto_rawDescOnce.Do(func() {
-		file_file_service_v1_ueditor_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_file_service_v1_ueditor_proto_rawDesc), len(file_file_service_v1_ueditor_proto_rawDesc)))
+func file_storage_service_v1_ueditor_proto_rawDescGZIP() []byte {
+	file_storage_service_v1_ueditor_proto_rawDescOnce.Do(func() {
+		file_storage_service_v1_ueditor_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_storage_service_v1_ueditor_proto_rawDesc), len(file_storage_service_v1_ueditor_proto_rawDesc)))
 	})
-	return file_file_service_v1_ueditor_proto_rawDescData
+	return file_storage_service_v1_ueditor_proto_rawDescData
 }
 
-var file_file_service_v1_ueditor_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_file_service_v1_ueditor_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
-var file_file_service_v1_ueditor_proto_goTypes = []any{
-	(UEditorAction)(0),                    // 0: file.service.v1.UEditorAction
-	(*UEditorRequest)(nil),                // 1: file.service.v1.UEditorRequest
-	(*UEditorResponse)(nil),               // 2: file.service.v1.UEditorResponse
-	(*UEditorUploadRequest)(nil),          // 3: file.service.v1.UEditorUploadRequest
-	(*UEditorUploadResponse)(nil),         // 4: file.service.v1.UEditorUploadResponse
-	(*UEditorListResponse)(nil),           // 5: file.service.v1.UEditorListResponse
-	(*UEditorResponse_FormulaConfig)(nil), // 6: file.service.v1.UEditorResponse.FormulaConfig
-	(*UEditorResponse_Item)(nil),          // 7: file.service.v1.UEditorResponse.Item
-	(*UEditorUploadResponse_Item)(nil),    // 8: file.service.v1.UEditorUploadResponse.Item
-	(*UEditorListResponse_Item)(nil),      // 9: file.service.v1.UEditorListResponse.Item
+var file_storage_service_v1_ueditor_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_storage_service_v1_ueditor_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_storage_service_v1_ueditor_proto_goTypes = []any{
+	(UEditorAction)(0),                    // 0: storage.service.v1.UEditorAction
+	(*UEditorRequest)(nil),                // 1: storage.service.v1.UEditorRequest
+	(*UEditorResponse)(nil),               // 2: storage.service.v1.UEditorResponse
+	(*UEditorUploadRequest)(nil),          // 3: storage.service.v1.UEditorUploadRequest
+	(*UEditorUploadResponse)(nil),         // 4: storage.service.v1.UEditorUploadResponse
+	(*UEditorListResponse)(nil),           // 5: storage.service.v1.UEditorListResponse
+	(*UEditorResponse_FormulaConfig)(nil), // 6: storage.service.v1.UEditorResponse.FormulaConfig
+	(*UEditorResponse_Item)(nil),          // 7: storage.service.v1.UEditorResponse.Item
+	(*UEditorUploadResponse_Item)(nil),    // 8: storage.service.v1.UEditorUploadResponse.Item
+	(*UEditorListResponse_Item)(nil),      // 9: storage.service.v1.UEditorListResponse.Item
 }
-var file_file_service_v1_ueditor_proto_depIdxs = []int32{
-	6, // 0: file.service.v1.UEditorResponse.formulaConfig:type_name -> file.service.v1.UEditorResponse.FormulaConfig
-	7, // 1: file.service.v1.UEditorResponse.list:type_name -> file.service.v1.UEditorResponse.Item
-	8, // 2: file.service.v1.UEditorUploadResponse.list:type_name -> file.service.v1.UEditorUploadResponse.Item
-	9, // 3: file.service.v1.UEditorListResponse.list:type_name -> file.service.v1.UEditorListResponse.Item
-	1, // 4: file.service.v1.UEditorService.UEditorAPI:input_type -> file.service.v1.UEditorRequest
-	3, // 5: file.service.v1.UEditorService.UploadFile:input_type -> file.service.v1.UEditorUploadRequest
-	2, // 6: file.service.v1.UEditorService.UEditorAPI:output_type -> file.service.v1.UEditorResponse
-	4, // 7: file.service.v1.UEditorService.UploadFile:output_type -> file.service.v1.UEditorUploadResponse
+var file_storage_service_v1_ueditor_proto_depIdxs = []int32{
+	6, // 0: storage.service.v1.UEditorResponse.formulaConfig:type_name -> storage.service.v1.UEditorResponse.FormulaConfig
+	7, // 1: storage.service.v1.UEditorResponse.list:type_name -> storage.service.v1.UEditorResponse.Item
+	8, // 2: storage.service.v1.UEditorUploadResponse.list:type_name -> storage.service.v1.UEditorUploadResponse.Item
+	9, // 3: storage.service.v1.UEditorListResponse.list:type_name -> storage.service.v1.UEditorListResponse.Item
+	1, // 4: storage.service.v1.UEditorService.UEditorAPI:input_type -> storage.service.v1.UEditorRequest
+	3, // 5: storage.service.v1.UEditorService.UploadFile:input_type -> storage.service.v1.UEditorUploadRequest
+	2, // 6: storage.service.v1.UEditorService.UEditorAPI:output_type -> storage.service.v1.UEditorResponse
+	4, // 7: storage.service.v1.UEditorService.UploadFile:output_type -> storage.service.v1.UEditorUploadResponse
 	6, // [6:8] is the sub-list for method output_type
 	4, // [4:6] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
@@ -1310,31 +1310,31 @@ var file_file_service_v1_ueditor_proto_depIdxs = []int32{
 	0, // [0:4] is the sub-list for field type_name
 }
 
-func init() { file_file_service_v1_ueditor_proto_init() }
-func file_file_service_v1_ueditor_proto_init() {
-	if File_file_service_v1_ueditor_proto != nil {
+func init() { file_storage_service_v1_ueditor_proto_init() }
+func file_storage_service_v1_ueditor_proto_init() {
+	if File_storage_service_v1_ueditor_proto != nil {
 		return
 	}
-	file_file_service_v1_ueditor_proto_msgTypes[1].OneofWrappers = []any{}
-	file_file_service_v1_ueditor_proto_msgTypes[2].OneofWrappers = []any{}
-	file_file_service_v1_ueditor_proto_msgTypes[3].OneofWrappers = []any{}
-	file_file_service_v1_ueditor_proto_msgTypes[7].OneofWrappers = []any{}
+	file_storage_service_v1_ueditor_proto_msgTypes[1].OneofWrappers = []any{}
+	file_storage_service_v1_ueditor_proto_msgTypes[2].OneofWrappers = []any{}
+	file_storage_service_v1_ueditor_proto_msgTypes[3].OneofWrappers = []any{}
+	file_storage_service_v1_ueditor_proto_msgTypes[7].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_file_service_v1_ueditor_proto_rawDesc), len(file_file_service_v1_ueditor_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_storage_service_v1_ueditor_proto_rawDesc), len(file_storage_service_v1_ueditor_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_file_service_v1_ueditor_proto_goTypes,
-		DependencyIndexes: file_file_service_v1_ueditor_proto_depIdxs,
-		EnumInfos:         file_file_service_v1_ueditor_proto_enumTypes,
-		MessageInfos:      file_file_service_v1_ueditor_proto_msgTypes,
+		GoTypes:           file_storage_service_v1_ueditor_proto_goTypes,
+		DependencyIndexes: file_storage_service_v1_ueditor_proto_depIdxs,
+		EnumInfos:         file_storage_service_v1_ueditor_proto_enumTypes,
+		MessageInfos:      file_storage_service_v1_ueditor_proto_msgTypes,
 	}.Build()
-	File_file_service_v1_ueditor_proto = out.File
-	file_file_service_v1_ueditor_proto_goTypes = nil
-	file_file_service_v1_ueditor_proto_depIdxs = nil
+	File_storage_service_v1_ueditor_proto = out.File
+	file_storage_service_v1_ueditor_proto_goTypes = nil
+	file_storage_service_v1_ueditor_proto_depIdxs = nil
 }

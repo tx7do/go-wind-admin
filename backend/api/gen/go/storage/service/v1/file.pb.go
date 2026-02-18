@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: file/service/v1/file.proto
+// source: storage/service/v1/file.proto
 
-package filepb
+package storagepb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
@@ -82,11 +82,11 @@ func (x OSSProvider) String() string {
 }
 
 func (OSSProvider) Descriptor() protoreflect.EnumDescriptor {
-	return file_file_service_v1_file_proto_enumTypes[0].Descriptor()
+	return file_storage_service_v1_file_proto_enumTypes[0].Descriptor()
 }
 
 func (OSSProvider) Type() protoreflect.EnumType {
-	return &file_file_service_v1_file_proto_enumTypes[0]
+	return &file_storage_service_v1_file_proto_enumTypes[0]
 }
 
 func (x OSSProvider) Number() protoreflect.EnumNumber {
@@ -95,39 +95,39 @@ func (x OSSProvider) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use OSSProvider.Descriptor instead.
 func (OSSProvider) EnumDescriptor() ([]byte, []int) {
-	return file_file_service_v1_file_proto_rawDescGZIP(), []int{0}
+	return file_storage_service_v1_file_proto_rawDescGZIP(), []int{0}
 }
 
 // 文件
 type File struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                              // 文件ID
-	Provider      *OSSProvider           `protobuf:"varint,2,opt,name=provider,proto3,enum=file.service.v1.OSSProvider,oneof" json:"provider,omitempty"` // OSS供应商
-	BucketName    *string                `protobuf:"bytes,3,opt,name=bucket_name,json=bucketName,proto3,oneof" json:"bucket_name,omitempty"`             // 存储桶名称
-	FileDirectory *string                `protobuf:"bytes,4,opt,name=file_directory,json=fileDirectory,proto3,oneof" json:"file_directory,omitempty"`    // 文件目录
-	FileGuid      *string                `protobuf:"bytes,5,opt,name=file_guid,json=fileGuid,proto3,oneof" json:"file_guid,omitempty"`                   // 文件Guid
-	SaveFileName  *string                `protobuf:"bytes,6,opt,name=save_file_name,json=saveFileName,proto3,oneof" json:"save_file_name,omitempty"`     // 实际存储文件名（防止在服务器文件系统发生文件冲突）
-	FileName      *string                `protobuf:"bytes,7,opt,name=file_name,json=fileName,proto3,oneof" json:"file_name,omitempty"`                   // 原始文件名
-	Extension     *string                `protobuf:"bytes,8,opt,name=extension,proto3,oneof" json:"extension,omitempty"`                                 // 文件扩展名
-	Size          *uint64                `protobuf:"varint,9,opt,name=size,proto3,oneof" json:"size,omitempty"`                                          // 文件字节长度
-	SizeFormat    *string                `protobuf:"bytes,10,opt,name=size_format,json=sizeFormat,proto3,oneof" json:"size_format,omitempty"`            // 格式化后的文件长度字符串
-	LinkUrl       *string                `protobuf:"bytes,11,opt,name=link_url,json=linkUrl,proto3,oneof" json:"link_url,omitempty"`                     // 链接地址
-	ContentHash   *string                `protobuf:"bytes,12,opt,name=content_hash,json=contentHash,proto3,oneof" json:"content_hash,omitempty"`         // 文件内容hash值
-	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                 // 租户ID，0代表系统全局角色
-	TenantName    *string                `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`            // 租户名称
-	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`             // 创建者ID
-	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`             // 更新者ID
-	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`             // 删除者用户ID
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`              // 创建时间
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`              // 更新时间
-	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`              // 删除时间
+	Id            *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                                                 // 文件ID
+	Provider      *OSSProvider           `protobuf:"varint,2,opt,name=provider,proto3,enum=storage.service.v1.OSSProvider,oneof" json:"provider,omitempty"` // OSS供应商
+	BucketName    *string                `protobuf:"bytes,3,opt,name=bucket_name,json=bucketName,proto3,oneof" json:"bucket_name,omitempty"`                // 存储桶名称
+	FileDirectory *string                `protobuf:"bytes,4,opt,name=file_directory,json=fileDirectory,proto3,oneof" json:"file_directory,omitempty"`       // 文件目录
+	FileGuid      *string                `protobuf:"bytes,5,opt,name=file_guid,json=fileGuid,proto3,oneof" json:"file_guid,omitempty"`                      // 文件Guid
+	SaveFileName  *string                `protobuf:"bytes,6,opt,name=save_file_name,json=saveFileName,proto3,oneof" json:"save_file_name,omitempty"`        // 实际存储文件名（防止在服务器文件系统发生文件冲突）
+	FileName      *string                `protobuf:"bytes,7,opt,name=file_name,json=fileName,proto3,oneof" json:"file_name,omitempty"`                      // 原始文件名
+	Extension     *string                `protobuf:"bytes,8,opt,name=extension,proto3,oneof" json:"extension,omitempty"`                                    // 文件扩展名
+	Size          *uint64                `protobuf:"varint,9,opt,name=size,proto3,oneof" json:"size,omitempty"`                                             // 文件字节长度
+	SizeFormat    *string                `protobuf:"bytes,10,opt,name=size_format,json=sizeFormat,proto3,oneof" json:"size_format,omitempty"`               // 格式化后的文件长度字符串
+	LinkUrl       *string                `protobuf:"bytes,11,opt,name=link_url,json=linkUrl,proto3,oneof" json:"link_url,omitempty"`                        // 链接地址
+	ContentHash   *string                `protobuf:"bytes,12,opt,name=content_hash,json=contentHash,proto3,oneof" json:"content_hash,omitempty"`            // 文件内容hash值
+	TenantId      *uint32                `protobuf:"varint,40,opt,name=tenant_id,json=tenantId,proto3,oneof" json:"tenant_id,omitempty"`                    // 租户ID，0代表系统全局角色
+	TenantName    *string                `protobuf:"bytes,41,opt,name=tenant_name,json=tenantName,proto3,oneof" json:"tenant_name,omitempty"`               // 租户名称
+	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`                // 创建者用户ID
+	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`                // 更新者用户ID
+	DeletedBy     *uint32                `protobuf:"varint,102,opt,name=deleted_by,json=deletedBy,proto3,oneof" json:"deleted_by,omitempty"`                // 删除者用户ID
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`                 // 创建时间
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`                 // 更新时间
+	DeletedAt     *timestamppb.Timestamp `protobuf:"bytes,202,opt,name=deleted_at,json=deletedAt,proto3,oneof" json:"deleted_at,omitempty"`                 // 删除时间
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *File) Reset() {
 	*x = File{}
-	mi := &file_file_service_v1_file_proto_msgTypes[0]
+	mi := &file_storage_service_v1_file_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -139,7 +139,7 @@ func (x *File) String() string {
 func (*File) ProtoMessage() {}
 
 func (x *File) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_file_proto_msgTypes[0]
+	mi := &file_storage_service_v1_file_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -152,7 +152,7 @@ func (x *File) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use File.ProtoReflect.Descriptor instead.
 func (*File) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_file_proto_rawDescGZIP(), []int{0}
+	return file_storage_service_v1_file_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *File) GetId() uint32 {
@@ -306,7 +306,7 @@ type ListFileResponse struct {
 
 func (x *ListFileResponse) Reset() {
 	*x = ListFileResponse{}
-	mi := &file_file_service_v1_file_proto_msgTypes[1]
+	mi := &file_storage_service_v1_file_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -318,7 +318,7 @@ func (x *ListFileResponse) String() string {
 func (*ListFileResponse) ProtoMessage() {}
 
 func (x *ListFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_file_proto_msgTypes[1]
+	mi := &file_storage_service_v1_file_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -331,7 +331,7 @@ func (x *ListFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListFileResponse.ProtoReflect.Descriptor instead.
 func (*ListFileResponse) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_file_proto_rawDescGZIP(), []int{1}
+	return file_storage_service_v1_file_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *ListFileResponse) GetItems() []*File {
@@ -362,7 +362,7 @@ type GetFileRequest struct {
 
 func (x *GetFileRequest) Reset() {
 	*x = GetFileRequest{}
-	mi := &file_file_service_v1_file_proto_msgTypes[2]
+	mi := &file_storage_service_v1_file_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -374,7 +374,7 @@ func (x *GetFileRequest) String() string {
 func (*GetFileRequest) ProtoMessage() {}
 
 func (x *GetFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_file_proto_msgTypes[2]
+	mi := &file_storage_service_v1_file_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -387,7 +387,7 @@ func (x *GetFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetFileRequest.ProtoReflect.Descriptor instead.
 func (*GetFileRequest) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_file_proto_rawDescGZIP(), []int{2}
+	return file_storage_service_v1_file_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetFileRequest) GetQueryBy() isGetFileRequest_QueryBy {
@@ -433,7 +433,7 @@ type CreateFileRequest struct {
 
 func (x *CreateFileRequest) Reset() {
 	*x = CreateFileRequest{}
-	mi := &file_file_service_v1_file_proto_msgTypes[3]
+	mi := &file_storage_service_v1_file_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -445,7 +445,7 @@ func (x *CreateFileRequest) String() string {
 func (*CreateFileRequest) ProtoMessage() {}
 
 func (x *CreateFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_file_proto_msgTypes[3]
+	mi := &file_storage_service_v1_file_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -458,7 +458,7 @@ func (x *CreateFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateFileRequest.ProtoReflect.Descriptor instead.
 func (*CreateFileRequest) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_file_proto_rawDescGZIP(), []int{3}
+	return file_storage_service_v1_file_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *CreateFileRequest) GetData() *File {
@@ -481,7 +481,7 @@ type UpdateFileRequest struct {
 
 func (x *UpdateFileRequest) Reset() {
 	*x = UpdateFileRequest{}
-	mi := &file_file_service_v1_file_proto_msgTypes[4]
+	mi := &file_storage_service_v1_file_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -493,7 +493,7 @@ func (x *UpdateFileRequest) String() string {
 func (*UpdateFileRequest) ProtoMessage() {}
 
 func (x *UpdateFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_file_proto_msgTypes[4]
+	mi := &file_storage_service_v1_file_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -506,7 +506,7 @@ func (x *UpdateFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateFileRequest.ProtoReflect.Descriptor instead.
 func (*UpdateFileRequest) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_file_proto_rawDescGZIP(), []int{4}
+	return file_storage_service_v1_file_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *UpdateFileRequest) GetId() uint32 {
@@ -547,7 +547,7 @@ type DeleteFileRequest struct {
 
 func (x *DeleteFileRequest) Reset() {
 	*x = DeleteFileRequest{}
-	mi := &file_file_service_v1_file_proto_msgTypes[5]
+	mi := &file_storage_service_v1_file_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -559,7 +559,7 @@ func (x *DeleteFileRequest) String() string {
 func (*DeleteFileRequest) ProtoMessage() {}
 
 func (x *DeleteFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_file_proto_msgTypes[5]
+	mi := &file_storage_service_v1_file_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -572,7 +572,7 @@ func (x *DeleteFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteFileRequest.ProtoReflect.Descriptor instead.
 func (*DeleteFileRequest) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_file_proto_rawDescGZIP(), []int{5}
+	return file_storage_service_v1_file_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *DeleteFileRequest) GetId() uint32 {
@@ -591,7 +591,7 @@ type CountFileResponse struct {
 
 func (x *CountFileResponse) Reset() {
 	*x = CountFileResponse{}
-	mi := &file_file_service_v1_file_proto_msgTypes[6]
+	mi := &file_storage_service_v1_file_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -603,7 +603,7 @@ func (x *CountFileResponse) String() string {
 func (*CountFileResponse) ProtoMessage() {}
 
 func (x *CountFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_file_proto_msgTypes[6]
+	mi := &file_storage_service_v1_file_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -616,7 +616,7 @@ func (x *CountFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CountFileResponse.ProtoReflect.Descriptor instead.
 func (*CountFileResponse) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_file_proto_rawDescGZIP(), []int{6}
+	return file_storage_service_v1_file_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *CountFileResponse) GetCount() uint64 {
@@ -626,14 +626,14 @@ func (x *CountFileResponse) GetCount() uint64 {
 	return 0
 }
 
-var File_file_service_v1_file_proto protoreflect.FileDescriptor
+var File_storage_service_v1_file_proto protoreflect.FileDescriptor
 
-const file_file_service_v1_file_proto_rawDesc = "" +
+const file_storage_service_v1_file_proto_rawDesc = "" +
 	"\n" +
-	"\x1afile/service/v1/file.proto\x12\x0ffile.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x81\x0e\n" +
+	"\x1dstorage/service/v1/file.proto\x12\x12storage.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x90\x0e\n" +
 	"\x04File\x12&\n" +
-	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b文件IDH\x00R\x02id\x88\x01\x01\x12Q\n" +
-	"\bprovider\x18\x02 \x01(\x0e2\x1c.file.service.v1.OSSProviderB\x12\xbaG\x0f\x92\x02\fOSS供应商H\x01R\bprovider\x88\x01\x01\x12;\n" +
+	"\x02id\x18\x01 \x01(\rB\x11\xe0A\x01\xbaG\v\x92\x02\b文件IDH\x00R\x02id\x88\x01\x01\x12T\n" +
+	"\bprovider\x18\x02 \x01(\x0e2\x1f.storage.service.v1.OSSProviderB\x12\xbaG\x0f\x92\x02\fOSS供应商H\x01R\bprovider\x88\x01\x01\x12;\n" +
 	"\vbucket_name\x18\x03 \x01(\tB\x15\xbaG\x12\x92\x02\x0f存储桶名称H\x02R\n" +
 	"bucketName\x88\x01\x01\x12Z\n" +
 	"\x0efile_directory\x18\x04 \x01(\tB.\xbaG+:\x1a\x12\x18tenant/1001/user/avatar/\x92\x02\f文件目录H\x03R\rfileDirectory\x88\x01\x01\x122\n" +
@@ -651,11 +651,11 @@ const file_file_service_v1_file_proto_rawDesc = "" +
 	"\fcontent_hash\x18\f \x01(\tB\x19\xbaG\x16\x92\x02\x13文件内容hash值H\vR\vcontentHash\x88\x01\x01\x12L\n" +
 	"\ttenant_id\x18( \x01(\rB*\xbaG'\x92\x02$租户ID，0代表系统全局角色H\fR\btenantId\x88\x01\x01\x128\n" +
 	"\vtenant_name\x18) \x01(\tB\x12\xbaG\x0f\x92\x02\f租户名称H\rR\n" +
-	"tenantName\x88\x01\x01\x125\n" +
+	"tenantName\x88\x01\x01\x12;\n" +
 	"\n" +
-	"created_by\x18d \x01(\rB\x11\xbaG\x0e\x92\x02\v创建者IDH\x0eR\tcreatedBy\x88\x01\x01\x125\n" +
+	"created_by\x18d \x01(\rB\x17\xbaG\x14\x92\x02\x11创建者用户IDH\x0eR\tcreatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rB\x11\xbaG\x0e\x92\x02\v更新者IDH\x0fR\tupdatedBy\x88\x01\x01\x12;\n" +
+	"updated_by\x18e \x01(\rB\x17\xbaG\x14\x92\x02\x11更新者用户IDH\x0fR\tupdatedBy\x88\x01\x01\x12;\n" +
 	"\n" +
 	"deleted_by\x18f \x01(\rB\x17\xbaG\x14\x92\x02\x11删除者用户IDH\x10R\tdeletedBy\x88\x01\x01\x12S\n" +
 	"\n" +
@@ -687,9 +687,9 @@ const file_file_service_v1_file_proto_rawDesc = "" +
 	"\v_deleted_byB\r\n" +
 	"\v_created_atB\r\n" +
 	"\v_updated_atB\r\n" +
-	"\v_deleted_at\"U\n" +
-	"\x10ListFileResponse\x12+\n" +
-	"\x05items\x18\x01 \x03(\v2\x15.file.service.v1.FileR\x05items\x12\x14\n" +
+	"\v_deleted_at\"X\n" +
+	"\x10ListFileResponse\x12.\n" +
+	"\x05items\x18\x01 \x03(\v2\x18.storage.service.v1.FileR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"\xc1\x01\n" +
 	"\x0eGetFileRequest\x12\x1c\n" +
 	"\x02id\x18\x01 \x01(\rB\n" +
@@ -698,12 +698,12 @@ const file_file_service_v1_file_proto_rawDesc = "" +
 	"\n" +
 	"\bquery_byB\f\n" +
 	"\n" +
-	"_view_mask\">\n" +
-	"\x11CreateFileRequest\x12)\n" +
-	"\x04data\x18\x01 \x01(\v2\x15.file.service.v1.FileR\x04data\"\x8c\x03\n" +
+	"_view_mask\"A\n" +
+	"\x11CreateFileRequest\x12,\n" +
+	"\x04data\x18\x01 \x01(\v2\x18.storage.service.v1.FileR\x04data\"\x8f\x03\n" +
 	"\x11UpdateFileRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\x12)\n" +
-	"\x04data\x18\x02 \x01(\v2\x15.file.service.v1.FileR\x04data\x12s\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\x12,\n" +
+	"\x04data\x18\x02 \x01(\v2\x18.storage.service.v1.FileR\x04data\x12s\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskB6\xbaG3:\x16\x12\x14id,realname,username\x92\x02\x18要更新的字段列表R\n" +
 	"updateMask\x12\xb4\x01\n" +
 	"\rallow_missing\x18\x04 \x01(\bB\x89\x01\xbaG\x85\x01\x92\x02\x81\x01如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。H\x00R\fallowMissing\x88\x01\x01B\x10\n" +
@@ -726,96 +726,99 @@ const file_file_service_v1_file_proto_rawDesc = "" +
 	"\n" +
 	"\x06HUAWEI\x10\b\x12\t\n" +
 	"\x05LOCAL\x10\n" +
-	"2\xee\x02\n" +
-	"\vFileService\x12F\n" +
-	"\x04List\x12\x19.pagination.PagingRequest\x1a!.file.service.v1.ListFileResponse\"\x00\x12?\n" +
-	"\x03Get\x12\x1f.file.service.v1.GetFileRequest\x1a\x15.file.service.v1.File\"\x00\x12F\n" +
-	"\x06Create\x12\".file.service.v1.CreateFileRequest\x1a\x16.google.protobuf.Empty\"\x00\x12F\n" +
-	"\x06Update\x12\".file.service.v1.UpdateFileRequest\x1a\x16.google.protobuf.Empty\"\x00\x12F\n" +
-	"\x06Delete\x12\".file.service.v1.DeleteFileRequest\x1a\x16.google.protobuf.Empty\"\x00B\xaf\x01\n" +
-	"\x13com.file.service.v1B\tFileProtoP\x01Z/go-wind-admin/api/gen/go/file/service/v1;filepb\xa2\x02\x03FSX\xaa\x02\x0fFile.Service.V1\xca\x02\x0fFile\\Service\\V1\xe2\x02\x1bFile\\Service\\V1\\GPBMetadata\xea\x02\x11File::Service::V1b\x06proto3"
+	"2\xcd\x03\n" +
+	"\vFileService\x12I\n" +
+	"\x04List\x12\x19.pagination.PagingRequest\x1a$.storage.service.v1.ListFileResponse\"\x00\x12K\n" +
+	"\x05Count\x12\x19.pagination.PagingRequest\x1a%.storage.service.v1.CountFileResponse\"\x00\x12E\n" +
+	"\x03Get\x12\".storage.service.v1.GetFileRequest\x1a\x18.storage.service.v1.File\"\x00\x12I\n" +
+	"\x06Create\x12%.storage.service.v1.CreateFileRequest\x1a\x16.google.protobuf.Empty\"\x00\x12I\n" +
+	"\x06Update\x12%.storage.service.v1.UpdateFileRequest\x1a\x16.google.protobuf.Empty\"\x00\x12I\n" +
+	"\x06Delete\x12%.storage.service.v1.DeleteFileRequest\x1a\x16.google.protobuf.Empty\"\x00B\xc4\x01\n" +
+	"\x16com.storage.service.v1B\tFileProtoP\x01Z5go-wind-admin/api/gen/go/storage/service/v1;storagepb\xa2\x02\x03SSX\xaa\x02\x12Storage.Service.V1\xca\x02\x12Storage\\Service\\V1\xe2\x02\x1eStorage\\Service\\V1\\GPBMetadata\xea\x02\x14Storage::Service::V1b\x06proto3"
 
 var (
-	file_file_service_v1_file_proto_rawDescOnce sync.Once
-	file_file_service_v1_file_proto_rawDescData []byte
+	file_storage_service_v1_file_proto_rawDescOnce sync.Once
+	file_storage_service_v1_file_proto_rawDescData []byte
 )
 
-func file_file_service_v1_file_proto_rawDescGZIP() []byte {
-	file_file_service_v1_file_proto_rawDescOnce.Do(func() {
-		file_file_service_v1_file_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_file_service_v1_file_proto_rawDesc), len(file_file_service_v1_file_proto_rawDesc)))
+func file_storage_service_v1_file_proto_rawDescGZIP() []byte {
+	file_storage_service_v1_file_proto_rawDescOnce.Do(func() {
+		file_storage_service_v1_file_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_storage_service_v1_file_proto_rawDesc), len(file_storage_service_v1_file_proto_rawDesc)))
 	})
-	return file_file_service_v1_file_proto_rawDescData
+	return file_storage_service_v1_file_proto_rawDescData
 }
 
-var file_file_service_v1_file_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_file_service_v1_file_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
-var file_file_service_v1_file_proto_goTypes = []any{
-	(OSSProvider)(0),              // 0: file.service.v1.OSSProvider
-	(*File)(nil),                  // 1: file.service.v1.File
-	(*ListFileResponse)(nil),      // 2: file.service.v1.ListFileResponse
-	(*GetFileRequest)(nil),        // 3: file.service.v1.GetFileRequest
-	(*CreateFileRequest)(nil),     // 4: file.service.v1.CreateFileRequest
-	(*UpdateFileRequest)(nil),     // 5: file.service.v1.UpdateFileRequest
-	(*DeleteFileRequest)(nil),     // 6: file.service.v1.DeleteFileRequest
-	(*CountFileResponse)(nil),     // 7: file.service.v1.CountFileResponse
+var file_storage_service_v1_file_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_storage_service_v1_file_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_storage_service_v1_file_proto_goTypes = []any{
+	(OSSProvider)(0),              // 0: storage.service.v1.OSSProvider
+	(*File)(nil),                  // 1: storage.service.v1.File
+	(*ListFileResponse)(nil),      // 2: storage.service.v1.ListFileResponse
+	(*GetFileRequest)(nil),        // 3: storage.service.v1.GetFileRequest
+	(*CreateFileRequest)(nil),     // 4: storage.service.v1.CreateFileRequest
+	(*UpdateFileRequest)(nil),     // 5: storage.service.v1.UpdateFileRequest
+	(*DeleteFileRequest)(nil),     // 6: storage.service.v1.DeleteFileRequest
+	(*CountFileResponse)(nil),     // 7: storage.service.v1.CountFileResponse
 	(*timestamppb.Timestamp)(nil), // 8: google.protobuf.Timestamp
 	(*fieldmaskpb.FieldMask)(nil), // 9: google.protobuf.FieldMask
 	(*v1.PagingRequest)(nil),      // 10: pagination.PagingRequest
 	(*emptypb.Empty)(nil),         // 11: google.protobuf.Empty
 }
-var file_file_service_v1_file_proto_depIdxs = []int32{
-	0,  // 0: file.service.v1.File.provider:type_name -> file.service.v1.OSSProvider
-	8,  // 1: file.service.v1.File.created_at:type_name -> google.protobuf.Timestamp
-	8,  // 2: file.service.v1.File.updated_at:type_name -> google.protobuf.Timestamp
-	8,  // 3: file.service.v1.File.deleted_at:type_name -> google.protobuf.Timestamp
-	1,  // 4: file.service.v1.ListFileResponse.items:type_name -> file.service.v1.File
-	9,  // 5: file.service.v1.GetFileRequest.view_mask:type_name -> google.protobuf.FieldMask
-	1,  // 6: file.service.v1.CreateFileRequest.data:type_name -> file.service.v1.File
-	1,  // 7: file.service.v1.UpdateFileRequest.data:type_name -> file.service.v1.File
-	9,  // 8: file.service.v1.UpdateFileRequest.update_mask:type_name -> google.protobuf.FieldMask
-	10, // 9: file.service.v1.FileService.List:input_type -> pagination.PagingRequest
-	3,  // 10: file.service.v1.FileService.Get:input_type -> file.service.v1.GetFileRequest
-	4,  // 11: file.service.v1.FileService.Create:input_type -> file.service.v1.CreateFileRequest
-	5,  // 12: file.service.v1.FileService.Update:input_type -> file.service.v1.UpdateFileRequest
-	6,  // 13: file.service.v1.FileService.Delete:input_type -> file.service.v1.DeleteFileRequest
-	2,  // 14: file.service.v1.FileService.List:output_type -> file.service.v1.ListFileResponse
-	1,  // 15: file.service.v1.FileService.Get:output_type -> file.service.v1.File
-	11, // 16: file.service.v1.FileService.Create:output_type -> google.protobuf.Empty
-	11, // 17: file.service.v1.FileService.Update:output_type -> google.protobuf.Empty
-	11, // 18: file.service.v1.FileService.Delete:output_type -> google.protobuf.Empty
-	14, // [14:19] is the sub-list for method output_type
-	9,  // [9:14] is the sub-list for method input_type
+var file_storage_service_v1_file_proto_depIdxs = []int32{
+	0,  // 0: storage.service.v1.File.provider:type_name -> storage.service.v1.OSSProvider
+	8,  // 1: storage.service.v1.File.created_at:type_name -> google.protobuf.Timestamp
+	8,  // 2: storage.service.v1.File.updated_at:type_name -> google.protobuf.Timestamp
+	8,  // 3: storage.service.v1.File.deleted_at:type_name -> google.protobuf.Timestamp
+	1,  // 4: storage.service.v1.ListFileResponse.items:type_name -> storage.service.v1.File
+	9,  // 5: storage.service.v1.GetFileRequest.view_mask:type_name -> google.protobuf.FieldMask
+	1,  // 6: storage.service.v1.CreateFileRequest.data:type_name -> storage.service.v1.File
+	1,  // 7: storage.service.v1.UpdateFileRequest.data:type_name -> storage.service.v1.File
+	9,  // 8: storage.service.v1.UpdateFileRequest.update_mask:type_name -> google.protobuf.FieldMask
+	10, // 9: storage.service.v1.FileService.List:input_type -> pagination.PagingRequest
+	10, // 10: storage.service.v1.FileService.Count:input_type -> pagination.PagingRequest
+	3,  // 11: storage.service.v1.FileService.Get:input_type -> storage.service.v1.GetFileRequest
+	4,  // 12: storage.service.v1.FileService.Create:input_type -> storage.service.v1.CreateFileRequest
+	5,  // 13: storage.service.v1.FileService.Update:input_type -> storage.service.v1.UpdateFileRequest
+	6,  // 14: storage.service.v1.FileService.Delete:input_type -> storage.service.v1.DeleteFileRequest
+	2,  // 15: storage.service.v1.FileService.List:output_type -> storage.service.v1.ListFileResponse
+	7,  // 16: storage.service.v1.FileService.Count:output_type -> storage.service.v1.CountFileResponse
+	1,  // 17: storage.service.v1.FileService.Get:output_type -> storage.service.v1.File
+	11, // 18: storage.service.v1.FileService.Create:output_type -> google.protobuf.Empty
+	11, // 19: storage.service.v1.FileService.Update:output_type -> google.protobuf.Empty
+	11, // 20: storage.service.v1.FileService.Delete:output_type -> google.protobuf.Empty
+	15, // [15:21] is the sub-list for method output_type
+	9,  // [9:15] is the sub-list for method input_type
 	9,  // [9:9] is the sub-list for extension type_name
 	9,  // [9:9] is the sub-list for extension extendee
 	0,  // [0:9] is the sub-list for field type_name
 }
 
-func init() { file_file_service_v1_file_proto_init() }
-func file_file_service_v1_file_proto_init() {
-	if File_file_service_v1_file_proto != nil {
+func init() { file_storage_service_v1_file_proto_init() }
+func file_storage_service_v1_file_proto_init() {
+	if File_storage_service_v1_file_proto != nil {
 		return
 	}
-	file_file_service_v1_file_proto_msgTypes[0].OneofWrappers = []any{}
-	file_file_service_v1_file_proto_msgTypes[2].OneofWrappers = []any{
+	file_storage_service_v1_file_proto_msgTypes[0].OneofWrappers = []any{}
+	file_storage_service_v1_file_proto_msgTypes[2].OneofWrappers = []any{
 		(*GetFileRequest_Id)(nil),
 	}
-	file_file_service_v1_file_proto_msgTypes[4].OneofWrappers = []any{}
+	file_storage_service_v1_file_proto_msgTypes[4].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_file_service_v1_file_proto_rawDesc), len(file_file_service_v1_file_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_storage_service_v1_file_proto_rawDesc), len(file_storage_service_v1_file_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_file_service_v1_file_proto_goTypes,
-		DependencyIndexes: file_file_service_v1_file_proto_depIdxs,
-		EnumInfos:         file_file_service_v1_file_proto_enumTypes,
-		MessageInfos:      file_file_service_v1_file_proto_msgTypes,
+		GoTypes:           file_storage_service_v1_file_proto_goTypes,
+		DependencyIndexes: file_storage_service_v1_file_proto_depIdxs,
+		EnumInfos:         file_storage_service_v1_file_proto_enumTypes,
+		MessageInfos:      file_storage_service_v1_file_proto_msgTypes,
 	}.Build()
-	File_file_service_v1_file_proto = out.File
-	file_file_service_v1_file_proto_goTypes = nil
-	file_file_service_v1_file_proto_depIdxs = nil
+	File_storage_service_v1_file_proto = out.File
+	file_storage_service_v1_file_proto_goTypes = nil
+	file_storage_service_v1_file_proto_depIdxs = nil
 }

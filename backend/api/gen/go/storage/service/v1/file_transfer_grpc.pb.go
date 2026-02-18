@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             (unknown)
-// source: file/service/v1/file_transfer.proto
+// source: storage/service/v1/file_transfer.proto
 
-package filepb
+package storagepb
 
 import (
 	context "context"
@@ -20,9 +20,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	FileTransferService_DownloadFile_FullMethodName   = "/file.service.v1.FileTransferService/DownloadFile"
-	FileTransferService_PutUploadFile_FullMethodName  = "/file.service.v1.FileTransferService/PutUploadFile"
-	FileTransferService_PostUploadFile_FullMethodName = "/file.service.v1.FileTransferService/PostUploadFile"
+	FileTransferService_DownloadFile_FullMethodName   = "/storage.service.v1.FileTransferService/DownloadFile"
+	FileTransferService_PutUploadFile_FullMethodName  = "/storage.service.v1.FileTransferService/PutUploadFile"
+	FileTransferService_PostUploadFile_FullMethodName = "/storage.service.v1.FileTransferService/PostUploadFile"
 )
 
 // FileTransferServiceClient is the client API for FileTransferService service.
@@ -173,7 +173,7 @@ type FileTransferService_PostUploadFileServer = grpc.ClientStreamingServer[httpb
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var FileTransferService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "file.service.v1.FileTransferService",
+	ServiceName: "storage.service.v1.FileTransferService",
 	HandlerType: (*FileTransferServiceServer)(nil),
 	Methods:     []grpc.MethodDesc{},
 	Streams: []grpc.StreamDesc{
@@ -193,5 +193,5 @@ var FileTransferService_ServiceDesc = grpc.ServiceDesc{
 			ClientStreams: true,
 		},
 	},
-	Metadata: "file/service/v1/file_transfer.proto",
+	Metadata: "storage/service/v1/file_transfer.proto",
 }

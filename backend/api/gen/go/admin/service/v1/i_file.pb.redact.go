@@ -7,7 +7,7 @@ import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
 	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	filepb "go-wind-admin/api/gen/go/file/service/v1"
+	storagepb "go-wind-admin/api/gen/go/storage/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"
@@ -23,7 +23,7 @@ var (
 	_ status.Status
 	_ emptypb.Empty
 	_ pagination.Sorting
-	_ filepb.File
+	_ storagepb.File
 )
 
 // RegisterRedactedFileServiceServer wraps the FileServiceServer with the redacted server and registers the service in GRPC
@@ -46,7 +46,7 @@ type redactedFileServiceServer struct {
 
 // List is the redacted wrapper for the actual FileServiceServer.List method
 // Unary RPC
-func (s *redactedFileServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*filepb.ListFileResponse, error) {
+func (s *redactedFileServiceServer) List(ctx context.Context, in *pagination.PagingRequest) (*storagepb.ListFileResponse, error) {
 	res, err := s.srv.List(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -57,7 +57,7 @@ func (s *redactedFileServiceServer) List(ctx context.Context, in *pagination.Pag
 
 // Get is the redacted wrapper for the actual FileServiceServer.Get method
 // Unary RPC
-func (s *redactedFileServiceServer) Get(ctx context.Context, in *filepb.GetFileRequest) (*filepb.File, error) {
+func (s *redactedFileServiceServer) Get(ctx context.Context, in *storagepb.GetFileRequest) (*storagepb.File, error) {
 	res, err := s.srv.Get(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -68,7 +68,7 @@ func (s *redactedFileServiceServer) Get(ctx context.Context, in *filepb.GetFileR
 
 // Create is the redacted wrapper for the actual FileServiceServer.Create method
 // Unary RPC
-func (s *redactedFileServiceServer) Create(ctx context.Context, in *filepb.CreateFileRequest) (*emptypb.Empty, error) {
+func (s *redactedFileServiceServer) Create(ctx context.Context, in *storagepb.CreateFileRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Create(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -79,7 +79,7 @@ func (s *redactedFileServiceServer) Create(ctx context.Context, in *filepb.Creat
 
 // Update is the redacted wrapper for the actual FileServiceServer.Update method
 // Unary RPC
-func (s *redactedFileServiceServer) Update(ctx context.Context, in *filepb.UpdateFileRequest) (*emptypb.Empty, error) {
+func (s *redactedFileServiceServer) Update(ctx context.Context, in *storagepb.UpdateFileRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Update(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -90,7 +90,7 @@ func (s *redactedFileServiceServer) Update(ctx context.Context, in *filepb.Updat
 
 // Delete is the redacted wrapper for the actual FileServiceServer.Delete method
 // Unary RPC
-func (s *redactedFileServiceServer) Delete(ctx context.Context, in *filepb.DeleteFileRequest) (*emptypb.Empty, error) {
+func (s *redactedFileServiceServer) Delete(ctx context.Context, in *storagepb.DeleteFileRequest) (*emptypb.Empty, error) {
 	res, err := s.srv.Delete(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response

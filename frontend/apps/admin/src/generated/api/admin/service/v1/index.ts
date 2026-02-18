@@ -1688,15 +1688,15 @@ export type dictservicev1_DeleteDictTypeRequest = {
 // 文件管理服务
 export interface FileService {
   // 查询文件列表
-  List(request: pagination_PagingRequest): Promise<fileservicev1_ListFileResponse>;
+  List(request: pagination_PagingRequest): Promise<storageservicev1_ListFileResponse>;
   // 查询文件详情
-  Get(request: fileservicev1_GetFileRequest): Promise<fileservicev1_File>;
+  Get(request: storageservicev1_GetFileRequest): Promise<storageservicev1_File>;
   // 创建文件
-  Create(request: fileservicev1_CreateFileRequest): Promise<wellKnownEmpty>;
+  Create(request: storageservicev1_CreateFileRequest): Promise<wellKnownEmpty>;
   // 更新文件
-  Update(request: fileservicev1_UpdateFileRequest): Promise<wellKnownEmpty>;
+  Update(request: storageservicev1_UpdateFileRequest): Promise<wellKnownEmpty>;
   // 删除文件
-  Delete(request: fileservicev1_DeleteFileRequest): Promise<wellKnownEmpty>;
+  Delete(request: storageservicev1_DeleteFileRequest): Promise<wellKnownEmpty>;
 }
 
 export function createFileServiceClient(
@@ -1780,7 +1780,7 @@ export function createFileServiceClient(
       }, {
         service: "FileService",
         method: "List",
-      }) as Promise<fileservicev1_ListFileResponse>;
+      }) as Promise<storageservicev1_ListFileResponse>;
     },
     Get(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       if (!request.id) {
@@ -1803,7 +1803,7 @@ export function createFileServiceClient(
       }, {
         service: "FileService",
         method: "Get",
-      }) as Promise<fileservicev1_File>;
+      }) as Promise<storageservicev1_File>;
     },
     Create(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/files`; // eslint-disable-line quotes
@@ -1865,17 +1865,17 @@ export function createFileServiceClient(
   };
 }
 // 查询列表 - 回应
-export type fileservicev1_ListFileResponse = {
-  items: fileservicev1_File[] | undefined;
+export type storageservicev1_ListFileResponse = {
+  items: storageservicev1_File[] | undefined;
   total: number | undefined;
 };
 
 // 文件
-export type fileservicev1_File = {
+export type storageservicev1_File = {
   //
   // Behaviors: OPTIONAL
   id?: number;
-  provider?: fileservicev1_OSSProvider;
+  provider?: storageservicev1_OSSProvider;
   bucketName?: string;
   fileDirectory?: string;
   fileGuid?: string;
@@ -1897,7 +1897,7 @@ export type fileservicev1_File = {
 };
 
 // OSS供应商
-export type fileservicev1_OSSProvider =
+export type storageservicev1_OSSProvider =
   | "MINIO"
   | "ALIYUN"
   | "AWS"
@@ -1909,37 +1909,37 @@ export type fileservicev1_OSSProvider =
   | "HUAWEI"
   | "LOCAL";
 // 查询 - 请求
-export type fileservicev1_GetFileRequest = {
+export type storageservicev1_GetFileRequest = {
   id?: number;
   viewMask?: wellKnownFieldMask;
 };
 
 // 创建 - 请求
-export type fileservicev1_CreateFileRequest = {
-  data: fileservicev1_File | undefined;
+export type storageservicev1_CreateFileRequest = {
+  data: storageservicev1_File | undefined;
 };
 
 // 更新 - 请求
-export type fileservicev1_UpdateFileRequest = {
+export type storageservicev1_UpdateFileRequest = {
   id: number | undefined;
-  data: fileservicev1_File | undefined;
+  data: storageservicev1_File | undefined;
   updateMask: wellKnownFieldMask | undefined;
   allowMissing?: boolean;
 };
 
 // 删除 - 请求
-export type fileservicev1_DeleteFileRequest = {
+export type storageservicev1_DeleteFileRequest = {
   id: number | undefined;
 };
 
 // 文件传输服务
 export interface FileTransferService {
   // 下载文件
-  DownloadFile(request: fileservicev1_DownloadFileRequest): Promise<fileservicev1_DownloadFileResponse>;
+  DownloadFile(request: storageservicev1_DownloadFileRequest): Promise<storageservicev1_DownloadFileResponse>;
   // 上传文件 PUT 方式
-  PutUploadFile(request: fileservicev1_UploadFileRequest): Promise<fileservicev1_UploadFileResponse>;
+  PutUploadFile(request: storageservicev1_UploadFileRequest): Promise<storageservicev1_UploadFileResponse>;
   // 上传文件 POST 方式
-  PostUploadFile(request: fileservicev1_UploadFileRequest): Promise<fileservicev1_UploadFileResponse>;
+  PostUploadFile(request: storageservicev1_UploadFileRequest): Promise<storageservicev1_UploadFileResponse>;
 }
 
 export function createFileTransferServiceClient(
@@ -1994,7 +1994,7 @@ export function createFileTransferServiceClient(
       }, {
         service: "FileTransferService",
         method: "DownloadFile",
-      }) as Promise<fileservicev1_DownloadFileResponse>;
+      }) as Promise<storageservicev1_DownloadFileResponse>;
     },
     PutUploadFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/file/upload`; // eslint-disable-line quotes
@@ -2011,7 +2011,7 @@ export function createFileTransferServiceClient(
       }, {
         service: "FileTransferService",
         method: "PutUploadFile",
-      }) as Promise<fileservicev1_UploadFileResponse>;
+      }) as Promise<storageservicev1_UploadFileResponse>;
     },
     PostUploadFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/file/upload`; // eslint-disable-line quotes
@@ -2028,7 +2028,7 @@ export function createFileTransferServiceClient(
       }, {
         service: "FileTransferService",
         method: "PostUploadFile",
-      }) as Promise<fileservicev1_UploadFileResponse>;
+      }) as Promise<storageservicev1_UploadFileResponse>;
     },
     UEditorPostUploadFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/ueditor`; // eslint-disable-line quotes
@@ -2045,7 +2045,7 @@ export function createFileTransferServiceClient(
       }, {
         service: "FileTransferService",
         method: "UEditorPostUploadFile",
-      }) as Promise<fileservicev1_UEditorUploadResponse>;
+      }) as Promise<storageservicev1_UEditorUploadResponse>;
     },
     UEditorPutUploadFile(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
       const path = `admin/v1/ueditor`; // eslint-disable-line quotes
@@ -2062,14 +2062,14 @@ export function createFileTransferServiceClient(
       }, {
         service: "FileTransferService",
         method: "UEditorPutUploadFile",
-      }) as Promise<fileservicev1_UEditorUploadResponse>;
+      }) as Promise<storageservicev1_UEditorUploadResponse>;
     },
   };
 }
 // 文件下载请求
-export type fileservicev1_DownloadFileRequest = {
+export type storageservicev1_DownloadFileRequest = {
   fileId?: number;
-  storageObject?: fileservicev1_StorageObject;
+  storageObject?: storageservicev1_StorageObject;
   downloadUrl?: string;
   // 可选的分段下载范围（闭区间 start，开区间 end；为 0/0 表示全量）
   rangeStart?: number;
@@ -2081,14 +2081,14 @@ export type fileservicev1_DownloadFileRequest = {
 };
 
 // 对象存储对象
-export type fileservicev1_StorageObject = {
+export type storageservicev1_StorageObject = {
   bucketName?: string;
   fileDirectory?: string;
   objectName?: string;
 };
 
 // 文件下载响应
-export type fileservicev1_DownloadFileResponse = {
+export type storageservicev1_DownloadFileResponse = {
   file?: string;
   downloadUrl?: string;
   sourceFileName: string | undefined;
@@ -2099,45 +2099,45 @@ export type fileservicev1_DownloadFileResponse = {
   updatedAt?: wellKnownTimestamp;
 };
 
-export type fileservicev1_UploadFileRequest = {
-  storageObject: fileservicev1_StorageObject | undefined;
+export type storageservicev1_UploadFileRequest = {
+  storageObject: storageservicev1_StorageObject | undefined;
   file?: string;
-  presign?: fileservicev1_PresignOption;
+  presign?: storageservicev1_PresignOption;
   sourceFileName?: string;
   mime?: string;
   size?: number;
 };
 
 // 预签名选项
-export type fileservicev1_PresignOption = {
+export type storageservicev1_PresignOption = {
   method?: string;
   expireSeconds?: number;
   contentType?: string;
 };
 
-export type fileservicev1_UploadFileResponse = {
+export type storageservicev1_UploadFileResponse = {
   objectName?: string;
   presignedUrl?: string;
 };
 
-export type fileservicev1_UEditorUploadRequest = {
+export type storageservicev1_UEditorUploadRequest = {
   action?: string;
   file?: string;
   sourceFileName?: string;
   mime?: string;
 };
 
-export type fileservicev1_UEditorUploadResponse = {
+export type storageservicev1_UEditorUploadResponse = {
   state?: string;
   url?: string;
   title?: string;
   original?: string;
   type?: string;
   size?: number;
-  list: fileservicev1_UEditorUploadResponse_Item[] | undefined;
+  list: storageservicev1_UEditorUploadResponse_Item[] | undefined;
 };
 
-export type fileservicev1_UEditorUploadResponse_Item = {
+export type storageservicev1_UEditorUploadResponse_Item = {
   state: string | undefined;
   url?: string;
   title?: string;
@@ -6300,7 +6300,7 @@ export type identityservicev1_TenantExistsResponse = {
 // UEditor后端服务
 export interface UEditorService {
   // UEditor API
-  UEditorAPI(request: fileservicev1_UEditorRequest): Promise<fileservicev1_UEditorResponse>;
+  UEditorAPI(request: storageservicev1_UEditorRequest): Promise<storageservicev1_UEditorResponse>;
 }
 
 export function createUEditorServiceClient(
@@ -6334,18 +6334,18 @@ export function createUEditorServiceClient(
       }, {
         service: "UEditorService",
         method: "UEditorAPI",
-      }) as Promise<fileservicev1_UEditorResponse>;
+      }) as Promise<storageservicev1_UEditorResponse>;
     },
   };
 }
-export type fileservicev1_UEditorRequest = {
+export type storageservicev1_UEditorRequest = {
   action: string | undefined;
   encode: string | undefined;
   start: number | undefined;
   size: number | undefined;
 };
 
-export type fileservicev1_UEditorResponse = {
+export type storageservicev1_UEditorResponse = {
   imageActionName?: string;
   imageFieldName?: string;
   imageMaxSize?: number;
@@ -6395,18 +6395,18 @@ export type fileservicev1_UEditorResponse = {
   fileManagerListSize?: number;
   fileManagerAllowFiles: string[] | undefined;
   FileManagerListPath?: string;
-  formulaConfig?: fileservicev1_UEditorResponse_FormulaConfig;
+  formulaConfig?: storageservicev1_UEditorResponse_FormulaConfig;
   state?: string;
   start?: number;
   total?: number;
-  list: fileservicev1_UEditorResponse_Item[] | undefined;
+  list: storageservicev1_UEditorResponse_Item[] | undefined;
 };
 
-export type fileservicev1_UEditorResponse_FormulaConfig = {
+export type storageservicev1_UEditorResponse_FormulaConfig = {
   imageUrlTemplate: string | undefined;
 };
 
-export type fileservicev1_UEditorResponse_Item = {
+export type storageservicev1_UEditorResponse_Item = {
   url: string | undefined;
   mtime: number | undefined;
 };

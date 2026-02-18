@@ -22,15 +22,15 @@ import (
 	"github.com/tx7do/go-utils/copierutil"
 	"github.com/tx7do/go-utils/mapper"
 
-	fileV1 "go-wind-admin/api/gen/go/file/service/v1"
+	storageV1 "go-wind-admin/api/gen/go/storage/service/v1"
 )
 
 type FileRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *log.Helper
 
-	mapper            *mapper.CopierMapper[fileV1.File, ent.File]
-	providerConverter *mapper.EnumTypeConverter[fileV1.OSSProvider, file.Provider]
+	mapper            *mapper.CopierMapper[storageV1.File, ent.File]
+	providerConverter *mapper.EnumTypeConverter[storageV1.OSSProvider, file.Provider]
 
 	repository *entCrud.Repository[
 		ent.FileQuery, ent.FileSelect,
@@ -38,7 +38,7 @@ type FileRepo struct {
 		ent.FileUpdate, ent.FileUpdateOne,
 		ent.FileDelete,
 		predicate.File,
-		fileV1.File, ent.File,
+		storageV1.File, ent.File,
 	]
 }
 
@@ -46,8 +46,8 @@ func NewFileRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Clien
 	repo := &FileRepo{
 		log:               ctx.NewLoggerHelper("file/repo/admin-service"),
 		entClient:         entClient,
-		mapper:            mapper.NewCopierMapper[fileV1.File, ent.File](),
-		providerConverter: mapper.NewEnumTypeConverter[fileV1.OSSProvider, file.Provider](fileV1.OSSProvider_name, fileV1.OSSProvider_value),
+		mapper:            mapper.NewCopierMapper[storageV1.File, ent.File](),
+		providerConverter: mapper.NewEnumTypeConverter[storageV1.OSSProvider, file.Provider](storageV1.OSSProvider_name, storageV1.OSSProvider_value),
 	}
 
 	repo.init()
@@ -62,7 +62,7 @@ func (r *FileRepo) init() {
 		ent.FileUpdate, ent.FileUpdateOne,
 		ent.FileDelete,
 		predicate.File,
-		fileV1.File, ent.File,
+		storageV1.File, ent.File,
 	](r.mapper)
 
 	r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
@@ -102,15 +102,15 @@ func (r *FileRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector))
 	count, err := builder.Count(ctx)
 	if err != nil {
 		r.log.Errorf("query count failed: %s", err.Error())
-		return 0, fileV1.ErrorInternalServerError("query count failed")
+		return 0, storageV1.ErrorInternalServerError("query count failed")
 	}
 
 	return count, nil
 }
 
-func (r *FileRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*fileV1.ListFileResponse, error) {
+func (r *FileRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*storageV1.ListFileResponse, error) {
 	if req == nil {
-		return nil, fileV1.ErrorBadRequest("invalid parameter")
+		return nil, storageV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().File.Query()
@@ -120,10 +120,10 @@ func (r *FileRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 		return nil, err
 	}
 	if ret == nil {
-		return &fileV1.ListFileResponse{Total: 0, Items: nil}, nil
+		return &storageV1.ListFileResponse{Total: 0, Items: nil}, nil
 	}
 
-	return &fileV1.ListFileResponse{
+	return &storageV1.ListFileResponse{
 		Total: ret.Total,
 		Items: ret.Items,
 	}, nil
@@ -135,14 +135,14 @@ func (r *FileRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Exist(ctx)
 	if err != nil {
 		r.log.Errorf("query exist failed: %s", err.Error())
-		return false, fileV1.ErrorInternalServerError("query exist failed")
+		return false, storageV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
 }
 
-func (r *FileRepo) Get(ctx context.Context, req *fileV1.GetFileRequest) (*fileV1.File, error) {
+func (r *FileRepo) Get(ctx context.Context, req *storageV1.GetFileRequest) (*storageV1.File, error) {
 	if req == nil {
-		return nil, fileV1.ErrorBadRequest("invalid parameter")
+		return nil, storageV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().File.Query()
@@ -150,7 +150,7 @@ func (r *FileRepo) Get(ctx context.Context, req *fileV1.GetFileRequest) (*fileV1
 	var whereCond []func(s *sql.Selector)
 	switch req.QueryBy.(type) {
 	default:
-	case *fileV1.GetFileRequest_Id:
+	case *storageV1.GetFileRequest_Id:
 		whereCond = append(whereCond, file.IDEQ(req.GetId()))
 	}
 
@@ -162,9 +162,9 @@ func (r *FileRepo) Get(ctx context.Context, req *fileV1.GetFileRequest) (*fileV1
 	return dto, err
 }
 
-func (r *FileRepo) Create(ctx context.Context, req *fileV1.CreateFileRequest) error {
+func (r *FileRepo) Create(ctx context.Context, req *storageV1.CreateFileRequest) error {
 	if req == nil || req.Data == nil {
-		return fileV1.ErrorBadRequest("invalid parameter")
+		return storageV1.ErrorBadRequest("invalid parameter")
 	}
 
 	if req.Data.Size != nil {
@@ -193,15 +193,15 @@ func (r *FileRepo) Create(ctx context.Context, req *fileV1.CreateFileRequest) er
 
 	if err := builder.Exec(ctx); err != nil {
 		r.log.Errorf("insert file failed: %s", err.Error())
-		return fileV1.ErrorInternalServerError("insert file failed")
+		return storageV1.ErrorInternalServerError("insert file failed")
 	}
 
 	return nil
 }
 
-func (r *FileRepo) Update(ctx context.Context, req *fileV1.UpdateFileRequest) error {
+func (r *FileRepo) Update(ctx context.Context, req *storageV1.UpdateFileRequest) error {
 	if req == nil || req.Data == nil {
-		return fileV1.ErrorBadRequest("invalid parameter")
+		return storageV1.ErrorBadRequest("invalid parameter")
 	}
 
 	if req.Data.Size != nil {
@@ -215,7 +215,7 @@ func (r *FileRepo) Update(ctx context.Context, req *fileV1.UpdateFileRequest) er
 			return err
 		}
 		if !exist {
-			createReq := &fileV1.CreateFileRequest{Data: req.Data}
+			createReq := &storageV1.CreateFileRequest{Data: req.Data}
 			createReq.Data.CreatedBy = createReq.Data.UpdatedBy
 			createReq.Data.UpdatedBy = nil
 			return r.Create(ctx, createReq)
@@ -224,7 +224,7 @@ func (r *FileRepo) Update(ctx context.Context, req *fileV1.UpdateFileRequest) er
 
 	builder := r.entClient.Client().Debug().File.Update()
 	err := r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
-		func(dto *fileV1.File) {
+		func(dto *storageV1.File) {
 			builder.
 				SetNillableProvider(r.providerConverter.ToEntity(req.Data.Provider)).
 				SetNillableBucketName(req.Data.BucketName).
@@ -248,19 +248,19 @@ func (r *FileRepo) Update(ctx context.Context, req *fileV1.UpdateFileRequest) er
 	return err
 }
 
-func (r *FileRepo) Delete(ctx context.Context, req *fileV1.DeleteFileRequest) error {
+func (r *FileRepo) Delete(ctx context.Context, req *storageV1.DeleteFileRequest) error {
 	if req == nil {
-		return fileV1.ErrorBadRequest("invalid parameter")
+		return storageV1.ErrorBadRequest("invalid parameter")
 	}
 
 	if err := r.entClient.Client().File.DeleteOneID(req.GetId()).Exec(ctx); err != nil {
 		if ent.IsNotFound(err) {
-			return fileV1.ErrorNotFound("file not found")
+			return storageV1.ErrorNotFound("file not found")
 		}
 
 		r.log.Errorf("delete one data failed: %s", err.Error())
 
-		return fileV1.ErrorInternalServerError("delete failed")
+		return storageV1.ErrorInternalServerError("delete failed")
 	}
 
 	return nil

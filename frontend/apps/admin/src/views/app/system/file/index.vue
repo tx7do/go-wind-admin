@@ -9,7 +9,7 @@ import { LucideFileDownload, LucideTrash2 } from '@vben/icons';
 import { notification, Upload } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type fileservicev1_File as File } from '#/generated/api/admin/service/v1';
+import { type storageservicev1_File as File } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
 import {
   ossProviderColor,

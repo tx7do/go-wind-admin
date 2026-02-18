@@ -6,7 +6,7 @@ package adminpb
 import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
-	filepb "go-wind-admin/api/gen/go/file/service/v1"
+	storagepb "go-wind-admin/api/gen/go/storage/service/v1"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -21,8 +21,8 @@ var (
 	_ codes.Code
 	_ status.Status
 	_ httpbody.HttpBody
-	_ filepb.DownloadFileRequest
-	_ filepb.UEditorRequest
+	_ storagepb.DownloadFileRequest
+	_ storagepb.UEditorRequest
 )
 
 // RegisterRedactedFileTransferServiceServer wraps the FileTransferServiceServer with the redacted server and registers the service in GRPC
@@ -45,7 +45,7 @@ type redactedFileTransferServiceServer struct {
 
 // DownloadFile is the redacted wrapper for the actual FileTransferServiceServer.DownloadFile method
 // Unary RPC
-func (s *redactedFileTransferServiceServer) DownloadFile(ctx context.Context, in *filepb.DownloadFileRequest) (*filepb.DownloadFileResponse, error) {
+func (s *redactedFileTransferServiceServer) DownloadFile(ctx context.Context, in *storagepb.DownloadFileRequest) (*storagepb.DownloadFileResponse, error) {
 	res, err := s.srv.DownloadFile(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -56,7 +56,7 @@ func (s *redactedFileTransferServiceServer) DownloadFile(ctx context.Context, in
 
 // PutUploadFile is the redacted wrapper for the actual FileTransferServiceServer.PutUploadFile method
 // Unary RPC
-func (s *redactedFileTransferServiceServer) PutUploadFile(ctx context.Context, in *filepb.UploadFileRequest) (*filepb.UploadFileResponse, error) {
+func (s *redactedFileTransferServiceServer) PutUploadFile(ctx context.Context, in *storagepb.UploadFileRequest) (*storagepb.UploadFileResponse, error) {
 	res, err := s.srv.PutUploadFile(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -67,7 +67,7 @@ func (s *redactedFileTransferServiceServer) PutUploadFile(ctx context.Context, i
 
 // PostUploadFile is the redacted wrapper for the actual FileTransferServiceServer.PostUploadFile method
 // Unary RPC
-func (s *redactedFileTransferServiceServer) PostUploadFile(ctx context.Context, in *filepb.UploadFileRequest) (*filepb.UploadFileResponse, error) {
+func (s *redactedFileTransferServiceServer) PostUploadFile(ctx context.Context, in *storagepb.UploadFileRequest) (*storagepb.UploadFileResponse, error) {
 	res, err := s.srv.PostUploadFile(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response
@@ -78,7 +78,7 @@ func (s *redactedFileTransferServiceServer) PostUploadFile(ctx context.Context, 
 
 // UEditorPostUploadFile is the redacted wrapper for the actual FileTransferServiceServer.UEditorPostUploadFile method
 // Client streaming
-func (s *redactedFileTransferServiceServer) UEditorPostUploadFile(stream grpc.ClientStreamingServer[filepb.UEditorUploadRequest, filepb.UEditorUploadResponse]) error {
+func (s *redactedFileTransferServiceServer) UEditorPostUploadFile(stream grpc.ClientStreamingServer[storagepb.UEditorUploadRequest, storagepb.UEditorUploadResponse]) error {
 	// Note: Redaction for client streaming is not fully implemented
 	// Streaming methods pass through without redaction
 	return s.srv.UEditorPostUploadFile(stream)
@@ -86,7 +86,7 @@ func (s *redactedFileTransferServiceServer) UEditorPostUploadFile(stream grpc.Cl
 
 // UEditorPutUploadFile is the redacted wrapper for the actual FileTransferServiceServer.UEditorPutUploadFile method
 // Client streaming
-func (s *redactedFileTransferServiceServer) UEditorPutUploadFile(stream grpc.ClientStreamingServer[filepb.UEditorUploadRequest, filepb.UEditorUploadResponse]) error {
+func (s *redactedFileTransferServiceServer) UEditorPutUploadFile(stream grpc.ClientStreamingServer[storagepb.UEditorUploadRequest, storagepb.UEditorUploadResponse]) error {
 	// Note: Redaction for client streaming is not fully implemented
 	// Streaming methods pass through without redaction
 	return s.srv.UEditorPutUploadFile(stream)

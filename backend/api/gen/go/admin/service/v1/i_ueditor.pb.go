@@ -8,7 +8,7 @@ package adminpb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
-	v1 "go-wind-admin/api/gen/go/file/service/v1"
+	v1 "go-wind-admin/api/gen/go/storage/service/v1"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	_ "google.golang.org/genproto/googleapis/api/httpbody"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -28,19 +28,19 @@ var File_admin_service_v1_i_ueditor_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_ueditor_proto_rawDesc = "" +
 	"\n" +
-	" admin/service/v1/i_ueditor.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x19google/api/httpbody.proto\x1a\x1dfile/service/v1/ueditor.proto2|\n" +
-	"\x0eUEditorService\x12j\n" +
+	" admin/service/v1/i_ueditor.proto\x12\x10admin.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x19google/api/httpbody.proto\x1a storage/service/v1/ueditor.proto2\x82\x01\n" +
+	"\x0eUEditorService\x12p\n" +
 	"\n" +
-	"UEditorAPI\x12\x1f.file.service.v1.UEditorRequest\x1a .file.service.v1.UEditorResponse\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/admin/v1/ueditorB\xba\x01\n" +
+	"UEditorAPI\x12\".storage.service.v1.UEditorRequest\x1a#.storage.service.v1.UEditorResponse\"\x19\x82\xd3\xe4\x93\x02\x13\x12\x11/admin/v1/ueditorB\xba\x01\n" +
 	"\x14com.admin.service.v1B\rIUeditorProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_ueditor_proto_goTypes = []any{
-	(*v1.UEditorRequest)(nil),  // 0: file.service.v1.UEditorRequest
-	(*v1.UEditorResponse)(nil), // 1: file.service.v1.UEditorResponse
+	(*v1.UEditorRequest)(nil),  // 0: storage.service.v1.UEditorRequest
+	(*v1.UEditorResponse)(nil), // 1: storage.service.v1.UEditorResponse
 }
 var file_admin_service_v1_i_ueditor_proto_depIdxs = []int32{
-	0, // 0: admin.service.v1.UEditorService.UEditorAPI:input_type -> file.service.v1.UEditorRequest
-	1, // 1: admin.service.v1.UEditorService.UEditorAPI:output_type -> file.service.v1.UEditorResponse
+	0, // 0: admin.service.v1.UEditorService.UEditorAPI:input_type -> storage.service.v1.UEditorRequest
+	1, // 1: admin.service.v1.UEditorService.UEditorAPI:output_type -> storage.service.v1.UEditorResponse
 	1, // [1:2] is the sub-list for method output_type
 	0, // [0:1] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name

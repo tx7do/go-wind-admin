@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             (unknown)
-// source: file/service/v1/file.proto
+// source: storage/service/v1/file.proto
 
-package filepb
+package storagepb
 
 import (
 	context "context"
@@ -21,11 +21,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	FileService_List_FullMethodName   = "/file.service.v1.FileService/List"
-	FileService_Get_FullMethodName    = "/file.service.v1.FileService/Get"
-	FileService_Create_FullMethodName = "/file.service.v1.FileService/Create"
-	FileService_Update_FullMethodName = "/file.service.v1.FileService/Update"
-	FileService_Delete_FullMethodName = "/file.service.v1.FileService/Delete"
+	FileService_List_FullMethodName   = "/storage.service.v1.FileService/List"
+	FileService_Count_FullMethodName  = "/storage.service.v1.FileService/Count"
+	FileService_Get_FullMethodName    = "/storage.service.v1.FileService/Get"
+	FileService_Create_FullMethodName = "/storage.service.v1.FileService/Create"
+	FileService_Update_FullMethodName = "/storage.service.v1.FileService/Update"
+	FileService_Delete_FullMethodName = "/storage.service.v1.FileService/Delete"
 )
 
 // FileServiceClient is the client API for FileService service.
@@ -36,6 +37,8 @@ const (
 type FileServiceClient interface {
 	// 获取文件列表
 	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListFileResponse, error)
+	// 统计文件数量
+	Count(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*CountFileResponse, error)
 	// 获取文件数据
 	Get(ctx context.Context, in *GetFileRequest, opts ...grpc.CallOption) (*File, error)
 	// 创建文件
@@ -58,6 +61,16 @@ func (c *fileServiceClient) List(ctx context.Context, in *v1.PagingRequest, opts
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(ListFileResponse)
 	err := c.cc.Invoke(ctx, FileService_List_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *fileServiceClient) Count(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*CountFileResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CountFileResponse)
+	err := c.cc.Invoke(ctx, FileService_Count_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -112,6 +125,8 @@ func (c *fileServiceClient) Delete(ctx context.Context, in *DeleteFileRequest, o
 type FileServiceServer interface {
 	// 获取文件列表
 	List(context.Context, *v1.PagingRequest) (*ListFileResponse, error)
+	// 统计文件数量
+	Count(context.Context, *v1.PagingRequest) (*CountFileResponse, error)
 	// 获取文件数据
 	Get(context.Context, *GetFileRequest) (*File, error)
 	// 创建文件
@@ -132,6 +147,9 @@ type UnimplementedFileServiceServer struct{}
 
 func (UnimplementedFileServiceServer) List(context.Context, *v1.PagingRequest) (*ListFileResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method List not implemented")
+}
+func (UnimplementedFileServiceServer) Count(context.Context, *v1.PagingRequest) (*CountFileResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method Count not implemented")
 }
 func (UnimplementedFileServiceServer) Get(context.Context, *GetFileRequest) (*File, error) {
 	return nil, status.Error(codes.Unimplemented, "method Get not implemented")
@@ -180,6 +198,24 @@ func _FileService_List_Handler(srv interface{}, ctx context.Context, dec func(in
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(FileServiceServer).List(ctx, req.(*v1.PagingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _FileService_Count_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.PagingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(FileServiceServer).Count(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: FileService_Count_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(FileServiceServer).Count(ctx, req.(*v1.PagingRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -260,12 +296,16 @@ func _FileService_Delete_Handler(srv interface{}, ctx context.Context, dec func(
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var FileService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "file.service.v1.FileService",
+	ServiceName: "storage.service.v1.FileService",
 	HandlerType: (*FileServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
 			MethodName: "List",
 			Handler:    _FileService_List_Handler,
+		},
+		{
+			MethodName: "Count",
+			Handler:    _FileService_Count_Handler,
 		},
 		{
 			MethodName: "Get",
@@ -285,5 +325,5 @@ var FileService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "file/service/v1/file.proto",
+	Metadata: "storage/service/v1/file.proto",
 }

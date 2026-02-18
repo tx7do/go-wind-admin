@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/tx7do/go-utils/trans"
 
-	fileV1 "go-wind-admin/api/gen/go/file/service/v1"
+	storageV1 "go-wind-admin/api/gen/go/storage/service/v1"
 
 	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
 )
@@ -31,8 +31,8 @@ func TestMinIoClient(t *testing.T) {
 	cli := createTestClient()
 	assert.NotNil(t, cli)
 
-	resp, err := cli.GetUploadPresignedUrl(t.Context(), &fileV1.GetUploadPresignedUrlRequest{
-		Method:        fileV1.GetUploadPresignedUrlRequest_Put,
+	resp, err := cli.GetUploadPresignedUrl(t.Context(), &storageV1.GetUploadPresignedUrlRequest{
+		Method:        storageV1.GetUploadPresignedUrlRequest_Put,
 		ContentType:   trans.String("image/jpeg"),
 		BucketName:    trans.String("images"),
 		FileDirectory: trans.String("20221010"),
@@ -45,7 +45,7 @@ func TestListFile(t *testing.T) {
 	cli := createTestClient()
 	assert.NotNil(t, cli)
 
-	req := &fileV1.ListOssFileRequest{
+	req := &storageV1.ListOssFileRequest{
 		BucketName: trans.Ptr("users"),
 		Folder:     trans.Ptr("1"),
 		Recursive:  trans.Ptr(true),
@@ -59,9 +59,9 @@ func TestDownloadFile(t *testing.T) {
 	cli := createTestClient()
 	assert.NotNil(t, cli)
 
-	resp, err := cli.DownloadFile(t.Context(), &fileV1.DownloadFileRequest{
-		Selector: &fileV1.DownloadFileRequest_StorageObject{
-			StorageObject: &fileV1.StorageObject{
+	resp, err := cli.DownloadFile(t.Context(), &storageV1.DownloadFileRequest{
+		Selector: &storageV1.DownloadFileRequest_StorageObject{
+			StorageObject: &storageV1.StorageObject{
 				BucketName: trans.Ptr("images"),
 				ObjectName: trans.Ptr("DateTimePicker.png"),
 			},

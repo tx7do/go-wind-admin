@@ -1,11 +1,11 @@
 syntax = "proto3";
 
-package file.service.v1;
+package storage.service.v1;
 
 import "errors/errors.proto";
 
-// 文件系统错误定义
-enum FileErrorReason {
+// 存储系统错误定义
+enum StorageErrorReason {
     option (errors.default_code) = 500;
 
     // 400

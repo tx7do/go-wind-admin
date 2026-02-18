@@ -7,7 +7,7 @@ import { defineStore } from 'pinia';
 
 import {
   createFileServiceClient,
-  type fileservicev1_OSSProvider as OSSProvider,
+  type storageservicev1_OSSProvider as OSSProvider,
 } from '#/generated/api/admin/service/v1';
 import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';

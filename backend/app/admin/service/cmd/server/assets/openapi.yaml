@@ -4953,11 +4953,11 @@ components:
                     description: 租户名称
                 createdBy:
                     type: integer
-                    description: 创建者ID
+                    description: 创建者用户ID
                     format: uint32
                 updatedBy:
                     type: integer
-                    description: 更新者ID
+                    description: 更新者用户ID
                     format: uint32
                 deletedBy:
                     type: integer

@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package file.service.v1;
+package storage.service.v1;
 
 import "gnostic/openapi/v3/annotations.proto";
 
@@ -17,7 +17,8 @@ service FileService {
   // 获取文件列表
   rpc List (pagination.PagingRequest) returns (ListFileResponse) {}
 
-  // 统计文件数量  rpc Count (pagination.PagingRequest) returns (CountFileResponse) {}
+  // 统计文件数量
+  rpc Count (pagination.PagingRequest) returns (CountFileResponse) {}
 
   // 获取文件数据
   rpc Get (GetFileRequest) returns (File) {}
@@ -134,8 +135,8 @@ message File {
     (gnostic.openapi.v3.property) = {description: "租户名称"}
   ];  // 租户名称
 
-  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
-  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者用户ID"}]; // 创建者用户ID
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者用户ID"}]; // 更新者用户ID
   optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
 
   optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间

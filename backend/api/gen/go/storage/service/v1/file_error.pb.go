@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: file/service/v1/file_error.proto
+// source: storage/service/v1/file_error.proto
 
-package filepb
+package storagepb
 
 import (
 	_ "github.com/go-kratos/kratos/v2/errors"
@@ -22,104 +22,104 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
-// 文件系统错误定义
-type FileErrorReason int32
+// 存储系统错误定义
+type StorageErrorReason int32
 
 const (
 	// 400
-	FileErrorReason_BAD_REQUEST FileErrorReason = 0 // 错误请求
+	StorageErrorReason_BAD_REQUEST StorageErrorReason = 0 // 错误请求
 	// 401
-	FileErrorReason_UNAUTHORIZED FileErrorReason = 100 // 未授权
+	StorageErrorReason_UNAUTHORIZED StorageErrorReason = 100 // 未授权
 	// 402
-	FileErrorReason_PAYMENT_REQUIRED FileErrorReason = 200 // 需要支付
+	StorageErrorReason_PAYMENT_REQUIRED StorageErrorReason = 200 // 需要支付
 	// 403
-	FileErrorReason_FORBIDDEN FileErrorReason = 300 // 禁止访问
+	StorageErrorReason_FORBIDDEN StorageErrorReason = 300 // 禁止访问
 	// 404
-	FileErrorReason_NOT_FOUND      FileErrorReason = 400 // 找不到资源
-	FileErrorReason_FILE_NOT_FOUND FileErrorReason = 401 // 文件不存在
+	StorageErrorReason_NOT_FOUND      StorageErrorReason = 400 // 找不到资源
+	StorageErrorReason_FILE_NOT_FOUND StorageErrorReason = 401 // 文件不存在
 	// 405
-	FileErrorReason_METHOD_NOT_ALLOWED FileErrorReason = 500 // 方法不允许
+	StorageErrorReason_METHOD_NOT_ALLOWED StorageErrorReason = 500 // 方法不允许
 	// 406
-	FileErrorReason_NOT_ACCEPTABLE FileErrorReason = 600 // 不可接受的请求
+	StorageErrorReason_NOT_ACCEPTABLE StorageErrorReason = 600 // 不可接受的请求
 	// 407
-	FileErrorReason_PROXY_AUTHENTICATION_REQUIRED FileErrorReason = 700 // 代理身份验证需要
+	StorageErrorReason_PROXY_AUTHENTICATION_REQUIRED StorageErrorReason = 700 // 代理身份验证需要
 	// 408
-	FileErrorReason_REQUEST_TIMEOUT FileErrorReason = 800 // 请求超时
+	StorageErrorReason_REQUEST_TIMEOUT StorageErrorReason = 800 // 请求超时
 	// 409
-	FileErrorReason_CONFLICT FileErrorReason = 900 // 冲突
+	StorageErrorReason_CONFLICT StorageErrorReason = 900 // 冲突
 	// 410
-	FileErrorReason_GONE FileErrorReason = 1000 // 已删除
+	StorageErrorReason_GONE StorageErrorReason = 1000 // 已删除
 	// 411
-	FileErrorReason_LENGTH_REQUIRED FileErrorReason = 1010 // 需要Content-Length
+	StorageErrorReason_LENGTH_REQUIRED StorageErrorReason = 1010 // 需要Content-Length
 	// 412
-	FileErrorReason_PRECONDITION_FAILED FileErrorReason = 1020 // 前置条件失败
+	StorageErrorReason_PRECONDITION_FAILED StorageErrorReason = 1020 // 前置条件失败
 	// 413
-	FileErrorReason_PAYLOAD_TOO_LARGE FileErrorReason = 1030 // 负载过大
-	FileErrorReason_FILE_TOO_LARGE    FileErrorReason = 1031 // 文件过大
+	StorageErrorReason_PAYLOAD_TOO_LARGE StorageErrorReason = 1030 // 负载过大
+	StorageErrorReason_FILE_TOO_LARGE    StorageErrorReason = 1031 // 文件过大
 	// 414
-	FileErrorReason_URI_TOO_LONG FileErrorReason = 1040 // URI过长
+	StorageErrorReason_URI_TOO_LONG StorageErrorReason = 1040 // URI过长
 	// 415
-	FileErrorReason_UNSUPPORTED_MEDIA_TYPE FileErrorReason = 1050 // 不支持的媒体类型
+	StorageErrorReason_UNSUPPORTED_MEDIA_TYPE StorageErrorReason = 1050 // 不支持的媒体类型
 	// 416
-	FileErrorReason_RANGE_NOT_SATISFIABLE FileErrorReason = 1060 // 请求范围无法满足
+	StorageErrorReason_RANGE_NOT_SATISFIABLE StorageErrorReason = 1060 // 请求范围无法满足
 	// 417
-	FileErrorReason_EXPECTATION_FAILED FileErrorReason = 1070 // 期望失败
+	StorageErrorReason_EXPECTATION_FAILED StorageErrorReason = 1070 // 期望失败
 	// 418
-	FileErrorReason_IM_A_TEAPOT FileErrorReason = 1080 // 我是茶壶 (RFC 2324)
+	StorageErrorReason_IM_A_TEAPOT StorageErrorReason = 1080 // 我是茶壶 (RFC 2324)
 	// 421
-	FileErrorReason_MISDIRECTED_REQUEST FileErrorReason = 1090 // 错误的请求
+	StorageErrorReason_MISDIRECTED_REQUEST StorageErrorReason = 1090 // 错误的请求
 	// 422
-	FileErrorReason_UNPROCESSABLE_ENTITY FileErrorReason = 1100 // 不可处理的实体
+	StorageErrorReason_UNPROCESSABLE_ENTITY StorageErrorReason = 1100 // 不可处理的实体
 	// 423
-	FileErrorReason_LOCKED FileErrorReason = 1110 // 已锁定
+	StorageErrorReason_LOCKED StorageErrorReason = 1110 // 已锁定
 	// 424
-	FileErrorReason_FAILED_DEPENDENCY FileErrorReason = 1120 // 依赖失败
+	StorageErrorReason_FAILED_DEPENDENCY StorageErrorReason = 1120 // 依赖失败
 	// 425
-	FileErrorReason_TOO_EARLY FileErrorReason = 1130 // 请求过早
+	StorageErrorReason_TOO_EARLY StorageErrorReason = 1130 // 请求过早
 	// 426
-	FileErrorReason_UPGRADE_REQUIRED FileErrorReason = 1140 // 需要升级
+	StorageErrorReason_UPGRADE_REQUIRED StorageErrorReason = 1140 // 需要升级
 	// 428
-	FileErrorReason_PRECONDITION_REQUIRED FileErrorReason = 1150 // 需要前置条件
+	StorageErrorReason_PRECONDITION_REQUIRED StorageErrorReason = 1150 // 需要前置条件
 	// 429
-	FileErrorReason_TOO_MANY_REQUESTS FileErrorReason = 1160 // 请求过多
+	StorageErrorReason_TOO_MANY_REQUESTS StorageErrorReason = 1160 // 请求过多
 	// 431
-	FileErrorReason_REQUEST_HEADER_FIELDS_TOO_LARGE FileErrorReason = 1170 // 请求头字段过大
+	StorageErrorReason_REQUEST_HEADER_FIELDS_TOO_LARGE StorageErrorReason = 1170 // 请求头字段过大
 	// 451
-	FileErrorReason_UNAVAILABLE_FOR_LEGAL_REASONS FileErrorReason = 1180 // 因法律原因不可用
+	StorageErrorReason_UNAVAILABLE_FOR_LEGAL_REASONS StorageErrorReason = 1180 // 因法律原因不可用
 	// 500
-	FileErrorReason_INTERNAL_SERVER_ERROR FileErrorReason = 2000 // 内部服务器错误
-	FileErrorReason_UPLOAD_FAILED         FileErrorReason = 2001
-	FileErrorReason_DOWNLOAD_FAILED       FileErrorReason = 2002
-	FileErrorReason_DELETE_FAILED         FileErrorReason = 2003
+	StorageErrorReason_INTERNAL_SERVER_ERROR StorageErrorReason = 2000 // 内部服务器错误
+	StorageErrorReason_UPLOAD_FAILED         StorageErrorReason = 2001
+	StorageErrorReason_DOWNLOAD_FAILED       StorageErrorReason = 2002
+	StorageErrorReason_DELETE_FAILED         StorageErrorReason = 2003
 	// 501
-	FileErrorReason_NOT_IMPLEMENTED FileErrorReason = 2100 // 未实现
+	StorageErrorReason_NOT_IMPLEMENTED StorageErrorReason = 2100 // 未实现
 	// 502
-	FileErrorReason_BAD_GATEWAY FileErrorReason = 2200 // 错误网关
+	StorageErrorReason_BAD_GATEWAY StorageErrorReason = 2200 // 错误网关
 	// 503
-	FileErrorReason_SERVICE_UNAVAILABLE FileErrorReason = 2300 // 服务不可用
+	StorageErrorReason_SERVICE_UNAVAILABLE StorageErrorReason = 2300 // 服务不可用
 	// 504
-	FileErrorReason_GATEWAY_TIMEOUT FileErrorReason = 2400 // 网关超时
+	StorageErrorReason_GATEWAY_TIMEOUT StorageErrorReason = 2400 // 网关超时
 	// 505
-	FileErrorReason_HTTP_VERSION_NOT_SUPPORTED FileErrorReason = 2500 // HTTP版本不支持
+	StorageErrorReason_HTTP_VERSION_NOT_SUPPORTED StorageErrorReason = 2500 // HTTP版本不支持
 	// 506
-	FileErrorReason_VARIANT_ALSO_NEGOTIATES FileErrorReason = 2600 // 变体也协商
+	StorageErrorReason_VARIANT_ALSO_NEGOTIATES StorageErrorReason = 2600 // 变体也协商
 	// 507
-	FileErrorReason_INSUFFICIENT_STORAGE FileErrorReason = 2700 // 存储空间不足
+	StorageErrorReason_INSUFFICIENT_STORAGE StorageErrorReason = 2700 // 存储空间不足
 	// 508
-	FileErrorReason_LOOP_DETECTED FileErrorReason = 2800 // 检测到循环
+	StorageErrorReason_LOOP_DETECTED StorageErrorReason = 2800 // 检测到循环
 	// 510
-	FileErrorReason_NOT_EXTENDED FileErrorReason = 2900 // 未扩展
+	StorageErrorReason_NOT_EXTENDED StorageErrorReason = 2900 // 未扩展
 	// 511
-	FileErrorReason_NETWORK_AUTHENTICATION_REQUIRED FileErrorReason = 3000 // 需要网络认证
+	StorageErrorReason_NETWORK_AUTHENTICATION_REQUIRED StorageErrorReason = 3000 // 需要网络认证
 	// 598
-	FileErrorReason_NETWORK_READ_TIMEOUT_ERROR FileErrorReason = 3100 // 网络读取超时
+	StorageErrorReason_NETWORK_READ_TIMEOUT_ERROR StorageErrorReason = 3100 // 网络读取超时
 	// 599
-	FileErrorReason_NETWORK_CONNECT_TIMEOUT_ERROR FileErrorReason = 3200 // 网络连接超时
+	StorageErrorReason_NETWORK_CONNECT_TIMEOUT_ERROR StorageErrorReason = 3200 // 网络连接超时
 )
 
-// Enum value maps for FileErrorReason.
+// Enum value maps for StorageErrorReason.
 var (
-	FileErrorReason_name = map[int32]string{
+	StorageErrorReason_name = map[int32]string{
 		0:    "BAD_REQUEST",
 		100:  "UNAUTHORIZED",
 		200:  "PAYMENT_REQUIRED",
@@ -168,7 +168,7 @@ var (
 		3100: "NETWORK_READ_TIMEOUT_ERROR",
 		3200: "NETWORK_CONNECT_TIMEOUT_ERROR",
 	}
-	FileErrorReason_value = map[string]int32{
+	StorageErrorReason_value = map[string]int32{
 		"BAD_REQUEST":                     0,
 		"UNAUTHORIZED":                    100,
 		"PAYMENT_REQUIRED":                200,
@@ -219,39 +219,39 @@ var (
 	}
 )
 
-func (x FileErrorReason) Enum() *FileErrorReason {
-	p := new(FileErrorReason)
+func (x StorageErrorReason) Enum() *StorageErrorReason {
+	p := new(StorageErrorReason)
 	*p = x
 	return p
 }
 
-func (x FileErrorReason) String() string {
+func (x StorageErrorReason) String() string {
 	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
 }
 
-func (FileErrorReason) Descriptor() protoreflect.EnumDescriptor {
-	return file_file_service_v1_file_error_proto_enumTypes[0].Descriptor()
+func (StorageErrorReason) Descriptor() protoreflect.EnumDescriptor {
+	return file_storage_service_v1_file_error_proto_enumTypes[0].Descriptor()
 }
 
-func (FileErrorReason) Type() protoreflect.EnumType {
-	return &file_file_service_v1_file_error_proto_enumTypes[0]
+func (StorageErrorReason) Type() protoreflect.EnumType {
+	return &file_storage_service_v1_file_error_proto_enumTypes[0]
 }
 
-func (x FileErrorReason) Number() protoreflect.EnumNumber {
+func (x StorageErrorReason) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use FileErrorReason.Descriptor instead.
-func (FileErrorReason) EnumDescriptor() ([]byte, []int) {
-	return file_file_service_v1_file_error_proto_rawDescGZIP(), []int{0}
+// Deprecated: Use StorageErrorReason.Descriptor instead.
+func (StorageErrorReason) EnumDescriptor() ([]byte, []int) {
+	return file_storage_service_v1_file_error_proto_rawDescGZIP(), []int{0}
 }
 
-var File_file_service_v1_file_error_proto protoreflect.FileDescriptor
+var File_storage_service_v1_file_error_proto protoreflect.FileDescriptor
 
-const file_file_service_v1_file_error_proto_rawDesc = "" +
+const file_storage_service_v1_file_error_proto_rawDesc = "" +
 	"\n" +
-	" file/service/v1/file_error.proto\x12\x0ffile.service.v1\x1a\x13errors/errors.proto*\x93\v\n" +
-	"\x0fFileErrorReason\x12\x15\n" +
+	"#storage/service/v1/file_error.proto\x12\x12storage.service.v1\x1a\x13errors/errors.proto*\x96\v\n" +
+	"\x12StorageErrorReason\x12\x15\n" +
 	"\vBAD_REQUEST\x10\x00\x1a\x04\xa8E\x90\x03\x12\x16\n" +
 	"\fUNAUTHORIZED\x10d\x1a\x04\xa8E\x91\x03\x12\x1b\n" +
 	"\x10PAYMENT_REQUIRED\x10\xc8\x01\x1a\x04\xa8E\x92\x03\x12\x14\n" +
@@ -298,26 +298,26 @@ const file_file_service_v1_file_error_proto_rawDesc = "" +
 	"\fNOT_EXTENDED\x10\xd4\x16\x1a\x04\xa8E\xfe\x03\x12*\n" +
 	"\x1fNETWORK_AUTHENTICATION_REQUIRED\x10\xb8\x17\x1a\x04\xa8E\xff\x03\x12%\n" +
 	"\x1aNETWORK_READ_TIMEOUT_ERROR\x10\x9c\x18\x1a\x04\xa8E\xd6\x04\x12(\n" +
-	"\x1dNETWORK_CONNECT_TIMEOUT_ERROR\x10\x80\x19\x1a\x04\xa8E\xd7\x04\x1a\x04\xa0E\xf4\x03B\xb4\x01\n" +
-	"\x13com.file.service.v1B\x0eFileErrorProtoP\x01Z/go-wind-admin/api/gen/go/file/service/v1;filepb\xa2\x02\x03FSX\xaa\x02\x0fFile.Service.V1\xca\x02\x0fFile\\Service\\V1\xe2\x02\x1bFile\\Service\\V1\\GPBMetadata\xea\x02\x11File::Service::V1b\x06proto3"
+	"\x1dNETWORK_CONNECT_TIMEOUT_ERROR\x10\x80\x19\x1a\x04\xa8E\xd7\x04\x1a\x04\xa0E\xf4\x03B\xc9\x01\n" +
+	"\x16com.storage.service.v1B\x0eFileErrorProtoP\x01Z5go-wind-admin/api/gen/go/storage/service/v1;storagepb\xa2\x02\x03SSX\xaa\x02\x12Storage.Service.V1\xca\x02\x12Storage\\Service\\V1\xe2\x02\x1eStorage\\Service\\V1\\GPBMetadata\xea\x02\x14Storage::Service::V1b\x06proto3"
 
 var (
-	file_file_service_v1_file_error_proto_rawDescOnce sync.Once
-	file_file_service_v1_file_error_proto_rawDescData []byte
+	file_storage_service_v1_file_error_proto_rawDescOnce sync.Once
+	file_storage_service_v1_file_error_proto_rawDescData []byte
 )
 
-func file_file_service_v1_file_error_proto_rawDescGZIP() []byte {
-	file_file_service_v1_file_error_proto_rawDescOnce.Do(func() {
-		file_file_service_v1_file_error_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_file_service_v1_file_error_proto_rawDesc), len(file_file_service_v1_file_error_proto_rawDesc)))
+func file_storage_service_v1_file_error_proto_rawDescGZIP() []byte {
+	file_storage_service_v1_file_error_proto_rawDescOnce.Do(func() {
+		file_storage_service_v1_file_error_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_storage_service_v1_file_error_proto_rawDesc), len(file_storage_service_v1_file_error_proto_rawDesc)))
 	})
-	return file_file_service_v1_file_error_proto_rawDescData
+	return file_storage_service_v1_file_error_proto_rawDescData
 }
 
-var file_file_service_v1_file_error_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_file_service_v1_file_error_proto_goTypes = []any{
-	(FileErrorReason)(0), // 0: file.service.v1.FileErrorReason
+var file_storage_service_v1_file_error_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_storage_service_v1_file_error_proto_goTypes = []any{
+	(StorageErrorReason)(0), // 0: storage.service.v1.StorageErrorReason
 }
-var file_file_service_v1_file_error_proto_depIdxs = []int32{
+var file_storage_service_v1_file_error_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for method output_type
 	0, // [0:0] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
@@ -325,26 +325,26 @@ var file_file_service_v1_file_error_proto_depIdxs = []int32{
 	0, // [0:0] is the sub-list for field type_name
 }
 
-func init() { file_file_service_v1_file_error_proto_init() }
-func file_file_service_v1_file_error_proto_init() {
-	if File_file_service_v1_file_error_proto != nil {
+func init() { file_storage_service_v1_file_error_proto_init() }
+func file_storage_service_v1_file_error_proto_init() {
+	if File_storage_service_v1_file_error_proto != nil {
 		return
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_file_service_v1_file_error_proto_rawDesc), len(file_file_service_v1_file_error_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_storage_service_v1_file_error_proto_rawDesc), len(file_storage_service_v1_file_error_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   0,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
-		GoTypes:           file_file_service_v1_file_error_proto_goTypes,
-		DependencyIndexes: file_file_service_v1_file_error_proto_depIdxs,
-		EnumInfos:         file_file_service_v1_file_error_proto_enumTypes,
+		GoTypes:           file_storage_service_v1_file_error_proto_goTypes,
+		DependencyIndexes: file_storage_service_v1_file_error_proto_depIdxs,
+		EnumInfos:         file_storage_service_v1_file_error_proto_enumTypes,
 	}.Build()
-	File_file_service_v1_file_error_proto = out.File
-	file_file_service_v1_file_error_proto_goTypes = nil
-	file_file_service_v1_file_error_proto_depIdxs = nil
+	File_storage_service_v1_file_error_proto = out.File
+	file_storage_service_v1_file_error_proto_goTypes = nil
+	file_storage_service_v1_file_error_proto_depIdxs = nil
 }

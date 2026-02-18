@@ -8,7 +8,7 @@ package adminpb
 
 import (
 	context "context"
-	v1 "go-wind-admin/api/gen/go/file/service/v1"
+	v1 "go-wind-admin/api/gen/go/storage/service/v1"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
 	status "google.golang.org/grpc/status"

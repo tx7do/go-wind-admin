@@ -16,7 +16,7 @@ import (
 
 	"go-wind-admin/app/admin/service/internal/service"
 
-	fileV1 "go-wind-admin/api/gen/go/file/service/v1"
+	storageV1 "go-wind-admin/api/gen/go/storage/service/v1"
 )
 
 var codec = encoding.GetCodec("json")
@@ -45,7 +45,7 @@ func _FileTransferService_PostUploadFile_HTTP_Handler(svc *service.FileTransferS
 	return func(ctx http.Context) error {
 		http.SetOperation(ctx, OperationFileTransferServicePostUploadFile)
 
-		var in fileV1.UploadFileRequest
+		var in storageV1.UploadFileRequest
 		var err error
 
 		file, header, err := ctx.Request().FormFile("file")
@@ -55,7 +55,7 @@ func _FileTransferService_PostUploadFile_HTTP_Handler(svc *service.FileTransferS
 			b := new(strings.Builder)
 			_, err = io.Copy(b, file)
 
-			in.Source = &fileV1.UploadFileRequest_File{File: []byte(b.String())}
+			in.Source = &storageV1.UploadFileRequest_File{File: []byte(b.String())}
 
 			sourceFileName := ctx.Request().FormValue("sourceFileName")
 			if sourceFileName != "" {
@@ -87,7 +87,7 @@ func _FileTransferService_PostUploadFile_HTTP_Handler(svc *service.FileTransferS
 
 			storageObject := ctx.Request().FormValue("storageObject")
 			if storageObject != "" {
-				in.StorageObject = &fileV1.StorageObject{}
+				in.StorageObject = &storageV1.StorageObject{}
 				if err = codec.Unmarshal([]byte(storageObject), in.StorageObject); err != nil {
 					log.Errorf("Unmarshal upload file storageObject error: %v", err)
 					return err
@@ -102,9 +102,9 @@ func _FileTransferService_PostUploadFile_HTTP_Handler(svc *service.FileTransferS
 		}
 
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			aReq := req.(*fileV1.UploadFileRequest)
+			aReq := req.(*storageV1.UploadFileRequest)
 
-			var resp *fileV1.UploadFileResponse
+			var resp *storageV1.UploadFileResponse
 			resp, err = svc.UploadFile(ctx, aReq)
 			in.Source = nil
 
@@ -117,7 +117,7 @@ func _FileTransferService_PostUploadFile_HTTP_Handler(svc *service.FileTransferS
 			return err
 		}
 
-		reply := out.(*fileV1.UploadFileResponse)
+		reply := out.(*storageV1.UploadFileResponse)
 
 		return ctx.Result(200, reply)
 	}
@@ -127,7 +127,7 @@ func _FileTransferService_PutUploadFile_HTTP_Handler(svc *service.FileTransferSe
 	return func(ctx http.Context) error {
 		http.SetOperation(ctx, OperationFileTransferServicePutUploadFile)
 
-		var in fileV1.UploadFileRequest
+		var in storageV1.UploadFileRequest
 		var err error
 
 		file, header, err := ctx.Request().FormFile("file")
@@ -137,7 +137,7 @@ func _FileTransferService_PutUploadFile_HTTP_Handler(svc *service.FileTransferSe
 			b := new(strings.Builder)
 			_, err = io.Copy(b, file)
 
-			in.Source = &fileV1.UploadFileRequest_File{File: []byte(b.String())}
+			in.Source = &storageV1.UploadFileRequest_File{File: []byte(b.String())}
 
 			sourceFileName := ctx.Request().FormValue("sourceFileName")
 			if sourceFileName != "" {
@@ -169,7 +169,7 @@ func _FileTransferService_PutUploadFile_HTTP_Handler(svc *service.FileTransferSe
 
 			storageObject := ctx.Request().FormValue("storageObject")
 			if storageObject != "" {
-				in.StorageObject = &fileV1.StorageObject{}
+				in.StorageObject = &storageV1.StorageObject{}
 				if err = codec.Unmarshal([]byte(storageObject), in.StorageObject); err != nil {
 					log.Errorf("Unmarshal upload file storageObject error: %v", err)
 					return err
@@ -184,9 +184,9 @@ func _FileTransferService_PutUploadFile_HTTP_Handler(svc *service.FileTransferSe
 		}
 
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			aReq := req.(*fileV1.UploadFileRequest)
+			aReq := req.(*storageV1.UploadFileRequest)
 
-			var resp *fileV1.UploadFileResponse
+			var resp *storageV1.UploadFileResponse
 			resp, err = svc.UploadFile(ctx, aReq)
 			in.Source = nil
 
@@ -199,7 +199,7 @@ func _FileTransferService_PutUploadFile_HTTP_Handler(svc *service.FileTransferSe
 			return err
 		}
 
-		reply := out.(*fileV1.UploadFileResponse)
+		reply := out.(*storageV1.UploadFileResponse)
 
 		return ctx.Result(200, reply)
 	}
@@ -209,7 +209,7 @@ func _FileTransferService_DownloadFile_HTTP_Handler(svc *service.FileTransferSer
 	return func(ctx http.Context) error {
 		http.SetOperation(ctx, OperationFileTransferServiceDownloadFile)
 
-		var in fileV1.DownloadFileRequest
+		var in storageV1.DownloadFileRequest
 		var err error
 
 		if err = ctx.BindQuery(&in); err != nil {
@@ -217,8 +217,8 @@ func _FileTransferService_DownloadFile_HTTP_Handler(svc *service.FileTransferSer
 		}
 
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			aReq := req.(*fileV1.DownloadFileRequest)
-			var resp *fileV1.DownloadFileResponse
+			aReq := req.(*storageV1.DownloadFileRequest)
+			var resp *storageV1.DownloadFileResponse
 			resp, err = svc.DownloadFile(ctx, aReq)
 			return resp, err
 		})
@@ -229,7 +229,7 @@ func _FileTransferService_DownloadFile_HTTP_Handler(svc *service.FileTransferSer
 			return err
 		}
 
-		reply := out.(*fileV1.DownloadFileResponse)
+		reply := out.(*storageV1.DownloadFileResponse)
 		rw := ctx.Response()
 		if rw == nil {
 			return ctx.Result(500, "response writer not available")
@@ -327,7 +327,7 @@ func _FileTransferService_UEditorPostUploadFile_HTTP_Handler(svc *service.FileTr
 	return func(ctx http.Context) error {
 		http.SetOperation(ctx, OperationFileTransferServiceUEditorPostUploadFile)
 
-		var in fileV1.UEditorUploadRequest
+		var in storageV1.UEditorUploadRequest
 		var err error
 
 		file, header, err := ctx.Request().FormFile("file")
@@ -347,9 +347,9 @@ func _FileTransferService_UEditorPostUploadFile_HTTP_Handler(svc *service.FileTr
 		}
 
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			var resp *fileV1.UEditorUploadResponse
+			var resp *storageV1.UEditorUploadResponse
 
-			resp, err = svc.UEditorUploadFile(ctx, req.(*fileV1.UEditorUploadRequest))
+			resp, err = svc.UEditorUploadFile(ctx, req.(*storageV1.UEditorUploadRequest))
 			in.File = nil
 
 			return resp, err
@@ -361,7 +361,7 @@ func _FileTransferService_UEditorPostUploadFile_HTTP_Handler(svc *service.FileTr
 			return err
 		}
 
-		reply := out.(*fileV1.UEditorUploadResponse)
+		reply := out.(*storageV1.UEditorUploadResponse)
 
 		return ctx.Result(200, reply)
 	}
@@ -371,7 +371,7 @@ func _FileTransferService_UEditorPutUploadFile_HTTP_Handler(svc *service.FileTra
 	return func(ctx http.Context) error {
 		http.SetOperation(ctx, OperationFileTransferServiceUEditorPutUploadFile)
 
-		var in fileV1.UEditorUploadRequest
+		var in storageV1.UEditorUploadRequest
 		var err error
 
 		file, header, err := ctx.Request().FormFile("file")
@@ -391,9 +391,9 @@ func _FileTransferService_UEditorPutUploadFile_HTTP_Handler(svc *service.FileTra
 		}
 
 		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
-			var resp *fileV1.UEditorUploadResponse
+			var resp *storageV1.UEditorUploadResponse
 
-			resp, err = svc.UEditorUploadFile(ctx, req.(*fileV1.UEditorUploadRequest))
+			resp, err = svc.UEditorUploadFile(ctx, req.(*storageV1.UEditorUploadRequest))
 			in.File = nil
 
 			return resp, err
@@ -405,7 +405,7 @@ func _FileTransferService_UEditorPutUploadFile_HTTP_Handler(svc *service.FileTra
 			return err
 		}
 
-		reply := out.(*fileV1.UEditorUploadResponse)
+		reply := out.(*storageV1.UEditorUploadResponse)
 
 		return ctx.Result(200, reply)
 	}

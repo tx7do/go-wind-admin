@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             (unknown)
-// source: file/service/v1/ueditor.proto
+// source: storage/service/v1/ueditor.proto
 
-package filepb
+package storagepb
 
 import (
 	context "context"
@@ -19,8 +19,8 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UEditorService_UEditorAPI_FullMethodName = "/file.service.v1.UEditorService/UEditorAPI"
-	UEditorService_UploadFile_FullMethodName = "/file.service.v1.UEditorService/UploadFile"
+	UEditorService_UEditorAPI_FullMethodName = "/storage.service.v1.UEditorService/UEditorAPI"
+	UEditorService_UploadFile_FullMethodName = "/storage.service.v1.UEditorService/UploadFile"
 )
 
 // UEditorServiceClient is the client API for UEditorService service.
@@ -150,7 +150,7 @@ func _UEditorService_UploadFile_Handler(srv interface{}, ctx context.Context, de
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var UEditorService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "file.service.v1.UEditorService",
+	ServiceName: "storage.service.v1.UEditorService",
 	HandlerType: (*UEditorServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -163,5 +163,5 @@ var UEditorService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "file/service/v1/ueditor.proto",
+	Metadata: "storage/service/v1/ueditor.proto",
 }

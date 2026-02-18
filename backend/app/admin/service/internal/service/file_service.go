@@ -12,7 +12,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
-	fileV1 "go-wind-admin/api/gen/go/file/service/v1"
+	storageV1 "go-wind-admin/api/gen/go/storage/service/v1"
 
 	"go-wind-admin/pkg/middleware/auth"
 	"go-wind-admin/pkg/oss"
@@ -39,15 +39,15 @@ func NewFileService(
 	}
 }
 
-func (s *FileService) List(ctx context.Context, req *paginationV1.PagingRequest) (*fileV1.ListFileResponse, error) {
+func (s *FileService) List(ctx context.Context, req *paginationV1.PagingRequest) (*storageV1.ListFileResponse, error) {
 	return s.fileRepo.List(ctx, req)
 }
 
-func (s *FileService) Get(ctx context.Context, req *fileV1.GetFileRequest) (*fileV1.File, error) {
+func (s *FileService) Get(ctx context.Context, req *storageV1.GetFileRequest) (*storageV1.File, error) {
 	return s.fileRepo.Get(ctx, req)
 }
 
-func (s *FileService) Create(ctx context.Context, req *fileV1.CreateFileRequest) (*emptypb.Empty, error) {
+func (s *FileService) Create(ctx context.Context, req *storageV1.CreateFileRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -67,7 +67,7 @@ func (s *FileService) Create(ctx context.Context, req *fileV1.CreateFileRequest)
 	return &emptypb.Empty{}, nil
 }
 
-func (s *FileService) Update(ctx context.Context, req *fileV1.UpdateFileRequest) (*emptypb.Empty, error) {
+func (s *FileService) Update(ctx context.Context, req *storageV1.UpdateFileRequest) (*emptypb.Empty, error) {
 	if req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
@@ -90,9 +90,9 @@ func (s *FileService) Update(ctx context.Context, req *fileV1.UpdateFileRequest)
 	return &emptypb.Empty{}, nil
 }
 
-func (s *FileService) Delete(ctx context.Context, req *fileV1.DeleteFileRequest) (*emptypb.Empty, error) {
-	f, err := s.fileRepo.Get(ctx, &fileV1.GetFileRequest{
-		QueryBy: &fileV1.GetFileRequest_Id{Id: req.GetId()},
+func (s *FileService) Delete(ctx context.Context, req *storageV1.DeleteFileRequest) (*emptypb.Empty, error) {
+	f, err := s.fileRepo.Get(ctx, &storageV1.GetFileRequest{
+		QueryBy: &storageV1.GetFileRequest_Id{Id: req.GetId()},
 	})
 	if err != nil {
 		return nil, err

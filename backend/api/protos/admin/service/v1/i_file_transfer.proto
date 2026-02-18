@@ -5,20 +5,20 @@ package admin.service.v1;
 import "google/api/annotations.proto";
 import "google/api/httpbody.proto";
 
-import "file/service/v1/file_transfer.proto";
-import "file/service/v1/ueditor.proto";
+import "storage/service/v1/file_transfer.proto";
+import "storage/service/v1/ueditor.proto";
 
 // 文件传输服务
 service FileTransferService {
   // 下载文件
-  rpc DownloadFile (file.service.v1.DownloadFileRequest) returns (file.service.v1.DownloadFileResponse) {
+  rpc DownloadFile (storage.service.v1.DownloadFileRequest) returns (storage.service.v1.DownloadFileResponse) {
     option (google.api.http) = {
       get: "/admin/v1/file/download"
     };
   }
 
   // 上传文件 PUT 方式
-  rpc PutUploadFile (file.service.v1.UploadFileRequest) returns (file.service.v1.UploadFileResponse) {
+  rpc PutUploadFile (storage.service.v1.UploadFileRequest) returns (storage.service.v1.UploadFileResponse) {
     option (google.api.http) = {
       put: "/admin/v1/file/upload",
       body: "*"
@@ -26,7 +26,7 @@ service FileTransferService {
   }
 
   // 上传文件 POST 方式
-  rpc PostUploadFile (file.service.v1.UploadFileRequest) returns (file.service.v1.UploadFileResponse) {
+  rpc PostUploadFile (storage.service.v1.UploadFileRequest) returns (storage.service.v1.UploadFileResponse) {
     option (google.api.http) = {
       post: "/admin/v1/file/upload",
       body: "*"
@@ -34,7 +34,7 @@ service FileTransferService {
   }
 
   // UEditor 上传文件
-  rpc UEditorPostUploadFile (stream file.service.v1.UEditorUploadRequest) returns (file.service.v1.UEditorUploadResponse) {
+  rpc UEditorPostUploadFile (stream storage.service.v1.UEditorUploadRequest) returns (storage.service.v1.UEditorUploadResponse) {
     option (google.api.http) = {
       post: "/admin/v1/ueditor"
       body: "*"
@@ -42,7 +42,7 @@ service FileTransferService {
   }
 
   // UEditor 上传文件
-  rpc UEditorPutUploadFile (stream file.service.v1.UEditorUploadRequest) returns (file.service.v1.UEditorUploadResponse) {
+  rpc UEditorPutUploadFile (stream storage.service.v1.UEditorUploadRequest) returns (storage.service.v1.UEditorUploadResponse) {
     option (google.api.http) = {
       put: "/admin/v1/ueditor"
       body: "*"

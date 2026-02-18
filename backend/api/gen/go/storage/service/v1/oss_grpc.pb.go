@@ -2,9 +2,9 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             (unknown)
-// source: file/service/v1/oss.proto
+// source: storage/service/v1/oss.proto
 
-package filepb
+package storagepb
 
 import (
 	context "context"
@@ -19,10 +19,10 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	OssService_GetUploadPresignedUrl_FullMethodName = "/file.service.v1.OssService/GetUploadPresignedUrl"
-	OssService_GetDownloadUrl_FullMethodName        = "/file.service.v1.OssService/GetDownloadUrl"
-	OssService_ListOssFile_FullMethodName           = "/file.service.v1.OssService/ListOssFile"
-	OssService_DeleteOssFile_FullMethodName         = "/file.service.v1.OssService/DeleteOssFile"
+	OssService_GetUploadPresignedUrl_FullMethodName = "/storage.service.v1.OssService/GetUploadPresignedUrl"
+	OssService_GetDownloadUrl_FullMethodName        = "/storage.service.v1.OssService/GetDownloadUrl"
+	OssService_ListOssFile_FullMethodName           = "/storage.service.v1.OssService/ListOssFile"
+	OssService_DeleteOssFile_FullMethodName         = "/storage.service.v1.OssService/DeleteOssFile"
 )
 
 // OssServiceClient is the client API for OssService service.
@@ -222,7 +222,7 @@ func _OssService_DeleteOssFile_Handler(srv interface{}, ctx context.Context, dec
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
 var OssService_ServiceDesc = grpc.ServiceDesc{
-	ServiceName: "file.service.v1.OssService",
+	ServiceName: "storage.service.v1.OssService",
 	HandlerType: (*OssServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
@@ -243,5 +243,5 @@ var OssService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "file/service/v1/oss.proto",
+	Metadata: "storage/service/v1/oss.proto",
 }

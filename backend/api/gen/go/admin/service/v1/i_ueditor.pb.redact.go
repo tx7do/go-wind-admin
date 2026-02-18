@@ -6,7 +6,7 @@ package adminpb
 import (
 	context "context"
 	redact "github.com/menta2k/protoc-gen-redact/v3/redact/v3"
-	filepb "go-wind-admin/api/gen/go/file/service/v1"
+	storagepb "go-wind-admin/api/gen/go/storage/service/v1"
 	httpbody "google.golang.org/genproto/googleapis/api/httpbody"
 	grpc "google.golang.org/grpc"
 	codes "google.golang.org/grpc/codes"
@@ -21,7 +21,7 @@ var (
 	_ codes.Code
 	_ status.Status
 	_ httpbody.HttpBody
-	_ filepb.UEditorRequest
+	_ storagepb.UEditorRequest
 )
 
 // RegisterRedactedUEditorServiceServer wraps the UEditorServiceServer with the redacted server and registers the service in GRPC
@@ -44,7 +44,7 @@ type redactedUEditorServiceServer struct {
 
 // UEditorAPI is the redacted wrapper for the actual UEditorServiceServer.UEditorAPI method
 // Unary RPC
-func (s *redactedUEditorServiceServer) UEditorAPI(ctx context.Context, in *filepb.UEditorRequest) (*filepb.UEditorResponse, error) {
+func (s *redactedUEditorServiceServer) UEditorAPI(ctx context.Context, in *storagepb.UEditorRequest) (*storagepb.UEditorResponse, error) {
 	res, err := s.srv.UEditorAPI(ctx, in)
 	if !s.bypass.CheckInternal(ctx) {
 		// Apply redaction to the response

@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: file/service/v1/file_transfer.proto
+// source: storage/service/v1/file_transfer.proto
 
-package filepb
+package storagepb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
@@ -46,7 +46,7 @@ type DownloadFileRequest struct {
 
 func (x *DownloadFileRequest) Reset() {
 	*x = DownloadFileRequest{}
-	mi := &file_file_service_v1_file_transfer_proto_msgTypes[0]
+	mi := &file_storage_service_v1_file_transfer_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -58,7 +58,7 @@ func (x *DownloadFileRequest) String() string {
 func (*DownloadFileRequest) ProtoMessage() {}
 
 func (x *DownloadFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_file_transfer_proto_msgTypes[0]
+	mi := &file_storage_service_v1_file_transfer_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -71,7 +71,7 @@ func (x *DownloadFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DownloadFileRequest.ProtoReflect.Descriptor instead.
 func (*DownloadFileRequest) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_file_transfer_proto_rawDescGZIP(), []int{0}
+	return file_storage_service_v1_file_transfer_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *DownloadFileRequest) GetSelector() isDownloadFileRequest_Selector {
@@ -194,7 +194,7 @@ type DownloadFileResponse struct {
 
 func (x *DownloadFileResponse) Reset() {
 	*x = DownloadFileResponse{}
-	mi := &file_file_service_v1_file_transfer_proto_msgTypes[1]
+	mi := &file_storage_service_v1_file_transfer_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -206,7 +206,7 @@ func (x *DownloadFileResponse) String() string {
 func (*DownloadFileResponse) ProtoMessage() {}
 
 func (x *DownloadFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_file_transfer_proto_msgTypes[1]
+	mi := &file_storage_service_v1_file_transfer_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -219,7 +219,7 @@ func (x *DownloadFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DownloadFileResponse.ProtoReflect.Descriptor instead.
 func (*DownloadFileResponse) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_file_transfer_proto_rawDescGZIP(), []int{1}
+	return file_storage_service_v1_file_transfer_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *DownloadFileResponse) GetContent() isDownloadFileResponse_Content {
@@ -322,7 +322,7 @@ type UploadFileRequest struct {
 
 func (x *UploadFileRequest) Reset() {
 	*x = UploadFileRequest{}
-	mi := &file_file_service_v1_file_transfer_proto_msgTypes[2]
+	mi := &file_storage_service_v1_file_transfer_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -334,7 +334,7 @@ func (x *UploadFileRequest) String() string {
 func (*UploadFileRequest) ProtoMessage() {}
 
 func (x *UploadFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_file_transfer_proto_msgTypes[2]
+	mi := &file_storage_service_v1_file_transfer_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -347,7 +347,7 @@ func (x *UploadFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadFileRequest.ProtoReflect.Descriptor instead.
 func (*UploadFileRequest) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_file_transfer_proto_rawDescGZIP(), []int{2}
+	return file_storage_service_v1_file_transfer_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *UploadFileRequest) GetStorageObject() *StorageObject {
@@ -429,7 +429,7 @@ type UploadFileResponse struct {
 
 func (x *UploadFileResponse) Reset() {
 	*x = UploadFileResponse{}
-	mi := &file_file_service_v1_file_transfer_proto_msgTypes[3]
+	mi := &file_storage_service_v1_file_transfer_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -441,7 +441,7 @@ func (x *UploadFileResponse) String() string {
 func (*UploadFileResponse) ProtoMessage() {}
 
 func (x *UploadFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_file_transfer_proto_msgTypes[3]
+	mi := &file_storage_service_v1_file_transfer_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -454,7 +454,7 @@ func (x *UploadFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UploadFileResponse.ProtoReflect.Descriptor instead.
 func (*UploadFileResponse) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_file_transfer_proto_rawDescGZIP(), []int{3}
+	return file_storage_service_v1_file_transfer_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *UploadFileResponse) GetObjectName() string {
@@ -471,14 +471,14 @@ func (x *UploadFileResponse) GetPresignedUrl() string {
 	return ""
 }
 
-var File_file_service_v1_file_transfer_proto protoreflect.FileDescriptor
+var File_storage_service_v1_file_transfer_proto protoreflect.FileDescriptor
 
-const file_file_service_v1_file_transfer_proto_rawDesc = "" +
+const file_storage_service_v1_file_transfer_proto_rawDesc = "" +
 	"\n" +
-	"#file/service/v1/file_transfer.proto\x12\x0ffile.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x19google/api/httpbody.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x19file/service/v1/oss.proto\"\xd4\b\n" +
+	"&storage/service/v1/file_transfer.proto\x12\x12storage.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x19google/api/httpbody.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cstorage/service/v1/oss.proto\"\xd7\b\n" +
 	"\x13DownloadFileRequest\x129\n" +
-	"\afile_id\x18\x01 \x01(\rB\x1e\xbaG\x1b\x92\x02\x18服务端内部文件 IDH\x00R\x06fileId\x12a\n" +
-	"\x0estorage_object\x18\x02 \x01(\v2\x1e.file.service.v1.StorageObjectB\x18\xbaG\x15\x92\x02\x12对象存储对象H\x00R\rstorageObject\x12\\\n" +
+	"\afile_id\x18\x01 \x01(\rB\x1e\xbaG\x1b\x92\x02\x18服务端内部文件 IDH\x00R\x06fileId\x12d\n" +
+	"\x0estorage_object\x18\x02 \x01(\v2!.storage.service.v1.StorageObjectB\x18\xbaG\x15\x92\x02\x12对象存储对象H\x00R\rstorageObject\x12\\\n" +
 	"\fdownload_url\x18\x03 \x01(\tB7\xbaG4\x92\x021直接的外部 URL（可用于代理或验证）H\x00R\vdownloadUrl\x12P\n" +
 	"\vrange_start\x18\x04 \x01(\x03B*\xbaG'\x92\x02$下载范围开始区域，闭区间H\x01R\n" +
 	"rangeStart\x88\x01\x01\x12L\n" +
@@ -508,11 +508,11 @@ const file_file_service_v1_file_transfer_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampB!\xbaG\x1e\x92\x02\x1b可选，最后修改时间H\x01R\tupdatedAt\x88\x01\x01B\t\n" +
 	"\acontentB\r\n" +
-	"\v_updated_at\"\xba\x04\n" +
-	"\x11UploadFileRequest\x12_\n" +
-	"\x0estorage_object\x18\x01 \x01(\v2\x1e.file.service.v1.StorageObjectB\x18\xbaG\x15\x92\x02\x12对象存储对象R\rstorageObject\x12I\n" +
-	"\x04file\x18\x02 \x01(\fB3\xbaG0\x92\x02-直接上传的文件内容（内联字节）H\x00R\x04file\x12\x91\x01\n" +
-	"\apresign\x18\x03 \x01(\v2\x1e.file.service.v1.PresignOptionBU\xbaGR\x92\x02O请求服务返回预签名信息（不上传文件而是获取预签名 URL）H\x00R\apresign\x12G\n" +
+	"\v_updated_at\"\xc0\x04\n" +
+	"\x11UploadFileRequest\x12b\n" +
+	"\x0estorage_object\x18\x01 \x01(\v2!.storage.service.v1.StorageObjectB\x18\xbaG\x15\x92\x02\x12对象存储对象R\rstorageObject\x12I\n" +
+	"\x04file\x18\x02 \x01(\fB3\xbaG0\x92\x02-直接上传的文件内容（内联字节）H\x00R\x04file\x12\x94\x01\n" +
+	"\apresign\x18\x03 \x01(\v2!.storage.service.v1.PresignOptionBU\xbaGR\x92\x02O请求服务返回预签名信息（不上传文件而是获取预签名 URL）H\x00R\apresign\x12G\n" +
 	"\x10source_file_name\x18\x04 \x01(\tB\x18\xbaG\x15\x92\x02\x12原文件文件名H\x01R\x0esourceFileName\x88\x01\x01\x122\n" +
 	"\x04mime\x18\x05 \x01(\tB\x19\xbaG\x16\x92\x02\x13文件的MIME类型H\x02R\x04mime\x88\x01\x01\x127\n" +
 	"\x04size\x18\x06 \x01(\x03B\x1e\xbaG\x1b\x92\x02\x18文件大小（字节）H\x03R\x04size\x88\x01\x01B\b\n" +
@@ -525,47 +525,47 @@ const file_file_service_v1_file_transfer_proto_rawDesc = "" +
 	"objectName\x88\x01\x01\x12E\n" +
 	"\rpresigned_url\x18\x02 \x01(\tB\x1b\xbaG\x18\x92\x02\x15预签名上传链接H\x01R\fpresignedUrl\x88\x01\x01B\x0e\n" +
 	"\f_object_nameB\x10\n" +
-	"\x0e_presigned_url2\x86\x02\n" +
-	"\x13FileTransferService\x12N\n" +
-	"\fDownloadFile\x12$.file.service.v1.DownloadFileRequest\x1a\x14.google.api.HttpBody\"\x000\x01\x12N\n" +
-	"\rPutUploadFile\x12\x14.google.api.HttpBody\x1a#.file.service.v1.UploadFileResponse\"\x00(\x01\x12O\n" +
-	"\x0ePostUploadFile\x12\x14.google.api.HttpBody\x1a#.file.service.v1.UploadFileResponse\"\x00(\x01B\xb7\x01\n" +
-	"\x13com.file.service.v1B\x11FileTransferProtoP\x01Z/go-wind-admin/api/gen/go/file/service/v1;filepb\xa2\x02\x03FSX\xaa\x02\x0fFile.Service.V1\xca\x02\x0fFile\\Service\\V1\xe2\x02\x1bFile\\Service\\V1\\GPBMetadata\xea\x02\x11File::Service::V1b\x06proto3"
+	"\x0e_presigned_url2\x8f\x02\n" +
+	"\x13FileTransferService\x12Q\n" +
+	"\fDownloadFile\x12'.storage.service.v1.DownloadFileRequest\x1a\x14.google.api.HttpBody\"\x000\x01\x12Q\n" +
+	"\rPutUploadFile\x12\x14.google.api.HttpBody\x1a&.storage.service.v1.UploadFileResponse\"\x00(\x01\x12R\n" +
+	"\x0ePostUploadFile\x12\x14.google.api.HttpBody\x1a&.storage.service.v1.UploadFileResponse\"\x00(\x01B\xcc\x01\n" +
+	"\x16com.storage.service.v1B\x11FileTransferProtoP\x01Z5go-wind-admin/api/gen/go/storage/service/v1;storagepb\xa2\x02\x03SSX\xaa\x02\x12Storage.Service.V1\xca\x02\x12Storage\\Service\\V1\xe2\x02\x1eStorage\\Service\\V1\\GPBMetadata\xea\x02\x14Storage::Service::V1b\x06proto3"
 
 var (
-	file_file_service_v1_file_transfer_proto_rawDescOnce sync.Once
-	file_file_service_v1_file_transfer_proto_rawDescData []byte
+	file_storage_service_v1_file_transfer_proto_rawDescOnce sync.Once
+	file_storage_service_v1_file_transfer_proto_rawDescData []byte
 )
 
-func file_file_service_v1_file_transfer_proto_rawDescGZIP() []byte {
-	file_file_service_v1_file_transfer_proto_rawDescOnce.Do(func() {
-		file_file_service_v1_file_transfer_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_file_service_v1_file_transfer_proto_rawDesc), len(file_file_service_v1_file_transfer_proto_rawDesc)))
+func file_storage_service_v1_file_transfer_proto_rawDescGZIP() []byte {
+	file_storage_service_v1_file_transfer_proto_rawDescOnce.Do(func() {
+		file_storage_service_v1_file_transfer_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_storage_service_v1_file_transfer_proto_rawDesc), len(file_storage_service_v1_file_transfer_proto_rawDesc)))
 	})
-	return file_file_service_v1_file_transfer_proto_rawDescData
+	return file_storage_service_v1_file_transfer_proto_rawDescData
 }
 
-var file_file_service_v1_file_transfer_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
-var file_file_service_v1_file_transfer_proto_goTypes = []any{
-	(*DownloadFileRequest)(nil),   // 0: file.service.v1.DownloadFileRequest
-	(*DownloadFileResponse)(nil),  // 1: file.service.v1.DownloadFileResponse
-	(*UploadFileRequest)(nil),     // 2: file.service.v1.UploadFileRequest
-	(*UploadFileResponse)(nil),    // 3: file.service.v1.UploadFileResponse
-	(*StorageObject)(nil),         // 4: file.service.v1.StorageObject
+var file_storage_service_v1_file_transfer_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_storage_service_v1_file_transfer_proto_goTypes = []any{
+	(*DownloadFileRequest)(nil),   // 0: storage.service.v1.DownloadFileRequest
+	(*DownloadFileResponse)(nil),  // 1: storage.service.v1.DownloadFileResponse
+	(*UploadFileRequest)(nil),     // 2: storage.service.v1.UploadFileRequest
+	(*UploadFileResponse)(nil),    // 3: storage.service.v1.UploadFileResponse
+	(*StorageObject)(nil),         // 4: storage.service.v1.StorageObject
 	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
-	(*PresignOption)(nil),         // 6: file.service.v1.PresignOption
+	(*PresignOption)(nil),         // 6: storage.service.v1.PresignOption
 	(*httpbody.HttpBody)(nil),     // 7: google.api.HttpBody
 }
-var file_file_service_v1_file_transfer_proto_depIdxs = []int32{
-	4, // 0: file.service.v1.DownloadFileRequest.storage_object:type_name -> file.service.v1.StorageObject
-	5, // 1: file.service.v1.DownloadFileResponse.updated_at:type_name -> google.protobuf.Timestamp
-	4, // 2: file.service.v1.UploadFileRequest.storage_object:type_name -> file.service.v1.StorageObject
-	6, // 3: file.service.v1.UploadFileRequest.presign:type_name -> file.service.v1.PresignOption
-	0, // 4: file.service.v1.FileTransferService.DownloadFile:input_type -> file.service.v1.DownloadFileRequest
-	7, // 5: file.service.v1.FileTransferService.PutUploadFile:input_type -> google.api.HttpBody
-	7, // 6: file.service.v1.FileTransferService.PostUploadFile:input_type -> google.api.HttpBody
-	7, // 7: file.service.v1.FileTransferService.DownloadFile:output_type -> google.api.HttpBody
-	3, // 8: file.service.v1.FileTransferService.PutUploadFile:output_type -> file.service.v1.UploadFileResponse
-	3, // 9: file.service.v1.FileTransferService.PostUploadFile:output_type -> file.service.v1.UploadFileResponse
+var file_storage_service_v1_file_transfer_proto_depIdxs = []int32{
+	4, // 0: storage.service.v1.DownloadFileRequest.storage_object:type_name -> storage.service.v1.StorageObject
+	5, // 1: storage.service.v1.DownloadFileResponse.updated_at:type_name -> google.protobuf.Timestamp
+	4, // 2: storage.service.v1.UploadFileRequest.storage_object:type_name -> storage.service.v1.StorageObject
+	6, // 3: storage.service.v1.UploadFileRequest.presign:type_name -> storage.service.v1.PresignOption
+	0, // 4: storage.service.v1.FileTransferService.DownloadFile:input_type -> storage.service.v1.DownloadFileRequest
+	7, // 5: storage.service.v1.FileTransferService.PutUploadFile:input_type -> google.api.HttpBody
+	7, // 6: storage.service.v1.FileTransferService.PostUploadFile:input_type -> google.api.HttpBody
+	7, // 7: storage.service.v1.FileTransferService.DownloadFile:output_type -> google.api.HttpBody
+	3, // 8: storage.service.v1.FileTransferService.PutUploadFile:output_type -> storage.service.v1.UploadFileResponse
+	3, // 9: storage.service.v1.FileTransferService.PostUploadFile:output_type -> storage.service.v1.UploadFileResponse
 	7, // [7:10] is the sub-list for method output_type
 	4, // [4:7] is the sub-list for method input_type
 	4, // [4:4] is the sub-list for extension type_name
@@ -573,41 +573,41 @@ var file_file_service_v1_file_transfer_proto_depIdxs = []int32{
 	0, // [0:4] is the sub-list for field type_name
 }
 
-func init() { file_file_service_v1_file_transfer_proto_init() }
-func file_file_service_v1_file_transfer_proto_init() {
-	if File_file_service_v1_file_transfer_proto != nil {
+func init() { file_storage_service_v1_file_transfer_proto_init() }
+func file_storage_service_v1_file_transfer_proto_init() {
+	if File_storage_service_v1_file_transfer_proto != nil {
 		return
 	}
-	file_file_service_v1_oss_proto_init()
-	file_file_service_v1_file_transfer_proto_msgTypes[0].OneofWrappers = []any{
+	file_storage_service_v1_oss_proto_init()
+	file_storage_service_v1_file_transfer_proto_msgTypes[0].OneofWrappers = []any{
 		(*DownloadFileRequest_FileId)(nil),
 		(*DownloadFileRequest_StorageObject)(nil),
 		(*DownloadFileRequest_DownloadUrl)(nil),
 	}
-	file_file_service_v1_file_transfer_proto_msgTypes[1].OneofWrappers = []any{
+	file_storage_service_v1_file_transfer_proto_msgTypes[1].OneofWrappers = []any{
 		(*DownloadFileResponse_File)(nil),
 		(*DownloadFileResponse_DownloadUrl)(nil),
 	}
-	file_file_service_v1_file_transfer_proto_msgTypes[2].OneofWrappers = []any{
+	file_storage_service_v1_file_transfer_proto_msgTypes[2].OneofWrappers = []any{
 		(*UploadFileRequest_File)(nil),
 		(*UploadFileRequest_Presign)(nil),
 	}
-	file_file_service_v1_file_transfer_proto_msgTypes[3].OneofWrappers = []any{}
+	file_storage_service_v1_file_transfer_proto_msgTypes[3].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_file_service_v1_file_transfer_proto_rawDesc), len(file_file_service_v1_file_transfer_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_storage_service_v1_file_transfer_proto_rawDesc), len(file_storage_service_v1_file_transfer_proto_rawDesc)),
 			NumEnums:      0,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_file_service_v1_file_transfer_proto_goTypes,
-		DependencyIndexes: file_file_service_v1_file_transfer_proto_depIdxs,
-		MessageInfos:      file_file_service_v1_file_transfer_proto_msgTypes,
+		GoTypes:           file_storage_service_v1_file_transfer_proto_goTypes,
+		DependencyIndexes: file_storage_service_v1_file_transfer_proto_depIdxs,
+		MessageInfos:      file_storage_service_v1_file_transfer_proto_msgTypes,
 	}.Build()
-	File_file_service_v1_file_transfer_proto = out.File
-	file_file_service_v1_file_transfer_proto_goTypes = nil
-	file_file_service_v1_file_transfer_proto_depIdxs = nil
+	File_storage_service_v1_file_transfer_proto = out.File
+	file_storage_service_v1_file_transfer_proto_goTypes = nil
+	file_storage_service_v1_file_transfer_proto_depIdxs = nil
 }

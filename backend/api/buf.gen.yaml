@@ -35,8 +35,8 @@ managed:
       path: dict/service/v1
       value: go-wind-admin/api/gen/go/dict/service/v1;dictpb
     - file_option: go_package
-      path: file/service/v1
-      value: go-wind-admin/api/gen/go/file/service/v1;filepb
+      path: storage/service/v1
+      value: go-wind-admin/api/gen/go/storage/service/v1;storagepb
     - file_option: go_package
       path: internal_message/service/v1
       value: go-wind-admin/api/gen/go/internal_message/service/v1;internalmessagepb

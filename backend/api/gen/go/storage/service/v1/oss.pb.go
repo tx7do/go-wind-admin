@@ -2,9 +2,9 @@
 // versions:
 // 	protoc-gen-go v1.36.11
 // 	protoc        (unknown)
-// source: file/service/v1/oss.proto
+// source: storage/service/v1/oss.proto
 
-package filepb
+package storagepb
 
 import (
 	_ "github.com/google/gnostic/openapiv3"
@@ -55,11 +55,11 @@ func (x GetUploadPresignedUrlRequest_Method) String() string {
 }
 
 func (GetUploadPresignedUrlRequest_Method) Descriptor() protoreflect.EnumDescriptor {
-	return file_file_service_v1_oss_proto_enumTypes[0].Descriptor()
+	return file_storage_service_v1_oss_proto_enumTypes[0].Descriptor()
 }
 
 func (GetUploadPresignedUrlRequest_Method) Type() protoreflect.EnumType {
-	return &file_file_service_v1_oss_proto_enumTypes[0]
+	return &file_storage_service_v1_oss_proto_enumTypes[0]
 }
 
 func (x GetUploadPresignedUrlRequest_Method) Number() protoreflect.EnumNumber {
@@ -68,7 +68,7 @@ func (x GetUploadPresignedUrlRequest_Method) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use GetUploadPresignedUrlRequest_Method.Descriptor instead.
 func (GetUploadPresignedUrlRequest_Method) EnumDescriptor() ([]byte, []int) {
-	return file_file_service_v1_oss_proto_rawDescGZIP(), []int{2, 0}
+	return file_storage_service_v1_oss_proto_rawDescGZIP(), []int{2, 0}
 }
 
 // 对象存储对象
@@ -83,7 +83,7 @@ type StorageObject struct {
 
 func (x *StorageObject) Reset() {
 	*x = StorageObject{}
-	mi := &file_file_service_v1_oss_proto_msgTypes[0]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[0]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -95,7 +95,7 @@ func (x *StorageObject) String() string {
 func (*StorageObject) ProtoMessage() {}
 
 func (x *StorageObject) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_oss_proto_msgTypes[0]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[0]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -108,7 +108,7 @@ func (x *StorageObject) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StorageObject.ProtoReflect.Descriptor instead.
 func (*StorageObject) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_oss_proto_rawDescGZIP(), []int{0}
+	return file_storage_service_v1_oss_proto_rawDescGZIP(), []int{0}
 }
 
 func (x *StorageObject) GetBucketName() string {
@@ -144,7 +144,7 @@ type PresignOption struct {
 
 func (x *PresignOption) Reset() {
 	*x = PresignOption{}
-	mi := &file_file_service_v1_oss_proto_msgTypes[1]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[1]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -156,7 +156,7 @@ func (x *PresignOption) String() string {
 func (*PresignOption) ProtoMessage() {}
 
 func (x *PresignOption) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_oss_proto_msgTypes[1]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[1]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -169,7 +169,7 @@ func (x *PresignOption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PresignOption.ProtoReflect.Descriptor instead.
 func (*PresignOption) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_oss_proto_rawDescGZIP(), []int{1}
+	return file_storage_service_v1_oss_proto_rawDescGZIP(), []int{1}
 }
 
 func (x *PresignOption) GetMethod() string {
@@ -196,11 +196,11 @@ func (x *PresignOption) GetContentType() string {
 // 获取对象存储上传链接 - 请求
 type GetUploadPresignedUrlRequest struct {
 	state         protoimpl.MessageState              `protogen:"open.v1"`
-	Method        GetUploadPresignedUrlRequest_Method `protobuf:"varint,1,opt,name=method,proto3,enum=file.service.v1.GetUploadPresignedUrlRequest_Method" json:"method,omitempty"` // 上传文件所用的HTTP方法
-	ContentType   *string                             `protobuf:"bytes,2,opt,name=content_type,json=contentType,proto3,oneof" json:"content_type,omitempty"`                        // 文件的MIME类型
-	BucketName    *string                             `protobuf:"bytes,3,opt,name=bucket_name,json=bucketName,proto3,oneof" json:"bucket_name,omitempty"`                           // 文件桶名称，如果不填写，将会根据文件名或者MIME类型进行自动解析。
-	FileDirectory *string                             `protobuf:"bytes,4,opt,name=file_directory,json=fileDirectory,proto3,oneof" json:"file_directory,omitempty"`                  // 远端的文件路径，可以不填写。
-	FileName      *string                             `protobuf:"bytes,5,opt,name=file_name,json=fileName,proto3,oneof" json:"file_name,omitempty"`                                 // 文件名，如果不填写，则会生成UUID，有同名文件也会改为UUID。
+	Method        GetUploadPresignedUrlRequest_Method `protobuf:"varint,1,opt,name=method,proto3,enum=storage.service.v1.GetUploadPresignedUrlRequest_Method" json:"method,omitempty"` // 上传文件所用的HTTP方法
+	ContentType   *string                             `protobuf:"bytes,2,opt,name=content_type,json=contentType,proto3,oneof" json:"content_type,omitempty"`                           // 文件的MIME类型
+	BucketName    *string                             `protobuf:"bytes,3,opt,name=bucket_name,json=bucketName,proto3,oneof" json:"bucket_name,omitempty"`                              // 文件桶名称，如果不填写，将会根据文件名或者MIME类型进行自动解析。
+	FileDirectory *string                             `protobuf:"bytes,4,opt,name=file_directory,json=fileDirectory,proto3,oneof" json:"file_directory,omitempty"`                     // 远端的文件路径，可以不填写。
+	FileName      *string                             `protobuf:"bytes,5,opt,name=file_name,json=fileName,proto3,oneof" json:"file_name,omitempty"`                                    // 文件名，如果不填写，则会生成UUID，有同名文件也会改为UUID。
 	ExpireSeconds *int32                              `protobuf:"varint,6,opt,name=expire_seconds,json=expireSeconds,proto3,oneof" json:"expire_seconds,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -208,7 +208,7 @@ type GetUploadPresignedUrlRequest struct {
 
 func (x *GetUploadPresignedUrlRequest) Reset() {
 	*x = GetUploadPresignedUrlRequest{}
-	mi := &file_file_service_v1_oss_proto_msgTypes[2]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[2]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -220,7 +220,7 @@ func (x *GetUploadPresignedUrlRequest) String() string {
 func (*GetUploadPresignedUrlRequest) ProtoMessage() {}
 
 func (x *GetUploadPresignedUrlRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_oss_proto_msgTypes[2]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[2]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -233,7 +233,7 @@ func (x *GetUploadPresignedUrlRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUploadPresignedUrlRequest.ProtoReflect.Descriptor instead.
 func (*GetUploadPresignedUrlRequest) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_oss_proto_rawDescGZIP(), []int{2}
+	return file_storage_service_v1_oss_proto_rawDescGZIP(), []int{2}
 }
 
 func (x *GetUploadPresignedUrlRequest) GetMethod() GetUploadPresignedUrlRequest_Method {
@@ -292,7 +292,7 @@ type GetUploadPresignedUrlResponse struct {
 
 func (x *GetUploadPresignedUrlResponse) Reset() {
 	*x = GetUploadPresignedUrlResponse{}
-	mi := &file_file_service_v1_oss_proto_msgTypes[3]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[3]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -304,7 +304,7 @@ func (x *GetUploadPresignedUrlResponse) String() string {
 func (*GetUploadPresignedUrlResponse) ProtoMessage() {}
 
 func (x *GetUploadPresignedUrlResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_oss_proto_msgTypes[3]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[3]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -317,7 +317,7 @@ func (x *GetUploadPresignedUrlResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUploadPresignedUrlResponse.ProtoReflect.Descriptor instead.
 func (*GetUploadPresignedUrlResponse) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_oss_proto_rawDescGZIP(), []int{3}
+	return file_storage_service_v1_oss_proto_rawDescGZIP(), []int{3}
 }
 
 func (x *GetUploadPresignedUrlResponse) GetUploadUrl() string {
@@ -377,7 +377,7 @@ type GetDownloadInfoRequest struct {
 
 func (x *GetDownloadInfoRequest) Reset() {
 	*x = GetDownloadInfoRequest{}
-	mi := &file_file_service_v1_oss_proto_msgTypes[4]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -389,7 +389,7 @@ func (x *GetDownloadInfoRequest) String() string {
 func (*GetDownloadInfoRequest) ProtoMessage() {}
 
 func (x *GetDownloadInfoRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_oss_proto_msgTypes[4]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -402,7 +402,7 @@ func (x *GetDownloadInfoRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDownloadInfoRequest.ProtoReflect.Descriptor instead.
 func (*GetDownloadInfoRequest) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_oss_proto_rawDescGZIP(), []int{4}
+	return file_storage_service_v1_oss_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *GetDownloadInfoRequest) GetSelector() isGetDownloadInfoRequest_Selector {
@@ -526,7 +526,7 @@ type GetDownloadInfoResponse struct {
 
 func (x *GetDownloadInfoResponse) Reset() {
 	*x = GetDownloadInfoResponse{}
-	mi := &file_file_service_v1_oss_proto_msgTypes[5]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -538,7 +538,7 @@ func (x *GetDownloadInfoResponse) String() string {
 func (*GetDownloadInfoResponse) ProtoMessage() {}
 
 func (x *GetDownloadInfoResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_oss_proto_msgTypes[5]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -551,7 +551,7 @@ func (x *GetDownloadInfoResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetDownloadInfoResponse.ProtoReflect.Descriptor instead.
 func (*GetDownloadInfoResponse) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_oss_proto_rawDescGZIP(), []int{5}
+	return file_storage_service_v1_oss_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *GetDownloadInfoResponse) GetContent() isGetDownloadInfoResponse_Content {
@@ -662,7 +662,7 @@ type ListOssFileRequest struct {
 
 func (x *ListOssFileRequest) Reset() {
 	*x = ListOssFileRequest{}
-	mi := &file_file_service_v1_oss_proto_msgTypes[6]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -674,7 +674,7 @@ func (x *ListOssFileRequest) String() string {
 func (*ListOssFileRequest) ProtoMessage() {}
 
 func (x *ListOssFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_oss_proto_msgTypes[6]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -687,7 +687,7 @@ func (x *ListOssFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListOssFileRequest.ProtoReflect.Descriptor instead.
 func (*ListOssFileRequest) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_oss_proto_rawDescGZIP(), []int{6}
+	return file_storage_service_v1_oss_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ListOssFileRequest) GetBucketName() string {
@@ -720,7 +720,7 @@ type ListOssFileResponse struct {
 
 func (x *ListOssFileResponse) Reset() {
 	*x = ListOssFileResponse{}
-	mi := &file_file_service_v1_oss_proto_msgTypes[7]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -732,7 +732,7 @@ func (x *ListOssFileResponse) String() string {
 func (*ListOssFileResponse) ProtoMessage() {}
 
 func (x *ListOssFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_oss_proto_msgTypes[7]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -745,7 +745,7 @@ func (x *ListOssFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListOssFileResponse.ProtoReflect.Descriptor instead.
 func (*ListOssFileResponse) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_oss_proto_rawDescGZIP(), []int{7}
+	return file_storage_service_v1_oss_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *ListOssFileResponse) GetFiles() []string {
@@ -765,7 +765,7 @@ type DeleteOssFileRequest struct {
 
 func (x *DeleteOssFileRequest) Reset() {
 	*x = DeleteOssFileRequest{}
-	mi := &file_file_service_v1_oss_proto_msgTypes[8]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -777,7 +777,7 @@ func (x *DeleteOssFileRequest) String() string {
 func (*DeleteOssFileRequest) ProtoMessage() {}
 
 func (x *DeleteOssFileRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_oss_proto_msgTypes[8]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -790,7 +790,7 @@ func (x *DeleteOssFileRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteOssFileRequest.ProtoReflect.Descriptor instead.
 func (*DeleteOssFileRequest) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_oss_proto_rawDescGZIP(), []int{8}
+	return file_storage_service_v1_oss_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *DeleteOssFileRequest) GetBucketName() string {
@@ -815,7 +815,7 @@ type DeleteOssFileResponse struct {
 
 func (x *DeleteOssFileResponse) Reset() {
 	*x = DeleteOssFileResponse{}
-	mi := &file_file_service_v1_oss_proto_msgTypes[9]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -827,7 +827,7 @@ func (x *DeleteOssFileResponse) String() string {
 func (*DeleteOssFileResponse) ProtoMessage() {}
 
 func (x *DeleteOssFileResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_file_service_v1_oss_proto_msgTypes[9]
+	mi := &file_storage_service_v1_oss_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -840,14 +840,14 @@ func (x *DeleteOssFileResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteOssFileResponse.ProtoReflect.Descriptor instead.
 func (*DeleteOssFileResponse) Descriptor() ([]byte, []int) {
-	return file_file_service_v1_oss_proto_rawDescGZIP(), []int{9}
+	return file_storage_service_v1_oss_proto_rawDescGZIP(), []int{9}
 }
 
-var File_file_service_v1_oss_proto protoreflect.FileDescriptor
+var File_storage_service_v1_oss_proto protoreflect.FileDescriptor
 
-const file_file_service_v1_oss_proto_rawDesc = "" +
+const file_storage_service_v1_oss_proto_rawDesc = "" +
 	"\n" +
-	"\x19file/service/v1/oss.proto\x12\x0ffile.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe4\x03\n" +
+	"\x1cstorage/service/v1/oss.proto\x12\x12storage.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe4\x03\n" +
 	"\rStorageObject\x12A\n" +
 	"\vbucket_name\x18\x01 \x01(\tB\x1b\xbaG\x18\x92\x02\x15目标文件桶名称H\x00R\n" +
 	"bucketName\x88\x01\x01\x12\xaa\x01\n" +
@@ -863,9 +863,9 @@ const file_file_service_v1_oss_proto_rawDesc = "" +
 	"\fcontent_type\x18\x03 \x01(\tB1\xbaG.\x92\x02+预签名约束的 Content-Type（可选）H\x02R\vcontentType\x88\x01\x01B\t\n" +
 	"\a_methodB\x11\n" +
 	"\x0f_expire_secondsB\x0f\n" +
-	"\r_content_type\"\x8a\x06\n" +
-	"\x1cGetUploadPresignedUrlRequest\x12\x86\x01\n" +
-	"\x06method\x18\x01 \x01(\x0e24.file.service.v1.GetUploadPresignedUrlRequest.MethodB8\xbaG5\x92\x022上传文件所用的HTTP方法，支持POST和PUTR\x06method\x12A\n" +
+	"\r_content_type\"\x8d\x06\n" +
+	"\x1cGetUploadPresignedUrlRequest\x12\x89\x01\n" +
+	"\x06method\x18\x01 \x01(\x0e27.storage.service.v1.GetUploadPresignedUrlRequest.MethodB8\xbaG5\x92\x022上传文件所用的HTTP方法，支持POST和PUTR\x06method\x12A\n" +
 	"\fcontent_type\x18\x02 \x01(\tB\x19\xbaG\x16\x92\x02\x13文件的MIME类型H\x00R\vcontentType\x88\x01\x01\x12\x87\x01\n" +
 	"\vbucket_name\x18\x03 \x01(\tBa\xbaG^\x92\x02[文件桶名称，如果不填写，将会根据文件名或者MIME类型进行自动解析H\x01R\n" +
 	"bucketName\x88\x01\x01\x12Y\n" +
@@ -880,7 +880,7 @@ const file_file_service_v1_oss_proto_rawDesc = "" +
 	"\x0f_file_directoryB\f\n" +
 	"\n" +
 	"_file_nameB\x11\n" +
-	"\x0f_expire_seconds\"\x89\x04\n" +
+	"\x0f_expire_seconds\"\x8c\x04\n" +
 	"\x1dGetUploadPresignedUrlResponse\x12\\\n" +
 	"\n" +
 	"upload_url\x18\x01 \x01(\tB=\xbaG:\x92\x027文件的上传链接，默认1个小时的过期时间R\tuploadUrl\x12>\n" +
@@ -888,15 +888,15 @@ const file_file_service_v1_oss_proto_rawDesc = "" +
 	"\vbucket_name\x18\x03 \x01(\tB\x15\xbaG\x12\x92\x02\x0f文件桶名称H\x00R\n" +
 	"bucketName\x88\x01\x01\x124\n" +
 	"\vobject_name\x18\x04 \x01(\tB\x13\xbaG\x10\x92\x02\rOSS 对象键R\n" +
-	"objectName\x12\x89\x01\n" +
-	"\tform_data\x18\x05 \x03(\v2<.file.service.v1.GetUploadPresignedUrlResponse.FormDataEntryB.\xbaG+\x92\x02(表单数据，使用POST方法时填写R\bformData\x1a;\n" +
+	"objectName\x12\x8c\x01\n" +
+	"\tform_data\x18\x05 \x03(\v2?.storage.service.v1.GetUploadPresignedUrlResponse.FormDataEntryB.\xbaG+\x92\x02(表单数据，使用POST方法时填写R\bformData\x1a;\n" +
 	"\rFormDataEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x0e\n" +
-	"\f_bucket_name\"\xc3\b\n" +
+	"\f_bucket_name\"\xc6\b\n" +
 	"\x16GetDownloadInfoRequest\x129\n" +
-	"\afile_id\x18\x01 \x01(\x04B\x1e\xbaG\x1b\x92\x02\x18服务端内部文件 IDH\x00R\x06fileId\x12e\n" +
-	"\x0estorage_object\x18\x02 \x01(\v2\x1e.file.service.v1.StorageObjectB\x1c\xbaG\x19\x92\x02\x16bucket + object 定位H\x00R\rstorageObject\x12\\\n" +
+	"\afile_id\x18\x01 \x01(\x04B\x1e\xbaG\x1b\x92\x02\x18服务端内部文件 IDH\x00R\x06fileId\x12h\n" +
+	"\x0estorage_object\x18\x02 \x01(\v2!.storage.service.v1.StorageObjectB\x1c\xbaG\x19\x92\x02\x16bucket + object 定位H\x00R\rstorageObject\x12\\\n" +
 	"\fdownload_url\x18\x03 \x01(\tB7\xbaG4\x92\x021直接的外部 URL（可用于代理或验证）H\x00R\vdownloadUrl\x12P\n" +
 	"\vrange_start\x18\x04 \x01(\x03B*\xbaG'\x92\x02$下载范围开始区域，闭区间H\x01R\n" +
 	"rangeStart\x88\x01\x01\x12L\n" +
@@ -914,7 +914,7 @@ const file_file_service_v1_oss_proto_rawDesc = "" +
 	"\x15_prefer_presigned_urlB\x19\n" +
 	"\x17_presign_expire_secondsB\x0e\n" +
 	"\f_dispositionB\x0e\n" +
-	"\f_accept_mime\"\xbf\b\n" +
+	"\f_accept_mime\"\xc2\b\n" +
 	"\x17GetDownloadInfoResponse\x12R\n" +
 	"\x04file\x18\x01 \x01(\fB<\xbaG9\x92\x026直接返回文件字节（小文件或同步场景）H\x00R\x04file\x12V\n" +
 	"\fdownload_url\x18\x02 \x01(\tB1\xbaG.\x92\x02+预签名 URL（大文件或异步下载）H\x00R\vdownloadUrl\x12`\n" +
@@ -924,8 +924,8 @@ const file_file_service_v1_oss_proto_rawDesc = "" +
 	"\bchecksum\x18\x06 \x01(\tB3\xbaG0\x92\x02-可选，文件校验（如 MD5 或 SHA256）R\bchecksum\x12K\n" +
 	"\fstorage_path\x18\a \x01(\tB(\xbaG%\x92\x02\"可选，后端存储位置或 keyR\vstoragePath\x12a\n" +
 	"\n" +
-	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampB!\xbaG\x1e\x92\x02\x1b可选，最后修改时间H\x01R\tupdatedAt\x88\x01\x01\x12\xad\x01\n" +
-	"\aheaders\x18\t \x03(\v25.file.service.v1.GetDownloadInfoResponse.HeadersEntryB\\\xbaGY\x92\x02V当返回 presigned URL 时，可能需要额外的请求 headers（或表单字段）R\aheaders\x12l\n" +
+	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampB!\xbaG\x1e\x92\x02\x1b可选，最后修改时间H\x01R\tupdatedAt\x88\x01\x01\x12\xb0\x01\n" +
+	"\aheaders\x18\t \x03(\v28.storage.service.v1.GetDownloadInfoResponse.HeadersEntryB\\\xbaGY\x92\x02V当返回 presigned URL 时，可能需要额外的请求 headers（或表单字段）R\aheaders\x12l\n" +
 	"\x06method\x18\n" +
 	" \x01(\tBO\xbaGL\x92\x02I请求方法建议（如 GET / HEAD），返回预签名 URL 时可说明H\x02R\x06method\x88\x01\x01\x1a:\n" +
 	"\fHeadersEntry\x12\x10\n" +
@@ -952,59 +952,59 @@ const file_file_service_v1_oss_proto_rawDesc = "" +
 	"objectName\x88\x01\x01B\x0e\n" +
 	"\f_bucket_nameB\x0e\n" +
 	"\f_object_name\"\x17\n" +
-	"\x15DeleteOssFileResponse2\xab\x03\n" +
+	"\x15DeleteOssFileResponse2\xc3\x03\n" +
 	"\n" +
-	"OssService\x12x\n" +
-	"\x15GetUploadPresignedUrl\x12-.file.service.v1.GetUploadPresignedUrlRequest\x1a..file.service.v1.GetUploadPresignedUrlResponse\"\x00\x12e\n" +
-	"\x0eGetDownloadUrl\x12'.file.service.v1.GetDownloadInfoRequest\x1a(.file.service.v1.GetDownloadInfoResponse\"\x00\x12Z\n" +
-	"\vListOssFile\x12#.file.service.v1.ListOssFileRequest\x1a$.file.service.v1.ListOssFileResponse\"\x00\x12`\n" +
-	"\rDeleteOssFile\x12%.file.service.v1.DeleteOssFileRequest\x1a&.file.service.v1.DeleteOssFileResponse\"\x00B\xae\x01\n" +
-	"\x13com.file.service.v1B\bOssProtoP\x01Z/go-wind-admin/api/gen/go/file/service/v1;filepb\xa2\x02\x03FSX\xaa\x02\x0fFile.Service.V1\xca\x02\x0fFile\\Service\\V1\xe2\x02\x1bFile\\Service\\V1\\GPBMetadata\xea\x02\x11File::Service::V1b\x06proto3"
+	"OssService\x12~\n" +
+	"\x15GetUploadPresignedUrl\x120.storage.service.v1.GetUploadPresignedUrlRequest\x1a1.storage.service.v1.GetUploadPresignedUrlResponse\"\x00\x12k\n" +
+	"\x0eGetDownloadUrl\x12*.storage.service.v1.GetDownloadInfoRequest\x1a+.storage.service.v1.GetDownloadInfoResponse\"\x00\x12`\n" +
+	"\vListOssFile\x12&.storage.service.v1.ListOssFileRequest\x1a'.storage.service.v1.ListOssFileResponse\"\x00\x12f\n" +
+	"\rDeleteOssFile\x12(.storage.service.v1.DeleteOssFileRequest\x1a).storage.service.v1.DeleteOssFileResponse\"\x00B\xc3\x01\n" +
+	"\x16com.storage.service.v1B\bOssProtoP\x01Z5go-wind-admin/api/gen/go/storage/service/v1;storagepb\xa2\x02\x03SSX\xaa\x02\x12Storage.Service.V1\xca\x02\x12Storage\\Service\\V1\xe2\x02\x1eStorage\\Service\\V1\\GPBMetadata\xea\x02\x14Storage::Service::V1b\x06proto3"
 
 var (
-	file_file_service_v1_oss_proto_rawDescOnce sync.Once
-	file_file_service_v1_oss_proto_rawDescData []byte
+	file_storage_service_v1_oss_proto_rawDescOnce sync.Once
+	file_storage_service_v1_oss_proto_rawDescData []byte
 )
 
-func file_file_service_v1_oss_proto_rawDescGZIP() []byte {
-	file_file_service_v1_oss_proto_rawDescOnce.Do(func() {
-		file_file_service_v1_oss_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_file_service_v1_oss_proto_rawDesc), len(file_file_service_v1_oss_proto_rawDesc)))
+func file_storage_service_v1_oss_proto_rawDescGZIP() []byte {
+	file_storage_service_v1_oss_proto_rawDescOnce.Do(func() {
+		file_storage_service_v1_oss_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_storage_service_v1_oss_proto_rawDesc), len(file_storage_service_v1_oss_proto_rawDesc)))
 	})
-	return file_file_service_v1_oss_proto_rawDescData
+	return file_storage_service_v1_oss_proto_rawDescData
 }
 
-var file_file_service_v1_oss_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_file_service_v1_oss_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
-var file_file_service_v1_oss_proto_goTypes = []any{
-	(GetUploadPresignedUrlRequest_Method)(0), // 0: file.service.v1.GetUploadPresignedUrlRequest.Method
-	(*StorageObject)(nil),                    // 1: file.service.v1.StorageObject
-	(*PresignOption)(nil),                    // 2: file.service.v1.PresignOption
-	(*GetUploadPresignedUrlRequest)(nil),     // 3: file.service.v1.GetUploadPresignedUrlRequest
-	(*GetUploadPresignedUrlResponse)(nil),    // 4: file.service.v1.GetUploadPresignedUrlResponse
-	(*GetDownloadInfoRequest)(nil),           // 5: file.service.v1.GetDownloadInfoRequest
-	(*GetDownloadInfoResponse)(nil),          // 6: file.service.v1.GetDownloadInfoResponse
-	(*ListOssFileRequest)(nil),               // 7: file.service.v1.ListOssFileRequest
-	(*ListOssFileResponse)(nil),              // 8: file.service.v1.ListOssFileResponse
-	(*DeleteOssFileRequest)(nil),             // 9: file.service.v1.DeleteOssFileRequest
-	(*DeleteOssFileResponse)(nil),            // 10: file.service.v1.DeleteOssFileResponse
-	nil,                                      // 11: file.service.v1.GetUploadPresignedUrlResponse.FormDataEntry
-	nil,                                      // 12: file.service.v1.GetDownloadInfoResponse.HeadersEntry
+var file_storage_service_v1_oss_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
+var file_storage_service_v1_oss_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_storage_service_v1_oss_proto_goTypes = []any{
+	(GetUploadPresignedUrlRequest_Method)(0), // 0: storage.service.v1.GetUploadPresignedUrlRequest.Method
+	(*StorageObject)(nil),                    // 1: storage.service.v1.StorageObject
+	(*PresignOption)(nil),                    // 2: storage.service.v1.PresignOption
+	(*GetUploadPresignedUrlRequest)(nil),     // 3: storage.service.v1.GetUploadPresignedUrlRequest
+	(*GetUploadPresignedUrlResponse)(nil),    // 4: storage.service.v1.GetUploadPresignedUrlResponse
+	(*GetDownloadInfoRequest)(nil),           // 5: storage.service.v1.GetDownloadInfoRequest
+	(*GetDownloadInfoResponse)(nil),          // 6: storage.service.v1.GetDownloadInfoResponse
+	(*ListOssFileRequest)(nil),               // 7: storage.service.v1.ListOssFileRequest
+	(*ListOssFileResponse)(nil),              // 8: storage.service.v1.ListOssFileResponse
+	(*DeleteOssFileRequest)(nil),             // 9: storage.service.v1.DeleteOssFileRequest
+	(*DeleteOssFileResponse)(nil),            // 10: storage.service.v1.DeleteOssFileResponse
+	nil,                                      // 11: storage.service.v1.GetUploadPresignedUrlResponse.FormDataEntry
+	nil,                                      // 12: storage.service.v1.GetDownloadInfoResponse.HeadersEntry
 	(*timestamppb.Timestamp)(nil),            // 13: google.protobuf.Timestamp
 }
-var file_file_service_v1_oss_proto_depIdxs = []int32{
-	0,  // 0: file.service.v1.GetUploadPresignedUrlRequest.method:type_name -> file.service.v1.GetUploadPresignedUrlRequest.Method
-	11, // 1: file.service.v1.GetUploadPresignedUrlResponse.form_data:type_name -> file.service.v1.GetUploadPresignedUrlResponse.FormDataEntry
-	1,  // 2: file.service.v1.GetDownloadInfoRequest.storage_object:type_name -> file.service.v1.StorageObject
-	13, // 3: file.service.v1.GetDownloadInfoResponse.updated_at:type_name -> google.protobuf.Timestamp
-	12, // 4: file.service.v1.GetDownloadInfoResponse.headers:type_name -> file.service.v1.GetDownloadInfoResponse.HeadersEntry
-	3,  // 5: file.service.v1.OssService.GetUploadPresignedUrl:input_type -> file.service.v1.GetUploadPresignedUrlRequest
-	5,  // 6: file.service.v1.OssService.GetDownloadUrl:input_type -> file.service.v1.GetDownloadInfoRequest
-	7,  // 7: file.service.v1.OssService.ListOssFile:input_type -> file.service.v1.ListOssFileRequest
-	9,  // 8: file.service.v1.OssService.DeleteOssFile:input_type -> file.service.v1.DeleteOssFileRequest
-	4,  // 9: file.service.v1.OssService.GetUploadPresignedUrl:output_type -> file.service.v1.GetUploadPresignedUrlResponse
-	6,  // 10: file.service.v1.OssService.GetDownloadUrl:output_type -> file.service.v1.GetDownloadInfoResponse
-	8,  // 11: file.service.v1.OssService.ListOssFile:output_type -> file.service.v1.ListOssFileResponse
-	10, // 12: file.service.v1.OssService.DeleteOssFile:output_type -> file.service.v1.DeleteOssFileResponse
+var file_storage_service_v1_oss_proto_depIdxs = []int32{
+	0,  // 0: storage.service.v1.GetUploadPresignedUrlRequest.method:type_name -> storage.service.v1.GetUploadPresignedUrlRequest.Method
+	11, // 1: storage.service.v1.GetUploadPresignedUrlResponse.form_data:type_name -> storage.service.v1.GetUploadPresignedUrlResponse.FormDataEntry
+	1,  // 2: storage.service.v1.GetDownloadInfoRequest.storage_object:type_name -> storage.service.v1.StorageObject
+	13, // 3: storage.service.v1.GetDownloadInfoResponse.updated_at:type_name -> google.protobuf.Timestamp
+	12, // 4: storage.service.v1.GetDownloadInfoResponse.headers:type_name -> storage.service.v1.GetDownloadInfoResponse.HeadersEntry
+	3,  // 5: storage.service.v1.OssService.GetUploadPresignedUrl:input_type -> storage.service.v1.GetUploadPresignedUrlRequest
+	5,  // 6: storage.service.v1.OssService.GetDownloadUrl:input_type -> storage.service.v1.GetDownloadInfoRequest
+	7,  // 7: storage.service.v1.OssService.ListOssFile:input_type -> storage.service.v1.ListOssFileRequest
+	9,  // 8: storage.service.v1.OssService.DeleteOssFile:input_type -> storage.service.v1.DeleteOssFileRequest
+	4,  // 9: storage.service.v1.OssService.GetUploadPresignedUrl:output_type -> storage.service.v1.GetUploadPresignedUrlResponse
+	6,  // 10: storage.service.v1.OssService.GetDownloadUrl:output_type -> storage.service.v1.GetDownloadInfoResponse
+	8,  // 11: storage.service.v1.OssService.ListOssFile:output_type -> storage.service.v1.ListOssFileResponse
+	10, // 12: storage.service.v1.OssService.DeleteOssFile:output_type -> storage.service.v1.DeleteOssFileResponse
 	9,  // [9:13] is the sub-list for method output_type
 	5,  // [5:9] is the sub-list for method input_type
 	5,  // [5:5] is the sub-list for extension type_name
@@ -1012,42 +1012,42 @@ var file_file_service_v1_oss_proto_depIdxs = []int32{
 	0,  // [0:5] is the sub-list for field type_name
 }
 
-func init() { file_file_service_v1_oss_proto_init() }
-func file_file_service_v1_oss_proto_init() {
-	if File_file_service_v1_oss_proto != nil {
+func init() { file_storage_service_v1_oss_proto_init() }
+func file_storage_service_v1_oss_proto_init() {
+	if File_storage_service_v1_oss_proto != nil {
 		return
 	}
-	file_file_service_v1_oss_proto_msgTypes[0].OneofWrappers = []any{}
-	file_file_service_v1_oss_proto_msgTypes[1].OneofWrappers = []any{}
-	file_file_service_v1_oss_proto_msgTypes[2].OneofWrappers = []any{}
-	file_file_service_v1_oss_proto_msgTypes[3].OneofWrappers = []any{}
-	file_file_service_v1_oss_proto_msgTypes[4].OneofWrappers = []any{
+	file_storage_service_v1_oss_proto_msgTypes[0].OneofWrappers = []any{}
+	file_storage_service_v1_oss_proto_msgTypes[1].OneofWrappers = []any{}
+	file_storage_service_v1_oss_proto_msgTypes[2].OneofWrappers = []any{}
+	file_storage_service_v1_oss_proto_msgTypes[3].OneofWrappers = []any{}
+	file_storage_service_v1_oss_proto_msgTypes[4].OneofWrappers = []any{
 		(*GetDownloadInfoRequest_FileId)(nil),
 		(*GetDownloadInfoRequest_StorageObject)(nil),
 		(*GetDownloadInfoRequest_DownloadUrl)(nil),
 	}
-	file_file_service_v1_oss_proto_msgTypes[5].OneofWrappers = []any{
+	file_storage_service_v1_oss_proto_msgTypes[5].OneofWrappers = []any{
 		(*GetDownloadInfoResponse_File)(nil),
 		(*GetDownloadInfoResponse_DownloadUrl)(nil),
 	}
-	file_file_service_v1_oss_proto_msgTypes[6].OneofWrappers = []any{}
-	file_file_service_v1_oss_proto_msgTypes[8].OneofWrappers = []any{}
+	file_storage_service_v1_oss_proto_msgTypes[6].OneofWrappers = []any{}
+	file_storage_service_v1_oss_proto_msgTypes[8].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
-			RawDescriptor: unsafe.Slice(unsafe.StringData(file_file_service_v1_oss_proto_rawDesc), len(file_file_service_v1_oss_proto_rawDesc)),
+			RawDescriptor: unsafe.Slice(unsafe.StringData(file_storage_service_v1_oss_proto_rawDesc), len(file_storage_service_v1_oss_proto_rawDesc)),
 			NumEnums:      1,
 			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
-		GoTypes:           file_file_service_v1_oss_proto_goTypes,
-		DependencyIndexes: file_file_service_v1_oss_proto_depIdxs,
-		EnumInfos:         file_file_service_v1_oss_proto_enumTypes,
-		MessageInfos:      file_file_service_v1_oss_proto_msgTypes,
+		GoTypes:           file_storage_service_v1_oss_proto_goTypes,
+		DependencyIndexes: file_storage_service_v1_oss_proto_depIdxs,
+		EnumInfos:         file_storage_service_v1_oss_proto_enumTypes,
+		MessageInfos:      file_storage_service_v1_oss_proto_msgTypes,
 	}.Build()
-	File_file_service_v1_oss_proto = out.File
-	file_file_service_v1_oss_proto_goTypes = nil
-	file_file_service_v1_oss_proto_depIdxs = nil
+	File_storage_service_v1_oss_proto = out.File
+	file_storage_service_v1_oss_proto_goTypes = nil
+	file_storage_service_v1_oss_proto_depIdxs = nil
 }

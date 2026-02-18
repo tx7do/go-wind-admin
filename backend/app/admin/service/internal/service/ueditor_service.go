@@ -7,7 +7,7 @@ import (
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
-	fileV1 "go-wind-admin/api/gen/go/file/service/v1"
+	storageV1 "go-wind-admin/api/gen/go/storage/service/v1"
 
 	"go-wind-admin/pkg/oss"
 )
@@ -31,14 +31,14 @@ func NewUEditorService(ctx *bootstrap.Context, mc *oss.MinIOClient) *UEditorServ
 	}
 }
 
-func (s *UEditorService) UEditorAPI(ctx context.Context, req *fileV1.UEditorRequest) (*fileV1.UEditorResponse, error) {
+func (s *UEditorService) UEditorAPI(ctx context.Context, req *storageV1.UEditorRequest) (*storageV1.UEditorResponse, error) {
 	//s.log.Infof("UEditorAPI [%s]", req.GetAction())
 
 	switch req.GetAction() {
 	default:
 		fallthrough
-	case fileV1.UEditorAction_config.String():
-		return &fileV1.UEditorResponse{
+	case storageV1.UEditorAction_config.String():
+		return &storageV1.UEditorResponse{
 			//// 上传图片配置项
 			//ImageActionName:     trans.Ptr("uploadImage"),                          // 执行上传图片的action名称
 			//ImageFieldName:      trans.Ptr("file"),                                 // 提交的图片表单名称
@@ -107,10 +107,10 @@ func (s *UEditorService) UEditorAPI(ctx context.Context, req *fileV1.UEditorRequ
 			//	".doc", ".docx", ".xls", ".xlsx", ".ppt", ".pptx", ".pdf", ".txt", ".md", ".xml"},
 		}, nil
 
-	case fileV1.UEditorAction_listFile.String():
+	case storageV1.UEditorAction_listFile.String():
 		return s.mc.ListFileForUEditor(ctx, "files", "")
 
-	case fileV1.UEditorAction_listImage.String():
+	case storageV1.UEditorAction_listImage.String():
 		return s.mc.ListFileForUEditor(ctx, "images", "")
 	}
 }
