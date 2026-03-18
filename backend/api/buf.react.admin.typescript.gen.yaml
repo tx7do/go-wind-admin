@@ -1,0 +1,58 @@
+version: v2
+
+clean: true
+
+managed:
+  enabled: true
+
+  disable:
+    - module: buf.build/googleapis/googleapis
+    - module: 'buf.build/envoyproxy/protoc-gen-validate'
+    - module: 'buf.build/kratos/apis'
+    - module: 'buf.build/gnostic/gnostic'
+    - module: 'buf.build/gogo/protobuf'
+    - module: 'buf.build/tx7do/pagination'
+    - module: 'buf.build/menta2k-org/redact'
+
+inputs:
+  - directory: protos
+    paths:
+      - protos/admin/service/v1
+
+plugins:
+  # generate typescript code
+#  - local: protoc-gen-ts_proto
+#    out: ../../frontend/apps/admin/src/generated/api
+#    opt:
+#      - outputSchema=false # 生成模式 (const, no-file-descriptor, true, false)
+#      - outputTypeRegistry=false # 生成类型注册表
+#      - outputTypeAnnotations=false # 生成类型注解 （static-only, true, optional, false）
+#      - outputServices=default # 生成服务代码 (default, definitions, grpc-js, nice-grpc, false, none)
+#      - outputJsonMethods=false # 生成json方法：toJSON、fromJSON
+#      - outputEncodeMethods=false # 生成编码方法：encode、decode
+#      - outputPartialMethods=false # Message.fromPartial和Message.create方法生成
+#      - outputClientImpl=false # 生成客户端实现 （grpc-web, false）
+#      - useExactTypes=true # 使用精确类型
+#      - usePrototypeForDefaults=true # 使用原型作为默认值
+#      - useJsonName=true # 使用json_name定义的字段名
+#      - useNullAsOptional=true # optional字段生成的类型，如果为true生成null，否则生成undefined。
+#      - useDate=false # google.protobuf.Timestamp类型转换为Date类型，如果为true，则生成Date类型，否则保持Timestamp类型。
+#      - useOptionals=none # 将字段声明为可选项，即是否加?号(all, messages, none)
+#      - useMapType=true # 使用Map类型
+#      - useReadonlyTypes=false # 使用只读类型readonly
+#      - nestJs=false # 使用nestjs
+#      - onlyTypes=false # 只生成类型，如果为true，等价于：outputJsonMethods=false,outputEncodeMethods=false,outputClientImpl=false,nestJs=false
+#      - fileSuffix=.pb # 文件后缀
+#      - enumsAsLiterals=false # 枚举作为文字
+#      - comments=true # 注释输出
+#      - exportCommonSymbols=false # 导出公共符号，如果为true，则生成protobufPackage，否则不导出。
+#      - esModuleInterop=true
+#      - forceLong=string # 强制long类型为string
+#      - oneof=unions # oneof生成的类型，如果为unions，则生成联合类型，否则生成交叉类型。
+#      - stringEnums=true # 枚举项生成的类型，如果为true，则生成字符串，否则生成为整型。
+#      - unrecognizedEnum=false # 未识别的枚举项，如果为true，默认会给enum增加一个UNRECOGNIZED枚举项。
+#      - outputIndex=false # 生成index.ts文件
+#      - paths=source_relative # 使用相对路径
+
+  - local: protoc-gen-typescript-http
+    out: ../../frontend/admin/react/src/api

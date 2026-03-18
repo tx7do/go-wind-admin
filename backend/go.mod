@@ -26,6 +26,7 @@ require (
 	github.com/tx7do/go-crud/api v0.0.7
 	github.com/tx7do/go-crud/entgo v0.0.43
 	github.com/tx7do/go-crud/gorm v0.0.19
+	github.com/tx7do/go-crud/pagination v0.0.12
 	github.com/tx7do/go-crud/viewer v0.0.6
 	github.com/tx7do/go-utils v1.1.34
 	github.com/tx7do/go-utils/aggregator v0.0.4
@@ -209,7 +210,6 @@ require (
 	github.com/tklauser/go-sysconf v0.3.16 // indirect
 	github.com/tklauser/numcpus v0.11.0 // indirect
 	github.com/tx7do/go-crud/audit v0.0.2 // indirect
-	github.com/tx7do/go-crud/pagination v0.0.12 // indirect
 	github.com/tx7do/go-utils/id v0.0.3 // indirect
 	github.com/tx7do/kratos-bootstrap/config v0.2.2 // indirect
 	github.com/tx7do/kratos-bootstrap/logger v0.1.2 // indirect

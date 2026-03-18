@@ -230,19 +230,26 @@ func (TokenCategory) EnumDescriptor() ([]byte, []int) {
 
 // 用户后台登录 - 请求
 type LoginRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	GrantType     GrantType              `protobuf:"varint,1,opt,name=grant_type,proto3,enum=authentication.service.v1.GrantType" json:"grant_type,omitempty"` // 授权类型，此处的值固定为"password"，必选项。
-	ClientId      *string                `protobuf:"bytes,2,opt,name=client_id,proto3,oneof" json:"client_id,omitempty"`
-	ClientSecret  *string                `protobuf:"bytes,3,opt,name=client_secret,proto3,oneof" json:"client_secret,omitempty"`
-	Scope         *string                `protobuf:"bytes,4,opt,name=scope,proto3,oneof" json:"scope,omitempty"`                                                         // 以空格分隔的范围列表。如果未提供，scope则授权任何范围，默认为空列表。
-	RedirectUri   *string                `protobuf:"bytes,5,opt,name=redirect_uri,proto3,oneof" json:"redirect_uri,omitempty"`                                           // 跳转链接
-	Username      *string                `protobuf:"bytes,10,opt,name=username,proto3,oneof" json:"username,omitempty"`                                                  // 用户名，必选项。
-	Password      *string                `protobuf:"bytes,11,opt,name=password,proto3,oneof" json:"password,omitempty"`                                                  // 用户的密码，必选项。
-	UserId        *uint32                `protobuf:"varint,12,opt,name=user_id,proto3,oneof" json:"user_id,omitempty"`                                                   // 用户ID
-	RefreshToken  *string                `protobuf:"bytes,20,opt,name=refresh_token,proto3,oneof" json:"refresh_token,omitempty"`                                        // 更新令牌，用来获取下一次的访问令牌，必选项。
-	Code          *string                `protobuf:"bytes,30,opt,name=code,proto3,oneof" json:"code,omitempty"`                                                          // 授权请求中收到的一次性验证/认证码。(当使用授权码模式时)
-	ClientType    *ClientType            `protobuf:"varint,40,opt,name=client_type,proto3,enum=authentication.service.v1.ClientType,oneof" json:"client_type,omitempty"` // 客户端类型
-	DeviceId      *string                `protobuf:"bytes,50,opt,name=device_id,proto3,oneof" json:"device_id,omitempty"`
+	state        protoimpl.MessageState `protogen:"open.v1"`
+	GrantType    GrantType              `protobuf:"varint,1,opt,name=grant_type,proto3,enum=authentication.service.v1.GrantType" json:"grant_type,omitempty"` // 授权类型，此处的值固定为"password"，必选项。
+	ClientId     *string                `protobuf:"bytes,2,opt,name=client_id,proto3,oneof" json:"client_id,omitempty"`
+	ClientSecret *string                `protobuf:"bytes,3,opt,name=client_secret,proto3,oneof" json:"client_secret,omitempty"`
+	Scope        *string                `protobuf:"bytes,4,opt,name=scope,proto3,oneof" json:"scope,omitempty"`               // 以空格分隔的范围列表。如果未提供，scope则授权任何范围，默认为空列表。
+	RedirectUri  *string                `protobuf:"bytes,5,opt,name=redirect_uri,proto3,oneof" json:"redirect_uri,omitempty"` // 跳转链接
+	UserId       *uint32                `protobuf:"varint,6,opt,name=user_id,proto3,oneof" json:"user_id,omitempty"`          // 用户ID
+	// 登录标识（用户名、邮箱、手机号三选一）
+	//
+	// Types that are valid to be assigned to Identifier:
+	//
+	//	*LoginRequest_Username
+	//	*LoginRequest_Email
+	//	*LoginRequest_Mobile
+	Identifier    isLoginRequest_Identifier `protobuf_oneof:"identifier"`
+	Password      *string                   `protobuf:"bytes,19,opt,name=password,proto3,oneof" json:"password,omitempty"`                                                  // 用户的密码，必选项。
+	RefreshToken  *string                   `protobuf:"bytes,20,opt,name=refresh_token,proto3,oneof" json:"refresh_token,omitempty"`                                        // 更新令牌，用来获取下一次的访问令牌，必选项。
+	Code          *string                   `protobuf:"bytes,30,opt,name=code,proto3,oneof" json:"code,omitempty"`                                                          // 授权请求中收到的一次性验证/认证码。(当使用授权码模式时)
+	ClientType    *ClientType               `protobuf:"varint,40,opt,name=client_type,proto3,enum=authentication.service.v1.ClientType,oneof" json:"client_type,omitempty"` // 客户端类型
+	DeviceId      *string                   `protobuf:"bytes,50,opt,name=device_id,proto3,oneof" json:"device_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -312,9 +319,43 @@ func (x *LoginRequest) GetRedirectUri() string {
 	return ""
 }
 
+func (x *LoginRequest) GetUserId() uint32 {
+	if x != nil && x.UserId != nil {
+		return *x.UserId
+	}
+	return 0
+}
+
+func (x *LoginRequest) GetIdentifier() isLoginRequest_Identifier {
+	if x != nil {
+		return x.Identifier
+	}
+	return nil
+}
+
 func (x *LoginRequest) GetUsername() string {
-	if x != nil && x.Username != nil {
-		return *x.Username
+	if x != nil {
+		if x, ok := x.Identifier.(*LoginRequest_Username); ok {
+			return x.Username
+		}
+	}
+	return ""
+}
+
+func (x *LoginRequest) GetEmail() string {
+	if x != nil {
+		if x, ok := x.Identifier.(*LoginRequest_Email); ok {
+			return x.Email
+		}
+	}
+	return ""
+}
+
+func (x *LoginRequest) GetMobile() string {
+	if x != nil {
+		if x, ok := x.Identifier.(*LoginRequest_Mobile); ok {
+			return x.Mobile
+		}
 	}
 	return ""
 }
@@ -324,13 +365,6 @@ func (x *LoginRequest) GetPassword() string {
 		return *x.Password
 	}
 	return ""
-}
-
-func (x *LoginRequest) GetUserId() uint32 {
-	if x != nil && x.UserId != nil {
-		return *x.UserId
-	}
-	return 0
 }
 
 func (x *LoginRequest) GetRefreshToken() string {
@@ -360,6 +394,28 @@ func (x *LoginRequest) GetDeviceId() string {
 	}
 	return ""
 }
+
+type isLoginRequest_Identifier interface {
+	isLoginRequest_Identifier()
+}
+
+type LoginRequest_Username struct {
+	Username string `protobuf:"bytes,10,opt,name=username,proto3,oneof"` // 用户名
+}
+
+type LoginRequest_Email struct {
+	Email string `protobuf:"bytes,11,opt,name=email,proto3,oneof"` // 电子邮件地址
+}
+
+type LoginRequest_Mobile struct {
+	Mobile string `protobuf:"bytes,12,opt,name=mobile,proto3,oneof"` // 手机号
+}
+
+func (*LoginRequest_Username) isLoginRequest_Identifier() {}
+
+func (*LoginRequest_Email) isLoginRequest_Identifier() {}
+
+func (*LoginRequest_Mobile) isLoginRequest_Identifier() {}
 
 // 用户后台登录 - 回应
 type LoginResponse struct {
@@ -1252,34 +1308,37 @@ var File_authentication_service_v1_authentication_proto protoreflect.FileDescrip
 
 const file_authentication_service_v1_authentication_proto_rawDesc = "" +
 	"\n" +
-	".authentication/service/v1/authentication.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x16redact/v3/redact.proto\x1a\x1eidentity/service/v1/user.proto\x1a*authentication/service/v1/user_token.proto\"\xbc\v\n" +
+	".authentication/service/v1/authentication.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x16redact/v3/redact.proto\x1a\x1eidentity/service/v1/user.proto\x1a*authentication/service/v1/user_token.proto\"\x97\f\n" +
 	"\fLoginRequest\x12\x99\x01\n" +
 	"\n" +
 	"grant_type\x18\x01 \x01(\x0e2$.authentication.service.v1.GrantTypeBS\xe0A\x02\xbaGM\x8a\x02\n" +
 	"\x1a\bpassword\x92\x02=授权类型，此处的值固定为\"password\"，必选项。R\n" +
 	"grant_type\x124\n" +
-	"\tclient_id\x18\x02 \x01(\tB\x11\xbaG\x0e\x92\x02\v客户端IDH\x00R\tclient_id\x88\x01\x01\x12@\n" +
-	"\rclient_secret\x18\x03 \x01(\tB\x15\xbaG\x12\x92\x02\x0f客户端密钥H\x01R\rclient_secret\x88\x01\x01\x12\x92\x01\n" +
-	"\x05scope\x18\x04 \x01(\tBw\xbaGt\x92\x02q以空格分隔的用户授予范围列表。如果未提供，scope则授权任何范围，默认为空列表。H\x02R\x05scope\x88\x01\x01\x12;\n" +
-	"\fredirect_uri\x18\x05 \x01(\tB\x12\xbaG\x0f\x92\x02\f跳转链接H\x03R\fredirect_uri\x88\x01\x01\x120\n" +
+	"\tclient_id\x18\x02 \x01(\tB\x11\xbaG\x0e\x92\x02\v客户端IDH\x01R\tclient_id\x88\x01\x01\x12@\n" +
+	"\rclient_secret\x18\x03 \x01(\tB\x15\xbaG\x12\x92\x02\x0f客户端密钥H\x02R\rclient_secret\x88\x01\x01\x12\x92\x01\n" +
+	"\x05scope\x18\x04 \x01(\tBw\xbaGt\x92\x02q以空格分隔的用户授予范围列表。如果未提供，scope则授权任何范围，默认为空列表。H\x03R\x05scope\x88\x01\x01\x12;\n" +
+	"\fredirect_uri\x18\x05 \x01(\tB\x12\xbaG\x0f\x92\x02\f跳转链接H\x04R\fredirect_uri\x88\x01\x01\x12-\n" +
+	"\auser_id\x18\x06 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDH\x05R\auser_id\x88\x01\x01\x12-\n" +
 	"\busername\x18\n" +
-	" \x01(\tB\x0f\xbaG\f\x92\x02\t用户名H\x04R\busername\x88\x01\x01\x12<\n" +
-	"\bpassword\x18\v \x01(\tB\x1b\xbaG\x12\x92\x02\x0f用户的密码ڶ\x1a\x02z\x00H\x05R\bpassword\x88\x01\x01\x12-\n" +
-	"\auser_id\x18\f \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDH\x06R\auser_id\x88\x01\x01\x12\xc2\x02\n" +
+	" \x01(\tB\x0f\xbaG\f\x92\x02\t用户名H\x00R\busername\x120\n" +
+	"\x05email\x18\v \x01(\tB\x18\xbaG\x15\x92\x02\x12电子邮件地址H\x00R\x05email\x12)\n" +
+	"\x06mobile\x18\f \x01(\tB\x0f\xbaG\f\x92\x02\t手机号H\x00R\x06mobile\x12<\n" +
+	"\bpassword\x18\x13 \x01(\tB\x1b\xbaG\x12\x92\x02\x0f用户的密码ڶ\x1a\x02z\x00H\x06R\bpassword\x88\x01\x01\x12\xc2\x02\n" +
 	"\rrefresh_token\x18\x14 \x01(\tB\x96\x02\xbaG\x92\x02\x92\x02\x8e\x02更新令牌，用来获取下一次的访问令牌，可选项。如果访问令牌将过期，则返回刷新令牌很有用，应用程序可以使用该刷新令牌来获取另一个访问令牌。但是，通过隐式授予颁发的令牌不能颁发刷新令牌。H\aR\rrefresh_token\x88\x01\x01\x12p\n" +
 	"\x04code\x18\x1e \x01(\tBW\xbaGT\x92\x02Q授权请求中收到的一次性验证/认证码。(当使用授权码模式时)H\bR\x04code\x88\x01\x01\x12c\n" +
 	"\vclient_type\x18( \x01(\x0e2%.authentication.service.v1.ClientTypeB\x15\xbaG\x12\x92\x02\x0f客户端类型H\tR\vclient_type\x88\x01\x01\x12q\n" +
 	"\tdevice_id\x182 \x01(\tBN\xbaGK\x92\x02H设备唯一标识（可选），用于设备绑定、推送、风控等H\n" +
 	"R\tdevice_id\x88\x01\x01B\f\n" +
 	"\n" +
+	"identifierB\f\n" +
+	"\n" +
 	"_client_idB\x10\n" +
 	"\x0e_client_secretB\b\n" +
 	"\x06_scopeB\x0f\n" +
-	"\r_redirect_uriB\v\n" +
-	"\t_usernameB\v\n" +
-	"\t_passwordB\n" +
+	"\r_redirect_uriB\n" +
 	"\n" +
-	"\b_user_idB\x10\n" +
+	"\b_user_idB\v\n" +
+	"\t_passwordB\x10\n" +
 	"\x0e_refresh_tokenB\a\n" +
 	"\x05_codeB\x0e\n" +
 	"\f_client_typeB\f\n" +
@@ -1494,7 +1553,11 @@ func file_authentication_service_v1_authentication_proto_init() {
 		return
 	}
 	file_authentication_service_v1_user_token_proto_init()
-	file_authentication_service_v1_authentication_proto_msgTypes[0].OneofWrappers = []any{}
+	file_authentication_service_v1_authentication_proto_msgTypes[0].OneofWrappers = []any{
+		(*LoginRequest_Username)(nil),
+		(*LoginRequest_Email)(nil),
+		(*LoginRequest_Mobile)(nil),
+	}
 	file_authentication_service_v1_authentication_proto_msgTypes[1].OneofWrappers = []any{}
 	file_authentication_service_v1_authentication_proto_msgTypes[3].OneofWrappers = []any{}
 	file_authentication_service_v1_authentication_proto_msgTypes[4].OneofWrappers = []any{}

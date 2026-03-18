@@ -59,6 +59,47 @@ func (m *LoginRequest) validate(all bool) error {
 
 	// no validation rules for GrantType
 
+	switch v := m.Identifier.(type) {
+	case *LoginRequest_Username:
+		if v == nil {
+			err := LoginRequestValidationError{
+				field:  "Identifier",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for Username
+	case *LoginRequest_Email:
+		if v == nil {
+			err := LoginRequestValidationError{
+				field:  "Identifier",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for Email
+	case *LoginRequest_Mobile:
+		if v == nil {
+			err := LoginRequestValidationError{
+				field:  "Identifier",
+				reason: "oneof value cannot be a typed-nil",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+		// no validation rules for Mobile
+	default:
+		_ = v // ensures v is used
+	}
+
 	if m.ClientId != nil {
 		// no validation rules for ClientId
 	}
@@ -75,16 +116,12 @@ func (m *LoginRequest) validate(all bool) error {
 		// no validation rules for RedirectUri
 	}
 
-	if m.Username != nil {
-		// no validation rules for Username
+	if m.UserId != nil {
+		// no validation rules for UserId
 	}
 
 	if m.Password != nil {
 		// no validation rules for Password
-	}
-
-	if m.UserId != nil {
-		// no validation rules for UserId
 	}
 
 	if m.RefreshToken != nil {

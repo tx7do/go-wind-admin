@@ -175,13 +175,11 @@ func (x *LoginRequest) Redact() string {
 
 	// Safe field: RedirectUri
 
-	// Safe field: Username
+	// Safe field: UserId
 
 	// Redacting field: Password
 	PasswordTmp := ``
 	x.Password = &PasswordTmp
-
-	// Safe field: UserId
 
 	// Safe field: RefreshToken
 

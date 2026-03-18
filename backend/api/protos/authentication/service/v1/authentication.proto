@@ -117,23 +117,34 @@ message LoginRequest {
     (gnostic.openapi.v3.property) = {description: "跳转链接"}
   ]; // 跳转链接
 
-  optional string username = 10 [
-    json_name = "username",
-    (gnostic.openapi.v3.property) = {description: "用户名"}
-  ]; // 用户名，必选项。
-
-  optional string password = 11 [
-    (redact.v3.value).string = "",
-    json_name = "password",
-    (gnostic.openapi.v3.property) = {description: "用户的密码"}
-  ]; // 用户的密码，必选项。
-
-  optional uint32 user_id = 12 [
+  optional uint32 user_id = 6 [
     json_name = "user_id",
     (gnostic.openapi.v3.property) = {
       description: "用户ID"
     }
   ]; // 用户ID
+
+  // 登录标识（用户名、邮箱、手机号三选一）
+  oneof identifier {
+    string username = 10 [
+      json_name = "username",
+      (gnostic.openapi.v3.property) = {description: "用户名"}
+    ]; // 用户名
+    string email = 11 [
+      json_name = "email",
+      (gnostic.openapi.v3.property) = {description: "电子邮件地址"}
+    ]; // 电子邮件地址
+    string mobile = 12 [
+      json_name = "mobile",
+      (gnostic.openapi.v3.property) = {description: "手机号"}
+    ]; // 手机号
+  }
+
+  optional string password = 19 [
+    (redact.v3.value).string = "",
+    json_name = "password",
+    (gnostic.openapi.v3.property) = {description: "用户的密码"}
+  ]; // 用户的密码，必选项。
 
   optional string refresh_token = 20 [
     json_name = "refresh_token",

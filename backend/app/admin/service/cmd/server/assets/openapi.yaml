@@ -5750,16 +5750,22 @@ components:
                 redirect_uri:
                     type: string
                     description: 跳转链接
-                username:
-                    type: string
-                    description: 用户名
-                password:
-                    type: string
-                    description: 用户的密码
                 user_id:
                     type: integer
                     description: 用户ID
                     format: uint32
+                username:
+                    type: string
+                    description: 用户名
+                email:
+                    type: string
+                    description: 电子邮件地址
+                mobile:
+                    type: string
+                    description: 手机号
+                password:
+                    type: string
+                    description: 用户的密码
                 refresh_token:
                     type: string
                     description: 更新令牌，用来获取下一次的访问令牌，可选项。如果访问令牌将过期，则返回刷新令牌很有用，应用程序可以使用该刷新令牌来获取另一个访问令牌。但是，通过隐式授予颁发的令牌不能颁发刷新令牌。

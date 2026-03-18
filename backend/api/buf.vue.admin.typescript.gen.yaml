@@ -55,4 +55,4 @@ plugins:
 #      - paths=source_relative # 使用相对路径
 
   - local: protoc-gen-typescript-http
-    out: ../../frontend/apps/admin/src/generated/api
+    out: ../../frontend/admin/vue/apps/admin/src/generated/api
