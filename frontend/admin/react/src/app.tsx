@@ -1,10 +1,9 @@
 import type {Settings as LayoutSettings} from '@ant-design/pro-components';
 import '@ant-design/v5-patch-for-react-19';
-import type {RequestConfig, RunTimeLayoutConfig} from '@umijs/max';
+import type {RunTimeLayoutConfig} from '@umijs/max';
 import {history} from '@umijs/max';
 
 import defaultSettings from '../config/defaultSettings';
-import {errorConfig} from './requestErrorConfig';
 import {layout as proLayoutConfig} from './layouts/ProLayoutConfig';
 import type {IUser} from "@/models/types";
 import {useUserProfileModel} from '@/models';
@@ -50,17 +49,6 @@ export async function getInitialState(): Promise<{
     settings: defaultSettings as Partial<LayoutSettings>,
   };
 }
-
-
-/**
- * @name request 配置，可以配置错误处理
- * 它基于 axios 和 ahooks 的 useRequest 提供了一套统一的网络请求和错误处理方案。
- * @doc https://umijs.org/docs/max/request#配置
- */
-export const request: RequestConfig = {
-  baseURL: 'https://proapi.azurewebsites.net',
-  ...errorConfig,
-};
 
 /**
  * @name layout 配置

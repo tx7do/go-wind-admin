@@ -10,22 +10,50 @@ const Login: React.FC = () => {
   const {message} = App.useApp();
   const intl = useIntl();
   const {login, loginLoading} = useModel('business.authentication');
+  const access = useModel('auth.access');
 
   const handleSubmit = async (values: { username: string; password: string }) => {
+    console.log('[Login] Form submitted with values:', values);
+      
     try {
-      await login(
+      console.log('[Login] Calling login function...');
+      const result = await login(
         {
           username: values.username,
           password: values.password,
           grant_type: 'password',
         },
-        () => {
-          // 登录成功后的回调
-          window.location.href = '/';
-        },
+        // 不传 onSuccess 回调，避免提前跳转
       );
+        
+      console.log('[Login] Login function returned result:', result);
+  
+      // 保存令牌到 AccessModel
+      if (result.accessToken || result.refreshToken) {
+        console.log('[Login] Saving tokens to AccessModel');
+        access.setTokens({
+          accessToken: result.accessToken ? {
+            value: result.accessToken,
+            expiresAt: Date.now() + 7200 * 1000, // 默认 2 小时过期
+          } : null,
+          refreshToken: result.refreshToken ? {
+            value: result.refreshToken,
+            expiresAt: Date.now() + 30 * 24 * 60 * 60 * 1000, // 默认 30 天过期
+          } : null,
+        });
+        console.log('[Login] Tokens saved to AccessModel');
+      } else {
+        console.warn('[Login] No tokens in result');
+      }
+        
       message.success(intl.formatMessage({id: 'pages.login.success'}));
+      
+      // 保存完令牌后再跳转
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 500);
     } catch (error: any) {
+      console.error('[Login] Error occurred:', error);
       // 错误已在 model 中处理
       message.error(error?.message || intl.formatMessage({id: 'pages.login.failure'}));
     }

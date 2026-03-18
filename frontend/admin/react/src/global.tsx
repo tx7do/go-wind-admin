@@ -1,9 +1,32 @@
-import { useIntl } from '@umijs/max';
-import { Button, message, notification } from 'antd';
+import {useIntl} from '@umijs/max';
+import {Button, message, notification} from 'antd';
 import defaultSettings from '../config/defaultSettings';
+import {setGetTokenCallback} from '@/transport/rest';
+import {loadAccessToken} from "@/models/auth/access";
 
-const { pwa } = defaultSettings;
+const {pwa} = defaultSettings;
 const isHttps = document.location.protocol === 'https:';
+
+// 初始化请求 Token 回调
+// 从 localStorage 读取 accessToken
+const initRequestTokenGetter = () => {
+  setGetTokenCallback(() => {
+    try {
+      const tokenItem = loadAccessToken();
+      console.log('Access token loaded:', tokenItem);
+      if (tokenItem) {
+        return tokenItem.value || null;
+      }
+    } catch (e) {
+      console.error('Failed to parse token:', e);
+    }
+    return null;
+  });
+  console.log('Request token getter initialized');
+};
+
+// 在应用启动时立即执行
+initRequestTokenGetter();
 
 const clearCache = () => {
   // remove all caches
@@ -23,7 +46,7 @@ const clearCache = () => {
 if (pwa) {
   // Notify user if offline now
   window.addEventListener('sw.offline', () => {
-    message.warning(useIntl().formatMessage({ id: 'app.pwa.offline' }));
+    message.warning(useIntl().formatMessage({id: 'app.pwa.offline'}));
   });
 
   // Pop up a prompt on the page asking the user if they want to use the latest version
@@ -46,7 +69,7 @@ if (pwa) {
             resolve(msgEvent.data);
           }
         };
-        worker.postMessage({ type: 'skip-waiting' }, [channel.port2]);
+        worker.postMessage({type: 'skip-waiting'}, [channel.port2]);
       });
 
       clearCache();
@@ -62,11 +85,11 @@ if (pwa) {
           reloadSW();
         }}
       >
-        {useIntl().formatMessage({ id: 'app.pwa.serviceworker.updated.ok' })}
+        {useIntl().formatMessage({id: 'app.pwa.serviceworker.updated.ok'})}
       </Button>
     );
     notification.open({
-      message: useIntl().formatMessage({ id: 'app.pwa.serviceworker.updated' }),
+      message: useIntl().formatMessage({id: 'app.pwa.serviceworker.updated'}),
       description: useIntl().formatMessage({
         id: 'app.pwa.serviceworker.updated.hint',
       }),
@@ -77,7 +100,7 @@ if (pwa) {
   });
 } else if ('serviceWorker' in navigator && isHttps) {
   // unregister service worker
-  const { serviceWorker } = navigator;
+  const {serviceWorker} = navigator;
   if (serviceWorker.getRegistrations) {
     serviceWorker.getRegistrations().then((sws) => {
       sws.forEach((sw) => {

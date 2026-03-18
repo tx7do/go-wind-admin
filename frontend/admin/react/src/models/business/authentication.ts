@@ -7,6 +7,7 @@ import {
 import {requestApi} from '@/transport/rest';
 import {encryptByAES} from '@/utils/crypto';
 import type {IUser} from '../types';
+import {saveAccessToken, saveRefreshToken} from "@/models/auth/access";
 
 export interface LoginParams {
   username?: string;
@@ -53,8 +54,10 @@ export default function AuthenticationModel() {
     async (
       params: LoginParams,
       onSuccess?: () => Promise<void> | void,
-    ): Promise<{ userInfo: IUser | null }> => {
+    ): Promise<{ userInfo: IUser | null; accessToken?: string; refreshToken?: string }> => {
       let userInfo: IUser | null = null;
+      let accessToken: string | undefined;
+      let refreshToken: string | undefined;
 
       try {
         setLoginLoading(true);
@@ -70,9 +73,25 @@ export default function AuthenticationModel() {
         });
 
         if (response.access_token) {
-          // 注意：这里需要与 access model 配合使用
-          // 在实际使用时，应该通过 useModel('auth.access') 来设置 token
-          console.log('Login successful, access_token:', response.access_token);
+          accessToken = response.access_token;
+          refreshToken = response.refresh_token;
+
+          saveAccessToken({
+            value: accessToken,
+            expiresAt: response.expires_in || 0,
+          });
+
+          if (refreshToken) {
+            saveRefreshToken({
+              value: refreshToken,
+              expiresAt: response.refresh_expires_in,
+            });
+          }
+
+          console.log('Login successful', {
+            access_token: response.access_token,
+            refresh_token: response.refresh_token,
+          });
 
           // 获取用户信息
           userInfo = await fetchUserInfo();
@@ -92,7 +111,7 @@ export default function AuthenticationModel() {
         setLoginLoading(false);
       }
 
-      return {userInfo};
+      return {userInfo, accessToken, refreshToken};
     },
     [fetchUserInfo],
   );

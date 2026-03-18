@@ -4,7 +4,6 @@ import {
   authenticateResponseInterceptor,
   errorMessageResponseInterceptor
 } from "@/transport/rest/preset-interceptors";
-import {message, notification} from 'antd';
 
 // 用于存储获取 token 的函数
 let getTokenCallback: (() => string | null) | null = null;
@@ -30,8 +29,10 @@ export function createRequestClient(baseURL: string) {
   // 请求头处理
   client.addRequestInterceptor({
     fulfilled: (config) => {
+
       if (getTokenCallback) {
         const token = getTokenCallback();
+        console.log('token', token);
         config.headers.Authorization = formatToken(token);
       }
       // if (getLocale) {
