@@ -21,7 +21,7 @@ export default [
   // 2. 主布局下的业务路由
   {
     path: '/',
-    component: '../layouts/BasicLayout', // 统一在这里配置主布局
+    // component: '../layouts/BasicLayout', // 统一在这里配置主布局
     routes: [
       {path: '/', redirect: '/dashboard/analysis'},
       // 引入各个业务模块

@@ -13,7 +13,6 @@ const API_URL = REACT_APP_API_URL || '';
 const SSE_URL = REACT_APP_SSE_URL || '';
 const AES_KEY = REACT_AES_KEY || '';
 
-
 /**
  * @name 使用公共路径
  * @description 部署时的路径，如果部署在非根目录下，需要配置这个变量
@@ -28,7 +27,6 @@ export default defineConfig({
     'process.env.SSE_URL': SSE_URL,
     'process.env.AES_KEY': AES_KEY,
   },
-
   /**
    * @name 开启 hash 模式
    * @description 让 build 之后的产物包含 hash 后缀。通常用于增量发布和避免浏览器加载缓存。
@@ -190,7 +188,4 @@ export default defineConfig({
   esbuildMinifyIIFE: true,
   requestRecord: {},
   exportStatic: {},
-  define: {
-    'process.env.CI': process.env.CI,
-  },
 });
