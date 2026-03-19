@@ -7,11 +7,16 @@ import proxy from './proxy';
 
 import routes from './routes';
 
-const {REACT_APP_ENV = 'dev', REACT_APP_API_URL, REACT_APP_SSE_URL, REACT_AES_KEY} = process.env;
-
-const API_URL = REACT_APP_API_URL || '';
-const SSE_URL = REACT_APP_SSE_URL || '';
-const AES_KEY = REACT_AES_KEY || '';
+const {
+  REACT_APP_ENV = 'dev',
+  REACT_APP_API_URL,
+  REACT_APP_SSE_URL,
+  REACT_AES_KEY,
+  REACT_APP_NAMESPACE,
+  REACT_APP_TITLE,
+  REACT_APP_MOCK,
+  REACT_APP_ANALYZE
+} = process.env;
 
 /**
  * @name 使用公共路径
@@ -23,9 +28,13 @@ const PUBLIC_PATH: string = '/';
 export default defineConfig({
   // 定义全局常量替换方式
   define: {
-    'process.env.API_URL': API_URL,
-    'process.env.SSE_URL': SSE_URL,
-    'process.env.AES_KEY': AES_KEY,
+    'REACT_APP_API_URL': REACT_APP_API_URL || '',
+    'REACT_APP_SSE_URL': REACT_APP_SSE_URL || '',
+    'REACT_AES_KEY': REACT_AES_KEY || '',
+    'REACT_APP_NAMESPACE': REACT_APP_NAMESPACE || '',
+    'REACT_APP_TITLE': REACT_APP_TITLE || '',
+    'REACT_APP_MOCK': REACT_APP_MOCK || false,
+    'REACT_APP_ANALYZE': REACT_APP_ANALYZE || false,
   },
   /**
    * @name 开启 hash 模式

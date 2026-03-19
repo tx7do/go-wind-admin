@@ -90,6 +90,4 @@ export function createRequestClient(baseURL: string) {
 }
 
 
-export const API_URL = process.env.API_URL || '';
-
-export const requestClient = createRequestClient(API_URL);
+export const requestClient = createRequestClient(REACT_APP_API_URL);
