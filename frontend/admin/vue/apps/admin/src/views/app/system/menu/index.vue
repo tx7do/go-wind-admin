@@ -207,6 +207,17 @@ const expandAll = () => {
 const collapseAll = () => {
   gridApi.grid?.setAllTreeExpand(false);
 };
+
+function normalizeAuthority(authority: unknown): string[] {
+  if (Array.isArray(authority)) return authority;
+  if (typeof authority === 'string') {
+    return authority
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean);
+  }
+  return [];
+}
 </script>
 
 <template>
@@ -260,13 +271,13 @@ const collapseAll = () => {
       </template>
       <template #authority="{ row }">
         <a-tag
-          v-for="auth in row.meta.authority"
+          v-for="auth in normalizeAuthority(row.meta?.authority)"
           :key="auth"
           class="mb-1 mr-1"
           :style="{
-            backgroundColor: getRandomColor(auth), // 随机背景色
-            color: '#333', // 深色文字（适配浅色背景）
-            border: 'none', // 可选：去掉边框更美观
+            backgroundColor: getRandomColor(auth),
+            color: '#333',
+            border: 'none',
           }"
         >
           {{ auth }}
