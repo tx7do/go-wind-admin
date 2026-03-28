@@ -88,6 +88,18 @@ const system: RouteRecordRaw[] = [
         },
         component: () => import('#/views/app/system/login_policy/index.vue'),
       },
+
+      {
+        path: 'languages',
+        name: 'LanguageManagement',
+        meta: {
+          order: 7,
+          icon: 'lucide:globe',
+          title: $t('menu.system.language'),
+          authority: ['sys:platform_admin'],
+        },
+        component: () => import('#/views/app/system/language/index.vue'),
+      },
     ],
   },
 ];

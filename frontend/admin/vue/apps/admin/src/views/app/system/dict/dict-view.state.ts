@@ -57,6 +57,8 @@ export const useDictViewStore = defineStore('dict-view', {
             pageSize,
           },
           formValues,
+          undefined,
+          ['sortOrder'],
         );
 
         await this.setCurrentTypeId(null);

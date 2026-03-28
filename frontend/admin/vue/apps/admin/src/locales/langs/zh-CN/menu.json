@@ -38,7 +38,8 @@
     "file": "文件管理",
     "loginPolicy": "登录策略",
     "menu": "菜单管理",
-    "api": "API管理"
+    "api": "API管理",
+    "language": "语言管理"
   },
   "log": {
     "moduleName": "日志审计",
