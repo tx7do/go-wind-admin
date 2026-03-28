@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	resourceV1 "go-wind-admin/api/gen/go/resource/service/v1"
 	"strings"
 	"time"
 
@@ -92,27 +93,49 @@ func (r *DictEntryRepo) List(ctx context.Context, req *paginationV1.PagingReques
 		return nil, dictV1.ErrorBadRequest("invalid parameter")
 	}
 
-	builder := r.entClient.Client().Debug().DictEntry.Query()
+	builder := r.entClient.Client().DictEntry.Query().WithDictType()
 
-	ret, err := r.repository.ListWithPaging(ctx, builder, builder.Clone(), req)
+	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
+	if err != nil {
+		r.log.Errorf("parse list param error [%s]", err.Error())
+		return nil, resourceV1.ErrorBadRequest("invalid query parameter")
+	}
+
+	entities, err := builder.All(ctx)
+	if err != nil {
+		r.log.Errorf("query dict entry list failed: %s", err.Error())
+		return nil, resourceV1.ErrorInternalServerError("query dict entry list failed")
+	}
+
+	dtos := make([]*dictV1.DictEntry, 0, len(entities))
+	for _, entity := range entities {
+		dto := r.mapper.ToDTO(entity)
+		if entity.Edges.DictType != nil {
+			dto.TypeId = &entity.Edges.DictType.ID
+		}
+		dtos = append(dtos, dto)
+		r.log.Debugf("dict entry entity ID: %v", entity.Edges.DictType.ID)
+	}
+
+	count, err := r.Count(ctx, whereSelectors)
 	if err != nil {
 		return nil, err
 	}
-	if ret == nil {
-		return &dictV1.ListDictEntryResponse{Total: 0, Items: nil}, nil
-	}
 
-	for _, item := range ret.Items {
-		i18ns, err := r.i18n.ListByEntryID(ctx, item.GetId())
+	var i18ns map[string]*dictV1.DictEntryI18N
+	for _, item := range dtos {
+		i18ns, err = r.i18n.ListByEntryID(ctx, item.GetId())
 		if err != nil {
 			return nil, err
 		}
 		item.I18N = i18ns
+
+		r.log.Debugf("dict entry: %v", item)
 	}
 
 	return &dictV1.ListDictEntryResponse{
-		Total: ret.Total,
-		Items: ret.Items,
+		Total: uint64(count),
+		Items: dtos,
 	}, nil
 }
 

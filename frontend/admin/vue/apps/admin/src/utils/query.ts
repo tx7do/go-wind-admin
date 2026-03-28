@@ -124,20 +124,15 @@ export function cleanQueryRule(obj: any): any {
 }
 
 /**
- * 移除对象中的 null、undefined 和空字符串值
- * @param obj 需要处理的对象
- * @returns 处理后的对象或 undefined
+ * 移除对象中的 null 和 undefined 值
+ * @param obj
  */
-export function removeNullUndefined(
-  obj?: Record<string, any>,
-): Record<string, any> | undefined {
-  if (!obj || typeof obj !== 'object' || Array.isArray(obj)) return undefined;
-  const entries = Object.entries(obj).filter(
-    ([_, v]) => v !== null && v !== undefined && v !== '',
+export const removeNullUndefined = (obj: any) =>
+  Object.fromEntries(
+    Object.entries(obj).filter(
+      ([_, v]) => v !== null && v !== undefined && v !== '',
+    ),
   );
-  if (entries.length === 0) return undefined;
-  return Object.fromEntries(entries);
-}
 
 /**
  * 创建列表查询JSON过滤字符串
@@ -148,7 +143,7 @@ export function makeQueryString(
   formValues?: null | object,
   needCleanTenant: boolean = false,
 ): string | undefined {
-  if (formValues === null) {
+  if (formValues === null || formValues === undefined) {
     return undefined;
   }
 
@@ -191,7 +186,7 @@ export function makeQueryString(
 export function makeFilterString(
   filterValues?: null | object,
 ): string | undefined {
-  if (filterValues === null) {
+  if (filterValues === null || filterValues === undefined) {
     return undefined;
   }
 
@@ -204,10 +199,7 @@ export function makeFilterString(
  * @param orderBy
  */
 export function makeOrderBy(orderBy?: null | string[]): string | undefined {
-  if (orderBy === undefined) {
-    orderBy = ['-created_at'];
-  }
-  if (orderBy === null) {
+  if (orderBy === undefined || orderBy === null) {
     orderBy = ['-created_at'];
   }
   return JSON.stringify(orderBy) ?? undefined;
@@ -218,7 +210,7 @@ export function makeOrderBy(orderBy?: null | string[]): string | undefined {
  * @param keys
  */
 export function makeUpdateMask(keys: string[]): string {
-  if (keys.length === 0) {
+  if (keys === undefined || keys.length === 0) {
     return '';
   }
   return keys.join(',');

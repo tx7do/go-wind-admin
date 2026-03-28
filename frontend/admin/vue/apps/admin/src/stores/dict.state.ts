@@ -1,3 +1,6 @@
+import { ref } from 'vue';
+
+import { i18n } from '@vben/locales';
 import { useUserStore } from '@vben/stores';
 
 import { defineStore } from 'pinia';
@@ -5,6 +8,7 @@ import { defineStore } from 'pinia';
 import {
   createDictEntryServiceClient,
   createDictTypeServiceClient,
+  type dictservicev1_DictEntry,
 } from '#/generated/api/admin/service/v1';
 import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
 import { type Paging, requestClientRequestHandler } from '#/utils/request';
@@ -17,6 +21,7 @@ export const useDictStore = defineStore('dict', () => {
     requestClientRequestHandler,
   );
   const userStore = useUserStore();
+  const dictEntryCache = ref<Record<string, dictservicev1_DictEntry[]>>({});
 
   /**
    * 查询字典类型列表
@@ -149,12 +154,53 @@ export const useDictStore = defineStore('dict', () => {
   }
 
   /**
-   * 根据字典类型编码查询字典项列表
+   * 获取并缓存指定 typeCode 的字典项列表
    */
-  async function listDictEntriesByTypeCode(code: string) {
-    return await dictEntryService.ListByTypeCode({
-      typeCode: code,
-    });
+  function getDictEntriesByTypeCode(typeCode: string) {
+    if (dictEntryCache.value[typeCode]) {
+      return dictEntryCache.value[typeCode];
+    }
+    return [];
+  }
+
+  function getDictEntriesOptionsByTypeCode(typeCode: string) {
+    const options = getDictEntriesByTypeCode(typeCode);
+    return options.map((option) => ({
+      label: getDictEntryLabel(option),
+      value: option.entryValue,
+    }));
+  }
+
+  /**
+   * 获取所有字典项
+   */
+  async function fetchAllDictEntries() {
+    if (
+      dictEntryCache &&
+      dictEntryCache.value &&
+      Object.keys(dictEntryCache.value).length > 0
+    ) {
+      return;
+    }
+
+    const types = await listDictType();
+
+    const result = await listDictEntry();
+    const items = result?.items || [];
+    for (const item of items) {
+      const typeCode = types?.items?.find(
+        (type) => type.id === item.typeId,
+      )?.typeCode;
+
+      if (!typeCode) {
+        continue;
+      }
+      if (dictEntryCache.value[typeCode]) {
+        dictEntryCache.value[typeCode].push(item);
+        continue;
+      }
+      dictEntryCache.value[typeCode] = [item];
+    }
   }
 
   function $reset() {}
@@ -173,6 +219,42 @@ export const useDictStore = defineStore('dict', () => {
     createDictEntry,
     updateDictEntry,
     deleteDictEntry,
-    listDictEntriesByTypeCode,
+    dictEntryCache,
+    getDictEntriesByTypeCode,
+    fetchAllDictEntries,
+    getDictEntriesOptionsByTypeCode,
   };
 });
+
+/**
+ * 获取字典项标签
+ */
+export function getDictEntryLabel(row: dictservicev1_DictEntry) {
+  const currentI18n = row.i18n?.[i18n.global.locale.value];
+  if (currentI18n === undefined) {
+    return '';
+  }
+  return currentI18n.entryLabel;
+}
+
+/**
+ * 通过字典项值获取字典项标签
+ * @param value
+ * @param dictEntries
+ */
+export function getDictEntryLabelByValue(
+  value?: string,
+  dictEntries?: dictservicev1_DictEntry[],
+): string {
+  if (value === undefined) {
+    return '';
+  }
+  if (dictEntries === undefined) {
+    return value;
+  }
+  const dictEnt = dictEntries.find((entry) => entry.entryValue === value);
+  if (!dictEnt) {
+    return value;
+  }
+  return getDictEntryLabel(dictEnt) || value;
+}
