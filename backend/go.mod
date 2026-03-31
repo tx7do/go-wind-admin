@@ -41,22 +41,22 @@ require (
 	github.com/tx7do/kratos-authz/engine/casbin v1.1.11
 	github.com/tx7do/kratos-authz/engine/opa v1.1.14
 	github.com/tx7do/kratos-authz/middleware v1.1.12
-	github.com/tx7do/kratos-bootstrap/api v0.0.36
+	github.com/tx7do/kratos-bootstrap/api v0.0.38
 	github.com/tx7do/kratos-bootstrap/bootstrap v0.1.16
 	github.com/tx7do/kratos-bootstrap/cache/redis v0.1.1
 	github.com/tx7do/kratos-bootstrap/database/ent v0.1.4
 	github.com/tx7do/kratos-bootstrap/database/gorm v0.1.4
 	github.com/tx7do/kratos-bootstrap/oss/minio v0.1.1
 	github.com/tx7do/kratos-bootstrap/rpc v0.1.1
-	github.com/tx7do/kratos-bootstrap/transport/asynq v0.0.3
+	github.com/tx7do/kratos-bootstrap/transport/asynq v0.0.5
 	github.com/tx7do/kratos-bootstrap/transport/sse v0.0.4
 	github.com/tx7do/kratos-swagger-ui v0.0.1
-	github.com/tx7do/kratos-transport/transport/asynq v1.3.2
+	github.com/tx7do/kratos-transport/transport/asynq v1.3.4
 	github.com/tx7do/kratos-transport/transport/sse v1.3.2
 	github.com/yuin/gopher-lua v1.1.1
 	go.opentelemetry.io/otel/trace v1.42.0
-	google.golang.org/genproto v0.0.0-20260319201613-d00831a3d3e7
-	google.golang.org/genproto/googleapis/api v0.0.0-20260319201613-d00831a3d3e7
+	google.golang.org/genproto v0.0.0-20260330182312-d5a96adf58d8
+	google.golang.org/genproto/googleapis/api v0.0.0-20260330182312-d5a96adf58d8
 	google.golang.org/grpc v1.79.3
 	google.golang.org/protobuf v1.36.11
 	gorm.io/datatypes v1.2.7
@@ -236,14 +236,14 @@ require (
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.67.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.67.0 // indirect
 	go.opentelemetry.io/otel v1.42.0 // indirect
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.40.0 // indirect
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.40.0 // indirect
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.40.0 // indirect
-	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.40.0 // indirect
-	go.opentelemetry.io/otel/exporters/zipkin v1.40.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.42.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.42.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.42.0 // indirect
+	go.opentelemetry.io/otel/exporters/stdout/stdouttrace v1.42.0 // indirect
+	go.opentelemetry.io/otel/exporters/zipkin v1.42.0 // indirect
 	go.opentelemetry.io/otel/metric v1.42.0 // indirect
 	go.opentelemetry.io/otel/sdk v1.42.0 // indirect
-	go.opentelemetry.io/proto/otlp v1.9.0 // indirect
+	go.opentelemetry.io/proto/otlp v1.10.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
@@ -260,7 +260,7 @@ require (
 	golang.org/x/tools v0.43.0 // indirect
 	golang.org/x/xerrors v0.0.0-20240903120638-7835f813f4da // indirect
 	google.golang.org/api v0.272.0 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260319201613-d00831a3d3e7 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260330182312-d5a96adf58d8 // indirect
 	gopkg.in/cenkalti/backoff.v1 v1.1.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/bigquery v1.2.0 // indirect
