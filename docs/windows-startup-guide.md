@@ -10,7 +10,7 @@
 
 | 软件 | 版本要求 | 用途 |
 |------|---------|------|
-| Go | 1.23+ | 后端编译运行 |
+| Go | 1.25.7+ | 后端编译运行 |
 | Docker Desktop | 最新版 | 运行 PostgreSQL、Redis、MinIO |
 | Node.js | >= 20.10.0 | 前端编译运行 |
 | pnpm | >= 10.19.0 | Vue 前端包管理（`packageManager` 锁定版本） |
