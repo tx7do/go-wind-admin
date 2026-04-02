@@ -45,7 +45,7 @@ cli:
 	@go install github.com/google/gnostic@latest
 	@go install github.com/bufbuild/buf/cmd/buf@latest
 	@go install entgo.io/ent/cmd/ent@latest
-	@go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+	@go install github.com/golangci/golangci-lint/v2/cmd/golangci-lint@latest
 	@go install github.com/tx7do/kratos-cli/config-exporter/cmd/cfgexp@latest
 	@go install github.com/tx7do/kratos-cli/sql-orm/cmd/sql2orm@latest
 	@go install github.com/tx7do/kratos-cli/sql-proto/cmd/sql2proto@latest

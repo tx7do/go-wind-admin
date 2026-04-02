@@ -40,7 +40,7 @@
 ./backend/script/prepare_rocky.sh
 
 # Windows
-./backend/script/prepare_windows.ps1
+./backend/script/env/install_windows_dev.ps1
 
 # MacOS
 ./backend/script/prepare_macos.sh
