@@ -7,9 +7,10 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(relativeTime);
 
-dayjs.tz.setDefault('Asia/Shanghai');
-
 const dateUtil = dayjs;
+
+dayjs.tz.setDefault('Asia/Shanghai');
+dateUtil.tz.setDefault('Asia/Shanghai');
 
 export { dateUtil };
 
