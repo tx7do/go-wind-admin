@@ -74,37 +74,37 @@ APP_NAME			:= $(shell echo $(APP_RELATIVE_PATH) | sed -En "s/\//-/p")
 
 # show environment variables
 env:
-	@echo "GOPATH: $(GOPATH)"
-	@echo "GOVERSION: $(GOVERSION)"
-	@echo "GOFLAGS: $(GOFLAGS)"
-	@echo "LDFLAGS: $(LDFLAGS)"
-	@echo "PROJECT_NAME: $(PROJECT_NAME)"
-	@echo "SERVICE_APP_VERSION: $(SERVICE_APP_VERSION)"
-	@echo "APP_RELATIVE_PATH: $(APP_RELATIVE_PATH)"
-	@echo "SERVICE_NAME: $(SERVICE_NAME)"
-	@echo "APP_NAME: $(APP_NAME)"
-	@echo "CUR_TAG: $(CUR_TAG)"
-	@echo "LAST_TAG: $(LAST_TAG)"
-	@echo "VERSION: $(VERSION)"
+	echo "GOPATH: $(GOPATH)"
+	echo "GOVERSION: $(GOVERSION)"
+	echo "GOFLAGS: $(GOFLAGS)"
+	echo "LDFLAGS: $(LDFLAGS)"
+	echo "PROJECT_NAME: $(PROJECT_NAME)"
+	echo "SERVICE_APP_VERSION: $(SERVICE_APP_VERSION)"
+	echo "APP_RELATIVE_PATH: $(APP_RELATIVE_PATH)"
+	echo "SERVICE_NAME: $(SERVICE_NAME)"
+	echo "APP_NAME: $(APP_NAME)"
+	echo "CUR_TAG: $(CUR_TAG)"
+	echo "LAST_TAG: $(LAST_TAG)"
+	echo "VERSION: $(VERSION)"
 
 # build golang application
 build: api openapi
-	@go build $(GOFLAGS) -ldflags "$(LDFLAGS)" -o ./bin/ ./...
+	go build $(GOFLAGS) -ldflags "$(LDFLAGS)" -o ./bin/ ./...
 
 # build golang application only
 build_only:
-	@go build $(GOFLAGS) -ldflags "$(LDFLAGS)" -o ./bin/ ./...
+	go build $(GOFLAGS) -ldflags "$(LDFLAGS)" -o ./bin/ ./...
 
 # run application
 run: api openapi
-	-@go run $(GOFLAGS) -ldflags "$(LDFLAGS)" ./cmd/server -c ./configs
+	go run $(GOFLAGS) -ldflags "$(LDFLAGS)" ./cmd/server -c ./configs
 
 # build service app
 app: api openapi wire ent build
 
 # clean build files
 clean:
-	@go clean
+	go clean
 	$(if $(IS_WINDOWS), del "coverage.out", rm -f "coverage.out")
 
 # generate code
@@ -113,7 +113,7 @@ gen: ent wire api openapi
 # generate ent code, if ent schema exist in the project's internal/data/ent folder
 ent:
 ifneq ("$(wildcard ./internal/data/ent)","")
-	@ent generate \
+	ent generate \
 				--feature privacy \
 				--feature entql \
 				--feature sql/modifier \
@@ -124,33 +124,33 @@ endif
 
 # generate wire code
 wire:
-	@go run -mod=mod github.com/google/wire/cmd/wire ./cmd/server
+	go run -mod=mod github.com/google/wire/cmd/wire ./cmd/server
 
 # generate protobuf api go code
 api:
-	@cd ../../../api && \
+	cd ../../../api && \
 	buf generate
 
 # generate protobuf api OpenAPI v3 docs
 openapi:
-	@cd ../../../api && \
+	cd ../../../api && \
 	buf generate --template buf.admin.openapi.gen.yaml
 
 # build docker image
 docker:
-	@docker build -t $(PROJECT_NAME)/$(APP_NAME) \
+	docker build -t $(PROJECT_NAME)/$(APP_NAME) \
 				  --build-arg SERVICE_NAME=$(SERVICE_NAME) \
 				  --build-arg APP_VERSION=$(APP_VERSION) \
 				  -f ../../../Dockerfile ../../../
 
 # show help
 help:
-	@echo ""
-	@echo "Usage:"
-	@echo " make [target]"
-	@echo ""
-	@echo "Targets:"
-	@awk '/^[a-zA-Z\-_0-9]+:/ { \
+	echo ""
+	echo "Usage:"
+	echo " make [target]"
+	echo ""
+	echo "Targets:"
+	awk '/^[a-zA-Z\-_0-9]+:/ { \
 	helpMessage = match(lastLine, /^# (.*)/); \
 		if (helpMessage) { \
 			helpCommand = substr($$1, 0, index($$1, ":")-1); \
