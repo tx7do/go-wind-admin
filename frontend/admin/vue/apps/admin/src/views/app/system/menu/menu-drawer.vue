@@ -317,10 +317,6 @@ const [Drawer, drawerApi] = useVbenDrawer({
     console.log(getTitle.value, values);
 
     try {
-      // if (values.meta.authority) {
-      //   values.meta.authority = values.meta.authority.split(',');
-      // }
-
       await (data.value?.create
         ? menuStore.createMenu(values)
         : menuStore.updateMenu(data.value.row.id, values));
@@ -346,11 +342,6 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (isOpen) {
       // 获取传入的数据
       data.value = drawerApi.getData<Record<string, any>>();
-
-      // if (data.value?.row?.meta && data.value?.row?.meta?.authority) {
-      //   const authority = data.value.row.meta.authority;
-      //   data.value.row.meta.authority = authority.join(',');
-      // }
 
       titleSuffix.title = data.value?.row?.meta?.title
         ? $t(data.value?.row?.meta?.title)
