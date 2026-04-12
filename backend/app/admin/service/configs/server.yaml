@@ -30,14 +30,15 @@ server:
   asynq:
     uri: "redis://:*Abcd123456@redis:6379/1"
     codec: "json"
-    enable_gracefully_shutdown: true
     concurrency: 10
     shutdown_timeout: 10s
+    enable_gracefully_shutdown: false
+    enable_strict_priority: true
+    location: "Asia/Shanghai"
     queues:
       critical: 10
       default: 5
       low: 1
-    enable_strict_priority: true
 
   sse:
     addr: ":7789"

@@ -3,7 +3,7 @@
 ##################################
 
 # 使用官方的 Go 基础镜像作为构建环境
-ARG GO_VERSION=1.25.4
+ARG GO_VERSION=1.25.7
 FROM golang:${GO_VERSION}-alpine AS builder
 
 ARG SERVICE_NAME=admin
