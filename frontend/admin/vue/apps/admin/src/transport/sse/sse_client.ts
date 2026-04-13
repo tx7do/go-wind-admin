@@ -79,15 +79,20 @@ export class SSEClient {
 
   /**
    * 建立 SSE 连接
+   * @param url 可选连接 URL，默认为配置中的 URL
    */
-  connect(): void {
+  connect(url?: string): Error | null {
     if (this.status === 'connected' || this.status === 'connecting') {
       console.warn('SSE 连接已存在或正在建立中');
-      return;
+      return new Error('SSE 连接已存在或正在建立中');
+    }
+
+    if (url === undefined || url === '') {
+      url = this.config.url;
     }
 
     this.status = 'connecting';
-    this.eventSource = new EventSource(this.config.url, {
+    this.eventSource = new EventSource(url, {
       withCredentials: this.config.withCredentials,
     });
 
@@ -114,6 +119,8 @@ export class SSEClient {
         setTimeout(() => this.connect(), this.config.reconnectDelay);
       }
     });
+
+    return null;
   }
 
   /**

@@ -91,43 +91,16 @@ function setupAccessGuard(router: Router) {
       return true;
     }
 
-    // 预先加载字典数据，部分页面可能会用到字典数据，如果没有预先加载，可能会导致页面闪烁
-    await dictStore.fetchAllDictEntries();
-
     // 生成路由表
     // 当前登录用户拥有的角色标识列表
 
-    let userPermissionCodes: string[] = [];
-    if (userStore.userInfo === null || accessStore.accessCodes === null) {
-      const [fetchUserInfoResult, fetchAccessCodeResult] = await Promise.all([
-        authStore.fetchUserInfo(),
-        authStore.fetchAccessCodes(),
-      ]);
-      if (fetchUserInfoResult === null || fetchAccessCodeResult === null) {
-        console.warn(
-          'setupAccessGuard failed fetch user info:',
-          fetchUserInfoResult,
-        );
-        return false;
-      }
-      userStore.setUserInfo(fetchUserInfoResult);
-
-      const roles = fetchUserInfoResult
-        ? (fetchUserInfoResult.roles ?? [])
-        : [];
-      const codes = fetchAccessCodeResult
-        ? (fetchAccessCodeResult.codes ?? [])
-        : [];
-      userPermissionCodes = [...roles, ...codes];
-      accessStore.setAccessCodes(userPermissionCodes);
-    } else {
-      userPermissionCodes = [
-        ...(userStore.userInfo.roles || []),
-        ...accessStore.accessCodes,
-      ];
+    const userPermissionCodes = await authStore.getUserPermissionCodes();
+    if (!userPermissionCodes) {
+      return false;
     }
 
-    authStore.startRefreshTimer();
+    // 预先加载字典数据，部分页面可能会用到字典数据，如果没有预先加载，可能会导致页面闪烁
+    await dictStore.fetchAllDictEntries();
 
     // 生成菜单和路由
     const { accessibleMenus, accessibleRoutes } = await generateAccess({

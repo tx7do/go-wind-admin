@@ -17,6 +17,7 @@ import {
   createUserProfileServiceClient,
 } from '#/generated/api/admin/service/v1';
 import { $t } from '#/locales';
+import { globalSSEClient } from '#/transport/sse';
 import { requestClientRequestHandler } from '#/utils/request';
 
 type RefreshTokenFunc = () => Promise<string> | string;
@@ -430,6 +431,53 @@ export const useAuthStore = defineStore('auth', () => {
     _startRefreshTimer(refreshToken);
   }
 
+  async function getUserPermissionCodes() {
+    let userPermissionCodes: string[] = [];
+
+    if (userStore.userInfo === null || accessStore.accessCodes === null) {
+      const [fetchUserInfoResult, fetchAccessCodeResult] = await Promise.all([
+        fetchUserInfo(),
+        fetchAccessCodes(),
+      ]);
+      if (fetchUserInfoResult === null || fetchAccessCodeResult === null) {
+        console.warn(
+          'setupAccessGuard failed fetch user info:',
+          fetchUserInfoResult,
+        );
+        return false;
+      }
+      userStore.setUserInfo(fetchUserInfoResult);
+
+      const roles = fetchUserInfoResult
+        ? (fetchUserInfoResult.roles ?? [])
+        : [];
+      const codes = fetchAccessCodeResult
+        ? (fetchAccessCodeResult.codes ?? [])
+        : [];
+      userPermissionCodes = [...roles, ...codes];
+      accessStore.setAccessCodes(userPermissionCodes);
+    } else {
+      userPermissionCodes = [
+        ...(userStore.userInfo.roles || []),
+        ...accessStore.accessCodes,
+      ];
+    }
+
+    startRefreshTimer();
+
+    _connectSSEServer();
+
+    return userPermissionCodes;
+  }
+
+  /**
+   * 连接 SSE 服务器
+   */
+  function _connectSSEServer() {
+    const targetSseUrl = `${import.meta.env.VITE_GLOB_SSE_URL}?stream=${encodeURIComponent(accessStore.accessToken ?? '')}`;
+    globalSSEClient.connect(targetSseUrl);
+  }
+
   function $reset() {
     loginLoading.value = false;
     _stopRefreshTimer();
@@ -445,5 +493,6 @@ export const useAuthStore = defineStore('auth', () => {
     refreshToken,
     reauthenticate,
     startRefreshTimer,
+    getUserPermissionCodes,
   };
 });

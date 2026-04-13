@@ -22,7 +22,7 @@ import { type internal_messageservicev1_InternalMessageRecipient as InternalMess
 import { $t } from '#/locales';
 import { router } from '#/router';
 import { useAuthStore, useInternalMessageStore } from '#/stores';
-import { SSEClient } from '#/transport/sse';
+import { globalSSEClient } from '#/transport/sse';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
 const userStore = useUserStore();
@@ -191,14 +191,10 @@ function handleSseNotification(
 }
 
 function initSseClient() {
-  const targetSseUrl = `${import.meta.env.VITE_GLOB_SSE_URL}?stream=${encodeURIComponent(accessStore.accessToken ?? '')}`;
-  const sseClient = new SSEClient({
-    url: targetSseUrl,
-    withCredentials: false,
-  });
-
-  sseClient.connect();
-  sseClient.on<InternalMessageRecipient>('notification', handleSseNotification);
+  globalSSEClient.on<InternalMessageRecipient>(
+    'notification',
+    handleSseNotification,
+  );
 }
 
 initSseClient();
