@@ -215,6 +215,8 @@ export const useAuthStore = defineStore('auth', () => {
 
     accessStore.setLoginExpired(false);
 
+    globalSSEClient.close();
+
     loginLoading.value = false;
 
     console.log('currentRoute', router.currentRoute.value);
