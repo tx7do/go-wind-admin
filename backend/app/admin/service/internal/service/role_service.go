@@ -205,7 +205,7 @@ func (s *RoleService) Update(ctx context.Context, req *permissionV1.UpdateRoleRe
 
 	r, err := s.roleRepo.Get(ctx, &permissionV1.GetRoleRequest{
 		QueryBy: &permissionV1.GetRoleRequest_Id{
-			Id: req.Data.GetId(),
+			Id: req.GetId(),
 		},
 	})
 	if err != nil {
