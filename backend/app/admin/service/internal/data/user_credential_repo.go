@@ -199,6 +199,9 @@ func (r *UserCredentialRepo) Update(ctx context.Context, req *authenticationV1.U
 	if req == nil || req.Data == nil {
 		return authenticationV1.ErrorBadRequest("invalid request")
 	}
+	if req.GetId() == 0 {
+		return authenticationV1.ErrorBadRequest("id is required")
+	}
 
 	// 如果不存在则创建
 	if req.GetAllowMissing() {

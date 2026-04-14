@@ -171,6 +171,9 @@ func (r *LoginPolicyRepo) Update(ctx context.Context, req *authenticationV1.Upda
 	if req == nil || req.Data == nil {
 		return adminV1.ErrorBadRequest("invalid request")
 	}
+	if req.GetId() == 0 {
+		return adminV1.ErrorBadRequest("id is required")
+	}
 
 	// 如果不存在则创建
 	if req.GetAllowMissing() {

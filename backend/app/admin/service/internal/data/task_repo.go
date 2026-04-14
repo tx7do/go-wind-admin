@@ -18,7 +18,6 @@ import (
 	"github.com/tx7do/go-utils/copierutil"
 	"github.com/tx7do/go-utils/mapper"
 
-	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	taskV1 "go-wind-admin/api/gen/go/task/service/v1"
 )
 
@@ -77,7 +76,7 @@ func (r *TaskRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector))
 	count, err := builder.Count(ctx)
 	if err != nil {
 		r.log.Errorf("query count failed: %s", err.Error())
-		return 0, adminV1.ErrorInternalServerError("query count failed")
+		return 0, taskV1.ErrorInternalServerError("query count failed")
 	}
 
 	return count, nil
@@ -85,7 +84,7 @@ func (r *TaskRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector))
 
 func (r *TaskRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*taskV1.ListTaskResponse, error) {
 	if req == nil {
-		return nil, adminV1.ErrorBadRequest("invalid parameter")
+		return nil, taskV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Task.Query()
@@ -110,14 +109,14 @@ func (r *TaskRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Exist(ctx)
 	if err != nil {
 		r.log.Errorf("query exist failed: %s", err.Error())
-		return false, adminV1.ErrorInternalServerError("query exist failed")
+		return false, taskV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
 }
 
 func (r *TaskRepo) Get(ctx context.Context, req *taskV1.GetTaskRequest) (*taskV1.Task, error) {
 	if req == nil {
-		return nil, adminV1.ErrorBadRequest("invalid parameter")
+		return nil, taskV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Task.Query()
@@ -142,7 +141,7 @@ func (r *TaskRepo) Get(ctx context.Context, req *taskV1.GetTaskRequest) (*taskV1
 
 func (r *TaskRepo) Create(ctx context.Context, req *taskV1.CreateTaskRequest) (*taskV1.Task, error) {
 	if req == nil || req.Data == nil {
-		return nil, adminV1.ErrorBadRequest("invalid parameter")
+		return nil, taskV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().Task.Create().
@@ -167,7 +166,7 @@ func (r *TaskRepo) Create(ctx context.Context, req *taskV1.CreateTaskRequest) (*
 	t, err := builder.Save(ctx)
 	if err != nil {
 		r.log.Errorf("insert task failed: %s", err.Error())
-		return nil, adminV1.ErrorInternalServerError("insert task failed")
+		return nil, taskV1.ErrorInternalServerError("insert task failed")
 	}
 
 	return r.mapper.ToDTO(t), nil
@@ -175,7 +174,10 @@ func (r *TaskRepo) Create(ctx context.Context, req *taskV1.CreateTaskRequest) (*
 
 func (r *TaskRepo) Update(ctx context.Context, req *taskV1.UpdateTaskRequest) (*taskV1.Task, error) {
 	if req == nil || req.Data == nil {
-		return nil, adminV1.ErrorBadRequest("invalid parameter")
+		return nil, taskV1.ErrorBadRequest("invalid parameter")
+	}
+	if req.GetId() == 0 {
+		return nil, taskV1.ErrorBadRequest("id is required")
 	}
 
 	// 如果不存在则创建
@@ -219,17 +221,17 @@ func (r *TaskRepo) Update(ctx context.Context, req *taskV1.UpdateTaskRequest) (*
 
 func (r *TaskRepo) Delete(ctx context.Context, req *taskV1.DeleteTaskRequest) error {
 	if req == nil {
-		return adminV1.ErrorBadRequest("invalid parameter")
+		return taskV1.ErrorBadRequest("invalid parameter")
 	}
 
 	if err := r.entClient.Client().Task.DeleteOneID(req.GetId()).Exec(ctx); err != nil {
 		if ent.IsNotFound(err) {
-			return adminV1.ErrorNotFound("task not found")
+			return taskV1.ErrorNotFound("task not found")
 		}
 
 		r.log.Errorf("delete one data failed: %s", err.Error())
 
-		return adminV1.ErrorInternalServerError("delete failed")
+		return taskV1.ErrorInternalServerError("delete failed")
 	}
 
 	return nil

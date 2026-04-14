@@ -246,6 +246,9 @@ func (r *DictEntryRepo) Update(ctx context.Context, req *dictV1.UpdateDictEntryR
 	if req == nil || req.Data == nil {
 		return dictV1.ErrorBadRequest("invalid parameter")
 	}
+	if req.GetId() == 0 {
+		return dictV1.ErrorBadRequest("id is required")
+	}
 
 	// 如果不存在则创建
 	if req.GetAllowMissing() {

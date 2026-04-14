@@ -559,12 +559,15 @@ func (r *userRepo) Update(ctx context.Context, req *identityV1.UpdateUserRequest
 	if req == nil || req.Data == nil {
 		return identityV1.ErrorBadRequest("invalid parameter")
 	}
+	if req.GetId() == 0 {
+		return identityV1.ErrorBadRequest("id is required")
+	}
 
 	// 如果不存在则创建
 	if req.GetAllowMissing() {
 		var existResp *identityV1.UserExistsResponse
 		existResp, err = r.UserExists(ctx, &identityV1.UserExistsRequest{
-			QueryBy: &identityV1.UserExistsRequest_Id{Id: req.GetData().GetId()},
+			QueryBy: &identityV1.UserExistsRequest_Id{Id: req.GetId()},
 		})
 		if err != nil {
 			return err

@@ -203,6 +203,9 @@ func (r *FileRepo) Update(ctx context.Context, req *storageV1.UpdateFileRequest)
 	if req == nil || req.Data == nil {
 		return storageV1.ErrorBadRequest("invalid parameter")
 	}
+	if req.GetId() == 0 {
+		return storageV1.ErrorBadRequest("id is required")
+	}
 
 	if req.Data.Size != nil {
 		req.Data.SizeFormat = trans.Ptr(r.formatSize(int64(req.Data.GetSize())))

@@ -469,6 +469,9 @@ func (r *RoleRepo) Update(ctx context.Context, req *permissionV1.UpdateRoleReque
 	if req == nil || req.Data == nil {
 		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
+	if req.GetId() == 0 {
+		return permissionV1.ErrorBadRequest("id is required")
+	}
 
 	// 如果不存在则创建
 	if req.GetAllowMissing() {

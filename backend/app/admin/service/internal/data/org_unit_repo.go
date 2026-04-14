@@ -304,6 +304,9 @@ func (r *OrgUnitRepo) Update(ctx context.Context, req *identityV1.UpdateOrgUnitR
 	if req == nil || req.Data == nil {
 		return identityV1.ErrorBadRequest("invalid parameter")
 	}
+	if req.GetId() == 0 {
+		return identityV1.ErrorBadRequest("id is required")
+	}
 
 	// 如果不存在则创建
 	if req.GetAllowMissing() {
