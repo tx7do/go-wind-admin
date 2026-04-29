@@ -4,7 +4,7 @@
 
 风行（GoWind Admin）是一款开箱即用的企业级Golang全栈后台管理系统的脚手架。
 
-系统后端基于GO微服务框架[go-kratos](https://go-kratos.dev/)，前端基于Vue微服务框架[Vben Admin](https://doc.vben.pro/)，兼顾微服务的扩展性与单体部署的便捷性。
+系统后端基于GO微服务框架[go-kratos](https://go-kratos.dev/)，前端有Vue3和React两个版本，兼顾微服务的扩展性与单体部署的便捷性。
 
 尽管依托微服务框架设计，但系统前后端均支持单体架构模式开发与部署，灵活适配不同团队规模及项目复杂度需求，平衡灵活性与易用性。
 
