@@ -11,11 +11,10 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/minio/minio-go/v7"
+
 	"github.com/tx7do/go-utils/id"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
-
-	"go-wind-admin/app/admin/service/internal/data"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	storageV1 "go-wind-admin/api/gen/go/storage/service/v1"
@@ -29,19 +28,19 @@ type FileTransferService struct {
 
 	log *log.Helper
 
-	mc       *oss.MinIOClient
-	fileRepo *data.FileRepo
+	mc                *oss.MinIOClient
+	fileServiceClient storageV1.FileServiceClient
 }
 
 func NewFileTransferService(
 	ctx *bootstrap.Context,
 	mc *oss.MinIOClient,
-	fileRepo *data.FileRepo,
+	fileServiceClient storageV1.FileServiceClient,
 ) *FileTransferService {
 	return &FileTransferService{
-		log:      ctx.NewLoggerHelper("file-transfer/service/admin-service"),
-		mc:       mc,
-		fileRepo: fileRepo,
+		log:               ctx.NewLoggerHelper("file-transfer/service/app-service"),
+		mc:                mc,
+		fileServiceClient: fileServiceClient,
 	}
 }
 
@@ -101,7 +100,7 @@ func (s *FileTransferService) recordFile(
 	dir, fileName, ext := parseKey(info.Key)
 	//s.log.Debugf("Parsed file - Dir: %s, FileName: %s, Ext: %s", dir, fileName, ext)
 
-	if err := s.fileRepo.Create(ctx, &storageV1.CreateFileRequest{
+	if _, err := s.fileServiceClient.Create(ctx, &storageV1.CreateFileRequest{
 		Data: &storageV1.File{
 			Provider:      trans.Ptr(storageV1.OSSProvider_MINIO),
 			BucketName:    trans.Ptr(info.Bucket),
@@ -110,7 +109,7 @@ func (s *FileTransferService) recordFile(
 			FileDirectory: trans.Ptr(dir),
 			FileName:      trans.Ptr(sourceFileName),
 			Extension:     trans.Ptr(ext),
-			FileGuid:      trans.Ptr(id.NewGUIDv4(false)),
+			FileGuid:      trans.Ptr(id.NewGUIDv7(false)),
 			Size:          trans.Ptr(uint64(info.Size)),
 			LinkUrl:       trans.Ptr(downloadUrl),
 			CreatedBy:     trans.Ptr(userID),
@@ -163,10 +162,11 @@ func (s *FileTransferService) directUploadFile(ctx context.Context, req *storage
 		)
 	}
 
-	info, downloadUrl, err := s.mc.UploadFile(
+	info, _, downloadUrl, err := s.mc.UploadFile(
 		ctx,
 		req.GetStorageObject().GetBucketName(),
 		req.GetStorageObject().GetObjectName(),
+		req.GetMime(),
 		req.GetFile(),
 	)
 	if err != nil {
@@ -308,7 +308,7 @@ func (s *FileTransferService) downloadFileFromURL(ctx context.Context, downloadU
 func (s *FileTransferService) DownloadFile(ctx context.Context, req *storageV1.DownloadFileRequest) (*storageV1.DownloadFileResponse, error) {
 	switch req.Selector.(type) {
 	case *storageV1.DownloadFileRequest_FileId:
-		resp, err := s.fileRepo.Get(ctx, &storageV1.GetFileRequest{
+		resp, err := s.fileServiceClient.Get(ctx, &storageV1.GetFileRequest{
 			QueryBy: &storageV1.GetFileRequest_Id{Id: req.GetFileId()},
 		})
 		if err != nil {

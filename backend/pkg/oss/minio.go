@@ -20,6 +20,8 @@ import (
 
 const (
 	defaultExpiryTime = time.Minute * 60 // 默认的预签名时间，默认为：1小时
+
+	DefaultContentType = "application/octet-stream"
 )
 
 // MinIOClient MinIO 客户端封装
@@ -197,51 +199,67 @@ func (c *MinIOClient) DeleteFile(ctx context.Context, bucketName, objectName str
 }
 
 // UploadFile 上传文件
-func (c *MinIOClient) UploadFile(ctx context.Context, bucketName string, objectName string, fileContent []byte) (minio.UploadInfo, string, error) {
+func (c *MinIOClient) UploadFile(
+	ctx context.Context,
+	bucketName string, objectName string,
+	mimeType string,
+	fileContent []byte,
+) (minio.UploadInfo, string, string, error) {
 	if len(fileContent) == 0 {
-		c.log.Errorf("Empty fileContent data")
-		return minio.UploadInfo{}, "", storageV1.ErrorUploadFailed("empty fileContent data")
+		c.log.Errorf("empty fileContent data")
+		return minio.UploadInfo{}, "", "", storageV1.ErrorUploadFailed("empty fileContent data")
 	}
 
 	if bucketName == "" {
 		bucketName = BucketFiles
 	}
-	if objectName == "" {
-		mimeType, ext := DetectFileType(fileContent)
-		if mimeType == "" {
-			mimeType = "application/octet-stream"
-		}
-		if ext == "" {
-			ext = ".bin"
-		}
 
+	var ext string
+	if mimeType == "" {
+		mimeType, ext = DetectFileType(fileContent)
+	}
+	if ext == "" {
+		ext = ContentTypeToFileExtension(mimeType)
+		//ext = ".bin"
+	}
+
+	if objectName == "" {
 		bucketName = ContentTypeToBucketName(mimeType)
 		objectName = GenerateObjectName("", fileContent, ext, GenerateFileNameTypeUUID)
+	} else {
+		ext = ExtractFileExtension(objectName)
 	}
+	if mimeType == "" {
+		mimeType = DefaultContentType
+	}
+
 	if err := c.EnsureBucketExists(ctx, bucketName); err != nil {
-		return minio.UploadInfo{}, "", err
+		return minio.UploadInfo{}, "", "", err
 	}
 
 	reader := bytes.NewReader(fileContent)
 	if reader == nil {
-		c.log.Errorf("Invalid fileContent data")
-		return minio.UploadInfo{}, "", storageV1.ErrorUploadFailed("invalid fileContent data")
+		c.log.Errorf("invalid fileContent data")
+		return minio.UploadInfo{}, "", "", storageV1.ErrorUploadFailed("invalid fileContent data")
 	}
 
 	info, err := c.mc.PutObject(
 		ctx,
 		bucketName, objectName,
 		reader, reader.Size(),
-		minio.PutObjectOptions{},
+		minio.PutObjectOptions{
+			ContentType: mimeType,
+		},
 	)
 	if err != nil {
-		c.log.Errorf("Failed to upload fileContent: %v", err)
-		return info, "", storageV1.ErrorUploadFailed("failed to upload fileContent")
+		c.log.Errorf("failed to upload fileContent: %v", err)
+		return info, "", "", storageV1.ErrorUploadFailed("failed to upload fileContent")
 	}
 
-	downloadUrl := JoinObjectUrl("", bucketName, objectName)
+	downloadUrl := JoinObjectUrl(c.conf.Minio.DownloadHost, bucketName, objectName)
+	storagePath := JoinObjectUrl("", bucketName, objectName)
 
-	return info, downloadUrl, nil
+	return info, storagePath, downloadUrl, nil
 }
 
 // getDownloadUrlWithStorageObjectDirect 直接获取文件内容
@@ -257,15 +275,20 @@ func (c *MinIOClient) getDownloadUrlWithStorageObjectDirect(ctx context.Context,
 		opts,
 	)
 	if err != nil {
-		c.log.Errorf("Failed to get object: %v", err)
+		c.log.Errorf("failed to get object: %v", err)
 		return nil, storageV1.ErrorDownloadFailed("failed to get object")
 	}
 
 	buf := new(bytes.Buffer)
-	_, err = buf.ReadFrom(object)
-	if err != nil {
-		c.log.Errorf("Failed to read object: %v", err)
+	if _, err = buf.ReadFrom(object); err != nil {
+		c.log.Errorf("failed to read object: %v", err)
 		return nil, storageV1.ErrorDownloadFailed("failed to read object")
+	}
+
+	st, err := object.Stat()
+	if err != nil {
+		c.log.Errorf("failed to stat object: %v", err)
+		return nil, storageV1.ErrorDownloadFailed("failed to stat object")
 	}
 
 	resp := &storageV1.GetDownloadInfoResponse{
@@ -274,19 +297,13 @@ func (c *MinIOClient) getDownloadUrlWithStorageObjectDirect(ctx context.Context,
 		},
 	}
 
-	st, err := object.Stat()
-	if err != nil {
-		c.log.Errorf("Failed to stat object: %v", err)
-		return nil, storageV1.ErrorDownloadFailed("failed to stat object")
-	}
-
 	if req.GetAcceptMime() != "" {
 		resp.Mime = req.GetAcceptMime()
 	} else {
 		resp.Mime = st.ContentType
 	}
 	if resp.GetMime() == "" {
-		resp.Mime = "application/octet-stream"
+		resp.Mime = DefaultContentType
 	}
 
 	resp.Checksum = st.ChecksumSHA256
@@ -388,7 +405,7 @@ func (c *MinIOClient) downloadFileWithStorageObjectDirect(ctx context.Context, r
 		resp.Mime = st.ContentType
 	}
 	if resp.GetMime() == "" {
-		resp.Mime = "application/octet-stream"
+		resp.Mime = DefaultContentType
 	}
 
 	resp.Checksum = st.ChecksumSHA256

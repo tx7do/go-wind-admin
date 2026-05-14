@@ -175,7 +175,7 @@ func RegisterOSS(L *lua.LState, ossClient *oss.MinIOClient, logger *log.Helper) 
 			content := L.CheckString(3)
 
 			ctx := context.Background()
-			_, downloadURL, err := ossClient.UploadFile(ctx, bucketName, objectName, []byte(content))
+			_, _, downloadURL, err := ossClient.UploadFile(ctx, bucketName, objectName, "", []byte(content))
 			if err != nil {
 				L.Push(lua.LBool(false))
 				L.Push(lua.LString(err.Error()))
