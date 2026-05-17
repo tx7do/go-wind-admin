@@ -2,32 +2,32 @@ import { computed } from 'vue';
 
 import { $t } from '@vben/locales';
 
-export * from './admin-portal.state';
-export * from './api.state';
-export * from './api-audit-log';
-export * from './authentication.state';
-export * from './data-access-audit-log.state';
-export * from './dict.state';
-export * from './file.state';
-export * from './file-transfer.state';
-export * from './internal-message.state';
-export * from './internal-message-category.state';
-export * from './language.state';
-export * from './login-audit-log';
-export * from './login-policy.state';
-export * from './menu.state';
-export * from './operation-audit-log.state';
-export * from './org-unit.state';
-export * from './permission.state';
-export * from './permission-audit-log.state';
-export * from './permission-group.state';
-export * from './policy-evaluation-log.state';
-export * from './position.state';
-export * from './role.state';
-export * from './task.state';
-export * from './tenant.state';
-export * from './user.state';
-export * from './user-profile.state';
+export * from './admin-portal.store';
+export * from './api.store';
+export * from './api-audit-log.store';
+export * from './authentication.store';
+export * from './data-access-audit-log.store';
+export * from './dict.store';
+export * from './file.store';
+export * from './file-transfer.store';
+export * from './internal-message.store';
+export * from './internal-message-category.store';
+export * from './language.store';
+export * from './login-audit-log.store';
+export * from './login-policy.store';
+export * from './menu.store';
+export * from './operation-audit-log.store';
+export * from './org-unit.store';
+export * from './permission.store';
+export * from './permission-audit-log.store';
+export * from './permission-group.store';
+export * from './policy-evaluation-log.store';
+export * from './position.store';
+export * from './role.store';
+export * from './task.store';
+export * from './tenant.store';
+export * from './user.store';
+export * from './user-profile.store';
 
 export const enableList = computed(() => [
   { value: 'true', label: $t('enum.enable.true') },
