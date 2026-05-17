@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/hex"
+	"go-wind-admin/app/admin/service/internal/data"
 	"io"
 	"net/http"
 	"path"
@@ -29,13 +30,13 @@ type FileTransferService struct {
 	log *log.Helper
 
 	mc                *oss.MinIOClient
-	fileServiceClient storageV1.FileServiceClient
+	fileServiceClient *data.FileRepo
 }
 
 func NewFileTransferService(
 	ctx *bootstrap.Context,
 	mc *oss.MinIOClient,
-	fileServiceClient storageV1.FileServiceClient,
+	fileServiceClient *data.FileRepo,
 ) *FileTransferService {
 	return &FileTransferService{
 		log:               ctx.NewLoggerHelper("file-transfer/service/app-service"),
@@ -100,7 +101,7 @@ func (s *FileTransferService) recordFile(
 	dir, fileName, ext := parseKey(info.Key)
 	//s.log.Debugf("Parsed file - Dir: %s, FileName: %s, Ext: %s", dir, fileName, ext)
 
-	if _, err := s.fileServiceClient.Create(ctx, &storageV1.CreateFileRequest{
+	if err := s.fileServiceClient.Create(ctx, &storageV1.CreateFileRequest{
 		Data: &storageV1.File{
 			Provider:      trans.Ptr(storageV1.OSSProvider_MINIO),
 			BucketName:    trans.Ptr(info.Bucket),
