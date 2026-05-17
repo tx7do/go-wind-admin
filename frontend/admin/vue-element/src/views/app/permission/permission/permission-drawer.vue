@@ -1,0 +1,247 @@
+<script lang="ts" setup>
+import { computed, ref } from 'vue';
+
+import { useVbenDrawer } from '@vben/common-ui';
+import { $t } from '@vben/locales';
+
+import { notification } from 'ant-design-vue';
+
+import { useVbenForm } from '#/adapter/form';
+import {
+  buildMenuTree,
+  buildPermissionGroupTree,
+  convertApiToTree,
+  statusList,
+  useApiStore,
+  useMenuStore,
+  usePermissionGroupStore,
+  usePermissionStore,
+} from '#/stores';
+import { deepClone, filterNumbers } from '#/utils';
+
+const permissionStore = usePermissionStore();
+const permissionGroupStore = usePermissionGroupStore();
+const apiStore = useApiStore();
+const menuStore = useMenuStore();
+
+const data = ref();
+
+const getTitle = computed(() =>
+  data.value?.create
+    ? $t('ui.modal.create', { moduleName: $t('page.permission.moduleName') })
+    : $t('ui.modal.update', { moduleName: $t('page.permission.moduleName') }),
+);
+
+// const isCreate = computed(() => data.value?.create);
+
+const [BaseForm, baseFormApi] = useVbenForm({
+  showDefaultActions: false,
+
+  // 所有表单项共用，可单独在表单内覆盖
+  commonConfig: {
+    // 所有表单项
+    componentProps: {
+      class: 'w-full',
+    },
+  },
+
+  schema: [
+    {
+      component: 'Input',
+      fieldName: 'name',
+      label: $t('page.permission.name'),
+      rules: 'required',
+      componentProps() {
+        return {
+          placeholder: $t('ui.placeholder.input'),
+          allowClear: true,
+        };
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'code',
+      label: $t('page.permission.code'),
+      rules: 'required',
+      componentProps() {
+        return {
+          placeholder: $t('ui.placeholder.input'),
+          allowClear: true,
+        };
+      },
+    },
+    {
+      component: 'ApiTreeSelect',
+      fieldName: 'groupId',
+      label: $t('page.permission.groupId'),
+      componentProps: {
+        placeholder: $t('ui.placeholder.select'),
+        class: 'w-full',
+        showSearch: true,
+        treeDefaultExpandAll: true,
+        numberToString: false,
+        allowClear: true,
+        childrenField: 'children',
+        labelField: 'name',
+        valueField: 'id',
+        treeNodeFilterProp: 'label',
+        filterOption: (input: string, option: any) =>
+          option.label.toLowerCase().includes(input.toLowerCase()),
+        afterFetch: (data: any) => {
+          return buildPermissionGroupTree(data);
+        },
+        api: async () => {
+          const fieldValue = baseFormApi.form.values;
+          const result = await permissionGroupStore.listPermissionGroup(
+            undefined,
+            {
+              parentId: fieldValue.groupId,
+              status: 'ON',
+            },
+          );
+          return result.items;
+        },
+      },
+    },
+    {
+      component: 'RadioGroup',
+      fieldName: 'status',
+      defaultValue: 'ON',
+      label: $t('ui.table.status'),
+      rules: 'selectRequired',
+      componentProps: {
+        optionType: 'button',
+        buttonStyle: 'solid',
+        class: 'flex flex-wrap', // 如果选项过多，可以添加class来自动折叠
+        options: statusList,
+      },
+    },
+    {
+      component: 'ApiTree',
+      fieldName: 'menuIds',
+      componentProps: {
+        title: $t('page.permission.menuIds'),
+        showSearch: true,
+        treeDefaultExpandAll: false,
+        loadingSlot: 'suffixIcon',
+        childrenField: 'children',
+        labelField: 'meta.title',
+        valueField: 'id',
+        resultField: 'items',
+        api: async () => {
+          return await menuStore.listMenu(undefined, {
+            status: 'ON',
+          });
+        },
+        afterFetch: (data: any) => {
+          return buildMenuTree(data.items);
+        },
+      },
+    },
+    {
+      component: 'ApiTree',
+      fieldName: 'apiIds',
+      componentProps: {
+        title: $t('page.permission.apiIds'),
+        toolbar: true,
+        search: true,
+        checkable: true,
+        numberToString: false,
+        loadingSlot: 'suffixIcon',
+        childrenField: 'children',
+        labelField: 'title',
+        valueField: 'key',
+        api: async () => {
+          const data = await apiStore.listApi(undefined, {});
+          return convertApiToTree(data.items ?? []);
+        },
+      },
+    },
+  ],
+});
+
+const [Drawer, drawerApi] = useVbenDrawer({
+  onCancel() {
+    drawerApi.close();
+  },
+
+  async onConfirm() {
+    console.log('onConfirm');
+
+    // 校验输入的数据
+    const validate = await baseFormApi.validate();
+    if (!validate.valid) {
+      return;
+    }
+
+    setLoading(true);
+
+    // 获取表单数据
+    const values = await baseFormApi.getValues();
+
+    // @ts-ignore JSON.stringify
+    const finalValues = deepClone(values);
+
+    if (
+      finalValues.apiIds !== null &&
+      Array.isArray(finalValues.apiIds) &&
+      finalValues.apiIds.length > 0
+    ) {
+      finalValues.apiIds = filterNumbers(values.apiIds);
+    }
+
+    if (
+      finalValues.menuIds !== null &&
+      Array.isArray(finalValues.menuIds) &&
+      finalValues.menuIds.length > 0
+    ) {
+      finalValues.menuIds = filterNumbers(values.menuIds);
+    }
+
+    console.log(getTitle.value, finalValues);
+
+    try {
+      await (data.value?.create
+        ? permissionStore.createPermission(finalValues)
+        : permissionStore.updatePermission(data.value.row.id, finalValues));
+
+      notification.success({
+        message: data.value?.create
+          ? $t('ui.notification.create_success')
+          : $t('ui.notification.update_success'),
+      });
+    } catch {
+      notification.error({
+        message: data.value?.create
+          ? $t('ui.notification.create_failed')
+          : $t('ui.notification.update_failed'),
+      });
+    } finally {
+      drawerApi.close();
+      setLoading(false);
+    }
+  },
+
+  onOpenChange(isOpen) {
+    if (isOpen) {
+      // 获取传入的数据
+      data.value = drawerApi.getData<Record<string, any>>();
+
+      // 为表单赋值
+      baseFormApi.setValues(data.value?.row);
+
+      setLoading(false);
+    }
+  },
+});
+
+function setLoading(loading: boolean) {
+  drawerApi.setState({ loading });
+}
+</script>
+
+<template>
+  <Drawer :title="getTitle">
+    <BaseForm />
+  </Drawer>
+</template>

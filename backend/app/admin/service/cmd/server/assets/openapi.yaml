@@ -300,6 +300,42 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/captcha:
+        get:
+            tags:
+                - AuthenticationService
+            description: 生成验证码
+            operationId: AuthenticationService_GenerateCaptcha
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GenerateCaptchaResponse'
+            security:
+                - {}
+    /admin/v1/captcha/verify:
+        post:
+            tags:
+                - AuthenticationService
+            description: 验证验证码
+            operationId: AuthenticationService_VerifyCaptcha
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/VerifyCaptchaRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/VerifyCaptchaResponse'
+            security:
+                - {}
     /admin/v1/data-access-audit-logs:
         get:
             tags:
@@ -4909,6 +4945,15 @@ components:
                     description: 删除时间
                     format: date-time
             description: 文件
+        GenerateCaptchaResponse:
+            type: object
+            properties:
+                captchaId:
+                    type: string
+                    description: 验证码ID，客户端应在后续请求中提供该ID以验证用户输入的验证码
+                imageBase64:
+                    type: string
+                    description: 验证码图片的Base64编码字符串，客户端可以解码并显示给用户
         GeoLocation:
             type: object
             properties:
@@ -7483,6 +7528,21 @@ components:
                 exist:
                     type: boolean
             description: 用户是否存在 - 答复
+        VerifyCaptchaRequest:
+            type: object
+            properties:
+                captchaId:
+                    type: string
+                    description: 验证码ID，来自 GenerateCaptcha 响应
+                userInput:
+                    type: string
+                    description: 用户输入的验证码文本
+        VerifyCaptchaResponse:
+            type: object
+            properties:
+                valid:
+                    type: boolean
+                    description: 验证码验证结果，true表示验证成功，false表示验证失败
         VerifyContactRequest:
             type: object
             properties:

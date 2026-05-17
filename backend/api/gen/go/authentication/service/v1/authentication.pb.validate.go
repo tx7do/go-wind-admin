@@ -1787,3 +1787,319 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = RevokeTokenByIdRequestValidationError{}
+
+// Validate checks the field values on GenerateCaptchaResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GenerateCaptchaResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GenerateCaptchaResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GenerateCaptchaResponseMultiError, or nil if none found.
+func (m *GenerateCaptchaResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GenerateCaptchaResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for CaptchaId
+
+	// no validation rules for ImageBase64
+
+	if len(errors) > 0 {
+		return GenerateCaptchaResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GenerateCaptchaResponseMultiError is an error wrapping multiple validation
+// errors returned by GenerateCaptchaResponse.ValidateAll() if the designated
+// constraints aren't met.
+type GenerateCaptchaResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GenerateCaptchaResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GenerateCaptchaResponseMultiError) AllErrors() []error { return m }
+
+// GenerateCaptchaResponseValidationError is the validation error returned by
+// GenerateCaptchaResponse.Validate if the designated constraints aren't met.
+type GenerateCaptchaResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GenerateCaptchaResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GenerateCaptchaResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GenerateCaptchaResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GenerateCaptchaResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GenerateCaptchaResponseValidationError) ErrorName() string {
+	return "GenerateCaptchaResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GenerateCaptchaResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGenerateCaptchaResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GenerateCaptchaResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GenerateCaptchaResponseValidationError{}
+
+// Validate checks the field values on VerifyCaptchaRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *VerifyCaptchaRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on VerifyCaptchaRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// VerifyCaptchaRequestMultiError, or nil if none found.
+func (m *VerifyCaptchaRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *VerifyCaptchaRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for CaptchaId
+
+	// no validation rules for UserInput
+
+	if len(errors) > 0 {
+		return VerifyCaptchaRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// VerifyCaptchaRequestMultiError is an error wrapping multiple validation
+// errors returned by VerifyCaptchaRequest.ValidateAll() if the designated
+// constraints aren't met.
+type VerifyCaptchaRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m VerifyCaptchaRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m VerifyCaptchaRequestMultiError) AllErrors() []error { return m }
+
+// VerifyCaptchaRequestValidationError is the validation error returned by
+// VerifyCaptchaRequest.Validate if the designated constraints aren't met.
+type VerifyCaptchaRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e VerifyCaptchaRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e VerifyCaptchaRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e VerifyCaptchaRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e VerifyCaptchaRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e VerifyCaptchaRequestValidationError) ErrorName() string {
+	return "VerifyCaptchaRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e VerifyCaptchaRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sVerifyCaptchaRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = VerifyCaptchaRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = VerifyCaptchaRequestValidationError{}
+
+// Validate checks the field values on VerifyCaptchaResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *VerifyCaptchaResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on VerifyCaptchaResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// VerifyCaptchaResponseMultiError, or nil if none found.
+func (m *VerifyCaptchaResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *VerifyCaptchaResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Valid
+
+	if len(errors) > 0 {
+		return VerifyCaptchaResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// VerifyCaptchaResponseMultiError is an error wrapping multiple validation
+// errors returned by VerifyCaptchaResponse.ValidateAll() if the designated
+// constraints aren't met.
+type VerifyCaptchaResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m VerifyCaptchaResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m VerifyCaptchaResponseMultiError) AllErrors() []error { return m }
+
+// VerifyCaptchaResponseValidationError is the validation error returned by
+// VerifyCaptchaResponse.Validate if the designated constraints aren't met.
+type VerifyCaptchaResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e VerifyCaptchaResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e VerifyCaptchaResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e VerifyCaptchaResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e VerifyCaptchaResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e VerifyCaptchaResponseValidationError) ErrorName() string {
+	return "VerifyCaptchaResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e VerifyCaptchaResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sVerifyCaptchaResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = VerifyCaptchaResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = VerifyCaptchaResponseValidationError{}

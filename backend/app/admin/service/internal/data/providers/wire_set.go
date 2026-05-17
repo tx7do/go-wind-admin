@@ -22,6 +22,7 @@ import (
 var ProviderSet = wire.NewSet(
 	data.NewRedisClient,
 	data.NewEntClient,
+	data.NewMinIoClient,
 
 	data.NewClientType,
 
@@ -31,8 +32,7 @@ var ProviderSet = wire.NewSet(
 	data.NewTokenChecker,
 
 	data.NewPasswordCrypto,
-
-	data.NewMinIoClient,
+	data.NewCaptcha,
 
 	data.NewUserTokenCache,
 

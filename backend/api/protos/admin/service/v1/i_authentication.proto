@@ -37,4 +37,27 @@ service AuthenticationService {
       body: "*"
     };
   }
+
+  // 生成验证码
+  rpc GenerateCaptcha (google.protobuf.Empty) returns (authentication.service.v1.GenerateCaptchaResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/captcha"
+    };
+
+    option(gnostic.openapi.v3.operation) = {
+      security: {}
+    };
+  }
+
+  // 验证验证码
+  rpc VerifyCaptcha (authentication.service.v1.VerifyCaptchaRequest) returns (authentication.service.v1.VerifyCaptchaResponse) {
+    option (google.api.http) = {
+      post: "/admin/v1/captcha/verify"
+      body: "*"
+    };
+
+    option(gnostic.openapi.v3.operation) = {
+      security: {}
+    };
+  }
 }

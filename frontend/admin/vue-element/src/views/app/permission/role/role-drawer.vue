@@ -1,0 +1,206 @@
+<script lang="ts" setup>
+import { computed, ref } from 'vue';
+
+import { useVbenDrawer } from '@vben/common-ui';
+import { $t } from '@vben/locales';
+
+import { notification } from 'ant-design-vue';
+
+import { useVbenForm } from '#/adapter/form';
+import { type permissionservicev1_PermissionGroup as PermissionGroup } from '@/api/generated/admin/service/v1';
+import {
+  buildPermissionTree,
+  statusList,
+  usePermissionGroupStore,
+  usePermissionStore,
+  useRoleStore,
+} from '#/stores';
+import { deepClone, filterNumbers } from '#/utils';
+
+const roleStore = useRoleStore();
+const permissionStore = usePermissionStore();
+const permissionGroupStore = usePermissionGroupStore();
+
+const data = ref();
+const groups = ref<PermissionGroup[]>([]);
+
+const getTitle = computed(() =>
+  data.value?.create
+    ? $t('ui.modal.create', { moduleName: $t('page.role.moduleName') })
+    : $t('ui.modal.update', { moduleName: $t('page.role.moduleName') }),
+);
+// const isCreate = computed(() => data.value?.create);
+
+const [BaseForm, baseFormApi] = useVbenForm({
+  showDefaultActions: false,
+  // 所有表单项共用，可单独在表单内覆盖
+  commonConfig: {
+    // 所有表单项
+    componentProps: {
+      class: 'w-full',
+    },
+  },
+  schema: [
+    {
+      component: 'Input',
+      fieldName: 'name',
+      label: $t('page.role.name'),
+      componentProps: {
+        placeholder: $t('ui.placeholder.input'),
+        allowClear: true,
+      },
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'code',
+      label: $t('page.role.code'),
+      componentProps: {
+        placeholder: $t('ui.placeholder.input'),
+        allowClear: true,
+      },
+      rules: 'required',
+    },
+    {
+      component: 'InputNumber',
+      fieldName: 'sortOrder',
+      defaultValue: 1,
+      label: $t('ui.table.sortOrder'),
+      componentProps: {
+        placeholder: $t('ui.placeholder.input'),
+        allowClear: true,
+      },
+      rules: 'required',
+    },
+    {
+      component: 'RadioGroup',
+      fieldName: 'status',
+      label: $t('ui.table.status'),
+      defaultValue: 'ON',
+      rules: 'selectRequired',
+      componentProps: {
+        optionType: 'button',
+        buttonStyle: 'solid',
+        class: 'flex flex-wrap', // 如果选项过多，可以添加class来自动折叠
+        options: statusList,
+      },
+    },
+    {
+      component: 'Textarea',
+      fieldName: 'description',
+      label: $t('ui.table.description'),
+      componentProps: {
+        placeholder: $t('ui.placeholder.input'),
+        allowClear: true,
+      },
+    },
+    {
+      component: 'ApiTree',
+      fieldName: 'permissions',
+      componentProps: {
+        title: $t('page.role.permissions'),
+        showSearch: true,
+        treeDefaultExpandAll: false,
+        loadingSlot: 'suffixIcon',
+        childrenField: 'children',
+        labelField: 'title',
+        valueField: 'key',
+        resultField: 'items',
+        api: async () => {
+          const groupData = await permissionGroupStore.listPermissionGroup(
+            undefined,
+            {
+              status: 'ON',
+            },
+          );
+          groups.value = groupData.items ?? [];
+
+          return await permissionStore.listPermission(undefined, {
+            status: 'ON',
+          });
+        },
+        afterFetch: (data: any) => {
+          return buildPermissionTree(groups.value, data.items);
+        },
+      },
+    },
+  ],
+});
+
+const [Drawer, drawerApi] = useVbenDrawer({
+  onCancel() {
+    drawerApi.close();
+  },
+
+  async onConfirm() {
+    console.log('onConfirm');
+
+    // 校验输入的数据
+    const validate = await baseFormApi.validate();
+    if (!validate.valid) {
+      return;
+    }
+
+    setLoading(true);
+
+    // 获取表单数据
+    const values = await baseFormApi.getValues();
+    // @ts-ignore JSON.stringify
+    const finalValues = deepClone(values);
+
+    if (
+      finalValues.permissions !== null &&
+      Array.isArray(finalValues.permissions) &&
+      finalValues.permissions.length > 0
+    ) {
+      finalValues.permissions = filterNumbers(values.permissions);
+    }
+
+    console.log(getTitle.value, finalValues, data.value.row);
+
+    try {
+      await (data.value?.create
+        ? roleStore.createRole(finalValues)
+        : roleStore.updateRole(data.value.row.id, finalValues));
+
+      notification.success({
+        message: data.value?.create
+          ? $t('ui.notification.create_success')
+          : $t('ui.notification.update_success'),
+      });
+    } catch {
+      notification.error({
+        message: data.value?.create
+          ? $t('ui.notification.create_failed')
+          : $t('ui.notification.update_failed'),
+      });
+    } finally {
+      drawerApi.close();
+      setLoading(false);
+    }
+  },
+
+  onOpenChange(isOpen) {
+    if (isOpen) {
+      // 获取传入的数据
+      data.value = drawerApi.getData<Record<string, any>>();
+
+      // 为表单赋值
+      baseFormApi.setValues(data.value?.row);
+
+      // setLoading(true);
+      setLoading(false);
+    }
+  },
+});
+
+function setLoading(loading: boolean) {
+  drawerApi.setState({ loading });
+}
+</script>
+
+<template>
+  <Drawer :title="getTitle">
+    <BaseForm />
+  </Drawer>
+</template>

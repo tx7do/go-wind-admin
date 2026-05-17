@@ -1,0 +1,58 @@
+{
+  "themeToggle": "主题切换",
+  "languageToggle": "语言切换",
+  "title": "企业级管理系统",
+  "subtitle": "提供安全、高效、可扩展的管理解决方案，助力企业数字化转型与业务增长。",
+  "features": {
+    "badge": "企业就绪",
+    "item1": "统一身份认证与权限管理",
+    "item2": "支持多租户模式与租户隔离",
+    "item3": "数据安全与操作审计",
+    "item4": "灵活扩展与高可用架构"
+  },
+  "brand": {
+    "version": "版本",
+    "multiTenant": "多租户"
+  },
+  "footer": {
+    "copyright": "Copyright © 2021 - 2026 GoWind"
+  },
+  "login": {
+    "login": "登 录",
+    "username": "用户名",
+    "password": "密码",
+    "captchaCode": "验证码",
+    "capsLock": "大写锁定已打开",
+    "rememberMe": "记住我",
+    "forgetPassword": "忘记密码？",
+    "noAccount": "您没有账号？",
+    "reg": "注 册",
+    "otherLoginMethods": "其他登录方式",
+    "agree": "我已同意并阅读",
+    "userAgreement": "用户协议",
+    "message": {
+      "username": {
+        "required": "请输入用户名"
+      },
+      "password": {
+        "required": "请输入密码",
+        "min": "密码不能少于6位",
+        "confirm": "请再次确认密码",
+        "inconformity": "两次密码输入不一致"
+      },
+      "captchaCode": {
+        "required": "请输入验证码"
+      }
+    }
+  },
+  "register": {
+    "register": "注册",
+    "haveAccount": "已有账号？",
+    "login": "登 录"
+  },
+  "resetPwd": {
+    "resetPassword": "重置密码",
+    "thinkOfPasswd": "想起密码？",
+    "login": "登 录"
+  }
+}

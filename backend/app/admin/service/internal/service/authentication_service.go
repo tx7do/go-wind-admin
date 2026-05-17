@@ -6,6 +6,7 @@ import (
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/go-crud/viewer"
+	"github.com/tx7do/go-utils/captcha"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -24,6 +25,8 @@ import (
 type AuthenticationService struct {
 	adminV1.AuthenticationServiceHTTPServer
 
+	log *log.Helper
+
 	userRepo           data.UserRepo
 	userCredentialRepo *data.UserCredentialRepo
 
@@ -36,7 +39,7 @@ type AuthenticationService struct {
 	authenticator *data.Authenticator
 	clientType    authenticationV1.ClientType
 
-	log *log.Helper
+	captchaClient *captcha.Captcha
 }
 
 func NewAuthenticationService(
@@ -50,6 +53,7 @@ func NewAuthenticationService(
 	permissionRepo *data.PermissionRepo,
 	authenticator *data.Authenticator,
 	clientType authenticationV1.ClientType,
+	captchaClient *captcha.Captcha,
 ) *AuthenticationService {
 	return &AuthenticationService{
 		log:                ctx.NewLoggerHelper("authn/service/admin-service"),
@@ -62,6 +66,7 @@ func NewAuthenticationService(
 		permissionRepo:     permissionRepo,
 		authenticator:      authenticator,
 		clientType:         clientType,
+		captchaClient:      captchaClient,
 	}
 }
 
@@ -545,5 +550,32 @@ func (s *AuthenticationService) WhoAmI(ctx context.Context, _ *emptypb.Empty) (*
 	return &authenticationV1.WhoAmIResponse{
 		UserId:   operator.GetUserId(),
 		Username: operator.GetUsername(),
+	}, nil
+}
+
+func (s *AuthenticationService) GenerateCaptcha(_ context.Context, _ *emptypb.Empty) (*authenticationV1.GenerateCaptchaResponse, error) {
+	captchaId, captchaValue, _, err := s.captchaClient.Generate()
+	if err != nil {
+		s.log.Errorf("generate captcha failed: %s", err.Error())
+		return nil, authenticationV1.ErrorInternalServerError("generate captcha failed")
+	}
+
+	//s.log.Debugf("generated captcha: id=%s, value=%s", captchaId, captchaValue)
+
+	return &authenticationV1.GenerateCaptchaResponse{
+		CaptchaId:   captchaId,
+		ImageBase64: captchaValue,
+	}, nil
+}
+
+func (s *AuthenticationService) VerifyCaptcha(ctx context.Context, req *authenticationV1.VerifyCaptchaRequest) (*authenticationV1.VerifyCaptchaResponse, error) {
+	ok, err := s.captchaClient.Verify(ctx, req.GetCaptchaId(), req.GetUserInput())
+	if err != nil {
+		s.log.Errorf("verify captcha failed: %s", err.Error())
+		return nil, authenticationV1.ErrorInternalServerError("verify captcha failed")
+	}
+
+	return &authenticationV1.VerifyCaptchaResponse{
+		Valid: ok,
 	}, nil
 }

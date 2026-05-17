@@ -1,0 +1,58 @@
+{
+  "themeToggle": "Theme Switch",
+  "languageToggle": "Language Switch",
+  "title": "Enterprise Management System",
+  "subtitle": "Providing secure, efficient, and scalable management solutions to empower enterprise digital transformation and business growth.",
+  "features": {
+    "badge": "Enterprise Ready",
+    "item1": "Unified identity authentication and permission management",
+    "item2": "Multi-tenant mode with tenant isolation support",
+    "item3": "Data security and operation audit",
+    "item4": "Flexible scalability and high availability architecture"
+  },
+  "brand": {
+    "version": "Version",
+    "multiTenant": "Multi-Tenant"
+  },
+  "footer": {
+    "copyright": "Copyright © 2021 - 2026 GoWind"
+  },
+  "login": {
+    "login": "Login",
+    "username": "Username",
+    "password": "Password",
+    "captchaCode": "Captcha",
+    "capsLock": "Caps Lock is On",
+    "rememberMe": "Remember Me",
+    "forgetPassword": "Forgot Password?",
+    "noAccount": "Don't have an account?",
+    "reg": "Register",
+    "otherLoginMethods": "Other Login Methods",
+    "agree": "I agree to the",
+    "userAgreement": "User Agreement",
+    "message": {
+      "username": {
+        "required": "Please enter username"
+      },
+      "password": {
+        "required": "Please enter password",
+        "min": "Password must be at least 6 characters",
+        "confirm": "Please confirm password again",
+        "inconformity": "Passwords do not match"
+      },
+      "captchaCode": {
+        "required": "Please enter captcha"
+      }
+    }
+  },
+  "register": {
+    "register": "Register",
+    "haveAccount": "Already have an account?",
+    "login": "Login"
+  },
+  "resetPwd": {
+    "resetPassword": "Reset Password",
+    "thinkOfPasswd": "Remember your password?",
+    "login": "Login"
+  }
+}

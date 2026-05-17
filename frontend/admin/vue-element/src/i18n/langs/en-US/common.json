@@ -1,0 +1,56 @@
+{
+  "button": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "edit": "Edit",
+    "delete": "Delete",
+    "search": "Search",
+    "reset": "Reset",
+    "export": "Export",
+    "import": "Import",
+    "add": "Add",
+    "update": "Update",
+    "view": "View",
+    "close": "Close",
+    "back": "Back"
+  },
+  "status": {
+    "enabled": "Enabled",
+    "disabled": "Disabled",
+    "active": "Active",
+    "inactive": "Inactive",
+    "pending": "Pending",
+    "completed": "Completed",
+    "failed": "Failed"
+  },
+  "text": {
+    "yes": "Yes",
+    "no": "No",
+    "all": "All",
+    "none": "None",
+    "unknown": "Unknown",
+    "total": "Total",
+    "items": "items"
+  },
+  "placeholder": {
+    "input": "Please input",
+    "select": "Please select",
+    "date": "Please select date",
+    "search": "Please enter search content"
+  },
+  "message": {
+    "success": "Operation successful",
+    "error": "Operation failed",
+    "warning": "Warning",
+    "info": "Info",
+    "loading": "Loading...",
+    "noData": "No data",
+    "networkError": "Network error, please try again later"
+  },
+  "langSelect": {
+    "message": {
+      "success": "Language switched successfully"
+    }
+  }
+}

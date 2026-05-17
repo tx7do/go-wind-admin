@@ -30,6 +30,8 @@ const (
 	AuthenticationService_BlockToken_FullMethodName      = "/authentication.service.v1.AuthenticationService/BlockToken"
 	AuthenticationService_UnblockToken_FullMethodName    = "/authentication.service.v1.AuthenticationService/UnblockToken"
 	AuthenticationService_WhoAmI_FullMethodName          = "/authentication.service.v1.AuthenticationService/WhoAmI"
+	AuthenticationService_GenerateCaptcha_FullMethodName = "/authentication.service.v1.AuthenticationService/GenerateCaptcha"
+	AuthenticationService_VerifyCaptcha_FullMethodName   = "/authentication.service.v1.AuthenticationService/VerifyCaptcha"
 )
 
 // AuthenticationServiceClient is the client API for AuthenticationService service.
@@ -58,6 +60,10 @@ type AuthenticationServiceClient interface {
 	UnblockToken(ctx context.Context, in *UnblockTokenRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 获取当前用户身份信息
 	WhoAmI(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*WhoAmIResponse, error)
+	// 生成验证码
+	GenerateCaptcha(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GenerateCaptchaResponse, error)
+	// 验证验证码
+	VerifyCaptcha(ctx context.Context, in *VerifyCaptchaRequest, opts ...grpc.CallOption) (*VerifyCaptchaResponse, error)
 }
 
 type authenticationServiceClient struct {
@@ -168,6 +174,26 @@ func (c *authenticationServiceClient) WhoAmI(ctx context.Context, in *emptypb.Em
 	return out, nil
 }
 
+func (c *authenticationServiceClient) GenerateCaptcha(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*GenerateCaptchaResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GenerateCaptchaResponse)
+	err := c.cc.Invoke(ctx, AuthenticationService_GenerateCaptcha_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authenticationServiceClient) VerifyCaptcha(ctx context.Context, in *VerifyCaptchaRequest, opts ...grpc.CallOption) (*VerifyCaptchaResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(VerifyCaptchaResponse)
+	err := c.cc.Invoke(ctx, AuthenticationService_VerifyCaptcha_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthenticationServiceServer is the server API for AuthenticationService service.
 // All implementations must embed UnimplementedAuthenticationServiceServer
 // for forward compatibility.
@@ -194,6 +220,10 @@ type AuthenticationServiceServer interface {
 	UnblockToken(context.Context, *UnblockTokenRequest) (*emptypb.Empty, error)
 	// 获取当前用户身份信息
 	WhoAmI(context.Context, *emptypb.Empty) (*WhoAmIResponse, error)
+	// 生成验证码
+	GenerateCaptcha(context.Context, *emptypb.Empty) (*GenerateCaptchaResponse, error)
+	// 验证验证码
+	VerifyCaptcha(context.Context, *VerifyCaptchaRequest) (*VerifyCaptchaResponse, error)
 	mustEmbedUnimplementedAuthenticationServiceServer()
 }
 
@@ -233,6 +263,12 @@ func (UnimplementedAuthenticationServiceServer) UnblockToken(context.Context, *U
 }
 func (UnimplementedAuthenticationServiceServer) WhoAmI(context.Context, *emptypb.Empty) (*WhoAmIResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method WhoAmI not implemented")
+}
+func (UnimplementedAuthenticationServiceServer) GenerateCaptcha(context.Context, *emptypb.Empty) (*GenerateCaptchaResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GenerateCaptcha not implemented")
+}
+func (UnimplementedAuthenticationServiceServer) VerifyCaptcha(context.Context, *VerifyCaptchaRequest) (*VerifyCaptchaResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method VerifyCaptcha not implemented")
 }
 func (UnimplementedAuthenticationServiceServer) mustEmbedUnimplementedAuthenticationServiceServer() {}
 func (UnimplementedAuthenticationServiceServer) testEmbeddedByValue()                               {}
@@ -435,6 +471,42 @@ func _AuthenticationService_WhoAmI_Handler(srv interface{}, ctx context.Context,
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthenticationService_GenerateCaptcha_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthenticationServiceServer).GenerateCaptcha(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthenticationService_GenerateCaptcha_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthenticationServiceServer).GenerateCaptcha(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthenticationService_VerifyCaptcha_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(VerifyCaptchaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthenticationServiceServer).VerifyCaptcha(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthenticationService_VerifyCaptcha_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthenticationServiceServer).VerifyCaptcha(ctx, req.(*VerifyCaptchaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthenticationService_ServiceDesc is the grpc.ServiceDesc for AuthenticationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -481,6 +553,14 @@ var AuthenticationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "WhoAmI",
 			Handler:    _AuthenticationService_WhoAmI_Handler,
+		},
+		{
+			MethodName: "GenerateCaptcha",
+			Handler:    _AuthenticationService_GenerateCaptcha_Handler,
+		},
+		{
+			MethodName: "VerifyCaptcha",
+			Handler:    _AuthenticationService_VerifyCaptcha_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

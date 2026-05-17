@@ -1,0 +1,19 @@
+/**
+ * 导出变量供 JS/TS 使用
+ * 
+ * 使用方式：
+ * import styles from "@/styles/variables.module.scss"
+ * console.log(styles['sidebar-width']) // "210px"
+ */
+
+@use "./variables" as *;
+
+:export {
+  sidebar-width: $sidebar-width;
+  navbar-height: $navbar-height;
+  tags-view-height: $tags-view-height;
+  menu-background: $menu-background;
+  menu-text: $menu-text;
+  menu-active-text: $menu-active-text;
+  menu-hover: $menu-hover;
+}

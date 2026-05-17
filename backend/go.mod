@@ -27,8 +27,9 @@ require (
 	github.com/tx7do/go-crud/gorm v0.0.20
 	github.com/tx7do/go-crud/pagination v0.0.13
 	github.com/tx7do/go-crud/viewer v0.0.6
-	github.com/tx7do/go-utils v1.1.38
+	github.com/tx7do/go-utils v1.1.39
 	github.com/tx7do/go-utils/aggregator v0.0.5
+	github.com/tx7do/go-utils/captcha v0.0.2
 	github.com/tx7do/go-utils/copierutil v0.0.8
 	github.com/tx7do/go-utils/crypto v0.0.2
 	github.com/tx7do/go-utils/geoip v1.1.8
@@ -56,9 +57,9 @@ require (
 	github.com/tx7do/kratos-transport/transport/sse v1.3.4
 	github.com/yuin/gopher-lua v1.1.2
 	go.opentelemetry.io/otel/trace v1.43.0
-	google.golang.org/genproto v0.0.0-20260504160031-60b97b32f348
+	google.golang.org/genproto v0.0.0-20260511170946-3700d4141b60
 	google.golang.org/genproto/googleapis/api v0.0.0-20260511170946-3700d4141b60
-	google.golang.org/grpc v1.81.0
+	google.golang.org/grpc v1.81.1
 	google.golang.org/protobuf v1.36.11
 	gorm.io/datatypes v1.2.7
 )
@@ -73,7 +74,7 @@ require (
 	cloud.google.com/go/auth/oauth2adapt v0.2.8 // indirect
 	cloud.google.com/go/bigquery v1.77.0 // indirect
 	cloud.google.com/go/compute/metadata v0.9.0 // indirect
-	cloud.google.com/go/iam v1.10.0 // indirect
+	cloud.google.com/go/iam v1.11.0 // indirect
 	dario.cat/mergo v1.0.2 // indirect
 	filippo.io/edwards25519 v1.2.0 // indirect
 	github.com/ClickHouse/ch-go v0.71.0 // indirect
@@ -120,6 +121,7 @@ require (
 	github.com/goccy/go-json v0.10.6 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
+	github.com/golang/freetype v0.0.0-20170609003504-e2365dfdc4a0 // indirect
 	github.com/google/cel-go v0.26.1 // indirect
 	github.com/google/flatbuffers v25.12.19+incompatible // indirect
 	github.com/google/gnostic-models v0.7.1 // indirect
@@ -164,6 +166,7 @@ require (
 	github.com/minio/md5-simd v1.1.2 // indirect
 	github.com/mitchellh/go-wordwrap v1.0.1 // indirect
 	github.com/mohae/deepcopy v0.0.0-20170929034955-c48cc78d4826 // indirect
+	github.com/mojocn/base64Captcha v1.3.8 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/ncruces/go-strftime v1.0.0 // indirect
 	github.com/oasdiff/yaml v0.0.9 // indirect
@@ -250,6 +253,7 @@ require (
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	golang.org/x/crypto v0.51.0 // indirect
 	golang.org/x/exp v0.0.0-20260410095643-746e56fc9e2f // indirect
+	golang.org/x/image v0.40.0 // indirect
 	golang.org/x/mod v0.35.0 // indirect
 	golang.org/x/net v0.54.0 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect

@@ -21,9 +21,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AuthenticationService_Login_FullMethodName        = "/admin.service.v1.AuthenticationService/Login"
-	AuthenticationService_Logout_FullMethodName       = "/admin.service.v1.AuthenticationService/Logout"
-	AuthenticationService_RefreshToken_FullMethodName = "/admin.service.v1.AuthenticationService/RefreshToken"
+	AuthenticationService_Login_FullMethodName           = "/admin.service.v1.AuthenticationService/Login"
+	AuthenticationService_Logout_FullMethodName          = "/admin.service.v1.AuthenticationService/Logout"
+	AuthenticationService_RefreshToken_FullMethodName    = "/admin.service.v1.AuthenticationService/RefreshToken"
+	AuthenticationService_GenerateCaptcha_FullMethodName = "/admin.service.v1.AuthenticationService/GenerateCaptcha"
+	AuthenticationService_VerifyCaptcha_FullMethodName   = "/admin.service.v1.AuthenticationService/VerifyCaptcha"
 )
 
 // AuthenticationServiceClient is the client API for AuthenticationService service.
@@ -38,6 +40,10 @@ type AuthenticationServiceClient interface {
 	Logout(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 刷新认证令牌
 	RefreshToken(ctx context.Context, in *v1.LoginRequest, opts ...grpc.CallOption) (*v1.LoginResponse, error)
+	// 生成验证码
+	GenerateCaptcha(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.GenerateCaptchaResponse, error)
+	// 验证验证码
+	VerifyCaptcha(ctx context.Context, in *v1.VerifyCaptchaRequest, opts ...grpc.CallOption) (*v1.VerifyCaptchaResponse, error)
 }
 
 type authenticationServiceClient struct {
@@ -78,6 +84,26 @@ func (c *authenticationServiceClient) RefreshToken(ctx context.Context, in *v1.L
 	return out, nil
 }
 
+func (c *authenticationServiceClient) GenerateCaptcha(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*v1.GenerateCaptchaResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.GenerateCaptchaResponse)
+	err := c.cc.Invoke(ctx, AuthenticationService_GenerateCaptcha_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authenticationServiceClient) VerifyCaptcha(ctx context.Context, in *v1.VerifyCaptchaRequest, opts ...grpc.CallOption) (*v1.VerifyCaptchaResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v1.VerifyCaptchaResponse)
+	err := c.cc.Invoke(ctx, AuthenticationService_VerifyCaptcha_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AuthenticationServiceServer is the server API for AuthenticationService service.
 // All implementations must embed UnimplementedAuthenticationServiceServer
 // for forward compatibility.
@@ -90,6 +116,10 @@ type AuthenticationServiceServer interface {
 	Logout(context.Context, *emptypb.Empty) (*emptypb.Empty, error)
 	// 刷新认证令牌
 	RefreshToken(context.Context, *v1.LoginRequest) (*v1.LoginResponse, error)
+	// 生成验证码
+	GenerateCaptcha(context.Context, *emptypb.Empty) (*v1.GenerateCaptchaResponse, error)
+	// 验证验证码
+	VerifyCaptcha(context.Context, *v1.VerifyCaptchaRequest) (*v1.VerifyCaptchaResponse, error)
 	mustEmbedUnimplementedAuthenticationServiceServer()
 }
 
@@ -108,6 +138,12 @@ func (UnimplementedAuthenticationServiceServer) Logout(context.Context, *emptypb
 }
 func (UnimplementedAuthenticationServiceServer) RefreshToken(context.Context, *v1.LoginRequest) (*v1.LoginResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RefreshToken not implemented")
+}
+func (UnimplementedAuthenticationServiceServer) GenerateCaptcha(context.Context, *emptypb.Empty) (*v1.GenerateCaptchaResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GenerateCaptcha not implemented")
+}
+func (UnimplementedAuthenticationServiceServer) VerifyCaptcha(context.Context, *v1.VerifyCaptchaRequest) (*v1.VerifyCaptchaResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method VerifyCaptcha not implemented")
 }
 func (UnimplementedAuthenticationServiceServer) mustEmbedUnimplementedAuthenticationServiceServer() {}
 func (UnimplementedAuthenticationServiceServer) testEmbeddedByValue()                               {}
@@ -184,6 +220,42 @@ func _AuthenticationService_RefreshToken_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthenticationService_GenerateCaptcha_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthenticationServiceServer).GenerateCaptcha(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthenticationService_GenerateCaptcha_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthenticationServiceServer).GenerateCaptcha(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthenticationService_VerifyCaptcha_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v1.VerifyCaptchaRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthenticationServiceServer).VerifyCaptcha(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthenticationService_VerifyCaptcha_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthenticationServiceServer).VerifyCaptcha(ctx, req.(*v1.VerifyCaptchaRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AuthenticationService_ServiceDesc is the grpc.ServiceDesc for AuthenticationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -202,6 +274,14 @@ var AuthenticationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RefreshToken",
 			Handler:    _AuthenticationService_RefreshToken_Handler,
+		},
+		{
+			MethodName: "GenerateCaptcha",
+			Handler:    _AuthenticationService_GenerateCaptcha_Handler,
+		},
+		{
+			MethodName: "VerifyCaptcha",
+			Handler:    _AuthenticationService_VerifyCaptcha_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

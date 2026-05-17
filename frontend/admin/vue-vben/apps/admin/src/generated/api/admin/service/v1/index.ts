@@ -948,6 +948,10 @@ export interface AuthenticationService {
   Logout(request: wellKnownEmpty): Promise<wellKnownEmpty>;
   // 刷新认证令牌
   RefreshToken(request: authenticationservicev1_LoginRequest): Promise<authenticationservicev1_LoginResponse>;
+  // 生成验证码
+  GenerateCaptcha(request: wellKnownEmpty): Promise<authenticationservicev1_GenerateCaptchaResponse>;
+  // 验证验证码
+  VerifyCaptcha(request: authenticationservicev1_VerifyCaptchaRequest): Promise<authenticationservicev1_VerifyCaptchaResponse>;
 }
 
 export function createAuthenticationServiceClient(
@@ -1005,6 +1009,40 @@ export function createAuthenticationServiceClient(
         method: "RefreshToken",
       }) as Promise<authenticationservicev1_LoginResponse>;
     },
+    GenerateCaptcha(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/captcha`; // eslint-disable-line quotes
+      const body = null;
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "GET",
+        body,
+      }, {
+        service: "AuthenticationService",
+        method: "GenerateCaptcha",
+      }) as Promise<authenticationservicev1_GenerateCaptchaResponse>;
+    },
+    VerifyCaptcha(request) { // eslint-disable-line @typescript-eslint/no-unused-vars
+      const path = `admin/v1/captcha/verify`; // eslint-disable-line quotes
+      const body = JSON.stringify(request);
+      const queryParams: string[] = [];
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join("&")}`
+      }
+      return handler({
+        path: uri,
+        method: "POST",
+        body,
+      }, {
+        service: "AuthenticationService",
+        method: "VerifyCaptcha",
+      }) as Promise<authenticationservicev1_VerifyCaptchaResponse>;
+    },
   };
 }
 // 用户后台登录 - 请求
@@ -1054,6 +1092,20 @@ export type authenticationservicev1_LoginResponse = {
 export type authenticationservicev1_TokenType =
   | "bearer"
   | "mac";
+export type authenticationservicev1_GenerateCaptchaResponse = {
+  captchaId: string | undefined;
+  imageBase64: string | undefined;
+};
+
+export type authenticationservicev1_VerifyCaptchaRequest = {
+  captchaId: string | undefined;
+  userInput: string | undefined;
+};
+
+export type authenticationservicev1_VerifyCaptchaResponse = {
+  valid: boolean | undefined;
+};
+
 // 数据访问审计日志管理服务
 export interface DataAccessAuditLogService {
   // 查询数据访问审计日志列表

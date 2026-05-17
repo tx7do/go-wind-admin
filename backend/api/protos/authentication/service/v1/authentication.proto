@@ -50,6 +50,13 @@ service AuthenticationService {
 
   // 获取当前用户身份信息
   rpc WhoAmI(google.protobuf.Empty) returns (WhoAmIResponse) {}
+
+
+  // 生成验证码
+  rpc GenerateCaptcha (google.protobuf.Empty) returns (GenerateCaptchaResponse) {}
+
+  // 验证验证码
+  rpc VerifyCaptcha (VerifyCaptchaRequest) returns (VerifyCaptchaResponse) {}
 }
 
 // 授权类型
@@ -500,4 +507,44 @@ message RevokeTokenByIdRequest {
       description: "可选：关联的用户ID，便于高效定位要撤销的令牌（向后兼容）"
     }
   ]; // 关联用户ID（可选）
+}
+
+message GenerateCaptchaResponse {
+  string captcha_id = 1 [
+    json_name = "captchaId",
+    (gnostic.openapi.v3.property) = {
+      description: "验证码ID，客户端应在后续请求中提供该ID以验证用户输入的验证码"
+    }
+  ]; // 验证码ID，客户端应在后续请求中提供该ID以验证用户输入的验证码
+
+  string image_base64 = 2 [
+    json_name = "imageBase64",
+    (gnostic.openapi.v3.property) = {
+      description: "验证码图片的Base64编码字符串，客户端可以解码并显示给用户"
+    }
+  ]; // 验证码图片的Base64编码字符串，客户端可以解码并显示给用户
+}
+
+message VerifyCaptchaRequest {
+  string captcha_id = 1 [
+    json_name = "captchaId",
+    (gnostic.openapi.v3.property) = {
+      description: "验证码ID，来自 GenerateCaptcha 响应"
+    }
+  ]; // 验证码ID，来自 GenerateCaptcha 响应
+
+  string user_input = 2 [
+    json_name = "userInput",
+    (gnostic.openapi.v3.property) = {
+      description: "用户输入的验证码文本"
+    }
+  ]; // 用户输入的验证码文本
+}
+message VerifyCaptchaResponse {
+  bool valid = 1 [
+    json_name = "valid",
+    (gnostic.openapi.v3.property) = {
+      description: "验证码验证结果，true表示验证成功，false表示验证失败"
+    }
+  ]; // 验证码验证结果，true表示验证成功，false表示验证失败
 }

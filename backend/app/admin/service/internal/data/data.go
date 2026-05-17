@@ -1,7 +1,11 @@
 package data
 
 import (
+	"go-wind-admin/pkg/serviceid"
+	"time"
+
 	"github.com/redis/go-redis/v9"
+	"github.com/tx7do/go-utils/captcha"
 	"github.com/tx7do/go-utils/password"
 
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -44,4 +48,15 @@ func NewPasswordCrypto() password.Crypto {
 		panic(err)
 	}
 	return crypto
+}
+
+func NewCaptcha(rdb *redis.Client) *captcha.Captcha {
+	captchaInstance := captcha.NewCaptcha(rdb,
+		captcha.WithDriverType(captcha.DriverString),
+		captcha.WithExpire(10*time.Minute),
+		captcha.WithKeyPrefix(serviceid.ProjectName+":captcha"),
+		captcha.WithStringCount(6),
+		captcha.WithStringSource("ABCDEFGHJKLMNPQRSTUVWXYZ23456789"),
+	)
+	return captchaInstance
 }

@@ -74,3 +74,25 @@ func (s *redactedAuthenticationServiceServer) RefreshToken(ctx context.Context, 
 	}
 	return res, err
 }
+
+// GenerateCaptcha is the redacted wrapper for the actual AuthenticationServiceServer.GenerateCaptcha method
+// Unary RPC
+func (s *redactedAuthenticationServiceServer) GenerateCaptcha(ctx context.Context, in *emptypb.Empty) (*authenticationpb.GenerateCaptchaResponse, error) {
+	res, err := s.srv.GenerateCaptcha(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
+}
+
+// VerifyCaptcha is the redacted wrapper for the actual AuthenticationServiceServer.VerifyCaptcha method
+// Unary RPC
+func (s *redactedAuthenticationServiceServer) VerifyCaptcha(ctx context.Context, in *authenticationpb.VerifyCaptchaRequest) (*authenticationpb.VerifyCaptchaResponse, error) {
+	res, err := s.srv.VerifyCaptcha(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
+}

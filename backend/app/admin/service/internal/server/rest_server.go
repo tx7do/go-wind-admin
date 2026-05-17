@@ -54,6 +54,8 @@ func NewRestMiddleware(
 	// add white list for authentication.
 	rpc.AddWhiteList(
 		adminV1.OperationAuthenticationServiceLogin,
+		adminV1.OperationAuthenticationServiceGenerateCaptcha,
+		adminV1.OperationAuthenticationServiceVerifyCaptcha,
 		//OperationFileTransferServiceDownloadFile,
 		//OperationFileTransferServicePostUploadFile,
 		//OperationFileTransferServicePutUploadFile,
