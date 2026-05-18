@@ -59,7 +59,9 @@ const MenuIcon = defineComponent({
   props: { icon: String },
   setup(props) {
     const isElIcon = computed(() => props.icon?.startsWith("el-icon"));
+    const isLucideIcon = computed(() => props.icon?.startsWith("lucide:"));
     const iconName = computed(() => props.icon?.replace("el-icon-", ""));
+    const lucideName = computed(() => props.icon?.replace("lucide:", ""));
 
     return () => {
       if (!props.icon) {
@@ -69,6 +71,11 @@ const MenuIcon = defineComponent({
       // Element Plus 图标
       if (isElIcon.value) {
         return h(ElIcon, null, () => h(resolveComponent(iconName.value!)));
+      }
+
+      // Lucide 图标
+      if (isLucideIcon.value) {
+        return h("div", { class: `i-lucide:${lucideName.value}` });
       }
 
       // SVG 图标
@@ -137,7 +144,8 @@ function resolvePath(routePath: string) {
     color: currentcolor;
   }
 
-  [class^="i-svg:"] {
+  [class^="i-svg:"],
+  [class^="i-lucide:"] {
     width: 18px;
     height: 18px;
     font-size: 18px;
@@ -149,7 +157,8 @@ function resolvePath(routePath: string) {
 .el-menu--collapse {
   .el-menu-item,
   .el-sub-menu > .el-sub-menu__title {
-    [class^="i-svg:"] {
+    [class^="i-svg:"],
+    [class^="i-lucide:"] {
       width: 18px !important;
       min-width: 18px !important;
       height: 18px !important;
@@ -159,7 +168,8 @@ function resolvePath(routePath: string) {
 
   /* tooltip 弹出层中的图标 */
   .el-tooltip__trigger {
-    [class^="i-svg:"] {
+    [class^="i-svg:"],
+    [class^="i-lucide:"] {
       width: 18px !important;
       min-width: 18px !important;
       height: 18px !important;
@@ -170,7 +180,8 @@ function resolvePath(routePath: string) {
 
 /* hideSidebar 状态下的图标 */
 .hideSidebar {
-  [class^="i-svg:"] {
+  [class^="i-svg:"],
+  [class^="i-lucide:"] {
     width: 18px !important;
     min-width: 18px !important;
     height: 18px !important;
