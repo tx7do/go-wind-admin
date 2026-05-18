@@ -1,8 +1,5 @@
 import type { RouteRecordRaw } from "vue-router";
 import { Layout } from "@/layouts";
-import { i18n } from "@/i18n/setup";
-
-const t = i18n.global.t;
 
 const messageRoutes: RouteRecordRaw[] = [
   {
@@ -10,7 +7,7 @@ const messageRoutes: RouteRecordRaw[] = [
     path: "/inbox",
     component: Layout,
     meta: {
-      title: t("menu.profile.internalMessage"),
+      title: "routes.profile.internalMessage",
       hideInMenu: true,
     },
     children: [
@@ -19,7 +16,7 @@ const messageRoutes: RouteRecordRaw[] = [
         name: "InboxPage",
         component: () => import("@/views/core/message/index.vue"),
         meta: {
-          title: t("menu.profile.internalMessage"),
+          title: "routes.profile.internalMessage",
           icon: "lucide:message-circle-more",
           hideInMenu: true,
         },

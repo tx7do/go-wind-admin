@@ -1,1 +1,49 @@
-{}
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "analytics": "Analytics"
+  },
+  "opm": {
+    "moduleName": "Organizational Personnel Management",
+    "orgUnit": "Organization Structure",
+    "position": "Position Management",
+    "user": "User Management",
+    "userDetail": "User Detail"
+  },
+  "permission": {
+    "moduleName": "Permission Management",
+    "permission": "Permission Point Management",
+    "role": "Role Management"
+  },
+  "internalMessage": {
+    "moduleName": "Internal Message Management",
+    "internalMessage": "Message List",
+    "internalMessageCategory": "Message Category"
+  },
+  "log": {
+    "moduleName": "Log Audit Management",
+    "loginAuditLog": "Login Audit Log",
+    "apiAuditLog": "API Audit Log",
+    "operationAuditLog": "Operation Audit Log",
+    "dataAccessAuditLog": "Data Access Audit Log",
+    "permissionAuditLog": "Permission Audit Log"
+  },
+  "system": {
+    "moduleName": "System Management",
+    "menu": "Menu Management",
+    "api": "API Management",
+    "dict": "Dictionary Management",
+    "file": "File Management",
+    "task": "Task Management",
+    "loginPolicy": "Login Policy",
+    "language": "Language Management"
+  },
+  "tenant": {
+    "moduleName": "Tenant Management",
+    "member": "Tenant Member"
+  },
+  "profile": {
+    "settings": "Profile Center",
+    "internalMessage": "Internal Message"
+  }
+}

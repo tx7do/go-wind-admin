@@ -34,8 +34,8 @@ const positionList = ref<Position[]>([]);
 
 const getTitle = computed(() =>
   data.value?.create
-    ? $t('ui.modal.create', { moduleName: $t('page.user.moduleName') })
-    : $t('ui.modal.update', { moduleName: $t('page.user.moduleName') }),
+    ? $t('ui.modal.create', { moduleName: t('pages.user.moduleName') })
+    : $t('ui.modal.update', { moduleName: t('pages.user.moduleName') }),
 );
 // const isCreate = computed(() => data.value?.create);
 
@@ -52,7 +52,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'username',
-      label: $t('page.user.table.username'),
+      label: t('pages.user.table.username'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -66,7 +66,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'VbenInputPassword',
       fieldName: 'password',
-      label: $t('page.user.table.password'),
+      label: t('pages.user.table.password'),
       componentProps: {
         passwordStrength: true,
         placeholder: $t('ui.placeholder.input'),
@@ -76,7 +76,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'ApiTreeSelect',
       fieldName: 'roleIds',
-      label: $t('page.user.form.role'),
+      label: t('pages.user.form.role'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         showSearch: true,
@@ -103,7 +103,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'ApiTreeSelect',
       fieldName: 'orgUnitIds',
-      label: $t('page.user.form.orgUnit'),
+      label: t('pages.user.form.orgUnit'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         numberToString: true,
@@ -141,7 +141,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'ApiTreeSelect',
       fieldName: 'positionIds',
-      label: $t('page.user.form.position'),
+      label: t('pages.user.form.position'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         showSearch: true,
@@ -168,7 +168,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Select',
       fieldName: 'gender',
-      label: $t('page.user.table.gender'),
+      label: t('pages.user.table.gender'),
       defaultValue: 'SECRET',
       componentProps: {
         filterOption: (input: string, option: any) =>
@@ -183,7 +183,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'nickname',
-      label: $t('page.user.table.nickname'),
+      label: t('pages.user.table.nickname'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -193,7 +193,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'realname',
-      label: $t('page.user.table.realname'),
+      label: t('pages.user.table.realname'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -202,7 +202,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'email',
-      label: $t('page.user.table.email'),
+      label: t('pages.user.table.email'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -212,7 +212,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'mobile',
-      label: $t('page.user.table.mobile'),
+      label: t('pages.user.table.mobile'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,

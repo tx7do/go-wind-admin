@@ -1,8 +1,5 @@
 import type { RouteRecordRaw } from "vue-router";
 import { Layout } from "@/layouts";
-import { i18n } from "@/i18n/setup";
-
-const t = i18n.global.t;
 
 const userRoutes: RouteRecordRaw[] = [
   {
@@ -10,7 +7,7 @@ const userRoutes: RouteRecordRaw[] = [
     path: "/profile",
     component: Layout,
     meta: {
-      title: t("menu.profile.settings"),
+      title: "routes.profile.settings",
       hideInMenu: true,
     },
 
@@ -20,7 +17,7 @@ const userRoutes: RouteRecordRaw[] = [
         name: "ProfilePage",
         component: () => import("@/views/core/profile/index.vue"),
         meta: {
-          title: t("menu.profile.settings"),
+          title: "routes.profile.settings",
           icon: "lucide:user-pen",
           hideInMenu: true,
         },

@@ -14,7 +14,7 @@ const languageStore = useLanguageDataStore();
 const data = ref();
 
 const getTitle = computed(() =>
-  data.value?.create ? $t("page.language.button.create") : $t("page.language.button.update")
+  data.value?.create ? t("pages.language.button.create") : t("pages.language.button.update")
 );
 // const isCreate = computed(() => data.value?.create);
 
@@ -31,7 +31,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: "Input",
       fieldName: "languageName",
-      label: $t("page.language.languageName"),
+      label: t("pages.language.languageName"),
       rules: "required",
       componentProps: {
         placeholder: $t("ui.placeholder.input"),
@@ -41,7 +41,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: "Input",
       fieldName: "languageCode",
-      label: $t("page.language.languageCode"),
+      label: t("pages.language.languageCode"),
       rules: "required",
       componentProps: {
         placeholder: $t("ui.placeholder.input"),
@@ -51,7 +51,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: "Input",
       fieldName: "nativeName",
-      label: $t("page.language.nativeName"),
+      label: t("pages.language.nativeName"),
       rules: "required",
       componentProps: {
         placeholder: $t("ui.placeholder.input"),
@@ -72,7 +72,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       component: "Switch",
       fieldName: "isEnabled",
       defaultValue: true,
-      label: $t("page.language.isEnabled"),
+      label: t("pages.language.isEnabled"),
       componentProps: {
         class: "w-auto",
       },
@@ -81,7 +81,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       component: "Switch",
       fieldName: "isDefault",
       defaultValue: false,
-      label: $t("page.language.isDefault"),
+      label: t("pages.language.isDefault"),
       componentProps: {
         class: "w-auto",
       },

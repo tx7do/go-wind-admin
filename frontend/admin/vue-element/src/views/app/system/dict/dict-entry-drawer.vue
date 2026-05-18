@@ -24,8 +24,8 @@ const data = ref();
 
 const getTitle = computed(() =>
   data.value?.create
-    ? $t('ui.modal.create', { moduleName: $t('page.dict.dictEntry') })
-    : $t('ui.modal.update', { moduleName: $t('page.dict.dictEntry') }),
+    ? $t('ui.modal.create', { moduleName: t('pages.dict.dictEntry') })
+    : $t('ui.modal.update', { moduleName: t('pages.dict.dictEntry') }),
 );
 // const isCreate = computed(() => data.value?.create);
 
@@ -42,7 +42,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'ApiSelect',
       fieldName: 'typeId',
-      label: $t('page.dict.typeId'),
+      label: t('pages.dict.typeId'),
       rules: 'required',
       defaultValue: dictViewStore.currentTypeId,
       componentProps: {
@@ -68,7 +68,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'entryValue',
-      label: $t('page.dict.entryValue'),
+      label: t('pages.dict.entryValue'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -78,7 +78,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'InputNumber',
       fieldName: 'numericValue',
-      label: $t('page.dict.numericValue'),
+      label: t('pages.dict.numericValue'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -167,18 +167,18 @@ const gridOptions: VxeGridProps<DictEntryI18n> = {
 
   columns: [
     {
-      title: $t('page.dict.languageCode'),
+      title: t('pages.dict.languageCode'),
       field: 'languageCode',
       fixed: 'left',
       width: 85,
     },
     {
-      title: $t('page.dict.languageName'),
+      title: t('pages.dict.languageName'),
       field: 'languageName',
       width: 85,
     },
     {
-      title: $t('page.dict.entryLabel'),
+      title: t('pages.dict.entryLabel'),
       field: 'entryLabel',
       editRender: { name: 'input' },
     },

@@ -43,7 +43,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'type',
-      label: $t('page.task.type'),
+      label: t('pages.task.type'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         options: taskTypeList,
@@ -57,7 +57,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'ApiSelect',
       fieldName: 'typeName',
-      label: $t('page.task.typeName'),
+      label: t('pages.task.typeName'),
       componentProps: {
         allowClear: true,
         showSearch: true,
@@ -125,12 +125,12 @@ const gridOptions: VxeGridProps<Task> = {
 
   columns: [
     { title: $t('ui.table.seq'), type: 'seq', width: 50 },
-    { title: $t('page.task.type'), field: 'type', slots: { default: 'type' } },
-    { title: $t('page.task.typeName'), field: 'typeName' },
-    { title: $t('page.task.taskPayload'), field: 'taskPayload' },
-    { title: $t('page.task.cronSpec'), field: 'cronSpec' },
+    { title: t('pages.task.type'), field: 'type', slots: { default: 'type' } },
+    { title: t('pages.task.typeName'), field: 'typeName' },
+    { title: t('pages.task.taskPayload'), field: 'taskPayload' },
+    { title: t('pages.task.cronSpec'), field: 'cronSpec' },
     {
-      title: $t('page.task.enable'),
+      title: t('pages.task.enable'),
       field: 'enable',
       slots: { default: 'enable' },
       width: 95,
@@ -328,21 +328,21 @@ async function handleEnableChanged(row: any, checked: boolean) {
     <Grid :table-title="$t('menu.system.task')">
       <template #toolbar-tools>
         <a-button class="mr-2" type="primary" @click="handleCreate">
-          {{ $t('page.task.button.create') }}
+          {{ t('pages.task.button.create') }}
         </a-button>
 
         <a-popconfirm
           :cancel-text="$t('ui.button.cancel')"
           :ok-text="$t('ui.button.ok')"
           :title="
-            $t('page.task.text.do_you_want_start_all_task', {
-              moduleName: $t('page.task.moduleName'),
+            t('pages.task.text.do_you_want_start_all_task', {
+              moduleName: t('pages.task.moduleName'),
             })
           "
           @confirm="handleStartAllTask()"
         >
           <a-button class="btn-start-all mr-2" type="primary">
-            {{ $t('page.task.button.startAll') }}
+            {{ t('pages.task.button.startAll') }}
           </a-button>
         </a-popconfirm>
 
@@ -350,14 +350,14 @@ async function handleEnableChanged(row: any, checked: boolean) {
           :cancel-text="$t('ui.button.cancel')"
           :ok-text="$t('ui.button.ok')"
           :title="
-            $t('page.task.text.do_you_want_stop_all_task', {
-              moduleName: $t('page.task.moduleName'),
+            t('pages.task.text.do_you_want_stop_all_task', {
+              moduleName: t('pages.task.moduleName'),
             })
           "
           @confirm="handleStopAllTask()"
         >
           <a-button danger class="mr-2" type="primary">
-            {{ $t('page.task.button.stopAll') }}
+            {{ t('pages.task.button.stopAll') }}
           </a-button>
         </a-popconfirm>
 
@@ -365,14 +365,14 @@ async function handleEnableChanged(row: any, checked: boolean) {
           :cancel-text="$t('ui.button.cancel')"
           :ok-text="$t('ui.button.ok')"
           :title="
-            $t('page.task.text.do_you_want_restart_all_task', {
-              moduleName: $t('page.task.moduleName'),
+            t('pages.task.text.do_you_want_restart_all_task', {
+              moduleName: t('pages.task.moduleName'),
             })
           "
           @confirm="handleRestartAllTask()"
         >
           <a-button class="mr-2" type="primary">
-            {{ $t('page.task.button.restartAll') }}
+            {{ t('pages.task.button.restartAll') }}
           </a-button>
         </a-popconfirm>
       </template>
@@ -403,8 +403,8 @@ async function handleEnableChanged(row: any, checked: boolean) {
           :cancel-text="$t('ui.button.cancel')"
           :ok-text="$t('ui.button.ok')"
           :title="
-            $t('page.task.text.do_you_want_start_task', {
-              moduleName: $t('page.task.moduleName'),
+            t('pages.task.text.do_you_want_start_task', {
+              moduleName: t('pages.task.moduleName'),
             })
           "
           @confirm="handleStartTask(row)"
@@ -419,8 +419,8 @@ async function handleEnableChanged(row: any, checked: boolean) {
           :cancel-text="$t('ui.button.cancel')"
           :ok-text="$t('ui.button.ok')"
           :title="
-            $t('page.task.text.do_you_want_stop_task', {
-              moduleName: $t('page.task.moduleName'),
+            t('pages.task.text.do_you_want_stop_task', {
+              moduleName: t('pages.task.moduleName'),
             })
           "
           @confirm="handleStopTask(row)"
@@ -431,8 +431,8 @@ async function handleEnableChanged(row: any, checked: boolean) {
           :cancel-text="$t('ui.button.cancel')"
           :ok-text="$t('ui.button.ok')"
           :title="
-            $t('page.task.text.do_you_want_restart_task', {
-              moduleName: $t('page.task.moduleName'),
+            t('pages.task.text.do_you_want_restart_task', {
+              moduleName: t('pages.task.moduleName'),
             })
           "
           @confirm="handleRestartTask(row)"
@@ -444,7 +444,7 @@ async function handleEnableChanged(row: any, checked: boolean) {
           :ok-text="$t('ui.button.ok')"
           :title="
             $t('ui.text.do_you_want_delete', {
-              moduleName: $t('page.task.moduleName'),
+              moduleName: t('pages.task.moduleName'),
             })
           "
           @confirm="handleDelete(row)"

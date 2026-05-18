@@ -34,7 +34,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'username',
-      label: $t('page.loginAuditLog.username'),
+      label: t('pages.loginAuditLog.username'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -43,7 +43,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'ipAddress',
-      label: $t('page.loginAuditLog.ipAddress'),
+      label: t('pages.loginAuditLog.ipAddress'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -52,7 +52,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'actionType',
-      label: $t('page.loginAuditLog.actionType'),
+      label: t('pages.loginAuditLog.actionType'),
       componentProps: {
         options: loginAuditLogActionTypeList,
         placeholder: $t('ui.placeholder.select'),
@@ -65,7 +65,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'riskLevel',
-      label: $t('page.loginAuditLog.riskLevel'),
+      label: t('pages.loginAuditLog.riskLevel'),
       componentProps: {
         options: loginAuditLogRiskLevelList,
         placeholder: $t('ui.placeholder.select'),
@@ -78,7 +78,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'status',
-      label: $t('page.loginAuditLog.status'),
+      label: t('pages.loginAuditLog.status'),
       componentProps: {
         options: loginAuditLogStatusList,
         placeholder: $t('ui.placeholder.select'),
@@ -91,7 +91,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'RangePicker',
       fieldName: 'createdAt',
-      label: $t('page.loginAuditLog.createdAt'),
+      label: t('pages.loginAuditLog.createdAt'),
       componentProps: {
         showTime: true,
         allowClear: true,
@@ -194,40 +194,40 @@ const gridOptions: VxeGridProps<LoginAuditLog> = {
 
   columns: [
     {
-      title: $t('page.loginAuditLog.createdAt'),
+      title: t('pages.loginAuditLog.createdAt'),
       field: 'createdAt',
       formatter: 'formatDateTime',
       width: 140,
     },
     {
-      title: $t('page.loginAuditLog.status'),
+      title: t('pages.loginAuditLog.status'),
       field: 'status',
       width: 80,
       slots: { default: 'status' },
     },
-    { title: $t('page.loginAuditLog.username'), field: 'username' },
+    { title: t('pages.loginAuditLog.username'), field: 'username' },
     {
-      title: $t('page.loginAuditLog.actionType'),
+      title: t('pages.loginAuditLog.actionType'),
       field: 'actionType',
       slots: { default: 'actionType' },
     },
     {
-      title: $t('page.loginAuditLog.riskLevel'),
+      title: t('pages.loginAuditLog.riskLevel'),
       field: 'riskLevel',
       slots: { default: 'riskLevel' },
     },
     {
-      title: $t('page.loginAuditLog.platform'),
+      title: t('pages.loginAuditLog.platform'),
       field: 'deviceInfo.platform',
       slots: { default: 'platform' },
     },
     {
-      title: $t('page.loginAuditLog.geoLocation'),
+      title: t('pages.loginAuditLog.geoLocation'),
       field: 'geoLocation',
       slots: { default: 'geoLocation' },
     },
     {
-      title: $t('page.loginAuditLog.ipAddress'),
+      title: t('pages.loginAuditLog.ipAddress'),
       field: 'ipAddress',
       width: 140,
     },

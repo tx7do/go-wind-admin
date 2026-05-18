@@ -38,7 +38,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'name',
-      label: $t('page.position.name'),
+      label: t('pages.position.name'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -47,7 +47,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'code',
-      label: $t('page.position.code'),
+      label: t('pages.position.code'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -69,7 +69,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'type',
-      label: $t('page.position.type'),
+      label: t('pages.position.type'),
       componentProps: {
         options: positionTypeList,
         placeholder: $t('ui.placeholder.select'),
@@ -82,7 +82,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'ApiTreeSelect',
       fieldName: 'orgUnitId',
-      label: $t('page.position.orgUnit'),
+      label: t('pages.position.orgUnit'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         numberToString: true,
@@ -138,21 +138,21 @@ const gridOptions: VxeGridProps<Position> = {
   },
 
   columns: [
-    { title: $t('page.position.name'), field: 'name' },
-    { title: $t('page.position.code'), field: 'code' },
+    { title: t('pages.position.name'), field: 'name' },
+    { title: t('pages.position.code'), field: 'code' },
     {
-      title: $t('page.position.type'),
+      title: t('pages.position.type'),
       field: 'type',
       slots: { default: 'type' },
       width: 95,
     },
-    { title: $t('page.position.description'), field: 'description' },
+    { title: t('pages.position.description'), field: 'description' },
     {
-      title: $t('page.position.orgUnitName'),
+      title: t('pages.position.orgUnitName'),
       field: 'orgUnitName',
       width: 150,
     },
-    { title: $t('page.position.headcount'), field: 'headcount', width: 80 },
+    { title: t('pages.position.headcount'), field: 'headcount', width: 80 },
     {
       title: $t('ui.table.status'),
       field: 'status',
@@ -237,7 +237,7 @@ async function handleDelete(row: any) {
     <Grid :table-title="$t('menu.opm.position')">
       <template #toolbar-tools>
         <a-button class="mr-2" type="primary" @click="handleCreate">
-          {{ $t('page.position.button.create') }}
+          {{ t('pages.position.button.create') }}
         </a-button>
       </template>
       <template #status="{ row }">
@@ -261,7 +261,7 @@ async function handleDelete(row: any) {
           :ok-text="$t('ui.button.ok')"
           :title="
             $t('ui.text.do_you_want_delete', {
-              moduleName: $t('page.position.moduleName'),
+              moduleName: t('pages.position.moduleName'),
             })
           "
           @confirm="handleDelete(row)"

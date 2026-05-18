@@ -21,8 +21,8 @@ const data = ref();
 
 const getTitle = computed(() =>
   data.value?.create
-    ? $t('ui.modal.create', { moduleName: $t('page.orgUnit.moduleName') })
-    : $t('ui.modal.update', { moduleName: $t('page.orgUnit.moduleName') }),
+    ? $t('ui.modal.create', { moduleName: t('pages.orgUnit.moduleName') })
+    : $t('ui.modal.update', { moduleName: t('pages.orgUnit.moduleName') }),
 );
 // const isCreate = computed(() => data.value?.create);
 
@@ -39,7 +39,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'name',
-      label: $t('page.orgUnit.name'),
+      label: t('pages.orgUnit.name'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -49,7 +49,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'code',
-      label: $t('page.orgUnit.code'),
+      label: t('pages.orgUnit.code'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -59,7 +59,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'ApiTreeSelect',
       fieldName: 'parentId',
-      label: $t('page.orgUnit.parentId'),
+      label: t('pages.orgUnit.parentId'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         numberToString: true,
@@ -82,7 +82,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'ApiSelect',
       fieldName: 'leaderId',
-      label: $t('page.orgUnit.leaderId'),
+      label: t('pages.orgUnit.leaderId'),
       componentProps: {
         allowClear: true,
         showSearch: true,
@@ -106,7 +106,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Select',
       fieldName: 'type',
-      label: $t('page.orgUnit.type'),
+      label: t('pages.orgUnit.type'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         options: orgUnitTypeList,
@@ -145,7 +145,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       component: 'Switch',
       fieldName: 'isLegalEntity',
       defaultValue: false,
-      label: $t('page.orgUnit.isLegalEntity'),
+      label: t('pages.orgUnit.isLegalEntity'),
       componentProps: {
         class: 'w-auto',
       },
@@ -153,7 +153,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'registrationNumber',
-      label: $t('page.orgUnit.registrationNumber'),
+      label: t('pages.orgUnit.registrationNumber'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -162,7 +162,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'taxId',
-      label: $t('page.orgUnit.taxId'),
+      label: t('pages.orgUnit.taxId'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -171,7 +171,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'address',
-      label: $t('page.orgUnit.address'),
+      label: t('pages.orgUnit.address'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -180,7 +180,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Textarea',
       fieldName: 'description',
-      label: $t('page.orgUnit.description'),
+      label: t('pages.orgUnit.description'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,

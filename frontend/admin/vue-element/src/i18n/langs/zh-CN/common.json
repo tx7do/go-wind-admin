@@ -45,6 +45,7 @@
     "warning": "警告",
     "info": "提示",
     "loading": "加载中...",
+    "loadingMenu": "加载菜单中",
     "noData": "暂无数据",
     "networkError": "网络异常，请稍后重试"
   },

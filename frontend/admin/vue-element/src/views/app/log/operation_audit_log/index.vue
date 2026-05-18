@@ -31,7 +31,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'username',
-      label: $t('page.operationAuditLog.username'),
+      label: t('pages.operationAuditLog.username'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -40,7 +40,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'resourceType',
-      label: $t('page.operationAuditLog.resourceType'),
+      label: t('pages.operationAuditLog.resourceType'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -49,7 +49,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'action',
-      label: $t('page.operationAuditLog.action'),
+      label: t('pages.operationAuditLog.action'),
       componentProps: {
         options: operationAuditLogActionList,
         placeholder: $t('ui.placeholder.select'),
@@ -62,7 +62,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'ipAddress',
-      label: $t('page.operationAuditLog.ipAddress'),
+      label: t('pages.operationAuditLog.ipAddress'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -71,7 +71,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'success',
-      label: $t('page.operationAuditLog.success'),
+      label: t('pages.operationAuditLog.success'),
       componentProps: {
         options: successStatusList,
         placeholder: $t('ui.placeholder.select'),
@@ -84,7 +84,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'RangePicker',
       fieldName: 'createdAt',
-      label: $t('page.operationAuditLog.createdAt'),
+      label: t('pages.operationAuditLog.createdAt'),
       componentProps: {
         showTime: true,
         allowClear: true,
@@ -187,37 +187,37 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
 
   columns: [
     {
-      title: $t('page.operationAuditLog.createdAt'),
+      title: t('pages.operationAuditLog.createdAt'),
       field: 'createdAt',
       formatter: 'formatDateTime',
       width: 140,
     },
     {
-      title: $t('page.operationAuditLog.success'),
+      title: t('pages.operationAuditLog.success'),
       field: 'success',
       slots: { default: 'success' },
       width: 80,
     },
     {
-      title: $t('page.operationAuditLog.action'),
+      title: t('pages.operationAuditLog.action'),
       field: 'action',
       slots: { default: 'action' },
       width: 80,
     },
-    { title: $t('page.operationAuditLog.resourceType'), field: 'resourceType' },
-    { title: $t('page.operationAuditLog.resourceId'), field: 'resourceId' },
+    { title: t('pages.operationAuditLog.resourceType'), field: 'resourceType' },
+    { title: t('pages.operationAuditLog.resourceId'), field: 'resourceId' },
     {
-      title: $t('page.operationAuditLog.requestId'),
+      title: t('pages.operationAuditLog.requestId'),
       field: 'requestId',
     },
-    { title: $t('page.operationAuditLog.username'), field: 'username' },
+    { title: t('pages.operationAuditLog.username'), field: 'username' },
     {
-      title: $t('page.operationAuditLog.geoLocation'),
+      title: t('pages.operationAuditLog.geoLocation'),
       field: 'geoLocation',
       slots: { default: 'geoLocation' },
     },
     {
-      title: $t('page.operationAuditLog.ipAddress'),
+      title: t('pages.operationAuditLog.ipAddress'),
       field: 'ipAddress',
       width: 140,
     },

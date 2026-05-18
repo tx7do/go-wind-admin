@@ -45,6 +45,7 @@
     "warning": "Warning",
     "info": "Info",
     "loading": "Loading...",
+    "loadingMenu": "Loading menu...",
     "noData": "No data",
     "networkError": "Network error, please try again later"
   },

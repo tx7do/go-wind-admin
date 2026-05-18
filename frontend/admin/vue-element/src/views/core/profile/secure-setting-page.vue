@@ -41,7 +41,7 @@ const secureSettingList = [
 </script>
 
 <template>
-  <Page :title="$t('page.user.profile.tab.securitySettings')">
+  <Page :title="t('pages.user.profile.tab.securitySettings')">
     <List>
       <template v-for="item in secureSettingList" :key="item.key">
         <ListItem>

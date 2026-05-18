@@ -37,7 +37,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'name',
-      label: $t('page.menu.name'),
+      label: t('pages.menu.name'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -107,7 +107,7 @@ const gridOptions: VxeGridProps<Menu> = {
 
   columns: [
     {
-      title: $t('page.menu.name'),
+      title: t('pages.menu.name'),
       field: 'meta.title',
       slots: { default: 'title' },
       width: 180,
@@ -116,19 +116,19 @@ const gridOptions: VxeGridProps<Menu> = {
       treeNode: true,
     },
     {
-      title: $t('page.menu.type'),
+      title: t('pages.menu.type'),
       field: 'type',
       slots: { default: 'type' },
       width: 95,
     },
     {
-      title: $t('page.menu.authority'),
+      title: t('pages.menu.authority'),
       field: 'meta.authority',
       align: 'left',
       slots: { default: 'authority' },
     },
-    { title: $t('page.menu.path'), field: 'path', align: 'left' },
-    { title: $t('page.menu.component'), field: 'component', align: 'left' },
+    { title: t('pages.menu.path'), field: 'path', align: 'left' },
+    { title: t('pages.menu.component'), field: 'component', align: 'left' },
     {
       title: $t('ui.table.status'),
       field: 'status',
@@ -225,7 +225,7 @@ function normalizeAuthority(authority: unknown): string[] {
     <Grid :table-title="$t('menu.system.menu')">
       <template #toolbar-tools>
         <a-button class="mr-2" type="primary" @click="handleCreate">
-          {{ $t('page.menu.button.create') }}
+          {{ t('pages.menu.button.create') }}
         </a-button>
         <a-button class="mr-2" @click="expandAll">
           {{ $t('ui.tree.expand_all') }}
@@ -294,7 +294,7 @@ function normalizeAuthority(authority: unknown): string[] {
           :ok-text="$t('ui.button.ok')"
           :title="
             $t('ui.text.do_you_want_delete', {
-              moduleName: $t('page.menu.moduleName'),
+              moduleName: t('pages.menu.moduleName'),
             })
           "
           @confirm="handleDelete(row)"

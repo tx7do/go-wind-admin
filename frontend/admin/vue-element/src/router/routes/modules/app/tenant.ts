@@ -1,8 +1,5 @@
 import type { RouteRecordRaw } from "vue-router";
 import { Layout } from "@/layouts";
-import { i18n } from "@/i18n/setup";
-
-const t = i18n.global.t;
 
 const tenant: RouteRecordRaw[] = [
   {
@@ -13,7 +10,7 @@ const tenant: RouteRecordRaw[] = [
     meta: {
       order: 2000,
       icon: "lucide:building-2",
-      title: t("menu.tenant.moduleName"),
+      title: "routes.tenant.moduleName",
       authority: ["sys:platform_admin"],
     },
     children: [
@@ -23,7 +20,7 @@ const tenant: RouteRecordRaw[] = [
         meta: {
           order: 1,
           icon: "lucide:users",
-          title: t("menu.tenant.member"),
+          title: "routes.tenant.member",
           authority: ["sys:platform_admin"],
         },
         component: () => import("@/views/app/tenant/tenant/index.vue"),

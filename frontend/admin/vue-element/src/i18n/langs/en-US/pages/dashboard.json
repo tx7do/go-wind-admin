@@ -1,1 +1,18 @@
-{}
+{
+  "title": "Dashboard",
+  "analytics": "Analytics",
+  "currentUserCount": "Current Users",
+  "totalUserCount": "Total Users",
+  "currentAccessCount": "Current Access",
+  "totalAccessCount": "Total Access",
+  "currentDownloadCount": "Current Downloads",
+  "totalDownloadCount": "Total Downloads",
+  "currentUsageCount": "Current Usage",
+  "totalUsageCount": "Total Usage",
+  "trafficTrend": "Traffic Trend",
+  "monthAccessCount": "Monthly Access",
+  "accessCount": "Access Count",
+  "accessSource": "Access Source",
+  "salesDistribution": "Sales Distribution",
+  "month": "Month"
+}

@@ -1,9 +1,6 @@
 import type { RouteRecordRaw } from "vue-router";
 
 import { Layout } from "@/layouts";
-import { i18n } from "@/i18n/setup";
-
-const t = i18n.global.t;
 
 const internal_message: RouteRecordRaw[] = [
   {
@@ -14,7 +11,7 @@ const internal_message: RouteRecordRaw[] = [
     meta: {
       order: 2003,
       icon: "lucide:mail",
-      title: t("menu.internalMessage.moduleName"),
+      title: "routes.internalMessage.moduleName",
       keepAlive: true,
       authority: ["sys:platform_admin", "sys:tenant_manager"],
     },
@@ -25,7 +22,7 @@ const internal_message: RouteRecordRaw[] = [
         meta: {
           order: 1,
           icon: "lucide:message-circle-more",
-          title: t("menu.internalMessage.internalMessage"),
+          title: "routes.internalMessage.internalMessage",
           authority: ["sys:platform_admin", "sys:tenant_manager"],
         },
         component: () => import("@/views/app/internal_message/message/index.vue"),
@@ -37,7 +34,7 @@ const internal_message: RouteRecordRaw[] = [
         meta: {
           order: 2,
           icon: "lucide:calendar-check",
-          title: t("menu.internalMessage.internalMessageCategory"),
+          title: "routes.internalMessage.internalMessageCategory",
           authority: ["sys:platform_admin"],
         },
         component: () => import("@/views/app/internal_message/category/index.vue"),

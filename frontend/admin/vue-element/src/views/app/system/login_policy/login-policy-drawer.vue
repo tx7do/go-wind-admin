@@ -20,10 +20,10 @@ const data = ref();
 const getTitle = computed(() =>
   data.value?.create
     ? $t('ui.modal.create', {
-        moduleName: $t('page.loginPolicy.moduleName'),
+        moduleName: t('pages.loginPolicy.moduleName'),
       })
     : $t('ui.modal.update', {
-        moduleName: $t('page.loginPolicy.moduleName'),
+        moduleName: t('pages.loginPolicy.moduleName'),
       }),
 );
 // const isCreate = computed(() => data.value?.create);
@@ -41,7 +41,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'targetId',
-      label: $t('page.loginPolicy.targetId'),
+      label: t('pages.loginPolicy.targetId'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -50,7 +50,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Select',
       fieldName: 'type',
-      label: $t('page.loginPolicy.type'),
+      label: t('pages.loginPolicy.type'),
       componentProps: {
         options: loginPolicyTypeList,
         placeholder: $t('ui.placeholder.select'),
@@ -64,7 +64,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Select',
       fieldName: 'method',
-      label: $t('page.loginPolicy.method'),
+      label: t('pages.loginPolicy.method'),
       componentProps: {
         options: loginPolicyMethodList,
         placeholder: $t('ui.placeholder.select'),
@@ -78,7 +78,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'value',
-      label: $t('page.loginPolicy.value'),
+      label: t('pages.loginPolicy.value'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -88,7 +88,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Textarea',
       fieldName: 'reason',
-      label: $t('page.loginPolicy.reason'),
+      label: t('pages.loginPolicy.reason'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,

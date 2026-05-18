@@ -91,7 +91,7 @@ function handleEditPassword() {
             <LucideArrowLeft class="text-align:center" />
           </template>
         </a-button>
-        <span>{{ $t('page.user.detail.title', { userId }) }}</span>
+        <span>{{ t('pages.user.detail.title', { userId }) }}</span>
       </div>
     </template>
     <template #extra>
@@ -100,17 +100,17 @@ function handleEditPassword() {
         :ok-text="$t('ui.button.ok')"
         :title="
           $t('ui.text.do_you_want_disable', {
-            moduleName: $t('page.user.moduleName'),
+            moduleName: t('pages.user.moduleName'),
           })
         "
         @confirm="handleBanAccount"
       >
         <a-button class="mr-2" danger type="primary">
-          {{ $t('page.user.button.banAccount') }}
+          {{ t('pages.user.button.banAccount') }}
         </a-button>
       </a-popconfirm>
       <a-button class="mr-2" type="primary" @click="handleEditPassword">
-        {{ $t('page.user.button.editPassword') }}
+        {{ t('pages.user.button.editPassword') }}
       </a-button>
     </template>
     <template #description>
@@ -120,15 +120,15 @@ function handleEditPassword() {
       >
         <a-tab-pane
           :key="TabEnum.BASIC_INFO"
-          :tab="$t('page.user.detail.tab.basicInfo')"
+          :tab="t('pages.user.detail.tab.basicInfo')"
         />
         <a-tab-pane
           :key="TabEnum.API_AUDIT_LOG"
-          :tab="$t('page.user.detail.tab.apiAuditLog')"
+          :tab="t('pages.user.detail.tab.apiAuditLog')"
         />
         <a-tab-pane
           :key="TabEnum.INTERNAL_MESSAGE"
-          :tab="$t('page.user.detail.tab.internalMessage')"
+          :tab="t('pages.user.detail.tab.internalMessage')"
         />
       </a-tabs>
     </template>

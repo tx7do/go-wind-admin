@@ -4,9 +4,6 @@ import { DEFAULT_HOME_PATH, LOGIN_PATH } from "@/constants";
 
 import Login from "@/views/core/login/index.vue";
 import { Layout } from "@/layouts";
-import { i18n } from "@/i18n/setup";
-
-const t = i18n.global.t;
 
 /** 全局404页面 */
 const fallbackNotFoundRoute: RouteRecordRaw = {
@@ -46,7 +43,7 @@ const coreRoutes: RouteRecordRaw[] = [
         path: "login",
         component: Login,
         meta: {
-          title: t("page.auth.login"),
+          title: "pages.auth.login",
         },
       },
     ],
@@ -56,7 +53,7 @@ const coreRoutes: RouteRecordRaw[] = [
     path: LOGIN_PATH,
     component: Login,
     meta: {
-      title: t("page.auth.login"),
+      title: "pages.auth.login",
       ignoreAccess: true,
     },
   },

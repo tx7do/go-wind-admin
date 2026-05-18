@@ -1,8 +1,5 @@
 import type { RouteRecordRaw } from "vue-router";
 import { Layout } from "@/layouts";
-import { i18n } from "@/i18n/setup";
-
-const t = i18n.global.t;
 
 const routes: RouteRecordRaw[] = [
   {
@@ -12,7 +9,7 @@ const routes: RouteRecordRaw[] = [
     meta: {
       icon: "lucide:layout-dashboard",
       order: -1,
-      title: t("page.dashboard.title"),
+      title: "routes.dashboard.title",
       authority: ["sys:platform_admin", "sys:tenant_manager"],
     },
 
@@ -24,7 +21,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           affixTab: true,
           icon: "lucide:area-chart",
-          title: t("page.dashboard.analytics"),
+          title: "routes.dashboard.analytics",
           authority: ["sys:platform_admin", "sys:tenant_manager"],
         },
       },

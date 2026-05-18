@@ -28,8 +28,8 @@ const data = ref();
 
 const getTitle = computed(() =>
   data.value?.create
-    ? $t("ui.modal.create", { moduleName: $t("page.permission.moduleName") })
-    : $t("ui.modal.update", { moduleName: $t("page.permission.moduleName") })
+    ? $t("ui.modal.create", { moduleName: t("pages.permission.moduleName") })
+    : $t("ui.modal.update", { moduleName: t("pages.permission.moduleName") })
 );
 
 // const isCreate = computed(() => data.value?.create);
@@ -49,7 +49,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: "Input",
       fieldName: "name",
-      label: $t("page.permission.name"),
+      label: t("pages.permission.name"),
       rules: "required",
       componentProps() {
         return {
@@ -61,7 +61,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: "Input",
       fieldName: "code",
-      label: $t("page.permission.code"),
+      label: t("pages.permission.code"),
       rules: "required",
       componentProps() {
         return {
@@ -73,7 +73,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: "ApiTreeSelect",
       fieldName: "groupId",
-      label: $t("page.permission.groupId"),
+      label: t("pages.permission.groupId"),
       componentProps: {
         placeholder: $t("ui.placeholder.select"),
         class: "w-full",
@@ -117,7 +117,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       component: "ApiTree",
       fieldName: "menuIds",
       componentProps: {
-        title: $t("page.permission.menuIds"),
+        title: t("pages.permission.menuIds"),
         showSearch: true,
         treeDefaultExpandAll: false,
         loadingSlot: "suffixIcon",
@@ -139,7 +139,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       component: "ApiTree",
       fieldName: "apiIds",
       componentProps: {
-        title: $t("page.permission.apiIds"),
+        title: t("pages.permission.apiIds"),
         toolbar: true,
         search: true,
         checkable: true,

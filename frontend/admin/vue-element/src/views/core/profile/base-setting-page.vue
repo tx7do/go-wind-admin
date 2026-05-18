@@ -26,32 +26,32 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       fieldName: 'nickname',
       component: 'Input',
-      label: $t('page.user.table.nickname'),
+      label: t('pages.user.table.nickname'),
     },
     {
       fieldName: 'realname',
       component: 'Input',
-      label: $t('page.user.table.realname'),
+      label: t('pages.user.table.realname'),
     },
     {
       fieldName: 'email',
       component: 'Input',
-      label: $t('page.user.table.email'),
+      label: t('pages.user.table.email'),
     },
     {
       fieldName: 'mobile',
       component: 'Input',
-      label: $t('page.user.table.mobile'),
+      label: t('pages.user.table.mobile'),
     },
     {
       fieldName: 'telephone',
       component: 'Input',
-      label: $t('page.user.table.telephone'),
+      label: t('pages.user.table.telephone'),
     },
     {
       fieldName: 'gender',
       component: 'Select',
-      label: $t('page.user.table.gender'),
+      label: t('pages.user.table.gender'),
       componentProps: {
         filterOption: (input: string, option: any) =>
           option.label.toLowerCase().includes(input.toLowerCase()),
@@ -64,17 +64,17 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       fieldName: 'region',
       component: 'Input',
-      label: $t('page.user.table.region'),
+      label: t('pages.user.table.region'),
     },
     {
       fieldName: 'address',
       component: 'Input',
-      label: $t('page.user.table.address'),
+      label: t('pages.user.table.address'),
     },
     {
       fieldName: 'description',
       component: 'Textarea',
-      label: $t('page.user.table.description'),
+      label: t('pages.user.table.description'),
     },
   ],
 });
@@ -123,7 +123,7 @@ reload();
 
 <template>
   <Page
-    :title="$t('page.user.profile.tab.basicSettings')"
+    :title="t('pages.user.profile.tab.basicSettings')"
     :body-style="{ padding: 0 }"
     class="edge-card"
     style="margin: 0"
@@ -134,12 +134,12 @@ reload();
       </Col>
       <Col :span="10">
         <div class="change-avatar">
-          <div class="mb-2">{{ $t('page.user.table.avatar') }}</div>
+          <div class="mb-2">{{ t('pages.user.table.avatar') }}</div>
         </div>
       </Col>
     </Row>
     <a-button type="primary" @click="handleSubmit">
-      {{ $t('page.user.button.updateUserInfo') }}
+      {{ t('pages.user.button.updateUserInfo') }}
     </a-button>
   </Page>
 </template>

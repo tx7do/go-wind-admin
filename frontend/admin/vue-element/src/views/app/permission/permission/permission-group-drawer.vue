@@ -20,10 +20,10 @@ const data = ref();
 const getTitle = computed(() =>
   data.value?.create
     ? $t('ui.modal.create', {
-        moduleName: $t('page.permissionGroup.moduleName'),
+        moduleName: t('pages.permissionGroup.moduleName'),
       })
     : $t('ui.modal.update', {
-        moduleName: $t('page.permissionGroup.moduleName'),
+        moduleName: t('pages.permissionGroup.moduleName'),
       }),
 );
 
@@ -44,7 +44,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'name',
-      label: $t('page.permissionGroup.name'),
+      label: t('pages.permissionGroup.name'),
       rules: 'required',
       componentProps() {
         return {
@@ -56,7 +56,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'module',
-      label: $t('page.permissionGroup.module'),
+      label: t('pages.permissionGroup.module'),
       rules: 'required',
       componentProps() {
         return {
@@ -68,7 +68,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'ApiTreeSelect',
       fieldName: 'parentId',
-      label: $t('page.permissionGroup.parentId'),
+      label: t('pages.permissionGroup.parentId'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         class: 'w-full',

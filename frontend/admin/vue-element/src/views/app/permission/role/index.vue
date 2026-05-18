@@ -33,7 +33,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'name',
-      label: $t('page.role.name'),
+      label: t('pages.role.name'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -42,7 +42,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'code',
-      label: $t('page.role.code'),
+      label: t('pages.role.code'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -98,9 +98,9 @@ const gridOptions: VxeGridProps<Role> = {
 
   columns: [
     { title: $t('ui.table.seq'), type: 'seq', width: 50 },
-    { title: $t('page.role.name'), field: 'name' },
-    { title: $t('page.role.code'), field: 'code' },
-    { title: $t('page.role.tenantName'), field: 'tenantName' },
+    { title: t('pages.role.name'), field: 'name' },
+    { title: t('pages.role.code'), field: 'code' },
+    { title: t('pages.role.tenantName'), field: 'tenantName' },
     {
       title: $t('ui.table.status'),
       field: 'status',
@@ -184,7 +184,7 @@ async function handleDelete(row: any) {
     <Grid :table-title="$t('menu.permission.role')">
       <template #toolbar-tools>
         <a-button class="mr-2" type="primary" @click="handleCreate">
-          {{ $t('page.role.button.create') }}
+          {{ t('pages.role.button.create') }}
         </a-button>
       </template>
       <template #status="{ row }">
@@ -203,7 +203,7 @@ async function handleDelete(row: any) {
           :ok-text="$t('ui.button.ok')"
           :title="
             $t('ui.text.do_you_want_delete', {
-              moduleName: $t('page.role.moduleName'),
+              moduleName: t('pages.role.moduleName'),
             })
           "
           @confirm="handleDelete(row)"

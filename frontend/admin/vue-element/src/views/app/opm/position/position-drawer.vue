@@ -21,8 +21,8 @@ const data = ref();
 
 const getTitle = computed(() =>
   data.value?.create
-    ? $t('ui.modal.create', { moduleName: $t('page.position.moduleName') })
-    : $t('ui.modal.update', { moduleName: $t('page.position.moduleName') }),
+    ? $t('ui.modal.create', { moduleName: t('pages.position.moduleName') })
+    : $t('ui.modal.update', { moduleName: t('pages.position.moduleName') }),
 );
 // const isCreate = computed(() => data.value?.create);
 
@@ -39,7 +39,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'name',
-      label: $t('page.position.name'),
+      label: t('pages.position.name'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -49,7 +49,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'code',
-      label: $t('page.position.code'),
+      label: t('pages.position.code'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -59,7 +59,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Select',
       fieldName: 'type',
-      label: $t('page.position.type'),
+      label: t('pages.position.type'),
       defaultValue: 'REGULAR',
       rules: 'selectRequired',
       componentProps: {
@@ -74,7 +74,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'ApiTreeSelect',
       fieldName: 'orgUnitId',
-      label: $t('page.position.orgUnit'),
+      label: t('pages.position.orgUnit'),
       rules: 'selectRequired',
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
@@ -98,7 +98,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'InputNumber',
       fieldName: 'headcount',
-      label: $t('page.position.headcount'),
+      label: t('pages.position.headcount'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -133,7 +133,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Textarea',
       fieldName: 'description',
-      label: $t('page.position.description'),
+      label: t('pages.position.description'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,

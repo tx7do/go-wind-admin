@@ -44,7 +44,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'username',
-      label: $t('page.user.form.username'),
+      label: t('pages.user.form.username'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -53,7 +53,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'realname',
-      label: $t('page.user.form.realname'),
+      label: t('pages.user.form.realname'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -62,7 +62,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'mobile',
-      label: $t('page.user.form.mobile'),
+      label: t('pages.user.form.mobile'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -71,7 +71,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'status',
-      label: $t('page.user.form.status'),
+      label: t('pages.user.form.status'),
       componentProps: {
         options: userStatusList,
         placeholder: $t('ui.placeholder.select'),
@@ -84,7 +84,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'ApiSelect',
       fieldName: 'roleId',
-      label: $t('page.user.form.role'),
+      label: t('pages.user.form.role'),
       componentProps: {
         allowClear: true,
         showSearch: true,
@@ -110,7 +110,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'ApiSelect',
       fieldName: 'positionId',
-      label: $t('page.user.form.position'),
+      label: t('pages.user.form.position'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         allowClear: true,
@@ -184,38 +184,38 @@ const gridOptions: VxeGridProps<User> = {
 
   columns: [
     { title: $t('ui.table.seq'), type: 'seq', width: 50 },
-    { title: $t('page.user.table.username'), field: 'username', width: 120 },
-    { title: $t('page.user.table.realname'), field: 'realname', width: 100 },
-    { title: $t('page.user.table.nickname'), field: 'nickname', width: 100 },
-    { title: $t('page.user.table.email'), field: 'email', width: 160 },
-    { title: $t('page.user.table.mobile'), field: 'mobile', width: 130 },
+    { title: t('pages.user.table.username'), field: 'username', width: 120 },
+    { title: t('pages.user.table.realname'), field: 'realname', width: 100 },
+    { title: t('pages.user.table.nickname'), field: 'nickname', width: 100 },
+    { title: t('pages.user.table.email'), field: 'email', width: 160 },
+    { title: t('pages.user.table.mobile'), field: 'mobile', width: 130 },
     {
-      title: $t('page.user.table.orgUnitId'),
+      title: t('pages.user.table.orgUnitId'),
       field: 'orgUnitNames',
       slots: { default: 'orgUnit' },
       width: 130,
     },
     {
-      title: $t('page.user.table.positionId'),
+      title: t('pages.user.table.positionId'),
       field: 'positionNames',
       slots: { default: 'position' },
       width: 130,
     },
     {
-      title: $t('page.user.table.roleId'),
+      title: t('pages.user.table.roleId'),
       field: 'roleNames',
       slots: { default: 'role' },
       width: 100,
       showOverflow: 'tooltip',
     },
     {
-      title: $t('page.user.table.status'),
+      title: t('pages.user.table.status'),
       field: 'status',
       width: 95,
       slots: { default: 'status' },
     },
     {
-      title: $t('page.user.table.lastLoginAt'),
+      title: t('pages.user.table.lastLoginAt'),
       field: 'lastLoginAt',
       formatter: 'formatDateTime',
       width: 160,
@@ -325,7 +325,7 @@ watch(
   <Grid :table-title="$t('menu.opm.user')">
     <template #toolbar-tools>
       <a-button type="primary" @click="handleCreate">
-        {{ $t('page.user.button.create') }}
+        {{ t('pages.user.button.create') }}
       </a-button>
     </template>
     <template #status="{ row }">
@@ -403,7 +403,7 @@ watch(
         :ok-text="$t('ui.button.ok')"
         :title="
           $t('ui.text.do_you_want_delete', {
-            moduleName: $t('page.user.moduleName'),
+            moduleName: t('pages.user.moduleName'),
           })
         "
         @confirm="handleDelete(row)"

@@ -216,8 +216,8 @@ export const useTagsViewStore = defineStore("tagsView", () => {
       title: route.meta.title as string,
       path: route.path,
       fullPath: route.fullPath,
-      affix: route.meta?.affix,
-      keepAlive: route.meta?.keepAlive,
+      affix: route.meta?.affix as boolean | undefined,
+      keepAlive: route.meta?.keepAlive as boolean | undefined,
       query: route.query,
     };
     delView(tags).then((res: any) => {

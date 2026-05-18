@@ -26,7 +26,7 @@ const msgNotifyList = [
 </script>
 
 <template>
-  <Page :title="$t('page.user.profile.tab.notification')">
+  <Page :title="t('pages.user.profile.tab.notification')">
     <List>
       <template v-for="item in msgNotifyList" :key="item.key">
         <ListItem>

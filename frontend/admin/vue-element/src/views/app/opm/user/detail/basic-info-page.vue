@@ -62,21 +62,21 @@ reload();
 
       <!-- 详细信息列表 -->
       <Descriptions class="info-list">
-        <DescriptionsItem :label="$t('page.user.detail.desc.username')">
+        <DescriptionsItem :label="t('pages.user.detail.desc.username')">
           {{ data?.username }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.user.detail.desc.realname')">
+        <DescriptionsItem :label="t('pages.user.detail.desc.realname')">
           {{ data?.realname }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.user.detail.desc.nickname')">
+        <DescriptionsItem :label="t('pages.user.detail.desc.nickname')">
           {{ data?.nickname }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.user.detail.desc.gender')">
+        <DescriptionsItem :label="t('pages.user.detail.desc.gender')">
           <a-tag :color="genderToColor(data?.gender)">
             {{ genderToName(data?.gender) }}
           </a-tag>
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.user.detail.desc.roleNames')">
+        <DescriptionsItem :label="t('pages.user.detail.desc.roleNames')">
           <a-tag
             v-for="role in data?.roleNames"
             :key="role"
@@ -90,22 +90,22 @@ reload();
             {{ role }}
           </a-tag>
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.user.detail.desc.mobile')">
+        <DescriptionsItem :label="t('pages.user.detail.desc.mobile')">
           {{ data?.mobile }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.user.detail.desc.email')">
+        <DescriptionsItem :label="t('pages.user.detail.desc.email')">
           {{ data?.email }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.user.detail.desc.region')">
+        <DescriptionsItem :label="t('pages.user.detail.desc.region')">
           {{ data?.region }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.user.detail.desc.address')">
+        <DescriptionsItem :label="t('pages.user.detail.desc.address')">
           {{ data?.address }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.user.detail.desc.tenantName')">
+        <DescriptionsItem :label="t('pages.user.detail.desc.tenantName')">
           {{ data?.tenantName }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.user.detail.desc.orgUnitName')">
+        <DescriptionsItem :label="t('pages.user.detail.desc.orgUnitName')">
           <a-tag
             v-for="orgUnit in data?.orgUnitNames"
             :key="orgUnit"
@@ -119,7 +119,7 @@ reload();
             {{ orgUnit }}
           </a-tag>
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.user.detail.desc.positionName')">
+        <DescriptionsItem :label="t('pages.user.detail.desc.positionName')">
           <a-tag
             v-for="position in data?.positionNames"
             :key="position"
@@ -136,10 +136,10 @@ reload();
         <DescriptionsItem :label="$t('ui.table.createdAt')">
           {{ formatDateTime(data?.createdAt ?? '') }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.user.detail.desc.lastLoginAt')">
+        <DescriptionsItem :label="t('pages.user.detail.desc.lastLoginAt')">
           {{ data?.lastLoginAt }}
         </DescriptionsItem>
-        <DescriptionsItem :label="$t('page.user.detail.desc.lastLoginIp')">
+        <DescriptionsItem :label="t('pages.user.detail.desc.lastLoginIp')">
           {{ data?.lastLoginIp }}
         </DescriptionsItem>
       </Descriptions>

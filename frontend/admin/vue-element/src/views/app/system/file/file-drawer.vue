@@ -15,8 +15,8 @@ const data = ref();
 
 const getTitle = computed(() =>
   data.value?.create
-    ? $t('ui.modal.create', { moduleName: $t('page.file.moduleName') })
-    : $t('ui.modal.update', { moduleName: $t('page.file.moduleName') }),
+    ? $t('ui.modal.create', { moduleName: t('pages.file.moduleName') })
+    : $t('ui.modal.update', { moduleName: t('pages.file.moduleName') }),
 );
 // const isCreate = computed(() => data.value?.create);
 
@@ -33,7 +33,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'fileName',
-      label: $t('page.file.fileName'),
+      label: t('pages.file.fileName'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,

@@ -22,7 +22,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'VbenInputPassword',
       fieldName: 'oldPassword',
-      label: $t('page.user.form.oldPassword'),
+      label: t('pages.user.form.oldPassword'),
       componentProps: {
         passwordStrength: true,
         placeholder: $t('ui.placeholder.input'),
@@ -32,7 +32,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'VbenInputPassword',
       fieldName: 'newPassword',
-      label: $t('page.user.form.newPassword'),
+      label: t('pages.user.form.newPassword'),
       componentProps: {
         passwordStrength: true,
         placeholder: $t('ui.placeholder.input'),
@@ -42,7 +42,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'VbenInputPassword',
       fieldName: 'confirmPassword',
-      label: $t('page.user.form.confirmPassword'),
+      label: t('pages.user.form.confirmPassword'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
       },
@@ -106,10 +106,10 @@ reload();
 </script>
 
 <template>
-  <Page :title="$t('page.user.profile.tab.editPassword')">
+  <Page :title="t('pages.user.profile.tab.editPassword')">
     <BaseForm />
     <a-button type="primary" @click="handleSubmit">
-      {{ $t('page.user.button.updatePassword') }}
+      {{ t('pages.user.button.updatePassword') }}
     </a-button>
   </Page>
 </template>

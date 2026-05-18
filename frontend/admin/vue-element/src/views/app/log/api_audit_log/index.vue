@@ -29,7 +29,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'username',
-      label: $t('page.apiAuditLog.username'),
+      label: t('pages.apiAuditLog.username'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -38,7 +38,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'path',
-      label: $t('page.apiAuditLog.path'),
+      label: t('pages.apiAuditLog.path'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -47,7 +47,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'httpMethod',
-      label: $t('page.apiAuditLog.httpMethod'),
+      label: t('pages.apiAuditLog.httpMethod'),
       componentProps: {
         options: methodList,
         placeholder: $t('ui.placeholder.select'),
@@ -60,7 +60,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'ipAddress',
-      label: $t('page.apiAuditLog.ipAddress'),
+      label: t('pages.apiAuditLog.ipAddress'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -69,7 +69,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'success',
-      label: $t('page.apiAuditLog.success'),
+      label: t('pages.apiAuditLog.success'),
       componentProps: {
         options: successStatusList,
         placeholder: $t('ui.placeholder.select'),
@@ -82,7 +82,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'RangePicker',
       fieldName: 'createdAt',
-      label: $t('page.apiAuditLog.createdAt'),
+      label: t('pages.apiAuditLog.createdAt'),
       componentProps: {
         showTime: true,
         allowClear: true,
@@ -185,37 +185,37 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
 
   columns: [
     {
-      title: $t('page.apiAuditLog.createdAt'),
+      title: t('pages.apiAuditLog.createdAt'),
       field: 'createdAt',
       formatter: 'formatDateTime',
       width: 140,
     },
     {
-      title: $t('page.apiAuditLog.success'),
+      title: t('pages.apiAuditLog.success'),
       field: 'success',
       slots: { default: 'success' },
       width: 80,
     },
-    { title: $t('page.apiAuditLog.username'), field: 'username' },
+    { title: t('pages.apiAuditLog.username'), field: 'username' },
     {
-      title: $t('page.apiAuditLog.httpMethod'),
+      title: t('pages.apiAuditLog.httpMethod'),
       field: 'httpMethod',
       width: 80,
     },
-    { title: $t('page.apiAuditLog.path'), field: 'path' },
-    { title: $t('page.apiAuditLog.latencyMs'), field: 'latencyMs' },
+    { title: t('pages.apiAuditLog.path'), field: 'path' },
+    { title: t('pages.apiAuditLog.latencyMs'), field: 'latencyMs' },
     {
-      title: $t('page.apiAuditLog.platform'),
+      title: t('pages.apiAuditLog.platform'),
       field: 'deviceInfo.platform',
       slots: { default: 'platform' },
     },
     {
-      title: $t('page.apiAuditLog.geoLocation'),
+      title: t('pages.apiAuditLog.geoLocation'),
       field: 'geoLocation',
       slots: { default: 'geoLocation' },
     },
     {
-      title: $t('page.apiAuditLog.ipAddress'),
+      title: t('pages.apiAuditLog.ipAddress'),
       field: 'ipAddress',
       width: 140,
     },

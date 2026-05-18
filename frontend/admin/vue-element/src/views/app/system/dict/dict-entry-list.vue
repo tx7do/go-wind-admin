@@ -33,7 +33,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'entry_value',
-      label: $t('page.dict.entryValue'),
+      label: t('pages.dict.entryValue'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -76,7 +76,7 @@ const gridOptions: VxeGridProps<DictEntry> = {
 
   columns: [
     {
-      title: $t('page.dict.entryLabel'),
+      title: t('pages.dict.entryLabel'),
       field: 'entryLabel',
       slots: { default: 'entryLabel' },
       minWidth: 95,
@@ -84,13 +84,13 @@ const gridOptions: VxeGridProps<DictEntry> = {
       align: 'left',
     },
     {
-      title: $t('page.dict.entryValue'),
+      title: t('pages.dict.entryValue'),
       field: 'entryValue',
       minWidth: 95,
       align: 'left',
     },
     {
-      title: $t('page.dict.numericValue'),
+      title: t('pages.dict.numericValue'),
       field: 'numericValue',
       minWidth: 95,
     },
@@ -173,10 +173,10 @@ watch(
 </script>
 
 <template>
-  <Grid :table-title="$t('page.dict.dictEntryList')">
+  <Grid :table-title="t('pages.dict.dictEntryList')">
     <template #toolbar-tools>
       <a-button type="primary" @click="handleCreate">
-        {{ $t('page.dict.button.create') }}
+        {{ t('pages.dict.button.create') }}
       </a-button>
     </template>
     <template #isEnabled="{ row }">
@@ -198,7 +198,7 @@ watch(
         :ok-text="$t('ui.button.ok')"
         :title="
           $t('ui.text.do_you_want_delete', {
-            moduleName: $t('page.dict.moduleName'),
+            moduleName: t('pages.dict.moduleName'),
           })
         "
         @confirm="handleDelete(row)"

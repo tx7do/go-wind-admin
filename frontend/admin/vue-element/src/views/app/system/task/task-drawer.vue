@@ -15,8 +15,8 @@ const data = ref();
 
 const getTitle = computed(() =>
   data.value?.create
-    ? $t('ui.modal.create', { moduleName: $t('page.task.moduleName') })
-    : $t('ui.modal.update', { moduleName: $t('page.task.moduleName') }),
+    ? $t('ui.modal.create', { moduleName: t('pages.task.moduleName') })
+    : $t('ui.modal.update', { moduleName: t('pages.task.moduleName') }),
 );
 // const isCreate = computed(() => data.value?.create);
 
@@ -33,7 +33,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Select',
       fieldName: 'type',
-      label: $t('page.task.type'),
+      label: t('pages.task.type'),
       defaultValue: 'PERIODIC',
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
@@ -49,7 +49,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'ApiSelect',
       fieldName: 'typeName',
-      label: $t('page.task.typeName'),
+      label: t('pages.task.typeName'),
       rules: 'required',
       componentProps: {
         allowClear: true,
@@ -71,7 +71,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Textarea',
       fieldName: 'taskPayload',
-      label: $t('page.task.taskPayload'),
+      label: t('pages.task.taskPayload'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -81,7 +81,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'cronSpec',
-      label: $t('page.task.cronSpec'),
+      label: t('pages.task.cronSpec'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -97,7 +97,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'InputNumber',
       fieldName: 'taskOptions.maxRetry',
-      label: $t('page.task.taskOptionsMaxRetry'),
+      label: t('pages.task.taskOptionsMaxRetry'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -108,7 +108,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'InputNumber',
       fieldName: 'taskOptions.timeout',
-      label: $t('page.task.taskOptionsTimeout'),
+      label: t('pages.task.taskOptionsTimeout'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -124,7 +124,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'DatePicker',
       fieldName: 'taskOptions.deadline',
-      label: $t('page.task.taskOptionsDeadline'),
+      label: t('pages.task.taskOptionsDeadline'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -141,7 +141,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'DatePicker',
       fieldName: 'taskOptions.processIn',
-      label: $t('page.task.taskOptionsProcessIn'),
+      label: t('pages.task.taskOptionsProcessIn'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -158,7 +158,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'DatePicker',
       fieldName: 'taskOptions.processAt',
-      label: $t('page.task.taskOptionsProcessAt'),
+      label: t('pages.task.taskOptionsProcessAt'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -176,7 +176,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       component: 'RadioGroup',
       fieldName: 'enable',
       defaultValue: true,
-      label: $t('page.task.enable'),
+      label: t('pages.task.enable'),
       rules: 'selectRequired',
       componentProps: {
         optionType: 'button',

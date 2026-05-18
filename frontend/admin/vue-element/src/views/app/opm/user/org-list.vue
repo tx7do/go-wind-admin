@@ -260,7 +260,7 @@ onMounted(async () => {
           />
         </a-space-compact>
         <a-space-compact block class="input-row">
-          <div class="input-label">{{ $t('page.orgUnit.moduleName') }}</div>
+          <div class="input-label">{{ t('pages.orgUnit.moduleName') }}</div>
           <a-input-search
             class="search-input"
             allow-clear

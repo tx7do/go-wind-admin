@@ -31,7 +31,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'username',
-      label: $t('page.dataAccessAuditLog.username'),
+      label: t('pages.dataAccessAuditLog.username'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -40,7 +40,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'tableName',
-      label: $t('page.dataAccessAuditLog.tableName'),
+      label: t('pages.dataAccessAuditLog.tableName'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -49,7 +49,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'accessType',
-      label: $t('page.dataAccessAuditLog.accessType'),
+      label: t('pages.dataAccessAuditLog.accessType'),
       componentProps: {
         options: dataAccessAuditLogAccessTypeList,
         placeholder: $t('ui.placeholder.select'),
@@ -62,7 +62,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'ipAddress',
-      label: $t('page.dataAccessAuditLog.ipAddress'),
+      label: t('pages.dataAccessAuditLog.ipAddress'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -71,7 +71,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'success',
-      label: $t('page.dataAccessAuditLog.success'),
+      label: t('pages.dataAccessAuditLog.success'),
       componentProps: {
         options: successStatusList,
         placeholder: $t('ui.placeholder.select'),
@@ -84,7 +84,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'RangePicker',
       fieldName: 'createdAt',
-      label: $t('page.dataAccessAuditLog.createdAt'),
+      label: t('pages.dataAccessAuditLog.createdAt'),
       componentProps: {
         showTime: true,
         allowClear: true,
@@ -187,37 +187,37 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
 
   columns: [
     {
-      title: $t('page.dataAccessAuditLog.createdAt'),
+      title: t('pages.dataAccessAuditLog.createdAt'),
       field: 'createdAt',
       formatter: 'formatDateTime',
       width: 140,
     },
     {
-      title: $t('page.dataAccessAuditLog.success'),
+      title: t('pages.dataAccessAuditLog.success'),
       field: 'success',
       slots: { default: 'success' },
       width: 80,
     },
     {
-      title: $t('page.dataAccessAuditLog.accessType'),
+      title: t('pages.dataAccessAuditLog.accessType'),
       field: 'accessType',
       slots: { default: 'accessType' },
       width: 80,
     },
-    { title: $t('page.dataAccessAuditLog.tableName'), field: 'tableName' },
+    { title: t('pages.dataAccessAuditLog.tableName'), field: 'tableName' },
     {
-      title: $t('page.dataAccessAuditLog.dataCategory'),
+      title: t('pages.dataAccessAuditLog.dataCategory'),
       field: 'dataCategory',
     },
-    { title: $t('page.dataAccessAuditLog.latencyMs'), field: 'latencyMs' },
-    { title: $t('page.dataAccessAuditLog.username'), field: 'username' },
+    { title: t('pages.dataAccessAuditLog.latencyMs'), field: 'latencyMs' },
+    { title: t('pages.dataAccessAuditLog.username'), field: 'username' },
     {
-      title: $t('page.dataAccessAuditLog.geoLocation'),
+      title: t('pages.dataAccessAuditLog.geoLocation'),
       field: 'geoLocation',
       slots: { default: 'geoLocation' },
     },
     {
-      title: $t('page.dataAccessAuditLog.ipAddress'),
+      title: t('pages.dataAccessAuditLog.ipAddress'),
       field: 'ipAddress',
       width: 140,
     },

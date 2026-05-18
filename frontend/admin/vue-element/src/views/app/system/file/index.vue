@@ -34,7 +34,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'saveFileName',
-      label: $t('page.file.saveFileName'),
+      label: t('pages.file.saveFileName'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -80,28 +80,28 @@ const gridOptions: VxeGridProps<File> = {
 
   columns: [
     { title: $t('ui.table.seq'), field: 'id', width: 50 },
-    { title: $t('page.file.fileName'), field: 'fileName' },
-    { title: $t('page.file.saveFileName'), field: 'saveFileName' },
-    { title: $t('page.file.fileDirectory'), field: 'fileDirectory' },
+    { title: t('pages.file.fileName'), field: 'fileName' },
+    { title: t('pages.file.saveFileName'), field: 'saveFileName' },
+    { title: t('pages.file.fileDirectory'), field: 'fileDirectory' },
     {
-      title: $t('page.file.size'),
+      title: t('pages.file.size'),
       field: 'sizeFormat',
     },
     {
-      title: $t('page.file.createdAt'),
+      title: t('pages.file.createdAt'),
       field: 'createdAt',
       formatter: 'formatDateTime',
       width: 140,
     },
     {
-      title: $t('page.file.provider'),
+      title: t('pages.file.provider'),
       field: 'provider',
       fixed: 'right',
       slots: { default: 'provider' },
       width: 90,
     },
     {
-      title: $t('page.file.createdAt'),
+      title: t('pages.file.createdAt'),
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
@@ -198,7 +198,7 @@ async function handleDelete(row: any) {
       <template #toolbar-tools>
         <Upload :multiple="false" :custom-request="handleUploadFile">
           <a-button class="mr-2" type="primary">
-            {{ $t('page.file.button.upload') }}
+            {{ t('pages.file.button.upload') }}
           </a-button>
         </Upload>
       </template>
@@ -218,7 +218,7 @@ async function handleDelete(row: any) {
           :ok-text="$t('ui.button.ok')"
           :title="
             $t('ui.text.do_you_want_delete', {
-              moduleName: $t('page.file.moduleName'),
+              moduleName: t('pages.file.moduleName'),
             })
           "
           @confirm="handleDelete(row)"

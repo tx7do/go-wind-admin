@@ -36,7 +36,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'type',
-      label: $t('page.loginPolicy.type'),
+      label: t('pages.loginPolicy.type'),
       componentProps: {
         options: loginPolicyTypeList,
         placeholder: $t('ui.placeholder.select'),
@@ -49,7 +49,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'method',
-      label: $t('page.loginPolicy.method'),
+      label: t('pages.loginPolicy.method'),
       componentProps: {
         options: loginPolicyMethodList,
         placeholder: $t('ui.placeholder.select'),
@@ -96,19 +96,19 @@ const gridOptions: VxeGridProps<LoginPolicy> = {
 
   columns: [
     { title: $t('ui.table.seq'), type: 'seq', width: 50 },
-    { title: $t('page.loginPolicy.targetId'), field: 'targetId' },
+    { title: t('pages.loginPolicy.targetId'), field: 'targetId' },
     {
-      title: $t('page.loginPolicy.type'),
+      title: t('pages.loginPolicy.type'),
       field: 'type',
       slots: { default: 'type' },
     },
     {
-      title: $t('page.loginPolicy.method'),
+      title: t('pages.loginPolicy.method'),
       field: 'method',
       slots: { default: 'method' },
     },
-    { title: $t('page.loginPolicy.value'), field: 'value' },
-    { title: $t('page.loginPolicy.reason'), field: 'reason' },
+    { title: t('pages.loginPolicy.value'), field: 'value' },
+    { title: t('pages.loginPolicy.reason'), field: 'reason' },
     {
       title: $t('ui.table.createdAt'),
       field: 'createdAt',
@@ -186,7 +186,7 @@ async function handleDelete(row: any) {
     <Grid :table-title="$t('menu.system.loginPolicy')">
       <template #toolbar-tools>
         <a-button type="primary" class="mr-2" @click="handleCreate">
-          {{ $t('page.loginPolicy.button.create') }}
+          {{ t('pages.loginPolicy.button.create') }}
         </a-button>
       </template>
       <template #type="{ row }">
@@ -210,7 +210,7 @@ async function handleDelete(row: any) {
           :ok-text="$t('ui.button.ok')"
           :title="
             $t('ui.text.do_you_want_delete', {
-              moduleName: $t('page.loginPolicy.moduleName'),
+              moduleName: t('pages.loginPolicy.moduleName'),
             })
           "
           @confirm="handleDelete(row)"

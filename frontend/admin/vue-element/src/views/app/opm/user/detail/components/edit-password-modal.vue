@@ -26,7 +26,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'VbenInputPassword',
       fieldName: 'new_password',
-      label: $t('page.user.form.newPassword'),
+      label: t('pages.user.form.newPassword'),
       componentProps: {
         passwordStrength: true,
         placeholder: $t('ui.placeholder.input'),
@@ -36,7 +36,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'VbenInputPassword',
       fieldName: 'confirm_password',
-      label: $t('page.user.form.confirmPassword'),
+      label: t('pages.user.form.confirmPassword'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
       },
@@ -66,7 +66,7 @@ const [Modal, modalApi] = useVbenModal({
 
     if (values.new_password !== values.confirm_password) {
       notification.error({
-        message: $t('page.notification.password_mismatch'),
+        message: t('pages.notification.password_mismatch'),
       });
 
       setLoading(false);
@@ -113,7 +113,7 @@ function setLoading(loading: boolean) {
 </script>
 
 <template>
-  <Modal :title="$t('page.user.button.editPassword')">
+  <Modal :title="t('pages.user.button.editPassword')">
     <BaseForm />
   </Modal>
 </template>

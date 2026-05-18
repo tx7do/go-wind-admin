@@ -33,8 +33,8 @@ const data = ref();
 
 const getTitle = computed(() =>
   data.value?.create
-    ? $t('page.internalMessage.drawer.create')
-    : $t('page.internalMessage.drawer.update'),
+    ? t('pages.internalMessage.drawer.create')
+    : t('pages.internalMessage.drawer.update'),
 );
 
 const [BaseForm, baseFormApi] = useVbenForm({
@@ -48,7 +48,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Select',
       fieldName: 'status',
-      label: $t('page.internalMessage.status'),
+      label: t('pages.internalMessage.status'),
       defaultValue: 'DRAFT',
       componentProps: {
         class: 'w-full',
@@ -63,7 +63,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Select',
       fieldName: 'type',
-      label: $t('page.internalMessage.type'),
+      label: t('pages.internalMessage.type'),
       defaultValue: 'NOTIFICATION',
       componentProps: {
         class: 'w-full',
@@ -78,7 +78,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'ApiTreeSelect',
       fieldName: 'categoryId',
-      label: $t('page.internalMessage.categoryId'),
+      label: t('pages.internalMessage.categoryId'),
       rules: 'selectRequired',
       formItemClass: 'col-span-2 md:col-span-2',
       componentProps: {
@@ -106,7 +106,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'title',
-      label: $t('page.internalMessage.title'),
+      label: t('pages.internalMessage.title'),
       rules: 'required',
       formItemClass: 'col-span-2 md:col-span-2',
       componentProps: {
@@ -118,7 +118,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       component: 'Editor',
       fieldName: 'content',
       defaultValue: '',
-      label: $t('page.internalMessage.content'),
+      label: t('pages.internalMessage.content'),
       formItemClass: 'col-span-2 md:col-span-2',
       componentProps: {
         height: '100%',

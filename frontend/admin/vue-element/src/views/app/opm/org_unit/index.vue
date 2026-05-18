@@ -36,7 +36,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'name',
-      label: $t('page.orgUnit.name'),
+      label: t('pages.orgUnit.name'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -58,7 +58,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'type',
-      label: $t('page.orgUnit.type'),
+      label: t('pages.orgUnit.type'),
       componentProps: {
         options: orgUnitTypeListForQuery,
         placeholder: $t('ui.placeholder.select'),
@@ -110,16 +110,16 @@ const gridOptions: VxeGridProps<OrgUnit> = {
   },
 
   columns: [
-    { title: $t('page.orgUnit.name'), field: 'name', treeNode: true },
-    { title: $t('page.orgUnit.code'), field: 'code' },
+    { title: t('pages.orgUnit.name'), field: 'name', treeNode: true },
+    { title: t('pages.orgUnit.code'), field: 'code' },
     {
-      title: $t('page.orgUnit.type'),
+      title: t('pages.orgUnit.type'),
       field: 'type',
       slots: { default: 'orgUnitType' },
       width: 95,
     },
-    { title: $t('page.orgUnit.description'), field: 'description' },
-    { title: $t('page.orgUnit.leaderName'), field: 'leaderName' },
+    { title: t('pages.orgUnit.description'), field: 'description' },
+    { title: t('pages.orgUnit.leaderName'), field: 'leaderName' },
     {
       title: $t('ui.table.status'),
       field: 'status',
@@ -214,7 +214,7 @@ const collapseAll = () => {
     <Grid :table-title="$t('menu.opm.orgUnit')">
       <template #toolbar-tools>
         <a-button class="mr-2" type="primary" @click="handleCreate">
-          {{ $t('page.orgUnit.button.create') }}
+          {{ t('pages.orgUnit.button.create') }}
         </a-button>
         <a-button class="mr-2" @click="expandAll">
           {{ $t('ui.tree.expand_all') }}
@@ -244,7 +244,7 @@ const collapseAll = () => {
           :ok-text="$t('ui.button.ok')"
           :title="
             $t('ui.text.do_you_want_delete', {
-              moduleName: $t('page.orgUnit.moduleName'),
+              moduleName: t('pages.orgUnit.moduleName'),
             })
           "
           @confirm="handleDelete(row)"

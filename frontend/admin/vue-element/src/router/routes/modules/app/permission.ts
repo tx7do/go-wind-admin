@@ -1,8 +1,5 @@
 import type { RouteRecordRaw } from "vue-router";
 import { Layout } from "@/layouts";
-import { i18n } from "@/i18n/setup";
-
-const t = i18n.global.t;
 
 const permission: RouteRecordRaw[] = [
   {
@@ -13,7 +10,7 @@ const permission: RouteRecordRaw[] = [
     meta: {
       order: 2002,
       icon: "lucide:shield-check",
-      title: t("menu.permission.moduleName"),
+      title: "routes.permission.moduleName",
       keepAlive: true,
       authority: ["sys:platform_admin", "sys:tenant_manager"],
     },
@@ -24,7 +21,7 @@ const permission: RouteRecordRaw[] = [
         meta: {
           order: 1,
           icon: "lucide:shield-ellipsis",
-          title: t("menu.permission.permission"),
+          title: "routes.permission.permission",
           authority: ["sys:platform_admin"],
         },
         component: () => import("@/views/app/permission/permission/index.vue"),
@@ -36,7 +33,7 @@ const permission: RouteRecordRaw[] = [
         meta: {
           order: 2,
           icon: "lucide:shield-user",
-          title: t("menu.permission.role"),
+          title: "routes.permission.role",
           authority: ["sys:platform_admin", "sys:tenant_manager"],
         },
         component: () => import("@/views/app/permission/role/index.vue"),

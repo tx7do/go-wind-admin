@@ -39,7 +39,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'name',
-      label: $t('page.tenant.name'),
+      label: t('pages.tenant.name'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -48,7 +48,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'code',
-      label: $t('page.tenant.code'),
+      label: t('pages.tenant.code'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -57,7 +57,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'type',
-      label: $t('page.tenant.type'),
+      label: t('pages.tenant.type'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         options: tenantTypeList,
@@ -70,7 +70,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'auditStatus',
-      label: $t('page.tenant.auditStatus'),
+      label: t('pages.tenant.auditStatus'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         options: tenantAuditStatusList,
@@ -131,17 +131,17 @@ const gridOptions: VxeGridProps<Tenant> = {
 
   columns: [
     { title: $t('ui.table.seq'), type: 'seq', width: 50 },
-    { title: $t('page.tenant.name'), field: 'name' },
-    { title: $t('page.tenant.code'), field: 'code' },
-    { title: $t('page.tenant.adminUserName'), field: 'adminUserName' },
+    { title: t('pages.tenant.name'), field: 'name' },
+    { title: t('pages.tenant.code'), field: 'code' },
+    { title: t('pages.tenant.adminUserName'), field: 'adminUserName' },
     {
-      title: $t('page.tenant.type'),
+      title: t('pages.tenant.type'),
       field: 'type',
       slots: { default: 'type' },
       width: 95,
     },
     {
-      title: $t('page.tenant.auditStatus'),
+      title: t('pages.tenant.auditStatus'),
       field: 'auditStatus',
       slots: { default: 'audit-status' },
       width: 95,
@@ -231,7 +231,7 @@ async function handleDelete(row: any) {
     <Grid :table-title="$t('menu.tenant.member')">
       <template #toolbar-tools>
         <a-button class="mr-2" type="primary" @click="handleCreate">
-          {{ $t('page.tenant.button.create') }}
+          {{ t('pages.tenant.button.create') }}
         </a-button>
       </template>
 
@@ -261,7 +261,7 @@ async function handleDelete(row: any) {
           :ok-text="$t('ui.button.ok')"
           :title="
             $t('ui.text.do_you_want_delete', {
-              moduleName: $t('page.tenant.moduleName'),
+              moduleName: t('pages.tenant.moduleName'),
             })
           "
           @confirm="handleDelete(row)"

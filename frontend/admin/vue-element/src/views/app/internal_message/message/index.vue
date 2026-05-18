@@ -38,7 +38,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'title',
-      label: $t('page.internalMessage.title'),
+      label: t('pages.internalMessage.title'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -47,7 +47,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'status',
-      label: $t('page.internalMessage.status'),
+      label: t('pages.internalMessage.status'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         options: internalMessageStatusList,
@@ -59,7 +59,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'type',
-      label: $t('page.internalMessage.type'),
+      label: t('pages.internalMessage.type'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         options: internalMessageTypeList,
@@ -71,7 +71,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'ApiTreeSelect',
       fieldName: 'category_id',
-      label: $t('page.internalMessage.categoryId'),
+      label: t('pages.internalMessage.categoryId'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         numberToString: true,
@@ -132,25 +132,25 @@ const gridOptions: VxeGridProps<InternalMessage> = {
 
   columns: [
     {
-      title: $t('page.internalMessage.title'),
+      title: t('pages.internalMessage.title'),
       field: 'title',
     },
     {
-      title: $t('page.internalMessage.categoryName'),
+      title: t('pages.internalMessage.categoryName'),
       field: 'categoryName',
     },
     {
-      title: $t('page.internalMessage.status'),
+      title: t('pages.internalMessage.status'),
       field: 'status',
       slots: { default: 'status' },
     },
     {
-      title: $t('page.internalMessage.type'),
+      title: t('pages.internalMessage.type'),
       field: 'type',
       slots: { default: 'type' },
     },
     {
-      title: $t('page.internalMessage.senderName'),
+      title: t('pages.internalMessage.senderName'),
       field: 'senderName',
     },
     {
@@ -230,7 +230,7 @@ async function handleDelete(row: any) {
     <Grid :table-title="$t('menu.internalMessage.internalMessage')">
       <template #toolbar-tools>
         <a-button class="mr-2" type="primary" @click="handleCreate">
-          {{ $t('page.internalMessage.button.create') }}
+          {{ t('pages.internalMessage.button.create') }}
         </a-button>
       </template>
       <template #status="{ row }">
@@ -254,7 +254,7 @@ async function handleDelete(row: any) {
           :ok-text="$t('ui.button.ok')"
           :title="
             $t('ui.text.do_you_want_delete', {
-              moduleName: $t('page.internalMessage.moduleName'),
+              moduleName: t('pages.internalMessage.moduleName'),
             })
           "
           @confirm="handleDelete(row)"

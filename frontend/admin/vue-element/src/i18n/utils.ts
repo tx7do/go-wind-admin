@@ -51,7 +51,10 @@ export function loadLocalesMapFromDir(
     localesMap[locale] = async () => {
       const messages: Record<string, any> = {};
       for (const [fileName, importFn] of Object.entries(files)) {
-        messages[fileName] = ((await importFn()) as any)?.default;
+        // 将文件路径中的 / 替换为 .，以便支持嵌套目录结构
+        // 例如：pages/dashboard -> pages.dashboard
+        const normalizedFileName = fileName.replace(/\//g, ".");
+        messages[normalizedFileName] = ((await importFn()) as any)?.default;
       }
       return { default: messages };
     };

@@ -121,15 +121,15 @@ const gridOptions: VxeGridProps<InternalMessageRecipient> = {
   },
 
   columns: [
-    { title: $t('page.internalMessage.title'), field: 'title' },
+    { title: t('pages.internalMessage.title'), field: 'title' },
     {
-      title: $t('page.internalMessage.status'),
+      title: t('pages.internalMessage.status'),
       field: 'status',
       slots: { default: 'status' },
       width: 100,
     },
     {
-      title: $t('page.internalMessage.readAt'),
+      title: t('pages.internalMessage.readAt'),
       field: 'readAt',
       formatter: 'formatDateTime',
       width: 140,

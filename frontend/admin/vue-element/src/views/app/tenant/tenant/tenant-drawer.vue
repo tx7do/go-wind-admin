@@ -22,8 +22,8 @@ const data = ref();
 
 const getTitle = computed(() =>
   data.value?.create
-    ? $t('ui.modal.create', { moduleName: $t('page.tenant.moduleName') })
-    : $t('ui.modal.update', { moduleName: $t('page.tenant.moduleName') }),
+    ? $t('ui.modal.create', { moduleName: t('pages.tenant.moduleName') })
+    : $t('ui.modal.update', { moduleName: t('pages.tenant.moduleName') }),
 );
 // const isCreate = computed(() => data.value?.create);
 
@@ -40,7 +40,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'name',
-      label: $t('page.tenant.name'),
+      label: t('pages.tenant.name'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -50,7 +50,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'code',
-      label: $t('page.tenant.code'),
+      label: t('pages.tenant.code'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -60,7 +60,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Select',
       fieldName: 'type',
-      label: $t('page.tenant.type'),
+      label: t('pages.tenant.type'),
       defaultValue: 'PAID',
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
@@ -75,7 +75,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Select',
       fieldName: 'auditStatus',
-      label: $t('page.tenant.auditStatus'),
+      label: t('pages.tenant.auditStatus'),
       defaultValue: 'APPROVED',
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
@@ -123,7 +123,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       },
       renderComponentContent() {
         return {
-          default: () => $t('page.tenant.adminSetting'),
+          default: () => t('pages.tenant.adminSetting'),
         };
       },
     },
@@ -131,7 +131,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'user.username',
-      label: $t('page.tenant.adminUserName'),
+      label: t('pages.tenant.adminUserName'),
       rules: 'required',
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
@@ -148,7 +148,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'VbenInputPassword',
       fieldName: 'password',
-      label: $t('page.tenant.adminPassword'),
+      label: t('pages.tenant.adminPassword'),
       rules: 'required',
       componentProps: {
         passwordStrength: true,
@@ -165,7 +165,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'VbenInputPassword',
       fieldName: 'passwordConfirm',
-      label: $t('page.tenant.adminPasswordConfirm'),
+      label: t('pages.tenant.adminPasswordConfirm'),
       rules: 'required',
       componentProps: {
         passwordStrength: true,
@@ -182,7 +182,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'user.mobile',
-      label: $t('page.tenant.adminMobile'),
+      label: t('pages.tenant.adminMobile'),
       rules: 'required',
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
@@ -199,7 +199,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'user.email',
-      label: $t('page.tenant.adminEmail'),
+      label: t('pages.tenant.adminEmail'),
       rules: 'required',
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
@@ -286,7 +286,7 @@ async function createTenantWithAdminUser(values: any) {
   // 检查密码和确认密码是否一致
   if (values.password !== values.passwordConfirm) {
     notification.error({
-      message: $t('page.notification.password_mismatch'),
+      message: t('pages.notification.password_mismatch'),
     });
     setLoading(false);
     return;
@@ -297,7 +297,7 @@ async function createTenantWithAdminUser(values: any) {
     await tenantStore.tenantExists(values.code, values.name);
   } catch {
     notification.error({
-      message: $t('page.tenant.tenant_code_exists'),
+      message: t('pages.tenant.tenant_code_exists'),
     });
     setLoading(false);
     return;
@@ -308,7 +308,7 @@ async function createTenantWithAdminUser(values: any) {
     await userListStore.userExists(values.user.username);
   } catch {
     notification.error({
-      message: $t('page.tenant.notification.user_username_exists'),
+      message: t('pages.tenant.notification.user_username_exists'),
     });
     setLoading(false);
     return;

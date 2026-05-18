@@ -21,7 +21,7 @@ function setupCommonGuard(router: Router) {
     to.meta.loaded = loadedPaths.has(to.path);
 
     // 页面加载进度条
-    if (!to.meta.loaded && preferences.app.enableProgress) {
+    if (!to.meta.loaded && preferences.transition.progress) {
       startProgress();
     }
     return true;
@@ -33,7 +33,7 @@ function setupCommonGuard(router: Router) {
     loadedPaths.add(to.path);
 
     // 关闭页面加载进度条
-    if (preferences.app.enableProgress) {
+    if (preferences.transition.progress) {
       stopProgress();
     }
   });

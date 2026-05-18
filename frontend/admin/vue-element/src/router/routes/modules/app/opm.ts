@@ -1,8 +1,5 @@
 import type { RouteRecordRaw } from "vue-router";
 import { Layout } from "@/layouts";
-import { i18n } from "@/i18n/setup";
-
-const t = i18n.global.t;
 
 const opm: RouteRecordRaw[] = [
   {
@@ -13,7 +10,7 @@ const opm: RouteRecordRaw[] = [
     meta: {
       order: 2001,
       icon: "lucide:users",
-      title: t("menu.opm.moduleName"),
+      title: "routes.opm.moduleName",
       keepAlive: true,
       authority: ["sys:platform_admin", "sys:tenant_manager"],
     },
@@ -24,7 +21,7 @@ const opm: RouteRecordRaw[] = [
         meta: {
           order: 1,
           icon: "lucide:layers",
-          title: t("menu.opm.orgUnit"),
+          title: "routes.opm.orgUnit",
           authority: ["sys:platform_admin", "sys:tenant_manager"],
         },
         component: () => import("@/views/app/opm/org_unit/index.vue"),
@@ -36,7 +33,7 @@ const opm: RouteRecordRaw[] = [
         meta: {
           order: 2,
           icon: "lucide:briefcase",
-          title: t("menu.opm.position"),
+          title: "routes.opm.position",
           authority: ["sys:platform_admin", "sys:tenant_manager"],
         },
         component: () => import("@/views/app/opm/position/index.vue"),
@@ -48,7 +45,7 @@ const opm: RouteRecordRaw[] = [
         meta: {
           order: 3,
           icon: "lucide:user",
-          title: t("menu.opm.user"),
+          title: "routes.opm.user",
           authority: ["sys:platform_admin", "sys:tenant_manager"],
         },
         component: () => import("@/views/app/opm/user/index.vue"),
@@ -58,7 +55,7 @@ const opm: RouteRecordRaw[] = [
         name: "UserDetail",
         meta: {
           hideInMenu: true,
-          title: t("menu.opm.userDetail"),
+          title: "routes.opm.userDetail",
           authority: ["sys:platform_admin", "sys:tenant_manager"],
         },
         component: () => import("@/views/app/opm/user/detail/index.vue"),

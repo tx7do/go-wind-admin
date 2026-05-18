@@ -36,7 +36,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'name',
-      label: $t('page.permissionGroup.name'),
+      label: t('pages.permissionGroup.name'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -45,7 +45,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'module',
-      label: $t('page.permissionGroup.module'),
+      label: t('pages.permissionGroup.module'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -107,14 +107,14 @@ const gridOptions: VxeGridProps<PermissionGroup> = {
 
   columns: [
     {
-      title: $t('page.permissionGroup.name'),
+      title: t('pages.permissionGroup.name'),
       field: 'name',
       fixed: 'left',
       align: 'left',
       treeNode: true,
     },
     {
-      title: $t('page.permissionGroup.module'),
+      title: t('pages.permissionGroup.module'),
       field: 'module',
       fixed: 'left',
       align: 'left',
@@ -223,10 +223,10 @@ watch(
 </script>
 
 <template>
-  <Grid :table-title="$t('page.permissionGroup.moduleName')">
+  <Grid :table-title="t('pages.permissionGroup.moduleName')">
     <template #toolbar-tools>
       <a-button class="mr-2" type="primary" @click="handleCreate">
-        {{ $t('page.permissionGroup.button.create') }}
+        {{ t('pages.permissionGroup.button.create') }}
       </a-button>
       <a-button class="mr-2" @click="expandAll">
         {{ $t('ui.tree.expand_all') }}
@@ -251,7 +251,7 @@ watch(
         :ok-text="$t('ui.button.ok')"
         :title="
           $t('ui.text.do_you_want_delete', {
-            moduleName: $t('page.permissionGroup.moduleName'),
+            moduleName: t('pages.permissionGroup.moduleName'),
           })
         "
         @confirm="handleDelete(row)"

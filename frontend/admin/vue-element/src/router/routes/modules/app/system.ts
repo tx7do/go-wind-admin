@@ -1,8 +1,5 @@
 import type { RouteRecordRaw } from "vue-router";
 import { Layout } from "@/layouts";
-import { i18n } from "@/i18n/setup";
-
-const t = i18n.global.t;
 
 const system: RouteRecordRaw[] = [
   {
@@ -13,7 +10,7 @@ const system: RouteRecordRaw[] = [
     meta: {
       order: 2005,
       icon: "lucide:settings",
-      title: t("menu.system.moduleName"),
+      title: "routes.system.moduleName",
       keepAlive: true,
       authority: ["sys:platform_admin", "sys:tenant_manager"],
     },
@@ -24,7 +21,7 @@ const system: RouteRecordRaw[] = [
         meta: {
           order: 1,
           icon: "lucide:square-menu",
-          title: t("menu.system.menu"),
+          title: "routes.system.menu",
           authority: ["sys:platform_admin"],
         },
         component: () => import("@/views/app/system/menu/index.vue"),
@@ -36,7 +33,7 @@ const system: RouteRecordRaw[] = [
         meta: {
           order: 2,
           icon: "lucide:route",
-          title: t("menu.system.api"),
+          title: "routes.system.api",
           authority: ["sys:platform_admin"],
         },
         component: () => import("@/views/app/system/api/index.vue"),
@@ -48,7 +45,7 @@ const system: RouteRecordRaw[] = [
         meta: {
           order: 3,
           icon: "lucide:library-big",
-          title: t("menu.system.dict"),
+          title: "routes.system.dict",
           authority: ["sys:platform_admin"],
         },
         component: () => import("@/views/app/system/dict/index.vue"),
@@ -60,7 +57,7 @@ const system: RouteRecordRaw[] = [
         meta: {
           order: 4,
           icon: "lucide:file-search",
-          title: t("menu.system.file"),
+          title: "routes.system.file",
           authority: ["sys:platform_admin", "sys:tenant_manager"],
         },
         component: () => import("@/views/app/system/file/index.vue"),
@@ -72,7 +69,7 @@ const system: RouteRecordRaw[] = [
         meta: {
           order: 5,
           icon: "lucide:list-todo",
-          title: t("menu.system.task"),
+          title: "routes.system.task",
           authority: ["sys:platform_admin", "sys:tenant_manager"],
         },
         component: () => import("@/views/app/system/task/index.vue"),
@@ -84,7 +81,7 @@ const system: RouteRecordRaw[] = [
         meta: {
           order: 6,
           icon: "lucide:shield-x",
-          title: t("menu.system.loginPolicy"),
+          title: "routes.system.loginPolicy",
           authority: ["sys:platform_admin"],
         },
         component: () => import("@/views/app/system/login_policy/index.vue"),
@@ -96,7 +93,7 @@ const system: RouteRecordRaw[] = [
         meta: {
           order: 7,
           icon: "lucide:globe",
-          title: t("menu.system.language"),
+          title: "routes.system.language",
           authority: ["sys:platform_admin"],
         },
         component: () => import("@/views/app/system/language/index.vue"),

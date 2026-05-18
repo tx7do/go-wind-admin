@@ -11,27 +11,27 @@ import SecureSettingPage from './secure-setting-page.vue';
 const settingList = [
   {
     key: '1',
-    name: $t('page.user.profile.tab.basicSettings'),
+    name: t('pages.user.profile.tab.basicSettings'),
     component: BaseSettingPage,
   },
   {
     key: '2',
-    name: $t('page.user.profile.tab.editPassword'),
+    name: t('pages.user.profile.tab.editPassword'),
     component: EditPasswordPage,
   },
   {
     key: '3',
-    name: $t('page.user.profile.tab.securitySettings'),
+    name: t('pages.user.profile.tab.securitySettings'),
     component: SecureSettingPage,
   },
   {
     key: '4',
-    name: $t('page.user.profile.tab.accountBind'),
+    name: t('pages.user.profile.tab.accountBind'),
     component: AccountBindPage,
   },
   {
     key: '5',
-    name: $t('page.user.profile.tab.notification'),
+    name: t('pages.user.profile.tab.notification'),
     component: MsgNotifyPage,
   },
 ];

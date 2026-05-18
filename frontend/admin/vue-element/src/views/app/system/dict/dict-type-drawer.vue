@@ -15,8 +15,8 @@ const data = ref();
 
 const getTitle = computed(() =>
   data.value?.create
-    ? $t('ui.modal.create', { moduleName: $t('page.dict.dictType') })
-    : $t('ui.modal.update', { moduleName: $t('page.dict.dictType') }),
+    ? $t('ui.modal.create', { moduleName: t('pages.dict.dictType') })
+    : $t('ui.modal.update', { moduleName: t('pages.dict.dictType') }),
 );
 // const isCreate = computed(() => data.value?.create);
 
@@ -33,7 +33,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'typeName',
-      label: $t('page.dict.typeName'),
+      label: t('pages.dict.typeName'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -43,7 +43,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'typeCode',
-      label: $t('page.dict.typeCode'),
+      label: t('pages.dict.typeCode'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,

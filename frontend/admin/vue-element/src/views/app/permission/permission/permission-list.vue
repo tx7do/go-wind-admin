@@ -31,7 +31,7 @@ const formOptions: VbenFormProps = {
     {
       component: "Input",
       fieldName: "name",
-      label: $t("page.permission.name"),
+      label: t("pages.permission.name"),
       componentProps: {
         placeholder: $t("ui.placeholder.input"),
         allowClear: true,
@@ -40,7 +40,7 @@ const formOptions: VbenFormProps = {
     {
       component: "Input",
       fieldName: "code",
-      label: $t("page.permission.code"),
+      label: t("pages.permission.code"),
       componentProps: {
         placeholder: $t("ui.placeholder.input"),
         allowClear: true,
@@ -99,18 +99,18 @@ const gridOptions: VxeGridProps<Permission> = {
 
   columns: [
     {
-      title: $t("page.permission.name"),
+      title: t("pages.permission.name"),
       field: "name",
       fixed: "left",
       align: "left",
     },
     {
-      title: $t("page.permission.code"),
+      title: t("pages.permission.code"),
       field: "code",
       fixed: "left",
       align: "left",
     },
-    { title: $t("page.permission.groupName"), field: "groupName" },
+    { title: t("pages.permission.groupName"), field: "groupName" },
     {
       title: $t("ui.table.status"),
       field: "status",
@@ -215,20 +215,20 @@ watch(
   <Grid :table-title="$t('menu.permission.permission')">
     <template #toolbar-tools>
       <a-button class="mr-2" type="primary" @click="handleCreate">
-        {{ $t("page.permission.button.create") }}
+        {{ t("pages.permission.button.create") }}
       </a-button>
       <a-popconfirm
         :cancel-text="$t('ui.button.cancel')"
         :ok-text="$t('ui.button.ok')"
         :title="
           $t('ui.text.do_you_want_sync_permissions', {
-            moduleName: $t('page.permission.moduleName'),
+            moduleName: t('pages.permission.moduleName'),
           })
         "
         @confirm="() => handleSyncPermissions()"
       >
         <a-button type="primary" danger class="mr-2">
-          {{ $t("page.permission.button.syncPermissions") }}
+          {{ t("pages.permission.button.syncPermissions") }}
         </a-button>
       </a-popconfirm>
     </template>
@@ -244,7 +244,7 @@ watch(
         :ok-text="$t('ui.button.ok')"
         :title="
           $t('ui.text.do_you_want_delete', {
-            moduleName: $t('page.permission.moduleName'),
+            moduleName: t('pages.permission.moduleName'),
           })
         "
         @confirm="handleDelete(row)"

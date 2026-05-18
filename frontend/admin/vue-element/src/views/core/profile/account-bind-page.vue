@@ -156,7 +156,7 @@ const accountBindList: AccountBindItem[] = [
 </script>
 
 <template>
-  <Page :title="$t('page.user.profile.tab.accountBind')">
+  <Page :title="t('pages.user.profile.tab.accountBind')">
     <List>
       <template v-for="item in accountBindList" :key="item.key">
         <ListItem>

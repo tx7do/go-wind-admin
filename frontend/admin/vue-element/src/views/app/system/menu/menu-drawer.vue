@@ -31,8 +31,8 @@ const titleSuffix = reactive({ title: '' });
 
 const getTitle = computed(() =>
   data.value?.create
-    ? $t('ui.modal.create', { moduleName: $t('page.menu.moduleName') })
-    : $t('ui.modal.update', { moduleName: $t('page.menu.moduleName') }),
+    ? $t('ui.modal.create', { moduleName: t('pages.menu.moduleName') })
+    : $t('ui.modal.update', { moduleName: t('pages.menu.moduleName') }),
 );
 
 // const isCreate = computed(() => data.value?.create);
@@ -49,7 +49,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'RadioGroup',
       fieldName: 'type',
-      label: $t('page.menu.type'),
+      label: t('pages.menu.type'),
       defaultValue: 'MENU',
       formItemClass: 'col-span-2 md:col-span-2',
       componentProps: {
@@ -62,7 +62,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'meta.title',
-      label: $t('page.menu.title'),
+      label: t('pages.menu.title'),
       rules: 'required',
       componentProps() {
         // 不需要处理多语言时就无需这么做
@@ -79,7 +79,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'ApiTreeSelect',
       fieldName: 'parentId',
-      label: $t('page.menu.parentId'),
+      label: t('pages.menu.parentId'),
       componentProps: {
         placeholder: $t('ui.placeholder.select'),
         class: 'w-full',
@@ -108,7 +108,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'InputNumber',
       fieldName: 'meta.order',
-      label: $t('page.menu.order'),
+      label: t('pages.menu.order'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -117,7 +117,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'IconPicker',
       fieldName: 'meta.icon',
-      label: $t('page.menu.icon'),
+      label: t('pages.menu.icon'),
       componentProps: {
         prefix: 'lucide',
       },
@@ -129,7 +129,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'path',
-      label: $t('page.menu.path'),
+      label: t('pages.menu.path'),
       rules: 'required',
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
@@ -143,7 +143,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'component',
-      label: $t('page.menu.component'),
+      label: t('pages.menu.component'),
       defaultValue: 'BasicLayout',
       rules: 'required',
       componentProps: {
@@ -158,7 +158,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Select',
       fieldName: 'meta.authority',
-      label: $t('page.menu.authority'),
+      label: t('pages.menu.authority'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -197,7 +197,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       hideLabel: true,
       renderComponentContent() {
         return {
-          default: () => $t('page.menu.advancedSettings'),
+          default: () => t('pages.menu.advancedSettings'),
         };
       },
     },
@@ -213,7 +213,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       },
       renderComponentContent() {
         return {
-          default: () => $t('page.menu.keepAlive'),
+          default: () => t('pages.menu.keepAlive'),
         };
       },
     },
@@ -228,7 +228,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       },
       renderComponentContent() {
         return {
-          default: () => $t('page.menu.affixTab'),
+          default: () => t('pages.menu.affixTab'),
         };
       },
     },
@@ -243,7 +243,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       },
       renderComponentContent() {
         return {
-          default: () => $t('page.menu.hideInMenu'),
+          default: () => t('pages.menu.hideInMenu'),
         };
       },
     },
@@ -258,7 +258,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       },
       renderComponentContent() {
         return {
-          default: () => $t('page.menu.hideChildrenInMenu'),
+          default: () => t('pages.menu.hideChildrenInMenu'),
         };
       },
     },
@@ -273,7 +273,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       },
       renderComponentContent() {
         return {
-          default: () => $t('page.menu.hideInBreadcrumb'),
+          default: () => t('pages.menu.hideInBreadcrumb'),
         };
       },
     },
@@ -288,7 +288,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       },
       renderComponentContent() {
         return {
-          default: () => $t('page.menu.hideInTab'),
+          default: () => t('pages.menu.hideInTab'),
         };
       },
     },

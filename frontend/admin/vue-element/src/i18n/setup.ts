@@ -52,8 +52,19 @@ async function loadLocaleMessages(lang: SupportedLanguagesType) {
   const message = await localesMap[langDir]?.();
 
   if (message?.default) {
+    // 调试：打印加载的消息结构
+    console.log("[i18n] Loaded messages for", lang, ":", Object.keys(message.default));
+    console.log(
+      "[i18n] routes keys:",
+      message.default.routes ? Object.keys(message.default.routes) : "not found"
+    );
     // 合并所有 JSON 文件的翻译内容
     i18n.global.mergeLocaleMessage(lang, message.default);
+    // 验证合并后的结果
+    console.log(
+      "[i18n] After merge, te('routes.dashboard.title'):",
+      i18n.global.te("routes.dashboard.title")
+    );
   }
 
   const mergeMessage = await loadMessages(lang);
@@ -65,10 +76,12 @@ async function loadLocaleMessages(lang: SupportedLanguagesType) {
 /**
  * 翻译路由标题
  * 用于面包屑、侧边栏、标签页等场景
+ * @param title 翻译键（如 "routes.dashboard.title"）
  */
 function translateRouteTitle(title: string): string {
-  const key = `route.${title}`;
-  return i18n.global.te(key) ? i18n.global.t(key) : title;
+  if (!title) return "";
+  // 直接尝试翻译，如果不存在则返回原文
+  return i18n.global.te(title) ? i18n.global.t(title) : title;
 }
 
 export {

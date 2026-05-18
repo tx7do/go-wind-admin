@@ -1,8 +1,5 @@
 import type { RouteRecordRaw } from "vue-router";
 import { Layout } from "@/layouts";
-import { i18n } from "@/i18n/setup";
-
-const t = i18n.global.t;
 
 const log: RouteRecordRaw[] = [
   {
@@ -13,7 +10,7 @@ const log: RouteRecordRaw[] = [
     meta: {
       order: 2004,
       icon: "lucide:logs",
-      title: t("menu.log.moduleName"),
+      title: "routes.log.moduleName",
       keepAlive: true,
       authority: ["sys:platform_admin"],
     },
@@ -23,7 +20,7 @@ const log: RouteRecordRaw[] = [
         name: "LoginAuditLog",
         meta: {
           icon: "lucide:user-lock",
-          title: t("menu.log.loginAuditLog"),
+          title: "routes.log.loginAuditLog",
           authority: ["sys:platform_admin"],
         },
         component: () => import("@/views/app/log/login_audit_log/index.vue"),
@@ -34,7 +31,7 @@ const log: RouteRecordRaw[] = [
         name: "ApiAuditLog",
         meta: {
           icon: "lucide:file-clock",
-          title: t("menu.log.apiAuditLog"),
+          title: "routes.log.apiAuditLog",
           authority: ["sys:platform_admin"],
         },
         component: () => import("@/views/app/log/api_audit_log/index.vue"),
@@ -45,7 +42,7 @@ const log: RouteRecordRaw[] = [
         name: "OperationAuditLog",
         meta: {
           icon: "lucide:shield-ellipsis",
-          title: t("menu.log.operationAuditLog"),
+          title: "routes.log.operationAuditLog",
           authority: ["sys:platform_admin"],
         },
         component: () => import("@/views/app/log/operation_audit_log/index.vue"),
@@ -56,7 +53,7 @@ const log: RouteRecordRaw[] = [
         name: "DataAccessAuditLog",
         meta: {
           icon: "lucide:shield-check",
-          title: t("menu.log.dataAccessAuditLog"),
+          title: "routes.log.dataAccessAuditLog",
           authority: ["sys:platform_admin"],
         },
         component: () => import("@/views/app/log/data_access_audit_log/index.vue"),
@@ -67,7 +64,7 @@ const log: RouteRecordRaw[] = [
         name: "PermissionAuditLog",
         meta: {
           icon: "lucide:shield-alert",
-          title: t("menu.log.permissionAuditLog"),
+          title: "routes.log.permissionAuditLog",
           authority: ["sys:platform_admin"],
         },
         component: () => import("@/views/app/log/permission_audit_log/index.vue"),

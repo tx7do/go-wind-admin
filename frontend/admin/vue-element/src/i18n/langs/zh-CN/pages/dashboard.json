@@ -1,1 +1,18 @@
-{}
+{
+  "title": "控制台",
+  "analytics": "分析页",
+  "currentUserCount": "当前用户数",
+  "totalUserCount": "总用户数",
+  "currentAccessCount": "当前访问量",
+  "totalAccessCount": "总访问量",
+  "currentDownloadCount": "当前下载数",
+  "totalDownloadCount": "总下载数",
+  "currentUsageCount": "当前使用量",
+  "totalUsageCount": "总使用量",
+  "trafficTrend": "流量趋势",
+  "monthAccessCount": "月度访问量",
+  "accessCount": "访问量",
+  "accessSource": "访问来源",
+  "salesDistribution": "销售分布",
+  "month": "月"
+}

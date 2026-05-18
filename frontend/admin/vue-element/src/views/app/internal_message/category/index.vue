@@ -32,7 +32,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'name',
-      label: $t('page.internalMessageCategory.name'),
+      label: t('pages.internalMessageCategory.name'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -41,7 +41,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'code',
-      label: $t('page.internalMessageCategory.code'),
+      label: t('pages.internalMessageCategory.code'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -84,11 +84,11 @@ const gridOptions: VxeGridProps<InternalMessageCategory> = {
 
   columns: [
     {
-      title: $t('page.internalMessageCategory.name'),
+      title: t('pages.internalMessageCategory.name'),
       field: 'name',
     },
     {
-      title: $t('page.internalMessageCategory.code'),
+      title: t('pages.internalMessageCategory.code'),
       field: 'code',
     },
     { title: $t('ui.table.sortOrder'), field: 'sortOrder', width: 70 },
@@ -177,7 +177,7 @@ async function handleDelete(row: any) {
     <Grid :table-title="$t('menu.internalMessage.internalMessageCategory')">
       <template #toolbar-tools>
         <a-button class="mr-2" type="primary" @click="handleCreate">
-          {{ $t('page.internalMessageCategory.button.create') }}
+          {{ t('pages.internalMessageCategory.button.create') }}
         </a-button>
       </template>
       <template #isEnabled="{ row }">
@@ -196,7 +196,7 @@ async function handleDelete(row: any) {
           :ok-text="$t('ui.button.ok')"
           :title="
             $t('ui.text.do_you_want_delete', {
-              moduleName: $t('page.internalMessageCategory.moduleName'),
+              moduleName: t('pages.internalMessageCategory.moduleName'),
             })
           "
           @confirm="handleDelete(row)"

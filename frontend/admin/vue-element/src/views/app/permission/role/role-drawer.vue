@@ -26,8 +26,8 @@ const groups = ref<PermissionGroup[]>([]);
 
 const getTitle = computed(() =>
   data.value?.create
-    ? $t("ui.modal.create", { moduleName: $t("page.role.moduleName") })
-    : $t("ui.modal.update", { moduleName: $t("page.role.moduleName") })
+    ? $t("ui.modal.create", { moduleName: t("pages.role.moduleName") })
+    : $t("ui.modal.update", { moduleName: t("pages.role.moduleName") })
 );
 // const isCreate = computed(() => data.value?.create);
 
@@ -44,7 +44,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: "Input",
       fieldName: "name",
-      label: $t("page.role.name"),
+      label: t("pages.role.name"),
       componentProps: {
         placeholder: $t("ui.placeholder.input"),
         allowClear: true,
@@ -54,7 +54,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: "Input",
       fieldName: "code",
-      label: $t("page.role.code"),
+      label: t("pages.role.code"),
       componentProps: {
         placeholder: $t("ui.placeholder.input"),
         allowClear: true,
@@ -98,7 +98,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
       component: "ApiTree",
       fieldName: "permissions",
       componentProps: {
-        title: $t("page.role.permissions"),
+        title: t("pages.role.permissions"),
         showSearch: true,
         treeDefaultExpandAll: false,
         loadingSlot: "suffixIcon",

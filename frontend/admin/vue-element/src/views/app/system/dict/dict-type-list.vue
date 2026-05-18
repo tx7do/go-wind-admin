@@ -30,7 +30,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'type_code',
-      label: $t('page.dict.typeCode'),
+      label: t('pages.dict.typeCode'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -71,14 +71,14 @@ const gridOptions: VxeGridProps<DictType> = {
 
   columns: [
     {
-      title: $t('page.dict.typeName'),
+      title: t('pages.dict.typeName'),
       field: 'typeName',
       fixed: 'left',
       align: 'left',
       minWidth: 150,
     },
     {
-      title: $t('page.dict.typeCode'),
+      title: t('pages.dict.typeCode'),
       field: 'typeCode',
       align: 'left',
       minWidth: 150,
@@ -169,10 +169,10 @@ async function handleDelete(row: any) {
 </script>
 
 <template>
-  <Grid :table-title="$t('page.dict.dictTypeList')">
+  <Grid :table-title="t('pages.dict.dictTypeList')">
     <template #toolbar-tools>
       <a-button type="primary" @click="handleCreate">
-        {{ $t('page.dict.button.create') }}
+        {{ t('pages.dict.button.create') }}
       </a-button>
     </template>
     <template #isEnabled="{ row }">
@@ -191,7 +191,7 @@ async function handleDelete(row: any) {
         :ok-text="$t('ui.button.ok')"
         :title="
           $t('ui.text.do_you_want_delete', {
-            moduleName: $t('page.dict.moduleName'),
+            moduleName: t('pages.dict.moduleName'),
           })
         "
         @confirm="handleDelete(row)"

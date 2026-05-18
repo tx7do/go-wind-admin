@@ -32,7 +32,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'languageName',
-      label: $t('page.language.languageName'),
+      label: t('pages.language.languageName'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -41,7 +41,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'languageCode',
-      label: $t('page.language.languageCode'),
+      label: t('pages.language.languageCode'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -84,29 +84,29 @@ const gridOptions: VxeGridProps<dictservicev1_Language> = {
 
   columns: [
     {
-      title: $t('page.language.nativeName'),
+      title: t('pages.language.nativeName'),
       field: 'nativeName',
       fixed: 'left',
       minWidth: 120,
     },
     {
-      title: $t('page.language.languageName'),
+      title: t('pages.language.languageName'),
       field: 'languageName',
       minWidth: 120,
     },
     {
-      title: $t('page.language.languageCode'),
+      title: t('pages.language.languageCode'),
       field: 'languageCode',
       minWidth: 120,
     },
     {
-      title: $t('page.language.isEnabled'),
+      title: t('pages.language.isEnabled'),
       field: 'isEnabled',
       slots: { default: 'isEnabled' },
       minWidth: 50,
     },
     {
-      title: $t('page.language.isDefault'),
+      title: t('pages.language.isDefault'),
       field: 'isDefault',
       slots: { default: 'isDefault' },
       minWidth: 50,
@@ -193,7 +193,7 @@ async function handleDelete(row: any) {
     <Grid :table-title="$t('menu.system.language')">
       <template #toolbar-tools>
         <a-button type="primary" class="mr-2" @click="handleCreate">
-          {{ $t('page.language.button.create') }}
+          {{ t('pages.language.button.create') }}
         </a-button>
       </template>
       <template #isEnabled="{ row }">
@@ -217,7 +217,7 @@ async function handleDelete(row: any) {
           :ok-text="$t('ui.button.ok')"
           :title="
             $t('ui.text.do_you_want_delete', {
-              moduleName: $t('page.language.moduleName'),
+              moduleName: t('pages.language.moduleName'),
             })
           "
           @confirm="handleDelete(row)"

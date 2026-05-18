@@ -8,7 +8,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { useLayout } from "./useLayout";
-import { LayoutMode } from "@/constants";
 
 import LeftLayout from "./LeftLayout.vue";
 import TopLayout from "./TopLayout.vue";
@@ -25,13 +24,13 @@ const settingsVisible = ref(false);
 provide("settingsVisible", settingsVisible);
 
 const currentLayoutComponent = computed(() => {
-  const override = route.meta?.layout as LayoutMode | undefined;
+  const override = route.meta?.layout as LayoutType | undefined;
   const layout = override ?? currentLayout.value;
 
   switch (layout) {
-    case LayoutMode.TOP:
+    case "header-nav":
       return TopLayout;
-    case LayoutMode.MIX:
+    case "mixed-nav":
       return MixLayout;
     default:
       return LeftLayout;

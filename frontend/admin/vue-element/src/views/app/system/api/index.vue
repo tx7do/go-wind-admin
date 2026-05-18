@@ -28,7 +28,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'method',
-      label: $t('page.api.method'),
+      label: t('pages.api.method'),
       componentProps: {
         options: methodList,
         placeholder: $t('ui.placeholder.select'),
@@ -41,7 +41,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'module',
-      label: $t('page.api.module'),
+      label: t('pages.api.module'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -50,7 +50,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'path',
-      label: $t('page.api.path'),
+      label: t('pages.api.path'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -95,11 +95,11 @@ const gridOptions: VxeGridProps<Api> = {
 
   columns: [
     { title: $t('ui.table.description'), field: 'description', align: 'left' },
-    { title: $t('page.api.path'), field: 'path', align: 'left' },
-    { title: $t('page.api.method'), field: 'method', width: 80 },
-    { title: $t('page.api.module'), field: 'module' },
+    { title: t('pages.api.path'), field: 'path', align: 'left' },
+    { title: t('pages.api.method'), field: 'method', width: 80 },
+    { title: t('pages.api.module'), field: 'module' },
     {
-      title: $t('page.api.moduleDescription'),
+      title: t('pages.api.moduleDescription'),
       field: 'moduleDescription',
     },
     {
@@ -197,20 +197,20 @@ async function handleSync() {
     <Grid :table-title="$t('menu.system.api')">
       <template #toolbar-tools>
         <a-button type="primary" class="mr-2" @click="handleCreate">
-          {{ $t('page.api.button.create') }}
+          {{ t('pages.api.button.create') }}
         </a-button>
         <a-popconfirm
           :cancel-text="$t('ui.button.cancel')"
           :ok-text="$t('ui.button.ok')"
           :title="
             $t('ui.text.do_you_want_sync_permissions', {
-              moduleName: $t('page.api.moduleName'),
+              moduleName: t('pages.api.moduleName'),
             })
           "
           @confirm="() => handleSync()"
         >
           <a-button type="primary" danger class="mr-2">
-            {{ $t('page.api.button.sync') }}
+            {{ t('pages.api.button.sync') }}
           </a-button>
         </a-popconfirm>
       </template>
@@ -225,7 +225,7 @@ async function handleSync() {
           :ok-text="$t('ui.button.ok')"
           :title="
             $t('ui.text.do_you_want_delete', {
-              moduleName: $t('page.api.moduleName'),
+              moduleName: t('pages.api.moduleName'),
             })
           "
           @confirm="handleDelete(row)"

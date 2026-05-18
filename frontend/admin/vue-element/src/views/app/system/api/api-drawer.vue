@@ -15,8 +15,8 @@ const data = ref();
 
 const getTitle = computed(() =>
   data.value?.create
-    ? $t('ui.modal.create', { moduleName: $t('page.api.moduleName') })
-    : $t('ui.modal.update', { moduleName: $t('page.api.moduleName') }),
+    ? $t('ui.modal.create', { moduleName: t('pages.api.moduleName') })
+    : $t('ui.modal.update', { moduleName: t('pages.api.moduleName') }),
 );
 // const isCreate = computed(() => data.value?.create);
 
@@ -42,7 +42,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'module',
-      label: $t('page.api.module'),
+      label: t('pages.api.module'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -51,7 +51,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'moduleDescription',
-      label: $t('page.api.moduleDescription'),
+      label: t('pages.api.moduleDescription'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -60,7 +60,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'path',
-      label: $t('page.api.path'),
+      label: t('pages.api.path'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -70,7 +70,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Select',
       fieldName: 'method',
-      label: $t('page.api.method'),
+      label: t('pages.api.method'),
       componentProps: {
         options: methodList,
         placeholder: $t('ui.placeholder.select'),

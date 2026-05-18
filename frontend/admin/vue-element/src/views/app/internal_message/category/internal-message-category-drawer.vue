@@ -16,10 +16,10 @@ const data = ref();
 const getTitle = computed(() =>
   data.value?.create
     ? $t('ui.modal.create', {
-        moduleName: $t('page.internalMessageCategory.moduleName'),
+        moduleName: t('pages.internalMessageCategory.moduleName'),
       })
     : $t('ui.modal.update', {
-        moduleName: $t('page.internalMessageCategory.moduleName'),
+        moduleName: t('pages.internalMessageCategory.moduleName'),
       }),
 );
 // const isCreate = computed(() => data.value?.create);
@@ -37,7 +37,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'name',
-      label: $t('page.internalMessageCategory.name'),
+      label: t('pages.internalMessageCategory.name'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -47,7 +47,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
     {
       component: 'Input',
       fieldName: 'code',
-      label: $t('page.internalMessageCategory.code'),
+      label: t('pages.internalMessageCategory.code'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,

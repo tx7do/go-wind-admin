@@ -30,7 +30,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'targetType',
-      label: $t('page.permissionAuditLog.targetType'),
+      label: t('pages.permissionAuditLog.targetType'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -39,7 +39,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'operatorName',
-      label: $t('page.permissionAuditLog.operatorName'),
+      label: t('pages.permissionAuditLog.operatorName'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -48,7 +48,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Select',
       fieldName: 'action',
-      label: $t('page.permissionAuditLog.action'),
+      label: t('pages.permissionAuditLog.action'),
       componentProps: {
         options: permissionAuditLogActionList,
         placeholder: $t('ui.placeholder.select'),
@@ -61,7 +61,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'Input',
       fieldName: 'ipAddress',
-      label: $t('page.permissionAuditLog.ipAddress'),
+      label: t('pages.permissionAuditLog.ipAddress'),
       componentProps: {
         placeholder: $t('ui.placeholder.input'),
         allowClear: true,
@@ -70,7 +70,7 @@ const formOptions: VbenFormProps = {
     {
       component: 'RangePicker',
       fieldName: 'createdAt',
-      label: $t('page.permissionAuditLog.createdAt'),
+      label: t('pages.permissionAuditLog.createdAt'),
       componentProps: {
         showTime: true,
         allowClear: true,
@@ -172,31 +172,31 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
 
   columns: [
     {
-      title: $t('page.permissionAuditLog.createdAt'),
+      title: t('pages.permissionAuditLog.createdAt'),
       field: 'createdAt',
       formatter: 'formatDateTime',
       width: 140,
     },
     {
-      title: $t('page.permissionAuditLog.action'),
+      title: t('pages.permissionAuditLog.action'),
       field: 'action',
       slots: { default: 'action' },
       width: 80,
     },
-    { title: $t('page.permissionAuditLog.targetType'), field: 'targetType' },
-    { title: $t('page.permissionAuditLog.targetName'), field: 'targetName' },
-    { title: $t('page.permissionAuditLog.reason'), field: 'reason' },
+    { title: t('pages.permissionAuditLog.targetType'), field: 'targetType' },
+    { title: t('pages.permissionAuditLog.targetName'), field: 'targetName' },
+    { title: t('pages.permissionAuditLog.reason'), field: 'reason' },
     {
-      title: $t('page.permissionAuditLog.operatorName'),
+      title: t('pages.permissionAuditLog.operatorName'),
       field: 'deviceInfo.operatorName',
     },
     {
-      title: $t('page.permissionAuditLog.geoLocation'),
+      title: t('pages.permissionAuditLog.geoLocation'),
       field: 'geoLocation',
       slots: { default: 'geoLocation' },
     },
     {
-      title: $t('page.permissionAuditLog.ipAddress'),
+      title: t('pages.permissionAuditLog.ipAddress'),
       field: 'ipAddress',
       width: 140,
     },
