@@ -2,6 +2,7 @@ import { cloneDeep, mapTree } from "@/utils";
 import { generateMenus } from "@/router/generate-menus";
 import { generateRoutesByBackend } from "@/router/generate-routes-backend";
 import { generateRoutesByFrontend } from "@/router/generate-routes-frontend";
+import type { RouteRecordRaw } from "vue-router";
 
 async function generateAccessible(mode: AccessModeType, options: GenerateMenuAndRoutesOptions) {
   const { router } = options;
@@ -15,10 +16,23 @@ async function generateAccessible(mode: AccessModeType, options: GenerateMenuAnd
     router.addRoute(route);
   });
 
-  // 生成菜单
-  const accessibleMenus = await generateMenus(accessibleRoutes, options.router);
+  // 递归对路由树进行排序（按 meta.order 升序）
+  function sortRoutes(routes: RouteRecordRaw[]): RouteRecordRaw[] {
+    return routes
+      .map((route) => ({
+        ...route,
+        children: route.children?.length ? sortRoutes(route.children) : [],
+      }))
+      .sort((a, b) => ((a.meta?.order as number) ?? 999) - ((b.meta?.order as number) ?? 999));
+  }
 
-  return { accessibleMenus, accessibleRoutes };
+  const sortedRoutes = sortRoutes(accessibleRoutes);
+
+  // 生成菜单
+  const accessibleMenus = await generateMenus(sortedRoutes, options.router);
+
+  // 将排序后的路由存入 Store（侧边栏渲染使用的是 accessRoutes）
+  return { accessibleMenus, accessibleRoutes: sortedRoutes };
 }
 
 /**

@@ -1,10 +1,10 @@
 {
   "dashboard": {
-    "title": "控制台",
+    "title": "概览",
     "analytics": "分析页"
   },
   "opm": {
-    "moduleName": "组织人事管理",
+    "moduleName": "组织人员",
     "orgUnit": "组织架构",
     "position": "职位管理",
     "user": "用户管理",
@@ -12,21 +12,21 @@
   },
   "permission": {
     "moduleName": "权限管理",
-    "permission": "权限点管理",
+    "permission": "权限管理",
     "role": "角色管理"
   },
   "internalMessage": {
-    "moduleName": "内部消息管理",
-    "internalMessage": "消息列表",
+    "moduleName": "站内消息",
+    "internalMessage": "消息管理",
     "internalMessageCategory": "消息分类"
   },
   "log": {
-    "moduleName": "日志审计管理",
-    "loginAuditLog": "登录审计日志",
-    "apiAuditLog": "API审计日志",
-    "operationAuditLog": "操作审计日志",
-    "dataAccessAuditLog": "数据访问审计日志",
-    "permissionAuditLog": "权限审计日志"
+    "moduleName": "日志审计",
+    "loginAuditLog": "登录日志",
+    "apiAuditLog": "API日志",
+    "operationAuditLog": "操作日志",
+    "dataAccessAuditLog": "数据日志",
+    "permissionAuditLog": "权限日志"
   },
   "system": {
     "moduleName": "系统管理",
@@ -40,7 +40,7 @@
   },
   "tenant": {
     "moduleName": "租户管理",
-    "member": "租户成员"
+    "member": "租户列表"
   },
   "profile": {
     "settings": "个人中心",

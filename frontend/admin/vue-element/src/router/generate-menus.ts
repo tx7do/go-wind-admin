@@ -64,8 +64,21 @@ async function generateMenus(routes: RouteRecordRaw[], router: Router): Promise<
     };
   });
 
-  // 对菜单进行排序
-  menus = menus.sort((a, b) => (a.order || 999) - (b.order || 999));
+  /**
+   * 递归对菜单树进行排序
+   */
+  function sortMenus(menuList: MenuRecordRaw[]): MenuRecordRaw[] {
+    return menuList
+      .map((menu) => ({
+        ...menu,
+        // 递归排序子菜单
+        children: menu.children?.length ? sortMenus(menu.children) : [],
+      }))
+      .sort((a, b) => (a.order ?? 999) - (b.order ?? 999));
+  }
+
+  // 对菜单树进行递归排序
+  menus = sortMenus(menus);
 
   return filterTree<MenuRecordRaw>(menus, (menu) => {
     return !!menu.show;
