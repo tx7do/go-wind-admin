@@ -39,6 +39,11 @@ type Request = {
 
 type Paging = { page?: number; pageSize?: number } | undefined;
 
+type PagingResult<T> = {
+  items: T[];
+  total: number;
+};
+
 export type {
   HttpResponse,
   MakeErrorMessageFn,
@@ -49,4 +54,5 @@ export type {
   ResponseInterceptorConfig,
   Paging,
   Request,
+  PagingResult,
 };

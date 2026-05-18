@@ -1,0 +1,11 @@
+{
+  "moduleName": "Tenant",
+  "name": "Tenant Name",
+  "code": "Tenant Code",
+  "type": "Tenant Type",
+  "auditStatus": "Audit Status",
+  "adminUserName": "Admin Username",
+  "status": "Status",
+  "remark": "Remark",
+  "createdAt": "Created At"
+}

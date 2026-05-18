@@ -8,15 +8,15 @@
   >
     <ElForm :model="formData" label-width="120px">
       <!-- 基本信息 -->
-      <ElFormItem :label="$t('routes.tenant.name')" required>
+      <ElFormItem :label="$t('pages.tenant.name')" required>
         <ElInput v-model="formData.name" :placeholder="$t('ui.placeholder.input')" clearable />
       </ElFormItem>
 
-      <ElFormItem :label="$t('routes.tenant.code')" required>
+      <ElFormItem :label="$t('pages.tenant.code')" required>
         <ElInput v-model="formData.code" :placeholder="$t('ui.placeholder.input')" clearable />
       </ElFormItem>
 
-      <ElFormItem :label="$t('routes.tenant.type')" required>
+      <ElFormItem :label="$t('pages.tenant.type')" required>
         <ElSelect
           v-model="formData.type"
           :placeholder="$t('ui.placeholder.select')"
@@ -32,7 +32,7 @@
         </ElSelect>
       </ElFormItem>
 
-      <ElFormItem :label="$t('routes.tenant.auditStatus')" required>
+      <ElFormItem :label="$t('pages.tenant.auditStatus')" required>
         <ElSelect
           v-model="formData.auditStatus"
           :placeholder="$t('ui.placeholder.select')"
@@ -74,9 +74,9 @@
       </ElFormItem>
 
       <!-- 管理员设置（仅创建时显示） -->
-      <ElDivider v-if="isCreate">{{ $t("routes.tenant.adminSetting") }}</ElDivider>
+      <ElDivider v-if="isCreate">{{ $t("pages.tenant.adminSetting") }}</ElDivider>
 
-      <ElFormItem v-if="isCreate" :label="$t('routes.tenant.adminUserName')" required>
+      <ElFormItem v-if="isCreate" :label="$t('pages.tenant.adminUserName')" required>
         <ElInput
           v-model="formData.user.username"
           :placeholder="$t('ui.placeholder.input')"
@@ -84,7 +84,7 @@
         />
       </ElFormItem>
 
-      <ElFormItem v-if="isCreate" :label="$t('routes.tenant.adminPassword')" required>
+      <ElFormItem v-if="isCreate" :label="$t('pages.tenant.adminPassword')" required>
         <ElInput
           v-model="formData.password"
           type="password"
@@ -93,7 +93,7 @@
         />
       </ElFormItem>
 
-      <ElFormItem v-if="isCreate" :label="$t('routes.tenant.adminPasswordConfirm')" required>
+      <ElFormItem v-if="isCreate" :label="$t('pages.tenant.adminPasswordConfirm')" required>
         <ElInput
           v-model="formData.passwordConfirm"
           type="password"
@@ -102,7 +102,7 @@
         />
       </ElFormItem>
 
-      <ElFormItem v-if="isCreate" :label="$t('routes.tenant.adminMobile')" required>
+      <ElFormItem v-if="isCreate" :label="$t('pages.tenant.adminMobile')" required>
         <ElInput
           v-model="formData.user.mobile"
           :placeholder="$t('ui.placeholder.input')"
@@ -110,7 +110,7 @@
         />
       </ElFormItem>
 
-      <ElFormItem v-if="isCreate" :label="$t('routes.tenant.adminEmail')" required>
+      <ElFormItem v-if="isCreate" :label="$t('pages.tenant.adminEmail')" required>
         <ElInput
           v-model="formData.user.email"
           :placeholder="$t('ui.placeholder.input')"
@@ -181,8 +181,8 @@ const formData = ref({
 // 弹窗标题
 const title = computed(() =>
   isCreate.value
-    ? $t("ui.modal.create", { moduleName: $t("routes.tenant.moduleName") })
-    : $t("ui.modal.update", { moduleName: $t("routes.tenant.moduleName") })
+    ? $t("ui.modal.create", { moduleName: $t("pages.tenant.moduleName") })
+    : $t("ui.modal.update", { moduleName: $t("pages.tenant.moduleName") })
 );
 
 // 打开弹窗

@@ -1,10 +1,12 @@
+import type { CSSProperties } from "vue";
+
 import type { DialogProps, DrawerProps, FormItemRule, PaginationProps } from "element-plus";
 import type { FormProps, TableProps, ColProps, ButtonProps, CardProps } from "element-plus";
+
 import type PageContent from "./PageContent.vue";
 import type PageModal from "./PageModal.vue";
 import type PageSearch from "./PageSearch.vue";
-import type { CSSProperties } from "vue";
-import type { PageResult } from "@/types/api/common";
+import { PagingResult } from "@/core/transport/rest";
 
 export type PageSearchInstance = InstanceType<typeof PageSearch>;
 export type PageContentInstance = InstanceType<typeof PageContent>;
@@ -73,13 +75,13 @@ export interface IContentConfig<TQuery = any, TItem = any> {
         >
       >;
   // 列表的网络请求函数(需返回promise)
-  indexAction: (queryParams: TQuery) => Promise<PageResult<TItem> | TItem[]>;
+  indexAction: (queryParams: TQuery) => Promise<PagingResult<TItem> | TItem[]>;
   // 默认的分页相关的请求参数
   request?: {
     pageName: string;
     limitName: string;
   };
-  // 分页接口统一返回 PageResult { list, total }
+  // 分页接口统一返回 PagingResult { list, total }
   // 修改属性的网络请求函数(需返回promise)
   modifyAction?: (data: {
     [key: string]: any;

@@ -91,13 +91,7 @@ export default [
         ...autoImportGlobals, // 自动导入的 API 函数
         ...elementPlusComponents, // Element Plus 组件
         // 全局类型定义，解决 TypeScript 中定义但 ESLint 不识别的问题
-        PageQuery: "readonly",
-        PageResult: "readonly",
-        OptionType: "readonly",
-        ApiResponse: "readonly",
-        ExcelResult: "readonly",
         TagView: "readonly",
-        AppSettings: "readonly",
         __APP_INFO__: "readonly",
       },
     },

@@ -48,7 +48,7 @@ import { ElTag, ElMessage, ElMessageBox } from "element-plus";
 import PageContent from "@/components/CURD/PageContent.vue";
 import PageSearch from "@/components/CURD/PageSearch.vue";
 import usePage from "@/components/CURD/usePage";
-import type { IOperateData } from "@/components/CURD/types";
+import type { IOperateData, ISearchConfig, IContentConfig } from "@/components/CURD/types";
 import TenantDrawer from "./tenant-drawer.vue";
 
 import {
@@ -74,123 +74,124 @@ const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
 const drawerRef = ref();
 
 // 搜索配置
-const searchConfig = {
+const searchConfig: ISearchConfig = {
   formItems: [
     {
       type: "input",
-      label: $t("routes.tenant.name"),
+      label: $t("pages.tenant.name"),
       prop: "name",
       attrs: {
-        placeholder: $t("ui.placeholder.input"),
+        placeholder: $t("common.placeholder.input"),
         clearable: true,
       },
     },
     {
       type: "input",
-      label: $t("routes.tenant.code"),
+      label: $t("pages.tenant.code"),
       prop: "code",
       attrs: {
-        placeholder: $t("ui.placeholder.input"),
+        placeholder: $t("common.placeholder.input"),
         clearable: true,
       },
     },
     {
       type: "select",
-      label: $t("routes.tenant.type"),
+      label: $t("pages.tenant.type"),
       prop: "type",
       attrs: {
-        placeholder: $t("ui.placeholder.select"),
+        placeholder: $t("common.placeholder.select"),
         clearable: true,
       },
-      options: tenantTypeList,
+      options: tenantTypeList.value,
     },
     {
       type: "select",
-      label: $t("routes.tenant.auditStatus"),
+      label: $t("pages.tenant.auditStatus"),
       prop: "auditStatus",
       attrs: {
-        placeholder: $t("ui.placeholder.select"),
+        placeholder: $t("common.placeholder.select"),
         clearable: true,
       },
-      options: tenantAuditStatusList,
+      options: tenantAuditStatusList.value,
     },
     {
       type: "select",
-      label: $t("ui.table.status"),
+      label: $t("common.table.status"),
       prop: "status",
       attrs: {
-        placeholder: $t("ui.placeholder.select"),
+        placeholder: $t("common.placeholder.select"),
         clearable: true,
       },
-      options: tenantStatusList,
+      options: tenantStatusList.value,
     },
   ],
 };
 
 // 表格配置
-const contentConfig = {
+const contentConfig: IContentConfig = {
   table: {
     border: true,
     stripe: false,
   },
-  indexAction: (query: any) => {
-    return tenantStore.listTenant(
+  indexAction: async (query: any) => {
+    const result = await tenantStore.listTenant(
       {
         page: query.page || 1,
         pageSize: query.pageSize || 10,
       },
       query
     );
+    // 转换数据格式：将 items 转换为 list
+    return {
+      items: result.items || [],
+      total: result.total || 0,
+    };
   },
-  props: {
-    list: "items",
-    total: "total",
-  },
-  columns: [
-    { type: "index", label: $t("ui.table.seq"), width: 60 },
-    { prop: "name", label: $t("routes.tenant.name"), minWidth: 120 },
-    { prop: "code", label: $t("routes.tenant.code"), minWidth: 120 },
-    { prop: "adminUserName", label: $t("routes.tenant.adminUserName"), minWidth: 120 },
+  cols: [
+    { type: "index", label: $t("common.table.seq"), width: 60 },
+    { prop: "name", label: $t("pages.tenant.name"), minWidth: 120 },
+    { prop: "code", label: $t("pages.tenant.code"), minWidth: 120 },
+    { prop: "adminUserName", label: $t("pages.tenant.adminUserName"), minWidth: 120 },
     {
       prop: "type",
-      label: $t("routes.tenant.type"),
+      label: $t("pages.tenant.type"),
       minWidth: 100,
       slotName: "type",
     },
     {
       prop: "auditStatus",
-      label: $t("routes.tenant.auditStatus"),
+      label: $t("pages.tenant.auditStatus"),
       minWidth: 100,
       slotName: "auditStatus",
     },
     {
       prop: "status",
-      label: $t("ui.table.status"),
+      label: $t("common.table.status"),
       minWidth: 100,
       slotName: "status",
     },
     {
       prop: "createdAt",
-      label: $t("ui.table.createdAt"),
+      label: $t("common.table.createdAt"),
       minWidth: 160,
       formatter: (row: any) => {
         if (!row.createdAt) return "";
         return new Date(row.createdAt).toLocaleString("zh-CN");
       },
     },
-    { prop: "remark", label: $t("ui.table.remark"), minWidth: 150 },
+    { prop: "remark", label: $t("common.table.remark"), minWidth: 150 },
     {
-      label: $t("ui.table.action"),
+      label: $t("common.table.action"),
       fixed: "right",
       width: 150,
       operat: [
         {
           name: "edit",
-          text: $t("ui.button.edit"),
+          text: $t("common.button.edit"),
         },
         {
           name: "delete",
-          text: $t("ui.button.delete"),
+          text: $t("common.button.delete"),
           attrs: {
             type: "danger",
           },
@@ -210,20 +211,20 @@ const handleOperateClick = (data: IOperateData) => {
   } else if (name === "delete") {
     // 删除
     ElMessageBox.confirm(
-      $t("ui.text.do_you_want_delete", { moduleName: $t("routes.tenant.moduleName") }),
-      $t("ui.title.confirm"),
+      $t("common.text.do_you_want_delete", { moduleName: $t("pages.tenant.moduleName") }),
+      $t("common.title.confirm"),
       {
-        confirmButtonText: $t("common.confirm"),
-        cancelButtonText: $t("common.cancel"),
+        confirmButtonText: $t("common.button.confirm"),
+        cancelButtonText: $t("common.button.cancel"),
         type: "warning",
       }
     ).then(async () => {
       try {
         await tenantStore.deleteTenant(row.id);
-        ElMessage.success($t("ui.notification.delete_success"));
+        ElMessage.success($t("common.notification.delete_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {
-        ElMessage.error($t("ui.notification.delete_failed"));
+        ElMessage.error($t("common.notification.delete_failed"));
       }
     });
   }

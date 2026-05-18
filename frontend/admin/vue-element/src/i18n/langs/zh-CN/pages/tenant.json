@@ -1,0 +1,11 @@
+{
+  "moduleName": "租户",
+  "name": "租户名称",
+  "code": "租户编码",
+  "type": "租户类型",
+  "auditStatus": "审核状态",
+  "adminUserName": "管理员用户名",
+  "status": "状态",
+  "remark": "备注",
+  "createdAt": "创建时间"
+}

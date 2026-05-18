@@ -55,5 +55,26 @@
     }
   },
   "backToHome": "Back to Home",
-  "refresh": "Refresh Page"
+  "refresh": "Refresh Page",
+  "table": {
+    "seq": "Seq",
+    "status": "Status",
+    "createdAt": "Created At",
+    "remark": "Remark",
+    "action": "Action"
+  },
+  "notification": {
+    "delete_success": "Delete successful",
+    "delete_failed": "Delete failed",
+    "update_success": "Update successful",
+    "update_failed": "Update failed",
+    "add_success": "Add successful",
+    "add_failed": "Add failed"
+  },
+  "title": {
+    "confirm": "Confirm"
+  },
+  "text": {
+    "do_you_want_delete": "Are you sure you want to delete this {moduleName}?"
+  }
 }

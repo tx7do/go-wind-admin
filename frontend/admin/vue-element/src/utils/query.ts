@@ -339,7 +339,10 @@ function formatAipValue(value: any): string {
  * @param orderBy
  */
 export function makeOrderBy(orderBy?: null | string[]): string | undefined {
-  if (orderBy === undefined || orderBy === null) {
+  if (orderBy === undefined) {
+    orderBy = ["-created_at"];
+  }
+  if (orderBy === null) {
     orderBy = ["-created_at"];
   }
   return JSON.stringify(orderBy) ?? undefined;

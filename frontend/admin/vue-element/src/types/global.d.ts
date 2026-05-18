@@ -5,7 +5,6 @@
  */
 declare global {
   type TagView = import("@/types/ui").TagView;
-  type AppSettings = import("@/types/ui").AppSettings;
 }
 
 export {};

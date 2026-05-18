@@ -427,8 +427,14 @@ const toolbarRightBtn = computed(() => {
 });
 
 // 表格操作工具栏
-const tableToolbar = config.value.cols[config.value.cols.length - 1].operat ?? ["edit", "delete"];
-const tableToolbarBtn = createToolbar(tableToolbar, { link: true, size: "small" });
+const tableToolbar = computed(() => {
+  const cols = config.value.cols;
+  if (!cols || cols.length === 0) return ["edit", "delete"];
+  return cols[cols.length - 1].operat ?? ["edit", "delete"];
+});
+const tableToolbarBtn = computed(() =>
+  createToolbar(tableToolbar.value, { link: true, size: "small" })
+);
 
 // 表格相关
 const cols = ref(
@@ -544,14 +550,24 @@ cols.value.forEach((item) => {
     fields.push(item.prop);
   }
 });
-const enum ExportsOriginEnum {
-  CURRENT = "current",
-  SELECTED = "selected",
-  REMOTE = "remote",
-}
+// 数据来源枚举（使用 const 对象而非 const enum，以便在模板中访问）
+const ExportsOriginEnum = {
+  CURRENT: "current",
+  SELECTED: "selected",
+  REMOTE: "remote",
+} as const;
+
+// 导出表单数据类型
+type ExportsOriginType = (typeof ExportsOriginEnum)[keyof typeof ExportsOriginEnum];
+
 const exportsModalVisible = ref(false);
 const exportsFormRef = ref<FormInstance>();
-const exportsFormData = reactive({
+const exportsFormData = reactive<{
+  filename: string;
+  sheetname: string;
+  fields: string[];
+  origin: ExportsOriginType;
+}>({
   filename: "",
   sheetname: "",
   fields,
@@ -884,7 +900,7 @@ function fetchPageData(formData: IObject = {}, isRestart = false) {
         pagination.total = (data as any)?.total ?? 0;
         pageData.value = (data as any)?.list ?? [];
       } else {
-        pageData.value = Array.isArray(data) ? data : (data?.list ?? (data as any)?.data ?? []);
+        pageData.value = Array.isArray(data) ? data : (data?.items ?? (data as any)?.data ?? []);
       }
     })
     .finally(() => {
