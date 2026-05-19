@@ -1,70 +1,70 @@
-<script lang="ts" setup>
-import { Page } from '@vben/common-ui';
-import { $t } from '@vben/locales';
+<template>
+  <div class="app-container h-full flex flex-1 flex-col">
+    <ElCard :bordered="false" class="profile-card">
+      <ElTabs v-model="activeTab" type="border-card" class="profile-tabs">
+        <ElTabPane v-for="item in settingList" :key="item.key" :label="item.name" :name="item.key">
+          <component :is="item.component" />
+        </ElTabPane>
+      </ElTabs>
+    </ElCard>
+  </div>
+</template>
 
-import AccountBindPage from './account-bind-page.vue';
-import BaseSettingPage from './base-setting-page.vue';
-import EditPasswordPage from './edit-password-page.vue';
-import MsgNotifyPage from './msg-notify-page.vue';
-import SecureSettingPage from './secure-setting-page.vue';
+<script lang="ts" setup>
+import { ref } from "vue";
+
+import BaseSettingPage from "./base-setting-page.vue";
+import EditPasswordPage from "./edit-password-page.vue";
+import AccountBindPage from "./account-bind-page.vue";
+import MsgNotifyPage from "./msg-notify-page.vue";
+import SecureSettingPage from "./secure-setting-page.vue";
+
+import { $t } from "@/i18n";
+
+const activeTab = ref("1");
 
 const settingList = [
   {
-    key: '1',
-    name: t('pages.user.profile.tab.basicSettings'),
+    key: "1",
+    name: $t("pages.user.profile.tab.basicSettings"),
     component: BaseSettingPage,
   },
   {
-    key: '2',
-    name: t('pages.user.profile.tab.editPassword'),
+    key: "2",
+    name: $t("pages.user.profile.tab.editPassword"),
     component: EditPasswordPage,
   },
   {
-    key: '3',
-    name: t('pages.user.profile.tab.securitySettings'),
+    key: "3",
+    name: $t("pages.user.profile.tab.securitySettings"),
     component: SecureSettingPage,
   },
   {
-    key: '4',
-    name: t('pages.user.profile.tab.accountBind'),
+    key: "4",
+    name: $t("pages.user.profile.tab.accountBind"),
     component: AccountBindPage,
   },
   {
-    key: '5',
-    name: t('pages.user.profile.tab.notification'),
+    key: "5",
+    name: $t("pages.user.profile.tab.notification"),
     component: MsgNotifyPage,
   },
 ];
 </script>
 
-<template>
-  <Page auto-content-height>
-    <a-card>
-      <a-tabs
-        tab-position="left"
-        :tab-bar-style="{ width: '220px' }"
-        class="edge-tabs"
-      >
-        <template v-for="item in settingList" :key="item.key">
-          <a-tab-pane :tab="item.name">
-            <component :is="item.component" />
-          </a-tab-pane>
-        </template>
-      </a-tabs>
-    </a-card>
-  </Page>
-</template>
-
-<style lang="less">
-.edge-tabs {
-  margin: 0;
+<style lang="scss" scoped>
+.app-container {
+  padding: 20px;
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
 }
 
-/* 使用 Vue scoped 的深度选择器，覆盖 Antd 的默认内边距/外边距 */
-.edge-tabs,
-::v-deep(.ant-tabs-content, .ant-tabs-content-holder, .ant-tabs-tabpane) {
-  padding: 0 !important;
-  margin: 0 !important;
-  box-sizing: border-box;
+.profile-card {
+  height: 100%;
+}
+
+.profile-tabs {
+  min-height: 600px;
 }
 </style>

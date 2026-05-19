@@ -1,45 +1,3 @@
-<script setup lang="ts">
-import { computed, ref } from 'vue';
-
-import { ElDescriptions, ElDescriptionsItem, ElAvatar, ElTag } from 'element-plus';
-import { formatDateTime } from '@/utils';
-import { $t } from '@/i18n';
-
-import { type identityservicev1_User as User } from '@/api/generated/admin/service/v1';
-import { genderToColor, genderToName, useUserListStore } from '@/stores';
-import { getCharColor, getRandomColor } from '@/utils/color';
-
-const props = defineProps({
-  userId: { type: Number, default: undefined },
-});
-
-const userListStore = useUserListStore();
-
-const data = ref<User>();
-
-// 获取首字母（默认用'?'）
-const getFirstChar = computed(() => {
-  if (!data.value?.username) return '?';
-  return data.value.username.slice(0, 1).toUpperCase();
-});
-
-// 根据首字母生成固定随机色
-const getAvatarColor = () => {
-  return getCharColor(getFirstChar.value);
-};
-
-/**
- * 重新加载用户信息
- */
-async function reload() {
-  if (props.userId) {
-    data.value = await userListStore.getUser(props.userId);
-  }
-}
-
-reload();
-</script>
-
 <template>
   <div class="basic-info-page">
     <!-- 基本信息卡片 -->
@@ -54,7 +12,7 @@ reload();
         >
           <!-- 头像加载失败/无头像时显示姓名首字母 -->
           <span class="avatar-placeholder">
-            {{ data?.username?.substring(0, 1) || '?' }}
+            {{ data?.username?.substring(0, 1) || "?" }}
           </span>
         </ElAvatar>
       </div>
@@ -133,7 +91,7 @@ reload();
           </ElTag>
         </ElDescriptionsItem>
         <ElDescriptionsItem :label="$t('common.table.createdAt')">
-          {{ formatDateTime(data?.createdAt ?? '') }}
+          {{ formatDateTime(data?.createdAt ?? "") }}
         </ElDescriptionsItem>
         <ElDescriptionsItem :label="$t('pages.user.detail.desc.lastLoginAt')">
           {{ data?.lastLoginAt }}
@@ -145,6 +103,48 @@ reload();
     </div>
   </div>
 </template>
+
+<script setup lang="ts">
+import { computed, ref } from "vue";
+
+import { ElDescriptions, ElDescriptionsItem, ElAvatar, ElTag } from "element-plus";
+import { formatDateTime } from "@/utils";
+import { $t } from "@/i18n";
+
+import { type identityservicev1_User as User } from "@/api/generated/admin/service/v1";
+import { genderToColor, genderToName, useUserListStore } from "@/stores";
+import { getCharColor, getRandomColor } from "@/utils/color";
+
+const props = defineProps({
+  userId: { type: Number, default: undefined },
+});
+
+const userListStore = useUserListStore();
+
+const data = ref<User>();
+
+// 获取首字母（默认用'?'）
+const getFirstChar = computed(() => {
+  if (!data.value?.username) return "?";
+  return data.value.username.slice(0, 1).toUpperCase();
+});
+
+// 根据首字母生成固定随机色
+const getAvatarColor = () => {
+  return getCharColor(getFirstChar.value);
+};
+
+/**
+ * 重新加载用户信息
+ */
+async function reload() {
+  if (props.userId) {
+    data.value = await userListStore.getUser(props.userId);
+  }
+}
+
+reload();
+</script>
 
 <style scoped>
 .basic-info-page {

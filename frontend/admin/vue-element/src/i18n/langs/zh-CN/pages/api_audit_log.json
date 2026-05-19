@@ -4,9 +4,9 @@
   "path": "请求路径",
   "httpMethod": "HTTP方法",
   "ipAddress": "IP地址",
-  "success": "是否成功",
-  "createdAt": "创建时间",
-  "latencyMs": "响应时间(ms)",
-  "platform": "平台信息",
+  "success": "请求结果",
+  "createdAt": "请求时间",
+  "latencyMs": "响应耗时（ms）",
+  "platform": "平台",
   "geoLocation": "地理位置"
 }

@@ -1,3 +1,57 @@
+<template>
+  <div class="user-detail-page">
+    <!-- 页面头部 -->
+    <div class="page-header">
+      <div class="header-left">
+        <ElButton type="text" @click="goBack">
+          <template #icon>
+            <ArrowLeft />
+          </template>
+        </ElButton>
+        <span class="page-title">{{ $t("pages.user.detail.title", { userId }) }}</span>
+      </div>
+      <div class="header-right">
+        <ElButton type="danger" @click="handleBanAccount">
+          {{ $t("pages.user.button.banAccount") }}
+        </ElButton>
+        <ElButton type="primary" @click="handleEditPassword">
+          {{ $t("pages.user.button.editPassword") }}
+        </ElButton>
+      </div>
+    </div>
+
+    <!-- 标签页 -->
+    <div class="page-content">
+      <ElTabs v-model="activeTab" class="detail-tabs">
+        <ElTabPane :label="$t('pages.user.detail.tab.basicInfo')" :name="TabEnum.BASIC_INFO" />
+        <ElTabPane :label="$t('pages.user.detail.tab.apiAuditLog')" :name="TabEnum.API_AUDIT_LOG" />
+        <ElTabPane
+          :label="$t('pages.user.detail.tab.internalMessage')"
+          :name="TabEnum.INTERNAL_MESSAGE"
+        />
+      </ElTabs>
+
+      <!-- 标签页内容 -->
+      <ElCard v-show="activeTab === TabEnum.BASIC_INFO" class="tab-content">
+        <BasicInfoPage :user-id="userId" />
+      </ElCard>
+      <ElCard v-show="activeTab === TabEnum.API_AUDIT_LOG" class="tab-content">
+        <ApiLogPage :user-id="userId" />
+      </ElCard>
+      <ElCard v-show="activeTab === TabEnum.INTERNAL_MESSAGE" class="tab-content">
+        <InternalMessagePage :user-id="userId" />
+      </ElCard>
+    </div>
+
+    <!-- 编辑密码弹窗 -->
+    <EditPasswordModal
+      v-model="dialogVisible"
+      :data="dialogData"
+      @success="handlePasswordSuccess"
+    />
+  </div>
+</template>
+
 <script lang="ts" setup>
 import { computed, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
@@ -80,60 +134,6 @@ function handlePasswordSuccess() {
   ElMessage.success($t("common.notification.update_success"));
 }
 </script>
-
-<template>
-  <div class="user-detail-page">
-    <!-- 页面头部 -->
-    <div class="page-header">
-      <div class="header-left">
-        <ElButton type="text" @click="goBack">
-          <template #icon>
-            <ArrowLeft />
-          </template>
-        </ElButton>
-        <span class="page-title">{{ $t("pages.user.detail.title", { userId }) }}</span>
-      </div>
-      <div class="header-right">
-        <ElButton type="danger" @click="handleBanAccount">
-          {{ $t("pages.user.button.banAccount") }}
-        </ElButton>
-        <ElButton type="primary" @click="handleEditPassword">
-          {{ $t("pages.user.button.editPassword") }}
-        </ElButton>
-      </div>
-    </div>
-
-    <!-- 标签页 -->
-    <div class="page-content">
-      <ElTabs v-model="activeTab" class="detail-tabs">
-        <ElTabPane :label="$t('pages.user.detail.tab.basicInfo')" :name="TabEnum.BASIC_INFO" />
-        <ElTabPane :label="$t('pages.user.detail.tab.apiAuditLog')" :name="TabEnum.API_AUDIT_LOG" />
-        <ElTabPane
-          :label="$t('pages.user.detail.tab.internalMessage')"
-          :name="TabEnum.INTERNAL_MESSAGE"
-        />
-      </ElTabs>
-
-      <!-- 标签页内容 -->
-      <ElCard v-show="activeTab === TabEnum.BASIC_INFO" class="tab-content">
-        <BasicInfoPage :user-id="userId" />
-      </ElCard>
-      <ElCard v-show="activeTab === TabEnum.API_AUDIT_LOG" class="tab-content">
-        <ApiLogPage :user-id="userId" />
-      </ElCard>
-      <ElCard v-show="activeTab === TabEnum.INTERNAL_MESSAGE" class="tab-content">
-        <InternalMessagePage :user-id="userId" />
-      </ElCard>
-    </div>
-
-    <!-- 编辑密码弹窗 -->
-    <EditPasswordModal
-      v-model="dialogVisible"
-      :data="dialogData"
-      @success="handlePasswordSuccess"
-    />
-  </div>
-</template>
 
 <style lang="scss" scoped>
 .user-detail-page {

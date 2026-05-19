@@ -1,5 +1,38 @@
 {
   "moduleName": "用户管理",
+  "profile": {
+    "tab": {
+      "editPassword": "修改密码",
+      "basicSettings": "基本设置",
+      "securitySettings": "安全设置",
+      "accountBind": "账号绑定",
+      "notification": "消息通知"
+    }
+  },
+  "detail": {
+    "tab": {
+      "basicInfo": "基本信息",
+      "apiAuditLog": "API审计日志",
+      "internalMessage": "内部消息"
+    },
+    "desc": {
+      "username": "用户名",
+      "realname": "真实姓名",
+      "nickname": "昵称",
+      "gender": "性别",
+      "roleNames": "角色",
+      "mobile": "手机号",
+      "email": "邮箱",
+      "region": "地区",
+      "address": "地址",
+      "tenantName": "租户",
+      "orgUnitName": "组织单位",
+      "positionName": "职位",
+      "lastLoginAt": "最后登录时间",
+      "lastLoginIp": "最后登录IP",
+      "createdAt": "创建时间"
+    }
+  },
   "form": {
     "username": "用户名",
     "realname": "真实姓名",
@@ -7,7 +40,10 @@
     "status": "状态",
     "role": "角色",
     "position": "职位",
-    "orgUnit": "所属组织"
+    "orgUnit": "所属组织",
+    "oldPassword": "原密码",
+    "newPassword": "新密码",
+    "confirmPassword": "确认密码"
   },
   "table": {
     "username": "用户名",
@@ -15,12 +51,61 @@
     "nickname": "昵称",
     "email": "邮箱",
     "mobile": "手机号",
+    "telephone": "电话",
     "password": "密码",
     "gender": "性别",
     "orgUnitId": "所属组织",
     "positionId": "职位",
     "roleId": "角色",
     "status": "状态",
-    "lastLoginAt": "最后登录时间"
+    "lastLoginAt": "最后登录时间",
+    "region": "地区",
+    "address": "地址",
+    "description": "描述",
+    "avatar": "头像"
+  },
+  "button": {
+    "updatePassword": "更新密码",
+    "updateUserInfo": "更新用户信息",
+    "editPassword": "修改密码",
+    "banAccount": "禁用账户"
+  },
+  "msgNotify": {
+    "accountPassword": "账户密码",
+    "accountPasswordDesc": "账户密码变动通知，包括密码修改、重置等操作",
+    "systemMessage": "系统消息",
+    "systemMessageDesc": "系统公告、维护通知等消息",
+    "todoTask": "待办任务",
+    "todoTaskDesc": "需要处理的任务审批、审核等提醒"
+  },
+  "secureSetting": {
+    "accountPassword": "账户密码",
+    "accountPasswordDesc": "当前密码强度：强",
+    "securePhone": "密保手机",
+    "securePhoneDesc": "已绑定手机：138****8293",
+    "secureQuestion": "安全问题",
+    "secureQuestionDesc": "未设置安全问题。安全问题可以有效保护账户安全。",
+    "backupEmail": "备份邮箱",
+    "backupEmailDesc": "已绑定邮箱：ant***sign.com",
+    "mfaDevice": "MFA设备",
+    "mfaDeviceDesc": "未绑定MFA设备。绑定后需要二次确认。"
+  },
+  "accountBind": {
+    "email": "邮箱账号",
+    "emailDesc": "已绑定 · 用于接收通知和找回密码",
+    "phone": "手机号",
+    "phoneDesc": "已绑定 · 138****5678（用于安全验证）",
+    "github": "GitHub 账号",
+    "githubDesc": "已绑定（主账号）· 绑定时间：2023-10-15",
+    "wechat": "微信账号",
+    "wechatDesc": "已绑定 · 绑定时间：2024-01-20",
+    "weibo": "新浪微博",
+    "weiboDesc": "未绑定账号，绑定后可快速登录",
+    "dingtalk": "钉钉",
+    "dingtalkDesc": "未绑定账号，企业协作更便捷",
+    "manage": "管理",
+    "unbind": "解绑",
+    "bindNow": "立即绑定",
+    "bind": "绑定"
   }
 }

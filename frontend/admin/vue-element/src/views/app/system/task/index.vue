@@ -130,7 +130,7 @@ const contentConfig: IContentConfig = {
     border: true,
     stripe: false,
   },
-  pagination: false, // 禁用分页（原 Vben 页面 pagerConfig.enabled = false）
+  pagination: false, // 禁用分页
   indexAction: async (query: any) => {
     const { page, pageSize, ...queryParams } = query;
     const result = await taskStore.listTask(

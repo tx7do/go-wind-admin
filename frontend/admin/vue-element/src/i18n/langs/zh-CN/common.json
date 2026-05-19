@@ -92,7 +92,9 @@
     "sync_success": "同步成功",
     "sync_failed": "同步失败",
     "syncSuccess": "同步成功",
-    "syncFailed": "同步失败"
+    "syncFailed": "同步失败",
+    "password_mismatch": "两次输入的密码不一致",
+    "update_status_success": "状态更新成功"
   },
   "title": {
     "confirm": "确认",

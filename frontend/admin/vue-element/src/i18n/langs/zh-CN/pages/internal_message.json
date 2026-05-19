@@ -8,6 +8,8 @@
   "content": "内容",
   "senderName": "发送人",
   "createdAt": "创建时间",
+  "readAt": "阅读时间",
+  "recipientUserInbox": "收件箱",
   "button": {
     "create": "新建消息"
   },

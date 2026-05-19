@@ -1,161 +1,231 @@
+<template>
+  <div class="app-container h-full flex flex-1 flex-col">
+    <ElCard :bordered="false" class="profile-card">
+      <template #header>
+        <div class="card-header">
+          {{ $t("pages.user.profile.tab.basicSettings") }}
+        </div>
+      </template>
+
+      <ElRow :gutter="24">
+        <ElCol :span="14">
+          <ElForm ref="formRef" :model="formData" label-width="120px" class="profile-form">
+            <ElFormItem :label="$t('pages.user.table.nickname')">
+              <ElInput
+                v-model="formData.nickname"
+                :placeholder="$t('common.placeholder.input')"
+                clearable
+              />
+            </ElFormItem>
+
+            <ElFormItem :label="$t('pages.user.table.realname')">
+              <ElInput
+                v-model="formData.realname"
+                :placeholder="$t('common.placeholder.input')"
+                clearable
+              />
+            </ElFormItem>
+
+            <ElFormItem :label="$t('pages.user.table.email')">
+              <ElInput
+                v-model="formData.email"
+                :placeholder="$t('common.placeholder.input')"
+                clearable
+              />
+            </ElFormItem>
+
+            <ElFormItem :label="$t('pages.user.table.mobile')">
+              <ElInput
+                v-model="formData.mobile"
+                :placeholder="$t('common.placeholder.input')"
+                clearable
+              />
+            </ElFormItem>
+
+            <ElFormItem :label="$t('pages.user.table.telephone')">
+              <ElInput
+                v-model="formData.telephone"
+                :placeholder="$t('common.placeholder.input')"
+                clearable
+              />
+            </ElFormItem>
+
+            <ElFormItem :label="$t('pages.user.table.gender')">
+              <ElSelect
+                v-model="formData.gender"
+                :placeholder="$t('common.placeholder.select')"
+                filterable
+                clearable
+                style="width: 100%"
+              >
+                <ElOption
+                  v-for="item in genderList"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </ElSelect>
+            </ElFormItem>
+
+            <ElFormItem :label="$t('pages.user.table.region')">
+              <ElInput
+                v-model="formData.region"
+                :placeholder="$t('common.placeholder.input')"
+                clearable
+              />
+            </ElFormItem>
+
+            <ElFormItem :label="$t('pages.user.table.address')">
+              <ElInput
+                v-model="formData.address"
+                :placeholder="$t('common.placeholder.input')"
+                clearable
+              />
+            </ElFormItem>
+
+            <ElFormItem :label="$t('pages.user.table.description')">
+              <ElInput
+                v-model="formData.description"
+                type="textarea"
+                :rows="3"
+                :placeholder="$t('common.placeholder.input')"
+              />
+            </ElFormItem>
+          </ElForm>
+        </ElCol>
+
+        <ElCol :span="10">
+          <div class="change-avatar">
+            <div class="avatar-label">{{ $t("pages.user.table.avatar") }}</div>
+            <!-- 头像显示区域（可根据需要添加上传功能） -->
+            <div class="avatar-placeholder">
+              <ElIcon :size="64" color="#909399">
+                <UserFilled />
+              </ElIcon>
+            </div>
+          </div>
+        </ElCol>
+      </ElRow>
+
+      <div class="form-actions">
+        <ElButton type="primary" :loading="submitLoading" @click="handleSubmit">
+          {{ $t("pages.user.button.updateUserInfo") }}
+        </ElButton>
+      </div>
+    </ElCard>
+  </div>
+</template>
+
 <script lang="ts" setup>
-import type { identityservicev1_User as User } from '@/api/generated/admin/service/v1';
+import { reactive, ref } from "vue";
+import { ElMessage } from "element-plus";
+import { UserFilled } from "@element-plus/icons-vue";
 
-import { ref } from 'vue';
-
-import { Page } from '@vben/common-ui';
-import { $t } from '@vben/locales';
-
-import { Col, notification, Row } from 'ant-design-vue';
-
-import { useVbenForm } from '@/adapter/form';
-import { genderList, useUserProfileStore } from '@/stores';
+import { genderList, useUserProfileStore } from "@/stores";
+import { $t } from "@/i18n";
 
 const userProfileStore = useUserProfileStore();
 
-const data = ref<null | User>();
+const submitLoading = ref(false);
+const formRef = ref();
 
-const [BaseForm, baseFormApi] = useVbenForm({
-  showDefaultActions: false,
-  commonConfig: {
-    componentProps: {
-      class: 'w-full',
-    },
-  },
-  schema: [
-    {
-      fieldName: 'nickname',
-      component: 'Input',
-      label: t('pages.user.table.nickname'),
-    },
-    {
-      fieldName: 'realname',
-      component: 'Input',
-      label: t('pages.user.table.realname'),
-    },
-    {
-      fieldName: 'email',
-      component: 'Input',
-      label: t('pages.user.table.email'),
-    },
-    {
-      fieldName: 'mobile',
-      component: 'Input',
-      label: t('pages.user.table.mobile'),
-    },
-    {
-      fieldName: 'telephone',
-      component: 'Input',
-      label: t('pages.user.table.telephone'),
-    },
-    {
-      fieldName: 'gender',
-      component: 'Select',
-      label: t('pages.user.table.gender'),
-      componentProps: {
-        filterOption: (input: string, option: any) =>
-          option.label.toLowerCase().includes(input.toLowerCase()),
-        allowClear: true,
-        showSearch: true,
-        options: genderList,
-        placeholder: $t('common.placeholder.select'),
-      },
-    },
-    {
-      fieldName: 'region',
-      component: 'Input',
-      label: t('pages.user.table.region'),
-    },
-    {
-      fieldName: 'address',
-      component: 'Input',
-      label: t('pages.user.table.address'),
-    },
-    {
-      fieldName: 'description',
-      component: 'Textarea',
-      label: t('pages.user.table.description'),
-    },
-  ],
+// 表单数据
+const formData = reactive({
+  nickname: "",
+  realname: "",
+  email: "",
+  mobile: "",
+  telephone: "",
+  gender: undefined as string | undefined,
+  region: "",
+  address: "",
+  description: "",
 });
 
-async function handleSubmit() {
-  console.log('submit');
-
-  // 校验输入的数据
-  const validate = await baseFormApi.validate();
-  if (!validate.valid) {
-    return;
+// 加载用户信息
+async function loadUserData() {
+  try {
+    const data = await userProfileStore.getMe();
+    if (data) {
+      Object.assign(formData, {
+        nickname: data.nickname || "",
+        realname: data.realname || "",
+        email: data.email || "",
+        mobile: data.mobile || "",
+        telephone: data.telephone || "",
+        gender: data.gender,
+        region: data.region || "",
+        address: data.address || "",
+        description: data.description || "",
+      });
+    }
+  } catch (_error) {
+    console.error("Failed to load user data:", _error);
   }
+}
 
-  setLoading(true);
-
-  // 获取表单数据
-  const values = await baseFormApi.getValues();
+// 提交表单
+async function handleSubmit() {
+  submitLoading.value = true;
 
   try {
-    await userProfileStore.updateUser(values);
-
-    notification.success({
-      message: $t('common.notification.update_success'),
-    });
-  } catch {
-    notification.error({
-      message: $t('common.notification.update_failed'),
-    });
+    await userProfileStore.updateUser(formData);
+    ElMessage.success($t("common.notification.updateSuccess"));
+  } catch (_error) {
+    ElMessage.error($t("common.notification.updateFailed"));
   } finally {
-    setLoading(false);
+    submitLoading.value = false;
   }
 }
 
-function setLoading(_loading: boolean) {}
-
-/**
- * 重新加载用户信息
- */
-async function reload() {
-  data.value = await userProfileStore.getMe();
-  await baseFormApi.setValues(data.value || {});
-}
-
-reload();
+// 初始化
+loadUserData();
 </script>
 
-<template>
-  <Page
-    :title="t('pages.user.profile.tab.basicSettings')"
-    :body-style="{ padding: 0 }"
-    class="edge-card"
-    style="margin: 0"
-  >
-    <Row :gutter="24">
-      <Col :span="14">
-        <BaseForm />
-      </Col>
-      <Col :span="10">
-        <div class="change-avatar">
-          <div class="mb-2">{{ t('pages.user.table.avatar') }}</div>
-        </div>
-      </Col>
-    </Row>
-    <a-button type="primary" @click="handleSubmit">
-      {{ t('pages.user.button.updateUserInfo') }}
-    </a-button>
-  </Page>
-</template>
-
-<style lang="less" scoped>
-.change-avatar {
-  img {
-    display: block;
-    margin-bottom: 15px;
-    border-radius: 50%;
-  }
+<style lang="scss" scoped>
+.app-container {
+  padding: 20px;
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
 }
 
-.edge-card {
-  .ant-card-body {
-    padding: 0 !important;
+.profile-card {
+  max-width: 1200px;
+}
+
+.card-header {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.profile-form {
+  padding-top: 20px;
+}
+
+.form-actions {
+  padding-top: 20px;
+  text-align: left;
+}
+
+.change-avatar {
+  padding-top: 20px;
+
+  .avatar-label {
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+
+  .avatar-placeholder {
+    width: 120px;
+    height: 120px;
+    border: 1px dashed var(--el-border-color);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--el-fill-color-light);
   }
 }
 </style>

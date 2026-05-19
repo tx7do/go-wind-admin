@@ -1,59 +1,104 @@
-<script lang="ts" setup>
-import { Page } from '@vben/common-ui';
-
-import { List, Switch } from 'ant-design-vue';
-
-const ListItem = List.Item;
-const ListItemMeta = List.Item.Meta;
-
-const msgNotifyList = [
-  {
-    key: '1',
-    title: '账户密码',
-    description: '其他用户的消息将以站内信的形式通知',
-  },
-  {
-    key: '2',
-    title: '系统消息',
-    description: '系统消息将以站内信的形式通知',
-  },
-  {
-    key: '3',
-    title: '待办任务',
-    description: '待办任务将以站内信的形式通知',
-  },
-];
-</script>
-
 <template>
-  <Page :title="t('pages.user.profile.tab.notification')">
-    <List>
-      <template v-for="item in msgNotifyList" :key="item.key">
-        <ListItem>
-          <ListItemMeta>
-            <template #title>
-              {{ item.title }}
-              <Switch
-                class="extra"
-                checked-children="开"
-                un-checked-children="关"
-                default-checked
-              />
-            </template>
-            <template #description>
-              <div>{{ item.description }}</div>
-            </template>
-          </ListItemMeta>
-        </ListItem>
+  <div class="app-container h-full flex flex-1 flex-col">
+    <ElCard :bordered="false" class="profile-card">
+      <template #header>
+        <div class="card-header">
+          {{ $t("pages.user.profile.tab.notification") }}
+        </div>
       </template>
-    </List>
-  </Page>
+
+      <ElList>
+        <ElListItem v-for="item in msgNotifyList" :key="item.key">
+          <template #default>
+            <div class="list-item-content">
+              <span class="item-title">{{ item.title }}</span>
+              <ElSwitch
+                v-model="item.checked"
+                :active-text="$t('common.switch.active')"
+                :inactive-text="$t('common.switch.inactive')"
+                class="item-switch"
+              />
+            </div>
+          </template>
+          <template #description>
+            <div class="item-description">{{ item.description }}</div>
+          </template>
+        </ElListItem>
+      </ElList>
+    </ElCard>
+  </div>
 </template>
 
-<style lang="less" scoped>
-.extra {
-  float: right;
-  margin-top: 10px;
-  margin-right: 30px;
+<script lang="ts" setup>
+import { reactive } from "vue";
+
+import { $t } from "@/i18n";
+
+interface NotifyItem {
+  key: string;
+  title: string;
+  description: string;
+  checked: boolean;
+}
+
+const msgNotifyList = reactive<NotifyItem[]>([
+  {
+    key: "1",
+    title: $t("pages.user.msgNotify.accountPassword"),
+    description: $t("pages.user.msgNotify.accountPasswordDesc"),
+    checked: true,
+  },
+  {
+    key: "2",
+    title: $t("pages.user.msgNotify.systemMessage"),
+    description: $t("pages.user.msgNotify.systemMessageDesc"),
+    checked: true,
+  },
+  {
+    key: "3",
+    title: $t("pages.user.msgNotify.todoTask"),
+    description: $t("pages.user.msgNotify.todoTaskDesc"),
+    checked: true,
+  },
+]);
+</script>
+
+<style lang="scss" scoped>
+.app-container {
+  padding: 20px;
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.profile-card {
+  max-width: 800px;
+}
+
+.card-header {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.list-item-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.item-title {
+  flex: 1;
+  margin-right: 16px;
+}
+
+.item-switch {
+  flex-shrink: 0;
+}
+
+.item-description {
+  color: var(--el-text-color-secondary);
+  font-size: 14px;
+  padding-top: 4px;
 }
 </style>

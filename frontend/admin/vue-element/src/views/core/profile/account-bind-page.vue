@@ -1,204 +1,215 @@
-<script lang="ts" setup>
-import { Page } from '@vben/common-ui';
-import { IconifyIcon } from '@vben/icons';
-
-import { List } from 'ant-design-vue';
-
-const ListItem = List.Item;
-const ListItemMeta = List.Item.Meta;
-
-interface AccountBindItem {
-  key: string; // 唯一标识（建议用平台标识符）
-  title: string;
-  description: string; // 动态生成建议：根据 status + boundTime + isPrimary
-  extra: string; // 按钮文案（绑定/解绑/管理）
-  avatar: string; // Iconify 格式图标
-  color: string; // 品牌主色（用于图标/边框）
-  status: 'bound' | 'pending' | 'unbound'; // 核心状态
-  boundTime?: string; // ISO 8601 格式，如 '2024-01-15T08:30:00Z'
-  isPrimary?: boolean; // 是否主账号（仅 status='bound' 时有效）
-  disabled?: boolean; // 按钮是否禁用（如主账号不可解绑）
-  platform?: string; // 平台英文标识（便于后端识别）
-  required?: boolean; // 是否必填项（如手机号/邮箱）
-}
-
-const accountBindList: AccountBindItem[] = [
-  // ========== 核心绑定项（必填）==========
-  {
-    key: 'email',
-    title: '邮箱账号',
-    description: '已绑定 · 用于接收通知和找回密码',
-    extra: '修改',
-    avatar: 'ri:mail-fill',
-    color: '#5470c6',
-    status: 'bound',
-    boundTime: '2023-09-01T10:00:00Z',
-    isPrimary: true,
-    required: true,
-    platform: 'email',
-  },
-  {
-    key: 'phone',
-    title: '手机号',
-    description: '已绑定 · 138****5678（用于安全验证）',
-    extra: '修改',
-    avatar: 'ri:smartphone-fill',
-    color: '#722ed1',
-    status: 'bound',
-    boundTime: '2023-09-01T10:05:00Z',
-    isPrimary: true,
-    required: true,
-    platform: 'phone',
-  },
-
-  // ========== 第三方账号绑定 ==========
-  {
-    key: 'github',
-    title: 'GitHub 账号',
-    description: '已绑定（主账号）· 绑定时间：2023-10-15',
-    extra: '管理',
-    avatar: 'fa-brands:github',
-    color: '#333',
-    status: 'bound',
-    boundTime: '2023-10-15T09:20:00Z',
-    isPrimary: true,
-    disabled: true,
-    platform: 'github',
-  },
-  {
-    key: 'wechat',
-    title: '微信账号',
-    description: '已绑定 · 绑定时间：2024-01-20',
-    extra: '解绑',
-    avatar: 'ri:wechat-fill',
-    color: '#2dc26b',
-    status: 'bound',
-    boundTime: '2024-01-20T14:35:00Z',
-    isPrimary: false,
-    platform: 'wechat',
-  },
-  {
-    key: 'weibo',
-    title: '新浪微博',
-    description: '未绑定账号，绑定后可快速登录',
-    extra: '立即绑定',
-    avatar: 'ri:weibo-fill',
-    color: '#e6162d',
-    status: 'unbound',
-    platform: 'weibo',
-  },
-  {
-    key: 'dingtalk',
-    title: '钉钉',
-    description: '未绑定账号，企业协作更便捷',
-    extra: '绑定',
-    avatar: 'ri:dingding-fill',
-    color: '#2eabff',
-    status: 'unbound',
-    platform: 'dingtalk',
-  },
-
-  // ========== 其他平台 ==========
-  {
-    key: 'qq',
-    title: 'QQ 账号',
-    description: '未绑定账号，支持 QQ 快捷登录',
-    extra: '绑定',
-    avatar: 'ri:qq-fill',
-    color: '#12b7f5',
-    status: 'unbound',
-    platform: 'qq',
-  },
-  {
-    key: 'alipay',
-    title: '支付宝',
-    description: '未绑定账号，支付验证更安全',
-    extra: '绑定',
-    avatar: 'ri:alipay-fill',
-    color: '#1677ff',
-    status: 'unbound',
-    platform: 'alipay',
-  },
-  {
-    key: 'google',
-    title: 'Google 账号',
-    description: '未绑定账号，国际服务支持',
-    extra: '绑定',
-    avatar: 'ri:google-fill',
-    color: '#4285f4',
-    status: 'unbound',
-    platform: 'google',
-  },
-  {
-    key: 'apple',
-    title: 'Apple ID',
-    description: '未绑定账号，iOS/macOS 设备同步',
-    extra: '绑定',
-    avatar: 'ri:apple-fill',
-    color: '#000',
-    status: 'unbound',
-    platform: 'apple',
-  },
-
-  // ========== 特殊状态示例 ==========
-  {
-    key: 'twitter',
-    title: 'Twitter',
-    description: '绑定申请审核中...',
-    extra: '审核中',
-    avatar: 'ri:twitter-fill',
-    color: '#1da1f2',
-    status: 'pending',
-    disabled: true,
-    platform: 'twitter',
-  },
-];
-</script>
-
 <template>
-  <Page :title="t('pages.user.profile.tab.accountBind')">
-    <List>
-      <template v-for="item in accountBindList" :key="item.key">
-        <ListItem>
-          <ListItemMeta>
-            <template #avatar>
-              <IconifyIcon
-                v-if="item.avatar"
-                class="avatar"
-                :icon="item.avatar"
-                :color="item.color"
-              />
-            </template>
-            <template #title>
-              {{ item.title }}
-              <a-button
-                type="link"
-                size="small"
-                v-if="item.extra"
-                class="extra"
-              >
-                {{ item.extra }}
-              </a-button>
-            </template>
-            <template #description>
-              <div>{{ item.description }}</div>
-            </template>
-          </ListItemMeta>
-        </ListItem>
+  <div class="app-container h-full flex flex-1 flex-col">
+    <ElCard :bordered="false" class="profile-card">
+      <template #header>
+        <div class="card-header">
+          {{ $t("pages.user.profile.tab.accountBind") }}
+        </div>
       </template>
-    </List>
-  </Page>
+
+      <ElList>
+        <ElListItem v-for="item in accountBindList" :key="item.key">
+          <template #default>
+            <div class="list-item-content">
+              <div class="item-left">
+                <ElIcon :size="40" :color="item.color" class="item-avatar">
+                  <component :is="getIconComponent(item.avatar)" />
+                </ElIcon>
+                <div class="item-info">
+                  <span class="item-title">{{ item.title }}</span>
+                  <ElButton
+                    v-if="item.extra"
+                    type="primary"
+                    link
+                    size="small"
+                    :disabled="item.disabled"
+                    class="item-btn"
+                  >
+                    {{ item.extra }}
+                  </ElButton>
+                </div>
+              </div>
+            </div>
+          </template>
+          <template #description>
+            <div class="item-description">{{ item.description }}</div>
+          </template>
+        </ElListItem>
+      </ElList>
+    </ElCard>
+  </div>
 </template>
 
-<style lang="less" scoped>
-.avatar {
-  font-size: 40px !important;
+<script lang="ts" setup>
+import { ref } from "vue";
+import { ElIcon } from "element-plus";
+import { $t } from "@/i18n";
+
+// Iconify 图标映射（实际使用时需要安装对应的图标库）
+const iconMap: Record<string, any> = {
+  "ri:mail-fill": "Mail",
+  "ri:smartphone-fill": "Phone",
+  "fa-brands:github": "GitHub",
+  "ri:wechat-fill": "ChatDotRound",
+  "ri:weibo-fill": "Service",
+  "ri:dingding-fill": "Service",
+  "ri:qq-fill": "Service",
+  "ri:alipay-fill": "Service",
+  "ri:google-fill": "Service",
+  "ri:apple-fill": "Service",
+  "ri:twitter-fill": "Service",
+};
+
+interface AccountBindItem {
+  key: string;
+  title: string;
+  description: string;
+  extra: string;
+  avatar: string;
+  color: string;
+  status: "bound" | "pending" | "unbound";
+  boundTime?: string;
+  isPrimary?: boolean;
+  disabled?: boolean;
+  platform?: string;
+  required?: boolean;
 }
 
-.extra {
-  float: right;
-  margin-top: 10px;
-  margin-right: 30px;
-  cursor: pointer;
+// 动态标题和描述，使用国际化
+const accountBindList = ref<AccountBindItem[]>([
+  {
+    key: "email",
+    title: $t("pages.user.accountBind.email"),
+    description: $t("pages.user.accountBind.emailDesc"),
+    extra: $t("common.button.edit"),
+    avatar: "ri:mail-fill",
+    color: "#5470c6",
+    status: "bound",
+    boundTime: "2023-09-01T10:00:00Z",
+    isPrimary: true,
+    required: true,
+    platform: "email",
+  },
+  {
+    key: "phone",
+    title: $t("pages.user.accountBind.phone"),
+    description: $t("pages.user.accountBind.phoneDesc"),
+    extra: $t("common.button.edit"),
+    avatar: "ri:smartphone-fill",
+    color: "#722ed1",
+    status: "bound",
+    boundTime: "2023-09-01T10:05:00Z",
+    isPrimary: true,
+    required: true,
+    platform: "phone",
+  },
+  {
+    key: "github",
+    title: $t("pages.user.accountBind.github"),
+    description: $t("pages.user.accountBind.githubDesc"),
+    extra: $t("pages.user.accountBind.manage"),
+    avatar: "fa-brands:github",
+    color: "#333",
+    status: "bound",
+    boundTime: "2023-10-15T09:20:00Z",
+    isPrimary: true,
+    disabled: true,
+    platform: "github",
+  },
+  {
+    key: "wechat",
+    title: $t("pages.user.accountBind.wechat"),
+    description: $t("pages.user.accountBind.wechatDesc"),
+    extra: $t("pages.user.accountBind.unbind"),
+    avatar: "ri:wechat-fill",
+    color: "#2dc26b",
+    status: "bound",
+    boundTime: "2024-01-20T14:35:00Z",
+    isPrimary: false,
+    platform: "wechat",
+  },
+  {
+    key: "weibo",
+    title: $t("pages.user.accountBind.weibo"),
+    description: $t("pages.user.accountBind.weiboDesc"),
+    extra: $t("pages.user.accountBind.bindNow"),
+    avatar: "ri:weibo-fill",
+    color: "#e6162d",
+    status: "unbound",
+    platform: "weibo",
+  },
+  {
+    key: "dingtalk",
+    title: $t("pages.user.accountBind.dingtalk"),
+    description: $t("pages.user.accountBind.dingtalkDesc"),
+    extra: $t("pages.user.accountBind.bind"),
+    avatar: "ri:dingding-fill",
+    color: "#2eabff",
+    status: "unbound",
+    platform: "dingtalk",
+  },
+]);
+
+// 获取图标组件
+function getIconComponent(iconName: string) {
+  return iconMap[iconName] || "Service";
+}
+</script>
+
+<style lang="scss" scoped>
+.app-container {
+  padding: 20px;
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+.profile-card {
+  max-width: 800px;
+}
+
+.card-header {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.list-item-content {
+  width: 100%;
+}
+
+.item-left {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.item-avatar {
+  margin-right: 16px;
+  flex-shrink: 0;
+}
+
+.item-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-width: 0;
+}
+
+.item-title {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.item-btn {
+  padding: 0;
+  height: auto;
+  line-height: 1;
+}
+
+.item-description {
+  color: var(--el-text-color-secondary);
+  font-size: 14px;
+  padding-top: 4px;
 }
 </style>

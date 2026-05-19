@@ -1,72 +1,103 @@
+<template>
+  <div class="app-container h-full flex flex-1 flex-col">
+    <!-- 搜索 -->
+    <PageSearch
+      ref="searchRef"
+      :search-config="searchConfig"
+      @query-click="handleQueryClick"
+      @reset-click="handleResetClick"
+    />
+
+    <!-- 列表 -->
+    <PageContent ref="contentRef" :content-config="contentConfig">
+      <!-- 状态 -->
+      <template #status="{ row }">
+        <ElTag
+          size="small"
+          effect="dark"
+          round
+          :color="internalMessageRecipientStatusColor(row.status)"
+        >
+          {{ internalMessageRecipientStatusLabel(row.status) }}
+        </ElTag>
+      </template>
+    </PageContent>
+  </div>
+</template>
+
 <script lang="ts" setup>
-import type { VxeGridProps } from '@/adapter/vxe-table';
+import { ElTag } from "element-plus";
 
-import { Page, type VbenFormProps } from '@vben/common-ui';
+import PageContent from "@/components/CURD/PageContent.vue";
+import PageSearch from "@/components/CURD/PageSearch.vue";
+import usePage from "@/components/CURD/usePage";
+import type { ISearchConfig, IContentConfig } from "@/components/CURD/types";
 
-import dayjs from 'dayjs';
-
-import { useVbenVxeGrid } from '@/adapter/vxe-table';
-import { type internal_messageservicev1_InternalMessageRecipient as InternalMessageRecipient } from '@/api/generated/admin/service/v1';
-import { $t } from '@/locales';
+import { $t } from "@/i18n";
 import {
   internalMessageRecipientStatusColor,
   internalMessageRecipientStatusLabel,
   useInternalMessageStore,
-} from '@/stores';
+} from "@/stores";
+import dayjs from "dayjs";
 
 const props = defineProps({
-  userId: { type: Number, default: undefined },
+  userId: {
+    type: Number,
+    default: undefined,
+  },
 });
 
 const internalMessageStore = useInternalMessageStore();
 
-const formOptions: VbenFormProps = {
-  // 默认展开
-  collapsed: false,
-  // 控制表单是否显示折叠按钮
-  showCollapseButton: false,
-  // 按下回车时是否提交表单
-  submitOnEnter: true,
-  schema: [
+// 使用 CURD hook
+const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
+
+// 搜索配置
+const searchConfig: ISearchConfig = {
+  grid: true,
+  formItems: [
     {
-      component: 'RangePicker',
-      fieldName: 'createdAt',
-      label: $t('common.table.createdAt'),
-      componentProps: {
-        showTime: true,
-        allowClear: true,
-        presets: [
+      type: "date-picker",
+      label: $t("common.table.createdAt"),
+      prop: "createdAt",
+      attrs: {
+        type: "datetimerange",
+        startPlaceholder: $t("common.placeholder.date"),
+        endPlaceholder: $t("common.placeholder.date"),
+        clearable: true,
+        shortcuts: [
           {
-            label: $t('common.dateRange.today'),
-            value: [dayjs().startOf('day'), dayjs().endOf('day')],
+            text: $t("common.dateRange.today"),
+            value: () => [dayjs().startOf("day").toDate(), dayjs().endOf("day").toDate()],
           },
           {
-            label: $t('common.dateRange.yesterday'),
-            value: [
-              dayjs().subtract(1, 'day').startOf('day'),
-              dayjs().subtract(1, 'day').endOf('day'),
+            text: $t("common.dateRange.yesterday"),
+            value: () => [
+              dayjs().subtract(1, "day").startOf("day").toDate(),
+              dayjs().subtract(1, "day").endOf("day").toDate(),
             ],
           },
           {
-            label: $t('common.dateRange.thisWeek'),
-            value: [dayjs().startOf('week'), dayjs().endOf('week')],
+            text: $t("common.dateRange.thisWeek"),
+            value: () => [dayjs().startOf("week").toDate(), dayjs().endOf("week").toDate()],
           },
           {
-            label: $t('common.dateRange.lastWeek'),
-            value: [
-              dayjs().subtract(1, 'week').startOf('week'),
-              dayjs().subtract(1, 'week').endOf('week'),
+            text: $t("common.dateRange.lastWeek"),
+            value: () => [
+              dayjs().subtract(1, "week").startOf("week").toDate(),
+              dayjs().subtract(1, "week").endOf("week").toDate(),
             ],
           },
           {
-            label: $t('common.dateRange.thisMonth'),
-            value: [dayjs().startOf('month'), dayjs().endOf('month')],
+            text: $t("common.dateRange.thisMonth"),
+            value: () => [dayjs().startOf("month").toDate(), dayjs().endOf("month").toDate()],
           },
           {
-            label: $t('common.dateRange.lastMonth'),
-            value: [
-              dayjs().subtract(1, 'month').startOf('month'),
-              dayjs().subtract(1, 'month').endOf('month'),
+            text: $t("common.dateRange.lastMonth"),
+            value: () => [
+              dayjs().subtract(1, "month").startOf("month").toDate(),
+              dayjs().subtract(1, "month").endOf("month").toDate(),
             ],
           },
         ],
@@ -75,88 +106,82 @@ const formOptions: VbenFormProps = {
   ],
 };
 
-const gridOptions: VxeGridProps<InternalMessageRecipient> = {
-  height: 'auto',
-  stripe: true,
-
-  exportConfig: {},
-  pagerConfig: {},
-  rowConfig: {
-    isHover: true,
+// 表格配置
+const contentConfig: IContentConfig = {
+  permPrefix: "sys:internal_message",
+  toolbarRight: [],
+  defaultToolbar: ["refresh", "filter"],
+  table: {
+    border: true,
+    stripe: true,
+    height: "auto",
   },
+  indexAction: async (query: any) => {
+    const { page, pageSize, ...queryParams } = query;
 
-  proxyConfig: {
-    ajax: {
-      query: async ({ page }, formValues) => {
-        console.log('query:', formValues);
+    let startTime: string | undefined;
+    let endTime: string | undefined;
 
-        let startTime: any;
-        let endTime: any;
-        if (
-          formValues.createdAt !== undefined &&
-          formValues.createdAt.length === 2
-        ) {
-          startTime = dayjs(formValues.createdAt[0]).format(
-            'YYYY-MM-DD HH:mm:ss',
-          );
-          endTime = dayjs(formValues.createdAt[1]).format(
-            'YYYY-MM-DD HH:mm:ss',
-          );
-          console.log(startTime, endTime);
-        }
+    if (
+      queryParams.createdAt !== undefined &&
+      Array.isArray(queryParams.createdAt) &&
+      queryParams.createdAt.length === 2
+    ) {
+      startTime = dayjs(queryParams.createdAt[0]).format("YYYY-MM-DD HH:mm:ss");
+      endTime = dayjs(queryParams.createdAt[1]).format("YYYY-MM-DD HH:mm:ss");
+    }
 
-        return await internalMessageStore.listUserInbox(
-          {
-            page: page.currentPage,
-            pageSize: page.pageSize,
-          },
-          {
-            recipient_user_id: props.userId?.toString(),
-            created_at__gte: startTime,
-            created_at__lte: endTime,
-          },
-        );
+    const result = await internalMessageStore.listUserInbox(
+      {
+        page: page || 1,
+        pageSize: pageSize || 10,
       },
-    },
-  },
+      {
+        recipient_user_id: props.userId?.toString(),
+        created_at__gte: startTime,
+        created_at__lte: endTime,
+      }
+    );
 
+    return {
+      items: result.items || [],
+      total: result.total || 0,
+    };
+  },
   columns: [
-    { title: t('pages.internalMessage.title'), field: 'title' },
     {
-      title: t('pages.internalMessage.status'),
-      field: 'status',
-      slots: { default: 'status' },
+      prop: "title",
+      label: $t("pages.internal_message.title"),
+      minWidth: 200,
+      align: "left",
+    },
+    {
+      prop: "status",
+      label: $t("pages.internal_message.status"),
       width: 100,
+      slotName: "status",
     },
     {
-      title: t('pages.internalMessage.readAt'),
-      field: 'readAt',
-      formatter: 'formatDateTime',
-      width: 140,
+      prop: "readAt",
+      label: $t("pages.internal_message.readAt"),
+      width: 160,
+      formatter: "formatDateTime",
     },
     {
-      title: $t('common.table.createdAt'),
-      field: 'createdAt',
-      formatter: 'formatDateTime',
-      width: 140,
+      prop: "createdAt",
+      label: $t("common.table.createdAt"),
+      width: 160,
+      formatter: "formatDateTime",
     },
   ],
 };
-
-const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
 </script>
 
-<template>
-  <Page auto-content-height>
-    <Grid>
-      <template #status="{ row }">
-        <a-tag :color="internalMessageRecipientStatusColor(row.status)">
-          {{ internalMessageRecipientStatusLabel(row.status) }}
-        </a-tag>
-      </template>
-      <template #platform="{ row }">
-        <span> {{ row.osName }} {{ row.browserName }}</span>
-      </template>
-    </Grid>
-  </Page>
-</template>
+<style lang="scss" scoped>
+.app-container {
+  padding: 20px;
+  width: 100%;
+  min-width: 0;
+  flex-shrink: 0;
+}
+</style>

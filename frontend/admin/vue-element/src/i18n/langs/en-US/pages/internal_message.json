@@ -8,6 +8,8 @@
   "content": "Content",
   "senderName": "Sender",
   "createdAt": "Created At",
+  "readAt": "Read At",
+  "recipientUserInbox": "User Inbox",
   "button": {
     "create": "New Message"
   },

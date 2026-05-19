@@ -94,7 +94,9 @@
     "sync_success": "Sync successful",
     "sync_failed": "Sync failed",
     "syncSuccess": "Sync successful",
-    "syncFailed": "Sync failed"
+    "syncFailed": "Sync failed",
+    "password_mismatch": "The two passwords do not match",
+    "update_status_success": "Status updated successfully"
   },
   "title": {
     "confirm": "Confirm",

@@ -360,7 +360,9 @@ async function handleSubmit() {
   } catch (error) {
     if (error !== false) {
       ElMessage.error(
-        isCreate.value ? $t("common.notification.create_failed") : $t("common.notification.update_failed")
+        isCreate.value
+          ? $t("common.notification.create_failed")
+          : $t("common.notification.update_failed")
       );
     }
   } finally {

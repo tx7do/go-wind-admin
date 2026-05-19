@@ -1,5 +1,38 @@
 {
   "moduleName": "User Management",
+  "profile": {
+    "tab": {
+      "editPassword": "Edit Password",
+      "basicSettings": "Basic Settings",
+      "securitySettings": "Security Settings",
+      "accountBind": "Account Bind",
+      "notification": "Notification"
+    }
+  },
+  "detail": {
+    "tab": {
+      "basicInfo": "Basic Info",
+      "apiAuditLog": "API Audit Log",
+      "internalMessage": "Internal Message"
+    },
+    "desc": {
+      "username": "Username",
+      "realname": "Real Name",
+      "nickname": "Nickname",
+      "gender": "Gender",
+      "roleNames": "Roles",
+      "mobile": "Mobile",
+      "email": "Email",
+      "region": "Region",
+      "address": "Address",
+      "tenantName": "Tenant",
+      "orgUnitName": "Organization",
+      "positionName": "Position",
+      "lastLoginAt": "Last Login Time",
+      "lastLoginIp": "Last Login IP",
+      "createdAt": "Created At"
+    }
+  },
   "form": {
     "username": "Username",
     "realname": "Real Name",
@@ -15,12 +48,61 @@
     "nickname": "Nickname",
     "email": "Email",
     "mobile": "Mobile",
+    "telephone": "Telephone",
     "password": "Password",
     "gender": "Gender",
     "orgUnitId": "Organization",
     "positionId": "Position",
     "roleId": "Role",
     "status": "Status",
-    "lastLoginAt": "Last Login Time"
+    "lastLoginAt": "Last Login Time",
+    "region": "Region",
+    "address": "Address",
+    "description": "Description",
+    "avatar": "Avatar"
+  },
+  "button": {
+    "updatePassword": "Update Password",
+    "updateUserInfo": "Update User Info",
+    "editPassword": "Edit Password",
+    "banAccount": "Ban Account"
+  },
+  "msgNotify": {
+    "accountPassword": "Account Password",
+    "accountPasswordDesc": "Notifications for account password changes, including password modification and reset operations",
+    "systemMessage": "System Message",
+    "systemMessageDesc": "System announcements, maintenance notices, etc.",
+    "todoTask": "Todo Task",
+    "todoTaskDesc": "Tasks and approvals that require processing"
+  },
+  "secureSetting": {
+    "accountPassword": "Account Password",
+    "accountPasswordDesc": "Current password strength: Strong",
+    "securePhone": "Secure Phone",
+    "securePhoneDesc": "Bound phone: 138****8293",
+    "secureQuestion": "Security Question",
+    "secureQuestionDesc": "No security question set. Security questions can effectively protect account security.",
+    "backupEmail": "Backup Email",
+    "backupEmailDesc": "Bound email: ant***sign.com",
+    "mfaDevice": "MFA Device",
+    "mfaDeviceDesc": "No MFA device bound. After binding, secondary confirmation will be required."
+  },
+  "accountBind": {
+    "email": "Email Account",
+    "emailDesc": "Bound · Used for receiving notifications and password recovery",
+    "phone": "Phone Number",
+    "phoneDesc": "Bound · 138****5678 (for security verification)",
+    "github": "GitHub Account",
+    "githubDesc": "Bound (Primary Account) · Bound time: 2023-10-15",
+    "wechat": "WeChat",
+    "wechatDesc": "Bound · Bound time: 2024-01-20",
+    "weibo": "Sina Weibo",
+    "weiboDesc": "Not bound. Bind to log in quickly",
+    "dingtalk": "DingTalk",
+    "dingtalkDesc": "Not bound. More convenient for enterprise collaboration",
+    "manage": "Manage",
+    "unbind": "Unbind",
+    "bindNow": "Bind Now",
+    "bind": "Bind"
   }
 }
