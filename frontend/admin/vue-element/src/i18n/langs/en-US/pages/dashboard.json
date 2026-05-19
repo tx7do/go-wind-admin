@@ -10,9 +10,10 @@
   "currentUsageCount": "Current Usage",
   "totalUsageCount": "Total Usage",
   "trafficTrend": "Traffic Trend",
-  "monthAccessCount": "Monthly Access",
-  "accessCount": "Access Count",
-  "accessSource": "Access Source",
+  "visitsTrend": "Visits Trend",
+  "monthVisits": "Monthly Visits",
+  "visitCount": "Visit Count",
+  "visitSource": "Visit Source",
   "salesDistribution": "Sales Distribution",
   "month": "Month"
 }

@@ -22,8 +22,12 @@
       <template #header>
         <div class="card-header-tabs">
           <el-radio-group v-model="activeTab" size="small">
-            <el-radio-button label="trends">访问趋势</el-radio-button>
-            <el-radio-button label="visits">月访问量</el-radio-button>
+            <el-radio-button value="trends">
+              {{ $t("pages.dashboard.visitsTrend") }}
+            </el-radio-button>
+            <el-radio-button value="visits">
+              {{ $t("pages.dashboard.monthVisits") }}
+            </el-radio-button>
           </el-radio-group>
         </div>
       </template>
@@ -38,7 +42,7 @@
       <el-col :xs="24" :sm="24" :md="8">
         <el-card shadow="hover">
           <template #header>
-            <span class="card-title">访问数量</span>
+            <span class="card-title">{{ $t("pages.dashboard.visitCount") }}</span>
           </template>
           <div class="chart-container chart-container-small">
             <AnalyticsVisitsData />
@@ -48,7 +52,7 @@
       <el-col :xs="24" :sm="24" :md="8">
         <el-card shadow="hover">
           <template #header>
-            <span class="card-title">访问来源</span>
+            <span class="card-title">{{ $t("pages.dashboard.visitSource") }}</span>
           </template>
           <div class="chart-container chart-container-small">
             <AnalyticsVisitsSource />
@@ -58,7 +62,7 @@
       <el-col :xs="24" :sm="24" :md="8">
         <el-card shadow="hover">
           <template #header>
-            <span class="card-title">访问来源</span>
+            <span class="card-title">{{ $t("pages.dashboard.salesDistribution") }}</span>
           </template>
           <div class="chart-container chart-container-small">
             <AnalyticsVisitsSales />
@@ -71,15 +75,14 @@
 
 <script lang="ts" setup>
 import { ref } from "vue";
-import { useI18n } from "vue-i18n";
+
+import { $t } from "@/i18n";
 
 import AnalyticsTrends from "./analytics-trends.vue";
 import AnalyticsVisits from "./analytics-visits.vue";
 import AnalyticsVisitsData from "./analytics-visits-data.vue";
 import AnalyticsVisitsSales from "./analytics-visits-sales.vue";
 import AnalyticsVisitsSource from "./analytics-visits-source.vue";
-
-const { t } = useI18n();
 
 // 定义 OverviewItem 接口
 interface OverviewItem {
@@ -93,29 +96,29 @@ interface OverviewItem {
 const overviewItems = ref<OverviewItem[]>([
   {
     icon: "i-svg:color_card",
-    title: t("pages.dashboard.currentUserCount"),
-    totalTitle: t("pages.dashboard.totalUserCount"),
+    title: $t("pages.dashboard.currentUserCount"),
+    totalTitle: $t("pages.dashboard.totalUserCount"),
     totalValue: 120_000,
     value: 2000,
   },
   {
     icon: "i-svg:color_cake",
-    title: t("pages.dashboard.currentAccessCount"),
-    totalTitle: t("pages.dashboard.totalAccessCount"),
+    title: $t("pages.dashboard.currentAccessCount"),
+    totalTitle: $t("pages.dashboard.totalAccessCount"),
     totalValue: 500_000,
     value: 20_000,
   },
   {
     icon: "i-svg:color_download",
-    title: t("pages.dashboard.currentDownloadCount"),
-    totalTitle: t("pages.dashboard.totalDownloadCount"),
+    title: $t("pages.dashboard.currentDownloadCount"),
+    totalTitle: $t("pages.dashboard.totalDownloadCount"),
     totalValue: 120_000,
     value: 8000,
   },
   {
     icon: "i-svg:color_bell",
-    title: t("pages.dashboard.currentUsageCount"),
-    totalTitle: t("pages.dashboard.totalUsageCount"),
+    title: $t("pages.dashboard.currentUsageCount"),
+    totalTitle: $t("pages.dashboard.totalUsageCount"),
     totalValue: 50_000,
     value: 5000,
   },

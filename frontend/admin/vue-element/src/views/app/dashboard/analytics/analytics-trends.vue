@@ -1,11 +1,16 @@
 <template>
-  <ECharts :options="chartOptions" height="100%" />
+  <EchartsUI ref="chartRef" height="100%" />
 </template>
 
 <script lang="ts" setup>
-import ECharts from "@/components/ECharts/index.vue";
+import type { EChartsOption } from "echarts";
 
-const chartOptions = computed(() => ({
+import { EchartsUI, EchartsUIType, useEcharts } from "@/plugins/echarts";
+
+const chartRef = ref<EchartsUIType>();
+const { renderEcharts } = useEcharts(chartRef);
+
+const chartOptions = computed<EChartsOption>(() => ({
   grid: {
     bottom: 0,
     containLabel: true,
@@ -77,4 +82,12 @@ const chartOptions = computed(() => ({
     },
   ],
 }));
+
+watch(
+  () => chartOptions.value,
+  (options) => {
+    renderEcharts(options);
+  },
+  { immediate: true, deep: true }
+);
 </script>

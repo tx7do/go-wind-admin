@@ -1,14 +1,17 @@
 <template>
-  <ECharts :options="chartOptions" height="100%" />
+  <EchartsUI ref="chartRef" height="100%" />
 </template>
 
 <script lang="ts" setup>
-import ECharts from "@/components/ECharts/index.vue";
-import { useI18n } from "vue-i18n";
+import type { EChartsOption } from "echarts";
 
-const { t } = useI18n();
+import { EchartsUI, EchartsUIType, useEcharts } from "@/plugins/echarts";
+import { $t } from "@/i18n";
 
-const chartOptions = computed(() => ({
+const chartRef = ref<EchartsUIType>();
+const { renderEcharts } = useEcharts(chartRef);
+
+const chartOptions = computed<EChartsOption>(() => ({
   grid: {
     bottom: 0,
     containLabel: true,
@@ -33,7 +36,7 @@ const chartOptions = computed(() => ({
   },
   xAxis: {
     data: Array.from({ length: 12 }).map(
-      (_item, index) => `${index + 1}${t("pages.dashboard.month")}`
+      (_item, index) => `${index + 1}${$t("pages.dashboard.month")}`
     ),
     type: "category",
   },
@@ -43,4 +46,12 @@ const chartOptions = computed(() => ({
     type: "value",
   },
 }));
+
+watch(
+  () => chartOptions.value,
+  (options) => {
+    renderEcharts(options);
+  },
+  { immediate: true, deep: true }
+);
 </script>

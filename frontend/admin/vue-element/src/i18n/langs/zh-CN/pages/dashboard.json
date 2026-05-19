@@ -10,9 +10,10 @@
   "currentUsageCount": "当前使用量",
   "totalUsageCount": "总使用量",
   "trafficTrend": "流量趋势",
-  "monthAccessCount": "月度访问量",
-  "accessCount": "访问量",
-  "accessSource": "访问来源",
+  "visitsTrend": "访问趋势",
+  "monthVisits": "月访问量",
+  "visitCount": "访问数量",
+  "visitSource": "访问来源",
   "salesDistribution": "销售分布",
   "month": "月"
 }
