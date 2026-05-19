@@ -14,7 +14,6 @@ const { renderEcharts } = useEcharts(chartRef);
 const chartOptions = computed<EChartsOption>(() => ({
   grid: {
     bottom: 0,
-    containLabel: true,
     left: "1%",
     right: "1%",
     top: "2%",
