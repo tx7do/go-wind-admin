@@ -1,11 +1,7 @@
-<script setup lang="ts">
-import { Page } from '@vben/common-ui';
-</script>
-
 <template>
-  <Page auto-content-height>
-    <template #description> </template>
-  </Page>
+  <div></div>
 </template>
+
+<script setup lang="ts"></script>
 
 <style scoped></style>
