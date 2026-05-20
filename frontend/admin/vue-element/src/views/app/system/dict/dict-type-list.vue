@@ -15,6 +15,7 @@
       @add-click="handleAddClick"
       @operate-click="handleOperateClick"
       @toolbar-click="handleToolbarClick"
+      @row-click="handleRowClick"
     >
       <!-- 启用状态 -->
       <template #isEnabled="{ row }">
@@ -164,6 +165,16 @@ async function handleOperateClick(data: IOperateData) {
 // 工具栏按钮点击
 function handleToolbarClick(name: string) {
   console.log("toolbar click:", name);
+}
+
+// 行点击联动 - 切换字典类型时刷新字典项列表
+function handleRowClick(row: any) {
+  console.log("字典类型行点击:", row);
+  if (row?.id) {
+    console.log("设置 currentTypeId:", row.id);
+    dictViewStore.setCurrentTypeId(row.id);
+    console.log("needReloadEntryList:", dictViewStore.needReloadEntryList);
+  }
 }
 
 // 成功回调

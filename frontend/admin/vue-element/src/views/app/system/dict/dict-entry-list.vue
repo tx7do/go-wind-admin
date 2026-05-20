@@ -35,7 +35,7 @@
 
 <script lang="ts" setup>
 import { ElTag, ElMessage, ElMessageBox } from "element-plus";
-import { watch } from "vue";
+import { watch, onMounted } from "vue";
 
 import PageContent from "@/components/CURD/PageContent.vue";
 import PageSearch from "@/components/CURD/PageSearch.vue";
@@ -192,13 +192,24 @@ function handleSuccess() {
   contentRef.value?.fetchPageData();
 }
 
-// 监听当前字典类型变化，重新加载数据
+// 监听字典类型切换,自动刷新字典项列表
 watch(
-  () => dictViewStore.currentTypeId,
-  () => {
-    contentRef.value?.fetchPageData();
+  () => dictViewStore.needReloadEntryList,
+  (needReload) => {
+    if (needReload && contentRef.value) {
+      contentRef.value.fetchPageData({}, true);
+      dictViewStore.needReloadEntryList = false;
+    }
   }
 );
+
+// 初始化时加载一次
+onMounted(() => {
+  // 如果有初始字典类型ID,加载字典项列表
+  if (dictViewStore.currentTypeId) {
+    dictViewStore.needReloadEntryList = true;
+  }
+});
 </script>
 
 <style lang="scss" scoped>

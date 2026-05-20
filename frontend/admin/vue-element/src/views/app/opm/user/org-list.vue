@@ -1,17 +1,16 @@
 <template>
   <div class="dept-container">
-    <ElCard class="card-flat">
+    <ElCard class="card-flat" shadow="never" :body-style="{ padding: '12px' }">
       <div class="toolbar-container">
         <!-- 租户选择器 -->
-        <div v-if="!userViewStore.isTenantUser()" class="input-row">
-          <span class="input-label">{{ $t("routes.tenant.member") }}</span>
+        <div v-if="!userViewStore.isTenantUser()" class="toolbar-item">
+          <span class="toolbar-label">{{ $t("routes.tenant.member") }}</span>
           <ElSelect
+            v-model="selectedValue"
             filterable
             clearable
-            class="search-input"
+            class="toolbar-select"
             :placeholder="$t('common.input-search.placeholder')"
-            v-model="selectedValue"
-            :filter-method="filterOption"
             @change="handleTenantChanged"
           >
             <ElOption
@@ -19,29 +18,42 @@
               :key="option.value"
               :label="option.label"
               :value="option.value"
+              :filter-method="filterOption"
             />
           </ElSelect>
         </div>
 
         <!-- 搜索框和工具栏 -->
-        <div class="input-row">
-          <span class="input-label">{{ $t("pages.org_unit.moduleName") }}</span>
-          <ElInput
-            class="search-input"
-            clearable
-            v-model="searchValue"
-            :placeholder="$t('common.input-search.placeholder')"
-          />
-          <ElDropdown @command="handleToolbarClick">
-            <ElButton type="text" :icon="More" />
-            <template #dropdown>
-              <ElDropdownMenu>
-                <ElDropdownItem v-for="item in toolbarList" :key="item.value" :command="item">
-                  {{ item.label }}
-                </ElDropdownItem>
-              </ElDropdownMenu>
-            </template>
-          </ElDropdown>
+        <div class="toolbar-item">
+          <span class="toolbar-label">{{ $t("pages.org_unit.moduleName") }}</span>
+          <div class="search-wrapper">
+            <ElInput
+              v-model="searchValue"
+              class="search-input"
+              clearable
+              :placeholder="$t('common.input-search.placeholder')"
+              :prefix-icon="Search"
+            />
+            <ElDropdown trigger="click" @command="handleToolbarClick">
+              <ElLink :underline="false" class="more-btn">
+                <ElIcon :size="18">
+                  <More />
+                </ElIcon>
+              </ElLink>
+              <template #dropdown>
+                <ElDropdownMenu>
+                  <ElDropdownItem v-for="item in toolbarList" :key="item.value" :command="item">
+                    <ElIcon :size="14" class="dropdown-icon">
+                      <Expand v-if="item.value === 'EXPAND_ALL'" />
+                      <Fold v-else-if="item.value === 'COLLAPSE_ALL'" />
+                      <CircleClose v-else />
+                    </ElIcon>
+                    {{ item.label }}
+                  </ElDropdownItem>
+                </ElDropdownMenu>
+              </template>
+            </ElDropdown>
+          </div>
         </div>
       </div>
     </ElCard>
@@ -56,7 +68,6 @@
       node-key="key"
       highlight-current
       class="tree-container"
-      @node-expand="handleExpandNode"
       @current-change="handleSelectNode"
     >
       <template #default="{ node }">
@@ -88,12 +99,13 @@ import {
   ElInput,
   ElSelect,
   ElOption,
-  ElButton,
+  ElLink,
+  ElIcon,
   ElDropdown,
   ElDropdownMenu,
   ElDropdownItem,
 } from "element-plus";
-import { More } from "@element-plus/icons-vue";
+import { More, Search, Expand, Fold, CircleClose } from "@element-plus/icons-vue";
 import { $t } from "@/i18n";
 
 import { type identityservicev1_OrgUnit as OrgUnit } from "@/api/generated/admin/service/v1";
@@ -106,16 +118,19 @@ const toolbarList = [
     value: "EXPAND_ALL",
     label: $t("common.tree.expand_all"),
     handler: handleMenuExpandAll,
+    icon: Expand,
   },
   {
     value: "COLLAPSE_ALL",
     label: $t("common.tree.collapse_all"),
     handler: handleMenuCollapseAll,
+    icon: Fold,
   },
   {
     value: "UNSELECT_ALL",
     label: $t("common.tree.unselect_all"),
     handler: handleMenuUnselectedAll,
+    icon: CircleClose,
   },
 ];
 
@@ -150,7 +165,7 @@ function mapTreeData(nodes: OrgUnit[]): any[] {
     key: `${node.parentId}-${node.id}`,
     label: node.name,
     id: node.id,
-    children: node.children && node.children.length > 0 ? mapTreeData(node.children, node.id) : [],
+    children: node.children && node.children.length > 0 ? mapTreeData(node.children) : [],
   }));
 }
 
@@ -211,14 +226,6 @@ function handleMenuUnselectedAll() {
 }
 
 /**
- * 展开单个节点
- */
-const handleExpandNode = (keys: string[]) => {
-  expandedKeys.value = keys;
-  autoExpandParent.value = false;
-};
-
-/**
  * 选中组织单元
  */
 function handleSelectOrgUnit(node: any) {
@@ -229,7 +236,7 @@ function handleSelectOrgUnit(node: any) {
  * 选中单个节点
  */
 function handleSelectNode(node: TreeNode) {
-  selectedKeys.value = [node.key];
+  selectedKeys.value = [(node as any).key];
   handleSelectOrgUnit(node);
 }
 
@@ -290,36 +297,72 @@ onMounted(async () => {
   flex-direction: column;
   height: 100%;
   overflow: hidden;
-  padding: 8px;
+  padding: 12px;
+  background: var(--el-bg-color-page);
 
   .card-flat {
     flex: 0 0 auto;
-    margin-bottom: 8px;
+    margin-bottom: 12px;
+    border-radius: 8px;
+    background: var(--el-bg-color);
+    border: 1px solid var(--el-border-color-lighter);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 
     :deep(.el-card__body) {
-      padding: 8px;
+      padding: 12px;
     }
   }
 
   .toolbar-container {
     display: flex;
     flex-direction: column;
-    gap: 8px;
+    gap: 12px;
   }
 
-  .input-row {
+  .toolbar-item {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 
-    .input-label {
+    .toolbar-label {
       flex-shrink: 0;
+      font-size: 14px;
       font-weight: 500;
+      color: var(--el-text-color-regular);
       white-space: nowrap;
+      min-width: 70px;
     }
 
-    .search-input {
+    .toolbar-select {
       flex: 1;
+      min-width: 200px;
+    }
+
+    .search-wrapper {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      .search-input {
+        flex: 1;
+      }
+
+      .more-btn {
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        border-radius: 6px;
+        transition: all 0.2s;
+
+        &:hover {
+          background: var(--el-fill-color);
+          color: var(--el-color-primary);
+        }
+      }
     }
   }
 
@@ -327,6 +370,31 @@ onMounted(async () => {
     flex: 1;
     overflow-y: auto;
     min-height: 0;
+    background: var(--el-bg-color);
+    border-radius: 8px;
+    padding: 8px;
+    border: 1px solid var(--el-border-color-lighter);
+
+    // 树节点样式优化
+    :deep(.el-tree-node__content) {
+      height: 36px;
+      border-radius: 6px;
+      margin-bottom: 2px;
+      transition: all 0.2s;
+
+      &:hover {
+        background: var(--el-fill-color-light);
+      }
+
+      &.is-current {
+        background: var(--el-color-primary-light-9);
+        font-weight: 500;
+      }
+    }
+
+    :deep(.el-tree-node__label) {
+      font-size: 14px;
+    }
   }
 
   .tree-node-label {
@@ -334,11 +402,15 @@ onMounted(async () => {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    padding-right: 8px;
   }
 
   .highlight-text {
     color: var(--el-color-danger);
-    font-weight: 500;
+    font-weight: 600;
+    background: var(--el-color-danger-light-9);
+    padding: 0 2px;
+    border-radius: 2px;
   }
 }
 </style>

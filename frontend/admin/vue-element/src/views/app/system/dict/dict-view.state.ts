@@ -15,6 +15,7 @@ import { useDictStore, useLanguageDataStore } from "@/stores";
  */
 interface DictViewState {
   loading: boolean; // 加载状态
+  needReloadEntryList: boolean; // 是否需要重新加载字典项列表
 
   currentTypeId: null | number; // 当前选中的字典类型ID
   typeList: ListDictTypeResponse; // 字典类型列表
@@ -29,6 +30,7 @@ export const useDictViewStore = defineStore("dict-view", {
   state: (): DictViewState => ({
     currentTypeId: null,
     loading: false,
+    needReloadEntryList: false,
     typeList: { items: [], total: 0 },
     entryList: { items: [], total: 0 },
     languageList: { items: [], total: 0 },
@@ -143,6 +145,7 @@ export const useDictViewStore = defineStore("dict-view", {
      */
     async setCurrentTypeId(typeId: null | number) {
       this.currentTypeId = typeId; // 更新当前选中的字典类型ID
+      this.needReloadEntryList = true; // 触发字典项列表刷新
     },
 
     resetTypeList() {
