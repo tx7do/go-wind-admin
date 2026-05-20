@@ -39,7 +39,8 @@
     "total": "共",
     "items": "条",
     "do_you_want_delete": "确定要删除该{moduleName}吗？",
-    "do_you_want_sync_permissions": "确定要同步{moduleName}权限吗？"
+    "do_you_want_sync_permissions": "确定要同步{moduleName}权限吗？",
+    "do_you_want_disable": "确定要禁用该{moduleName}吗？"
   },
   "placeholder": {
     "input": "请输入",
@@ -99,6 +100,9 @@
   "title": {
     "confirm": "确认",
     "warning": "警告"
+  },
+  "dialog": {
+    "confirm": "确认"
   },
   "modal": {
     "create": "创建{moduleName}",

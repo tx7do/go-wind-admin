@@ -39,7 +39,8 @@
     "total": "Total",
     "items": "items",
     "do_you_want_delete": "Are you sure you want to delete this {moduleName}?",
-    "do_you_want_sync_permissions": "Are you sure you want to sync {moduleName} permissions?"
+    "do_you_want_sync_permissions": "Are you sure you want to sync {moduleName} permissions?",
+    "do_you_want_disable": "Are you sure you want to disable this {moduleName}?"
   },
   "placeholder": {
     "input": "Please input",
@@ -101,6 +102,9 @@
   "title": {
     "confirm": "Confirm",
     "warning": "Warning"
+  },
+  "dialog": {
+    "confirm": "Confirm"
   },
   "modal": {
     "create": "Create {moduleName}",

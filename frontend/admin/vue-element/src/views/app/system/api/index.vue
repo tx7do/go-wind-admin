@@ -55,7 +55,7 @@ const searchConfig: ISearchConfig = {
         clearable: true,
         filterable: true,
       },
-      options: methodList.value,
+      options: methodList,
     },
     {
       type: "input",

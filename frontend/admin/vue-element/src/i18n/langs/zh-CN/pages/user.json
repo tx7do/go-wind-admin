@@ -10,6 +10,7 @@
     }
   },
   "detail": {
+    "title": "用户 {userId} 详情",
     "tab": {
       "basicInfo": "基本信息",
       "apiAuditLog": "API审计日志",

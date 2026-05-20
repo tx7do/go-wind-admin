@@ -165,13 +165,15 @@ const contentConfig: IContentConfig = {
       prop: "readAt",
       label: $t("pages.internal_message.readAt"),
       width: 160,
-      formatter: "formatDateTime",
+      template: "date",
+      dateFormat: "YYYY-MM-DD HH:mm:ss",
     },
     {
       prop: "createdAt",
       label: $t("common.table.createdAt"),
       width: 160,
-      formatter: "formatDateTime",
+      template: "date",
+      dateFormat: "YYYY-MM-DD HH:mm:ss",
     },
   ],
 };

@@ -81,7 +81,7 @@ const searchConfig: ISearchConfig = {
         placeholder: $t("common.placeholder.select"),
         clearable: true,
       },
-      options: methodList.value,
+      options: methodList,
     },
     {
       type: "input",
@@ -204,7 +204,8 @@ const contentConfig: IContentConfig = {
       prop: "createdAt",
       label: $t("pages.api_audit_log.createdAt"),
       width: 160,
-      formatter: "formatDateTime",
+      template: "date",
+      dateFormat: "YYYY-MM-DD HH:mm:ss",
     },
     {
       prop: "success",

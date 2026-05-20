@@ -10,6 +10,7 @@
     }
   },
   "detail": {
+    "title": "User {userId} Details",
     "tab": {
       "basicInfo": "Basic Info",
       "apiAuditLog": "API Audit Log",
