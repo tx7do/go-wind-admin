@@ -31,6 +31,7 @@
 
 <script lang="ts" setup>
 import { ElTag, ElMessage, ElMessageBox } from "element-plus";
+import { watch, onMounted } from "vue";
 
 import PageContent from "@/components/CURD/PageContent.vue";
 import PageSearch from "@/components/CURD/PageSearch.vue";
@@ -50,6 +51,25 @@ const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
 
 // 抽屉引用
 const drawerRef = ref();
+
+// 监听分组切换,自动刷新权限列表
+watch(
+  () => permissionViewStore.needReloadPermissionList,
+  (needReload) => {
+    if (needReload && contentRef.value) {
+      contentRef.value.fetchPageData({}, true);
+      permissionViewStore.needReloadPermissionList = false;
+    }
+  }
+);
+
+// 初始化时加载一次
+onMounted(() => {
+  // 如果有初始分组ID,加载权限列表
+  if (permissionViewStore.currentGroupId) {
+    permissionViewStore.needReloadPermissionList = true;
+  }
+});
 
 // 搜索配置
 const searchConfig: ISearchConfig = {
@@ -195,7 +215,9 @@ async function handleToolbarClick(name: string) {
   if (name === "syncPermissions") {
     try {
       await ElMessageBox.confirm(
-        $t("common.message.confirmSyncPermissions", { moduleName: $t("pages.permission.moduleName") }),
+        $t("common.message.confirmSyncPermissions", {
+          moduleName: $t("pages.permission.moduleName"),
+        }),
         $t("common.title.warning"),
         {
           confirmButtonText: $t("common.button.confirm"),

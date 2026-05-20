@@ -15,6 +15,7 @@
       @add-click="handleAddClick"
       @operate-click="handleOperateClick"
       @toolbar-click="handleToolbarClick"
+      @row-click="handleRowClick"
     >
       <!-- 状态 -->
       <template #status="{ row }">
@@ -50,6 +51,16 @@ const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
 
 // 抽屉引用
 const drawerRef = ref();
+
+// 行点击联动 - 切换分组时刷新权限列表
+function handleRowClick(row: any) {
+  console.log('分组行点击:', row);
+  if (row?.id) {
+    console.log('设置 currentGroupId:', row.id);
+    permissionViewStore.setCurrentGroupId(row.id);
+    console.log('needReloadPermissionList:', permissionViewStore.needReloadPermissionList);
+  }
+}
 
 // 搜索配置
 const searchConfig: ISearchConfig = {

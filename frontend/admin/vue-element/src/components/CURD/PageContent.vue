@@ -66,6 +66,7 @@
       class="w-full vxe-table-fixed-header"
       @checkbox-change="handleSelectionChange"
       @checkbox-all="handleSelectionChange"
+      @current-change="handleCurrentRowChange"
     >
       <template v-for="col in columns" :key="col.prop">
         <!-- 复选框列 -->
@@ -400,6 +401,7 @@ const emit = defineEmits<{
   editClick: [row: IObject];
   filterChange: [data: IObject];
   operateClick: [data: IOperateData];
+  rowClick: [row: IObject]; // 新增：行点击事件
 }>();
 
 // 国际化
@@ -577,6 +579,11 @@ const removeIds = ref<(number | string)[]>([]);
 function handleSelectionChange({ records }: { records: IObject[] }) {
   selectionData.value = records;
   removeIds.value = records.map((item) => item[pk]);
+}
+
+// 行点击事件处理
+function handleCurrentRowChange({ row }: { row: IObject }) {
+  emit("rowClick", row);
 }
 
 // 获取行选中
@@ -1028,7 +1035,7 @@ function saveXlsx(fileData: any, fileName: string) {
 }
 
 // 暴露的属性和方法
-defineExpose({ fetchPageData, exportPageData, getFilterParams, getSelectionData, handleRefresh });
+defineExpose({ fetchPageData, exportPageData, getFilterParams, getSelectionData, handleRefresh, tableRef });
 </script>
 
 <style lang="scss" scoped>
