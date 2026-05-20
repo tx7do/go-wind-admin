@@ -31,7 +31,7 @@ const { locale, t } = useI18n();
 
 // 可用语言列表
 const availableLanguages = [
-  { code: "zh-cn" as SupportedLanguagesType, name: "简体中文", locale: "zh-CN" },
+  { code: "zh-CN" as SupportedLanguagesType, name: "简体中文", locale: "zh-CN" },
   { code: "en-US" as SupportedLanguagesType, name: "English", locale: "en-US" },
 ];
 
@@ -55,6 +55,10 @@ async function handleLanguageChange(lang: SupportedLanguagesType) {
   // 同步更新 vue-i18n
   locale.value = lang;
 
+  // 等待下一个 tick 确保 locale 更新完成
+  await nextTick();
+
+  // 使用新的 locale 获取翻译文本
   ElMessage.success(t("common.langSelect.message.success"));
 }
 </script>

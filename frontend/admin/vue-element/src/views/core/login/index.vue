@@ -4,7 +4,7 @@
     <div class="login-header">
       <div class="header-left">
         <el-image :src="logo" class="header-logo" fit="contain" />
-        <span class="header-title">GoWind Admin</span>
+        <span class="header-title">{{ t("core.login.headerTitle") }}</span>
       </div>
       <div class="header-right">
         <ThemeSwitch class="header-icon" />
@@ -21,8 +21,8 @@
             <SloganIcon class="slogan-icon" />
           </div>
           <div class="brand-info">
-            <h2 class="brand-title">风行中后台管理系统</h2>
-            <p class="brand-desc">开箱即用的企业级中后台管理系统</p>
+            <h2 class="brand-title">{{ t("core.login.brandTitle") }}</h2>
+            <p class="brand-desc">{{ t("core.login.brandDesc") }}</p>
           </div>
         </div>
       </div>
@@ -32,10 +32,10 @@
         <div class="login-form-container">
           <div class="form-header">
             <h2 class="form-title">
-              欢迎回来
+              {{ t("core.login.welcomeTitle") }}
               <span class="wave">👋</span>
             </h2>
-            <p class="form-subtitle">请输入您的账户信息以开始管理您的系统</p>
+            <p class="form-subtitle">{{ t("core.login.welcomeSubtitle") }}</p>
           </div>
 
           <transition name="fade-slide" mode="out-in">
@@ -49,7 +49,7 @@
 
         <!-- 版权信息 - 放在右侧面板最底部 -->
         <div class="form-copyright">
-          <el-text size="small">Copyright &copy; 2026 GoWind</el-text>
+          <el-text size="small">{{ t("core.login.copyright") }}</el-text>
         </div>
       </div>
     </div>
@@ -60,6 +60,8 @@
 import logo from "@/assets/images/logo.png";
 import ThemeSwitch from "@/components/ThemeSwitch/index.vue";
 import SloganIcon from "./icons/slogan.vue";
+
+const { t } = useI18n();
 
 type LayoutMap = "login" | "register" | "resetPwd";
 

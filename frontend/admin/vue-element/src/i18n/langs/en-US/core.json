@@ -31,6 +31,12 @@
     "copyright": "Copyright © 2021 - 2026 GoWind"
   },
   "login": {
+    "headerTitle": "GoWind Admin",
+    "brandTitle": "GoWind Admin System",
+    "brandDesc": "Out-of-the-box enterprise-level admin system",
+    "welcomeTitle": "Welcome Back",
+    "welcomeSubtitle": "Please enter your account information to start managing your system",
+    "copyright": "Copyright © 2026 GoWind",
     "login": "Login",
     "register": "Register",
     "username": "Username",

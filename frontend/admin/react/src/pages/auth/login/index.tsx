@@ -1,7 +1,7 @@
-import {LockOutlined, UserOutlined} from '@ant-design/icons';
+import {LockOutlined, UserOutlined, GlobalOutlined, MoonOutlined, SunOutlined} from '@ant-design/icons';
 import {LoginForm, ProFormCheckbox, ProFormText} from '@ant-design/pro-components';
 import {Helmet, useIntl, useModel} from '@umijs/max';
-import {App} from 'antd';
+import {App, Button, Tooltip} from 'antd';
 import React from 'react';
 
 import Settings from '../../../../config/defaultSettings';
@@ -11,6 +11,40 @@ const Login: React.FC = () => {
   const intl = useIntl();
   const {login, loginLoading} = useModel('business.authentication');
   const access = useModel('auth.access');
+  const {mode: themeMode, setMode: setThemeMode} = useModel('core.theme');
+  const {locale: currentLocale, setLocale: setCurrentLocale} = useModel('core.language');
+
+  // 切换主题
+  const toggleTheme = () => {
+    const newMode = themeMode === 'light' ? 'dark' : 'light';
+    setThemeMode(newMode);
+  };
+
+  // 根据主题模式判断当前是否为亮色模式
+  const isLightMode = React.useMemo(() => {
+    if (themeMode === 'system') {
+      return window.matchMedia('(prefers-color-scheme: light)').matches;
+    }
+    return themeMode === 'light';
+  }, [themeMode]);
+
+  // 监听系统主题变化
+  React.useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    const handleChange = () => {
+      if (themeMode === 'system') {
+        // 强制重新渲染以更新 isLightMode
+        setThemeMode('system');
+      }
+    };
+    mediaQuery.addEventListener('change', handleChange);
+    return () => mediaQuery.removeEventListener('change', handleChange);
+  }, [themeMode]);
+
+  // 切换语言
+  const toggleLanguage = () => {
+    setCurrentLocale(currentLocale === 'zh-CN' ? 'en-US' : 'zh-CN');
+  };
 
   const handleSubmit = async (values: { username: string; password: string }) => {
     console.log('[Login] Form submitted with values:', values);
@@ -66,10 +100,51 @@ const Login: React.FC = () => {
       style={{
         display: 'flex',
         minHeight: '100vh',
-        background: '#0a0a0a',
+        background: 'var(--login-page-bg, #0a0a0a)',
         overflow: 'hidden',
+        position: 'relative',
       }}
     >
+      {/* 右上角工具栏 */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 20,
+          right: 20,
+          display: 'flex',
+          gap: 8,
+          zIndex: 10,
+        }}
+      >
+        <Tooltip title={currentLocale === 'zh-CN' ? '切换语言' : 'Switch Language'}>
+          <Button
+            type="text"
+            icon={<GlobalOutlined />}
+            onClick={toggleLanguage}
+            style={{
+              color: isLightMode ? 'rgba(0, 0, 0, 0.65)' : 'rgba(255, 255, 255, 0.65)',
+              background: isLightMode ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.08)',
+              border: isLightMode ? '1px solid rgba(0, 0, 0, 0.12)' : '1px solid rgba(255, 255, 255, 0.12)',
+              borderRadius: 6,
+            }}
+          >
+            {currentLocale === 'zh-CN' ? 'EN' : '中文'}
+          </Button>
+        </Tooltip>
+        <Tooltip title={themeMode === 'light' ? '切换暗黑模式' : '切换亮色模式'}>
+          <Button
+            type="text"
+            icon={themeMode === 'light' ? <MoonOutlined /> : <SunOutlined />}
+            onClick={toggleTheme}
+            style={{
+              color: isLightMode ? 'rgba(0, 0, 0, 0.65)' : 'rgba(255, 255, 255, 0.65)',
+              background: isLightMode ? 'rgba(0, 0, 0, 0.04)' : 'rgba(255, 255, 255, 0.08)',
+              border: isLightMode ? '1px solid rgba(0, 0, 0, 0.12)' : '1px solid rgba(255, 255, 255, 0.12)',
+              borderRadius: 6,
+            }}
+          />
+        </Tooltip>
+      </div>
       <Helmet>
         <title>
           {intl.formatMessage({
@@ -88,7 +163,9 @@ const Login: React.FC = () => {
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
-          background: 'radial-gradient(ellipse at center, rgba(59, 130, 246, 0.15) 0%, transparent 70%)',
+          background: isLightMode 
+            ? 'radial-gradient(ellipse at center, rgba(59, 130, 246, 0.08) 0%, transparent 70%)'
+            : 'radial-gradient(ellipse at center, rgba(59, 130, 246, 0.15) 0%, transparent 70%)',
           position: 'relative',
           overflow: 'hidden',
           minWidth: 0,
@@ -121,7 +198,7 @@ const Login: React.FC = () => {
         
         <h2
           style={{
-            color: '#fff',
+            color: isLightMode ? '#1f1f1f' : '#fff',
             fontSize: 24,
             fontWeight: 600,
             marginBottom: 12,
@@ -132,7 +209,7 @@ const Login: React.FC = () => {
         </h2>
         <p
           style={{
-            color: 'rgba(255, 255, 255, 0.6)',
+            color: isLightMode ? 'rgba(0, 0, 0, 0.55)' : 'rgba(255, 255, 255, 0.75)',
             fontSize: 14,
             textAlign: 'center',
           }}
@@ -151,31 +228,33 @@ const Login: React.FC = () => {
           justifyContent: 'center',
           alignItems: 'center',
           padding: '64px 48px',
-          background: '#141414',
-          borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
+          background: isLightMode ? '#ffffff' : '#141414',
+          borderLeft: isLightMode 
+            ? '1px solid rgba(0, 0, 0, 0.08)'
+            : '1px solid rgba(255, 255, 255, 0.08)',
           position: 'relative',
         }}
       >
         <div style={{width: '100%', maxWidth: '420px'}}>
           <h1
             style={{
-              color: '#fff',
+              color: isLightMode ? '#1f1f1f' : '#fff',
               fontSize: 28,
               fontWeight: 600,
               marginBottom: 8,
             }}
           >
-            欢迎回来 
+            欢迎回来
           </h1>
           <p
             style={{
-              color: 'rgba(255, 255, 255, 0.5)',
+              color: isLightMode ? 'rgba(0, 0, 0, 0.55)' : 'rgba(255, 255, 255, 0.65)',
               fontSize: 14,
               marginBottom: 32,
               paddingLeft: 2,
             }}
           >
-            请输入您的帐户信息以开始管理您的系统
+            请输入您的账户信息以登录系统
           </p>
           
           <LoginForm
@@ -196,9 +275,6 @@ const Login: React.FC = () => {
                 placeholder: '请输入用户名',
                 className: 'login-input-field',
                 autoComplete: 'username',
-                style: {
-                  '--ant-color-text-placeholder': 'rgba(255, 255, 255, 0.4)',
-                } as any,
               }}
               rules={[
                 {
@@ -214,9 +290,6 @@ const Login: React.FC = () => {
                 placeholder: '密码',
                 className: 'login-input-field',
                 autoComplete: 'current-password',
-                style: {
-                  '--ant-color-text-placeholder': 'rgba(255, 255, 255, 0.4)',
-                } as any,
               }}
               rules={[
                 {
@@ -229,6 +302,7 @@ const Login: React.FC = () => {
               style={{
                 display: 'flex',
                 alignItems: 'center',
+                justifyContent: 'space-between',
                 marginBottom: 24,
                 marginTop: 8,
               }}
@@ -237,7 +311,7 @@ const Login: React.FC = () => {
                 name="autoLogin"
                 fieldProps={{
                   style: {
-                    color: 'rgba(255, 255, 255, 0.6)',
+                    color: isLightMode ? 'rgba(0, 0, 0, 0.65)' : 'rgba(255, 255, 255, 0.65)',
                     fontSize: 13,
                   },
                 }}
@@ -245,7 +319,7 @@ const Login: React.FC = () => {
                 记住账号
               </ProFormCheckbox>
             </div>
-            <div style={{marginTop: 32}}>
+            <div style={{marginTop: 24}}>
               <button
                 type="submit"
                 style={{
@@ -271,10 +345,10 @@ const Login: React.FC = () => {
           <div
             style={{
               textAlign: 'center',
-              marginTop: 24,
+              marginTop: 16,
             }}
           >
-            <span style={{color: 'rgba(255, 255, 255, 0.5)', fontSize: 13}}>
+            <span style={{color: isLightMode ? 'rgba(0, 0, 0, 0.65)' : 'rgba(255, 255, 255, 0.65)', fontSize: 13}}>
               还没有账号？{' '}
             </span>
             <a
@@ -298,7 +372,7 @@ const Login: React.FC = () => {
             left: 0,
             right: 0,
             textAlign: 'center',
-            color: 'rgba(255, 255, 255, 0.25)',
+            color: isLightMode ? 'rgba(0, 0, 0, 0.45)' : 'rgba(255, 255, 255, 0.45)',
             fontSize: 12,
           }}
         >

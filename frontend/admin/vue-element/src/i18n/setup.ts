@@ -52,12 +52,16 @@ async function loadLocaleMessages(lang: SupportedLanguagesType) {
   const message = await localesMap[langDir]?.();
 
   if (message?.default) {
-    // 合并所有 JSON 文件的翻译内容
-    i18n.global.mergeLocaleMessage(lang, message.default);
+    // 设置语言包（先清空再设置，确保完全替换）
+    i18n.global.setLocaleMessage(lang, message.default);
+  } else {
+    console.error(`[intlify] Failed to load '${lang}' locale messages.`);
   }
 
   const mergeMessage = await loadMessages(lang);
-  i18n.global.mergeLocaleMessage(lang, mergeMessage);
+  if (mergeMessage && Object.keys(mergeMessage).length > 0) {
+    i18n.global.mergeLocaleMessage(lang, mergeMessage);
+  }
 
   return setI18nLanguage(lang);
 }
