@@ -7,6 +7,15 @@
         <CommandPalette />
       </div>
 
+      <!-- 系统设置 -->
+      <div
+        v-if="preferences.app.enablePreferences"
+        class="navbar-actions__item"
+        @click="handleSettingsClick"
+      >
+        <div class="i-svg:setting" />
+      </div>
+
       <!-- 全屏 -->
       <div class="navbar-actions__item">
         <Fullscreen />
@@ -52,15 +61,6 @@
           </el-dropdown-menu>
         </template>
       </el-dropdown>
-    </div>
-
-    <!-- 系统设置 -->
-    <div
-      v-if="preferences.app.enablePreferences"
-      class="navbar-actions__item"
-      @click="handleSettingsClick"
-    >
-      <div class="i-svg:setting" />
     </div>
   </div>
 </template>

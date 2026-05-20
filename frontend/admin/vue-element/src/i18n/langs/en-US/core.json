@@ -65,6 +65,14 @@
       }
     }
   },
+  "notice": {
+    "title": "Notifications",
+    "empty": "No messages",
+    "markAllRead": "Mark All as Read",
+    "clearAll": "Clear All",
+    "viewAll": "View All Messages",
+    "detail": "Notification Details"
+  },
   "register": {
     "register": "Register",
     "haveAccount": "Already have an account?",

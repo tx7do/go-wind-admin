@@ -59,7 +59,11 @@
     "loading": "加载中...",
     "loadingMenu": "加载菜单中",
     "noData": "暂无数据",
-    "networkError": "网络异常，请稍后重试"
+    "networkError": "网络异常，请稍后重试",
+    "operationFailed": "操作失败",
+    "getDetailFailed": "获取详情失败",
+    "confirmDelete": "确定要删除该{moduleName}吗？",
+    "confirmSyncPermissions": "确定要同步{moduleName}权限吗？"
   },
   "langSelect": {
     "message": {
@@ -72,6 +76,7 @@
     "createdAt": "创建时间",
     "remark": "备注",
     "action": "操作",
+    "operation": "操作",
     "sortOrder": "排序",
     "description": "描述"
   },
@@ -111,10 +116,6 @@
   "confirm": {
     "do_you_want_delete": "确定要删除该{moduleName}吗？",
     "do_you_want_sync": "确定要同步{moduleName}权限吗？"
-  },
-  "message": {
-    "confirmDelete": "确定要删除该{moduleName}吗？",
-    "confirmSyncPermissions": "确定要同步{moduleName}权限吗？"
   },
   "navbar": {
     "profile": "个人中心",

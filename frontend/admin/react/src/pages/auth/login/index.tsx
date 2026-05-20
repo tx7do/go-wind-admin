@@ -98,10 +98,11 @@ const Login: React.FC = () => {
 
   return (
     <div
+      className="login-page-wrapper"
       style={{
         display: 'flex',
         minHeight: '100vh',
-        background: 'var(--login-page-bg, #0a0a0a)',
+        background: isLightMode ? '#f5f7fa' : 'var(--login-page-bg, #0a0a0a)',
         overflow: 'hidden',
         position: 'relative',
       }}
@@ -165,22 +166,55 @@ const Login: React.FC = () => {
           alignItems: 'center',
           justifyContent: 'center',
           background: isLightMode
-            ? 'radial-gradient(ellipse at center, rgba(59, 130, 246, 0.08) 0%, transparent 70%)'
-            : 'radial-gradient(ellipse at center, rgba(59, 130, 246, 0.15) 0%, transparent 70%)',
+            ? 'linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%)'
+            : 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)',
           position: 'relative',
           overflow: 'hidden',
           minWidth: 0,
         }}
       >
-        {/* 背景渐变装饰 */}
+        {/* 背景装饰 - 多层渐变 */}
         <div
           style={{
             position: 'absolute',
-            top: '-50%',
-            left: '-50%',
-            width: '200%',
-            height: '200%',
-            background: 'radial-gradient(circle at 30% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%)',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: isLightMode
+              ? 'linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 50%, rgba(0,0,0,0.1) 100%)'
+              : 'linear-gradient(180deg, rgba(0,0,0,0.2) 0%, transparent 50%, rgba(0,0,0,0.3) 100%)',
+            pointerEvents: 'none',
+          }}
+        />
+        
+        {/* 装饰圆形 */}
+        <div
+          style={{
+            position: 'absolute',
+            top: '10%',
+            right: '15%',
+            width: 300,
+            height: 300,
+            borderRadius: '50%',
+            background: isLightMode
+              ? 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)'
+              : 'radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%)',
+            pointerEvents: 'none',
+          }}
+        />
+        
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '15%',
+            left: '10%',
+            width: 200,
+            height: 200,
+            borderRadius: '50%',
+            background: isLightMode
+              ? 'radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%)'
+              : 'radial-gradient(circle, rgba(147,51,234,0.1) 0%, transparent 70%)',
             pointerEvents: 'none',
           }}
         />
@@ -188,10 +222,11 @@ const Login: React.FC = () => {
         {/* 品牌图标 */}
         <div
           style={{
-            width: 280,
-            height: 280,
-            marginBottom: 32,
-            filter: 'drop-shadow(0 0 40px rgba(59, 130, 246, 0.3))',
+            width: 300,
+            height: 300,
+            marginBottom: 36,
+            position: 'relative',
+            zIndex: 1,
           }}
         >
           <SloganIcon/>
@@ -199,20 +234,28 @@ const Login: React.FC = () => {
 
         <h2
           style={{
-            color: isLightMode ? '#1f1f1f' : '#fff',
-            fontSize: 24,
-            fontWeight: 600,
-            marginBottom: 12,
+            color: '#fff',
+            fontSize: 26,
+            fontWeight: 700,
+            marginBottom: 14,
             textAlign: 'center',
+            textShadow: '0 2px 20px rgba(0, 0, 0, 0.3)',
+            letterSpacing: '0.5px',
+            position: 'relative',
+            zIndex: 1,
           }}
         >
           风行中后台管理系统
         </h2>
         <p
           style={{
-            color: isLightMode ? 'rgba(0, 0, 0, 0.55)' : 'rgba(255, 255, 255, 0.75)',
-            fontSize: 14,
+            color: 'rgba(255, 255, 255, 0.95)',
+            fontSize: 15,
             textAlign: 'center',
+            textShadow: '0 1px 8px rgba(0, 0, 0, 0.2)',
+            lineHeight: 1.6,
+            position: 'relative',
+            zIndex: 1,
           }}
         >
           开箱即用的企业级中后台管理系统
@@ -222,37 +265,45 @@ const Login: React.FC = () => {
       {/* 右侧登录表单区 */}
       <div
         style={{
-          width: '45%',
-          minWidth: '480px',
+          width: '48%',
+          minWidth: '500px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'center',
           alignItems: 'center',
-          padding: '64px 48px',
-          background: isLightMode ? '#ffffff' : '#141414',
+          padding: '64px 56px',
+          background: isLightMode ? '#ffffff' : '#0d1117',
           borderLeft: isLightMode
-            ? '1px solid rgba(0, 0, 0, 0.08)'
-            : '1px solid rgba(255, 255, 255, 0.08)',
+            ? 'none'
+            : '1px solid rgba(255, 255, 255, 0.06)',
+          boxShadow: isLightMode ? '-20px 0 60px rgba(102, 126, 234, 0.15)' : 'none',
           position: 'relative',
         }}
       >
         <div style={{width: '100%', maxWidth: '420px'}}>
           <h1
             style={{
-              color: isLightMode ? '#1f1f1f' : '#fff',
-              fontSize: 28,
-              fontWeight: 600,
-              marginBottom: 8,
+              color: isLightMode ? '#1a1a2e' : '#fff',
+              fontSize: 34,
+              fontWeight: 800,
+              marginBottom: 10,
+              letterSpacing: '-0.5px',
+              background: isLightMode
+                ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                : 'none',
+              WebkitBackgroundClip: isLightMode ? 'text' : 'unset',
+              WebkitTextFillColor: isLightMode ? 'transparent' : 'unset',
             }}
           >
             欢迎回来
           </h1>
           <p
             style={{
-              color: isLightMode ? 'rgba(0, 0, 0, 0.55)' : 'rgba(255, 255, 255, 0.65)',
-              fontSize: 14,
-              marginBottom: 32,
+              color: isLightMode ? 'rgba(0, 0, 0, 0.5)' : 'rgba(255, 255, 255, 0.6)',
+              fontSize: 15,
+              marginBottom: 44,
               paddingLeft: 2,
+              lineHeight: 1.6,
             }}
           >
             请输入您的账户信息以登录系统
@@ -273,9 +324,15 @@ const Login: React.FC = () => {
               name="username"
               fieldProps={{
                 size: 'large',
-                placeholder: '请输入用户名',
-                className: 'login-input-field',
+                placeholder: '请输入用户名或邮箱',
                 autoComplete: 'username',
+                style: {
+                  height: 48,
+                  background: isLightMode ? 'rgba(102, 126, 234, 0.06)' : 'rgba(255, 255, 255, 0.08)',
+                  border: isLightMode ? '1.5px solid rgba(102, 126, 234, 0.3)' : '1px solid rgba(255, 255, 255, 0.18)',
+                  borderRadius: 8,
+                  color: isLightMode ? '#1a1a2e' : '#fff',
+                },
               }}
               rules={[
                 {
@@ -288,9 +345,15 @@ const Login: React.FC = () => {
               name="password"
               fieldProps={{
                 size: 'large',
-                placeholder: '密码',
-                className: 'login-input-field',
+                placeholder: '请输入密码',
                 autoComplete: 'current-password',
+                style: {
+                  height: 48,
+                  background: isLightMode ? 'rgba(102, 126, 234, 0.06)' : 'rgba(255, 255, 255, 0.08)',
+                  border: isLightMode ? '1.5px solid rgba(102, 126, 234, 0.3)' : '1px solid rgba(255, 255, 255, 0.18)',
+                  borderRadius: 8,
+                  color: isLightMode ? '#1a1a2e' : '#fff',
+                },
               }}
               rules={[
                 {
@@ -320,21 +383,28 @@ const Login: React.FC = () => {
                 记住账号
               </ProFormCheckbox>
             </div>
-            <div style={{marginTop: 24}}>
+            <div style={{marginTop: 36}}>
               <button
                 type="submit"
                 style={{
                   width: '100%',
-                  height: 44,
-                  background: 'linear-gradient(135deg, #0066ff 0%, #0052cc 100%)',
+                  height: 50,
+                  background: isLightMode
+                    ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
+                    : 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
                   border: 'none',
-                  borderRadius: 6,
+                  borderRadius: 10,
                   color: '#fff',
-                  fontSize: 15,
-                  fontWeight: 500,
+                  fontSize: 16,
+                  fontWeight: 600,
                   cursor: loginLoading ? 'not-allowed' : 'pointer',
                   opacity: loginLoading ? 0.7 : 1,
-                  transition: 'all 0.2s',
+                  transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+                  boxShadow: isLightMode
+                    ? '0 8px 24px rgba(102, 126, 234, 0.35)'
+                    : '0 8px 24px rgba(59, 130, 246, 0.3)',
+                  letterSpacing: '2px',
+                  transform: 'translateY(0)',
                 }}
                 disabled={loginLoading}
               >

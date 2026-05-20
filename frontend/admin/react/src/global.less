@@ -93,53 +93,17 @@ ol {
   }
 }
 
-/* 登录页输入框样式 - 默认（暗黑模式） */
-.login-input-field {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  color: #fff !important;
-  height: 44px !important;
-  border-radius: 6px !important;
-  padding: 0 12px !important;
-  transition: all 0.2s ease !important;
-  
-  &:hover {
-    background: rgba(255, 255, 255, 0.12) !important;
-    border-color: rgba(255, 255, 255, 0.25) !important;
-  }
-  
-  &:focus {
-    background: rgba(255, 255, 255, 0.12) !important;
-    border-color: #4B5563 !important;
-    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.2) !important;
-    outline: none !important;
-  }
-  
-  &::placeholder {
-    color: rgba(255, 255, 255, 0.65) !important;
-  }
+/* ============================================
+   登录页输入框样式 - 简化版
+   ============================================ */
+
+/* 确保 placeholder 颜色 */
+.ant-input::placeholder {
+  color: rgba(255, 255, 255, 0.5) !important;
 }
 
-/* 亮色模式下的输入框样式 */
-html.light .login-input-field {
-  background: rgba(0, 0, 0, 0.04) !important;
-  border: 1px solid rgba(0, 0, 0, 0.15) !important;
-  color: #1f1f1f !important;
-  
-  &:hover {
-    background: rgba(0, 0, 0, 0.06) !important;
-    border-color: rgba(0, 0, 0, 0.25) !important;
-  }
-  
-  &:focus {
-    background: #fff !important;
-    border-color: #0066ff !important;
-    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.15) !important;
-  }
-  
-  &::placeholder {
-    color: rgba(0, 0, 0, 0.45) !important;
-  }
+html.light .ant-input::placeholder {
+  color: rgba(0, 0, 0, 0.45) !important;
 }
 
 /* 移除横向滚动条 */
@@ -152,85 +116,14 @@ html, body {
   box-sizing: border-box;
 }
 
-/* 登录页特殊样式 - 默认（暗黑模式） */
+/* 登录页特殊样式 */
 .ant-form-item {
-  margin-bottom: 16px;
+  margin-bottom: 20px;
 }
 
 .ant-form-item-explain-error {
   color: #ff4d4f !important;
   font-size: 12px !important;
-}
-
-/* 暗黑模式下的输入框包装器 */
-.ant-input-affix-wrapper {
-  background: rgba(255, 255, 255, 0.08) !important;
-  border: 1px solid rgba(255, 255, 255, 0.18) !important;
-  transition: all 0.2s ease !important;
-  
-  &:hover {
-    background: rgba(255, 255, 255, 0.12) !important;
-    border-color: rgba(255, 255, 255, 0.25) !important;
-  }
-  
-  &.ant-input-affix-wrapper-focused {
-    background: rgba(255, 255, 255, 0.12) !important;
-    border-color: #4B5563 !important;
-    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.2) !important;
-  }
-  
-  input {
-    background: transparent !important;
-    color: #fff !important;
-    height: 42px !important;
-    
-    &::placeholder {
-      color: rgba(255, 255, 255, 0.65) !important;
-    }
-  }
-  
-  .ant-input-suffix {
-    color: #fff !important;
-    
-    .anticon {
-      color: #fff !important;
-    }
-    
-    svg {
-      color: #fff !important;
-      fill: #fff !important;
-    }
-  }
-}
-
-/* 亮色模式下的输入框包装器 */
-html.light .ant-input-affix-wrapper {
-  background: rgba(0, 0, 0, 0.04) !important;
-  border: 1px solid rgba(0, 0, 0, 0.15) !important;
-  
-  &:hover {
-    background: rgba(0, 0, 0, 0.06) !important;
-    border-color: rgba(0, 0, 0, 0.25) !important;
-  }
-  
-  &.ant-input-affix-wrapper-focused {
-    background: #fff !important;
-    border-color: #0066ff !important;
-    box-shadow: 0 0 0 3px rgba(0, 102, 255, 0.15) !important;
-  }
-  
-  input {
-    background: transparent !important;
-    color: #1f1f1f !important;
-    
-    &::placeholder {
-      color: rgba(0, 0, 0, 0.45) !important;
-    }
-  }
-  
-  .ant-input-suffix {
-    color: rgba(0, 0, 0, 0.45) !important;
-  }
 }
 
 /* 确保所有 input placeholder 颜色 - 暗黑模式 */
@@ -241,6 +134,12 @@ input::placeholder {
 /* 亮色模式下的 placeholder */
 html.light input::placeholder {
   color: rgba(0, 0, 0, 0.45) !important;
+}
+
+/* 亮色模式下登录表单输入框的 placeholder */
+html.light .login-page-wrapper .ant-input-affix-wrapper input::placeholder {
+  color: rgba(0, 0, 0, 0.45) !important;
+  font-size: 14px !important;
 }
 
 /* 通用登录页样式 */

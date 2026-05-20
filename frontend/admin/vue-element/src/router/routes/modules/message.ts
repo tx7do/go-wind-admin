@@ -12,7 +12,7 @@ const messageRoutes: RouteRecordRaw[] = [
     },
     children: [
       {
-        path: "/inbox",
+        path: "messages",
         name: "InboxPage",
         component: () => import("@/views/core/message/index.vue"),
         meta: {

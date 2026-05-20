@@ -42,11 +42,12 @@ export function useNotice() {
       null,
       ["-created_at"] // 按创建时间倒序
     );
-    list.value = result.items || [];
+    // 转换数据格式
+    list.value = (result.items || []).map((item) => convertInternalMessageRecipient(item));
     unreadTotal.value = result.total ?? 0;
   }
 
-  async function read(id: string) {
+  async function read(id: string | number) {
     const numericId = Number(id);
     detail.value = await internalMessageStore.getMessage(numericId);
     dialogVisible.value = true;
@@ -99,8 +100,44 @@ export function useNotice() {
     unreadTotal.value = 0;
   }
 
+  async function clearAll() {
+    const userId = userStore.userInfo?.id;
+    if (!userId) return;
+
+    try {
+      await ElMessageBox.confirm("确定要清空所有消息吗？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      });
+    } catch {
+      return;
+    }
+
+    // 获取所有消息ID
+    const allIds = list.value.map((item) => Number(item.id));
+
+    if (allIds.length === 0) {
+      ElMessage.info("没有消息可清空");
+      return;
+    }
+
+    try {
+      // TODO: 调用后端 API 删除消息
+      // await internalMessageStore.deleteMessages(userId, allIds);
+      ElMessage.success("已清空所有消息");
+    } catch {
+      ElMessage.error("操作失败");
+      return;
+    }
+
+    // 清空列表并重置计数
+    list.value = [];
+    unreadTotal.value = 0;
+  }
+
   function goMore() {
-    router.push({ name: "MyNotice" });
+    router.push("/inbox/messages");
   }
 
   /**
@@ -217,6 +254,7 @@ export function useNotice() {
     fetchList,
     read,
     readAll,
+    clearAll,
     goMore,
   };
 }
