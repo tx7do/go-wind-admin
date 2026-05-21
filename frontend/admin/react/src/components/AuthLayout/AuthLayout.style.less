@@ -57,14 +57,14 @@
   overflow: hidden;
   min-width: 0;
 
-  /* 亮色模式渐变 */
+  /* 亮色模式渐变 - 参考图配色 */
   .auth-layout-wrapper.light-mode & {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    background: linear-gradient(135deg, #e8ecf1 0%, #d5e0ed 100%);
   }
 
-  /* 暗黑模式渐变 */
+  /* 暗黑模式渐变 - 参考图配色 */
   .auth-layout-wrapper:not(.light-mode) & {
-    background: linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%);
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
   }
 
   /* 背景装饰层 */
@@ -131,28 +131,44 @@
     z-index: 1;
   }
 
-  /* 品牌标题 */
+  /* 品牌标题 - 参考图配色 */
   .auth-brand-title {
-    color: #fff; /* WCAG AA: 在深色背景上对比度 12.6:1 */
     font-size: 26px;
     font-weight: 700;
     margin-bottom: 14px;
     text-align: center;
-    text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
     letter-spacing: 0.5px;
     position: relative;
     z-index: 1;
+
+    .auth-layout-wrapper.light-mode & {
+      color: #1f1f1f !important; /* WCAG AA: 对比度 14.5:1 */
+      text-shadow: none;
+    }
+
+    .auth-layout-wrapper:not(.light-mode) & {
+      color: #fff !important; /* WCAG AA: 在深色背景上对比度 12.6:1 */
+      text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+    }
   }
 
-  /* 品牌描述 */
+  /* 品牌描述 - 参考图配色 */
   .auth-brand-description {
-    color: rgba(255, 255, 255, 0.95); /* WCAG AA: 对比度约 12:1 */
     font-size: 15px;
     text-align: center;
-    text-shadow: 0 1px 8px rgba(0, 0, 0, 0.2);
     line-height: 1.6;
     position: relative;
     z-index: 1;
+
+    .auth-layout-wrapper.light-mode & {
+      color: rgba(0, 0, 0, 0.75) !important; /* WCAG AA: 对比度约 7.2:1 */
+      text-shadow: none;
+    }
+
+    .auth-layout-wrapper:not(.light-mode) & {
+      color: rgba(255, 255, 255, 0.9) !important; /* WCAG AA: 对比度约 10:1 */
+      text-shadow: 0 1px 8px rgba(0, 0, 0, 0.2);
+    }
   }
 }
 
@@ -167,17 +183,17 @@
   padding: 64px 56px;
   position: relative;
 
-  /* 亮色模式 */
+  /* 亮色模式 - 参考图配色 */
   .auth-layout-wrapper.light-mode & {
     background: #ffffff;
     border-left: none;
-    box-shadow: -20px 0 60px rgba(102, 126, 234, 0.15);
+    box-shadow: -10px 0 40px rgba(0, 0, 0, 0.05);
   }
 
-  /* 暗黑模式 */
+  /* 暗黑模式 - 参考图配色 */
   .auth-layout-wrapper:not(.light-mode) & {
-    background: #0d1117;
-    border-left: 1px solid rgba(255, 255, 255, 0.06);
+    background: #1f1f1f;
+    border-left: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: none;
   }
 
@@ -187,7 +203,7 @@
     max-width: 420px;
   }
 
-  /* 页面标题 */
+  /* 页面标题 - 参考图配色 */
   .auth-form-title {
     font-size: 34px;
     font-weight: 800;
@@ -195,10 +211,10 @@
     letter-spacing: -0.5px;
 
     .auth-layout-wrapper.light-mode & {
-      color: #1a1a2e; /* WCAG AA: 对比度 14.5:1 */
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: #1f1f1f; /* WCAG AA: 对比度 14.5:1 */
+      background: none;
+      -webkit-background-clip: unset;
+      -webkit-text-fill-color: unset;
     }
 
     .auth-layout-wrapper:not(.light-mode) & {

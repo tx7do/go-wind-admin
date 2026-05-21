@@ -1,75 +1,75 @@
 /* ============================================
-   登录页专用样式
+   登录页专用样式 - 参考图配色
    ============================================ */
 
 .login-page-wrapper {
   /* 输入框基础样式 - 暗黑模式 */
   .ant-input-affix-wrapper {
-    background: rgba(255, 255, 255, 0.08) !important;
-    border: 1px solid rgba(255, 255, 255, 0.18) !important;
-    border-radius: 8px !important;
-    height: 48px !important;
+    background-color: #2a2a2a !important;
+    border: 1px solid #3a3a3a !important;
+    border-radius: 6px !important;
+    height: 40px !important;
     transition: all 0.3s ease !important;
 
     &:hover {
-      background: rgba(255, 255, 255, 0.12) !important;
-      border-color: rgba(255, 255, 255, 0.3) !important;
+      background-color: #333333 !important;
+      border-color: #1677ff !important;
     }
 
     &.ant-input-affix-wrapper-focused,
     &:focus-within {
-      background: rgba(255, 255, 255, 0.15) !important;
-      border-color: #8b5cf6 !important;
-      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
+      background-color: #333333 !important;
+      border-color: #1677ff !important;
+      box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2) !important;
     }
 
-    input {
+    input.ant-input {
       color: #fff !important;
       background: transparent !important;
 
       &::placeholder {
-        color: rgba(255, 255, 255, 0.75) !important; /* WCAG AA: 对比度约 7.2:1 */
+        color: rgba(255, 255, 255, 0.5) !important;
         opacity: 1 !important;
       }
     }
 
     .ant-input-suffix .anticon {
-      color: rgba(255, 255, 255, 0.75) !important; /* WCAG AA: 对比度约 7.2:1 */
+      color: rgba(255, 255, 255, 0.5) !important;
     }
   }
+}
 
-  /* 亮色模式覆盖 */
-  &.light-mode {
-    .ant-input-affix-wrapper {
-      background: rgba(102, 126, 234, 0.06) !important;
-      border: 1.5px solid rgba(102, 126, 234, 0.3) !important;
-      box-shadow: 0 1px 4px rgba(102, 126, 234, 0.08) !important;
+/* 亮色模式 - 通过 auth-layout-wrapper.light-mode 来控制 */
+.auth-layout-wrapper.light-mode {
+  .ant-input-affix-wrapper {
+    background-color: #ffffff !important;
+    border: 1px solid #d9d9d9 !important;
+    box-shadow: none !important;
 
-      &:hover {
-        background: rgba(102, 126, 234, 0.1) !important;
-        border-color: rgba(102, 126, 234, 0.5) !important;
-        box-shadow: 0 2px 8px rgba(102, 126, 234, 0.15) !important;
+    &:hover {
+      background-color: #ffffff !important;
+      border-color: #1677ff !important;
+      box-shadow: none !important;
+    }
+
+    &.ant-input-affix-wrapper-focused,
+    &:focus-within {
+      background-color: #ffffff !important;
+      border-color: #1677ff !important;
+      box-shadow: 0 0 0 2px rgba(22, 119, 255, 0.2) !important;
+    }
+
+    input.ant-input {
+      color: #1f1f1f !important;
+
+      &::placeholder {
+        color: rgba(0, 0, 0, 0.45) !important;
+        opacity: 1 !important;
       }
+    }
 
-      &.ant-input-affix-wrapper-focused,
-      &:focus-within {
-        background: rgba(102, 126, 234, 0.08) !important;
-        border-color: #667eea !important;
-        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15) !important;
-      }
-
-      input {
-        color: #1a1a2e !important; /* WCAG AA: 在白色背景上对比度 14.5:1 */
-
-        &::placeholder {
-          color: rgba(0, 0, 0, 0.75) !important; /* WCAG AA: 在白色背景上对比度约 7.2:1 */
-          opacity: 1 !important;
-        }
-      }
-
-      .ant-input-suffix .anticon {
-        color: rgba(102, 126, 234, 0.85) !important; /* WCAG AA: 对比度约 5.5:1 */
-      }
+    .ant-input-suffix .anticon {
+      color: rgba(0, 0, 0, 0.45) !important;
     }
   }
 }

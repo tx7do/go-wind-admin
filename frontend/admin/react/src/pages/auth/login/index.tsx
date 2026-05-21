@@ -54,27 +54,28 @@ const Login: React.FC = () => {
   };
 
   return (
-    <AuthLayout
-      title="欢迎回来"
-      description="请输入您的账户信息以登录系统"
-      pageKey="login"
-      footerLink={{
-        text: '还没有账号？',
-        linkText: '创建账号',
-        href: '/auth/register',
-      }}
-    >
-      <LoginForm
-        loading={loginLoading}
-        logo={false}
-        title={false}
-        subTitle={false}
-        initialValues={{
-          autoLogin: true,
+    <div className="login-page-wrapper">
+      <AuthLayout
+        title="欢迎回来"
+        description="请输入您的账户信息以登录系统"
+        pageKey="login"
+        footerLink={{
+          text: '还没有账号？',
+          linkText: '创建账号',
+          href: '/auth/register',
         }}
-        onFinish={handleSubmit}
-        submitter={false}
       >
+        <LoginForm
+          loading={loginLoading}
+          logo={false}
+          title={false}
+          subTitle={false}
+          initialValues={{
+            autoLogin: true,
+          }}
+          onFinish={handleSubmit}
+          submitter={false}
+        >
         <ProFormText
           name="username"
           fieldProps={{
@@ -129,31 +130,27 @@ const Login: React.FC = () => {
             type="submit"
             style={{
               width: '100%',
-              height: 50,
-              background: isLightMode
-                ? 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'
-                : 'linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%)',
+              height: 40,
+              background: '#1677ff',
               border: 'none',
-              borderRadius: 10,
+              borderRadius: 6,
               color: '#fff',
-              fontSize: 16,
-              fontWeight: 600,
+              fontSize: 14,
+              fontWeight: 500,
               cursor: loginLoading ? 'not-allowed' : 'pointer',
               opacity: loginLoading ? 0.7 : 1,
-              transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-              boxShadow: isLightMode
-                ? '0 8px 24px rgba(102, 126, 234, 0.35)'
-                : '0 8px 24px rgba(59, 130, 246, 0.3)',
-              letterSpacing: '2px',
-              transform: 'translateY(0)',
+              transition: 'all 0.3s ease',
+              boxShadow: '0 2px 0 rgba(5, 145, 255, 0.1)',
+              letterSpacing: '0.5px',
             }}
             disabled={loginLoading}
           >
-            {loginLoading ? '登录中...' : '登 录'}
+            {loginLoading ? '登录中...' : '登录'}
           </button>
         </div>
       </LoginForm>
     </AuthLayout>
+    </div>
   );
 };
 
