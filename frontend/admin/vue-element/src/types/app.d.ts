@@ -28,6 +28,13 @@ declare global {
   type SupportedLanguagesType = "zh-CN" | "en-US";
 
   /**
+   * 面包屑样式
+   * background 背景
+   * normal 默认
+   */
+  type BreadcrumbStyleType = "background" | "normal";
+
+  /**
    * 布局方式
    * sidebar-nav 侧边菜单布局
    * header-nav 顶部菜单布局
