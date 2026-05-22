@@ -22,12 +22,17 @@ export const AppRouter = () => {
             setLoading(true);
 
             try {
-                // 未登录：只允许访问登录页和 404，并强制重定向到登录页
+                // 未登录：只允许访问登录页、注册页和 404，并强制重定向到登录页
                 if (!isAuthenticated) {
                     const publicRoutes = [
                         {
                             path: '/login',
                             element: staticRoutes.find(r => r.path === '/login')?.element,
+                            meta: {ignoreAccess: true, hideInMenu: true},
+                        },
+                        {
+                            path: '/register',
+                            element: staticRoutes.find(r => r.path === '/register')?.element,
                             meta: {ignoreAccess: true, hideInMenu: true},
                         },
                         {

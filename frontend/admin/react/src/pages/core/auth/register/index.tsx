@@ -1,62 +1,63 @@
-import { LoginForm, ProFormCheckbox, ProFormText } from '@ant-design/pro-components';
+import { LoginForm, ProFormText } from '@ant-design/pro-components';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '@/stores';
 import { usePreferences } from '@/core/preferences';
+import { message } from 'antd';
 
-import './login.style.less';
+import './register.style.less';
 import AuthLayout from '@/components/bussiness/AuthLayout';
 
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const { t } = useTranslation();
-  const { login, loginLoading } = useAuthStore();
+  const { register, registerLoading } = useAuthStore();
   const { theme } = usePreferences();
 
   // 根据主题模式判断当前是否为亮色模式
-  const isLightMode = React.useMemo(() => {
+  React.useMemo(() => {
     if (theme.mode === 'auto') {
       return window.matchMedia('(prefers-color-scheme: light)').matches;
     }
     return theme.mode === 'light';
   }, [theme.mode]);
+  const handleSubmit = async (values: { username: string; password: string; confirmPassword: string }) => {
+    // 验证密码一致性
+    if (values.password !== values.confirmPassword) {
+      message.error(t('auth:passwordMismatch'));
+      return;
+    }
 
-  const handleSubmit = async (values: { username: string; password: string }) => {
     try {
-      await login({
+      await register({
         username: values.username,
         password: values.password,
-        grant_type: 'password',
       });
 
-      // 等待一小段时间确保 localStorage 写入完成，然后跳转
+      // 注册成功后跳转到登录页
       setTimeout(() => {
-        const urlParams = new URL(window.location.href).searchParams;
-        window.location.href = urlParams.get('redirect') || '/';
+        window.location.href = '/login';
       }, 300);
     } catch (error: any) {
-      // 错误已在 store 中处理，这里不需要再次弹出 message
+      // 错误已在 store 中处理
     }
   };
 
   return (
     <AuthLayout
-      title={t('auth:welcomeBack')}
-      description={t('auth:loginDescription')}
-      pageKey="login"
+      title={t('auth:registerTitle')}
+      description={t('auth:registerDescription')}
+      pageKey="register"
       footerLink={{
-        text: t('auth:noAccount'),
-        linkText: t('auth:createAccount'),
-        href: '/register',
+        text: t('auth:hasAccount'),
+        linkText: t('auth:backToLogin'),
+        href: '/login',
       }}
     >
       <LoginForm
-        loading={loginLoading}
+        loading={registerLoading}
         logo={false}
         title={false}
         subTitle={false}
-        initialValues={{
-          autoLogin: true,
-        }}
         onFinish={handleSubmit}
         submitter={false}
       >
@@ -79,36 +80,33 @@ const Login: React.FC = () => {
           fieldProps={{
             size: 'large',
             placeholder: t('auth:passwordPlaceholder'),
-            autoComplete: 'current-password',
+            autoComplete: 'new-password',
           }}
           rules={[
             {
               required: true,
               message: t('auth:passwordRequired'),
             },
+            {
+              min: 6,
+              message: t('auth:passwordMinLength'),
+            },
           ]}
         />
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: 24,
-            marginTop: 8,
+        <ProFormText.Password
+          name="confirmPassword"
+          fieldProps={{
+            size: 'large',
+            placeholder: t('auth:confirmPasswordPlaceholder'),
+            autoComplete: 'new-password',
           }}
-        >
-          <ProFormCheckbox
-            name="autoLogin"
-            fieldProps={{
-              style: {
-                color: isLightMode ? 'rgba(0, 0, 0, 0.7)' : 'rgba(255, 255, 255, 0.75)',
-                fontSize: 13,
-              },
-            }}
-          >
-            {t('auth:rememberAccount')}
-          </ProFormCheckbox>
-        </div>
+          rules={[
+            {
+              required: true,
+              message: t('auth:confirmPasswordRequired'),
+            },
+          ]}
+        />
         <div style={{ marginTop: 36 }}>
           <button
             type="submit"
@@ -121,15 +119,15 @@ const Login: React.FC = () => {
               color: '#fff',
               fontSize: 14,
               fontWeight: 500,
-              cursor: loginLoading ? 'not-allowed' : 'pointer',
-              opacity: loginLoading ? 0.7 : 1,
+              cursor: registerLoading ? 'not-allowed' : 'pointer',
+              opacity: registerLoading ? 0.7 : 1,
               transition: 'all 0.3s ease',
               boxShadow: '0 2px 0 rgba(5, 145, 255, 0.1)',
               letterSpacing: '0.5px',
             }}
-            disabled={loginLoading}
+            disabled={registerLoading}
           >
-            {loginLoading ? t('auth:loggingIn') : t('auth:loginButton')}
+            {registerLoading ? t('auth:registering') : t('auth:registerButton')}
           </button>
         </div>
       </LoginForm>
@@ -137,4 +135,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Register;

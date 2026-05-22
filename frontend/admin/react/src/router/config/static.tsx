@@ -1,6 +1,7 @@
 import type {AppRouteObject} from '@/core/router';
 
 import Login from '@/pages/core/auth/login';
+import Register from '@/pages/core/auth/register';
 
 import NotFound from '@/pages/core/error/404.tsx';
 import MainLayout from '@/layouts/MainLayout';
@@ -16,6 +17,13 @@ export const staticRoutes: AppRouteObject[] = [
         label: '登录',
         element: <Login/>,
         meta: {title: '登录', ignoreAccess: true, hideInMenu: true},
+    },
+    {
+        name: 'register',
+        path: '/register',
+        label: '注册',
+        element: <Register/>,
+        meta: {title: '注册', ignoreAccess: true, hideInMenu: true},
     },
     {
         name: 'root',
