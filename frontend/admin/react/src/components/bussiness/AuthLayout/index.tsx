@@ -1,6 +1,7 @@
 import {GlobalOutlined, MoonOutlined, SunOutlined} from '@ant-design/icons';
 import {Button, Tooltip} from 'antd';
 import React from 'react';
+import {useTranslation} from 'react-i18next';
 
 import SloganIcon from './icons/SloganIcon';
 import './AuthLayout.style.less';
@@ -38,7 +39,8 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
                                                  pageKey = 'auth',
                                                  footerLink,
                                                }) => {
-  const {theme, toggleTheme, setThemeMode} = usePreferences();
+  const {t} = useTranslation();
+  const {theme, toggleTheme, setThemeMode, copyright} = usePreferences();
   const {locale, toggleLocale} = useLocale();
 
   // 切换主题
@@ -76,7 +78,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
     <div className={`auth-layout-wrapper${isLightMode ? ' light-mode' : ''}`}>
       {/* 右上角工具栏 */}
       <div className="auth-toolbar">
-        <Tooltip title={locale === 'zh-CN' ? '切换语言' : 'Switch Language'}>
+        <Tooltip title={t('auth:switchLanguage')}>
           <Button
             type="text"
             icon={<GlobalOutlined/>}
@@ -86,7 +88,7 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
             {locale === 'zh-CN' ? 'EN' : '中文'}
           </Button>
         </Tooltip>
-        <Tooltip title={theme.mode === 'light' ? '切换暗黑模式' : '切换亮色模式'}>
+        <Tooltip title={theme.mode === 'light' ? t('auth:switchToDarkMode') : t('auth:switchToLightMode')}>
           <Button
             type="text"
             icon={theme.mode === 'light' ? <MoonOutlined/> : <SunOutlined/>}
@@ -111,10 +113,10 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
         </div>
 
         <h2 className="auth-brand-title">
-          风行中后台管理系统
+          {t('auth:systemTitle')}
         </h2>
         <p className="auth-brand-description">
-          开箱即用的企业级中后台管理系统
+          {t('auth:systemDescription')}
         </p>
       </div>
 
@@ -151,9 +153,11 @@ const AuthLayout: React.FC<AuthLayoutProps> = ({
         </div>
 
         {/* 底部版权信息 */}
-        <div className="auth-copyright">
-          Copyright © {new Date().getFullYear()} GoWind
-        </div>
+        {copyright.enable && (
+          <div className="auth-copyright">
+            Copyright © {copyright.date} {copyright.companyName}
+          </div>
+        )}
       </div>
     </div>
   );
