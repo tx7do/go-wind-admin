@@ -221,6 +221,11 @@ export const MainLayout = ({ routes: dynamicRoutes }: MainLayoutProps) => {
           >
             <PageContainer
               ghost={true}
+              route={{
+                meta: {
+                  title: matches.at(-1)?.handle?.title || '',
+                },
+              }}
               header={{
                 title: matches.at(-1)?.handle?.title || '',
                 breadcrumb: {},

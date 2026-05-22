@@ -1,6 +1,7 @@
 import { createBrowserRouter, type RouteObject } from 'react-router-dom';
 import { injectRedirects } from './utils/inject-redirect';
 import { sortRoutes } from './utils/sort-routes';
+import { transformRoutesWithHandle } from './utils/transform-meta-to-handle';
 import type { GenerateMenuAndRoutesOptions, AppRoute, AppRouteObject } from './types';
 import { generateRoutesByBackend, generateRoutesByFrontend } from '@/core/router/generators';
 import type { AccessModeType } from '@/core/preferences';
@@ -20,6 +21,9 @@ export const createAccessibleRouter = async (options: GenerateMenuAndRoutesOptio
     routes = injectRedirects(routes as unknown as AppRoute[]) as unknown as AppRouteObject[];
   if (options.autoSort !== false)
     routes = sortRoutes(routes as unknown as AppRoute[]) as unknown as AppRouteObject[];
+
+  // 将 meta 转换为 handle，使 useMatches() 能获取路由元数据
+  routes = transformRoutesWithHandle(routes);
 
   return createBrowserRouter(routes as RouteObject[], {
     future: {
