@@ -1,6 +1,6 @@
-import { useMemo, useCallback } from 'react';
+import { useMemo, useCallback, useState, useEffect } from 'react';
 import { Menu } from 'antd';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { usePreferencesStore } from '@/core/preferences/store';
 import { getIconFromName } from '../utils/iconResolver';
 import ControlPanel from './ControlPanel';
@@ -14,7 +14,6 @@ interface SiderMenuProps {
   selectedKeys: string[];
   onCollapse: (collapsed: boolean) => void;
   onOpenChange: (keys: string[]) => void;
-  onToggleTheme: () => void;
 }
 
 export const SiderMenu = ({
@@ -26,11 +25,12 @@ export const SiderMenu = ({
   selectedKeys,
   onCollapse,
   onOpenChange,
-  onToggleTheme,
 }: SiderMenuProps) => {
   const navigate = useNavigate();
-  const location = useLocation();
   const preferences = usePreferencesStore((state) => state.preferences);
+
+  // 固定状态：pinned=true 时始终显示完整列表，不允许折叠
+  const [pinned, setPinned] = useState(false);
 
   // 转换菜单数据为 Ant Design Menu items 格式
   const menuItems = useMemo(() => {
@@ -56,7 +56,20 @@ export const SiderMenu = ({
     [navigate, isMobile, onCollapse],
   );
 
-  const sidebarWidth = collapsed ? 64 : (preferences.sidebar?.width || 224);
+  // 固定菜单时强制展开
+  useEffect(() => {
+    if (pinned && collapsed) {
+      onCollapse(false);
+    }
+  }, [pinned, collapsed, onCollapse]);
+
+  // pinned 为 true 时不允许折叠
+  const effectiveCollapsed = pinned ? false : collapsed;
+
+  // collapsed 为 true 且未固定时完全隐藏侧边栏
+  if (effectiveCollapsed) return null;
+
+  const sidebarWidth = preferences.sidebar?.width || 224;
 
   return (
     <div
@@ -78,8 +91,8 @@ export const SiderMenu = ({
           height: 56,
           display: 'flex',
           alignItems: 'center',
-          justifyContent: collapsed ? 'center' : 'flex-start',
-          padding: collapsed ? 0 : '0 16px',
+          justifyContent: 'flex-start',
+          padding: '0 16px',
           gap: 8,
           borderBottom: `1px solid ${isDark ? '#303030' : '#e5e7eb'}`,
           cursor: 'pointer',
@@ -95,7 +108,7 @@ export const SiderMenu = ({
             style={{ height: 32, width: 32, flexShrink: 0 }}
           />
         )}
-        {!collapsed && preferences.app.dynamicTitle && (
+        {preferences.app.dynamicTitle && (
           <span
             style={{
               fontWeight: 700,
@@ -116,9 +129,9 @@ export const SiderMenu = ({
         <div style={{ height: '100%', overflowY: 'auto', overflowX: 'hidden', padding: '4px 0' }}>
           <Menu
             mode="inline"
-            inlineCollapsed={collapsed}
+            inlineCollapsed={false}
             selectedKeys={selectedKeys}
-            openKeys={collapsed ? [] : openKeys}
+            openKeys={openKeys}
             onOpenChange={onOpenChange}
             onClick={handleMenuClick}
             items={menuItems}
@@ -136,7 +149,8 @@ export const SiderMenu = ({
         collapsed={collapsed}
         isDark={isDark}
         onToggleCollapse={() => onCollapse(!collapsed)}
-        onToggleTheme={onToggleTheme}
+        pinned={pinned}
+        onTogglePin={() => setPinned(!pinned)}
       />
     </div>
   );

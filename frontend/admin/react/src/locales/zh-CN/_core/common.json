@@ -13,7 +13,13 @@
     "notification": "通知",
     "guest": "访客",
     "switchToLight": "切换到亮色模式",
-    "switchToDark": "切换到暗色模式"
+    "switchToDark": "切换到暗色模式",
+    "expandSidebar": "展开侧边栏",
+    "collapseSidebar": "收起侧边栏",
+    "refresh": "刷新页面",
+    "switchLanguage": "切换语言",
+    "search": "搜索",
+    "searchPlaceholder": "搜索菜单或功能..."
   },
   "refresh": "刷新",
   "iframe": {

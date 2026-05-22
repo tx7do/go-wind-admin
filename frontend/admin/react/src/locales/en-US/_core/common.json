@@ -12,7 +12,13 @@
     "notification": "Notifications",
     "guest": "Guest",
     "switchToLight": "Switch to Light Mode",
-    "switchToDark": "Switch to Dark Mode"
+    "switchToDark": "Switch to Dark Mode",
+    "expandSidebar": "Expand Sidebar",
+    "collapseSidebar": "Collapse Sidebar",
+    "refresh": "Refresh Page",
+    "switchLanguage": "Switch Language",
+    "search": "Search",
+    "searchPlaceholder": "Search menu or features..."
   },
   "refresh": "Refresh",
   "home": "Home",

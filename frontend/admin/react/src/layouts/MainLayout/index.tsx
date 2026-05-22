@@ -17,6 +17,7 @@ import { useLayoutState } from './hooks/useLayoutState';
 import { useUserStore, useAuthStore } from '@/stores';
 import { usePreferencesStore } from '@/core/preferences/store';
 import { useThemeConfig } from '@/core/preferences/hooks/useThemeConfig';
+import { PreferencesPanel } from '@/core/preferences/components';
 
 import { staticRoutes } from '@/router/config/static';
 import type { AppRouteObject } from '@/core/router/types';
@@ -93,6 +94,16 @@ export const MainLayout = ({ routes: dynamicRoutes }: MainLayoutProps) => {
   // 全屏状态
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  // 设置面板
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // 刷新 key（用于强制重渲染内容区）
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const handleRefresh = useCallback(() => {
+    setRefreshKey((k) => k + 1);
+  }, []);
+
   // 窗口大小监听
   useEffect(() => {
     const checkMobile = () => {
@@ -112,7 +123,7 @@ export const MainLayout = ({ routes: dynamicRoutes }: MainLayoutProps) => {
   }, [location.pathname]);
 
   // 顶栏右侧
-  const rightContentRender = useCallback(() => {
+  const headerContentRender = useCallback(() => {
     const toggleTheme = () => {
       setPreferences({
         theme: {
@@ -124,7 +135,10 @@ export const MainLayout = ({ routes: dynamicRoutes }: MainLayoutProps) => {
     return (
       <HeaderContent
         userInfo={userInfo}
+        collapsed={collapsed}
         isFullscreen={isFullscreen}
+        onToggleCollapse={() => setCollapsed(!collapsed)}
+        onRefresh={handleRefresh}
         onToggleFullscreen={() => {
           if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen();
@@ -137,9 +151,10 @@ export const MainLayout = ({ routes: dynamicRoutes }: MainLayoutProps) => {
         onLogout={logout}
         isDark={isDark}
         onToggleTheme={toggleTheme}
+        onOpenSettings={() => setSettingsOpen(true)}
       />
     );
-  }, [userInfo, isFullscreen, logout, isDark, setPreferences]);
+  }, [userInfo, collapsed, isFullscreen, logout, isDark, setPreferences, handleRefresh]);
 
   // 主题切换
   const handleToggleTheme = useCallback(() => {
@@ -169,7 +184,6 @@ export const MainLayout = ({ routes: dynamicRoutes }: MainLayoutProps) => {
           selectedKeys={selectedKeys}
           onCollapse={setCollapsed}
           onOpenChange={setOpenKeys}
-          onToggleTheme={handleToggleTheme}
         />
 
         {/* ===== 右侧：主内容区 ===== */}
@@ -187,15 +201,12 @@ export const MainLayout = ({ routes: dynamicRoutes }: MainLayoutProps) => {
               height: 56,
               backgroundColor: isDark ? '#141414' : '#ffffff',
               borderBottom: `1px solid ${isDark ? '#303030' : '#e5e7eb'}`,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-              padding: '0 24px',
+              padding: '0 12px',
               flexShrink: 0,
               zIndex: 100,
             }}
           >
-            {rightContentRender()}
+            {headerContentRender()}
           </div>
 
           {/* 标签栏 */}
