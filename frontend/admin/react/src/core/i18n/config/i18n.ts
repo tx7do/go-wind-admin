@@ -1,12 +1,17 @@
 import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
-import { resources, type SupportedLocale, type ModuleLoader } from '@/locales';
+import { resources, type SupportedLocale } from '@/locales';
 
 // 扩展模块加载器（按需加载）
-const loadModule: ModuleLoader = async (lang: string, namespace: string) => {
-  // 动态导入对应语言的模块加载器
-  const { loadModule } = await import(`@/locales/${lang}/index.ts`);
-  return loadModule(namespace);
+const loadModule = async (lang: string, namespace: string) => {
+  try {
+    // 动态导入对应语言的模块加载器
+    const { loadModule } = await import(`@/locales/${lang}/index.ts`);
+    return await loadModule(namespace);
+  } catch (error) {
+    console.error(`[i18n] Failed to load module ${namespace} for ${lang}:`, error);
+    return null;
+  }
 };
 
 export const initI18n = async (initialLang: SupportedLocale) => {
@@ -35,8 +40,6 @@ export const initI18n = async (initialLang: SupportedLocale) => {
 
   // 在初始化之后注册扩展模块加载器
   if (i18n.services.backendConnector) {
-    i18n.services.backendConnector.read.bind(i18n.services.backendConnector);
-
     i18n.services.backendConnector.read = (
       lng: string,
       ns: string,
@@ -48,12 +51,9 @@ export const initI18n = async (initialLang: SupportedLocale) => {
         return;
       }
 
-      console.log(`[i18n] Loading namespace: ${ns} for language: ${lng}`);
-
-      // 扩展命名空间：按需加载
+      // 扩展命名空间：按需加载（支持所有扩展模块，不只是 preferences）
       loadModule(lng, ns)
         .then((data) => {
-          console.log(`[i18n] Loaded namespace ${ns}:`, data ? 'success' : 'failed');
           if (data) {
             callback(null, data);
           } else {

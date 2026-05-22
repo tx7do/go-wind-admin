@@ -1,7 +1,7 @@
 import React from 'react';
 import {Button, Input, InputNumber, Segmented, Select, Space, Switch} from 'antd';
 import {MinusOutlined, PlusOutlined, QuestionCircleOutlined} from '@ant-design/icons';
-import {useI18n} from '@/core/i18n';
+import { useDynamicI18n } from '@/core/i18n';
 import {usePreferencesStore} from '../../store';
 import type {ContentCompactType, LayoutType} from '../../types';
 import './LayoutPanel.style.less';
@@ -43,7 +43,7 @@ const CONTENT_COMPACT_OPTIONS = [
 
 export const LayoutPanel: React.FC = () => {
   const { preferences, setPreferences } = usePreferencesStore();
-  const { t } = useI18n('preferences');
+  const { t } = useDynamicI18n({ namespace: 'preferences' });
 
   const handleLayoutChange = (layout: LayoutType) => {
     setPreferences({ app: { layout } });

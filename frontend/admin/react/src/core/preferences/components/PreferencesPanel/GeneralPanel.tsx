@@ -1,6 +1,6 @@
 import React from 'react';
 import { Select, Switch } from 'antd';
-import { useI18n } from '@/core/i18n';
+import { useDynamicI18n } from '@/core/i18n';
 import { usePreferencesStore } from '../../store';
 import type { SupportedLanguagesType } from '../../types';
 import './GeneralPanel.style.less';
@@ -21,7 +21,7 @@ const LANGUAGE_OPTIONS = [
 
 export const GeneralPanel: React.FC = () => {
   const { preferences, setPreferences } = usePreferencesStore();
-  const { t } = useI18n('preferences');
+  const { t } = useDynamicI18n({ namespace: 'preferences' });
 
   const handleLanguageChange = (locale: SupportedLanguagesType) => {
     setPreferences({ app: { locale } });

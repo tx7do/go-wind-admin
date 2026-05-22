@@ -16,9 +16,11 @@ export const useLocaleSync = () => {
     // preferences 变更 → 切换 i18n 语言
     useEffect(() => {
         if (locale && i18n.language !== locale) {
-            i18n.changeLanguage(locale);
+            i18n.changeLanguage(locale).catch((error) => {
+                console.error('Failed to switch language:', error);
+            });
         }
-    }, [locale, i18n.language]);
+    }, [locale]);
 
     // i18n 初始化后，只在第一次反向同步到 store
     useEffect(() => {
