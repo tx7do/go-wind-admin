@@ -1,0 +1,186 @@
+/* GeneralPanel 样式 */
+
+.general-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.general-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .section-title {
+    margin: 0 0 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ant-text-color);
+  }
+
+  /* 开关项区域 */
+  .preference-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+
+    &.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .ant-switch {
+      background: var(--ant-color-fill);
+
+      &.ant-switch-checked {
+        background: var(--ant-color-primary);
+      }
+    }
+  }
+
+  /* 动画选项 */
+
+  .transition-animations {
+    &.disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .transition-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .transition-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 8px;
+      border: 1px solid var(--ant-border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: transparent;
+
+      &:hover {
+        border-color: var(--ant-color-primary-hover);
+        background: var(--ant-color-fill-alter);
+      }
+
+      &.active {
+        border: 2px solid var(--ant-color-primary);
+        background: transparent;
+
+        .transition-label {
+          color: var(--ant-color-primary);
+          font-weight: 500;
+        }
+
+        .transition-preview {
+          background: var(--ant-color-fill-quaternary);
+        }
+      }
+
+      .transition-preview {
+        width: 48px;
+        height: 48px;
+        background: var(--ant-color-fill-quaternary);
+        border: 1px solid var(--ant-border-color-split);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        position: relative;
+        transition: all 0.2s;
+
+        .animation-box {
+          width: 32px;
+          height: 32px;
+          border-radius: 4px;
+          opacity: 1;
+          transition: all 0.2s;
+
+          /* 使用边框代替填充，增强对比度 */
+          border: 3px solid var(--ant-color-primary);
+          background: transparent;
+
+          /* 淡入动画 */
+          &.fade {
+            animation: fadeIn 2s infinite;
+          }
+
+          /* 淡入下滑动画 */
+          &.fade-down {
+            animation: fadeDown 2s infinite;
+          }
+
+          /* 淡入滑动动画 */
+          &.fade-slide {
+            animation: fadeSlide 2s infinite;
+          }
+
+          /* 淡入上滑动画 */
+          &.fade-up {
+            animation: fadeUp 2s infinite;
+          }
+        }
+      }
+
+      .transition-label {
+        font-size: 12px;
+        font-weight: 400;
+        color: var(--ant-text-color-secondary);
+      }
+    }
+  }
+
+  /* 关键帧动画定义 */
+
+  @keyframes fadeIn {
+    0%, 100% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    50% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes fadeDown {
+    0%, 100% {
+      opacity: 0;
+      transform: translateY(-20px);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeSlide {
+    0%, 100% {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    50% {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeUp {
+    0%, 100% {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+}

@@ -1,0 +1,243 @@
+/* AppearancePanel 样式 */
+
+.appearance-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.appearance-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+
+  .section-title {
+    margin: 0 0 4px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ant-text-color);
+  }
+
+  /* 开关项区域 - 不强制高度 */
+  .preference-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 4px 0;
+
+    &.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    &.width-control {
+      gap: 12px;
+    }
+
+    .ant-switch {
+      background: var(--ant-color-fill);
+
+      &.ant-switch-checked {
+        background: var(--ant-color-primary);
+      }
+    }
+  }
+
+  /* 主题模式选项 */
+
+  .theme-mode-group {
+    width: 100%;
+  }
+
+  .theme-mode-options {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .theme-mode-btn {
+    width: 100%;
+    height: 64px;
+    padding: 0;
+    border-radius: 6px;
+    border: 1px solid var(--ant-border-color);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    &:hover {
+      border-color: var(--ant-color-primary);
+      background: var(--ant-color-primary-bg);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+      .theme-mode-content {
+        .theme-icon {
+          color: var(--ant-color-primary);
+          transform: scale(1.1);
+        }
+
+        span {
+          color: var(--ant-color-primary);
+          font-weight: 500;
+        }
+      }
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    &.ant-radio-button-wrapper-checked {
+      border: 2px solid var(--ant-color-primary);
+      background: transparent;
+      color: var(--ant-color-primary);
+
+      .theme-mode-content span {
+        color: var(--ant-color-primary);
+        font-weight: 500;
+      }
+    }
+
+    .theme-mode-content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+
+      .theme-icon {
+        font-size: 20px;
+      }
+
+      span {
+        font-size: 11px;
+        font-weight: 400;
+        color: var(--ant-text-color-secondary);
+      }
+    }
+  }
+
+  .theme-mode-group {
+    .ant-radio-button-wrapper-checked .theme-mode-content span {
+      color: var(--ant-color-primary);
+    }
+  }
+
+  /* 内置主题网格 */
+
+  .builtin-themes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  .builtin-theme-item {
+    width: 100%;
+    height: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 0;
+    border: 1px solid var(--ant-border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
+
+    &:hover {
+      border-color: var(--ant-color-primary);
+      background: var(--ant-color-primary-bg);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+      .theme-color-preview {
+        transform: scale(1.15);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .theme-name {
+        color: var(--ant-color-primary);
+        font-weight: 500;
+      }
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    &.active {
+      border: 2px solid var(--ant-color-primary);
+      background: transparent;
+
+      .theme-name {
+        color: var(--ant-color-primary);
+        font-weight: 500;
+      }
+    }
+
+    .theme-color-preview {
+      width: 28px;
+      height: 28px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+      .custom-icon {
+        font-size: 20px;
+        color: var(--ant-text-color);
+      }
+    }
+
+    .theme-name {
+      font-size: 11px;
+      color: var(--ant-text-color-secondary);
+      font-weight: 400;
+      margin: 0;
+    }
+  }
+
+  /* 圆角分段器 */
+
+  .radius-segmented {
+    width: 100%;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background: var(--ant-color-fill-secondary);
+    border-radius: 6px;
+
+    .ant-segmented-group {
+      display: flex;
+      gap: 4px;
+      padding: 2px;
+    }
+
+    .ant-segmented-item {
+      flex: 1;
+      height: 54px;
+      border-radius: 5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 500;
+      transition: all 0.2s;
+
+      &.ant-segmented-item-selected {
+        background: var(--ant-color-bg-container);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+    }
+  }
+}

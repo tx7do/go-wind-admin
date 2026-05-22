@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Drawer, Segmented } from 'antd';
-import { ReloadOutlined, CopyOutlined, LogoutOutlined } from '@ant-design/icons';
+import { ReloadOutlined, CloseOutlined, CopyOutlined, LogoutOutlined } from '@ant-design/icons';
 
 import { usePreferencesStore } from '../../store';
 import { AppearancePanel } from './AppearancePanel';
@@ -60,12 +60,7 @@ export const PreferencesPanel: React.FC<PreferencesPanelProps> = ({ open, onClos
           </div>
           <div className="drawer-actions">
             <Button type="text" icon={<ReloadOutlined />} onClick={handleReset} title="重置" />
-            <Button
-              type="text"
-              icon={<span style={{ fontSize: 16 }}>×</span>}
-              onClick={onClose}
-              title="关闭"
-            />
+            <Button type="text" icon={<CloseOutlined />} onClick={onClose} title="关闭" />
           </div>
         </div>
       }
@@ -73,6 +68,7 @@ export const PreferencesPanel: React.FC<PreferencesPanelProps> = ({ open, onClos
       size={360}
       open={open}
       onClose={onClose}
+      closable={false}
       className="preferences-drawer"
       footer={
         <div className="drawer-footer">

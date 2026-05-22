@@ -1,9 +1,13 @@
-/* PreferencesPanel 样式 */
+/* PreferencesPanel 主样式 - 仅包含 Drawer 和通用布局样式 */
 
 .preferences-drawer {
   .ant-drawer-header {
     padding: 16px 24px;
     border-bottom: 1px solid var(--ant-border-color-split);
+  }
+
+  .ant-drawer-footer {
+    border-top: 1px solid var(--ant-border-color-split);
   }
 
   .drawer-header {
@@ -18,6 +22,7 @@
     font-size: 16px;
     font-weight: 600;
     line-height: 1.4;
+    color: var(--ant-text-color);
   }
 
   .drawer-subtitle {
@@ -29,10 +34,39 @@
   .drawer-actions {
     display: flex;
     gap: 8px;
+
+    .ant-btn {
+      width: 32px;
+      height: 32px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      .anticon {
+        font-size: 16px;
+      }
+    }
   }
 
   .drawer-tabs {
     margin-bottom: 24px;
+
+    .ant-segmented {
+      background: var(--ant-color-fill-secondary);
+      padding: 2px;
+      border-radius: 6px;
+
+      .ant-segmented-item {
+        border-radius: 4px;
+        transition: all 0.2s;
+
+        &.ant-segmented-item-selected {
+          background: var(--ant-color-bg-container);
+          box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+      }
+    }
   }
 
   .drawer-content {
@@ -44,277 +78,9 @@
     justify-content: space-between;
     align-items: center;
     padding: 16px 0;
-  }
 
-  /* 通用面板样式 */
-
-  .preference-panel {
-    display: flex;
-    flex-direction: column;
-    gap: 24px;
-  }
-
-  .preference-section {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-  }
-
-  .section-title {
-    margin: 0 0 12px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--ant-text-color);
-  }
-
-  .preference-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 8px 0;
-
-    &.disabled {
-      opacity: 0.5;
-      pointer-events: none;
-    }
-
-    &.width-control {
-      gap: 16px;
-    }
-  }
-
-  /* 主题模式选项 */
-
-  .theme-mode-group {
-    width: 100%;
-  }
-
-  .theme-mode-options {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-
-  .theme-mode-btn {
-    width: 100%;
-    height: auto;
-    padding: 16px 8px;
-    border-radius: 8px;
-
-    .theme-mode-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-
-      .theme-icon {
-        font-size: 24px;
-      }
-
-      span {
-        font-size: 12px;
-      }
-    }
-  }
-
-  /* 内置主题网格 */
-
-  .builtin-themes-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
-  }
-
-  .builtin-theme-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 12px 8px;
-    border: 1px solid var(--ant-border-color);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-      border-color: var(--ant-color-primary);
-    }
-
-    &.active {
-      border-color: var(--ant-color-primary);
-      background: var(--ant-color-primary-bg);
-    }
-
-    .theme-color-preview {
-      width: 32px;
-      height: 32px;
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      .custom-icon {
-        font-size: 18px;
-        color: var(--ant-text-color);
-      }
-    }
-
-    .theme-name {
-      font-size: 12px;
-      color: var(--ant-text-color-secondary);
-    }
-  }
-
-  /* 圆角分段器 */
-
-  .radius-segmented {
-    width: 100%;
-  }
-
-  /* 布局网格 */
-
-  .layout-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  .layout-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 12px;
-    border: 1px solid var(--ant-border-color);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-      border-color: var(--ant-color-primary);
-    }
-
-    &.active {
-      border-color: var(--ant-color-primary);
-      background: var(--ant-color-primary-bg);
-    }
-
-    .layout-preview {
-      width: 80px;
-      height: 60px;
-      background: var(--ant-color-bg-layout);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-
-      .layout-icon {
-        font-size: 24px;
-      }
-    }
-
-    .layout-label {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      font-size: 12px;
-      color: var(--ant-text-color-secondary);
-
-      .help-icon {
-        font-size: 12px;
-        cursor: help;
-      }
-    }
-  }
-
-  /* 内容宽度网格 */
-
-  .content-compact-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
-  }
-
-  .content-compact-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    padding: 12px;
-    border: 1px solid var(--ant-border-color);
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.2s;
-
-    &:hover {
-      border-color: var(--ant-color-primary);
-    }
-
-    &.active {
-      border-color: var(--ant-color-primary);
-      background: var(--ant-color-primary-bg);
-    }
-
-    .content-preview {
-      width: 80px;
-      height: 60px;
-      background: var(--ant-color-bg-layout);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 8px;
-
-      .preview-bar {
-        height: 100%;
-        border-radius: 4px;
-        background: var(--ant-color-primary);
-
-        &.narrow {
-          width: 60%;
-        }
-
-        &.wide {
-          width: 100%;
-        }
-      }
-    }
-
-    span {
-      font-size: 12px;
-      color: var(--ant-text-color-secondary);
-    }
-  }
-
-  /* 快捷键样式 */
-
-  .shortcut-key-row {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-  }
-
-  .kbd-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 2px 6px;
-    min-width: 24px;
-    height: 24px;
-    font-size: 11px;
-    font-family: monospace;
-    color: var(--ant-text-color-secondary);
-    background: var(--ant-color-bg-layout);
-    border: 1px solid var(--ant-border-color);
-    border-radius: 4px;
-  }
-
-  /* 动画选项 */
-
-  .transition-animations {
-    &.disabled {
-      opacity: 0.5;
-      pointer-events: none;
+    .ant-btn {
+      flex: 1;
     }
   }
 }

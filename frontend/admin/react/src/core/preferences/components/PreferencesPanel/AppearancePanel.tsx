@@ -1,8 +1,9 @@
 import React from 'react';
 import { Radio, Segmented, Switch } from 'antd';
-import { BulbOutlined, LaptopOutlined, MoonOutlined, ReloadOutlined } from '@ant-design/icons';
+import { BulbOutlined, LaptopOutlined, MoonOutlined, BgColorsOutlined } from '@ant-design/icons';
 import { usePreferencesStore } from '../../store';
 import type { BuiltinThemeType, ThemeModeType } from '../../types';
+import './AppearancePanel.style.less';
 
 /** 内置主题色配置 */
 const BUILTIN_THEMES: { name: string; color: string; type: BuiltinThemeType }[] = [
@@ -54,9 +55,9 @@ export const AppearancePanel: React.FC = () => {
   };
 
   return (
-    <div className="preference-panel">
+    <div className="appearance-panel">
       {/* 主题模式 */}
-      <section className="preference-section">
+      <section className="appearance-section">
         <h3 className="section-title">主题</h3>
         <Radio.Group
           value={preferences.theme.mode}
@@ -87,7 +88,7 @@ export const AppearancePanel: React.FC = () => {
       </section>
 
       {/* 深色侧边栏和顶栏 */}
-      <section className="preference-section">
+      <section className="appearance-section">
         <div className="preference-item">
           <span>深色侧边栏</span>
           <Switch
@@ -105,7 +106,7 @@ export const AppearancePanel: React.FC = () => {
       </section>
 
       {/* 内置主题 */}
-      <section className="preference-section">
+      <section className="appearance-section">
         <h3 className="section-title">内置主题</h3>
         <div className="builtin-themes-grid">
           {BUILTIN_THEMES.map((theme) => (
@@ -121,7 +122,7 @@ export const AppearancePanel: React.FC = () => {
                   border: theme.type === 'custom' ? '1px dashed #666' : 'none',
                 }}
               >
-                {theme.type === 'custom' && <ReloadOutlined className="custom-icon" />}
+                {theme.type === 'custom' && <BgColorsOutlined className="custom-icon" />}
               </div>
               <span className="theme-name">{theme.name}</span>
             </div>
@@ -130,7 +131,7 @@ export const AppearancePanel: React.FC = () => {
       </section>
 
       {/* 圆角 */}
-      <section className="preference-section">
+      <section className="appearance-section">
         <h3 className="section-title">圆角</h3>
         <Segmented
           options={RADIUS_OPTIONS}
@@ -142,7 +143,7 @@ export const AppearancePanel: React.FC = () => {
       </section>
 
       {/* 其它 */}
-      <section className="preference-section">
+      <section className="appearance-section">
         <h3 className="section-title">其它</h3>
         <div className="preference-item">
           <span>色弱模式</span>

@@ -1,13 +1,14 @@
 import React from 'react';
 import { Switch } from 'antd';
 import { usePreferencesStore } from '../../store';
+import './ShortcutKeyPanel.style.less';
 
 export const ShortcutKeyPanel: React.FC = () => {
   const { preferences, setPreferences } = usePreferencesStore();
 
   return (
-    <div className="preference-panel">
-      <section className="preference-section">
+    <div className="shortcut-panel">
+      <section className="shortcut-section">
         <h3 className="section-title">全局</h3>
 
         <div className="preference-item">

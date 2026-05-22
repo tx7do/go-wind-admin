@@ -1,14 +1,15 @@
 import React from 'react';
-import { Select, Segmented, Switch } from 'antd';
+import { Select, Switch } from 'antd';
 import { usePreferencesStore } from '../../store';
 import type { SupportedLanguagesType } from '../../types';
+import './GeneralPanel.style.less';
 
 /** 页面切换动画选项 */
 const TRANSITION_OPTIONS = [
-  { label: '淡入', value: 'fade' },
-  { label: '淡入下滑', value: 'fade-down' },
-  { label: '淡入滑动', value: 'fade-slide' },
-  { label: '淡入上滑', value: 'fade-up' },
+  { label: '淡入', value: 'fade', icon: '✨' },
+  { label: '淡入下滑', value: 'fade-down', icon: '️' },
+  { label: '淡入滑动', value: 'fade-slide', icon: '↔️' },
+  { label: '淡入上滑', value: 'fade-up', icon: '⬆️' },
 ];
 
 /** 语言选项 */
@@ -25,8 +26,8 @@ export const GeneralPanel: React.FC = () => {
   };
 
   return (
-    <div className="preference-panel">
-      <section className="preference-section">
+    <div className="general-panel">
+      <section className="general-section">
         <h3 className="section-title">通用</h3>
 
         <div className="preference-item">
@@ -64,7 +65,7 @@ export const GeneralPanel: React.FC = () => {
         </div>
       </section>
 
-      <section className="preference-section">
+      <section className="general-section">
         <h3 className="section-title">动画</h3>
 
         <div className="preference-item">
@@ -94,13 +95,24 @@ export const GeneralPanel: React.FC = () => {
         <div
           className={`transition-animations ${!preferences.transition.enable ? 'disabled' : ''}`}
         >
-          <Segmented
-            disabled={!preferences.transition.enable}
-            options={TRANSITION_OPTIONS}
-            value={preferences.transition.name}
-            onChange={(value) => setPreferences({ transition: { name: value as string } })}
-            block
-          />
+          <div className="transition-grid">
+            {TRANSITION_OPTIONS.map((option) => (
+              <div
+                key={option.value}
+                className={`transition-item ${preferences.transition.name === option.value ? 'active' : ''}`}
+                onClick={() => {
+                  if (preferences.transition.enable) {
+                    setPreferences({ transition: { name: option.value } });
+                  }
+                }}
+              >
+                <div className="transition-preview">
+                  <div className={`animation-box ${option.value}`} />
+                </div>
+                <span className="transition-label">{option.label}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
     </div>

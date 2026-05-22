@@ -3,6 +3,7 @@ import {Button, InputNumber, Segmented, Space, Switch} from 'antd';
 import {MinusOutlined, PlusOutlined, QuestionCircleOutlined} from '@ant-design/icons';
 import {usePreferencesStore} from '../../store';
 import type {ContentCompactType, LayoutType} from '../../types';
+import './LayoutPanel.style.less';
 
 /** 布局选项 */
 const LAYOUT_OPTIONS = [
@@ -57,9 +58,9 @@ export const LayoutPanel: React.FC = () => {
   };
 
   return (
-    <div className="preference-panel">
+    <div className="layout-panel">
       {/* 布局选择 */}
-      <section className="preference-section">
+      <section className="layout-section">
         <h3 className="section-title">布局</h3>
         <div className="layout-grid">
           {LAYOUT_OPTIONS.map((option) => (
@@ -81,7 +82,7 @@ export const LayoutPanel: React.FC = () => {
       </section>
 
       {/* 内容宽度 */}
-      <section className="preference-section">
+      <section className="layout-section">
         <h3 className="section-title">内容</h3>
         <div className="content-compact-grid">
           {CONTENT_COMPACT_OPTIONS.map((option) => (
@@ -100,7 +101,7 @@ export const LayoutPanel: React.FC = () => {
       </section>
 
       {/* 侧边栏设置 */}
-      <section className="preference-section">
+      <section className="layout-section">
         <h3 className="section-title">侧边栏</h3>
         <div className="preference-item">
           <span>显示侧边栏</span>
@@ -151,7 +152,7 @@ export const LayoutPanel: React.FC = () => {
       </section>
 
       {/* 顶栏设置 */}
-      <section className="preference-section">
+      <section className="layout-section">
         <h3 className="section-title">顶栏</h3>
         <div className="preference-item">
           <span>显示顶栏</span>
@@ -175,7 +176,7 @@ export const LayoutPanel: React.FC = () => {
       </section>
 
       {/* 导航菜单 */}
-      <section className="preference-section">
+      <section className="layout-section">
         <h3 className="section-title">导航菜单</h3>
         <div className="preference-item">
           <span>导航菜单风格</span>

@@ -1,0 +1,66 @@
+/* ShortcutKeyPanel 样式 */
+
+.shortcut-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.shortcut-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+
+  .section-title {
+    margin: 0 0 16px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ant-text-color);
+  }
+
+  /* 开关项区域 */
+  .preference-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+
+    &.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+    }
+
+    .ant-switch {
+      background: var(--ant-color-fill);
+
+      &.ant-switch-checked {
+        background: var(--ant-color-primary);
+      }
+    }
+  }
+
+  /* 快捷键样式 */
+
+  .shortcut-key-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .kbd-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 3px 8px;
+    min-width: 28px;
+    height: 26px;
+    font-size: 12px;
+    font-family: monospace;
+    font-weight: 500;
+    color: var(--ant-text-color-secondary);
+    background: var(--ant-color-fill-secondary);
+    border: 1px solid var(--ant-border-color);
+    border-radius: 5px;
+    box-shadow: 0 1px 0 var(--ant-border-color);
+  }
+}
