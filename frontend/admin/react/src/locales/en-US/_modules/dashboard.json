@@ -1,0 +1,57 @@
+{
+  "stats": {
+    "users": "Users",
+    "visits": "Visits",
+    "downloads": "Downloads",
+    "usage": "Usage",
+    "totalUsers": "Total Users",
+    "totalVisits": "Total Visits",
+    "totalDownloads": "Total Downloads",
+    "totalUsage": "Total Usage"
+  },
+  "charts": {
+    "visitTrend": "Visit Trend",
+    "monthlyVisits": "Monthly Visits",
+    "visitCount": "Visit Count",
+    "visitSource": "Visit Source"
+  },
+  "sources": {
+    "searchEngine": "Search Engine",
+    "directAccess": "Direct Access",
+    "emailMarketing": "Email Marketing",
+    "allianceAdvertising": "Alliance Advertising"
+  },
+  "categories": {
+    "outsourcing": "Outsourcing",
+    "remote": "Remote",
+    "customization": "Customization",
+    "technicalSupport": "Technical Support"
+  },
+  "devices": {
+    "webpage": "Webpage",
+    "other": "Other",
+    "thirdParty": "Third Party",
+    "client": "Client",
+    "ipad": "iPad",
+    "mobile": "Mobile"
+  },
+  "data": {
+    "visit": "Visit",
+    "trend": "Trend",
+    "monthlyVisitCount": "Monthly Visits"
+  },
+  "months": {
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "may": "May",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dec": "Dec"
+  }
+}

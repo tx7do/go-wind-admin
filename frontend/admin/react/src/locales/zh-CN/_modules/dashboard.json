@@ -1,0 +1,57 @@
+{
+  "stats": {
+    "users": "用户量",
+    "visits": "访问量",
+    "downloads": "下载量",
+    "usage": "使用量",
+    "totalUsers": "总用户量",
+    "totalVisits": "总访问量",
+    "totalDownloads": "总下载量",
+    "totalUsage": "总使用量"
+  },
+  "charts": {
+    "visitTrend": "访问趋势",
+    "monthlyVisits": "月访问量",
+    "visitCount": "访问数量",
+    "visitSource": "访问来源"
+  },
+  "sources": {
+    "searchEngine": "搜索引擎",
+    "directAccess": "直接访问",
+    "emailMarketing": "邮件营销",
+    "allianceAdvertising": "联盟广告"
+  },
+  "categories": {
+    "outsourcing": "外包",
+    "remote": "远程",
+    "customization": "定制",
+    "technicalSupport": "技术支持"
+  },
+  "devices": {
+    "webpage": "网页",
+    "other": "其它",
+    "thirdParty": "第三方",
+    "client": "客户端",
+    "ipad": "Ipad",
+    "mobile": "移动端"
+  },
+  "data": {
+    "visit": "访问",
+    "trend": "趋势",
+    "monthlyVisitCount": "月访问量"
+  },
+  "months": {
+    "jan": "1月",
+    "feb": "2月",
+    "mar": "3月",
+    "apr": "4月",
+    "may": "5月",
+    "jun": "6月",
+    "jul": "7月",
+    "aug": "8月",
+    "sep": "9月",
+    "oct": "10月",
+    "nov": "11月",
+    "dec": "12月"
+  }
+}
