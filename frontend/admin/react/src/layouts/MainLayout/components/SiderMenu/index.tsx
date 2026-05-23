@@ -68,21 +68,25 @@ export const Index = ({
   // 完全隐藏侧边栏（sidebar.enable = false 或 sidebar.hidden = true）
   if (!sidebarEnable || sidebarHidden) return null;
 
-  // 计算是否折叠：sidebarCollapsed 为 true 且不在 hover 状态
-  const isCollapsed = sidebarCollapsed && !isHovering;
+  // 计算是否折叠：
+  // - expandOnHover=true: 根据 hover 状态动态切换
+  // - expandOnHover=false: 根据 collapsed 状态决定
+  const isCollapsed = expandOnHover 
+    ? (!isHovering)  // 自动模式：只看 hover 状态
+    : sidebarCollapsed;  // 手动模式：看 collapsed 状态
 
-  // 计算侧边栏宽度：使用括号确保正确的运算符优先级
+  // 计算侧边栏宽度
   const sidebarWidth = isCollapsed ? 60 : (sidebarConfig?.width ?? 224);
 
-  // 鼠标进入/离开事件处理
+  // 鼠标进入/离开事件处理（仅 expandOnHover=true 时生效）
   const handleMouseEnter = () => {
-    if (expandOnHover && sidebarCollapsed) {
+    if (expandOnHover) {
       setIsHovering(true);
     }
   };
 
   const handleMouseLeave = () => {
-    if (expandOnHover && sidebarCollapsed) {
+    if (expandOnHover) {
       setIsHovering(false);
     }
   };
@@ -97,8 +101,8 @@ export const Index = ({
     const newExpandOnHover = !expandOnHover;
     setPreferences({ sidebar: { expandOnHover: newExpandOnHover } });
     if (newExpandOnHover) {
-      // 切换到自动模式时，如果当前是折叠状态，允许 hover 展开
-      // 不做任何操作
+      // 切换到自动模式时，如果当前是折叠状态，立即允许 hover 展开
+      // 不需要额外操作，isHovering 会根据鼠标位置自动更新
     } else {
       // 切换到手动模式时，取消 hover 状态
       setIsHovering(false);
@@ -114,9 +118,12 @@ export const Index = ({
         flexDirection: 'column',
         backgroundColor: isDark ? '#141414' : '#ffffff',
         borderRight: `1px solid ${isDark ? '#303030' : '#e5e7eb'}`,
-        transition: 'width 0.2s',
+        transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         flexShrink: 0,
         overflow: 'hidden',
+        // Drawer 效果：expandOnHover=true 时，使用绝对定位悬浮在内容上方
+        position: expandOnHover ? 'absolute' : 'relative',
+        zIndex: expandOnHover ? 1000 : 1,
       }}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

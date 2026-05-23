@@ -3,23 +3,35 @@
   /* 让菜单项文字在折叠状态下仍然显示 */
   .ant-menu-item {
     width: auto !important;
+    min-width: auto !important;
     padding: 0 16px !important;
+    margin: 0 !important;
     
     .ant-menu-title-content {
       display: inline-block !important;
       opacity: 1 !important;
+      visibility: visible !important;
       margin-left: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
 
   .ant-menu-submenu-title {
     width: auto !important;
+    min-width: auto !important;
     padding: 0 16px !important;
+    margin: 0 !important;
     
     .ant-menu-title-content {
       display: inline-block !important;
       opacity: 1 !important;
+      visibility: visible !important;
       margin-left: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     
     /* 隐藏子菜单箭头 */
@@ -32,5 +44,13 @@
   .ant-menu-item-icon,
   .ant-menu-submenu-title .anticon {
     margin-right: 8px !important;
+    flex-shrink: 0;
+  }
+  
+  /* 确保子菜单弹出时不受影响 */
+  &.ant-menu-inline-collapsed {
+    .ant-menu-submenu {
+      position: relative;
+    }
   }
 }

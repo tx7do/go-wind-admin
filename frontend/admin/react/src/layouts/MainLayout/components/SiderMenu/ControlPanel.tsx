@@ -21,9 +21,6 @@ export const ControlPanel = ({
   onToggleExpandOnHover,
   onToggleCollapse,
 }: ControlPanelProps) => {
-  // 固定按钮：折叠状态下隐藏
-  const showPinButton = !collapsed;
-
   return (
     <div
       style={{
@@ -53,27 +50,25 @@ export const ControlPanel = ({
         />
       </Tooltip>
 
-      {/* 右侧：固定/自动按钮（折叠状态下隐藏） */}
-      {showPinButton && (
-        <Tooltip
-          title={expandOnHover ? '切换为手动模式（固定菜单）' : '切换为自动模式（鼠标悬停展开）'}
-        >
-          <Button
-            type="text"
-            icon={!expandOnHover ? <PushpinFilled /> : <PushpinOutlined />}
-            onClick={onToggleExpandOnHover}
-            size="small"
-            style={{
-              color: isDark ? '#a6a6a6' : '#595959',
-              width: 32,
-              height: 32,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          />
-        </Tooltip>
-      )}
+      {/* 右侧：固定/自动按钮（始终显示） */}
+      <Tooltip
+        title={expandOnHover ? '切换为手动模式（固定菜单）' : '切换为自动模式（鼠标悬停展开）'}
+      >
+        <Button
+          type="text"
+          icon={!expandOnHover ? <PushpinFilled /> : <PushpinOutlined />}
+          onClick={onToggleExpandOnHover}
+          size="small"
+          style={{
+            color: isDark ? '#a6a6a6' : '#595959',
+            width: 32,
+            height: 32,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        />
+      </Tooltip>
     </div>
   );
 };
