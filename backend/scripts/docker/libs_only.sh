@@ -8,7 +8,6 @@
 ## 启动的服务（仅依赖）：
 ##   - PostgreSQL 数据库
 ##   - Redis 缓存
-##   - Consul 服务发现
 ##   - MinIO 对象存储
 ##   - Jaeger 分布式追踪
 ##

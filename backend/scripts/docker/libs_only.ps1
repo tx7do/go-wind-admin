@@ -30,7 +30,6 @@ Compose 文件路径 (默认: docker-compose.libs.yaml)
 启动的服务（仅依赖）：
   - PostgreSQL 数据库
   - Redis 缓存
-  - Consul 服务发现
   - MinIO 对象存储
   - Jaeger 分布式追踪
 
@@ -48,8 +47,7 @@ Compose 文件路径 (默认: docker-compose.libs.yaml)
   .\libs_only.ps1
 
   # PowerShell 2: 启动应用代码
-  cd app\admin\service
-  go run main.go
+  gow run admin
 
 相关脚本：
   - full_deploy.ps1  启动完整应用（包含应用服务）

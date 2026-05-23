@@ -52,7 +52,7 @@ scripts/
 
 ```bash
 # 自动检测系统并安装
-bash scripts/env/install_unix_prod.sh
+./scripts/env/install_unix_prod.sh
 ```
 
 **特点：**
@@ -78,7 +78,7 @@ bash scripts/env/install_unix_prod.sh
 **使用方式：**
 
 ```bash
-bash scripts/env/install_unix_dev.sh
+./scripts/env/install_unix_dev.sh
 ```
 
 **开发特性：**
@@ -104,7 +104,7 @@ bash scripts/env/install_unix_dev.sh
 **使用方式：**
 
 ```bash
-bash scripts/env/install_golang.sh
+./scripts/env/install_golang.sh
 ```
 
 **支持：** macOS 和 Linux（自动检测 ARM64/AMD64）
@@ -125,13 +125,13 @@ bash scripts/env/install_golang.sh
 
 ```powershell
 # 完整安装
-.\install_windows_dev.ps1
+.\scripts\env\install_windows_dev.ps1
 
 # 跳过 Docker
-.\install_windows_dev.ps1 -SkipDocker
+.\scripts\env\install_windows_dev.ps1 -SkipDocker
 
 # 自动确认
-.\install_windows_dev.ps1 -AutoConfirm
+.\scripts\env\install_windows_dev.ps1 -AutoConfirm
 ```
 
 **特点：**
@@ -166,10 +166,10 @@ bash scripts/env/install_golang.sh
 
 ```bash
 # 使用默认配置（APP_ROOT=/root/app）
-bash scripts/docker/full_deploy.sh
+./scripts/docker/full_deploy.sh
 
 # 自定义数据目录
-APP_ROOT=/opt/app bash scripts/docker/full_deploy.sh
+APP_ROOT=/opt/app ./scripts/docker/full_deploy.sh
 ```
 
 *Windows (PowerShell)：*
@@ -207,7 +207,6 @@ APP_ROOT=/opt/app bash scripts/docker/full_deploy.sh
 
 - PostgreSQL 数据库
 - Redis 缓存
-- Consul 服务发现
 - MinIO 对象存储
 - Jaeger 分布式追踪
 
@@ -219,14 +218,13 @@ APP_ROOT=/opt/app bash scripts/docker/full_deploy.sh
 
 ```bash
 # 启动依赖服务
-bash scripts/docker/libs_only.sh
+./scripts/docker/libs_only.sh
 
 # 然后在另一个终端本地运行应用
-cd app
-go run main.go
+gow run admin
 
 # 自定义配置
-APP_ROOT=/opt/app COMPOSE_FILE=custom.yaml bash scripts/docker/libs_only.sh
+APP_ROOT=/opt/app COMPOSE_FILE=custom.yaml ./scripts/docker/libs_only.sh
 ```
 
 *Windows (PowerShell)：*
@@ -236,8 +234,7 @@ APP_ROOT=/opt/app COMPOSE_FILE=custom.yaml bash scripts/docker/libs_only.sh
 .\scripts\docker\libs_only.ps1
 
 # 然后在另一个 PowerShell 本地运行应用
-cd app
-go run main.go
+gow run admin
 
 # 自定义配置
 .\scripts\docker\libs_only.ps1 -AppRoot "D:\app" -ComposeFile "docker-compose.libs.yaml"
@@ -274,7 +271,7 @@ go run main.go
 **使用方式：**
 
 ```bash
-bash scripts/deploy/pm2_service.sh
+./scripts/deploy/pm2_service.sh
 ```
 
 **前置条件：**
@@ -298,13 +295,13 @@ bash scripts/deploy/pm2_service.sh
 
 ```bash
 # 1. 准备开发环境
-bash scripts/env/install_unix_dev.sh
+./scripts/env/install_unix_dev.sh
 
 # 2. 启动所有服务
-bash scripts/docker/full_deploy.sh
+./scripts/docker/full_deploy.sh
 
 # 3. 开始开发
-cd app && go run main.go
+gow run admin
 ```
 
 ---
@@ -313,13 +310,13 @@ cd app && go run main.go
 
 ```bash
 # 1. 准备开发环境
-bash scripts/env/install_unix_dev.sh
+./scripts/env/install_unix_dev.sh
 
 # 2. 启动本地依赖
-bash scripts/docker/libs_only.sh
+./scripts/docker/libs_only.sh
 
 # 3. 本地运行应用代码
-cd app && go run main.go
+gow run admin
 
 # 4. 在 IDE 中调试应用（推荐）
 ```
@@ -330,13 +327,13 @@ cd app && go run main.go
 
 ```bash
 # 1. 准备生产环境
-bash scripts/env/install_unix_prod.sh
+./scripts/env/install_unix_prod.sh
 
 # 2. 启动完整应用
-bash scripts/docker/full_deploy.sh
+./scripts/docker/full_deploy.sh
 
 # 3. 通过 PM2 管理（可选）
-bash scripts/deploy/pm2_service.sh
+./scripts/deploy/pm2_service.sh
 ```
 
 ---
@@ -358,8 +355,7 @@ bash scripts/deploy/pm2_service.sh
 # 打开项目，按 F5 开始调试
 
 # 或本地运行应用（如使用方式 B）
-cd app
-go run main.go
+gow run admin
 ```
 
 **Windows PowerShell 脚本特性：**
@@ -423,13 +419,13 @@ COMPOSE_FILE=custom.yaml bash scripts/docker/libs_only.sh
 
 ```bash
 # 1. 准备环境
-bash scripts/env/install_unix_dev.sh
+./scripts/env/install_unix_dev.sh
 
 # 2. 启动依赖
-bash scripts/docker/libs_only.sh
+./scripts/docker/libs_only.sh
 
-# 3. 本地开发
-cd app && go run main.go
+# 3. 本地开发运行
+gow run admin
 
 # 4. 查看日志
 docker logs -f postgres  # 查看数据库日志
@@ -443,11 +439,10 @@ docker logs -f postgres  # 查看数据库日志
 .\scripts\env\install_windows_dev.ps1
 
 # 3. 启动依赖
-bash scripts/docker/libs_only.sh
+.\scripts\docker\libs_only.ps1
 
 # 4. 本地开发
-cd app
-go run main.go
+gow run admin
 ```
 
 ---
@@ -493,6 +488,3 @@ pm2 list
 5. **重新运行** - 脚本具有幂等性，多次运行安全
 
 ---
-
-**最后更新：** 2026-03-01  
-**脚本版本：** v5.0（完全函数化）

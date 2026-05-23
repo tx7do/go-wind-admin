@@ -9,7 +9,7 @@
 ```bash
 # 步骤 1：准备开发环境（只需一次）
 # 安装所有必要工具：基础工具、Node.js、Docker、Go、开发插件
-bash scripts/env/install_unix_dev.sh
+./scripts/env/install_unix_dev.sh
 
 # 步骤 2：验证安装
 go version
@@ -17,23 +17,22 @@ docker --version
 npm -v
 
 # 步骤 3：启动完整环境
-bash scripts/docker/full_deploy.sh
+./scripts/docker/full_deploy.sh
 
 # 步骤 4：开发
-cd app
-go run main.go
+gow run admin
 ```
 
 #### 后续开发（每天）
 
 ```bash
 # 方式 A：启动所有服务（如果需要完整环境）
-bash scripts/docker/full_deploy.sh
-cd app && go run main.go
+./scripts/docker/full_deploy.sh
+gow run admin
 
 # 方式 B：启动仅依赖（推荐本地开发）
-bash scripts/docker/libs_only.sh
-cd app && go run main.go
+./scripts/docker/libs_only.sh
+gow run admin
 ```
 
 ---
@@ -44,10 +43,10 @@ cd app && go run main.go
 
 ```bash
 # 步骤 1：准备开发环境
-bash scripts/env/install_unix_dev.sh
+./scripts/env/install_unix_dev.sh
 
 # 步骤 2：仅启动本地依赖
-bash scripts/docker/libs_only.sh
+./scripts/docker/libs_only.sh
 
 # 步骤 3：在 IDE 中开发（不需要通过命令行运行）
 # 在 VS Code / GoLand 中打开项目，直接按 F5 调试
@@ -68,17 +67,17 @@ bash scripts/docker/libs_only.sh
 ssh user@server.com
 
 # 步骤 2：克隆项目
-git clone <repo-url>
+git clone https://github.com/tx7do/go-wind-admin.git
 cd go-wind-admin/backend
 
 # 步骤 3：准备生产环境
-bash scripts/env/install_unix_prod.sh
+./scripts/env/install_unix_prod.sh
 
 # 步骤 4：启动完整应用
-bash scripts/docker/full_deploy.sh
+./scripts/docker/full_deploy.sh
 
 # 步骤 5：通过 PM2 管理应用
-bash scripts/deploy/pm2_service.sh
+./scripts/deploy/pm2_service.sh
 
 # 步骤 6：查看日志
 pm2 logs
@@ -100,9 +99,6 @@ pm2 logs
 
 # 步骤 4：启动依赖（推荐 - 使用 PowerShell 脚本）
 .\scripts\docker\libs_only.ps1
-
-# 或使用 Bash 脚本（如果已安装 Git Bash）
-bash scripts/docker/libs_only.sh
 
 # 步骤 5：在 IDE 中开发（VS Code / GoLand）
 # 打开项目，按 F5 开始调试
@@ -137,18 +133,18 @@ bash scripts/docker/libs_only.sh
 
 ```bash
 # 项目负责人
-git clone <repo-url>
+git clone https://github.com/tx7do/go-wind-admin.git
 cd go-wind-admin/backend
-bash scripts/env/install_unix_dev.sh
-bash scripts/docker/full_deploy.sh
+./scripts/env/install_unix_dev.sh
+./scripts/docker/full_deploy.sh
 git push  # 确保项目配置已推送
 
 # 其他开发者
-git clone <repo-url>
+git clone https://github.com/tx7do/go-wind-admin.git
 cd go-wind-admin/backend
-bash scripts/env/install_unix_dev.sh  # 一次性
-bash scripts/docker/libs_only.sh      # 每天开发时
-cd app && go run main.go
+./scripts/env/install_unix_dev.sh  # 一次性
+./scripts/docker/libs_only.sh      # 每天开发时
+gow run admin
 ```
 
 ---
@@ -176,15 +172,15 @@ cd app && go run main.go
 ```
 我需要什么？
 ├─ 完整应用 + 所有依赖
-│  ├─ Linux/macOS → bash scripts/docker/full_deploy.sh
+│  ├─ Linux/macOS → ./scripts/docker/full_deploy.sh
 │  └─ Windows → .\scripts\docker\full_deploy.ps1
 │
 ├─ 仅依赖（本地开发）
-│  ├─ Linux/macOS → bash scripts/docker/libs_only.sh
+│  ├─ Linux/macOS → ./scripts/docker/libs_only.sh
 │  └─ Windows → .\scripts\docker\libs_only.ps1
 │
 └─ 自定义配置
-   ├─ Bash → APP_ROOT=/path bash scripts/docker/libs_only.sh
+   ├─ Bash → APP_ROOT=/path ./scripts/docker/libs_only.sh
    └─ PowerShell → .\scripts\docker\libs_only.ps1 -AppRoot "D:\path"
 ```
 
@@ -206,8 +202,8 @@ cd app && go run main.go
 
 ```bash
 # 为每个项目/环境创建独立的数据目录
-APP_ROOT=/opt/project1 bash scripts/docker/libs_only.sh
-APP_ROOT=/opt/project2 bash scripts/docker/libs_only.sh
+APP_ROOT=/opt/project1 ./scripts/docker/libs_only.sh
+APP_ROOT=/opt/project2 ./scripts/docker/libs_only.sh
 ```
 
 *Windows (PowerShell):*
@@ -228,7 +224,7 @@ APP_ROOT=/opt/project2 bash scripts/docker/libs_only.sh
 
 ```bash
 # 定期更新工具
-bash scripts/env/install_unix_dev.sh  # 重新运行可更新工具
+./scripts/env/install_unix_dev.sh  # 重新运行可更新工具
 
 # 检查版本
 go version
@@ -295,12 +291,12 @@ docker exec -i postgres psql < backup.sql
 
 ```bash
 # 方式 1：最简单（推荐）
-bash scripts/docker/libs_only.sh  # 重启依赖
+./scripts/docker/libs_only.sh  # 重启依赖
 # 在 IDE 中重启应用
 
 # 方式 2：完整重启
-bash scripts/docker/full_deploy.sh  # 重启所有
-cd app && go run main.go
+./scripts/docker/full_deploy.sh  # 重启所有
+gow run admin
 
 # 方式 3：PM2 重启
 pm2 restart all
@@ -315,7 +311,7 @@ pm2 restart all
 
 # 方式 2：完整重启
 .\scripts\docker\full_deploy.ps1  # 重启所有
-cd app; go run main.go
+gow run admin
 
 # 方式 3：PM2 重启（如已安装）
 pm2 restart all
@@ -326,7 +322,7 @@ pm2 restart all
 ```bash
 # 编辑 install_unix_dev.sh 中的 Go 版本
 # 然后重新运行
-bash scripts/env/install_unix_dev.sh
+./scripts/env/install_unix_dev.sh
 ```
 
 ### 场景 3：添加新的 Go 依赖
@@ -335,7 +331,7 @@ bash scripts/env/install_unix_dev.sh
 # 编辑 app/go.mod
 # 运行
 go mod tidy
-go run main.go
+gow run admin
 ```
 
 ### 场景 4：Docker 卷满了
@@ -362,7 +358,7 @@ kill -9 <PID>
 
 # 更改 docker-compose 端口配置
 # 编辑 docker-compose.yml 后重启
-bash scripts/docker/libs_only.sh
+./scripts/docker/libs_only.sh
 ```
 
 *Windows:*
@@ -410,7 +406,6 @@ Stop-Process -Id <PID> -Force
 
 - ✅ 数据库容器运行：`docker ps | grep postgres`
 - ✅ Redis 容器运行：`docker ps | grep redis`
-- ✅ Consul 容器运行：`docker ps | grep consul`
 
 ### 应用检查
 
@@ -429,7 +424,7 @@ Stop-Process -Id <PID> -Force
 ```bash
 # 解决
 chmod +x scripts/**/*.sh
-bash scripts/env/install_unix_dev.sh
+./scripts/env/install_unix_dev.sh
 ```
 
 *Windows (PowerShell):*
@@ -546,6 +541,3 @@ Test-Path .\scripts\docker\libs_only.ps1
 5. **查看文档** - 参考 README.md
 
 ---
-
-**更新时间：** 2026-03-01  
-**文档版本：** v2.0 - 添加 Windows PowerShell 脚本支持
