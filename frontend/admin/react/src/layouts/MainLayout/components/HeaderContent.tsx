@@ -112,12 +112,16 @@ export const HeaderContent = ({
 
     // 始终在开头添加首页（如果 showHome 为 true）
     if (showHome) {
-      items.unshift({
-        key: '/',
-        title: t('home'),
-        icon: showIcon ? getIconFromName('lucide:home') : undefined,
-        onClick: () => navigate('/'),
-      });
+      // 检查是否已经存在根路径 '/' 的面包屑项，避免重复 key
+      const hasHome = items.some((item) => item.key === '/');
+      if (!hasHome) {
+        items.unshift({
+          key: '/',
+          title: t('home'),
+          icon: showIcon ? getIconFromName('lucide:home') : undefined,
+          onClick: () => navigate('/'),
+        });
+      }
     }
 
     return items;
