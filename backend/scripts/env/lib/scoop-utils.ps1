@@ -8,11 +8,10 @@ Scoop 包管理器工具函数库
 #>
 
 # 导入通用工具库（如果尚未导入）
-# if (-not (Test-Path variable:global:CommonUtilsLoaded)) {
-#     $LibDir = Split-Path -Parent $MyInvocation.MyCommand.Path
-#     . "$LibDir\common-utils.ps1"
-#     Set-Variable -Name CommonUtilsLoaded -Value $true -Scope Global
-# }
+if (-not $global:CommonUtilsLoaded) {
+    $LibDir = if ($PSScriptRoot) { $PSScriptRoot } else { Split-Path -Parent $MyInvocation.MyCommand.Path }
+    . (Join-Path $LibDir "common-utils.ps1")
+}
 
 # ========== Scoop 安装函数 ==========
 function Install-Scoop {
