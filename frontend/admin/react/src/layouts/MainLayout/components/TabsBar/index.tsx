@@ -142,12 +142,17 @@ export const Index = () => {
   const currentTab = useMemo(() => {
     const lastMatch = matches.at(-1) as any;
     const title = lastMatch?.handle?.title || lastMatch?.data?.title || '未知页面';
-    const icon = lastMatch?.handle?.icon;
+    
+    // 从 handle 中获取图标字符串（已绎通过 transformMetaToHandle 转换）
+    const icon = lastMatch?.handle?.icon || lastMatch?.data?.icon;
+    
+    console.log('TabsBar - currentTab:', { title, icon, handle: lastMatch?.handle });
+    
     return {
       key: location.pathname,
       path: location.pathname,
       title,
-      icon,
+      icon, // 保持为字符串，后续通过 getIconFromName 转换
       closable: location.pathname !== '/',
     };
   }, [location.pathname, matches]);

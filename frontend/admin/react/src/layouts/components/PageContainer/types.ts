@@ -73,5 +73,6 @@ export interface PageContainerProps extends Omit<
 export interface BreadcrumbItem {
   path?: string;
   breadcrumbName: string;
+  icon?: ReactNode;
   onClick?: () => void;
 }

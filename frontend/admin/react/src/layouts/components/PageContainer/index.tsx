@@ -97,6 +97,9 @@ export const PageContainer = ({
     route,
     showHomeIcon: true,
   });
+  
+  // 调试：查看面包屑数据
+  console.log('PageContainer - breadcrumb:', breadcrumb);
 
   // 计算标题
   const pageTitle = usePageTitle({
@@ -203,7 +206,17 @@ export const PageContainer = ({
         breadcrumb={
           effectiveBreadcrumb === false
             ? undefined
-            : (effectiveBreadcrumb as any)
+            : {
+                items: effectiveBreadcrumb.map((item) => ({
+                  title: (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      {item.icon}
+                      <span>{item.breadcrumbName}</span>
+                    </span>
+                  ),
+                  onClick: item.onClick,
+                })),
+              }
         }
         extra={actionButtons ? <Space>{actionButtons}</Space> : extra}
         style={fullscreenStyles}
@@ -224,7 +237,17 @@ export const PageContainer = ({
         breadcrumb={
           effectiveBreadcrumb === false
             ? undefined
-            : (effectiveBreadcrumb as any)
+            : {
+                items: effectiveBreadcrumb.map((item) => ({
+                  title: (
+                    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                      {item.icon}
+                      <span>{item.breadcrumbName}</span>
+                    </span>
+                  ),
+                  onClick: item.onClick,
+                })),
+              }
         }
         extra={actionButtons ? <Space>{actionButtons}</Space> : extra}
         style={fullscreenStyles}
@@ -244,7 +267,18 @@ export const PageContainer = ({
       breadcrumb={
         effectiveBreadcrumb === false
           ? undefined
-          : (effectiveBreadcrumb as any)
+          : {
+              // 使用 items 而不是 routes（Ant Design v6）
+              items: effectiveBreadcrumb.map((item) => ({
+                title: (
+                  <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                    {item.icon}
+                    <span>{item.breadcrumbName}</span>
+                  </span>
+                ),
+                onClick: item.onClick,
+              })),
+            }
       }
       extra={actionButtons ? <Space>{actionButtons}</Space> : extra}
       footer={footer}

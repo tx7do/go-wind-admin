@@ -1,5 +1,7 @@
 import { useMemo } from 'react';
+import React from 'react';
 import { useMatches, useNavigate } from 'react-router-dom';
+import * as Icons from '@ant-design/icons';
 
 import { useI18n } from '@/core/i18n';
 import type { BreadcrumbItem } from '../types';
@@ -38,12 +40,16 @@ export const useBreadcrumb = ({
       pathnameBase: string;
       handle?: {
         title?: string;
+        icon?: string;
         [key: string]: any;
       };
       [key: string]: any;
     };
 
     const typedMatches = matches as MatchWithHandle[];
+    
+    console.log('useBreadcrumb - matches:', typedMatches);
+    console.log('useBreadcrumb - handles:', typedMatches.map(m => ({ path: m.pathname, handle: m.handle })));
 
     // 过滤出有标题的匹配项
     const items = typedMatches
@@ -51,10 +57,27 @@ export const useBreadcrumb = ({
       .map((match: MatchWithHandle, index: number, arr: MatchWithHandle[]) => {
         const isLast = index === arr.length - 1;
         const title = match.handle?.title || route?.meta?.title || t('pageContainer.defaultTitle');
+        
+        console.log(`useBreadcrumb - match ${index}:`, { path: match.pathname, handle: match.handle, title });
+        
+        // 将图标字符串转换为 React 组件
+        let icon: React.ReactNode = undefined;
+        if (match.handle?.icon) {
+          const IconComponent = (Icons as any)[match.handle.icon];
+          if (IconComponent) {
+            icon = React.createElement(IconComponent);
+            console.log(`useBreadcrumb - icon found for ${match.pathname}:`, match.handle.icon);
+          } else {
+            console.warn(`useBreadcrumb - icon component not found:`, match.handle.icon);
+          }
+        } else {
+          console.log(`useBreadcrumb - no icon for ${match.pathname}`);
+        }
 
         return {
           path: match.pathname,
           breadcrumbName: title,
+          icon, // 添加图标
           // 最后一项不可点击（当前页）
           onClick: !isLast && match.pathname ? () => navigate(match.pathname) : undefined,
         };
@@ -65,9 +88,12 @@ export const useBreadcrumb = ({
       items.unshift({
         path: '/',
         breadcrumbName: t('home'),
+        icon: React.createElement(Icons.HomeOutlined), // 首页图标
         onClick: () => navigate('/'),
       });
     }
+    
+    console.log('useBreadcrumb - final items:', items);
 
     return items;
   }, [matches, route?.meta?.title, navigate, showHomeIcon]);

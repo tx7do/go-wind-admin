@@ -294,8 +294,10 @@ export const MainLayout = ({ routes: dynamicRoutes }: MainLayoutProps) => {
               route={{
                 meta: {
                   title: matches.at(-1)?.handle?.title || '',
+                  icon: undefined, // 明确禁止显示图标
                 },
               }}
+              breadcrumb={false} // 禁用面包屑（顶部栏已有）
               header={false}
               contentPadding={false}
               style={{

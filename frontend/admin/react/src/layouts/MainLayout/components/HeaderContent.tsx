@@ -1,21 +1,8 @@
 import { useMemo } from 'react';
+import React from 'react';
 import { Avatar, Dropdown, Badge, Tooltip, Button, Breadcrumb, Input, Popover } from 'antd';
 import type { MenuProps } from 'antd';
-import {
-  LogoutOutlined,
-  UserOutlined,
-  SettingOutlined,
-  BellOutlined,
-  FullscreenOutlined,
-  FullscreenExitOutlined,
-  MoonOutlined,
-  SunOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  ReloadOutlined,
-  GlobalOutlined,
-  SearchOutlined,
-} from '@ant-design/icons';
+import * as Icons from '@ant-design/icons';
 import { useMatches, useNavigate } from 'react-router-dom';
 import { useI18n } from '@/core/i18n';
 import { usePreferencesStore } from '@/core/preferences/store';
@@ -67,22 +54,35 @@ export const HeaderContent = ({
 
     const items = typedMatches
       .filter((match) => match.handle?.title)
-      .map((match, index, arr) => ({
-        key: match.pathname,
-        title: match.handle?.title || '',
-        onClick:
-          index < arr.length - 1
-            ? () => {
-                navigate(match.pathname);
-              }
-            : undefined,
-      }));
+      .map((match, index, arr) => {
+        // 将图标字符串转换为 React 组件
+        let icon: React.ReactNode = undefined;
+        if (match.handle?.icon) {
+          const IconComponent = (Icons as any)[match.handle.icon];
+          if (IconComponent) {
+            icon = React.createElement(IconComponent);
+          }
+        }
+
+        return {
+          key: match.pathname,
+          title: match.handle?.title || '',
+          icon, // 添加图标
+          onClick:
+            index < arr.length - 1
+              ? () => {
+                  navigate(match.pathname);
+                }
+              : undefined,
+        };
+      });
 
     // 如果第一个不是首页，添加首页
     if (items.length && items[0].key !== '/') {
       items.unshift({
         key: '/',
         title: t('home'),
+        icon: React.createElement(Icons.HomeOutlined), // 首页图标
         onClick: () => navigate('/'),
       });
     }
@@ -118,7 +118,7 @@ export const HeaderContent = ({
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
-      icon: <UserOutlined />,
+      icon: <Icons.UserOutlined />,
       label: t('header.profile'),
       onClick: () => {
         /* 跳转个人中心 */
@@ -126,7 +126,7 @@ export const HeaderContent = ({
     },
     {
       key: 'settings',
-      icon: <SettingOutlined />,
+      icon: <Icons.SettingOutlined />,
       label: t('header.settings'),
       onClick: onOpenSettings,
     },
@@ -135,7 +135,7 @@ export const HeaderContent = ({
     },
     {
       key: 'logout',
-      icon: <LogoutOutlined style={{ color: '#ff4d4f' }} />,
+      icon: <Icons.LogoutOutlined style={{ color: '#ff4d4f' }} />,
       label: <span style={{ color: '#ff4d4f' }}>{t('header.logout')}</span>,
       onClick: onLogout,
     },
@@ -166,7 +166,7 @@ export const HeaderContent = ({
           <Tooltip title={collapsed ? t('header.expandSidebar') : t('header.collapseSidebar')}>
             <Button
               type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              icon={collapsed ? <Icons.MenuUnfoldOutlined /> : <Icons.MenuFoldOutlined />}
               onClick={onToggleCollapse}
               size="small"
               style={btnStyle}
@@ -179,7 +179,7 @@ export const HeaderContent = ({
           <Tooltip title={t('header.refresh')}>
             <Button
               type="text"
-              icon={<ReloadOutlined />}
+              icon={<Icons.ReloadOutlined />}
               onClick={onRefresh}
               size="small"
               style={btnStyle}
@@ -210,8 +210,12 @@ export const HeaderContent = ({
                 style={{
                   color: isDark ? '#a6a6a6' : '#595959',
                   fontSize: 13,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
                 }}
               >
+                {item.icon}
                 {item.title}
               </a>
             ) : (
@@ -220,8 +224,12 @@ export const HeaderContent = ({
                   color: isDark ? '#ffffff' : '#262626',
                   fontSize: 13,
                   fontWeight: 500,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
                 }}
               >
+                {item.icon}
                 {item.title}
               </span>
             ),
@@ -270,7 +278,7 @@ export const HeaderContent = ({
                 e.currentTarget.style.backgroundColor = isDark ? '#2a2a2a' : '#f5f5f5';
               }}
             >
-              <SearchOutlined
+              <Icons.SearchOutlined
                 style={{
                   color: isDark ? '#a6a6a6' : '#8c8c8c',
                   fontSize: 14,
@@ -307,7 +315,7 @@ export const HeaderContent = ({
         <Tooltip title={t('header.settings')}>
           <Button
             type="text"
-            icon={<SettingOutlined />}
+            icon={<Icons.SettingOutlined />}
             onClick={onOpenSettings}
             size="small"
             style={btnStyle}
@@ -319,7 +327,7 @@ export const HeaderContent = ({
           <Tooltip title={isDark ? t('header.switchToLight') : t('header.switchToDark')}>
             <Button
               type="text"
-              icon={isDark ? <SunOutlined /> : <MoonOutlined />}
+              icon={isDark ? <Icons.SunOutlined /> : <Icons.MoonOutlined />}
               onClick={onToggleTheme}
               size="small"
               style={btnStyle}
@@ -331,7 +339,7 @@ export const HeaderContent = ({
         {widgetConfig.languageToggle && (
           <Dropdown menu={{ items: languageMenuItems }} trigger={['click']} placement="bottomRight">
             <Tooltip title={t('header.switchLanguage')}>
-              <Button type="text" icon={<GlobalOutlined />} size="small" style={btnStyle} />
+              <Button type="text" icon={<Icons.GlobalOutlined />} size="small" style={btnStyle} />
             </Tooltip>
           </Dropdown>
         )}
@@ -341,7 +349,7 @@ export const HeaderContent = ({
           <Tooltip title={isFullscreen ? t('header.exitFullscreen') : t('header.fullscreen')}>
             <Button
               type="text"
-              icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+              icon={isFullscreen ? <Icons.FullscreenExitOutlined /> : <Icons.FullscreenOutlined />}
               onClick={onToggleFullscreen}
               size="small"
               style={btnStyle}
@@ -353,7 +361,7 @@ export const HeaderContent = ({
         {widgetConfig.notification && (
           <Badge count={3} size="small" offset={[0, 4]}>
             <Tooltip title={t('header.notification')}>
-              <Button type="text" icon={<BellOutlined />} size="small" style={btnStyle} />
+              <Button type="text" icon={<Icons.BellOutlined />} size="small" style={btnStyle} />
             </Tooltip>
           </Badge>
         )}
@@ -378,7 +386,7 @@ export const HeaderContent = ({
               e.currentTarget.style.backgroundColor = 'transparent';
             }}
           >
-            <Avatar src={userInfo?.avatar} icon={<UserOutlined />} size="small" />
+            <Avatar src={userInfo?.avatar} icon={<Icons.UserOutlined />} size="small" />
             <span
               className="hidden md:inline"
               style={{
