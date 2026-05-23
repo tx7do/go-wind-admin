@@ -99,14 +99,19 @@ export const Index = ({
   // 切换 expandOnHover 状态（固定/自动模式）
   const handleToggleExpandOnHover = () => {
     const newExpandOnHover = !expandOnHover;
-    setPreferences({ sidebar: { expandOnHover: newExpandOnHover } });
+    
+    // 关键：切换模式时，同步更新 hover 状态以保持当前视觉效果
     if (newExpandOnHover) {
-      // 切换到自动模式时，如果当前是折叠状态，立即允许 hover 展开
-      // 不需要额外操作，isHovering 会根据鼠标位置自动更新
+      // 切换到自动模式：根据当前 collapsed 状态设置 hover
+      // 如果当前是展开状态（collapsed=false），则设置 hovering=true
+      // 如果当前是折叠状态（collapsed=true），则设置 hovering=false
+      setIsHovering(!sidebarCollapsed);
     } else {
-      // 切换到手动模式时，取消 hover 状态
+      // 切换到手动模式：取消 hover 状态
       setIsHovering(false);
     }
+    
+    setPreferences({ sidebar: { expandOnHover: newExpandOnHover } });
   };
 
   return (
