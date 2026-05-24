@@ -47,3 +47,15 @@
         z-index: 1000 !important;
     }
 }
+
+/* PageContainer 内容区域内边距优化 */
+.ant-pro-page-container-children-container {
+  padding: 4px !important; /* 从默认的 32px 40px 减小到 4px */
+}
+
+/* 响应式调整 */
+@media (min-width: 768px) {
+  .ant-pro-page-container-children-container {
+    padding: 8px !important; /* 中屏以上 8px */
+  }
+}

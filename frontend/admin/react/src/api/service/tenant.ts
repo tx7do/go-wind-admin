@@ -1,6 +1,7 @@
 import {
   createTenantServiceClient,
   type identityservicev1_CreateTenantRequest,
+  type identityservicev1_CreateTenantWithAdminUserRequest,
   type identityservicev1_DeleteTenantRequest,
   type identityservicev1_GetTenantRequest,
   type identityservicev1_UpdateTenantRequest,
@@ -35,4 +36,8 @@ export async function updateTenant(request: identityservicev1_UpdateTenantReques
 
 export async function deleteTenant(request: identityservicev1_DeleteTenantRequest) {
   return getTenantService().Delete(request);
+}
+
+export async function createTenantWithAdminUser(request: identityservicev1_CreateTenantWithAdminUserRequest) {
+  return getTenantService().CreateWithAdminUser(request);
 }

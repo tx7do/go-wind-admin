@@ -315,15 +315,25 @@ export const PageContainer = ({
       }
       extra={actionButtons ? <Space>{actionButtons}</Space> : extra}
       footer={footer}
-      style={fullscreenStyles}
+      style={{
+        ...fullscreenStyles,
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
       {...restProps}
     >
       {/* 内容区域增强 */}
       <div
         className={`
-          ${isFullscreen ? '' : contentPadding ? 'p-4 md:p-6' : ''}
+          ${isFullscreen ? '' : contentPadding ? 'p-1' : ''}
           ${contentClassName || ''}
         `.trim()}
+        style={{
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+        }}
         data-page-key={pageKey}
         data-keep-alive={keepAlive || undefined}
       >
