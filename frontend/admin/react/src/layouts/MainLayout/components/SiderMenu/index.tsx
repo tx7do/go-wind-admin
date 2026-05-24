@@ -7,7 +7,6 @@ import { usePreferencesStore } from '@/core/preferences/store';
 import { getIconFromName } from '../../utils/iconResolver';
 import ControlPanel from './ControlPanel';
 import './SiderMenu.style.less';
-import { useDynamicI18n } from '@/core/i18n';
 
 interface SiderMenuProps {
   menuData: any[];
@@ -27,9 +26,7 @@ export const Index = ({
   onOpenChange,
 }: SiderMenuProps) => {
   const navigate = useNavigate();
-  const { i18n } = useTranslation('routes'); // 直接使用 routes namespace
-
-  const { t } = useDynamicI18n({ namespace: 'routes' });
+  const { i18n, t } = useTranslation();
 
   const preferences = usePreferencesStore((state) => state.preferences);
   const setPreferences = usePreferencesStore((state) => state.setPreferences);
@@ -54,13 +51,6 @@ export const Index = ({
      */
     const translateLabel = (label: string | undefined): string => {
       if (!label) return '';
-
-      // 如果是以 'routes.' 开头的 i18n key，提取 key 名称后翻译
-      if (label.startsWith('routes.')) {
-        const keyName = label.substring(7); // 去掉 'routes.' 前缀，得到 'dashboard'
-        return t(keyName, label);
-      }
-
       // 否则直接尝试翻译（可能已经是简化的 key）
       return t(label, label);
     };

@@ -62,7 +62,7 @@ export const HeaderContent = ({
   widgetConfig,
 }: HeaderContentProps) => {
   const { t } = useI18n('common');
-  const { t: tRoutes, i18n } = useTranslation('routes'); // 用于路由翻译
+  const { t: tRoutes, i18n } = useTranslation(); // 用于路由翻译
   const navigate = useNavigate();
   const matches = useMatches();
 
@@ -101,17 +101,7 @@ export const HeaderContent = ({
 
         // 尝试通过路由 name 获取翻译标题
         let title = match.handle?.title || '';
-        const routeName = (match as any).route?.name;
-        if (routeName) {
-          // 如果 title 是 i18n key (以 'routes.' 开头)，提取 key 名称
-          if (title.startsWith('routes.')) {
-            const keyName = title.substring(7);
-            title = tRoutes(keyName, { defaultValue: title });
-          } else {
-            // 否则直接翻译
-            title = tRoutes(routeName, { defaultValue: title });
-          }
-        }
+        title = tRoutes(title, { defaultValue: title });
 
         return {
           key: match.pathname,
@@ -141,7 +131,15 @@ export const HeaderContent = ({
     }
 
     return items;
-  }, [matches, navigate, t, tRoutes, i18n.language, breadcrumbPreferences?.showIcon, breadcrumbPreferences?.showHome]);
+  }, [
+    matches,
+    navigate,
+    t,
+    tRoutes,
+    i18n.language,
+    breadcrumbPreferences?.showIcon,
+    breadcrumbPreferences?.showHome,
+  ]);
 
   // 语言切换
   const toggleLocale = (newLocale: SupportedLanguagesType) => {

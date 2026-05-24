@@ -68,7 +68,7 @@ src/core/access/
   name: "PermissionManagement",
   component: Layout,
   meta: {
-    title: "routes.permission.moduleName",
+    title: "routes:permission.moduleName",
     authority: ["sys:platform_admin", "sys:tenant_manager"], // 需要这些权限之一
   },
   children: [
@@ -76,7 +76,7 @@ src/core/access/
       path: "codes",
       name: "PermissionPointManagement",
       meta: {
-        title: "routes.permission.permission",
+        title: "routes:permission.permission",
         authority: ["sys:platform_admin"], // 仅平台管理员可访问
       },
       component: () => import("@/views/app/permission/permission/index.vue"),

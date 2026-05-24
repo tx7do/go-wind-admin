@@ -10,7 +10,7 @@ export const systemRoutes: AppRouteObject[] = [
     name: 'system',
     path: 'system', // 相对路径，会自动拼接到父路由 '/'
     meta: {
-      title: 'routes.system',
+      title: 'menu:system',
       icon: 'lucide:settings', // Iconify 格式
       order: 2005,
       keepAlive: true, // 保持组件状态
@@ -22,7 +22,7 @@ export const systemRoutes: AppRouteObject[] = [
         path: 'menus', // 相对路径，最终为 /system/menus
         element: createLazyRoute(() => import('@/pages/app/system/menu')),
         meta: {
-          title: 'routes.menus',
+          title: 'menu:menus',
           icon: 'lucide:square-menu', // Iconify 格式
           order: 1,
           // permission: 'sys:platform_admin', // 仅平台管理员权限（开发阶段暂时注释）
@@ -33,7 +33,7 @@ export const systemRoutes: AppRouteObject[] = [
         path: 'apis', // 相对路径，最终为 /system/apis
         element: createLazyRoute(() => import('@/pages/app/system/api')),
         meta: {
-          title: 'routes.apis',
+          title: 'menu:apis',
           icon: 'lucide:route', // Iconify 格式
           order: 2,
           // permission: 'sys:platform_admin', // 仅平台管理员权限（开发阶段暂时注释）
@@ -44,7 +44,7 @@ export const systemRoutes: AppRouteObject[] = [
         path: 'dict', // 相对路径，最终为 /system/dict
         element: createLazyRoute(() => import('@/pages/app/system/dict')),
         meta: {
-          title: 'routes.dict',
+          title: 'menu:dict',
           icon: 'lucide:library-big', // Iconify 格式
           order: 3,
           // permission: 'sys:platform_admin', // 仅平台管理员权限（开发阶段暂时注释）
@@ -55,7 +55,7 @@ export const systemRoutes: AppRouteObject[] = [
         path: 'files', // 相对路径，最终为 /system/files
         element: createLazyRoute(() => import('@/pages/app/system/file')),
         meta: {
-          title: 'routes.files',
+          title: 'menu:files',
           icon: 'lucide:file-search', // Iconify 格式
           order: 4,
           // permission: 'sys:platform_admin', // 平台管理员或租户管理员权限（开发阶段暂时注释）
@@ -66,7 +66,7 @@ export const systemRoutes: AppRouteObject[] = [
         path: 'tasks', // 相对路径，最终为 /system/tasks
         element: createLazyRoute(() => import('@/pages/app/system/task')),
         meta: {
-          title: 'routes.tasks',
+          title: 'menu:tasks',
           icon: 'lucide:list-todo', // Iconify 格式
           order: 5,
           // permission: 'sys:platform_admin', // 平台管理员或租户管理员权限（开发阶段暂时注释）
@@ -77,7 +77,7 @@ export const systemRoutes: AppRouteObject[] = [
         path: 'login-policies', // 相对路径，最终为 /system/login-policies
         element: createLazyRoute(() => import('@/pages/app/system/login-policy')),
         meta: {
-          title: 'routes.login-policies',
+          title: 'menu:login-policies',
           icon: 'lucide:shield-x', // Iconify 格式
           order: 6,
           // permission: 'sys:platform_admin', // 仅平台管理员权限（开发阶段暂时注释）
@@ -88,7 +88,7 @@ export const systemRoutes: AppRouteObject[] = [
         path: 'languages', // 相对路径，最终为 /system/languages
         element: createLazyRoute(() => import('@/pages/app/system/language')),
         meta: {
-          title: 'routes.languages',
+          title: 'menu:languages',
           icon: 'lucide:globe', // Iconify 格式
           order: 7,
           // permission: 'sys:platform_admin', // 仅平台管理员权限（开发阶段暂时注释）

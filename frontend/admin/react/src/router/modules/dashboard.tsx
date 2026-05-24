@@ -7,7 +7,7 @@ export const dashboardRoutes: AppRouteObject[] = [
     path: 'dashboard', // 相对路径，会自动拼接到父路由 '/'
     element: createLazyRoute(() => import('@/pages/app/dashboard')),
     meta: {
-      title: 'routes.dashboard',
+      title: 'menu:dashboard',
       icon: 'lucide:layout-dashboard', // Iconify 格式
       order: 1,
       hideInMenu: false,

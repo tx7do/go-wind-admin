@@ -10,7 +10,7 @@ export const logRoutes: AppRouteObject[] = [
     name: 'log',
     path: 'log', // 相对路径，会自动拼接到父路由 '/'
     meta: {
-      title: 'routes.log',
+      title: 'menu:log',
       icon: 'lucide:logs', // Iconify 格式
       order: 2004,
       keepAlive: true, // 保持组件状态
@@ -22,7 +22,7 @@ export const logRoutes: AppRouteObject[] = [
         path: 'login-audit-logs', // 相对路径，最终为 /log/login-audit-logs
         element: createLazyRoute(() => import('@/pages/app/log/login-audit-log')),
         meta: {
-          title: 'routes.login-audit-log',
+          title: 'menu:login-audit-log',
           icon: 'lucide:user-lock', // Iconify 格式
           // permission: 'sys:platform_admin', // 平台管理员权限（开发阶段暂时注释）
         },
@@ -32,7 +32,7 @@ export const logRoutes: AppRouteObject[] = [
         path: 'api-audit-logs', // 相对路径，最终为 /log/api-audit-logs
         element: createLazyRoute(() => import('@/pages/app/log/api-audit-log')),
         meta: {
-          title: 'routes.api-audit-log',
+          title: 'menu:api-audit-log',
           icon: 'lucide:file-clock', // Iconify 格式
           // permission: 'sys:platform_admin', // 平台管理员权限（开发阶段暂时注释）
         },
@@ -42,7 +42,7 @@ export const logRoutes: AppRouteObject[] = [
         path: 'operation-audit-logs', // 相对路径，最终为 /log/operation-audit-logs
         element: createLazyRoute(() => import('@/pages/app/log/operation-audit-log')),
         meta: {
-          title: 'routes.operation-audit-log',
+          title: 'menu:operation-audit-log',
           icon: 'lucide:shield-ellipsis', // Iconify 格式
           // permission: 'sys:platform_admin', // 平台管理员权限（开发阶段暂时注释）
         },
@@ -52,7 +52,7 @@ export const logRoutes: AppRouteObject[] = [
         path: 'data-access-audit-logs', // 相对路径，最终为 /log/data-access-audit-logs
         element: createLazyRoute(() => import('@/pages/app/log/data-access-audit-log')),
         meta: {
-          title: 'routes.data-access-audit-log',
+          title: 'menu:data-access-audit-log',
           icon: 'lucide:shield-check', // Iconify 格式
           // permission: 'sys:platform_admin', // 平台管理员权限（开发阶段暂时注释）
         },
@@ -62,7 +62,7 @@ export const logRoutes: AppRouteObject[] = [
         path: 'permission-audit-logs', // 相对路径，最终为 /log/permission-audit-logs
         element: createLazyRoute(() => import('@/pages/app/log/permission-audit-log')),
         meta: {
-          title: 'routes.permission-audit-log',
+          title: 'menu:permission-audit-log',
           icon: 'lucide:shield-alert', // Iconify 格式
           // permission: 'sys:platform_admin', // 平台管理员权限（开发阶段暂时注释）
         },

@@ -27,7 +27,7 @@ export const staticRoutes: AppRouteObject[] = [
         path: '/',
         index: true,
         element: <Navigate to="/dashboard" replace />,
-        meta: { title: 'routes.home', hideInMenu: true, hideInTab: true },
+        meta: { title: 'menu:home', hideInMenu: true, hideInTab: true },
       },
     ],
   },
