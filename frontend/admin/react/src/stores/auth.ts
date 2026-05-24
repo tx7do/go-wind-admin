@@ -4,11 +4,11 @@ import { persist } from 'zustand/middleware';
 import { encryptPassword } from '@/utils';
 import {
   type authenticationservicev1_LoginRequest,
-  getMe,
-  login,
-  logout,
-  refreshToken,
-  register,
+  fetchLogin,
+  fetchLogout,
+  fetchRefreshToken,
+  fetchRegister,
+  fetchUserProfile,
 } from '@/api';
 
 /**
@@ -75,7 +75,7 @@ export const useAuthStore = create<AuthState>()(
 
         try {
           // 1. 调用登录接口
-          const response = await login({
+          const response = await fetchLogin({
             ...params,
             password: encryptPassword(params.password || ''),
           });
@@ -101,7 +101,9 @@ export const useAuthStore = create<AuthState>()(
 
           console.log('💾 Access token saved:', {
             value: accessTokenPayload.value ? '***' + accessTokenPayload.value.slice(-8) : 'empty',
-            expiresAt: accessTokenPayload.expiresAt ? new Date(accessTokenPayload.expiresAt).toISOString() : 'N/A',
+            expiresAt: accessTokenPayload.expiresAt
+              ? new Date(accessTokenPayload.expiresAt).toISOString()
+              : 'N/A',
           });
 
           if (response.refresh_token) {
@@ -115,14 +117,18 @@ export const useAuthStore = create<AuthState>()(
             });
 
             console.log('💾 Refresh token saved:', {
-              value: refreshTokenPayload.value ? '***' + refreshTokenPayload.value.slice(-8) : 'empty',
-              expiresAt: refreshTokenPayload.expiresAt ? new Date(refreshTokenPayload.expiresAt).toISOString() : 'N/A',
+              value: refreshTokenPayload.value
+                ? '***' + refreshTokenPayload.value.slice(-8)
+                : 'empty',
+              expiresAt: refreshTokenPayload.expiresAt
+                ? new Date(refreshTokenPayload.expiresAt).toISOString()
+                : 'N/A',
             });
           }
 
           // 3. 获取用户信息（交给 React Query 处理缓存，这里只更新 Zustand）
           console.log('👤 Fetching user info...');
-          const userInfo = (await getMe()) as unknown as UserInfo;
+          const userInfo = (await fetchUserProfile()) as unknown as UserInfo;
           set({ userInfo });
           console.log('✅ User info fetched:', userInfo);
 
@@ -147,7 +153,7 @@ export const useAuthStore = create<AuthState>()(
 
         try {
           // 调用注册 API（API 内部已处理密码加密）
-          await register(params.username, params.password);
+          await fetchRegister(params.username, params.password);
         } catch (err: any) {
           const errorMsg = err?.message || '注册失败';
           set({ error: errorMsg });
@@ -160,11 +166,11 @@ export const useAuthStore = create<AuthState>()(
       // 登出
       logout: async (redirect = true) => {
         try {
-          await logout().catch(() => {}); // 忽略接口错误
+          await fetchLogout().catch(() => {}); // 忽略接口错误
         } finally {
           // 清除 localStorage 中的持久化数据
           localStorage.removeItem('auth-storage');
-          
+
           // 清除内存中的状态
           set({
             accessToken: null,
@@ -193,7 +199,7 @@ export const useAuthStore = create<AuthState>()(
         }
 
         try {
-          const response = await refreshToken(refreshVal);
+          const response = await fetchRefreshToken(refreshVal);
 
           const now = Date.now();
           set({
