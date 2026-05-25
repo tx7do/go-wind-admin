@@ -16,6 +16,14 @@ import { TABLE } from '@/config/constants';
 import { fetchListTenants, useDeleteTenant } from '@/api/hooks/tenant';
 import { useProTableScrollY } from '@/hooks/useProTableScrollY';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
+import {
+  getTenantTypeMap,
+  getAuditStatusMap,
+  getTenantStatusMap,
+  TENANT_TYPE_STATUS,
+  AUDIT_STATUS_STATUS,
+  TENANT_STATUS_STATUS,
+} from './constants';
 import TenantDrawer from './components/TenantDrawer';
 
 /**
@@ -35,6 +43,10 @@ const TenantList = () => {
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMode, setDrawerMode] = useState<'create' | 'edit'>('create');
   const [selectedTenant, setSelectedTenant] = useState<identityservicev1_Tenant | undefined>();
+
+  const tenantTypeMap = getTenantTypeMap(t);
+  const auditStatusMap = getAuditStatusMap(t);
+  const tenantStatusMap = getTenantStatusMap(t);
 
   // 删除操作
   const deleteMutation = useDeleteTenant({
@@ -87,23 +99,15 @@ const TenantList = () => {
       dataIndex: 'tenantType',
       width: 100,
       valueType: 'select',
-      valueEnum: {
-        TRIAL: { text: t('type.TRIAL'), status: 'Default' },
-        PAID: { text: t('type.PAID'), status: 'Success' },
-        INTERNAL: { text: t('type.INTERNAL'), status: 'Processing' },
-        PARTNER: { text: t('type.PARTNER'), status: 'Warning' },
-        CUSTOM: { text: t('type.CUSTOM'), status: 'Default' },
-      },
+      valueEnum: Object.fromEntries(
+        Object.entries(TENANT_TYPE_STATUS).map(([key, status]) => [
+          key,
+          { text: tenantTypeMap[key]?.text || t('typeUnknown'), status },
+        ]),
+      ),
       render: (_, record) => {
-        const typeMap: Record<string, { text: string; color: string }> = {
-          TRIAL: { text: t('type.TRIAL'), color: 'default' },
-          PAID: { text: t('type.PAID'), color: 'success' },
-          INTERNAL: { text: t('type.INTERNAL'), color: 'processing' },
-          PARTNER: { text: t('type.PARTNER'), color: 'warning' },
-          CUSTOM: { text: t('type.CUSTOM'), color: 'default' },
-        };
         const type = record.type as identityservicev1_Tenant_Type;
-        const config = typeMap[type] || { text: t('typeUnknown'), color: 'default' };
+        const config = tenantTypeMap[type] || { text: t('typeUnknown'), color: 'default' };
         return <Tag color={config.color}>{config.text}</Tag>;
       },
     },
@@ -112,19 +116,15 @@ const TenantList = () => {
       dataIndex: 'auditStatus',
       width: 100,
       valueType: 'select',
-      valueEnum: {
-        PENDING: { text: t('audit.PENDING'), status: 'Warning' },
-        APPROVED: { text: t('audit.APPROVED'), status: 'Success' },
-        REJECTED: { text: t('audit.REJECTED'), status: 'Error' },
-      },
+      valueEnum: Object.fromEntries(
+        Object.entries(AUDIT_STATUS_STATUS).map(([key, status]) => [
+          key,
+          { text: auditStatusMap[key]?.text || t('auditUnknown'), status },
+        ]),
+      ),
       render: (_, record) => {
-        const statusMap: Record<string, { text: string; color: string }> = {
-          PENDING: { text: t('audit.PENDING'), color: 'warning' },
-          APPROVED: { text: t('audit.APPROVED'), color: 'success' },
-          REJECTED: { text: t('audit.REJECTED'), color: 'error' },
-        };
         const status = record.auditStatus as identityservicev1_Tenant_AuditStatus;
-        const config = statusMap[status] || { text: t('auditUnknown'), color: 'default' };
+        const config = auditStatusMap[status] || { text: t('auditUnknown'), color: 'default' };
         return <Tag color={config.color}>{config.text}</Tag>;
       },
     },
@@ -133,21 +133,15 @@ const TenantList = () => {
       dataIndex: 'status',
       width: 100,
       valueType: 'select',
-      valueEnum: {
-        ON: { text: t('tenantStatus.ON'), status: 'Success' },
-        OFF: { text: t('tenantStatus.OFF'), status: 'Error' },
-        EXPIRED: { text: t('tenantStatus.EXPIRED'), status: 'Warning' },
-        FREEZE: { text: t('tenantStatus.FREEZE'), status: 'Default' },
-      },
+      valueEnum: Object.fromEntries(
+        Object.entries(TENANT_STATUS_STATUS).map(([key, status]) => [
+          key,
+          { text: tenantStatusMap[key]?.text || t('statusUnknown'), status },
+        ]),
+      ),
       render: (_, record) => {
-        const statusMap: Record<string, { text: string; color: string }> = {
-          ON: { text: t('tenantStatus.ON'), color: 'success' },
-          OFF: { text: t('tenantStatus.OFF'), color: 'error' },
-          EXPIRED: { text: t('tenantStatus.EXPIRED'), color: 'warning' },
-          FREEZE: { text: t('tenantStatus.FREEZE'), color: 'default' },
-        };
         const status = record.status as identityservicev1_Tenant_Status;
-        const config = statusMap[status] || { text: t('statusUnknown'), color: 'default' };
+        const config = tenantStatusMap[status] || { text: t('statusUnknown'), color: 'default' };
         return <Tag color={config.color}>{config.text}</Tag>;
       },
     },

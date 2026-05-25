@@ -11,6 +11,12 @@ import type {
   identityservicev1_Tenant_Status,
   identityservicev1_Tenant_AuditStatus,
 } from '@/api/generated/admin/service/v1';
+import {
+  getTenantTypeOptions,
+  getAuditStatusOptions,
+  getTenantStatusOptions,
+  SELECT_FILTER_PROPS,
+} from '../constants';
 
 interface TenantDrawerProps {
   open: boolean;
@@ -186,57 +192,27 @@ const TenantDrawer: React.FC<TenantDrawerProps> = ({
         name="tenantType"
         label={t('tenantType')}
         placeholder={t('tenantTypePlaceholder')}
+        options={getTenantTypeOptions(t)}
         rules={[{ required: true, message: t('requiredType') }]}
-        options={[
-          { label: t('type.TRIAL'), value: 'TRIAL' },
-          { label: t('type.PAID'), value: 'PAID' },
-          { label: t('type.INTERNAL'), value: 'INTERNAL' },
-          { label: t('type.PARTNER'), value: 'PARTNER' },
-          { label: t('type.CUSTOM'), value: 'CUSTOM' },
-        ]}
-        fieldProps={{
-          showSearch: true,
-          allowClear: true,
-          filterOption: (input, option) =>
-            (option?.label ?? '').toLowerCase().includes(input.toLowerCase()),
-        }}
+        fieldProps={SELECT_FILTER_PROPS}
       />
 
       <ProFormSelect
         name="auditStatus"
         label={t('auditStatus')}
         placeholder={t('auditStatusPlaceholder')}
+        options={getAuditStatusOptions(t)}
         rules={[{ required: true, message: t('requiredAuditStatus') }]}
-        options={[
-          { label: t('audit.PENDING'), value: 'PENDING' },
-          { label: t('audit.APPROVED'), value: 'APPROVED' },
-          { label: t('audit.REJECTED'), value: 'REJECTED' },
-        ]}
-        fieldProps={{
-          showSearch: true,
-          allowClear: true,
-          filterOption: (input, option) =>
-            (option?.label ?? '').toLowerCase().includes(input.toLowerCase()),
-        }}
+        fieldProps={SELECT_FILTER_PROPS}
       />
 
       <ProFormSelect
         name="status"
         label={t('status')}
         placeholder={t('statusPlaceholder')}
+        options={getTenantStatusOptions(t)}
         rules={[{ required: true, message: t('requiredStatus') }]}
-        options={[
-          { label: t('tenantStatus.ON'), value: 'ON' },
-          { label: t('tenantStatus.OFF'), value: 'OFF' },
-          { label: t('tenantStatus.EXPIRED'), value: 'EXPIRED' },
-          { label: t('tenantStatus.FREEZE'), value: 'FREEZE' },
-        ]}
-        fieldProps={{
-          showSearch: true,
-          allowClear: true,
-          filterOption: (input, option) =>
-            (option?.label ?? '').toLowerCase().includes(input.toLowerCase()),
-        }}
+        fieldProps={SELECT_FILTER_PROPS}
       />
 
       <ProFormTextArea

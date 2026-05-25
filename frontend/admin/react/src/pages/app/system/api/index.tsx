@@ -11,6 +11,7 @@ import { TABLE, METHOD_LIST } from '@/config/constants';
 import { fetchListApis, useSyncApisApi, useDeleteApi } from '@/api/hooks/api';
 import { useProTableScrollY } from '@/hooks/useProTableScrollY';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
+import { getMethodColor } from './constants';
 import ApiDrawer from './components/ApiDrawer';
 
 /**
@@ -96,16 +97,7 @@ const ApiManagement = () => {
         METHOD_LIST.map((item) => [item.value, { text: item.label, status: 'Default' }]),
       ),
       render: (_, record) => {
-        const colorMap: Record<string, string> = {
-          GET: 'success',
-          POST: 'processing',
-          PUT: 'warning',
-          DELETE: 'error',
-          PATCH: 'default',
-          HEAD: 'default',
-          OPTIONS: 'default',
-        };
-        return <span style={{ color: colorMap[record.method || ''] || '#666' }}>{record.method}</span>;
+        return <span style={{ color: getMethodColor(record.method) }}>{record.method}</span>;
       },
     },
     {
