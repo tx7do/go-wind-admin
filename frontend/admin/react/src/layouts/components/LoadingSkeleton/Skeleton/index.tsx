@@ -26,7 +26,7 @@ export const SkeletonBlock = ({
 
   // 计算样式
   const blockStyle = useMemo(() => {
-    const base: React.CSSProperties = {
+    return {
       display: 'inline-block',
       width,
       height,
@@ -34,13 +34,6 @@ export const SkeletonBlock = ({
       backgroundColor: 'var(--ant-color-fill-tertiary, rgba(0,0,0,0.06))',
       ...style,
     };
-
-    // 暗黑模式适配
-    if (document.documentElement.classList.contains('dark')) {
-      base.backgroundColor = 'var(--ant-color-fill-tertiary, rgba(255,255,255,0.12))';
-    }
-
-    return base;
   }, [width, height, shape, style]);
 
   if (!visible) {

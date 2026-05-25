@@ -60,7 +60,7 @@
 }
 
 /*  暗黑模式适配 */
-.dark .animate-wave::after {
+[data-theme='dark'] .animate-wave::after {
     background: linear-gradient(
             90deg,
             transparent,

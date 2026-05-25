@@ -18,6 +18,7 @@ import 'uno.css';
 import 'nprogress/nprogress.css';
 
 import './styles/global.css';
+import './styles/skeleton-force-dark.css';
 import './styles/pro-layout-overrides.css';
 import './styles/pro-components-dark.css';
 

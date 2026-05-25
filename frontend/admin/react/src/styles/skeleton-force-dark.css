@@ -1,0 +1,81 @@
+/* ========== 基础：暗黑模式检测 ========== */
+[data-theme='dark'] {
+  --skeleton-bg-base: rgba(255, 255, 255, 0.08);
+  --skeleton-bg-highlight: rgba(255, 255, 255, 0.14);
+}
+
+/* ========== 1. 标题 + 段落骨架 ========== */
+[data-theme='dark'] .ant-skeleton-title,
+[data-theme='dark'] .ant-skeleton-paragraph > li {
+  background-color: var(--skeleton-bg-base) !important;
+}
+[data-theme='dark'] .ant-skeleton-title::after,
+[data-theme='dark'] .ant-skeleton-paragraph > li::after {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-bg-base) 25%,
+    var(--skeleton-bg-highlight) 37%,
+    var(--skeleton-bg-base) 63%
+  ) !important;
+}
+
+/* ========== 2. 头像/圆形骨架 ========== */
+[data-theme='dark'] .ant-skeleton-avatar {
+  background-color: var(--skeleton-bg-base) !important;
+}
+[data-theme='dark'] .ant-skeleton-avatar::after {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-bg-base) 25%,
+    var(--skeleton-bg-highlight) 37%,
+    var(--skeleton-bg-base) 63%
+  ) !important;
+}
+
+/* ========== 3. 按钮骨架 ========== */
+[data-theme='dark'] .ant-skeleton-button {
+  background-color: var(--skeleton-bg-base) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+[data-theme='dark'] .ant-skeleton-button::after {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-bg-base) 25%,
+    var(--skeleton-bg-highlight) 37%,
+    var(--skeleton-bg-base) 63%
+  ) !important;
+}
+
+/* ========== 4. 输入框骨架 ========== */
+[data-theme='dark'] .ant-skeleton-input {
+  background-color: var(--skeleton-bg-base) !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+}
+[data-theme='dark'] .ant-skeleton-input::after {
+  background: linear-gradient(
+    90deg,
+    var(--skeleton-bg-base) 25%,
+    var(--skeleton-bg-highlight) 37%,
+    var(--skeleton-bg-base) 63%
+  ) !important;
+}
+
+/* ========== 5. 图片骨架 ========== */
+[data-theme='dark'] .ant-skeleton-image {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+}
+[data-theme='dark'] .ant-skeleton-image::after {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.04) 25%,
+    rgba(255, 255, 255, 0.08) 37%,
+    rgba(255, 255, 255, 0.04) 63%
+  ) !important;
+}
+
+/* ========== 6. 亮色模式回退（防止干扰） ========== */
+[data-theme='light'] .ant-skeleton-title::after,
+[data-theme='light'] .ant-skeleton-paragraph > li::after {
+  background: none !important;
+  animation: none !important;
+}
