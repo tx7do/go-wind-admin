@@ -1,112 +1,90 @@
-import { useState, useEffect, useRef, useCallback, type RefObject } from 'react';
+import { useState, useEffect, useRef, type RefObject } from 'react';
 
 /**
- * 基于容器实际 DOM 尺寸动态计算 ProTable 的 scroll.y 值
+ * 动态计算 ProTable 的 scroll.y，使表格撑满容器，分页器置底。
  *
- * 测量策略（精确方案）：
- *   使用 getBoundingClientRect 精确测量 .ant-table-body 上下方占用的空间，
- *   自动包含 margin/padding/border 等所有间距，无需逐个测量组件。
+ * 核心原理：
+ *   1. 初始值必须是像素值（不能用 'auto'），否则 antd 不会创建 .ant-table-body
+ *   2. 用 getBoundingClientRect 测量 .ant-table-body 上方占用的空间（自动含所有 margin）
+ *   3. 直接测量分页器的 offsetHeight + margin
+ *   4. scroll.y = 容器高度 - 上方空间 - 下方空间 - 安全边距
  *
- *   scroll.y = 容器高度 - 表体上方空间 - 表体下方空间 - 安全边距
- *
- * 优势：
- *   - 自动包含所有 margin，不受 ProTable 内部间距影响
- *   - 不需要知道 ProTable 的 DOM 结构细节
- *   - ResizeObserver + MutationObserver 实时响应变化
- *
- * @param containerRef - .page-container-content 容器 div 的 ref
- * @param options.buffer - 安全边距（像素），默认 4
- * @param options.minHeight - scroll.y 最小值，默认 200
+ * @param containerRef - .page-container-content 容器 div 的 ref（无 padding/border）
+ * @param options.buffer - 安全边距（像素），默认 8
+ * @param options.minHeight - scroll.y 最小值，默认 100
  */
 export function useProTableScrollY(
   containerRef: RefObject<HTMLElement | null>,
-  options: {
-    buffer?: number;
-    minHeight?: number;
-  } = {},
+  options: { buffer?: number; minHeight?: number } = {},
 ): string {
-  const { buffer = 4, minHeight = 200 } = options;
+  const { buffer = 8, minHeight = 100 } = options;
 
-  const [scrollY, setScrollY] = useState<string>('auto');
+  // 关键：初始值必须是像素值，触发 antd 创建 .ant-table-body
+  const [scrollY, setScrollY] = useState<string>(() => {
+    const estimate = window.innerHeight - 350;
+    return `${Math.max(estimate, minHeight)}px`;
+  });
 
-  const measureRef = useRef<(container: HTMLElement) => void>();
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
-  const measureCallback = useCallback(
-    (container: HTMLElement) => {
+    const measure = () => {
       const containerHeight = container.clientHeight;
       if (containerHeight <= 0) return;
 
-      // 查找 .ant-table-body（scroll.y 设置后 antd 会创建此元素）
+      // 查找 .ant-table-body（scroll.y 为像素值时 antd 会创建此元素）
       const tableBody = container.querySelector('.ant-table-body');
       if (!tableBody) return;
 
       const containerRect = container.getBoundingClientRect();
       const bodyRect = tableBody.getBoundingClientRect();
 
-      // 表体上方空间（搜索表单 + 工具栏 + 表头 + 所有 margin）
+      // 上方空间：从容器顶部到表体顶部（搜索表单 + 工具栏 + 表头 + 所有间距）
       const aboveSpace = bodyRect.top - containerRect.top;
 
-      // 表体下方空间（分页器 + 所有 margin）
-      // 如果分页器被 overflow:hidden 截断，用直接测量法
+      // 下方空间：分页器高度 + margin
       const pagination = container.querySelector('.ant-pagination');
-      let belowSpace: number;
+      let belowSpace = 0;
       if (pagination) {
         const pagStyle = getComputedStyle(pagination);
-        const pagMarginTop = parseFloat(pagStyle.marginTop) || 0;
-        const pagMarginBottom = parseFloat(pagStyle.marginBottom) || 0;
-        belowSpace = pagination.offsetHeight + pagMarginTop + pagMarginBottom;
+        const marginTop = parseFloat(pagStyle.marginTop) || 0;
+        const marginBottom = parseFloat(pagStyle.marginBottom) || 0;
+        belowSpace = pagination.offsetHeight + marginTop + marginBottom;
       } else {
-        // 分页器可能还没渲染，用容器底部到表体底部的距离
-        belowSpace = containerRect.bottom - bodyRect.bottom;
-        if (belowSpace < 0) belowSpace = 0;
+        // 分页器可能还没渲染，用默认估算
+        belowSpace = 56;
       }
 
       const available = containerHeight - aboveSpace - belowSpace - buffer;
       const result = Math.max(available, minHeight);
-
       setScrollY(`${result}px`);
-    },
-    [buffer, minHeight],
-  );
+    };
 
-  measureRef.current = measureCallback;
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const measure = () => measureRef.current?.(container);
+    // 多次重试测量，确保 ProTable 异步渲染完成
+    const timers = [
+      setTimeout(measure, 50),
+      setTimeout(measure, 200),
+      setTimeout(measure, 500),
+      setTimeout(measure, 1200),
+    ];
 
     const resizeObserver = new ResizeObserver(() => {
       requestAnimationFrame(measure);
     });
+    resizeObserver.observe(container);
 
     const mutationObserver = new MutationObserver(() => {
       requestAnimationFrame(measure);
     });
-
-    // 首次测量：多次重试，确保 ProTable 完全渲染
-    const rafId = requestAnimationFrame(() => {
-      requestAnimationFrame(measure);
-    });
-
-    const timers = [
-      setTimeout(measure, 100),
-      setTimeout(measure, 300),
-      setTimeout(measure, 600),
-      setTimeout(measure, 1200),
-    ];
-
-    resizeObserver.observe(container);
     mutationObserver.observe(container, { childList: true, subtree: true });
 
     return () => {
-      cancelAnimationFrame(rafId);
       timers.forEach(clearTimeout);
       resizeObserver.disconnect();
       mutationObserver.disconnect();
     };
-  }, [containerRef]);
+  }, [containerRef, buffer, minHeight]);
 
   return scrollY;
 }

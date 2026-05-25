@@ -9,12 +9,24 @@
 }
 
 /* ========================================
- * ProTable 在 ContentContainer 中占满高度
+ * ProTable 在 ContentContainer 中自适应高度
  *
  * 使用方式：ContentContainer > .page-container-content > ProTable
  *
- * 注意：scroll.y 由 useProTableScrollY 动态计算，
- * CSS 不干预 .ant-table-wrapper 内部布局，避免与 antd scroll.y 冲突。
+ * 原理：scroll.y='100%' 触发 antd 表头/表体分离，
+ * CSS flex 负责整条高度链的自适应，无需 JS 测量。
+ *
+ * 布局链：
+ *   ContentContainer (flex:1, overflow:hidden)
+ *     > .page-container-content (flex:1)
+ *       > .ant-pro-table (flex:1)
+ *         > div:not(.search) (flex:1)
+ *           > .ant-table-wrapper (flex:1)
+ *             > .ant-table (flex:1)
+ *               > .ant-table-container (flex:1)
+ *                 > .ant-table-header (flex-shrink:0)
+ *                 > .ant-table-body (flex:1, overflow:auto)
+ *           > .ant-pagination (flex-shrink:0)
  * ======================================== */
 
 /* 中间容器：占满 ContentContainer 的内容区 */
@@ -45,4 +57,45 @@
   min-height: 0;
   display: flex;
   flex-direction: column;
+}
+
+/* 工具栏保持自适应高度 */
+.page-container-content .ant-pro-table-list-toolbar-container {
+  flex-shrink: 0;
+}
+
+/* .ant-table-wrapper 占满剩余空间 */
+.page-container-content .ant-table-wrapper {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* .ant-table 占满 .ant-table-wrapper */
+.page-container-content .ant-table-wrapper > .ant-table {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* .ant-table-container 占满 */
+.page-container-content .ant-table-wrapper > .ant-table > .ant-table-container {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* .ant-table-body 自动滚动，占满剩余空间 */
+.page-container-content .ant-table-wrapper .ant-table-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto !important;
+}
+
+/* 分页器保持自适应高度 */
+.page-container-content .ant-pagination {
+  flex-shrink: 0;
 }
