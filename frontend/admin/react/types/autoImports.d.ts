@@ -94,6 +94,7 @@ declare global {
   const use: typeof import('react').use
   const useActionState: typeof import('react').useActionState
   const useAuthStore: typeof import('../src/stores/auth').useAuthStore
+  const useAutoTableHeight: typeof import('../src/hooks/useTableScrollHeight').useAutoTableHeight
   const useCallback: typeof import('react').useCallback
   const useClipboard: typeof import('../src/hooks/useClipboard').useClipboard
   const useCommonStore: typeof import('../src/hooks/useCommonStore').useCommonStore
@@ -132,6 +133,7 @@ declare global {
   const useSingleTab: typeof import('../src/hooks/useSingleTab').useSingleTab
   const useState: typeof import('react').useState
   const useSyncExternalStore: typeof import('react').useSyncExternalStore
+  const useTableScrollHeight: typeof import('../src/hooks/useTableScrollHeight').useTableScrollHeight
   const useTabsStore: typeof import('../src/stores/tabs').useTabsStore
   const useTimes: typeof import('../src/hooks/useTime').useTimes
   const useTitle: typeof import('../src/hooks/useTitle').useTitle

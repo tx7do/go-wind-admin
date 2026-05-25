@@ -11,7 +11,9 @@ import type {
   identityservicev1_Tenant_AuditStatus,
 } from '@/api/generated/admin/service/v1';
 import { PaginationQuery } from '@/core';
+import { TABLE } from '@/config/constants';
 import { listTenants, deleteTenant } from '@/api/service/tenant';
+import { useTableScrollHeight } from '@/hooks/useTableScrollHeight';
 import TenantDrawer from './components/TenantDrawer';
 
 /**
@@ -22,6 +24,9 @@ const TenantList = () => {
   const queryClient = useQueryClient();
 
   const { message } = App.useApp();
+
+  // 动态计算表格内容区域高度（搜索栏固定，表格数据区滚动）
+  const tableScrollY = useTableScrollHeight();
 
   // Drawer 状态管理
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -193,7 +198,7 @@ const TenantList = () => {
   ];
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+    <>
       <ProTable<identityservicev1_Tenant>
         actionRef={actionRef}
         columns={columns}
@@ -244,10 +249,11 @@ const TenantList = () => {
         }}
         // 分页配置
         pagination={{
-          pageSize: 10,
+          defaultPageSize: TABLE.DEFAULT_PAGE_SIZE,
           showSizeChanger: true,
           showQuickJumper: true,
-          showTotal: (total) => `共 ${total} 条`,
+          // showTotal: (total) => `共 ${total} 条`,
+          position: ['bottomRight'],
         }}
         // 工具栏配置
         toolBarRender={() => [
@@ -273,7 +279,10 @@ const TenantList = () => {
         }}
         size="middle"
         bordered
-        scroll={{ x: 1200 }}
+        scroll={{
+          y: tableScrollY, // 动态计算表格高度
+          x: 1300, // 如果列太宽，启用横向滚动
+        }}
       />
 
       {/* 租户编辑/创建 Drawer */}
@@ -289,7 +298,7 @@ const TenantList = () => {
           actionRef.current?.reload();
         }}
       />
-    </div>
+    </>
   );
 };
 

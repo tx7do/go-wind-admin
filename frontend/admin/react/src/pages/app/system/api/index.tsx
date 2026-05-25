@@ -6,7 +6,9 @@ import { EditOutlined, DeleteOutlined, PlusOutlined, SyncOutlined } from '@ant-d
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import type { resourceservicev1_Api as Api } from '@/api/generated/admin/service/v1';
 import { PaginationQuery } from '@/core';
+import { TABLE } from '@/config/constants';
 import { listApis, deleteApi } from '@/api/service/api';
+import { useTableScrollHeight } from '@/hooks/useTableScrollHeight';
 import ApiDrawer from './components/ApiDrawer';
 
 /**
@@ -30,6 +32,9 @@ const ApiManagement = () => {
   const queryClient = useQueryClient();
 
   const { message } = App.useApp();
+
+  // 动态计算表格内容区域高度（搜索栏固定，表格数据区滚动）
+  const tableScrollY = useTableScrollHeight();
 
   // Drawer 状态管理
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -218,10 +223,10 @@ const ApiManagement = () => {
         defaultCollapsed: false,
       }}
       pagination={{
-        pageSize: 10,
+        defaultPageSize: TABLE.DEFAULT_PAGE_SIZE,
         showSizeChanger: true,
         showQuickJumper: true,
-        showTotal: (total) => `共 ${total} 条`,
+        // showTotal: (total) => `共 ${total} 条`,
         position: ['bottomRight'],
       }}
       toolBarRender={() => [
@@ -262,6 +267,10 @@ const ApiManagement = () => {
       }}
       size="middle"
       bordered
+      scroll={{
+        y: tableScrollY, // 动态计算表格高度
+        x: 1300, // 如果列太宽，启用横向滚动
+      }}
     />
 
     {/* API 编辑/创建 Drawer */}
