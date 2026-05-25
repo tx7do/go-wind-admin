@@ -9,9 +9,8 @@ import {
   type authenticationservicev1_GetLoginPolicyRequest,
   type authenticationservicev1_ListLoginPolicyResponse,
   type authenticationservicev1_LoginPolicy,
-  type authenticationservicev1_UpdateLoginPolicyRequest,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core';
+import { makeUpdateMask, type PaginationQuery, queryClient } from '@/core';
 import {
   listLoginPolicies,
   getLoginPolicy,
@@ -32,6 +31,14 @@ export function useListLoginPolicies(
     queryKey: ['listLoginPolicies', query],
     queryFn: () => listLoginPolicies(query),
     ...options,
+  });
+}
+
+export async function fetchListLoginPolicies(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listLoginPolicies', params],
+    queryFn: () => listLoginPolicies(params),
+    retry: 0,
   });
 }
 
@@ -60,10 +67,15 @@ export function useCreateLoginPolicy(
 }
 
 export function useUpdateLoginPolicy(
-  options?: UseMutationOptions<{}, Error, authenticationservicev1_UpdateLoginPolicyRequest>,
+  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: (data) => updateLoginPolicy(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updateLoginPolicy({
+        id,
+        data: { ...values },
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }

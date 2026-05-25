@@ -4,7 +4,7 @@ import {
   type auditservicev1_ListPermissionAuditLogResponse,
   type auditservicev1_PermissionAuditLog,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core';
+import { type PaginationQuery, queryClient } from '@/core';
 import { listPermissionAuditLogs, getPermissionAuditLog } from '@/api/service/permission-audit-log';
 
 // ==============================
@@ -19,6 +19,14 @@ export function useListPermissionAuditLogs(
     queryKey: ['listPermissionAuditLogs', query],
     queryFn: () => listPermissionAuditLogs(query),
     ...options,
+  });
+}
+
+export async function fetchListPermissionAuditLogs(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listPermissionAuditLogs', params],
+    queryFn: () => listPermissionAuditLogs(params),
+    retry: 0,
   });
 }
 

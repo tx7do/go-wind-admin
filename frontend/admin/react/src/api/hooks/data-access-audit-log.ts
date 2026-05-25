@@ -4,7 +4,7 @@ import {
   type auditservicev1_GetDataAccessAuditLogRequest,
   type auditservicev1_ListDataAccessAuditLogResponse,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core';
+import { type PaginationQuery, queryClient } from '@/core';
 import {
   listDataAccessAuditLogs,
   getDataAccessAuditLog,
@@ -22,6 +22,14 @@ export function useListDataAccessAuditLogs(
     queryKey: ['listDataAccessAuditLogs', query],
     queryFn: () => listDataAccessAuditLogs(query),
     ...options,
+  });
+}
+
+export async function fetchListDataAccessAuditLogs(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listDataAccessAuditLogs', params],
+    queryFn: () => listDataAccessAuditLogs(params),
+    retry: 0,
   });
 }
 

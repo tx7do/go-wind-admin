@@ -10,9 +10,8 @@ import {
   type identityservicev1_GetPositionRequest,
   type identityservicev1_ListPositionResponse,
   type identityservicev1_Position,
-  type identityservicev1_UpdatePositionRequest,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core';
+import { makeUpdateMask, type PaginationQuery, queryClient } from '@/core';
 import {
   listPositions,
   getPosition,
@@ -33,6 +32,14 @@ export function useListPositions(
     queryKey: ['listPositions', query],
     queryFn: () => listPositions(query),
     ...options,
+  });
+}
+
+export async function fetchListPositions(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listPositions', params],
+    queryFn: () => listPositions(params),
+    retry: 0,
   });
 }
 
@@ -57,10 +64,15 @@ export function useCreatePosition(
 }
 
 export function useUpdatePosition(
-  options?: UseMutationOptions<{}, Error, identityservicev1_UpdatePositionRequest>,
+  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: (data) => updatePosition(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updatePosition({
+        id,
+        data: { ...values },
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }

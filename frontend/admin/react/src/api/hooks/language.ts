@@ -10,10 +10,9 @@ import {
   type dictservicev1_GetLanguageRequest,
   type dictservicev1_Language,
   type dictservicev1_ListLanguageResponse,
-  type dictservicev1_UpdateLanguageRequest,
   type dictservicev1_BatchCreateLanguagesRequest,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core';
+import { makeUpdateMask, type PaginationQuery, queryClient } from '@/core';
 import {
   listLanguages,
   getLanguage,
@@ -38,6 +37,14 @@ export function useListLanguages(
   });
 }
 
+export async function fetchListLanguages(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listLanguages', params],
+    queryFn: () => listLanguages(params),
+    retry: 0,
+  });
+}
+
 export function useGetLanguage(
   req: dictservicev1_GetLanguageRequest,
   options?: UseQueryOptions<dictservicev1_Language, Error>,
@@ -59,10 +66,15 @@ export function useCreateLanguage(
 }
 
 export function useUpdateLanguage(
-  options?: UseMutationOptions<{}, Error, dictservicev1_UpdateLanguageRequest>,
+  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: (data) => updateLanguage(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updateLanguage({
+        id,
+        data: { ...values },
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }

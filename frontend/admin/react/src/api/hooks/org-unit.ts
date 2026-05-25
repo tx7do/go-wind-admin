@@ -10,9 +10,8 @@ import {
   type identityservicev1_GetOrgUnitRequest,
   type identityservicev1_ListOrgUnitResponse,
   type identityservicev1_OrgUnit,
-  type identityservicev1_UpdateOrgUnitRequest,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core';
+import { makeUpdateMask, type PaginationQuery, queryClient } from '@/core';
 import {
   listOrgUnits,
   getOrgUnit,
@@ -33,6 +32,14 @@ export function useListOrgUnits(
     queryKey: ['listOrgUnits', query],
     queryFn: () => listOrgUnits(query),
     ...options,
+  });
+}
+
+export async function fetchListOrgUnits(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listOrgUnits', params],
+    queryFn: () => listOrgUnits(params),
+    retry: 0,
   });
 }
 
@@ -57,10 +64,15 @@ export function useCreateOrgUnit(
 }
 
 export function useUpdateOrgUnit(
-  options?: UseMutationOptions<{}, Error, identityservicev1_UpdateOrgUnitRequest>,
+  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: (data) => updateOrgUnit(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updateOrgUnit({
+        id,
+        data: { ...values } as any,
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }

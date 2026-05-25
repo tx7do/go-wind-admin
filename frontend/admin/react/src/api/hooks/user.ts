@@ -8,12 +8,11 @@ import {
   type identityservicev1_User,
   type identityservicev1_ListUserResponse,
   type identityservicev1_GetUserRequest,
-  type identityservicev1_UpdateUserRequest,
   type identityservicev1_UserExistsRequest,
   type identityservicev1_EditUserPasswordRequest,
   type identityservicev1_UserExistsResponse,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core/transport/rest';
+import { makeUpdateMask, type PaginationQuery } from '@/core/transport/rest';
 import {
   createUser,
   deleteUser,
@@ -101,10 +100,15 @@ export function useDeleteUser(options?: UseMutationOptions<{}, Error, number>) {
 // 更新用户
 // ==============================
 export function useUpdateUser(
-  options?: UseMutationOptions<{}, Error, identityservicev1_UpdateUserRequest>,
+  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: (data) => updateUser(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updateUser({
+        id,
+        data: { ...values } as any,
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }

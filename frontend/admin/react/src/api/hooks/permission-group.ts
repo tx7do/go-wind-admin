@@ -12,7 +12,7 @@ import {
   type permissionservicev1_PermissionGroup,
   type permissionservicev1_UpdatePermissionGroupRequest,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core';
+import { makeUpdateMask, type PaginationQuery, queryClient } from '@/core';
 import {
   listPermissionGroups,
   getPermissionGroup,
@@ -33,6 +33,14 @@ export function useListPermissionGroups(
     queryKey: ['listPermissionGroups', query],
     queryFn: () => listPermissionGroups(query),
     ...options,
+  });
+}
+
+export async function fetchListPermissionGroups(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listPermissionGroups', params],
+    queryFn: () => listPermissionGroups(params),
+    retry: 0,
   });
 }
 
@@ -57,10 +65,15 @@ export function useCreatePermissionGroup(
 }
 
 export function useUpdatePermissionGroup(
-  options?: UseMutationOptions<{}, Error, permissionservicev1_UpdatePermissionGroupRequest>,
+  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: (data) => updatePermissionGroup(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updatePermissionGroup({
+        id,
+        data: { ...values },
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }

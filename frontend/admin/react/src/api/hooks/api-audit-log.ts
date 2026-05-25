@@ -4,7 +4,7 @@ import {
   type auditservicev1_GetApiAuditLogRequest,
   type auditservicev1_ListApiAuditLogResponse,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core';
+import { type PaginationQuery, queryClient } from '@/core';
 import { listApiAuditLogs, getApiAuditLog } from '@/api/service/api-audit-log';
 
 // ==============================
@@ -19,6 +19,14 @@ export function useListApiAuditLogs(
     queryKey: ['listApiAuditLogs', query],
     queryFn: () => listApiAuditLogs(query),
     ...options,
+  });
+}
+
+export async function fetchListApiAuditLogs(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listApiAuditLogs', params],
+    queryFn: () => listApiAuditLogs(params),
+    retry: 0,
   });
 }
 

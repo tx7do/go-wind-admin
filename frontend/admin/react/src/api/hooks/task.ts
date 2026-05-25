@@ -10,9 +10,8 @@ import {
   type taskservicev1_GetTaskRequest,
   type taskservicev1_ListTaskResponse,
   type taskservicev1_Task,
-  type taskservicev1_UpdateTaskRequest,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core';
+import { makeUpdateMask, type PaginationQuery, queryClient } from '@/core';
 import { listTasks, getTask, createTask, updateTask, deleteTask } from '@/api/service/task';
 
 // ==============================
@@ -27,6 +26,14 @@ export function useListTasks(
     queryKey: ['listTasks', query],
     queryFn: () => listTasks(query),
     ...options,
+  });
+}
+
+export async function fetchListTasks(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listTasks', params],
+    queryFn: () => listTasks(params),
+    retry: 0,
   });
 }
 
@@ -51,10 +58,15 @@ export function useCreateTask(
 }
 
 export function useUpdateTask(
-  options?: UseMutationOptions<{}, Error, taskservicev1_UpdateTaskRequest>,
+  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: (data) => updateTask(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updateTask({
+        id,
+        data: { ...values },
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }

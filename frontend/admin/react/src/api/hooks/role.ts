@@ -10,9 +10,8 @@ import {
   type permissionservicev1_GetRoleRequest,
   type permissionservicev1_ListRoleResponse,
   type permissionservicev1_Role,
-  type permissionservicev1_UpdateRoleRequest,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core';
+import { makeUpdateMask, type PaginationQuery, queryClient } from '@/core';
 import { listRoles, getRole, createRole, updateRole, deleteRole } from '@/api/service/role';
 
 // ==============================
@@ -27,6 +26,14 @@ export function useListRoles(
     queryKey: ['listRoles', query],
     queryFn: () => listRoles(query),
     ...options,
+  });
+}
+
+export async function fetchListRoles(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listRoles', params],
+    queryFn: () => listRoles(params),
+    retry: 0,
   });
 }
 
@@ -51,10 +58,15 @@ export function useCreateRole(
 }
 
 export function useUpdateRole(
-  options?: UseMutationOptions<{}, Error, permissionservicev1_UpdateRoleRequest>,
+  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: (data) => updateRole(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updateRole({
+        id,
+        data: { ...values } as any,
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }

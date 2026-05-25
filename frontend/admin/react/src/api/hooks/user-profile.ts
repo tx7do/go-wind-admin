@@ -6,7 +6,6 @@ import {
 } from '@tanstack/react-query';
 import {
   type identityservicev1_User,
-  type identityservicev1_UpdateUserRequest,
   type identityservicev1_ChangePasswordRequest,
   type identityservicev1_UploadAvatarRequest,
   type identityservicev1_UploadAvatarResponse,
@@ -22,7 +21,7 @@ import {
   uploadMyAvatar,
   verifyMyContact,
 } from '@/api/service/user-profile';
-import { queryClient } from '@/core';
+import { makeUpdateMask, queryClient } from '@/core';
 
 export function useGetUserProfile(options?: UseQueryOptions<identityservicev1_User | null, Error>) {
   return useQuery({
@@ -44,10 +43,15 @@ export async function fetchUserProfile() {
 }
 
 export function useUpdateUserProfile(
-  options?: UseMutationOptions<{}, Error, identityservicev1_UpdateUserRequest>,
+  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: (data) => updateMyUserInfo(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updateMyUserInfo({
+        id,
+        data: { ...values } as any,
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }

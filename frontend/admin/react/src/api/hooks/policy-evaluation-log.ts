@@ -4,7 +4,7 @@ import {
   type permissionservicev1_GetPolicyEvaluationLogRequest,
   type permissionservicev1_ListPolicyEvaluationLogResponse,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core';
+import { type PaginationQuery, queryClient } from '@/core';
 import {
   listPolicyEvaluationLogs,
   getPolicyEvaluationLog,
@@ -22,6 +22,14 @@ export function useListPolicyEvaluationLogs(
     queryKey: ['listPolicyEvaluationLogs', query],
     queryFn: () => listPolicyEvaluationLogs(query),
     ...options,
+  });
+}
+
+export async function fetchListPolicyEvaluationLogs(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listPolicyEvaluationLogs', params],
+    queryFn: () => listPolicyEvaluationLogs(params),
+    retry: 0,
   });
 }
 

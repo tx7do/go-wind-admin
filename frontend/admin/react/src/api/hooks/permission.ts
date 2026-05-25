@@ -9,10 +9,10 @@ import {
   type permissionservicev1_ListPermissionResponse,
   type permissionservicev1_GetPermissionRequest,
   type permissionservicev1_CreatePermissionRequest,
-  type permissionservicev1_UpdatePermissionRequest,
   type permissionservicev1_DeletePermissionRequest,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core/transport/rest';
+import { makeUpdateMask, type PaginationQuery } from '@/core/transport/rest';
+import { queryClient } from '@/core';
 import {
   listPermissions,
   getPermission,
@@ -33,6 +33,14 @@ export function useListPermissions(
     queryKey: ['listPermissions', query],
     queryFn: () => listPermissions(query),
     ...options,
+  });
+}
+
+export async function fetchListPermissions(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listPermissions', params],
+    queryFn: () => listPermissions(params),
+    retry: 0,
   });
 }
 
@@ -57,10 +65,15 @@ export function useCreatePermission(
 }
 
 export function useUpdatePermission(
-  options?: UseMutationOptions<{}, Error, permissionservicev1_UpdatePermissionRequest>,
+  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: (data) => updatePermission(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updatePermission({
+        id,
+        data: { ...values } as any,
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }

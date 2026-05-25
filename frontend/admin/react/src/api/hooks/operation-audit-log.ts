@@ -4,7 +4,7 @@ import {
   type auditservicev1_ListOperationAuditLogResponse,
   type auditservicev1_OperationAuditLog,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core';
+import { type PaginationQuery, queryClient } from '@/core';
 import { listOperationAuditLogs, getOperationAuditLog } from '@/api/service/operation-audit-log';
 
 // ==============================
@@ -19,6 +19,14 @@ export function useListOperationAuditLogs(
     queryKey: ['listOperationAuditLogs', query],
     queryFn: () => listOperationAuditLogs(query),
     ...options,
+  });
+}
+
+export async function fetchListOperationAuditLogs(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listOperationAuditLogs', params],
+    queryFn: () => listOperationAuditLogs(params),
+    retry: 0,
   });
 }
 

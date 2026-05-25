@@ -6,13 +6,13 @@ import {
 } from '@tanstack/react-query';
 import {
   type storageservicev1_CreateFileRequest,
-  type storageservicev1_UpdateFileRequest,
   type storageservicev1_DeleteFileRequest,
   type storageservicev1_File,
   type storageservicev1_GetFileRequest,
   type storageservicev1_ListFileResponse,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core/transport/rest';
+import { makeUpdateMask, type PaginationQuery } from '@/core/transport/rest';
+import { queryClient } from '@/core';
 import { listFiles, getFile, createFile, updateFile, deleteFile } from '@/api/service/file';
 
 // ==============================
@@ -27,6 +27,14 @@ export function useListFiles(
     queryKey: ['listFiles', query],
     queryFn: () => listFiles(query),
     ...options,
+  });
+}
+
+export async function fetchListFiles(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listFiles', params],
+    queryFn: () => listFiles(params),
+    retry: 0,
   });
 }
 
@@ -51,10 +59,15 @@ export function useCreateFile(
 }
 
 export function useUpdateFile(
-  options?: UseMutationOptions<{}, Error, storageservicev1_UpdateFileRequest>,
+  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: (data) => updateFile(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updateFile({
+        id,
+        data: { ...values },
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }

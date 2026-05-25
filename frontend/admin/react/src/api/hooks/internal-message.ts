@@ -8,7 +8,6 @@ import {
   type internal_messageservicev1_ListInternalMessageResponse,
   type internal_messageservicev1_InternalMessage,
   type internal_messageservicev1_GetInternalMessageRequest,
-  type internal_messageservicev1_UpdateInternalMessageRequest,
   type internal_messageservicev1_DeleteInternalMessageRequest,
   type internal_messageservicev1_SendMessageRequest,
   type internal_messageservicev1_SendMessageResponse,
@@ -17,13 +16,12 @@ import {
   type internal_messageservicev1_InternalMessageCategory,
   type internal_messageservicev1_GetInternalMessageCategoryRequest,
   type internal_messageservicev1_CreateInternalMessageCategoryRequest,
-  type internal_messageservicev1_UpdateInternalMessageCategoryRequest,
   type internal_messageservicev1_DeleteInternalMessageCategoryRequest,
   type internal_messageservicev1_ListUserInboxResponse,
   type internal_messageservicev1_DeleteNotificationFromInboxRequest,
   type internal_messageservicev1_MarkNotificationAsReadRequest,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core';
+import { makeUpdateMask, type PaginationQuery, queryClient } from '@/core';
 import {
   listInternalMessages,
   getInternalMessage,
@@ -55,6 +53,14 @@ export function useListInternalMessages(
   });
 }
 
+export async function fetchListInternalMessages(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listInternalMessages', params],
+    queryFn: () => listInternalMessages(params),
+    retry: 0,
+  });
+}
+
 export function useGetInternalMessage(
   req: internal_messageservicev1_GetInternalMessageRequest,
   options?: UseQueryOptions<internal_messageservicev1_InternalMessage, Error>,
@@ -67,10 +73,15 @@ export function useGetInternalMessage(
 }
 
 export function useUpdateInternalMessage(
-  options?: UseMutationOptions<{}, Error, internal_messageservicev1_UpdateInternalMessageRequest>,
+  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: (data) => updateInternalMessage(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updateInternalMessage({
+        id,
+        data: { ...values },
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }
@@ -120,6 +131,14 @@ export function useListMessageCategories(
   });
 }
 
+export async function fetchListMessageCategories(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listMessageCategories', params],
+    queryFn: () => listMessageCategories(params),
+    retry: 0,
+  });
+}
+
 export function useGetMessageCategory(
   req: internal_messageservicev1_GetInternalMessageCategoryRequest,
   options?: UseQueryOptions<internal_messageservicev1_InternalMessageCategory, Error>,
@@ -148,11 +167,16 @@ export function useUpdateMessageCategory(
   options?: UseMutationOptions<
     {},
     Error,
-    internal_messageservicev1_UpdateInternalMessageCategoryRequest
+    { id: number; values: Record<string, any> }
   >,
 ) {
   return useMutation({
-    mutationFn: (data) => updateMessageCategory(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updateMessageCategory({
+        id,
+        data: { ...values },
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }
@@ -181,6 +205,14 @@ export function useListUserInbox(
     queryKey: ['listUserInbox', query],
     queryFn: () => listUserInbox(query),
     ...options,
+  });
+}
+
+export async function fetchListUserInbox(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listUserInbox', params],
+    queryFn: () => listUserInbox(params),
+    retry: 0,
   });
 }
 

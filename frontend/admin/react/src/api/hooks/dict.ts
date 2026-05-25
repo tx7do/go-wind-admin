@@ -8,15 +8,14 @@ import {
   type dictservicev1_DictType,
   type dictservicev1_ListDictTypeResponse,
   type dictservicev1_ListDictEntryResponse,
-  type dictservicev1_UpdateDictTypeRequest,
   type dictservicev1_DeleteDictTypeRequest,
   type dictservicev1_CreateDictEntryRequest,
-  type dictservicev1_UpdateDictEntryRequest,
   type dictservicev1_DeleteDictEntryRequest,
   type dictservicev1_CreateDictTypeRequest,
   type dictservicev1_GetDictTypeRequest,
 } from '@/api/generated/admin/service/v1';
-import { type PaginationQuery } from '@/core/transport/rest';
+import { makeUpdateMask, type PaginationQuery } from '@/core/transport/rest';
+import { queryClient } from '@/core';
 import {
   listDictTypes,
   getDictType,
@@ -44,6 +43,14 @@ export function useListDictTypes(
   });
 }
 
+export async function fetchListDictTypes(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listDictTypes', params],
+    queryFn: () => listDictTypes(params),
+    retry: 0,
+  });
+}
+
 export function useGetDictType(
   req: dictservicev1_GetDictTypeRequest,
   options?: UseQueryOptions<dictservicev1_DictType, Error>,
@@ -65,10 +72,19 @@ export function useCreateDictType(
 }
 
 export function useUpdateDictType(
-  options?: UseMutationOptions<dictservicev1_DictType, Error, dictservicev1_UpdateDictTypeRequest>,
+  options?: UseMutationOptions<
+    dictservicev1_DictType,
+    Error,
+    { id: number; values: Record<string, any> }
+  >,
 ) {
   return useMutation({
-    mutationFn: (data) => updateDictType(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updateDictType({
+        id,
+        data: { ...values },
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }
@@ -97,6 +113,14 @@ export function useListDictEntries(
   });
 }
 
+export async function fetchListDictEntries(params: PaginationQuery) {
+  return queryClient.fetchQuery({
+    queryKey: ['listDictEntries', params],
+    queryFn: () => listDictEntries(params),
+    retry: 0,
+  });
+}
+
 export function useCreateDictEntry(
   options?: UseMutationOptions<{}, Error, dictservicev1_CreateDictEntryRequest>,
 ) {
@@ -107,10 +131,15 @@ export function useCreateDictEntry(
 }
 
 export function useUpdateDictEntry(
-  options?: UseMutationOptions<{}, Error, dictservicev1_UpdateDictEntryRequest>,
+  options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>,
 ) {
   return useMutation({
-    mutationFn: (data) => updateDictEntry(data),
+    mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
+      updateDictEntry({
+        id,
+        data: { ...values } as any,
+        updateMask: makeUpdateMask(Object.keys(values ?? {})),
+      }),
     ...options,
   });
 }
