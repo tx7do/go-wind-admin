@@ -1,18 +1,13 @@
-import {zhCN, type ZhCNResources} from './zh-CN';
+import {zhCN, type ZhCNResources, allNamespaces as zhCNNamespaces} from './zh-CN';
 import {enUS, type EnUSResources} from './en-US';
 
-// 资源映射（供 i18next 初始化）
+// 所有命名空间列表（供 i18next ns 配置）
+const allNamespaces = zhCNNamespaces;
+
+// 资源映射（供 i18next 初始化，核心 + 扩展全部预加载）
 export const resources = {
-    'zh-CN': {
-        common: zhCN.common,
-        auth: zhCN.auth,
-        menu: zhCN.menu,
-    },
-    'en-US': {
-        common: enUS.common,
-        auth: enUS.auth,
-        menu: enUS.menu,
-    },
+    'zh-CN': zhCN,
+    'en-US': enUS,
 } as const;
 
 // 支持的语言
@@ -31,5 +26,5 @@ export type CoreTFunction = <N extends CoreNamespace>(
     params?: Record<string, any>
 ) => string;
 
-// 扩展模块加载器类型
-export type ModuleLoader = (lang: string, namespace: string) => Promise<Record<string, any> | null>;
+// 导出命名空间列表供 i18n 初始化使用
+export {allNamespaces};

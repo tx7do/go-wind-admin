@@ -1,12 +1,12 @@
 import React from 'react';
 import { Switch } from 'antd';
-import { useDynamicI18n } from '@/core/i18n';
+import { useTranslation } from 'react-i18next';
 import { usePreferencesStore } from '../../store';
 import './ShortcutKeyPanel.style.less';
 
 export const ShortcutKeyPanel: React.FC = () => {
   const { preferences, setPreferences } = usePreferencesStore();
-  const { t } = useDynamicI18n({ namespace: 'preferences' });
+  const { t } = useTranslation('preferences');
 
   return (
     <div className="shortcut-panel">

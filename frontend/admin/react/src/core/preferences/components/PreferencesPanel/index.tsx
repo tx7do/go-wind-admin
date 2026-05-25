@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Drawer, Segmented } from 'antd';
 import { ReloadOutlined, CloseOutlined, CopyOutlined, LogoutOutlined } from '@ant-design/icons';
-import { useDynamicI18n } from '@/core/i18n';
+import { useTranslation } from 'react-i18next';
 
 import { usePreferencesStore } from '../../store';
 import { useAuthStore } from '@/stores';
@@ -34,7 +34,7 @@ const TAB_COMPONENTS = {
 
 export const PreferencesPanel: React.FC<PreferencesPanelProps> = ({ open, onClose }) => {
   const { resetPreferences } = usePreferencesStore();
-  const { t } = useDynamicI18n({ namespace: 'preferences' });
+  const { t } = useTranslation('preferences');
   const [activeTab, setActiveTab] = useState<TabType>('appearance');
 
   const ActiveComponent = TAB_COMPONENTS[activeTab];

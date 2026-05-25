@@ -1,7 +1,7 @@
 import React from 'react';
 import { Segmented, Switch } from 'antd';
 import { BulbOutlined, LaptopOutlined, MoonOutlined, BgColorsOutlined } from '@ant-design/icons';
-import { useDynamicI18n } from '@/core/i18n';
+import { useTranslation } from 'react-i18next';
 import { usePreferencesStore } from '../../store';
 import type { BuiltinThemeType, ThemeModeType } from '../../types';
 import './AppearancePanel.style.less';
@@ -36,7 +36,7 @@ const RADIUS_OPTIONS = [
 
 export const AppearancePanel: React.FC = () => {
   const { preferences, setPreferences } = usePreferencesStore();
-  const { t } = useDynamicI18n({ namespace: 'preferences' });
+  const { t } = useTranslation('preferences');
 
   // 主题模式切换
   const handleThemeModeChange = (mode: ThemeModeType) => {

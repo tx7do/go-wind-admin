@@ -5,7 +5,7 @@ import {
   DownloadOutlined,
   ClockCircleOutlined,
 } from '@ant-design/icons';
-import { useDynamicI18n } from '@/core/i18n';
+import { useTranslation } from 'react-i18next';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import {
   StatsCard,
@@ -16,7 +16,7 @@ import {
 } from './components';
 
 const Dashboard = () => {
-  const { t } = useDynamicI18n({ namespace: 'dashboard' });
+  const { t } = useTranslation('dashboard');
 
   // 统计卡片数据
   const statsData = [
