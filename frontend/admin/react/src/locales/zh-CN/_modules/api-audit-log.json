@@ -1,0 +1,21 @@
+{
+  "title": "API 审计日志",
+  "serial": "序号",
+  "username": "用户名",
+  "usernamePlaceholder": "请输入用户名",
+  "path": "API路径",
+  "pathPlaceholder": "请输入API路径",
+  "httpMethod": "请求方法",
+  "httpMethodPlaceholder": "请选择请求方法",
+  "ipAddress": "IP地址",
+  "ipAddressPlaceholder": "请输入IP地址",
+  "success": "状态",
+  "successPlaceholder": "请选择状态",
+  "success.true": "成功",
+  "success.false": "失败",
+  "latencyMs": "耗时(ms)",
+  "platform": "平台",
+  "geoLocation": "地理位置",
+  "createdAt": "创建时间",
+  "fetchFailed": "获取数据失败"
+}

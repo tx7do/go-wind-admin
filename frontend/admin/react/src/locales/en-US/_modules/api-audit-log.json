@@ -1,0 +1,21 @@
+{
+  "title": "API Audit Log",
+  "serial": "#",
+  "username": "Username",
+  "usernamePlaceholder": "Enter username",
+  "path": "API Path",
+  "pathPlaceholder": "Enter API path",
+  "httpMethod": "Method",
+  "httpMethodPlaceholder": "Select method",
+  "ipAddress": "IP Address",
+  "ipAddressPlaceholder": "Enter IP address",
+  "success": "Status",
+  "successPlaceholder": "Select status",
+  "success.true": "Success",
+  "success.false": "Failed",
+  "latencyMs": "Latency(ms)",
+  "platform": "Platform",
+  "geoLocation": "Geo Location",
+  "createdAt": "Created At",
+  "fetchFailed": "Failed to fetch data"
+}

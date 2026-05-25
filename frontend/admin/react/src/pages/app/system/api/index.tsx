@@ -7,24 +7,11 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { resourceservicev1_Api as Api } from '@/api/generated/admin/service/v1';
 import { PaginationQuery } from '@/core';
-import { TABLE } from '@/config/constants';
+import { TABLE, METHOD_LIST } from '@/config/constants';
 import { fetchListApis, useSyncApisApi, useDeleteApi } from '@/api/hooks/api';
 import { useProTableScrollY } from '@/hooks/useProTableScrollY';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import ApiDrawer from './components/ApiDrawer';
-
-/**
- * HTTP 方法列表
- */
-const methodList = [
-  { label: 'GET', value: 'GET' },
-  { label: 'POST', value: 'POST' },
-  { label: 'PUT', value: 'PUT' },
-  { label: 'DELETE', value: 'DELETE' },
-  { label: 'PATCH', value: 'PATCH' },
-  { label: 'HEAD', value: 'HEAD' },
-  { label: 'OPTIONS', value: 'OPTIONS' },
-];
 
 /**
  * API管理页面
@@ -106,7 +93,7 @@ const ApiManagement = () => {
       width: 100,
       valueType: 'select',
       valueEnum: Object.fromEntries(
-        methodList.map((item) => [item.value, { text: item.label, status: 'Default' }]),
+        METHOD_LIST.map((item) => [item.value, { text: item.label, status: 'Default' }]),
       ),
       render: (_, record) => {
         const colorMap: Record<string, string> = {
@@ -155,18 +142,18 @@ const ApiManagement = () => {
             setDrawerOpen(true);
           }}
         >
-          <EditOutlined /> 编辑
+          <EditOutlined /> {t('common:button.edit')}
         </a>,
         <Popconfirm
           key="delete"
           title={t('deleteConfirmTitle')}
           description={t('deleteConfirmDesc', { path: record.path })}
           onConfirm={() => record.id && deleteMutation.mutate({ id: record.id })}
-          okText="确定"
-          cancelText="取消"
+          okText={t('common:button.ok')}
+          cancelText={t('common:button.cancel')}
         >
           <a style={{ color: '#ff4d4f' }}>
-            <DeleteOutlined /> 删除
+            <DeleteOutlined /> {t('common:button.delete')}
           </a>
         </Popconfirm>,
       ],
@@ -246,8 +233,8 @@ const ApiManagement = () => {
                 title={t('syncConfirmTitle')}
                 description={t('syncConfirmDesc')}
                 onConfirm={handleSync}
-                okText="确定"
-                cancelText="取消"
+                okText={t('common:button.ok')}
+                cancelText={t('common:button.cancel')}
               >
                 <Button type="primary" danger icon={<SyncOutlined />}>
                   {t('sync')}

@@ -7,18 +7,7 @@ import { useTranslation } from 'react-i18next';
 import type { resourceservicev1_Api as Api } from '@/api/generated/admin/service/v1';
 import { useCreateApi, useUpdateApi } from '@/api/hooks/api';
 
-/**
- * HTTP 方法列表
- */
-const methodList = [
-  { label: 'GET', value: 'GET' },
-  { label: 'POST', value: 'POST' },
-  { label: 'PUT', value: 'PUT' },
-  { label: 'DELETE', value: 'DELETE' },
-  { label: 'PATCH', value: 'PATCH' },
-  { label: 'HEAD', value: 'HEAD' },
-  { label: 'OPTIONS', value: 'OPTIONS' },
-];
+import { METHOD_LIST } from '@/config/constants';
 
 interface ApiDrawerProps {
   open: boolean;
@@ -90,8 +79,8 @@ const ApiDrawer: React.FC<ApiDrawerProps> = ({ open, mode, data, onClose, onSucc
       onFinish={handleSubmit}
       submitter={{
         searchConfig: {
-          submitText: '确定',
-          resetText: '取消',
+          submitText: t('common:button.submit'),
+          resetText: t('common:button.reset'),
         },
         submitButtonProps: {
           loading: confirmLoading || createMutation.isPending || updateMutation.isPending,
@@ -140,7 +129,7 @@ const ApiDrawer: React.FC<ApiDrawerProps> = ({ open, mode, data, onClose, onSucc
         name="method"
         label={t('method')}
         placeholder={t('methodPlaceholder')}
-        options={methodList}
+        options={METHOD_LIST}
         rules={[{ required: true, message: t('requiredMethod') }]}
         fieldProps={{
           showSearch: true,

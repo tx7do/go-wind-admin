@@ -62,6 +62,17 @@ export const LAYOUT_HEIGHTS = {
   CONTENT_PADDING: 16,
 } as const;
 
+// ========== HTTP 方法列表 ==========
+export const METHOD_LIST = [
+  { label: 'GET', value: 'GET' },
+  { label: 'POST', value: 'POST' },
+  { label: 'PUT', value: 'PUT' },
+  { label: 'DELETE', value: 'DELETE' },
+  { label: 'PATCH', value: 'PATCH' },
+  { label: 'HEAD', value: 'HEAD' },
+  { label: 'OPTIONS', value: 'OPTIONS' },
+];
+
 // ========== 业务阈值（按需扩展） ==========
 export const BUSINESS = {
   /** 请求超时时间 (ms) */

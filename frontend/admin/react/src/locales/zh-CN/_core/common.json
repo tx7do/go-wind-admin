@@ -1,6 +1,12 @@
 {
   "button": {
-    "back": "返回"
+    "back": "返回",
+    "ok": "确定",
+    "cancel": "取消",
+    "edit": "编辑",
+    "delete": "删除",
+    "submit": "确定",
+    "reset": "取消"
   },
   "home": "首页",
   "header": {

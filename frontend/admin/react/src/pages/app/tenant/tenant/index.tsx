@@ -179,18 +179,18 @@ const TenantList = () => {
             setDrawerOpen(true);
           }}
         >
-          <EditOutlined /> 编辑
+          <EditOutlined /> {t('common:button.edit')}
         </a>,
         <Popconfirm
           key="delete"
           title={t('deleteConfirmTitle')}
           description={t('deleteConfirmDesc', { name: record.name })}
           onConfirm={() => record.id && deleteMutation.mutate({ id: record.id })}
-          okText="确定"
-          cancelText="取消"
+          okText={t('common:button.ok')}
+          cancelText={t('common:button.cancel')}
         >
           <a style={{ color: '#ff4d4f' }}>
-            <DeleteOutlined /> 删除
+            <DeleteOutlined /> {t('common:button.delete')}
           </a>
         </Popconfirm>,
       ],

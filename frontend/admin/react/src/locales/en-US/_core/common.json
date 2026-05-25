@@ -1,6 +1,12 @@
 {
   "button": {
-    "back": "Back"
+    "back": "Back",
+    "ok": "OK",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "delete": "Delete",
+    "submit": "Submit",
+    "reset": "Reset"
   },
   "header": {
     "profile": "Profile",
