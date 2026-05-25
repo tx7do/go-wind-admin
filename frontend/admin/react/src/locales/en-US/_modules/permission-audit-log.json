@@ -1,0 +1,19 @@
+{
+  "title": "Permission Audit Log",
+  "serial": "No.",
+  "targetType": "Target Type",
+  "targetTypePlaceholder": "Enter target type",
+  "operatorName": "Operator",
+  "operatorNamePlaceholder": "Enter operator",
+  "action": "Action",
+  "actionPlaceholder": "Select action",
+  "action.GRANT": "Grant",
+  "action.REVOKE": "Revoke",
+  "targetName": "Target Name",
+  "reason": "Reason",
+  "ipAddress": "IP Address",
+  "ipAddressPlaceholder": "Enter IP address",
+  "geoLocation": "Geo Location",
+  "createdAt": "Created At",
+  "fetchFailed": "Failed to fetch data"
+}

@@ -1,0 +1,19 @@
+{
+  "title": "权限审计日志",
+  "serial": "序号",
+  "targetType": "目标类型",
+  "targetTypePlaceholder": "请输入目标类型",
+  "operatorName": "操作人",
+  "operatorNamePlaceholder": "请输入操作人",
+  "action": "操作类型",
+  "actionPlaceholder": "请选择操作类型",
+  "action.GRANT": "授权",
+  "action.REVOKE": "撤销",
+  "targetName": "目标名称",
+  "reason": "原因",
+  "ipAddress": "IP地址",
+  "ipAddressPlaceholder": "请输入IP地址",
+  "geoLocation": "地理位置",
+  "createdAt": "创建时间",
+  "fetchFailed": "获取数据失败"
+}
