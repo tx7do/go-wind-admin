@@ -84,7 +84,10 @@ export function createRequestClient(baseURL: string) {
     authenticateResponseInterceptor({
       client,
       doReAuthenticate: async () => {
-        console.warn('Token expired, need to re-authenticate');
+        console.warn('Token expired, redirecting to login...');
+        // 执行登出并跳转到登录页
+        const { useAuthStore } = await import('@/stores/auth');
+        useAuthStore.getState().logout(true);
       },
       doRefreshToken: async () => {
         // 这里需要从 AccessModel 获取 refresh_token

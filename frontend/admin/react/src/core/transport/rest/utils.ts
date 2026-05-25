@@ -102,8 +102,9 @@ export function getErrorMsg(error: unknown) {
   // =========================================
   if (reason) {
     const key = i18nPrefix + `reason.${reason}`;
-    if (i18n.exists(key)) {
-      return i18n.t(key);
+    // 使用 i18n.exists() 时需要指定命名空间
+    if (i18n.exists(key, { ns: 'common' })) {
+      return i18n.t(key, { ns: 'common' });
     }
   }
 
@@ -117,13 +118,15 @@ export function getErrorMsg(error: unknown) {
   // =========================================
   // 3. 都没有 → 使用 code 查 status
   // =========================================
-  const statusKey = i18nPrefix + `status.${code}`;
-  if (i18n.exists(statusKey)) {
-    return i18n.t(statusKey);
+  if (code) {
+    const statusKey = i18nPrefix + `status.${code}`;
+    if (i18n.exists(statusKey, { ns: 'common' })) {
+      return i18n.t(statusKey, { ns: 'common' });
+    }
   }
 
   // =========================================
   // 4. 全部失败 → 兜底
   // =========================================
-  return i18n.t(i18nPrefix + `fallback.reason}`);
+  return i18n.t(i18nPrefix + 'error.unknownError', { ns: 'common' });
 }
