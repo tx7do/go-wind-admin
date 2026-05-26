@@ -27,11 +27,15 @@ declare global {
   const BaseTransfer: typeof import('../src/components/Transfer/BaseTransfer').default
   const BaseTreeSelect: typeof import('../src/components/common/Selects/index').BaseTreeSelect
   const BaseUpload: typeof import('../src/components/Upload/BaseUpload').default
+  const CodeBlockModal: typeof import('../src/components/common/Editor/src/TiptapEditor/modals').CodeBlockModal
   const CodeEditor: typeof import('../src/components/common/Editor/src/CodeEditor').default
   const CopyBtn: typeof import('../src/components/Copy/CopyBtn').default
   const CopyInput: typeof import('../src/components/Copy/CopyInput').default
   const Count: typeof import('../src/components/Count/index').default
   const CreateBusiness: typeof import('../src/components/common/Business/index').CreateBusiness
+  const CustomCodeBlockLowlight: typeof import('../src/components/common/Editor/src/TiptapEditor/index').CustomCodeBlockLowlight
+  const CustomIframe: typeof import('../src/components/common/Editor/src/TiptapEditor/nodes').CustomIframe
+  const CustomVideo: typeof import('../src/components/common/Editor/src/TiptapEditor/nodes').CustomVideo
   const DeleteBtn: typeof import('../src/components/Buttons/index').DeleteBtn
   const DragContent: typeof import('../src/components/Table/components/DragContent').default
   const Editor: typeof import('../src/components/common/Editor/src/Editor').default
@@ -44,8 +48,10 @@ declare global {
   const Github: typeof import('../src/components/common/Github/index').default
   const GlobalSearch: typeof import('../src/components/common/GlobalSearch/index').default
   const I18n: typeof import('../src/components/common/I18n/index').default
+  const IframeModal: typeof import('../src/components/common/Editor/src/TiptapEditor/modals').IframeModal
   const JsonEditor: typeof import('../src/components/common/Editor/src/JsonEditor').default
   const Link: typeof import('react-router-dom').Link
+  const LinkModal: typeof import('../src/components/common/Editor/src/TiptapEditor/index').LinkModal
   const Loading: typeof import('../src/components/common/Loading/index').default
   const LoadingComponent: typeof import('../src/components/common/Form/components/LoadingComponent').default
   const MAX_TAG_COUNT: typeof import('../src/components/common/Selects/index').MAX_TAG_COUNT
@@ -65,6 +71,7 @@ declare global {
   const SearchModal: typeof import('../src/components/common/GlobalSearch/components/SearchModal').default
   const SearchResult: typeof import('../src/components/common/GlobalSearch/components/SearchResult').default
   const SloganIcon: typeof import('../src/components/bussiness/AuthLayout/icons/SloganIcon').default
+  const StatusBar: typeof import('../src/components/common/Editor/src/TiptapEditor/index').StatusBar
   const StrengthBar: typeof import('../src/components/PasswordStrength/components/StrengthBar').default
   const SubmitBottom: typeof import('../src/components/Bottom/SubmitBottom').default
   const Suspense: typeof import('react').Suspense
@@ -72,7 +79,9 @@ declare global {
   const Theme: typeof import('../src/components/common/Theme/index').default
   const ThemeLoading: typeof import('../src/components/common/Loading/index').ThemeLoading
   const TiptapEditor: typeof import('../src/components/common/Editor/src/TiptapEditor').default
+  const Toolbar: typeof import('../src/components/common/Editor/src/TiptapEditor/index').Toolbar
   const UpdateBtn: typeof import('../src/components/Buttons/index').UpdateBtn
+  const VideoModal: typeof import('../src/components/common/Editor/src/TiptapEditor/modals').VideoModal
   const VirtualWrapper: typeof import('../src/components/Table/components/VirtualWrapper').default
   const addComponent: typeof import('../src/components/common/Form/utils/componentMap').addComponent
   const cache: typeof import('react').cache
@@ -94,6 +103,7 @@ declare global {
   const initCompProps: typeof import('../src/components/common/Form/utils/helper').initCompProps
   const initMonacoWorkers: typeof import('../src/components/common/Editor/src/monaco-loader').initMonacoWorkers
   const isDarkMode: typeof import('../src/components/common/Editor/src/utils').isDarkMode
+  const languages: typeof import('../src/components/common/Editor/src/TiptapEditor/index').languages
   const lazy: typeof import('react').lazy
   const memo: typeof import('react').memo
   const monacoLoader: typeof import('../src/components/common/Editor/src/monaco-loader').default
@@ -147,6 +157,7 @@ declare global {
   const useTableScrollHeight: typeof import('../src/hooks/useTableScrollHeight').useTableScrollHeight
   const useTabsStore: typeof import('../src/stores/tabs').useTabsStore
   const useTimes: typeof import('../src/hooks/useTime').useTimes
+  const useTiptapEditor: typeof import('../src/components/common/Editor/src/TiptapEditor/useTiptapEditor').useTiptapEditor
   const useTitle: typeof import('../src/hooks/useTitle').useTitle
   const useToken: typeof import('../src/hooks/useToken').useToken
   const useTransition: typeof import('react').useTransition
@@ -158,6 +169,6 @@ declare global {
 // for type re-export
 declare global {
   // @ts-ignore
-  export type { TiptapEditorProps, MarkdownEditorProps, CodeEditorProps, JsonEditorProps, PlainTextEditorProps, EditorProps, TabItem, ThemeLoadingProps, TokenPayload, AuthState, UserState, AuthLayoutProps, BusinessComponents, RangeValue, SearchModalProps, Langs, ApiFn, ApiSelectProps, ApiTreeSelectProps, ApiPageSelectProps, CheckboxList, InitTableState, TableAction, ECOption, FC } from './autoImports.d'
+  export type { CodeBlockModalProps, VideoModalProps, IframeModalProps, TiptapEditorProps, MarkdownEditorProps, CodeEditorProps, JsonEditorProps, PlainTextEditorProps, EditorProps, TabItem, ThemeLoadingProps, TokenPayload, AuthState, UserState, AuthLayoutProps, BusinessComponents, RangeValue, SearchModalProps, Langs, ApiFn, ApiSelectProps, ApiTreeSelectProps, ApiPageSelectProps, CheckboxList, InitTableState, TableAction, ECOption, FC } from './autoImports.d'
   import('./autoImports.d')
 }

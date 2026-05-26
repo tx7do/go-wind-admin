@@ -124,6 +124,47 @@
   transform: scale(1.05);
 }
 
+/* Font Size Select */
+.toolbar-select {
+  height: 28px;
+  padding: 0 6px;
+  font-size: 12px;
+  color: #475569;
+  cursor: pointer;
+  background-color: transparent;
+  border: 1px solid #e5e7eb;
+  border-radius: 4px;
+  outline: none;
+  transition: all 0.15s ease;
+}
+
+.toolbar-select:hover {
+  border-color: #94a3b8;
+  background-color: #f8fafc;
+}
+
+.toolbar-select:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgb(59 130 246 / 10%);
+}
+
+.tiptap-editor-dark .toolbar-select {
+  color: var(--tte-toolbar-btn);
+  background-color: transparent;
+  border-color: var(--tte-border-secondary);
+}
+
+.tiptap-editor-dark .toolbar-select:hover {
+  color: var(--tte-text-primary);
+  background-color: var(--tte-toolbar-btn-hover);
+  border-color: var(--tte-border-primary);
+}
+
+.tiptap-editor-dark .toolbar-select:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 2px rgb(96 165 250 / 20%);
+}
+
 .tiptap-editor-dark .toolbar-color-picker {
   border-color: var(--tte-border-secondary);
 }
@@ -761,4 +802,35 @@
 .tiptap-editor-wrapper,
 .tiptap-editor-wrapper * {
   transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
+}
+
+/* ============ Fullscreen Mode ============ */
+.tiptap-editor-fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  z-index: 9999 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  animation: fullscreen-enter 0.2s ease-out;
+}
+
+@keyframes fullscreen-enter {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Prevent body scroll when fullscreen */
+body.tiptap-editor-fullscreen-active {
+  overflow: hidden;
 }
