@@ -108,7 +108,7 @@ const { hasAccessByCodes } = useAccess();
 // 检查按钮是否应该显示
 function shouldShow(btn: ToolbarButton): boolean {
   if (btn.hidden) return false;
-  if (btn.render && !btn.render()) return false;
+  if (btn.visible && !btn.visible()) return false;
 
   // 权限检查
   if (btn.perm) {

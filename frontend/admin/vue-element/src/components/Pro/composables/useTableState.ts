@@ -4,7 +4,7 @@ import { DEFAULT_CURRENT_PAGE, DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from "../
 
 export interface UseTableConfig {
   indexAction: (queryParams: any) => Promise<PagingResult<any> | any[]>;
-  pk?: string;
+  rowKey?: string;
   pagination?: boolean;
   request?: { pageName: string; limitName: string };
 }
@@ -13,7 +13,7 @@ export function useTableState<T = any, Q = any>(config: UseTableConfig) {
   const data = shallowRef<T[]>([]);
   const loading = ref(false);
   const selection = shallowRef<T[]>([]);
-  const pk = config.pk ?? "id";
+  const rowKey = config.rowKey ?? "id";
   const showPagination = config.pagination !== false;
   const request = config.request ?? { pageName: "page", limitName: "pageSize" };
 
@@ -55,7 +55,7 @@ export function useTableState<T = any, Q = any>(config: UseTableConfig) {
   }
 
   function getSelectionIds() {
-    return selection.value.map((r) => (r as any)[pk]);
+    return selection.value.map((r) => (r as any)[rowKey]);
   }
 
   return {

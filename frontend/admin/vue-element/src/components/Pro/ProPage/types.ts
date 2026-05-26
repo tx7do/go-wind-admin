@@ -12,11 +12,11 @@ export interface ToolsButton {
   textKey?: string;
   perm?: string | string[];
   attrs?: Record<string, any>;
-  render?: (row: Record<string, any>) => boolean;
+  visible?: (row: Record<string, any>) => boolean;
 }
 
 // 请求函数类型
-export type IndexAction<TItem = any, TQuery = any> = (
+export type ListAction<TItem = any, TQuery = any> = (
   queryParams: TQuery
 ) => Promise<{ items: TItem[]; total: number } | TItem[]>;
 
@@ -24,11 +24,11 @@ export interface ProPageConfig<T = any, Q = any> {
   // 权限前缀
   permPrefix?: string;
   // 主键名(默认id)
-  pk?: string;
+  rowKey?: string;
 
   // === 搜索配置 ===
   search?: {
-    formItems?: ProFormField[];
+    fields?: ProFormField[];
     isExpandable?: boolean;
     showNumber?: number;
     colon?: boolean;
@@ -38,13 +38,13 @@ export interface ProPageConfig<T = any, Q = any> {
   // === 表格配置 ===
   table: {
     columns: ProTableColumn<T>[];
-    table?: Record<string, any>;
+    tableAttrs?: Record<string, any>;
     pagination?: boolean;
     toolbar?: Array<ToolbarLeft | ToolsButton>;
     toolbarRight?: Array<ToolbarLeft | ToolsButton>;
     defaultToolbar?: Array<ToolbarRight | ToolsButton>;
     // 请求函数
-    indexAction: IndexAction<T, Q>;
+    listAction: ListAction<T, Q>;
     // 请求参数名
     request?: { pageName: string; limitName: string };
     // 修改属性
@@ -66,8 +66,8 @@ export interface ProPageConfig<T = any, Q = any> {
     drawer?: Partial<Omit<DrawerProps, "modelValue">>;
     form?: Record<string, any>;
     colon?: boolean;
-    formItems: ProFormField<T>[];
+    fields: ProFormField<T>[];
     beforeSubmit?: (data: T) => void;
-    formAction?: (data: T) => Promise<any>;
+    submitAction?: (data: T) => Promise<any>;
   };
 }

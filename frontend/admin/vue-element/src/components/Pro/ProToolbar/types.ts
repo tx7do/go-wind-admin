@@ -22,7 +22,7 @@ export interface ToolbarButton {
   hidden?: boolean;
   disabled?: boolean;
   loading?: boolean;
-  render?: (data?: any) => boolean;
+  visible?: (data?: any) => boolean;
 }
 
 export interface ProToolbarProps {

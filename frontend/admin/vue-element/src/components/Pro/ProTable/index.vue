@@ -4,7 +4,7 @@
       ref="tableRef"
       v-loading="loading ?? false"
       :data="data"
-      :row-key="pk"
+      :row-key="rowKey"
       border
       style="width: 100%"
       v-bind="tableAttrs"
@@ -42,7 +42,7 @@
           <template #default="scope">
             <!-- 自定义插槽 -->
             <slot
-              v-if="col.template === 'custom' || col.slotName"
+              v-if="col.cellType === 'custom' || col.slotName"
               :name="col.slotName ?? col.prop"
               :row="scope.row"
               :column="scope.column"
@@ -50,7 +50,7 @@
             />
 
             <!-- 图片模板 -->
-            <template v-else-if="col.template === 'image'">
+            <template v-else-if="col.cellType === 'image'">
               <template v-if="col.prop">
                 <template v-if="Array.isArray(scope.row[col.prop])">
                   <ElImage
@@ -75,14 +75,14 @@
             </template>
 
             <!-- 标签/列表模板 -->
-            <template v-else-if="col.template === 'tag'">
+            <template v-else-if="col.cellType === 'tag'">
               <ElTag :type="getTagType(scope.row[col.prop], col)">
-                {{ (col.selectList ?? {})[scope.row[col.prop]] ?? scope.row[col.prop] }}
+                {{ (col.labelMap ?? {})[scope.row[col.prop]] ?? scope.row[col.prop] }}
               </ElTag>
             </template>
 
             <!-- 开关模板 -->
-            <template v-else-if="col.template === 'switch'">
+            <template v-else-if="col.cellType === 'switch'">
               <ElSwitch
                 v-if="col.prop"
                 v-model="scope.row[col.prop]"
@@ -99,7 +99,7 @@
             </template>
 
             <!-- 日期模板 -->
-            <template v-else-if="col.template === 'date'">
+            <template v-else-if="col.cellType === 'date'">
               {{
                 scope.row[col.prop]
                   ? useDateFormat(scope.row[col.prop], col.dateFormat ?? "YYYY-MM-DD HH:mm:ss")
@@ -109,30 +109,30 @@
             </template>
 
             <!-- 链接模板 -->
-            <template v-else-if="col.template === 'link'">
+            <template v-else-if="col.cellType === 'link'">
               <ElLink type="primary" :href="scope.row[col.prop]" target="_blank">
                 {{ scope.row[col.prop] }}
               </ElLink>
             </template>
 
             <!-- 价格模板 -->
-            <template v-else-if="col.template === 'price'">
-              {{ `${col.priceFormat ?? ""}${scope.row[col.prop]}` }}
+            <template v-else-if="col.cellType === 'price'">
+              {{ `${col.pricePrefix ?? ""}${scope.row[col.prop]}` }}
             </template>
 
             <!-- 百分比模板 -->
-            <template v-else-if="col.template === 'percent'">{{ scope.row[col.prop] }}%</template>
+            <template v-else-if="col.cellType === 'percent'">{{ scope.row[col.prop] }}%</template>
 
             <!-- 图标模板 -->
-            <template v-else-if="col.template === 'icon'">
+            <template v-else-if="col.cellType === 'icon'">
               <ElIcon><component :is="scope.row[col.prop]" /></ElIcon>
             </template>
 
             <!-- 操作列模板 -->
-            <template v-else-if="col.template === 'tool'">
-              <template v-for="(btn, idx) in col.action" :key="idx">
+            <template v-else-if="col.cellType === 'tool'">
+              <template v-for="(btn, idx) in col.buttons" :key="idx">
                 <ElButton
-                  v-if="btn.render === undefined || btn.render(scope.row)"
+                  v-if="btn.visible === undefined || btn.visible(scope.row)"
                   v-bind="{ link: true, size: 'small', ...btn.attrs }"
                   @click="emit('operate', { name: btn.name, row: scope.row, $index: scope.$index })"
                 >
@@ -180,8 +180,7 @@ import ProPagination from "../ProPagination/index.vue";
 import type { ProTableProps, ProTableColumn } from "./types";
 
 const props = withDefaults(defineProps<ProTableProps<T>>(), {
-  pagination: false,
-  pk: "id",
+  rowKey: "id",
   total: 0,
   currentPage: 1,
   pageSize: 20,
@@ -207,6 +206,7 @@ const resolvedColumns = ref(
 
 // 透传 table 属性
 const tableAttrs = props.table ?? {};
+const rowKey = props.rowKey;
 
 // 选中处理
 function handleSelectionChange(rows: T[]) {

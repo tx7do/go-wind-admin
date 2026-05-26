@@ -1,6 +1,6 @@
 import type { TableProps, ButtonProps } from "element-plus";
 
-export type TableValueType =
+export type CellType =
   | "text"
   | "image"
   | "tag"
@@ -38,13 +38,13 @@ export interface ProTableColumn<T = any> {
   // 树节点列
   treeNode?: boolean;
 
-  // === 模板相关 ===
-  template?: TableValueType;
+  // === 单元格渲染类型 ===
+  cellType?: CellType;
   // image 模板
   imageWidth?: number;
   imageHeight?: number;
-  // tag/list 模板
-  selectList?: Record<string, any>;
+  // tag 模板
+  labelMap?: Record<string, any>;
   tagType?: string;
   // switch 模板
   activeValue?: boolean | string | number;
@@ -54,17 +54,17 @@ export interface ProTableColumn<T = any> {
   // input 模板
   inputType?: string;
   // price 模板
-  priceFormat?: string;
+  pricePrefix?: string;
   // date 模板
   dateFormat?: string;
-  // tool 模板（操作列）
-  action?: Array<{
+  // tool 模板（操作列按钮）
+  buttons?: Array<{
     name: string;
     text?: string;
     textKey?: string;
     perm?: string | string[];
     attrs?: Partial<ButtonProps>;
-    render?: (row: Record<string, any>) => boolean;
+    visible?: (row: Record<string, any>) => boolean;
   }>;
   // 自定义插槽名
   slotName?: string;
@@ -85,7 +85,7 @@ export interface ProTableProps<T = any> {
   columns: ProTableColumn<T>[];
   data?: T[];
   loading?: boolean;
-  pk?: string;
+  rowKey?: string;
   table?: Partial<TableProps<any>>;
 
   // === 分页 ===

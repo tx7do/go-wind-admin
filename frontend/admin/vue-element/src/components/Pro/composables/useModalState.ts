@@ -1,6 +1,6 @@
 import { ref, reactive } from "vue";
 
-export function useModalState<T = any>(pk = "id") {
+export function useModalState<T = any>(rowKey = "id") {
   const visible = ref(false);
   const mode = ref<"add" | "edit" | "view">("add");
   const formData = reactive<Record<string, any>>({});
@@ -16,5 +16,5 @@ export function useModalState<T = any>(pk = "id") {
     visible.value = true;
   }
 
-  return { visible, mode, formData, open, pk };
+  return { visible, mode, formData, open, rowKey };
 }

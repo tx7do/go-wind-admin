@@ -18,7 +18,7 @@ export interface ProModalConfig<T = any> {
   // 标签冒号
   colon?: boolean;
   // 主键名
-  pk?: string;
+  rowKey?: string;
   // 表单字段
   fields: ProFormField<T>[];
   // 提交网络请求

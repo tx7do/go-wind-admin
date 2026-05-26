@@ -2,8 +2,8 @@
   <div class="pro-page">
     <!-- 搜索区 -->
     <ProSearch
-      v-if="searchVisible && config.search?.formItems?.length"
-      :fields="config.search.formItems"
+      v-if="searchVisible && config.search?.fields?.length"
+      :fields="config.search.fields"
       :colon="config.search.colon"
       :is-expandable="config.search.isExpandable"
       :show-number="config.search.showNumber"
@@ -36,8 +36,8 @@
         :columns="config.table.columns"
         :data="tableData"
         :loading="tableState.loading.value"
-        :pk="pk"
-        :table="config.table.table"
+        :row-key="rowKey"
+        :table="config.table.tableAttrs"
         :pagination="tableState.showPagination"
         :total="tableState.pagination.total"
         :current-page="tableState.pagination.currentPage"
@@ -104,18 +104,18 @@ const { t } = useI18n();
 const slots = useSlots();
 
 // === 基础状态 ===
-const pk = props.config.pk ?? "id";
+const rowKey = props.config.rowKey ?? "id";
 const searchParams = reactive<Q>({} as Q);
 const searchVisible = ref(true);
 
 const tableState = useTableState<T, Q>({
-  indexAction: props.config.table.indexAction as any,
-  pk,
+  indexAction: props.config.table.listAction as any,
+  rowKey,
   pagination: props.config.table.pagination,
   request: props.config.table.request,
 });
 
-const modalState = useModalState<T>(pk);
+const modalState = useModalState<T>(rowKey);
 const tableRef = ref<any>(null);
 
 const tableData = computed(() => tableState.data.value);
@@ -123,7 +123,7 @@ const tableData = computed(() => tableState.data.value);
 // === 区分表格插槽和弹窗插槽 ===
 const tableColumnProps = computed(() =>
   props.config.table.columns
-    .filter((c) => c.template === "custom" || c.slotName)
+    .filter((c) => c.cellType === "custom" || c.slotName)
     .map((c) => c.slotName ?? c.prop)
 );
 const modalSlots = computed(() => {
@@ -168,7 +168,7 @@ function toToolbarButtons(
       text: item.text ?? (item.textKey ? t(item.textKey) : item.name),
       attrs: { ...defaultAttrs, ...item.attrs },
       perm: item.perm,
-      render: item.render,
+      visible: item.visible,
     };
   });
 }
@@ -239,7 +239,7 @@ function handleRefresh() {
 function handleModify(data: { row: T; field: string; value: any }) {
   if (props.config.table.modifyAction) {
     props.config.table.modifyAction({
-      [pk]: (data.row as any)[pk],
+      [rowKey]: (data.row as any)[rowKey],
       field: data.field,
       value: data.value,
     });
@@ -283,7 +283,7 @@ async function handleBatchDelete() {
 }
 
 async function handleDelete(row: T) {
-  const id = String((row as any)[pk]);
+  const id = String((row as any)[rowKey]);
   await ElMessageBox.confirm(t("pages.curd.message.confirmDelete"), t("common.title.confirm"), {
     confirmButtonText: t("common.button.confirm"),
     cancelButtonText: t("common.button.cancel"),
@@ -350,9 +350,9 @@ const modalConfig = computed(() => {
     drawer: props.config.modal.drawer,
     form: props.config.modal.form,
     colon: props.config.modal.colon,
-    pk,
-    fields: props.config.modal.formItems ?? [],
-    submitAction: props.config.modal.formAction,
+    rowKey: rowKey,
+    fields: props.config.modal.fields ?? [],
+    submitAction: props.config.modal.submitAction,
     beforeSubmit: props.config.modal.beforeSubmit,
   };
 });
