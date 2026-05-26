@@ -3,6 +3,9 @@
  * 导出所有业务模块的 hooks
  */
 
+// 通用枚举与工具函数
+export * from "./_shared";
+
 // 认证相关
 export * from "./auth";
 
@@ -47,3 +50,6 @@ export * from "./policy-evaluation-log";
 
 // 内部消息
 export * from "./internal-message";
+
+// 字典缓存
+export * from "./use-dict-cache";
