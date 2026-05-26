@@ -1,0 +1,32 @@
+{
+  "pageTitle": "字典类型管理",
+  "moduleName": "字典类型",
+  "typeName": "类型名称",
+  "typeNamePlaceholder": "请输入类型名称",
+  "requiredTypeName": "请输入类型名称",
+  "typeCode": "类型编码",
+  "typeCodePlaceholder": "请输入类型编码",
+  "requiredTypeCode": "请输入类型编码",
+  "sortOrder": "排序",
+  "sortOrderPlaceholder": "请输入排序",
+  "status": "状态",
+  "requiredStatus": "请选择状态",
+  "action": "操作",
+  "create": "新建类型",
+  "edit": "编辑类型",
+  "deleteConfirmTitle": "确认删除",
+  "deleteConfirmDesc": "确定要删除该{{moduleName}}吗？",
+  "createSuccess": "创建成功",
+  "updateSuccess": "更新成功",
+  "deleteSuccess": "删除成功",
+  "createFailed": "创建失败",
+  "updateFailed": "更新失败",
+  "deleteFailed": "删除失败",
+  "fetchFailed": "获取数据失败",
+  "selectTypeFirst": "请先在左侧选择一个字典类型",
+  "dictTypeList": "字典类型列表",
+  "statusMap": {
+    "true": "启用",
+    "false": "禁用"
+  }
+}

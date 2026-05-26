@@ -1,0 +1,32 @@
+{
+  "pageTitle": "Dict Type Management",
+  "moduleName": "Dict Type",
+  "typeName": "Type Name",
+  "typeNamePlaceholder": "Enter type name",
+  "requiredTypeName": "Please enter type name",
+  "typeCode": "Type Code",
+  "typeCodePlaceholder": "Enter type code",
+  "requiredTypeCode": "Please enter type code",
+  "sortOrder": "Sort Order",
+  "sortOrderPlaceholder": "Enter sort order",
+  "status": "Status",
+  "requiredStatus": "Please select status",
+  "action": "Action",
+  "create": "New Type",
+  "edit": "Edit Type",
+  "deleteConfirmTitle": "Confirm Delete",
+  "deleteConfirmDesc": "Are you sure you want to delete this {{moduleName}}?",
+  "createSuccess": "Created successfully",
+  "updateSuccess": "Updated successfully",
+  "deleteSuccess": "Deleted successfully",
+  "createFailed": "Creation failed",
+  "updateFailed": "Update failed",
+  "deleteFailed": "Delete failed",
+  "fetchFailed": "Failed to fetch data",
+  "selectTypeFirst": "Please select a dict type on the left first",
+  "dictTypeList": "Dict Type List",
+  "statusMap": {
+    "true": "Active",
+    "false": "Inactive"
+  }
+}

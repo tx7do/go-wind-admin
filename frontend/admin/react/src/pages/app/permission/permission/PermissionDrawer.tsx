@@ -143,22 +143,6 @@ const PermissionDrawer: React.FC<PermissionDrawerProps> = ({
     return keys;
   };
 
-  // 收集树所有叶子节点 key（用于全选勾选）
-  const collectLeafKeys = (tree: any[]): React.Key[] => {
-    const keys: React.Key[] = [];
-    const walk = (nodes: any[]) => {
-      nodes.forEach((n) => {
-        if (n.children?.length) {
-          walk(n.children);
-        } else {
-          keys.push(n.key ?? n.value ?? n.id);
-        }
-      });
-    };
-    walk(tree);
-    return keys;
-  };
-
   // 收集树所有节点 key（含父子，用于全选勾选）
   const collectAllNodeKeys = (tree: any[]): React.Key[] => {
     const keys: React.Key[] = [];
@@ -175,8 +159,8 @@ const PermissionDrawer: React.FC<PermissionDrawerProps> = ({
   // 树工具栏渲染
   const renderTreeToolbar = (
     treeData: any[],
-    expandedKeys: React.Key[],
-    checkedKeys: React.Key[],
+    _expandedKeys: React.Key[],
+    _checkedKeys: React.Key[],
     onExpand: (keys: React.Key[]) => void,
     onCheck: (keys: React.Key[]) => void,
   ) => (
