@@ -50,30 +50,44 @@
 /* ========== ProTable 圆角一致性 ========== */
 /* 顶部搜索表单圆角 */
 .ant-pro-table .ant-pro-table-search {
-  border-radius: 8px;
+  border-radius: var(--ant-border-radius-lg, 8px);
 }
 /* 工具栏容器圆角 */
 .ant-pro-table .ant-pro-table-list-toolbar-container {
-  border-radius: 8px 8px 0 0;
+  border-radius: var(--ant-border-radius-lg, 8px) var(--ant-border-radius-lg, 8px) 0 0;
 }
-/* 表格整体底部圆角（与顶部对称） */
+/* 表格容器底部圆角（与顶部对称） */
 .ant-pro-table .ant-table-container {
-  border-radius: 0 0 8px 8px;
+  border-radius: 0 0 var(--ant-border-radius-lg, 8px) var(--ant-border-radius-lg, 8px) !important;
+  overflow: hidden !important;
 }
-.ant-pro-table .ant-table-container .ant-table-content,
-.ant-pro-table .ant-table-container table {
-  border-radius: 0 0 8px 8px;
+/* 表格内容区域底部圆角 */
+.ant-pro-table .ant-table-container .ant-table-content {
+  border-radius: 0 0 var(--ant-border-radius-lg, 8px) var(--ant-border-radius-lg, 8px) !important;
+}
+/* 表格 body 底部圆角 */
+.ant-pro-table .ant-table-body {
+  border-radius: 0 0 var(--ant-border-radius-lg, 8px) var(--ant-border-radius-lg, 8px) !important;
 }
 /* bordered 模式下最后一行左右端圆角 */
 .ant-pro-table .ant-table-tbody > tr:last-child > td:first-child {
-  border-bottom-left-radius: 8px;
+  border-bottom-left-radius: var(--ant-border-radius-lg, 8px) !important;
 }
 .ant-pro-table .ant-table-tbody > tr:last-child > td:last-child {
-  border-bottom-right-radius: 8px;
+  border-bottom-right-radius: var(--ant-border-radius-lg, 8px) !important;
+}
+/* 无数据状态表格圆角 */
+.ant-pro-table .ant-table-placeholder {
+  border-radius: 0 0 var(--ant-border-radius-lg, 8px) var(--ant-border-radius-lg, 8px) !important;
+}
+/* 分页器圆角（如果有） */
+.ant-pro-table .ant-pagination {
+  border-radius: 0 0 var(--ant-border-radius-lg, 8px) var(--ant-border-radius-lg, 8px);
+  margin-top: 0 !important;
 }
 /* 搜索+表格整体分离时各自圆角 */
 .ant-pro-table .ant-card {
-  border-radius: 8px;
+  border-radius: var(--ant-border-radius-lg, 8px);
 }
 
 /* ========== 暗黑模式专属修正 ========== */

@@ -45,8 +45,8 @@ export function useProTableScrollY(
             (parseFloat(pagStyle.marginBottom) || 0);
         }
 
-        // 安全边距
-        const buffer = 4;
+        // 安全边距（给分页器留出视觉呼吸空间，确保表格底线完整可见）
+        const buffer = 24;
 
         // 计算表格体可用高度
         const availableHeight = Math.max(containerHeight - aboveSpace - belowSpace - buffer, 100);
