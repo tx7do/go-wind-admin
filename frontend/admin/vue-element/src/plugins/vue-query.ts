@@ -6,7 +6,10 @@ import { QueryClient, VueQueryPlugin } from "@tanstack/vue-query";
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      retry: 0,
+      staleTime: 60_000,
+      retry: false,
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false,
     },
   },
 });
@@ -18,15 +21,6 @@ export const TanstackQueryDevtools = defineAsyncComponent(
 
 export function setupVueQuery(app: App) {
   app.use(VueQueryPlugin, {
-    queryClientConfig: {
-      defaultOptions: {
-        queries: {
-          staleTime: 60_000,
-          retry: false,
-          refetchOnWindowFocus: false,
-          refetchOnReconnect: false,
-        },
-      },
-    },
+    queryClient,
   });
 }
