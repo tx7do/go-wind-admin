@@ -69,7 +69,8 @@
 import { useI18n } from "vue-i18n";
 import { useRoute, useRouter } from "vue-router";
 
-import { useAppUserStore, useAuthStore } from "@/stores";
+import { useAppUserStore } from "@/stores";
+import { useAuth } from "@/composables/use-auth";
 import { preferences, usePreferences } from "@/core/preferences";
 
 // 导入子组件
@@ -81,7 +82,7 @@ import NoticeDropdown from "@/components/NoticeDropdown/index.vue";
 
 const { t } = useI18n();
 const userStore = useAppUserStore();
-const authStore = useAuthStore();
+const authStore = useAuth();
 const { isMobile, appPreferences } = usePreferences();
 
 const route = useRoute();

@@ -63,10 +63,11 @@ export function useGetDictType(
 }
 
 export function useCreateDictType(
-  options?: UseMutationOptions<dictservicev1_DictType, Error, dictservicev1_CreateDictTypeRequest>
+  options?: UseMutationOptions<dictservicev1_DictType, Error, Record<string, any>>,
 ) {
   return useMutation({
-    mutationFn: (data) => createDictType(data),
+    mutationFn: (values) =>
+      createDictType({ data: { ...values } as any }),
     ...options,
   });
 }
@@ -121,11 +122,9 @@ export async function fetchListDictEntries(params: PaginationQuery) {
   });
 }
 
-export function useCreateDictEntry(
-  options?: UseMutationOptions<{}, Error, dictservicev1_CreateDictEntryRequest>
-) {
+export function useCreateDictEntry(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (data) => createDictEntry(data),
+    mutationFn: (values) => createDictEntry({ data: { ...values } as any }),
     ...options,
   });
 }

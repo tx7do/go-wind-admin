@@ -39,11 +39,16 @@ import usePage from "@/components/CURD/usePage";
 import type { IOperateData, ISearchConfig, IContentConfig } from "@/components/CURD/types";
 import PermissionGroupDrawer from "./permission-group-drawer.vue";
 
-import { statusList, statusToColor, statusToName, usePermissionGroupStore } from "@/stores";
+import {
+  statusList,
+  statusToColor,
+  statusToName,
+  useDeletePermissionGroup,
+} from "@/api/composables";
 import { $t } from "@/i18n";
 import { usePermissionViewStore } from "@/views/app/permission/permission/permission-view.state";
 
-const permissionGroupStore = usePermissionGroupStore();
+const { mutateAsync: deletePermissionGroup } = useDeletePermissionGroup();
 const permissionViewStore = usePermissionViewStore();
 
 // 使用 CURD hook
@@ -54,11 +59,11 @@ const drawerRef = ref();
 
 // 行点击联动 - 切换分组时刷新权限列表
 function handleRowClick(row: any) {
-  console.log('分组行点击:', row);
+  console.log("分组行点击:", row);
   if (row?.id) {
-    console.log('设置 currentGroupId:', row.id);
+    console.log("设置 currentGroupId:", row.id);
     permissionViewStore.setCurrentGroupId(row.id);
-    console.log('needReloadPermissionList:', permissionViewStore.needReloadPermissionList);
+    console.log("needReloadPermissionList:", permissionViewStore.needReloadPermissionList);
   }
 }
 
@@ -190,7 +195,7 @@ async function handleOperateClick(data: IOperateData) {
         }
       );
 
-      await permissionGroupStore.deletePermissionGroup(row.id);
+      await deletePermissionGroup({ id: row.id });
       ElMessage.success($t("common.notification.deleteSuccess"));
       handleSuccess();
     } catch (error) {

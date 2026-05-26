@@ -79,14 +79,15 @@
 import { computed, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 
-import { useApiStore, methodList } from "@/stores";
+import { methodList, useCreateApi, useUpdateApi } from "@/api/composables";
 import { $t } from "@/i18n";
 
 const emit = defineEmits<{
   success: [];
 }>();
 
-const apiStore = useApiStore();
+const { mutateAsync: createApi } = useCreateApi();
+const { mutateAsync: updateApi } = useUpdateApi();
 
 const visible = ref(false);
 const submitLoading = ref(false);
@@ -161,10 +162,10 @@ async function handleSubmit() {
     const values = { ...formData };
 
     if (isCreate.value) {
-      await apiStore.createApi(values);
+      await createApi(values);
       ElMessage.success($t("common.notification.createSuccess"));
     } else {
-      await apiStore.updateApi(currentId.value!, values);
+      await updateApi({ id: currentId.value!, values });
       ElMessage.success($t("common.notification.updateSuccess"));
     }
 

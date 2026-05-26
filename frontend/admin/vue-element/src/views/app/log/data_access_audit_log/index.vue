@@ -53,11 +53,10 @@ import {
   successStatusList,
   successToColor,
   successToNameWithStatusCode,
-  useDataAccessAuditLogStore,
-} from "@/stores";
+  fetchListDataAccessAuditLogs,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
-
-const dataAccessAuditLogStore = useDataAccessAuditLogStore();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -183,22 +182,20 @@ const contentConfig: IContentConfig = {
       endTime = dayjs(createdAt[1]).format("YYYY-MM-DD HH:mm:ss");
     }
 
-    const result = await dataAccessAuditLogStore.listDataAccessAuditLog(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      {
-        username: queryParams.username,
-        accessType: queryParams.accessType,
-        tableName: queryParams.tableName,
-        ipAddress: queryParams.ipAddress,
-        success: queryParams.success,
-        created_at__gte: startTime,
-        created_at__lte: endTime,
-      },
-      null,
-      ["-created_at"] // 按创建时间倒序排序
+    const result = await fetchListDataAccessAuditLogs(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: {
+          username: queryParams.username,
+          accessType: queryParams.accessType,
+          tableName: queryParams.tableName,
+          ipAddress: queryParams.ipAddress,
+          success: queryParams.success,
+          created_at__gte: startTime,
+          created_at__lte: endTime,
+        },
+        orderBy: ["-created_at"],
+      })
     );
     return {
       items: result.items || [],

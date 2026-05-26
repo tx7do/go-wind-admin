@@ -55,11 +55,10 @@ export function useGetPermission(
   });
 }
 
-export function useCreatePermission(
-  options?: UseMutationOptions<{}, Error, permissionservicev1_CreatePermissionRequest>
-) {
+export function useCreatePermission(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (data) => createPermission(data),
+    mutationFn: (values) =>
+      createPermission({ data: { ...values } as permissionservicev1_Permission }),
     ...options,
   });
 }

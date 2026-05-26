@@ -38,10 +38,17 @@ import usePage from "@/components/CURD/usePage";
 import type { IOperateData, ISearchConfig, IContentConfig } from "@/components/CURD/types";
 import RoleDrawer from "./role-drawer.vue";
 
-import { statusList, statusToColor, statusToName, useRoleStore } from "@/stores";
+import {
+  statusList,
+  statusToColor,
+  statusToName,
+  fetchListRoles,
+  useDeleteRole,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
-const roleStore = useRoleStore();
+const { mutateAsync: deleteRole } = useDeleteRole();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -95,12 +102,11 @@ const contentConfig: IContentConfig = {
   },
   indexAction: async (query: any) => {
     const { page, pageSize, ...queryParams } = query;
-    const result = await roleStore.listRole(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      queryParams
+    const result = await fetchListRoles(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: queryParams,
+      })
     );
     // 转换数据格式：将 items 转换为 list
     return {
@@ -173,7 +179,7 @@ async function handleOperateClick(data: IOperateData) {
         }
       );
 
-      await roleStore.deleteRole(row.id);
+      await deleteRole({ id: row.id });
       ElMessage.success($t("common.notification.deleteSuccess"));
       handleSuccess();
     } catch (error) {

@@ -51,10 +51,10 @@
 import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 
-import { useUserProfileStore } from "@/stores";
+import { useChangePassword } from "@/api/composables";
 import { $t } from "@/i18n";
 
-const userProfileStore = useUserProfileStore();
+const { mutateAsync: changePassword } = useChangePassword();
 
 const submitLoading = ref(false);
 const formRef = ref();
@@ -92,7 +92,7 @@ async function handleSubmit() {
   submitLoading.value = true;
 
   try {
-    await userProfileStore.changePassword(formData.oldPassword, formData.newPassword);
+    await changePassword({ oldPassword: formData.oldPassword, newPassword: formData.newPassword });
 
     ElMessage.success($t("common.notification.updateSuccess"));
 

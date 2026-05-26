@@ -6,6 +6,9 @@
 // 通用枚举与工具函数
 export * from "./_shared";
 
+// 模块专属枚举与工具函数
+export * from "./_module-enums";
+
 // 认证相关
 export * from "./auth";
 

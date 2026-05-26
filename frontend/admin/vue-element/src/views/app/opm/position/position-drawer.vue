@@ -122,15 +122,22 @@
 import { computed, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 
-import { usePositionStore, useOrgUnitStore, positionTypeList, statusList } from "@/stores";
+import {
+  useCreatePosition,
+  useUpdatePosition,
+  fetchListOrgUnits,
+  positionTypeList,
+  statusList,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
 const emit = defineEmits<{
   success: [];
 }>();
 
-const positionStore = usePositionStore();
-const orgUnitStore = useOrgUnitStore();
+const { mutateAsync: createPosition } = useCreatePosition();
+const { mutateAsync: updatePosition } = useUpdatePosition();
 
 const visible = ref(false);
 const submitLoading = ref(false);
@@ -177,9 +184,7 @@ const orgUnitTreeData = ref<any[]>([]);
 // 加载组织树
 async function loadOrgUnitTree() {
   try {
-    const result = await orgUnitStore.listOrgUnit(undefined, {
-      status: "ON",
-    });
+    const result = await fetchListOrgUnits(new PaginationQuery({ formValues: { status: "ON" } }));
     orgUnitTreeData.value = result.items || [];
   } catch (error) {
     console.error("Failed to load org unit tree:", error);
@@ -236,10 +241,10 @@ async function handleSubmit() {
     const values = { ...formData };
 
     if (isCreate.value) {
-      await positionStore.createPosition(values);
+      await createPosition(values);
       ElMessage.success($t("common.notification.createSuccess"));
     } else {
-      await positionStore.updatePosition(currentId.value!, values);
+      await updatePosition({ id: currentId.value!, values });
       ElMessage.success($t("common.notification.updateSuccess"));
     }
 

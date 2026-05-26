@@ -60,11 +60,9 @@ export function useGetTask(
   });
 }
 
-export function useCreateTask(
-  options?: UseMutationOptions<{}, Error, taskservicev1_CreateTaskRequest>
-) {
+export function useCreateTask(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (data) => createTask(data),
+    mutationFn: (values) => createTask({ data: { ...values } as taskservicev1_Task }),
     ...options,
   });
 }

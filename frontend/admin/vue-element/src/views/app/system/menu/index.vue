@@ -84,12 +84,14 @@ import {
   statusList,
   statusToColor,
   statusToName,
-  useMenuStore,
-} from "@/stores";
+  fetchListMenus,
+  useDeleteMenu,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { getRandomColor } from "@/utils/color";
 import { $t } from "@/i18n";
 
-const menuStore = useMenuStore();
+const { mutateAsync: deleteMenu } = useDeleteMenu();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -141,17 +143,15 @@ const contentConfig: IContentConfig = {
   pagination: false, // 禁用分页（树形表格不需要分页）
   indexAction: async (query: any) => {
     const { page, pageSize, ...queryParams } = query;
-    const result = await menuStore.listMenu(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      {
-        "meta.title": queryParams.name,
-        status: queryParams.status,
-      },
-      null,
-      ["id"] // 按 id 排序
+    const result = await fetchListMenus(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: {
+          "meta.title": queryParams.name,
+          status: queryParams.status,
+        },
+        orderBy: ["id"],
+      })
     );
     // 转换数据格式为树形结构
     return {
@@ -236,7 +236,7 @@ const handleOperateClick = (data: IOperateData) => {
       }
     ).then(async () => {
       try {
-        await menuStore.deleteMenu(row.id);
+        await deleteMenu({ id: row.id });
         ElMessage.success($t("common.notification.delete_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {

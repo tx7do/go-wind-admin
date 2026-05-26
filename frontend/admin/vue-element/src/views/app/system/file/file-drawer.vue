@@ -51,14 +51,15 @@
 import { computed, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 
-import { useFileStore } from "@/stores";
+import { useCreateFile, useUpdateFile } from "@/api/composables";
 import { $t } from "@/i18n";
 
 const emit = defineEmits<{
   success: [];
 }>();
 
-const fileStore = useFileStore();
+const { mutateAsync: createFile } = useCreateFile();
+const { mutateAsync: updateFile } = useUpdateFile();
 
 const visible = ref(false);
 const submitLoading = ref(false);
@@ -126,10 +127,10 @@ async function handleSubmit() {
     const values = { ...formData };
 
     if (isCreate.value) {
-      await fileStore.createFile(values);
+      await createFile(values);
       ElMessage.success($t("common.notification.createSuccess"));
     } else {
-      await fileStore.updateFile(currentId.value!, values);
+      await updateFile({ id: currentId.value!, values });
       ElMessage.success($t("common.notification.updateSuccess"));
     }
 

@@ -51,11 +51,13 @@ import {
   orgUnitTypeListForQuery,
   orgUnitTypeToColor,
   orgUnitTypeToName,
-  useOrgUnitStore,
-} from "@/stores";
+  fetchListOrgUnits,
+  useDeleteOrgUnit,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
-const orgUnitStore = useOrgUnitStore();
+const { mutateAsync: deleteOrgUnit } = useDeleteOrgUnit();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -119,12 +121,11 @@ const contentConfig: IContentConfig = {
   },
   indexAction: async (query: any) => {
     const { page, pageSize, ...queryParams } = query;
-    const result = await orgUnitStore.listOrgUnit(
-      {
-        page: page || 1,
-        pageSize: pageSize || 100, // 树形表格通常不分页
-      },
-      queryParams
+    const result = await fetchListOrgUnits(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 100 },
+        formValues: queryParams,
+      })
     );
     console.log("org unit data:", result);
     // 转换数据格式：将 items 转换为 list
@@ -205,7 +206,7 @@ async function handleOperateClick(data: IOperateData) {
         }
       );
 
-      await orgUnitStore.deleteOrgUnit(row.id);
+      await deleteOrgUnit({ id: row.id });
       ElMessage.success($t("common.notification.deleteSuccess"));
       handleSuccess();
     } catch (error) {

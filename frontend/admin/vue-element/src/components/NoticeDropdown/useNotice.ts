@@ -2,7 +2,9 @@
  * 通知中心逻辑
  */
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { useInternalMessageStore, useAppUserStore } from "@/stores";
+import { fetchListUserInbox, fetchGetInternalMessage, useMarkNotificationAsRead } from "@/api/composables";
+import { useAppUserStore } from "@/stores";
+import { PaginationQuery } from "@/core/transport/rest";
 import { router } from "@/router";
 import type { internal_messageservicev1_InternalMessageRecipient as InternalMessageRecipient } from "@/api/generated/admin/service/v1";
 import { dateUtil } from "@/utils";
@@ -14,7 +16,7 @@ const PAGE_SIZE = 5;
 const NOTICE_EVENT = "notification";
 
 export function useNotice() {
-  const internalMessageStore = useInternalMessageStore();
+  const { mutateAsync: markNotificationAsRead } = useMarkNotificationAsRead();
   const userStore = useAppUserStore();
 
   // 状态
@@ -33,14 +35,15 @@ export function useNotice() {
     const userId = userStore.userInfo?.id;
     if (!userId) return;
 
-    const result = await internalMessageStore.listUserInbox(
-      { page: 1, pageSize: PAGE_SIZE },
-      {
-        recipient_user_id: userId.toString(),
-        ...params,
-      },
-      null,
-      ["-created_at"] // 按创建时间倒序
+    const result = await fetchListUserInbox(
+      new PaginationQuery({
+        paging: { page: 1, pageSize: PAGE_SIZE },
+        formValues: {
+          recipient_user_id: userId.toString(),
+          ...params,
+        },
+        orderBy: ["-created_at"],
+      })
     );
     // 转换数据格式
     list.value = (result.items || []).map((item) => convertInternalMessageRecipient(item));
@@ -49,14 +52,14 @@ export function useNotice() {
 
   async function read(id: string | number) {
     const numericId = Number(id);
-    detail.value = await internalMessageStore.getMessage(numericId);
+    detail.value = await fetchGetInternalMessage({ id: numericId });
     dialogVisible.value = true;
 
     // 标记为已读
     const userId = userStore.userInfo?.id;
     if (userId) {
       try {
-        await internalMessageStore.markNotificationAsRead(userId, [numericId]);
+        await markNotificationAsRead({ userId, notificationIds: [numericId] });
         ElMessage.success("已标记为已读");
       } catch {
         ElMessage.error("标记失败");
@@ -88,7 +91,7 @@ export function useNotice() {
     }
 
     try {
-      await internalMessageStore.markNotificationAsRead(userId, unreadIds);
+      await markNotificationAsRead({ userId, notificationIds: unreadIds });
       ElMessage.success("已全部标记为已读");
     } catch {
       ElMessage.error("操作失败");

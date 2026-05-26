@@ -37,8 +37,9 @@ import { $t } from "@/i18n";
 import {
   internalMessageRecipientStatusColor,
   internalMessageRecipientStatusLabel,
-  useInternalMessageStore,
-} from "@/stores";
+  fetchListUserInbox,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import dayjs from "dayjs";
 
 const props = defineProps({
@@ -47,8 +48,6 @@ const props = defineProps({
     default: undefined,
   },
 });
-
-const internalMessageStore = useInternalMessageStore();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -131,16 +130,15 @@ const contentConfig: IContentConfig = {
       endTime = dayjs(queryParams.createdAt[1]).format("YYYY-MM-DD HH:mm:ss");
     }
 
-    const result = await internalMessageStore.listUserInbox(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      {
-        recipient_user_id: props.userId?.toString(),
-        created_at__gte: startTime,
-        created_at__lte: endTime,
-      }
+    const result = await fetchListUserInbox(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: {
+          recipient_user_id: props.userId?.toString(),
+          created_at__gte: startTime,
+          created_at__lte: endTime,
+        },
+      })
     );
 
     return {

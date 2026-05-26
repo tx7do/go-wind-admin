@@ -73,11 +73,10 @@ import {
   loginAuditLogRiskLevelToName,
   loginAuditLogStatusList,
   loginAuditLogStatusToName,
-  useLoginAuditLogStore,
-} from "@/stores";
+  fetchListLoginAuditLogs,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
-
-const loginAuditLogStore = useLoginAuditLogStore();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -205,22 +204,20 @@ const contentConfig: IContentConfig = {
       endTime = dayjs(createdAt[1]).format("YYYY-MM-DD HH:mm:ss");
     }
 
-    const result = await loginAuditLogStore.listLoginAuditLog(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      {
-        username: queryParams.username,
-        ipAddress: queryParams.ipAddress,
-        status: queryParams.status,
-        actionType: queryParams.actionType,
-        riskType: queryParams.riskLevel,
-        created_at__gte: startTime,
-        created_at__lte: endTime,
-      },
-      null,
-      ["-created_at"] // 按创建时间倒序排序
+    const result = await fetchListLoginAuditLogs(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: {
+          username: queryParams.username,
+          ipAddress: queryParams.ipAddress,
+          status: queryParams.status,
+          actionType: queryParams.actionType,
+          riskType: queryParams.riskLevel,
+          created_at__gte: startTime,
+          created_at__lte: endTime,
+        },
+        orderBy: ["-created_at"],
+      })
     );
     return {
       items: result.items || [],

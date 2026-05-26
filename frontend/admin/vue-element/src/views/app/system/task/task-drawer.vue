@@ -166,14 +166,20 @@
 import { computed, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 
-import { taskTypeList, useTaskStore } from "@/stores";
+import {
+  taskTypeList,
+  useCreateTask,
+  useUpdateTask,
+  fetchListTaskTypeNames,
+} from "@/api/composables";
 import { $t } from "@/i18n";
 
 const emit = defineEmits<{
   success: [];
 }>();
 
-const taskStore = useTaskStore();
+const { mutateAsync: createTask } = useCreateTask();
+const { mutateAsync: updateTask } = useUpdateTask();
 
 const visible = ref(false);
 const submitLoading = ref(false);
@@ -214,7 +220,7 @@ const title = computed(() =>
 // 加载任务类型名称选项
 async function loadTypeNameOptions() {
   try {
-    const result = await taskStore.listTaskTypeName();
+    const result = await fetchListTaskTypeNames();
     typeNameOptions.value = (result.typeNames ?? []).map((item: any) => ({
       label: item,
       value: item,
@@ -284,10 +290,10 @@ async function handleSubmit() {
     const values = { ...formData };
 
     if (isCreate.value) {
-      await taskStore.createTask(values);
+      await createTask(values);
       ElMessage.success($t("common.notification.createSuccess"));
     } else {
-      await taskStore.updateTask(currentId.value!, values);
+      await updateTask({ id: currentId.value!, values });
       ElMessage.success($t("common.notification.updateSuccess"));
     }
 

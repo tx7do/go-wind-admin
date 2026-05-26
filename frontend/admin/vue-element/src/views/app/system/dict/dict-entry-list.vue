@@ -43,11 +43,11 @@ import usePage from "@/components/CURD/usePage";
 import type { IOperateData, ISearchConfig, IContentConfig } from "@/components/CURD/types";
 import DictEntryDrawer from "./dict-entry-drawer.vue";
 
-import { enableBoolToColor, enableBoolToName, useDictStore } from "@/stores";
+import { enableBoolToColor, enableBoolToName, useDeleteDictEntry } from "@/api/composables";
 import { $t } from "@/i18n";
 import { getEntryLabel, useDictViewStore } from "@/views/app/system/dict/dict-view.state";
 
-const dictStore = useDictStore();
+const { mutateAsync: deleteDictEntry } = useDeleteDictEntry();
 const dictViewStore = useDictViewStore();
 
 // 使用 CURD hook
@@ -171,7 +171,7 @@ async function handleOperateClick(data: IOperateData) {
         }
       );
 
-      await dictStore.deleteDictEntry([row.id]);
+      await deleteDictEntry({ ids: [row.id] });
       ElMessage.success($t("common.notification.deleteSuccess"));
       handleSuccess();
     } catch (error) {

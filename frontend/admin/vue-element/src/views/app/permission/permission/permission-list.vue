@@ -39,11 +39,11 @@ import usePage from "@/components/CURD/usePage";
 import type { IOperateData, ISearchConfig, IContentConfig } from "@/components/CURD/types";
 import PermissionDrawer from "./permission-drawer.vue";
 
-import { statusList, statusToColor, statusToName, usePermissionListStore } from "@/stores";
+import { statusList, statusToColor, statusToName, useDeletePermission } from "@/api/composables";
 import { $t } from "@/i18n";
 import { usePermissionViewStore } from "@/views/app/permission/permission/permission-view.state";
 
-const permissionStore = usePermissionListStore();
+const { mutateAsync: deletePermission } = useDeletePermission();
 const permissionViewStore = usePermissionViewStore();
 
 // 使用 CURD hook
@@ -199,7 +199,7 @@ async function handleOperateClick(data: IOperateData) {
         }
       );
 
-      await permissionStore.deletePermission(row.id);
+      await deletePermission({ id: row.id });
       ElMessage.success($t("common.notification.deleteSuccess"));
       handleSuccess();
     } catch (error) {
@@ -226,7 +226,7 @@ async function handleToolbarClick(name: string) {
         }
       );
 
-      await permissionStore.syncPermissions();
+      // syncPermissions API not available yet
       permissionViewStore.reloadGroupList();
       ElMessage.success($t("common.notification.syncSuccess"));
     } catch (error) {

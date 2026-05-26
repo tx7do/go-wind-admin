@@ -89,14 +89,20 @@
 import { computed, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 
-import { loginPolicyMethodList, loginPolicyTypeList, useLoginPolicyStore } from "@/stores";
+import {
+  loginPolicyMethodList,
+  loginPolicyTypeList,
+  useCreateLoginPolicy,
+  useUpdateLoginPolicy,
+} from "@/api/composables";
 import { $t } from "@/i18n";
 
 const emit = defineEmits<{
   success: [];
 }>();
 
-const loginPolicyStore = useLoginPolicyStore();
+const { mutateAsync: createLoginPolicy } = useCreateLoginPolicy();
+const { mutateAsync: updateLoginPolicy } = useUpdateLoginPolicy();
 
 const visible = ref(false);
 const submitLoading = ref(false);
@@ -170,10 +176,10 @@ async function handleSubmit() {
     const values = { ...formData };
 
     if (isCreate.value) {
-      await loginPolicyStore.createLoginPolicy(values);
+      await createLoginPolicy(values);
       ElMessage.success($t("common.notification.createSuccess"));
     } else {
-      await loginPolicyStore.updateLoginPolicy(currentId.value!, values);
+      await updateLoginPolicy({ id: currentId.value!, values });
       ElMessage.success($t("common.notification.updateSuccess"));
     }
 

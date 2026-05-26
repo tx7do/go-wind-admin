@@ -51,11 +51,13 @@ import {
   loginPolicyTypeList,
   loginPolicyTypeToColor,
   loginPolicyTypeToName,
-  useLoginPolicyStore,
-} from "@/stores";
+  fetchListLoginPolicies,
+  useDeleteLoginPolicy,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
-const loginPolicyStore = useLoginPolicyStore();
+const { mutateAsync: deleteLoginPolicy } = useDeleteLoginPolicy();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -103,12 +105,11 @@ const contentConfig: IContentConfig = {
   },
   indexAction: async (query: any) => {
     const { page, pageSize, ...queryParams } = query;
-    const result = await loginPolicyStore.listLoginPolicy(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      queryParams
+    const result = await fetchListLoginPolicies(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: queryParams,
+      })
     );
     // 转换数据格式
     return {
@@ -182,7 +183,7 @@ const handleOperateClick = (data: IOperateData) => {
       }
     ).then(async () => {
       try {
-        await loginPolicyStore.deleteLoginPolicy(row.id);
+        await deleteLoginPolicy({ id: row.id });
         ElMessage.success($t("common.notification.delete_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {

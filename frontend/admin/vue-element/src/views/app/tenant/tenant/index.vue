@@ -62,11 +62,13 @@ import {
   tenantTypeList,
   tenantTypeToColor,
   tenantTypeToName,
-  useTenantStore,
-} from "@/stores";
+  fetchListTenants,
+  useDeleteTenant,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
-const tenantStore = useTenantStore();
+const { mutateAsync: deleteTenant } = useDeleteTenant();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -140,12 +142,11 @@ const contentConfig: IContentConfig = {
   },
   indexAction: async (query: any) => {
     const { page, pageSize, ...queryParams } = query;
-    const result = await tenantStore.listTenant(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      queryParams
+    const result = await fetchListTenants(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: queryParams,
+      })
     );
     // 转换数据格式：将 items 转换为 list
     return {
@@ -226,7 +227,7 @@ const handleOperateClick = (data: IOperateData) => {
       }
     ).then(async () => {
       try {
-        await tenantStore.deleteTenant(row.id);
+        await deleteTenant({ id: row.id });
         ElMessage.success($t("common.notification.delete_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {

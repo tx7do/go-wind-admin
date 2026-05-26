@@ -141,7 +141,13 @@ import { ElMessage } from "element-plus";
 
 import type { dictservicev1_DictType as DictType } from "@/api/generated/admin/service/v1";
 
-import { enableBoolList, useDictStore } from "@/stores";
+import {
+  enableBoolList,
+  fetchListDictTypes,
+  useCreateDictEntry,
+  useUpdateDictEntry,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 import { useDictViewStore } from "@/views/app/system/dict/dict-view.state";
 
@@ -149,7 +155,8 @@ const emit = defineEmits<{
   success: [];
 }>();
 
-const dictStore = useDictStore();
+const { mutateAsync: createDictEntry } = useCreateDictEntry();
+const { mutateAsync: updateDictEntry } = useUpdateDictEntry();
 const dictViewStore = useDictViewStore();
 
 const visible = ref(false);
@@ -194,9 +201,9 @@ const title = computed(() =>
 // 加载字典类型列表
 async function loadDictTypeList() {
   try {
-    const result = await dictStore.listDictType(undefined, {
-      is_enabled: "true",
-    });
+    const result = await fetchListDictTypes(
+      new PaginationQuery({ formValues: { is_enabled: "true" } })
+    );
     dictTypeList.value = (result.items || []).filter(
       (item): item is DictType & { id: number } => item.id != null
     );
@@ -246,9 +253,12 @@ async function handleSaveRow(row: any) {
   if (!isCreate.value && currentId.value) {
     try {
       submitLoading.value = true;
-      await dictStore.updateDictEntry(currentId.value, {
-        ...formData,
-        i18n: i18nDataMap.value,
+      await updateDictEntry({
+        id: currentId.value!,
+        values: {
+          ...formData,
+          i18n: i18nDataMap.value,
+        },
       });
       ElMessage.success($t("common.notification.save_success"));
     } catch {
@@ -338,10 +348,10 @@ async function handleSubmit() {
     };
 
     if (isCreate.value) {
-      await dictStore.createDictEntry(submitData);
+      await createDictEntry(submitData);
       ElMessage.success($t("common.notification.create_success"));
     } else {
-      await dictStore.updateDictEntry(currentId.value!, submitData);
+      await updateDictEntry({ id: currentId.value!, values: submitData });
       ElMessage.success($t("common.notification.update_success"));
     }
 

@@ -112,14 +112,12 @@ import { formatDateTime } from "@/utils";
 import { $t } from "@/i18n";
 
 import { type identityservicev1_User as User } from "@/api/generated/admin/service/v1";
-import { genderToColor, genderToName, useUserListStore } from "@/stores";
+import { genderToColor, genderToName, fetchUser } from "@/api/composables";
 import { getCharColor, getRandomColor } from "@/utils/color";
 
 const props = defineProps({
   userId: { type: Number, default: undefined },
 });
-
-const userListStore = useUserListStore();
 
 const data = ref<User>();
 
@@ -139,7 +137,7 @@ const getAvatarColor = () => {
  */
 async function reload() {
   if (props.userId) {
-    data.value = await userListStore.getUser(props.userId);
+    data.value = await fetchUser({ id: props.userId });
   }
 }
 

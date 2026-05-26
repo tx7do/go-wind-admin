@@ -49,15 +49,16 @@ import {
   internalMessageTypeColor,
   internalMessageTypeLabel,
   internalMessageTypeList,
-  useInternalMessageCategoryStore,
-  useInternalMessageStore,
-} from "@/stores";
+  fetchListInternalMessages,
+  fetchListMessageCategories,
+  useDeleteInternalMessage,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
 import InternalMessageDrawer from "./internal-message-drawer.vue";
 
-const internalMessageStore = useInternalMessageStore();
-const internalMessageCategoryStore = useInternalMessageCategoryStore();
+const { mutateAsync: deleteMessage } = useDeleteInternalMessage();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -116,9 +117,9 @@ const searchConfig: ISearchConfig = {
         defaultExpandAll: true,
       },
       api: async () => {
-        const result = await internalMessageCategoryStore.listInternalMessageCategory(undefined, {
-          is_enabled: "true",
-        });
+        const result = await fetchListMessageCategories(
+          new PaginationQuery({ formValues: { is_enabled: "true" } })
+        );
         return result.items || [];
       },
     },
@@ -137,12 +138,11 @@ const contentConfig: IContentConfig = {
   pagination: false, // 禁用分页
   indexAction: async (query: any) => {
     const { page, pageSize, ...queryParams } = query;
-    const result = await internalMessageStore.listMessage(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      queryParams
+    const result = await fetchListInternalMessages(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: queryParams,
+      })
     );
     return {
       items: result.items || [],
@@ -205,7 +205,7 @@ const handleOperateClick = async (data: any) => {
           type: "warning",
         }
       );
-      await internalMessageStore.deleteMessage(row.id);
+      await deleteMessage({ id: row.id });
       ElMessage.success($t("common.notification.delete_success"));
       contentRef.value?.fetchPageData({}, true);
     } catch {

@@ -58,12 +58,13 @@
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
 import { ref, reactive, computed } from "vue";
 
-import { useInternalMessageCategoryStore } from "@/stores";
+import { useCreateMessageCategory, useUpdateMessageCategory } from "@/api/composables";
 import { $t } from "@/i18n";
 
 const emit = defineEmits(["success"]);
 
-const internalMessageCategoryStore = useInternalMessageCategoryStore();
+const { mutateAsync: createMessageCategory } = useCreateMessageCategory();
+const { mutateAsync: updateMessageCategory } = useUpdateMessageCategory();
 
 const visible = ref(false);
 const loading = ref(false);
@@ -136,10 +137,10 @@ async function handleSubmit() {
     loading.value = true;
 
     if (isCreate.value) {
-      await internalMessageCategoryStore.createInternalMessageCategory(formData);
+      await createMessageCategory({ data: formData });
       ElMessage.success($t("common.notification.createSuccess"));
     } else {
-      await internalMessageCategoryStore.updateInternalMessageCategory(currentId.value!, formData);
+      await updateMessageCategory({ id: currentId.value!, values: formData });
       ElMessage.success($t("common.notification.updateSuccess"));
     }
 

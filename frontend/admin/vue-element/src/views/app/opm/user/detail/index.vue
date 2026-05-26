@@ -59,7 +59,7 @@ import { ElMessage, ElMessageBox, ElButton, ElTabs, ElTabPane, ElCard } from "el
 import { ArrowLeft } from "@element-plus/icons-vue";
 import { $t } from "@/i18n";
 
-import { useUserListStore } from "@/stores";
+import { useUpdateUser } from "@/api/composables";
 import { TabEnum } from "@/views/app/opm/user/detail/types";
 
 import ApiLogPage from "./api-log-page.vue";
@@ -76,7 +76,7 @@ const userId = computed(() => {
   return Number(id);
 });
 
-const userListStore = useUserListStore();
+const { mutateAsync: updateUser } = useUpdateUser();
 
 // 弹窗控制
 const dialogVisible = ref(false);
@@ -112,7 +112,7 @@ async function handleBanAccount() {
       }
     );
 
-    await userListStore.updateUser(userId.value, { status: "DISABLED" });
+    await updateUser({ id: userId.value, values: { status: "DISABLED" } });
     ElMessage.success($t("common.notification.update_status_success"));
   } catch {
     // 用户取消

@@ -49,11 +49,20 @@ import usePage from "@/components/CURD/usePage";
 import type { IOperateData, ISearchConfig, IContentConfig } from "@/components/CURD/types";
 import FileDrawer from "./file-drawer.vue";
 
-import { ossProviderColor, ossProviderLabel, useFileStore, useFileTransferStore } from "@/stores";
+import {
+  ossProviderColor,
+  ossProviderLabel,
+  fetchListFiles,
+  useDeleteFile,
+  useUploadFile,
+  useDownloadFile,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
-const fileStore = useFileStore();
-const fileTransferStore = useFileTransferStore();
+const { mutateAsync: deleteFile } = useDeleteFile();
+const { mutateAsync: uploadFileAction } = useUploadFile();
+const { mutateAsync: downloadFileAction } = useDownloadFile();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -100,14 +109,12 @@ const contentConfig: IContentConfig = {
   pagination: false, // 禁用分页
   indexAction: async (query: any) => {
     const { page, pageSize, ...queryParams } = query;
-    const result = await fileStore.listFile(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      queryParams,
-      null,
-      ["-created_at"] // 按创建时间倒序排序
+    const result = await fetchListFiles(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: queryParams,
+        orderBy: ["-created_at"],
+      })
     );
     // 转换数据格式
     return {
@@ -176,7 +183,7 @@ const handleOperateClick = (data: IOperateData) => {
       }
     ).then(async () => {
       try {
-        await fileStore.deleteFile(row.id);
+        await deleteFile({ id: row.id });
         ElMessage.success($t("common.notification.delete_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {
@@ -210,8 +217,11 @@ const handleFileChange = async (file: UploadFile) => {
   if (!file.raw) return;
 
   try {
-    await fileTransferStore.uploadFile("images", "temp", file.raw, "post", () => {
-      // 可以在这里处理进度
+    await uploadFileAction({
+      bucketName: "images",
+      fileDirectory: "temp",
+      file: file.raw,
+      method: "post",
     });
 
     ElMessage.success($t("pages.file.notification.upload_success"));
@@ -225,7 +235,7 @@ const handleFileChange = async (file: UploadFile) => {
 // 下载文件
 const handleDownloadFile = (row: any) => {
   const objectName = row ? `${row.fileDirectory}/${row.saveFileName}` : "";
-  fileTransferStore.downloadFile(row.bucketName, objectName, true);
+  downloadFileAction({ bucketName: row.bucketName, objectName, preferPresignedUrl: true });
 };
 </script>
 

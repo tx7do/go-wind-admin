@@ -80,12 +80,15 @@ import { $t } from "@/i18n";
 import {
   internalMessageRecipientStatusColor,
   internalMessageRecipientStatusLabel,
-  useInternalMessageStore,
-  useAppUserStore,
-} from "@/stores";
+  fetchListUserInbox,
+  fetchGetInternalMessage,
+  useMarkNotificationAsRead,
+} from "@/api/composables";
+import { useAppUserStore } from "@/stores";
+import { PaginationQuery } from "@/core/transport/rest";
 import defaultAvatar from "@/assets/images/default-avatar.png";
 
-const internalMessageStore = useInternalMessageStore();
+const { mutateAsync: markNotificationAsRead } = useMarkNotificationAsRead();
 const userStore = useAppUserStore();
 
 // 使用 CURD hook
@@ -204,18 +207,17 @@ const contentConfig: IContentConfig = {
       endTime = dayjs(queryParams.createdAt[1]).format("YYYY-MM-DD HH:mm:ss");
     }
 
-    const result = await internalMessageStore.listUserInbox(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      {
-        recipient_user_id: userId.toString(),
-        title: queryParams.title || undefined,
-        status: queryParams.status || undefined,
-        created_at__gte: startTime,
-        created_at__lte: endTime,
-      }
+    const result = await fetchListUserInbox(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: {
+          recipient_user_id: userId.toString(),
+          title: queryParams.title || undefined,
+          status: queryParams.status || undefined,
+          created_at__gte: startTime,
+          created_at__lte: endTime,
+        },
+      })
     );
 
     return {
@@ -264,14 +266,14 @@ const contentConfig: IContentConfig = {
 async function handleView(row: any) {
   try {
     const messageId = Number(row.messageId);
-    detail.value = await internalMessageStore.getMessage(messageId);
+    detail.value = await fetchGetInternalMessage({ id: messageId });
     detailDialogVisible.value = true;
 
     // 标记为已读
     const userId = userStore.userInfo?.id;
     if (userId && row.status !== "READ") {
       try {
-        await internalMessageStore.markNotificationAsRead(userId, [Number(row.id)]);
+        await markNotificationAsRead({ userId, notificationIds: [Number(row.id)] });
         // 刷新列表
         const queryParams = searchRef.value?.getQueryParams();
         contentRef.value?.fetchPageData(queryParams, true);

@@ -68,14 +68,15 @@
 import { computed, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 
-import { enableBoolList, useDictStore } from "@/stores";
+import { enableBoolList, useCreateDictType, useUpdateDictType } from "@/api/composables";
 import { $t } from "@/i18n";
 
 const emit = defineEmits<{
   success: [];
 }>();
 
-const dictStore = useDictStore();
+const { mutateAsync: createDictType } = useCreateDictType();
+const { mutateAsync: updateDictType } = useUpdateDictType();
 
 const visible = ref(false);
 const submitLoading = ref(false);
@@ -154,10 +155,10 @@ async function handleSubmit() {
     submitLoading.value = true;
 
     if (isCreate.value) {
-      await dictStore.createDictType(formData);
+      await createDictType(formData);
       ElMessage.success($t("common.notification.create_success"));
     } else {
-      await dictStore.updateDictType(currentId.value!, formData);
+      await updateDictType({ id: currentId.value!, values: formData });
       ElMessage.success($t("common.notification.update_success"));
     }
 

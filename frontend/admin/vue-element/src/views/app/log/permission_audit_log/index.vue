@@ -43,11 +43,10 @@ import {
   permissionAuditLogActionList,
   permissionAuditLogActionToColor,
   permissionAuditLogActionToName,
-  usePermissionAuditLogStore,
-} from "@/stores";
+  fetchListPermissionAuditLogs,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
-
-const permissionAuditLogStore = usePermissionAuditLogStore();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -162,21 +161,19 @@ const contentConfig: IContentConfig = {
       endTime = dayjs(createdAt[1]).format("YYYY-MM-DD HH:mm:ss");
     }
 
-    const result = await permissionAuditLogStore.listPermissionAuditLog(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      {
-        targetType: queryParams.targetType,
-        operatorName: queryParams.operatorName,
-        action: queryParams.action,
-        ipAddress: queryParams.ipAddress,
-        created_at__gte: startTime,
-        created_at__lte: endTime,
-      },
-      null,
-      ["-created_at"] // 按创建时间倒序排序
+    const result = await fetchListPermissionAuditLogs(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: {
+          targetType: queryParams.targetType,
+          operatorName: queryParams.operatorName,
+          action: queryParams.action,
+          ipAddress: queryParams.ipAddress,
+          created_at__gte: startTime,
+          created_at__lte: endTime,
+        },
+        orderBy: ["-created_at"],
+      })
     );
     return {
       items: result.items || [],

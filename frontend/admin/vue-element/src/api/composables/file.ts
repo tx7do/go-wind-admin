@@ -49,11 +49,9 @@ export function useGetFile(
   });
 }
 
-export function useCreateFile(
-  options?: UseMutationOptions<{}, Error, storageservicev1_CreateFileRequest>
-) {
+export function useCreateFile(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (data) => createFile(data),
+    mutationFn: (values) => createFile({ data: { ...values } as storageservicev1_File }),
     ...options,
   });
 }

@@ -39,11 +39,11 @@ import usePage from "@/components/CURD/usePage";
 import type { IOperateData, ISearchConfig, IContentConfig } from "@/components/CURD/types";
 import DictTypeDrawer from "./dict-type-drawer.vue";
 
-import { enableBoolToColor, enableBoolToName, useDictStore } from "@/stores";
+import { enableBoolToColor, enableBoolToName, useDeleteDictType } from "@/api/composables";
 import { $t } from "@/i18n";
 import { useDictViewStore } from "@/views/app/system/dict/dict-view.state";
 
-const dictStore = useDictStore();
+const { mutateAsync: deleteDictType } = useDeleteDictType();
 const dictViewStore = useDictViewStore();
 
 // 使用 CURD hook
@@ -151,7 +151,7 @@ async function handleOperateClick(data: IOperateData) {
         }
       );
 
-      await dictStore.deleteDictType([row.id]);
+      await deleteDictType({ ids: [row.id] });
       ElMessage.success($t("common.notification.deleteSuccess"));
       handleSuccess();
     } catch (error) {

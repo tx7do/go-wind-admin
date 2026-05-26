@@ -49,10 +49,28 @@ import usePage from "@/components/CURD/usePage";
 import type { IOperateData, ISearchConfig, IContentConfig } from "@/components/CURD/types";
 import TaskDrawer from "./task-drawer.vue";
 
-import { enableList, taskTypeList, taskTypeToColor, taskTypeToName, useTaskStore } from "@/stores";
+import {
+  enableList,
+  taskTypeList,
+  taskTypeToColor,
+  taskTypeToName,
+  fetchListTasks,
+  useDeleteTask,
+  useUpdateTask,
+  useControlTask,
+  useStartAllTasks,
+  useStopAllTasks,
+  useRestartAllTasks,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
-const taskStore = useTaskStore();
+const { mutateAsync: deleteTask } = useDeleteTask();
+const { mutateAsync: updateTask } = useUpdateTask();
+const { mutateAsync: controlTask } = useControlTask();
+const { mutateAsync: startAllTask } = useStartAllTasks();
+const { mutateAsync: stopAllTask } = useStopAllTasks();
+const { mutateAsync: restartAllTask } = useRestartAllTasks();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -133,12 +151,11 @@ const contentConfig: IContentConfig = {
   pagination: false, // 禁用分页
   indexAction: async (query: any) => {
     const { page, pageSize, ...queryParams } = query;
-    const result = await taskStore.listTask(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      queryParams
+    const result = await fetchListTasks(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: queryParams,
+      })
     );
     return {
       items: result.items || [],
@@ -239,7 +256,7 @@ const handleOperateClick = (data: IOperateData) => {
       }
     ).then(async () => {
       try {
-        await taskStore.controlTask(row.typeName, "Start");
+        await controlTask({ typeName: row.typeName, controlType: "Start" });
         ElMessage.success($t("common.notification.operation_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {
@@ -258,7 +275,7 @@ const handleOperateClick = (data: IOperateData) => {
       }
     ).then(async () => {
       try {
-        await taskStore.controlTask(row.typeName, "Stop");
+        await controlTask({ typeName: row.typeName, controlType: "Stop" });
         ElMessage.success($t("common.notification.operation_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {
@@ -277,7 +294,7 @@ const handleOperateClick = (data: IOperateData) => {
       }
     ).then(async () => {
       try {
-        await taskStore.controlTask(row.typeName, "Restart");
+        await controlTask({ typeName: row.typeName, controlType: "Restart" });
         ElMessage.success($t("common.notification.operation_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {
@@ -296,7 +313,7 @@ const handleOperateClick = (data: IOperateData) => {
       }
     ).then(async () => {
       try {
-        await taskStore.deleteTask(row.id);
+        await deleteTask({ id: row.id });
         ElMessage.success($t("common.notification.delete_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {
@@ -329,7 +346,7 @@ const handleToolbarClick = async (name: string) => {
       }
     ).then(async () => {
       try {
-        await taskStore.startAllTask();
+        await startAllTask();
         ElMessage.success($t("common.notification.operation_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {
@@ -347,7 +364,7 @@ const handleToolbarClick = async (name: string) => {
       }
     ).then(async () => {
       try {
-        await taskStore.stopAllTask();
+        await stopAllTask();
         ElMessage.success($t("common.notification.operation_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {
@@ -367,7 +384,7 @@ const handleToolbarClick = async (name: string) => {
       }
     ).then(async () => {
       try {
-        await taskStore.restartAllTask();
+        await restartAllTask();
         ElMessage.success($t("common.notification.operation_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {
@@ -383,8 +400,8 @@ async function handleEnableChanged(row: any, checked: boolean) {
   row.enable = checked;
 
   try {
-    await taskStore.updateTask(row.id, { enable: row.enable });
-    await taskStore.controlTask(row.typeName, row.enable ? "Start" : "Stop");
+    await updateTask({ id: row.id, values: { enable: row.enable } });
+    await controlTask({ typeName: row.typeName, controlType: row.enable ? "Start" : "Stop" });
     ElMessage.success($t("common.notification.update_status_success"));
   } catch {
     ElMessage.error($t("common.notification.update_status_failed"));

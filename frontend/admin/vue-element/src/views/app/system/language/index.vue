@@ -44,10 +44,16 @@ import usePage from "@/components/CURD/usePage";
 import type { IOperateData, ISearchConfig, IContentConfig } from "@/components/CURD/types";
 import LanguageDrawer from "./language-drawer.vue";
 
-import { enableBoolToColor, enableBoolToName, useLanguageDataStore } from "@/stores";
+import {
+  enableBoolToColor,
+  enableBoolToName,
+  fetchListLanguages,
+  useDeleteLanguage,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
-const languageStore = useLanguageDataStore();
+const { mutateAsync: deleteLanguage } = useDeleteLanguage();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -91,12 +97,11 @@ const contentConfig: IContentConfig = {
   },
   indexAction: async (query: any) => {
     const { page, pageSize, ...queryParams } = query;
-    const result = await languageStore.listLanguage(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      queryParams
+    const result = await fetchListLanguages(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: queryParams,
+      })
     );
     // 转换数据格式
     return {
@@ -171,7 +176,7 @@ const handleOperateClick = (data: IOperateData) => {
       }
     ).then(async () => {
       try {
-        await languageStore.deleteLanguage(row.id);
+        await deleteLanguage({ id: row.id });
         ElMessage.success($t("common.notification.delete_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {

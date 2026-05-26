@@ -75,14 +75,15 @@
 import { computed, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 
-import { useLanguageDataStore } from "@/stores";
+import { useCreateLanguage, useUpdateLanguage } from "@/api/composables";
 import { $t } from "@/i18n";
 
 const emit = defineEmits<{
   success: [];
 }>();
 
-const languageStore = useLanguageDataStore();
+const { mutateAsync: createLanguage } = useCreateLanguage();
+const { mutateAsync: updateLanguage } = useUpdateLanguage();
 
 const visible = ref(false);
 const submitLoading = ref(false);
@@ -158,10 +159,10 @@ async function handleSubmit() {
     const values = { ...formData };
 
     if (isCreate.value) {
-      await languageStore.createLanguage(values);
+      await createLanguage(values);
       ElMessage.success($t("common.notification.createSuccess"));
     } else {
-      await languageStore.updateLanguage(currentId.value!, values);
+      await updateLanguage({ id: currentId.value!, values });
       ElMessage.success($t("common.notification.updateSuccess"));
     }
 

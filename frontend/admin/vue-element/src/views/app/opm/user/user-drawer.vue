@@ -171,21 +171,21 @@ import { ElMessage } from "element-plus";
 import {
   genderList,
   userStatusList,
-  useUserListStore,
-  useRoleStore,
-  useOrgUnitStore,
-  usePositionStore,
-} from "@/stores";
+  useCreateUser,
+  useUpdateUser,
+  fetchListRoles,
+  fetchListOrgUnits,
+  fetchListPositions,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
 const emit = defineEmits<{
   success: [];
 }>();
 
-const userListStore = useUserListStore();
-const roleStore = useRoleStore();
-const orgUnitStore = useOrgUnitStore();
-const positionStore = usePositionStore();
+const { mutateAsync: createUser } = useCreateUser();
+const { mutateAsync: updateUser } = useUpdateUser();
 
 const visible = ref(false);
 const submitLoading = ref(false);
@@ -237,10 +237,9 @@ const positionTreeData = ref<any[]>([]);
 // 加载角色树
 async function loadRoleTree() {
   try {
-    const result = await roleStore.listRole(undefined, {
-      status: "ON",
-      type__not: "TEMPLATE",
-    });
+    const result = await fetchListRoles(
+      new PaginationQuery({ formValues: { status: "ON", type__not: "TEMPLATE" } })
+    );
     roleTreeData.value = result.items || [];
   } catch (error) {
     console.error("Failed to load role tree:", error);
@@ -250,9 +249,7 @@ async function loadRoleTree() {
 // 加载组织树
 async function loadOrgUnitTree() {
   try {
-    const result = await orgUnitStore.listOrgUnit(undefined, {
-      status: "ON",
-    });
+    const result = await fetchListOrgUnits(new PaginationQuery({ formValues: { status: "ON" } }));
     orgUnitTreeData.value = result.items || [];
   } catch (error) {
     console.error("Failed to load org unit tree:", error);
@@ -262,9 +259,7 @@ async function loadOrgUnitTree() {
 // 加载职位树
 async function loadPositionTree() {
   try {
-    const result = await positionStore.listPosition(undefined, {
-      status: "ON",
-    });
+    const result = await fetchListPositions(new PaginationQuery({ formValues: { status: "ON" } }));
     positionTreeData.value = result.items || [];
   } catch (error) {
     console.error("Failed to load position tree:", error);
@@ -348,10 +343,10 @@ async function handleSubmit() {
     };
 
     if (isCreate.value) {
-      await userListStore.createUser(submitData);
+      await createUser({ data: submitData as any, password: formData.password });
       ElMessage.success($t("common.notification.create_success"));
     } else {
-      await userListStore.updateUser(currentId.value!, submitData);
+      await updateUser({ id: currentId.value!, values: submitData });
       ElMessage.success($t("common.notification.update_success"));
     }
 

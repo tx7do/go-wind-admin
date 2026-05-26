@@ -49,11 +49,10 @@ export function useGetMenu(
   });
 }
 
-export function useCreateMenu(
-  options?: UseMutationOptions<{}, Error, resourceservicev1_CreateMenuRequest>
-) {
+export function useCreateMenu(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (data) => createMenu(data),
+    mutationFn: (values) =>
+      createMenu({ data: { ...values } as resourceservicev1_Menu }),
     ...options,
   });
 }

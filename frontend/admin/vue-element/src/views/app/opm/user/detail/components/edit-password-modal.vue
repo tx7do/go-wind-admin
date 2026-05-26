@@ -51,10 +51,10 @@
 import { computed, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 
-import { useUserListStore } from "@/stores";
+import { useEditUserPassword } from "@/api/composables";
 import { $t } from "@/i18n";
 
-const userListStore = useUserListStore();
+const { mutateAsync: editUserPassword } = useEditUserPassword();
 
 const visible = ref(false);
 const submitLoading = ref(false);
@@ -112,7 +112,7 @@ async function handleSubmit() {
 
     submitLoading.value = true;
 
-    await userListStore.editUserPassword(userId.value!, formData.newPassword);
+    await editUserPassword({ userId: userId.value!, newPassword: formData.newPassword });
 
     ElMessage.success($t("common.notification.updateSuccess"));
     handleClose();

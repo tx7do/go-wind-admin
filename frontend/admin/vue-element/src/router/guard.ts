@@ -5,7 +5,9 @@ import { startProgress, stopProgress } from "@/utils";
 import { preferences } from "@/core/preferences";
 
 import { accessRoutes, coreRouteNames } from "@/router/routes";
-import { useAccessStore, useAppUserStore, useAuthStore, useDictStore } from "@/stores";
+import { useAccessStore, useAppUserStore } from "@/stores";
+import { useAuth } from "@/composables/use-auth";
+import { fetchAllDictEntries } from "@/api/composables/use-dict-cache";
 
 import { generateAccess } from "./access";
 
@@ -47,8 +49,7 @@ function setupAccessGuard(router: Router) {
   router.beforeEach(async (to, from) => {
     const accessStore = useAccessStore();
     const userStore = useAppUserStore();
-    const authStore = useAuthStore();
-    const dictStore = useDictStore();
+    const auth = useAuth();
 
     // 基本路由，这些路由不需要进入权限拦截
     if (coreRouteNames.includes(to.name as string)) {
@@ -91,13 +92,13 @@ function setupAccessGuard(router: Router) {
     // 生成路由表
     // 当前登录用户拥有的角色标识列表
 
-    const userPermissionCodes = await authStore.getUserPermissionCodes();
+    const userPermissionCodes = await auth.getUserPermissionCodes();
     if (!userPermissionCodes) {
       return false;
     }
 
     // 预先加载字典数据，部分页面可能会用到字典数据，如果没有预先加载，可能会导致页面闪烁
-    await dictStore.fetchAllDictEntries();
+    await fetchAllDictEntries();
 
     // 生成菜单和路由
     const { accessibleMenus, accessibleRoutes } = await generateAccess({

@@ -55,11 +55,9 @@ export function useGetPosition(
   });
 }
 
-export function useCreatePosition(
-  options?: UseMutationOptions<{}, Error, identityservicev1_CreatePositionRequest>
-) {
+export function useCreatePosition(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (data) => createPosition(data),
+    mutationFn: (values) => createPosition({ data: { ...values } as identityservicev1_Position }),
     ...options,
   });
 }

@@ -74,6 +74,14 @@ export function useGetInternalMessage(
   });
 }
 
+export async function fetchGetInternalMessage(params: internal_messageservicev1_GetInternalMessageRequest) {
+  return queryClient.fetchQuery({
+    queryKey: ["getInternalMessage", params],
+    queryFn: () => getInternalMessage(params),
+    retry: 0,
+  });
+}
+
 export function useUpdateInternalMessage(
   options?: UseMutationOptions<{}, Error, { id: number; values: Record<string, any> }>
 ) {

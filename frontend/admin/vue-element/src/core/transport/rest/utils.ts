@@ -1,14 +1,3 @@
-import { QueryClient } from "@tanstack/vue-query";
-
-/** 全局 QueryClient 实例，供 hooks 外部（Store、路由守卫等）调用 */
-export const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 0,
-    },
-  },
-});
-
 /**
  * 移除对象中的 null 和 undefined 值
  * @param obj

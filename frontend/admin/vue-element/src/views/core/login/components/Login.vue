@@ -1,7 +1,9 @@
 <template>
   <div class="auth-panel-form">
     <!-- 隐藏“登录”标题，使用主页面的“欢迎回来”作为主标题 -->
-    <h3 class="auth-panel-form__title" text-center style="display: none;">{{ t("core.login.login") }}</h3>
+    <h3 class="auth-panel-form__title" text-center style="display: none">
+      {{ t("core.login.login") }}
+    </h3>
     <el-form
       ref="loginFormRef"
       :model="loginFormData"
@@ -63,11 +65,11 @@
 </template>
 <script setup lang="ts">
 import type { FormInstance } from "element-plus";
-import { useAuthStore } from "@/stores";
+import { useAuth } from "@/composables/use-auth";
 import { router } from "@/router";
 
 const { t } = useI18n();
-const authStore = useAuthStore();
+const authStore = useAuth();
 const route = useRoute();
 
 const loginFormRef = ref<FormInstance>();

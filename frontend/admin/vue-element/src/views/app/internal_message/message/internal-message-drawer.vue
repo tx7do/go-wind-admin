@@ -91,15 +91,17 @@ import { ref, reactive, computed } from "vue";
 import {
   internalMessageStatusList,
   internalMessageTypeList,
-  useInternalMessageCategoryStore,
-  useInternalMessageStore,
-} from "@/stores";
+  fetchListMessageCategories,
+  useSendMessage,
+  useUpdateInternalMessage,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
 const emit = defineEmits(["success"]);
 
-const internalMessageStore = useInternalMessageStore();
-const internalMessageCategoryStore = useInternalMessageCategoryStore();
+const { mutateAsync: sendMessage } = useSendMessage();
+const { mutateAsync: updateMessage } = useUpdateInternalMessage();
 
 const visible = ref(false);
 const loading = ref(false);
@@ -145,9 +147,9 @@ const title = computed(() =>
 // 加载分类树
 async function loadCategoryTree() {
   try {
-    const result = await internalMessageCategoryStore.listInternalMessageCategory(undefined, {
-      is_enabled: "true",
-    });
+    const result = await fetchListMessageCategories(
+      new PaginationQuery({ formValues: { is_enabled: "true" } })
+    );
     categoryTreeData.value = result.items || [];
   } catch (error) {
     console.error("加载分类树失败", error);
@@ -195,14 +197,14 @@ async function handleSubmit() {
     loading.value = true;
 
     if (isCreate.value) {
-      await internalMessageStore.sendMessage({
+      await sendMessage({
         targetUserIds: undefined,
         ...formData,
         targetAll: true,
       } as any);
       ElMessage.success($t("common.notification.createSuccess"));
     } else {
-      await internalMessageStore.updateMessage(currentId.value!, formData);
+      await updateMessage({ id: currentId.value!, values: formData });
       ElMessage.success($t("common.notification.updateSuccess"));
     }
 

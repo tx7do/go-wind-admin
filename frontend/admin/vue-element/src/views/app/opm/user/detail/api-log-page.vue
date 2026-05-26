@@ -44,8 +44,9 @@ import {
   successStatusList,
   successToColor,
   successToNameWithStatusCode,
-  useApiAuditLogStore,
-} from "@/stores";
+  fetchListApiAuditLogs,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import dayjs from "dayjs";
 
 const props = defineProps({
@@ -54,8 +55,6 @@ const props = defineProps({
     default: undefined,
   },
 });
-
-const apiAuditLogStore = useApiAuditLogStore();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -176,22 +175,20 @@ const contentConfig: IContentConfig = {
       endTime = dayjs(queryParams.createdAt[1]).format("YYYY-MM-DD HH:mm:ss");
     }
 
-    const result = await apiAuditLogStore.listApiAuditLog(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      {
-        user_id: props.userId?.toString(),
-        httpMethod: queryParams.httpMethod,
-        path: queryParams.path,
-        ipAddress: queryParams.ipAddress,
-        success: queryParams.success,
-        created_at__gte: startTime,
-        created_at__lte: endTime,
-      },
-      null,
-      ["-created_at"]
+    const result = await fetchListApiAuditLogs(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: {
+          user_id: props.userId?.toString(),
+          httpMethod: queryParams.httpMethod,
+          path: queryParams.path,
+          ipAddress: queryParams.ipAddress,
+          success: queryParams.success,
+          created_at__gte: startTime,
+          created_at__lte: endTime,
+        },
+        orderBy: ["-created_at"],
+      })
     );
 
     return {

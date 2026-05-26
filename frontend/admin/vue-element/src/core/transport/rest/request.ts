@@ -1,6 +1,7 @@
 import { ElMessage } from "element-plus";
 
-import { useAuthStore, useAccessStore } from "@/stores";
+import { useAccessStore } from "@/stores";
+import { reauthenticate as _reauthenticate, refreshToken as _refreshToken } from "@/composables/use-token-refresh";
 import { preferences } from "@/core/preferences";
 
 import type { HttpResponse, Request } from "./types";
@@ -16,20 +17,15 @@ function createRequestClient(baseURL: string) {
     baseURL,
   });
 
-  /**
-   * 重新认证逻辑
-   */
   async function doReAuthenticate() {
-    const authStore = useAuthStore();
-    await authStore.reauthenticate();
+    await _reauthenticate();
   }
 
   /**
    * 刷新token逻辑
    */
   async function doRefreshToken() {
-    const authStore = useAuthStore();
-    return (await authStore.refreshToken()) || "";
+    return (await _refreshToken()) || "";
   }
 
   /**

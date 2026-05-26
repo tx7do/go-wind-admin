@@ -5,7 +5,9 @@ import type {
   identityservicev1_ListTenantResponse as ListTenantResponse,
   identityservicev1_ListUserResponse as ListUserResponse,
 } from "@/api/generated/admin/service/v1";
-import { useAppUserStore, useOrgUnitStore, useTenantStore, useUserListStore } from "@/stores";
+import { useAppUserStore } from "@/stores";
+import { fetchListTenants, fetchListOrgUnits, fetchListUsers } from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 
 interface UserViewState {
   loading: boolean; // 加载状
@@ -35,13 +37,13 @@ export const useUserViewStore = defineStore("user-view", {
      * 获取租户列表
      */
     async fetchTenantList(formValues?: any): Promise<ListTenantResponse> {
-      const tenantStore = useTenantStore();
       this.loading = true;
       try {
-        this.tenantList = await tenantStore.listTenant(undefined, {
-          ...formValues,
-          status: "ON",
-        });
+        this.tenantList = await fetchListTenants(
+          new PaginationQuery({
+            formValues: { ...formValues, status: "ON" },
+          })
+        );
         return this.tenantList;
       } catch (error) {
         console.error("获取租户列表失败:", error);
@@ -57,14 +59,17 @@ export const useUserViewStore = defineStore("user-view", {
      * 根据租户获取组织列表
      */
     async fetchOrgUnitList(formValues?: any): Promise<ListOrgUnitResponse> {
-      const orgUnitStore = useOrgUnitStore();
       this.loading = true;
       try {
-        this.orgUnitList = await orgUnitStore.listOrgUnit(undefined, {
-          ...formValues,
-          tenant_id: this.currentTenantId ?? 0,
-          status: "ON",
-        });
+        this.orgUnitList = await fetchListOrgUnits(
+          new PaginationQuery({
+            formValues: {
+              ...formValues,
+              tenant_id: this.currentTenantId ?? 0,
+              status: "ON",
+            },
+          })
+        );
       } catch (error) {
         console.error(`获取租户[${this.currentTenantId}]的组织失败:`, error);
         this.resetOrgUnitList();
@@ -83,19 +88,17 @@ export const useUserViewStore = defineStore("user-view", {
       pageSize: number,
       formValues: any
     ): Promise<ListUserResponse> {
-      const userListStore = useUserListStore();
       this.loading = true;
       try {
-        this.userList = await userListStore.listUser(
-          {
-            page: currentPage,
-            pageSize,
-          },
-          {
-            ...formValues,
-            tenant_id: this.currentTenantId ?? 0,
-            org_unit_id: this.currentOrgUnitId,
-          }
+        this.userList = await fetchListUsers(
+          new PaginationQuery({
+            paging: { page: currentPage, pageSize },
+            formValues: {
+              ...formValues,
+              tenant_id: this.currentTenantId ?? 0,
+              org_unit_id: this.currentOrgUnitId,
+            },
+          })
         );
       } catch (error) {
         console.error(

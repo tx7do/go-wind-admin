@@ -35,12 +35,18 @@ import PageSearch from "@/components/CURD/PageSearch.vue";
 import usePage from "@/components/CURD/usePage";
 import type { ISearchConfig, IContentConfig } from "@/components/CURD/types";
 
-import { enableBoolToColor, enableBoolToName, useInternalMessageCategoryStore } from "@/stores";
+import {
+  enableBoolToColor,
+  enableBoolToName,
+  fetchListMessageCategories,
+  useDeleteMessageCategory,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
 import InternalMessageCategoryDrawer from "./internal-message-category-drawer.vue";
 
-const internalMessageCategoryStore = useInternalMessageCategoryStore();
+const { mutateAsync: deleteMessageCategory } = useDeleteMessageCategory();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -85,12 +91,11 @@ const contentConfig: IContentConfig = {
   pagination: false, // 禁用分页
   indexAction: async (query: any) => {
     const { page, pageSize, ...queryParams } = query;
-    const result = await internalMessageCategoryStore.listInternalMessageCategory(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      queryParams
+    const result = await fetchListMessageCategories(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: queryParams,
+      })
     );
     return {
       items: result.items || [],
@@ -148,7 +153,7 @@ const handleOperateClick = async (data: any) => {
           type: "warning",
         }
       );
-      await internalMessageCategoryStore.deleteInternalMessageCategory(row.id);
+      await deleteMessageCategory({ id: row.id });
       ElMessage.success($t("common.notification.delete_success"));
       contentRef.value?.fetchPageData({}, true);
     } catch {

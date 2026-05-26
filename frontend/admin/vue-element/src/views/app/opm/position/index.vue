@@ -52,13 +52,14 @@ import {
   statusList,
   statusToColor,
   statusToName,
-  useOrgUnitStore,
-  usePositionStore,
-} from "@/stores";
+  fetchListOrgUnits,
+  fetchListPositions,
+  useDeletePosition,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
-const positionStore = usePositionStore();
-const orgUnitStore = useOrgUnitStore();
+const { mutateAsync: deletePosition } = useDeletePosition();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -126,9 +127,9 @@ const searchConfig: ISearchConfig = {
       },
       initFn: async (item: any) => {
         try {
-          const result = await orgUnitStore.listOrgUnit(undefined, {
-            status: "ON",
-          });
+          const result = await fetchListOrgUnits(
+            new PaginationQuery({ formValues: { status: "ON" } })
+          );
           item.attrs.data = result.items || [];
         } catch (error) {
           console.error("Failed to load org unit tree:", error);
@@ -149,12 +150,11 @@ const contentConfig: IContentConfig = {
   },
   indexAction: async (query: any) => {
     const { page, pageSize, ...queryParams } = query;
-    const result = await positionStore.listPosition(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      queryParams
+    const result = await fetchListPositions(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: queryParams,
+      })
     );
     // 转换数据格式：将 items 转换为 list
     return {
@@ -236,7 +236,7 @@ async function handleOperateClick(data: IOperateData) {
         }
       );
 
-      await positionStore.deletePosition(row.id);
+      await deletePosition({ id: row.id });
       ElMessage.success($t("common.notification.deleteSuccess"));
       handleSuccess();
     } catch (error) {

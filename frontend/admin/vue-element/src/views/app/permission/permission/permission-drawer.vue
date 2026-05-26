@@ -101,24 +101,24 @@ import { ElMessage } from "element-plus";
 
 import {
   statusList,
-  usePermissionListStore,
-  usePermissionGroupStore,
-  useMenuStore,
-  useApiStore,
+  fetchListPermissionGroups,
+  fetchListMenus,
+  fetchListApis,
+  useCreatePermission,
+  useUpdatePermission,
   buildPermissionGroupTree,
   buildMenuTree,
   convertApiToTree,
-} from "@/stores";
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
 const emit = defineEmits<{
   success: [];
 }>();
 
-const permissionStore = usePermissionListStore();
-const permissionGroupStore = usePermissionGroupStore();
-const menuStore = useMenuStore();
-const apiStore = useApiStore();
+const { mutateAsync: createPermission } = useCreatePermission();
+const { mutateAsync: updatePermission } = useUpdatePermission();
 
 const visible = ref(false);
 const submitLoading = ref(false);
@@ -158,9 +158,9 @@ const apiTreeData = ref<any[]>([]);
 // 加载权限分组树
 async function loadPermissionGroupTree() {
   try {
-    const result = await permissionGroupStore.listPermissionGroup(undefined, {
-      status: "ON",
-    });
+    const result = await fetchListPermissionGroups(
+      new PaginationQuery({ formValues: { status: "ON" } })
+    );
     permissionGroupTreeData.value = buildPermissionGroupTree(result.items || []);
   } catch (error) {
     console.error("Failed to load permission group tree:", error);
@@ -170,9 +170,7 @@ async function loadPermissionGroupTree() {
 // 加载菜单树
 async function loadMenuTree() {
   try {
-    const result = await menuStore.listMenu(undefined, {
-      status: "ON",
-    });
+    const result = await fetchListMenus(new PaginationQuery({ formValues: { status: "ON" } }));
     menuTreeData.value = buildMenuTree(result.items || []);
   } catch (error) {
     console.error("Failed to load menu tree:", error);
@@ -182,7 +180,7 @@ async function loadMenuTree() {
 // 加载 API 树
 async function loadApiTree() {
   try {
-    const result = await apiStore.listApi(undefined, {});
+    const result = await fetchListApis(new PaginationQuery({}));
     apiTreeData.value = convertApiToTree(result.items || []);
   } catch (error) {
     console.error("Failed to load API tree:", error);
@@ -255,10 +253,10 @@ async function handleSubmit() {
     };
 
     if (isCreate.value) {
-      await permissionStore.createPermission(submitData);
+      await createPermission(submitData);
       ElMessage.success($t("common.notification.create_success"));
     } else {
-      await permissionStore.updatePermission(currentId.value!, submitData);
+      await updatePermission({ id: currentId.value!, values: submitData });
       ElMessage.success($t("common.notification.update_success"));
     }
 

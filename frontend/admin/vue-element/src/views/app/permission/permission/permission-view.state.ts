@@ -1,10 +1,11 @@
 import { defineStore } from "pinia";
 
-import {
-  type permissionservicev1_ListPermissionGroupResponse as ListPermissionGroupResponse,
-  type permissionservicev1_ListPermissionResponse as ListPermissionResponse,
+import type {
+  permissionservicev1_ListPermissionGroupResponse as ListPermissionGroupResponse,
+  permissionservicev1_ListPermissionResponse as ListPermissionResponse,
 } from "@/api/generated/admin/service/v1";
-import { usePermissionGroupStore, usePermissionListStore } from "@/stores";
+import { fetchListPermissionGroups, fetchListPermissions } from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 
 /**
  * 权限视图状态接口
@@ -37,15 +38,13 @@ export const usePermissionViewStore = defineStore("permission-view", {
      * 获取分组列表
      */
     async fetchGroupList(currentPage: number, pageSize: number, formValues: any) {
-      const permissionGroupStore = usePermissionGroupStore();
       this.loading = true;
       try {
-        this.groupList = await permissionGroupStore.listPermissionGroup(
-          {
-            page: currentPage,
-            pageSize,
-          },
-          formValues
+        this.groupList = await fetchListPermissionGroups(
+          new PaginationQuery({
+            paging: { page: currentPage, pageSize },
+            formValues,
+          })
         );
         return this.groupList;
       } catch (error) {
@@ -71,7 +70,6 @@ export const usePermissionViewStore = defineStore("permission-view", {
       pageSize: number,
       formValues: any
     ) {
-      const permissionStore = usePermissionListStore();
       if (!groupId) {
         this.resetPermissionList();
         return this.permList;
@@ -79,15 +77,14 @@ export const usePermissionViewStore = defineStore("permission-view", {
 
       this.loading = true;
       try {
-        this.permList = await permissionStore.listPermission(
-          {
-            page: currentPage,
-            pageSize,
-          },
-          {
-            ...formValues,
-            group_id: groupId.toString(),
-          }
+        this.permList = await fetchListPermissions(
+          new PaginationQuery({
+            paging: { page: currentPage, pageSize },
+            formValues: {
+              ...formValues,
+              group_id: groupId.toString(),
+            },
+          })
         );
       } catch (error) {
         console.error(`获取分组[${groupId}]的权限点失败:`, error);

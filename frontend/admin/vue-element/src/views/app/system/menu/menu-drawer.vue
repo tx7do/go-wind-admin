@@ -197,15 +197,19 @@ import {
   isMenu,
   menuTypeList,
   statusList,
-  useMenuStore,
-} from "@/stores";
+  fetchListMenus,
+  useCreateMenu,
+  useUpdateMenu,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t, $te } from "@/i18n";
 
 const emit = defineEmits<{
   success: [];
 }>();
 
-const menuStore = useMenuStore();
+const { mutateAsync: createMenu } = useCreateMenu();
+const { mutateAsync: updateMenu } = useUpdateMenu();
 
 const visible = ref(false);
 const submitLoading = ref(false);
@@ -322,7 +326,7 @@ function resetForm() {
 // 加载菜单树
 async function loadMenuTree() {
   try {
-    const result = await menuStore.listMenu(undefined, { status: "ON" });
+    const result = await fetchListMenus(new PaginationQuery({ formValues: { status: "ON" } }));
     menuTreeData.value = buildMenuTree(result.items || []);
   } catch (error) {
     console.error("加载菜单树失败", error);
@@ -340,10 +344,10 @@ async function handleSubmit() {
     const values = { ...formData };
 
     if (isCreate.value) {
-      await menuStore.createMenu(values);
+      await createMenu(values);
       ElMessage.success($t("common.notification.createSuccess"));
     } else {
-      await menuStore.updateMenu(currentId.value!, values);
+      await updateMenu({ id: currentId.value!, values });
       ElMessage.success($t("common.notification.updateSuccess"));
     }
 

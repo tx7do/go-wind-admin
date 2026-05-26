@@ -49,11 +49,9 @@ export function useGetApi(
   });
 }
 
-export function useCreateApi(
-  options?: UseMutationOptions<{}, Error, resourceservicev1_CreateApiRequest>
-) {
+export function useCreateApi(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (data) => createApi(data),
+    mutationFn: (values) => createApi({ data: { ...values } as resourceservicev1_Api }),
     ...options,
   });
 }

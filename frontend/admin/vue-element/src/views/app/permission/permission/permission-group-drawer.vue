@@ -20,7 +20,11 @@
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.permission_group.module')" prop="module">
-        <ElInput v-model="formData.module" :placeholder="$t('common.placeholder.input')" clearable />
+        <ElInput
+          v-model="formData.module"
+          :placeholder="$t('common.placeholder.input')"
+          clearable
+        />
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.permission_group.parentId')" prop="parentId">
@@ -74,16 +78,20 @@ import { ElMessage } from "element-plus";
 
 import {
   statusList,
-  usePermissionGroupStore,
+  fetchListPermissionGroups,
+  useCreatePermissionGroup,
+  useUpdatePermissionGroup,
   buildPermissionGroupTree,
-} from "@/stores";
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
 const emit = defineEmits<{
   success: [];
 }>();
 
-const permissionGroupStore = usePermissionGroupStore();
+const { mutateAsync: createPermissionGroup } = useCreatePermissionGroup();
+const { mutateAsync: updatePermissionGroup } = useUpdatePermissionGroup();
 
 const visible = ref(false);
 const submitLoading = ref(false);
@@ -121,9 +129,9 @@ const permissionGroupTreeData = ref<any[]>([]);
 // 加载权限分组树
 async function loadPermissionGroupTree() {
   try {
-    const result = await permissionGroupStore.listPermissionGroup(undefined, {
-      status: "ON",
-    });
+    const result = await fetchListPermissionGroups(
+      new PaginationQuery({ formValues: { status: "ON" } })
+    );
     permissionGroupTreeData.value = buildPermissionGroupTree(result.items || []);
   } catch (error) {
     console.error("Failed to load permission group tree:", error);
@@ -181,10 +189,10 @@ async function handleSubmit() {
     submitLoading.value = true;
 
     if (isCreate.value) {
-      await permissionGroupStore.createPermissionGroup(formData);
+      await createPermissionGroup(formData);
       ElMessage.success($t("common.notification.create_success"));
     } else {
-      await permissionGroupStore.updatePermissionGroup(currentId.value!, formData);
+      await updatePermissionGroup({ id: currentId.value!, values: formData });
       ElMessage.success($t("common.notification.update_success"));
     }
 

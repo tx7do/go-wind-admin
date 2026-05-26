@@ -56,10 +56,13 @@ export function useGetPermissionGroup(
 }
 
 export function useCreatePermissionGroup(
-  options?: UseMutationOptions<{}, Error, permissionservicev1_CreatePermissionGroupRequest>
+  options?: UseMutationOptions<{}, Error, Record<string, any>>,
 ) {
   return useMutation({
-    mutationFn: (data) => createPermissionGroup(data),
+    mutationFn: (values) =>
+      createPermissionGroup({
+        data: { ...values } as permissionservicev1_PermissionGroup,
+      }),
     ...options,
   });
 }

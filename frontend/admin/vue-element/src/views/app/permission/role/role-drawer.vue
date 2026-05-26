@@ -93,21 +93,22 @@ import { ElMessage } from "element-plus";
 import type { TreeInstance } from "element-plus";
 
 import {
-  useRoleStore,
-  usePermissionGroupStore,
-  usePermissionListStore,
+  useCreateRole,
+  useUpdateRole,
+  fetchListPermissionGroups,
+  fetchListPermissions,
   statusList,
   buildPermissionTree,
-} from "@/stores";
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
 const emit = defineEmits<{
   success: [];
 }>();
 
-const roleStore = useRoleStore();
-const permissionGroupStore = usePermissionGroupStore();
-const permissionListStore = usePermissionListStore();
+const { mutateAsync: createRole } = useCreateRole();
+const { mutateAsync: updateRole } = useUpdateRole();
 
 const visible = ref(false);
 const submitLoading = ref(false);
@@ -147,14 +148,14 @@ const permissionTreeData = ref<any[]>([]);
 // 加载权限树
 async function loadPermissionTree() {
   try {
-    const groupData = await permissionGroupStore.listPermissionGroup(undefined, {
-      status: "ON",
-    });
+    const groupData = await fetchListPermissionGroups(
+      new PaginationQuery({ formValues: { status: "ON" } })
+    );
     const groups = groupData.items ?? [];
 
-    const permissionData = await permissionListStore.listPermission(undefined, {
-      status: "ON",
-    });
+    const permissionData = await fetchListPermissions(
+      new PaginationQuery({ formValues: { status: "ON" } })
+    );
 
     permissionTreeData.value = buildPermissionTree(groups, permissionData.items || []);
   } catch (error) {
@@ -229,10 +230,10 @@ async function handleSubmit() {
     };
 
     if (isCreate.value) {
-      await roleStore.createRole(values);
+      await createRole(values);
       ElMessage.success($t("common.notification.createSuccess"));
     } else {
-      await roleStore.updateRole(currentId.value!, values);
+      await updateRole({ id: currentId.value!, values });
       ElMessage.success($t("common.notification.updateSuccess"));
     }
 

@@ -141,9 +141,12 @@ import {
   tenantAuditStatusList,
   tenantStatusList,
   tenantTypeList,
-  useTenantStore,
-  useUserListStore,
-} from "@/stores";
+  useCreateTenantWithAdminUser,
+  useUpdateTenant,
+  useUserExists,
+  fetchListTenants,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import type { identityservicev1_Tenant as Tenant } from "@/api/generated/admin/service/v1";
 import { $t } from "@/i18n";
 
@@ -151,8 +154,9 @@ const emit = defineEmits<{
   (e: "success"): void;
 }>();
 
-const tenantStore = useTenantStore();
-const userListStore = useUserListStore();
+const { mutateAsync: createTenantWithAdminUserMut } = useCreateTenantWithAdminUser();
+const { mutateAsync: updateTenantMut } = useUpdateTenant();
+const { mutateAsync: userExists } = useUserExists();
 
 // 弹窗可见性
 const visible = ref(false);
@@ -280,7 +284,12 @@ async function createTenantWithAdminUser() {
 
   // 检查租户编码是否存在
   try {
-    await tenantStore.tenantExists(formData.value.code, formData.value.name);
+    const result = await fetchListTenants(
+      new PaginationQuery({ formValues: { code: formData.value.code, name: formData.value.name } })
+    );
+    if (result.items && result.items.length > 0) {
+      throw new Error("Tenant code already exists");
+    }
   } catch {
     ElMessage.error($t("pages.tenant.tenant_code_exists"));
     return;
@@ -288,22 +297,22 @@ async function createTenantWithAdminUser() {
 
   // 检查用户名是否存在
   try {
-    await userListStore.userExists(formData.value.user.username);
+    await userExists({ username: formData.value.user.username });
   } catch {
     ElMessage.error($t("pages.tenant.notification.user_username_exists"));
     return;
   }
 
-  await tenantStore.createTenantWithAdminUser({
+  await createTenantWithAdminUserMut({
     tenant: {
       name: formData.value.name,
       code: formData.value.code,
-      type: formData.value.type,
-      auditStatus: formData.value.auditStatus,
-      status: formData.value.status,
+      type: formData.value.type as any,
+      auditStatus: formData.value.auditStatus as any,
+      status: formData.value.status as any,
       remark: formData.value.remark,
     },
-    user: formData.value.user,
+    user: formData.value.user as any,
     password: formData.value.password,
   });
 
@@ -317,13 +326,16 @@ async function updateTenant() {
     return;
   }
 
-  await tenantStore.updateTenant(currentRow.value.id, {
-    name: formData.value.name,
-    code: formData.value.code,
-    type: formData.value.type,
-    auditStatus: formData.value.auditStatus,
-    status: formData.value.status,
-    remark: formData.value.remark,
+  await updateTenantMut({
+    id: currentRow.value.id,
+    values: {
+      name: formData.value.name,
+      code: formData.value.code,
+      type: formData.value.type,
+      auditStatus: formData.value.auditStatus,
+      status: formData.value.status,
+      remark: formData.value.remark,
+    },
   });
 
   ElMessage.success($t("common.notification.update_success"));

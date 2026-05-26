@@ -165,15 +165,23 @@
 import { computed, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 
-import { useOrgUnitStore, useUserListStore, orgUnitTypeList, orgUnitStatusList } from "@/stores";
+import {
+  fetchListOrgUnits,
+  useCreateOrgUnit,
+  useUpdateOrgUnit,
+  fetchListUsers,
+  orgUnitTypeList,
+  orgUnitStatusList,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
 const emit = defineEmits<{
   success: [];
 }>();
 
-const orgUnitStore = useOrgUnitStore();
-const userListStore = useUserListStore();
+const { mutateAsync: createOrgUnit } = useCreateOrgUnit();
+const { mutateAsync: updateOrgUnit } = useUpdateOrgUnit();
 
 const visible = ref(false);
 const submitLoading = ref(false);
@@ -223,9 +231,7 @@ const userList = ref<any[]>([]);
 // 加载组织树
 async function loadOrgUnitTree() {
   try {
-    const result = await orgUnitStore.listOrgUnit(undefined, {
-      status: "ON",
-    });
+    const result = await fetchListOrgUnits(new PaginationQuery({ formValues: { status: "ON" } }));
     orgUnitTreeData.value = result.items || [];
   } catch (error) {
     console.error("Failed to load org unit tree:", error);
@@ -235,7 +241,7 @@ async function loadOrgUnitTree() {
 // 加载用户列表
 async function loadUserList() {
   try {
-    const result = await userListStore.listUser(undefined, {});
+    const result = await fetchListUsers(new PaginationQuery({}));
     userList.value = result.items || [];
   } catch (error) {
     console.error("Failed to load user list:", error);
@@ -296,10 +302,10 @@ async function handleSubmit() {
     const values = { ...formData };
 
     if (isCreate.value) {
-      await orgUnitStore.createOrgUnit(values);
+      await createOrgUnit(values);
       ElMessage.success($t("common.notification.createSuccess"));
     } else {
-      await orgUnitStore.updateOrgUnit(currentId.value!, values);
+      await updateOrgUnit({ id: currentId.value!, values });
       ElMessage.success($t("common.notification.updateSuccess"));
     }
 

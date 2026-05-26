@@ -48,11 +48,10 @@ import {
   successStatusList,
   successToColor,
   successToNameWithStatusCode,
-  useOperationAuditLogStore,
-} from "@/stores";
+  fetchListOperationAuditLogs,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
-
-const operationAuditLogStore = useOperationAuditLogStore();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -178,22 +177,20 @@ const contentConfig: IContentConfig = {
       endTime = dayjs(createdAt[1]).format("YYYY-MM-DD HH:mm:ss");
     }
 
-    const result = await operationAuditLogStore.listOperationAuditLog(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      {
-        username: queryParams.username,
-        resourceType: queryParams.resourceType,
-        action: queryParams.action,
-        ipAddress: queryParams.ipAddress,
-        success: queryParams.success,
-        created_at__gte: startTime,
-        created_at__lte: endTime,
-      },
-      null,
-      ["-created_at"] // 按创建时间倒序排序
+    const result = await fetchListOperationAuditLogs(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: {
+          username: queryParams.username,
+          resourceType: queryParams.resourceType,
+          action: queryParams.action,
+          ipAddress: queryParams.ipAddress,
+          success: queryParams.success,
+          created_at__gte: startTime,
+          created_at__lte: endTime,
+        },
+        orderBy: ["-created_at"],
+      })
     );
     return {
       items: result.items || [],

@@ -57,11 +57,9 @@ export function useGetLanguage(
   });
 }
 
-export function useCreateLanguage(
-  options?: UseMutationOptions<{}, Error, dictservicev1_CreateLanguageRequest>
-) {
+export function useCreateLanguage(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (data) => createLanguage(data),
+    mutationFn: (values) => createLanguage({ data: { ...values } as dictservicev1_Language }),
     ...options,
   });
 }

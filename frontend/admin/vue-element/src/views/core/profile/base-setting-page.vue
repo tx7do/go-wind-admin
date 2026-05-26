@@ -113,11 +113,12 @@ import { reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
 import { UserFilled } from "@element-plus/icons-vue";
 
-import { genderList, useUserProfileStore } from "@/stores";
+import { genderList, fetchUserProfile, useUpdateUserProfile } from "@/api/composables";
 import { $t } from "@/i18n";
 
-const userProfileStore = useUserProfileStore();
+const { mutateAsync: updateUserProfile } = useUpdateUserProfile();
 
+const currentUserId = ref<number>();
 const submitLoading = ref(false);
 const formRef = ref();
 
@@ -137,8 +138,9 @@ const formData = reactive({
 // 加载用户信息
 async function loadUserData() {
   try {
-    const data = await userProfileStore.getMe();
+    const data = await fetchUserProfile();
     if (data) {
+      currentUserId.value = data.id;
       Object.assign(formData, {
         nickname: data.nickname || "",
         realname: data.realname || "",
@@ -161,7 +163,7 @@ async function handleSubmit() {
   submitLoading.value = true;
 
   try {
-    await userProfileStore.updateUser(formData);
+    await updateUserProfile({ id: currentUserId.value!, values: formData });
     ElMessage.success($t("common.notification.updateSuccess"));
   } catch {
     ElMessage.error($t("common.notification.updateFailed"));

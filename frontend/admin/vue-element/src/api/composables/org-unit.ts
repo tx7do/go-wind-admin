@@ -56,10 +56,10 @@ export function useGetOrgUnit(
 }
 
 export function useCreateOrgUnit(
-  options?: UseMutationOptions<{}, Error, identityservicev1_CreateOrgUnitRequest>
+  options?: UseMutationOptions<{}, Error, Record<string, any>>
 ) {
   return useMutation({
-    mutationFn: (data) => createOrgUnit(data),
+    mutationFn: (values) => createOrgUnit({ data: { ...values } as identityservicev1_OrgUnit }),
     ...options,
   });
 }

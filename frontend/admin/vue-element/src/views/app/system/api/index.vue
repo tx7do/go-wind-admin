@@ -31,10 +31,12 @@ import usePage from "@/components/CURD/usePage";
 import type { IOperateData, ISearchConfig, IContentConfig } from "@/components/CURD/types";
 import ApiDrawer from "./api-drawer.vue";
 
-import { methodList, useApiStore } from "@/stores";
+import { methodList, fetchListApis, useDeleteApi, useSyncApisApi } from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 
-const apiStore = useApiStore();
+const { mutateAsync: deleteApi } = useDeleteApi();
+const { mutateAsync: syncApis } = useSyncApisApi();
 
 // 使用 CURD hook
 const { searchRef, contentRef, handleQueryClick, handleResetClick } = usePage();
@@ -99,14 +101,12 @@ const contentConfig: IContentConfig = {
   },
   indexAction: async (query: any) => {
     const { page, pageSize, ...queryParams } = query;
-    const result = await apiStore.listApi(
-      {
-        page: page || 1,
-        pageSize: pageSize || 10,
-      },
-      queryParams,
-      null,
-      ["path"] // 按 path 字段排序
+    const result = await fetchListApis(
+      new PaginationQuery({
+        paging: { page: page || 1, pageSize: pageSize || 10 },
+        formValues: queryParams,
+        orderBy: ["path"],
+      })
     );
     // 转换数据格式
     return {
@@ -170,7 +170,7 @@ const handleOperateClick = (data: IOperateData) => {
       }
     ).then(async () => {
       try {
-        await apiStore.deleteApi(row.id);
+        await deleteApi({ id: row.id });
         ElMessage.success($t("common.notification.delete_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {
@@ -204,7 +204,7 @@ const handleToolbarClick = (name: string) => {
       }
     ).then(async () => {
       try {
-        await apiStore.syncApis();
+        await syncApis();
         ElMessage.success($t("pages.api.notification.sync_success"));
         contentRef.value?.fetchPageData({}, true);
       } catch {

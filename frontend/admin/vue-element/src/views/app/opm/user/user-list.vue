@@ -91,21 +91,20 @@ import type { IOperateData, ISearchConfig, IContentConfig } from "@/components/C
 import UserDrawer from "./user-drawer.vue";
 
 import {
-  usePositionStore,
-  useRoleStore,
+  fetchListPositions,
+  fetchListRoles,
   userStatusList,
   userStatusToColor,
   userStatusToName,
-  useUserListStore,
-} from "@/stores";
+  useDeleteUser,
+} from "@/api/composables";
+import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/i18n";
 import { router } from "@/router";
 import { getRandomColor } from "@/utils/color";
 import { useUserViewStore } from "@/views/app/opm/user/user-view.state";
 
-const userListStore = useUserListStore();
-const roleStore = useRoleStore();
-const positionStore = usePositionStore();
+const { mutateAsync: deleteUser } = useDeleteUser();
 const userViewStore = useUserViewStore();
 
 // 使用 CURD hook
@@ -174,11 +173,15 @@ const searchConfig: ISearchConfig = {
       },
       initFn: async (item: any) => {
         try {
-          const result = await roleStore.listRole(undefined, {
-            status: "ON",
-            type__not: "TEMPLATE",
-            tenant_id: userViewStore.currentTenantId ?? 0,
-          });
+          const result = await fetchListRoles(
+            new PaginationQuery({
+              formValues: {
+                status: "ON",
+                type__not: "TEMPLATE",
+                tenant_id: userViewStore.currentTenantId ?? 0,
+              },
+            })
+          );
           item.attrs.data = result.items || [];
         } catch (error) {
           console.error("Failed to load roles:", error);
@@ -202,11 +205,15 @@ const searchConfig: ISearchConfig = {
       },
       initFn: async (item: any) => {
         try {
-          const result = await positionStore.listPosition(undefined, {
-            status: "ON",
-            org_unit_id: userViewStore.currentOrgUnitId,
-            tenant_id: userViewStore.currentTenantId ?? 0,
-          });
+          const result = await fetchListPositions(
+            new PaginationQuery({
+              formValues: {
+                status: "ON",
+                org_unit_id: userViewStore.currentOrgUnitId,
+                tenant_id: userViewStore.currentTenantId ?? 0,
+              },
+            })
+          );
           item.attrs.data = result.items || [];
         } catch (error) {
           console.error("Failed to load positions:", error);
@@ -333,7 +340,7 @@ async function handleOperateClick(data: IOperateData) {
         }
       );
 
-      await userListStore.deleteUser(row.id);
+      await deleteUser(row.id);
       ElMessage.success($t("common.notification.deleteSuccess"));
       handleSuccess();
     } catch (error) {
