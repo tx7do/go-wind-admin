@@ -41,7 +41,7 @@ export const filterRoutesByPermission = (
 ): AppRouteObject[] => {
   return routes.reduce<AppRouteObject[]>((acc, route) => {
     // 检查当前路由权限
-    const hasPerm = !route.meta?.permission || permissions.includes(route.meta.permission);
+    const hasPerm = !route.meta?.authority?.length || route.meta.authority.some((code) => permissions.includes(code));
     if (!hasPerm && !route.meta?.menuVisibleWithForbidden) {
       return acc; // 无权限且不可见 = 过滤
     }

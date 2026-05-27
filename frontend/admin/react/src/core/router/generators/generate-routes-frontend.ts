@@ -46,7 +46,7 @@ function hasPermission(route: AppRouteObject, permissions: string[]): boolean {
     const meta = route.meta as RouteMeta | undefined;
 
     // 情况 1: 无权限要求 = 公开路由（登录页、404 等）
-    if (!meta?.authority?.length && !meta?.permission) {
+    if (!meta?.authority?.length) {
         return true;
     }
 
@@ -55,17 +55,12 @@ function hasPermission(route: AppRouteObject, permissions: string[]): boolean {
         return true;
     }
 
-    // 情况 3: 检查单一权限码（推荐，对应 Go 后端）
-    if (meta?.permission && permissions.includes(meta.permission)) {
+    // 情况 3: 检查权限码数组（authority 中任一元素匹配用户权限即可）
+    if (meta.authority.some((code) => permissions.includes(code))) {
         return true;
     }
 
-    // 情况 4: 检查角色权限数组（兼容旧版）
-    if (meta?.authority?.some((role) => permissions.includes(role))) {
-        return true;
-    }
-
-    // 情况 5: 无权限，但可能是"菜单可见但禁止访问"，交给上层处理
+    // 情况 4: 无权限，但可能是"菜单可见但禁止访问"，交给上层处理
     return false;
 }
 
@@ -83,8 +78,8 @@ function shouldRenderForbidden(route: AppRouteObject, permissions: string[]): bo
     // 2. 当前用户无此权限
     // 3. 配置了 menuVisibleWithForbidden = true
     return (
-        !!(meta?.permission || meta?.authority?.length) &&
-        !hasPermission(route, permissions) && // 复用权限判断逻辑，避免重复
+        !!meta?.authority?.length &&
+        !hasPermission(route, permissions) &&
         meta?.menuVisibleWithForbidden === true
     );
 }

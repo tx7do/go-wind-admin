@@ -10,9 +10,9 @@ export function transformMetaToHandle(meta?: RouteMeta): RouteHandle | undefined
   return {
     title: meta.title,
     icon: typeof meta.icon === 'string' ? meta.icon : undefined,
-    permission: meta.permission,
+    authority: meta.authority,
     // 展开其他自定义字段（排除已明确指定的字段）
-    ...((({ title, icon, permission, ...rest }) => rest)(meta)),
+    ...((({ title, icon, authority, ...rest }) => rest)(meta)),
   };
 }
 

@@ -15,6 +15,7 @@ import { useLayoutState } from './hooks/useLayoutState';
 
 // Stores & Preferences
 import { useUserStore, useAuthStore, usePageRefreshStore } from '@/stores';
+import { useAccess } from '@/core/access';
 import { usePreferencesStore } from '@/core/preferences/store';
 import { useThemeConfig } from '@/core/preferences/hooks/useThemeConfig';
 import { PreferencesPanel } from '@/core/preferences/components';
@@ -48,6 +49,9 @@ export const MainLayout = ({ routes: dynamicRoutes }: MainLayoutProps) => {
   // Preferences
   const preferences = usePreferencesStore((state) => state.preferences);
   const setPreferences = usePreferencesStore((state) => state.setPreferences);
+
+  // 权限
+  const { getAllPermissions } = useAccess();
 
   // Theme
   const themeConfig = useThemeConfig();
@@ -99,7 +103,7 @@ export const MainLayout = ({ routes: dynamicRoutes }: MainLayoutProps) => {
   );
 
   // 菜单数据
-  const permissions = useMemo(() => userInfo?.permissions || [], [userInfo?.permissions]);
+  const permissions = useMemo(() => getAllPermissions(), [getAllPermissions]);
   const menuData = useMenuData({
     staticRoutes: allRoutes,
     dynamicRoutes,

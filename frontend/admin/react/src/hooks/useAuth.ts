@@ -36,15 +36,15 @@ export function useAuth() {
   }
 
   /**
-   * 获取用户权限码（组合角色 + 权限码）
+   * 获取用户权限码（角色码 + 权限码分开存储）
    * 首次获取后缓存到 store，后续直接读取
    */
-  async function getUserPermissionCodes(): Promise<string[] | false> {
+  async function getUserPermissionCodes(): Promise<{ roles: string[]; codes: string[] } | false> {
     const userStore = useUserStore.getState();
-    const { userInfo, userRoles } = userStore;
+    const { userInfo, userRoles, accessCodes } = userStore;
 
-    // 如果 store 中没有用户信息，先获取
-    if (userInfo === null || userRoles.length === 0) {
+    // 如果 store 中没有用户信息或权限码为空，先获取
+    if (userInfo === null || (userRoles.length === 0 && accessCodes.length === 0)) {
       const [userInfoResult, accessCodeResult] = await Promise.all([
         fetchUserInfo(),
         fetchAccessCodes(),
@@ -55,18 +55,17 @@ export function useAuth() {
         return false;
       }
 
-      // 更新到 store
+      // 更新到 store：用户信息、角色码、权限码分开存储
       userStore.setUserInfo(userInfoResult);
-
       const roles = userInfoResult.roles ?? [];
       const codes = accessCodeResult.codes ?? [];
-      const combined = [...roles, ...codes];
-      userStore.setUserRoles(combined);
-      return combined;
+      userStore.setUserRoles(roles);
+      userStore.setAccessCodes(codes);
+      return { roles, codes };
     }
 
     // 已有缓存，直接返回
-    return userRoles;
+    return { roles: userRoles, codes: accessCodes };
   }
 
   /**
@@ -97,7 +96,7 @@ export function useAuth() {
     fetchUserInfo,
     /** 获取权限码 */
     fetchAccessCodes,
-    /** 获取组合权限码（角色 + 权限码） */
+    /** 获取角色码和权限码（分开存储） */
     getUserPermissionCodes,
   };
 }

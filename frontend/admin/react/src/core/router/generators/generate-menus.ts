@@ -131,7 +131,6 @@ function convertRouteToMenu(
         children,
 
         // 权限/行为
-        permission: meta.permission,
         authority: meta.authority,
         menuVisibleWithForbidden,
 
@@ -167,11 +166,10 @@ export const shouldShowMenu = (menu: AppMenu, permissions: string[]): boolean =>
     if (menu.show === false) return false;
 
     // 2. 无权限要求 = 显示
-    if (!menu.permission && !menu.authority?.length) return true;
+    if (!menu.authority?.length) return true;
 
     // 3. 检查权限
-    if (menu.permission && permissions.includes(menu.permission)) return true;
-    if (menu.authority?.some(role => permissions.includes(role))) return true;
+    if (menu.authority.some(code => permissions.includes(code))) return true;
 
     // 4. 无权限但配置了可见 = 显示但禁用（由前端控制）
     return menu.menuVisibleWithForbidden === true;

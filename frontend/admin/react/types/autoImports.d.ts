@@ -99,6 +99,7 @@ declare global {
   const filterFormItem: typeof import('../src/components/common/Form/utils/helper').filterFormItem
   const filterTableColumns: typeof import('../src/components/Table/utils/helper').filterTableColumns
   const forwardRef: typeof import('react').forwardRef
+  const getAccessStatic: typeof import('../src/hooks/useAccess').getAccessStatic
   const getComponent: typeof import('../src/components/common/Form/utils/componentMap').getComponent
   const getDictEntriesByTypeCode: typeof import('../src/hooks/useDictCache').getDictEntriesByTypeCode
   const getDictEntriesOptionsByTypeCode: typeof import('../src/hooks/useDictCache').getDictEntriesOptionsByTypeCode
@@ -123,6 +124,7 @@ declare global {
   const string2Dayjs: typeof import('../src/components/common/Dates/utils/helper').string2Dayjs
   const stringRang2DayjsRang: typeof import('../src/components/common/Dates/utils/helper').stringRang2DayjsRang
   const use: typeof import('react').use
+  const useAccess: typeof import('../src/hooks/useAccess').useAccess
   const useActionState: typeof import('react').useActionState
   const useAuth: typeof import('../src/hooks/useAuth').useAuth
   const useAuthStore: typeof import('../src/stores/auth').useAuthStore

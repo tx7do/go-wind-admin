@@ -55,8 +55,7 @@ export interface RouteMeta {
     activeIcon?: IconType;            // 激活时图标
 
     // 权限控制
-    authority?: string[];             // 角色权限码（兼容旧版）
-    permission?: string;              // 单一权限码（对应 Go 后端）
+    authority?: string[];             // 权限码数组（包含权限码和角色码，前端/后端路由统一使用）
     ignoreAccess?: boolean;           // 忽略权限，公开访问
 
     // 菜单/标签页显示控制
@@ -83,7 +82,12 @@ export interface RouteMeta {
     query?: Record<string, any>;      // 路由携带参数
     maxNumOfOpenTab?: number;         // 标签页最大打开数（-1 无限制）
 
-    // 扩展字段
+    // 菜单徽标
+    badge?: string;                   // 徽标内容
+    badgeType?: 'dot' | 'normal';     // 徽标类型
+    badgeVariants?: BadgeVariant;     // 徽标颜色
+
+    // 其他扩展（保留灵活性）
     [key: string]: any;
 }
 
@@ -148,8 +152,6 @@ export interface AppRouteObject extends Omit<RouteObject, 'children'> {
     componentPath?: string;   // 后端返回的组件路径字符串（动态加载用）
 
     element?: ReactNode;
-
-    permission?: string;
 }
 
 export interface AppMenuBadge {
@@ -185,7 +187,6 @@ export interface AppMenu extends AppMenuBadge {
     children?: AppMenu[];
 
     // 权限控制
-    permission?: string;
     authority?: string[];
     menuVisibleWithForbidden?: boolean;
 
@@ -196,19 +197,12 @@ export interface AppMenu extends AppMenuBadge {
     [key: string]: any;
 }
 
-
-// 定义递归类型以将 RouteObject 的 component 属性更改为 string
-export type RouteRecordStringComponent<T = string> = {
-    children?: RouteRecordStringComponent<T>[];
-    component: T;
-} & Omit<RouteObject, "children" | "component">;
-
 // React 组件映射类型
 export type ComponentRecordType = Record<string, ComponentType<any>>;
 export type ComponentRecord = Record<string, ComponentType<any>>;
 
 export interface GenerateMenuAndRoutesOptions {
-    fetchMenuListAsync?: () => Promise<RouteRecordStringComponent[]>;
+    fetchMenuListAsync?: () => Promise<BackendRoute[]>;
     forbiddenElement?: React.ReactNode;
     layoutMap?: ComponentRecordType;
     pageMap?: ComponentRecordType;
@@ -238,16 +232,6 @@ export const isAppRoute = (route: any): route is AppRouteObject => {
     return route && typeof route.name === 'string' && typeof route.path === 'string';
 };
 
-/**
- * 扩展路由原始对象
- */
-export type ExRouteRecordRaw = {
-    parent?: string;
-    parents?: string[];
-    path?: any;
-    meta?: RouteMeta;
-    redirect?: string;
-} & RouteObject;
 
 export interface MenuRecordBadgeRaw {
     /**

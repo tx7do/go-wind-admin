@@ -33,7 +33,7 @@ export const transformRoutesToMenu = (
 
       const meta = route.meta;
       // 如果有权限要求且用户不在权限列表中，则过滤
-      return !(meta?.permission && !permissions.includes(meta.permission));
+      return !(meta?.authority?.length && !meta.authority.some((code: string) => permissions.includes(code)));
     })
     .map((route) => {
       // 处理路径：将相对路径转换为绝对路径

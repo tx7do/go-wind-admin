@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import { RouterProvider } from 'react-router-dom';
 
 import { createAccessibleRouter } from '@/core/router/factory';
-import { useAuthStore, useUserStore } from '@/stores';
+import { useAuthStore } from '@/stores';
 import { useAuth } from '@/hooks/useAuth';
+import { getAccessStatic } from '@/core/access';
 import { fetchAllDictEntries } from '@/hooks/useDictCache';
 
 import { Forbidden } from '@/pages/core/error';
@@ -46,11 +47,8 @@ export const AppRouter = () => {
   const [loading, setLoading] = useState(true);
 
   const { accessToken } = useAuthStore();
-  const { userInfo } = useUserStore();
 
-  // 计算属性：是否已认证、权限列表（使用 useMemo 稳定化）
   const isAuthenticated = !!accessToken;
-  const permissions = useMemo(() => userInfo?.permissions || [], [userInfo?.permissions]);
 
   useEffect(() => {
     let stale = false;
@@ -74,16 +72,21 @@ export const AppRouter = () => {
             // 认证失败（token 过期/无效）：forceLogout 已在拦截器中被调用
             // 清除 userStore 防止脏数据
             console.warn('Auth initialization failed, will redirect to login:', authErr);
+            // forceLogout 已在拦截器中处理，此处清除 userStore
+            const { useUserStore } = await import('@/stores');
             useUserStore.getState().$reset();
 
             if (stale) return; // 已过期，不继续创建路由
           }
         }
 
+        // await 之后，通过 useAccess 获取最新合并权限（角色码 + 权限码）
+        const freshPermissions = getAccessStatic().getAllPermissions();
+
         // 无论认证是否成功，都生成路由（未认证时 permissions 为空，AuthGuard 会拦截）
         const appRouter = await createAccessibleRouter({
           routes: allRoutes,
-          permissions,
+          permissions: freshPermissions,
           forbiddenElement: <Forbidden />,
           autoInjectRedirect: true,
           autoSort: true,
@@ -107,7 +110,7 @@ export const AppRouter = () => {
     return () => {
       stale = true;
     };
-  }, [isAuthenticated, permissions]);
+  }, [isAuthenticated]);
 
   if (loading || !router)
     return <ThemeLoading fullScreen text="初始化中" subText="正在加载路由配置..." />;

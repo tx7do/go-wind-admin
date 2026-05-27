@@ -8,7 +8,7 @@ declare global {
     interface RouteHandle {
         title?: string;
         icon?: string;
-        permission?: string;
+        authority?: string[];
         [key: string]: any;
     }
 

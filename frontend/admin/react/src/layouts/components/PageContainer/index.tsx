@@ -4,8 +4,8 @@ import { PageContainer as ProPageContainer } from '@ant-design/pro-components';
 import { Skeleton, Alert, Button, Space } from 'antd';
 import { ReloadOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@ant-design/icons';
 
-import { useUserStore } from '@/stores/user';
 import { usePageRefreshStore } from '@/stores/pageRefresh';
+import { useAccess } from '@/core/access';
 
 import { useI18n } from '@/core/i18n';
 import { usePreferencesStore } from '@/core/preferences/store';
@@ -49,9 +49,9 @@ export const PageContainer = ({
 }: PageContainerProps) => {
   const location = useLocation();
 
-  // 用户权限（从 userInfo 中获取 permissions）
-  const { userInfo } = useUserStore();
-  const userPermissions = userInfo?.permissions || [];
+  // 用户权限（通过 useAccess 获取合并后的角色码 + 权限码）
+  const { getAllPermissions } = useAccess();
+  const userPermissions = useMemo(() => getAllPermissions(), [getAllPermissions]);
   const { t } = useI18n('common');
 
   // 全屏状态

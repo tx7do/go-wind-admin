@@ -5,7 +5,8 @@ import {persist} from 'zustand/middleware';
 export interface UserState {
     // 核心状态
     userInfo: BasicUserInfo | null;
-    userRoles: string[];
+    userRoles: string[];         // 角色码（来自 userInfo.roles）
+    accessCodes: string[];       // 权限码（来自 GetMyPermissionCode）
 
     // 计算属性（函数形式，React 中不需要 computed）
     tenantId: number | null;
@@ -14,6 +15,7 @@ export interface UserState {
     // 动作
     setUserInfo: (info: BasicUserInfo | null) => void;
     setUserRoles: (roles: string[]) => void;
+    setAccessCodes: (codes: string[]) => void;
     isTenantUser: () => boolean;
     $reset: () => void;
 }
@@ -25,6 +27,7 @@ export const useUserStore = create<UserState>()(
             // 初始状态
             userInfo: null,
             userRoles: [],
+            accessCodes: [],
 
             // 计算属性（函数形式，每次调用时计算）
             get tenantId() {
@@ -48,6 +51,11 @@ export const useUserStore = create<UserState>()(
                 set({userRoles: roles});
             },
 
+            // 单独设置权限码
+            setAccessCodes: (codes) => {
+                set({accessCodes: codes});
+            },
+
             // 判断是否为租户用户
             isTenantUser: () => {
                 const {tenantId} = get();
@@ -59,6 +67,7 @@ export const useUserStore = create<UserState>()(
                 set({
                     userInfo: null,
                     userRoles: [],
+                    accessCodes: [],
                 });
             },
         }),
