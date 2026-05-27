@@ -1,7 +1,7 @@
 import { cloneDeep, mapTree } from "@/utils";
-import { generateMenus } from "@/router/generate-menus";
-import { generateRoutesByBackend } from "@/router/generate-routes-backend";
-import { generateRoutesByFrontend } from "@/router/generate-routes-frontend";
+import { generateMenus } from "./generate-menus";
+import { generateRoutesByBackend } from "./generate-routes-backend";
+import { generateRoutesByFrontend } from "./generate-routes-frontend";
 import type { RouteRecordRaw } from "vue-router";
 
 async function generateAccessible(mode: AccessModeType, options: GenerateMenuAndRoutesOptions) {

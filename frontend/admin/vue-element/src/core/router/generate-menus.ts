@@ -19,7 +19,6 @@ async function generateMenus(routes: RouteRecordRaw[], router: Router): Promise<
     const path = finalRoutesMap[route.name as string] ?? route.path;
 
     // 转换为菜单结构
-    // const path = matchRoute?.path ?? route.path;
     const { meta, name: routeName, redirect, children } = route;
     const {
       activeIcon,

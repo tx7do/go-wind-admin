@@ -1,7 +1,7 @@
 import { ElMessage } from "element-plus";
 
 import { BasicLayout, Layout } from "@/layouts";
-import { generateAccessible } from "@/router/accessible";
+import { generateAccessible } from "@/core/router";
 import { preferences } from "@/core/preferences";
 import { fetchNavigation } from "@/api/composables";
 

@@ -2,7 +2,7 @@ import { createRouter, createWebHashHistory, createWebHistory } from "vue-router
 
 import { createRouterGuard } from "./guard";
 import { routes } from "./routes";
-import { resetStaticRoutes } from "@/router/reset-routes";
+import { resetStaticRoutes } from "@/core/router";
 import { App } from "vue";
 
 /**
