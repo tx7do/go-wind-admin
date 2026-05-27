@@ -8,7 +8,7 @@
     :text-color="menuThemeProps.textColor"
     :active-text-color="menuThemeProps.activeTextColor"
     :popper-effect="theme"
-    :unique-opened="false"
+    :unique-opened="navigationPreferences.accordion"
     :collapse-transition="false"
     :mode="menuMode"
     @open="onMenuOpen"
@@ -55,7 +55,7 @@ const props = defineProps({
 
 const menuRef = ref<MenuInstance>();
 const currentRoute = useRoute();
-const { sidebarCollapsed, theme } = usePreferences();
+const { sidebarCollapsed, theme, navigationPreferences } = usePreferences();
 
 // 存储已展开的菜单项索引
 const expandedMenuIndexes = ref<string[]>([]);

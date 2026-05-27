@@ -38,13 +38,17 @@
     <!-- 主内容区容器 -->
     <div class="layout__container">
       <!-- 左侧菜单栏 -->
-      <div class="layout__sidebar--left" :class="{ 'layout__sidebar--collapsed': !isSidebarOpen }">
+      <div
+        class="layout__sidebar--left"
+        :class="{ 'layout__sidebar--collapsed': !isSidebarOpen }"
+        :style="{ width: sidebarActualWidth + 'px' }"
+      >
         <el-scrollbar>
           <el-menu
             :default-active="activeSideMenuPath"
             :collapse="!isSidebarOpen"
             :collapse-transition="false"
-            :unique-opened="false"
+            :unique-opened="accordion"
             :background-color="variables['menu-background']"
             :text-color="variables['menu-text']"
             :active-text-color="variables['menu-active-text']"
@@ -80,7 +84,7 @@ import { useLayout } from "./useLayout";
 import { useAccessStore } from "@/stores";
 import { isExternal } from "@/utils";
 import { translateRouteTitle } from "@/i18n";
-import { preferencesManager } from "@/core/preferences";
+import { preferences, preferencesManager, usePreferences } from "@/core/preferences";
 
 import BaseLayout from "./BaseLayout.vue";
 import LayoutLogo from "./components/LayoutLogo.vue";
@@ -122,6 +126,14 @@ const accessStore = useAccessStore();
 
 const { showTagsView, showLogo, isSidebarOpen, toggleSidebar, sideMenuRoutes, activeTopMenuPath } =
   useLayout();
+
+const { navigationPreferences } = usePreferences();
+
+const SIDEBAR_COLLAPSED_WIDTH = 54;
+const sidebarActualWidth = computed(() =>
+  isSidebarOpen.value ? preferences.sidebar.width : SIDEBAR_COLLAPSED_WIDTH,
+);
+const accordion = computed(() => navigationPreferences.value.accordion);
 
 const isLogoCollapsed = computed(() => width.value < 768);
 
@@ -278,13 +290,13 @@ function navigateToFirstMenu(menus: RouteRecordRaw[]) {
 
     .layout__sidebar--left {
       position: relative;
-      width: $sidebar-width;
+      // 宽度由内联 style 控制
       height: 100%;
       background-color: var(--menu-background);
       transition: width 0.28s;
 
       &.layout__sidebar--collapsed {
-        width: $sidebar-width-collapsed !important;
+        // 折叠宽度由内联 style 控制
       }
 
       :deep(.el-scrollbar) {
@@ -334,8 +346,7 @@ function navigateToFirstMenu(menus: RouteRecordRaw[]) {
 
   &.hideSidebar {
     .layout__sidebar--left {
-      width: $sidebar-width !important;
-      transform: translateX(-$sidebar-width);
+      transform: translateX(-100%);
     }
   }
 }

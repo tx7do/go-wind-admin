@@ -24,6 +24,8 @@ function usePreferences() {
 
   const logoPreferences = computed(() => preferences.logo);
 
+  const navigationPreferences = computed(() => preferences.navigation);
+
   const shortcutKeysPreferences = computed(() => preferences.shortcutKeys);
 
   /**
@@ -261,6 +263,7 @@ function usePreferences() {
     layout,
     locale,
     logoPreferences,
+    navigationPreferences,
     preferencesButtonPosition,
     setTheme,
     sidebarCollapsed,
