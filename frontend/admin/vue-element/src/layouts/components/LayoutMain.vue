@@ -84,7 +84,12 @@ const transitionName = computed(() => {
   background-color: var(--el-bg-color-page);
   width: 100%;
   min-width: 0;
+}
+</style>
 
+<style lang="scss">
+/* 页面过渡动画 - 不能使用 scoped，否则类名无法应用到 transition 子元素 */
+.app-main {
   /* fade */
   .fade-enter-active,
   .fade-leave-active {

@@ -10,6 +10,7 @@ import { useAuth } from "@/composables/use-auth";
 
 import { generateAccess } from "./access";
 import { fetchAllDictEntries } from "@/composables/use-dict-cache";
+import { translateRouteTitle } from "@/i18n";
 
 /**
  * 通用守卫配置
@@ -37,6 +38,19 @@ function setupCommonGuard(router: Router) {
     // 关闭页面加载进度条
     if (preferences.transition.progress) {
       stopProgress();
+    }
+
+    // 动态更新页面标题
+    if (preferences.app.dynamicTitle) {
+      const routeTitle = to.meta?.title as string | undefined;
+      if (routeTitle) {
+        const translatedTitle = translateRouteTitle(routeTitle);
+        const appTitle = preferences.app.name || "GoWind Admin";
+        document.title = `${translatedTitle} - ${appTitle}`;
+      } else {
+        // 如果路由没有标题，只显示应用名称
+        document.title = preferences.app.name || "GoWind Admin";
+      }
     }
   });
 }
