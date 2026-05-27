@@ -121,7 +121,7 @@ const DictTypeDrawer: React.FC<DictTypeDrawerProps> = ({
         },
         resetButtonProps: { onClick: onClose },
       }}
-      drawerProps={{ destroyOnClose: true, onClose, placement: 'left', styles: { wrapper: { width: 600 } } }}
+      drawerProps={{ destroyOnClose: true, onClose, placement: 'left', size: 600 }}
     >
       <ProFormText
         name="typeName"

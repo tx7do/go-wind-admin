@@ -120,7 +120,7 @@ const LanguageDrawer: React.FC<LanguageDrawerProps> = ({
       drawerProps={{
         destroyOnClose: true,
         onClose,
-        styles: { wrapper: { width: 480 } },
+        size: 480,
       }}
     >
       <ProFormText

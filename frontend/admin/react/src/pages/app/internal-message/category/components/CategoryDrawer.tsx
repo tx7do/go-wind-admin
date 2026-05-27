@@ -110,7 +110,7 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({ open, mode, data, onClo
         },
         resetButtonProps: { onClick: onClose },
       }}
-      drawerProps={{ destroyOnClose: true, onClose, styles: { wrapper: { width: 500 } } }}
+      drawerProps={{ destroyOnClose: true, onClose, size: 500 }}
     >
       <ProFormText
         name="name"

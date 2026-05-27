@@ -7,6 +7,7 @@
  *   - 权限码：GetMyPermissionCode → useUserStore.accessCodes
  *   - UI 绑定：meta.authority（角色码和权限码的混合数组）
  */
+import { useCallback } from 'react';
 import { useUserStore } from '@/stores/user';
 
 /**
@@ -51,35 +52,37 @@ function useAccess() {
   const accessCodes = useUserStore((s) => s.accessCodes);
 
   /**
-   * 基于角色码判断是否有权限
-   * @param roles - 需要匹配的角色码数组
+   * 基于角色码判断是否有权限（useCallback 稳定化引用）
    */
-  function hasAccessByRoles(roles: string[]): boolean {
-    return checkAccessByRoles(userRoles, roles);
-  }
+  const hasAccessByRoles = useCallback(
+    (roles: string[]): boolean => checkAccessByRoles(userRoles, roles),
+    [userRoles],
+  );
 
   /**
-   * 基于权限码判断是否有权限
-   * @param codes - 需要匹配的权限码数组
+   * 基于权限码判断是否有权限（useCallback 稳定化引用）
    */
-  function hasAccessByCodes(codes: string[]): boolean {
-    return checkAccessByCodes(accessCodes, codes);
-  }
+  const hasAccessByCodes = useCallback(
+    (codes: string[]): boolean => checkAccessByCodes(accessCodes, codes),
+    [accessCodes],
+  );
 
   /**
-   * 基于 meta.authority 判断是否有权限（角色码 + 权限码混合匹配）
-   * authority 中的元素可能是角色码也可能是权限码，只要任一匹配即通过
+   * 基于 meta.authority 判断是否有权限（useCallback 稳定化引用）
    */
-  function hasAccessByAuthority(authority: string[] | undefined): boolean {
-    return checkAccessByAuthority(userRoles, accessCodes, authority);
-  }
+  const hasAccessByAuthority = useCallback(
+    (authority: string[] | undefined): boolean =>
+      checkAccessByAuthority(userRoles, accessCodes, authority),
+    [userRoles, accessCodes],
+  );
 
   /**
-   * 获取合并后的完整权限列表（角色码 + 权限码）
+   * 获取合并后的完整权限列表（useCallback 稳定化引用）
    */
-  function getAllPermissions(): string[] {
-    return [...userRoles, ...accessCodes];
-  }
+  const getAllPermissions = useCallback(
+    (): string[] => [...userRoles, ...accessCodes],
+    [userRoles, accessCodes],
+  );
 
   return {
     /** 用户的角色码列表 */

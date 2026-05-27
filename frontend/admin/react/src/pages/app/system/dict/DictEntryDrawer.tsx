@@ -295,7 +295,7 @@ const DictEntryDrawer: React.FC<DictEntryDrawerProps> = ({
         },
         resetButtonProps: { onClick: onClose },
       }}
-      drawerProps={{ destroyOnClose: true, onClose, styles: { wrapper: { width: 800 } } }}
+      drawerProps={{ destroyOnClose: true, onClose, size: 800 }}
     >
       {/* 所属类型 - Select */}
       <Form.Item

@@ -140,7 +140,7 @@ const PositionDrawer: React.FC<PositionDrawerProps> = ({
         },
         resetButtonProps: { onClick: onClose },
       }}
-      drawerProps={{ destroyOnClose: true, onClose, styles: { wrapper: { width: 600 } } }}
+      drawerProps={{ destroyOnClose: true, onClose, size: 600 }}
     >
       <ProFormText
         name="name"

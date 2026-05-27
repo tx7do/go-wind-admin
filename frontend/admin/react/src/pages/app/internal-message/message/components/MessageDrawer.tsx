@@ -136,7 +136,7 @@ const MessageDrawer: React.FC<MessageDrawerProps> = ({ open, mode, data, onClose
         },
         resetButtonProps: { onClick: onClose },
       }}
-      drawerProps={{ destroyOnClose: true, onClose, styles: { wrapper: { width: 800 } } }}
+      drawerProps={{ destroyOnClose: true, onClose, size: 800 }}
     >
       <ProFormSelect
         name="status"

@@ -91,7 +91,7 @@ const ApiDrawer: React.FC<ApiDrawerProps> = ({ open, mode, data, onClose, onSucc
       drawerProps={{
         destroyOnClose: true,
         onClose,
-        styles: { wrapper: { width: 600 } },
+        size: 600,
       }}
     >
       <ProFormText

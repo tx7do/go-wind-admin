@@ -107,7 +107,7 @@ const LoginPolicyDrawer: React.FC<LoginPolicyDrawerProps> = ({
       drawerProps={{
         destroyOnClose: true,
         onClose,
-        styles: { wrapper: { width: 520 } },
+        size: 520,
       }}
     >
       <ProFormText
