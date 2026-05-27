@@ -47,7 +47,7 @@
           />
           <!-- 筛选 -->
           <ElPopover
-            v-else-if="tool === 'filter'"
+            v-else-if="tool === 'filter' && hasFilterContent"
             placement="bottom"
             trigger="click"
             :width="200"
@@ -56,7 +56,15 @@
               <ElButton circle :icon="Operation" />
             </template>
             <ElScrollbar max-height="350px">
-              <slot name="filter" />
+              <template v-if="filterableColumns.length">
+                <ElCheckbox
+                  v-for="col in filterableColumns"
+                  :key="col.prop"
+                  v-model="col.show"
+                  :label="col.label"
+                />
+              </template>
+              <slot v-else name="filter" />
             </ElScrollbar>
           </ElPopover>
           <!-- 搜索 -->
@@ -101,7 +109,7 @@
 </template>
 
 <script setup lang="ts">
-import { ElButton, ElIcon, ElPopover, ElScrollbar } from "element-plus";
+import { ElButton, ElCheckbox, ElIcon, ElPopover, ElScrollbar } from "element-plus";
 import { Refresh, Operation, Search, Download, Upload } from "@element-plus/icons-vue";
 import type {
   ProToolbarProps,
@@ -111,6 +119,7 @@ import type {
   ToolbarRightType,
 } from "./types";
 import { useAccess } from "@/core/access";
+import { computed, useSlots } from "vue";
 
 defineOptions({ inheritAttrs: false });
 
@@ -122,8 +131,19 @@ const props = withDefaults(defineProps<ProToolbarProps>(), {
 });
 
 const emit = defineEmits<ProToolbarEmits>();
+const slots = useSlots();
 
 const { hasAccessByCodes } = useAccess();
+
+// 可筛选的列（有 prop 和 label）
+const filterableColumns = computed(() =>
+  (props.columns ?? []).filter((col) => col.prop && col.label),
+);
+
+// filter 按钮是否有内容
+const hasFilterContent = computed(
+  () => filterableColumns.value.length > 0 || !!slots.filter,
+);
 
 // 检查按钮是否应该显示
 function shouldShow(btn: ToolbarButton | ToolbarCustomButton): boolean {
@@ -133,9 +153,7 @@ function shouldShow(btn: ToolbarButton | ToolbarCustomButton): boolean {
   // 权限检查
   if (btn.perm) {
     const perms = Array.isArray(btn.perm) ? btn.perm : [btn.perm];
-    const fullPerms = perms.map((p) =>
-      p.includes(":") ? p : `${props.permPrefix ?? ""}:${p}`,
-    );
+    const fullPerms = perms.map((p) => (p.includes(":") ? p : `${props.permPrefix ?? ""}:${p}`));
     if (!hasAccessByCodes(fullPerms)) return false;
   }
 
@@ -197,9 +215,7 @@ function handleCustomToolClick(btn: ToolbarCustomButton) {
 // 暴露方法
 defineExpose({
   trigger: (name: string) => {
-    const btn = [...props.leftButtons, ...props.rightButtons].find(
-      (b) => b.name === name,
-    );
+    const btn = [...props.leftButtons, ...props.rightButtons].find((b) => b.name === name);
     if (btn) handleButtonClick(btn);
   },
 });

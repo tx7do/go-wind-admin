@@ -35,6 +35,9 @@ export interface ProToolbarProps {
   // 默认工具栏（右侧图标按钮 + 自定义按钮）
   defaultToolbar?: Array<ToolbarRightType | ToolbarCustomButton>;
 
+  // 列配置（用于 filter 列显隐）
+  columns?: Array<{ prop?: string; label?: string; show?: boolean }>;
+
   // 权限前缀
   permPrefix?: string;
 

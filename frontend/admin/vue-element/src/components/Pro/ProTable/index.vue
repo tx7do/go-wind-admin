@@ -192,6 +192,7 @@ function handleElSelectionChange(rows: T[]) {
 // === 统一 expose API ===
 defineExpose({
   tableRef,
+  resolvedColumns,
   getSelectionRows: () => {
     if (engine === "vxe") {
       return tableRef.value?.getCheckboxRecords?.();

@@ -19,17 +19,17 @@
         :left-buttons="leftButtons"
         :right-buttons="rightButtons"
         :default-toolbar="defaultToolbarButtons"
+        :columns="filterColumns"
         :perm-prefix="config.permPrefix"
         @button-click="handleToolbarClick"
         @refresh="handleRefresh"
         @search="toggleSearch"
-        @filter="handleFilter"
         @export="handleExport"
         @import="handleImport"
       >
         <template #left><slot name="toolbar-left" /></template>
         <template #before-tools><slot name="toolbar-before-tools" /></template>
-        <template #filter><slot name="toolbar-filter" /></template>
+        <template v-if="!!$slots['toolbar-filter']" #filter><slot name="toolbar-filter" /></template>
         <template #right><slot name="toolbar-right" /></template>
       </ProToolbar>
 
@@ -128,6 +128,16 @@ const tableRef = ref<any>(null);
 
 const tableData = computed(() => tableState.data.value);
 
+// === filter 列显隐：从 ProTable 获取响应式 columns ===
+const filterColumns = computed(() => {
+  const cols = tableRef.value?.resolvedColumns;
+  if (!cols) return [];
+  return cols.filter(
+    (col: any) =>
+      col.prop && col.label && col.type !== "selection" && col.type !== "index",
+  );
+});
+
 // === 区分表格插槽和弹窗插槽 ===
 const tableColumnProps = computed(() =>
   props.config.table.columns
@@ -210,11 +220,7 @@ function toggleSearch() {
   searchVisible.value = !searchVisible.value;
 }
 
-// === 筛选处理 ===
-function handleFilter() {
-  // filter 按钮由 ProToolbar 内部的 ElPopover 处理显示/隐藏
-  // 此处预留扩展点，外部可监听 operate 事件
-}
+// === 筛选处理（filter 由 ProToolbar 内部 ElPopover + columns checkbox 处理） ===
 
 // === 工具栏事件 ===
 function handleToolbarClick(name: string) {
@@ -237,9 +243,6 @@ function handleToolbarClick(name: string) {
       break;
     case "search":
       toggleSearch();
-      break;
-    case "filter":
-      handleFilter();
       break;
     default:
       emit("toolbar", name);
