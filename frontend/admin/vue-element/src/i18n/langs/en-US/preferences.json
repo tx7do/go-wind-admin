@@ -160,5 +160,20 @@
     "date": "Date",
     "icpNumber": "ICP Number",
     "icpLink": "ICP Link"
+  },
+  "tabbar": {
+    "contextMenu": {
+      "reload": "Reload",
+      "close": "Close",
+      "closeOther": "Close Others",
+      "closeLeft": "Close Left",
+      "closeRight": "Close Right",
+      "closeAll": "Close All",
+      "pin": "Pin Tab",
+      "unpin": "Unpin Tab",
+      "maximize": "Maximize",
+      "restoreMaximize": "Exit Maximize",
+      "openInNewWindow": "Open in New Window"
+    }
   }
 }

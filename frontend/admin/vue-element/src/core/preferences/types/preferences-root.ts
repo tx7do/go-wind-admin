@@ -20,13 +20,13 @@ import type {
 export interface Preferences {
   /** 全局配置 */
   app: AppPreferences;
-  /** 顶栏配置 */
+  /** 面包屑偏好设置 */
   breadcrumb: BreadcrumbPreferences;
   /** 版权配置 */
   copyright: CopyrightPreferences;
   /** 底栏配置 */
   footer: FooterPreferences;
-  /** 面包屑配置 */
+  /** 顶栏偏好设置 */
   header: HeaderPreferences;
   /** logo配置 */
   logo: LogoPreferences;
