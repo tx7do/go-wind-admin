@@ -1151,27 +1151,6 @@ $chrome-radius: 7px;
   }
 }
 
-// ==================== Element Plus Dropdown 分割线修正 ====================
-// Element Plus 的 divided 属性会额外插入一个独立的 <li> 元素（class: el-dropdown-menu__item--divided），
-// 该元素是一个 flex 容器，默认有 padding/line-height，视觉上会撑开。
-// 此处覆盖为细分割线：只保留 border-top，其他全部隐藏。
-:global(.el-dropdown-menu__item--divided) {
-  margin: 4px 0 !important;
-  padding: 0 !important;
-  border-top: 1px solid var(--el-border-color-lighter) !important;
-  min-height: 0 !important;
-  height: 0 !important;
-  line-height: 0 !important;
-  font-size: 0 !important;
-  overflow: hidden;
-
-  &::before,
-  &::after {
-    display: none !important;
-    content: none !important;
-  }
-}
-
 // ==================== Tab 切换动画 ====================
 .tab-slide-enter-active {
   transition: all 0.2s ease-out;
