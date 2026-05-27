@@ -176,8 +176,9 @@ export const useAuthStore = create<AuthState>()(
         }
       },
 
-      // 登出
-      logout: async (redirect = true) => {
+      // 登出（主动，调后端接口）
+      // 清除状态后由 React 组件响应状态变化自然重定向
+      logout: async (_redirect = true) => {
         stopRefreshTimer();
         disconnectSSEServer();
         try {
@@ -185,6 +186,7 @@ export const useAuthStore = create<AuthState>()(
         } finally {
           // 清除 localStorage 中的持久化数据
           localStorage.removeItem('auth-storage');
+          localStorage.removeItem('user-storage');
 
           // 清除内存中的状态
           set({
@@ -197,14 +199,6 @@ export const useAuthStore = create<AuthState>()(
             loginLoading: false,
             registerLoading: false,
           });
-
-          // 跳转
-          if (redirect && window.location.pathname !== '/auth/login') {
-            const currentPath = encodeURIComponent(
-              window.location.pathname + window.location.search,
-            );
-            window.location.href = `/auth/login?redirect=${currentPath}`;
-          }
         }
       },
 
@@ -249,15 +243,13 @@ export const useAuthStore = create<AuthState>()(
 
       // 强制登出：纯前端操作，不调后端接口
       // 用于 token 已失效（401）场景，避免调 logout API 又触发 401 死循环
+      // 只清除状态，不做页面跳转（让 React 组件响应状态变化自然重定向）
       forceLogout: () => {
         stopRefreshTimer();
         disconnectSSEServer();
-        const currentPath =
-          window.location.pathname !== '/auth/login'
-            ? `?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
-            : '';
-        console.warn('Force logout: clearing auth state and redirecting to login');
+        console.warn('Force logout: clearing auth state');
         localStorage.removeItem('auth-storage');
+        localStorage.removeItem('user-storage');
         set({
           accessToken: null,
           refreshTokenValue: null,
@@ -268,7 +260,6 @@ export const useAuthStore = create<AuthState>()(
           loginLoading: false,
           registerLoading: false,
         });
-        window.location.href = `/auth/login${currentPath}`;
       },
 
       // 设置用户信息

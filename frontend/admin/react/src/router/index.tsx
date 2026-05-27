@@ -3,6 +3,8 @@ import { RouterProvider } from 'react-router-dom';
 
 import { createAccessibleRouter } from '@/core/router/factory';
 import { useAuthStore, useUserStore } from '@/stores';
+import { useAuth } from '@/hooks/useAuth';
+import { fetchAllDictEntries } from '@/hooks/useDictCache';
 
 import { Forbidden } from '@/pages/core/error';
 import type { AppRouteObject } from '@/core/router';
@@ -51,11 +53,34 @@ export const AppRouter = () => {
   const permissions = useMemo(() => userInfo?.permissions || [], [userInfo?.permissions]);
 
   useEffect(() => {
+    let stale = false;
+
     const initRouter = async () => {
       setLoading(true);
 
       try {
-        // 生成完整路由（包含 AuthGuard 和 GuestGuard）
+        // ========== 已认证时的初始化流程 ==========
+        // 对齐 Vue 版 setupAccessGuard：权限码获取 + 字典预加载
+        if (isAuthenticated) {
+          try {
+            const auth = useAuth();
+
+            // 1. 获取用户权限码（角色 + 权限码，首次会调 API）
+            await auth.getUserPermissionCodes();
+
+            // 2. 预加载字典数据（部分页面依赖字典，未预加载会导致闪烁）
+            await fetchAllDictEntries();
+          } catch (authErr) {
+            // 认证失败（token 过期/无效）：forceLogout 已在拦截器中被调用
+            // 清除 userStore 防止脏数据
+            console.warn('Auth initialization failed, will redirect to login:', authErr);
+            useUserStore.getState().$reset();
+
+            if (stale) return; // 已过期，不继续创建路由
+          }
+        }
+
+        // 无论认证是否成功，都生成路由（未认证时 permissions 为空，AuthGuard 会拦截）
         const appRouter = await createAccessibleRouter({
           routes: allRoutes,
           permissions,
@@ -63,15 +88,25 @@ export const AppRouter = () => {
           autoInjectRedirect: true,
           autoSort: true,
         });
-        setRouter(appRouter);
+
+        if (!stale) {
+          setRouter(appRouter);
+        }
       } catch (err) {
         console.error('Router init failed:', err);
       } finally {
-        setLoading(false);
+        if (!stale) {
+          setLoading(false);
+        }
       }
     };
 
     initRouter();
+
+    // cleanup：当 effect 重新触发时（isAuthenticated 变化），取消上一次 initRouter
+    return () => {
+      stale = true;
+    };
   }, [isAuthenticated, permissions]);
 
   if (loading || !router)
