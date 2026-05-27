@@ -86,7 +86,6 @@ const detailDialogVisible = ref(false);
 const detail = ref<any | null>(null);
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:internal_message",
 
   search: {
     grid: true,

@@ -76,7 +76,6 @@ import { ProPage, type ProPageConfig } from "@/components/Pro";
 const pageRef = ref();
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:manage_tenants",
   engine: "vxe", // 默认 vxe，可选 "element"
 
   search: {
@@ -148,8 +147,6 @@ import { PaginationQuery } from "@/core/transport/rest";
 const { mutateAsync: deleteTenant } = useDeleteTenant();
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:manage_tenants",
-
   // 搜索配置
   search: {
     grid: true,
@@ -768,7 +765,7 @@ function handleNodeClick(node: any) {
 
 ```typescript
 interface ProPageConfig<T, Q> {
-  permPrefix?: string;           // 权限前缀，如 "sys:manage_tenants"
+  exportFilename?: string;       // 导出文件名（不含扩展名）
   engine?: "vxe" | "element";   // 表格引擎，默认 "vxe"
   rowKey?: string;               // 主键字段名，默认 "id"
 
@@ -886,7 +883,7 @@ interface ProTableColumn<T> {
   // cellType: "price"
   pricePrefix?: string;              // 价格前缀，如 "¥"
   // cellType: "tool"
-  buttons?: Array<{ name: string; text?: string; attrs?: any; visible?: (row) => boolean }>;
+  buttons?: Array<{ name: string; text?: string; auth?: string | string[]; attrs?: any; visible?: (row) => boolean }>;
 
   attrs?: Record<string, any>;       // 透传原生属性
   initFn?: (item) => void;           // 初始化函数
@@ -948,7 +945,6 @@ interface ProTableColumn<T> {
 | `leftButtons` | `ToolbarButton[]` | `[]` | 左侧按钮 |
 | `rightButtons` | `ToolbarButton[]` | `[]` | 右侧自定义按钮 |
 | `defaultToolbar` | `("refresh" \| "filter" \| "search" \| "exports" \| "imports")[]` | `["refresh","filter","search"]` | 右侧图标按钮 |
-| `permPrefix` | `string` | — | 权限前缀 |
 | `visible` | `boolean` | `true` | 是否显示 |
 
 #### Events
@@ -1228,7 +1224,7 @@ toolbar: [
   {
     name: "custom-action",
     text: "自定义操作",
-    perm: "custom",           // 权限标识，会拼接 permPrefix
+    auth: "sys:user:create",    // 完整权限标识（角色码或权限码均可）
     attrs: { type: "warning" }, // ElButton 属性
     visible: (row) => true,   // 动态显隐
   },

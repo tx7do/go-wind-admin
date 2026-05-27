@@ -49,7 +49,6 @@ const pageRef = ref();
 const drawerRef = ref();
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:platform_admin",
 
   search: {
     grid: true,

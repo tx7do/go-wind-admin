@@ -23,7 +23,9 @@ declare global {
      */
     affixTabOrder?: number;
     /**
-     * 需要特定的角色标识才可以访问
+     * 需要特定的权限标识才可以访问（角色码或权限码均可）
+     * 在前端模式下与 accessCodes（角色码 + 权限码的混合列表）做交集判断
+     * 在后端模式下由服务端在 permissionservicev1_Menu.meta.authority 中下发
      * @default []
      */
     authority?: string[];
@@ -124,7 +126,10 @@ declare global {
     forbiddenComponent?: RouteRecordRaw["component"];
     layoutMap?: ComponentRecordType;
     pageMap?: ComponentRecordType;
+    /** 用户角色码（来自 getMe().roles） */
     roles?: string[];
+    /** 用户权限码（来自 GetMyPermissionCode） */
+    accessCodes?: string[];
     router: Router;
     routes: RouteRecordRaw[];
   }

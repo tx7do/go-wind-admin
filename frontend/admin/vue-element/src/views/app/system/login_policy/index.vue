@@ -48,7 +48,6 @@ const pageRef = ref();
 const drawerRef = ref();
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:login_policy",
 
   search: {
     grid: true,

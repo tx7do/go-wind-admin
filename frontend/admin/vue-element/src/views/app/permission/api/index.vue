@@ -26,7 +26,6 @@ const pageRef = ref();
 const drawerRef = ref();
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:api",
 
   search: {
     grid: true,

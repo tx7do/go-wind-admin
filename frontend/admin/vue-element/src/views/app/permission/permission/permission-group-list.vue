@@ -45,7 +45,6 @@ const pageRef = ref();
 const drawerRef = ref();
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:permission_group",
 
   search: {
     fields: [

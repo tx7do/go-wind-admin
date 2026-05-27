@@ -67,7 +67,6 @@ const pageRef = ref();
 const drawerRef = ref();
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:task",
 
   search: {
     grid: true,

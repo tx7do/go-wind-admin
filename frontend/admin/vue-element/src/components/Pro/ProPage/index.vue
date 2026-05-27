@@ -20,7 +20,6 @@
         :right-buttons="rightButtons"
         :default-toolbar="defaultToolbarButtons"
         :columns="filterColumns"
-        :perm-prefix="config.permPrefix"
         @button-click="handleToolbarClick"
         @refresh="handleRefresh"
         @search="toggleSearch"
@@ -74,7 +73,7 @@
       :table-data="tableData"
       :exports-action="config.table.exportsAction"
       :search-params="searchParams"
-      :default-filename="config.permPrefix"
+      :default-filename="config.exportFilename"
     />
 
     <!-- 导入弹窗 -->
@@ -230,7 +229,7 @@ function toToolbarButtons(
       name: item.name,
       text: item.text ?? (item.textKey ? t(item.textKey) : item.name),
       attrs: { ...defaultAttrs, ...item.attrs },
-      perm: item.perm,
+      auth: item.auth,
       visible: item.visible,
     };
   });

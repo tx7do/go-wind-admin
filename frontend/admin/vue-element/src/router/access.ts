@@ -11,6 +11,15 @@ const t = i18n.global.t;
 
 const forbiddenComponent = () => import("@/views/core/error/403.vue");
 
+/**
+ * 后端返回的路由数据结构兼容 RouteRecordStringComponent
+ * （path、name、component、children、meta 等字段一致），
+ * 但 TypeScript 类型不匹配，需要通过此函数显式转换。
+ */
+function asRouteRecords(data: Record<string, any>): RouteRecordStringComponent[] {
+  return (data.items ?? []) as RouteRecordStringComponent[];
+}
+
 async function generateAccess(options: GenerateMenuAndRoutesOptions) {
   const pageMap: ComponentRecordType = import.meta.glob("../views/**/*.vue");
 
@@ -29,14 +38,12 @@ async function generateAccess(options: GenerateMenuAndRoutesOptions) {
       });
       try {
         const data = (await fetchNavigation()) ?? {};
-        return <RouteRecordStringComponent[]>(data.items ?? []);
+        return asRouteRecords(data);
       } finally {
         loadingMessage.close();
       }
     },
-    // 可以指定没有权限跳转403页面
     forbiddenComponent,
-    // 如果 route.meta.menuVisibleWithForbidden = true
     layoutMap,
     pageMap,
   });

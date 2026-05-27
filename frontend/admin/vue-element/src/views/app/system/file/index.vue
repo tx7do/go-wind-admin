@@ -45,7 +45,6 @@ const drawerRef = ref();
 const fileSelectRef = ref();
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:file",
 
   search: {
     grid: true,

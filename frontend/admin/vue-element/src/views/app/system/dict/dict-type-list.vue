@@ -39,7 +39,6 @@ const pageRef = ref();
 const drawerRef = ref();
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:dict_type",
 
   search: {
     grid: true,

@@ -55,7 +55,6 @@ onMounted(() => {
 });
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:dict_entry",
 
   search: {
     grid: true,

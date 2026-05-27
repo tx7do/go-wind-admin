@@ -51,7 +51,6 @@ onMounted(() => {
 });
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:permission",
 
   search: {
     fields: [

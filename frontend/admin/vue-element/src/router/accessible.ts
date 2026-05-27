@@ -52,7 +52,7 @@ async function generateRoutes(mode: AccessModeType, options: GenerateMenuAndRout
       break;
     }
     case "frontend": {
-      resultRoutes = await generateRoutesByFrontend(routes, roles || [], forbiddenComponent);
+      resultRoutes = await generateRoutesByFrontend(routes, roles || [], forbiddenComponent, options.accessCodes);
       break;
     }
   }

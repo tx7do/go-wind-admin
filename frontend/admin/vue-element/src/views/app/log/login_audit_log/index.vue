@@ -76,7 +76,6 @@ import { $t } from "@/i18n";
 const pageRef = ref();
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:login_audit_log",
 
   search: {
     grid: true,

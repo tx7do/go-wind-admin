@@ -11,9 +11,9 @@ function useAccess() {
   });
 
   /**
-   * 基于角色判断是否有权限
-   * @description: Determine whether there is permission，The role is judged by the user's role
-   * @param roles
+   * 基于角色码判断是否有权限（精确匹配）
+   * 角色码来源：getMe().roles → userStore.userRoles
+   * @param roles - 所需的角色码列表
    */
   function hasAccessByRoles(roles: string[]) {
     const userRoleSet = new Set(userStore.userRoles);
@@ -22,33 +22,28 @@ function useAccess() {
   }
 
   /**
-   * 基于权限码判断是否有权限
-   * @description: Determine whether there is permission，The permission code is judged by the user's permission code
-   * @param codes
+   * 基于权限码判断是否有权限（支持前缀匹配）
+   * 权限码来源：GetMyPermissionCode → accessStore.accessCodes
+   *
+   * 匹配规则：
+   * 1. 精确匹配：用户权限码 === 所需权限码
+   * 2. 前缀匹配：用户权限码是所需权限码的前缀
+   *    例如用户有 sys:manage_tenants，则拥有 sys:manage_tenants:add 等
+   *
+   * @param codes - 所需的权限码列表
    */
   function hasAccessByCodes(codes: string[]) {
     const userCodesSet = new Set(accessStore.accessCodes);
 
-    // 检查用户是否拥有超级管理员权限
-    if (userCodesSet.has("*:*:*")) {
-      return true;
-    }
-
-    // 检查是否有精确匹配的权限码，或所需的权限码是 *:*:*
-    const exactMatch = codes.filter((item) => item === "*:*:*" || userCodesSet.has(item));
+    // 精确匹配
+    const exactMatch = codes.filter((item) => userCodesSet.has(item));
     if (exactMatch.length > 0) {
       return true;
     }
 
-    // 检查前缀匹配：如果用户拥有某个权限前缀，则拥有所有子权限
-    // 例如：用户有 sys:manage_tenants，则拥有 sys:manage_tenants:add, sys:manage_tenants:edit 等
+    // 前缀匹配
     for (const requiredCode of codes) {
-      // 如果需要的权限是 *:*:*，直接通过
-      if (requiredCode === "*:*:*") {
-        return true;
-      }
       for (const userCode of userCodesSet) {
-        // 如果用户权限码是所需权限码的前缀（加冒号），则认为有权限
         if (requiredCode.startsWith(userCode + ":")) {
           return true;
         }
@@ -56,6 +51,15 @@ function useAccess() {
     }
 
     return false;
+  }
+
+  /**
+   * 综合权限检查：同时检查角色码和权限码（取并集）
+   * 用于路由 meta.authority 等混合标识场景
+   * @param authority - 所需的权限标识列表（可包含角色码和权限码）
+   */
+  function hasAccess(authority: string[]) {
+    return hasAccessByRoles(authority) || hasAccessByCodes(authority);
   }
 
   async function toggleAccessMode() {
@@ -68,6 +72,7 @@ function useAccess() {
 
   return {
     accessMode,
+    hasAccess,
     hasAccessByCodes,
     hasAccessByRoles,
     toggleAccessMode,

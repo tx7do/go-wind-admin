@@ -1,4 +1,9 @@
 declare global {
+  /**
+   * 用户基本信息（从 identityservicev1_User 适配）
+   * 保留此接口作为前端 UI 层的稳定类型，
+   * 避免后端 proto 类型变更直接影响组件代码
+   */
   interface BasicUserInfo {
     [key: string]: any;
 

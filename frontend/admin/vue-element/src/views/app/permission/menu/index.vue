@@ -91,7 +91,6 @@ const pageRef = ref();
 const drawerRef = ref();
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:menu",
 
   search: {
     grid: true,

@@ -74,7 +74,11 @@ const REFRESH_TOKEN_REFRESH_INTERVAL = 12 * 60 * 60 * 1000;
 
 async function fetchUserInfo() {
   try {
-    return (await getMe()) as unknown as UserInfo;
+    const user = await getMe();
+    if (!user) return null;
+    // identityservicev1_User → UserInfo 适配
+    // identityservicev1_User 字段与 BasicUserInfo/UserInfo 兼容，直接作为 UserInfo 使用
+    return user as unknown as UserInfo;
   } catch (error) {
     console.error("fetchUserInfo failed:", error);
     await _doLogout();
@@ -214,8 +218,6 @@ async function getUserPermissionCodes() {
   const accessStore = useAccessStore();
   const userStore = useAppUserStore();
 
-  let userPermissionCodes: string[];
-
   if (userStore.userInfo === null || accessStore.accessCodes === null) {
     const [fetchUserInfoResult, fetchAccessCodeResult] = await Promise.all([
       fetchUserInfo(),
@@ -227,18 +229,16 @@ async function getUserPermissionCodes() {
     }
     userStore.setUserInfo(fetchUserInfoResult);
 
-    const roles = fetchUserInfoResult ? (fetchUserInfoResult.roles ?? []) : [];
+    // 只存权限码，角色码由 userStore.userRoles 管理
     const codes = fetchAccessCodeResult ? (fetchAccessCodeResult.codes ?? []) : [];
-    userPermissionCodes = [...roles, ...codes];
-    accessStore.setAccessCodes(userPermissionCodes);
-  } else {
-    userPermissionCodes = [...(userStore.userInfo.roles || []), ...accessStore.accessCodes];
+    accessStore.setAccessCodes(codes);
   }
 
   startRefreshTimer();
   connectSSEServer();
 
-  return userPermissionCodes;
+  // 返回 true 表示成功获取权限数据
+  return true;
 }
 
 // ==============================

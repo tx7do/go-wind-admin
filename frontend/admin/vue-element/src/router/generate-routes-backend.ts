@@ -29,6 +29,10 @@ async function generateRoutesByBackend(
   }
 }
 
+/**
+ * 将后端返回的路由（component 为字符串）转换为 vue-router 路由（component 为实际组件）
+ * 后端路由的 component 字段值是组件路径字符串，需要通过 layoutMap/pageMap 映射为实际组件
+ */
 function convertRoutes(
   routes: RouteRecordStringComponent[],
   layoutMap: ComponentRecordType,

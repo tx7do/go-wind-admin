@@ -4,16 +4,18 @@
       <!-- 左侧按钮 -->
       <div class="toolbar-left flex gap-y-2.5 gap-x-2 md:gap-x-3 flex-wrap">
         <template v-for="btn in leftButtons" :key="btn.name">
-          <ElButton
-            v-if="shouldShow(btn)"
-            v-bind="btn.attrs"
-            :disabled="btn.disabled"
-            :loading="btn.loading"
-            @click="handleButtonClick(btn)"
-          >
-            <ElIcon v-if="btn.icon"><component :is="btn.icon" /></ElIcon>
-            {{ btn.text }}
-          </ElButton>
+          <AccessControl :codes="btn.auth ? (Array.isArray(btn.auth) ? btn.auth : [btn.auth]) : undefined">
+            <ElButton
+              v-if="shouldShow(btn)"
+              v-bind="btn.attrs"
+              :disabled="btn.disabled"
+              :loading="btn.loading"
+              @click="handleButtonClick(btn)"
+            >
+              <ElIcon v-if="btn.icon"><component :is="btn.icon" /></ElIcon>
+              {{ btn.text }}
+            </ElButton>
+          </AccessControl>
         </template>
         <slot name="left" />
       </div>
@@ -21,16 +23,18 @@
       <!-- 右侧按钮 -->
       <div class="toolbar-right flex items-center gap-y-2.5 gap-x-2 md:gap-x-3 flex-wrap">
         <template v-for="btn in rightButtons" :key="'right-' + btn.name">
-          <ElButton
-            v-if="shouldShow(btn)"
-            v-bind="btn.attrs"
-            :disabled="btn.disabled"
-            :loading="btn.loading"
-            @click="handleButtonClick(btn)"
-          >
-            <ElIcon v-if="btn.icon"><component :is="btn.icon" /></ElIcon>
-            {{ btn.text }}
-          </ElButton>
+          <AccessControl :codes="btn.auth ? (Array.isArray(btn.auth) ? btn.auth : [btn.auth]) : undefined">
+            <ElButton
+              v-if="shouldShow(btn)"
+              v-bind="btn.attrs"
+              :disabled="btn.disabled"
+              :loading="btn.loading"
+              @click="handleButtonClick(btn)"
+            >
+              <ElIcon v-if="btn.icon"><component :is="btn.icon" /></ElIcon>
+              {{ btn.text }}
+            </ElButton>
+          </AccessControl>
         </template>
 
         <!-- 工具栏图标按钮区前插槽 -->
@@ -90,17 +94,22 @@
             @click="handleZoom"
           />
           <!-- 自定义工具栏按钮 -->
-          <ElButton
-            v-else-if="typeof tool === 'object' && shouldShow(tool)"
-            v-bind="tool.attrs"
-            :disabled="tool.disabled"
-            :loading="tool.loading"
-            circle
-            @click="handleCustomToolClick(tool)"
+          <AccessControl
+            v-else-if="typeof tool === 'object'"
+            :codes="tool.auth ? (Array.isArray(tool.auth) ? tool.auth : [tool.auth]) : undefined"
           >
-            <ElIcon v-if="tool.icon"><component :is="tool.icon" /></ElIcon>
-            <template v-if="tool.text">{{ tool.text }}</template>
-          </ElButton>
+            <ElButton
+              v-if="shouldShow(tool)"
+              v-bind="tool.attrs"
+              :disabled="tool.disabled"
+              :loading="tool.loading"
+              circle
+              @click="handleCustomToolClick(tool)"
+            >
+              <ElIcon v-if="tool.icon"><component :is="tool.icon" /></ElIcon>
+              <template v-if="tool.text">{{ tool.text }}</template>
+            </ElButton>
+          </AccessControl>
         </template>
 
         <slot name="right" />
@@ -121,6 +130,7 @@ import {
   Aim,
 } from "@element-plus/icons-vue";
 import ColumnFilter from "./ColumnFilter.vue";
+import { AccessControl } from "@/core/access";
 import type {
   ProToolbarProps,
   ProToolbarEmits,
@@ -128,7 +138,6 @@ import type {
   ToolbarCustomButton,
   ToolbarRightType,
 } from "./types";
-import { useAccess } from "@/core/access";
 import { computed, ref, useSlots } from "vue";
 import { ProTableColumn } from "@/components/Pro";
 
@@ -144,8 +153,6 @@ const props = withDefaults(defineProps<ProToolbarProps>(), {
 const emit = defineEmits<ProToolbarEmits>();
 const slots = useSlots();
 
-const { hasAccessByCodes } = useAccess();
-
 // === 全屏状态 ===
 const isFullscreen = ref(false);
 
@@ -157,18 +164,10 @@ const filterableColumns = computed(() =>
 // filter 按钮是否有内容
 const hasFilterContent = computed(() => filterableColumns.value.length > 0 || !!slots.filter);
 
-// 检查按钮是否应该显示
+// 检查按钮是否应该显示（仅处理 hidden/visible，权限由 AccessControl 组件处理）
 function shouldShow(btn: ToolbarButton | ToolbarCustomButton): boolean {
   if (btn.hidden) return false;
   if (btn.visible && !btn.visible()) return false;
-
-  // 权限检查
-  if (btn.perm) {
-    const perms = Array.isArray(btn.perm) ? btn.perm : [btn.perm];
-    const fullPerms = perms.map((p) => (p.includes(":") ? p : `${props.permPrefix ?? ""}:${p}`));
-    if (!hasAccessByCodes(fullPerms)) return false;
-  }
-
   return true;
 }
 

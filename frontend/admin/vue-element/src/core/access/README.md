@@ -10,7 +10,7 @@
 - ✅ **多维度权限**：角色权限 + 权限码权限
 - ✅ **多层级控制**：路由级别 + 菜单级别 + 按钮级别 + 组件级别
 - ✅ **灵活配置**：指令、组件、函数三种使用方式
-- ✅ **超级管理员**：特殊角色拥有所有权限
+- ✅ **路由豁免**：通过 `meta.ignoreAccess` 跳过权限检查
 
 ---
 
@@ -34,10 +34,10 @@ type AccessModeType = "frontend" | "backend";
 
 ### 权限判断维度
 
-| 维度 | 说明 | 示例 |
-|------|------|------|
-| **角色权限** | 基于用户角色判断 | `ADMIN`, `MANAGER`, `USER` |
-| **权限码权限** | 基于权限标识判断 | `sys:user:create`, `sys:user:update` |
+| 维度 | 数据源 | 存储位置 | 匹配方式 |
+|------|--------|---------|----------|
+| **角色码** | `getMe().roles` | `userStore.userRoles` | 精确匹配 |
+| **权限码** | `GetMyPermissionCode()` | `accessStore.accessCodes` | 前缀匹配 |
 
 ---
 
@@ -49,8 +49,7 @@ src/core/access/
 ├── index.ts                   # 模块导出入口
 ├── use-access.ts              # 权限判断 Hook
 ├── access-control.vue         # 权限控制组件
-├── directive.ts               # 权限指令
-└── accessible.ts              # 路由和菜单生成
+└── directive.ts               # 权限指令
 ```
 
 ---
@@ -94,39 +93,66 @@ src/core/access/
 
 ### 按钮级别权限控制
 
-#### 方式一：使用指令（推荐）
+#### 方式一：使用权限控制组件（推荐）
+
+`AccessControl` 是声明式的权限包裹组件，Pro 组件（ProToolbar、ProTableCellContent）内部已使用它实现按钮级鉴权，业务页面也可直接使用：
 
 ```vue
 <template>
-  <!-- 单个权限码 -->
-  <el-button v-access:code="'sys:user:create'">新增</el-button>
-  
+  <!-- 传入 codes 检查权限，不传或 undefined 表示不限制 -->
+  <AccessControl :codes="['sys:user:create']">
+    <el-button>新增</el-button>
+  </AccessControl>
+
   <!-- 多个权限码（满足一个即可） -->
-  <el-button v-access:code="['sys:user:create', 'sys:user:update']">操作</el-button>
-  
-  <!-- 角色权限 -->
-  <div v-access:role="'ADMIN'">管理员可见</div>
+  <AccessControl :codes="['sys:user:create', 'sys:user:update']">
+    <el-button>操作</el-button>
+  </AccessControl>
+</template>
+
+<script setup lang="ts">
+import { AccessControl } from '@/core/access';
+</script>
+```
+
+**组件说明：**
+- 同时检查角色码（精确匹配）和权限码（前缀匹配），取并集
+- 无权限时不渲染子元素
+- `codes` 不传或 `undefined` 表示不限制（始终渲染）
+
+#### 方式二：使用指令
+
+```vue
+<template>
+  <!-- 单个权限码（同时检查角色码和权限码） -->
+  <el-button v-access="'sys:user:create'">新增</el-button>
+
+  <!-- 多个权限码（满足一个即可） -->
+  <el-button v-access="['sys:user:create', 'sys:user:update']">操作</el-button>
 </template>
 ```
 
 **指令说明：**
-- `v-access:code` - 基于权限码判断
-- `v-access:role` - 基于角色判断
+- `v-access` - 同时检查角色码（精确匹配）和权限码（前缀匹配），取并集
 - 支持字符串和数组形式
 - 无权限时自动移除 DOM 元素
 
-#### 方式二：使用 Hook（推荐）
+#### 方式三：使用 Hook
 
 ```vue
 <script setup lang="ts">
 import { useAccess } from '@/core/access';
 
-const { hasAccessByCodes, hasAccessByRoles } = useAccess();
+const { hasAccess, hasAccessByCodes, hasAccessByRoles } = useAccess();
 
-// 在 script 中使用
-const canCreate = hasAccessByCodes(['sys:user:create']);
-const canEdit = hasAccessByCodes(['sys:user:create', 'sys:user:update']);
-const isAdmin = hasAccessByRoles(['ADMIN']);
+// 综合检查（角色码 + 权限码，取并集，推荐）
+const canCreate = hasAccess(['sys:user:create']);
+
+// 单独检查权限码（前缀匹配）
+const canEdit = hasAccessByCodes(['sys:user:update']);
+
+// 单独检查角色码（精确匹配）
+const isAdmin = hasAccessByRoles(['sys:platform_admin']);
 </script>
 
 <template>
@@ -134,26 +160,6 @@ const isAdmin = hasAccessByRoles(['ADMIN']);
   <el-button v-if="canEdit">编辑</el-button>
   <div v-if="isAdmin">管理员内容</div>
 </template>
-```
-
-#### 方式三：使用权限控制组件
-
-```vue
-<template>
-  <!-- 基于权限码 -->
-  <AccessControl :codes="['sys:user:create']" type="code">
-    <el-button>新增</el-button>
-  </AccessControl>
-  
-  <!-- 基于角色 -->
-  <AccessControl :codes="['ADMIN']" type="role">
-    <el-button>管理员操作</el-button>
-  </AccessControl>
-</template>
-
-<script setup lang="ts">
-import { AccessControl } from '@/core/access';
-</script>
 ```
 
 ---
@@ -164,13 +170,16 @@ import { AccessControl } from '@/core/access';
 <script setup lang="ts">
 import { useAccess } from '@/core/access';
 
-const { hasAccessByCodes, hasAccessByRoles, accessMode } = useAccess();
+const { hasAccess, hasAccessByCodes, hasAccessByRoles, accessMode } = useAccess();
 
-// 检查是否有任意一个权限码
-const canOperate = hasAccessByCodes(['sys:user:create', 'sys:user:update']);
+// 综合检查（角色码 + 权限码，取并集，推荐用于混合标识场景）
+const canOperate = hasAccess(['sys:user:create', 'sys:user:update']);
 
-// 检查是否有任意一个角色
-const isAdmin = hasAccessByRoles(['ADMIN', 'SUPER_ADMIN']);
+// 单独检查权限码（前缀匹配）
+const canEdit = hasAccessByCodes(['sys:user:update']);
+
+// 单独检查角色码（精确匹配）
+const isAdmin = hasAccessByRoles(['sys:platform_admin']);
 
 // 获取当前权限模式
 console.log('当前权限模式:', accessMode.value); // 'frontend' | 'backend'
@@ -192,10 +201,13 @@ interface UseAccessReturn {
   /** 当前权限模式 */
   accessMode: Ref<"frontend" | "backend">;
   
-  /** 基于权限码判断是否有权限（满足一个即可） */
+  /** 综合权限检查（角色码 + 权限码，取并集，推荐用于混合标识场景） */
+  hasAccess: (authority: string[]) => boolean;
+  
+  /** 基于权限码判断（前缀匹配） */
   hasAccessByCodes: (codes: string[]) => boolean;
   
-  /** 基于角色判断是否有权限（满足一个即可） */
+  /** 基于角色码判断（精确匹配） */
   hasAccessByRoles: (roles: string[]) => boolean;
   
   /** 切换权限模式 */
@@ -208,80 +220,37 @@ interface UseAccessReturn {
 ```typescript
 import { useAccess } from '@/core/access';
 
-const { hasAccessByCodes, hasAccessByRoles } = useAccess();
+const { hasAccess, hasAccessByCodes, hasAccessByRoles } = useAccess();
+
+if (hasAccess(['sys:user:create'])) {
+  console.log('有创建用户的权限（角色码或权限码匹配）');
+}
 
 if (hasAccessByCodes(['sys:user:create'])) {
-  console.log('有创建用户的权限');
+  console.log('有创建用户的权限码');
 }
 
-if (hasAccessByRoles(['ADMIN'])) {
-  console.log('是管理员角色');
+if (hasAccessByRoles(['sys:platform_admin'])) {
+  console.log('是平台管理员角色');
 }
-```
-
----
-
-### 工具函数（兼容层）
-
-位于 `src/utils/auth.ts`，内部调用 `core/access`，标记为 `@deprecated`：
-
-```typescript
-/**
- * @deprecated 建议直接使用 useAccess() Hook
- */
-export function hasPerm(value: string | string[], type: "button" | "role" = "button"): boolean;
-
-/**
- * @deprecated 建议直接使用 useAccess().hasAccessByCodes()
- */
-export function hasAnyPerm(perms: string[]): boolean;
-
-export function hasAllPerms(perms: string[]): boolean;
-export function hasAnyRole(roles: string[]): boolean;
-export function hasAllRoles(roles: string[]): boolean;
-```
-
-**迁移示例：**
-
-```typescript
-// ❌ 旧用法（已废弃）
-import { hasPerm, hasAnyPerm } from '@/utils/auth';
-hasPerm('sys:user:create');
-hasAnyPerm(['sys:user:create', 'sys:user:update']);
-
-// ✅ 新用法（推荐）
-import { useAccess } from '@/core/access';
-const { hasAccessByCodes } = useAccess();
-hasAccessByCodes(['sys:user:create']);
-hasAccessByCodes(['sys:user:create', 'sys:user:update']);
 ```
 
 ---
 
 ### 指令
 
-#### `v-access:code` - 权限码指令
+#### `v-access` - 权限指令
 
 ```vue
 <!-- 字符串形式 -->
-<el-button v-access:code="'sys:user:create'">新增</el-button>
+<el-button v-access="'sys:user:create'">新增</el-button>
 
 <!-- 数组形式 -->
-<el-button v-access:code="['sys:user:create', 'sys:user:update']">操作</el-button>
-```
-
-#### `v-access:role` - 角色权限指令
-
-```vue
-<!-- 字符串形式 -->
-<div v-access:role="'ADMIN'">管理员内容</div>
-
-<!-- 数组形式 -->
-<div v-access:role="['ADMIN', 'MANAGER']">管理内容</div>
+<el-button v-access="['sys:user:create', 'sys:user:update']">操作</el-button>
 ```
 
 **特性：**
-- 自动适配权限模式（frontend/backend）
+- 同时检查角色码和权限码（取并集）
 - 无权限时从 DOM 中移除元素
 - 支持响应式更新
 
@@ -297,21 +266,25 @@ hasAccessByCodes(['sys:user:create', 'sys:user:update']);
 
 | 属性 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
-| `codes` | `string[]` | `[]` | 权限码或角色列表 |
-| `type` | `"code" \| "role"` | `"role"` | 权限类型 |
+| `codes` | `string[]?` | `undefined` | 权限标识列表（角色码或权限码均可），不传表示不限制 |
 
 **使用示例：**
 
 ```vue
 <template>
-  <!-- 基于权限码 -->
-  <AccessControl :codes="['sys:user:create']" type="code">
+  <!-- 检查权限码 -->
+  <AccessControl :codes="['sys:user:create']">
     <el-button>新增用户</el-button>
   </AccessControl>
-  
-  <!-- 基于角色 -->
-  <AccessControl :codes="['ADMIN']" type="role">
+
+  <!-- 检查角色码 -->
+  <AccessControl :codes="['sys:platform_admin']">
     <el-alert type="warning">管理员专属功能</el-alert>
+  </AccessControl>
+
+  <!-- 不限制（始终渲染） -->
+  <AccessControl>
+    <el-button>公共按钮</el-button>
   </AccessControl>
 </template>
 ```
@@ -325,9 +298,11 @@ hasAccessByCodes(['sys:user:create', 'sys:user:update']);
 ```mermaid
 graph TD
     A[用户登录] --> B[获取用户信息和权限码]
-    B --> C[存储到 AccessStore]
-    C --> D{权限模式?}
-    D -->|frontend| E[前端过滤路由]
+    B --> C1[角色码 → userStore.userRoles]
+    B --> C2[权限码 → accessStore.accessCodes]
+    C1 --> D{权限模式?}
+    C2 --> D
+    D -->|frontend| E[前端过滤路由 hasAuthority]
     D -->|backend| F[后端返回路由]
     E --> G[生成可访问菜单]
     F --> G
@@ -338,7 +313,7 @@ graph TD
     J -->|无权限| L[拒绝访问/403]
     
     M[按钮/组件权限] --> N{使用指令/组件/函数}
-    N --> O[检查用户权限码]
+    N --> O[hasAccess: 角色码 + 权限码]
     O -->|有权限| P[显示元素]
     O -->|无权限| Q[隐藏/移除元素]
 ```
@@ -346,9 +321,11 @@ graph TD
 ### 权限数据存储
 
 ```typescript
-// AccessStore 存储结构
+// 双池存储结构
+
+// 1. accessStore（权限码，来自 GetMyPermissionCode）
 interface AccessState {
-  /** 权限码列表（角色 + 权限点） */
+  /** 权限码列表（仅权限码，不含角色码） */
   accessCodes: string[];
   
   /** 可访问的菜单列表 */
@@ -362,6 +339,15 @@ interface AccessState {
   
   /** 是否已检查权限 */
   isAccessChecked: boolean;
+}
+
+// 2. userStore（角色码，来自 getMe().roles）
+interface UserState {
+  /** 用户角色码（参与权限判断） */
+  userRoles: string[];
+  
+  /** 用户信息 */
+  userInfo: BasicUserInfo | null;
 }
 ```
 
@@ -394,17 +380,23 @@ const { toggleAccessMode } = useAccess();
 await toggleAccessMode();
 ```
 
-### 超级管理员配置
+### 路由豁免（ignoreAccess）
+
+对于不需要权限检查的路由（如登录页、404 页），在路由 `meta` 中设置 `ignoreAccess: true`：
 
 ```typescript
-// src/constants/index.ts
-export const ROLE_ROOT = "*:*:*";
-
-// 拥有此角色的用户自动拥有所有权限
-if (roles.includes(ROLE_ROOT)) {
-  return true; // 跳过所有权限检查
+{
+  path: "/login",
+  meta: {
+    ignoreAccess: true, // 此路由不需要权限检查
+  },
 }
 ```
+
+**说明：**
+- `ignoreAccess` 是路由级别的权限豁免，表示该路由本身不参与权限过滤
+- 在前端路由过滤（`hasAuthority`）中，标记 `ignoreAccess` 的路由直接放行
+- 与 `authority` 互斥：设置了 `ignoreAccess` 的路由不应再设置 `authority`
 
 ---
 
@@ -421,11 +413,11 @@ if (roles.includes(ROLE_ROOT)) {
   },
 }
 
-// ❌ 不推荐：权限过于宽泛
+// ✅ 推荐：不需要权限检查的路由使用 ignoreAccess
 {
-  path: "/user",
+  path: "/login",
   meta: {
-    authority: ["*:*:*"], // 所有人都能访问
+    ignoreAccess: true,
   },
 }
 ```
@@ -433,21 +425,18 @@ if (roles.includes(ROLE_ROOT)) {
 ### 2. 按钮权限配置
 
 ```vue
-<!-- ✅ 推荐：使用新指令 -->
-<el-button v-access:code="'sys:user:create'">新增</el-button>
-<el-button v-access:code="'sys:user:update'">编辑</el-button>
-<el-button v-access:code="'sys:user:delete'">删除</el-button>
-
-<!-- ❌ 不推荐：使用旧指令（已废弃） -->
-<el-button v-has-perm="'sys:user:create'">新增</el-button>
+<!-- ✅ 推荐：使用 v-access 指令 -->
+<el-button v-access="'sys:user:create'">新增</el-button>
+<el-button v-access="'sys:user:update'">编辑</el-button>
+<el-button v-access="'sys:user:delete'">删除</el-button>
 
 <!-- ❌ 不推荐：权限标识不清晰 -->
-<el-button v-access:code="'user_add'">新增</el-button>
+<el-button v-access="'user_add'">新增</el-button>
 ```
 
-### 3. 权限前缀规范
+### 3. 权限码命名规范
 
-建议使用统一的权限前缀：
+建议使用统一的命名格式：
 
 ```
 模块:资源:操作
@@ -459,27 +448,35 @@ if (roles.includes(ROLE_ROOT)) {
 - sys:user:export    (系统模块-用户资源-导出操作)
 ```
 
-### 4. CURD 页面权限配置
+### 4. ProPage 按钮权限配置
+
+Pro 组件已内置 `AccessControl` 包裹，只需在按钮配置中添加 `auth` 字段即可实现权限控制：
 
 ```typescript
-// PageContent 配置
-const pageContentConfig = {
-  permPrefix: "sys:user", // 权限前缀
-  toolbar: [
-    "add",      // 自动组合为 sys:user:add
-    "delete",   // 自动组合为 sys:user:delete
-    "export",   // 自动组合为 sys:user:export
-  ],
-  columns: [
-    {
-      action: [
-        "edit",   // 自动组合为 sys:user:edit
-        "delete", // 自动组合为 sys:user:delete
-      ],
-    },
-  ],
+const pageConfig: ProPageConfig = {
+  table: {
+    toolbar: [
+      // 工具栏按钮：auth 传入完整权限标识，无权限时按钮不显示
+      { name: "add", text: "新增", auth: "sys:user:create" },
+      { name: "delete", text: "删除", auth: "sys:user:delete" },
+      // 不设 auth 的按钮始终显示（不受权限控制）
+      { name: "refresh", text: "刷新" },
+    ],
+    columns: [
+      {
+        cellType: "tool",
+        buttons: [
+          // 操作列按钮：同样通过 auth 控制权限
+          { name: "edit", text: "编辑", auth: "sys:user:update" },
+          { name: "delete", text: "删除", auth: "sys:user:delete" },
+        ],
+      },
+    ],
+  },
 };
 ```
+
+**实现原理：** `ProToolbar` 和 `ProTableCellContent` 内部使用 `AccessControl` 组件包裹按钮，根据 `auth` 字段自动进行权限检查。
 
 ---
 
@@ -494,7 +491,7 @@ import { useAccessStore, useAppUserStore } from '@/stores';
 const accessStore = useAccessStore();
 const userStore = useAppUserStore();
 
-console.log('用户角色:', userStore.userInfo.roles);
+console.log('用户角色码:', userStore.userRoles);
 console.log('用户权限码:', accessStore.accessCodes);
 console.log('可访问路由:', accessStore.accessRoutes);
 console.log('可访问菜单:', accessStore.accessMenus);
@@ -503,13 +500,7 @@ console.log('可访问菜单:', accessStore.accessMenus);
 ### Q2: 权限变更后如何刷新？
 
 ```typescript
-// 重新获取用户权限并刷新路由
-import { useAuthStore } from '@/stores';
-
-const authStore = useAuthStore();
-await authStore.getUserPermissionCodes();
-
-// 或者刷新整个页面
+// 刷新整个页面即可，路由守卫会重新获取权限
 location.reload();
 ```
 
@@ -536,11 +527,16 @@ const canAdvancedOperation = computed(() => {
 ### Q4: 如何在非组件环境中检查权限？
 
 ```typescript
-import { useAccessStore } from '@/stores';
+import { useAccessStore, useAppUserStore } from '@/stores';
 
-function checkPermission(permission: string): boolean {
+function checkPermission(code: string): boolean {
   const accessStore = useAccessStore();
-  return accessStore.accessCodes.includes(permission);
+  return accessStore.accessCodes.includes(code);
+}
+
+function checkRole(role: string): boolean {
+  const userStore = useAppUserStore();
+  return userStore.userRoles.includes(role);
 }
 ```
 
@@ -549,7 +545,7 @@ function checkPermission(permission: string): boolean {
 ## 📝 注意事项
 
 1. **权限缓存**：权限数据存储在 Pinia Store 中，页面刷新后会丢失，需要在路由守卫中重新获取
-2. **超级管理员**：拥有 `*:*:*` 角色的用户会自动通过所有权限检查
+2. **路由豁免**：使用 `meta.ignoreAccess: true` 标记不需要权限检查的路由，而非使用特殊权限码
 3. **权限粒度**：建议权限标识细化到具体操作，避免过于宽泛
 4. **性能优化**：权限判断使用了 Set 数据结构，查询复杂度为 O(1)
 5. **安全性**：前端权限控制仅用于 UI 展示，真正的权限验证应在后端进行
@@ -558,9 +554,9 @@ function checkPermission(permission: string): boolean {
 
 ## 🔗 相关文档
 
-- [路由守卫](../router/guard.ts)
+- [路由守卫](../../router/guard.ts)
 - [权限 Store](../../stores/modules/access.store.ts)
-- [权限工具函数](../../utils/auth.ts)
-- [CURD 组件权限配置](../../components/CURD/PageContent.vue)
+- [用户 Store](../../stores/modules/app-user.store.ts)
+- [Pro 组件权限配置](../Pro/README.md)
 
 ---

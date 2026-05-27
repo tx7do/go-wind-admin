@@ -42,7 +42,6 @@ const props = defineProps({
 const pageRef = ref();
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:internal_message",
 
   search: {
     grid: true,

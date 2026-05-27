@@ -38,7 +38,6 @@ const pageRef = ref();
 const drawerRef = ref();
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:internal_message_category",
 
   search: {
     grid: true,

@@ -71,7 +71,6 @@ const [ConnectedDrawer, modalApi] = useProModal({
 
 // === 页面配置 ===
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:manage_tenants",
 
   // 搜索配置
   search: {

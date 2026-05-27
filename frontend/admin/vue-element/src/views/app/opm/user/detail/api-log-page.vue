@@ -49,7 +49,6 @@ const props = defineProps({
 const pageRef = ref();
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:api_audit_log",
 
   search: {
     grid: true,

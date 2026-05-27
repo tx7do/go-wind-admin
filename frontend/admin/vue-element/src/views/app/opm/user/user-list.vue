@@ -108,7 +108,6 @@ watch(
 );
 
 const pageConfig: ProPageConfig = {
-  permPrefix: "sys:user",
 
   search: {
     grid: true,
