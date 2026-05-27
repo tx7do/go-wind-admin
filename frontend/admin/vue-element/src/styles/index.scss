@@ -78,3 +78,17 @@ svg {
 }
 
 // Element Plus lock-scroll 通过 JS 层面拦截 body.style.width 修改来阻止。
+
+// ============================================
+// 3. 页面特效模式（色弱/灰色）
+// ============================================
+
+/* 色弱模式 - 颜色反转 */
+html.invert-mode {
+  filter: invert(0.8);
+}
+
+/* 灰色模式 - 去色效果 */
+html.grayscale-mode {
+  filter: grayscale(1);
+}

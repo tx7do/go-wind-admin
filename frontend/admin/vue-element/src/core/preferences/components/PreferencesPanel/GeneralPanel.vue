@@ -218,4 +218,78 @@ const LANGUAGE_OPTIONS = [
   font-size: 11px;
   color: var(--el-text-color-secondary);
 }
+
+/* 过渡动画预览效果 */
+.animation-box {
+  width: 100%;
+  height: 100%;
+  background: var(--el-color-primary-light-7);
+  border-radius: 3px;
+}
+
+/* fade 动画 */
+.animation-box.fade {
+  animation: fadePreview 2s ease-in-out infinite;
+}
+
+@keyframes fadePreview {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+/* fade-down 动画 */
+.animation-box.fade-down {
+  animation: fadeDownPreview 2s ease-in-out infinite;
+}
+
+@keyframes fadeDownPreview {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+
+/* fade-slide 动画 */
+.animation-box.fade-slide {
+  animation: fadeSlidePreview 2s ease-in-out infinite;
+}
+
+@keyframes fadeSlidePreview {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  50% {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+}
+
+/* fade-up 动画 */
+.animation-box.fade-up {
+  animation: fadeUpPreview 2s ease-in-out infinite;
+}
+
+@keyframes fadeUpPreview {
+  0%,
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  50% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
 </style>
