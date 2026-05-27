@@ -142,8 +142,11 @@ function updateMainColorVariables(preference: Preferences) {
     mode,
   });
 
-  // 3. 合并所有变量
-  const allVariables = { ...customVariables, ...epVariables };
+  // 3. 使用内联样式设置 Element Plus 变量（最高优先级，不会被覆盖）
+  const root = document.documentElement;
+  Object.entries(epVariables).forEach(([key, value]) => {
+    root.style.setProperty(key, value);
+  });
 
   // 4. 设置映射变量 (--primary-500 → --primary 等)
   const colorMappings: Record<string, string> = {
@@ -155,12 +158,12 @@ function updateMainColorVariables(preference: Preferences) {
   Object.entries(colorMappings).forEach(([sourceVar, targetVar]) => {
     const colorValue = customVariables[sourceVar];
     if (colorValue) {
-      document.documentElement.style.setProperty(targetVar, colorValue);
+      root.style.setProperty(targetVar, colorValue);
     }
   });
 
-  // 5. 应用所有 CSS 变量
-  executeUpdateCSSVariables(allVariables);
+  // 5. 自定义变量通过 style 标签设置
+  executeUpdateCSSVariables(customVariables);
 }
 
 function isDarkTheme(theme: string) {
