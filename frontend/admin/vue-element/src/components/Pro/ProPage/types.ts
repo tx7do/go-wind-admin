@@ -4,7 +4,7 @@ import type { ProTableColumn, TableEngine } from "../ProTable/types";
 
 // 工具栏按钮类型
 export type ToolbarLeft = "add" | "delete" | "import" | "export";
-export type ToolbarRight = "refresh" | "filter" | "search" | "imports" | "exports";
+export type ToolbarRight = "refresh" | "filter" | "search" | "imports" | "exports" | "zoom";
 
 export interface ToolsButton {
   name: string;
@@ -57,6 +57,10 @@ export interface ProPageConfig<T = any, Q = any> {
     exportAction?: (queryParams: Q) => Promise<any>;
     // 导入
     importAction?: (file: File) => Promise<any>;
+    // 导出（远程全量）
+    exportsAction?: (queryParams: Q) => Promise<any[]>;
+    // 导入（批量，解析 Excel 后传后端）
+    importsAction?: (data: Record<string, any>[]) => Promise<any>;
     // 导入模板
     importTemplate?: string | (() => Promise<any>);
   };

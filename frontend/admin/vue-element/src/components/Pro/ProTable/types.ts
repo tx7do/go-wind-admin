@@ -35,6 +35,8 @@ export interface ProTableColumn<T = any> {
   align?: "left" | "center" | "right";
   // 排序
   sortable?: boolean | "custom";
+  // 列宽是否可拖动调整
+  resizable?: boolean;
   // 是否显示
   show?: boolean;
   // 树节点列

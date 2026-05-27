@@ -6,6 +6,8 @@
       ref="tableRef"
       v-loading="loading ?? false"
       :row-config="{ keyField: rowKey, isHover: true, isCurrent: true }"
+      :column-config="{ resizable: true }"
+      :custom-config="{ storage: true, checkMethod }"
       :data="data"
       class="w-full"
       v-bind="tableAttrs"
@@ -38,6 +40,7 @@
           :fixed="col.fixed === 'left' || col.fixed === 'right' ? col.fixed : col.fixed === true ? 'left' : undefined"
           :align="col.align || 'center'"
           :sortable="col.sortable === true"
+          :resizable="col.resizable !== false"
           :tree-node="col.treeNode"
           v-bind="col.attrs"
         >
@@ -178,6 +181,12 @@ const resolvedColumns = ref(
 // 透传 table 属性
 const tableAttrs = props.table ?? {};
 const rowKey = props.rowKey;
+
+// vxe-table customConfig checkMethod: 控制 selection/index 列不可被自定义隐藏
+function checkMethod({ column }: { column: any }) {
+  const field = column.field ?? column.type;
+  return field !== 'checkbox' && field !== 'seq' && column.type !== 'checkbox';
+}
 
 // === vxe-table 选中处理 ===
 function handleVxeSelectionChange({ records }: { records: T[] }) {

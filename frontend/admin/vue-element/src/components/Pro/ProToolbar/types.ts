@@ -35,7 +35,7 @@ export interface ProToolbarProps {
   // 默认工具栏（右侧图标按钮 + 自定义按钮）
   defaultToolbar?: Array<ToolbarRightType | ToolbarCustomButton>;
 
-  // 列配置（用于 filter 列显隐）
+  // 列配置（用于 filter 列显隐，仅 el-table 引擎使用）
   columns?: Array<{ prop?: string; label?: string; show?: boolean }>;
 
   // 权限前缀
@@ -49,7 +49,7 @@ export interface ProToolbarProps {
 }
 
 /** 内置工具栏按钮类型 */
-export type ToolbarRightType = "refresh" | "filter" | "search" | "exports" | "imports";
+export type ToolbarRightType = "refresh" | "filter" | "search" | "exports" | "imports" | "zoom";
 
 /** 自定义工具栏按钮（插入到内置图标按钮区域） */
 export interface ToolbarCustomButton {
@@ -71,4 +71,5 @@ export interface ProToolbarEmits {
   search: [];
   export: [];
   import: [];
+  zoom: [isFullscreen: boolean];
 }

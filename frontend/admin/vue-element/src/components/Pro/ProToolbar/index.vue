@@ -88,6 +88,13 @@
             :icon="Upload"
             @click="handleDefaultTool('import')"
           />
+          <!-- 全屏 -->
+          <ElButton
+            v-else-if="tool === 'zoom'"
+            circle
+            :icon="isFullscreen ? Aim : FullScreen"
+            @click="handleZoom"
+          />
           <!-- 自定义工具栏按钮 -->
           <ElButton
             v-else-if="typeof tool === 'object' && shouldShow(tool)"
@@ -110,7 +117,15 @@
 
 <script setup lang="ts">
 import { ElButton, ElCheckbox, ElIcon, ElPopover, ElScrollbar } from "element-plus";
-import { Refresh, Operation, Search, Download, Upload } from "@element-plus/icons-vue";
+import {
+  Refresh,
+  Operation,
+  Search,
+  Download,
+  Upload,
+  FullScreen,
+  Aim,
+} from "@element-plus/icons-vue";
 import type {
   ProToolbarProps,
   ProToolbarEmits,
@@ -119,7 +134,7 @@ import type {
   ToolbarRightType,
 } from "./types";
 import { useAccess } from "@/core/access";
-import { computed, useSlots } from "vue";
+import { computed, ref, useSlots } from "vue";
 
 defineOptions({ inheritAttrs: false });
 
@@ -135,7 +150,10 @@ const slots = useSlots();
 
 const { hasAccessByCodes } = useAccess();
 
-// 可筛选的列（有 prop 和 label）
+// === 全屏状态 ===
+const isFullscreen = ref(false);
+
+// 可筛选的列（有 prop 和 label，仅 el-table 引擎使用）
 const filterableColumns = computed(() =>
   (props.columns ?? []).filter((col) => col.prop && col.label),
 );
@@ -210,6 +228,12 @@ function handleDefaultTool(tool: string) {
 // 处理自定义工具栏按钮点击
 function handleCustomToolClick(btn: ToolbarCustomButton) {
   emit("button-click", btn.name, btn);
+}
+
+// 全屏切换
+function handleZoom() {
+  isFullscreen.value = !isFullscreen.value;
+  emit("zoom", isFullscreen.value);
 }
 
 // 暴露方法
