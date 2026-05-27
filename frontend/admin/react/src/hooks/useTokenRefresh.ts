@@ -13,14 +13,12 @@ import { useAuthStore } from '@/stores/auth';
 /** Access Token 刷新间隔（1.5 小时） */
 const ACCESS_TOKEN_REFRESH_INTERVAL = 90 * 60 * 1000;
 /** Refresh Token 刷新间隔（12 小时） */
-const REFRESH_TOKEN_REFRESH_INTERVAL = 12 * 60 * 60 * 1000;
+// const REFRESH_TOKEN_REFRESH_INTERVAL = 12 * 60 * 60 * 1000;
 
 /** 在 access token 到期前多久开始刷新 */
 const SAFETY_BUFFER_MS = 5 * 60 * 1000;
 /** 最小刷新间隔（避免立即重试风暴） */
 const MIN_INTERVAL_MS = 3 * 1000;
-
-const LOGIN_PATH = '/auth/login';
 
 // ==============================
 // 模块级状态（单例）

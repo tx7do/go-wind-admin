@@ -6,10 +6,7 @@
 import { useAuthStore } from '@/stores/auth';
 import { type authenticationservicev1_LoginRequest } from '@/api/generated/admin/service/v1';
 import { useUserStore } from '@/stores/user';
-import {
-  fetchUserProfile,
-  fetchGenerateCaptcha,
-} from '@/api/hooks/auth';
+import { fetchUserProfile, fetchGenerateCaptcha } from '@/api/hooks';
 import { fetchMyPermissionCode } from '@/api/hooks/admin-portal';
 
 /**
