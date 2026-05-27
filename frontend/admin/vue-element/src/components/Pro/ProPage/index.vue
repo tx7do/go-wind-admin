@@ -441,11 +441,12 @@ defineExpose({
     display: flex;
     flex-direction: column;
     min-height: 0;
-    overflow: auto;
-    padding: 8px 12px;
+    overflow: hidden;
+    padding: 12px;
     background: var(--el-bg-color);
-    border: 1px solid var(--el-border-color);
-    border-radius: 4px;
+    border: 1px solid var(--el-border-color-lighter);
+    border-radius: 8px;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 5%);
   }
 }
 </style>

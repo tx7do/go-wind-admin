@@ -245,57 +245,56 @@ defineExpose({
 .pro-table {
   flex: 1;
   min-height: 0;
-  overflow: auto;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
 }
 
-// vxe-table 样式优化
+// ======================== vxe-table 样式 ========================
 :deep(.vxe-table) {
-  border-radius: 4px;
+  border-radius: 6px;
   overflow: hidden;
+  font-size: 13px;
 
-  // 表头样式
+  // --- 表头 ---
   .vxe-table--header-wrapper {
     background-color: var(--el-fill-color-light);
 
     .vxe-header--column {
-      height: 45px !important;
-      line-height: 45px !important;
+      height: 44px !important;
 
       .vxe-cell {
-        height: 45px !important;
-        line-height: 45px !important;
+        height: 44px !important;
+        line-height: 44px !important;
+        font-weight: 600;
+        font-size: 13px;
+        color: var(--el-text-color-primary);
       }
     }
-
-    .vxe-cell {
-      font-weight: 600;
-      color: var(--el-text-color-primary);
-    }
   }
 
-  // 表格主体样式
-  .vxe-table--body-wrapper {
-    background-color: var(--el-bg-color);
-  }
-
-  // 去掉列之间的分割线
+  // --- 去掉列间竖线 ---
   .vxe-body--column,
   .vxe-header--column,
   .vxe-footer--column {
     border-right: none !important;
   }
 
-  // 表格行样式
+  // --- 表体行 ---
+  .vxe-table--body-wrapper {
+    background-color: var(--el-bg-color);
+  }
+
   .vxe-body--row {
     background-color: var(--el-bg-color);
+    transition: background-color 0.15s ease;
 
     .vxe-body--column {
-      height: 40px !important;
-      line-height: 40px !important;
+      height: 42px !important;
 
       .vxe-cell {
-        height: 40px !important;
-        line-height: 40px !important;
+        height: 42px !important;
+        line-height: 42px !important;
       }
     }
 
@@ -304,45 +303,64 @@ defineExpose({
     }
 
     &.row--current {
-      background-color: var(--el-fill-color);
+      background-color: var(--el-color-primary-light-9);
     }
   }
 
-  // 暗黑模式下的悬停效果增强
-  html.dark & .vxe-body--row {
-    background-color: #1a1a1a !important;
-    transition: background-color 0.2s ease !important;
-
-    &:hover,
-    &.row--hover {
-      background-color: #2a2a2a !important;
-
-      > td {
-        background-color: transparent !important;
-      }
-    }
-
-    &.row--current {
-      background-color: #333333 !important;
-
-      > td {
-        background-color: transparent !important;
-      }
-    }
-
-    &.row--hover.row--current {
-      background-color: #333333 !important;
-    }
-  }
-
-  // 表格单元格
+  // --- 单元格文本 ---
   .vxe-cell {
     color: var(--el-text-color-regular);
   }
 
-  // 表格边框
-  &.vxe-table--border-line--inner {
-    border-color: var(--el-border-color);
+  // --- 复选框/序号列居中 ---
+  .vxe-checkbox--icon,
+  .vxe-table--checkbox-column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  // --- 表格底部边框 ---
+  &.border--default .vxe-table--border-line {
+    border-color: var(--el-border-color-lighter);
+  }
+
+  // --- 空数据 ---
+  .vxe-table--empty-content {
+    color: var(--el-text-color-placeholder);
+    padding: 32px 0;
+  }
+}
+
+// ======================== el-table 样式 ========================
+:deep(.el-table) {
+  border-radius: 6px;
+  overflow: hidden;
+  font-size: 13px;
+
+  // 表头
+  .el-table__header-wrapper {
+    .el-table__header th {
+      height: 44px;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--el-text-color-primary);
+      background-color: var(--el-fill-color-light);
+    }
+  }
+
+  // 表体行
+  .el-table__body-wrapper {
+    .el-table__row td {
+      height: 42px;
+      padding: 0;
+    }
+  }
+
+  // 空数据
+  .el-table__empty-block {
+    color: var(--el-text-color-placeholder);
+    padding: 32px 0;
   }
 }
 </style>

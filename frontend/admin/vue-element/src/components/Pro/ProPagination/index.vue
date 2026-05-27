@@ -124,7 +124,11 @@ defineExpose({
 
 <style scoped lang="scss">
 .pro-pagination {
-  padding: 4px 0 0 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 0 4px;
+  border-top: 1px solid var(--el-border-color-lighter);
   background-color: var(--el-bg-color);
 
   &--hidden {
@@ -132,16 +136,14 @@ defineExpose({
   }
 
   :deep(.el-pagination) {
-    display: flex;
-    align-items: center;
-
+    // 移除默认 margin-right，由 flex 布局控制
     .el-pagination__total,
     .el-pagination__sizes {
-      margin-right: auto;
+      margin-right: 0;
     }
 
     .el-pagination__jump {
-      margin-left: auto;
+      margin-left: 0;
     }
   }
 }
