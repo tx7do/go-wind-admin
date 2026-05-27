@@ -41,7 +41,7 @@ const props = defineProps({
 
 const pageRef = ref();
 
-const pageConfig: ProPageConfig = {
+const pageConfig = computed<ProPageConfig>(() => ({
 
   search: {
     grid: true,
@@ -159,7 +159,7 @@ const pageConfig: ProPageConfig = {
       },
     ],
   },
-};
+}));
 </script>
 
 <style lang="scss" scoped>

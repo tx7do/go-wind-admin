@@ -149,7 +149,7 @@
 </template>
 
 <script setup lang="ts" generic="T extends Record<string, any>">
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { ElTable, ElTableColumn } from "element-plus";
 import ProPagination from "../ProPagination/index.vue";
 import ProTableCellContent from "./ProTableCellContent.vue";
@@ -176,11 +176,13 @@ const engine = props.engine;
 const tableId = props.tableId;
 
 // 解析列（支持 initFn 和 show 默认值）
-const resolvedColumns = ref(
+// 使用 computed 以响应外部 columns prop 的变化（如语言切换时 computed pageConfig 重新求值）
+const resolvedColumns = computed(() =>
   [...props.columns].map((col) => {
-    if (col.initFn) col.initFn(col as unknown as Record<string, any>);
-    if (col.show === undefined) col.show = true;
-    return col;
+    const resolved = { ...col };
+    if (resolved.initFn) resolved.initFn(resolved as unknown as Record<string, any>);
+    if (resolved.show === undefined) resolved.show = true;
+    return resolved;
   })
 );
 

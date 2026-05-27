@@ -44,7 +44,7 @@ const pageRef = ref();
 const drawerRef = ref();
 const fileSelectRef = ref();
 
-const pageConfig: ProPageConfig = {
+const pageConfig = computed<ProPageConfig>(() => ({
 
   search: {
     grid: true,
@@ -116,7 +116,7 @@ const pageConfig: ProPageConfig = {
       },
     ],
   },
-};
+}));
 
 function handleToolbar(name: string) {
   if (name === "upload") {

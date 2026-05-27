@@ -39,6 +39,12 @@
     "originOptions": {
       "current": "Current Data (current page data)",
       "selected": "Selected Data (selected data on current page)"
+    },
+    "fileTypeOptions": {
+      "csv": "CSV (Comma Separated)(*.csv)",
+      "html": "Web Page(*.html)",
+      "xml": "XML Data(*.xml)",
+      "txt": "Text File(Tab Delimited)(*.txt)"
     }
   },
   "import": {

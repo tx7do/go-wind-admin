@@ -70,7 +70,7 @@ const [ConnectedDrawer, modalApi] = useProModal({
 });
 
 // === 页面配置 ===
-const pageConfig: ProPageConfig = {
+const pageConfig = computed<ProPageConfig>(() => ({
 
   // 搜索配置
   search: {
@@ -165,7 +165,7 @@ const pageConfig: ProPageConfig = {
       },
     ],
   },
-};
+}));
 
 // === 事件处理 ===
 function handleAdd() {

@@ -40,7 +40,7 @@ import { $t } from "@/i18n";
 
 const pageRef = ref();
 
-const pageConfig: ProPageConfig = {
+const pageConfig = computed<ProPageConfig>(() => ({
 
   search: {
     grid: true,
@@ -177,7 +177,7 @@ const pageConfig: ProPageConfig = {
       { prop: "ipAddress", label: $t("pages.permission_audit_log.ipAddress"), width: 140 },
     ],
   },
-};
+}));
 </script>
 
 <style lang="scss" scoped>

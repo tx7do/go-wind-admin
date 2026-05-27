@@ -107,7 +107,7 @@ watch(
   }
 );
 
-const pageConfig: ProPageConfig = {
+const pageConfig = computed<ProPageConfig>(() => ({
 
   search: {
     grid: true,
@@ -269,7 +269,7 @@ const pageConfig: ProPageConfig = {
       },
     ],
   },
-};
+}));
 
 function handleAdd() {
   drawerRef.value?.open({ create: true });

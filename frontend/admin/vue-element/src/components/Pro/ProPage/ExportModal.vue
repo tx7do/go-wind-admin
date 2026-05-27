@@ -148,12 +148,12 @@ const defaultFields = computed(() =>
   exportableColumns.value.map((col: any) => col.prop).filter(Boolean)
 );
 
-const fileTypes = [
-  { label: "CSV (逗号分隔)(*.csv)", value: "csv" },
-  { label: "网页(*.html)", value: "html" },
-  { label: "XML 数据(*.xml)", value: "xml" },
-  { label: "文本文件(制表符分隔)(*.txt)", value: "txt" },
-];
+const fileTypes = computed(() => [
+  { label: t("pages.curd.export.fileTypeOptions.csv"), value: "csv" },
+  { label: t("pages.curd.export.fileTypeOptions.html"), value: "html" },
+  { label: t("pages.curd.export.fileTypeOptions.xml"), value: "xml" },
+  { label: t("pages.curd.export.fileTypeOptions.txt"), value: "txt" },
+]);
 
 const state = reactive<{
   visible: boolean;

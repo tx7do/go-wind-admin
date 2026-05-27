@@ -44,7 +44,7 @@ const permissionViewStore = usePermissionViewStore();
 const pageRef = ref();
 const drawerRef = ref();
 
-const pageConfig: ProPageConfig = {
+const pageConfig = computed<ProPageConfig>(() => ({
 
   search: {
     fields: [
@@ -152,7 +152,7 @@ const pageConfig: ProPageConfig = {
       },
     ],
   },
-};
+}));
 
 function handleAdd() {
   drawerRef.value?.open({ create: true });

@@ -54,7 +54,7 @@ const { mutateAsync: deleteMessage } = useDeleteInternalMessage();
 const pageRef = ref();
 const drawerRef = ref();
 
-const pageConfig: ProPageConfig = {
+const pageConfig = computed<ProPageConfig>(() => ({
 
   search: {
     grid: true,
@@ -167,7 +167,7 @@ const pageConfig: ProPageConfig = {
       },
     ],
   },
-};
+}));
 
 function handleAdd() {
   drawerRef.value?.open();

@@ -81,11 +81,11 @@
             :loading="searching"
             @click="handleSearch"
           >
-            {{ searchButtonText }}
+            {{ searchButtonText || t("common.button.search") }}
           </ElButton>
 
           <ElButton v-if="showResetButton" :icon="Refresh" @click="handleReset">
-            {{ resetButtonText }}
+            {{ resetButtonText || t("common.button.reset") }}
           </ElButton>
 
           <!-- 展开/收起 -->
@@ -139,8 +139,8 @@ const props = withDefaults(defineProps<ProSearchConfig<T>>(), {
   showNumber: 3,
   showSearchButton: true,
   showResetButton: true,
-  searchButtonText: "搜索",
-  resetButtonText: "重置",
+  searchButtonText: "",
+  resetButtonText: "",
 });
 
 const emit = defineEmits<ProSearchEmits<T>>();
@@ -387,6 +387,7 @@ defineExpose({
   font-size: 13px;
   user-select: none;
   white-space: nowrap;
+  margin-left: 12px;
 
   &:hover {
     opacity: 0.85;
