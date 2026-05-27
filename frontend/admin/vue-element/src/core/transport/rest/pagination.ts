@@ -24,7 +24,7 @@ export class PaginationQuery {
    */
   private static removeNullUndefined<T extends Record<string, unknown>>(obj: T): Partial<T> {
     return Object.fromEntries(
-      Object.entries(obj).filter(([_, v]) => v !== null && v !== undefined && v !== ''),
+      Object.entries(obj).filter(([_, v]) => v !== null && v !== undefined && v !== "")
     ) as Partial<T>;
   }
 
@@ -36,7 +36,7 @@ export class PaginationQuery {
    */
   private static makeQueryString(
     formValues?: null | Record<string, unknown>,
-    needCleanTenant: boolean = false,
+    needCleanTenant: boolean = false
   ): string | undefined {
     if (formValues === null || formValues === undefined) {
       return undefined;
@@ -80,10 +80,10 @@ export class PaginationQuery {
    */
   private static makeOrderBy(orderBy?: null | string[]): string | undefined {
     if (orderBy === undefined) {
-      orderBy = ['-created_at'];
+      orderBy = ["-created_at"];
     }
     if (orderBy === null) {
-      orderBy = ['-created_at'];
+      orderBy = ["-created_at"];
     }
     return JSON.stringify(orderBy) ?? undefined;
   }
@@ -109,7 +109,7 @@ export class PaginationQuery {
 
     // 数组 → 逗号分隔
     if (Array.isArray(this.fieldMask)) {
-      return this.fieldMask.filter(Boolean).join(',');
+      return this.fieldMask.filter(Boolean).join(",");
     }
 
     // 字符串直接返回

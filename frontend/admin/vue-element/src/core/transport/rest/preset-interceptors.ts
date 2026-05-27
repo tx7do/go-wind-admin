@@ -1,10 +1,8 @@
 import axios from "axios";
 
-import type { MakeErrorMessageFn, ResponseInterceptorConfig } from "./types";
 import type { RequestClient } from "./request-client";
-import { i18n } from "@/i18n";
-
-const t = i18n.global.t;
+import type { MakeErrorMessageFn, ResponseInterceptorConfig } from "./types";
+import { getErrorMsg } from "./utils";
 
 export const authenticateResponseInterceptor = ({
   client,
@@ -22,16 +20,23 @@ export const authenticateResponseInterceptor = ({
   return {
     rejected: async (error) => {
       const { config, response } = error;
-      // 如果不是 401 错误，直接抛出异常
+
+      /// 不是 401 → 直接抛错，交给错误拦截器处理
       if (response?.status !== 401) {
         throw error;
       }
+
       // 判断是否启用了 refreshToken 功能
       // 如果没有启用或者已经是重试请求了，直接跳转到重新登录
       if (!enableRefreshToken || config.__isRetryRequest) {
         await doReAuthenticate();
-        throw error;
+        // 标记错误已由认证拦截器处理
+        const handledError = Object.assign(error, {
+          __handledByAuthInterceptor: true,
+        });
+        throw handledError;
       }
+
       // 如果正在刷新 token，则将请求加入队列，等待刷新完成
       if (client.isRefreshing) {
         return new Promise((resolve) => {
@@ -60,10 +65,16 @@ export const authenticateResponseInterceptor = ({
         // 如果刷新 token 失败，处理错误（如强制登出或跳转登录页面）
         client.refreshTokenQueue.forEach((callback) => callback(""));
         client.refreshTokenQueue = [];
-        console.error("Refresh token failed, please login again.");
+
+        console.error("Refresh token failed:", refreshError);
+
         await doReAuthenticate();
 
-        throw refreshError;
+        // 标记错误已由认证拦截器处理，不继续抛出错误，避免触发错误消息拦截器
+        const handledError = Object.assign(new Error("Authentication required"), {
+          __handledByAuthInterceptor: true,
+        });
+        return Promise.reject(handledError);
       } finally {
         client.isRefreshing = false;
       }
@@ -75,52 +86,21 @@ export const errorMessageResponseInterceptor = (
   makeErrorMessage?: MakeErrorMessageFn
 ): ResponseInterceptorConfig => {
   return {
-    rejected: (error: any) => {
+    rejected: (error: unknown) => {
+      // 取消请求不处理
       if (axios.isCancel(error)) {
         return Promise.reject(error);
       }
 
-      const err: string = error?.toString?.() ?? "";
-      let errMsg = "";
-      if (err?.includes("Network Error")) {
-        errMsg = t("common.fallback.http.networkError");
-      } else if (error?.message?.includes?.("timeout")) {
-        errMsg = t("common.fallback.http.requestTimeout");
-      }
-      if (errMsg) {
-        makeErrorMessage?.(errMsg, error);
+      // 已由认证拦截器处理的错误，不弹窗
+      if (error && typeof error === "object" && "__handledByAuthInterceptor" in error) {
         return Promise.reject(error);
       }
 
-      const status = error?.response?.status;
+      // 统一获取错误信息并弹窗
+      const msg = getErrorMsg(error);
+      makeErrorMessage?.(msg, error);
 
-      let errorMessage: string;
-      switch (status) {
-        case 400: {
-          errorMessage = t("common.fallback.http.badRequest");
-          break;
-        }
-        case 401: {
-          errorMessage = t("common.fallback.http.unauthorized");
-          break;
-        }
-        case 403: {
-          errorMessage = t("common.fallback.http.forbidden");
-          break;
-        }
-        case 404: {
-          errorMessage = t("common.fallback.http.notFound");
-          break;
-        }
-        case 408: {
-          errorMessage = t("common.fallback.http.requestTimeout");
-          break;
-        }
-        default: {
-          errorMessage = t("common.fallback.http.internalServerError");
-        }
-      }
-      makeErrorMessage?.(errorMessage, error);
       return Promise.reject(error);
     },
   };

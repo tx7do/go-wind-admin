@@ -37,13 +37,6 @@ type Request = {
   path: string;
 };
 
-type Paging = { page?: number; pageSize?: number } | undefined;
-
-type PagingResult<T> = {
-  items: T[];
-  total: number;
-};
-
 export type {
   HttpResponse,
   MakeErrorMessageFn,
@@ -52,7 +45,5 @@ export type {
   RequestInterceptorConfig,
   RequestResponse,
   ResponseInterceptorConfig,
-  Paging,
   Request,
-  PagingResult,
 };

@@ -1,7 +1,7 @@
 import type { AxiosRequestConfig } from "axios";
 
+import type { RequestClient } from "../request-client";
 import type { RequestResponse } from "../types";
-import { RequestClient } from "..";
 
 class FileDownloader {
   private client: RequestClient;

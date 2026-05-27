@@ -1,9 +1,9 @@
 import { shallowRef, ref, reactive } from "vue";
-import type { PagingResult } from "@/core/transport/rest";
 import { DEFAULT_CURRENT_PAGE, DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from "../constants";
+import { PaginationResult } from "@/core/transport/rest";
 
 export interface UseTableConfig {
-  indexAction: (queryParams: any) => Promise<PagingResult<any> | any[]>;
+  indexAction: (queryParams: any) => Promise<PaginationResult<any> | any[]>;
   rowKey?: string;
   pagination?: boolean;
   request?: { pageName: string; limitName: string };
@@ -40,10 +40,10 @@ export function useTableState<T = any, Q = any>(config: UseTableConfig) {
     try {
       const res = await config.indexAction(params as Q);
       if (showPagination && !Array.isArray(res)) {
-        data.value = (res as PagingResult<T>).items ?? [];
-        pagination.total = Number((res as PagingResult<T>).total) || 0;
+        data.value = (res as PaginationResult<T>).items ?? [];
+        pagination.total = Number((res as PaginationResult<T>).total) || 0;
       } else {
-        data.value = Array.isArray(res) ? res : ((res as PagingResult<T>).items ?? []);
+        data.value = Array.isArray(res) ? res : ((res as PaginationResult<T>).items ?? []);
       }
     } finally {
       loading.value = false;

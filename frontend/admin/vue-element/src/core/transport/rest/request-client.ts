@@ -58,28 +58,28 @@ class RequestClient {
   /**
    * DELETE请求方法
    */
-  public delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
+  public delete<T = never>(url: string, config?: AxiosRequestConfig): Promise<T> {
     return this.request<T>(url, { ...config, method: "DELETE" });
   }
 
   /**
    * GET请求方法
    */
-  public get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
+  public get<T = never>(url: string, config?: AxiosRequestConfig): Promise<T> {
     return this.request<T>(url, { ...config, method: "GET" });
   }
 
   /**
    * POST请求方法
    */
-  public post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  public post<T = never>(url: string, data?: never, config?: AxiosRequestConfig): Promise<T> {
     return this.request<T>(url, { ...config, data, method: "POST" });
   }
 
   /**
    * PUT请求方法
    */
-  public put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+  public put<T = never>(url: string, data?: never, config?: AxiosRequestConfig): Promise<T> {
     return this.request<T>(url, { ...config, data, method: "PUT" });
   }
 
@@ -93,7 +93,8 @@ class RequestClient {
         ...config,
       });
       return response as T;
-    } catch (error: any) {
+    } catch (error: unknown) {
+      // @ts-expect-error 忽略类型检查
       throw error.response ? error.response.data : error;
     }
   }

@@ -1,6 +1,6 @@
 import type { AxiosRequestConfig, AxiosResponse } from "axios";
 
-import { RequestClient } from "..";
+import type { RequestClient } from "../request-client";
 
 class FileUploader {
   private client: RequestClient;
@@ -28,7 +28,12 @@ class FileUploader {
       },
     };
 
-    return this.client.post(url, formData, finalConfig);
+    // 使用 request 方法代替 post 方法，避免类型推断问题
+    return this.client.request(url, {
+      method: "POST",
+      data: formData,
+      ...finalConfig,
+    });
   }
 }
 

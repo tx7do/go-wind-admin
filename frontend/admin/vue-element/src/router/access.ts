@@ -1,23 +1,15 @@
 import { ElMessage } from "element-plus";
 
-import { createAdminPortalServiceClient } from "@/api/generated/admin/service/v1";
 import { BasicLayout, Layout } from "@/layouts";
-import { requestClientRequestHandler } from "@/core/transport/rest";
 import { generateAccessible } from "@/router/accessible";
 import { preferences } from "@/core/preferences";
+import { fetchNavigation } from "@/api/composables";
 
 import { i18n } from "@/i18n/setup";
 
 const t = i18n.global.t;
 
-const adminPortalService = createAdminPortalServiceClient(requestClientRequestHandler);
-
 const forbiddenComponent = () => import("@/views/core/error/403.vue");
-
-async function getAllMenusApi(): Promise<RouteRecordStringComponent[]> {
-  const data = (await adminPortalService.GetNavigation({})) ?? [];
-  return <RouteRecordStringComponent[]>data.items ?? [];
-}
 
 async function generateAccess(options: GenerateMenuAndRoutesOptions) {
   const pageMap: ComponentRecordType = import.meta.glob("../views/**/*.vue");
@@ -36,7 +28,8 @@ async function generateAccess(options: GenerateMenuAndRoutesOptions) {
         duration: 0,
       });
       try {
-        return await getAllMenusApi();
+        const data = (await fetchNavigation()) ?? {};
+        return <RouteRecordStringComponent[]>(data.items ?? []);
       } finally {
         loadingMessage.close();
       }
