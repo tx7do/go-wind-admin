@@ -35,7 +35,6 @@ async function _initI18n() {
   });
 }
 
-
 /**
  * 按优先级获取错误提示文本
  * 1. reason → i18n error.xxx
