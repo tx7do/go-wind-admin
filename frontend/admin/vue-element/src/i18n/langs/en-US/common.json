@@ -127,6 +127,12 @@
     "logoutConfirmTitle": "Notice",
     "logoutConfirmMessage": "Are you sure you want to logout and exit the system?"
   },
+  "sidebar": {
+    "collapseMenu": "Collapse menu",
+    "expandMenu": "Expand menu",
+    "switchToFixed": "Switch to fixed mode",
+    "switchToAuto": "Switch to auto mode (expand on hover)"
+  },
   "breadcrumb": {
     "home": "Home"
   },

@@ -12,8 +12,14 @@
       <div :class="{ 'has-logo': showLogo }" class="layout-sidebar">
         <LayoutLogo :collapse="!isSidebarActuallyOpen" />
         <el-scrollbar>
-          <LayoutSidebar :data="routes" base-path="" />
+          <LayoutSidebar :data="routes" base-path="" :collapse="!isSidebarActuallyOpen" />
         </el-scrollbar>
+        <SidebarControlPanel
+          :collapsed="!isSidebarOpen"
+          :expand-on-hover="expandOnHover"
+          @toggle-collapse="toggleCollapse"
+          @toggle-expand-on-hover="toggleExpandOnHover"
+        />
       </div>
     </div>
 
@@ -42,8 +48,10 @@ import LayoutNavbar from "./components/LayoutNavbar.vue";
 import LayoutTagsView from "./components/LayoutTagsView.vue";
 import LayoutMain from "./components/LayoutMain.vue";
 import LayoutSidebar from "./components/LayoutSidebar.vue";
+import SidebarControlPanel from "./components/SidebarControlPanel.vue";
+import { preferencesManager } from "@/core/preferences";
 
-const { showTagsView, showLogo, isSidebarOpen, routes } = useLayout();
+const { showTagsView, showLogo, isSidebarOpen, toggleSidebar, routes } = useLayout();
 
 const SIDEBAR_COLLAPSED_WIDTH = 54;
 
@@ -70,10 +78,14 @@ const isHoverExpanded = ref(false);
 // 侧边栏展开/折叠计算
 // =====================
 
-// 实际是否展开（考虑 hover 展开）
+// 实际是否展开
+// 自动模式 (expandOnHover): 视觉状态仅由 hover 控制，忽略 collapsed 偏好
+// 手动模式 (固定): 视觉状态由 collapsed 偏好控制
 const isSidebarActuallyOpen = computed(() => {
-  if (isSidebarOpen.value) return true;
-  return isHoverExpanded.value;
+  if (expandOnHover.value) {
+    return isHoverExpanded.value;
+  }
+  return isSidebarOpen.value;
 });
 
 // 侧边栏展开宽度（响应 preferences）
@@ -112,7 +124,7 @@ const mainStyle = computed(() => {
 // =====================
 
 function onSidebarMouseEnter() {
-  if (expandOnHover.value && !isSidebarOpen.value) {
+  if (expandOnHover.value) {
     isHoverExpanded.value = true;
   }
 }
@@ -121,6 +133,32 @@ function onSidebarMouseLeave() {
   if (isHoverExpanded.value) {
     isHoverExpanded.value = false;
   }
+}
+
+// =====================
+// 控制面板操作
+// =====================
+
+/** 折叠/展开侧边栏（修改偏好） */
+function toggleCollapse() {
+  toggleSidebar();
+}
+
+/** 切换鼠标悬停自动展开模式 */
+function toggleExpandOnHover() {
+  const newExpandOnHover = !expandOnHover.value;
+
+  if (newExpandOnHover) {
+    // 切换到自动模式：保持当前视觉状态作为 hover 状态
+    isHoverExpanded.value = isSidebarActuallyOpen.value;
+  } else {
+    // 切换到手动模式：清除 hover 状态
+    isHoverExpanded.value = false;
+  }
+
+  preferencesManager.updatePreferences({
+    sidebar: { expandOnHover: newExpandOnHover },
+  });
 }
 </script>
 
@@ -138,13 +176,20 @@ function onSidebarMouseLeave() {
 
     .layout-sidebar {
       position: relative;
+      display: flex;
+      flex-direction: column;
       height: 100%;
       background-color: var(--menu-background);
       transition: width 0.28s;
 
+      .el-scrollbar {
+        flex: 1;
+        min-height: 0;
+      }
+
       &.has-logo {
         .el-scrollbar {
-          height: calc(100vh - $navbar-height);
+          // 由 flex 布局自动计算高度，不再需要 calc
         }
       }
 

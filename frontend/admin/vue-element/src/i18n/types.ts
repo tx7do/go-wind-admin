@@ -1,3 +1,5 @@
+import { SupportedLanguagesType } from "@/core/preferences";
+
 export type LoadMessageFn = (
   lang: SupportedLanguagesType
 ) => Promise<Record<string, string> | undefined>;

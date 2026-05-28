@@ -3,7 +3,7 @@
  *
  * 整合布局状态、设备检测、菜单数据
  */
-import { computed, watchEffect } from "vue";
+import { computed, watch } from "vue";
 import { useRoute } from "vue-router";
 
 import { useAccessStore } from "@/stores";
@@ -21,34 +21,22 @@ export function useLayout() {
 
   const isDesktop = computed(() => !isMobile.value);
 
-  // ============================================
-  // 设备检测
-  // ============================================
-
-  // 监听窗口变化，自动调整设备类型和侧边栏
-  watchEffect(() => {
-    // 只在首次或值真正变化时才更新
-    const currentMobile = preferences.app.isMobile;
-    if (isMobile.value !== currentMobile) {
+  // 监听设备类型变化，自动调整侧边栏
+  // 仅在桌面↔移动切换时触发，不干预用户手动折叠/展开
+  watch(
+    () => isMobile.value,
+    (mobile) => {
+      // 同步 isMobile 到 preferences
+      if (mobile !== preferences.app.isMobile) {
+        preferencesManager.updatePreferences({ app: { isMobile: mobile } });
+      }
+      // 切到移动端 → 收起侧边栏；切到桌面端 → 展开侧边栏
       preferencesManager.updatePreferences({
-        app: { isMobile: isMobile.value },
+        sidebar: { collapsed: mobile },
       });
-    }
-
-    // 根据设备类型自动展开/收起侧边栏
-    const currentCollapsed = preferences.sidebar.collapsed;
-    if (isDesktop.value && currentCollapsed) {
-      // 桌面端且当前是收起状态，则展开
-      preferencesManager.updatePreferences({
-        sidebar: { collapsed: false },
-      });
-    } else if (isMobile.value && !currentCollapsed) {
-      // 移动端且当前是展开状态，则收起
-      preferencesManager.updatePreferences({
-        sidebar: { collapsed: true },
-      });
-    }
-  });
+    },
+    { immediate: true }
+  );
 
   // ============================================
   // 布局状态

@@ -4,7 +4,7 @@
     ref="menuRef"
     :default-active="activeMenuPath"
     :class="[`nav-style--${navigationStyle}`]"
-    :collapse="sidebarCollapsed"
+    :collapse="effectiveCollapsed"
     :background-color="menuThemeProps.backgroundColor"
     :text-color="menuThemeProps.textColor"
     :active-text-color="menuThemeProps.activeTextColor"
@@ -53,11 +53,22 @@ const props = defineProps({
     default: "vertical",
     validator: (value: string) => ["vertical", "horizontal"].includes(value),
   },
+  /** 菜单折叠状态，由父组件传入视觉状态 */
+  collapse: {
+    type: Boolean,
+    default: undefined,
+  },
 });
 
 const menuRef = ref<MenuInstance>();
 const currentRoute = useRoute();
 const { sidebarCollapsed, theme, navigationPreferences } = usePreferences();
+
+// 折叠状态：优先使用外部传入的 prop，否则回退到 preferences
+const effectiveCollapsed = computed(() => {
+  if (props.collapse !== undefined) return props.collapse;
+  return sidebarCollapsed.value;
+});
 
 // 菜单风格类型
 const navigationStyle = computed(() => navigationPreferences.value.styleType);

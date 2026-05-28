@@ -3,6 +3,7 @@ import { App } from "vue";
 
 import { LoadMessageFn, LocaleSetupOptions } from "@/i18n/types";
 import { loadLocalesMap, loadLocalesMapFromDir } from "@/i18n/utils";
+import { SupportedLanguagesType } from "@/core/preferences";
 
 const i18n = createI18n({
   globalInjection: true,

@@ -127,6 +127,12 @@
     "logoutConfirmTitle": "提示",
     "logoutConfirmMessage": "确定注销并退出系统吗？"
   },
+  "sidebar": {
+    "collapseMenu": "折叠菜单",
+    "expandMenu": "展开菜单",
+    "switchToFixed": "切换为固定模式",
+    "switchToAuto": "切换为自动模式（鼠标悬停展开）"
+  },
   "breadcrumb": {
     "home": "首页"
   },

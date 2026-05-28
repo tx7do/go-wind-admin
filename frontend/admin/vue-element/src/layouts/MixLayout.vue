@@ -40,13 +40,15 @@
       <!-- 左侧菜单栏 -->
       <div
         class="layout__sidebar--left"
-        :class="{ 'layout__sidebar--collapsed': !isSidebarOpen }"
+        :class="{ 'layout__sidebar--collapsed': !isSidebarActuallyOpen }"
         :style="{ width: sidebarActualWidth + 'px' }"
+        @mouseenter="onSidebarMouseEnter"
+        @mouseleave="onSidebarMouseLeave"
       >
         <el-scrollbar>
           <el-menu
             :default-active="activeSideMenuPath"
-            :collapse="!isSidebarOpen"
+            :collapse="!isSidebarActuallyOpen"
             :collapse-transition="false"
             :unique-opened="accordion"
             :background-color="variables['menu-background']"
@@ -61,9 +63,12 @@
             />
           </el-menu>
         </el-scrollbar>
-        <div class="layout__sidebar-toggle">
-          <LayoutHamburger :is-active="isSidebarOpen" @toggle-click="toggleSidebar" />
-        </div>
+        <SidebarControlPanel
+          :collapsed="!isSidebarOpen"
+          :expand-on-hover="expandOnHover"
+          @toggle-collapse="toggleSidebar"
+          @toggle-expand-on-hover="toggleExpandOnHover"
+        />
       </div>
 
       <!-- 主内容区 -->
@@ -92,7 +97,7 @@ import LayoutToolbar from "./components/LayoutToolbar.vue";
 import LayoutTagsView from "./components/LayoutTagsView.vue";
 import LayoutMain from "./components/LayoutMain.vue";
 import LayoutSidebarItem from "./components/LayoutSidebarItem.vue";
-import LayoutHamburger from "./components/LayoutHamburger.vue";
+import SidebarControlPanel from "./components/SidebarControlPanel.vue";
 import variables from "@/styles/variables.module.scss";
 
 // 菜单图标渲染组件
@@ -124,21 +129,42 @@ const { width } = useWindowSize();
 
 const accessStore = useAccessStore();
 
-const { showTagsView, showLogo, isSidebarOpen, toggleSidebar, routes, sideMenuRoutes, activeTopMenuPath } =
-  useLayout();
+const {
+  showTagsView,
+  showLogo,
+  isSidebarOpen,
+  toggleSidebar,
+  routes,
+  sideMenuRoutes,
+  activeTopMenuPath,
+} = useLayout();
 
 const { navigationPreferences } = usePreferences();
 
 const SIDEBAR_COLLAPSED_WIDTH = 54;
+
+// 侧边栏 hover 展开
+const expandOnHover = computed(() => preferences.sidebar.expandOnHover);
+const isHoverExpanded = ref(false);
+
+// 自动模式: 视觉状态仅由 hover 控制
+// 手动模式: 视觉状态由 collapsed 偏好控制
+const isSidebarActuallyOpen = computed(() => {
+  if (expandOnHover.value) {
+    return isHoverExpanded.value;
+  }
+  return isSidebarOpen.value;
+});
+
 const sidebarActualWidth = computed(() =>
-  isSidebarOpen.value ? preferences.sidebar.width : SIDEBAR_COLLAPSED_WIDTH,
+  isSidebarActuallyOpen.value ? preferences.sidebar.width : SIDEBAR_COLLAPSED_WIDTH
 );
 const accordion = computed(() => navigationPreferences.value.accordion);
 const isSplit = computed(() => navigationPreferences.value.split);
 
 // 侧边栏菜单数据：split 模式下显示二级菜单，否则显示完整菜单
 const effectiveSideMenuRoutes = computed(() =>
-  isSplit.value ? sideMenuRoutes.value : routes.value,
+  isSplit.value ? sideMenuRoutes.value : routes.value
 );
 
 const isLogoCollapsed = computed(() => width.value < 768);
@@ -226,6 +252,39 @@ function navigateToFirstMenu(menus: RouteRecordRaw[]) {
 
 // 监听路由变化，同步顶部菜单状态
 // activeTopMenuPath 和 sideMenuRoutes 会自动根据路由计算，无需手动同步
+
+// =====================
+// 侧边栏 hover 展开/收起
+// =====================
+
+function onSidebarMouseEnter() {
+  if (expandOnHover.value) {
+    isHoverExpanded.value = true;
+  }
+}
+
+function onSidebarMouseLeave() {
+  if (isHoverExpanded.value) {
+    isHoverExpanded.value = false;
+  }
+}
+
+/** 切换鼠标悬停自动展开模式 */
+function toggleExpandOnHover() {
+  const newExpandOnHover = !expandOnHover.value;
+
+  if (newExpandOnHover) {
+    // 切换到自动模式：保持当前视觉状态作为 hover 状态
+    isHoverExpanded.value = isSidebarActuallyOpen.value;
+  } else {
+    // 切换到手动模式：清除 hover 状态
+    isHoverExpanded.value = false;
+  }
+
+  preferencesManager.updatePreferences({
+    sidebar: { expandOnHover: newExpandOnHover },
+  });
+}
 </script>
 
 <style lang="scss" scoped>
@@ -302,6 +361,8 @@ function navigateToFirstMenu(menus: RouteRecordRaw[]) {
 
     .layout__sidebar--left {
       position: relative;
+      display: flex;
+      flex-direction: column;
       // 宽度由内联 style 控制
       height: 100%;
       background-color: var(--menu-background);
@@ -311,26 +372,14 @@ function navigateToFirstMenu(menus: RouteRecordRaw[]) {
         // 折叠宽度由内联 style 控制
       }
 
-      :deep(.el-scrollbar) {
-        height: calc(100vh - $navbar-height - 50px);
+      .el-scrollbar {
+        flex: 1;
+        min-height: 0;
       }
 
       :deep(.el-menu) {
         height: 100%;
         border: none;
-      }
-
-      .layout__sidebar-toggle {
-        position: absolute;
-        bottom: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 50px;
-        line-height: 50px;
-        background-color: var(--menu-background);
-        box-shadow: 0 0 6px -2px var(--el-color-primary);
       }
     }
 
