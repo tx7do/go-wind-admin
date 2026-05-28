@@ -172,21 +172,50 @@ html.sidebar-color-blue .layout-mix .layout__sidebar--left .el-menu {
 }
 
 // ============================================
-// Pro 组件工具栏按钮 亮色模式柔和风格
+// Pro 组件按钮 亮色模式全局统一规范
+// 搜索/重置/新增/危险/默认 全部柔和风格
 // ============================================
 
-// ---- ProToolbar 工具栏文字按钮 ----
+// ---- ProSearch 搜索栏按钮 ----
+.pro-search {
+  // 搜索按钮（主色）
+  .el-button--primary {
+    background-color: rgba(64, 128, 255, 0.12) !important;
+    border-color: rgba(64, 128, 255, 0.25) !important;
+    color: #4080FF !important;
+
+    &:hover,
+    &:focus {
+      background-color: rgba(64, 128, 255, 0.2) !important;
+      border-color: rgba(64, 128, 255, 0.4) !important;
+    }
+  }
+
+  // 重置按钮（次级）
+  .el-button--default {
+    background-color: rgba(0, 0, 0, 0.04) !important;
+    border-color: #ddd !important;
+    color: #555 !important;
+
+    &:hover,
+    &:focus {
+      background-color: rgba(0, 0, 0, 0.08) !important;
+    }
+  }
+}
+
+// ---- ProToolbar 工具栏按钮 ----
 .pro-toolbar {
   // 成功按钮（新增）：柔和绿色
   .el-button--success:not(.is-circle) {
     background-color: rgba(82, 196, 26, 0.1) !important;
-    border-color: rgba(82, 196, 26, 0.3) !important;
+    border-color: rgba(82, 196, 26, 0.25) !important;
     color: #52c41a !important;
 
     &:hover,
     &:focus {
       background-color: rgba(82, 196, 26, 0.18) !important;
-      border-color: rgba(82, 196, 26, 0.5) !important;
+      border-color: rgba(82, 196, 26, 0.45) !important;
     }
   }
 
@@ -205,15 +234,13 @@ html.sidebar-color-blue .layout-mix .layout__sidebar--left .el-menu {
 
   // 默认按钮（导入/导出）：柔和中性色
   .el-button--default:not(.is-circle) {
-    background-color: rgba(0, 0, 0, 0.02) !important;
-    border-color: rgba(0, 0, 0, 0.12) !important;
-    color: var(--el-text-color-regular) !important;
+    background-color: rgba(0, 0, 0, 0.04) !important;
+    border-color: #ddd !important;
+    color: #555 !important;
 
     &:hover,
     &:focus {
-      background-color: rgba(0, 0, 0, 0.06) !important;
-      border-color: rgba(0, 0, 0, 0.2) !important;
-      color: var(--el-text-color-primary) !important;
+      background-color: rgba(0, 0, 0, 0.08) !important;
     }
   }
 }
@@ -235,6 +262,11 @@ html.sidebar-color-blue .layout-mix .layout__sidebar--left .el-menu {
   background: transparent;
   transition: all 0.2s ease;
   vertical-align: middle;
+
+  // 按钮之间间距 8px，不再拥挤
+  & + .table-icon-btn {
+    margin-left: 8px;
+  }
 
   // ---- Primary（编辑/查看/下载/重启） ----
   &--primary {

@@ -610,35 +610,32 @@ html.dark {
   }
 
   // ============================================
-  // Pro 组件按钮暗黑模式专业级优化
+  // Pro 组件按钮暗黑模式 · 同源统一
   // ============================================
 
   // ---- ProSearch 搜索栏按钮 ----
   .pro-search {
-    // 主按钮（搜索）：柔和主色
+    // 搜索按钮（主色）
     .el-button--primary {
       background-color: rgba(64, 128, 255, 0.15) !important;
-      border-color: rgba(64, 128, 255, 0.3) !important;
-      color: var(--el-color-primary) !important;
+      border-color: rgba(64, 128, 255, 0.35) !important;
+      color: #4080FF !important;
 
       &:hover,
       &:focus {
         background-color: rgba(64, 128, 255, 0.25) !important;
-        border-color: var(--el-color-primary) !important;
       }
     }
 
-    // 重置按钮：中性色
+    // 重置按钮（次级）
     .el-button--default {
-      background-color: rgba(255, 255, 255, 0.05) !important;
-      border-color: rgba(255, 255, 255, 0.1) !important;
-      color: #cbd5e1 !important;
+      background-color: rgba(255, 255, 255, 0.06) !important;
+      border-color: rgba(255, 255, 255, 0.12) !important;
+      color: #d0d0d0 !important;
 
       &:hover,
       &:focus {
         background-color: rgba(255, 255, 255, 0.1) !important;
-        border-color: rgba(255, 255, 255, 0.2) !important;
-        color: #ffffff !important;
       }
     }
   }
@@ -647,9 +644,9 @@ html.dark {
   .pro-toolbar {
     // 文字按钮通用：柔和底色 + 过渡
     .el-button:not(.is-circle) {
-      background-color: rgba(255, 255, 255, 0.05) !important;
-      border: 1px solid rgba(255, 255, 255, 0.1) !important;
-      color: #cbd5e1 !important;
+      background-color: rgba(255, 255, 255, 0.06) !important;
+      border-color: rgba(255, 255, 255, 0.12) !important;
+      color: #d0d0d0 !important;
       transition: all 0.2s ease !important;
 
       &:hover,
@@ -663,39 +660,36 @@ html.dark {
     // 成功按钮（新增）：柔和绿色
     .el-button--success:not(.is-circle) {
       background-color: rgba(82, 196, 26, 0.15) !important;
-      border-color: rgba(82, 196, 26, 0.3) !important;
+      border-color: rgba(82, 196, 26, 0.35) !important;
       color: #52c41a !important;
 
       &:hover,
       &:focus {
         background-color: rgba(82, 196, 26, 0.25) !important;
-        border-color: #52c41a !important;
       }
     }
 
     // 危险按钮：柔和红色
     .el-button--danger:not(.is-circle) {
       background-color: rgba(245, 63, 63, 0.15) !important;
-      border-color: rgba(245, 63, 63, 0.3) !important;
+      border-color: rgba(245, 63, 63, 0.35) !important;
       color: #f53f3f !important;
 
       &:hover,
       &:focus {
         background-color: rgba(245, 63, 63, 0.25) !important;
-        border-color: #f53f3f !important;
       }
     }
 
     // 主色按钮：柔和主色
     .el-button--primary:not(.is-circle) {
       background-color: rgba(64, 128, 255, 0.15) !important;
-      border-color: rgba(64, 128, 255, 0.3) !important;
-      color: var(--el-color-primary) !important;
+      border-color: rgba(64, 128, 255, 0.35) !important;
+      color: #4080FF !important;
 
       &:hover,
       &:focus {
         background-color: rgba(64, 128, 255, 0.25) !important;
-        border-color: var(--el-color-primary) !important;
       }
     }
 
@@ -703,7 +697,7 @@ html.dark {
     .el-button.is-circle {
       background-color: rgba(255, 255, 255, 0.05) !important;
       border-color: rgba(255, 255, 255, 0.1) !important;
-      color: #cbd5e1 !important;
+      color: #d0d0d0 !important;
       transition: all 0.2s ease !important;
 
       &:hover,
