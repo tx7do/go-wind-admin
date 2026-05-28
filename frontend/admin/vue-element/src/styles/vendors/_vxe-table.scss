@@ -98,13 +98,19 @@
   --vxe-ui-table-cell-padding-bottom: 10px;
   --vxe-ui-table-header-cell-padding-top: 12px;
   --vxe-ui-table-header-cell-padding-bottom: 12px;
+}
 
-  /* 浅色模式配色 */
+// ============================================
+// 浅色模式配色（使用 vxe-table 4.x 属性选择器确保优先级）
+// ============================================
+
+[data-vxe-ui-theme="light"] {
   --vxe-ui-table-header-background-color: var(--el-fill-color-light, #f5f7fa);
   --vxe-ui-table-header-font-color: var(--el-text-color-primary, #1d2129);
   --vxe-ui-table-body-background-color: var(--el-bg-color, #ffffff);
   --vxe-ui-table-row-striped-background-color: var(--el-fill-color-light, #f5f7fa);
   --vxe-ui-table-row-hover-background-color: var(--el-fill-color, #f2f3f5);
+  --vxe-ui-table-row-hover-striped-background-color: var(--el-fill-color, #f2f3f5);
   --vxe-ui-table-border-color: var(--el-border-color-lighter, #e5e6eb);
 }
 
@@ -169,11 +175,10 @@
 }
 
 // ============================================
-// 暗色主题
+// 暗色模式配色（使用 vxe-table 4.x 属性选择器确保优先级）
 // ============================================
 
-html.dark {
-  // vxe-table 暗色主题变量
+[data-vxe-ui-theme="dark"] {
   --vxe-ui-table-header-background-color: #212430;
   --vxe-ui-table-header-font-color: #e5eaf3;
   --vxe-ui-table-body-background-color: #1a1d24;

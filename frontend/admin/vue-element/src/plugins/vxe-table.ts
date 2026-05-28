@@ -27,8 +27,7 @@ export function configureVxeTable() {
       },
       align: "center",
       headerAlign: "center",
-      // 暗色主题边框配置
-      stripe: false,
+      stripe: true,
     },
     pager: {
       perfect: false,

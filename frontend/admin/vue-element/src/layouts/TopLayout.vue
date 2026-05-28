@@ -144,7 +144,7 @@ const isLogoCollapsed = computed(() => width.value < 768);
 
   &__main {
     height: calc(100vh - $navbar-height);
-    overflow-y: auto;
+    overflow-y: hidden;
   }
 }
 

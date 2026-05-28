@@ -254,7 +254,7 @@ function toggleExpandOnHover() {
     right: 0;
     bottom: 0;
     // left 由内联 style 控制
-    overflow-y: auto;
+    overflow-y: hidden;
     transition: left 0.28s;
 
     &--no-sidebar {

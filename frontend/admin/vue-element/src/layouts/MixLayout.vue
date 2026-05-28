@@ -407,7 +407,7 @@ function toggleExpandOnHover() {
       min-width: 0;
       height: 100%;
       margin-left: 0;
-      overflow-y: auto;
+      overflow-y: hidden;
     }
   }
 }
