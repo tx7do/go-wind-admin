@@ -240,7 +240,7 @@ html.sidebar-color-blue {
 
 // 父菜单激活状态样式 - 当子菜单激活时，父菜单显示激活状态
 .el-sub-menu {
-  // 亮色：仅文字变为主色，无背景，不抢子菜单焦点
+  // 亮色：仅主色文字，无背景，不抢子菜单焦点
   &.has-active-child > .el-sub-menu__title {
     color: var(--el-color-primary) !important;
     font-weight: 500 !important;
@@ -250,7 +250,7 @@ html.sidebar-color-blue {
     }
   }
 
-  // 暗色：同上，仅文字变色
+  // 暗色：同源同色
   html.dark & {
     &.has-active-child > .el-sub-menu__title {
       color: var(--el-color-primary) !important;
@@ -265,11 +265,11 @@ html.sidebar-color-blue {
   // 深蓝色侧边栏
   html.sidebar-color-blue & {
     &.has-active-child > .el-sub-menu__title {
-      color: var(--el-color-primary-light-3) !important;
+      color: var(--el-color-primary) !important;
       font-weight: 500 !important;
 
       .menu-icon {
-        color: var(--el-color-primary-light-3) !important;
+        color: var(--el-color-primary) !important;
       }
     }
   }

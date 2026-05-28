@@ -43,7 +43,7 @@
   }
 
   .el-menu-item.is-active {
-    background-color: var(--el-fill-color) !important;
+    background-color: rgba(64, 128, 255, 0.08) !important;
     color: var(--el-color-primary) !important;
     font-weight: 500 !important;
 
@@ -62,7 +62,7 @@
   }
 
   .el-menu-item.is-active {
-    background-color: var(--el-fill-color) !important;
+    background-color: rgba(64, 128, 255, 0.08) !important;
     color: var(--el-color-primary) !important;
     font-weight: 500 !important;
 
@@ -85,7 +85,7 @@ html.dark .layout-mix .layout__sidebar--left .el-menu {
   }
 
   .el-menu-item.is-active {
-    background-color: var(--el-fill-color-light) !important;
+    background-color: rgba(64, 128, 255, 0.1) !important;
     color: var(--el-color-primary) !important;
     font-weight: 500 !important;
 
