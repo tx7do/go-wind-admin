@@ -329,6 +329,27 @@ html.dark {
 }
 
 // ============================================
+// 选中行样式：明暗模式通用柔和背景高亮
+// ============================================
+
+.vxe-table .vxe-body--row {
+  // 浅色模式选中行：柔和蓝色背景 + 文字微加粗
+  &.row--current {
+    background-color: rgba(64, 128, 255, 0.06) !important;
+    font-weight: 500;
+
+    > td {
+      background-color: transparent !important;
+    }
+  }
+
+  // 浅色模式 hover + 选中
+  &.row--hover.row--current {
+    background-color: rgba(64, 128, 255, 0.1) !important;
+  }
+}
+
+// ============================================
 // 行高兜底硬覆盖：防止 vxe-table 内部样式优先级更高
 // ============================================
 
