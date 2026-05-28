@@ -9,25 +9,52 @@
 @forward "element-plus/theme-chalk/src/common/var.scss" with (
   $colors: (
     "primary": (
-      // 默认主题色 - 修改此值时需同步修改 src/settings.ts 中的 themeColor
-      "base": #4080ff,
+      // 现代蓝 — 高级感拉满
+      "base": #165DFF,
     ),
     "success": (
-      "base": #23c343,
+      "base": #00B42A,
     ),
     "warning": (
-      "base": #ff9a2e,
+      "base": #FF7D00,
     ),
     "danger": (
-      "base": #f76560,
+      "base": #F53F3F,
     ),
     "info": (
-      "base": #a9aeb8,
+      "base": #86909C,
     ),
   ),
   $bg-color: (
-    "page": #f5f8fd,
-  )
+    "page": #F7F8FA,
+  ),
+  // 圆角 — 现代大圆角
+  $border-radius: (
+    "base": 8px,
+    "small": 6px,
+    "round": 20px,
+    "circle": 100%,
+  ),
+  // 阴影更柔和
+  $box-shadow: (
+    "": (0 4px 12px rgba(0, 0, 0, 0.08)),
+    "light": (0 2px 8px rgba(0, 0, 0, 0.06)),
+    "lighter": (0 1px 4px rgba(0, 0, 0, 0.04)),
+    "dark": (0 6px 16px rgba(0, 0, 0, 0.12)),
+  ),
+  // 表格更清爽
+  $table: (
+    "header-font-color": #1D2129,
+    "header-bg-color": #F7F8FA,
+    "row-hover-bg-color": #F2F3F5,
+    "border-color": #E5E6EB,
+  ),
+  // 填充色优化
+  $fill-color: (
+    "light": #F2F3F5,
+    "lighter": #F7F8FA,
+    "extra-light": #FAFBFC,
+  ),
 );
 
 // ============================================
@@ -36,10 +63,27 @@
 
 $border: 1px solid var(--el-border-color-light);
 
-/* el-dialog */
+/* ---------- 表格 hover 颜色跟随主色调 ---------- */
+:root {
+  --el-table-row-hover-bg-color: #f5f8ff;
+  --el-table-header-text-color: #1d2129;
+  --el-table-header-bg-color: #f7f8fa;
+  --el-table-border-color: #e5e6eb;
+}
+
+html.dark {
+  --el-table-row-hover-bg-color: #252a37;
+  --el-table-header-bg-color: #1f232b;
+}
+
+/* ---------- el-dialog ---------- */
 .el-dialog {
+  border-radius: 12px;
+  box-shadow: var(--el-box-shadow-dark);
+  overflow: hidden;
+
   .el-dialog__header {
-    padding: 15px 20px;
+    padding: 16px 20px;
     margin: 0;
     border-bottom: $border;
   }
@@ -49,15 +93,15 @@ $border: 1px solid var(--el-border-color-light);
   }
 
   .el-dialog__footer {
-    padding: 15px;
+    padding: 16px 20px;
     border-top: $border;
   }
 }
 
-/* el-drawer */
+/* ---------- el-drawer ---------- */
 .el-drawer {
   .el-drawer__header {
-    padding: 15px 20px;
+    padding: 16px 20px;
     margin: 0;
     color: inherit;
     border-bottom: $border;
@@ -68,14 +112,112 @@ $border: 1px solid var(--el-border-color-light);
   }
 
   .el-drawer__footer {
-    padding: 15px;
+    padding: 16px 20px;
     border-top: $border;
   }
 }
 
-/* 抽屉和对话框底部按钮区域 */
+/* ---------- 抽屉和对话框底部按钮区域 ---------- */
 .dialog-footer {
   display: flex;
   gap: 8px;
   justify-content: flex-end;
+}
+
+/* ---------- 按钮精致化 ---------- */
+.el-button {
+  border-radius: 8px;
+  font-weight: 500;
+  transition: all 0.25s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+/* ---------- 卡片精致化 ---------- */
+.el-card {
+  border-radius: 12px;
+  border: 1px solid var(--el-border-color-lighter, #EBEDF0);
+  box-shadow: var(--el-box-shadow-light);
+  transition: box-shadow 0.25s ease;
+
+  &:hover {
+    box-shadow: var(--el-box-shadow-base);
+  }
+}
+
+/* ---------- 表格高级感 ---------- */
+.el-table {
+  --el-table-border-color: #e5e6eb;
+  border-radius: 8px;
+  overflow: hidden;
+
+  // 表头更精致
+  .el-table__header-wrapper th.el-table__cell {
+    font-weight: 600;
+    font-size: 13px;
+  }
+}
+
+/* ---------- 输入框精致化 ---------- */
+.el-input {
+  .el-input__wrapper {
+    border-radius: 8px;
+    transition: box-shadow 0.25s ease;
+  }
+}
+
+/* ---------- 下拉菜单精致化 ---------- */
+.el-select-dropdown,
+.el-popper.is-light {
+  border-radius: 8px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* ---------- 标签精致化 ---------- */
+.el-tag {
+  border-radius: 6px;
+}
+
+/* ---------- 消息提示精致化 ---------- */
+.el-message {
+  border-radius: 8px;
+}
+
+/* ---------- 通知精致化 ---------- */
+.el-notification {
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+/* ---------- 分页精致化 ---------- */
+.el-pagination {
+  .el-pager li {
+    border-radius: 6px;
+    transition: all 0.2s ease;
+  }
+
+  .btn-prev,
+  .btn-next {
+    border-radius: 6px;
+  }
+}
+
+/* ---------- Tabs 精致化 ---------- */
+.el-tabs {
+  .el-tabs__item {
+    transition: color 0.2s ease;
+  }
+}
+
+/* ---------- 消息弹窗精致化 ---------- */
+.el-message-box {
+  border-radius: 12px;
+  overflow: hidden;
 }

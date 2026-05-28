@@ -391,7 +391,7 @@ html.dark {
     --el-table-bg-color: var(--dark-bg-table) !important;
     --el-table-tr-bg-color: var(--dark-bg-table) !important;
     --el-table-header-bg-color: var(--dark-header) !important; // 表头背景色微亮，和数据行形成明显区分
-    --el-table-row-hover-bg-color: var(--dark-bg-hover) !important;
+    --el-table-row-hover-bg-color: #252a37 !important; // 暗黑模式 hover 色跟随主色调
     --el-table-text-color: var(--dark-text-data) !important;
     --el-table-header-text-color: var(--dark-text-primary) !important;
 
