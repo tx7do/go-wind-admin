@@ -7,6 +7,7 @@ import { preferencesManager } from "./preferences";
 import { isDarkTheme } from "./update-css-variables";
 import { toggleDarkMode } from "@/utils/theme";
 import { diff } from "@/utils/diff";
+import { ThemeModeType } from "@/core/preferences/types";
 
 function usePreferences() {
   const preferences = preferencesManager.getPreferences();
