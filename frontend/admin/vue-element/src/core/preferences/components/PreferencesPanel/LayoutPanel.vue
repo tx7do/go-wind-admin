@@ -638,6 +638,4 @@ function handleSidebarWidthChange(width: number | null | undefined) {
 }
 </script>
 
-<style scoped lang="scss">
-@import "./LayoutPanel.scss";
-</style>
+<style src="./LayoutPanel.scss" scoped lang="scss"></style>

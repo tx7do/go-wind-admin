@@ -126,7 +126,7 @@ import {
   ElTooltip,
 } from "element-plus";
 import { Search, Refresh, ArrowUp, ArrowDown, QuestionFilled } from "@element-plus/icons-vue";
-import InputTag from "../InputTag.vue";
+import InputTag from "@/components/InputTag/index.vue";
 import { useI18n } from "@/i18n";
 import type { ProSearchConfig, ProSearchEmits } from "./types";
 
