@@ -6,6 +6,7 @@ import {
   presetTypography,
   presetUno,
   presetWebFonts,
+  presetWind3,
   transformerDirectives,
   transformerVariantGroup,
 } from "unocss";
@@ -82,7 +83,19 @@ export default defineConfig({
     colors: {
       primary: "var(--el-color-primary)",
       primary_dark: "var(--el-color-primary-light-5)",
+
+      success: "var(--success)",
+      warning: "var(--warning)",
+      danger: "var(--destructive)",
     },
+
+    borderRadius: {
+      DEFAULT: "var(--radius)",
+
+      sm: "calc(var(--radius) * 0.5)",
+      lg: "calc(var(--radius) * 1.5)",
+    },
+
     breakpoints: Object.fromEntries(
       [640, 768, 1024, 1280, 1536, 1920, 2560].map((size, index) => [
         ["sm", "md", "lg", "xl", "2xl", "3xl", "4xl"][index],
@@ -91,7 +104,7 @@ export default defineConfig({
     ),
   },
   presets: [
-    presetUno(),
+    presetWind3(),
     presetAttributify(),
     presetIcons({
       // 额外属性

@@ -104,7 +104,15 @@ function updateCSSVariables(preferences: Preferences) {
 
   // 更新圆角
   if (Reflect.has(theme, "radius")) {
-    document.documentElement.style.setProperty("--radius", `${radius}rem`);
+    const r = `${radius}rem`;
+
+    // 自定义全局变量
+    document.documentElement.style.setProperty("--radius", r);
+
+    // Element Plus 核心圆角变量
+    document.documentElement.style.setProperty("--el-border-radius-base", r);
+    document.documentElement.style.setProperty("--el-border-radius-small", r);
+    document.documentElement.style.setProperty("--el-border-radius-round", r);
   }
 }
 
