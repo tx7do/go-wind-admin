@@ -12,7 +12,7 @@ import { getNavigation } from '@/api/service/admin-portal';
 import { Forbidden } from '@/pages/core/error';
 import type { AppRouteObject, ComponentRecordType } from '@/core/router';
 import MainLayout from '@/layouts/MainLayout';
-import { AuthGuard } from '@/core/router/guards';
+import { AuthGuard } from '@/router/guards';
 
 import { errorRoutes } from './config/error-routes';
 import { authRoutes } from './config/auth';

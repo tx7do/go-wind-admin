@@ -1,4 +1,5 @@
-import { type AppRouteObject, GuestGuard } from '@/core/router';
+import { type AppRouteObject } from '@/core/router';
+import { GuestGuard } from '@/router/guards';
 
 import UserLayout from '@/layouts/UserLayout';
 import RouteErrorFallback from '@/layouts/components/ErrorFallback/RouteErrorFallback.tsx';

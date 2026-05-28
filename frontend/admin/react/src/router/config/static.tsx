@@ -1,7 +1,7 @@
 import { Navigate } from 'react-router-dom';
 
 import { type AppRouteObject } from '@/core/router';
-import { AuthGuard } from '@/core/router/guards';
+import { AuthGuard } from '@/router/guards';
 import MainLayout from '@/layouts/MainLayout';
 
 /**
