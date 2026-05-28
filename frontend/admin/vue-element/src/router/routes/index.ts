@@ -2,7 +2,7 @@ import type { RouteRecordRaw } from "vue-router";
 
 import { traverseTreeValues } from "@/utils";
 
-import { coreRoutes, fallbackNotFoundRoute } from "./core";
+import { coreRoutes, fallbackNotFoundRoute } from "./core.routes";
 import { mergeRouteModules } from "@/core/router";
 
 const dynamicRouteFiles = import.meta.glob("./modules/**/*.ts", {

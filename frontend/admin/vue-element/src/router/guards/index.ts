@@ -1,7 +1,7 @@
 import type { Router } from "vue-router";
 
-import { setupCommonGuard } from "./common";
-import { setupAccessGuard } from "./access";
+import { setupCommonGuard } from "./common.guard";
+import { setupAccessGuard } from "./auth.guard";
 
 /**
  * 项目守卫配置

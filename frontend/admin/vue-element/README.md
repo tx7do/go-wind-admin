@@ -143,7 +143,7 @@ src/
 ├── router/                 # 路由业务绑定
 │   ├── index.ts            #   路由实例
 │   ├── guard.ts            #   路由守卫
-│   ├── access.ts           #   权限路由入口
+│   ├── auth.guard.ts           #   权限路由入口
 │   └── routes/modules/app/ #   业务路由模块文件
 │
 ├── styles/                 # 全局样式

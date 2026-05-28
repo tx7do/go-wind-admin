@@ -6,7 +6,7 @@ import { accessRoutes, coreRouteNames } from "@/router/routes";
 import { useAccessStore, useAppUserStore } from "@/stores";
 import { useAuth } from "@/composables/use-auth";
 
-import { generateAccess } from "@/router/access";
+import { generateAccess } from "@/router/route-generator";
 import { fetchAllDictEntries } from "@/composables/use-dict-cache";
 
 /**

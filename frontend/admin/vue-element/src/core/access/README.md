@@ -47,7 +47,7 @@ type AccessModeType = "frontend" | "backend";
 src/core/access/
 ├── README.md                  # 本文档
 ├── index.ts                   # 模块导出入口
-├── use-access.ts              # 权限判断 Hook
+├── use-auth.guard.ts              # 权限判断 Hook
 ├── access-control.vue         # 权限控制组件
 └── directive.ts               # 权限指令
 ```

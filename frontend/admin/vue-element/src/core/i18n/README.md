@@ -309,7 +309,7 @@ updatePreferences({ app: { locale: "en-US" } });
 - 侧边栏菜单：`LayoutSidebarItem` → `translateRouteTitle(item.meta.title)`
 - 面包屑：`LayoutBreadcrumb` → `translateRouteTitle()`
 - 标签页：`LayoutTagsView` → `translateRouteTitle()`
-- 浏览器标题：`common.ts` 守卫 → `translateRouteTitle()`
+- 浏览器标题：`common.guard.ts` 守卫 → `translateRouteTitle()`
 
 ---
 
