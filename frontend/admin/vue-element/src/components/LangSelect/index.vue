@@ -1,6 +1,6 @@
 <template>
   <el-dropdown trigger="click" @command="handleLanguageChange">
-    <div class="i-svg:language" :class="size" />
+    <SvgIcon icon="language" :class="size" />
     <template #dropdown>
       <el-dropdown-menu>
         <el-dropdown-item
@@ -20,6 +20,7 @@
 import { preferencesManager } from "@/core/preferences";
 import type { SupportedLanguagesType } from "@/core/preferences";
 import { loadLocaleMessages } from "@/core/i18n";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 
 defineProps({
   size: {

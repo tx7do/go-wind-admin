@@ -15,7 +15,7 @@
 
     <!-- 返回顶部按钮 -->
     <el-backtop target=".app-main">
-      <div class="i-svg:backtop w-6 h-6" />
+      <SvgIcon icon="backtop" class="w-6 h-6" />
     </el-backtop>
   </section>
 </template>
@@ -23,6 +23,7 @@
 <script setup lang="ts">
 import { type RouteLocationNormalized } from "vue-router";
 import { useTagsViewStore } from "@/stores";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 import { preferences, usePreferences } from "@/core/preferences";
 import variables from "@/styles/variables.module.scss";
 import Error404 from "@/pages/core/error/404.vue";

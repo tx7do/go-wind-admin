@@ -10,9 +10,7 @@
                 <el-icon v-if="isElementIcon">
                   <component :is="selectedIcon.replace('el-icon-', '')" />
                 </el-icon>
-                <template v-else>
-                  <div :class="`i-svg:${selectedIcon}`" />
-                </template>
+                <SvgIcon :icon="selectedIcon" />
               </template>
               <template #suffix>
                 <!-- 清空按钮 -->
@@ -52,7 +50,7 @@
                   @click="selectIcon(icon)"
                 >
                   <el-tooltip :content="icon" placement="bottom" effect="light">
-                    <div :class="`i-svg:${icon}`" />
+                    <SvgIcon :icon="icon" />
                   </el-tooltip>
                 </li>
               </ul>
@@ -82,6 +80,7 @@
 
 <script setup lang="ts">
 import * as ElementPlusIconsVue from "@element-plus/icons-vue";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 
 const props = defineProps({
   modelValue: {

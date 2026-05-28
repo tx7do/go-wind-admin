@@ -13,7 +13,7 @@
         class="navbar-actions__item"
         @click="handleSettingsClick"
       >
-        <div class="i-svg:setting" />
+        <SvgIcon icon="setting" />
       </div>
 
       <!-- 全屏 -->
@@ -72,6 +72,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useAppUserStore } from "@/stores";
 import { useAuth } from "@/composables/use-auth";
 import { preferences, usePreferences } from "@/core/preferences";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 
 // 导入子组件
 import CommandPalette from "@/components/CommandPalette/index.vue";

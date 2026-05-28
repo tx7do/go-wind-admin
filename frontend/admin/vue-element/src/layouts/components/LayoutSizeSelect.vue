@@ -3,7 +3,7 @@
   <el-tooltip :content="t('core.sizeSelect.tooltip')" effect="dark" placement="bottom">
     <el-dropdown trigger="click" @command="handleSizeChange">
       <div class="size-trigger">
-        <div class="i-svg:size" />
+        <SvgIcon icon="size" />
       </div>
       <template #dropdown>
         <el-dropdown-menu>
@@ -23,6 +23,7 @@
 
 <script setup lang="ts">
 import { preferences, preferencesManager } from "@/core/preferences";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 
 const { t } = useI18n();
 

@@ -1,11 +1,15 @@
 <template>
   <div class="hamburger-wrapper" @click="toggleClick">
-    <div :class="['i-svg:collapse', { hamburger: true, 'is-active': isActive }, hamburgerClass]" />
+    <SvgIcon
+      icon="collapse"
+      :class="[{ hamburger: true, 'is-active': isActive }, hamburgerClass]"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { usePreferences } from "@/core/preferences";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 
 defineProps({
   isActive: { type: Boolean, required: true },

@@ -1,10 +1,12 @@
 <template>
   <div class="fullscreen-trigger" @click="toggle">
-    <div :class="`i-svg:` + (isFullscreen ? 'fullscreen-exit' : 'fullscreen')" />
+    <SvgIcon :icon="isFullscreen ? 'fullscreen-exit' : 'fullscreen'" />
   </div>
 </template>
 
 <script setup lang="ts">
+import SvgIcon from "@/components/SvgIcon/index.vue";
+
 const { isFullscreen, toggle } = useFullscreen();
 </script>
 

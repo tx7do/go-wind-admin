@@ -2,10 +2,10 @@
   <el-dropdown class="notice__dropdown" trigger="click">
     <div class="notice__trigger">
       <el-badge v-if="unreadTotal > 0" :value="unreadTotal" :max="99">
-        <div class="i-svg:bell" />
+        <SvgIcon icon="bell" />
       </el-badge>
 
-      <div v-else class="i-svg:bell" />
+      <SvgIcon v-else icon="bell" />
     </div>
 
     <template #dropdown>
@@ -106,6 +106,7 @@
 
 <script setup lang="ts">
 import { Bell, UserFilled } from "@element-plus/icons-vue";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 import defaultAvatar from "@/assets/images/default-avatar.png";
 import { useNotice } from "./useNotice";
 

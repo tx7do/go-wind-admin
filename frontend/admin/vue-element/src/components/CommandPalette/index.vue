@@ -10,7 +10,7 @@
       @keydown.space.prevent="open"
     >
       <div class="command-palette-trigger__left">
-        <div class="i-svg:search" />
+        <SvgIcon icon="search" />
         <span class="command-palette-trigger__text">搜索菜单</span>
       </div>
       <kbd class="command-palette-trigger__kbd">Ctrl K</kbd>
@@ -33,17 +33,11 @@
           @keydown="handleInputKeydown"
         >
           <template #prefix>
-            <div class="i-svg:search" />
+            <SvgIcon icon="search" />
           </template>
           <template #suffix>
             <div class="command-palette-input__suffix">
-              <div
-                class="i-svg:close"
-                role="button"
-                tabindex="0"
-                aria-label="关闭"
-                @click="close"
-              />
+              <SvgIcon icon="close" role="button" tabindex="0" aria-label="关闭" @click="close" />
             </div>
           </template>
         </el-input>
@@ -67,16 +61,16 @@
 
         <div class="command-palette-hints">
           <div class="command-palette-hint">
-            <div class="command-palette-hint__key"><div class="i-svg:up" /></div>
-            <div class="command-palette-hint__key"><div class="i-svg:down" /></div>
+            <div class="command-palette-hint__key"><SvgIcon icon="up" /></div>
+            <div class="command-palette-hint__key"><SvgIcon icon="down" /></div>
             <span class="command-palette-hint__text">切换</span>
           </div>
           <div class="command-palette-hint">
-            <div class="command-palette-hint__key"><div class="i-svg:enter" /></div>
+            <div class="command-palette-hint__key"><SvgIcon icon="enter" /></div>
             <span class="command-palette-hint__text">选择</span>
           </div>
           <div class="command-palette-hint">
-            <div class="command-palette-hint__key"><div class="i-svg:esc" /></div>
+            <div class="command-palette-hint__key"><SvgIcon icon="esc" /></div>
             <span class="command-palette-hint__text">关闭</span>
           </div>
         </div>
@@ -87,6 +81,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 import { useCommandPalette } from "./useCommandPalette";
 
 const {

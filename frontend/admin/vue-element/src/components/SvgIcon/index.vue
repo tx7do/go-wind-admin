@@ -12,14 +12,9 @@
   扩展新图标集只需安装对应的 @iconify-json/xxx 包即可。
 -->
 <template>
-  <!-- 本地 SVG 图标：用 UnoCSS CSS 类渲染 -->
-  <div
-    v-if="isSvgIcon"
-    :class="[cssClass, props.class]"
-    :style="{ width: `${size || 16}px`, height: `${size || 16}px` }"
-  />
+  <div v-if="isSvgIcon" :class="[cssClass, props.class]" :style="sizeStyle" />
   <!-- Iconify 图标：用 @iconify/vue 组件渲染 -->
-  <Icon v-else :icon="resolvedIcon" :width="size || 16" :height="size || 16" :class="props.class" />
+  <Icon v-else :icon="resolvedIcon" :width="iconSize" :height="iconSize" :class="props.class" />
 </template>
 
 <script setup lang="ts">
@@ -72,5 +67,19 @@ const cssClass = computed(() => {
   if (!isSvgIcon.value) return "";
   // svg:menu → i-svg:menu
   return `i-${resolvedIcon.value}`;
+});
+
+/**
+ * 解析后的图标尺寸（Iconify 组件用）
+ * 不传 size 时为 undefined，让 Iconify 使用默认 1em
+ */
+const iconSize = computed(() => props.size || undefined);
+
+/**
+ * 内联样式（仅显式传 size 时生效，避免覆盖 CSS 中的尺寸规则）
+ */
+const sizeStyle = computed(() => {
+  if (!props.size) return undefined;
+  return { width: `${props.size}px`, height: `${props.size}px` };
 });
 </script>

@@ -4,12 +4,12 @@
     <div class="navbar__left">
       <!-- 侧边栏显示/隐藏按钮 -->
       <div v-if="widget.sidebarToggle" class="navbar-action" @click="toggleSidebarVisibility">
-        <div :class="['i-svg:collapse', { 'is-active': isSidebarEnabled }]" />
+        <SvgIcon icon="collapse" :class="{ 'is-active': isSidebarEnabled }" />
       </div>
 
       <!-- 刷新内容区按钮 -->
       <div v-if="widget.refresh" class="navbar-action" @click="handleRefresh">
-        <div :class="['i-svg:refresh', { 'is-spin': contentRefreshing }]" />
+        <SvgIcon icon="refresh" :class="{ 'is-spin': contentRefreshing }" />
       </div>
 
       <!-- 面包屑 -->
@@ -29,7 +29,7 @@
         class="navbar-action"
         @click="handleSettingsClick"
       >
-        <div class="i-svg:setting" />
+        <SvgIcon icon="setting" />
       </div>
 
       <!-- 主题切换 -->
@@ -88,6 +88,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useAppUserStore } from "@/stores";
 import { useAuth } from "@/composables/use-auth";
 import { preferences, preferencesManager } from "@/core/preferences";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 
 import LayoutBreadcrumb from "./LayoutBreadcrumb.vue";
 import CommandPalette from "@/components/CommandPalette/index.vue";
