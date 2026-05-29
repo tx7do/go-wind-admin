@@ -291,11 +291,18 @@ onMounted(() => {
       transition: color 0.2s ease;
     }
 
-    // 选中菜单项：主色淡背景 + 主色文字，克制不刺眼
+    // 亮色模式 hover：极浅灰背景，提供交互反馈
+    .el-menu-item:hover,
+    .el-sub-menu__title:hover {
+      background-color: #f5f7fa !important;
+    }
+
+    // 选中菜单项：左侧亮色竖条 + 主色文字 + 加粗，与暗色模式一致
     .el-menu-item.is-active {
       background-color: var(--el-color-primary-light-9) !important;
       color: var(--el-color-primary) !important;
       font-weight: 500 !important;
+      box-shadow: inset 3px 0 0 0 var(--el-color-primary) !important;
 
       .el-icon {
         color: var(--el-color-primary) !important;
@@ -316,6 +323,7 @@ onMounted(() => {
         background-color: var(--el-color-primary-light-9) !important;
         color: var(--el-color-primary) !important;
         font-weight: 500 !important;
+        box-shadow: inset 3px 0 0 0 var(--el-color-primary) !important;
       }
     }
 
@@ -323,24 +331,25 @@ onMounted(() => {
     // 暗黑模式
     // ============================================
     html.dark & {
-      // 普通菜单文字：柔和色
+      // 未选中菜单文字：亮灰色（#d9d9d9），清晰可读，像“活”的按钮
       .el-menu-item,
       .el-sub-menu__title {
-        color: #94a3b8 !important;
+        color: #d9d9d9 !important;
       }
 
-      // hover 态：柔和反馈
+      // hover 态：淡白背景 + 纯白文字，明确交互反馈
       .el-menu-item:hover,
       .el-sub-menu__title:hover {
         background-color: rgba(255, 255, 255, 0.05) !important;
-        color: #cbd5e1 !important;
+        color: #ffffff !important;
       }
 
-      // 选中菜单：主色淡背景 + 主色文字，同源同色仅调透明度
+      // 选中菜单：品牌色透明度背景 + 左侧竖条 + 纯白文字
       .el-menu-item.is-active {
-        background-color: var(--el-color-primary-light-9) !important;
-        color: var(--el-color-primary) !important;
+        background-color: rgba(24, 144, 255, 0.15) !important;
+        color: #ffffff !important;
         font-weight: 500 !important;
+        box-shadow: inset 3px 0 0 0 var(--el-color-primary) !important;
 
         .el-icon {
           color: var(--el-color-primary) !important;
@@ -349,9 +358,10 @@ onMounted(() => {
 
       // rounded 风格暗黑模式
       &.nav-style--rounded .el-menu-item.is-active {
-        background-color: var(--el-color-primary-light-9) !important;
-        color: var(--el-color-primary) !important;
+        background-color: rgba(24, 144, 255, 0.15) !important;
+        color: #ffffff !important;
         font-weight: 500 !important;
+        box-shadow: inset 3px 0 0 0 var(--el-color-primary) !important;
       }
     }
   }

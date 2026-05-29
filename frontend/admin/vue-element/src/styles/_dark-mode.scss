@@ -24,10 +24,11 @@ html.dark {
   --dark-row-even: #161A23;         // 偶数行背景(用深灰替代纯白,既保留奇偶区分,又完全融入暗黑体系)
   --dark-header: #14171C;           // 表头背景(微提亮,和数据行层级更清晰)
     
-  --dark-text-primary: #E5EAF3;     // 表头主文本/偶数行主文本（提升表头可读性，满足 WCAG AA 标准）
-  --dark-text-secondary: #9099A7;   // 占位符文本/辅助文本（提升弱光环境可读性，不抢主文本焦点）
-  --dark-text-placeholder: #9099A7; // 占位符专用色
-  --dark-text-data: #C9CDD4;        // 奇数行主文本（核心数据清晰可见，辅助文本不抢焦点）
+  // 文本色层级体系（背景越深，文本越亮）
+  --dark-text-primary: #ffffff;       // 一级文本：表头主文本/选中菜单项/核心标题（纯白，最强对比）
+  --dark-text-secondary: #b3b3b3;     // 二级文本：未选中菜单项/面包屑非当前页/辅助说明（亮灰，WCAG 4.5:1）
+  --dark-text-placeholder: #8c8c8c;   // 三级文本：占位符/时间戳/辅助说明（中灰，辅助信息）
+  --dark-text-data: #d4d4d4;          // 数据文本：表格数据行主体（中性灰，清晰可读不抢焦点）
 
   // 2. 色彩体系（跟随用户主题色）
   --dark-primary: var(--el-color-primary);       // 主色（跟随主题）
@@ -374,6 +375,22 @@ html.dark {
       &:hover {
         filter: brightness(1.15);
       }
+    }
+  }
+
+  // ============================================
+  // Pro 搜索区域按钮（ProSearch）
+  // ============================================
+  .pro-search__actions .el-button {
+    // 重置/default 按钮
+    // stylelint-disable-next-line selector-max-universal
+    &:not(.el-button--primary):not(.el-button--danger):not(.el-button--success):not(.el-button--warning):not(.el-button--info) {
+      --el-button-bg-color: rgba(255, 255, 255, 0.06);
+      --el-button-border-color: rgba(255, 255, 255, 0.12);
+      --el-button-text-color: var(--el-text-color-regular);
+      --el-button-hover-bg-color: rgba(255, 255, 255, 0.1);
+      --el-button-hover-border-color: rgba(255, 255, 255, 0.2);
+      --el-button-hover-text-color: var(--el-text-color-primary);
     }
   }
 

@@ -1188,9 +1188,9 @@ html.dark .tabs-bar {
   --tabs-bar-hover-color: #e5eaf3;
   --tabs-bar-active-bg: #1a1d24;
 
-  // 未激活文字
+  // 未激活文字：亮灰色，清晰可读
   .tabs-bar__item {
-    color: #94a3b8;
+    color: #b3b3b3;
 
     &.is-active {
       color: var(--el-color-primary);

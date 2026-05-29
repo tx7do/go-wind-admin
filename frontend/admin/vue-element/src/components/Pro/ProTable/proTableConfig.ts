@@ -4,10 +4,10 @@ import { DEFAULT_PAGE_SIZE, DEFAULT_PAGE_SIZES } from "@/components/Pro";
 export const proTableGlobalConfig: ProTableConfig = {
   engine: "vxe",
   rowKey: "id",
-  // 行高由全局 _vxe-table.scss 通过 padding 控制（表项 ~32px、表头 ~32px）
+  // 行高由全局 _vxe-table.scss 通过 padding 控制（表项 ~30px、表头 ~30px）
   // 此处保留字段用于 el-table 引擎兼容
-  rowHeight: 32,
-  headerHeight: 32,
+  rowHeight: 30,
+  headerHeight: 30,
   border: "none",
   stripe: true,
   borderRadius: 6,
@@ -18,7 +18,7 @@ export const proTableGlobalConfig: ProTableConfig = {
     show: true,
     pageSizes: DEFAULT_PAGE_SIZES,
     pageSize: DEFAULT_PAGE_SIZE,
-    layout: "total, sizes, prev, pager, next, jumper",
+    layout: "total, sizes -> prev, pager, next",
     background: true,
   },
 

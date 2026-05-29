@@ -63,7 +63,7 @@ html.sidebar-color-blue {
 // 暗黑主题
 html.dark {
   --menu-background: #0D0F14;  // 与 Logo 区保持一致
-  --menu-text: #fff;
+  --menu-text: #d9d9d9;          // 未选中菜单项（亮灰色，清晰可读）
   --menu-active-text: var(--el-menu-active-color);
   --menu-hover: #14171C;  // hover 态背景（深色主题）
   --sidebar-logo-background: #0D0F14;  // Logo 区背景（和侧边栏完全一致）

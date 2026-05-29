@@ -2,7 +2,7 @@
   <div class="logo">
     <transition enter-active-class="animate__animated animate__fadeInLeft">
       <router-link :key="+collapse" class="wh-full flex-center" to="/">
-        <img :src="logo" class="w20px h20px" />
+        <img :src="logo" class="logo-icon" />
         <span v-if="!collapse" class="title">
           {{ preferences.app.name }}
         </span>
@@ -26,16 +26,25 @@ defineProps({
 <style lang="scss" scoped>
 .logo {
   width: 100%;
-  height: $navbar-height;
+  height: 64px;
   background-color: $sidebar-logo-background;
-  border-bottom: 1px solid var(--sidebar-logo-border-color); // 分割线
+  border-bottom: 1px solid var(--sidebar-logo-border-color);
+
+  .logo-icon {
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+  }
 
   .title {
     flex-shrink: 0;
-    margin-left: 10px;
-    font-size: 14px;
-    font-weight: bold;
+    margin-left: 12px;
+    padding-right: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
     color: $sidebar-logo-text-color;
+    white-space: nowrap;
   }
 }
 </style>

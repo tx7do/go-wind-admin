@@ -42,7 +42,7 @@ const props = withDefaults(defineProps<ProPaginationProps>(), {
   disabled: false,
   showTotal: true,
   showSizes: true,
-  showJump: true,
+  showJump: false,
   pagerCount: 7,
   small: false,
   hideOnSinglePage: false,
@@ -53,7 +53,7 @@ const emit = defineEmits<PaginationEmits>();
 const currentPage = ref(props.currentPage);
 const pageSize = ref(props.pageSize);
 
-// 自动计算 layout
+// 自动计算 layout：左侧 total + sizes，右侧翻页器
 const computedLayout = computed(() => {
   if (props.layout) return props.layout;
   const left: string[] = ["total"];
@@ -127,16 +127,19 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0 4px;
+  padding: 8px 0 0;
   border-top: 1px solid var(--el-border-color-lighter);
   background-color: var(--el-bg-color);
+  margin-top: auto; // 贴底 ProPage 容器
 
   &--hidden {
     display: none;
   }
 
   :deep(.el-pagination) {
-    // 移除默认 margin-right，由 flex 布局控制
+    width: 100%;
+
+    // 左侧区域（total + sizes）
     .el-pagination__total,
     .el-pagination__sizes {
       margin-right: 0;

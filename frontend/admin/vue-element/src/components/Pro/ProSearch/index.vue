@@ -469,7 +469,8 @@ defineExpose({
         }
       }
 
-      // 重置按钮
+      // 重置按钮：CSS 变量覆盖已在全局 _dark-mode.scss 中处理
+      // 这里仅保留直接属性兜底，防止极端情况下变量失效
       // stylelint-disable-next-line selector-max-universal
       &:not(.el-button--primary):not(.el-button--danger):not(.el-button--success):not(.el-button--warning):not(.el-button--info) {
         background-color: rgba(255, 255, 255, 0.06) !important;

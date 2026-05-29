@@ -227,7 +227,7 @@ html.dark {
   .el-menu-item:hover,
   .el-sub-menu__title:hover {
     background-color: rgba(255, 255, 255, 0.05) !important;
-    color: #cbd5e1 !important;
+    color: #ffffff !important;
   }
 }
 

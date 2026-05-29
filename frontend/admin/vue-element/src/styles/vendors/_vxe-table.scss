@@ -94,13 +94,13 @@
   --vxe-select-panel-background-color: var(--el-bg-color);
 
   /* ========== 行高：极简紧凑模式 ==========
-   * 表头高度：~32px（2 + 28px文字line-height + 2）
-   * 表项高度：~32px（2 + 28px文字line-height + 2）
+   * 表头高度：~30px（1 + 28px文字line-height + 1）
+   * 表项高度：~30px（1 + 28px文字line-height + 1）
    */
-  --vxe-ui-table-cell-padding-top: 2px;
-  --vxe-ui-table-cell-padding-bottom: 2px;
-  --vxe-ui-table-header-cell-padding-top: 2px;
-  --vxe-ui-table-header-cell-padding-bottom: 2px;
+  --vxe-ui-table-cell-padding-top: 1px;
+  --vxe-ui-table-cell-padding-bottom: 1px;
+  --vxe-ui-table-header-cell-padding-top: 1px;
+  --vxe-ui-table-header-cell-padding-bottom: 1px;
 }
 
 // ============================================
@@ -195,10 +195,10 @@
   --vxe-ui-pager-background-color: #14161a;
 
   // 行高：极简紧凑（显式赋值，禁止自引用）
-  --vxe-ui-table-cell-padding-top: 2px;
-  --vxe-ui-table-cell-padding-bottom: 2px;
-  --vxe-ui-table-header-cell-padding-top: 2px;
-  --vxe-ui-table-header-cell-padding-bottom: 2px;
+  --vxe-ui-table-cell-padding-top: 1px;
+  --vxe-ui-table-cell-padding-bottom: 1px;
+  --vxe-ui-table-header-cell-padding-top: 1px;
+  --vxe-ui-table-header-cell-padding-bottom: 1px;
 
   // vxe-table v3 兼容变量
   --vxe-table-border-color: #2a2f36;
@@ -220,16 +220,16 @@
 // 使用 vxe-table v4 属性选择器 + !important 兜底，确保不被内部样式覆盖
 // ============================================
 
-// 表项行高：~32px（2 + 28 + 2）
+// 表项行高：~30px（1 + 28 + 1）
 .vxe-table .vxe-body--column {
-  padding-top: 2px !important;
-  padding-bottom: 2px !important;
+  padding-top: 1px !important;
+  padding-bottom: 1px !important;
 }
 
-// 表头行高：~32px（2 + 28 + 2）
+// 表头行高：~30px（1 + 28 + 1）
 .vxe-table .vxe-header--column {
-  padding-top: 2px !important;
-  padding-bottom: 2px !important;
+  padding-top: 1px !important;
+  padding-bottom: 1px !important;
 }
 
 // 表头字体加粗

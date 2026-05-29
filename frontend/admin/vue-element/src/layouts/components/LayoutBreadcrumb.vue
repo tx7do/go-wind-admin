@@ -119,6 +119,7 @@ onBeforeMount(() => {
   font-size: 14px;
 
   // 覆盖 element-plus 的样式
+  // 亮色模式：非当前页 #909399（中灰），当前页 #303133（深黑）+ 加粗
   :deep(.el-breadcrumb__inner),
   :deep(.el-breadcrumb__inner a) {
     display: inline-flex;
@@ -126,8 +127,14 @@ onBeforeMount(() => {
     gap: 4px;
     font-weight: 400 !important;
     font-size: 14px !important;
-    color: var(--el-text-color-regular) !important;
+    color: #909399 !important;
     transition: color 0.2s ease;
+  }
+
+  // 当前页（最后一项）：深黑色 + 加粗，强化"当前位置"视觉焦点
+  :deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
+    color: #303133 !important;
+    font-weight: 500 !important;
   }
 
   // 可点击链接 hover
@@ -135,14 +142,9 @@ onBeforeMount(() => {
     color: var(--el-color-primary) !important;
   }
 
-  // 分隔符颜色
+  // 分隔符颜色：比非当前页文字略浅
   :deep(.el-breadcrumb__separator) {
-    color: var(--el-text-color-placeholder);
-  }
-
-  // 最后一项（当前页）文字色
-  &__last {
-    color: var(--el-text-color-secondary);
+    color: #c0c4cc;
   }
 
   // background 风格
@@ -177,6 +179,44 @@ onBeforeMount(() => {
     height: 16px;
     flex-shrink: 0;
     color: currentColor;
+  }
+
+  // ======== 暗色模式适配 ========
+  :global(html.dark) {
+    // 非当前页文字：亮灰色（#d9d9d9），清晰可读但不抢当前页焦点
+    :deep(.el-breadcrumb__inner),
+    :deep(.el-breadcrumb__inner a) {
+      color: #d9d9d9 !important;
+    }
+  
+    // 当前页（最后一项）：纯白 + 加粗，强化"当前位置"视觉焦点
+    :deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
+      color: #ffffff !important;
+      font-weight: 500 !important;
+    }
+  
+    // 分隔符：较暗灰色，作为视觉分割不抢文字焦点
+    :deep(.el-breadcrumb__separator) {
+      color: #595959 !important;
+    }
+
+    // 可点击链接 hover
+    :deep(.el-breadcrumb__inner a:hover) {
+      color: var(--el-color-primary) !important;
+    }
+
+    // background 风格暗色模式
+    &.breadcrumb--background {
+      :deep(.el-breadcrumb__item) {
+        &:not(:last-child) .el-breadcrumb__inner {
+          background-color: rgba(255, 255, 255, 0.06);
+        }
+
+        &:not(:last-child) .el-breadcrumb__inner:hover {
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+    }
   }
 }
 </style>
