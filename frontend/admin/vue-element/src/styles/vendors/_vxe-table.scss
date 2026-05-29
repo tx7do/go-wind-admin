@@ -205,6 +205,8 @@
   --vxe-ui-table-header-font-color: #e5eaf3;
   // 表项：深色背景（普通行）
   --vxe-ui-table-body-background-color: #14161a;
+  // body wrapper 背景必须与表项背景一致
+  --vxe-ui-layout-background-color: #14161a;
   // 斑马纹行：稍亮的灰色，形成对比
   --vxe-ui-table-row-striped-background-color: #1e2127;
   --vxe-ui-table-row-hover-background-color: #252830;
@@ -243,7 +245,7 @@
 // vxe-table 使用 background-image: linear-gradient() 绘制行间水平线
 // ============================================
 
-// 浅色模式：淡灰色分割线
+// 浅色模式：淡灰色分割线（background-image 方式）
 [data-vxe-ui-theme="light"] .vxe-table--render-default {
   &.border--outer {
     .vxe-body--column {
@@ -258,17 +260,23 @@
   }
 }
 
-// 暗色模式：行分割线（普通行和斑马纹行都需要）
+// 暗色模式：行分割线（使用 box-shadow，不受 background 干扰）
+// box-shadow: inset 在单元格底部画 1px 线，不受 background-color/background-image 层叠影响
+// 对所有行（普通行 + 斑马纹行 + hover行）都生效
 [data-vxe-ui-theme="dark"] .vxe-table--render-default {
   &.border--outer {
     .vxe-body--column {
-      background-image: linear-gradient(
-        #2a2f36,
-        #2a2f36
-      ) !important;
-      background-repeat: no-repeat !important;
-      background-size: 100% 1px !important;
-      background-position: bottom !important;
+      box-shadow: inset 0 -1px 0 0 #3a3f46;
+    }
+  }
+}
+
+// 暗色模式：非斑马纹行设置显式背景色
+// 确保 body wrapper 背景不穿透，让分割线更清晰
+[data-vxe-ui-theme="dark"] .vxe-table--render-default {
+  .vxe-body--row:not(.row--stripe):not(.row--hover):not(.row--current) {
+    & > .vxe-body--column {
+      background-color: var(--vxe-ui-table-body-background-color);
     }
   }
 }
