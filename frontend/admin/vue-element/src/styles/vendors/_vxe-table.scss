@@ -240,6 +240,30 @@
 }
 
 // ============================================
+// 去除数据行内部线
+// vxe-table 的内部线不是用 border 画的，而是用 background-image: linear-gradient()
+// 同时将 body 区域的边框颜色变量设为透明，确保所有来源的线都不可见
+// ============================================
+
+// 方案1: 覆盖 background-image（vxe-table 用此画线）
+.vxe-table--render-default {
+  &.border--outer,
+  &.border--inner,
+  &.border--default,
+  &.border--full {
+    .vxe-body--column {
+      background-image: none !important;
+    }
+  }
+}
+
+// 方案2: 将 body 区域的 --vxe-ui-table-border-color 设为透明
+// 这样无论用什么方式画的线（border、background-image、outline 等）都会不可见
+.vxe-table--render-default .vxe-table--body-wrapper {
+  --vxe-ui-table-border-color: transparent;
+}
+
+// ============================================
 // 行高强制统一（明暗双模式）
 // 使用 vxe-table v4 属性选择器 + !important 兜底，确保不被内部样式覆盖
 // ============================================

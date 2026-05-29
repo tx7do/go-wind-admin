@@ -1,5 +1,5 @@
 <template>
-  <div class="pro-table" :style="tableStyle">
+  <div ref="tableWrapperRef" class="pro-table" :style="tableStyle">
     <vxe-table
       v-if="engine === 'vxe'"
       :id="tableId"
@@ -8,6 +8,7 @@
       :row-config="{ keyField: rowKey, isHover: true, isCurrent: true }"
       :column-config="{ resizable: true }"
       :custom-config="{ storage: !!tableId, checkMethod }"
+      :height="vxeTableHeight"
       :data="data"
       class="w-full"
       v-bind="tableAttrs"
@@ -146,7 +147,7 @@
 </template>
 
 <script setup lang="ts" generic="T extends Record<string, any>">
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
 import { ElTable, ElTableColumn } from "element-plus";
 import ProPagination from "../ProPagination/index.vue";
 import ProTableCellContent from "./ProTableCellContent.vue";
@@ -172,9 +173,47 @@ const emit = defineEmits<{
 }>();
 
 const tableRef = ref<any>(null);
+const tableWrapperRef = ref<HTMLElement | null>(null);
+const vxeTableHeight = ref<number | undefined>(undefined);
 const engine = props.engine;
 const tableId = props.tableId;
 const rowKey = props.rowKey;
+
+// ResizeObserver: 动态计算 vxe-table 的像素高度
+let resizeObserver: ResizeObserver | null = null;
+
+function updateTableHeight() {
+  if (!tableWrapperRef.value) return;
+  const wrapperHeight = tableWrapperRef.value.clientHeight;
+  if (wrapperHeight <= 0) return;
+  // 减去分页器高度（如果存在）
+  const pagerEl = tableWrapperRef.value.querySelector(".pro-pagination") as HTMLElement | null;
+  const pagerHeight = pagerEl ? pagerEl.offsetHeight + 12 : 0; // 12 = margin/gap
+  vxeTableHeight.value = wrapperHeight - pagerHeight;
+}
+
+onMounted(() => {
+  nextTick(() => {
+    if (tableWrapperRef.value) {
+      resizeObserver = new ResizeObserver(() => {
+        updateTableHeight();
+      });
+      resizeObserver.observe(tableWrapperRef.value);
+      updateTableHeight();
+    }
+  });
+});
+
+// 分页器显隐变化时重新计算
+watch(
+  () => [props.pagination, props.total],
+  () => nextTick(updateTableHeight)
+);
+
+onUnmounted(() => {
+  resizeObserver?.disconnect();
+  resizeObserver = null;
+});
 
 const tableConfig = computed(() => mergeTableConfig(proTableGlobalConfig, props.config));
 const paginationConfig = computed(() => tableConfig.value.pagination!);
@@ -264,16 +303,15 @@ defineExpose({
 
 <style lang="scss" scoped>
 .pro-table {
-  flex: 1;
-  min-height: 0;
-  overflow: hidden;
   display: flex;
   flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 :deep(.vxe-table) {
   border-radius: var(--pro-table-radius);
-  overflow: auto; // 允许表格内容滚动
   font-size: var(--pro-table-font-size);
 
   // 暗色模式去掉列分割线（border:outer 仍会在列间渲染细线）
@@ -295,7 +333,7 @@ defineExpose({
   .vxe-body--column .vxe-cell {
     color: var(--el-text-color-regular);
   }
-  
+
   // 操作列按钮容器居中（针对 cellType: "tool"）
   .vxe-body--column .flex.items-center.justify-center {
     justify-content: center !important;

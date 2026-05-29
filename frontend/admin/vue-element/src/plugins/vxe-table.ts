@@ -15,7 +15,7 @@ export function configureVxeTable() {
       showOverflow: "title",
       showHeaderOverflow: "title",
       autoResize: true,
-      border: "inner",
+      border: "outer",
       emptyText: "暂无数据",
       rowConfig: {
         isHover: true,

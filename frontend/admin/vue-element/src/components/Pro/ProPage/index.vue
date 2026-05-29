@@ -35,6 +35,7 @@
       <!-- 表格 -->
       <ProTable
         ref="tableRef"
+        class="flex-1 min-h-0"
         :engine="config.engine"
         :table-id="tableId"
         :columns="config.table.columns"
