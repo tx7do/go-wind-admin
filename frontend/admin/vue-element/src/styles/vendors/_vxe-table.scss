@@ -159,41 +159,18 @@
 }
 
 // ============================================
-// 列分割线策略：表头保留列线，表项去除列线
-// 表头：需要列分割线帮助区分列标题
-// 表项：只保留行间水平线，不需要列间竖线
+// 分割线策略（border--none 模式）
+// vxe-table 不画任何内部线
+// 表头小竖线和表体行间横线由 ProTable scoped :deep() 样式绘制
+// 全局只处理：去除 border-right、暗色模式配色、行高、斑马纹
 // ============================================
 
-// 1. 表项去除列线（border-right）
+// 所有列去掉 border-right
 .vxe-table {
+  .vxe-header--column,
   .vxe-body--column,
   .vxe-footer--column {
     border-right: none !important;
-  }
-}
-
-// 2. 覆盖 border--default/inner/full 的 background-image（表项列线）
-.vxe-table--render-default {
-  &.border--default,
-  &.border--inner,
-  &.border--full {
-    .vxe-body--column,
-    .vxe-footer--column {
-      background-image: none !important;
-    }
-  }
-}
-
-// 3. 隐藏表项的 resizable handle 竖线伪元素
-// 表头的保留（帮助区分列标题）
-.vxe-table .vxe-body--column .vxe-cell--col-resizable::before {
-  display: none !important;
-}
-
-// 浅色模式保留整体边框
-.vxe-table {
-  &.vxe-table--border-line {
-    border: 1px solid var(--el-border-color);
   }
 }
 
@@ -236,50 +213,8 @@
 }
 
 // ============================================
-// 表头下边框由 vxe-table 自身 border--outer 机制提供
-// 不再手动添加，避免与内置线重叠形成"双下巴"
+// 表头下边框由 ProTable scoped :deep() 中通过 border-bottom 绘制
 // ============================================
-
-// ============================================
-// 数据行水平分割线（更淡的颜色）
-// vxe-table 使用 background-image: linear-gradient() 绘制行间水平线
-// ============================================
-
-// 浅色模式：淡灰色分割线（background-image 方式）
-[data-vxe-ui-theme="light"] .vxe-table--render-default {
-  &.border--outer {
-    .vxe-body--column {
-      background-image: linear-gradient(
-        #ebeef5,
-        #ebeef5
-      ) !important;
-      background-repeat: no-repeat !important;
-      background-size: 100% 1px !important;
-      background-position: bottom !important;
-    }
-  }
-}
-
-// 暗色模式：行分割线（使用 box-shadow，不受 background 干扰）
-// box-shadow: inset 在单元格底部画 1px 线，不受 background-color/background-image 层叠影响
-// 对所有行（普通行 + 斑马纹行 + hover行）都生效
-[data-vxe-ui-theme="dark"] .vxe-table--render-default {
-  &.border--outer {
-    .vxe-body--column {
-      box-shadow: inset 0 -1px 0 0 #3a3f46;
-    }
-  }
-}
-
-// 暗色模式：非斑马纹行设置显式背景色
-// 确保 body wrapper 背景不穿透，让分割线更清晰
-[data-vxe-ui-theme="dark"] .vxe-table--render-default {
-  .vxe-body--row:not(.row--stripe):not(.row--hover):not(.row--current) {
-    & > .vxe-body--column {
-      background-color: var(--vxe-ui-table-body-background-color);
-    }
-  }
-}
 
 // ============================================
 // 行高强制统一（明暗双模式）

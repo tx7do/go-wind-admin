@@ -314,15 +314,50 @@ defineExpose({
   border-radius: var(--pro-table-radius);
   font-size: var(--pro-table-font-size);
 
-  // 去掉表项列分割线（表头保留列线）
+  // ======== 列边框：全部去除 border-right ========
+  .vxe-header--column,
   .vxe-body--column,
   .vxe-footer--column {
     border-right: none !important;
   }
 
-  .vxe-table--header-wrapper .vxe-header--column .vxe-cell {
+  // ======== 表头列间小竖线 ========
+  // 使用 .vxe-cell 的 ::after 伪元素画 1px × 50% 高度的小竖线
+  // 不依赖 vxe-table 的 resizable handle（border--none 模式下可能不渲染）
+  .vxe-header--column .vxe-cell {
     display: flex;
     align-items: center;
+    color: var(--el-text-color-primary);
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 25%;
+      width: 1px;
+      height: 50%;
+      background-color: var(--el-border-color-lighter);
+    }
+  }
+
+  // 最后一列不显示竖线
+  .vxe-header--column:last-child .vxe-cell::after {
+    display: none;
+  }
+
+  // ======== 表头底部横线（分隔表头与表体） ========
+  .vxe-header--column {
+    border-bottom: 1px solid var(--el-border-color-lighter) !important;
+  }
+
+  // ======== 表体行间横线 ========
+  .vxe-body--column {
+    border-bottom: 1px solid var(--el-border-color-extra-light) !important;
+  }
+
+  // ======== 表头单元格文本色 ========
+  .vxe-table--header-wrapper .vxe-header--column .vxe-cell {
     color: var(--el-text-color-primary);
   }
 
@@ -344,8 +379,9 @@ defineExpose({
     justify-content: center;
   }
 
-  &.border--outer .vxe-table--border-line {
-    border-color: var(--el-border-color-lighter);
+  // border--none 隐藏外边框线
+  &.border--none .vxe-table--border-line {
+    display: none;
   }
 
   .vxe-table--empty-content {

@@ -8,7 +8,7 @@ export const proTableGlobalConfig: ProTableConfig = {
   // 此处保留字段用于 el-table 引擎兼容
   rowHeight: 44,
   headerHeight: 48,
-  border: "outer",
+  border: "none",
   stripe: true,
   borderRadius: 6,
   fontSize: 13,
