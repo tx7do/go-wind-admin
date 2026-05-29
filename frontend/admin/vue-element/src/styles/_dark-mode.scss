@@ -382,15 +382,25 @@ html.dark {
   // Pro 搜索区域按钮（ProSearch）
   // ============================================
   .pro-search__actions .el-button {
-    // 重置/default 按钮
+    height: 32px !important;
+    border-radius: 6px !important;
+    padding: 0 14px !important;
+    font-size: 13px !important;
+    font-weight: 500 !important;
+
+    // 重置/default 按钮 — 使用亮色模式相同的设计语言，颜色适配暗色背景
     // stylelint-disable-next-line selector-max-universal
     &:not(.el-button--primary):not(.el-button--danger):not(.el-button--success):not(.el-button--warning):not(.el-button--info) {
-      --el-button-bg-color: rgba(255, 255, 255, 0.06);
-      --el-button-border-color: rgba(255, 255, 255, 0.12);
-      --el-button-text-color: var(--el-text-color-regular);
-      --el-button-hover-bg-color: rgba(255, 255, 255, 0.1);
-      --el-button-hover-border-color: rgba(255, 255, 255, 0.2);
-      --el-button-hover-text-color: var(--el-text-color-primary);
+      background-color: rgba(255, 255, 255, 0.06) !important;
+      border: 1px solid rgba(255, 255, 255, 0.15) !important;
+      color: var(--el-text-color-regular) !important;
+
+      &:hover,
+      &:focus {
+        background-color: rgba(255, 255, 255, 0.1) !important;
+        border-color: rgba(255, 255, 255, 0.25) !important;
+        color: var(--el-text-color-primary) !important;
+      }
     }
   }
 

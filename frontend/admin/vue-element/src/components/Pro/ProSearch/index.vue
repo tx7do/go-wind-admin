@@ -453,38 +453,6 @@ defineExpose({
 }
 
 // ======== 暗色模式适配 ========
-:global(html.dark) {
-  :deep(.pro-search__actions) {
-    .el-button {
-      // 搜索按钮（暗色模式：柔和风格）
-      &.el-button--primary {
-        background-color: var(--el-color-primary-light-9);
-        border-color: var(--el-color-primary-light-5);
-        color: var(--el-color-primary-light-3);
-
-        &:hover,
-        &:focus {
-          background-color: var(--el-color-primary-light-8);
-          border-color: var(--el-color-primary-light-3);
-        }
-      }
-
-      // 重置按钮：CSS 变量覆盖已在全局 _dark-mode.scss 中处理
-      // 这里仅保留直接属性兜底，防止极端情况下变量失效
-      // stylelint-disable-next-line selector-max-universal
-      &:not(.el-button--primary):not(.el-button--danger):not(.el-button--success):not(.el-button--warning):not(.el-button--info) {
-        background-color: rgba(255, 255, 255, 0.06) !important;
-        border-color: rgba(255, 255, 255, 0.12) !important;
-        color: var(--el-text-color-regular) !important;
-
-        &:hover,
-        &:focus {
-          background-color: rgba(255, 255, 255, 0.1) !important;
-          border-color: rgba(255, 255, 255, 0.2) !important;
-          color: var(--el-text-color-primary) !important;
-        }
-      }
-    }
-  }
-}
+// 暗色模式按钮样式已在全局 _dark-mode.scss 中统一处理
+// 这里不需要额外的 scoped 覆盖，避免样式冲突
 </style>

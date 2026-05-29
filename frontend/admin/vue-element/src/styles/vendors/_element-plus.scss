@@ -45,7 +45,7 @@
   // 表格更清爽
   $table: (
     "header-font-color": #1D2129,
-    "header-bg-color": #F7F8FA,
+    "header-bg-color": #F0F2F5,
     "row-hover-bg-color": #F2F3F5,
     "border-color": #E5E6EB,
   ),
@@ -67,7 +67,7 @@ $border: 1px solid var(--el-border-color-light);
 :root {
   --el-table-row-hover-bg-color: #f5f8ff;
   --el-table-header-text-color: #1d2129;
-  --el-table-header-bg-color: #f7f8fa;
+  --el-table-header-bg-color: #f0f2f5;
   --el-table-border-color: #e5e6eb;
 
   /* ---------- GoWind 全局组件变量 ---------- */
@@ -165,12 +165,16 @@ html.dark {
   border-radius: 8px;
   overflow: hidden;
 
-  // 表头紧凑
+  // 表头紧凑 + 视觉分隔增强
   .el-table__header-wrapper th.el-table__cell {
     font-weight: 600;
     font-size: 13px;
     padding-top: 3px;
     padding-bottom: 3px;
+    // 加深表头背景，和数据区形成对比
+    background-color: #F0F2F5 !important;
+    // 底部加一条深灰色实线，明确切分标题和数据
+    border-bottom: 1px solid #D9DDE3 !important;
   }
 
   // 内容区紧凑

@@ -18,7 +18,7 @@ export const proTableGlobalConfig: ProTableConfig = {
     show: true,
     pageSizes: DEFAULT_PAGE_SIZES,
     pageSize: DEFAULT_PAGE_SIZE,
-    layout: "total, sizes -> prev, pager, next",
+    layout: "total, sizes, ->, prev, pager, next",
     background: true,
   },
 

@@ -131,10 +131,10 @@ onBeforeMount(() => {
     transition: color 0.2s ease;
   }
 
-  // 当前页（最后一项）：深黑色 + 加粗，强化"当前位置"视觉焦点
+  // 当前页（最后一项）：接近黑色 + 更粗，强化“当前位置”视觉焦点
   :deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
-    color: #303133 !important;
-    font-weight: 500 !important;
+    color: #1d2129 !important;
+    font-weight: 600 !important;
   }
 
   // 可点击链接 hover
@@ -189,10 +189,10 @@ onBeforeMount(() => {
       color: #d9d9d9 !important;
     }
   
-    // 当前页（最后一项）：纯白 + 加粗，强化"当前位置"视觉焦点
+    // 当前页（最后一项）：纯白 + 更粗，强化“当前位置”视觉焦点
     :deep(.el-breadcrumb__item:last-child .el-breadcrumb__inner) {
       color: #ffffff !important;
-      font-weight: 500 !important;
+      font-weight: 600 !important;
     }
   
     // 分隔符：较暗灰色，作为视觉分割不抢文字焦点
