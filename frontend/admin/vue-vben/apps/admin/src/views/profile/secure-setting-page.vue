@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { Page } from '@vben/common-ui';
 
 import { List } from 'ant-design-vue';

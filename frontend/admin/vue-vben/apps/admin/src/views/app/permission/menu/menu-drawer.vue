@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import type { ChangeEvent } from 'ant-design-vue/es/_util/EventInterface';
 
 import { computed, reactive, ref } from 'vue';
@@ -13,15 +13,19 @@ import { notification } from 'ant-design-vue';
 import { useVbenForm } from '#/adapter/form';
 import {
   buildMenuTree,
+  fetchListMenus,
   isButton,
   isCatalog,
   isMenu,
   menuTypeList,
+  PaginationQuery,
   statusList,
-  useMenuStore,
-} from '#/stores';
+  useCreateMenu,
+  useUpdateMenu,
+} from '#/api';
 
-const menuStore = useMenuStore();
+const { mutateAsync: createMenu } = useCreateMenu();
+const { mutateAsync: updateMenu } = useUpdateMenu();
 
 addCollection(lucide);
 
@@ -93,10 +97,14 @@ const [BaseForm, baseFormApi] = useVbenForm({
         treeNodeFilterProp: 'label',
         api: async () => {
           const fieldValue = baseFormApi.form.values;
-          const result = await menuStore.listMenu(undefined, {
-            parentId: fieldValue.parentId,
-            status: 'ON',
-          });
+          const result = await fetchListMenus(
+            new PaginationQuery({
+              formValues: {
+                parentId: fieldValue.parentId,
+                status: 'ON',
+              },
+            }),
+          );
           return result.items;
         },
 
@@ -318,8 +326,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     try {
       await (data.value?.create
-        ? menuStore.createMenu(values)
-        : menuStore.updateMenu(data.value.row.id, values));
+        ? createMenu(values)
+        : updateMenu({ id: data.value.row.id, values }));
 
       notification.success({
         message: data.value?.create

@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
@@ -7,9 +7,10 @@ import { $t } from '@vben/locales';
 import { notification } from 'ant-design-vue';
 
 import { useVbenForm, z } from '#/adapter/form';
-import { enableBoolList, useDictStore } from '#/stores';
+import { enableBoolList, useCreateDictType, useUpdateDictType } from '#/api';
 
-const dictStore = useDictStore();
+const { mutateAsync: createDictType } = useCreateDictType();
+const { mutateAsync: updateDictType } = useUpdateDictType();
 
 const data = ref();
 
@@ -100,8 +101,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     try {
       await (data.value?.create
-        ? dictStore.createDictType(values)
-        : dictStore.updateDictType(data.value.row.id, values));
+        ? createDictType(values)
+        : updateDictType({ id: data.value.row.id, values }));
 
       notification.success({
         message: data.value?.create

@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { h } from 'vue';
@@ -9,21 +9,23 @@ import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
 import { notification } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type authenticationservicev1_LoginPolicy as LoginPolicy } from '#/generated/api/admin/service/v1';
-import { $t } from '#/locales';
+import { type authenticationservicev1_LoginPolicy as LoginPolicy } from '#/api';
 import {
+  fetchListLoginPolicies,
   loginPolicyMethodList,
   loginPolicyMethodToColor,
   loginPolicyMethodToName,
   loginPolicyTypeList,
   loginPolicyTypeToColor,
   loginPolicyTypeToName,
-  useLoginPolicyStore,
-} from '#/stores';
+  PaginationQuery,
+  useDeleteLoginPolicy,
+} from '#/api';
+import { $t } from '#/locales';
 
 import LoginPolicyDrawer from './login-policy-drawer.vue';
 
-const loginPolicyStore = useLoginPolicyStore();
+const { mutateAsync: deleteLoginPolicy } = useDeleteLoginPolicy();
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -83,12 +85,14 @@ const gridOptions: VxeGridProps<LoginPolicy> = {
       query: async ({ page }, formValues) => {
         // console.log('query:', filters, form, formValues);
 
-        return await loginPolicyStore.listLoginPolicy(
-          {
-            page: page.currentPage,
-            pageSize: page.pageSize,
-          },
-          formValues,
+        return await fetchListLoginPolicies(
+          new PaginationQuery({
+            paging: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+            },
+            formValues,
+          }),
         );
       },
     },
@@ -166,7 +170,7 @@ async function handleDelete(row: any) {
   console.log('删除', row);
 
   try {
-    await loginPolicyStore.deleteLoginPolicy(row.id);
+    await deleteLoginPolicy({ id: row.id });
 
     notification.success({
       message: $t('ui.notification.delete_success'),

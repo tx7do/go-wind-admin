@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Enum for tree actions
  */
 export enum TreeActionEnum {

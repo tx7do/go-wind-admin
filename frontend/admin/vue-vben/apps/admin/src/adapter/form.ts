@@ -1,4 +1,4 @@
-import type {
+﻿import type {
   VbenFormSchema as FormSchema,
   VbenFormProps,
 } from '@vben/common-ui';

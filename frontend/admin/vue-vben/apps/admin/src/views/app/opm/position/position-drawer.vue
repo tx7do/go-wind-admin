@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
@@ -8,14 +8,16 @@ import { notification } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import {
+  fetchListOrgUnits,
+  PaginationQuery,
   positionTypeList,
   statusList,
-  useOrgUnitStore,
-  usePositionStore,
-} from '#/stores';
+  useCreatePosition,
+  useUpdatePosition,
+} from '#/api';
 
-const positionStore = usePositionStore();
-const orgUnitStore = useOrgUnitStore();
+const { mutateAsync: createPosition } = useCreatePosition();
+const { mutateAsync: updatePosition } = useUpdatePosition();
 
 const data = ref();
 
@@ -87,10 +89,11 @@ const [BaseForm, baseFormApi] = useVbenForm({
         valueField: 'id',
         treeNodeFilterProp: 'label',
         api: async () => {
-          const result = await orgUnitStore.listOrgUnit(undefined, {
-            // parent_id: 0,
-            status: 'ON',
-          });
+          const result = await fetchListOrgUnits(
+            new PaginationQuery({
+              formValues: { status: 'ON' },
+            }),
+          );
           return result.items;
         },
       },
@@ -170,8 +173,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     try {
       await (data.value?.create
-        ? positionStore.createPosition(values)
-        : positionStore.updatePosition(data.value.row.id, values));
+        ? createPosition(values)
+        : updatePosition({ id: data.value.row.id, values }));
 
       notification.success({
         message: data.value?.create

@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
@@ -7,11 +7,11 @@ import { $t } from '@vben/locales';
 import { notification } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { useUserListStore } from '#/stores';
+import { useEditUserPassword } from '#/api';
 
 const data = ref();
 
-const userListStore = useUserListStore();
+const { mutateAsync: editUserPassword } = useEditUserPassword();
 
 const [BaseForm, baseFormApi] = useVbenForm({
   showDefaultActions: false,
@@ -75,10 +75,10 @@ const [Modal, modalApi] = useVbenModal({
     }
 
     try {
-      await userListStore.editUserPassword(
-        data.value?.userId,
-        values.new_password,
-      );
+      await editUserPassword({
+        userId: data.value?.userId,
+        newPassword: values.new_password,
+      });
 
       setLoading(false);
       modalApi.close();

@@ -1,13 +1,13 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { notification } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { useUserProfileStore } from '#/stores';
+import { getMe, useChangePassword } from '#/api';
 
-const userProfileStore = useUserProfileStore();
+const { mutateAsync: changePassword } = useChangePassword();
 
 const [BaseForm, baseFormApi] = useVbenForm({
   showDefaultActions: false,
@@ -75,10 +75,10 @@ async function handleSubmit() {
   }
 
   try {
-    await userProfileStore.changePassword(
-      values.oldPassword,
-      values.newPassword,
-    );
+    await changePassword({
+      oldPassword: values.oldPassword,
+      newPassword: values.newPassword,
+    });
 
     notification.success({
       message: $t('ui.notification.update_success'),
@@ -98,7 +98,7 @@ function setLoading(_loading: boolean) {}
  * 重新加载用户信息
  */
 async function reload() {
-  const data = await userProfileStore.getMe();
+  const data = await getMe();
   await baseFormApi.setValues(data || {});
 }
 

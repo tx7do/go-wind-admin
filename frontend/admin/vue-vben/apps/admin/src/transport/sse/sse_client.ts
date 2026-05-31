@@ -1,4 +1,4 @@
-import type { EventSourceMessage } from '@microsoft/fetch-event-source/lib/cjs/parse';
+﻿import type { EventSourceMessage } from '@microsoft/fetch-event-source/lib/cjs/parse';
 
 import type {
   SSEClientConfig,

@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import type { NotificationItem } from '@vben/layouts';
 
 import { computed, ref, watch } from 'vue';
@@ -18,17 +18,22 @@ import { dateUtil } from '@vben/utils';
 
 import { notification } from 'ant-design-vue';
 
-import { type internal_messageservicev1_InternalMessageRecipient as InternalMessageRecipient } from '#/generated/api/admin/service/v1';
+import {
+  fetchListUserInbox,
+  PaginationQuery,
+  useMarkNotificationAsRead,
+} from '#/api';
+import { type internal_messageservicev1_InternalMessageRecipient as InternalMessageRecipient } from '#/api';
 import { $t } from '#/locales';
 import { router } from '#/router';
-import { useAuthStore, useInternalMessageStore } from '#/stores';
+import { useAuthStore } from '#/stores';
 import { globalSSEClient } from '#/transport/sse';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
 const userStore = useUserStore();
 const authStore = useAuthStore();
 const accessStore = useAccessStore();
-const internalMessageStore = useInternalMessageStore();
+const { mutateAsync: markNotificationAsRead } = useMarkNotificationAsRead();
 
 const notifications = ref<NotificationItem[]>([]);
 
@@ -59,16 +64,17 @@ const avatar = computed(() => {
  * 重载用户收件箱列表
  */
 async function reloadMessages() {
-  const resp = await internalMessageStore.listUserInbox(
-    {
-      page: 1,
-      pageSize: 5,
-    },
-    {
-      recipient_user_id: userStore.userInfo?.id.toString(),
-    },
-    null,
-    ['-created_at'],
+  const resp = await fetchListUserInbox(
+    new PaginationQuery({
+      paging: {
+        page: 1,
+        pageSize: 5,
+      },
+      formValues: {
+        recipient_user_id: userStore.userInfo?.id.toString(),
+      },
+      orderBy: ['-created_at'],
+    }),
   );
 
   for (const item of resp.items ?? []) {
@@ -111,15 +117,16 @@ function handleNoticeClear() {
  * 标记为已读
  * @param item
  */
-function handleMarkAsRead(item: NotificationItem) {
+async function handleMarkAsRead(item: NotificationItem) {
   if (item.isRead) {
     return;
   }
 
   try {
-    internalMessageStore.markNotificationAsRead(userStore.userInfo?.id ?? 0, [
-      item.id,
-    ]);
+    await markNotificationAsRead({
+      userId: userStore.userInfo?.id ?? 0,
+      recipientIds: [item.id],
+    });
 
     notification.success({
       message: $t('ui.notification.update_success'),
@@ -140,7 +147,7 @@ function handleMarkAsRead(item: NotificationItem) {
 /**
  * 全部通知标识为已读
  */
-function handleMakeAll() {
+async function handleMakeAll() {
   const ids: number[] = [];
   for (const item of notifications.value) {
     if (!item.isRead) {
@@ -153,10 +160,10 @@ function handleMakeAll() {
   }
 
   try {
-    internalMessageStore.markNotificationAsRead(
-      userStore.userInfo?.id ?? 0,
-      ids,
-    );
+    await markNotificationAsRead({
+      userId: userStore.userInfo?.id ?? 0,
+      recipientIds: ids,
+    });
 
     notification.success({
       message: $t('ui.notification.update_success'),

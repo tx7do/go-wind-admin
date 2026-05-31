@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { AuthenticationQrCodeLogin } from '@vben/common-ui';
 import { LOGIN_PATH } from '@vben/constants';
 

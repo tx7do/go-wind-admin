@@ -1,4 +1,4 @@
-import type { AnyPromiseFunction } from '@vben/types';
+﻿import type { AnyPromiseFunction } from '@vben/types';
 
 export type OptionsItem = {
   [name: string]: any;

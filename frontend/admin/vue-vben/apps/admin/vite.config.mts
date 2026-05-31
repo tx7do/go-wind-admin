@@ -15,6 +15,18 @@ export default defineConfig(async () => {
           },
         },
       },
+      build: {
+        rollupOptions: {
+          external: (id: string) => {
+            // vue-query-devtools v6 引入 jiti，导致生产构建失败
+            // devtools 通过动态 import 加载，生产环境不需要打包
+            return (
+              id.includes('@tanstack/vue-query-devtools') ||
+              id.includes('jiti')
+            );
+          },
+        },
+      },
     },
   };
 });

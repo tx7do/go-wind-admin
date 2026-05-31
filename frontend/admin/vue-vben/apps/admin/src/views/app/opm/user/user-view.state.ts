@@ -1,4 +1,4 @@
-import { useUserStore } from '@vben/stores';
+﻿import { useUserStore } from '@vben/stores';
 
 import { defineStore } from 'pinia';
 
@@ -6,13 +6,15 @@ import {
   type identityservicev1_ListOrgUnitResponse as ListOrgUnitResponse,
   type identityservicev1_ListTenantResponse as ListTenantResponse,
   type identityservicev1_ListUserResponse as ListUserResponse,
-} from '#/generated/api/admin/service/v1';
-import { useOrgUnitStore, useTenantStore, useUserListStore } from '#/stores';
+} from '#/api';
+import {
+  fetchListOrgUnits,
+  fetchListTenants,
+  fetchListUsers,
+  PaginationQuery,
+} from '#/api';
 
 const userStore = useUserStore();
-const userListStore = useUserListStore();
-const orgUnitStore = useOrgUnitStore();
-const tenantStore = useTenantStore();
 
 interface UserViewState {
   loading: boolean; // 加载状态
@@ -45,10 +47,11 @@ export const useUserViewStore = defineStore('user-view', {
     async fetchTenantList(formValues?: any): Promise<ListTenantResponse> {
       this.loading = true;
       try {
-        this.tenantList = await tenantStore.listTenant(undefined, {
-          ...formValues,
-          status: 'ON',
-        });
+        this.tenantList = await fetchListTenants(
+          new PaginationQuery({
+            formValues: { ...formValues, status: 'ON' },
+          }),
+        );
         return this.tenantList;
       } catch (error) {
         console.error('获取租户列表失败:', error);
@@ -66,11 +69,15 @@ export const useUserViewStore = defineStore('user-view', {
     async fetchOrgUnitList(formValues?: any): Promise<ListOrgUnitResponse> {
       this.loading = true;
       try {
-        this.orgUnitList = await orgUnitStore.listOrgUnit(undefined, {
-          ...formValues,
-          tenant_id: this.currentTenantId ?? 0,
-          status: 'ON',
-        });
+        this.orgUnitList = await fetchListOrgUnits(
+          new PaginationQuery({
+            formValues: {
+              ...formValues,
+              tenant_id: this.currentTenantId ?? 0,
+              status: 'ON',
+            },
+          }),
+        );
       } catch (error) {
         console.error(`获取租户[${this.currentTenantId}]的组织失败:`, error);
         this.resetOrgUnitList();
@@ -91,16 +98,15 @@ export const useUserViewStore = defineStore('user-view', {
     ): Promise<ListUserResponse> {
       this.loading = true;
       try {
-        this.userList = await userListStore.listUser(
-          {
-            page: currentPage,
-            pageSize,
-          },
-          {
-            ...formValues,
-            tenant_id: this.currentTenantId ?? 0,
-            org_unit_id: this.currentOrgUnitId,
-          },
+        this.userList = await fetchListUsers(
+          new PaginationQuery({
+            paging: { page: currentPage, pageSize },
+            formValues: {
+              ...formValues,
+              tenant_id: this.currentTenantId ?? 0,
+              org_unit_id: this.currentOrgUnitId,
+            },
+          }),
         );
       } catch (error) {
         console.error(

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * SSE 事件类型（区分默认事件和自定义事件）
  */
 export type SSEEventName = 'error' | 'message' | 'open' | string; // 'message' 是默认事件，其他为自定义事件

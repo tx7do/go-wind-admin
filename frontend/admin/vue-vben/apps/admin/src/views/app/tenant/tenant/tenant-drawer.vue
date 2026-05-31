@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
@@ -11,12 +11,16 @@ import {
   tenantAuditStatusList,
   tenantStatusList,
   tenantTypeList,
-  useTenantStore,
-  useUserListStore,
-} from '#/stores';
+  useCreateTenantWithAdminUser,
+  useTenantExists,
+  useUpdateTenant,
+  useUserExists,
+} from '#/api';
 
-const tenantStore = useTenantStore();
-const userListStore = useUserListStore();
+const { mutateAsync: doCreateTenant } = useCreateTenantWithAdminUser();
+const { mutateAsync: doUpdateTenant } = useUpdateTenant();
+const { mutateAsync: tenantExists } = useTenantExists();
+const { mutateAsync: userExists } = useUserExists();
 
 const data = ref();
 
@@ -294,7 +298,7 @@ async function createTenantWithAdminUser(values: any) {
 
   // 检查租户编码是否存在
   try {
-    await tenantStore.tenantExists(values.code, values.name);
+    await tenantExists({ code: values.code, name: values.name });
   } catch {
     notification.error({
       message: $t('page.tenant.tenant_code_exists'),
@@ -305,7 +309,7 @@ async function createTenantWithAdminUser(values: any) {
 
   // 检查用户名是否存在
   try {
-    await userListStore.userExists(values.user.username);
+    await userExists({ username: values.user.username });
   } catch {
     notification.error({
       message: $t('page.tenant.notification.user_username_exists'),
@@ -315,7 +319,7 @@ async function createTenantWithAdminUser(values: any) {
   }
 
   try {
-    await tenantStore.createTenantWithAdminUser({
+    await doCreateTenant({
       tenant: {
         name: values.name,
         code: values.code,
@@ -346,7 +350,7 @@ async function updateTenant(values: any) {
   console.log('updateTenant', values);
 
   try {
-    await tenantStore.updateTenant(data.value.row.id, values);
+    await doUpdateTenant({ id: data.value.row.id, values });
 
     notification.success({
       message: $t('ui.notification.update_success'),

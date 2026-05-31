@@ -10,6 +10,7 @@ packages:
   - packages/business/*
   - apps/*
   - scripts/*
+
 catalog:
   '@ast-grep/napi': ^0.31.1
   '@changesets/changelog-github': ^0.5.0
@@ -34,11 +35,12 @@ catalog:
   '@stylistic/stylelint-plugin': ^3.1.1
   '@tailwindcss/nesting': 0.0.0-insiders.565cd3e
   '@tailwindcss/typography': ^0.5.15
-  '@tanstack/vue-query': ^5.62.7
+  '@tanstack/vue-query': 5.100.14
   '@tanstack/vue-store': ^0.6.0
   '@types/archiver': ^6.0.3
   '@types/eslint': ^9.6.1
   '@types/html-minifier-terser': ^7.0.2
+  '@types/json-bigint': ^1.0.4
   '@types/jsonwebtoken': ^9.0.7
   '@types/lodash.clonedeep': ^4.5.9
   '@types/lodash.get': ^4.4.9
@@ -59,11 +61,10 @@ catalog:
   '@vue/test-utils': ^2.4.6
   '@vueuse/core': ^12.0.0
   '@vueuse/integrations': ^12.0.0
-  '@types/json-bigint': ^1.0.4
   ant-design-vue: ^4.2.6
   archiver: ^7.0.1
   autoprefixer: ^10.4.20
-  axios: ^1.7.9
+  axios: 1.7.9
   axios-mock-adapter: ^2.1.0
   cac: ^6.7.14
   chalk: ^5.3.0
@@ -79,7 +80,7 @@ catalog:
   cz-git: ^1.11.0
   czg: ^1.11.0
   dayjs: ^1.11.13
-  defu: ^6.1.4
+  defu: 6.1.4
   depcheck: ^1.4.7
   dotenv: ^16.4.7
   echarts: ^5.5.1
@@ -109,6 +110,7 @@ catalog:
   html-minifier-terser: ^7.2.0
   husky: ^9.1.7
   is-ci: ^3.0.1
+  json-bigint: ^1.0.0
   jsonc-eslint-parser: ^2.4.0
   jsonwebtoken: ^9.0.2
   lint-staged: ^15.2.11
@@ -173,6 +175,7 @@ catalog:
   vue: ^3.5.13
   vue-eslint-parser: ^9.4.3
   vue-i18n: ^10.0.5
+  vue-json-viewer: ^3.0.4
   vue-router: ^4.5.0
   vue-tsc: ^2.1.10
   vxe-pc-ui: ^4.3.27
@@ -180,5 +183,3 @@ catalog:
   watermark-js-plus: ^1.5.7
   zod: ^3.24.1
   zod-defaults: ^0.1.3
-  vue-json-viewer: ^3.0.4
-  json-bigint: ^1.0.0

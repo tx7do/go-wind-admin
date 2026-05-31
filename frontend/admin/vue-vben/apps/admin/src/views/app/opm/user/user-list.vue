@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import type { VxeGridListeners, VxeGridProps } from '#/adapter/vxe-table';
 
 import { h, watch } from 'vue';
@@ -10,27 +10,26 @@ import { isEqual } from '@vben/utils';
 import { notification } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type identityservicev1_User as User } from '#/generated/api/admin/service/v1';
-import { $t } from '#/locales';
-import { router } from '#/router';
+import { type identityservicev1_User as User } from '#/api';
 import {
+  fetchListPositions,
+  fetchListRoles,
   genderToColor,
   genderToName,
-  usePositionStore,
-  useRoleStore,
+  PaginationQuery,
+  useDeleteUser,
   userStatusList,
   userStatusToColor,
   userStatusToName,
-  useUserListStore,
-} from '#/stores';
+} from '#/api';
+import { $t } from '#/locales';
+import { router } from '#/router';
 import { getRandomColor } from '#/utils/color';
 import { useUserViewStore } from '#/views/app/opm/user/user-view.state';
 
 import UserDrawer from './user-drawer.vue';
 
-const userListStore = useUserListStore();
-const roleStore = useRoleStore();
-const positionStore = usePositionStore();
+const { mutateAsync: deleteUser } = useDeleteUser();
 const userViewStore = useUserViewStore();
 
 const formOptions: VbenFormProps = {
@@ -98,11 +97,15 @@ const formOptions: VbenFormProps = {
           }));
         },
         api: async () => {
-          const result = await roleStore.listRole(undefined, {
-            status: 'ON',
-            type__not: 'TEMPLATE',
-            tenant_id: userViewStore.currentTenantId ?? 0,
-          });
+          const result = await fetchListRoles(
+            new PaginationQuery({
+              formValues: {
+                status: 'ON',
+                type__not: 'TEMPLATE',
+                tenant_id: userViewStore.currentTenantId ?? 0,
+              },
+            }),
+          );
           return result.items;
         },
       },
@@ -126,11 +129,15 @@ const formOptions: VbenFormProps = {
           }));
         },
         api: async () => {
-          const result = await positionStore.listPosition(undefined, {
-            status: 'ON',
-            org_unit_id: userViewStore.currentOrgUnitId,
-            tenant_id: userViewStore.currentTenantId ?? 0,
-          });
+          const result = await fetchListPositions(
+            new PaginationQuery({
+              formValues: {
+                status: 'ON',
+                org_unit_id: userViewStore.currentOrgUnitId,
+                tenant_id: userViewStore.currentTenantId ?? 0,
+              },
+            }),
+          );
           return result.items;
         },
       },
@@ -290,7 +297,7 @@ async function handleDelete(row: any) {
   console.log('删除', row);
 
   try {
-    await userListStore.deleteUser(row.id);
+    await deleteUser(row.id);
 
     notification.success({
       message: $t('ui.notification.delete_success'),

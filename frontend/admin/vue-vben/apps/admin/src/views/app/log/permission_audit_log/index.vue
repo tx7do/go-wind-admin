@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { Page, type VbenFormProps } from '@vben/common-ui';
@@ -6,18 +6,17 @@ import { Page, type VbenFormProps } from '@vben/common-ui';
 import dayjs from 'dayjs';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type auditservicev1_ApiAuditLog as ApiAuditLog } from '#/generated/api/admin/service/v1';
-import { $t } from '#/locales';
 import {
+  fetchListPermissionAuditLogs,
+  PaginationQuery,
   permissionAuditLogActionList,
   permissionAuditLogActionToColor,
   permissionAuditLogActionToName,
   successToColor,
   successToNameWithStatusCode,
-  usePermissionAuditLogStore,
-} from '#/stores';
-
-const permissionAuditLogStore = usePermissionAuditLogStore();
+} from '#/api';
+import { type auditservicev1_ApiAuditLog as ApiAuditLog } from '#/api';
+import { $t } from '#/locales';
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -150,21 +149,19 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
           console.log(startTime, endTime);
         }
 
-        return await permissionAuditLogStore.listPermissionAuditLog(
-          {
-            page: page.currentPage,
-            pageSize: page.pageSize,
-          },
-          {
-            username: formValues.username,
-            action: formValues.action,
-            path: formValues.path,
-            ipAddress: formValues.ipAddress,
-            created_at__gte: startTime,
-            created_at__lte: endTime,
-          },
-          null,
-          ['-created_at'],
+        return await fetchListPermissionAuditLogs(
+          new PaginationQuery({
+            paging: { page: page.currentPage, pageSize: page.pageSize },
+            formValues: {
+              username: formValues.username,
+              action: formValues.action,
+              path: formValues.path,
+              ipAddress: formValues.ipAddress,
+              created_at__gte: startTime,
+              created_at__lte: endTime,
+            },
+            orderBy: ['-created_at'],
+          }),
         );
       },
     },

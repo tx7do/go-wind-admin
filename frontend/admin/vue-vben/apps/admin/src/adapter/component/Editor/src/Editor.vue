@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { EditorEmits, EditorProps } from '../types';
 
 import { computed, defineAsyncComponent } from 'vue';

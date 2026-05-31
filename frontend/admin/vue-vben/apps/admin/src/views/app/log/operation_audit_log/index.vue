@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { Page, type VbenFormProps } from '@vben/common-ui';
@@ -6,19 +6,18 @@ import { Page, type VbenFormProps } from '@vben/common-ui';
 import dayjs from 'dayjs';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type auditservicev1_ApiAuditLog as ApiAuditLog } from '#/generated/api/admin/service/v1';
-import { $t } from '#/locales';
 import {
+  fetchListOperationAuditLogs,
   operationAuditLogActionList,
   operationAuditLogActionToColor,
   operationAuditLogActionToName,
+  PaginationQuery,
   successStatusList,
   successToColor,
   successToNameWithStatusCode,
-  useOperationAuditLogStore,
-} from '#/stores';
-
-const operationAuditLogStore = useOperationAuditLogStore();
+} from '#/api';
+import { type auditservicev1_ApiAuditLog as ApiAuditLog } from '#/api';
+import { $t } from '#/locales';
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -164,22 +163,20 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
           console.log(startTime, endTime);
         }
 
-        return await operationAuditLogStore.listOperationAuditLog(
-          {
-            page: page.currentPage,
-            pageSize: page.pageSize,
-          },
-          {
-            username: formValues.username,
-            resourceType: formValues.resourceType,
-            action: formValues.action,
-            ipAddress: formValues.ipAddress,
-            success: formValues.success,
-            created_at__gte: startTime,
-            created_at__lte: endTime,
-          },
-          null,
-          ['-created_at'],
+        return await fetchListOperationAuditLogs(
+          new PaginationQuery({
+            paging: { page: page.currentPage, pageSize: page.pageSize },
+            formValues: {
+              username: formValues.username,
+              resourceType: formValues.resourceType,
+              action: formValues.action,
+              ipAddress: formValues.ipAddress,
+              success: formValues.success,
+              created_at__gte: startTime,
+              created_at__lte: endTime,
+            },
+            orderBy: ['-created_at'],
+          }),
         );
       },
     },

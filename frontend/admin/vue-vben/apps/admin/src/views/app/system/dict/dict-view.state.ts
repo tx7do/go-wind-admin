@@ -1,4 +1,4 @@
-import { preferences } from '@vben/preferences';
+﻿import { preferences } from '@vben/preferences';
 
 import { defineStore } from 'pinia';
 
@@ -7,11 +7,13 @@ import {
   type dictservicev1_ListDictEntryResponse as ListDictEntryResponse,
   type dictservicev1_ListDictTypeResponse as ListDictTypeResponse,
   type dictservicev1_ListLanguageResponse as ListLanguageResponse,
-} from '#/generated/api/admin/service/v1';
-import { useDictStore, useLanguageStore } from '#/stores';
-
-const dictStore = useDictStore();
-const languageStore = useLanguageStore();
+} from '#/api';
+import {
+  fetchListDictEntries,
+  fetchListDictTypes,
+  fetchListLanguages,
+  PaginationQuery,
+} from '#/api';
 
 /**
  * 字典视图状态接口
@@ -51,14 +53,12 @@ export const useDictViewStore = defineStore('dict-view', {
     ) {
       this.loading = true;
       try {
-        this.languageList = await languageStore.listLanguage(
-          {
-            page: currentPage,
-            pageSize,
-          },
-          formValues,
-          undefined,
-          ['sortOrder'],
+        this.languageList = await fetchListLanguages(
+          new PaginationQuery({
+            paging: { page: currentPage, pageSize },
+            formValues,
+            orderBy: ['sortOrder'],
+          }),
         );
 
         await this.setCurrentTypeId(null);
@@ -84,12 +84,11 @@ export const useDictViewStore = defineStore('dict-view', {
     ) {
       this.loading = true;
       try {
-        this.typeList = await dictStore.listDictType(
-          {
-            page: currentPage,
-            pageSize,
-          },
-          formValues,
+        this.typeList = await fetchListDictTypes(
+          new PaginationQuery({
+            paging: { page: currentPage, pageSize },
+            formValues,
+          }),
         );
 
         await this.setCurrentTypeId(null);
@@ -125,15 +124,14 @@ export const useDictViewStore = defineStore('dict-view', {
 
       this.loading = true;
       try {
-        this.entryList = await dictStore.listDictEntry(
-          {
-            page: currentPage,
-            pageSize,
-          },
-          {
-            ...formValues,
-            type_id: typeId.toString(),
-          },
+        this.entryList = await fetchListDictEntries(
+          new PaginationQuery({
+            paging: { page: currentPage, pageSize },
+            formValues: {
+              ...formValues,
+              type_id: typeId.toString(),
+            },
+          }),
         );
       } catch (error) {
         console.error(`获取字典类型[${typeId}]的字典项列表失败:`, error);

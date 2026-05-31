@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
@@ -10,10 +10,12 @@ import { useVbenForm } from '#/adapter/form';
 import {
   loginPolicyMethodList,
   loginPolicyTypeList,
-  useLoginPolicyStore,
-} from '#/stores';
+  useCreateLoginPolicy,
+  useUpdateLoginPolicy,
+} from '#/api';
 
-const loginPolicyStore = useLoginPolicyStore();
+const { mutateAsync: createLoginPolicy } = useCreateLoginPolicy();
+const { mutateAsync: updateLoginPolicy } = useUpdateLoginPolicy();
 
 const data = ref();
 
@@ -121,8 +123,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     try {
       await (data.value?.create
-        ? loginPolicyStore.createLoginPolicy(values)
-        : loginPolicyStore.updateLoginPolicy(data.value.row.id, values));
+        ? createLoginPolicy(values)
+        : updateLoginPolicy({ id: data.value.row.id, values }));
 
       notification.success({
         message: data.value?.create

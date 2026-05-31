@@ -1,4 +1,4 @@
-import type { LocaleSetupOptions, SupportedLanguagesType } from '@vben/locales';
+﻿import type { LocaleSetupOptions, SupportedLanguagesType } from '@vben/locales';
 import type { Locale } from 'ant-design-vue/es/locale';
 
 import type { App } from 'vue';

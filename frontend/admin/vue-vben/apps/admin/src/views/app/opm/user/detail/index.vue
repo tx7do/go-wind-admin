@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { computed, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
@@ -8,8 +8,8 @@ import { $t } from '@vben/locales';
 
 import { notification } from 'ant-design-vue';
 
+import { useUpdateUser } from '#/api';
 import { router } from '#/router';
-import { useUserListStore } from '#/stores';
 import { TabEnum } from '#/views/app/opm/user/detail/types';
 
 import ApiLogPage from './api-log-page.vue';
@@ -26,7 +26,7 @@ const userId = computed(() => {
   return Number(id);
 });
 
-const userListStore = useUserListStore();
+const { mutateAsync: updateUser } = useUpdateUser();
 
 const [Modal, modalApi] = useVbenModal({
   // 连接抽离的组件
@@ -55,7 +55,7 @@ function goBack() {
  */
 async function handleBanAccount() {
   try {
-    await userListStore.updateUser(userId.value, { status: 'DISABLED' });
+    await updateUser({ id: userId.value, values: { status: 'DISABLED' } });
 
     notification.success({
       message: $t('ui.notification.update_status_success'),

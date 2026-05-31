@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
@@ -7,19 +7,20 @@ import { $t } from '@vben/locales';
 import { notification } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { type permissionservicev1_PermissionGroup as PermissionGroup } from '#/generated/api/admin/service/v1';
+import { type permissionservicev1_PermissionGroup as PermissionGroup } from '#/api';
 import {
   buildPermissionTree,
+  fetchListPermissionGroups,
+  fetchListPermissions,
+  PaginationQuery,
   statusList,
-  usePermissionGroupStore,
-  usePermissionStore,
-  useRoleStore,
-} from '#/stores';
+  useCreateRole,
+  useUpdateRole,
+} from '#/api';
 import { deepClone, filterNumbers } from '#/utils';
 
-const roleStore = useRoleStore();
-const permissionStore = usePermissionStore();
-const permissionGroupStore = usePermissionGroupStore();
+const { mutateAsync: createRole } = useCreateRole();
+const { mutateAsync: updateRole } = useUpdateRole();
 
 const data = ref();
 const groups = ref<PermissionGroup[]>([]);
@@ -107,17 +108,18 @@ const [BaseForm, baseFormApi] = useVbenForm({
         valueField: 'key',
         resultField: 'items',
         api: async () => {
-          const groupData = await permissionGroupStore.listPermissionGroup(
-            undefined,
-            {
-              status: 'ON',
-            },
+          const groupData = await fetchListPermissionGroups(
+            new PaginationQuery({
+              formValues: { status: 'ON' },
+            }),
           );
           groups.value = groupData.items ?? [];
 
-          return await permissionStore.listPermission(undefined, {
-            status: 'ON',
-          });
+          return await fetchListPermissions(
+            new PaginationQuery({
+              formValues: { status: 'ON' },
+            }),
+          );
         },
         afterFetch: (data: any) => {
           return buildPermissionTree(groups.value, data.items);
@@ -160,8 +162,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     try {
       await (data.value?.create
-        ? roleStore.createRole(finalValues)
-        : roleStore.updateRole(data.value.row.id, finalValues));
+        ? createRole(finalValues)
+        : updateRole({ id: data.value.row.id, values: finalValues }));
 
       notification.success({
         message: data.value?.create

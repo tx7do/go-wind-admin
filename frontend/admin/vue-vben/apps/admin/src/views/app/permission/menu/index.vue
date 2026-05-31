@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { h } from 'vue';
@@ -10,21 +10,23 @@ import { Icon } from '@iconify/vue';
 import { notification } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type permissionservicev1_Menu as Menu } from '#/generated/api/admin/service/v1';
-import { $t } from '#/locales';
 import {
+  fetchListMenus,
   menuTypeToColor,
   menuTypeToName,
+  PaginationQuery,
   statusList,
   statusToColor,
   statusToName,
-  useMenuStore,
-} from '#/stores';
+  useDeleteMenu,
+} from '#/api';
+import { type permissionservicev1_Menu as Menu } from '#/api';
+import { $t } from '#/locales';
 import { getRandomColor } from '#/utils/color';
 
 import MenuDrawer from './menu-drawer.vue';
 
-const menuStore = useMenuStore();
+const { mutateAsync: deleteMenu } = useDeleteMenu();
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -89,17 +91,15 @@ const gridOptions: VxeGridProps<Menu> = {
       query: async ({ page }, formValues) => {
         console.log('query:', formValues);
 
-        return await menuStore.listMenu(
-          {
-            page: page.currentPage,
-            pageSize: page.pageSize,
-          },
-          {
-            'meta.title': formValues.name,
-            status: formValues.status,
-          },
-          null,
-          ['id'],
+        return await fetchListMenus(
+          new PaginationQuery({
+            paging: { page: page.currentPage, pageSize: page.pageSize },
+            formValues: {
+              'meta.title': formValues.name,
+              status: formValues.status,
+            },
+            orderBy: ['id'],
+          }),
         );
       },
     },
@@ -186,7 +186,7 @@ async function handleDelete(row: any) {
   console.log('删除', row);
 
   try {
-    await menuStore.deleteMenu(row.id);
+    await deleteMenu({ id: row.id });
 
     notification.success({
       message: $t('ui.notification.delete_success'),
@@ -222,7 +222,7 @@ function normalizeAuthority(authority: unknown): string[] {
 
 <template>
   <Page auto-content-height>
-    <Grid :table-title="$t('menu.system.menu')">
+    <Grid :table-title="$t('menu.permission.menu')">
       <template #toolbar-tools>
         <a-button class="mr-2" type="primary" @click="handleCreate">
           {{ $t('page.menu.button.create') }}

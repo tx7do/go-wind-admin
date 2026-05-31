@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
@@ -9,11 +9,15 @@ import { notification } from 'ant-design-vue';
 import { useVbenForm } from '#/adapter/form';
 import {
   buildPermissionGroupTree,
+  fetchListPermissionGroups,
+  PaginationQuery,
   statusList,
-  usePermissionGroupStore,
-} from '#/stores';
+  useCreatePermissionGroup,
+  useUpdatePermissionGroup,
+} from '#/api';
 
-const permissionGroupStore = usePermissionGroupStore();
+const { mutateAsync: createPermissionGroup } = useCreatePermissionGroup();
+const { mutateAsync: updatePermissionGroup } = useUpdatePermissionGroup();
 
 const data = ref();
 
@@ -87,12 +91,13 @@ const [BaseForm, baseFormApi] = useVbenForm({
         },
         api: async () => {
           const fieldValue = baseFormApi.form.values;
-          const result = await permissionGroupStore.listPermissionGroup(
-            undefined,
-            {
-              parentId: fieldValue.parentId,
-              status: 'ON',
-            },
+          const result = await fetchListPermissionGroups(
+            new PaginationQuery({
+              formValues: {
+                parentId: fieldValue.parentId,
+                status: 'ON',
+              },
+            }),
           );
           return result.items;
         },
@@ -147,11 +152,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     try {
       await (data.value?.create
-        ? permissionGroupStore.createPermissionGroup(values)
-        : permissionGroupStore.updatePermissionGroup(
-            data.value.row.id,
-            values,
-          ));
+        ? createPermissionGroup(values)
+        : updatePermissionGroup({ id: data.value.row.id, values }));
 
       notification.success({
         message: data.value?.create

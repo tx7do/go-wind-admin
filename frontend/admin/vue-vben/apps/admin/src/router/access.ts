@@ -9,21 +9,16 @@ import { preferences } from '@vben/preferences';
 
 import { message } from 'ant-design-vue';
 
-import { createAdminPortalServiceClient } from '#/generated/api/admin/service/v1';
+import { fetchNavigation } from '#/api';
 import { BasicLayout, IFrameView } from '#/layouts';
 import { $t } from '#/locales';
-import { requestClientRequestHandler } from '#/utils/request';
-
-const adminPortalService = createAdminPortalServiceClient(
-  requestClientRequestHandler,
-);
-
-const forbiddenComponent = () => import('#/views/_core/fallback/forbidden.vue');
 
 async function getAllMenusApi(): Promise<RouteRecordStringComponent[]> {
-  const data = (await adminPortalService.GetNavigation({})) ?? [];
-  return <RouteRecordStringComponent[]>data.items ?? [];
+  const data = (await fetchNavigation()) ?? [];
+  return <RouteRecordStringComponent[]>(data as any).items ?? [];
 }
+
+const forbiddenComponent = () => import('#/views/_core/fallback/forbidden.vue');
 
 async function generateAccess(options: GenerateMenuAndRoutesOptions) {
   const pageMap: ComponentRecordType = import.meta.glob('../views/**/*.vue');

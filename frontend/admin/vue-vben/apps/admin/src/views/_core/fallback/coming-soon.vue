@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { Fallback } from '@vben/common-ui';
 </script>
 

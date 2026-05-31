@@ -1,4 +1,4 @@
-export enum EditorType {
+﻿export enum EditorType {
   CODE = 'EDITOR_TYPE_CODE',
   JSON = 'EDITOR_TYPE_JSON_BLOCK',
   MARKDOWN = 'EDITOR_TYPE_MARKDOWN',

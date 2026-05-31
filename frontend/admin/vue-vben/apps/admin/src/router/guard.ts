@@ -1,4 +1,4 @@
-import type { Router } from 'vue-router';
+﻿import type { Router } from 'vue-router';
 
 import { DEFAULT_HOME_PATH, LOGIN_PATH } from '@vben/constants';
 import { preferences } from '@vben/preferences';

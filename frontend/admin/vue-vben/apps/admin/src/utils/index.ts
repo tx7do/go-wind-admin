@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 深度克隆一个值，支持对象、数组、Map、Set、Date、RegExp 等类型，且能处理循环引用。
  * @param value
  */

@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 查询操作符类型
  */
 export type QueryOperator =

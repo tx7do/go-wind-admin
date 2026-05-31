@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { h } from 'vue';
@@ -9,21 +9,23 @@ import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
 import { notification } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type identityservicev1_OrgUnit as OrgUnit } from '#/generated/api/admin/service/v1';
-import { $t } from '#/locales';
+import { type identityservicev1_OrgUnit as OrgUnit } from '#/api';
 import {
+  fetchListOrgUnits,
   orgUnitStatusToColor,
   orgUnitStatusToName,
   orgUnitTypeListForQuery,
   orgUnitTypeToColor,
   orgUnitTypeToName,
+  PaginationQuery,
   statusList,
-  useOrgUnitStore,
-} from '#/stores';
+  useDeleteOrgUnit,
+} from '#/api';
+import { $t } from '#/locales';
 
 import OrgDrawer from './org-drawer.vue';
 
-const orgUnitStore = useOrgUnitStore();
+const { mutateAsync: deleteOrgUnit } = useDeleteOrgUnit();
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -98,12 +100,11 @@ const gridOptions: VxeGridProps<OrgUnit> = {
       query: async ({ page }, formValues) => {
         console.log('query:', formValues);
 
-        return await orgUnitStore.listOrgUnit(
-          {
-            page: page.currentPage,
-            pageSize: page.pageSize,
-          },
-          formValues,
+        return await fetchListOrgUnits(
+          new PaginationQuery({
+            paging: { page: page.currentPage, pageSize: page.pageSize },
+            formValues,
+          }),
         );
       },
     },
@@ -186,7 +187,7 @@ async function handleDelete(row: any) {
   console.log('删除', row);
 
   try {
-    await orgUnitStore.deleteOrgUnit(row.id);
+    await deleteOrgUnit({ id: row.id });
 
     notification.success({
       message: $t('ui.notification.delete_success'),

@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
@@ -12,16 +12,18 @@ import { useVbenForm } from '#/adapter/form';
 import {
   type internal_messageservicev1_InternalMessage as InternalMessage,
   type internal_messageservicev1_SendMessageRequest as SendMessageRequest,
-} from '#/generated/api/admin/service/v1';
+} from '#/api';
 import {
+  fetchListMessageCategories,
   internalMessageStatusList,
   internalMessageTypeList,
-  useInternalMessageCategoryStore,
-  useInternalMessageStore,
-} from '#/stores';
+  PaginationQuery,
+  useSendMessage,
+  useUpdateInternalMessage,
+} from '#/api';
 
-const internalMessageStore = useInternalMessageStore();
-const internalMessageCategoryStore = useInternalMessageCategoryStore();
+const { mutateAsync: sendMessage } = useSendMessage();
+const { mutateAsync: updateInternalMessage } = useUpdateInternalMessage();
 
 const storageManager = new StorageManager({
   prefix: 'internal_message',
@@ -92,13 +94,13 @@ const [BaseForm, baseFormApi] = useVbenForm({
         valueField: 'id',
         treeNodeFilterProp: 'label',
         api: async () => {
-          const result =
-            await internalMessageCategoryStore.listInternalMessageCategory(
-              undefined,
-              {
+          const result = await fetchListMessageCategories(
+            new PaginationQuery({
+              formValues: {
                 is_enabled: 'true',
               },
-            );
+            }),
+          );
           return result.items;
         },
       },
@@ -153,11 +155,11 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     try {
       await (data.value?.create
-        ? internalMessageStore.sendMessage({
+        ? sendMessage({
             ...values,
             targetAll: true,
           } as SendMessageRequest)
-        : internalMessageStore.updateMessage(data.value.row.id, values));
+        : updateInternalMessage({ id: data.value.row.id, values }));
 
       notification.success({
         message: data.value?.create

@@ -17,6 +17,7 @@
     "@iconify/json": "catalog:",
     "@iconify/vue": "catalog:",
     "@microsoft/fetch-event-source": "^2.0.1",
+    "@tanstack/vue-query": "catalog:",
     "@tiptap/core": "^3.20.0",
     "@tiptap/extension-code-block-lowlight": "^3.20.0",
     "@tiptap/extension-color": "^3.20.0",
@@ -57,9 +58,11 @@
     "@vben/utils": "workspace:*",
     "@vueuse/core": "catalog:",
     "ant-design-vue": "catalog:",
+    "axios": "catalog:",
     "cropperjs": "^2.1.0",
     "crypto-js": "^4.2.0",
     "dayjs": "catalog:",
+    "defu": "catalog:",
     "highlight.js": "^11.11.1",
     "json-editor-vue": "^0.18.1",
     "jsoneditor": "^10.4.2",
@@ -72,6 +75,7 @@
     "vue-router": "catalog:"
   },
   "devDependencies": {
+    "@tanstack/vue-query-devtools": "^6.1.33",
     "@types/crypto-js": "^4.2.2"
   }
 }

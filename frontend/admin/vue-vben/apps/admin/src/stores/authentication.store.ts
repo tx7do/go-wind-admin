@@ -1,7 +1,6 @@
 import type { Recordable, UserInfo } from '@vben/types';
 
 import { ref } from 'vue';
-import { useRouter } from 'vue-router';
 
 import { DEFAULT_HOME_PATH, LOGIN_PATH } from '@vben/constants';
 import { preferences } from '@vben/preferences';
@@ -12,13 +11,15 @@ import CryptoJS from 'crypto-js';
 import { defineStore } from 'pinia';
 
 import {
-  createAdminPortalServiceClient,
-  createAuthenticationServiceClient,
-  createUserProfileServiceClient,
-} from '#/generated/api/admin/service/v1';
+  login as apiLogin,
+  logout as apiLogout,
+  refreshToken as apiRefreshToken,
+  getMe,
+  getMyPermissionCode,
+} from '#/api';
 import { $t } from '#/locales';
+import { router } from '#/router';
 import { globalSSEClient } from '#/transport/sse';
-import { requestClientRequestHandler } from '#/utils/request';
 
 type RefreshTokenFunc = () => Promise<string> | string;
 
@@ -36,19 +37,8 @@ let isReauthenticating = false;
 export const useAuthStore = defineStore('auth', () => {
   const accessStore = useAccessStore();
   const userStore = useUserStore();
-  const router = useRouter();
 
   const loginLoading = ref(false);
-
-  const authnService = createAuthenticationServiceClient(
-    requestClientRequestHandler,
-  );
-  const adminPortalService = createAdminPortalServiceClient(
-    requestClientRequestHandler,
-  );
-  const userProfileService = createUserProfileServiceClient(
-    requestClientRequestHandler,
-  );
 
   /**
    * 加密数据
@@ -94,7 +84,7 @@ export const useAuthStore = defineStore('auth', () => {
     try {
       loginLoading.value = true;
 
-      const resp = await authnService.Login({
+      const resp = await apiLogin({
         username: params.username,
         password: encryptPassword(params.password),
         grant_type: 'password',
@@ -192,7 +182,7 @@ export const useAuthStore = defineStore('auth', () => {
   async function logout(redirect: boolean = true) {
     try {
       if (accessStore.accessToken !== null && accessStore.accessToken !== '') {
-        await authnService.Logout({});
+        await apiLogout();
       }
     } catch {
       // 忽略错误
@@ -244,10 +234,7 @@ export const useAuthStore = defineStore('auth', () => {
     }
 
     try {
-      const resp = await authnService.RefreshToken({
-        grant_type: 'refresh_token',
-        refresh_token: accessStore.refreshToken ?? '',
-      });
+      const resp = await apiRefreshToken(accessStore.refreshToken ?? '');
 
       const newAccessToken = (resp as any).access_token;
       const newRefreshToken = (resp as any).refresh_token;
@@ -320,7 +307,7 @@ export const useAuthStore = defineStore('auth', () => {
    */
   async function fetchUserInfo() {
     try {
-      return (await userProfileService.GetUser({})) as unknown as UserInfo;
+      return (await getMe()) as unknown as UserInfo;
     } catch (error) {
       console.error('fetchUserInfo failed:', error);
       await _doLogout();
@@ -332,7 +319,7 @@ export const useAuthStore = defineStore('auth', () => {
    * 获取用户权限码
    */
   async function fetchAccessCodes() {
-    return await adminPortalService.GetMyPermissionCode({});
+    return await getMyPermissionCode();
   }
 
   /**

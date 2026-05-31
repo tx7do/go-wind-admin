@@ -1,156 +1,49 @@
 import { ref } from 'vue';
 
 import { i18n } from '@vben/locales';
-import { useUserStore } from '@vben/stores';
 
 import { defineStore } from 'pinia';
 
 import {
-  createDictEntryServiceClient,
-  createDictTypeServiceClient,
-  type dictservicev1_DictEntry,
-} from '#/generated/api/admin/service/v1';
-import { makeOrderBy, makeQueryString, makeUpdateMask } from '#/utils/query';
-import { type Paging, requestClientRequestHandler } from '#/utils/request';
+  fetchListDictEntries,
+  fetchListDictTypes,
+  PaginationQuery,
+} from '#/api';
+import { type dictservicev1_DictEntry } from '#/api';
 
 export const useDictStore = defineStore('dict', () => {
-  const dictTypeService = createDictTypeServiceClient(
-    requestClientRequestHandler,
-  );
-  const dictEntryService = createDictEntryServiceClient(
-    requestClientRequestHandler,
-  );
-  const userStore = useUserStore();
   const dictEntryCache = ref<Record<string, dictservicev1_DictEntry[]>>({});
 
   /**
-   * 查询字典类型列表
+   * 获取所有字典项
    */
-  async function listDictType(
-    paging?: Paging,
-    formValues?: null | object,
-    fieldMask?: null | string,
-    orderBy?: null | string[],
-  ) {
-    const noPaging =
-      paging?.page === undefined && paging?.pageSize === undefined;
-    return await dictTypeService.List({
-      // @ts-ignore proto generated code is error.
-      fieldMask,
-      orderBy: makeOrderBy(orderBy),
-      query: makeQueryString(formValues, userStore.isTenantUser()),
-      page: paging?.page,
-      pageSize: paging?.pageSize,
-      noPaging,
-    });
-  }
+  async function fetchAllDictEntries() {
+    if (
+      dictEntryCache &&
+      dictEntryCache.value &&
+      Object.keys(dictEntryCache.value).length > 0
+    ) {
+      return;
+    }
 
-  /**
-   * 查询字典项列表
-   */
-  async function listDictEntry(
-    paging?: Paging,
-    formValues?: null | object,
-    fieldMask?: null | string,
-    orderBy?: null | string[],
-  ) {
-    const noPaging =
-      paging?.page === undefined && paging?.pageSize === undefined;
-    return await dictEntryService.List({
-      // @ts-ignore proto generated code is error.
-      fieldMask,
-      orderBy: makeOrderBy(orderBy),
-      query: makeQueryString(formValues, userStore.isTenantUser()),
-      page: paging?.page,
-      pageSize: paging?.pageSize,
-      noPaging,
-    });
-  }
+    const types = await fetchListDictTypes(new PaginationQuery({}));
 
-  /**
-   * 获取字典类型
-   */
-  async function getDictType(id: number) {
-    return await dictTypeService.Get({
-      id,
-    });
-  }
+    const result = await fetchListDictEntries(new PaginationQuery({}));
+    const items = result?.items || [];
+    for (const item of items) {
+      const typeCode = types?.items?.find(
+        (type) => type.id === item.typeId,
+      )?.typeCode;
 
-  /**
-   * 获取字典类型
-   */
-  async function getDictTypeByCode(code: string) {
-    return await dictTypeService.Get({
-      code,
-    });
-  }
-
-  /**
-   * 创建字典类型
-   */
-  async function createDictType(values: Record<string, any> = {}) {
-    return await dictTypeService.Create({
-      // @ts-ignore proto generated code is error.
-      data: {
-        ...values,
-      },
-    });
-  }
-
-  /**
-   * 创建字典项
-   */
-  async function createDictEntry(values: Record<string, any> = {}) {
-    return await dictEntryService.Create({
-      // @ts-ignore proto generated code is error.
-      data: {
-        ...values,
-      },
-    });
-  }
-
-  /**
-   * 更新字典类型
-   */
-  async function updateDictType(id: number, values: Record<string, any> = {}) {
-    return await dictTypeService.Update({
-      id,
-      // @ts-ignore proto generated code is error.
-      data: {
-        ...values,
-      },
-      // @ts-ignore proto generated code is error.
-      updateMask: makeUpdateMask(Object.keys(values ?? [])),
-    });
-  }
-
-  /**
-   * 更新字典项
-   */
-  async function updateDictEntry(id: number, values: Record<string, any> = {}) {
-    return await dictEntryService.Update({
-      id,
-      // @ts-ignore proto generated code is error.
-      data: {
-        ...values,
-      },
-      // @ts-ignore proto generated code is error.
-      updateMask: makeUpdateMask(Object.keys(values ?? [])),
-    });
-  }
-
-  /**
-   * 删除字典类型
-   */
-  async function deleteDictType(ids: number[]) {
-    return await dictTypeService.Delete({ ids });
-  }
-
-  /**
-   * 删除字典项
-   */
-  async function deleteDictEntry(ids: number[]) {
-    return await dictEntryService.Delete({ ids });
+      if (!typeCode) {
+        continue;
+      }
+      if (dictEntryCache.value[typeCode]) {
+        dictEntryCache.value[typeCode].push(item);
+        continue;
+      }
+      dictEntryCache.value[typeCode] = [item];
+    }
   }
 
   /**
@@ -171,57 +64,14 @@ export const useDictStore = defineStore('dict', () => {
     }));
   }
 
-  /**
-   * 获取所有字典项
-   */
-  async function fetchAllDictEntries() {
-    if (
-      dictEntryCache &&
-      dictEntryCache.value &&
-      Object.keys(dictEntryCache.value).length > 0
-    ) {
-      return;
-    }
-
-    const types = await listDictType();
-
-    const result = await listDictEntry();
-    const items = result?.items || [];
-    for (const item of items) {
-      const typeCode = types?.items?.find(
-        (type) => type.id === item.typeId,
-      )?.typeCode;
-
-      if (!typeCode) {
-        continue;
-      }
-      if (dictEntryCache.value[typeCode]) {
-        dictEntryCache.value[typeCode].push(item);
-        continue;
-      }
-      dictEntryCache.value[typeCode] = [item];
-    }
-  }
-
   function $reset() {}
 
   return {
     $reset,
 
-    listDictType,
-    getDictType,
-    getDictTypeByCode,
-    createDictType,
-    updateDictType,
-    deleteDictType,
-
-    listDictEntry,
-    createDictEntry,
-    updateDictEntry,
-    deleteDictEntry,
     dictEntryCache,
-    getDictEntriesByTypeCode,
     fetchAllDictEntries,
+    getDictEntriesByTypeCode,
     getDictEntriesOptionsByTypeCode,
   };
 });

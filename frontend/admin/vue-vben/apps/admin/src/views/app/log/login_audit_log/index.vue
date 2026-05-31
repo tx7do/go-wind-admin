@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { Page, type VbenFormProps } from '@vben/common-ui';
@@ -6,9 +6,8 @@ import { Page, type VbenFormProps } from '@vben/common-ui';
 import dayjs from 'dayjs';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type auditservicev1_LoginAuditLog as LoginAuditLog } from '#/generated/api/admin/service/v1';
-import { $t } from '#/locales';
 import {
+  fetchListLoginAuditLogs,
   getLoginAuditLogActionTypeColor,
   getLoginAuditLogRiskLevelColor,
   getLoginAuditLogStatusColor,
@@ -18,10 +17,10 @@ import {
   loginAuditLogRiskLevelToName,
   loginAuditLogStatusList,
   loginAuditLogStatusToName,
-  useLoginAuditLogStore,
-} from '#/stores';
-
-const loginAuditLogStore = useLoginAuditLogStore();
+  PaginationQuery,
+} from '#/api';
+import { type auditservicev1_LoginAuditLog as LoginAuditLog } from '#/api';
+import { $t } from '#/locales';
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -171,22 +170,20 @@ const gridOptions: VxeGridProps<LoginAuditLog> = {
           console.log(startTime, endTime);
         }
 
-        return await loginAuditLogStore.listLoginAuditLog(
-          {
-            page: page.currentPage,
-            pageSize: page.pageSize,
-          },
-          {
-            username: formValues.username,
-            ipAddress: formValues.ipAddress,
-            status: formValues.status,
-            actionType: formValues.actionType,
-            riskType: formValues.riskType,
-            created_at__gte: startTime,
-            created_at__lte: endTime,
-          },
-          null,
-          ['-created_at'],
+        return await fetchListLoginAuditLogs(
+          new PaginationQuery({
+            paging: { page: page.currentPage, pageSize: page.pageSize },
+            formValues: {
+              username: formValues.username,
+              ipAddress: formValues.ipAddress,
+              status: formValues.status,
+              actionType: formValues.actionType,
+              riskType: formValues.riskType,
+              created_at__gte: startTime,
+              created_at__lte: endTime,
+            },
+            orderBy: ['-created_at'],
+          }),
         );
       },
     },

@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { Page, type VbenFormProps } from '@vben/common-ui';
@@ -6,19 +6,18 @@ import { Page, type VbenFormProps } from '@vben/common-ui';
 import dayjs from 'dayjs';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type auditservicev1_ApiAuditLog as ApiAuditLog } from '#/generated/api/admin/service/v1';
-import { $t } from '#/locales';
 import {
   dataAccessAuditLogAccessTypeList,
   dataAccessAuditLogAccessTypeToColor,
   dataAccessAuditLogAccessTypeToName,
+  fetchListDataAccessAuditLogs,
+  PaginationQuery,
   successStatusList,
   successToColor,
   successToNameWithStatusCode,
-  useDataAccessAuditLogStore,
-} from '#/stores';
-
-const dataAccessAuditLogStore = useDataAccessAuditLogStore();
+} from '#/api';
+import { type auditservicev1_ApiAuditLog as ApiAuditLog } from '#/api';
+import { $t } from '#/locales';
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -164,22 +163,20 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
           console.log(startTime, endTime);
         }
 
-        return await dataAccessAuditLogStore.listDataAccessAuditLog(
-          {
-            page: page.currentPage,
-            pageSize: page.pageSize,
-          },
-          {
-            username: formValues.username,
-            accessType: formValues.accessType,
-            tableName: formValues.tableName,
-            ipAddress: formValues.ipAddress,
-            success: formValues.success,
-            created_at__gte: startTime,
-            created_at__lte: endTime,
-          },
-          null,
-          ['-created_at'],
+        return await fetchListDataAccessAuditLogs(
+          new PaginationQuery({
+            paging: { page: page.currentPage, pageSize: page.pageSize },
+            formValues: {
+              username: formValues.username,
+              accessType: formValues.accessType,
+              tableName: formValues.tableName,
+              ipAddress: formValues.ipAddress,
+              success: formValues.success,
+              created_at__gte: startTime,
+              created_at__lte: endTime,
+            },
+            orderBy: ['-created_at'],
+          }),
         );
       },
     },

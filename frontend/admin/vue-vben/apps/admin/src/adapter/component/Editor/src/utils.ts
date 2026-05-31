@@ -1,4 +1,4 @@
-import { preferences } from '@vben/preferences';
+﻿import { preferences } from '@vben/preferences';
 
 /**
  * 是否是暗黑模式

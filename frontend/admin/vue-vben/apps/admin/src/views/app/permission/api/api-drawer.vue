@@ -7,9 +7,10 @@ import { $t } from '@vben/locales';
 import { notification } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { methodList, useApiStore } from '#/stores';
+import { methodList, useCreateApi, useUpdateApi } from '#/api';
 
-const apiStore = useApiStore();
+const { mutateAsync: createApi } = useCreateApi();
+const { mutateAsync: updateApi } = useUpdateApi();
 
 const data = ref();
 
@@ -108,8 +109,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     try {
       await (data.value?.create
-        ? apiStore.createApi(values)
-        : apiStore.updateApi(data.value.row.id, values));
+        ? createApi(values)
+        : updateApi({ id: data.value.row.id, values }));
 
       notification.success({
         message: data.value?.create

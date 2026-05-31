@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
 import { h } from 'vue';
@@ -9,19 +9,23 @@ import { LucideFileDownload, LucideTrash2 } from '@vben/icons';
 import { notification, Upload } from 'ant-design-vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { type storageservicev1_File as File } from '#/generated/api/admin/service/v1';
-import { $t } from '#/locales';
+import { type storageservicev1_File as File } from '#/api';
 import {
+  fetchListFiles,
   ossProviderColor,
   ossProviderLabel,
-  useFileStore,
-  useFileTransferStore,
-} from '#/stores';
+  PaginationQuery,
+  useDeleteFile,
+  useDownloadFile,
+  useUploadFile,
+} from '#/api';
+import { $t } from '#/locales';
 
 import FileDrawer from './file-drawer.vue';
 
-const fileStore = useFileStore();
-const fileTransferStore = useFileTransferStore();
+const { mutateAsync: deleteFile } = useDeleteFile();
+const { mutateAsync: uploadFile } = useUploadFile();
+const { mutateAsync: downloadFile } = useDownloadFile();
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -65,14 +69,15 @@ const gridOptions: VxeGridProps<File> = {
       query: async ({ page }, formValues) => {
         console.log('query:', formValues);
 
-        return await fileStore.listFile(
-          {
-            page: page.currentPage,
-            pageSize: page.pageSize,
-          },
-          formValues,
-          null,
-          ['-created_at'],
+        return await fetchListFiles(
+          new PaginationQuery({
+            paging: {
+              page: page.currentPage,
+              pageSize: page.pageSize,
+            },
+            formValues,
+            orderBy: ['-created_at'],
+          }),
         );
       },
     },
@@ -130,21 +135,12 @@ async function handleUploadFile(options: any) {
   console.log('上传文件', options);
 
   try {
-    const res = await fileTransferStore.uploadFile(
-      'images',
-      'temp',
+    const res = await uploadFile({
+      bucketName: 'images',
+      fileDirectory: 'temp',
       file,
-      'post',
-      (progressEvent: any) => {
-        console.log(progressEvent);
-        // ant-design-vue 要求的进度结构为 { percent: number }
-        try {
-          // onProgress?.({ percent });
-        } catch {
-          // 忽略回调内错误
-        }
-      },
-    );
+      method: 'post',
+    });
 
     onSuccess?.(res ?? {}, file);
 
@@ -166,10 +162,14 @@ async function handleUploadFile(options: any) {
   }
 }
 
-function handleDownloadFile(row: any) {
+async function handleDownloadFile(row: any) {
   console.log('下载文件', row);
   const objectName = row ? `${row.fileDirectory}/${row.saveFileName}` : '';
-  fileTransferStore.downloadFile(row.bucketName, objectName, true);
+  await downloadFile({
+    bucketName: row.bucketName,
+    objectName,
+    preferPresignedUrl: true,
+  });
 }
 
 /* 删除 */
@@ -177,7 +177,7 @@ async function handleDelete(row: any) {
   console.log('删除', row);
 
   try {
-    await fileStore.deleteFile(row.id);
+    await deleteFile({ id: row.id });
 
     notification.success({
       message: $t('ui.notification.delete_success'),

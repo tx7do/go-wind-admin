@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
@@ -8,23 +8,23 @@ import { notification } from 'ant-design-vue';
 
 import { useVbenForm, z } from '#/adapter/form';
 import {
+  fetchListOrgUnits,
+  fetchListPositions,
+  fetchListRoles,
+  genderList,
+  PaginationQuery,
+  useCreateUser,
+  userStatusList,
+  useUpdateUser,
+} from '#/api';
+import {
   type identityservicev1_OrgUnit as OrgUnit,
   type identityservicev1_Position as Position,
-} from '#/generated/api/admin/service/v1';
-import {
-  genderList,
-  useOrgUnitStore,
-  usePositionStore,
-  useRoleStore,
-  userStatusList,
-  useUserListStore,
-} from '#/stores';
+} from '#/api';
 import { useUserViewStore } from '#/views/app/opm/user/user-view.state';
 
-const userListStore = useUserListStore();
-const roleStore = useRoleStore();
-const orgUnitStore = useOrgUnitStore();
-const positionStore = usePositionStore();
+const { mutateAsync: createUser } = useCreateUser();
+const { mutateAsync: updateUser } = useUpdateUser();
 const userViewStore = useUserViewStore();
 
 const data = ref();
@@ -89,12 +89,15 @@ const [BaseForm, baseFormApi] = useVbenForm({
         valueField: 'id',
         treeNodeFilterProp: 'label',
         api: async () => {
-          const result = await roleStore.listRole(undefined, {
-            // parent_id: 0,
-            status: 'ON',
-            tenant_id: userViewStore.currentTenantId ?? 0,
-            type__not: 'TEMPLATE',
-          });
+          const result = await fetchListRoles(
+            new PaginationQuery({
+              formValues: {
+                status: 'ON',
+                tenant_id: userViewStore.currentTenantId ?? 0,
+                type__not: 'TEMPLATE',
+              },
+            }),
+          );
 
           return result.items;
         },
@@ -116,10 +119,14 @@ const [BaseForm, baseFormApi] = useVbenForm({
         valueField: 'id',
         treeNodeFilterProp: 'label',
         api: async () => {
-          const result = await orgUnitStore.listOrgUnit(undefined, {
-            status: 'ON',
-            tenant_id: userViewStore.currentTenantId ?? 0,
-          });
+          const result = await fetchListOrgUnits(
+            new PaginationQuery({
+              formValues: {
+                status: 'ON',
+                tenant_id: userViewStore.currentTenantId ?? 0,
+              },
+            }),
+          );
           orgUnitList.value = result.items ?? [];
           return result.items;
         },
@@ -148,9 +155,11 @@ const [BaseForm, baseFormApi] = useVbenForm({
         allowClear: true,
         multiple: true,
         api: async () => {
-          const result = await positionStore.listPosition(undefined, {
-            status: 'ON',
-          });
+          const result = await fetchListPositions(
+            new PaginationQuery({
+              formValues: { status: 'ON' },
+            }),
+          );
           positionList.value = result.items ?? [];
           return result.items;
         },
@@ -269,8 +278,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     try {
       await (data.value?.create
-        ? userListStore.createUser(values)
-        : userListStore.updateUser(data.value.row.id, values));
+        ? createUser({ data: values })
+        : updateUser({ id: data.value.row.id, values }));
 
       notification.success({
         message: data.value?.create

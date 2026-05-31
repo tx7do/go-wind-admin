@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { computed, ref } from 'vue';
 
 import { Page } from '@vben/common-ui';
@@ -7,15 +7,13 @@ import { formatDateTime } from '@vben/utils';
 
 import { Avatar, Descriptions, DescriptionsItem } from 'ant-design-vue';
 
-import { type identityservicev1_User as User } from '#/generated/api/admin/service/v1';
-import { genderToColor, genderToName, useUserListStore } from '#/stores';
+import { type identityservicev1_User as User } from '#/api';
+import { fetchUser, genderToColor, genderToName } from '#/api';
 import { getCharColor, getRandomColor } from '#/utils/color';
 
 const props = defineProps({
   userId: { type: Number, default: undefined },
 });
-
-const userListStore = useUserListStore();
 
 const data = ref<User>();
 
@@ -35,7 +33,7 @@ const getAvatarColor = () => {
  */
 async function reload() {
   if (props.userId) {
-    data.value = await userListStore.getUser(props.userId);
+    data.value = await fetchUser({ id: props.userId });
   }
 }
 

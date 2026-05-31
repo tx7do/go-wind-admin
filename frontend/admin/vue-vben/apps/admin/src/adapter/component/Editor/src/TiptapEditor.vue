@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { Level } from '@tiptap/extension-heading';
 
 import { computed, h, nextTick, onUnmounted, ref, watch } from 'vue';

@@ -1,13 +1,14 @@
-import { defineStore } from 'pinia';
+﻿import { defineStore } from 'pinia';
 
 import {
   type permissionservicev1_ListPermissionGroupResponse as ListPermissionGroupResponse,
   type permissionservicev1_ListPermissionResponse as ListPermissionResponse,
-} from '#/generated/api/admin/service/v1';
-import { usePermissionGroupStore, usePermissionStore } from '#/stores';
-
-const permissionStore = usePermissionStore();
-const permissionGroupStore = usePermissionGroupStore();
+} from '#/api';
+import {
+  fetchListPermissionGroups,
+  fetchListPermissions,
+  PaginationQuery,
+} from '#/api';
 
 /**
  * 权限视图状态接口
@@ -46,12 +47,11 @@ export const usePermissionViewStore = defineStore('permission-view', {
     ) {
       this.loading = true;
       try {
-        this.groupList = await permissionGroupStore.listPermissionGroup(
-          {
-            page: currentPage,
-            pageSize,
-          },
-          formValues,
+        this.groupList = await fetchListPermissionGroups(
+          new PaginationQuery({
+            paging: { page: currentPage, pageSize },
+            formValues,
+          }),
         );
         return this.groupList;
       } catch (error) {
@@ -84,15 +84,14 @@ export const usePermissionViewStore = defineStore('permission-view', {
 
       this.loading = true;
       try {
-        this.permList = await permissionStore.listPermission(
-          {
-            page: currentPage,
-            pageSize,
-          },
-          {
-            ...formValues,
-            group_id: groupId.toString(),
-          },
+        this.permList = await fetchListPermissions(
+          new PaginationQuery({
+            paging: { page: currentPage, pageSize },
+            formValues: {
+              ...formValues,
+              group_id: groupId.toString(),
+            },
+          }),
         );
       } catch (error) {
         console.error(`获取分组[${groupId}]的权限点失败:`, error);

@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+﻿<script lang="ts" setup>
 import { computed, ref } from 'vue';
 
 import { useVbenDrawer } from '@vben/common-ui';
@@ -7,9 +7,10 @@ import { $t } from '@vben/locales';
 import { notification } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
-import { useFileStore } from '#/stores';
+import { useCreateFile, useUpdateFile } from '#/api';
 
-const fileStore = useFileStore();
+const { mutateAsync: createFile } = useCreateFile();
+const { mutateAsync: updateFile } = useUpdateFile();
 
 const data = ref();
 
@@ -75,8 +76,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     try {
       await (data.value?.create
-        ? fileStore.createFile(values)
-        : fileStore.updateFile(data.value.row.id, values));
+        ? createFile(values)
+        : updateFile({ id: data.value.row.id, values }));
 
       notification.success({
         message: data.value?.create
