@@ -11,8 +11,12 @@ scripts/
 ├── env/                           # 环境配置脚本
 │   ├── install_unix_prod.sh      # Unix/Linux 生产环境准备
 │   ├── install_unix_dev.sh       # Unix/Linux 开发环境准备
-│   ├── install_golang.sh         # Go 运行时安装
-│   └── install_windows_dev.ps1   # Windows 开发环境配置
+│   ├── install_windows_dev.ps1   # Windows 开发环境配置
+│   └── lib/                      # Unix/PowerShell 共享函数库
+│       ├── common-utils.sh       # Unix 通用日志/权限工具
+│       ├── host-utils.sh         # Unix hosts 文件管理工具
+│       ├── common-utils.ps1      # PowerShell 通用日志工具
+│       └── host-utils.ps1        # PowerShell hosts 文件管理工具
 │
 ├── docker/                        # Docker 部署脚本
 │   ├── full_deploy.sh            # 完整部署（应用+依赖）- Bash
@@ -62,6 +66,18 @@ scripts/
 - ✅ 完整的错误处理
 - ✅ 向后兼容旧脚本
 
+**可选：初始化 hosts 记录（默认关闭）**
+
+脚本支持通过环境变量自动写入 `/etc/hosts`（例如 `postgres.local`）。默认不会改动 hosts，需显式开启：
+
+```bash
+AUTO_INIT_HOSTS=true \
+HOSTS_IP=127.0.0.1 \
+HOSTS_DOMAIN_SUFFIX=.local \
+HOSTS_SERVICES="postgres mysql redis" \
+./scripts/env/install_unix_prod.sh
+```
+
 ---
 
 ### install_unix_dev.sh
@@ -87,6 +103,18 @@ scripts/
 - ✅ Go 代码生成插件
 - ✅ CLI 脚手架工具（可扩展）
 - ✅ 开发友好的配置
+
+**可选：初始化 hosts 记录（默认关闭）**
+
+支持与生产脚本相同的 hosts 初始化参数：
+
+```bash
+AUTO_INIT_HOSTS=true \
+HOSTS_IP=127.0.0.1 \
+HOSTS_DOMAIN_SUFFIX=.local \
+HOSTS_SERVICES="postgres mysql redis" \
+./scripts/env/install_unix_dev.sh
+```
 
 ---
 
@@ -405,7 +433,17 @@ gow run admin
 ```bash
 APP_ROOT=/custom/path bash scripts/docker/full_deploy.sh
 COMPOSE_FILE=custom.yaml bash scripts/docker/libs_only.sh
+
+# Unix 环境脚本可选初始化 hosts（默认 false）
+AUTO_INIT_HOSTS=true HOSTS_SERVICES="postgres mysql redis" bash scripts/env/install_unix_dev.sh
 ```
+
+Unix hosts 初始化相关变量：
+
+- `AUTO_INIT_HOSTS` - 是否启用 hosts 初始化（默认：`false`）
+- `HOSTS_IP` - hosts 记录 IP（默认：`127.0.0.1`）
+- `HOSTS_DOMAIN_SUFFIX` - 域名后缀（默认：`.local`）
+- `HOSTS_SERVICES` - 服务名列表，空格分隔（默认：`postgres mysql redis`）
 
 ### Q: 如何添加新的 Go 工具或插件？
 
