@@ -94,10 +94,6 @@ install_go_cli_tools() {
         "github.com/bufbuild/buf/cmd/buf@latest" \
         "entgo.io/ent/cmd/ent@latest" \
         "github.com/golangci/golangci-lint/cmd/golangci-lint@latest" \
-        "github.com/tx7do/go-wind-toolkit/config-exporter/cmd/cfgexp@latest" \
-        "github.com/tx7do/go-wind-toolkit/sql-orm/cmd/sql2orm@latest" \
-        "github.com/tx7do/go-wind-toolkit/sql-proto/cmd/sql2proto@latest" \
-        "github.com/tx7do/go-wind-toolkit/sql-kratos/cmd/sql2kratos@latest" \
         "github.com/tx7do/go-wind-toolkit/gowind/cmd/gow@latest"
 }
 
