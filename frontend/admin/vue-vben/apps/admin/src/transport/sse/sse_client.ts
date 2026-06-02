@@ -1,4 +1,4 @@
-﻿import type { EventSourceMessage } from '@microsoft/fetch-event-source/lib/cjs/parse';
+import type { EventSourceMessage } from '@microsoft/fetch-event-source/lib/cjs/parse';
 
 import type {
   SSEClientConfig,
@@ -6,7 +6,7 @@ import type {
   SSEEventHandler,
   SSEEventName,
   SSETransport,
-} from '#/transport/sse/types';
+} from './types';
 
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 
@@ -259,6 +259,16 @@ export class SSEClient {
         this.triggerHandler(eventName, data, event as MessageEvent);
       });
     }
+  }
+
+  /**
+   * 关闭当前连接并使用新的 URL / headers 重新连接
+   * 适用于 token 刷新后需要携带新凭证的场景
+   * @param url 可选的新连接 URL，默认沿用配置中的 URL
+   */
+  reconnect(url?: string): void {
+    this.close();
+    this.connect(url);
   }
 
   /**
