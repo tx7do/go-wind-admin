@@ -102,7 +102,8 @@ openapi:
 ts:
 	cd api && \
 	buf generate --template buf.vue-vben.admin.typescript.gen.yaml && \
-	buf generate --template buf.vue-element.admin.typescript.gen.yaml
+	buf generate --template buf.vue-element.admin.typescript.gen.yaml && \
+	buf generate --template buf.react.admin.typescript.gen.yaml
 
 # build all service applications
 build: api openapi
