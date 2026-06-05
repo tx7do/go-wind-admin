@@ -11,6 +11,7 @@
         <el-menu-item
           :index="resolvePath(item.path)"
           :class="{ 'submenu-title-noDropdown': !isNest }"
+          @mouseenter="prefetchRoute"
         >
           <SvgIcon :icon="getMetaIcon(item.meta) || 'menu'" :size="18" />
           <span v-if="item.meta?.title" class="menu-title">
@@ -44,7 +45,7 @@
 
 <script setup lang="ts">
 import path from "path-browserify";
-import { RouteRecordRaw, LocationQueryRaw } from "vue-router";
+import { RouteRecordRaw, LocationQueryRaw, useRouter } from "vue-router";
 import { isExternal } from "@/utils";
 import { translateRouteTitle } from "@/core/i18n";
 import SvgIcon from "@/components/SvgIcon/index.vue";
@@ -53,6 +54,8 @@ defineOptions({
   name: "LayoutSidebarItem",
   inheritAttrs: false,
 });
+
+const router = useRouter();
 
 const props = defineProps({
   /**
@@ -113,6 +116,31 @@ function resolvePath(routePath: string) {
 
   // 拼接父路径和当前路径
   return path.resolve(props.basePath, routePath);
+}
+
+/**
+ * 预加载路由组件：鼠标悬停时提前下载目标页面的 JS chunk
+ * 用户点击时 chunk 已在浏览器缓存中，消除首跳白屏延迟
+ */
+function prefetchRoute() {
+  const fullPath = resolvePath(props.item.path);
+  if (isExternal(fullPath)) return;
+
+  try {
+    const resolved = router.resolve(fullPath);
+    const matched = resolved.matched;
+    if (matched.length === 0) return;
+
+    // 取最深层匹配的路由记录（叶子节点）
+    const leaf = matched[matched.length - 1];
+    const comp = leaf.components?.default;
+    // 懒加载组件是一个返回 Promise 的函数，调用即触发 chunk 下载
+    if (typeof comp === "function") {
+      (comp as () => Promise<unknown>)();
+    }
+  } catch {
+    // 预加载失败不影响正常功能，静默忽略
+  }
 }
 </script>
 

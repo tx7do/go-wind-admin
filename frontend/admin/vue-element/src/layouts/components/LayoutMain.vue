@@ -2,7 +2,7 @@
   <section class="app-main" :class="mainClass" :style="{ height: appMainHeight }">
     <router-view>
       <template #default="{ Component, route }">
-        <transition :name="transitionName" mode="out-in">
+        <transition :name="transitionName" mode="out-in" :duration="150">
           <keep-alive :include="cachedViews">
             <component
               :is="currentComponent(Component, route)"
@@ -129,7 +129,7 @@ const mainClass = computed(() => {
   /* fade */
   .fade-enter-active,
   .fade-leave-active {
-    transition: opacity 0.2s ease;
+    transition: opacity 0.15s ease;
   }
   .fade-enter-from,
   .fade-leave-to {
@@ -140,48 +140,48 @@ const mainClass = computed(() => {
   .fade-slide-leave-active,
   .fade-slide-enter-active {
     transition:
-      opacity 0.2s ease,
-      transform 0.2s ease;
+      opacity 0.15s ease,
+      transform 0.15s ease;
   }
   .fade-slide-enter-from {
     opacity: 0;
-    transform: translateX(-10px);
+    transform: translateX(-8px);
   }
   .fade-slide-leave-to {
     opacity: 0;
-    transform: translateX(10px);
+    transform: translateX(8px);
   }
 
   /* fade-down */
   .fade-down-leave-active,
   .fade-down-enter-active {
     transition:
-      opacity 0.2s ease,
-      transform 0.2s ease;
+      opacity 0.15s ease,
+      transform 0.15s ease;
   }
   .fade-down-enter-from {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
   .fade-down-leave-to {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
 
   /* fade-up */
   .fade-up-leave-active,
   .fade-up-enter-active {
     transition:
-      opacity 0.2s ease,
-      transform 0.2s ease;
+      opacity 0.15s ease,
+      transform 0.15s ease;
   }
   .fade-up-enter-from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   .fade-up-leave-to {
     opacity: 0;
-    transform: translateY(-10px);
+    transform: translateY(-8px);
   }
 }
 </style>
