@@ -26,6 +26,13 @@
   --el-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, 'Noto Sans', 'PingFang SC', 'Hiragino Sans GB',
     'Microsoft YaHei', Helvetica, sans-serif !important;
+  // 亮色正文：450 介于常规400和加粗500之间，笔画够厚不笨重
+  --el-font-weight-primary: 450;
+  // 亮色文字加深，不用浅灰，避免发虚
+  --el-text-color-primary: #1F2937;
+  --el-text-color-regular: #374151;
+  --el-text-color-secondary: #525966; // 辅助文字（创建时间、发送人等）加深，避免浅色页面过淡发飘
+  --el-font-weight-bold: 600;
 }
 
 // 针对 Element Plus 全局布局强制开启硬件级渲染优化
@@ -36,7 +43,7 @@ html, body, #app,
 .tiptap {
   -webkit-font-smoothing: antialiased !important;
   -moz-osx-font-smoothing: grayscale !important;
-  text-rendering: optimizeLegibility !important;
+  text-rendering: geometricPrecision !important;
 }
 
 // ============================================
@@ -61,10 +68,11 @@ body {
   margin: 0;
   overflow: hidden;
   font-family: var(--el-font-family);
+  font-weight: var(--el-font-weight-primary);
   line-height: 1.5;
-  -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizelegibility;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: geometricPrecision;
 }
 
 ul,

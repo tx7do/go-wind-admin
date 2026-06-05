@@ -13,14 +13,18 @@ html.dark {
   // CSS 变量定义（暗色模式专用）
   // ============================================
   
-  // ---- 字体渲染优化：消除纯白炫光导致的发虚 ----
-  // 将 Element Plus 默认纯白字体微调为温润的亮灰，消除光晕散光效应
-  --el-text-color-primary: #e3e6eb !important;     // 主要文字（标题、正文）
-  --el-text-color-regular: #babbc0 !important;     // 常规文字（表单 Label、提示）
+  // ---- 字体渲染优化：暗黑模式字重提粗 + 文字色柔化 ----
+  // 暗黑正文500：深色底会吃掉细笔画，必须加粗避免发虚
+  --el-font-weight-primary: 500 !important;
+  --el-font-weight-bold: 600 !important;
+  // 暗黑文字色：放弃纯白#fff，用柔和灰白显厚重
+  --el-text-color-primary: #E5E7EB !important;     // 主要文字（标题、正文）
+  --el-text-color-regular: #D1D5DB !important;     // 常规文字（表单 Label、提示）
   --el-text-color-placeholder: #6c7280 !important; // 占位符文字（调亮一点，防止看不清）
   
   // 暗黑模式下给文本增加极微小的字间距，强迫 Windows 浏览器重新对齐像素点
-  letter-spacing: 0.02em !important;
+  // 移除：与亮色模式不一致，且 letter-spacing 差异会导致宽度偏移
+  // letter-spacing: 0.02em !important;
   
   // 1. 核心对比度优化(先解决“看得见”的问题)
   --dark-bg-primary: #0C0E13;      // 页面主背景(微压暗基底,暗黑质感更高级)
@@ -96,7 +100,7 @@ html.dark {
 
       .el-form-item__label {
         color: var(--dark-text-primary) !important;
-        font-weight: 500 !important;
+        font-weight: 550 !important; // 与亮色模式保持一致
       }
 
       // 输入框和选择器
@@ -259,7 +263,7 @@ html.dark {
     // 表单标签
     .el-form-item__label {
       color: var(--dark-text-primary) !important;
-      font-weight: 500 !important;
+      font-weight: 550 !important; // 与亮色模式保持一致
 
       // 必填项标签增加轻微高亮，强化核心字段的视觉权重
       &.is-required::before {
@@ -267,9 +271,9 @@ html.dark {
       }
     }
 
-    // 表单项间距增加呼吸感
+    // 表单项间距与亮色模式统一（--gowind-form-item-margin-bottom: 24px）
     .el-form-item {
-      margin-bottom: 22px !important;
+      margin-bottom: 24px !important;
     }
   }
 
@@ -465,13 +469,13 @@ html.dark {
     }
   }
 
-  // ---- 输入框文字渲染优化 ----
-  // 略微加深微调字重，让微软雅黑在暗色底上不至于因为被吃字而显得太细、发虚
+ // ---- 输入框文字渲染优化 ----
+  // 继承全局 --el-font-weight-primary: 500，不再单独设 450（与全局矛盾会导致变形）
   .el-input__inner,
   .el-textarea__inner,
   .tiptap {
     -webkit-font-smoothing: antialiased !important;
-    font-weight: 450 !important;
+    // font-weight 由全局 --el-font-weight-primary 控制，无需显式覆盖
   }
 
   // 下拉选择框展开态
@@ -527,8 +531,7 @@ html.dark {
 
   // 按钮样式优化（Pro 组件区域单独处理，不覆盖其柔和风格）
   .el-button:not(.pro-toolbar .el-button):not(.pro-search__actions .el-button) {
-    // 按钮文字微调：增加字间距 + 统一字重，消除高饱和背景上白字的发胀感
-    letter-spacing: 0.03em !important;
+    // 按钮文字统一字重 500（与亮色模式 .el-button { font-weight: 500 } 一致）
     font-weight: 500 !important;
 
     // 主按钮
@@ -579,6 +582,7 @@ html.dark {
 
   // ============================================
   // Pro 搜索区域按钮（ProSearch）
+  // 显式尺寸与亮色模式 scoped 样式保持一致
   // ============================================
   .pro-search__actions .el-button {
     height: 32px !important;
@@ -586,13 +590,22 @@ html.dark {
     padding: 0 14px !important;
     font-size: 13px !important;
     font-weight: 500 !important;
+    font-family: var(--el-font-family) !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: geometricPrecision !important;
+
+    // 主按钮（搜索）— 白色文字确保对比度
+    &.el-button--primary {
+      color: #fff !important;
+    }
 
     // 重置/default 按钮 — 使用亮色模式相同的设计语言，颜色适配暗色背景
     // stylelint-disable-next-line selector-max-universal
     &:not(.el-button--primary):not(.el-button--danger):not(.el-button--success):not(.el-button--warning):not(.el-button--info) {
       background-color: rgba(255, 255, 255, 0.06) !important;
       border: 1px solid rgba(255, 255, 255, 0.15) !important;
-      color: var(--el-text-color-regular) !important;
+      color: var(--el-text-color-primary) !important; // 改用 primary 提高对比度
 
       &:hover,
       &:focus {
@@ -605,6 +618,7 @@ html.dark {
 
   // ============================================
   // Pro 工具栏按钮（ProToolbar）
+  // 显式尺寸与亮色模式 scoped 样式保持一致
   // ============================================
   .pro-toolbar .toolbar-left .el-button,
   .pro-toolbar .toolbar-right .el-button {
@@ -613,13 +627,17 @@ html.dark {
     padding: 0 14px !important;
     font-size: 13px !important;
     font-weight: 500 !important;
+    font-family: var(--el-font-family) !important;
+    -webkit-font-smoothing: antialiased !important;
+    -moz-osx-font-smoothing: grayscale !important;
+    text-rendering: geometricPrecision !important;
 
     // 重置/default 按钮 — 使用亮色模式相同的设计语言，颜色适配暗色背景
     // stylelint-disable-next-line selector-max-universal
     &:not(.el-button--primary):not(.el-button--danger):not(.el-button--success):not(.el-button--warning):not(.el-button--info):not(.is-circle) {
       background-color: rgba(255, 255, 255, 0.06) !important;
       border: 1px solid rgba(255, 255, 255, 0.15) !important;
-      color: var(--el-text-color-regular) !important;
+      color: var(--el-text-color-primary) !important; // 改用 primary 提高对比度
 
       &:hover,
       &:focus {
@@ -853,9 +871,8 @@ html.dark {
   .el-tag {
     border-radius: 3px !important; // 暗黑模式再小一点，和按钮的 6px 明显区分
     cursor: default !important; // 不可点击，和按钮区分
-    // Tag 文字微调：笔画变细一丁点，让小字号在深色底上内部空隙露出来
-    font-weight: 450 !important;
-    letter-spacing: 0.02em !important;
+    // Tag 文字字重提粗：暗黑底上 450 偏细，500 厚实
+    font-weight: 500 !important;
 
     // 主色调（天空蓝，柔化降噪）
     &.el-tag--primary {
@@ -999,9 +1016,9 @@ html.dark {
 
   // ---- 6. ProToolbar 工具栏底部分割线 ----
   // 给 "+ 新增" 所在行增加底部分割线，锁定为表格头部工具栏边界
+  // 不加额外 margin/padding，与亮色模式高度保持一致
   .pro-toolbar {
     border-bottom: 1px solid rgba(255, 255, 255, 0.04);
-    padding-bottom: 12px;
   }
 
   // ---- 7. Tiptap Editor disabled 状态 ----

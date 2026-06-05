@@ -150,6 +150,7 @@ html.dark {
 .el-button {
   border-radius: 8px;
   font-weight: 500;
+  height: var(--el-button-height, 32px);
   transition: all 0.25s ease;
 
   &:hover {
@@ -313,4 +314,18 @@ html.dark {
 .el-message-box {
   border-radius: 12px;
   overflow: hidden;
+}
+
+/* ---------- 字重巤底：表格/表头/输入框 ---------- */
+/* 确保关键区域的字重跟随全局 --el-font-weight-primary 变量 */
+.el-table__cell {
+  font-weight: var(--el-font-weight-primary) !important;
+}
+
+.el-table__header th {
+  font-weight: var(--el-font-weight-bold, 600) !important;
+}
+
+.el-input__inner {
+  font-weight: var(--el-font-weight-primary);
 }

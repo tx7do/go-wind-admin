@@ -252,7 +252,12 @@
 // 表头字体加粗
 .vxe-table--render-default {
   .vxe-table--header-wrapper .vxe-header--column {
-    font-weight: 600 !important;
+    font-weight: var(--el-font-weight-bold, 600) !important;
+  }
+
+  // 数据行字重跟随全局变量
+  .vxe-body--column .vxe-cell {
+    font-weight: var(--el-font-weight-primary);
   }
 }
 
