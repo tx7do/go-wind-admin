@@ -279,10 +279,11 @@ defineExpose({
 
 <style lang="scss" scoped>
 .pro-search {
-  padding: 12px 16px;
+  padding: 16px 20px;
   background: var(--el-bg-color);
-  border: 1px solid var(--el-border-color);
-  border-radius: 4px;
+  border: 1px solid var(--el-border-color-lighter);
+  border-radius: 8px;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 5%);
 }
 
 // === Grid 布局模式（参考 Vben） ===
@@ -453,6 +454,11 @@ defineExpose({
 }
 
 // ======== 暗色模式适配 ========
-// 暗色模式按钮样式已在全局 _dark-mode.scss 中统一处理
-// 这里不需要额外的 scoped 覆盖，避免样式冲突
+:global(html.dark) {
+  .pro-search {
+    background-color: #14171C; // 比页面底色 #0C0E13 亮一个色阶，建立层级
+    border-color: #23272F;
+    box-shadow: 0 1px 3px 0 rgb(0 0 0 / 20%);
+  }
+}
 </style>

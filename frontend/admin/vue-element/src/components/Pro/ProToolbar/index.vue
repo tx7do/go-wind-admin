@@ -356,7 +356,7 @@ defineExpose({
     border-radius: 50%;
     background-color: transparent;
     border: none;
-    color: var(--el-text-color-regular);
+    color: #6B7280;
     transition: all 0.2s ease;
     font-size: 15px;
 

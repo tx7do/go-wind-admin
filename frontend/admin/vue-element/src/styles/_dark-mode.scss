@@ -39,6 +39,7 @@ html.dark {
 
   // 3. Element Plus 组件变量覆盖
   --el-bg-color: var(--dark-bg-primary);
+  --el-bg-color-page: var(--dark-bg-primary);
   --el-bg-color-overlay: var(--dark-bg-table);
   --el-fill-color-blank: var(--dark-bg-table);
   --el-border-color: var(--dark-border);
@@ -61,12 +62,8 @@ html.dark {
     }
   }
 
-  // ProSearch 搜索栏：比页面底色亮一个色阶，建立层级感
-  .pro-search {
-    background-color: var(--dark-bg-table) !important;
-    border: 1px solid var(--dark-border) !important;
-    border-radius: 8px !important;
-  }
+  // ProSearch 搜索栏：暗色模式卡片样式已由组件 scoped 样式自动适配
+  // （通过 var(--el-bg-color) 等语义变量）
 
   // 搜索表单样式
   .el-form--inline {

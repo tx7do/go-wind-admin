@@ -349,3 +349,51 @@ html.dark .table-icon-btn {
 // 注意：选中行/hover/斑马纹的完整覆盖已移至 _vxe-table.scss 统一管理
 // ============================================
 
+// ============================================
+// 页面背景层级感（亮色模式）
+// 将 ProPage 区域设为淡灰色底色，让白色搜索栏和内容卡片「浮」起来
+// ============================================
+
+.pro-page {
+  background-color: var(--el-bg-color-page);
+}
+
+// 搜索栏卡片化：样式已在 ProSearch scoped 中统一设置
+// 白色背景 + 边框 + 圆角 + 淡投影，与内容卡片风格一致
+
+// ============================================
+// 状态标签文字对比度增强（亮色模式 WCAG AA）
+// ============================================
+
+// 信息态标签：文字加深至 #6B7280，提升灰色标签在白底上的辨识度
+.el-tag--plain.el-tag--info {
+  --el-tag-text-color: #6B7280;
+}
+
+// 成功态标签：文字加深至 #529B2E，满足 WCAG AA 对比度
+.el-tag--plain.el-tag--success {
+  --el-tag-text-color: #529B2E;
+}
+
+// 主色调标签：文字加深至 primary-dark-2，自适应主题色
+.el-tag--plain.el-tag--primary {
+  --el-tag-text-color: var(--el-color-primary-dark-2);
+}
+
+// ============================================
+// vxe-table 行悬停淡出动画
+// ============================================
+
+.vxe-table--render-default .vxe-body--row > .vxe-body--column {
+  transition: background-color 0.2s ease;
+}
+
+// ============================================
+// 分页器禁用状态增强
+// ============================================
+
+.el-pagination .btn-prev.is-disabled,
+.el-pagination .btn-next.is-disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
