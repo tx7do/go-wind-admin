@@ -34,7 +34,7 @@ const props = withDefaults(defineProps<EditorProps>(), {
 const emit = defineEmits<EditorEmits>();
 
 // 懒加载编辑器组件
-const TiptapEditor = defineAsyncComponent(() => import("./TiptapEditor.vue"));
+const TiptapEditor = defineAsyncComponent(() => import("./TiptapEditor/index.vue"));
 const MarkdownEditor = defineAsyncComponent(() => import("./MarkdownEditor.vue"));
 const JsonEditor = defineAsyncComponent(() => import("./JsonEditor.vue"));
 const PlainTextEditor = defineAsyncComponent(() => import("./PlainTextEditor.vue"));

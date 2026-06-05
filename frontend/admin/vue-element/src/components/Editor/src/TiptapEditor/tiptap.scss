@@ -1,0 +1,540 @@
+/* ============ 基础容器 ============ */
+.tiptap-editor-wrapper {
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background-color: #fff;
+  border: none !important;
+  border-radius: 0 !important;
+  transition: all 0.2s ease;
+}
+
+/* ============ 暗黑模式变量 ============ */
+.tiptap-editor-dark {
+  --tte-bg-primary: #0f172a !important;
+  --tte-bg-secondary: #1e293b !important;
+  --tte-bg-tertiary: #334155 !important;
+  --tte-text-primary: #f1f5f9 !important;
+  --tte-text-secondary: #94a3b8 !important;
+  --tte-text-muted: #64748b !important;
+  --tte-border-primary: #334155 !important;
+  --tte-border-secondary: #475569 !important;
+  --tte-code-bg: #1e293b !important;
+  --tte-code-text: #e2e8f0 !important;
+  --tte-blockquote-border: #475569 !important;
+  --tte-blockquote-text: #94a3b8 !important;
+  --tte-link: #60a5fa !important;
+  --tte-link-hover: #93c5fd !important;
+  --tte-toolbar-bg: #1e293b !important;
+  --tte-toolbar-btn: #cbd5e1 !important;
+  --tte-toolbar-btn-hover: #334155 !important;
+  --tte-toolbar-btn-active: #60a5fa !important;
+  --tte-statusbar-bg: #1e293b !important;
+}
+
+.tiptap-editor-dark {
+  background-color: var(--tte-bg-primary) !important;
+  border-color: var(--tte-border-primary) !important;
+}
+
+/* ============ Editor Content ============ */
+.tiptap-editor-content-wrapper {
+  display: flex !important;
+  flex: 1 !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+  background-color: #ffffff !important;
+}
+
+.tiptap-editor-dark .tiptap-editor-content-wrapper {
+  background-color: var(--tte-bg-primary) !important;
+}
+
+.tiptap-editor-content {
+  display: flex !important;
+  flex: 1 !important;
+  flex-direction: column !important;
+  width: 100% !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  background-color: #ffffff !important;
+}
+
+.tiptap-editor-dark .tiptap-editor-content {
+  background-color: var(--tte-bg-primary) !important;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror) {
+  box-sizing: border-box;
+  flex: 1 !important;
+  width: 100% !important;
+  height: 100% !important;
+  padding: 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #1f2937;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  background-color: transparent;
+  outline: none;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease !important;
+}
+
+.tiptap-editor-dark :deep(.ProseMirror),
+.tiptap-editor-content.dark :deep(.ProseMirror) {
+  color: var(--tte-text-primary) !important;
+  background-color: var(--tte-bg-primary) !important;
+}
+
+/* Placeholder */
+/* prettier-ignore */
+.tiptap-editor-wrapper :deep(.ProseMirror p.is-editor-empty:first-child::before) {
+  float: left;
+  height: 0;
+  color: #9ca3af;
+  pointer-events: none;
+  content: attr(data-placeholder);
+}
+
+/* prettier-ignore */
+.tiptap-editor-dark :deep(.ProseMirror p.is-editor-empty:first-child::before),
+.tiptap-editor-content.dark :deep(.ProseMirror p.is-editor-empty:first-child::before) {
+  color: var(--tte-text-secondary) !important;
+}
+
+/* Headings */
+.tiptap-editor-wrapper :deep(.ProseMirror h1) {
+  margin: 16px 0;
+  font-size: 28px;
+  font-weight: 700;
+  color: #111827;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror h2) {
+  margin: 12px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror h3) {
+  margin: 8px 0;
+  font-size: 20px;
+  font-weight: 700;
+  color: #374151;
+}
+
+.tiptap-editor-dark :deep(.ProseMirror h1),
+.tiptap-editor-dark :deep(.ProseMirror h2),
+.tiptap-editor-dark :deep(.ProseMirror h3),
+.tiptap-editor-content.dark :deep(.ProseMirror h1),
+.tiptap-editor-content.dark :deep(.ProseMirror h2),
+.tiptap-editor-content.dark :deep(.ProseMirror h3) {
+  color: var(--tte-text-primary) !important;
+}
+
+/* Paragraphs & Lists */
+.tiptap-editor-wrapper :deep(.ProseMirror p) {
+  margin: 8px 0;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror ul),
+.tiptap-editor-wrapper :deep(.ProseMirror ol) {
+  padding-left: 24px;
+  margin: 8px 0;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror li) {
+  margin: 4px 0;
+}
+
+/* Code */
+.tiptap-editor-wrapper :deep(.ProseMirror code) {
+  padding: 2px 6px;
+  font-family: Monaco, Menlo, "Courier New", monospace;
+  font-size: 13px;
+  color: #ef4444;
+  background-color: #f3f4f6;
+  border-radius: 3px;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror pre) {
+  position: relative;
+  padding: 12px;
+  padding-top: 36px; /* 为语言选择器留出空间 */
+  margin: 8px 0;
+  overflow-x: auto;
+  color: #f3f4f6;
+  background-color: #1f2937;
+  border-radius: 6px;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror pre code) {
+  display: block;
+  padding: 0;
+  font-family: Monaco, Menlo, "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  color: inherit;
+  background: none;
+  border-radius: 0;
+}
+
+/* Code Block Language Selector */
+.tiptap-editor-wrapper :deep(.ProseMirror pre .code-block-language-selector) {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 10;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror pre .code-block-language-selector select) {
+  padding: 2px 20px 2px 8px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 11px;
+  color: #9ca3af;
+  text-transform: uppercase;
+  appearance: none;
+  cursor: pointer;
+  background-color: rgb(0 0 0 / 30%);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  background-size: 8px;
+  border: 1px solid rgb(255 255 255 / 10%);
+  border-radius: 3px;
+  outline: none;
+}
+
+/* prettier-ignore */
+.tiptap-editor-wrapper :deep(.ProseMirror pre .code-block-language-selector select:hover) {
+  background-color: rgb(0 0 0 / 50%);
+  border-color: rgb(255 255 255 / 20%);
+}
+
+/* prettier-ignore */
+.tiptap-editor-wrapper :deep(.ProseMirror pre .code-block-language-selector select:focus) {
+  background-color: rgb(0 0 0 / 60%);
+  border-color: #3b82f6;
+}
+
+/* prettier-ignore */
+.tiptap-editor-dark :deep(.ProseMirror pre .code-block-language-selector select) {
+  color: #cbd5e1;
+  background-color: rgb(255 255 255 / 10%);
+  border-color: rgb(255 255 255 / 20%);
+}
+
+/* prettier-ignore */
+.tiptap-editor-dark :deep(.ProseMirror pre .code-block-language-selector select:hover) {
+  background-color: rgb(255 255 255 / 15%);
+}
+
+/* Syntax Highlighting (lowlight) */
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-comment),
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-quote) {
+  font-style: italic;
+  color: #6b7280;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-keyword),
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-selector-tag),
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-literal),
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-type) {
+  color: #c678dd;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-string),
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-number) {
+  color: #98c379;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-title),
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-function) {
+  color: #61afef;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-params) {
+  color: #d19a66;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-built_in),
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-class) {
+  color: #e6c07b;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-attr),
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-variable),
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-property) {
+  color: #e06c75;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-tag),
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-name) {
+  color: #e06c75;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-regexp) {
+  color: #56b6c2;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror .hljs-meta) {
+  color: #abb2bf;
+}
+
+.tiptap-editor-dark :deep(.ProseMirror code),
+.tiptap-editor-content.dark :deep(.ProseMirror code) {
+  color: var(--tte-code-text) !important;
+  background-color: var(--tte-code-bg) !important;
+}
+
+.tiptap-editor-dark :deep(.ProseMirror pre),
+.tiptap-editor-content.dark :deep(.ProseMirror pre) {
+  color: var(--tte-text-primary) !important;
+  background-color: var(--tte-bg-secondary) !important;
+  border: 1px solid var(--tte-border-secondary) !important;
+}
+
+/* Blockquote */
+.tiptap-editor-wrapper :deep(.ProseMirror blockquote) {
+  padding-left: 12px;
+  margin: 8px 0;
+  font-style: italic;
+  color: #6b7280;
+  border-left: 4px solid #d1d5db;
+}
+
+.tiptap-editor-dark :deep(.ProseMirror blockquote),
+.tiptap-editor-content.dark :deep(.ProseMirror blockquote) {
+  color: var(--tte-blockquote-text) !important;
+  border-left-color: var(--tte-blockquote-border) !important;
+}
+
+/* Links */
+.tiptap-editor-wrapper :deep(.ProseMirror a) {
+  color: #3b82f6;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror a:hover) {
+  color: #2563eb;
+}
+
+.tiptap-editor-dark :deep(.ProseMirror a),
+.tiptap-editor-content.dark :deep(.ProseMirror a) {
+  color: var(--tte-link) !important;
+}
+
+.tiptap-editor-dark :deep(.ProseMirror a:hover),
+.tiptap-editor-content.dark :deep(.ProseMirror a:hover) {
+  color: var(--tte-link-hover) !important;
+}
+
+/* Selection */
+.tiptap-editor-wrapper :deep(.ProseMirror ::selection) {
+  background-color: rgb(59 130 246 / 30%);
+}
+
+.tiptap-editor-dark :deep(.ProseMirror ::selection),
+.tiptap-editor-content.dark :deep(.ProseMirror ::selection) {
+  background-color: rgb(96 165 250 / 40%) !important;
+}
+
+/* Images */
+.tiptap-editor-wrapper :deep(.ProseMirror img) {
+  max-width: 100%;
+  height: auto;
+  margin: 8px 0;
+  border-radius: 4px;
+}
+
+/* ============ Scrollbar ============ */
+.tiptap-editor-content::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.tiptap-editor-content::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.tiptap-editor-content::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.tiptap-editor-content::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+.tiptap-editor-dark .tiptap-editor-content::-webkit-scrollbar-track,
+.tiptap-editor-content.dark::-webkit-scrollbar-track {
+  background: var(--tte-bg-primary) !important;
+}
+
+.tiptap-editor-dark .tiptap-editor-content::-webkit-scrollbar-thumb,
+.tiptap-editor-content.dark::-webkit-scrollbar-thumb {
+  background: var(--tte-border-secondary) !important;
+}
+
+.tiptap-editor-dark .tiptap-editor-content::-webkit-scrollbar-thumb:hover,
+.tiptap-editor-content.dark::-webkit-scrollbar-thumb:hover {
+  background: #64748b !important;
+}
+
+.tiptap-editor-content {
+  scrollbar-color: #cbd5e1 #f1f5f9;
+  scrollbar-width: thin;
+}
+
+.tiptap-editor-dark .tiptap-editor-content,
+.tiptap-editor-content.dark {
+  scrollbar-color: var(--tte-border-secondary) var(--tte-bg-primary) !important;
+}
+
+/* ============ Disabled State ============ */
+.tiptap-editor-wrapper:has(.ProseMirror[contenteditable="false"]) {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+/* ============ Focus State ============ */
+.tiptap-editor-wrapper:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
+}
+
+.tiptap-editor-dark:focus-within {
+  border-color: var(--tte-link) !important;
+  box-shadow: 0 0 0 3px rgb(96 165 250 / 20%) !important;
+}
+
+/* ============ Transitions ============ */
+.tiptap-editor-wrapper,
+.tiptap-editor-wrapper :deep(*) {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease !important;
+}
+
+/* ============ Utility ============ */
+.hidden {
+  display: none;
+}
+
+/* ============ Video Styles ============ */
+.tiptap-editor-wrapper :deep(.ProseMirror video) {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 12px 0;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror video:hover) {
+  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror .ProseMirror-selectednode video) {
+  outline: 3px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+.tiptap-editor-dark :deep(.ProseMirror video) {
+  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
+}
+
+.tiptap-editor-dark :deep(.ProseMirror .ProseMirror-selectednode video) {
+  outline-color: var(--tte-link);
+}
+
+/* ============ Modal Styles ============ */
+.code-block-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.modal-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #374151;
+}
+
+.tiptap-editor-dark .field-label {
+  color: var(--tte-text-primary) !important;
+}
+
+.language-select {
+  width: 100%;
+}
+
+.code-textarea {
+  width: 100%;
+  padding: 8px 12px;
+  font-family: Monaco, Menlo, "Courier New", monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  resize: vertical;
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  transition: border-color 0.2s ease;
+}
+
+.code-textarea:focus {
+  border-color: #3b82f6;
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
+}
+
+.tiptap-editor-dark .code-textarea {
+  color: var(--tte-text-primary) !important;
+  background-color: var(--tte-bg-secondary) !important;
+  border-color: var(--tte-border-secondary) !important;
+}
+
+.tiptap-editor-dark .code-textarea:focus {
+  border-color: var(--tte-link) !important;
+  box-shadow: 0 0 0 3px rgb(96 165 250 / 20%) !important;
+}
+
+.video-modal,
+.iframe-modal {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.width-select,
+.height-select {
+  width: 100%;
+}
+
+/* ============ Dialog Footer ============ */
+.dialog-footer {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
