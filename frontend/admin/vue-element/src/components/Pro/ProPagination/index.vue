@@ -127,7 +127,7 @@ defineExpose({
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 0 0;
+  padding: 12px 0;
   border-top: 1px solid var(--el-border-color-lighter);
   background-color: var(--el-bg-color);
   margin-top: auto; // 贴底 ProPage 容器

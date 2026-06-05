@@ -27,8 +27,8 @@ html.dark {
   // 文本色层级体系（背景越深，文本越亮）
   --dark-text-primary: #ffffff;       // 一级文本：表头主文本/选中菜单项/核心标题（纯白，最强对比）
   --dark-text-secondary: #b3b3b3;     // 二级文本：未选中菜单项/面包屑非当前页/辅助说明（亮灰，WCAG 4.5:1）
-  --dark-text-placeholder: #8c8c8c;   // 三级文本：占位符/时间戳/辅助说明（中灰，辅助信息）
-  --dark-text-data: #d4d4d4;          // 数据文本：表格数据行主体（中性灰，清晰可读不抢焦点）
+  --dark-text-placeholder: #9ca3af;   // 三级文本：占位符/时间戳/辅助说明（中灰，辅助信息，暗色下适当提亮以区分输入框背景）
+  --dark-text-data: #CFD3DC;          // 数据文本：表格数据行主体（柔和灰白，清晰可读不刺眼，避免纯白光晕效应）
 
   // 2. 色彩体系（跟随用户主题色）
   --dark-primary: var(--el-color-primary);       // 主色（跟随主题）
@@ -59,6 +59,13 @@ html.dark {
         padding: 16px !important;
       }
     }
+  }
+
+  // ProSearch 搜索栏：比页面底色亮一个色阶，建立层级感
+  .pro-search {
+    background-color: var(--dark-bg-table) !important;
+    border: 1px solid var(--dark-border) !important;
+    border-radius: 8px !important;
   }
 
   // 搜索表单样式
@@ -490,7 +497,7 @@ html.dark {
           background-color: #1e2128 !important;
 
           td {
-            color: var(--dark-text-primary) !important;
+            color: var(--dark-text-data) !important;
             background-color: #1e2128 !important;
             border-color: var(--dark-border) !important;
             padding-top: 8px !important;
@@ -525,6 +532,12 @@ html.dark {
       }
     }
 
+    // vxe-table 数据行文字色（覆盖 ProTable scoped 样式的 var(--el-text-color-regular)）
+    // 使用柔和灰白，避免纯白的光晕效应
+    .vxe-body--column .vxe-cell {
+      color: var(--dark-text-data) !important;
+    }
+    
     // 固定列样式
     .el-table__fixed,
     .el-table__fixed-right {
@@ -552,8 +565,10 @@ html.dark {
   }
 
   // 分页器优化
+  .pro-pagination,
   .pagination-container {
     background-color: var(--dark-bg-table) !important; // 和表格容器统一，避免模块割裂
+    border-top-color: var(--dark-border) !important;
     padding: 12px 0 !important;
   }
 
@@ -564,10 +579,18 @@ html.dark {
 
     // 分页文字
     .el-pagination__total,
-    .el-pagination__sizes,
     .el-pagination__jump {
       color: var(--dark-text-primary) !important;
       font-weight: 500 !important;
+    }
+
+    // "xx 条/页" 下拉选单文字
+    .el-pagination__sizes {
+      color: var(--dark-text-primary) !important;
+
+      .el-input__inner {
+        color: var(--dark-text-primary) !important;
+      }
     }
 
     // 分页按钮
@@ -646,11 +669,11 @@ html.dark {
       color: #409EFF !important;
     }
 
-    // 成功态（绿）
+    // 成功态（亮绿，暗色模式下提亮以确保可读性）
     &.el-tag--success {
-      background-color: rgba(103, 194, 58, 0.15) !important;
+      background-color: rgba(52, 211, 153, 0.12) !important;
       border-color: transparent !important;
-      color: #67C23A !important;
+      color: #34D399 !important;
     }
 
     // 警告态（橙）
@@ -671,7 +694,7 @@ html.dark {
     &.el-tag--info {
       background-color: rgba(144, 147, 153, 0.15) !important;
       border-color: transparent !important;
-      color: #909399 !important;
+      color: #A0A4AD !important;
     }
   }
 

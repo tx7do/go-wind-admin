@@ -120,7 +120,7 @@ const ToolCell = defineComponent({
   setup(props, { emit }) {
     return () => {
       const buttons = props.col.buttons ?? [];
-      return h("div", { class: "flex items-center justify-center gap-2" }, [
+      return h("div", { class: "flex items-center justify-center gap-3" }, [
         buttons.map((btn: any) => {
           const codes = btn.auth ? (Array.isArray(btn.auth) ? btn.auth : [btn.auth]) : undefined;
           const visible = btn.visible?.(props.row) ?? true;

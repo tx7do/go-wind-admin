@@ -311,20 +311,36 @@ html.dark .table-icon-btn {
     background-color: rgba(255, 255, 255, 0.05);
   }
 
-  &--primary:hover {
-    background-color: var(--el-color-primary-light-9);
+  &--primary {
+    color: var(--el-color-primary-light-3) !important;
+
+    &:hover {
+      background-color: var(--el-color-primary-light-9);
+    }
   }
 
-  &--danger:hover {
-    background-color: var(--el-color-danger-light-9);
+  &--danger {
+    color: var(--el-color-danger-light-3) !important;
+
+    &:hover {
+      background-color: var(--el-color-danger-light-9);
+    }
   }
 
-  &--success:hover {
-    background-color: var(--el-color-success-light-9);
+  &--success {
+    color: var(--el-color-success-light-3) !important;
+
+    &:hover {
+      background-color: var(--el-color-success-light-9);
+    }
   }
 
-  &--warning:hover {
-    background-color: var(--el-color-warning-light-9);
+  &--warning {
+    color: var(--el-color-warning-light-3) !important;
+
+    &:hover {
+      background-color: var(--el-color-warning-light-9);
+    }
   }
 }
 

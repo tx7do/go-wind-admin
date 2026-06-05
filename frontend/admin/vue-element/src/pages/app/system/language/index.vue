@@ -77,8 +77,8 @@ const pageConfig = computed<ProPageConfig>(() => ({
     tableAttrs: { border: true, stripe: false },
     columns: [
       { type: "index", label: $t("common.table.seq"), width: 60 },
-      { prop: "nativeName", label: $t("pages.language.nativeName"), minWidth: 120, fixed: "left" },
-      { prop: "languageName", label: $t("pages.language.languageName"), minWidth: 120 },
+      { prop: "nativeName", label: $t("pages.language.nativeName"), minWidth: 120, fixed: "left", align: "left" },
+      { prop: "languageName", label: $t("pages.language.languageName"), minWidth: 120, align: "left" },
       { prop: "languageCode", label: $t("pages.language.languageCode"), minWidth: 120 },
       {
         prop: "isEnabled",
@@ -104,7 +104,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
         prop: "action",
         label: $t("common.table.action"),
         fixed: "right",
-        width: 150,
+        width: 160,
         cellType: "tool",
         buttons: [
           { name: "edit", label: $t("common.button.edit"), icon: "lucide:pen-line" },
