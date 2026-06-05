@@ -1,5 +1,5 @@
 <template>
-  <div class="basic-info-page">
+  <div class="basic-info-page" v-loading="pageLoading">
     <!-- 基本信息卡片 -->
     <div class="basic-info-container">
       <!-- 头像与状态 -->
@@ -120,6 +120,7 @@ const props = defineProps({
 });
 
 const data = ref<User>();
+const pageLoading = ref(true);
 
 // 获取首字母（默认用'?'）
 const getFirstChar = computed(() => {
@@ -137,7 +138,12 @@ const getAvatarColor = () => {
  */
 async function reload() {
   if (props.userId) {
-    data.value = await fetchUser({ id: props.userId });
+    pageLoading.value = true;
+    try {
+      data.value = await fetchUser({ id: props.userId });
+    } finally {
+      pageLoading.value = false;
+    }
   }
 }
 

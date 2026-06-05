@@ -2,7 +2,7 @@
   <section class="app-main" :class="mainClass" :style="{ height: appMainHeight }">
     <router-view>
       <template #default="{ Component, route }">
-        <transition :name="transitionName" mode="out-in" :duration="150">
+        <transition :name="transitionName" mode="out-in" :duration="150" @before-leave="onBeforeLeave" @after-enter="onAfterEnter">
           <keep-alive :include="cachedViews">
             <component
               :is="currentComponent(Component, route)"
@@ -10,6 +10,16 @@
             />
           </keep-alive>
         </transition>
+
+        <!-- 页面切换骨架屏 -->
+        <div v-if="showSkeleton" class="page-skeleton">
+          <div class="skeleton-line skeleton-line--title" />
+          <div class="skeleton-line skeleton-line--long" />
+          <div class="skeleton-line skeleton-line--medium" />
+          <div class="skeleton-line skeleton-line--short" />
+          <div class="skeleton-line skeleton-line--long" />
+          <div class="skeleton-line skeleton-line--medium" />
+        </div>
       </template>
     </router-view>
 
@@ -78,6 +88,20 @@ const currentComponent = (component: Component, route: RouteLocationNormalized) 
   return h(wrapper);
 };
 
+// 页面切换骨架屏状态
+const showSkeleton = ref(false);
+
+function onBeforeLeave() {
+  // 只在首次加载时显示骨架屏（非 keep-alive 缓存页面）
+  if (preferences.transition.enable) {
+    showSkeleton.value = true;
+  }
+}
+
+function onAfterEnter() {
+  showSkeleton.value = false;
+}
+
 const appMainHeight = computed(() => {
   if (tabbarPreferences.value.enable) {
     return `calc(100vh - ${variables["navbar-height"]} - ${variables["tags-view-height"]})`;
@@ -108,6 +132,47 @@ const mainClass = computed(() => {
   background-color: var(--el-bg-color-page);
   width: 100%;
   min-width: 0;
+}
+
+// 页面切换骨架屏
+.page-skeleton {
+  position: absolute;
+  inset: 0;
+  padding: 24px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.skeleton-line {
+  height: 16px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  background: linear-gradient(90deg, var(--el-fill-color-light) 25%, var(--el-fill-color) 37%, var(--el-fill-color-light) 63%);
+  background-size: 400% 100%;
+  animation: skeleton-pulse 1.4s ease infinite;
+
+  &--title {
+    width: 30%;
+    height: 24px;
+    margin-bottom: 24px;
+  }
+
+  &--long {
+    width: 100%;
+  }
+
+  &--medium {
+    width: 60%;
+  }
+
+  &--short {
+    width: 40%;
+  }
+}
+
+@keyframes skeleton-pulse {
+  0% { background-position: 100% 50%; }
+  100% { background-position: 0 50%; }
 }
 
 // 紧凑模式：限制最大宽度并居中

@@ -14,6 +14,7 @@
       :rules="formRules"
       label-width="120px"
       class="drawer-form"
+      v-loading="pageLoading"
     >
       <ElFormItem :label="$t('pages.permission_group.name')" prop="name">
         <ElInput v-model="formData.name" :placeholder="$t('common.placeholder.input')" clearable />
@@ -96,6 +97,7 @@ const { mutateAsync: updatePermissionGroup } = useUpdatePermissionGroup();
 
 const visible = ref(false);
 const submitLoading = ref(false);
+const pageLoading = ref(false);
 const isCreate = ref(true);
 const currentId = ref<number>();
 const formRef = ref();
@@ -160,18 +162,23 @@ async function open(data?: { create: boolean; row?: any }) {
   // 重置表单
   resetForm();
 
-  // 加载权限分组树
-  await loadPermissionGroupTree();
+  // 加载权限分组树（显示加载状态）
+  pageLoading.value = true;
+  try {
+    await loadPermissionGroupTree();
 
-  // 编辑时填充数据
-  if (data?.row && !isCreate.value) {
-    Object.assign(formData, {
-      name: data.row.name || "",
-      module: data.row.module || "",
-      parentId: data.row.parentId,
-      sortOrder: data.row.sortOrder || 1,
-      status: data.row.status || "ON",
-    });
+    // 编辑时填充数据
+    if (data?.row && !isCreate.value) {
+      Object.assign(formData, {
+        name: data.row.name || "",
+        module: data.row.module || "",
+        parentId: data.row.parentId,
+        sortOrder: data.row.sortOrder || 1,
+        status: data.row.status || "ON",
+      });
+    }
+  } finally {
+    pageLoading.value = false;
   }
 }
 

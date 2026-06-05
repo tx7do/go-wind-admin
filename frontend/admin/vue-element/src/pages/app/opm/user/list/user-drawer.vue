@@ -14,6 +14,7 @@
       :rules="formRules"
       label-width="120px"
       class="drawer-form"
+      v-loading="pageLoading"
     >
       <!-- 基本信息 -->
       <ElDivider content-position="left">{{ $t("common.section.basic") }}</ElDivider>
@@ -190,6 +191,7 @@ const { mutateAsync: updateUser } = useUpdateUser();
 
 const visible = ref(false);
 const submitLoading = ref(false);
+const pageLoading = ref(false);
 const isCreate = ref(true);
 const currentId = ref<number>();
 const formRef = ref();
@@ -302,25 +304,30 @@ async function open(data?: { create: boolean; row?: any }) {
   // 重置表单
   resetForm();
 
-  // 加载树形数据
-  await Promise.all([loadRoleTree(), loadOrgUnitTree(), loadPositionTree()]);
+  // 加载树形数据（显示加载状态）
+  pageLoading.value = true;
+  try {
+    await Promise.all([loadRoleTree(), loadOrgUnitTree(), loadPositionTree()]);
 
-  // 编辑时填充数据
-  if (data?.row && !isCreate.value) {
-    Object.assign(formData, {
-      username: data.row.username || "",
-      password: "",
-      roleIds: data.row.roleIds || [],
-      orgUnitIds: data.row.orgUnitIds || [],
-      positionIds: data.row.positionIds || [],
-      gender: data.row.gender || "SECRET",
-      nickname: data.row.nickname || "",
-      realname: data.row.realname || "",
-      email: data.row.email || "",
-      mobile: data.row.mobile || "",
-      status: data.row.status || "NORMAL",
-      remark: data.row.remark || "",
-    });
+    // 编辑时填充数据
+    if (data?.row && !isCreate.value) {
+      Object.assign(formData, {
+        username: data.row.username || "",
+        password: "",
+        roleIds: data.row.roleIds || [],
+        orgUnitIds: data.row.orgUnitIds || [],
+        positionIds: data.row.positionIds || [],
+        gender: data.row.gender || "SECRET",
+        nickname: data.row.nickname || "",
+        realname: data.row.realname || "",
+        email: data.row.email || "",
+        mobile: data.row.mobile || "",
+        status: data.row.status || "NORMAL",
+        remark: data.row.remark || "",
+      });
+    }
+  } finally {
+    pageLoading.value = false;
   }
 }
 

@@ -14,6 +14,7 @@
       :rules="formRules"
       label-width="120px"
       class="drawer-form"
+      v-loading="pageLoading"
     >
       <!-- 基本信息 -->
       <ElDivider content-position="left">{{ $t("common.section.basic") }}</ElDivider>
@@ -213,6 +214,7 @@ const { mutateAsync: updateMenu } = useUpdateMenu();
 
 const visible = ref(false);
 const submitLoading = ref(false);
+const pageLoading = ref(false);
 const isCreate = ref(true);
 const currentId = ref<number>();
 const formRef = ref();
@@ -268,28 +270,33 @@ watch(
 // 打开抽屉
 async function open(row?: any) {
   visible.value = true;
+  pageLoading.value = true;
 
-  // 加载菜单树数据
-  await loadMenuTree();
+  try {
+    // 加载菜单树数据
+    await loadMenuTree();
 
-  if (row) {
-    // 编辑模式
-    isCreate.value = false;
-    currentId.value = row.id;
-    Object.assign(formData, row);
-    // 处理 meta 字段
-    if (row.meta) {
-      Object.assign(formData.meta, row.meta);
+    if (row) {
+      // 编辑模式
+      isCreate.value = false;
+      currentId.value = row.id;
+      Object.assign(formData, row);
+      // 处理 meta 字段
+      if (row.meta) {
+        Object.assign(formData.meta, row.meta);
+      }
+      // 初始化 titleSuffix
+      if (row.meta?.title && $te(row.meta.title)) {
+        titleSuffix.value = $t(row.meta.title);
+      }
+    } else {
+      // 创建模式
+      isCreate.value = true;
+      currentId.value = undefined;
+      resetForm();
     }
-    // 初始化 titleSuffix
-    if (row.meta?.title && $te(row.meta.title)) {
-      titleSuffix.value = $t(row.meta.title);
-    }
-  } else {
-    // 创建模式
-    isCreate.value = true;
-    currentId.value = undefined;
-    resetForm();
+  } finally {
+    pageLoading.value = false;
   }
 }
 

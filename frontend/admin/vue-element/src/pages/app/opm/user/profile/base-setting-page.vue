@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container">
+  <div class="page-container" v-loading="pageLoading">
     <ElRow :gutter="24">
       <ElCol :span="14">
         <ElForm ref="formRef" :model="formData" label-width="120px" class="profile-form">
@@ -120,6 +120,7 @@ const { mutateAsync: updateUserProfile } = useUpdateUserProfile();
 
 const currentUserId = ref<number>();
 const submitLoading = ref(false);
+const pageLoading = ref(true);
 const formRef = ref();
 
 // 表单数据
@@ -137,6 +138,7 @@ const formData = reactive({
 
 // 加载用户信息
 async function loadUserData() {
+  pageLoading.value = true;
   try {
     const data = await fetchUserProfile();
     if (data) {
@@ -155,6 +157,8 @@ async function loadUserData() {
     }
   } catch (_error) {
     console.error("Failed to load user data:", _error);
+  } finally {
+    pageLoading.value = false;
   }
 }
 

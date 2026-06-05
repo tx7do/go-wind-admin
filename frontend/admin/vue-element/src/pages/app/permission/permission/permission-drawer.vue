@@ -14,6 +14,7 @@
       :rules="formRules"
       label-width="120px"
       class="drawer-form"
+      v-loading="pageLoading"
     >
       <!-- 基本信息 -->
       <ElDivider content-position="left">{{ $t("common.section.basic") }}</ElDivider>
@@ -152,6 +153,7 @@ const { mutateAsync: updatePermission } = useUpdatePermission();
 
 const visible = ref(false);
 const submitLoading = ref(false);
+const pageLoading = ref(false);
 const isCreate = ref(true);
 const currentId = ref<number>();
 const formRef = ref();
@@ -409,22 +411,27 @@ async function open(data?: { create: boolean; row?: any }) {
   // 重置表单
   resetForm();
 
-  // 加载树形数据
-  await Promise.all([loadPermissionGroupTree(), loadMenuTree(), loadApiTree()]);
+  // 加载树形数据（显示加载状态）
+  pageLoading.value = true;
+  try {
+    await Promise.all([loadPermissionGroupTree(), loadMenuTree(), loadApiTree()]);
 
-  // 编辑时填充数据
-  if (data?.row && !isCreate.value) {
-    Object.assign(formData, {
-      name: data.row.name || "",
-      code: data.row.code || "",
-      groupId: data.row.groupId ?? null,
-      status: data.row.status || "ON",
-    });
-    // 等待树渲染后设置选中节点
-    nextTick(() => {
-      menuTreeRef.value?.setCheckedKeys(data.row.menuIds || []);
-      apiTreeRef.value?.setCheckedKeys(data.row.apiIds || []);
-    });
+    // 编辑时填充数据
+    if (data?.row && !isCreate.value) {
+      Object.assign(formData, {
+        name: data.row.name || "",
+        code: data.row.code || "",
+        groupId: data.row.groupId ?? null,
+        status: data.row.status || "ON",
+      });
+      // 等待树渲染后设置选中节点
+      nextTick(() => {
+        menuTreeRef.value?.setCheckedKeys(data.row.menuIds || []);
+        apiTreeRef.value?.setCheckedKeys(data.row.apiIds || []);
+      });
+    }
+  } finally {
+    pageLoading.value = false;
   }
 }
 

@@ -14,6 +14,7 @@
       :rules="formRules"
       label-width="120px"
       class="drawer-form"
+      v-loading="pageLoading"
     >
       <!-- 基本信息 -->
       <ElDivider content-position="left">{{ $t("common.section.basic") }}</ElDivider>
@@ -113,6 +114,7 @@ const { mutateAsync: updateRole } = useUpdateRole();
 
 const visible = ref(false);
 const submitLoading = ref(false);
+const pageLoading = ref(false);
 const isCreate = ref(true);
 const currentId = ref<number>();
 const formRef = ref();
@@ -179,18 +181,23 @@ async function open(data?: { create: boolean; row?: any }) {
   // 重置表单
   resetForm();
 
-  // 加载权限树
-  await loadPermissionTree();
+  // 加载权限树（显示加载状态）
+  pageLoading.value = true;
+  try {
+    await loadPermissionTree();
 
-  // 如果是编辑模式，填充数据
-  if (!isCreate.value && data?.row) {
-    Object.assign(formData, data.row);
+    // 如果是编辑模式，填充数据
+    if (!isCreate.value && data?.row) {
+      Object.assign(formData, data.row);
 
-    // 设置权限树的选中状态
-    await nextTick();
-    if (data.row.permissions && Array.isArray(data.row.permissions)) {
-      permissionTreeRef.value?.setCheckedKeys(data.row.permissions);
+      // 设置权限树的选中状态
+      await nextTick();
+      if (data.row.permissions && Array.isArray(data.row.permissions)) {
+        permissionTreeRef.value?.setCheckedKeys(data.row.permissions);
+      }
     }
+  } finally {
+    pageLoading.value = false;
   }
 }
 

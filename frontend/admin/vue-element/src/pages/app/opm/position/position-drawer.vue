@@ -14,6 +14,7 @@
       :rules="formRules"
       label-width="120px"
       class="drawer-form"
+      v-loading="pageLoading"
     >
       <!-- 基本信息 -->
       <ElDivider content-position="left">{{ $t("common.section.basic") }}</ElDivider>
@@ -142,6 +143,7 @@ const { mutateAsync: updatePosition } = useUpdatePosition();
 
 const visible = ref(false);
 const submitLoading = ref(false);
+const pageLoading = ref(false);
 const isCreate = ref(true);
 const currentId = ref<number>();
 const formRef = ref();
@@ -201,12 +203,17 @@ async function open(data?: { create: boolean; row?: any }) {
   // 重置表单
   resetForm();
 
-  // 加载组织树
-  await loadOrgUnitTree();
+  // 加载组织树（显示加载状态）
+  pageLoading.value = true;
+  try {
+    await loadOrgUnitTree();
 
-  // 如果是编辑模式，填充数据
-  if (!isCreate.value && data?.row) {
-    Object.assign(formData, data.row);
+    // 如果是编辑模式，填充数据
+    if (!isCreate.value && data?.row) {
+      Object.assign(formData, data.row);
+    }
+  } finally {
+    pageLoading.value = false;
   }
 }
 
