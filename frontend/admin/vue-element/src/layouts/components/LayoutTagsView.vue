@@ -1190,32 +1190,38 @@ html.dark .tabs-bar {
 
   // 未激活文字：亮灰色，清晰可读
   .tabs-bar__item {
-    color: #b3b3b3;
+    color: #8a94a6;
+    transition: all 0.2s ease;
 
     &.is-active {
       color: var(--el-color-primary);
+      font-weight: 600;
+      background-color: rgba(255, 255, 255, 0.04);
+      border-radius: 4px 4px 0 0;
     }
 
     &:not(.is-active):hover {
       color: #e5eaf3;
+      background-color: rgba(255, 255, 255, 0.03);
     }
   }
 
-  // Card 激活态边框
+  // Card 激活态：底部主色指示线 + 微亮背景
   .tabs-bar__item--card.is-active {
     border-color: transparent;
     border-bottom-color: var(--el-color-primary);
+    background-color: rgba(255, 255, 255, 0.04);
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
   }
 
-  // Chrome 激活态背景
+  // Chrome 激活态背景（更明显的区分）
   .tabs-bar__item--chrome.is-active .tabs-bar__chrome-bg__content {
-    background-color: var(--el-color-primary-light-9);
+    background-color: rgba(255, 255, 255, 0.06);
   }
 
   .tabs-bar__item--chrome.is-active .tabs-bar__chrome-bg__before,
   .tabs-bar__item--chrome.is-active .tabs-bar__chrome-bg__after {
-    fill: var(--el-color-primary-light-9);
+    fill: rgba(255, 255, 255, 0.06);
   }
 
   .tabs-bar__item--chrome:not(.is-active):hover .tabs-bar__chrome-bg__content {

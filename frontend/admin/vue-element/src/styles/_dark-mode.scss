@@ -26,7 +26,7 @@ html.dark {
   --dark-bg-primary: #0C0E13;      // 页面主背景(微压暗基底,暗黑质感更高级)
   --dark-bg-table: #14171C;         // 表格容器/输入框背景(比背景亮 2 个灰度层级,模块边界瞬间清晰)
   --dark-bg-hover: #1A1E26;         // 悬浮态/展开态/表头/行 hover(hover 态微高亮,给用户明确的交互反馈)
-  --dark-border: #23272F;           // 输入框边框/分割线/表格边框(微加深,列边界更清晰)
+  --dark-border: #2d3139;           // 输入框边框/分割线/表格边框(提亮一阶,静止态边界感更清晰)
     
   // Drawer 专属层级（比页面主背景亮 3 个灰度层级，配合环境光投影，让抽屉「浮」起来）
   --dark-bg-drawer: #1e2026;         // Drawer 主背景（偏暖色调，比页面底色明显提亮，拉开层级距离）
@@ -857,39 +857,39 @@ html.dark {
     font-weight: 450 !important;
     letter-spacing: 0.02em !important;
 
-    // 主色调（蓝）
+    // 主色调（天空蓝，柔化降噪）
     &.el-tag--primary {
-      background-color: rgba(64, 158, 255, 0.15) !important;
-      border-color: transparent !important;
-      color: #409EFF !important;
+      background-color: rgba(96, 165, 250, 0.12) !important;
+      border-color: rgba(96, 165, 250, 0.2) !important;
+      color: #60a5fa !important; // 天空蓝，比 #409EFF 更柔
     }
 
-    // 成功态（亮绿，暗色模式下提亮以确保可读性）
+    // 成功态（薄荷绿，柔化降噪）
     &.el-tag--success {
-      background-color: rgba(52, 211, 153, 0.12) !important;
-      border-color: transparent !important;
-      color: #34D399 !important;
+      background-color: rgba(52, 211, 153, 0.10) !important;
+      border-color: rgba(52, 211, 153, 0.18) !important;
+      color: #34d399 !important; // 薄荷绿
     }
 
-    // 警告态（橙）
+    // 警告态（琥珀，柔化降噪）
     &.el-tag--warning {
-      background-color: rgba(230, 162, 60, 0.15) !important;
-      border-color: transparent !important;
-      color: #E6A23C !important;
+      background-color: rgba(251, 191, 36, 0.12) !important;
+      border-color: rgba(251, 191, 36, 0.2) !important;
+      color: #fbbf24 !important; // 柔化琥珀
     }
 
-    // 危险态（红）
+    // 危险态（珊瑚红，柔化降噪）
     &.el-tag--danger {
-      background-color: rgba(245, 108, 108, 0.15) !important;
-      border-color: transparent !important;
-      color: #F56C6C !important;
+      background-color: rgba(248, 113, 113, 0.12) !important;
+      border-color: rgba(248, 113, 113, 0.2) !important;
+      color: #f87171 !important; // 柔和珊瑚红
     }
 
-    // 信息态（灰）
+    // 信息态（石板灰，柔化降噪）
     &.el-tag--info {
-      background-color: rgba(144, 147, 153, 0.15) !important;
-      border-color: transparent !important;
-      color: #A0A4AD !important;
+      background-color: rgba(148, 163, 184, 0.12) !important;
+      border-color: rgba(148, 163, 184, 0.18) !important;
+      color: #94a3b8 !important; // 石板灰
     }
   }
 
@@ -995,5 +995,12 @@ html.dark {
   // ---- 5. vxe-table 行 hover 微亮呼吸反馈 ----
   .vxe-table--render-default .vxe-body--row.row--hover > .vxe-body--column {
     transition: background-color 0.2s ease;
+  }
+
+  // ---- 6. ProToolbar 工具栏底部分割线 ----
+  // 给 "+ 新增" 所在行增加底部分割线，锁定为表格头部工具栏边界
+  .pro-toolbar {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    padding-bottom: 12px;
   }
 }

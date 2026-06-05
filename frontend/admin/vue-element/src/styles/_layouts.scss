@@ -299,9 +299,9 @@ html.sidebar-color-blue .layout-mix .layout__sidebar--left .el-menu {
     }
   }
 
-  // 按钮之间间距 8px
+  // 按钮之间间距 12px（防误触安全间距）
   & + .table-icon-btn {
-    margin-left: 8px;
+    margin-left: 12px;
   }
 }
 

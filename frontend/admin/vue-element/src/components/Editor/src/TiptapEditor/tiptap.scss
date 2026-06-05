@@ -430,8 +430,12 @@
 }
 
 /* ============ Disabled State ============ */
-.tiptap-editor-wrapper:has(.ProseMirror[contenteditable="false"]) {
+/* 使用 :deep() 确保在 scoped 环境下正确穿透到 ProseMirror */
+.tiptap-editor-wrapper :deep(.ProseMirror[contenteditable="false"]) {
   cursor: not-allowed;
+}
+
+.tiptap-editor-wrapper :deep(.ProseMirror[contenteditable="false"]) * {
   opacity: 0.7;
 }
 
