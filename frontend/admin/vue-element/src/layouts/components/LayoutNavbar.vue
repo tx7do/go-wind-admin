@@ -194,7 +194,7 @@ function handleSettingsClick() {
   align-items: center;
   justify-content: center;
   min-width: 40px;
-  height: 40px;
+  height: 32px; // 与面包屑高度匹配
   padding: 0 8px;
   cursor: pointer;
   border-radius: 8px;

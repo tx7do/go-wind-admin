@@ -394,6 +394,8 @@ body,
 
 /* ---------- 分页精致化 ---------- */
 .el-pagination {
+  font-size: 14px; // 从默认增大到 14px
+
   .el-pager li {
     border-radius: 6px;
     transition: all 0.2s ease;
@@ -422,6 +424,7 @@ body,
 .el-form-item__label {
   color: #475569 !important;
   font-weight: 550 !important;
+  font-size: 14px; // 表单标签字号
 }
 
 /* ---------- 消息弹窗精致化 ---------- */
@@ -432,14 +435,20 @@ body,
 
 /* ---------- 字重巤底：表格/表头/输入框 ---------- */
 /* 确保关键区域的字重跟随全局 --el-font-weight-primary 变量 */
+.el-table {
+  font-size: 14px; // 表格基础字号
+}
+
 .el-table__cell {
   font-weight: var(--el-font-weight-primary) !important;
 }
 
 .el-table__header th {
   font-weight: var(--el-font-weight-bold, 600) !important;
+  font-size: 14px !important; // 表头字号
 }
 
 .el-input__inner {
   font-weight: var(--el-font-weight-primary);
+  font-size: 14px; // 输入框字号
 }

@@ -1028,7 +1028,7 @@ $chrome-radius: 7px;
   }
 
   &__title {
-    font-size: 12px;
+    font-size: 13px; // 从 12px 增大到 13px
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1115,7 +1115,7 @@ $chrome-radius: 7px;
     z-index: 3000;
     padding: 4px 0;
     margin: 0;
-    font-size: 12px;
+    font-size: 13px; // 从 12px 增大到 13px
     color: var(--el-text-color-primary);
     list-style: none;
     background: var(--el-bg-color-overlay);

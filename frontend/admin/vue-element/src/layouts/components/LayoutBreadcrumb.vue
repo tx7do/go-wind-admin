@@ -8,7 +8,7 @@
     >
       <SvgIcon
         v-if="breadcrumbPrefs.showIcon"
-        icon="homepage"
+        icon="lucide:house"
         :size="16"
         class="breadcrumb__icon"
       />
@@ -160,6 +160,15 @@ onBeforeMount(() => {
 -->
 <style lang="scss">
 .breadcrumb {
+  // 与按钮高度匹配，line-height: normal 让 flex 的 align-items: center 负责垂直居中
+  line-height: normal !important;
+
+  // home图标居中对齐
+  .breadcrumb__home .el-breadcrumb__inner {
+    display: inline-flex !important;
+    align-items: center !important;
+  }
+
   // 非当前页：中灰 + 常规字重
   .el-breadcrumb__inner,
   .el-breadcrumb__inner a {
@@ -167,9 +176,12 @@ onBeforeMount(() => {
     align-items: center;
     gap: 4px;
     font-weight: 400 !important;
-    font-size: 14px !important;
+    font-size: 15px !important; // 从 14px 增大到 15px
     color: #909399 !important;
     transition: color 0.2s ease;
+    line-height: normal !important;
+    height: auto !important;
+    padding: 0 4px; // 与按钮视觉对齐
   }
 
   // 当前页（最后一项）：深黑 + 半粗体，视觉焦点

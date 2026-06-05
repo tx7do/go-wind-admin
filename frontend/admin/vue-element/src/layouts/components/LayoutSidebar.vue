@@ -281,11 +281,26 @@ onMounted(() => {
       padding: 0 16px !important;
       margin: 4px 12px !important;
       border-radius: 6px !important;
-      font-size: 13px !important;
+      font-size: 14px !important; // 从 13px 增大到 14px
       font-weight: 400 !important;
       transition:
         background-color 0.2s ease,
         color 0.2s ease;
+    }
+
+    // 二级菜单项：缩进 + 与一级菜单同字号
+    .el-menu--inline {
+      .el-menu-item {
+        padding-left: 44px !important; // 一级图标18px + 间距8px + 额外缩进18px
+        font-size: 14px !important; // 与一级菜单相同字号
+        font-weight: 400 !important;
+
+        .el-icon {
+          width: 16px !important;
+          height: 16px !important;
+          font-size: 16px !important;
+        }
+      }
     }
 
     // 图标尺寸

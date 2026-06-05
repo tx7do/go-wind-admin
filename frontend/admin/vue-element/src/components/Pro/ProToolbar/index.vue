@@ -266,7 +266,7 @@ defineExpose({
     height: 32px;
     border-radius: 6px;
     padding: 0 16px;
-    font-size: 14px;
+    font-size: 15px; // 从 14px 增大到 15px
     line-height: normal;
     transition: all 0.2s ease;
     cursor: pointer;
@@ -358,7 +358,12 @@ defineExpose({
     border: none;
     color: #6B7280;
     transition: all 0.2s ease;
-    font-size: 15px;
+    font-size: 16px;
+
+    // 增大图标尺寸
+    .el-icon {
+      font-size: 16px !important;
+    }
 
     &:hover {
       background-color: var(--el-fill-color-light);
