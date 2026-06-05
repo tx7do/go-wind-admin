@@ -192,15 +192,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     build: {
       chunkSizeWarningLimit: 2000, // 消除打包大小超过500kb警告
       reportCompressedSize: false,
-      minify: isProduction ? "terser" : false, // Vite 8 推荐使用 terser 进行生产压缩
-      terserOptions: isProduction
-        ? {
-            compress: {
-              drop_console: true, // 生产环境移除 console
-              drop_debugger: true, // 生产环境移除 debugger
-            },
-          }
-        : undefined,
+      minify: isProduction ? "esbuild" : false, // 使用 esbuild 压缩，比 terser 快 20-100 倍
+      target: "esnext",
       rollupOptions: {
         output: {
           // 手动分块：将 Vue 相关包分离到独立 chunk，避免 Rolldown 产生循环依赖
@@ -255,6 +248,14 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     },
     define: {
       __APP_INFO__: JSON.stringify(__APP_INFO__),
+      // esbuild 会将 console.log / console.debug / debugger 视为无副作用并移除
+      ...(isProduction
+        ? {
+            "console.log": "(() => {})",
+            "console.debug": "(() => {})",
+            "console.info": "(() => {})",
+          }
+        : {}),
     },
   };
 });

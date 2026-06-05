@@ -1,5 +1,6 @@
 allowBuilds:
   '@parcel/watcher': false
   es5-ext: false
+  esbuild: true
   json-editor-vue: false
   vue-demi: false
