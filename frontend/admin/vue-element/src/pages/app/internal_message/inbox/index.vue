@@ -89,6 +89,7 @@ const detailDialogVisible = ref(false);
 const detail = ref<any | null>(null);
 
 const pageConfig = computed<ProPageConfig>(() => ({
+  skeleton: true,
   search: {
     grid: true,
     fields: [

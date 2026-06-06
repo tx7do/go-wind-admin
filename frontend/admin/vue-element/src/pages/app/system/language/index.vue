@@ -39,6 +39,7 @@ const pageRef = ref();
 const drawerRef = ref();
 
 const pageConfig = computed<ProPageConfig>(() => ({
+  skeleton: true,
   search: {
     grid: true,
     fields: [
@@ -77,8 +78,19 @@ const pageConfig = computed<ProPageConfig>(() => ({
     tableAttrs: { border: true, stripe: false },
     columns: [
       { type: "index", label: $t("common.table.seq"), width: 60 },
-      { prop: "nativeName", label: $t("pages.language.nativeName"), minWidth: 120, fixed: "left", align: "left" },
-      { prop: "languageName", label: $t("pages.language.languageName"), minWidth: 120, align: "left" },
+      {
+        prop: "nativeName",
+        label: $t("pages.language.nativeName"),
+        minWidth: 120,
+        fixed: "left",
+        align: "left",
+      },
+      {
+        prop: "languageName",
+        label: $t("pages.language.languageName"),
+        minWidth: 120,
+        align: "left",
+      },
       { prop: "languageCode", label: $t("pages.language.languageCode"), minWidth: 120 },
       {
         prop: "isEnabled",

@@ -108,6 +108,7 @@ watch(
 );
 
 const pageConfig = computed<ProPageConfig>(() => ({
+  skeleton: true,
   search: {
     grid: true,
     fields: [

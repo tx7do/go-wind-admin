@@ -402,6 +402,7 @@ const pageRef = ref();
 const drawerRef = ref();
 
 const pageConfig = computed<ProPageConfig>(() => ({
+  skeleton: true,
   search: {
     grid: true,
     fields: [

@@ -57,6 +57,7 @@ onMounted(() => {
 });
 
 const pageConfig = computed<ProPageConfig>(() => ({
+  skeleton: true,
   search: {
     fields: [
       {

@@ -38,6 +38,7 @@ const pageRef = ref();
 const drawerRef = ref();
 
 const pageConfig = computed<ProPageConfig>(() => ({
+  skeleton: true,
   search: {
     grid: true,
     fields: [
@@ -108,7 +109,12 @@ const pageConfig = computed<ProPageConfig>(() => ({
         cellType: "tool",
         buttons: [
           { name: "edit", label: $t("common.button.edit"), icon: "lucide:pen-line" },
-          { name: "delete", label: $t("common.button.delete"), icon: "lucide:trash-2", attrs: { type: "danger" } },
+          {
+            name: "delete",
+            label: $t("common.button.delete"),
+            icon: "lucide:trash-2",
+            attrs: { type: "danger" },
+          },
         ],
       },
     ],

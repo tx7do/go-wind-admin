@@ -51,6 +51,7 @@ import { $t } from "@/core/i18n";
 const pageRef = ref();
 
 const pageConfig = computed<ProPageConfig>(() => ({
+  skeleton: true,
   search: {
     grid: true,
     fields: [
@@ -193,7 +194,12 @@ const pageConfig = computed<ProPageConfig>(() => ({
         label: $t("pages.data_access_audit_log.dataCategory"),
         minWidth: 150,
       },
-      { prop: "latencyMs", label: $t("pages.data_access_audit_log.latencyMs"), width: 120, align: "right" },
+      {
+        prop: "latencyMs",
+        label: $t("pages.data_access_audit_log.latencyMs"),
+        width: 120,
+        align: "right",
+      },
       { prop: "username", label: $t("pages.data_access_audit_log.username"), minWidth: 120 },
       {
         prop: "geoLocation",
@@ -201,7 +207,12 @@ const pageConfig = computed<ProPageConfig>(() => ({
         minWidth: 150,
         slotName: "geoLocation",
       },
-      { prop: "ipAddress", label: $t("pages.data_access_audit_log.ipAddress"), width: 140, align: "right" },
+      {
+        prop: "ipAddress",
+        label: $t("pages.data_access_audit_log.ipAddress"),
+        width: 140,
+        align: "right",
+      },
     ],
   },
 }));

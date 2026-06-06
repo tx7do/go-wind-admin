@@ -21,7 +21,13 @@ import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig, ToolsButton } from "@/components/Pro/ProPage/types";
 import ApiDrawer from "./api-drawer.vue";
 
-import { methodList, httpMethodTagTypeMap, fetchListApis, useDeleteApi, useSyncApisApi } from "@/api/composables";
+import {
+  methodList,
+  httpMethodTagTypeMap,
+  fetchListApis,
+  useDeleteApi,
+  useSyncApisApi,
+} from "@/api/composables";
 import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/core/i18n";
 
@@ -32,6 +38,7 @@ const pageRef = ref();
 const drawerRef = ref();
 
 const pageConfig = computed<ProPageConfig>(() => ({
+  skeleton: true,
   search: {
     grid: true,
     fields: [
