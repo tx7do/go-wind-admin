@@ -1,12 +1,8 @@
 <template>
-  <ElDrawer
-    v-model="visible"
+  <ProModal
+    v-model:visible="visible"
     :title="title"
-    :size="DRAWER_WIDTH"
-    :close-on-click-modal="false"
-    :append-to-body="true"
-    :destroy-on-close="true"
-    @close="handleClose"
+    :config="{ component: 'drawer', drawer: { size: DRAWER_WIDTH, closeOnClickModal: false } }"
   >
     <ElForm :model="formData" label-width="120px">
       <!-- 基本信息 -->
@@ -129,7 +125,7 @@
         </ElButton>
       </div>
     </template>
-  </ElDrawer>
+  </ProModal>
 </template>
 
 <script lang="ts" setup>
@@ -151,6 +147,7 @@ import type { identityservicev1_Tenant as Tenant } from "@/api/generated/admin/s
 import { $t } from "@/core/i18n";
 import { DRAWER_WIDTH } from "@/constants";
 import { injectProModalApi } from "@/components/Pro";
+import ProModal from "@/components/Pro/ProModal/index.vue";
 
 // 通过 inject 获取列表页传入的 modalApi
 const modalApi = injectProModalApi();
@@ -196,7 +193,7 @@ const title = computed(() =>
     : $t("common.modal.update", { moduleName: $t("pages.tenant.moduleName") })
 );
 
-// 监听弹窗打开，初始化表单数据
+// 监听弹窗打开/关闭
 watch(visible, (val) => {
   if (val) {
     if (!isCreate.value && data.value.row) {
@@ -221,6 +218,9 @@ watch(visible, (val) => {
       // 创建模式
       resetForm();
     }
+  } else {
+    // ProModal 关闭时自动重置表单
+    resetForm();
   }
 });
 

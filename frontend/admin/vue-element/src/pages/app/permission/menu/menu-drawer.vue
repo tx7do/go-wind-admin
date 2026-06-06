@@ -1,12 +1,12 @@
 <template>
-  <ElDrawer
-    v-model="visible"
+  <ProModal
+    v-model:visible="visible"
     :title="title"
-    size="800px"
-    :close-on-click-modal="false"
-    :append-to-body="true"
-    :destroy-on-close="true"
-    @close="handleClose"
+    :loading="pageLoading"
+    :config="{
+      component: 'drawer',
+      drawer: { size: '800px', closeOnClickModal: false },
+    }"
   >
     <ElForm
       ref="formRef"
@@ -183,13 +183,14 @@
         </ElButton>
       </div>
     </template>
-  </ElDrawer>
+  </ProModal>
 </template>
 
 <script lang="ts" setup>
 import { computed, reactive, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
 
+import ProModal from "@/components/Pro/ProModal/index.vue";
 import IconSelect from "@/components/IconSelect/index.vue";
 import {
   buildMenuTree,

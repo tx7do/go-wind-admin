@@ -1,11 +1,8 @@
 <template>
-  <ElDrawer
-    v-model="visible"
+  <ProModal
+    v-model:visible="visible"
     :title="title"
-    size="800px"
-    append-to-body
-    destroy-on-close
-    @close="handleClose"
+    :config="{ component: 'drawer', drawer: { size: '800px', closeOnClickModal: false } }"
   >
     <ElForm ref="formRef" :model="formData" :rules="formRules" label-width="120px">
       <ElRow :gutter="20">
@@ -75,12 +72,12 @@
         </ElButton>
       </div>
     </template>
-  </ElDrawer>
+  </ProModal>
 </template>
 
 <script lang="ts" setup>
 import { ElMessage, type FormInstance, type FormRules } from "element-plus";
-import { ref, reactive, computed } from "vue";
+import { ref, reactive, computed, watch } from "vue";
 
 import { Editor, EditorType } from "@/components/Editor";
 
@@ -93,6 +90,7 @@ import {
 } from "@/api/composables";
 import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/core/i18n";
+import ProModal from "@/components/Pro/ProModal/index.vue";
 
 const emit = defineEmits(["success"]);
 
@@ -219,6 +217,11 @@ async function handleSubmit() {
     loading.value = false;
   }
 }
+
+// ProModal 关闭时自动重置表单
+watch(visible, (val) => {
+  if (!val) resetForm();
+});
 
 // 暴露方法
 defineExpose({

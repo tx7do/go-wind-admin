@@ -1,16 +1,15 @@
 <template>
-  <ElDrawer
-    v-model="visible"
-    :title="title"
-    :size="DRAWER_WIDTH"
-    :close-on-click-modal="false"
-    :append-to-body="true"
-    :destroy-on-close="true"
-    @close="handleClose"
+  <ProModal
+    v-model:visible="drawer.visible.value"
+    :title="drawer.title.value"
+    :config="{
+      component: 'drawer',
+      drawer: { size: drawer.drawerWidth, closeOnClickModal: false },
+    }"
   >
     <ElForm
       ref="formRef"
-      :model="formData"
+      :model="drawer.formData"
       :rules="formRules"
       label-width="120px"
       class="drawer-form"
@@ -20,7 +19,7 @@
 
       <ElFormItem :label="$t('common.table.description')" prop="description">
         <ElInput
-          v-model="formData.description"
+          v-model="drawer.formData.description"
           :placeholder="$t('common.placeholder.input')"
           clearable
         />
@@ -28,7 +27,7 @@
 
       <ElFormItem :label="$t('pages.api.module')" prop="module">
         <ElInput
-          v-model="formData.module"
+          v-model="drawer.formData.module"
           :placeholder="$t('common.placeholder.input')"
           clearable
         />
@@ -36,19 +35,19 @@
 
       <ElFormItem :label="$t('pages.api.moduleDescription')" prop="moduleDescription">
         <ElInput
-          v-model="formData.moduleDescription"
+          v-model="drawer.formData.moduleDescription"
           :placeholder="$t('common.placeholder.input')"
           clearable
         />
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.api.path')" prop="path">
-        <ElInput v-model="formData.path" :placeholder="$t('common.placeholder.input')" clearable />
+        <ElInput v-model="drawer.formData.path" :placeholder="$t('common.placeholder.input')" clearable />
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.api.method')" prop="method">
         <ElSelect
-          v-model="formData.method"
+          v-model="drawer.formData.method"
           :placeholder="$t('common.placeholder.select')"
           filterable
           clearable
@@ -66,22 +65,25 @@
 
     <template #footer>
       <div class="drawer-footer">
-        <ElButton @click="handleClose">{{ $t("common.button.cancel") }}</ElButton>
-        <ElButton type="primary" :loading="submitLoading" @click="handleSubmit">
+        <ElButton @click="drawer.close">{{ $t("common.button.cancel") }}</ElButton>
+        <ElButton
+          type="primary"
+          :loading="drawer.submitLoading.value"
+          @click="drawer.handleSubmit(formRef, () => emit('success'))"
+        >
           {{ $t("common.button.confirm") }}
         </ElButton>
       </div>
     </template>
-  </ElDrawer>
+  </ProModal>
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref } from "vue";
-import { ElMessage } from "element-plus";
-
+import { ref } from "vue";
+import ProModal from "@/components/Pro/ProModal/index.vue";
+import { useDrawerForm } from "@/components/Pro/composables/useDrawerForm";
 import { methodList, useCreateApi, useUpdateApi } from "@/api/composables";
 import { $t } from "@/core/i18n";
-import { DRAWER_WIDTH } from "@/constants";
 
 const emit = defineEmits<{
   success: [];
@@ -90,19 +92,19 @@ const emit = defineEmits<{
 const { mutateAsync: createApi } = useCreateApi();
 const { mutateAsync: updateApi } = useUpdateApi();
 
-const visible = ref(false);
-const submitLoading = ref(false);
-const isCreate = ref(true);
-const currentId = ref<number>();
 const formRef = ref();
 
-// 表单数据
-const formData = reactive({
-  description: "",
-  module: "",
-  moduleDescription: "",
-  path: "",
-  method: "",
+const drawer = useDrawerForm({
+  moduleKey: "pages.api.moduleName",
+  defaults: {
+    description: "",
+    module: "",
+    moduleDescription: "",
+    path: "",
+    method: "",
+  },
+  createFn: createApi,
+  updateFn: (id, values) => updateApi({ id, values }),
 });
 
 // 表单验证规则
@@ -111,85 +113,8 @@ const formRules = {
   method: [{ required: true, message: $t("common.validation.selectRequired"), trigger: "change" }],
 };
 
-// 标题
-const title = computed(() =>
-  isCreate.value
-    ? $t("common.modal.create", { moduleName: $t("pages.api.moduleName") })
-    : $t("common.modal.update", { moduleName: $t("pages.api.moduleName") })
-);
-
-// 打开抽屉
-function open(row?: any) {
-  visible.value = true;
-
-  if (row) {
-    // 编辑模式
-    isCreate.value = false;
-    currentId.value = row.id;
-    Object.assign(formData, row);
-  } else {
-    // 创建模式
-    isCreate.value = true;
-    currentId.value = undefined;
-    resetForm();
-  }
-}
-
-// 关闭抽屉
-function handleClose() {
-  visible.value = false;
-  resetForm();
-}
-
-// 重置表单
-function resetForm() {
-  formData.description = "";
-  formData.module = "";
-  formData.moduleDescription = "";
-  formData.path = "";
-  formData.method = "";
-
-  formRef.value?.clearValidate();
-}
-
-// 提交表单
-async function handleSubmit() {
-  if (!formRef.value) return;
-
-  try {
-    await formRef.value.validate();
-    submitLoading.value = true;
-
-    const values = { ...formData };
-
-    if (isCreate.value) {
-      await createApi(values);
-      ElMessage.success($t("common.notification.createSuccess"));
-    } else {
-      await updateApi({ id: currentId.value!, values });
-      ElMessage.success($t("common.notification.updateSuccess"));
-    }
-
-    emit("success");
-    handleClose();
-  } catch (error) {
-    if (error !== false) {
-      // 不是验证错误
-      ElMessage.error(
-        isCreate.value
-          ? $t("common.notification.createFailed")
-          : $t("common.notification.updateFailed")
-      );
-    }
-  } finally {
-    submitLoading.value = false;
-  }
-}
-
 // 暴露方法给父组件
-defineExpose({
-  open,
-});
+defineExpose({ open: drawer.open });
 </script>
 
 <style lang="scss" scoped>

@@ -1,12 +1,12 @@
 <template>
-  <ElDrawer
-    v-model="visible"
+  <ProModal
+    v-model:visible="visible"
     :title="title"
-    :size="DRAWER_WIDTH"
-    :close-on-click-modal="false"
-    :append-to-body="true"
-    :destroy-on-close="true"
-    @close="handleClose"
+    :loading="pageLoading"
+    :config="{
+      component: 'drawer',
+      drawer: { size: DRAWER_WIDTH, closeOnClickModal: false },
+    }"
   >
     <ElForm
       ref="formRef"
@@ -162,12 +162,14 @@
         </ElButton>
       </div>
     </template>
-  </ElDrawer>
+  </ProModal>
 </template>
 
 <script lang="ts" setup>
 import { computed, reactive, ref } from "vue";
 import { ElMessage } from "element-plus";
+
+import ProModal from "@/components/Pro/ProModal/index.vue";
 
 import {
   genderList,

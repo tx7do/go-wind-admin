@@ -1,28 +1,27 @@
 <template>
-  <ElDrawer
-    v-model="visible"
-    :title="title"
-    :size="DRAWER_WIDTH"
-    :close-on-click-modal="false"
-    :append-to-body="true"
-    :destroy-on-close="true"
-    @close="handleClose"
+  <ProModal
+    v-model:visible="drawer.visible.value"
+    :title="drawer.title.value"
+    :loading="drawer.pageLoading.value"
+    :config="{
+      component: 'drawer',
+      drawer: { size: drawer.drawerWidth, closeOnClickModal: false },
+    }"
   >
     <ElForm
       ref="formRef"
-      :model="formData"
+      :model="drawer.formData"
       :rules="formRules"
       label-width="120px"
       class="drawer-form"
-      v-loading="pageLoading"
     >
       <ElFormItem :label="$t('pages.permission_group.name')" prop="name">
-        <ElInput v-model="formData.name" :placeholder="$t('common.placeholder.input')" clearable />
+        <ElInput v-model="drawer.formData.name" :placeholder="$t('common.placeholder.input')" clearable />
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.permission_group.module')" prop="module">
         <ElInput
-          v-model="formData.module"
+          v-model="drawer.formData.module"
           :placeholder="$t('common.placeholder.input')"
           clearable
         />
@@ -30,7 +29,7 @@
 
       <ElFormItem :label="$t('pages.permission_group.parentId')" prop="parentId">
         <ElTreeSelect
-          v-model="formData.parentId"
+          v-model="drawer.formData.parentId"
           :data="permissionGroupTreeData"
           node-key="id"
           check-strictly
@@ -46,7 +45,7 @@
 
       <ElFormItem :label="$t('common.table.sortOrder')" prop="sortOrder">
         <ElInputNumber
-          v-model="formData.sortOrder"
+          v-model="drawer.formData.sortOrder"
           :min="1"
           :placeholder="$t('common.placeholder.input')"
           style="width: 100%"
@@ -54,7 +53,7 @@
       </ElFormItem>
 
       <ElFormItem :label="$t('common.table.status')" prop="status">
-        <ElRadioGroup v-model="formData.status">
+        <ElRadioGroup v-model="drawer.formData.status">
           <ElRadioButton v-for="item in statusList" :key="item.value" :value="item.value">
             {{ item.label }}
           </ElRadioButton>
@@ -64,18 +63,23 @@
 
     <template #footer>
       <div class="drawer-footer">
-        <ElButton @click="handleClose">{{ $t("common.button.cancel") }}</ElButton>
-        <ElButton type="primary" :loading="submitLoading" @click="handleSubmit">
+        <ElButton @click="drawer.close">{{ $t("common.button.cancel") }}</ElButton>
+        <ElButton
+          type="primary"
+          :loading="drawer.submitLoading.value"
+          @click="drawer.handleSubmit(formRef, () => emit('success'))"
+        >
           {{ $t("common.button.confirm") }}
         </ElButton>
       </div>
     </template>
-  </ElDrawer>
+  </ProModal>
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref } from "vue";
-import { ElMessage } from "element-plus";
+import { ref } from "vue";
+import ProModal from "@/components/Pro/ProModal/index.vue";
+import { useDrawerForm } from "@/components/Pro/composables/useDrawerForm";
 
 import {
   statusList,
@@ -86,7 +90,6 @@ import {
 } from "@/api/composables";
 import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/core/i18n";
-import { DRAWER_WIDTH } from "@/constants";
 
 const emit = defineEmits<{
   success: [];
@@ -95,20 +98,26 @@ const emit = defineEmits<{
 const { mutateAsync: createPermissionGroup } = useCreatePermissionGroup();
 const { mutateAsync: updatePermissionGroup } = useUpdatePermissionGroup();
 
-const visible = ref(false);
-const submitLoading = ref(false);
-const pageLoading = ref(false);
-const isCreate = ref(true);
-const currentId = ref<number>();
 const formRef = ref();
+const permissionGroupTreeData = ref<any[]>([]);
 
-// 表单数据
-const formData = reactive({
-  name: "",
-  module: "",
-  parentId: undefined as number | undefined,
-  sortOrder: 1,
-  status: "ON",
+const drawer = useDrawerForm({
+  moduleKey: "pages.permission_group.moduleName",
+  defaults: {
+    name: "",
+    module: "",
+    parentId: undefined as number | undefined,
+    sortOrder: 1,
+    status: "ON",
+  },
+  createFn: createPermissionGroup,
+  updateFn: (id, values) => updatePermissionGroup({ id, values }),
+  asyncSetup: async () => {
+    const result = await fetchListPermissionGroups(
+      new PaginationQuery({ formValues: { status: "ON" } })
+    );
+    permissionGroupTreeData.value = buildPermissionGroupTree(result.items || []);
+  },
 });
 
 // 表单验证规则
@@ -119,110 +128,8 @@ const formRules = {
   status: [{ required: true, message: $t("common.validation.selectRequired"), trigger: "change" }],
 };
 
-// 标题
-const title = computed(() =>
-  isCreate.value
-    ? $t("common.modal.create", { moduleName: $t("pages.permission_group.moduleName") })
-    : $t("common.modal.update", { moduleName: $t("pages.permission_group.moduleName") })
-);
-
-// 权限分组树数据
-const permissionGroupTreeData = ref<any[]>([]);
-
-// 加载权限分组树
-async function loadPermissionGroupTree() {
-  try {
-    const result = await fetchListPermissionGroups(
-      new PaginationQuery({ formValues: { status: "ON" } })
-    );
-    permissionGroupTreeData.value = buildPermissionGroupTree(result.items || []);
-  } catch (error) {
-    console.error("Failed to load permission group tree:", error);
-  }
-}
-
-// 重置表单
-function resetForm() {
-  Object.assign(formData, {
-    name: "",
-    module: "",
-    parentId: undefined,
-    sortOrder: 1,
-    status: "ON",
-  });
-  formRef.value?.clearValidate();
-}
-
-// 打开抽屉
-async function open(data?: { create: boolean; row?: any }) {
-  visible.value = true;
-  isCreate.value = data?.create ?? true;
-  currentId.value = data?.row?.id;
-
-  // 重置表单
-  resetForm();
-
-  // 加载权限分组树（显示加载状态）
-  pageLoading.value = true;
-  try {
-    await loadPermissionGroupTree();
-
-    // 编辑时填充数据
-    if (data?.row && !isCreate.value) {
-      Object.assign(formData, {
-        name: data.row.name || "",
-        module: data.row.module || "",
-        parentId: data.row.parentId,
-        sortOrder: data.row.sortOrder || 1,
-        status: data.row.status || "ON",
-      });
-    }
-  } finally {
-    pageLoading.value = false;
-  }
-}
-
-// 关闭抽屉
-function handleClose() {
-  visible.value = false;
-  resetForm();
-}
-
-// 提交表单
-async function handleSubmit() {
-  if (!formRef.value) return;
-
-  try {
-    await formRef.value.validate();
-    submitLoading.value = true;
-
-    if (isCreate.value) {
-      await createPermissionGroup(formData);
-      ElMessage.success($t("common.notification.create_success"));
-    } else {
-      await updatePermissionGroup({ id: currentId.value!, values: formData });
-      ElMessage.success($t("common.notification.update_success"));
-    }
-
-    handleClose();
-    emit("success");
-  } catch (error) {
-    if (error !== false) {
-      ElMessage.error(
-        isCreate.value
-          ? $t("common.notification.create_failed")
-          : $t("common.notification.update_failed")
-      );
-    }
-  } finally {
-    submitLoading.value = false;
-  }
-}
-
 // 暴露方法
-defineExpose({
-  open,
-});
+defineExpose({ open: drawer.open });
 </script>
 
 <style lang="scss" scoped>

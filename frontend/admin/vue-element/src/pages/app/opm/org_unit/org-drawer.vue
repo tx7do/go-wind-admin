@@ -1,35 +1,34 @@
 <template>
-  <ElDrawer
-    v-model="visible"
-    :title="title"
-    :size="DRAWER_WIDTH"
-    :close-on-click-modal="false"
-    :append-to-body="true"
-    :destroy-on-close="true"
-    @close="handleClose"
+  <ProModal
+    v-model:visible="drawer.visible.value"
+    :title="drawer.title.value"
+    :loading="drawer.pageLoading.value"
+    :config="{
+      component: 'drawer',
+      drawer: { size: drawer.drawerWidth, closeOnClickModal: false },
+    }"
   >
     <ElForm
       ref="formRef"
-      :model="formData"
+      :model="drawer.formData"
       :rules="formRules"
       label-width="120px"
       class="drawer-form"
-      v-loading="pageLoading"
     >
       <!-- 基本信息 -->
       <ElDivider content-position="left">{{ $t("common.section.basic") }}</ElDivider>
 
       <ElFormItem :label="$t('pages.org_unit.name')" prop="name">
-        <ElInput v-model="formData.name" :placeholder="$t('common.placeholder.input')" clearable />
+        <ElInput v-model="drawer.formData.name" :placeholder="$t('common.placeholder.input')" clearable />
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.org_unit.code')" prop="code">
-        <ElInput v-model="formData.code" :placeholder="$t('common.placeholder.input')" clearable />
+        <ElInput v-model="drawer.formData.code" :placeholder="$t('common.placeholder.input')" clearable />
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.org_unit.parentId')" prop="parentId">
         <ElTreeSelect
-          v-model="formData.parentId"
+          v-model="drawer.formData.parentId"
           :data="orgUnitTreeData"
           node-key="id"
           check-strictly
@@ -45,7 +44,7 @@
 
       <ElFormItem :label="$t('pages.org_unit.leaderId')" prop="leaderId">
         <ElSelect
-          v-model="formData.leaderId"
+          v-model="drawer.formData.leaderId"
           :placeholder="$t('common.placeholder.select')"
           filterable
           clearable
@@ -62,7 +61,7 @@
 
       <ElFormItem :label="$t('pages.org_unit.type')" prop="type">
         <ElSelect
-          v-model="formData.type"
+          v-model="drawer.formData.type"
           :placeholder="$t('common.placeholder.select')"
           filterable
           clearable
@@ -79,7 +78,7 @@
 
       <ElFormItem :label="$t('common.table.sortOrder')" prop="sortOrder">
         <ElInputNumber
-          v-model="formData.sortOrder"
+          v-model="drawer.formData.sortOrder"
           :min="1"
           :placeholder="$t('common.placeholder.input')"
           style="width: 100%"
@@ -87,7 +86,7 @@
       </ElFormItem>
 
       <ElFormItem :label="$t('common.table.status')" prop="status">
-        <ElRadioGroup v-model="formData.status">
+        <ElRadioGroup v-model="drawer.formData.status">
           <ElRadioButton v-for="item in orgUnitStatusList" :key="item.value" :value="item.value">
             {{ item.label }}
           </ElRadioButton>
@@ -98,32 +97,32 @@
       <ElDivider content-position="left">{{ $t("pages.org_unit.legalEntity") }}</ElDivider>
 
       <ElFormItem :label="$t('pages.org_unit.isLegalEntity')" prop="isLegalEntity">
-        <ElSwitch v-model="formData.isLegalEntity" />
+        <ElSwitch v-model="drawer.formData.isLegalEntity" />
       </ElFormItem>
 
       <ElFormItem
-        v-if="formData.isLegalEntity"
+        v-if="drawer.formData.isLegalEntity"
         :label="$t('pages.org_unit.registrationNumber')"
         prop="registrationNumber"
       >
         <ElInput
-          v-model="formData.registrationNumber"
+          v-model="drawer.formData.registrationNumber"
           :placeholder="$t('common.placeholder.input')"
           clearable
         />
       </ElFormItem>
 
-      <ElFormItem v-if="formData.isLegalEntity" :label="$t('pages.org_unit.taxId')" prop="taxId">
-        <ElInput v-model="formData.taxId" :placeholder="$t('common.placeholder.input')" clearable />
+      <ElFormItem v-if="drawer.formData.isLegalEntity" :label="$t('pages.org_unit.taxId')" prop="taxId">
+        <ElInput v-model="drawer.formData.taxId" :placeholder="$t('common.placeholder.input')" clearable />
       </ElFormItem>
 
       <ElFormItem
-        v-if="formData.isLegalEntity"
+        v-if="drawer.formData.isLegalEntity"
         :label="$t('pages.org_unit.address')"
         prop="address"
       >
         <ElInput
-          v-model="formData.address"
+          v-model="drawer.formData.address"
           :placeholder="$t('common.placeholder.input')"
           clearable
         />
@@ -134,7 +133,7 @@
 
       <ElFormItem :label="$t('pages.org_unit.description')" prop="description">
         <ElInput
-          v-model="formData.description"
+          v-model="drawer.formData.description"
           type="textarea"
           :rows="3"
           :placeholder="$t('common.placeholder.input')"
@@ -143,7 +142,7 @@
 
       <ElFormItem :label="$t('common.table.remark')" prop="remark">
         <ElInput
-          v-model="formData.remark"
+          v-model="drawer.formData.remark"
           type="textarea"
           :rows="3"
           :placeholder="$t('common.placeholder.input')"
@@ -153,18 +152,23 @@
 
     <template #footer>
       <div class="drawer-footer">
-        <ElButton @click="handleClose">{{ $t("common.button.cancel") }}</ElButton>
-        <ElButton type="primary" :loading="submitLoading" @click="handleSubmit">
+        <ElButton @click="drawer.close">{{ $t("common.button.cancel") }}</ElButton>
+        <ElButton
+          type="primary"
+          :loading="drawer.submitLoading.value"
+          @click="drawer.handleSubmit(formRef, () => emit('success'))"
+        >
           {{ $t("common.button.confirm") }}
         </ElButton>
       </div>
     </template>
-  </ElDrawer>
+  </ProModal>
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref } from "vue";
-import { ElMessage } from "element-plus";
+import { ref } from "vue";
+import ProModal from "@/components/Pro/ProModal/index.vue";
+import { useDrawerForm } from "@/components/Pro/composables/useDrawerForm";
 
 import {
   fetchListOrgUnits,
@@ -176,7 +180,6 @@ import {
 } from "@/api/composables";
 import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/core/i18n";
-import { DRAWER_WIDTH } from "@/constants";
 
 const emit = defineEmits<{
   success: [];
@@ -185,28 +188,37 @@ const emit = defineEmits<{
 const { mutateAsync: createOrgUnit } = useCreateOrgUnit();
 const { mutateAsync: updateOrgUnit } = useUpdateOrgUnit();
 
-const visible = ref(false);
-const submitLoading = ref(false);
-const pageLoading = ref(false);
-const isCreate = ref(true);
-const currentId = ref<number>();
 const formRef = ref();
+const orgUnitTreeData = ref<any[]>([]);
+const userList = ref<any[]>([]);
 
-// 表单数据
-const formData = reactive({
-  name: "",
-  code: "",
-  parentId: undefined as number | undefined,
-  leaderId: undefined as number | undefined,
-  type: "",
-  sortOrder: 1,
-  status: "ON",
-  isLegalEntity: false,
-  registrationNumber: "",
-  taxId: "",
-  address: "",
-  description: "",
-  remark: "",
+const drawer = useDrawerForm({
+  moduleKey: "pages.org_unit.moduleName",
+  defaults: {
+    name: "",
+    code: "",
+    parentId: undefined as number | undefined,
+    leaderId: undefined as number | undefined,
+    type: "",
+    sortOrder: 1,
+    status: "ON",
+    isLegalEntity: false,
+    registrationNumber: "",
+    taxId: "",
+    address: "",
+    description: "",
+    remark: "",
+  },
+  createFn: createOrgUnit,
+  updateFn: (id, values) => updateOrgUnit({ id, values }),
+  asyncSetup: async () => {
+    const [orgResult, userResult] = await Promise.all([
+      fetchListOrgUnits(new PaginationQuery({ formValues: { status: "ON" } })),
+      fetchListUsers(new PaginationQuery({})),
+    ]);
+    orgUnitTreeData.value = orgResult.items || [];
+    userList.value = userResult.items || [];
+  },
 });
 
 // 表单验证规则
@@ -218,125 +230,8 @@ const formRules = {
   status: [{ required: true, message: $t("common.validation.selectRequired"), trigger: "change" }],
 };
 
-// 标题
-const title = computed(() =>
-  isCreate.value
-    ? $t("common.modal.create", { moduleName: $t("pages.org_unit.moduleName") })
-    : $t("common.modal.update", { moduleName: $t("pages.org_unit.moduleName") })
-);
-
-// 组织树数据
-const orgUnitTreeData = ref<any[]>([]);
-
-// 用户列表
-const userList = ref<any[]>([]);
-
-// 加载组织树
-async function loadOrgUnitTree() {
-  try {
-    const result = await fetchListOrgUnits(new PaginationQuery({ formValues: { status: "ON" } }));
-    orgUnitTreeData.value = result.items || [];
-  } catch (error) {
-    console.error("Failed to load org unit tree:", error);
-  }
-}
-
-// 加载用户列表
-async function loadUserList() {
-  try {
-    const result = await fetchListUsers(new PaginationQuery({}));
-    userList.value = result.items || [];
-  } catch (error) {
-    console.error("Failed to load user list:", error);
-  }
-}
-
-// 打开抽屉
-async function open(data?: { create: boolean; row?: any }) {
-  visible.value = true;
-  isCreate.value = data?.create ?? true;
-  currentId.value = data?.row?.id;
-
-  // 重置表单
-  resetForm();
-
-  // 加载数据（显示加载状态）
-  pageLoading.value = true;
-  try {
-    await Promise.all([loadOrgUnitTree(), loadUserList()]);
-
-    // 如果是编辑模式，填充数据
-    if (!isCreate.value && data?.row) {
-      Object.assign(formData, data.row);
-    }
-  } finally {
-    pageLoading.value = false;
-  }
-}
-
-// 关闭抽屉
-function handleClose() {
-  visible.value = false;
-  resetForm();
-}
-
-// 重置表单
-function resetForm() {
-  formData.name = "";
-  formData.code = "";
-  formData.parentId = undefined;
-  formData.leaderId = undefined;
-  formData.type = "";
-  formData.sortOrder = 1;
-  formData.status = "ON";
-  formData.isLegalEntity = false;
-  formData.registrationNumber = "";
-  formData.taxId = "";
-  formData.address = "";
-  formData.description = "";
-  formData.remark = "";
-
-  formRef.value?.clearValidate();
-}
-
-// 提交表单
-async function handleSubmit() {
-  if (!formRef.value) return;
-
-  try {
-    await formRef.value.validate();
-    submitLoading.value = true;
-
-    const values = { ...formData };
-
-    if (isCreate.value) {
-      await createOrgUnit(values);
-      ElMessage.success($t("common.notification.createSuccess"));
-    } else {
-      await updateOrgUnit({ id: currentId.value!, values });
-      ElMessage.success($t("common.notification.updateSuccess"));
-    }
-
-    emit("success");
-    handleClose();
-  } catch (error) {
-    if (error !== false) {
-      // 不是验证错误
-      ElMessage.error(
-        isCreate.value
-          ? $t("common.notification.createFailed")
-          : $t("common.notification.updateFailed")
-      );
-    }
-  } finally {
-    submitLoading.value = false;
-  }
-}
-
 // 暴露方法给父组件
-defineExpose({
-  open,
-});
+defineExpose({ open: drawer.open });
 </script>
 
 <style lang="scss" scoped>
