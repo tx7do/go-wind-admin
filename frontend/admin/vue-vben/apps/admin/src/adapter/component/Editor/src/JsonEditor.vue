@@ -325,12 +325,26 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border: 1px solid var(--jse-panel-border, #d7d7d7);
+  border: 1px solid #cbd5e1;
   border-radius: 8px;
-  background-color: var(--jse-background-color, #fff);
+  background-color: #fff;
+  transition:
+    border-color 0.2s cubic-bezier(0.08, 0.82, 0.17, 1),
+    box-shadow 0.2s cubic-bezier(0.08, 0.82, 0.17, 1);
   /* vanilla-jsoneditor 内置 --jse-* 变量体系 */
-  --jse-theme-color: #3b82f6;
-  --jse-theme-color-highlight: #60a5fa;
+  --jse-theme-color: #f8fafc;
+  --jse-theme-color-highlight: #f1f5f9;
+
+  /* 模式切换按钮选中态 */
+  --jse-button-primary-background: rgb(22 93 255 / 10%);
+  --jse-button-primary-background-highlight: rgb(22 93 255 / 15%);
+  --jse-button-primary-color: #165dff;
+}
+
+/* 聚焦态：蓝色边框 + 微光（对齐 Tiptap） */
+.json-editor-container:focus-within {
+  border-color: #165dff;
+  box-shadow: 0 0 0 3px rgb(22 93 255 / 10%);
 }
 
 /* ============ 错误提示 ============ */
@@ -356,87 +370,193 @@ onUnmounted(() => {
 <style>
 .jse-theme-dark {
   --jse-theme: dark !important;
-  --jse-theme-color: #2a3548 !important;
-  --jse-theme-color-highlight: #344054 !important;
-  --jse-background-color: #1e1e1e;
-  --jse-text-color: #d4d4d4;
-  --jse-text-color-inverse: #4d4d4d;
-  --jse-main-border: 1px solid #4f4f4f;
-  --jse-menu-color: #fff;
-  --jse-modal-background: #2f2f2f;
-  --jse-modal-overlay-background: rgb(0 0 0 / 50%);
-  --jse-modal-code-background: #2f2f2f;
-  --jse-tooltip-color: var(--jse-text-color);
-  --jse-tooltip-background: #4b4b4b;
-  --jse-tooltip-border: 1px solid #737373;
-  --jse-tooltip-action-button-color: inherit;
-  --jse-tooltip-action-button-background: #737373;
-  --jse-panel-background: #333;
-  --jse-panel-background-border: 1px solid #464646;
-  --jse-panel-color: var(--jse-text-color);
-  --jse-panel-color-readonly: #737373;
-  --jse-panel-border: 1px solid #3c3c3c;
-  --jse-panel-button-color-highlight: #e5e5e5;
-  --jse-panel-button-background-highlight: #464646;
-  --jse-navigation-bar-background: #656565;
-  --jse-navigation-bar-background-highlight: #7e7e7e;
-  --jse-navigation-bar-dropdown-color: var(--jse-text-color);
-  --jse-context-menu-background: #4b4b4b;
-  --jse-context-menu-background-highlight: #595959;
-  --jse-context-menu-separator-color: #595959;
-  --jse-context-menu-color: var(--jse-text-color);
-  --jse-context-menu-pointer-background: #737373;
-  --jse-context-menu-pointer-background-highlight: #818181;
-  --jse-context-menu-pointer-color: var(--jse-context-menu-color);
-  --jse-key-color: #9cdcfe;
-  --jse-value-color: var(--jse-text-color);
-  --jse-value-color-number: #b5cea8;
-  --jse-value-color-boolean: #569cd6;
-  --jse-value-color-null: #569cd6;
-  --jse-value-color-string: #ce9178;
-  --jse-value-color-url: #ce9178;
-  --jse-delimiter-color: #949494;
-  --jse-edit-outline: 2px solid var(--jse-text-color);
-  --jse-selection-background-color: #464646;
-  --jse-selection-background-inactive-color: #333;
-  --jse-hover-background-color: #343434;
-  --jse-active-line-background-color: rgb(255 255 255 / 6%);
-  --jse-search-match-background-color: #343434;
-  --jse-collapsed-items-background-color: #333;
-  --jse-collapsed-items-selected-background-color: #565656;
-  --jse-collapsed-items-link-color: #b2b2b2;
-  --jse-collapsed-items-link-color-highlight: #ec8477;
-  --jse-search-match-color: #724c27;
-  --jse-search-match-outline: 1px solid #966535;
-  --jse-search-match-active-color: #9f6c39;
-  --jse-search-match-active-outline: 1px solid #bb7f43;
-  --jse-tag-background: #444;
-  --jse-tag-color: #bdbdbd;
-  --jse-table-header-background: #333;
-  --jse-table-header-background-highlight: #424242;
-  --jse-table-row-odd-background: rgb(255 255 255 / 10%);
-  --jse-input-background: #3d3d3d;
-  --jse-input-border: var(--jse-main-border);
-  --jse-button-background: #808080;
-  --jse-button-background-highlight: #7a7a7a;
-  --jse-button-color: #e0e0e0;
-  --jse-button-secondary-background: #494949;
-  --jse-button-secondary-background-highlight: #5d5d5d;
-  --jse-button-secondary-background-disabled: #9d9d9d;
-  --jse-button-secondary-color: var(--jse-text-color);
-  --jse-a-color: #55abff;
-  --jse-a-color-highlight: #4387c9;
-  --jse-svelte-select-background: #3d3d3d;
-  --jse-svelte-select-border: 1px solid #4f4f4f;
-  --list-background: #3d3d3d;
-  --item-hover-bg: #505050;
-  --multi-item-bg: #5b5b5b;
-  --input-color: #d4d4d4;
-  --multi-clear-bg: #8a8a8a;
-  --multi-item-clear-icon-color: #d4d4d4;
-  --multi-item-outline: 1px solid #696969;
+  --jse-theme-color: #1a1d24 !important;
+  --jse-theme-color-highlight: #313540 !important;
+
+  /* ===== 背景色系（对齐 Tiptap --tte-* 变量） ===== */
+  --jse-background-color: #14161a;
+  --jse-panel-background: #1e2026;
+  --jse-panel-background-border: 1px solid #313540;
+  --jse-modal-background: #1e2026;
+  --jse-modal-code-background: #1e2026;
+  --jse-modal-overlay-background: rgb(0 0 0 / 60%);
+
+  /* ===== 文字色系 ===== */
+  --jse-text-color: #e3e6eb;
+  --jse-text-color-inverse: #626773;
+  --jse-menu-color: #e3e6eb;
+
+  /* ===== 边框色系 ===== */
+  --jse-main-border: 1px solid #313540;
+  --jse-panel-border: 1px solid #313540;
+  --jse-panel-color: #e3e6eb;
+  --jse-panel-color-readonly: #626773;
+
+  /* ===== 工具栏/菜单按钮 ===== */
+  --jse-panel-button-color: #e3e6eb;
+  --jse-panel-button-color-highlight: #ffffff;
+  --jse-panel-button-background: transparent;
+  --jse-panel-button-background-highlight: rgb(255 255 255 / 8%);
+
+  /* 模式切换按钮（text/tree/table）选中态：用半透明蓝色强调 */
+  --jse-button-primary-background: rgb(59 130 246 / 20%);
+  --jse-button-primary-background-highlight: rgb(59 130 246 / 30%);
+  --jse-button-primary-color: #93c5fd;
+
+  /* ===== 导航栏 ===== */
+  --jse-navigation-bar-background: #313540;
+  --jse-navigation-bar-background-highlight: #475569;
+  --jse-navigation-bar-dropdown-color: #e3e6eb;
+
+  /* ===== 右键菜单 ===== */
+  --jse-context-menu-background: #1e2026;
+  --jse-context-menu-background-highlight: #313540;
+  --jse-context-menu-separator-color: #313540;
+  --jse-context-menu-color: #e3e6eb;
+  --jse-context-menu-pointer-background: #475569;
+  --jse-context-menu-pointer-background-highlight: #64748b;
+  --jse-context-menu-pointer-color: #e3e6eb;
+
+  /* ===== 语法高亮 ===== */
+  --jse-key-color: #60a5fa;
+  --jse-value-color: #e3e6eb;
+  --jse-value-color-number: #98c379;
+  --jse-value-color-boolean: #c678dd;
+  --jse-value-color-null: #c678dd;
+  --jse-value-color-string: #98c379;
+  --jse-value-color-url: #60a5fa;
+  --jse-delimiter-color: #626773;
+
+  /* ===== 交互状态 ===== */
+  --jse-edit-outline: 2px solid #3b82f6;
+  --jse-selection-background-color: #313540;
+  --jse-selection-background-inactive-color: #1e2026;
+  --jse-hover-background-color: rgb(255 255 255 / 6%);
+  --jse-active-line-background-color: rgb(255 255 255 / 4%);
+  --jse-search-match-background-color: #313540;
+
+  /* ===== 折叠/搜索 ===== */
+  --jse-collapsed-items-background-color: #1e2026;
+  --jse-collapsed-items-selected-background-color: #313540;
+  --jse-collapsed-items-link-color: #94a3b8;
+  --jse-collapsed-items-link-color-highlight: #60a5fa;
+  --jse-search-match-color: #475569;
+  --jse-search-match-outline: 1px solid #64748b;
+  --jse-search-match-active-color: #475569;
+  --jse-search-match-active-outline: 1px solid #64748b;
+
+  /* ===== 标签/表格 ===== */
+  --jse-tag-background: #313540;
+  --jse-tag-color: #94a3b8;
+  --jse-table-header-background: #1e2026;
+  --jse-table-header-background-highlight: #313540;
+  --jse-table-row-odd-background: rgb(255 255 255 / 3%);
+
+  /* ===== 输入/按钮 ===== */
+  --jse-input-background: #1e2026;
+  --jse-input-border: 1px solid #313540;
+  --jse-button-background: #475569;
+  --jse-button-background-highlight: #64748b;
+  --jse-button-color: #e3e6eb;
+  --jse-button-secondary-background: #313540;
+  --jse-button-secondary-background-highlight: #475569;
+  --jse-button-secondary-background-disabled: #1e2026;
+  --jse-button-secondary-color: #e3e6eb;
+  --jse-a-color: #60a5fa;
+  --jse-a-color-highlight: #93c5fd;
+
+  /* ===== 提示框 ===== */
+  --jse-tooltip-color: #e3e6eb;
+  --jse-tooltip-background: #1e2026;
+  --jse-tooltip-border: 1px solid #313540;
+  --jse-tooltip-action-button-color: #e3e6eb;
+  --jse-tooltip-action-button-background: #475569;
+
+  /* ===== Svelte Select ===== */
+  --jse-svelte-select-background: #1e2026;
+  --jse-svelte-select-border: 1px solid #313540;
+  --list-background: #1e2026;
+  --item-hover-bg: #313540;
+  --multi-item-bg: #313540;
+  --input-color: #e3e6eb;
+  --multi-clear-bg: #475569;
+  --multi-item-clear-icon-color: #e3e6eb;
+  --multi-item-outline: 1px solid #475569;
   --list-shadow: 0 2px 8px 0 rgb(0 0 0 / 40%);
-  --jse-color-picker-background: #656565;
-  --jse-color-picker-border-box-shadow: #8c8c8c 0 0 0 1px;
+
+  /* ===== 其他 ===== */
+  --jse-color-picker-background: #313540;
+  --jse-color-picker-border-box-shadow: #475569 0 0 0 1px;
+
+  /* 聚焦态边框 */
+  border-color: #313540 !important;
+}
+
+/* ===== 亮色模式：工具栏模式切换按钮（text/tree/table） ===== */
+/* 工具栏背景改为白色而非默认蓝色 */
+.json-editor-container:not(.jse-theme-dark) .jse-menu {
+  background-color: #f8fafc !important;
+}
+
+/* 默认按钮文字：中灰 */
+.json-editor-container:not(.jse-theme-dark) .jse-menu button {
+  color: #64748b !important;
+  background-color: transparent !important;
+}
+
+/* hover 按钮 */
+.json-editor-container:not(.jse-theme-dark) .jse-menu button:hover {
+  color: #1e293b !important;
+  background-color: rgb(0 0 0 / 4%) !important;
+}
+
+/* 选中的模式按钮：淡蓝背景 + 蓝色文字 */
+.json-editor-container:not(.jse-theme-dark) .jse-menu button[class*='selected'],
+.json-editor-container:not(.jse-theme-dark) .jse-menu button[class*='active'],
+.json-editor-container:not(.jse-theme-dark) .jse-menu button.selected,
+.json-editor-container:not(.jse-theme-dark) .jse-menu button.active {
+  color: #165dff !important;
+  background-color: rgb(22 93 255 / 10%) !important;
+}
+
+/* 通过 inline style 设置的选中态 */
+.json-editor-container:not(.jse-theme-dark) .jse-menu button[style*='theme-color'] {
+  color: #165dff !important;
+  background-color: rgb(22 93 255 / 10%) !important;
+  background-image: none !important;
+}
+
+html.dark .json-editor-container:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 18%);
+}
+
+/* ===== 暗色模式：工具栏模式切换按钮（text/tree/table） ===== */
+/* 默认按钮文字：浅灰 */
+html.dark .jse-theme-dark .jse-menu button {
+  color: #94a3b8 !important;
+  background-color: transparent !important;
+}
+
+/* hover 按钮 */
+html.dark .jse-theme-dark .jse-menu button:hover {
+  color: #e3e6eb !important;
+  background-color: rgb(255 255 255 / 6%) !important;
+}
+
+/* 选中的模式按钮：半透明蓝色背景 + 蓝色文字 */
+html.dark .jse-theme-dark .jse-menu button[class*='selected'],
+html.dark .jse-theme-dark .jse-menu button[class*='active'],
+html.dark .jse-theme-dark .jse-menu button.selected,
+html.dark .jse-theme-dark .jse-menu button.active {
+  color: #93c5fd !important;
+  background-color: rgb(59 130 246 / 18%) !important;
+}
+
+/* 通过 inline style 设置的选中态（vanilla-jsoneditor 用 --jse-theme-color 渲染） */
+html.dark .jse-theme-dark .jse-menu button[style*='theme-color'] {
+  color: #93c5fd !important;
+  background-color: rgb(59 130 246 / 18%) !important;
+  background-image: none !important;
 }
 </style>

@@ -287,35 +287,115 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.md-editor-wrapper {
+.markdown-editor-wrapper {
   box-sizing: border-box;
   width: 100%;
   min-height: 1px;
   overflow: hidden;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  transition:
+    border-color 0.2s cubic-bezier(0.08, 0.82, 0.17, 1),
+    box-shadow 0.2s cubic-bezier(0.08, 0.82, 0.17, 1);
 }
 
-.md-editor-wrapper :deep(.md-editor-inner) {
+.markdown-editor-wrapper :deep(.md-editor) {
   width: 100% !important;
-  height: 100% !important;
+  border: none !important;
+  border-radius: 8px !important;
 }
 
-.md-editor-wrapper :deep(.m-md-editor) {
-  width: 100% !important;
-  height: 100% !important;
-  min-height: unset !important;
+/* 聚焦态：蓝色边框 + 微光（对齐 Tiptap） */
+.markdown-editor-wrapper:focus-within {
+  border-color: #165dff;
+  box-shadow: 0 0 0 3px rgb(22 93 255 / 10%);
+}
+</style>
+
+<!--
+  暗色模式配色覆盖必须用非 scoped 块，
+  scoped 的 :deep() 对 CSS 自定义属性的覆盖在 Vite 构建中不稳定。
+  使用 html.dark 前缀 + .markdown-editor-wrapper 限定作用范围。
+-->
+<style>
+/* CSS 变量覆盖：把纯黑背景改为柔和深灰（对齐 Tiptap 风格） */
+html.dark .markdown-editor-wrapper {
+  border-color: #313540;
 }
 
-.md-editor-wrapper :deep(.m-md-editor .m-md-content) {
-  height: calc(100% - 40px) !important;
+html.dark .markdown-editor-wrapper:focus-within {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 18%);
 }
 
-.md-editor-wrapper :deep(.m-md-editor .m-md-preview),
-.md-editor-wrapper :deep(.m-md-editor .m-md-edit-area) {
-  width: 100% !important;
-  height: 100% !important;
+html.dark .markdown-editor-wrapper .md-editor.md-editor-dark {
+  --md-color: #e3e6eb;
+  --md-hover-color: #ffffff;
+  --md-bk-color: #14161a;
+  --md-bk-color-outstand: #313540;
+  --md-bk-hover-color: #1a1d24;
+  --md-border-color: #313540;
+  --md-border-hover-color: #475569;
+  --md-border-active-color: #60a5fa;
 }
 
-.md-editor-wrapper :deep(.m-md-editor.dark) {
-  height: 100% !important;
+/* 工具栏背景 */
+html.dark
+  .markdown-editor-wrapper
+  .md-editor.md-editor-dark
+  .md-editor-toolbar-wrapper {
+  background-color: #1a1d24 !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* 工具栏按钮颜色 */
+html.dark
+  .markdown-editor-wrapper
+  .md-editor.md-editor-dark
+  .md-editor-toolbar
+  .md-editor-toolbar-item {
+  color: #a3aed0 !important;
+}
+
+/* 工具栏按钮 hover */
+html.dark
+  .markdown-editor-wrapper
+  .md-editor.md-editor-dark
+  .md-editor-toolbar
+  .md-editor-toolbar-item:not([disabled]):hover {
+  color: #ffffff !important;
+  background-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* CodeMirror 编辑区 */
+html.dark .markdown-editor-wrapper .md-editor.md-editor-dark .cm-content {
+  color: #e3e6eb !important;
+  caret-color: #e3e6eb !important;
+}
+
+html.dark .markdown-editor-wrapper .md-editor.md-editor-dark .cm-editor {
+  background-color: #14161a !important;
+}
+
+/* 编辑器外层背景 */
+html.dark .markdown-editor-wrapper .md-editor.md-editor-dark {
+  background-color: #14161a !important;
+}
+
+/* 输入区域背景 */
+html.dark
+  .markdown-editor-wrapper
+  .md-editor.md-editor-dark
+  .md-editor-input-wrapper {
+  background-color: #14161a !important;
+}
+
+/* placeholder 颜色 */
+html.dark
+  .markdown-editor-wrapper
+  .md-editor.md-editor-dark
+  .md-editor-input-wrapper
+  textarea::placeholder {
+  color: #626773 !important;
 }
 </style>
