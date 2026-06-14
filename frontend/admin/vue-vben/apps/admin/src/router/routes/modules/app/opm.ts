@@ -50,7 +50,7 @@ const opm: RouteRecordRaw[] = [
           title: $t('menu.opm.user'),
           authority: ['sys:platform_admin', 'sys:tenant_manager'],
         },
-        component: () => import('#/views/app/opm/user/index.vue'),
+        component: () => import('#/views/app/opm/user/list/index.vue'),
       },
       {
         path: 'users/detail/:id',

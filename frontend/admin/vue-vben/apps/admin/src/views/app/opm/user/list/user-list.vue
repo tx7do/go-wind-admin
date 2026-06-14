@@ -25,9 +25,9 @@ import {
 import { $t } from '#/locales';
 import { router } from '#/router';
 import { getRandomColor } from '#/utils/color';
-import { useUserViewStore } from '#/views/app/opm/user/user-view.state';
 
 import UserDrawer from './user-drawer.vue';
+import { useUserViewStore } from './user-view.state';
 
 const { mutateAsync: deleteUser } = useDeleteUser();
 const userViewStore = useUserViewStore();

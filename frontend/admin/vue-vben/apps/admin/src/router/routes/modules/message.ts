@@ -4,7 +4,7 @@ import { $t } from '@vben/locales';
 
 import { BasicLayout } from '#/layouts';
 
-const messageRoutes: RouteRecordRaw[] = [
+const messageInboxRoutes: RouteRecordRaw[] = [
   {
     name: 'Inbox',
     path: '/inbox',
@@ -17,7 +17,7 @@ const messageRoutes: RouteRecordRaw[] = [
       {
         path: '/inbox',
         name: 'InboxPage',
-        component: () => import('#/views/message/index.vue'),
+        component: () => import('#/views/app/internal_message/inbox/index.vue'),
         meta: {
           title: $t('menu.profile.internalMessage'),
           icon: 'lucide:message-circle-more',
@@ -28,4 +28,4 @@ const messageRoutes: RouteRecordRaw[] = [
   },
 ];
 
-export default messageRoutes;
+export default messageInboxRoutes;

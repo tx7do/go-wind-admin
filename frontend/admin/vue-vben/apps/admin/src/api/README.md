@@ -31,7 +31,7 @@ src/api/
 │       └── index.ts                # 所有类型 + createXxxServiceClient 工厂
 ├── service/                        # Service 层（一个文件对应一个后端 Service）
 │   ├── auth.ts                     # 认证服务
-│   ├── user.ts                     # 用户管理
+│   ├── user_profile.ts                     # 用户管理
 │   ├── role.ts                     # 角色管理
 │   ├── permission.ts               # 权限管理
 │   ├── permission-group.ts         # 权限组管理
@@ -58,7 +58,7 @@ src/api/
 └── composables/                    # Vue Query hooks 层（与 service 一一对应）
     ├── shared.ts                   # 通用枚举工具（enable/status/成功失败等）
     ├── auth.ts                     # 认证 hooks
-    ├── user.ts                     # 用户 hooks + 用户枚举工具
+    ├── user_profile.ts                     # 用户 hooks + 用户枚举工具
     ├── ...其余同 service 目录
     └── index.ts                    # 统一导出
 ```
@@ -148,7 +148,7 @@ import type {
 - **纯异步函数**（可直接 `await` 调用）
 
 ```ts
-// service/user.ts 的典型结构
+// service/user_profile.ts 的典型结构
 import { createUserServiceClient } from "#/api/generated/admin/service/v1";
 import { requestApi } from "#/transport/rest";
 
@@ -284,7 +284,7 @@ await mutateAsync({ ids: [1, 2, 3] });
 
 | 模块 | composable | service | 说明 |
 |---|---|---|---|
-| 用户管理 | `user.ts` | `user.ts` | 用户 CRUD + 枚举（状态/性别） |
+| 用户管理 | `user_profile.ts` | `user_profile.ts` | 用户 CRUD + 枚举（状态/性别） |
 | 用户资料 | `user-profile.ts` | `user-profile.ts` | 当前用户个人资料 |
 | 租户管理 | `tenant.ts` | `tenant.ts` | 租户 CRUD |
 

@@ -3,8 +3,8 @@ import { reactive } from 'vue';
 
 import { ColPage } from '@vben/common-ui';
 
-import OrgList from '#/views/app/opm/user/org-list.vue';
-import UserList from '#/views/app/opm/user/user-list.vue';
+import OrgList from './org-list.vue';
+import UserList from './user-list.vue';
 
 const props = reactive({
   leftCollapsedWidth: 0,

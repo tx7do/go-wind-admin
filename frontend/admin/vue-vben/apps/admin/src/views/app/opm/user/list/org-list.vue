@@ -13,7 +13,8 @@ import { Select } from 'ant-design-vue';
 
 import { type identityservicev1_OrgUnit as OrgUnit } from '#/api';
 import { TreeActionEnum } from '#/constants/tree';
-import { useUserViewStore } from '#/views/app/opm/user/user-view.state';
+
+import { useUserViewStore } from './user-view.state';
 
 const userViewStore = useUserViewStore();
 

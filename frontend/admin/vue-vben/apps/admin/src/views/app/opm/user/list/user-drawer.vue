@@ -21,7 +21,8 @@ import {
   type identityservicev1_OrgUnit as OrgUnit,
   type identityservicev1_Position as Position,
 } from '#/api';
-import { useUserViewStore } from '#/views/app/opm/user/user-view.state';
+
+import { useUserViewStore } from './user-view.state';
 
 const { mutateAsync: createUser } = useCreateUser();
 const { mutateAsync: updateUser } = useUpdateUser();

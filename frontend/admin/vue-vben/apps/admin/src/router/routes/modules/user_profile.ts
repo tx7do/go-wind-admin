@@ -4,7 +4,7 @@ import { $t } from '@vben/locales';
 
 import { BasicLayout } from '#/layouts';
 
-const userRoutes: RouteRecordRaw[] = [
+const userProfileRoutes: RouteRecordRaw[] = [
   {
     name: 'Profile',
     path: '/profile',
@@ -18,7 +18,7 @@ const userRoutes: RouteRecordRaw[] = [
       {
         path: '/profile',
         name: 'ProfilePage',
-        component: () => import('#/views/profile/index.vue'),
+        component: () => import('#/views/app/opm/user/profile/index.vue'),
         meta: {
           title: $t('menu.profile.settings'),
           icon: 'lucide:user-pen',
@@ -29,4 +29,4 @@ const userRoutes: RouteRecordRaw[] = [
   },
 ];
 
-export default userRoutes;
+export default userProfileRoutes;
