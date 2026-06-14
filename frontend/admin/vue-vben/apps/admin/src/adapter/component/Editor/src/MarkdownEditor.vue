@@ -292,7 +292,7 @@ onUnmounted(() => {
   width: 100%;
   min-height: 1px;
   overflow: hidden;
-  border: 1px solid #cbd5e1;
+  border: 1px solid hsl(var(--border));
   border-radius: 8px;
   transition:
     border-color 0.2s cubic-bezier(0.08, 0.82, 0.17, 1),
@@ -305,10 +305,10 @@ onUnmounted(() => {
   border-radius: 8px !important;
 }
 
-/* 聚焦态：蓝色边框 + 微光（对齐 Tiptap） */
+/* 聚焦态 */
 .markdown-editor-wrapper:focus-within {
-  border-color: #165dff;
-  box-shadow: 0 0 0 3px rgb(22 93 255 / 10%);
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 10%);
 }
 </style>
 
@@ -316,27 +316,28 @@ onUnmounted(() => {
   暗色模式配色覆盖必须用非 scoped 块，
   scoped 的 :deep() 对 CSS 自定义属性的覆盖在 Vite 构建中不稳定。
   使用 html.dark 前缀 + .markdown-editor-wrapper 限定作用范围。
+  颜色统一对接 Vben 框架 CSS 变量。
 -->
 <style>
-/* CSS 变量覆盖：把纯黑背景改为柔和深灰（对齐 Tiptap 风格） */
+/* CSS 变量覆盖 */
 html.dark .markdown-editor-wrapper {
-  border-color: #313540;
+  border-color: hsl(var(--accent-dark));
 }
 
 html.dark .markdown-editor-wrapper:focus-within {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 18%);
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 18%);
 }
 
 html.dark .markdown-editor-wrapper .md-editor.md-editor-dark {
-  --md-color: #e3e6eb;
-  --md-hover-color: #ffffff;
-  --md-bk-color: #14161a;
-  --md-bk-color-outstand: #313540;
-  --md-bk-hover-color: #1a1d24;
-  --md-border-color: #313540;
-  --md-border-hover-color: #475569;
-  --md-border-active-color: #60a5fa;
+  --md-color: hsl(var(--foreground));
+  --md-hover-color: hsl(var(--foreground));
+  --md-bk-color: hsl(var(--background));
+  --md-bk-color-outstand: hsl(var(--accent-dark));
+  --md-bk-hover-color: hsl(var(--accent-lighter));
+  --md-border-color: hsl(var(--accent-dark));
+  --md-border-hover-color: hsl(var(--accent-darker));
+  --md-border-active-color: hsl(var(--primary));
 }
 
 /* 工具栏背景 */
@@ -344,8 +345,8 @@ html.dark
   .markdown-editor-wrapper
   .md-editor.md-editor-dark
   .md-editor-toolbar-wrapper {
-  background-color: #1a1d24 !important;
-  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: hsl(var(--accent-lighter)) !important;
+  border-bottom-color: hsl(0deg 0% 100% / 8%) !important;
 }
 
 /* 工具栏按钮颜色 */
@@ -354,7 +355,7 @@ html.dark
   .md-editor.md-editor-dark
   .md-editor-toolbar
   .md-editor-toolbar-item {
-  color: #a3aed0 !important;
+  color: hsl(var(--muted-foreground)) !important;
 }
 
 /* 工具栏按钮 hover */
@@ -363,23 +364,23 @@ html.dark
   .md-editor.md-editor-dark
   .md-editor-toolbar
   .md-editor-toolbar-item:not([disabled]):hover {
-  color: #ffffff !important;
-  background-color: rgba(255, 255, 255, 0.08) !important;
+  color: hsl(var(--foreground)) !important;
+  background-color: hsl(0deg 0% 100% / 8%) !important;
 }
 
 /* CodeMirror 编辑区 */
 html.dark .markdown-editor-wrapper .md-editor.md-editor-dark .cm-content {
-  color: #e3e6eb !important;
-  caret-color: #e3e6eb !important;
+  color: hsl(var(--foreground)) !important;
+  caret-color: hsl(var(--foreground)) !important;
 }
 
 html.dark .markdown-editor-wrapper .md-editor.md-editor-dark .cm-editor {
-  background-color: #14161a !important;
+  background-color: hsl(var(--background)) !important;
 }
 
 /* 编辑器外层背景 */
 html.dark .markdown-editor-wrapper .md-editor.md-editor-dark {
-  background-color: #14161a !important;
+  background-color: hsl(var(--background)) !important;
 }
 
 /* 输入区域背景 */
@@ -387,7 +388,7 @@ html.dark
   .markdown-editor-wrapper
   .md-editor.md-editor-dark
   .md-editor-input-wrapper {
-  background-color: #14161a !important;
+  background-color: hsl(var(--background)) !important;
 }
 
 /* placeholder 颜色 */
@@ -396,6 +397,6 @@ html.dark
   .md-editor.md-editor-dark
   .md-editor-input-wrapper
   textarea::placeholder {
-  color: #626773 !important;
+  color: hsl(var(--muted-foreground)) !important;
 }
 </style>

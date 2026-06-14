@@ -25,8 +25,7 @@ const markdownInputRef = defineModel<HTMLInputElement | undefined>(
 <template>
   <!-- prettier-ignore -->
   <div
-    class="flex flex-wrap gap-1 items-center px-3 py-2 select-none"
-    :class="isDark ? 'bg-[var(--tte-toolbar-bg)] border-b border-[var(--tte-toolbar-border)]' : 'bg-[#f8fafc] border-b border-[#e5e7eb]'"
+    class="flex flex-wrap gap-1 items-center px-3 py-2 select-none bg-[var(--tte-toolbar-bg)] border-b border-[var(--tte-toolbar-border)]"
   >
     <div class="flex gap-0.5 items-center">
       <button
@@ -67,7 +66,7 @@ P
 </button>
     </div>
 
-    <div class="w-px h-4 mx-1.5" :class="isDark ? 'bg-[var(--tte-toolbar-border)]' : 'bg-[#e5e7eb]'"></div>
+    <div class="w-px h-4 mx-1.5 bg-[var(--tte-toolbar-border)]"></div>
 
     <div class="flex gap-0.5 items-center">
       <button type="button" class="tb" :class="{ 'tb-active': isActive('bold') }" :title="$t('common.editor.bold')" @click="actions.toggleBold">
@@ -87,8 +86,8 @@ P
       </button>
     </div>
 
-    <div class="w-px h-4 mx-1.5" :class="isDark ? 'bg-[var(--tte-toolbar-border)]' : 'bg-[#e5e7eb]'"></div>
-
+    <div class="w-px h-4 mx-1.5 bg-[var(--tte-toolbar-border)]"></div>
+    
     <div class="flex gap-0.5 items-center">
       <button type="button" class="tb" :title="$t('common.editor.subscript')" @click="actions.toggleSubscript">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><text x="3" y="12" font-size="16" font-weight="bold">X</text><text x="14" y="18" font-size="10">2</text></svg>
@@ -99,23 +98,21 @@ P
       <input
         :value="textColor"
         type="color"
-        class="w-7 h-7 p-0.5 cursor-pointer rounded transition-all duration-150"
-        :class="isDark ? 'border border-[var(--tte-border-secondary)] hover:border-[#f1f5f9]' : 'border border-[#e5e7eb] hover:border-[#94a3b8] hover:scale-105'"
+        class="w-7 h-7 p-0.5 cursor-pointer rounded transition-all duration-150 border border-[var(--tte-border-secondary)] hover:border-[var(--tte-text-secondary)]"
         :title="$t('common.editor.textColor')"
         @change="actions.setTextColor(($event.target as HTMLInputElement).value)"
       />
       <input
         :value="highlightColor"
         type="color"
-        class="w-7 h-7 p-0.5 cursor-pointer rounded transition-all duration-150"
-        :class="isDark ? 'border border-[var(--tte-border-secondary)] hover:border-[#f1f5f9]' : 'border border-[#e5e7eb] hover:border-[#94a3b8] hover:scale-105'"
+        class="w-7 h-7 p-0.5 cursor-pointer rounded transition-all duration-150 border border-[var(--tte-border-secondary)] hover:border-[var(--tte-text-secondary)]"
         :title="$t('common.editor.highlightColor')"
         @change="actions.setHighlight(($event.target as HTMLInputElement).value)"
       />
     </div>
 
-    <div class="w-px h-4 mx-1.5" :class="isDark ? 'bg-[var(--tte-toolbar-border)]' : 'bg-[#e5e7eb]'"></div>
-
+    <div class="w-px h-4 mx-1.5 bg-[var(--tte-toolbar-border)]"></div>
+    
     <div class="flex gap-0.5 items-center">
       <button type="button" class="tb" :class="{ 'tb-active': isActive('bulletList') }" :title="$t('common.editor.bulletList')" @click="actions.toggleBulletList">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" /><circle cx="3" cy="6" r="1" fill="currentColor" /><circle cx="3" cy="12" r="1" fill="currentColor" /><circle cx="3" cy="18" r="1" fill="currentColor" /></svg>
@@ -143,7 +140,7 @@ P
       </button>
     </div>
 
-    <div class="w-px h-4 mx-1.5" :class="isDark ? 'bg-[var(--tte-toolbar-border)]' : 'bg-[#e5e7eb]'"></div>
+    <div class="w-px h-4 mx-1.5 bg-[var(--tte-toolbar-border)]"></div>
 
     <div class="flex gap-0.5 items-center">
       <button type="button" class="tb" :class="{ 'tb-active': isActive('textAlign', { textAlign: 'left' }) }" :title="$t('common.editor.left')" @click="actions.setAlign('left')">
@@ -160,7 +157,7 @@ P
       </button>
     </div>
 
-    <div class="w-px h-4 mx-1.5" :class="isDark ? 'bg-[var(--tte-toolbar-border)]' : 'bg-[#e5e7eb]'"></div>
+    <div class="w-px h-4 mx-1.5 bg-[var(--tte-toolbar-border)]"></div>
 
     <div v-if="isActive('table')" class="flex gap-0.5 items-center">
       <button type="button" class="tb" :title="$t('common.editor.addRowBefore')" @click="actions.addRowBefore">R+</button>
@@ -176,7 +173,7 @@ P
       <button type="button" class="tb" :title="$t('common.editor.toggleHeaderCell')" @click="actions.toggleHeaderCell">H</button>
     </div>
 
-    <div v-if="isActive('table')" class="w-px h-4 mx-1.5" :class="isDark ? 'bg-[var(--tte-toolbar-border)]' : 'bg-[#e5e7eb]'"></div>
+    <div v-if="isActive('table')" class="w-px h-4 mx-1.5 bg-[var(--tte-toolbar-border)]"></div>
 
     <div class="flex gap-0.5 items-center">
       <button type="button" class="tb" :disabled="!editor?.can().undo()" :title="$t('common.editor.undo')" @click="actions.undo">
@@ -193,7 +190,7 @@ P
       </button>
     </div>
 
-    <div class="w-px h-4 mx-1.5" :class="isDark ? 'bg-[var(--tte-toolbar-border)]' : 'bg-[#e5e7eb]'"></div>
+    <div class="w-px h-4 mx-1.5 bg-[var(--tte-toolbar-border)]"></div>
 
     <div class="flex gap-0.5 items-center">
       <button
@@ -222,7 +219,7 @@ P
 </template>
 
 <style scoped>
-/* ---- 亮色模式 ---- */
+/* ---- 工具栏按钮（颜色由 --tte-* CSS 变量统一管理，亮暗模式自动切换） ---- */
 .tb {
   display: flex;
   align-items: center;
@@ -232,7 +229,7 @@ P
   padding: 0;
   font-size: 12px;
   font-weight: 500;
-  color: #64748b; /* 高级深灰蓝，告别脏黑 */
+  color: var(--tte-toolbar-btn);
   cursor: pointer;
   background: transparent;
   border: none;
@@ -241,43 +238,19 @@ P
 }
 
 .tb:hover:not(:disabled) {
-  color: #0f172a !important; /* 悬停变深 */
-  background-color: #f1f5f9 !important; /* 淡淡的灰色背景 */
+  color: var(--tte-toolbar-btn-hover-color) !important;
+  background-color: var(--tte-toolbar-btn-hover-bg) !important;
 }
 
 .tb-active {
-  color: #165dff !important; /* 绑定主题蓝 */
-  background-color: rgba(22, 93, 255, 0.1) !important; /* 蓝色半透明背景 */
+  color: var(--tte-toolbar-btn-active) !important;
+  background-color: var(--tte-toolbar-btn-active-bg) !important;
 }
 
 .tb:disabled {
+  color: var(--tte-toolbar-btn-disabled) !important;
   cursor: not-allowed;
   opacity: 0.4;
-}
-
-/* ---- 暗黑模式 ---- */
-:global(.tiptap-editor-dark) .tb {
-  color: var(--tte-toolbar-btn) !important; /* #a3aed0 亮灰，大幅提升可读性 */
-}
-
-:global(.tiptap-editor-dark) .tb:hover:not(:disabled) {
-  color: var(--tte-toolbar-btn-hover-color) !important; /* #ffffff 悬停变白 */
-  background-color: var(
-    --tte-toolbar-btn-hover-bg
-  ) !important; /* rgba(255,255,255,0.08) 半透明 */
-}
-
-:global(.tiptap-editor-dark) .tb-active {
-  color: var(--tte-toolbar-btn-active) !important; /* #3b82f6 科技蓝 */
-  background-color: var(
-    --tte-toolbar-btn-active-bg
-  ) !important; /* rgba(59,130,246,0.15) 蓝色半透明背景 */
-}
-
-:global(.tiptap-editor-dark) .tb:disabled {
-  color: var(--tte-toolbar-btn-disabled) !important; /* #4a5568 暗淡 */
-  opacity: 1;
-  cursor: not-allowed;
 }
 
 /* ---- 图标尺寸 ---- */

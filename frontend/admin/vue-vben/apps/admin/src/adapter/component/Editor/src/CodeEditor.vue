@@ -323,7 +323,7 @@ onMounted(async () => {
           placeholder.style.position = 'absolute';
           placeholder.style.top = '10px';
           placeholder.style.left = '10px';
-          placeholder.style.color = '#999';
+          placeholder.style.color = 'hsl(var(--input-placeholder))';
           placeholder.style.pointerEvents = 'none';
           placeholder.style.fontSize = `${props.options?.fontSize || 14}px`;
           placeholder.textContent = props.placeholder;
@@ -418,7 +418,7 @@ defineExpose({
   width: 100%;
   min-height: 200px; /* 最小高度 */
   overflow: hidden;
-  border: 1px solid var(--border-color, #d9d9d9);
+  border: 1px solid hsl(var(--border));
   border-radius: 6px; /* 优化圆角 */
   transition: border-color 0.2s ease;
 }
@@ -438,14 +438,14 @@ defineExpose({
   scrollbar-width: thin;
 }
 
-/* 暗黑模式下滚动条样式 */
+/* 滚动条样式 */
 .code-editor-container,
 :deep(.monaco-editor .monaco-scrollable-element::-webkit-scrollbar-thumb) {
-  background-color: #555 !important;
+  background-color: hsl(var(--accent-darker)) !important;
 }
 
 .code-editor-container,
 :deep(.monaco-editor .monaco-scrollable-element::-webkit-scrollbar-track) {
-  background-color: #222 !important;
+  background-color: hsl(var(--accent)) !important;
 }
 </style>

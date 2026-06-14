@@ -1,5 +1,67 @@
-/* ============ 基础容器 ============ */
+/* ============ CSS 变量（对接 Vben 框架主题系统） ============ */
+/*
+ * 所有颜色统一通过 hsl(var(--xxx)) 引用框架 CSS 变量，
+ * 亮/暗模式由框架自动切换，无需手动维护两套配色。
+ */
 .tiptap-editor-wrapper {
+  /* 背景色系 */
+  --tte-bg-primary: hsl(var(--background));
+  --tte-bg-secondary: hsl(var(--accent));
+  --tte-bg-tertiary: hsl(var(--accent-dark));
+
+  /* 文字色系 */
+  --tte-text-primary: hsl(var(--foreground));
+  --tte-text-secondary: hsl(var(--muted-foreground));
+  --tte-text-muted: hsl(var(--muted-foreground));
+
+  /* 边框色系 */
+  --tte-border-primary: hsl(var(--border));
+  --tte-border-secondary: hsl(var(--accent-darker));
+
+  /* 代码色系 */
+  --tte-code-bg: hsl(var(--muted));
+  --tte-code-text: hsl(var(--destructive));
+  /* 代码块使用深色背景（亮暗模式统一，与 GitHub 风格一致） */
+  --tte-codeblock-bg: hsl(222deg 47% 11%);
+  --tte-codeblock-text: hsl(210deg 20% 98%);
+
+  /* 引用色系 */
+  --tte-blockquote-border: hsl(var(--border));
+  --tte-blockquote-text: hsl(var(--muted-foreground));
+
+  /* 链接色系 */
+  --tte-link: hsl(var(--primary));
+  --tte-link-hover: hsl(var(--primary));
+
+  /* 工具栏色系 */
+  --tte-toolbar-bg: hsl(var(--accent-lighter));
+  --tte-toolbar-border: hsl(var(--border));
+  --tte-toolbar-btn: hsl(var(--muted-foreground));
+  --tte-toolbar-btn-hover-bg: hsl(var(--accent));
+  --tte-toolbar-btn-hover-color: hsl(var(--foreground));
+  --tte-toolbar-btn-active-bg: hsl(var(--primary) / 15%);
+  --tte-toolbar-btn-active: hsl(var(--primary));
+  --tte-toolbar-btn-disabled: hsl(var(--muted-foreground) / 50%);
+
+  /* 状态栏色系 */
+  --tte-statusbar-bg: hsl(var(--accent-lighter));
+  --tte-statusbar-border: hsl(var(--border));
+
+  /* 聚焦色系 */
+  --tte-focus-blue: hsl(var(--primary));
+  --tte-focus-glow: hsl(var(--primary) / 18%);
+
+  /* 语法高亮色系（集中管理，亮暗模式共用） */
+  --tte-hl-comment: hsl(218deg 10% 60%);
+  --tte-hl-keyword: hsl(291deg 61% 64%);
+  --tte-hl-string: hsl(96deg 38% 64%);
+  --tte-hl-title: hsl(207deg 82% 66%);
+  --tte-hl-params: hsl(29deg 80% 61%);
+  --tte-hl-attr: hsl(4deg 74% 63%);
+  --tte-hl-regexp: hsl(186deg 47% 57%);
+  --tte-hl-meta: hsl(218deg 14% 71%);
+  --tte-hl-built-in: hsl(39deg 67% 66%);
+
   margin: 0 !important;
   padding: 0 !important;
   box-sizing: border-box !important;
@@ -8,47 +70,13 @@
   width: 100% !important;
   height: 100% !important;
   overflow: hidden !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  background-color: #fff;
-  border: 1px solid #cbd5e1 !important; /* 精确定义输入框物理边界 */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background-color: var(--tte-bg-primary);
+  border: 1px solid var(--tte-border-primary) !important;
   border-radius: 8px !important;
-  transition: border-color 0.2s cubic-bezier(0.08, 0.82, 0.17, 1),
-              box-shadow 0.2s cubic-bezier(0.08, 0.82, 0.17, 1);
-}
-
-/* ============ 暗黑模式变量 ============ */
-.tiptap-editor-dark {
-  --tte-bg-primary: #14161a !important;
-  --tte-bg-secondary: #1e2026 !important;
-  --tte-bg-tertiary: #313540 !important;
-  --tte-text-primary: #e3e6eb !important;
-  --tte-text-secondary: #94a3b8 !important;
-  --tte-text-muted: #626773 !important;
-  --tte-border-primary: #313540 !important;
-  --tte-border-secondary: #475569 !important;
-  --tte-code-bg: #1e2026 !important;
-  --tte-code-text: #e2e8f0 !important;
-  --tte-blockquote-border: #475569 !important;
-  --tte-blockquote-text: #94a3b8 !important;
-  --tte-link: #60a5fa !important;
-  --tte-link-hover: #93c5fd !important;
-  --tte-toolbar-bg: #1a1d24 !important;
-  --tte-toolbar-border: rgba(255, 255, 255, 0.08) !important;
-  --tte-toolbar-btn: #a3aed0 !important;
-  --tte-toolbar-btn-hover-bg: rgba(255, 255, 255, 0.08) !important;
-  --tte-toolbar-btn-hover-color: #ffffff !important;
-  --tte-toolbar-btn-active-bg: rgba(59, 130, 246, 0.15) !important;
-  --tte-toolbar-btn-active: #3b82f6 !important;
-  --tte-toolbar-btn-disabled: #4a5568 !important;
-  --tte-statusbar-bg: #1a1c22 !important;
-  --tte-statusbar-border: rgba(255, 255, 255, 0.06) !important;
-  --tte-focus-blue: #3b82f6 !important;
-  --tte-focus-glow: rgba(59, 130, 246, 0.18) !important;
-}
-
-.tiptap-editor-dark {
-  background-color: var(--tte-bg-primary) !important;
-  border-color: var(--tte-border-primary) !important;
+  transition:
+    border-color 0.2s cubic-bezier(0.08, 0.82, 0.17, 1),
+    box-shadow 0.2s cubic-bezier(0.08, 0.82, 0.17, 1);
 }
 
 /* ============ Editor Content ============ */
@@ -60,10 +88,6 @@
   height: 100% !important;
   min-height: 0 !important;
   overflow: hidden !important;
-  background-color: #ffffff !important;
-}
-
-.tiptap-editor-dark .tiptap-editor-content-wrapper {
   background-color: var(--tte-bg-primary) !important;
 }
 
@@ -76,10 +100,6 @@
   min-height: 0 !important;
   overflow-y: auto !important;
   overflow-x: hidden !important;
-  background-color: #ffffff !important;
-}
-
-.tiptap-editor-dark .tiptap-editor-content {
   background-color: var(--tte-bg-primary) !important;
 }
 
@@ -88,25 +108,19 @@
   flex: 1 !important;
   width: 100% !important;
   height: 100% !important;
-  min-height: 260px; /* 舒适的最小高度 */
-  padding: 16px 16px 40px 16px; /* 底部留空间给字数统计栏 */
+  min-height: 260px;
+  padding: 16px 16px 40px 16px;
   font-size: 14px;
   line-height: 1.6;
-  color: #334155; /* 温润的正文字体颜色 */
+  color: var(--tte-text-primary);
   word-wrap: break-word;
   white-space: pre-wrap;
   background-color: transparent;
-  outline: none; /* 消除浏览器原生聚焦边框 */
+  outline: none;
   cursor: text;
   transition:
     background-color 0.2s ease,
     color 0.2s ease !important;
-}
-
-.tiptap-editor-dark :deep(.ProseMirror),
-.tiptap-editor-content.dark :deep(.ProseMirror) {
-  color: var(--tte-text-primary) !important;
-  background-color: var(--tte-bg-primary) !important;
 }
 
 /* Placeholder */
@@ -114,15 +128,9 @@
 .tiptap-editor-wrapper :deep(.ProseMirror p.is-editor-empty:first-child::before) {
   float: left;
   height: 0;
-  color: #94a3b8; /* 适度调深，清晰可辨 */
+  color: var(--tte-text-muted);
   pointer-events: none;
   content: attr(data-placeholder);
-}
-
-/* prettier-ignore */
-.tiptap-editor-dark :deep(.ProseMirror p.is-editor-empty:first-child::before),
-.tiptap-editor-content.dark :deep(.ProseMirror p.is-editor-empty:first-child::before) {
-  color: var(--tte-text-muted) !important;
 }
 
 /* Headings */
@@ -130,35 +138,26 @@
   margin: 16px 0;
   font-size: 28px;
   font-weight: 700;
-  color: #111827;
+  color: var(--tte-text-primary);
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror h2) {
   margin: 12px 0;
   font-size: 24px;
   font-weight: 700;
-  color: #1f2937;
+  color: var(--tte-text-primary);
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror h3) {
   margin: 8px 0;
   font-size: 20px;
   font-weight: 700;
-  color: #374151;
-}
-
-.tiptap-editor-dark :deep(.ProseMirror h1),
-.tiptap-editor-dark :deep(.ProseMirror h2),
-.tiptap-editor-dark :deep(.ProseMirror h3),
-.tiptap-editor-content.dark :deep(.ProseMirror h1),
-.tiptap-editor-content.dark :deep(.ProseMirror h2),
-.tiptap-editor-content.dark :deep(.ProseMirror h3) {
-  color: var(--tte-text-primary) !important;
+  color: var(--tte-text-primary);
 }
 
 /* Paragraphs & Lists */
 .tiptap-editor-wrapper :deep(.ProseMirror p) {
-  margin: 0 0 8px 0; /* 统一段落间距 */
+  margin: 0 0 8px 0;
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror ul),
@@ -174,18 +173,18 @@
 .tiptap-editor-wrapper :deep(.ProseMirror pre) {
   position: relative;
   padding: 12px;
-  padding-top: 36px; /* 为语言选择器留出空间 */
+  padding-top: 36px;
   margin: 8px 0;
   overflow-x: auto;
-  color: #f3f4f6;
-  background-color: #1f2937;
+  color: var(--tte-codeblock-text);
+  background-color: var(--tte-codeblock-bg);
   border-radius: 6px;
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror pre code) {
   display: block;
   padding: 0;
-  font-family: Monaco, Menlo, "Courier New", monospace;
+  font-family: Monaco, Menlo, 'Courier New', monospace;
   font-size: 13px;
   line-height: 1.6;
   color: inherit;
@@ -201,119 +200,87 @@
   z-index: 10;
 }
 
-.tiptap-editor-wrapper :deep(.ProseMirror pre .code-block-language-selector select) {
+.tiptap-editor-wrapper
+  :deep(.ProseMirror pre .code-block-language-selector select) {
   padding: 2px 20px 2px 8px;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: 11px;
-  color: #9ca3af;
+  color: hsl(0deg 0% 65%);
   text-transform: uppercase;
   appearance: none;
   cursor: pointer;
-  background-color: rgb(0 0 0 / 30%);
+  background-color: hsl(0deg 0% 0% / 30%);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%239ca3af' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 4px center;
   background-size: 8px;
-  border: 1px solid rgb(255 255 255 / 10%);
+  border: 1px solid hsl(0deg 0% 100% / 10%);
   border-radius: 3px;
   outline: none;
 }
 
 /* prettier-ignore */
 .tiptap-editor-wrapper :deep(.ProseMirror pre .code-block-language-selector select:hover) {
-  background-color: rgb(0 0 0 / 50%);
-  border-color: rgb(255 255 255 / 20%);
+  background-color: hsl(0deg 0% 0% / 50%);
+  border-color: hsl(0deg 0% 100% / 20%);
 }
 
 /* prettier-ignore */
 .tiptap-editor-wrapper :deep(.ProseMirror pre .code-block-language-selector select:focus) {
-  background-color: rgb(0 0 0 / 60%);
-  border-color: #3b82f6;
+  background-color: hsl(0deg 0% 0% / 60%);
+  border-color: var(--tte-focus-blue);
 }
 
-/* prettier-ignore */
-.tiptap-editor-dark :deep(.ProseMirror pre .code-block-language-selector select) {
-  color: #cbd5e1;
-  background-color: rgb(255 255 255 / 10%);
-  border-color: rgb(255 255 255 / 20%);
-}
-
-/* prettier-ignore */
-.tiptap-editor-dark :deep(.ProseMirror pre .code-block-language-selector select:hover) {
-  background-color: rgb(255 255 255 / 15%);
-}
-
-/* Syntax Highlighting (lowlight) */
+/* Syntax Highlighting (lowlight) - 使用 CSS 变量集中管理 */
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-comment),
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-quote) {
   font-style: italic;
-  color: #6b7280;
+  color: var(--tte-hl-comment);
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-keyword),
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-selector-tag),
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-literal),
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-type) {
-  color: #c678dd;
+  color: var(--tte-hl-keyword);
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-string),
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-number) {
-  color: #98c379;
+  color: var(--tte-hl-string);
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-title),
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-function) {
-  color: #61afef;
+  color: var(--tte-hl-title);
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-params) {
-  color: #d19a66;
+  color: var(--tte-hl-params);
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-built_in),
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-class) {
-  color: #e6c07b;
+  color: var(--tte-hl-built-in);
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-attr),
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-variable),
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-property) {
-  color: #e06c75;
+  color: var(--tte-hl-attr);
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-tag),
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-name) {
-  color: #e06c75;
+  color: var(--tte-hl-attr);
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-regexp) {
-  color: #56b6c2;
+  color: var(--tte-hl-regexp);
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror .hljs-meta) {
-  color: #abb2bf;
-}
-
-.tiptap-editor-dark :deep(.ProseMirror code),
-.tiptap-editor-content.dark :deep(.ProseMirror code) {
-  color: var(--tte-code-text) !important;
-  background-color: var(--tte-code-bg) !important;
-}
-
-.tiptap-editor-dark :deep(.ProseMirror pre),
-.tiptap-editor-content.dark :deep(.ProseMirror pre) {
-  color: var(--tte-text-primary) !important;
-  background-color: var(--tte-bg-secondary) !important;
-  border: 1px solid var(--tte-border-secondary) !important;
-}
-
-/* Syntax Highlighting - 暗黑模式优化 */
-.tiptap-editor-dark :deep(.ProseMirror .hljs-comment),
-.tiptap-editor-dark :deep(.ProseMirror .hljs-quote),
-.tiptap-editor-content.dark :deep(.ProseMirror .hljs-comment),
-.tiptap-editor-content.dark :deep(.ProseMirror .hljs-quote) {
-  color: #626773 !important; /* 更克制的注释颜色 */
+  color: var(--tte-hl-meta);
 }
 
 /* Blockquote */
@@ -321,61 +288,34 @@
   padding-left: 12px;
   margin: 8px 0;
   font-style: italic;
-  color: #6b7280;
-  border-left: 4px solid #d1d5db;
+  color: var(--tte-blockquote-text);
+  border-left: 4px solid var(--tte-blockquote-border);
 }
 
-.tiptap-editor-dark :deep(.ProseMirror blockquote),
-.tiptap-editor-content.dark :deep(.ProseMirror blockquote) {
-  color: var(--tte-blockquote-text) !important;
-  border-left-color: var(--tte-blockquote-border) !important;
-}
-
-/* Links - 统一样式 */
+/* Links */
 .tiptap-editor-wrapper :deep(.ProseMirror a) {
-  color: #3b82f6;
+  color: var(--tte-link);
   text-decoration: underline;
   cursor: pointer;
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror a:hover) {
-  color: #2563eb;
+  color: var(--tte-link-hover);
 }
 
-.tiptap-editor-dark :deep(.ProseMirror a),
-.tiptap-editor-content.dark :deep(.ProseMirror a) {
-  color: var(--tte-link) !important;
-}
-
-.tiptap-editor-dark :deep(.ProseMirror a:hover),
-.tiptap-editor-content.dark :deep(.ProseMirror a:hover) {
-  color: var(--tte-link-hover) !important;
-}
-
-/* Inline Code - 统一样式 */
+/* Inline Code */
 .tiptap-editor-wrapper :deep(.ProseMirror code) {
   padding: 2px 6px;
-  font-family: Monaco, Menlo, "Courier New", monospace;
+  font-family: Monaco, Menlo, 'Courier New', monospace;
   font-size: 13px;
-  color: #ef4444;
-  background-color: #f3f4f6;
+  color: var(--tte-code-text);
+  background-color: var(--tte-code-bg);
   border-radius: 3px;
-}
-
-.tiptap-editor-dark :deep(.ProseMirror code),
-.tiptap-editor-content.dark :deep(.ProseMirror code) {
-  color: var(--tte-code-text) !important;
-  background-color: rgba(255, 255, 255, 0.06) !important; /* 更克制的背景 */
 }
 
 /* Selection */
 .tiptap-editor-wrapper :deep(.ProseMirror ::selection) {
-  background-color: rgb(59 130 246 / 30%);
-}
-
-.tiptap-editor-dark :deep(.ProseMirror ::selection),
-.tiptap-editor-content.dark :deep(.ProseMirror ::selection) {
-  background-color: rgb(96 165 250 / 40%) !important;
+  background-color: hsl(var(--primary) / 30%);
 }
 
 /* Images */
@@ -393,54 +333,25 @@
 }
 
 .tiptap-editor-content::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: hsl(var(--accent));
 }
 
 .tiptap-editor-content::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: hsl(var(--border));
   border-radius: 4px;
 }
 
 .tiptap-editor-content::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
-}
-
-.tiptap-editor-dark .tiptap-editor-content::-webkit-scrollbar-track,
-.tiptap-editor-content.dark::-webkit-scrollbar-track {
-  background: var(--tte-bg-primary) !important;
-}
-
-.tiptap-editor-dark .tiptap-editor-content::-webkit-scrollbar-thumb,
-.tiptap-editor-content.dark::-webkit-scrollbar-thumb {
-  background: var(--tte-border-secondary) !important;
-}
-
-.tiptap-editor-dark .tiptap-editor-content::-webkit-scrollbar-thumb:hover,
-.tiptap-editor-content.dark::-webkit-scrollbar-thumb:hover {
-  background: #64748b !important;
+  background: hsl(var(--muted-foreground));
 }
 
 .tiptap-editor-content {
-  scrollbar-color: #cbd5e1 #f1f5f9;
+  scrollbar-color: hsl(var(--border)) hsl(var(--accent));
   scrollbar-width: thin;
 }
 
-.tiptap-editor-dark .tiptap-editor-content,
-.tiptap-editor-content.dark {
-  scrollbar-color: var(--tte-border-secondary) var(--tte-bg-primary) !important;
-}
-
-/* ============ Disabled State ============ */
-/* 注意：disabled 状态样式已移至全局 _dark-mode.scss，
-   因为 scoped :deep() 对 ProseMirror DOM 属性选择器匹配不稳定 */
-
 /* ============ Focus State ============ */
 .tiptap-editor-wrapper:focus-within {
-  border-color: #165DFF !important; /* 绑定 Element Plus 主题蓝 */
-  box-shadow: 0 0 0 3px rgba(22, 93, 255, 0.1) !important;
-}
-
-.tiptap-editor-dark:focus-within {
   border-color: var(--tte-focus-blue) !important;
   box-shadow: 0 0 0 3px var(--tte-focus-glow) !important;
 }
@@ -470,20 +381,12 @@
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror video:hover) {
-  box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
+  box-shadow: 0 4px 12px hsl(0deg 0% 0% / 15%);
 }
 
 .tiptap-editor-wrapper :deep(.ProseMirror .ProseMirror-selectednode video) {
-  outline: 3px solid #3b82f6;
+  outline: 3px solid var(--tte-link);
   outline-offset: 2px;
-}
-
-.tiptap-editor-dark :deep(.ProseMirror video) {
-  box-shadow: 0 2px 8px rgb(0 0 0 / 30%);
-}
-
-.tiptap-editor-dark :deep(.ProseMirror .ProseMirror-selectednode video) {
-  outline-color: var(--tte-link);
 }
 
 /* ============ Modal Styles ============ */
@@ -502,11 +405,7 @@
 .field-label {
   font-size: 14px;
   font-weight: 500;
-  color: #374151;
-}
-
-.tiptap-editor-dark .field-label {
-  color: var(--tte-text-primary) !important;
+  color: var(--tte-text-primary);
 }
 
 .language-select {
@@ -516,30 +415,21 @@
 .code-textarea {
   width: 100%;
   padding: 8px 12px;
-  font-family: Monaco, Menlo, "Courier New", monospace;
+  font-family: Monaco, Menlo, 'Courier New', monospace;
   font-size: 13px;
   line-height: 1.5;
   resize: vertical;
-  border: 1px solid #d1d5db;
+  color: var(--tte-text-primary);
+  background-color: var(--tte-bg-primary);
+  border: 1px solid var(--tte-border-primary);
   border-radius: 4px;
   transition: border-color 0.2s ease;
 }
 
 .code-textarea:focus {
-  border-color: #3b82f6;
+  border-color: var(--tte-focus-blue);
   outline: none;
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 10%);
-}
-
-.tiptap-editor-dark .code-textarea {
-  color: var(--tte-text-primary) !important;
-  background-color: var(--tte-bg-secondary) !important;
-  border-color: var(--tte-border-secondary) !important;
-}
-
-.tiptap-editor-dark .code-textarea:focus {
-  border-color: var(--tte-link) !important;
-  box-shadow: 0 0 0 3px rgb(96 165 250 / 20%) !important;
+  box-shadow: 0 0 0 3px var(--tte-focus-glow);
 }
 
 .video-modal,

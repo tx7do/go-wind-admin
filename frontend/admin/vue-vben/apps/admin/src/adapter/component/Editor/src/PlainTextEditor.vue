@@ -90,39 +90,23 @@ defineExpose({
     monospace;
   font-size: 14px;
   line-height: 1.6;
-  color: var(--text-color, #333);
+  color: hsl(var(--foreground));
   resize: vertical;
-  background-color: var(--bg-color, #fff);
-  border: 1px solid var(--border-color, #d9d9d9);
+  background-color: hsl(var(--input-background));
+  border: 1px solid hsl(var(--input));
   border-radius: 4px;
   outline: none;
   transition: border-color 0.3s;
 }
 
 .plain-text-editor-textarea:focus {
-  border-color: var(--primary-color, #1890ff);
-  box-shadow: 0 0 0 2px rgb(24 144 255 / 10%);
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 10%);
 }
 
 .plain-text-editor-textarea:disabled {
-  color: var(--disabled-text-color, #999);
+  color: hsl(var(--muted-foreground));
   cursor: not-allowed;
-  background-color: var(--disabled-bg-color, #f5f5f5);
-}
-
-/* 暗黑模式支持 - 仅作用于当前组件 */
-.plain-text-editor-container.dark .plain-text-editor-textarea {
-  --bg-color: #1e1e1e;
-  --text-color: #d4d4d4;
-  --border-color: #3e3e3e;
-  --disabled-bg-color: #2d2d2d;
-  --disabled-text-color: #6e6e6e;
-}
-
-.plain-text-editor-container.dark .plain-text-editor-textarea:focus {
-  --primary-color: #1890ff;
-
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgb(24 144 255 / 20%);
+  background-color: hsl(var(--accent-lighter));
 }
 </style>

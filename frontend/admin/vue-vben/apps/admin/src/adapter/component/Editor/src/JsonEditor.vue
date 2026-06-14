@@ -325,26 +325,26 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border: 1px solid #cbd5e1;
+  border: 1px solid hsl(var(--border));
   border-radius: 8px;
-  background-color: #fff;
+  background-color: hsl(var(--background));
   transition:
     border-color 0.2s cubic-bezier(0.08, 0.82, 0.17, 1),
     box-shadow 0.2s cubic-bezier(0.08, 0.82, 0.17, 1);
   /* vanilla-jsoneditor 内置 --jse-* 变量体系 */
-  --jse-theme-color: #f8fafc;
-  --jse-theme-color-highlight: #f1f5f9;
+  --jse-theme-color: hsl(var(--accent-lighter));
+  --jse-theme-color-highlight: hsl(var(--accent));
 
   /* 模式切换按钮选中态 */
-  --jse-button-primary-background: rgb(22 93 255 / 10%);
-  --jse-button-primary-background-highlight: rgb(22 93 255 / 15%);
-  --jse-button-primary-color: #165dff;
+  --jse-button-primary-background: hsl(var(--primary) / 10%);
+  --jse-button-primary-background-highlight: hsl(var(--primary) / 15%);
+  --jse-button-primary-color: hsl(var(--primary));
 }
 
-/* 聚焦态：蓝色边框 + 微光（对齐 Tiptap） */
+/* 聚焦态 */
 .json-editor-container:focus-within {
-  border-color: #165dff;
-  box-shadow: 0 0 0 3px rgb(22 93 255 / 10%);
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 10%);
 }
 
 /* ============ 错误提示 ============ */
@@ -353,9 +353,9 @@ onUnmounted(() => {
   margin: 0;
   font-size: 12px;
   line-height: 1.4;
-  color: var(--jse-error-color, #ee5341);
-  background-color: #fef2f2;
-  border-bottom: 1px solid #fecaca;
+  color: hsl(var(--destructive));
+  background-color: hsl(var(--destructive) / 5%);
+  border-bottom: 1px solid hsl(var(--destructive) / 20%);
 }
 
 /* ============ 编辑器核心 ============ */
@@ -366,197 +366,190 @@ onUnmounted(() => {
 }
 </style>
 
-<!-- vanilla-jsoneditor 内置暗色主题（从 jse-theme-dark.css 内联，因 pnpm 间接依赖无法直接 import） -->
+<!-- vanilla-jsoneditor 暗色主题（颜色对接 Vben 框架 CSS 变量） -->
 <style>
 .jse-theme-dark {
   --jse-theme: dark !important;
-  --jse-theme-color: #1a1d24 !important;
-  --jse-theme-color-highlight: #313540 !important;
+  --jse-theme-color: hsl(var(--accent-lighter)) !important;
+  --jse-theme-color-highlight: hsl(var(--accent-dark)) !important;
 
-  /* ===== 背景色系（对齐 Tiptap --tte-* 变量） ===== */
-  --jse-background-color: #14161a;
-  --jse-panel-background: #1e2026;
-  --jse-panel-background-border: 1px solid #313540;
-  --jse-modal-background: #1e2026;
-  --jse-modal-code-background: #1e2026;
-  --jse-modal-overlay-background: rgb(0 0 0 / 60%);
+  /* ===== 背景色系 ===== */
+  --jse-background-color: hsl(var(--background));
+  --jse-panel-background: hsl(var(--accent));
+  --jse-panel-background-border: 1px solid hsl(var(--accent-dark));
+  --jse-modal-background: hsl(var(--accent));
+  --jse-modal-code-background: hsl(var(--accent));
+  --jse-modal-overlay-background: hsl(0deg 0% 0% / 60%);
 
   /* ===== 文字色系 ===== */
-  --jse-text-color: #e3e6eb;
-  --jse-text-color-inverse: #626773;
-  --jse-menu-color: #e3e6eb;
+  --jse-text-color: hsl(var(--foreground));
+  --jse-text-color-inverse: hsl(var(--muted-foreground));
+  --jse-menu-color: hsl(var(--foreground));
 
   /* ===== 边框色系 ===== */
-  --jse-main-border: 1px solid #313540;
-  --jse-panel-border: 1px solid #313540;
-  --jse-panel-color: #e3e6eb;
-  --jse-panel-color-readonly: #626773;
+  --jse-main-border: 1px solid hsl(var(--accent-dark));
+  --jse-panel-border: 1px solid hsl(var(--accent-dark));
+  --jse-panel-color: hsl(var(--foreground));
+  --jse-panel-color-readonly: hsl(var(--muted-foreground));
 
   /* ===== 工具栏/菜单按钮 ===== */
-  --jse-panel-button-color: #e3e6eb;
-  --jse-panel-button-color-highlight: #ffffff;
+  --jse-panel-button-color: hsl(var(--foreground));
+  --jse-panel-button-color-highlight: hsl(var(--foreground));
   --jse-panel-button-background: transparent;
-  --jse-panel-button-background-highlight: rgb(255 255 255 / 8%);
+  --jse-panel-button-background-highlight: hsl(0deg 0% 100% / 8%);
 
-  /* 模式切换按钮（text/tree/table）选中态：用半透明蓝色强调 */
-  --jse-button-primary-background: rgb(59 130 246 / 20%);
-  --jse-button-primary-background-highlight: rgb(59 130 246 / 30%);
-  --jse-button-primary-color: #93c5fd;
+  /* 模式切换按钮选中态 */
+  --jse-button-primary-background: hsl(var(--primary) / 20%);
+  --jse-button-primary-background-highlight: hsl(var(--primary) / 30%);
+  --jse-button-primary-color: hsl(var(--primary));
 
   /* ===== 导航栏 ===== */
-  --jse-navigation-bar-background: #313540;
-  --jse-navigation-bar-background-highlight: #475569;
-  --jse-navigation-bar-dropdown-color: #e3e6eb;
+  --jse-navigation-bar-background: hsl(var(--accent-dark));
+  --jse-navigation-bar-background-highlight: hsl(var(--accent-darker));
+  --jse-navigation-bar-dropdown-color: hsl(var(--foreground));
 
   /* ===== 右键菜单 ===== */
-  --jse-context-menu-background: #1e2026;
-  --jse-context-menu-background-highlight: #313540;
-  --jse-context-menu-separator-color: #313540;
-  --jse-context-menu-color: #e3e6eb;
-  --jse-context-menu-pointer-background: #475569;
-  --jse-context-menu-pointer-background-highlight: #64748b;
-  --jse-context-menu-pointer-color: #e3e6eb;
+  --jse-context-menu-background: hsl(var(--accent));
+  --jse-context-menu-background-highlight: hsl(var(--accent-dark));
+  --jse-context-menu-separator-color: hsl(var(--accent-dark));
+  --jse-context-menu-color: hsl(var(--foreground));
+  --jse-context-menu-pointer-background: hsl(var(--accent-darker));
+  --jse-context-menu-pointer-background-highlight: hsl(var(--muted-foreground));
+  --jse-context-menu-pointer-color: hsl(var(--foreground));
 
   /* ===== 语法高亮 ===== */
-  --jse-key-color: #60a5fa;
-  --jse-value-color: #e3e6eb;
-  --jse-value-color-number: #98c379;
-  --jse-value-color-boolean: #c678dd;
-  --jse-value-color-null: #c678dd;
-  --jse-value-color-string: #98c379;
-  --jse-value-color-url: #60a5fa;
-  --jse-delimiter-color: #626773;
+  --jse-key-color: hsl(var(--primary));
+  --jse-value-color: hsl(var(--foreground));
+  --jse-value-color-number: hsl(var(--success));
+  --jse-value-color-boolean: hsl(291deg 61% 64%);
+  --jse-value-color-null: hsl(291deg 61% 64%);
+  --jse-value-color-string: hsl(var(--success));
+  --jse-value-color-url: hsl(var(--primary));
+  --jse-delimiter-color: hsl(var(--muted-foreground));
 
   /* ===== 交互状态 ===== */
-  --jse-edit-outline: 2px solid #3b82f6;
-  --jse-selection-background-color: #313540;
-  --jse-selection-background-inactive-color: #1e2026;
-  --jse-hover-background-color: rgb(255 255 255 / 6%);
-  --jse-active-line-background-color: rgb(255 255 255 / 4%);
-  --jse-search-match-background-color: #313540;
+  --jse-edit-outline: 2px solid hsl(var(--primary));
+  --jse-selection-background-color: hsl(var(--accent-dark));
+  --jse-selection-background-inactive-color: hsl(var(--accent));
+  --jse-hover-background-color: hsl(0deg 0% 100% / 6%);
+  --jse-active-line-background-color: hsl(0deg 0% 100% / 4%);
+  --jse-search-match-background-color: hsl(var(--accent-dark));
 
   /* ===== 折叠/搜索 ===== */
-  --jse-collapsed-items-background-color: #1e2026;
-  --jse-collapsed-items-selected-background-color: #313540;
-  --jse-collapsed-items-link-color: #94a3b8;
-  --jse-collapsed-items-link-color-highlight: #60a5fa;
-  --jse-search-match-color: #475569;
-  --jse-search-match-outline: 1px solid #64748b;
-  --jse-search-match-active-color: #475569;
-  --jse-search-match-active-outline: 1px solid #64748b;
+  --jse-collapsed-items-background-color: hsl(var(--accent));
+  --jse-collapsed-items-selected-background-color: hsl(var(--accent-dark));
+  --jse-collapsed-items-link-color: hsl(var(--muted-foreground));
+  --jse-collapsed-items-link-color-highlight: hsl(var(--primary));
+  --jse-search-match-color: hsl(var(--accent-darker));
+  --jse-search-match-outline: 1px solid hsl(var(--muted-foreground));
+  --jse-search-match-active-color: hsl(var(--accent-darker));
+  --jse-search-match-active-outline: 1px solid hsl(var(--muted-foreground));
 
   /* ===== 标签/表格 ===== */
-  --jse-tag-background: #313540;
-  --jse-tag-color: #94a3b8;
-  --jse-table-header-background: #1e2026;
-  --jse-table-header-background-highlight: #313540;
-  --jse-table-row-odd-background: rgb(255 255 255 / 3%);
+  --jse-tag-background: hsl(var(--accent-dark));
+  --jse-tag-color: hsl(var(--muted-foreground));
+  --jse-table-header-background: hsl(var(--accent));
+  --jse-table-header-background-highlight: hsl(var(--accent-dark));
+  --jse-table-row-odd-background: hsl(0deg 0% 100% / 3%);
 
   /* ===== 输入/按钮 ===== */
-  --jse-input-background: #1e2026;
-  --jse-input-border: 1px solid #313540;
-  --jse-button-background: #475569;
-  --jse-button-background-highlight: #64748b;
-  --jse-button-color: #e3e6eb;
-  --jse-button-secondary-background: #313540;
-  --jse-button-secondary-background-highlight: #475569;
-  --jse-button-secondary-background-disabled: #1e2026;
-  --jse-button-secondary-color: #e3e6eb;
-  --jse-a-color: #60a5fa;
-  --jse-a-color-highlight: #93c5fd;
+  --jse-input-background: hsl(var(--accent));
+  --jse-input-border: 1px solid hsl(var(--accent-dark));
+  --jse-button-background: hsl(var(--accent-darker));
+  --jse-button-background-highlight: hsl(var(--muted-foreground));
+  --jse-button-color: hsl(var(--foreground));
+  --jse-button-secondary-background: hsl(var(--accent-dark));
+  --jse-button-secondary-background-highlight: hsl(var(--accent-darker));
+  --jse-button-secondary-background-disabled: hsl(var(--accent));
+  --jse-button-secondary-color: hsl(var(--foreground));
+  --jse-a-color: hsl(var(--primary));
+  --jse-a-color-highlight: hsl(var(--primary));
 
   /* ===== 提示框 ===== */
-  --jse-tooltip-color: #e3e6eb;
-  --jse-tooltip-background: #1e2026;
-  --jse-tooltip-border: 1px solid #313540;
-  --jse-tooltip-action-button-color: #e3e6eb;
-  --jse-tooltip-action-button-background: #475569;
+  --jse-tooltip-color: hsl(var(--foreground));
+  --jse-tooltip-background: hsl(var(--accent));
+  --jse-tooltip-border: 1px solid hsl(var(--accent-dark));
+  --jse-tooltip-action-button-color: hsl(var(--foreground));
+  --jse-tooltip-action-button-background: hsl(var(--accent-darker));
 
   /* ===== Svelte Select ===== */
-  --jse-svelte-select-background: #1e2026;
-  --jse-svelte-select-border: 1px solid #313540;
-  --list-background: #1e2026;
-  --item-hover-bg: #313540;
-  --multi-item-bg: #313540;
-  --input-color: #e3e6eb;
-  --multi-clear-bg: #475569;
-  --multi-item-clear-icon-color: #e3e6eb;
-  --multi-item-outline: 1px solid #475569;
-  --list-shadow: 0 2px 8px 0 rgb(0 0 0 / 40%);
+  --jse-svelte-select-background: hsl(var(--accent));
+  --jse-svelte-select-border: 1px solid hsl(var(--accent-dark));
+  --list-background: hsl(var(--accent));
+  --item-hover-bg: hsl(var(--accent-dark));
+  --multi-item-bg: hsl(var(--accent-dark));
+  --input-color: hsl(var(--foreground));
+  --multi-clear-bg: hsl(var(--accent-darker));
+  --multi-item-clear-icon-color: hsl(var(--foreground));
+  --multi-item-outline: 1px solid hsl(var(--accent-darker));
+  --list-shadow: 0 2px 8px 0 hsl(0deg 0% 0% / 40%);
 
   /* ===== 其他 ===== */
-  --jse-color-picker-background: #313540;
-  --jse-color-picker-border-box-shadow: #475569 0 0 0 1px;
+  --jse-color-picker-background: hsl(var(--accent-dark));
+  --jse-color-picker-border-box-shadow: hsl(var(--accent-darker)) 0 0 0 1px;
 
   /* 聚焦态边框 */
-  border-color: #313540 !important;
+  border-color: hsl(var(--accent-dark)) !important;
 }
 
-/* ===== 亮色模式：工具栏模式切换按钮（text/tree/table） ===== */
-/* 工具栏背景改为白色而非默认蓝色 */
+/* ===== 亮色模式：工具栏模式切换按钮 ===== */
 .json-editor-container:not(.jse-theme-dark) .jse-menu {
-  background-color: #f8fafc !important;
+  background-color: hsl(var(--accent-lighter)) !important;
 }
 
-/* 默认按钮文字：中灰 */
 .json-editor-container:not(.jse-theme-dark) .jse-menu button {
-  color: #64748b !important;
+  color: hsl(var(--muted-foreground)) !important;
   background-color: transparent !important;
 }
 
-/* hover 按钮 */
 .json-editor-container:not(.jse-theme-dark) .jse-menu button:hover {
-  color: #1e293b !important;
-  background-color: rgb(0 0 0 / 4%) !important;
+  color: hsl(var(--foreground)) !important;
+  background-color: hsl(0deg 0% 0% / 4%) !important;
 }
 
-/* 选中的模式按钮：淡蓝背景 + 蓝色文字 */
 .json-editor-container:not(.jse-theme-dark) .jse-menu button[class*='selected'],
 .json-editor-container:not(.jse-theme-dark) .jse-menu button[class*='active'],
 .json-editor-container:not(.jse-theme-dark) .jse-menu button.selected,
 .json-editor-container:not(.jse-theme-dark) .jse-menu button.active {
-  color: #165dff !important;
-  background-color: rgb(22 93 255 / 10%) !important;
+  color: hsl(var(--primary)) !important;
+  background-color: hsl(var(--primary) / 10%) !important;
 }
 
-/* 通过 inline style 设置的选中态 */
-.json-editor-container:not(.jse-theme-dark) .jse-menu button[style*='theme-color'] {
-  color: #165dff !important;
-  background-color: rgb(22 93 255 / 10%) !important;
+.json-editor-container:not(.jse-theme-dark)
+  .jse-menu
+  button[style*='theme-color'] {
+  color: hsl(var(--primary)) !important;
+  background-color: hsl(var(--primary) / 10%) !important;
   background-image: none !important;
 }
 
 html.dark .json-editor-container:focus-within {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 3px rgb(59 130 246 / 18%);
+  border-color: hsl(var(--primary));
+  box-shadow: 0 0 0 3px hsl(var(--primary) / 18%);
 }
 
-/* ===== 暗色模式：工具栏模式切换按钮（text/tree/table） ===== */
-/* 默认按钮文字：浅灰 */
+/* ===== 暗色模式：工具栏模式切换按钮 ===== */
 html.dark .jse-theme-dark .jse-menu button {
-  color: #94a3b8 !important;
+  color: hsl(var(--muted-foreground)) !important;
   background-color: transparent !important;
 }
 
-/* hover 按钮 */
 html.dark .jse-theme-dark .jse-menu button:hover {
-  color: #e3e6eb !important;
-  background-color: rgb(255 255 255 / 6%) !important;
+  color: hsl(var(--foreground)) !important;
+  background-color: hsl(0deg 0% 100% / 6%) !important;
 }
 
-/* 选中的模式按钮：半透明蓝色背景 + 蓝色文字 */
 html.dark .jse-theme-dark .jse-menu button[class*='selected'],
 html.dark .jse-theme-dark .jse-menu button[class*='active'],
 html.dark .jse-theme-dark .jse-menu button.selected,
 html.dark .jse-theme-dark .jse-menu button.active {
-  color: #93c5fd !important;
-  background-color: rgb(59 130 246 / 18%) !important;
+  color: hsl(var(--primary)) !important;
+  background-color: hsl(var(--primary) / 18%) !important;
 }
 
-/* 通过 inline style 设置的选中态（vanilla-jsoneditor 用 --jse-theme-color 渲染） */
 html.dark .jse-theme-dark .jse-menu button[style*='theme-color'] {
-  color: #93c5fd !important;
-  background-color: rgb(59 130 246 / 18%) !important;
+  color: hsl(var(--primary)) !important;
+  background-color: hsl(var(--primary) / 18%) !important;
   background-image: none !important;
 }
 </style>

@@ -1,5 +1,5 @@
 import type { Ref } from 'vue';
-import { ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { preferences } from '@vben/preferences';
 
@@ -149,8 +149,8 @@ export function useTiptapEditor(options: UseTiptapEditorOptions) {
     { immediate: true },
   );
 
-  // 文本颜色
-  const textColor = ref('#000000');
+  // 文本颜色：根据主题模式动态推导
+  const textColor = computed(() => (isDark.value ? '#f1f5f9' : '#1e293b'));
   const highlightColor = ref('#FFFF00');
 
   return {
