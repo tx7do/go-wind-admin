@@ -63,7 +63,8 @@ export const CustomIframe = Node.create({
       "iframe",
       mergeAttributes(HTMLAttributes, {
         frameborder: "0",
-        style: "max-width: 100%; border: 1px solid #e5e7eb; border-radius: 6px; margin: 12px 0;",
+        style:
+          "max-width: 100%; border: 1px solid var(--el-border-color-light); border-radius: 6px; margin: 12px 0;",
       }),
     ];
   },

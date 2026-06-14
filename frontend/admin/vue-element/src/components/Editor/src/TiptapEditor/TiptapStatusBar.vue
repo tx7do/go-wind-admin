@@ -1,23 +1,13 @@
 <template>
   <div
-    class="absolute bottom-3 right-4 flex items-center gap-2 text-xs select-none pointer-events-none"
-    :class="
-      isDark
-        ? 'text-[#626773]'
-        : 'text-[#94a3b8]'
-    "
+    class="tiptap-statusbar absolute bottom-3 right-4 flex items-center gap-2 text-xs select-none pointer-events-none"
   >
     <span>{{ statusInfo.words }} {{ $t("common.editor.words") }}</span>
-    <span :class="isDark ? 'text-[var(--tte-toolbar-border)]' : 'text-[#cbd5e1]'">|</span>
+    <span class="statusbar-sep">|</span>
     <span>{{ statusInfo.chars }} {{ $t("common.editor.chars") }}</span>
-    <span :class="isDark ? 'text-[var(--tte-toolbar-border)]' : 'text-[#cbd5e1]'">|</span>
+    <span class="statusbar-sep">|</span>
     <span>Ln {{ statusInfo.cursor }}</span>
-    <span
-      class="px-2 py-0.5 text-[11px] rounded"
-      :class="isDark ? 'text-[#626773] bg-[rgba(255,255,255,0.06)]' : 'text-[#94a3b8] bg-[#f1f5f9]'"
-    >
-      MD
-    </span>
+    <span class="statusbar-badge px-2 py-0.5 text-[11px] rounded">MD</span>
   </div>
 </template>
 
@@ -27,3 +17,18 @@ defineProps<{
   statusInfo: { chars: number; words: number; cursor: string };
 }>();
 </script>
+
+<style scoped>
+.tiptap-statusbar {
+  color: var(--tte-text-muted);
+}
+
+.statusbar-sep {
+  color: var(--tte-statusbar-border);
+}
+
+.statusbar-badge {
+  color: var(--tte-text-muted);
+  background-color: var(--tte-code-bg);
+}
+</style>

@@ -149,10 +149,10 @@ export function useEditorModals(editor: Ref<Editor | undefined>) {
   watch(linkModalVisible, (visible) => {
     if (visible) {
       nextTick(() => {
-        const input = document.querySelector(
-          ".ant-modal:last-of-type .ant-input"
+        const dialog = document.querySelector(
+          ".el-dialog:last-of-type .el-input__inner"
         ) as HTMLInputElement;
-        input?.focus();
+        dialog?.focus();
       });
     }
   });

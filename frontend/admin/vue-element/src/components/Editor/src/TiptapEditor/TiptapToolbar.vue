@@ -1,8 +1,7 @@
 <template>
   <!-- prettier-ignore -->
   <div
-    class="flex flex-wrap gap-1 items-center px-3 py-2 select-none"
-    :class="isDark ? 'bg-[var(--tte-toolbar-bg)] border-b border-[var(--tte-toolbar-border)]' : 'bg-[#f8fafc] border-b border-[#e5e7eb]'"
+    class="tiptap-toolbar flex flex-wrap gap-1 items-center px-3 py-2 select-none"
   >
     <div class="flex gap-0.5 items-center">
       <button
@@ -35,7 +34,7 @@
       >P</button>
     </div>
 
-    <div class="w-px h-4 mx-1.5" :class="isDark ? 'bg-[var(--tte-toolbar-border)]' : 'bg-[#e5e7eb]'"></div>
+    <div class="toolbar-divider w-px h-4 mx-1.5"></div>
 
     <div class="flex gap-0.5 items-center">
       <button type="button" class="tb" :class="{ 'tb-active': isActive('bold') }" :title="$t('common.editor.bold')" @click="actions.toggleBold">
@@ -55,7 +54,7 @@
       </button>
     </div>
 
-    <div class="w-px h-4 mx-1.5" :class="isDark ? 'bg-[var(--tte-toolbar-border)]' : 'bg-[#e5e7eb]'"></div>
+    <div class="toolbar-divider w-px h-4 mx-1.5"></div>
 
     <div class="flex gap-0.5 items-center">
       <button type="button" class="tb" :title="$t('common.editor.subscript')" @click="actions.toggleSubscript">
@@ -67,22 +66,20 @@
       <input
         :value="textColor"
         type="color"
-        class="w-7 h-7 p-0.5 cursor-pointer rounded transition-all duration-150"
-        :class="isDark ? 'border border-[var(--tte-border-secondary)] hover:border-[#f1f5f9]' : 'border border-[#e5e7eb] hover:border-[#94a3b8] hover:scale-105'"
+        class="color-input"
         :title="$t('common.editor.textColor')"
         @change="actions.setTextColor(($event.target as HTMLInputElement).value)"
       />
       <input
         :value="highlightColor"
         type="color"
-        class="w-7 h-7 p-0.5 cursor-pointer rounded transition-all duration-150"
-        :class="isDark ? 'border border-[var(--tte-border-secondary)] hover:border-[#f1f5f9]' : 'border border-[#e5e7eb] hover:border-[#94a3b8] hover:scale-105'"
+        class="color-input"
         :title="$t('common.editor.highlightColor')"
         @change="actions.setHighlight(($event.target as HTMLInputElement).value)"
       />
     </div>
 
-    <div class="w-px h-4 mx-1.5" :class="isDark ? 'bg-[var(--tte-toolbar-border)]' : 'bg-[#e5e7eb]'"></div>
+    <div class="toolbar-divider w-px h-4 mx-1.5"></div>
 
     <div class="flex gap-0.5 items-center">
       <button type="button" class="tb" :class="{ 'tb-active': isActive('bulletList') }" :title="$t('common.editor.bulletList')" @click="actions.toggleBulletList">
@@ -103,7 +100,7 @@
       <button type="button" class="tb" :title="$t('common.editor.insertTable')" @click="actions.insertTable">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><rect x="3" y="3" width="18" height="18" rx="2" stroke-width="2" /><line x1="12" y1="3" x2="12" y2="21" stroke-width="2" /><line x1="3" y1="12" x2="21" y2="12" stroke-width="2" /></svg>
       </button>
-      <button v-if="isActive('table')" type="button" class="tb text-red-500" :title="$t('common.editor.deleteTable')" @click="actions.deleteTable">
+      <button v-if="isActive('table')" type="button" class="tb tb-danger" :title="$t('common.editor.deleteTable')" @click="actions.deleteTable">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
       </button>
       <button type="button" class="tb" :title="$t('common.editor.insertHorizontalRule')" @click="actions.insertHorizontalRule">
@@ -111,7 +108,7 @@
       </button>
     </div>
 
-    <div class="w-px h-4 mx-1.5" :class="isDark ? 'bg-[var(--tte-toolbar-border)]' : 'bg-[#e5e7eb]'"></div>
+    <div class="toolbar-divider w-px h-4 mx-1.5"></div>
 
     <div class="flex gap-0.5 items-center">
       <button type="button" class="tb" :class="{ 'tb-active': isActive('textAlign', { textAlign: 'left' }) }" :title="$t('common.editor.left')" @click="actions.setAlign('left')">
@@ -128,7 +125,7 @@
       </button>
     </div>
 
-    <div class="w-px h-4 mx-1.5" :class="isDark ? 'bg-[var(--tte-toolbar-border)]' : 'bg-[#e5e7eb]'"></div>
+    <div class="toolbar-divider w-px h-4 mx-1.5"></div>
 
     <div v-if="isActive('table')" class="flex gap-0.5 items-center">
       <button type="button" class="tb" :title="$t('common.editor.addRowBefore')" @click="actions.addRowBefore">R+</button>
@@ -144,7 +141,7 @@
       <button type="button" class="tb" :title="$t('common.editor.toggleHeaderCell')" @click="actions.toggleHeaderCell">H</button>
     </div>
 
-    <div v-if="isActive('table')" class="w-px h-4 mx-1.5" :class="isDark ? 'bg-[var(--tte-toolbar-border)]' : 'bg-[#e5e7eb]'"></div>
+    <div v-if="isActive('table')" class="toolbar-divider w-px h-4 mx-1.5"></div>
 
     <div class="flex gap-0.5 items-center">
       <button type="button" class="tb" :disabled="!editor?.can().undo()" :title="$t('common.editor.undo')" @click="actions.undo">
@@ -156,12 +153,12 @@
       <button type="button" class="tb" :title="$t('common.editor.clearFormatting')" @click="actions.clearFormatting">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M8 6l8 12M6 18h12" /></svg>
       </button>
-      <button type="button" class="tb text-red-500" :title="$t('common.editor.clearContent')" @click="actions.clearContent">
+      <button type="button" class="tb tb-danger" :title="$t('common.editor.clearContent')" @click="actions.clearContent">
         <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
       </button>
     </div>
 
-    <div class="w-px h-4 mx-1.5" :class="isDark ? 'bg-[var(--tte-toolbar-border)]' : 'bg-[#e5e7eb]'"></div>
+    <div class="toolbar-divider w-px h-4 mx-1.5"></div>
 
     <div class="flex gap-0.5 items-center">
       <button
@@ -212,7 +209,34 @@ const markdownInputRef = defineModel<HTMLInputElement | undefined>("markdownInpu
 </script>
 
 <style scoped>
-/* ---- 亮色模式 ---- */
+/* ---- 工具栏容器 ---- */
+.tiptap-toolbar {
+  background-color: var(--tte-toolbar-bg);
+  border-bottom: 1px solid var(--tte-toolbar-border);
+}
+
+/* ---- 分割线 ---- */
+.toolbar-divider {
+  background-color: var(--tte-toolbar-border);
+}
+
+/* ---- 颜色选择器 ---- */
+.color-input {
+  width: 28px;
+  height: 28px;
+  padding: 2px;
+  cursor: pointer;
+  border: 1px solid var(--tte-border-secondary);
+  border-radius: 4px;
+  transition: all 0.15s ease;
+}
+
+.color-input:hover {
+  border-color: var(--tte-toolbar-btn-hover-color);
+  transform: scale(1.05);
+}
+
+/* ---- 工具栏按钮（亮暗统一通过 --tte-* 变量适配） ---- */
 .tb {
   display: flex;
   align-items: center;
@@ -222,7 +246,7 @@ const markdownInputRef = defineModel<HTMLInputElement | undefined>("markdownInpu
   padding: 0;
   font-size: 12px;
   font-weight: 500;
-  color: #64748b; /* 高级深灰蓝，告别脏黑 */
+  color: var(--tte-toolbar-btn);
   cursor: pointer;
   background: transparent;
   border: none;
@@ -231,39 +255,28 @@ const markdownInputRef = defineModel<HTMLInputElement | undefined>("markdownInpu
 }
 
 .tb:hover:not(:disabled) {
-  color: #0f172a !important; /* 悬停变深 */
-  background-color: #f1f5f9 !important; /* 淡淡的灰色背景 */
+  color: var(--tte-toolbar-btn-hover-color) !important;
+  background-color: var(--tte-toolbar-btn-hover-bg) !important;
 }
 
 .tb-active {
-  color: #165DFF !important; /* 绑定主题蓝 */
-  background-color: rgba(22, 93, 255, 0.1) !important; /* 蓝色半透明背景 */
+  color: var(--tte-toolbar-btn-active) !important;
+  background-color: var(--tte-toolbar-btn-active-bg) !important;
 }
 
 .tb:disabled {
+  color: var(--tte-toolbar-btn-disabled) !important;
   cursor: not-allowed;
   opacity: 0.4;
 }
 
-/* ---- 暗黑模式 ---- */
-:global(.tiptap-editor-dark) .tb {
-  color: var(--tte-toolbar-btn) !important; /* #a3aed0 亮灰，大幅提升可读性 */
+/* ---- 危险操作按钮 ---- */
+.tb-danger {
+  color: var(--el-color-danger);
 }
 
-:global(.tiptap-editor-dark) .tb:hover:not(:disabled) {
-  color: var(--tte-toolbar-btn-hover-color) !important; /* #ffffff 悬停变白 */
-  background-color: var(--tte-toolbar-btn-hover-bg) !important; /* rgba(255,255,255,0.08) 半透明 */
-}
-
-:global(.tiptap-editor-dark) .tb-active {
-  color: var(--tte-toolbar-btn-active) !important; /* #3b82f6 科技蓝 */
-  background-color: var(--tte-toolbar-btn-active-bg) !important; /* rgba(59,130,246,0.15) 蓝色半透明背景 */
-}
-
-:global(.tiptap-editor-dark) .tb:disabled {
-  color: var(--tte-toolbar-btn-disabled) !important; /* #4a5568 暗淡 */
-  opacity: 1;
-  cursor: not-allowed;
+.tb-danger:hover:not(:disabled) {
+  background-color: var(--el-color-danger-light-9) !important;
 }
 
 /* ---- 图标尺寸 ---- */

@@ -314,24 +314,24 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--el-border-color-light);
   border-radius: 6px;
   transition: all 0.2s ease;
 }
 
 .json-editor-dark {
-  --bg-primary: #0f172a !important;
-  --bg-secondary: #1e293b !important;
-  --text-primary: #fff !important;
-  --text-secondary: #94a3b8 !important;
-  --border-primary: #1e293b !important;
-  --border-secondary: #334155 !important;
-  --error-bg: #2a1a1a !important;
-  --error-text: #f88 !important;
-  --error-border: #4a2222 !important;
+  --je-bg-primary: var(--dark-bg-table);
+  --je-bg-secondary: var(--dark-bg-hover);
+  --je-text-primary: var(--dark-text-primary);
+  --je-text-secondary: var(--dark-text-secondary);
+  --je-border-primary: var(--dark-border);
+  --je-border-secondary: var(--dark-drawer-input-border);
+  --je-error-bg: rgba(248, 113, 113, 0.1);
+  --je-error-text: var(--el-color-danger);
+  --je-error-border: var(--dark-border);
 
-  background-color: var(--bg-primary) !important;
-  border-color: var(--border-primary) !important;
+  background-color: var(--je-bg-primary) !important;
+  border-color: var(--je-border-primary) !important;
 }
 
 .error-message {
@@ -339,15 +339,15 @@ onUnmounted(() => {
   margin: 0;
   font-size: 12px;
   line-height: 1.4;
-  color: #c33;
-  background-color: #fee;
-  border-bottom: 1px solid #fcc;
+  color: var(--el-color-danger);
+  background-color: var(--el-color-danger-light-9);
+  border-bottom: 1px solid var(--el-color-danger-light-7);
 }
 
 .json-editor-dark .error-message {
-  color: var(--error-text) !important;
-  background-color: var(--error-bg) !important;
-  border-bottom-color: var(--error-border) !important;
+  color: var(--je-error-text) !important;
+  background-color: var(--je-error-bg) !important;
+  border-bottom-color: var(--je-error-border) !important;
 }
 
 .json-editor-container :deep(.json-editor-core) {
@@ -360,97 +360,97 @@ onUnmounted(() => {
 .json-editor-dark :deep(.jsoneditor) {
   font-family: Monaco, Consolas, "Courier New", monospace !important;
   font-size: 14px !important;
-  color: var(--text-primary) !important;
-  background-color: var(--bg-primary) !important;
+  color: var(--je-text-primary) !important;
+  background-color: var(--je-bg-primary) !important;
   border: none !important;
 }
 
 .json-editor-dark :deep(.jsoneditor > *) {
-  background-color: var(--bg-primary) !important;
+  background-color: var(--je-bg-primary) !important;
 }
 
 /* 暗黑模式 - 菜单样式 */
 .json-editor-dark :deep(.jsoneditor-menu) {
   padding: 4px !important;
-  background-color: var(--bg-secondary) !important;
-  border-bottom: 1px solid var(--border-primary) !important;
+  background-color: var(--je-bg-secondary) !important;
+  border-bottom: 1px solid var(--je-border-primary) !important;
 }
 
 .json-editor-dark :deep(.jsoneditor-menu button) {
   padding: 4px 8px !important;
   margin: 0 2px !important;
-  color: var(--text-primary) !important;
+  color: var(--je-text-primary) !important;
   border: none !important;
   border-radius: 4px !important;
   transition: background-color 0.2s ease !important;
 }
 
 .json-editor-dark :deep(.jsoneditor-menu button:hover) {
-  background-color: var(--border-secondary) !important;
+  background-color: var(--je-border-secondary) !important;
 }
 
 /* 暗黑模式 - 树状视图 */
 .json-editor-dark :deep(.jsoneditor-tree) {
   padding: 8px !important;
-  color: var(--text-primary) !important;
-  background-color: var(--bg-primary) !important;
+  color: var(--je-text-primary) !important;
+  background-color: var(--je-bg-primary) !important;
 }
 
 .json-editor-dark :deep(.jsoneditor-tree .jsoneditor-field) {
   margin-right: 4px !important;
   font-weight: 500 !important;
-  color: #93c5fd !important;
+  color: var(--el-color-primary-light-5, #93c5fd) !important;
 }
 
 .json-editor-dark :deep(.jsoneditor-tree .jsoneditor-string) {
-  color: #a3e635 !important;
+  color: #98c379 !important;
 }
 
 .json-editor-dark :deep(.jsoneditor-tree .jsoneditor-number) {
-  color: #f87171 !important;
+  color: #d19a66 !important;
 }
 
 .json-editor-dark :deep(.jsoneditor-tree .jsoneditor-boolean) {
-  color: #60a5fa !important;
+  color: var(--el-color-primary-light-5, #60a5fa) !important;
 }
 
 .json-editor-dark :deep(.jsoneditor-tree .jsoneditor-null) {
-  color: #94a3b8 !important;
+  color: var(--je-text-secondary) !important;
 }
 
 /* 暗黑模式 - 代码/文本模式 */
 .json-editor-dark :deep(.jsoneditor-code) {
-  color: var(--text-primary) !important;
-  background-color: var(--bg-primary) !important;
+  color: var(--je-text-primary) !important;
+  background-color: var(--je-bg-primary) !important;
 }
 
 .json-editor-dark :deep(.jsoneditor-code textarea) {
   padding: 8px !important;
   font-family: Monaco, Consolas, "Courier New", monospace !important;
-  color: var(--text-primary) !important;
+  color: var(--je-text-primary) !important;
   resize: none !important;
-  background-color: var(--bg-primary) !important;
+  background-color: var(--je-bg-primary) !important;
   border: none !important;
 }
 
 .json-editor-dark :deep(.jsoneditor-code textarea:focus) {
-  border: 1px solid #60a5fa !important;
+  border: 1px solid var(--dark-primary) !important;
   border-radius: 2px !important;
   outline: none !important;
 }
 
 /* 暗黑模式 - 表单模式 */
 .json-editor-dark :deep(.jsoneditor-form) {
-  color: var(--text-primary) !important;
-  background-color: var(--bg-primary) !important;
+  color: var(--je-text-primary) !important;
+  background-color: var(--je-bg-primary) !important;
 }
 
 .json-editor-dark :deep(.jsoneditor-form input),
 .json-editor-dark :deep(.jsoneditor-form textarea),
 .json-editor-dark :deep(.jsoneditor-form select) {
-  color: var(--text-primary) !important;
-  background-color: var(--bg-secondary) !important;
-  border: 1px solid var(--border-secondary) !important;
+  color: var(--je-text-primary) !important;
+  background-color: var(--je-bg-secondary) !important;
+  border: 1px solid var(--je-border-secondary) !important;
   border-radius: 4px !important;
 }
 
@@ -458,36 +458,36 @@ onUnmounted(() => {
 .json-editor-dark :deep(.jsoneditor-search) {
   padding: 4px 8px !important;
   margin: 0 4px !important;
-  color: var(--text-primary) !important;
-  background-color: var(--bg-secondary) !important;
-  border: 1px solid var(--border-primary) !important;
+  color: var(--je-text-primary) !important;
+  background-color: var(--je-bg-secondary) !important;
+  border: 1px solid var(--je-border-primary) !important;
   border-radius: 4px !important;
 }
 
 .json-editor-dark :deep(.jsoneditor-search::placeholder) {
-  color: var(--text-secondary) !important;
+  color: var(--je-text-secondary) !important;
   opacity: 1 !important;
 }
 
 /* 暗黑模式 - 输入框 */
 .json-editor-dark :deep(.jsoneditor-text-input) {
   padding: 2px 4px !important;
-  color: var(--text-primary) !important;
-  background-color: var(--bg-secondary) !important;
-  border: 1px solid var(--border-secondary) !important;
+  color: var(--je-text-primary) !important;
+  background-color: var(--je-bg-secondary) !important;
+  border: 1px solid var(--je-border-secondary) !important;
   border-radius: 2px !important;
 }
 
 .json-editor-dark :deep(.jsoneditor-text-input:focus) {
-  background-color: #1a2436 !important;
-  border-color: #60a5fa !important;
+  background-color: var(--je-bg-secondary) !important;
+  border-color: var(--dark-primary) !important;
   outline: none !important;
 }
 
 /* 禁用状态 */
 .json-editor-container :deep(.jsoneditor-disabled) {
   cursor: not-allowed !important;
-  background-color: #1a2436 !important;
+  background-color: var(--el-fill-color-light) !important;
   opacity: 0.8 !important;
 }
 
@@ -500,18 +500,18 @@ onUnmounted(() => {
 
 .json-editor-dark :deep(.jsoneditor-tree::-webkit-scrollbar-track),
 .json-editor-dark :deep(.jsoneditor-code::-webkit-scrollbar-track) {
-  background: var(--bg-primary) !important;
+  background: var(--je-bg-primary) !important;
 }
 
 .json-editor-dark :deep(.jsoneditor-tree::-webkit-scrollbar-thumb),
 .json-editor-dark :deep(.jsoneditor-code::-webkit-scrollbar-thumb) {
-  background: var(--border-secondary) !important;
+  background: var(--je-border-secondary) !important;
   border-radius: 4px !important;
 }
 
 .json-editor-dark :deep(.jsoneditor-tree::-webkit-scrollbar-thumb:hover),
 .json-editor-dark :deep(.jsoneditor-code::-webkit-scrollbar-thumb:hover) {
-  background: #475569 !important;
+  background: var(--je-text-secondary) !important;
 }
 
 /* 亮色模式基础样式 */
