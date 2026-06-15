@@ -1,79 +1,87 @@
 ---
-description: API 三层架构（service/composables）代码模板和规范。当创建或修改 API 层代码（service 文件、composables 文件、Vue Query hooks）时应用此规则。
+description: API 两层架构（generated/client + composables）代码模板和规范。当创建或修改 API 层代码（composables 文件、Vue Query hooks、apiClient 调用）时应用此规则。
 globs:
   - "apps/admin/src/api/**"
 alwaysApply: false
 ---
 
-# API 三层架构详细模板
+# API 两层架构详细模板
 
 ## 架构总览
 
 ```
-generated/  →  service/  →  composables/  →  views/stores
-(自动生成)     (纯异步函数)   (Vue Query hooks)
+generated/  +  client.ts  →  composables/  →  views/stores
+(自动生成)     (ApiClient 单例)   (Vue Query hooks)
 ```
 
-**依赖方向**: `views/stores → composables → service → generated`
+**依赖方向**: `views/stores → composables → apiClient.xxxService → transport.unary → requestApi`
 
-## 第 1 层：service 层模板
+## client.ts — ApiClient 单例
 
-文件路径: `src/api/service/{module-name}.ts`
+文件路径: `src/api/client.ts`
+
+生成的 `ApiClient` 类通过 `ClientTransport` 接口发送请求。`client.ts` 将已有的 `requestApi`（基于 axios 的 `RequestClient`）适配为 `ClientTransport`，保留 token 注入、错误拦截、自动刷新等全部已有逻辑。
 
 ```typescript
 import {
-  createXxxServiceClient,
-  type xxxservicev1_CreateXxxRequest,
-  type xxxservicev1_DeleteXxxRequest,
-  type xxxservicev1_GetXxxRequest,
-  type xxxservicev1_UpdateXxxRequest,
+  type ClientTransport,
+  createApiClient,
 } from '#/api/generated/admin/service/v1';
-import { type PaginationQuery, requestApi } from '#/transport/rest';
+import { requestApi } from '#/transport/rest';
 
-// 延迟初始化单例 Client
-let _instance: null | ReturnType<typeof createXxxServiceClient> = null;
+const transport: ClientTransport = {
+  unary(path, method, body, _meta) {
+    return requestApi({ body, method, path });
+  },
+  serverStream(path, _meta) {
+    throw new Error(`serverStream not supported via ApiClient: ${path}`);
+  },
+  duplexStream(path, _meta) {
+    throw new Error(`duplexStream not supported via ApiClient: ${path}`);
+  },
+};
 
-function getXxxService() {
-  if (!_instance) {
-    _instance = createXxxServiceClient(requestApi);
-  }
-  return _instance;
-}
-
-// 列表查询
-export async function listXxxs(query: PaginationQuery) {
-  return getXxxService().List(query.toRawParams());
-}
-
-// 获取详情
-export async function getXxx(request: xxxservicev1_GetXxxRequest) {
-  return getXxxService().Get(request);
-}
-
-// 创建
-export async function createXxx(request: xxxservicev1_CreateXxxRequest) {
-  return getXxxService().Create(request);
-}
-
-// 更新
-export async function updateXxx(request: xxxservicev1_UpdateXxxRequest) {
-  return getXxxService().Update(request);
-}
-
-// 删除
-export async function deleteXxx(request: xxxservicev1_DeleteXxxRequest) {
-  return getXxxService().Delete(request);
-}
+export const apiClient = createApiClient(transport);
 ```
 
-**注册导出** — 在 `src/api/service/index.ts` 中添加：
+**ApiClient 提供的所有 Service Client getter**:
+
 ```typescript
-export * from './xxx';
+apiClient.adminPortalService              // 管理门户
+apiClient.authenticationService           // 认证服务
+apiClient.dictTypeService                 // 字典类型
+apiClient.dictEntryService                // 字典条目
+apiClient.userService                     // 用户管理
+apiClient.userProfileService              // 用户资料
+apiClient.roleService                     // 角色管理
+apiClient.permissionService               // 权限管理
+apiClient.permissionGroupService          // 权限组管理
+apiClient.menuService                     // 菜单管理
+apiClient.apiService                      // API 管理
+apiClient.orgUnitService                  // 组织单元
+apiClient.positionService                 // 岗位管理
+apiClient.tenantService                   // 租户管理
+apiClient.taskService                     // 异步任务
+apiClient.fileService                     // 文件管理
+apiClient.fileTransferService             // 文件传输
+apiClient.loginPolicyService              // 登录策略
+apiClient.languageService                 // 语言管理
+apiClient.internalMessageService          // 内部消息
+apiClient.internalMessageCategoryService  // 内部消息分类
+apiClient.internalMessageRecipientService // 内部消息接收
+apiClient.apiAuditLogService              // API 审计日志
+apiClient.dataAccessAuditLogService       // 数据访问审计日志
+apiClient.loginAuditLogService            // 登录审计日志
+apiClient.operationAuditLogService        // 操作审计日志
+apiClient.permissionAuditLogService       // 权限审计日志
+apiClient.policyEvaluationLogService      // 策略评估日志
 ```
 
-## 第 2 层：composables 层模板
+## composables 层模板
 
 文件路径: `src/api/composables/{module-name}.ts`
+
+每个 composable 文件直接导入 `apiClient` 并调用对应的 Service Client：
 
 ```typescript
 import type {
@@ -92,13 +100,7 @@ import {
   type UseQueryOptions,
 } from '@tanstack/vue-query';
 
-import {
-  createXxx,
-  deleteXxx,
-  getXxx,
-  listXxxs,
-  updateXxx,
-} from '#/api/service/xxx';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
 
@@ -111,7 +113,7 @@ export function useListXxxs(
 ) {
   return useQuery({
     queryKey: ['listXxxs', query],
-    queryFn: () => listXxxs(query),
+    queryFn: () => apiClient.xxxService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -120,7 +122,7 @@ export function useListXxxs(
 export async function fetchListXxxs(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listXxxs', params],
-    queryFn: () => listXxxs(params),
+    queryFn: () => apiClient.xxxService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -132,7 +134,7 @@ export function useGetXxx(
 ) {
   return useQuery({
     queryKey: ['getXxx', req],
-    queryFn: () => getXxx(req),
+    queryFn: () => apiClient.xxxService.Get(req),
     ...options,
   });
 }
@@ -141,7 +143,7 @@ export function useGetXxx(
 export async function fetchXxx(params: xxxservicev1_GetXxxRequest) {
   return queryClient.fetchQuery({
     queryKey: ['getXxx', params],
-    queryFn: () => getXxx(params),
+    queryFn: () => apiClient.xxxService.Get(params),
     retry: 0,
   });
 }
@@ -151,7 +153,7 @@ export function useCreateXxx(
   options?: UseMutationOptions<object, Error, { data: xxxservicev1_Xxx }>,
 ) {
   return useMutation({
-    mutationFn: ({ data }) => createXxx({ data }),
+    mutationFn: ({ data }) => apiClient.xxxService.Create({ data }),
     ...options,
   });
 }
@@ -166,7 +168,7 @@ export function useUpdateXxx(
 ) {
   return useMutation({
     mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
-      updateXxx({
+      apiClient.xxxService.Update({
         id,
         data: { ...values } as any,
         updateMask: makeUpdateMask(Object.keys(values ?? {})),
@@ -180,7 +182,7 @@ export function useDeleteXxx(
   options?: UseMutationOptions<object, Error, number>,
 ) {
   return useMutation({
-    mutationFn: (id) => deleteXxx({ id }),
+    mutationFn: (id) => apiClient.xxxService.Delete({ id }),
     ...options,
   });
 }
@@ -213,6 +215,27 @@ export function xxxStatusToName(status?: Xxx_Status) {
 **注册导出** — 在 `src/api/composables/index.ts` 中添加：
 ```typescript
 export * from './xxx';
+```
+
+## 特殊模式：Store 直接调用的纯异步函数
+
+某些函数需要同时供 Pinia Store 和 Mutation builder 使用（如 auth 的 `login`、`logout`），先定义为纯异步函数：
+
+```typescript
+// composables/auth.ts
+import { apiClient } from '#/api/client';
+
+// 纯异步函数 — 供 Store 和 Mutation builder 使用
+export async function login(request: authenticationservicev1_LoginRequest) {
+  return apiClient.authenticationService.Login(request);
+}
+
+// Mutation builder — 供 Store 在非 Vue 上下文中使用
+export const loginMutation = queryClient.getMutationCache().build(queryClient, {
+  mutationKey: ['login'],
+  mutationFn: login,
+  retry: 0,
+});
 ```
 
 ## Query Key 命名约定
@@ -250,6 +273,9 @@ new PaginationQuery({ fieldMask: 'id,name,status' });
 // ✅ 正确 — 通过 #/api 统一入口
 import { useListUsers, fetchListUsers, PaginationQuery } from '#/api';
 import { type identityservicev1_User as User } from '#/api';
+
+// ✅ 正确 — composables 内部导入 apiClient
+import { apiClient } from '#/api/client';
 
 // ❌ 错误 — 禁止直接引用 generated 路径
 import { useListUsers } from '#/api/composables/user';

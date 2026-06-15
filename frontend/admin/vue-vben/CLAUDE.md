@@ -51,9 +51,9 @@ Mentions, Rate, Divider, Space, DefaultButton, PrimaryButton, ApiTree
 
 ```
 apps/admin/src/
-├── api/                  # API 层（三层架构）
+├── api/                  # API 层（两层架构）
 │   ├── generated/        # ← protobuf 自动生成，禁止手动编辑
-│   ├── service/          # ← Service 层：调用 generated Client 的纯异步函数
+│   ├── client.ts         # ← ApiClient 单例（ClientTransport 适配器）
 │   └── composables/      # ← Vue Query hooks 层：use*/fetch*/枚举工具
 ├── adapter/              # VbenForm + VxeTable 适配器配置
 ├── router/routes/modules/# ← 路由模块（按功能拆分）
@@ -68,10 +68,11 @@ apps/admin/src/
 ### 数据层约定
 
 1. **禁止直接引用 `#/api/generated/` 路径** — 业务层通过 `#/api` 统一入口导入
-2. **组件内用 `use*` hooks，组件外（Store/路由守卫）用 `fetch*` 函数**
-3. **更新操作只传变化字段** — `useUpdate*` 内部自动生成 `updateMask`
-4. **Pinia Store 中不可依赖 `useRouter()`** — Store 初始化时路由可能未就绪
-5. **所有列表查询统一使用 `PaginationQuery`**
+2. **composables 直接使用 `apiClient`** — 导入 `apiClient` from `#/api/client`，调用 `apiClient.xxxService.Method()`
+3. **组件内用 `use*` hooks，组件外（Store/路由守卫）用 `fetch*` 函数**
+4. **更新操作只传变化字段** — `useUpdate*` 内部自动生成 `updateMask`
+5. **Pinia Store 中不可依赖 `useRouter()`** — Store 初始化时路由可能未就绪
+6. **所有列表查询统一使用 `PaginationQuery`**
 
 ### Vben 框架强规约
 
@@ -117,43 +118,32 @@ import { notification } from 'ant-design-vue';
 
 ```
 - [ ] Step 1: 确认 generated 层已有类型（protobuf 已生成）
-- [ ] Step 2: 创建 service 层（src/api/service/xxx.ts）
-- [ ] Step 3: 创建 composables 层（src/api/composables/xxx.ts）
-- [ ] Step 4: 注册导出（service/index.ts + composables/index.ts）
-- [ ] Step 5: 添加 i18n 翻译（zh-CN + en-US 的 enum.json, menu.json, page.json）
-- [ ] Step 6: 创建路由模块（router/routes/modules/app/xxx.ts）
-- [ ] Step 7: 创建视图页面（views/app/xxx/）
+- [ ] Step 2: 创建 composables 层（src/api/composables/xxx.ts）
+- [ ] Step 3: 注册导出（composables/index.ts）
+- [ ] Step 4: 添加 i18n 翻译（zh-CN + en-US 的 enum.json, menu.json, page.json）
+- [ ] Step 5: 创建路由模块（router/routes/modules/app/xxx.ts）
+- [ ] Step 6: 创建视图页面（views/app/xxx/）
 ```
 
-## API 三层架构模板
+## API 两层架构模板
 
-### service 层模板 (src/api/service/xxx.ts)
+### client.ts — ApiClient 单例
+
+生成的 `ApiClient` 通过 `ClientTransport` 接口发送请求，`client.ts` 将 `requestApi` 适配为 `ClientTransport`：
 
 ```typescript
-import {
-  createXxxServiceClient,
-  type xxxservicev1_CreateXxxRequest,
-  type xxxservicev1_DeleteXxxRequest,
-  type xxxservicev1_GetXxxRequest,
-  type xxxservicev1_UpdateXxxRequest,
-} from '#/api/generated/admin/service/v1';
-import { type PaginationQuery, requestApi } from '#/transport/rest';
+import { type ClientTransport, createApiClient } from '#/api/generated/admin/service/v1';
+import { requestApi } from '#/transport/rest';
 
-let _instance: null | ReturnType<typeof createXxxServiceClient> = null;
-
-function getXxxService() {
-  if (!_instance) { _instance = createXxxServiceClient(requestApi); }
-  return _instance;
-}
-
-export async function listXxxs(query: PaginationQuery) { return getXxxService().List(query.toRawParams()); }
-export async function getXxx(request: xxxservicev1_GetXxxRequest) { return getXxxService().Get(request); }
-export async function createXxx(request: xxxservicev1_CreateXxxRequest) { return getXxxService().Create(request); }
-export async function updateXxx(request: xxxservicev1_UpdateXxxRequest) { return getXxxService().Update(request); }
-export async function deleteXxx(request: xxxservicev1_DeleteXxxRequest) { return getXxxService().Delete(request); }
+const transport: ClientTransport = {
+  unary(path, method, body, _meta) { return requestApi({ body, method, path }); },
+  serverStream(path, _meta) { throw new Error(`serverStream not supported: ${path}`); },
+  duplexStream(path, _meta) { throw new Error(`duplexStream not supported: ${path}`); },
+};
+export const apiClient = createApiClient(transport);
 ```
 
-注册导出 — 在 `service/index.ts` 添加 `export * from './xxx';`
+ApiClient 提供的 Service Client：`apiClient.userService`、`apiClient.roleService`、`apiClient.authenticationService` 等。
 
 ### composables 层模板 (src/api/composables/xxx.ts)
 
@@ -168,7 +158,7 @@ import type {
 import { computed } from 'vue';
 import { i18n } from '@vben/locales';
 import { useMutation, type UseMutationOptions, useQuery, type UseQueryOptions } from '@tanstack/vue-query';
-import { createXxx, deleteXxx, getXxx, listXxxs, updateXxx } from '#/api/service/xxx';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
 
@@ -176,41 +166,41 @@ const t = i18n.global.t;
 
 // 列表 — 组件内 hook
 export function useListXxxs(query: PaginationQuery, options?: UseQueryOptions<xxxservicev1_ListXxxResponse, Error>) {
-  return useQuery({ queryKey: ['listXxxs', query], queryFn: () => listXxxs(query), ...options });
+  return useQuery({ queryKey: ['listXxxs', query], queryFn: () => apiClient.xxxService.List(query.toRawParams()), ...options });
 }
 
 // 列表 — Store / 外部调用
 export async function fetchListXxxs(params: PaginationQuery) {
-  return queryClient.fetchQuery({ queryKey: ['listXxxs', params], queryFn: () => listXxxs(params), retry: 0 });
+  return queryClient.fetchQuery({ queryKey: ['listXxxs', params], queryFn: () => apiClient.xxxService.List(params.toRawParams()), retry: 0 });
 }
 
 // 详情 — 组件内 hook
 export function useGetXxx(req: xxxservicev1_GetXxxRequest, options?: UseQueryOptions<xxxservicev1_Xxx, Error>) {
-  return useQuery({ queryKey: ['getXxx', req], queryFn: () => getXxx(req), ...options });
+  return useQuery({ queryKey: ['getXxx', req], queryFn: () => apiClient.xxxService.Get(req), ...options });
 }
 
 // 详情 — Store / 外部调用
 export async function fetchXxx(params: xxxservicev1_GetXxxRequest) {
-  return queryClient.fetchQuery({ queryKey: ['getXxx', params], queryFn: () => getXxx(params), retry: 0 });
+  return queryClient.fetchQuery({ queryKey: ['getXxx', params], queryFn: () => apiClient.xxxService.Get(params), retry: 0 });
 }
 
 // 创建
 export function useCreateXxx(options?: UseMutationOptions<object, Error, { data: xxxservicev1_Xxx }>) {
-  return useMutation({ mutationFn: ({ data }) => createXxx({ data }), ...options });
+  return useMutation({ mutationFn: ({ data }) => apiClient.xxxService.Create({ data }), ...options });
 }
 
 // 更新（自动生成 updateMask）
 export function useUpdateXxx(options?: UseMutationOptions<object, Error, { id: number; values: Record<string, any> }>) {
   return useMutation({
     mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
-      updateXxx({ id, data: { ...values } as any, updateMask: makeUpdateMask(Object.keys(values ?? {})) }),
+      apiClient.xxxService.Update({ id, data: { ...values } as any, updateMask: makeUpdateMask(Object.keys(values ?? {})) }),
     ...options,
   });
 }
 
 // 删除
 export function useDeleteXxx(options?: UseMutationOptions<object, Error, number>) {
-  return useMutation({ mutationFn: (id) => deleteXxx({ id }), ...options });
+  return useMutation({ mutationFn: (id) => apiClient.xxxService.Delete({ id }), ...options });
 }
 
 // 枚举与工具函数

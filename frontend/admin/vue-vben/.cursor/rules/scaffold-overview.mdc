@@ -57,9 +57,9 @@ Mentions, Rate, Divider, Space, DefaultButton, PrimaryButton, ApiTree
 
 ```
 apps/admin/src/
-├── api/                  # API 层（三层架构）
+├── api/                  # API 层（两层架构）
 │   ├── generated/        # ← protobuf 自动生成，禁止手动编辑
-│   ├── service/          # ← Service 层：调用 generated Client 的纯异步函数
+│   ├── client.ts         # ← ApiClient 单例（ClientTransport 适配器）
 │   └── composables/      # ← Vue Query hooks 层：use*/fetch*/枚举工具
 ├── adapter/              # VbenForm + VxeTable 适配器配置
 ├── router/routes/modules/# ← 路由模块（按功能拆分）
@@ -74,10 +74,11 @@ apps/admin/src/
 ### 数据层约定
 
 1. **禁止直接引用 `#/api/generated/` 路径** — 业务层通过 `#/api` 统一入口导入
-2. **组件内用 `use*` hooks，组件外（Store/路由守卫）用 `fetch*` 函数**
-3. **更新操作只传变化字段** — `useUpdate*` 内部自动生成 `updateMask`
-4. **Pinia Store 中不可依赖 `useRouter()`** — Store 初始化时路由可能未就绪
-5. **所有列表查询统一使用 `PaginationQuery`**
+2. **composables 直接使用 `apiClient`** — 导入 `apiClient` from `#/api/client`，调用 `apiClient.xxxService.Method()`
+3. **组件内用 `use*` hooks，组件外（Store/路由守卫）用 `fetch*` 函数**
+4. **更新操作只传变化字段** — `useUpdate*` 内部自动生成 `updateMask`
+5. **Pinia Store 中不可依赖 `useRouter()`** — Store 初始化时路由可能未就绪
+6. **所有列表查询统一使用 `PaginationQuery`**
 
 ### Vben 框架强规约
 
@@ -99,12 +100,11 @@ apps/admin/src/
 
 ```
 - [ ] Step 1: 确认 generated 层已有类型（protobuf 已生成）
-- [ ] Step 2: 创建 service 层（src/api/service/xxx.ts）
-- [ ] Step 3: 创建 composables 层（src/api/composables/xxx.ts）
-- [ ] Step 4: 注册导出（service/index.ts + composables/index.ts）
-- [ ] Step 5: 添加 i18n 翻译（zh-CN + en-US 的 enum.json, menu.json, page.json）
-- [ ] Step 6: 创建路由模块（router/routes/modules/app/xxx.ts）
-- [ ] Step 7: 创建视图页面（views/app/xxx/）
+- [ ] Step 2: 创建 composables 层（src/api/composables/xxx.ts）
+- [ ] Step 3: 注册导出（composables/index.ts）
+- [ ] Step 4: 添加 i18n 翻译（zh-CN + en-US 的 enum.json, menu.json, page.json）
+- [ ] Step 5: 创建路由模块（router/routes/modules/app/xxx.ts）
+- [ ] Step 6: 创建视图页面（views/app/xxx/）
 ```
 
 ## 导入路径约定

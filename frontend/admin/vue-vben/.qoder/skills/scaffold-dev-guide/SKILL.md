@@ -1,6 +1,6 @@
 ---
 name: scaffold-dev-guide
-description: Vue3 中后台脚手架项目二次开发指南。指导开发者按照项目架构规范创建新业务模块，包括 API 三层架构（generated/service/composables）、路由配置、VxeTable + VbenForm 页面开发、i18n 国际化、Pinia Store 等完整工作流。当用户要求新建模块、新增页面、添加 API、创建 CRUD 功能、或询问项目开发规范时使用此 Skill。
+description: Vue3 中后台脚手架项目二次开发指南。指导开发者按照项目架构规范创建新业务模块，包括 API 两层架构（generated/client + composables）、路由配置、VxeTable + VbenForm 页面开发、i18n 国际化、Pinia Store 等完整工作流。当用户要求新建模块、新增页面、添加 API、创建 CRUD 功能、或询问项目开发规范时使用此 Skill。
 ---
 
 # 脚手架项目二次开发指南
@@ -60,9 +60,9 @@ Mentions, Rate, Divider, Space, DefaultButton, PrimaryButton, ApiTree
 
 ```
 apps/admin/src/
-├── api/                  # API 层（三层架构）
+├── api/                  # API 层（两层架构）
 │   ├── generated/        # ← protobuf 自动生成，禁止手动编辑
-│   ├── service/          # ← Service 层：调用 generated Client 的纯异步函数
+│   ├── client.ts         # ← ApiClient 单例（ClientTransport 适配器）
 │   └── composables/      # ← Vue Query hooks 层：use*/fetch*/枚举工具
 ├── adapter/              # VbenForm + VxeTable 适配器配置
 ├── router/routes/modules/# ← 路由模块（按功能拆分）
@@ -79,24 +79,22 @@ apps/admin/src/
 ### 数据层约定
 
 1. **禁止直接引用 `#/api/generated/` 路径** — 业务层通过 `#/api` 统一入口导入
-2. **组件内用 `use*` hooks，组件外（Store/路由守卫）用 `fetch*` 函数**
-3. **更新操作只传变化字段** — `useUpdate*` 内部自动生成 `updateMask`
-4. **Pinia Store 中不可依赖 `useRouter()`** — Store 初始化时路由可能未就绪
-5. **所有列表查询统一使用 `PaginationQuery`**
+2. **composables 直接使用 `apiClient`** — 导入 `apiClient` from `#/api/client`，调用 `apiClient.xxxService.Method()`
+3. **组件内用 `use*` hooks，组件外（Store/路由守卫）用 `fetch*` 函数**
+4. **更新操作只传变化字段** — `useUpdate*` 内部自动生成 `updateMask`
+5. **Pinia Store 中不可依赖 `useRouter()`** — Store 初始化时路由可能未就绪
+6. **所有列表查询统一使用 `PaginationQuery`**
 
 ### Vben 框架强规约
 
-6. **表单组件必须使用注册名** — `schema` 中 `component` 字段只能使用 `adapter/component/index.ts` 中注册的名称（如 `Input`、`Select`、`ApiSelect`），不要使用 Ant Design Vue 原始组件名（如 `AInput`、`ASelect`）或原生 HTML 标签
-7. **Template 中使用 `a-*` 前缀** — Ant Design Vue 组件已全局注册，在 template 中直接用 `<a-button>`、`<a-tag>`、`<a-popconfirm>` 等，不需要 `import { Tag } from 'ant-design-vue'`
-8. **图标在 `:icon` prop 中必须用 `h()` 渲染** — `:icon="h(LucideFilePenLine)"`，图标组件从 `@vben/icons` 导入
-9. **日期列用 `formatter: 'formatDateTime'`** — 不要在 Slot 中用 dayjs 手动格式化
-10. **表单校验用内置规则名** — `rules: 'required'` 或 `rules: 'selectRequired'`，不要用 Zod 表达式
-11. **删除操作必须二次确认** — 使用 `<a-popconfirm>`，不要用 `window.confirm` 或直接删除
-
-### 通用约定
-
-12. **国际化文本不硬编码** — 使用 `$t()` 引用 locales 文件中的 key
-13. **使用严格相等运算符 `===`** — 禁止使用 `==`
+7. **表单组件必须使用注册名** — `schema` 中 `component` 字段只能使用 `adapter/component/index.ts` 中注册的名称（如 `Input`、`Select`、`ApiSelect`），不要使用 Ant Design Vue 原始组件名（如 `AInput`、`ASelect`）或原生 HTML 标签
+8. **Template 中使用 `a-*` 前缀** — Ant Design Vue 组件已全局注册，在 template 中直接用 `<a-button>`、`<a-tag>`、`<a-popconfirm>` 等，不需要 `import { Tag } from 'ant-design-vue'`
+9. **图标在 `:icon` prop 中必须用 `h()` 渲染** — `:icon="h(LucideFilePenLine)"`，图标组件从 `@vben/icons` 导入
+10. **日期列用 `formatter: 'formatDateTime'`** — 不要在 Slot 中用 dayjs 手动格式化
+11. **表单校验用内置规则名** — `rules: 'required'` 或 `rules: 'selectRequired'`，不要用 Zod 表达式
+12. **删除操作必须二次确认** — 使用 `<a-popconfirm>`，不要用 `window.confirm` 或直接删除
+13. **国际化文本不硬编码** — 使用 `$t()` 引用 locales 文件中的 key
+14. **使用严格相等运算符 `===`** — 禁止使用 `==`
 
 ## 新建业务模块 Checklist
 
@@ -104,12 +102,11 @@ apps/admin/src/
 
 ```
 - [ ] Step 1: 确认 generated 层已有类型（protobuf 已生成）
-- [ ] Step 2: 创建 service 层（src/api/service/xxx.ts）
-- [ ] Step 3: 创建 composables 层（src/api/composables/xxx.ts）
-- [ ] Step 4: 注册导出（service/index.ts + composables/index.ts）
-- [ ] Step 5: 添加 i18n 翻译（zh-CN + en-US）
-- [ ] Step 6: 创建路由模块（router/routes/modules/app/xxx.ts）
-- [ ] Step 7: 创建视图页面（views/app/xxx/）
+- [ ] Step 2: 创建 composables 层（src/api/composables/xxx.ts）
+- [ ] Step 3: 注册导出（composables/index.ts）
+- [ ] Step 4: 添加 i18n 翻译（zh-CN + en-US）
+- [ ] Step 5: 创建路由模块（router/routes/modules/app/xxx.ts）
+- [ ] Step 6: 创建视图页面（views/app/xxx/）
 ```
 
 ### Step 1: 确认 generated 类型
@@ -117,13 +114,13 @@ apps/admin/src/
 确保 `src/api/generated/admin/service/v1` 中包含目标模块的：
 - 类型定义: `xxxservicev1_EntityName`
 - 请求/响应类型
-- Client 工厂: `createXxxServiceClient`
+- ApiClient 中已有 `xxxService` getter
 
-### Step 2-4: API 层开发
+### Step 2-3: API 层开发
 
-详见 [api-patterns.md](api-patterns.md)，包含完整的 service/composable 模板代码。
+详见 [api-patterns.md](api-patterns.md)，包含完整的 composable 模板代码。
 
-### Step 5: i18n 国际化
+### Step 4: i18n 国际化
 
 在四个 JSON 文件中添加对应 key：
 
@@ -136,7 +133,7 @@ apps/admin/src/
 
 `en-US/` 目录下同步添加英文翻译。
 
-### Step 6: 路由配置
+### Step 5: 路由配置
 
 新建 `router/routes/modules/app/xxx.ts`：
 
@@ -173,7 +170,7 @@ const routes: RouteRecordRaw[] = [
 export default routes;
 ```
 
-### Step 7: 视图页面开发
+### Step 6: 视图页面开发
 
 详见 [view-patterns.md](view-patterns.md)，包含列表页、Drawer 表单页的完整模板。
 
@@ -202,5 +199,5 @@ import { LucideFilePenLine, LucideTrash2 } from '@vben/icons';
 
 ## 参考文件
 
-- API 三层架构详细模板和模式: [api-patterns.md](api-patterns.md)
+- API 两层架构详细模板和模式: [api-patterns.md](api-patterns.md)
 - 视图/页面/表单/表格详细模板: [view-patterns.md](view-patterns.md)
