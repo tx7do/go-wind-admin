@@ -1,4 +1,4 @@
-﻿import type { RouteRecordRaw } from 'vue-router';
+import type { RouteRecordRaw } from 'vue-router';
 
 import { BasicLayout } from '#/layouts';
 import { $t } from '#/locales';
@@ -8,7 +8,7 @@ const system: RouteRecordRaw[] = [
     path: '/system',
     name: 'System',
     component: BasicLayout,
-    redirect: '/system/menus',
+    redirect: '/system/dict',
     meta: {
       order: 2005,
       icon: 'lucide:settings',

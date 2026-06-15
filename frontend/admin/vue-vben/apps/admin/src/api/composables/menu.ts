@@ -131,7 +131,10 @@ export function useSyncMenus(
  * - 布局组件 → "BasicLayout" / "IFrameView"
  * - 页面组件 → 相对于 views/ 的路径，如 "app/opm/org_unit/index.vue"
  */
-function routeToMenu(route: RouteRecordRaw): null | permissionservicev1_Menu {
+function routeToMenu(
+  route: RouteRecordRaw,
+  depth: number = 0,
+): null | permissionservicev1_Menu {
   if (!route.path || !route.name) return null;
 
   // 解析 component
@@ -160,6 +163,7 @@ function routeToMenu(route: RouteRecordRaw): null | permissionservicev1_Menu {
   const menu: permissionservicev1_Menu = {
     name: route.name as string,
     path: route.path,
+    type: depth === 0 ? 'CATALOG' : 'MENU',
     component,
     children: undefined,
     redirect: route.redirect as string | undefined,
@@ -168,7 +172,7 @@ function routeToMenu(route: RouteRecordRaw): null | permissionservicev1_Menu {
 
   if (route.children && route.children.length > 0) {
     menu.children = route.children
-      .map((child) => routeToMenu(child as RouteRecordRaw))
+      .map((child) => routeToMenu(child as RouteRecordRaw, depth + 1))
       .filter((item): item is permissionservicev1_Menu => item !== null);
   }
 
