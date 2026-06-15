@@ -386,7 +386,7 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	}, nil
 }
 
-// doGrantTypeAuthorizationCode 处理授权类型 - 刷新令牌
+// doGrantTypeRefreshToken 处理授权类型 - 刷新令牌
 func (s *AuthenticationService) doGrantTypeRefreshToken(ctx context.Context, req *authenticationV1.LoginRequest) (*authenticationV1.LoginResponse, error) {
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)

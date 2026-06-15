@@ -132,3 +132,67 @@ func TestUserTokenCache_BasicOperations(t *testing.T) {
 	// 额外：确认过期设置不会导致 panic（safety check）
 	_ = repo.AddBlockedAccessToken(ctx, "tmp-jti", "r", 50*time.Millisecond)
 }
+
+func TestUserTokenCache_VerifyAndRevokeTokenPair(t *testing.T) {
+	mr, err := miniredis.Run()
+	assert.NoError(t, err)
+	defer mr.Close()
+
+	rdb := redis.NewClient(&redis.Options{Addr: mr.Addr()})
+	ctx := context.Background()
+
+	cfg := &conf.Bootstrap{
+		Server: &conf.Server{
+			Rest: &conf.Server_REST{
+				Middleware: &conf.Middleware{
+					Auth: &conf.Middleware_Auth{Method: "HS256", Key: "some_api_key"},
+				},
+			},
+		},
+		Data: &conf.Data{Redis: &conf.Data_Redis{Addr: mr.Addr()}},
+	}
+	bctx := bootstrap.NewContextWithParam(ctx, &conf.AppInfo{}, cfg, log.DefaultLogger)
+	repo := NewUserTokenCache(bctx, rdb)
+
+	clientType := authenticationV1.ClientType_app
+	var userId uint32 = 456
+	jti := "jti-atomic"
+	atVal := "access_atomic"
+	rtVal := "refresh_atomic"
+
+	// 添加令牌对
+	err = repo.AddTokenPair(ctx, clientType, userId, jti, atVal, rtVal, 0, 0)
+	assert.NoError(t, err)
+
+	// 第一次原子验证并吊销：应成功
+	valid, err := repo.VerifyAndRevokeTokenPair(ctx, clientType, userId, jti, rtVal)
+	assert.NoError(t, err)
+	assert.True(t, valid, "第一次验证应成功")
+
+	// 验证旧令牌对已被删除
+	valid, err = repo.IsValidAccessToken(ctx, clientType, userId, jti, atVal)
+	assert.NoError(t, err)
+	assert.False(t, valid, "旧 Access Token 应已被删除")
+
+	valid, err = repo.IsValidRefreshToken(ctx, clientType, userId, jti, rtVal)
+	assert.NoError(t, err)
+	assert.False(t, valid, "旧 Refresh Token 应已被删除")
+
+	// 第二次原子验证：应失败（已被吊销）
+	valid, err = repo.VerifyAndRevokeTokenPair(ctx, clientType, userId, jti, rtVal)
+	assert.NoError(t, err)
+	assert.False(t, valid, "已吊销的 token 不应再次通过验证")
+
+	// 测试值不匹配的情况
+	err = repo.AddTokenPair(ctx, clientType, userId, jti, atVal, rtVal, 0, 0)
+	assert.NoError(t, err)
+
+	valid, err = repo.VerifyAndRevokeTokenPair(ctx, clientType, userId, jti, "wrong_token")
+	assert.NoError(t, err)
+	assert.False(t, valid, "值不匹配时验证应失败")
+
+	// 验证令牌未被删除（因为验证失败了）
+	valid, err = repo.IsValidRefreshToken(ctx, clientType, userId, jti, rtVal)
+	assert.NoError(t, err)
+	assert.True(t, valid, "验证失败时不应删除令牌")
+}

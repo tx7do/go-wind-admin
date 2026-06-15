@@ -24,6 +24,25 @@ const (
 	BlacklistKeyFormat = "bl:%s"
 )
 
+// verifyAndRevokeRefreshTokenScript 原子验证并吊销刷新令牌的 Lua 脚本。
+// 在单次 Redis 调用中完成「验证 RT → 删除 RT → 删除 AT」，避免 TOCTOU 竞态。
+// 返回值: 1=验证成功, 0=令牌不存在或值不匹配
+var verifyAndRevokeRefreshTokenScript = redis.NewScript(`
+	local rtKey = KEYS[1]
+	local atKey = KEYS[2]
+	local jti = ARGV[1]
+	local refreshToken = ARGV[2]
+
+	local stored = redis.call('HGET', rtKey, jti)
+	if not stored or stored ~= refreshToken then
+		return 0
+	end
+
+	redis.call('HDEL', rtKey, jti)
+	redis.call('HDEL', atKey, jti)
+	return 1
+`)
+
 // UserTokenCache 用户令牌缓存
 type UserTokenCache struct {
 	log *log.Helper
@@ -308,6 +327,28 @@ func (r *UserTokenCache) RevokeUserAllRefreshToken(
 ) error {
 	key := r.makeRefreshTokenKey(clientType, userId)
 	return r.del(ctx, key)
+}
+
+// VerifyAndRevokeTokenPair 原子验证并吊销刷新令牌及其关联的访问令牌。
+// 使用 Lua 脚本保证「验证→删除」操作的原子性，避免 TOCTOU 竞态条件。
+// 返回 (true, nil) 表示刷新令牌有效且已成功吊销旧令牌对。
+func (r *UserTokenCache) VerifyAndRevokeTokenPair(
+	ctx context.Context,
+	clientType authenticationV1.ClientType,
+	userId uint32,
+	jti string,
+	refreshToken string,
+) (bool, error) {
+	rtKey := r.makeRefreshTokenKey(clientType, userId)
+	atKey := r.makeAccessTokenKey(clientType, userId)
+
+	result, err := verifyAndRevokeRefreshTokenScript.Run(ctx, r.rdb, []string{rtKey, atKey}, jti, refreshToken).Int64()
+	if err != nil {
+		r.log.Errorf("verifyAndRevokeTokenPair failed for user [%d] jti [%s]: %v", userId, jti, err)
+		return false, err
+	}
+
+	return result == 1, nil
 }
 
 // makeAccessTokenKey 生成访问令牌键

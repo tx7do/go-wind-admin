@@ -251,7 +251,8 @@ func (a *Authenticator) RevokeTokenByJti(ctx context.Context, clientType *authen
 	return a.userTokenCache.RevokeTokenByJti(ctx, authenticationV1.ClientType_app, userId, jti)
 }
 
-// VerifyRefreshToken 验证刷新令牌
+// VerifyRefreshToken 验证刷新令牌，并原子地吊销旧令牌对。
+// 使用 Lua 脚本保证「验证 RT → 删除 RT → 删除 AT」的原子性，避免 TOCTOU 竞态。
 func (a *Authenticator) VerifyRefreshToken(
 	ctx context.Context,
 	clientType authenticationV1.ClientType,
@@ -273,22 +274,15 @@ func (a *Authenticator) VerifyRefreshToken(
 		return err
 	}
 
-	// 校验刷新令牌
+	// 原子验证并吊销旧令牌对（Lua 脚本保证原子性）
 	var valid bool
-	if valid, err = a.userTokenCache.IsValidRefreshToken(ctx, clientType, userId, jti, refreshToken); !valid || err != nil {
-		a.log.Errorf("invalid refresh token for user [%d]: [%s]", userId, err)
+	if valid, err = a.userTokenCache.VerifyAndRevokeTokenPair(ctx, clientType, userId, jti, refreshToken); err != nil {
+		a.log.Errorf("verify refresh token failed for user [%d]: [%s]", userId, err)
+		return authenticationV1.ErrorServiceUnavailable("verify refresh token failed")
+	}
+	if !valid {
+		a.log.Errorf("invalid refresh token for user [%d]", userId)
 		return authenticationV1.ErrorIncorrectRefreshToken("invalid refresh token")
-	}
-
-	// 撤销已使用的刷新令牌
-	if err = a.userTokenCache.RevokeRefreshToken(ctx, clientType, userId, jti); err != nil {
-		a.log.Errorf("remove refresh token failed [%s]", err.Error())
-		return authenticationV1.ErrorServiceUnavailable("remove refresh token failed")
-	}
-
-	if err = a.userTokenCache.RevokeAccessToken(ctx, clientType, userId, jti); err != nil {
-		a.log.Errorf("remove access token failed for user [%d] jti[%s]: %v", userId, jti, err)
-		return authenticationV1.ErrorServiceUnavailable("remove access token failed")
 	}
 
 	return nil
