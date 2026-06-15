@@ -12,10 +12,7 @@ import { i18n } from '@vben/locales';
 
 import { useQuery, type UseQueryOptions } from '@tanstack/vue-query';
 
-import {
-  getOperationAuditLog,
-  listOperationAuditLogs,
-} from '#/api/service/operation-audit-log';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 
 const t = i18n.global.t;
@@ -33,7 +30,7 @@ export function useListOperationAuditLogs(
 ) {
   return useQuery({
     queryKey: ['listOperationAuditLogs', query],
-    queryFn: () => listOperationAuditLogs(query),
+    queryFn: () => apiClient.operationAuditLogService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -41,7 +38,7 @@ export function useListOperationAuditLogs(
 export async function fetchListOperationAuditLogs(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listOperationAuditLogs', params],
-    queryFn: () => listOperationAuditLogs(params),
+    queryFn: () => apiClient.operationAuditLogService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -52,7 +49,7 @@ export function useGetOperationAuditLog(
 ) {
   return useQuery({
     queryKey: ['getOperationAuditLog', req],
-    queryFn: () => getOperationAuditLog(req),
+    queryFn: () => apiClient.operationAuditLogService.Get(req),
     ...options,
   });
 }

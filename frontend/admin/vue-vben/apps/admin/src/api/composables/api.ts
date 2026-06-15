@@ -12,14 +12,7 @@ import {
   type UseQueryOptions,
 } from '@tanstack/vue-query';
 
-import {
-  createApi,
-  deleteApi,
-  getApi,
-  listApis,
-  syncApis,
-  updateApi,
-} from '#/api/service/api';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
 
@@ -33,7 +26,7 @@ export function useListApis(
 ) {
   return useQuery({
     queryKey: ['listApis', query],
-    queryFn: () => listApis(query),
+    queryFn: () => apiClient.apiService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -41,7 +34,7 @@ export function useListApis(
 export async function fetchListApis(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listApis', params],
-    queryFn: () => listApis(params),
+    queryFn: () => apiClient.apiService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -52,7 +45,7 @@ export function useGetApi(
 ) {
   return useQuery({
     queryKey: ['getApi', req],
-    queryFn: () => getApi(req),
+    queryFn: () => apiClient.apiService.Get(req),
     ...options,
   });
 }
@@ -62,7 +55,7 @@ export function useCreateApi(
 ) {
   return useMutation({
     mutationFn: (values) =>
-      createApi({ data: { ...values } as permissionservicev1_Api }),
+      apiClient.apiService.Create({ data: { ...values } as permissionservicev1_Api }),
     ...options,
   });
 }
@@ -76,7 +69,7 @@ export function useUpdateApi(
 ) {
   return useMutation({
     mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
-      updateApi({
+      apiClient.apiService.Update({
         id,
         data: {
           ...values,
@@ -95,14 +88,14 @@ export function useDeleteApi(
   >,
 ) {
   return useMutation({
-    mutationFn: (data) => deleteApi(data),
+    mutationFn: (data) => apiClient.apiService.Delete(data),
     ...options,
   });
 }
 
 export function useSyncApisApi(options?: UseMutationOptions<object, Error>) {
   return useMutation({
-    mutationFn: () => syncApis(),
+    mutationFn: () => apiClient.apiService.SyncApis({}),
     ...options,
   });
 }

@@ -14,10 +14,7 @@ import { i18n } from '@vben/locales';
 
 import { useQuery, type UseQueryOptions } from '@tanstack/vue-query';
 
-import {
-  getLoginAuditLog,
-  listLoginAuditLogs,
-} from '#/api/service/login-audit-log';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 
 const t = i18n.global.t;
@@ -35,7 +32,7 @@ export function useListLoginAuditLogs(
 ) {
   return useQuery({
     queryKey: ['listLoginAuditLogs', query],
-    queryFn: () => listLoginAuditLogs(query),
+    queryFn: () => apiClient.loginAuditLogService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -43,7 +40,7 @@ export function useListLoginAuditLogs(
 export async function fetchListLoginAuditLogs(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listLoginAuditLogs', params],
-    queryFn: () => listLoginAuditLogs(params),
+    queryFn: () => apiClient.loginAuditLogService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -54,7 +51,7 @@ export function useGetLoginAuditLog(
 ) {
   return useQuery({
     queryKey: ['getLoginAuditLog', req],
-    queryFn: () => getLoginAuditLog(req),
+    queryFn: () => apiClient.loginAuditLogService.Get(req),
     ...options,
   });
 }

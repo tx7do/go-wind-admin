@@ -18,13 +18,7 @@ import {
   type UseQueryOptions,
 } from '@tanstack/vue-query';
 
-import {
-  createLoginPolicy,
-  deleteLoginPolicy,
-  getLoginPolicy,
-  listLoginPolicies,
-  updateLoginPolicy,
-} from '#/api/service/login-policy';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
 
@@ -43,7 +37,7 @@ export function useListLoginPolicies(
 ) {
   return useQuery({
     queryKey: ['listLoginPolicies', query],
-    queryFn: () => listLoginPolicies(query),
+    queryFn: () => apiClient.loginPolicyService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -51,7 +45,7 @@ export function useListLoginPolicies(
 export async function fetchListLoginPolicies(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listLoginPolicies', params],
-    queryFn: () => listLoginPolicies(params),
+    queryFn: () => apiClient.loginPolicyService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -62,7 +56,7 @@ export function useGetLoginPolicy(
 ) {
   return useQuery({
     queryKey: ['getLoginPolicy', req],
-    queryFn: () => getLoginPolicy(req),
+    queryFn: () => apiClient.loginPolicyService.Get(req),
     ...options,
   });
 }
@@ -76,7 +70,7 @@ export function useCreateLoginPolicy(
 ) {
   return useMutation({
     mutationFn: (values) =>
-      createLoginPolicy({ ...values } as authenticationservicev1_LoginPolicy),
+      apiClient.loginPolicyService.Create({ data: { ...values } as authenticationservicev1_LoginPolicy }),
     ...options,
   });
 }
@@ -90,7 +84,7 @@ export function useUpdateLoginPolicy(
 ) {
   return useMutation({
     mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
-      updateLoginPolicy({
+      apiClient.loginPolicyService.Update({
         id,
         data: { ...values },
         updateMask: makeUpdateMask(Object.keys(values ?? {})),
@@ -107,7 +101,7 @@ export function useDeleteLoginPolicy(
   >,
 ) {
   return useMutation({
-    mutationFn: (req) => deleteLoginPolicy(req),
+    mutationFn: (req) => apiClient.loginPolicyService.Delete(req),
     ...options,
   });
 }

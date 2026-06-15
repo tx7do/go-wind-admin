@@ -18,13 +18,7 @@ import {
   type UseQueryOptions,
 } from '@tanstack/vue-query';
 
-import {
-  createPosition,
-  deletePosition,
-  getPosition,
-  listPositions,
-  updatePosition,
-} from '#/api/service/position';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
 
@@ -40,7 +34,7 @@ export function useListPositions(
 ) {
   return useQuery({
     queryKey: ['listPositions', query],
-    queryFn: () => listPositions(query),
+    queryFn: () => apiClient.positionService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -48,7 +42,7 @@ export function useListPositions(
 export async function fetchListPositions(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listPositions', params],
-    queryFn: () => listPositions(params),
+    queryFn: () => apiClient.positionService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -59,7 +53,7 @@ export function useGetPosition(
 ) {
   return useQuery({
     queryKey: ['getPosition', req],
-    queryFn: () => getPosition(req),
+    queryFn: () => apiClient.positionService.Get(req),
     ...options,
   });
 }
@@ -69,7 +63,7 @@ export function useCreatePosition(
 ) {
   return useMutation({
     mutationFn: (values) =>
-      createPosition({ data: { ...values } as identityservicev1_Position }),
+      apiClient.positionService.Create({ data: { ...values } as identityservicev1_Position }),
     ...options,
   });
 }
@@ -83,7 +77,7 @@ export function useUpdatePosition(
 ) {
   return useMutation({
     mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
-      updatePosition({
+      apiClient.positionService.Update({
         id,
         data: { ...values },
         updateMask: makeUpdateMask(Object.keys(values ?? {})),
@@ -100,7 +94,7 @@ export function useDeletePosition(
   >,
 ) {
   return useMutation({
-    mutationFn: (req) => deletePosition(req),
+    mutationFn: (req) => apiClient.positionService.Delete(req),
     ...options,
   });
 }

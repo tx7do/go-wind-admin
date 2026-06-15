@@ -7,7 +7,7 @@ import type { PaginationQuery } from '#/transport/rest';
 
 import { useQuery, type UseQueryOptions } from '@tanstack/vue-query';
 
-import { getApiAuditLog, listApiAuditLogs } from '#/api/service/api-audit-log';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 
 // ==============================
@@ -20,7 +20,7 @@ export function useListApiAuditLogs(
 ) {
   return useQuery({
     queryKey: ['listApiAuditLogs', query],
-    queryFn: () => listApiAuditLogs(query),
+    queryFn: () => apiClient.apiAuditLogService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -28,7 +28,7 @@ export function useListApiAuditLogs(
 export async function fetchListApiAuditLogs(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listApiAuditLogs', params],
-    queryFn: () => listApiAuditLogs(params),
+    queryFn: () => apiClient.apiAuditLogService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -39,7 +39,7 @@ export function useGetApiAuditLog(
 ) {
   return useQuery({
     queryKey: ['getApiAuditLog', req],
-    queryFn: () => getApiAuditLog(req),
+    queryFn: () => apiClient.apiAuditLogService.Get(req),
     ...options,
   });
 }

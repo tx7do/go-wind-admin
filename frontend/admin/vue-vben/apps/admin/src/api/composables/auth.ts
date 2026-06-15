@@ -13,17 +13,34 @@ import {
   type UseQueryOptions,
 } from '@tanstack/vue-query';
 
-import {
-  generateCaptcha,
-  login,
-  logout,
-  refreshToken,
-  registerUser,
-} from '#/api/service/auth';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 
-// 直接导出 service 层函数，供非 Vue 上下文使用
-export { generateCaptcha, login, logout, refreshToken, registerUser };
+// 供非 Vue 上下文使用的纯函数
+export async function login(request: authenticationservicev1_LoginRequest) {
+  return apiClient.authenticationService.Login(request);
+}
+
+export async function logout() {
+  return apiClient.authenticationService.Logout({});
+}
+
+export async function registerUser(
+  request: authenticationservicev1_RegisterUserRequest,
+) {
+  return apiClient.authenticationService.RegisterUser(request);
+}
+
+export async function generateCaptcha() {
+  return apiClient.authenticationService.GenerateCaptcha({});
+}
+
+export async function refreshToken(refreshToken: string) {
+  return apiClient.authenticationService.RefreshToken({
+    grant_type: 'refresh_token',
+    refresh_token: refreshToken ?? '',
+  });
+}
 
 // ------------------------------
 // 登录（Mutation）

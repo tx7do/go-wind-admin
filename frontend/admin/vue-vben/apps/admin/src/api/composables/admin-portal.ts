@@ -6,15 +6,13 @@ import type {
 
 import { useQuery, type UseQueryOptions } from '@tanstack/vue-query';
 
-import {
-  getInitialContext,
-  getMyPermissionCode,
-  getNavigation,
-} from '#/api/service/admin-portal';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 
-// 直接导出 service 层函数，供非 Vue 上下文使用
-export { getMyPermissionCode };
+// 供非 Vue 上下文使用的纯函数
+export async function getMyPermissionCode() {
+  return apiClient.adminPortalService.GetMyPermissionCode({});
+}
 
 // ------------------------------
 // 1. 获取导航路由（左侧菜单）
@@ -24,7 +22,7 @@ export function useGetNavigation(
 ) {
   return useQuery({
     queryKey: ['getNavigation'],
-    queryFn: () => getNavigation(),
+    queryFn: () => apiClient.adminPortalService.GetNavigation({}),
     ...options,
   });
 }
@@ -35,7 +33,7 @@ export function useGetNavigation(
 export async function fetchNavigation() {
   return queryClient.fetchQuery({
     queryKey: ['navigation'],
-    queryFn: () => getNavigation(),
+    queryFn: () => apiClient.adminPortalService.GetNavigation({}),
     retry: 0,
   });
 }
@@ -72,7 +70,7 @@ export function useGetInitialContext(
 ) {
   return useQuery({
     queryKey: ['getInitialContext'],
-    queryFn: () => getInitialContext(),
+    queryFn: () => apiClient.adminPortalService.GetInitialContext({}),
     ...options,
   });
 }
@@ -83,7 +81,7 @@ export function useGetInitialContext(
 export async function fetchInitialContext() {
   return queryClient.fetchQuery({
     queryKey: ['initialContext'],
-    queryFn: () => getInitialContext(),
+    queryFn: () => apiClient.adminPortalService.GetInitialContext({}),
     retry: 0,
   });
 }

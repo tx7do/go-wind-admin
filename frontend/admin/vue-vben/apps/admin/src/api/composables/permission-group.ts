@@ -14,13 +14,7 @@ import {
   type UseQueryOptions,
 } from '@tanstack/vue-query';
 
-import {
-  createPermissionGroup,
-  deletePermissionGroup,
-  getPermissionGroup,
-  listPermissionGroups,
-  updatePermissionGroup,
-} from '#/api/service/permission-group';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
 
@@ -39,7 +33,7 @@ export function useListPermissionGroups(
 ) {
   return useQuery({
     queryKey: ['listPermissionGroups', query],
-    queryFn: () => listPermissionGroups(query),
+    queryFn: () => apiClient.permissionGroupService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -47,7 +41,7 @@ export function useListPermissionGroups(
 export async function fetchListPermissionGroups(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listPermissionGroups', params],
-    queryFn: () => listPermissionGroups(params),
+    queryFn: () => apiClient.permissionGroupService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -58,7 +52,7 @@ export function useGetPermissionGroup(
 ) {
   return useQuery({
     queryKey: ['getPermissionGroup', req],
-    queryFn: () => getPermissionGroup(req),
+    queryFn: () => apiClient.permissionGroupService.Get(req),
     ...options,
   });
 }
@@ -68,7 +62,7 @@ export function useCreatePermissionGroup(
 ) {
   return useMutation({
     mutationFn: (values) =>
-      createPermissionGroup({
+      apiClient.permissionGroupService.Create({
         data: { ...values } as PermissionGroup,
       }),
     ...options,
@@ -84,7 +78,7 @@ export function useUpdatePermissionGroup(
 ) {
   return useMutation({
     mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
-      updatePermissionGroup({
+      apiClient.permissionGroupService.Update({
         id,
         data: { ...values } as any,
         updateMask: makeUpdateMask(Object.keys(values ?? {})),
@@ -101,7 +95,7 @@ export function useDeletePermissionGroup(
   >,
 ) {
   return useMutation({
-    mutationFn: (req) => deletePermissionGroup(req),
+    mutationFn: (req) => apiClient.permissionGroupService.Delete(req),
     ...options,
   });
 }

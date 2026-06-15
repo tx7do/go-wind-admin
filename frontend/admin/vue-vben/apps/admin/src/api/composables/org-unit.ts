@@ -18,13 +18,7 @@ import {
   type UseQueryOptions,
 } from '@tanstack/vue-query';
 
-import {
-  createOrgUnit,
-  deleteOrgUnit,
-  getOrgUnit,
-  listOrgUnits,
-  updateOrgUnit,
-} from '#/api/service/org-unit';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
 
@@ -40,7 +34,7 @@ export function useListOrgUnits(
 ) {
   return useQuery({
     queryKey: ['listOrgUnits', query],
-    queryFn: () => listOrgUnits(query),
+    queryFn: () => apiClient.orgUnitService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -48,7 +42,7 @@ export function useListOrgUnits(
 export async function fetchListOrgUnits(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listOrgUnits', params],
-    queryFn: () => listOrgUnits(params),
+    queryFn: () => apiClient.orgUnitService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -59,7 +53,7 @@ export function useGetOrgUnit(
 ) {
   return useQuery({
     queryKey: ['getOrgUnit', req],
-    queryFn: () => getOrgUnit(req),
+    queryFn: () => apiClient.orgUnitService.Get(req),
     ...options,
   });
 }
@@ -68,7 +62,7 @@ export function useCreateOrgUnit(
   options?: UseMutationOptions<object, Error, Record<string, any>>,
 ) {
   return useMutation({
-    mutationFn: (values) => createOrgUnit({ data: { ...values } as OrgUnit }),
+    mutationFn: (values) => apiClient.orgUnitService.Create({ data: { ...values } as OrgUnit }),
     ...options,
   });
 }
@@ -82,7 +76,7 @@ export function useUpdateOrgUnit(
 ) {
   return useMutation({
     mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
-      updateOrgUnit({
+      apiClient.orgUnitService.Update({
         id,
         data: { ...values } as any,
         updateMask: makeUpdateMask(Object.keys(values ?? {})),
@@ -99,7 +93,7 @@ export function useDeleteOrgUnit(
   >,
 ) {
   return useMutation({
-    mutationFn: (req) => deleteOrgUnit(req),
+    mutationFn: (req) => apiClient.orgUnitService.Delete(req),
     ...options,
   });
 }

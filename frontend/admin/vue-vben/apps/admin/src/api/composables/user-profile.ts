@@ -1,6 +1,7 @@
 import type {
   identityservicev1_BindContactRequest,
   identityservicev1_ChangePasswordRequest,
+  identityservicev1_UpdateUserRequest,
   identityservicev1_UploadAvatarRequest,
   identityservicev1_UploadAvatarResponse,
   identityservicev1_User,
@@ -14,20 +15,53 @@ import {
   type UseQueryOptions,
 } from '@tanstack/vue-query';
 
-import {
-  bindMyContact,
-  changeMyPassword,
-  deleteMyAvatar,
-  getMe,
-  updateMyUserInfo,
-  uploadMyAvatar,
-  verifyMyContact,
-} from '#/api/service/user-profile';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 import { makeUpdateMask } from '#/transport/rest';
 
-// 直接导出 service 层函数，供非 Vue 上下文使用
-export { getMe };
+// 供非 Vue 上下文使用的纯函数
+export async function getMe(): Promise<identityservicev1_User | null> {
+  try {
+    return await apiClient.userProfileService.GetUser({});
+  } catch (error) {
+    console.error('getMe failed:', error);
+    return null;
+  }
+}
+
+export async function updateMyUserInfo(
+  request: identityservicev1_UpdateUserRequest,
+) {
+  return apiClient.userProfileService.UpdateUser(request);
+}
+
+export async function changeMyPassword(
+  request: identityservicev1_ChangePasswordRequest,
+) {
+  return apiClient.userProfileService.ChangePassword(request);
+}
+
+export async function uploadMyAvatar(
+  request: identityservicev1_UploadAvatarRequest,
+) {
+  return apiClient.userProfileService.UploadAvatar(request);
+}
+
+export async function deleteMyAvatar() {
+  return apiClient.userProfileService.DeleteAvatar({});
+}
+
+export async function bindMyContact(
+  request: identityservicev1_BindContactRequest,
+) {
+  return apiClient.userProfileService.BindContact(request);
+}
+
+export async function verifyMyContact(
+  request: identityservicev1_VerifyContactRequest,
+) {
+  return apiClient.userProfileService.VerifyContact(request);
+}
 
 export function useGetUserProfile(
   options?: UseQueryOptions<identityservicev1_User | null, Error>,

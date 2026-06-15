@@ -17,20 +17,10 @@ import {
   type UseQueryOptions,
 } from '@tanstack/vue-query';
 
-import {
-  controlTask,
-  createTask,
-  deleteTask,
-  getTask,
-  listTasks,
-  listTaskTypeNames,
-  restartAllTasks,
-  startAllTasks,
-  stopAllTasks,
-  updateTask,
-} from '#/api/service/task';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
+import type { taskservicev1_ControlTaskRequest } from '#/api/generated/admin/service/v1';
 
 const t = i18n.global.t;
 
@@ -44,7 +34,7 @@ export function useListTasks(
 ) {
   return useQuery({
     queryKey: ['listTasks', query],
-    queryFn: () => listTasks(query),
+    queryFn: () => apiClient.taskService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -52,7 +42,7 @@ export function useListTasks(
 export async function fetchListTasks(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listTasks', params],
-    queryFn: () => listTasks(params),
+    queryFn: () => apiClient.taskService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -63,7 +53,7 @@ export function useGetTask(
 ) {
   return useQuery({
     queryKey: ['getTask', req],
-    queryFn: () => getTask(req),
+    queryFn: () => apiClient.taskService.Get(req),
     ...options,
   });
 }
@@ -73,7 +63,7 @@ export function useCreateTask(
 ) {
   return useMutation({
     mutationFn: (values) =>
-      createTask({ data: { ...values } as taskservicev1_Task }),
+      apiClient.taskService.Create({ data: { ...values } as taskservicev1_Task }),
     ...options,
   });
 }
@@ -87,7 +77,7 @@ export function useUpdateTask(
 ) {
   return useMutation({
     mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
-      updateTask({
+      apiClient.taskService.Update({
         id,
         data: { ...values },
         updateMask: makeUpdateMask(Object.keys(values ?? {})),
@@ -100,7 +90,7 @@ export function useDeleteTask(
   options?: UseMutationOptions<object, Error, taskservicev1_DeleteTaskRequest>,
 ) {
   return useMutation({
-    mutationFn: (req) => deleteTask(req),
+    mutationFn: (req) => apiClient.taskService.Delete(req),
     ...options,
   });
 }
@@ -113,7 +103,7 @@ export function useDeleteTask(
 export async function fetchListTaskTypeNames() {
   return queryClient.fetchQuery({
     queryKey: ['listTaskTypeNames'],
-    queryFn: () => listTaskTypeNames(),
+    queryFn: () => apiClient.taskService.ListTaskTypeName({}),
     retry: 0,
   });
 }
@@ -128,7 +118,10 @@ export function useControlTask(
 ) {
   return useMutation({
     mutationFn: ({ typeName, controlType }) =>
-      controlTask(typeName, controlType),
+      apiClient.taskService.ControlTask({
+        typeName,
+        controlType: controlType as taskservicev1_ControlTaskRequest['controlType'],
+      }),
     ...options,
   });
 }
@@ -138,7 +131,7 @@ export function useStartAllTasks(
   options?: UseMutationOptions<object, Error, void>,
 ) {
   return useMutation({
-    mutationFn: () => startAllTasks(),
+    mutationFn: () => apiClient.taskService.StartAllTask({}),
     ...options,
   });
 }
@@ -148,7 +141,7 @@ export function useStopAllTasks(
   options?: UseMutationOptions<object, Error, void>,
 ) {
   return useMutation({
-    mutationFn: () => stopAllTasks(),
+    mutationFn: () => apiClient.taskService.StopAllTask({}),
     ...options,
   });
 }
@@ -158,7 +151,7 @@ export function useRestartAllTasks(
   options?: UseMutationOptions<object, Error, void>,
 ) {
   return useMutation({
-    mutationFn: () => restartAllTasks(),
+    mutationFn: () => apiClient.taskService.RestartAllTask({}),
     ...options,
   });
 }

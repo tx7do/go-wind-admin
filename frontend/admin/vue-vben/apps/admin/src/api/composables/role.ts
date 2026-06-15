@@ -12,13 +12,7 @@ import {
   type UseQueryOptions,
 } from '@tanstack/vue-query';
 
-import {
-  createRole,
-  deleteRole,
-  getRole,
-  listRoles,
-  updateRole,
-} from '#/api/service/role';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
 
@@ -32,7 +26,7 @@ export function useListRoles(
 ) {
   return useQuery({
     queryKey: ['listRoles', query],
-    queryFn: () => listRoles(query),
+    queryFn: () => apiClient.roleService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -40,7 +34,7 @@ export function useListRoles(
 export async function fetchListRoles(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listRoles', params],
-    queryFn: () => listRoles(params),
+    queryFn: () => apiClient.roleService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -51,7 +45,7 @@ export function useGetRole(
 ) {
   return useQuery({
     queryKey: ['getRole', req],
-    queryFn: () => getRole(req),
+    queryFn: () => apiClient.roleService.Get(req),
     ...options,
   });
 }
@@ -61,7 +55,7 @@ export function useCreateRole(
 ) {
   return useMutation({
     mutationFn: (values) =>
-      createRole({ data: { ...values } as permissionservicev1_Role }),
+      apiClient.roleService.Create({ data: { ...values } as permissionservicev1_Role }),
     ...options,
   });
 }
@@ -75,7 +69,7 @@ export function useUpdateRole(
 ) {
   return useMutation({
     mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
-      updateRole({
+      apiClient.roleService.Update({
         id,
         data: { ...values } as any,
         updateMask: makeUpdateMask(Object.keys(values ?? {})),
@@ -92,7 +86,7 @@ export function useDeleteRole(
   >,
 ) {
   return useMutation({
-    mutationFn: (req) => deleteRole(req),
+    mutationFn: (req) => apiClient.roleService.Delete(req),
     ...options,
   });
 }

@@ -17,13 +17,7 @@ import {
   type UseQueryOptions,
 } from '@tanstack/vue-query';
 
-import {
-  createFile,
-  deleteFile,
-  getFile,
-  listFiles,
-  updateFile,
-} from '#/api/service/file';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
 
@@ -39,7 +33,7 @@ export function useListFiles(
 ) {
   return useQuery({
     queryKey: ['listFiles', query],
-    queryFn: () => listFiles(query),
+    queryFn: () => apiClient.fileService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -47,7 +41,7 @@ export function useListFiles(
 export async function fetchListFiles(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listFiles', params],
-    queryFn: () => listFiles(params),
+    queryFn: () => apiClient.fileService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -58,7 +52,7 @@ export function useGetFile(
 ) {
   return useQuery({
     queryKey: ['getFile', req],
-    queryFn: () => getFile(req),
+    queryFn: () => apiClient.fileService.Get(req),
     ...options,
   });
 }
@@ -68,7 +62,7 @@ export function useCreateFile(
 ) {
   return useMutation({
     mutationFn: (values) =>
-      createFile({ data: { ...values } as storageservicev1_File }),
+      apiClient.fileService.Create({ data: { ...values } as storageservicev1_File }),
     ...options,
   });
 }
@@ -82,7 +76,7 @@ export function useUpdateFile(
 ) {
   return useMutation({
     mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
-      updateFile({
+      apiClient.fileService.Update({
         id,
         data: { ...values },
         updateMask: makeUpdateMask(Object.keys(values ?? {})),
@@ -99,7 +93,7 @@ export function useDeleteFile(
   >,
 ) {
   return useMutation({
-    mutationFn: (data) => deleteFile(data),
+    mutationFn: (data) => apiClient.fileService.Delete(data),
     ...options,
   });
 }

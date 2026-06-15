@@ -16,14 +16,7 @@ import {
   type UseQueryOptions,
 } from '@tanstack/vue-query';
 
-import {
-  createPermission,
-  deletePermission,
-  getPermission,
-  listPermissions,
-  syncPermissions,
-  updatePermission,
-} from '#/api/service/permission';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
 
@@ -39,7 +32,7 @@ export function useListPermissions(
 ) {
   return useQuery({
     queryKey: ['listPermissions', query],
-    queryFn: () => listPermissions(query),
+    queryFn: () => apiClient.permissionService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -47,7 +40,7 @@ export function useListPermissions(
 export async function fetchListPermissions(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listPermissions', params],
-    queryFn: () => listPermissions(params),
+    queryFn: () => apiClient.permissionService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -58,7 +51,7 @@ export function useGetPermission(
 ) {
   return useQuery({
     queryKey: ['getPermission', req],
-    queryFn: () => getPermission(req),
+    queryFn: () => apiClient.permissionService.Get(req),
     ...options,
   });
 }
@@ -68,7 +61,7 @@ export function useCreatePermission(
 ) {
   return useMutation({
     mutationFn: (values) =>
-      createPermission({ data: { ...values } as Permission }),
+      apiClient.permissionService.Create({ data: { ...values } as Permission }),
     ...options,
   });
 }
@@ -82,7 +75,7 @@ export function useUpdatePermission(
 ) {
   return useMutation({
     mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
-      updatePermission({
+      apiClient.permissionService.Update({
         id,
         data: { ...values } as any,
         updateMask: makeUpdateMask(Object.keys(values ?? {})),
@@ -99,7 +92,7 @@ export function useDeletePermission(
   >,
 ) {
   return useMutation({
-    mutationFn: (req) => deletePermission(req),
+    mutationFn: (req) => apiClient.permissionService.Delete(req),
     ...options,
   });
 }
@@ -108,7 +101,7 @@ export function useSyncPermissions(
   options?: UseMutationOptions<object, Error>,
 ) {
   return useMutation({
-    mutationFn: () => syncPermissions(),
+    mutationFn: () => apiClient.permissionService.SyncPermissions({}),
     ...options,
   });
 }

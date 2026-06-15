@@ -20,15 +20,7 @@ import {
   type UseQueryOptions,
 } from '@tanstack/vue-query';
 
-import {
-  createUser,
-  deleteUser,
-  editUserPassword,
-  getUser,
-  listUsers,
-  updateUser,
-  userExists,
-} from '#/api/service/user';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
 
@@ -68,7 +60,7 @@ export function useGetUser(
 ) {
   return useQuery({
     queryKey: ['getUser', req],
-    queryFn: () => getUser(req),
+    queryFn: () => apiClient.userService.Get(req),
     ...options,
   });
 }
@@ -79,7 +71,7 @@ export function useGetUser(
 export async function fetchUser(params: identityservicev1_GetUserRequest) {
   return queryClient.fetchQuery({
     queryKey: ['getUser', params],
-    queryFn: () => getUser(params),
+    queryFn: () => apiClient.userService.Get(params),
     retry: 0,
   });
 }
@@ -95,7 +87,8 @@ export function useCreateUser(
   >,
 ) {
   return useMutation({
-    mutationFn: ({ data, password }) => createUser({ data, password }),
+    mutationFn: ({ data, password }) =>
+      apiClient.userService.Create({ data, password }),
     ...options,
   });
 }
@@ -107,7 +100,7 @@ export function useDeleteUser(
   options?: UseMutationOptions<object, Error, number>,
 ) {
   return useMutation({
-    mutationFn: (id) => deleteUser({ id }),
+    mutationFn: (id) => apiClient.userService.Delete({ id }),
     ...options,
   });
 }
@@ -124,7 +117,7 @@ export function useUpdateUser(
 ) {
   return useMutation({
     mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
-      updateUser({
+      apiClient.userService.Update({
         id,
         data: { ...values } as any,
         updateMask: makeUpdateMask(Object.keys(values ?? {})),
@@ -144,7 +137,7 @@ export function useUserExists(
   >,
 ) {
   return useMutation({
-    mutationFn: (data) => userExists(data),
+    mutationFn: (data) => apiClient.userService.UserExists(data),
     ...options,
   });
 }
@@ -160,7 +153,7 @@ export function useEditUserPassword(
   >,
 ) {
   return useMutation({
-    mutationFn: (data) => editUserPassword(data),
+    mutationFn: (data) => apiClient.userService.EditUserPassword(data),
     ...options,
   });
 }
@@ -230,4 +223,21 @@ export function genderToColor(gender?: User_Gender) {
       return '#C9CDD4';
     }
   }
+}
+
+// ==============================
+// 内部辅助：listUsers 需要清理 toRawParams 中不需要的字段
+// ==============================
+async function listUsers(query: PaginationQuery) {
+  const params = query.toRawParams();
+  const req = {
+    ...params,
+    sorting: undefined,
+    offset: undefined,
+    limit: undefined,
+    token: undefined,
+    filter: undefined,
+    filterExpr: undefined,
+  };
+  return apiClient.userService.List(req);
 }

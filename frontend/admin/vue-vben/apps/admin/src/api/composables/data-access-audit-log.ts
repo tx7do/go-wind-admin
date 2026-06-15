@@ -12,10 +12,7 @@ import { i18n } from '@vben/locales';
 
 import { useQuery, type UseQueryOptions } from '@tanstack/vue-query';
 
-import {
-  getDataAccessAuditLog,
-  listDataAccessAuditLogs,
-} from '#/api/service/data-access-audit-log';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 
 const t = i18n.global.t;
@@ -33,7 +30,7 @@ export function useListDataAccessAuditLogs(
 ) {
   return useQuery({
     queryKey: ['listDataAccessAuditLogs', query],
-    queryFn: () => listDataAccessAuditLogs(query),
+    queryFn: () => apiClient.dataAccessAuditLogService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -41,7 +38,7 @@ export function useListDataAccessAuditLogs(
 export async function fetchListDataAccessAuditLogs(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listDataAccessAuditLogs', params],
-    queryFn: () => listDataAccessAuditLogs(params),
+    queryFn: () => apiClient.dataAccessAuditLogService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -52,7 +49,7 @@ export function useGetDataAccessAuditLog(
 ) {
   return useQuery({
     queryKey: ['getDataAccessAuditLog', req],
-    queryFn: () => getDataAccessAuditLog(req),
+    queryFn: () => apiClient.dataAccessAuditLogService.Get(req),
     ...options,
   });
 }

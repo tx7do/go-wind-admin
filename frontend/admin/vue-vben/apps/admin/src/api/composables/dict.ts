@@ -14,17 +14,7 @@ import {
   type UseQueryOptions,
 } from '@tanstack/vue-query';
 
-import {
-  createDictEntry,
-  createDictType,
-  deleteDictEntry,
-  deleteDictType,
-  getDictType,
-  listDictEntries,
-  listDictTypes,
-  updateDictEntry,
-  updateDictType,
-} from '#/api/service/dict';
+import { apiClient } from '#/api/client';
 import { queryClient } from '#/plugins/vue-query';
 import { makeUpdateMask, type PaginationQuery } from '#/transport/rest';
 
@@ -38,7 +28,7 @@ export function useListDictTypes(
 ) {
   return useQuery({
     queryKey: ['listDictTypes', query],
-    queryFn: () => listDictTypes(query),
+    queryFn: () => apiClient.dictTypeService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -46,7 +36,7 @@ export function useListDictTypes(
 export async function fetchListDictTypes(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listDictTypes', params],
-    queryFn: () => listDictTypes(params),
+    queryFn: () => apiClient.dictTypeService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -57,7 +47,7 @@ export function useGetDictType(
 ) {
   return useQuery({
     queryKey: ['getDictType', req],
-    queryFn: () => getDictType(req),
+    queryFn: () => apiClient.dictTypeService.Get(req),
     ...options,
   });
 }
@@ -70,7 +60,8 @@ export function useCreateDictType(
   >,
 ) {
   return useMutation({
-    mutationFn: (values) => createDictType({ data: { ...values } as any }),
+    mutationFn: (values) =>
+      apiClient.dictTypeService.Create({ data: { ...values } as any }),
     ...options,
   });
 }
@@ -84,7 +75,7 @@ export function useUpdateDictType(
 ) {
   return useMutation({
     mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
-      updateDictType({
+      apiClient.dictTypeService.Update({
         id,
         data: { ...values },
         updateMask: makeUpdateMask(Object.keys(values ?? {})),
@@ -101,7 +92,7 @@ export function useDeleteDictType(
   >,
 ) {
   return useMutation({
-    mutationFn: (data) => deleteDictType(data),
+    mutationFn: (data) => apiClient.dictTypeService.Delete(data),
     ...options,
   });
 }
@@ -116,7 +107,7 @@ export function useListDictEntries(
 ) {
   return useQuery({
     queryKey: ['listDictEntries', query],
-    queryFn: () => listDictEntries(query),
+    queryFn: () => apiClient.dictEntryService.List(query.toRawParams()),
     ...options,
   });
 }
@@ -124,7 +115,7 @@ export function useListDictEntries(
 export async function fetchListDictEntries(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listDictEntries', params],
-    queryFn: () => listDictEntries(params),
+    queryFn: () => apiClient.dictEntryService.List(params.toRawParams()),
     retry: 0,
   });
 }
@@ -133,7 +124,8 @@ export function useCreateDictEntry(
   options?: UseMutationOptions<object, Error, Record<string, any>>,
 ) {
   return useMutation({
-    mutationFn: (values) => createDictEntry({ data: { ...values } as any }),
+    mutationFn: (values) =>
+      apiClient.dictEntryService.Create({ data: { ...values } as any }),
     ...options,
   });
 }
@@ -147,7 +139,7 @@ export function useUpdateDictEntry(
 ) {
   return useMutation({
     mutationFn: ({ id, values }: { id: number; values: Record<string, any> }) =>
-      updateDictEntry({
+      apiClient.dictEntryService.Update({
         id,
         data: { ...values } as any,
         updateMask: makeUpdateMask(Object.keys(values ?? {})),
@@ -164,7 +156,7 @@ export function useDeleteDictEntry(
   >,
 ) {
   return useMutation({
-    mutationFn: (data) => deleteDictEntry(data),
+    mutationFn: (data) => apiClient.dictEntryService.Delete(data),
     ...options,
   });
 }
