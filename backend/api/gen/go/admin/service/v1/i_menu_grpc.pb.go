@@ -22,11 +22,12 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	MenuService_List_FullMethodName   = "/admin.service.v1.MenuService/List"
-	MenuService_Get_FullMethodName    = "/admin.service.v1.MenuService/Get"
-	MenuService_Create_FullMethodName = "/admin.service.v1.MenuService/Create"
-	MenuService_Update_FullMethodName = "/admin.service.v1.MenuService/Update"
-	MenuService_Delete_FullMethodName = "/admin.service.v1.MenuService/Delete"
+	MenuService_List_FullMethodName      = "/admin.service.v1.MenuService/List"
+	MenuService_Get_FullMethodName       = "/admin.service.v1.MenuService/Get"
+	MenuService_Create_FullMethodName    = "/admin.service.v1.MenuService/Create"
+	MenuService_Update_FullMethodName    = "/admin.service.v1.MenuService/Update"
+	MenuService_Delete_FullMethodName    = "/admin.service.v1.MenuService/Delete"
+	MenuService_SyncMenus_FullMethodName = "/admin.service.v1.MenuService/SyncMenus"
 )
 
 // MenuServiceClient is the client API for MenuService service.
@@ -45,6 +46,8 @@ type MenuServiceClient interface {
 	Update(ctx context.Context, in *v11.UpdateMenuRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 删除菜单
 	Delete(ctx context.Context, in *v11.DeleteMenuRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 同步菜单
+	SyncMenus(ctx context.Context, in *v11.SyncMenusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type menuServiceClient struct {
@@ -105,6 +108,16 @@ func (c *menuServiceClient) Delete(ctx context.Context, in *v11.DeleteMenuReques
 	return out, nil
 }
 
+func (c *menuServiceClient) SyncMenus(ctx context.Context, in *v11.SyncMenusRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, MenuService_SyncMenus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MenuServiceServer is the server API for MenuService service.
 // All implementations must embed UnimplementedMenuServiceServer
 // for forward compatibility.
@@ -121,6 +134,8 @@ type MenuServiceServer interface {
 	Update(context.Context, *v11.UpdateMenuRequest) (*emptypb.Empty, error)
 	// 删除菜单
 	Delete(context.Context, *v11.DeleteMenuRequest) (*emptypb.Empty, error)
+	// 同步菜单
+	SyncMenus(context.Context, *v11.SyncMenusRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedMenuServiceServer()
 }
 
@@ -145,6 +160,9 @@ func (UnimplementedMenuServiceServer) Update(context.Context, *v11.UpdateMenuReq
 }
 func (UnimplementedMenuServiceServer) Delete(context.Context, *v11.DeleteMenuRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method Delete not implemented")
+}
+func (UnimplementedMenuServiceServer) SyncMenus(context.Context, *v11.SyncMenusRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method SyncMenus not implemented")
 }
 func (UnimplementedMenuServiceServer) mustEmbedUnimplementedMenuServiceServer() {}
 func (UnimplementedMenuServiceServer) testEmbeddedByValue()                     {}
@@ -257,6 +275,24 @@ func _MenuService_Delete_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _MenuService_SyncMenus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v11.SyncMenusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MenuServiceServer).SyncMenus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: MenuService_SyncMenus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MenuServiceServer).SyncMenus(ctx, req.(*v11.SyncMenusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // MenuService_ServiceDesc is the grpc.ServiceDesc for MenuService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -283,6 +319,10 @@ var MenuService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Delete",
 			Handler:    _MenuService_Delete_Handler,
+		},
+		{
+			MethodName: "SyncMenus",
+			Handler:    _MenuService_SyncMenus_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

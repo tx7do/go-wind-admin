@@ -274,6 +274,16 @@ func (r *MenuRepo) updateMetaField(builder *ent.MenuUpdate, meta *permissionV1.M
 	}
 }
 
+// Truncate 清空菜单表数据
+// Clear all menu data from the table
+func (r *MenuRepo) Truncate(ctx context.Context) error {
+	if _, err := r.entClient.Client().Menu.Delete().Exec(ctx); err != nil {
+		r.log.Errorf("failed to truncate menus table: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("truncate menus failed")
+	}
+	return nil
+}
+
 func (r *MenuRepo) Delete(ctx context.Context, req *permissionV1.DeleteMenuRequest) error {
 	if req == nil {
 		return permissionV1.ErrorBadRequest("invalid parameter")

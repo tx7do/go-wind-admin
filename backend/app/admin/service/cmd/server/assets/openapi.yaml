@@ -2159,6 +2159,22 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/menus/sync:
+        post:
+            tags:
+                - MenuService
+            description: 同步菜单
+            operationId: MenuService_SyncMenus
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/SyncMenusRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /admin/v1/menus/{id}:
         get:
             tags:
@@ -6865,6 +6881,13 @@ components:
                     type: string
                     description: OSS 对象键（完整路径，如 'user/1001/avatar.jpg'）。若未提供，服务端将自动生成。
             description: 对象存储对象
+        SyncMenusRequest:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Menu'
         Task:
             type: object
             properties:

@@ -3807,6 +3807,10 @@ export interface MenuService {
   Delete(
     request: permissionservicev1_DeleteMenuRequest,
   ): Promise<wellKnownEmpty>;
+  // 同步菜单
+  SyncMenus(
+    request: permissionservicev1_SyncMenusRequest,
+  ): Promise<wellKnownEmpty>;
 }
 
 export function createMenuServiceClient(
@@ -3989,6 +3993,14 @@ export function createMenuServiceClient(
         method: 'Delete',
       }) as Promise<wellKnownEmpty>;
     },
+    SyncMenus(request) {
+      const path = `admin/v1/menus/sync`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'MenuService',
+        method: 'SyncMenus',
+      }) as Promise<wellKnownEmpty>;
+    },
   };
 }
 // 查询菜单列表 - 回应
@@ -4066,6 +4078,10 @@ export type permissionservicev1_UpdateMenuRequest = {
 export type permissionservicev1_DeleteMenuRequest = {
   id?: number;
   operatorId?: number;
+};
+
+export type permissionservicev1_SyncMenusRequest = {
+  items: permissionservicev1_Menu[] | undefined;
 };
 
 // 操作审计日志管理服务

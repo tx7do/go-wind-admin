@@ -31,6 +31,9 @@ service MenuService {
 
   // 删除菜单
   rpc Delete (DeleteMenuRequest) returns (google.protobuf.Empty) {}
+
+  // 同步菜单
+  rpc SyncMenus (SyncMenusRequest) returns (google.protobuf.Empty) {}
 }
 
 // 菜单
@@ -431,4 +434,8 @@ message DeleteMenuRequest {
 
 message CountMenuResponse {
   uint64 count = 1;
+}
+
+message SyncMenusRequest {
+  repeated Menu items = 1;
 }

@@ -114,6 +114,17 @@ func (s *redactedMenuServiceServer) Delete(ctx context.Context, in *DeleteMenuRe
 	return res, err
 }
 
+// SyncMenus is the redacted wrapper for the actual MenuServiceServer.SyncMenus method
+// Unary RPC
+func (s *redactedMenuServiceServer) SyncMenus(ctx context.Context, in *SyncMenusRequest) (*emptypb.Empty, error) {
+	res, err := s.srv.SyncMenus(ctx, in)
+	if !s.bypass.CheckInternal(ctx) {
+		// Apply redaction to the response
+		redact.Apply(res)
+	}
+	return res, err
+}
+
 // Redact method implementation for Menu
 func (x *Menu) Redact() string {
 	if x == nil {
@@ -297,5 +308,15 @@ func (x *CountMenuResponse) Redact() string {
 	}
 
 	// Safe field: Count
+	return x.String()
+}
+
+// Redact method implementation for SyncMenusRequest
+func (x *SyncMenusRequest) Redact() string {
+	if x == nil {
+		return ""
+	}
+
+	// Safe field: Items
 	return x.String()
 }

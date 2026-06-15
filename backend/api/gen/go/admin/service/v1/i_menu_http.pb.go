@@ -26,6 +26,7 @@ const OperationMenuServiceCreate = "/admin.service.v1.MenuService/Create"
 const OperationMenuServiceDelete = "/admin.service.v1.MenuService/Delete"
 const OperationMenuServiceGet = "/admin.service.v1.MenuService/Get"
 const OperationMenuServiceList = "/admin.service.v1.MenuService/List"
+const OperationMenuServiceSyncMenus = "/admin.service.v1.MenuService/SyncMenus"
 const OperationMenuServiceUpdate = "/admin.service.v1.MenuService/Update"
 
 type MenuServiceHTTPServer interface {
@@ -37,6 +38,8 @@ type MenuServiceHTTPServer interface {
 	Get(context.Context, *v11.GetMenuRequest) (*v11.Menu, error)
 	// List 查询菜单列表
 	List(context.Context, *v1.PagingRequest) (*v11.ListMenuResponse, error)
+	// SyncMenus 同步菜单
+	SyncMenus(context.Context, *v11.SyncMenusRequest) (*emptypb.Empty, error)
 	// Update 更新菜单
 	Update(context.Context, *v11.UpdateMenuRequest) (*emptypb.Empty, error)
 }
@@ -48,6 +51,7 @@ func RegisterMenuServiceHTTPServer(s *http.Server, srv MenuServiceHTTPServer) {
 	r.POST("/admin/v1/menus", _MenuService_Create7_HTTP_Handler(srv))
 	r.PUT("/admin/v1/menus/{id}", _MenuService_Update7_HTTP_Handler(srv))
 	r.DELETE("/admin/v1/menus/{id}", _MenuService_Delete7_HTTP_Handler(srv))
+	r.POST("/admin/v1/menus/sync", _MenuService_SyncMenus0_HTTP_Handler(srv))
 }
 
 func _MenuService_List10_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.Context) error {
@@ -160,6 +164,28 @@ func _MenuService_Delete7_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.
 	}
 }
 
+func _MenuService_SyncMenus0_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.SyncMenusRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationMenuServiceSyncMenus)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.SyncMenus(ctx, req.(*v11.SyncMenusRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 type MenuServiceHTTPClient interface {
 	// Create 创建菜单
 	Create(ctx context.Context, req *v11.CreateMenuRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
@@ -169,6 +195,8 @@ type MenuServiceHTTPClient interface {
 	Get(ctx context.Context, req *v11.GetMenuRequest, opts ...http.CallOption) (rsp *v11.Menu, err error)
 	// List 查询菜单列表
 	List(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListMenuResponse, err error)
+	// SyncMenus 同步菜单
+	SyncMenus(ctx context.Context, req *v11.SyncMenusRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// Update 更新菜单
 	Update(ctx context.Context, req *v11.UpdateMenuRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
@@ -231,6 +259,20 @@ func (c *MenuServiceHTTPClientImpl) List(ctx context.Context, in *v1.PagingReque
 	opts = append(opts, http.Operation(OperationMenuServiceList))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// SyncMenus 同步菜单
+func (c *MenuServiceHTTPClientImpl) SyncMenus(ctx context.Context, in *v11.SyncMenusRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/menus/sync"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationMenuServiceSyncMenus))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

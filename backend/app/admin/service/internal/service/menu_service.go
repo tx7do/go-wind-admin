@@ -127,6 +127,42 @@ func (s *MenuService) Delete(ctx context.Context, req *permissionV1.DeleteMenuRe
 	return &emptypb.Empty{}, nil
 }
 
+// SyncMenus 同步菜单（将前端传入的菜单列表全量同步到数据库）
+// SyncMenus: full sync of client-provided menu list into the database
+func (s *MenuService) SyncMenus(ctx context.Context, req *permissionV1.SyncMenusRequest) (*emptypb.Empty, error) {
+	if req == nil {
+		return nil, adminV1.ErrorBadRequest("invalid parameter")
+	}
+
+	// 获取操作人信息
+	operator, err := auth.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	// 清空现有菜单数据 / Clear existing menu data
+	if err = s.menuRepo.Truncate(ctx); err != nil {
+		return nil, err
+	}
+
+	// 逐条写入前端传入的菜单 / Insert client-provided menus one by one
+	for _, m := range req.Items {
+		if m == nil {
+			continue
+		}
+		m.CreatedBy = trans.Ptr(operator.UserId)
+		m.UpdatedBy = nil
+		if err = s.menuRepo.Create(ctx, &permissionV1.CreateMenuRequest{Data: m}); err != nil {
+			s.log.Errorf("sync menu failed, name: %s, err: %v", m.GetName(), err)
+			return nil, err
+		}
+	}
+
+	s.log.Infof("sync menus success, total: %d", len(req.Items))
+
+	return &emptypb.Empty{}, nil
+}
+
 func (s *MenuService) createDefaultMenus(ctx context.Context) error {
 	for _, m := range constants.DefaultMenus {
 		if err := s.menuRepo.Create(ctx, &permissionV1.CreateMenuRequest{Data: m}); err != nil {
