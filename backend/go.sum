@@ -903,6 +903,8 @@ github.com/tx7do/go-crud/pagination v0.0.14 h1:1k/EuyD0zmy2gMX3CAxmhpJ7Nd8aoxGyd
 github.com/tx7do/go-crud/pagination v0.0.14/go.mod h1:LT3Cwgqoav7rMGCMzrIxp0Iux22+XzHIYzvo3patte8=
 github.com/tx7do/go-crud/viewer v0.0.6 h1:y1DLUwS9JzbLGHiZGq2FlBXl1WLl9CPkeQFHr0bNvcw=
 github.com/tx7do/go-crud/viewer v0.0.6/go.mod h1:t5MGistb4OfREu9aMj85eeYJqswnNpFRWgbL4nHTXiY=
+github.com/tx7do/go-scripts v0.0.6 h1:c9HSup8CKRxhDqhbRLwoGaLyVQ1VhJCb90OngUndXWI=
+github.com/tx7do/go-scripts v0.0.6/go.mod h1:OxJCiXouVGS36CZd29UvDClyEQfOCTxHPJ2jSlMf/GI=
 github.com/tx7do/go-utils v1.1.39 h1:da+mBT8eiJ9oLBxbFPQYhWImU3/eavM8AdACU6otpoA=
 github.com/tx7do/go-utils v1.1.39/go.mod h1:A5zjhW0UTM6veYuCbq7/mcwDXaBw8UhBnvaLSwURBRg=
 github.com/tx7do/go-utils/aggregator v0.0.5 h1:JId6VIcIR27fMgxvwRPvcY3/9WBGZJKyKvZOdjKNJfc=

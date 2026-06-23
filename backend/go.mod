@@ -26,6 +26,7 @@ require (
 	github.com/tx7do/go-crud/gorm v0.0.20
 	github.com/tx7do/go-crud/pagination v0.0.14
 	github.com/tx7do/go-crud/viewer v0.0.6
+	github.com/tx7do/go-scripts v0.0.6
 	github.com/tx7do/go-utils v1.1.39
 	github.com/tx7do/go-utils/aggregator v0.0.5
 	github.com/tx7do/go-utils/captcha v0.0.4
