@@ -2,6 +2,7 @@ import { refreshToken as refreshTokenService } from "@/api/composables";
 import { LOGIN_PATH } from "@/constants";
 import { preferences } from "@/core/preferences";
 import { globalSSEClient } from "@/core/transport/sse";
+import { queryClient } from "@/plugins/vue-query";
 import { resetAllStores, useAccessStore } from "@/stores";
 import { router } from "@/router";
 
@@ -135,6 +136,10 @@ export async function logoutToLoginPage(redirect: boolean = true): Promise<void>
 
   const accessStore = useAccessStore();
   accessStore.setLoginExpired(false);
+
+  // 清除 queryClient 缓存，防止登出期间被缓存污染的查询结果
+  // 导致重新登录时命中脏数据
+  queryClient.clear();
 
   globalSSEClient.close();
 
