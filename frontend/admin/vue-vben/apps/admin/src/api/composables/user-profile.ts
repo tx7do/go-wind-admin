@@ -21,12 +21,7 @@ import { makeUpdateMask } from '#/transport/rest';
 
 // 供非 Vue 上下文使用的纯函数
 export async function getMe(): Promise<identityservicev1_User | null> {
-  try {
-    return await apiClient.userProfileService.GetUser({});
-  } catch (error) {
-    console.error('getMe failed:', error);
-    return null;
-  }
+  return apiClient.userProfileService.GetUser({});
 }
 
 export async function updateMyUserInfo(
@@ -80,6 +75,7 @@ export async function fetchUserProfile() {
   return queryClient.fetchQuery({
     queryKey: ['userProfile'],
     queryFn: () => getMe(),
+    staleTime: 0,
     retry: 0,
   });
 }

@@ -43,6 +43,7 @@ export async function fetchListPositions(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listPositions', params],
     queryFn: () => apiClient.positionService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }

@@ -33,6 +33,7 @@ export async function fetchListRoles(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ["listRoles", params],
     queryFn: () => apiClient.roleService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }

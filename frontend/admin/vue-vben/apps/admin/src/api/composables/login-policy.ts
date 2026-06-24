@@ -46,6 +46,7 @@ export async function fetchListLoginPolicies(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listLoginPolicies', params],
     queryFn: () => apiClient.loginPolicyService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }

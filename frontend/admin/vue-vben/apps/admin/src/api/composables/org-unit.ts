@@ -43,6 +43,7 @@ export async function fetchListOrgUnits(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listOrgUnits', params],
     queryFn: () => apiClient.orgUnitService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }

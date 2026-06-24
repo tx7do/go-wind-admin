@@ -16,12 +16,7 @@ import { apiClient } from "@/api/client";
 
 // 直接导出函数，供非 Vue 上下文使用
 export async function getMe(): Promise<identityservicev1_User | null> {
-  try {
-    return await apiClient.userProfileService.GetUser({});
-  } catch (error) {
-    console.error("getMe failed:", error);
-    return null;
-  }
+  return apiClient.userProfileService.GetUser({});
 }
 import { makeUpdateMask } from "@/core/transport/rest";
 import { queryClient } from "@/plugins/vue-query";
@@ -41,6 +36,7 @@ export async function fetchUserProfile() {
   return queryClient.fetchQuery({
     queryKey: ["userProfile"],
     queryFn: () => getMe(),
+    staleTime: 0,
     retry: 0,
   });
 }

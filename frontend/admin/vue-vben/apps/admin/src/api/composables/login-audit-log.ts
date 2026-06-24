@@ -41,6 +41,7 @@ export async function fetchListLoginAuditLogs(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listLoginAuditLogs', params],
     queryFn: () => apiClient.loginAuditLogService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }

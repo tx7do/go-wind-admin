@@ -48,6 +48,7 @@ export async function fetchListMenus(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listMenus', params],
     queryFn: () => apiClient.menuService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }

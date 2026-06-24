@@ -51,6 +51,7 @@ export async function fetchListInternalMessages(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ["listInternalMessages", params],
     queryFn: () => apiClient.internalMessageService.ListMessage(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }
@@ -72,6 +73,7 @@ export async function fetchGetInternalMessage(
   return queryClient.fetchQuery({
     queryKey: ["getInternalMessage", params],
     queryFn: () => apiClient.internalMessageService.GetMessage(params),
+    staleTime: 0,
     retry: 0,
   });
 }
@@ -139,6 +141,7 @@ export async function fetchListMessageCategories(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ["listMessageCategories", params],
     queryFn: () => apiClient.internalMessageCategoryService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }
@@ -212,6 +215,7 @@ export async function fetchListUserInbox(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ["listUserInbox", params],
     queryFn: () => apiClient.internalMessageRecipientService.ListUserInbox(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }

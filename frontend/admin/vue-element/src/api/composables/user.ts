@@ -65,6 +65,7 @@ export async function fetchListUsers(params: PaginationQuery) {
         filterExpr: undefined,
       });
     },
+    staleTime: 0,
     retry: 0,
   });
 }
@@ -90,6 +91,7 @@ export async function fetchUser(params: identityservicev1_GetUserRequest) {
   return queryClient.fetchQuery({
     queryKey: ["getUser", params],
     queryFn: () => apiClient.userService.Get(params),
+    staleTime: 0,
     retry: 0,
   });
 }

@@ -42,6 +42,7 @@ export async function fetchListFiles(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listFiles', params],
     queryFn: () => apiClient.fileService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }

@@ -35,6 +35,7 @@ export async function fetchListDictTypes(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ["listDictTypes", params],
     queryFn: () => apiClient.dictTypeService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }
@@ -105,6 +106,7 @@ export async function fetchListDictEntries(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ["listDictEntries", params],
     queryFn: () => apiClient.dictEntryService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }

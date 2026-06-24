@@ -35,6 +35,7 @@ export async function fetchListApis(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listApis', params],
     queryFn: () => apiClient.apiService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }

@@ -34,6 +34,7 @@ export async function fetchNavigation() {
   return queryClient.fetchQuery({
     queryKey: ['navigation'],
     queryFn: () => apiClient.adminPortalService.GetNavigation({}),
+    staleTime: 0,
     retry: 0,
   });
 }
@@ -58,6 +59,7 @@ export async function fetchMyPermissionCode() {
   return queryClient.fetchQuery({
     queryKey: ['permissionCode'],
     queryFn: () => getMyPermissionCode(),
+    staleTime: 0,
     retry: 0,
   });
 }
@@ -82,6 +84,7 @@ export async function fetchInitialContext() {
   return queryClient.fetchQuery({
     queryKey: ['initialContext'],
     queryFn: () => apiClient.adminPortalService.GetInitialContext({}),
+    staleTime: 0,
     retry: 0,
   });
 }

@@ -39,6 +39,7 @@ export async function fetchListTasks(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ["listTasks", params],
     queryFn: () => apiClient.taskService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }
@@ -93,6 +94,7 @@ export async function fetchListTaskTypeNames() {
   return queryClient.fetchQuery({
     queryKey: ["listTaskTypeNames"],
     queryFn: () => apiClient.taskService.ListTaskTypeName({}),
+    staleTime: 0,
     retry: 0,
   });
 }

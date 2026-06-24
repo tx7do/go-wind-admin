@@ -36,6 +36,7 @@ export async function fetchListLanguages(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listLanguages', params],
     queryFn: () => apiClient.languageService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }

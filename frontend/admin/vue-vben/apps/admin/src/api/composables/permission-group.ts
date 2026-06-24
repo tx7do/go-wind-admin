@@ -42,6 +42,7 @@ export async function fetchListPermissionGroups(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listPermissionGroups', params],
     queryFn: () => apiClient.permissionGroupService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }

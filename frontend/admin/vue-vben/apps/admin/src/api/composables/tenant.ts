@@ -45,6 +45,7 @@ export async function fetchListTenants(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ['listTenants', params],
     queryFn: () => apiClient.tenantService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }

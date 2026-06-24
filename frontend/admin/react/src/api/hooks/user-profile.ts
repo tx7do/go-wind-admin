@@ -16,15 +16,10 @@ import { apiClient } from '@/api/client';
 import { makeUpdateMask, queryClient } from '@/core';
 
 /**
- * 获取当前用户（包含错误处理）
+ * 获取当前用户
  */
 async function getMe(): Promise<identityservicev1_User | null> {
-  try {
-    return await apiClient.userProfileService.GetUser({});
-  } catch (error) {
-    console.error('getMe failed:', error);
-    return null;
-  }
+  return apiClient.userProfileService.GetUser({});
 }
 
 export function useGetUserProfile(options?: UseQueryOptions<identityservicev1_User | null, Error>) {

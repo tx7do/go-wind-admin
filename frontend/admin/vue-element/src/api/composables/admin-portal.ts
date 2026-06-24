@@ -38,6 +38,7 @@ export async function fetchNavigation() {
   return queryClient.fetchQuery({
     queryKey: ["navigation"],
     queryFn: () => getNavigation(),
+    staleTime: 0,
     retry: 0,
   });
 }
@@ -62,6 +63,7 @@ export async function fetchMyPermissionCode() {
   return queryClient.fetchQuery({
     queryKey: ["permissionCode"],
     queryFn: () => getMyPermissionCode(),
+    staleTime: 0,
     retry: 0,
   });
 }
@@ -84,6 +86,7 @@ export async function fetchInitialContext() {
   return queryClient.fetchQuery({
     queryKey: ["initialContext"],
     queryFn: () => getInitialContext(),
+    staleTime: 0,
     retry: 0,
   });
 }

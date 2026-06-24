@@ -136,6 +136,7 @@ export async function fetchGenerateCaptcha() {
   return queryClient.fetchQuery({
     queryKey: ['generateCaptcha'],
     queryFn: () => apiClient.authenticationService.GenerateCaptcha({}),
+    staleTime: 0,
     retry: 0,
   });
 }

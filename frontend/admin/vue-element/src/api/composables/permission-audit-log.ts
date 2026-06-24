@@ -32,6 +32,7 @@ export async function fetchListPermissionAuditLogs(params: PaginationQuery) {
   return queryClient.fetchQuery({
     queryKey: ["listPermissionAuditLogs", params],
     queryFn: () => apiClient.permissionAuditLogService.List(params.toRawParams()),
+    staleTime: 0,
     retry: 0,
   });
 }
