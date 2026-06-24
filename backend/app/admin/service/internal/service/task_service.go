@@ -115,6 +115,9 @@ func (s *TaskService) Update(ctx context.Context, req *taskV1.UpdateTaskRequest)
 		return nil, err
 	}
 
+	// 获取更新前的任务，用于判断调度器中是否有正在运行的注册项
+	oldTask, _ := s.taskRepo.Get(ctx, &taskV1.GetTaskRequest{QueryBy: &taskV1.GetTaskRequest_Id{Id: req.GetId()}})
+
 	req.Data.Id = trans.Ptr(req.GetId())
 
 	req.Data.UpdatedBy = trans.Ptr(operator.UserId)
@@ -128,6 +131,16 @@ func (s *TaskService) Update(ctx context.Context, req *taskV1.UpdateTaskRequest)
 		return nil, err
 	}
 
+	// 先移除调度器中旧的注册项（若存在），避免停用后仍运行、或启用时重复注册。
+	// 直接调用 RemovePeriodicTask 绕过 stopTask 内部的 enable 保护，
+	// 因为 oldTask 可能已是禁用状态，但其注册项可能仍残留在调度器中。
+	if oldTask != nil && oldTask.GetType() == taskV1.Task_PERIODIC && oldTask.GetTypeName() != "" {
+		if removeErr := s.taskScheduler.RemovePeriodicTask(oldTask.GetTypeName()); removeErr != nil {
+			s.log.Warnf("移除旧定时任务注册项失败[%s]: %v", oldTask.GetTypeName(), removeErr)
+		}
+	}
+
+	// 根据更新后的 enable 状态决定是否重新启动
 	if err = s.startTask(t); err != nil {
 		s.log.Error(err)
 	}
