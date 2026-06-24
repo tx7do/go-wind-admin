@@ -22,6 +22,7 @@ import (
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
 	"go-wind-admin/pkg/constants"
+	"go-wind-admin/pkg/utils"
 )
 
 type RoleRepo struct {
@@ -506,6 +507,17 @@ func (r *RoleRepo) Update(ctx context.Context, req *permissionV1.UpdateRoleReque
 		}
 	}()
 
+	// permissions 是关联字段（存于 sys_role_permissions），并非 sys_roles 表的列。
+	// 若留在 updateMask 中，当其为空时会被当作 nil 字段生成 SET permissions=NULL 的 SQL，触发列不存在错误。
+	// 关联关系由下方的 ReplacePermissions 单独维护。
+	// 同时记录是否需要处理权限（用户在表单中提交了权限项，含清空场景）。
+	updatePermissions := req.UpdateMask != nil && hasPath("permissions", req.UpdateMask)
+	if req.UpdateMask != nil {
+		req.UpdateMask.Paths = utils.FilterBlacklist(req.UpdateMask.GetPaths(), []string{
+			"permissions",
+		})
+	}
+
 	var entity *permissionV1.Role
 	builder := tx.Role.UpdateOneID(req.GetId())
 	entity, err = r.repository.UpdateOne(ctx, builder, req.Data, req.GetUpdateMask(),
@@ -536,9 +548,11 @@ func (r *RoleRepo) Update(ctx context.Context, req *permissionV1.UpdateRoleReque
 		return permissionV1.ErrorInternalServerError("upgrade role metadata template version failed")
 	}
 
-	if len(req.Data.Permissions) > 0 {
-		if err = r.assignPermissionsToRole(ctx, tx,
-			*entity.TenantId, req.Data.GetUpdatedBy(),
+	// 处理权限关联：只要用户提交了权限项（含清空场景），即整体替换角色的权限。
+	// 使用 entity.GetTenantId() 避免 SYSTEM 角色（TenantId 为 nil）解引用 panic。
+	if updatePermissions {
+		if err = r.rolePermissionRepo.ReplacePermissions(ctx, tx,
+			entity.GetTenantId(), req.Data.GetUpdatedBy(),
 			req.GetId(), req.Data.Permissions); err != nil {
 			r.log.Errorf("assign permissions to role failed: %s", err.Error())
 			return permissionV1.ErrorInternalServerError("assign permissions to role failed")

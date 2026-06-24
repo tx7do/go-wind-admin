@@ -23,6 +23,7 @@ import (
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
 	"go-wind-admin/pkg/constants"
+	"go-wind-admin/pkg/utils"
 )
 
 type PermissionRepo struct {
@@ -421,6 +422,15 @@ func (r *PermissionRepo) Update(ctx context.Context, req *permissionV1.UpdatePer
 			createReq.Data.UpdatedBy = nil
 			return r.Create(ctx, createReq)
 		}
+	}
+
+	// 剔除关联字段：api_ids / menu_ids 是关联表字段，并非 sys_permissions 表的列。
+	// 若保留在 updateMask 中，当其值为空时会被当作 nil 字段生成 SET api_ids=NULL 的 SQL，触发列不存在错误。
+	// 关联关系由下方的 AssignApis / AssignMenus 单独维护。
+	if req.UpdateMask != nil {
+		req.UpdateMask.Paths = utils.FilterBlacklist(req.UpdateMask.GetPaths(), []string{
+			"api_ids", "menu_ids",
+		})
 	}
 
 	builder := r.entClient.Client().Debug().Permission.UpdateOneID(req.GetId())

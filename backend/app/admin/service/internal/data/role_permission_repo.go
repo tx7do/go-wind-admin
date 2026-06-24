@@ -165,6 +165,23 @@ func (r *RolePermissionRepo) Upsert(ctx context.Context, tx *ent.Tx, data *permi
 	return nil
 }
 
+// ReplacePermissions 整体替换角色的权限：先清空该角色现有权限，再插入新的权限集合。
+// 与 AssignPermissions（仅 upsert，不删除）不同，此方法用于更新场景，确保取消勾选的权限被正确移除。
+func (r *RolePermissionRepo) ReplacePermissions(ctx context.Context, tx *ent.Tx,
+	tenantID, operatorID uint32,
+	roleID uint32, permissionIDs []uint32,
+) error {
+	if err := r.CleanPermissions(ctx, tx, roleID); err != nil {
+		return err
+	}
+
+	if len(permissionIDs) == 0 {
+		return nil
+	}
+
+	return r.AssignPermissions(ctx, tx, tenantID, operatorID, roleID, permissionIDs)
+}
+
 // AssignPermissions 给角色分配权限
 func (r *RolePermissionRepo) AssignPermissions(ctx context.Context, tx *ent.Tx,
 	tenantID, operatorID uint32,

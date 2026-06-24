@@ -322,6 +322,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
     // 获取表单数据
     const values = await baseFormApi.getValues();
 
+    // 剔除纯 UI 字段（分割线），避免进入 updateMask 导致后端校验失败
+    delete values.divider1;
+
     console.log(getTitle.value, values);
 
     try {
