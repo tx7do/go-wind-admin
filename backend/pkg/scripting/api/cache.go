@@ -9,7 +9,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	lua "github.com/yuin/gopher-lua"
 
-	"go-wind-admin/pkg/lua/internal/convert"
+	"go-wind-admin/pkg/scripting/internal/convert"
 )
 
 // RegisterCache registers the Redis cache API for Lua as a requireable module

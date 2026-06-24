@@ -9,7 +9,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 
 	"go-wind-admin/pkg/eventbus"
-	"go-wind-admin/pkg/lua/internal/convert"
+	"go-wind-admin/pkg/scripting/internal/convert"
 )
 
 // LuaEventHandler wraps a Lua function as an eventbus.Handler

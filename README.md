@@ -50,6 +50,7 @@
 <tr><td><strong>中间件</strong></td><td><code>Redis 8.0+</code> · <code>MinIO</code>（S3 兼容对象存储） · <code>Jaeger</code>（链路追踪）</td></tr>
 <tr><td><strong>认证授权</strong></td><td><code>JWT</code> · <code>Casbin</code> · <code>OPA</code> · <code>Zanzibar</code></td></tr>
 <tr><td><strong>实时通信</strong></td><td><code>SSE</code>（服务端推送） · <code>Asynq</code>（异步任务）</td></tr>
+<tr><td><strong>脚本引擎</strong></td><td><code>go-scripts</code> · <code>Lua</code>（gopher-lua） · <code>JavaScript</code>（goja） · 多语言 Hook 插件系统</td></tr>
 <tr><td><strong>Vue Vben 版</strong></td><td><code>Vue 3</code> · <code>TypeScript</code> · <code>Vite</code> · <code>Ant Design Vue</code> · <code>Vben Admin</code></td></tr>
 <tr><td><strong>Vue Element 版</strong></td><td><code>Vue 3</code> · <code>TypeScript</code> · <code>Vite</code> · <code>Element Plus</code>（轻量纯净版）</td></tr>
 <tr><td><strong>React 版</strong></td><td><code>React 19</code> · <code>TypeScript</code> · <code>Vite</code> · <code>Zustand</code> · <code>Ant Design V6</code>（无 UMI）</td></tr>
@@ -200,6 +201,10 @@ go-wind-admin/
 │   │   ├── configs/                # 配置文件 (YAML)
 │   │   └── internal/               # 业务核心（data/service/server）
 │   ├── pkg/                        # 公共包
+│   │   ├── scripting/              # 多语言脚本引擎（Lua + JavaScript）
+│   │   ├── oss/                    # 对象存储（MinIO）
+│   │   ├── eventbus/               # 事件总线
+│   │   └── ...                     # 其他工具包
 │   ├── scripts/                    # 部署脚本（env/docker/deploy）
 │   └── sql/                        # 初始化 SQL 文件
 ├── frontend/admin/                 # 前端项目

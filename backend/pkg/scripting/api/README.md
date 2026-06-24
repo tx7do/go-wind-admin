@@ -22,7 +22,7 @@ This directory contains the Lua API modules that expose Go functionality to Lua 
 
 ```go
 import (
-    "go-wind-admin/pkg/lua"
+    "go-wind-admin/pkg/scripting"
     "go-wind-admin/pkg/oss"
 )
 
@@ -227,7 +227,7 @@ func TestMyAPI(t *testing.T) {
 
 ```bash
 # Test all API modules
-cd pkg/lua/api
+cd pkg/scripting/api
 go test -v
 
 # Test specific module

@@ -9,7 +9,7 @@ import (
 	lua "github.com/yuin/gopher-lua"
 
 	"go-wind-admin/pkg/crypto"
-	"go-wind-admin/pkg/lua/internal/convert"
+	"go-wind-admin/pkg/scripting/internal/convert"
 )
 
 // RegisterCrypto registers the Crypto API for Lua as a requireable module

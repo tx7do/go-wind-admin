@@ -6,7 +6,7 @@ import (
 	"github.com/go-kratos/kratos/v2/log"
 	lua "github.com/yuin/gopher-lua"
 
-	"go-wind-admin/pkg/lua/internal/convert"
+	"go-wind-admin/pkg/scripting/internal/convert"
 )
 
 // convertForFormat converts values to be format-string friendly.

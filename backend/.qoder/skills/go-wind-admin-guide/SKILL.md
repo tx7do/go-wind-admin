@@ -24,7 +24,7 @@ Go-Wind-Admin 是基于 **Go + Kratos** 框架的后台管理系统。当前 adm
 | 授权     | Casbin / OPA (kratos-authz)  |
 | 异步任务   | Asynq                        |
 | 实时推送   | SSE                          |
-| 脚本引擎   | GopherLua                    |
+| 脚本引擎   | go-scripts (Lua + JavaScript) |
 | 可观测性   | OpenTelemetry                |
 
 ### Go 模块路径
@@ -65,7 +65,7 @@ backend/
 │   ├── jwt/                      # JWT 工具
 │   ├── oss/                      # 对象存储
 │   ├── eventbus/                 # 事件总线
-│   ├── lua/                      # Lua 脚本引擎
+│   ├── scripting/                # 多语言脚本引擎 (Lua + JavaScript)
 │   └── ...
 └── scripts/                      # 部署/安装脚本
 ```

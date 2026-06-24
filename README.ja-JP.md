@@ -30,6 +30,7 @@
 
 - **バックエンド**：`Golang`、`go-kratos`、`Wire`、`Ent ORM` / `Gorm`、`MySQL`、`Redis`、`Docker`
 - **共通基盤**：`JWT 認証`、`Casbin` / `OPA` / `Zanzibar` 認可、`SSE プッシュ`、`Swagger API ドキュメント`
+- **スクリプトエンジン**：`go-scripts` · `Lua`（gopher-lua） · `JavaScript`（goja） · 多言語 Hook プラグインシステム
 - **Vue Vben 版**：`Vue3` + `TypeScript` + `Vite` + `Ant Design Vue` + `Vben Admin`
 - **Vue Element 版**：`Vue3` + `TypeScript` + `Vite` + `Element Plus`（軽量ピュア版）
 - **React 版**：`React19` + `TypeScript` + `Vite` + `React Router` + `Zustand` + `Ant Design V6` + `@ant-design/pro-components`（**UMI フレームワーク不使用**）

@@ -106,6 +106,9 @@ require (
 	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc // indirect
 	github.com/decred/dcrd/dcrec/secp256k1/v4 v4.4.1 // indirect
+	github.com/dlclark/regexp2/v2 v2.2.2 // indirect
+	github.com/dop251/goja v0.0.0-20260618133527-c9b2ea77db59 // indirect
+	github.com/dop251/goja_nodejs v0.0.0-20260212111938-1f56ff5bcf14 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fatih/color v1.19.0 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -123,6 +126,7 @@ require (
 	github.com/go-openapi/jsonpointer v0.21.0 // indirect
 	github.com/go-openapi/swag v0.23.0 // indirect
 	github.com/go-playground/form/v4 v4.3.0 // indirect
+	github.com/go-sourcemap/sourcemap v2.1.4+incompatible // indirect
 	github.com/gobwas/glob v0.2.3 // indirect
 	github.com/goccy/go-json v0.10.6 // indirect
 	github.com/golang-sql/civil v0.0.0-20220223132316-b832511892a9 // indirect
@@ -132,6 +136,7 @@ require (
 	github.com/google/flatbuffers v25.12.19+incompatible // indirect
 	github.com/google/gnostic-models v0.7.1 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
+	github.com/google/pprof v0.0.0-20260604005048-7023385849c0 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/subcommands v1.2.0 // indirect
 	github.com/google/uuid v1.6.0 // indirect
@@ -227,6 +232,7 @@ require (
 	github.com/tklauser/numcpus v0.11.0 // indirect
 	github.com/tx7do/go-crud/audit v0.0.2 // indirect
 	github.com/tx7do/go-crud/cache v0.0.1 // indirect
+	github.com/tx7do/go-scripts/javascript v0.0.7 // indirect
 	github.com/tx7do/kratos-bootstrap/config v0.2.2 // indirect
 	github.com/tx7do/kratos-bootstrap/logger v0.1.2 // indirect
 	github.com/tx7do/kratos-bootstrap/registry v0.2.2 // indirect

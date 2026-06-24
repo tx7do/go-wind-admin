@@ -1,4 +1,4 @@
-package lua
+package scripting
 
 import (
 	"context"
@@ -11,7 +11,7 @@ import (
 
 // ScriptLoader 是从数据库加载脚本源码的回调函数类型。
 //
-// 因 pkg/lua 不能反向依赖 internal/data（会形成循环依赖），
+// 因 pkg/scripting 不能反向依赖 internal/data（会形成循环依赖），
 // 由 app 层在 Wire 装配时注入真正的 DB 查询函数。
 //
 // 参数 key 通常是脚本的 id 或 name，返回脚本源码字符串。

@@ -30,6 +30,7 @@ Adhering to the philosophy of efficient, stable, and scalable technology selecti
 
 - **Backend**: `Golang`, `go-kratos`, `Wire`, `Ent ORM` / `Gorm`, `MySQL`, `Redis`, `Docker`
 - **Common Infrastructure**: `JWT Authentication`, `Casbin` / `OPA` / `Zanzibar` Authorization, `SSE Push`, `Swagger API Docs`
+- **Scripting Engine**: `go-scripts` · `Lua` (gopher-lua) · `JavaScript` (goja) · Multi-language Hook plugin system
 - **Vue Vben Edition**: `Vue3` + `TypeScript` + `Vite` + `Ant Design Vue` + `Vben Admin`
 - **Vue Element Edition**: `Vue3` + `TypeScript` + `Vite` + `Element Plus` (lightweight pure version)
 - **React Edition**: `React19` + `TypeScript` + `Vite` + `React Router` + `Zustand` + `Ant Design V6` + `@ant-design/pro-components` (**No UMI framework**)

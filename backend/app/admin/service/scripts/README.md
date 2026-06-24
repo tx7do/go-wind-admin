@@ -130,7 +130,7 @@ You can create your own hooks in your application code:
 
 ```go
 // In your Go code
-err := luaEngine.ExecuteHook(ctx, "user.created", &lua.Context{
+err := scriptingEngine.ExecuteHook(ctx, "user.created", &scripting.Context{
     ID: "user-123",
     HookName: "user.created",
     Data: map[string]interface{}{
@@ -232,6 +232,6 @@ end
 
 See the example scripts in this directory:
 - `on_server_start.lua` - Server startup hook
-- Check `/home/sko/projects/go-imap-admin/backend/pkg/lua/` for more examples:
+- Check `pkg/scripting/` for more examples:
   - `example_callback_registration.lua`
   - `example_self_register.lua`

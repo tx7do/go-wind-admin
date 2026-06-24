@@ -1,4 +1,4 @@
-package lua
+package scripting
 
 import (
 	"crypto/sha256"
