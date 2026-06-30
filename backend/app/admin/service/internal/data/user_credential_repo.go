@@ -480,7 +480,7 @@ func (r *UserCredentialRepo) ChangeCredential(ctx context.Context, req *authenti
 	}
 
 	var newCredential string
-	newCredential, err = r.prepareCredential(entity.CredentialType, req.GetOldCredential())
+	newCredential, err = r.prepareCredential(entity.CredentialType, req.GetNewCredential())
 	if err != nil {
 		r.log.Errorf("prepare new credential failed: %s", err.Error())
 		return authenticationV1.ErrorBadRequest("prepare new credential failed")
