@@ -5,6 +5,9 @@ server:
     enable_swagger: true
     enable_pprof: true
     cors:
+      # 前端 refresh token 走 HttpOnly Cookie（withCredentials=true），
+      # 预检响应必须带 Access-Control-Allow-Credentials: true
+      allow_credentials: true
       headers:
         - "X-Requested-With"
         - "X-Request-ID"
