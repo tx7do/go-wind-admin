@@ -81,7 +81,6 @@ function encryptPassword(password: string): string {
 // ==============================
 
 const ACCESS_TOKEN_REFRESH_INTERVAL = 90 * 60 * 1000;
-const REFRESH_TOKEN_REFRESH_INTERVAL = 12 * 60 * 60 * 1000;
 
 // ==============================
 // 核心业务逻辑
@@ -114,6 +113,9 @@ async function login(
   onSuccess?: () => Promise<void> | void
 ): Promise<{ userInfo: null | UserInfo } | null> {
   let userInfo: null | UserInfo = null;
+  // MFA 分支要在请求后透传 redirect 到挑战页；请求返回后路由可能被副作用
+  // 先行更新（响应式时序竞态）丢掉 query，故必须在发起请求前捕获。
+  const redirectAtEntry = (router.currentRoute.value.query.redirect as string) || "";
   try {
     loginLoading.value = true;
 
@@ -135,9 +137,8 @@ async function login(
     // 不写任何 token，记录 operation_id 并跳转 MFA 挑战页（路由守卫亦据此强制跳转）。
     if ((resp as any).mfa_operation_id) {
       accessStore.mfaOperationId = (resp as any).mfa_operation_id as string;
-      // 携带当前 redirect 到挑战页，验证通过后回到原目标页
-      const redirect = (router.currentRoute.value.query.redirect as string) || "";
-      await router.push({ name: "MfaChallenge", query: redirect ? { redirect } : {} });
+      // 携带 redirect 到挑战页（用请求前捕获值），验证通过后回到原目标页
+      await router.push({ name: "MfaChallenge", query: redirectAtEntry ? { redirect: redirectAtEntry } : {} });
       return { userInfo: null };
       }
 
@@ -168,9 +169,7 @@ async function applySuccessfulLogin(
   onSuccess?: () => Promise<void> | void
 ): Promise<UserInfo | null> {
   const accessToken = resp.access_token;
-  const refresh_token = resp.refresh_token;
   let expiresAt = resp.expires_in;
-  let refreshExpiresAt = resp.refresh_expires_in;
 
   const accessStore = useAccessStore();
 
@@ -180,12 +179,6 @@ async function applySuccessfulLogin(
       ? Date.now() + ACCESS_TOKEN_REFRESH_INTERVAL
       : Date.now() + Math.floor(expiresAtSec * 1000);
 
-  const refreshExpiresAtSec = Number(refreshExpiresAt);
-  refreshExpiresAt =
-    !Number.isFinite(refreshExpiresAtSec) || refreshExpiresAtSec <= 0
-      ? Date.now() + REFRESH_TOKEN_REFRESH_INTERVAL
-      : Date.now() + Math.floor(refreshExpiresAtSec * 1000);
-
   if (!accessToken) {
     return null;
   }
@@ -193,11 +186,9 @@ async function applySuccessfulLogin(
   accessStore.setAccessToken(accessToken);
   accessStore.setAccessTokenExpireTime(expiresAt);
 
-  if (refresh_token) {
-    accessStore.setRefreshToken(refresh_token);
-    accessStore.setRefreshTokenExpireTime(refreshExpiresAt);
-    startRefreshTimer();
-  }
+  // refresh token 通过 HttpOnly Cookie 传输，前端不可读也不存内存。
+  // 页面刷新后由 bootstrap 静默恢复（凭 cookie 调 /refresh-token 换新 access token）。
+  startRefreshTimer();
 
   const [fetchUserInfoResult, fetchAccessCodeResult] = await Promise.all([
     fetchUserInfo(),

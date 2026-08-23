@@ -230,3 +230,26 @@ func HeaderFromContext(ctx context.Context) http.Header {
 	}
 	return req.Header
 }
+
+// CookieFromContext 从 kratos context 中提取具名 HTTP cookie 值。
+// 用于 refresh token 接口从 HttpOnly cookie 中读取刷新令牌。
+// 若上下文非 HTTP 传输、取不到 request 或无此 cookie，返回空串。
+func CookieFromContext(ctx context.Context, name string) string {
+	tr, ok := transport.FromServerContext(ctx)
+	if !ok {
+		return ""
+	}
+	htr, ok := tr.(khttp.Transporter)
+	if !ok {
+		return ""
+	}
+	req := htr.Request()
+	if req == nil {
+		return ""
+	}
+	c, err := req.Cookie(name)
+	if err != nil {
+		return ""
+	}
+	return c.Value
+}

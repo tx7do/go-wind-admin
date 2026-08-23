@@ -31,10 +31,9 @@ export async function generateCaptcha() {
   return apiClient.authenticationService.GenerateCaptcha({});
 }
 
-export async function refreshToken(refreshToken: string) {
+export async function refreshToken() {
   return apiClient.authenticationService.RefreshToken({
     grant_type: "refresh_token",
-    refresh_token: refreshToken ?? "",
   });
 }
 
@@ -118,7 +117,7 @@ export function useRefreshToken(
   >
 ) {
   return useMutation({
-    mutationFn: (req) => refreshToken(req.refresh_token ?? ""),
+    mutationFn: () => refreshToken(),
     ...options,
   });
 }

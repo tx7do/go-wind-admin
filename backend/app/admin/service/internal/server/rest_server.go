@@ -64,6 +64,10 @@ func NewRestMiddleware(
 		adminV1.OperationAuthenticationServiceRegisterUser,
 		adminV1.OperationAuthenticationServiceGenerateCaptcha,
 		adminV1.OperationAuthenticationServiceVerifyCaptcha,
+		// 刷新令牌接口免鉴权：refresh token 现以 HttpOnly Cookie 传输且为自描述 JWT，
+		// 可脱离 access token 独立鉴权。页面刷新后 access token 丢失时，前端凭
+		// refresh cookie 静默恢复会话，不再强制重新登录。
+		adminV1.OperationAuthenticationServiceRefreshToken,
 		// MFA 登录挑战验证免鉴权：operation_id 由登录流程签发，见 doGrantTypePassword 的 MFA 闸门。
 		// 仅此一个 MFA RPC 免鉴权；管理侧 RPC（GetMFAStatus 等）走正常 auth+authz。
 		adminV1.OperationMfaServiceVerifyMFAChallenge,

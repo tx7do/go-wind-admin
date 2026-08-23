@@ -61,6 +61,7 @@ class RequestClient {
         'Content-Type': 'application/json;charset=utf-8' as RequestContentType,
       },
       timeout: 10_000,
+      withCredentials: true,
     };
     const { ...axiosConfig } = options;
     const requestConfig = merge(axiosConfig, defaultConfig);

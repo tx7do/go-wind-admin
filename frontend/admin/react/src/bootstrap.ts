@@ -3,7 +3,11 @@ import { usePreferencesStore } from '@/core/preferences';
 import { type HttpResponse, RequestClient } from '@/core/transport/rest';
 import i18n from 'i18next';
 import { useAuthStore } from '@/stores';
-import { startRefreshTimer } from '@/hooks/useTokenRefresh';
+import {
+  connectSSEServer,
+  startRefreshTimer,
+} from '@/hooks/useTokenRefresh';
+import { fetchUserProfile } from '@/api/hooks/user-profile';
 
 /**
  * 应用启动初始化
@@ -13,6 +17,22 @@ export async function bootstrap() {
 
   // 可放全局初始化逻辑
   console.log('✅ 应用启动初始化完成');
+}
+
+/**
+ * 从 refresh_exp cookie 读取 refresh token 的过期时间戳（Unix 秒）。
+ * 返回毫秒级时间戳或 null（cookie 不存在/已过期）。
+ */
+function getRefreshExpireAt(): number | null {
+  const match = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith('refresh_exp='));
+  if (!match) return null;
+  const parts = match.split('=');
+  if (parts.length < 2) return null;
+  const val = parseInt(parts[1], 10);
+  if (!Number.isFinite(val) || val <= 0) return null;
+  return val * 1000;
 }
 
 async function _initI18n() {
@@ -35,11 +55,44 @@ async function _initI18n() {
     getErrorMsg: getErrorMsg,
   });
 
-  // 页面刷新后，若 localStorage 中有有效 token，恢复定时刷新
-  // （登录时也会启动，但刷新后丢失定时器状态，需在此补启动）
+  // 页面刷新后的会话恢复：
+  // access token 仅存内存，刷新页面后丢失。refresh token 现以 HttpOnly Cookie 传输，
+  // 刷新后仍在。若检测到有效的 refresh_exp cookie，静默调 /refresh-token 换回新 access token，
+  // 使用户无感知地恢复会话，无需重新登录。
   const { accessToken } = useAuthStore.getState();
   if (accessToken) {
+    // 内存中仍有 access token（如 SPA 内导航），仅需恢复定时器
     startRefreshTimer();
+  } else {
+    // 内存无 access token（页面刷新），尝试静默恢复
+    const refreshExpireAt = getRefreshExpireAt();
+    const now = Date.now();
+    if (refreshExpireAt && refreshExpireAt > now) {
+      try {
+        // refresh token cookie 由浏览器自动携带，无需前端传参
+        const newToken = await useAuthStore.getState().refreshToken();
+        if (newToken) {
+          // 恢复用户信息（刷新页面后内存丢失）
+          try {
+            const profile = (await fetchUserProfile()) as unknown as Parameters<
+              ReturnType<typeof useAuthStore.getState>['setUserInfo']
+            >[0];
+            if (profile) {
+              useAuthStore.getState().setUserInfo(profile);
+            }
+          } catch (e) {
+            console.error('[Bootstrap] silent restore: fetch user profile failed:', e);
+          }
+          // 恢复 SSE 连接与刷新定时器
+          connectSSEServer();
+          startRefreshTimer();
+          console.log('[Bootstrap] session silently restored via refresh cookie');
+        }
+      } catch (e) {
+        // refresh cookie 无效/过期/后端拒验 → 保持登出态，静默忽略
+        console.log('[Bootstrap] silent restore skipped: refresh cookie invalid or expired');
+      }
+    }
   }
 }
 

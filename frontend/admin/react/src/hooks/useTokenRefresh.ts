@@ -13,8 +13,6 @@ import { useAuthStore } from '@/stores/auth';
 
 /** Access Token 刷新间隔（1.5 小时） */
 const ACCESS_TOKEN_REFRESH_INTERVAL = 90 * 60 * 1000;
-/** Refresh Token 刷新间隔（12 小时） */
-// const REFRESH_TOKEN_REFRESH_INTERVAL = 12 * 60 * 60 * 1000;
 
 /** 在 access token 到期前多久开始刷新 */
 const SAFETY_BUFFER_MS = 5 * 60 * 1000;
@@ -28,16 +26,39 @@ const MIN_INTERVAL_MS = 3 * 1000;
 let refreshTimer: ReturnType<typeof setTimeout> | null = null;
 
 // ==============================
+// Cookie 读取辅助
+// ==============================
+
+/**
+ * 从 refresh_exp cookie 读取 refresh token 的过期时间戳（Unix 秒）。
+ * refresh_exp 为非 HttpOnly cookie，仅含过期时间戳，无敏感信息。
+ * 由后端 setRefreshCookies 在登录/刷新时写入。
+ * 返回毫秒级时间戳或 null（cookie 不存在/已过期）。
+ */
+function getRefreshExpireAt(): number | null {
+  const match = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith('refresh_exp='));
+  if (!match) return null;
+  const parts = match.split('=');
+  if (parts.length < 2) return null;
+  const val = parseInt(parts[1], 10);
+  if (!Number.isFinite(val) || val <= 0) return null;
+  return val * 1000;
+}
+
+// ==============================
 // 核心：计算下次刷新间隔
 // ==============================
 
 function computeNextInterval(): number {
-  const { accessTokenExpireAt, refreshTokenExpireAt } = useAuthStore.getState();
+  const { accessTokenExpireAt } = useAuthStore.getState();
   const now = Date.now();
 
-  // refresh token 快过期 → 快速重试
-  const refreshRemaining = (refreshTokenExpireAt ?? 0) - now;
-  if (refreshTokenExpireAt && refreshRemaining <= SAFETY_BUFFER_MS) {
+  // refresh token 快过期 → 快速重试（使其在过期前尽快刷新）
+  const refreshExpireAt = getRefreshExpireAt();
+  const refreshRemaining = (refreshExpireAt ?? 0) - now;
+  if (refreshExpireAt && refreshRemaining <= SAFETY_BUFFER_MS) {
     return MIN_INTERVAL_MS;
   }
 
@@ -70,17 +91,18 @@ function scheduleRefresh(): void {
 
   const tick = async () => {
     try {
-      const { refreshTokenValue, refreshTokenExpireAt } = useAuthStore.getState();
       const now = Date.now();
 
-      // 没有 refresh token → 强制登出
-      if (!refreshTokenValue) {
+      // refresh token 不存在或已过期 → 强制登出
+      // refresh token 过期时间从 refresh_exp cookie 读取
+      const refreshExpireAt = getRefreshExpireAt();
+      if (!refreshExpireAt) {
         useAuthStore.getState().forceLogout();
         return;
       }
 
       // refresh token 快过期 → 强制登出
-      if (refreshTokenExpireAt && refreshTokenExpireAt - now <= SAFETY_BUFFER_MS) {
+      if (refreshExpireAt - now <= SAFETY_BUFFER_MS) {
         useAuthStore.getState().forceLogout();
         return;
       }

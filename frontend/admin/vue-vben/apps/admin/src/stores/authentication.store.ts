@@ -20,10 +20,27 @@ import { globalSSEClient } from '#/transport/sse';
 type RefreshTokenFunc = () => Promise<string> | string;
 
 const ACCESS_TOKEN_REFRESH_INTERVAL = 90 * 60 * 1000; // 1.5 小时
-const REFRESH_TOKEN_REFRESH_INTERVAL = 12 * 60 * 60 * 1000; // 12 小时
 
 let refreshTimer: null | ReturnType<typeof setTimeout> = null;
 let refreshCallback: null | RefreshTokenFunc = null;
+
+/**
+ * 从 refresh_exp cookie 读取 refresh token 的过期时间戳（Unix 秒）。
+ * refresh_exp 为非 HttpOnly cookie，仅含过期时间戳，无敏感信息。
+ * 由后端在登录/刷新时写入。返回毫秒级时间戳或 null（cookie 不存在/已过期）。
+ */
+function getRefreshExpireAt(): number | null {
+  const match = document.cookie
+    .split('; ')
+    .find((row) => row.startsWith('refresh_exp='));
+  if (!match) return null;
+  const parts = match.split('=');
+  const raw = parts.length >= 2 ? parts[1] : undefined;
+  if (raw === undefined) return null;
+  const val = parseInt(raw, 10);
+  if (!Number.isFinite(val) || val <= 0) return null;
+  return val * 1000;
+}
 
 let isReauthenticating = false;
 
@@ -135,21 +152,13 @@ export const useAuthStore = defineStore('auth', () => {
     onSuccess?: () => Promise<void> | void,
   ): Promise<UserInfo | null> {
     const accessToken = resp.access_token;
-    const refresh_token = resp.refresh_token;
     let expiresAt = resp.expires_in;
-    let refreshExpiresAt = resp.refresh_expires_in;
 
     const expiresAtSec = Number(expiresAt);
     expiresAt =
       !Number.isFinite(expiresAtSec) || expiresAtSec <= 0
         ? Date.now() + ACCESS_TOKEN_REFRESH_INTERVAL
         : Date.now() + Math.floor(expiresAtSec * 1000);
-
-    const refreshExpiresAtSec = Number(refreshExpiresAt);
-    refreshExpiresAt =
-      !Number.isFinite(refreshExpiresAtSec) || refreshExpiresAtSec <= 0
-        ? Date.now() + REFRESH_TOKEN_REFRESH_INTERVAL
-        : Date.now() + Math.floor(refreshExpiresAtSec * 1000);
 
     if (!accessToken) {
       return null;
@@ -158,11 +167,9 @@ export const useAuthStore = defineStore('auth', () => {
     accessStore.setAccessToken(accessToken);
     accessStore.setAccessTokenExpireTime(expiresAt);
 
-    if (refresh_token) {
-      accessStore.setRefreshToken(refresh_token);
-      accessStore.setRefreshTokenExpireTime(refreshExpiresAt);
-      startRefreshTimer();
-    }
+    // refresh token 通过 HttpOnly Cookie 传输，前端不可读也不存内存。
+    // 页面刷新后由 bootstrap 静默恢复（凭 cookie 调 /refresh-token 换新 access token）。
+    startRefreshTimer();
 
     // 获取用户信息并存储到 accessStore 中
     const [fetchUserInfoResult, fetchAccessCodeResult] = await Promise.all([
@@ -264,7 +271,6 @@ export const useAuthStore = defineStore('auth', () => {
 
     // resetAllStores 可能从持久化中恢复 token，必须再次清除
     accessStore.setAccessToken(null);
-    accessStore.setRefreshToken(null);
     accessStore.setLoginExpired(false);
 
     // 清除 queryClient 缓存，防止登出期间被缓存污染的查询结果
@@ -292,23 +298,16 @@ export const useAuthStore = defineStore('auth', () => {
 
   /**
    * 刷新访问令牌
+   * refresh token 以 HttpOnly Cookie 传输，刷新请求由浏览器自动携带 cookie，
+   * 前端无需（也无法）读取 refresh token 值。
    */
   async function refreshToken(): Promise<string> {
-    if (!accessStore.refreshToken) {
-      await reauthenticate();
-      return '';
-    }
-
     try {
-      const resp = await refreshTokenMutation.execute(
-        accessStore.refreshToken ?? '',
-      );
+      const resp = await refreshTokenMutation.execute(undefined);
 
       const newAccessToken = (resp as any).access_token;
-      const newRefreshToken = (resp as any).refresh_token;
 
       let expiresIn = (resp as any).expires_in;
-      let refreshExpiresIn = (resp as any).refresh_expires_in;
 
       const expiresInSec = Number(expiresIn);
       expiresIn =
@@ -316,17 +315,8 @@ export const useAuthStore = defineStore('auth', () => {
           ? Date.now() + ACCESS_TOKEN_REFRESH_INTERVAL
           : Date.now() + Math.floor(expiresInSec * 1000);
 
-      const refreshExpiresInSec = Number(refreshExpiresIn);
-      refreshExpiresIn =
-        !Number.isFinite(refreshExpiresInSec) || refreshExpiresInSec <= 0
-          ? Date.now() + REFRESH_TOKEN_REFRESH_INTERVAL
-          : Date.now() + Math.floor(refreshExpiresInSec * 1000);
-
       accessStore.setAccessTokenExpireTime(expiresIn);
-      accessStore.setRefreshTokenExpireTime(refreshExpiresIn);
-
       accessStore.setAccessToken(newAccessToken ?? null);
-      accessStore.setRefreshToken(newRefreshToken ?? null);
 
       // token 刷新成功后，使用新 token 重连 SSE
       _reconnectSSEServer();
@@ -355,7 +345,6 @@ export const useAuthStore = defineStore('auth', () => {
       _stopRefreshTimer();
 
       accessStore.setAccessToken(null);
-      accessStore.setRefreshToken(null);
       // 注意：setIsAccessChecked(false) 之前必须先读出原值用于下面的 modal 判定，
       // 否则下方 accessStore.isAccessChecked 永远是 false，modal 模式恒不触发。
       const wasAccessChecked = accessStore.isAccessChecked;
@@ -413,19 +402,18 @@ export const useAuthStore = defineStore('auth', () => {
       const now = Date.now();
 
       const accessExpire = accessStore.accessTokenExpireTime ?? 0;
-      const refreshExpire = accessStore.refreshTokenExpireTime ?? 0;
+      // refresh token 过期时间从 refresh_exp cookie 读取（非 HttpOnly）
+      const refreshExpire = getRefreshExpireAt() ?? 0;
 
       // 如果 refresh token 已过期或快到期，优先走 reauthenticate（尽快处理）
       const refreshRemaining = refreshExpire - now;
       if (refreshExpire && refreshRemaining <= SAFETY_BUFFER_MS) {
-        // 让 schedule 触发短延迟以处理 reauthenticate（或直接 reauthenticate）
         return MIN_INTERVAL_MS;
       }
 
       // 基于 access token 计算下一次刷新
       const accessRemaining = accessExpire - now;
       if (!accessExpire || accessRemaining <= 0) {
-        // access 已过期或缺失 -> 立刻重认证
         return MIN_INTERVAL_MS;
       }
 
@@ -445,17 +433,14 @@ export const useAuthStore = defineStore('auth', () => {
 
     const schedule = async () => {
       try {
-        // 在每次触发前再做两个检查：
-        // 1) 是否还有 refresh token（没有则 reauthenticate）
-        // 2) 如果 refresh token 快过期，直接 reauthenticate
         const now = Date.now();
-        const refreshExpire = accessStore.refreshTokenExpireTime ?? 0;
-        if (!accessStore.refreshToken) {
+        // refresh token 过期时间从 refresh_exp cookie 读取
+        const refreshExpire = getRefreshExpireAt();
+        if (!refreshExpire) {
           await reauthenticate();
           return;
         }
-        if (refreshExpire && refreshExpire - now <= SAFETY_BUFFER_MS) {
-          // refresh token 在缓冲期内或过期 -> 重新认证处理
+        if (refreshExpire - now <= SAFETY_BUFFER_MS) {
           await reauthenticate();
           return;
         }
@@ -464,7 +449,6 @@ export const useAuthStore = defineStore('auth', () => {
         await refreshCallback?.();
       } catch (error) {
         console.error('refreshToken 定时刷新失败', error);
-        // refresh 失败后，refreshToken() 内通常会调用 reauthenticate()
       } finally {
         if (refreshCallback) {
           const next = computeNextInterval();

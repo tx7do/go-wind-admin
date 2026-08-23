@@ -46,16 +46,6 @@ interface AccessState {
    * 非空表示当前处于 MFA 挑战待验证阶段，前端据此跳挑战页。
    */
   mfaOperationId: string | null;
-
-  /**
-   * 登录 accessToken
-   */
-  refreshToken: AccessToken;
-
-  /**
-   * refreshToken 过期时间戳
-   */
-  refreshTokenExpireTime?: number;
 }
 
 /**
@@ -65,7 +55,6 @@ export const useAccessStore = defineStore("core-access", {
   actions: {
     $reset() {
       this.accessToken = null;
-      this.refreshToken = null;
       this.accessCodes = [];
       this.accessMenus = [];
       this.accessRoutes = [];
@@ -73,7 +62,6 @@ export const useAccessStore = defineStore("core-access", {
       this.loginExpired = false;
       this.mfaOperationId = null;
       this.accessTokenExpireTime = undefined;
-      this.refreshTokenExpireTime = undefined;
     },
     /**
      * @zh_CN 检查 accessToken 是否过期
@@ -84,16 +72,6 @@ export const useAccessStore = defineStore("core-access", {
       }
       const now = Date.now();
       return now >= this.accessTokenExpireTime;
-    },
-    /**
-     * @zh_CN 检查 refreshToken 是否过期
-     */
-    checkRefreshTokenExpired(): boolean {
-      if (!this.refreshTokenExpireTime) {
-        return true;
-      }
-      const now = Date.now();
-      return now >= this.refreshTokenExpireTime;
     },
     setAccessCodes(codes: string[]) {
       this.accessCodes = codes;
@@ -117,14 +95,6 @@ export const useAccessStore = defineStore("core-access", {
     setLoginExpired(loginExpired: boolean) {
       this.loginExpired = loginExpired;
     },
-
-    setRefreshToken(token: AccessToken) {
-      this.refreshToken = token;
-    },
-
-    setRefreshTokenExpireTime(refreshTokenExpireTime: number) {
-      this.refreshTokenExpireTime = refreshTokenExpireTime;
-    },
   },
   persist: {
     // Token（access/refresh 及其过期时间）全部仅存内存，不落 localStorage。
@@ -141,8 +111,6 @@ export const useAccessStore = defineStore("core-access", {
     isAccessChecked: false,
     loginExpired: false,
     mfaOperationId: null,
-    refreshToken: null,
-    refreshTokenExpireTime: undefined,
   }),
 });
 

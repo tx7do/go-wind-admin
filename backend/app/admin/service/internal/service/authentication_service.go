@@ -3,6 +3,8 @@ package service
 import (
 	"context"
 	"encoding/base64"
+	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -16,6 +18,9 @@ import (
 
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
+
+	khttp "github.com/go-kratos/kratos/v2/transport/http"
+	ktransport "github.com/go-kratos/kratos/v2/transport"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
@@ -35,6 +40,80 @@ const (
 // CaptchaEnabled 控制登录是否强制校验验证码。
 // 开发/无 Redis 等环境可改为 false 跳过验证码校验，避免登录被 400 invalid or missing captcha 阻断。
 const CaptchaEnabled = true
+
+// refresh token cookie 相关常量。
+// refresh token 以 HttpOnly Cookie 传输，Path 收窄到刷新端点，SameSite=Lax 阻断跨站 POST。
+// refresh_exp 为非 HttpOnly 的过期时间戳 cookie，供前端定时器读取以调度主动刷新。
+const (
+	refreshTokenCookieName = "refresh_token"
+	refreshExpCookieName   = "refresh_exp"
+	refreshCookiePath      = "/admin/v1/refresh-token"
+)
+
+// setRefreshCookies 将 refresh token 及其过期时间戳写入 Set-Cookie 响应头。
+// refresh_token cookie 为 HttpOnly（JS 不可读），refresh_exp cookie 非 HttpOnly（前端定时器可读）。
+// 两者均 Secure + SameSite=Lax + Path 收窄到刷新端点。
+func setRefreshCookies(ctx context.Context, refreshToken string, refreshExpiresInSeconds int64) {
+	tr, ok := ktransport.FromServerContext(ctx)
+	if !ok {
+		return
+	}
+	htr, hok := tr.(*khttp.Transport)
+	if !hok {
+		return
+	}
+	header := htr.ReplyHeader()
+
+	// HttpOnly refresh token cookie
+	rtCookie := &http.Cookie{
+		Name:     refreshTokenCookieName,
+		Value:    refreshToken,
+		Path:     refreshCookiePath,
+		MaxAge:   int(refreshExpiresInSeconds),
+		Secure:   true,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	}
+	header.Add("Set-Cookie", rtCookie.String())
+
+	// 非 HttpOnly 过期时间戳 cookie（只含 Unix 秒，无敏感信息）
+	expCookie := &http.Cookie{
+		Name:     refreshExpCookieName,
+		Value:    fmt.Sprintf("%d", time.Now().Unix()+refreshExpiresInSeconds),
+		Path:     refreshCookiePath,
+		MaxAge:   int(refreshExpiresInSeconds),
+		Secure:   true,
+		HttpOnly: false,
+		SameSite: http.SameSiteLaxMode,
+	}
+	header.Add("Set-Cookie", expCookie.String())
+}
+
+// clearRefreshCookies 向响应头写入 Max-Age=0 的清除 cookie，使浏览器立即删除 refresh token 相关 cookie。
+func clearRefreshCookies(ctx context.Context) {
+	tr, ok := ktransport.FromServerContext(ctx)
+	if !ok {
+		return
+	}
+	htr, hok := tr.(*khttp.Transport)
+	if !hok {
+		return
+	}
+	header := htr.ReplyHeader()
+
+	for _, name := range []string{refreshTokenCookieName, refreshExpCookieName} {
+		cookie := &http.Cookie{
+			Name:     name,
+			Value:    "",
+			Path:     refreshCookiePath,
+			MaxAge:   -1,
+			Secure:   true,
+			HttpOnly: true,
+			SameSite: http.SameSiteLaxMode,
+		}
+		header.Add("Set-Cookie", cookie.String())
+	}
+}
 
 // normalizeLoginVerifyError 将登录凭证校验的多种细分错误统一对外成 INVALID_PASSWORD，
 // 防止攻击者通过区分"用户不存在(404)/账号冻结(401)/密码错误(400)"来枚举有效用户名。
@@ -141,7 +220,9 @@ func (s *AuthenticationService) Login(ctx context.Context, req *authenticationV1
 		return s.doGrantTypePassword(ctx, req)
 
 	case authenticationV1.GrantType_refresh_token:
-		return s.doGrantTypeRefreshToken(ctx, req)
+		// refresh token 刷新已迁移到 /admin/v1/refresh-token 端点（HttpOnly Cookie 传输），
+		// login 端点不再处理 refresh_token grant type。
+		return nil, authenticationV1.ErrorInvalidGrantType("use /admin/v1/refresh-token for token refresh")
 
 	case authenticationV1.GrantType_client_credentials:
 		return s.doGrantTypeClientCredentials(ctx, req)
@@ -476,12 +557,14 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 		s.rateLimiter.Reset(ctx, clientIP, username)
 	}
 
+	// refresh token 通过 HttpOnly Cookie 下发，不再放入响应体
+	refreshExpiresIn := int64(s.authenticator.GetRefreshTokenExpires(req.GetClientType()).Seconds())
+	setRefreshCookies(ctx, refreshToken, refreshExpiresIn)
+
 	return &authenticationV1.LoginResponse{
-		TokenType:        authenticationV1.TokenType_bearer,
-		AccessToken:      accessToken,
-		RefreshToken:     trans.Ptr(refreshToken),
-		ExpiresIn:        int64(s.authenticator.GetAccessTokenExpires(req.GetClientType()).Seconds()),
-		RefreshExpiresIn: trans.Ptr(int64(s.authenticator.GetRefreshTokenExpires(req.GetClientType()).Seconds())),
+		TokenType:   authenticationV1.TokenType_bearer,
+		AccessToken: accessToken,
+		ExpiresIn:   int64(s.authenticator.GetAccessTokenExpires(req.GetClientType()).Seconds()),
 	}, nil
 }
 
@@ -543,17 +626,19 @@ func (s *AuthenticationService) verifyLoginCaptcha(ctx context.Context) bool {
 }
 
 // doGrantTypeRefreshToken 处理授权类型 - 刷新令牌
-func (s *AuthenticationService) doGrantTypeRefreshToken(ctx context.Context, req *authenticationV1.LoginRequest) (*authenticationV1.LoginResponse, error) {
-	// 获取操作人信息
-	operator, err := auth.FromContext(ctx)
+func (s *AuthenticationService) doGrantTypeRefreshToken(ctx context.Context, req *authenticationV1.LoginRequest, refreshToken string) (*authenticationV1.LoginResponse, error) {
+	// refresh token 为自描述 JWT，VerifyRefreshToken 验签并原子吊销旧令牌对，返回 uid/jti。
+	// 不再依赖 access token 的 auth.FromContext 提供身份信息。
+	userId, _, err := s.authenticator.VerifyRefreshToken(ctx, req.GetClientType(), refreshToken)
 	if err != nil {
-		return nil, err
+		s.log.Errorf("verify refresh token failed: [%s]", err)
+		return nil, authenticationV1.ErrorIncorrectRefreshToken("invalid refresh token")
 	}
 
 	// 获取用户信息
 	user, err := s.userRepo.Get(ctx, &identityV1.GetUserRequest{
 		QueryBy: &identityV1.GetUserRequest_Id{
-			Id: operator.UserId,
+			Id: userId,
 		},
 	})
 	if err != nil {
@@ -575,24 +660,20 @@ func (s *AuthenticationService) doGrantTypeRefreshToken(ctx context.Context, req
 		return nil, err
 	}
 
-	// 验证刷新令牌
-	if err = s.authenticator.VerifyRefreshToken(ctx, req.GetClientType(), req.GetUserId(), operator.GetJti(), req.GetRefreshToken()); err != nil {
-		s.log.Errorf("verify refresh token failed for user [%d]: [%s]", req.GetUserId(), err)
-		return nil, authenticationV1.ErrorIncorrectRefreshToken("invalid refresh token")
-	}
-
 	// 生成令牌
-	accessToken, refreshToken, err := s.authenticator.CreateUserToken(ctx, req.GetClientType(), tokenPayload)
+	accessToken, newRefreshToken, err := s.authenticator.CreateUserToken(ctx, req.GetClientType(), tokenPayload)
 	if err != nil {
 		return nil, err
 	}
 
+	// refresh token 通过 HttpOnly Cookie 下发，不再放入响应体
+	refreshExpiresIn := int64(s.authenticator.GetRefreshTokenExpires(req.GetClientType()).Seconds())
+	setRefreshCookies(ctx, newRefreshToken, refreshExpiresIn)
+
 	return &authenticationV1.LoginResponse{
-		TokenType:        authenticationV1.TokenType_bearer,
-		AccessToken:      accessToken,
-		RefreshToken:     trans.Ptr(refreshToken),
-		ExpiresIn:        int64(s.authenticator.GetAccessTokenExpires(req.GetClientType()).Seconds()),
-		RefreshExpiresIn: trans.Ptr(int64(s.authenticator.GetRefreshTokenExpires(req.GetClientType()).Seconds())),
+		TokenType:   authenticationV1.TokenType_bearer,
+		AccessToken: accessToken,
+		ExpiresIn:   int64(s.authenticator.GetAccessTokenExpires(req.GetClientType()).Seconds()),
 	}, nil
 }
 
@@ -613,26 +694,31 @@ func (s *AuthenticationService) Logout(ctx context.Context, _ *emptypb.Empty) (*
 		return nil, err
 	}
 
+	// 清除 refresh token 相关 cookie
+	clearRefreshCookies(ctx)
+
 	return &emptypb.Empty{}, nil
 }
 
 // RefreshToken 刷新令牌
+// refresh token 现以 HttpOnly Cookie 传输，本接口已加入白名单（无需 access token）。
+// refresh token 为自描述 JWT，VerifyRefreshToken 从中解析 uid/jti 完成独立鉴权。
 func (s *AuthenticationService) RefreshToken(ctx context.Context, req *authenticationV1.LoginRequest) (*authenticationV1.LoginResponse, error) {
 	// 校验授权类型
 	if req.GetGrantType() != authenticationV1.GrantType_refresh_token {
 		return nil, authenticationV1.ErrorInvalidGrantType("invalid grant type")
 	}
 
-	operator, err := auth.FromContext(ctx)
-	if err != nil {
-		return nil, err
+	// refresh token 从 HttpOnly Cookie 读取，不再从请求体获取
+	refreshToken := netutil.CookieFromContext(ctx, refreshTokenCookieName)
+	if refreshToken == "" {
+		return nil, authenticationV1.ErrorIncorrectRefreshToken("refresh token cookie is missing")
 	}
 
+	// admin 客户端类型固定
 	req.ClientType = trans.Ptr(authenticationV1.ClientType_admin)
-	req.UserId = trans.Ptr(operator.GetUserId())
-	req.Jti = operator.Jti
 
-	return s.doGrantTypeRefreshToken(ctx, req)
+	return s.doGrantTypeRefreshToken(ctx, req, refreshToken)
 }
 
 // ValidateToken 验证令牌

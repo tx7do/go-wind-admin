@@ -104,10 +104,9 @@ export function useRefreshToken(
   >,
 ) {
   return useMutation({
-    mutationFn: (req) =>
+    mutationFn: () =>
       apiClient.authenticationService.RefreshToken({
         grant_type: 'refresh_token',
-        refresh_token: req.refresh_token ?? '',
       }),
     ...options,
   });
@@ -118,10 +117,9 @@ export function useRefreshToken(
 // ------------------------------
 export const refreshTokenMutation = queryClient.getMutationCache().build(queryClient, {
   mutationKey: ['refreshToken'],
-  mutationFn: (token: string) =>
+  mutationFn: () =>
     apiClient.authenticationService.RefreshToken({
       grant_type: 'refresh_token',
-      refresh_token: token ?? '',
     }),
   retry: 0,
 });

@@ -1,3 +1,5 @@
+import { START_LOCATION } from "vue-router";
+
 import { refreshToken as refreshTokenService } from "@/api/composables";
 import { LOGIN_PATH } from "@/constants";
 import { preferences } from "@/core/preferences";
@@ -12,8 +14,6 @@ import { router } from "@/router";
 
 /** Access Token 刷新间隔（1.5 小时） */
 const ACCESS_TOKEN_REFRESH_INTERVAL = 90 * 60 * 1000;
-/** Refresh Token 刷新间隔（12 小时） */
-const REFRESH_TOKEN_REFRESH_INTERVAL = 12 * 60 * 60 * 1000;
 
 /** 在 access token 到期前多久开始刷新 */
 const SAFETY_BUFFER_MS = 5 * 60 * 1000;
@@ -30,30 +30,41 @@ let isReauthenticating = false;
 
 type RefreshTokenFunc = () => Promise<string> | string;
 
+/**
+ * 从 refresh_exp cookie 读取 refresh token 的过期时间戳（Unix 秒）。
+ * refresh_exp 为非 HttpOnly cookie，仅含过期时间戳，无敏感信息。
+ * 由后端在登录/刷新时写入。返回毫秒级时间戳或 null（cookie 不存在/已过期）。
+ */
+function getRefreshExpireAt(): number | null {
+  const match = document.cookie
+    .split("; ")
+    .find((row) => row.startsWith("refresh_exp="));
+  if (!match) return null;
+  const parts = match.split("=");
+  if (parts.length < 2) return null;
+  const val = parseInt(parts[1], 10);
+  if (!Number.isFinite(val) || val <= 0) return null;
+  return val * 1000;
+}
+
 // ==============================
 // 核心：刷新 Access Token
 // ==============================
 
 /**
  * 刷新访问令牌
- * 使用 refresh_token 换取新的 access_token 和 refresh_token
+ * refresh token 以 HttpOnly Cookie 传输，刷新请求由浏览器自动携带 cookie，
+ * 前端无需（也无法）读取 refresh token 值。
  */
 export async function refreshToken(): Promise<string> {
   const accessStore = useAccessStore();
 
-  if (!accessStore.refreshToken) {
-    await reauthenticate();
-    return "";
-  }
-
   try {
-    const resp = await refreshTokenService(accessStore.refreshToken ?? "");
+    const resp = await refreshTokenService();
 
     const newAccessToken = (resp as any).access_token;
-    const newRefreshToken = (resp as any).refresh_token;
 
     let expiresIn = (resp as any).expires_in;
-    let refreshExpiresIn = (resp as any).refresh_expires_in;
 
     const expiresInSec = Number(expiresIn);
     expiresIn =
@@ -61,17 +72,8 @@ export async function refreshToken(): Promise<string> {
         ? Date.now() + ACCESS_TOKEN_REFRESH_INTERVAL
         : Date.now() + Math.floor(expiresInSec * 1000);
 
-    const refreshExpiresInSec = Number(refreshExpiresIn);
-    refreshExpiresIn =
-      !Number.isFinite(refreshExpiresInSec) || refreshExpiresInSec <= 0
-        ? Date.now() + REFRESH_TOKEN_REFRESH_INTERVAL
-        : Date.now() + Math.floor(refreshExpiresInSec * 1000);
-
     accessStore.setAccessTokenExpireTime(expiresIn);
-    accessStore.setRefreshTokenExpireTime(refreshExpiresIn);
-
     accessStore.setAccessToken(newAccessToken ?? null);
-    accessStore.setRefreshToken(newRefreshToken ?? null);
 
     // token 已更新，重连 SSE 以使用新凭证
     reconnectSSEServer();
@@ -105,7 +107,6 @@ export async function reauthenticate(): Promise<void> {
 
     const accessStore = useAccessStore();
     accessStore.setAccessToken(null);
-    accessStore.setRefreshToken(null);
     // 注意：setIsAccessChecked(false) 之前必须先读出原值用于下面的 modal 判定，
     // 否则下方 accessStore.isAccessChecked 永远是 false，modal 模式恒不触发。
     const wasAccessChecked = accessStore.isAccessChecked;
@@ -146,14 +147,28 @@ export async function logoutToLoginPage(redirect: boolean = true): Promise<void>
 
   globalSSEClient.close();
 
-  console.log("currentRoute", router.currentRoute.value);
-  if (router.currentRoute.value.path === LOGIN_PATH) return;
+  const cur = router.currentRoute.value;
+  console.log("currentRoute", cur);
+  if (cur.path === LOGIN_PATH) return;
+
+  // 整页重载进行中（首次导航未完成，currentRoute 仍是 START_LOCATION）时，
+  // 地址栏 URL（可能带着完好的 ?redirect=...）尚未被消费。此时若照常
+  // replace 到登录页，redirect 会被写成 "%2F"，把原目标冲掉 → 下次登录
+  // 成功落到首页。直接返回，交给待完成的首次导航/守卫自行落位。
+  if (cur === START_LOCATION) return;
+
+  // 已解析但未注册的路径（name 未定义，如 "/"）不携带有效回跳目标；
+  // 写 redirect="%2F" 同样会冲掉登录页 URL 上原有的目标。直接去登录页。
+  if (cur.name === undefined && (cur.path === "/" || cur.path === "")) {
+    await router.replace({ path: LOGIN_PATH });
+    return;
+  }
 
   await router.replace({
     path: LOGIN_PATH,
     query: redirect
       ? {
-          redirect: encodeURIComponent(router.currentRoute.value.fullPath),
+          redirect: encodeURIComponent(cur.fullPath),
         }
       : {},
   });
@@ -167,14 +182,15 @@ function computeNextInterval(): number {
   const accessStore = useAccessStore();
   const now = Date.now();
 
-  const accessExpire = accessStore.accessTokenExpireTime ?? 0;
-  const refreshExpire = accessStore.refreshTokenExpireTime ?? 0;
+  // refresh token 过期时间从 refresh_exp cookie 读取（非 HttpOnly）
+  const refreshExpire = getRefreshExpireAt() ?? 0;
 
   const refreshRemaining = refreshExpire - now;
   if (refreshExpire && refreshRemaining <= SAFETY_BUFFER_MS) {
     return MIN_INTERVAL_MS;
   }
 
+  const accessExpire = accessStore.accessTokenExpireTime ?? 0;
   const accessRemaining = accessExpire - now;
   if (!accessExpire || accessRemaining <= 0) {
     return MIN_INTERVAL_MS;
@@ -200,14 +216,14 @@ function _startRefreshTimer(cb?: RefreshTokenFunc): void {
 
   const schedule = async () => {
     try {
-      const accessStore = useAccessStore();
       const now = Date.now();
-      const refreshExpire = accessStore.refreshTokenExpireTime ?? 0;
-      if (!accessStore.refreshToken) {
+      // refresh token 过期时间从 refresh_exp cookie 读取
+      const refreshExpire = getRefreshExpireAt();
+      if (!refreshExpire) {
         await reauthenticate();
         return;
       }
-      if (refreshExpire && refreshExpire - now <= SAFETY_BUFFER_MS) {
+      if (refreshExpire - now <= SAFETY_BUFFER_MS) {
         await reauthenticate();
         return;
       }

@@ -55,6 +55,7 @@ class RequestClient {
       headers: {
         'Content-Type': 'application/json;charset=utf-8' as RequestContentType,
       },
+      withCredentials: true,
       // timeout: 10_000,
     };
     const { ...axiosConfig } = options;

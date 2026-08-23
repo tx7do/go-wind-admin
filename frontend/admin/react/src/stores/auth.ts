@@ -32,11 +32,9 @@ export interface TokenPayload {
 }
 
 export interface AuthState {
-  // Token 状态（持久化）
+  // Token 状态（仅存内存，不落 localStorage）
   accessToken: string | null;
-  refreshTokenValue: string | null;
   accessTokenExpireAt: number | null;
-  refreshTokenExpireAt: number | null;
 
   // 用户状态（不持久化，避免脏数据）
   userInfo: UserInfo | null;
@@ -77,7 +75,6 @@ export interface AuthState {
 
 // ========== 常量 ==========
 const DEFAULT_ACCESS_EXPIRES_IN = 7200; // 2 小时
-const DEFAULT_REFRESH_EXPIRES_IN = 2592000; // 30 天
 
 // ========== Store 实现 ==========
 export const useAuthStore = create<AuthState>()(
@@ -85,9 +82,7 @@ export const useAuthStore = create<AuthState>()(
     (set, get) => ({
       // 初始状态
       accessToken: null,
-      refreshTokenValue: null,
       accessTokenExpireAt: null,
-      refreshTokenExpireAt: null,
       userInfo: null,
       mfaOperationId: null,
       loginLoading: false,
@@ -120,25 +115,8 @@ export const useAuthStore = create<AuthState>()(
             : 'N/A',
         });
 
-        if (response.refresh_token) {
-          const refreshTokenPayload: TokenPayload = {
-            value: response.refresh_token,
-            expiresAt: now + (response.refresh_expires_in || DEFAULT_REFRESH_EXPIRES_IN) * 1000,
-          };
-          set({
-            refreshTokenValue: refreshTokenPayload.value,
-            refreshTokenExpireAt: refreshTokenPayload.expiresAt,
-          });
-
-          console.log('💾 Refresh token saved:', {
-            value: refreshTokenPayload.value
-              ? '***' + refreshTokenPayload.value.slice(-8)
-              : 'empty',
-            expiresAt: refreshTokenPayload.expiresAt
-              ? new Date(refreshTokenPayload.expiresAt)
-              : 'N/A',
-          });
-        }
+        // refresh token 通过 HttpOnly Cookie 传输，前端不可读也不存内存。
+        // 页面刷新后由 bootstrap 静默恢复（凭 cookie 调 /refresh-token 换新 access token）。
 
         // 获取用户信息（交给 React Query 处理缓存，这里只更新 Zustand）
         console.log('👤 Fetching user info...');
@@ -181,7 +159,6 @@ export const useAuthStore = create<AuthState>()(
 
           console.log('🔐 Login response:', {
             hasAccessToken: !!response.access_token,
-            hasRefreshToken: !!response.refresh_token,
             expiresIn: response.expires_in,
           });
 
@@ -206,8 +183,6 @@ export const useAuthStore = create<AuthState>()(
             error: errorMsg,
             accessToken: null,
             accessTokenExpireAt: null,
-            refreshTokenValue: null,
-            refreshTokenExpireAt: null,
             mfaOperationId: null,
           });
           throw err;
@@ -283,9 +258,7 @@ export const useAuthStore = create<AuthState>()(
           // 清除内存中的状态
           set({
             accessToken: null,
-            refreshTokenValue: null,
             accessTokenExpireAt: null,
-            refreshTokenExpireAt: null,
             userInfo: null,
             error: null,
             loginLoading: false,
@@ -295,29 +268,17 @@ export const useAuthStore = create<AuthState>()(
       },
 
       // 刷新 Token
+      // refresh token 以 HttpOnly Cookie 传输，刷新请求由浏览器自动携带 cookie，
+      // 前端无需（也无法）读取 refresh token 值。
       refreshToken: async () => {
-        const { refreshTokenValue: refreshVal } = get();
-        if (!refreshVal) {
-          get().forceLogout();
-          return '';
-        }
-
         try {
-          const response = await refreshTokenMutation.execute(refreshVal);
+          const response = await refreshTokenMutation.execute();
 
           const now = Date.now();
           set({
             accessToken: response.access_token,
             accessTokenExpireAt: now + (response.expires_in || DEFAULT_ACCESS_EXPIRES_IN) * 1000,
           });
-
-          if (response.refresh_token) {
-            set({
-              refreshTokenValue: response.refresh_token,
-              refreshTokenExpireAt:
-                now + (response.refresh_expires_in || DEFAULT_REFRESH_EXPIRES_IN) * 1000,
-            });
-          }
 
           return response.access_token || '';
         } catch (err) {
@@ -346,9 +307,7 @@ export const useAuthStore = create<AuthState>()(
         localStorage.removeItem('user-storage');
         set({
           accessToken: null,
-          refreshTokenValue: null,
           accessTokenExpireAt: null,
-          refreshTokenExpireAt: null,
           userInfo: null,
           mfaOperationId: null,
           error: null,
@@ -367,9 +326,7 @@ export const useAuthStore = create<AuthState>()(
       $reset: () =>
         set({
           accessToken: null,
-          refreshTokenValue: null,
           accessTokenExpireAt: null,
-          refreshTokenExpireAt: null,
           userInfo: null,
           mfaOperationId: null,
           loginLoading: false,
