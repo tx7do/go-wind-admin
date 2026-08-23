@@ -4241,7 +4241,9 @@ export interface MfaService {
   DisableMFA(
     request: authenticationservicev1_DisableMFARequest,
   ): Promise<wellKnownEmpty>;
-  // 撤销指定 MFA 凭证（按 id）
+  // 撤销指定 MFA 凭证（按 id）。
+  // ⚠️ 当前无前端调用方：DELETE 请求体在 Go 生成器（恒 BindQuery）与 TS 生成器
+  // （发 body）之间不一致，贸然对接会静默丢参——需要时应改 POST（参见 DisableMFA）。
   RevokeMFADevice(
     request: authenticationservicev1_RevokeMFADeviceRequest,
   ): Promise<wellKnownEmpty>;

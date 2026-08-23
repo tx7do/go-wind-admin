@@ -2301,6 +2301,142 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/mfa/disable:
+        post:
+            tags:
+                - MfaService
+            description: |-
+                禁用/移除已注册 MFA 凭证。
+                 注意：kratos http 生成器不支持 DELETE 请求体（handler 只 BindQuery），
+                 而 TS 生成器默认把 message 序列化为 body——为两端一致改用 POST + body。
+            operationId: MfaService_DisableMFA
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/DisableMFARequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/mfa/enroll/confirm:
+        post:
+            tags:
+                - MfaService
+            description: 确认注册 MFA 方法（提交首码完成绑定）
+            operationId: MfaService_ConfirmEnrollMethod
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ConfirmEnrollMethodRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ConfirmEnrollMethodResponse'
+    /admin/v1/mfa/enroll/start:
+        post:
+            tags:
+                - MfaService
+            description: 开始注册 MFA 方法（返回 secret/QR，仅 TOTP 本轮实现）
+            operationId: MfaService_StartEnrollMethod
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/StartEnrollMethodRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/StartEnrollMethodResponse'
+    /admin/v1/mfa/methods:
+        get:
+            tags:
+                - MfaService
+            description: 列出已注册的 MFA 凭证
+            operationId: MfaService_ListEnrolledMethods
+            parameters:
+                - name: userId
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListEnrolledMethodsResponse'
+    /admin/v1/mfa/status:
+        get:
+            tags:
+                - MfaService
+            description: 查询当前登录用户 MFA 总览
+            operationId: MfaService_GetMFAStatus
+            parameters:
+                - name: userId
+                  in: query
+                  description: 可选：若服务端通过上下文识别用户，可不传 user_id
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GetMFAStatusResponse'
+    /admin/v1/mfa/verify:
+        post:
+            tags:
+                - MfaService
+            description: |-
+                验证登录 MFA 挑战。通过则返回 LoginResponse（含真 access_token）。
+                 免鉴权：登录流程在密码校验通过、待二次验证阶段调用。
+            operationId: MfaService_VerifyMFAChallenge
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/VerifyMFAChallengeRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/LoginResponse'
+            security:
+                - {}
+    /admin/v1/mfa/{credentialId}:
+        delete:
+            tags:
+                - MfaService
+            description: |-
+                撤销指定 MFA 凭证（按 id）。
+                 ⚠️ 当前无前端调用方：DELETE 请求体在 Go 生成器（恒 BindQuery）与 TS 生成器
+                 （发 body）之间不一致，贸然对接会静默丢参——需要时应改 POST（参见 DisableMFA）。
+            operationId: MfaService_RevokeMFADevice
+            parameters:
+                - name: credentialId
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /admin/v1/operation-audit-logs:
         get:
             tags:
@@ -4957,6 +5093,42 @@ components:
                     description: 租户ID
                     format: uint32
             description: 清理租户数据 - 请求
+        ConfirmEnrollMethodRequest:
+            type: object
+            properties:
+                method:
+                    enum:
+                        - MFA_METHOD_UNSPECIFIED
+                        - TOTP
+                        - SMS
+                        - EMAIL
+                        - U2F
+                        - WEBAUTHN
+                        - BACKUP_CODE
+                        - OTHER
+                    type: string
+                    format: enum
+                operationId:
+                    type: string
+                totpCode:
+                    type: string
+                sms:
+                    $ref: '#/components/schemas/SMSVerification'
+                webauthn:
+                    $ref: '#/components/schemas/WebAuthnAssertion'
+                backupCode:
+                    type: string
+                display:
+                    type: string
+                    description: 可选：设备/显示名
+            description: Confirm enroll
+        ConfirmEnrollMethodResponse:
+            type: object
+            properties:
+                success:
+                    type: boolean
+                credentialId:
+                    type: string
         ControlTaskRequest:
             type: object
             properties:
@@ -5461,6 +5633,39 @@ components:
                     description: 删除时间
                     format: date-time
             description: 字典类型
+        DisableMFARequest:
+            type: object
+            properties:
+                credentialId:
+                    type: string
+                    description: 指定凭证 id 或仅按方法禁用全部
+                method:
+                    enum:
+                        - MFA_METHOD_UNSPECIFIED
+                        - TOTP
+                        - SMS
+                        - EMAIL
+                        - U2F
+                        - WEBAUTHN
+                        - BACKUP_CODE
+                        - OTHER
+                    type: string
+                    format: enum
+                password:
+                    type: string
+                totpCode:
+                    type: string
+                sms:
+                    $ref: '#/components/schemas/SMSVerification'
+                webauthn:
+                    $ref: '#/components/schemas/WebAuthnAssertion'
+                reason:
+                    type: string
+                userId:
+                    type: integer
+                    description: "管理端重置：指定目标用户（不传=操作当前登录用户）。\r\n 仅平台管理员可指定他人，用于用户认证器丢失时的救援解绑（按 method 清空该用户全部因子）。"
+                    format: uint32
+            description: Disable / remove
         DistributionItem:
             type: object
             properties:
@@ -5523,6 +5728,33 @@ components:
                     type: string
                     description: 邮箱验证码
             description: 邮箱验证
+        EnrolledMethod:
+            type: object
+            properties:
+                id:
+                    type: string
+                method:
+                    enum:
+                        - MFA_METHOD_UNSPECIFIED
+                        - TOTP
+                        - SMS
+                        - EMAIL
+                        - U2F
+                        - WEBAUTHN
+                        - BACKUP_CODE
+                        - OTHER
+                    type: string
+                    format: enum
+                display:
+                    type: string
+                enabled:
+                    type: boolean
+                createdAt:
+                    type: string
+                    format: date-time
+                lastUsedAt:
+                    type: string
+                    format: date-time
         File:
             type: object
             properties:
@@ -5646,6 +5878,22 @@ components:
                     type: string
                     description: 经度（微度）
             description: 地理位置
+        GetMFAStatusResponse:
+            type: object
+            properties:
+                enabled:
+                    type: boolean
+                enrolled:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/EnrolledMethod'
+                enforcement:
+                    enum:
+                        - MFA_NOT_REQUIRED
+                        - MFA_OPTIONAL
+                        - MFA_REQUIRED
+                    type: string
+                    format: enum
         InfoEntry:
             type: object
             properties:
@@ -6004,6 +6252,13 @@ components:
                 total:
                     type: string
             description: 查询字典类型列表 - 回应
+        ListEnrolledMethodsResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/EnrolledMethod'
         ListFileResponse:
             type: object
             properties:
@@ -6518,6 +6773,9 @@ components:
                 id_token:
                     type: string
                     description: ID 令牌，OpenID Connect 扩展中定义的 JWT 格式令牌
+                mfa_operation_id:
+                    type: string
+                    description: MFA 挑战操作标识。非空表示登录需二次验证，此时 access_token 为空。
             description: 用户后台登录 - 回应
         LoginTrendResponse:
             type: object
@@ -7720,6 +7978,22 @@ components:
                     description: 删除时间
                     format: date-time
             description: 角色
+        SMSResult:
+            type: object
+            properties:
+                verificationId:
+                    type: string
+                smsSent:
+                    type: boolean
+                maskedPhone:
+                    type: string
+        SMSVerification:
+            type: object
+            properties:
+                verificationId:
+                    type: string
+                code:
+                    type: string
         SendMessageRequest:
             type: object
             properties:
@@ -7784,6 +8058,42 @@ components:
                 clientName:
                     type: string
             description: SLOWLOG GET 返回的单条慢日志
+        StartEnrollMethodRequest:
+            type: object
+            properties:
+                method:
+                    enum:
+                        - MFA_METHOD_UNSPECIFIED
+                        - TOTP
+                        - SMS
+                        - EMAIL
+                        - U2F
+                        - WEBAUTHN
+                        - BACKUP_CODE
+                        - OTHER
+                    type: string
+                    format: enum
+                phone:
+                    type: string
+                    description: 根据 method 可能需要额外参数（例如 SMS 需要 phone）
+                email:
+                    type: string
+            description: Start enroll
+        StartEnrollMethodResponse:
+            type: object
+            properties:
+                totp:
+                    $ref: '#/components/schemas/TOTPResult'
+                sms:
+                    $ref: '#/components/schemas/SMSResult'
+                webauthn:
+                    $ref: '#/components/schemas/WebAuthnResult'
+                expiresAt:
+                    type: string
+                    format: date-time
+                operationId:
+                    type: string
+                    description: 临时操作 id，用于 ConfirmEnrollMethod / 后续验证
         StatusDistributionResponse:
             type: object
             properties:
@@ -7814,6 +8124,16 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Menu'
+        TOTPResult:
+            type: object
+            properties:
+                secret:
+                    type: string
+                    description: base32 secret：仅在注册时返回一次，服务端应只存哈希/引用
+                otpAuthUrl:
+                    type: string
+                qrCodeDataUri:
+                    type: string
         Task:
             type: object
             properties:
@@ -8644,6 +8964,41 @@ components:
                 verificationId:
                     type: string
                     description: 服务端生成的验证码会话ID（可选）
+        VerifyMFAChallengeRequest:
+            type: object
+            properties:
+                operationId:
+                    type: string
+                totpCode:
+                    type: string
+                sms:
+                    $ref: '#/components/schemas/SMSVerification'
+                webauthn:
+                    $ref: '#/components/schemas/WebAuthnAssertion'
+                backupCode:
+                    type: string
+        WebAuthnAssertion:
+            type: object
+            properties:
+                id:
+                    type: string
+                clientDataJson:
+                    type: string
+                authenticatorData:
+                    type: string
+                signature:
+                    type: string
+                userHandle:
+                    type: string
+        WebAuthnResult:
+            type: object
+            properties:
+                challenge:
+                    type: string
+                optionsJson:
+                    type: string
+                rpId:
+                    type: string
     responses:
         default:
             description: default kratos response
@@ -8696,6 +9051,12 @@ tags:
       description: 登录策略管理服务
     - name: MenuService
       description: 后台菜单管理服务
+    - name: MfaService
+      description: |-
+        MFA（多因素认证）服务 HTTP 桥接。
+         管理侧 RPC（GetMFAStatus/ListEnrolledMethods/StartEnrollMethod/ConfirmEnrollMethod/
+         DisableMFA/RevokeMFADevice）需登录态，走正常 auth+authz 中间件，不加 security:{}。
+         登录挑战侧 RPC（VerifyMFAChallenge）免鉴权，加 security:{} 并加入 rest_server 白名单。
     - name: OperationAuditLogService
       description: 操作审计日志管理服务
     - name: OrgUnitService

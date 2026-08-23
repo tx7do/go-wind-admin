@@ -40,7 +40,9 @@ type MfaServiceHTTPServer interface {
 	GetMFAStatus(context.Context, *v1.GetMFAStatusRequest) (*v1.GetMFAStatusResponse, error)
 	// ListEnrolledMethods 列出已注册的 MFA 凭证
 	ListEnrolledMethods(context.Context, *v1.ListEnrolledMethodsRequest) (*v1.ListEnrolledMethodsResponse, error)
-	// RevokeMFADevice 撤销指定 MFA 凭证（按 id）
+	// RevokeMFADevice 撤销指定 MFA 凭证（按 id）。
+	// ⚠️ 当前无前端调用方：DELETE 请求体在 Go 生成器（恒 BindQuery）与 TS 生成器
+	// （发 body）之间不一致，贸然对接会静默丢参——需要时应改 POST（参见 DisableMFA）。
 	RevokeMFADevice(context.Context, *v1.RevokeMFADeviceRequest) (*emptypb.Empty, error)
 	// StartEnrollMethod 开始注册 MFA 方法（返回 secret/QR，仅 TOTP 本轮实现）
 	StartEnrollMethod(context.Context, *v1.StartEnrollMethodRequest) (*v1.StartEnrollMethodResponse, error)
@@ -219,7 +221,9 @@ type MfaServiceHTTPClient interface {
 	GetMFAStatus(ctx context.Context, req *v1.GetMFAStatusRequest, opts ...http.CallOption) (rsp *v1.GetMFAStatusResponse, err error)
 	// ListEnrolledMethods 列出已注册的 MFA 凭证
 	ListEnrolledMethods(ctx context.Context, req *v1.ListEnrolledMethodsRequest, opts ...http.CallOption) (rsp *v1.ListEnrolledMethodsResponse, err error)
-	// RevokeMFADevice 撤销指定 MFA 凭证（按 id）
+	// RevokeMFADevice 撤销指定 MFA 凭证（按 id）。
+	// ⚠️ 当前无前端调用方：DELETE 请求体在 Go 生成器（恒 BindQuery）与 TS 生成器
+	// （发 body）之间不一致，贸然对接会静默丢参——需要时应改 POST（参见 DisableMFA）。
 	RevokeMFADevice(ctx context.Context, req *v1.RevokeMFADeviceRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// StartEnrollMethod 开始注册 MFA 方法（返回 secret/QR，仅 TOTP 本轮实现）
 	StartEnrollMethod(ctx context.Context, req *v1.StartEnrollMethodRequest, opts ...http.CallOption) (rsp *v1.StartEnrollMethodResponse, err error)
@@ -294,7 +298,9 @@ func (c *MfaServiceHTTPClientImpl) ListEnrolledMethods(ctx context.Context, in *
 	return &out, nil
 }
 
-// RevokeMFADevice 撤销指定 MFA 凭证（按 id）
+// RevokeMFADevice 撤销指定 MFA 凭证（按 id）。
+// ⚠️ 当前无前端调用方：DELETE 请求体在 Go 生成器（恒 BindQuery）与 TS 生成器
+// （发 body）之间不一致，贸然对接会静默丢参——需要时应改 POST（参见 DisableMFA）。
 func (c *MfaServiceHTTPClientImpl) RevokeMFADevice(ctx context.Context, in *v1.RevokeMFADeviceRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
 	var out emptypb.Empty
 	pattern := "/admin/v1/mfa/{credential_id}"

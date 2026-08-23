@@ -51,7 +51,9 @@ type MfaServiceClient interface {
 	// 注意：kratos http 生成器不支持 DELETE 请求体（handler 只 BindQuery），
 	// 而 TS 生成器默认把 message 序列化为 body——为两端一致改用 POST + body。
 	DisableMFA(ctx context.Context, in *v1.DisableMFARequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
-	// 撤销指定 MFA 凭证（按 id）
+	// 撤销指定 MFA 凭证（按 id）。
+	// ⚠️ 当前无前端调用方：DELETE 请求体在 Go 生成器（恒 BindQuery）与 TS 生成器
+	// （发 body）之间不一致，贸然对接会静默丢参——需要时应改 POST（参见 DisableMFA）。
 	RevokeMFADevice(ctx context.Context, in *v1.RevokeMFADeviceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 验证登录 MFA 挑战。通过则返回 LoginResponse（含真 access_token）。
 	// 免鉴权：登录流程在密码校验通过、待二次验证阶段调用。
@@ -157,7 +159,9 @@ type MfaServiceServer interface {
 	// 注意：kratos http 生成器不支持 DELETE 请求体（handler 只 BindQuery），
 	// 而 TS 生成器默认把 message 序列化为 body——为两端一致改用 POST + body。
 	DisableMFA(context.Context, *v1.DisableMFARequest) (*emptypb.Empty, error)
-	// 撤销指定 MFA 凭证（按 id）
+	// 撤销指定 MFA 凭证（按 id）。
+	// ⚠️ 当前无前端调用方：DELETE 请求体在 Go 生成器（恒 BindQuery）与 TS 生成器
+	// （发 body）之间不一致，贸然对接会静默丢参——需要时应改 POST（参见 DisableMFA）。
 	RevokeMFADevice(context.Context, *v1.RevokeMFADeviceRequest) (*emptypb.Empty, error)
 	// 验证登录 MFA 挑战。通过则返回 LoginResponse（含真 access_token）。
 	// 免鉴权：登录流程在密码校验通过、待二次验证阶段调用。
