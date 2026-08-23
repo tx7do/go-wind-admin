@@ -278,7 +278,7 @@ const tableAttrs = computed(() => ({
 }));
 
 const resolvedColumns = computed(() =>
-  [...props.columns].map((col) => {
+  [...props.columns].map((col, colIdx) => {
     const resolved = { ...col };
     const colDef = tableConfig.value.column!;
 
@@ -291,6 +291,15 @@ const resolvedColumns = computed(() =>
 
     if (resolved.initFn) resolved.initFn(resolved);
     if (resolved.show === undefined) resolved.show = true;
+
+    // vxe 列持久化（custom-config.storage）要求每个进入渲染的列都有唯一 field；
+    // 不绑定数据的列（如操作列 cellType:"tool"）缺 prop 会被判 field 缺失而告警。
+    // 这里给这类列补一个表内唯一的合成字段，既满足持久化，也避免与真实数据列撞名。
+    // selection/index/expand 由 type 标识走单独分支，不在此列。
+    if (resolved.prop === undefined && resolved.type === undefined) {
+      resolved.prop = `__col_${colIdx}`;
+    }
+
     return resolved;
   })
 );

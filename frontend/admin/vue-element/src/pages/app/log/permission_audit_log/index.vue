@@ -192,7 +192,6 @@ const pageConfig = computed<ProPageConfig>(() => ({
         align: "right",
       },
       {
-        prop: "action",
         label: $t("common.table.action"),
         fixed: "right",
         width: 90,
