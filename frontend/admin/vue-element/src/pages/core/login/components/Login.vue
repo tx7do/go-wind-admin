@@ -162,6 +162,12 @@ onMounted(() => {
  * 登录提交
  */
 async function handleLoginSubmit() {
+  // 函数入口即同步捕获 redirect：此时当前路由必然是登录页，读取最可靠。
+  // 登录请求返回后到 onSuccess 之间存在响应式更新时序竞态（route 与
+  // currentRoute.value 可能先行更新、丢掉 query），onSuccess 内再读会拿空，
+  // safePath 回退 "/" → 跳首页（即「登录成功不跳目标页、F5 才跳」的根因）。
+  const rawRedirect = (route.query.redirect as string) || "/";
+
   // 1. 表单验证
   const valid = await loginFormRef.value?.validate().then(
     () => true,
@@ -180,8 +186,13 @@ async function handleLoginSubmit() {
       async () => {
         // 登录成功，跳转到目标页面
         // 校验 redirect 必须为同源相对路径，防止开放重定向（如 ?redirect=https://evil.com 或 //evil.com）
-        const rawRedirect = (route.query.redirect as string) || "/";
-        const decodedPath = decodeURIComponent(rawRedirect);
+        // 使用入口捕获的 rawRedirect；decode 对畸形输入（如裸 %）抛 URIError，需兜底
+        let decodedPath = "/";
+        try {
+          decodedPath = decodeURIComponent(rawRedirect);
+        } catch {
+          decodedPath = "/";
+        }
         const safePath =
           typeof decodedPath === "string" &&
           decodedPath.startsWith("/") &&

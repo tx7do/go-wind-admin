@@ -67,12 +67,27 @@ const handleSubmit = async () => {
     await router.push({ name: "Login" });
     return;
   }
+  // 在发起 MFA 验证请求前，当前路由必然是 MFA 挑战页，此时读取 redirect 最可靠。
+  // 验证请求返回后到 onSuccess 之间，路由可能因 token 写入等副作用先行更新，
+  // 导致 onSuccess 内再读 route.query.redirect 时拿不到值，回退默认首页跳转。
+  // 故在此处同步捕获并解码（含同源校验与畸形输入兜底），闭包传入 onSuccess。
+  const rawRedirect = (route.query.redirect as string) || "";
+  let decodedRedirect = "";
+  try {
+    decodedRedirect = decodeURIComponent(rawRedirect);
+  } catch {
+    decodedRedirect = "";
+  }
+  const safeRedirect =
+    typeof decodedRedirect === "string" &&
+    decodedRedirect.startsWith("/") &&
+    !decodedRedirect.startsWith("//")
+      ? decodedRedirect
+      : "";
   await mfaFormRef.value?.validate(async (valid: boolean) => {
     if (!valid) return;
-    // 验证成功后回到进入登录流程前的原目标页（由 store 登录分支透传）
-    const redirect = (route.query.redirect as string) || "";
-    const safeRedirect = redirect.startsWith("/") && !redirect.startsWith("//") ? redirect : "";
     // 有 redirect 才传 onSuccess（覆盖默认 homePath 跳转）；空时走默认跳转
+    // 使用上面捕获的 safeRedirect，避免响应式更新时序导致读不到。
     const result = await completeMfaChallenge(
       mfaForm.value.code,
       safeRedirect ? async () => { await router.replace(safeRedirect); } : undefined,
