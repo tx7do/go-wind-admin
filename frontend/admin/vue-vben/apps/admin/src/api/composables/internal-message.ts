@@ -1,5 +1,4 @@
 import type {
-  internal_messageservicev1_CreateInternalMessageCategoryRequest,
   internal_messageservicev1_DeleteInternalMessageCategoryRequest,
   internal_messageservicev1_DeleteInternalMessageRequest,
   internal_messageservicev1_DeleteNotificationFromInboxRequest,
@@ -182,14 +181,15 @@ export function useGetMessageCategory(
 }
 
 export function useCreateMessageCategory(
-  options?: UseMutationOptions<
-    object,
-    Error,
-    internal_messageservicev1_CreateInternalMessageCategoryRequest
-  >,
+  options?: UseMutationOptions<object, Error, Record<string, any>>
 ) {
   return useMutation({
-    mutationFn: (data) => apiClient.internalMessageCategoryService.Create(data),
+    mutationFn: (values) =>
+      apiClient.internalMessageCategoryService.Create({
+        data: {
+          ...values,
+        } as internal_messageservicev1_InternalMessageCategory,
+      }),
     ...options,
   });
 }
