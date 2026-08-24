@@ -171,7 +171,12 @@
       "NOT_EXTENDED": "未扩展",
       "NETWORK_AUTHENTICATION_REQUIRED": "需要网络认证",
       "NETWORK_READ_TIMEOUT_ERROR": "网络读取超时",
-      "NETWORK_CONNECT_TIMEOUT_ERROR": "网络连接超时"
+      "NETWORK_CONNECT_TIMEOUT_ERROR": "网络连接超时",
+      "USER_DISABLED": "用户已被禁用",
+      "USER_LOCKED": "用户已被锁定",
+      "DUPLICATE_ENTRY": "数据已存在",
+      "VALIDATION_FAILED": "数据校验失败",
+      "INTERNAL_ERROR": "服务器内部错误"
     },
     "status": {
       "400": "请求参数错误",

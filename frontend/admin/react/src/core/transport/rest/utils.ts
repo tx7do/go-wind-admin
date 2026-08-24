@@ -28,8 +28,8 @@ export function defaultIdGenerator(): string {
 
 /**
  * 默认的错误消息提取（不依赖 i18n，纯逻辑 fallback）
- * 按优先级：reason → message → status code → 兜底
- * 如需 i18n 翻译，通过 RequestClientCallbacks.getErrorMsg 注入
+ * 仅基于 reason；不再回退到后端 message 字段（该字段后续将被移除）。
+ * 如需 i18n 翻译，通过 RequestClientCallbacks.getErrorMsg 注入。
  */
 export function getDefaultErrorMsg(error: unknown): string {
   // 网络错误
@@ -63,24 +63,14 @@ export function getDefaultErrorMsg(error: unknown): string {
     return 'Unknown Error';
   }
 
-  const { reason, message, code } = resData;
+  const { reason } = resData;
 
-  // 1. 优先使用 reason
+  // 1. 优先使用 reason（原始值，i18n 翻译由注入的 getErrorMsg 负责）
   if (reason) {
     return reason;
   }
 
-  // 2. 使用后端 message
-  if (message?.trim()) {
-    return message.trim();
-  }
-
-  // 3. 使用 code
-  if (code) {
-    return `Error ${code}`;
-  }
-
-  // 4. 兜底
+  // 2. 兜底：不再回退到后端 message 字段
   return 'Unknown Error';
 }
 

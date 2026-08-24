@@ -97,11 +97,13 @@ async function _initI18n() {
 }
 
 /**
- * 按优先级获取错误提示文本
- * 1. reason → i18n error.xxx
- * 2. reason 无翻译 → 使用 message
- * 3. 都无 → 使用 status → i18n status.xxx
- * 4. 都无 → fallback
+ * 获取错误提示文本。
+ *
+ * 错误提示统一基于后端返回的 reason 字段经 i18n 翻译得到，
+ * 不再依赖后端 message 字段（该字段后续将被移除）。
+ * - 网络错误 / 超时：走对应的 i18n 文案
+ * - reason 命中 i18n 映射：返回翻译文案
+ * - 其余（无 reason 或无对应翻译）：返回通用兜底文案
  */
 export function getErrorMsg(error: unknown) {
   const i18nPrefix = 'request.';
@@ -109,7 +111,7 @@ export function getErrorMsg(error: unknown) {
   // 网络错误
   const errStr = String(error ?? '');
   if (errStr.includes('Network Error')) {
-    return i18n.t(i18nPrefix + 'error.networkError');
+    return i18n.t(i18nPrefix + 'error.networkError', { ns: 'common' });
   }
 
   // 超时
@@ -119,7 +121,7 @@ export function getErrorMsg(error: unknown) {
     'message' in error &&
     String(error.message).includes('timeout')
   ) {
-    return i18n.t(i18nPrefix + 'error.timeout');
+    return i18n.t(i18nPrefix + 'error.timeout', { ns: 'common' });
   }
 
   // 获取后端返回数据
@@ -133,44 +135,18 @@ export function getErrorMsg(error: unknown) {
       ? (error.response.data as HttpResponse)
       : undefined;
 
-  if (!resData) {
-    return i18n.t(i18nPrefix + 'error.unknownError');
-  }
-
-  const { reason, message, code } = resData;
-
-  console.log('resData:', resData);
-
-  // =========================================
-  // 1. 优先：reason → request.reason.xxx
-  // =========================================
-  if (reason) {
-    const key = i18nPrefix + `reason.${reason}`;
-    // 使用 i18n.exists() 时需要指定命名空间
-    if (i18n.exists(key, { ns: 'common' })) {
-      return i18n.t(key, { ns: 'common' });
+  // 仅基于 reason 查询 i18n；不再回退到后端 message
+  if (resData) {
+    const { reason } = resData;
+    if (reason) {
+      const key = i18nPrefix + `reason.${reason}`;
+      // 使用 i18n.exists() 时需要指定命名空间
+      if (i18n.exists(key, { ns: 'common' })) {
+        return i18n.t(key, { ns: 'common' });
+      }
     }
   }
 
-  // =========================================
-  // 2. reason 无翻译 → 使用后端 message
-  // =========================================
-  if (message?.trim()) {
-    return message.trim();
-  }
-
-  // =========================================
-  // 3. 都没有 → 使用 code 查 status
-  // =========================================
-  if (code) {
-    const statusKey = i18nPrefix + `status.${code}`;
-    if (i18n.exists(statusKey, { ns: 'common' })) {
-      return i18n.t(statusKey, { ns: 'common' });
-    }
-  }
-
-  // =========================================
-  // 4. 全部失败 → 兜底
-  // =========================================
+  // 兜底
   return i18n.t(i18nPrefix + 'error.unknownError', { ns: 'common' });
 }

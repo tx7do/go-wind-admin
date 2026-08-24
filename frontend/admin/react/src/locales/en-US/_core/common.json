@@ -171,7 +171,12 @@
       "NOT_EXTENDED": "Not extended",
       "NETWORK_AUTHENTICATION_REQUIRED": "Network authentication required",
       "NETWORK_READ_TIMEOUT_ERROR": "Network read timeout",
-      "NETWORK_CONNECT_TIMEOUT_ERROR": "Network connect timeout"
+      "NETWORK_CONNECT_TIMEOUT_ERROR": "Network connect timeout",
+      "USER_DISABLED": "User has been disabled",
+      "USER_LOCKED": "User has been locked",
+      "DUPLICATE_ENTRY": "Data already exists",
+      "VALIDATION_FAILED": "Validation failed",
+      "INTERNAL_ERROR": "Internal server error"
     },
     "status": {
       "400": "Bad request",

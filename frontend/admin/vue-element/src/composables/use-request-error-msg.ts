@@ -2,8 +2,13 @@ import { $t, $te } from "@/core/i18n";
 import type { HttpResponse } from "@/core/transport/rest";
 
 /**
- * 创建带 i18n 翻译的错误消息提取函数
- * 按优先级：reason(翻译) → message → code(翻译) → 兜底
+ * 创建带 i18n 翻译的错误消息提取函数。
+ *
+ * 错误提示统一基于后端返回的 reason 字段经 i18n 翻译得到，
+ * 不再依赖后端 message 字段（该字段后续将被移除）。
+ * - 网络错误 / 超时：走对应的 i18n 文案
+ * - reason 命中 i18n 映射：返回翻译文案
+ * - 其余（无 reason 或无对应翻译）：返回通用兜底文案
  */
 export function createI18nGetErrorMsg() {
   const prefix = "common.request.";
@@ -41,15 +46,10 @@ export function createI18nGetErrorMsg() {
 
     if (!resData) return $t(prefix + "error.unknownError");
 
-    const { reason, message, code } = resData;
+    const { reason } = resData;
     if (reason) {
       const key = `${prefix}reason.${reason}`;
       if ($te(key)) return $t(key);
-    }
-    if (message?.trim()) return message.trim();
-    if (code) {
-      const statusKey = `${prefix}status.${code}`;
-      if ($te(statusKey)) return $t(statusKey);
     }
     return $t(prefix + "error.unknownError");
   };

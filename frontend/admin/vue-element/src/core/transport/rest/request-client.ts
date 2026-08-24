@@ -18,6 +18,12 @@ import type { RequestClientCallbacks, RequestClientOptions, RequestContentType }
 class RequestClient {
   private readonly instance: AxiosInstance;
 
+  /**
+   * 错误消息提取函数（由应用层注入，接入 i18n；未注入时回退到 getDefaultErrorMsg）。
+   * 仅基于 reason 翻译，不返回后端 message。
+   */
+  private readonly getErrorMsg: (error: unknown) => string;
+
   public addRequestInterceptor: InterceptorManager["addRequestInterceptor"];
   public addResponseInterceptor: InterceptorManager["addResponseInterceptor"];
 
@@ -56,6 +62,9 @@ class RequestClient {
    * @param callbacks - 业务回调接口（token、认证、错误处理），由应用层注入
    */
   constructor(options: RequestClientOptions = {}, callbacks?: RequestClientCallbacks) {
+    // 错误消息提取函数：优先使用应用层注入的 i18n 实现，否则回退到默认实现。
+    this.getErrorMsg = callbacks?.getErrorMsg ?? getDefaultErrorMsg;
+
     // 合并默认配置和传入的配置
     const defaultConfig: CreateAxiosDefaults<RequestContentType> = {
       headers: {
@@ -207,7 +216,7 @@ class RequestClient {
     this.addResponseInterceptor(
       errorMessageResponseInterceptor((msg: string) => {
         callbacks.onError?.(msg);
-      }, callbacks.getErrorMsg ?? getDefaultErrorMsg)
+      }, this.getErrorMsg)
     );
   }
 
@@ -250,8 +259,34 @@ class RequestClient {
       });
       return response as T;
     } catch (error: unknown) {
-      // @ts-expect-error 忽略类型检查
-      throw error.response ? error.response.data : error;
+      // 已由认证拦截器处理的错误（如 token 过期跳转登录页）必须原样抛出，
+      // 保留 __handledByAuthInterceptor 标记，避免被下方逻辑误判。
+      if (
+        error &&
+        typeof error === "object" &&
+        "__handledByAuthInterceptor" in error
+      ) {
+        throw error;
+      }
+
+      // 错误提示统一基于 reason 经 i18n 翻译，不再依赖后端 message 字段。
+      // 用翻译后的文案覆盖抛出对象的 message，使所有读取 .message 的调用方
+      // 都得到本地化文本，同时保留其余字段（如 code/reason）供业务逻辑判断。
+      const msg = this.getErrorMsg(error);
+      // error 为 unknown；用 any 访问 response.data 以兼容拦截器解包后的结构
+      const errAny = error as any;
+      const thrown: unknown =
+        errAny && typeof errAny === "object" && errAny.response
+          ? (errAny.response.data as unknown)
+          : error;
+      try {
+        if (thrown && typeof thrown === "object") {
+          (thrown as { message?: string }).message = msg;
+        }
+      } catch {
+        // 忽略只读属性等赋值异常
+      }
+      throw thrown;
     }
   }
 }

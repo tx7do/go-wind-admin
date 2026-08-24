@@ -10,9 +10,9 @@ import lucide from '@iconify/json/json/lucide.json';
 import { addCollection } from '@iconify/vue';
 import { useTitle } from '@vueuse/core';
 
-import { $t, setupI18n } from '#/locales';
+import { $t, $te, setupI18n } from '#/locales';
 import { setupVueQuery } from '#/plugins/vue-query';
-import { RequestClient } from '#/transport/rest';
+import { type HttpResponse, RequestClient } from '#/transport/rest';
 
 import { initComponentAdapter } from './adapter/component';
 import App from './app.vue';
@@ -52,6 +52,7 @@ async function bootstrap(namespace: string) {
     refreshToken: () => authStore.refreshToken(),
     onReAuthenticate: () => authStore.reauthenticate(),
     onError: (msg) => console.error('[RequestClient]', msg),
+    getErrorMsg,
   });
 
   // 安装权限指令
@@ -115,6 +116,60 @@ function getRefreshExpireAt(): number | null {
   const val = parseInt(raw, 10);
   if (!Number.isFinite(val) || val <= 0) return null;
   return val * 1000;
+}
+
+/**
+ * 获取错误提示文本。
+ *
+ * 错误提示统一基于后端返回的 reason 字段经 i18n 翻译得到，
+ * 不再依赖后端 message 字段（该字段后续将被移除）。
+ * - 网络错误 / 超时：走对应的 i18n 文案
+ * - reason 命中 i18n 映射：返回翻译文案
+ * - 其余（无 reason 或无对应翻译）：返回通用兜底文案
+ */
+function getErrorMsg(error: unknown) {
+  const i18nPrefix = 'ui.request.';
+
+  // 网络错误
+  const errStr = String(error ?? '');
+  if (errStr.includes('Network Error')) {
+    return $t(i18nPrefix + 'error.networkError');
+  }
+
+  // 超时
+  if (
+    error &&
+    typeof error === 'object' &&
+    'message' in error &&
+    String(error.message).includes('timeout')
+  ) {
+    return $t(i18nPrefix + 'error.timeout');
+  }
+
+  // 获取后端返回数据
+  const resData =
+    error &&
+    typeof error === 'object' &&
+    'response' in error &&
+    error.response &&
+    typeof error.response === 'object' &&
+    'data' in error.response
+      ? (error.response.data as HttpResponse)
+      : undefined;
+
+  // 仅基于 reason 查询 i18n；不再回退到后端 message
+  if (resData) {
+    const { reason } = resData;
+    if (reason) {
+      const key = i18nPrefix + `reason.${reason}`;
+      if ($te(key)) {
+        return $t(key);
+      }
+    }
+  }
+
+  // 兜底
+  return $t(i18nPrefix + 'error.unknownError');
 }
 
 export { bootstrap };
