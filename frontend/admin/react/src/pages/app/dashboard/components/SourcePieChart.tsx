@@ -10,17 +10,33 @@ interface SourcePieChartProps {
 
 /**
  * 登录成功/失败占比饼图。
- * 后端返回 status 枚举名（SUCCESS/FAILED/...），legend 直接展示枚举名。
+ * 后端返回 status 枚举名（SUCCESS/FAILED/...），这里经 i18n 转成本地化文案展示。
  */
 export const SourcePieChart = ({ data }: SourcePieChartProps) => {
   const { token } = theme.useToken();
   const { t } = useI18n('dashboard');
+  const { t: tAuditLog } = useI18n('login-audit-log');
 
   // 科技风暗色系调色板（靛蓝、翠绿、紫罗兰、琥珀）
   const palette = ['#6366f1', '#10b981', '#8b5cf6', '#f59e0b'];
 
   const option = useMemo(() => {
     const items = data?.items ?? [];
+
+    // 状态枚举名 → 本地化文案，复用登录审计日志模块的 status.* 翻译。
+    const statusLabel = (label?: string): string => {
+      switch (label) {
+        case 'SUCCESS':
+          return tAuditLog('status.SUCCESS');
+        case 'FAILED':
+          return tAuditLog('status.FAILED');
+        case 'PARTIAL':
+          return tAuditLog('status.PARTIAL');
+        default:
+          return label ?? '';
+      }
+    };
+
     return {
       tooltip: {
         trigger: 'item',
@@ -32,7 +48,7 @@ export const SourcePieChart = ({ data }: SourcePieChartProps) => {
       legend: {
         orient: 'horizontal',
         bottom: 0,
-        data: items.map((it) => it.label),
+        data: items.map((it) => statusLabel(it.label)),
         textStyle: {
           color: '#94a3b8',
           fontSize: 12,
@@ -64,13 +80,13 @@ export const SourcePieChart = ({ data }: SourcePieChartProps) => {
           },
           data: items.map((it, i) => ({
             value: it.count,
-            name: it.label,
+            name: statusLabel(it.label),
             itemStyle: { color: palette[i % palette.length] },
           })),
         },
       ],
     };
-  }, [data, token, t]);
+  }, [data, token, t, tAuditLog]);
 
   return (
     <Card title={t('charts.loginStatusDistribution')} style={{ height: '100%' }}>

@@ -17,13 +17,26 @@ const chartRef = ref<EchartsUIType>();
 const { renderEcharts } = useEcharts(chartRef);
 const { isDark } = usePreferences();
 
-// 登录成功/失败占比环形图。后端返回 status 枚举名（SUCCESS/FAILED/...），legend 直接展示枚举名。
+// 登录成功/失败占比环形图。后端返回 status 枚举名（SUCCESS/FAILED/...），这里经 i18n 转成本地化文案展示。
+const statusLabel = (label?: string): string => {
+  switch (label) {
+    case "SUCCESS":
+      return $t("enum.loginAuditLog.status.SUCCESS");
+    case "FAILED":
+      return $t("enum.loginAuditLog.status.FAILED");
+    case "PARTIAL":
+      return $t("enum.loginAuditLog.status.PARTIAL");
+    default:
+      return label ?? "";
+  }
+};
+
 const chartOptions = computed(() => {
   const items = props.data?.items ?? [];
   return {
     legend: {
-      bottom: '2%',
-      left: 'center',
+      bottom: "2%",
+      left: "center",
       textStyle: {
         color: isDark.value ? "#CFD3DC" : "#606266",
         fontSize: 12,
@@ -39,7 +52,7 @@ const chartOptions = computed(() => {
         avoidLabelOverlap: false,
         color: ["#4080ff", "#36d399", "#f7ba1e", "#958ce2"],
         data: items.map((it) => ({
-          name: it.label,
+          name: statusLabel(it.label),
           value: it.count,
         })),
         emphasis: {
