@@ -185,7 +185,7 @@ export function reconnectSSEServer(): void {
     return;
   }
 
-  const sseUrl = `${import.meta.env.VITE_APP_SSE_URL ?? '/api/sse'}?stream=${userInfo.id}`;
+  const sseUrl = `${import.meta.env.VITE_SSE_URL ?? '/api/sse'}?stream=${userInfo.id}`;
   globalSSEClient.setHeaders({ Authorization: `Bearer ${accessToken}` });
   globalSSEClient.reconnect(sseUrl);
   console.log('[TokenRefresh] SSE reconnected with new token');
@@ -204,7 +204,7 @@ export function connectSSEServer(): void {
     return;
   }
 
-  const sseUrl = `${import.meta.env.VITE_APP_SSE_URL ?? '/api/sse'}?stream=${userInfo.id}`;
+  const sseUrl = `${import.meta.env.VITE_SSE_URL ?? '/api/sse'}?stream=${userInfo.id}`;
   globalSSEClient.setHeaders({ Authorization: `Bearer ${accessToken}` });
   globalSSEClient.connect(sseUrl);
 }
