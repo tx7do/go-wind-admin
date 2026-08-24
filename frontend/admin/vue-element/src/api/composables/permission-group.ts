@@ -115,7 +115,7 @@ export function travelPermissionGroupChild(
 
 export function buildPermissionGroupTree(
   groups: PermissionGroup[],
-  excludeId?: number,
+  excludeId?: number
 ): PermissionGroup[] {
   // 深拷贝后再构建树，避免就地修改 group.name = t(...) 污染传入的
   // vue-query 缓存（否则翻译值会被永久写回缓存，后续读取拿到已翻译的 name）。

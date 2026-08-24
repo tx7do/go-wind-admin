@@ -11,7 +11,9 @@
     >
       <div class="command-palette-trigger__left">
         <SvgIcon icon="search" />
-        <span class="command-palette-trigger__text">{{ $t('common.commandPalette.searchMenu') }}</span>
+        <span class="command-palette-trigger__text">
+          {{ $t("common.commandPalette.searchMenu") }}
+        </span>
       </div>
       <kbd class="command-palette-trigger__kbd">Ctrl K</kbd>
     </div>
@@ -37,13 +39,21 @@
           </template>
           <template #suffix>
             <div class="command-palette-input__suffix">
-              <SvgIcon icon="close" role="button" tabindex="0" :aria-label="$t('common.commandPalette.close')" @click="close" />
+              <SvgIcon
+                icon="close"
+                role="button"
+                tabindex="0"
+                :aria-label="$t('common.commandPalette.close')"
+                @click="close"
+              />
             </div>
           </template>
         </el-input>
 
         <div class="command-palette-results">
-          <div v-if="displayList.length === 0" class="command-palette-empty">{{ $t('common.commandPalette.noHistory') }}</div>
+          <div v-if="displayList.length === 0" class="command-palette-empty">
+            {{ $t("common.commandPalette.noHistory") }}
+          </div>
 
           <ul v-else class="command-palette-list">
             <li
@@ -63,15 +73,15 @@
           <div class="command-palette-hint">
             <div class="command-palette-hint__key"><SvgIcon icon="up" /></div>
             <div class="command-palette-hint__key"><SvgIcon icon="down" /></div>
-            <span class="command-palette-hint__text">{{ $t('common.commandPalette.switch') }}</span>
+            <span class="command-palette-hint__text">{{ $t("common.commandPalette.switch") }}</span>
           </div>
           <div class="command-palette-hint">
             <div class="command-palette-hint__key"><SvgIcon icon="enter" /></div>
-            <span class="command-palette-hint__text">{{ $t('common.commandPalette.select') }}</span>
+            <span class="command-palette-hint__text">{{ $t("common.commandPalette.select") }}</span>
           </div>
           <div class="command-palette-hint">
             <div class="command-palette-hint__key"><SvgIcon icon="esc" /></div>
-            <span class="command-palette-hint__text">{{ $t('common.commandPalette.close') }}</span>
+            <span class="command-palette-hint__text">{{ $t("common.commandPalette.close") }}</span>
           </div>
         </div>
       </div>

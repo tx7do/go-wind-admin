@@ -42,7 +42,11 @@
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.api.path')" prop="path">
-        <ElInput v-model="drawer.formData.path" :placeholder="$t('common.placeholder.input')" clearable />
+        <ElInput
+          v-model="drawer.formData.path"
+          :placeholder="$t('common.placeholder.input')"
+          clearable
+        />
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.api.method')" prop="method">

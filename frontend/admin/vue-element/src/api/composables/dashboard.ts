@@ -14,9 +14,7 @@ import { apiClient } from "@/api/client";
 // ------------------------------
 // 1. 概览统计卡片
 // ------------------------------
-export function useDashboardOverview(
-  options?: UseQueryOptions<DashboardOverviewResponse, Error>
-) {
+export function useDashboardOverview(options?: UseQueryOptions<DashboardOverviewResponse, Error>) {
   return useQuery({
     queryKey: ["dashboardOverview"],
     queryFn: () => apiClient.dashboardService.GetOverview({}),
@@ -27,10 +25,7 @@ export function useDashboardOverview(
 // ------------------------------
 // 2. 近 N 天登录趋势
 // ------------------------------
-export function useLoginTrend(
-  days: number,
-  options?: UseQueryOptions<LoginTrendResponse, Error>
-) {
+export function useLoginTrend(days: number, options?: UseQueryOptions<LoginTrendResponse, Error>) {
   return useQuery({
     queryKey: ["loginTrend", days],
     queryFn: () => apiClient.dashboardService.GetLoginTrend({ days }),
@@ -46,8 +41,7 @@ export function useOperationActionDistribution(
 ) {
   return useQuery({
     queryKey: ["operationActionDistribution"],
-    queryFn: () =>
-      apiClient.dashboardService.GetOperationActionDistribution({}),
+    queryFn: () => apiClient.dashboardService.GetOperationActionDistribution({}),
     ...options,
   });
 }

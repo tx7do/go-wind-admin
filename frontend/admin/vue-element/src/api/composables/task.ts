@@ -57,7 +57,8 @@ export function useGetTask(
 
 export function useCreateTask(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (values) => apiClient.taskService.Create({ data: { ...values } as taskservicev1_Task }),
+    mutationFn: (values) =>
+      apiClient.taskService.Create({ data: { ...values } as taskservicev1_Task }),
     ...options,
   });
 }
@@ -104,10 +105,11 @@ export function useControlTask(
   options?: UseMutationOptions<{}, Error, { typeName: string; controlType: string }>
 ) {
   return useMutation({
-    mutationFn: ({ typeName, controlType }) => apiClient.taskService.ControlTask({
-      typeName,
-      controlType: controlType as taskservicev1_ControlTaskRequest["controlType"],
-    }),
+    mutationFn: ({ typeName, controlType }) =>
+      apiClient.taskService.ControlTask({
+        typeName,
+        controlType: controlType as taskservicev1_ControlTaskRequest["controlType"],
+      }),
     ...options,
   });
 }

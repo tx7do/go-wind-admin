@@ -145,7 +145,12 @@
       <!-- 管理员设置（仅创建时显示） -->
       <ElDivider v-if="isCreate">{{ $t("pages.tenant.adminSetting") }}</ElDivider>
 
-      <ElFormItem v-if="isCreate" :label="$t('pages.tenant.adminUserName')" prop="user.username" required>
+      <ElFormItem
+        v-if="isCreate"
+        :label="$t('pages.tenant.adminUserName')"
+        prop="user.username"
+        required
+      >
         <ElInput
           v-model="formData.user.username"
           :placeholder="$t('common.placeholder.input')"
@@ -153,7 +158,12 @@
         />
       </ElFormItem>
 
-      <ElFormItem v-if="isCreate" :label="$t('pages.tenant.adminPassword')" prop="password" required>
+      <ElFormItem
+        v-if="isCreate"
+        :label="$t('pages.tenant.adminPassword')"
+        prop="password"
+        required
+      >
         <ElInput
           v-model="formData.password"
           type="password"
@@ -162,7 +172,12 @@
         />
       </ElFormItem>
 
-      <ElFormItem v-if="isCreate" :label="$t('pages.tenant.adminPasswordConfirm')" prop="passwordConfirm" required>
+      <ElFormItem
+        v-if="isCreate"
+        :label="$t('pages.tenant.adminPasswordConfirm')"
+        prop="passwordConfirm"
+        required
+      >
         <ElInput
           v-model="formData.passwordConfirm"
           type="password"
@@ -171,7 +186,12 @@
         />
       </ElFormItem>
 
-      <ElFormItem v-if="isCreate" :label="$t('pages.tenant.adminMobile')" prop="user.mobile" required>
+      <ElFormItem
+        v-if="isCreate"
+        :label="$t('pages.tenant.adminMobile')"
+        prop="user.mobile"
+        required
+      >
         <ElInput
           v-model="formData.user.mobile"
           :placeholder="$t('common.placeholder.input')"
@@ -212,7 +232,7 @@ import {
   useCreateTenantWithAdminUser,
   useUpdateTenant,
   useUserExists,
-  useGetTenantUsage,
+  fetchTenantUsage,
   useCleanupTenantData,
   fetchListTenants,
   fetchListPlans,
@@ -245,24 +265,21 @@ const { mutateAsync: createTenantWithAdminUserMut } = useCreateTenantWithAdminUs
 const { mutateAsync: updateTenantMut } = useUpdateTenant();
 const { mutateAsync: userExists } = useUserExists();
 
-// 编辑模式下加载租户用量数据（usageData）和清理 mutation。
-// usageQuery 在 setup 顶层声明，refetch 在 watch 中按需触发。
-const tenantIdForUsage = computed(() => data.value.row?.id ?? 0);
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const usageQuery = useGetTenantUsage({ id: tenantIdForUsage.value } as any);
-const usageData = computed(() => usageQuery.data.value);
+// 编辑模式下按需加载租户用量数据（usageData）。
+// 不在 setup 顶层发起请求：仅当抽屉打开且选中真实租户行时，用 fetchTenantUsage 命令式拉取，
+// 避免 row.id 为空时以 id=0 发请求触发 400。与 vue-vben 实现保持一致。
+const usageData = ref<any>(null);
 const cleanupLoading = ref(false);
 const { mutateAsync: cleanupMut } = useCleanupTenantData();
 
 // 辅助函数：根据配额类型返回标签/当前值/百分比。
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 function getQuotaLabel(qt: any): string {
   if (qt === 1) return $t("pages.tenant.usageUserCount");
   if (qt === 2) return $t("pages.tenant.usageStorage");
   if (qt === 3) return $t("pages.tenant.usageApiCalls");
   return $t("pages.tenant.quotaType");
 }
-// eslint-disable-next-line @typescript-messages/no-explicit-any
 function getQuotaCurrent(qt: any): number {
   const ud = usageData.value as any;
   if (!ud) return 0;
@@ -271,7 +288,6 @@ function getQuotaCurrent(qt: any): number {
   if (qt === 3) return ud.apiCallCount ?? 0;
   return 0;
 }
-// eslint-disable-next-line @typescript-messages/no-explicit-any
 function getQuotaPercent(qt: any, limit: number): number {
   const current = getQuotaCurrent(qt);
   if (limit <= 0) return 0;
@@ -328,9 +344,7 @@ const formRules: FormRules = {
     { required: true, message: $t("common.validation.selectRequired"), trigger: "change" },
   ],
   status: [{ required: true, message: $t("common.validation.selectRequired"), trigger: "change" }],
-  "user.username": [
-    { required: true, message: $t("common.validation.required"), trigger: "blur" },
-  ],
+  "user.username": [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
   "user.mobile": [
     { required: true, message: $t("common.validation.required"), trigger: "blur" },
     {
@@ -385,14 +399,22 @@ watch(visible, async (val) => {
       };
 
       // 加载该租户的用量与配额对比数据
-      try {
-        await usageQuery.refetch();
-      } catch {
-        // 忽略错误
+      // 仅当存在真实租户 ID 时按需拉取，避免 id=0 触发 400
+      const rowId = data.value.row?.id;
+      if (rowId) {
+        try {
+          const res = await fetchTenantUsage({ id: rowId });
+          usageData.value = res ?? null;
+        } catch {
+          usageData.value = null;
+        }
+      } else {
+        usageData.value = null;
       }
     } else {
       // 创建模式
       resetForm();
+      usageData.value = null;
     }
 
     // 加载套餐下拉选项（订阅套餐）

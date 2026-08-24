@@ -21,10 +21,10 @@ function getTagType(
   if (col.tagTypeMap && value != null) {
     return col.tagTypeMap[value] ?? "info";
   }
-  
+
   // 其次使用固定 tagType
   if (col.tagType) return col.tagType as any;
-  
+
   // 默认：有值为 success，无值为 danger
   return value ? "success" : "danger";
 }
@@ -67,10 +67,10 @@ const ImageCell: FunctionalComponent<CellRendererContext> = ({ col, row, field }
 const TagCell: FunctionalComponent<CellRendererContext> = ({ col, row, field }) => {
   const value = row[field];
   const tagType = getTagType(value, col);
-  
+
   // 获取标签文本
   const label = col.labelMap?.[value] ?? value;
-  
+
   // plain 效果：白底 + 深色文字 + 彩色边框，亮暗模式下都有高对比度
   return h(ElTag, { type: tagType, effect: col.tagEffect ?? "plain" }, () => label);
 };

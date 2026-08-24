@@ -13,7 +13,9 @@
         <ElSwitch
           :model-value="scope.row.enable"
           :loading="scope.row.pending"
-          @update:model-value="(value: string | number | boolean) => handleEnableChanged(scope.row, !!value)"
+          @update:model-value="
+            (value: string | number | boolean) => handleEnableChanged(scope.row, !!value)
+          "
         />
       </template>
 

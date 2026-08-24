@@ -67,7 +67,10 @@ export const methodList = [
 ];
 
 // HTTP 方法对应的 Tag 颜色类型
-export const httpMethodTagTypeMap: Record<string, "success" | "primary" | "warning" | "danger" | "info"> = {
+export const httpMethodTagTypeMap: Record<
+  string,
+  "success" | "primary" | "warning" | "danger" | "info"
+> = {
   GET: "success",
   POST: "primary",
   PUT: "warning",

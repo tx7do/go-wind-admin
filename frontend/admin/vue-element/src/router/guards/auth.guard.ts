@@ -25,10 +25,15 @@ function setupAccessGuard(router: Router) {
       return { name: "MfaChallenge", replace: true } as any;
     }
 
+    // 过期的 access token 视同无 token 统一跳登录，避免“仅未访问页面首次发请求
+    // 被 401 拦截才登出”的不一致。治标：dev 明文 HTTP 拒收 Secure cookie 致续期
+    // 链路断裂，token 过期无法刷新；此检查统一登出时机，不解决会话丢失根因。
+    const tokenExpired = accessStore.checkAccessTokenExpired();
+
     // 基本路由，这些路由不需要进入权限拦截
     if (coreRouteNames.includes(to.name as string)) {
-      // 如果已经登录且访问登录页面，重定向到首页
-      if (to.path === LOGIN_PATH && accessStore.accessToken) {
+      // 已经有效登录且访问登录页面，重定向到首页（token 过期则放行到登录页）
+      if (to.path === LOGIN_PATH && accessStore.accessToken && !tokenExpired) {
         return decodeURIComponent(
           (to.query?.redirect as string) || userStore.userInfo?.homePath || DEFAULT_HOME_PATH
         );
@@ -36,8 +41,8 @@ function setupAccessGuard(router: Router) {
       return true;
     }
 
-    // accessToken 检查
-    if (!accessStore.accessToken) {
+    // accessToken 检查（含过期判定：过期视同无 token，统一跳登录页）
+    if (!accessStore.accessToken || tokenExpired) {
       // 明确声明忽略权限访问权限，则可以访问
       if (to.meta.ignoreAccess) {
         return true;

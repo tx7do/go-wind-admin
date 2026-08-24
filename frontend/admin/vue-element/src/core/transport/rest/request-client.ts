@@ -261,11 +261,7 @@ class RequestClient {
     } catch (error: unknown) {
       // 已由认证拦截器处理的错误（如 token 过期跳转登录页）必须原样抛出，
       // 保留 __handledByAuthInterceptor 标记，避免被下方逻辑误判。
-      if (
-        error &&
-        typeof error === "object" &&
-        "__handledByAuthInterceptor" in error
-      ) {
+      if (error && typeof error === "object" && "__handledByAuthInterceptor" in error) {
         throw error;
       }
 

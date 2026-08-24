@@ -22,8 +22,8 @@ const chartOptions = computed(() => {
   const items = props.data?.items ?? [];
   return {
     legend: {
-      bottom: '2%',
-      left: 'center',
+      bottom: "2%",
+      left: "center",
       textStyle: {
         color: isDark.value ? "#CFD3DC" : "#606266",
         fontSize: 12,

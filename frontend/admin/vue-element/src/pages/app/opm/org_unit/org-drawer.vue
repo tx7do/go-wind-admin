@@ -19,11 +19,19 @@
       <ElDivider content-position="left">{{ $t("common.section.basic") }}</ElDivider>
 
       <ElFormItem :label="$t('pages.org_unit.name')" prop="name">
-        <ElInput v-model="drawer.formData.name" :placeholder="$t('common.placeholder.input')" clearable />
+        <ElInput
+          v-model="drawer.formData.name"
+          :placeholder="$t('common.placeholder.input')"
+          clearable
+        />
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.org_unit.code')" prop="code">
-        <ElInput v-model="drawer.formData.code" :placeholder="$t('common.placeholder.input')" clearable />
+        <ElInput
+          v-model="drawer.formData.code"
+          :placeholder="$t('common.placeholder.input')"
+          clearable
+        />
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.org_unit.parentId')" prop="parentId">
@@ -112,8 +120,16 @@
         />
       </ElFormItem>
 
-      <ElFormItem v-if="drawer.formData.isLegalEntity" :label="$t('pages.org_unit.taxId')" prop="taxId">
-        <ElInput v-model="drawer.formData.taxId" :placeholder="$t('common.placeholder.input')" clearable />
+      <ElFormItem
+        v-if="drawer.formData.isLegalEntity"
+        :label="$t('pages.org_unit.taxId')"
+        prop="taxId"
+      >
+        <ElInput
+          v-model="drawer.formData.taxId"
+          :placeholder="$t('common.placeholder.input')"
+          clearable
+        />
       </ElFormItem>
 
       <ElFormItem

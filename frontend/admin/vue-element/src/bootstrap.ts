@@ -83,16 +83,11 @@ async function bootstrap(namespace: string) {
     getErrorMsg: createI18nGetErrorMsg(),
   });
 
-  // 配置路由及路由守卫
-  setupRouter(app);
-
-  // 国际化 i18n 配置
-  await setupI18n(app);
-
   // 页面刷新后的会话恢复：
-  // access token 仅存内存，刷新页面后丢失。refresh token 现以 HttpOnly Cookie 传输，
-  // 刷新后仍在。若检测到有效的 refresh_exp cookie，静默调 /refresh-token 换回新 access token，
-  // 使用户无感知地恢复会话，无需重新登录。
+  // access token 仅存内存，刷新页面后丢失。refresh token 以 HttpOnly Cookie 传输，
+  // 刷新后仍在。若检测到有效的 refresh_exp cookie，静默调 /refresh-token 换回新 access token。
+  // 必须在 setupRouter 之前完成——router 安装即触发首次导航，守卫此刻就要读 accessToken；
+  // 若恢复晚于守卫执行，守卫看到 null token 会先把用户踢去登录页，恢复成功也为时已晚。
   if (accessStore.accessToken) {
     // 内存中仍有 access token（如 SPA 内导航），仅需恢复定时器
     startRefreshTimer();
@@ -105,10 +100,6 @@ async function bootstrap(namespace: string) {
         // refresh token cookie 由浏览器自动携带，无需前端传参
         const newToken = await refreshToken();
         if (newToken) {
-          // 恢复用户信息（刷新页面后内存丢失）。
-          // getUserPermissionCodes 内部会 fetchUserInfo + fetchAccessCodes 并启动定时器/SSE。
-          // 该函数由 useAuth() 导出，此处通过 auth guard 的既有调用路径间接复用。
-          // 在 bootstrap 中没有 guard 上下文，直接走 timer/SSE 恢复即可。
           startRefreshTimer();
           connectSSEServer();
           console.log("[Bootstrap] session silently restored via refresh cookie");
@@ -119,6 +110,12 @@ async function bootstrap(namespace: string) {
     }
   }
 
+  // 配置路由及路由守卫（首个导航从这里开始，此刻 token 已就绪）
+  setupRouter(app);
+
+  // 国际化 i18n 配置
+  await setupI18n(app);
+
   // 挂载应用
   app.mount("#app");
 }
@@ -128,9 +125,7 @@ async function bootstrap(namespace: string) {
  * 返回毫秒级时间戳或 null（cookie 不存在/已过期）。
  */
 function getRefreshExpireAt(): number | null {
-  const match = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("refresh_exp="));
+  const match = document.cookie.split("; ").find((row) => row.startsWith("refresh_exp="));
   if (!match) return null;
   const parts = match.split("=");
   if (parts.length < 2) return null;

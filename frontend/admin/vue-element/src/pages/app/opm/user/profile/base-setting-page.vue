@@ -1,5 +1,5 @@
 <template>
-  <div class="page-container" v-loading="pageLoading">
+  <div v-loading="pageLoading" class="page-container">
     <ElRow :gutter="24">
       <ElCol :span="14">
         <ElForm ref="formRef" :model="formData" label-width="120px" class="profile-form">

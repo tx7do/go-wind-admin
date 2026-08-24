@@ -90,7 +90,11 @@ const handleSubmit = async () => {
     // 使用上面捕获的 safeRedirect，避免响应式更新时序导致读不到。
     const result = await completeMfaChallenge(
       mfaForm.value.code,
-      safeRedirect ? async () => { await router.replace(safeRedirect); } : undefined,
+      safeRedirect
+        ? async () => {
+            await router.replace(safeRedirect);
+          }
+        : undefined
     );
     if (!result?.userInfo) {
       ElNotification({

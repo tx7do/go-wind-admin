@@ -2,11 +2,7 @@
   <section class="app-main" :class="mainClass" :style="{ height: appMainHeight }">
     <router-view>
       <template #default="{ Component, route: slotRoute }">
-        <transition
-          :name="transitionName"
-          mode="out-in"
-          :duration="150"
-        >
+        <transition :name="transitionName" mode="out-in" :duration="150">
           <keep-alive :include="cachedViews">
             <component
               :is="currentComponent(Component, slotRoute)"
@@ -18,7 +14,6 @@
             />
           </keep-alive>
         </transition>
-
       </template>
     </router-view>
 

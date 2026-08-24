@@ -53,11 +53,7 @@ import { computed, ref, watch } from "vue";
 import { ElMessage } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
 
-import {
-  planQuotaTypeList,
-  useCreatePlanQuota,
-  useUpdatePlanQuota,
-} from "@/api/composables";
+import { planQuotaTypeList, useCreatePlanQuota, useUpdatePlanQuota } from "@/api/composables";
 import type { identityservicev1_PlanQuota as PlanQuota } from "@/api/generated/admin/service/v1";
 import { $t } from "@/core/i18n";
 import { DRAWER_WIDTH } from "@/constants";
@@ -99,7 +95,9 @@ const formRef = ref<FormInstance>();
 
 // 表单校验规则
 const formRules: FormRules = {
-  quotaType: [{ required: true, message: $t("common.validation.selectRequired"), trigger: "change" }],
+  quotaType: [
+    { required: true, message: $t("common.validation.selectRequired"), trigger: "change" },
+  ],
 };
 
 // 弹窗标题

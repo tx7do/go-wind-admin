@@ -84,10 +84,7 @@ export function useDrawerForm<T extends Record<string, any>>(options: {
   }
 
   // === 打开 ===
-  async function open(
-    data?: { create?: boolean; row?: any },
-    onEditFill?: (row: any) => void,
-  ) {
+  async function open(data?: { create?: boolean; row?: any }, onEditFill?: (row: any) => void) {
     visible.value = true;
     isCreate.value = data?.create ?? true;
     currentId.value = data?.row?.id;
@@ -122,14 +119,14 @@ export function useDrawerForm<T extends Record<string, any>>(options: {
   async function handleSubmit(
     formRef: any,
     onSuccess?: () => void,
-    transformValues?: (values: T) => any,
+    transformValues?: (values: T) => any
   ) {
     if (!formRef) return;
 
     // 校验失败时 validate 会 reject 字段错误对象（非 false），用二段式区分校验失败与接口失败
     const valid = await formRef.validate().then(
       () => true,
-      () => false,
+      () => false
     );
     if (!valid) return;
 
@@ -153,7 +150,7 @@ export function useDrawerForm<T extends Record<string, any>>(options: {
       ElMessage.error(
         isCreate.value
           ? $t("common.notification.createFailed")
-          : $t("common.notification.updateFailed"),
+          : $t("common.notification.updateFailed")
       );
     } finally {
       submitLoading.value = false;

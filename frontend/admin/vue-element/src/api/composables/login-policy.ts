@@ -59,7 +59,10 @@ export function useCreateLoginPolicy(
   options?: UseMutationOptions<authenticationservicev1_LoginPolicy, Error, Record<string, any>>
 ) {
   return useMutation({
-    mutationFn: (values) => apiClient.loginPolicyService.Create({ data: { ...values } as authenticationservicev1_LoginPolicy }),
+    mutationFn: (values) =>
+      apiClient.loginPolicyService.Create({
+        data: { ...values } as authenticationservicev1_LoginPolicy,
+      }),
     ...options,
   });
 }

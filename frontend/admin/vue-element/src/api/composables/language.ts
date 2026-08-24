@@ -52,7 +52,8 @@ export function useGetLanguage(
 
 export function useCreateLanguage(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (values) => apiClient.languageService.Create({ data: { ...values } as dictservicev1_Language }),
+    mutationFn: (values) =>
+      apiClient.languageService.Create({ data: { ...values } as dictservicev1_Language }),
     ...options,
   });
 }

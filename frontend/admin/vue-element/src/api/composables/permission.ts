@@ -55,7 +55,8 @@ export function useGetPermission(
 
 export function useCreatePermission(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (values) => apiClient.permissionService.Create({ data: { ...values } as Permission }),
+    mutationFn: (values) =>
+      apiClient.permissionService.Create({ data: { ...values } as Permission }),
     ...options,
   });
 }

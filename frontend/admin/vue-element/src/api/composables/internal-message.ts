@@ -228,7 +228,8 @@ export function useDeleteNotificationFromInbox(
   >
 ) {
   return useMutation({
-    mutationFn: (data) => apiClient.internalMessageRecipientService.DeleteNotificationFromInbox(data),
+    mutationFn: (data) =>
+      apiClient.internalMessageRecipientService.DeleteNotificationFromInbox(data),
     ...options,
   });
 }

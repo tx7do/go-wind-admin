@@ -83,7 +83,7 @@ import { $t } from "@/core/i18n";
 const { data: statusData, refetch } = useGetMfaStatus();
 const enrolledItems = computed(() => statusData.value?.enrolled ?? []);
 const totpItems = computed(() =>
-  enrolledItems.value.filter((m) => m.method === "TOTP" && m.enabled),
+  enrolledItems.value.filter((m) => m.method === "TOTP" && m.enabled)
 );
 const hasTotp = computed(() => totpItems.value.length > 0);
 
@@ -164,7 +164,7 @@ const handleUnbind = () => {
       confirmButtonText: $t("pages.user.secureSetting.mfaUnbind"),
       cancelButtonText: $t("core.login.mfaCancel"),
       type: "warning",
-    },
+    }
   ).then(() => {
     disableMfa.mutate({ credentialId: target.id, method: "TOTP" } as any);
   });

@@ -164,13 +164,13 @@ export function extractLeafIds(checkedKeys: unknown[], treeData: any[]): number[
     for (const node of nodes) {
       if (node.children && node.children.length > 0) {
         collect(node.children);
-      } else if (typeof node.key === 'number' && !isNaN(node.key)) {
+      } else if (typeof node.key === "number" && !isNaN(node.key)) {
         leafIds.add(node.key);
       }
     }
   };
   collect(treeData);
   return checkedKeys
-    .filter((v): v is number => typeof v === 'number' && !isNaN(v) && leafIds.has(v))
+    .filter((v): v is number => typeof v === "number" && !isNaN(v) && leafIds.has(v))
     .map((v) => Number(v));
 }

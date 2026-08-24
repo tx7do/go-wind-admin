@@ -204,7 +204,6 @@ watch(visible, async (val) => {
         const names: string[] = [];
         if (resp?.items) {
           for (const item of resp.items) {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const mod = (item as any)?.module;
             if (typeof mod === "string" && mod.length > 0) {
               names.push(mod);
@@ -303,10 +302,9 @@ const handleSubmit = async () => {
       }
 
       for (const mod of toAdd) {
-        await createModuleMut({ planId: planId, module: mod as any } as any);
+        await createModuleMut({ planId, module: mod as any } as any);
       }
       for (const mod of toRemove) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const item = existingItems.find((it: any) => it?.module === mod);
         if (item?.id) {
           await deleteModuleMut({ id: item.id } as any);

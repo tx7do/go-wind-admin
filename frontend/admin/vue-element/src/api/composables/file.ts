@@ -56,7 +56,8 @@ export function useGetFile(
 
 export function useCreateFile(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (values) => apiClient.fileService.Create({ data: { ...values } as storageservicev1_File }),
+    mutationFn: (values) =>
+      apiClient.fileService.Create({ data: { ...values } as storageservicev1_File }),
     ...options,
   });
 }

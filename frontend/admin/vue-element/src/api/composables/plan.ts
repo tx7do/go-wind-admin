@@ -62,9 +62,7 @@ export function useGetPlan(
   });
 }
 
-export function useCreatePlan(
-  options?: UseMutationOptions<{}, Error, Record<string, any>>
-) {
+export function useCreatePlan(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
     mutationFn: (values) => apiClient.planService.Create({ data: { ...values } as any }),
     ...options,
@@ -120,12 +118,9 @@ export async function fetchListPlanQuotas(params: PaginationQuery) {
   });
 }
 
-export function useCreatePlanQuota(
-  options?: UseMutationOptions<{}, Error, Record<string, any>>
-) {
+export function useCreatePlanQuota(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (values) =>
-      apiClient.planQuotaService.Create({ data: { ...values } as any }),
+    mutationFn: (values) => apiClient.planQuotaService.Create({ data: { ...values } as any }),
     ...options,
   });
 }
@@ -183,8 +178,7 @@ export function useCreatePlanModule(
   options?: UseMutationOptions<{}, Error, identityservicev1_PlanModule>
 ) {
   return useMutation({
-    mutationFn: (data) =>
-      apiClient.planModuleService.Create({ data } as any),
+    mutationFn: (data) => apiClient.planModuleService.Create({ data } as any),
     ...options,
   });
 }
@@ -246,7 +240,10 @@ export const planExpiryPolicyList = computed(() => [
   { value: "BLOCK_LOGIN", label: t("enum.plan.expiryPolicy.BLOCK_LOGIN") },
   { value: "FREEZE", label: t("enum.plan.expiryPolicy.FREEZE") },
   { value: "READONLY", label: t("enum.plan.expiryPolicy.READONLY") },
-  { value: "PLAN_EXPIRY_POLICY_UNSPECIFIED", label: t("enum.plan.expiryPolicy.PLAN_EXPIRY_POLICY_UNSPECIFIED") },
+  {
+    value: "PLAN_EXPIRY_POLICY_UNSPECIFIED",
+    label: t("enum.plan.expiryPolicy.PLAN_EXPIRY_POLICY_UNSPECIFIED"),
+  },
 ]);
 
 export function planExpiryPolicyToName(expiryPolicy: Plan_ExpiryPolicy) {
@@ -272,7 +269,10 @@ export const planQuotaTypeList = computed(() => [
   { value: "API_CALL", label: t("enum.plan.quotaType.API_CALL") },
   { value: "STORAGE", label: t("enum.plan.quotaType.STORAGE") },
   { value: "USER_LIMIT", label: t("enum.plan.quotaType.USER_LIMIT") },
-  { value: "PLAN_QUOTA_TYPE_UNSPECIFIED", label: t("enum.plan.quotaType.PLAN_QUOTA_TYPE_UNSPECIFIED") },
+  {
+    value: "PLAN_QUOTA_TYPE_UNSPECIFIED",
+    label: t("enum.plan.quotaType.PLAN_QUOTA_TYPE_UNSPECIFIED"),
+  },
 ]);
 
 export function planQuotaTypeToName(quotaType: PlanQuota_QuotaType) {

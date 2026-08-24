@@ -16,7 +16,11 @@
       class="drawer-form"
     >
       <ElFormItem :label="$t('pages.permission_group.name')" prop="name">
-        <ElInput v-model="drawer.formData.name" :placeholder="$t('common.placeholder.input')" clearable />
+        <ElInput
+          v-model="drawer.formData.name"
+          :placeholder="$t('common.placeholder.input')"
+          clearable
+        />
       </ElFormItem>
 
       <ElFormItem :label="$t('pages.permission_group.module')" prop="module">
@@ -119,7 +123,7 @@ const drawer = useDrawerForm({
     // 编辑模式下排除自身，防止把分组设为自己的父级（自环）
     permissionGroupTreeData.value = buildPermissionGroupTree(
       result.items || [],
-      drawer.currentId.value,
+      drawer.currentId.value
     );
   },
 });

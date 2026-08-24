@@ -19,7 +19,9 @@ import { apiClient } from "@/api/client";
 import { queryClient } from "@/plugins/vue-query";
 
 // 直接导出函数，供非 Vue 上下文使用
-export async function verifyMfaChallenge(request: authenticationservicev1_VerifyMFAChallengeRequest) {
+export async function verifyMfaChallenge(
+  request: authenticationservicev1_VerifyMFAChallengeRequest
+) {
   return apiClient.mfaService.VerifyMFAChallenge(request);
 }
 
@@ -35,7 +37,9 @@ export async function startEnrollMfa(request: authenticationservicev1_StartEnrol
   return apiClient.mfaService.StartEnrollMethod(request);
 }
 
-export async function confirmEnrollMfa(request: authenticationservicev1_ConfirmEnrollMethodRequest) {
+export async function confirmEnrollMfa(
+  request: authenticationservicev1_ConfirmEnrollMethodRequest
+) {
   return apiClient.mfaService.ConfirmEnrollMethod(request);
 }
 

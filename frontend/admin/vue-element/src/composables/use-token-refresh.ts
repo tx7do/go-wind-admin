@@ -36,9 +36,7 @@ type RefreshTokenFunc = () => Promise<string> | string;
  * 由后端在登录/刷新时写入。返回毫秒级时间戳或 null（cookie 不存在/已过期）。
  */
 function getRefreshExpireAt(): number | null {
-  const match = document.cookie
-    .split("; ")
-    .find((row) => row.startsWith("refresh_exp="));
+  const match = document.cookie.split("; ").find((row) => row.startsWith("refresh_exp="));
   if (!match) return null;
   const parts = match.split("=");
   if (parts.length < 2) return null;

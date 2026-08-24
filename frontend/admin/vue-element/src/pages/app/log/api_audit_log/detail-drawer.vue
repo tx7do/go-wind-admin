@@ -116,24 +116,15 @@
         <ElDescriptionsItem :label="$t('pages.api_audit_log.signature')" :span="2">
           {{ data?.signature || "-" }}
         </ElDescriptionsItem>
-        <ElDescriptionsItem
-          :label="$t('pages.api_audit_log.requestBody')"
-          :span="2"
-        >
+        <ElDescriptionsItem :label="$t('pages.api_audit_log.requestBody')" :span="2">
           <pre v-if="data?.requestBody" class="pre-text">{{ data.requestBody }}</pre>
           <template v-else>-</template>
         </ElDescriptionsItem>
-        <ElDescriptionsItem
-          :label="$t('pages.api_audit_log.requestHeader')"
-          :span="2"
-        >
+        <ElDescriptionsItem :label="$t('pages.api_audit_log.requestHeader')" :span="2">
           <pre v-if="data?.requestHeader" class="pre-text">{{ data.requestHeader }}</pre>
           <template v-else>-</template>
         </ElDescriptionsItem>
-        <ElDescriptionsItem
-          :label="$t('pages.api_audit_log.response')"
-          :span="2"
-        >
+        <ElDescriptionsItem :label="$t('pages.api_audit_log.response')" :span="2">
           <pre v-if="data?.response" class="pre-text">{{ data.response }}</pre>
           <template v-else>-</template>
         </ElDescriptionsItem>

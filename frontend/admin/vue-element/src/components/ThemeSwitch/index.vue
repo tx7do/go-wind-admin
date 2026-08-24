@@ -29,13 +29,13 @@ function handleToggle(event: MouseEvent) {
   // 计算从左下角到按钮的最大半径（切暗色用）
   const darkMaxRadius = Math.hypot(
     Math.max(btnX, window.innerWidth - cornerX),
-    Math.max(cornerY - btnY, cornerY),
+    Math.max(cornerY - btnY, cornerY)
   );
 
   // 计算从按钮覆盖全屏的最大半径（切亮色用）
   const lightMaxRadius = Math.hypot(
     Math.max(btnX, window.innerWidth - btnX),
-    Math.max(btnY, window.innerHeight - btnY),
+    Math.max(btnY, window.innerHeight - btnY)
   );
 
   // 动态注入 z-index 样式
@@ -47,54 +47,58 @@ function handleToggle(event: MouseEvent) {
     toggleTheme();
   });
 
-  transition.ready.then(() => {
-    if (goingDark) {
-      // 切暗色：黑暗从左下角扩散，直到吞没按钮
-      style.textContent =
-        "::view-transition-old(root){z-index:-1}::view-transition-new(root){z-index:auto}";
+  transition.ready
+    .then(() => {
+      if (goingDark) {
+        // 切暗色：黑暗从左下角扩散，直到吞没按钮
+        style.textContent =
+          "::view-transition-old(root){z-index:-1}::view-transition-new(root){z-index:auto}";
 
-      document.documentElement.animate(
-        {
-          clipPath: [
-            `circle(0px at ${cornerX}px ${cornerY}px)`,
-            `circle(${darkMaxRadius}px at ${cornerX}px ${cornerY}px)`,
-          ],
-        },
-        {
-          duration: 600,
-          easing: "ease-in-out",
-          pseudoElement: "::view-transition-new(root)",
-        },
-      );
-    } else {
-      // 切亮色：白色光明从按钮释放，扩散到整个页面
-      style.textContent =
-        "::view-transition-old(root){z-index:-1}::view-transition-new(root){z-index:auto}";
+        document.documentElement.animate(
+          {
+            clipPath: [
+              `circle(0px at ${cornerX}px ${cornerY}px)`,
+              `circle(${darkMaxRadius}px at ${cornerX}px ${cornerY}px)`,
+            ],
+          },
+          {
+            duration: 600,
+            easing: "ease-in-out",
+            pseudoElement: "::view-transition-new(root)",
+          }
+        );
+      } else {
+        // 切亮色：白色光明从按钮释放，扩散到整个页面
+        style.textContent =
+          "::view-transition-old(root){z-index:-1}::view-transition-new(root){z-index:auto}";
 
-      document.documentElement.animate(
-        {
-          clipPath: [
-            `circle(0px at ${btnX}px ${btnY}px)`,
-            `circle(${lightMaxRadius}px at ${btnX}px ${btnY}px)`,
-          ],
-        },
-        {
-          duration: 600,
-          easing: "ease-in-out",
-          pseudoElement: "::view-transition-new(root)",
-        },
-      );
-    }
-  }).catch(() => {
-    // transition 可能因文档不可见（切换标签页/最小化）或被新过渡抢占而 reject，
-    // 这里吞掉异常，style 的清理统一交给下面的 finally。
-  });
+        document.documentElement.animate(
+          {
+            clipPath: [
+              `circle(0px at ${btnX}px ${btnY}px)`,
+              `circle(${lightMaxRadius}px at ${btnX}px ${btnY}px)`,
+            ],
+          },
+          {
+            duration: 600,
+            easing: "ease-in-out",
+            pseudoElement: "::view-transition-new(root)",
+          }
+        );
+      }
+    })
+    .catch(() => {
+      // transition 可能因文档不可见（切换标签页/最小化）或被新过渡抢占而 reject，
+      // 这里吞掉异常，style 的清理统一交给下面的 finally。
+    });
 
-  transition.finished.finally(() => {
-    // 无论过渡成功还是被中止，都必须移除注入的 <style>，
-    // 否则它会在 <head> 中永久残留（每次中止都泄漏一个）。
-    style.remove();
-  }).catch(() => {});
+  transition.finished
+    .finally(() => {
+      // 无论过渡成功还是被中止，都必须移除注入的 <style>，
+      // 否则它会在 <head> 中永久残留（每次中止都泄漏一个）。
+      style.remove();
+    })
+    .catch(() => {});
 }
 </script>
 

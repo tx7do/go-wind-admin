@@ -14,7 +14,12 @@
 <template>
   <!-- 本地 SVG 图标：通过内联 SVG 渲染 -->
   <!-- eslint-disable-next-line vue/no-v-html -- svgContent 来自构建时打包的本地 SVG 资源，非用户输入 -->
-  <span v-if="isSvgIcon" v-html="svgContent" :class="[attrs.class, 'svg-local-icon']" :style="svgStyle" />
+  <span
+    v-if="isSvgIcon"
+    :class="[attrs.class, 'svg-local-icon']"
+    :style="svgStyle"
+    v-html="svgContent"
+  />
   <!-- Iconify 图标：用 @iconify/vue 组件渲染 -->
   <Icon v-else :icon="resolvedIcon" :width="iconSize" :height="iconSize" :class="attrs.class" />
 </template>
@@ -100,12 +105,11 @@ const svgContent = computed(() => {
   const raw = svgRaw.value;
   if (!raw) return "";
   // 统一设置 width="1em" height="1em"，确保 SVG 通过 font-size 控制尺寸
-  return raw
-    .replace(/<svg\b[^>]*>/, (match) => {
-      // 先移除已有的 width/height 属性，再统一注入
-      const cleaned = match.replace(/\s+(width|height)="[^"]*"/g, "");
-      return cleaned.replace(/<svg\b/, '<svg width="1em" height="1em"');
-    });
+  return raw.replace(/<svg\b[^>]*>/, (match) => {
+    // 先移除已有的 width/height 属性，再统一注入
+    const cleaned = match.replace(/\s+(width|height)="[^"]*"/g, "");
+    return cleaned.replace(/<svg\b/, '<svg width="1em" height="1em"');
+  });
 });
 
 /**

@@ -331,7 +331,9 @@ defineExpose({
 
     // ======== 普通按钮（default）—— 中性灰，使用 Element Plus 按钮主题变量（亮/暗自动切换） ========
     // stylelint-disable-next-line selector-max-universal
-    &:not(.el-button--primary):not(.el-button--danger):not(.el-button--success):not(.el-button--warning):not(.el-button--info):not(.is-circle) {
+    &:not(.el-button--primary):not(.el-button--danger):not(.el-button--success):not(
+        .el-button--warning
+      ):not(.el-button--info):not(.is-circle) {
       background-color: var(--el-button-bg-color);
       border-color: var(--el-button-border-color);
       color: var(--el-button-text-color);

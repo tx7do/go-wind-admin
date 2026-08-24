@@ -20,60 +20,64 @@
         v-if="showSkeleton"
         v-bind="skeletonProps"
         :show-search="skeletonProps.showSearch ?? !!config.search?.fields?.length"
-        :column-count="config.table.columns.filter((c: any) => c.prop && c.type !== 'selection' && c.type !== 'index').length"
-        :show-pagination="skeletonProps.showPagination ?? (config.table.pagination !== false)"
+        :column-count="
+          config.table.columns.filter(
+            (c: any) => c.prop && c.type !== 'selection' && c.type !== 'index'
+          ).length
+        "
+        :show-pagination="skeletonProps.showPagination ?? config.table.pagination !== false"
       />
 
       <!-- 正常内容 -->
       <template v-else>
-      <!-- 工具栏 -->
-      <ProToolbar
-        :left-buttons="leftButtons"
-        :right-buttons="rightButtons"
-        :default-toolbar="defaultToolbarButtons"
-        :columns="filterColumns"
-        @button-click="handleToolbarClick"
-        @zoom="handleZoom"
-        @filter-change="handleFilterChange"
-      >
-        <template #left><slot name="toolbar-left" /></template>
-        <template #before-tools><slot name="toolbar-before-tools" /></template>
-        <template v-if="!!$slots['toolbar-filter']" #filter>
-          <slot name="toolbar-filter" />
-        </template>
-        <template #right><slot name="toolbar-right" /></template>
-      </ProToolbar>
+        <!-- 工具栏 -->
+        <ProToolbar
+          :left-buttons="leftButtons"
+          :right-buttons="rightButtons"
+          :default-toolbar="defaultToolbarButtons"
+          :columns="filterColumns"
+          @button-click="handleToolbarClick"
+          @zoom="handleZoom"
+          @filter-change="handleFilterChange"
+        >
+          <template #left><slot name="toolbar-left" /></template>
+          <template #before-tools><slot name="toolbar-before-tools" /></template>
+          <template v-if="!!$slots['toolbar-filter']" #filter>
+            <slot name="toolbar-filter" />
+          </template>
+          <template #right><slot name="toolbar-right" /></template>
+        </ProToolbar>
 
-      <!-- 表格 -->
-      <ProTable
-        ref="tableRef"
-        class="flex-1 min-h-0"
-        :engine="config.engine"
-        :table-id="tableId"
-        :columns="config.table.columns"
-        :data="tableData"
-        :loading="tableState.loading.value"
-        :row-key="rowKey"
-        :table="config.table.tableAttrs"
-        :empty-action-text="config.table.emptyActionText"
-        :pagination="tableState.showPagination"
-        :total="tableState.pagination.total"
-        :current-page="tableState.pagination.currentPage"
-        :page-size="tableState.pagination.pageSize"
-        :page-sizes="tableState.pagination.pageSizes"
-        @selection-change="tableState.handleSelectionChange"
-        @modify="handleModify"
-        @operate="handleOperate"
-        @current-change="handlePageChange"
-        @size-change="handleSizeChange"
-        @row-click="handleRowClick"
-        @empty-action="handleEmptyAction"
-      >
-        <!-- 透传自定义列插槽 -->
-        <template v-for="(_, name) in $slots" :key="name" #[name]="slotProps">
-          <slot :name="name" v-bind="slotProps" />
-        </template>
-      </ProTable>
+        <!-- 表格 -->
+        <ProTable
+          ref="tableRef"
+          class="flex-1 min-h-0"
+          :engine="config.engine"
+          :table-id="tableId"
+          :columns="config.table.columns"
+          :data="tableData"
+          :loading="tableState.loading.value"
+          :row-key="rowKey"
+          :table="config.table.tableAttrs"
+          :empty-action-text="config.table.emptyActionText"
+          :pagination="tableState.showPagination"
+          :total="tableState.pagination.total"
+          :current-page="tableState.pagination.currentPage"
+          :page-size="tableState.pagination.pageSize"
+          :page-sizes="tableState.pagination.pageSizes"
+          @selection-change="tableState.handleSelectionChange"
+          @modify="handleModify"
+          @operate="handleOperate"
+          @current-change="handlePageChange"
+          @size-change="handleSizeChange"
+          @row-click="handleRowClick"
+          @empty-action="handleEmptyAction"
+        >
+          <!-- 透传自定义列插槽 -->
+          <template v-for="(_, name) in $slots" :key="name" #[name]="slotProps">
+            <slot :name="name" v-bind="slotProps" />
+          </template>
+        </ProTable>
       </template>
     </div>
 
@@ -461,7 +465,9 @@ function handleModalSubmit() {
 tableState.fetch(searchParams);
 
 // === 骨架屏：追踪首次加载 ===
-const skeletonEnabled = computed(() => props.config.skeleton !== undefined && props.config.skeleton !== false);
+const skeletonEnabled = computed(
+  () => props.config.skeleton !== undefined && props.config.skeleton !== false
+);
 const skeletonProps = computed<SkeletonConfig>(() => {
   const s = props.config.skeleton;
   if (s === true || s === undefined || s === false) return {} as SkeletonConfig;

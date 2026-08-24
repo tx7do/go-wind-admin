@@ -51,7 +51,8 @@ export function useGetRole(
 
 export function useCreateRole(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (values) => apiClient.roleService.Create({ data: { ...values } as permissionservicev1_Role }),
+    mutationFn: (values) =>
+      apiClient.roleService.Create({ data: { ...values } as permissionservicev1_Role }),
     ...options,
   });
 }

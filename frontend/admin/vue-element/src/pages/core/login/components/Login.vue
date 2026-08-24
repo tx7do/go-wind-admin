@@ -13,7 +13,10 @@
     >
       <!-- 租户编号（可选，留空为平台登录） -->
       <el-form-item prop="tenant_code">
-        <el-input v-model.trim="loginFormData.tenant_code" :placeholder="t('core.login.tenantCode')">
+        <el-input
+          v-model.trim="loginFormData.tenant_code"
+          :placeholder="t('core.login.tenantCode')"
+        >
           <template #prefix>
             <el-icon><User /></el-icon>
           </template>
@@ -65,7 +68,9 @@
             @click="refreshCaptcha"
           >
             <img v-if="captchaImage" :src="captchaImage" alt="captcha" />
-            <span v-else class="captcha-image__placeholder">{{ t("core.login.captchaRefresh") }}</span>
+            <span v-else class="captcha-image__placeholder">
+              {{ t("core.login.captchaRefresh") }}
+            </span>
           </div>
         </div>
       </el-form-item>

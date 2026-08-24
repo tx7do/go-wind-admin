@@ -5,11 +5,7 @@ import { RequestClient } from "@/core/transport/rest";
 /**
  * 从MinIO下载文件
  */
-async function downloadFile(
-  bucketName: string,
-  objectName: string,
-  preferPresignedUrl: boolean
-) {
+async function downloadFile(bucketName: string, objectName: string, preferPresignedUrl: boolean) {
   if (preferPresignedUrl) {
     const resp = await apiClient.fileTransferService.DownloadFile({
       storageObject: { bucketName, objectName },

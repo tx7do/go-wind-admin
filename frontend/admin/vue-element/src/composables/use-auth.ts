@@ -138,9 +138,12 @@ async function login(
     if ((resp as any).mfa_operation_id) {
       accessStore.mfaOperationId = (resp as any).mfa_operation_id as string;
       // 携带 redirect 到挑战页（用请求前捕获值），验证通过后回到原目标页
-      await router.push({ name: "MfaChallenge", query: redirectAtEntry ? { redirect: redirectAtEntry } : {} });
+      await router.push({
+        name: "MfaChallenge",
+        query: redirectAtEntry ? { redirect: redirectAtEntry } : {},
+      });
       return { userInfo: null };
-      }
+    }
 
     userInfo = await applySuccessfulLogin(resp as any, onSuccess);
   } catch (error) {
@@ -229,7 +232,7 @@ async function applySuccessfulLogin(
 // completeMfaChallenge 用 operation_id + TOTP 码调后端验证，通过则复用 applySuccessfulLogin。
 async function completeMfaChallenge(
   totpCode: string,
-  onSuccess?: () => Promise<void> | void,
+  onSuccess?: () => Promise<void> | void
 ): Promise<{ userInfo: null | UserInfo } | null> {
   let userInfo: null | UserInfo = null;
   const accessStore = useAccessStore();
@@ -241,7 +244,7 @@ async function completeMfaChallenge(
     loginLoading.value = true;
     const resp = await verifyMfaMutation.execute({
       operationId: opId,
-      totpCode: totpCode,
+      totpCode,
     } as any);
     accessStore.mfaOperationId = null;
     userInfo = await applySuccessfulLogin(resp as any, onSuccess);

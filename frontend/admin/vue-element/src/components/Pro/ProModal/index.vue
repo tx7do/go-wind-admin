@@ -111,7 +111,7 @@ async function handleSubmit() {
   // （如必填项为空）也误弹「操作失败」。这里先单独校验，失败即返回。
   const valid = await formRef.value?.validate().then(
     () => true,
-    () => false,
+    () => false
   );
   if (!valid) return;
 

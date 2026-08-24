@@ -43,7 +43,11 @@
           <div class="ts-bar ts-bar--xs ts-bar--subtle" style="width: 24px" />
         </div>
         <div v-for="col in columns" :key="col.key" class="ts-td">
-          <div class="ts-bar" :class="col.barClass" :style="{ width: col.barWidths[(i - 1) % col.barWidths.length] }" />
+          <div
+            class="ts-bar"
+            :class="col.barClass"
+            :style="{ width: col.barWidths[(i - 1) % col.barWidths.length] }"
+          />
         </div>
         <div class="ts-td ts-td--end">
           <div class="ts-link-bar" />
@@ -57,7 +61,12 @@
     <div v-if="showPagination" class="ts-pagination">
       <div class="ts-bar ts-bar--xs ts-bar--subtle" style="width: 120px" />
       <div class="ts-pagi-pages">
-        <div v-for="p in 5" :key="p" class="ts-pagi-btn" :class="{ 'ts-pagi-btn--active': p === 1 }" />
+        <div
+          v-for="p in 5"
+          :key="p"
+          class="ts-pagi-btn"
+          :class="{ 'ts-pagi-btn--active': p === 1 }"
+        />
         <div class="ts-pagi-btn ts-pagi-btn--nav" />
       </div>
     </div>
@@ -123,7 +132,11 @@ const columns = computed(() => {
       key: i,
       label: "",
       width: widthOptions[i % widthOptions.length],
-      barClass: isStatusCol ? "ts-bar--tag" : isNameCol ? "ts-bar--name" : "ts-bar--s ts-bar--subtle",
+      barClass: isStatusCol
+        ? "ts-bar--tag"
+        : isNameCol
+          ? "ts-bar--name"
+          : "ts-bar--s ts-bar--subtle",
       barWidths,
     });
   }

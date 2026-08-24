@@ -129,6 +129,15 @@ export function useGetTenantUsage(
   });
 }
 
+export async function fetchTenantUsage(req: identityservicev1_GetTenantUsageRequest) {
+  return queryClient.fetchQuery({
+    queryKey: ["getTenantUsage", req],
+    queryFn: () => apiClient.tenantService.GetUsage(req),
+    staleTime: 0,
+    retry: 0,
+  });
+}
+
 // ==============================
 // 清理租户数据
 // ==============================

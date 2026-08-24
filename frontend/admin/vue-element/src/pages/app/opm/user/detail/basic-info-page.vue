@@ -1,5 +1,5 @@
 <template>
-  <div class="basic-info-page" v-loading="pageLoading">
+  <div v-loading="pageLoading" class="basic-info-page">
     <!-- 基本信息卡片 -->
     <div class="basic-info-container">
       <!-- 头像与状态 -->

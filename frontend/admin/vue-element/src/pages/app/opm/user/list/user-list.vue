@@ -306,11 +306,15 @@ function handleOperate(data: { name: string; row: any }) {
 // 管理端救援重置：清空目标用户 TOTP 因子（认证器丢失解锁用，仅平台管理员生效）
 async function handleResetMfa(row: any) {
   try {
-    await ElMessageBox.confirm($t("pages.user.resetMfaConfirmDesc"), $t("pages.user.resetMfaConfirmTitle"), {
-      confirmButtonText: $t("pages.user.resetMfa"),
-      cancelButtonText: $t("core.login.mfaCancel"),
-      type: "warning",
-    });
+    await ElMessageBox.confirm(
+      $t("pages.user.resetMfaConfirmDesc"),
+      $t("pages.user.resetMfaConfirmTitle"),
+      {
+        confirmButtonText: $t("pages.user.resetMfa"),
+        cancelButtonText: $t("core.login.mfaCancel"),
+        type: "warning",
+      }
+    );
   } catch {
     return;
   }

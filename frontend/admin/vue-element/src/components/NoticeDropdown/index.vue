@@ -21,12 +21,7 @@
         <!-- 消息列表 -->
         <div class="notice-dropdown__body">
           <template v-if="list.length > 0">
-            <div
-              v-for="item in list"
-              :key="item.id"
-              class="notice-item"
-              @click="read(item)"
-            >
+            <div v-for="item in list" :key="item.id" class="notice-item" @click="read(item)">
               <!-- 头像 -->
               <div class="notice-item__avatar">
                 <el-avatar :size="40" :src="defaultAvatar">
@@ -57,7 +52,7 @@
           <template v-else>
             <div class="notice-dropdown__empty">
               <SvgIcon icon="lucide:inbox" :size="48" class="notice-dropdown__empty-icon" />
-              <p class="notice-dropdown__empty-text">{{ t('core.notice.empty') }}</p>
+              <p class="notice-dropdown__empty-text">{{ t("core.notice.empty") }}</p>
             </div>
           </template>
         </div>

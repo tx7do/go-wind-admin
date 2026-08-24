@@ -57,7 +57,8 @@ export function useGetPosition(
 
 export function useCreatePosition(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (values) => apiClient.positionService.Create({ data: { ...values } as identityservicev1_Position }),
+    mutationFn: (values) =>
+      apiClient.positionService.Create({ data: { ...values } as identityservicev1_Position }),
     ...options,
   });
 }

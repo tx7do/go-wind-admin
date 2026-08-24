@@ -39,10 +39,7 @@
           </div>
 
           <transition name="fade-slide" mode="out-in">
-            <component
-              :is="formComponents[component]"
-              class="auth-panel__form"
-            />
+            <component :is="formComponents[component]" class="auth-panel__form" />
           </transition>
         </div>
 

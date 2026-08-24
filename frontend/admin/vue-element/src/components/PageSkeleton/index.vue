@@ -267,7 +267,6 @@ export function resolveSkeletonType(path: string): SkeletonType {
 </script>
 
 <script lang="ts" setup>
-// eslint-disable-next-line vue/no-export-in-script-setup -- type-only import is fine
 withDefaults(
   defineProps<{
     visible: boolean;

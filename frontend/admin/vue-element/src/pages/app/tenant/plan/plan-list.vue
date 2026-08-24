@@ -16,7 +16,12 @@
 
       <!-- 到期处置策略 -->
       <template #expiryPolicy="scope: any">
-        <ElTag size="small" effect="dark" round :color="planExpiryPolicyToColor(scope.row.expiryPolicy)">
+        <ElTag
+          size="small"
+          effect="dark"
+          round
+          :color="planExpiryPolicyToColor(scope.row.expiryPolicy)"
+        >
           {{ planExpiryPolicyToName(scope.row.expiryPolicy) }}
         </ElTag>
       </template>
@@ -36,7 +41,13 @@ import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import { useProModal } from "@/components/Pro";
 import PlanDrawer from "./plan-drawer.vue";
 
-import { planExpiryPolicyToColor, planExpiryPolicyToName, planVersionToColor, planVersionToName, useDeletePlan } from "@/api/composables";
+import {
+  planExpiryPolicyToColor,
+  planExpiryPolicyToName,
+  planVersionToColor,
+  planVersionToName,
+  useDeletePlan,
+} from "@/api/composables";
 import { $t } from "@/core/i18n";
 import { usePlanViewStore } from "@/pages/app/tenant/plan/plan-view.state";
 

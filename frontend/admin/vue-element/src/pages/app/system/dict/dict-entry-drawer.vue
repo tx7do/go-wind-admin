@@ -326,7 +326,7 @@ async function handleSubmit() {
   // 否则 catch 里 `error !== false` 恒为 true，校验失败（如必填项为空）会误弹「创建/更新失败」。
   const valid = await formRef.value.validate().then(
     () => true,
-    () => false,
+    () => false
   );
   if (!valid) return;
 
@@ -353,7 +353,7 @@ async function handleSubmit() {
     ElMessage.error(
       isCreate.value
         ? $t("common.notification.create_failed")
-        : $t("common.notification.update_failed"),
+        : $t("common.notification.update_failed")
     );
   } finally {
     submitLoading.value = false;

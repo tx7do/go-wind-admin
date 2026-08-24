@@ -10,11 +10,11 @@
   >
     <ElForm
       ref="formRef"
+      v-loading="pageLoading"
       :model="formData"
       :rules="formRules"
       label-width="120px"
       class="drawer-form"
-      v-loading="pageLoading"
     >
       <!-- 基本信息 -->
       <ElDivider content-position="left">{{ $t("common.section.basic") }}</ElDivider>

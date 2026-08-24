@@ -8,7 +8,7 @@
       @toolbar="handleToolbar"
     >
       <!-- 状态 -->
-      <template #status="scope:any">
+      <template #status="scope: any">
         <ElTag size="small" effect="plain" round :type="statusToType(scope.row.status)">
           {{ statusToName(scope.row.status) }}
         </ElTag>

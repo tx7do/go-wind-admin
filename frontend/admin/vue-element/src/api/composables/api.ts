@@ -51,7 +51,8 @@ export function useGetApi(
 
 export function useCreateApi(options?: UseMutationOptions<{}, Error, Record<string, any>>) {
   return useMutation({
-    mutationFn: (values) => apiClient.apiService.Create({ data: { ...values } as permissionservicev1_Api }),
+    mutationFn: (values) =>
+      apiClient.apiService.Create({ data: { ...values } as permissionservicev1_Api }),
     ...options,
   });
 }
