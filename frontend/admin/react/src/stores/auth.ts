@@ -1,4 +1,4 @@
-import { create } from 'zustand';
+import { create, type StoreApi } from 'zustand';
 import { persist } from 'zustand/middleware';
 import i18next from 'i18next';
 
@@ -76,6 +76,61 @@ export interface AuthState {
 // ========== 常量 ==========
 const DEFAULT_ACCESS_EXPIRES_IN = 7200; // 2 小时
 
+// applySuccessfulLogin 处理"已拿到含真 token 的 LoginResponse"后的统一流程：
+// 存 token → 拉用户信息 → 启动刷新定时器 → 跳转。
+// 登录成功与 MFA 验证成功都复用此函数。
+async function applySuccessfulLogin(
+  set: StoreApi<AuthState>['setState'],
+  response: authenticationservicev1_LoginResponse,
+  now: number,
+  onSuccess?: () => void,
+): Promise<void> {
+  // 保存 Token
+  const accessTokenPayload: TokenPayload = {
+    value: response.access_token || '',
+    expiresAt: now + (response.expires_in || DEFAULT_ACCESS_EXPIRES_IN) * 1000,
+  };
+
+  set({
+    accessToken: accessTokenPayload.value,
+    accessTokenExpireAt: accessTokenPayload.expiresAt,
+  });
+
+  console.log('💾 Access token saved:', {
+    value: accessTokenPayload.value ? '***' + accessTokenPayload.value.slice(-8) : 'empty',
+    expiresAt: accessTokenPayload.expiresAt
+      ? new Date(accessTokenPayload.expiresAt).toISOString()
+      : 'N/A',
+  });
+
+  // refresh token 通过 HttpOnly Cookie 传输，前端不可读也不存内存。
+  // 页面刷新后由 bootstrap 静默恢复（凭 cookie 调 /refresh-token 换新 access token）。
+
+  // 获取用户信息（交给 React Query 处理缓存，这里只更新 Zustand）
+  console.log('👤 Fetching user info...');
+  const userInfo = (await fetchUserProfile()) as unknown as UserInfo;
+  set({ userInfo });
+  console.log('✅ User info fetched:', userInfo);
+
+  // 启动定时刷新 token
+  startRefreshTimer();
+
+  // 执行成功回调或跳转
+  if (onSuccess) {
+    onSuccess();
+  } else if (userInfo?.homePath) {
+    // 校验 homePath 必须为同源相对路径，防止服务端返回值导致开放重定向
+    const rawHomePath = userInfo.homePath;
+    if (
+      typeof rawHomePath === 'string' &&
+      rawHomePath.startsWith('/') &&
+      !rawHomePath.startsWith('//')
+    ) {
+      window.location.href = rawHomePath;
+    }
+  }
+}
+
 // ========== Store 实现 ==========
 export const useAuthStore = create<AuthState>()(
   persist(
@@ -88,60 +143,6 @@ export const useAuthStore = create<AuthState>()(
       loginLoading: false,
       registerLoading: false,
       error: null,
-
-      // applySuccessfulLogin 处理"已拿到含真 token 的 LoginResponse"后的统一流程：
-      // 存 token → 拉用户信息 → 启动刷新定时器 → 跳转。
-      // 登录成功与 MFA 验证成功都复用此函数。
-      applySuccessfulLogin: async (
-        response: authenticationservicev1_LoginResponse,
-        now: number,
-        onSuccess?: () => void,
-      ) => {
-        // 保存 Token
-        const accessTokenPayload: TokenPayload = {
-          value: response.access_token || '',
-          expiresAt: now + (response.expires_in || DEFAULT_ACCESS_EXPIRES_IN) * 1000,
-        };
-
-        set({
-          accessToken: accessTokenPayload.value,
-          accessTokenExpireAt: accessTokenPayload.expiresAt,
-        });
-
-        console.log('💾 Access token saved:', {
-          value: accessTokenPayload.value ? '***' + accessTokenPayload.value.slice(-8) : 'empty',
-          expiresAt: accessTokenPayload.expiresAt
-            ? new Date(accessTokenPayload.expiresAt).toISOString()
-            : 'N/A',
-        });
-
-        // refresh token 通过 HttpOnly Cookie 传输，前端不可读也不存内存。
-        // 页面刷新后由 bootstrap 静默恢复（凭 cookie 调 /refresh-token 换新 access token）。
-
-        // 获取用户信息（交给 React Query 处理缓存，这里只更新 Zustand）
-        console.log('👤 Fetching user info...');
-        const userInfo = (await fetchUserProfile()) as unknown as UserInfo;
-        set({ userInfo });
-        console.log('✅ User info fetched:', userInfo);
-
-        // 启动定时刷新 token
-        startRefreshTimer();
-
-        // 执行成功回调或跳转
-        if (onSuccess) {
-          onSuccess();
-        } else if (userInfo?.homePath) {
-          // 校验 homePath 必须为同源相对路径，防止服务端返回值导致开放重定向
-          const rawHomePath = userInfo.homePath;
-          if (
-            typeof rawHomePath === 'string' &&
-            rawHomePath.startsWith('/') &&
-            !rawHomePath.startsWith('//')
-          ) {
-            window.location.href = rawHomePath;
-          }
-        }
-      },
 
       // 登录
       login: async (params, onSuccess, captcha) => {
@@ -174,7 +175,7 @@ export const useAuthStore = create<AuthState>()(
           }
 
           const now = Date.now();
-          await applySuccessfulLogin(response, now, onSuccess);
+          await applySuccessfulLogin(set, response, now, onSuccess);
         } catch (err: any) {
           const errorMsg = err?.message || i18next.t('auth:loginFailed');
           // 登录失败时清除任何可能被部分写入的认证状态（含空 token / 未来 expiry / MFA 状态），
@@ -207,7 +208,7 @@ export const useAuthStore = create<AuthState>()(
 
           // MFA 验证成功后清掉挑战态，复用登录成功流程存 token / 拉用户信息 / 跳转。
           set({ mfaOperationId: null });
-          await applySuccessfulLogin(response, Date.now(), onSuccess);
+          await applySuccessfulLogin(set, response, Date.now(), onSuccess);
         } catch (err: any) {
           const errorMsg = err?.message || i18next.t('auth:mfaVerifyFailed');
           set({ error: errorMsg, mfaOperationId: null });
