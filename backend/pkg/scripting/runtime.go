@@ -4,7 +4,7 @@ import (
 	"context"
 	"sync"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/redis/go-redis/v9"
 
 	gsEngine "github.com/tx7do/go-scripts"
@@ -39,7 +39,7 @@ type ScriptCallback interface {
 // RuntimeDeps 聚合编排器持有的业务依赖，传给 RuntimeBinder.Bind。
 // 各语言适配器根据这些依赖在 VM 上注册对应的业务模块。
 type RuntimeDeps struct {
-	Logger          *log.Helper
+	Logger          *bLogger.Helper
 	Rdb             *redis.Client     // 可为 nil，nil 时跳过 cache 模块
 	EventBusManager *eventbus.Manager // 可为 nil，nil 时跳过 eventbus 模块
 	OSSClient       *oss.MinIOClient  // 可为 nil，nil 时跳过 oss 模块

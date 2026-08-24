@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	gsEngine "github.com/tx7do/go-scripts"
 	lua "github.com/yuin/gopher-lua"
@@ -15,7 +15,7 @@ func newTestEngine(t *testing.T) *Engine {
 	t.Helper()
 	cfg := DefaultConfig()
 	cfg.ScriptDir = "" // 测试不自动加载
-	e := NewEngine(cfg, log.DefaultLogger)
+	e := NewEngine(cfg, bLogger.NopLogger())
 	t.Cleanup(func() { e.Close() })
 	return e
 }
@@ -133,7 +133,7 @@ func TestEngine_RuntimeHook_ContextFunctions(t *testing.T) {
 // 这是多语言切换的入口：替换工厂即可切换底层脚本语言。
 func TestEngineWithFactory_CustomEngine(t *testing.T) {
 	injected := false
-	customFactory := func(config *Config, _ log.Logger) (gsEngine.Engine, error) {
+	customFactory := func(config *Config, _ bLogger.Logger) (gsEngine.Engine, error) {
 		injected = true
 		// 返回标准 Lua 引擎（验证工厂机制本身）
 		return gsEngine.NewScriptEngine(config.EngineType)
@@ -141,7 +141,7 @@ func TestEngineWithFactory_CustomEngine(t *testing.T) {
 
 	cfg := DefaultConfig()
 	cfg.ScriptDir = ""
-	e := NewEngineWithFactory(cfg, log.DefaultLogger, customFactory)
+	e := NewEngineWithFactory(cfg, bLogger.NopLogger(), customFactory)
 	defer e.Close()
 
 	if !injected {

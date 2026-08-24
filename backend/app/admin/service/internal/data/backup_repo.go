@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-kratos/kratos/v2/log"
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
 )
@@ -17,7 +17,7 @@ import (
 // 直接持有 *entCrud.EntClient，从而维持分层边界。
 type BackupRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 }
 
 // NewBackupRepo 创建备份仓库。
@@ -66,7 +66,7 @@ func (r *BackupRepo) ExportCoreTables(ctx context.Context) (map[string]any, erro
 		rows, err := t.query()
 		if err != nil {
 			// 核心表导出失败直接返回错误，避免产出残缺备份被当作成功
-			r.log.Errorf("backup: export table %q failed: %s", t.name, err.Error())
+			r.log.Errorf(ctx, "backup: export table %q failed: %s", t.name, err.Error())
 			return nil, fmt.Errorf("export table %q failed: %w", t.name, err)
 		}
 		result[t.name] = rows

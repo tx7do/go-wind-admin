@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	gsEngine "github.com/tx7do/go-scripts"
 )
@@ -15,7 +15,7 @@ func newTestJSEngine(t *testing.T) *Engine {
 	cfg := DefaultConfig()
 	cfg.ScriptDir = ""
 	cfg.EngineType = gsEngine.JavaScriptType
-	e := NewEngine(cfg, log.DefaultLogger)
+	e := NewEngine(cfg, bLogger.NopLogger())
 	t.Cleanup(func() { e.Close() })
 	return e
 }
@@ -166,7 +166,7 @@ func TestMultiLanguageSwitch(t *testing.T) {
 	// Lua 引擎
 	luaCfg := DefaultConfig()
 	luaCfg.ScriptDir = ""
-	luaEng := NewEngine(luaCfg, log.DefaultLogger)
+	luaEng := NewEngine(luaCfg, bLogger.NopLogger())
 	defer luaEng.Close()
 	if luaEng.ScriptEngine().GetType() != gsEngine.LuaType {
 		t.Fatal("expected lua engine")
@@ -176,7 +176,7 @@ func TestMultiLanguageSwitch(t *testing.T) {
 	jsCfg := DefaultConfig()
 	jsCfg.ScriptDir = ""
 	jsCfg.EngineType = gsEngine.JavaScriptType
-	jsEng := NewEngine(jsCfg, log.DefaultLogger)
+	jsEng := NewEngine(jsCfg, bLogger.NopLogger())
 	defer jsEng.Close()
 	if jsEng.ScriptEngine().GetType() != gsEngine.JavaScriptType {
 		t.Fatal("expected javascript engine")

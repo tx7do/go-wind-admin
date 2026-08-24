@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -23,7 +23,7 @@ import (
 
 type PlanQuotaRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper           *mapper.CopierMapper[identityV1.PlanQuota, ent.PlanQuota]
 	quotaTypeConv    *mapper.EnumTypeConverter[identityV1.PlanQuota_QuotaType, planquota.QuotaType]
@@ -80,7 +80,7 @@ func (r *PlanQuotaRepo) Count(ctx context.Context, whereCond []func(s *sql.Selec
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -96,13 +96,13 @@ func (r *PlanQuotaRepo) List(ctx context.Context, req *paginationV1.PagingReques
 
 	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
 	if err != nil {
-		r.log.Errorf("parse list param error [%s]", err.Error())
+		r.log.Errorf(ctx, "parse list param error [%s]", err.Error())
 		return nil, identityV1.ErrorBadRequest("invalid query parameter")
 	}
 
 	entities, err := builder.All(ctx)
 	if err != nil {
-		r.log.Errorf("query plan quota list failed: %s", err.Error())
+		r.log.Errorf(ctx, "query plan quota list failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query plan quota list failed")
 	}
 
@@ -131,7 +131,7 @@ func (r *PlanQuotaRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Where(planquota.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, identityV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -167,18 +167,18 @@ func (r *PlanQuotaRepo) Create(ctx context.Context, req *identityV1.CreatePlanQu
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -198,7 +198,7 @@ func (r *PlanQuotaRepo) Create(ctx context.Context, req *identityV1.CreatePlanQu
 	}
 
 	if _, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("insert plan quota failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert plan quota failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("insert plan quota failed")
 	}
 
@@ -231,18 +231,18 @@ func (r *PlanQuotaRepo) Update(ctx context.Context, req *identityV1.UpdatePlanQu
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -261,7 +261,7 @@ func (r *PlanQuotaRepo) Update(ctx context.Context, req *identityV1.UpdatePlanQu
 		},
 	)
 	if err != nil {
-		r.log.Errorf("update plan quota failed: %s", err.Error())
+		r.log.Errorf(ctx, "update plan quota failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("update plan quota failed")
 	}
 
@@ -278,7 +278,7 @@ func (r *PlanQuotaRepo) Delete(ctx context.Context, id uint32) error {
 			return identityV1.ErrorNotFound("plan quota not found")
 		}
 
-		r.log.Errorf("delete one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete one data failed: %s", err.Error())
 
 		return identityV1.ErrorInternalServerError("delete failed")
 	}

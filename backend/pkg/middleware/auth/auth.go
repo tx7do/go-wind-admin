@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/go-kratos/kratos/v2/middleware"
 	"github.com/go-kratos/kratos/v2/transport"
 	http "github.com/go-kratos/kratos/v2/transport/http"
@@ -24,7 +24,7 @@ var defaultAction = authzEngine.Action("ANY")
 // Server 衔接认证和鉴权
 func Server(opts ...Option) middleware.Middleware {
 	op := options{
-		log: log.NewHelper(log.With(log.DefaultLogger, "module", "auth/middleware")),
+		log: bLogger.NewHelper(bLogger.GetLogger().With("module", "auth/middleware")),
 
 		injectOperatorId: false,
 		injectTenantId:   false,
@@ -40,7 +40,7 @@ func Server(opts ...Option) middleware.Middleware {
 		return func(ctx context.Context, req interface{}) (interface{}, error) {
 			tr, ok := transport.FromServerContext(ctx)
 			if !ok {
-				op.log.Errorf("auth middleware: missing transport in context")
+				op.log.Errorf(ctx, "auth middleware: missing transport in context")
 				return nil, ErrWrongContext
 			}
 
@@ -50,14 +50,14 @@ func Server(opts ...Option) middleware.Middleware {
 			}
 
 			if op.accessTokenChecker == nil {
-				op.log.Errorf("auth middleware: access token checker is not configured")
+				op.log.Errorf(ctx, "auth middleware: access token checker is not configured")
 				return nil, ErrAccessTokenCheckerNotConfigured
 			}
 
 			var tokenPayload *authenticationV1.UserTokenPayload
 			var valid bool
 			if valid, tokenPayload = op.accessTokenChecker.IsValidAccessToken(ctx, token, false); !valid {
-				op.log.Errorf("auth middleware: invalid access token")
+				op.log.Errorf(ctx, "auth middleware: invalid access token")
 				return nil, ErrAccessTokenExpired
 			}
 
@@ -65,13 +65,13 @@ func Server(opts ...Option) middleware.Middleware {
 
 			if op.injectOperatorId {
 				if err = setRequestOperationId(req, tokenPayload); err != nil {
-					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
+					op.log.Errorf(ctx, "auth middleware: invalid token payload in context [%s]", err.Error())
 					return nil, err
 				}
 			}
 			if op.injectTenantId {
 				if err = setRequestTenantId(req, tokenPayload); err != nil {
-					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
+					op.log.Errorf(ctx, "auth middleware: invalid token payload in context [%s]", err.Error())
 					return nil, err
 				}
 			}
@@ -103,7 +103,7 @@ func Server(opts ...Option) middleware.Middleware {
 			},
 		)
 		if err != nil {
-			op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
+			op.log.Errorf(ctx, "auth middleware: invalid token payload in context [%s]", err.Error())
 			return nil, err
 		}
 	}
@@ -128,7 +128,7 @@ func Server(opts ...Option) middleware.Middleware {
 	if op.enableAuthz {
 				ctx, err = processAuthz(ctx, tr, tokenPayload)
 				if err != nil {
-					op.log.Errorf("auth middleware: invalid token payload in context [%s]", err.Error())
+					op.log.Errorf(ctx, "auth middleware: invalid token payload in context [%s]", err.Error())
 					return nil, err
 				}
 			}

@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -49,7 +49,7 @@ const (
 //
 // 非 TOTP 方法、StartMFAChallenge、备份码相关 RPC 本轮返回 UNIMPLEMENTED。
 type MfaService struct {
-	log *log.Helper
+	log *bLogger.Helper
 
 	mfaFactorRepo     *data.UserMfaFactorRepo
 	mfaChallengeCache *data.MfaChallengeCache
@@ -148,19 +148,19 @@ func (s *MfaService) StartEnrollMethod(ctx context.Context, req *authenticationV
 		AccountName: fmt.Sprintf("uid:%d", operator.GetUserId()),
 	})
 	if err != nil {
-		s.log.Errorf("generate totp key failed: %s", err.Error())
+		s.log.Errorf(ctx, "generate totp key failed: %s", err.Error())
 		return nil, authenticationV1.ErrorInternalServerError("generate totp key failed")
 	}
 
 	opId, err := s.mfaChallengeCache.SetEnrollChallenge(ctx, key.Secret(), operator.GetTenantId(), operator.GetUserId())
 	if err != nil {
-		s.log.Errorf("set enroll challenge failed: %s", err.Error())
+		s.log.Errorf(ctx, "set enroll challenge failed: %s", err.Error())
 		return nil, authenticationV1.ErrorInternalServerError("start enroll failed")
 	}
 
 	qrUri, err := totpQrDataUri(key)
 	if err != nil {
-		s.log.Errorf("encode totp qr failed: %s", err.Error())
+		s.log.Errorf(ctx, "encode totp qr failed: %s", err.Error())
 		return nil, authenticationV1.ErrorInternalServerError("encode totp qr failed")
 	}
 
@@ -252,7 +252,7 @@ func (s *MfaService) VerifyMFAChallenge(ctx context.Context, req *authentication
 	factorId, plainSecret, err := s.mfaFactorRepo.FindEnabledTotpForUser(ctx, tid, uid)
 	if err != nil {
 		// 因子缺失（如验证期间被解绑/被管理员重置）：作废挑战走重新登录
-		s.log.Errorf("find totp factor for login mfa failed uid=%d: %s", uid, err.Error())
+		s.log.Errorf(ctx, "find totp factor for login mfa failed uid=%d: %s", uid, err.Error())
 		s.mfaChallengeCache.ConsumeLoginChallenge(ctx, req.GetOperationId())
 		return nil, authenticationV1.ErrorForbidden("mfa verification failed")
 	}
@@ -270,7 +270,7 @@ func (s *MfaService) VerifyMFAChallenge(ctx context.Context, req *authentication
 		exceeded := s.mfaChallengeCache.RecordLoginFailure(ctx, req.GetOperationId())
 		if s.rateLimiter != nil {
 			if _, _, _, cerr := s.rateLimiter.CheckAndIncr(ctx, netutil.ClientIPFromContext(ctx), payload.GetUsername()); cerr != nil {
-				s.log.Errorf("mfa rate limiter incr failed: %s", cerr.Error())
+				s.log.Errorf(ctx, "mfa rate limiter incr failed: %s", cerr.Error())
 			}
 		}
 		if exceeded {
@@ -358,7 +358,7 @@ func (s *MfaService) DisableMFA(ctx context.Context, req *authenticationV1.Disab
 			}
 		}
 
-		s.log.Warnf("admin [%d] reset mfa for user [%d], reason=%s", operator.GetUserId(), target, req.GetReason())
+		s.log.Warnf(ctx, "admin [%d] reset mfa for user [%d], reason=%s", operator.GetUserId(), target, req.GetReason())
 		return &emptypb.Empty{}, nil
 	}
 

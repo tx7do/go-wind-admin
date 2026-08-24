@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/go-utils/id"
 )
 
@@ -17,7 +17,7 @@ type Context struct {
 	Data       map[string]interface{} // Input/output data
 	User       *UserContext           // Current user info
 	Request    *HTTPContext           // HTTP request info
-	Logger     *log.Helper            // Logger instance
+	Logger     *bLogger.Helper            // Logger instance
 	Cancel     context.Context        // Cancellation context
 	Stopped    bool                   // Set to true if script calls stop()
 	StopReason string                 // Reason for stopping
@@ -166,7 +166,7 @@ func (c *Context) WithRequest(req *HTTPContext) *Context {
 }
 
 // WithLogger sets the logger
-func (c *Context) WithLogger(logger *log.Helper) *Context {
+func (c *Context) WithLogger(logger *bLogger.Helper) *Context {
 	c.Logger = logger
 	return c
 }
@@ -182,7 +182,7 @@ func (c *Context) Stop(reason string) error {
 	c.Stopped = true
 	c.StopReason = reason
 	if c.Logger != nil {
-		c.Logger.Warnf("Context stopped: %s", reason)
+		c.Logger.Warnf(context.Background(), "Context stopped: %s", reason)
 	}
 	return fmt.Errorf("execution stopped: %s", reason)
 }

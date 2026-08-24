@@ -4,22 +4,22 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 )
 
 // Middleware is a function that wraps a Handler
 type Middleware func(Handler) Handler
 
 // LoggingMiddleware logs event handling
-func LoggingMiddleware(logger *log.Helper) Middleware {
+func LoggingMiddleware(logger *bLogger.Helper) Middleware {
 	return func(next Handler) Handler {
 		return EventHandlerFunc(func(ctx context.Context, event *Event) error {
-			logger.Infof("Handling event: type=%s, id=%s, source=%s", event.Type, event.ID, event.Source)
+			logger.Infof(ctx, "Handling event: type=%s, id=%s, source=%s", event.Type, event.ID, event.Source)
 			err := next.Handle(ctx, event)
 			if err != nil {
-				logger.Errorf("Error handling event %s: %v", event.ID, err)
+				logger.Errorf(ctx, "Error handling event %s: %v", event.ID, err)
 			} else {
-				logger.Debugf("Successfully handled event: %s", event.ID)
+				logger.Debugf(ctx, "Successfully handled event: %s", event.ID)
 			}
 			return err
 		})
@@ -27,12 +27,12 @@ func LoggingMiddleware(logger *log.Helper) Middleware {
 }
 
 // RecoveryMiddleware recovers from panics in handlers
-func RecoveryMiddleware(logger *log.Helper) Middleware {
+func RecoveryMiddleware(logger *bLogger.Helper) Middleware {
 	return func(next Handler) Handler {
 		return EventHandlerFunc(func(ctx context.Context, event *Event) (err error) {
 			defer func() {
 				if r := recover(); r != nil {
-					logger.Errorf("Panic recovered in event handler for %s: %v", event.Type, r)
+					logger.Errorf(ctx, "Panic recovered in event handler for %s: %v", event.Type, r)
 					err = &PanicError{Value: r}
 				}
 			}()
@@ -88,14 +88,14 @@ func RetryMiddleware(maxRetries int, delay time.Duration) Middleware {
 }
 
 // MetricsMiddleware collects metrics for event handling
-func MetricsMiddleware(logger *log.Helper) Middleware {
+func MetricsMiddleware(logger *bLogger.Helper) Middleware {
 	return func(next Handler) Handler {
 		return EventHandlerFunc(func(ctx context.Context, event *Event) error {
 			start := time.Now()
 			err := next.Handle(ctx, event)
 			duration := time.Since(start)
 
-			logger.Infof("Event handling metrics: type=%s, duration=%s, success=%v",
+			logger.Infof(ctx, "Event handling metrics: type=%s, duration=%s, success=%v",
 				event.Type, duration, err == nil)
 
 			return err

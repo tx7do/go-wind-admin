@@ -9,7 +9,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-crud/viewer"
 	"github.com/tx7do/go-utils/aggregator"
@@ -55,7 +55,7 @@ func (noopInternalMessagePublisher) TryPublish(_ context.Context, _ sse.StreamID
 type InternalMessageService struct {
 	adminV1.InternalMessageServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	internalMessageRepo          *data.InternalMessageRepo
 	internalMessageCategoryRepo  *data.InternalMessageCategoryRepo
@@ -94,8 +94,8 @@ func (s *InternalMessageService) RegisterInternalMessagePublisher(internalMessag
 }
 
 func (s *InternalMessageService) HandleAuthorize(r *http.Request, token string) error {
-	//s.log.Debugf("authorizing token: %s", token)
-	//s.log.Debugf("authorizing token HEADER: %s", req.Header.Get("Authorization"))
+	//s.log.Debugf(context.Background(), "authorizing token: %s", token)
+	//s.log.Debugf(context.Background(), "authorizing token HEADER: %s", req.Header.Get("Authorization"))
 
 	resp, err := s.authenticator.Authenticate(context.Background(), &authenticationV1.ValidateTokenRequest{
 		ClientType:    s.clientType,
@@ -103,16 +103,16 @@ func (s *InternalMessageService) HandleAuthorize(r *http.Request, token string) 
 		TokenCategory: authenticationV1.TokenCategory_ACCESS,
 	})
 	if err != nil {
-		s.log.Errorf("token authentication failed: %s", err)
+		s.log.Errorf(context.Background(), "token authentication failed: %s", err)
 		return err
 	}
 
 	if resp.GetIsBlocked() {
-		s.log.Warnf("token is blocked: %s", token)
+		s.log.Warnf(context.Background(), "token is blocked: %s", token)
 		return authenticationV1.ErrorForbidden("token is blocked")
 	}
 	if !resp.GetIsValid() {
-		s.log.Warnf("token is invalid: %s", token)
+		s.log.Warnf(context.Background(), "token is invalid: %s", token)
 		return authenticationV1.ErrorUnauthorized("invalid token")
 	}
 
@@ -129,17 +129,17 @@ func (s *InternalMessageService) HandleAuthorize(r *http.Request, token string) 
 		return authenticationV1.ErrorForbidden("stream user mismatch")
 	}
 	if uint32(streamUserId) != tokenUserId {
-		s.log.Warnf("stream user mismatch: token uid=%d, stream uid=%d", tokenUserId, streamUserId)
+		s.log.Warnf(context.Background(), "stream user mismatch: token uid=%d, stream uid=%d", tokenUserId, streamUserId)
 		return authenticationV1.ErrorForbidden("stream user mismatch")
 	}
 
-	s.log.Debugf("token authenticated successfully, userId: [%d]", tokenUserId)
+	s.log.Debugf(context.Background(), "token authenticated successfully, userId: [%d]", tokenUserId)
 
 	return nil
 }
 
 func (s *InternalMessageService) HandleSubscribe(streamID sse.StreamID, _ *sse.Subscriber) {
-	s.log.Infof("subscriber [%s] connected", streamID)
+	s.log.Infof(context.Background(), "subscriber [%s] connected", streamID)
 }
 
 func (s *InternalMessageService) extractRelationIDs(
@@ -165,7 +165,7 @@ func (s *InternalMessageService) fetchRelationInfo(
 
 		categories, err := s.internalMessageCategoryRepo.ListCategoriesByIds(ctx, categoryIds)
 		if err != nil {
-			s.log.Errorf("query internal message category err: %v", err)
+			s.log.Errorf(context.Background(), "query internal message category err: %v", err)
 			return err
 		}
 
@@ -283,12 +283,12 @@ func (s *InternalMessageService) RevokeMessage(ctx context.Context, req *interna
 	// 这里两者都执行，用 errors.Join 聚合，保证任一失败都如实上报。
 	var errs []error
 	if err := s.internalMessageRepo.Delete(ctx, req.GetMessageId()); err != nil {
-		s.log.Errorf("delete internal message failed: [%d] %s", req.GetMessageId(), err)
+		s.log.Errorf(ctx, "delete internal message failed: [%d] %s", req.GetMessageId(), err)
 		errs = append(errs, fmt.Errorf("delete message failed: %w", err))
 	}
 
 	if err := s.internalMessageRecipientRepo.RevokeMessage(ctx, req); err != nil {
-		s.log.Errorf("delete internal message inbox failed: [%d][%d] %s", req.GetMessageId(), req.GetUserId(), err)
+		s.log.Errorf(ctx, "delete internal message inbox failed: [%d][%d] %s", req.GetMessageId(), req.GetUserId(), err)
 		errs = append(errs, fmt.Errorf("revoke recipients failed: %w", err))
 	}
 
@@ -321,7 +321,7 @@ func (s *InternalMessageService) SendMessage(ctx context.Context, req *internalM
 			CreatedAt:  timeutil.TimeToTimestamppb(&now),
 		},
 	}); err != nil {
-		s.log.Errorf("create internal message failed: %s", err)
+		s.log.Errorf(ctx, "create internal message failed: %s", err)
 		return nil, err
 	}
 
@@ -344,7 +344,7 @@ func (s *InternalMessageService) SendMessage(ctx context.Context, req *internalM
 
 			users, err := s.userRepo.List(broadcastCtx, &paginationV1.PagingRequest{NoPaging: trans.Ptr(true)})
 			if err != nil {
-				s.log.Errorf("send message failed, list users failed: %s", err)
+				s.log.Errorf(ctx, "send message failed, list users failed: %s", err)
 				return
 			}
 
@@ -355,16 +355,16 @@ func (s *InternalMessageService) SendMessage(ctx context.Context, req *internalM
 				}
 			}
 			if failCount > 0 {
-				s.log.Warnf("broadcast message [%d]: %d/%d recipients failed", msg.GetId(), failCount, len(users.Items))
+				s.log.Warnf(ctx, "broadcast message [%d]: %d/%d recipients failed", msg.GetId(), failCount, len(users.Items))
 			} else {
-				s.log.Infof("broadcast message [%d] to %d recipients done", msg.GetId(), len(users.Items))
+				s.log.Infof(ctx, "broadcast message [%d] to %d recipients done", msg.GetId(), len(users.Items))
 			}
 		}()
 	} else {
 		// 定向发送：人数少，仍同步执行，但同样上报错误而非全部丢弃。
 		if req.RecipientUserId != nil {
 			if err := s.sendNotification(ctx, msg.GetId(), req.GetRecipientUserId(), operator.GetUserId(), &now, msg.GetTitle(), msg.GetContent()); err != nil {
-				s.log.Errorf("send message to user [%d] failed: %s", req.GetRecipientUserId(), err)
+				s.log.Errorf(ctx, "send message to user [%d] failed: %s", req.GetRecipientUserId(), err)
 			}
 		} else {
 			var failCount int
@@ -374,7 +374,7 @@ func (s *InternalMessageService) SendMessage(ctx context.Context, req *internalM
 				}
 			}
 			if failCount > 0 {
-				s.log.Warnf("send message [%d]: %d/%d target users failed", msg.GetId(), failCount, len(req.TargetUserIds))
+				s.log.Warnf(ctx, "send message [%d]: %d/%d target users failed", msg.GetId(), failCount, len(req.TargetUserIds))
 			}
 		}
 	}
@@ -399,7 +399,7 @@ func (s *InternalMessageService) sendNotification(ctx context.Context, messageId
 	var err error
 	var entity *internalMessageV1.InternalMessageRecipient
 	if entity, err = s.internalMessageRecipientRepo.Create(ctx, recipient); err != nil {
-		s.log.Errorf("send message failed, send to user failed, %s", err)
+		s.log.Errorf(ctx, "send message failed, send to user failed, %s", err)
 		return err
 	}
 	recipient.Id = entity.Id
@@ -408,7 +408,7 @@ func (s *InternalMessageService) sendNotification(ctx context.Context, messageId
 	if err != nil {
 		// 序列化失败：记录后跳过推送（SSE 客户端把空 Data 当作断流）。
 		// 收件人记录已落库，不影响投递状态，只是不实时推送。
-		s.log.Errorf("marshal recipient failed, skip sse push: %s", err)
+		s.log.Errorf(ctx, "marshal recipient failed, skip sse push: %s", err)
 		return nil
 	}
 
@@ -422,7 +422,7 @@ func (s *InternalMessageService) sendNotification(ctx context.Context, messageId
 		Data:  recipientJson,
 		Event: []byte("notification"),
 	}); !ok {
-		s.log.Debugf("sse try publish skipped (stream not exist or buffer full): user=%d stream=%s", recipientUserId, streamId)
+		s.log.Debugf(ctx, "sse try publish skipped (stream not exist or buffer full): user=%d stream=%s", recipientUserId, streamId)
 	}
 
 	return nil

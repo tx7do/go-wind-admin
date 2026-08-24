@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/go-utils/copierutil"
 	"github.com/tx7do/go-utils/mapper"
@@ -19,7 +19,7 @@ import (
 )
 
 type RolePermissionRepo struct {
-	log       *log.Helper
+	log       *bLogger.Helper
 	entClient *entCrud.EntClient[*ent.Client]
 
 	mapper          *mapper.CopierMapper[permissionV1.RolePermission, ent.RolePermission]
@@ -66,7 +66,7 @@ func (r *RolePermissionRepo) CleanPermissions(
 			rolepermission.RoleIDEQ(roleID),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete old role [%d] permissions failed: %s", roleID, err.Error())
+		r.log.Errorf(context.Background(), "delete old role [%d] permissions failed: %s", roleID, err.Error())
 		return permissionV1.ErrorInternalServerError("delete old role permissions failed")
 	}
 	return nil
@@ -96,7 +96,7 @@ func (r *RolePermissionRepo) BatchCreate(ctx context.Context, tx *ent.Tx, datas 
 
 	err := tx.RolePermission.CreateBulk(builders...).Exec(ctx)
 	if err != nil {
-		r.log.Errorf("batch create role permissions failed: %s", err.Error())
+		r.log.Errorf(ctx, "batch create role permissions failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("batch create role permissions failed")
 	}
 
@@ -112,7 +112,7 @@ func (r *RolePermissionRepo) Upsert(ctx context.Context, tx *ent.Tx, data *permi
 		operatorID = data.CreatedBy
 	}
 	if operatorID == nil {
-		r.log.Errorf("operator ID is nil for upsert role permission")
+		r.log.Errorf(ctx, "operator ID is nil for upsert role permission")
 		return permissionV1.ErrorInternalServerError("operator ID is required for upsert role permission")
 	}
 
@@ -158,7 +158,7 @@ func (r *RolePermissionRepo) Upsert(ctx context.Context, tx *ent.Tx, data *permi
 
 	err := builder.Exec(ctx)
 	if err != nil {
-		r.log.Errorf("create role permission failed: %s", err.Error())
+		r.log.Errorf(ctx, "create role permission failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("create role permission failed")
 	}
 
@@ -211,7 +211,7 @@ func (r *RolePermissionRepo) AssignPermissions(ctx context.Context, tx *ent.Tx,
 			SetUpdatedAt(now)
 
 		if err := rp.Exec(ctx); err != nil {
-			r.log.Errorf("assign permission to role failed: %s", err.Error())
+			r.log.Errorf(ctx, "assign permission to role failed: %s", err.Error())
 			return permissionV1.ErrorInternalServerError("assign permission to role failed")
 		}
 	}
@@ -230,7 +230,7 @@ func (r *RolePermissionRepo) ListPermissionIDs(ctx context.Context, roleID uint3
 		Select(rolepermission.FieldPermissionID).
 		Ints(ctx)
 	if err != nil {
-		r.log.Errorf("query permission ids by role id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query permission ids by role id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission ids by role id failed")
 	}
 	ids := make([]uint32, len(intIDs))
@@ -251,7 +251,7 @@ func (r *RolePermissionRepo) ListPermissionIDsByRoleIDs(ctx context.Context, rol
 		Select(rolepermission.FieldPermissionID).
 		Ints(ctx)
 	if err != nil {
-		r.log.Errorf("query permission ids by role ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query permission ids by role ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission ids by role ids failed")
 	}
 	ids := make([]uint32, len(intIDs))
@@ -273,7 +273,7 @@ func (r *RolePermissionRepo) RemovePermissions(ctx context.Context, tenantID, ro
 		).
 		Exec(ctx)
 	if err != nil {
-		r.log.Errorf("remove roles by role id failed: %s", err.Error())
+		r.log.Errorf(ctx, "remove roles by role id failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("remove roles by role id failed")
 	}
 	return nil
@@ -286,7 +286,7 @@ func (r *RolePermissionRepo) ListPermissionsByRoleID(ctx context.Context, roleID
 		).
 		All(ctx)
 	if err != nil {
-		r.log.Errorf("list role permissions by role id failed: %s", err.Error())
+		r.log.Errorf(ctx, "list role permissions by role id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("list role permissions by role id failed")
 	}
 

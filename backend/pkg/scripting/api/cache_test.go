@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/alicebob/miniredis/v2"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/redis/go-redis/v9"
 	lua "github.com/yuin/gopher-lua"
 )
@@ -92,7 +92,7 @@ func TestCacheAPI_SetGet(t *testing.T) {
 	L := setupLuaState()
 	defer L.Close()
 
-	logger := log.NewHelper(log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
 	RegisterCache(L, rdb, logger)
 
 	// Test script
@@ -134,7 +134,7 @@ func TestCacheAPI_IncrDecr(t *testing.T) {
 	L := lua.NewState()
 	defer L.Close()
 
-	logger := log.NewHelper(log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
 	RegisterCache(L, rdb, logger)
 
 	script := `
@@ -179,7 +179,7 @@ func TestCacheAPI_Exists(t *testing.T) {
 	L := lua.NewState()
 	defer L.Close()
 
-	logger := log.NewHelper(log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
 	RegisterCache(L, rdb, logger)
 
 	script := `
@@ -221,7 +221,7 @@ func TestCacheAPI_TTL(t *testing.T) {
 	L := lua.NewState()
 	defer L.Close()
 
-	logger := log.NewHelper(log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
 	RegisterCache(L, rdb, logger)
 
 	script := `
@@ -259,7 +259,7 @@ func TestCacheAPI_Hash(t *testing.T) {
 	L := lua.NewState()
 	defer L.Close()
 
-	logger := log.NewHelper(log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
 	RegisterCache(L, rdb, logger)
 
 	script := `
@@ -301,7 +301,7 @@ func TestCacheAPI_Keys(t *testing.T) {
 	L := lua.NewState()
 	defer L.Close()
 
-	logger := log.NewHelper(log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
 	RegisterCache(L, rdb, logger)
 
 	script := `
@@ -340,7 +340,7 @@ func TestCacheAPI_JSONSupport(t *testing.T) {
 	L := lua.NewState()
 	defer L.Close()
 
-	logger := log.NewHelper(log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
 	// Register both cache and logger APIs
 	RegisterLogger(L, logger)
 	RegisterCache(L, rdb, logger)

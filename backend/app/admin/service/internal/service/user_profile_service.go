@@ -4,7 +4,7 @@ import (
 	"context"
 	"encoding/base64"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/genproto/protobuf/field_mask"
@@ -28,7 +28,7 @@ type UserProfileService struct {
 	userCredentialRepo *data.UserCredentialRepo
 	mc                 *oss.MinIOClient
 
-	log *log.Helper
+	log *bLogger.Helper
 }
 
 func NewUserProfileService(
@@ -60,13 +60,13 @@ func (s *UserProfileService) GetUser(ctx context.Context, _ *emptypb.Empty) (*id
 		},
 	})
 	if err != nil {
-		s.log.Errorf("查询用户失败[%s]", err.Error())
+		s.log.Errorf(ctx, "查询用户失败[%s]", err.Error())
 		return nil, authenticationV1.ErrorNotFound("user not found")
 	}
 
 	roleCodes, err := s.roleRepo.ListRoleCodesByRoleIds(ctx, user.GetRoleIds())
 	if err != nil {
-		s.log.Errorf("get user role codes failed [%s]", err.Error())
+		s.log.Errorf(ctx, "get user role codes failed [%s]", err.Error())
 	}
 	if roleCodes != nil {
 		user.Roles = roleCodes
@@ -125,7 +125,7 @@ func (s *UserProfileService) DeleteAvatar(ctx context.Context, _ *emptypb.Empty)
 			Paths: []string{"avatar"},
 		},
 	}); err != nil {
-		s.log.Errorf("delete user avatar failed [%s]", err.Error())
+		s.log.Errorf(ctx, "delete user avatar failed [%s]", err.Error())
 		return nil, err
 	}
 
@@ -146,7 +146,7 @@ func (s *UserProfileService) UploadAvatar(ctx context.Context, req *identityV1.U
 		// 解码 base64 图片数据
 		imageBytes, derr := base64.StdEncoding.DecodeString(req.GetImageBase64())
 		if derr != nil {
-			s.log.Errorf("decode avatar base64 failed [%s]", derr.Error())
+			s.log.Errorf(ctx, "decode avatar base64 failed [%s]", derr.Error())
 			return nil, authenticationV1.ErrorBadRequest("invalid avatar base64 data")
 		}
 		if len(imageBytes) == 0 {
@@ -164,14 +164,14 @@ func (s *UserProfileService) UploadAvatar(ctx context.Context, req *identityV1.U
 		// 上传到 OSS（mc 自动嗅探 MIME/桶/对象名，头像统一进 images 桶）
 		_, _, downloadUrl, uerr := s.mc.UploadFile(ctx, "", "", realMime, imageBytes)
 		if uerr != nil {
-			s.log.Errorf("upload avatar to oss failed [%s]", uerr.Error())
+			s.log.Errorf(ctx, "upload avatar to oss failed [%s]", uerr.Error())
 			return nil, authenticationV1.ErrorInternalServerError("upload avatar failed")
 		}
 		avatarURL = downloadUrl
 	case *identityV1.UploadAvatarRequest_ImageUrl:
 		avatarURL = req.GetImageUrl()
 	default:
-		s.log.Errorf("upload avatar failed, invalid avatar source")
+		s.log.Errorf(ctx, "upload avatar failed, invalid avatar source")
 		return nil, authenticationV1.ErrorBadRequest("invalid avatar source")
 	}
 
@@ -184,7 +184,7 @@ func (s *UserProfileService) UploadAvatar(ctx context.Context, req *identityV1.U
 			Paths: []string{"avatar"},
 		},
 	}); err != nil {
-		s.log.Errorf("delete user avatar failed [%s]", err.Error())
+		s.log.Errorf(ctx, "delete user avatar failed [%s]", err.Error())
 		return nil, err
 	}
 

@@ -2,8 +2,9 @@ package service
 
 import (
 	"context"
+	"fmt"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/aggregator"
 	"github.com/tx7do/go-utils/trans"
@@ -21,7 +22,7 @@ import (
 type OrgUnitService struct {
 	adminV1.OrgUnitServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	orgUnitRepo *data.OrgUnitRepo
 	userRepo    data.UserRepo
@@ -77,7 +78,7 @@ func (s *OrgUnitService) fetchRelationInfo(
 
 	users, err := s.userRepo.ListUsersByIds(ctx, userIds)
 	if err != nil {
-		log.Errorf("query users err: %v", err)
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("query users err: %v", err))
 		return err
 	}
 

@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -25,7 +25,7 @@ import (
 
 type LoginPolicyRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper          *mapper.CopierMapper[authenticationV1.LoginPolicy, ent.LoginPolicy]
 	typeConverter   *mapper.EnumTypeConverter[authenticationV1.LoginPolicy_Type, loginpolicy.Type]
@@ -93,7 +93,7 @@ func (r *LoginPolicyRepo) ListForLogin(ctx context.Context, tenantID uint32) ([]
 		Where(loginpolicy.TenantIDEQ(tenantID)).
 		All(ctx)
 	if err != nil {
-		r.log.Errorf("list login policies for login failed: %s", err.Error())
+		r.log.Errorf(ctx, "list login policies for login failed: %s", err.Error())
 		return nil, fmt.Errorf("list login policies failed")
 	}
 	policies := make([]EffectivePolicy, 0, len(entities))
@@ -131,7 +131,7 @@ func (r *LoginPolicyRepo) Count(ctx context.Context, whereCond []func(s *sql.Sel
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, adminV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -164,7 +164,7 @@ func (r *LoginPolicyRepo) IsExist(ctx context.Context, id uint32) (bool, error) 
 		Where(loginpolicy.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, adminV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -208,7 +208,7 @@ func (r *LoginPolicyRepo) Create(ctx context.Context, req *authenticationV1.Crea
 		SetCreatedAt(time.Now())
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert admin login restriction failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert admin login restriction failed: %s", err.Error())
 		return adminV1.ErrorInternalServerError("insert admin login restriction failed")
 	}
 
@@ -267,7 +267,7 @@ func (r *LoginPolicyRepo) Delete(ctx context.Context, req *authenticationV1.Dele
 		s.Where(sql.EQ(loginpolicy.FieldID, req.GetId()))
 	})
 	if err != nil {
-		r.log.Errorf("delete internal message categories failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete internal message categories failed: %s", err.Error())
 		return adminV1.ErrorInternalServerError("delete admin login restriction failed")
 	}
 

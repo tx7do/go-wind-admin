@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	entCrud "github.com/tx7do/go-crud/entgo"
@@ -54,7 +54,7 @@ import (
 type TenantUsageRepo struct {
 	entClient     *entCrud.EntClient[*ent.Client]
 	authenticator *Authenticator
-	log           *log.Helper
+	log           *bLogger.Helper
 }
 
 func NewTenantUsageRepo(
@@ -80,7 +80,7 @@ func (r *TenantUsageRepo) GetUsage(ctx context.Context, tenantId uint32) (*ident
 		WithPlan(func(q *ent.PlanQuery) { q.WithQuotas() }).
 		Only(sysCtx)
 	if err != nil || t == nil {
-		r.log.Errorf("get usage: tenant %d not found: %v", tenantId, err)
+		r.log.Errorf(ctx, "get usage: tenant %d not found: %v", tenantId, err)
 		return nil, adminV1.ErrorBadRequest("tenant not found")
 	}
 
@@ -110,7 +110,7 @@ func (r *TenantUsageRepo) GetUsage(ctx context.Context, tenantId uint32) (*ident
 		Where(user.TenantIDEQ(tenantId)).
 		Count(sysCtx)
 	if uerr != nil {
-		r.log.Errorf("get usage: count users failed: %v", uerr)
+		r.log.Errorf(ctx, "get usage: count users failed: %v", uerr)
 		userCount = 0
 	}
 	usage.UserCount = uint64(userCount)
@@ -124,7 +124,7 @@ func (r *TenantUsageRepo) GetUsage(ctx context.Context, tenantId uint32) (*ident
 		Where(file.TenantIDEQ(tenantId)).
 		Aggregate(ent.As(ent.Sum(file.FieldSize), "total")).
 		Scan(sysCtx, &storageRows); serr != nil {
-		r.log.Errorf("get usage: sum file size failed: %v", serr)
+		r.log.Errorf(ctx, "get usage: sum file size failed: %v", serr)
 	} else if len(storageRows) > 0 {
 		storageSum = storageRows[0].Total
 	}
@@ -135,7 +135,7 @@ func (r *TenantUsageRepo) GetUsage(ctx context.Context, tenantId uint32) (*ident
 		Where(apiauditlog.TenantIDEQ(tenantId)).
 		Count(sysCtx)
 	if aerr != nil {
-		r.log.Errorf("get usage: count api audit logs failed: %v", aerr)
+		r.log.Errorf(ctx, "get usage: count api audit logs failed: %v", aerr)
 		apiCount = 0
 	}
 	usage.ApiCallCount = uint64(apiCount)
@@ -167,7 +167,7 @@ func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint32
 
 	tx, err := r.entClient.Client().Tx(sysCtx)
 	if err != nil {
-		r.log.Errorf("cleanup tenant %d: start tx failed: %s", tenantId, err.Error())
+		r.log.Errorf(ctx, "cleanup tenant %d: start tx failed: %s", tenantId, err.Error())
 		return adminV1.ErrorInternalServerError("start transaction failed")
 	}
 
@@ -177,7 +177,7 @@ func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint32
 		Where(user.TenantIDEQ(tenantId)).
 		IDs(sysCtx)
 	if err != nil {
-		r.log.Errorf("cleanup tenant %d: query user ids failed: %v", tenantId, err)
+		r.log.Errorf(ctx, "cleanup tenant %d: query user ids failed: %v", tenantId, err)
 		_ = tx.Rollback()
 		return err
 	}
@@ -219,7 +219,7 @@ func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint32
 
 	for _, fn := range deleteFns {
 		if err = fn(); err != nil {
-			r.log.Errorf("cleanup tenant %d: delete table data failed: %v", tenantId, err)
+			r.log.Errorf(ctx, "cleanup tenant %d: delete table data failed: %v", tenantId, err)
 			_ = tx.Rollback()
 			return err
 		}
@@ -229,17 +229,17 @@ func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint32
 	if err = tx.Tenant.UpdateOneID(tenantId).
 		SetStatus(tenant.StatusOff).
 		Exec(sysCtx); err != nil {
-		r.log.Errorf("cleanup tenant %d: set status OFF failed: %v", tenantId, err)
+		r.log.Errorf(ctx, "cleanup tenant %d: set status OFF failed: %v", tenantId, err)
 		_ = tx.Rollback()
 		return err
 	}
 
 	if err = tx.Commit(); err != nil {
-		r.log.Errorf("cleanup tenant %d: commit failed: %s", tenantId, err.Error())
+		r.log.Errorf(ctx, "cleanup tenant %d: commit failed: %s", tenantId, err.Error())
 		return adminV1.ErrorInternalServerError("transaction commit failed")
 	}
 
-	r.log.Infof("cleanup tenant %d: committed deletion of %d tables, set status OFF", tenantId, len(deleteFns))
+	r.log.Infof(ctx, "cleanup tenant %d: committed deletion of %d tables, set status OFF", tenantId, len(deleteFns))
 
 	// 事务提交后吊销该租户全部用户的在线令牌（admin+app 双 ClientType）。
 	// 即使部分吊销失败，status==OFF 也会让 TenantAccessChecker 阻断后续请求。
@@ -248,9 +248,9 @@ func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint32
 			_ = r.authenticator.RevokeUserToken(ctx, authenticationV1.ClientType_admin, uid)
 			_ = r.authenticator.RevokeUserToken(ctx, authenticationV1.ClientType_app, uid)
 		}
-		r.log.Infof("cleanup tenant %d: revoked tokens for %d users", tenantId, len(userIds))
+		r.log.Infof(ctx, "cleanup tenant %d: revoked tokens for %d users", tenantId, len(userIds))
 	} else {
-		r.log.Warnf("cleanup tenant %d: authenticator is nil, skipped token revocation for %d users", tenantId, len(userIds))
+		r.log.Warnf(ctx, "cleanup tenant %d: authenticator is nil, skipped token revocation for %d users", tenantId, len(userIds))
 	}
 
 	return nil
@@ -278,7 +278,7 @@ func (r *TenantUsageRepo) EnforceExpiryPolicies(ctx context.Context) (int, error
 		WithPlan().
 		All(sysCtx)
 	if err != nil {
-		r.log.Errorf("expiry scan: query tenants failed: %v", err)
+		r.log.Errorf(ctx, "expiry scan: query tenants failed: %v", err)
 		return 0, err
 	}
 
@@ -287,7 +287,7 @@ func (r *TenantUsageRepo) EnforceExpiryPolicies(ctx context.Context) (int, error
 		// 该租户必须有关联套餐才能判定策略。
 		if t.Edges.Plan == nil {
 			// 无套餐关联：无法判定策略，跳过（保持 ON）。
-			r.log.Warnf("expiry scan: tenant %d expired but has no plan, skipped", t.ID)
+			r.log.Warnf(ctx, "expiry scan: tenant %d expired but has no plan, skipped", t.ID)
 			continue
 		}
 		planId := t.Edges.Plan.ID
@@ -304,10 +304,10 @@ func (r *TenantUsageRepo) EnforceExpiryPolicies(ctx context.Context) (int, error
 			newStatus = tenant.StatusFreeze
 		case plan.ExpiryPolicyReadonly:
 			// READONLY：保持 ON，读写拦截交给中间件，此处不改状态。
-			r.log.Infof("expiry scan: tenant %d expired with READONLY policy, kept ON", t.ID)
+			r.log.Infof(ctx, "expiry scan: tenant %d expired with READONLY policy, kept ON", t.ID)
 			continue
 		default:
-			r.log.Warnf("expiry scan: tenant %d plan %d has unknown expiry policy %q, skipped", t.ID, planId, expiryPolicy)
+			r.log.Warnf(ctx, "expiry scan: tenant %d plan %d has unknown expiry policy %q, skipped", t.ID, planId, expiryPolicy)
 			continue
 		}
 
@@ -315,7 +315,7 @@ func (r *TenantUsageRepo) EnforceExpiryPolicies(ctx context.Context) (int, error
 		if err = r.entClient.Client().Tenant.UpdateOneID(t.ID).
 			SetStatus(newStatus).
 			Exec(sysCtx); err != nil {
-			r.log.Errorf("expiry scan: tenant %d set status %s failed: %v", t.ID, newStatus, err)
+			r.log.Errorf(ctx, "expiry scan: tenant %d set status %s failed: %v", t.ID, newStatus, err)
 			continue
 		}
 		enforcedCount++
@@ -326,17 +326,17 @@ func (r *TenantUsageRepo) EnforceExpiryPolicies(ctx context.Context) (int, error
 				Where(user.TenantIDEQ(t.ID)).
 				IDs(sysCtx)
 			if uerr != nil {
-				r.log.Errorf("expiry scan: tenant %d query user ids failed: %v", t.ID, uerr)
+				r.log.Errorf(ctx, "expiry scan: tenant %d query user ids failed: %v", t.ID, uerr)
 				continue
 			}
 			for _, uid := range userIds {
 				_ = r.authenticator.RevokeUserToken(ctx, authenticationV1.ClientType_admin, uid)
 				_ = r.authenticator.RevokeUserToken(ctx, authenticationV1.ClientType_app, uid)
 			}
-			r.log.Infof("expiry scan: tenant %d set status=%s, revoked tokens for %d users", t.ID, newStatus, len(userIds))
+			r.log.Infof(ctx, "expiry scan: tenant %d set status=%s, revoked tokens for %d users", t.ID, newStatus, len(userIds))
 		}
 	}
 
-	r.log.Infof("expiry scan: completed, %d tenants enforced", enforcedCount)
+	r.log.Infof(ctx, "expiry scan: completed, %d tenants enforced", enforcedCount)
 	return enforcedCount, nil
 }

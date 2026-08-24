@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 )
 
 func TestEngine_AutoLoadScripts(t *testing.T) {
@@ -36,7 +36,7 @@ func TestEngine_AutoLoadScripts(t *testing.T) {
 	config := DefaultConfig()
 	config.ScriptDir = tmpDir
 
-	engine := NewEngine(config, log.DefaultLogger)
+	engine := NewEngine(config, bLogger.NopLogger())
 	defer engine.Close()
 
 	// Script should have been loaded automatically
@@ -65,7 +65,7 @@ func TestEngine_NoAutoLoadWithoutScriptDir(t *testing.T) {
 	config := DefaultConfig()
 	config.ScriptDir = "" // Empty
 
-	engine := NewEngine(config, log.DefaultLogger)
+	engine := NewEngine(config, bLogger.NopLogger())
 	defer engine.Close()
 
 	// Should initialize without errors even without scripts
@@ -78,7 +78,7 @@ func TestEngine_AutoLoadNonExistentDir(t *testing.T) {
 	config.ScriptDir = "/non/existent/path"
 
 	// Should not panic, just log warning
-	engine := NewEngine(config, log.DefaultLogger)
+	engine := NewEngine(config, bLogger.NopLogger())
 	defer engine.Close()
 
 	t.Log("✓ Engine initialized with non-existent ScriptDir (warning logged)")

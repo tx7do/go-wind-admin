@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 )
@@ -69,7 +69,7 @@ func (c *composedChecker) IsBlockedAccessToken(ctx context.Context, accessToken 
 }
 
 type options struct {
-	log *log.Helper
+	log *bLogger.Helper
 
 	accessTokenChecker                AccessTokenChecker // 访问令牌检查器
 	tenantAccessChecker               TenantAccessChecker
@@ -155,8 +155,8 @@ func WithEnableAuthority(enable bool) Option {
 }
 
 // WithLogger 设置日志记录器
-func WithLogger(logger log.Logger) Option {
+func WithLogger(logger bLogger.Logger) Option {
 	return func(o *options) {
-		o.log = log.NewHelper(log.With(logger, "module", "auth.middleware"))
+		o.log = bLogger.NewHelper(logger.With("module", "auth.middleware"))
 	}
 }

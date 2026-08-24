@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-kratos/kratos/v2/log"
 	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
 
 	authzEngine "github.com/tx7do/kratos-authz/engine"
@@ -13,11 +12,12 @@ import (
 	"github.com/tx7do/kratos-authz/engine/opa"
 
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 )
 
 // Authorizer 权限管理器
 type Authorizer struct {
-	log *log.Helper
+	log *bLogger.Helper
 
 	engine   authzEngine.Engine
 	provider Provider
@@ -33,12 +33,17 @@ func NewAuthorizer(
 	}
 
 	if ctx == nil {
-		a.log.Warn("bootstrap context is nil")
+		a.log.Warn(ctx.Context(), "bootstrap context is nil")
 		return a
 	}
 
-	if ctx.GetConfig() == nil || ctx.GetConfig().Authz == nil {
-		a.log.Warn("authorization config is nil")
+	if ctx.GetConfig() == nil {
+		a.log.Warn(ctx.Context(), "config is nil")
+		return a
+	}
+
+	if ctx.GetConfig().Authz == nil {
+		a.log.Warn(ctx.Context(), "authorization config is nil")
 		return a
 	}
 
@@ -65,7 +70,7 @@ func (a *Authorizer) ResetPolicies(ctx context.Context) error {
 
 	result, err := a.provider.ProvidePolicies(ctx)
 	if err != nil {
-		a.log.Errorf("provide authorizer data error: %v", err)
+		a.log.Errorf(ctx, "provide authorizer data error: %v", err)
 		return err
 	}
 
@@ -77,13 +82,13 @@ func (a *Authorizer) ResetPolicies(ctx context.Context) error {
 	switch a.engine.Name() {
 	case "casbin":
 		if policies, err = a.generateCasbinPolicies(result); err != nil {
-			a.log.Errorf("generate casbin policies error: %v", err)
+			a.log.Errorf(ctx, "generate casbin policies error: %v", err)
 			return err
 		}
 
 	case "opa":
 		if policies, err = a.generateOpaPolicies(result); err != nil {
-			a.log.Errorf("generate OPA policies error: %v", err)
+			a.log.Errorf(ctx, "generate OPA policies error: %v", err)
 			return err
 		}
 
@@ -92,18 +97,18 @@ func (a *Authorizer) ResetPolicies(ctx context.Context) error {
 
 	default:
 		err = fmt.Errorf("unknown engine name: %s", a.engine.Name())
-		a.log.Warnf(err.Error())
+		a.log.Warnf(ctx, "%s", err.Error())
 		return err
 	}
 
 	//a.log.Debugf("***************** policy rules len: %v", len(policies))
 
 	if err = a.engine.SetPolicies(ctx, policies, nil); err != nil {
-		a.log.Errorf("set policies error: %v", err)
+		a.log.Errorf(ctx, "set policies error: %v", err)
 		return err
 	}
 
-	a.log.Infof("reloaded policy rules [%d] successfully for engine: %s", len(policies), a.engine.Name())
+	a.log.Infof(ctx, "reloaded policy rules [%d] successfully for engine: %s", len(policies), a.engine.Name())
 
 	return nil
 }
@@ -191,7 +196,7 @@ func (a *Authorizer) newEngineZanzibar(_ context.Context) authzEngine.Engine {
 func (a *Authorizer) newEngineNoop(ctx context.Context) authzEngine.Engine {
 	state, err := noop.NewEngine(ctx)
 	if err != nil {
-		a.log.Errorf("new noop engine error: %v", err)
+		a.log.Errorf(ctx, "new noop engine error: %v", err)
 		return nil
 	}
 	return state
@@ -201,7 +206,7 @@ func (a *Authorizer) newEngineNoop(ctx context.Context) authzEngine.Engine {
 func (a *Authorizer) newEngineCasbin(ctx context.Context) authzEngine.Engine {
 	state, err := casbin.NewEngine(ctx)
 	if err != nil {
-		a.log.Errorf("init casbin engine error: %v", err)
+		a.log.Errorf(ctx, "init casbin engine error: %v", err)
 		return nil
 	}
 	return state
@@ -214,9 +219,9 @@ func (a *Authorizer) newEngineOPA(ctx context.Context) authzEngine.Engine {
 	var model []byte
 	var ok bool
 	if model, ok = models[modelName]; ok {
-		a.log.Infof("load custom OPA model: %s", modelName)
+		a.log.Infof(ctx, "load custom OPA model: %s", modelName)
 	} else {
-		a.log.Errorf("OPA model not found: %s", modelName)
+		a.log.Errorf(ctx, "OPA model not found: %s", modelName)
 		return nil
 	}
 
@@ -226,14 +231,14 @@ func (a *Authorizer) newEngineOPA(ctx context.Context) authzEngine.Engine {
 		}),
 	)
 	if err != nil {
-		a.log.Errorf("init opa engine error: %v", err)
+		a.log.Errorf(ctx, "init opa engine error: %v", err)
 		return nil
 	}
 
 	if err = state.InitModulesFromString(map[string]string{
 		modelName: string(model),
 	}); err != nil {
-		a.log.Errorf("init opa modules error: %v", err)
+		a.log.Errorf(ctx, "init opa modules error: %v", err)
 	}
 
 	return state

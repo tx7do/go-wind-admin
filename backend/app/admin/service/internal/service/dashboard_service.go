@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -17,7 +17,7 @@ import (
 type DashboardService struct {
 	adminV1.DashboardServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	dashboardRepo *data.DashboardRepo
 }

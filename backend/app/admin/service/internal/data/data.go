@@ -1,19 +1,21 @@
 package data
 
 import (
-	"go-wind-admin/pkg/serviceid"
 	"time"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/tx7do/go-utils/captcha"
 	"github.com/tx7do/go-utils/password"
 
+	klog "github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	redisClient "github.com/tx7do/kratos-bootstrap/cache/redis"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 
 	"go-wind-admin/pkg/oss"
+	"go-wind-admin/pkg/serviceid"
 )
 
 func NewClientType() authenticationV1.ClientType {
@@ -29,11 +31,11 @@ func NewRedisClient(ctx *bootstrap.Context) (*redis.Client, func(), error) {
 
 	l := ctx.NewLoggerHelper("redis/data/admin-service")
 
-	cli := redisClient.NewClient(cfg.Data, l)
+	cli := redisClient.NewClient(cfg.Data, klog.NewHelper(bLogger.AsKratosLogger(l)))
 
 	return cli, func() {
 		if err := cli.Close(); err != nil {
-			l.Error(err)
+			l.Error(ctx.Context(), err.Error())
 		}
 	}, nil
 }

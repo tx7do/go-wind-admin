@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
@@ -15,7 +15,7 @@ import (
 )
 
 type PermissionMenuRepo struct {
-	log       *log.Helper
+	log       *bLogger.Helper
 	entClient *entCrud.EntClient[*ent.Client]
 }
 
@@ -37,7 +37,7 @@ func (r *PermissionMenuRepo) CleanMenus(
 			permissionmenu.PermissionIDIn(permissionIDs...),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete old permission menus failed: %s", err.Error())
+		r.log.Errorf(context.Background(), "delete old permission menus failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete old permission menus failed")
 	}
 	return nil
@@ -56,7 +56,7 @@ func (r *PermissionMenuRepo) CleanNotExistMenus(
 			permissionmenu.PermissionIDEQ(permissionID),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("clean not exists permission menus failed: %s", err.Error())
+		r.log.Errorf(context.Background(), "clean not exists permission menus failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("clean not exists permission menus failed")
 	}
 	return nil
@@ -67,25 +67,25 @@ func (r *PermissionMenuRepo) AssignMenus(ctx context.Context, permissionID uint3
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = permissionV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
 	// 清理失效关联失败不阻断分配（仅告警），理由同 CleanNotExistApis
 	if err := r.CleanNotExistMenus(ctx, tx, permissionID, menuIDs); err != nil {
-		r.log.Warnf("clean not exist menus for permission [%d] failed: %s", permissionID, err.Error())
+		r.log.Warnf(ctx, "clean not exist menus for permission [%d] failed: %s", permissionID, err.Error())
 	}
 
 	return r.AssignMenusWithTx(ctx, tx, permissionID, menuIDs)
@@ -112,7 +112,7 @@ func (r *PermissionMenuRepo) AssignMenusWithTx(ctx context.Context, tx *ent.Tx, 
 			UpdateNewValues().
 			SetUpdatedAt(now)
 		if err := pm.Exec(ctx); err != nil {
-			r.log.Errorf("assign permission menuIDs failed: %s", err.Error())
+			r.log.Errorf(ctx, "assign permission menuIDs failed: %s", err.Error())
 			return permissionV1.ErrorInternalServerError("assign permission menuIDs failed")
 		}
 	}
@@ -132,7 +132,7 @@ func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, permissionIDs []ui
 		Select(permissionmenu.FieldMenuID).
 		Ints(ctx)
 	if err != nil {
-		r.log.Errorf("list permission menus by permission id failed: %s", err.Error())
+		r.log.Errorf(ctx, "list permission menus by permission id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("list permission menus by permission id failed")
 	}
 
@@ -151,7 +151,7 @@ func (r *PermissionMenuRepo) Truncate(ctx context.Context) error {
 		)
 
 	if _, err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("failed to truncate permission menu table: %s", err.Error())
+		r.log.Errorf(ctx, "failed to truncate permission menu table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 
@@ -165,7 +165,7 @@ func (r *PermissionMenuRepo) Delete(ctx context.Context, permissionID uint32) er
 			permissionmenu.PermissionIDEQ(permissionID),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("failed to delete permission menu by permission id: %s", err.Error())
+		r.log.Errorf(ctx, "failed to delete permission menu by permission id: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete failed")
 	}
 
@@ -178,7 +178,7 @@ func (r *PermissionMenuRepo) DeleteByPermissionIDs(ctx context.Context, permissi
 			permissionmenu.PermissionIDIn(permissionIDs...),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete permission menus by permission ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete permission menus by permission ids failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete permission menus by permission ids failed")
 	}
 	return nil

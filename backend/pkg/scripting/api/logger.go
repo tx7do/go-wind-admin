@@ -1,9 +1,10 @@
 package api
 
 import (
+	"context"
 	"math"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	lua "github.com/yuin/gopher-lua"
 
 	"go-wind-admin/pkg/scripting/internal/convert"
@@ -24,13 +25,13 @@ func convertForFormat(val interface{}) interface{} {
 
 // RegisterLogger registers the logger API for Lua as a requireable module
 // RegisterLogger registers the logger API for Lua as a requireable module
-func RegisterLogger(L *lua.LState, logger *log.Helper) {
+func RegisterLogger(L *lua.LState, logger *bLogger.Helper) {
 	// Register in package.preload so it can be required
 	L.PreloadModule("kratos_logger", LoaderLogger(logger))
 }
 
 // LoaderLogger 返回 logger 模块（kratos_logger）的 loader，供 go-scripts 引擎 RegisterModule 使用。
-func LoaderLogger(logger *log.Helper) lua.LGFunction {
+func LoaderLogger(logger *bLogger.Helper) lua.LGFunction {
 	return func(L *lua.LState) int {
 		// Create log module
 		logModule := L.NewTable()
@@ -38,28 +39,28 @@ func LoaderLogger(logger *log.Helper) lua.LGFunction {
 		// log.info(message)
 		logModule.RawSetString("info", L.NewFunction(func(L *lua.LState) int {
 			msg := L.CheckString(1)
-			logger.Info(msg)
+			logger.Info(context.Background(), msg)
 			return 0
 		}))
 
 		// log.warn(message)
 		logModule.RawSetString("warn", L.NewFunction(func(L *lua.LState) int {
 			msg := L.CheckString(1)
-			logger.Warn(msg)
+			logger.Warn(context.Background(), msg)
 			return 0
 		}))
 
 		// log.error(message)
 		logModule.RawSetString("error", L.NewFunction(func(L *lua.LState) int {
 			msg := L.CheckString(1)
-			logger.Error(msg)
+			logger.Error(context.Background(), msg)
 			return 0
 		}))
 
 		// log.debug(message)
 		logModule.RawSetString("debug", L.NewFunction(func(L *lua.LState) int {
 			msg := L.CheckString(1)
-			logger.Debug(msg)
+			logger.Debug(context.Background(), msg)
 			return 0
 		}))
 
@@ -70,7 +71,7 @@ func LoaderLogger(logger *log.Helper) lua.LGFunction {
 			for i := 2; i <= L.GetTop(); i++ {
 				args[i-2] = convertForFormat(convert.ToGoValue(L.Get(i)))
 			}
-			logger.Infof(format, args...)
+			logger.Infof(context.Background(), format, args...)
 			return 0
 		}))
 
@@ -81,7 +82,7 @@ func LoaderLogger(logger *log.Helper) lua.LGFunction {
 			for i := 2; i <= L.GetTop(); i++ {
 				args[i-2] = convertForFormat(convert.ToGoValue(L.Get(i)))
 			}
-			logger.Errorf(format, args...)
+			logger.Errorf(context.Background(), format, args...)
 			return 0
 		}))
 
@@ -92,7 +93,7 @@ func LoaderLogger(logger *log.Helper) lua.LGFunction {
 			for i := 2; i <= L.GetTop(); i++ {
 				args[i-2] = convertForFormat(convert.ToGoValue(L.Get(i)))
 			}
-			logger.Warnf(format, args...)
+			logger.Warnf(context.Background(), format, args...)
 			return 0
 		}))
 
@@ -103,7 +104,7 @@ func LoaderLogger(logger *log.Helper) lua.LGFunction {
 			for i := 2; i <= L.GetTop(); i++ {
 				args[i-2] = convertForFormat(convert.ToGoValue(L.Get(i)))
 			}
-			logger.Debugf(format, args...)
+			logger.Debugf(context.Background(), format, args...)
 			return 0
 		}))
 

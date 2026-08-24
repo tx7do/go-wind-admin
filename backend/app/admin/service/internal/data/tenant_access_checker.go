@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	entCrud "github.com/tx7do/go-crud/entgo"
@@ -26,7 +26,7 @@ import (
 // 仅对租户用户（tenantId>0）调用（中间件已保证），平台管理员（tid=0）不会进入此检查。
 type TenantAccessCheckerImpl struct {
 	entClient *ent.Client
-	log       *log.Helper
+	log       *bLogger.Helper
 }
 
 func NewTenantAccessCheckerImpl(
@@ -50,7 +50,7 @@ func (c *TenantAccessCheckerImpl) CheckTenantAccess(ctx context.Context, tenantI
 		WithPlan().
 		Only(sysCtx)
 	if err != nil || t == nil {
-		c.log.Errorf("tenant access check: tenant %d not found: %v", tenantId, err)
+		c.log.Errorf(ctx, "tenant access check: tenant %d not found: %v", tenantId, err)
 		return adminV1.ErrorForbidden("access denied")
 	}
 
@@ -89,7 +89,7 @@ func (c *TenantAccessCheckerImpl) CheckTenantAccess(ctx context.Context, tenantI
 		}
 	} else {
 		// 找不到对应 API 记录，无法判定模块。fail-closed 拒绝。
-		c.log.Errorf("tenant access check: api not found for %s %s", method, path)
+		c.log.Errorf(ctx, "tenant access check: api not found for %s %s", method, path)
 		return adminV1.ErrorForbidden("access denied")
 	}
 
@@ -105,7 +105,7 @@ func (c *TenantAccessCheckerImpl) CheckTenantAccess(ctx context.Context, tenantI
 
 	allowed, lerr := c.isModuleAllowed(sysCtx, planId, bizModule)
 	if lerr != nil {
-		c.log.Errorf("tenant access check: whitelist query failed: %v", lerr)
+		c.log.Errorf(ctx, "tenant access check: whitelist query failed: %v", lerr)
 		return adminV1.ErrorForbidden("access denied")
 	}
 	if !allowed {

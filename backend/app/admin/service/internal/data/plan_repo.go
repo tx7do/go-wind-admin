@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -23,7 +23,7 @@ import (
 
 type PlanRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper             *mapper.CopierMapper[identityV1.Plan, ent.Plan]
 	versionConverter   *mapper.EnumTypeConverter[identityV1.Plan_Version, plan.Version]
@@ -82,7 +82,7 @@ func (r *PlanRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (
 
 	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
 	if err != nil {
-		r.log.Errorf("parse count param error [%s]", err.Error())
+		r.log.Errorf(ctx, "parse count param error [%s]", err.Error())
 		return 0, identityV1.ErrorInternalServerError("invalid query parameter")
 	}
 	if len(whereSelectors) != 0 {
@@ -91,7 +91,7 @@ func (r *PlanRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -124,7 +124,7 @@ func (r *PlanRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Where(plan.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, identityV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -160,18 +160,18 @@ func (r *PlanRepo) Create(ctx context.Context, req *identityV1.CreatePlanRequest
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -191,7 +191,7 @@ func (r *PlanRepo) Create(ctx context.Context, req *identityV1.CreatePlanRequest
 	}
 
 	if _, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("insert plan failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert plan failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("insert plan failed")
 	}
 
@@ -224,18 +224,18 @@ func (r *PlanRepo) Update(ctx context.Context, req *identityV1.UpdatePlanRequest
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -258,7 +258,7 @@ func (r *PlanRepo) Update(ctx context.Context, req *identityV1.UpdatePlanRequest
 		},
 	)
 	if err != nil {
-		r.log.Errorf("update plan failed: %s", err.Error())
+		r.log.Errorf(ctx, "update plan failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("update plan failed")
 	}
 
@@ -275,7 +275,7 @@ func (r *PlanRepo) Delete(ctx context.Context, id uint32) error {
 			return identityV1.ErrorNotFound("plan not found")
 		}
 
-		r.log.Errorf("delete one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete one data failed: %s", err.Error())
 
 		return identityV1.ErrorInternalServerError("delete failed")
 	}

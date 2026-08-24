@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 )
 
 // 测试脚本约定（适配 go-scripts/lua 架构）：
@@ -16,7 +16,7 @@ func TestEngine_BasicExecution(t *testing.T) {
 	config := DefaultConfig()
 	config.PoolSize = 2
 	config.ScriptDir = ""
-	engine := NewEngine(config, log.DefaultLogger)
+	engine := NewEngine(config, bLogger.NopLogger())
 	defer engine.Close()
 
 	// Register hook
@@ -71,7 +71,7 @@ end
 func TestEngine_ContextDataTransfer(t *testing.T) {
 	config := DefaultConfig()
 	config.ScriptDir = ""
-	engine := NewEngine(config, log.DefaultLogger)
+	engine := NewEngine(config, bLogger.NopLogger())
 	defer engine.Close()
 
 	engine.RegisterHook("data_transfer", "Test data transfer")
@@ -113,7 +113,7 @@ end
 func TestEngine_ScriptAbort(t *testing.T) {
 	config := DefaultConfig()
 	config.ScriptDir = ""
-	engine := NewEngine(config, log.DefaultLogger)
+	engine := NewEngine(config, bLogger.NopLogger())
 	defer engine.Close()
 
 	engine.RegisterHook("abort_test", "Test script abort")
@@ -148,7 +148,7 @@ end
 func TestEngine_MultipleScripts(t *testing.T) {
 	config := DefaultConfig()
 	config.ScriptDir = ""
-	engine := NewEngine(config, log.DefaultLogger)
+	engine := NewEngine(config, bLogger.NopLogger())
 	defer engine.Close()
 
 	engine.RegisterHook("multi_test", "Test multiple scripts")

@@ -4,7 +4,7 @@ import (
 	"context"
 	"strings"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/redis/go-redis/v9"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
@@ -17,7 +17,7 @@ import (
 // 数据来源为 Redis 的 INFO / DBSIZE / SLOWLOG GET 命令，全部为只读查询，不做任何写操作。
 // 仿照 LoginRateLimiter 的封装风格：直接持有 *redis.Client，在 data 层完成 Redis 访问。
 type RedisCacheMonitorRepo struct {
-	log *log.Helper
+	log *bLogger.Helper
 	rdb *redis.Client
 }
 
@@ -45,21 +45,21 @@ func (r *RedisCacheMonitorRepo) GetInfo(ctx context.Context) (*redisCacheV1.Redi
 
 	// INFO：原始串按 section/entry 拆分后落入泛型结构。
 	if raw, err := r.rdb.Info(ctx).Result(); err != nil {
-		r.log.Errorf("redis INFO failed: %s", err.Error())
+		r.log.Errorf(ctx, "redis INFO failed: %s", err.Error())
 	} else {
 		info.Sections = parseInfoSections(raw)
 	}
 
 	// DBSIZE：当前库 key 总数。
 	if n, err := r.rdb.DBSize(ctx).Result(); err != nil {
-		r.log.Errorf("redis DBSIZE failed: %s", err.Error())
+		r.log.Errorf(ctx, "redis DBSIZE failed: %s", err.Error())
 	} else if n >= 0 {
 		info.DbSize = uint64(n)
 	}
 
 	// SLOWLOG GET：最近慢日志条目。
 	if entries, err := r.rdb.SlowLogGet(ctx, slowLogFetchLimit).Result(); err != nil {
-		r.log.Errorf("redis SLOWLOG GET failed: %s", err.Error())
+		r.log.Errorf(ctx, "redis SLOWLOG GET failed: %s", err.Error())
 	} else {
 		info.Slowlog = mapSlowLogEntries(entries)
 	}
@@ -81,10 +81,25 @@ func mapSlowLogEntries(in []redis.SlowLog) []*redisCacheV1.SlowLogEntry {
 			Id:            s.ID,
 			CreatedAt:     timestamppb.New(s.Time),
 			DurationUsec:  s.Duration.Microseconds(),
-			Args:          s.Args,
+			Args:          sanitizeSlowLogArgs(s.Args),
 			ClientAddr:    s.ClientAddr,
-			ClientName:    s.ClientName,
+			ClientName:    strings.ToValidUTF8(s.ClientName, "\uFFFD"),
 		})
+	}
+	return out
+}
+
+// sanitizeSlowLogArgs 将 slowlog 命令参数净化为合法 UTF-8。
+// Redis 命令参数二进制安全（如二进制序列化的 key/value），而 proto string 字段
+// 强制 UTF-8——未净化直接透传会让响应在 HTTP codec 序列化阶段整体失败，
+// 表现为与本 repo fail-soft 设计相悖的 500（message: invalid UTF-8）。
+func sanitizeSlowLogArgs(args []string) []string {
+	if len(args) == 0 {
+		return nil
+	}
+	out := make([]string, 0, len(args))
+	for _, a := range args {
+		out = append(out, strings.ToValidUTF8(a, "\uFFFD"))
 	}
 	return out
 }

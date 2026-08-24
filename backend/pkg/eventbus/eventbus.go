@@ -6,7 +6,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 )
 
 // EventBus manages event subscriptions and publishing
@@ -38,16 +38,16 @@ type DefaultEventBus struct {
 	mu           sync.RWMutex
 	handlers     map[string][]Handler
 	onceHandlers map[string][]Handler
-	logger       *log.Helper
+	logger       *bLogger.Helper
 	closed       bool
 }
 
 // NewEventBus creates a new event bus
-func NewEventBus(logger log.Logger) EventBus {
+func NewEventBus(logger bLogger.Logger) EventBus {
 	return &DefaultEventBus{
 		handlers:     make(map[string][]Handler),
 		onceHandlers: make(map[string][]Handler),
-		logger:       log.NewHelper(log.With(logger, "module", "eventbus")),
+		logger:       bLogger.NewHelper(logger.With("module", "eventbus")),
 	}
 }
 
@@ -109,7 +109,7 @@ func (eb *DefaultEventBus) Publish(ctx context.Context, event *Event) error {
 	defer eb.mu.RUnlock()
 
 	if eb.closed {
-		eb.logger.Warnf("❌ Event bus is closed, cannot publish event: %s", event.Type)
+			eb.logger.Warnf(ctx, "❌ Event bus is closed, cannot publish event: %s", event.Type)
 		return fmt.Errorf("event bus is closed")
 	}
 
@@ -126,7 +126,7 @@ func (eb *DefaultEventBus) Publish(ctx context.Context, event *Event) error {
 	// Execute regular handlers
 	for _, handler := range handlers {
 		if err := handler.Handle(ctx, event); err != nil {
-			eb.logger.Errorf("Handler error for event %s: %v", event.Type, err)
+				eb.logger.Errorf(ctx, "Handler error for event %s: %v", event.Type, err)
 			// Continue with other handlers even if one fails
 		}
 	}
@@ -134,7 +134,7 @@ func (eb *DefaultEventBus) Publish(ctx context.Context, event *Event) error {
 	// Execute once handlers
 	for _, handler := range onceHandlers {
 		if err := handler.Handle(ctx, event); err != nil {
-			eb.logger.Errorf("Once handler error for event %s: %v", event.Type, err)
+				eb.logger.Errorf(ctx, "Once handler error for event %s: %v", event.Type, err)
 		}
 	}
 
@@ -160,7 +160,7 @@ func (eb *DefaultEventBus) PublishAsync(ctx context.Context, event *Event) error
 		bgCtx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 		defer cancel()
 		if err := eb.Publish(bgCtx, event); err != nil {
-			eb.logger.Errorf("Async publish error for event %s: %v", event.Type, err)
+			eb.logger.Errorf(bgCtx, "Async publish error for event %s: %v", event.Type, err)
 		}
 	}()
 	return nil
@@ -178,7 +178,7 @@ func (eb *DefaultEventBus) Close() error {
 	eb.closed = true
 	eb.handlers = make(map[string][]Handler)
 	eb.onceHandlers = make(map[string][]Handler)
-	eb.logger.Info("Event bus closed")
+	eb.logger.Info(context.Background(), "Event bus closed")
 
 	return nil
 }

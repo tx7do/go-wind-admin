@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/timeutil"
@@ -17,7 +17,7 @@ import (
 )
 
 type UserOrgUnitRepo struct {
-	log *log.Helper
+	log *bLogger.Helper
 
 	entClient       *entCrud.EntClient[*ent.Client]
 	statusConverter *mapper.EnumTypeConverter[identityV1.UserOrgUnit_Status, userorgunit.Status]
@@ -45,7 +45,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByUserID(ctx context.Context, tx *ent.Tx
 			userorgunit.UserIDEQ(userID),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete old user orgUnits failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user orgUnits failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old user orgUnits failed")
 	}
 	return nil
@@ -62,7 +62,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByUserIDs(ctx context.Context, tx *ent.T
 			userorgunit.UserIDIn(userIDs...),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete old user orgUnits by user ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user orgUnits by user ids failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old user orgUnits by user ids failed")
 	}
 	return nil
@@ -79,7 +79,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByOrgUnitID(ctx context.Context, tx *ent
 			userorgunit.OrgUnitIDEQ(orgUnitID),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete old user orgUnits by orgUnit id failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user orgUnits by orgUnit id failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old user orgUnits by orgUnit id failed")
 	}
 	return nil
@@ -96,7 +96,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByOrgUnitIDs(ctx context.Context, tx *en
 			userorgunit.OrgUnitIDIn(orgUnitIDs...),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete old user orgUnits by orgUnit ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user orgUnits by orgUnit ids failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old user orgUnits by orgUnit ids failed")
 	}
 	return nil
@@ -117,7 +117,7 @@ func (r *UserOrgUnitRepo) RemoveOrgUnitsFromUser(ctx context.Context, userID uin
 		).
 		Exec(ctx)
 	if err != nil {
-		r.log.Errorf("remove user orgUnits failed: %s", err.Error())
+		r.log.Errorf(ctx, "remove user orgUnits failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("remove user orgUnits failed")
 	}
 	return nil
@@ -151,7 +151,7 @@ func (r *UserOrgUnitRepo) AssignUserOrgUnit(
 		SetCreatedAt(now).
 		Save(ctx)
 	if err != nil {
-		r.log.Errorf("assign orgUnit to user failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign orgUnit to user failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("assign orgUnit to user failed")
 	}
 	return nil
@@ -199,7 +199,7 @@ func (r *UserOrgUnitRepo) AssignUserOrgUnits(
 
 	_, err = tx.UserOrgUnit.CreateBulk(userOrgUnitCreates...).Save(ctx)
 	if err != nil {
-		r.log.Errorf("assign orgUnit to user failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign orgUnit to user failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("assign orgUnit to user failed")
 	}
 
@@ -231,7 +231,7 @@ func (r *UserOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, userID uint32, exc
 		Select(userorgunit.FieldOrgUnitID).
 		Ints(ctx)
 	if err != nil {
-		r.log.Errorf("query orgUnit ids by user id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query orgUnit ids by user id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query orgUnit ids by user id failed")
 	}
 	ids := make([]uint32, len(intIDs))
@@ -266,7 +266,7 @@ func (r *UserOrgUnitRepo) ListUserIDs(ctx context.Context, orgUnitID uint32, exc
 		Select(userorgunit.FieldUserID).
 		Ints(ctx)
 	if err != nil {
-		r.log.Errorf("query user ids by orgUnit id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user ids by orgUnit id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user ids by orgUnit id failed")
 	}
 	ids := make([]uint32, len(intIDs))
@@ -301,7 +301,7 @@ func (r *UserOrgUnitRepo) ListUserIDsByOrgUnitIDs(ctx context.Context, orgUnitID
 		Select(userorgunit.FieldUserID).
 		Ints(ctx)
 	if err != nil {
-		r.log.Errorf("query user ids by orgUnit ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user ids by orgUnit ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user ids by orgUnit ids failed")
 	}
 	ids := make([]uint32, len(intIDs))

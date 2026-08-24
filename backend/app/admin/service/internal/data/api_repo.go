@@ -6,8 +6,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
@@ -19,16 +19,16 @@ import (
 	"github.com/tx7do/go-utils/copierutil"
 	"github.com/tx7do/go-utils/mapper"
 
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
 
 type ApiRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
-	mapper                 *mapper.CopierMapper[permissionV1.Api, ent.Api]
-	scopeConverter         *mapper.EnumTypeConverter[permissionV1.Api_Scope, api.Scope]
+	mapper                  *mapper.CopierMapper[permissionV1.Api, ent.Api]
+	scopeConverter          *mapper.EnumTypeConverter[permissionV1.Api_Scope, api.Scope]
 	businessModuleConverter *mapper.EnumTypeConverter[identityV1.Module, api.BusinessModule]
 
 	repository *entCrud.Repository[
@@ -86,7 +86,7 @@ func (r *ApiRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (*
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query api count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query api count failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query api count failed")
 	}
 
@@ -121,7 +121,7 @@ func (r *ApiRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Where(api.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, permissionV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -166,7 +166,7 @@ func (r *ApiRepo) GetApiByEndpoint(ctx context.Context, path, method string) (*p
 			return nil, permissionV1.ErrorNotFound("api not found")
 		}
 
-		r.log.Errorf("query one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "query one data failed: %s", err.Error())
 
 		return nil, permissionV1.ErrorInternalServerError("query data failed")
 	}
@@ -190,7 +190,7 @@ func (r *ApiRepo) GetApiByIDs(ctx context.Context, ids []uint32) ([]*permissionV
 			return nil, permissionV1.ErrorNotFound("api not found")
 		}
 
-		r.log.Errorf("query one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "query one data failed: %s", err.Error())
 
 		return nil, permissionV1.ErrorInternalServerError("query data failed")
 	}
@@ -212,7 +212,7 @@ func (r *ApiRepo) Create(ctx context.Context, req *permissionV1.CreateApiRequest
 	builder := r.newApiCreate(req.Data)
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert api failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert api failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("insert api failed")
 	}
 
@@ -258,7 +258,7 @@ func (r *ApiRepo) BatchCreate(ctx context.Context, apis []*permissionV1.Api) err
 	bulkBuilder := r.entClient.Client().Api.CreateBulk(bulk...)
 
 	if err := bulkBuilder.Exec(ctx); err != nil {
-		r.log.Errorf("batch insert apis failed: %s", err.Error())
+		r.log.Errorf(ctx, "batch insert apis failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("batch insert apis failed")
 	}
 
@@ -326,7 +326,7 @@ func (r *ApiRepo) Delete(ctx context.Context, req *permissionV1.DeleteApiRequest
 		s.Where(sql.EQ(api.FieldID, req.GetId()))
 	})
 	if err != nil {
-		r.log.Errorf("delete api failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete api failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete api failed")
 	}
 
@@ -336,7 +336,7 @@ func (r *ApiRepo) Delete(ctx context.Context, req *permissionV1.DeleteApiRequest
 // Truncate 清空表数据
 func (r *ApiRepo) Truncate(ctx context.Context) error {
 	if _, err := r.entClient.Client().Api.Delete().Exec(ctx); err != nil {
-		r.log.Errorf("failed to truncate apis table: %s", err.Error())
+		r.log.Errorf(ctx, "failed to truncate apis table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 	return nil

@@ -4,15 +4,15 @@ import (
 	"context"
 	"testing"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	lua "github.com/yuin/gopher-lua"
 
 	"go-wind-admin/pkg/scripting/api"
 )
 
 func TestHookAPI_RegisterHook(t *testing.T) {
-	logger := log.NewHelper(log.DefaultLogger)
-	engine := NewEngine(DefaultConfig(), log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
+	engine := NewEngine(DefaultConfig(), bLogger.NopLogger())
 	defer engine.Close()
 
 	L := lua.NewState()
@@ -56,8 +56,8 @@ func TestHookAPI_RegisterHook(t *testing.T) {
 }
 
 func TestHookAPI_AddScript(t *testing.T) {
-	logger := log.NewHelper(log.DefaultLogger)
-	engine := NewEngine(DefaultConfig(), log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
+	engine := NewEngine(DefaultConfig(), bLogger.NopLogger())
 	defer engine.Close()
 
 	L := lua.NewState()
@@ -120,8 +120,8 @@ func TestHookAPI_AddScript(t *testing.T) {
 }
 
 func TestHookAPI_SelfRegistration(t *testing.T) {
-	logger := log.NewHelper(log.DefaultLogger)
-	engine := NewEngine(DefaultConfig(), log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
+	engine := NewEngine(DefaultConfig(), bLogger.NopLogger())
 	defer engine.Close()
 
 	L := lua.NewState()
@@ -193,8 +193,8 @@ func TestHookAPI_SelfRegistration(t *testing.T) {
 }
 
 func TestHookAPI_ListHooks(t *testing.T) {
-	logger := log.NewHelper(log.DefaultLogger)
-	engine := NewEngine(DefaultConfig(), log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
+	engine := NewEngine(DefaultConfig(), bLogger.NopLogger())
 	defer engine.Close()
 
 	// Pre-register some hooks
@@ -241,8 +241,8 @@ func TestHookAPI_ListHooks(t *testing.T) {
 }
 
 func TestHookAPI_ComplexWorkflow(t *testing.T) {
-	logger := log.NewHelper(log.DefaultLogger)
-	engine := NewEngine(DefaultConfig(), log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
+	engine := NewEngine(DefaultConfig(), bLogger.NopLogger())
 	defer engine.Close()
 
 	L := lua.NewState()
@@ -356,8 +356,8 @@ func TestHookAPI_ComplexWorkflow(t *testing.T) {
 }
 
 func TestHookAPI_CallbackRegistration(t *testing.T) {
-	logger := log.NewHelper(log.DefaultLogger)
-	engine := NewEngine(DefaultConfig(), log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
+	engine := NewEngine(DefaultConfig(), bLogger.NopLogger())
 	defer engine.Close()
 
 	L := lua.NewState()
@@ -426,8 +426,8 @@ func TestHookAPI_CallbackRegistration(t *testing.T) {
 }
 
 func TestHookAPI_CallbackWithoutDescription(t *testing.T) {
-	logger := log.NewHelper(log.DefaultLogger)
-	engine := NewEngine(DefaultConfig(), log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
+	engine := NewEngine(DefaultConfig(), bLogger.NopLogger())
 	defer engine.Close()
 
 	L := lua.NewState()
@@ -474,8 +474,8 @@ func TestHookAPI_CallbackWithoutDescription(t *testing.T) {
 }
 
 func TestHookAPI_MixedRegistrationMethods(t *testing.T) {
-	logger := log.NewHelper(log.DefaultLogger)
-	engine := NewEngine(DefaultConfig(), log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
+	engine := NewEngine(DefaultConfig(), bLogger.NopLogger())
 	defer engine.Close()
 
 	L := lua.NewState()

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	lua "github.com/yuin/gopher-lua"
 
 	"go-wind-admin/pkg/eventbus"
@@ -16,7 +16,7 @@ import (
 type LuaEventHandler struct {
 	L        *lua.LState
 	function *lua.LFunction
-	logger   *log.Helper
+	logger   *bLogger.Helper
 	mu       sync.Mutex
 }
 
@@ -53,7 +53,7 @@ func (h *LuaEventHandler) Handle(ctx context.Context, event *eventbus.Event) err
 	h.L.Push(eventTable)
 
 	if err := h.L.PCall(1, 0, nil); err != nil {
-		h.logger.Errorf("Lua event handler error: %v", err)
+		h.logger.Errorf(ctx, "Lua event handler error: %v", err)
 		return fmt.Errorf("lua handler error: %w", err)
 	}
 
@@ -61,7 +61,7 @@ func (h *LuaEventHandler) Handle(ctx context.Context, event *eventbus.Event) err
 }
 
 // RegisterEventBus registers the EventBus API for Lua
-func RegisterEventBus(L *lua.LState, manager *eventbus.Manager, logger *log.Helper) {
+func RegisterEventBus(L *lua.LState, manager *eventbus.Manager, logger *bLogger.Helper) {
 	// Store manager in registry for later access (kept as internal global)
 	L.SetGlobal("_eventbus_manager", lua.LString("internal"))
 
@@ -71,7 +71,7 @@ func RegisterEventBus(L *lua.LState, manager *eventbus.Manager, logger *log.Help
 
 // LoaderEventBus 返回 eventbus 模块（kratos_eventbus）的 loader，供 go-scripts 引擎 RegisterModule 使用。
 // manager 为 nil 时返回空模块。
-func LoaderEventBus(manager *eventbus.Manager, logger *log.Helper) lua.LGFunction {
+func LoaderEventBus(manager *eventbus.Manager, logger *bLogger.Helper) lua.LGFunction {
 	return func(L *lua.LState) int {
 		if manager == nil {
 			L.Push(L.NewTable())
@@ -105,13 +105,13 @@ func LoaderEventBus(manager *eventbus.Manager, logger *log.Helper) lua.LGFunctio
 
 			err := bus.Subscribe(eventType, handler)
 			if err != nil {
-				logger.Errorf("eventbus.subscribe error: %v", err)
+				logger.Errorf(context.Background(), "eventbus.subscribe error: %v", err)
 				L.Push(lua.LBool(false))
 				L.Push(lua.LString(err.Error()))
 				return 2
 			}
 
-			logger.Debugf("Subscribed Lua handler for event type: %s (bus: %s)", eventType, busName)
+			logger.Debugf(context.Background(), "Subscribed Lua handler for event type: %s (bus: %s)", eventType, busName)
 			L.Push(lua.LBool(true))
 			return 1
 		}))
@@ -132,13 +132,13 @@ func LoaderEventBus(manager *eventbus.Manager, logger *log.Helper) lua.LGFunctio
 
 			err := bus.SubscribeAsync(eventType, handler)
 			if err != nil {
-				logger.Errorf("eventbus.subscribe_async error: %v", err)
+				logger.Errorf(context.Background(), "eventbus.subscribe_async error: %v", err)
 				L.Push(lua.LBool(false))
 				L.Push(lua.LString(err.Error()))
 				return 2
 			}
 
-			logger.Debugf("Subscribed async Lua handler for event type: %s (bus: %s)", eventType, busName)
+			logger.Debugf(context.Background(), "Subscribed async Lua handler for event type: %s (bus: %s)", eventType, busName)
 			L.Push(lua.LBool(true))
 			return 1
 		}))
@@ -159,13 +159,13 @@ func LoaderEventBus(manager *eventbus.Manager, logger *log.Helper) lua.LGFunctio
 
 			err := bus.SubscribeOnce(eventType, handler)
 			if err != nil {
-				logger.Errorf("eventbus.subscribe_once error: %v", err)
+				logger.Errorf(context.Background(), "eventbus.subscribe_once error: %v", err)
 				L.Push(lua.LBool(false))
 				L.Push(lua.LString(err.Error()))
 				return 2
 			}
 
-			logger.Debugf("Subscribed once Lua handler for event type: %s (bus: %s)", eventType, busName)
+			logger.Debugf(context.Background(), "Subscribed once Lua handler for event type: %s (bus: %s)", eventType, busName)
 			L.Push(lua.LBool(true))
 			return 1
 		}))
@@ -230,13 +230,13 @@ func LoaderEventBus(manager *eventbus.Manager, logger *log.Helper) lua.LGFunctio
 			bus := getBus(L, busName)
 			err := bus.Publish(context.Background(), event)
 			if err != nil {
-				logger.Errorf("eventbus.publish error: %v", err)
+				logger.Errorf(context.Background(), "eventbus.publish error: %v", err)
 				L.Push(lua.LBool(false))
 				L.Push(lua.LString(err.Error()))
 				return 2
 			}
 
-			logger.Debugf("Published event: %s (bus: %s)", event.Type, busName)
+			logger.Debugf(context.Background(), "Published event: %s (bus: %s)", event.Type, busName)
 			L.Push(lua.LBool(true))
 			return 1
 		}))
@@ -255,13 +255,13 @@ func LoaderEventBus(manager *eventbus.Manager, logger *log.Helper) lua.LGFunctio
 			bus := getBus(L, busName)
 			err := bus.PublishAsync(context.Background(), event)
 			if err != nil {
-				logger.Errorf("eventbus.publish_async error: %v", err)
+				logger.Errorf(context.Background(), "eventbus.publish_async error: %v", err)
 				L.Push(lua.LBool(false))
 				L.Push(lua.LString(err.Error()))
 				return 2
 			}
 
-			logger.Debugf("Published async event: %s (bus: %s)", event.Type, busName)
+			logger.Debugf(context.Background(), "Published async event: %s (bus: %s)", event.Type, busName)
 			L.Push(lua.LBool(true))
 			return 1
 		}))

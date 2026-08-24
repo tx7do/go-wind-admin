@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -26,7 +26,7 @@ import (
 
 type PermissionGroupRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper          *mapper.CopierMapper[permissionV1.PermissionGroup, ent.PermissionGroup]
 	statusConverter *mapper.EnumTypeConverter[permissionV1.PermissionGroup_Status, permissiongroup.Status]
@@ -83,7 +83,7 @@ func (r *PermissionGroupRepo) Count(ctx context.Context, whereCond []func(s *sql
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, permissionV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -99,13 +99,13 @@ func (r *PermissionGroupRepo) List(ctx context.Context, req *paginationV1.Paging
 
 	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
 	if err != nil {
-		r.log.Errorf("parse list param error [%s]", err.Error())
+		r.log.Errorf(ctx, "parse list param error [%s]", err.Error())
 		return nil, permissionV1.ErrorBadRequest("invalid query parameter")
 	}
 
 	entities, err := builder.All(ctx)
 	if err != nil {
-		r.log.Errorf("query permission group list failed: %s", err.Error())
+		r.log.Errorf(ctx, "query permission group list failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission group list failed")
 	}
 
@@ -142,7 +142,7 @@ func (r *PermissionGroupRepo) IsExist(ctx context.Context, id uint32) (bool, err
 		Where(permissiongroup.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, permissionV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -179,18 +179,18 @@ func (r *PermissionGroupRepo) Create(ctx context.Context, req *permissionV1.Crea
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = permissionV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -200,7 +200,7 @@ func (r *PermissionGroupRepo) Create(ctx context.Context, req *permissionV1.Crea
 
 	var entity *ent.PermissionGroup
 	if entity, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("insert permission group failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert permission group failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("insert permission group failed")
 	}
 
@@ -229,7 +229,7 @@ func (r *PermissionGroupRepo) BatchCreate(ctx context.Context, permissionGroups 
 
 	var entities []*ent.PermissionGroup
 	if entities, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("batch insert permission groups failed: %s", err.Error())
+		r.log.Errorf(ctx, "batch insert permission groups failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("batch insert permission groups failed")
 	}
 
@@ -321,18 +321,18 @@ func (r *PermissionGroupRepo) UpdateParentIDs(ctx context.Context, parentIDs map
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = permissionV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -343,7 +343,7 @@ func (r *PermissionGroupRepo) UpdateParentIDs(ctx context.Context, parentIDs map
 			Where(permissiongroup.IDEQ(permID))
 
 		if err = builder.Exec(ctx); err != nil {
-			r.log.Errorf("update permission parent_id failed: %s", err.Error())
+			r.log.Errorf(ctx, "update permission parent_id failed: %s", err.Error())
 			return permissionV1.ErrorInternalServerError("update permission parent_id failed")
 		}
 	}
@@ -363,7 +363,7 @@ func (r *PermissionGroupRepo) Delete(ctx context.Context, req *permissionV1.Dele
 		s.Where(sql.EQ(permissiongroup.FieldID, req.GetId()))
 	})
 	if err != nil {
-		r.log.Errorf("delete permission group failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete permission group failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete permission group failed")
 	}
 
@@ -373,7 +373,7 @@ func (r *PermissionGroupRepo) Delete(ctx context.Context, req *permissionV1.Dele
 // Truncate 清空表数据
 func (r *PermissionGroupRepo) Truncate(ctx context.Context) error {
 	if _, err := r.entClient.Client().PermissionGroup.Delete().Exec(ctx); err != nil {
-		r.log.Errorf("failed to truncate permission group table: %s", err.Error())
+		r.log.Errorf(ctx, "failed to truncate permission group table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 
@@ -388,7 +388,7 @@ func (r *PermissionGroupRepo) TruncateBizGroup(ctx context.Context) error {
 		)
 
 	if _, err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("failed to truncate permission group table: %s", err.Error())
+		r.log.Errorf(ctx, "failed to truncate permission group table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 
@@ -405,7 +405,7 @@ func (r *PermissionGroupRepo) ListByIDs(ctx context.Context, ids []uint32) ([]*p
 
 	entities, err := builder.All(ctx)
 	if err != nil {
-		r.log.Errorf("query list by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query list by ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query list by ids failed")
 	}
 

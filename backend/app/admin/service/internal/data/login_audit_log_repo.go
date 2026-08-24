@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -24,7 +24,7 @@ import (
 
 type LoginAuditLogRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper *mapper.CopierMapper[auditV1.LoginAuditLog, ent.LoginAuditLog]
 
@@ -94,7 +94,7 @@ func (r *LoginAuditLogRepo) Count(ctx context.Context, whereCond []func(s *sql.S
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, adminV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -127,7 +127,7 @@ func (r *LoginAuditLogRepo) IsExist(ctx context.Context, id uint32) (bool, error
 		Where(loginauditlog.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, adminV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -183,7 +183,7 @@ func (r *LoginAuditLogRepo) Create(ctx context.Context, req *auditV1.CreateLogin
 		SetCreatedAt(time.Now())
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert login audit log failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert login audit log failed: %s", err.Error())
 		return adminV1.ErrorInternalServerError("insert login audit log failed")
 	}
 

@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -22,7 +22,7 @@ import (
 type MenuService struct {
 	adminV1.MenuServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	menuRepo *data.MenuRepo
 }
@@ -151,7 +151,7 @@ func (s *MenuService) SyncMenus(ctx context.Context, req *permissionV1.SyncMenus
 		return nil, err
 	}
 
-	s.log.Infof("sync menus success, total: %d", count)
+	s.log.Infof(ctx, "sync menus success, total: %d", count)
 
 	return &emptypb.Empty{}, nil
 }
@@ -179,7 +179,7 @@ func (s *MenuService) syncMenuTree(ctx context.Context, menus []*permissionV1.Me
 		// 插入当前节点，获取数据库生成的 ID / Insert current node, get DB-generated ID
 		created, err := s.menuRepo.CreateReturn(ctx, &permissionV1.CreateMenuRequest{Data: m})
 		if err != nil {
-			s.log.Errorf("sync menu failed, name: %s, err: %v", m.GetName(), err)
+			s.log.Errorf(ctx, "sync menu failed, name: %s, err: %v", m.GetName(), err)
 			return count, err
 		}
 		count++
@@ -200,7 +200,7 @@ func (s *MenuService) createDefaultMenus(ctx context.Context) error {
 	for _, m := range constants.DefaultMenus {
 		m.Module = trans.Ptr(constants.ComponentToModule(m.GetComponent()))
 		if err := s.menuRepo.Create(ctx, &permissionV1.CreateMenuRequest{Data: m}); err != nil {
-			s.log.Errorf("create default menu err: %v", err)
+			s.log.Errorf(ctx, "create default menu err: %v", err)
 			return err
 		}
 	}

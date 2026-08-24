@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	"github.com/tx7do/go-utils/jwtutil"
 	"github.com/tx7do/go-utils/trans"
@@ -32,7 +32,7 @@ import (
 const devSamplePrivateKeyFingerprint = "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQCL8EdeTLDTf8AY"
 
 // applyJwtKeyOverrides 环境变量密钥覆盖 + 开发示例密钥安全检查（见调用处注释）。
-func applyJwtKeyOverrides(logHelper *log.Helper, jwtCfg *conf.Authentication_Jwt) *conf.Authentication_Jwt {
+func applyJwtKeyOverrides(logHelper *bLogger.Helper, jwtCfg *conf.Authentication_Jwt) *conf.Authentication_Jwt {
 	if jwtCfg == nil {
 		return jwtCfg
 	}
@@ -49,8 +49,8 @@ func applyJwtKeyOverrides(logHelper *log.Helper, jwtCfg *conf.Authentication_Jwt
 	if strings.Contains(jwtCfg.GetPrivateKey(), devSamplePrivateKeyFingerprint) {
 		// 仅打醒目告警，不阻断启动——测试/本地环境普遍沿用示例密钥，
 		// 强行 panic 会断掉开发与联调链路。生产替换由部署流程保证。
-		logHelper.Warnf("⚠️ configs/auth.yaml 中的开发示例 JWT 私钥仍在生效，生产环境必须替换：" +
-			"通过环境变量 GWA_AUTH_JWT_PRIVATE_KEY / GWA_AUTH_JWT_PUBLIC_KEY 注入，" +
+		logHelper.Warnf(context.Background(), "⚠️ configs/auth.yaml 中的开发示例 JWT 私钥仍在生效，生产环境必须替换："+
+			"通过环境变量 GWA_AUTH_JWT_PRIVATE_KEY / GWA_AUTH_JWT_PUBLIC_KEY 注入，"+
 			"或修改 yaml（生成命令见 auth.yaml 内注释）。")
 	}
 	return jwtCfg
@@ -65,7 +65,7 @@ const (
 )
 
 type Authenticator struct {
-	log *log.Helper
+	log *bLogger.Helper
 
 	AdminAuthenticator authnEngine.Authenticator
 
@@ -336,7 +336,7 @@ func (a *Authenticator) Authenticate(ctx context.Context, req *authenticationV1.
 		}
 		exist, _, err := a.userTokenCache.IsExistRefreshToken(ctx, req.GetClientType(), rtUserId, req.GetToken())
 		if err != nil {
-			a.log.Errorf("check refresh token exist failed: %s", err.Error())
+			a.log.Errorf(ctx, "check refresh token exist failed: %s", err.Error())
 		}
 		if err != nil || !exist {
 			return &authenticationV1.ValidateTokenResponse{
@@ -400,7 +400,7 @@ func (a *Authenticator) CreateUserToken(
 // RevokeUserToken 撤销用户令牌
 func (a *Authenticator) RevokeUserToken(ctx context.Context, clientType authenticationV1.ClientType, userId uint32) error {
 	if a.userTokenCache == nil {
-		a.log.Error("userTokenCache is nil")
+		a.log.Error(ctx, "userTokenCache is nil")
 		return authenticationV1.ErrorServiceUnavailable("token cache unavailable")
 	}
 
@@ -413,7 +413,7 @@ func (a *Authenticator) RevokeUserToken(ctx context.Context, clientType authenti
 	}
 
 	if err := a.userTokenCache.RevokeToken(ctx, clientType, userId); err != nil {
-		a.log.Errorf("revoke user token failed: %v", err)
+		a.log.Errorf(ctx, "revoke user token failed: %v", err)
 		return err
 	}
 
@@ -444,7 +444,7 @@ func (a *Authenticator) VerifyRefreshToken(
 	refreshToken string,
 ) (userId uint32, jti string, err error) {
 	if a.userTokenCache == nil {
-		a.log.Error("userTokenCache is nil")
+		a.log.Error(ctx, "userTokenCache is nil")
 		return 0, "", authenticationV1.ErrorServiceUnavailable("token cache unavailable")
 	}
 	if refreshToken == "" {
@@ -459,7 +459,7 @@ func (a *Authenticator) VerifyRefreshToken(
 	// 验签 refresh token JWT，提取 uid/jti
 	claims, authErr := authenticator.AuthenticateToken(refreshToken)
 	if authErr != nil {
-		a.log.Errorf("authenticate refresh token failed: [%s]", authErr)
+		a.log.Errorf(ctx, "authenticate refresh token failed: [%s]", authErr)
 		return 0, "", authenticationV1.ErrorIncorrectRefreshToken("invalid refresh token")
 	}
 	if jwt.IsTokenExpired(claims) {
@@ -467,18 +467,18 @@ func (a *Authenticator) VerifyRefreshToken(
 	}
 	userId, jti, err = jwt.ParseRefreshTokenClaims(claims)
 	if err != nil {
-		a.log.Errorf("parse refresh token claims failed: [%s]", err)
+		a.log.Errorf(ctx, "parse refresh token claims failed: [%s]", err)
 		return 0, "", authenticationV1.ErrorIncorrectRefreshToken("invalid refresh token")
 	}
 
 	// 原子验证并吊销旧令牌对（Lua 脚本保证原子性）
 	var valid bool
 	if valid, err = a.userTokenCache.VerifyAndRevokeTokenPair(ctx, clientType, userId, jti, refreshToken); err != nil {
-		a.log.Errorf("verify refresh token failed for user [%d]: [%s]", userId, err)
+		a.log.Errorf(ctx, "verify refresh token failed for user [%d]: [%s]", userId, err)
 		return 0, "", authenticationV1.ErrorServiceUnavailable("verify refresh token failed")
 	}
 	if !valid {
-		a.log.Errorf("invalid refresh token for user [%d]", userId)
+		a.log.Errorf(ctx, "invalid refresh token for user [%d]", userId)
 		return 0, "", authenticationV1.ErrorIncorrectRefreshToken("invalid refresh token")
 	}
 
@@ -505,11 +505,11 @@ func (a *Authenticator) BlockToken(
 		var exist bool
 		exist, jti, err = a.userTokenCache.IsExistAccessToken(ctx, req.GetClientType(), req.GetUserId(), req.GetToken())
 		if err != nil {
-			a.log.Errorf("check access token existence failed: [%v]", err)
+			a.log.Errorf(ctx, "check access token existence failed: [%v]", err)
 			return authenticationV1.ErrorServiceUnavailable("check access token existence failed")
 		}
 		if !exist {
-			a.log.Warnf("access token not found for user [%d]", req.GetUserId())
+			a.log.Warnf(ctx, "access token not found for user [%d]", req.GetUserId())
 			return authenticationV1.ErrorAccessTokenNotFound("access token not found")
 		}
 
@@ -517,17 +517,17 @@ func (a *Authenticator) BlockToken(
 		var exist bool
 		exist, err = a.userTokenCache.IsExistAccessTokenByJti(ctx, req.GetClientType(), req.GetUserId(), req.GetJti())
 		if err != nil {
-			a.log.Errorf("check access token existence by jti failed: [%v]", err)
+			a.log.Errorf(ctx, "check access token existence by jti failed: [%v]", err)
 			return authenticationV1.ErrorServiceUnavailable("check access token existence failed")
 		}
 		if !exist {
-			a.log.Warnf("access token not found for user [%d] by jti", req.GetUserId())
+			a.log.Warnf(ctx, "access token not found for user [%d] by jti", req.GetUserId())
 			return authenticationV1.ErrorAccessTokenNotFound("access token not found")
 		}
 		jti = req.GetJti()
 
 	default:
-		a.log.Error("invalid block token request target")
+		a.log.Error(ctx, "invalid block token request target")
 		return authenticationV1.ErrorBadRequest("invalid block token request target")
 	}
 
@@ -544,11 +544,11 @@ func (a *Authenticator) UnblockToken(
 		var exist bool
 		exist, jti, err = a.userTokenCache.IsExistAccessToken(ctx, req.GetClientType(), req.GetUserId(), req.GetToken())
 		if err != nil {
-			a.log.Errorf("check access token existence failed: [%v]", err)
+			a.log.Errorf(ctx, "check access token existence failed: [%v]", err)
 			return authenticationV1.ErrorServiceUnavailable("check access token existence failed")
 		}
 		if !exist {
-			a.log.Warnf("access token not found for user [%d]", req.GetUserId())
+			a.log.Warnf(ctx, "access token not found for user [%d]", req.GetUserId())
 			return authenticationV1.ErrorAccessTokenNotFound("access token not found")
 		}
 
@@ -556,17 +556,17 @@ func (a *Authenticator) UnblockToken(
 		var exist bool
 		exist, err = a.userTokenCache.IsExistAccessTokenByJti(ctx, req.GetClientType(), req.GetUserId(), req.GetJti())
 		if err != nil {
-			a.log.Errorf("check access token existence by jti failed: [%v]", err)
+			a.log.Errorf(ctx, "check access token existence by jti failed: [%v]", err)
 			return authenticationV1.ErrorServiceUnavailable("check access token existence failed")
 		}
 		if !exist {
-			a.log.Warnf("access token not found for user [%d] by jti", req.GetUserId())
+			a.log.Warnf(ctx, "access token not found for user [%d] by jti", req.GetUserId())
 			return authenticationV1.ErrorAccessTokenNotFound("access token not found")
 		}
 		jti = req.GetJti()
 
 	default:
-		a.log.Error("invalid block token request target")
+		a.log.Error(ctx, "invalid block token request target")
 		return authenticationV1.ErrorBadRequest("invalid block token request target")
 	}
 
@@ -581,7 +581,7 @@ func (a *Authenticator) getAuthenticator(clientType authenticationV1.ClientType)
 		authenticator = a.AdminAuthenticator
 	case authenticationV1.ClientType_app:
 	default:
-		a.log.Error("invalid client type: [%v]", clientType)
+		a.log.Error(context.Background(), "invalid client type: [%v]", clientType)
 		return nil, authenticationV1.ErrorBadRequest("invalid client type")
 	}
 	return authenticator, nil
@@ -593,7 +593,7 @@ func (a *Authenticator) newAccessToken(
 	tokenPayload *authenticationV1.UserTokenPayload,
 ) (accessToken string, err error) {
 	if tokenPayload == nil {
-		a.log.Error("token payload is nil")
+		a.log.Error(context.Background(), "token payload is nil")
 		return "", authenticationV1.ErrorBadRequest("token payload is nil")
 	}
 
@@ -607,7 +607,7 @@ func (a *Authenticator) newAccessToken(
 
 	accessToken, err = authenticator.CreateIdentity(*authClaims)
 	if err != nil {
-		a.log.Error("create access token failed: [%v]", err)
+		a.log.Error(context.Background(), "create access token failed: [%v]", err)
 		return "", authenticationV1.ErrorServiceUnavailable("create access token failed")
 	}
 
@@ -622,14 +622,14 @@ func (a *Authenticator) newRefreshToken(
 	tokenPayload *authenticationV1.UserTokenPayload,
 ) (refreshToken string, err error) {
 	if tokenPayload == nil {
-		a.log.Error("refresh token payload is nil")
+		a.log.Error(context.Background(), "refresh token payload is nil")
 		return "", authenticationV1.ErrorBadRequest("refresh token payload is nil")
 	}
 
 	expTime := time.Now().Add(a.GetRefreshTokenExpires(clientType))
 	authClaims, err := jwt.NewRefreshTokenAuthClaims(tokenPayload.GetUserId(), tokenPayload.GetJti(), &expTime)
 	if err != nil {
-		a.log.Error("create refresh token claims failed: [%v]", err)
+		a.log.Error(context.Background(), "create refresh token claims failed: [%v]", err)
 		return "", authenticationV1.ErrorServiceUnavailable("create refresh token failed")
 	}
 
@@ -640,7 +640,7 @@ func (a *Authenticator) newRefreshToken(
 
 	refreshToken, err = authenticator.CreateIdentity(*authClaims)
 	if err != nil {
-		a.log.Error("create refresh token failed: [%v]", err)
+		a.log.Error(context.Background(), "create refresh token failed: [%v]", err)
 		return "", authenticationV1.ErrorServiceUnavailable("create refresh token failed")
 	}
 	return refreshToken, nil

@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
@@ -15,7 +15,7 @@ import (
 )
 
 type PermissionApiRepo struct {
-	log       *log.Helper
+	log       *bLogger.Helper
 	entClient *entCrud.EntClient[*ent.Client]
 }
 
@@ -37,7 +37,7 @@ func (r *PermissionApiRepo) CleanApis(
 			permissionapi.PermissionIDIn(permissionIDs...),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete old permission apis failed: %s", err.Error())
+		r.log.Errorf(context.Background(), "delete old permission apis failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete old permission apis failed")
 	}
 	return nil
@@ -56,7 +56,7 @@ func (r *PermissionApiRepo) CleanNotExistApis(
 			permissionapi.PermissionIDEQ(permissionID),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("clean not exists permission apis failed: %s", err.Error())
+		r.log.Errorf(context.Background(), "clean not exists permission apis failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("clean not exists permission apis failed")
 	}
 	return nil
@@ -71,18 +71,18 @@ func (r *PermissionApiRepo) AssignApis(
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(context.Background(), "start transaction failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(context.Background(), "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(context.Background(), "transaction commit failed: %s", commitErr.Error())
 			err = permissionV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -90,7 +90,7 @@ func (r *PermissionApiRepo) AssignApis(
 	// 清理失效关联失败不阻断分配（仅告警）：CleanNotExist 出错时仍执行 Assign，
 	// 由 (tenant, permission, api) 唯一约束兜底重复数据
 	if err := r.CleanNotExistApis(ctx, tx, permissionID, apiIDs); err != nil {
-		r.log.Warnf("clean not exist apis for permission [%d] failed: %s", permissionID, err.Error())
+		r.log.Warnf(context.Background(), "clean not exist apis for permission [%d] failed: %s", permissionID, err.Error())
 	}
 
 	return r.AssignApisWithTx(ctx, tx, permissionID, apiIDs)
@@ -122,7 +122,7 @@ func (r *PermissionApiRepo) AssignApisWithTx(
 			UpdateNewValues().
 			SetUpdatedAt(now)
 		if err := pm.Exec(ctx); err != nil {
-			r.log.Errorf("assign permission apis failed: %s", err.Error())
+			r.log.Errorf(context.Background(), "assign permission apis failed: %s", err.Error())
 			return permissionV1.ErrorInternalServerError("assign permission apis failed")
 		}
 	}
@@ -142,7 +142,7 @@ func (r *PermissionApiRepo) ListApiIDs(ctx context.Context, permissionIDs []uint
 		Select(permissionapi.FieldAPIID).
 		Ints(ctx)
 	if err != nil {
-		r.log.Errorf("list permission apis by permission id failed: %s", err.Error())
+		r.log.Errorf(ctx, "list permission apis by permission id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("list permission apis by permission id failed")
 	}
 
@@ -161,7 +161,7 @@ func (r *PermissionApiRepo) Truncate(ctx context.Context) error {
 		)
 
 	if _, err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("failed to truncate permission api table: %s", err.Error())
+		r.log.Errorf(ctx, "failed to truncate permission api table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 
@@ -175,7 +175,7 @@ func (r *PermissionApiRepo) Delete(ctx context.Context, permissionID uint32) err
 			permissionapi.PermissionIDEQ(permissionID),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete permission apis by permission id failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete permission apis by permission id failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete permission apis by permission id failed")
 	}
 	return nil
@@ -187,7 +187,7 @@ func (r *PermissionApiRepo) DeleteByPermissionIDs(ctx context.Context, permissio
 			permissionapi.PermissionIDIn(permissionIDs...),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete permission apis by permission ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete permission apis by permission ids failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete permission apis by permission ids failed")
 	}
 	return nil

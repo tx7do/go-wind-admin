@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/sliceutil"
@@ -26,7 +26,7 @@ import (
 type AdminPortalService struct {
 	adminV1.AdminPortalServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	menuRepo        *data.MenuRepo
 	roleRepo        *data.RoleRepo
@@ -89,7 +89,7 @@ func (s *AdminPortalService) queryMultipleRolesMenusByRoleCodes(ctx context.Cont
 		return nil, adminV1.ErrorInternalServerError("query roles menuIDs failed")
 	}
 
-	s.log.Infof("queryMultipleRolesMenusByRoleCodes menuIDs: %+v", menuIDs)
+	s.log.Infof(ctx, "queryMultipleRolesMenusByRoleCodes menuIDs: %+v", menuIDs)
 
 	menuIDs = sliceutil.Unique(menuIDs)
 
@@ -108,7 +108,7 @@ func (s *AdminPortalService) GetMyPermissionCode(ctx context.Context, _ *emptypb
 		},
 	})
 	if err != nil {
-		s.log.Errorf("query user failed[%s]", err.Error())
+		s.log.Errorf(ctx, "query user failed[%s]", err.Error())
 		return nil, adminV1.ErrorInternalServerError("query user failed")
 	}
 
@@ -175,7 +175,7 @@ func (s *AdminPortalService) GetNavigation(ctx context.Context, _ *emptypb.Empty
 		},
 	})
 	if err != nil {
-		s.log.Errorf("query user failed[%s]", err.Error())
+		s.log.Errorf(ctx, "query user failed[%s]", err.Error())
 		return nil, adminV1.ErrorInternalServerError("query user failed")
 	}
 
@@ -192,7 +192,7 @@ func (s *AdminPortalService) GetNavigation(ctx context.Context, _ *emptypb.Empty
 		},
 	}, true)
 	if err != nil {
-		s.log.Errorf("list route failed [%s]", err.Error())
+		s.log.Errorf(ctx, "list route failed [%s]", err.Error())
 		return nil, adminV1.ErrorInternalServerError("list route failed")
 	}
 

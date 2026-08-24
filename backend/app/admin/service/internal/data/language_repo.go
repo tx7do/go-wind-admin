@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -23,7 +23,7 @@ import (
 
 type LanguageRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper *mapper.CopierMapper[dictV1.Language, ent.Language]
 
@@ -71,7 +71,7 @@ func (r *LanguageRepo) Count(ctx context.Context, whereCond []func(s *sql.Select
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, dictV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -104,7 +104,7 @@ func (r *LanguageRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Where(language.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, dictV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -144,7 +144,7 @@ func (r *LanguageRepo) ListLanguageByIds(ctx context.Context, ids []uint32) ([]*
 		Where(language.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		r.log.Errorf("query language by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query language by ids failed: %s", err.Error())
 		return nil, dictV1.ErrorInternalServerError("query language by ids failed")
 	}
 
@@ -177,7 +177,7 @@ func (r *LanguageRepo) Create(ctx context.Context, req *dictV1.CreateLanguageReq
 	}
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert language failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert language failed: %s", err.Error())
 		return dictV1.ErrorInternalServerError("insert data failed")
 	}
 
@@ -239,7 +239,7 @@ func (r *LanguageRepo) Delete(ctx context.Context, req *dictV1.DeleteLanguageReq
 		s.Where(sql.EQ(language.FieldID, req.GetId()))
 	})
 	if err != nil {
-		r.log.Errorf("delete language failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete language failed: %s", err.Error())
 		return dictV1.ErrorInternalServerError("delete language failed")
 	}
 

@@ -53,6 +53,7 @@ require (
 	github.com/tx7do/kratos-bootstrap/cache/redis v0.1.2
 	github.com/tx7do/kratos-bootstrap/database/ent v0.1.6
 	github.com/tx7do/kratos-bootstrap/database/gorm v0.1.6
+	github.com/tx7do/kratos-bootstrap/logger v0.1.3
 	github.com/tx7do/kratos-bootstrap/oss/minio v0.1.3
 	github.com/tx7do/kratos-bootstrap/rpc v0.1.2
 	github.com/tx7do/kratos-bootstrap/transport/asynq v0.0.7
@@ -227,7 +228,6 @@ require (
 	github.com/tx7do/go-wind-plugins/encoding v0.0.1 // indirect
 	github.com/tx7do/go-wind-plugins/encoding/json v0.0.1 // indirect
 	github.com/tx7do/kratos-bootstrap/config v0.2.3 // indirect
-	github.com/tx7do/kratos-bootstrap/logger v0.1.3 // indirect
 	github.com/tx7do/kratos-bootstrap/registry v0.2.3 // indirect
 	github.com/tx7do/kratos-bootstrap/tracer v0.1.5 // indirect
 	github.com/tx7do/kratos-transport/broker v1.3.3 // indirect

@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -23,7 +23,7 @@ import (
 type LanguageService struct {
 	adminV1.LanguageServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	languageRepo *data.LanguageRepo
 }
@@ -126,7 +126,7 @@ func (s *LanguageService) createDefaultLanguage(ctx context.Context) (err error)
 		if err = s.languageRepo.Create(ctx, &dictV1.CreateLanguageRequest{
 			Data: user,
 		}); err != nil {
-			s.log.Errorf("create default language err: %v", err)
+			s.log.Errorf(ctx, "create default language err: %v", err)
 			return err
 		}
 	}

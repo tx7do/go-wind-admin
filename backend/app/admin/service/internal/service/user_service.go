@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/aggregator"
 	"github.com/tx7do/go-utils/sliceutil"
@@ -28,7 +28,7 @@ import (
 type UserService struct {
 	adminV1.UserServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	userRepo           data.UserRepo
 	userCredentialRepo *data.UserCredentialRepo
@@ -136,7 +136,7 @@ func (s *UserService) fetchRelationInfo(
 
 		roles, err := s.roleRepo.ListRolesByRoleIds(ctx, roleIds)
 		if err != nil {
-			s.log.Errorf("query roles err: %v", err)
+			s.log.Errorf(context.Background(), "query roles err: %v", err)
 			return err
 		}
 
@@ -153,7 +153,7 @@ func (s *UserService) fetchRelationInfo(
 
 		tenants, err := s.tenantRepo.ListTenantsByIds(ctx, tenantIds)
 		if err != nil {
-			s.log.Errorf("query tenants err: %v", err)
+			s.log.Errorf(context.Background(), "query tenants err: %v", err)
 			return err
 		}
 
@@ -170,7 +170,7 @@ func (s *UserService) fetchRelationInfo(
 
 		orgUnits, err := s.orgUnitRepo.ListOrgUnitsByIds(ctx, orgUnitIds)
 		if err != nil {
-			s.log.Errorf("query orgUnits err: %v", err)
+			s.log.Errorf(context.Background(), "query orgUnits err: %v", err)
 			return err
 		}
 
@@ -187,7 +187,7 @@ func (s *UserService) fetchRelationInfo(
 
 		positions, err := s.positionRepo.ListPositionByIds(ctx, posIds)
 		if err != nil {
-			s.log.Errorf("query positions err: %v", err)
+			s.log.Errorf(context.Background(), "query positions err: %v", err)
 			return err
 		}
 
@@ -358,7 +358,7 @@ func (s *UserService) Create(ctx context.Context, req *identityV1.CreateUserRequ
 	}
 	roleIds = sliceutil.Unique(roleIds)
 	if len(roleIds) == 0 {
-		s.log.Errorf("role_ids is required")
+		s.log.Errorf(ctx, "role_ids is required")
 		return nil, adminV1.ErrorBadRequest("role_ids is required")
 	}
 
@@ -380,16 +380,16 @@ func (s *UserService) Create(ctx context.Context, req *identityV1.CreateUserRequ
 		},
 	})
 	if err != nil {
-		s.log.Errorf("query roles err: %v", err)
+		s.log.Errorf(ctx, "query roles err: %v", err)
 		return nil, err
 	}
 
 	if len(roles.Items) != len(roleIds) {
-		s.log.Errorf("some roles not found, requested role ids: %v", roleIds)
+		s.log.Errorf(ctx, "some roles not found, requested role ids: %v", roleIds)
 		return nil, adminV1.ErrorBadRequest("some roles not found")
 	}
 	if len(roles.Items) == 0 {
-		s.log.Errorf("at least one role is required")
+		s.log.Errorf(ctx, "at least one role is required")
 		return nil, adminV1.ErrorBadRequest("at least one role is required")
 	}
 
@@ -471,7 +471,7 @@ func (s *UserService) Update(ctx context.Context, req *identityV1.UpdateUserRequ
 	}
 	roleIds = sliceutil.Unique(roleIds)
 	if len(roleIds) == 0 {
-		s.log.Errorf("role_ids is required")
+		s.log.Errorf(ctx, "role_ids is required")
 		return nil, adminV1.ErrorBadRequest("role_ids is required")
 	}
 
@@ -493,16 +493,16 @@ func (s *UserService) Update(ctx context.Context, req *identityV1.UpdateUserRequ
 		},
 	})
 	if err != nil {
-		s.log.Errorf("query roles err: %v", err)
+		s.log.Errorf(ctx, "query roles err: %v", err)
 		return nil, err
 	}
 
 	if len(roles.Items) != len(roleIds) {
-		s.log.Errorf("some roles not found, requested role ids: %v", roleIds)
+		s.log.Errorf(ctx, "some roles not found, requested role ids: %v", roleIds)
 		return nil, adminV1.ErrorBadRequest("some roles not found")
 	}
 	if len(roles.Items) == 0 {
-		s.log.Errorf("at least one role is required")
+		s.log.Errorf(ctx, "at least one role is required")
 		return nil, adminV1.ErrorBadRequest("at least one role is required")
 	}
 
@@ -511,7 +511,7 @@ func (s *UserService) Update(ctx context.Context, req *identityV1.UpdateUserRequ
 
 	// 更新用户
 	if err = s.userRepo.Update(ctx, req); err != nil {
-		s.log.Error(err)
+		s.log.Error(ctx, err.Error())
 		return nil, err
 	}
 
@@ -527,7 +527,7 @@ func (s *UserService) Update(ctx context.Context, req *identityV1.UpdateUserRequ
 				return nil, gerr
 			}
 			if targetUser.GetTenantId() != operator.GetTenantId() {
-				s.log.Errorf("operator [%d] (tenant %d) has no permission to reset password of cross-tenant user [%d] (tenant %d)",
+				s.log.Errorf(ctx, "operator [%d] (tenant %d) has no permission to reset password of cross-tenant user [%d] (tenant %d)",
 					operator.GetUserId(), operator.GetTenantId(), targetUser.GetId(), targetUser.GetTenantId())
 				return nil, adminV1.ErrorForbidden("no permission to reset password of user in other tenant")
 			}
@@ -590,14 +590,14 @@ func (s *UserService) Delete(ctx context.Context, req *identityV1.DeleteUserRequ
 	// 即便后续改名也由 id 兜底保护）。误删会导致系统失去超级管理员且无法自动重建。
 	if target.GetId() == 1 ||
 		(target.GetUsername() == constants.DefaultAdminUserName && target.GetTenantId() == 0) {
-		s.log.Errorf("operator [%d] attempted to delete default admin user [%d]",
+		s.log.Errorf(ctx, "operator [%d] attempted to delete default admin user [%d]",
 			operator.GetUserId(), target.GetId())
 		return nil, adminV1.ErrorBadRequest("default admin cannot be deleted")
 	}
 
 	// 禁止删除自己：误删自身账号将导致当前会话立即失去管理能力。
 	if target.GetId() == operator.GetUserId() {
-		s.log.Errorf("operator [%d] attempted to delete self", operator.GetUserId())
+		s.log.Errorf(ctx, "operator [%d] attempted to delete self", operator.GetUserId())
 		return nil, adminV1.ErrorBadRequest("cannot delete yourself")
 	}
 
@@ -631,7 +631,7 @@ func (s *UserService) EditUserPassword(ctx context.Context, req *identityV1.Edit
 
 	// 跨租户防护：非平台超级管理员只能重置本租户用户的密码
 	if !operator.GetIsPlatformAdmin() && u.GetTenantId() != operator.GetTenantId() {
-		s.log.Errorf("operator [%d] (tenant %d) has no permission to reset password of cross-tenant user [%d] (tenant %d)",
+		s.log.Errorf(ctx, "operator [%d] (tenant %d) has no permission to reset password of cross-tenant user [%d] (tenant %d)",
 			operator.GetUserId(), operator.GetTenantId(), u.GetId(), u.GetTenantId())
 		return nil, adminV1.ErrorForbidden("no permission to reset password of user in other tenant")
 	}
@@ -642,7 +642,7 @@ func (s *UserService) EditUserPassword(ctx context.Context, req *identityV1.Edit
 		NewCredential: req.GetNewPassword(),
 		NeedDecrypt:   false,
 	}); err != nil {
-		s.log.Errorf("reset user password err: %v", err)
+		s.log.Errorf(ctx, "reset user password err: %v", err)
 		return nil, err
 	}
 
@@ -658,7 +658,7 @@ func (s *UserService) createDefaultUser(ctx context.Context) error {
 		if _, err = s.userRepo.Create(ctx, &identityV1.CreateUserRequest{
 			Data: user,
 		}); err != nil {
-			s.log.Errorf("create default user err: %v", err)
+			s.log.Errorf(ctx, "create default user err: %v", err)
 			return err
 		}
 	}
@@ -668,7 +668,7 @@ func (s *UserService) createDefaultUser(ctx context.Context) error {
 		if err = s.userCredentialRepo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
 			Data: userCredential,
 		}); err != nil {
-			s.log.Errorf("create default user credential err: %v", err)
+			s.log.Errorf(ctx, "create default user credential err: %v", err)
 			return err
 		}
 	}
@@ -680,7 +680,7 @@ func (s *UserService) createDefaultUser(ctx context.Context) error {
 		// 创建默认用户角色关联关系
 		for _, userRole := range constants.DefaultUserRoles {
 			if err = s.userRepo.AssignUserRole(ctx, userRole); err != nil {
-				s.log.Errorf("create default user role relation err: %v", err)
+				s.log.Errorf(ctx, "create default user role relation err: %v", err)
 				return err
 			}
 		}
@@ -689,7 +689,7 @@ func (s *UserService) createDefaultUser(ctx context.Context) error {
 		// 创建默认用户租户关联关系
 		for _, membership := range constants.DefaultMemberships {
 			if err = s.membershipRepo.AssignTenantMembershipWith(ctx, membership); err != nil {
-				s.log.Errorf("create default user membership err: %v", err)
+				s.log.Errorf(ctx, "create default user membership err: %v", err)
 				return err
 			}
 		}

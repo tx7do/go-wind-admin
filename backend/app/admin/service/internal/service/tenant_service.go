@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/aggregator"
 	"github.com/tx7do/go-utils/trans"
@@ -24,7 +24,7 @@ import (
 type TenantService struct {
 	adminV1.TenantServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	tenantRepo          *data.TenantRepo
 	tenantUsageRepo     *data.TenantUsageRepo
@@ -78,7 +78,7 @@ func (s *TenantService) fetchRelationInfo(
 
 		users, err := s.userRepo.ListUsersByIds(ctx, userIds)
 		if err != nil {
-			s.log.Errorf("query users err: %v", err)
+			s.log.Errorf(context.Background(), "query users err: %v", err)
 			return err
 		}
 
@@ -121,7 +121,7 @@ func (s *TenantService) enrichRelations(ctx context.Context, tenants []*identity
 	}
 	counts, err := s.userRepo.CountByTenantIDs(ctx, tenantIDs)
 	if err != nil {
-		s.log.Errorf("enrich member_count failed: %s", err.Error())
+		s.log.Errorf(ctx, "enrich member_count failed: %s", err.Error())
 	} else {
 		for _, t := range tenants {
 			if t != nil && t.Id != nil {
@@ -230,7 +230,7 @@ func (s *TenantService) TenantExists(ctx context.Context, req *identityV1.Tenant
 // CreateTenantWithAdminUser 创建租户及其管理员用户
 func (s *TenantService) CreateTenantWithAdminUser(ctx context.Context, req *identityV1.CreateTenantWithAdminUserRequest) (*emptypb.Empty, error) {
 	if req.Tenant == nil || req.User == nil {
-		s.log.Error("invalid parameter: tenant or user is nil", req)
+		s.log.Error(ctx, "invalid parameter: tenant or user is nil", req)
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 
@@ -250,7 +250,7 @@ func (s *TenantService) CreateTenantWithAdminUser(ctx context.Context, req *iden
 		Name: req.GetTenant().GetName(),
 	})
 	if err != nil {
-		s.log.Errorf("check tenant exists err: %v", err)
+		s.log.Errorf(ctx, "check tenant exists err: %v", err)
 		return nil, err
 	}
 	if tenantExistsResp.GetExist() {
@@ -264,7 +264,7 @@ func (s *TenantService) CreateTenantWithAdminUser(ctx context.Context, req *iden
 
 	tx, cleanup, err := s.tenantRepo.BeginTx(ctx)
 	if err != nil {
-		s.log.Errorf("begin tx err: %v", err)
+		s.log.Errorf(ctx, "begin tx err: %v", err)
 		return nil, err
 	}
 	defer func() {
@@ -280,7 +280,7 @@ func (s *TenantService) CreateTenantWithAdminUser(ctx context.Context, req *iden
 	// Create tenant
 	var tenant *identityV1.Tenant
 	if tenant, err = s.tenantRepo.CreateWithTx(ctx, tx, req.Tenant); err != nil {
-		s.log.Errorf("create tenant err: %v", err)
+		s.log.Errorf(ctx, "create tenant err: %v", err)
 		return nil, err
 	}
 
@@ -289,7 +289,7 @@ func (s *TenantService) CreateTenantWithAdminUser(ctx context.Context, req *iden
 	// copy tenant manager role to tenant
 	var role *permissionV1.Role
 	if role, err = s.roleRepo.CreateTenantRoleFromTemplate(ctx, tx, tenant.GetId(), operator.GetUserId()); err != nil {
-		s.log.Errorf("copy tenant admin role template to tenant err: %v", err)
+		s.log.Errorf(ctx, "copy tenant admin role template to tenant err: %v", err)
 		return nil, err
 	}
 
@@ -298,7 +298,7 @@ func (s *TenantService) CreateTenantWithAdminUser(ctx context.Context, req *iden
 	req.User.RoleId = role.Id
 	//req.User.Status = identityV1.User_NORMAL.Enum()
 	if adminUser, err = s.userRepo.CreateWithTx(ctx, tx, req.User); err != nil {
-		s.log.Errorf("create tenant admin user err: %v", err)
+		s.log.Errorf(ctx, "create tenant admin user err: %v", err)
 		return nil, err
 	}
 
@@ -313,13 +313,13 @@ func (s *TenantService) CreateTenantWithAdminUser(ctx context.Context, req *iden
 		IsPrimary:      trans.Ptr(true),
 		Status:         authenticationV1.UserCredential_ENABLED.Enum(),
 	}); err != nil {
-		s.log.Errorf("create tenant admin user credential err: %v", err)
+		s.log.Errorf(ctx, "create tenant admin user credential err: %v", err)
 		return nil, err
 	}
 
 	// assign admin user id to tenant
 	if err = s.tenantRepo.AssignTenantAdmin(ctx, tx, *tenant.Id, *adminUser.Id); err != nil {
-		s.log.Errorf("assign admin user id to tenant err: %v", err)
+		s.log.Errorf(ctx, "assign admin user id to tenant err: %v", err)
 		return nil, err
 	}
 

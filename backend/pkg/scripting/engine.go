@@ -10,7 +10,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/redis/go-redis/v9"
 
 	gsEngine "github.com/tx7do/go-scripts"
@@ -37,7 +37,7 @@ import (
 // 编排器通过 RuntimeBinder 接口面向抽象，核心逻辑零语言耦合。
 type Engine struct {
 	config   *Config
-	logger   *log.Helper
+	logger   *bLogger.Helper
 	registry *hook.Registry
 
 	// 脚本引擎（语言无关，实现 go-scripts.Engine 接口）
@@ -91,10 +91,10 @@ func DefaultConfig() *Config {
 const EngineTypeLua = gsEngine.LuaType
 
 // ScriptEngineFactory 创建脚本引擎实例。
-type ScriptEngineFactory func(config *Config, logger log.Logger) (gsEngine.Engine, error)
+type ScriptEngineFactory func(config *Config, logger bLogger.Logger) (gsEngine.Engine, error)
 
 // 默认引擎工厂：通过 go-scripts 全局工厂按 EngineType 创建。
-var defaultEngineFactory ScriptEngineFactory = func(config *Config, _ log.Logger) (gsEngine.Engine, error) {
+var defaultEngineFactory ScriptEngineFactory = func(config *Config, _ bLogger.Logger) (gsEngine.Engine, error) {
 	return gsEngine.NewScriptEngine(config.EngineType)
 }
 
@@ -106,12 +106,12 @@ func SetEngineFactory(f ScriptEngineFactory) {
 }
 
 // NewEngine 创建一个新的 Hook 编排器（默认 Lua 引擎）。
-func NewEngine(config *Config, logger log.Logger) *Engine {
+func NewEngine(config *Config, logger bLogger.Logger) *Engine {
 	return NewEngineWithFactory(config, logger, defaultEngineFactory)
 }
 
 // NewEngineWithFactory 使用指定工厂创建编排器（支持自定义引擎）。
-func NewEngineWithFactory(config *Config, logger log.Logger, factory ScriptEngineFactory) *Engine {
+func NewEngineWithFactory(config *Config, logger bLogger.Logger, factory ScriptEngineFactory) *Engine {
 	if config == nil {
 		config = DefaultConfig()
 	}
@@ -119,15 +119,15 @@ func NewEngineWithFactory(config *Config, logger log.Logger, factory ScriptEngin
 		factory = defaultEngineFactory
 	}
 
-	l := log.NewHelper(log.With(logger, "module", "lua/engine"))
+	l := bLogger.NewHelper(logger.With("module", "lua/engine"))
 
 	eng, err := factory(config, logger)
 	if err != nil {
-		l.Errorf("Failed to create script engine (%s): %v", config.EngineType, err)
+		l.Errorf(context.Background(), "Failed to create script engine (%s): %v", config.EngineType, err)
 		// 降级：使用默认 Lua 引擎
 		eng, err = gsEngine.NewScriptEngine(gsEngine.LuaType)
 		if err != nil {
-			l.Errorf("Fallback Lua engine also failed: %v", err)
+			l.Errorf(context.Background(), "Fallback Lua engine also failed: %v", err)
 		}
 	}
 
@@ -163,24 +163,24 @@ func NewEngineWithFactory(config *Config, logger log.Logger, factory ScriptEngin
 			if registrar := gsEngine.AsRuntimeHookRegistrar(eng); registrar != nil {
 				hook := e.buildBindHook(binder)
 				if err := registrar.AddRuntimeHook(hook); err != nil {
-					l.Errorf("Failed to add runtime hook: %v", err)
+					l.Errorf(context.Background(), "Failed to add runtime hook: %v", err)
 				}
 			}
 		}
 
 		if err := eng.Init(context.Background()); err != nil {
-			l.Errorf("Failed to init script engine: %v", err)
+			l.Errorf(context.Background(), "Failed to init script engine: %v", err)
 		}
 	}
 
 	// 自动加载脚本目录
 	if config.ScriptDir != "" {
 		if err := e.LoadScriptsFromDir(context.Background(), config.ScriptDir); err != nil {
-			l.Errorf("Failed to load scripts from %s: %v", config.ScriptDir, err)
+			l.Errorf(context.Background(), "Failed to load scripts from %s: %v", config.ScriptDir, err)
 		}
 	}
 
-	l.Infof("Engine initialized (type: %s, timeout: %s)", config.EngineType, config.VMTimeout)
+	l.Infof(context.Background(), "Engine initialized (type: %s, timeout: %s)", config.EngineType, config.VMTimeout)
 
 	return e
 }
@@ -303,7 +303,7 @@ func (e *Engine) registerCallback(hookName string, cb ScriptCallback) {
 
 	e.callbacks[hookName] = append(e.callbacks[hookName], cb)
 
-	e.logger.Infof("Registered callback for hook: %s (total: %d callbacks)",
+	e.logger.Infof(context.Background(), "Registered callback for hook: %s (total: %d callbacks)",
 		hookName, len(e.callbacks[hookName]))
 }
 
@@ -376,22 +376,22 @@ func (e *Engine) ExecuteHook(ctx context.Context, hookName string, execCtx *Cont
 		duration := time.Since(start)
 
 		if err != nil {
-			e.logger.Errorf("Callback %d failed (hook: %s, duration: %s): %v",
+			e.logger.Errorf(ctx, "Callback %d failed (hook: %s, duration: %s): %v",
 				i+1, hookName, duration, err)
 			return fmt.Errorf("callback %d failed: %w", i+1, err)
 		}
-		e.logger.Debugf("Callback %d completed (hook: %s, duration: %s)",
+		e.logger.Debugf(ctx, "Callback %d completed (hook: %s, duration: %s)",
 			i+1, hookName, duration)
 	}
 
 	// 再执行注册的脚本
 	hookScripts := e.registry.GetScripts(hookName)
 	if len(hookScripts) == 0 && len(callbacks) == 0 {
-		e.logger.Debugf("No scripts or callbacks registered for hook: %s", hookName)
+		e.logger.Debugf(ctx, "No scripts or callbacks registered for hook: %s", hookName)
 		return nil
 	}
 
-	e.logger.Debugf("Executing %d scripts for hook: %s", len(hookScripts), hookName)
+	e.logger.Debugf(ctx, "Executing %d scripts for hook: %s", len(hookScripts), hookName)
 
 	for _, hookScript := range hookScripts {
 		if !hookScript.Enabled {
@@ -416,12 +416,12 @@ func (e *Engine) ExecuteHook(ctx context.Context, hookName string, execCtx *Cont
 		duration := time.Since(start)
 
 		if err != nil {
-			e.logger.Errorf("Script '%s' failed (hook: %s, duration: %s): %v",
+			e.logger.Errorf(ctx, "Script '%s' failed (hook: %s, duration: %s): %v",
 				script.Name, hookName, duration, err)
 			return fmt.Errorf("script '%s' failed: %w", script.Name, err)
 		}
 
-		e.logger.Debugf("Script '%s' completed (hook: %s, duration: %s)",
+		e.logger.Debugf(ctx, "Script '%s' completed (hook: %s, duration: %s)",
 			script.Name, hookName, duration)
 	}
 
@@ -458,10 +458,10 @@ func (e *Engine) WatchScript(ctx context.Context, key string) error {
 // LoadScriptsFromDir 从目录加载所有脚本文件。
 // 根据引擎类型匹配扩展名（.lua / .js）。
 func (e *Engine) LoadScriptsFromDir(ctx context.Context, dir string) error {
-	e.logger.Infof("📂 Loading scripts from directory: %s", dir)
+	e.logger.Infof(ctx, "📂 Loading scripts from directory: %s", dir)
 
 	if _, err := os.Stat(dir); err != nil {
-		e.logger.Warnf("Scripts directory does not exist: %s", dir)
+		e.logger.Warnf(ctx, "Scripts directory does not exist: %s", dir)
 		return nil
 	}
 
@@ -475,12 +475,12 @@ func (e *Engine) LoadScriptsFromDir(ctx context.Context, dir string) error {
 		if info.IsDir() || !strings.HasSuffix(path, ext) {
 			return nil
 		}
-		e.logger.Infof("📄 Loading script: %s", path)
+		e.logger.Infof(ctx, "📄 Loading script: %s", path)
 		if err := e.LoadScriptFile(ctx, path); err != nil {
-			e.logger.Errorf("❌ Failed to load script %s: %v", path, err)
+			e.logger.Errorf(ctx, "❌ Failed to load script %s: %v", path, err)
 			return nil
 		}
-		e.logger.Infof("✅ Successfully loaded script: %s", path)
+		e.logger.Infof(ctx, "✅ Successfully loaded script: %s", path)
 		loadedCount++
 		return nil
 	})
@@ -488,7 +488,7 @@ func (e *Engine) LoadScriptsFromDir(ctx context.Context, dir string) error {
 		return fmt.Errorf("failed to walk scripts directory: %w", walkErr)
 	}
 
-	e.logger.Infof("Loaded %d scripts from %s", loadedCount, dir)
+	e.logger.Infof(ctx, "Loaded %d scripts from %s", loadedCount, dir)
 	return nil
 }
 
@@ -532,7 +532,7 @@ func (e *Engine) SetRedis(rdb *redis.Client) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	e.rdb = rdb
-	e.logger.Info("Redis client configured for cache API")
+	e.logger.Info(context.Background(), "Redis client configured for cache API")
 }
 
 // SetEventBus 注入 EventBus 管理器，启用 eventbus API。
@@ -540,7 +540,7 @@ func (e *Engine) SetEventBus(manager *eventbus.Manager) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	e.eventbusManager = manager
-	e.logger.Info("EventBus manager configured for eventbus API")
+	e.logger.Info(context.Background(), "EventBus manager configured for eventbus API")
 }
 
 // SetOSS 注入 OSS 客户端，启用 oss API。
@@ -548,7 +548,7 @@ func (e *Engine) SetOSS(client *oss.MinIOClient) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	e.ossClient = client
-	e.logger.Info("OSS client configured for oss API")
+	e.logger.Info(context.Background(), "OSS client configured for oss API")
 }
 
 // ScriptEngine 返回底层脚本引擎（用于高级场景直接操作引擎）。
@@ -558,11 +558,11 @@ func (e *Engine) ScriptEngine() gsEngine.Engine {
 
 // Close 关闭编排器及底层引擎。
 func (e *Engine) Close() error {
-	e.logger.Info("Closing engine...")
+	e.logger.Info(context.Background(), "Closing engine...")
 
 	if e.scriptEngine != nil {
 		if err := e.scriptEngine.Close(); err != nil {
-			e.logger.Errorf("Error closing script engine: %v", err)
+			e.logger.Errorf(context.Background(), "Error closing script engine: %v", err)
 		}
 	}
 

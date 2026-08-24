@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -16,7 +16,7 @@ import (
 type UserCredentialService struct {
 	authenticationV1.UnimplementedUserCredentialServiceServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	userCredentialsRepo *data.UserCredentialRepo
 }
@@ -45,7 +45,7 @@ func (s *UserCredentialService) GetByIdentifier(ctx context.Context, req *authen
 
 func (s *UserCredentialService) Create(ctx context.Context, req *authenticationV1.CreateUserCredentialRequest) (*emptypb.Empty, error) {
 	if err := s.userCredentialsRepo.Create(ctx, req); err != nil {
-		// s.log.Info(err)
+		// s.log.Info(ctx, err)
 		return nil, err
 	}
 

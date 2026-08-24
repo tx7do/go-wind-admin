@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -17,7 +17,7 @@ import (
 type PermissionAuditLogService struct {
 	adminV1.PermissionAuditLogServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	policyEvaluationLogRepo *data.PermissionAuditLogRepo
 }

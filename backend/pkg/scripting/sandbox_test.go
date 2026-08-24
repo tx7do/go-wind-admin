@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 )
 
 // TestSandbox_BlocksDangerousLibs 验证沙箱配置生效：
@@ -14,7 +14,7 @@ import (
 func TestSandbox_BlocksDangerousLibs(t *testing.T) {
 	cfg := DefaultConfig()
 	cfg.ScriptDir = ""
-	e := NewEngine(cfg, log.DefaultLogger)
+	e := NewEngine(cfg, bLogger.NopLogger())
 	defer e.Close()
 
 	// os 库应被禁用（os.execute 命令注入防护）

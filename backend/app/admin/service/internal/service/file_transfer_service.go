@@ -13,7 +13,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/minio/minio-go/v7"
 
 	"github.com/tx7do/go-utils/id"
@@ -31,7 +31,7 @@ import (
 type FileTransferService struct {
 	adminV1.FileTransferServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	mc                *oss.MinIOClient
 	fileServiceClient *data.FileRepo
@@ -114,7 +114,7 @@ func (s *FileTransferService) recordFile(
 	sha256Hex := hex.EncodeToString(sum[:]) // 转为十六进制字符串
 
 	dir, fileName, ext := parseKey(info.Key)
-	//s.log.Debugf("Parsed file - Dir: %s, FileName: %s, Ext: %s", dir, fileName, ext)
+	//s.log.Debugf(context.Background(), "Parsed file - Dir: %s, FileName: %s, Ext: %s", dir, fileName, ext)
 
 	if err := s.fileServiceClient.Create(ctx, &storageV1.CreateFileRequest{
 		Data: &storageV1.File{
@@ -132,7 +132,7 @@ func (s *FileTransferService) recordFile(
 			TenantId:      trans.Ptr(tenantID),
 		},
 	}); err != nil {
-		s.log.Errorf("Failed to create file record: %v", err)
+		s.log.Errorf(context.Background(), "Failed to create file record: %v", err)
 		return err
 	}
 	return nil
@@ -216,7 +216,7 @@ func (s *FileTransferService) directUploadFile(ctx context.Context, req *storage
 		info, downloadUrl); err != nil {
 		// H3: 元数据落库失败时记录告警。对象已入 OSS 但无 DB 记录（孤儿对象），
 		// 这里不掩盖错误，让上层感知以便后续清理。
-		s.log.Errorf("upload succeeded but failed to record file metadata (orphan object %q in bucket %q): %v",
+		s.log.Errorf(ctx, "upload succeeded but failed to record file metadata (orphan object %q in bucket %q): %v",
 			info.Key, info.Bucket, err)
 		return nil, err
 	}

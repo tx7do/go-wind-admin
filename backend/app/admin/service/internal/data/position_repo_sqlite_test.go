@@ -2,10 +2,9 @@ package data
 
 import (
 	"context"
-	"io"
 	"testing"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
@@ -33,7 +32,7 @@ func newPositionRepoSqlite(t *testing.T) *PositionRepo {
 	// 白盒构造 PositionRepo，复用 NewPositionRepo.init() 的 mapper/converter 初始化逻辑
 	repo := &PositionRepo{
 		entClient: entClient,
-		log:       log.NewHelper(log.NewStdLogger(io.Discard)),
+		log:       bLogger.NewHelper(bLogger.NopLogger()),
 		mapper:    mapper.NewCopierMapper[identityV1.Position, ent.Position](),
 		statusConverter: mapper.NewEnumTypeConverter[identityV1.Position_Status, entPosition.Status](
 			identityV1.Position_Status_name, identityV1.Position_Status_value,

@@ -2,15 +2,16 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 
 	"github.com/go-kratos/kratos/v2"
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/transport"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/tx7do/kratos-transport/transport/asynq"
 	"github.com/tx7do/kratos-transport/transport/sse"
 
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	//_ "github.com/tx7do/kratos-bootstrap/config/consul"
@@ -87,11 +88,11 @@ func runApp() error {
 func initGlobalEncryptorFromEnv() {
 	key := os.Getenv("GOWIND_CRYPTO_KEY")
 	if key == "" {
-		log.Warn("GOWIND_CRYPTO_KEY not set, global encryption disabled (payloads stored in plaintext)")
+		bLogger.GetLogger().Warn(context.Background(), "GOWIND_CRYPTO_KEY not set, global encryption disabled (payloads stored in plaintext)")
 		return
 	}
 	if err := appCrypto.InitGlobalEncryptor(key, true); err != nil {
-		log.Errorf("init global encryptor failed, encryption disabled: %v", err)
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("init global encryptor failed, encryption disabled: %v", err))
 	}
 }
 

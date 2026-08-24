@@ -6,7 +6,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/assert"
 	"github.com/tx7do/go-utils/trans"
 
@@ -26,7 +26,7 @@ func createTestClient() *MinIOClient {
 				SecretKey:    "*Abcd123456",
 			},
 		},
-	}, log.DefaultLogger)
+	}, bLogger.NopLogger())
 }
 
 // minioAvailable 探测本地 MinIO 是否可达：这两个测试依赖真实 MinIO 服务

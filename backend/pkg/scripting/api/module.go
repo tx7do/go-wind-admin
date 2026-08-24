@@ -1,13 +1,14 @@
 package api
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
 	"math"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	"go-wind-admin/pkg/crypto"
 )
@@ -40,33 +41,33 @@ func convertForFormatVal(val any) any {
 }
 
 // ModuleLogger 构建语言无关的 logger 模块。
-func ModuleLogger(logger *log.Helper) ModuleDef {
+func ModuleLogger(logger *bLogger.Helper) ModuleDef {
 	return ModuleDef{
 		Name: "log",
 		Funcs: map[string]any{
 			"info": func(msg string) {
-				logger.Info(msg)
+				logger.Info(context.Background(), msg)
 			},
 			"warn": func(msg string) {
-				logger.Warn(msg)
+				logger.Warn(context.Background(), msg)
 			},
 			"error": func(msg string) {
-				logger.Error(msg)
+				logger.Error(context.Background(), msg)
 			},
 			"debug": func(msg string) {
-				logger.Debug(msg)
+				logger.Debug(context.Background(), msg)
 			},
 			"infof": func(format string, args ...any) {
-				logger.Infof(format, convertForFormatArgs(args)...)
+				logger.Infof(context.Background(), format, convertForFormatArgs(args)...)
 			},
 			"warnf": func(format string, args ...any) {
-				logger.Warnf(format, convertForFormatArgs(args)...)
+				logger.Warnf(context.Background(), format, convertForFormatArgs(args)...)
 			},
 			"errorf": func(format string, args ...any) {
-				logger.Errorf(format, convertForFormatArgs(args)...)
+				logger.Errorf(context.Background(), format, convertForFormatArgs(args)...)
 			},
 			"debugf": func(format string, args ...any) {
-				logger.Debugf(format, convertForFormatArgs(args)...)
+				logger.Debugf(context.Background(), format, convertForFormatArgs(args)...)
 			},
 		},
 	}

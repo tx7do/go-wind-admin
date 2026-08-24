@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	entCrud "github.com/tx7do/go-crud/entgo"
 
@@ -38,7 +38,7 @@ type TrendRow struct {
 // HTTP 请求经 auth 中间件已注入 viewer，因此这里不需要手动 where tenant_id。
 type DashboardRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 }
 
 func NewDashboardRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *DashboardRepo {
@@ -58,7 +58,7 @@ func startOfToday() time.Time {
 func (r *DashboardRepo) CountActiveUsers(ctx context.Context) (int, error) {
 	count, err := r.entClient.Client().User.Query().Count(ctx)
 	if err != nil {
-		r.log.Errorf("count users failed: %s", err.Error())
+		r.log.Errorf(ctx, "count users failed: %s", err.Error())
 		return 0, adminV1.ErrorInternalServerError("count users failed")
 	}
 	return count, nil
@@ -68,7 +68,7 @@ func (r *DashboardRepo) CountActiveUsers(ctx context.Context) (int, error) {
 func (r *DashboardRepo) CountRoles(ctx context.Context) (int, error) {
 	count, err := r.entClient.Client().Role.Query().Count(ctx)
 	if err != nil {
-		r.log.Errorf("count roles failed: %s", err.Error())
+		r.log.Errorf(ctx, "count roles failed: %s", err.Error())
 		return 0, adminV1.ErrorInternalServerError("count roles failed")
 	}
 	return count, nil
@@ -84,7 +84,7 @@ func (r *DashboardRepo) CountTodayLogins(ctx context.Context) (int, error) {
 		).
 		Count(ctx)
 	if err != nil {
-		r.log.Errorf("count today logins failed: %s", err.Error())
+		r.log.Errorf(ctx, "count today logins failed: %s", err.Error())
 		return 0, adminV1.ErrorInternalServerError("count today logins failed")
 	}
 	return count, nil
@@ -97,7 +97,7 @@ func (r *DashboardRepo) CountTodayOperations(ctx context.Context) (int, error) {
 		Where(operationauditlog.CreatedAtGTE(today)).
 		Count(ctx)
 	if err != nil {
-		r.log.Errorf("count today operations failed: %s", err.Error())
+		r.log.Errorf(ctx, "count today operations failed: %s", err.Error())
 		return 0, adminV1.ErrorInternalServerError("count today operations failed")
 	}
 	return count, nil
@@ -126,7 +126,7 @@ func (r *DashboardRepo) LoginTrend(ctx context.Context, days int) ([]TrendRow, e
 		Select(loginauditlog.FieldCreatedAt).
 		Scan(ctx, &logs)
 	if err != nil {
-		r.log.Errorf("login trend select failed: %s", err.Error())
+		r.log.Errorf(ctx, "login trend select failed: %s", err.Error())
 		return nil, adminV1.ErrorInternalServerError("login trend query failed")
 	}
 
@@ -148,7 +148,6 @@ func (r *DashboardRepo) LoginTrend(ctx context.Context, days int) ([]TrendRow, e
 	return buckets, nil
 }
 
-
 // OperationActionDistribution 按操作类型（action）分组统计。
 // 返回的 Label 是 action 枚举值字符串（CREATE/UPDATE/...），由 service 层透传，前端做 i18n 映射。
 // GroupBy 的字段会被自动 select；用 ent.As(ent.Count(),"count") 给计数列起别名，
@@ -160,7 +159,7 @@ func (r *DashboardRepo) OperationActionDistribution(ctx context.Context) ([]Dist
 		Aggregate(ent.As(ent.Count(), "count")).
 		Scan(ctx, &rows)
 	if err != nil {
-		r.log.Errorf("operation action distribution failed: %s", err.Error())
+		r.log.Errorf(ctx, "operation action distribution failed: %s", err.Error())
 		return nil, adminV1.ErrorInternalServerError("operation action distribution query failed")
 	}
 	return rows, nil
@@ -175,7 +174,7 @@ func (r *DashboardRepo) LoginStatusDistribution(ctx context.Context) ([]Distribu
 		Aggregate(ent.As(ent.Count(), "count")).
 		Scan(ctx, &rows)
 	if err != nil {
-		r.log.Errorf("login status distribution failed: %s", err.Error())
+		r.log.Errorf(ctx, "login status distribution failed: %s", err.Error())
 		return nil, adminV1.ErrorInternalServerError("login status distribution query failed")
 	}
 	return rows, nil

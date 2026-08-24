@@ -6,7 +6,7 @@ import (
 	"strings"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/go-utils/aggregator"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -30,7 +30,7 @@ import (
 type PermissionService struct {
 	adminV1.PermissionServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	permissionRepo      *data.PermissionRepo
 	permissionGroupRepo *data.PermissionGroupRepo
@@ -111,7 +111,7 @@ func (s *PermissionService) fetchRelationInfo(
 
 		groups, err := s.permissionGroupRepo.ListByIDs(ctx, groupIds)
 		if err != nil {
-			s.log.Errorf("query permission group err: %v", err)
+			s.log.Errorf(context.Background(), "query permission group err: %v", err)
 			return err
 		}
 
@@ -331,7 +331,7 @@ func (s *PermissionService) appendAPis(
 			continue
 		}
 
-		s.log.Debugf("appendAPis: processing api [%s] [%s] with code [%s]", api.GetMethod(), api.GetPath(), code)
+		s.log.Debugf(ctx, "appendAPis: processing api [%s] [%s] with code [%s]", api.GetMethod(), api.GetPath(), code)
 
 		if curCode, exist := codes[code]; !exist {
 			var module string
@@ -371,7 +371,7 @@ func (s *PermissionService) appendAPis(
 		}
 	}
 
-	//s.log.Debugf("appendAPis: unmatched permission codes: %v", codes)
+	//s.log.Debugf(ctx, "appendAPis: unmatched permission codes: %v", codes)
 
 	for code, apiIDs := range codes {
 		name := strings.ReplaceAll(code, ":", "_")
@@ -390,7 +390,7 @@ func (s *PermissionService) appendAPis(
 
 		(*mapPermissions)[apiIDs.module] = append((*mapPermissions)[apiIDs.module], perm)
 
-		//s.log.Debugf("appendAPis: create permission for api code: [%s][%s]", apiIDs.module, code)
+		//s.log.Debugf(ctx, "appendAPis: create permission for api code: [%s][%s]", apiIDs.module, code)
 	}
 
 	return nil
@@ -472,7 +472,7 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 				CreatedBy: trans.Ptr(operator.UserId),
 				UpdatedBy: trans.Ptr(operator.UserId),
 			})
-			//s.log.Debugf("SyncPermissions: created permission group for menu %s - %s", menu.GetName(), permissionCode)
+			//s.log.Debugf(ctx, "SyncPermissions: created permission group for menu %s - %s", menu.GetName(), permissionCode)
 		}
 
 		perm := &permissionV1.Permission{
@@ -494,13 +494,13 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 
 	var finalPermissionGroups []*permissionV1.PermissionGroup
 	if finalPermissionGroups, err = s.permissionGroupRepo.BatchCreate(ctx, permissionGroups); err != nil {
-		s.log.Errorf("batch create permission groups failed: %s", err.Error())
+		s.log.Errorf(ctx, "batch create permission groups failed: %s", err.Error())
 		return nil, err
 	}
 	//for _, pg := range permissionGroups {
 	//	var npg *permissionV1.PermissionGroup
 	//	if npg, err = s.permissionGroupRepo.Create(ctx, &permissionV1.CreatePermissionGroupRequest{Data: pg}); err != nil {
-	//		s.log.Errorf("batch create permission groups failed: %s", err.Error())
+	//		s.log.Errorf(ctx, "batch create permission groups failed: %s", err.Error())
 	//		return nil, err
 	//	}
 	//	finalPermissionGroups = append(finalPermissionGroups, npg)
@@ -515,7 +515,7 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 	}
 
 	if err = s.permissionRepo.BatchCreate(ctx, permissions); err != nil {
-		s.log.Errorf("batch create permissions failed: %s", err.Error())
+		s.log.Errorf(ctx, "batch create permissions failed: %s", err.Error())
 		return nil, err
 	}
 
@@ -534,7 +534,7 @@ func (s *PermissionService) createDefaultPermissions(ctx context.Context) error 
 		if err = s.permissionRepo.Create(ctx, &permissionV1.CreatePermissionRequest{
 			Data: d,
 		}); err != nil {
-			s.log.Errorf("create default permission %s failed: %v", d.GetCode(), err)
+			s.log.Errorf(ctx, "create default permission %s failed: %v", d.GetCode(), err)
 			return err
 		}
 	}

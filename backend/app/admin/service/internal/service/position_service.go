@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/aggregator"
 	"github.com/tx7do/go-utils/trans"
@@ -21,7 +21,7 @@ import (
 type PositionService struct {
 	adminV1.PositionServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	positionRepo *data.PositionRepo
 	orgUnitRepo  *data.OrgUnitRepo
@@ -62,7 +62,7 @@ func (s *PositionService) fetchRelationInfo(
 
 		orgUnits, err := s.orgUnitRepo.ListOrgUnitsByIds(ctx, orgUnitIds)
 		if err != nil {
-			s.log.Errorf("query orgUnits err: %v", err)
+			s.log.Errorf(context.Background(), "query orgUnits err: %v", err)
 			return err
 		}
 

@@ -1,6 +1,7 @@
 package logging
 
 import (
+	"context"
 	"bytes"
 	"crypto/ecdsa"
 	"crypto/elliptic"
@@ -15,7 +16,7 @@ import (
 	"net/url"
 
 	"github.com/go-kratos/kratos/v2/errors"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/tx7do/go-utils/geoip"
 	"github.com/tx7do/go-utils/id"
@@ -44,13 +45,13 @@ func extractAuthToken(htr *http.Transport) *authenticationV1.UserTokenPayload {
 
 	claims, err := jwtutil.ParseJWTPayload(jwtToken)
 	if err != nil {
-		log.Errorf("extractAuthToken ParseJWTPayload failed: %v", err)
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("extractAuthToken ParseJWTPayload failed: %v", err))
 		return nil
 	}
 
 	ut, err := jwt.NewUserTokenPayloadWithJwtMapClaims(claims)
 	if err != nil {
-		log.Errorf("extractAuthToken NewUserTokenPayloadWithJwtMapClaims failed: %v", err)
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("extractAuthToken NewUserTokenPayloadWithJwtMapClaims failed: %v", err))
 		return nil
 	}
 

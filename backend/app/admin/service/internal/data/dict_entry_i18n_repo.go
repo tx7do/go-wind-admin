@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/go-utils/copierutil"
@@ -21,7 +21,7 @@ import (
 
 type DictEntryI18nRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper *mapper.CopierMapper[dictV1.DictEntryI18N, ent.DictEntryI18n]
 
@@ -185,7 +185,7 @@ func (r *DictEntryI18nRepo) ReplaceByEntryID(
 	}
 
 	if err = tx.DictEntryI18n.CreateBulk(dictEntryI18nCreates...).Exec(ctx); err != nil {
-		r.log.Errorf("bulk insert dict entry i18n failed: %s", err.Error())
+		r.log.Errorf(ctx, "bulk insert dict entry i18n failed: %s", err.Error())
 		return dictV1.ErrorInternalServerError("bulk insert dict entry i18n failed")
 	}
 

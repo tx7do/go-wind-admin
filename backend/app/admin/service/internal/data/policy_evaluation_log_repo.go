@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -22,7 +22,7 @@ import (
 
 type PolicyEvaluationLogRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper *mapper.CopierMapper[permissionV1.PolicyEvaluationLog, ent.PolicyEvaluationLog]
 
@@ -70,7 +70,7 @@ func (r *PolicyEvaluationLogRepo) Count(ctx context.Context, whereCond []func(s 
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, permissionV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -103,7 +103,7 @@ func (r *PolicyEvaluationLogRepo) IsExist(ctx context.Context, id uint32) (bool,
 		Where(policyevaluationlog.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, permissionV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -157,7 +157,7 @@ func (r *PolicyEvaluationLogRepo) Create(ctx context.Context, req *permissionV1.
 
 	err := builder.Exec(ctx)
 	if err != nil {
-		r.log.Errorf("insert policy evaluation log failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert policy evaluation log failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("insert policy evaluation log failed")
 	}
 

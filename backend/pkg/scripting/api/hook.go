@@ -1,7 +1,9 @@
 package api
 
 import (
-	"github.com/go-kratos/kratos/v2/log"
+	"context"
+
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	lua "github.com/yuin/gopher-lua"
 )
 
@@ -30,14 +32,14 @@ type Script struct {
 
 // RegisterHookAPI registers the hook management API for Lua as a requireable module
 // This allows Lua scripts to register themselves to hooks dynamically
-func RegisterHookAPI(L *lua.LState, engine HookEngine, logger *log.Helper) {
+func RegisterHookAPI(L *lua.LState, engine HookEngine, logger *bLogger.Helper) {
 	// Register in package.preload so it can be required
 	L.PreloadModule("kratos_hook", LoaderHook(engine, logger))
 }
 
 // LoaderHook 返回 hook 模块（kratos_hook）的 loader，供 go-scripts 引擎 RegisterModule 使用。
 // engine 为 nil 时返回空模块。
-func LoaderHook(engine HookEngine, logger *log.Helper) lua.LGFunction {
+func LoaderHook(engine HookEngine, logger *bLogger.Helper) lua.LGFunction {
 	return func(L *lua.LState) int {
 		if engine == nil {
 			L.Push(L.NewTable())
@@ -57,9 +59,9 @@ func LoaderHook(engine HookEngine, logger *log.Helper) lua.LGFunction {
 			err := engine.RegisterHook(hookName, description)
 			if err != nil {
 				// Only log error, don't return - we still want to register the callback
-				logger.Debugf("hook.register: %v (continuing to register callback)", err)
+				logger.Debugf(context.Background(), "hook.register: %v (continuing to register callback)", err)
 			} else {
-				logger.Debugf("Registered hook: %s", hookName)
+				logger.Debugf(context.Background(), "Registered hook: %s", hookName)
 			}
 
 			// If callback provided, register it directly with the engine
@@ -68,9 +70,9 @@ func LoaderHook(engine HookEngine, logger *log.Helper) lua.LGFunction {
 					// Register the callback function with the engine
 					// The engine will store the LState and function for later execution
 					engine.RegisterCallback(hookName, L, fn)
-					logger.Debugf("Registered callback for hook: %s", hookName)
+					logger.Debugf(context.Background(), "Registered callback for hook: %s", hookName)
 				} else {
-					logger.Warnf("Third argument is not a function, ignoring callback")
+					logger.Warnf(context.Background(), "Third argument is not a function, ignoring callback")
 				}
 			}
 
@@ -118,13 +120,13 @@ func LoaderHook(engine HookEngine, logger *log.Helper) lua.LGFunction {
 
 			err := engine.AddScript(hookName, script)
 			if err != nil {
-				logger.Errorf("hook.add_script error: %v", err)
+				logger.Errorf(context.Background(), "hook.add_script error: %v", err)
 				L.Push(lua.LBool(false))
 				L.Push(lua.LString(err.Error()))
 				return 2
 			}
 
-			logger.Debugf("Added script '%s' to hook: %s", name, hookName)
+			logger.Debugf(context.Background(), "Added script '%s' to hook: %s", name, hookName)
 			L.Push(lua.LBool(true))
 			return 1
 		}))

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
@@ -58,7 +58,7 @@ func toEnrolledEnabled(s *usermfafactor.Status) bool {
 // crypto.DecryptIfNeeded 还原明文后交给 totp 库验证。
 type UserMfaFactorRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 }
 
 func NewUserMfaFactorRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *UserMfaFactorRepo {
@@ -80,7 +80,7 @@ func (r *UserMfaFactorRepo) HasEnabledTotp(ctx context.Context, tenantID, userID
 		).
 		Count(ctx)
 	if err != nil {
-		r.log.Errorf("query has enabled totp failed: %s", err.Error())
+		r.log.Errorf(ctx, "query has enabled totp failed: %s", err.Error())
 		return false, fmt.Errorf("query mfa factor failed")
 	}
 	return count > 0, nil
@@ -101,7 +101,7 @@ func (r *UserMfaFactorRepo) FindEnabledTotpForUser(ctx context.Context, tenantID
 		if ent.IsNotFound(qerr) {
 			return 0, "", fmt.Errorf("mfa factor not found")
 		}
-		r.log.Errorf("query enabled totp failed: %s", qerr.Error())
+		r.log.Errorf(ctx, "query enabled totp failed: %s", qerr.Error())
 		return 0, "", fmt.Errorf("query mfa factor failed")
 	}
 	if entity.SecretHash == nil {
@@ -109,7 +109,7 @@ func (r *UserMfaFactorRepo) FindEnabledTotpForUser(ctx context.Context, tenantID
 	}
 	plain, derr := crypto.DecryptIfNeeded(*entity.SecretHash)
 	if derr != nil {
-		r.log.Errorf("decrypt mfa secret failed: %s", derr.Error())
+		r.log.Errorf(ctx, "decrypt mfa secret failed: %s", derr.Error())
 		return 0, "", fmt.Errorf("decrypt mfa secret failed")
 	}
 	return entity.ID, plain, nil
@@ -124,7 +124,7 @@ func (r *UserMfaFactorRepo) ListByUser(ctx context.Context, tenantID, userID uin
 		).
 		All(ctx)
 	if err != nil {
-		r.log.Errorf("list mfa factors failed: %s", err.Error())
+		r.log.Errorf(ctx, "list mfa factors failed: %s", err.Error())
 		return nil, fmt.Errorf("list mfa factors failed")
 	}
 	infos := make([]EnrolledFactorInfo, 0, len(entities))
@@ -146,7 +146,7 @@ func (r *UserMfaFactorRepo) ListByUser(ctx context.Context, tenantID, userID uin
 func (r *UserMfaFactorRepo) CreateTotpFactor(ctx context.Context, tenantID, userID uint32, plainSecret, displayName string) (uint32, error) {
 	encSecret, err := crypto.EncryptIfNeeded(plainSecret)
 	if err != nil {
-		r.log.Errorf("encrypt mfa secret failed: %s", err.Error())
+		r.log.Errorf(ctx, "encrypt mfa secret failed: %s", err.Error())
 		return 0, fmt.Errorf("encrypt mfa secret failed")
 	}
 	created, cerr := r.entClient.Client().UserMfaFactor.Create().
@@ -158,7 +158,7 @@ func (r *UserMfaFactorRepo) CreateTotpFactor(ctx context.Context, tenantID, user
 		SetStatus(usermfafactor.StatusEnabled).
 		Save(ctx)
 	if cerr != nil {
-		r.log.Errorf("create mfa factor failed: %s", cerr.Error())
+		r.log.Errorf(ctx, "create mfa factor failed: %s", cerr.Error())
 		return 0, fmt.Errorf("create mfa factor failed")
 	}
 	return created.ID, nil
@@ -175,7 +175,7 @@ func (r *UserMfaFactorRepo) DeleteForUser(ctx context.Context, tenantID, userID,
 		).
 		Exec(ctx)
 	if err != nil {
-		r.log.Errorf("delete mfa factor failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete mfa factor failed: %s", err.Error())
 		return false, fmt.Errorf("delete mfa factor failed")
 	}
 	return n > 0, nil
@@ -192,7 +192,7 @@ func (r *UserMfaFactorRepo) DeleteAllByUserMethod(ctx context.Context, tenantID,
 		).
 		Exec(ctx)
 	if err != nil {
-		r.log.Errorf("delete mfa factors by method failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete mfa factors by method failed: %s", err.Error())
 		return 0, fmt.Errorf("delete mfa factors failed")
 	}
 	return n, nil
@@ -208,7 +208,7 @@ func (r *UserMfaFactorRepo) GetFactorById(ctx context.Context, factorID uint32) 
 		if ent.IsNotFound(qerr) {
 			return 0, 0, false, nil
 		}
-		r.log.Errorf("get mfa factor failed: %s", qerr.Error())
+		r.log.Errorf(ctx, "get mfa factor failed: %s", qerr.Error())
 		return 0, 0, false, fmt.Errorf("get mfa factor failed")
 	}
 	return derefUint32(entity.TenantID), derefUint32(entity.UserID), true, nil
@@ -228,7 +228,7 @@ func (r *UserMfaFactorRepo) FindFirstByUser(ctx context.Context, userID uint32, 
 		if ent.IsNotFound(qerr) {
 			return 0, 0, false, nil
 		}
-		r.log.Errorf("find mfa factor by user failed: %s", qerr.Error())
+		r.log.Errorf(ctx, "find mfa factor by user failed: %s", qerr.Error())
 		return 0, 0, false, fmt.Errorf("find mfa factor failed")
 	}
 	return derefUint32(entity.TenantID), derefUint32(entity.UserID), true, nil
@@ -245,7 +245,7 @@ func (r *UserMfaFactorRepo) UpdateLastUsed(ctx context.Context, tenantID, userID
 		SetLastUsedAt(at).
 		Save(ctx)
 	if err != nil {
-		r.log.Errorf("update mfa last_used_at failed: %s", err.Error())
+		r.log.Errorf(ctx, "update mfa last_used_at failed: %s", err.Error())
 		return fmt.Errorf("update mfa last_used_at failed")
 	}
 	_ = n

@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -79,7 +79,7 @@ type UserRepo interface {
 
 type userRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper          *mapper.CopierMapper[identityV1.User, ent.User]
 	genderConverter *mapper.EnumTypeConverter[identityV1.User_Gender, user.Gender]
@@ -154,7 +154,7 @@ func (r *userRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -306,7 +306,7 @@ func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 
 	filterExpr, err := r.repository.ConvertFilterByPagingRequest(req)
 	if err != nil {
-		r.log.Errorf("convert filter by paging request failed: %s", err.Error())
+		r.log.Errorf(ctx, "convert filter by paging request failed: %s", err.Error())
 		return nil, err
 	}
 
@@ -320,7 +320,7 @@ func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 	var positionIDs []uint32
 	var roleIDs []uint32
 	for _, cond := range excludeConditions {
-		//r.log.Debugf("excluding filter condition: field=%s operator=%s value=%v", cond.GetField(), cond.GetOp(), cond.GetValue())
+		//r.log.Debugf(ctx, "excluding filter condition: field=%s operator=%s value=%v", cond.GetField(), cond.GetOp(), cond.GetValue())
 
 		var val uint64
 		switch cond.GetField() {
@@ -328,14 +328,14 @@ func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 			if val, err = strconv.ParseUint(cond.GetValue(), 10, 64); err == nil {
 				orgUnitIDs = append(orgUnitIDs, uint32(val))
 			} else {
-				r.log.Errorf("parse org_unit_id value failed: %s", err.Error())
+				r.log.Errorf(ctx, "parse org_unit_id value failed: %s", err.Error())
 			}
 		case "org_unit_ids":
 			for _, v := range cond.GetValues() {
 				if val, err = strconv.ParseUint(v, 10, 64); err == nil {
 					orgUnitIDs = append(orgUnitIDs, uint32(val))
 				} else {
-					r.log.Errorf("parse org_unit_ids value failed: %s", err.Error())
+					r.log.Errorf(ctx, "parse org_unit_ids value failed: %s", err.Error())
 				}
 			}
 
@@ -343,14 +343,14 @@ func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 			if val, err = strconv.ParseUint(cond.GetValue(), 10, 64); err == nil {
 				positionIDs = append(positionIDs, uint32(val))
 			} else {
-				r.log.Errorf("parse position_id value failed: %s", err.Error())
+				r.log.Errorf(ctx, "parse position_id value failed: %s", err.Error())
 			}
 		case "position_ids":
 			for _, v := range cond.GetValues() {
 				if val, err = strconv.ParseUint(v, 10, 64); err == nil {
 					positionIDs = append(positionIDs, uint32(val))
 				} else {
-					r.log.Errorf("parse position_ids value failed: %s", err.Error())
+					r.log.Errorf(ctx, "parse position_ids value failed: %s", err.Error())
 				}
 			}
 
@@ -358,14 +358,14 @@ func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 			if val, err = strconv.ParseUint(cond.GetValue(), 10, 64); err == nil {
 				roleIDs = append(roleIDs, uint32(val))
 			} else {
-				r.log.Errorf("parse role_id value failed: %s", err.Error())
+				r.log.Errorf(ctx, "parse role_id value failed: %s", err.Error())
 			}
 		case "role_ids":
 			for _, v := range cond.GetValues() {
 				if val, err = strconv.ParseUint(v, 10, 64); err == nil {
 					roleIDs = append(roleIDs, uint32(val))
 				} else {
-					r.log.Errorf("parse role_ids value failed: %s", err.Error())
+					r.log.Errorf(ctx, "parse role_ids value failed: %s", err.Error())
 				}
 			}
 		}
@@ -374,11 +374,11 @@ func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 	var mergedUserIDs []uint32
 	mergedUserIDs, err = r.queryUserIDsByRelationIDs(ctx, roleIDs, orgUnitIDs, positionIDs)
 	if err != nil {
-		r.log.Errorf("query user ids by relation ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user ids by relation ids failed: %s", err.Error())
 		return nil, err
 	}
 
-	//r.log.Debugf("filtered user ids by relation ids: [%v] [%v] [%v] [%v]", roleIDs, orgUnitIDs, positionIDs, mergedUserIDs)
+	//r.log.Debugf(ctx, "filtered user ids by relation ids: [%v] [%v] [%v] [%v]", roleIDs, orgUnitIDs, positionIDs, mergedUserIDs)
 
 	hasRelationFilter := len(roleIDs) > 0 || len(orgUnitIDs) > 0 || len(positionIDs) > 0
 	if hasRelationFilter && len(mergedUserIDs) == 0 {
@@ -418,14 +418,14 @@ func (r *userRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 	for _, item := range resp.Items {
 		roleIDs, positionIDs, orgUnitIDs, err = r.ListUserRelationIDs(ctx, item.GetId())
 		if err != nil {
-			r.log.Errorf("list user relation ids failed: %s", err.Error())
+			r.log.Errorf(ctx, "list user relation ids failed: %s", err.Error())
 			continue
 		}
 		item.RoleIds = roleIDs
 		item.PositionIds = positionIDs
 		item.OrgUnitIds = orgUnitIDs
 
-		//r.log.Debugf("user id=%d role_ids=%v position_ids=%v org_unit_ids=%v", item.GetId(), roleIDs, positionIDs, orgUnitIDs)
+		//r.log.Debugf(ctx, "user id=%d role_ids=%v position_ids=%v org_unit_ids=%v", item.GetId(), roleIDs, positionIDs, orgUnitIDs)
 	}
 
 	return resp, nil
@@ -462,13 +462,13 @@ func (r *userRepo) Get(ctx context.Context, req *identityV1.GetUserRequest) (*id
 
 	roleIDs, positionIDs, orgUnitIDs, err := r.ListUserRelationIDs(ctx, dto.GetId())
 	if err != nil {
-		r.log.Errorf("list user relation ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "list user relation ids failed: %s", err.Error())
 	}
 	dto.RoleIds = roleIDs
 	dto.PositionIds = positionIDs
 	dto.OrgUnitIds = orgUnitIDs
 
-	r.log.Debugf("get user id=%d role_ids=%v position_ids=%v org_unit_ids=%v", dto.GetId(), roleIDs, positionIDs, orgUnitIDs)
+	r.log.Debugf(ctx, "get user id=%d role_ids=%v position_ids=%v org_unit_ids=%v", dto.GetId(), roleIDs, positionIDs, orgUnitIDs)
 
 	return dto, err
 }
@@ -482,18 +482,18 @@ func (r *userRepo) Create(ctx context.Context, req *identityV1.CreateUserRequest
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -534,7 +534,7 @@ func (r *userRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *identityV
 
 	var entity *ent.User
 	if entity, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("insert user failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert user failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("insert user failed")
 	}
 
@@ -600,18 +600,18 @@ func (r *userRepo) Update(ctx context.Context, req *identityV1.UpdateUserRequest
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -751,18 +751,18 @@ func (r *userRepo) Delete(ctx context.Context, req *identityV1.DeleteUserRequest
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -790,7 +790,7 @@ func (r *userRepo) Delete(ctx context.Context, req *identityV1.DeleteUserRequest
 			return identityV1.ErrorNotFound("user not found")
 		}
 
-		r.log.Errorf("delete one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete one data failed: %s", err.Error())
 
 		return identityV1.ErrorInternalServerError("delete failed")
 	}
@@ -812,13 +812,13 @@ func (r *userRepo) Delete(ctx context.Context, req *identityV1.DeleteUserRequest
 // removeUserRelations 移除用户关联关系
 func (r *userRepo) removeUserRelations(ctx context.Context, tx *ent.Tx, userID uint32) (err error) {
 	if err = r.userRoleRepo.CleanRelationsByUserID(ctx, tx, userID); err != nil {
-		r.log.Errorf("clean user role relations failed: %s", err.Error())
+		r.log.Errorf(ctx, "clean user role relations failed: %s", err.Error())
 	}
 	if err = r.userOrgUnitRepo.CleanRelationsByUserID(ctx, tx, userID); err != nil {
-		r.log.Errorf("clean user org unit relations failed: %s", err.Error())
+		r.log.Errorf(ctx, "clean user org unit relations failed: %s", err.Error())
 	}
 	if err = r.userPositionRepo.CleanRelationsByUserID(ctx, tx, userID); err != nil {
-		r.log.Errorf("clean user position relations failed: %s", err.Error())
+		r.log.Errorf(ctx, "clean user position relations failed: %s", err.Error())
 	}
 
 	return
@@ -827,7 +827,7 @@ func (r *userRepo) removeUserRelations(ctx context.Context, tx *ent.Tx, userID u
 // removeMembershipRelations 移除用户关联关系（通过 Membership 关联）
 func (r *userRepo) removeMembershipRelations(ctx context.Context, tx *ent.Tx, userID uint32) error {
 	if err := r.membershipRepo.CleanRelationsByUserID(ctx, tx, userID); err != nil {
-		r.log.Errorf("clean user membership relations failed: %s", err.Error())
+		r.log.Errorf(ctx, "clean user membership relations failed: %s", err.Error())
 		return err
 	}
 	return nil
@@ -855,7 +855,7 @@ func (r *userRepo) UserExists(ctx context.Context, req *identityV1.UserExistsReq
 
 	exist, err := builder.Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return &identityV1.UserExistsResponse{
 			Exist: false,
 		}, identityV1.ErrorInternalServerError("query exist failed")
@@ -920,7 +920,7 @@ func (r *userRepo) assignUserRelations(ctx context.Context, tx *ent.Tx,
 	}
 	if len(orgUnitIDs) > 0 {
 		orgUnitIDs = sliceutil.Unique(orgUnitIDs)
-		//r.log.Debugf("assigning org unit ids: %v", orgUnitIDs)
+		//r.log.Debugf(ctx, "assigning org unit ids: %v", orgUnitIDs)
 		var userOrgUnits []*identityV1.UserOrgUnit
 		for _, orgUnitID := range orgUnitIDs {
 			userOrgUnits = append(userOrgUnits, &identityV1.UserOrgUnit{
@@ -938,7 +938,7 @@ func (r *userRepo) assignUserRelations(ctx context.Context, tx *ent.Tx,
 	}
 	if len(positionIDs) > 0 {
 		positionIDs = sliceutil.Unique(positionIDs)
-		//r.log.Debugf("assigning position ids: %v", positionIDs)
+		//r.log.Debugf(ctx, "assigning position ids: %v", positionIDs)
 		var userPositions []*identityV1.UserPosition
 		for _, positionID := range positionIDs {
 			userPositions = append(userPositions, &identityV1.UserPosition{
@@ -963,18 +963,18 @@ func (r *userRepo) AssignUserRole(ctx context.Context, data *permissionV1.UserRo
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -987,18 +987,18 @@ func (r *userRepo) AssignUserRoles(ctx context.Context, userID uint32, datas []*
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -1011,18 +1011,18 @@ func (r *userRepo) AssignUserOrgUnit(ctx context.Context, data *identityV1.UserO
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -1035,18 +1035,18 @@ func (r *userRepo) AssignUserOrgUnits(ctx context.Context, userID uint32, datas 
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -1059,18 +1059,18 @@ func (r *userRepo) AssignUserPosition(ctx context.Context, data *identityV1.User
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -1083,18 +1083,18 @@ func (r *userRepo) AssignUserPositions(ctx context.Context, userID uint32, datas
 	var tx *ent.Tx
 	tx, err := r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -1112,7 +1112,7 @@ func (r *userRepo) ListUsersByIds(ctx context.Context, ids []uint32) ([]*identit
 		Where(user.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		r.log.Errorf("query user by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user by ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user by ids failed")
 	}
 
@@ -1137,7 +1137,7 @@ func (r *userRepo) CountByTenantIDs(ctx context.Context, tenantIDs []uint32) (ma
 			Where(user.TenantIDEQ(tid)).
 			Count(ctx)
 		if err != nil {
-			r.log.Errorf("count users by tenant %d failed: %s", tid, err.Error())
+			r.log.Errorf(ctx, "count users by tenant %d failed: %s", tid, err.Error())
 			return nil, identityV1.ErrorInternalServerError("count users by tenant failed")
 		}
 		result[tid] = cnt
@@ -1161,10 +1161,10 @@ func (r *userRepo) FindUsernameByIdentifier(ctx context.Context, tenantID uint32
 			Only(ctx)
 		if err != nil {
 			if ent.IsNotFound(err) {
-				r.log.Warnf("login email [%s] not matched in tenant [%d], fallthrough to credential check", identifier, tenantID)
+				r.log.Warnf(ctx, "login email [%s] not matched in tenant [%d], fallthrough to credential check", identifier, tenantID)
 				return identifier, 0, nil
 			}
-			r.log.Errorf("find user by email failed: %s", err.Error())
+			r.log.Errorf(ctx, "find user by email failed: %s", err.Error())
 			return "", 0, identityV1.ErrorInternalServerError("find user by email failed")
 		}
 		return *entity.Username, entity.ID, nil
@@ -1178,7 +1178,7 @@ func (r *userRepo) FindUsernameByIdentifier(ctx context.Context, tenantID uint32
 			).
 			All(ctx)
 		if err != nil {
-			r.log.Errorf("find user by mobile failed: %s", err.Error())
+			r.log.Errorf(ctx, "find user by mobile failed: %s", err.Error())
 			return "", 0, identityV1.ErrorInternalServerError("find user by mobile failed")
 		}
 		switch len(entities) {
@@ -1188,7 +1188,7 @@ func (r *userRepo) FindUsernameByIdentifier(ctx context.Context, tenantID uint32
 		case 1:
 			return *entities[0].Username, entities[0].ID, nil
 		default:
-			r.log.Errorf("ambiguous mobile login: tenant=%d mobile=%s rows=%d", tenantID, identifier, len(entities))
+			r.log.Errorf(ctx, "ambiguous mobile login: tenant=%d mobile=%s rows=%d", tenantID, identifier, len(entities))
 			return "", 0, identityV1.ErrorInternalServerError("ambiguous account identifier")
 		}
 
@@ -1241,26 +1241,26 @@ func (r *userRepo) ListUserRelationIDs(ctx context.Context, userID uint32) (role
 // listUserRelationIDsOneToOne 列出用户关联的角色、岗位、组织单元ID列表（一对一关系）
 func (r *userRepo) listUserRelationIDs(ctx context.Context, userID uint32) (roleIDs []uint32, positionIDs []uint32, orgUnitIDs []uint32, err error) {
 	if userID == 0 {
-		r.log.Errorf("invalid user id: %d", userID)
+		r.log.Errorf(ctx, "invalid user id: %d", userID)
 		return
 	}
 
 	if roleIDs, err = r.userRoleRepo.ListRoleIDs(ctx, userID, false); err != nil {
-		r.log.Errorf("list user role ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "list user role ids failed: %s", err.Error())
 		return
 	}
 
 	if positionIDs, err = r.userPositionRepo.ListPositionIDs(ctx, userID, false); err != nil {
-		r.log.Errorf("list user position ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "list user position ids failed: %s", err.Error())
 		return
 	}
 
 	if orgUnitIDs, err = r.userOrgUnitRepo.ListOrgUnitIDs(ctx, userID, false); err != nil {
-		r.log.Errorf("list user org unit ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "list user org unit ids failed: %s", err.Error())
 		return
 	}
 
-	r.log.Debugf("list user relation ids: user_id=%d role_ids=%v position_ids=%v org_unit_ids=%v", userID, roleIDs, positionIDs, orgUnitIDs)
+	r.log.Debugf(ctx, "list user relation ids: user_id=%d role_ids=%v position_ids=%v org_unit_ids=%v", userID, roleIDs, positionIDs, orgUnitIDs)
 
 	return
 }

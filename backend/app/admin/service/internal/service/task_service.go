@@ -9,7 +9,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/hibiken/asynq"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
@@ -47,7 +47,7 @@ const backupBucket = "backups"
 type TaskService struct {
 	adminV1.TaskServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	taskScheduler TaskScheduler
 
@@ -132,7 +132,7 @@ func (s *TaskService) Create(ctx context.Context, req *taskV1.CreateTaskRequest)
 
 	if err = s.startTask(t); err != nil {
 		// 调度失败不掩盖：DB 记录已建，但任务实际不会运行，需明确告知
-		s.log.Errorf("create task [%s] succeeded but scheduling failed: %s", t.GetTypeName(), err.Error())
+		s.log.Errorf(ctx, "create task [%s] succeeded but scheduling failed: %s", t.GetTypeName(), err.Error())
 		return nil, adminV1.ErrorInternalServerError("task scheduling failed: %s", err.Error())
 	}
 
@@ -181,7 +181,7 @@ func (s *TaskService) Update(ctx context.Context, req *taskV1.UpdateTaskRequest)
 	// 因为 oldTask 可能已是禁用状态，但其注册项可能仍残留在调度器中。
 	if s.hasScheduler() && oldTask != nil && oldTask.GetType() == taskV1.Task_PERIODIC && oldTask.GetTypeName() != "" {
 		if removeErr := s.taskScheduler.RemovePeriodicTask(oldTask.GetTypeName()); removeErr != nil {
-			s.log.Warnf("移除旧定时任务注册项失败[%s]: %v", oldTask.GetTypeName(), removeErr)
+			s.log.Warnf(ctx, "移除旧定时任务注册项失败[%s]: %v", oldTask.GetTypeName(), removeErr)
 		}
 	}
 
@@ -191,7 +191,7 @@ func (s *TaskService) Update(ctx context.Context, req *taskV1.UpdateTaskRequest)
 	// "成功停用"误报成 InternalServerError。因此仅在 enable 时才启动。
 	if t.GetEnable() {
 		if err = s.startTask(t); err != nil {
-			s.log.Error(err)
+			s.log.Error(ctx, err.Error())
 			return nil, adminV1.ErrorInternalServerError("task scheduling failed: %s", err.Error())
 		}
 	}
@@ -218,7 +218,7 @@ func (s *TaskService) Delete(ctx context.Context, req *taskV1.DeleteTaskRequest)
 	if s.hasScheduler() && t.GetType() == taskV1.Task_PERIODIC && t.GetTypeName() != "" {
 		if removeErr := s.taskScheduler.RemovePeriodicTask(t.GetTypeName()); removeErr != nil {
 			// 注销失败仅告警，不阻断删除（DB 记录已删）
-			s.log.Warnf("删除任务后注销调度项失败[%s]: %v", t.GetTypeName(), removeErr)
+			s.log.Warnf(ctx, "删除任务后注销调度项失败[%s]: %v", t.GetTypeName(), removeErr)
 		}
 	}
 
@@ -229,7 +229,7 @@ func (s *TaskService) Delete(ctx context.Context, req *taskV1.DeleteTaskRequest)
 func (s *TaskService) ControlTask(ctx context.Context, req *taskV1.ControlTaskRequest) (*emptypb.Empty, error) {
 	t, err := s.taskRepo.Get(ctx, &taskV1.GetTaskRequest{QueryBy: &taskV1.GetTaskRequest_TypeName{TypeName: req.GetTypeName()}})
 	if err != nil {
-		s.log.Errorf("获取任务失败[%s]", err.Error())
+		s.log.Errorf(ctx, "获取任务失败[%s]", err.Error())
 		return nil, err
 	}
 
@@ -294,11 +294,11 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 		NoPaging: trans.Ptr(true),
 	})
 	if err != nil {
-		s.log.Errorf("获取任务列表失败[%s]", err.Error())
+		s.log.Errorf(ctx, "获取任务列表失败[%s]", err.Error())
 		return 0, err
 	}
 
-	s.log.Infof("开始开启定时任务，总计[%d]个", resp.GetTotal())
+	s.log.Infof(ctx, "开始开启定时任务，总计[%d]个", resp.GetTotal())
 
 	// 重新启动任务
 	//
@@ -312,7 +312,7 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 	for _, t := range resp.GetItems() {
 		if t.GetType() == taskV1.Task_PERIODIC {
 			if registeredTypeNames[t.GetTypeName()] {
-				s.log.Warnf("跳过重复 typeName[%s] 的定时任务注册（调度器以 typeName 去重，多租户同名会泄漏孤儿调度项）", t.GetTypeName())
+				s.log.Warnf(ctx, "跳过重复 typeName[%s] 的定时任务注册（调度器以 typeName 去重，多租户同名会泄漏孤儿调度项）", t.GetTypeName())
 				continue
 			}
 			registeredTypeNames[t.GetTypeName()] = true
@@ -324,7 +324,7 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 		}
 	}
 
-	s.log.Infof("总共成功开启定时任务[%d]个", count)
+	s.log.Infof(ctx, "总共成功开启定时任务[%d]个", count)
 
 	// 注册系统级常驻任务：租户到期扫描（不依赖 sys_tasks 表，规避 typeName 去重问题）。
 	// 放在 startAllTask 末尾，确保初始启动与 RestartAllTask（先 RemoveAllPeriodicTask 再
@@ -335,9 +335,9 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 			task.TenantExpiryScanTaskType,
 			&task.TenantExpiryScanTaskData{},
 		); err != nil {
-			s.log.Errorf("注册系统级到期扫描定时任务失败: %s", err.Error())
+			s.log.Errorf(ctx, "注册系统级到期扫描定时任务失败: %s", err.Error())
 		} else {
-			s.log.Infof("系统级到期扫描定时任务已注册（cron=%s）", task.TenantExpiryScanCronSpec)
+			s.log.Infof(ctx, "系统级到期扫描定时任务已注册（cron=%s）", task.TenantExpiryScanCronSpec)
 		}
 	}
 
@@ -348,16 +348,16 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 func (s *TaskService) stopAllTask() {
 	// nil 调度器防护
 	if !s.hasScheduler() {
-		s.log.Warnf("task scheduler is not configured, skip stopAllTask")
+		s.log.Warnf(context.Background(), "task scheduler is not configured, skip stopAllTask")
 		return
 	}
 
-	s.log.Infof("开始清除所有的定时任务...")
+	s.log.Infof(context.Background(), "开始清除所有的定时任务...")
 
 	// 清除所有的定时任务
 	s.taskScheduler.RemoveAllPeriodicTask()
 
-	s.log.Infof("完成清除所有的定时任务")
+	s.log.Infof(context.Background(), "完成清除所有的定时任务")
 }
 
 // stopTask 停止一个任务
@@ -449,21 +449,21 @@ func (s *TaskService) startTask(t *taskV1.Task) error {
 	case taskV1.Task_PERIODIC:
 		opts, payload = s.convertTaskOption(t)
 		if _, err = s.taskScheduler.NewPeriodicTask(t.GetCronSpec(), t.GetTypeName(), payload, opts...); err != nil {
-			s.log.Errorf("[%s] 创建定时任务失败[%s]", t.GetTypeName(), err.Error())
+			s.log.Errorf(context.Background(), "[%s] 创建定时任务失败[%s]", t.GetTypeName(), err.Error())
 			return err
 		}
 
 	case taskV1.Task_DELAY:
 		opts, payload = s.convertTaskOption(t)
 		if err = s.taskScheduler.NewTask(t.GetTypeName(), payload, opts...); err != nil {
-			s.log.Errorf("[%s] 创建延迟任务失败[%s]", t.GetTypeName(), err.Error())
+			s.log.Errorf(context.Background(), "[%s] 创建延迟任务失败[%s]", t.GetTypeName(), err.Error())
 			return err
 		}
 
 	case taskV1.Task_WAIT_RESULT:
 		opts, payload = s.convertTaskOption(t)
 		if err = s.taskScheduler.NewWaitResultTask(t.GetTypeName(), payload, opts...); err != nil {
-			s.log.Errorf("[%s] 创建等待结果任务失败[%s]", t.GetTypeName(), err.Error())
+			s.log.Errorf(context.Background(), "[%s] 创建等待结果任务失败[%s]", t.GetTypeName(), err.Error())
 			return err
 		}
 	}
@@ -482,7 +482,7 @@ func (s *TaskService) AsyncBackup(taskType string, taskData *task.BackupTaskData
 	if taskData != nil {
 		backupName = taskData.Name
 	}
-	s.log.Infof("AsyncBackup [%s] [%+v] [%s]", taskType, taskData, backupName)
+	s.log.Infof(context.Background(), "AsyncBackup [%s] [%+v] [%s]", taskType, taskData, backupName)
 
 	// 用 SystemViewerContext 包裹：备份需要导出全部租户的核心表，
 	// 而 TenantPrivacy 在 viewer 缺失时会返回 error 导致带 tenant_id 的表全部查询失败。
@@ -528,15 +528,15 @@ func (s *TaskService) AsyncBackup(taskType string, taskData *task.BackupTaskData
 		time.Now().UTC().Format("150405"),
 	)
 
-	s.log.Infof("backup: uploading %s (%d bytes raw, %d bytes compressed) to bucket %q",
+	s.log.Infof(context.Background(), "backup: uploading %s (%d bytes raw, %d bytes compressed) to bucket %q",
 		objectName, len(jsonBytes), len(compressed), backupBucket)
 
 	if _, _, _, err = s.mc.UploadFile(ctx, backupBucket, objectName, "application/gzip", compressed); err != nil {
-		s.log.Errorf("backup: upload to oss failed: %s", err.Error())
+		s.log.Errorf(context.Background(), "backup: upload to oss failed: %s", err.Error())
 		return fmt.Errorf("upload backup to oss failed: %w", err)
 	}
 
-	s.log.Infof("backup: completed successfully, object=%s", objectName)
+	s.log.Infof(context.Background(), "backup: completed successfully, object=%s", objectName)
 	return nil
 }
 
@@ -572,10 +572,10 @@ func gzipBytes(data []byte) ([]byte, error) {
 //
 // READONLY 策略的即时读写拦截由 TenantAccessChecker 中间件承担，不需要等待本扫描任务。
 func (s *TaskService) AsyncTenantExpiryScan(taskType string, taskData *task.TenantExpiryScanTaskData) error {
-	s.log.Infof("AsyncTenantExpiryScan [%s] [%+v]", taskType, taskData)
+	s.log.Infof(context.Background(), "AsyncTenantExpiryScan [%s] [%+v]", taskType, taskData)
 
 	if s.tenantUsageRepo == nil {
-		s.log.Errorf("AsyncTenantExpiryScan: tenantUsageRepo is nil, aborting")
+		s.log.Errorf(context.Background(), "AsyncTenantExpiryScan: tenantUsageRepo is nil, aborting")
 		return errors.New("tenantUsageRepo is not configured")
 	}
 
@@ -584,10 +584,10 @@ func (s *TaskService) AsyncTenantExpiryScan(taskType string, taskData *task.Tena
 
 	count, err := s.tenantUsageRepo.EnforceExpiryPolicies(ctx)
 	if err != nil {
-		s.log.Errorf("AsyncTenantExpiryScan: enforce failed: %v", err)
+		s.log.Errorf(context.Background(), "AsyncTenantExpiryScan: enforce failed: %v", err)
 		return err
 	}
 
-	s.log.Infof("AsyncTenantExpiryScan: completed, %d tenants enforced", count)
+	s.log.Infof(context.Background(), "AsyncTenantExpiryScan: completed, %d tenants enforced", count)
 	return nil
 }

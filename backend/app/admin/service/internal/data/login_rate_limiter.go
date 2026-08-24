@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/redis/go-redis/v9"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 )
@@ -53,7 +53,7 @@ var incrIfNotLockedScript = redis.NewScript(`
 // LoginRateLimiter 基于 Redis 的登录失败计数器，按 IP 与用户名双维度限流。
 // 用于 H5：防止登录暴力破解——失败超阈值后锁定相应窗口。
 type LoginRateLimiter struct {
-	log *log.Helper
+	log *bLogger.Helper
 	rdb *redis.Client
 }
 
@@ -84,7 +84,7 @@ func (l *LoginRateLimiter) CheckAndIncr(ctx context.Context, ip, username string
 	for _, key := range keys {
 		res, rerr := incrIfNotLockedScript.Run(ctx, l.rdb, []string{key}, threshold, ttl).Result()
 		if rerr != nil {
-			l.log.Errorf("incr login fail counter failed (key=%s): %s", key, rerr.Error())
+			l.log.Errorf(ctx, "incr login fail counter failed (key=%s): %s", key, rerr.Error())
 			continue
 		}
 		// res 形如 [1 "5"] 或 [0 "3"]
@@ -98,7 +98,7 @@ func (l *LoginRateLimiter) CheckAndIncr(ctx context.Context, ip, username string
 			maxAttempts = int(count)
 		}
 		if isLocked == 1 {
-			l.log.Warnf("login locked: key=%s, attempts=%d", key, count)
+			l.log.Warnf(ctx, "login locked: key=%s, attempts=%d", key, count)
 			return true, int(count), loginLockoutDuration, nil
 		}
 	}
@@ -115,7 +115,7 @@ func (l *LoginRateLimiter) IsLocked(ctx context.Context, ip, username string) (b
 	for _, key := range l.failKeys(ip, username) {
 		cnt, rerr := l.rdb.Get(ctx, key).Int64()
 		if rerr != nil && rerr != redis.Nil {
-			l.log.Errorf("get login fail counter failed (key=%s): %s", key, rerr.Error())
+			l.log.Errorf(ctx, "get login fail counter failed (key=%s): %s", key, rerr.Error())
 			continue
 		}
 		if cnt >= threshold {
@@ -132,7 +132,7 @@ func (l *LoginRateLimiter) Reset(ctx context.Context, ip, username string) {
 	}
 	for _, key := range l.failKeys(ip, username) {
 		if err := l.rdb.Del(ctx, key).Err(); err != nil {
-			l.log.Errorf("reset login fail counter failed (key=%s): %s", key, err.Error())
+			l.log.Errorf(ctx, "reset login fail counter failed (key=%s): %s", key, err.Error())
 		}
 	}
 }

@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
@@ -32,7 +32,7 @@ type RouteWalker interface {
 type ApiService struct {
 	adminV1.ApiServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	repo        *data.ApiRepo
 	authorizer  *authorizer.Authorizer
@@ -168,16 +168,16 @@ func (s *ApiService) syncWithOpenAPI(ctx context.Context) error {
 	if err != nil {
 		// 此前用 log.Fatal（os.Exit 直接终止进程），其后的 return 是死代码。
 		// 启动期同步失败应返回错误由上层决定，而非杀掉整个进程。
-		s.log.Errorf("加载 OpenAPI 文档失败: %v", err)
+		s.log.Errorf(ctx, "加载 OpenAPI 文档失败: %v", err)
 		return adminV1.ErrorInternalServerError("load OpenAPI document failed")
 	}
 
 	if doc == nil {
-		s.log.Error("OpenAPI 文档为空")
+		s.log.Error(ctx, "OpenAPI 文档为空")
 		return adminV1.ErrorInternalServerError("OpenAPI document is nil")
 	}
 	if doc.Paths == nil {
-		s.log.Error("OpenAPI 文档的路径为空")
+		s.log.Error(ctx, "OpenAPI 文档的路径为空")
 		return adminV1.ErrorInternalServerError("OpenAPI document paths is nil")
 	}
 
@@ -251,7 +251,7 @@ func (s *ApiService) GetWalkRouteData(_ context.Context, _ *emptypb.Empty) (*per
 		})
 		return nil
 	}); err != nil {
-		s.log.Errorf("failed to walk route: %v", err)
+		s.log.Errorf(context.Background(), "failed to walk route: %v", err)
 		return nil, adminV1.ErrorInternalServerError("failed to walk route")
 	}
 	resp.Total = uint64(count)

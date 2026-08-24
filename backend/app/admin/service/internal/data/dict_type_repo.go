@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -23,7 +23,7 @@ import (
 
 type DictTypeRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper *mapper.CopierMapper[dictV1.DictType, ent.DictType]
 
@@ -74,7 +74,7 @@ func (r *DictTypeRepo) Count(ctx context.Context, whereCond []func(s *sql.Select
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, dictV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -107,7 +107,7 @@ func (r *DictTypeRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Where(dicttype.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, dictV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -151,18 +151,18 @@ func (r *DictTypeRepo) Create(ctx context.Context, req *dictV1.CreateDictTypeReq
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return dictV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = dictV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -181,7 +181,7 @@ func (r *DictTypeRepo) Create(ctx context.Context, req *dictV1.CreateDictTypeReq
 	}
 
 	if _, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("insert dict type failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert dict type failed: %s", err.Error())
 		return dictV1.ErrorInternalServerError("insert dict type failed")
 	}
 
@@ -214,18 +214,18 @@ func (r *DictTypeRepo) Update(ctx context.Context, req *dictV1.UpdateDictTypeReq
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return dictV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = dictV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -245,7 +245,7 @@ func (r *DictTypeRepo) Update(ctx context.Context, req *dictV1.UpdateDictTypeReq
 		},
 	)
 	if err != nil {
-		r.log.Errorf("update dict type failed: %s", err.Error())
+		r.log.Errorf(ctx, "update dict type failed: %s", err.Error())
 		return dictV1.ErrorInternalServerError("update dict type failed")
 	}
 
@@ -262,7 +262,7 @@ func (r *DictTypeRepo) Delete(ctx context.Context, id uint32) error {
 			return dictV1.ErrorNotFound("dict not found")
 		}
 
-		r.log.Errorf("delete one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete one data failed: %s", err.Error())
 
 		return dictV1.ErrorInternalServerError("delete failed")
 	}
@@ -282,7 +282,7 @@ func (r *DictTypeRepo) BatchDelete(ctx context.Context, ids []uint32) error {
 			return dictV1.ErrorNotFound("dict not found")
 		}
 
-		r.log.Errorf("delete one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete one data failed: %s", err.Error())
 
 		return dictV1.ErrorInternalServerError("delete failed")
 	}

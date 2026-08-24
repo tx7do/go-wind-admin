@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/go-utils/copierutil"
 	"github.com/tx7do/go-utils/mapper"
@@ -20,7 +20,7 @@ import (
 
 type RoleMetadataRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper              *mapper.CopierMapper[permissionV1.RoleMetadata, ent.RoleMetadata]
 	syncPolicyConverter *mapper.EnumTypeConverter[permissionV1.RoleMetadata_SyncPolicy, rolemetadata.SyncPolicy]

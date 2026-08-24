@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	"go-wind-admin/app/admin/service/internal/data"
@@ -18,7 +18,7 @@ import (
 type RedisCacheMonitorService struct {
 	adminV1.RedisCacheMonitorServiceHTTPServer
 
-	log  *log.Helper
+	log  *bLogger.Helper
 	repo *data.RedisCacheMonitorRepo
 }
 

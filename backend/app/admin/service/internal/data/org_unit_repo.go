@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -26,7 +26,7 @@ import (
 
 type OrgUnitRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper          *mapper.CopierMapper[identityV1.OrgUnit, ent.OrgUnit]
 	typeConverter   *mapper.EnumTypeConverter[identityV1.OrgUnit_Type, orgunit.Type]
@@ -81,7 +81,7 @@ func (r *OrgUnitRepo) count(ctx context.Context, whereCond []func(s *sql.Selecto
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -98,7 +98,7 @@ func (r *OrgUnitRepo) Count(ctx context.Context, req *paginationV1.PagingRequest
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query org-unit count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query org-unit count failed: %s", err.Error())
 		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -114,13 +114,13 @@ func (r *OrgUnitRepo) List(ctx context.Context, req *paginationV1.PagingRequest)
 
 	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
 	if err != nil {
-		r.log.Errorf("parse list param error [%s]", err.Error())
+		r.log.Errorf(ctx, "parse list param error [%s]", err.Error())
 		return nil, identityV1.ErrorBadRequest("invalid query parameter")
 	}
 
 	entities, err := builder.All(ctx)
 	if err != nil {
-		r.log.Errorf("query org unit list failed: %s", err.Error())
+		r.log.Errorf(ctx, "query org unit list failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query org unit list failed")
 	}
 
@@ -166,7 +166,7 @@ func (r *OrgUnitRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Where(orgunit.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, identityV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -204,7 +204,7 @@ func (r *OrgUnitRepo) ListOrgUnitsByIds(ctx context.Context, ids []uint32) ([]*i
 		Where(orgunit.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		r.log.Errorf("query orgUnit by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query orgUnit by ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query orgUnit by ids failed")
 	}
 
@@ -225,18 +225,18 @@ func (r *OrgUnitRepo) Create(ctx context.Context, req *identityV1.CreateOrgUnitR
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -284,7 +284,7 @@ func (r *OrgUnitRepo) Create(ctx context.Context, req *identityV1.CreateOrgUnitR
 
 	var entity *ent.OrgUnit
 	if entity, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("insert org unit failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert org unit failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("insert org unit failed")
 	}
 
@@ -371,12 +371,12 @@ func (r *OrgUnitRepo) Delete(ctx context.Context, req *identityV1.DeleteOrgUnitR
 
 	childrenIds, err := entCrud.QueryAllChildrenIds(ctx, r.entClient, "sys_org_units", req.GetId())
 	if err != nil {
-		r.log.Errorf("query child orgUnits failed: %s", err.Error())
+		r.log.Errorf(ctx, "query child orgUnits failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("query child orgUnits failed")
 	}
 	childrenIds = append(childrenIds, req.GetId())
 
-	//r.log.Info("orgunits childrenIds to delete: ", childrenIds)
+	//r.log.Info(ctx, "orgunits childrenIds to delete: ", childrenIds)
 
 	var ids []any
 	for _, id := range childrenIds {
@@ -389,7 +389,7 @@ func (r *OrgUnitRepo) Delete(ctx context.Context, req *identityV1.DeleteOrgUnitR
 		s.Where(sql.In(orgunit.FieldID, ids...))
 	})
 	if err != nil {
-		r.log.Errorf("delete orgUnit failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete orgUnit failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete orgUnit failed")
 	}
 

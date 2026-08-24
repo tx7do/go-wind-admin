@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/aggregator"
 	"github.com/tx7do/go-utils/trans"
@@ -26,7 +26,7 @@ import (
 type RoleService struct {
 	adminV1.RoleServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	authorizer *authorizer.Authorizer
 
@@ -82,7 +82,7 @@ func (s *RoleService) fetchRelationInfo(
 
 		tenants, err := s.tenantRepo.ListTenantsByIds(ctx, tenantIds)
 		if err != nil {
-			s.log.Errorf("query tenants err: %v", err)
+			s.log.Errorf(context.Background(), "query tenants err: %v", err)
 			return err
 		}
 
@@ -174,7 +174,7 @@ func (s *RoleService) Create(ctx context.Context, req *permissionV1.CreateRoleRe
 	}
 
 	if err = s.authorizer.ResetPolicies(ctx); err != nil {
-		s.log.Errorf("reset policies error: %v", err)
+		s.log.Errorf(ctx, "reset policies error: %v", err)
 	}
 
 	return &emptypb.Empty{}, nil
@@ -188,7 +188,7 @@ func (s *RoleService) Update(ctx context.Context, req *permissionV1.UpdateRoleRe
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
-		s.log.Errorf("get operator from context error: %v", err)
+		s.log.Errorf(ctx, "get operator from context error: %v", err)
 		return nil, err
 	}
 
@@ -235,12 +235,12 @@ func (s *RoleService) Update(ctx context.Context, req *permissionV1.UpdateRoleRe
 	}
 
 	if err = s.roleRepo.Update(ctx, req); err != nil {
-		s.log.Errorf("update role error: %v", err)
+		s.log.Errorf(ctx, "update role error: %v", err)
 		return nil, err
 	}
 
 	if err = s.authorizer.ResetPolicies(ctx); err != nil {
-		s.log.Errorf("reset policies error: %v", err)
+		s.log.Errorf(ctx, "reset policies error: %v", err)
 	}
 
 	return &emptypb.Empty{}, nil
@@ -254,7 +254,7 @@ func (s *RoleService) Delete(ctx context.Context, req *permissionV1.DeleteRoleRe
 	}
 
 	if err = s.authorizer.ResetPolicies(ctx); err != nil {
-		s.log.Errorf("reset policies error: %v", err)
+		s.log.Errorf(ctx, "reset policies error: %v", err)
 	}
 
 	return &emptypb.Empty{}, nil

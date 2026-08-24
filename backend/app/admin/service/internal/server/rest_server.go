@@ -16,6 +16,7 @@ import (
 	swaggerUI "github.com/tx7do/kratos-swagger-ui"
 
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/rpc"
 
 	"go-wind-admin/app/admin/service/cmd/server/assets"
@@ -44,7 +45,7 @@ func NewRestMiddleware(
 	// recovery 必须置于链首：任何中间件/handler 的 panic（如审计日志解析畸形 JWT）
 	// 兜底为 500，避免崩溃请求 goroutine、被用作未认证 DoS。
 	ms = append(ms, recovery.Recovery())
-	ms = append(ms, logging.Server(ctx.GetLogger()))
+	ms = append(ms, logging.Server(bLogger.AsKratosLogger(ctx.GetLogger())))
 
 	ms = append(ms, applogging.Server(
 		applogging.WithWriteApiLogFunc(func(ctx context.Context, data *auditV1.ApiAuditLog) error {

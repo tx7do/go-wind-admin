@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/redis/go-redis/v9"
 	"github.com/tx7do/go-utils/jwtutil"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -50,7 +50,7 @@ type MfaEnrollChallengeContext struct {
 // MfaChallengeCache MFA 操作上下文缓存。
 // 所有操作均 verify-and-delete 单次有效（取即删），与 captchaClient 一致。
 type MfaChallengeCache struct {
-	log *log.Helper
+	log *bLogger.Helper
 	rdb *redis.Client
 }
 
@@ -78,7 +78,7 @@ func (c *MfaChallengeCache) SetLoginChallenge(ctx context.Context, payload *auth
 	}
 	key := fmt.Sprintf(mfaLoginChallengeKeyFmt, opId)
 	if err := c.rdb.Set(ctx, key, raw, MfaChallengeTTL).Err(); err != nil {
-		c.log.Errorf("set login challenge failed: %s", err.Error())
+		c.log.Errorf(ctx, "set login challenge failed: %s", err.Error())
 		return "", fmt.Errorf("set login challenge failed")
 	}
 	return opId, nil
@@ -101,7 +101,7 @@ func (c *MfaChallengeCache) PeekLoginChallenge(ctx context.Context, opId string)
 		if errors.Is(err, redis.Nil) {
 			return nil, ErrMfaChallengeNotFound
 		}
-		c.log.Errorf("peek login challenge failed: %s", err.Error())
+		c.log.Errorf(ctx, "peek login challenge failed: %s", err.Error())
 		return nil, fmt.Errorf("peek mfa challenge failed")
 	}
 
@@ -126,7 +126,7 @@ func (c *MfaChallengeCache) RecordLoginFailure(ctx context.Context, opId string)
 	n, err := c.rdb.Incr(ctx, failKey).Result()
 	if err != nil {
 		// Redis 异常按已达上限处理（fail-closed，防计数失效后的无限重试）
-		c.log.Errorf("incr login challenge fail count failed: %s", err.Error())
+		c.log.Errorf(ctx, "incr login challenge fail count failed: %s", err.Error())
 		return true
 	}
 	c.rdb.Expire(ctx, failKey, MfaChallengeTTL)
@@ -162,7 +162,7 @@ func (c *MfaChallengeCache) TakeLoginChallengeAtomic(ctx context.Context, opId s
 	key := fmt.Sprintf(mfaLoginChallengeKeyFmt, opId)
 	res, err := takeAndDelScript.Run(ctx, c.rdb, []string{key}).Result()
 	if err != nil {
-		c.log.Errorf("atomic take login challenge failed: %s", err.Error())
+		c.log.Errorf(ctx, "atomic take login challenge failed: %s", err.Error())
 		return false
 	}
 	if res == nil {
@@ -179,7 +179,7 @@ func (c *MfaChallengeCache) TryAcquireEnrollCooldown(ctx context.Context, tenant
 	ok, err := c.rdb.SetNX(ctx, key, 1, mfaEnrollCooldown).Result()
 	if err != nil {
 		// Redis 异常放行（频控是防御性优化，不阻断正常注册）
-		c.log.Errorf("acquire enroll cooldown failed: %s", err.Error())
+		c.log.Errorf(ctx, "acquire enroll cooldown failed: %s", err.Error())
 		return true
 	}
 	return ok
@@ -199,7 +199,7 @@ func (c *MfaChallengeCache) SetEnrollChallenge(ctx context.Context, secret strin
 	}
 	key := fmt.Sprintf(mfaEnrollChallengeKeyFmt, opId)
 	if err := c.rdb.Set(ctx, key, raw, MfaChallengeTTL).Err(); err != nil {
-		c.log.Errorf("set enroll challenge failed: %s", err.Error())
+		c.log.Errorf(ctx, "set enroll challenge failed: %s", err.Error())
 		return "", fmt.Errorf("set enroll challenge failed")
 	}
 	return opId, nil
@@ -216,7 +216,7 @@ func (c *MfaChallengeCache) PeekEnrollChallenge(ctx context.Context, opId string
 		if errors.Is(err, redis.Nil) {
 			return nil, ErrMfaChallengeNotFound
 		}
-		c.log.Errorf("peek enroll challenge failed: %s", err.Error())
+		c.log.Errorf(ctx, "peek enroll challenge failed: %s", err.Error())
 		return nil, fmt.Errorf("peek mfa challenge failed")
 	}
 	var envelope MfaEnrollChallengeContext

@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -20,7 +20,7 @@ import (
 type LoginPolicyService struct {
 	adminV1.LoginPolicyServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	repo *data.LoginPolicyRepo
 }

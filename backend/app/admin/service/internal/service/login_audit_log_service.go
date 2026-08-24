@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -18,7 +18,7 @@ import (
 type LoginAuditLogService struct {
 	adminV1.LoginAuditLogServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	repo *data.LoginAuditLogRepo
 }

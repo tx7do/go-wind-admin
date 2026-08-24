@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -27,7 +27,7 @@ import (
 
 type RoleRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper          *mapper.CopierMapper[permissionV1.Role, ent.Role]
 	statusConverter *mapper.EnumTypeConverter[permissionV1.Role_Status, role.Status]
@@ -102,7 +102,7 @@ func (r *RoleRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query role count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query role count failed: %s", err.Error())
 		return 0, permissionV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -115,7 +115,7 @@ func (r *RoleRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Where(role.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, permissionV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -151,7 +151,7 @@ func (r *RoleRepo) List(ctx context.Context, req *paginationV1.PagingRequest) (*
 func (r *RoleRepo) fillPermissionIDs(ctx context.Context, dto *permissionV1.Role) error {
 	permissionIDs, err := r.rolePermissionRepo.ListPermissionIDs(ctx, dto.GetId())
 	if err != nil {
-		r.log.Errorf("list permission ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "list permission ids failed: %s", err.Error())
 		return err
 	}
 	dto.Permissions = permissionIDs
@@ -174,7 +174,7 @@ func (r *RoleRepo) ListRolesByRoleCodes(ctx context.Context, codes []string) ([]
 		Where(role.CodeIn(codes...)).
 		All(ctx)
 	if err != nil {
-		r.log.Errorf("query roles by codes failed: %s", err.Error())
+		r.log.Errorf(ctx, "query roles by codes failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query roles by codes failed")
 	}
 
@@ -201,7 +201,7 @@ func (r *RoleRepo) ListRolesByRoleIds(ctx context.Context, ids []uint32) ([]*per
 		Where(role.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		r.log.Errorf("query roles by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query roles by ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query roles by ids failed")
 	}
 
@@ -228,7 +228,7 @@ func (r *RoleRepo) ListRoleCodesByRoleIds(ctx context.Context, ids []uint32) ([]
 		Where(role.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		r.log.Errorf("query role codes failed: %s", err.Error())
+		r.log.Errorf(ctx, "query role codes failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query role codes failed")
 	}
 
@@ -259,7 +259,7 @@ func (r *RoleRepo) ListRoleIDsByRoleCodes(ctx context.Context, codes []string) (
 		Select(role.FieldID).
 		All(ctx)
 	if err != nil {
-		r.log.Errorf("query role ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query role ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query role ids failed")
 	}
 
@@ -360,7 +360,7 @@ func (r *RoleRepo) CreateTenantRoleFromTemplate(ctx context.Context, tx *ent.Tx,
 	roleTemplate.UpdatedBy = nil
 	roleTemplate.UpdatedAt = nil
 
-	//r.log.Infof("Creating tenant role from template: %+v", roleTemplate)
+	//r.log.Infof(ctx, "Creating tenant role from template: %+v", roleTemplate)
 
 	dto, err = r.CreateWithTx(ctx, tx, roleTemplate)
 	if err != nil {
@@ -379,18 +379,18 @@ func (r *RoleRepo) Create(ctx context.Context, req *permissionV1.CreateRoleReque
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = permissionV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -423,7 +423,7 @@ func (r *RoleRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *permissio
 
 	var ret *ent.Role
 	if ret, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("insert role failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert role failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("insert role failed")
 	}
 
@@ -453,7 +453,7 @@ func (r *RoleRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *permissio
 		SyncPolicy:  permissionV1.RoleMetadata_AUTO.Enum(),
 		Scope:       scope,
 	}); err != nil {
-		r.log.Errorf("create role metadata failed: %s", err.Error())
+		r.log.Errorf(ctx, "create role metadata failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("create role metadata failed")
 	}
 
@@ -462,7 +462,7 @@ func (r *RoleRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *permissio
 		if err = r.assignPermissionsToRole(ctx, tx,
 			data.GetTenantId(), data.GetCreatedBy(),
 			ret.ID, data.Permissions); err != nil {
-			r.log.Errorf("assign permissions to role failed: %s", err.Error())
+			r.log.Errorf(ctx, "assign permissions to role failed: %s", err.Error())
 			return nil, permissionV1.ErrorInternalServerError("assign permissions to role failed")
 		}
 	}
@@ -496,18 +496,18 @@ func (r *RoleRepo) Update(ctx context.Context, req *permissionV1.UpdateRoleReque
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = permissionV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -543,13 +543,13 @@ func (r *RoleRepo) Update(ctx context.Context, req *permissionV1.UpdateRoleReque
 		},
 	)
 	if err != nil {
-		r.log.Errorf("update role failed: %s", err.Error())
+		r.log.Errorf(ctx, "update role failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("update role failed")
 	}
 
 	// 升级角色元数据模板版本
 	if err = r.roleMetadataRepo.UpgradeTemplateVersion(ctx, tx, req.GetId()); err != nil {
-		r.log.Errorf("upgrade role metadata template version failed: %s", err.Error())
+		r.log.Errorf(ctx, "upgrade role metadata template version failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("upgrade role metadata template version failed")
 	}
 
@@ -559,7 +559,7 @@ func (r *RoleRepo) Update(ctx context.Context, req *permissionV1.UpdateRoleReque
 		if err = r.rolePermissionRepo.ReplacePermissions(ctx, tx,
 			entity.GetTenantId(), req.Data.GetUpdatedBy(),
 			req.GetId(), req.Data.Permissions); err != nil {
-			r.log.Errorf("assign permissions to role failed: %s", err.Error())
+			r.log.Errorf(ctx, "assign permissions to role failed: %s", err.Error())
 			return permissionV1.ErrorInternalServerError("assign permissions to role failed")
 		}
 	}
@@ -576,25 +576,25 @@ func (r *RoleRepo) Delete(ctx context.Context, req *permissionV1.DeleteRoleReque
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = permissionV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
 
 	ret, err := tx.Role.Query().Where(role.IDEQ(req.GetId())).Only(ctx)
 	if err != nil {
-		r.log.Errorf("get role failed: %s", err.Error())
+		r.log.Errorf(ctx, "get role failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("get role failed")
 	}
 
@@ -607,7 +607,7 @@ func (r *RoleRepo) Delete(ctx context.Context, req *permissionV1.DeleteRoleReque
 	if _, err = tx.Role.Delete().
 		Where(role.IDEQ(req.GetId())).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete role failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete role failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete role failed")
 	}
 

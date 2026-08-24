@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
@@ -27,7 +27,7 @@ import (
 
 type FileRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper            *mapper.CopierMapper[storageV1.File, ent.File]
 	providerConverter *mapper.EnumTypeConverter[storageV1.OSSProvider, file.Provider]
@@ -101,7 +101,7 @@ func (r *FileRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector))
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, storageV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -134,7 +134,7 @@ func (r *FileRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Where(file.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, storageV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -192,7 +192,7 @@ func (r *FileRepo) Create(ctx context.Context, req *storageV1.CreateFileRequest)
 	}
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert file failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert file failed: %s", err.Error())
 		return storageV1.ErrorInternalServerError("insert file failed")
 	}
 
@@ -261,7 +261,7 @@ func (r *FileRepo) Delete(ctx context.Context, req *storageV1.DeleteFileRequest)
 			return storageV1.ErrorNotFound("file not found")
 		}
 
-		r.log.Errorf("delete one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete one data failed: %s", err.Error())
 
 		return storageV1.ErrorInternalServerError("delete failed")
 	}

@@ -1,7 +1,8 @@
 package data
 
 import (
-	"github.com/go-kratos/kratos/v2/log"
+	"context"
+	"fmt"
 
 	"entgo.io/ent/dialect/sql"
 
@@ -25,39 +26,40 @@ func NewEntClient(ctx *bootstrap.Context) (*entCrud.EntClient[*ent.Client], func
 
 	cfg := ctx.GetConfig()
 	if cfg == nil || cfg.Data == nil {
-		l.Fatalf("[ENT] failed getting config")
-		return nil, func() {}, nil
+		l.Errorf(context.Background(), "[ENT] failed getting config")
+		panic("[ENT] failed getting config")
 	}
 
 	cli, err := entBootstrap.NewEntClient(cfg, func(drv *sql.Driver) *ent.Client {
 		client := ent.NewClient(
 			ent.Driver(drv),
 			ent.Log(func(a ...any) {
-				l.Debug(a...)
+				l.Debug(context.Background(), fmt.Sprint(a...))
 			}),
 		)
 		if client == nil {
-			l.Fatalf("[ENT] failed creating ent client")
-			return nil
+			l.Errorf(context.Background(), "[ENT] failed creating ent client")
+			panic("[ENT] failed creating ent client")
 		}
 
 		// run the auto migration tool
 		if cfg.Data.Database.GetMigrate() {
 			if err := client.Schema.Create(ctx.Context(), migrate.WithForeignKeys(true)); err != nil {
-				l.Fatalf("[ENT] failed creating schema resources: %v", err)
+				l.Errorf(context.Background(), "[ENT] failed creating schema resources: %v", err)
+				panic("[ENT] failed creating schema resources")
 			}
 		}
 
 		return client
 	})
 	if err != nil {
-		log.Fatalf("[ENT] failed creating ent client: %v", err)
-		return nil, func() {}, err
+		l.Errorf(context.Background(), "[ENT] failed creating ent client: %v", err)
+		panic("[ENT] failed creating ent client")
 	}
 
 	return cli, func() {
-		if cleanErr := cli.Close(); cleanErr != nil {
-			log.Errorf("[ENT] failed closing ent client: %v", cleanErr)
-		}
+			if cleanErr := cli.Close(); cleanErr != nil {
+				l.Errorf(context.Background(), "[ENT] failed closing ent client: %v", cleanErr)
+			}
 	}, nil
 }

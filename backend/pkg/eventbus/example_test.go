@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"go-wind-admin/pkg/eventbus"
 )
 
 // Example_basic demonstrates basic event bus usage
 func Example_basic() {
 	// Create event bus
-	bus := eventbus.NewEventBus(log.DefaultLogger)
+	bus := eventbus.NewEventBus(bLogger.NopLogger())
 	defer bus.Close()
 
 	// Subscribe to events
@@ -33,7 +33,7 @@ func Example_basic() {
 
 // Example_typedEvents demonstrates using typed event data
 func Example_typedEvents() {
-	bus := eventbus.NewEventBus(log.DefaultLogger)
+	bus := eventbus.NewEventBus(bLogger.NopLogger())
 	defer bus.Close()
 
 	// Subscribe with typed data
@@ -63,8 +63,8 @@ func Example_typedEvents() {
 
 // Example_middleware demonstrates using middleware
 func Example_middleware() {
-	logger := log.NewHelper(log.DefaultLogger)
-	bus := eventbus.NewEventBus(log.DefaultLogger)
+	logger := bLogger.NewHelper(bLogger.NopLogger())
+	bus := eventbus.NewEventBus(bLogger.NopLogger())
 	defer bus.Close()
 
 	// Create handler with middleware
@@ -94,7 +94,7 @@ func Example_middleware() {
 
 // Example_manager demonstrates using the event bus manager
 func Example_manager() {
-	manager := eventbus.NewManager(log.DefaultLogger)
+	manager := eventbus.NewManager(bLogger.NopLogger())
 	defer manager.Close()
 
 	// Subscribe to global bus
@@ -128,7 +128,7 @@ func Example_manager() {
 
 // Example_asyncHandlers demonstrates async event handling
 func Example_asyncHandlers() {
-	bus := eventbus.NewEventBus(log.DefaultLogger)
+	bus := eventbus.NewEventBus(bLogger.NopLogger())
 	defer bus.Close()
 
 	// Subscribe async handler
@@ -154,7 +154,7 @@ func Example_asyncHandlers() {
 
 // Example_filterHandler demonstrates filtering events
 func Example_filterHandler() {
-	bus := eventbus.NewEventBus(log.DefaultLogger)
+	bus := eventbus.NewEventBus(bLogger.NopLogger())
 	defer bus.Close()
 
 	// Only process high-priority events
@@ -183,7 +183,7 @@ func Example_filterHandler() {
 
 // Example_subscribeOnce demonstrates one-time event handlers
 func Example_subscribeOnce() {
-	bus := eventbus.NewEventBus(log.DefaultLogger)
+	bus := eventbus.NewEventBus(bLogger.NopLogger())
 	defer bus.Close()
 
 	counter := 0
@@ -208,7 +208,7 @@ func Example_subscribeOnce() {
 
 // Example_chainHandlers demonstrates chaining multiple handlers
 func Example_chainHandlers() {
-	bus := eventbus.NewEventBus(log.DefaultLogger)
+	bus := eventbus.NewEventBus(bLogger.NopLogger())
 	defer bus.Close()
 
 	// Create multiple handlers

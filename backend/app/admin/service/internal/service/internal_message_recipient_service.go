@@ -3,7 +3,7 @@ package service
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/emptypb"
@@ -17,7 +17,7 @@ import (
 type InternalMessageRecipientService struct {
 	adminV1.InternalMessageRecipientServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	internalMessageRepo          *data.InternalMessageRepo
 	internalMessageRecipientRepo *data.InternalMessageRecipientRepo
@@ -53,7 +53,7 @@ func (s *InternalMessageRecipientService) ListUserInbox(ctx context.Context, req
 			},
 		})
 		if err != nil {
-			s.log.Errorf("list user inbox failed, get message failed: %s", err)
+			s.log.Errorf(ctx, "list user inbox failed, get message failed: %s", err)
 			continue
 		}
 

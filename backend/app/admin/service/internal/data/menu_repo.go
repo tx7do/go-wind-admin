@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -27,7 +27,7 @@ import (
 
 type MenuRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper          *mapper.CopierMapper[permissionV1.Menu, ent.Menu]
 	statusConverter *mapper.EnumTypeConverter[permissionV1.Menu_Status, menu.Status]
@@ -85,7 +85,7 @@ func (r *MenuRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector))
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, permissionV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -101,13 +101,13 @@ func (r *MenuRepo) List(ctx context.Context, req *paginationV1.PagingRequest, tr
 
 	whereSelectors, _, err := r.repository.BuildListSelectorWithPaging(builder, req)
 	if err != nil {
-		r.log.Errorf("parse list param error [%s]", err.Error())
+		r.log.Errorf(ctx, "parse list param error [%s]", err.Error())
 		return nil, permissionV1.ErrorBadRequest("invalid query parameter")
 	}
 
 	entities, err := builder.All(ctx)
 	if err != nil {
-		r.log.Errorf("query menu list failed: %s", err.Error())
+		r.log.Errorf(ctx, "query menu list failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query menu list failed")
 	}
 
@@ -144,7 +144,7 @@ func (r *MenuRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Where(menu.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, permissionV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -204,7 +204,7 @@ func (r *MenuRepo) Create(ctx context.Context, req *permissionV1.CreateMenuReque
 	}
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert menu failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert menu failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("insert menu failed")
 	}
 
@@ -246,7 +246,7 @@ func (r *MenuRepo) CreateReturn(ctx context.Context, req *permissionV1.CreateMen
 
 	entity, err := builder.Save(ctx)
 	if err != nil {
-		r.log.Errorf("insert menu failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert menu failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("insert menu failed")
 	}
 
@@ -336,7 +336,7 @@ func (r *MenuRepo) updateMetaField(builder *ent.MenuUpdate, meta *permissionV1.M
 // Clear all menu data from the table
 func (r *MenuRepo) Truncate(ctx context.Context) error {
 	if _, err := r.entClient.Client().Menu.Delete().Exec(ctx); err != nil {
-		r.log.Errorf("failed to truncate menus table: %s", err.Error())
+		r.log.Errorf(ctx, "failed to truncate menus table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate menus failed")
 	}
 	return nil
@@ -349,12 +349,12 @@ func (r *MenuRepo) Delete(ctx context.Context, req *permissionV1.DeleteMenuReque
 
 	childrenIds, err := entCrud.QueryAllChildrenIds(ctx, r.entClient, "sys_menus", req.GetId())
 	if err != nil {
-		r.log.Errorf("query child menus failed: %s", err.Error())
+		r.log.Errorf(ctx, "query child menus failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("query child menus failed")
 	}
 	childrenIds = append(childrenIds, req.GetId())
 
-	//r.log.Info("menu childrenIds to delete: ", childrenIds)
+	//r.log.Info(ctx, "menu childrenIds to delete: ", childrenIds)
 
 	var ids []any
 	for _, id := range childrenIds {
@@ -367,7 +367,7 @@ func (r *MenuRepo) Delete(ctx context.Context, req *permissionV1.DeleteMenuReque
 		s.Where(sql.In(menu.FieldID, ids...))
 	})
 	if err != nil {
-		r.log.Errorf("delete menu failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete menu failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete menu failed")
 	}
 

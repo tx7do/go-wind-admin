@@ -1,3 +1,6 @@
+//go:build gorm_backend
+// +build gorm_backend
+
 package gorm
 
 import (

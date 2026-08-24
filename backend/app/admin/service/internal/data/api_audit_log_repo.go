@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/jinzhu/copier"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/durationpb"
@@ -28,7 +28,7 @@ import (
 
 type ApiAuditLogRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper *mapper.CopierMapper[auditV1.ApiAuditLog, ent.ApiAuditLog]
 
@@ -88,7 +88,7 @@ func (r *ApiAuditLogRepo) Count(ctx context.Context, whereCond []func(s *sql.Sel
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, adminV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -121,7 +121,7 @@ func (r *ApiAuditLogRepo) IsExist(ctx context.Context, id uint32) (bool, error) 
 		Where(apiauditlog.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, adminV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -185,7 +185,7 @@ func (r *ApiAuditLogRepo) Create(ctx context.Context, req *auditV1.CreateApiAudi
 
 	err := builder.Exec(ctx)
 	if err != nil {
-		r.log.Errorf("insert api audit log failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert api audit log failed: %s", err.Error())
 		return adminV1.ErrorInternalServerError("insert api audit log failed")
 	}
 

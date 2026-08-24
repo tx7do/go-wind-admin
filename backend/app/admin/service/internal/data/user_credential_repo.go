@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/go-crud/viewer"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
@@ -29,7 +29,7 @@ import (
 
 type UserCredentialRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper                  *mapper.CopierMapper[authenticationV1.UserCredential, ent.UserCredential]
 	statusConverter         *mapper.EnumTypeConverter[authenticationV1.UserCredential_Status, usercredential.Status]
@@ -87,7 +87,7 @@ func (r *UserCredentialRepo) IsExist(ctx context.Context, id uint32) (bool, erro
 		Where(usercredential.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, authenticationV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -101,7 +101,7 @@ func (r *UserCredentialRepo) Count(ctx context.Context, whereCond []func(s *sql.
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, authenticationV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -137,18 +137,18 @@ func (r *UserCredentialRepo) Create(ctx context.Context, req *authenticationV1.C
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -167,7 +167,7 @@ func (r *UserCredentialRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data 
 		var newCredential string
 		newCredential, err = r.prepareCredential(r.credentialTypeConverter.ToEntity(data.CredentialType), data.GetCredential())
 		if err != nil {
-			r.log.Errorf("prepare new credential failed: %s", err.Error())
+			r.log.Errorf(ctx, "prepare new credential failed: %s", err.Error())
 			return authenticationV1.ErrorBadRequest("prepare new credential failed")
 		}
 		data.Credential = trans.Ptr(newCredential)
@@ -189,7 +189,7 @@ func (r *UserCredentialRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data 
 		SetCreatedAt(time.Now())
 
 	if err = builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert user credential failed: %s [%v]", err.Error(), data)
+		r.log.Errorf(ctx, "insert user credential failed: %s [%v]", err.Error(), data)
 		return authenticationV1.ErrorInternalServerError("insert user credential failed")
 	}
 
@@ -222,7 +222,7 @@ func (r *UserCredentialRepo) Update(ctx context.Context, req *authenticationV1.U
 		var newCredential string
 		newCredential, err = r.prepareCredential(r.credentialTypeConverter.ToEntity(req.Data.CredentialType), req.Data.GetCredential())
 		if err != nil {
-			r.log.Errorf("prepare new credential failed: %s", err.Error())
+			r.log.Errorf(ctx, "prepare new credential failed: %s", err.Error())
 			return authenticationV1.ErrorBadRequest("prepare new credential failed")
 		}
 		req.Data.Credential = trans.Ptr(newCredential)
@@ -259,7 +259,7 @@ func (r *UserCredentialRepo) Delete(ctx context.Context, id uint32) error {
 			return authenticationV1.ErrorNotFound("user credential not found")
 		}
 
-		r.log.Errorf("delete one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete one data failed: %s", err.Error())
 
 		return authenticationV1.ErrorInternalServerError("delete one data failed")
 	} else {
@@ -279,7 +279,7 @@ func (r *UserCredentialRepo) DeleteByUserId(ctx context.Context, userId uint32) 
 			return authenticationV1.ErrorNotFound("user credential not found")
 		}
 
-		r.log.Errorf("delete one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete one data failed: %s", err.Error())
 
 		return authenticationV1.ErrorInternalServerError("delete one data failed")
 	} else {
@@ -306,7 +306,7 @@ func (r *UserCredentialRepo) DeleteByIdentifier(ctx context.Context, identityTyp
 			return authenticationV1.ErrorNotFound("user credential not found")
 		}
 
-		r.log.Errorf("delete one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete one data failed: %s", err.Error())
 
 		return authenticationV1.ErrorInternalServerError("delete one data failed")
 	} else {
@@ -375,7 +375,7 @@ func (r *UserCredentialRepo) GetByIdentifier(ctx context.Context, req *authentic
 			return nil, authenticationV1.ErrorNotFound("user credential not found")
 		}
 
-		r.log.Errorf("query one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "query one data failed: %s", err.Error())
 
 		return nil, authenticationV1.ErrorInternalServerError("query data failed")
 	}
@@ -403,12 +403,12 @@ func (r *UserCredentialRepo) FindUserCredential(ctx context.Context, tenantID ui
 	if needDecrypt {
 		bytesPass, err := base64.StdEncoding.DecodeString(plainCredential)
 		if err != nil {
-			r.log.Errorf("decode base64 credential failed: %s", err.Error())
+			r.log.Errorf(ctx, "decode base64 credential failed: %s", err.Error())
 			return 0, authenticationV1.ErrorBadRequest("invalid credential format")
 		}
 		decrypted, err := crypto.AesDecrypt(bytesPass, crypto.DefaultAESKey, nil)
 		if err != nil {
-			r.log.Errorf("decrypt credential failed: %s", err.Error())
+			r.log.Errorf(ctx, "decrypt credential failed: %s", err.Error())
 			return 0, authenticationV1.ErrorBadRequest("decrypt credential failed")
 		}
 		plainCredential = string(decrypted)
@@ -433,7 +433,7 @@ func (r *UserCredentialRepo) FindUserCredential(ctx context.Context, tenantID ui
 		if ent.IsNotFound(err) {
 			return 0, authenticationV1.ErrorUserNotFound("user not found")
 		}
-		r.log.Errorf("query credential failed: %s", err.Error())
+		r.log.Errorf(ctx, "query credential failed: %s", err.Error())
 		return 0, authenticationV1.ErrorServiceUnavailable("db error")
 	}
 
@@ -473,7 +473,7 @@ func (r *UserCredentialRepo) verifyCredential(credentialType *usercredential.Cre
 	case usercredential.CredentialTypePasswordHash:
 		ok, err := r.passwordCrypto.Verify(plainCredential, targetCredential)
 		if err != nil {
-			r.log.Errorf("verify password failed: %s", err.Error())
+			r.log.Errorf(context.Background(), "verify password failed: %s", err.Error())
 			return false
 		}
 		return ok
@@ -490,7 +490,7 @@ func (r *UserCredentialRepo) prepareCredential(credentialType *usercredential.Cr
 		// 加密明文密码
 		newCredential, err = r.passwordCrypto.Encrypt(plainCredential)
 		if err != nil {
-			r.log.Errorf("hash new password failed: %s", err.Error())
+			r.log.Errorf(context.Background(), "hash new password failed: %s", err.Error())
 			return "", authenticationV1.ErrorBadRequest("hash new password failed")
 		}
 
@@ -507,12 +507,12 @@ func (r *UserCredentialRepo) ChangeCredential(ctx context.Context, req *authenti
 		// 解密旧密码
 		oldBytes, err := base64.StdEncoding.DecodeString(req.GetOldCredential())
 		if err != nil {
-			r.log.Errorf("decode base64 old credential failed: %s", err.Error())
+			r.log.Errorf(ctx, "decode base64 old credential failed: %s", err.Error())
 			return authenticationV1.ErrorBadRequest("invalid old credential format")
 		}
 		oldPlain, err := crypto.AesDecrypt(oldBytes, crypto.DefaultAESKey, nil)
 		if err != nil {
-			r.log.Errorf("decrypt old credential failed: %s", err.Error())
+			r.log.Errorf(ctx, "decrypt old credential failed: %s", err.Error())
 			return authenticationV1.ErrorBadRequest("decrypt old credential failed")
 		}
 		req.OldCredential = string(oldPlain)
@@ -521,12 +521,12 @@ func (r *UserCredentialRepo) ChangeCredential(ctx context.Context, req *authenti
 		// 哈希存储，导致后续登录恒失败且难以排查。这里与 VerifyCredential 对齐：解密失败即报错。
 		newBytes, err := base64.StdEncoding.DecodeString(req.GetNewCredential())
 		if err != nil {
-			r.log.Errorf("decode base64 new credential failed: %s", err.Error())
+			r.log.Errorf(ctx, "decode base64 new credential failed: %s", err.Error())
 			return authenticationV1.ErrorBadRequest("invalid new credential format")
 		}
 		newPlain, err := crypto.AesDecrypt(newBytes, crypto.DefaultAESKey, nil)
 		if err != nil {
-			r.log.Errorf("decrypt new credential failed: %s", err.Error())
+			r.log.Errorf(ctx, "decrypt new credential failed: %s", err.Error())
 			return authenticationV1.ErrorBadRequest("decrypt new credential failed")
 		}
 		req.NewCredential = string(newPlain)
@@ -553,7 +553,7 @@ func (r *UserCredentialRepo) ChangeCredential(ctx context.Context, req *authenti
 		if ent.IsNotFound(err) {
 			return authenticationV1.ErrorNotFound("user credential not found")
 		}
-		r.log.Errorf("query one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "query one data failed: %s", err.Error())
 		return authenticationV1.ErrorInternalServerError("query one data failed")
 	}
 
@@ -569,7 +569,7 @@ func (r *UserCredentialRepo) ChangeCredential(ctx context.Context, req *authenti
 	var newCredential string
 	newCredential, err = r.prepareCredential(entity.CredentialType, req.GetNewCredential())
 	if err != nil {
-		r.log.Errorf("prepare new credential failed: %s", err.Error())
+		r.log.Errorf(ctx, "prepare new credential failed: %s", err.Error())
 		return authenticationV1.ErrorBadRequest("prepare new credential failed")
 	}
 
@@ -583,7 +583,7 @@ func (r *UserCredentialRepo) ChangeCredential(ctx context.Context, req *authenti
 		SetCredential(newCredential).
 		SetUpdatedAt(time.Now())
 	if err = builder.Exec(ctx); err != nil {
-		r.log.Errorf("update one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "update one data failed: %s", err.Error())
 		return authenticationV1.ErrorInternalServerError("update data failed")
 	}
 
@@ -596,12 +596,12 @@ func (r *UserCredentialRepo) ResetCredential(ctx context.Context, req *authentic
 		// 解密新密码（base64/AES 错误不可吞：吞错会把空串/垃圾串哈希存为新口令）
 		bytesPass, err := base64.StdEncoding.DecodeString(req.GetNewCredential())
 		if err != nil {
-			r.log.Errorf("decode base64 new credential failed: %s", err.Error())
+			r.log.Errorf(ctx, "decode base64 new credential failed: %s", err.Error())
 			return authenticationV1.ErrorBadRequest("invalid new credential format")
 		}
 		plainPassword, err := crypto.AesDecrypt(bytesPass, crypto.DefaultAESKey, nil)
 		if err != nil {
-			r.log.Errorf("decrypt new credential failed: %s", err.Error())
+			r.log.Errorf(ctx, "decrypt new credential failed: %s", err.Error())
 			return authenticationV1.ErrorBadRequest("decrypt new credential failed")
 		}
 		req.NewCredential = string(plainPassword)
@@ -627,7 +627,7 @@ func (r *UserCredentialRepo) ResetCredential(ctx context.Context, req *authentic
 		if ent.IsNotFound(err) {
 			return authenticationV1.ErrorNotFound("user credential not found")
 		}
-		r.log.Errorf("query one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "query one data failed: %s", err.Error())
 		return authenticationV1.ErrorInternalServerError("query one data failed")
 	}
 
@@ -638,7 +638,7 @@ func (r *UserCredentialRepo) ResetCredential(ctx context.Context, req *authentic
 	var newCredential string
 	newCredential, err = r.prepareCredential(entity.CredentialType, req.GetNewCredential())
 	if err != nil {
-		r.log.Errorf("prepare new credential failed: %s", err.Error())
+		r.log.Errorf(ctx, "prepare new credential failed: %s", err.Error())
 		return authenticationV1.ErrorBadRequest("prepare new credential failed")
 	}
 
@@ -652,7 +652,7 @@ func (r *UserCredentialRepo) ResetCredential(ctx context.Context, req *authentic
 		SetCredential(newCredential).
 		SetUpdatedAt(time.Now())
 	if err = builder.Exec(ctx); err != nil {
-		r.log.Errorf("update one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "update one data failed: %s", err.Error())
 		return authenticationV1.ErrorInternalServerError("update data failed")
 	}
 

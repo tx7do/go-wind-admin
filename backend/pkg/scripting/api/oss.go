@@ -5,7 +5,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/minio/minio-go/v7"
 	lua "github.com/yuin/gopher-lua"
 
@@ -13,14 +13,14 @@ import (
 )
 
 // RegisterOSS registers the OSS (Object Storage Service) API for Lua as a requireable module
-func RegisterOSS(L *lua.LState, ossClient *oss.MinIOClient, logger *log.Helper) {
+func RegisterOSS(L *lua.LState, ossClient *oss.MinIOClient, logger *bLogger.Helper) {
 	// Register in package.preload so it can be required
 	L.PreloadModule("kratos_oss", LoaderOSS(ossClient, logger))
 }
 
 // LoaderOSS 返回 oss 模块（kratos_oss）的 loader，供 go-scripts 引擎 RegisterModule 使用。
 // ossClient 为 nil 时返回空模块。
-func LoaderOSS(ossClient *oss.MinIOClient, logger *log.Helper) lua.LGFunction {
+func LoaderOSS(ossClient *oss.MinIOClient, logger *bLogger.Helper) lua.LGFunction {
 	return func(L *lua.LState) int {
 		if ossClient == nil {
 			L.Push(L.NewTable())
@@ -139,7 +139,7 @@ func LoaderOSS(ossClient *oss.MinIOClient, logger *log.Helper) lua.LGFunction {
 
 			for object := range objectCh {
 				if object.Err != nil {
-					logger.Errorf("Error listing objects: %v", object.Err)
+					logger.Errorf(context.Background(), "Error listing objects: %v", object.Err)
 					continue
 				}
 

@@ -1,10 +1,12 @@
 package jwt
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/tx7do/go-utils/trans"
 
@@ -114,7 +116,7 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 
 	sub, err := claims.GetSubject()
 	if err != nil {
-		log.Errorf("GetSubject failed: %v", err)
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetSubject failed: %v", err))
 	}
 	if sub != "" {
 		payload.Username = trans.Ptr(sub)
@@ -122,7 +124,7 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 
 	jti, err := claims.GetJwtID()
 	if err != nil {
-		log.Errorf("GetJwtID failed: %v", err)
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetJwtID failed: %v", err))
 	}
 	if jti != "" {
 		payload.Jti = trans.Ptr(jti)
@@ -130,7 +132,7 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 
 	userId, err := claims.GetUint32(ClaimFieldUserID)
 	if err != nil {
-		log.Errorf("GetUint32 ClaimFieldUserID failed: %v", err)
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetUint32 ClaimFieldUserID failed: %v", err))
 	}
 	if userId != 0 {
 		payload.UserId = userId
@@ -138,7 +140,7 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 
 	tenantId, err := claims.GetUint32(ClaimFieldTenantID)
 	if err != nil {
-		log.Errorf("GetUint32 ClaimFieldTenantID failed: %v", err)
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetUint32 ClaimFieldTenantID failed: %v", err))
 	}
 	if tenantId != 0 {
 		payload.TenantId = trans.Ptr(tenantId)
@@ -146,7 +148,7 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 
 	clientId, err := claims.GetString(ClaimFieldClientID)
 	if err != nil {
-		log.Errorf("GetString ClaimFieldClientID failed: %v", err)
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetString ClaimFieldClientID failed: %v", err))
 	}
 	if clientId != "" {
 		payload.ClientId = trans.Ptr(clientId)
@@ -154,7 +156,7 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 
 	deviceId, err := claims.GetString(ClaimFieldDeviceID)
 	if err != nil {
-		log.Errorf("GetString ClaimFieldDeviceID failed: %v", err)
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetString ClaimFieldDeviceID failed: %v", err))
 	}
 	if deviceId != "" {
 		payload.DeviceId = trans.Ptr(deviceId)
@@ -162,7 +164,7 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 
 	roleCodes, err := claims.GetStrings(ClaimFieldRoleCodes)
 	if err != nil {
-		log.Errorf("GetStrings ClaimFieldRoleCodes failed: %v", err)
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetStrings ClaimFieldRoleCodes failed: %v", err))
 	}
 	if roleCodes != nil {
 		payload.Roles = roleCodes
@@ -170,7 +172,7 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 
 	dataScope, err := claims.GetString(ClaimFieldDataScope)
 	if err != nil {
-		log.Errorf("GetString ClaimFieldDataScope failed: %v", err)
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetString ClaimFieldDataScope failed: %v", err))
 	}
 	if dataScope != "" {
 		v, ok := identityV1.DataScope_value[dataScope]
@@ -181,7 +183,7 @@ func NewUserTokenPayloadWithClaims(claims *authn.AuthClaims) (*authenticationV1.
 
 	orgUnitID, err := claims.GetUint32(ClaimFieldOrgUnitID)
 	if err != nil {
-		log.Errorf("GetUint32 ClaimFieldOrgUnitID failed: %v", err)
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetUint32 ClaimFieldOrgUnitID failed: %v", err))
 	}
 	if orgUnitID != 0 {
 		payload.OrgUnitId = trans.Ptr(orgUnitID)
@@ -207,7 +209,7 @@ func NewUserTokenPayloadWithJwtMapClaims(claims jwt.MapClaims) (*authenticationV
 
 	sub, err := claims.GetSubject()
 	if err != nil {
-		log.Errorf("GetSubject failed: %v", err)
+		bLogger.GetLogger().Error(context.Background(), fmt.Sprintf("GetSubject failed: %v", err))
 	}
 	if sub != "" {
 		payload.Username = trans.Ptr(sub)

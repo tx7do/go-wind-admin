@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
@@ -28,7 +28,7 @@ import (
 
 type PermissionRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper          *mapper.CopierMapper[permissionV1.Permission, ent.Permission]
 	statusConverter *mapper.EnumTypeConverter[permissionV1.Permission_Status, permission.Status]
@@ -94,7 +94,7 @@ func (r *PermissionRepo) Count(ctx context.Context, req *paginationV1.PagingRequ
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query permission count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query permission count failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission count failed")
 	}
 
@@ -207,7 +207,7 @@ func (r *PermissionRepo) GetPermissionCodesByIDs(ctx context.Context, ids []uint
 		Select(permission.FieldCode).
 		Strings(ctx)
 	if err != nil {
-		r.log.Errorf("query permission codes by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query permission codes by ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission codes by ids failed")
 	}
 	return codes, nil
@@ -224,7 +224,7 @@ func (r *PermissionRepo) GetPermissionIDsByCodes(ctx context.Context, codes []st
 		Select(permission.FieldID).
 		Ints(ctx)
 	if err != nil {
-		r.log.Errorf("query permission ids by codes failed: %s", err.Error())
+		r.log.Errorf(ctx, "query permission ids by codes failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission ids by codes failed")
 	}
 	ids := make([]uint32, len(intIDs))
@@ -245,7 +245,7 @@ func (r *PermissionRepo) GetPermissionIDsByCodesWithTx(ctx context.Context, tx *
 		Select(permission.FieldID).
 		Ints(ctx)
 	if err != nil {
-		r.log.Errorf("query permission ids by codes failed: %s", err.Error())
+		r.log.Errorf(ctx, "query permission ids by codes failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission ids by codes failed")
 	}
 	ids := make([]uint32, len(intIDs))
@@ -261,7 +261,7 @@ func (r *PermissionRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Where(permission.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, permissionV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -330,7 +330,7 @@ func (r *PermissionRepo) Create(ctx context.Context, req *permissionV1.CreatePer
 	var entity *ent.Permission
 	var err error
 	if entity, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("insert permission failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert permission failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("insert permission failed")
 	}
 
@@ -364,7 +364,7 @@ func (r *PermissionRepo) BatchCreate(ctx context.Context, permissions []*permiss
 
 	var entities []*ent.Permission
 	if entities, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("batch insert permissions failed: %s", err.Error())
+		r.log.Errorf(ctx, "batch insert permissions failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("batch insert permissions failed")
 	}
 
@@ -482,7 +482,7 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 			Select(permission.FieldID).
 			IDs(ctx)
 		if err != nil {
-			r.log.Errorf("get permission ids by code failed: %s", err.Error())
+			r.log.Errorf(ctx, "get permission ids by code failed: %s", err.Error())
 			return permissionV1.ErrorInternalServerError("get permission ids by code failed")
 		}
 
@@ -492,7 +492,7 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 			Select(permission.FieldID).
 			IDs(ctx)
 		if err != nil {
-			r.log.Errorf("get permission ids by group id failed: %s", err.Error())
+			r.log.Errorf(ctx, "get permission ids by group id failed: %s", err.Error())
 			return permissionV1.ErrorInternalServerError("get permission ids by group id failed")
 		}
 	}
@@ -510,7 +510,7 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 
 	_, err = builder.Exec(ctx)
 	if err != nil {
-		r.log.Errorf("delete permission failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete permission failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete permission failed")
 	}
 
@@ -528,7 +528,7 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 // Truncate 清空表数据
 func (r *PermissionRepo) Truncate(ctx context.Context) error {
 	if _, err := r.entClient.Client().Permission.Delete().Exec(ctx); err != nil {
-		r.log.Errorf("failed to truncate permission table: %s", err.Error())
+		r.log.Errorf(ctx, "failed to truncate permission table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 
@@ -552,7 +552,7 @@ func (r *PermissionRepo) CleanPermissionsByCodes(ctx context.Context, codes []st
 
 	_, err := builder.Exec(ctx)
 	if err != nil {
-		r.log.Errorf("delete permissions by codes failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete permissions by codes failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete permissions by codes failed")
 	}
 
@@ -583,7 +583,7 @@ func (r *PermissionRepo) TruncateBizPermissions(ctx context.Context) error {
 
 	_, err := builder.Exec(ctx)
 	if err != nil {
-		r.log.Errorf("truncate biz permissions failed: %s", err.Error())
+		r.log.Errorf(ctx, "truncate biz permissions failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate biz permissions failed")
 	}
 

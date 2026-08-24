@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/go-crud/viewer"
 	"github.com/tx7do/go-utils/captcha"
 	"github.com/tx7do/go-utils/crypto"
@@ -27,6 +27,7 @@ import (
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 
 	"go-wind-admin/pkg/constants"
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
 	"go-wind-admin/pkg/netutil"
 )
@@ -50,9 +51,26 @@ const (
 	refreshCookiePath      = "/admin/v1/refresh-token"
 )
 
+// resolveCookieSecure 按请求的实际传输层判断是否加 Secure 属性：
+// TLS 直连或经可信反代（X-Forwarded-Proto: https）→ true；明文 HTTP → false。
+// 依据：带 Secure 的 cookie 在明文 HTTP 下会被浏览器拒收，导致 refresh token 无法落地。
+// 伪造 X-Forwarded-Proto 只会让 cookie 多加 Secure（存不下而非泄露），失败方向安全。
+func resolveCookieSecure(htr *khttp.Transport) bool {
+	req := htr.Request()
+	if req == nil {
+		return true
+	}
+	if req.TLS != nil {
+		return true
+	}
+	return strings.EqualFold(req.Header.Get("X-Forwarded-Proto"), "https")
+}
+
 // setRefreshCookies 将 refresh token 及其过期时间戳写入 Set-Cookie 响应头。
-// refresh_token cookie 为 HttpOnly（JS 不可读），refresh_exp cookie 非 HttpOnly（前端定时器可读）。
-// 两者均 Secure + SameSite=Lax + Path 收窄到刷新端点。
+// refresh_token cookie 为 HttpOnly（JS 不可读）+ Path 收窄到刷新端点；
+// refresh_exp cookie 非 HttpOnly（前端定时器可读）+ Path=/（任意页面 JS 可读）。
+// 两者均 SameSite=Lax（按站点判断，localhost 不同端口属同站，dev 直连后端可落地）；
+// Secure 按 TLS 自适应（明文 HTTP 下省略，否则浏览器拒收）。
 func setRefreshCookies(ctx context.Context, refreshToken string, refreshExpiresInSeconds int64) {
 	tr, ok := ktransport.FromServerContext(ctx)
 	if !ok {
@@ -63,26 +81,29 @@ func setRefreshCookies(ctx context.Context, refreshToken string, refreshExpiresI
 		return
 	}
 	header := htr.ReplyHeader()
+	cookieSecure := resolveCookieSecure(htr)
 
-	// HttpOnly refresh token cookie
+	// HttpOnly refresh token cookie：Path 收窄到刷新端点（纵深防御，仅刷新请求携带）
 	rtCookie := &http.Cookie{
 		Name:     refreshTokenCookieName,
 		Value:    refreshToken,
 		Path:     refreshCookiePath,
 		MaxAge:   int(refreshExpiresInSeconds),
-		Secure:   true,
+		Secure:   cookieSecure,
 		HttpOnly: true,
 		SameSite: http.SameSiteLaxMode,
 	}
 	header.Add("Set-Cookie", rtCookie.String())
 
-	// 非 HttpOnly 过期时间戳 cookie（只含 Unix 秒，无敏感信息）
+	// 非 HttpOnly 过期时间戳 cookie（只含 Unix 秒，无敏感信息）。
+	// Path 必须为 /：前端 JS（bootstrap 静默恢复/刷新定时器）在任意页面路径读取
+	// document.cookie 判断续期窗口——收窄到刷新端点会导致普通页面读不到、刷新即丢会话。
 	expCookie := &http.Cookie{
 		Name:     refreshExpCookieName,
 		Value:    fmt.Sprintf("%d", time.Now().Unix()+refreshExpiresInSeconds),
-		Path:     refreshCookiePath,
+		Path:     "/",
 		MaxAge:   int(refreshExpiresInSeconds),
-		Secure:   true,
+		Secure:   cookieSecure,
 		HttpOnly: false,
 		SameSite: http.SameSiteLaxMode,
 	}
@@ -90,6 +111,7 @@ func setRefreshCookies(ctx context.Context, refreshToken string, refreshExpiresI
 }
 
 // clearRefreshCookies 向响应头写入 Max-Age=0 的清除 cookie，使浏览器立即删除 refresh token 相关 cookie。
+// Secure 按 TLS 自适应，与 setRefreshCookies 同逻辑，保证属性匹配可删除。
 func clearRefreshCookies(ctx context.Context) {
 	tr, ok := ktransport.FromServerContext(ctx)
 	if !ok {
@@ -100,14 +122,20 @@ func clearRefreshCookies(ctx context.Context) {
 		return
 	}
 	header := htr.ReplyHeader()
+	cookieSecure := resolveCookieSecure(htr)
 
-	for _, name := range []string{refreshTokenCookieName, refreshExpCookieName} {
+	// 两个 cookie 的 Path 不同（refresh_token 收窄到刷新端点、refresh_exp 为 /），
+	// 清除时须各自匹配原 Path，否则浏览器因属性不匹配拒绝删除。
+	for name, path := range map[string]string{
+		refreshTokenCookieName: refreshCookiePath,
+		refreshExpCookieName:   "/",
+	} {
 		cookie := &http.Cookie{
 			Name:     name,
 			Value:    "",
-			Path:     refreshCookiePath,
+			Path:     path,
 			MaxAge:   -1,
-			Secure:   true,
+			Secure:   cookieSecure,
 			HttpOnly: true,
 			SameSite: http.SameSiteLaxMode,
 		}
@@ -132,7 +160,7 @@ func normalizeLoginVerifyError(err error) error {
 type AuthenticationService struct {
 	adminV1.AuthenticationServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	userRepo           data.UserRepo
 	userCredentialRepo *data.UserCredentialRepo
@@ -198,7 +226,7 @@ func NewAuthenticationService(
 func (s *AuthenticationService) checkLoginPolicies(ctx context.Context, tenantID, userId uint32, clientIP, deviceId string) (bool, string) {
 	policies, err := s.loginPolicyRepo.ListForLogin(ctx, tenantID)
 	if err != nil {
-		s.log.Errorf("list login policies failed for tenant [%d]: %s", tenantID, err.Error())
+		s.log.Errorf(ctx, "list login policies failed for tenant [%d]: %s", tenantID, err.Error())
 		return false, ""
 	}
 	return data.MatchLoginPolicy(policies, userId, clientIP, deviceId, time.Now())
@@ -258,21 +286,21 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 	// 获取角色 ID 列表
 	roleIDs, err := s.userRepo.ListRoleIDsByUserID(ctx, userID)
 	if err != nil || len(roleIDs) == 0 {
-		s.log.Errorf("get roles by user [%d] failed [%v]", userID, err)
+		s.log.Errorf(ctx, "get roles by user [%d] failed [%v]", userID, err)
 		return authenticationV1.ErrorForbidden("insufficient authority")
 	}
 
 	// 获取权限 ID 列表
 	permissionIDs, err := s.roleRepo.ListPermissionIDsByRoleIDs(ctx, roleIDs)
 	if err != nil || len(permissionIDs) == 0 {
-		s.log.Errorf("get permissions by role ids failed [%v]", err)
+		s.log.Errorf(ctx, "get permissions by role ids failed [%v]", err)
 		return authenticationV1.ErrorForbidden("insufficient authority")
 	}
 
 	// 获取权限代码列表
 	permissionCodes, err := s.permissionRepo.GetPermissionCodesByIDs(ctx, permissionIDs)
 	if err != nil || len(permissionCodes) == 0 {
-		s.log.Errorf("get permission codes by ids failed [%v]", err)
+		s.log.Errorf(ctx, "get permission codes by ids failed [%v]", err)
 		return authenticationV1.ErrorForbidden("insufficient authority")
 	}
 
@@ -283,14 +311,14 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 
 	// 授权决策
 	if !hasBackendAccess {
-		s.log.Errorf("user [%d] has no backend access permission", userID)
+		s.log.Errorf(ctx, "user [%d] has no backend access permission", userID)
 		return authenticationV1.ErrorForbidden("insufficient authority")
 	}
 
 	// 获取角色代码列表
 	roleCodes, err := s.roleRepo.ListRoleCodesByRoleIds(ctx, roleIDs)
 	if err != nil || len(roleCodes) == 0 {
-		s.log.Errorf("list role codes by role ids failed [%v]", err)
+		s.log.Errorf(ctx, "list role codes by role ids failed [%v]", err)
 		return authenticationV1.ErrorForbidden("insufficient authority")
 	}
 	tokenPayload.Roles = roleCodes
@@ -306,7 +334,7 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 		// 指定租户
 		membership, err := s.membershipRepo.GetMembershipByUserTenant(ctx, userID, tenantID)
 		if err != nil {
-			s.log.Errorf("get user [%d] membership for tenant [%d] failed [%s]", userID, tenantID, err.Error())
+			s.log.Errorf(ctx, "get user [%d] membership for tenant [%d] failed [%s]", userID, tenantID, err.Error())
 			return authenticationV1.ErrorForbidden("insufficient authority")
 		}
 		memberships = []*identityV1.Membership{membership}
@@ -315,7 +343,7 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 		// 获取所有活跃成员身份
 		memberships, err = s.membershipRepo.GetUserActiveMemberships(ctx, userID)
 		if err != nil || len(memberships) == 0 {
-			s.log.Errorf("list user [%d] active memberships failed [%v]", userID, err)
+			s.log.Errorf(ctx, "list user [%d] active memberships failed [%v]", userID, err)
 			return authenticationV1.ErrorForbidden("insufficient authority")
 		}
 	}
@@ -336,21 +364,21 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 		// 获取角色 ID 列表
 		roleIDs, err := s.membershipRepo.GetRoleIDsByMembership(ctx, m.GetId())
 		if err != nil || len(roleIDs) == 0 {
-			s.log.Errorf("get roles by membership [%d] failed [%v]", m.GetId(), err)
+			s.log.Errorf(ctx, "get roles by membership [%d] failed [%v]", m.GetId(), err)
 			continue
 		}
 
 		// 获取权限 ID 列表
 		permissionIDs, err := s.roleRepo.ListPermissionIDsByRoleIDs(ctx, roleIDs)
 		if err != nil || len(permissionIDs) == 0 {
-			s.log.Errorf("get permissions by role ids failed [%v]", err)
+			s.log.Errorf(ctx, "get permissions by role ids failed [%v]", err)
 			continue
 		}
 
 		// 获取权限代码列表
 		permissionCodes, _ := s.permissionRepo.GetPermissionCodesByIDs(ctx, permissionIDs)
 
-		s.log.Infof("user [%d] membership [%d] permission codes: %v", userID, m.GetId(), permissionCodes)
+		s.log.Infof(ctx, "user [%d] membership [%d] permission codes: %v", userID, m.GetId(), permissionCodes)
 
 		// 检查是否包含系统访问后台权限
 		if containsPermission(permissionCodes, constants.SystemAccessBackendPermissionCode) {
@@ -361,14 +389,14 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayloadUserTenantRela
 
 	// 授权决策
 	if !hasBackendAccess {
-		s.log.Errorf("user [%d] has no backend access permission", userID)
+		s.log.Errorf(ctx, "user [%d] has no backend access permission", userID)
 		return authenticationV1.ErrorForbidden("insufficient authority")
 	}
 
 	// 获取角色代码列表
 	roleCodes, err := s.roleRepo.ListRoleCodesByRoleIds(ctx, validRoleIDs)
 	if err != nil || len(roleCodes) == 0 {
-		s.log.Errorf("list role codes by role ids failed [%v]", err)
+		s.log.Errorf(ctx, "list role codes by role ids failed [%v]", err)
 		return authenticationV1.ErrorForbidden("insufficient authority")
 	}
 	tokenPayload.Roles = roleCodes
@@ -387,7 +415,7 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayload(ctx context.C
 		return s.authorizeAndEnrichUserTokenPayloadUserTenantRelationOneToMany(ctx, userID, tenantID, tokenPayload)
 
 	default:
-		s.log.Errorf("unsupported user-tenant relation type: %d", constants.DefaultUserTenantRelationType)
+		s.log.Errorf(ctx, "unsupported user-tenant relation type: %d", constants.DefaultUserTenantRelationType)
 		return authenticationV1.ErrorServiceUnavailable("unsupported user-tenant relation type")
 	}
 }
@@ -395,7 +423,7 @@ func (s *AuthenticationService) authorizeAndEnrichUserTokenPayload(ctx context.C
 // resolveUserAuthority 解析用户权限信息
 func (s *AuthenticationService) resolveUserAuthority(ctx context.Context, user *identityV1.User, tokenPayload *authenticationV1.UserTokenPayload) error {
 	if user.GetStatus() != identityV1.User_NORMAL {
-		s.log.Errorf("user [%d] is [%v]", user.GetId(), user.GetStatus())
+		s.log.Errorf(ctx, "user [%d] is [%v]", user.GetId(), user.GetStatus())
 		return authenticationV1.ErrorForbidden("user is disabled")
 	}
 
@@ -418,9 +446,9 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	// ===== H5 闸门 1：登录限流预检（按 IP + 用户名双维度）=====
 	if s.rateLimiter != nil {
 		if locked, lerr := s.rateLimiter.IsLocked(ctx, clientIP, username); lerr != nil {
-			s.log.Errorf("login rate limiter pre-check failed: %s", lerr.Error())
+			s.log.Errorf(ctx, "login rate limiter pre-check failed: %s", lerr.Error())
 		} else if locked {
-			s.log.Warnf("login blocked by rate limiter: ip=%s, username=%s", clientIP, username)
+			s.log.Warnf(ctx, "login blocked by rate limiter: ip=%s, username=%s", clientIP, username)
 			return nil, authenticationV1.ErrorBadRequest("too many login failures, please try again later")
 		}
 	}
@@ -449,7 +477,7 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	// ===== 用户定向策略（target_id = userId）在取到 user 后二次检查。
 	if s.loginPolicyRepo != nil {
 		if blocked, reason := s.checkLoginPolicies(ctx, tenantID, 0, clientIP, req.GetDeviceId()); blocked {
-			s.log.Warnf("login blocked by policy: ip=%s username=%s reason=%s", clientIP, username, reason)
+			s.log.Warnf(ctx, "login blocked by policy: ip=%s username=%s reason=%s", clientIP, username, reason)
 			return nil, authenticationV1.ErrorForbidden("login blocked by security policy")
 		}
 	}
@@ -470,12 +498,12 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	matchedUserID, err = s.userCredentialRepo.FindUserCredential(ctx, tenantID, authenticationV1.UserCredential_USERNAME, username, req.GetPassword(), true)
 	if err != nil {
 		// 服务端日志保留真实原因（USER_NOT_FOUND / USER_FREEZE / INVALID_PASSWORD），便于运维排查
-		s.log.Errorf("verify user credential failed for username [%s]: %s", username, err.Error())
+		s.log.Errorf(ctx, "verify user credential failed for username [%s]: %s", username, err.Error())
 
 		// H5：登录失败时自增失败计数（按 IP + 用户名双维度）
 		if s.rateLimiter != nil {
 			if _, _, _, cerr := s.rateLimiter.CheckAndIncr(ctx, clientIP, username); cerr != nil {
-				s.log.Errorf("login rate limiter incr failed: %s", cerr.Error())
+				s.log.Errorf(ctx, "login rate limiter incr failed: %s", cerr.Error())
 			}
 		}
 
@@ -487,13 +515,13 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	var user *identityV1.User
 	user, err = s.userRepo.Get(ctx, &identityV1.GetUserRequest{QueryBy: &identityV1.GetUserRequest_Id{Id: matchedUserID}})
 	if err != nil {
-		s.log.Errorf("get user by id [%d] failed [%s]", matchedUserID, err.Error())
+		s.log.Errorf(ctx, "get user by id [%d] failed [%s]", matchedUserID, err.Error())
 		return nil, err
 	}
 
 	// 纵深防御：凭证行的 tenant 必须与用户行的 tenant 一致，否则拒绝登录
 	if user.GetTenantId() != tenantID {
-		s.log.Errorf("tenant mismatch for user [%d]: credential tenant [%d] vs user tenant [%d]",
+		s.log.Errorf(ctx, "tenant mismatch for user [%d]: credential tenant [%d] vs user tenant [%d]",
 			matchedUserID, tenantID, user.GetTenantId())
 		return nil, authenticationV1.ErrorBadRequest("invalid tenant")
 	}
@@ -502,7 +530,7 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	// ===== 检查 target_id 约束到该用户的策略条目。
 	if s.loginPolicyRepo != nil {
 		if blocked, reason := s.checkLoginPolicies(ctx, tenantID, user.GetId(), clientIP, req.GetDeviceId()); blocked {
-			s.log.Warnf("login blocked by user-targeted policy: uid=%d ip=%s reason=%s", user.GetId(), clientIP, reason)
+			s.log.Warnf(ctx, "login blocked by user-targeted policy: uid=%d ip=%s reason=%s", user.GetId(), clientIP, reason)
 			return nil, authenticationV1.ErrorForbidden("login blocked by security policy")
 		}
 	}
@@ -518,7 +546,7 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	// 解析用户权限信息
 	err = s.resolveUserAuthority(ctx, user, tokenPayload)
 	if err != nil {
-		s.log.Errorf("resolve user [%d] authority failed [%s]", user.GetId(), err.Error())
+		s.log.Errorf(ctx, "resolve user [%d] authority failed [%s]", user.GetId(), err.Error())
 		return nil, err
 	}
 
@@ -530,13 +558,13 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 		if merr != nil {
 			// fail-closed：MFA 状态查询失败时拒绝登录，避免已绑定用户在 DB 故障时
 			// 被降级为单因子放行（与上方凭证校验出错即拒登的行为一致）。
-			s.log.Errorf("check mfa factor failed for user [%d]: %s", user.GetId(), merr.Error())
+			s.log.Errorf(ctx, "check mfa factor failed for user [%d]: %s", user.GetId(), merr.Error())
 			return nil, authenticationV1.ErrorInternalServerError("mfa check failed")
 		}
 		if needMfa && s.mfaChallengeCache != nil {
 			opId, cerr := s.mfaChallengeCache.SetLoginChallenge(ctx, tokenPayload, req.GetClientType())
 			if cerr != nil {
-				s.log.Errorf("set mfa login challenge failed for user [%d]: %s", user.GetId(), cerr.Error())
+				s.log.Errorf(ctx, "set mfa login challenge failed for user [%d]: %s", user.GetId(), cerr.Error())
 				return nil, authenticationV1.ErrorInternalServerError("mfa challenge failed")
 			}
 			return &authenticationV1.LoginResponse{
@@ -620,7 +648,7 @@ func (s *AuthenticationService) verifyLoginCaptcha(ctx context.Context) bool {
 	}
 	ok, err := s.captchaClient.Verify(ctx, captchaID, captchaValue)
 	if err != nil {
-		s.log.Errorf("verify captcha failed: %s", err.Error())
+		s.log.Errorf(ctx, "verify captcha failed: %s", err.Error())
 		return false
 	}
 	return ok
@@ -632,9 +660,15 @@ func (s *AuthenticationService) doGrantTypeRefreshToken(ctx context.Context, req
 	// 不再依赖 access token 的 auth.FromContext 提供身份信息。
 	userId, _, err := s.authenticator.VerifyRefreshToken(ctx, req.GetClientType(), refreshToken)
 	if err != nil {
-		s.log.Errorf("verify refresh token failed: [%s]", err)
+		s.log.Errorf(ctx, "verify refresh token failed: [%s]", err)
 		return nil, authenticationV1.ErrorIncorrectRefreshToken("invalid refresh token")
 	}
+
+	// 本端点在鉴权白名单内（refresh token 独立鉴权），ctx 无 auth 中间件注入的
+	// ViewerContext，而下方 userRepo.Get 等查询走 ent privacy（缺 viewer 直接 500
+	// "missing ViewerContext"）。uid 来自已验签的自描述 JWT 且按主键精确查询，
+	// 注入系统级 viewer 查询不会越权。
+	ctx = appViewer.NewSystemViewerContext(ctx)
 
 	// 获取用户信息
 	user, err := s.userRepo.Get(ctx, &identityV1.GetUserRequest{
@@ -657,7 +691,7 @@ func (s *AuthenticationService) doGrantTypeRefreshToken(ctx context.Context, req
 	// 解析用户权限信息
 	err = s.resolveUserAuthority(ctx, user, tokenPayload)
 	if err != nil {
-		s.log.Errorf("resolve user [%d] authority failed [%s]", user.GetId(), err.Error())
+		s.log.Errorf(ctx, "resolve user [%d] authority failed [%s]", user.GetId(), err.Error())
 		return nil, err
 	}
 
@@ -761,7 +795,7 @@ func (s *AuthenticationService) RegisterUser(ctx context.Context, req *authentic
 		},
 	})
 	if err != nil {
-		s.log.Errorf("create user error: %v", err)
+		s.log.Errorf(ctx, "create user error: %v", err)
 		return nil, err
 	}
 
@@ -788,7 +822,7 @@ func (s *AuthenticationService) RegisterUser(ctx context.Context, req *authentic
 			Status:    authenticationV1.UserCredential_ENABLED.Enum(),
 		},
 	}); err != nil {
-		s.log.Errorf("create user credentials error: %v", err)
+		s.log.Errorf(ctx, "create user credentials error: %v", err)
 		return nil, err
 	}
 
@@ -813,13 +847,13 @@ func (s *AuthenticationService) WhoAmI(ctx context.Context, _ *emptypb.Empty) (*
 func (s *AuthenticationService) GenerateCaptcha(ctx context.Context, _ *emptypb.Empty) (*authenticationV1.GenerateCaptchaResponse, error) {
 	captchaId, captchaImage, answer, err := s.captchaClient.Generate()
 	if err != nil {
-		s.log.Errorf("generate captcha failed: %s", err.Error())
+		s.log.Errorf(ctx, "generate captcha failed: %s", err.Error())
 		return nil, authenticationV1.ErrorInternalServerError("generate captcha failed")
 	}
 
 	// Generate() 只生成验证码但不落盘，必须手动 Save 到 Redis，否则 Verify 时查不到。
 	if err = s.captchaClient.Save(ctx, captchaId, answer); err != nil {
-		s.log.Errorf("save captcha failed: %s", err.Error())
+		s.log.Errorf(ctx, "save captcha failed: %s", err.Error())
 		return nil, authenticationV1.ErrorInternalServerError("save captcha failed")
 	}
 
@@ -832,7 +866,7 @@ func (s *AuthenticationService) GenerateCaptcha(ctx context.Context, _ *emptypb.
 func (s *AuthenticationService) VerifyCaptcha(ctx context.Context, req *authenticationV1.VerifyCaptchaRequest) (*authenticationV1.VerifyCaptchaResponse, error) {
 	ok, err := s.captchaClient.Verify(ctx, req.GetCaptchaId(), req.GetUserInput())
 	if err != nil {
-		s.log.Errorf("verify captcha failed: %s", err.Error())
+		s.log.Errorf(ctx, "verify captcha failed: %s", err.Error())
 		return nil, authenticationV1.ErrorInternalServerError("verify captcha failed")
 	}
 

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -24,7 +24,7 @@ import (
 
 type TenantRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper               *mapper.CopierMapper[identityV1.Tenant, ent.Tenant]
 	statusConverter      *mapper.EnumTypeConverter[identityV1.Tenant_Status, tenant.Status]
@@ -84,7 +84,7 @@ func (r *TenantRepo) Count(ctx context.Context, req *paginationV1.PagingRequest)
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query tenant count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query tenant count failed: %s", err.Error())
 		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -117,7 +117,7 @@ func (r *TenantRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Where(tenant.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, identityV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -154,19 +154,19 @@ func (r *TenantRepo) Get(ctx context.Context, req *identityV1.GetTenantRequest) 
 func (r *TenantRepo) BeginTx(ctx context.Context) (tx *ent.Tx, cleanup func(), err error) {
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return nil, nil, identityV1.ErrorInternalServerError("start transaction failed")
 	}
 
 	cleanup = func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}
@@ -182,18 +182,18 @@ func (r *TenantRepo) Create(ctx context.Context, data *identityV1.Tenant) (tenan
 	var tx *ent.Tx
 	tx, err = r.entClient.Client().Tx(ctx)
 	if err != nil {
-		r.log.Errorf("start transaction failed: %s", err.Error())
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("start transaction failed")
 	}
 	defer func() {
 		if err != nil {
 			if rollbackErr := tx.Rollback(); rollbackErr != nil {
-				r.log.Errorf("transaction rollback failed: %s", rollbackErr.Error())
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
 			}
 			return
 		}
 		if commitErr := tx.Commit(); commitErr != nil {
-			r.log.Errorf("transaction commit failed: %s", commitErr.Error())
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
 			err = identityV1.ErrorInternalServerError("transaction commit failed")
 		}
 	}()
@@ -230,7 +230,7 @@ func (r *TenantRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *identit
 	}
 
 	if ret, err := builder.Save(ctx); err != nil {
-		r.log.Errorf("insert tenant failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert tenant failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("insert tenant failed")
 	} else {
 		return r.mapper.ToDTO(ret), nil
@@ -297,7 +297,7 @@ func (r *TenantRepo) AssignTenantAdmin(ctx context.Context, tx *ent.Tx, tenantId
 		SetAdminUserID(userId).
 		Save(ctx)
 	if err != nil {
-		r.log.Errorf("assign tenant admin failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign tenant admin failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("assign tenant admin failed")
 	}
 
@@ -314,7 +314,7 @@ func (r *TenantRepo) Delete(ctx context.Context, req *identityV1.DeleteTenantReq
 			return identityV1.ErrorNotFound("tenant not found")
 		}
 
-		r.log.Errorf("delete one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete one data failed: %s", err.Error())
 
 		return identityV1.ErrorInternalServerError("delete failed")
 	}
@@ -340,7 +340,7 @@ func (r *TenantRepo) TenantExists(ctx context.Context, req *identityV1.TenantExi
 
 	exist, err := query.Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query exist failed")
 	}
 
@@ -359,7 +359,7 @@ func (r *TenantRepo) ListTenantsByIds(ctx context.Context, ids []uint32) ([]*ide
 		Where(tenant.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		r.log.Errorf("query tenant by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query tenant by ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query tenant by ids failed")
 	}
 

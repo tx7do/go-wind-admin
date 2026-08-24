@@ -4,10 +4,10 @@ import (
 	"context"
 	"strconv"
 
-	"github.com/go-kratos/kratos/v2/log"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	"go-wind-admin/app/admin/service/cmd/server/assets"
 
@@ -20,7 +20,7 @@ import (
 
 // AuthorizerProvider 权限数据提供者
 type AuthorizerProvider struct {
-	log *log.Helper
+	log *bLogger.Helper
 
 	roleRepo *RoleRepo
 	apiRepo  *ApiRepo
@@ -58,7 +58,7 @@ func (p *AuthorizerProvider) ProvidePolicies(_ context.Context) (authorizer.Perm
 
 	roles, err := p.roleRepo.List(ctx, &paginationV1.PagingRequest{NoPaging: trans.Ptr(true)})
 	if err != nil {
-		p.log.Errorf("failed to list roles: %v", err)
+		p.log.Errorf(context.Background(), "failed to list roles: %v", err)
 		return nil, err
 	}
 
@@ -66,7 +66,7 @@ func (p *AuthorizerProvider) ProvidePolicies(_ context.Context) (authorizer.Perm
 	var apiIDs []uint32
 	var apis []*permissionV1.Api
 	for _, role := range roles.Items {
-		//p.log.Infof("processing role: %s", role.GetCode())
+		//p.log.Infof(context.Background(), _, "processing role: %s", role.GetCode())
 		if role == nil {
 			continue
 		}
@@ -79,13 +79,13 @@ func (p *AuthorizerProvider) ProvidePolicies(_ context.Context) (authorizer.Perm
 
 		apiIDs, err = p.roleRepo.GetRolePermissionApiIDs(ctx, role.GetId())
 		if err != nil {
-			p.log.Errorf("failed to get role [%d] permission api ids: %v", role.GetId(), err)
+			p.log.Errorf(context.Background(), "failed to get role [%d] permission api ids: %v", role.GetId(), err)
 			continue
 		}
 
 		apis, err = p.apiRepo.GetApiByIDs(ctx, apiIDs)
 		if err != nil {
-			p.log.Errorf("failed to list apis by ids: %v", err)
+			p.log.Errorf(context.Background(), "failed to list apis by ids: %v", err)
 			continue
 		}
 

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -24,7 +24,7 @@ import (
 
 type PositionRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper          *mapper.CopierMapper[identityV1.Position, ent.Position]
 	statusConverter *mapper.EnumTypeConverter[identityV1.Position_Status, position.Status]
@@ -85,7 +85,7 @@ func (r *PositionRepo) Count(ctx context.Context, req *paginationV1.PagingReques
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query position count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query position count failed: %s", err.Error())
 		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -118,7 +118,7 @@ func (r *PositionRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Where(position.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, identityV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -170,7 +170,7 @@ func (r *PositionRepo) ListPositionByIds(ctx context.Context, ids []uint32) ([]*
 		Where(position.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		r.log.Errorf("query position by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query position by ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query position by ids failed")
 	}
 
@@ -214,7 +214,7 @@ func (r *PositionRepo) Create(ctx context.Context, req *identityV1.CreatePositio
 	}
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert position failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert position failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("insert data failed")
 	}
 
@@ -286,7 +286,7 @@ func (r *PositionRepo) Delete(ctx context.Context, req *identityV1.DeletePositio
 		s.Where(sql.EQ(position.FieldID, req.GetId()))
 	})
 	if err != nil {
-		r.log.Errorf("delete position failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete position failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete position failed")
 	}
 

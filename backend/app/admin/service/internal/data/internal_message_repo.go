@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -23,7 +23,7 @@ import (
 
 type InternalMessageRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper          *mapper.CopierMapper[internalMessageV1.InternalMessage, ent.InternalMessage]
 	statusConverter *mapper.EnumTypeConverter[internalMessageV1.InternalMessage_Status, internalmessage.Status]
@@ -78,7 +78,7 @@ func (r *InternalMessageRepo) Count(ctx context.Context, whereCond []func(s *sql
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, internalMessageV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -111,7 +111,7 @@ func (r *InternalMessageRepo) IsExist(ctx context.Context, id uint32) (bool, err
 		Where(internalmessage.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, internalMessageV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -162,7 +162,7 @@ func (r *InternalMessageRepo) Create(ctx context.Context, req *internalMessageV1
 	var err error
 	var entity *ent.InternalMessage
 	if entity, err = builder.Save(ctx); err != nil {
-		r.log.Errorf("insert internal message failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert internal message failed: %s", err.Error())
 		return nil, internalMessageV1.ErrorInternalServerError("insert internal message failed")
 	}
 
@@ -223,7 +223,7 @@ func (r *InternalMessageRepo) Delete(ctx context.Context, id uint32) error {
 			return internalMessageV1.ErrorNotFound("internal message not found")
 		}
 
-		r.log.Errorf("delete one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete one data failed: %s", err.Error())
 
 		return internalMessageV1.ErrorInternalServerError("delete failed")
 	}

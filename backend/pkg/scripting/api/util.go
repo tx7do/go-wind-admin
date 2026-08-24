@@ -1,25 +1,26 @@
 package api
 
 import (
+	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	lua "github.com/yuin/gopher-lua"
 )
 
 // RegisterUtilAPI registers utility functions for Lua scripts
 // Provides common utilities like sleep, time, etc.
-func RegisterUtilAPI(L *lua.LState, logger *log.Helper) {
+func RegisterUtilAPI(L *lua.LState, logger *bLogger.Helper) {
 	// Register as requireable module
 	L.PreloadModule("kratos_util", LoaderUtil(logger))
 
 	if logger != nil {
-		logger.Debug("Registered Lua util API")
+		logger.Debug(context.Background(), "Registered Lua util API")
 	}
 }
 
 // LoaderUtil 返回 util 模块（kratos_util）的 loader，供 go-scripts 引擎 RegisterModule 使用。
-func LoaderUtil(logger *log.Helper) lua.LGFunction {
+func LoaderUtil(logger *bLogger.Helper) lua.LGFunction {
 	return func(L *lua.LState) int {
 		// Create util module
 		utilModule := L.NewTable()
@@ -31,7 +32,7 @@ func LoaderUtil(logger *log.Helper) lua.LGFunction {
 			duration := time.Duration(float64(seconds) * float64(time.Second))
 
 			if logger != nil {
-				logger.Debugf("Lua sleep: %v", duration)
+				logger.Debugf(context.Background(), "Lua sleep: %v", duration)
 			}
 
 			time.Sleep(duration)

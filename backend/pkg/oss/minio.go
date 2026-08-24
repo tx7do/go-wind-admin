@@ -7,12 +7,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/minio/minio-go/v7"
 	"github.com/tx7do/go-utils/timeutil"
 	"github.com/tx7do/go-utils/trans"
 
 	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	ossMinio "github.com/tx7do/kratos-bootstrap/oss/minio"
 
 	storageV1 "go-wind-admin/api/gen/go/storage/service/v1"
@@ -28,12 +28,12 @@ const (
 type MinIOClient struct {
 	mc         *minio.Client
 	conf       *conf.OSS
-	log        *log.Helper
+	log        *bLogger.Helper
 	hmacSecret []byte
 }
 
-func NewMinIoClient(cfg *conf.Bootstrap, logger log.Logger) *MinIOClient {
-	l := log.NewHelper(log.With(logger, "module", "minio/data/admin-service"))
+func NewMinIoClient(cfg *conf.Bootstrap, logger bLogger.Logger) *MinIOClient {
+	l := bLogger.NewHelper(logger.With("module", "minio/data/admin-service"))
 	return &MinIOClient{
 		log:        l,
 		conf:       cfg.Oss,
@@ -51,7 +51,7 @@ func (c *MinIOClient) GetClient() *minio.Client {
 func (c *MinIOClient) BucketExists(ctx context.Context, bucketName string) (exists bool, err error) {
 	exists, err = c.mc.BucketExists(ctx, bucketName)
 	if err != nil {
-		c.log.Errorf("Failed to check bucket existence: %v", err)
+		c.log.Errorf(ctx, "Failed to check bucket existence: %v", err)
 		return false, storageV1.ErrorInternalServerError("failed to check bucket existence: %s", bucketName)
 	}
 	return exists, nil
@@ -61,10 +61,10 @@ func (c *MinIOClient) BucketExists(ctx context.Context, bucketName string) (exis
 func (c *MinIOClient) MakeBucket(ctx context.Context, bucketName string) (err error) {
 	err = c.mc.MakeBucket(ctx, bucketName, minio.MakeBucketOptions{})
 	if err != nil {
-		c.log.Errorf("Failed to create bucket: %v", err)
+		c.log.Errorf(ctx, "Failed to create bucket: %v", err)
 		return storageV1.ErrorInternalServerError("failed to create bucket: %s", bucketName)
 	}
-	c.log.Infof("Created bucket: %s", bucketName)
+	c.log.Infof(ctx, "Created bucket: %s", bucketName)
 
 	return nil
 }
@@ -117,7 +117,7 @@ func (c *MinIOClient) GetUploadPresignedUrl(ctx context.Context, req *storageV1.
 	case storageV1.GetUploadPresignedUrlRequest_Put:
 		presignedURL, err = c.mc.PresignedPutObject(ctx, bucketName, objectName, expiry)
 		if err != nil {
-			c.log.Errorf("Failed to generate presigned PUT policy: %v", err)
+			c.log.Errorf(ctx, "Failed to generate presigned PUT policy: %v", err)
 			return nil, storageV1.ErrorUploadFailed("failed to generate presigned PUT policy")
 		}
 
@@ -144,14 +144,14 @@ func (c *MinIOClient) GetUploadPresignedUrl(ctx context.Context, req *storageV1.
 			policy.SetContentLengthRange(0, int64(MaxUploadSize)),
 		} {
 			if e != nil {
-				c.log.Errorf("Failed to build presigned POST policy: %v", e)
+				c.log.Errorf(ctx, "Failed to build presigned POST policy: %v", e)
 				return nil, storageV1.ErrorUploadFailed("failed to build presigned POST policy")
 			}
 		}
 
 		presignedURL, formData, err = c.mc.PresignedPostPolicy(ctx, policy)
 		if err != nil {
-			c.log.Errorf("Failed to generate presigned POST policy: %v", err)
+			c.log.Errorf(ctx, "Failed to generate presigned POST policy: %v", err)
 			return nil, storageV1.ErrorUploadFailed("failed to generate presigned POST policy")
 		}
 
@@ -204,7 +204,7 @@ func (c *MinIOClient) DeleteFile(ctx context.Context, bucketName, objectName str
 
 	err := c.mc.RemoveObject(ctx, bucketName, objectName, minio.RemoveObjectOptions{})
 	if err != nil {
-		c.log.Errorf("Failed to delete file: %v", err)
+		c.log.Errorf(ctx, "Failed to delete file: %v", err)
 		return storageV1.ErrorDeleteFailed("failed to delete file")
 	}
 
@@ -219,7 +219,7 @@ func (c *MinIOClient) UploadFile(
 	fileContent []byte,
 ) (minio.UploadInfo, string, string, error) {
 	if len(fileContent) == 0 {
-		c.log.Errorf("empty fileContent data")
+		c.log.Errorf(ctx, "empty fileContent data")
 		return minio.UploadInfo{}, "", "", storageV1.ErrorUploadFailed("empty fileContent data")
 	}
 
@@ -250,7 +250,7 @@ func (c *MinIOClient) UploadFile(
 
 	reader := bytes.NewReader(fileContent)
 	if reader == nil {
-		c.log.Errorf("invalid fileContent data")
+		c.log.Errorf(ctx, "invalid fileContent data")
 		return minio.UploadInfo{}, "", "", storageV1.ErrorUploadFailed("invalid fileContent data")
 	}
 
@@ -263,7 +263,7 @@ func (c *MinIOClient) UploadFile(
 		},
 	)
 	if err != nil {
-		c.log.Errorf("failed to upload fileContent: %v", err)
+		c.log.Errorf(ctx, "failed to upload fileContent: %v", err)
 		return info, "", "", storageV1.ErrorUploadFailed("failed to upload fileContent")
 	}
 
@@ -286,19 +286,19 @@ func (c *MinIOClient) getDownloadUrlWithStorageObjectDirect(ctx context.Context,
 		opts,
 	)
 	if err != nil {
-		c.log.Errorf("failed to get object: %v", err)
+		c.log.Errorf(ctx, "failed to get object: %v", err)
 		return nil, storageV1.ErrorDownloadFailed("failed to get object")
 	}
 
 	buf := new(bytes.Buffer)
 	if _, err = buf.ReadFrom(object); err != nil {
-		c.log.Errorf("failed to read object: %v", err)
+		c.log.Errorf(ctx, "failed to read object: %v", err)
 		return nil, storageV1.ErrorDownloadFailed("failed to read object")
 	}
 
 	st, err := object.Stat()
 	if err != nil {
-		c.log.Errorf("failed to stat object: %v", err)
+		c.log.Errorf(ctx, "failed to stat object: %v", err)
 		return nil, storageV1.ErrorDownloadFailed("failed to stat object")
 	}
 
@@ -339,7 +339,7 @@ func (c *MinIOClient) getDownloadUrlWithStorageObjectPresigned(ctx context.Conte
 		nil,
 	)
 	if err != nil {
-		c.log.Errorf("Failed to generate presigned URL: %v", err)
+		c.log.Errorf(ctx, "Failed to generate presigned URL: %v", err)
 		return nil, storageV1.ErrorDownloadFailed("failed to generate presigned URL")
 	}
 
@@ -387,14 +387,14 @@ func (c *MinIOClient) downloadFileWithStorageObjectDirect(ctx context.Context, r
 		opts,
 	)
 	if err != nil {
-		c.log.Errorf("Failed to get object: %v", err)
+		c.log.Errorf(ctx, "Failed to get object: %v", err)
 		return nil, storageV1.ErrorDownloadFailed("failed to get object")
 	}
 
 	buf := new(bytes.Buffer)
 	_, err = buf.ReadFrom(object)
 	if err != nil {
-		c.log.Errorf("Failed to read object: %v", err)
+		c.log.Errorf(ctx, "Failed to read object: %v", err)
 		return nil, storageV1.ErrorDownloadFailed("failed to read object")
 	}
 
@@ -406,7 +406,7 @@ func (c *MinIOClient) downloadFileWithStorageObjectDirect(ctx context.Context, r
 
 	st, err := object.Stat()
 	if err != nil {
-		c.log.Errorf("Failed to stat object: %v", err)
+		c.log.Errorf(ctx, "Failed to stat object: %v", err)
 		return nil, storageV1.ErrorDownloadFailed("failed to stat object")
 	}
 
@@ -441,7 +441,7 @@ func (c *MinIOClient) downloadFileWithStorageObjectPresigned(ctx context.Context
 		nil,
 	)
 	if err != nil {
-		c.log.Errorf("Failed to generate presigned URL: %v", err)
+		c.log.Errorf(ctx, "Failed to generate presigned URL: %v", err)
 		return nil, storageV1.ErrorDownloadFailed("failed to generate presigned URL")
 	}
 

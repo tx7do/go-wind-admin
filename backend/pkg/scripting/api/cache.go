@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/redis/go-redis/v9"
 	lua "github.com/yuin/gopher-lua"
 
@@ -13,14 +13,14 @@ import (
 )
 
 // RegisterCache registers the Redis cache API for Lua as a requireable module
-func RegisterCache(L *lua.LState, rdb *redis.Client, logger *log.Helper) {
+func RegisterCache(L *lua.LState, rdb *redis.Client, logger *bLogger.Helper) {
 	// Register in package.preload so it can be required
 	L.PreloadModule("kratos_cache", LoaderCache(rdb, logger))
 }
 
 // LoaderCache 返回 cache 模块（kratos_cache）的 loader，供 go-scripts 引擎 RegisterModule 使用。
 // rdb 为 nil 时返回空模块。
-func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
+func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 	return func(L *lua.LState) int {
 		if rdb == nil {
 			L.Push(L.NewTable())
@@ -40,7 +40,7 @@ func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
 					L.Push(lua.LNil)
 					return 1
 				}
-				logger.Errorf("cache.get error: %v", err)
+				logger.Errorf(context.Background(), "cache.get error: %v", err)
 				L.Push(lua.LNil)
 				L.Push(lua.LString(err.Error()))
 				return 2
@@ -78,7 +78,7 @@ func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
 				// Serialize complex types as JSON
 				jsonBytes, err := json.Marshal(goVal)
 				if err != nil {
-					logger.Errorf("cache.set JSON marshal error: %v", err)
+					logger.Errorf(context.Background(), "cache.set JSON marshal error: %v", err)
 					L.Push(lua.LBool(false))
 					L.Push(lua.LString(err.Error()))
 					return 2
@@ -95,7 +95,7 @@ func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
 			}
 
 			if err != nil {
-				logger.Errorf("cache.set error: %v", err)
+				logger.Errorf(context.Background(), "cache.set error: %v", err)
 				L.Push(lua.LBool(false))
 				L.Push(lua.LString(err.Error()))
 				return 2
@@ -111,7 +111,7 @@ func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
 
 			err := rdb.Del(context.Background(), key).Err()
 			if err != nil {
-				logger.Errorf("cache.delete error: %v", err)
+				logger.Errorf(context.Background(), "cache.delete error: %v", err)
 				L.Push(lua.LBool(false))
 				L.Push(lua.LString(err.Error()))
 				return 2
@@ -127,7 +127,7 @@ func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
 
 			count, err := rdb.Exists(context.Background(), key).Result()
 			if err != nil {
-				logger.Errorf("cache.exists error: %v", err)
+				logger.Errorf(context.Background(), "cache.exists error: %v", err)
 				L.Push(lua.LBool(false))
 				return 1
 			}
@@ -143,7 +143,7 @@ func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
 
 			ok, err := rdb.Expire(context.Background(), key, time.Duration(ttl)*time.Second).Result()
 			if err != nil {
-				logger.Errorf("cache.expire error: %v", err)
+				logger.Errorf(context.Background(), "cache.expire error: %v", err)
 				L.Push(lua.LBool(false))
 				L.Push(lua.LString(err.Error()))
 				return 2
@@ -159,7 +159,7 @@ func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
 
 			val, err := rdb.Incr(context.Background(), key).Result()
 			if err != nil {
-				logger.Errorf("cache.incr error: %v", err)
+				logger.Errorf(context.Background(), "cache.incr error: %v", err)
 				L.Push(lua.LNil)
 				L.Push(lua.LString(err.Error()))
 				return 2
@@ -175,7 +175,7 @@ func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
 
 			val, err := rdb.Decr(context.Background(), key).Result()
 			if err != nil {
-				logger.Errorf("cache.decr error: %v", err)
+				logger.Errorf(context.Background(), "cache.decr error: %v", err)
 				L.Push(lua.LNil)
 				L.Push(lua.LString(err.Error()))
 				return 2
@@ -192,7 +192,7 @@ func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
 
 			val, err := rdb.IncrBy(context.Background(), key, int64(increment)).Result()
 			if err != nil {
-				logger.Errorf("cache.incrby error: %v", err)
+				logger.Errorf(context.Background(), "cache.incrby error: %v", err)
 				L.Push(lua.LNil)
 				L.Push(lua.LString(err.Error()))
 				return 2
@@ -208,7 +208,7 @@ func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
 
 			duration, err := rdb.TTL(context.Background(), key).Result()
 			if err != nil {
-				logger.Errorf("cache.ttl error: %v", err)
+				logger.Errorf(context.Background(), "cache.ttl error: %v", err)
 				L.Push(lua.LNumber(-2)) // Key doesn't exist
 				return 1
 			}
@@ -230,7 +230,7 @@ func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
 
 			keys, err := rdb.Keys(context.Background(), pattern).Result()
 			if err != nil {
-				logger.Errorf("cache.keys error: %v", err)
+				logger.Errorf(context.Background(), "cache.keys error: %v", err)
 				L.Push(lua.LNil)
 				L.Push(lua.LString(err.Error()))
 				return 2
@@ -257,7 +257,7 @@ func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
 					L.Push(lua.LNil)
 					return 1
 				}
-				logger.Errorf("cache.hget error: %v", err)
+				logger.Errorf(context.Background(), "cache.hget error: %v", err)
 				L.Push(lua.LNil)
 				L.Push(lua.LString(err.Error()))
 				return 2
@@ -275,7 +275,7 @@ func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
 
 			err := rdb.HSet(context.Background(), key, field, value).Err()
 			if err != nil {
-				logger.Errorf("cache.hset error: %v", err)
+				logger.Errorf(context.Background(), "cache.hset error: %v", err)
 				L.Push(lua.LBool(false))
 				L.Push(lua.LString(err.Error()))
 				return 2
@@ -291,7 +291,7 @@ func LoaderCache(rdb *redis.Client, logger *log.Helper) lua.LGFunction {
 
 			vals, err := rdb.HGetAll(context.Background(), key).Result()
 			if err != nil {
-				logger.Errorf("cache.hgetall error: %v", err)
+				logger.Errorf(context.Background(), "cache.hgetall error: %v", err)
 				L.Push(lua.LNil)
 				L.Push(lua.LString(err.Error()))
 				return 2

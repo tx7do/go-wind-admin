@@ -3,7 +3,7 @@ package api
 import (
 	"testing"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	lua "github.com/yuin/gopher-lua"
 )
 
@@ -15,7 +15,7 @@ func TestRegisterOSS_Module(t *testing.T) {
 	L := lua.NewState()
 	defer L.Close()
 
-	_ = log.NewHelper(log.DefaultLogger)
+	_ = bLogger.NewHelper(bLogger.NopLogger())
 
 	// Note: This test would require a real MinIOClient
 	// For now, we'll just verify the module structure

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -22,7 +22,7 @@ import (
 
 type PermissionAuditLogRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper              *mapper.CopierMapper[auditV1.PermissionAuditLog, ent.PermissionAuditLog]
 	actionTypeConverter *mapper.EnumTypeConverter[auditV1.PermissionAuditLog_ActionType, permissionauditlog.Action]
@@ -76,7 +76,7 @@ func (r *PermissionAuditLogRepo) Count(ctx context.Context, whereCond []func(s *
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, auditV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -109,7 +109,7 @@ func (r *PermissionAuditLogRepo) IsExist(ctx context.Context, id uint32) (bool, 
 		Where(permissionauditlog.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, auditV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -159,7 +159,7 @@ func (r *PermissionAuditLogRepo) Create(ctx context.Context, req *auditV1.Create
 
 	err := builder.Exec(ctx)
 	if err != nil {
-		r.log.Errorf("insert permission audit log failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert permission audit log failed: %s", err.Error())
 		return auditV1.ErrorInternalServerError("insert permission audit log failed")
 	}
 

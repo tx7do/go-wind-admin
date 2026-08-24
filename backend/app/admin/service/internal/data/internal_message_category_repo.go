@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -23,7 +23,7 @@ import (
 
 type InternalMessageCategoryRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper *mapper.CopierMapper[internalMessageV1.InternalMessageCategory, ent.InternalMessageCategory]
 
@@ -71,7 +71,7 @@ func (r *InternalMessageCategoryRepo) Count(ctx context.Context, whereCond []fun
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, internalMessageV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -104,7 +104,7 @@ func (r *InternalMessageCategoryRepo) IsExist(ctx context.Context, id uint32) (b
 		Where(internalmessagecategory.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, internalMessageV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -142,7 +142,7 @@ func (r *InternalMessageCategoryRepo) ListCategoriesByIds(ctx context.Context, i
 		Where(internalmessagecategory.IDIn(ids...)).
 		All(ctx)
 	if err != nil {
-		r.log.Errorf("query internal message category by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query internal message category by ids failed: %s", err.Error())
 		return nil, internalMessageV1.ErrorInternalServerError("query internal message category by ids failed")
 	}
 
@@ -175,7 +175,7 @@ func (r *InternalMessageCategoryRepo) Create(ctx context.Context, req *internalM
 	}
 
 	if err := builder.Exec(ctx); err != nil {
-		r.log.Errorf("insert internal message category failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert internal message category failed: %s", err.Error())
 		return internalMessageV1.ErrorInternalServerError("insert internal message category failed")
 	}
 
@@ -231,12 +231,12 @@ func (r *InternalMessageCategoryRepo) Delete(ctx context.Context, req *internalM
 
 	childrenIds, err := entCrud.QueryAllChildrenIds(ctx, r.entClient, "internal_message_categories", req.GetId())
 	if err != nil {
-		r.log.Errorf("query child internal message categories failed: %s", err.Error())
+		r.log.Errorf(ctx, "query child internal message categories failed: %s", err.Error())
 		return internalMessageV1.ErrorInternalServerError("query child internal message categories failed")
 	}
 	childrenIds = append(childrenIds, req.GetId())
 
-	//r.log.Info("internal message category childrenIds to delete: ", childrenIds)
+	//r.log.Info(ctx, "internal message category childrenIds to delete: ", childrenIds)
 
 	var ids []any
 	for _, id := range childrenIds {
@@ -249,7 +249,7 @@ func (r *InternalMessageCategoryRepo) Delete(ctx context.Context, req *internalM
 		s.Where(sql.In(internalmessagecategory.FieldID, ids...))
 	})
 	if err != nil {
-		r.log.Errorf("delete internal message categories failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete internal message categories failed: %s", err.Error())
 		return internalMessageV1.ErrorInternalServerError("delete internal message categories failed")
 	}
 

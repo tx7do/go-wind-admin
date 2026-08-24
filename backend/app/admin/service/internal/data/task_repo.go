@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -23,7 +23,7 @@ import (
 
 type TaskRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
-	log       *log.Helper
+	log       *bLogger.Helper
 
 	mapper        *mapper.CopierMapper[taskV1.Task, ent.Task]
 	typeConverter *mapper.EnumTypeConverter[taskV1.Task_Type, task.Type]
@@ -75,7 +75,7 @@ func (r *TaskRepo) Count(ctx context.Context, whereCond []func(s *sql.Selector))
 
 	count, err := builder.Count(ctx)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, taskV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -108,7 +108,7 @@ func (r *TaskRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		Where(task.IDEQ(id)).
 		Exist(ctx)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, taskV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -171,7 +171,7 @@ func (r *TaskRepo) Create(ctx context.Context, req *taskV1.CreateTaskRequest) (*
 
 	t, err := builder.Save(ctx)
 	if err != nil {
-		r.log.Errorf("insert task failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert task failed: %s", err.Error())
 		return nil, taskV1.ErrorInternalServerError("insert task failed")
 	}
 
@@ -235,7 +235,7 @@ func (r *TaskRepo) Delete(ctx context.Context, req *taskV1.DeleteTaskRequest) er
 			return taskV1.ErrorNotFound("task not found")
 		}
 
-		r.log.Errorf("delete one data failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete one data failed: %s", err.Error())
 
 		return taskV1.ErrorInternalServerError("delete failed")
 	}

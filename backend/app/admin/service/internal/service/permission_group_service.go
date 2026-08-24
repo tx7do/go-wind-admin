@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"entgo.io/ent/dialect/sql"
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
@@ -23,7 +23,7 @@ import (
 type PermissionGroupService struct {
 	adminV1.PermissionGroupServiceHTTPServer
 
-	log *log.Helper
+	log *bLogger.Helper
 
 	permissionGroupRepo *data.PermissionGroupRepo
 	permissionRepo      *data.PermissionRepo
@@ -127,7 +127,7 @@ func (s *PermissionGroupService) createDefaultPermissionGroups(ctx context.Conte
 		if _, err = s.permissionGroupRepo.Create(ctx, &permissionV1.CreatePermissionGroupRequest{
 			Data: d,
 		}); err != nil {
-			s.log.Errorf("create default permission group error: %v", err)
+			s.log.Errorf(ctx, "create default permission group error: %v", err)
 			return err
 		}
 	}

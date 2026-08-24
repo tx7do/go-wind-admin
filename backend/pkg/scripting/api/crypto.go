@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	lua "github.com/yuin/gopher-lua"
 
 	"go-wind-admin/pkg/crypto"
@@ -13,13 +13,13 @@ import (
 )
 
 // RegisterCrypto registers the Crypto API for Lua as a requireable module
-func RegisterCrypto(L *lua.LState, logger *log.Helper) {
+func RegisterCrypto(L *lua.LState, logger *bLogger.Helper) {
 	// Register in package.preload so it can be required
 	L.PreloadModule("kratos_crypto", LoaderCrypto(logger))
 }
 
 // buildCryptoModule 构建并压入 crypto 模块到栈顶（供 RegisterCrypto 与 LoaderCrypto 复用）。
-func buildCryptoModule(L *lua.LState, logger *log.Helper) {
+func buildCryptoModule(L *lua.LState, logger *bLogger.Helper) {
 	// Create crypto module
 	cryptoModule := L.NewTable()
 
@@ -196,7 +196,7 @@ func buildCryptoModule(L *lua.LState, logger *log.Helper) {
 }
 
 // LoaderCrypto 返回 crypto 模块（kratos_crypto）的 loader，供 go-scripts 引擎 RegisterModule 使用。
-func LoaderCrypto(logger *log.Helper) lua.LGFunction {
+func LoaderCrypto(logger *bLogger.Helper) lua.LGFunction {
 	return func(L *lua.LState) int {
 		buildCryptoModule(L, logger)
 		return 1

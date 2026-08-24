@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/redis/go-redis/v9"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
@@ -53,7 +53,7 @@ var verifyAndRevokeRefreshTokenScript = redis.NewScript(`
 
 // UserTokenCache 用户令牌缓存
 type UserTokenCache struct {
-	log *log.Helper
+	log *bLogger.Helper
 	rdb *redis.Client
 }
 
@@ -138,11 +138,11 @@ func (r *UserTokenCache) GetRefreshTokens(ctx context.Context, clientType authen
 func (r *UserTokenCache) RevokeToken(ctx context.Context, clientType authenticationV1.ClientType, userId uint32) error {
 	var err error
 	if err = r.RevokeUserAllAccessToken(ctx, clientType, userId); err != nil {
-		r.log.Errorf("remove user access token failed: [%v]", err)
+		r.log.Errorf(ctx, "remove user access token failed: [%v]", err)
 	}
 
 	if err = r.RevokeUserAllRefreshToken(ctx, clientType, userId); err != nil {
-		r.log.Errorf("remove user refresh token failed: [%v]", err)
+		r.log.Errorf(ctx, "remove user refresh token failed: [%v]", err)
 	}
 
 	return err
@@ -151,11 +151,11 @@ func (r *UserTokenCache) RevokeToken(ctx context.Context, clientType authenticat
 func (r *UserTokenCache) RevokeTokenByJti(ctx context.Context, clientType authenticationV1.ClientType, userId uint32, jti string) error {
 	var err error
 	if err = r.RevokeAccessToken(ctx, clientType, userId, jti); err != nil {
-		r.log.Errorf("remove user access token failed: [%v]", err)
+		r.log.Errorf(ctx, "remove user access token failed: [%v]", err)
 	}
 
 	if err = r.RevokeRefreshToken(ctx, clientType, userId, jti); err != nil {
-		r.log.Errorf("remove user refresh token failed: [%v]", err)
+		r.log.Errorf(ctx, "remove user refresh token failed: [%v]", err)
 	}
 
 	return err
@@ -312,7 +312,7 @@ func (r *UserTokenCache) VerifyAndRevokeTokenPair(
 
 	result, err := verifyAndRevokeRefreshTokenScript.Run(ctx, r.rdb, []string{rtKey, atKey}, refreshToken).Int64()
 	if err != nil {
-		r.log.Errorf("verifyAndRevokeTokenPair failed for user [%d] jti [%s]: %v", userId, jti, err)
+		r.log.Errorf(ctx, "verifyAndRevokeTokenPair failed for user [%d] jti [%s]: %v", userId, jti, err)
 		return false, err
 	}
 
@@ -354,7 +354,7 @@ func (r *UserTokenCache) makeBlacklistKey(jti string) string {
 
 func (r *UserTokenCache) set(ctx context.Context, key string, value string, expires time.Duration) error {
 	if err := r.rdb.Set(ctx, key, value, expires).Err(); err != nil {
-		r.log.Errorf("set key[%s] value[%s] failed: %v", key, value, err)
+		r.log.Errorf(ctx, "set key[%s] value[%s] failed: %v", key, value, err)
 		return err
 	}
 	return nil
@@ -363,7 +363,7 @@ func (r *UserTokenCache) set(ctx context.Context, key string, value string, expi
 // del 删除键
 func (r *UserTokenCache) del(ctx context.Context, key string) error {
 	if err := r.rdb.Del(ctx, key).Err(); err != nil {
-		r.log.Errorf("del key[%s] failed: %v", key, err)
+		r.log.Errorf(ctx, "del key[%s] failed: %v", key, err)
 		return err
 	}
 	return nil
@@ -372,7 +372,7 @@ func (r *UserTokenCache) del(ctx context.Context, key string) error {
 func (r *UserTokenCache) exists(ctx context.Context, key string) bool {
 	n, err := r.rdb.Exists(ctx, key).Result()
 	if err != nil {
-		r.log.Errorf("exists key[%s] failed: %v", key, err)
+		r.log.Errorf(ctx, "exists key[%s] failed: %v", key, err)
 		return false
 	}
 	return n > 0
@@ -393,7 +393,7 @@ func (r *UserTokenCache) scanKeys(ctx context.Context, pattern string) ([]string
 		var batch []string
 		batch, cursor, err = r.rdb.Scan(ctx, cursor, pattern, scanCount).Result()
 		if err != nil {
-			r.log.Errorf("scan pattern[%s] failed: %v", pattern, err)
+			r.log.Errorf(ctx, "scan pattern[%s] failed: %v", pattern, err)
 			return nil, err
 		}
 
@@ -416,7 +416,7 @@ func (r *UserTokenCache) scanValues(ctx context.Context, pattern string) []strin
 
 	values, err := r.rdb.MGet(ctx, keys...).Result()
 	if err != nil {
-		r.log.Errorf("mget pattern[%s] failed: %v", pattern, err)
+		r.log.Errorf(ctx, "mget pattern[%s] failed: %v", pattern, err)
 		return []string{}
 	}
 
@@ -446,7 +446,7 @@ func (r *UserTokenCache) scanFindValue(ctx context.Context, pattern string, targ
 
 	values, err := r.rdb.MGet(ctx, keys...).Result()
 	if err != nil {
-		r.log.Errorf("mget pattern[%s] failed: %v", pattern, err)
+		r.log.Errorf(ctx, "mget pattern[%s] failed: %v", pattern, err)
 		return false, "", err
 	}
 
@@ -471,7 +471,7 @@ func (r *UserTokenCache) delByPattern(ctx context.Context, pattern string) error
 	}
 
 	if err := r.rdb.Del(ctx, keys...).Err(); err != nil {
-		r.log.Errorf("del by pattern[%s] failed: %v", pattern, err)
+		r.log.Errorf(ctx, "del by pattern[%s] failed: %v", pattern, err)
 		return err
 	}
 

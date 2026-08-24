@@ -1,14 +1,16 @@
 package api
 
 import (
-	"github.com/go-kratos/kratos/v2/log"
+	"context"
+
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	lua "github.com/yuin/gopher-lua"
 )
 
 // TaskHandlerRegistry stores Lua-based task handlers
 type TaskHandlerRegistry struct {
 	handlers map[string]*LuaTaskHandler
-	logger   *log.Helper
+	logger   *bLogger.Helper
 	engine   VMManager
 }
 
@@ -36,7 +38,7 @@ var globalTaskRegistry = &TaskHandlerRegistry{
 
 // RegisterTask registers the task API for Lua scripts
 // RegisterTask registers the task API for Lua scripts (direct LState style).
-func RegisterTask(L *lua.LState, engine VMManager, logger *log.Helper) {
+func RegisterTask(L *lua.LState, engine VMManager, logger *bLogger.Helper) {
 	globalTaskRegistry.logger = logger
 	globalTaskRegistry.engine = engine
 
@@ -52,12 +54,12 @@ func RegisterTask(L *lua.LState, engine VMManager, logger *log.Helper) {
 		return 1
 	})
 
-	logger.Info("✅ Task API registered, task.register_handler() is now available")
+	logger.Info(context.Background(), "✅ Task API registered, task.register_handler() is now available")
 }
 
 // LoaderTask 返回 task 模块的 loader，供 go-scripts 引擎 RegisterModule 使用。
 // engine 为 nil 时返回空模块。
-func LoaderTask(engine VMManager, logger *log.Helper) lua.LGFunction {
+func LoaderTask(engine VMManager, logger *bLogger.Helper) lua.LGFunction {
 	globalTaskRegistry.logger = logger
 	globalTaskRegistry.engine = engine
 
@@ -161,12 +163,12 @@ func registerTaskHandler(L *lua.LState) int {
 	if globalTaskRegistry.engine != nil {
 		globalTaskRegistry.engine.MarkVMDedicated(L)
 		if globalTaskRegistry.logger != nil {
-			globalTaskRegistry.logger.Debugf("VM marked as dedicated for task handler: %s", name)
+			globalTaskRegistry.logger.Debugf(context.Background(), "VM marked as dedicated for task handler: %s", name)
 		}
 	}
 
 	if globalTaskRegistry.logger != nil {
-		globalTaskRegistry.logger.Infof("📝 Registered Lua task handler: %s (timeout: %ds, retries: %d, priority: %d)",
+		globalTaskRegistry.logger.Infof(context.Background(), "📝 Registered Lua task handler: %s (timeout: %ds, retries: %d, priority: %d)",
 			name, timeoutSecs, maxRetries, priority)
 	}
 
@@ -176,9 +178,9 @@ func registerTaskHandler(L *lua.LState) int {
 // GetRegisteredHandlers returns all registered Lua task handlers
 func GetRegisteredHandlers() map[string]*LuaTaskHandler {
 	if globalTaskRegistry.logger != nil {
-		globalTaskRegistry.logger.Infof("📋 GetRegisteredHandlers called: %d handlers available", len(globalTaskRegistry.handlers))
+		globalTaskRegistry.logger.Infof(context.Background(), "📋 GetRegisteredHandlers called: %d handlers available", len(globalTaskRegistry.handlers))
 		for name := range globalTaskRegistry.handlers {
-			globalTaskRegistry.logger.Infof("  - %s", name)
+			globalTaskRegistry.logger.Infof(context.Background(), "  - %s", name)
 		}
 	}
 	return globalTaskRegistry.handlers

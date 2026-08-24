@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/go-kratos/kratos/v2/log"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/timeutil"
@@ -17,7 +17,7 @@ import (
 )
 
 type UserRoleRepo struct {
-	log             *log.Helper
+	log             *bLogger.Helper
 	entClient       *entCrud.EntClient[*ent.Client]
 	statusConverter *mapper.EnumTypeConverter[permissionV1.UserRole_Status, userrole.Status]
 }
@@ -44,7 +44,7 @@ func (r *UserRoleRepo) CleanRelationsByUserID(ctx context.Context, tx *ent.Tx, u
 			userrole.UserIDEQ(userID),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete old user roles failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user roles failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete old user roles failed")
 	}
 	return nil
@@ -61,7 +61,7 @@ func (r *UserRoleRepo) CleanRelationsByUserIDs(ctx context.Context, tx *ent.Tx, 
 			userrole.UserIDIn(userIDs...),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete old user roles by user ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user roles by user ids failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete old user roles by user ids failed")
 	}
 	return nil
@@ -78,7 +78,7 @@ func (r *UserRoleRepo) CleanRelationsByRoleID(ctx context.Context, tx *ent.Tx, r
 			userrole.RoleIDEQ(roleID),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete old user roles by role id failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user roles by role id failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete old user roles by role id failed")
 	}
 	return nil
@@ -95,7 +95,7 @@ func (r *UserRoleRepo) CleanRelationsByRoleIDs(ctx context.Context, tx *ent.Tx, 
 			userrole.RoleIDIn(roleIDs...),
 		).
 		Exec(ctx); err != nil {
-		r.log.Errorf("delete old user roles by role ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user roles by role ids failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete old user roles by role ids failed")
 	}
 	return nil
@@ -116,7 +116,7 @@ func (r *UserRoleRepo) RemoveRolesFromUser(ctx context.Context, userID uint32, r
 		).
 		Exec(ctx)
 	if err != nil {
-		r.log.Errorf("remove roles from user failed: %s", err.Error())
+		r.log.Errorf(ctx, "remove roles from user failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("remove roles from user failed")
 	}
 	return nil
@@ -144,7 +144,7 @@ func (r *UserRoleRepo) AssignUserRole(ctx context.Context, tx *ent.Tx, data *per
 		SetNillableCreatedBy(data.CreatedBy).
 		Save(ctx)
 	if err != nil {
-		r.log.Errorf("assign role to user failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign role to user failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("assign role to user failed")
 	}
 
@@ -190,7 +190,7 @@ func (r *UserRoleRepo) AssignUserRoles(ctx context.Context, tx *ent.Tx, userID u
 
 	_, err = tx.UserRole.CreateBulk(userRoleCreates...).Save(ctx)
 	if err != nil {
-		r.log.Errorf("assign roles to user failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign roles to user failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("assign roles to user failed")
 	}
 
@@ -222,7 +222,7 @@ func (r *UserRoleRepo) ListRoleIDs(ctx context.Context, userID uint32, excludeEx
 		Select(userrole.FieldRoleID).
 		Ints(ctx)
 	if err != nil {
-		r.log.Errorf("query role ids by user id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query role ids by user id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query role ids by user id failed")
 	}
 	ids := make([]uint32, len(intIDs))
@@ -257,7 +257,7 @@ func (r *UserRoleRepo) ListUserIDs(ctx context.Context, roleID uint32, excludeEx
 		Select(userrole.FieldUserID).
 		Ints(ctx)
 	if err != nil {
-		r.log.Errorf("query user ids by role id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user ids by role id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query user ids by role id failed")
 	}
 	ids := make([]uint32, len(intIDs))
@@ -292,7 +292,7 @@ func (r *UserRoleRepo) ListUserIDsByRoleIDs(ctx context.Context, roleIDs []uint3
 		Select(userrole.FieldUserID).
 		Ints(ctx)
 	if err != nil {
-		r.log.Errorf("query user ids by role ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user ids by role ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query user ids by role ids failed")
 	}
 	ids := make([]uint32, len(intIDs))
