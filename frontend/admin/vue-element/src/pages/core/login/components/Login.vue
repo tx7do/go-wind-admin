@@ -178,7 +178,7 @@ async function handleLoginSubmit() {
   loading.value = true;
   try {
     // 2. 执行登录（把验证码 id 和用户输入一并传入）
-    await authStore.login(
+    const result = await authStore.login(
       {
         ...loginFormData.value,
         captchaId: captchaId.value,
@@ -202,9 +202,10 @@ async function handleLoginSubmit() {
         await router.push(safePath);
       }
     );
-  } catch {
-    // 登录失败刷新验证码
-    refreshCaptcha();
+    // authStore.login 永不抛错：失败（含验证码错误、MFA 闸门）以 userInfo 缺失表达，据此刷新验证码。
+    if (!result?.userInfo) {
+      refreshCaptcha();
+    }
   } finally {
     loading.value = false;
   }
