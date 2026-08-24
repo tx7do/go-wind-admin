@@ -5,6 +5,7 @@ package identitypb
 
 import (
 	context "context"
+	validate "github.com/envoyproxy/protoc-gen-validate/validate"
 	pagination "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	redact "github.com/tx7do/go-wind-toolkit/protoc-gen-go-redact/redact/v1"
 	annotations "google.golang.org/genproto/googleapis/api/annotations"
@@ -30,6 +31,7 @@ var (
 	_ annotations.FieldBehavior
 	_ redact.FieldRules
 	_ pagination.Sorting
+	_ validate.FieldRules
 )
 
 // Redaction helper functions

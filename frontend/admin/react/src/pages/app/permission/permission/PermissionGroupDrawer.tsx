@@ -103,7 +103,7 @@ const PermissionGroupDrawer: React.FC<PermissionGroupDrawerProps> = ({
       if (mode === 'edit' && data?.id) {
         await updateMutation.mutateAsync({ id: data.id, values });
       } else {
-        await createMutation.mutateAsync(values as any);
+        await createMutation.mutateAsync({ data: values });
       }
       return true;
     } catch {

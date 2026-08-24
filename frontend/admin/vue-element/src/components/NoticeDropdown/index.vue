@@ -99,6 +99,7 @@
       </div>
 
       <div class="max-h-60vh pt-16px mb-24px overflow-y-auto border-t border-solid border-color">
+        <!-- eslint-disable-next-line vue/no-v-html -- 已由 DOMPurify 净化（见 sanitizedDetailContent） -->
         <div v-html="sanitizedDetailContent"></div>
       </div>
     </div>

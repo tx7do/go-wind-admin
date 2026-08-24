@@ -186,9 +186,14 @@ func (r *MenuRepo) Create(ctx context.Context, req *permissionV1.CreateMenuReque
 		SetNillableName(req.Data.Name).
 		SetNillableComponent(req.Data.Component).
 		SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
-		SetNillableModule(r.moduleConverter.ToEntity(req.Data.Module)).
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetCreatedAt(time.Now())
+
+	// module 为 proto 零值（MODULE_UNSPECIFIED）时跳过：ent schema 未声明该值，
+	// SetNillableModule 会触发 ModuleValidator 失败。未指定即留空，等价不写。
+	if req.Data.Module != nil && *req.Data.Module != identityV1.Module_MODULE_UNSPECIFIED {
+		builder.SetNillableModule(r.moduleConverter.ToEntity(req.Data.Module))
+	}
 
 	if req.Data.Meta != nil {
 		builder.SetMeta(req.Data.Meta)
@@ -222,9 +227,14 @@ func (r *MenuRepo) CreateReturn(ctx context.Context, req *permissionV1.CreateMen
 		SetNillableName(req.Data.Name).
 		SetNillableComponent(req.Data.Component).
 		SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
-		SetNillableModule(r.moduleConverter.ToEntity(req.Data.Module)).
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetCreatedAt(time.Now())
+
+	// module 为 proto 零值（MODULE_UNSPECIFIED）时跳过：ent schema 未声明该值，
+	// SetNillableModule 会触发 ModuleValidator 失败。未指定即留空，等价不写。
+	if req.Data.Module != nil && *req.Data.Module != identityV1.Module_MODULE_UNSPECIFIED {
+		builder.SetNillableModule(r.moduleConverter.ToEntity(req.Data.Module))
+	}
 
 	if req.Data.Meta != nil {
 		builder.SetMeta(req.Data.Meta)
@@ -286,9 +296,14 @@ func (r *MenuRepo) Update(ctx context.Context, req *permissionV1.UpdateMenuReque
 				SetNillableName(req.Data.Name).
 				SetNillableComponent(req.Data.Component).
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
-				SetNillableModule(r.moduleConverter.ToEntity(req.Data.Module)).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetUpdatedAt(time.Now())
+
+			// module 为 proto 零值（MODULE_UNSPECIFIED）时跳过：ent schema 未声明该值，
+			// SetNillableModule 会触发 ModuleValidator 失败。未指定即不更新该字段。
+			if req.Data.Module != nil && *req.Data.Module != identityV1.Module_MODULE_UNSPECIFIED {
+				builder.SetNillableModule(r.moduleConverter.ToEntity(req.Data.Module))
+			}
 
 			if req.Data.Meta != nil {
 				r.updateMetaField(builder, req.Data.Meta, metaPaths)

@@ -184,17 +184,23 @@ func getStatusCode(err error) (uint32, string, bool) {
 }
 var reUsername = regexp.MustCompile(`"username"\s*:\s*"([^"]+)"`)
 
-// parseUsernameFromBytes 从请求体中解析用户名
+// parseUsernameFromBytes 从请求体中解析用户名。
+// 返回前剥离 CR/LF，防止含换行的用户名注入文本日志行（伪造条目/行内注入）。
 func parseUsernameFromBytes(body []byte) (string, error) {
 	if m := reUsername.FindSubmatch(body); m != nil {
-		return string(m[1]), nil
+		return stripLineBreaks(string(m[1])), nil
 	}
 	if values, err := url.ParseQuery(string(body)); err == nil {
 		if u := values.Get("username"); u != "" {
-			return u, nil
+			return stripLineBreaks(u), nil
 		}
 	}
 	return "", fmt.Errorf("username not found")
+}
+
+// stripLineBreaks 移除所有 CR/LF，阻断日志行注入。
+func stripLineBreaks(s string) string {
+	return strings.NewReplacer("\r", "", "\n", "").Replace(s)
 }
 
 // extractUsernameFromRequest 从HTTP请求中提取用户名

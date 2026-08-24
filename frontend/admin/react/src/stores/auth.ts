@@ -92,7 +92,7 @@ export const useAuthStore = create<AuthState>()(
       // applySuccessfulLogin 处理"已拿到含真 token 的 LoginResponse"后的统一流程：
       // 存 token → 拉用户信息 → 启动刷新定时器 → 跳转。
       // 登录成功与 MFA 验证成功都复用此函数。
-      const applySuccessfulLogin = async (
+      applySuccessfulLogin: async (
         response: authenticationservicev1_LoginResponse,
         now: number,
         onSuccess?: () => void,
@@ -141,7 +141,7 @@ export const useAuthStore = create<AuthState>()(
             window.location.href = rawHomePath;
           }
         }
-      };
+      },
 
       // 登录
       login: async (params, onSuccess, captcha) => {

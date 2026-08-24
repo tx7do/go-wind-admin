@@ -185,9 +185,14 @@ func (r *PlanModuleRepo) Create(ctx context.Context, req *identityV1.CreatePlanM
 	}()
 
 	builder := tx.PlanModule.Create().
-		SetNillableModule(r.moduleConv.ToEntity(req.Data.Module)).
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetCreatedAt(time.Now())
+
+	// module 为 proto 零值（MODULE_UNSPECIFIED）时跳过：ent schema 未声明该值，
+	// SetNillableModule 会触发 ModuleValidator 失败。未指定即留空。
+	if req.Data.Module != nil && *req.Data.Module != identityV1.Module_MODULE_UNSPECIFIED {
+		builder.SetNillableModule(r.moduleConv.ToEntity(req.Data.Module))
+	}
 
 	if req.Data.PlanId == nil {
 		builder.SetPlanID(req.Data.GetPlanId())
@@ -251,9 +256,14 @@ func (r *PlanModuleRepo) Update(ctx context.Context, req *identityV1.UpdatePlanM
 	_, err = r.repository.UpdateOne(ctx, builder, req.Data, req.GetUpdateMask(),
 		func(dto *identityV1.PlanModule) {
 			builder.
-				SetNillableModule(r.moduleConv.ToEntity(req.Data.Module)).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetUpdatedAt(time.Now())
+
+			// module 为 proto 零值（MODULE_UNSPECIFIED）时跳过：ent schema 未声明该值，
+			// SetNillableModule 会触发 ModuleValidator 失败。未指定即不更新该字段。
+			if req.Data.Module != nil && *req.Data.Module != identityV1.Module_MODULE_UNSPECIFIED {
+				builder.SetNillableModule(r.moduleConv.ToEntity(req.Data.Module))
+			}
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(planmodule.FieldID, req.GetId()))

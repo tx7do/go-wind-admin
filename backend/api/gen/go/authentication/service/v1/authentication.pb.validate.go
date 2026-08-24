@@ -71,7 +71,18 @@ func (m *LoginRequest) validate(all bool) error {
 			}
 			errors = append(errors, err)
 		}
-		// no validation rules for Username
+
+		if utf8.RuneCountInString(m.GetUsername()) > 64 {
+			err := LoginRequestValidationError{
+				field:  "Username",
+				reason: "value length must be at most 64 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
 	case *LoginRequest_Email:
 		if v == nil {
 			err := LoginRequestValidationError{
@@ -83,7 +94,18 @@ func (m *LoginRequest) validate(all bool) error {
 			}
 			errors = append(errors, err)
 		}
-		// no validation rules for Email
+
+		if utf8.RuneCountInString(m.GetEmail()) > 254 {
+			err := LoginRequestValidationError{
+				field:  "Email",
+				reason: "value length must be at most 254 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
 	case *LoginRequest_Mobile:
 		if v == nil {
 			err := LoginRequestValidationError{
@@ -95,7 +117,18 @@ func (m *LoginRequest) validate(all bool) error {
 			}
 			errors = append(errors, err)
 		}
-		// no validation rules for Mobile
+
+		if utf8.RuneCountInString(m.GetMobile()) > 20 {
+			err := LoginRequestValidationError{
+				field:  "Mobile",
+				reason: "value length must be at most 20 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
 	default:
 		_ = v // ensures v is used
 	}
@@ -121,7 +154,18 @@ func (m *LoginRequest) validate(all bool) error {
 	}
 
 	if m.Password != nil {
-		// no validation rules for Password
+
+		if utf8.RuneCountInString(m.GetPassword()) > 128 {
+			err := LoginRequestValidationError{
+				field:  "Password",
+				reason: "value length must be at most 128 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
 	}
 
 	if m.RefreshToken != nil {
@@ -736,14 +780,64 @@ func (m *RegisterUserRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for Username
+	if l := utf8.RuneCountInString(m.GetUsername()); l < 3 || l > 64 {
+		err := RegisterUserRequestValidationError{
+			field:  "Username",
+			reason: "value length must be between 3 and 64 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for Password
+	if l := utf8.RuneCountInString(m.GetPassword()); l < 8 || l > 128 {
+		err := RegisterUserRequestValidationError{
+			field:  "Password",
+			reason: "value length must be between 8 and 128 runes, inclusive",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for TenantCode
+	if utf8.RuneCountInString(m.GetTenantCode()) > 32 {
+		err := RegisterUserRequestValidationError{
+			field:  "TenantCode",
+			reason: "value length must be at most 32 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if m.Email != nil {
-		// no validation rules for Email
+
+		if utf8.RuneCountInString(m.GetEmail()) > 254 {
+			err := RegisterUserRequestValidationError{
+				field:  "Email",
+				reason: "value length must be at most 254 runes",
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
+		if err := m._validateEmail(m.GetEmail()); err != nil {
+			err = RegisterUserRequestValidationError{
+				field:  "Email",
+				reason: "value must be a valid email address",
+				cause:  err,
+			}
+			if !all {
+				return err
+			}
+			errors = append(errors, err)
+		}
+
 	}
 
 	if m.ClientType != nil {
@@ -755,6 +849,56 @@ func (m *RegisterUserRequest) validate(all bool) error {
 	}
 
 	return nil
+}
+
+func (m *RegisterUserRequest) _validateHostname(host string) error {
+	s := strings.ToLower(strings.TrimSuffix(host, "."))
+
+	if len(host) > 253 {
+		return errors.New("hostname cannot exceed 253 characters")
+	}
+
+	for _, part := range strings.Split(s, ".") {
+		if l := len(part); l == 0 || l > 63 {
+			return errors.New("hostname part must be non-empty and cannot exceed 63 characters")
+		}
+
+		if part[0] == '-' {
+			return errors.New("hostname parts cannot begin with hyphens")
+		}
+
+		if part[len(part)-1] == '-' {
+			return errors.New("hostname parts cannot end with hyphens")
+		}
+
+		for _, r := range part {
+			if (r < 'a' || r > 'z') && (r < '0' || r > '9') && r != '-' {
+				return fmt.Errorf("hostname parts can only contain alphanumeric characters or hyphens, got %q", string(r))
+			}
+		}
+	}
+
+	return nil
+}
+
+func (m *RegisterUserRequest) _validateEmail(addr string) error {
+	a, err := mail.ParseAddress(addr)
+	if err != nil {
+		return err
+	}
+	addr = a.Address
+
+	if len(addr) > 254 {
+		return errors.New("email addresses cannot exceed 254 characters")
+	}
+
+	parts := strings.SplitN(addr, "@", 2)
+
+	if len(parts[0]) > 64 {
+		return errors.New("email address local phrase cannot exceed 64 characters")
+	}
+
+	return m._validateHostname(parts[1])
 }
 
 // RegisterUserRequestMultiError is an error wrapping multiple validation
@@ -1924,9 +2068,27 @@ func (m *VerifyCaptchaRequest) validate(all bool) error {
 
 	var errors []error
 
-	// no validation rules for CaptchaId
+	if utf8.RuneCountInString(m.GetCaptchaId()) > 128 {
+		err := VerifyCaptchaRequestValidationError{
+			field:  "CaptchaId",
+			reason: "value length must be at most 128 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
-	// no validation rules for UserInput
+	if utf8.RuneCountInString(m.GetUserInput()) > 32 {
+		err := VerifyCaptchaRequestValidationError{
+			field:  "UserInput",
+			reason: "value length must be at most 32 runes",
+		}
+		if !all {
+			return err
+		}
+		errors = append(errors, err)
+	}
 
 	if len(errors) > 0 {
 		return VerifyCaptchaRequestMultiError(errors)

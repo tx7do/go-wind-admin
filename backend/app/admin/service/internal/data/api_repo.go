@@ -228,9 +228,14 @@ func (r *ApiRepo) newApiCreate(api *permissionV1.Api) *ent.APICreate {
 		SetNillablePath(api.Path).
 		SetNillableMethod(api.Method).
 		SetNillableScope(r.scopeConverter.ToEntity(api.Scope)).
-		SetNillableBusinessModule(r.businessModuleConverter.ToEntity(api.BusinessModule)).
 		SetNillableCreatedBy(api.CreatedBy).
 		SetCreatedAt(time.Now())
+
+	// business_module 为 proto 零值（MODULE_UNSPECIFIED）时跳过：ent schema 未声明该值，
+	// SetNillableBusinessModule 会触发 BusinessModuleValidator 失败。未指定即留空。
+	if api.BusinessModule != nil && *api.BusinessModule != identityV1.Module_MODULE_UNSPECIFIED {
+		builder.SetNillableBusinessModule(r.businessModuleConverter.ToEntity(api.BusinessModule))
+	}
 
 	if api.Id != nil {
 		builder.SetID(api.GetId())
@@ -293,9 +298,14 @@ func (r *ApiRepo) Update(ctx context.Context, req *permissionV1.UpdateApiRequest
 				SetNillablePath(req.Data.Path).
 				SetNillableMethod(req.Data.Method).
 				SetNillableScope(r.scopeConverter.ToEntity(req.Data.Scope)).
-				SetNillableBusinessModule(r.businessModuleConverter.ToEntity(req.Data.BusinessModule)).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetUpdatedAt(time.Now())
+
+			// business_module 为 proto 零值（MODULE_UNSPECIFIED）时跳过：ent schema 未声明该值，
+			// SetNillableBusinessModule 会触发 BusinessModuleValidator 失败。未指定即不更新该字段。
+			if req.Data.BusinessModule != nil && *req.Data.BusinessModule != identityV1.Module_MODULE_UNSPECIFIED {
+				builder.SetNillableBusinessModule(r.businessModuleConverter.ToEntity(req.Data.BusinessModule))
+			}
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(api.FieldID, req.GetId()))

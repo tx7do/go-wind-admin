@@ -7,6 +7,7 @@
 package authenticationpb
 
 import (
+	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	_ "github.com/google/gnostic/openapiv3"
 	_ "github.com/tx7do/go-wind-toolkit/protoc-gen-go-redact/redact/v1"
 	_ "go-wind-admin/api/gen/go/identity/service/v1"
@@ -1483,7 +1484,7 @@ var File_authentication_service_v1_authentication_proto protoreflect.FileDescrip
 
 const file_authentication_service_v1_authentication_proto_rawDesc = "" +
 	"\n" +
-	".authentication/service/v1/authentication.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x16redact/v1/redact.proto\x1a\x1eidentity/service/v1/user.proto\x1a*authentication/service/v1/user_token.proto\"\xd2\x0e\n" +
+	".authentication/service/v1/authentication.proto\x12\x19authentication.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x16redact/v1/redact.proto\x1a\x17validate/validate.proto\x1a\x1eidentity/service/v1/user.proto\x1a*authentication/service/v1/user_token.proto\"\xf0\x0e\n" +
 	"\fLoginRequest\x12\x99\x01\n" +
 	"\n" +
 	"grant_type\x18\x01 \x01(\x0e2$.authentication.service.v1.GrantTypeBS\xe0A\x02\xbaGM\x8a\x02\n" +
@@ -1493,12 +1494,12 @@ const file_authentication_service_v1_authentication_proto_rawDesc = "" +
 	"\rclient_secret\x18\x03 \x01(\tB\x15\xbaG\x12\x92\x02\x0f客户端密钥H\x02R\rclient_secret\x88\x01\x01\x12\x92\x01\n" +
 	"\x05scope\x18\x04 \x01(\tBw\xbaGt\x92\x02q以空格分隔的用户授予范围列表。如果未提供，scope则授权任何范围，默认为空列表。H\x03R\x05scope\x88\x01\x01\x12;\n" +
 	"\fredirect_uri\x18\x05 \x01(\tB\x12\xbaG\x0f\x92\x02\f跳转链接H\x04R\fredirect_uri\x88\x01\x01\x12-\n" +
-	"\auser_id\x18\x06 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDH\x05R\auser_id\x88\x01\x01\x12-\n" +
+	"\auser_id\x18\x06 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDH\x05R\auser_id\x88\x01\x01\x124\n" +
 	"\busername\x18\n" +
-	" \x01(\tB\x0f\xbaG\f\x92\x02\t用户名H\x00R\busername\x120\n" +
-	"\x05email\x18\v \x01(\tB\x18\xbaG\x15\x92\x02\x12电子邮件地址H\x00R\x05email\x12)\n" +
-	"\x06mobile\x18\f \x01(\tB\x0f\xbaG\f\x92\x02\t手机号H\x00R\x06mobile\x12<\n" +
-	"\bpassword\x18\x13 \x01(\tB\x1b\xbaG\x12\x92\x02\x0f用户的密码ڶ\x1a\x02z\x00H\x06R\bpassword\x88\x01\x01\x12\xc2\x02\n" +
+	" \x01(\tB\x16\xfaB\x04r\x02\x18@\xbaG\f\x92\x02\t用户名H\x00R\busername\x128\n" +
+	"\x05email\x18\v \x01(\tB \xfaB\x05r\x03\x18\xfe\x01\xbaG\x15\x92\x02\x12电子邮件地址H\x00R\x05email\x120\n" +
+	"\x06mobile\x18\f \x01(\tB\x16\xfaB\x04r\x02\x18\x14\xbaG\f\x92\x02\t手机号H\x00R\x06mobile\x12D\n" +
+	"\bpassword\x18\x13 \x01(\tB#\xfaB\x05r\x03\x18\x80\x01\xbaG\x12\x92\x02\x0f用户的密码ڶ\x1a\x02z\x00H\x06R\bpassword\x88\x01\x01\x12\xc2\x02\n" +
 	"\rrefresh_token\x18\x14 \x01(\tB\x96\x02\xbaG\x92\x02\x92\x02\x8e\x02更新令牌，用来获取下一次的访问令牌，可选项。如果访问令牌将过期，则返回刷新令牌很有用，应用程序可以使用该刷新令牌来获取另一个访问令牌。但是，通过隐式授予颁发的令牌不能颁发刷新令牌。H\aR\rrefresh_token\x88\x01\x01\x12p\n" +
 	"\x04code\x18\x1e \x01(\tBW\xbaGT\x92\x02Q授权请求中收到的一次性验证/认证码。(当使用授权码模式时)H\bR\x04code\x88\x01\x01\x12c\n" +
 	"\vclient_type\x18( \x01(\x0e2%.authentication.service.v1.ClientTypeB\x15\xbaG\x12\x92\x02\x0f客户端类型H\tR\vclient_type\x88\x01\x01\x12q\n" +
@@ -1565,13 +1566,13 @@ const file_authentication_service_v1_authentication_proto_rawDesc = "" +
 	"\n" +
 	"is_blocked\x18\x03 \x01(\bB+\xbaG(\x92\x02%令牌是否被阻塞/列入黑名单R\tisBlockedB\n" +
 	"\n" +
-	"\b_payload\"\xdb\x02\n" +
-	"\x13RegisterUserRequest\x12+\n" +
-	"\busername\x18\x01 \x01(\tB\x0f\xbaG\f\x92\x02\t用户名R\busername\x12.\n" +
-	"\bpassword\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f登入密码R\bpassword\x123\n" +
-	"\vtenant_code\x18\x03 \x01(\tB\x12\xbaG\x0f\x92\x02\f租户代码R\n" +
-	"tenantCode\x123\n" +
-	"\x05email\x18\x04 \x01(\tB\x18\xbaG\x15\x92\x02\x12电子邮件地址H\x00R\x05email\x88\x01\x01\x12c\n" +
+	"\b_payload\"\xff\x02\n" +
+	"\x13RegisterUserRequest\x124\n" +
+	"\busername\x18\x01 \x01(\tB\x18\xfaB\x06r\x04\x10\x03\x18@\xbaG\f\x92\x02\t用户名R\busername\x128\n" +
+	"\bpassword\x18\x02 \x01(\tB\x1c\xfaB\ar\x05\x10\b\x18\x80\x01\xbaG\x0f\x92\x02\f登入密码R\bpassword\x12:\n" +
+	"\vtenant_code\x18\x03 \x01(\tB\x19\xfaB\x04r\x02\x18 \xbaG\x0f\x92\x02\f租户代码R\n" +
+	"tenantCode\x12=\n" +
+	"\x05email\x18\x04 \x01(\tB\"\xfaB\ar\x05\x18\xfe\x01`\x01\xbaG\x15\x92\x02\x12电子邮件地址H\x00R\x05email\x88\x01\x01\x12c\n" +
 	"\vclient_type\x18\x05 \x01(\x0e2%.authentication.service.v1.ClientTypeB\x15\xbaG\x12\x92\x02\x0f客户端类型H\x01R\vclient_type\x88\x01\x01B\b\n" +
 	"\x06_emailB\x0e\n" +
 	"\f_client_type\"?\n" +
@@ -1619,12 +1620,12 @@ const file_authentication_service_v1_authentication_proto_rawDesc = "" +
 	"\x17GenerateCaptchaResponse\x12}\n" +
 	"\n" +
 	"captcha_id\x18\x01 \x01(\tB^\xbaG[\x92\x02X验证码ID，客户端应在后续请求中提供该ID以验证用户输入的验证码R\tcaptchaId\x12z\n" +
-	"\fimage_base64\x18\x02 \x01(\tBW\xbaGT\x92\x02Q验证码图片的Base64编码字符串，客户端可以解码并显示给用户R\vimageBase64\"\xad\x01\n" +
-	"\x14VerifyCaptchaRequest\x12P\n" +
+	"\fimage_base64\x18\x02 \x01(\tBW\xbaGT\x92\x02Q验证码图片的Base64编码字符串，客户端可以解码并显示给用户R\vimageBase64\"\xbc\x01\n" +
+	"\x14VerifyCaptchaRequest\x12X\n" +
 	"\n" +
-	"captcha_id\x18\x01 \x01(\tB1\xbaG.\x92\x02+验证码ID，来自 GenerateCaptcha 响应R\tcaptchaId\x12C\n" +
+	"captcha_id\x18\x01 \x01(\tB9\xfaB\x05r\x03\x18\x80\x01\xbaG.\x92\x02+验证码ID，来自 GenerateCaptcha 响应R\tcaptchaId\x12J\n" +
 	"\n" +
-	"user_input\x18\x02 \x01(\tB$\xbaG!\x92\x02\x1e用户输入的验证码文本R\tuserInput\"}\n" +
+	"user_input\x18\x02 \x01(\tB+\xfaB\x04r\x02\x18 \xbaG!\x92\x02\x1e用户输入的验证码文本R\tuserInput\"}\n" +
 	"\x15VerifyCaptchaResponse\x12d\n" +
 	"\x05valid\x18\x01 \x01(\bBN\xbaGK\x92\x02H验证码验证结果，true表示验证成功，false表示验证失败R\x05valid*j\n" +
 	"\tGrantType\x12\f\n" +

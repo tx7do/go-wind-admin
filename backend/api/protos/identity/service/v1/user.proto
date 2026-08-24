@@ -10,6 +10,7 @@ import "google/api/field_behavior.proto";
 
 import "redact/v1/redact.proto";
 import "pagination/v1/pagination.proto";
+import "validate/validate.proto";
 
 // 用户服务
 service UserService {
@@ -344,7 +345,8 @@ message EditUserPasswordRequest {
     json_name = "newPassword",
     (gnostic.openapi.v3.property) = {
       description: "新密码"
-    }
+    },
+    (validate.rules).string = {min_len: 8, max_len: 128}
   ]; // 新密码
 }
 
@@ -354,15 +356,17 @@ message ChangePasswordRequest {
   string old_password = 1 [
     json_name = "oldPassword",
     (gnostic.openapi.v3.property) = {
-      description: "旧密码"
-    }
+          description: "旧密码"
+        },
+    (validate.rules).string.max_len = 128
   ]; // 旧密码
 
   string new_password = 2 [
     json_name = "newPassword",
     (gnostic.openapi.v3.property) = {
-      description: "新密码"
-    }
+          description: "新密码"
+        },
+    (validate.rules).string = {min_len: 8, max_len: 128}
   ]; // 新密码
 }
 

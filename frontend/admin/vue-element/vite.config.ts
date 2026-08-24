@@ -10,6 +10,41 @@ import { mockDevServerPlugin } from "vite-plugin-mock-dev-server";
 import tailwindcss from "@tailwindcss/vite";
 import pkg from "./package.json" with { type: "json" };
 
+/**
+ * 生产构建期向 index.html 注入 CSP meta。
+ * dev 下 vite 注入的 HMR 内联脚本会被 script-src 'self' 拦截，故仅 build 注入。
+ * vue-element 仓库内无独立部署 header 层，meta CSP 是规范支持、部署无关的途径。
+ * 限制：meta 不支持 frame-ancestors 等，点击劫持防护仍需部署侧 header。
+ */
+function cspMetaPlugin(): PluginOption {
+    let isBuild = false;
+    return {
+        name: "gowind-csp-meta",
+        configResolved(config: any) {
+            isBuild = config.command === "build";
+        },
+        transformIndexHtml: {
+            order: "post" as const,
+            handler() {
+                if (!isBuild) return;
+                return {
+                    tags: [
+                        {
+                            tag: "meta",
+                            attrs: {
+                                "http-equiv": "Content-Security-Policy",
+                                content:
+                                    "script-src 'self'; base-uri 'self'; object-src 'none'",
+                            },
+                            injectTo: "head-prepend" as const,
+                        },
+                    ],
+                };
+            },
+        },
+    };
+}
+
 // Vite配置  https://cn.vitejs.dev/config
 export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
   const env = loadEnv(mode, process.cwd());
@@ -39,11 +74,19 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
           rewrite: (path: string) => path.replace(new RegExp("^" + env.VITE_APP_BASE_API), ""),
         },
       },
+      // 开发态安全响应头。X-Frame-Options/HSTS/CSP 仅在生产 nginx 生效——
+      // DENY 会阻断 vue-devtools 等开发期同源 iframe，HSTS/CSP 依赖 HTTPS。
+      headers: {
+        'X-Content-Type-Options': 'nosniff',
+        'Referrer-Policy': 'strict-origin-when-cross-origin',
+      },
     },
     plugins: [
       vue(),
       ...(env.VITE_MOCK_DEV_SERVER === "true" ? [mockDevServerPlugin()] : []),
       tailwindcss(),
+      // 生产构建期注入 CSP meta（内部 isBuild 守卫，dev 空操作）
+      cspMetaPlugin(),
       // API 自动导入
       AutoImport({
         // 导入 Vue 函数，如：ref, reactive, toRef 等

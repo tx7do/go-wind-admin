@@ -53,6 +53,7 @@
 
         <ElDivider />
 
+        <!-- eslint-disable-next-line vue/no-v-html -- 已由 DOMPurify 净化（见 sanitizedContent） -->
         <div class="message-detail__content" v-html="sanitizedContent"></div>
       </div>
     </el-dialog>

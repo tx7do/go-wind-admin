@@ -137,7 +137,7 @@ export default [
     rules: {
       // Vue 规则
       "vue/multi-word-component-names": "off",
-      "vue/no-v-html": "off",
+      "vue/no-v-html": "error",
       "vue/require-default-prop": "off",
       "vue/require-explicit-emits": "error",
       "vue/no-unused-vars": "error",

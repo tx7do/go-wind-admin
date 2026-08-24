@@ -8,6 +8,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/logging"
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/selector"
+	"github.com/go-kratos/kratos/v2/middleware/validate"
 	"github.com/go-kratos/kratos/v2/transport/http"
 
 	authz "github.com/tx7do/kratos-authz/middleware"
@@ -55,6 +56,11 @@ func NewRestMiddleware(
 			return loginLogRepo.Create(ctx, &auditV1.CreateLoginAuditLogRequest{Data: data})
 		}),
 	))
+
+	// 输入校验：对所有 RPC（含白名单内的 login/register/refresh/MFA）调用生成代码的
+	// Validate()。放 selector 外，否则白名单路由会被跳过——而它们恰是最需要校验入参的。
+	// 当前业务 proto 尚未补 (validate.rules)，多数 Validate() 返回 nil；补规则后再生效。
+	ms = append(ms, validate.Validator())
 
 	// add white list for authentication.
 	rpc.AddWhiteList(

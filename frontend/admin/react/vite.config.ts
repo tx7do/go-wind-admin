@@ -40,6 +40,12 @@ export default defineConfig(({mode}) => {
             hmr: {
                 overlay: true,
             },
+            // 开发态安全响应头。X-Frame-Options/HSTS/CSP 仅在生产 nginx 生效——
+            // DENY 会阻断 vue-devtools 等开发期同源 iframe，HSTS/CSP 依赖 HTTPS。
+            headers: {
+                'X-Content-Type-Options': 'nosniff',
+                'Referrer-Policy': 'strict-origin-when-cross-origin',
+            },
         },
         build: buildOptions(),
     };

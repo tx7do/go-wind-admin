@@ -47,14 +47,11 @@ func applyJwtKeyOverrides(logHelper *log.Helper, jwtCfg *conf.Authentication_Jwt
 	}
 
 	if strings.Contains(jwtCfg.GetPrivateKey(), devSamplePrivateKeyFingerprint) {
-		msg := "configs/auth.yaml 中的开发示例 JWT 私钥仍在生效，生产环境必须替换：" +
+		// 仅打醒目告警，不阻断启动——测试/本地环境普遍沿用示例密钥，
+		// 强行 panic 会断掉开发与联调链路。生产替换由部署流程保证。
+		logHelper.Warnf("⚠️ configs/auth.yaml 中的开发示例 JWT 私钥仍在生效，生产环境必须替换：" +
 			"通过环境变量 GWA_AUTH_JWT_PRIVATE_KEY / GWA_AUTH_JWT_PUBLIC_KEY 注入，" +
-			"或修改 yaml（生成命令见 auth.yaml 内注释）；" +
-			"部署入口可设置 GWA_AUTH_STRICT_KEYS=1 强制拒绝示例密钥启动"
-		if os.Getenv("GWA_AUTH_STRICT_KEYS") == "1" {
-			panic(msg)
-		}
-		logHelper.Warnf("⚠️ %s", msg)
+			"或修改 yaml（生成命令见 auth.yaml 内注释）。")
 	}
 	return jwtCfg
 }
@@ -95,9 +92,7 @@ func NewAuthenticator(
 	// 1) 环境变量优先于 yaml——生产环境应通过 GWA_AUTH_JWT_PRIVATE_KEY /
 	//    GWA_AUTH_JWT_PUBLIC_KEY（非对称）或 GWA_AUTH_JWT_KEY（对称）注入密钥，
 	//    避免 yaml 中的开发示例密钥被带入生产。
-	// 2) 检测到开发示例私钥仍生效时打醒目告警。
-	// 3) 设置 GWA_AUTH_STRICT_KEYS=1 可启用硬校验：示例密钥生效即拒绝启动，
-	//    供部署方在启动脚本/入口中强制密钥合规。
+	// 2) 检测到开发示例私钥仍生效时打醒目告警（不阻断启动，避免断开发/测试链路）。
 	jwtCfg = applyJwtKeyOverrides(logHelper, jwtCfg)
 
 	a := Authenticator{

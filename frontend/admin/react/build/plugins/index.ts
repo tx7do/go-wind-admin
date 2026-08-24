@@ -4,6 +4,7 @@ import {timePlugin} from './time';
 import {nojekyllPlugin} from './nojekyll';
 import {autoImportPlugin} from './autoImport';
 import {versionUpdatePlugin} from './version';
+import {cspMetaPlugin} from './csp';
 import react from '@vitejs/plugin-react-swc';
 import tailwindcss from '@tailwindcss/vite';
 import viteCompression from 'vite-plugin-compression';
@@ -32,6 +33,8 @@ export function createVitePlugins() {
             nojekyllPlugin(),
             // 打包时间
             timePlugin(),
+            // 生产期注入 CSP meta（阻断 XSS 内联脚本执行）
+            cspMetaPlugin(),
         );
 
         // 按需启用：Gzip 压缩（设置 ANALYZE=true 启用包分析时一起启用）

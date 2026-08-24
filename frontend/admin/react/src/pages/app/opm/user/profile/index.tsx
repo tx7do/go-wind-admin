@@ -281,8 +281,8 @@ const UserProfile = () => {
                         </Button>
                       </Form.Item>
                     </Form>
-                  </div>
                   <MfaManagement />
+                </div>
               ),
             },
           ]}

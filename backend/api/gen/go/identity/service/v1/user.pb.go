@@ -7,6 +7,7 @@
 package identitypb
 
 import (
+	_ "github.com/envoyproxy/protoc-gen-validate/validate"
 	_ "github.com/google/gnostic/openapiv3"
 	v1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	_ "github.com/tx7do/go-wind-toolkit/protoc-gen-go-redact/redact/v1"
@@ -1750,7 +1751,7 @@ var File_identity_service_v1_user_proto protoreflect.FileDescriptor
 
 const file_identity_service_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x1eidentity/service/v1/user.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x16redact/v1/redact.proto\x1a\x1epagination/v1/pagination.proto\"\xbf\x15\n" +
+	"\x1eidentity/service/v1/user.proto\x12\x13identity.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x16redact/v1/redact.proto\x1a\x1epagination/v1/pagination.proto\x1a\x17validate/validate.proto\"\xbf\x15\n" +
 	"\x04User\x12#\n" +
 	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDH\x00R\x02id\x88\x01\x01\x120\n" +
 	"\ttenant_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b租户IDH\x01R\btenantId\x88\x01\x01\x128\n" +
@@ -1893,13 +1894,13 @@ const file_identity_service_v1_user_proto_rawDesc = "" +
 	"\vcreated_ids\x18\x01 \x03(\x05B#\xbaG \x92\x02\x1d创建成功的用户ID列表R\n" +
 	"createdIds\"(\n" +
 	"\x14GetUsersByIdsRequest\x12\x10\n" +
-	"\x03ids\x18\x01 \x03(\rR\x03ids\"v\n" +
+	"\x03ids\x18\x01 \x03(\rR\x03ids\"\x80\x01\n" +
 	"\x17EditUserPasswordRequest\x12'\n" +
-	"\auser_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x122\n" +
-	"\fnew_password\x18\x02 \x01(\tB\x0f\xbaG\f\x92\x02\t新密码R\vnewPassword\"\x7f\n" +
-	"\x15ChangePasswordRequest\x122\n" +
-	"\fold_password\x18\x01 \x01(\tB\x0f\xbaG\f\x92\x02\t旧密码R\voldPassword\x122\n" +
-	"\fnew_password\x18\x02 \x01(\tB\x0f\xbaG\f\x92\x02\t新密码R\vnewPassword\"\x9a\x01\n" +
+	"\auser_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12<\n" +
+	"\fnew_password\x18\x02 \x01(\tB\x19\xfaB\ar\x05\x10\b\x18\x80\x01\xbaG\f\x92\x02\t新密码R\vnewPassword\"\x91\x01\n" +
+	"\x15ChangePasswordRequest\x12:\n" +
+	"\fold_password\x18\x01 \x01(\tB\x17\xfaB\x05r\x03\x18\x80\x01\xbaG\f\x92\x02\t旧密码R\voldPassword\x12<\n" +
+	"\fnew_password\x18\x02 \x01(\tB\x19\xfaB\ar\x05\x10\b\x18\x80\x01\xbaG\f\x92\x02\t新密码R\vnewPassword\"\x9a\x01\n" +
 	"\x13UploadAvatarRequest\x12@\n" +
 	"\fimage_base64\x18\x01 \x01(\tB\x1b\xbaG\x18\x92\x02\x15图片的Base64编码H\x00R\vimageBase64\x127\n" +
 	"\timage_url\x18\x02 \x01(\tB\x18\xbaG\x15\x92\x02\x12图片的URL地址H\x00R\bimageUrlB\b\n" +

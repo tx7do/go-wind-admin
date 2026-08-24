@@ -18,20 +18,6 @@ interface WorkbenchProjectItem {
   url?: string;
 }
 
-interface WorkbenchTrendItem {
-  avatar: string;
-  content: string;
-  date: string;
-  title: string;
-}
-
-interface WorkbenchTodoItem {
-  completed: boolean;
-  content: string;
-  date: string;
-  title: string;
-}
-
 interface WorkbenchQuickNavItem {
   color?: string;
   icon: Component | string;
@@ -43,6 +29,4 @@ export type {
   AnalysisOverviewItem,
   WorkbenchProjectItem,
   WorkbenchQuickNavItem,
-  WorkbenchTodoItem,
-  WorkbenchTrendItem,
 };

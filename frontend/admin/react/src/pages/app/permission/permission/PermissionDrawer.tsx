@@ -248,7 +248,7 @@ const PermissionDrawer: React.FC<PermissionDrawerProps> = ({
       if (mode === 'edit' && data?.id) {
         await updateMutation.mutateAsync({ id: data.id, values: payload });
       } else {
-        await createMutation.mutateAsync(payload as any);
+        await createMutation.mutateAsync({ data: payload });
       }
       return true;
     } catch {

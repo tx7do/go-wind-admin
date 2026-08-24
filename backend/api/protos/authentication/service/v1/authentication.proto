@@ -13,6 +13,8 @@ import "google/api/field_behavior.proto";
 
 import "redact/v1/redact.proto";
 
+import "validate/validate.proto";
+
 import "identity/service/v1/user.proto";
 
 import "authentication/service/v1/user_token.proto";
@@ -135,22 +137,26 @@ message LoginRequest {
   oneof identifier {
     string username = 10 [
       json_name = "username",
-      (gnostic.openapi.v3.property) = {description: "用户名"}
+      (gnostic.openapi.v3.property) = {description: "用户名"},
+      (validate.rules).string.max_len = 64
     ]; // 用户名
     string email = 11 [
       json_name = "email",
-      (gnostic.openapi.v3.property) = {description: "电子邮件地址"}
+      (gnostic.openapi.v3.property) = {description: "电子邮件地址"},
+      (validate.rules).string.max_len = 254
     ]; // 电子邮件地址
     string mobile = 12 [
       json_name = "mobile",
-      (gnostic.openapi.v3.property) = {description: "手机号"}
+      (gnostic.openapi.v3.property) = {description: "手机号"},
+      (validate.rules).string.max_len = 20
     ]; // 手机号
   }
 
   optional string password = 19 [
     (redact.value).string = "",
     json_name = "password",
-    (gnostic.openapi.v3.property) = {description: "用户的密码"}
+    (gnostic.openapi.v3.property) = {description: "用户的密码"},
+    (validate.rules).string.max_len = 128
   ]; // 用户的密码，必选项。
 
   optional string refresh_token = 20 [
@@ -350,28 +356,32 @@ message RegisterUserRequest {
     json_name = "username",
     (gnostic.openapi.v3.property) = {
       description: "用户名"
-    }
+    },
+    (validate.rules).string = {min_len: 3, max_len: 64}
   ]; // 用户名
 
   string password = 2 [
     json_name = "password",
     (gnostic.openapi.v3.property) = {
       description: "登入密码"
-    }
+    },
+    (validate.rules).string = {min_len: 8, max_len: 128}
   ]; // 登入密码
 
   string tenant_code = 3 [
     json_name = "tenantCode",
     (gnostic.openapi.v3.property) = {
       description: "租户代码"
-    }
+    },
+    (validate.rules).string.max_len = 32
   ]; // 租户代码
 
   optional string email = 4 [
     json_name = "email",
     (gnostic.openapi.v3.property) = {
       description: "电子邮件地址"
-    }
+    },
+    (validate.rules).string = {max_len: 254, email: true}
   ]; // 电子邮件地址
 
   optional ClientType client_type = 5 [
@@ -547,14 +557,16 @@ message VerifyCaptchaRequest {
     json_name = "captchaId",
     (gnostic.openapi.v3.property) = {
       description: "验证码ID，来自 GenerateCaptcha 响应"
-    }
+    },
+    (validate.rules).string.max_len = 128
   ]; // 验证码ID，来自 GenerateCaptcha 响应
 
   string user_input = 2 [
     json_name = "userInput",
     (gnostic.openapi.v3.property) = {
       description: "用户输入的验证码文本"
-    }
+    },
+    (validate.rules).string.max_len = 32
   ]; // 用户输入的验证码文本
 }
 message VerifyCaptchaResponse {

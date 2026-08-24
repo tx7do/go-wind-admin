@@ -412,7 +412,8 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 
 	// 取客户端 IP（供限流维度使用），失败不阻断登录
 	clientIP := netutil.ClientIPFromContext(ctx)
-	username := req.GetUsername()
+	// 剥离 CR/LF，防止含换行的用户名注入文本日志行（伪造条目/行内注入）。
+	username := strings.NewReplacer("\r", "", "\n", "").Replace(req.GetUsername())
 
 	// ===== H5 闸门 1：登录限流预检（按 IP + 用户名双维度）=====
 	if s.rateLimiter != nil {
