@@ -34,7 +34,7 @@ const MfaManagement = () => {
 
   const startEnroll = useStartEnrollMfa({
     onSuccess: (resp) => {
-      const totpResult = resp.result?.totp;
+      const totpResult = resp.totp;
       if (totpResult) {
         setQrUri(totpResult.qrCodeDataUri ?? '');
         setSecret(totpResult.secret ?? '');
