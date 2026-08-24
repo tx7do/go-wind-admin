@@ -7,6 +7,20 @@ interface LineChartProps {
   data?: LoginTrendResponse;
 }
 
+/** 把主题主色（hex）转成带透明度的 rgba，供 ECharts 渐变使用。
+ *  非 hex 格式（如 hsl）时原样返回，保证至少与线条同色不破图。 */
+const primaryToRgba = (color: string, alpha: number): string => {
+  const match = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(color.trim());
+  if (!match) return color;
+  let hex = match[1];
+  if (hex.length === 3) hex = hex.split('').map((c) => c + c).join('');
+  const value = parseInt(hex, 16);
+  const r = (value >> 16) & 255;
+  const g = (value >> 8) & 255;
+  const b = value & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+};
+
 /**
  * 登录趋势折线图组件。
  * 数据由父组件从后端 GetLoginTrend 拉取后通过 prop 下发；
@@ -83,8 +97,8 @@ export const LineChart = ({ data }: LineChartProps) => {
               x2: 0,
               y2: 1,
               colorStops: [
-                { offset: 0, color: 'rgba(59,130,246,0.25)' },
-                { offset: 1, color: 'rgba(59,130,246,0)' },
+                { offset: 0, color: primaryToRgba(token.colorPrimary, 0.25) },
+                { offset: 1, color: primaryToRgba(token.colorPrimary, 0) },
               ],
             },
           },

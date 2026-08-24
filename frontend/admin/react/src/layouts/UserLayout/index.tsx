@@ -36,7 +36,7 @@ export const UserLayout = ({ requireAuth = false }: UserLayoutProps) => {
 
   // 监听系统主题变化
   React.useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark');
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
     const handleChange = () => {
       if (preferences.theme.mode === 'auto') {
         // 触发重新渲染以更新 isLightMode

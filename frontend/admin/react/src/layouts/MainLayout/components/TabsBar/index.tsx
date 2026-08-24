@@ -600,7 +600,7 @@ export const Index = () => {
       style={{
         height: tabbarConfig.height,
         borderBottom: '1px solid var(--ant-color-border)',
-        backgroundColor: 'var(--ant-color-bg-container)',
+        backgroundColor: 'var(--app-bg-nav, var(--ant-color-bg-container))',
         display: 'flex',
         alignItems: 'center',
         padding: '0 8px',

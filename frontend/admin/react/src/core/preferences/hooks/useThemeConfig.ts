@@ -1,6 +1,7 @@
 import {useMemo, useState, useEffect} from 'react';
 import {theme as antdTheme, type ThemeConfig, type MappingAlgorithm} from 'antd';
 
+import {darkThemeComponents, darkThemeTokens} from '../config';
 import {usePreferencesStore} from '../store';
 
 export const useThemeConfig = (): ThemeConfig => {
@@ -31,15 +32,20 @@ export const useThemeConfig = (): ThemeConfig => {
         if (effectiveIsDark) algorithms.push(antdTheme.darkAlgorithm);
         if (app.compact) algorithms.push(antdTheme.compactAlgorithm);
 
+        const tokens: ThemeConfig['token'] = {
+            colorPrimary: theme.colorPrimary,
+            colorSuccess: theme.colorSuccess,
+            colorWarning: theme.colorWarning,
+            colorError: theme.colorDestructive,
+            borderRadius: Number.parseInt(theme.radius) || 6,
+        };
+        // 与全局 ThemeProvider 保持同一份暗色色阶，避免内层 ConfigProvider 覆盖外层
+        if (effectiveIsDark) Object.assign(tokens, darkThemeTokens);
+
         return {
             algorithm: algorithms.length > 0 ? algorithms : antdTheme.defaultAlgorithm,
-            token: {
-                colorPrimary: theme.colorPrimary,
-                colorSuccess: theme.colorSuccess,
-                colorWarning: theme.colorWarning,
-                colorError: theme.colorDestructive,
-                borderRadius: Number.parseInt(theme.radius) || 6,
-            },
+            token: tokens,
+            components: effectiveIsDark ? darkThemeComponents : undefined,
         };
     }, [effectiveIsDark, theme, app]);
 };

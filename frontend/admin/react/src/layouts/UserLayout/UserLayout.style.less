@@ -18,7 +18,7 @@
 
   /* 暗黑模式背景 */
   &:not(.light-mode) {
-    background: var(--login-page-bg, #0a0a0a);
+    background: var(--login-page-bg, #0B0F19);
   }
 }
 
@@ -66,7 +66,7 @@
 
   /* 暗黑模式渐变 */
   .user-layout-wrapper:not(.light-mode) & {
-    background: linear-gradient(135deg, #0a0a0a 0%, #121218 50%, #0a0a0a 100%);
+    background: linear-gradient(135deg, #0B0F19 0%, #111827 50%, #0B0F19 100%);
   }
 
   /* 背景装饰层 */
@@ -192,11 +192,11 @@
     box-shadow: -10px 0 40px rgba(0, 0, 0, 0.05);
   }
 
-  /* 暗黑模式 */
+  /* 暗黑模式：表单面板用导航层色，极细描边与品牌区勾边 */
   .user-layout-wrapper:not(.light-mode) & {
-    background: #262626;
-    border-left: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: none;
+    background: #111827;
+    border-left: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow: -20px 0 60px rgba(0, 0, 0, 0.4);
   }
 
   /* 表单内容容器 */

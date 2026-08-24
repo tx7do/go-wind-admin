@@ -14,6 +14,46 @@
     <!-- 由 vite 注入 VITE_APP_TITLE 变量，在 .env 文件内配置 -->
     <title>%VITE_APP_TITLE%</title>
     <link rel="icon" href="/favicon.ico" />
+    <!--
+      预绘制主题注入（必须保持同步、位于 head 内）：
+      React 启动前先从 localStorage('app-preferences') 读取持久化的主题 mode，
+      立即在 <html> 上设置 data-theme 与页面底色，避免每次刷新先闪默认背景
+      再被 ThemeProvider 纠正（底色竞态/闪烁）。
+      底色常量须与 src/core/preferences/config/darkTheme.ts 保持一致：
+      dark=#0B0F19，light=#f5f5f5。
+    -->
+    <script>
+      (function () {
+        var DARK_BG = '#0B0F19';
+        var LIGHT_BG = '#f5f5f5';
+        var mode = 'dark'; // 与 defaultPreferences.theme.mode 默认值一致
+        try {
+          var raw = window.localStorage.getItem('app-preferences');
+          if (raw) {
+            var saved = JSON.parse(raw);
+            var m =
+              saved &&
+              saved.state &&
+              saved.state.preferences &&
+              saved.state.preferences.theme &&
+              saved.state.preferences.theme.mode;
+            if (m === 'light' || m === 'dark' || m === 'auto') mode = m;
+          }
+        } catch (e) {
+          /* 解析失败回退默认 dark */
+        }
+        if (mode === 'auto') {
+          mode =
+            window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches
+              ? 'light'
+              : 'dark';
+        }
+        var bg = mode === 'dark' ? DARK_BG : LIGHT_BG;
+        var root = document.documentElement;
+        root.setAttribute('data-theme', mode);
+        root.style.backgroundColor = bg;
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

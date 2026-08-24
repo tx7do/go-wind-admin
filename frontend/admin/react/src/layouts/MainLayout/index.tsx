@@ -287,7 +287,7 @@ export const MainLayout = ({ routes: dynamicRoutes }: MainLayoutProps) => {
           <div
             style={{
               height: 56,
-              backgroundColor: 'var(--ant-color-bg-container)',
+              backgroundColor: 'var(--app-bg-nav, var(--ant-color-bg-container))',
               borderBottom: '1px solid var(--ant-color-border)',
               padding: '0 12px',
               flexShrink: 0,

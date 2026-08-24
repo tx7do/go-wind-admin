@@ -24,6 +24,34 @@
     border-right: 3px solid var(--ant-color-primary) !important;
 }
 
+/* 暗黑侧栏菜单（标准 antd Menu 类名）：悬停柔和浮起、文字提亮 */
+[data-theme='dark'] .ant-menu-dark .ant-menu-item:hover,
+[data-theme='dark'] .ant-menu-dark .ant-menu-submenu-title:hover {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: #f0f6fc !important;
+}
+
+/* 暗黑菜单：未选中项文字用次要色，选中项品牌色点缀由 antd dark token 提供 */
+[data-theme='dark'] .ant-menu-dark .ant-menu-item,
+[data-theme='dark'] .ant-menu-dark .ant-menu-submenu-title {
+    color: rgba(230, 237, 243, 0.72);
+}
+
+/* 暗黑菜单：展开的子菜单区域凹陷更深一档 + 圆角分组，与父级拉开层次 */
+[data-theme='dark'] .ant-menu-dark .ant-menu-sub.ant-menu-inline {
+    background: rgba(0, 0, 0, 0.22) !important;
+    border-radius: 8px;
+    padding: 4px 0;
+}
+[data-theme='dark'] .ant-menu-dark .ant-menu-sub .ant-menu-item {
+    border-radius: 6px;
+}
+
+[data-theme='dark'] .ant-menu-dark .ant-menu-item-selected,
+[data-theme='dark'] .ant-menu-dark .ant-menu-submenu-selected > .ant-menu-submenu-title {
+    color: #fff;
+}
+
 /* 顶栏阴影 —— 使用 antd 阴影 token，亮/暗模式自动切换 */
 .ant-pro-top-nav-header {
     box-shadow: var(--ant-box-shadow) !important;

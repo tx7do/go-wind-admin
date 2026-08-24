@@ -714,6 +714,14 @@
         border-color: var(--ant-color-primary);
       }
 
+      // 暗色聚焦：只保留主色边框，去掉通用规则里的外发光（与全局暗色聚焦规则一致）
+      &:focus,
+      &.ant-input-affix-wrapper-focused,
+      &.ant-select-focused .ant-select-selector {
+        border-color: var(--ant-color-primary);
+        box-shadow: none;
+      }
+
       &.ant-input-disabled,
       &.ant-select-disabled {
         background: var(--ant-color-fill-secondary);

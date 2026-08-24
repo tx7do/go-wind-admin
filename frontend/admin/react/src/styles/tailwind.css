@@ -47,24 +47,29 @@
 .login-form .ant-input-password {
   height: 2.75rem;
   border-radius: 0.75rem;
-  background-color: rgba(255, 255, 255, 0.05);
-  border-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(9, 13, 22, 0.6);
+  border-color: rgba(255, 255, 255, 0.15);
   transition: box-shadow 0.3s ease, border-color 0.3s ease, background-color 0.3s ease;
 }
 
 .login-form .ant-input-affix-wrapper:hover {
-  border-color: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
 }
 
 .login-form .ant-input-affix-wrapper:focus-within {
   border-color: var(--ant-color-primary);
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--ant-color-primary) 35%, transparent);
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(9, 13, 22, 0.45);
+}
+
+/* 暗色模式：聚焦只保留主色边框，去掉外发光 ring（与全局暗色聚焦规则一致） */
+[data-theme=dark] .login-form .ant-input-affix-wrapper:focus-within {
+  box-shadow: none;
 }
 
 /* placeholder 浅灰，保证暗色下可读 */
 .login-form .ant-input::placeholder {
-  color: #94a3b8 !important;
+  color: #64748b !important;
   opacity: 1;
 }
 

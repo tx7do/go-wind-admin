@@ -199,8 +199,8 @@
       }
       
       &.drag-over {
-        border-left: 2px solid #1677ff;
-        
+        border-left: 2px solid var(--ant-color-primary);
+
         &::before {
           content: '';
           position: absolute;
@@ -208,7 +208,7 @@
           top: 0;
           bottom: 0;
           width: 2px;
-          background: #1677ff;
+          background: var(--ant-color-primary);
         }
       }
     }
@@ -257,7 +257,26 @@
       width: 4px;
       height: 4px;
       border-radius: 50%;
-      background: #1677ff;
+      background: var(--ant-color-primary);
     }
   }
+}
+
+/* ========== 暗色模式：选中 Tab 高亮（各风格统一） ==========
+   颜色一律走 antd 主题变量 --ant-color-primary，不硬编码色值，
+   否则用户切换主题色 / 持久化主色迁移前后会出现"两种蓝"。 */
+[data-theme='dark'] .tabsbar-container .ant-tabs-tab.ant-tabs-tab-active {
+  color: var(--ant-color-primary);
+  font-weight: 500;
+}
+/* chrome / card 风格：主色描边 + 主色调微光底 */
+[data-theme='dark'] .tabsbar-chrome .ant-tabs-tab.ant-tabs-tab-active,
+[data-theme='dark'] .tabsbar-card .ant-tabs-tab.ant-tabs-tab-active {
+  background: color-mix(in srgb, var(--ant-color-primary) 12%, transparent) !important;
+  border-color: color-mix(in srgb, var(--ant-color-primary) 45%, transparent) !important;
+  box-shadow: 0 -2px 8px color-mix(in srgb, var(--ant-color-primary) 18%, transparent);
+}
+/* brisk / plain 风格：底部指示条统一主色 */
+[data-theme='dark'] .tabsbar-container .ant-tabs-ink-bar {
+  background: var(--ant-color-primary);
 }

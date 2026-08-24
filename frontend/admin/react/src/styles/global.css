@@ -57,6 +57,18 @@ body {
     gap: 12px !important;
 }
 
+/* 应用级主题变量：导航层（侧栏/顶栏/标签栏）背景
+   暗色取 gray-900 #111827（画布与卡片之间的次暗层）。
+   亮色必须是字面量：此变量定义在 <html> 上，而 antd v6 的
+   --ant-color-* CSS 变量只注入在 .css-var-* 包裹层内，在 <html>
+   作用域引用会解析为 IACVT 空值 → 导航背景整块透明。 */
+[data-theme='dark'] {
+    --app-bg-nav: #111827;
+}
+[data-theme='light'] {
+    --app-bg-nav: #ffffff;
+}
+
 .ant-table-cell .ant-space-item a {
     display: inline-flex;
     align-items: center;
@@ -69,4 +81,20 @@ body {
 
 .ant-table-cell .ant-space-item a:hover {
     background-color: var(--ant-color-fill-tertiary);
+}
+
+/* 空表表头错位修复（多页面共性）：
+   scroll.y 分离表头/表体后，antd 会在表头行末尾渲染一个滚动条占位单元格
+   （.ant-table-cell-scrollbar）。空表时 body 无滚动条，表头 colgroup 里
+   缺少对应的 gutter <col>；table-layout:fixed 下，这个没有列宽定义的占位
+   单元格会吞掉表格全部剩余宽度，表头与表体的列宽分配从此分叉 → 表头错位。
+   钉死 0 宽即可恢复对齐：
+   - 无滚动条（空表/内容不溢出）：占位本就该是 0 宽，表头与表体按同一组
+     列宽比例扩展，重新对齐；
+   - 有滚动条：colgroup 里存在 15px 的 gutter <col>，fixed 布局中 <col>
+     的 width 优先于单元格宽度，此规则不影响。 */
+.ant-table-header th.ant-table-cell-scrollbar {
+    width: 0 !important;
+    min-width: 0 !important;
+    padding: 0 !important;
 }

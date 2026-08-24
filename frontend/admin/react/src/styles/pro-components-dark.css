@@ -53,10 +53,10 @@
 }
 /* 暗色下分页器 hover/disabled */
 [data-theme='dark'] .ant-pagination-item:not(.ant-pagination-item-active):hover {
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
 }
 [data-theme='dark'] .ant-pagination-disabled .ant-pagination-item-link {
-  color: #6b7280 !important;
+  color: #6e7681 !important;
 }
 
 /* ========== ProTable 圆角一致性 ========== */
@@ -106,79 +106,163 @@
 [data-theme='dark'] .ant-pro-table .ant-table-placeholder {
   background-color: var(--ant-color-bg-container) !important;
 }
-[data-theme='dark'] .ant-empty-normal {
-  color: var(--ant-color-text-secondary) !important;
+
+/* ---- 空状态（暂无数据）：半透明科技蓝图标 + 居中呼吸感 ----
+   占位 padding 属于几何属性，亮暗必须一致（不放在主题作用域内） */
+.ant-pro-table .ant-table-placeholder > .ant-table-cell {
+  padding: 48px 16px !important;
 }
-[data-theme='dark'] .ant-empty-description {
-  color: #94a3b8 !important;
+[data-theme='dark'] .ant-empty-normal {
+  color: var(--ant-color-primary) !important;
+  margin: 0 auto !important;
 }
 [data-theme='dark'] .ant-empty-image {
-  opacity: 0.6;
+  opacity: 0.55;
+  margin-bottom: 8px;
+}
+[data-theme='dark'] .ant-empty-image svg {
+  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--ant-color-primary) 20%, transparent));
+}
+[data-theme='dark'] .ant-empty-description {
+  color: #8b949e !important;
+  font-size: 13px;
+  letter-spacing: 0.03em;
+  text-align: center;
 }
 
-/* 表体行在亮暗下统一的底部边框色 */
+/* 表体行：文字高对比 + 极细分割线 */
 [data-theme='dark'] .ant-pro-table .ant-table-tbody > tr > td {
-  color: #e2e8f0 !important;
-  border-bottom-color: rgba(255, 255, 255, 0.04) !important;
+  color: #e6edf3 !important;
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
 }
 [data-theme='light'] .ant-pro-table .ant-table-tbody > tr > td {
   border-bottom-color: #f0f0f0 !important;
 }
 
-/* ========== 暗黑模式：表单控件统一暗黑背景（#404040） ========== */
-/* Input 全类型覆盖：普通 input、带前后缀 affix-wrapper、outlined 变体 */
-[data-theme='dark'] .ant-input,
+/* ============================================================
+   暗黑模式：表单控件（Input / Select / InputNumber / DatePicker）
+   两个关键点：
+   1) antd v6 cssVar 默认边框为亚像素宽度，水平（上下）边框会被
+      渲染舍入丢失 —— 必须用 border 简写强制四边完整 1px。
+   2) antd v6 已移除 .ant-select-selector 内层元素，Select 的
+      边框/背景必须打在 .ant-select 根元素上。
+   标准矩形：高 32px、圆角 4px、背景 #1E293B、边框 rgba(255,255,255,0.12)。
+   ============================================================ */
+/* 文本输入：带图标/前后缀的 affix-wrapper + InputNumber + DatePicker */
 [data-theme='dark'] .ant-input-affix-wrapper,
-[data-theme='dark'] .ant-input-outlined {
-  background-color: #404040 !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-  color: #e2e8f0 !important;
+[data-theme='dark'] .ant-input-outlined,
+[data-theme='dark'] .ant-input-number,
+[data-theme='dark'] .ant-picker,
+[data-theme='dark'] textarea.ant-input:not(.ant-input-affix-wrapper textarea) {
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 6px !important;
+  background-color: #090d16 !important;
+  color: #e6edf3 !important;
+  /* 几何属性（min-height 等）不设主题专属值：亮暗控件高度必须一致 */
+  box-shadow: none !important;
 }
 
-[data-theme='dark'] .ant-input::placeholder,
-[data-theme='dark'] .ant-input-affix-wrapper .ant-input::placeholder,
-[data-theme='dark'] .ant-input-affix-wrapper input::placeholder,
-[data-theme='dark'] .ant-select-selection-placeholder,
-[data-theme='dark'] .ant-input-number input::placeholder {
-  color: #94a3b8 !important;
-  opacity: 1 !important;
+/* Select：v6 结构无边框载体子元素，直接打根元素 */
+[data-theme='dark'] .ant-select:not(.ant-select-disabled),
+[data-theme='dark'] .ant-select-multiple .ant-select-selection-item {
+  border-radius: 6px;
+}
+[data-theme='dark'] .ant-select:not(.ant-select-disabled) {
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 6px !important;
+  background-color: #090d16 !important;
+  color: #e6edf3 !important;
+  box-shadow: none !important;
 }
 
-/* Select：增强特异性覆盖 antd CSS-in-JS */
-html[data-theme='dark'] .ant-select-selector {
-  background: #404040 !important;
-  background-color: #404040 !important;
-  background-image: none !important;
+/* 无包装的独立 input / textarea（搜索表单纯文本框）同样四边封闭。
+   :not() 排除 affix 内层 input——否则边框/min-height 泄漏到内层，
+   外层包装被撑高（暗色下曾达 41.3px，与亮色 31.3px 不一致）。 */
+html[data-theme='dark'] .ant-pro-table-search .ant-input:not(.ant-input-affix-wrapper .ant-input),
+html[data-theme='dark'] .ant-form .ant-input:not(.ant-input-affix-wrapper .ant-input) {
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  border-radius: 6px !important;
+  background-color: #090d16 !important;
+  color: #e6edf3 !important;
+}
+
+/* affix-wrapper 内层的真实 input 元素：透明 + 无边框（避免双边框） */
+[data-theme='dark'] .ant-input-affix-wrapper > input.ant-input,
+[data-theme='dark'] .ant-input-affix-wrapper > textarea {
+  border: none !important;
+  background-color: transparent !important;
+  border-radius: 0 !important;
+  color: #e6edf3 !important;
+}
+
+/* InputNumber 内部输入区（几何由外层控件统一决定，此处仅改色） */
+[data-theme='dark'] .ant-input-number .ant-input-number-input {
+  background-color: transparent !important;
+  color: #e6edf3 !important;
 }
 
 [data-theme='dark'] .ant-select-selection-item {
-  color: #e2e8f0 !important;
+  color: #e6edf3 !important;
 }
 
-[data-theme='dark'] .ant-select-selection-placeholder {
-  color: #6b7280 !important;
+[data-theme='dark'] .ant-select-selection-placeholder,
+[data-theme='dark'] .ant-input::placeholder,
+[data-theme='dark'] .ant-input-affix-wrapper .ant-input::placeholder,
+[data-theme='dark'] .ant-input-affix-wrapper input::placeholder,
+[data-theme='dark'] .ant-input-number input::placeholder,
+[data-theme='dark'] textarea.ant-input::placeholder {
+  color: #64748b !important;
+  opacity: 1 !important;
 }
 
-[data-theme='dark'] .ant-select-dropdown {
-  background-color: #404040 !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+/* 下拉面板：浮层色 #1C2128（bgElevated，与定稿色板一致）+ 细边框 */
+[data-theme='dark'] .ant-select-dropdown,
+[data-theme='dark'] .ant-picker-dropdown .ant-picker-panel-container {
+  background-color: #1c2128 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+[data-theme='dark'] .ant-select-dropdown .ant-select-item {
+  color: #e6edf3 !important;
+}
+/* 悬停于已选中项：默认 hover 底色会把选中态的主色调蓝冲成灰，
+   这里在选中色基础上提亮 14% 白，保留"当前选中"的蓝色语义。
+   色值走 --ant-select-option-selected-bg 变量，用户改主色时自动跟随。 */
+[data-theme='dark'] .ant-select-dropdown .ant-select-item-option-selected.ant-select-item-option-active:not(.ant-select-item-option-disabled) {
+  background-color: color-mix(in srgb, var(--ant-select-option-selected-bg) 86%, #ffffff) !important;
 }
 
-/* hover：统一微亮边框 */
-[data-theme='dark'] .ant-input:hover,
+/* hover：边框整体提亮（四边同步，防止再次出现单边丢失） */
 [data-theme='dark'] .ant-input-affix-wrapper:hover,
-[data-theme='dark'] .ant-select:hover .ant-select-selector,
-[data-theme='dark'] .ant-select:not(.ant-select-disabled):hover .ant-select-selector {
-  border-color: rgba(255, 255, 255, 0.25) !important;
+[data-theme='dark'] .ant-input-outlined:hover,
+[data-theme='dark'] .ant-input-number:hover,
+[data-theme='dark'] .ant-picker:hover,
+[data-theme='dark'] .ant-select:not(.ant-select-disabled):hover,
+html[data-theme='dark'] .ant-pro-table-search .ant-input:not(.ant-input-affix-wrapper .ant-input):hover,
+html[data-theme='dark'] .ant-form .ant-input:not(.ant-input-affix-wrapper .ant-input):hover {
+  border-color: rgba(255, 255, 255, 0.3) !important;
 }
 
-/* focus：统一蓝色（var(--ant-color-primary)）+ ring 发光 */
-[data-theme='dark'] .ant-input:focus,
+/* focus：暗色下只把边框换成主色，不带外发光 ring（发光高亮观感刺眼，
+   2026-08-24 按反馈去除）。色值必须走 var(--ant-color-primary)：
+   暗色下 antd 会把主色微调为暗调色阶，写死 hex 会与组件实际主色脱节。
+   antd v6 注意：
+   - Select 聚焦选择器须叠 .ant-select.ant-select-focused 双类提到 (0,4,0)，
+     否则打不过同为 !important 的 hover 规则（多一个 :hover 伪类）；
+   - Picker/InputNumber 聚焦态 v6 走 :focus/:focus-within 伪类，
+     旧的 .ant-*-focused 类选择器仅作兜底保留。 */
 [data-theme='dark'] .ant-input-affix-wrapper:focus-within,
-[data-theme='dark'] .ant-select-focused .ant-select-selector,
-[data-theme='dark'] .ant-select:not(.ant-select-disabled).ant-select-focused .ant-select-selector {
+[data-theme='dark'] .ant-input-outlined:focus,
+[data-theme='dark'] .ant-input-number-focused,
+[data-theme='dark'] .ant-input-number:focus-within,
+[data-theme='dark'] .ant-picker-focused,
+[data-theme='dark'] .ant-picker-outlined:focus,
+[data-theme='dark'] .ant-picker-outlined:focus-within,
+[data-theme='dark'] .ant-select.ant-select-focused:not(.ant-select-disabled),
+[data-theme='dark'] .ant-select-open:not(.ant-select-disabled),
+html[data-theme='dark'] .ant-pro-table-search .ant-input:not(.ant-input-affix-wrapper .ant-input):focus,
+html[data-theme='dark'] .ant-form .ant-input:not(.ant-input-affix-wrapper .ant-input):focus {
   border-color: var(--ant-color-primary) !important;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ant-color-primary) 25%, transparent) !important;
+  box-shadow: none !important;
 }
 
 /* ========== 搜索按钮与输入框等高（通用） ========== */
@@ -186,50 +270,80 @@ html[data-theme='dark'] .ant-select-selector {
   height: 2.75rem;
 }
 
-/* ========== 搜索表单 / 工具条 / 表格之间垂直呼吸感 ========== */
-.ant-pro-table .ant-pro-table-search {
-  margin-bottom: 16px;
-}
-.ant-pro-table .ant-pro-table-list-toolbar-container {
-  margin-bottom: 16px;
-  gap: 12px;
-}
+/* ========== 搜索表单布局：回归 antd v6 原生栅格 ==========
+   历史版本在此叠过 flex:1 0 auto / gap:0 / align-items 等 hack，
+   与 v6 栅格打架导致 Col 塌缩（Select 缩成一条线）、form-item
+   退化为 block（标签堆到输入框上方）。现已全部拆除，只保留
+   以下保护性规则，布局交给 antd 默认（col-span 栅格 + 水平 form-item）。 */
 
-/* ========== 搜索表单网格布局：按钮列紧凑跟随，不换行 ========== */
-.ant-pro-query-filter .ant-row {
-  align-items: flex-end;
-  gap: 0;
-}
-
-/* 搜索项 Col：不限制宽度，让 Input 自然撑满 */
-.ant-pro-table-search .ant-col {
-  flex: 1 0 auto;
-}
-
-/* Input/Select 不设最大宽度，撑满所属 Col */
+/* 输入类控件撑满所属 Col；min-width 保证"请输入/请选择"有呼吸空间 */
 .ant-pro-table-search .ant-picker,
 .ant-pro-table-search .ant-select,
 .ant-pro-table-search .ant-input-affix-wrapper,
 .ant-pro-table-search .ant-input {
   width: 100%;
+  min-width: 160px;
 }
 
-/* 按钮组：右对齐，与表格右边缘垂直对齐 */
-.ant-pro-form-query-filter .ant-pro-query-filter-collapse,
-.ant-pro-query-filter .ant-form-item:last-child,
-.ant-pro-table-search .ant-form-item[style*="flex"] {
+/* Label 不换行，与控件保持水平同行。
+   双类选择器（.ant-form-item.ant-form-item）提特异性：antd v6 cssVar 层的
+   .ant-form-item { flex-wrap: wrap } 与单类规则平手且后注入会翻盘 */
+.ant-pro-table-search .ant-form-item.ant-form-item {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+.ant-pro-table-search .ant-form-item-label.ant-form-item-label {
+  flex: 0 0 auto;
+}
+.ant-pro-table-search .ant-form-item-label > label {
+  white-space: nowrap;
+}
+.ant-pro-table-search .ant-form-item-control {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* 查询/重置按钮组：紧凑排列、贴齐行尾 */
+.ant-pro-query-filter .ant-pro-query-filter-collapse,
+.ant-pro-table-search .ant-form-item:last-child {
   flex: 0 0 auto;
   margin-left: auto;
-  justify-content: flex-end;
+}
+.ant-pro-query-filter .ant-pro-query-filter-collapse {
+  display: flex;
+  gap: 8px;
 }
 
-/* Label 与输入框间距缩小 */
-.ant-pro-query-filter .ant-form-item {
-  margin-right: 8px;
-  margin-bottom: 8px;
+/* ========== 窄容器响应式：搜索表单优雅降级为上下结构 ==========
+   Col 在窄屏下不足以水平容纳 label + 160px 输入框（antd v6 form-item
+   默认 flex-wrap:wrap 会粗暴换行导致标签悬空）——主动切换为规范的
+   垂直结构（与 Drawer 表单同款：label 在上、8px 间距、灰色标签） */
+@media (max-width: 1024px) {
+  .ant-pro-table-search .ant-form-item.ant-form-item {
+    flex-direction: column;
+    align-items: stretch;
+    flex-wrap: nowrap;
+  }
+  .ant-pro-table-search .ant-form-item-label.ant-form-item-label {
+    padding-bottom: 8px;
+    text-align: left;
+  }
+  .ant-pro-table-search .ant-form-item-label > label {
+    height: auto;
+  }
+  [data-theme='dark'] .ant-pro-table-search .ant-form-item-label > label {
+    color: #c9d1d9;
+  }
 }
-.ant-pro-query-filter .ant-form-item-label {
-  padding-right: 4px;
+
+/* ========== 搜索表单 / 工具条 / 表格之间垂直呼吸感 ========== */
+.ant-pro-table .ant-pro-table-search {
+  margin-bottom: 24px; /* 对齐设计稿 mb-6 */
+}
+.ant-pro-table .ant-pro-table-list-toolbar-container {
+  margin-bottom: 16px;
+  gap: 12px;
 }
 
 /* ========== 工具条顶部留白，与表头拉开距离 ========== */
@@ -239,32 +353,35 @@ html[data-theme='dark'] .ant-select-selector {
   margin-bottom: 0;
 }
 
-/* ========== 页面整体层次感：背景调暗、搜索/表格卡片化 ========== */
-/* 暗黑页面背景 */
-[data-theme='dark'] .ant-pro-page-container {
-  background-color: #0d0d0d !important;
-}
+/* ========== 页面整体层次感：画布调暗、搜索/表格独立卡片化 ========== */
+/* 暗黑页面背景走 --ant-color-bg-layout（= 画布 #0B0F19），无需再覆写 */
 
-/* 卡片边框/圆角/内边距 —— 通用（亮暗一致，高度不变） */
+/* 卡片边框/圆角/内边距 —— 通用（亮暗一致，高度不变）
+   圆角与留白对齐设计稿：rounded-xl(12px) + p-5(20px) + 悬浮阴影 */
 .ant-pro-table-search {
   border: 1px solid;
-  border-radius: 0.5rem;
+  border-radius: 12px;
   padding: 20px 20px 4px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
 }
 .ant-pro-table .ant-table {
   border: 1px solid;
-  border-radius: 0.5rem;
+  border-radius: 12px;
   overflow: hidden;
 }
 
-/* 暗黑模式卡片颜色 */
+/* 暗黑模式卡片：#111827 卡片面 + 1px 极细描边 + shadow-xl 悬浮感 */
+[data-theme='dark'] .ant-pro-table-search,
+[data-theme='dark'] .ant-pro-table .ant-table {
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.45), 0 8px 10px -6px rgba(0, 0, 0, 0.4) !important;
+}
 [data-theme='dark'] .ant-pro-table-search {
-  background-color: #111 !important;
-  border-color: rgba(255, 255, 255, 0.06) !important;
+  background-color: var(--ant-color-bg-container) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
 }
 [data-theme='dark'] .ant-pro-table .ant-table {
-  background-color: #1f1f1f !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: var(--ant-color-bg-container) !important;
+  border-color: rgba(255, 255, 255, 0.05) !important;
 }
 
 /* 亮色模式卡片颜色 */
@@ -276,16 +393,17 @@ html[data-theme='dark'] .ant-select-selector {
   border-color: #e5e7eb !important;
 }
 
-/* ========== 表格表头：字体粗细通用，颜色按主题 ========== */
+/* ========== 表格表头：文字加粗（通用），颜色按主题 ========== */
 .ant-pro-table .ant-table-thead > tr > th {
   font-weight: 600;
   border-bottom: 1px solid;
 }
 
+/* 表头：比卡片面稍深一档（#1A2230），标题加粗提亮，从表体中脱颖而出 */
 [data-theme='dark'] .ant-pro-table .ant-table-thead > tr > th {
-  background-color: #1a1a1a !important;
-  color: #d1d5db !important;
-  border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+  background-color: #1f2937 !important;
+  color: #e6edf3 !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
 }
 
 [data-theme='light'] .ant-pro-table .ant-table-thead > tr > th {
@@ -293,76 +411,70 @@ html[data-theme='dark'] .ant-select-selector {
   border-bottom-color: #e5e7eb !important;
 }
 
-/* ========== 暗黑模式：Input/TextArea 背景调亮（#404040） ========== */
-[data-theme='dark'] .ant-input,
-[data-theme='dark'] .ant-input-affix-wrapper,
-[data-theme='dark'] .ant-input-outlined,
-[data-theme='dark'] textarea.ant-input {
-  background-color: #404040 !important;
-}
-
-/* InputNumber 同步调亮 */
-[data-theme='dark'] .ant-input-number {
-  background-color: #404040 !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
-}
-
-[data-theme='dark'] .ant-input-number .ant-input-number-input {
-  background-color: #404040 !important;
-  color: #e2e8f0 !important;
-}
-
-[data-theme='dark'] .ant-input-number:hover {
-  border-color: rgba(255, 255, 255, 0.15) !important;
-}
-
-[data-theme='dark'] .ant-input-number-focused {
-  border-color: var(--ant-color-primary) !important;
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--ant-color-primary) 25%, transparent) !important;
-}
-
-[data-theme='dark'] .ant-select .ant-select-selector {
-  background-color: #404040 !important;
-}
-
-[data-theme='dark'] .ant-select-dropdown {
-  background-color: #404040 !important;
-}
-
 /* ========== 暗黑模式：Radio.Button 未选中态 ========== */
 [data-theme='dark'] .ant-radio-button-wrapper:not(.ant-radio-button-wrapper-checked) {
-  background-color: rgba(255, 255, 255, 0.06) !important;
+  background-color: rgba(255, 255, 255, 0.05) !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
-  color: #94a3b8 !important;
+  color: #8b949e !important;
 }
 [data-theme='dark'] .ant-radio-button-wrapper:not(.ant-radio-button-wrapper-checked) span {
-  color: #94a3b8 !important;
+  color: #8b949e !important;
 }
 
 [data-theme='dark'] .ant-radio-button-wrapper:not(.ant-radio-button-wrapper-checked):hover {
-  color: #e2e8f0 !important;
+  color: #e6edf3 !important;
 }
 
-/* ========== Drawer/Modal 底部按钮区域内边距 ========== */
+/* ========== Drawer / 抽屉表单（新建/编辑弹层） ========== */
+/* 一楼 Elevation 1：抽屉容器比画布亮一档（#161B22），
+   左缘 1px 精致竖线与主页面分隔，产生悬浮立体感。
+   antd v6 的背景载体是 .ant-drawer-section */
+[data-theme='dark'] .ant-drawer .ant-drawer-section,
+[data-theme='dark'] .ant-drawer .ant-drawer-content {
+  background-color: #111827 !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+[data-theme='dark'] .ant-drawer .ant-drawer-header {
+  background-color: transparent !important;
+  border-bottom-color: rgba(255, 255, 255, 0.06) !important;
+}
+[data-theme='dark'] .ant-drawer .ant-drawer-title {
+  color: #e6edf3 !important;
+}
+/* 表单项垂直呼吸感 + 标签与输入框清晰间距（几何属性，亮暗一致） */
+.ant-drawer .ant-form-item {
+  margin-bottom: 20px;
+}
+.ant-drawer .ant-form-item-label {
+  padding-bottom: 8px;
+}
+[data-theme='dark'] .ant-drawer .ant-form-item-label > label {
+  color: #c9d1d9;
+}
+/* 底部按钮区：独立底部容器，最暗底色（#0D1117）与表单彻底隔离，按钮居右 */
 .ant-drawer-footer {
-  padding: 16px 24px !important;
+  padding: 20px 24px !important;
   display: flex;
   justify-content: flex-end;
   gap: 12px;
+}
+[data-theme='dark'] .ant-drawer-footer {
+  background-color: #0b0f19 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
 /* ========== 暗黑模式：权限树/包裹区域背景 ========== */
 [data-theme='dark'] .ant-tree {
   background: transparent !important;
-  color: #e2e8f0 !important;
+  color: #e6edf3 !important;
 }
 
 [data-theme='dark'] .ant-tree .ant-tree-treenode {
-  color: #e2e8f0 !important;
+  color: #e6edf3 !important;
 }
 
 [data-theme='dark'] .ant-tree .ant-tree-node-content-wrapper {
-  color: #e2e8f0 !important;
+  color: #e6edf3 !important;
 }
 
 [data-theme='dark'] .ant-tree .ant-tree-node-content-wrapper:hover {
@@ -370,12 +482,12 @@ html[data-theme='dark'] .ant-select-selector {
 }
 
 [data-theme='dark'] .ant-tree .ant-tree-switcher {
-  color: #94a3b8 !important;
+  color: #8b949e !important;
 }
 
 [data-theme='dark'] .ant-tree-checkbox-inner {
-  background-color: #404040 !important;
-  border-color: rgba(255, 255, 255, 0.15) !important;
+  background-color: #090d16 !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
 }
 
 [data-theme='dark'] .ant-tree-checkbox-checked .ant-tree-checkbox-inner {
@@ -383,19 +495,32 @@ html[data-theme='dark'] .ant-select-selector {
   border-color: var(--ant-color-primary) !important;
 }
 
-/* ========== 暗黑模式：默认/取消按钮背景调亮 ========== */
+/* ========== 暗黑模式：默认/取消按钮（#1C2128 浮层色底） ========== */
 [data-theme='dark'] .ant-btn-default,
 [data-theme='dark'] .ant-btn:not(.ant-btn-primary):not(.ant-btn-danger):not(.ant-btn-link):not(.ant-btn-text) {
-  background-color: #404040 !important;
+  background-color: #1c2128 !important;
   border-color: rgba(255, 255, 255, 0.1) !important;
-  color: #e2e8f0 !important;
+  color: #e6edf3 !important;
 }
 
 [data-theme='dark'] .ant-btn-default:hover,
 [data-theme='dark'] .ant-btn:not(.ant-btn-primary):not(.ant-btn-danger):not(.ant-btn-link):not(.ant-btn-text):hover {
-  background-color: #3a3a3e !important;
-  border-color: rgba(255, 255, 255, 0.2) !important;
-  color: #fff !important;
+  background-color: #262c36 !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  color: #f0f6fc !important;
+}
+
+/* ========== 暗黑模式：主按钮质感（顶部高光渐变 + 品牌色微光投影） ========== */
+[data-theme='dark'] .ant-btn-primary {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 45%, rgba(0, 0, 0, 0.08) 100%);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--ant-color-primary) 35%, transparent);
+}
+[data-theme='dark'] .ant-btn-primary:not(:disabled):hover {
+  filter: brightness(1.1);
+  box-shadow: 0 4px 14px color-mix(in srgb, var(--ant-color-primary) 45%, transparent);
+}
+[data-theme='dark'] .ant-btn-primary:not(:disabled):active {
+  filter: brightness(0.96);
 }
 
 /* ========== Input 文字垂直居中 ========== */
@@ -403,9 +528,9 @@ html[data-theme='dark'] .ant-select-selector {
   align-items: center;
 }
 
-/* ========== 面包屑首页图标调亮 ========== */
+/* ========== 面包屑首页图标 ========== */
 [data-theme='dark'] .ant-breadcrumb .anticon {
-  color: #94a3b8 !important;
+  color: #8b949e !important;
 }
 
 /* ========== 必填星号柔和红 ========== */

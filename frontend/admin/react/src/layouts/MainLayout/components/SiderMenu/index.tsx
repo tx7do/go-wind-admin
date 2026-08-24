@@ -141,7 +141,7 @@ export const Index = ({
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: 'var(--ant-color-bg-container)',
+        backgroundColor: 'var(--app-bg-nav, var(--ant-color-bg-container))',
         borderRight: '1px solid var(--ant-color-border)',
         transition: 'width 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         flexShrink: 0,

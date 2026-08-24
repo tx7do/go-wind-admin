@@ -88,11 +88,11 @@ const defaultPreferences: Preferences = {
     theme: {
         builtinType: "default",
         colorDestructive: "hsl(348 100% 61%)",
-        colorPrimary: "hsl(212 100% 45%)",
+        colorPrimary: "#3B82F6",
         colorSuccess: "hsl(144 57% 58%)",
         colorWarning: "hsl(42 84% 61%)",
         mode: "dark",
-        radius: "0.5",
+        radius: "6",
         semiDarkHeader: false,
         semiDarkSidebar: false,
     },

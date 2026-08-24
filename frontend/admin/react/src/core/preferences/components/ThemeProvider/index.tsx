@@ -6,6 +6,7 @@ import enUS from 'antd/locale/en_US';
 // import jaJP from 'antd/locale/ja_JP';
 
 import { usePreferencesStore } from '../../store';
+import { DARK_PALETTE, darkThemeComponents, darkThemeTokens } from '../../config';
 import type { SupportedLanguagesType } from '../../types';
 
 export interface ThemeProviderProps {
@@ -58,14 +59,12 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
       borderRadius: Number.parseInt(themePrefs.radius) || 6,
     };
 
-    // 暗黑模式下调亮 Input/Select 容器背景，仅作用于这两个组件
-    const components: ThemeConfig['components'] = effectiveMode === 'dark' ? {
-      Input: { colorBgContainer: '#404040' },
-      Select: { colorBgContainer: '#404040' },
-      InputNumber: { colorBgContainer: '#404040' },
-      DatePicker: { colorBgContainer: '#404040' },
-      TreeSelect: { colorBgContainer: '#404040' },
-    } : undefined;
+    // 暗黑模式叠加蓝调深色色阶（背景/文字/边框/填充分层），亮色保持 antd 默认
+    if (effectiveMode === 'dark') Object.assign(tokens, darkThemeTokens);
+
+    // 暗黑模式下输入类控件用 L1 内嵌底色，在卡片上形成「凹陷」层次
+    const components: ThemeConfig['components'] =
+      effectiveMode === 'dark' ? darkThemeComponents : undefined;
 
     return {
       algorithm: algorithms.length > 0 ? algorithms : antdTheme.defaultAlgorithm,
@@ -79,12 +78,12 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
     const root = document.documentElement;
     const body = document.body;
 
-    const bgLayout = effectiveMode === 'dark' ? '#000000' : '#f5f5f5';
+    const bgLayout = effectiveMode === 'dark' ? DARK_PALETTE.bgLayout : '#f5f5f5';
     root.style.backgroundColor = bgLayout;
     body.style.backgroundColor = bgLayout;
 
     const colorText = effectiveMode === 'dark'
-      ? 'rgba(255, 255, 255, 0.85)'
+      ? 'rgba(230, 237, 243, 0.92)'
       : 'rgba(0, 0, 0, 0.85)';
     root.style.color = colorText;
 
