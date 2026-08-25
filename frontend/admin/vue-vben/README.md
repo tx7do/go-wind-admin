@@ -44,3 +44,11 @@ https://apifoxmock.com/m1/5619700-5299226-default/admin/v1
 ## WebStorm相关
 
 1. `Ctrl+Alt+L`的格式化快捷键需要手动绑定到ESlint fix。
+
+## 环境变量
+
+> 以下仅列出与运行时地址相关的关键项，完整配置见 `apps/admin/.env.development` / `.env.production`。
+
+| 变量 | 说明 | 开发默认值 |
+|------|------|-----------|
+| `VITE_GLOB_SSE_URL` | SSE 推送地址 | `http://localhost:7789/events` |

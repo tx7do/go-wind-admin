@@ -128,6 +128,7 @@ pnpm dev:antd
 | Task Scheduler          | Manage tasks and task run logs; support create, update, delete, start, pause, and run immediately.                                                                                                                      |
 | File Management         | Manage file uploads, search files, upload to OSS or local storage, download, copy file address, delete files, support image preview (large view).                                                                       |
 | Login Policy | Manage login restriction policies; configure restriction type, method, value, and reason for target users. |
+| Multi-Factor Authentication (MFA) | TOTP-based multi-factor authentication, including login challenge, personal binding management, and admin rescue reset of a user's MFA. |
 | Language Management | Manage system-supported languages; configure language name, code, native name, enabled and default status. |
 | Message Categories      | Manage message categories (2-level custom categories) for message management category selection.                                                                                                                        |
 | Message Management      | Manage messages, send messages to specified users, view read status and read time.                                                                                                                                      |

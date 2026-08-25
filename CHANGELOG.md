@@ -11,6 +11,16 @@
 ### 新增
 - 新增项目治理文件：`CONTRIBUTING.md`、`SECURITY.md`、`CHANGELOG.md`，
   以及 `.github/` 下的 Issue / PR 模板与行为准则。
+- 多因素认证（MFA）：基于 TOTP 的登录挑战、个人中心绑定管理，以及管理员救援重置用户 MFA 的解锁路径。
+- 登录支持邮箱 / 手机号作为账号标识，登录策略接入登录主流程。
+- SSE 反向代理网关部署包（nginx，透传 `/events` 至后端 SSE transport），独立于 compose 部署。
+- React 前端暗色主题色板定稿（暗夜蓝黑底色 + 科技蓝主色）。
+
+### 变更
+- 刷新令牌（refresh token）由本地存储迁移至 HttpOnly Cookie，并改用自描述 JWT。
+- CORS 补齐 `allow_credentials`，以适配 HttpOnly Cookie 刷新令牌的跨域携带。
+- 安全加固：内容安全策略（CSP）、输入校验、日志注入防护、枚举零值守卫。
+- 后端日志统一迁移至 `kratos-bootstrap` logger，移除 refresh cookie 明文 HTTP 落地。
 
 ## [0.x] — 早期开发版本
 

@@ -63,7 +63,7 @@ pnpm preview
 |------|------|------|
 | `VITE_API_URL` | API 基础地址 | `http://localhost:7788` |
 | `VITE_SSE_URL` | SSE 推送地址 | `http://localhost:7789/events` |
-| `VITE_SERVER_PORT` | 开发服务器端口 | `7000` |
+| `VITE_SERVER_PORT` | 开发服务器端口 | `5888` |
 | `VITE_PROXY` | 开发代理配置 | `[["/admin", "http://127.0.0.1:7788/"]]` |
 | `VITE_APP_TITLE` | 应用标题 | `GoWind Admin` |
 | `VITE_MOCK` | 是否启用 Mock | `false` |

@@ -298,6 +298,8 @@ pnpm install
 | PostgreSQL | localhost:5432 | 数据库 |
 | Redis | localhost:6379 | 缓存 |
 
+> 上表为本地开发端口。生产环境中的 SSE 反向代理网关（独立 nginx 容器，端口 `8013`）与 JWT 签名密钥的环境变量注入属于部署配置，不在本地开发范围，详见 [backend_deploy.md](./backend_deploy.md)。
+
 ---
 
 ## 日常开发工作流

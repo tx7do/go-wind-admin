@@ -46,7 +46,7 @@
 npm install pnpm -g                    # 安装 pnpm（如未安装）
 pnpm config set registry https://registry.npmmirror.com  # 国内镜像（可选）
 pnpm install                           # 安装依赖
-pnpm run dev                           # 启动开发服务器 → http://localhost:3000
+pnpm run dev                           # 启动开发服务器 → http://localhost:5777
 ```
 
 ### 构建
@@ -383,7 +383,7 @@ const { isDark, layout, isMobile } = usePreferences();
 **开发环境** (`.env.development`)：
 
 ```bash
-VITE_APP_PORT=3000                            # 应用端口
+VITE_APP_PORT=5777                            # 应用端口
 VITE_APP_BASE_API=/admin/v1                   # 代理前缀
 VITE_APP_API_URL=http://localhost:7788        # 后端 API 地址
 VITE_APP_SSE_URL=http://localhost:7789/events # SSE 推送地址
