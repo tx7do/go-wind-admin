@@ -463,7 +463,18 @@
     "maskingRules": "Masking Rules",
     "businessPurpose": "Business Purpose",
     "dataCategory": "Data Category",
-    "dbUser": "Database User"
+    "dbUser": "Database User",
+    "userId": "User ID",
+    "tenantId": "Tenant ID",
+    "tenantName": "Tenant Name",
+    "traceId": "Trace ID",
+    "logHash": "Log Hash",
+    "signature": "Signature",
+    "sectionBasic": "Basic Info",
+    "sectionOther": "Other Info",
+    "sectionSql": "SQL Details",
+    "dataMaskedYes": "Masked",
+    "dataMaskedNo": "Not Masked"
   },
   "operationAuditLog": {
     "moduleName": "Operation Logs",
@@ -472,13 +483,21 @@
     "resourceType": "Resource Type",
     "resourceId": "Resource ID",
     "action": "Action",
-    "beforeData": "Before Data",
-    "afterData": "After Data",
+    "beforeData": "Before",
+    "afterData": "After",
     "sensitiveLevel": "Sensitivity Level",
     "requestId": "Request ID",
     "success": "Status",
     "ipAddress": "IP Address",
-    "geoLocation": "Geolocation"
+    "geoLocation": "Geolocation",
+    "failureReason": "Failure Reason",
+    "userId": "User ID",
+    "tenantName": "Tenant Name",
+    "traceId": "Trace ID",
+    "logHash": "Log Hash",
+    "signature": "Signature",
+    "sectionBasic": "Basic Info",
+    "sectionOther": "Other Info"
   },
   "permissionAuditLog": {
     "moduleName": "Permission Logs",
@@ -493,7 +512,14 @@
     "targetId": "Target ID",
     "targetName": "Target Name",
     "action": "Action",
-    "reason": "Change Reason"
+    "reason": "Change Reason",
+    "newValue": "After",
+    "oldValue": "Before",
+    "tenantId": "Tenant ID",
+    "logHash": "Log Hash",
+    "signature": "Signature",
+    "sectionBasic": "Basic Info",
+    "sectionOther": "Other Info"
   },
   "policyEvaluationLog": {
     "moduleName": "Policy Evaluation Logs",
@@ -509,7 +535,14 @@
     "ipAddress": "IP Address",
     "traceId": "Trace ID",
     "effectDetails": "Effect Details",
-    "evaluationContext": "Evaluation Context"
+    "evaluationContext": "Evaluation Context",
+    "scopeSql": "Generated SQL",
+    "logHash": "Log Hash",
+    "signature": "Signature",
+    "sectionBasic": "Basic Info",
+    "sectionOther": "Other Info",
+    "resultPass": "Pass",
+    "resultDenied": "Denied"
   },
   "api": {
     "moduleName": "API Resources",

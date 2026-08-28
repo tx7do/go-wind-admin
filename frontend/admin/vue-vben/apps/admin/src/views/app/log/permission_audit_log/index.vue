@@ -1,9 +1,12 @@
 ﻿<script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { Page, type VbenFormProps } from '@vben/common-ui';
+import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
+import { LucideEye } from '@vben/icons';
 
 import dayjs from 'dayjs';
+
+import { h } from 'vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
@@ -15,6 +18,8 @@ import {
 } from '#/api';
 import { type auditservicev1_PermissionAuditLog as PermissionAuditLog } from '#/api';
 import { $t } from '#/locales';
+
+import PermissionAuditLogDetailDrawer from './permission-audit-log-detail-drawer.vue';
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -175,8 +180,7 @@ const gridOptions: VxeGridProps<PermissionAuditLog> = {
     {
       title: $t('page.permissionAuditLog.action'),
       field: 'action',
-      slots: { default: 'action' },
-      width: 80,
+      slots: { default: 'actionTag' },
     },
     { title: $t('page.permissionAuditLog.targetType'), field: 'targetType' },
     { title: $t('page.permissionAuditLog.targetName'), field: 'targetName' },
@@ -190,20 +194,44 @@ const gridOptions: VxeGridProps<PermissionAuditLog> = {
       field: 'ipAddress',
       width: 140,
     },
+    {
+      title: $t('ui.table.action'),
+      field: 'action',
+      fixed: 'right',
+      slots: { default: 'action' },
+      width: 80,
+    },
   ],
 };
 
 const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
+
+const [Drawer, drawerApi] = useVbenDrawer({
+  connectedComponent: PermissionAuditLogDetailDrawer,
+});
+
+function handleView(row: PermissionAuditLog) {
+  drawerApi.setData({ row });
+  drawerApi.open();
+}
 </script>
 
 <template>
   <Page auto-content-height>
     <Grid :table-title="$t('menu.log.permissionAuditLog')">
-      <template #action="{ row }">
+      <template #actionTag="{ row }">
         <a-tag :color="permissionAuditLogActionToColor(row.action)">
           {{ permissionAuditLogActionToName(row.action) }}
         </a-tag>
       </template>
+      <template #action="{ row }">
+        <a-button
+          type="link"
+          :icon="h(LucideEye)"
+          @click="handleView(row)"
+        />
+      </template>
     </Grid>
+    <Drawer />
   </Page>
 </template>

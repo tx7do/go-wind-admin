@@ -1,9 +1,12 @@
 ﻿<script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { Page, type VbenFormProps } from '@vben/common-ui';
+import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
+import { LucideEye } from '@vben/icons';
 
 import dayjs from 'dayjs';
+
+import { h } from 'vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
@@ -18,6 +21,8 @@ import {
 } from '#/api';
 import { type auditservicev1_OperationAuditLog as OperationAuditLog } from '#/api';
 import { $t } from '#/locales';
+
+import OperationAuditLogDetailDrawer from './operation-audit-log-detail-drawer.vue';
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -198,8 +203,7 @@ const gridOptions: VxeGridProps<OperationAuditLog> = {
     {
       title: $t('page.operationAuditLog.action'),
       field: 'action',
-      slots: { default: 'action' },
-      width: 80,
+      slots: { default: 'actionTag' },
     },
     { title: $t('page.operationAuditLog.resourceType'), field: 'resourceType' },
     { title: $t('page.operationAuditLog.resourceId'), field: 'resourceId' },
@@ -218,10 +222,26 @@ const gridOptions: VxeGridProps<OperationAuditLog> = {
       field: 'ipAddress',
       width: 140,
     },
+    {
+      title: $t('ui.table.action'),
+      field: 'action',
+      fixed: 'right',
+      slots: { default: 'action' },
+      width: 80,
+    },
   ],
 };
 
 const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
+
+const [Drawer, drawerApi] = useVbenDrawer({
+  connectedComponent: OperationAuditLogDetailDrawer,
+});
+
+function handleView(row: OperationAuditLog) {
+  drawerApi.setData({ row });
+  drawerApi.open();
+}
 </script>
 
 <template>
@@ -235,11 +255,19 @@ const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
       <template #geoLocation="{ row }">
         {{ row.geoLocation?.province }} {{ row.geoLocation?.city }}
       </template>
-      <template #action="{ row }">
+      <template #actionTag="{ row }">
         <a-tag :color="operationAuditLogActionToColor(row.action)">
           {{ operationAuditLogActionToName(row.action) }}
         </a-tag>
       </template>
+      <template #action="{ row }">
+        <a-button
+          type="link"
+          :icon="h(LucideEye)"
+          @click="handleView(row)"
+        />
+      </template>
     </Grid>
+    <Drawer />
   </Page>
 </template>

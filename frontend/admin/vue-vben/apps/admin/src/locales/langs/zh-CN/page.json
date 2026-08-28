@@ -463,7 +463,18 @@
     "maskingRules": "脱敏规则",
     "businessPurpose": "业务处理目的",
     "dataCategory": "数据分类",
-    "dbUser": "数据库用户"
+    "dbUser": "数据库用户",
+    "userId": "用户ID",
+    "tenantId": "租户ID",
+    "tenantName": "租户名称",
+    "traceId": "追踪ID",
+    "logHash": "日志哈希",
+    "signature": "数字签名",
+    "sectionBasic": "基本信息",
+    "sectionOther": "其他信息",
+    "sectionSql": "SQL详情",
+    "dataMaskedYes": "已脱敏",
+    "dataMaskedNo": "未脱敏"
   },
   "operationAuditLog": {
     "moduleName": "操作日志",
@@ -472,13 +483,21 @@
     "resourceType": "资源类型",
     "resourceId": "资源ID",
     "action": "动作",
-    "beforeData": "动作",
-    "afterData": "动作",
+    "beforeData": "变更前数据",
+    "afterData": "变更后数据",
     "sensitiveLevel": "敏感等级",
     "requestId": "请求ID",
     "success": "操作状态",
     "ipAddress": "IP地址",
-    "geoLocation": "地理位置"
+    "geoLocation": "地理位置",
+    "failureReason": "失败原因",
+    "userId": "操作者ID",
+    "tenantName": "租户名称",
+    "traceId": "追踪ID",
+    "logHash": "日志哈希",
+    "signature": "数字签名",
+    "sectionBasic": "基本信息",
+    "sectionOther": "其他信息"
   },
   "permissionAuditLog": {
     "moduleName": "权限变更日志",
@@ -493,7 +512,14 @@
     "targetId": "目标ID",
     "targetName": "目标名称",
     "action": "动作",
-    "reason": "变更原因"
+    "reason": "变更原因",
+    "newValue": "变更后数据",
+    "oldValue": "变更前数据",
+    "tenantId": "租户ID",
+    "logHash": "日志哈希",
+    "signature": "数字签名",
+    "sectionBasic": "基本信息",
+    "sectionOther": "其他信息"
   },
   "policyEvaluationLog": {
     "moduleName": "策略评估日志",
@@ -509,7 +535,14 @@
     "ipAddress": "IP地址",
     "traceId": "追踪ID",
     "effectDetails": "效果详情",
-    "evaluationContext": "评估上下文"
+    "evaluationContext": "评估上下文",
+    "scopeSql": "生成的SQL条件",
+    "logHash": "日志哈希",
+    "signature": "数字签名",
+    "sectionBasic": "基本信息",
+    "sectionOther": "其他信息",
+    "resultPass": "通过",
+    "resultDenied": "拒绝"
   },
   "api": {
     "moduleName": "API资源",

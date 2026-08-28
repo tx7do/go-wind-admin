@@ -1,9 +1,12 @@
 ﻿<script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { Page, type VbenFormProps } from '@vben/common-ui';
+import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
+import { LucideEye } from '@vben/icons';
 
 import dayjs from 'dayjs';
+
+import { h } from 'vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
@@ -20,6 +23,8 @@ import {
 } from '#/api';
 import { type auditservicev1_DataAccessAuditLog as DataAccessAuditLog } from '#/api';
 import { $t } from '#/locales';
+
+import DataAccessAuditLogDetailDrawer from './data-access-audit-log-detail-drawer.vue';
 
 const formOptions: VbenFormProps = {
   // 默认展开
@@ -216,10 +221,26 @@ const gridOptions: VxeGridProps<DataAccessAuditLog> = {
       field: 'ipAddress',
       width: 140,
     },
+    {
+      title: $t('ui.table.action'),
+      field: 'action',
+      fixed: 'right',
+      slots: { default: 'action' },
+      width: 80,
+    },
   ],
 };
 
 const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
+
+const [Drawer, drawerApi] = useVbenDrawer({
+  connectedComponent: DataAccessAuditLogDetailDrawer,
+});
+
+function handleView(row: DataAccessAuditLog) {
+  drawerApi.setData({ row });
+  drawerApi.open();
+}
 </script>
 
 <template>
@@ -243,6 +264,14 @@ const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
           {{ dataAccessAuditLogCategoryToName(row.dataCategory) }}
         </a-tag>
       </template>
+      <template #action="{ row }">
+        <a-button
+          type="link"
+          :icon="h(LucideEye)"
+          @click="handleView(row)"
+        />
+      </template>
     </Grid>
+    <Drawer />
   </Page>
 </template>
