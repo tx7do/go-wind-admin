@@ -12,6 +12,7 @@ import ContentContainer from '@/layouts/components/PageContainer/ContentContaine
 import {
   getAccessTypeMap,
   getAccessTypeOptions,
+  getDataCategoryMap,
   getSuccessStatusList,
   successToColor,
   successToName,
@@ -30,6 +31,7 @@ const DataAccessAuditLogPage = () => {
 
   const accessTypeMap = getAccessTypeMap(t);
   const accessTypeOptions = getAccessTypeOptions(t);
+  const dataCategoryMap = getDataCategoryMap(t);
 
   const columns: ProColumns<DataAccessAuditLog>[] = [
     {
@@ -93,6 +95,13 @@ const DataAccessAuditLogPage = () => {
       width: 150,
       hideInSearch: true,
       ellipsis: true,
+      render: (_, record) => {
+        if (!record.dataCategory) return '-';
+        const config =
+          dataCategoryMap[record.dataCategory as keyof typeof dataCategoryMap];
+        if (!config) return record.dataCategory;
+        return <Tag color={config.color}>{config.text}</Tag>;
+      },
     },
     {
       title: t('latencyMs'),

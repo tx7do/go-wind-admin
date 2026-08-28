@@ -44,6 +44,43 @@ export function getSuccessStatusList(t: TFn) {
   ];
 }
 
+// ========== 数据分类（码值与后端 pkg/audit.ClassifyTable 一致） ==========
+
+/** 数据分类颜色映射 */
+export const DATA_CATEGORY_COLORS: Record<string, string> = {
+  USER_DATA: 'processing',
+  ORG_DATA: 'cyan',
+  ACCESS_CONTROL: 'purple',
+  TENANT_DATA: 'geekblue',
+  MESSAGE_DATA: 'success',
+  AUDIT_LOG: 'warning',
+  SYSTEM_CONFIG: 'default',
+  UNKNOWN: 'default',
+};
+
+/** 获取数据分类映射（text + color），未收录码值回退显示原始码值 */
+export function getDataCategoryMap(t: TFn) {
+  return {
+    USER_DATA: { text: t('dataCategory.USER_DATA'), color: DATA_CATEGORY_COLORS.USER_DATA },
+    ORG_DATA: { text: t('dataCategory.ORG_DATA'), color: DATA_CATEGORY_COLORS.ORG_DATA },
+    ACCESS_CONTROL: {
+      text: t('dataCategory.ACCESS_CONTROL'),
+      color: DATA_CATEGORY_COLORS.ACCESS_CONTROL,
+    },
+    TENANT_DATA: { text: t('dataCategory.TENANT_DATA'), color: DATA_CATEGORY_COLORS.TENANT_DATA },
+    MESSAGE_DATA: {
+      text: t('dataCategory.MESSAGE_DATA'),
+      color: DATA_CATEGORY_COLORS.MESSAGE_DATA,
+    },
+    AUDIT_LOG: { text: t('dataCategory.AUDIT_LOG'), color: DATA_CATEGORY_COLORS.AUDIT_LOG },
+    SYSTEM_CONFIG: {
+      text: t('dataCategory.SYSTEM_CONFIG'),
+      color: DATA_CATEGORY_COLORS.SYSTEM_CONFIG,
+    },
+    UNKNOWN: { text: t('dataCategory.UNKNOWN'), color: DATA_CATEGORY_COLORS.UNKNOWN },
+  };
+}
+
 /** 根据成功状态获取颜色 */
 export function successToColor(success: boolean | undefined): string {
   if (success === true) return 'success';

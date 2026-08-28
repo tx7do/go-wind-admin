@@ -10,6 +10,8 @@ import {
   dataAccessAuditLogAccessTypeList,
   dataAccessAuditLogAccessTypeToColor,
   dataAccessAuditLogAccessTypeToName,
+  dataAccessAuditLogCategoryToColor,
+  dataAccessAuditLogCategoryToName,
   fetchListDataAccessAuditLogs,
   PaginationQuery,
   successStatusList,
@@ -205,6 +207,7 @@ const gridOptions: VxeGridProps<DataAccessAuditLog> = {
     {
       title: $t('page.dataAccessAuditLog.dataCategory'),
       field: 'dataCategory',
+      slots: { default: 'dataCategory' },
     },
     { title: $t('page.dataAccessAuditLog.latencyMs'), field: 'latencyMs' },
     { title: $t('page.dataAccessAuditLog.username'), field: 'username' },
@@ -230,6 +233,14 @@ const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
       <template #accessType="{ row }">
         <a-tag :color="dataAccessAuditLogAccessTypeToColor(row.accessType)">
           {{ dataAccessAuditLogAccessTypeToName(row.accessType) }}
+        </a-tag>
+      </template>
+      <template #dataCategory="{ row }">
+        <a-tag
+          v-if="row.dataCategory"
+          :color="dataAccessAuditLogCategoryToColor(row.dataCategory)"
+        >
+          {{ dataAccessAuditLogCategoryToName(row.dataCategory) }}
         </a-tag>
       </template>
     </Grid>

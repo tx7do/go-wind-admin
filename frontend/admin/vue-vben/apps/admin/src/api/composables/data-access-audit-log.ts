@@ -148,3 +148,69 @@ export function dataAccessAuditLogAccessTypeToName(accessType: AccessType) {
   const matchedItem = values.find((item) => item.value === accessType);
   return matchedItem ? matchedItem.label : '';
 }
+
+// 数据分类码与后端 pkg/audit.ClassifyTable 一一对应
+export const dataAccessAuditLogCategoryList = computed(() => [
+  {
+    value: 'USER_DATA',
+    label: t('enum.dataAccessAuditLog.dataCategory.USER_DATA'),
+  },
+  {
+    value: 'ORG_DATA',
+    label: t('enum.dataAccessAuditLog.dataCategory.ORG_DATA'),
+  },
+  {
+    value: 'ACCESS_CONTROL',
+    label: t('enum.dataAccessAuditLog.dataCategory.ACCESS_CONTROL'),
+  },
+  {
+    value: 'TENANT_DATA',
+    label: t('enum.dataAccessAuditLog.dataCategory.TENANT_DATA'),
+  },
+  {
+    value: 'MESSAGE_DATA',
+    label: t('enum.dataAccessAuditLog.dataCategory.MESSAGE_DATA'),
+  },
+  {
+    value: 'AUDIT_LOG',
+    label: t('enum.dataAccessAuditLog.dataCategory.AUDIT_LOG'),
+  },
+  {
+    value: 'SYSTEM_CONFIG',
+    label: t('enum.dataAccessAuditLog.dataCategory.SYSTEM_CONFIG'),
+  },
+  { value: 'UNKNOWN', label: t('enum.dataAccessAuditLog.dataCategory.UNKNOWN') },
+]);
+
+const DATA_ACCESS_AUDIT_LOG_CATEGORY_COLOR_MAP: Record<
+  string,
+  'blue' | 'geekblue' | 'red' | 'green' | 'cyan' | 'purple' | 'orange' | 'default'
+> = {
+  USER_DATA: 'blue',
+  ORG_DATA: 'cyan',
+  ACCESS_CONTROL: 'purple',
+  TENANT_DATA: 'geekblue',
+  MESSAGE_DATA: 'green',
+  AUDIT_LOG: 'orange',
+  SYSTEM_CONFIG: 'default',
+  UNKNOWN: 'default',
+};
+
+export function dataAccessAuditLogCategoryToColor(
+  category: string | undefined,
+): 'blue' | 'geekblue' | 'red' | 'green' | 'cyan' | 'purple' | 'orange' | 'default' {
+  return (
+    DATA_ACCESS_AUDIT_LOG_CATEGORY_COLOR_MAP[category ?? ''] ?? 'default'
+  );
+}
+
+export function dataAccessAuditLogCategoryToName(
+  category: string | undefined,
+) {
+  if (!category) {
+    return '';
+  }
+  const values = dataAccessAuditLogCategoryList.value;
+  const matchedItem = values.find((item) => item.value === category);
+  return matchedItem ? matchedItem.label : category;
+}

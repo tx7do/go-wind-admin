@@ -183,6 +183,16 @@
       "SCAN": "SCAN",
       "ADMIN_OPERATION": "ADMIN OPERATION",
       "OTHER": "OTHER"
+    },
+    "dataCategory": {
+      "USER_DATA": "User Data",
+      "ORG_DATA": "Org Data",
+      "ACCESS_CONTROL": "Access Control",
+      "TENANT_DATA": "Tenant Data",
+      "MESSAGE_DATA": "Messages",
+      "AUDIT_LOG": "Audit Logs",
+      "SYSTEM_CONFIG": "System Config",
+      "UNKNOWN": "Other"
     }
   },
   "permissionAuditLog": {
