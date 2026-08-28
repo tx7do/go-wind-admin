@@ -49,8 +49,10 @@ service InternalMessageRecipientService {
 message InternalMessageRecipient {
   // 消息状态
   enum Status {
-    SENT = 0;      // (系统状态) 消息已存入接收者收件箱，等待客户端拉取
-    RECEIVED = 1;  // (客户端回执) 接收方客户端已成功接收/下载该消息
+    // (预留) 消息已存入接收者收件箱、等待客户端确认。当前服务端写入即 RECEIVED，
+    // SENT→RECEIVED 的客户端回执链路未启用（MarkNotificationsStatus 无 HTTP 路由也无人调用）。
+    SENT = 0;
+    RECEIVED = 1;  // (写入态) 消息已投递到接收者收件箱，未读
     READ = 2;      // (客户端回执) 接收方已读消息
     REVOKED = 3;   // (发送者动作) 消息被发送者撤销
     DELETED = 4;   // (接收者动作) 接收者删除该消息
@@ -181,9 +183,10 @@ message DeleteNotificationFromInboxRequest {
     (gnostic.openapi.v3.property) = { description: "用户ID" }
   ]; // 用户ID
 
+  // 收件箱记录ID列表；为空表示清空该用户收件箱（与 MarkNotificationAsRead 空 ids 语义一致）。
   repeated uint32 recipient_ids = 2 [
     json_name = "recipientIds",
-    (gnostic.openapi.v3.property) = { description: "收件箱记录ID列表" }
+    (gnostic.openapi.v3.property) = { description: "收件箱记录ID列表，为空表示清空收件箱" }
   ]; // 收件箱记录ID列表
 }
 
@@ -193,9 +196,11 @@ message MarkNotificationAsReadRequest {
     (gnostic.openapi.v3.property) = { description: "用户ID" }
   ]; // 用户ID
 
+  // 收件箱记录ID列表；为空表示标记该用户全部未读通知（服务端按用户维度兜底，
+  // 前端"全部已读"入口只加载了当前页数据，无法枚举全部ID）。
   repeated uint32 recipient_ids = 2 [
     json_name = "recipientIds",
-    (gnostic.openapi.v3.property) = { description: "收件箱记录ID列表" }
+    (gnostic.openapi.v3.property) = { description: "收件箱记录ID列表，为空表示全部未读" }
   ]; // 收件箱记录ID列表
 }
 

@@ -44,5 +44,11 @@
     "NOTIFICATION": "Notification",
     "PRIVATE": "Private",
     "GROUP": "Group"
-  }
+  },
+  "sendScope": "Send To",
+  "sendScopeAll": "All Users",
+  "sendScopeUsers": "Selected Users",
+  "targetUsers": "Recipients",
+  "targetUsersPlaceholder": "Select recipients",
+  "requiredTargetUsers": "Please select recipients"
 }

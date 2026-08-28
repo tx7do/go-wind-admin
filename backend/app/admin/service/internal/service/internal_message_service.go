@@ -3,8 +3,6 @@ package service
 import (
 	"context"
 	"encoding/json"
-	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -29,9 +27,15 @@ import (
 	"go-wind-admin/pkg/middleware/auth"
 )
 
-// defaultBroadcastTimeout 全员广播 fan-out 的总超时。
-// 脱离请求的 HTTP ctx 后由该超时兜底，避免广播 goroutine 因个别慢操作无限期挂起。
-const defaultBroadcastTimeout = 5 * time.Minute
+const (
+	// defaultBroadcastTimeout 全员广播 fan-out 的总超时。
+	// 脱离请求的 HTTP ctx 后由该超时兜底，避免广播 goroutine 因个别慢操作无限期挂起。
+	defaultBroadcastTimeout = 5 * time.Minute
+
+	// broadcastUserPageSize 全员广播时按页拉取用户的页大小。
+	// 不用 NoPaging 全量拉取，避免用户量大时把全表用户一次性读进内存。
+	broadcastUserPageSize uint32 = 1000
+)
 
 type InternalMessagePublisher interface {
 	Publish(ctx context.Context, streamId sse.StreamID, event *sse.Event)
@@ -278,22 +282,10 @@ func (s *InternalMessageService) DeleteMessage(ctx context.Context, req *interna
 
 // RevokeMessage 撤销某条消息
 func (s *InternalMessageService) RevokeMessage(ctx context.Context, req *internalMessageV1.RevokeMessageRequest) (*emptypb.Empty, error) {
-	// 消息本体删除与收件人撤销分属两个 repo，无共享事务。
-	// 此前第一个错误被第二个覆盖并丢弃，消息删除失败但收件人撤销成功时会向客户端返回成功（消息仍在）。
-	// 这里两者都执行，用 errors.Join 聚合，保证任一失败都如实上报。
-	var errs []error
-	if err := s.internalMessageRepo.Delete(ctx, req.GetMessageId()); err != nil {
-		s.log.Errorf(ctx, "delete internal message failed: [%d] %s", req.GetMessageId(), err)
-		errs = append(errs, fmt.Errorf("delete message failed: %w", err))
-	}
-
-	if err := s.internalMessageRecipientRepo.RevokeMessage(ctx, req); err != nil {
-		s.log.Errorf(ctx, "delete internal message inbox failed: [%d][%d] %s", req.GetMessageId(), req.GetUserId(), err)
-		errs = append(errs, fmt.Errorf("revoke recipients failed: %w", err))
-	}
-
-	if len(errs) > 0 {
-		return nil, errors.Join(errs...)
+	// 消息本体删除与收件人撤销收在同一个事务里执行，避免半成功留下幽灵收件记录。
+	if err := s.internalMessageRecipientRepo.RevokeMessageWithMessage(ctx, req); err != nil {
+		s.log.Errorf(ctx, "revoke internal message failed: [%d][%d] %s", req.GetMessageId(), req.GetUserId(), err)
+		return nil, err
 	}
 
 	return &emptypb.Empty{}, nil
@@ -326,13 +318,13 @@ func (s *InternalMessageService) SendMessage(ctx context.Context, req *internalM
 	}
 
 	if req.GetTargetAll() {
-		// 全员广播：fan-out 可能很慢（每个用户一次 DB 写 + Redis SCAN），
-		// 不能阻塞调用方 HTTP 请求，也不能直接复用请求 ctx（客户端断连会取消 ctx 进而中断投递）。
+		// 全员广播：按页拉取用户 + 分批批量插入，总量大时也不能阻塞调用方 HTTP 请求，
+		// 也不能直接复用请求 ctx（客户端断连会取消 ctx 进而中断投递）。
 		// 因此在脱离请求的后台 ctx 上异步执行，并在完成后记录失败计数。
 		//
 		// 注意 viewer：请求 ctx 里携带操作人的 UserViewer（auth 中间件注入），ent 的 TenantPrivacy
 		// 在 viewer 缺失时会返回 error。若直接用 context.Background() 会丢掉 viewer，
-		// 导致 userRepo.List 与 recipientRepo.Create 全部失败（广播实际一人未送达）。
+		// 导致 userRepo.List 与收件记录插入全部失败（广播实际一人未送达）。
 		// 故启动 goroutine 前先从请求 ctx 取出 viewer，再贴到后台 ctx 上，保持与同步路径一致的租户可见性。
 		vc, _ := viewer.FromContext(ctx)
 		go func() {
@@ -342,22 +334,46 @@ func (s *InternalMessageService) SendMessage(ctx context.Context, req *internalM
 				broadcastCtx = viewer.WithContext(broadcastCtx, vc)
 			}
 
-			users, err := s.userRepo.List(broadcastCtx, &paginationV1.PagingRequest{NoPaging: trans.Ptr(true)})
-			if err != nil {
-				s.log.Errorf(ctx, "send message failed, list users failed: %s", err)
-				return
-			}
+			var total, failCount int
+			for page := uint32(1); ; page++ {
+				users, err := s.userRepo.List(broadcastCtx, &paginationV1.PagingRequest{
+					Page:     trans.Ptr(page),
+					PageSize: trans.Ptr(broadcastUserPageSize),
+				})
+				if err != nil {
+					s.log.Errorf(broadcastCtx, "broadcast message [%d]: list users (page %d) failed: %s", msg.GetId(), page, err)
+					break
+				}
+				if len(users.GetItems()) == 0 {
+					break
+				}
 
-			var failCount int
-			for _, user := range users.Items {
-				if err := s.sendNotification(broadcastCtx, msg.GetId(), user.GetId(), operator.GetUserId(), &now, msg.GetTitle(), msg.GetContent()); err != nil {
-					failCount++
+				recipients := make([]*internalMessageV1.InternalMessageRecipient, 0, len(users.GetItems()))
+				for _, user := range users.GetItems() {
+					recipients = append(recipients, newMessageRecipient(msg.GetId(), user.GetId(), operator.GetUserId(), &now, msg.GetTitle(), msg.GetContent()))
+				}
+
+				created, err := s.internalMessageRecipientRepo.CreateBulk(broadcastCtx, recipients)
+				if err != nil {
+					// CreateBulk 失败的批次会被跳过并聚合在 err 里，成功批次照常返回，这里继续处理后续页。
+					s.log.Errorf(broadcastCtx, "broadcast message [%d]: bulk insert recipients (page %d) failed: %s", msg.GetId(), page, err)
+				}
+				total += len(recipients)
+				failCount += len(recipients) - len(created)
+
+				for _, recipient := range created {
+					s.publishNotification(broadcastCtx, recipient)
+				}
+
+				if len(users.GetItems()) < int(broadcastUserPageSize) {
+					break
 				}
 			}
+
 			if failCount > 0 {
-				s.log.Warnf(ctx, "broadcast message [%d]: %d/%d recipients failed", msg.GetId(), failCount, len(users.Items))
+				s.log.Warnf(broadcastCtx, "broadcast message [%d]: %d/%d recipients failed", msg.GetId(), failCount, total)
 			} else {
-				s.log.Infof(ctx, "broadcast message [%d] to %d recipients done", msg.GetId(), len(users.Items))
+				s.log.Infof(broadcastCtx, "broadcast message [%d] to %d recipients done", msg.GetId(), total)
 			}
 		}()
 	} else {
@@ -384,17 +400,49 @@ func (s *InternalMessageService) SendMessage(ctx context.Context, req *internalM
 	}, nil
 }
 
-// sendNotification 向客户端发送通知消息
-func (s *InternalMessageService) sendNotification(ctx context.Context, messageId uint32, recipientUserId uint32, senderUserId uint32, now *time.Time, title, content string) error {
-	recipient := &internalMessageV1.InternalMessageRecipient{
+// newMessageRecipient 构造一条收件记录。
+// 状态直接写 RECEIVED 并落 received_at：SENT→RECEIVED 的流转本应由客户端确认送达
+// （MarkNotificationsStatus），但该接口没有 HTTP 路由也无人调用，若写 SENT，
+// 按 status=RECEIVED 过滤的收件箱/未读列表将永远查不到新消息。
+func newMessageRecipient(messageId, recipientUserId, senderUserId uint32, now *time.Time, title, content string) *internalMessageV1.InternalMessageRecipient {
+	return &internalMessageV1.InternalMessageRecipient{
 		MessageId:       trans.Ptr(messageId),
 		RecipientUserId: trans.Ptr(recipientUserId),
-		Status:          trans.Ptr(internalMessageV1.InternalMessageRecipient_SENT),
+		Status:          trans.Ptr(internalMessageV1.InternalMessageRecipient_RECEIVED),
+		ReceivedAt:      timeutil.TimeToTimestamppb(now),
 		CreatedBy:       trans.Ptr(senderUserId),
 		CreatedAt:       timeutil.TimeToTimestamppb(now),
 		Title:           trans.Ptr(title),
 		Content:         trans.Ptr(content),
 	}
+}
+
+// publishNotification 尽力而为地实时推送一条收件记录。
+// 站内信以落库为准，推送失败（用户离线、缓冲已满）不影响投递，客户端重连后可从收件箱补取。
+func (s *InternalMessageService) publishNotification(ctx context.Context, recipient *internalMessageV1.InternalMessageRecipient) {
+	recipientJson, err := json.Marshal(recipient)
+	if err != nil {
+		s.log.Errorf(ctx, "marshal recipient failed, skip sse push: %s", err)
+		return
+	}
+
+	// streamID 用 userId：同一用户的所有在线设备订阅同一条流，
+	// 库的 stream fan-out 会把该事件投递给该流的全部 subscriber，因此只需单次 publish。
+	// TryPublish 非阻塞推送：流不存在（用户无在线 SSE 连接）或缓冲已满时立即跳过，
+	// 避免慢客户端阻塞发送方。
+	streamId := strconv.FormatUint(uint64(recipient.GetRecipientUserId()), 10)
+	if ok := s.internalMessagePublisher.TryPublish(ctx, sse.StreamID(streamId), &sse.Event{
+		ID:    []byte(id.NewGUIDv4(false)),
+		Data:  recipientJson,
+		Event: []byte("notification"),
+	}); !ok {
+		s.log.Debugf(ctx, "sse try publish skipped (stream not exist or buffer full): user=%d stream=%s", recipient.GetRecipientUserId(), streamId)
+	}
+}
+
+// sendNotification 单个收件人：落库 + 实时推送
+func (s *InternalMessageService) sendNotification(ctx context.Context, messageId, recipientUserId, senderUserId uint32, now *time.Time, title, content string) error {
+	recipient := newMessageRecipient(messageId, recipientUserId, senderUserId, now, title, content)
 
 	var err error
 	var entity *internalMessageV1.InternalMessageRecipient
@@ -404,26 +452,7 @@ func (s *InternalMessageService) sendNotification(ctx context.Context, messageId
 	}
 	recipient.Id = entity.Id
 
-	recipientJson, err := json.Marshal(recipient)
-	if err != nil {
-		// 序列化失败：记录后跳过推送（SSE 客户端把空 Data 当作断流）。
-		// 收件人记录已落库，不影响投递状态，只是不实时推送。
-		s.log.Errorf(ctx, "marshal recipient failed, skip sse push: %s", err)
-		return nil
-	}
-
-	// streamID 已从 access token 改为 userId：同一用户的所有在线设备订阅同一条流，
-	// 库的 stream fan-out 会把该事件投递给该流的全部 subscriber，因此只需单次 publish。
-	// 用 TryPublish 非阻塞推送：流不存在（用户无在线 SSE 连接）或缓冲已满时立即跳过，
-	// 避免慢客户端阻塞发送方。站内信已落库，客户端重连后可拉取收件箱补取，实时推送仅为尽力而为。
-	streamId := strconv.FormatUint(uint64(recipientUserId), 10)
-	if ok := s.internalMessagePublisher.TryPublish(ctx, sse.StreamID(streamId), &sse.Event{
-		ID:    []byte(id.NewGUIDv4(false)),
-		Data:  recipientJson,
-		Event: []byte("notification"),
-	}); !ok {
-		s.log.Debugf(ctx, "sse try publish skipped (stream not exist or buffer full): user=%d stream=%s", recipientUserId, streamId)
-	}
+	s.publishNotification(ctx, recipient)
 
 	return nil
 }

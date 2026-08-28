@@ -5,6 +5,7 @@ import { ref, onMounted, onBeforeUnmount } from "vue";
 import {
   fetchListUserInbox,
   fetchGetInternalMessage,
+  useDeleteNotificationFromInbox,
   useMarkNotificationAsRead,
 } from "@/api/composables";
 import { useAppUserStore } from "@/stores";
@@ -21,6 +22,7 @@ const NOTICE_EVENT = "notification";
 
 export function useNotice() {
   const { mutateAsync: markNotificationAsRead } = useMarkNotificationAsRead();
+  const { mutateAsync: deleteNotificationFromInbox } = useDeleteNotificationFromInbox();
   const userStore = useAppUserStore();
 
   // 状态
@@ -93,18 +95,15 @@ export function useNotice() {
     const userId = userStore.userInfo?.id;
     if (!userId) return;
 
-    // 获取所有未读消息ID
-    const unreadIds = list.value
-      .filter((item) => item.status !== "READ")
-      .map((item) => Number(item.id));
-
-    if (unreadIds.length === 0) {
+    if (unreadTotal.value === 0) {
       ElMessage.info("没有未读消息");
       return;
     }
 
     try {
-      await markNotificationAsRead({ userId, recipientIds: unreadIds });
+      // 空 recipientIds 表示标记该用户全部未读（服务端按用户维度兜底）：
+      // 下拉只加载了当前页，无法枚举全部未读ID。
+      await markNotificationAsRead({ userId, recipientIds: [] });
       ElMessage.success("已全部标记为已读");
     } catch {
       ElMessage.error("操作失败");
@@ -130,17 +129,15 @@ export function useNotice() {
       return;
     }
 
-    // 获取所有消息ID
-    const allIds = list.value.map((item) => Number(item.id));
-
-    if (allIds.length === 0) {
+    if (list.value.length === 0 && unreadTotal.value === 0) {
       ElMessage.info("没有消息可清空");
       return;
     }
 
     try {
-      // TODO: 调用后端 API 删除消息
-      // await internalMessageStore.deleteMessages(userId, allIds);
+      // 空 recipientIds 表示清空该用户收件箱（服务端按用户维度兜底，
+      // 下拉只加载了当前页，无法枚举全部ID），危险操作已有上方二次确认。
+      await deleteNotificationFromInbox({ userId, recipientIds: [] });
       ElMessage.success("已清空所有消息");
     } catch {
       ElMessage.error("操作失败");

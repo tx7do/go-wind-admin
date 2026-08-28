@@ -359,7 +359,11 @@
     "drawer": {
       "create": "发布消息",
       "update": "修改消息"
-    }
+    },
+    "sendScope": "发送范围",
+    "sendScopeAll": "全员",
+    "sendScopeUsers": "指定用户",
+    "targetUsers": "接收用户"
   },
   "internalMessageCategory": {
     "moduleName": "消息分类",

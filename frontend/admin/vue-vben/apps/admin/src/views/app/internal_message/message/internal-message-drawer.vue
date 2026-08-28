@@ -15,6 +15,7 @@ import {
 } from '#/api';
 import {
   fetchListMessageCategories,
+  fetchListUsers,
   internalMessageStatusList,
   internalMessageTypeList,
   PaginationQuery,
@@ -76,6 +77,45 @@ const [BaseForm, baseFormApi] = useVbenForm({
         showSearch: true,
       },
       rules: 'selectRequired',
+    },
+    {
+      component: 'RadioGroup',
+      fieldName: 'sendScope',
+      label: $t('page.internalMessage.sendScope'),
+      defaultValue: 'ALL',
+      componentProps: {
+        class: 'w-full',
+        options: [
+          { label: $t('page.internalMessage.sendScopeAll'), value: 'ALL' },
+          { label: $t('page.internalMessage.sendScopeUsers'), value: 'USERS' },
+        ],
+      },
+    },
+    {
+      // 指定用户范围才渲染并必填；用户选项懒加载（ApiSelect 首次渲染才调 api）
+      component: 'ApiSelect',
+      fieldName: 'targetUserIds',
+      label: $t('page.internalMessage.targetUsers'),
+      dependencies: {
+        triggerFields: ['sendScope'],
+        if: (values) => values.sendScope === 'USERS',
+        required: (values) => values.sendScope === 'USERS',
+      },
+      componentProps: {
+        class: 'w-full',
+        mode: 'multiple',
+        allowClear: true,
+        showSearch: true,
+        optionFilterProp: 'label',
+        placeholder: $t('ui.placeholder.select'),
+        api: async () => {
+          const result = await fetchListUsers(new PaginationQuery({}));
+          return (result.items || []).map((u: any) => ({
+            label: u.nickname ? `${u.nickname}(${u.username})` : u.username,
+            value: u.id,
+          }));
+        },
+      },
     },
     {
       component: 'ApiTreeSelect',
@@ -148,18 +188,20 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     setLoading(true);
 
-    // 获取表单数据
-    const values = await baseFormApi.getValues();
+    // 获取表单数据；sendScope/targetUserIds 是前端选择发送范围的控制字段，
+    // 不随报文提交（protojson 对未知字段报错）
+    const { sendScope, targetUserIds, ...rest } = await baseFormApi.getValues();
 
-    console.log(getTitle.value, values);
+    console.log(getTitle.value, rest);
 
     try {
       await (data.value?.create
-        ? sendMessage({
-            ...values,
-            targetAll: true,
-          } as SendMessageRequest)
-        : updateInternalMessage({ id: data.value.row.id, values }));
+        ? sendMessage(
+            (sendScope === 'USERS'
+              ? { ...rest, targetUserIds }
+              : { ...rest, targetAll: true }) as SendMessageRequest,
+          )
+        : updateInternalMessage({ id: data.value.row.id, values: rest }));
 
       notification.success({
         message: data.value?.create

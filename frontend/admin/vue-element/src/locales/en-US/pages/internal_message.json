@@ -16,5 +16,10 @@
   "drawer": {
     "create": "New Message",
     "update": "Edit Message"
-  }
+  },
+  "sendScope": "Send To",
+  "sendScopeAll": "All Users",
+  "sendScopeUsers": "Selected Users",
+  "targetUsers": "Recipients",
+  "requiredTargetUsers": "Please select recipients"
 }

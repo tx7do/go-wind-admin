@@ -233,8 +233,10 @@ message RevokeMessageRequest {
     (gnostic.openapi.v3.property) = { description: "消息ID" }
   ]; // 消息ID
 
+  // 用户ID：0 为全局撤销（删除消息本体与全部收件记录，同一事务）；
+  // 大于 0 为单用户撤销（仅删除该用户收件记录，消息本体与其他收件人不受影响）。
   uint32 user_id = 2 [
     json_name = "userId",
-    (gnostic.openapi.v3.property) = { description: "用户ID" }
+    (gnostic.openapi.v3.property) = { description: "用户ID，0表示全局撤销" }
   ]; // 用户ID
 }

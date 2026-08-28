@@ -165,21 +165,16 @@ async function handleMarkAsRead(item: NotificationItem) {
  * 全部通知标识为已读
  */
 async function handleMakeAll() {
-  const ids: number[] = [];
-  for (const item of notifications.value) {
-    if (!item.isRead) {
-      ids.push(item.id);
-    }
-  }
-
-  if (ids.length === 0) {
+  if (!notifications.value.some((item) => !item.isRead)) {
     return;
   }
 
   try {
+    // 空 recipientIds 表示标记该用户全部未读（服务端按用户维度兜底）：
+    // 面板只加载了当前页，无法枚举全部未读ID。
     await markNotificationAsRead({
       userId: userStore.userInfo?.id ?? 0,
-      recipientIds: ids,
+      recipientIds: [],
     });
 
     notification.success({

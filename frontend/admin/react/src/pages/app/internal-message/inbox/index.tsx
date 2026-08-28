@@ -7,6 +7,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { internal_messageservicev1_InternalMessageRecipient as InboxItem } from '@/api/generated/admin/service/v1';
 import { PaginationQuery } from '@/core';
+import { useAuthStore } from '@/stores';
 import {
   fetchListUserInbox,
   useMarkNotificationAsRead,
@@ -24,6 +25,7 @@ const InboxList = () => {
   const actionRef = useRef<ActionType>(null);
   const queryClient = useQueryClient();
   const { message } = App.useApp();
+  const userId = useAuthStore((s) => s.userInfo?.id);
 
   const containerRef = useRef<HTMLDivElement>(null);
   const tableScrollY = useProTableScrollY(containerRef);
@@ -146,6 +148,8 @@ const InboxList = () => {
                   formValues[key] = value;
                 }
               });
+              // 收件箱只看自己的：不传 recipient_user_id 会按租户过滤，列出其他用户的收件记录
+              formValues.recipient_user_id = String(userId);
 
               const query = new PaginationQuery({
                 formValues,

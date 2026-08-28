@@ -40,6 +40,38 @@
         </ElCol>
       </ElRow>
 
+      <!-- 发送范围与接收用户：仅创建模式 -->
+      <template v-if="isCreate">
+        <ElFormItem :label="$t('pages.internal_message.sendScope')" prop="sendScope">
+          <ElRadioGroup v-model="formData.sendScope">
+            <ElRadio value="ALL">{{ $t("pages.internal_message.sendScopeAll") }}</ElRadio>
+            <ElRadio value="USERS">{{ $t("pages.internal_message.sendScopeUsers") }}</ElRadio>
+          </ElRadioGroup>
+        </ElFormItem>
+
+        <ElFormItem
+          v-if="formData.sendScope === 'USERS'"
+          :label="$t('pages.internal_message.targetUsers')"
+          prop="targetUserIds"
+        >
+          <ElSelect
+            v-model="formData.targetUserIds"
+            multiple
+            filterable
+            clearable
+            :placeholder="$t('common.placeholder.select')"
+            style="width: 100%"
+          >
+            <ElOption
+              v-for="u in userOptions"
+              :key="u.value"
+              :label="u.label"
+              :value="u.value"
+            />
+          </ElSelect>
+        </ElFormItem>
+      </template>
+
       <ElFormItem :label="$t('pages.internal_message.categoryId')" prop="categoryId">
         <ElTreeSelect
           v-model="formData.categoryId"
@@ -85,6 +117,7 @@ import {
   internalMessageStatusList,
   internalMessageTypeList,
   fetchListMessageCategories,
+  fetchListUsers,
   useSendMessage,
   useUpdateInternalMessage,
 } from "@/api/composables";
@@ -106,6 +139,9 @@ const currentId = ref<number | undefined>();
 // 分类树数据
 const categoryTreeData = ref<any[]>([]);
 
+// 接收用户选项（切换到指定用户时懒加载）
+const userOptions = ref<{ label: string; value: number }[]>([]);
+
 // 表单数据
 const formData = reactive({
   status: "DRAFT",
@@ -113,6 +149,8 @@ const formData = reactive({
   categoryId: undefined as number | undefined,
   title: "",
   content: "",
+  sendScope: "ALL" as "ALL" | "USERS",
+  targetUserIds: [] as number[],
 });
 
 // 表单验证规则
@@ -123,7 +161,40 @@ const formRules: FormRules = {
     { required: true, message: $t("common.validation.selectRequired"), trigger: "change" },
   ],
   title: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
+  targetUserIds: [
+    {
+      validator: (_rule, value: number[], callback) => {
+        if (formData.sendScope === "USERS" && (!value || value.length === 0)) {
+          callback(new Error($t("pages.internal_message.requiredTargetUsers")));
+        } else {
+          callback();
+        }
+      },
+      trigger: "change",
+    },
+  ],
 };
+
+// 切换到指定用户时按需拉取用户选项（fetchListUsers 不传分页即全量，管理员规模可控）
+async function loadUserOptions() {
+  if (userOptions.value.length > 0) return;
+  try {
+    const result = await fetchListUsers(new PaginationQuery({}));
+    userOptions.value = (result.items || []).map((u: any) => ({
+      label: u.nickname ? `${u.nickname}(${u.username})` : String(u.username),
+      value: Number(u.id),
+    }));
+  } catch (error) {
+    console.error("加载用户列表失败", error);
+  }
+}
+
+watch(
+  () => formData.sendScope,
+  (val) => {
+    if (val === "USERS") loadUserOptions();
+  },
+);
 
 // 状态选项
 const statusOptions = computed(() => internalMessageStatusList.value);
@@ -157,6 +228,8 @@ function resetForm() {
   formData.categoryId = undefined;
   formData.title = "";
   formData.content = "";
+  formData.sendScope = "ALL";
+  formData.targetUserIds = [];
   formRef.value?.clearValidate();
 }
 
@@ -202,14 +275,17 @@ async function handleSubmit() {
     loading.value = true;
 
     if (isCreate.value) {
-      await sendMessage({
-        targetUserIds: undefined,
-        ...formData,
-        targetAll: true,
-      } as any);
+      // sendScope/targetUserIds 是前端选择发送范围的控制字段，按范围决定提交形态
+      const { sendScope, targetUserIds, ...rest } = formData;
+      await sendMessage(
+        (sendScope === "USERS"
+          ? { ...rest, targetUserIds }
+          : { ...rest, targetAll: true }) as any
+      );
       ElMessage.success($t("common.notification.createSuccess"));
     } else {
-      await updateMessage({ id: currentId.value!, values: formData });
+      const { sendScope: _scope, targetUserIds: _uids, ...editValues } = formData;
+      await updateMessage({ id: currentId.value!, values: editValues });
       ElMessage.success($t("common.notification.updateSuccess"));
     }
 

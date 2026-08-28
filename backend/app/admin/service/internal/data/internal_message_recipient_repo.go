@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -17,6 +18,7 @@ import (
 	"github.com/tx7do/go-utils/trans"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
+	"go-wind-admin/app/admin/service/internal/data/ent/internalmessage"
 	"go-wind-admin/app/admin/service/internal/data/ent/internalmessagerecipient"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 
@@ -162,6 +164,51 @@ func (r *InternalMessageRecipientRepo) Create(ctx context.Context, req *internal
 	return r.mapper.ToDTO(entity), nil
 }
 
+// recipientInsertBatchSize 批量插入收件记录的单批行数。
+// 控制单条 INSERT 语句的大小，避免超过 max_allowed_packet 或单事务过大。
+const recipientInsertBatchSize = 500
+
+// CreateBulk 批量插入收件记录，超出单批上限时自动分批。
+// 部分批次失败时跳过该批继续后续批次，返回成功落库的记录并聚合错误；
+// 调用方以（入参数量 - 返回数量）得知失败条数。
+func (r *InternalMessageRecipientRepo) CreateBulk(ctx context.Context, reqs []*internalMessageV1.InternalMessageRecipient) ([]*internalMessageV1.InternalMessageRecipient, error) {
+	if len(reqs) == 0 {
+		return nil, nil
+	}
+
+	var (
+		created []*internalMessageV1.InternalMessageRecipient
+		errs    error
+	)
+	for start := 0; start < len(reqs); start += recipientInsertBatchSize {
+		end := min(start+recipientInsertBatchSize, len(reqs))
+
+		builders := make([]*ent.InternalMessageRecipientCreate, 0, end-start)
+		for _, req := range reqs[start:end] {
+			builders = append(builders, r.entClient.Client().InternalMessageRecipient.Create().
+				SetNillableTenantID(req.TenantId).
+				SetNillableMessageID(req.MessageId).
+				SetNillableRecipientUserID(req.RecipientUserId).
+				SetNillableStatus(r.statusConverter.ToEntity(req.Status)).
+				SetNillableReceivedAt(timeutil.TimestamppbToTime(req.ReceivedAt)).
+				SetNillableReadAt(timeutil.TimestamppbToTime(req.ReadAt)).
+				SetCreatedAt(time.Now()))
+		}
+
+		entities, err := r.entClient.Client().InternalMessageRecipient.CreateBulk(builders...).Save(ctx)
+		if err != nil {
+			r.log.Errorf(ctx, "bulk insert internal message recipients failed: %s", err.Error())
+			errs = errors.Join(errs, err)
+			continue
+		}
+		for _, entity := range entities {
+			created = append(created, r.mapper.ToDTO(entity))
+		}
+	}
+
+	return created, errs
+}
+
 func (r *InternalMessageRecipientRepo) Update(ctx context.Context, req *internalMessageV1.UpdateInternalMessageRecipientRequest) error {
 	if req == nil || req.Data == nil {
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
@@ -221,22 +268,24 @@ func (r *InternalMessageRecipientRepo) Delete(ctx context.Context, id uint32) er
 	return nil
 }
 
-// MarkNotificationAsRead 将通知标记为已读
+// MarkNotificationAsRead 将通知标记为已读。
+// recipient_ids 为空表示"标记该用户全部未读"——前端"全部已读"入口只加载了当前页数据，
+// 无法枚举全部 id，由服务端按用户维度兜底（status <> READ 的守卫保证已读记录不被重写）。
 func (r *InternalMessageRecipientRepo) MarkNotificationAsRead(ctx context.Context, req *internalMessageV1.MarkNotificationAsReadRequest) error {
-	if len(req.GetRecipientIds()) == 0 {
-		return internalMessageV1.ErrorBadRequest("invalid parameter")
-	}
 	if req.GetUserId() == 0 {
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
 	}
 
 	now := time.Now()
-	_, err := r.entClient.Client().InternalMessageRecipient.Update().
+	builder := r.entClient.Client().InternalMessageRecipient.Update().
 		Where(
-			internalmessagerecipient.IDIn(req.GetRecipientIds()...),
 			internalmessagerecipient.RecipientUserIDEQ(req.GetUserId()),
 			internalmessagerecipient.StatusNEQ(internalmessagerecipient.StatusRead),
-		).
+		)
+	if len(req.GetRecipientIds()) > 0 {
+		builder = builder.Where(internalmessagerecipient.IDIn(req.GetRecipientIds()...))
+	}
+	_, err := builder.
 		SetStatus(internalmessagerecipient.StatusRead).
 		SetNillableReadAt(trans.Ptr(now)).
 		SetNillableUpdatedAt(trans.Ptr(now)).
@@ -288,12 +337,82 @@ func (r *InternalMessageRecipientRepo) RevokeMessage(ctx context.Context, req *i
 	return err
 }
 
+// RevokeMessageWithMessage 撤销消息。
+// user_id == 0 为全局撤销：同一事务内删除消息本体与全部收件记录——两表各自删除无共享事务时，
+// 半成功会留下指向已删除消息的幽灵收件记录；user_id > 0 为单用户撤销：仅删除该用户的收件记录，
+// 消息本体与其他收件人不受影响（单条语句，无需事务）。
+func (r *InternalMessageRecipientRepo) RevokeMessageWithMessage(ctx context.Context, req *internalMessageV1.RevokeMessageRequest) (err error) {
+	if req == nil || req.GetMessageId() == 0 {
+		return internalMessageV1.ErrorBadRequest("invalid parameter")
+	}
+
+	if req.GetUserId() > 0 {
+		if _, err = r.entClient.Client().InternalMessageRecipient.Delete().
+			Where(
+				internalmessagerecipient.MessageIDEQ(req.GetMessageId()),
+				internalmessagerecipient.RecipientUserIDEQ(req.GetUserId()),
+			).
+			Exec(ctx); err != nil {
+			r.log.Errorf(ctx, "revoke recipients failed: %s", err.Error())
+			return internalMessageV1.ErrorInternalServerError("revoke recipients failed")
+		}
+		return nil
+	}
+
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
+		return internalMessageV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
+			err = internalMessageV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	var deleted int
+	if deleted, err = tx.InternalMessage.Delete().
+		Where(internalmessage.IDEQ(req.GetMessageId())).
+		Exec(ctx); err != nil {
+		r.log.Errorf(ctx, "delete message failed: %s", err.Error())
+		return internalMessageV1.ErrorInternalServerError("delete message failed")
+	}
+	if deleted == 0 {
+		err = internalMessageV1.ErrorNotFound("internal message not found")
+		return err
+	}
+
+	if _, err = tx.InternalMessageRecipient.Delete().
+		Where(internalmessagerecipient.MessageIDEQ(req.GetMessageId())).
+		Exec(ctx); err != nil {
+		r.log.Errorf(ctx, "revoke recipients failed: %s", err.Error())
+		return internalMessageV1.ErrorInternalServerError("revoke recipients failed")
+	}
+
+	return nil
+}
+
+// DeleteNotificationFromInbox 删除用户收件箱中的通知记录。
+// recipient_ids 为空表示清空该用户收件箱（前端"清空"入口无法枚举全部ID，
+// 与 MarkNotificationAsRead 的空 ids 语义保持一致）。
 func (r *InternalMessageRecipientRepo) DeleteNotificationFromInbox(ctx context.Context, req *internalMessageV1.DeleteNotificationFromInboxRequest) error {
-	_, err := r.entClient.Client().InternalMessageRecipient.Delete().
-		Where(
-			internalmessagerecipient.IDIn(req.GetRecipientIds()...),
-			internalmessagerecipient.RecipientUserIDEQ(req.GetUserId()),
-		).
-		Exec(ctx)
+	if req.GetUserId() == 0 {
+		return internalMessageV1.ErrorBadRequest("invalid parameter")
+	}
+
+	builder := r.entClient.Client().InternalMessageRecipient.Delete().
+		Where(internalmessagerecipient.RecipientUserIDEQ(req.GetUserId()))
+	if len(req.GetRecipientIds()) > 0 {
+		builder = builder.Where(internalmessagerecipient.IDIn(req.GetRecipientIds()...))
+	}
+	_, err := builder.Exec(ctx)
 	return err
 }

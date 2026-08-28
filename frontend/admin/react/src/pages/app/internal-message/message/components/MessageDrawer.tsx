@@ -4,6 +4,7 @@ import {
   DrawerForm,
   ProFormText,
   ProFormSelect,
+  ProFormRadio,
 } from '@ant-design/pro-components';
 import { App, TreeSelect, Form } from 'antd';
 import { useQueryClient } from '@tanstack/react-query';
@@ -11,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import type { internal_messageservicev1_InternalMessage as InternalMessage } from '@/api/generated/admin/service/v1';
 import { PaginationQuery } from '@/core';
 import { useUpdateInternalMessage, useSendMessage, fetchListMessageCategories } from '@/api/hooks/internal-message';
+import { fetchListUsers } from '@/api/hooks/user';
 import { Editor, EditorType } from '@/components/common/Editor';
 import { getStatusOptions, getTypeOptions } from '../constants';
 
@@ -33,6 +35,14 @@ const MessageDrawer: React.FC<MessageDrawerProps> = ({ open, mode, data, onClose
 
   const [confirmLoading, setConfirmLoading] = useState(false);
   const [categoryTreeData, setCategoryTreeData] = useState<any[]>([]);
+  // 发送范围：控制 targetUserIds 选择框的显隐，抽屉每次打开重置回全员
+  const [sendScope, setSendScope] = useState<'ALL' | 'USERS'>('ALL');
+
+  useEffect(() => {
+    if (open) {
+      setSendScope('ALL');
+    }
+  }, [open]);
 
   // 加载分类列表
   useEffect(() => {
@@ -98,10 +108,11 @@ const MessageDrawer: React.FC<MessageDrawerProps> = ({ open, mode, data, onClose
     setConfirmLoading(true);
     try {
       if (mode === 'create') {
-        await sendMessageMutation.mutateAsync({
-          ...values,
-          targetAll: true,
-        });
+        // sendScope/targetUserIds 是前端选择发送范围的控制字段，不随报文提交
+        const { sendScope: scope, targetUserIds, ...rest } = values;
+        await sendMessageMutation.mutateAsync(
+          scope === 'USERS' ? { ...rest, targetUserIds } : { ...rest, targetAll: true },
+        );
       } else if (data?.id) {
         await updateMutation.mutateAsync({ id: data.id, values });
       }
@@ -163,6 +174,47 @@ const MessageDrawer: React.FC<MessageDrawerProps> = ({ open, mode, data, onClose
             (option?.label ?? '').toLowerCase().includes(input.toLowerCase()),
         }}
       />
+
+      {/* 发送范围与接收用户：仅创建模式 */}
+      {mode === 'create' && (
+        <>
+          <ProFormRadio.Group
+            name="sendScope"
+            label={t('sendScope')}
+            initialValue="ALL"
+            options={[
+              { label: t('sendScopeAll'), value: 'ALL' },
+              { label: t('sendScopeUsers'), value: 'USERS' },
+            ]}
+            fieldProps={{
+              onChange: (e) => setSendScope(e.target.value),
+            }}
+          />
+
+          {sendScope === 'USERS' && (
+            <ProFormSelect
+              name="targetUserIds"
+              label={t('targetUsers')}
+              placeholder={t('targetUsersPlaceholder')}
+              mode="multiple"
+              request={async () => {
+                const res = await fetchListUsers(new PaginationQuery({}));
+                return (res?.items || []).map((u: any) => ({
+                  label: u.nickname ? `${u.nickname}(${u.username})` : u.username,
+                  value: u.id,
+                }));
+              }}
+              rules={[{ required: true, message: t('requiredTargetUsers') }]}
+              fieldProps={{
+                showSearch: true,
+                filterOption: (input: string, option: any) =>
+                  (option?.label ?? '').toLowerCase().includes(input.toLowerCase()),
+                optionFilterProp: 'label',
+              }}
+            />
+          )}
+        </>
+      )}
 
       {/* 消息分类 - TreeSelect */}
       <Form.Item

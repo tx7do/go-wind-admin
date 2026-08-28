@@ -359,7 +359,11 @@
     "drawer": {
       "create": "Publish Message",
       "update": "Update Message"
-    }
+    },
+    "sendScope": "Send To",
+    "sendScopeAll": "All Users",
+    "sendScopeUsers": "Selected Users",
+    "targetUsers": "Recipients"
   },
   "internalMessageCategory": {
     "moduleName": "Message Categories",

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import React from 'react';
 import { Avatar, Dropdown, Badge, Tooltip, Button, Breadcrumb, Input, Popover, List, Empty, Spin } from 'antd';
 import type { MenuProps } from 'antd';
@@ -27,8 +27,8 @@ import { usePreferencesStore } from '@/core/preferences/store';
 import type { SupportedLanguagesType } from '@/core/preferences/types/layout';
 import { fetchListUserInbox } from '@/api/hooks/internal-message';
 import { useQuery } from '@tanstack/react-query';
-import type { internal_messageservicev1_InternalMessageRecipient as InboxItem } from '@/api/generated/admin/service/v1';
-import { PaginationQuery } from '@/core';
+import { PaginationQuery, queryClient } from '@/core';
+import { globalSSEClient } from '@/core/transport/sse';
 
 interface HeaderContentProps {
   userInfo: BasicUserInfo | null;
@@ -205,28 +205,45 @@ export const HeaderContent = ({
   // 通知弹出框数据
   const { t: tInbox } = useTranslation('inbox');
   const { data: inboxPreview, isLoading: inboxLoading } = useQuery({
-    queryKey: ['inboxPreview'],
+    queryKey: ['inboxPreview', userInfo?.id],
     queryFn: async () => {
       const query = new PaginationQuery({
-        formValues: { status: 'RECEIVED' },
+        paging: { page: 1, pageSize: 5 },
+        // recipient_user_id 必传：不传只靠租户过滤，会查到同租户其他用户的收件记录
+        formValues: { recipient_user_id: String(userInfo?.id), status: 'RECEIVED' },
       });
-      const response = await fetchListUserInbox(query);
-      return (response.items || []) as InboxItem[];
+      return await fetchListUserInbox(query);
     },
-    // 每 60 秒轮询一次
-    refetchInterval: 60_000,
+    enabled: Boolean(userInfo?.id),
+    // 兜底轮询：实时更新靠下方 SSE notification 事件触发 invalidate，这里只在 SSE 失联时补拉
+    refetchInterval: 300_000,
     // 窗口不聚焦时不轮询
     refetchIntervalInBackground: false,
   });
 
-  const unreadCount = inboxPreview?.length ?? 0;
+  // 未读数用列表响应的服务端 total（独立 COUNT），不能用当前页条数——后者封顶在 pageSize
+  const unreadCount = inboxPreview?.total ?? 0;
+
+  // SSE 实时通知：收到新站内信即刷新预览。
+  // 后端一直在推 notification 事件，此前前端建了连接却无人订阅，实时推送全部落空。
+  useEffect(() => {
+    if (!userInfo?.id) return undefined;
+    const handler = () => {
+      queryClient.invalidateQueries({ queryKey: ['inboxPreview', userInfo?.id] });
+    };
+    globalSSEClient.on('notification', handler);
+    return () => {
+      globalSSEClient.off('notification', handler);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userInfo?.id]);
 
   const inboxContent = (
     <div style={{ width: 320 }}>
       <Spin spinning={inboxLoading}>
-        {inboxPreview && inboxPreview.length > 0 ? (
+        {inboxPreview && (inboxPreview.items?.length ?? 0) > 0 ? (
           <List
-            dataSource={inboxPreview.slice(0, 5)}
+            dataSource={(inboxPreview.items || []).slice(0, 5)}
             renderItem={(item) => (
               <List.Item
                 style={{ padding: '8px 0', cursor: 'pointer' }}

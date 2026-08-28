@@ -42,23 +42,27 @@ func (s *InternalMessageRecipientService) ListUserInbox(ctx context.Context, req
 		return nil, err
 	}
 
+	// 一次 IN 查询批量回填消息本体：逐条 Get 是 N+1（每页 10 条 = 11 次查询），
+	// 且收件箱是头部徽标的轮询高频路径。
+	messageIds := make([]uint32, 0, len(resp.Items))
 	for _, d := range resp.Items {
-		if d.MessageId == nil {
-			continue
+		if d.MessageId != nil {
+			messageIds = append(messageIds, d.GetMessageId())
 		}
+	}
 
-		msg, err := s.internalMessageRepo.Get(ctx, &internalMessageV1.GetInternalMessageRequest{
-			QueryBy: &internalMessageV1.GetInternalMessageRequest_Id{
-				Id: d.GetMessageId(),
-			},
-		})
-		if err != nil {
-			s.log.Errorf(ctx, "list user inbox failed, get message failed: %s", err)
-			continue
+	messages, err := s.internalMessageRepo.ListByIds(ctx, messageIds)
+	if err != nil {
+		// 回填失败只影响 title/content 展示，不阻断整页返回，与此前逐条 Get 失败仅跳过保持一致。
+		s.log.Errorf(ctx, "list user inbox failed, batch get messages failed: %s", err)
+		return resp, nil
+	}
+
+	for _, d := range resp.Items {
+		if msg, ok := messages[d.GetMessageId()]; ok {
+			d.Title = msg.Title
+			d.Content = msg.Content
 		}
-
-		d.Title = msg.Title
-		d.Content = msg.Content
 	}
 
 	return resp, nil
