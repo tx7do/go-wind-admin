@@ -43,6 +43,7 @@ func NewRestMiddleware(
 	operationAuditLogRepo *data.OperationAuditLogRepo,
 	permissionAuditLogRepo *data.PermissionAuditLogRepo,
 	dataAccessAuditLogRepo *data.DataAccessAuditLogRepo,
+	policyEvaluationLogRepo *data.PolicyEvaluationLogRepo,
 ) []middleware.Middleware {
 	var ms []middleware.Middleware
 	// recovery 必须置于链首：任何中间件/handler 的 panic（如审计日志解析畸形 JWT）
@@ -102,7 +103,7 @@ func NewRestMiddleware(
 				auth.WithInjectMetadata(false),
 				auth.WithInjectEnt(true),
 			),
-			authz.Server(authorizer.Engine()),
+			authz.Server(newEvalLoggingEngine(authorizer.Engine(), policyEvaluationLogRepo)),
 		).
 			Match(rpc.NewRestWhiteListMatcher()).
 			Build(),
