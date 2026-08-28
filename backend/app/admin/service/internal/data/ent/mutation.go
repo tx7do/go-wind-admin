@@ -36410,8 +36410,10 @@ type PermissionAuditLogMutation struct {
 	addtenant_id   *int32
 	operator_id    *uint32
 	addoperator_id *int32
+	operator_name  *string
 	target_type    *string
 	target_id      *string
+	target_name    *string
 	action         *permissionauditlog.Action
 	old_value      *string
 	new_value      *string
@@ -36719,6 +36721,55 @@ func (m *PermissionAuditLogMutation) ResetOperatorID() {
 	delete(m.clearedFields, permissionauditlog.FieldOperatorID)
 }
 
+// SetOperatorName sets the "operator_name" field.
+func (m *PermissionAuditLogMutation) SetOperatorName(s string) {
+	m.operator_name = &s
+}
+
+// OperatorName returns the value of the "operator_name" field in the mutation.
+func (m *PermissionAuditLogMutation) OperatorName() (r string, exists bool) {
+	v := m.operator_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOperatorName returns the old "operator_name" field's value of the PermissionAuditLog entity.
+// If the PermissionAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermissionAuditLogMutation) OldOperatorName(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOperatorName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOperatorName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOperatorName: %w", err)
+	}
+	return oldValue.OperatorName, nil
+}
+
+// ClearOperatorName clears the value of the "operator_name" field.
+func (m *PermissionAuditLogMutation) ClearOperatorName() {
+	m.operator_name = nil
+	m.clearedFields[permissionauditlog.FieldOperatorName] = struct{}{}
+}
+
+// OperatorNameCleared returns if the "operator_name" field was cleared in this mutation.
+func (m *PermissionAuditLogMutation) OperatorNameCleared() bool {
+	_, ok := m.clearedFields[permissionauditlog.FieldOperatorName]
+	return ok
+}
+
+// ResetOperatorName resets all changes to the "operator_name" field.
+func (m *PermissionAuditLogMutation) ResetOperatorName() {
+	m.operator_name = nil
+	delete(m.clearedFields, permissionauditlog.FieldOperatorName)
+}
+
 // SetTargetType sets the "target_type" field.
 func (m *PermissionAuditLogMutation) SetTargetType(s string) {
 	m.target_type = &s
@@ -36815,6 +36866,55 @@ func (m *PermissionAuditLogMutation) TargetIDCleared() bool {
 func (m *PermissionAuditLogMutation) ResetTargetID() {
 	m.target_id = nil
 	delete(m.clearedFields, permissionauditlog.FieldTargetID)
+}
+
+// SetTargetName sets the "target_name" field.
+func (m *PermissionAuditLogMutation) SetTargetName(s string) {
+	m.target_name = &s
+}
+
+// TargetName returns the value of the "target_name" field in the mutation.
+func (m *PermissionAuditLogMutation) TargetName() (r string, exists bool) {
+	v := m.target_name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTargetName returns the old "target_name" field's value of the PermissionAuditLog entity.
+// If the PermissionAuditLog object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermissionAuditLogMutation) OldTargetName(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTargetName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTargetName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTargetName: %w", err)
+	}
+	return oldValue.TargetName, nil
+}
+
+// ClearTargetName clears the value of the "target_name" field.
+func (m *PermissionAuditLogMutation) ClearTargetName() {
+	m.target_name = nil
+	m.clearedFields[permissionauditlog.FieldTargetName] = struct{}{}
+}
+
+// TargetNameCleared returns if the "target_name" field was cleared in this mutation.
+func (m *PermissionAuditLogMutation) TargetNameCleared() bool {
+	_, ok := m.clearedFields[permissionauditlog.FieldTargetName]
+	return ok
+}
+
+// ResetTargetName resets all changes to the "target_name" field.
+func (m *PermissionAuditLogMutation) ResetTargetName() {
+	m.target_name = nil
+	delete(m.clearedFields, permissionauditlog.FieldTargetName)
 }
 
 // SetAction sets the "action" field.
@@ -37204,7 +37304,7 @@ func (m *PermissionAuditLogMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PermissionAuditLogMutation) Fields() []string {
-	fields := make([]string, 0, 13)
+	fields := make([]string, 0, 15)
 	if m.created_at != nil {
 		fields = append(fields, permissionauditlog.FieldCreatedAt)
 	}
@@ -37214,11 +37314,17 @@ func (m *PermissionAuditLogMutation) Fields() []string {
 	if m.operator_id != nil {
 		fields = append(fields, permissionauditlog.FieldOperatorID)
 	}
+	if m.operator_name != nil {
+		fields = append(fields, permissionauditlog.FieldOperatorName)
+	}
 	if m.target_type != nil {
 		fields = append(fields, permissionauditlog.FieldTargetType)
 	}
 	if m.target_id != nil {
 		fields = append(fields, permissionauditlog.FieldTargetID)
+	}
+	if m.target_name != nil {
+		fields = append(fields, permissionauditlog.FieldTargetName)
 	}
 	if m.action != nil {
 		fields = append(fields, permissionauditlog.FieldAction)
@@ -37258,10 +37364,14 @@ func (m *PermissionAuditLogMutation) Field(name string) (ent.Value, bool) {
 		return m.TenantID()
 	case permissionauditlog.FieldOperatorID:
 		return m.OperatorID()
+	case permissionauditlog.FieldOperatorName:
+		return m.OperatorName()
 	case permissionauditlog.FieldTargetType:
 		return m.TargetType()
 	case permissionauditlog.FieldTargetID:
 		return m.TargetID()
+	case permissionauditlog.FieldTargetName:
+		return m.TargetName()
 	case permissionauditlog.FieldAction:
 		return m.Action()
 	case permissionauditlog.FieldOldValue:
@@ -37293,10 +37403,14 @@ func (m *PermissionAuditLogMutation) OldField(ctx context.Context, name string) 
 		return m.OldTenantID(ctx)
 	case permissionauditlog.FieldOperatorID:
 		return m.OldOperatorID(ctx)
+	case permissionauditlog.FieldOperatorName:
+		return m.OldOperatorName(ctx)
 	case permissionauditlog.FieldTargetType:
 		return m.OldTargetType(ctx)
 	case permissionauditlog.FieldTargetID:
 		return m.OldTargetID(ctx)
+	case permissionauditlog.FieldTargetName:
+		return m.OldTargetName(ctx)
 	case permissionauditlog.FieldAction:
 		return m.OldAction(ctx)
 	case permissionauditlog.FieldOldValue:
@@ -37343,6 +37457,13 @@ func (m *PermissionAuditLogMutation) SetField(name string, value ent.Value) erro
 		}
 		m.SetOperatorID(v)
 		return nil
+	case permissionauditlog.FieldOperatorName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOperatorName(v)
+		return nil
 	case permissionauditlog.FieldTargetType:
 		v, ok := value.(string)
 		if !ok {
@@ -37356,6 +37477,13 @@ func (m *PermissionAuditLogMutation) SetField(name string, value ent.Value) erro
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetTargetID(v)
+		return nil
+	case permissionauditlog.FieldTargetName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTargetName(v)
 		return nil
 	case permissionauditlog.FieldAction:
 		v, ok := value.(permissionauditlog.Action)
@@ -37479,11 +37607,17 @@ func (m *PermissionAuditLogMutation) ClearedFields() []string {
 	if m.FieldCleared(permissionauditlog.FieldOperatorID) {
 		fields = append(fields, permissionauditlog.FieldOperatorID)
 	}
+	if m.FieldCleared(permissionauditlog.FieldOperatorName) {
+		fields = append(fields, permissionauditlog.FieldOperatorName)
+	}
 	if m.FieldCleared(permissionauditlog.FieldTargetType) {
 		fields = append(fields, permissionauditlog.FieldTargetType)
 	}
 	if m.FieldCleared(permissionauditlog.FieldTargetID) {
 		fields = append(fields, permissionauditlog.FieldTargetID)
+	}
+	if m.FieldCleared(permissionauditlog.FieldTargetName) {
+		fields = append(fields, permissionauditlog.FieldTargetName)
 	}
 	if m.FieldCleared(permissionauditlog.FieldAction) {
 		fields = append(fields, permissionauditlog.FieldAction)
@@ -37523,11 +37657,17 @@ func (m *PermissionAuditLogMutation) ClearField(name string) error {
 	case permissionauditlog.FieldOperatorID:
 		m.ClearOperatorID()
 		return nil
+	case permissionauditlog.FieldOperatorName:
+		m.ClearOperatorName()
+		return nil
 	case permissionauditlog.FieldTargetType:
 		m.ClearTargetType()
 		return nil
 	case permissionauditlog.FieldTargetID:
 		m.ClearTargetID()
+		return nil
+	case permissionauditlog.FieldTargetName:
+		m.ClearTargetName()
 		return nil
 	case permissionauditlog.FieldAction:
 		m.ClearAction()
@@ -37561,11 +37701,17 @@ func (m *PermissionAuditLogMutation) ResetField(name string) error {
 	case permissionauditlog.FieldOperatorID:
 		m.ResetOperatorID()
 		return nil
+	case permissionauditlog.FieldOperatorName:
+		m.ResetOperatorName()
+		return nil
 	case permissionauditlog.FieldTargetType:
 		m.ResetTargetType()
 		return nil
 	case permissionauditlog.FieldTargetID:
 		m.ResetTargetID()
+		return nil
+	case permissionauditlog.FieldTargetName:
+		m.ResetTargetName()
 		return nil
 	case permissionauditlog.FieldAction:
 		m.ResetAction()

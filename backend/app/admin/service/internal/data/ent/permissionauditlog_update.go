@@ -55,6 +55,26 @@ func (_u *PermissionAuditLogUpdate) ClearOperatorID() *PermissionAuditLogUpdate 
 	return _u
 }
 
+// SetOperatorName sets the "operator_name" field.
+func (_u *PermissionAuditLogUpdate) SetOperatorName(v string) *PermissionAuditLogUpdate {
+	_u.mutation.SetOperatorName(v)
+	return _u
+}
+
+// SetNillableOperatorName sets the "operator_name" field if the given value is not nil.
+func (_u *PermissionAuditLogUpdate) SetNillableOperatorName(v *string) *PermissionAuditLogUpdate {
+	if v != nil {
+		_u.SetOperatorName(*v)
+	}
+	return _u
+}
+
+// ClearOperatorName clears the value of the "operator_name" field.
+func (_u *PermissionAuditLogUpdate) ClearOperatorName() *PermissionAuditLogUpdate {
+	_u.mutation.ClearOperatorName()
+	return _u
+}
+
 // SetTargetType sets the "target_type" field.
 func (_u *PermissionAuditLogUpdate) SetTargetType(v string) *PermissionAuditLogUpdate {
 	_u.mutation.SetTargetType(v)
@@ -92,6 +112,26 @@ func (_u *PermissionAuditLogUpdate) SetNillableTargetID(v *string) *PermissionAu
 // ClearTargetID clears the value of the "target_id" field.
 func (_u *PermissionAuditLogUpdate) ClearTargetID() *PermissionAuditLogUpdate {
 	_u.mutation.ClearTargetID()
+	return _u
+}
+
+// SetTargetName sets the "target_name" field.
+func (_u *PermissionAuditLogUpdate) SetTargetName(v string) *PermissionAuditLogUpdate {
+	_u.mutation.SetTargetName(v)
+	return _u
+}
+
+// SetNillableTargetName sets the "target_name" field if the given value is not nil.
+func (_u *PermissionAuditLogUpdate) SetNillableTargetName(v *string) *PermissionAuditLogUpdate {
+	if v != nil {
+		_u.SetTargetName(*v)
+	}
+	return _u
+}
+
+// ClearTargetName clears the value of the "target_name" field.
+func (_u *PermissionAuditLogUpdate) ClearTargetName() *PermissionAuditLogUpdate {
+	_u.mutation.ClearTargetName()
 	return _u
 }
 
@@ -304,6 +344,12 @@ func (_u *PermissionAuditLogUpdate) sqlSave(ctx context.Context) (_node int, err
 	if _u.mutation.OperatorIDCleared() {
 		_spec.ClearField(permissionauditlog.FieldOperatorID, field.TypeUint32)
 	}
+	if value, ok := _u.mutation.OperatorName(); ok {
+		_spec.SetField(permissionauditlog.FieldOperatorName, field.TypeString, value)
+	}
+	if _u.mutation.OperatorNameCleared() {
+		_spec.ClearField(permissionauditlog.FieldOperatorName, field.TypeString)
+	}
 	if value, ok := _u.mutation.TargetType(); ok {
 		_spec.SetField(permissionauditlog.FieldTargetType, field.TypeString, value)
 	}
@@ -315,6 +361,12 @@ func (_u *PermissionAuditLogUpdate) sqlSave(ctx context.Context) (_node int, err
 	}
 	if _u.mutation.TargetIDCleared() {
 		_spec.ClearField(permissionauditlog.FieldTargetID, field.TypeString)
+	}
+	if value, ok := _u.mutation.TargetName(); ok {
+		_spec.SetField(permissionauditlog.FieldTargetName, field.TypeString, value)
+	}
+	if _u.mutation.TargetNameCleared() {
+		_spec.ClearField(permissionauditlog.FieldTargetName, field.TypeString)
 	}
 	if value, ok := _u.mutation.Action(); ok {
 		_spec.SetField(permissionauditlog.FieldAction, field.TypeEnum, value)
@@ -404,6 +456,26 @@ func (_u *PermissionAuditLogUpdateOne) ClearOperatorID() *PermissionAuditLogUpda
 	return _u
 }
 
+// SetOperatorName sets the "operator_name" field.
+func (_u *PermissionAuditLogUpdateOne) SetOperatorName(v string) *PermissionAuditLogUpdateOne {
+	_u.mutation.SetOperatorName(v)
+	return _u
+}
+
+// SetNillableOperatorName sets the "operator_name" field if the given value is not nil.
+func (_u *PermissionAuditLogUpdateOne) SetNillableOperatorName(v *string) *PermissionAuditLogUpdateOne {
+	if v != nil {
+		_u.SetOperatorName(*v)
+	}
+	return _u
+}
+
+// ClearOperatorName clears the value of the "operator_name" field.
+func (_u *PermissionAuditLogUpdateOne) ClearOperatorName() *PermissionAuditLogUpdateOne {
+	_u.mutation.ClearOperatorName()
+	return _u
+}
+
 // SetTargetType sets the "target_type" field.
 func (_u *PermissionAuditLogUpdateOne) SetTargetType(v string) *PermissionAuditLogUpdateOne {
 	_u.mutation.SetTargetType(v)
@@ -441,6 +513,26 @@ func (_u *PermissionAuditLogUpdateOne) SetNillableTargetID(v *string) *Permissio
 // ClearTargetID clears the value of the "target_id" field.
 func (_u *PermissionAuditLogUpdateOne) ClearTargetID() *PermissionAuditLogUpdateOne {
 	_u.mutation.ClearTargetID()
+	return _u
+}
+
+// SetTargetName sets the "target_name" field.
+func (_u *PermissionAuditLogUpdateOne) SetTargetName(v string) *PermissionAuditLogUpdateOne {
+	_u.mutation.SetTargetName(v)
+	return _u
+}
+
+// SetNillableTargetName sets the "target_name" field if the given value is not nil.
+func (_u *PermissionAuditLogUpdateOne) SetNillableTargetName(v *string) *PermissionAuditLogUpdateOne {
+	if v != nil {
+		_u.SetTargetName(*v)
+	}
+	return _u
+}
+
+// ClearTargetName clears the value of the "target_name" field.
+func (_u *PermissionAuditLogUpdateOne) ClearTargetName() *PermissionAuditLogUpdateOne {
+	_u.mutation.ClearTargetName()
 	return _u
 }
 
@@ -683,6 +775,12 @@ func (_u *PermissionAuditLogUpdateOne) sqlSave(ctx context.Context) (_node *Perm
 	if _u.mutation.OperatorIDCleared() {
 		_spec.ClearField(permissionauditlog.FieldOperatorID, field.TypeUint32)
 	}
+	if value, ok := _u.mutation.OperatorName(); ok {
+		_spec.SetField(permissionauditlog.FieldOperatorName, field.TypeString, value)
+	}
+	if _u.mutation.OperatorNameCleared() {
+		_spec.ClearField(permissionauditlog.FieldOperatorName, field.TypeString)
+	}
 	if value, ok := _u.mutation.TargetType(); ok {
 		_spec.SetField(permissionauditlog.FieldTargetType, field.TypeString, value)
 	}
@@ -694,6 +792,12 @@ func (_u *PermissionAuditLogUpdateOne) sqlSave(ctx context.Context) (_node *Perm
 	}
 	if _u.mutation.TargetIDCleared() {
 		_spec.ClearField(permissionauditlog.FieldTargetID, field.TypeString)
+	}
+	if value, ok := _u.mutation.TargetName(); ok {
+		_spec.SetField(permissionauditlog.FieldTargetName, field.TypeString, value)
+	}
+	if _u.mutation.TargetNameCleared() {
+		_spec.ClearField(permissionauditlog.FieldTargetName, field.TypeString)
 	}
 	if value, ok := _u.mutation.Action(); ok {
 		_spec.SetField(permissionauditlog.FieldAction, field.TypeEnum, value)

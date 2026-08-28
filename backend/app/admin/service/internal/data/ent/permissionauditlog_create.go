@@ -64,6 +64,20 @@ func (_c *PermissionAuditLogCreate) SetNillableOperatorID(v *uint32) *Permission
 	return _c
 }
 
+// SetOperatorName sets the "operator_name" field.
+func (_c *PermissionAuditLogCreate) SetOperatorName(v string) *PermissionAuditLogCreate {
+	_c.mutation.SetOperatorName(v)
+	return _c
+}
+
+// SetNillableOperatorName sets the "operator_name" field if the given value is not nil.
+func (_c *PermissionAuditLogCreate) SetNillableOperatorName(v *string) *PermissionAuditLogCreate {
+	if v != nil {
+		_c.SetOperatorName(*v)
+	}
+	return _c
+}
+
 // SetTargetType sets the "target_type" field.
 func (_c *PermissionAuditLogCreate) SetTargetType(v string) *PermissionAuditLogCreate {
 	_c.mutation.SetTargetType(v)
@@ -88,6 +102,20 @@ func (_c *PermissionAuditLogCreate) SetTargetID(v string) *PermissionAuditLogCre
 func (_c *PermissionAuditLogCreate) SetNillableTargetID(v *string) *PermissionAuditLogCreate {
 	if v != nil {
 		_c.SetTargetID(*v)
+	}
+	return _c
+}
+
+// SetTargetName sets the "target_name" field.
+func (_c *PermissionAuditLogCreate) SetTargetName(v string) *PermissionAuditLogCreate {
+	_c.mutation.SetTargetName(v)
+	return _c
+}
+
+// SetNillableTargetName sets the "target_name" field if the given value is not nil.
+func (_c *PermissionAuditLogCreate) SetNillableTargetName(v *string) *PermissionAuditLogCreate {
+	if v != nil {
+		_c.SetTargetName(*v)
 	}
 	return _c
 }
@@ -288,6 +316,10 @@ func (_c *PermissionAuditLogCreate) createSpec() (*PermissionAuditLog, *sqlgraph
 		_spec.SetField(permissionauditlog.FieldOperatorID, field.TypeUint32, value)
 		_node.OperatorID = &value
 	}
+	if value, ok := _c.mutation.OperatorName(); ok {
+		_spec.SetField(permissionauditlog.FieldOperatorName, field.TypeString, value)
+		_node.OperatorName = &value
+	}
 	if value, ok := _c.mutation.TargetType(); ok {
 		_spec.SetField(permissionauditlog.FieldTargetType, field.TypeString, value)
 		_node.TargetType = &value
@@ -295,6 +327,10 @@ func (_c *PermissionAuditLogCreate) createSpec() (*PermissionAuditLog, *sqlgraph
 	if value, ok := _c.mutation.TargetID(); ok {
 		_spec.SetField(permissionauditlog.FieldTargetID, field.TypeString, value)
 		_node.TargetID = &value
+	}
+	if value, ok := _c.mutation.TargetName(); ok {
+		_spec.SetField(permissionauditlog.FieldTargetName, field.TypeString, value)
+		_node.TargetName = &value
 	}
 	if value, ok := _c.mutation.Action(); ok {
 		_spec.SetField(permissionauditlog.FieldAction, field.TypeEnum, value)
@@ -404,6 +440,24 @@ func (u *PermissionAuditLogUpsert) ClearOperatorID() *PermissionAuditLogUpsert {
 	return u
 }
 
+// SetOperatorName sets the "operator_name" field.
+func (u *PermissionAuditLogUpsert) SetOperatorName(v string) *PermissionAuditLogUpsert {
+	u.Set(permissionauditlog.FieldOperatorName, v)
+	return u
+}
+
+// UpdateOperatorName sets the "operator_name" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsert) UpdateOperatorName() *PermissionAuditLogUpsert {
+	u.SetExcluded(permissionauditlog.FieldOperatorName)
+	return u
+}
+
+// ClearOperatorName clears the value of the "operator_name" field.
+func (u *PermissionAuditLogUpsert) ClearOperatorName() *PermissionAuditLogUpsert {
+	u.SetNull(permissionauditlog.FieldOperatorName)
+	return u
+}
+
 // SetTargetType sets the "target_type" field.
 func (u *PermissionAuditLogUpsert) SetTargetType(v string) *PermissionAuditLogUpsert {
 	u.Set(permissionauditlog.FieldTargetType, v)
@@ -437,6 +491,24 @@ func (u *PermissionAuditLogUpsert) UpdateTargetID() *PermissionAuditLogUpsert {
 // ClearTargetID clears the value of the "target_id" field.
 func (u *PermissionAuditLogUpsert) ClearTargetID() *PermissionAuditLogUpsert {
 	u.SetNull(permissionauditlog.FieldTargetID)
+	return u
+}
+
+// SetTargetName sets the "target_name" field.
+func (u *PermissionAuditLogUpsert) SetTargetName(v string) *PermissionAuditLogUpsert {
+	u.Set(permissionauditlog.FieldTargetName, v)
+	return u
+}
+
+// UpdateTargetName sets the "target_name" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsert) UpdateTargetName() *PermissionAuditLogUpsert {
+	u.SetExcluded(permissionauditlog.FieldTargetName)
+	return u
+}
+
+// ClearTargetName clears the value of the "target_name" field.
+func (u *PermissionAuditLogUpsert) ClearTargetName() *PermissionAuditLogUpsert {
+	u.SetNull(permissionauditlog.FieldTargetName)
 	return u
 }
 
@@ -648,6 +720,27 @@ func (u *PermissionAuditLogUpsertOne) ClearOperatorID() *PermissionAuditLogUpser
 	})
 }
 
+// SetOperatorName sets the "operator_name" field.
+func (u *PermissionAuditLogUpsertOne) SetOperatorName(v string) *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.SetOperatorName(v)
+	})
+}
+
+// UpdateOperatorName sets the "operator_name" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsertOne) UpdateOperatorName() *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.UpdateOperatorName()
+	})
+}
+
+// ClearOperatorName clears the value of the "operator_name" field.
+func (u *PermissionAuditLogUpsertOne) ClearOperatorName() *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.ClearOperatorName()
+	})
+}
+
 // SetTargetType sets the "target_type" field.
 func (u *PermissionAuditLogUpsertOne) SetTargetType(v string) *PermissionAuditLogUpsertOne {
 	return u.Update(func(s *PermissionAuditLogUpsert) {
@@ -687,6 +780,27 @@ func (u *PermissionAuditLogUpsertOne) UpdateTargetID() *PermissionAuditLogUpsert
 func (u *PermissionAuditLogUpsertOne) ClearTargetID() *PermissionAuditLogUpsertOne {
 	return u.Update(func(s *PermissionAuditLogUpsert) {
 		s.ClearTargetID()
+	})
+}
+
+// SetTargetName sets the "target_name" field.
+func (u *PermissionAuditLogUpsertOne) SetTargetName(v string) *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.SetTargetName(v)
+	})
+}
+
+// UpdateTargetName sets the "target_name" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsertOne) UpdateTargetName() *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.UpdateTargetName()
+	})
+}
+
+// ClearTargetName clears the value of the "target_name" field.
+func (u *PermissionAuditLogUpsertOne) ClearTargetName() *PermissionAuditLogUpsertOne {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.ClearTargetName()
 	})
 }
 
@@ -1085,6 +1199,27 @@ func (u *PermissionAuditLogUpsertBulk) ClearOperatorID() *PermissionAuditLogUpse
 	})
 }
 
+// SetOperatorName sets the "operator_name" field.
+func (u *PermissionAuditLogUpsertBulk) SetOperatorName(v string) *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.SetOperatorName(v)
+	})
+}
+
+// UpdateOperatorName sets the "operator_name" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsertBulk) UpdateOperatorName() *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.UpdateOperatorName()
+	})
+}
+
+// ClearOperatorName clears the value of the "operator_name" field.
+func (u *PermissionAuditLogUpsertBulk) ClearOperatorName() *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.ClearOperatorName()
+	})
+}
+
 // SetTargetType sets the "target_type" field.
 func (u *PermissionAuditLogUpsertBulk) SetTargetType(v string) *PermissionAuditLogUpsertBulk {
 	return u.Update(func(s *PermissionAuditLogUpsert) {
@@ -1124,6 +1259,27 @@ func (u *PermissionAuditLogUpsertBulk) UpdateTargetID() *PermissionAuditLogUpser
 func (u *PermissionAuditLogUpsertBulk) ClearTargetID() *PermissionAuditLogUpsertBulk {
 	return u.Update(func(s *PermissionAuditLogUpsert) {
 		s.ClearTargetID()
+	})
+}
+
+// SetTargetName sets the "target_name" field.
+func (u *PermissionAuditLogUpsertBulk) SetTargetName(v string) *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.SetTargetName(v)
+	})
+}
+
+// UpdateTargetName sets the "target_name" field to the value that was provided on create.
+func (u *PermissionAuditLogUpsertBulk) UpdateTargetName() *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.UpdateTargetName()
+	})
+}
+
+// ClearTargetName clears the value of the "target_name" field.
+func (u *PermissionAuditLogUpsertBulk) ClearTargetName() *PermissionAuditLogUpsertBulk {
+	return u.Update(func(s *PermissionAuditLogUpsert) {
+		s.ClearTargetName()
 	})
 }
 

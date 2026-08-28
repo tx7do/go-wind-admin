@@ -20,10 +20,14 @@ const (
 	FieldTenantID = "tenant_id"
 	// FieldOperatorID holds the string denoting the operator_id field in the database.
 	FieldOperatorID = "operator_id"
+	// FieldOperatorName holds the string denoting the operator_name field in the database.
+	FieldOperatorName = "operator_name"
 	// FieldTargetType holds the string denoting the target_type field in the database.
 	FieldTargetType = "target_type"
 	// FieldTargetID holds the string denoting the target_id field in the database.
 	FieldTargetID = "target_id"
+	// FieldTargetName holds the string denoting the target_name field in the database.
+	FieldTargetName = "target_name"
 	// FieldAction holds the string denoting the action field in the database.
 	FieldAction = "action"
 	// FieldOldValue holds the string denoting the old_value field in the database.
@@ -50,8 +54,10 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldTenantID,
 	FieldOperatorID,
+	FieldOperatorName,
 	FieldTargetType,
 	FieldTargetID,
+	FieldTargetName,
 	FieldAction,
 	FieldOldValue,
 	FieldNewValue,
@@ -145,6 +151,11 @@ func ByOperatorID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldOperatorID, opts...).ToFunc()
 }
 
+// ByOperatorName orders the results by the operator_name field.
+func ByOperatorName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldOperatorName, opts...).ToFunc()
+}
+
 // ByTargetType orders the results by the target_type field.
 func ByTargetType(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTargetType, opts...).ToFunc()
@@ -153,6 +164,11 @@ func ByTargetType(opts ...sql.OrderTermOption) OrderOption {
 // ByTargetID orders the results by the target_id field.
 func ByTargetID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldTargetID, opts...).ToFunc()
+}
+
+// ByTargetName orders the results by the target_name field.
+func ByTargetName(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldTargetName, opts...).ToFunc()
 }
 
 // ByAction orders the results by the action field.

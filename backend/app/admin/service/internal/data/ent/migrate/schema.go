@@ -1656,8 +1656,10 @@ var (
 		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
 		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
 		{Name: "operator_id", Type: field.TypeUint32, Nullable: true, Comment: "操作者 用户ID"},
+		{Name: "operator_name", Type: field.TypeString, Nullable: true, Comment: "操作者用户名"},
 		{Name: "target_type", Type: field.TypeString, Nullable: true, Comment: "目标类型"},
 		{Name: "target_id", Type: field.TypeString, Nullable: true, Comment: "目标ID"},
+		{Name: "target_name", Type: field.TypeString, Nullable: true, Comment: "目标名称"},
 		{Name: "action", Type: field.TypeEnum, Nullable: true, Comment: "动作", Enums: []string{"GRANT", "REVOKE", "UPDATE", "RESET", "CREATE", "DELETE", "ASSIGN", "UNASSIGN", "BULK_GRANT", "BULK_REVOKE", "EXPIRE", "SUSPEND", "RESUME", "ROLLBACK", "OTHER"}},
 		{Name: "old_value", Type: field.TypeString, Nullable: true, Comment: "旧值（JSON）", SchemaType: map[string]string{"mysql": "json", "postgres": "jsonb"}},
 		{Name: "new_value", Type: field.TypeString, Nullable: true, Comment: "新值（JSON）", SchemaType: map[string]string{"mysql": "json", "postgres": "jsonb"}},
@@ -1687,22 +1689,22 @@ var (
 			{
 				Name:    "idx_permission_audit_tenant_target_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{SysPermissionAuditLogsColumns[2], SysPermissionAuditLogsColumns[4], SysPermissionAuditLogsColumns[5], SysPermissionAuditLogsColumns[1]},
+				Columns: []*schema.Column{SysPermissionAuditLogsColumns[2], SysPermissionAuditLogsColumns[5], SysPermissionAuditLogsColumns[6], SysPermissionAuditLogsColumns[1]},
 			},
 			{
 				Name:    "idx_permission_audit_target",
 				Unique:  false,
-				Columns: []*schema.Column{SysPermissionAuditLogsColumns[4], SysPermissionAuditLogsColumns[5]},
+				Columns: []*schema.Column{SysPermissionAuditLogsColumns[5], SysPermissionAuditLogsColumns[6]},
 			},
 			{
 				Name:    "idx_permission_audit_tenant_action_created_at",
 				Unique:  false,
-				Columns: []*schema.Column{SysPermissionAuditLogsColumns[2], SysPermissionAuditLogsColumns[6], SysPermissionAuditLogsColumns[1]},
+				Columns: []*schema.Column{SysPermissionAuditLogsColumns[2], SysPermissionAuditLogsColumns[8], SysPermissionAuditLogsColumns[1]},
 			},
 			{
 				Name:    "idx_permission_audit_tenant_ip",
 				Unique:  false,
-				Columns: []*schema.Column{SysPermissionAuditLogsColumns[2], SysPermissionAuditLogsColumns[9]},
+				Columns: []*schema.Column{SysPermissionAuditLogsColumns[2], SysPermissionAuditLogsColumns[11]},
 			},
 		},
 	}

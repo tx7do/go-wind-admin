@@ -8,6 +8,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/go-kratos/kratos/v2/transport/http"
@@ -83,6 +84,17 @@ func (p *PermissionAuditLogMiddleware) Handle(ctx context.Context, htr *http.Tra
 	permissionAuditLog.TargetType = trans.Ptr(targetType)
 	permissionAuditLog.Action = trans.Ptr(action)
 
+	// 目标ID：REST 路径最后一个纯数字段（如 /admin/v1/roles/5 → "5"）。
+	if req := htr.Request(); req != nil {
+		if tid := lastNumericPathSegment(req.URL.Path); tid != "" {
+			permissionAuditLog.TargetId = trans.Ptr(tid)
+		}
+	}
+	// 目标名称：JSON 写请求体（CRUD 包 {"data":{...}}）里第一个非空名称类字段。
+	if name := targetNameFromBody(bodySnapshotFromContext(ctx)); name != "" {
+		permissionAuditLog.TargetName = trans.Ptr(name)
+	}
+
 	clientIp := getClientRealIP(htr.Request())
 
 	permissionAuditLog.IpAddress = trans.Ptr(clientIp)
@@ -95,8 +107,15 @@ func (p *PermissionAuditLogMiddleware) Handle(ctx context.Context, htr *http.Tra
 		permissionAuditLog.TenantId = ut.TenantId
 	}
 
-	_, reason, _ := getStatusCode(middleErr)
-
+	// 变更原因：记录操作上下文（方法 + 路径）；失败时附错误原因码。
+	reason := ""
+	if req := htr.Request(); req != nil {
+		reason = req.Method + " " + req.URL.Path
+	}
+	if middleErr != nil {
+		_, errReason, _ := getStatusCode(middleErr)
+		reason = reason + " failed: " + errReason
+	}
 	permissionAuditLog.Reason = trans.Ptr(reason)
 
 	permissionAuditLog.LogHash = trans.Ptr(p.hashLog(permissionAuditLog))
@@ -106,6 +125,74 @@ func (p *PermissionAuditLogMiddleware) Handle(ctx context.Context, htr *http.Tra
 		ctx = appViewer.NewSystemViewerContext(ctx)
 		_ = p.op.writePermissionAuditLogFunc(ctx, permissionAuditLog)
 	}
+}
+
+// lastNumericPathSegment 返回路径中最后一个纯数字段（如 /admin/v1/roles/5 → "5"），
+// 无数字段返回空串。嵌套资源（/users/1/roles）取最深一层的属主 ID。
+func lastNumericPathSegment(path string) string {
+	segments := strings.Split(strings.Trim(path, "/"), "/")
+	for i := len(segments) - 1; i >= 0; i-- {
+		s := segments[i]
+		if s == "" {
+			continue
+		}
+		allDigits := true
+		for j := 0; j < len(s); j++ {
+			if s[j] < '0' || s[j] > '9' {
+				allDigits = false
+				break
+			}
+		}
+		if allDigits {
+			return s
+		}
+	}
+	return ""
+}
+
+// targetNameFromNameCandidates 按优先级尝试的名称类字段（protojson 驼峰）。
+var targetNameFromNameCandidates = []string{"name", "username", "typeName", "code", "typeCode", "title"}
+
+// targetNameFromBody 从 JSON 写请求体提取目标名称：兼容 CRUD 的 {"data":{...}}
+// 包装与平铺对象，先按候选字段精确匹配，再兜底任何以 name/code 结尾的键
+// （覆盖 roleName/menuName 等未列举字段）。
+func targetNameFromBody(body []byte) string {
+	if len(body) == 0 {
+		return ""
+	}
+	var m map[string]any
+	if err := json.Unmarshal(body, &m); err != nil {
+		return ""
+	}
+	if d, ok := m["data"].(map[string]any); ok {
+		m = d
+	}
+	for _, key := range targetNameFromNameCandidates {
+		if s, ok := m[key].(string); ok && strings.TrimSpace(s) != "" {
+			return s
+		}
+	}
+	// 兜底：按 key 排序保证确定性，name 结尾优先于 code 结尾
+	var nameKeys, codeKeys []string
+	for key := range m {
+		lk := strings.ToLower(key)
+		switch {
+		case strings.HasSuffix(lk, "name"):
+			nameKeys = append(nameKeys, key)
+		case strings.HasSuffix(lk, "code"):
+			codeKeys = append(codeKeys, key)
+		}
+	}
+	sort.Strings(nameKeys)
+	sort.Strings(codeKeys)
+	for _, keys := range [][]string{nameKeys, codeKeys} {
+		for _, key := range keys {
+			if s, ok := m[key].(string); ok && strings.TrimSpace(s) != "" {
+				return s
+			}
+		}
+	}
+	return ""
 }
 
 // hashLog 计算日志的 SHA256 哈希（十六进制小写字符串）

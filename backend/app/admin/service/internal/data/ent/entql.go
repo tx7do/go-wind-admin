@@ -709,19 +709,21 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "PermissionAuditLog",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			permissionauditlog.FieldCreatedAt:  {Type: field.TypeTime, Column: permissionauditlog.FieldCreatedAt},
-			permissionauditlog.FieldTenantID:   {Type: field.TypeUint32, Column: permissionauditlog.FieldTenantID},
-			permissionauditlog.FieldOperatorID: {Type: field.TypeUint32, Column: permissionauditlog.FieldOperatorID},
-			permissionauditlog.FieldTargetType: {Type: field.TypeString, Column: permissionauditlog.FieldTargetType},
-			permissionauditlog.FieldTargetID:   {Type: field.TypeString, Column: permissionauditlog.FieldTargetID},
-			permissionauditlog.FieldAction:     {Type: field.TypeEnum, Column: permissionauditlog.FieldAction},
-			permissionauditlog.FieldOldValue:   {Type: field.TypeString, Column: permissionauditlog.FieldOldValue},
-			permissionauditlog.FieldNewValue:   {Type: field.TypeString, Column: permissionauditlog.FieldNewValue},
-			permissionauditlog.FieldIPAddress:  {Type: field.TypeString, Column: permissionauditlog.FieldIPAddress},
-			permissionauditlog.FieldRequestID:  {Type: field.TypeString, Column: permissionauditlog.FieldRequestID},
-			permissionauditlog.FieldReason:     {Type: field.TypeString, Column: permissionauditlog.FieldReason},
-			permissionauditlog.FieldLogHash:    {Type: field.TypeString, Column: permissionauditlog.FieldLogHash},
-			permissionauditlog.FieldSignature:  {Type: field.TypeBytes, Column: permissionauditlog.FieldSignature},
+			permissionauditlog.FieldCreatedAt:    {Type: field.TypeTime, Column: permissionauditlog.FieldCreatedAt},
+			permissionauditlog.FieldTenantID:     {Type: field.TypeUint32, Column: permissionauditlog.FieldTenantID},
+			permissionauditlog.FieldOperatorID:   {Type: field.TypeUint32, Column: permissionauditlog.FieldOperatorID},
+			permissionauditlog.FieldOperatorName: {Type: field.TypeString, Column: permissionauditlog.FieldOperatorName},
+			permissionauditlog.FieldTargetType:   {Type: field.TypeString, Column: permissionauditlog.FieldTargetType},
+			permissionauditlog.FieldTargetID:     {Type: field.TypeString, Column: permissionauditlog.FieldTargetID},
+			permissionauditlog.FieldTargetName:   {Type: field.TypeString, Column: permissionauditlog.FieldTargetName},
+			permissionauditlog.FieldAction:       {Type: field.TypeEnum, Column: permissionauditlog.FieldAction},
+			permissionauditlog.FieldOldValue:     {Type: field.TypeString, Column: permissionauditlog.FieldOldValue},
+			permissionauditlog.FieldNewValue:     {Type: field.TypeString, Column: permissionauditlog.FieldNewValue},
+			permissionauditlog.FieldIPAddress:    {Type: field.TypeString, Column: permissionauditlog.FieldIPAddress},
+			permissionauditlog.FieldRequestID:    {Type: field.TypeString, Column: permissionauditlog.FieldRequestID},
+			permissionauditlog.FieldReason:       {Type: field.TypeString, Column: permissionauditlog.FieldReason},
+			permissionauditlog.FieldLogHash:      {Type: field.TypeString, Column: permissionauditlog.FieldLogHash},
+			permissionauditlog.FieldSignature:    {Type: field.TypeBytes, Column: permissionauditlog.FieldSignature},
 		},
 	}
 	graph.Nodes[23] = &sqlgraph.Node{
@@ -4277,6 +4279,11 @@ func (f *PermissionAuditLogFilter) WhereOperatorID(p entql.Uint32P) {
 	f.Where(p.Field(permissionauditlog.FieldOperatorID))
 }
 
+// WhereOperatorName applies the entql string predicate on the operator_name field.
+func (f *PermissionAuditLogFilter) WhereOperatorName(p entql.StringP) {
+	f.Where(p.Field(permissionauditlog.FieldOperatorName))
+}
+
 // WhereTargetType applies the entql string predicate on the target_type field.
 func (f *PermissionAuditLogFilter) WhereTargetType(p entql.StringP) {
 	f.Where(p.Field(permissionauditlog.FieldTargetType))
@@ -4285,6 +4292,11 @@ func (f *PermissionAuditLogFilter) WhereTargetType(p entql.StringP) {
 // WhereTargetID applies the entql string predicate on the target_id field.
 func (f *PermissionAuditLogFilter) WhereTargetID(p entql.StringP) {
 	f.Where(p.Field(permissionauditlog.FieldTargetID))
+}
+
+// WhereTargetName applies the entql string predicate on the target_name field.
+func (f *PermissionAuditLogFilter) WhereTargetName(p entql.StringP) {
+	f.Where(p.Field(permissionauditlog.FieldTargetName))
 }
 
 // WhereAction applies the entql string predicate on the action field.

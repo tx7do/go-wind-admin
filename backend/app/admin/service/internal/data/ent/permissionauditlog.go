@@ -24,10 +24,14 @@ type PermissionAuditLog struct {
 	TenantID *uint32 `json:"tenant_id,omitempty"`
 	// 操作者 用户ID
 	OperatorID *uint32 `json:"operator_id,omitempty"`
+	// 操作者用户名
+	OperatorName *string `json:"operator_name,omitempty"`
 	// 目标类型
 	TargetType *string `json:"target_type,omitempty"`
 	// 目标ID
 	TargetID *string `json:"target_id,omitempty"`
+	// 目标名称
+	TargetName *string `json:"target_name,omitempty"`
 	// 动作
 	Action *permissionauditlog.Action `json:"action,omitempty"`
 	// 旧值（JSON）
@@ -56,7 +60,7 @@ func (*PermissionAuditLog) scanValues(columns []string) ([]any, error) {
 			values[i] = new([]byte)
 		case permissionauditlog.FieldID, permissionauditlog.FieldTenantID, permissionauditlog.FieldOperatorID:
 			values[i] = new(sql.NullInt64)
-		case permissionauditlog.FieldTargetType, permissionauditlog.FieldTargetID, permissionauditlog.FieldAction, permissionauditlog.FieldOldValue, permissionauditlog.FieldNewValue, permissionauditlog.FieldIPAddress, permissionauditlog.FieldRequestID, permissionauditlog.FieldReason, permissionauditlog.FieldLogHash:
+		case permissionauditlog.FieldOperatorName, permissionauditlog.FieldTargetType, permissionauditlog.FieldTargetID, permissionauditlog.FieldTargetName, permissionauditlog.FieldAction, permissionauditlog.FieldOldValue, permissionauditlog.FieldNewValue, permissionauditlog.FieldIPAddress, permissionauditlog.FieldRequestID, permissionauditlog.FieldReason, permissionauditlog.FieldLogHash:
 			values[i] = new(sql.NullString)
 		case permissionauditlog.FieldCreatedAt:
 			values[i] = new(sql.NullTime)
@@ -102,6 +106,13 @@ func (_m *PermissionAuditLog) assignValues(columns []string, values []any) error
 				_m.OperatorID = new(uint32)
 				*_m.OperatorID = uint32(value.Int64)
 			}
+		case permissionauditlog.FieldOperatorName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field operator_name", values[i])
+			} else if value.Valid {
+				_m.OperatorName = new(string)
+				*_m.OperatorName = value.String
+			}
 		case permissionauditlog.FieldTargetType:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field target_type", values[i])
@@ -115,6 +126,13 @@ func (_m *PermissionAuditLog) assignValues(columns []string, values []any) error
 			} else if value.Valid {
 				_m.TargetID = new(string)
 				*_m.TargetID = value.String
+			}
+		case permissionauditlog.FieldTargetName:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field target_name", values[i])
+			} else if value.Valid {
+				_m.TargetName = new(string)
+				*_m.TargetName = value.String
 			}
 		case permissionauditlog.FieldAction:
 			if value, ok := values[i].(*sql.NullString); !ok {
@@ -222,6 +240,11 @@ func (_m *PermissionAuditLog) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
+	if v := _m.OperatorName; v != nil {
+		builder.WriteString("operator_name=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
 	if v := _m.TargetType; v != nil {
 		builder.WriteString("target_type=")
 		builder.WriteString(*v)
@@ -229,6 +252,11 @@ func (_m *PermissionAuditLog) String() string {
 	builder.WriteString(", ")
 	if v := _m.TargetID; v != nil {
 		builder.WriteString("target_id=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.TargetName; v != nil {
+		builder.WriteString("target_name=")
 		builder.WriteString(*v)
 	}
 	builder.WriteString(", ")

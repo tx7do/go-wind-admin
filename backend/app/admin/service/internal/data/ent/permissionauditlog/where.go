@@ -69,6 +69,11 @@ func OperatorID(v uint32) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldEQ(FieldOperatorID, v))
 }
 
+// OperatorName applies equality check predicate on the "operator_name" field. It's identical to OperatorNameEQ.
+func OperatorName(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEQ(FieldOperatorName, v))
+}
+
 // TargetType applies equality check predicate on the "target_type" field. It's identical to TargetTypeEQ.
 func TargetType(v string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldEQ(FieldTargetType, v))
@@ -77,6 +82,11 @@ func TargetType(v string) predicate.PermissionAuditLog {
 // TargetID applies equality check predicate on the "target_id" field. It's identical to TargetIDEQ.
 func TargetID(v string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldEQ(FieldTargetID, v))
+}
+
+// TargetName applies equality check predicate on the "target_name" field. It's identical to TargetNameEQ.
+func TargetName(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEQ(FieldTargetName, v))
 }
 
 // OldValue applies equality check predicate on the "old_value" field. It's identical to OldValueEQ.
@@ -264,6 +274,81 @@ func OperatorIDNotNil() predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldNotNull(FieldOperatorID))
 }
 
+// OperatorNameEQ applies the EQ predicate on the "operator_name" field.
+func OperatorNameEQ(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEQ(FieldOperatorName, v))
+}
+
+// OperatorNameNEQ applies the NEQ predicate on the "operator_name" field.
+func OperatorNameNEQ(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNEQ(FieldOperatorName, v))
+}
+
+// OperatorNameIn applies the In predicate on the "operator_name" field.
+func OperatorNameIn(vs ...string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldIn(FieldOperatorName, vs...))
+}
+
+// OperatorNameNotIn applies the NotIn predicate on the "operator_name" field.
+func OperatorNameNotIn(vs ...string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNotIn(FieldOperatorName, vs...))
+}
+
+// OperatorNameGT applies the GT predicate on the "operator_name" field.
+func OperatorNameGT(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldGT(FieldOperatorName, v))
+}
+
+// OperatorNameGTE applies the GTE predicate on the "operator_name" field.
+func OperatorNameGTE(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldGTE(FieldOperatorName, v))
+}
+
+// OperatorNameLT applies the LT predicate on the "operator_name" field.
+func OperatorNameLT(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldLT(FieldOperatorName, v))
+}
+
+// OperatorNameLTE applies the LTE predicate on the "operator_name" field.
+func OperatorNameLTE(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldLTE(FieldOperatorName, v))
+}
+
+// OperatorNameContains applies the Contains predicate on the "operator_name" field.
+func OperatorNameContains(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldContains(FieldOperatorName, v))
+}
+
+// OperatorNameHasPrefix applies the HasPrefix predicate on the "operator_name" field.
+func OperatorNameHasPrefix(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldHasPrefix(FieldOperatorName, v))
+}
+
+// OperatorNameHasSuffix applies the HasSuffix predicate on the "operator_name" field.
+func OperatorNameHasSuffix(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldHasSuffix(FieldOperatorName, v))
+}
+
+// OperatorNameIsNil applies the IsNil predicate on the "operator_name" field.
+func OperatorNameIsNil() predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldIsNull(FieldOperatorName))
+}
+
+// OperatorNameNotNil applies the NotNil predicate on the "operator_name" field.
+func OperatorNameNotNil() predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNotNull(FieldOperatorName))
+}
+
+// OperatorNameEqualFold applies the EqualFold predicate on the "operator_name" field.
+func OperatorNameEqualFold(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEqualFold(FieldOperatorName, v))
+}
+
+// OperatorNameContainsFold applies the ContainsFold predicate on the "operator_name" field.
+func OperatorNameContainsFold(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldContainsFold(FieldOperatorName, v))
+}
+
 // TargetTypeEQ applies the EQ predicate on the "target_type" field.
 func TargetTypeEQ(v string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldEQ(FieldTargetType, v))
@@ -412,6 +497,81 @@ func TargetIDEqualFold(v string) predicate.PermissionAuditLog {
 // TargetIDContainsFold applies the ContainsFold predicate on the "target_id" field.
 func TargetIDContainsFold(v string) predicate.PermissionAuditLog {
 	return predicate.PermissionAuditLog(sql.FieldContainsFold(FieldTargetID, v))
+}
+
+// TargetNameEQ applies the EQ predicate on the "target_name" field.
+func TargetNameEQ(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEQ(FieldTargetName, v))
+}
+
+// TargetNameNEQ applies the NEQ predicate on the "target_name" field.
+func TargetNameNEQ(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNEQ(FieldTargetName, v))
+}
+
+// TargetNameIn applies the In predicate on the "target_name" field.
+func TargetNameIn(vs ...string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldIn(FieldTargetName, vs...))
+}
+
+// TargetNameNotIn applies the NotIn predicate on the "target_name" field.
+func TargetNameNotIn(vs ...string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNotIn(FieldTargetName, vs...))
+}
+
+// TargetNameGT applies the GT predicate on the "target_name" field.
+func TargetNameGT(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldGT(FieldTargetName, v))
+}
+
+// TargetNameGTE applies the GTE predicate on the "target_name" field.
+func TargetNameGTE(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldGTE(FieldTargetName, v))
+}
+
+// TargetNameLT applies the LT predicate on the "target_name" field.
+func TargetNameLT(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldLT(FieldTargetName, v))
+}
+
+// TargetNameLTE applies the LTE predicate on the "target_name" field.
+func TargetNameLTE(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldLTE(FieldTargetName, v))
+}
+
+// TargetNameContains applies the Contains predicate on the "target_name" field.
+func TargetNameContains(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldContains(FieldTargetName, v))
+}
+
+// TargetNameHasPrefix applies the HasPrefix predicate on the "target_name" field.
+func TargetNameHasPrefix(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldHasPrefix(FieldTargetName, v))
+}
+
+// TargetNameHasSuffix applies the HasSuffix predicate on the "target_name" field.
+func TargetNameHasSuffix(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldHasSuffix(FieldTargetName, v))
+}
+
+// TargetNameIsNil applies the IsNil predicate on the "target_name" field.
+func TargetNameIsNil() predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldIsNull(FieldTargetName))
+}
+
+// TargetNameNotNil applies the NotNil predicate on the "target_name" field.
+func TargetNameNotNil() predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldNotNull(FieldTargetName))
+}
+
+// TargetNameEqualFold applies the EqualFold predicate on the "target_name" field.
+func TargetNameEqualFold(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldEqualFold(FieldTargetName, v))
+}
+
+// TargetNameContainsFold applies the ContainsFold predicate on the "target_name" field.
+func TargetNameContainsFold(v string) predicate.PermissionAuditLog {
+	return predicate.PermissionAuditLog(sql.FieldContainsFold(FieldTargetName, v))
 }
 
 // ActionEQ applies the EQ predicate on the "action" field.

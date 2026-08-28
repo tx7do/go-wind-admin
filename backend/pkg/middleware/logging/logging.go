@@ -1,7 +1,11 @@
 package logging
 
 import (
+	"bytes"
 	"context"
+	"io"
+	nethttp "net/http"
+	"strings"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/middleware"
@@ -11,6 +15,57 @@ import (
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	"go-wind-admin/pkg/audit"
 )
+
+// reqBodyKey 携带 pre-handler 快照的 JSON 写请求体，供 post-handler 审计解析。
+type reqBodyKey struct{}
+
+// maxBodySnapshot 快照上限：CRUD JSON 体远小于此；超长时剩余部分透传原流。
+const maxBodySnapshot = 64 << 10
+
+// bodySnapshotFromContext 取 pre-handler 快照的请求体（无则 nil）。
+func bodySnapshotFromContext(ctx context.Context) []byte {
+	b, _ := ctx.Value(reqBodyKey{}).([]byte)
+	return b
+}
+
+// replayBody 把快照与剩余原始流拼回可重放 body，Close 透传原 body。
+type replayBody struct {
+	io.Reader
+	closer io.Closer
+}
+
+func (b *replayBody) Close() error { return b.closer.Close() }
+
+// snapshotWriteBody 对 JSON 写请求体做限长快照并重置为可重放流。
+// 仅 POST/PUT/PATCH/DELETE 且 Content-Type 含 application/json（避开 multipart
+// 文件上传等大/非结构体）；post-handler 审计（权限日志取目标名称）从 ctx 读取。
+func snapshotWriteBody(ctx context.Context, req *nethttp.Request) context.Context {
+	if req == nil || req.Body == nil {
+		return ctx
+	}
+	switch req.Method {
+	case "POST", "PUT", "PATCH", "DELETE":
+	default:
+		return ctx
+	}
+	if ct := req.Header.Get("Content-Type"); !strings.Contains(ct, "application/json") {
+		return ctx
+	}
+
+	buf := make([]byte, maxBodySnapshot)
+	n, _ := io.ReadFull(req.Body, buf)
+	if n == 0 {
+		req.Body = io.NopCloser(bytes.NewReader(nil))
+		return ctx
+	}
+	snap := buf[:n]
+	var rdr io.Reader = bytes.NewReader(snap)
+	if n == maxBodySnapshot {
+		rdr = io.MultiReader(bytes.NewReader(snap), req.Body)
+	}
+	req.Body = &replayBody{Reader: rdr, closer: req.Body}
+	return context.WithValue(ctx, reqBodyKey{}, snap)
+}
 
 // Server is an server logging middleware.
 func Server(opts ...Option) middleware.Middleware {
@@ -45,6 +100,14 @@ func Server(opts ...Option) middleware.Middleware {
 			// 在 handler 内执行 SQL 时向其 append 事件。post-handler 取出落库。
 			var dataAccessEvents []audit.AuditEvent
 			ctx = context.WithValue(ctx, audit.AccumulatorKey(), &dataAccessEvents)
+
+			// pre-handler 快照 JSON 写请求体（重置为可重放流），post-handler
+			// 权限审计从中提取目标名称。
+			if tr, ok := transport.FromServerContext(ctx); ok {
+				if htr, ok := tr.(*http.Transport); ok {
+					ctx = snapshotWriteBody(ctx, htr.Request())
+				}
+			}
 
 			reply, err = handler(ctx, req)
 

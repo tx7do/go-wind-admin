@@ -145,7 +145,9 @@ func (r *PermissionAuditLogRepo) Create(ctx context.Context, req *auditV1.Create
 	builder := r.entClient.Client().PermissionAuditLog.Create().
 		SetNillableTenantID(req.Data.TenantId).
 		SetNillableOperatorID(req.Data.OperatorId).
+		SetNillableOperatorName(req.Data.OperatorName).
 		SetNillableTargetID(req.Data.TargetId).
+		SetNillableTargetName(req.Data.TargetName).
 		SetNillableTargetType(req.Data.TargetType).
 		SetNillableAction(r.actionTypeConverter.ToEntity(req.Data.Action)).
 		SetNillableOldValue(req.Data.OldValue).

@@ -34,6 +34,11 @@ func (PermissionAuditLog) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
+		field.String("operator_name").
+			Comment("操作者用户名").
+			Optional().
+			Nillable(),
+
 		field.String("target_type").
 			Comment("目标类型").
 			Optional().
@@ -41,6 +46,11 @@ func (PermissionAuditLog) Fields() []ent.Field {
 
 		field.String("target_id").
 			Comment("目标ID").
+			Optional().
+			Nillable(),
+
+		field.String("target_name").
+			Comment("目标名称").
 			Optional().
 			Nillable(),
 
