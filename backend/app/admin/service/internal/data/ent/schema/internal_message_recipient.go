@@ -95,8 +95,10 @@ func (InternalMessageRecipient) Indexes() []ent.Index {
 		index.Fields("recipient_user_id", "status", "created_at").
 			StorageKey("idx_internal_msg_recipient_recipient_status_created_at"),
 
-		// 按消息 + 接收者，用于快速定位特定消息-接收者的记录
+		// 按消息 + 接收者，唯一约束：广播任务经 asynq 重试时保证 (message_id, recipient_user_id)
+		// 不重复落库（配合 ent OnConflict+ResolveWithIgnore 做幂等 upsert）。
 		index.Fields("message_id", "recipient_user_id").
-			StorageKey("idx_internal_msg_recipient_message_recipient"),
+			Unique().
+			StorageKey("uq_internal_msg_recipient_message_recipient"),
 	}
 }

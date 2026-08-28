@@ -82,6 +82,16 @@ func (s *TaskService) RegisterTaskScheduler(taskScheduler TaskScheduler) {
 	s.taskScheduler = taskScheduler
 }
 
+// NewTask 委托 taskScheduler.NewTask 投递一次性 asynq 任务。
+// 实现 service.TaskEnqueuer 接口，供 InternalMessageService 广播任务入队使用。
+// asynq 未配置时 taskScheduler 为 nil，调用方（InternalMessageService）通过 nil 检查回退到 goroutine。
+func (s *TaskService) NewTask(typeName string, msg any, opts ...asynq.Option) error {
+	if !s.hasScheduler() {
+		return errors.New("task scheduler is not configured")
+	}
+	return s.taskScheduler.NewTask(typeName, msg, opts...)
+}
+
 // hasScheduler 检查调度器是否可用（未配置 asynq 时为 nil）。
 // 在所有调用 taskScheduler 的地方前置检查，避免 nil 解引用 panic。
 func (s *TaskService) hasScheduler() bool {

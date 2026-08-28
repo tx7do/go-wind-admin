@@ -651,8 +651,8 @@ var (
 				Columns: []*schema.Column{InternalMessageRecipientsColumns[6], InternalMessageRecipientsColumns[7], InternalMessageRecipientsColumns[1]},
 			},
 			{
-				Name:    "idx_internal_msg_recipient_message_recipient",
-				Unique:  false,
+				Name:    "uq_internal_msg_recipient_message_recipient",
+				Unique:  true,
 				Columns: []*schema.Column{InternalMessageRecipientsColumns[5], InternalMessageRecipientsColumns[6]},
 			},
 		},

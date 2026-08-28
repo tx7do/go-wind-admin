@@ -169,17 +169,17 @@ func (r *InternalMessageRecipientRepo) Create(ctx context.Context, req *internal
 const recipientInsertBatchSize = 500
 
 // CreateBulk 批量插入收件记录，超出单批上限时自动分批。
-// 部分批次失败时跳过该批继续后续批次，返回成功落库的记录并聚合错误；
-// 调用方以（入参数量 - 返回数量）得知失败条数。
-func (r *InternalMessageRecipientRepo) CreateBulk(ctx context.Context, reqs []*internalMessageV1.InternalMessageRecipient) ([]*internalMessageV1.InternalMessageRecipient, error) {
+// 使用 ON CONFLICT (message_id, recipient_user_id) DO NOTHING：
+// (message_id, recipient_user_id) 有唯一约束，asynq 广播任务重试时若某批已落库，
+// 冲突行会被忽略而非报错回滚，保证幂等。upsert 模式下数据库不返回实体，
+// 故本方法不返回创建结果，调用方（广播 handler）按入参数视为已投递并逐条推送 SSE。
+// 部分批次因非冲突错误失败时跳过该批继续后续批次，聚合错误返回。
+func (r *InternalMessageRecipientRepo) CreateBulk(ctx context.Context, reqs []*internalMessageV1.InternalMessageRecipient) error {
 	if len(reqs) == 0 {
-		return nil, nil
+		return nil
 	}
 
-	var (
-		created []*internalMessageV1.InternalMessageRecipient
-		errs    error
-	)
+	var errs error
 	for start := 0; start < len(reqs); start += recipientInsertBatchSize {
 		end := min(start+recipientInsertBatchSize, len(reqs))
 
@@ -195,18 +195,21 @@ func (r *InternalMessageRecipientRepo) CreateBulk(ctx context.Context, reqs []*i
 				SetCreatedAt(time.Now()))
 		}
 
-		entities, err := r.entClient.Client().InternalMessageRecipient.CreateBulk(builders...).Save(ctx)
+		// 唯一约束 (message_id, recipient_user_id) 冲突时忽略该行，不更新任何字段。
+		// 见 schema/internal_message_recipient.go 的 Unique index 与 ent feature sql/upsert。
+		err := r.entClient.Client().InternalMessageRecipient.CreateBulk(builders...).
+			OnConflict(
+				sql.ResolveWithIgnore(),
+				sql.ConflictColumns(internalmessagerecipient.FieldMessageID, internalmessagerecipient.FieldRecipientUserID),
+			).
+			Exec(ctx)
 		if err != nil {
 			r.log.Errorf(ctx, "bulk insert internal message recipients failed: %s", err.Error())
 			errs = errors.Join(errs, err)
-			continue
-		}
-		for _, entity := range entities {
-			created = append(created, r.mapper.ToDTO(entity))
 		}
 	}
 
-	return created, errs
+	return errs
 }
 
 func (r *InternalMessageRecipientRepo) Update(ctx context.Context, req *internalMessageV1.UpdateInternalMessageRecipientRequest) error {

@@ -135,7 +135,7 @@ func initApp(context *bootstrap.Context) (*kratos.App, func(), error) {
 		cleanup()
 		return nil, nil, err
 	}
-	asynqServer, err := server.NewAsynqServer(context, taskService)
+	asynqServer, err := server.NewAsynqServer(context, taskService, internalMessageService)
 	if err != nil {
 		cleanup2()
 		cleanup()
