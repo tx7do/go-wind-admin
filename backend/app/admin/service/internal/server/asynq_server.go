@@ -50,6 +50,13 @@ func NewAsynqServer(ctx *bootstrap.Context, taskService *service.TaskService, in
 		return nil, err
 	}
 
+	// 注册审计日志归档任务 handler（等保 ≥6 个月留存：超期行导出 JSONL 后删除）。
+	// 周期调度同样在 startAllTask 末尾注册。
+	if err = asynqServer.RegisterSubscriber(srv, task.AuditLogArchiveTaskType, taskService.AsyncAuditLogArchive); err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
 	// 注册站内信广播任务 handler。该任务为一次性投递任务（非周期），
 	// 由 InternalMessageService.SendMessage 在消息落库后入队，handler 从 DB 取回消息本体后执行 fan-out。
 	// 重试幂等性由 (message_id, recipient_user_id) 唯一约束 + CreateBulk 的 ON CONFLICT DO NOTHING 保证。

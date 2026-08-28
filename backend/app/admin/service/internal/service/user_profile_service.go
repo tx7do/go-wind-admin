@@ -99,11 +99,14 @@ func (s *UserProfileService) ChangePassword(ctx context.Context, req *identityV1
 		return nil, err
 	}
 
+	// 前端与登录/注册一致走 AES 密文传输，必须解密后再校验/哈希——
+	// 此前漏设 NeedDecrypt，密文串被当明文哈希入库（改完即锁号）且绕过复杂度校验。
 	err = s.userCredentialRepo.ChangeCredential(ctx, &authenticationV1.ChangeCredentialRequest{
 		IdentityType:  authenticationV1.UserCredential_USERNAME,
 		Identifier:    operator.GetUsername(),
 		OldCredential: req.GetOldPassword(),
 		NewCredential: req.GetNewPassword(),
+		NeedDecrypt:   true,
 	})
 	return &emptypb.Empty{}, err
 }

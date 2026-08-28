@@ -7,6 +7,8 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
@@ -55,6 +57,7 @@ type TaskService struct {
 	taskRepo        *data.TaskRepo
 	backupRepo      *data.BackupRepo
 	tenantUsageRepo *data.TenantUsageRepo
+	auditLogArchiveRepo *data.AuditLogArchiveRepo
 	mc              *oss.MinIOClient
 }
 
@@ -64,6 +67,7 @@ func NewTaskService(
 	userRepo data.UserRepo,
 	backupRepo *data.BackupRepo,
 	tenantUsageRepo *data.TenantUsageRepo,
+	auditLogArchiveRepo *data.AuditLogArchiveRepo,
 	mc *oss.MinIOClient,
 ) *TaskService {
 	svc := &TaskService{
@@ -72,6 +76,7 @@ func NewTaskService(
 		userRepo:        userRepo,
 		backupRepo:      backupRepo,
 		tenantUsageRepo: tenantUsageRepo,
+		auditLogArchiveRepo: auditLogArchiveRepo,
 		mc:              mc,
 	}
 
@@ -349,6 +354,18 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 		} else {
 			s.log.Infof(ctx, "系统级到期扫描定时任务已注册（cron=%s）", task.TenantExpiryScanCronSpec)
 		}
+
+		// 审计日志归档（等保 ≥6 个月留存）：超保留期行导出 JSONL 后删除，
+		// 目录/保留期走环境变量（见 AsyncAuditLogArchive）。
+		if _, err := s.taskScheduler.NewPeriodicTask(
+			task.AuditLogArchiveCronSpec,
+			task.AuditLogArchiveTaskType,
+			&task.AuditLogArchiveTaskData{},
+		); err != nil {
+			s.log.Errorf(ctx, "注册审计日志归档定时任务失败: %s", err.Error())
+		} else {
+			s.log.Infof(ctx, "审计日志归档定时任务已注册（cron=%s）", task.AuditLogArchiveCronSpec)
+		}
 	}
 
 	return count, nil
@@ -478,6 +495,41 @@ func (s *TaskService) startTask(t *taskV1.Task) error {
 		}
 	}
 
+	return nil
+}
+
+// AsyncAuditLogArchive 审计日志归档任务：把超过保留期的审计行导出为本地
+// JSONL 文件后从库中删除（等保要求日志留存 ≥6 个月）。
+// 目录：AUDIT_ARCHIVE_DIR（默认 ./data/audit-archive）；
+// 保留天数：AUDIT_RETENTION_DAYS（默认 180）。
+func (s *TaskService) AsyncAuditLogArchive(taskType string, taskData *task.AuditLogArchiveTaskData) error {
+	s.log.Infof(context.Background(), "AsyncAuditLogArchive [%s] [%+v]", taskType, taskData)
+
+	if s.auditLogArchiveRepo == nil {
+		return errors.New("audit log archive repo is not configured")
+	}
+
+	outDir := os.Getenv("AUDIT_ARCHIVE_DIR")
+	if outDir == "" {
+		outDir = "./data/audit-archive"
+	}
+	retentionDays := 180
+	if v := os.Getenv("AUDIT_RETENTION_DAYS"); v != "" {
+		if n, err := strconv.Atoi(v); err == nil && n > 0 {
+			retentionDays = n
+		}
+	}
+	before := time.Now().AddDate(0, 0, -retentionDays)
+
+	ctx := appViewer.NewSystemViewerContext(context.Background())
+	results, err := s.auditLogArchiveRepo.ArchiveExpired(ctx, before, outDir)
+	if err != nil {
+		s.log.Errorf(ctx, "audit log archive failed: %s", err.Error())
+		return err
+	}
+	for table, n := range results {
+		s.log.Infof(ctx, "audit log archived: %s -> %d rows (dir=%s)", table, n, outDir)
+	}
 	return nil
 }
 

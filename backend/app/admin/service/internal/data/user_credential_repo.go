@@ -22,6 +22,8 @@ import (
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
+
+	passwordPolicy "go-wind-admin/pkg/password"
 	"go-wind-admin/app/admin/service/internal/data/ent/usercredential"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
@@ -420,6 +422,8 @@ func (r *UserCredentialRepo) FindUserCredential(ctx context.Context, tenantID ui
 			usercredential.FieldCredentialType,
 			usercredential.FieldCredential,
 			usercredential.FieldStatus,
+			usercredential.FieldUpdatedAt,
+			usercredential.FieldExtraInfo,
 		).
 		Where(
 			usercredential.TenantIDEQ(tenantID),
@@ -447,6 +451,13 @@ func (r *UserCredentialRepo) FindUserCredential(ctx context.Context, tenantID ui
 	}
 
 	if r.verifyCredential(entity.CredentialType, plainCredential, *entity.Credential) {
+		// 等保口令策略：有效期检查——超期拒绝登录，用户走重置/改密流程换新口令
+		if maxAge := passwordPolicy.MaxAgeDays(); maxAge > 0 && *entity.CredentialType == usercredential.CredentialTypePasswordHash {
+			if entity.UpdatedAt != nil && time.Since(*entity.UpdatedAt) > time.Duration(maxAge)*24*time.Hour {
+				r.log.Warnf(ctx, "password expired for user [%d] (age > %dd), login denied", *entity.UserID, maxAge)
+				return 0, authenticationV1.ErrorBadRequest("password expired, please reset your password")
+			}
+		}
 		return *entity.UserID, nil
 	}
 
@@ -486,6 +497,10 @@ func (r *UserCredentialRepo) prepareCredential(credentialType *usercredential.Cr
 	var newCredential string
 	switch *credentialType {
 	case usercredential.CredentialTypePasswordHash:
+		// 等保口令策略：哈希前对明文做复杂度校验（覆盖创建/修改/重置全部路径）
+		if err := passwordPolicy.ValidateComplexity(plainCredential); err != nil {
+			return "", authenticationV1.ErrorBadRequest("%s", err.Error())
+		}
 		var err error
 		// 加密明文密码
 		newCredential, err = r.passwordCrypto.Encrypt(plainCredential)
@@ -546,6 +561,7 @@ func (r *UserCredentialRepo) ChangeCredential(ctx context.Context, req *authenti
 		Select(
 			usercredential.FieldCredentialType,
 			usercredential.FieldCredential,
+			usercredential.FieldExtraInfo,
 		).
 		Where(tenantWhere...).
 		Only(ctx)
@@ -569,18 +585,27 @@ func (r *UserCredentialRepo) ChangeCredential(ctx context.Context, req *authenti
 	var newCredential string
 	newCredential, err = r.prepareCredential(entity.CredentialType, req.GetNewCredential())
 	if err != nil {
-		r.log.Errorf(ctx, "prepare new credential failed: %s", err.Error())
-		return authenticationV1.ErrorBadRequest("prepare new credential failed")
+		// 口令策略（复杂度等）错误原样透传，便于前端给出可操作的提示
+		r.log.Warnf(ctx, "prepare new credential rejected: %s", err.Error())
+		return err
 	}
 
 	if newCredential == "" {
 		return authenticationV1.ErrorBadRequest("new credential cannot be empty")
 	}
 
+	// 等保口令策略：历史口令检查——新明文不得与最近 N 条历史哈希重复
+	if err := r.checkPasswordHistory(ctx, entity, req.GetNewCredential()); err != nil {
+		return err
+	}
+
+	extraInfo := appendPasswordHistory(entity.ExtraInfo, *entity.Credential, passwordPolicy.HistoryCount())
+
 	builder := r.entClient.Client().UserCredential.Update()
 	builder.Where(tenantWhere...)
 	builder.
 		SetCredential(newCredential).
+		SetNillableExtraInfo(extraInfo).
 		SetUpdatedAt(time.Now())
 	if err = builder.Exec(ctx); err != nil {
 		r.log.Errorf(ctx, "update one data failed: %s", err.Error())
@@ -638,18 +663,27 @@ func (r *UserCredentialRepo) ResetCredential(ctx context.Context, req *authentic
 	var newCredential string
 	newCredential, err = r.prepareCredential(entity.CredentialType, req.GetNewCredential())
 	if err != nil {
-		r.log.Errorf(ctx, "prepare new credential failed: %s", err.Error())
-		return authenticationV1.ErrorBadRequest("prepare new credential failed")
+		// 口令策略（复杂度等）错误原样透传，便于前端给出可操作的提示
+		r.log.Warnf(ctx, "prepare new credential rejected: %s", err.Error())
+		return err
 	}
 
 	if newCredential == "" {
 		return authenticationV1.ErrorBadRequest("new credential cannot be empty")
 	}
 
+	// 等保口令策略：历史口令检查（管理员重置同样不得与近期历史重复）
+	if err := r.checkPasswordHistory(ctx, entity, req.GetNewCredential()); err != nil {
+		return err
+	}
+
+	extraInfo := appendPasswordHistory(entity.ExtraInfo, *entity.Credential, passwordPolicy.HistoryCount())
+
 	builder := r.entClient.Client().UserCredential.Update()
 	builder.Where(tenantWhere...)
 	builder.
 		SetCredential(newCredential).
+		SetNillableExtraInfo(extraInfo).
 		SetUpdatedAt(time.Now())
 	if err = builder.Exec(ctx); err != nil {
 		r.log.Errorf(ctx, "update one data failed: %s", err.Error())

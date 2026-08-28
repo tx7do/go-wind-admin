@@ -551,6 +551,7 @@ func (s *UserService) Update(ctx context.Context, req *identityV1.UpdateUserRequ
 			IdentityType:  authenticationV1.UserCredential_USERNAME,
 			Identifier:    targetUsername,
 			NewCredential: req.GetPassword(),
+			NeedDecrypt:   true, // 前端 AES 密文传输，解密后才走复杂度/哈希
 		}); err != nil {
 			return nil, err
 		}
@@ -640,7 +641,7 @@ func (s *UserService) EditUserPassword(ctx context.Context, req *identityV1.Edit
 		IdentityType:  authenticationV1.UserCredential_USERNAME,
 		Identifier:    u.GetUsername(),
 		NewCredential: req.GetNewPassword(),
-		NeedDecrypt:   false,
+		NeedDecrypt:   true, // 前端 AES 密文传输，解密后才走复杂度/哈希
 	}); err != nil {
 		s.log.Errorf(ctx, "reset user password err: %v", err)
 		return nil, err
