@@ -30,8 +30,10 @@ const (
 type InternalMessageRecipient_Status int32
 
 const (
-	InternalMessageRecipient_SENT     InternalMessageRecipient_Status = 0 // (系统状态) 消息已存入接收者收件箱，等待客户端拉取
-	InternalMessageRecipient_RECEIVED InternalMessageRecipient_Status = 1 // (客户端回执) 接收方客户端已成功接收/下载该消息
+	// (预留) 消息已存入接收者收件箱、等待客户端确认。当前服务端写入即 RECEIVED，
+	// SENT→RECEIVED 的客户端回执链路未启用（MarkNotificationsStatus 无 HTTP 路由也无人调用）。
+	InternalMessageRecipient_SENT     InternalMessageRecipient_Status = 0
+	InternalMessageRecipient_RECEIVED InternalMessageRecipient_Status = 1 // (写入态) 消息已投递到接收者收件箱，未读
 	InternalMessageRecipient_READ     InternalMessageRecipient_Status = 2 // (客户端回执) 接收方已读消息
 	InternalMessageRecipient_REVOKED  InternalMessageRecipient_Status = 3 // (发送者动作) 消息被发送者撤销
 	InternalMessageRecipient_DELETED  InternalMessageRecipient_Status = 4 // (接收者动作) 接收者删除该消息
@@ -654,9 +656,10 @@ func (x *GetInternalMessageRecipientsByIdsRequest) GetIds() []uint32 {
 }
 
 type DeleteNotificationFromInboxRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        uint32                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                          // 用户ID
-	RecipientIds  []uint32               `protobuf:"varint,2,rep,packed,name=recipient_ids,json=recipientIds,proto3" json:"recipient_ids,omitempty"` // 收件箱记录ID列表
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	UserId uint32                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // 用户ID
+	// 收件箱记录ID列表；为空表示清空该用户收件箱（与 MarkNotificationAsRead 空 ids 语义一致）。
+	RecipientIds  []uint32 `protobuf:"varint,2,rep,packed,name=recipient_ids,json=recipientIds,proto3" json:"recipient_ids,omitempty"` // 收件箱记录ID列表
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -706,9 +709,11 @@ func (x *DeleteNotificationFromInboxRequest) GetRecipientIds() []uint32 {
 }
 
 type MarkNotificationAsReadRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        uint32                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`                          // 用户ID
-	RecipientIds  []uint32               `protobuf:"varint,2,rep,packed,name=recipient_ids,json=recipientIds,proto3" json:"recipient_ids,omitempty"` // 收件箱记录ID列表
+	state  protoimpl.MessageState `protogen:"open.v1"`
+	UserId uint32                 `protobuf:"varint,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // 用户ID
+	// 收件箱记录ID列表；为空表示标记该用户全部未读通知（服务端按用户维度兜底，
+	// 前端"全部已读"入口只加载了当前页数据，无法枚举全部ID）。
+	RecipientIds  []uint32 `protobuf:"varint,2,rep,packed,name=recipient_ids,json=recipientIds,proto3" json:"recipient_ids,omitempty"` // 收件箱记录ID列表
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -948,13 +953,13 @@ const file_internal_message_service_v1_internal_message_recipient_proto_rawDesc 
 	"\n" +
 	"\bquery_by\"<\n" +
 	"(GetInternalMessageRecipientsByIdsRequest\x12\x10\n" +
-	"\x03ids\x18\x01 \x03(\rR\x03ids\"\x91\x01\n" +
+	"\x03ids\x18\x01 \x03(\rR\x03ids\"\xaf\x01\n" +
 	"\"DeleteNotificationFromInboxRequest\x12'\n" +
-	"\auser_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12B\n" +
-	"\rrecipient_ids\x18\x02 \x03(\rB\x1d\xbaG\x1a\x92\x02\x17收件箱记录ID列表R\frecipientIds\"\x8c\x01\n" +
+	"\auser_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12`\n" +
+	"\rrecipient_ids\x18\x02 \x03(\rB;\xbaG8\x92\x025收件箱记录ID列表，为空表示清空收件箱R\frecipientIds\"\xa7\x01\n" +
 	"\x1dMarkNotificationAsReadRequest\x12'\n" +
-	"\auser_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12B\n" +
-	"\rrecipient_ids\x18\x02 \x03(\rB\x1d\xbaG\x1a\x92\x02\x17收件箱记录ID列表R\frecipientIds\"\x84\x02\n" +
+	"\auser_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12]\n" +
+	"\rrecipient_ids\x18\x02 \x03(\rB8\xbaG5\x92\x022收件箱记录ID列表，为空表示全部未读R\frecipientIds\"\x84\x02\n" +
 	"\x1eMarkNotificationsStatusRequest\x12'\n" +
 	"\auser_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x06userId\x12B\n" +
 	"\rrecipient_ids\x18\x02 \x03(\rB\x1d\xbaG\x1a\x92\x02\x17收件箱记录ID列表R\frecipientIds\x12u\n" +

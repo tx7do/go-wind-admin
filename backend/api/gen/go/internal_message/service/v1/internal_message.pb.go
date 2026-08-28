@@ -763,9 +763,11 @@ func (x *SendMessageResponse) GetMessageId() uint32 {
 }
 
 type RevokeMessageRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	MessageId     uint32                 `protobuf:"varint,1,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"` // 消息ID
-	UserId        uint32                 `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`          // 用户ID
+	state     protoimpl.MessageState `protogen:"open.v1"`
+	MessageId uint32                 `protobuf:"varint,1,opt,name=message_id,json=messageId,proto3" json:"message_id,omitempty"` // 消息ID
+	// 用户ID：0 为全局撤销（删除消息本体与全部收件记录，同一事务）；
+	// 大于 0 为单用户撤销（仅删除该用户收件记录，消息本体与其他收件人不受影响）。
+	UserId        uint32 `protobuf:"varint,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"` // 用户ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -922,11 +924,11 @@ const file_internal_message_service_v1_internal_message_proto_rawDesc = "" +
 	"\x06_title\"D\n" +
 	"\x13SendMessageResponse\x12-\n" +
 	"\n" +
-	"message_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b消息IDR\tmessageId\"n\n" +
+	"message_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b消息IDR\tmessageId\"\x84\x01\n" +
 	"\x14RevokeMessageRequest\x12-\n" +
 	"\n" +
-	"message_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b消息IDR\tmessageId\x12'\n" +
-	"\auser_id\x18\x02 \x01(\rB\x0e\xbaG\v\x92\x02\b用户IDR\x06userId2\x8a\x06\n" +
+	"message_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b消息IDR\tmessageId\x12=\n" +
+	"\auser_id\x18\x02 \x01(\rB$\xbaG!\x92\x02\x1e用户ID，0表示全局撤销R\x06userId2\x8a\x06\n" +
 	"\x16InternalMessageService\x12d\n" +
 	"\vListMessage\x12\x19.pagination.PagingRequest\x1a8.internal_message.service.v1.ListInternalMessageResponse\"\x00\x12t\n" +
 	"\n" +

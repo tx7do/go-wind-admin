@@ -5411,7 +5411,7 @@ components:
                     items:
                         type: integer
                         format: uint32
-                    description: 收件箱记录ID列表
+                    description: 收件箱记录ID列表，为空表示清空收件箱
         DeviceInfo:
             type: object
             properties:
@@ -6797,7 +6797,7 @@ components:
                     items:
                         type: integer
                         format: uint32
-                    description: 收件箱记录ID列表
+                    description: 收件箱记录ID列表，为空表示全部未读
         Menu:
             type: object
             properties:
@@ -7899,7 +7899,7 @@ components:
                     format: uint32
                 userId:
                     type: integer
-                    description: 用户ID
+                    description: 用户ID，0表示全局撤销
                     format: uint32
         Role:
             type: object
