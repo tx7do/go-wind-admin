@@ -36,8 +36,9 @@ func (p *PermissionAuditLogMiddleware) Name() string {
 
 // parseTargetAndAction 从 kratos operation 字符串解析目标类型与动作。
 // operation 格式统一为 "/<package>.<ServiceName>/<Method>"（如 "/admin.service.v1.PermissionService/Update"）。
-// target_type 取 ServiceName 去除 "Service" 后缀并转小写；action 按 Method 映射 PermissionAuditLog_ActionType。
-// 非写操作返回 UNSPECIFIED，由调用方决定是否落库。
+// target_type 取 ServiceName 去除 "Service" 后缀转小写；action 按 Method 映射
+// PermissionAuditLog_ActionType。未识别的写方法返回 OTHER（读请求由调用方按
+// HTTP 方法先行拦截，不会走到这里）。
 func parseTargetAndAction(operation string) (string, auditV1.PermissionAuditLog_ActionType) {
 	slash := strings.LastIndex(operation, "/")
 	if slash < 0 || slash == len(operation)-1 {
@@ -60,7 +61,7 @@ func parseTargetAndAction(operation string) (string, auditV1.PermissionAuditLog_
 		action = auditV1.PermissionAuditLog_CREATE
 	case "Update":
 		action = auditV1.PermissionAuditLog_UPDATE
-	case "Delete":
+	case "Delete", "BatchDelete":
 		action = auditV1.PermissionAuditLog_DELETE
 	case "Assign":
 		action = auditV1.PermissionAuditLog_ASSIGN
@@ -73,7 +74,22 @@ func parseTargetAndAction(operation string) (string, auditV1.PermissionAuditLog_
 }
 
 func (p *PermissionAuditLogMiddleware) Handle(ctx context.Context, htr *http.Transport, middleErr error, latencyMs int64) {
-	// 仅对写操作落库：解析不出 target_type 或 action 为 UNSPECIFIED 时跳过。
+	// 仅对写操作落库。按 HTTP 方法判读请求（比方法名前缀猜测可靠）：
+	// GET/HEAD/OPTIONS 属读请求，不构成权限变更——此前 default 分支返回 OTHER
+	// 使每次页面浏览都产生一条 GET 噪音行（且无请求体，目标名称恒空）。
+	// 读请求的审计归 API日志（全量请求）与 策略评估日志（鉴权评估）。
+	if req := htr.Request(); req != nil {
+		switch req.Method {
+		case "POST", "PUT", "PATCH", "DELETE":
+		default:
+			return
+		}
+	}
+	// 会话维护端点（登录/刷新/登出/MFA 验证）不是变更，交给登录审计。
+	if sessionOnlyOperations[htr.Operation()] {
+		return
+	}
+	// 解析不出 target_type 或 action 为 UNSPECIFIED 时跳过。
 	targetType, action := parseTargetAndAction(htr.Operation())
 	if targetType == "" || action == auditV1.PermissionAuditLog_ACTION_TYPE_UNSPECIFIED {
 		return

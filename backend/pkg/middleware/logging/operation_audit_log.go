@@ -35,8 +35,8 @@ func (o *OperationAuditLogMiddleware) Name() string {
 
 // parseResourceAndAction 从 kratos operation 字符串解析资源类型与动作。
 // operation 格式统一为 "/<package>.<ServiceName>/<Method>"（如 "/admin.service.v1.RoleService/Update"）。
-// resource_type 取 ServiceName 去除 "Service" 后缀并转小写；action 按 Method 映射 ActionType。
-// 非写操作（Create/Update/Delete/BatchCreate 之外）返回 UNSPECIFIED，由调用方决定是否落库。
+// resource_type 取 ServiceName 去除 "Service" 后缀转小写；action 按 Method 映射 ActionType。
+// 未识别的写方法返回 OTHER（读请求由调用方按 HTTP 方法先行拦截，不会走到这里）。
 func parseResourceAndAction(operation string) (string, auditV1.OperationAuditLog_ActionType) {
 	slash := strings.LastIndex(operation, "/")
 	if slash < 0 || slash == len(operation)-1 {
@@ -59,7 +59,7 @@ func parseResourceAndAction(operation string) (string, auditV1.OperationAuditLog
 		action = auditV1.OperationAuditLog_CREATE
 	case "Update":
 		action = auditV1.OperationAuditLog_UPDATE
-	case "Delete":
+	case "Delete", "BatchDelete":
 		action = auditV1.OperationAuditLog_DELETE
 	case "Export":
 		action = auditV1.OperationAuditLog_EXPORT
@@ -76,7 +76,21 @@ func parseResourceAndAction(operation string) (string, auditV1.OperationAuditLog
 }
 
 func (o *OperationAuditLogMiddleware) Handle(ctx context.Context, htr *http.Transport, middleErr error, latencyMs int64) {
-	// 仅对写操作落库：解析不出 resource_type 或 action 为 UNSPECIFIED 时跳过。
+	// 仅对写操作落库。按 HTTP 方法判读请求（比方法名前缀猜测可靠）：
+	// GET/HEAD/OPTIONS 属读请求，不构成变更——此前 default 分支返回 OTHER
+	// 使每次页面浏览都产生一条 GET 噪音行。读请求的审计归 API日志（全量请求）。
+	if req := htr.Request(); req != nil {
+		switch req.Method {
+		case "POST", "PUT", "PATCH", "DELETE":
+		default:
+			return
+		}
+	}
+	// 会话维护端点（登录/刷新/登出/MFA 验证）不是变更，交给登录审计。
+	if sessionOnlyOperations[htr.Operation()] {
+		return
+	}
+	// 解析不出 resource_type 或 action 为 UNSPECIFIED 时跳过。
 	resourceType, action := parseResourceAndAction(htr.Operation())
 	if resourceType == "" || action == auditV1.OperationAuditLog_ACTION_TYPE_UNSPECIFIED {
 		return

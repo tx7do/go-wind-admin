@@ -19,6 +19,17 @@ import (
 // reqBodyKey 携带 pre-handler 快照的 JSON 写请求体，供 post-handler 审计解析。
 type reqBodyKey struct{}
 
+// sessionOnlyOperations 是会话维护类端点：虽为 POST 但不构成业务/权限变更。
+// refresh-token 会被前端定时刷新器周期触发、login 已有专门的登录审计，
+// 记入操作/权限审计只是持续噪音。
+var sessionOnlyOperations = map[string]bool{
+	adminV1.OperationAuthenticationServiceLogin:             true,
+	adminV1.OperationAuthenticationServiceRegisterUser:      true,
+	adminV1.OperationAuthenticationServiceRefreshToken:      true,
+	adminV1.OperationAuthenticationServiceLogout:            true,
+	adminV1.OperationMfaServiceVerifyMFAChallenge:           true,
+}
+
 // maxBodySnapshot 快照上限：CRUD JSON 体远小于此；超长时剩余部分透传原流。
 const maxBodySnapshot = 64 << 10
 
