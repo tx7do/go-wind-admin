@@ -62,8 +62,9 @@ func (DictEntry) Edges() []ent.Edge {
 			Ref("entries").
 			Unique(),
 
+		// 一对多边不可 Required()：i18n 在条目落库后单独建，
+		// Required 会让 Create 在运行时校验 "missing required edge" 而 500。
 		edge.To("i18ns", DictEntryI18n.Type).
-			Required().
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}).

@@ -267,9 +267,6 @@ func (_c *DictTypeCreate) check() error {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "DictType.id": %w`, err)}
 		}
 	}
-	if len(_c.mutation.EntriesIDs()) == 0 {
-		return &ValidationError{Name: "entries", err: errors.New(`ent: missing required edge "DictType.entries"`)}
-	}
 	return nil
 }
 

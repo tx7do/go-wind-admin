@@ -61,8 +61,9 @@ func (DictType) Mixin() []ent.Mixin {
 // Edges of the DictType.
 func (DictType) Edges() []ent.Edge {
 	return []ent.Edge{
+		// 一对多边不可 Required()：业务上先建类型后加条目，
+		// Required 会让 Create 在运行时校验 "missing required edge" 而 500。
 		edge.To("entries", DictEntry.Type).
-			Required().
 			Annotations(entsql.Annotation{
 				OnDelete: entsql.Cascade,
 			}).

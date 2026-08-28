@@ -29,6 +29,10 @@ const dictViewStore = useDictViewStore();
 
 const data = ref();
 
+// 创建态暂存的 i18n 行：此时条目尚未落库无 id，不能像编辑态那样逐行
+// updateDictEntry，确认时随 createDictEntry 一并提交。
+const pendingI18n = ref<Record<string, DictEntryI18n>>({});
+
 const getTitle = computed(() =>
   data.value?.create
     ? $t('ui.modal.create', { moduleName: $t('page.dict.dictEntry') })
@@ -234,7 +238,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
 
     try {
       await (data.value?.create
-        ? createDictEntry(values)
+        ? createDictEntry({ ...values, i18n: pendingI18n.value })
         : updateDictEntry({ id: data.value.row.id, values }));
 
       notification.success({
@@ -259,6 +263,8 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (isOpen) {
       // 获取传入的数据
       data.value = drawerApi.getData<Record<string, any>>();
+
+      pendingI18n.value = {};
 
       // 为表单赋值
       if (data.value.row === undefined) {
@@ -290,13 +296,23 @@ function editRowEvent(row: DictEntryI18n) {
 async function saveRowEvent(row: DictEntryI18n) {
   await gridApi.grid?.clearEdit();
 
-  if (row.languageCode !== undefined) {
-    data.value.row.i18n[row.languageCode] = {
-      languageCode: row.languageCode,
-      entryLabel: row.entryLabel,
-      description: row.description,
-    };
+  if (row.languageCode === undefined) {
+    return;
   }
+
+  const i18nItem: DictEntryI18n = {
+    languageCode: row.languageCode,
+    entryLabel: row.entryLabel,
+    description: row.description,
+  };
+
+  // 创建态：条目尚无 id，只暂存，随确认时的 createDictEntry 一并提交。
+  if (data.value?.create) {
+    pendingI18n.value[row.languageCode] = i18nItem;
+    return;
+  }
+
+  data.value.row.i18n[row.languageCode] = i18nItem;
 
   gridApi.setLoading(true);
 

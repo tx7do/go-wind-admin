@@ -213,7 +213,8 @@ func (r *DictEntryRepo) Create(ctx context.Context, req *dictV1.CreateDictEntryR
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetCreatedAt(time.Now())
 
-	if req.Data.TypeId == nil {
+	// 此前条件写反（TypeId == nil 时才 Set），正常携带 TypeId 反而不落库。
+	if req.Data.TypeId != nil {
 		builder.SetDictTypeID(req.Data.GetTypeId())
 	}
 
