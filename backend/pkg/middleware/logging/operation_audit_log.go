@@ -87,6 +87,14 @@ func (o *OperationAuditLogMiddleware) Handle(ctx context.Context, htr *http.Tran
 	operationAuditLog.ResourceType = trans.Ptr(resourceType)
 	operationAuditLog.Action = trans.Ptr(action)
 
+	// 资源ID：REST 路径最后一个纯数字段（如 /admin/v1/roles/5 → "5"）。
+	// Create 无路径 ID（资源 id 在响应体中，post-handler 不可见），留空。
+	if req := htr.Request(); req != nil {
+		if rid := lastNumericPathSegment(req.URL.Path); rid != "" {
+			operationAuditLog.ResourceId = trans.Ptr(rid)
+		}
+	}
+
 	clientIp := getClientRealIP(htr.Request())
 
 	operationAuditLog.IpAddress = trans.Ptr(clientIp)
