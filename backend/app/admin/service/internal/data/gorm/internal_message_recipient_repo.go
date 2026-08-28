@@ -190,11 +190,10 @@ func (r *InternalMessageRecipientRepo) Delete(ctx context.Context, id uint32) er
 	return nil
 }
 
-// MarkNotificationAsRead 将通知标记为已读
+// MarkNotificationAsRead 将通知标记为已读。
+// recipient_ids 为空表示"标记该用户全部未读"——与 ent 版语义一致，
+// 前端"全部已读"入口只加载了当前页数据，无法枚举全部 id。
 func (r *InternalMessageRecipientRepo) MarkNotificationAsRead(ctx context.Context, req *internalMessageV1.MarkNotificationAsReadRequest) error {
-	if len(req.GetRecipientIds()) == 0 {
-		return internalMessageV1.ErrorBadRequest("invalid parameter")
-	}
 	if req.GetUserId() == 0 {
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
 	}
@@ -205,22 +204,22 @@ func (r *InternalMessageRecipientRepo) MarkNotificationAsRead(ctx context.Contex
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
 	}
 
-	err := r.client.DB.WithContext(ctx).
+	query := r.client.DB.WithContext(ctx).
 		Model(&models.InternalMessageRecipient{}).
-		Where("id IN ? AND recipient_user_id = ? AND status <> ?", req.GetRecipientIds(), req.GetUserId(), *statusEntity).
-		Updates(map[string]interface{}{
-			"status":     *statusEntity,
-			"read_at":    now,
-			"updated_at": now,
-		}).Error
-	return err
+		Where("recipient_user_id = ? AND status <> ?", req.GetUserId(), *statusEntity)
+	if len(req.GetRecipientIds()) > 0 {
+		query = query.Where("id IN ?", req.GetRecipientIds())
+	}
+	return query.Updates(map[string]interface{}{
+		"status":     *statusEntity,
+		"read_at":    now,
+		"updated_at": now,
+	}).Error
 }
 
-// MarkNotificationsStatus 标记特定用户的某些或所有通知的状态
+// MarkNotificationsStatus 标记特定用户的某些或所有通知的状态。
+// recipient_ids 为空表示"标记该用户全部"——与 ent 版语义一致。
 func (r *InternalMessageRecipientRepo) MarkNotificationsStatus(ctx context.Context, req *internalMessageV1.MarkNotificationsStatusRequest) error {
-	if len(req.GetRecipientIds()) == 0 {
-		return internalMessageV1.ErrorBadRequest("invalid parameter")
-	}
 	if req.GetUserId() == 0 {
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
 	}
@@ -251,26 +250,55 @@ func (r *InternalMessageRecipientRepo) MarkNotificationsStatus(ctx context.Conte
 		updates["received_at"] = *receiveAt
 	}
 
-	err := r.client.DB.WithContext(ctx).
+	query := r.client.DB.WithContext(ctx).
 		Model(&models.InternalMessageRecipient{}).
-		Where("id IN ? AND recipient_user_id = ? AND status <> ?", req.GetRecipientIds(), req.GetUserId(), *statusEntity).
-		Updates(updates).Error
-	return err
+		Where("recipient_user_id = ? AND status <> ?", req.GetUserId(), *statusEntity)
+	if len(req.GetRecipientIds()) > 0 {
+		query = query.Where("id IN ?", req.GetRecipientIds())
+	}
+	return query.Updates(updates).Error
 }
 
-// RevokeMessage 撤销某条消息
-func (r *InternalMessageRecipientRepo) RevokeMessage(ctx context.Context, req *internalMessageV1.RevokeMessageRequest) error {
-	err := r.client.DB.WithContext(ctx).
+// RevokeMessageWithMessage 撤销消息。
+// user_id == 0 为全局撤销：删除消息本体（internal_messages 表）与全部收件记录；
+// user_id > 0 为单用户撤销：仅删除该用户的收件记录，消息本体与其他收件人不受影响。
+// 与 ent 版语义一致。注意：gorm 版不做事务（死代码，采用者自行加 tx）。
+func (r *InternalMessageRecipientRepo) RevokeMessageWithMessage(ctx context.Context, req *internalMessageV1.RevokeMessageRequest) error {
+	if req == nil || req.GetMessageId() == 0 {
+		return internalMessageV1.ErrorBadRequest("invalid parameter")
+	}
+
+	if req.GetUserId() > 0 {
+		return r.client.DB.WithContext(ctx).
+			Model(&models.InternalMessageRecipient{}).
+			Where("message_id = ? AND recipient_user_id = ?", req.GetMessageId(), req.GetUserId()).
+			Delete(&models.InternalMessageRecipient{}).Error
+	}
+
+	// 全局撤销：删除消息本体 + 全部收件记录。
+	// 注意：gorm 版无跨表事务（ent 版有），此处两条独立 DELETE 非原子。
+	if err := r.client.DB.WithContext(ctx).
+		Where("id = ?", req.GetMessageId()).
+		Delete(&models.InternalMessage{}).Error; err != nil {
+		r.log.Errorf("delete message failed: %s", err.Error())
+		return internalMessageV1.ErrorInternalServerError("delete message failed")
+	}
+	return r.client.DB.WithContext(ctx).
 		Model(&models.InternalMessageRecipient{}).
-		Where("message_id = ? AND recipient_user_id = ?", req.GetMessageId(), req.GetUserId()).
+		Where("message_id = ?", req.GetMessageId()).
 		Delete(&models.InternalMessageRecipient{}).Error
-	return err
 }
 
 func (r *InternalMessageRecipientRepo) DeleteNotificationFromInbox(ctx context.Context, req *internalMessageV1.DeleteNotificationFromInboxRequest) error {
-	err := r.client.DB.WithContext(ctx).
+	if req.GetUserId() == 0 {
+		return internalMessageV1.ErrorBadRequest("invalid parameter")
+	}
+
+	query := r.client.DB.WithContext(ctx).
 		Model(&models.InternalMessageRecipient{}).
-		Where("id IN ? AND recipient_user_id = ?", req.GetRecipientIds(), req.GetUserId()).
-		Delete(&models.InternalMessageRecipient{}).Error
-	return err
+		Where("recipient_user_id = ?", req.GetUserId())
+	if len(req.GetRecipientIds()) > 0 {
+		query = query.Where("id IN ?", req.GetRecipientIds())
+	}
+	return query.Delete(&models.InternalMessageRecipient{}).Error
 }

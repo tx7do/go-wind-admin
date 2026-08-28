@@ -130,6 +130,30 @@ func (r *InternalMessageRepo) Get(ctx context.Context, req *internalMessageV1.Ge
 	return dto, nil
 }
 
+// ListByIds 按主键批量取消息本体，用于收件箱列表回填 title/content，
+// 替代逐条 Get 的 N+1 查询。缺失的 id 不会出现在返回的 map 里。
+// 与 ent 版语义一致。
+func (r *InternalMessageRepo) ListByIds(ctx context.Context, ids []uint32) (map[uint32]*internalMessageV1.InternalMessage, error) {
+	if len(ids) == 0 {
+		return map[uint32]*internalMessageV1.InternalMessage{}, nil
+	}
+
+	var entities []*models.InternalMessage
+	err := r.client.DB.WithContext(ctx).
+		Where("id IN ?", ids).
+		Find(&entities).Error
+	if err != nil {
+		r.log.Errorf("list internal messages by ids failed: %s", err.Error())
+		return nil, internalMessageV1.ErrorInternalServerError("query internal messages failed")
+	}
+
+	ret := make(map[uint32]*internalMessageV1.InternalMessage, len(entities))
+	for _, entity := range entities {
+		ret[entity.ID] = r.mapper.ToDTO(entity)
+	}
+	return ret, nil
+}
+
 func (r *InternalMessageRepo) Create(ctx context.Context, req *internalMessageV1.CreateInternalMessageRequest) (*internalMessageV1.InternalMessage, error) {
 	if req == nil || req.Data == nil {
 		return nil, internalMessageV1.ErrorBadRequest("invalid parameter")
