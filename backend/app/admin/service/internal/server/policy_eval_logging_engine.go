@@ -7,6 +7,7 @@ import (
 	"net"
 	nethttp "net/http"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/go-kratos/kratos/v2/transport"
@@ -27,14 +28,31 @@ import (
 type evalLoggingEngine struct {
 	authzEngine.Authorizer
 	repo *data.PolicyEvaluationLogRepo
+
+	// resolveCache 缓存 (subject|path|method)→(权限点ID,策略ID) 反查结果，
+	// 避免每次评估（每角色每请求）都打 DB；权限数据变更最多 60s 延迟可见。
+	resolveMu    sync.Mutex
+	resolveCache map[string]resolveResult
 }
+
+type resolveResult struct {
+	permissionID uint32
+	policyID     uint32
+	expiresAt    time.Time
+}
+
+const resolveTTL = 60 * time.Second
 
 // newEvalLoggingEngine 包装引擎；inner 或 repo 为 nil 时原样返回（不埋点）。
 func newEvalLoggingEngine(inner authzEngine.Authorizer, repo *data.PolicyEvaluationLogRepo) authzEngine.Authorizer {
 	if inner == nil || repo == nil {
 		return inner
 	}
-	return &evalLoggingEngine{Authorizer: inner, repo: repo}
+	return &evalLoggingEngine{
+		Authorizer:   inner,
+		repo:         repo,
+		resolveCache: make(map[string]resolveResult),
+	}
 }
 
 func (e *evalLoggingEngine) IsAuthorized(ctx context.Context, subject authzEngine.Subject, action authzEngine.Action, resource authzEngine.Resource, project authzEngine.Project) (bool, error) {
@@ -61,11 +79,43 @@ func (e *evalLoggingEngine) IsAuthorized(ctx context.Context, subject authzEngin
 	if ctxJSON := evaluationContextJSON(e.Authorizer.Name(), subject, action, resource, project, rec); ctxJSON != "" {
 		rec.EvaluationContext = trans.Ptr(ctxJSON)
 	}
+	// 反查评估命中的权限点与挂接策略（角色码+路径+方法 → permission → policy），
+	// 尽力而为：API 未登记/无策略行时对应字段留空。
+	if pid, pol := e.resolvePolicyCached(ctx, string(subject), string(resource), string(action)); pid != 0 || pol != 0 {
+		if pid != 0 {
+			rec.PermissionId = trans.Ptr(pid)
+		}
+		if pol != 0 {
+			rec.PolicyId = trans.Ptr(pol)
+		}
+	}
 
 	// SystemViewer：评估发生在 authz 阶段，无租户 viewer 上下文，落库需系统视角。
 	_ = e.repo.Create(appViewer.NewSystemViewerContext(ctx), &permissionV1.CreatePolicyEvaluationLogRequest{Data: rec})
 
 	return allowed, err
+}
+
+// resolvePolicyCached 带 TTL 缓存的反查；查询走 SystemViewer（评估阶段无租户 viewer）。
+func (e *evalLoggingEngine) resolvePolicyCached(ctx context.Context, subject, path, method string) (permissionID, policyID uint32) {
+	if e.repo == nil {
+		return 0, 0
+	}
+	key := subject + "|" + path + "|" + strings.ToUpper(method)
+
+	e.resolveMu.Lock()
+	if hit, ok := e.resolveCache[key]; ok && time.Now().Before(hit.expiresAt) {
+		e.resolveMu.Unlock()
+		return hit.permissionID, hit.policyID
+	}
+	e.resolveMu.Unlock()
+
+	pid, pol := e.repo.ResolvePermissionPolicyByRoute(appViewer.NewSystemViewerContext(ctx), subject, path, method)
+
+	e.resolveMu.Lock()
+	e.resolveCache[key] = resolveResult{permissionID: pid, policyID: pol, expiresAt: time.Now().Add(resolveTTL)}
+	e.resolveMu.Unlock()
+	return pid, pol
 }
 
 // traceIDFromContext 取链路追踪ID：优先 W3C TraceContext 的 traceparent 头

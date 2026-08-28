@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -11,8 +12,13 @@ import (
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
+	"go-wind-admin/app/admin/service/internal/data/ent/api"
+	"go-wind-admin/app/admin/service/internal/data/ent/permissionapi"
+	"go-wind-admin/app/admin/service/internal/data/ent/permissionpolicy"
 	"go-wind-admin/app/admin/service/internal/data/ent/policyevaluationlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
+	"go-wind-admin/app/admin/service/internal/data/ent/role"
+	"go-wind-admin/app/admin/service/internal/data/ent/rolepermission"
 
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
@@ -162,4 +168,57 @@ func (r *PolicyEvaluationLogRepo) Create(ctx context.Context, req *permissionV1.
 	}
 
 	return err
+}
+
+// ResolvePermissionPolicyByRoute 反查评估命中的权限点与挂接策略：
+// (角色码, 路径模板, HTTP方法) → sys_apis → sys_permission_apis → sys_permissions
+// （角色经 sys_role_permissions 持有该权限）→ sys_permission_policies 按 eval_order 首条。
+// 任一环缺数据（API 未登记 / 角色未授权 / 无策略行）对应 ID 返回 0，不报错——
+// 评估埋点尽力而为，绝不影响鉴权主流程。调用方需自行做 TTL 缓存。
+// 四步各走索引的单表查询（曾试过一条 Modify 联表，pgx 参数类型推断 42P18）。
+func (r *PolicyEvaluationLogRepo) ResolvePermissionPolicyByRoute(ctx context.Context, roleCode, path, method string) (permissionID uint32, policyID uint32) {
+	if roleCode == "" || path == "" || method == "" {
+		return 0, 0
+	}
+	client := r.entClient.Client()
+
+	apiID, err := client.Api.Query().
+		Where(api.PathEQ(path), api.MethodEQ(strings.ToUpper(method))).
+		FirstID(ctx)
+	if err != nil {
+		return 0, 0
+	}
+
+	pa, err := client.PermissionApi.Query().
+		Where(permissionapi.APIIDEQ(apiID)).
+		First(ctx)
+	if err != nil {
+		return 0, 0
+	}
+	if pa.PermissionID != nil {
+		permissionID = *pa.PermissionID
+	}
+
+	// 校验该角色确实持有此权限（经 sys_role_permissions）
+	roleID, err := client.Role.Query().
+		Where(role.CodeEQ(roleCode)).
+		FirstID(ctx)
+	if err != nil {
+		return 0, 0
+	}
+	held, err := client.RolePermission.Query().
+		Where(rolepermission.RoleIDEQ(roleID), rolepermission.PermissionIDEQ(permissionID)).
+		Exist(ctx)
+	if err != nil || !held {
+		return 0, 0
+	}
+
+	policyID, err = client.PermissionPolicy.Query().
+		Where(permissionpolicy.PermissionIDEQ(permissionID)).
+		Order(ent.Asc(permissionpolicy.FieldEvalOrder)).
+		FirstID(ctx)
+	if err != nil {
+		return 0, permissionID
+	}
+	return permissionID, policyID
 }
