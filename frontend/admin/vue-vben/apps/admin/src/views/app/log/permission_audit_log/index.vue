@@ -196,7 +196,7 @@ const gridOptions: VxeGridProps<PermissionAuditLog> = {
     },
     {
       title: $t('ui.table.action'),
-      field: 'action',
+      field: 'operation',
       fixed: 'right',
       slots: { default: 'action' },
       width: 80,
