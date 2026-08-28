@@ -58,23 +58,13 @@ async function bootstrap(namespace: string) {
   // 安装权限指令
   registerAccessDirective(app);
 
-  // 配置路由及路由守卫
-  app.use(router);
-
-  // 动态更新标题
-  watchEffect(() => {
-    if (preferences.app.dynamicTitle) {
-      const routeTitle = router.currentRoute.value.meta?.title;
-      const pageTitle =
-        (routeTitle ? `${$t(routeTitle)} - ` : '') + preferences.app.name;
-      useTitle(pageTitle);
-    }
-  });
-
   // 页面刷新后的会话恢复：
   // access token 仅存内存，刷新页面后丢失。refresh token 现以 HttpOnly Cookie 传输，
   // 刷新后仍在。若检测到有效的 refresh_exp cookie，静默调 /refresh-token 换回新 access token，
   // 使用户无感知地恢复会话，无需重新登录。
+  // 必须在 app.use(router) 之前完成——router 安装即触发首次导航，守卫此刻就要读
+  // accessToken；若恢复晚于守卫执行，守卫看到 null token 会先把用户踢去登录页，
+  // 恢复成功也为时已晚。
   if (accessStore.accessToken) {
     // 内存中仍有 access token（如 SPA 内导航），仅需恢复定时器
     authStore.startRefreshTimer();
@@ -97,6 +87,19 @@ async function bootstrap(namespace: string) {
       }
     }
   }
+
+  // 配置路由及路由守卫（首个导航从这里开始，此刻 token 已就绪）
+  app.use(router);
+
+  // 动态更新标题
+  watchEffect(() => {
+    if (preferences.app.dynamicTitle) {
+      const routeTitle = router.currentRoute.value.meta?.title;
+      const pageTitle =
+        (routeTitle ? `${$t(routeTitle)} - ` : '') + preferences.app.name;
+      useTitle(pageTitle);
+    }
+  });
 
   app.mount('#app');
 }
