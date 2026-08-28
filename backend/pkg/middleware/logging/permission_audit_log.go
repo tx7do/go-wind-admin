@@ -1,0 +1,182 @@
+package logging
+
+import (
+	"context"
+	"crypto/ecdsa"
+	"crypto/rand"
+	"crypto/sha256"
+	"encoding/hex"
+	"encoding/json"
+	"fmt"
+	"strings"
+
+	"github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/tx7do/go-utils/trans"
+	"google.golang.org/protobuf/proto"
+
+	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
+
+	appViewer "go-wind-admin/pkg/entgo/viewer"
+)
+
+type PermissionAuditLogMiddleware struct {
+	op *options
+}
+
+func NewPermissionAuditLogMiddleware(op *options) *PermissionAuditLogMiddleware {
+	return &PermissionAuditLogMiddleware{
+		op: op,
+	}
+}
+
+func (p *PermissionAuditLogMiddleware) Name() string {
+	return "PermissionAuditLogMiddleware"
+}
+
+// parseTargetAndAction 从 kratos operation 字符串解析目标类型与动作。
+// operation 格式统一为 "/<package>.<ServiceName>/<Method>"（如 "/admin.service.v1.PermissionService/Update"）。
+// target_type 取 ServiceName 去除 "Service" 后缀并转小写；action 按 Method 映射 PermissionAuditLog_ActionType。
+// 非写操作返回 UNSPECIFIED，由调用方决定是否落库。
+func parseTargetAndAction(operation string) (string, auditV1.PermissionAuditLog_ActionType) {
+	slash := strings.LastIndex(operation, "/")
+	if slash < 0 || slash == len(operation)-1 {
+		return "", auditV1.PermissionAuditLog_ACTION_TYPE_UNSPECIFIED
+	}
+	servicePart := operation[:slash]
+	method := operation[slash+1:]
+
+	dot := strings.LastIndex(servicePart, ".")
+	if dot < 0 || dot == len(servicePart)-1 {
+		return "", auditV1.PermissionAuditLog_ACTION_TYPE_UNSPECIFIED
+	}
+	svcName := servicePart[dot+1:]
+	svcName = strings.TrimSuffix(svcName, "Service")
+	targetType := strings.ToLower(svcName)
+
+	var action auditV1.PermissionAuditLog_ActionType
+	switch method {
+	case "Create", "BatchCreate":
+		action = auditV1.PermissionAuditLog_CREATE
+	case "Update":
+		action = auditV1.PermissionAuditLog_UPDATE
+	case "Delete":
+		action = auditV1.PermissionAuditLog_DELETE
+	case "Assign":
+		action = auditV1.PermissionAuditLog_ASSIGN
+	case "Unassign":
+		action = auditV1.PermissionAuditLog_UNASSIGN
+	default:
+		return targetType, auditV1.PermissionAuditLog_OTHER
+	}
+	return targetType, action
+}
+
+func (p *PermissionAuditLogMiddleware) Handle(ctx context.Context, htr *http.Transport, middleErr error, latencyMs int64) {
+	// 仅对写操作落库：解析不出 target_type 或 action 为 UNSPECIFIED 时跳过。
+	targetType, action := parseTargetAndAction(htr.Operation())
+	if targetType == "" || action == auditV1.PermissionAuditLog_ACTION_TYPE_UNSPECIFIED {
+		return
+	}
+
+	permissionAuditLog := &auditV1.PermissionAuditLog{}
+
+	permissionAuditLog.TargetType = trans.Ptr(targetType)
+	permissionAuditLog.Action = trans.Ptr(action)
+
+	clientIp := getClientRealIP(htr.Request())
+
+	permissionAuditLog.IpAddress = trans.Ptr(clientIp)
+	permissionAuditLog.RequestId = trans.Ptr(getRequestId(htr.Request()))
+
+	ut := extractAuthToken(htr)
+	if ut != nil {
+		permissionAuditLog.OperatorId = trans.Ptr(ut.UserId)
+		permissionAuditLog.OperatorName = ut.Username
+		permissionAuditLog.TenantId = ut.TenantId
+	}
+
+	_, reason, _ := getStatusCode(middleErr)
+
+	permissionAuditLog.Reason = trans.Ptr(reason)
+
+	permissionAuditLog.LogHash = trans.Ptr(p.hashLog(permissionAuditLog))
+	permissionAuditLog.Signature = p.signature(permissionAuditLog)
+
+	if p.op.writePermissionAuditLogFunc != nil {
+		ctx = appViewer.NewSystemViewerContext(ctx)
+		_ = p.op.writePermissionAuditLogFunc(ctx, permissionAuditLog)
+	}
+}
+
+// hashLog 计算日志的 SHA256 哈希（十六进制小写字符串）
+// 规则：排除 log_hash 和 signature 字段，Protobuf 确定性序列化后哈希
+func (p *PermissionAuditLogMiddleware) hashLog(permissionAuditLog *auditV1.PermissionAuditLog) string {
+	if permissionAuditLog == nil {
+		return ""
+	}
+
+	permissionAuditLog.LogHash = nil
+	permissionAuditLog.Signature = nil
+
+	rawBytes, err := proto.Marshal(permissionAuditLog)
+	if err != nil {
+		fmt.Printf("marshal log failed: %v\n", err)
+		return ""
+	}
+
+	hash := sha256.Sum256(rawBytes)
+	return hex.EncodeToString(hash[:])
+}
+
+// signature 生成日志的 ECDSA 数字签名
+// 签名内容：tenant_id + operator_id + created_at（原始时间戳） + log_hash
+// 返回：ECDSA 签名字节数组（DER 格式）
+func (p *PermissionAuditLogMiddleware) signature(permissionAuditLog *auditV1.PermissionAuditLog) []byte {
+	if permissionAuditLog == nil || p.op.ecPrivateKey == nil {
+		return nil
+	}
+
+	tenantID := permissionAuditLog.GetTenantId()
+	operatorID := permissionAuditLog.GetOperatorId()
+	logHash := permissionAuditLog.GetLogHash()
+	createdAt := permissionAuditLog.GetCreatedAt()
+
+	type signContent struct {
+		TenantID  uint32 `json:"tenant_id"`
+		OperatorID uint32 `json:"operator_id"`
+		Sec      int64  `json:"sec"`
+		Nanos    int32  `json:"nanos"`
+		LogHash  string `json:"log_hash"`
+	}
+	sc := signContent{
+		TenantID:  tenantID,
+		OperatorID: operatorID,
+		LogHash:   logHash,
+	}
+	if createdAt != nil {
+		sc.Sec = createdAt.Seconds
+		sc.Nanos = createdAt.Nanos
+	}
+
+	scBytes, err := json.Marshal(sc)
+	if err != nil {
+		fmt.Printf("marshal sign content failed: %v\n", err)
+		return nil
+	}
+
+	scHash := sha256.Sum256(scBytes)
+
+	r, s, err := ecdsa.Sign(rand.Reader, p.op.ecPrivateKey, scHash[:])
+	if err != nil {
+		fmt.Printf("ECDSA sign failed: %v\n", err)
+		return nil
+	}
+
+	signBytes, err := encodeDER(r, s)
+	if err != nil {
+		fmt.Printf("encode DER failed: %v\n", err)
+		return nil
+	}
+
+	return signBytes
+}

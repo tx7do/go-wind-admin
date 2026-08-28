@@ -9,10 +9,16 @@ import (
 
 type WriteApiLogFunc func(ctx context.Context, data *auditV1.ApiAuditLog) error
 type WriteLoginLogFunc func(ctx context.Context, data *auditV1.LoginAuditLog) error
+type WriteOperationAuditLogFunc func(ctx context.Context, data *auditV1.OperationAuditLog) error
+type WritePermissionAuditLogFunc func(ctx context.Context, data *auditV1.PermissionAuditLog) error
+type WriteDataAccessAuditLogFunc func(ctx context.Context, data *auditV1.DataAccessAuditLog) error
 
 type options struct {
-	writeApiLogFunc   WriteApiLogFunc   // 写入API审计日志函数
-	writeLoginLogFunc WriteLoginLogFunc // 写入登录审计日志函数
+	writeApiLogFunc                WriteApiLogFunc                // 写入API审计日志函数
+	writeLoginLogFunc              WriteLoginLogFunc              // 写入登录审计日志函数
+	writeOperationAuditLogFunc    WriteOperationAuditLogFunc    // 写入操作审计日志函数
+	writePermissionAuditLogFunc   WritePermissionAuditLogFunc   // 写入权限审计日志函数
+	writeDataAccessAuditLogFunc   WriteDataAccessAuditLogFunc   // 写入数据访问审计日志函数
 
 	loginOperations  []string // 登录操作名称集合（登录、MFA 验证等）
 	logoutOperation string   // 登出操作名称
@@ -32,6 +38,24 @@ func WithWriteApiLogFunc(fnc WriteApiLogFunc) Option {
 func WithWriteLoginLogFunc(fnc WriteLoginLogFunc) Option {
 	return func(opts *options) {
 		opts.writeLoginLogFunc = fnc
+	}
+}
+
+func WithWriteOperationAuditLogFunc(fnc WriteOperationAuditLogFunc) Option {
+	return func(opts *options) {
+		opts.writeOperationAuditLogFunc = fnc
+	}
+}
+
+func WithWritePermissionAuditLogFunc(fnc WritePermissionAuditLogFunc) Option {
+	return func(opts *options) {
+		opts.writePermissionAuditLogFunc = fnc
+	}
+}
+
+func WithWriteDataAccessAuditLogFunc(fnc WriteDataAccessAuditLogFunc) Option {
+	return func(opts *options) {
+		opts.writeDataAccessAuditLogFunc = fnc
 	}
 }
 

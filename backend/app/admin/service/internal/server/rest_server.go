@@ -40,6 +40,9 @@ func NewRestMiddleware(
 	authorizer *authorizer.Authorizer,
 	apiAuditLogRepo *data.ApiAuditLogRepo,
 	loginLogRepo *data.LoginAuditLogRepo,
+	operationAuditLogRepo *data.OperationAuditLogRepo,
+	permissionAuditLogRepo *data.PermissionAuditLogRepo,
+	dataAccessAuditLogRepo *data.DataAccessAuditLogRepo,
 ) []middleware.Middleware {
 	var ms []middleware.Middleware
 	// recovery 必须置于链首：任何中间件/handler 的 panic（如审计日志解析畸形 JWT）
@@ -55,6 +58,15 @@ func NewRestMiddleware(
 		applogging.WithWriteLoginLogFunc(func(ctx context.Context, data *auditV1.LoginAuditLog) error {
 			// TODO 如果系统的负载比较小，可以同步写入数据库，否则，建议使用异步方式，即投递进队列。
 			return loginLogRepo.Create(ctx, &auditV1.CreateLoginAuditLogRequest{Data: data})
+		}),
+		applogging.WithWriteOperationAuditLogFunc(func(ctx context.Context, data *auditV1.OperationAuditLog) error {
+			return operationAuditLogRepo.Create(ctx, &auditV1.CreateOperationAuditLogRequest{Data: data})
+		}),
+		applogging.WithWritePermissionAuditLogFunc(func(ctx context.Context, data *auditV1.PermissionAuditLog) error {
+			return permissionAuditLogRepo.Create(ctx, &auditV1.CreatePermissionAuditLogRequest{Data: data})
+		}),
+		applogging.WithWriteDataAccessAuditLogFunc(func(ctx context.Context, data *auditV1.DataAccessAuditLog) error {
+			return dataAccessAuditLogRepo.Create(ctx, &auditV1.CreateDataAccessAuditLogRequest{Data: data})
 		}),
 	))
 

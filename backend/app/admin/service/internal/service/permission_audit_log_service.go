@@ -19,21 +19,21 @@ type PermissionAuditLogService struct {
 
 	log *bLogger.Helper
 
-	policyEvaluationLogRepo *data.PermissionAuditLogRepo
+	permissionAuditLogRepo *data.PermissionAuditLogRepo
 }
 
 func NewPermissionAuditLogService(
 	ctx *bootstrap.Context,
-	policyEvaluationLogRepo *data.PermissionAuditLogRepo,
+	permissionAuditLogRepo *data.PermissionAuditLogRepo,
 ) *PermissionAuditLogService {
 	return &PermissionAuditLogService{
-		log:                     ctx.NewLoggerHelper("permission-audit-log/service/admin-service"),
-		policyEvaluationLogRepo: policyEvaluationLogRepo,
+		log:                    ctx.NewLoggerHelper("permission-audit-log/service/admin-service"),
+		permissionAuditLogRepo: permissionAuditLogRepo,
 	}
 }
 
 func (s *PermissionAuditLogService) List(ctx context.Context, req *paginationV1.PagingRequest) (*auditV1.ListPermissionAuditLogResponse, error) {
-	resp, err := s.policyEvaluationLogRepo.List(ctx, req)
+	resp, err := s.permissionAuditLogRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (s *PermissionAuditLogService) List(ctx context.Context, req *paginationV1.
 }
 
 func (s *PermissionAuditLogService) Get(ctx context.Context, req *auditV1.GetPermissionAuditLogRequest) (*auditV1.PermissionAuditLog, error) {
-	resp, err := s.policyEvaluationLogRepo.Get(ctx, req)
+	resp, err := s.permissionAuditLogRepo.Get(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -55,7 +55,7 @@ func (s *PermissionAuditLogService) Create(ctx context.Context, req *auditV1.Cre
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 
-	if err := s.policyEvaluationLogRepo.Create(ctx, req); err != nil {
+	if err := s.permissionAuditLogRepo.Create(ctx, req); err != nil {
 		return nil, err
 	}
 

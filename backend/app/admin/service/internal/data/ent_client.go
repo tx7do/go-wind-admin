@@ -32,7 +32,7 @@ func NewEntClient(ctx *bootstrap.Context) (*entCrud.EntClient[*ent.Client], func
 
 	cli, err := entBootstrap.NewEntClient(cfg, func(drv *sql.Driver) *ent.Client {
 		client := ent.NewClient(
-			ent.Driver(drv),
+			ent.Driver(&auditDriver{drv}),
 			ent.Log(func(a ...any) {
 				l.Debug(context.Background(), fmt.Sprint(a...))
 			}),
