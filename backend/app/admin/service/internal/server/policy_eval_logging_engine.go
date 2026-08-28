@@ -2,8 +2,10 @@ package server
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net"
+	nethttp "net/http"
 	"strings"
 	"time"
 
@@ -53,11 +55,74 @@ func (e *evalLoggingEngine) IsAuthorized(ctx context.Context, subject authzEngin
 	if ip := clientIPFromContext(ctx); ip != "" {
 		rec.IpAddress = trans.Ptr(ip)
 	}
+	if traceID := traceIDFromContext(ctx); traceID != "" {
+		rec.TraceId = trans.Ptr(traceID)
+	}
+	if ctxJSON := evaluationContextJSON(e.Authorizer.Name(), subject, action, resource, project, rec); ctxJSON != "" {
+		rec.EvaluationContext = trans.Ptr(ctxJSON)
+	}
 
 	// SystemViewer：评估发生在 authz 阶段，无租户 viewer 上下文，落库需系统视角。
 	_ = e.repo.Create(appViewer.NewSystemViewerContext(ctx), &permissionV1.CreatePolicyEvaluationLogRequest{Data: rec})
 
 	return allowed, err
+}
+
+// traceIDFromContext 取链路追踪ID：优先 W3C TraceContext 的 traceparent 头
+//（格式 00-{trace-id}-{span-id}-{flags}，取 trace-id 段）；无则回退 X-Request-Id，
+// 与 api/operation/data_access 审计的 request_id 同源，可跨日志关联同一请求。
+func traceIDFromContext(ctx context.Context) string {
+	tr, ok := transport.FromServerContext(ctx)
+	if !ok {
+		return ""
+	}
+	htr, ok := tr.(*khttp.Transport)
+	if !ok || htr == nil || htr.Request() == nil {
+		return ""
+	}
+	return traceIDFromHeader(htr.Request().Header)
+}
+
+// traceIDFromHeader 从请求头解析追踪ID（纯函数，便于单测）。
+func traceIDFromHeader(header nethttp.Header) string {
+	if tp := strings.TrimSpace(header.Get("traceparent")); tp != "" {
+		// 00-0af7651916cd43dd8448eb211c80319c-b7ad6b7169203331-01
+		parts := strings.Split(tp, "-")
+		if len(parts) >= 2 && len(parts[1]) == 32 {
+			return parts[1]
+		}
+	}
+	if rid := strings.TrimSpace(header.Get("X-Request-Id")); rid != "" {
+		return rid
+	}
+	return ""
+}
+
+// evaluationContextJSON 生成决策上下文快照（JSON）：引擎、角色、动作、资源、
+// 项目与操作者归属。 proto 语义为"用户属性、环境属性"的评估输入留档。
+func evaluationContextJSON(engine string, subject authzEngine.Subject, action authzEngine.Action, resource authzEngine.Resource, project authzEngine.Project, rec *permissionV1.PolicyEvaluationLog) string {
+	snapshot := map[string]any{
+		"engine":   engine,
+		"subject":  string(subject),
+		"action":   string(action),
+		"resource": string(resource),
+	}
+	if project != "" {
+		snapshot["project"] = string(project)
+	}
+	if rec != nil {
+		if rec.UserId != nil {
+			snapshot["userId"] = rec.GetUserId()
+		}
+		if rec.TenantId != nil {
+			snapshot["tenantId"] = rec.GetTenantId()
+		}
+	}
+	b, err := json.Marshal(snapshot)
+	if err != nil {
+		return ""
+	}
+	return string(b)
 }
 
 // describe 生成 effect_details：引擎、角色、项目、耗时，err/拒绝时附原因。
