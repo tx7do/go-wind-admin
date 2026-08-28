@@ -16,7 +16,7 @@ import {
   successToColor,
   successToNameWithStatusCode,
 } from '#/api';
-import { type auditservicev1_ApiAuditLog as ApiAuditLog } from '#/api';
+import { type auditservicev1_DataAccessAuditLog as DataAccessAuditLog } from '#/api';
 import { $t } from '#/locales';
 
 const formOptions: VbenFormProps = {
@@ -127,7 +127,7 @@ const formOptions: VbenFormProps = {
   ],
 };
 
-const gridOptions: VxeGridProps<ApiAuditLog> = {
+const gridOptions: VxeGridProps<DataAccessAuditLog> = {
   toolbarConfig: {
     custom: true,
     export: true,
@@ -209,11 +209,6 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
     { title: $t('page.dataAccessAuditLog.latencyMs'), field: 'latencyMs' },
     { title: $t('page.dataAccessAuditLog.username'), field: 'username' },
     {
-      title: $t('page.dataAccessAuditLog.geoLocation'),
-      field: 'geoLocation',
-      slots: { default: 'geoLocation' },
-    },
-    {
       title: $t('page.dataAccessAuditLog.ipAddress'),
       field: 'ipAddress',
       width: 140,
@@ -231,9 +226,6 @@ const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
         <a-tag :color="successToColor(row.success)">
           {{ successToNameWithStatusCode(row.success, row.statusCode) }}
         </a-tag>
-      </template>
-      <template #geoLocation="{ row }">
-        {{ row.geoLocation.province }} {{ row.geoLocation.city }}
       </template>
       <template #accessType="{ row }">
         <a-tag :color="dataAccessAuditLogAccessTypeToColor(row.accessType)">

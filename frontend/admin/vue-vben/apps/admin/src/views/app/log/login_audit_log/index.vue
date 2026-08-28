@@ -274,10 +274,10 @@ function handleView(row: any) {
         </a-tag>
       </template>
       <template #geoLocation="{ row }">
-        {{ row.geoLocation.province }} {{ row.geoLocation.city }}
+        {{ row.geoLocation?.province }} {{ row.geoLocation?.city }}
       </template>
       <template #platform="{ row }">
-        {{ row.deviceInfo.osName }} {{ row.deviceInfo.browserName }}
+        {{ row.deviceInfo?.osName }} {{ row.deviceInfo?.browserName }}
       </template>
       <template #action="{ row }">
         <a-button

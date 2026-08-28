@@ -16,7 +16,7 @@ import {
   successToColor,
   successToNameWithStatusCode,
 } from '#/api';
-import { type auditservicev1_ApiAuditLog as ApiAuditLog } from '#/api';
+import { type auditservicev1_OperationAuditLog as OperationAuditLog } from '#/api';
 import { $t } from '#/locales';
 
 const formOptions: VbenFormProps = {
@@ -127,7 +127,7 @@ const formOptions: VbenFormProps = {
   ],
 };
 
-const gridOptions: VxeGridProps<ApiAuditLog> = {
+const gridOptions: VxeGridProps<OperationAuditLog> = {
   toolbarConfig: {
     custom: true,
     export: true,
@@ -233,7 +233,7 @@ const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
         </a-tag>
       </template>
       <template #geoLocation="{ row }">
-        {{ row.geoLocation.province }} {{ row.geoLocation.city }}
+        {{ row.geoLocation?.province }} {{ row.geoLocation?.city }}
       </template>
       <template #action="{ row }">
         <a-tag :color="operationAuditLogActionToColor(row.action)">

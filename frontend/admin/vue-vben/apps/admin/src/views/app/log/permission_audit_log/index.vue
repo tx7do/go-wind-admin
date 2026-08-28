@@ -12,10 +12,8 @@ import {
   permissionAuditLogActionList,
   permissionAuditLogActionToColor,
   permissionAuditLogActionToName,
-  successToColor,
-  successToNameWithStatusCode,
 } from '#/api';
-import { type auditservicev1_ApiAuditLog as ApiAuditLog } from '#/api';
+import { type auditservicev1_PermissionAuditLog as PermissionAuditLog } from '#/api';
 import { $t } from '#/locales';
 
 const formOptions: VbenFormProps = {
@@ -113,7 +111,7 @@ const formOptions: VbenFormProps = {
   ],
 };
 
-const gridOptions: VxeGridProps<ApiAuditLog> = {
+const gridOptions: VxeGridProps<PermissionAuditLog> = {
   toolbarConfig: {
     custom: true,
     export: true,
@@ -185,12 +183,7 @@ const gridOptions: VxeGridProps<ApiAuditLog> = {
     { title: $t('page.permissionAuditLog.reason'), field: 'reason' },
     {
       title: $t('page.permissionAuditLog.operatorName'),
-      field: 'deviceInfo.operatorName',
-    },
-    {
-      title: $t('page.permissionAuditLog.geoLocation'),
-      field: 'geoLocation',
-      slots: { default: 'geoLocation' },
+      field: 'operatorName',
     },
     {
       title: $t('page.permissionAuditLog.ipAddress'),
@@ -206,14 +199,6 @@ const [Grid] = useVbenVxeGrid({ gridOptions, formOptions });
 <template>
   <Page auto-content-height>
     <Grid :table-title="$t('menu.log.permissionAuditLog')">
-      <template #success="{ row }">
-        <a-tag :color="successToColor(row.success)">
-          {{ successToNameWithStatusCode(row.success, row.statusCode) }}
-        </a-tag>
-      </template>
-      <template #geoLocation="{ row }">
-        {{ row.geoLocation.province }} {{ row.geoLocation.city }}
-      </template>
       <template #action="{ row }">
         <a-tag :color="permissionAuditLogActionToColor(row.action)">
           {{ permissionAuditLogActionToName(row.action) }}
