@@ -11,24 +11,42 @@ export const ACTION_COLORS: Record<string, string> = {
   CREATE: 'success',
   UPDATE: 'warning',
   DELETE: 'error',
+  READ: 'processing',
+  ASSIGN: 'processing',
+  UNASSIGN: 'default',
+  EXPORT: 'cyan',
+  IMPORT: 'geekblue',
+  OTHER: 'default',
 };
+
+/** 操作类型枚举值列表 */
+export const ACTION_VALUES = [
+  'CREATE',
+  'UPDATE',
+  'DELETE',
+  'READ',
+  'ASSIGN',
+  'UNASSIGN',
+  'EXPORT',
+  'IMPORT',
+  'OTHER',
+] as const;
 
 /** 获取操作类型映射（text + color），供 render 使用 */
 export function getActionMap(t: TFn) {
-  return {
-    CREATE: { text: t('action.CREATE'), color: ACTION_COLORS.CREATE },
-    UPDATE: { text: t('action.UPDATE'), color: ACTION_COLORS.UPDATE },
-    DELETE: { text: t('action.DELETE'), color: ACTION_COLORS.DELETE },
-  };
+  const map: Record<string, { text: string; color: string }> = {};
+  for (const value of ACTION_VALUES) {
+    map[value] = { text: t(`action.${value}`), color: ACTION_COLORS[value] };
+  }
+  return map;
 }
 
 /** 获取操作类型选项列表，供搜索/Select 使用 */
 export function getActionOptions(t: TFn) {
-  return [
-    { label: t('action.CREATE'), value: 'CREATE' },
-    { label: t('action.UPDATE'), value: 'UPDATE' },
-    { label: t('action.DELETE'), value: 'DELETE' },
-  ];
+  return ACTION_VALUES.map((value) => ({
+    label: t(`action.${value}`),
+    value,
+  }));
 }
 
 // ========== 成功状态 ==========

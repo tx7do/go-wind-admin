@@ -17,7 +17,32 @@ const chartRef = ref<EchartsUIType>();
 const { renderEcharts } = useEcharts(chartRef);
 const { isDark } = usePreferences();
 
-// 操作类型分布环形图。后端返回 action 枚举名（CREATE/UPDATE/...），legend 直接展示枚举名。
+// 操作类型分布环形图。后端返回 action 枚举名（CREATE/UPDATE/...），
+// 这里经 i18n 转成本地化文案展示，复用操作审计日志模块的 action.* 翻译。
+const actionLabel = (label?: string): string => {
+  switch (label) {
+    case "CREATE":
+      return $t("enum.operationAuditLog.action.CREATE");
+    case "UPDATE":
+      return $t("enum.operationAuditLog.action.UPDATE");
+    case "DELETE":
+      return $t("enum.operationAuditLog.action.DELETE");
+    case "READ":
+      return $t("enum.operationAuditLog.action.READ");
+    case "ASSIGN":
+      return $t("enum.operationAuditLog.action.ASSIGN");
+    case "UNASSIGN":
+      return $t("enum.operationAuditLog.action.UNASSIGN");
+    case "EXPORT":
+      return $t("enum.operationAuditLog.action.EXPORT");
+    case "IMPORT":
+      return $t("enum.operationAuditLog.action.IMPORT");
+    case "OTHER":
+      return $t("enum.operationAuditLog.action.OTHER");
+    default:
+      return label ?? "";
+  }
+};
 const chartOptions = computed(() => {
   const items = props.data?.items ?? [];
   return {
@@ -39,7 +64,7 @@ const chartOptions = computed(() => {
         avoidLabelOverlap: false,
         color: ["#4080ff", "#36d399", "#f7ba1e", "#958ce2"],
         data: items.map((it) => ({
-          name: it.label,
+          name: actionLabel(it.label),
           value: it.count,
         })),
         emphasis: {
