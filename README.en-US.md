@@ -144,18 +144,19 @@ pnpm dev:antd
 | Task Scheduler          | Manage tasks and task run logs; support create, update, delete, start, pause, and run immediately.                                                                                                                      |
 | File Management         | Manage file uploads, search files, upload to OSS or local storage, download, copy file address, delete files, support image preview (large view).                                                                       |
 | Login Policy | Manage login restriction policies; configure restriction type, method, value, and reason for target users. |
+| Account Login | Sign in with username / email / phone number as account identifier, combinable with image captcha, login policies, and TOTP multi-factor authentication. |
 | Multi-Factor Authentication (MFA) | TOTP-based multi-factor authentication, including login challenge, personal binding management, and admin rescue reset of a user's MFA. |
 | Language Management | Manage system-supported languages; configure language name, code, native name, enabled and default status. |
 | Message Categories      | Manage message categories (2-level custom categories) for message management category selection.                                                                                                                        |
-| Message Management      | Manage messages, send messages to specified users, view read status and read time.                                                                                                                                      |
+| Message Management      | Manage messages; send by scope (all users / specified users) with message revocation; broadcast fan-out runs on an async task queue (resumable, idempotent); view read status and read time.                                                             |
 | Internal Mail           | Manage internal messages, view details, delete, mark as read, mark all as read.                                                                                                                                         |
 | Personal Center         | View and edit personal info, view last login info, change password, etc.                                                                                                                                                |
 | Login Logs              | Query login logs for successful and failed logins; supports IP geolocation.                                                                                                                                             |
-| Operation Logs          | Query operation logs for normal and abnormal operations; supports IP geolocation and viewing operation details.                                                                                                         |
+| Operation Logs          | Query operation logs for normal and abnormal operations; supports IP geolocation, resource object identification, and viewing operation details.                                                                      |
 | API Logs | Query API audit logs recording API request operator, path, method, and success status; supports IP geolocation. |
-| Data Logs | Query data access audit logs recording data access behavior and masking audit information. |
-| Permission Logs | Query permission change audit logs recording permission change operations and reasons. |
-| Policy Evaluation Logs | Query policy evaluation audit logs recording evaluation results and context. |
+| Data Logs | Query data access audit logs; SQL is lexically masked, with involved table names and data categories automatically extracted. |
+| Permission Logs | Query permission change audit logs recording operator, target object, and reason, with request snapshots retained. |
+| Policy Evaluation Logs | Query policy evaluation audit logs recording each authorization decision with evaluation context; supports trace_id correlation for troubleshooting. |
 | Redis Cache Monitor | Read-only Redis cache monitoring displaying INFO, DBSIZE, and slowlog data; performs no write operations. |
 
 ## Backend Screenshots
