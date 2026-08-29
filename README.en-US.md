@@ -35,6 +35,22 @@ Adhering to the philosophy of efficient, stable, and scalable technology selecti
 - **Vue Element Edition**: `Vue3` + `TypeScript` + `Vite` + `Element Plus` (lightweight pure version)
 - **React Edition**: `React19` + `TypeScript` + `Vite` + `React Router` + `Zustand` + `Ant Design V6` + `@ant-design/pro-components` (**No UMI framework**)
 
+## Security & Compliance (MLPS 2.0)
+
+Security capabilities are designed with reference to the technical requirements of China's Cybersecurity Multi-Level Protection Scheme 2.0 (MLPS 2.0, Level 2/3), ready out of the box for privacy-conscious private deployment scenarios:
+
+| Requirement | Implementation |
+|------------|----------------|
+| **Security Audit** | Full coverage of six audit log types: login / operation / API / data access / permission change / policy evaluation, recording IP geolocation and trace_id. Daily scheduled archiving via asynq: 180-day in-database retention (`AUDIT_RETENTION_DAYS`, adjustable); expired rows are exported to JSONL archive files for long-term traceability |
+| **Identity Authentication** | Password complexity (≥8 chars, at least 3 of 4 character classes), password history reuse check (last 3 by default), password validity period (90 days by default) — all thresholds adjustable via environment variables; TOTP multi-factor authentication (MFA); image captcha; Redis login failure rate limiting (IP + username dual dimensions); configurable login restriction policies |
+| **Access Control** | Dynamic RBAC engine (Casbin / OPA / Zanzibar switchable); role–permission–API mappings stored in the database with instant hot-reload on changes; menu / button / data-level permission control; every authorization decision is logged to policy evaluation logs for traceability |
+| **Multi-Tenant Isolation** | Compile-time ent Privacy data isolation; tenant requests are fail-closed validated against the Api table by `(path, method)`; plan module whitelists and expiry read-only policy |
+| **Data Confidentiality** | Login passwords encrypted at the application layer (AES) in transit and bcrypt-hashed at rest; sensitive task configs encrypted at rest with AES-256-GCM (transparent via Ent hooks); JWT RS256 asymmetric signing; refresh token in HttpOnly Cookie; transport-layer TLS enabled at deployment (backend `server.rest.tls` config, or nginx / load balancer termination) |
+| **Data Backup & Recovery** | [`scripts/backup/pg_backup.sh`](./backend/scripts/backup/pg_backup.sh) scheduled full backups (pg_dump, 30 copies auto-rotation by default), Docker container / local direct-connect dual modes, with recovery documentation |
+| **Frontend Security** | All three frontend production builds enable security response headers such as CSP, X-Frame-Options, and HSTS |
+
+> **Note**: MLPS evaluation covers more than technical requirements — management policies, physical environment, personnel organization, etc. This project covers the technical measures portion, providing direct support for evaluation preparation in private deployments, but it does not replace the full MLPS certification process.
+
 ## Quick Start
 
 ### Environment Scripts
