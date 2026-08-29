@@ -74,6 +74,14 @@
   "skeleton": {
     "loading": "加载中"
   },
+  "loading": {
+    "text": "加载中",
+    "success": "加载成功",
+    "failed": "加载失败",
+    "initializing": "初始化中",
+    "loadingRouter": "正在加载路由配置..."
+  },
+  "unknownPage": "未知页面",
   "pageContainer": {
     "defaultTitle": "页面",
     "forbiddenTitle": "无权限访问",

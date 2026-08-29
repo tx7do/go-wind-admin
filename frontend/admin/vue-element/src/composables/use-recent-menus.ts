@@ -1,4 +1,7 @@
 import { ref } from "vue";
+import { i18n } from "@/core/i18n";
+
+const t = i18n.global.t;
 
 /**
  * 最近访问菜单项
@@ -57,10 +60,10 @@ export function useRecentMenus() {
     const now = Date.now();
     const diff = now - timestamp;
 
-    if (diff < 60000) return "刚刚";
-    if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`;
-    if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`;
-    if (diff < 604800000) return `${Math.floor(diff / 86400000)}天前`;
+    if (diff < 60000) return t("common.relativeTime.justNow");
+    if (diff < 3600000) return t("common.relativeTime.minutesAgo", { n: Math.floor(diff / 60000) });
+    if (diff < 86400000) return t("common.relativeTime.hoursAgo", { n: Math.floor(diff / 3600000) });
+    if (diff < 604800000) return t("common.relativeTime.daysAgo", { n: Math.floor(diff / 86400000) });
 
     const date = new Date(timestamp);
     return `${date.getMonth() + 1}-${date.getDate()}`;

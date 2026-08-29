@@ -65,6 +65,7 @@
 <script setup lang="ts" generic="T extends Record<string, any>">
 import { ref, computed, onMounted, markRaw } from "vue";
 import { ElMessage } from "element-plus";
+import { i18n } from "@/core/i18n";
 import {
   ElForm,
   ElFormItem,
@@ -91,6 +92,8 @@ import { QuestionFilled } from "@element-plus/icons-vue";
 import InputTag from "@/components/InputTag/index.vue";
 import IconSelect from "@/components/IconSelect/index.vue";
 import type { ProFormField, FormValueType } from "./types";
+
+const t = i18n.global.t;
 
 // 关闭属性透传
 defineOptions({ inheritAttrs: false });
@@ -197,7 +200,7 @@ onMounted(() => {
         .then((data) => {
           field.attrs!.data = data;
         })
-        .catch(() => ElMessage.error("数据加载失败"))
+        .catch(() => ElMessage.error(t("common.message.loadDataFailed")))
         .finally(() => {
           field.attrs!.loading = false;
         });

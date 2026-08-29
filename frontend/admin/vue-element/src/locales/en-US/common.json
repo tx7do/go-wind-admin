@@ -42,7 +42,8 @@
     "items": "items",
     "do_you_want_delete": "Are you sure you want to delete this {moduleName}?",
     "do_you_want_sync_permissions": "Are you sure you want to sync {moduleName} permissions?",
-    "do_you_want_disable": "Are you sure you want to disable this {moduleName}?"
+    "do_you_want_disable": "Are you sure you want to disable this {moduleName}?",
+    "home": "Home"
   },
   "placeholder": {
     "input": "Please input",
@@ -66,7 +67,32 @@
     "operationFailed": "Operation failed",
     "getDetailFailed": "Failed to get details",
     "confirmDelete": "Are you sure you want to delete this {moduleName}?",
-    "confirmSyncPermissions": "Are you sure you want to sync {moduleName} permissions?"
+    "confirmSyncPermissions": "Are you sure you want to sync {moduleName} permissions?",
+    "developing": "Under development ...",
+    "loadDataFailed": "Failed to load data"
+  },
+  "notice": {
+    "markedRead": "Marked as read",
+    "markFailed": "Failed to mark",
+    "noUnread": "No unread messages",
+    "allMarkedRead": "All marked as read",
+    "confirmClear": "Are you sure you want to clear all messages?",
+    "noMessages": "No messages to clear",
+    "cleared": "All messages cleared",
+    "newNotificationTitle": "You have a new notification!",
+    "newMessage": "New message"
+  },
+  "relativeTime": {
+    "justNow": "Just now",
+    "minutesAgo": "{n} min ago",
+    "hoursAgo": "{n} h ago",
+    "daysAgo": "{n} d ago"
+  },
+  "iconSelect": {
+    "selectPlaceholder": "Click to select an icon",
+    "searchPlaceholder": "Search icons",
+    "svgTab": "SVG Icons",
+    "elementTab": "Element Icons"
   },
   "langSelect": {
     "message": {

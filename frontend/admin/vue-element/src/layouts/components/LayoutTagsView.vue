@@ -94,7 +94,7 @@
 
     <!-- 工具按钮 -->
     <div class="tabs-bar__tools">
-      <ElTooltip v-if="showMaximize" :content="isMaximized ? '还原' : '最大化'" placement="bottom">
+      <ElTooltip v-if="showMaximize" :content="isMaximized ? t('preferences.tabbar.contextMenu.restoreMaximize') : t('preferences.tabbar.contextMenu.maximize')" placement="bottom">
         <ElIcon class="tabs-bar__tool-btn" @click="toggleMaximize">
           <FullScreen v-if="!isMaximized" />
           <ScaleToOriginal v-else />

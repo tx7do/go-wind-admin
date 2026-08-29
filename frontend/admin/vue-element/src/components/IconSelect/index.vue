@@ -4,7 +4,7 @@
       <template #reference>
         <div @click="popoverVisible = !popoverVisible">
           <slot>
-            <el-input v-model="selectedIcon" readonly placeholder="点击选择图标" class="reference">
+            <el-input v-model="selectedIcon" readonly :placeholder="$t('common.iconSelect.selectPlaceholder')" class="reference">
               <template #prepend>
                 <!-- 根据图标类型展示，两个分支互斥，避免双重渲染 -->
                 <el-icon v-if="isElementIcon">
@@ -38,9 +38,9 @@
 
       <!-- 图标选择弹窗 -->
       <div ref="popoverContentRef">
-        <el-input v-model="filterText" placeholder="搜索图标" clearable @input="filterIcons" />
+        <el-input v-model="filterText" :placeholder="$t('common.iconSelect.searchPlaceholder')" clearable @input="filterIcons" />
         <el-tabs v-model="activeTab" @tab-click="handleTabClick">
-          <el-tab-pane label="SVG 图标" name="svg">
+          <el-tab-pane :label="$t('common.iconSelect.svgTab')" name="svg">
             <el-scrollbar height="300px">
               <ul class="icon-grid">
                 <li
@@ -56,7 +56,7 @@
               </ul>
             </el-scrollbar>
           </el-tab-pane>
-          <el-tab-pane label="Element 图标" name="element">
+          <el-tab-pane :label="$t('common.iconSelect.elementTab')" name="element">
             <el-scrollbar height="300px">
               <ul class="icon-grid">
                 <li

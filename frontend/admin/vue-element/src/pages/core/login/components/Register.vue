@@ -150,6 +150,6 @@ function checkCapsLock(event: KeyboardEvent) {
 
 const submit = async () => {
   await formRef.value?.validate();
-  ElMessage.warning("开发中 ...");
+  ElMessage.warning(t("common.message.developing"));
 };
 </script>

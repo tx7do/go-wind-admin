@@ -45,6 +45,7 @@
   },
   "layout": {
     "layout": "布局",
+    "content": "内容",
     "modes": {
       "sidebarNav": "垂直",
       "sidebarMixedNav": "双列菜单",

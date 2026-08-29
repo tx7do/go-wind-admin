@@ -140,7 +140,8 @@
     "status": {
       "SUCCESS": "Success",
       "FAILED": "Failed",
-      "PARTIAL": "Partial Success"
+      "PARTIAL": "Partial Success",
+      "LOCKED": "Locked"
     },
     "actionType": {
       "LOGIN": "User Login",

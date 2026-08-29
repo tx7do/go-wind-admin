@@ -14,6 +14,9 @@ import { router } from "@/router";
 import type { internal_messageservicev1_InternalMessageRecipient as InternalMessageRecipient } from "@/api/generated/admin/service/v1";
 import { dateUtil } from "@/utils";
 import { globalSSEClient } from "@/core/transport/sse";
+import { i18n } from "@/core/i18n";
+
+const t = i18n.global.t;
 
 const PAGE_SIZE = 5;
 
@@ -73,9 +76,9 @@ export function useNotice() {
     if (userId && recipientId != null) {
       try {
         await markNotificationAsRead({ userId, recipientIds: [recipientId] });
-        ElMessage.success("已标记为已读");
+        ElMessage.success(t("common.notice.markedRead"));
       } catch {
-        ElMessage.error("标记失败");
+        ElMessage.error(t("common.notice.markFailed"));
       }
     }
 
@@ -96,7 +99,7 @@ export function useNotice() {
     if (!userId) return;
 
     if (unreadTotal.value === 0) {
-      ElMessage.info("没有未读消息");
+      ElMessage.info(t("common.notice.noUnread"));
       return;
     }
 
@@ -104,9 +107,9 @@ export function useNotice() {
       // 空 recipientIds 表示标记该用户全部未读（服务端按用户维度兜底）：
       // 下拉只加载了当前页，无法枚举全部未读ID。
       await markNotificationAsRead({ userId, recipientIds: [] });
-      ElMessage.success("已全部标记为已读");
+      ElMessage.success(t("common.notice.allMarkedRead"));
     } catch {
-      ElMessage.error("操作失败");
+      ElMessage.error(t("common.message.error"));
       return;
     }
 
@@ -120,9 +123,9 @@ export function useNotice() {
     if (!userId) return;
 
     try {
-      await ElMessageBox.confirm("确定要清空所有消息吗？", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
+      await ElMessageBox.confirm(t("common.notice.confirmClear"), t("common.message.info"), {
+        confirmButtonText: t("common.button.confirm"),
+        cancelButtonText: t("common.button.cancel"),
         type: "warning",
       });
     } catch {
@@ -130,7 +133,7 @@ export function useNotice() {
     }
 
     if (list.value.length === 0 && unreadTotal.value === 0) {
-      ElMessage.info("没有消息可清空");
+      ElMessage.info(t("common.notice.noMessages"));
       return;
     }
 
@@ -138,9 +141,9 @@ export function useNotice() {
       // 空 recipientIds 表示清空该用户收件箱（服务端按用户维度兜底，
       // 下拉只加载了当前页，无法枚举全部ID），危险操作已有上方二次确认。
       await deleteNotificationFromInbox({ userId, recipientIds: [] });
-      ElMessage.success("已清空所有消息");
+      ElMessage.success(t("common.notice.cleared"));
     } catch {
-      ElMessage.error("操作失败");
+      ElMessage.error(t("common.message.error"));
       return;
     }
 
@@ -201,8 +204,8 @@ export function useNotice() {
 
       // 显示桌面通知
       ElNotification({
-        title: "您收到一条新的通知消息！",
-        message: data.title || "新消息",
+        title: t("common.notice.newNotificationTitle"),
+        message: data.title || t("common.notice.newMessage"),
         type: "success",
         position: "bottom-right",
       });

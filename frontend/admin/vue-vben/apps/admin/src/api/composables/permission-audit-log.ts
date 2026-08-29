@@ -77,6 +77,10 @@ export const permissionAuditLogActionList = computed(() => [
     label: t('enum.permissionAuditLog.action.BULK_REVOKE'),
   },
   { value: 'EXPIRE', label: t('enum.permissionAuditLog.action.EXPIRE') },
+  {
+    value: 'SUSPEND',
+    label: t('enum.permissionAuditLog.action.SUSPEND'),
+  },
   { value: 'RESUME', label: t('enum.permissionAuditLog.action.RESUME') },
   { value: 'ROLLBACK', label: t('enum.permissionAuditLog.action.ROLLBACK') },
   { value: 'OTHER', label: t('enum.permissionAuditLog.action.OTHER') },
@@ -103,6 +107,7 @@ const PERMISSION_AUDIT_LOG_ACTION_COLOR_MAP: Record<
   BULK_GRANT: 'green',
   BULK_REVOKE: 'red',
   EXPIRE: 'red',
+  SUSPEND: 'red',
   RESUME: 'green',
   ROLLBACK: 'orange',
   OTHER: 'default',

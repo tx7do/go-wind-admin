@@ -74,6 +74,14 @@
   "skeleton": {
     "loading": "Loading"
   },
+  "loading": {
+    "text": "Loading",
+    "success": "Loaded successfully",
+    "failed": "Failed to load",
+    "initializing": "Initializing",
+    "loadingRouter": "Loading route configuration..."
+  },
+  "unknownPage": "Unknown Page",
   "pageContainer": {
     "defaultTitle": "Page",
     "forbiddenTitle": "Access Denied",

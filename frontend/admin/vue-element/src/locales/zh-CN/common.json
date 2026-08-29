@@ -42,7 +42,8 @@
     "items": "条",
     "do_you_want_delete": "确定要删除该{moduleName}吗？",
     "do_you_want_sync_permissions": "确定要同步{moduleName}权限吗？",
-    "do_you_want_disable": "确定要禁用该{moduleName}吗？"
+    "do_you_want_disable": "确定要禁用该{moduleName}吗？",
+    "home": "首页"
   },
   "placeholder": {
     "input": "请输入",
@@ -66,7 +67,32 @@
     "operationFailed": "操作失败",
     "getDetailFailed": "获取详情失败",
     "confirmDelete": "确定要删除该{moduleName}吗？",
-    "confirmSyncPermissions": "确定要同步{moduleName}权限吗？"
+    "confirmSyncPermissions": "确定要同步{moduleName}权限吗？",
+    "developing": "开发中 ...",
+    "loadDataFailed": "数据加载失败"
+  },
+  "notice": {
+    "markedRead": "已标记为已读",
+    "markFailed": "标记失败",
+    "noUnread": "没有未读消息",
+    "allMarkedRead": "已全部标记为已读",
+    "confirmClear": "确定要清空所有消息吗？",
+    "noMessages": "没有消息可清空",
+    "cleared": "已清空所有消息",
+    "newNotificationTitle": "您收到一条新的通知消息！",
+    "newMessage": "新消息"
+  },
+  "relativeTime": {
+    "justNow": "刚刚",
+    "minutesAgo": "{n}分钟前",
+    "hoursAgo": "{n}小时前",
+    "daysAgo": "{n}天前"
+  },
+  "iconSelect": {
+    "selectPlaceholder": "点击选择图标",
+    "searchPlaceholder": "搜索图标",
+    "svgTab": "SVG 图标",
+    "elementTab": "Element 图标"
   },
   "langSelect": {
     "message": {

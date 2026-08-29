@@ -6,6 +6,9 @@ import { RouteRecordRaw, LocationQueryRaw } from "vue-router";
 import { router } from "@/router";
 import { useAccessStore } from "@/stores";
 import { isExternal } from "@/utils";
+import { i18n } from "@/core/i18n";
+
+const t = i18n.global.t;
 
 /** 搜索项类型 */
 interface SearchItem {
@@ -159,7 +162,7 @@ export function useCommandPalette() {
         loadRoutes(route.children, path);
       } else if (route.meta?.title && typeof route.meta.title === "string") {
         menuItems.value.push({
-          title: route.meta.title === "dashboard" ? "首页" : route.meta.title,
+          title: route.meta.title === "dashboard" ? t("common.text.home") : route.meta.title,
           path,
           name: typeof route.name === "string" ? route.name : undefined,
           icon: typeof route.meta.icon === "string" ? route.meta.icon : undefined,

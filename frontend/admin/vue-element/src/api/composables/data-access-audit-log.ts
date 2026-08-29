@@ -101,3 +101,40 @@ export function dataAccessAuditLogAccessTypeToName(accessType: AccessType) {
   const matchedItem = values.find((item) => item.value === accessType);
   return matchedItem ? matchedItem.label : "";
 }
+
+// 数据分类码与后端 pkg/audit.ClassifyTable 一一对应
+export const dataAccessAuditLogCategoryList = computed(() => [
+  { value: "USER_DATA", label: t("enum.dataAccessAuditLog.dataCategory.USER_DATA") },
+  { value: "ORG_DATA", label: t("enum.dataAccessAuditLog.dataCategory.ORG_DATA") },
+  { value: "ACCESS_CONTROL", label: t("enum.dataAccessAuditLog.dataCategory.ACCESS_CONTROL") },
+  { value: "TENANT_DATA", label: t("enum.dataAccessAuditLog.dataCategory.TENANT_DATA") },
+  { value: "MESSAGE_DATA", label: t("enum.dataAccessAuditLog.dataCategory.MESSAGE_DATA") },
+  { value: "AUDIT_LOG", label: t("enum.dataAccessAuditLog.dataCategory.AUDIT_LOG") },
+  { value: "SYSTEM_CONFIG", label: t("enum.dataAccessAuditLog.dataCategory.SYSTEM_CONFIG") },
+  { value: "UNKNOWN", label: t("enum.dataAccessAuditLog.dataCategory.UNKNOWN") },
+]);
+
+const DATA_ACCESS_AUDIT_LOG_CATEGORY_COLOR_MAP: Record<string, string> = {
+  USER_DATA: "#1677FF",
+  ORG_DATA: "#36CFC9",
+  ACCESS_CONTROL: "#722ED1",
+  TENANT_DATA: "#2F54EB",
+  MESSAGE_DATA: "#52C41A",
+  AUDIT_LOG: "#FAAD14",
+  SYSTEM_CONFIG: "#597EF7",
+  UNKNOWN: "#86909C",
+  DEFAULT: "#86909C",
+};
+
+export function dataAccessAuditLogCategoryToColor(category: string) {
+  return (
+    DATA_ACCESS_AUDIT_LOG_CATEGORY_COLOR_MAP[category] ||
+    DATA_ACCESS_AUDIT_LOG_CATEGORY_COLOR_MAP.DEFAULT
+  );
+}
+
+export function dataAccessAuditLogCategoryToName(category: string) {
+  const values = dataAccessAuditLogCategoryList.value;
+  const matchedItem = values.find((item) => item.value === category);
+  return matchedItem ? matchedItem.label : "";
+}

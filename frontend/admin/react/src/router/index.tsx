@@ -8,6 +8,7 @@ import { getAccessStatic } from '@/core/access';
 import { fetchAllDictEntries } from '@/hooks/useDictCache';
 import { usePreferencesStore } from '@/core/preferences/store';
 import { apiClient } from '@/api/client';
+import { useI18n } from '@/core/i18n';
 
 import { Forbidden } from '@/pages/core/error';
 import type { AppRouteObject, ComponentRecordType } from '@/core/router';
@@ -97,6 +98,7 @@ export const AppRouter = () => {
 
   const { accessToken } = useAuthStore();
   const accessMode = usePreferencesStore((s) => s.preferences.app.accessMode);
+  const { t } = useI18n('common');
 
   const isAuthenticated = !!accessToken;
 
@@ -169,7 +171,7 @@ export const AppRouter = () => {
   }, [isAuthenticated, accessMode]);
 
   if (loading || !router)
-    return <Loading fullScreen text="初始化中" subText="正在加载路由配置..." />;
+    return <Loading fullScreen text={t('loading.initializing')} subText={t('loading.loadingRouter')} />;
 
   return <RouterProvider router={router} />;
 };

@@ -45,6 +45,7 @@
   },
   "layout": {
     "layout": "Layout",
+    "content": "Content",
     "modes": {
       "sidebarNav": "Vertical",
       "sidebarMixedNav": "Dual Column",

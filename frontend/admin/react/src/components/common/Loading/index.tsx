@@ -2,6 +2,7 @@ import {useMemo} from 'react';
 import {ConfigProvider, Spin, Progress, type ThemeConfig} from 'antd';
 import {LoadingOutlined} from '@ant-design/icons';
 import {usePreferencesStore, useThemeConfig} from '@/core/preferences';
+import {useI18n} from '@/core/i18n';
 
 export interface ThemeLoadingProps {
     text?: string;
@@ -28,7 +29,7 @@ export interface ThemeLoadingProps {
  * 自动同步应用主题配置（颜色、圆角、暗黑模式等）
  */
 export const ThemeLoading = ({
-                                 text = '加载中',
+                                 text,
                                  subText,
                                  fullScreen = false,
                                  className = '',
@@ -40,6 +41,7 @@ export const ThemeLoading = ({
                              }: ThemeLoadingProps) => {
     const {theme: prefTheme} = usePreferencesStore(state => state.preferences);
     const defaultTheme = useThemeConfig();
+    const {t} = useI18n('common');
 
     // 合并主题配置
     const themeConfig = useMemo((): ThemeConfig => {
@@ -64,13 +66,13 @@ export const ThemeLoading = ({
                 return {
                     icon: <span className="text-green-500 text-4xl">✓</span>,
                     color: themeConfig.token?.colorSuccess,
-                    text: text || '加载成功',
+                    text: text || t('loading.success'),
                 };
             case 'error':
                 return {
                     icon: <span className="text-red-500 text-4xl">✕</span>,
                     color: themeConfig.token?.colorError,
-                    text: text || '加载失败',
+                    text: text || t('loading.failed'),
                 };
             default:
                 return {
@@ -81,10 +83,10 @@ export const ThemeLoading = ({
                         />
                     ),
                     color: themeConfig.token?.colorPrimary,
-                    text: text || '加载中',
+                    text: text || t('loading.text'),
                 };
         }
-    }, [status, themeConfig.token, text]);
+    }, [status, themeConfig.token, text, t]);
 
     const content = (
         <ConfigProvider theme={themeConfig}>

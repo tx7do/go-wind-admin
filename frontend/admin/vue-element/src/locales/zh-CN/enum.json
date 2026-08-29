@@ -28,6 +28,16 @@
       "SCAN": "扫描",
       "ADMIN_OPERATION": "管理员操作",
       "OTHER": "其他"
+    },
+    "dataCategory": {
+      "USER_DATA": "用户数据",
+      "ORG_DATA": "组织数据",
+      "ACCESS_CONTROL": "权限配置",
+      "TENANT_DATA": "租户数据",
+      "MESSAGE_DATA": "消息数据",
+      "AUDIT_LOG": "审计日志",
+      "SYSTEM_CONFIG": "系统配置",
+      "UNKNOWN": "其他"
     }
   },
   "ossProvider": {
@@ -119,7 +129,8 @@
     "status": {
       "SUCCESS": "成功",
       "FAILED": "失败",
-      "PARTIAL": "部分成功"
+      "PARTIAL": "部分成功",
+      "LOCKED": "已锁定"
     },
     "actionType": {
       "LOGIN": "登录",
@@ -160,6 +171,7 @@
       "BULK_GRANT": "批量授予",
       "BULK_REVOKE": "批量撤销",
       "EXPIRE": "过期",
+      "SUSPEND": "冻结",
       "RESUME": "恢复",
       "ROLLBACK": "回滚",
       "OTHER": "其他"

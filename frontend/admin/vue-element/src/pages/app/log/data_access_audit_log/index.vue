@@ -20,6 +20,18 @@
         </ElTag>
       </template>
 
+      <!-- 数据分类 -->
+      <template #dataCategory="scope: any">
+        <ElTag
+          size="small"
+          effect="dark"
+          round
+          :color="dataAccessAuditLogCategoryToColor(scope.row.dataCategory)"
+        >
+          {{ dataAccessAuditLogCategoryToName(scope.row.dataCategory) }}
+        </ElTag>
+      </template>
+
       <!-- 地理位置 -->
       <template #geoLocation="scope: any">
         {{ scope.row.geoLocation?.province }} {{ scope.row.geoLocation?.city }}
@@ -44,6 +56,8 @@ import {
   dataAccessAuditLogAccessTypeList,
   dataAccessAuditLogAccessTypeToColor,
   dataAccessAuditLogAccessTypeToName,
+  dataAccessAuditLogCategoryToColor,
+  dataAccessAuditLogCategoryToName,
   successStatusList,
   successToColor,
   successToNameWithStatusCode,
@@ -204,6 +218,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
         prop: "dataCategory",
         label: $t("pages.data_access_audit_log.dataCategory"),
         minWidth: 150,
+        slotName: "dataCategory",
       },
       {
         prop: "latencyMs",

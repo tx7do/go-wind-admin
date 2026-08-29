@@ -140,7 +140,8 @@
     "status": {
       "SUCCESS": "成功",
       "FAILED": "失败",
-      "PARTIAL": "部分成功"
+      "PARTIAL": "部分成功",
+      "LOCKED": "已锁定"
     },
     "actionType": {
       "LOGIN": "用户登录",
@@ -174,7 +175,7 @@
       "DELETE": "删除",
       "VIEW": "查看",
       "BULK_READ": "批量读取",
-      "EXPORT": "导入",
+      "EXPORT": "导出",
       "IMPORT": "导入",
       "DDL_CREATE": "创建表",
       "DDL_ALTER": "修改表",

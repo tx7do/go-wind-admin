@@ -106,6 +106,8 @@ export function loginAuditLogStatusToName(status: LoginAuditLog_Status) {
       return t("enum.loginAuditLog.status.PARTIAL");
     case "SUCCESS":
       return t("enum.loginAuditLog.status.SUCCESS");
+    case "LOCKED":
+      return t("enum.loginAuditLog.status.LOCKED");
     default:
       return "";
   }
@@ -115,6 +117,7 @@ export const loginAuditLogStatusList = computed(() => [
   { value: "FAILED", label: t("enum.loginAuditLog.status.FAILED") },
   { value: "PARTIAL", label: t("enum.loginAuditLog.status.PARTIAL") },
   { value: "SUCCESS", label: t("enum.loginAuditLog.status.SUCCESS") },
+  { value: "LOCKED", label: t("enum.loginAuditLog.status.LOCKED") },
 ]);
 
 export function loginAuditLogActionTypeToName(status: LoginAuditLog_ActionType) {

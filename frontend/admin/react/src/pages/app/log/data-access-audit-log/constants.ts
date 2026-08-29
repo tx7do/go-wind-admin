@@ -6,32 +6,59 @@ type TFn = (key: string, options?: Record<string, any>) => string;
 
 // ========== 访问类型 ==========
 
+/** 访问类型枚举值列表（与后端 proto DataAccessAuditLog.AccessType 一致） */
+export const ACCESS_TYPE_VALUES = [
+  'SELECT',
+  'INSERT',
+  'UPDATE',
+  'DELETE',
+  'VIEW',
+  'BULK_READ',
+  'EXPORT',
+  'IMPORT',
+  'DDL_CREATE',
+  'DDL_ALTER',
+  'DDL_DROP',
+  'METADATA_READ',
+  'SCAN',
+  'ADMIN_OPERATION',
+  'OTHER',
+] as const;
+
 /** 访问类型颜色映射 */
 export const ACCESS_TYPE_COLORS: Record<string, string> = {
-  READ: 'processing',
-  CREATE: 'success',
+  SELECT: 'processing',
+  VIEW: 'processing',
+  METADATA_READ: 'processing',
+  SCAN: 'cyan',
+  BULK_READ: 'cyan',
+  INSERT: 'success',
+  IMPORT: 'success',
+  EXPORT: 'geekblue',
   UPDATE: 'warning',
+  DDL_ALTER: 'warning',
   DELETE: 'error',
+  DDL_DROP: 'error',
+  DDL_CREATE: 'purple',
+  ADMIN_OPERATION: 'purple',
+  OTHER: 'default',
 };
 
 /** 获取访问类型映射（text + color），供 render 使用 */
 export function getAccessTypeMap(t: TFn) {
-  return {
-    READ: { text: t('accessType.READ'), color: ACCESS_TYPE_COLORS.READ },
-    CREATE: { text: t('accessType.CREATE'), color: ACCESS_TYPE_COLORS.CREATE },
-    UPDATE: { text: t('accessType.UPDATE'), color: ACCESS_TYPE_COLORS.UPDATE },
-    DELETE: { text: t('accessType.DELETE'), color: ACCESS_TYPE_COLORS.DELETE },
-  };
+  const map: Record<string, { text: string; color: string }> = {};
+  for (const value of ACCESS_TYPE_VALUES) {
+    map[value] = { text: t(`accessType.${value}`), color: ACCESS_TYPE_COLORS[value] };
+  }
+  return map;
 }
 
 /** 获取访问类型选项列表，供搜索/Select 使用 */
 export function getAccessTypeOptions(t: TFn) {
-  return [
-    { label: t('accessType.READ'), value: 'READ' },
-    { label: t('accessType.CREATE'), value: 'CREATE' },
-    { label: t('accessType.UPDATE'), value: 'UPDATE' },
-    { label: t('accessType.DELETE'), value: 'DELETE' },
-  ];
+  return ACCESS_TYPE_VALUES.map((value) => ({
+    label: t(`accessType.${value}`),
+    value,
+  }));
 }
 
 // ========== 成功状态 ==========

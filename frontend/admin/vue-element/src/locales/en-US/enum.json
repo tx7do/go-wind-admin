@@ -28,6 +28,16 @@
       "SCAN": "Scan",
       "ADMIN_OPERATION": "Admin Operation",
       "OTHER": "Other"
+    },
+    "dataCategory": {
+      "USER_DATA": "User Data",
+      "ORG_DATA": "Org Data",
+      "ACCESS_CONTROL": "Access Control",
+      "TENANT_DATA": "Tenant Data",
+      "MESSAGE_DATA": "Messages",
+      "AUDIT_LOG": "Audit Logs",
+      "SYSTEM_CONFIG": "System Config",
+      "UNKNOWN": "Other"
     }
   },
   "ossProvider": {
@@ -119,7 +129,8 @@
     "status": {
       "SUCCESS": "Success",
       "FAILED": "Failed",
-      "PARTIAL": "Partial Success"
+      "PARTIAL": "Partial Success",
+      "LOCKED": "Locked"
     },
     "actionType": {
       "LOGIN": "Login",
@@ -160,6 +171,7 @@
       "BULK_GRANT": "Bulk Grant",
       "BULK_REVOKE": "Bulk Revoke",
       "EXPIRE": "Expire",
+      "SUSPEND": "Suspend",
       "RESUME": "Resume",
       "ROLLBACK": "Rollback",
       "OTHER": "Other"

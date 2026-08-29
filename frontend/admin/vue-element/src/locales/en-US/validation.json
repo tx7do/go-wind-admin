@@ -1,1 +1,7 @@
-{}
+{
+  "email": "Please enter a valid email address",
+  "phone": "Please enter a valid phone number",
+  "url": "Please enter a valid URL",
+  "number": "Please enter a number",
+  "integer": "Please enter an integer"
+}

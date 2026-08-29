@@ -63,7 +63,7 @@ export const LayoutPanel: React.FC = () => {
     <div className="layout-panel">
       {/* 布局选择 */}
       <section className="layout-section">
-        <h3 className="section-title">布局</h3>
+        <h3 className="section-title">{t('layout.layout')}</h3>
         <div className="layout-grid">
           {LAYOUT_OPTIONS.map((option) => (
             <div
@@ -172,7 +172,7 @@ export const LayoutPanel: React.FC = () => {
 
       {/* 内容宽度 */}
       <section className="layout-section">
-        <h3 className="section-title">内容</h3>
+        <h3 className="section-title">{t('layout.content')}</h3>
         <div className="content-compact-grid">
           {CONTENT_COMPACT_OPTIONS.map((option) => (
             <div

@@ -167,7 +167,7 @@ export const Index = () => {
   // 当前标签
   const currentTab = useMemo(() => {
     const lastMatch = matches.at(-1) as any;
-    const rawTitle = lastMatch?.handle?.title || lastMatch?.data?.title || '未知页面';
+    const rawTitle = lastMatch?.handle?.title || lastMatch?.data?.title || t('unknownPage');
 
     // 翻译标题
     const title = translateTitle(rawTitle);
@@ -189,7 +189,7 @@ export const Index = () => {
       closable: location.pathname !== '/',
       hideInTab, // 传递 hideInTab 配置
     };
-  }, [location.pathname, matches, translateTitle]);
+  }, [location.pathname, matches, translateTitle, t]);
 
   // 自动添加当前标签（检查 hideInTab）
   useEffect(() => {
