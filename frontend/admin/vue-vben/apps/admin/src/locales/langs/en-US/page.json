@@ -94,8 +94,21 @@
         "basicSettings": "Basic Settings",
         "securitySettings": "Security Settings",
         "editPassword": "Change Password",
-        "accountBind": "Account Bindings",
-        "notification": "Notifications"
+        "accountBind": "Account Bindings"
+      },
+      "security": {
+        "password": "Login Password",
+        "passwordDesc": "Change your password regularly and pair it with MFA for better security",
+        "modify": "Modify"
+      },
+      "bind": {
+        "email": "Email",
+        "phone": "Phone",
+        "emailDesc": "Used for system notifications",
+        "phoneDesc": "Used for identity verification",
+        "bound": "Bound: {value}",
+        "unbound": "Not bound; fill it in Basic Settings",
+        "modify": "Modify"
       }
     },
     "detail": {

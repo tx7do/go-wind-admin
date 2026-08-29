@@ -23,7 +23,10 @@
             </h2>
           </div>
           <div class="content-body">
-            <component :is="settingList.find((item) => item.key === activeTab)?.component" />
+            <component
+              :is="settingList.find((item) => item.key === activeTab)?.component"
+              @switch-tab="handleSwitchTab"
+            />
           </div>
         </div>
       </div>
@@ -37,12 +40,18 @@ import { ref } from "vue";
 import BaseSettingPage from "./base-setting-page.vue";
 import EditPasswordPage from "./edit-password-page.vue";
 import AccountBindPage from "./account-bind-page.vue";
-import MsgNotifyPage from "./msg-notify-page.vue";
 import SecureSettingPage from "./secure-setting-page.vue";
 
 import { $t } from "@/core/i18n";
 
 const activeTab = ref("1");
+
+// 消息通知 tab 已移除：后端暂无用户通知偏好能力，原页为模板演示数据。
+
+// 子页（安全设置/账号绑定）通过 switch-tab 事件跳转到对应设置页
+const handleSwitchTab = (key: string) => {
+  activeTab.value = key;
+};
 
 const settingList = [
   {
@@ -64,11 +73,6 @@ const settingList = [
     key: "4",
     name: $t("pages.user.profile.tab.accountBind"),
     component: AccountBindPage,
-  },
-  {
-    key: "5",
-    name: $t("pages.user.profile.tab.notification"),
-    component: MsgNotifyPage,
   },
 ];
 </script>

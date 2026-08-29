@@ -5,8 +5,7 @@
       "editPassword": "修改密码",
       "basicSettings": "基本设置",
       "securitySettings": "安全设置",
-      "accountBind": "账号绑定",
-      "notification": "消息通知"
+      "accountBind": "账号绑定"
     }
   },
   "detail": {
@@ -71,23 +70,10 @@
     "editPassword": "修改密码",
     "banAccount": "禁用账户"
   },
-  "msgNotify": {
-    "accountPassword": "账户密码",
-    "accountPasswordDesc": "账户密码变动通知，包括密码修改、重置等操作",
-    "systemMessage": "系统消息",
-    "systemMessageDesc": "系统公告、维护通知等消息",
-    "todoTask": "待办任务",
-    "todoTaskDesc": "需要处理的任务审批、审核等提醒"
-  },
   "secureSetting": {
-    "accountPassword": "账户密码",
-    "accountPasswordDesc": "当前密码强度：强",
-    "securePhone": "密保手机",
-    "securePhoneDesc": "已绑定手机：138****8293",
-    "secureQuestion": "安全问题",
-    "secureQuestionDesc": "未设置安全问题。安全问题可以有效保护账户安全。",
-    "backupEmail": "备份邮箱",
-    "backupEmailDesc": "已绑定邮箱：ant***sign.com",
+    "accountPassword": "登录密码",
+    "accountPasswordDesc": "建议定期修改密码，可搭配两步验证提升账户安全性",
+    "modify": "修改",
     "mfaDevice": "MFA 设备（TOTP）",
     "mfaDeviceDesc": "未绑定 TOTP 认证器。绑定后每次登录将要求输入验证码。",
     "mfaBoundDesc": "已绑定 TOTP 认证器，每次登录需输入验证码。",
@@ -109,21 +95,10 @@
   },
   "accountBind": {
     "email": "邮箱账号",
-    "emailDesc": "已绑定 · 用于接收通知和找回密码",
     "phone": "手机号",
-    "phoneDesc": "已绑定 · 138****5678（用于安全验证）",
-    "github": "GitHub 账号",
-    "githubDesc": "已绑定（主账号）· 绑定时间：2023-10-15",
-    "wechat": "微信账号",
-    "wechatDesc": "已绑定 · 绑定时间：2024-01-20",
-    "weibo": "新浪微博",
-    "weiboDesc": "未绑定账号，绑定后可快速登录",
-    "dingtalk": "钉钉",
-    "dingtalkDesc": "未绑定账号，企业协作更便捷",
-    "manage": "管理",
-    "unbind": "解绑",
-    "bindNow": "立即绑定",
-    "bind": "绑定"
+    "bound": "已绑定：{value}",
+    "unbound": "未绑定，可在基本设置中填写",
+    "modify": "修改"
   },
   "resetMfa": "重置 MFA",
   "resetMfaConfirmTitle": "重置该用户的 MFA？",

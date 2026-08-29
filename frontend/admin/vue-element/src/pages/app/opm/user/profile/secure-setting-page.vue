@@ -1,14 +1,17 @@
 <template>
   <div class="page-container">
     <div class="setting-list">
-      <div v-for="item in secureSettingList" :key="item.key" class="setting-item">
+      <!-- 登录密码：跳转“修改密码”页 -->
+      <div class="setting-item">
         <div class="setting-item-content">
-          <span class="item-title">{{ item.title }}</span>
-          <ElLink v-if="item.extra" type="primary" underline="never" class="item-link">
-            {{ item.extra }}
+          <span class="item-title">{{ $t("pages.user.secureSetting.accountPassword") }}</span>
+          <ElLink type="primary" underline="never" class="item-link" @click="emit('switchTab', '2')">
+            {{ $t("pages.user.secureSetting.modify") }}
           </ElLink>
         </div>
-        <div class="item-description">{{ item.description }}</div>
+        <div class="item-description">
+          {{ $t("pages.user.secureSetting.accountPasswordDesc") }}
+        </div>
       </div>
 
       <!-- MFA（TOTP）绑定/解绑：真实功能组件，绑定后登录需二次验证 -->
@@ -20,43 +23,11 @@
 </template>
 
 <script lang="ts" setup>
-import { $t } from "@/core/i18n";
-
 import MfaManagement from "./MfaManagement.vue";
 
-interface SettingItem {
-  key: string;
-  title: string;
-  description: string;
-  extra?: string;
-}
-
-const secureSettingList: SettingItem[] = [
-  {
-    key: "1",
-    title: $t("pages.user.secureSetting.accountPassword"),
-    description: $t("pages.user.secureSetting.accountPasswordDesc"),
-    extra: $t("common.button.edit"),
-  },
-  {
-    key: "2",
-    title: $t("pages.user.secureSetting.securePhone"),
-    description: $t("pages.user.secureSetting.securePhoneDesc"),
-    extra: $t("common.button.edit"),
-  },
-  {
-    key: "3",
-    title: $t("pages.user.secureSetting.secureQuestion"),
-    description: $t("pages.user.secureSetting.secureQuestionDesc"),
-    extra: $t("common.button.edit"),
-  },
-  {
-    key: "4",
-    title: $t("pages.user.secureSetting.backupEmail"),
-    description: $t("pages.user.secureSetting.backupEmailDesc"),
-    extra: $t("common.button.edit"),
-  },
-];
+// 密保问题/备用邮箱等演示条目已移除：后端无对应能力。
+// 手机/邮箱绑定状态展示在“账号绑定”页；修改密码入口跳转对应 tab。
+const emit = defineEmits<{ switchTab: [key: string] }>();
 </script>
 
 <style lang="scss" scoped>

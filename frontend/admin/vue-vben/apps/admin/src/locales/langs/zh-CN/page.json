@@ -94,8 +94,21 @@
         "basicSettings": "基本设置",
         "securitySettings": "安全设置",
         "editPassword": "修改密码",
-        "accountBind": "账号绑定",
-        "notification": "消息通知"
+        "accountBind": "账号绑定"
+      },
+      "security": {
+        "password": "登录密码",
+        "passwordDesc": "建议定期修改密码，并搭配两步验证提升账户安全性",
+        "modify": "修改"
+      },
+      "bind": {
+        "email": "邮箱账号",
+        "phone": "手机号",
+        "emailDesc": "用于接收系统通知",
+        "phoneDesc": "用于身份验证",
+        "bound": "已绑定：{value}",
+        "unbound": "未绑定，可在基本设置中填写",
+        "modify": "修改"
       }
     },
     "detail": {
