@@ -167,14 +167,17 @@ const DictEntryDrawer: React.FC<DictEntryDrawerProps> = ({
     try {
       setConfirmLoading(true);
 
-      // 构建 i18n map
+      // 构建 i18n map：只提交用户实际填写过的语言行。
+      // 后端 entry_label 有 NotEmpty 校验，空标签行会导致 500（对齐 vue-element/vben 行为）。
       const i18nMap: Record<string, any> = {};
       i18nData.forEach((row) => {
-        if (row.languageCode) {
+        const label = (row.entryLabel || '').trim();
+        const desc = (row.description || '').trim();
+        if (row.languageCode && (label || desc)) {
           i18nMap[row.languageCode] = {
             languageCode: row.languageCode,
-            entryLabel: row.entryLabel,
-            description: row.description,
+            entryLabel: label,
+            description: desc,
           };
         }
       });
