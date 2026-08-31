@@ -132,10 +132,6 @@ gow run admin
 gow ent          # 所有服务
 gow ent admin    # 指定服务
 
-# 生成Wire依赖注入代码
-gow wire
-gow wire admin
-
 # 生成Protobuf/API代码
 gow api
 ```
@@ -158,9 +154,11 @@ cd app/admin/service
 
 make api      # 生成API/Protobuf代码
 make ent      # 生成Ent ORM代码
-make wire     # 生成依赖注入代码
 make openapi  # 生成OpenAPI文档
 make ts       # 生成前端TS代码
+
+# 根目录执行:登记新CRUD模块到手写装配(wiring.go + rest_server.go)
+cd ../.. && make register ENTITY=product
 ```
 
 ### 运行与构建

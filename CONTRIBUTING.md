@@ -43,7 +43,6 @@
 | Go API / HTTP / gRPC / OpenAPI | `make api` | 由 `backend/api/protos/` 下的 proto 生成至 `backend/api/gen/go/` |
 | TypeScript HTTP 客户端 | `make api` | 同步生成至各前端 `src/api/generated/` |
 | Ent ORM 代码 | `make ent` | 由 `internal/data/ent/schema/` 下的 schema 生成 |
-| 依赖注入 | `make wire` | 生成 `wire_gen.go` |
 
 修改 `.proto` 或 `ent/schema` 后，请同步重新生成并一并提交，保持三端一致。
 

@@ -18,7 +18,7 @@ Go 模块路径: `go-wind-admin`
 | 缓存     | Redis (go-redis/v9)           |
 | 对象存储   | MinIO                         |
 | API 定义 | Protocol Buffers 3 (buf 工具链)  |
-| 依赖注入   | google/wire                   |
+| 依赖注入   | 手写构造注入 (cmd/server/wiring.go) |
 | 认证     | JWT (kratos-authn)            |
 | 授权     | Casbin / OPA (kratos-authz)   |
 | 异步任务   | Asynq                         |
@@ -39,18 +39,15 @@ backend/
 │   └── gen/go/                   # buf 生成的 Go 代码
 ├── app/
 │   └── admin/service/            # Admin 服务应用
-│       ├── cmd/server/           # 入口 (main.go, wire.go)
+│       ├── cmd/server/           # 入口 (main.go, wiring.go 依赖装配)
 │       ├── configs/              # 配置文件 (YAML)
 │       └── internal/
 │           ├── data/             # 数据层 (Repository)
 │           │   ├── ent/          # Ent 生成代码 & schema [禁止手动修改]
 │           │   ├── gorm/         # GORM 相关
-│           │   ├── providers/    # Wire provider set
 │           │   └── *_repo.go     # 各资源 Repository
 │           ├── server/           # 传输层 (HTTP/Asynq/SSE)
-│           │   └── providers/    # Wire provider set
 │           └── service/          # 业务逻辑层 (Service)
-│               ├── providers/    # Wire provider set
 │               └── *_service.go  # 各资源 Service
 ├── pkg/                          # 公共包
 │   ├── authorizer/               # 授权引擎
@@ -115,24 +112,24 @@ Proto (API 定义) → Service (业务逻辑) → Data/Repo (数据访问)
 - 配置认证/授权中间件 (白名单机制)
 - 支持 Swagger UI
 
-## Wire 依赖注入
+## 依赖装配 (手写 wiring)
 
-每一层都有 `providers/wire_set.go` 定义 ProviderSet。入口在 `cmd/server/wire.go`，合并三层 ProviderSet 后由 Wire 生成 `wire_gen.go`。
+依赖注入不使用框架,由 `cmd/server/wiring.go` 的 `initApp` 手写构造注入,自上而下单向分层:
+基础设施 → 仓储层(data) → 认证与鉴权 → 服务层(service) → 传输层(server)。
 
-```go
-// service/providers/wire_set.go
-var ProviderSet = wire.NewSet(
-    service.NewXxxService,
-    // ...
-)
-```
+**新增 CRUD 模块的登记(推荐自动化):**
 
-**修改依赖后需重新生成:**
 ```bash
-gow wire          # 推荐，可在任意位置执行
-# 或
-cd app/admin/service && make wire
+make register ENTITY=product    # 在 backend/ 根目录执行
 ```
+
+一条命令完成全部五处登记: `wiring.go` 的仓储构造行、服务构造行、`NewRestServer` 实参,以及
+`rest_server.go` 的服务形参与路由注册调用。注入位置由文件内的 `register:*` 锚点注释标记,
+工具可重复执行(幂等)。仅覆盖标准 CRUD 形态(`New<Ent>Repo(ctx, entClient)` /
+`New<Ent>Service(ctx, <ent>Repo)`),依赖更多的模块需手工调整注入行。
+
+**手工登记(等价):** 在 `wiring.go` 对应分层小节追加构造行并传给下游消费者;
+漏接由编译器在调用处报错,无需任何代码生成步骤。
 
 ## 添加新 CRUD 功能 (以 Product 为例)
 
@@ -144,7 +141,7 @@ cd app/admin/service && make wire
 3. 生成 Go 代码
 4. 创建 Ent Schema → 5. 生成 Ent 代码
 6. 创建 Repository → 7. 创建 Service → 8. 注册到 Server
-9. 更新 Wire → 10. 重新生成 → 11. 验证
+9. 在 wiring.go 注册依赖 → 10. 验证
 ```
 
 ### Step 1: 源领域层 - 定义消息 + gRPC Service
@@ -323,20 +320,19 @@ func (s *ProductService) Create(ctx context.Context, req *pb.CreateProductReques
 1. 在 `NewRestServer` 参数中添加 `productService *service.ProductService`
 2. 注册 HTTP handler: `adminV1.RegisterProductServiceHTTPServer(srv, productService)`
 
-### Step 9: 更新 Wire ProviderSet
+(这两处也可由 Step 9 的 `make register` 自动注入,手工编辑可省略。)
 
-- `data/providers/wire_set.go` 追加 `data.NewProductRepo,`
-- `service/providers/wire_set.go` 追加 `service.NewProductService,`
-
-### Step 10: 重新生成 Wire
+### Step 9: 注册依赖装配
 
 ```bash
-gow wire       # 推荐
-# 或
-cd app/admin/service && make wire
+make register ENTITY=product    # 自动注入 wiring.go 三处 + rest_server.go 两处(含 Step 8 两项)
 ```
 
-### Step 11: 验证
+或手工编辑 `cmd/server/wiring.go` 对应分层小节:仓储行 `productRepo := data.NewProductRepo(ctx, entClient)`、
+服务行 `productService := service.NewProductService(ctx, productRepo)`,并把 `productService`
+传入 `server.NewRestServer(...)`(工具幂等,与手工编辑混用不会重复注入)。
+
+### Step 10: 验证
 
 ```bash
 gow run        # 无需先构建
@@ -360,7 +356,6 @@ gow run        # 无需先构建
 |-----------------------------------------------------------------------------------------------|-------------------------------------------|
 | `gow api`                                                                                     | 生成所有服务的 Protobuf & API 代码 (自动遍历所有 buf 配置) |
 | `gow ent` / `gow ent admin`                                                                   | 生成所有 / 指定服务的 Ent 代码                      |
-| `gow wire` / `gow wire admin`                                                                 | 生成所有 / 指定服务的 Wire 依赖注入代码                |
 | `gow run` / `gow run admin`                                                                   | 运行当前 / 指定服务                              |
 | `gow generate --dsn "mysql://..." --service admin --orm ent`                                  | 从数据库一键生成完整 CRUD 代码                       |
 | `gow extract admin user -o role[,permission] [--keep-source]`                                 | 微服务演进：从 admin 提取模块到目标服务                 |
@@ -372,8 +367,7 @@ gow run        # 无需先构建
 | `make api`        | 生成 Protobuf Go 代码                 |
 | `make openapi`    | 生成 OpenAPI 文档                     |
 | `make ent`        | 生成 Ent ORM 代码                     |
-| `make wire`       | 生成 Wire 依赖注入代码                    |
-| `make gen`        | 一键生成 (ent + wire + api + openapi) |
+| `make gen`        | 一键生成 (ent + api + openapi)        |
 | `make build`      | 构建 (含 api + openapi 生成)           |
 | `make build_only` | 仅构建，不生成代码                         |
 | `make test`       | 运行测试                              |
@@ -402,4 +396,4 @@ gow run        # 无需先构建
 4. **可选字段**: 使用 `trans.Ptr()` 将标量转为指针，Ent 使用 `SetNillable*` 方法
 5. **注释风格**: 中英双语注释 `// 中文说明 / English description`
 6. **日志**: 通过 `ctx.NewLoggerHelper("module/name")` 创建命名日志器，命名遵循 `模块/子模块` 格式
-7. **禁止手动修改**: `wire_gen.go`、`api/gen/go/` 和 `internal/data/ent/` 下的生成代码
+7. **禁止手动修改**: `api/gen/go/` 和 `internal/data/ent/` 下的生成代码;依赖装配统一在 `cmd/server/wiring.go` 手写维护

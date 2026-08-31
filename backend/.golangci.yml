@@ -4,7 +4,6 @@ version: "2"
 # - ent / enttest   ent 生成代码
 # - api/gen         proto 生成代码
 # - *.pb.go         proto 生成代码
-# - wire_gen.go     wire 生成代码
 linters:
   default: standard
   exclusions:
@@ -22,4 +21,3 @@ linters:
       - internal/data/enttest
       - vendor
       - ".*\\.pb\\.go$"
-      - "wire_gen\\.go$"

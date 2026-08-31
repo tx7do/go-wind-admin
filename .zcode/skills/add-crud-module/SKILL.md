@@ -44,13 +44,13 @@ If the user insists on frontend-only for an entity that has no backend proto yet
 
 ## Step 2 — Backend
 
-Read **`references/backend.md`** in full before touching backend files. It covers the 11-step flow with real sample references:
+Read **`references/backend.md`** in full before touching backend files. It covers the 10-step flow with real sample references:
 
 ```
 1. domain proto  → 2. BFF proto  → 3. make api (+openapi)
 4. ent schema    → 5. make ent
 6. repo          → 7. service  → 8. register server
-9. update wire (2 files) → 10. make wire → 11. make build verify
+9. make register ENTITY=<entity> → 10. make build verify
 ```
 
 Real samples to mirror: `backend/api/protos/dict/service/v1/dict_type.proto`, `backend/api/protos/admin/service/v1/i_api.proto`, `backend/app/admin/service/internal/data/api_repo.go`, `backend/app/admin/service/internal/service/dict_type_service.go`. **Read the matching sample file before writing your version** — copy its structure, change names/fields.
@@ -79,7 +79,7 @@ Before declaring done, verify cross-cutting concerns:
 - [ ] Backend compiles: `cd backend && make build` (or `make gen`)
 - [ ] Swagger at `http://localhost:7788/docs` shows the new resource with correct routes
 - [ ] For each frontend: list loads, search filters, pagination works, create/edit form validates and persists, update actually changes fields, delete confirms and refreshes
-- [ ] No edits to any `generated/` directory or `wire_gen.go` (these are regenerated, not hand-edited)
+- [ ] No edits to any `generated/` directory (these are regenerated, not hand-edited); dependency wiring lives in `cmd/server/wiring.go` (hand-written, no codegen)
 - [ ] `apiClient.<entity>Service` getter exists in the frontend generated index (proves proto round-trip worked)
 - [ ] i18n: no hardcoded Chinese/English in pages — everything goes through `$t`/`t` with keys in the locale JSONs
 - [ ] Update operations carry `updateMask` (frontend `useUpdateXxx` does this automatically via `makeUpdateMask`; do not hand-build the mask)

@@ -70,7 +70,7 @@ APP_RELATIVE_PATH	:= $(shell a=`basename $$PWD` && cd .. && b=`basename $$PWD` &
 SERVICE_NAME		:= $(shell a=`basename $$PWD` && cd .. && b=`basename $$PWD` && echo $$b)
 APP_NAME			:= $(shell echo $(APP_RELATIVE_PATH) | sed -En "s/\//-/p")
 
-.PHONY: build clean docker gen ent wire api openapi run app help
+.PHONY: build clean docker gen ent api openapi run app help
 
 # show environment variables
 env:
@@ -100,7 +100,7 @@ run: api openapi
 	go run $(GOFLAGS) -ldflags "$(LDFLAGS)" ./cmd/server -c ./configs
 
 # build service app
-app: api openapi wire ent build
+app: api openapi ent build
 
 # clean build files
 clean:
@@ -108,7 +108,7 @@ clean:
 	$(if $(IS_WINDOWS), del "coverage.out", rm -f "coverage.out")
 
 # generate code
-gen: ent wire api openapi
+gen: ent api openapi
 
 # generate ent code, if ent schema exist in the project's internal/data/ent folder
 ent:
@@ -121,10 +121,6 @@ ifneq ("$(wildcard ./internal/data/ent)","")
 				--feature sql/lock \
 				./internal/data/ent/schema
 endif
-
-# generate wire code
-wire:
-	go run -mod=mod github.com/google/wire/cmd/wire ./cmd/server
 
 # generate protobuf api go code
 api:

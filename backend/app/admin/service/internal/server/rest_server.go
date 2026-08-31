@@ -161,6 +161,7 @@ func NewRestServer(
 	internalMessageCategoryService *service.InternalMessageCategoryService,
 	internalMessageRecipientService *service.InternalMessageRecipientService,
 
+	// register:param ── 新模块服务形参在此行后注册(make register 工具锚点,勿删)
 ) (*http.Server, error) {
 	cfg := ctx.GetConfig()
 
@@ -224,6 +225,8 @@ func NewRestServer(
 	adminV1.RegisterInternalMessageServiceHTTPServer(srv, internalMessageService)
 	adminV1.RegisterInternalMessageCategoryServiceHTTPServer(srv, internalMessageCategoryService)
 	adminV1.RegisterInternalMessageRecipientServiceHTTPServer(srv, internalMessageRecipientService)
+
+	// register:route ── 新模块路由在此行后注册(make register 工具锚点,勿删)
 
 	if cfg.GetServer().GetRest().GetEnableSwagger() {
 		swaggerUI.RegisterSwaggerUIServerWithOption(
