@@ -224,7 +224,7 @@ go-wind-admin/
 │   │   ├── protos/                 # .proto 源文件（按领域分层）
 │   │   └── gen/go/                 # buf 生成的 Go 代码
 │   ├── app/admin/service/          # Admin 服务应用
-│   │   ├── cmd/server/             # 入口 (main.go, wiring.go 依赖装配)
+│   │   ├── cmd/server/             # 入口 (main.go, wiring_ent.go 依赖装配)
 │   │   ├── configs/                # 配置文件 (YAML)
 │   │   └── internal/               # 业务核心（data/service/server）
 │   ├── pkg/                        # 公共包

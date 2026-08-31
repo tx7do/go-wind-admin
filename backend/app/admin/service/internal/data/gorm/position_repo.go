@@ -2,7 +2,7 @@
 // +build gorm_backend
 
 // Package gorm 中的仓储是 ent 仓储的平行 gorm 镜像，作为"ent 为主力、gorm 为备选"脚手架的完整代码。
-// 这些仓储为死代码：未接入 cmd/server/wiring.go、不被 service 引用；采用者需要时自行装配。
+// 这些仓储仅由 cmd/server/wiring_gorm.go(gorm_backend 构建,ORM 切换 Phase 4 占位)装配,服务层尚未接入。
 //
 // gorm 仓储不做租户隔离（ent 侧靠编译进生成代码的 privacy 策略自动注入，gorm 侧无此机制）。
 // 直接切换 gorm 后端会有跨租户数据泄露风险，采用者须自行加 scope/plugin。
@@ -14,8 +14,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	gormCrud "github.com/tx7do/go-crud/gorm"
@@ -30,7 +30,7 @@ import (
 
 type PositionRepo struct {
 	client          *gormCrud.Client
-	log             *log.Helper
+	log             *bLogger.Helper
 	mapper          *mapper.CopierMapper[identityV1.Position, models.Position]
 	statusConverter *mapper.EnumTypeConverter[identityV1.Position_Status, string]
 	typeConverter   *mapper.EnumTypeConverter[identityV1.Position_Type, string]
@@ -71,7 +71,7 @@ func (r *PositionRepo) init() {
 func (r *PositionRepo) Count(ctx context.Context, scopes []func(*gormDB.DB) *gormDB.DB) (int, error) {
 	count, err := r.repository.Count(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -102,7 +102,7 @@ func (r *PositionRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, identityV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -129,7 +129,7 @@ func (r *PositionRepo) Get(ctx context.Context, req *identityV1.GetPositionReque
 		if errors.Is(err, gormDB.ErrRecordNotFound) {
 			return nil, identityV1.ErrorNotFound("position not found")
 		}
-		r.log.Errorf("query position failed: %s", err.Error())
+		r.log.Errorf(ctx, "query position failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query position failed")
 	}
 
@@ -144,7 +144,7 @@ func (r *PositionRepo) ListPositionByIds(ctx context.Context, ids []uint32) ([]*
 
 	var entities []*models.Position
 	if err := r.client.DB.WithContext(ctx).Model(&models.Position{}).Where("id IN ?", ids).Find(&entities).Error; err != nil {
-		r.log.Errorf("query position by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query position by ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query position by ids failed")
 	}
 
@@ -163,7 +163,7 @@ func (r *PositionRepo) Create(ctx context.Context, req *identityV1.CreatePositio
 	}
 
 	if _, err := r.repository.Create(ctx, r.client.DB, req.Data, nil); err != nil {
-		r.log.Errorf("insert position failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert position failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("insert data failed")
 	}
 
@@ -195,7 +195,7 @@ func (r *PositionRepo) Update(ctx context.Context, req *identityV1.UpdatePositio
 	if _, err := r.repository.UpdateWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", req.GetId()) },
 	}, req.Data, req.GetUpdateMask()); err != nil {
-		r.log.Errorf("update position failed: %s", err.Error())
+		r.log.Errorf(ctx, "update position failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("update position failed")
 	}
 
@@ -210,7 +210,7 @@ func (r *PositionRepo) Delete(ctx context.Context, req *identityV1.DeletePositio
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", req.GetId()) },
 	}); err != nil {
-		r.log.Errorf("delete position failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete position failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete position failed")
 	}
 

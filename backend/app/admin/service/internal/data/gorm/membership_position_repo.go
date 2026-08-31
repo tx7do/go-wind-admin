@@ -9,8 +9,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	gormCrud "github.com/tx7do/go-crud/gorm"
 
@@ -24,7 +24,7 @@ import (
 
 type MembershipPositionRepo struct {
 	client          *gormCrud.Client
-	log             *log.Helper
+	log             *bLogger.Helper
 	mapper          *mapper.CopierMapper[identityV1.MembershipPosition, models.MembershipPosition]
 	repository      *gormCrud.Repository[identityV1.MembershipPosition, models.MembershipPosition]
 	statusConverter *mapper.EnumTypeConverter[identityV1.MembershipPosition_Status, string]
@@ -35,9 +35,9 @@ func NewMembershipPositionRepo(
 	client *gormCrud.Client,
 ) *MembershipPositionRepo {
 	repo := &MembershipPositionRepo{
-		log:       ctx.NewLoggerHelper("membership-position/gorm-repo/admin-service"),
-		client:    client,
-		mapper:    mapper.NewCopierMapper[identityV1.MembershipPosition, models.MembershipPosition](),
+		log:    ctx.NewLoggerHelper("membership-position/gorm-repo/admin-service"),
+		client: client,
+		mapper: mapper.NewCopierMapper[identityV1.MembershipPosition, models.MembershipPosition](),
 		statusConverter: mapper.NewEnumTypeConverter[identityV1.MembershipPosition_Status, string](
 			identityV1.MembershipPosition_Status_name,
 			identityV1.MembershipPosition_Status_value,
@@ -67,7 +67,7 @@ func (r *MembershipPositionRepo) CleanRelationsByMembershipID(ctx context.Contex
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("membership_id = ?", membershipID) },
 	}); err != nil {
-		r.log.Errorf("delete old membership positions failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old membership positions failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old membership positions failed")
 	}
 	return nil
@@ -82,7 +82,7 @@ func (r *MembershipPositionRepo) CleanRelationsByMembershipIDs(ctx context.Conte
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("membership_id IN ?", membershipIDs) },
 	}); err != nil {
-		r.log.Errorf("delete old membership positions by membership ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old membership positions by membership ids failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old membership positions by membership ids failed")
 	}
 	return nil
@@ -97,7 +97,7 @@ func (r *MembershipPositionRepo) CleanRelationsByPositionID(ctx context.Context,
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("position_id = ?", positionID) },
 	}); err != nil {
-		r.log.Errorf("delete old membership positions by position id failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old membership positions by position id failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old membership positions by position id failed")
 	}
 	return nil
@@ -112,7 +112,7 @@ func (r *MembershipPositionRepo) CleanRelationsByPositionIDs(ctx context.Context
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("position_id IN ?", positionIDs) },
 	}); err != nil {
-		r.log.Errorf("delete old membership positions by position ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old membership positions by position ids failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old membership positions by position ids failed")
 	}
 	return nil
@@ -129,7 +129,7 @@ func (r *MembershipPositionRepo) RemovePositionsFromMembership(ctx context.Conte
 			return db.Where("membership_id = ?", membershipID).Where("position_id IN ?", positionIDs)
 		},
 	}); err != nil {
-		r.log.Errorf("remove positions from membership failed: %s", err.Error())
+		r.log.Errorf(ctx, "remove positions from membership failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("remove positions from membership failed")
 	}
 	return nil
@@ -151,7 +151,7 @@ func (r *MembershipPositionRepo) AssignMembershipPositions(
 	}
 
 	if _, err := r.repository.BatchCreate(ctx, r.client.DB, datas, nil); err != nil {
-		r.log.Errorf("assign positions to membership failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign positions to membership failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("assign positions to membership failed")
 	}
 
@@ -173,7 +173,7 @@ func (r *MembershipPositionRepo) ListPositionIDs(ctx context.Context, membership
 
 	var ids []uint32
 	if err := db.Pluck("position_id", &ids).Error; err != nil {
-		r.log.Errorf("query position ids by membership id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query position ids by membership id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query position ids by membership id failed")
 	}
 	return ids, nil
@@ -194,7 +194,7 @@ func (r *MembershipPositionRepo) ListMembershipIDs(ctx context.Context, position
 
 	var ids []uint32
 	if err := db.Pluck("membership_id", &ids).Error; err != nil {
-		r.log.Errorf("query membership ids by position id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query membership ids by position id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query membership ids by position id failed")
 	}
 	return ids, nil
@@ -215,7 +215,7 @@ func (r *MembershipPositionRepo) ListMembershipIDsByPositionIDs(ctx context.Cont
 
 	var ids []uint32
 	if err := db.Pluck("membership_id", &ids).Error; err != nil {
-		r.log.Errorf("query membership ids by position ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query membership ids by position ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query membership ids by position ids failed")
 	}
 	return ids, nil

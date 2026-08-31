@@ -9,8 +9,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	gormCrud "github.com/tx7do/go-crud/gorm"
@@ -25,7 +25,7 @@ import (
 
 type PlanQuotaRepo struct {
 	client        *gormCrud.Client
-	log           *log.Helper
+	log           *bLogger.Helper
 	mapper        *mapper.CopierMapper[identityV1.PlanQuota, models.PlanQuota]
 	quotaTypeConv *mapper.EnumTypeConverter[identityV1.PlanQuota_QuotaType, string]
 
@@ -60,7 +60,7 @@ func (r *PlanQuotaRepo) init() {
 func (r *PlanQuotaRepo) Count(ctx context.Context, scopes []func(*gormDB.DB) *gormDB.DB) (int, error) {
 	count, err := r.repository.Count(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -76,7 +76,7 @@ func (r *PlanQuotaRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, identityV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -99,7 +99,7 @@ func (r *PlanQuotaRepo) Get(ctx context.Context, req *identityV1.GetPlanQuotaReq
 		if errors.Is(err, gormDB.ErrRecordNotFound) {
 			return nil, identityV1.ErrorNotFound("plan quota not found")
 		}
-		r.log.Errorf("query plan quota failed: %s", err.Error())
+		r.log.Errorf(ctx, "query plan quota failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query plan quota failed")
 	}
 
@@ -122,7 +122,7 @@ func (r *PlanQuotaRepo) Delete(ctx context.Context, id uint32) error {
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	}); err != nil {
-		r.log.Errorf("delete plan quota failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete plan quota failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete failed")
 	}
 

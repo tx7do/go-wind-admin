@@ -8,8 +8,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	gormCrud "github.com/tx7do/go-crud/gorm"
@@ -26,7 +26,7 @@ import (
 
 type RoleRepo struct {
 	client           *gormCrud.Client
-	log              *log.Helper
+	log              *bLogger.Helper
 	mapper           *mapper.CopierMapper[permissionV1.Role, models.Role]
 	repository       *gormCrud.Repository[permissionV1.Role, models.Role]
 	structuredFilter *gormCrudFilter.StructuredFilter
@@ -65,19 +65,19 @@ func (r *RoleRepo) init() {
 func (r *RoleRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (int, error) {
 	filterExpr, err := paginationFilter.ConvertFilterByPagingRequest(req)
 	if err != nil {
-		r.log.Errorf("parse count param error [%s]", err.Error())
+		r.log.Errorf(ctx, "parse count param error [%s]", err.Error())
 		return 0, permissionV1.ErrorBadRequest("invalid query parameter")
 	}
 
 	scopes, err := r.structuredFilter.BuildSelectors(filterExpr)
 	if err != nil {
-		r.log.Errorf("parse count param error [%s]", err.Error())
+		r.log.Errorf(ctx, "parse count param error [%s]", err.Error())
 		return 0, permissionV1.ErrorBadRequest("invalid query parameter")
 	}
 
 	count, err := r.repository.Count(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query role count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query role count failed: %s", err.Error())
 		return 0, permissionV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -89,7 +89,7 @@ func (r *RoleRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, permissionV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -102,7 +102,7 @@ func (r *RoleRepo) ListRoleCodesByRoleIds(ctx context.Context, ids []uint32) ([]
 
 	var entities []*models.Role
 	if err := r.client.DB.WithContext(ctx).Model(&models.Role{}).Where("id IN ?", ids).Find(&entities).Error; err != nil {
-		r.log.Errorf("query role codes failed: %s", err.Error())
+		r.log.Errorf(ctx, "query role codes failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query role codes failed")
 	}
 
@@ -123,7 +123,7 @@ func (r *RoleRepo) ListRoleIDsByRoleCodes(ctx context.Context, codes []string) (
 
 	var entities []*models.Role
 	if err := r.client.DB.WithContext(ctx).Model(&models.Role{}).Where("code IN ?", codes).Find(&entities).Error; err != nil {
-		r.log.Errorf("query role ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query role ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query role ids failed")
 	}
 

@@ -9,8 +9,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	gormCrud "github.com/tx7do/go-crud/gorm"
@@ -25,7 +25,7 @@ import (
 
 type DictEntryRepo struct {
 	client     *gormCrud.Client
-	log        *log.Helper
+	log        *bLogger.Helper
 	mapper     *mapper.CopierMapper[dictV1.DictEntry, models.DictEntry]
 	repository *gormCrud.Repository[dictV1.DictEntry, models.DictEntry]
 }
@@ -35,9 +35,9 @@ func NewDictEntryRepo(
 	client *gormCrud.Client,
 ) *DictEntryRepo {
 	repo := &DictEntryRepo{
-		log:       ctx.NewLoggerHelper("dict-entry/gorm-repo/admin-service"),
-		client:    client,
-		mapper:    mapper.NewCopierMapper[dictV1.DictEntry, models.DictEntry](),
+		log:    ctx.NewLoggerHelper("dict-entry/gorm-repo/admin-service"),
+		client: client,
+		mapper: mapper.NewCopierMapper[dictV1.DictEntry, models.DictEntry](),
 	}
 
 	repo.init()
@@ -55,7 +55,7 @@ func (r *DictEntryRepo) init() {
 func (r *DictEntryRepo) Count(ctx context.Context, scopes []func(*gormDB.DB) *gormDB.DB) (int, error) {
 	count, err := r.repository.Count(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, dictV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -71,7 +71,7 @@ func (r *DictEntryRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, dictV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -96,7 +96,7 @@ func (r *DictEntryRepo) Get(ctx context.Context, req *dictV1.GetDictEntryRequest
 		if errors.Is(err, gormDB.ErrRecordNotFound) {
 			return nil, dictV1.ErrorNotFound("dict not found")
 		}
-		r.log.Errorf("query dict entry failed: %s", err.Error())
+		r.log.Errorf(ctx, "query dict entry failed: %s", err.Error())
 		return nil, dictV1.ErrorInternalServerError("query dict entry failed")
 	}
 
@@ -119,7 +119,7 @@ func (r *DictEntryRepo) Delete(ctx context.Context, id uint32) error {
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	}); err != nil {
-		r.log.Errorf("delete dict entry failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete dict entry failed: %s", err.Error())
 		return dictV1.ErrorInternalServerError("delete failed")
 	}
 
@@ -134,7 +134,7 @@ func (r *DictEntryRepo) BatchDelete(ctx context.Context, ids []uint32) error {
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id IN ?", ids) },
 	}); err != nil {
-		r.log.Errorf("delete dict entry failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete dict entry failed: %s", err.Error())
 		return dictV1.ErrorInternalServerError("delete failed")
 	}
 

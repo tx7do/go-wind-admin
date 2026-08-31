@@ -8,8 +8,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	gormCrud "github.com/tx7do/go-crud/gorm"
 
@@ -23,7 +23,7 @@ import (
 
 type PermissionApiRepo struct {
 	client     *gormCrud.Client
-	log        *log.Helper
+	log        *bLogger.Helper
 	mapper     *mapper.CopierMapper[permissionV1.PermissionApi, models.PermissionApi]
 	repository *gormCrud.Repository[permissionV1.PermissionApi, models.PermissionApi]
 }
@@ -58,7 +58,7 @@ func (r *PermissionApiRepo) CleanApis(
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("permission_id IN ?", permissionIDs) },
 	}); err != nil {
-		r.log.Errorf("delete old permission apis failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old permission apis failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete old permission apis failed")
 	}
 	return nil
@@ -75,7 +75,7 @@ func (r *PermissionApiRepo) CleanNotExistApis(
 			return db.Where("api_id NOT IN ?", apiIDs).Where("permission_id = ?", permissionID)
 		},
 	}); err != nil {
-		r.log.Errorf("clean not exists permission apis failed: %s", err.Error())
+		r.log.Errorf(ctx, "clean not exists permission apis failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("clean not exists permission apis failed")
 	}
 	return nil
@@ -115,7 +115,7 @@ func (r *PermissionApiRepo) AssignApisWithTx(
 	}
 
 	if _, err := r.repository.BatchCreate(ctx, r.client.DB, datas, nil); err != nil {
-		r.log.Errorf("assign permission apis failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign permission apis failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("assign permission apis failed")
 	}
 
@@ -129,7 +129,7 @@ func (r *PermissionApiRepo) ListApiIDs(ctx context.Context, permissionIDs []uint
 		Model(&models.PermissionApi{}).
 		Where("permission_id IN ?", permissionIDs).
 		Pluck("api_id", &ids).Error; err != nil {
-		r.log.Errorf("list permission apis by permission id failed: %s", err.Error())
+		r.log.Errorf(ctx, "list permission apis by permission id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("list permission apis by permission id failed")
 	}
 
@@ -139,7 +139,7 @@ func (r *PermissionApiRepo) ListApiIDs(ctx context.Context, permissionIDs []uint
 // Truncate 清空表数据
 func (r *PermissionApiRepo) Truncate(ctx context.Context) error {
 	if err := r.client.DB.WithContext(ctx).Where("1 = 1").Delete(&models.PermissionApi{}).Error; err != nil {
-		r.log.Errorf("failed to truncate permission api table: %s", err.Error())
+		r.log.Errorf(ctx, "failed to truncate permission api table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 
@@ -151,7 +151,7 @@ func (r *PermissionApiRepo) Delete(ctx context.Context, permissionID uint32) err
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("permission_id = ?", permissionID) },
 	}); err != nil {
-		r.log.Errorf("delete permission apis by permission id failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete permission apis by permission id failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete permission apis by permission id failed")
 	}
 	return nil
@@ -161,7 +161,7 @@ func (r *PermissionApiRepo) DeleteByPermissionIDs(ctx context.Context, permissio
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("permission_id IN ?", permissionIDs) },
 	}); err != nil {
-		r.log.Errorf("delete permission apis by permission ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete permission apis by permission ids failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete permission apis by permission ids failed")
 	}
 	return nil

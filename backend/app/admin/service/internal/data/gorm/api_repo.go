@@ -2,7 +2,7 @@
 // +build gorm_backend
 
 // Package gorm 中的仓储是 ent 仓储的平行 gorm 镜像，作为"ent 为主力、gorm 为备选"脚手架的完整代码。
-// 这些仓储为死代码：未接入 cmd/server/wiring.go、不被 service 引用；采用者需要时自行装配。
+// 这些仓储仅由 cmd/server/wiring_gorm.go(gorm_backend 构建,ORM 切换 Phase 4 占位)装配,服务层尚未接入。
 //
 // gorm 仓储不做租户隔离（ent 侧靠编译进生成代码的 privacy 策略自动注入，gorm 侧无此机制）。
 // 直接切换 gorm 后端会有跨租户数据泄露风险，采用者须自行加 scope/plugin。
@@ -14,8 +14,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	gormCrud "github.com/tx7do/go-crud/gorm"
@@ -33,7 +33,7 @@ import (
 
 type ApiRepo struct {
 	client           *gormCrud.Client
-	log              *log.Helper
+	log              *bLogger.Helper
 	mapper           *mapper.CopierMapper[permissionV1.Api, models.Api]
 	repository       *gormCrud.Repository[permissionV1.Api, models.Api]
 	structuredFilter *gormCrudFilter.StructuredFilter
@@ -78,19 +78,19 @@ func (r *ApiRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (*
 
 	filterExpr, err := paginationFilter.ConvertFilterByPagingRequest(req)
 	if err != nil {
-		r.log.Errorf("convert filter failed: %s", err.Error())
+		r.log.Errorf(ctx, "convert filter failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query api count failed")
 	}
 
 	scopes, err := r.structuredFilter.BuildSelectors(filterExpr)
 	if err != nil {
-		r.log.Errorf("build selectors failed: %s", err.Error())
+		r.log.Errorf(ctx, "build selectors failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query api count failed")
 	}
 
 	count, err := r.repository.Count(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query api count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query api count failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query api count failed")
 	}
 
@@ -123,7 +123,7 @@ func (r *ApiRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, permissionV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -146,7 +146,7 @@ func (r *ApiRepo) Get(ctx context.Context, req *permissionV1.GetApiRequest) (*pe
 		if errors.Is(err, gormDB.ErrRecordNotFound) {
 			return nil, permissionV1.ErrorNotFound("api not found")
 		}
-		r.log.Errorf("query api failed: %s", err.Error())
+		r.log.Errorf(ctx, "query api failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query api failed")
 	}
 
@@ -164,7 +164,7 @@ func (r *ApiRepo) GetApiByEndpoint(ctx context.Context, path, method string) (*p
 		if errors.Is(err, gormDB.ErrRecordNotFound) {
 			return nil, permissionV1.ErrorNotFound("api not found")
 		}
-		r.log.Errorf("query data failed: %s", err.Error())
+		r.log.Errorf(ctx, "query data failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query data failed")
 	}
 
@@ -179,7 +179,7 @@ func (r *ApiRepo) GetApiByIDs(ctx context.Context, ids []uint32) ([]*permissionV
 
 	var entities []*models.Api
 	if err := r.client.DB.WithContext(ctx).Model(&models.Api{}).Where("id IN ?", ids).Find(&entities).Error; err != nil {
-		r.log.Errorf("query data failed: %s", err.Error())
+		r.log.Errorf(ctx, "query data failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query data failed")
 	}
 
@@ -197,7 +197,7 @@ func (r *ApiRepo) Create(ctx context.Context, req *permissionV1.CreateApiRequest
 	}
 
 	if _, err := r.repository.Create(ctx, r.client.DB, req.Data, nil); err != nil {
-		r.log.Errorf("insert api failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert api failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("insert api failed")
 	}
 
@@ -210,7 +210,7 @@ func (r *ApiRepo) BatchCreate(ctx context.Context, apis []*permissionV1.Api) err
 	}
 
 	if _, err := r.repository.BatchCreate(ctx, r.client.DB, apis, nil); err != nil {
-		r.log.Errorf("batch insert apis failed: %s", err.Error())
+		r.log.Errorf(ctx, "batch insert apis failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("batch insert apis failed")
 	}
 
@@ -242,7 +242,7 @@ func (r *ApiRepo) Update(ctx context.Context, req *permissionV1.UpdateApiRequest
 	if _, err := r.repository.UpdateWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", req.GetId()) },
 	}, req.Data, req.GetUpdateMask()); err != nil {
-		r.log.Errorf("update api failed: %s", err.Error())
+		r.log.Errorf(ctx, "update api failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("update api failed")
 	}
 
@@ -257,7 +257,7 @@ func (r *ApiRepo) Delete(ctx context.Context, req *permissionV1.DeleteApiRequest
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", req.GetId()) },
 	}); err != nil {
-		r.log.Errorf("delete api failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete api failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete api failed")
 	}
 
@@ -267,7 +267,7 @@ func (r *ApiRepo) Delete(ctx context.Context, req *permissionV1.DeleteApiRequest
 // Truncate 清空表数据
 func (r *ApiRepo) Truncate(ctx context.Context) error {
 	if err := r.client.DB.WithContext(ctx).Where("1 = 1").Delete(&models.Api{}).Error; err != nil {
-		r.log.Errorf("failed to truncate apis table: %s", err.Error())
+		r.log.Errorf(ctx, "failed to truncate apis table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 	return nil

@@ -9,8 +9,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	gormCrud "github.com/tx7do/go-crud/gorm"
 
@@ -24,7 +24,7 @@ import (
 
 type UserRoleRepo struct {
 	client     *gormCrud.Client
-	log        *log.Helper
+	log        *bLogger.Helper
 	mapper     *mapper.CopierMapper[permissionV1.UserRole, models.UserRole]
 	repository *gormCrud.Repository[permissionV1.UserRole, models.UserRole]
 }
@@ -60,7 +60,7 @@ func (r *UserRoleRepo) CleanRelationsByUserID(ctx context.Context, userID uint32
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("user_id = ?", userID) },
 	}); err != nil {
-		r.log.Errorf("delete old user roles failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user roles failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete old user roles failed")
 	}
 	return nil
@@ -75,7 +75,7 @@ func (r *UserRoleRepo) CleanRelationsByUserIDs(ctx context.Context, userIDs []ui
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("user_id IN ?", userIDs) },
 	}); err != nil {
-		r.log.Errorf("delete old user roles by user ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user roles by user ids failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete old user roles by user ids failed")
 	}
 	return nil
@@ -90,7 +90,7 @@ func (r *UserRoleRepo) CleanRelationsByRoleID(ctx context.Context, roleID uint32
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("role_id = ?", roleID) },
 	}); err != nil {
-		r.log.Errorf("delete old user roles by role id failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user roles by role id failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete old user roles by role id failed")
 	}
 	return nil
@@ -105,7 +105,7 @@ func (r *UserRoleRepo) CleanRelationsByRoleIDs(ctx context.Context, roleIDs []ui
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("role_id IN ?", roleIDs) },
 	}); err != nil {
-		r.log.Errorf("delete old user roles by role ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user roles by role ids failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete old user roles by role ids failed")
 	}
 	return nil
@@ -122,7 +122,7 @@ func (r *UserRoleRepo) RemoveRolesFromUser(ctx context.Context, userID uint32, r
 			return db.Where("user_id = ?", userID).Where("role_id IN ?", roleIDs)
 		},
 	}); err != nil {
-		r.log.Errorf("remove roles from user failed: %s", err.Error())
+		r.log.Errorf(ctx, "remove roles from user failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("remove roles from user failed")
 	}
 	return nil
@@ -135,7 +135,7 @@ func (r *UserRoleRepo) AssignUserRole(ctx context.Context, data *permissionV1.Us
 	}
 
 	if _, err := r.repository.Create(ctx, r.client.DB, data, nil); err != nil {
-		r.log.Errorf("assign role to user failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign role to user failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("assign role to user failed")
 	}
 
@@ -154,7 +154,7 @@ func (r *UserRoleRepo) AssignUserRoles(ctx context.Context, userID uint32, datas
 	}
 
 	if _, err := r.repository.BatchCreate(ctx, r.client.DB, datas, nil); err != nil {
-		r.log.Errorf("assign roles to user failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign roles to user failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("assign roles to user failed")
 	}
 
@@ -176,7 +176,7 @@ func (r *UserRoleRepo) ListRoleIDs(ctx context.Context, userID uint32, excludeEx
 
 	var ids []uint32
 	if err := db.Pluck("role_id", &ids).Error; err != nil {
-		r.log.Errorf("query role ids by user id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query role ids by user id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query role ids by user id failed")
 	}
 	return ids, nil
@@ -197,7 +197,7 @@ func (r *UserRoleRepo) ListUserIDs(ctx context.Context, roleID uint32, excludeEx
 
 	var ids []uint32
 	if err := db.Pluck("user_id", &ids).Error; err != nil {
-		r.log.Errorf("query user ids by role id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user ids by role id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query user ids by role id failed")
 	}
 	return ids, nil
@@ -218,7 +218,7 @@ func (r *UserRoleRepo) ListUserIDsByRoleIDs(ctx context.Context, roleIDs []uint3
 
 	var ids []uint32
 	if err := db.Pluck("user_id", &ids).Error; err != nil {
-		r.log.Errorf("query user ids by role ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user ids by role ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query user ids by role ids failed")
 	}
 	return ids, nil

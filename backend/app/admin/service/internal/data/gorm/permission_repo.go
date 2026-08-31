@@ -8,8 +8,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	gormCrud "github.com/tx7do/go-crud/gorm"
@@ -27,7 +27,7 @@ import (
 
 type PermissionRepo struct {
 	client           *gormCrud.Client
-	log              *log.Helper
+	log              *bLogger.Helper
 	mapper           *mapper.CopierMapper[permissionV1.Permission, models.Permission]
 	repository       *gormCrud.Repository[permissionV1.Permission, models.Permission]
 	structuredFilter *gormCrudFilter.StructuredFilter
@@ -63,19 +63,19 @@ func (r *PermissionRepo) init() {
 func (r *PermissionRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.CountPermissionResponse, error) {
 	filterExpr, err := paginationFilter.ConvertFilterByPagingRequest(req)
 	if err != nil {
-		r.log.Errorf("parse count param error [%s]", err.Error())
+		r.log.Errorf(ctx, "parse count param error [%s]", err.Error())
 		return nil, permissionV1.ErrorBadRequest("invalid query parameter")
 	}
 
 	scopes, err := r.structuredFilter.BuildSelectors(filterExpr)
 	if err != nil {
-		r.log.Errorf("parse count param error [%s]", err.Error())
+		r.log.Errorf(ctx, "parse count param error [%s]", err.Error())
 		return nil, permissionV1.ErrorBadRequest("invalid query parameter")
 	}
 
 	count, err := r.repository.Count(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query permission count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query permission count failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -89,7 +89,7 @@ func (r *PermissionRepo) GetPermissionCodesByIDs(ctx context.Context, ids []uint
 	if err := r.client.DB.WithContext(ctx).Model(&models.Permission{}).
 		Where("id IN ?", ids).
 		Pluck("code", &codes).Error; err != nil {
-		r.log.Errorf("query permission codes by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query permission codes by ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission codes by ids failed")
 	}
 	return codes, nil
@@ -100,7 +100,7 @@ func (r *PermissionRepo) GetPermissionIDsByCodes(ctx context.Context, codes []st
 	if err := r.client.DB.WithContext(ctx).Model(&models.Permission{}).
 		Where("code IN ?", codes).
 		Pluck("id", &ids).Error; err != nil {
-		r.log.Errorf("query permission ids by codes failed: %s", err.Error())
+		r.log.Errorf(ctx, "query permission ids by codes failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission ids by codes failed")
 	}
 	return ids, nil
@@ -111,7 +111,7 @@ func (r *PermissionRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, permissionV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -120,7 +120,7 @@ func (r *PermissionRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 func (r *PermissionRepo) CleanPermissionsByCodes(ctx context.Context, codes []string) error {
 	if err := r.client.DB.WithContext(ctx).Where("code IN ?", codes).
 		Delete(&models.Permission{}).Error; err != nil {
-		r.log.Errorf("delete permissions by codes failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete permissions by codes failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete permissions by codes failed")
 	}
 	return nil
@@ -134,7 +134,7 @@ func (r *PermissionRepo) TruncateBizPermissions(ctx context.Context) error {
 	if err := r.client.DB.WithContext(ctx).
 		Where("code NOT LIKE ?", constants.SystemPermissionCodePrefix+"%").
 		Delete(&models.Permission{}).Error; err != nil {
-		r.log.Errorf("truncate biz permissions failed: %s", err.Error())
+		r.log.Errorf(ctx, "truncate biz permissions failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate biz permissions failed")
 	}
 	return nil

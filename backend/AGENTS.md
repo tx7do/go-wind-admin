@@ -18,7 +18,7 @@ Go 模块路径: `go-wind-admin`
 | 缓存     | Redis (go-redis/v9)           |
 | 对象存储   | MinIO                         |
 | API 定义 | Protocol Buffers 3 (buf 工具链)  |
-| 依赖注入   | 手写构造注入 (cmd/server/wiring.go) |
+| 依赖注入   | 手写构造注入 (cmd/server/wiring_ent.go) |
 | 认证     | JWT (kratos-authn)            |
 | 授权     | Casbin / OPA (kratos-authz)   |
 | 异步任务   | Asynq                         |
@@ -39,7 +39,7 @@ backend/
 │   └── gen/go/                   # buf 生成的 Go 代码
 ├── app/
 │   └── admin/service/            # Admin 服务应用
-│       ├── cmd/server/           # 入口 (main.go, wiring.go 依赖装配)
+│       ├── cmd/server/           # 入口 (main.go, wiring_ent.go / wiring_gorm.go 依赖装配)
 │       ├── configs/              # 配置文件 (YAML)
 │       └── internal/
 │           ├── data/             # 数据层 (Repository)
@@ -114,8 +114,11 @@ Proto (API 定义) → Service (业务逻辑) → Data/Repo (数据访问)
 
 ## 依赖装配 (手写 wiring)
 
-依赖注入不使用框架,由 `cmd/server/wiring.go` 的 `initApp` 手写构造注入,自上而下单向分层:
-基础设施 → 仓储层(data) → 认证与鉴权 → 服务层(service) → 传输层(server)。
+依赖注入不使用框架,由 `cmd/server/wiring_ent.go`(!gorm_backend)的 `initApp` 手写构造注入,
+自上而下单向分层:基础设施 → 仓储层(data) → 认证与鉴权 → 服务层(service) → 传输层(server)。
+GORM 后端为平行文件 `cmd/server/wiring_gorm.go`(gorm_backend):其仓储层(`newGormRepos`)已是
+可编译的真实代码,服务层待 repo 接口抽取(ORM 切换 Phase 4)后接通,当前 tag 构建仅剩预期错误
+`undefined: initApp`。
 
 **新增 CRUD 模块的登记(推荐自动化):**
 
@@ -123,12 +126,12 @@ Proto (API 定义) → Service (业务逻辑) → Data/Repo (数据访问)
 make register ENTITY=product    # 在 backend/ 根目录执行
 ```
 
-一条命令完成全部五处登记: `wiring.go` 的仓储构造行、服务构造行、`NewRestServer` 实参,以及
+一条命令完成全部五处登记: `wiring_ent.go` 的仓储构造行、服务构造行、`NewRestServer` 实参,以及
 `rest_server.go` 的服务形参与路由注册调用。注入位置由文件内的 `register:*` 锚点注释标记,
 工具可重复执行(幂等)。仅覆盖标准 CRUD 形态(`New<Ent>Repo(ctx, entClient)` /
 `New<Ent>Service(ctx, <ent>Repo)`),依赖更多的模块需手工调整注入行。
 
-**手工登记(等价):** 在 `wiring.go` 对应分层小节追加构造行并传给下游消费者;
+**手工登记(等价):** 在 `wiring_ent.go` 对应分层小节追加构造行并传给下游消费者;
 漏接由编译器在调用处报错,无需任何代码生成步骤。
 
 ## 添加新 CRUD 功能 (以 Product 为例)
@@ -141,7 +144,7 @@ make register ENTITY=product    # 在 backend/ 根目录执行
 3. 生成 Go 代码
 4. 创建 Ent Schema → 5. 生成 Ent 代码
 6. 创建 Repository → 7. 创建 Service → 8. 注册到 Server
-9. 在 wiring.go 注册依赖 → 10. 验证
+9. 在 wiring_ent.go 注册依赖 → 10. 验证
 ```
 
 ### Step 1: 源领域层 - 定义消息 + gRPC Service
@@ -325,10 +328,10 @@ func (s *ProductService) Create(ctx context.Context, req *pb.CreateProductReques
 ### Step 9: 注册依赖装配
 
 ```bash
-make register ENTITY=product    # 自动注入 wiring.go 三处 + rest_server.go 两处(含 Step 8 两项)
+make register ENTITY=product    # 自动注入 wiring_ent.go 三处 + rest_server.go 两处(含 Step 8 两项)
 ```
 
-或手工编辑 `cmd/server/wiring.go` 对应分层小节:仓储行 `productRepo := data.NewProductRepo(ctx, entClient)`、
+或手工编辑 `cmd/server/wiring_ent.go` 对应分层小节:仓储行 `productRepo := data.NewProductRepo(ctx, entClient)`、
 服务行 `productService := service.NewProductService(ctx, productRepo)`,并把 `productService`
 传入 `server.NewRestServer(...)`(工具幂等,与手工编辑混用不会重复注入)。
 
@@ -396,4 +399,4 @@ gow run        # 无需先构建
 4. **可选字段**: 使用 `trans.Ptr()` 将标量转为指针，Ent 使用 `SetNillable*` 方法
 5. **注释风格**: 中英双语注释 `// 中文说明 / English description`
 6. **日志**: 通过 `ctx.NewLoggerHelper("module/name")` 创建命名日志器，命名遵循 `模块/子模块` 格式
-7. **禁止手动修改**: `api/gen/go/` 和 `internal/data/ent/` 下的生成代码;依赖装配统一在 `cmd/server/wiring.go` 手写维护
+7. **禁止手动修改**: `api/gen/go/` 和 `internal/data/ent/` 下的生成代码;依赖装配统一在 `cmd/server/wiring_ent.go` 手写维护

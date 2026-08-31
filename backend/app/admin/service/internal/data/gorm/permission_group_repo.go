@@ -9,8 +9,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	gormCrud "github.com/tx7do/go-crud/gorm"
@@ -26,7 +26,7 @@ import (
 
 type PermissionGroupRepo struct {
 	client          *gormCrud.Client
-	log             *log.Helper
+	log             *bLogger.Helper
 	mapper          *mapper.CopierMapper[permissionV1.PermissionGroup, models.PermissionGroup]
 	statusConverter *mapper.EnumTypeConverter[permissionV1.PermissionGroup_Status, string]
 
@@ -61,7 +61,7 @@ func (r *PermissionGroupRepo) init() {
 func (r *PermissionGroupRepo) Count(ctx context.Context, scopes []func(*gormDB.DB) *gormDB.DB) (int, error) {
 	count, err := r.repository.Count(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, permissionV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -75,7 +75,7 @@ func (r *PermissionGroupRepo) List(ctx context.Context, req *paginationV1.Paging
 
 	var entities []*models.PermissionGroup
 	if err := r.client.DB.WithContext(ctx).Model(&models.PermissionGroup{}).Find(&entities).Error; err != nil {
-		r.log.Errorf("query permission group list failed: %s", err.Error())
+		r.log.Errorf(ctx, "query permission group list failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission group list failed")
 	}
 
@@ -112,7 +112,7 @@ func (r *PermissionGroupRepo) IsExist(ctx context.Context, id uint32) (bool, err
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, permissionV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -135,7 +135,7 @@ func (r *PermissionGroupRepo) Get(ctx context.Context, req *permissionV1.GetPerm
 		if errors.Is(err, gormDB.ErrRecordNotFound) {
 			return nil, permissionV1.ErrorNotFound("permission group not found")
 		}
-		r.log.Errorf("query permission group failed: %s", err.Error())
+		r.log.Errorf(ctx, "query permission group failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission group failed")
 	}
 
@@ -145,7 +145,7 @@ func (r *PermissionGroupRepo) Get(ctx context.Context, req *permissionV1.GetPerm
 // Truncate 清空表数据
 func (r *PermissionGroupRepo) Truncate(ctx context.Context) error {
 	if err := r.client.DB.WithContext(ctx).Where("1 = 1").Delete(&models.PermissionGroup{}).Error; err != nil {
-		r.log.Errorf("failed to truncate permission group table: %s", err.Error())
+		r.log.Errorf(ctx, "failed to truncate permission group table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 
@@ -159,7 +159,7 @@ func (r *PermissionGroupRepo) ListByIDs(ctx context.Context, ids []uint32) ([]*p
 
 	var entities []*models.PermissionGroup
 	if err := r.client.DB.WithContext(ctx).Model(&models.PermissionGroup{}).Where("id IN ?", ids).Find(&entities).Error; err != nil {
-		r.log.Errorf("query list by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query list by ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query list by ids failed")
 	}
 

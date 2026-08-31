@@ -2,14 +2,14 @@
 // +build gorm_backend
 
 // Package gorm 中的仓储是 ent 仓储的平行 gorm 镜像，作为"ent 为主力、gorm 为备选"脚手架的完整代码。
-// 这些仓储为死代码：未接入 cmd/server/wiring.go、不被 service 引用；采用者需要时自行装配。
+// 这些仓储仅由 cmd/server/wiring_gorm.go(gorm_backend 构建,ORM 切换 Phase 4 占位)装配,服务层尚未接入。
 package gorm
 
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 )
 
 // DistributionRow 统计分布行（与 data.DistributionRow 结构一致，供 service 层使用）。
@@ -29,7 +29,7 @@ type TrendRow struct {
 // 的 GroupBy/Aggregate/Scan 统计，go-crud/gorm 无对应原语，且无单一 gorm model。
 // 见 data/dashboard_repo.go。
 type DashboardRepo struct {
-	log *log.Helper
+	log *bLogger.Helper
 }
 
 func NewDashboardRepo(ctx *bootstrap.Context) *DashboardRepo {

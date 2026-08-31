@@ -8,8 +8,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	gormCrud "github.com/tx7do/go-crud/gorm"
 
@@ -23,7 +23,7 @@ import (
 
 type RolePermissionRepo struct {
 	client          *gormCrud.Client
-	log             *log.Helper
+	log             *bLogger.Helper
 	mapper          *mapper.CopierMapper[permissionV1.RolePermission, models.RolePermission]
 	repository      *gormCrud.Repository[permissionV1.RolePermission, models.RolePermission]
 	statusConverter *mapper.EnumTypeConverter[permissionV1.RolePermission_Status, string]
@@ -35,9 +35,9 @@ func NewRolePermissionRepo(
 	client *gormCrud.Client,
 ) *RolePermissionRepo {
 	repo := &RolePermissionRepo{
-		log:       ctx.NewLoggerHelper("role-permission/gorm-repo/admin-service"),
-		client:    client,
-		mapper:    mapper.NewCopierMapper[permissionV1.RolePermission, models.RolePermission](),
+		log:    ctx.NewLoggerHelper("role-permission/gorm-repo/admin-service"),
+		client: client,
+		mapper: mapper.NewCopierMapper[permissionV1.RolePermission, models.RolePermission](),
 		statusConverter: mapper.NewEnumTypeConverter[permissionV1.RolePermission_Status, string](
 			permissionV1.RolePermission_Status_name,
 			permissionV1.RolePermission_Status_value,
@@ -71,7 +71,7 @@ func (r *RolePermissionRepo) CleanPermissions(
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("role_id = ?", roleID) },
 	}); err != nil {
-		r.log.Errorf("delete old role [%d] permissions failed: %s", roleID, err.Error())
+		r.log.Errorf(ctx, "delete old role [%d] permissions failed: %s", roleID, err.Error())
 		return permissionV1.ErrorInternalServerError("delete old role permissions failed")
 	}
 	return nil
@@ -83,7 +83,7 @@ func (r *RolePermissionRepo) BatchCreate(ctx context.Context, datas []*permissio
 	}
 
 	if _, err := r.repository.BatchCreate(ctx, r.client.DB, datas, nil); err != nil {
-		r.log.Errorf("batch create role permissions failed: %s", err.Error())
+		r.log.Errorf(ctx, "batch create role permissions failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("batch create role permissions failed")
 	}
 
@@ -97,7 +97,7 @@ func (r *RolePermissionRepo) Upsert(ctx context.Context, data *permissionV1.Role
 	}
 
 	if _, err := r.repository.Create(ctx, r.client.DB, data, nil); err != nil {
-		r.log.Errorf("create role permission failed: %s", err.Error())
+		r.log.Errorf(ctx, "create role permission failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("create role permission failed")
 	}
 
@@ -145,7 +145,7 @@ func (r *RolePermissionRepo) AssignPermissions(ctx context.Context,
 	}
 
 	if _, err := r.repository.BatchCreate(ctx, r.client.DB, datas, nil); err != nil {
-		r.log.Errorf("assign permission to role failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign permission to role failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("assign permission to role failed")
 	}
 
@@ -159,7 +159,7 @@ func (r *RolePermissionRepo) ListPermissionIDs(ctx context.Context, roleID uint3
 		Model(&models.RolePermission{}).
 		Where("role_id = ?", roleID).
 		Pluck("permission_id", &ids).Error; err != nil {
-		r.log.Errorf("query permission ids by role id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query permission ids by role id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission ids by role id failed")
 	}
 	return ids, nil
@@ -172,7 +172,7 @@ func (r *RolePermissionRepo) ListPermissionIDsByRoleIDs(ctx context.Context, rol
 		Model(&models.RolePermission{}).
 		Where("role_id IN ?", roleIDs).
 		Pluck("permission_id", &ids).Error; err != nil {
-		r.log.Errorf("query permission ids by role ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query permission ids by role ids failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query permission ids by role ids failed")
 	}
 	return ids, nil
@@ -187,7 +187,7 @@ func (r *RolePermissionRepo) RemovePermissions(ctx context.Context, tenantID, ro
 				Where("permission_id IN ?", permissionIDs)
 		},
 	}); err != nil {
-		r.log.Errorf("remove roles by role id failed: %s", err.Error())
+		r.log.Errorf(ctx, "remove roles by role id failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("remove roles by role id failed")
 	}
 	return nil
@@ -199,7 +199,7 @@ func (r *RolePermissionRepo) ListPermissionsByRoleID(ctx context.Context, roleID
 		Model(&models.RolePermission{}).
 		Where("role_id = ?", roleID).
 		Find(&entities).Error; err != nil {
-		r.log.Errorf("list role permissions by role id failed: %s", err.Error())
+		r.log.Errorf(ctx, "list role permissions by role id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("list role permissions by role id failed")
 	}
 

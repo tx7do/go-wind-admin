@@ -6,8 +6,8 @@ package gorm
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	gormCrud "github.com/tx7do/go-crud/gorm"
 
@@ -21,7 +21,7 @@ import (
 
 type DictEntryI18nRepo struct {
 	client     *gormCrud.Client
-	log        *log.Helper
+	log        *bLogger.Helper
 	mapper     *mapper.CopierMapper[dictV1.DictEntryI18N, models.DictEntryI18n]
 	repository *gormCrud.Repository[dictV1.DictEntryI18N, models.DictEntryI18n]
 }
@@ -32,9 +32,9 @@ func NewDictEntryI18nRepo(
 	client *gormCrud.Client,
 ) *DictEntryI18nRepo {
 	repo := &DictEntryI18nRepo{
-		log:       ctx.NewLoggerHelper("dict-entry-i18n/gorm-repo/admin-service"),
-		client:    client,
-		mapper:    mapper.NewCopierMapper[dictV1.DictEntryI18N, models.DictEntryI18n](),
+		log:    ctx.NewLoggerHelper("dict-entry-i18n/gorm-repo/admin-service"),
+		client: client,
+		mapper: mapper.NewCopierMapper[dictV1.DictEntryI18N, models.DictEntryI18n](),
 	}
 
 	repo.init()
@@ -59,7 +59,7 @@ func (r *DictEntryI18nRepo) Upsert(ctx context.Context,
 	}
 
 	if _, err := r.repository.UpsertWithFilters(ctx, r.client.DB, nil, data, nil); err != nil {
-		r.log.Errorf("upsert dict entry i18n failed: %s", err.Error())
+		r.log.Errorf(ctx, "upsert dict entry i18n failed: %s", err.Error())
 		return dictV1.ErrorInternalServerError("upsert dict entry i18n failed")
 	}
 
@@ -79,7 +79,7 @@ func (r *DictEntryI18nRepo) GetByEntryIDAndLangCode(ctx context.Context, entryID
 // Truncate 清理字典类型多语言数据
 func (r *DictEntryI18nRepo) Truncate(ctx context.Context) error {
 	if err := r.client.DB.WithContext(ctx).Where("1 = 1").Delete(&models.DictEntryI18n{}).Error; err != nil {
-		r.log.Errorf("truncate dict entry i18n failed: %s", err.Error())
+		r.log.Errorf(ctx, "truncate dict entry i18n failed: %s", err.Error())
 		return dictV1.ErrorInternalServerError("truncate dict entry i18n failed")
 	}
 	return nil

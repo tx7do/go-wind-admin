@@ -8,8 +8,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	gormCrud "github.com/tx7do/go-crud/gorm"
@@ -26,7 +26,7 @@ import (
 
 type UserRepo struct {
 	client           *gormCrud.Client
-	log              *log.Helper
+	log              *bLogger.Helper
 	mapper           *mapper.CopierMapper[identityV1.User, models.User]
 	repository       *gormCrud.Repository[identityV1.User, models.User]
 	structuredFilter *gormCrudFilter.StructuredFilter
@@ -65,19 +65,19 @@ func (r *UserRepo) init() {
 func (r *UserRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (int, error) {
 	filterExpr, err := paginationFilter.ConvertFilterByPagingRequest(req)
 	if err != nil {
-		r.log.Errorf("parse count param error [%s]", err.Error())
+		r.log.Errorf(ctx, "parse count param error [%s]", err.Error())
 		return 0, identityV1.ErrorBadRequest("invalid query parameter")
 	}
 
 	scopes, err := r.structuredFilter.BuildSelectors(filterExpr)
 	if err != nil {
-		r.log.Errorf("parse count param error [%s]", err.Error())
+		r.log.Errorf(ctx, "parse count param error [%s]", err.Error())
 		return 0, identityV1.ErrorBadRequest("invalid query parameter")
 	}
 
 	count, err := r.repository.Count(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query user count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user count failed: %s", err.Error())
 		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -97,7 +97,7 @@ func (r *UserRepo) UserExists(ctx context.Context, req *identityV1.UserExistsReq
 
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return &identityV1.UserExistsResponse{Exist: false}, identityV1.ErrorInternalServerError("query exist failed")
 	}
 
@@ -113,7 +113,7 @@ func (r *UserRepo) ListUsersByIds(ctx context.Context, ids []uint32) ([]*identit
 
 	var entities []*models.User
 	if err := r.client.DB.WithContext(ctx).Model(&models.User{}).Where("id IN ?", ids).Find(&entities).Error; err != nil {
-		r.log.Errorf("query user by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user by ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user by ids failed")
 	}
 
@@ -135,7 +135,7 @@ func (r *UserRepo) CountByTenantIDs(ctx context.Context, tenantIDs []uint32) (ma
 			func(db *gormDB.DB) *gormDB.DB { return db.Where("tenant_id = ?", tid) },
 		})
 		if err != nil {
-			r.log.Errorf("count users by tenant %d failed: %s", tid, err.Error())
+			r.log.Errorf(ctx, "count users by tenant %d failed: %s", tid, err.Error())
 			return nil, identityV1.ErrorInternalServerError("count users by tenant failed")
 		}
 		result[tid] = int(count)

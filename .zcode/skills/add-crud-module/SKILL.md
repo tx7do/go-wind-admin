@@ -79,7 +79,7 @@ Before declaring done, verify cross-cutting concerns:
 - [ ] Backend compiles: `cd backend && make build` (or `make gen`)
 - [ ] Swagger at `http://localhost:7788/docs` shows the new resource with correct routes
 - [ ] For each frontend: list loads, search filters, pagination works, create/edit form validates and persists, update actually changes fields, delete confirms and refreshes
-- [ ] No edits to any `generated/` directory (these are regenerated, not hand-edited); dependency wiring lives in `cmd/server/wiring.go` (hand-written, no codegen)
+- [ ] No edits to any `generated/` directory (these are regenerated, not hand-edited); dependency wiring lives in `cmd/server/wiring_ent.go` (hand-written, no codegen)
 - [ ] `apiClient.<entity>Service` getter exists in the frontend generated index (proves proto round-trip worked)
 - [ ] i18n: no hardcoded Chinese/English in pages — everything goes through `$t`/`t` with keys in the locale JSONs
 - [ ] Update operations carry `updateMask` (frontend `useUpdateXxx` does this automatically via `makeUpdateMask`; do not hand-build the mask)

@@ -9,8 +9,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	gormCrud "github.com/tx7do/go-crud/gorm"
@@ -26,14 +26,14 @@ import (
 )
 
 type TenantRepo struct {
-	client                *gormCrud.Client
-	log                   *log.Helper
-	mapper                *mapper.CopierMapper[identityV1.Tenant, models.Tenant]
-	repository            *gormCrud.Repository[identityV1.Tenant, models.Tenant]
-	structuredFilter      *gormCrudFilter.StructuredFilter
-	statusConverter       *mapper.EnumTypeConverter[identityV1.Tenant_Status, string]
-	typeConverter         *mapper.EnumTypeConverter[identityV1.Tenant_Type, string]
-	auditStatusConverter  *mapper.EnumTypeConverter[identityV1.Tenant_AuditStatus, string]
+	client               *gormCrud.Client
+	log                  *bLogger.Helper
+	mapper               *mapper.CopierMapper[identityV1.Tenant, models.Tenant]
+	repository           *gormCrud.Repository[identityV1.Tenant, models.Tenant]
+	structuredFilter     *gormCrudFilter.StructuredFilter
+	statusConverter      *mapper.EnumTypeConverter[identityV1.Tenant_Status, string]
+	typeConverter        *mapper.EnumTypeConverter[identityV1.Tenant_Type, string]
+	auditStatusConverter *mapper.EnumTypeConverter[identityV1.Tenant_AuditStatus, string]
 }
 
 func NewTenantRepo(
@@ -41,13 +41,13 @@ func NewTenantRepo(
 	client *gormCrud.Client,
 ) *TenantRepo {
 	repo := &TenantRepo{
-		log:                   ctx.NewLoggerHelper("tenant/gorm-repo/admin-service"),
-		client:                client,
-		mapper:                mapper.NewCopierMapper[identityV1.Tenant, models.Tenant](),
-		structuredFilter:      gormCrudFilter.NewStructuredFilter(),
-		statusConverter:       mapper.NewEnumTypeConverter[identityV1.Tenant_Status, string](identityV1.Tenant_Status_name, identityV1.Tenant_Status_value),
-		typeConverter:         mapper.NewEnumTypeConverter[identityV1.Tenant_Type, string](identityV1.Tenant_Type_name, identityV1.Tenant_Type_value),
-		auditStatusConverter:  mapper.NewEnumTypeConverter[identityV1.Tenant_AuditStatus, string](identityV1.Tenant_AuditStatus_name, identityV1.Tenant_AuditStatus_value),
+		log:                  ctx.NewLoggerHelper("tenant/gorm-repo/admin-service"),
+		client:               client,
+		mapper:               mapper.NewCopierMapper[identityV1.Tenant, models.Tenant](),
+		structuredFilter:     gormCrudFilter.NewStructuredFilter(),
+		statusConverter:      mapper.NewEnumTypeConverter[identityV1.Tenant_Status, string](identityV1.Tenant_Status_name, identityV1.Tenant_Status_value),
+		typeConverter:        mapper.NewEnumTypeConverter[identityV1.Tenant_Type, string](identityV1.Tenant_Type_name, identityV1.Tenant_Type_value),
+		auditStatusConverter: mapper.NewEnumTypeConverter[identityV1.Tenant_AuditStatus, string](identityV1.Tenant_AuditStatus_name, identityV1.Tenant_AuditStatus_value),
 	}
 
 	repo.init()
@@ -69,19 +69,19 @@ func (r *TenantRepo) init() {
 func (r *TenantRepo) Count(ctx context.Context, req *paginationV1.PagingRequest) (int, error) {
 	filterExpr, err := paginationFilter.ConvertFilterByPagingRequest(req)
 	if err != nil {
-		r.log.Errorf("parse count param error [%s]", err.Error())
+		r.log.Errorf(ctx, "parse count param error [%s]", err.Error())
 		return 0, identityV1.ErrorBadRequest("invalid query parameter")
 	}
 
 	scopes, err := r.structuredFilter.BuildSelectors(filterExpr)
 	if err != nil {
-		r.log.Errorf("parse count param error [%s]", err.Error())
+		r.log.Errorf(ctx, "parse count param error [%s]", err.Error())
 		return 0, identityV1.ErrorBadRequest("invalid query parameter")
 	}
 
 	count, err := r.repository.Count(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query tenant count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query tenant count failed: %s", err.Error())
 		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -112,7 +112,7 @@ func (r *TenantRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, identityV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -139,7 +139,7 @@ func (r *TenantRepo) Get(ctx context.Context, req *identityV1.GetTenantRequest) 
 		if errors.Is(err, gormDB.ErrRecordNotFound) {
 			return nil, identityV1.ErrorNotFound("tenant not found")
 		}
-		r.log.Errorf("query tenant failed: %s", err.Error())
+		r.log.Errorf(ctx, "query tenant failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query tenant failed")
 	}
 
@@ -153,7 +153,7 @@ func (r *TenantRepo) Create(ctx context.Context, data *identityV1.Tenant) (*iden
 
 	dto, err := r.repository.Create(ctx, r.client.DB, data, nil)
 	if err != nil {
-		r.log.Errorf("insert tenant failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert tenant failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("insert data failed")
 	}
 
@@ -185,7 +185,7 @@ func (r *TenantRepo) Update(ctx context.Context, req *identityV1.UpdateTenantReq
 	if _, err := r.repository.UpdateWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", req.GetId()) },
 	}, req.Data, req.GetUpdateMask()); err != nil {
-		r.log.Errorf("update tenant failed: %s", err.Error())
+		r.log.Errorf(ctx, "update tenant failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("update tenant failed")
 	}
 
@@ -203,7 +203,7 @@ func (r *TenantRepo) Delete(ctx context.Context, req *identityV1.DeleteTenantReq
 		if errors.Is(err, gormDB.ErrRecordNotFound) {
 			return identityV1.ErrorNotFound("tenant not found")
 		}
-		r.log.Errorf("delete tenant failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete tenant failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete failed")
 	}
 
@@ -221,7 +221,7 @@ func (r *TenantRepo) TenantExists(ctx context.Context, req *identityV1.TenantExi
 
 	exist, err := r.repository.ExistsWithFilters(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query exist failed")
 	}
 
@@ -237,7 +237,7 @@ func (r *TenantRepo) ListTenantsByIds(ctx context.Context, ids []uint32) ([]*ide
 
 	var entities []*models.Tenant
 	if err := r.client.DB.WithContext(ctx).Model(&models.Tenant{}).Where("id IN ?", ids).Find(&entities).Error; err != nil {
-		r.log.Errorf("query tenant by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query tenant by ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query tenant by ids failed")
 	}
 

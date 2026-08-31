@@ -1,7 +1,7 @@
 // register 将新 CRUD 模块的登记代码一次性注入手写装配文件,替代原 Wire 时代的
 // "改 wire set + make wire" 自动化。注入点为两个文件中的 register:* 锚点注释:
 //
-//	cmd/server/wiring.go     仓储构造行 / 服务构造行 / NewRestServer 实参
+//	cmd/server/wiring_ent.go     仓储构造行 / 服务构造行 / NewRestServer 实参
 //	internal/server/rest_server.go  服务形参 / 路由注册调用
 //
 // 仅覆盖 CRUD 生成器的标准形态(New<Ent>Repo(ctx, entClient) /
@@ -37,7 +37,7 @@ func main() {
 
 	typ := pascal(*entity)
 	name := lowerFirst(typ)
-	wiringPath := *appDir + "/cmd/server/wiring.go"
+	wiringPath := *appDir + "/cmd/server/wiring_ent.go"
 	serverPath := *appDir + "/internal/server/rest_server.go"
 	if err := apply(
 		// 仓储构造行:注入到仓储层小节末尾

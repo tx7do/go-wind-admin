@@ -9,8 +9,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	gormCrud "github.com/tx7do/go-crud/gorm"
@@ -27,7 +27,7 @@ import (
 
 type MenuRepo struct {
 	client          *gormCrud.Client
-	log             *log.Helper
+	log             *bLogger.Helper
 	mapper          *mapper.CopierMapper[permissionV1.Menu, models.Menu]
 	statusConverter *mapper.EnumTypeConverter[permissionV1.Menu_Status, string]
 	typeConverter   *mapper.EnumTypeConverter[permissionV1.Menu_Type, string]
@@ -68,7 +68,7 @@ func (r *MenuRepo) init() {
 func (r *MenuRepo) Count(ctx context.Context, scopes []func(*gormDB.DB) *gormDB.DB) (int, error) {
 	count, err := r.repository.Count(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, permissionV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -82,7 +82,7 @@ func (r *MenuRepo) List(ctx context.Context, req *paginationV1.PagingRequest, tr
 
 	var entities []*models.Menu
 	if err := r.client.DB.WithContext(ctx).Model(&models.Menu{}).Find(&entities).Error; err != nil {
-		r.log.Errorf("query menu list failed: %s", err.Error())
+		r.log.Errorf(ctx, "query menu list failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query menu list failed")
 	}
 
@@ -119,7 +119,7 @@ func (r *MenuRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, permissionV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -142,7 +142,7 @@ func (r *MenuRepo) Get(ctx context.Context, req *permissionV1.GetMenuRequest) (*
 		if errors.Is(err, gormDB.ErrRecordNotFound) {
 			return nil, permissionV1.ErrorNotFound("menu not found")
 		}
-		r.log.Errorf("query menu failed: %s", err.Error())
+		r.log.Errorf(ctx, "query menu failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("query menu failed")
 	}
 
@@ -155,7 +155,7 @@ func (r *MenuRepo) Create(ctx context.Context, req *permissionV1.CreateMenuReque
 	}
 
 	if _, err := r.repository.Create(ctx, r.client.DB, req.Data, nil); err != nil {
-		r.log.Errorf("insert menu failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert menu failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("insert menu failed")
 	}
 
@@ -171,7 +171,7 @@ func (r *MenuRepo) CreateReturn(ctx context.Context, req *permissionV1.CreateMen
 
 	dto, err := r.repository.Create(ctx, r.client.DB, req.Data, nil)
 	if err != nil {
-		r.log.Errorf("insert menu failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert menu failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("insert menu failed")
 	}
 
@@ -203,7 +203,7 @@ func (r *MenuRepo) Update(ctx context.Context, req *permissionV1.UpdateMenuReque
 	if _, err := r.repository.UpdateWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", req.GetId()) },
 	}, req.Data, req.GetUpdateMask()); err != nil {
-		r.log.Errorf("update menu failed: %s", err.Error())
+		r.log.Errorf(ctx, "update menu failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("update menu failed")
 	}
 
@@ -214,7 +214,7 @@ func (r *MenuRepo) Update(ctx context.Context, req *permissionV1.UpdateMenuReque
 // Clear all menu data from the table
 func (r *MenuRepo) Truncate(ctx context.Context) error {
 	if err := r.client.DB.WithContext(ctx).Where("1 = 1").Delete(&models.Menu{}).Error; err != nil {
-		r.log.Errorf("failed to truncate menus table: %s", err.Error())
+		r.log.Errorf(ctx, "failed to truncate menus table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate menus failed")
 	}
 	return nil

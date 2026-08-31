@@ -8,8 +8,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	gormCrud "github.com/tx7do/go-crud/gorm"
 
@@ -23,7 +23,7 @@ import (
 
 type PermissionMenuRepo struct {
 	client     *gormCrud.Client
-	log        *log.Helper
+	log        *bLogger.Helper
 	mapper     *mapper.CopierMapper[permissionV1.PermissionMenu, models.PermissionMenu]
 	repository *gormCrud.Repository[permissionV1.PermissionMenu, models.PermissionMenu]
 }
@@ -58,7 +58,7 @@ func (r *PermissionMenuRepo) CleanMenus(
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("permission_id IN ?", permissionIDs) },
 	}); err != nil {
-		r.log.Errorf("delete old permission menus failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old permission menus failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete old permission menus failed")
 	}
 	return nil
@@ -75,7 +75,7 @@ func (r *PermissionMenuRepo) CleanNotExistMenus(
 			return db.Where("menu_id NOT IN ?", menuIDs).Where("permission_id = ?", permissionID)
 		},
 	}); err != nil {
-		r.log.Errorf("clean not exists permission menus failed: %s", err.Error())
+		r.log.Errorf(ctx, "clean not exists permission menus failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("clean not exists permission menus failed")
 	}
 	return nil
@@ -107,7 +107,7 @@ func (r *PermissionMenuRepo) AssignMenusWithTx(ctx context.Context, permissionID
 	}
 
 	if _, err := r.repository.BatchCreate(ctx, r.client.DB, datas, nil); err != nil {
-		r.log.Errorf("assign permission menuIDs failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign permission menuIDs failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("assign permission menuIDs failed")
 	}
 
@@ -121,7 +121,7 @@ func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, permissionIDs []ui
 		Model(&models.PermissionMenu{}).
 		Where("permission_id IN ?", permissionIDs).
 		Pluck("menu_id", &ids).Error; err != nil {
-		r.log.Errorf("list permission menus by permission id failed: %s", err.Error())
+		r.log.Errorf(ctx, "list permission menus by permission id failed: %s", err.Error())
 		return nil, permissionV1.ErrorInternalServerError("list permission menus by permission id failed")
 	}
 
@@ -131,7 +131,7 @@ func (r *PermissionMenuRepo) ListMenuIDs(ctx context.Context, permissionIDs []ui
 // Truncate 清空表数据
 func (r *PermissionMenuRepo) Truncate(ctx context.Context) error {
 	if err := r.client.DB.WithContext(ctx).Where("1 = 1").Delete(&models.PermissionMenu{}).Error; err != nil {
-		r.log.Errorf("failed to truncate permission menu table: %s", err.Error())
+		r.log.Errorf(ctx, "failed to truncate permission menu table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 
@@ -143,7 +143,7 @@ func (r *PermissionMenuRepo) Delete(ctx context.Context, permissionID uint32) er
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("permission_id = ?", permissionID) },
 	}); err != nil {
-		r.log.Errorf("failed to delete permission menu by permission id: %s", err.Error())
+		r.log.Errorf(ctx, "failed to delete permission menu by permission id: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete failed")
 	}
 
@@ -154,7 +154,7 @@ func (r *PermissionMenuRepo) DeleteByPermissionIDs(ctx context.Context, permissi
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("permission_id IN ?", permissionIDs) },
 	}); err != nil {
-		r.log.Errorf("delete permission menus by permission ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete permission menus by permission ids failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete permission menus by permission ids failed")
 	}
 	return nil

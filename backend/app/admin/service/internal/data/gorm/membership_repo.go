@@ -10,8 +10,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	gormCrud "github.com/tx7do/go-crud/gorm"
 
@@ -25,7 +25,7 @@ import (
 
 type MembershipRepo struct {
 	client          *gormCrud.Client
-	log             *log.Helper
+	log             *bLogger.Helper
 	mapper          *mapper.CopierMapper[identityV1.Membership, models.Membership]
 	repository      *gormCrud.Repository[identityV1.Membership, models.Membership]
 	statusConverter *mapper.EnumTypeConverter[identityV1.Membership_Status, string]
@@ -66,7 +66,7 @@ func (r *MembershipRepo) SetUserOrgUnitID(ctx context.Context, userID uint32, or
 	if err := r.client.DB.WithContext(ctx).Model(&models.Membership{}).
 		Where("user_id = ?", userID).
 		Update("org_unit_id", val).Error; err != nil {
-		r.log.Errorf("update membership org_unit_id failed: %s", err.Error())
+		r.log.Errorf(ctx, "update membership org_unit_id failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("update membership org_unit_id failed")
 	}
 	return nil
@@ -82,7 +82,7 @@ func (r *MembershipRepo) SetUserRoleID(ctx context.Context, userID uint32, roleI
 	if err := r.client.DB.WithContext(ctx).Model(&models.Membership{}).
 		Where("user_id = ?", userID).
 		Update("role_id", val).Error; err != nil {
-		r.log.Errorf("update membership role_id failed: %s", err.Error())
+		r.log.Errorf(ctx, "update membership role_id failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("update membership role_id failed")
 	}
 	return nil
@@ -98,7 +98,7 @@ func (r *MembershipRepo) SetUserPositionID(ctx context.Context, userID uint32, p
 	if err := r.client.DB.WithContext(ctx).Model(&models.Membership{}).
 		Where("user_id = ?", userID).
 		Update("position_id", val).Error; err != nil {
-		r.log.Errorf("update membership position_id failed: %s", err.Error())
+		r.log.Errorf(ctx, "update membership position_id failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("update membership position_id failed")
 	}
 	return nil
@@ -115,7 +115,7 @@ func (r *MembershipRepo) SetUserStatus(ctx context.Context, userID uint32, statu
 	if err := r.client.DB.WithContext(ctx).Model(&models.Membership{}).
 		Where("user_id = ?", userID).
 		Update("status", val).Error; err != nil {
-		r.log.Errorf("update membership status failed: %s", err.Error())
+		r.log.Errorf(ctx, "update membership status failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("update membership status failed")
 	}
 	return nil
@@ -131,7 +131,7 @@ func (r *MembershipRepo) SetUserEndAt(ctx context.Context, userID uint32, endAt 
 	if err := r.client.DB.WithContext(ctx).Model(&models.Membership{}).
 		Where("user_id = ?", userID).
 		Update("end_at", val).Error; err != nil {
-		r.log.Errorf("update membership end_at failed: %s", err.Error())
+		r.log.Errorf(ctx, "update membership end_at failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("update membership end_at failed")
 	}
 	return nil
@@ -148,7 +148,7 @@ func (r *MembershipRepo) GetMembershipByUserTenant(ctx context.Context, userID, 
 		if errors.Is(err, gormDB.ErrRecordNotFound) {
 			return nil, identityV1.ErrorNotFound("membership not found")
 		}
-		r.log.Errorf("get membership failed: %s", err.Error())
+		r.log.Errorf(ctx, "get membership failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("get membership failed")
 	}
 	dto := r.mapper.ToDTO(&entity)
@@ -162,7 +162,7 @@ func (r *MembershipRepo) GetUserActiveMemberships(ctx context.Context, userID ui
 		Where("user_id = ?", userID).
 		Where("end_at IS NULL OR end_at > ?", now).
 		Find(&entities).Error; err != nil {
-		r.log.Errorf("get user active memberships failed: %s", err.Error())
+		r.log.Errorf(ctx, "get user active memberships failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("get user active memberships failed")
 	}
 	dtos := make([]*identityV1.Membership, 0, len(entities))
@@ -183,7 +183,7 @@ func (r *MembershipRepo) GetMembershipIDByUserID(ctx context.Context, userID uin
 		if errors.Is(err, gormDB.ErrRecordNotFound) {
 			return 0, identityV1.ErrorNotFound("membership not found")
 		}
-		r.log.Errorf("get membership failed: %s", err.Error())
+		r.log.Errorf(ctx, "get membership failed: %s", err.Error())
 		return 0, identityV1.ErrorInternalServerError("get membership failed")
 	}
 	return entity.ID, nil
@@ -198,7 +198,7 @@ func (r *MembershipRepo) ListUserIDs(ctx context.Context, membershipID uint32, e
 	}
 	var ids []uint32
 	if err := q.Pluck("user_id", &ids).Error; err != nil {
-		r.log.Errorf("query user ids by membership id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user ids by membership id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user ids by membership id failed")
 	}
 	return ids, nil
@@ -213,7 +213,7 @@ func (r *MembershipRepo) ListUserIDsByMembershipIDs(ctx context.Context, members
 	}
 	var ids []uint32
 	if err := q.Pluck("user_id", &ids).Error; err != nil {
-		r.log.Errorf("query user ids by membership ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user ids by membership ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user ids by membership ids failed")
 	}
 	return ids, nil

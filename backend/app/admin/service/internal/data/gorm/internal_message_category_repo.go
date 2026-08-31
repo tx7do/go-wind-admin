@@ -9,8 +9,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	gormCrud "github.com/tx7do/go-crud/gorm"
@@ -25,7 +25,7 @@ import (
 
 type InternalMessageCategoryRepo struct {
 	client     *gormCrud.Client
-	log        *log.Helper
+	log        *bLogger.Helper
 	mapper     *mapper.CopierMapper[internalMessageV1.InternalMessageCategory, models.InternalMessageCategory]
 	repository *gormCrud.Repository[internalMessageV1.InternalMessageCategory, models.InternalMessageCategory]
 }
@@ -35,9 +35,9 @@ func NewInternalMessageCategoryRepo(
 	client *gormCrud.Client,
 ) *InternalMessageCategoryRepo {
 	repo := &InternalMessageCategoryRepo{
-		log:       ctx.NewLoggerHelper("internal-message-category/gorm-repo/admin-service"),
-		client:    client,
-		mapper:    mapper.NewCopierMapper[internalMessageV1.InternalMessageCategory, models.InternalMessageCategory](),
+		log:    ctx.NewLoggerHelper("internal-message-category/gorm-repo/admin-service"),
+		client: client,
+		mapper: mapper.NewCopierMapper[internalMessageV1.InternalMessageCategory, models.InternalMessageCategory](),
 	}
 
 	repo.init()
@@ -55,7 +55,7 @@ func (r *InternalMessageCategoryRepo) init() {
 func (r *InternalMessageCategoryRepo) Count(ctx context.Context, scopes []func(*gormDB.DB) *gormDB.DB) (int, error) {
 	count, err := r.repository.Count(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, internalMessageV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -86,7 +86,7 @@ func (r *InternalMessageCategoryRepo) IsExist(ctx context.Context, id uint32) (b
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, internalMessageV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -109,7 +109,7 @@ func (r *InternalMessageCategoryRepo) Get(ctx context.Context, req *internalMess
 		if errors.Is(err, gormDB.ErrRecordNotFound) {
 			return nil, internalMessageV1.ErrorNotFound("internal message category not found")
 		}
-		r.log.Errorf("query internal message category failed: %s", err.Error())
+		r.log.Errorf(ctx, "query internal message category failed: %s", err.Error())
 		return nil, internalMessageV1.ErrorInternalServerError("query internal message category failed")
 	}
 
@@ -124,7 +124,7 @@ func (r *InternalMessageCategoryRepo) ListCategoriesByIds(ctx context.Context, i
 
 	var entities []*models.InternalMessageCategory
 	if err := r.client.DB.WithContext(ctx).Model(&models.InternalMessageCategory{}).Where("id IN ?", ids).Find(&entities).Error; err != nil {
-		r.log.Errorf("query internal message category by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query internal message category by ids failed: %s", err.Error())
 		return nil, internalMessageV1.ErrorInternalServerError("query internal message category by ids failed")
 	}
 
@@ -142,7 +142,7 @@ func (r *InternalMessageCategoryRepo) Create(ctx context.Context, req *internalM
 	}
 
 	if _, err := r.repository.Create(ctx, r.client.DB, req.Data, nil); err != nil {
-		r.log.Errorf("insert internal message category failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert internal message category failed: %s", err.Error())
 		return internalMessageV1.ErrorInternalServerError("insert internal message category failed")
 	}
 
@@ -174,7 +174,7 @@ func (r *InternalMessageCategoryRepo) Update(ctx context.Context, req *internalM
 	if _, err := r.repository.UpdateWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", req.GetId()) },
 	}, req.Data, req.GetUpdateMask()); err != nil {
-		r.log.Errorf("update internal message category failed: %s", err.Error())
+		r.log.Errorf(ctx, "update internal message category failed: %s", err.Error())
 		return internalMessageV1.ErrorInternalServerError("update internal message category failed")
 	}
 

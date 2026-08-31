@@ -2,14 +2,14 @@
 // +build gorm_backend
 
 // Package gorm 中的仓储是 ent 仓储的平行 gorm 镜像，作为"ent 为主力、gorm 为备选"脚手架的完整代码。
-// 这些仓储为死代码：未接入 cmd/server/wiring.go、不被 service 引用；采用者需要时自行装配。
+// 这些仓储仅由 cmd/server/wiring_gorm.go(gorm_backend 构建,ORM 切换 Phase 4 占位)装配,服务层尚未接入。
 package gorm
 
 import (
 	"context"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
@@ -18,7 +18,7 @@ import (
 // 计数）与 29 表事务清理 + token 吊销副作用，无单一 gorm model，go-crud/gorm 无对应原语。
 // 见 data/tenant_usage_repo.go。
 type TenantUsageRepo struct {
-	log *log.Helper
+	log *bLogger.Helper
 }
 
 func NewTenantUsageRepo(ctx *bootstrap.Context) *TenantUsageRepo {

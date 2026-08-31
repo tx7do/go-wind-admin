@@ -18,11 +18,11 @@ The backend is the source of truth. Frontends depend on the types generated here
 6. *(optional)* `backend/api/protos/<domain>/service/v1/<entity>_error.proto` — domain error enum (only if you want domain-specific errors; otherwise reuse `admin_error`)
 
 **Edit (2, or 0 with `make register`):**
-7. `backend/app/admin/service/cmd/server/wiring.go` — `make register ENTITY=<entity>` (Step 9) injects the repo line, service line, and `NewRestServer` arg at the `register:*` markers; or add them by hand
+7. `backend/app/admin/service/cmd/server/wiring_ent.go` — `make register ENTITY=<entity>` (Step 9) injects the repo line, service line, and `NewRestServer` arg at the `register:*` markers; or add them by hand
 8. `backend/app/admin/service/internal/server/rest_server.go` — param + `Register<Entity>HTTPServer` call; also injected by `make register`
 9. `backend/api/buf.gen.yaml` — **only if** you created a brand-new domain (not permission/dict/identity/...). Add a `go_package` override entry.
 
-**Never hand-edit (regenerated):** `api/gen/go/**`, `internal/data/ent/**` (except `schema/`). Dependency wiring in `cmd/server/wiring.go` is hand-written — no codegen step exists for it; a missing wire-up is a compile error at the call site.
+**Never hand-edit (regenerated):** `api/gen/go/**`, `internal/data/ent/**` (except `schema/`). Dependency wiring in `cmd/server/wiring_ent.go` is hand-written — no codegen step exists for it; a missing wire-up is a compile error at the call site.
 
 ## Step 1 — Domain proto
 
@@ -347,7 +347,7 @@ cd backend && make register ENTITY=product
 
 This injects all five registration points in one shot, anchored on `register:*` marker comments (idempotent, safe to re-run):
 
-- `cmd/server/wiring.go` — repo constructor line, service constructor line, `productService,` arg in the `NewRestServer(...)` call
+- `cmd/server/wiring_ent.go` — repo constructor line, service constructor line, `productService,` arg in the `NewRestServer(...)` call
 - `internal/server/rest_server.go` — param in the `NewRestServer` signature, `RegisterProductServiceHTTPServer(srv, productService)` route call
 
 The tool only emits the standard CRUD shape (`data.New<Entity>Repo(ctx, entClient)` / `service.New<Entity>Service(ctx, <entity>Repo)`). For services with extra dependencies, edit the injected lines by hand — the markers show exactly where things belong.
@@ -374,4 +374,4 @@ Run and check Swagger at `http://localhost:7788/docs` for the new resource. Hit 
 
 5. **Audit field numbers are a hard convention.** Don't renumber `created_by` to e.g. `5` — the BFF/domain proto pair, the Ent mixin, and the CopierMapper all agree on 100/101/102 + 200/201/202 by name, and renumbering risks collision with business fields.
 
-6. **Never edit `api/gen/go/` or `internal/data/ent/` (except `schema/`).** If a generated symbol is wrong, fix the source (proto / schema) and regenerate. Dependency wiring is hand-written in `cmd/server/wiring.go` — edit it directly when constructors change.
+6. **Never edit `api/gen/go/` or `internal/data/ent/` (except `schema/`).** If a generated symbol is wrong, fix the source (proto / schema) and regenerate. Dependency wiring is hand-written in `cmd/server/wiring_ent.go` — edit it directly when constructors change.

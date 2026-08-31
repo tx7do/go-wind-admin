@@ -157,7 +157,7 @@ make ent      # 生成Ent ORM代码
 make openapi  # 生成OpenAPI文档
 make ts       # 生成前端TS代码
 
-# 根目录执行:登记新CRUD模块到手写装配(wiring.go + rest_server.go)
+# 根目录执行:登记新CRUD模块到手写装配(wiring_ent.go + rest_server.go)
 cd ../.. && make register ENTITY=product
 ```
 

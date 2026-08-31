@@ -9,8 +9,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	gormCrud "github.com/tx7do/go-crud/gorm"
 
@@ -24,7 +24,7 @@ import (
 
 type UserOrgUnitRepo struct {
 	client          *gormCrud.Client
-	log             *log.Helper
+	log             *bLogger.Helper
 	mapper          *mapper.CopierMapper[identityV1.UserOrgUnit, models.UserOrgUnit]
 	repository      *gormCrud.Repository[identityV1.UserOrgUnit, models.UserOrgUnit]
 	statusConverter *mapper.EnumTypeConverter[identityV1.UserOrgUnit_Status, string]
@@ -35,9 +35,9 @@ func NewUserOrgUnitRepo(
 	client *gormCrud.Client,
 ) *UserOrgUnitRepo {
 	repo := &UserOrgUnitRepo{
-		log:       ctx.NewLoggerHelper("user-org-unit/gorm-repo/admin-service"),
-		client:    client,
-		mapper:    mapper.NewCopierMapper[identityV1.UserOrgUnit, models.UserOrgUnit](),
+		log:    ctx.NewLoggerHelper("user-org-unit/gorm-repo/admin-service"),
+		client: client,
+		mapper: mapper.NewCopierMapper[identityV1.UserOrgUnit, models.UserOrgUnit](),
 		statusConverter: mapper.NewEnumTypeConverter[identityV1.UserOrgUnit_Status, string](
 			identityV1.UserOrgUnit_Status_name,
 			identityV1.UserOrgUnit_Status_value,
@@ -67,7 +67,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByUserID(ctx context.Context, userID uin
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("user_id = ?", userID) },
 	}); err != nil {
-		r.log.Errorf("delete old user orgUnits failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user orgUnits failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old user orgUnits failed")
 	}
 	return nil
@@ -82,7 +82,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByUserIDs(ctx context.Context, userIDs [
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("user_id IN ?", userIDs) },
 	}); err != nil {
-		r.log.Errorf("delete old user orgUnits by user ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user orgUnits by user ids failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old user orgUnits by user ids failed")
 	}
 	return nil
@@ -97,7 +97,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByOrgUnitID(ctx context.Context, orgUnit
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("org_unit_id = ?", orgUnitID) },
 	}); err != nil {
-		r.log.Errorf("delete old user orgUnits by orgUnit id failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user orgUnits by orgUnit id failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old user orgUnits by orgUnit id failed")
 	}
 	return nil
@@ -112,7 +112,7 @@ func (r *UserOrgUnitRepo) CleanRelationsByOrgUnitIDs(ctx context.Context, orgUni
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("org_unit_id IN ?", orgUnitIDs) },
 	}); err != nil {
-		r.log.Errorf("delete old user orgUnits by orgUnit ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user orgUnits by orgUnit ids failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old user orgUnits by orgUnit ids failed")
 	}
 	return nil
@@ -129,7 +129,7 @@ func (r *UserOrgUnitRepo) RemoveOrgUnitsFromUser(ctx context.Context, userID uin
 			return db.Where("user_id = ?", userID).Where("org_unit_id IN ?", orgUnitIDs)
 		},
 	}); err != nil {
-		r.log.Errorf("remove user orgUnits failed: %s", err.Error())
+		r.log.Errorf(ctx, "remove user orgUnits failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("remove user orgUnits failed")
 	}
 	return nil
@@ -145,7 +145,7 @@ func (r *UserOrgUnitRepo) AssignUserOrgUnit(
 	}
 
 	if _, err := r.repository.Create(ctx, r.client.DB, data, nil); err != nil {
-		r.log.Errorf("assign orgUnit to user failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign orgUnit to user failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("assign orgUnit to user failed")
 	}
 	return nil
@@ -166,7 +166,7 @@ func (r *UserOrgUnitRepo) AssignUserOrgUnits(
 	}
 
 	if _, err := r.repository.BatchCreate(ctx, r.client.DB, datas, nil); err != nil {
-		r.log.Errorf("assign orgUnit to user failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign orgUnit to user failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("assign orgUnit to user failed")
 	}
 
@@ -188,7 +188,7 @@ func (r *UserOrgUnitRepo) ListOrgUnitIDs(ctx context.Context, userID uint32, exc
 
 	var ids []uint32
 	if err := db.Pluck("org_unit_id", &ids).Error; err != nil {
-		r.log.Errorf("query orgUnit ids by user id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query orgUnit ids by user id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query orgUnit ids by user id failed")
 	}
 	return ids, nil
@@ -209,7 +209,7 @@ func (r *UserOrgUnitRepo) ListUserIDs(ctx context.Context, orgUnitID uint32, exc
 
 	var ids []uint32
 	if err := db.Pluck("user_id", &ids).Error; err != nil {
-		r.log.Errorf("query user ids by orgUnit id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user ids by orgUnit id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user ids by orgUnit id failed")
 	}
 	return ids, nil
@@ -230,7 +230,7 @@ func (r *UserOrgUnitRepo) ListUserIDsByOrgUnitIDs(ctx context.Context, orgUnitID
 
 	var ids []uint32
 	if err := db.Pluck("user_id", &ids).Error; err != nil {
-		r.log.Errorf("query user ids by orgUnit ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user ids by orgUnit ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user ids by orgUnit ids failed")
 	}
 	return ids, nil

@@ -2,7 +2,7 @@
 // +build gorm_backend
 
 // Package gorm 中的仓储是 ent 仓储的平行 gorm 镜像，作为"ent 为主力、gorm 为备选"脚手架的完整代码。
-// 这些仓储为死代码：未接入 cmd/server/wiring.go、不被 service 引用；采用者需要时自行装配。
+// 这些仓储仅由 cmd/server/wiring_gorm.go(gorm_backend 构建,ORM 切换 Phase 4 占位)装配,服务层尚未接入。
 //
 // gorm 仓储不做租户隔离（ent 侧靠编译进生成代码的 privacy 策略自动注入，gorm 侧无此机制）。
 // 直接切换 gorm 后端会有跨租户数据泄露风险，采用者须自行加 scope/plugin。
@@ -14,8 +14,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	gormCrud "github.com/tx7do/go-crud/gorm"
@@ -30,7 +30,7 @@ import (
 
 type InternalMessageRepo struct {
 	client     *gormCrud.Client
-	log        *log.Helper
+	log        *bLogger.Helper
 	mapper     *mapper.CopierMapper[internalMessageV1.InternalMessage, models.InternalMessage]
 	repository *gormCrud.Repository[internalMessageV1.InternalMessage, models.InternalMessage]
 
@@ -69,7 +69,7 @@ func (r *InternalMessageRepo) init() {
 func (r *InternalMessageRepo) Count(ctx context.Context, scopes []func(*gormDB.DB) *gormDB.DB) (int, error) {
 	count, err := r.repository.Count(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, internalMessageV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -100,7 +100,7 @@ func (r *InternalMessageRepo) IsExist(ctx context.Context, id uint32) (bool, err
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, internalMessageV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -123,7 +123,7 @@ func (r *InternalMessageRepo) Get(ctx context.Context, req *internalMessageV1.Ge
 		if errors.Is(err, gormDB.ErrRecordNotFound) {
 			return nil, internalMessageV1.ErrorNotFound("internal message not found")
 		}
-		r.log.Errorf("query internal message failed: %s", err.Error())
+		r.log.Errorf(ctx, "query internal message failed: %s", err.Error())
 		return nil, internalMessageV1.ErrorInternalServerError("query internal message failed")
 	}
 
@@ -143,7 +143,7 @@ func (r *InternalMessageRepo) ListByIds(ctx context.Context, ids []uint32) (map[
 		Where("id IN ?", ids).
 		Find(&entities).Error
 	if err != nil {
-		r.log.Errorf("list internal messages by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "list internal messages by ids failed: %s", err.Error())
 		return nil, internalMessageV1.ErrorInternalServerError("query internal messages failed")
 	}
 
@@ -161,7 +161,7 @@ func (r *InternalMessageRepo) Create(ctx context.Context, req *internalMessageV1
 
 	dto, err := r.repository.Create(ctx, r.client.DB, req.Data, nil)
 	if err != nil {
-		r.log.Errorf("insert internal message failed: %s", err.Error())
+		r.log.Errorf(ctx, "insert internal message failed: %s", err.Error())
 		return nil, internalMessageV1.ErrorInternalServerError("insert internal message failed")
 	}
 
@@ -194,7 +194,7 @@ func (r *InternalMessageRepo) Update(ctx context.Context, req *internalMessageV1
 	if _, err := r.repository.UpdateWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", req.GetId()) },
 	}, req.Data, req.GetUpdateMask()); err != nil {
-		r.log.Errorf("update internal message failed: %s", err.Error())
+		r.log.Errorf(ctx, "update internal message failed: %s", err.Error())
 		return internalMessageV1.ErrorInternalServerError("update internal message failed")
 	}
 
@@ -209,7 +209,7 @@ func (r *InternalMessageRepo) Delete(ctx context.Context, id uint32) error {
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	}); err != nil {
-		r.log.Errorf("delete internal message failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete internal message failed: %s", err.Error())
 		return internalMessageV1.ErrorInternalServerError("delete failed")
 	}
 

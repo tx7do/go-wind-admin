@@ -9,8 +9,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	gormCrud "github.com/tx7do/go-crud/gorm"
 
@@ -24,7 +24,7 @@ import (
 
 type UserPositionRepo struct {
 	client     *gormCrud.Client
-	log        *log.Helper
+	log        *bLogger.Helper
 	mapper     *mapper.CopierMapper[identityV1.UserPosition, models.UserPosition]
 	repository *gormCrud.Repository[identityV1.UserPosition, models.UserPosition]
 }
@@ -60,7 +60,7 @@ func (r *UserPositionRepo) CleanRelationsByUserID(ctx context.Context, userID ui
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("user_id = ?", userID) },
 	}); err != nil {
-		r.log.Errorf("delete old user positions failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user positions failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old user positions failed")
 	}
 	return nil
@@ -75,7 +75,7 @@ func (r *UserPositionRepo) CleanRelationsByUserIDs(ctx context.Context, userIDs 
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("user_id IN ?", userIDs) },
 	}); err != nil {
-		r.log.Errorf("delete old user positions by user ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user positions by user ids failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old user positions by user ids failed")
 	}
 	return nil
@@ -90,7 +90,7 @@ func (r *UserPositionRepo) CleanRelationsByPositionID(ctx context.Context, posit
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("position_id = ?", positionID) },
 	}); err != nil {
-		r.log.Errorf("delete old user positions by position id failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user positions by position id failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old user positions by position id failed")
 	}
 	return nil
@@ -105,7 +105,7 @@ func (r *UserPositionRepo) CleanRelationsByPositionIDs(ctx context.Context, posi
 	if _, err := r.repository.DeleteWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("position_id IN ?", positionIDs) },
 	}); err != nil {
-		r.log.Errorf("delete old user positions by position ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "delete old user positions by position ids failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("delete old user positions by position ids failed")
 	}
 	return nil
@@ -122,7 +122,7 @@ func (r *UserPositionRepo) RemovePositionsFromUser(ctx context.Context, userID u
 			return db.Where("user_id = ?", userID).Where("position_id IN ?", positionIDs)
 		},
 	}); err != nil {
-		r.log.Errorf("remove positions from user failed: %s", err.Error())
+		r.log.Errorf(ctx, "remove positions from user failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("remove positions from user failed")
 	}
 	return nil
@@ -137,7 +137,7 @@ func (r *UserPositionRepo) AssignUserPosition(
 	}
 
 	if _, err := r.repository.Create(ctx, r.client.DB, data, nil); err != nil {
-		r.log.Errorf("assign position to user failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign position to user failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("assign position to user failed")
 	}
 
@@ -159,7 +159,7 @@ func (r *UserPositionRepo) AssignUserPositions(
 	}
 
 	if _, err := r.repository.BatchCreate(ctx, r.client.DB, datas, nil); err != nil {
-		r.log.Errorf("assign positions to user failed: %s", err.Error())
+		r.log.Errorf(ctx, "assign positions to user failed: %s", err.Error())
 		return identityV1.ErrorInternalServerError("assign positions to user failed")
 	}
 
@@ -181,7 +181,7 @@ func (r *UserPositionRepo) ListPositionIDs(ctx context.Context, userID uint32, e
 
 	var ids []uint32
 	if err := db.Pluck("position_id", &ids).Error; err != nil {
-		r.log.Errorf("query position ids by user id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query position ids by user id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query position ids by user id failed")
 	}
 	return ids, nil
@@ -202,7 +202,7 @@ func (r *UserPositionRepo) ListUserIDs(ctx context.Context, positionID uint32, e
 
 	var ids []uint32
 	if err := db.Pluck("user_id", &ids).Error; err != nil {
-		r.log.Errorf("query user ids by position id failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user ids by position id failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user ids by position id failed")
 	}
 	return ids, nil
@@ -223,7 +223,7 @@ func (r *UserPositionRepo) ListUserIDsByPositionIDs(ctx context.Context, positio
 
 	var ids []uint32
 	if err := db.Pluck("user_id", &ids).Error; err != nil {
-		r.log.Errorf("query user ids by position ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query user ids by position ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query user ids by position ids failed")
 	}
 	return ids, nil

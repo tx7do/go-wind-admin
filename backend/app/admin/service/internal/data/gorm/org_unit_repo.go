@@ -9,8 +9,8 @@ import (
 
 	gormDB "gorm.io/gorm"
 
-	"github.com/go-kratos/kratos/v2/log"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	gormCrud "github.com/tx7do/go-crud/gorm"
@@ -26,7 +26,7 @@ import (
 
 type OrgUnitRepo struct {
 	client          *gormCrud.Client
-	log             *log.Helper
+	log             *bLogger.Helper
 	mapper          *mapper.CopierMapper[identityV1.OrgUnit, models.OrgUnit]
 	typeConverter   *mapper.EnumTypeConverter[identityV1.OrgUnit_Type, string]
 	statusConverter *mapper.EnumTypeConverter[identityV1.OrgUnit_Status, string]
@@ -64,7 +64,7 @@ func (r *OrgUnitRepo) init() {
 func (r *OrgUnitRepo) Count(ctx context.Context, scopes []func(*gormDB.DB) *gormDB.DB) (int, error) {
 	count, err := r.repository.Count(ctx, r.client.DB, scopes)
 	if err != nil {
-		r.log.Errorf("query count failed: %s", err.Error())
+		r.log.Errorf(ctx, "query count failed: %s", err.Error())
 		return 0, identityV1.ErrorInternalServerError("query count failed")
 	}
 
@@ -78,7 +78,7 @@ func (r *OrgUnitRepo) List(ctx context.Context, req *paginationV1.PagingRequest)
 
 	var entities []*models.OrgUnit
 	if err := r.client.DB.WithContext(ctx).Model(&models.OrgUnit{}).Find(&entities).Error; err != nil {
-		r.log.Errorf("query org unit list failed: %s", err.Error())
+		r.log.Errorf(ctx, "query org unit list failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query org unit list failed")
 	}
 
@@ -113,7 +113,7 @@ func (r *OrgUnitRepo) IsExist(ctx context.Context, id uint32) (bool, error) {
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", id) },
 	})
 	if err != nil {
-		r.log.Errorf("query exist failed: %s", err.Error())
+		r.log.Errorf(ctx, "query exist failed: %s", err.Error())
 		return false, identityV1.ErrorInternalServerError("query exist failed")
 	}
 	return exist, nil
@@ -136,7 +136,7 @@ func (r *OrgUnitRepo) Get(ctx context.Context, req *identityV1.GetOrgUnitRequest
 		if errors.Is(err, gormDB.ErrRecordNotFound) {
 			return nil, identityV1.ErrorNotFound("org unit not found")
 		}
-		r.log.Errorf("query org unit failed: %s", err.Error())
+		r.log.Errorf(ctx, "query org unit failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query org unit failed")
 	}
 
@@ -151,7 +151,7 @@ func (r *OrgUnitRepo) ListOrgUnitsByIds(ctx context.Context, ids []uint32) ([]*i
 
 	var entities []*models.OrgUnit
 	if err := r.client.DB.WithContext(ctx).Model(&models.OrgUnit{}).Where("id IN ?", ids).Find(&entities).Error; err != nil {
-		r.log.Errorf("query orgUnit by ids failed: %s", err.Error())
+		r.log.Errorf(ctx, "query orgUnit by ids failed: %s", err.Error())
 		return nil, identityV1.ErrorInternalServerError("query orgUnit by ids failed")
 	}
 
