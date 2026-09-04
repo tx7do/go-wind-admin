@@ -278,10 +278,11 @@ const [Drawer, drawerApi] = useVbenDrawer({
     console.log(getTitle.value, Object.keys(values));
 
     try {
-      // proto CreateUserRequest.password 是顶层字段，放在 data 里会被后端当成未设置
-      const { password, ...data } = values;
+      // proto CreateUserRequest.password 是顶层字段，放在 data 里会被后端当成未设置。
+      // 注意 rest 变量不能叫 data，会遮蔽外层抽屉的 data ref
+      const { password, ...userData } = values;
       await (data.value?.create
-        ? createUser({ data, password })
+        ? createUser({ data: userData, password })
         : updateUser({ id: data.value.row.id, values }));
 
       notification.success({
