@@ -178,7 +178,7 @@ const PlanQuotaList: React.FC<PlanQuotaListProps> = ({ planId }) => {
                   setDrawerOpen(true);
                 }}
               >
-                {t('create')}
+                {t('quotaCreate')}
               </Button>,
             ]}
             options={{

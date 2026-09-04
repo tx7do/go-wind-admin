@@ -3,6 +3,7 @@ import type { ProFormInstance } from '@ant-design/pro-components';
 import {
   DrawerForm,
   ProFormText,
+  ProFormDigit,
   ProFormSelect,
   ProFormTextArea,
 } from '@ant-design/pro-components';
@@ -69,10 +70,15 @@ const LoginPolicyDrawer: React.FC<LoginPolicyDrawerProps> = ({
     setConfirmLoading(true);
 
     try {
+      // target_id 是 proto uint32：留空不传，避免空串/undefined 触发 protojson 400
+      const payload: any = { ...values };
+      if (payload.targetId === undefined || payload.targetId === null) {
+        delete payload.targetId;
+      }
       if (mode === 'create') {
-        await createMutation.mutateAsync(values);
+        await createMutation.mutateAsync(payload);
       } else if (data?.id) {
-        await updateMutation.mutateAsync({ id: data.id, values });
+        await updateMutation.mutateAsync({ id: data.id, values: payload });
       }
     } finally {
       setConfirmLoading(false);
@@ -110,12 +116,14 @@ const LoginPolicyDrawer: React.FC<LoginPolicyDrawerProps> = ({
         size: 520,
       }}
     >
-      <ProFormText
+      {/* proto 中 target_id 是 uint32（目标用户ID）；IP/MAC/地区类策略应留空，限制内容填"策略值" */}
+      <ProFormDigit
         name="targetId"
         label={t('targetId')}
         placeholder={t('targetIdPlaceholder')}
         fieldProps={{
-          allowClear: true,
+          precision: 0,
+          min: 0,
         }}
       />
 

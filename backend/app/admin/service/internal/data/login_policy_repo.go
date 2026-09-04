@@ -80,7 +80,7 @@ func (r *LoginPolicyRepo) init() {
 type EffectivePolicy struct {
 	TargetID uint32 // 0 表示全局策略（不限定用户）
 	Value    string
-	Type     string // BLACK_LIST / WHITE_LIST
+	Type     string // BLACKLIST / WHITELIST
 	Method   string // IP / MAC / REGION / TIME / DEVICE
 	Reason   string
 }

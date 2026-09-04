@@ -138,7 +138,7 @@ const MenuDrawer: React.FC<MenuDrawerProps> = ({ open, mode, data, onClose, onSu
         path: values.path,
         component: values.component,
         parentId: values.parentId || 0,
-        children: [],
+        // children 是树的只读虚拟边：表里没有该列，进 updateMask 会让后端生成非法 SQL
         meta: {
           title: values['meta.title'],
           order: values['meta.order'] || 0,

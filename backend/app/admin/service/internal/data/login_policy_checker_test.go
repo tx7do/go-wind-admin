@@ -7,8 +7,8 @@ import (
 
 func TestMatchLoginPolicyIpBlacklist(t *testing.T) {
 	policies := []EffectivePolicy{
-		{TargetID: 0, Value: "10.0.0.5", Type: "BLACK_LIST", Method: "IP"},
-		{TargetID: 0, Value: "172.16.0.0/16", Type: "BLACK_LIST", Method: "IP"},
+		{TargetID: 0, Value: "10.0.0.5", Type: "BLACKLIST", Method: "IP"},
+		{TargetID: 0, Value: "172.16.0.0/16", Type: "BLACKLIST", Method: "IP"},
 	}
 	if blocked, _ := MatchLoginPolicy(policies, 0, "10.0.0.5", "", time.Now()); !blocked {
 		t.Fatalf("exact IP blacklist should block")
@@ -20,7 +20,7 @@ func TestMatchLoginPolicyIpBlacklist(t *testing.T) {
 		t.Fatalf("unlisted IP should pass")
 	}
 	// 非法策略值不命中（配置错误不阻断全部登录）
-	bad := []EffectivePolicy{{TargetID: 0, Value: "not-an-ip", Type: "BLACK_LIST", Method: "IP"}}
+	bad := []EffectivePolicy{{TargetID: 0, Value: "not-an-ip", Type: "BLACKLIST", Method: "IP"}}
 	if blocked, _ := MatchLoginPolicy(bad, 0, "1.2.3.4", "", time.Now()); blocked {
 		t.Fatalf("malformed policy value should not block")
 	}
@@ -28,7 +28,7 @@ func TestMatchLoginPolicyIpBlacklist(t *testing.T) {
 
 func TestMatchLoginPolicyIpWhitelist(t *testing.T) {
 	policies := []EffectivePolicy{
-		{TargetID: 0, Value: "10.0.0.0/8", Type: "WHITE_LIST", Method: "IP"},
+		{TargetID: 0, Value: "10.0.0.0/8", Type: "WHITELIST", Method: "IP"},
 	}
 	if blocked, _ := MatchLoginPolicy(policies, 0, "10.1.2.3", "", time.Now()); blocked {
 		t.Fatalf("IP in whitelist should pass")
@@ -40,7 +40,7 @@ func TestMatchLoginPolicyIpWhitelist(t *testing.T) {
 
 func TestMatchLoginPolicyTargetScope(t *testing.T) {
 	policies := []EffectivePolicy{
-		{TargetID: 42, Value: "10.0.0.5", Type: "BLACK_LIST", Method: "IP"},
+		{TargetID: 42, Value: "10.0.0.5", Type: "BLACKLIST", Method: "IP"},
 	}
 	// userId=0（密码校验前的全局段）：定向条目不生效
 	if blocked, _ := MatchLoginPolicy(policies, 0, "10.0.0.5", "", time.Now()); blocked {
@@ -58,7 +58,7 @@ func TestMatchLoginPolicyTargetScope(t *testing.T) {
 
 func TestMatchLoginPolicyTimeWindow(t *testing.T) {
 	policies := []EffectivePolicy{
-		{TargetID: 0, Value: "22:00-06:00", Type: "BLACK_LIST", Method: "TIME"},
+		{TargetID: 0, Value: "22:00-06:00", Type: "BLACKLIST", Method: "TIME"},
 	}
 	at := func(h, m int) time.Time { return time.Date(2026, 1, 1, h, m, 0, 0, time.Local) }
 	if blocked, _ := MatchLoginPolicy(policies, 0, "", "", at(23, 30)); !blocked {
@@ -72,7 +72,7 @@ func TestMatchLoginPolicyTimeWindow(t *testing.T) {
 	}
 	// 跨午夜白名单：仅工作时间允许
 	white := []EffectivePolicy{
-		{TargetID: 0, Value: "09:00-18:00", Type: "WHITE_LIST", Method: "TIME"},
+		{TargetID: 0, Value: "09:00-18:00", Type: "WHITELIST", Method: "TIME"},
 	}
 	if blocked, _ := MatchLoginPolicy(white, 0, "", "", at(10, 0)); blocked {
 		t.Fatalf("10:00 should be inside work-hours whitelist")
@@ -84,7 +84,7 @@ func TestMatchLoginPolicyTimeWindow(t *testing.T) {
 
 func TestMatchLoginPolicyDevice(t *testing.T) {
 	policies := []EffectivePolicy{
-		{TargetID: 0, Value: "device-abc", Type: "BLACK_LIST", Method: "DEVICE"},
+		{TargetID: 0, Value: "device-abc", Type: "BLACKLIST", Method: "DEVICE"},
 	}
 	if blocked, _ := MatchLoginPolicy(policies, 0, "", "device-abc", time.Now()); !blocked {
 		t.Fatalf("blacklisted device should block")

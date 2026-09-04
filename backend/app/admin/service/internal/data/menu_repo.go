@@ -178,7 +178,6 @@ func (r *MenuRepo) Create(ctx context.Context, req *permissionV1.CreateMenuReque
 	}
 
 	builder := r.entClient.Client().Menu.Create().
-		SetNillableParentID(req.Data.ParentId).
 		SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
 		SetNillablePath(req.Data.Path).
 		SetNillableRedirect(req.Data.Redirect).
@@ -188,6 +187,12 @@ func (r *MenuRepo) Create(ctx context.Context, req *permissionV1.CreateMenuReque
 		SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetCreatedAt(time.Now())
+
+	// parent_id=0 表示挂根节点；proto optional 会把显式 0 当作"已设置"，
+	// SetParentID(0) 指向不存在的行触发自引用外键违约，必须按无父级处理。
+	if req.Data.ParentId != nil && *req.Data.ParentId > 0 {
+		builder.SetParentID(*req.Data.ParentId)
+	}
 
 	// module 为 proto 零值（MODULE_UNSPECIFIED）时跳过：ent schema 未声明该值，
 	// SetNillableModule 会触发 ModuleValidator 失败。未指定即留空，等价不写。
@@ -219,7 +224,6 @@ func (r *MenuRepo) CreateReturn(ctx context.Context, req *permissionV1.CreateMen
 	}
 
 	builder := r.entClient.Client().Menu.Create().
-		SetNillableParentID(req.Data.ParentId).
 		SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
 		SetNillablePath(req.Data.Path).
 		SetNillableRedirect(req.Data.Redirect).
@@ -229,6 +233,12 @@ func (r *MenuRepo) CreateReturn(ctx context.Context, req *permissionV1.CreateMen
 		SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetCreatedAt(time.Now())
+
+	// parent_id=0 表示挂根节点；proto optional 会把显式 0 当作"已设置"，
+	// SetParentID(0) 指向不存在的行触发自引用外键违约，必须按无父级处理。
+	if req.Data.ParentId != nil && *req.Data.ParentId > 0 {
+		builder.SetParentID(*req.Data.ParentId)
+	}
 
 	// module 为 proto 零值（MODULE_UNSPECIFIED）时跳过：ent schema 未声明该值，
 	// SetNillableModule 会触发 ModuleValidator 失败。未指定即留空，等价不写。
@@ -288,7 +298,6 @@ func (r *MenuRepo) Update(ctx context.Context, req *permissionV1.UpdateMenuReque
 	err := r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
 		func(dto *permissionV1.Menu) {
 			builder.
-				SetNillableParentID(req.Data.ParentId).
 				SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
 				SetNillablePath(req.Data.Path).
 				SetNillableRedirect(req.Data.Redirect).
@@ -298,6 +307,11 @@ func (r *MenuRepo) Update(ctx context.Context, req *permissionV1.UpdateMenuReque
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetUpdatedAt(time.Now())
+
+			// parent_id=0 同 Create：按无父级处理，避免外键违约
+			if req.Data.ParentId != nil && *req.Data.ParentId > 0 {
+				builder.SetParentID(*req.Data.ParentId)
+			}
 
 			// module 为 proto 零值（MODULE_UNSPECIFIED）时跳过：ent schema 未声明该值，
 			// SetNillableModule 会触发 ModuleValidator 失败。未指定即不更新该字段。

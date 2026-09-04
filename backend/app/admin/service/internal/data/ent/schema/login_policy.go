@@ -48,10 +48,12 @@ func (LoginPolicy) Fields() []ent.Field {
 		field.Enum("type").
 			Comment("限制类型").
 			NamedValues(
-				"Blacklist", "BLACK_LIST",
-				"Whitelist", "WHITE_LIST",
+				"Blacklist", "BLACKLIST",
+				"Whitelist", "WHITELIST",
 			).
-			Default("BLACK_LIST").
+			// 与 proto 枚举名保持一致：EnumTypeConverter 按 proto 名直传 ent 值，
+			// 此前 BLACK_LIST 与 proto 的 BLACKLIST 不一致会触发枚举校验失败
+			Default("BLACKLIST").
 			Optional().
 			Nillable(),
 

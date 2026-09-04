@@ -189,8 +189,9 @@ func (r *PlanQuotaRepo) Create(ctx context.Context, req *identityV1.CreatePlanQu
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetCreatedAt(time.Now())
 
-	if req.Data.PlanId == nil {
-		builder.SetPlanID(req.Data.GetPlanId())
+	// 原条件写反（== nil 时才 Set），导致请求带 planId 也落库为 NULL
+	if req.Data.PlanId != nil {
+		builder.SetPlanID(*req.Data.PlanId)
 	}
 
 	if req.Data.Id != nil {

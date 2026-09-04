@@ -311,12 +311,6 @@ func (_c *PlanCreate) check() error {
 			return &ValidationError{Name: "id", err: fmt.Errorf(`ent: validator failed for field "Plan.id": %w`, err)}
 		}
 	}
-	if len(_c.mutation.QuotasIDs()) == 0 {
-		return &ValidationError{Name: "quotas", err: errors.New(`ent: missing required edge "Plan.quotas"`)}
-	}
-	if len(_c.mutation.ModulesIDs()) == 0 {
-		return &ValidationError{Name: "modules", err: errors.New(`ent: missing required edge "Plan.modules"`)}
-	}
 	return nil
 }
 

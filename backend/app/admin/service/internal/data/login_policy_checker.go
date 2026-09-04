@@ -34,7 +34,7 @@ func MatchLoginPolicy(
 			if p.TargetID != 0 && p.TargetID != userId {
 				continue
 			}
-			if p.Type == "WHITE_LIST" {
+			if p.Type == "WHITELIST" {
 				whites = append(whites, p)
 			} else {
 				blacks = append(blacks, p)

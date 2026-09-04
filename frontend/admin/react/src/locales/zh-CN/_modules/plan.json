@@ -16,6 +16,7 @@
   "createdAt": "创建时间",
   "action": "操作",
   "create": "新建套餐",
+  "quotaCreate": "新建配额",
   "edit": "编辑套餐",
   "deleteConfirmTitle": "确认删除",
   "deleteConfirmDesc": "确定要删除此套餐吗？",

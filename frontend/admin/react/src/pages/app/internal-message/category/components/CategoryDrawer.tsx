@@ -74,10 +74,13 @@ const CategoryDrawer: React.FC<CategoryDrawerProps> = ({ open, mode, data, onClo
   const handleSubmit = async (values: any) => {
     setConfirmLoading(true);
     try {
+      // InternalMessageCategory proto 没有 remark 字段，残留会进 updateMask 触发 500
+      const payload: any = { ...values };
+      delete payload.remark;
       if (mode === 'create') {
-        await createMutation.mutateAsync({ data: values });
+        await createMutation.mutateAsync({ data: payload });
       } else if (data?.id) {
-        await updateMutation.mutateAsync({ id: data.id, values });
+        await updateMutation.mutateAsync({ id: data.id, values: payload });
       }
     } finally {
       setConfirmLoading(false);
