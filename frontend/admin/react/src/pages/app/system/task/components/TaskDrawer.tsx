@@ -15,6 +15,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { taskservicev1_Task as Task } from '@/api/generated/admin/service/v1';
 import { useCreateTask, useUpdateTask, fetchListTaskTypeNames } from '@/api/hooks/task';
+import { toProtoTimestamp } from '@/utils/datetime';
 import { getTaskTypeOptions } from '../constants';
 
 interface TaskDrawerProps {
@@ -109,9 +110,9 @@ const TaskDrawer: React.FC<TaskDrawerProps> = ({ open, mode, data, onClose, onSu
         taskOptions: {
           maxRetry: values['taskOptions.maxRetry'] ?? 3,
           timeout: values['taskOptions.timeout'],
-          deadline: values['taskOptions.deadline'],
-          processIn: values['taskOptions.processIn'],
-          processAt: values['taskOptions.processAt'],
+          deadline: toProtoTimestamp(values['taskOptions.deadline']),
+          processIn: toProtoTimestamp(values['taskOptions.processIn']),
+          processAt: toProtoTimestamp(values['taskOptions.processAt']),
         },
       };
 

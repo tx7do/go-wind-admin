@@ -231,7 +231,6 @@ import {
   tenantTypeList,
   useCreateTenantWithAdminUser,
   useUpdateTenant,
-  useUserExists,
   fetchTenantUsage,
   useCleanupTenantData,
   fetchListTenants,
@@ -263,7 +262,6 @@ const visible = computed({
 
 const { mutateAsync: createTenantWithAdminUserMut } = useCreateTenantWithAdminUser();
 const { mutateAsync: updateTenantMut } = useUpdateTenant();
-const { mutateAsync: userExists } = useUserExists();
 
 // 编辑模式下按需加载租户用量数据（usageData）。
 // 不在 setup 顶层发起请求：仅当抽屉打开且选中真实租户行时，用 fetchTenantUsage 命令式拉取，
@@ -506,14 +504,6 @@ async function createTenantWithAdminUser() {
     return;
   }
 
-  // 检查用户名是否存在
-  try {
-    await userExists({ username: formData.value.user.username });
-  } catch {
-    ElMessage.error($t("pages.tenant.notification.user_username_exists"));
-    return;
-  }
-
   await createTenantWithAdminUserMut({
     tenant: {
       name: formData.value.name,
@@ -522,6 +512,9 @@ async function createTenantWithAdminUser() {
       auditStatus: formData.value.auditStatus as any,
       status: formData.value.status as any,
       remark: formData.value.remark,
+      // proto Timestamp 只接受 RFC3339；Date 经 toJSON 序列化即为 ISO 串
+      expiredAt: formData.value.expiredAt || undefined,
+      planId: formData.value.subscriptionPlan || undefined,
     },
     user: formData.value.user as any,
     password: formData.value.password,

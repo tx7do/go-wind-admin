@@ -5,6 +5,7 @@ import { Button, message, Divider, Popconfirm, Descriptions, Tag, Progress } fro
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useUpdateTenant, useCreateTenantWithAdminUser, useGetTenantUsage, useCleanupTenantData } from '@/api/hooks/tenant';
+import { toProtoTimestamp } from '@/utils/datetime';
 import { fetchListPlans } from '@/api/hooks/plan';
 import { PaginationQuery } from '@/core';
 import type {
@@ -116,7 +117,7 @@ const TenantDrawer: React.FC<TenantDrawerProps> = ({
             auditStatus: values.auditStatus as identityservicev1_Tenant_AuditStatus,
             status: values.status as identityservicev1_Tenant_Status,
             planId: values.planId,
-            expiredAt: values.expiredAt,
+            expiredAt: toProtoTimestamp(values.expiredAt),
             remark: values.remark,
           },
           user: {
@@ -149,7 +150,7 @@ const TenantDrawer: React.FC<TenantDrawerProps> = ({
             auditStatus: values.auditStatus as identityservicev1_Tenant_AuditStatus,
             status: values.status as identityservicev1_Tenant_Status,
             planId: values.planId,
-            expiredAt: values.expiredAt,
+            expiredAt: toProtoTimestamp(values.expiredAt),
             remark: values.remark,
           },
         });

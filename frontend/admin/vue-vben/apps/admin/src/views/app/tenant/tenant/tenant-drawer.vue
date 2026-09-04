@@ -4,6 +4,8 @@ import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
+import dayjs from 'dayjs';
+
 import {
   Button,
   Descriptions,
@@ -24,14 +26,12 @@ import {
   useCreateTenantWithAdminUser,
   useTenantExists,
   useUpdateTenant,
-  useUserExists,
   useCleanupTenantData,
 } from '#/api';
 
 const { mutateAsync: doCreateTenant } = useCreateTenantWithAdminUser();
 const { mutateAsync: doUpdateTenant } = useUpdateTenant();
 const { mutateAsync: tenantExists } = useTenantExists();
-const { mutateAsync: userExists } = useUserExists();
 const { mutateAsync: cleanupMut } = useCleanupTenantData();
 
 const data = ref();
@@ -410,17 +410,6 @@ async function createTenantWithAdminUser(values: any) {
     return;
   }
 
-  // 检查用户名是否存在
-  try {
-    await userExists({ username: values.user.username });
-  } catch {
-    notification.error({
-      message: $t('page.tenant.notification.user_username_exists'),
-    });
-    setLoading(false);
-    return;
-  }
-
   try {
     await doCreateTenant({
       tenant: {
@@ -430,6 +419,11 @@ async function createTenantWithAdminUser(values: any) {
         auditStatus: values.auditStatus,
         status: values.status,
         remark: values.remark,
+        // proto Timestamp 只接受 RFC3339；DatePicker 值为 dayjs，需显式转 ISO 串
+        expiredAt: values.expiredAt
+          ? dayjs(values.expiredAt).toISOString()
+          : undefined,
+        planId: values.subscriptionPlan || undefined,
       },
       user: values.user,
       password: values.password,
@@ -464,8 +458,12 @@ async function updateTenant(values: any) {
         auditStatus: values.auditStatus,
         status: values.status,
         remark: values.remark,
-        subscriptionPlan: values.subscriptionPlan,
-        expiredAt: values.expiredAt,
+        // proto 字段为 plan_id（json_name: planId），此前误写 subscriptionPlan 会被丢弃
+        planId: values.subscriptionPlan || undefined,
+        // proto Timestamp 只接受 RFC3339；未动过时是服务端 RFC3339 串，动过则是 dayjs
+        expiredAt: values.expiredAt
+          ? dayjs(values.expiredAt).toISOString()
+          : undefined,
       },
     });
 
