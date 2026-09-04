@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/aggregator"
 	"github.com/tx7do/go-utils/sliceutil"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"go-wind-admin/app/admin/service/internal/data"
@@ -666,9 +666,9 @@ func (s *UserService) createDefaultUser(ctx context.Context) error {
 
 	// 创建默认用户凭证
 	for _, userCredential := range constants.DefaultUserCredentials {
-		if err = s.userCredentialRepo.Create(ctx, &authenticationV1.CreateUserCredentialRequest{
-			Data: userCredential,
-		}); err != nil {
+		// 引导期默认管理员口令（admin/admin）不满足等保复杂度，走专用 Bootstrap 路径跳过校验，
+		// 否则凭证无法写入，首次登录将恒报 INVALID_PASSWORD（用户不存在）。
+		if err = s.userCredentialRepo.CreateBootstrapCredential(ctx, userCredential); err != nil {
 			s.log.Errorf(ctx, "create default user credential err: %v", err)
 			return err
 		}
