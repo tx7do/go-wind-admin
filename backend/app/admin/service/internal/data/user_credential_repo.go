@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/go-crud/viewer"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
@@ -23,8 +23,8 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 
-	passwordPolicy "go-wind-admin/pkg/password"
 	"go-wind-admin/app/admin/service/internal/data/ent/usercredential"
+	passwordPolicy "go-wind-admin/pkg/password"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 )
@@ -158,7 +158,9 @@ func (r *UserCredentialRepo) Create(ctx context.Context, req *authenticationV1.C
 	return r.CreateWithTx(ctx, tx, req.GetData())
 }
 
-func (r *UserCredentialRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *authenticationV1.UserCredential) error {
+// createCredential 创建凭证。skipPolicy 为 true 时跳过口令复杂度校验，
+// 仅供引导期默认管理员种子使用（见 CreateBootstrapCredential）。
+func (r *UserCredentialRepo) createCredential(ctx context.Context, tx *ent.Tx, data *authenticationV1.UserCredential, skipPolicy bool) error {
 	if data == nil {
 		return authenticationV1.ErrorBadRequest("invalid request")
 	}
@@ -167,7 +169,7 @@ func (r *UserCredentialRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data 
 
 	if data.Credential != nil {
 		var newCredential string
-		newCredential, err = r.prepareCredential(r.credentialTypeConverter.ToEntity(data.CredentialType), data.GetCredential())
+		newCredential, err = r.prepareCredential(r.credentialTypeConverter.ToEntity(data.CredentialType), data.GetCredential(), skipPolicy)
 		if err != nil {
 			r.log.Errorf(ctx, "prepare new credential failed: %s", err.Error())
 			return authenticationV1.ErrorBadRequest("prepare new credential failed")
@@ -198,6 +200,39 @@ func (r *UserCredentialRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data 
 	return nil
 }
 
+func (r *UserCredentialRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *authenticationV1.UserCredential) error {
+	return r.createCredential(ctx, tx, data, false)
+}
+
+// CreateBootstrapCredential 引导期创建默认管理员（超级用户）口令。
+// 该口令为文档约定的初始引导凭据（admin/admin），仅在全新空库初始化时写入，
+// 属系统引导账号，故跳过复杂度策略；登录后应尽快改密以符合等保口令要求。
+func (r *UserCredentialRepo) CreateBootstrapCredential(ctx context.Context, data *authenticationV1.UserCredential) (err error) {
+	if data == nil {
+		return authenticationV1.ErrorBadRequest("invalid request")
+	}
+
+	var tx *ent.Tx
+	if tx, err = r.entClient.Client().Tx(ctx); err != nil {
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
+		return authenticationV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
+			err = authenticationV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	return r.createCredential(ctx, tx, data, true)
+}
+
 func (r *UserCredentialRepo) Update(ctx context.Context, req *authenticationV1.UpdateUserCredentialRequest) error {
 	if req == nil || req.Data == nil {
 		return authenticationV1.ErrorBadRequest("invalid request")
@@ -222,7 +257,7 @@ func (r *UserCredentialRepo) Update(ctx context.Context, req *authenticationV1.U
 
 	if req.Data.Credential != nil {
 		var newCredential string
-		newCredential, err = r.prepareCredential(r.credentialTypeConverter.ToEntity(req.Data.CredentialType), req.Data.GetCredential())
+		newCredential, err = r.prepareCredential(r.credentialTypeConverter.ToEntity(req.Data.CredentialType), req.Data.GetCredential(), false)
 		if err != nil {
 			r.log.Errorf(ctx, "prepare new credential failed: %s", err.Error())
 			return authenticationV1.ErrorBadRequest("prepare new credential failed")
@@ -493,13 +528,16 @@ func (r *UserCredentialRepo) verifyCredential(credentialType *usercredential.Cre
 	}
 }
 
-func (r *UserCredentialRepo) prepareCredential(credentialType *usercredential.CredentialType, plainCredential string) (string, error) {
+func (r *UserCredentialRepo) prepareCredential(credentialType *usercredential.CredentialType, plainCredential string, skipComplexity bool) (string, error) {
 	var newCredential string
 	switch *credentialType {
 	case usercredential.CredentialTypePasswordHash:
-		// 等保口令策略：哈希前对明文做复杂度校验（覆盖创建/修改/重置全部路径）
-		if err := passwordPolicy.ValidateComplexity(plainCredential); err != nil {
-			return "", authenticationV1.ErrorBadRequest("%s", err.Error())
+		// 等保口令策略：哈希前对明文做复杂度校验（覆盖创建/修改/重置全部路径）。
+		// 引导期默认管理员种子口令（admin/admin）通过 skipComplexity 跳过。
+		if !skipComplexity {
+			if err := passwordPolicy.ValidateComplexity(plainCredential); err != nil {
+				return "", authenticationV1.ErrorBadRequest("%s", err.Error())
+			}
 		}
 		var err error
 		// 加密明文密码
@@ -583,7 +621,7 @@ func (r *UserCredentialRepo) ChangeCredential(ctx context.Context, req *authenti
 	}
 
 	var newCredential string
-	newCredential, err = r.prepareCredential(entity.CredentialType, req.GetNewCredential())
+	newCredential, err = r.prepareCredential(entity.CredentialType, req.GetNewCredential(), false)
 	if err != nil {
 		// 口令策略（复杂度等）错误原样透传，便于前端给出可操作的提示
 		r.log.Warnf(ctx, "prepare new credential rejected: %s", err.Error())
@@ -661,7 +699,7 @@ func (r *UserCredentialRepo) ResetCredential(ctx context.Context, req *authentic
 	}
 
 	var newCredential string
-	newCredential, err = r.prepareCredential(entity.CredentialType, req.GetNewCredential())
+	newCredential, err = r.prepareCredential(entity.CredentialType, req.GetNewCredential(), false)
 	if err != nil {
 		// 口令策略（复杂度等）错误原样透传，便于前端给出可操作的提示
 		r.log.Warnf(ctx, "prepare new credential rejected: %s", err.Error())
