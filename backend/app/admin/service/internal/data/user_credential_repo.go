@@ -172,7 +172,9 @@ func (r *UserCredentialRepo) createCredential(ctx context.Context, tx *ent.Tx, d
 		newCredential, err = r.prepareCredential(r.credentialTypeConverter.ToEntity(data.CredentialType), data.GetCredential(), skipPolicy)
 		if err != nil {
 			r.log.Errorf(ctx, "prepare new credential failed: %s", err.Error())
-			return authenticationV1.ErrorBadRequest("prepare new credential failed")
+			// 透传底层错误（如"密码过短/复杂度不足"），避免把真实原因吞成笼统的报错，
+			// 否则前端只能看到无意义的 "prepare new credential failed"，难以对症处理。
+			return err
 		}
 		data.Credential = trans.Ptr(newCredential)
 	}

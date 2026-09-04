@@ -48,6 +48,7 @@
   "passwordPlaceholder": "请输入初始密码",
   "requiredPassword": "请输入初始密码",
   "passwordMin": "密码至少 {{min}} 个字符",
+  "passwordComplexity": "密码至少 8 位，且需包含大小写字母、数字、符号中的至少三类",
   "passwordConfirm": "确认密码",
   "passwordConfirmPlaceholder": "请再次输入密码",
   "requiredPasswordConfirm": "请再次输入密码",

@@ -4,6 +4,7 @@ import type { ProFormInstance } from '@ant-design/pro-components';
 import { Button, message, Divider, Popconfirm, Descriptions, Tag, Progress } from 'antd';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
+import dayjs from 'dayjs';
 import { useUpdateTenant, useCreateTenantWithAdminUser, useGetTenantUsage, useCleanupTenantData } from '@/api/hooks/tenant';
 import { fetchListPlans } from '@/api/hooks/plan';
 import { PaginationQuery } from '@/core';
@@ -27,6 +28,17 @@ interface TenantDrawerProps {
   onClose: () => void;
   onSuccess: () => void;
 }
+
+/**
+ * 将日期选择器返回的本地时间（如 "2026-09-30 00:00:00"）归一化为
+ * protobuf google.protobuf.Timestamp 可解析的 RFC3339 字符串。
+ * 后端 protojson 要求 Timestamp 必须是 RFC3339，直接传 "2026-09-30 00:00:00" 会报 CODEC 错误。
+ */
+const toProtoTimestamp = (v?: any): string | undefined => {
+  if (!v) return undefined;
+  const d = dayjs(v);
+  return d.isValid() ? d.toISOString() : String(v);
+};
 
 /**
  * 租户编辑/创建 Drawer 组件（基于 DrawerForm）
@@ -116,7 +128,7 @@ const TenantDrawer: React.FC<TenantDrawerProps> = ({
             auditStatus: values.auditStatus as identityservicev1_Tenant_AuditStatus,
             status: values.status as identityservicev1_Tenant_Status,
             planId: values.planId,
-            expiredAt: values.expiredAt,
+            expiredAt: toProtoTimestamp(values.expiredAt),
             remark: values.remark,
           },
           user: {
@@ -149,7 +161,7 @@ const TenantDrawer: React.FC<TenantDrawerProps> = ({
             auditStatus: values.auditStatus as identityservicev1_Tenant_AuditStatus,
             status: values.status as identityservicev1_Tenant_Status,
             planId: values.planId,
-            expiredAt: values.expiredAt,
+            expiredAt: toProtoTimestamp(values.expiredAt),
             remark: values.remark,
           },
         });
@@ -377,7 +389,23 @@ const TenantDrawer: React.FC<TenantDrawerProps> = ({
             placeholder={t('passwordPlaceholder')}
             rules={[
               { required: true, message: t('requiredPassword') },
-              { min: 6, message: t('passwordMin', { min: 6 }) },
+              {
+                validator: async (_, value) => {
+                  if (!value) return Promise.resolve();
+                  // 与后端等保口令策略一致：≥8 位，小写/大写/数字/符号四类取三。
+                  const errMsg = t('passwordComplexity');
+                  if (typeof value !== 'string' || value.length < 8) {
+                    return Promise.reject(new Error(errMsg));
+                  }
+                  let classes = 0;
+                  if (/[a-z]/.test(value)) classes++;
+                  if (/[A-Z]/.test(value)) classes++;
+                  if (/\d/.test(value)) classes++;
+                  if (/[^A-Za-z0-9]/.test(value)) classes++;
+                  if (classes < 3) return Promise.reject(new Error(errMsg));
+                  return Promise.resolve();
+                },
+              },
             ]}
             fieldProps={{
               allowClear: true,

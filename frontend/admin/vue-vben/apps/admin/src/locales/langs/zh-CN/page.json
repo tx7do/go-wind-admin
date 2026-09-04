@@ -283,6 +283,7 @@
     "unsubscribeAt": "退订时间",
     "adminUserName": "管理员用户名",
     "adminPassword": "初始密码",
+    "passwordComplexity": "密码至少 8 位，且需包含大小写字母、数字、符号中的至少三类",
     "adminPasswordConfirm": "确认密码",
     "adminMobile": "手机号",
     "adminEmail": "电子邮箱",

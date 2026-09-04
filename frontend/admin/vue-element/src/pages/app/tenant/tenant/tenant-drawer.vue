@@ -224,6 +224,7 @@ import { computed, ref, watch } from "vue";
 
 import { ElMessage } from "element-plus";
 import type { FormInstance, FormRules } from "element-plus";
+import dayjs from "dayjs";
 
 import {
   tenantAuditStatusList,
@@ -247,6 +248,14 @@ import ProModal from "@/components/Pro/ProModal/index.vue";
 
 // 通过 inject 获取列表页传入的 modalApi
 const modalApi = injectProModalApi();
+
+// 将日期组件的值（Date/字符串等）归一化为 protobuf Timestamp 可解析的 RFC3339 字符串。
+// 后端 protojson 要求 Timestamp 必须是 RFC3339，直接传 "2026-09-30 00:00:00" 等形式会报 CODEC。
+function toProtoTimestamp(v?: Date | string | number | null): string | undefined {
+  if (!v) return undefined;
+  const d = dayjs(v);
+  return d.isValid() ? d.toISOString() : String(v);
+}
 
 // 注意：不能使用 modalApi.getData()，其内部对 toRaw(store).sharedData 取值会丢失响应式，
 // 导致多次 open（新增↔编辑切换、编辑不同租户）时 data/isCreate 停留在首次快照，造成串数据。
@@ -359,7 +368,22 @@ const formRules: FormRules = {
   ],
   password: [
     { required: true, message: $t("common.validation.required"), trigger: "blur" },
-    { min: 6, message: $t("common.validation.passwordMin"), trigger: "blur" },
+    {
+      // 与后端等保口令策略一致：≥8 位，小写/大写/数字/符号四类取三。
+      validator: (_rule, value, callback) => {
+        if (!value) return callback();
+        const pwd = String(value);
+        if (pwd.length < 8) return callback(new Error($t("page.tenant.passwordComplexity")));
+        let classes = 0;
+        if (/[a-z]/.test(pwd)) classes++;
+        if (/[A-Z]/.test(pwd)) classes++;
+        if (/\d/.test(pwd)) classes++;
+        if (/[^A-Za-z0-9]/.test(pwd)) classes++;
+        if (classes < 3) return callback(new Error($t("page.tenant.passwordComplexity")));
+        return callback();
+      },
+      trigger: "blur",
+    },
   ],
   passwordConfirm: [
     { required: true, message: $t("common.validation.required"), trigger: "blur" },
@@ -475,8 +499,13 @@ const handleSubmit = async () => {
 
     // 成功回调
     modalApi.close();
-  } catch (error) {
+  } catch (error: any) {
     console.error("Submit error:", error);
+    // 透传后端可读错误（如密码复杂度不达标）。表单校验失败会被 Element 组装成对象、
+    // 无 string message，此处不会误弹（校验错误由表单内联展示）。
+    if (error?.message && typeof error.message === "string") {
+      ElMessage.error(error.message);
+    }
   } finally {
     loading.value = false;
   }
@@ -521,6 +550,8 @@ async function createTenantWithAdminUser() {
       type: formData.value.type as any,
       auditStatus: formData.value.auditStatus as any,
       status: formData.value.status as any,
+      planId: formData.value.subscriptionPlan,
+      expiredAt: toProtoTimestamp(formData.value.expiredAt),
       remark: formData.value.remark,
     },
     user: formData.value.user as any,
@@ -547,7 +578,7 @@ async function updateTenant() {
       status: formData.value.status,
       remark: formData.value.remark,
       planId: formData.value.subscriptionPlan,
-      expiredAt: formData.value.expiredAt,
+      expiredAt: toProtoTimestamp(formData.value.expiredAt),
     },
   });
 

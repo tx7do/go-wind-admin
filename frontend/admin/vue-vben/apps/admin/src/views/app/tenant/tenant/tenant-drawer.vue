@@ -1,5 +1,7 @@
-﻿<script lang="ts" setup>
+<script lang="ts" setup>
 import { computed, ref } from 'vue';
+
+import dayjs from 'dayjs';
 
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
@@ -37,6 +39,25 @@ const { mutateAsync: cleanupMut } = useCleanupTenantData();
 const data = ref();
 const usageData = ref<any>(null);
 const cleanupLoading = ref(false);
+
+// 将日期组件的值（dayjs/Date/字符串）归一化为 protobuf Timestamp 可解析的 RFC3339 字符串。
+// 后端 protojson 要求 Timestamp 必须是 RFC3339，直接传 "2026-09-30 00:00:00" 等形式会报 CODEC。
+function toProtoTimestamp(v?: unknown): string | undefined {
+  if (v === undefined || v === null || v === '') return undefined;
+  const d = dayjs(v as any);
+  return d.isValid() ? d.toISOString() : String(v);
+}
+
+// 与后端等保口令策略一致：≥8 位，小写/大写/数字/符号四类取三。
+function isValidPassword(pwd: string): boolean {
+  if (typeof pwd !== 'string' || pwd.length < 8) return false;
+  let classes = 0;
+  if (/[a-z]/.test(pwd)) classes++;
+  if (/[A-Z]/.test(pwd)) classes++;
+  if (/\d/.test(pwd)) classes++;
+  if (/[^A-Za-z0-9]/.test(pwd)) classes++;
+  return classes >= 3;
+}
 
 // 辅助函数：根据配额类型返回标签/当前值/百分比。
 // eslint-disable-next-line @typescript-messages/no-explicit-any
@@ -326,6 +347,15 @@ const [Drawer, drawerApi] = useVbenDrawer({
     // 获取表单数据
     const values = await baseFormApi.getValues();
 
+    // 创建模式下，密码需满足后端等保复杂度，提前拦截给出可操作提示
+    if (data.value?.create && !isValidPassword(values.password)) {
+      notification.error({
+        message: $t('page.tenant.passwordComplexity'),
+      });
+      setLoading(false);
+      return;
+    }
+
     console.log(getTitle.value, values);
 
     await (data.value?.create
@@ -429,6 +459,8 @@ async function createTenantWithAdminUser(values: any) {
         type: values.type,
         auditStatus: values.auditStatus,
         status: values.status,
+        planId: values.subscriptionPlan,
+        expiredAt: toProtoTimestamp(values.expiredAt),
         remark: values.remark,
       },
       user: values.user,
@@ -465,16 +497,16 @@ async function updateTenant(values: any) {
         status: values.status,
         remark: values.remark,
         subscriptionPlan: values.subscriptionPlan,
-        expiredAt: values.expiredAt,
+        expiredAt: toProtoTimestamp(values.expiredAt),
       },
     });
 
     notification.success({
       message: $t('ui.notification.update_success'),
     });
-  } catch {
+  } catch (err: any) {
     notification.error({
-      message: $t('ui.notification.update_failed'),
+      message: err?.message || $t('ui.notification.update_failed'),
     });
   } finally {
     // 关闭窗口

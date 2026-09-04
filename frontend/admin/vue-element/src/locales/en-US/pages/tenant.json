@@ -6,6 +6,8 @@
   "auditStatus": "Audit Status",
   "adminUserName": "Admin Username",
   "adminPassword": "Admin Password",
+  "adminPasswordPlaceholder": "Enter admin password",
+  "passwordComplexity": "Password must be at least 8 characters and include at least three of lowercase, uppercase, digit, symbol",
   "adminPasswordConfirm": "Confirm Password",
   "adminMobile": "Admin Mobile",
   "adminEmail": "Admin Email",

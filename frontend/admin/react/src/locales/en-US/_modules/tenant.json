@@ -48,6 +48,7 @@
   "passwordPlaceholder": "Enter initial password",
   "requiredPassword": "Please enter initial password",
   "passwordMin": "Password must be at least {{min}} characters",
+  "passwordComplexity": "Password must be at least 8 characters and include at least three of lowercase, uppercase, digit, symbol",
   "passwordConfirm": "Confirm Password",
   "passwordConfirmPlaceholder": "Re-enter password",
   "requiredPasswordConfirm": "Please re-enter password",
