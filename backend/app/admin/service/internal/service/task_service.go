@@ -159,21 +159,26 @@ func (s *TaskService) Update(ctx context.Context, req *taskV1.UpdateTaskRequest)
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 
-	// H8：校验 typeName 已在调度器注册
+	// 获取更新前的任务，用于判断调度器中是否有正在运行的注册项。
+	// 此处不可吞错：若 Get 失败则 oldTask==nil，下方 remove 会因 oldTask==nil 被跳过，
+	// 导致旧调度项残留（任务"停用/更新后仍运行"）。故失败直接返回。
+	oldTask, err := s.taskRepo.Get(ctx, &taskV1.GetTaskRequest{QueryBy: &taskV1.GetTaskRequest_Id{Id: req.GetId()}})
+	if err != nil {
+		return nil, err
+	}
+
+	// H8：校验 typeName 已在调度器注册。
+	// 列表行的启停开关只提交 {enable}，不带 typeName；此时从库中回填原值再校验，
+	// 否则开关永远 400 "task type [] is not registered"。
+	if req.Data.GetTypeName() == "" && oldTask != nil {
+		req.Data.TypeName = trans.Ptr(oldTask.GetTypeName())
+	}
 	if !s.hasScheduler() || !s.taskScheduler.TaskTypeExists(req.Data.GetTypeName()) {
 		return nil, adminV1.ErrorBadRequest("task type [%s] is not registered", req.Data.GetTypeName())
 	}
 
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	// 获取更新前的任务，用于判断调度器中是否有正在运行的注册项。
-	// 此处不可吞错：若 Get 失败则 oldTask==nil，下方 remove 会因 oldTask==nil 被跳过，
-	// 导致旧调度项残留（任务"停用/更新后仍运行"）。故失败直接返回。
-	oldTask, err := s.taskRepo.Get(ctx, &taskV1.GetTaskRequest{QueryBy: &taskV1.GetTaskRequest_Id{Id: req.GetId()}})
 	if err != nil {
 		return nil, err
 	}
@@ -422,6 +427,11 @@ func (s *TaskService) convertTaskOption(t *taskV1.Task) (opts []asynq.Option, pa
 
 	if len(t.GetTaskPayload()) > 0 {
 		_ = json.Unmarshal([]byte(t.GetTaskPayload()), &payload)
+	}
+
+	// asynq 拒绝 nil message（"message is nil"）；任务数据留空时兜底为空对象
+	if payload == nil {
+		payload = map[string]any{}
 	}
 
 	if t.TaskOptions != nil {

@@ -322,15 +322,21 @@ const [Drawer, drawerApi] = useVbenDrawer({
     // 获取表单数据
     const values = await baseFormApi.getValues();
 
-    // 剔除纯 UI 字段（分割线），避免进入 updateMask 导致后端校验失败
-    delete values.divider1;
+    // 剔除纯 UI 字段（分割线），避免进入 updateMask 导致后端校验失败。
+    // 注意 getValues() 返回的是响应式对象，delete 可能不生效，必须用解构拷贝
+    const { divider1: _ignoredDivider, divider2: _ignoredDivider2, ...menuValues } = values;
+    const finalValues = { ...menuValues };
+    if (!finalValues.parentId) {
+      // 父级为空时删除键，避免 parentId:0 进 mask 触发后端外键违约
+      delete finalValues.parentId;
+    }
 
     console.log(getTitle.value, values);
 
     try {
       await (data.value?.create
-        ? createMenu(values)
-        : updateMenu({ id: data.value.row.id, values }));
+        ? createMenu(finalValues)
+        : updateMenu({ id: data.value.row.id, values: finalValues }));
 
       notification.success({
         message: data.value?.create
