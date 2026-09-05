@@ -1,16 +1,16 @@
 <template>
-  <ElSplitter>
-    <ElSplitterPanel :size="40" :min-size="30" :max-size="50">
+  <ProSplitter :left-size="40" :left-min-size="30" :left-max-size="50">
+    <template #left>
       <PermissionGroupList />
-    </ElSplitterPanel>
-    <ElSplitterPanel :size="60">
+    </template>
+    <template #right>
       <PermissionList />
-    </ElSplitterPanel>
-  </ElSplitter>
+    </template>
+  </ProSplitter>
 </template>
 
 <script lang="ts" setup>
-import { ElSplitter, ElSplitterPanel } from "element-plus";
+import ProSplitter from "@/components/Pro/ProSplitter/index.vue";
 
 import PermissionGroupList from "./permission-group-list.vue";
 import PermissionList from "./permission-list.vue";

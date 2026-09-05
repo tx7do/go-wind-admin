@@ -948,6 +948,18 @@ $chrome-radius: 7px;
         color: var(--el-color-primary);
       }
     }
+
+    // Chrome 激活标签底部指示线（亮暗通用，锚定内容区）
+    &--chrome.is-active::after {
+      position: absolute;
+      right: 16px;
+      bottom: 0;
+      left: 16px;
+      height: 2px;
+      content: "";
+      background-color: var(--el-color-primary);
+      border-radius: 2px 2px 0 0;
+    }
   }
 
   // ==================== Chrome 风格特殊元素 ====================
@@ -997,12 +1009,16 @@ $chrome-radius: 7px;
 
     .is-active & {
       &__content {
-        background-color: var(--el-color-primary-light-9);
+        // 主色与当前主题底色混色：亮色→淡蓝、暗色→深蓝（html.dark 下被实色规则覆盖）。
+        // 不能用 primary-light-N：主题生成器以内联变量写死为暗色调值，亮色下会是深蓝块
+        background-color: rgba(26, 102, 255, 0.12);
+        background-color: color-mix(in srgb, var(--el-color-primary) 15%, var(--el-bg-color));
       }
 
       &__before,
       &__after {
-        fill: var(--el-color-primary-light-9);
+        fill: rgba(26, 102, 255, 0.12);
+        fill: color-mix(in srgb, var(--el-color-primary) 15%, var(--el-bg-color));
       }
     }
   }
@@ -1215,14 +1231,22 @@ html.dark .tabs-bar {
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.2);
   }
 
-  // Chrome 激活态背景（更明显的区分）
+  // Chrome 激活/悬停态：item 本体保持透明，仅由 chrome-bg 一层承担背景。
+  // 通用规则里的半透明白底会与 chrome-bg 叠加，两层圆角不一致会形成"描边"伪影
+  .tabs-bar__item--chrome.is-active,
+  .tabs-bar__item--chrome:not(.is-active):hover {
+    background-color: transparent;
+    border-radius: 0;
+  }
+
+  // Chrome 激活态背景（主色暗阶，与激活文字同色系）
   .tabs-bar__item--chrome.is-active .tabs-bar__chrome-bg__content {
-    background-color: rgba(255, 255, 255, 0.06);
+    background-color: var(--el-color-primary-light-7);
   }
 
   .tabs-bar__item--chrome.is-active .tabs-bar__chrome-bg__before,
   .tabs-bar__item--chrome.is-active .tabs-bar__chrome-bg__after {
-    fill: rgba(255, 255, 255, 0.06);
+    fill: var(--el-color-primary-light-7);
   }
 
   .tabs-bar__item--chrome:not(.is-active):hover .tabs-bar__chrome-bg__content {

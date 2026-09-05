@@ -298,20 +298,12 @@ defineExpose({
 }
 
 // === Grid 布局模式（参考 Vben） ===
+// 列数按容器宽度自适应（auto-fill），不能用视口断点：
+// 本组件常嵌在 ElSplitter 栏位等窄容器里，视口断点会把输入框挤成细条
 .pro-search--grid {
   display: grid;
-  grid-template-columns: repeat(1, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(min(240px, 100%), 1fr));
   gap: 16px;
-
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  @media (min-width: 768px) {
-    grid-template-columns: repeat(3, 1fr);
-  }
-  @media (min-width: 1024px) {
-    grid-template-columns: repeat(4, 1fr);
-  }
 
   // 让表单项内容拉伸
   :deep(.el-form-item__content) {

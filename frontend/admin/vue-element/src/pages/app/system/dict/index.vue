@@ -1,16 +1,16 @@
 <template>
-  <ElSplitter>
-    <ElSplitterPanel :size="40" :min-size="30" :max-size="50">
+  <ProSplitter :left-size="40" :left-min-size="30" :left-max-size="50">
+    <template #left>
       <DictTypeList />
-    </ElSplitterPanel>
-    <ElSplitterPanel :size="60">
+    </template>
+    <template #right>
       <DictEntryList />
-    </ElSplitterPanel>
-  </ElSplitter>
+    </template>
+  </ProSplitter>
 </template>
 
 <script lang="ts" setup>
-import { ElSplitter, ElSplitterPanel } from "element-plus";
+import ProSplitter from "@/components/Pro/ProSplitter/index.vue";
 
 import DictEntryList from "./dict-entry-list.vue";
 import DictTypeList from "./dict-type-list.vue";
