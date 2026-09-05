@@ -14,10 +14,7 @@ export const TrendChart = ({ data }: TrendChartProps) => {
   const { t } = useI18n('dashboard');
 
   return (
-    <Card style={{ marginTop: 16 }} styles={{ body: { padding: 16 } }}>
-      <div style={{ fontSize: 16, fontWeight: 600, marginBottom: 8 }}>
-        {t('charts.loginTrend')}
-      </div>
+    <Card title={t('charts.loginTrend')} style={{ marginTop: 16 }} styles={{ body: { padding: 16 } }}>
       <LineChart data={data} />
     </Card>
   );

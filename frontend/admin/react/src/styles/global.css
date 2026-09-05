@@ -57,6 +57,41 @@ body {
     gap: 12px !important;
 }
 
+/* ========== 暗色模式全局质感 ========== */
+
+/* 文本选中：主色微底，替代浏览器默认高亮蓝 */
+[data-theme='dark'] ::selection {
+    background: rgba(59, 130, 246, 0.35);
+    color: #f8fafc;
+}
+
+/* 卡片悬浮反馈：边框提亮 + 轻投影（仅暗色；亮色卡片自带边框层次无需加） */
+[data-theme='dark'] .ant-card {
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+[data-theme='dark'] .ant-card:hover {
+    border-color: rgba(255, 255, 255, 0.14);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
+}
+
+/* 浮层（抽屉/弹窗）深投影：强化"悬浮在页面上"的层级感 */
+[data-theme='dark'] .ant-drawer-content,
+[data-theme='dark'] .ant-modal-content {
+    box-shadow:
+        0 12px 48px rgba(0, 0, 0, 0.55),
+        0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+/* 表格行内操作链接 hover 底色已在上面统一处理；
+   这里补抽屉/弹窗头部与内容的分割线弱化（8% 白与全局分隔线一致） */
+[data-theme='dark'] .ant-drawer-header,
+[data-theme='dark'] .ant-modal-header {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
 /* 应用级主题变量：导航层（侧栏/顶栏/标签栏）背景
    暗色取 gray-900 #111827（画布与卡片之间的次暗层）。
    亮色必须是字面量：此变量定义在 <html> 上，而 antd v6 的

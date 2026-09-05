@@ -35,12 +35,14 @@ const Dashboard = () => {
   }
 
   const d = overviewQuery.data;
+  // 每张卡片一个语义色（蓝/青/紫/绿），图标色与色块同系
   const iconPool = [
-    <UserOutlined style={{ fontSize: 24, color: 'var(--ant-color-primary)' }} />,
-    <TeamOutlined style={{ fontSize: 24, color: 'var(--ant-color-warning)' }} />,
-    <LoginOutlined style={{ fontSize: 24, color: 'var(--ant-color-warning)' }} />,
-    <AuditOutlined style={{ fontSize: 24, color: 'var(--ant-color-success)' }} />,
+    <UserOutlined style={{ fontSize: 22, color: 'currentColor' }} />,
+    <TeamOutlined style={{ fontSize: 22, color: 'currentColor' }} />,
+    <LoginOutlined style={{ fontSize: 22, color: 'currentColor' }} />,
+    <AuditOutlined style={{ fontSize: 22, color: 'currentColor' }} />,
   ];
+  const tones = ['blue', 'cyan', 'violet', 'emerald'] as const;
   const values = [
     d?.userCount ?? 0,
     d?.roleCount ?? 0,
@@ -60,13 +62,8 @@ const Dashboard = () => {
       <Row gutter={[16, 16]}>
         {values.map((v, i) => (
           <Col xs={24} sm={12} lg={6} key={i}>
-            <StatsCard
-              title={t(titleKeys[i]!)}
-              value={v}
-              total={t('stats.total')}
-              totalValue={v}
-              icon={iconPool[i]}
-            />
+            <StatsCard title={t(titleKeys[i]!)} value={v} icon={iconPool[i]} tone={tones[i]}>
+            </StatsCard>
           </Col>
         ))}
       </Row>

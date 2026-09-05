@@ -17,8 +17,13 @@ export const SourcePieChart = ({ data }: SourcePieChartProps) => {
   const { t } = useI18n('dashboard');
   const { t: tAuditLog } = useI18n('login-audit-log');
 
-  // 科技风暗色系调色板（靛蓝、翠绿、紫罗兰、琥珀）
-  const palette = ['#6366f1', '#10b981', '#8b5cf6', '#f59e0b'];
+  // 状态语义色：绿=成功、红=失败、琥珀=部分成功，未知状态回退中性灰
+  const statusColors: Record<string, string> = {
+    SUCCESS: '#34D399',
+    FAILED: '#F87171',
+    PARTIAL: '#FBBF24',
+  };
+  const fallbackColor = '#94A3B8';
 
   const option = useMemo(() => {
     const items = data?.items ?? [];
@@ -78,10 +83,10 @@ export const SourcePieChart = ({ data }: SourcePieChartProps) => {
           emphasis: {
             scaleSize: 8,
           },
-          data: items.map((it, i) => ({
+          data: items.map((it) => ({
             value: it.count,
             name: statusLabel(it.label),
-            itemStyle: { color: palette[i % palette.length] },
+            itemStyle: { color: statusColors[it.label ?? ''] ?? fallbackColor },
           })),
         },
       ],

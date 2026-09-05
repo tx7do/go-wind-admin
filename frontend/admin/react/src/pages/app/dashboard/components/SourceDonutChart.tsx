@@ -18,8 +18,18 @@ export const SourceDonutChart = ({ data }: SourceDonutChartProps) => {
   const { t } = useI18n('dashboard');
   const { t: tAuditLog } = useI18n('operation-audit-log');
 
-  // 科技风暗色系调色板（靛蓝、翠绿、紫罗兰、琥珀）
-  const palette = ['#6366f1', '#10b981', '#8b5cf6', '#f59e0b'];
+  // 主色系扩展调色板：以 #3B82F6 为核心的低饱和暗色友好序列（蓝→青→靛→绿→紫…）
+  const palette = [
+    '#3B82F6',
+    '#22D3EE',
+    '#818CF8',
+    '#34D399',
+    '#A78BFA',
+    '#FBBF24',
+    '#F472B6',
+    '#2DD4BF',
+    '#94A3B8',
+  ];
 
   // 操作类型枚举名 → 本地化文案，复用操作审计日志模块的 action.* 翻译。
   const actionLabel = (label?: string): string => {
