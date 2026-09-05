@@ -540,7 +540,8 @@ async function updateTenant() {
       status: formData.value.status,
       remark: formData.value.remark,
       planId: formData.value.subscriptionPlan,
-      expiredAt: formData.value.expiredAt,
+      // proto Timestamp 只接受 RFC3339；空串会触发 protojson 400
+      expiredAt: formData.value.expiredAt || undefined,
     },
   });
 
