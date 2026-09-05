@@ -22,6 +22,7 @@
   "requiredStatus": "Please select status",
   "roleIds": "Roles",
   "roleIdsPlaceholder": "Select roles",
+  "requiredRoleIds": "Please select roles",
   "orgUnitIds": "Organizations",
   "orgUnitIdsPlaceholder": "Select organizations",
   "positionIds": "Positions",

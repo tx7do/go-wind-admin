@@ -156,8 +156,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
     console.log(getTitle.value, Object.keys(planValues));
 
     try {
+      // useCreatePlan 内部已包 { data: {...} }，这里再包一层会让后端解析出空 Plan
       await (data.value?.create
-        ? createPlan({ data: { ...planValues } })
+        ? createPlan({ ...planValues })
         : updatePlan({ id: data.value.row.id, values: planValues }));
 
       notification.success({

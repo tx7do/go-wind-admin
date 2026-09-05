@@ -22,6 +22,7 @@
   "requiredStatus": "请选择状态",
   "roleIds": "角色",
   "roleIdsPlaceholder": "请选择角色",
+  "requiredRoleIds": "请选择角色",
   "orgUnitIds": "组织",
   "orgUnitIdsPlaceholder": "请选择组织",
   "positionIds": "职位",

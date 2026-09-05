@@ -205,8 +205,12 @@ const UserDrawer: React.FC<UserDrawerProps> = ({
         fieldProps={{ allowClear: true }}
       />
 
-      {/* 角色 - TreeSelect 多选 */}
-      <Form.Item name="roleIds" label={t('roleIds')}>
+      {/* 角色 - TreeSelect 多选（后端要求 role_ids 必填，必填校验前置避免裸 400） */}
+      <Form.Item
+        name="roleIds"
+        label={t('roleIds')}
+        rules={mode === 'create' ? [{ required: true, message: t('requiredRoleIds') }] : undefined}
+      >
         <TreeSelect
           treeData={roleTreeData}
           placeholder={t('roleIdsPlaceholder')}
