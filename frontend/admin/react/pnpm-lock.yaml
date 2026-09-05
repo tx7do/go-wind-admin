@@ -104,6 +104,9 @@ importers:
       dayjs:
         specifier: ^1.11.20
         version: 1.11.20
+      dompurify:
+        specifier: ^3.4.14
+        version: 3.4.14
       echarts:
         specifier: ^6.1.0
         version: 6.1.0
@@ -2950,6 +2953,9 @@ packages:
 
   dompurify@3.2.7:
     resolution: {integrity: sha512-WhL/YuveyGXJaerVlMYGWhvQswa7myDG17P7Vu65EWC05o8vfeNbvNf4d/BOvH99+ZW+LlQsc1GDKMa1vNK6dw==}
+
+  dompurify@3.4.14:
+    resolution: {integrity: sha512-dVoH9z+MY+C9IilgGCk3YfFqjLi3fChm2OiKJMzh6axrJ5qwxqWaZamgmHrpv22CN/KdbZJuGEGgfQoL00LTdg==}
 
   domutils@1.5.0:
     resolution: {integrity: sha512-389qXukJlNZvjy3XHPpMc295cZsUus5XklwdkeMqJWlro86MbHg7WH8FMoIEC4VeAlKjFTdGeDgRr+mjJ8bZFg==}
@@ -8579,6 +8585,10 @@ snapshots:
       domelementtype: 2.3.0
 
   dompurify@3.2.7:
+    optionalDependencies:
+      '@types/trusted-types': 2.0.7
+
+  dompurify@3.4.14:
     optionalDependencies:
       '@types/trusted-types': 2.0.7
 

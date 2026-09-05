@@ -1,7 +1,7 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import type { ProColumns, ActionType } from '@ant-design/pro-components';
 import { ProTable } from '@ant-design/pro-components';
-import { Popconfirm, Tag, App } from 'antd';
+import { Button, Popconfirm, Tag, App } from 'antd';
 import { DeleteOutlined, CheckOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -15,6 +15,7 @@ import {
 } from '@/api/hooks/internal-message';
 import { useProTableScrollY } from '@/hooks/useProTableScrollY';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
+import { InboxDetailDrawer } from './components/InboxDetailDrawer';
 import { getRecipientStatusMap, getRecipientStatusOptions } from './constants';
 
 /**
@@ -32,15 +33,42 @@ const InboxList = () => {
 
   const statusMap = getRecipientStatusMap(t);
 
+  // 全文阅读抽屉
+  const [detailOpen, setDetailOpen] = useState(false);
+  const [detailRecord, setDetailRecord] = useState<InboxItem | null>(null);
+
+  const refreshInbox = () => {
+    actionRef.current?.reload();
+    queryClient.invalidateQueries({ queryKey: ['listUserInbox'] });
+    // 顶栏通知徽标（inboxPreview 查询）同步刷新
+    queryClient.invalidateQueries({ queryKey: ['inboxPreview'] });
+  };
+
   // 标记已读
   const markReadMutation = useMarkNotificationAsRead({
     onSuccess: () => {
       message.success(t('markReadSuccess'));
-      actionRef.current?.reload();
-      queryClient.invalidateQueries({ queryKey: ['listUserInbox'] });
+      refreshInbox();
     },
     onError: (error: Error) => {
       message.error(error.message || t('markReadFailed'));
+    },
+  });
+
+  // 打开全文抽屉时的静默已读（不弹 toast，列表与徽标仍刷新）
+  const silentMarkReadMutation = useMarkNotificationAsRead({
+    onSuccess: refreshInbox,
+    onError: () => {},
+  });
+
+  // 一键全部已读（后端约定：recipientIds 为空 = 该用户全部未读）
+  const markAllReadMutation = useMarkNotificationAsRead({
+    onSuccess: () => {
+      message.success(t('markAllReadSuccess'));
+      refreshInbox();
+    },
+    onError: (error: Error) => {
+      message.error(error.message || t('markAllReadFailed'));
     },
   });
 
@@ -48,13 +76,24 @@ const InboxList = () => {
   const deleteMutation = useDeleteNotificationFromInbox({
     onSuccess: () => {
       message.success(t('deleteSuccess'));
-      actionRef.current?.reload();
-      queryClient.invalidateQueries({ queryKey: ['listUserInbox'] });
+      refreshInbox();
     },
     onError: (error: Error) => {
       message.error(error.message || t('deleteFailed'));
     },
   });
+
+  const openDetail = (record: InboxItem) => {
+    setDetailRecord(record);
+    setDetailOpen(true);
+    // 打开即已读：未读（RECEIVED）消息在阅读时静默标记
+    if (record.status === 'RECEIVED' && record.id) {
+      silentMarkReadMutation.mutate({
+        userId: record.recipientUserId,
+        recipientIds: [record.id],
+      });
+    }
+  };
 
   // 列配置
   const columns: ProColumns<InboxItem>[] = [
@@ -62,6 +101,11 @@ const InboxList = () => {
       title: t('title'),
       dataIndex: 'title',
       ellipsis: true,
+      render: (_, record) => (
+        <a onClick={() => openDetail(record)} style={{ cursor: 'pointer' }}>
+          {record.title || '-'}
+        </a>
+      ),
     },
     {
       title: t('status'),
@@ -179,12 +223,28 @@ const InboxList = () => {
             setting: true,
             reload: true,
           }}
+          toolBarRender={() => [
+            <Button
+              key="mark-all-read"
+              icon={<CheckOutlined />}
+              loading={markAllReadMutation.isPending}
+              onClick={() => markAllReadMutation.mutate({ userId, recipientIds: [] })}
+            >
+              {t('markAllRead')}
+            </Button>,
+          ]}
           size="middle"
           bordered
           cardBordered={false}
           scroll={{ y: tableScrollY }}
         />
       </div>
+
+      <InboxDetailDrawer
+        open={detailOpen}
+        record={detailRecord}
+        onClose={() => setDetailOpen(false)}
+      />
     </ContentContainer>
   );
 };

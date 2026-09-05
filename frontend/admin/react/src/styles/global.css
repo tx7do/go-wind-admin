@@ -92,6 +92,12 @@ body {
     border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
+/* ========== 顶栏通知弹层 ========== */
+/* 列表项悬停底色（rounded 行卡片式交互） */
+.notification-item:hover {
+    background: var(--ant-color-fill-tertiary) !important;
+}
+
 /* 应用级主题变量：导航层（侧栏/顶栏/标签栏）背景
    暗色取 gray-900 #111827（画布与卡片之间的次暗层）。
    亮色必须是字面量：此变量定义在 <html> 上，而 antd v6 的

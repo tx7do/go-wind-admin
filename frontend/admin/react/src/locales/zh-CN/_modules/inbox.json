@@ -25,5 +25,11 @@
     "READ": "已读",
     "REVOKED": "已撤回",
     "DELETED": "已删除"
-  }
+  },
+  "markAllRead": "全部已读",
+  "markAllReadSuccess": "已全部标记为已读",
+  "markAllReadFailed": "全部已读操作失败",
+  "detailTitle": "消息详情",
+  "unreadCount": "{{count}} 条未读",
+  "noMessages": "暂无消息"
 }

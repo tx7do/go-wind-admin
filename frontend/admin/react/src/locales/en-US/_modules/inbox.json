@@ -25,5 +25,11 @@
     "READ": "Read",
     "REVOKED": "Revoked",
     "DELETED": "Deleted"
-  }
+  },
+  "markAllRead": "Mark All Read",
+  "markAllReadSuccess": "All messages marked as read",
+  "markAllReadFailed": "Failed to mark all as read",
+  "detailTitle": "Message Detail",
+  "unreadCount": "{{count}} unread",
+  "noMessages": "No messages"
 }
