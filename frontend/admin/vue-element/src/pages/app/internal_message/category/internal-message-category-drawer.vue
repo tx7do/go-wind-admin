@@ -146,11 +146,14 @@ async function handleSubmit() {
   try {
     loading.value = true;
 
+    // InternalMessageCategory proto 没有 remark 字段，残留会进 updateMask 触发 invalid field mask 500
+    const { remark: _ignoredRemark, ...payload } = formData;
+
     if (isCreate.value) {
-      await createMessageCategory({ data: formData });
+      await createMessageCategory({ data: payload });
       ElMessage.success($t("common.notification.createSuccess"));
     } else {
-      await updateMessageCategory({ id: currentId.value!, values: formData });
+      await updateMessageCategory({ id: currentId.value!, values: payload });
       ElMessage.success($t("common.notification.updateSuccess"));
     }
 

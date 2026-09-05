@@ -178,6 +178,11 @@ async function handleSubmit() {
 
     const values = { ...formData };
 
+    // proto target_id 是 uint32：空串/undefined 会触发 protojson 400，留空不传
+    if (values.targetId === "" || values.targetId === undefined || values.targetId === null) {
+      delete values.targetId;
+    }
+
     if (isCreate.value) {
       await createLoginPolicy(values);
       ElMessage.success($t("common.notification.createSuccess"));
