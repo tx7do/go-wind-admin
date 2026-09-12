@@ -86,6 +86,15 @@ html.dark {
   --el-border-color-lighter: rgba(255, 255, 255, 0.06);
   --el-border-color-extra-light: rgba(255, 255, 255, 0.04);
 
+  // 卡片内部背景变量归位：EP dark 有 html.dark .el-card { --el-fill-color-blank:
+  // var(--el-card-bg-color) }，而 --el-card-bg-color 暗色下 = 浮层色 #1C2128，
+  // 导致卡片内所有 select/输入类控件发灰（用户管理树面板、租户列表下拉实测）。
+  // 需直接在 .el-card 上覆盖（元素级定义会压过 html.dark 继承）。
+  .el-card {
+    --el-card-bg-color: var(--el-bg-color);
+    --el-fill-color-blank: var(--el-bg-color);
+  }
+
   // ============================================
   // 卡片表面色修正（design-language.md §2.3）
   // EP 暗色把 el-card 背景映射到 --el-bg-color-overlay（浮层色 #1C2128，中性灰调），
