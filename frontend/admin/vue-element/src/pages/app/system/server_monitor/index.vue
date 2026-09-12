@@ -1,5 +1,5 @@
 <template>
-  <div class="server-monitor-page">
+  <div class="server-monitor-page app-container">
     <template v-if="isLoading">
       <el-card shadow="hover" class="mb-4">
         <div class="loading-wrap"><el-skeleton :rows="3" animated /></div>
@@ -93,7 +93,9 @@ function fmtUptime(seconds?: number | string): string {
 
 <style lang="scss" scoped>
 .server-monitor-page {
-  padding: 4px 0;
+  // 留白由 app-container 统一施加（§2.6），此处不再自带 padding
+  width: 100%;
+  min-width: 0;
 }
 .card-header {
   display: flex;

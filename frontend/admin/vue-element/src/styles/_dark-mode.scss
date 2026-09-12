@@ -104,9 +104,10 @@ html.dark {
   // ============================================
   .el-card {
     background-color: var(--el-bg-color);
-    // 暗色下卡片分层靠色差与边框，不用投影：EP dark 的 --el-box-shadow 是
-    // 72% 黑晕，窄间距卡片间会叠出「黑缝」（用户详情 tab 卡片间实测）
-    box-shadow: none;
+    // 暗色分层：EP dark 的 --el-box-shadow 是 72% 黑晕（窄间距卡片间叠出「黑缝」），
+    // 但完全无投影又会因卡片(9%L)与画布(7%L)色差过小而边界感塌陷、缝隙成「黑沟」。
+    // 取静默态轻投影，保持克制不发光（§2.2 投影精神的暗色对应）。
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.36);
   }
 
   // 描述表（el-descriptions，bordered）body 同理归位表面色：
