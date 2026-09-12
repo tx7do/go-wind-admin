@@ -82,6 +82,10 @@ html.dark {
   --el-fill-color-lighter: rgba(255, 255, 255, 0.03);
   --el-fill-color-extra-light: rgba(255, 255, 255, 0.02);
 
+  // 弱边框两档 → α 白（EP 暗色默认 #363637/#2b2b2c 中性灰，同底不同温）
+  --el-border-color-lighter: rgba(255, 255, 255, 0.06);
+  --el-border-color-extra-light: rgba(255, 255, 255, 0.04);
+
   // ============================================
   // 卡片表面色修正（design-language.md §2.3）
   // EP 暗色把 el-card 背景映射到 --el-bg-color-overlay（浮层色 #1C2128，中性灰调），
@@ -90,6 +94,16 @@ html.dark {
   // 不带 !important：组件 scoped 样式仍可按需覆盖。
   // ============================================
   .el-card {
+    background-color: var(--el-bg-color);
+    // 暗色下卡片分层靠色差与边框，不用投影：EP dark 的 --el-box-shadow 是
+    // 72% 黑晕，窄间距卡片间会叠出「黑缝」（用户详情 tab 卡片间实测）
+    box-shadow: none;
+  }
+
+  // 描述表（el-descriptions，bordered）body 同理归位表面色：
+  // EP 暗色默认浮层色 #1C2128 会让用户详情等页的信息表在卡片上呈「灰块」，
+  // label/值格的 §2.3 α 白在表面色上才能均匀浮起
+  .el-descriptions__body {
     background-color: var(--el-bg-color);
   }
 
