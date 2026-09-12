@@ -7,6 +7,7 @@ import type { LoginTrendResponse } from "@/api/generated/admin/service/v1";
 
 import { EchartsUI, EchartsUIType, useEcharts } from "@/plugins/echarts";
 import { usePreferences } from "@/core/preferences";
+import { getChartPrimary, hexToRgba } from "@/utils/chart-palette";
 
 const props = defineProps<{
   data?: LoginTrendResponse;
@@ -20,8 +21,10 @@ const { isDark } = usePreferences();
 // 后端已按日补零、升序返回 points。
 const chartOptions = computed(() => {
   const points = props.data?.points ?? [];
+  // 主色跟随运行时主题（对齐 react 端 LineChart 的 token.colorPrimary）
+  const primary = getChartPrimary();
   return {
-    color: ["#4080ff"],
+    color: [primary],
     grid: {
       bottom: 24,
       left: 40,
@@ -33,8 +36,8 @@ const chartOptions = computed(() => {
         areaStyle: {
           color: {
             colorStops: [
-              { offset: 0, color: "rgba(64,128,255,0.25)" },
-              { offset: 1, color: "rgba(64,128,255,0.02)" },
+              { offset: 0, color: hexToRgba(primary, 0.25) },
+              { offset: 1, color: hexToRgba(primary, 0.02) },
             ],
             x: 0,
             x2: 0,
@@ -62,7 +65,7 @@ const chartOptions = computed(() => {
       },
       axisPointer: {
         lineStyle: {
-          color: "#4080ff",
+          color: primary,
           opacity: 0.3,
           width: 1,
         },

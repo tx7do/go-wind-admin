@@ -104,15 +104,15 @@
 }
 
 // ============================================
-// 浅色模式配色
+// 浅色模式配色（对齐 design-language.md §2.2/§4：表头 #F0F2F5 系、文字 zinc 系、边框 #E4E4E7）
 [data-vxe-ui-theme="light"] {
-  --vxe-ui-table-header-background-color: #EBEDF0;
-  --vxe-ui-table-header-font-color: #1d2129;
+  --vxe-ui-table-header-background-color: #F0F2F5;
+  --vxe-ui-table-header-font-color: #1F2937;
   --vxe-ui-table-body-background-color: #ffffff;
   --vxe-ui-table-row-striped-background-color: #f8f9fb;
   --vxe-ui-table-row-hover-background-color: #f0f2f5;
   --vxe-ui-table-row-hover-striped-background-color: #f0f2f5;
-  --vxe-ui-table-border-color: #e4e7ed;
+  --vxe-ui-table-border-color: #E4E4E7;
 }
 
 // ============================================

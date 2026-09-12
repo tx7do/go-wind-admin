@@ -136,7 +136,7 @@ const statusDistQuery = useLoginStatusDistribution();
     }
 
     .overview-header__icon {
-      background: rgba(64, 128, 255, 0.15);
+      background: rgba(0, 107, 230, 0.15); // 主色 15% α（design-language.md §2.3）
     }
   }
 

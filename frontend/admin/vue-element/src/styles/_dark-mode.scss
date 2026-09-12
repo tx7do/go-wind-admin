@@ -19,7 +19,10 @@ html.dark {
   --el-font-weight-bold: 600 !important;
   // 暗黑文字色：放弃纯白#fff，用柔和灰白显厚重
   --el-text-color-primary: #F8FAFC !important;     // 主要文字（标题、正文）
-  --el-text-color-regular: #F8FAFC !important;     // 常规文字（表单 Label、提示）
+  // 常规文字降一档（design-language.md §2.3：主 #F8FAFC / 表单标签 #DCE3ED / 次 #8B949E），
+  // 避免 Label/正文/标题全部同亮导致层次拉平
+  --el-text-color-regular: #DCE3ED !important;     // 常规文字（表单 Label、表格正文）
+  --el-text-color-secondary: #8B949E !important;   // 次要文字（冷调灰，对齐规范）
   --el-text-color-placeholder: #9CA3AF !important; // 占位符文字（对齐 vben：提亮至 gray-400）
   
   // 暗黑模式下给文本增加极微小的字间距，强迫 Windows 浏览器重新对齐像素点
@@ -34,28 +37,27 @@ html.dark {
   --dark-bg-hover: rgba(255, 255, 255, 0.08);         // 悬浮态/展开态/表头/行 hover(hover 态微高亮,给用户明确的交互反馈)
   --dark-border: rgba(255, 255, 255, 0.1);           // 输入框边框/分割线/表格边框(柔化降燥——旧值 #3a3f4a 过硬,纯黑背景下显得粗糙刺眼)
     
-  // Drawer 专属层级（比页面主背景亮 3 个灰度层级，配合环境光投影，让抽屉「浮」起来）
-  --dark-bg-drawer: #111827;         // Drawer 主背景（偏暖色调，比页面底色明显提亮，拉开层级距离）
-  --dark-bg-drawer-header: #111827;  // Drawer Header 背景（微暗于 body，标题区与内容区形成自然分割）
-  --dark-bg-drawer-footer: #111827;  // Drawer Footer 背景（与 header 统一，锚定操作区）
-  --dark-bg-drawer-input: #161F33;   // Drawer 内输入框背景（比 body 暗，形成「凹入」深度感）
-  --dark-drawer-border: rgba(255, 255, 255, 0.06); // Drawer 分割线（微透明白，现代半透明分割感）
-  --dark-drawer-input-border: #313540; // Drawer 内输入框边框（比全局边框更亮，提升可辨识度）
+  // Drawer 专属层级（design-language.md §2.3：输入控件与表面同层，仅靠边框区分；
+  // 原「凹入 + 提亮」L2 方案已废弃，避免抽屉输入框与页面输入框两套形态）
+  --dark-bg-drawer: #111827;         // Drawer 主背景（L1 表面）
+  --dark-bg-drawer-header: #111827;  // Drawer Header 背景
+  --dark-bg-drawer-footer: #111827;  // Drawer Footer 背景
+  --dark-bg-drawer-input: #111827;   // Drawer 内输入框背景（与表面同层）
+  --dark-drawer-border: rgba(255, 255, 255, 0.08); // Drawer 分割线（§2.3 分隔线 α）
+  --dark-drawer-input-border: rgba(255, 255, 255, 0.1); // 输入框边框（§2.3 输入类 α 方案）
   --dark-drawer-shadow: 
     -8px 0 32px rgba(0, 0, 0, 0.5),          // 主投影：左侧深黑阴影
     -2px 0 8px rgba(0, 0, 0, 0.3),            // 近投影：贴近边缘的紧凑阴影
     -1px 0 1px rgba(100, 120, 200, 0.08);     // 环境光：极淡蓝紫微光，赋予空间深度
   
-  // 奇偶行背景色(核心解决生硬割裂问题)
-  --dark-row-odd: #0F1218;          // 奇数行背景(微提亮,和偶数行形成 1 个灰度级区分,不破坏暗黑基底)
-  --dark-row-even: #161A23;         // 偶数行背景(用深灰替代纯白,既保留奇偶区分,又完全融入暗黑体系)
+  // 奇偶行斑马纹（§2.3 填充 α 方案；--dark-row-odd/even 旧变量已废弃删除）
   --dark-header: #1F2937;           // 表头背景(微提亮,和数据行层级更清晰)
-    
-  // 文本色层级体系（背景越深，文本越亮）
-  --dark-text-primary: #ffffff;       // 一级文本：表头主文本/选中菜单项/核心标题（纯白，最强对比）
-  --dark-text-secondary: #b3b3b3;     // 二级文本：未选中菜单项/面包屑非当前页/辅助说明（亮灰，WCAG 4.5:1）
-  --dark-text-placeholder: #9ca3af;   // 三级文本：占位符/时间戳/辅助说明（中灰，辅助信息，暗色下适当提亮以区分输入框背景）
-  --dark-text-data: #CFD3DC;          // 数据文本：表格数据行主体（柔和灰白，清晰可读不刺眼，避免纯白光晕效应）
+
+  // 文本色层级体系（design-language.md §2.3）
+  --dark-text-primary: #F8FAFC;       // 一级文本：表头主文本/选中菜单项/核心标题
+  --dark-text-secondary: #8B949E;     // 二级文本：未选中菜单项/面包屑非当前页/辅助说明（冷调灰，WCAG 4.5:1）
+  --dark-text-placeholder: #9ca3af;   // 三级文本：占位符/时间戳/辅助说明
+  --dark-text-data: #CFD3DC;          // 数据文本：表格数据行主体（柔和灰白，避免纯白光晕效应）
 
   // 2. 色彩体系（跟随用户主题色）
   --dark-primary: var(--el-color-primary);       // 主色（跟随主题）
@@ -71,6 +73,47 @@ html.dark {
   --el-fill-color-blank: var(--dark-bg-table);
   --el-border-color: var(--dark-border);
   --el-border-color-light: var(--dark-border);
+
+  // 填充色四阶 → §2.3 α 白方案（EP 暗色默认是中性灰 hex，与蓝黑底冷暖打架；
+  // 影响 hover/禁用/占位等所有 fill 消费者，含个人中心头像占位圆）
+  --el-fill-color-dark: rgba(255, 255, 255, 0.14);
+  --el-fill-color: rgba(255, 255, 255, 0.09);
+  --el-fill-color-light: rgba(255, 255, 255, 0.05);
+  --el-fill-color-lighter: rgba(255, 255, 255, 0.03);
+  --el-fill-color-extra-light: rgba(255, 255, 255, 0.02);
+
+  // ============================================
+  // 卡片表面色修正（design-language.md §2.3）
+  // EP 暗色把 el-card 背景映射到 --el-bg-color-overlay（浮层色 #1C2128，中性灰调），
+  // 导致个人中心等 is-always-shadow 卡片呈「死灰大面板」，与全站表面 #111827 冷调
+  // 打架。卡片/容器 = L1 表面，不是浮层；浮层语义（下拉/弹窗/Popover）走 el-popper 系。
+  // 不带 !important：组件 scoped 样式仍可按需覆盖。
+  // ============================================
+  .el-card {
+    background-color: var(--el-bg-color);
+  }
+
+  // ============================================
+  // 全局暗色滚动条（浏览器默认亮灰滚动条在暗底上刺眼）
+  // 与 Drawer 内滚动条（6px 细条）保持同一形态
+  // ============================================
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 3px;
+
+    &:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+  }
 
   // ============================================
   // 表单和 Drawer 专项优化
@@ -297,17 +340,17 @@ html.dark {
 
   // ============================================
   // Drawer/Dialog 内专属输入控件覆盖
-  // 参考现代暗黑模式设计：输入框凹入 + 更亮边框 + 呼吸灯聚焦
+  // 与页面输入控件同形态：同层背景 + §2.3 α 边框 + 主色聚焦
   // ============================================
   .el-drawer .el-form,
   .el-dialog .el-form {
-    // 输入框 & 文本域 — 背景凹入、边框提亮
+    // 输入框 & 文本域 — 与表面同层，仅靠边框区分
     .el-input__wrapper,
     .el-textarea__inner {
       background-color: var(--dark-bg-drawer-input) !important;
       border-color: var(--dark-drawer-input-border) !important;
       box-shadow: 0 0 0 1px var(--dark-drawer-input-border) inset !important;
-      border-radius: 6px !important;
+      border-radius: 8px !important;
       transition: border-color 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease !important;
 
       // 占位符
@@ -321,11 +364,11 @@ html.dark {
         border-color: rgba(255, 255, 255, 0.2) !important;
       }
 
-      // 聚焦态：主色边框 + 减弱外发光（alpha 0.08，柔和反馈）
+      // 聚焦态：主色边框 + §2.3 主色柔光
       &.is-focus {
         border-color: var(--dark-primary) !important;
         box-shadow: 0 0 0 1px var(--dark-primary) inset,
-                    0 0 0 3px rgba(59, 130, 246, 0.08) !important;
+                    0 0 0 3px rgba(0, 107, 230, 0.12) !important;
       }
 
       // 错误态
@@ -341,7 +384,7 @@ html.dark {
         background-color: var(--dark-bg-drawer-input) !important;
         border-color: var(--dark-drawer-input-border) !important;
         box-shadow: 0 0 0 1px var(--dark-drawer-input-border) inset !important;
-        border-radius: 6px !important;
+        border-radius: 8px !important;
         transition: border-color 0.2s ease, box-shadow 0.2s ease !important;
       }
 
@@ -353,7 +396,7 @@ html.dark {
       .el-input__wrapper.is-focus {
         border-color: var(--dark-primary) !important;
         box-shadow: 0 0 0 1px var(--dark-primary) inset,
-                    0 0 0 3px rgba(59, 130, 246, 0.08) !important;
+                    0 0 0 3px rgba(0, 107, 230, 0.12) !important;
       }
     }
 
@@ -375,7 +418,7 @@ html.dark {
   .el-date-editor {
     .el-input__wrapper,
     .el-textarea__inner {
-      background-color: var(--dark-bg-input) !important; // 输入框背景比主背景亮 2 个灰度层级
+      background-color: var(--dark-bg-input) !important; // 输入框与表面同层（§2.3）
       border-color: var(--dark-border) !important;       // 加深边框
       box-shadow: 0 0 0 1px var(--dark-border) inset, 
                   inset 0 1px 2px rgba(255, 255, 255, 0.05) !important; // 1px 内阴影，替代纯边框，更有“浮起”的层级感
@@ -398,7 +441,7 @@ html.dark {
       &.is-focus {
         border-color: var(--dark-primary) !important;
         box-shadow: 0 0 0 1px var(--dark-primary) inset,
-                    0 0 0 3px rgba(0, 107, 230, 0.15) !important;
+                    0 0 0 3px rgba(0, 107, 230, 0.12) !important;
         background-color: var(--dark-bg-hover) !important;
       }
   
@@ -484,7 +527,9 @@ html.dark {
 
   // 下拉选择框展开态
   .el-select-dropdown {
-    background-color: var(--dark-bg-hover) !important; // 展开态背景比输入框再亮一级
+    // 浮层底色 = §2.3 bgElevated（实底，不透出下层内容）；
+    // 旧值 --dark-bg-hover（半透明白 8%）是 hover 语义，叠在浮层上会发灰且透底
+    background-color: var(--el-bg-color-overlay) !important;
     border-color: var(--dark-border) !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
 
@@ -498,7 +543,8 @@ html.dark {
 
       &.selected {
         color: var(--dark-primary) !important;
-        background-color: var(--el-color-primary-light-9) !important;
+        // 选中项 = §2.3 主色 15% α（light-9 在暗色浮层上是近黑条，与主色无关）
+        background-color: rgba(0, 107, 230, 0.15) !important;
         font-weight: 500 !important;
       }
     }
@@ -804,52 +850,54 @@ html.dark {
 
   // 状态标签颜色优化
   // Tag 和操作按钮视觉分离：Tag 更扁更柔、无交互感；按钮有边框有 hover
-  // 覆盖所有 effect（light/plain/dark），确保暗色模式下统一为半透明背景 + 亮色文字
+  // 覆盖所有 effect（light/plain/dark），确保暗色模式下统一为语义色 α 底 + 亮色文字。
+  // 色值跟随 design-language.md §2.1 语义色（随主色/语义色迁移联动，禁止再回旧 tailwind 色板）。
   .el-tag {
     border-radius: 3px !important; // 暗黑模式再小一点，和按钮的 6px 明显区分
     cursor: default !important; // 不可点击，和按钮区分
     // Tag 文字字重提粗：暗黑底上 450 偏细，500 厚实
     font-weight: 500 !important;
 
-    // 主色调（天空蓝，柔化降噪）
+    // 主色调（§2.1 主色 hsl(212 100% 45%) 的 α 衍生；文字提亮至 L65% 保证暗底可读）
     &.el-tag--primary {
-      background-color: rgba(96, 165, 250, 0.12) !important;
-      border-color: rgba(96, 165, 250, 0.2) !important;
-      color: #60a5fa !important; // 天空蓝，比 #409EFF 更柔
+      background-color: rgba(0, 107, 230, 0.15) !important;
+      border-color: rgba(0, 107, 230, 0.35) !important;
+      color: hsl(212, 100%, 65%) !important;
     }
 
-    // 成功态（薄荷绿，柔化降噪）
+    // 成功态（§2.1 success hsl(144 57% 58%)）
     &.el-tag--success {
-      background-color: rgba(52, 211, 153, 0.10) !important;
-      border-color: rgba(52, 211, 153, 0.18) !important;
-      color: #34d399 !important; // 薄荷绿
+      background-color: rgba(87, 209, 136, 0.12) !important;
+      border-color: rgba(87, 209, 136, 0.3) !important;
+      color: #57d188 !important;
     }
 
-    // 警告态（琥珀，柔化降噪）
+    // 警告态（§2.1 warning hsl(42 84% 61%)）
     &.el-tag--warning {
-      background-color: rgba(251, 191, 36, 0.12) !important;
-      border-color: rgba(251, 191, 36, 0.2) !important;
-      color: #fbbf24 !important; // 柔化琥珀
+      background-color: rgba(239, 189, 72, 0.12) !important;
+      border-color: rgba(239, 189, 72, 0.3) !important;
+      color: #efbd48 !important;
     }
 
-    // 危险态（珊瑚红，柔化降噪）
+    // 危险态（§2.1 destructive hsl(348 100% 61%)）
     &.el-tag--danger {
-      background-color: rgba(248, 113, 113, 0.12) !important;
-      border-color: rgba(248, 113, 113, 0.2) !important;
-      color: #f87171 !important; // 柔和珊瑚红
+      background-color: rgba(255, 56, 96, 0.12) !important;
+      border-color: rgba(255, 56, 96, 0.3) !important;
+      color: #ff3860 !important;
     }
 
-    // 信息态（石板灰，柔化降噪）
+    // 信息态（石板灰，§2.2 灰阶 slate 族）
     &.el-tag--info {
       background-color: rgba(148, 163, 184, 0.12) !important;
-      border-color: rgba(148, 163, 184, 0.18) !important;
-      color: #94a3b8 !important; // 石板灰
+      border-color: rgba(148, 163, 184, 0.3) !important;
+      color: #94a3b8 !important;
     }
   }
 
   // ---- 下拉框展开态优化（和暗黑模系统一） ----
   .el-select-dropdown {
-    background-color: var(--dark-bg-hover) !important;
+    // 同上：浮层实底 + hover 语义仅用于列表项
+    background-color: var(--el-bg-color-overlay) !important;
     border-color: var(--dark-border) !important;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4) !important;
 
@@ -863,7 +911,7 @@ html.dark {
 
       &.selected {
         color: var(--dark-primary) !important;
-        background-color: var(--el-color-primary-light-9) !important;
+        background-color: rgba(0, 107, 230, 0.15) !important;
         font-weight: 500 !important;
       }
     }
@@ -874,16 +922,15 @@ html.dark {
   // ============================================
 
   // ---- 3. 表头视觉统治力重塑（vxe-table 暗色模式） ----
-  // 表头背景需比表体亮一阶以形成结构层级（表体 #161F33，表头 #1F2937），
-  // 与 _vxe-table.scss 暗色块保持一致；此处仅统一字体色与边框色。
-  // 旧值 #111419 比表体还暗，导致表头与表体/空态区融合。
+  // 表头背景需比表体亮一阶以形成结构层级（表体 #111827，表头 #1F2937），
+  // 与 _vxe-table.scss 暗色块保持一致（含表头文字色 #e5eaf3，两处必须一致）。
   [data-vxe-ui-theme="dark"] {
     --vxe-ui-table-header-background-color: #1F2937 !important;
-    --vxe-ui-table-header-font-color: #8a94a6 !important;
+    --vxe-ui-table-header-font-color: #e5eaf3 !important;
     --vxe-ui-table-header-border-color: var(--dark-border) !important;
     // vxe-table v3 兼容
     --vxe-table-header-background-color: #1F2937 !important;
-    --vxe-table-header-font-color: #8a94a6 !important;
+    --vxe-table-header-font-color: #e5eaf3 !important;
   }
 
   // 表头文字增加 letter-spacing，增强高级感

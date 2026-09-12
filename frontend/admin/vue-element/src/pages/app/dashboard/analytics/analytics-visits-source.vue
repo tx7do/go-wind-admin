@@ -8,6 +8,7 @@ import type { StatusDistributionResponse } from "@/api/generated/admin/service/v
 import { EchartsUI, EchartsUIType, useEcharts } from "@/plugins/echarts";
 import { $t } from "@/core/i18n";
 import { usePreferences } from "@/core/preferences";
+import { CHART_PALETTE } from "@/utils/chart-palette";
 
 const props = defineProps<{
   data?: StatusDistributionResponse;
@@ -50,7 +51,7 @@ const chartOptions = computed(() => {
         animationEasing: "exponentialInOut",
         animationType: "scale",
         avoidLabelOverlap: false,
-        color: ["#4080ff", "#36d399", "#f7ba1e", "#958ce2"],
+        color: [...CHART_PALETTE],
         data: items.map((it) => ({
           name: statusLabel(it.label),
           value: it.count,

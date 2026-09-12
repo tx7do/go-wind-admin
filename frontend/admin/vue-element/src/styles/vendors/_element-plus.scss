@@ -21,8 +21,10 @@
     "danger": (
       "base": #FF3860,
     ),
+    // info 与主色同值：运行时 utils/theme.ts 同样把 info 映射为主色，
+    // 对齐 react 端 antd colorInfo=主色的三端一致映射（design-language.md §2.1），两处值必须一致
     "info": (
-      "base": #86909C,
+      "base": #006BE6,
     ),
   ),
   $bg-color: (

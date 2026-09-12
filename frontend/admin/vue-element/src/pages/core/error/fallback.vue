@@ -167,14 +167,14 @@ function refresh() {
 // 全局样式，不使用 scoped，让 SVG 可以继承 CSS 变量
 .fallback-container {
   // 定义主题色变量，供 SVG 使用
-  --fallback-primary: #0066ff;
+  --fallback-primary: #006be6; // 规范主色 hsl(212 100% 45%)
   --fallback-foreground: #ffffff;
 }
 
 // 深色主题下的颜色
 .dark .fallback-container {
-  --fallback-primary: #409eff;
-  --fallback-foreground: #e5eaf3;
+  --fallback-primary: hsl(212, 100%, 60%); // 暗色下主色提亮一档保持插画可读
+  --fallback-foreground: #f8fafc; // 规范暗色主文字
 }
 </style>
 

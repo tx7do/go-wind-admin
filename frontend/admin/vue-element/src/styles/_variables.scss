@@ -21,20 +21,20 @@ $tags-view-height: 34px;
 // ============================================
 
 :root {
-  // 菜单
+  // 菜单（浅色文字对齐 design-language.md §2.2：常规 #374151 / 主 #1F2937 / 边框 #E4E4E7）
   --menu-background: #fff;
-  --menu-text: #606266;
+  --menu-text: #374151;
   --menu-active-text: var(--el-menu-active-color);
   --menu-hover: #F2F3F5;  // hover 态背景（浅色主题）
 
   // 侧边栏 Logo
   --sidebar-logo-background: #FFFFFF;  // Logo 区背景（和侧边栏完全一致）
-  --sidebar-logo-text-color: #1D2129;  // Logo 文字
-  --sidebar-logo-border-color: #E5E6EB;  // 分割线颜色
+  --sidebar-logo-text-color: #1F2937;  // Logo 文字
+  --sidebar-logo-border-color: #E4E4E7;  // 分割线颜色
 
   // 顶栏（Navbar / Header）
   --navbar-background: #FFFFFF;
-  --navbar-border-color: #E5E6EB;
+  --navbar-border-color: #E4E4E7;
 }
 
 // SCSS 变量映射（供组件使用）

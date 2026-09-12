@@ -29,8 +29,8 @@
 | Token | HSL（权威） | ≈HEX | 用途 |
 |---|---|---|---|
 | `--primary` | `hsl(212 100% 45%)` | `#006BE6` | 主色；react 端 colorInfo 同值（沿用 vben 映射） |
-| `--success` | `hsl(144 57% 58%)` | `#57D1A0` | 成功 |
-| `--warning` | `hsl(42 84% 61%)` | `#EF7A48` | 警告 |
+| `--success` | `hsl(144 57% 58%)` | `#57D188` | 成功（2026-09-13 勘误：原 `#57D1A0` 换算有误，正确值即 ele 端运行时实际值） |
+| `--warning` | `hsl(42 84% 61%)` | `#EFBD48` | 警告（2026-09-13 勘误：原 `#EF7A48` 有误） |
 | `--destructive` | `hsl(348 100% 61%)` | `#FF3860` | 危险/错误（antd colorError、EP danger/error） |
 | `--primary-foreground` | `hsl(0 0% 98%)` | `#FAFAFA` | 主色上的文字 |
 
@@ -186,4 +186,4 @@ Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif
 2. **vue-element 跟进**：主色/语义色 + 暗色底统一 + 尺寸，改动集中在 4 个样式/配置文件。
 3. **vben 收尾**：按最终决议决定是否把暗色 default 主题对齐 react 系 4 个值。
 
-> 维护记录：2026-09-08 首版定稿（基准取 vben 视觉语言 + react 暗色中性色定稿）。
+> 维护记录：2026-09-08 首版定稿（基准取 vben 视觉语言 + react 暗色中性色定稿）；2026-09-13 勘误 2.1 表 success/warning ≈HEX，并补记 vue-element 端收尾迁移（暗色文字层次/抽屉输入同层化/Tag 与图表色板对齐 react/浅色 Arco 灰清除）。
