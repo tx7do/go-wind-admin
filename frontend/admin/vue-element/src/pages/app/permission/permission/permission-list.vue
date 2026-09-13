@@ -199,6 +199,7 @@ function handleSuccess() {
   padding: 20px;
   width: 100%;
   min-width: 0;
-  flex-shrink: 0;
+  // ProSplitter 面板内必须允许收缩（同 permission-group-list）
+  flex-shrink: 1;
 }
 </style>

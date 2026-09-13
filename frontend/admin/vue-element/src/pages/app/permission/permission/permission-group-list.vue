@@ -190,6 +190,8 @@ function handleToolbar(name: string) {
   padding: 20px;
   width: 100%;
   min-width: 0;
-  flex-shrink: 0;
+  // ProSplitter 面板内必须允许收缩：flex-shrink:0 会让内容超宽时整体
+  // 溢出面板（搜索按钮顶进右栏、整页出现横向滚动条）
+  flex-shrink: 1;
 }
 </style>
