@@ -1,5 +1,5 @@
 <template>
-  <ProSplitter :left-size="40" :left-min-size="30" :left-max-size="50">
+  <ProSplitter :left-size="45" :left-min-size="25" :left-max-size="75">
     <template #left>
       <DictTypeList />
     </template>

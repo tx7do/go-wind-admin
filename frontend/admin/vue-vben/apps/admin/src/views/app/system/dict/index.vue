@@ -9,9 +9,9 @@ import DictTypeList from '#/views/app/system/dict/dict-type-list.vue';
 const props = reactive({
   leftCollapsedWidth: 0,
   leftCollapsible: false,
-  leftMaxWidth: 50,
-  leftMinWidth: 40,
-  leftWidth: 40,
+  leftMaxWidth: 75,
+  leftMinWidth: 25,
+  leftWidth: 45,
   rightWidth: 60,
   resizable: true,
   splitHandle: true,
