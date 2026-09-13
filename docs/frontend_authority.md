@@ -54,6 +54,10 @@ async function generateAccess(options: GenerateMenuAndRoutesOptions) {
 
 前端启用办法，修改`.env`配置文件`VITE_ROUTER_ACCESS_MODE`的值为`frontend`：
 
+> 本小节的 env 开关是 **vue-vben** 的机制；react / vue-element 的双模式生成器在
+> `core/router/generators/generate-routes-{frontend,backend}.ts`，开关为运行时偏好
+> `preferences.app.accessMode`——三端对照见下文「三端实现对照」。
+
 ```env
 # 路由的访问模式：frontend，backend
 VITE_ROUTER_ACCESS_MODE=frontend
@@ -105,33 +109,19 @@ message User {
 
 ### 权限码
 
-权限码为接口返回的权限码，通过权限码来判断按钮是否显示，逻辑在`src/store/auth`下：
+权限码为接口返回的权限码，通过权限码来判断按钮是否显示。**三端统一**经
+`apiClient.adminPortalService.GetMyPermissionCode`（admin-portal 域唯一端点）拉取，
+响应同时携带 `codes`（权限码）与 `hiddenFields`（字段级权限黑名单，见下文字段级权限一节）；
+落库到各端的 access store（vue-vben：`accessStore`；react：`userStore.accessCodes`；
+vue-element：`accessStore.accessCodes`）。
 
 ```typescript
-// 获取用户信息并存储到 accessStore 中
-const [fetchUserInfoResult, accessCodes] = await Promise.all([
-    fetchUserInfo(),
-    fetchAccessCodes(),
-]);
-
-userInfo = fetchUserInfoResult;
-
-userStore.setUserInfo(userInfo);
-accessStore.setAccessCodes(accessCodes.codes);
-
-/**
- * 拉取用户信息
- */
-async function fetchUserInfo() {
-    return (await defAuthnService.GetMe({ id: 0 })) as UserInfo;
-}
-
-/**
- * 获取用户权限码
- */
-async function fetchAccessCodes() {
-    return await defRouterService.ListPermissionCode({});
-}
+// 三端登录流的公共形态（composables/hooks 层封装）：
+const me = await getMe();                       // 用户信息（含 roles）
+const codes = await getMyPermissionCode();      // { codes, hiddenFields }
+userStore.setUser(me);
+accessStore.setAccessCodes(codes.codes);        // 按钮级权限码
+accessStore.setHiddenFields(codes.hiddenFields); // 字段级权限黑名单
 ```
 
 权限码返回的数据结构为字符串数组，例如：`['AC_100100', 'AC_100110', 'AC_100120', 'AC_100010']`
@@ -271,6 +261,24 @@ const { hasAccessByRoles } = useAccess();
   </Button>
 </template>
 ```
+
+### 三端实现对照
+
+三端的访问控制子系统 API 同构、实现位置与个别语义有差异：
+
+| | vue-vben | react | vue-element |
+|---|---|---|---|
+| 子系统位置 | `@vben/access`（框架包） | `src/core/access/`（`access-control.tsx` + `use-access.ts`） | `src/core/access/`（`access-control.vue` + `use-access.ts` + `directive.ts`） |
+| 组件式 | `AccessControl`（`type="code"\|"role"`） | `AccessControl`（`type="code"\|"role"\|"authority"`，另支持 `fallback`） | `AccessControl`（对齐 vben） |
+| Hook 式 | `hasAccessByRoles` / `hasAccessByCodes` | `hasAccessByRoles` / `hasAccessByCodes` / `hasAccessByAuthority`（roles ∪ codes 混合判定，对应路由 `meta.authority`） | `hasAccessByRoles` / `hasAccessByCodes` / `hasAccess`（roles ∪ codes 并集） |
+| 指令式 | `v-access:code` / `v-access:role` | 无（React 无指令机制） | `v-access`（混合判定，无权限 `el.remove()`） |
+| 权限码匹配语义 | **精确匹配** | **精确匹配** | **精确 + 前缀授权**：用户持 `sys:a` 即判过 `sys:a:b`（`requiredCode.startsWith(userCode + ":")`）——**比另两端宽** |
+| 路由双模式 | `@vben/router` + `VITE_ROUTER_ACCESS_MODE`（env） | `src/core/router/generators/generate-routes-{frontend,backend}.ts` + `preferences.app.accessMode`（运行时偏好，可 `toggleAccessMode` 切换） | 同 react（`core/router/generators/` + `preferences.app.accessMode`） |
+| 权限码/菜单端点 | 权限码三端统一 `adminPortalService.GetMyPermissionCode`（codes+hiddenFields）；后端模式的菜单下发经同域 `GetNavigation`（返回 `ListRouteResponse` 菜单路由） | 同左 | 同左 |
+
+**移植警示**：三端按钮/路由权限码的匹配语义不一致（上表"权限码匹配语义"行）——
+同一权限码集合在 vue-element 下可判过另两端拒绝的前缀子码。跨端移植受控按钮前按目标端语义核对；
+长期应对齐（收敛或显式声明各端语义差异为产品决策）。
 
 ## 字段级权限
 

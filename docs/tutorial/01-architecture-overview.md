@@ -79,7 +79,7 @@ PostgreSQL / MySQL
 | 数据范围 | 角色级行过滤（五档），令牌承载聚合结果 | ent 隐私层（逐表 opt-in） | [data_scope_design.md](../data_scope_design.md) |
 | 字段级权限 | 角色黑名单字段，服务端响应裁剪 + 前端隐藏 | 响应包装器 + 三端 access store | [frontend_authority.md](../frontend_authority.md) |
 | 审计日志 | 六类日志全覆盖，含 SQL 级 data access 采集与词法脱敏 | `pkg/middleware/logging`、driver 包装器 | [audit-log-producer-design.md](../audit-log-producer-design.md) |
-| 异步任务 | asynq 调度（cron/周期），Redis 队列 | `internal/service` 任务桥 | 第 8 章（脚本任务侧） |
+| 异步任务 | asynq 调度（cron/周期），Redis 队列 | `internal/service` 任务桥 | [task_system.md](../task_system.md) |
 | 脚本系统 | Lua/JS 脚本级插件：实体钩子/定时任务/事件/HTTP 出站 | `pkg/scripting` + 管理页 | [script_system.md](../script_system.md) |
 | 对象存储 | MinIO（S3 兼容），预签名上传下载，元数据落库 | `internal/data` 文件模块 | [backend_file_upload.md](../backend_file_upload.md) |
 

@@ -131,8 +131,9 @@ resource_type=tenant）。
 
 到期扫描是 asynq 固定分发订阅（type=`TenantExpiryScanTaskType`）的系统级周期任务，
 handler 为 `TaskService.AsyncTenantExpiryScan`。它**不在** sys_tasks 表（任务管理页不可见、
-不可停），删除/停用只能改代码。租户自建任务体系（sys_tasks + 任务管理页）是另一套，
-`script_task` 型见 [script_system.md](./script_system.md)。
+不可停），删除/停用只能改代码。任务调度体系的完整机制（启动链、装载、其他系统级任务、
+排障）见 [task_system.md](./task_system.md)；租户自建任务体系（sys_tasks + 任务管理页）
+是另一套，`script_task` 型见 [script_system.md](./script_system.md)。
 
 ## 6. 模块白名单联动（新模块上线 checklist）
 

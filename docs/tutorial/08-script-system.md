@@ -78,5 +78,6 @@ Lua 与 JS 模块能力一致（`log`/`crypto`/`util`/`cache`/`eventbus`/`oss`/`
 ## 深读
 
 - [script_system.md](../script_system.md) —— 五类扩展点 API、安全模型、语言/沙箱差异、运维的唯一权威说明
+- [task_system.md](../task_system.md) —— 脚本任务桥的宿主系统：调度生命周期、task_payload 装载语义、系统级任务注册面
 
 下一步：[09 · 部署上线](./09-deployment.md)。

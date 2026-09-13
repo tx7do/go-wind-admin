@@ -144,6 +144,41 @@ directUploadFile 在上传前施加多层校验，定义见 `pkg/oss/constants.g
 
 ---
 
+## 签名公开访问 URL 与图片代理
+
+服务端中转上传成功后，除走鉴权 API 的下载地址外，另返回一个**签名公开访问 URL**（`UploadFileResponse.PublicUrl`），供富文本编辑器等场景直接以 `<img>` 内嵌引用。
+
+### URL 形态与签名机制
+
+```
+GET /admin/v1/file/image?path={bucket}/{object}&expires={unix}&sig={hmac}
+sig = HMAC-SHA256(GOWIND_CRYPTO_KEY, "{path}|{expires}")   // hex
+```
+
+- **密钥**：`GOWIND_CRYPTO_KEY` 环境变量（`pkg/crypto/hmac.go` 的全局加密器）。
+  **未配置时 SignData 报错，PublicUrl 返回空串**——上传与下载不受影响，仅富文本内嵌预览不可用（前端编辑器拿不到公开 URL）。
+- **有效期**：`mediaURLTTL = 365 天`（常量，`file_transfer_service.go`）。已嵌入历史富文本的图片链接在该期限内可访问。
+- **验签**：`crypto.VerifyData`，内部 `hmac.Equal` **恒定时间比较**（防时序侧信道）。
+
+### 代理端点（`ServeImageHandler`）
+
+- 路由 `GET /admin/v1/file/image` 注册于 `i_file_transfer_http.pb.go` 的**手动注册块**——该路由不设 `http.SetOperation`，
+  而 auth 中间件经 selector 按 **Operation** 匹配，故天然不适用鉴权（**免鉴权是结构性的，不在 `AddWhiteList` 里**）。
+  安全性完全由 handler 内的三重校验承担：参数齐全 → `expires` 未过 → 签名验证（均失败即 403/400）。
+- 通过后拆分 `{bucket}/{object}`，经 `GetObjectReader` 从 MinIO **流式回源**（Content-Type/Content-Length 按对象元数据回填，
+  响应头 `Cache-Control: public, max-age=31536000, immutable`）。
+- 该端点不做租户/用户级鉴别：**签名 URL 是不记名凭证**——持有者即可在有效期内访问对象，无接收方绑定、不可撤销轮换（除非换 `GOWIND_CRYPTO_KEY` 全量作废）。
+
+### 边界与注意
+
+- **对象路径不自动带租户维度**（[tenant_isolation.md](./tenant_isolation.md) 第 6 节覆盖边界）：签名覆盖的是完整
+  `{bucket}/{object}` 串，路径本身不可篡改；但 URL 的分发面（富文本内容、转发）即访问面。
+- 需要撤销/短期访问时，走鉴权下载端点（`GET /admin/v1/file/download`）而非公开 URL。
+- 换 `GOWIND_CRYPTO_KEY` 会使全部存量公开 URL 立即失效（含历史富文本内嵌图）——轮换前评估。
+- 上传侧元数据落库失败时（孤儿对象）按 H3 语义告警并向上抛错，公开 URL 不会签出。
+
+---
+
 ## 预签名上传路径
 
 ### 为何禁用
@@ -182,6 +217,7 @@ directUploadFile 在上传前施加多层校验，定义见 `pkg/oss/constants.g
 | `AllowedMimePrefixes` / `AllowedExactMimeTypes` | `pkg/oss/constants.go:18,26` | 上传 MIME 白名单 |
 | `MINIO_DEFAULT_BUCKETS` | `docker-compose.libs.yaml` | 启动时自动创建的 bucket |
 | `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` | `docker-compose.libs.yaml` | MinIO 根凭证（生产环境务必修改） |
+| `GOWIND_CRYPTO_KEY` | 环境变量 | 签名公开 URL 的 HMAC 密钥（`pkg/crypto/hmac.go`）；未配置则 `PublicUrl` 恒为空串，富文本内嵌预览不可用；轮换=全部存量公开 URL 作废 |
 
 ---
 
@@ -190,7 +226,8 @@ directUploadFile 在上传前施加多层校验，定义见 `pkg/oss/constants.g
 | 文件 | 说明 |
 |---|---|
 | `backend/app/admin/service/internal/service/file_transfer_service.go` | 上传/下载业务逻辑（directUploadFile / presignedUploadFile / recordFile / DownloadFile） |
-| `backend/app/admin/service/internal/server/i_file_transfer_http.pb.go` | 手动注册的上传/下载 HTTP 端点（处理 multipart） |
+| `backend/app/admin/service/internal/server/i_file_transfer_http.pb.go` | 手动注册的上传/下载 HTTP 端点（处理 multipart）；含签名图片代理路由的免鉴权手动注册块 |
+| `backend/pkg/crypto/hmac.go` | 签名公开 URL 的 HMAC-SHA256 签发/恒定时间验签（`GOWIND_CRYPTO_KEY`） |
 | `backend/pkg/oss/minio.go` | MinIO 客户端封装（UploadFile / DownloadFile / GetUploadPresignedUrl 等） |
 | `backend/pkg/oss/constants.go` | 安全常量与校验函数（大小上限、MIME 白名单、目录校验） |
 | `backend/pkg/oss/utils.go` | objectName 生成、MIME 嗅探、bucket 路由等工具 |
