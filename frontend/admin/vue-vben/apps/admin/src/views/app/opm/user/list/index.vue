@@ -9,8 +9,8 @@ import UserList from './user-list.vue';
 const props = reactive({
   leftCollapsedWidth: 0,
   leftCollapsible: false,
-  leftMaxWidth: 25,
-  leftMinWidth: 75,
+  leftMaxWidth: 40,
+  leftMinWidth: 20,
   leftWidth: 25,
   rightWidth: 75,
   resizable: true,
