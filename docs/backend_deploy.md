@@ -119,6 +119,18 @@ openssl genpkey -algorithm RSA -pkeyopt rsa_keygen_bits:2048 -out jwt_private_ke
 openssl pkey -in jwt_private_key.pem -pubout -out jwt_public_key.pem
 ```
 
+## 备份与恢复
+
+平台有两套互补的备份机制，**互不替代**：
+
+| 机制 | 形态 | 说明 |
+|---|---|---|
+| [`scripts/backup/pg_backup.sh`](../backend/scripts/backup/pg_backup.sh) | pg_dump 物理备份（Docker 容器 / 本地直连双模式），定时全量、默认保留 30 份自动轮换，附恢复操作文档 | 部署侧脚本，cron/计划任务挂载 |
+| asynq `backup` 任务 | 应用级逻辑备份：核心表导出 JSON → gzip → 上传 MinIO `backups` 桶（日期分层对象） | 调度与机制见 [task_system.md](./task_system.md) 第 5.3 节；当前无自动恢复/演练工具链，桶内对象无生命周期清理（该文档第 10 节） |
+
+**恢复演练**：没有验证过的备份等于没有。任一机制接入后，用一次真实恢复演练闭环
+（pg_dump 走其附带恢复文档；JSON 备份目前需手工下载反序列化）。
+
 ## 本地开发配置 hosts
 
 如果使用完整模式部署后需要从宿主机访问服务，需修改`hosts`文件（需要管理员权限）：
