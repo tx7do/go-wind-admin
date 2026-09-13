@@ -111,12 +111,12 @@
 - **操作符后缀守卫 `hasOperatorSuffix`**：键尾段已是操作符拼写则不再追加 `__contains`——
   否则 `a__gte__contains` 会被三段解析成 `a CONTAINS value`（语义静默反转）或按未知键报错。
 
-**守卫缺口（实测对照 2026-09-13）**：三端守卫表未覆盖后端映射表的全部拼写——缺
+**守卫缺口（已于 2026-09-13 修复）**：三端守卫表曾未覆盖后端映射表的全部拼写——缺
 `i_*` 前缀变体（`istarts_with` 等）、数值比较长拼写（`greater_than` 族）、`not_isnull`、
-以及 `json_contains`/`array_contains`/`exists`/`search`/`exact`/`iexact`。
-以 `field__exact` 为例：守卫不识别 → 追加 `__contains` → `field__exact__contains`
-被三段解析为 `field CONTAINS value`（精确匹配被静默转成模糊、字段名被改写）或报错。
-修复方向：三端守卫表与库 `operatorMap` 对齐（或直接复用其判定函数）；三端同缺口，需同步修。
+以及 `json_contains`/`array_contains`/`exists`/`search`/`exact`/`iexact`，
+后果是 `field__exact` 一类后缀键被追加 `__contains` 后经三段解析成 `field CONTAINS value`
+（精确匹配被静默转成模糊、字段名被改写）或报错。修复：三端守卫表与库 `operatorMap`
+逐字对齐（含小写归一），后续库映射表变更须同步三端守卫表。
 
 ## 项目代码
 

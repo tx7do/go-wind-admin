@@ -32,21 +32,33 @@ export class PaginationQuery {
    * key 末段是否已是 go-crud 支持的查询操作符（type__not 等）。
    * 这类 key 不能再叠加 __contains：go-crud 会把 `type__not__contains`
    * 解析成 `type CONTAINS value`，"排除"语义静默反转成"命中"。
+   *
+   * 下表与 go-crud `filter/operator_converter.go` 的 operatorMap 别名集
+   * 逐字对齐（含 i_* 前缀变体、数值比较长拼写/连字符拼写、is_not_null
+   * 拼写族、json_contains/array_contains/exists/search/exact/iexact）。
+   * 后端映射表变更时须同步此表；匹配前做小写归一（后端同）。此表缺项
+   * 会让对应后缀键被追加 __contains 而语义反转或 500（2026-09-13 修复的缺口）。
    */
   private static hasOperatorSuffix(key: string): boolean {
     const idx = key.lastIndexOf('__');
     if (idx === -1) return false;
     return [
-      'eq', 'equal', 'equals', 'ne', 'neq', 'not', 'not_equal', 'not_equals',
-      'gt', 'gte', 'lt', 'lte',
-      'like', 'ilike', 'not_like',
+      'eq', 'equal', 'equals',
+      'ne', 'neq', 'not', 'not_equal', 'not_equals', 'not-equal',
+      'gt', 'greater_than', 'greater-than',
+      'gte', 'greater_than_or_equal', 'greater_equals', 'greater_or_equal', 'greater-or-equal',
+      'lt', 'less_than', 'less-than',
+      'lte', 'less_than_or_equal', 'less_equals', 'less_or_equal', 'less-or-equal',
+      'like', 'ilike', 'i_like', 'not_like', 'notlike',
       'in', 'nin', 'not_in', 'notin',
-      'is_null', 'isnull', 'is_not_null', 'isnotnull',
+      'is_null', 'isnull', 'is_not_null', 'isnot_null', 'isnotnull', 'not_isnull',
       'between', 'range',
-      'regexp', 'regex', 'iregexp',
-      'contains', 'icontains',
-      'starts_with', 'startswith', 'ends_with', 'endswith',
-    ].includes(key.slice(idx + 2));
+      'regexp', 'regex', 'iregexp', 'i_regexp', 'iregex',
+      'contains', 'icontains', 'i_contains',
+      'starts_with', 'startswith', 'istarts_with', 'i_starts_with', 'istartswith',
+      'ends_with', 'endswith', 'iends_with', 'i_ends_with', 'iendswith',
+      'json_contains', 'array_contains', 'exists', 'search', 'exact', 'iexact', 'i_exact',
+    ].includes(key.slice(idx + 2).toLowerCase());
   }
 
   /**
