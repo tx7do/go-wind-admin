@@ -24,6 +24,8 @@ type EmailSender struct {
 	channel *data.NotificationChannelRepo
 }
 
+var _ Prechecker = (*EmailSender)(nil)
+
 func NewEmailSender(channelRepo *data.NotificationChannelRepo) *EmailSender {
 	return &EmailSender{channel: channelRepo}
 }
@@ -56,6 +58,12 @@ func (s *EmailSender) Send(ctx context.Context, req *SendRequest) (*SendReceipt,
 	}
 
 	return &SendReceipt{ChannelID: account.ID}, nil
+}
+
+// Precheck 只解析 SMTP 配置并自检可用性，不拨号。见 channel.Prechecker。
+func (s *EmailSender) Precheck(ctx context.Context, channelID uint32) error {
+	_, err := s.pickAccount(ctx, channelID)
+	return err
 }
 
 // pickAccount 解析实际使用的 SMTP 账号：显式 ID 优先，并校验类型与启用状态。

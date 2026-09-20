@@ -1,8 +1,8 @@
 # 任务调度系统（Task System）参考文档
 
 > **定位**：本仓 asynq 任务调度体系的唯一权威说明——配置与启动链、任务数据模型、调度
-> 生命周期、系统级常驻任务（含跨链路的到期扫描 / 审计归档 / 备份 / 站内信广播）、脚本任务桥、
-> 管理页、多租户语义与运维排障。给任务系统加新类型、排"任务没跑"的问题、或接入新调度需求前先读它。
+> 生命周期、系统级常驻任务（含跨链路的到期扫描 / 审计归档 / 备份 / 站内信广播 / 通知异步派发）、
+> 脚本任务桥、管理页、多租户语义与运维排障。给任务系统加新类型、排"任务没跑"的问题、或接入新调度需求前先读它。
 > 脚本任务桥的脚本侧语义（处理器注册/代际清理）见 [script_system.md](./script_system.md)；
 > 到期扫描与备份的业务语义分别见 [plan_billing.md](./plan_billing.md)、下文第 5.3 节。
 
@@ -13,9 +13,10 @@
           整个任务子系统（含系统级任务）不启动
 启动链    NewAsynqServer（internal/server/asynq_server.go）
           ├─ 固定类型订阅注册（handler 路由表）：backup / tenant_expiry_scan /
-          │  audit_log_archive / broadcast_message + script_task（桥，见第 6 节）
+          │  audit_log_archive / broadcast_message / notification_dispatch + script_task（桥，见第 6 节）
           ├─ RegisterTaskScheduler：把调度器句柄注入 TaskService（后续所有调度动作经它）
-          ├─ RegisterTaskEnqueuer：站内信服务获得一次性任务入队能力（广播 fan-out）
+          ├─ RegisterTaskEnqueuer：站内信服务（广播 fan-out）与通知域服务（异步派发）
+          │  各自获得一次性任务入队能力；未注入时两处都退回同步路径
           └─ StartAllTask（SystemViewer 上下文）：装载 sys_tasks + 重注册系统级 cron
 数据      sys_tasks（任务表，带租户列）+ task_options（asynq 选项映射）
 执行      asynq 调度器（Redis 队列，周期任务 cron entry + 一次性任务队列）
@@ -36,7 +37,14 @@
 | `tenant_expiry_scan` | `TaskService.AsyncTenantExpiryScan` | 系统级 cron，每小时（见 5.1） |
 | `audit_log_archive` | `TaskService.AsyncAuditLogArchive` | 系统级 cron，每日 03:30（见 5.2） |
 | `broadcast_message` | `InternalMessageService.AsyncBroadcastMessage` | 一次性、幂等（见 5.4） |
+| `notification_dispatch` | `NotificationService.AsyncNotificationDispatch` | 一次性、幂等（见 5.5） |
 | `script_task` | `ScriptRuntime.RunScriptTaskHandler`（经桥） | sys_tasks 型 PERIODIC，载荷带处理器名（见 6） |
+
+订阅有两种形态：`RegisterSubscriber[T]` 的 handler 签名不带 ctx，`RegisterSubscriberWithCtx[T]`
+带（`func(ctx, taskType, *T) error`）。**只有需要任务超时真正生效的那一类要用 WithCtx**：
+`asynq.Timeout` 是挂在任务 ctx 上的 deadline，handler 拿不到 ctx 就等于把超时只用在"杀任务"上、
+掐不断正在进行的 I/O（见 5.5 里的 SMTP 拨号）。两者的 handler 返回值都原样交给 asynq，
+所以 `asynq.SkipRetry` / 归档语义在两种形态下都可用（用 `errors.Is` 判定）。
 
 ## 3. 任务数据模型（`sys_tasks`）
 
@@ -94,6 +102,28 @@ cron `30 3 * * *`。把超过保留期的六类审计行导出 JSONL 归档文�
 （(message_id, recipient_user_id) 唯一约束 + CreateBulk `ON CONFLICT DO NOTHING`）。
 载荷只带 messageId（消息本体留在库里，载荷不带大字段）。语义属站内信子系统。
 
+### 5.5 通知异步派发（`notification_dispatch`，一次性 + 台账幂等）
+
+通知域里"调用方不需要投递结论"的那几个事件（找回密码 / 换绑验证码）在 `SendDirect` 落完台账行后
+入队，SMTP 往返不再占住 HTTP；渠道测试邮件与站内信**故意保持同步**，判据与白名单见
+[notification_domain_design.md](./notification_domain_design.md) §4 P2-3。要点（本任务是"幂等门不在
+asynq 侧、在业务侧"的那个例外）：
+
+- **载荷 `{delivery_id, target, title, content}`**：台账既不存正文、`target` 又是脱敏串，handler 无法从
+  库里读回可投递的三元组，所以正文进载荷（代价与取舍记在通知域 §6 决策点 7）。这与 5.4 广播"载荷只带
+  messageId"相反 —— 广播的本体在库里，验证码不在。
+- **幂等门 = 台账状态**：handler 读回该行，`status != SENDING` 直接返回 nil（重投/归档后手工重跑都 no-op）。
+  推论：**还有重试额度的失败必须留在 SENDING**，只写 `last_error` + `attempts`，否则第一次瞬态错误落了
+  终态就把额度静默作废 —— 加新任务型时容易反过来写（写终态更"顺手"）。
+- **选项写死在代码里**，不走 `sys_tasks.task_options`：`asynq.MaxRetry(3)`（⇒ 最多 4 次尝试，第 4 次才落
+  终态 FAILED）+ `asynq.Timeout(30s)`（`pkg/mailer` 用 `DialContext`，配 `RegisterSubscriberWithCtx` 才真掐得断
+  卡死的握手）。配置类错误（渠道没配/没启用/类型不对）与未注册渠道一律包 `asynq.SkipRetry`：
+  重试不会让配置变好，只会把一个 OTP 载荷送进归档队列。
+- **不入 `sys_tasks`**，与 5.1/5.2 同为"代码常驻"。但它确实进了 `ListTaskTypeName` 的注册面，
+  所以管理页的类型下拉今天能选到它 —— 手工建一条这样的行只会在 handler 第一道守卫处报错
+  （载荷缺 delivery_id），不会误发信；5.4 的 `broadcast_message` 同形。
+- **运行期实测（2026-09-20，含"重试额度走完"的 4 次尝试轨迹）**：见通知域 §4 P2-3 的观测表。
+
 ## 6. 脚本任务桥（`script_task`）
 
 asynq mux 的"Start 后不能注册 handler"约束 vs 脚本处理器运行期动态增删——故启动期注册
@@ -127,6 +157,7 @@ asynq mux 的"Start 后不能注册 handler"约束 vs 脚本处理器运行期�
 | 备份对象 | MinIO `backups` 桶，日期分层对象名；恢复 = 下载 JSON 反序列化（当前无自动恢复流程） |
 | 归档目录/保留期 | `AUDIT_ARCHIVE_DIR` / `AUDIT_RETENTION_DAYS`（改后下个 03:30 周期生效） |
 | 改了 cron 没生效 | Update 走 stop→start 重装载；确认后看管理页行内状态与调度器日志 |
+| 通知台账一直 `SENDING` / 验证码邮件迟迟不来 | ① `server.asynq.uri` 是否配置（没配 ⇒ 通知整体退回同步投递，属预期不是故障）；② 任务有没有被同机的别的项目抢走（第 10 节"队列无命名空间"）：`asynq:{default}:retry` / `:archived` 里躺着它，而 `asynq:servers:*` 心跳里有多个进程 ⇒ 就是这个；③ 读台账的 `attempts` 与 `last_error`：`attempts=0` 且 `SKIPPED` = 入队前的配置预检就没过，是渠道配置问题，与队列无关 |
 
 ## 10. 边界与已知问题
 
@@ -136,3 +167,4 @@ asynq mux 的"Start 后不能注册 handler"约束 vs 脚本处理器运行期�
 | 备份恢复流程 | 仅导出上传，无自动恢复/演练工具链；桶内对象无生命周期清理 |
 | WAIT_RESULT 型 | 枚举与装载路径在，无内置消费方示范；语义同 asynq wait-result |
 | 系统级任务的可见性 | 不入 sys_tasks，管理页不可见、不可停——监控只能靠服务日志（"系统级…定时任务已注册"/"expiry scan:"等前缀） |
+| **asynq 队列没有命名空间** | 键形如 `asynq:{<queue>}:…`，**不带应用前缀** ⇒ "同一个 Redis DB + 同一个队列名"就是同一个队列。两个项目共库时互相抢任务，抢到的一方没有 handler 就 `handler not found` 退避重试直至归档（本机 DB 1 上实测读到过本仓 `tenant_expiry_scan` 躺在 `asynq:{default}:retry` 里，而同一 DB 里同时活着另一项目的 worker）。唯一的隔离手段是 `server.asynq.uri` 换 DB（或改 `queues` 名字），**部署时共库必须显式错开**；库层不提供"按消费者组区分"的能力 |

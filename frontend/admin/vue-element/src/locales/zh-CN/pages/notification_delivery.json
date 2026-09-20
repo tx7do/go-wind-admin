@@ -5,6 +5,8 @@
   "target": "投递目标",
   "targetMaskedHint": "台账只存脱敏后的地址，排障时按此定位收件人",
   "status": "结果",
+  "attempts": "尝试次数",
+  "requestId": "派发请求",
   "recipientUserId": "收件用户",
   "channelId": "渠道配置",
   "relatedId": "关联对象",

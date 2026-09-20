@@ -35,6 +35,9 @@ type fakeSender struct {
 	receipt *channel.SendReceipt
 	err     error
 
+	// precheckErr 非空时 Precheck 报它：用来测异步派发的"入队前同步预检"分支。
+	precheckErr error
+
 	calls []*channel.SendRequest
 }
 
@@ -44,6 +47,8 @@ func (f *fakeSender) Send(_ context.Context, req *channel.SendRequest) (*channel
 	f.calls = append(f.calls, req)
 	return f.receipt, f.err
 }
+
+func (f *fakeSender) Precheck(_ context.Context, _ uint32) error { return f.precheckErr }
 
 type notificationSvcEnv struct {
 	svc   *NotificationService

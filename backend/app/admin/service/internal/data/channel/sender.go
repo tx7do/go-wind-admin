@@ -56,6 +56,19 @@ type Sender interface {
 // 服务层据此把台账记为 SKIPPED 而非 FAILED：管理员配错与压根没配是两件事。
 var ErrChannelNotConfigured = fmt.Errorf("no enabled notification channel configured")
 
+// Prechecker 渠道的"配置可用性"自检，由异步派发在入队之前调用。
+//
+// 为什么不干脆先 Send 一次看结果：异步载荷带着一次性验证码，能在这次请求里就判定
+// "这条渠道根本用不了"，就不该把 OTP 塞进队列、等它躺在归档里过期。
+// 只查配置不拨号——拨号是投递本身，归 Send。
+//
+// 不实现本接口的渠道（站内信）由服务层视作"没有预检可用"，直接入队。
+type Prechecker interface {
+	// Precheck 校验 channelID 指向的配置可用；0 表示由渠道策略自选。
+	// 返回的 error 语义与 Send 一致：配置类错误必须包成 ErrChannelNotConfigured。
+	Precheck(ctx context.Context, channelID uint32) error
+}
+
 // Registry 渠道注册表。未注册的渠道 Notifier 会记 SKIPPED，不会静默丢通知。
 //
 // Register 覆盖同渠道的旧实现：装配期一次性写入，运行期只读。

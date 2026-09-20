@@ -287,7 +287,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 		return nil, nil, err
 	}
 
-	asynqServer, err := server.NewAsynqServer(ctx, taskService, internalMessageService, scriptRuntime)
+	asynqServer, err := server.NewAsynqServer(ctx, taskService, internalMessageService, notificationService, scriptRuntime)
 	if err != nil {
 		rollback()
 		return nil, nil, err

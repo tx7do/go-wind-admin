@@ -29,7 +29,8 @@ import { $t } from '#/locales';
  * 一行 = 一次投递事实，写侧在 NotificationService.SendDirect（找回密码验证码、联系人绑定码、
  * 渠道测试邮件、站内信定向投递），本域没有增删改路由，所以页面只有查询与排序。
  * status 的语义差别值得看清：SKIPPED 是"压根没发出去过"（渠道没配/没启用），
- * FAILED 才是"发了但被退回"。
+ * FAILED 才是"发了但被退回"。找回密码/换绑验证码是异步派发（asynq 任务），
+ * 所以「发送中」是正常中间态——分辨它靠 attempts，见该列注释。
  */
 
 // vxe 列名 → 后端 orderBy 的蛇形字段（只有时间列参与排序）
@@ -188,6 +189,14 @@ const gridOptions: VxeGridProps<NotificationDelivery> = {
       width: 110,
     },
     {
+      // 含首次。同步投递恒为 1；异步投递每次尝试先加再一次拨号，
+      // 所以「发送中 + 0」是还在队列里等，「发送中 + ≥1」是拨过号还没定案。
+      title: $t('page.notificationDelivery.attempts'),
+      field: 'attempts',
+      width: 100,
+      formatter: ({ cellValue }) => cellValue ?? 0,
+    },
+    {
       title: $t('page.notificationDelivery.recipientUserId'),
       field: 'recipientUserId',
       width: 110,
@@ -205,6 +214,13 @@ const gridOptions: VxeGridProps<NotificationDelivery> = {
       field: 'relatedId',
       width: 110,
       formatter: ({ cellValue }) => cellValue ?? '-',
+    },
+    {
+      // 同一次业务调用产生的多条投递共享此 ID（调用方不传时服务端生成），排障时按它把一行行投递串起来
+      title: $t('page.notificationDelivery.requestId'),
+      field: 'requestId',
+      minWidth: 150,
+      showOverflow: 'tooltip',
     },
     {
       title: $t('page.notificationDelivery.sentAt'),

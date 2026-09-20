@@ -20,6 +20,9 @@ import ContentContainer from '@/layouts/components/PageContainer/ContentContaine
  * 一行 = 一次投递事实：写侧在 NotificationService.SendDirect（找回密码验证码、联系人绑定码、
  * 渠道测试邮件），本页只查不改。status 的语义差别值得看清：
  * SKIPPED 是"压根没发出去过"（渠道没配/没启用），FAILED 才是"发了但被退回"。
+ *
+ * SENDING 有两种读法，靠 attempts 分辨：0 = 已入队还没开拨（异步派发的正常中间态）；
+ * >0 = 拨过号但还没定案（还留着 asynq 的重试额度，本次的报错在 last_error；或进程死在中途）。
  */
 
 const STATUS_COLORS: Record<notificationservicev1_DeliveryStatus, string> = {
@@ -120,6 +123,14 @@ const NotificationDeliveryPage = () => {
         ),
     },
     {
+      title: t('attempts'),
+      dataIndex: 'attempts',
+      width: 90,
+      hideInSearch: true,
+      tooltip: t('attemptsHint'),
+      render: (_, record) => record.attempts ?? 0,
+    },
+    {
       title: t('recipientUserId'),
       dataIndex: 'recipientUserId',
       width: 110,
@@ -141,6 +152,22 @@ const NotificationDeliveryPage = () => {
       hideInSearch: true,
       tooltip: t('relatedIdHint'),
       render: (_, record) => record.relatedId ?? '-',
+    },
+    {
+      title: t('requestId'),
+      dataIndex: 'requestId',
+      width: 150,
+      hideInSearch: true,
+      ellipsis: { showTitle: false },
+      tooltip: t('requestIdHint'),
+      render: (_, record) =>
+        record.requestId ? (
+          <Tooltip title={record.requestId} placement="topLeft">
+            <span>{record.requestId}</span>
+          </Tooltip>
+        ) : (
+          '-'
+        ),
     },
     {
       title: t('sentAt'),
@@ -229,7 +256,7 @@ const NotificationDeliveryPage = () => {
           cardBordered={false}
           scroll={{
             y: tableScrollY,
-            x: 1300,
+            x: 1670,
           }}
         />
       </div>

@@ -1,8 +1,10 @@
 # 通知域（Notification Domain）设计文档
 
 > **状态：P0 + P1 已落地（后端内聚 + 三端投递台账页 + 邮件文案 i18n + SSE 事件类型注册表，2026-09-19），
-> P2 第一块已落地（站内信注册为 INTERNAL 渠道 + 定向发送改走缝 + 台账 `related_id`，2026-09-20，见 §4 P2）；
-> P2 剩余（规则表 / WEBHOOK 渠道 / 异步投递）与 P3 仍是设计提案。**
+> P2 已落地三块（见 §4：P2-1 站内信注册为 INTERNAL 渠道 + 定向发送改走缝 + 台账 `related_id`；
+> P2-2 收件行租户打标跟着受众走 + 修掉收件箱一处越权读；P2-3 异步投递 = 入队前同步预检 + asynq 派发 +
+> 台账 `request_id`/`attempts`，均 2026-09-20）；P2 剩余（规则表 / WEBHOOK 渠道）与 P3 仍是设计提案，
+> 另有一处已定位、尚未修的写侧姊妹缺陷记在 §7「收件箱读侧不钉归属」一节末尾。**
 > 第 2 节「现状盘点」是 P1 之前的基线（核对至 commit `29d700b9`），其中被改动的事实在就地标注；
 > 第 3~4 节的实施状态以 §4 的分期标记为准，落地验收进度在 §7。实施进度更新时改本文状态标记，不要另开文档。
 >
@@ -127,13 +129,17 @@ SSE 扇出与 streamID 归属校验（`HandleAuthorize` 不匹配即 403）都�
         ▼
 NotificationService.SendDirect（internal/service/notification_service.go）
    ├─ 事件类型 → 渠道（一期 Go 静态表 eventChannels；请求可显式覆盖；二期 notification_rules 表）
-   ├─ sys_notification_deliveries 台账：先落 SENDING，再发
-   └─ 同步 channel.Registry.Sender(ch).Send()  ← P2 才换成 asynq 投递任务
-                │
+   ├─ sys_notification_deliveries 台账：先落 SENDING（带 request_id 幂等锚），再发
+   └─ 两条出口，按事件类型分流（asyncDispatchEvents，见 §4 P2-3）：
+        ├─ 异步：sender.(Prechecker).Precheck() 通过 → asynq 入队 → 立刻回 SENDING
+        │         （预检不过 → 当场结台账 SKIPPED/FAILED，回话与同步路径逐字相同）
+        └─ 同步：deliver() = sendOnce() + 回写结论（渠道测试邮件、站内信、入队失败兜底）
+                │  两条出口共用 sendOnce 这一处分类，结论语义不会分叉
    ┌────────────┴──────────────────┐
    ▼                               ▼
 EmailSender                  InternalMessageSender（P2 已落地，见下）
 internal/data/channel/        internal/service/（成环，位置不可照抄 IM）
+（同时实现 Sender 与 Prechecker）
 ```
 
 **为什么 `InternalMessageSender` 不在 `data/channel/`**：IM 那边它是通过 gRPC client 回打
@@ -181,8 +187,8 @@ SKIPPED/FAILED）和非 nil error。只回 error，调用方拿不到台账行�
 | `last_error` / `sent_at` | 结果与完成时间（FAILED/SKIPPED 不留 `sent_at`） | 已建 |
 | `related_id` | 可空，**按 `event_type` 解释**的业务对象 ID（`INTERNAL_MESSAGE` → `internal_messages.id`）。台账不存正文快照，这一列是"这条投递发的是什么"的唯一回跳入口 | P2 已建（`Optional().Nillable()` + 索引 `(event_type, related_id)`，启动期 ent 自动迁移加列加索引，实测已在 `gwa` 库出现） |
 | `event_type/channel/status` 三枚枚举 | 必须 `Optional().Nillable()`：值型枚举列 + 可选指针 DTO 会踩 copier 的"指针↔指点对"失配，读回恒为零值（同款坑见 `notification_channel_repo.go` 的 `queryTypeByIDs` 注释） | 已按此建 |
-| `request_id` | 唯一索引，幂等锚 | **推迟 P2**：P1 无异步重试，重复调用收敛暂无消费方 |
-| `attempts` | 重试计数 | **推迟 P2**，同上 |
+| `request_id` | 幂等锚：**一次业务调用 → 若干条投递**的唯一串线抓手。调用方不传则服务端生成（GUIDv4 无连字符，32 字符）。唯一索引是 `(request_id, channel)` 复合，不是一列唯一 —— 一次调用同时发邮件 + 站内信是这条台账的**预期用法**，单列唯一会把这种调用变成插入冲突 | P2-3 已建（`Optional().Nillable()` + `uidx_sys_notification_delivery_request_channel`，实测已在 `gwa` 库出现；三个生产点今天都不传，全靠服务端生成） |
+| `attempts` | 已尝试投递的次数。同步路径恒为 1（"当场投一次就是一次"，不留 0 让读的人先回忆哪条路写过这列）；异步路径由 handler 每次开拨前 +1，配合 `status=SENDING` 就是"还在重试" | P2-3 已建（`Uint32().Default(0)`；预检失败/配置类 SKIPPED 的行留 0 = 一次都没真试过） |
 | `title` / `content` | 正文快照 | **不做**：一期三个事件里两个的正文就是验证码本身，快照进永久台账等于建了一张 OTP 明文表。P2 引入模板后按"模板 ID + 渲染参数"存，不存渲染结果 |
 | mixin | `AutoIncrementId` / `TimeAt` / `OperatorID` | 已按此建；**不挂 `TenantID`**（见 §6 决策点 3 结论），也不挂 `SwitchStatus`（台账没有"停用"语义） |
 
@@ -201,9 +207,12 @@ app/admin/service/internal/data/channel/email_sender.go        包装 pkg/mailer
 app/admin/service/internal/service/notification_service.go     SendDirect 实现 + 事件路由表 + maskTarget
 app/admin/service/internal/service/notifier.go                 Notifier 接口
 app/admin/service/internal/service/internal_message_sender.go  P2：INTERNAL 渠道适配器（成环分析见 §3.1）
---- 以下为 P2 剩余项，P1 未建 ---
+--- 以下为 P2-3 异步投递新增 ---
+pkg/task/notification_dispatch.go                              任务类型常量 + 载荷结构（delivery_id + 正文三件）
+app/admin/service/internal/data/channel/sender.go              新增 Prechecker 接口（配置的可用性自检，不拨号）
+app/admin/service/internal/server/asynq_server.go              订阅 notification_dispatch + 把 TaskService 注成 TaskEnqueuer
+--- 以下为 P2 剩余项，尚未建 ---
 app/admin/service/internal/data/channel/webhook_sender.go      等 §6 决策点 2 定了表结构再写
-pkg/task/notification_dispatch.go                              见下"为什么 P1 没有异步投递"
 ```
 
 两处刻意偏离首稿：
@@ -211,9 +220,10 @@ pkg/task/notification_dispatch.go                              见下"为什么 
 1. **BFF 不开放"发一条通知"的 HTTP 路由**。`SendDirect` 只由进程内业务 service 经 `Notifier` 调用；
    开成端点等于给任意已登录操作员一个"向任意邮箱发信"的入口，而唯一的站外手动触发口
    （渠道测试邮件）已在 `notification-channels` 路由上存在。
-2. **P1 没有 asynq 投递任务**：`SendTestEmail` 的产物就是"SMTP 报错原文"，必须同步返回；
-   验证码邮件同样要立刻知道"渠道没配"以便回不同文案。异步化在 P2 随 `request_id`/`attempts`
-   一起引入（届时的形态：入队 delivery_id，正文由 handler 重新渲染而非从台账取）。
+2. **P1 没有 asynq 投递任务**（P2-3 已引入，见 §4）：`SendTestEmail` 的产物就是"SMTP 报错原文"，必须同步返回；
+   验证码邮件同样要立刻知道"渠道没配"以便回不同文案。首稿为异步形态写的"载荷只带 delivery_id，正文由
+   handler 按事件重新渲染"那条**没有采纳**，原因记在 §6 决策点 7：重渲染要 handler 重新拿一遍调用方的
+   输入（验证码值在调用那一刻就只存在于内存），找回密码的码根本渲染不出来。
 
 `sys_notification_channels` 与 `NotificationChannelService` 在 P1 **不改一行业务代码**——
 它继续作为"渠道花名册"的 CRUD 存在，只是渠道选择策略从两个 caller 收进 `email_sender.go` 一处；
@@ -357,16 +367,64 @@ vue-element 的 `if (!data.id || !data.messageId) return` 把**每一条广播�
 `TestNotifySeamDirectedSend`（收件行落在收件人租户而非 SystemViewer 的租户 0）、
 `TestInternalMessageRecipientTenantSqlite` 的 `listAs(t, uid)`（同租户换一个收件人就读不到）。
 
-**环境发现（不是代码缺陷，但会让广播看起来"没发"**）：本机 `backend` 与兄弟项目 `go-wind-quant` 的 asynq
-共用同一个 Redis 的 **DB 1 `default` 队列**，谁先抢到谁处理，没有对应 handler 的一方报
-`handler not found for task "…"` 进退避重试。实测 `asynq:{default}:retry` 里躺着 `tenant_expiry_scan`（本仓任务类型），
-而探针的两次广播任务延迟 58 秒才被处理、后续两次干脆没被本实例处理。上表里的运行期证据因此走的是**同步的定向路径**。
+**环境发现（不是代码缺陷，但会让广播看起来"没发"**）：本机 `backend` 与同机其他项目的 asynq 共用同一个
+Redis DB 的**同名队列**，谁先抢到谁处理，没有对应 handler 的一方报 `handler not found for task "…"`
+进退避重试。实测 `asynq:{default}:retry` 里躺着 `tenant_expiry_scan`（本仓任务类型），而探针的两次广播任务
+延迟 58 秒才被处理、后续两次干脆没被本实例处理。上表里的运行期证据因此走的是**同步的定向路径**。
+队列键形如 `asynq:{<queue>}:…`、不带应用前缀这件事的完整后果与本次的处置，见下面 P2-3 末尾那条。
+
+**P2-3（异步投递：同步预检 + asynq 派发，已完成 2026-09-20）** —— 落 §3.1 图里那条异步出口，
+把"一次 SMTP 抖动 = 一次永久 FAILED，且这句话还被回给最终用户"断掉：
+
+1. **哪些事件异步，判据是"调用方需不需要这次投递的结论"**（`asyncDispatchEvents` 白名单）：
+   `PASSWORD_RESET_CODE`、`CONTACT_BIND_CODE` 异步；`CHANNEL_TEST_EMAIL`（产物就是 SMTP 报错原文）、
+   `INTERNAL_MESSAGE`（收件行 + SSE 本身就是投递，异步化只会让收件箱晚一点亮）保持同步。
+2. **入队前先做一次同步预检**（新接口 `channel.Prechecker`，实现是 `EmailSender.Precheck` → `pickAccount`，
+   只解析并自检配置、不拨号）：配置不可用就当场结台账 SKIPPED/FAILED 并把原始 error 回给调用方 ——
+   找回密码那句 `email channel is not configured` 的回话因此与异步化之前逐字相同，不会退化成
+   "永远 200 + 用户等一封不会来的信"。没有 `Prechecker` 实现的 sender（站内信）直接入队。
+3. **载荷带正文**（`pkg/task.NotificationDispatchTaskData{DeliveryId, Target, Title, Content}`）：
+   台账既不存正文、`target` 又是脱敏串，handler 无法从库里读回可投递的三元组（取舍见 §6 决策点 7）。
+4. **幂等门是台账状态，不是 asynq 的 task id**：`AsyncNotificationDispatch` 读回该行，`status != SENDING` 即
+   返回 nil。由此推出重试的写法——**还有额度的失败必须留在 SENDING**（只写 `last_error` + `attempts`），
+   否则第一次瞬态错误落了终态就把重试额度静默作废了。`asynq.MaxRetry(3)` ⇒ 最多 4 次尝试
+   （`notificationDispatchMaxAttempts`），第 4 次才落 FAILED；配置类错误（`ErrChannelNotConfigured`）与
+   未注册渠道一律 `asynq.SkipRetry`，不让一个 OTP 载荷在归档队列里过夜。
+5. **入队失败不等于丢通知**：`NewTask` 报错时退回当场投递（结论照旧同步给出），只多一条 error 日志；
+   `TaskEnqueuer` 未注入（没配 asynq 的部署）同理整体退回同步路径 —— 异步是加速，不是新依赖。
+
+**运行期实测（本机实例重启到新代码 + 现网 `gwa` 库 + mailpit；探针造成的变更与复旧列在最后）**：
+
+| 观测点 | 结果 |
+| --- | --- |
+| 自动迁移 | 重启后 `request_id`(varchar, nullable) + `attempts`(bigint default 0) + `uidx_sys_notification_delivery_request_channel` 三项在 `information_schema` / `pg_indexes` 里出现，无需手写 DDL |
+| **预检失败路径**（自选命中演示渠道 1 的 `SSL_TLS` 坏配置） | `POST /admin/v1/forgot-password` → **71ms** 内 500 `email channel is not configured`（与异步化之前逐字相同）；台账 id=9 **当场即 `SKIPPED`**、`attempts=0`、`last_error` 带原始原因；该 Redis DB 里 `pending`/`active`/`retry`/`archived`/`processed` 一个键都不存在 ⇒ **一条任务都没入队** |
+| **异步成功路径**（自选命中指向 mailpit 的探针渠道 id=7） | `forgot-password` → **200 / 61ms**，请求全程没有拨号；台账 id=11 `SENT`、`channel_id=7`、`attempts=1`、`request_id=81b0607a…`、`target=t***@company.com`（脱敏）；mailpit 里唯一一封 `subject "GoWind Admin 密码重置验证码"`，正文验证码 **455900** 与 Redis `gowind:vcode:reset_password:tenant@company.com` 逐字一致 |
+| **重试额度真的走完**（探针渠道 id=6 = `127.0.0.1:1099`，无监听） | `forgot-password` → 200 / 64ms，台账 id=10 先 `SENDING/attempts=1`（`asynq:{default}:retry` 的 score 显示退避 +2s），+25s 读到 `SENDING/2`，终态 **`FAILED/attempts=4`**（`asynq` 侧单次运行计数亦为 4）；额度用尽后任务落入 `asynq:{default}:archived`=1、`retry` 清空。中间每一次只写 `last_error` + `attempts` 而**不改状态** —— 这正是幂等门放行重试的原因 |
+| **同步事件不入队** | `POST /notification-channels/7/send-test-email` → 200 用时 **1246ms**（SMTP 握手发生在请求内），台账 id=12 `CHANNEL_TEST_EMAIL` / `SENT` / `attempts=1`；调用前后队列键数不变（仍只有上面那条归档任务）。同一台机器上"当场投"与"入队投"的响应时间差就是 1246ms vs 61ms |
+| `attempts` 的两义 | `0` = 一次都没真投过（预检拦截 / 配置类 SKIPPED），`≥1` = 拨过号 |
+
+**队列没有命名空间（部署边界，不是代码缺陷）**：asynq 的键形如 `asynq:{<queue>}:…`，**不带任何应用前缀**，
+所以"同一个 Redis DB + 同一个队列名"就是同一个队列。DB 选择只有 `server.asynq.uri` 一处，队列名相同
+时两个项目无法区分归属 —— 对方 worker 抢走本仓任务就 `handler not found` 反复重试到归档，反过来一样。
+本机实测：DB 1 的存活消费者除本实例（`asynq:servers:{MSI:<pid>:…}` 心跳）外还有
+`D:\GoProject\loft\backend\bin\task.exe`，其 `app/task/service/configs/server.yaml` 同样是 DB 1 +
+`critical:10 / default:5 / low:1`（`asynq:{default}:t:order_timeout:…` 就是它家的任务）。
+上表的异步证据因此是**临时把本机实例的 asynq 指到一个空闲 DB** 取得的，测完已复旧：
+`configs/server.yaml` 无 diff、该 DB 的 11 个 asynq 键逐个 `DEL` 清空（该 Redis 实例禁用了 `FLUSHDB`）。
+
+探针造成的变更（全部如实记账）：新建渠道 `b4-deadport`(id=6) / `b4-mailpit`(id=7)，测完都经
+`DELETE /notification-channels/{id}` 删除；停用又启用渠道 1、2；台账新增 id=9…12 四行**保留**作上表证据
+（id=10、id=11 的 `channel_id` 因此是悬空引用 —— 该列无外键，删渠道才过得去，读它时按此理解）；
+mailpit 容器随测随删。**没有做运行期验证的一段**：归档后手工 `RetryTask` 重跑会被台账幂等门挡成 no-op，
+sqlite 测试 `AsyncDispatchHandlerSettlesLedger` 覆盖了这道门，但本机没装 asynqmon，这一键没真点过。
+
+回归测试：`notification_dispatch_sqlite_test.go` 九条（入队不投递、handler 结台账 + 幂等门、重试额度到 4 落 FAILED
+且额度用尽后不再拨号、配置类错误 `SkipRetry`、预检失败不入队、入队失败退回当场投、同步事件不入队、
+`request_id` 调用方优先 + `(request_id, channel)` 冲突、未知 delivery 交给重试）。
 
 P2 剩余：`notification_rules` 表 + 管理页，替换 §3.5 的 Go 表；`sys_notification_channels` 解掉"WEBHOOK 类型
 无处存 URL"的问题（方案见 §6 决策点 2）；`webhook_sender.go` 落地。
-**异步投递随本阶段一起引入**：`request_id`（唯一索引，幂等锚）+ `attempts` + `pkg/task/notification_dispatch.go`
-（载荷只带 delivery_id 列表，正文由 handler 按事件重新渲染，见 §3.3 不做正文快照的理由）。
-在此之前，一次 SMTP 抖动就是一次永久 FAILED，且业务侧（找回密码）会把这句话回给用户。
 
 ### P3 偏好与模板
 
@@ -420,6 +478,18 @@ P2 剩余：`notification_rules` 表 + 管理页，替换 §3.5 的 Go 表；`sy
 6. **`related_id` 要不要做成带类型的多态外键** —— **P2 已定：不做**，只有这一列 + 按 `event_type` 解释的约定。
    多态外键的代价（无外键约束、跨表 JOIN 要按类型分支）在"事件种类个位数"的规模下换不来任何东西；
    代价是**前端列必须自带解释**（三端台账页的"关联对象"列 tooltip/注释都写死了"站内信 = 消息ID"）。
+7. **异步载荷带不带正文** —— **P2-3 已定：带**（`{delivery_id, target, title, content}`），首稿的
+   "只带 delivery_id，handler 重新渲染"那条不采纳。三条理由：
+   - **重渲染做不到**：找回密码的验证码在调用那一刻才生成，只活在 Redis 与这次调用的内存里，handler 拿不到；
+     要让 handler 拿得到，等于把码写进台账或另建一张明文表 —— 比"载荷在 Redis 里躺一会儿"更糟。
+   - **台账故意没有正文列**（§3.3 的 `title`/`content` 不做）：永久表 + 正文快照 = 一张 OTP 明文表，
+     异步路径不该反过来破坏这条边界。
+   - **代价有边界**：明文验证码进的是 Redis（asynq 载荷）而不是 Postgres，存活期由
+     `MaxRetry(3)` + 4 次尝试封顶（实测最坏 ~100s 后落归档），且入队前的同步预检已经把"配置不可用"
+     这类注定失败的载荷挡在队列外，配置类错误还额外 `SkipRetry`。接受的是"一次崩溃窗口内可能重发一封"
+     （至少一次投递），换掉的是"业务侧被 SMTP 抖动绑住响应时间"。
+   若将来引入模板（P3），这一条应重估：载荷换成 `{delivery_id, template_id, render_params}` 才是既无明文
+   又能重渲染的形态 —— 届时正文仍不落台账，与 §3.3 同构。
 
 ## 7. 落地验收清单
 
@@ -473,6 +543,14 @@ gow run admin
 - [x] `docs/sse_architecture.md` 已随 P2 更新（P1 那条"不改"的判断当时是对的：P1 只做了 EMAIL 渠道，
       站内 SSE 的生产方没变）。P2 之后成立的两件事写进了它：`publishNotification` 现在是**被通知域调用**的
       INTERNAL 投递内核（新增站内信一律走 `Notifier`），以及载荷格式即 protojson 驼峰 + `id` 必须非零。
+- [x] 台账加列（`request_id` / `attempts`）的三端落点清单，与 P2 新事件类型那张同形，漏任一处都是静默不一致：
+      ent schema → `gow ent admin` → proto → `cd api && buf generate` → `make ts`（三端 `index.ts` 里
+      确认两个新字段都已生成，再动页面）→ 三端页面列 + 各自 locales（react `notification-delivery` 命名空间 /
+      ele `pages/notification_delivery.json` / vben `page.json` 的 `notificationDelivery.*`）。
+      **本次留下的一处不对称（已认定可接受，不是漏做）**：`attempts` / `request_id` 的表头解释只有 react 挂了
+      `Tooltip`；ele 的 `ProPage` 与 vben 的 vxe 适配都没有列头 tooltip 机制（P2 移植记录里那条老结论，本次复核
+      仍成立），ele 侧把说明写进列定义的代码注释、vben 侧同。真要在页面上给最终用户解释这两列，得先给两端
+      的表格适配层加列头提示能力。
 
 P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点到的地方，漏任一处都是静默不一致）：
 
@@ -554,8 +632,8 @@ Mailpit 在 1025 上明文接收、默认不要求 AUTH，所以渠道配置要 
 | id=3 / id=4 | 显式指定渠道 | SKIPPED | 1 / 3 | 显式路径失败也带 ID —— 那是 `Create` 时从 `req.ChannelId` 直接落的（`notification_service.go:99`），不是回执；自选路径 `Create` 时无从得知，只能发完补（`:154` 的 `pickedChannelId`） |
 | **id=8** | **自选 + 真发成功** | **SENT** | **5** | 本次闭环：`SendReceipt.ChannelID = account.ID` 在真实投递下成立 |
 
-仍未覆盖的一段：`SendDirect` 之后**异步**补台账（D 项的 async dispatch）与 SMS/WEBHOOK 两个渠道——
-它们连实现都没接进 Registry，不是"缺测试"而是"缺代码"。
+本节取证时仍未覆盖的一段：`SendDirect` 之后的**异步**补台账 —— 已由 §4 P2-3（2026-09-20）连运行期证据一起补上；
+SMS / WEBHOOK 两个渠道到今天**依然没有**实现（连 Registry 都没接进去，不是"缺测试"而是"缺代码"，见 §6 决策点 2）。
 
 ### 收件箱读侧不钉归属：一处越权读（2026-09-20，运行期实测发现并修掉）
 

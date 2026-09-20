@@ -59,6 +59,9 @@ import { $t } from "@/core/i18n";
  * 联系人绑定码、渠道测试邮件、站内信定向投递），本页只查不改。
  * target 服务端已脱敏（b***@example.com），台账不得成为明文集邮地址的第二个真相源，
  * 故此处原样展示、不再二次掩码。
+ *
+ * 找回密码/换绑验证码的投递是异步的（asynq 任务），因此「发送中」是正常中间态而不是卡住；
+ * 分辨它靠 attempts，见该列注释。
  */
 const pageRef = ref();
 
@@ -163,6 +166,15 @@ const pageConfig = computed<ProPageConfig<NotificationDelivery>>(() => ({
         slotName: "status",
       },
       {
+        // 含首次。同步投递恒为 1；异步投递每次尝试先加再一次拨号，
+        // 所以「发送中 + 0」是还在队列里等，「发送中 + ≥1」是拨过号还没定案。
+        prop: "attempts",
+        label: $t("pages.notification_delivery.attempts"),
+        width: 100,
+        align: "right",
+        formatter: (row: NotificationDelivery) => row.attempts ?? 0,
+      },
+      {
         prop: "recipientUserId",
         label: $t("pages.notification_delivery.recipientUserId"),
         width: 110,
@@ -181,6 +193,13 @@ const pageConfig = computed<ProPageConfig<NotificationDelivery>>(() => ({
         width: 110,
         align: "right",
         formatter: (row: NotificationDelivery) => row.relatedId ?? "-",
+      },
+      {
+        // 同一次业务调用产生的多条投递共享此 ID（调用方不传时服务端生成），排障时按它把一行行投递串起来
+        prop: "requestId",
+        label: $t("pages.notification_delivery.requestId"),
+        minWidth: 150,
+        formatter: (row: NotificationDelivery) => row.requestId || "-",
       },
       {
         prop: "sentAt",
