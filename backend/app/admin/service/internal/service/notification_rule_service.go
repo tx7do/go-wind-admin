@@ -79,6 +79,10 @@ func (s *NotificationRuleService) init() {
 }
 
 func (s *NotificationRuleService) ListNotificationRule(ctx context.Context, req *paginationV1.PagingRequest) (*notificationV1.ListNotificationRuleResponse, error) {
+	if err := requirePlatformAdmin(ctx, s.log, "notification routing rules"); err != nil {
+		return nil, err
+	}
+
 	return s.repo.List(ctx, req)
 }
 
@@ -87,12 +91,20 @@ func (s *NotificationRuleService) GetNotificationRule(ctx context.Context, req *
 		return nil, adminV1.ErrorBadRequest("id is required")
 	}
 
+	if err := requirePlatformAdmin(ctx, s.log, "notification routing rules"); err != nil {
+		return nil, err
+	}
+
 	return s.repo.Get(ctx, req.GetId())
 }
 
 func (s *NotificationRuleService) CreateNotificationRule(ctx context.Context, req *notificationV1.CreateNotificationRuleRequest) (*notificationV1.NotificationRule, error) {
 	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
+	}
+
+	if err := requirePlatformAdmin(ctx, s.log, "notification routing rules"); err != nil {
+		return nil, err
 	}
 
 	operator, err := auth.FromContext(ctx)
@@ -113,6 +125,10 @@ func (s *NotificationRuleService) UpdateNotificationRule(ctx context.Context, re
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 
+	if err := requirePlatformAdmin(ctx, s.log, "notification routing rules"); err != nil {
+		return nil, err
+	}
+
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
 		return nil, err
@@ -128,6 +144,10 @@ func (s *NotificationRuleService) UpdateNotificationRule(ctx context.Context, re
 func (s *NotificationRuleService) DeleteNotificationRule(ctx context.Context, req *notificationV1.DeleteNotificationRuleRequest) (*emptypb.Empty, error) {
 	if req == nil || req.GetId() == 0 {
 		return nil, adminV1.ErrorBadRequest("id is required")
+	}
+
+	if err := requirePlatformAdmin(ctx, s.log, "notification routing rules"); err != nil {
+		return nil, err
 	}
 
 	if err := s.repo.Delete(ctx, req.GetId()); err != nil {
@@ -148,6 +168,10 @@ func (s *NotificationRuleService) DeleteNotificationRule(ctx context.Context, re
 func (s *NotificationRuleService) TestDispatchNotification(ctx context.Context, req *notificationV1.TestDispatchNotificationRequest) (*notificationV1.TestDispatchNotificationResponse, error) {
 	if req == nil || req.GetId() == 0 {
 		return nil, adminV1.ErrorBadRequest("id is required")
+	}
+
+	if err := requirePlatformAdmin(ctx, s.log, "notification routing rules"); err != nil {
+		return nil, err
 	}
 
 	operator, err := auth.FromContext(ctx)

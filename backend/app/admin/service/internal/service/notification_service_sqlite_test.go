@@ -30,7 +30,10 @@ import (
 
 	notificationV1 "go-wind-admin/api/gen/go/notification/service/v1"
 
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
+
 	appViewer "go-wind-admin/pkg/entgo/viewer"
+	"go-wind-admin/pkg/middleware/auth"
 )
 
 // fakeSender 可编排的渠道替身：记录收到的每一次投递请求，按预设返回回执或错误。
@@ -81,10 +84,15 @@ func newNotificationServiceForTest(t *testing.T) *notificationSvcEnv {
 	}
 
 	return &notificationSvcEnv{
-		svc:     svc,
-		ctx:     appViewer.NewSystemViewerContext(context.Background()),
-		email:   email,
-		client:  entClient.Client(),
+		svc: svc,
+		// 台账读接口只对平台管理员开放（requirePlatformAdmin），而测试的断言几乎都是从
+		// GetNotificationDelivery 回读台账，所以这个 ctx 带平台管理员载荷。
+		ctx: auth.NewContext(
+			appViewer.NewSystemViewerContext(context.Background()),
+			&authenticationV1.UserTokenPayload{UserId: 1, IsPlatformAdmin: trans.Ptr(true)},
+		),
+		email:  email,
+		client: entClient.Client(),
 	}
 }
 

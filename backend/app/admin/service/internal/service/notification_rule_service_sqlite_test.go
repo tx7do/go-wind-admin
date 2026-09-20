@@ -70,7 +70,6 @@ func newRuleSvcEnv(t *testing.T) *ruleSvcEnv {
 		repo:     data.NewNotificationRuleRepoForTest(entClient),
 		channel:  data.NewNotificationChannelRepoForTest(entClient),
 		notifier: notifier,
-		ctx:      enttest.NewSystemViewerCtx(context.Background()),
 	}
 	env.svc = &NotificationRuleService{
 		log:      bLogger.NewHelper(bLogger.NopLogger()),
@@ -78,7 +77,12 @@ func newRuleSvcEnv(t *testing.T) *ruleSvcEnv {
 		channel:  env.channel,
 		notifier: notifier,
 	}
-	env.opCtx = auth.NewContext(env.ctx, &authenticationV1.UserTokenPayload{UserId: 88})
+
+	// 规则表是平台级配置，服务层 requirePlatformAdmin 挡住租户侧，所以这个 ctx 带平台管理员标志。
+	// ctx 与 opCtx 取同一个值："无操作人"那一格由 Crud 现造裸 ctx 来测。
+	env.ctx = auth.NewContext(enttest.NewSystemViewerCtx(context.Background()),
+		&authenticationV1.UserTokenPayload{UserId: 88, IsPlatformAdmin: trans.Ptr(true)})
+	env.opCtx = env.ctx
 
 	return env
 }
@@ -206,13 +210,15 @@ func TestNotificationRuleServiceSqlite_Crud(t *testing.T) {
 	require.Error(t, err, "同一事件的第二行应被拒")
 	require.Contains(t, err.Error(), "already has a routing rule")
 
-	// 没有操作人上下文的写入必须失败（created_by 落不出一个存在的主人）
-	_, err = e.svc.CreateNotificationRule(e.ctx, &notificationV1.CreateNotificationRuleRequest{
-		Data: &notificationV1.NotificationRule{
-			EventType: notificationV1.EventType_CONTACT_BIND_CODE.Enum(),
-			Channel:   notificationV1.Channel_EMAIL.Enum(),
-		},
-	})
+	// 没有操作人上下文的写入必须失败（created_by 落不出一个存在的主人）。
+	// 这里现造一个裸 viewer ctx：env.ctx 现在是平台管理员 ctx（服务层 requirePlatformAdmin 要过它）。
+	_, err = e.svc.CreateNotificationRule(enttest.NewSystemViewerCtx(context.Background()),
+		&notificationV1.CreateNotificationRuleRequest{
+			Data: &notificationV1.NotificationRule{
+				EventType: notificationV1.EventType_CONTACT_BIND_CODE.Enum(),
+				Channel:   notificationV1.Channel_EMAIL.Enum(),
+			},
+		})
 	require.Error(t, err, "缺鉴权上下文应拒绝写入")
 
 	// Get

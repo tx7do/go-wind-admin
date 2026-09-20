@@ -66,8 +66,11 @@ func newNotificationChannelServiceForTest(t *testing.T, entClient *entCrud.EntCl
 func TestNotificationChannelServiceSqlite_CreateAndGet(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newNotificationChannelServiceForTest(t, entClient)
-	ctx := enttest.NewSystemViewerCtx(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 71})
+	// 渠道是平台级配置、服务层 requirePlatformAdmin 挡租户侧，故基础 ctx 带平台管理员标志；
+	// opCtx 另换 UserId 只为断言 created_by/updated_by 落操作人。
+	ctx := auth.NewContext(enttest.NewSystemViewerCtx(context.Background()),
+		&authenticationV1.UserTokenPayload{UserId: 70, IsPlatformAdmin: trans.Ptr(true)})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 71, IsPlatformAdmin: trans.Ptr(true)})
 
 	created, err := svc.CreateNotificationChannel(opCtx, &notificationChannelV1.CreateNotificationChannelRequest{
 		Data: &notificationChannelV1.NotificationChannel{
@@ -127,8 +130,11 @@ func TestNotificationChannelServiceSqlite_CreateAndGet(t *testing.T) {
 func TestNotificationChannelServiceSqlite_CreateAndGetValidation(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newNotificationChannelServiceForTest(t, entClient)
-	ctx := enttest.NewSystemViewerCtx(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 71})
+	// 渠道是平台级配置、服务层 requirePlatformAdmin 挡租户侧，故基础 ctx 带平台管理员标志；
+	// opCtx 另换 UserId 只为断言 created_by/updated_by 落操作人。
+	ctx := auth.NewContext(enttest.NewSystemViewerCtx(context.Background()),
+		&authenticationV1.UserTokenPayload{UserId: 70, IsPlatformAdmin: trans.Ptr(true)})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 71, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.CreateNotificationChannel(opCtx, &notificationChannelV1.CreateNotificationChannelRequest{
 		Data: &notificationChannelV1.NotificationChannel{
@@ -158,8 +164,11 @@ func TestNotificationChannelServiceSqlite_CreateAndGetValidation(t *testing.T) {
 func TestNotificationChannelServiceSqlite_ListHasPasswordFlag(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newNotificationChannelServiceForTest(t, entClient)
-	ctx := enttest.NewSystemViewerCtx(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 71})
+	// 渠道是平台级配置、服务层 requirePlatformAdmin 挡租户侧，故基础 ctx 带平台管理员标志；
+	// opCtx 另换 UserId 只为断言 created_by/updated_by 落操作人。
+	ctx := auth.NewContext(enttest.NewSystemViewerCtx(context.Background()),
+		&authenticationV1.UserTokenPayload{UserId: 70, IsPlatformAdmin: trans.Ptr(true)})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 71, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.CreateNotificationChannel(opCtx, &notificationChannelV1.CreateNotificationChannelRequest{
 		Data: &notificationChannelV1.NotificationChannel{
@@ -201,8 +210,11 @@ func TestNotificationChannelServiceSqlite_ListHasPasswordFlag(t *testing.T) {
 func TestNotificationChannelServiceSqlite_UpdateRename(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newNotificationChannelServiceForTest(t, entClient)
-	ctx := enttest.NewSystemViewerCtx(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 72})
+	// 渠道是平台级配置、服务层 requirePlatformAdmin 挡租户侧，故基础 ctx 带平台管理员标志；
+	// opCtx 另换 UserId 只为断言 created_by/updated_by 落操作人。
+	ctx := auth.NewContext(enttest.NewSystemViewerCtx(context.Background()),
+		&authenticationV1.UserTokenPayload{UserId: 70, IsPlatformAdmin: trans.Ptr(true)})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 72, IsPlatformAdmin: trans.Ptr(true)})
 
 	created, err := svc.CreateNotificationChannel(opCtx, &notificationChannelV1.CreateNotificationChannelRequest{
 		Data: &notificationChannelV1.NotificationChannel{
@@ -251,8 +263,11 @@ func TestNotificationChannelServiceSqlite_UpdateRename(t *testing.T) {
 func TestNotificationChannelServiceSqlite_Delete(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newNotificationChannelServiceForTest(t, entClient)
-	ctx := enttest.NewSystemViewerCtx(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 72})
+	// 渠道是平台级配置、服务层 requirePlatformAdmin 挡租户侧，故基础 ctx 带平台管理员标志；
+	// opCtx 另换 UserId 只为断言 created_by/updated_by 落操作人。
+	ctx := auth.NewContext(enttest.NewSystemViewerCtx(context.Background()),
+		&authenticationV1.UserTokenPayload{UserId: 70, IsPlatformAdmin: trans.Ptr(true)})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 72, IsPlatformAdmin: trans.Ptr(true)})
 
 	created, err := svc.CreateNotificationChannel(opCtx, &notificationChannelV1.CreateNotificationChannelRequest{
 		Data: &notificationChannelV1.NotificationChannel{
@@ -291,8 +306,11 @@ func TestNotificationChannelServiceSqlite_Delete(t *testing.T) {
 func TestNotificationChannelServiceSqlite_SendTestEmailBranches(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newNotificationChannelServiceForTest(t, entClient)
-	ctx := enttest.NewSystemViewerCtx(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 73})
+	// 渠道是平台级配置、服务层 requirePlatformAdmin 挡租户侧，故基础 ctx 带平台管理员标志；
+	// opCtx 另换 UserId 只为断言 created_by/updated_by 落操作人。
+	ctx := auth.NewContext(enttest.NewSystemViewerCtx(context.Background()),
+		&authenticationV1.UserTokenPayload{UserId: 70, IsPlatformAdmin: trans.Ptr(true)})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 73, IsPlatformAdmin: trans.Ptr(true)})
 
 	// 非 EMAIL 渠道。
 	webhook, err := svc.CreateNotificationChannel(opCtx, &notificationChannelV1.CreateNotificationChannelRequest{
