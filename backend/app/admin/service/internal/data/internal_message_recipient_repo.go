@@ -11,6 +11,7 @@ import (
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
+	"github.com/tx7do/go-crud/viewer"
 
 	"github.com/tx7do/go-utils/copierutil"
 	"github.com/tx7do/go-utils/mapper"
@@ -103,6 +104,15 @@ func (r *InternalMessageRecipientRepo) List(ctx context.Context, req *pagination
 	}
 
 	builder := r.entClient.Client().InternalMessageRecipient.Query()
+
+	// 收件箱按"我自己的"来读，归属谓词必须由服务端给出：查询条件整个来自调用方的 query 字符串，
+	// 不钉住 recipient_user_id 就等于同租户任何登录用户改一个 ID 就能翻别人的收件记录
+	// （title/content 随父消息回填，一并跟着走）。三端页面本来就各自在前端塞这个条件，
+	// 钉住之后前端传不传都只会拿到自己的行。
+	// 平台/系统视图豁免：用户详情页要看指定用户的收件箱，异步任务路径也需要全量读。
+	if vc, ok := viewer.FromContext(ctx); ok && !vc.IsPlatformContext() && !vc.IsSystemContext() {
+		builder.Where(internalmessagerecipient.RecipientUserIDEQ(uint32(vc.UserID())))
+	}
 
 	ret, err := r.repository.ListWithPaging(ctx, builder, builder.Clone(), req)
 	if err != nil {

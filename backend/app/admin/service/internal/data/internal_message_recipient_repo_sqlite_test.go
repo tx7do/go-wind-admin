@@ -183,9 +183,12 @@ func TestInternalMessageRecipientTenantSqlite(t *testing.T) {
 		}
 	}
 
-	listForTenant := func(t *testing.T) map[uint32]bool {
+	listAs := func(t *testing.T, uid uint32) map[uint32]bool {
 		t.Helper()
-		inbox, err := repo.List(tenantCtx, &paginationV1.PagingRequest{})
+		// 收件箱读取被服务端钉成"viewer 自己的收件行"（见 repo.List 的归属谓词），
+		// 所以这里必须按要读的那个人构造 viewer，而不是只给租户。
+		ctx := crudViewer.WithContext(context.Background(), appViewer.NewUserViewer(uint64(uid), 5, 0, "", nil))
+		inbox, err := repo.List(ctx, &paginationV1.PagingRequest{})
 		require.NoError(t, err)
 		seen := make(map[uint32]bool, len(inbox.GetItems()))
 		for _, item := range inbox.GetItems() {
@@ -198,14 +201,16 @@ func TestInternalMessageRecipientTenantSqlite(t *testing.T) {
 		created, err := repo.Create(sysCtx, newRecipient(101, 201, nil))
 		require.NoError(t, err)
 		require.Equal(t, uint32(0), created.GetTenantId(), "SystemViewer 下未显式传租户 → 落 DefaultTenantID=0")
-		require.False(t, listForTenant(t)[201], "tenant_id=0 的收件行对租户 5 不可见（这就是广播丢投递的机理）")
+		require.False(t, listAs(t, 201)[201], "tenant_id=0 的收件行对租户 5 不可见（这就是广播丢投递的机理）")
 	})
 
 	t.Run("平台上下文显式传租户被尊重", func(t *testing.T) {
 		created, err := repo.Create(sysCtx, newRecipient(102, 202, trans.Ptr(uint32(5))))
 		require.NoError(t, err)
 		require.Equal(t, uint32(5), created.GetTenantId(), "平台/系统上下文应尊重显式设置（广播修复依赖此行为）")
-		require.True(t, listForTenant(t)[202], "带正确租户的收件行必须对租户 5 的收件箱可见")
+		require.True(t, listAs(t, 202)[202], "带正确租户的收件行必须对租户 5 的收件箱可见")
+		require.False(t, listAs(t, 999)[202],
+			"同租户、换一个收件人就读不到：归属谓词由服务端给出，不依赖调用方传 recipient_user_id")
 	})
 
 	t.Run("租户上下文强制覆盖为本租户", func(t *testing.T) {

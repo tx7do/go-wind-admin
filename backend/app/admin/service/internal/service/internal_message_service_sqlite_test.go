@@ -301,9 +301,6 @@ func TestInternalMessageServiceSqlite_AsyncBroadcastTenantScoping(t *testing.T) 
 	svc.userRepo = stub
 
 	sysCtx := enttest.NewSystemViewerCtx(context.Background())
-	tenantCtx := func(tid uint32) context.Context {
-		return viewer.WithContext(context.Background(), appViewer.NewUserViewer(0, uint64(tid), 0, "", nil))
-	}
 
 	// 父消息由平台上下文显式落到租户 7（与真实链路里"租户管理员发送 → 强制覆盖为本租户"同值）。
 	msg, err := svc.internalMessageRepo.Create(sysCtx, &internalMessageV1.CreateInternalMessageRequest{
@@ -326,14 +323,16 @@ func TestInternalMessageServiceSqlite_AsyncBroadcastTenantScoping(t *testing.T) 
 	require.Equal(t, []uint64{7}, stub.seenTenantIDs,
 		"handler 应以 payload 的租户重建 viewer（贴 SystemViewer 即为跨租户投递）")
 
-	inbox, err := svc.internalMessageRecipientRepo.List(tenantCtx(7), &paginationV1.PagingRequest{})
-	require.NoError(t, err)
-	require.Len(t, inbox.GetItems(), 3, "租户 7 的 3 个用户都应收到")
-	for _, item := range inbox.GetItems() {
-		require.Equal(t, uint32(7), item.GetTenantId(), "收件行必须落在收件人自己的租户上")
+	// 逐个收件人各读一次：每人恰好一行。少钉归属谓词会一次返回三行（=同租户翻别人收件箱），
+	// 收件行没跟着收件人的租户打标则一行都读不到（=改动前的静默丢投递）。
+	for _, uid := range []uint32{701, 702, 703} {
+		inbox, err := svc.internalMessageRecipientRepo.List(inboxCtx(uid, 7), &paginationV1.PagingRequest{})
+		require.NoError(t, err)
+		require.Len(t, inbox.GetItems(), 1, "租户 7 的收件人 %d 应读到且只读到自己那一行", uid)
+		require.Equal(t, uint32(7), inbox.GetItems()[0].GetTenantId(), "收件行必须落在收件人自己的租户上")
 	}
 
-	other, err := svc.internalMessageRecipientRepo.List(tenantCtx(9), &paginationV1.PagingRequest{})
+	other, err := svc.internalMessageRecipientRepo.List(inboxCtx(901, 9), &paginationV1.PagingRequest{})
 	require.NoError(t, err)
 	require.Empty(t, other.GetItems(), "租户 9 不应看到别租户的广播")
 }

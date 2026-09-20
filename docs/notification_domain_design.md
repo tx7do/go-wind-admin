@@ -331,6 +331,11 @@ vue-element 的 `if (!data.id || !data.messageId) return` 把**每一条广播�
    用读者的 viewer 读父消息 → 收件箱有行、标题正文为空（推送侧从内存 DTO 取正文，反而是全的，两条路径就此分叉）。
    `messageIds` 全部来自已按读者租户过滤过的收件行，"能读到这条收件行"就是授权凭据，不构成跨租户读取口。
 
+同一次改动顺带钉掉一个越权读：收件箱 `List` 的查询条件整个来自调用方的 `query` 字符串，服务端此前不注入
+`recipient_user_id`，同租户任意登录用户改一个 ID 就能翻别人的收件记录（标题正文随父消息一并跟走）。
+现在 `InternalMessageRecipientRepo.List` 在非平台/非系统上下文下强制 `recipient_user_id = viewer.UserID()`，
+平台侧仍可按用户筛（用户详情页要看指定用户的收件箱）。详见 §7 的"第三个缺陷"。
+
 **运行期实测（本机实例重启到新代码 + 现网 `gwa` 库）**：
 
 | 观测点 | 结果 |
@@ -339,6 +344,8 @@ vue-element 的 `if (!data.id || !data.messageId) return` 把**每一条广播�
 | admin → tenant_admin(租户 1) 定向（message 13） | 收件行 `tenant_id=1`，父消息 `tenant_id=0` —— 打标跟的是收件人，不是操作人/viewer |
 | admin → 探针租户(租户 2) 用户定向（message 17） | 收件行 `tenant_id=2` |
 | **租户用户读自己的收件箱**（`probe_admin` @ 租户 2，`GET /admin/v1/internal-message/inbox`） | total=1、`tenant=2`、**`title`/`content` 回填到位**（父消息在租户 0）—— 这一行是"平台公告租户读不到"缺陷的反面证据 |
+| 同一 token 发 `?query={"recipientUserId__eq":1}` | total=0（改动前：读到别人的收件行含标题正文） |
+| admin（平台）发同一条件按用户筛 | total=1、`tenant=2` —— 平台豁免仍成立，用户详情页不受影响 |
 
 租户态 token 是本次现场造出来的：`POST /admin/v1/tenants:with-admin`（租户 2 + 管理员，绑定企业版套餐 3，
 否则闸门回 `no subscription plan`）→ 登录取 token → 探针结束后按各资源的 DELETE 路由清掉。
@@ -347,7 +354,8 @@ vue-element 的 `if (!data.id || !data.messageId) return` 把**每一条广播�
 **用户删除不级联凭证**是本次顺手发现的一个既有缺口（不在本次范围内，登录侧因用户已不存在而 fail-closed）。
 
 回归测试：`TestInternalMessageServiceSqlite_PlatformBroadcastIsReadableByTenantUser`（平台广播 → 两个租户的读者各读到自己的行 + 标题正文）、
-`TestNotifySeamDirectedSend`（收件行落在收件人租户而非 SystemViewer 的租户 0）。
+`TestNotifySeamDirectedSend`（收件行落在收件人租户而非 SystemViewer 的租户 0）、
+`TestInternalMessageRecipientTenantSqlite` 的 `listAs(t, uid)`（同租户换一个收件人就读不到）。
 
 **环境发现（不是代码缺陷，但会让广播看起来"没发"**）：本机 `backend` 与兄弟项目 `go-wind-quant` 的 asynq
 共用同一个 Redis 的 **DB 1 `default` 队列**，谁先抢到谁处理，没有对应 handler 的一方报
@@ -512,6 +520,31 @@ P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点
 `pkg/mailer` 的 `TestIsSupportedTlsMode`、repo sqlite 测试补 `SmtpAccount.ID` 断言。
 `EmailSender` 与 mailer 之间"成功投递补 channel_id"这一段仍只有服务层替身测试覆盖——本机没有可控的 SMTP 服务端，
 真发一封才算闭环。
+
+### 收件箱读侧不钉归属：一处越权读（2026-09-20，运行期实测发现并修掉）
+
+`GET /admin/v1/internal-message/inbox` 的过滤条件整个来自调用方的 `query` 字符串，服务端只让 `TenantPrivacy`
+注入租户谓词，**从不注入收件人谓词**——三端页面各自在前端塞 `recipientUserId`，于是"只看自己的收件箱"这件事
+从来只是客户端约定。实测：同租户的两个用户，A 用自己的 token 发 `?query={"recipientUserId__eq":<B 的 id>}`
+就读到了 B 的收件行，`title`/`content` 由父消息回填一并带出。租户隔离把"跨租户"堵住了，没堵"同租户跨用户"。
+
+修法：`InternalMessageRecipientRepo.List` 在非平台、非系统上下文下强制 `recipient_user_id = viewer.UserID()`
+（`viewer` 由 `pkg/middleware/ent/ent.go:29` 从令牌注入，uid 是真用户 ID，不是 0）。
+平台/系统上下文豁免：用户详情页要看指定用户的收件箱（`ListUserInbox` 是这条 `List` 在生产里唯一的调用方），
+异步任务路径需要全量读。
+回归测试：`TestInternalMessageRecipientTenantSqlite` 新增"同租户、换一个收件人就读不到"的断言。
+
+**没一起修的姊妹问题（写侧，已定位未修）**：`MarkNotificationAsRead`（`:329`）与
+`DeleteNotificationFromInbox`（`:510`）都以 `Where(RecipientUserIDEQ(req.GetUserId()))` 定作用域，
+而 `user_id` 取自**请求体**、不是 viewer —— 同租户用户可以传别人的 `user_id` 去标记已读/删除别人的收件行
+（跨租户仍被 `TenantMutationGuardPolicy` 拦住）。这与上面修掉的是同一个假设（"调用方报的归属可信"），
+只是落在写侧。修法同形（非平台上下文以 viewer 覆盖 `req.UserId`），但要一并确认三端是否有
+"平台管理员代客操作"的调用，本次未动，留作 P2 收尾项。
+
+同一批实测里另有一处**不是缺陷但值得记**：每次创建实体都回一条
+`script entity hook <table>.after_create failed: ... no scripts mounted on hook point` 的 ERROR 日志
+（站内信/用户/角色/租户都中招）。钩子点上没挂脚本是常态，不该按错误记账；属脚本系统（`docs/script_system.md`）
+的日志分级问题，与通知域无关，未在本次改动内。
 
 ### 移植记录（react → ele → vben，2026-09-19）
 

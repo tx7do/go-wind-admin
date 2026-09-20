@@ -183,8 +183,20 @@ Create 分支：租户上下文**强制覆盖** `SetTenantID(viewer.tid)`（防�
 | **应用层自有存储**（Redis 缓存键、MinIO 对象路径、asynq 任务载荷） | ❌ 不自动注入 | 隔离谓词只存在于 ent privacy；这些路径必须业务侧显式携带/校验租户维度 |
 | GORM 仓内路径（`internal/data/gorm/`） | ⚠️ 依赖库侧 | 仓内无独立镜像插件（grep 无 TenantIsolation）；隔离依赖 go-crud/gorm 的 viewer 机制，**未做深验证**，接 gorm 路径的租户表前先核实 |
 | 跨服务出站（脚本 HTTP egress、Webhook） | ❌ | 按域名白名单管控，无租户维度（[script_system.md](./script_system.md)） |
+| **租户内跨用户**（同 tenant 下 A 读/写 B 的行） | ❌ 完全不覆盖 | 隔离谓词只有 `tenant_id` 一列，"只看自己的行"必须业务侧自己钉（见下） |
 | 平台管理员上下文 | 放行 | 设计使然（tid==0 全量） |
 | 登录/找回/闸门自查询 | 例外通道 | NoopContext+privacy.Allow（登录）/ SystemViewerContext（闸门、机器令牌交换的 AK 查询）——审计落库自身经 SystemViewer 写入 |
+
+**"自己的行"没人钉过：收件箱越权读（2026-09-20 实测并修）**。
+`GET /admin/v1/internal-message/inbox` 的过滤条件整个来自调用方 `query` 字符串，租户隔离只保证"读不到别租户的行"，
+同租户内换一个 `recipientUserId` 就能读到别人的收件记录（`title`/`content` 由父消息回填，一并带出）。
+三端页面各自在前端塞 `recipientUserId`，所以这个条件从来不是服务端事实。
+修法与位置见 `internal_message_recipient_repo.go` 的 `List`（非平台/非系统上下文强制
+`recipient_user_id = viewer.UserID()`）与 [notification_domain_design.md](./notification_domain_design.md) §7。
+**给"按人归属"的资源接入时的教训**：凡是"这张表每行属于某个用户"的读路径，归属谓词要落在 repo 的
+查询构造上，而不是指望调用方传对——三端各有一份前端，漏一份就是一个洞。
+写侧的同形问题（`MarkNotificationAsRead` / `DeleteNotificationFromInbox` 用请求体的 `user_id` 定作用域）
+**已定位、尚未修**，记在 `notification_domain_design.md` §7 的同一小节里。
 
 **`sys_access_keys` 守卫缺口的修复记录（2026-09-12）**：该表曾长期是 33 张带租户表中
 唯一未挂仓内守卫的表（schema 无 `Policy()` 覆写）。补挂后与其他表一致（库层+仓内双防线），
