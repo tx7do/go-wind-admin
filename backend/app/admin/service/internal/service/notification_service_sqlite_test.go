@@ -22,6 +22,7 @@ import (
 
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/channel"
+	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
 
 	notificationV1 "go-wind-admin/api/gen/go/notification/service/v1"
@@ -54,6 +55,10 @@ type notificationSvcEnv struct {
 	svc   *NotificationService
 	ctx   context.Context
 	email *fakeSender
+
+	// client 是同一份内存库的 ent 客户端，只给测试注入故障用（见 notification_record_sqlite_test.go
+	// 的 armRecordWriteFailure）——生产代码不从这里走。
+	client *ent.Client
 }
 
 func newNotificationServiceForTest(t *testing.T) *notificationSvcEnv {
@@ -71,7 +76,12 @@ func newNotificationServiceForTest(t *testing.T) *notificationSvcEnv {
 		channels:     registry,
 	}
 
-	return &notificationSvcEnv{svc: svc, ctx: appViewer.NewSystemViewerContext(context.Background()), email: email}
+	return &notificationSvcEnv{
+		svc:     svc,
+		ctx:     appViewer.NewSystemViewerContext(context.Background()),
+		email:   email,
+		client:  entClient.Client(),
+	}
 }
 
 func directReq(eventType notificationV1.EventType) *notificationV1.SendDirectNotificationRequest {

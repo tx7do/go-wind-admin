@@ -1,9 +1,10 @@
 # 通知域（Notification Domain）设计文档
 
 > **状态：P0 + P1 已落地（后端内聚 + 三端投递台账页 + 邮件文案 i18n + SSE 事件类型注册表，2026-09-19），
-> P2 已落地四块（见 §4：P2-1 站内信注册为 INTERNAL 渠道 + 定向发送改走缝 + 台账 `related_id`；
+> P2 已落地五块（见 §4：P2-1 站内信注册为 INTERNAL 渠道 + 定向发送改走缝 + 台账 `related_id`；
 > P2-2 收件行租户打标跟着受众走 + 修掉收件箱一处越权读；P2-3 异步投递 = 入队前同步预检 + asynq 派发 +
-> 台账 `request_id`/`attempts`；P2-4 台账 `SENDING` 超时清扫 = 系统级常驻 cron，均 2026-09-20）；P2 剩余（规则表 / WEBHOOK 渠道）与 P3 仍是设计提案，
+> 台账 `request_id`/`attempts`；P2-4 台账 `SENDING` 超时清扫 = 系统级常驻 cron；P2-5 台账结论回写失败按出口上抛，
+> 均 2026-09-20）；P2 剩余（规则表 / WEBHOOK 渠道）与 P3 仍是设计提案，
 > 另有一处已定位、尚未修的写侧姊妹缺陷记在 §7「收件箱读侧不钉归属」一节末尾。**
 > 第 2 节「现状盘点」是 P1 之前的基线（核对至 commit `29d700b9`），其中被改动的事实在就地标注；
 > 第 3~4 节的实施状态以 §4 的分期标记为准，落地验收进度在 §7。实施进度更新时改本文状态标记，不要另开文档。
@@ -188,7 +189,7 @@ SKIPPED/FAILED）和非 nil error。只回 error，调用方拿不到台账行�
 | `related_id` | 可空，**按 `event_type` 解释**的业务对象 ID（`INTERNAL_MESSAGE` → `internal_messages.id`）。台账不存正文快照，这一列是"这条投递发的是什么"的唯一回跳入口 | P2 已建（`Optional().Nillable()` + 索引 `(event_type, related_id)`，启动期 ent 自动迁移加列加索引，实测已在 `gwa` 库出现） |
 | `event_type/channel/status` 三枚枚举 | 必须 `Optional().Nillable()`：值型枚举列 + 可选指针 DTO 会踩 copier 的"指针↔指点对"失配，读回恒为零值（同款坑见 `notification_channel_repo.go` 的 `queryTypeByIDs` 注释） | 已按此建 |
 | `request_id` | 幂等锚：**一次业务调用 → 若干条投递**的唯一串线抓手。调用方不传则服务端生成（GUIDv4 无连字符，32 字符）。唯一索引是 `(request_id, channel)` 复合，不是一列唯一 —— 一次调用同时发邮件 + 站内信是这条台账的**预期用法**，单列唯一会把这种调用变成插入冲突 | P2-3 已建（`Optional().Nillable()` + `uidx_sys_notification_delivery_request_channel`，实测已在 `gwa` 库出现；三个生产点今天都不传，全靠服务端生成） |
-| `attempts` | 已尝试投递的次数。同步路径恒为 1（"当场投一次就是一次"，不留 0 让读的人先回忆哪条路写过这列）；异步路径由 handler 每次开拨前 +1，配合 `status=SENDING` 就是"还在重试"。**P2-4 之后这条判据有了时限**：超过清扫阈值仍挂在 `SENDING` 的行不是"还在重试"，而是"没人结算"（阈值下限就是按重试预算算出来的，见 §6 决策点 8） | P2-3 已建（`Uint32().Default(0)`；预检失败/配置类 SKIPPED 的行留 0 = 一次都没真试过） |
+| `attempts` | 已尝试投递的次数。异步路径由 handler 每次开拨前 `MarkAttempted` +1，配合 `status=SENDING` 就是"还在重试"；同步路径把 `attempts=1` 写在结论那一条更新里，"当场投一次就是一次"。**P2-4 之后这条判据有了时限**：超过清扫阈值仍挂在 `SENDING` 的行不是"还在重试"，而是"没人结算"（阈值下限就是按重试预算算出来的，见 §6 决策点 8）。**P2-5 之后 `attempts=0` 有了第二种成因**：结论回写失败时异步侧照样在涨（先记账再拨号），同步侧那一格却是 0 —— 信可能真的发出去了，只是这一列和结论写在同一条被挡下的更新里（实测见 §4 P2-5 表倒数第二行；不改成的理由见 §4 P2-5 第 4 条） | P2-3 已建（`Uint32().Default(0)`；预检失败/配置类 SKIPPED 的行留 0 = 一次都没真试过） |
 | `title` / `content` | 正文快照 | **不做**：一期三个事件里两个的正文就是验证码本身，快照进永久台账等于建了一张 OTP 明文表。P2 引入模板后按"模板 ID + 渲染参数"存，不存渲染结果 |
 | mixin | `AutoIncrementId` / `TimeAt` / `OperatorID` | 已按此建；**不挂 `TenantID`**（见 §6 决策点 3 结论），也不挂 `SwitchStatus`（台账没有"停用"语义） |
 
@@ -218,6 +219,9 @@ app/admin/service/internal/data/notification_delivery_repo.go  + SweepStaleSendi
 app/admin/service/internal/service/notification_service.go     + AsyncDeliverySweep handler + deliveryStaleAfter 阈值解析
 app/admin/service/internal/server/asynq_server.go              + 订阅 notification_delivery_sweep
 app/admin/service/internal/service/task_service.go             + startAllTask 尾部重注册这条 cron（见 §4 P2-4 第 1 条）
+--- 以下为 P2-5 结论回写上抛（同样零契约变更：只动 service 层的错误去处）---
+app/admin/service/internal/service/notification_service.go     markResult 改返回 error + 八处调用点按出口定去处
+app/admin/service/internal/service/notification_record_sqlite_test.go  回写失败注入的五条回归（一次性 ent hook）
 --- 以下为 P2 剩余项，尚未建 ---
 app/admin/service/internal/data/channel/webhook_sender.go      等 §6 决策点 2 定了表结构再写
 ```
@@ -480,6 +484,61 @@ asynq 消费者 —— 三种情况都会留下一行永远 `SENDING` 的台账�
 批量逐轮推进 / 阈值解析含坏值与下限 / handler 崩溃后端到端闭环），另把 `TestTaskService_RestartAllTask` 的常驻
 注册计数从 3 项改 4 项并加断言。
 
+**P2-5（台账结论回写失败上抛，已完成 2026-09-20）** —— 把 `markResult` 从"只记日志"改成"把事实交给还能补救它的那一方"。
+此前八处回写点（四种出口形状、三种去处）一律丢弃错误，于是两件坏事同时成立：进程内的调用方以为一切正常（同步侧本来就只能这样，见下表），
+而**异步侧连 asynq 的重投机会都被丢掉** —— handler 返回 nil 等于告诉队列"这条做完了"，一行本该重试的回写失败
+从此只活在日志里，最后由清扫写成 `FAILED`（账面上是"没送到"，实际上信早就出去了）。
+
+1. **策略按出口分，不是一条"上抛"了之**（口径全在 `notification_service.go` 的逐条注释里）：
+
+| 出口 | 回写失败去处 | 为什么是这条 |
+| --- | --- | --- |
+| 同步 `deliver`：投递成功 | **不回错**给业务调用方，返回值照旧 `SENT` | 找回密码的调用方看到 error 就再生成一封验证码 ⇒ 拿"用户收到两封信"去换一个"缺格的账"，是更贵的交换 |
+| 同步 `deliver`：投递失败 | `errors.Join(sendErr, recordErr)` | 这条调用本来就在报错，多一个事实不改变任何行为 |
+| 同步 `SendDirect`：渠道未注册（代码 bug） | `errors.Join(errors.New(reason), recordErr)` | 同上 |
+| 异步 `dispatchAsync`：入队前预检失败 | `errors.Join(err, recordErr)` | 预检失败的回话本来就要给业务侧（"渠道没配"与"已发送"是不同文案） |
+| 异步 handler：投递成功 | `return s.markResult(...)` ⇒ 交给 asynq 重投 | 唯一的"上抛即补救"出口：结论还能落地，比留给清扫诚实 |
+| 异步 handler：失败且还有额度 | `errors.Join(sendErr, recordErr)` | 这一格写的是"上一次为什么失败"，丢了不致命（下一次带着 `sendErr` 再来） |
+| 异步 handler：额度用尽 | `errors.Join(sendErr, markResult(FAILED))` | 报错给队列 ⇒ 同时进归档 |
+| 异步 handler：两支 `SkipRetry`（渠道未注册 / 配置类 SKIPPED） | `errors.Join(带 SkipRetry 的错, recordErr)` | `errors.Is` 穿得过 `Join` ⇒ SkipRetry 仍然优先：从没拨过号的行不值得为一次没落库的结论，把明文验证码在队列里多留一轮 |
+
+2. **刻意不做进程内重试**：异步侧的重试机制就是 asynq，再造一个只会把"重投递"与"重写台账"混进同一个计数器；
+   同步侧无论重试几次都不改变"不能回错给调用方"这个结论。
+3. **`errors.Join` 与 `asynq.SkipRetry` 的兼容性是这张表成立的前提**（`errors.Is` 会遍历 Join 的每个分支），
+   所以它由回归测试钉住而不是靠注释承诺。
+4. **同步侧 `attempts` 的不对称由本次实测暴露**（下表倒数第二行）：异步在拨号前先 `MarkAttempted`，
+   所以回写失败时 `attempts` 照样涨；同步把 `attempts=1` 写在同一条结论更新里，回写失败 ⇒ 这一格停在 **0**，
+   哪怕信真的发出去了。**没有**改成"同步也先记账"：那会破坏 §3.3 的 `SKIPPED ⇒ attempts=0` 判据
+   （"没拨过号"与"拨了没记账"就分不开了）。读台账时的口径：`attempts=0` 配 `FAILED` 有两种成因。
+
+**运行期实测（本机实例 + 现网 `gwa` 库 + mailpit 假 SMTP + asynq 独占 DB 12 + 一次性 Postgres 触发器 +
+`NOTIFICATION_DELIVERY_STALE_MINUTES=5`；探针账目列在最后）**：
+
+| 观测点 | 结果 |
+| --- | --- |
+| 故障注入方式 | `BEFORE UPDATE` 触发器：`NEW.id >= 15 AND NEW.status IN ('SENT','FAILED')` ⇒ `RAISE EXCEPTION 'gwa probe: …'`。只咬结论回写，放过 `Create` 与 `MarkAttempted`（后者只写 `attempts`），所以看到的错误与"生产库写不进去"同形（`code = 500 … mark notification delivery result failed`） |
+| 自选渠道命中探针 | 演示通道 1/2 临时 `OFF`，新建探针通道 8 = `127.0.0.1:1025` / `smtp_tls=NONE` / 用户名留空（空用户名即不认证，`pkg/mailer/smtp.go:93`），密码列留 NULL 以绕开解密路径 |
+| 异步：结论写不进 | 14:38:10.867 台账 id=15 落 `SENDING`；14:38:13.164 出现新日志 `write back delivery [15] result [SENT] failed, the row keeps its previous status (notification_delivery_sweep will settle it): … mark notification delivery result failed` |
+| **异步：asynq 因此重投（P2-5 的新行为）** | 同一行该 ERROR 共 4 条：14:38:13.164 / 14:38:49.429 / 14:39:34.320 / 14:41:09.720 ⇒ `attempts` 1→4，退避间隔 36.3s / 44.9s / 95.4s，全程 178.9s |
+| **代价：收件人真收到 4 封** | mailpit 4 封 `tenant@company.com`，正文验证码是**同一个 `170300`** ⇒ 重投是"重复投递同一内容"，不是重新生成一个码（载荷带正文的直接后果，§6 决策点 7） |
+| 归档里留下了什么 | `asynq:{default}:archived` 1 条，其 `msg` 字段明文含 `"target":"tenant@company.com"` 与 `验证码是：170300`，`error` 字段正是那条回写失败 ⇒ 回写失败把它推进归档，归档顺手把明文验证码留在 Redis（测完连 DB 12 一起清） |
+| 同步：不回错给业务侧 | 重挂触发器（`id >= 16`）后 `POST /admin/v1/notification-channels/8/send-test-email` ⇒ **HTTP 200 `{}`**，同时 14:46:58.290 落了同一条 ERROR 日志，mailpit 真收到 `sync-probe@company.com` 一封 |
+| 同步：`attempts` 停在 0 | id=16 定案前为 `SENDING` / `attempts=0` / `sent_at` 空，而 `channel_id=8` 有值（显式指定渠道时它属于投递意图，`Create` 阶段就写了）⇒ 台账写着"一次都没试"，账外信已送达，这就是第 4 点那条不对称 |
+| 清扫兜底（顺带被同一故障咬住） | 14:45:00.565 触发器还挂着时，清扫任务自己报错 `pq: gwa probe: ledger conclusion write blocked` → `AsyncDeliverySweep: sweep failed` → asynq 重试该任务；14:45:19 摘掉触发器后 14:45:24.873 WARN `1 stale deliveries settled as FAILED (staleAfter=5m0s)` ⇒ id=15 定案 `FAILED`、`attempts=4` **原样保留**、`last_error = swept by …`、`sent_at` 仍空 |
+
+探针造成的变更（全部如实记账）：`sys_notification_deliveries` 上的触发器与函数 `gwa_probe_break_ledger_result`
+建两次、每次测完即 `DROP`（库内 `pg_trigger` 复查为空）；通道 1/2 `ON→OFF→ON` 已复原，探针通道 8 建后已删
+（表回到 1/2/3 三条、状态 `ON/ON/OFF`，与动手前逐列一致）；台账 id=15、16 两行**保留**作上表证据（与 id=9…14
+同一处理，两行现在都已是终态：id=15 于 14:45:24.873、id=16 于 14:55:00.321 各被清扫定案，
+`attempts` 分别保留 4 与 0）；`configs/server.yaml` 的 `server.asynq.uri` 临时 DB 1 → DB 12，测完复旧并对
+DB 12 的 asynq 键逐个 `DEL`；mailpit 容器 `gwa-mailpit` 为本轮新起（镜像已在本机）。
+
+回归测试：`notification_record_sqlite_test.go` 五条（异步成功→交给 asynq / 同步成功→不回错且 `attempts=0` /
+同步失败→两个事实并呈 / `SkipRetry` 活过 `Join` / 重试窗口那一格仍可重试）。故障注入用一次性 ent mutation hook
+（`client.Use`，只在 `NotificationDelivery` 的 `UpdateOne` 且字段含 `status` 时命中）而不是删行或关库 —— 那样
+`Get`/`MarkAttempted` 还能照常跑，且 hook 命中与否由测试自己断言（`fired()`），注入落空不会假装通过。
+配套把 `notificationSvcEnv` 加了一个 `client *ent.Client` 字段（只给测试注入故障用，生产代码不从这里走）。
+
 P2 剩余：`notification_rules` 表 + 管理页，替换 §3.5 的 Go 表；`sys_notification_channels` 解掉"WEBHOOK 类型
 无处存 URL"的问题（方案见 §6 决策点 2）；`webhook_sender.go` 落地。
 
@@ -559,6 +618,18 @@ P2 剩余：`notification_rules` 表 + 管理页，替换 §3.5 的 Go 表；`sy
    而是让清扫读 `attempts` 后**重新入队**，那要先有"下次可投递时间"这类列，属 P3+ 的量级，本次不做（也不预埋）。
    另一个否掉的方案是用 `updated_at` 当年龄锚点：本仓没有任何代码写过这一列（§4 P2-4 表里两行 `updated_at`
    至今为空），拿它比较等于"永远按创建时间算"，却要让人误以为有滑动窗口 —— 不如把事实写在列名上。
+9. **回写失败该回给谁** —— **P2-5 已定：回给"还能补救它的那一方"，而不是无差别上抛**。
+   异步侧回给 asynq（重试是唯一还能把结论落地的机制），同步侧在投递成功时**绝不**回给业务调用方
+   （找回密码的调用方看到 error 会再生成一封验证码，等于拿"用户收到两封信"换一个"缺格的账"），
+   两支 `SkipRetry` 不为回写失败破例（从没拨过号的行不值得把明文验证码在队列里多留一轮）。
+   逐条去处见 §4 P2-5 的策略表。两个被否掉的方案：
+   - **一律上抛**：形状最干净，代价是同步侧把可观测性缺陷换成用户可见的重复信件 —— 而调用方手里没有幂等键，
+     它唯一的反应就是重发。
+   - **`markResult` 内部进程内重试三次**：看着比"交给 asynq"更主动，实际是把"重投递"和"重写台账"
+     混进同一个计数器（重试到第几次到底在重试哪件事，日志答不出来），且同步侧无论如何重试都改变不了
+     "不能回错给调用方"这个结论 —— 于是它只解决了异步侧，而异步侧本来就有 asynq。
+   仍然没有解决的那一半要说清楚：**"信已发出、结论写不进"这段窗口现在靠重投缩小、靠清扫兜底，
+   但消除不了**（要消除得把投递与写结论拆成两态，见 §7 P2-5 那条）。
 
 ## 7. 落地验收清单
 
@@ -628,6 +699,17 @@ gow run admin
       在同一刻度不动（本次实测把阈值降到 5 分钟复现：13:36 直插的行 13:40 刻度不动、13:45 刻度才落定）。
       **给任何"按时间比较"的 repo 方法提个醒**：谓词参数必须先 `.UTC()`，否则 sqlite 回归测试里的比较是
       字典序的（Postgres 上不复现）—— 详见 §4 P2-4 那条时间坑与 `docs/task_system.md` §10。
+- [x] P2-5 台账结论回写失败上抛：**契约、三端、ent schema 一列未动**（改动全在 service 层的错误去处，
+      加一个新回归文件），故无 `buf generate` / `make ts` / `make openapi` / 接口同步。验收看四样：
+      ① 异步侧注入回写失败 ⇒ handler 返回 error、asynq 重投、`attempts` 涨到 4 后落归档；
+      ② 同步侧同样注入 ⇒ `send-test-email` 仍返回 **200**（业务调用方拿不到这个错误），
+      而日志有 `write back delivery [n] result [SENT] failed, …`；
+      ③ 两支 `SkipRetry` 在 `errors.Join` 之后仍被 `errors.Is` 认出（由测试钉住）；
+      ④ 兜底仍由清扫闭环：`swept by …` + `attempts` 原样保留 + `sent_at` 为空。
+      **副作用必须知道**：这一条把"回写失败"从静默变成了 asynq 重投 ⇒ 收件人可能收到重复信件
+      （实测 4 封、同一个验证码 `170300`）。若部署方不接受这个交换，正确的改法**不是**回退本块，
+      而是把"投递"与"写结论"拆开（拨号前先落一条中间态，成功回写只更新那一格）—— 那要先有能表达
+      "已发出待定案"的列语义，属 P3+ 的量级，本次不做也不预埋。
 
 P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点到的地方，漏任一处都是静默不一致）：
 
