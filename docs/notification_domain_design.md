@@ -678,7 +678,8 @@ vben `views/app/system/notification_rule/index.vue` + `api/composables/notificat
 `AdminPortalService.GetNavigation` **没有超管绕过**（`MenuMeta.Authority` 后端根本不读），
 所以只加 `DefaultMenus` 的结果是连全新环境都看不见这一行。已部署实例的权限行早就存在、那段播种不会再跑，
 只能在「权限管理」里勾上 —— 本轮 `sys_apis` 侧同理，新端点靠「接口同步」全量重建才进表（`86/87/88/199/200/201` 六条 notification-rules）。
-`DefaultPermissions[].MenuIds` 这条改的是全新安装路径，本机没有干净库可验，证据只有代码 + 现网实例的等价手工勾选结果。
+`DefaultPermissions[].MenuIds` 这条改的是**全新安装**路径，当时本机没有干净库可验，只留下代码 + 现网等价手工勾选的证据。
+这一格在 C7 里换成了实测，见下一节。
 
 **顺手挖出并修掉一个数据破坏 bug：编辑权限会清空它的全部授权**。排查"菜单为什么不亮"时撞上的。
 `PUT /admin/v1/permissions/{id}` 只要带 `updateMask` 且掩码里有 `menuIds`/`apiIds`（三端权限抽屉本来就是这个形状），
@@ -708,6 +709,79 @@ vben `views/app/system/notification_rule/index.vue` + `api/composables/notificat
 `notification_rule_repo_sqlite_test.go`（CRUD + 唯一事件类型拒绝）、`notification_rule_service_sqlite_test.go`
 （空表播种、CRUD、测试投递转调缝、WEBHOOK 空目标兜底并钉 `channel_id`、INTERNAL 拒绝等守卫），
 `notification_service_sqlite_test.go` 两条断言锁住缺规则时的报错原文，加上面那条权限回归。三端 typecheck 0 错误。
+
+### C7（全新安装链路实测 + 补上通知域的平台侧授权，已完成 2026-09-20）
+
+C 的收尾欠着一格：那条"全新安装会不会真的把通知域播种齐"没有干净库可验。这轮把干净库造出来了 ——
+顺带撞出一个**平台配置对租户管理员可读可写**的授权缺口，并把它修掉。两件事分开记。
+
+**全新安装实测**（另建空库 `gwa_c7_fresh`，实例跑在 `:17788`/`:17789`、asynq 用 Redis DB 4，
+与 `:7788` 那套彻底隔开；库内一行数据都不预置，schema 由启动自动迁移建出）：
+
+| 观测点 | 结果 |
+| --- | --- |
+| 规则播种 | `sys_notification_rules` 空表启动播 **4 行 id 1/2/3/4**：`PASSWORD_RESET_CODE`/`CONTACT_BIND_CODE` 异步 EMAIL，`CHANNEL_TEST_EMAIL` 同步 EMAIL，`INTERNAL_MESSAGE` 同步 INTERNAL；`created_by` 为空（系统视角写入，没有"主人"可记） |
+| 菜单 + 授权 | `sys_menus` 44 行含 68/72/73；`sys_permission_menus` 里 **68/72/73 三行只授予 permission 2**（全新安装与现网 `gwa` 一致），即 C 那条"菜单要同时进 `DefaultMenus` 与 `DefaultPermissions[].MenuIds`"的口径在安装路径上成立 |
+| 侧边栏（活的，不是查表） | 全新实例以 `admin` 登录后 `GET /admin/v1/routes` 回 44 个节点，`NotificationChannelManagement`/`NotificationDeliveryManagement`/`NotificationRuleManagement` 三条都在；`GET /admin/v1/perm-codes` 含 `sys:platform_admin` |
+| Api 表 | `sys_apis` 211 行**空表自动全量同步**（`api_service.go:58-63` 的 `count==0 → SyncApis`），14 条 notification 端点（channels 6 / rules 6 / deliveries 2）全在、`business_module` 一律 `SYSTEM` —— 全新安装不需要点「接口同步」，那条铁律只针对已部署实例 |
+| 三个读接口 | platform admin 打 `:17788` 三个 List 全 200（channels/deliveries 空列表、rules 4 行） |
+| 新装即有的缺口（只记录，未实测后果） | 全新库 `sys_plan_modules` 为 **0 行** —— 照闸门代码（模块白名单为空即拒）推断，新装实例上一旦建出租户、其请求会全部 fail-closed。这条属套餐/计费那块、与通知域无关，本轮只在库里数了这一张表，没造租户去撞 |
+
+**撞出来的授权缺口（同一台 `:7788`、同一个租户 token、两个二进制的 A/B）**：
+探针是 plan 3（企业版）租户 `c7probe`(id=12) 的管理员 `c7_u1`，`/admin/v1/login` 真登录拿的真 token（claims：`tid=12`、`ita=true`、无 `ipa`）。
+
+| 端点 | 修复前（`gwa_c6/server.exe`） | 修复后（本轮二进制） |
+| --- | --- | --- |
+| `GET /admin/v1/notification-channels` | **200**，列出 3 条平台通道的 `smtpHost`/`smtpPort`/`smtpUsername`/`smtpFrom`（口令字段本就只回 `hasPassword`） | **403** `notification channels is platform-level configuration, only platform administrators may access it` |
+| `POST /admin/v1/notification-channels` | 修复前另测过一次：**真落一行** id=10、`created_by=7`（探针已删，渠道表回到 1/2/3 三行） | 403（同一句守卫，写路径与读路径共用） |
+| `GET /admin/v1/notification-rules` | 403 `module not allowed` | 403 `module not allowed`（`gwa` 的行早于映射登记，见下） |
+| `GET /admin/v1/notification-deliveries` | 403 `module not allowed` | 同上 |
+| platform admin 三条 | 200 | 200（未受影响） |
+
+**为什么"挡住了"不算挡住**：规则与台账那两个口当时回 403，靠的是 `ServiceTagToBusinessModule`
+**少登记两个服务** —— `NotificationService`/`NotificationRuleService` 的 `business_module` 落空，租户闸门对
+UNSPECIFIED 一律拒（fail-closed）。也就是说：登记全的那条（channels 本来就是 `SYSTEM`）漏了，
+没登记的那两条偶然挡住了。**注册状态不是授权**，补齐登记之后这个区别还会反过来 ——
+上面全新安装那张表的"Api 表"一格就是证据：14 条端点全落 `SYSTEM`，闸门对持有该模块的租户一律放行，
+此后挡住租户的只剩守卫。所以修法是两处一起：
+
+1. `notification_platform_guard.go` 新增 `requirePlatformAdmin(ctx, log, resource)`，照 `user_service.go:544`
+   与 `mfa_service.go:335` 的既有先例，挂在**服务层**：渠道 6 个方法、规则 6 个方法、台账 2 个读方法，共 14 处；
+   非平台超管一律 `ErrorForbidden`，并 `log.Errorf` 带上操作人 id 与租户 id。台账那两处的注释写清了理由：
+   `sys_notification_deliveries` 没有 TenantID mixin（平台级表），读侧没有按租户过滤可退。
+2. `module_mapping.go` 补登记 `NotificationService` / `NotificationRuleService` → `Module_SYSTEM`，
+   并在文件头写一段：登记成哪个模块就等于把该服务全部端点交给那个模块的白名单，
+   **租户侧的拒绝由 service 层的 `requirePlatformAdmin` 显式承担**，不靠注册缺口兜。
+
+**有意没做的一件事**：没在现网 `gwa` 库上跑「接口同步」全量重建。重建会重排 `sys_apis` 主键，
+而"同步前后租户 403→200"那条对照属于尚未批准的 D2，重排会把它读脏。代价是 `gwa` 上规则/台账的行仍是空
+`business_module`（表格里那两格至今是 `module not allowed` 而不是守卫文案），**只有全新安装反映这次登记**。
+`gwa` 上 channels 那一格恰好是反向证据：它的行本来就是 `SYSTEM`，闸门放行、守卫接管，回的是守卫的文案。
+
+**顺带撞见、没追的一处**：同一个租户 token 打 `GET /admin/v1/routes` 回 `{"items":[]}`，
+而服务端日志显示菜单 id 已经解出 19 条（`queryMultipleRolesMenusByRoleCodes menuIDs: [1 2 20 …]`）、
+租户 `plan_id=3` 且该套餐在 `sys_plan_modules` 里确有 10 个模块、日志里没有任何错误。
+也就是说 `filterMenusByPlanWhitelist` 或它前面的某一步把这个租户的整个侧边栏清空了，成因未定位 ——
+它是租户导航的既有问题、与通知域无关，本轮只记账不修。（记录它是因为这决定了"缺口有多要紧"：
+租户口在 UI 上本来就看不见这三页，所以泄漏发生在 API 层而不是"点得到"层。）
+
+**回归测试**：新增 `notification_platform_guard_sqlite_test.go` 五个测试，覆盖 14 个方法 ——
+渠道路由全拒（并断言表里**没有**被写进去的行）、规则路由全拒（并断言被拒的测试投递**没走到通知缝**：
+`require.Empty(t, env.notifier.calls)`）、台账两个读口全拒、平台超管三条 List 的正对照、
+以及"缺 token 时报错但不是 403"（不把鉴权失败伪装成授权失败）。
+**摘掉 14 处守卫调用后这五个测试 4 个 FAIL**（"An error is expected but got nil"），正对照仍 PASS ——
+断言读的是守卫本身，不是旁敲。三个既有通知 service 测试的 fixture 上下文随之升为平台超管
+（`auth.NewContext(..., &UserTokenPayload{IsPlatformAdmin: true})`），其中"缺鉴权上下文应拒绝写入"那条
+改为现搭一个裸 viewer ctx，语义没变。
+
+**探针造成的变更与残留（如实记账）**：租户 `c7probe`(12) + 用户 `c7_u1` + 克隆角色 6 **仍在**（保护角色删不掉，与 A3 那次同因）；
+渠道 id=10 建后已删；`gwa_c7_fresh` 建 → 删 → 重建（A/B 取证期间换新二进制重来过一次）；`:7788` 实例为 A/B 换二进制重启三轮，
+最后一轮是修复后的二进制；`:17788` 全新实例收完证据后关停；`gwa_c7_fresh` 证据收完即 drop（它只是一次性夹具）。
+另有一个 `gwa_guard_test` 库看着像探针残留、**不是**：已提交的 `data/ent/tenant_guard_test.go` 把库名写死在
+`guardTestDSN` 里，本轮跑 `go test ./internal/data/...` 又碰过它，**故意留着不删**。
+
+**门禁**：本块**没动三端**（纯后端授权），react/ele/vben 的 typecheck 与 C6 那次同状态；
+后端 `go build ./...`、`go vet ./...`、`go test -count=1 ./internal/service/... ./internal/data/...` 全绿。
 
 ### P3 偏好与模板
 
@@ -929,6 +1003,17 @@ gow run admin
       302 不跟随、非 2xx 一律 FAILED（`peer answered <status>`）。
       **已知未修**：显式 `target` 的测试投递不落 `channel_id`（见 §4 C 那条），`RevokeMessage` 的对象级授权仍未批
       （见本节末尾），SMS 仍只有枚举没有 Sender。
+- [x] C7 全新安装链路 + 通知域的平台侧授权：三张通知表都是**平台级**（无 TenantID mixin），页面 authority 写死
+      `sys:platform_admin`，所以后端也必须有同一道判定 —— 现在由 `notification_platform_guard.go` 的
+      `requirePlatformAdmin` 承担，挂在渠道 6 + 规则 6 + 台账 2 共 14 个方法上。
+      **别把 `ServiceTagToBusinessModule` 的登记状态当授权用**：实测修复前"规则/台账回 403"只是少登记两个服务带来的
+      偶然 fail-closed，而登记全的 `notification-channels` 对 plan 3 租户管理员**回 200 并列出平台 SMTP 配置**、
+      POST 真落了一行（§4 C7 那张 A/B 表）。新加通知域服务时两处都要做：登记进映射表（否则租户侧连合法调用都 403），
+      并在 service 层挂守卫（否则持有该模块的租户读写得到平台配置）。
+      另两条口径：全新安装 `sys_apis` 是空表自动全量同步的（211 行、含 14 条通知端点全落 `SYSTEM`），
+      **不需要**点「接口同步」—— 那条铁律只针对已部署实例；已部署实例本次**故意没重建**（重建重排 `sys_apis` 主键，
+      会脏掉 D2 那条待实测的 403→200 对照），所以现网 `gwa` 上规则/台账两组的 `business_module` 仍是空。
+      播种链路的干净库实测（4 行规则、菜单 68/72/73、`/admin/v1/routes` 三条齐备）见 §4 C7。
 
 P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点到的地方，漏任一处都是静默不一致）。
 **C 之后第一行变了**：路由不再是 Go 表，而是"播种一行默认规则 + 页面可改"：
