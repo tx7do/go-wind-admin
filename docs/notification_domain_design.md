@@ -1,11 +1,11 @@
 # 通知域（Notification Domain）设计文档
 
 > **状态：P0 + P1 已落地（后端内聚 + 三端投递台账页 + 邮件文案 i18n + SSE 事件类型注册表，2026-09-19），
-> P2 已落地五块（见 §4：P2-1 站内信注册为 INTERNAL 渠道 + 定向发送改走缝 + 台账 `related_id`；
+> P2 已落地六块（见 §4：P2-1 站内信注册为 INTERNAL 渠道 + 定向发送改走缝 + 台账 `related_id`；
 > P2-2 收件行租户打标跟着受众走 + 修掉收件箱一处越权读；P2-3 异步投递 = 入队前同步预检 + asynq 派发 +
-> 台账 `request_id`/`attempts`；P2-4 台账 `SENDING` 超时清扫 = 系统级常驻 cron；P2-5 台账结论回写失败按出口上抛，
-> 均 2026-09-20）；P2 剩余（规则表 / WEBHOOK 渠道）与 P3 仍是设计提案，
-> 另有一处已定位、尚未修的写侧姊妹缺陷记在 §7「收件箱读侧不钉归属」一节末尾。**
+> 台账 `request_id`/`attempts`；P2-4 台账 `SENDING` 超时清扫 = 系统级常驻 cron；P2-5 台账结论回写失败按出口上抛；
+> P2-6 收件箱写侧由服务端钉定收件人归属，均 2026-09-20）；P2 剩余（规则表 / WEBHOOK 渠道）与 P3 仍是设计提案，
+> 撤销消息缺对象级授权一处**已知未修**记在 §7「收件箱不钉归属」一节末尾。**
 > 第 2 节「现状盘点」是 P1 之前的基线（核对至 commit `29d700b9`），其中被改动的事实在就地标注；
 > 第 3~4 节的实施状态以 §4 的分期标记为准，落地验收进度在 §7。实施进度更新时改本文状态标记，不要另开文档。
 >
@@ -355,7 +355,7 @@ vue-element 的 `if (!data.id || !data.messageId) return` 把**每一条广播�
 同一次改动顺带钉掉一个越权读：收件箱 `List` 的查询条件整个来自调用方的 `query` 字符串，服务端此前不注入
 `recipient_user_id`，同租户任意登录用户改一个 ID 就能翻别人的收件记录（标题正文随父消息一并跟走）。
 现在 `InternalMessageRecipientRepo.List` 在非平台/非系统上下文下强制 `recipient_user_id = viewer.UserID()`，
-平台侧仍可按用户筛（用户详情页要看指定用户的收件箱）。详见 §7 的"第三个缺陷"。
+平台侧仍可按用户筛（用户详情页要看指定用户的收件箱）。详见 §7「收件箱不钉归属：一处越权读 + 一处越权写」。
 
 **运行期实测（本机实例重启到新代码 + 现网 `gwa` 库）**：
 
@@ -547,6 +547,53 @@ DB 12 的 asynq 键逐个 `DEL`；mailpit 容器 `gwa-mailpit` 为本轮新起�
 "退避 2s/17s/82s ⇒ 预算 ≈221s"算，而 asynq v0.26 的默认退避带随机项，最坏预算 ≈504s —— 5 分钟落在预算之内。
 算术口径与后果见 §6 决策点 8。
 
+**P2-6（收件箱写侧由服务端钉定收件人归属，已完成 2026-09-20）** —— 补上 P2-2 只修了读侧留下的另一半。
+`MarkNotificationAsRead` / `MarkNotificationsStatus` / `DeleteNotificationFromInbox` 三个写口的 `user_id`
+整个取自请求体，租户隔离只保证"动不到别租户的行"，同租户换一个 id 就能改别人的收件行；其中
+`DeleteNotificationFromInbox` 在 `recipient_ids` 为空时是**按用户维度整箱删除**，换一个 id 就是清空别人的收件箱。
+修法与读侧同形：新增 `inboxScopedUserID(ctx, reqUserID)`（非平台、非系统上下文一律返回 `viewer.UserID()`），
+三个方法都用它替换 `req.GetUserId()`；原有的"`user_id == 0` → 400"守卫保留，但挪到覆盖之后（对非平台调用者
+而言 0 不再是"参数缺失"，而是"没填、按你自己算"）。平台/系统上下文豁免（代客操作按指定用户执行）。
+
+两种落定语义**写死在测试里**，免得下次被当成 bug 顺手改成另一种：带 `recipient_ids` 时跨用户调用缩成
+"我自己的行 ∩ 这些 id" = 空操作；`recipient_ids` 为空时整箱操作缩回**调用者自己**。选"缩回"而不是"报错"，
+是因为三端合法调用方传的都是自己的 id（`react` HeaderContent / inbox 页、`ele` useNotice / inbox 页、
+`vben` basic.vue / inbox 页与详情抽屉，逐处核过），加一条错误码等于给三端新增文案与分支而无收益。
+
+**没一起动的姊妹问题**：`RevokeMessage` / `RevokeMessageWithMessage` 是**发件方/管理员**撤销语义
+（含 `user_id == 0` 的全局撤销分支），不属于"按人归属的收件箱写口"，本次未动；它引出的是一个更大的
+独立问题——撤销消息这条路径到底有没有对调用方做过对象级授权，记在 §7 末尾的"已知未修"里。
+另一处**刻意没有对齐**：`internal/data/gorm/` 那份镜像仓（build tag `gorm_backend`，服务层尚未接入）
+读侧写侧**都没有**归属谓词，`List` 直接跑 `r.client.DB`、连租户过滤也没有（`tenant_id` 在 gorm 版 `List` 里
+根本不出现）—— 那不是"漏同步"，而是该层文件头自述的"不做租户隔离、采用者须自行加 scope/plugin"。
+在它接进服务之前，不要把 ent 侧的这两次归属修复（读侧 P2-2、写侧 P2-6）当成已经在两份实现里都成立。
+
+回归测试：`TestInternalMessageRecipientInboxWritesSqlite`（`internal_message_recipient_repo_sqlite_test.go`，
+七个子测试，每个子测试一个干净的 sqlite 内存库、同租户 5 下两个用户 201/202）。
+**负向对照做过**：把 repo 文件回退到修复前，五个"碰不到别人的行/缩回自己"的子测试全部 FAIL
+（已读被写进别人的行、别人的行被删），两个合法路径子测试仍 PASS —— 断言的是这次修的行为，不是恰好通过。
+
+**运行期实测（本机实例跑新代码 + 现网 `gwa` 库；租户 3 `a3probe` 内两个用户 u1=5 / u2=6，
+两条定向站内信 message 18/19 → 收件行 15(u2)/16(u1) 均 `RECEIVED`）**：
+
+| # | 调用（HTTP） | 状态码 | 库内实际发生 |
+| --- | --- | --- | --- |
+| A | u1 的 token，`/read` `{"userId":6,"recipientIds":[15]}` | 200 | 15 仍 `RECEIVED`、16 仍 `RECEIVED`（跨用户带 id = 空操作） |
+| B | u1 的 token，`/status` 同上 + `newStatus=READ` | 200 | 两条都不动 |
+| C | u1 的 token，`/read` `{"userId":6,"recipientIds":[]}` | 200 | **15 不动、16 变 `READ`** —— 整箱"全部已读"缩回调用者自己 |
+| D | u1 的 token，`/inbox/delete` 空 ids | 200 | **15 存活、16 被删** —— 想清空别人收件箱，清的是自己的 |
+| E | u2 的 token，`/read` `{"userId":6,"recipientIds":[15]}` | 200 | 15 → `READ`（合法路径零回归） |
+| F | u1 的 token，`/read` `{"userId":0,...}` | **200** | 非平台上下文下请求体 `user_id` 连 0 都被 viewer 覆盖，作用域是 u1 自己（当时空箱，无行可动）。**这是本块唯一朝向"更宽松"的行为变化**：改前 `userId=0` 在方法开头就 400 |
+| F2 | admin（平台）的 token，`/status` `{"userId":0}` | **400** `BAD_REQUEST invalid parameter` | 平台/系统分支才读请求体 —— 400 只在这一支出现（与改前一致） |
+| F3 | admin 代客：`/status` `{"userId":6,"recipientIds":[15],"newStatus":"RECEIVED"}` | 200 | 15 真的从 `READ` 翻回 `RECEIVED` —— 读侧豁免的写侧对应成立 |
+| G | u1 的 token 发 `?query={"recipientUserId__eq":6}` 读收件箱 | 200 | `items:[], total:0` —— P2-2 的读侧钉住未被本次改动破坏 |
+
+探针造成的变更与清理结果：租户 `a3probe`(id=3)、用户 `a3_u1`(5)/`a3_u2`(6)、站内信 message 18/19 与收件行
+15/16 全部经 app 自己的路由撤销/删除（`/internal-message/revoke` 的 `userId=0` 全局分支顺带被取证：
+撤销后两行收件行随本体一并消失，同事务成立）；**两处残留与 P2-2 那次一模一样**——模板角色
+`5:tenant:manager` 删不掉（"protected role cannot be deleted"，删租户也不带走），`sys_user_credentials`
+里用户 5/6 的两行 `deleted_at` 仍为空（用户删除不级联凭证）。两者都是既有缺口，本轮不修、如实记在这里。
+
 P2 剩余：`notification_rules` 表 + 管理页，替换 §3.5 的 Go 表；`sys_notification_channels` 解掉"WEBHOOK 类型
 无处存 URL"的问题（方案见 §6 决策点 2）；`webhook_sender.go` 落地。
 
@@ -724,6 +771,21 @@ gow run admin
       本块的实测顺手推翻了 P2-4 的一个常量（`deliverySweepMinStaleAfter` 5 分钟 → 10 分钟）：
       **凡"照着 asynq 默认退避算预算"的地方，先确认版本** —— v0.26 的公式带随机项
       （`n^4 + 15 + rand(0..29)*(n+1)`），单次实测值只能证伪上界、不能当上界（口径见 §6 决策点 8）。
+- [x] P2-6 收件箱写侧钉归属：**契约、三端、ent schema 一列未动**（改动只在 repo 层的一个助手 + 三个方法首行，
+      加一个回归测试文件），故无 `buf generate` / `make ts` / `make openapi` / 接口同步。验收看三样：
+      ① `TestInternalMessageRecipientInboxWritesSqlite` 七个子测试全绿；
+      ② **负向对照**：只回退 repo 文件（保留测试）⇒ 五条越权断言必须 FAIL、两条合法路径仍 PASS
+      （已实际做过一次，这是"测试钉的是这次修的行为"的唯一证据）；
+      ③ 三端不回归：整箱"全部已读/清空"与单条已读/删除都传的是 viewer 自己的 id，
+      逐处核过（react `HeaderContent.tsx:285`、react inbox 页 `:93`/`:233`、ele `useNotice.ts:75`/`:106`/`:140`
+      与 inbox 页 `:251`、vben `basic.vue:144`/`:176`、vben inbox 页 `:166`/`:188` 与详情抽屉 `:87`），
+      所以**不需要**给三端补错误文案，也没有新增错误码。
+      **对调用方可见的行为变化只有两条**（实测 F/F2）：① 非平台上下文传别人的 `user_id` 不再动别人的行
+      （带 `recipient_ids` = 空操作，空 `recipient_ids` = 作用在自己身上）；② 非平台上下文传 `user_id=0`
+      从"方法开头就 400"变成"按 viewer 自己的收件箱操作"（viewer 覆盖了请求体，0 只是"没填"）。
+      平台/系统上下文一律照旧读请求体，`user_id=0` 仍是 400。
+      三个方法在全仓**只有 HTTP RPC 一条入口**（`internal_message_recipient_service.go:79/85/91`
+      逐行确认），没有 asynq/定时任务/脚本会带一个 uid=0 的 viewer 走进来。
 
 P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点到的地方，漏任一处都是静默不一致）：
 
@@ -808,7 +870,7 @@ Mailpit 在 1025 上明文接收、默认不要求 AUTH，所以渠道配置要 
 本节取证时仍未覆盖的一段：`SendDirect` 之后的**异步**补台账 —— 已由 §4 P2-3（2026-09-20）连运行期证据一起补上；
 SMS / WEBHOOK 两个渠道到今天**依然没有**实现（连 Registry 都没接进去，不是"缺测试"而是"缺代码"，见 §6 决策点 2）。
 
-### 收件箱读侧不钉归属：一处越权读（2026-09-20，运行期实测发现并修掉）
+### 收件箱不钉归属：一处越权读 + 一处越权写（2026-09-20，运行期实测发现并修掉）
 
 `GET /admin/v1/internal-message/inbox` 的过滤条件整个来自调用方的 `query` 字符串，服务端只让 `TenantPrivacy`
 注入租户谓词，**从不注入收件人谓词**——三端页面各自在前端塞 `recipientUserId`，于是"只看自己的收件箱"这件事
@@ -821,12 +883,25 @@ SMS / WEBHOOK 两个渠道到今天**依然没有**实现（连 Registry 都没�
 异步任务路径需要全量读。
 回归测试：`TestInternalMessageRecipientTenantSqlite` 新增"同租户、换一个收件人就读不到"的断言。
 
-**没一起修的姊妹问题（写侧，已定位未修）**：`MarkNotificationAsRead`（`:329`）与
-`DeleteNotificationFromInbox`（`:510`）都以 `Where(RecipientUserIDEQ(req.GetUserId()))` 定作用域，
-而 `user_id` 取自**请求体**、不是 viewer —— 同租户用户可以传别人的 `user_id` 去标记已读/删除别人的收件行
-（跨租户仍被 `TenantMutationGuardPolicy` 拦住）。这与上面修掉的是同一个假设（"调用方报的归属可信"），
-只是落在写侧。修法同形（非平台上下文以 viewer 覆盖 `req.UserId`），但要一并确认三端是否有
-"平台管理员代客操作"的调用，本次未动，留作 P2 收尾项。
+**写侧的同形问题（同日修掉，见 §4 P2-6）**：三个收件箱写口原先都以 `Where(RecipientUserIDEQ(req.GetUserId()))`
+定作用域，而 `user_id` 取自**请求体**、不是 viewer —— 同租户用户可以传别人的 `user_id` 去标记已读/删除别人的
+收件行（跨租户仍被 `TenantMutationGuardPolicy` 拦住）。这与读侧是同一个假设（"调用方报的归属可信"），
+只是后果更重：`DeleteNotificationFromInbox` 在 `recipient_ids` 为空时按用户维度**整箱删除**。
+现在三处（`MarkNotificationAsRead` `:343` / `MarkNotificationsStatus` `:367` /
+`DeleteNotificationFromInbox` `:527`）一律经 `inboxScopedUserID` `:332` 取作用域，非平台/非系统上下文以
+viewer 覆盖请求体。修法与两种落定语义（带 id = 空操作、空 id = 缩回自己）的详细记录在 §4 P2-6，
+回归测试 `TestInternalMessageRecipientInboxWritesSqlite` 并已做负向对照。
+
+**已知未修（不在本域范围内，但由本次排查发现）**：`RevokeMessage`（`POST /admin/v1/internal-message/revoke`）
+没有**对象级**授权。`RevokeMessageWithMessage` 的 `user_id == 0` 分支会删掉**消息本体**与全部收件行，而整条路径
+从头到尾没有比较过 `created_by`（该列只在 `Create` 时写入：`internal_message_service.go:288`、`:359`）；
+能挡住调用方的只有路由级权限与租户闸门——即"同租户内任何握有 revoke 权限的人都能撤销别人发的消息"。
+这一条**只有代码层面的依据**：读了 repo 与 service 全文、grep 过 `CreatedBy` 在撤销路径上无出现，
+**没有**做运行期撤销越权取证（需要先造两个同租户用户 + 一条消息，属独立一轮）。它是"按人归属"这个洞的
+第三块拼图，但语义与收件箱不同（撤销是发件方/管理员动作），要不要收、收到哪一层（仅创建者 / 平台管理员 /
+菜单权限即够）是一个产品决策，不该由一次归属修复顺手定。
+`RevokeMessage`（`:402`，不带消息本体的旧签名）至今**零调用方**（service 走的是 `RevokeMessageWithMessage`），
+属可删的死代码，同样不在本次范围内。
 
 同一批实测里另有一处**不是缺陷但值得记**：每次创建实体都回一条
 `script entity hook <table>.after_create failed: ... no scripts mounted on hook point` 的 ERROR 日志
