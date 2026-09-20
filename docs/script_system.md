@@ -35,6 +35,12 @@ GoWind Admin 内置一套以 **Lua / JavaScript** 为载体的脚本级插件系
 | `before` | 变更落库前，**同步** | 可否决：脚本 `return false` 或 `ctx.stop("原因")` 拒绝业务写入，业务侧收到 400 与否决原因；钩子自身异常 fail-open（不阻断业务） |
 | `after` | 变更成功后，**异步** | 只读旁路：独立 goroutine + 30s 超时 + panic 兜底，失败只记日志不影响业务 |
 
+**「该钩子点上没挂脚本」不是失败**：`EntityHooksMapping` 登记的实体 × 三类操作，远多于实际挂过脚本的
+钩子点，每次映射实体变更都会问到若干空钩子点——两侧入口（`InvokeEntityHookVeto` / `InvokeEntityHook`）对
+"无挂载"一律返回 nil，不打日志、不落执行记录。真出错的仍照报：ERROR 日志指名脚本名
+（`script entity hook <点> failed: script '<名>' failed: …`）、`sys_script_logs` 落一条
+`trigger_type=hook, success=false`，脚本本身加载失败另有 Resync 阶段按脚本名逐条的 ERROR。
+
 上下文：`ctx.get("entity")`（实体类型）、`ctx.get("op")`、`ctx.get("id")`（实体 ID，update/delete 可得）。
 
 ### 2. 定时任务

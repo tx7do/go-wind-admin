@@ -906,7 +906,17 @@ viewer 覆盖请求体。修法与两种落定语义（带 id = 空操作、空 
 同一批实测里另有一处**不是缺陷但值得记**：每次创建实体都回一条
 `script entity hook <table>.after_create failed: ... no scripts mounted on hook point` 的 ERROR 日志
 （站内信/用户/角色/租户都中招）。钩子点上没挂脚本是常态，不该按错误记账；属脚本系统（`docs/script_system.md`）
-的日志分级问题，与通知域无关，未在本次改动内。
+的日志分级问题，与通知域无关。
+
+**已收口（2026-09-20，脚本侧修复，不动通知域任何代码）**：`InvokeEntityHook`（after 侧入口）的"无挂载"分支
+由 `ErrorNotFound` 改为 `nil`，与 before 侧 `InvokeEntityHookVeto` 早已有的语义对齐，接线处
+（`cmd/server/wiring_ent.go:248`）的 ERROR 日志因此只剩真失败。**运行期取证**（本机实例 + 现网 `gwa` 库）：
+登录一次（触发 `user.after_opupdateone`）、无挂载下建/改/删租户各一次，新增 `script entity hook` ERROR 行
+**0**（改前每次映射实体变更 +1，基线取自上一版二进制的实测日志）；再往 `tenant.after_create` 挂一条
+`error('s2 probe boom')` 的 lua 脚本，同一变更立刻回一条 ERROR 且**指名脚本**，`sys_script_logs` 同步落
+`trigger_type=hook, success=false` 的行；卸载脚本（`DELETE /admin/v1/scripts?ids=N`）后再变更，复归于 0
+——消噪没有把错误一起消掉。回归测试两头都钉住：`TestScriptRuntime_InvokeEntityHook_NoMount`（无挂载 = nil）
+与 `TestScriptRuntime_InvokeEntityHook_MountedFailureStillErrors`（挂载脚本失败仍上抛 + 落审计）。
 
 ### 移植记录（react → ele → vben，2026-09-19）
 
