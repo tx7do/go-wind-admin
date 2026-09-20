@@ -114,6 +114,19 @@ const system: RouteRecordRaw[] = [
       },
 
       {
+        // 投递台账：与渠道配置同域，order 取 14 与 react 端菜单位置保持一致
+        path: 'notification-deliveries',
+        name: 'NotificationDeliveryManagement',
+        meta: {
+          order: 14,
+          icon: 'lucide:send',
+          title: $t('menu.system.notificationDeliveries'),
+          authority: ['sys:platform_admin'],
+        },
+        component: () => import('#/views/app/system/notification_delivery/index.vue'),
+      },
+
+      {
         path: 'scripts',
         name: 'ScriptManagement',
         meta: {

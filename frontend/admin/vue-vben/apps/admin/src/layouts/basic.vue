@@ -27,7 +27,7 @@ import { type internal_messageservicev1_InternalMessageRecipient as InternalMess
 import { $t } from '#/locales';
 import { router } from '#/router';
 import { useAuthStore } from '#/stores';
-import { globalSSEClient } from '#/transport/sse';
+import { globalSSEClient, SSE_EVENT } from '#/transport/sse';
 import LoginForm from '#/views/_core/authentication/login.vue';
 
 const userStore = useUserStore();
@@ -217,7 +217,7 @@ function handleSseNotification(
 
 function initSseClient() {
   globalSSEClient.on<InternalMessageRecipient>(
-    'notification',
+    SSE_EVENT.Notification,
     handleSseNotification,
   );
 }
@@ -230,7 +230,7 @@ reloadMessages();
 // 若不 off，同一 SSE 推送会触发 N 次回调（N=累计挂载次数），通知项重复出现，
 // 且旧组件闭包引用旧 ref 造成内存泄漏。
 onUnmounted(() => {
-  globalSSEClient.off('notification', handleSseNotification);
+  globalSSEClient.off(SSE_EVENT.Notification, handleSseNotification);
 });
 
 watch(

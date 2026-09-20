@@ -140,6 +140,11 @@ func (r *InternalMessageRecipientRepo) Get(ctx context.Context, req *internalMes
 	return dto, err
 }
 
+// Create 落一条收件记录。
+// 注意：DTO 上的 title/content 无对应列，本方法不写入——它们是 SSE 推送负载与
+// 收件箱回填用的瞬态字段（写侧 internal_message_service.go 的 newMessageRecipient，
+// 读侧 internal_message_recipient_service.go 的 ListUserInbox），两条路径都填得到值，
+// 但不要指望 Create 把它们持久化。
 func (r *InternalMessageRecipientRepo) Create(ctx context.Context, req *internalMessageV1.InternalMessageRecipient) (*internalMessageV1.InternalMessageRecipient, error) {
 	if req == nil {
 		return nil, internalMessageV1.ErrorBadRequest("invalid parameter")
@@ -210,6 +215,43 @@ func (r *InternalMessageRecipientRepo) CreateBulk(ctx context.Context, reqs []*i
 	}
 
 	return errs
+}
+
+// IdsByMessageAndRecipients 按 (message_id, recipient_user_id) 回读收件记录主键。
+//
+// 为什么需要它：全员广播走 CreateBulk（ON CONFLICT DO NOTHING），upsert 路径不返回实体，
+// 而三端通知面板要求 SSE 载荷带收件行主键——vue-element 的 handleSseNotification 第一行就是
+// `if (!data.id || !data.messageId) return`。缺 id 会让整场广播在 ele 端不弹桌面通知、
+// 未读数不涨、列表不插入，且不报任何错（与 P1 修掉的 encoding/json snake_case 缺陷同一形态）。
+// 因此广播落库后按页回读一次主键再推送：一页一条 SELECT，代价可忽略。
+//
+// 租户语义：查询经 ent 租户隐私层，调用方 ctx 的 viewer 决定可见范围——广播的收件行正是
+// 同一 viewer 落库的，回读范围与写入范围天然一致。
+func (r *InternalMessageRecipientRepo) IdsByMessageAndRecipients(ctx context.Context, messageID uint32, userIDs []uint32) (map[uint32]uint32, error) {
+	if messageID == 0 || len(userIDs) == 0 {
+		return nil, nil
+	}
+
+	entities, err := r.entClient.Client().InternalMessageRecipient.Query().
+		Where(
+			internalmessagerecipient.MessageIDEQ(messageID),
+			internalmessagerecipient.RecipientUserIDIn(userIDs...),
+		).
+		All(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "query internal message recipient ids failed: %s", err.Error())
+		return nil, internalMessageV1.ErrorInternalServerError("query internal message recipient ids failed")
+	}
+
+	ids := make(map[uint32]uint32, len(entities))
+	for _, e := range entities {
+		if e.RecipientUserID == nil {
+			continue
+		}
+		ids[*e.RecipientUserID] = e.ID
+	}
+
+	return ids, nil
 }
 
 func (r *InternalMessageRecipientRepo) Update(ctx context.Context, req *internalMessageV1.UpdateInternalMessageRecipientRequest) error {

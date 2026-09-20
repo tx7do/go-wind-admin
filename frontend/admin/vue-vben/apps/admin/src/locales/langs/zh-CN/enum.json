@@ -275,6 +275,26 @@
       "API_CALL": "API 调用"
     }
   },
+  "notificationDelivery": {
+    "eventType": {
+      "PASSWORD_RESET_CODE": "密码重置码",
+      "CONTACT_BIND_CODE": "联系人绑定码",
+      "CHANNEL_TEST_EMAIL": "渠道测试邮件",
+      "INTERNAL_MESSAGE": "站内信"
+    },
+    "channel": {
+      "EMAIL": "邮件",
+      "SMS": "短信",
+      "WEBHOOK": "Webhook",
+      "INTERNAL": "站内信"
+    },
+    "status": {
+      "SENDING": "发送中",
+      "SENT": "已送达",
+      "FAILED": "发送失败",
+      "SKIPPED": "未配置渠道"
+    }
+  },
   "module": {
     "DASHBOARD": "仪表盘",
     "OPM": "组织与人员",

@@ -44,6 +44,7 @@
     "onlineSessions": "Online Users",
     "serverMonitor": "Server Monitor",
     "notificationChannels": "Notification Channels",
+    "notificationDeliveries": "Notification Deliveries",
     "scripts": "Scripts",
     "config": "Config Management",
     "accessKeys": "OpenAPI Credentials"

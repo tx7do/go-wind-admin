@@ -322,8 +322,10 @@ VALUES
 -- ============================================================
 
 -- 通知渠道（类型 tag：EMAIL；状态 tag：ON/OFF）
+-- smtp_tls 值域只有 NONE / START_TLS / SSL（ent 枚举 + mailer 拨号 switch 同一份表），
+-- 写宽了不会被库拦下（列是 varchar），但投递时会被判成"配置不可用"→ 台账 SKIPPED。
 INSERT INTO public.sys_notification_channels (status, name, type, smtp_host, smtp_port, smtp_username, smtp_password, smtp_from, smtp_tls, remark) VALUES
-    ('ON', '运维告警邮箱', 'EMAIL', 'smtp.example.com', 465, 'ops@example.com', 'demo-pass-1', 'ops@example.com', 'SSL_TLS', '生产告警主通道'),
+    ('ON', '运维告警邮箱', 'EMAIL', 'smtp.example.com', 465, 'ops@example.com', 'demo-pass-1', 'ops@example.com', 'SSL', '生产告警主通道'),
     ('ON', '市场活动通知', 'EMAIL', 'smtp.example.com', 587, 'mkt@example.com', 'demo-pass-2', 'mkt@example.com', 'START_TLS', '市场推广通知'),
     ('OFF', '备用邮箱通道', 'EMAIL', 'smtp.backup.com', 25, 'bak@example.com', 'demo-pass-3', 'bak@example.com', 'NONE', '灾备备用，停用中')
 ;

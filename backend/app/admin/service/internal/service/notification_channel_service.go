@@ -11,31 +11,36 @@ import (
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 
 	notificationChannelV1 "go-wind-admin/api/gen/go/notification_channel/service/v1"
+	notificationV1 "go-wind-admin/api/gen/go/notification/service/v1"
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 
+	"go-wind-admin/pkg/mailtext"
 	"go-wind-admin/pkg/middleware/auth"
-	"go-wind-admin/pkg/mailer"
 
 	"go-wind-admin/app/admin/service/internal/data"
 )
 
 // NotificationChannelService 通知渠道管理（平台级配置）。
-// 一期实现 EMAIL（SMTP）渠道：CRUD + 测试发送；找回密码/联系方式验证
-// 等下游能力在渠道可用后接入。
+// 一期实现 EMAIL（SMTP）渠道：CRUD 留在本服务，"发"这件事已经交还给 NotificationService
+// （渠道选择策略与 SMTP 调用收在 data/channel/email_sender.go 一处）。
 type NotificationChannelService struct {
 	adminV1.NotificationChannelServiceHTTPServer
 
 	log  *bLogger.Helper
 	repo *data.NotificationChannelRepo
+
+	notifier Notifier
 }
 
 func NewNotificationChannelService(
 	ctx *bootstrap.Context,
 	repo *data.NotificationChannelRepo,
+	notifier Notifier,
 ) *NotificationChannelService {
 	return &NotificationChannelService{
-		log:  ctx.NewLoggerHelper("notification-channel/service/admin-service"),
-		repo: repo,
+		log:      ctx.NewLoggerHelper("notification-channel/service/admin-service"),
+		repo:     repo,
+		notifier: notifier,
 	}
 }
 
@@ -95,7 +100,10 @@ func (s *NotificationChannelService) DeleteNotificationChannel(ctx context.Conte
 }
 
 // SendTestEmail 向指定收件人发送测试邮件，验证渠道配置是否可用。
-// 渠道未启用时拒绝发送，避免误以为配置可用。
+//
+// 类型/启用状态/凭据一律不在这层判断：SendDirect 显式带 channel_id 时，
+// EmailSender 会做同样的校验并把原因包进 error（渠道没配/没启用/类型不对），
+// 因此这里能直接把原始错误回给配置页——正是这个功能唯一有用的输出。
 func (s *NotificationChannelService) SendTestEmail(ctx context.Context, req *notificationChannelV1.SendTestEmailRequest) (*emptypb.Empty, error) {
 	if req == nil || req.GetId() == 0 {
 		return nil, adminV1.ErrorBadRequest("id is required")
@@ -104,41 +112,21 @@ func (s *NotificationChannelService) SendTestEmail(ctx context.Context, req *not
 		return nil, adminV1.ErrorBadRequest("recipient is required")
 	}
 
-	channel, err := s.repo.Get(ctx, req.GetId())
-	if err != nil {
-		return nil, err
-	}
-	if channel.GetType() != notificationChannelV1.NotificationChannel_EMAIL {
-		return nil, adminV1.ErrorBadRequest("test email is only available for EMAIL channels")
-	}
-
-	account, err := s.repo.GetDecryptedSmtpAccount(ctx, req.GetId())
-	if err != nil {
-		return nil, err
-	}
-	if !account.Enabled {
-		return nil, adminV1.ErrorBadRequest("notification channel is disabled")
-	}
-
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	subject := "GoWind Admin 通知渠道测试邮件"
-	body := "这是一封来自 GoWind Admin 的测试邮件。\n" +
-		"如果您收到了它，说明渠道 [" + strconv.FormatUint(uint64(req.GetId()), 10) + "] 配置可用。\n" +
-		"操作人用户 ID: " + itoa(operator.UserId) + "\n"
+	title, body := mailtext.ChannelTestEmail(ctx, req.GetId(), operator.UserId)
 
-	err = mailer.SendMail(mailer.SmtpConfig{
-		Host:     account.Host,
-		Port:     account.Port,
-		Username: account.Username,
-		Password: account.Password,
-		From:     account.From,
-		TlsMode:  account.TlsMode,
-	}, []string{req.GetRecipient()}, subject, body)
-	if err != nil {
+	if _, err = s.notifier.SendDirect(ctx, &notificationV1.SendDirectNotificationRequest{
+		EventType:      notificationV1.EventType_CHANNEL_TEST_EMAIL,
+		ChannelId:      trans.Ptr(req.GetId()),
+		Target:         req.GetRecipient(),
+		Title:          title,
+		Content:        body,
+		OperatorUserId: trans.Ptr(operator.UserId),
+	}); err != nil {
 		s.log.Errorf(ctx, "send test email via channel [%d] to [%s] failed: %v", req.GetId(), req.GetRecipient(), err)
 		return nil, adminV1.ErrorBadRequest("%s", "send test email failed: "+err.Error())
 	}

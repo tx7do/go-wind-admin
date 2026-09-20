@@ -3,6 +3,7 @@
   "name": "渠道名称",
   "type": "渠道类型",
   "typeEmail": "邮件 (SMTP)",
+  "typeWebhook": "Webhook",
   "smtpHost": "SMTP 服务器",
   "smtpPort": "端口",
   "smtpUsername": "SMTP 用户名",

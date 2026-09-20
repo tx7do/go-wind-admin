@@ -3,6 +3,7 @@
   "name": "Name",
   "type": "Type",
   "typeEmail": "Email (SMTP)",
+  "typeWebhook": "Webhook",
   "smtpHost": "SMTP Server",
   "smtpPort": "Port",
   "smtpUsername": "SMTP Username",

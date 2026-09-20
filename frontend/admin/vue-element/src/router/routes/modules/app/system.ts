@@ -112,6 +112,19 @@ const system: RouteRecordRaw[] = [
       },
 
       {
+        // 通知投递台账：平台级只读账本，紧跟渠道配置，排在系统菜单末位（与 react 端顺序一致）
+        path: "notification-deliveries",
+        name: "NotificationDeliveryManagement",
+        meta: {
+          order: 14,
+          icon: "lucide:send",
+          title: "routes.system.notificationDeliveries",
+          authority: ["sys:platform_admin"],
+        },
+        component: () => import("@/pages/app/system/notification_delivery/index.vue"),
+      },
+
+      {
         path: "scripts",
         name: "ScriptManagement",
         meta: {

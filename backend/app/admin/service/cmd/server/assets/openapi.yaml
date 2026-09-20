@@ -3014,6 +3014,104 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/notification-deliveries:
+        get:
+            tags:
+                - NotificationService
+            description: 查询投递台账列表
+            operationId: NotificationService_ListNotificationDelivery
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListNotificationDeliveryResponse'
+    /admin/v1/notification-deliveries/{id}:
+        get:
+            tags:
+                - NotificationService
+            description: 查询投递台账详情
+            operationId: NotificationService_GetNotificationDelivery
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/NotificationDelivery'
     /admin/v1/online-session/force-logout:
         post:
             tags:
@@ -7814,6 +7912,16 @@ components:
                 total:
                     type: string
             description: 查询通知渠道列表 - 回应
+        ListNotificationDeliveryResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/NotificationDelivery'
+                total:
+                    type: string
+            description: 查询投递台账列表 - 回应
         ListOnlineSessionResponse:
             type: object
             properties:
@@ -8604,6 +8712,78 @@ components:
                     type: string
                     format: date-time
             description: 通知渠道
+        NotificationDelivery:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 台账ID
+                    format: uint32
+                eventType:
+                    enum:
+                        - EVENT_TYPE_UNSPECIFIED
+                        - PASSWORD_RESET_CODE
+                        - CONTACT_BIND_CODE
+                        - CHANNEL_TEST_EMAIL
+                        - INTERNAL_MESSAGE
+                    type: string
+                    description: 业务事件类型
+                    format: enum
+                channel:
+                    enum:
+                        - CHANNEL_UNSPECIFIED
+                        - EMAIL
+                        - SMS
+                        - WEBHOOK
+                        - INTERNAL
+                    type: string
+                    description: 投递渠道
+                    format: enum
+                channelId:
+                    type: integer
+                    description: 实际选中的渠道配置ID
+                    format: uint32
+                recipientUserId:
+                    type: integer
+                    description: 收件用户ID（直发模式可为空）
+                    format: uint32
+                target:
+                    type: string
+                    description: 投递目标（脱敏）
+                status:
+                    enum:
+                        - DELIVERY_STATUS_UNSPECIFIED
+                        - SENDING
+                        - SENT
+                        - FAILED
+                        - SKIPPED
+                    type: string
+                    description: 投递状态
+                    format: enum
+                lastError:
+                    type: string
+                    description: 最近一次失败原因
+                sentAt:
+                    type: string
+                    description: 投递完成时间
+                    format: date-time
+                relatedId:
+                    type: integer
+                    description: 关联业务对象ID（按 event_type 解释）
+                    format: uint32
+                createdBy:
+                    type: integer
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    format: uint32
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+            description: 一条通知 × 一个渠道 × 一个收件人 = 一行投递台账
         OnlineSession:
             type: object
             properties:
@@ -11002,6 +11182,13 @@ tags:
          登录挑战侧 RPC（VerifyMFAChallenge）免鉴权，加 security:{} 并加入 rest_server 白名单。
     - name: NotificationChannelService
       description: 通知渠道管理服务（平台级配置）
+    - name: NotificationService
+      description: |-
+        通知投递台账管理服务（平台级只读视图）。
+
+         本域不含"发一条通知"的 HTTP 路由：SendDirect 只由进程内的业务 service 经 Notifier 接口调用。
+         把它开放成端点等于给任意已登录操作员一个"向任意邮箱发信"的能力，
+         而唯一的站外手动触发口（渠道测试邮件）已在 notification-channels 路由上存在。
     - name: OnlineSessionService
       description: 在线会话管理服务（在线用户列表 + 强制下线）
     - name: OperationAuditLogService

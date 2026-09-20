@@ -42,6 +42,7 @@
     "onlineSessions": "在线用户",
     "serverMonitor": "服务监控",
     "notificationChannels": "通知渠道",
+    "notificationDeliveries": "通知投递台账",
     "scripts": "脚本管理",
     "config": "参数管理",
     "accessKeys": "OpenAPI 凭证"

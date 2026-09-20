@@ -1,0 +1,34 @@
+{
+  "title": "通知投递记录",
+  "createdAt": "投递时间",
+  "eventType": "业务事件",
+  "channel": "渠道",
+  "target": "投递目标",
+  "targetMaskedHint": "台账只存脱敏后的地址，排障时按此定位收件人",
+  "status": "结果",
+  "recipientUserId": "收件用户",
+  "channelId": "渠道配置",
+  "relatedId": "关联对象",
+  "relatedIdHint": "按业务事件解释：站内信 = 消息ID",
+  "sentAt": "完成时间",
+  "lastError": "失败原因",
+  "fetchFailed": "获取投递记录失败",
+  "eventTypeMap": {
+    "PASSWORD_RESET_CODE": "密码重置码",
+    "CONTACT_BIND_CODE": "联系人绑定码",
+    "CHANNEL_TEST_EMAIL": "渠道测试邮件",
+    "INTERNAL_MESSAGE": "站内信"
+  },
+  "channelMap": {
+    "EMAIL": "邮件",
+    "SMS": "短信",
+    "WEBHOOK": "Webhook",
+    "INTERNAL": "站内信"
+  },
+  "statusMap": {
+    "SENDING": "发送中",
+    "SENT": "已送达",
+    "FAILED": "发送失败",
+    "SKIPPED": "未配置渠道"
+  }
+}

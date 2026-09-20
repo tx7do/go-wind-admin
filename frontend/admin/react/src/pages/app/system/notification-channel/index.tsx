@@ -25,6 +25,23 @@ import { useProTableScrollY } from '@/hooks/useProTableScrollY';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 
 /**
+ * 渠道类型 → 文案/颜色。列必须按 record.type 渲染：WEBHOOK 目前没有发送实现（P2 才落地），
+ * 建渠道的表单也因此只给 EMAIL 选项，但行数据里有 WEBHOOK 时不能跟着显示"邮件 (SMTP)"。
+ */
+const CHANNEL_TYPE_LABEL_KEY: Record<
+  NonNullable<NotificationChannel['type']>,
+  string
+> = {
+  EMAIL: 'typeEmail',
+  WEBHOOK: 'typeWebhook',
+};
+
+const CHANNEL_TYPE_COLOR: Record<NonNullable<NotificationChannel['type']>, string> = {
+  EMAIL: 'blue',
+  WEBHOOK: 'purple',
+};
+
+/**
  * 通知渠道管理页面（平台级配置）
  * 一期实现 EMAIL（SMTP）渠道：CRUD + 测试发送。
  */
@@ -124,7 +141,14 @@ const NotificationChannelManagement = () => {
       title: t('type'),
       dataIndex: 'type',
       width: 100,
-      render: () => <Tag color="blue">{t('typeEmail')}</Tag>,
+      render: (_, record) =>
+        record.type ? (
+          <Tag color={CHANNEL_TYPE_COLOR[record.type]}>
+            {t(CHANNEL_TYPE_LABEL_KEY[record.type])}
+          </Tag>
+        ) : (
+          '-'
+        ),
     },
     {
       title: t('smtpHost'),

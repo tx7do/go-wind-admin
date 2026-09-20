@@ -56,6 +56,8 @@ export * from './server-monitor';
 
 // 通知渠道
 export * from './notification-channel';
+// 通知投递台账（只读）
+export * from './notification-delivery';
 export * from './role';
 // 通用枚举与工具函数
 export * from './shared';

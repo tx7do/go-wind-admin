@@ -317,7 +317,11 @@ func (r *NotificationChannelRepo) Delete(ctx context.Context, id uint32) error {
 }
 
 // SmtpAccount 发送邮件所需的解密后 SMTP 配置（仅服务层内部使用，禁止外传）。
+//
+// ID 是这条配置在 sys_notification_channels 里的主键：渠道自选后还要靠它把
+// "实际用了哪个账号"写回投递台账。
 type SmtpAccount struct {
+	ID       uint32
 	Host     string
 	Port     uint32
 	Username string
@@ -357,6 +361,7 @@ func (r *NotificationChannelRepo) GetFirstEnabledEmailChannel(ctx context.Contex
 	}
 
 	return &SmtpAccount{
+		ID:       e.ID,
 		Host:     derefStr(e.SMTPHost),
 		Port:     derefUint32(e.SMTPPort),
 		Username: derefStr(e.SMTPUsername),
@@ -390,6 +395,7 @@ func (r *NotificationChannelRepo) GetDecryptedSmtpAccount(ctx context.Context, i
 	}
 
 	return &SmtpAccount{
+		ID:       entity.ID,
 		Host:     derefStr(entity.SMTPHost),
 		Port:     derefUint32(entity.SMTPPort),
 		Username: derefStr(entity.SMTPUsername),

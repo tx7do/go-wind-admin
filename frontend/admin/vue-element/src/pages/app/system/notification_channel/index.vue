@@ -7,9 +7,12 @@
     @edit="handleEdit"
     @operate="handleOperate"
   >
-    <!-- 渠道类型 -->
+    <!-- 渠道类型：按 row.type 渲染，不写死成邮件 -->
     <template #type="scope: any">
-      <ElTag size="small">{{ t("pages.notification_channel.typeEmail") }}</ElTag>
+      <ElTag v-if="scope.row.type" size="small" :type="typeTagType(scope.row.type)">
+        {{ typeLabel(scope.row.type) }}
+      </ElTag>
+      <span v-else>-</span>
     </template>
 
     <!-- 密码配置状态 -->
@@ -94,6 +97,26 @@ const tlsLabels: Record<string, string> = {
 
 function tlsLabel(mode?: string): string {
   return (mode && tlsLabels[mode]) || mode || "-";
+}
+
+// 渠道类型同上按枚举查表：WEBHOOK 还没有发送实现（P2 才落地），建渠道的表单因此只给
+// EMAIL 选项，但行数据是 WEBHOOK 时列不能跟着写死"邮件 (SMTP)"。
+const typeLabels: Record<string, string> = {
+  EMAIL: t("pages.notification_channel.typeEmail"),
+  WEBHOOK: t("pages.notification_channel.typeWebhook"),
+};
+
+const typeTagTypes: Record<string, "primary" | "info"> = {
+  EMAIL: "primary",
+  WEBHOOK: "info",
+};
+
+function typeLabel(type?: string): string {
+  return (type && typeLabels[type]) || type || "-";
+}
+
+function typeTagType(type?: string): "primary" | "info" {
+  return (type && typeTagTypes[type]) || "info";
 }
 
 const pageConfig = computed<ProPageConfig>(() => ({

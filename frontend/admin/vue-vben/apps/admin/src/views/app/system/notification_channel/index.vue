@@ -114,6 +114,24 @@ function tlsLabel(mode?: string): string {
   return (mode && map[mode]) || mode || '-';
 }
 
+// 渠道类型同样按枚举查表：WEBHOOK 还没有发送实现（P2 才落地），建渠道的表单因此只给
+// EMAIL 选项，但列不能写死成"邮件 (SMTP)"——已有行是 WEBHOOK 时显示就是错的。
+function typeLabel(type?: string): string {
+  const map: Record<string, string> = {
+    EMAIL: $t('page.notificationChannel.typeEmail'),
+    WEBHOOK: $t('page.notificationChannel.typeWebhook'),
+  };
+  return (type && map[type]) || type || '-';
+}
+
+function typeColor(type?: string): string {
+  const map: Record<string, string> = {
+    EMAIL: 'blue',
+    WEBHOOK: 'purple',
+  };
+  return (type && map[type]) || 'default';
+}
+
 // ============ 创建/编辑 ============
 const editOpen = ref(false);
 const editMode = ref<'create' | 'edit'>('create');
@@ -257,8 +275,9 @@ async function handleTestSend() {
         </a-button>
         <TableExportButton :fetcher="exportFetcher" :columns="gridOptions.columns" filename="notification-channels" />
       </template>
-      <template #type>
-        <a-tag color="blue">{{ $t('page.notificationChannel.typeEmail') }}</a-tag>
+      <template #type="{ row }">
+        <a-tag v-if="row.type" :color="typeColor(row.type)">{{ typeLabel(row.type) }}</a-tag>
+        <template v-else>-</template>
       </template>
       <template #tls="{ row }">{{ tlsLabel(row.smtpTls) }}</template>
       <template #hasPassword="{ row }">

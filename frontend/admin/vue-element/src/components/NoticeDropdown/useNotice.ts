@@ -13,15 +13,12 @@ import { PaginationQuery } from "@/core/transport/rest";
 import { router } from "@/router";
 import type { internal_messageservicev1_InternalMessageRecipient as InternalMessageRecipient } from "@/api/generated/admin/service/v1";
 import { dateUtil } from "@/utils";
-import { globalSSEClient } from "@/core/transport/sse";
+import { globalSSEClient, SSE_EVENT } from "@/core/transport/sse";
 import { i18n } from "@/core/i18n";
 
 const t = i18n.global.t;
 
 const PAGE_SIZE = 5;
-
-// SSE 事件名称：通知消息
-const NOTICE_EVENT = "notification";
 
 export function useNotice() {
   const { mutateAsync: markNotificationAsRead } = useMarkNotificationAsRead();
@@ -214,36 +211,17 @@ export function useNotice() {
     }
   }
 
-  /**
-   * 处理撤回通知事件
-   */
-  function handleSseRevoke(data: any) {
-    try {
-      if (!data.id && !data.messageId) return;
-
-      // 从列表中移除已撤回的通知
-      const idx = list.value.findIndex(
-        (item) => item.id === data.id || item.messageId === data.messageId
-      );
-      if (idx >= 0) {
-        list.value.splice(idx, 1);
-        if (unreadTotal.value > 0) unreadTotal.value -= 1;
-      }
-    } catch (e) {
-      console.error("处理撤回通知失败", e);
-    }
-  }
-
   // ============================================
   // SSE 订阅
   // ============================================
 
   function setupSubscription() {
-    // 订阅新通知事件
-    globalSSEClient.on<InternalMessageRecipient>(NOTICE_EVENT, handleSseNotification);
-
-    // 订阅撤回通知事件
-    globalSSEClient.on<any>("notification-revoke", handleSseRevoke);
+    // 后端目前只推送 SSE_EVENT.Notification 一种事件；撤回不推送——收件行在库侧已被删除，
+    // 下次拉取（fetchList / 轮询）自然消失，无需增量同步。
+    globalSSEClient.on<InternalMessageRecipient>(
+      SSE_EVENT.Notification,
+      handleSseNotification,
+    );
   }
 
   // ============================================
@@ -260,8 +238,7 @@ export function useNotice() {
     // NoticeDropdown 每次重新挂载（布局切换/路由往返/热重载）都会重新 on()，
     // 若不 off()，一条新消息会触发 N 次回调（N=累计挂载次数），
     // 导致 unreadTotal 重复自增、桌面通知重复弹出、list 反复 unshift。
-    globalSSEClient.off(NOTICE_EVENT, handleSseNotification);
-    globalSSEClient.off("notification-revoke", handleSseRevoke);
+    globalSSEClient.off(SSE_EVENT.Notification, handleSseNotification);
   });
 
   return {

@@ -10,11 +10,13 @@ import (
 	"github.com/tx7do/go-utils/trans"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	crudViewer "github.com/tx7do/go-crud/viewer"
 
 	internalMessageV1 "go-wind-admin/api/gen/go/internal_message/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	entInternalMessageRecipient "go-wind-admin/app/admin/service/internal/data/ent/internalmessagerecipient"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 )
 
 // newInternalMessageRecipientRepoSqlite 用 enttest helper 构造一个可直接做 CRUD 的
@@ -157,4 +159,59 @@ func TestInternalMessageRecipientRepoSqlite_EnumReadback(t *testing.T) {
 				"行 %d 的 Get 读视图应如实呈现行内存储值", c.marker)
 		}
 	}
+}
+
+// TestInternalMessageRecipientTenantSqlite 锁定收件行 tenant_id 的三条真实语义。
+//
+// 为什么要跑出来而不是读代码：repo 统一写 SetNillableTenantID(req.TenantId)，
+// 但落库结果取决于 viewer 而不取决于调用方是否"记得传"——go-crud TenantPrivacy 在
+// Create 上分平台/租户两套行为，留空时由 ent 的 DefaultTenantID=0 兜底。
+// 全员广播在 asynq handler 里以 SystemViewer 运行，一旦不显式传收件用户的租户，
+// 整批收件行会静默落到 0，收件人（租户用户）的查询被租户谓词过滤后一行也读不到——
+// 不报错、不丢日志。本测试同时是 InternalMessageService 广播路径传租户的回归护栏。
+func TestInternalMessageRecipientTenantSqlite(t *testing.T) {
+	repo := newInternalMessageRecipientRepoSqlite(t)
+	sysCtx := enttest.NewSystemViewerCtx(context.Background())
+	tenantCtx := crudViewer.WithContext(context.Background(), appViewer.NewUserViewer(1, 5, 0, "", nil))
+
+	newRecipient := func(messageID, recipientUserID uint32, tenantID *uint32) *internalMessageV1.InternalMessageRecipient {
+		return &internalMessageV1.InternalMessageRecipient{
+			TenantId:        tenantID,
+			MessageId:       trans.Ptr(messageID),
+			RecipientUserId: trans.Ptr(recipientUserID),
+			Status:          internalMessageV1.InternalMessageRecipient_RECEIVED.Enum(),
+		}
+	}
+
+	listForTenant := func(t *testing.T) map[uint32]bool {
+		t.Helper()
+		inbox, err := repo.List(tenantCtx, &paginationV1.PagingRequest{})
+		require.NoError(t, err)
+		seen := make(map[uint32]bool, len(inbox.GetItems()))
+		for _, item := range inbox.GetItems() {
+			seen[item.GetRecipientUserId()] = true
+		}
+		return seen
+	}
+
+	t.Run("平台上下文留空落0且租户读者读不到", func(t *testing.T) {
+		created, err := repo.Create(sysCtx, newRecipient(101, 201, nil))
+		require.NoError(t, err)
+		require.Equal(t, uint32(0), created.GetTenantId(), "SystemViewer 下未显式传租户 → 落 DefaultTenantID=0")
+		require.False(t, listForTenant(t)[201], "tenant_id=0 的收件行对租户 5 不可见（这就是广播丢投递的机理）")
+	})
+
+	t.Run("平台上下文显式传租户被尊重", func(t *testing.T) {
+		created, err := repo.Create(sysCtx, newRecipient(102, 202, trans.Ptr(uint32(5))))
+		require.NoError(t, err)
+		require.Equal(t, uint32(5), created.GetTenantId(), "平台/系统上下文应尊重显式设置（广播修复依赖此行为）")
+		require.True(t, listForTenant(t)[202], "带正确租户的收件行必须对租户 5 的收件箱可见")
+	})
+
+	t.Run("租户上下文强制覆盖为本租户", func(t *testing.T) {
+		created, err := repo.Create(tenantCtx, newRecipient(103, 203, trans.Ptr(uint32(9))))
+		require.NoError(t, err)
+		require.Equal(t, uint32(5), created.GetTenantId(),
+			"非平台上下文传他租户会被强制覆盖为当前租户——定向路径显式传值只是冗余，不是防线")
+	})
 }

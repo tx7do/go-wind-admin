@@ -1,0 +1,14 @@
+{
+  "createdAt": "投递时间",
+  "eventType": "业务事件",
+  "channel": "渠道",
+  "target": "投递目标",
+  "targetMaskedHint": "台账只存脱敏后的地址，排障时按此定位收件人",
+  "status": "结果",
+  "recipientUserId": "收件用户",
+  "channelId": "渠道配置",
+  "relatedId": "关联对象",
+  "sentAt": "完成时间",
+  "lastError": "失败原因",
+  "fetchFailed": "获取投递记录失败"
+}

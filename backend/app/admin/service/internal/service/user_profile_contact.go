@@ -10,7 +10,8 @@ import (
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
-	"go-wind-admin/pkg/mailer"
+	notificationV1 "go-wind-admin/api/gen/go/notification/service/v1"
+	"go-wind-admin/pkg/mailtext"
 	"go-wind-admin/pkg/middleware/auth"
 )
 
@@ -21,23 +22,19 @@ func (s *UserProfileService) sendContactVCode(ctx context.Context, contact strin
 		return authenticationV1.ErrorInternalServerError("save verification code failed")
 	}
 
-	account, err := s.notificationRepo.GetFirstEnabledEmailChannel(ctx)
+	title, content := mailtext.ContactBindCode(ctx, code)
+	resp, err := s.notifier.SendDirect(ctx, &notificationV1.SendDirectNotificationRequest{
+		EventType: notificationV1.EventType_CONTACT_BIND_CODE,
+		Target:    contact,
+		Title:     title,
+		Content:   content,
+	})
 	if err != nil {
-		s.log.Errorf(ctx, "bind-contact: no email channel available: %s", err.Error())
-		return authenticationV1.ErrorInternalServerError("email channel is not configured")
-	}
-
-	subject := "GoWind Admin 邮箱绑定验证码"
-	body := "您的邮箱绑定验证码是：" + code + "\n\n10 分钟内有效。若非本人操作请忽略本邮件。\n"
-	if err = mailer.SendMail(mailer.SmtpConfig{
-		Host:     account.Host,
-		Port:     account.Port,
-		Username: account.Username,
-		Password: account.Password,
-		From:     account.From,
-		TlsMode:  account.TlsMode,
-	}, []string{contact}, subject, body); err != nil {
-		s.log.Errorf(ctx, "bind-contact: send mail to [%s] failed: %s", contact, err.Error())
+		s.log.Errorf(ctx, "bind-contact: send mail to [%s] failed (delivery %d): %s",
+			contact, resp.GetDeliveryId(), err.Error())
+		if resp.GetStatus() == notificationV1.DeliveryStatus_SKIPPED {
+			return authenticationV1.ErrorInternalServerError("email channel is not configured")
+		}
 		return authenticationV1.ErrorInternalServerError("send verification email failed")
 	}
 	return nil

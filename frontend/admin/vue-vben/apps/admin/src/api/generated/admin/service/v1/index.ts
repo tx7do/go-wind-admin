@@ -5076,6 +5076,209 @@ export type authenticationservicev1_VerifyMFAChallengeRequest = {
   webauthn?: authenticationservicev1_WebAuthnAssertion;
 };
 
+// 通知投递台账管理服务（平台级只读视图）。
+// 本域不含"发一条通知"的 HTTP 路由：SendDirect 只由进程内的业务 service 经 Notifier 接口调用。
+// 把它开放成端点等于给任意已登录操作员一个"向任意邮箱发信"的能力，
+// 而唯一的站外手动触发口（渠道测试邮件）已在 notification-channels 路由上存在。
+export interface NotificationService {
+  // 查询投递台账列表
+  ListNotificationDelivery(
+    request: pagination_PagingRequest,
+  ): Promise<notificationservicev1_ListNotificationDeliveryResponse>;
+  // 查询投递台账详情
+  GetNotificationDelivery(
+    request: notificationservicev1_GetNotificationDeliveryRequest,
+  ): Promise<notificationservicev1_NotificationDelivery>;
+}
+
+export function createNotificationServiceClient(
+  transport: ClientTransport,
+): NotificationService {
+  return {
+    ListNotificationDelivery(request) {
+      const path = `admin/v1/notification-deliveries`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
+      if (request.offset) {
+        queryParams.push(
+          `offset=${encodeURIComponent(request.offset.toString())}`,
+        );
+      }
+      if (request.limit) {
+        queryParams.push(
+          `limit=${encodeURIComponent(request.limit.toString())}`,
+        );
+      }
+      if (request.token) {
+        queryParams.push(
+          `token=${encodeURIComponent(request.token.toString())}`,
+        );
+      }
+      if (request.noPaging) {
+        queryParams.push(
+          `noPaging=${encodeURIComponent(request.noPaging.toString())}`,
+        );
+      }
+      if (request.query) {
+        queryParams.push(
+          `query=${encodeURIComponent(request.query.toString())}`,
+        );
+      }
+      if (request.filter) {
+        queryParams.push(
+          `filter=${encodeURIComponent(request.filter.toString())}`,
+        );
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(
+          `filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.field) {
+        queryParams.push(
+          `filterExpr.conditions.field=${encodeURIComponent(request.filterExpr.conditions.field.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.op) {
+        queryParams.push(
+          `filterExpr.conditions.op=${encodeURIComponent(request.filterExpr.conditions.op.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.value) {
+        queryParams.push(
+          `filterExpr.conditions.value=${encodeURIComponent(request.filterExpr.conditions.value.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonValue) {
+        queryParams.push(
+          `filterExpr.conditions.jsonValue=${encodeURIComponent(request.filterExpr.conditions.jsonValue.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.values) {
+        request.filterExpr.conditions.values.forEach((x) => {
+          queryParams.push(
+            `filterExpr.conditions.values=${encodeURIComponent(x.toString())}`,
+          );
+        });
+      }
+      if (request.filterExpr?.conditions?.datePart) {
+        queryParams.push(
+          `filterExpr.conditions.datePart=${encodeURIComponent(request.filterExpr.conditions.datePart.toString())}`,
+        );
+      }
+      if (request.filterExpr?.conditions?.jsonPath) {
+        queryParams.push(
+          `filterExpr.conditions.jsonPath=${encodeURIComponent(request.filterExpr.conditions.jsonPath.toString())}`,
+        );
+      }
+      if (request.orderBy) {
+        queryParams.push(
+          `orderBy=${encodeURIComponent(request.orderBy.toString())}`,
+        );
+      }
+      if (request.sorting?.field) {
+        queryParams.push(
+          `sorting.field=${encodeURIComponent(request.sorting.field.toString())}`,
+        );
+      }
+      if (request.sorting?.direction) {
+        queryParams.push(
+          `sorting.direction=${encodeURIComponent(request.sorting.direction.toString())}`,
+        );
+      }
+      if (request.fieldMask) {
+        queryParams.push(
+          `fieldMask=${encodeURIComponent(request.fieldMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'NotificationService',
+        method: 'ListNotificationDelivery',
+      }) as Promise<notificationservicev1_ListNotificationDeliveryResponse>;
+    },
+    GetNotificationDelivery(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `admin/v1/notification-deliveries/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'GET', body, {
+        service: 'NotificationService',
+        method: 'GetNotificationDelivery',
+      }) as Promise<notificationservicev1_NotificationDelivery>;
+    },
+  };
+}
+// 查询投递台账列表 - 回应
+export type notificationservicev1_ListNotificationDeliveryResponse = {
+  items: notificationservicev1_NotificationDelivery[] | undefined;
+  total: number | undefined;
+};
+
+// 一条通知 × 一个渠道 × 一个收件人 = 一行投递台账
+export type notificationservicev1_NotificationDelivery = {
+  channel?: notificationservicev1_Channel;
+  channelId?: number;
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  eventType?: notificationservicev1_EventType;
+  id?: number;
+  lastError?: string;
+  recipientUserId?: number;
+  // 产生本条投递的业务对象主键，含义由 event_type 决定（INTERNAL_MESSAGE → sys_internal_messages.id）。
+  // 存在的理由：台账不存正文快照（见 §3.3），排障时要能跳回业务对象去看发了什么。
+  relatedId?: number;
+  sentAt?: wellKnownTimestamp;
+  status?: notificationservicev1_DeliveryStatus;
+  // 脱敏后的投递目标（见 MaskTarget）：台账可查，但不得成为明文集邮地址的第二个真相源
+  target?: string;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+};
+
+// 业务事件类型。路由表（事件 → 渠道集合）按此枚举建，一期为 Go 静态表。
+export type notificationservicev1_EventType =
+  | 'CHANNEL_TEST_EMAIL'
+  | 'CONTACT_BIND_CODE'
+  | 'EVENT_TYPE_UNSPECIFIED'
+  // 站内信投递：一条站内信发给一个收件人 = 一行台账，related_id 指向 sys_internal_messages.id。
+  // 它与其他三个事件的区别：那三个由业务动作触发、渠道由路由表决定；这一个本身就是
+  // "站内信内容域经缝投递了一次"，related_id 必填，否则台账行无法回答"发的是哪条消息"。
+  | 'INTERNAL_MESSAGE'
+  | 'PASSWORD_RESET_CODE';
+// 投递渠道
+export type notificationservicev1_Channel =
+  | 'CHANNEL_UNSPECIFIED'
+  | 'EMAIL'
+  | 'INTERNAL'
+  | 'SMS'
+  | 'WEBHOOK';
+// 投递状态
+export type notificationservicev1_DeliveryStatus =
+  | 'DELIVERY_STATUS_UNSPECIFIED'
+  | 'FAILED'
+  | 'SENDING'
+  | 'SENT'
+  | 'SKIPPED';
+// 查询投递台账详情 - 请求
+export type notificationservicev1_GetNotificationDeliveryRequest = {
+  id: number | undefined;
+};
+
 // 通知渠道管理服务（平台级配置）
 export interface NotificationChannelService {
   // 查询通知渠道列表
@@ -10367,6 +10570,7 @@ export class ApiClient {
   private _menuService?: MenuService;
   private _mfaService?: MfaService;
   private _notificationChannelService?: NotificationChannelService;
+  private _notificationService?: NotificationService;
   private _onlineSessionService?: OnlineSessionService;
   private _operationAuditLogService?: OperationAuditLogService;
   private _orgUnitService?: OrgUnitService;
@@ -10475,6 +10679,10 @@ export class ApiClient {
 
   get notificationChannelService(): NotificationChannelService {
     return this._notificationChannelService ??= createNotificationChannelServiceClient(this._transport);
+  }
+
+  get notificationService(): NotificationService {
+    return this._notificationService ??= createNotificationServiceClient(this._transport);
   }
 
   get onlineSessionService(): OnlineSessionService {

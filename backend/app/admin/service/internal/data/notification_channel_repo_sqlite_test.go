@@ -463,7 +463,7 @@ func TestNotificationChannelRepoSqlite_GetFirstEnabledEmailChannel(t *testing.T)
 		Password: trans.Ptr("secret-a"),
 	}, 1)
 	require.NoError(t, err)
-	_, err = repo.Create(ctx, &notificationChannelV1.CreateNotificationChannelRequest{
+	idB, err := repo.Create(ctx, &notificationChannelV1.CreateNotificationChannelRequest{
 		Data: &notificationChannelV1.NotificationChannel{
 			Name:         trans.Ptr("cand-b"),
 			Type:         notificationChannelV1.NotificationChannel_EMAIL.Enum(),
@@ -481,6 +481,7 @@ func TestNotificationChannelRepoSqlite_GetFirstEnabledEmailChannel(t *testing.T)
 	// 首次选取：ID 升序命中 A，干扰行被跳过
 	acct, err := repo.GetFirstEnabledEmailChannel(ctx)
 	require.NoError(t, err, "存在启用的 EMAIL 渠道时应命中")
+	require.Equal(t, idA, acct.ID, "命中行的主键要带回来：台账的 channel_id 只认这个")
 	require.Equal(t, "smtp.a.example", acct.Host, "应命中 ID 较小的候选 A")
 	require.Equal(t, uint32(587), acct.Port)
 	require.Equal(t, "user-a", acct.Username)
@@ -494,6 +495,7 @@ func TestNotificationChannelRepoSqlite_GetFirstEnabledEmailChannel(t *testing.T)
 	acct, err = repo.GetFirstEnabledEmailChannel(ctx)
 	require.NoError(t, err, "删除 A 后仍存在启用的 EMAIL 渠道（B）应命中")
 	require.Equal(t, "smtp.b.example", acct.Host, "删除 A 后应命中 B")
+	require.Equal(t, idB, acct.ID, "换了一条就要换 ID，不能留上一次的")
 	require.Equal(t, "SSL", acct.TlsMode)
 	require.Equal(t, "secret-b", acct.Password)
 }
@@ -551,6 +553,7 @@ func TestNotificationChannelRepoSqlite_GetDecryptedSmtpAccount(t *testing.T) {
 
 	acct, err := repo.GetDecryptedSmtpAccount(ctx, idOn)
 	require.NoError(t, err, "按存在 ID 查询应命中")
+	require.Equal(t, idOn, acct.ID, "取回的账号要自带主键：显式指定渠道时错误文本靠它回指")
 	require.Equal(t, "smtp.on.example", acct.Host, "Host 应回读")
 	require.Equal(t, uint32(25), acct.Port, "Port 应回读")
 	require.Equal(t, "user-on", acct.Username, "Username 应回读")

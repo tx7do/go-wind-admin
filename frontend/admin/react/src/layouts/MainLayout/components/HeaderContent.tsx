@@ -33,7 +33,7 @@ import { fetchListUserInbox, } from '@/api/hooks/internal-message';
 import { apiClient } from '@/api/client';
 import { useQuery } from '@tanstack/react-query';
 import { PaginationQuery, queryClient } from '@/core';
-import { globalSSEClient } from '@/core/transport/sse';
+import { globalSSEClient, SSE_EVENT } from '@/core/transport/sse';
 
 dayjs.extend(relativeTime);
 
@@ -269,9 +269,9 @@ export const HeaderContent = ({
       queryClient.invalidateQueries({ queryKey: ['inboxPreview', userInfo?.id] });
       queryClient.invalidateQueries({ queryKey: ['inboxPreviewList', userInfo?.id] });
     };
-    globalSSEClient.on('notification', handler);
+    globalSSEClient.on(SSE_EVENT.Notification, handler);
     return () => {
-      globalSSEClient.off('notification', handler);
+      globalSSEClient.off(SSE_EVENT.Notification, handler);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userInfo?.id]);

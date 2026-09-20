@@ -956,6 +956,21 @@ var DefaultMenus = []*permissionV1.Menu{
 			Authority: []string{"sys:platform_admin"},
 		},
 	},
+	{
+		Id:        trans.Ptr(uint32(72)),
+		ParentId:  trans.Ptr(uint32(60)),
+		Type:      permissionV1.Menu_MENU.Enum(),
+		Name:      trans.Ptr("NotificationDeliveryManagement"),
+		Path:      trans.Ptr("notification-deliveries"),
+		Component: trans.Ptr("app/system/notification_delivery/index.vue"),
+		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
+		Meta: &permissionV1.MenuMeta{
+			Title:     trans.Ptr("menu.system.notificationDeliveries"),
+			Icon:      trans.Ptr("lucide:send"),
+			Order:     trans.Ptr(int32(12)),
+			Authority: []string{"sys:platform_admin"},
+		},
+	},
 }
 
 // DefaultConfigs 系统初始化内置平台参数（等保口令策略阈值）。

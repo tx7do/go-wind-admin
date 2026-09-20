@@ -66,6 +66,9 @@ export * from "./server-monitor";
 // 通知渠道
 export * from "./notification-channel";
 
+// 通知投递台账（只读）
+export * from "./notification-delivery";
+
 // 首页分析概览
 export * from "./dashboard";
 

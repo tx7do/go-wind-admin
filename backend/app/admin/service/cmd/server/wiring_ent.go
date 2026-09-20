@@ -11,6 +11,7 @@ import (
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
 	"go-wind-admin/app/admin/service/internal/data"
+	"go-wind-admin/app/admin/service/internal/data/channel"
 	"go-wind-admin/app/admin/service/internal/server"
 	"go-wind-admin/app/admin/service/internal/service"
 	"go-wind-admin/pkg/authorizer"
@@ -135,6 +136,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	redisCacheMonitorRepo := data.NewRedisCacheMonitorRepo(ctx, redisClient)
 	serverMonitorRepo := data.NewServerMonitorRepo(ctx, entClient)
 	notificationChannelRepo := data.NewNotificationChannelRepo(ctx, entClient)
+	notificationDeliveryRepo := data.NewNotificationDeliveryRepo(ctx, entClient)
 	dashboardRepo := data.NewDashboardRepo(ctx, entClient)
 
 	// 站内信
@@ -156,14 +158,20 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 
 	// ═══════════════════════ 四、服务层(internal/service) ═══════════════════════
 
+	// 通知投递：渠道注册表（一期内只有 EMAIL）→ NotificationService → 各业务 service 只拿 Notifier。
+	// 注册顺序即装配位置：新增一种渠道 = 在这里多 Register 一个 Sender，业务调用方不动。
+	channelRegistry := channel.NewRegistry()
+	channelRegistry.Register(channel.NewEmailSender(notificationChannelRepo))
+	notificationService := service.NewNotificationService(ctx, notificationDeliveryRepo, channelRegistry)
+
 	// 认证与登录策略
-	authenticationService := service.NewAuthenticationService(ctx, userRepo, userCredentialRepo, roleRepo, tenantRepo, membershipRepo, orgUnitRepo, roleOrgUnitRepo, roleFieldPermissionRepo, permissionRepo, authenticator, clientType, captcha, loginRateLimiter, loginPolicyRepo, userMfaFactorRepo, mfaChallengeCache, vcodeCache, notificationChannelRepo)
+	authenticationService := service.NewAuthenticationService(ctx, userRepo, userCredentialRepo, roleRepo, tenantRepo, membershipRepo, orgUnitRepo, roleOrgUnitRepo, roleFieldPermissionRepo, permissionRepo, authenticator, clientType, captcha, loginRateLimiter, loginPolicyRepo, userMfaFactorRepo, mfaChallengeCache, vcodeCache, notificationService)
 	mfaService := service.NewMfaService(ctx, userMfaFactorRepo, mfaChallengeCache, authenticator, loginRateLimiter, userRepo)
 	loginPolicyService := service.NewLoginPolicyService(ctx, loginPolicyRepo)
 
 	// 身份与组织
 	userService := service.NewUserService(ctx, userRepo, roleRepo, userCredentialRepo, positionRepo, orgUnitRepo, tenantRepo, membershipRepo, authenticator)
-	userProfileService := service.NewUserProfileService(ctx, userRepo, roleRepo, userCredentialRepo, authenticator, notificationChannelRepo, vcodeCache, minioClient)
+	userProfileService := service.NewUserProfileService(ctx, userRepo, roleRepo, userCredentialRepo, authenticator, notificationService, vcodeCache, minioClient)
 	positionService := service.NewPositionService(ctx, positionRepo, orgUnitRepo)
 	orgUnitService := service.NewOrgUnitService(ctx, orgUnitRepo, userRepo)
 
@@ -201,7 +209,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	// 运维观测与门户
 	redisCacheMonitorService := service.NewRedisCacheMonitorService(ctx, redisCacheMonitorRepo)
 	serverMonitorService := service.NewServerMonitorService(ctx, serverMonitorRepo)
-	notificationChannelService := service.NewNotificationChannelService(ctx, notificationChannelRepo)
+	notificationChannelService := service.NewNotificationChannelService(ctx, notificationChannelRepo, notificationService)
 	onlineSessionService := service.NewOnlineSessionService(ctx, authenticator)
 	dashboardService := service.NewDashboardService(ctx, dashboardRepo)
 	adminPortalService := service.NewAdminPortalService(ctx, menuRepo, roleRepo, userRepo, permissionRepo, planModuleRepo, tenantRepo)
@@ -259,7 +267,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 		permissionAuditLogService, policyEvaluationLogService,
 		loginAuditLogService, apiAuditLogService, operationAuditLogService, dataAccessAuditLogService,
 		redisCacheMonitorService, serverMonitorService, notificationChannelService,
-		onlineSessionService, dashboardService,
+		notificationService, onlineSessionService, dashboardService,
 		internalMessageService, internalMessageCategoryService, internalMessageRecipientService,
 		scriptService, scriptLogService,
 		// register:rest-arg ── 新模块服务实参在此行后追加(make register 工具锚点,勿删)

@@ -1,0 +1,34 @@
+{
+  "title": "Notification Deliveries",
+  "createdAt": "Delivered at",
+  "eventType": "Event",
+  "channel": "Channel",
+  "target": "Target",
+  "targetMaskedHint": "The ledger only stores masked targets; use this shape to locate a recipient",
+  "status": "Result",
+  "recipientUserId": "Recipient",
+  "channelId": "Channel config",
+  "relatedId": "Related",
+  "relatedIdHint": "Meaning depends on the event: in-app message = message ID",
+  "sentAt": "Completed at",
+  "lastError": "Failure reason",
+  "fetchFailed": "Failed to load delivery records",
+  "eventTypeMap": {
+    "PASSWORD_RESET_CODE": "Password reset code",
+    "CONTACT_BIND_CODE": "Contact binding code",
+    "CHANNEL_TEST_EMAIL": "Channel test email",
+    "INTERNAL_MESSAGE": "In-app message"
+  },
+  "channelMap": {
+    "EMAIL": "Email",
+    "SMS": "SMS",
+    "WEBHOOK": "Webhook",
+    "INTERNAL": "In-app"
+  },
+  "statusMap": {
+    "SENDING": "Sending",
+    "SENT": "Sent",
+    "FAILED": "Failed",
+    "SKIPPED": "Channel not configured"
+  }
+}

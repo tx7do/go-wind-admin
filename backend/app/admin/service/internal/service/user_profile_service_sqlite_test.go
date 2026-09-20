@@ -93,8 +93,7 @@ type userProfileServiceTestEnv struct {
 // log 换 NopLogger；userRepo 用本文件桩；roleRepo 走既有 testkit；
 // userCredentialRepo / configRepo 走 repo_testkit5（miniredis 假 client 注入，
 // 装配关系与生产 wiring_ent.go 一致）；authenticator 走 repo_testkit5 注入式
-// 构造；notificationRepo 走 repo_testkit4 仅为字段对齐（被测路径未触碰）。
-// vcodeCache（生产签名取 *bLogger.Context，跨包不可构造）与 mc（需 MinIO 实例）
+// 构造；notifier（换绑验证码邮件出口）与 mc（需 MinIO 实例）
 // 置 nil，见文件头跳过说明。
 func newUserProfileServiceForTest(t *testing.T) userProfileServiceTestEnv {
 	t.Helper()
@@ -122,7 +121,7 @@ func newUserProfileServiceForTest(t *testing.T) userProfileServiceTestEnv {
 		roleRepo:           data.NewRoleRepoForTest(entClient),
 		userCredentialRepo: userCredentialRepo,
 		authenticator:      authenticator,
-		notificationRepo:   data.NewNotificationChannelRepoForTest(entClient),
+		notifier:           nil,
 		vcodeCache:         nil,
 		mc:                 nil,
 	}

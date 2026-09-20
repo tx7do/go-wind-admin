@@ -8,10 +8,12 @@ import (
 	"time"
 
 	"google.golang.org/protobuf/types/known/emptypb"
+	"github.com/tx7do/go-utils/trans"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
-	"go-wind-admin/pkg/mailer"
+	notificationV1 "go-wind-admin/api/gen/go/notification/service/v1"
+	"go-wind-admin/pkg/mailtext"
 )
 
 // generateVCode 生成 6 位数字验证码。
@@ -45,23 +47,24 @@ func (s *AuthenticationService) ForgotPassword(ctx context.Context, req *authent
 		return nil, authenticationV1.ErrorInternalServerError("save verification code failed")
 	}
 
-	account, err := s.notificationChannelRepo.GetFirstEnabledEmailChannel(ctx)
+	// 文案按请求的 Accept-Language 选语言：这一步在免鉴权白名单上，上下文里没有
+	// token 级的 locale 可用，请求头是唯一入口（见 pkg/mailtext 包注释）。
+	title, content := mailtext.PasswordResetCode(ctx, code)
+	resp, err := s.notifier.SendDirect(ctx, &notificationV1.SendDirectNotificationRequest{
+		EventType:       notificationV1.EventType_PASSWORD_RESET_CODE,
+		Target:          identifier,
+		RecipientUserId: trans.Ptr(userId),
+		Title:           title,
+		Content:         content,
+	})
 	if err != nil {
-		s.log.Errorf(ctx, "forgot-password: no email channel available: %s", err.Error())
-		return nil, authenticationV1.ErrorInternalServerError("email channel is not configured")
-	}
-
-	subject := "GoWind Admin 密码重置验证码"
-	body := "您的密码重置验证码是：" + code + "\n\n10 分钟内有效。若非本人操作请忽略本邮件。\n"
-	if err = mailer.SendMail(mailer.SmtpConfig{
-		Host:     account.Host,
-		Port:     account.Port,
-		Username: account.Username,
-		Password: account.Password,
-		From:     account.From,
-		TlsMode:  account.TlsMode,
-	}, []string{identifier}, subject, body); err != nil {
-		s.log.Errorf(ctx, "forgot-password: send mail to [%s] failed: %s", identifier, err.Error())
+		s.log.Errorf(ctx, "forgot-password: send mail to [%s] failed (delivery %d): %s",
+			identifier, resp.GetDeliveryId(), err.Error())
+		// SKIPPED＝一条都没发出去：没配启用的 EMAIL 渠道。这与"SMTP 报错"是两回事，
+		// 前者要管理员去渠道页配置，分开报才不用翻日志才知道差哪一步。
+		if resp.GetStatus() == notificationV1.DeliveryStatus_SKIPPED {
+			return nil, authenticationV1.ErrorInternalServerError("email channel is not configured")
+		}
 		return nil, authenticationV1.ErrorInternalServerError("send verification email failed")
 	}
 

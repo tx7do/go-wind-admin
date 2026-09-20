@@ -184,8 +184,11 @@ type AuthenticationService struct {
 	mfaFactorRepo     *data.UserMfaFactorRepo
 	mfaChallengeCache *data.MfaChallengeCache
 
-	vcodeCache              *data.VCodeCache
-	notificationChannelRepo *data.NotificationChannelRepo
+	vcodeCache *data.VCodeCache
+	// notifier 是唯一的对外通知出口（找回密码验证码邮件）。
+	// 此前这里持有 notificationChannelRepo 并直接调 mailer.SendMail——渠道选择策略
+	// 与 SMTP 细节因此散落到登录链路里，改一处漏一处。
+	notifier Notifier
 }
 
 func NewAuthenticationService(
@@ -207,7 +210,7 @@ func NewAuthenticationService(
 	mfaFactorRepo *data.UserMfaFactorRepo,
 	mfaChallengeCache *data.MfaChallengeCache,
 	vcodeCache *data.VCodeCache,
-	notificationChannelRepo *data.NotificationChannelRepo,
+	notifier Notifier,
 ) *AuthenticationService {
 	return &AuthenticationService{
 		log:                     ctx.NewLoggerHelper("authn/service/admin-service"),
@@ -228,7 +231,7 @@ func NewAuthenticationService(
 		mfaFactorRepo:           mfaFactorRepo,
 		mfaChallengeCache:       mfaChallengeCache,
 		vcodeCache:              vcodeCache,
-		notificationChannelRepo: notificationChannelRepo,
+		notifier:                notifier,
 	}
 }
 

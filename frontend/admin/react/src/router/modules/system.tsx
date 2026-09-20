@@ -137,6 +137,16 @@ export const systemRoutes: AppRouteObject[] = [
           order: 13,
         },
       },
+      {
+        name: 'notification-deliveries',
+        path: 'notification-deliveries', // 相对路径，最终为 /system/notification-deliveries
+        element: createLazyRoute(() => import('@/pages/app/system/notification-delivery')),
+        meta: {
+          title: 'routes:notification-deliveries',
+          icon: 'lucide:send',
+          order: 14,
+        },
+      },
     ],
   },
 ];
