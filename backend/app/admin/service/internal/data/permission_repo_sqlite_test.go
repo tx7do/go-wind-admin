@@ -16,6 +16,8 @@ import (
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
+	"go-wind-admin/app/admin/service/internal/data/ent/permissionapi"
+	"go-wind-admin/app/admin/service/internal/data/ent/permissionmenu"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
 )
 
@@ -258,6 +260,102 @@ func TestPermissionRepoSqlite_Update(t *testing.T) {
 	require.Equal(t, "更新后描述-sqlite", *after[0].Description, "掩码内字段应被更新")
 	require.Equal(t, "sqlite权限点-更新", *after[0].Name, "掩码外字段 name 应保持原值")
 	require.Equal(t, "sqlite_perm_update_code", *after[0].Code, "掩码外字段 code 应保持原值")
+}
+
+// TestPermissionRepoSqlite_UpdateKeepsRelationGrants 是回归测试：编辑权限点曾把它自己的
+// 「菜单 / 接口授权」整片清空。原因是 UpdateOne 内部的 FilterByFieldMask 会把不在 mask 里的
+// Data 字段清零，而 api_ids / menu_ids 又被黑名单移出 mask —— Assign* 于是拿到空集，
+// 而它们的语义是「空集＝删光该权限的全部关联」。三端权限抽屉都带 menuIds/apiIds 提交，
+// 所以这条路径是「保存一次权限，丢光一次授权」。
+func TestPermissionRepoSqlite_UpdateKeepsRelationGrants(t *testing.T) {
+	newPerm := func(t *testing.T, code string) (*PermissionRepo, context.Context, uint32) {
+		t.Helper()
+		entClient := enttest.NewEntClientForTest(t)
+		repo := newPermissionRepoSqlite(t, entClient)
+		ctx := enttest.NewSystemViewerCtx(context.Background())
+		require.NoError(t, repo.Create(ctx, &permissionV1.CreatePermissionRequest{
+			Data: &permissionV1.Permission{
+				Name:    trans.Ptr("sqlite权限点-关联保持"),
+				Code:    trans.Ptr(code),
+				MenuIds: []uint32{1, 2, 3},
+				ApiIds:  []uint32{10, 11},
+			},
+		}))
+		rows, err := repo.entClient.Client().Permission.Query().All(ctx)
+		require.NoError(t, err)
+		require.Len(t, rows, 1)
+		return repo, ctx, rows[0].ID
+	}
+
+	menuIDs := func(t *testing.T, repo *PermissionRepo, ctx context.Context, permID uint32) []uint32 {
+		t.Helper()
+		links, err := repo.entClient.Client().PermissionMenu.Query().
+			Where(permissionmenu.PermissionIDEQ(permID)).All(ctx)
+		require.NoError(t, err)
+		ids := make([]uint32, 0, len(links))
+		for _, l := range links {
+			require.NotNil(t, l.MenuID, "关联行的 menu_id 不应为 NULL")
+			ids = append(ids, *l.MenuID)
+		}
+		return ids
+	}
+
+	t.Run("掩码带关联字段（三端权限抽屉的形状）应落新集", func(t *testing.T) {
+		repo, ctx, id := newPerm(t, "sqlite_perm_rel_mask")
+		require.NoError(t, repo.Update(ctx, &permissionV1.UpdatePermissionRequest{
+			Id:         id,
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "menu_ids", "api_ids"}},
+			Data: &permissionV1.Permission{
+				Name:    trans.Ptr("sqlite权限点-关联改写"),
+				MenuIds: []uint32{3, 72, 73},
+				ApiIds:  []uint32{20},
+			},
+		}))
+		require.ElementsMatch(t, []uint32{3, 72, 73}, menuIDs(t, repo, ctx, id), "提交的菜单集应整体替换旧的")
+		apis, err := repo.entClient.Client().PermissionApi.Query().
+			Where(permissionapi.PermissionIDEQ(id)).All(ctx)
+		require.NoError(t, err)
+		require.Len(t, apis, 1, "提交的接口集应整体替换旧的")
+	})
+
+	t.Run("掩码不含关联字段（只改名）不得动授权", func(t *testing.T) {
+		repo, ctx, id := newPerm(t, "sqlite_perm_rel_rename")
+		require.NoError(t, repo.Update(ctx, &permissionV1.UpdatePermissionRequest{
+			Id:         id,
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name"}},
+			Data:       &permissionV1.Permission{Name: trans.Ptr("sqlite权限点-仅改名")},
+		}))
+		require.ElementsMatch(t, []uint32{1, 2, 3}, menuIDs(t, repo, ctx, id), "没提交 menu_ids 就该维持原授权")
+	})
+
+	t.Run("camelCase 掩码路径同样受保护", func(t *testing.T) {
+		// protojson 会把 json_name 规范成 snake_case，但直连 gRPC/测试的调用方给什么就是什么，
+		// 两种拼写都得认出，否则同样的清空只在 HTTP 侧消失。
+		repo, ctx, id := newPerm(t, "sqlite_perm_rel_camel")
+		require.NoError(t, repo.Update(ctx, &permissionV1.UpdatePermissionRequest{
+			Id:         id,
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"menuIds", "apiIds"}},
+			Data: &permissionV1.Permission{
+				MenuIds: []uint32{4},
+				ApiIds:  []uint32{30, 31},
+			},
+		}))
+		require.Equal(t, []uint32{4}, menuIDs(t, repo, ctx, id))
+	})
+
+	t.Run("显式提交空集仍是清空", func(t *testing.T) {
+		repo, ctx, id := newPerm(t, "sqlite_perm_rel_clear")
+		require.NoError(t, repo.Update(ctx, &permissionV1.UpdatePermissionRequest{
+			Id:         id,
+			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"menu_ids", "api_ids"}},
+			Data: &permissionV1.Permission{
+				Name:    trans.Ptr("sqlite权限点-清空授权"),
+				MenuIds: []uint32{},
+				ApiIds:  []uint32{},
+			},
+		}))
+		require.Empty(t, menuIDs(t, repo, ctx, id), "全不勾是合法操作：提交了就该清空")
+	})
 }
 
 // TestPermissionRepoSqlite_Delete 验证按 ID 与按 code 删除后行数归零。

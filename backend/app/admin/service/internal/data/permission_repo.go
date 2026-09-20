@@ -2,6 +2,7 @@ package data
 
 import (
 	"context"
+	"slices"
 	"strconv"
 	"time"
 
@@ -424,6 +425,20 @@ func (r *PermissionRepo) Update(ctx context.Context, req *permissionV1.UpdatePer
 		}
 	}
 
+	// 关联载荷先快照：UpdateOne 内部的 FilterByFieldMask 会把不在 mask 里的 Data 字段清零，
+	// 而 api_ids / menu_ids 恰被下面的黑名单移出 mask——不先取就走不到 Assign（编辑权限会静默
+	// 清空它的全部菜单与接口授权）。语义照 role_repo / user_repo 的快照模式：提交了该项（含清空）
+	// 才整体替换，没提交则维持原关联。
+	updateApis := hasPath("api_ids", req.UpdateMask) || hasPath("apiIds", req.UpdateMask)
+	updateMenus := hasPath("menu_ids", req.UpdateMask) || hasPath("menuIds", req.UpdateMask)
+	var wantApiIds, wantMenuIds []uint32
+	if updateApis {
+		wantApiIds = slices.Clone(req.Data.GetApiIds())
+	}
+	if updateMenus {
+		wantMenuIds = slices.Clone(req.Data.GetMenuIds())
+	}
+
 	// 剔除关联字段：api_ids / menu_ids 是关联表字段，并非 sys_permissions 表的列。
 	// 若保留在 updateMask 中，当其值为空时会被当作 nil 字段生成 SET api_ids=NULL 的 SQL，触发列不存在错误。
 	// 关联关系由下方的 AssignApis / AssignMenus 单独维护。
@@ -453,12 +468,16 @@ func (r *PermissionRepo) Update(ctx context.Context, req *permissionV1.UpdatePer
 		return err
 	}
 
-	if err = r.permissionApiRepo.AssignApis(ctx, perm.GetId(), req.Data.GetApiIds()); err != nil {
-		return err
+	if updateApis {
+		if err = r.permissionApiRepo.AssignApis(ctx, perm.GetId(), wantApiIds); err != nil {
+			return err
+		}
 	}
 
-	if err = r.permissionMenuRepo.AssignMenus(ctx, perm.GetId(), req.Data.GetMenuIds()); err != nil {
-		return err
+	if updateMenus {
+		if err = r.permissionMenuRepo.AssignMenus(ctx, perm.GetId(), wantMenuIds); err != nil {
+			return err
+		}
 	}
 
 	return nil
