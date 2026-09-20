@@ -8,8 +8,11 @@
 > **C 已落地（2026-09-20，见 §4 C）：路由搬进 `sys_notification_rules`（两张 Go 静态表删除）+
 > WEBHOOK 渠道（`webhook_url`/`webhook_secret` 两列 + dial 时按解析 IP 的 SSRF 防线 + HMAC 签名）+
 > 规则管理页三端 + 按规则行的测试投递 RPC**。P3（偏好与模板）与 SMS 出口仍是设计提案；
-> 撤销消息缺对象级授权一处**已知未修**记在 §7「收件箱不钉归属」一节末尾，
-> C 自己留下的一处（显式 target 不落 `channel_id`）记在 §4 C。**
+> 撤销消息缺对象级授权一处**已知未修**记在 §7「收件箱不钉归属」一节末尾。
+> C 自己留下的那一格（显式 target 的投递不落 `channel_id`）已由 **欠账 1 修掉（2026-09-21，见 §4 欠账 1）**：
+> 失败路径与异步重试中途都照样把"实际用的哪条渠道配置"写进台账。
+> 同一天定位完、但**没修**的一处记在 §4 欠账 2：租户侧边栏整箱被清空，成因是 `TenantRepo` 读不到 ent 的 `plan_id` 边外键 ——
+> 属套餐/租户导航域，修法要点头。**
 > 第 2 节「现状盘点」是 P1 之前的基线（核对至 commit `29d700b9`），其中被改动的事实在就地标注；
 > 第 3~4 节的实施状态以 §4 的分期标记为准，落地验收进度在 §7。实施进度更新时改本文状态标记，不要另开文档。
 >
@@ -185,7 +188,7 @@ SKIPPED/FAILED）和非 nil error。只回 error，调用方拿不到台账行�
 | --- | --- | --- |
 | `event_type` | 枚举，业务事件标识 | 已建（`Optional().Nillable()`） |
 | `channel` | 枚举，渠道 | 已建（同上） |
-| `channel_id` | 可空，指向实际选中的 `sys_notification_channels` 行（策略结果落档，便于排障） | 已建 |
+| `channel_id` | 可空，指向实际选中的 `sys_notification_channels` 行（策略结果落档，便于排障）。**SENT/FAILED 都落这一格**（欠账 1），留空只剩两种成因：压根没选出配置行（没配/没启用/类型不对），或该渠道本来就没有配置行（INTERNAL，见 §6 决策点 5）。注意它**不是** `SKIPPED` 的同义词：SSRF 在拨号前拦下目标时账号已经选出，那一行照样有 `channel_id`（只是状态为 SKIPPED） | 已建 |
 | `recipient_user_id` | 可空（直发模式无 userId） | 已建 |
 | `target` | 脱敏后的投递目标（邮箱留首字符与域名，见 `maskTarget`）。**INTERNAL 例外：原样存收件用户 ID** —— 那是本平台内部主键、台账本就只对平台管理员开放，掩成 `****1024` 只会把台账里唯一可读的字段变成噪音 | 已建 |
 | `status` | `SENDING` / `SENT` / `FAILED` / `SKIPPED`（`SENDING` 不是终态、也不许是永久态：超期未结算由 P2-4 的常驻清扫定案成 `FAILED` 并写明 `swept by …` 原因） | 已建 |
@@ -659,11 +662,12 @@ DB 12 的 asynq 键逐个 `DEL`；mailpit 容器 `gwa-mailpit` 为本轮新起�
 | **302 不跟随** | 显式目标指向 `/redirect`（该路径回 `302` 且 `location` 指向一台**没人监听**的 `127.0.0.1:8098`）→ **400** `send webhook via channel [9] failed: peer answered 302 Found:`，台账 id=21 `FAILED`；收端只记下 `/redirect` 这一跳，**没有**第二跳、也没有任何 8098 的拨号错误 ⇒ `CheckRedirect` 的 `http.ErrUseLastResponse` 生效，非 2xx 一律按"对端 answered <status>"定案 |
 | 台账 `target` 的脱敏 | WEBHOOK 的地址不是邮箱形态，`maskTarget` 落到"只留末 4 位"：id=20/19 为 `****hook`、id=21 为 `****rect`（`notification_service.go:570`） |
 
-**已知未修的一处**：显式传 `target` 时 `testDispatchTarget` 返回的 `channelID` 是 nil（"发去哪里由管理员这一行决定"），
-于是那次投递**实际用了哪条渠道配置**只留在 `last_error` 的 `via channel [9]` 字样里 —— id=21 的 `channel_id` 为空。
-`channel_id` 一列的设计目的是"策略结果落档便于排障"（§3.3），这一格因此是空的。没有为它改代码：
-要么在 service 层预解析渠道（把 sender 的选择策略搬出去一份，就是第二个真相源），要么让 sender 回传选中项
-（`SendReceipt` 加字段 + 台账多一次写），两者都比这一格空着贵。
+**当时已知未修、现已修掉的一处（见 §4 欠账 1）**：显式传 `target` 时 `testDispatchTarget` 返回的 `channelID` 是 nil
+（"发去哪里由管理员这一行决定"），于是那次投递**实际用了哪条渠道配置**只留在 `last_error` 的 `via channel [9]` 字样里
+—— id=21 的 `channel_id` 为空。C 当时的判断是"没有为它改代码：要么在 service 层预解析渠道（把 sender 的选择策略
+搬出去一份，就是第二个真相源），要么让 sender 回传选中项，两者都比这一格空着贵"。**后半个判断错了**：
+`SendReceipt` 本来就在回传选中项（成功路径靠它落 `channel_id`），缺的只是"失败时也把已经确定的事实带回来"这一步，
+它既不引入第二个真相源、也不额外多一次写（同一条 `MarkResult`）。欠账 1 因此按第二个方案修，见 §4 欠账 1。
 
 **三端页面**（react 先行 → ele → vben，路由一律 `/system/notification-rules`、菜单 id 73、authority `sys:platform_admin`）：
 react `pages/app/system/notification-rule/` + `api/hooks/notification-rule.ts` + `locales/{zh-CN,en-US}/_modules/notification-rule.json`；
@@ -758,12 +762,12 @@ UNSPECIFIED 一律拒（fail-closed）。也就是说：登记全的那条（cha
 `business_module`（表格里那两格至今是 `module not allowed` 而不是守卫文案），**只有全新安装反映这次登记**。
 `gwa` 上 channels 那一格恰好是反向证据：它的行本来就是 `SYSTEM`，闸门放行、守卫接管，回的是守卫的文案。
 
-**顺带撞见、没追的一处**：同一个租户 token 打 `GET /admin/v1/routes` 回 `{"items":[]}`，
-而服务端日志显示菜单 id 已经解出 19 条（`queryMultipleRolesMenusByRoleCodes menuIDs: [1 2 20 …]`）、
-租户 `plan_id=3` 且该套餐在 `sys_plan_modules` 里确有 10 个模块、日志里没有任何错误。
-也就是说 `filterMenusByPlanWhitelist` 或它前面的某一步把这个租户的整个侧边栏清空了，成因未定位 ——
-它是租户导航的既有问题、与通知域无关，本轮只记账不修。（记录它是因为这决定了"缺口有多要紧"：
-租户口在 UI 上本来就看不见这三页，所以泄漏发生在 API 层而不是"点得到"层。）
+**顺带撞见的一处，成因已定位**：同一个租户 token 打 `GET /admin/v1/routes` 回 `{"items":[]}`，
+而服务端日志显示菜单 id 已经解出 19 条、租户 `plan_id=3` 且该套餐确有 10 个模块、日志里没有任何错误。
+当时只记现象、写着"成因未定位"；现已定位到 `TenantRepo.Get` 把 `plan_id` 读丢了
+（`plan_id` 在 ent 里是边外键、不是字段），完整证据链见 **§4 欠账 2**。它是租户导航/套餐域的既有缺陷、
+与通知域无关，**仍未修**（修法要点头）。
+（记录它是因为这决定了"缺口有多要紧"：租户口在 UI 上本来就看不见这三页，所以泄漏发生在 API 层而不是"点得到"层。）
 
 **回归测试**：新增 `notification_platform_guard_sqlite_test.go` 五个测试，覆盖 14 个方法 ——
 渠道路由全拒（并断言表里**没有**被写进去的行）、规则路由全拒（并断言被拒的测试投递**没走到通知缝**：
@@ -782,6 +786,114 @@ UNSPECIFIED 一律拒（fail-closed）。也就是说：登记全的那条（cha
 
 **门禁**：本块**没动三端**（纯后端授权），react/ele/vben 的 typecheck 与 C6 那次同状态；
 后端 `go build ./...`、`go vet ./...`、`go test -count=1 ./internal/service/... ./internal/data/...` 全绿。
+
+### 欠账 1（失败路径也落台账 `channel_id`，已完成 2026-09-21）
+
+补的是 §4 C 记下的那一格。改的只有"失败时把已经确定的事实带回来"这一件事，没有新列、没有新写路径。
+
+**契约改动**：`Sender.Send` 的注释原来只说"返回 error 即视为投递失败"，回执在失败时算什么没写。现在写明：
+**err 非 nil 时回执仍可以（也应该）带回来，但只装已经确定的事实；压根没选出账号（没配/没启用/类型不对）时回执为 nil**。
+两个实现里凡是 `pickAccount` **之后**的失败分支都跟着改（`EmailSender` 1 处、`WebhookSender` 6 处），
+`pickAccount` 之前的两条（target 为空 / 没选出账号）继续回 nil。`InternalMessageSender` 不吃渠道花名册，
+本来就是这个形状（成功回空回执、失败回 nil），未改。
+服务层 `sendOnce` 的失败分支把 `pickedChannelId(receipt)` 一起放进 outcome；
+`MarkResult` 早就只在 `ChannelID != nil` 时才写这一格，所以"没选出账号"继续留空，不需要新分支。
+
+**顺带扩到异步的中途回写**（超出 C 那条记录的范围，但那是同一个洞的另一半）：
+`AsyncNotificationDispatch` 在"还有重试额度"的分支原先只写 `status=SENDING + last_error`，把 `channel_id` 丢了。
+于一行最后被清扫定案时（`swept by …` 那条 outcome 里没有任何渠道事实），这一格永远问不出来 ——
+现成的旧证据就是台账 id=15：`PASSWORD_RESET_CODE`、`attempts=4`、`channel_id` 空。现在这条分支带上 `outcome.ChannelID`。
+
+**随之而来的行为变化，说清楚**：`dispatchRequest` 是从台账行还原投递意图的，所以第一次尝试把 `channel_id` 写进去之后，
+第二次起是**显式钉住**那条配置、不再走自选。自选本身按 `id` 升序取第一个启用的（`GetFirstEnabledEmailChannel`），
+两条分支平时给出的是同一个答案，所以正常路径看不出差别；差别只在"第一次选中之后那条配置被停用/删除"：
+以前会另选一条接着发，现在报 `channel [N] not found` → SKIPPED + SkipRetry。
+取向定为"**同一次投递只对应一条渠道配置**"——换账号续发会让这一列在重试之间没有唯一答案，
+而"到底是哪条在抖"恰恰是排障先要问的那件事。
+
+**运行期实测（本机 `:7788` 换欠账 1 二进制 + 现网 `gwa` 库；探针账目在最后）**：
+
+| 观测点 | 结果 |
+| --- | --- |
+| 自选 + 同步 + 拨号失败（正对照 C 的 id=21） | 演示通道 1/2 临时 OFF，新建 EMAIL 通道 11 = `127.0.0.1:1025`（无监听）/`smtp_tls=NONE`；`POST /notification-rules/3/test-dispatch {"target":"d1-fail@local.test"}` → **400** 原文 `send mail via channel [11] failed: connect smtp server failed: dial tcp 127.0.0.1:1025: connectex: No connection could be made because the target machine actively refused it.`；台账 **id=22 = `FAILED` + `channel_id=11`**，与同一张表里修复前的 id=21（`FAILED`、`channel_id` 空、`last_error` 同样写着 `via channel [9]`）逐列同形对照 |
+| 异步 + 重试中途 | `POST /notification-rules/1/test-dispatch`（规则 1 = `PASSWORD_RESET_CODE`、`is_async`）→ 200 `{deliveryId:23, status:"SENDING"}`；handler 第一次失败后该行是 **`SENDING` + `attempts=1` + `channel_id=11`** —— 修复前这一格在中间态根本没有来源（它只随终态写，而异步终态要么 SENT 要么被清扫写成 swept，见 id=14/15 两行的空值） |
+| 钉住生效的直接证据 | 在第二次尝试之前把通道 11 删掉 → 该行定案 **`SKIPPED` + `attempts=2` + `channel_id=11`（保留）**，`last_error` 原文 `no enabled notification channel configured: channel [11] not found: error: code = 404 reason = NOT_FOUND …`。`channel [11] not found` 只有 `resolveAccount` 的显式分支会说，自选分支的措辞是 `no enabled email channel`；而此刻库里**已经没有任何启用的 EMAIL 通道** ⇒ 第二次尝试读的就是台账那一格，不是重选出来的 |
+
+**回归测试**：`email_sender_sqlite_test.go` 的自选失败用例从 `require.Nil(t, receipt)` 翻成"回执带真实命中的渠道 ID"，
+同文件"没有可用配置"那条补上反向断言（回执必须为 nil，否则 `channel_id` 空这一格就成了漏写）；
+webhook 侧三条失败用例（SSRF 拦下 / 对端 5xx / 配置不可用）按"账号选出与否"分正反面各钉一次；
+服务层 `SendFailed` 断言 FAILED 行带 `channel_id=42`、`SendSkipped`（替身刻意不回回执）断言这一格为 nil；
+`AsyncDispatchKeepsRetryBudget` 加逐次断言：第 1 次尝试 `ChannelID=0`（自选）、第 2 次起 `=42`（钉住），
+把上面那条行为变化钉进测试而不是只写在注释里。
+
+**探针造成的变更与残留**：通道 1/2 探测期 OFF、结束已恢复 ON（通道 3 本来就 OFF，未碰）；探针通道 11 建后已删；
+台账新增 id=22/23 两行**保留** —— 台账不提供删除（改一条已发生的投递等于伪造事实），
+且上一轮 C/P2 的探针行 16~21 同样在表里。`:7788` 现在是欠账 1 二进制、仍在跑（日志 `%TEMP%/gwa_d1/server_d1.log`）；
+`%TEMP%/gwa_d1/configs` 被仓库默认配置覆盖过一次（原先那份是 D1 块的 mailpit 探针配置，已不需要）。
+
+**门禁**：本块纯后端 + 文档，三端未动。`go build ./...` 通过，`go vet ./app/admin/service/internal/data/... ./app/admin/service/internal/service/...` 无输出，
+`go test -count=1 ./app/...` 六个包全绿。
+
+### 欠账 2（租户侧边栏整箱被清空：成因已定位，**未修**，2026-09-21）
+
+**编号口径**：§4 里的「欠账 1 / 欠账 2」是"把代码侧的欠账先做完"这一轮排出来的两块，
+与 §7 待办里那两项 `D1`、`D2`（mailpit 成功投递实测 / 已部署实例「接口同步」后的 403→200 复测）不是同一套编号。
+
+**现象**（本机 `:7788` 现网 `gwa`，plan 3 租户 `c7probe`(id=12) 的管理员 `c7_u1` 真 token，2026-09-21 重跑）：
+服务端日志同一时间戳解出 19 条菜单 id（`queryMultipleRolesMenusByRoleCodes menuIDs: [1 2 20 21 22 23 24 30 32 33 34 40 41 50 51 60 61 62 63]`），
+`GET /admin/v1/routes` 回 **200 `{"items":[]}`**，日志里没有任何 ERROR/WARN。
+
+| 环节 | 实测（本轮重跑取的是活数，不是复述上一轮） |
+| --- | --- |
+| 库 | `sys_tenants` id=12 的 `plan_id=3`（非空）；`sys_plan_modules` 中 plan 3 有 10 个模块 `{DASHBOARD,OPM,SYSTEM,DICT,TENANT,PERMISSION,LOG,INTERNAL_MESSAGE,FILE,TASK}` |
+| 白名单该放行多少 | 那 19 条菜单逐条查 `module`：6 条是根容器（`module` 为空）、13 条叶子落在上面 10 个模块里（DASHBOARD 1 / OPM 4 / PERMISSION 3 / INTERNAL_MESSAGE 1 / LOG 1 / SYSTEM 3）⇒ **一条都不该被剔掉**，清空整箱只能发生在那一步之前的 `return nil` |
+| DTO 读得到吗 | 平台管理员 `GET /admin/v1/tenants/12` → 200，响应里有 `adminUserId: 7`（真列）、`adminUserName`、`memberCount`，**没有 `planId` 这一格**；`GET /admin/v1/tenants` 列表里 id=12 那行同样没有 —— 而 `plan_id=3` 就躺在下面那行数据里 |
+| 消费方 | `admin_portal_service.go:214` 用 `s.tenantRepo.Get` 拿租户，:219 的 `t.PlanId == nil` 命中 → :221 `return nil`，**一行日志都不打**（这就是"没有任何错误"的原因） |
+
+**为什么 `planId` 读不出来** —— 不是掩码、不是序列化，是**读路径没把边的值搬进 DTO**：
+`plan_id` 在 schema 里不是字段而是边外键（`ent/schema/tenant.go:128` `edge.From("plan", Plan.Type).Ref("tenants")`），
+生成的实体把它存在**非导出字段** `plan_id *uint32`（`ent/tenant.go:65`）。列值 SQL 侧确实读出来了
+（`tenant.go:101` 分配 `NullInt64`、`:263-268` 写进 `_m.plan_id`，报错文案自称 "edge-field plan_id"），
+但它不在 `tenant.Fields` 里而在 `ForeignKeys`（注释明写 "not defined as standalone fields in the schema"），
+实体上也没有 getter（只有 `QueryPlan()`）。`TenantRepo` 用的是
+`mapper.NewCopierMapper[identityV1.Tenant, ent.Tenant]()`（`tenant_repo.go:48`，反射按字段名拷，读不到非导出字段），
+而 proto DTO 那侧 `PlanId *uint32` 是实打实存在的（`api/gen/go/identity/service/v1/tenant.pb.go:211`）。
+`Get`（`tenant_repo.go:126-152`）与 `List`（:93-113）都是裸 `Tenant.Query()`、没有 `WithPlan()`；
+服务层 `TenantService.Get`（`tenant_service.go:161-171`）只 `enrichRelations` 补管理员用户名与成员数、不碰 planId，
+所以"HTTP 缺这一格"就等于"DTO 缺这一格"，中间没有别的可能丢的地方。
+
+**仓里每一处真要读 plan 的地方都手工绕过这个坑** —— 说明它是已知形状、不是新坑：
+`plan_module_repo.go:96` + `:112-114`（`WithPlan()` 之后 `dto.PlanId = &entity.Edges.Plan.ID`）、
+`plan_quota_repo.go:95`、`tenant_access_checker.go:47-50`、`tenant_usage_repo.go:77-94`（注释写明"WithPlan(WithQuotas) 预载套餐"）。
+`gorm` 侧甚至把它写成拒绝实现的理由（`data/gorm/plan_module_repo.go:71`：edge 预载没有 gorm 原语，故 `List` 不实现）。
+`filterMenusByPlanWhitelist` 是 **Go 侧唯一一个从"数据库读出的 `Tenant` DTO"上取 `PlanId` 的地方**
+（全仓 grep `PlanId`：其余命中要么是写路径从请求体取值 —— `tenant_repo.go:224/281`、`plan_*_repo.go` 的 Create/Update，
+要么是别的 DTO —— `plan_module`/`plan_quota`/`TenantUsage`），
+所以它不是写错了判定，是踩在别人的绕过点上而没人替它绕。
+
+**顺带量到的第二格（同一段代码，不影响上面的因果）**：白名单过滤只遍历顶层节点
+（`admin_portal_service.go:231-241` 一个平铺 for，`fillRouteItem` 才对 `Children` 递归），
+而现网 `sys_menus` 44 行里根节点 9 条、**其中带 `module` 的 0 条**（带 `module` 的 35 条全是叶子）。
+也就是说：这条白名单对侧边栏的**实际过滤面是 0/35**，它今天唯一的有效行为就是"plan_id 拿不到 → 整箱清空"这一支。
+模块门禁真正生效的地方是 Api 表闸门（§4 C7 那两格 403 `module not allowed` 就是它），所以这一格属显示层缺陷、
+不构成数据越权 —— 但"套餐白名单已经管不住菜单"这件事必须记下来，否则改完 `plan_id` 会以为门禁在生效。
+
+**修法（未做，等点头）**：`TenantRepo` 的读路径补边回填，形状照 `plan_module_repo.go:112-114` ——
+`Get`/`List` 的 builder 加 `WithPlan()`，DTO 上 `if e.Edges.Plan != nil { dto.PlanId = &e.Edges.Plan.ID }`。
+不在通知域范围内，而且它改变的是**所有租户用户的侧边栏可见集**（今天全空 → 修完变成"按套餐白名单"），
+影响面比本轮通知域那两块大；若同时想把白名单真正接上（递归过滤叶子），那是第三次行为变化，
+得单独确认。所以这一块交成因、不交 diff。
+
+**同一处读路径的第三个症状（不必额外实验，读码即得）**：react 租户编辑抽屉
+`pages/app/tenant/tenant/components/TenantDrawer.tsx:85` 用 `planId: data.planId` 预填「订阅套餐」下拉，
+所以打开任何租户的编辑弹窗时那一栏都是空的；写侧 `tenant_repo.go:281` 是 `SetNillablePlanID`（nil 不动列），
+**不会**因此清空已绑的套餐，只是显示不出来。
+
+**探针**：本轮为定位它只做了读操作（`psql SELECT` ×5、HTTP `GET` ×4、读服务端日志），**没写任何数据**、没动三端。
+上一轮为拿同一个事实临时建过一个测试文件 `internal/data/zz_tmp_plan_probe_test.go`，跑完即删（`git status` 已确认无残留）；
+它给出的是仓内视角的同一件事：`repo.Get` 的 DTO `PlanId == nil`，而同一 ctx 下 `WithPlan()` 预载能拿到 `Edges.Plan.ID`。
+
+**门禁**：本块无代码改动，因此不产生新的回归项；`go build ./...` 与 `go test -count=1 ./app/...` 的全绿记在欠账 1。
 
 ### P3 偏好与模板
 
@@ -842,10 +954,12 @@ UNSPECIFIED 一律拒（fail-closed）。也就是说：登记全的那条（cha
    （改缝前后同形，实测 admin→tenant_admin 一次投递落 `tenant_id=0`），所以"平台公告租户读不到"
    这个缺陷在定向路径上同样存在，不止广播。已按同一规则一起覆盖两个入口。
 
-5. **站内信投递在台账里 `channel_id` 留空是否可接受** —— **P2 已定：可接受**。
+5. **站内信投递在台账里 `channel_id` 留空是否可接受** —— **P2 已定：可接受**，欠账 1 之后仍然成立。
    `channel_id` 的语义是"实际选中的 `sys_notification_channels` 行"，站内信压根没有配置行，
    硬塞 0 会让"渠道自选失败"与"该渠道不需要配置"两种事实混成一行。台账里判"走的哪条 SMTP"
    仍按 EMAIL 读这一列，其余渠道读 `channel`。
+   欠账 1 把"失败也落这一格"扩到了 SENT/FAILED，但没有动这条边界：`InternalMessageSender` 成功时回的是
+   **空回执**（`ChannelID=0` → `pickedChannelId` 归 nil → 该列不写），所以站内信行至今与修复前同形。
 6. **`related_id` 要不要做成带类型的多态外键** —— **P2 已定：不做**，只有这一列 + 按 `event_type` 解释的约定。
    多态外键的代价（无外键约束、跨表 JOIN 要按类型分支）在"事件种类个位数"的规模下换不来任何东西；
    代价是**前端列必须自带解释**（三端台账页的"关联对象"列 tooltip/注释都写死了"站内信 = 消息ID"）。
@@ -1001,8 +1115,8 @@ gow run admin
       本机联调用 `NOTIFICATION_WEBHOOK_ALLOW_PRIVATE=1`，生产不要开。对端要验签就按
       `sha256=HMAC_SHA256(secret, "<x-gw-timestamp>." + 原始 body 字节)` 复算，密钥只在创建/更新时提交、读视图恒不回显。
       302 不跟随、非 2xx 一律 FAILED（`peer answered <status>`）。
-      **已知未修**：显式 `target` 的测试投递不落 `channel_id`（见 §4 C 那条），`RevokeMessage` 的对象级授权仍未批
-      （见本节末尾），SMS 仍只有枚举没有 Sender。
+      ~~已知未修：显式 `target` 的测试投递不落 `channel_id`~~ —— **欠账 1 已修**（见本节 C7 之后的「欠账 1」条）。
+      仍然未修的：`RevokeMessage` 的对象级授权（见本节末尾）、SMS 仍只有枚举没有 Sender。
 - [x] C7 全新安装链路 + 通知域的平台侧授权：三张通知表都是**平台级**（无 TenantID mixin），页面 authority 写死
       `sys:platform_admin`，所以后端也必须有同一道判定 —— 现在由 `notification_platform_guard.go` 的
       `requirePlatformAdmin` 承担，挂在渠道 6 + 规则 6 + 台账 2 共 14 个方法上。
@@ -1014,6 +1128,21 @@ gow run admin
       **不需要**点「接口同步」—— 那条铁律只针对已部署实例；已部署实例本次**故意没重建**（重建重排 `sys_apis` 主键，
       会脏掉 D2 那条待实测的 403→200 对照），所以现网 `gwa` 上规则/台账两组的 `business_module` 仍是空。
       播种链路的干净库实测（4 行规则、菜单 68/72/73、`/admin/v1/routes` 三条齐备）见 §4 C7。
+- [x] 欠账 1 台账 `channel_id` 在**失败路径**上也落档：`Sender` 的契约是"err 非 nil 时回执只装已经确定的事实，
+      压根没选出账号才回 nil"，两个 sender 里 `pickAccount` 之后的每条失败分支都带回执（email 1 + webhook 6），
+      `sendOnce` 的失败分支与异步"还有重试额度"那条中途回写都带上 `pickedChannelId(receipt)`。
+      **加新渠道实现时必须照这条走**：失败分支漏掉回执不会有任何测试红，只会让台账那一格重新变成空的
+      （判据是"账号选出与否"，不是"状态是什么" —— SKIPPED 也可以带 `channel_id`，SSRF 拦下目标就是这种行）。
+      连带后果：**异步重试从第二次起显式钉住第一次那条配置**（`dispatchRequest` 读台账的 `channel_id`），
+      于是一次投递只有一次渠道答案，中途把它停用/删除会让剩下的尝试变成 SKIPPED，而不是改选下一条。
+      实测的对照行、行为变化理由与探针账目见 §4 欠账 1。
+- [ ] 欠账 2 **未修，跨域等点头**：租户侧边栏整箱被清空（`GET /admin/v1/routes` → `{"items":[]}`）。
+      成因已定位并实测：`plan_id` 是 ent 的**边外键**而非字段，`TenantRepo` 的 copier mapper 读不到非导出字段，
+      于是 `filterMenusByPlanWhitelist` 的 `t.PlanId == nil` 命中、无日志 `return nil`。
+      修法是读侧补 `WithPlan()` + 手工回填 `dto.PlanId`（照 `plan_module_repo.go:112-114`），
+      **但它属套餐/租户导航域**、改变的是全部租户用户可见的菜单集，所以本轮只交成因。
+      同一段代码另两格顺带记下：白名单只遍历顶层节点而顶层 9 条根菜单一条都不带 `module`（实际过滤面 0/35），
+      以及 react 租户编辑抽屉的「订阅套餐」下拉因此恒为空。全在 §4 欠账 2。
 
 P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点到的地方，漏任一处都是静默不一致）。
 **C 之后第一行变了**：路由不再是 Go 表，而是"播种一行默认规则 + 页面可改"：
