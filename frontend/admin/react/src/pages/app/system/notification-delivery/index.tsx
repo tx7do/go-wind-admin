@@ -53,10 +53,11 @@ const eventTypeOptions = (t: (key: string) => string) =>
     label: t(`eventTypeMap.${value}`),
   }));
 
-// 可筛渠道 = 已注册实现的渠道。SMS/WEBHOOK 只在 channelMap 里留文案（历史行要能显示），
-// 不进筛选项：路由表还没有把它们分给任何事件，筛出来恒为空。
+// 可筛渠道 = 有 Sender 实现、因此真能写出台账行的渠道。路由现在是数据库表
+// （sys_notification_rules，在「通知路由规则」页维护），默认规则没指向 WEBHOOK 也筛得到：
+// 管理员建一行 WEBHOOK 规则，下一趟投递就写进台账。只有 SMS 还没有实现，永远筛不出东西。
 const channelOptions = (t: (key: string) => string) =>
-  (['EMAIL', 'INTERNAL'] as const).map((value) => ({ value, label: t(`channelMap.${value}`) }));
+  (['EMAIL', 'WEBHOOK', 'INTERNAL'] as const).map((value) => ({ value, label: t(`channelMap.${value}`) }));
 
 // ProTable 的 sorter key 来自 dataIndex（camelCase），而 orderBy 要的是数据库列名。
 // 直接透传 "createdAt" 在 sqlite 上实测为"静默不参与排序"（go-crud 的列白名单对本仓表

@@ -1,4 +1,4 @@
-// 通知异步派发（asyncDispatchEvents + notification_dispatch 任务）的 SQLite 集成测试。
+// 通知异步派发（规则行的 is_async + notification_dispatch 任务）的 SQLite 集成测试。
 //
 // 覆盖的是"什么时候离开请求、离开之后怎么闭环"这几件事：
 //   - 异步事件在请求里**不拨号**：只入队，台账停在 SENDING，attempts 还是 0；

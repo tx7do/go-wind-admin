@@ -96,6 +96,7 @@ func newNotifySeamEnv(t *testing.T) *notifySeamEnv {
 	notifier := &NotificationService{
 		log:          bLogger.NewHelper(bLogger.NopLogger()),
 		deliveryRepo: data.NewNotificationDeliveryRepoForTest(entClient),
+		ruleRepo:     newSeededRuleRepoForTest(t, entClient),
 		channels:     registry,
 	}
 	im.RegisterNotifier(notifier)
@@ -135,7 +136,7 @@ func TestNotifySeamDirectedSend(t *testing.T) {
 	row := items[0]
 	require.Equal(t, notificationV1.EventType_INTERNAL_MESSAGE, row.GetEventType())
 	require.Equal(t, notificationV1.Channel_INTERNAL, row.GetChannel(),
-		"渠道由 eventChannels 路由表决定（调用方没有显式传 Channel）")
+		"渠道由 sys_notification_rules 的 INTERNAL_MESSAGE 一行决定（调用方没有显式传 Channel）")
 	require.Equal(t, resp.GetMessageId(), row.GetRelatedId(), "台账要能跳回消息本体")
 	require.Equal(t, uint32(1024), row.GetRecipientUserId())
 	require.Equal(t, "1024", row.GetTarget(), "INTERNAL 的目标是用户 ID 原文，不脱敏")

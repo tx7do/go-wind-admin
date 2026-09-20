@@ -35,6 +35,10 @@ type SendRequest struct {
 	// （INTERNAL_MESSAGE → sys_internal_messages.id）。渠道自己用不上，
 	// 但站内信必须靠它知道往哪个消息本体上挂收件行。
 	RelatedID uint32
+	// EventType 这次投递属于哪个业务事件。SMTP 用不上它（主题与正文已经是这个事件的），
+	// WEBHOOK 必须带上：出站 JSON 是对端唯一的判据，而模板渲染排在 P3，
+	// 正文里此刻没有任何东西说明"这是找回密码还是换绑验证码"。
+	EventType notificationV1.EventType
 }
 
 // SendReceipt 渠道回执。
@@ -69,7 +73,7 @@ type Prechecker interface {
 	Precheck(ctx context.Context, channelID uint32) error
 }
 
-// Registry 渠道注册表。未注册的渠道 Notifier 会记 SKIPPED，不会静默丢通知。
+// Registry 渠道注册表。路由指向未注册的渠道时 Notifier 记 FAILED 并报错（代码 bug，不是配置问题）。
 //
 // Register 覆盖同渠道的旧实现：装配期一次性写入，运行期只读。
 type Registry struct {

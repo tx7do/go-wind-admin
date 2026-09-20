@@ -147,6 +147,16 @@ export const systemRoutes: AppRouteObject[] = [
           order: 14,
         },
       },
+      {
+        name: 'notification-rules',
+        path: 'notification-rules', // 相对路径，最终为 /system/notification-rules
+        element: createLazyRoute(() => import('@/pages/app/system/notification-rule')),
+        meta: {
+          title: 'routes:notification-rules',
+          icon: 'lucide:git-branch',
+          order: 15,
+        },
+      },
     ],
   },
 ];

@@ -148,6 +148,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	scriptRepo := data.NewScriptRepo(ctx, entClient)
 
 	// ── register:repo ── 新模块仓储在此行后注册(make register 工具锚点,勿删)
+	notificationRuleRepo := data.NewNotificationRuleRepo(ctx, entClient)
 	accessKeyRepo := data.NewAccessKeyRepo(ctx, entClient)
 
 	// ═══════════════════════ 三、认证与鉴权 ═══════════════════════
@@ -158,11 +159,13 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 
 	// ═══════════════════════ 四、服务层(internal/service) ═══════════════════════
 
-	// 通知投递：渠道注册表（一期内只有 EMAIL）→ NotificationService → 各业务 service 只拿 Notifier。
+	// 通知投递：渠道注册表（EMAIL / WEBHOOK / INTERNAL）→ NotificationService → 各业务 service 只拿 Notifier。
 	// 注册顺序即装配位置：新增一种渠道 = 在这里多 Register 一个 Sender，业务调用方不动。
+	// 路由（事件 → 渠道 + 同步/异步）读 sys_notification_rules，不在这里登记，见 resolveRoute。
 	channelRegistry := channel.NewRegistry()
 	channelRegistry.Register(channel.NewEmailSender(notificationChannelRepo))
-	notificationService := service.NewNotificationService(ctx, notificationDeliveryRepo, channelRegistry)
+	channelRegistry.Register(channel.NewWebhookSender(notificationChannelRepo))
+	notificationService := service.NewNotificationService(ctx, notificationDeliveryRepo, notificationRuleRepo, channelRegistry)
 
 	// 认证与登录策略
 	authenticationService := service.NewAuthenticationService(ctx, userRepo, userCredentialRepo, roleRepo, tenantRepo, membershipRepo, orgUnitRepo, roleOrgUnitRepo, roleFieldPermissionRepo, permissionRepo, authenticator, clientType, captcha, loginRateLimiter, loginPolicyRepo, userMfaFactorRepo, mfaChallengeCache, vcodeCache, notificationService)
@@ -256,6 +259,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	)
 
 	// ── register:service ── 新模块服务在此行后注册(make register 工具锚点,勿删)
+	notificationRuleService := service.NewNotificationRuleService(ctx, notificationRuleRepo, notificationChannelRepo, notificationService)
 	accessKeyService := service.NewAccessKeyService(ctx, accessKeyRepo, authenticator, loginRateLimiter)
 	configService := service.NewConfigService(ctx, configRepo)
 
@@ -279,6 +283,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 		internalMessageService, internalMessageCategoryService, internalMessageRecipientService,
 		scriptService, scriptLogService,
 		// register:rest-arg ── 新模块服务实参在此行后追加(make register 工具锚点,勿删)
+		notificationRuleService,
 		accessKeyService,
 		configService,
 	)

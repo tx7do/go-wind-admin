@@ -46,6 +46,7 @@
   "home": "Home",
   "server-monitor": "Server Monitor",
   "notification-channels": "Notification Channels",
+  "notification-rules": "Notification Routing Rules",
   "notification-deliveries": "Notification Deliveries",
   "scripts": "Scripts",
   "configs": "Config Management",

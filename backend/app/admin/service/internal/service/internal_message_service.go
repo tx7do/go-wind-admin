@@ -471,7 +471,8 @@ func (s *InternalMessageService) publishNotification(ctx context.Context, recipi
 // 站内信自此没有"绕过缝"的第二条单收件人路径——这正是 P1 结束时它还是半吊子的地方：
 // 消息发没发过、走的哪个渠道、成没成，此前只在收件箱表里有半个答案。
 //
-// 不显式传 Channel：让 eventChannels 成为唯一声明处，路由表被绕开时测试会红。
+// 不显式传 Channel：让 sys_notification_rules 的 INTERNAL_MESSAGE 一行成为唯一声明处，
+// 路由表被绕开时测试会红。
 func (s *InternalMessageService) deliverViaNotifier(ctx context.Context, messageId, recipientUserId, operatorUserId uint32, title, content string) error {
 	// Target 是收件用户 ID 的十进制字符串：缝要求调用方自己给出投递目标，
 	// INTERNAL 渠道的"地址"就是这个人（台账里与脱敏邮箱并列时保持可读）。

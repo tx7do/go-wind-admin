@@ -127,6 +127,20 @@ const system: RouteRecordRaw[] = [
       },
 
       {
+        // 路由规则（事件 → 渠道 + 派发方式）：台账读的就是这张表，order 排在台账之后
+        // 组件目录名与后端菜单种子一致（app/system/notification_rule/index.vue），改目录名要同步那边
+        path: 'notification-rules',
+        name: 'NotificationRuleManagement',
+        meta: {
+          order: 15,
+          icon: 'lucide:git-branch',
+          title: $t('menu.system.notificationRules'),
+          authority: ['sys:platform_admin'],
+        },
+        component: () => import('#/views/app/system/notification_rule/index.vue'),
+      },
+
+      {
         path: 'scripts',
         name: 'ScriptManagement',
         meta: {

@@ -94,12 +94,21 @@ export const notificationDeliveryChannelList = computed(() => [
 ]);
 
 /**
- * 渠道筛选项 = 已注册实现的渠道（路由表见后端 notification_service.go 的 eventChannels）：
- * SMS/WEBHOOK 还没有事件会路由过去，进了下拉只会让"筛出空表"被误读成条件写错。
+ * 渠道筛选项 = 有投递实现、因此真能写出台账行的渠道。
+ *
+ * 路由不写在 Go 里：后端那份静态 eventChannels 表已经删了，「事件 → 渠道 + 是否异步」现在
+ * 是数据库表 sys_notification_rules——启动时只按 pkg/constants.DefaultNotificationRules
+ * 播一次空表，之后在「通知路由规则」页（views/app/system/notification_rule）维护，改完立刻生效。
+ * 所以默认规则里没指向 WEBHOOK 不代表筛不到 WEBHOOK 行：管理员建一行规则它就来了。
+ *
+ * SMS 至今没有 Sender 实现，任何事件都路由不过去，永远不会有台账行，故不进下拉。
  */
 export const notificationDeliveryChannelFilterList = computed(() =>
   notificationDeliveryChannelList.value.filter(
-    (item) => item.value === 'EMAIL' || item.value === 'INTERNAL',
+    (item) =>
+      item.value === 'EMAIL' ||
+      item.value === 'INTERNAL' ||
+      item.value === 'WEBHOOK',
   ),
 );
 

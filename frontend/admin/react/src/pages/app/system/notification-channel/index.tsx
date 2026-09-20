@@ -1,7 +1,16 @@
 import { useRef, useState } from 'react';
 import type { ProColumns, ActionType } from '@ant-design/pro-components';
 import TableExportButton from '@/components/common/TableExportButton';
-import { ProTable, ModalForm, ProFormText, ProFormDigit, ProFormSelect, ProFormTextArea, ProFormSwitch } from '@ant-design/pro-components';
+import {
+  ProTable,
+  ModalForm,
+  ProFormText,
+  ProFormDigit,
+  ProFormSelect,
+  ProFormTextArea,
+  ProFormSwitch,
+  ProFormDependency,
+} from '@ant-design/pro-components';
 import { Button, Popconfirm, Tag, App } from 'antd';
 import { EditOutlined, DeleteOutlined, PlusOutlined, SendOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
@@ -25,8 +34,8 @@ import { useProTableScrollY } from '@/hooks/useProTableScrollY';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 
 /**
- * 渠道类型 → 文案/颜色。列必须按 record.type 渲染：WEBHOOK 目前没有发送实现（P2 才落地），
- * 建渠道的表单也因此只给 EMAIL 选项，但行数据里有 WEBHOOK 时不能跟着显示"邮件 (SMTP)"。
+ * 渠道类型 → 文案/颜色。列必须按 record.type 渲染：一个渠道类型对应一列自己的配置
+ * （SMTP 那几列对 WEBHOOK 没有意义，反之 webhookUrl 对邮件渠道为空），混着显示会读成"没配"。
  */
 const CHANNEL_TYPE_LABEL_KEY: Record<
   NonNullable<NotificationChannel['type']>,
@@ -43,7 +52,7 @@ const CHANNEL_TYPE_COLOR: Record<NonNullable<NotificationChannel['type']>, strin
 
 /**
  * 通知渠道管理页面（平台级配置）
- * 一期实现 EMAIL（SMTP）渠道：CRUD + 测试发送。
+ * 两类渠道：EMAIL（SMTP 账号）与 WEBHOOK（回调地址 + 可选签名密钥）。
  */
 const NotificationChannelManagement = () => {
   const { t } = useTranslation('notification-channel');
@@ -84,12 +93,14 @@ const NotificationChannelManagement = () => {
   };
 
   const handleSubmit = async (values: Record<string, any>) => {
-    const { password, ...data } = values;
+    // 两处密钥是请求级字段（不进 data）：读视图只有 hasPassword / hasWebhookSecret 两个布尔
+    const { password, webhookSecret, ...data } = values;
     try {
       if (drawerMode === 'create') {
         const req: notification_channelservicev1_CreateNotificationChannelRequest = {
           data,
           password: password || undefined,
+          webhookSecret: webhookSecret || undefined,
         };
         await createMutation.mutateAsync(req);
         message.success(t('createSuccess'));
@@ -98,8 +109,9 @@ const NotificationChannelManagement = () => {
           id: selected.id,
           data,
           password: password || undefined,
+          webhookSecret: webhookSecret || undefined,
           updateMask:
-            'name,type,smtpHost,smtpPort,smtpUsername,smtpFrom,smtpTls,enabled,remark',
+            'name,type,smtpHost,smtpPort,smtpUsername,smtpFrom,smtpTls,webhookUrl,enabled,remark',
         };
         await updateMutation.mutateAsync(req);
         message.success(t('updateSuccess'));
@@ -184,11 +196,29 @@ const NotificationChannelManagement = () => {
       },
     },
     {
+      title: t('webhookUrl'),
+      dataIndex: 'webhookUrl',
+      width: 200,
+      ellipsis: true,
+      render: (_, record) => record.webhookUrl || '-',
+    },
+    {
       title: t('hasPassword'),
       dataIndex: 'hasPassword',
       width: 100,
       render: (_, record) =>
         record.hasPassword ? (
+          <Tag color="green">{t('passwordSet')}</Tag>
+        ) : (
+          <Tag>{t('passwordNotSet')}</Tag>
+        ),
+    },
+    {
+      title: t('hasWebhookSecret'),
+      dataIndex: 'hasWebhookSecret',
+      width: 100,
+      render: (_, record) =>
+        record.hasWebhookSecret ? (
           <Tag color="green">{t('passwordSet')}</Tag>
         ) : (
           <Tag>{t('passwordNotSet')}</Tag>
@@ -228,15 +258,13 @@ const NotificationChannelManagement = () => {
         >
           {t('edit')}
         </Button>,
-        <Button
-          key="test"
-          type="link"
-          size="small"
-          icon={<SendOutlined />}
-          onClick={() => setTestTarget(record)}
-        >
-          {t('testSend')}
-        </Button>,
+        // 测试发送只对 EMAIL 有意义：它测的就是这一个 SMTP 账号能否握手发信。
+        // WEBHOOK 的"当场试一次"在路由规则页（那里测的是事件 → 渠道 → 台账整条链）。
+        record.type === 'EMAIL' && (
+          <Button key="test" type="link" size="small" icon={<SendOutlined />} onClick={() => setTestTarget(record)}>
+            {t('testSend')}
+          </Button>
+        ),
         <Popconfirm key="delete" title={t('deleteConfirm')} onConfirm={() => handleDelete(record)}>
           <Button danger type="link" size="small" icon={<DeleteOutlined />}>
             {t('delete')}
@@ -291,7 +319,7 @@ const NotificationChannelManagement = () => {
           ]}
           size="middle"
           bordered
-          scroll={{ y: tableScrollY, x: 1200 }}
+          scroll={{ y: tableScrollY, x: 1640 }}
         />
       </div>
 
@@ -306,7 +334,7 @@ const NotificationChannelManagement = () => {
         initialValues={
           drawerMode === 'create'
             ? { type: 'EMAIL', smtpTls: 'START_TLS', smtpPort: 587, enabled: true }
-            : { ...selected, password: undefined }
+            : { ...selected, password: undefined, webhookSecret: undefined }
         }
       >
         <ProFormText
@@ -317,29 +345,72 @@ const NotificationChannelManagement = () => {
         <ProFormSelect
           name="type"
           label={t('type')}
-          options={[{ label: t('typeEmail'), value: 'EMAIL' }]}
+          options={[
+            { label: t('typeEmail'), value: 'EMAIL' },
+            { label: t('typeWebhook'), value: 'WEBHOOK' },
+          ]}
           disabled={drawerMode === 'edit'}
           rules={[{ required: true }]}
         />
-        <ProFormText name="smtpHost" label={t('smtpHost')} placeholder="smtp.example.com" />
-        <ProFormDigit name="smtpPort" label={t('smtpPort')} min={1} max={65535} fieldProps={{ precision: 0 }} />
-        <ProFormText name="smtpUsername" label={t('smtpUsername')} />
-        <ProFormText.Password
-          name="password"
-          label={t('password')}
-          placeholder={drawerMode === 'edit' ? t('passwordKeepHint') : t('passwordPlaceholder')}
-          rules={drawerMode === 'create' ? [{ required: true, message: t('requiredPassword') }] : []}
-        />
-        <ProFormText name="smtpFrom" label={t('smtpFrom')} placeholder="noreply@example.com" />
-        <ProFormSelect
-          name="smtpTls"
-          label={t('smtpTls')}
-          options={[
-            { label: t('tlsNone'), value: 'NONE' },
-            { label: t('tlsStartTls'), value: 'START_TLS' },
-            { label: t('tlsSsl'), value: 'SSL' },
-          ]}
-        />
+        {/* 两类渠道各自的配置项分组显示：表单里同时摆两组，管理员要自己猜哪一组生效。
+            编辑态 type 不可改（改类型等于换一条渠道实现），所以两组不会在同一个会话里来回切。 */}
+        <ProFormDependency name={['type']}>
+          {({ type }) =>
+            type === 'WEBHOOK' ? (
+              <>
+                <ProFormText
+                  name="webhookUrl"
+                  label={t('webhookUrl')}
+                  placeholder="https://example.com/hooks/notification"
+                  tooltip={t('webhookUrlHint')}
+                  rules={
+                    drawerMode === 'create'
+                      ? [{ required: true, message: t('requiredWebhookUrl') }]
+                      : []
+                  }
+                />
+                <ProFormText.Password
+                  name="webhookSecret"
+                  label={t('webhookSecret')}
+                  placeholder={
+                    drawerMode === 'edit' ? t('webhookSecretKeepHint') : t('webhookSecretPlaceholder')
+                  }
+                  tooltip={t('webhookSecretHint')}
+                />
+              </>
+            ) : (
+              <>
+                <ProFormText name="smtpHost" label={t('smtpHost')} placeholder="smtp.example.com" />
+                <ProFormDigit
+                  name="smtpPort"
+                  label={t('smtpPort')}
+                  min={1}
+                  max={65535}
+                  fieldProps={{ precision: 0 }}
+                />
+                <ProFormText name="smtpUsername" label={t('smtpUsername')} />
+                <ProFormText.Password
+                  name="password"
+                  label={t('password')}
+                  placeholder={drawerMode === 'edit' ? t('passwordKeepHint') : t('passwordPlaceholder')}
+                  rules={
+                    drawerMode === 'create' ? [{ required: true, message: t('requiredPassword') }] : []
+                  }
+                />
+                <ProFormText name="smtpFrom" label={t('smtpFrom')} placeholder="noreply@example.com" />
+                <ProFormSelect
+                  name="smtpTls"
+                  label={t('smtpTls')}
+                  options={[
+                    { label: t('tlsNone'), value: 'NONE' },
+                    { label: t('tlsStartTls'), value: 'START_TLS' },
+                    { label: t('tlsSsl'), value: 'SSL' },
+                  ]}
+                />
+              </>
+            )
+          }
+        </ProFormDependency>
         <ProFormSwitch name="enabled" label={t('enabled')} />
         <ProFormTextArea name="remark" label={t('remark')} fieldProps={{ rows: 2 }} />
       </ModalForm>

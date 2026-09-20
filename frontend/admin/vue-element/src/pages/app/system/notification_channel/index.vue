@@ -23,6 +23,14 @@
       <ElTag v-else size="small">{{ t("pages.notification_channel.passwordNotSet") }}</ElTag>
     </template>
 
+    <!-- 签名密钥配置状态：与密码同一条约定，读侧只有布尔、密钥永不回显 -->
+    <template #hasWebhookSecret="scope: any">
+      <ElTag v-if="scope.row.hasWebhookSecret" type="success" size="small">
+        {{ t("pages.notification_channel.passwordSet") }}
+      </ElTag>
+      <ElTag v-else size="small">{{ t("pages.notification_channel.passwordNotSet") }}</ElTag>
+    </template>
+
     <!-- 启用状态 -->
     <template #enabled="scope: any">
       <ElTag v-if="scope.row.enabled" type="success" size="small">
@@ -99,8 +107,8 @@ function tlsLabel(mode?: string): string {
   return (mode && tlsLabels[mode]) || mode || "-";
 }
 
-// 渠道类型同上按枚举查表：WEBHOOK 还没有发送实现（P2 才落地），建渠道的表单因此只给
-// EMAIL 选项，但行数据是 WEBHOOK 时列不能跟着写死"邮件 (SMTP)"。
+// 渠道类型按枚举查表渲染：一个类型对应一列自己的配置（SMTP 那几列对 WEBHOOK 没有意义，
+// 反之 webhookUrl 对邮件渠道为空），混着显示会读成"没配"。
 const typeLabels: Record<string, string> = {
   EMAIL: t("pages.notification_channel.typeEmail"),
   WEBHOOK: t("pages.notification_channel.typeWebhook"),
@@ -156,18 +164,38 @@ const pageConfig = computed<ProPageConfig>(() => ({
         width: 110,
         formatter: (row: any) => tlsLabel(row.smtpTls),
       },
+      {
+        prop: "webhookUrl",
+        label: t("pages.notification_channel.webhookUrl"),
+        minWidth: 200,
+        // 邮件渠道这一列恒空：显示 "-" 而不是空白，免得读成"配了但看不到"
+        formatter: (row: any) => row.webhookUrl || "-",
+      },
       { prop: "hasPassword", label: t("pages.notification_channel.hasPassword"), width: 100, slotName: "hasPassword" },
+      {
+        prop: "hasWebhookSecret",
+        label: t("pages.notification_channel.hasWebhookSecret"),
+        width: 100,
+        slotName: "hasWebhookSecret",
+      },
       { prop: "enabled", label: t("pages.notification_channel.enabled"), width: 90, slotName: "enabled" },
       { prop: "remark", label: t("pages.notification_channel.remark"), minWidth: 140 },
       {
         prop: "action",
         label: t("common.table.action"),
         fixed: "right",
-        width: 170,
+        width: 210,
         cellType: "tool",
         buttons: [
           { name: "edit", label: t("common.button.edit"), icon: "lucide:pen-line" },
-          { name: "test", label: t("pages.notification_channel.testSend"), icon: "lucide:send" },
+          {
+            name: "test",
+            label: t("pages.notification_channel.testSend"),
+            icon: "lucide:send",
+            // 测试发送只对 EMAIL 有意义：它测的就是这一个 SMTP 账号能否握手发信。
+            // WEBHOOK 的"当场试一次"在路由规则页（那里测的是事件 → 渠道 → 台账整条链）。
+            visible: (row: any) => row.type === "EMAIL",
+          },
           {
             name: "delete",
             label: t("common.button.delete"),

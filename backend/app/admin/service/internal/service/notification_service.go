@@ -36,6 +36,7 @@ type NotificationService struct {
 
 	log          *bLogger.Helper
 	deliveryRepo *data.NotificationDeliveryRepo
+	ruleRepo     *data.NotificationRuleRepo
 	channels     *channel.Registry
 
 	// taskEnqueuer 异步派发能力。默认 nil（asynq 未配置）＝全部事件走同步投递；
@@ -46,11 +47,13 @@ type NotificationService struct {
 func NewNotificationService(
 	ctx *bootstrap.Context,
 	deliveryRepo *data.NotificationDeliveryRepo,
+	ruleRepo *data.NotificationRuleRepo,
 	channelRegistry *channel.Registry,
 ) *NotificationService {
 	return &NotificationService{
 		log:          ctx.NewLoggerHelper("notification/service/admin-service"),
 		deliveryRepo: deliveryRepo,
+		ruleRepo:     ruleRepo,
 		channels:     channelRegistry,
 	}
 }
@@ -61,36 +64,44 @@ func (s *NotificationService) RegisterTaskEnqueuer(enqueuer TaskEnqueuer) {
 	s.taskEnqueuer = enqueuer
 }
 
-// eventChannels 是"事件 → 渠道"路由表。
+// dispatchRoute 一次投递的路由结论：走哪个渠道、要不要交给队列。
 //
-// 为什么先写在 Go 里：一期事件种类个位数，DB 规则表带来的"不发版改路由"抵不上
-// 多一张表 + 一套 BFF + 三端页面的成本。P2 建 notification_rules 时整表平移进 DB，
-// 本变量换成查表，调用方签名不变。
-//
-// INTERNAL_MESSAGE 一条看起来多余（站内信本来就走 INTERNAL 渠道），但它是这条路由的
-// 唯一声明处：删掉它，站内信的生产点就会退回"自己 new 收件行、自己推 SSE、不留台账"。
-var eventChannels = map[notificationV1.EventType]notificationV1.Channel{
-	notificationV1.EventType_PASSWORD_RESET_CODE: notificationV1.Channel_EMAIL,
-	notificationV1.EventType_CONTACT_BIND_CODE:   notificationV1.Channel_EMAIL,
-	notificationV1.EventType_CHANNEL_TEST_EMAIL:  notificationV1.Channel_EMAIL,
-	notificationV1.EventType_INTERNAL_MESSAGE:    notificationV1.Channel_INTERNAL,
+// 两个答案来自同一行 sys_notification_rules（见 resolveRoute），刻意不分开取：
+// "渠道"与"派发方式"是同一个决定的两面，分两处查会允许它们在两次读之间漂移。
+type dispatchRoute struct {
+	channel notificationV1.Channel
+	isAsync bool
 }
 
-// asyncDispatchEvents 是"事件 → 是否异步派发"的第二张表。
+// resolveRoute 决定本次投递的渠道与派发方式。
 //
-// 判据只有一条：**调用方需不需要这次投递的结论**。
+// 数据源是 sys_notification_rules（§3.5 的 Go 静态表已在 P2-C 整表平移进 DB）。
+// 每次都查库、不在进程内缓存：这张表存在的意义就是"不发版改路由"，缓存会让改完规则后的
+// 行为取决于进程何时重启；代价是一次投递多一条走 event_type 唯一索引的读，量级可忽略。
 //
-//   - 找回密码 / 换绑验证码：请求只要"已受理"，SMTP 往返的 3~30 秒不该占住 HTTP，
-//     失败反正由台账兜着 → 异步。
-//   - CHANNEL_TEST_EMAIL：这个接口的产物就是报错原文（"535 authentication failed"），
-//     异步化会让配置页点完测试只看到"已入队"，什么也测不出来 → 同步。
-//   - INTERNAL_MESSAGE：站内信渠道要在同一趟里返回收件行主键，SSE 载荷与前端乐观插入
-//     都依赖它 → 同步。
-//
-// 与 eventChannels 一样先写在 Go 里，P2 建 notification_rules 时一并平移进 DB。
-var asyncDispatchEvents = map[notificationV1.EventType]bool{
-	notificationV1.EventType_PASSWORD_RESET_CODE: true,
-	notificationV1.EventType_CONTACT_BIND_CODE:   true,
+// 请求显式带 channel 时覆盖规则行的渠道（配置页测试投递就靠它点名某一条渠道）。
+// 规则缺行/停用时是否放行这个显式渠道，判据是"这次投递的决定是否完整"：
+// 点了名的渠道 + 同步投递是一个完整决定，放它过去；两者都没有则必须报错——
+// 没有路由的事件不是"暂时没配好"，而是"没人决定过它该发去哪"，静默丢掉等于吞掉一条通知。
+func (s *NotificationService) resolveRoute(ctx context.Context, req *notificationV1.SendDirectNotificationRequest) (*dispatchRoute, error) {
+	rule, err := s.ruleRepo.GetByEventType(ctx, req.GetEventType())
+	if err != nil {
+		return nil, err
+	}
+
+	if rule == nil || !rule.GetIsEnabled() {
+		if ch := req.GetChannel(); ch != notificationV1.Channel_CHANNEL_UNSPECIFIED {
+			return &dispatchRoute{channel: ch}, nil
+		}
+		return nil, fmt.Errorf("no enabled channel routing rule for event type %s: configure it on the notification-rules page", req.GetEventType().String())
+	}
+
+	ch := req.GetChannel()
+	if ch == notificationV1.Channel_CHANNEL_UNSPECIFIED {
+		ch = rule.GetChannel()
+	}
+
+	return &dispatchRoute{channel: ch, isAsync: rule.GetIsAsync()}, nil
 }
 
 const (
@@ -109,26 +120,12 @@ const (
 	notificationDispatchTimeout = 30 * time.Second
 )
 
-// resolveChannel 决定本次投递的渠道：请求显式指定优先，否则查事件路由表。
-func resolveChannel(req *notificationV1.SendDirectNotificationRequest) (notificationV1.Channel, error) {
-	if req.GetChannel() != notificationV1.Channel_CHANNEL_UNSPECIFIED {
-		return req.GetChannel(), nil
-	}
-
-	ch, ok := eventChannels[req.GetEventType()]
-	if !ok {
-		return notificationV1.Channel_CHANNEL_UNSPECIFIED,
-			fmt.Errorf("no channel routing rule for event type %s", req.GetEventType().String())
-	}
-	return ch, nil
-}
-
 // SendDirect 投递一条通知并落台账。实现 Notifier 接口。
 //
 // 台账先落 SENDING 再投递：进程在 SMTP 握手中途被杀时，留下一条永远停在 SENDING 的行，
 // 这就是"发了一半"的唯一线索（若改成发完再写，这种情况连痕迹都没有）。
 //
-// 命中 asyncDispatchEvents 的事件不在这里等投递结果：入队即返回 SENDING，
+// 规则行标为异步的事件不在这里等投递结果：入队即返回 SENDING，
 // 结论由 AsyncNotificationDispatch 回写同一行台账（见 dispatchAsync 的三种出口）。
 //
 // 不读 auth.FromContext：找回密码等场景没有操作人（免鉴权），系统任务同理。
@@ -141,10 +138,11 @@ func (s *NotificationService) SendDirect(ctx context.Context, req *notificationV
 		return nil, errors.New("notification title and content are required")
 	}
 
-	ch, err := resolveChannel(req)
+	route, err := s.resolveRoute(ctx, req)
 	if err != nil {
 		return nil, err
 	}
+	ch := route.channel
 
 	now := time.Now()
 	delivery, err := s.deliveryRepo.Create(ctx, &notificationV1.NotificationDelivery{
@@ -179,7 +177,7 @@ func (s *NotificationService) SendDirect(ctx context.Context, req *notificationV
 		}, errors.Join(errors.New(reason), recordErr)
 	}
 
-	if asyncDispatchEvents[req.GetEventType()] {
+	if route.isAsync {
 		if resp, dispatched, dispatchErr := s.dispatchAsync(ctx, deliveryId, req, sender); dispatched {
 			return resp, dispatchErr
 		}
@@ -241,6 +239,7 @@ func (s *NotificationService) sendOnce(
 		Target:          req.GetTarget(),
 		Title:           req.GetTitle(),
 		Content:         req.GetContent(),
+		EventType:       req.GetEventType(),
 		ChannelID:       req.GetChannelId(),
 		RecipientUserID: req.GetRecipientUserId(),
 		OperatorUserID:  req.GetOperatorUserId(),

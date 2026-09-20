@@ -54,6 +54,7 @@ func newNotificationChannelServiceForTest(t *testing.T, entClient *entCrud.EntCl
 		notifier: &NotificationService{
 			log:          bLogger.NewHelper(bLogger.NopLogger()),
 			deliveryRepo: data.NewNotificationDeliveryRepoForTest(entClient),
+			ruleRepo:     newSeededRuleRepoForTest(t, entClient),
 			channels:     registry,
 		},
 	}

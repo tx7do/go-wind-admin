@@ -46,6 +46,7 @@
   "home": "首页",
   "server-monitor": "服务监控",
   "notification-channels": "通知渠道",
+  "notification-rules": "通知路由规则",
   "notification-deliveries": "通知投递记录",
   "scripts": "脚本管理",
   "configs": "参数管理",

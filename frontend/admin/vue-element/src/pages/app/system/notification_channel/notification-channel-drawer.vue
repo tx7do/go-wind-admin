@@ -22,47 +22,77 @@
       <ElFormItem :label="t('pages.notification_channel.type')" prop="type">
         <ElSelect v-model="drawer.formData.type" :disabled="!isCreate">
           <ElOption :label="t('pages.notification_channel.typeEmail')" value="EMAIL" />
+          <ElOption :label="t('pages.notification_channel.typeWebhook')" value="WEBHOOK" />
         </ElSelect>
       </ElFormItem>
 
-      <ElFormItem :label="t('pages.notification_channel.smtpHost')" prop="smtpHost">
-        <ElInput v-model="drawer.formData.smtpHost" placeholder="smtp.example.com" clearable />
-      </ElFormItem>
+      <!-- 两类渠道各自的配置项分组显示：表单里同时摆两组，管理员要自己猜哪一组生效。
+           编辑态 type 不可改（改类型等于换一条渠道实现），所以两组不会在同一个会话里来回切。 -->
+      <template v-if="drawer.formData.type === 'WEBHOOK'">
+        <ElFormItem :label="t('pages.notification_channel.webhookUrl')" prop="webhookUrl">
+          <ElInput
+            v-model="drawer.formData.webhookUrl"
+            placeholder="https://example.com/hooks/notification"
+            clearable
+          />
+          <div class="field-tip">{{ t("pages.notification_channel.webhookUrlHint") }}</div>
+        </ElFormItem>
 
-      <ElFormItem :label="t('pages.notification_channel.smtpPort')" prop="smtpPort">
-        <ElInputNumber
-          v-model="drawer.formData.smtpPort"
-          :min="1"
-          :max="65535"
-          :precision="0"
-          controls-position="right"
-        />
-      </ElFormItem>
+        <ElFormItem :label="t('pages.notification_channel.webhookSecret')" prop="webhookSecret">
+          <ElInput
+            v-model="drawer.formData.webhookSecret"
+            type="password"
+            show-password
+            :placeholder="
+              isCreate
+                ? t('pages.notification_channel.webhookSecretPlaceholder')
+                : t('pages.notification_channel.webhookSecretKeepHint')
+            "
+          />
+          <div class="field-tip">{{ t("pages.notification_channel.webhookSecretHint") }}</div>
+        </ElFormItem>
+      </template>
 
-      <ElFormItem :label="t('pages.notification_channel.smtpUsername')" prop="smtpUsername">
-        <ElInput v-model="drawer.formData.smtpUsername" clearable />
-      </ElFormItem>
+      <template v-else>
+        <ElFormItem :label="t('pages.notification_channel.smtpHost')" prop="smtpHost">
+          <ElInput v-model="drawer.formData.smtpHost" placeholder="smtp.example.com" clearable />
+        </ElFormItem>
 
-      <ElFormItem :label="t('pages.notification_channel.password')" prop="password">
-        <ElInput
-          v-model="drawer.formData.password"
-          type="password"
-          show-password
-          :placeholder="isCreate ? t('pages.notification_channel.passwordPlaceholder') : t('pages.notification_channel.passwordKeepHint')"
-        />
-      </ElFormItem>
+        <ElFormItem :label="t('pages.notification_channel.smtpPort')" prop="smtpPort">
+          <ElInputNumber
+            v-model="drawer.formData.smtpPort"
+            :min="1"
+            :max="65535"
+            :precision="0"
+            controls-position="right"
+          />
+        </ElFormItem>
 
-      <ElFormItem :label="t('pages.notification_channel.smtpFrom')" prop="smtpFrom">
-        <ElInput v-model="drawer.formData.smtpFrom" placeholder="noreply@example.com" clearable />
-      </ElFormItem>
+        <ElFormItem :label="t('pages.notification_channel.smtpUsername')" prop="smtpUsername">
+          <ElInput v-model="drawer.formData.smtpUsername" clearable />
+        </ElFormItem>
 
-      <ElFormItem :label="t('pages.notification_channel.smtpTls')" prop="smtpTls">
-        <ElSelect v-model="drawer.formData.smtpTls">
-          <ElOption :label="t('pages.notification_channel.tlsNone')" value="NONE" />
-          <ElOption :label="t('pages.notification_channel.tlsStartTls')" value="START_TLS" />
-          <ElOption :label="t('pages.notification_channel.tlsSsl')" value="SSL" />
-        </ElSelect>
-      </ElFormItem>
+        <ElFormItem :label="t('pages.notification_channel.password')" prop="password">
+          <ElInput
+            v-model="drawer.formData.password"
+            type="password"
+            show-password
+            :placeholder="isCreate ? t('pages.notification_channel.passwordPlaceholder') : t('pages.notification_channel.passwordKeepHint')"
+          />
+        </ElFormItem>
+
+        <ElFormItem :label="t('pages.notification_channel.smtpFrom')" prop="smtpFrom">
+          <ElInput v-model="drawer.formData.smtpFrom" placeholder="noreply@example.com" clearable />
+        </ElFormItem>
+
+        <ElFormItem :label="t('pages.notification_channel.smtpTls')" prop="smtpTls">
+          <ElSelect v-model="drawer.formData.smtpTls">
+            <ElOption :label="t('pages.notification_channel.tlsNone')" value="NONE" />
+            <ElOption :label="t('pages.notification_channel.tlsStartTls')" value="START_TLS" />
+            <ElOption :label="t('pages.notification_channel.tlsSsl')" value="SSL" />
+          </ElSelect>
+        </ElFormItem>
+      </template>
 
       <ElFormItem :label="t('pages.notification_channel.enabled')" prop="enabled">
         <ElSwitch v-model="drawer.formData.enabled" />
@@ -129,29 +159,46 @@ const drawer = useDrawerForm({
     password: "",
     smtpFrom: "",
     smtpTls: "START_TLS",
+    webhookUrl: "",
+    webhookSecret: "",
     enabled: true,
     remark: "",
   },
+  // password / webhookSecret 是请求级字段，与 data 并列发出去：读视图只有 hasPassword /
+  // hasWebhookSecret 两个布尔，所以它们既不进 data、也不进 updateMask。
   createFn: async (values: Record<string, any>) => {
-    const { password, ...data } = values;
-    return createNotificationChannel(data, password);
+    const { password, webhookSecret, ...data } = values;
+    return createNotificationChannel(data, password, webhookSecret);
   },
   updateFn: (id: number, values: Record<string, any>) => {
-    const { password, ...data } = values;
-    return updateNotificationChannel(id, data, password || undefined);
+    const { password, webhookSecret, ...data } = values;
+    return updateNotificationChannel(id, data, password || undefined, webhookSecret || undefined);
   },
 });
 
 const formRules = computed(() => ({
   name: [{ required: true, message: t("pages.notification_channel.requiredName"), trigger: "blur" }],
-  password: isCreate.value
-    ? [{ required: true, message: t("pages.notification_channel.requiredPassword"), trigger: "blur" }]
-    : [],
+  // SMTP 密码不填等于建了个发不出信的渠道，故创建时必填；签名密钥始终可选（不签名是合法
+  // 配置），所以 WEBHOOK 组里只有 webhookUrl 在创建时必填。两类规则各按当前 type 生效。
+  password:
+    isCreate.value && drawer.formData.type === "EMAIL"
+      ? [{ required: true, message: t("pages.notification_channel.requiredPassword"), trigger: "blur" }]
+      : [],
+  webhookUrl:
+    isCreate.value && drawer.formData.type === "WEBHOOK"
+      ? [
+          {
+            required: true,
+            message: t("pages.notification_channel.requiredWebhookUrl"),
+            trigger: "blur",
+          },
+        ]
+      : [],
 }));
 
-// 包装 open：追踪创建/编辑模式（切换类型字段禁用态与密码必填规则），
-// 并在编辑时显式回填行数据（useDrawerForm 不做默认填充；hasPassword 为
-// 服务端计算字段、密码不回显，均不进表单）。
+// 包装 open：追踪创建/编辑模式（切换类型字段禁用态与密钥必填规则），
+// 并在编辑时显式回填行数据（useDrawerForm 不做默认填充；hasPassword /
+// hasWebhookSecret 为服务端计算字段、两处密钥均不回显，故不进表单）。
 function open(options: { create: boolean; row?: any }) {
   isCreate.value = options.create;
   drawer.open(options, (row: any) => {
@@ -163,6 +210,7 @@ function open(options: { create: boolean; row?: any }) {
       smtpUsername: row.smtpUsername || "",
       smtpFrom: row.smtpFrom || "",
       smtpTls: row.smtpTls || "START_TLS",
+      webhookUrl: row.webhookUrl || "",
       enabled: !!row.enabled,
       remark: row.remark || "",
     });
@@ -175,6 +223,12 @@ defineExpose({ open });
 <style lang="scss" scoped>
 .drawer-form {
   padding-right: 10px;
+}
+
+.field-tip {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--el-text-color-secondary);
 }
 
 .drawer-footer {

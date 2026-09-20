@@ -11,6 +11,7 @@ import (
 	configV1 "go-wind-admin/api/gen/go/config/service/v1"
 	dictV1 "go-wind-admin/api/gen/go/dict/service/v1"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
+	notificationV1 "go-wind-admin/api/gen/go/notification/service/v1"
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
 	passwordPolicy "go-wind-admin/pkg/password"
@@ -94,6 +95,9 @@ var DefaultPermissions = []*permissionV1.Permission{
 		Description: trans.Ptr("拥有系统所有功能的操作权限，可管理租户、用户、角色及所有资源"),
 		Code:        trans.Ptr(SystemPlatformAdminPermissionCode),
 		Status:      trans.Ptr(permissionV1.Permission_ON),
+		// 后台左侧菜单读的是「角色 → 权限 → sys_permission_menus」这条链（GetNavigation 无超管绕过），
+		// 所以 DefaultMenus 里加一行还不够，新菜单必须同时出现在这里，否则播种出来的平台管理员看不见它。
+		// 已部署实例的权限行早已存在、这段不会再跑，须在「权限管理」里勾上新菜单。
 		MenuIds: []uint32{
 			1, 2, 3, 4, 5, 6,
 			10, 11, 12,
@@ -102,6 +106,7 @@ var DefaultPermissions = []*permissionV1.Permission{
 			40, 41, 42,
 			50, 51, 52, 53, 54, 55, 56, 57,
 			60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+			72, 73,
 		},
 		ApiIds: []uint32{
 			1, 2, 3, 4, 5, 6, 7, 8, 9,
@@ -971,6 +976,21 @@ var DefaultMenus = []*permissionV1.Menu{
 			Authority: []string{"sys:platform_admin"},
 		},
 	},
+	{
+		Id:        trans.Ptr(uint32(73)),
+		ParentId:  trans.Ptr(uint32(60)),
+		Type:      permissionV1.Menu_MENU.Enum(),
+		Name:      trans.Ptr("NotificationRuleManagement"),
+		Path:      trans.Ptr("notification-rules"),
+		Component: trans.Ptr("app/system/notification_rule/index.vue"),
+		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
+		Meta: &permissionV1.MenuMeta{
+			Title:     trans.Ptr("menu.system.notificationRules"),
+			Icon:      trans.Ptr("lucide:git-branch"),
+			Order:     trans.Ptr(int32(13)),
+			Authority: []string{"sys:platform_admin"},
+		},
+	},
 }
 
 // DefaultConfigs 系统初始化内置平台参数（等保口令策略阈值）。
@@ -997,5 +1017,48 @@ var DefaultConfigs = []*configV1.Config{
 		Value:     trans.Ptr(strconv.Itoa(passwordPolicy.DefaultHistoryCount)),
 		ValueType: configV1.Config_INT.Enum(),
 		IsBuiltIn: trans.Ptr(true),
+	},
+}
+
+// DefaultNotificationRules 通知路由规则的初始四行。
+//
+// 它们是 docs/notification_domain_design.md §3.5 那张 Go 静态表（eventChannels +
+// asyncDispatchEvents）的平移结果：前两个验证码事件异步（SMTP 往返不该占住 HTTP），
+// 渠道测试邮件与站内信同步（前者的产物就是报错原文，后者要在同一趟里回收件行主键）。
+//
+// INTERNAL_MESSAGE 一行看起来多余（站内信本来就走 INTERNAL 渠道），但它是这条路由的
+// 唯一声明处：删掉它，站内信的生产点就会退回"自己 new 收件行、自己推 SSE、不留台账"。
+//
+// 播种只在 sys_notification_rules 为空表时执行一次（同 DefaultMenus 的 count==0 守卫）：
+// 管理员删掉一行是"这个事件不再通知"的决定，重启不该把它复活。代价写在
+// service/notification_rule_service.go 的 init 注释里。
+var DefaultNotificationRules = []*notificationV1.NotificationRule{
+	{
+		EventType: notificationV1.EventType_PASSWORD_RESET_CODE.Enum(),
+		Channel:   notificationV1.Channel_EMAIL.Enum(),
+		IsAsync:   trans.Ptr(true),
+		IsEnabled: trans.Ptr(true),
+		Remark:    trans.Ptr("找回密码验证码邮件：入队即回“已发送”，不等 SMTP 往返"),
+	},
+	{
+		EventType: notificationV1.EventType_CONTACT_BIND_CODE.Enum(),
+		Channel:   notificationV1.Channel_EMAIL.Enum(),
+		IsAsync:   trans.Ptr(true),
+		IsEnabled: trans.Ptr(true),
+		Remark:    trans.Ptr("换绑邮箱验证码邮件：同上"),
+	},
+	{
+		EventType: notificationV1.EventType_CHANNEL_TEST_EMAIL.Enum(),
+		Channel:   notificationV1.Channel_EMAIL.Enum(),
+		IsAsync:   trans.Ptr(false),
+		IsEnabled: trans.Ptr(true),
+		Remark:    trans.Ptr("渠道配置测试邮件：这个接口的产物就是投递结论，必须同步"),
+	},
+	{
+		EventType: notificationV1.EventType_INTERNAL_MESSAGE.Enum(),
+		Channel:   notificationV1.Channel_INTERNAL.Enum(),
+		IsAsync:   trans.Ptr(false),
+		IsEnabled: trans.Ptr(true),
+		Remark:    trans.Ptr("站内信：收件行主键要在同一趟里回给调用方（SSE 载荷依赖它）"),
 	},
 }

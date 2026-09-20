@@ -295,6 +295,28 @@
       "SKIPPED": "Channel not configured"
     }
   },
+  "notificationRule": {
+    "eventType": {
+      "PASSWORD_RESET_CODE": "Password reset code",
+      "CONTACT_BIND_CODE": "Contact binding code",
+      "CHANNEL_TEST_EMAIL": "Channel test email",
+      "INTERNAL_MESSAGE": "In-app message"
+    },
+    "channel": {
+      "EMAIL": "Email",
+      "SMS": "SMS",
+      "WEBHOOK": "Webhook",
+      "INTERNAL": "In-app"
+    },
+    "asyncMode": {
+      "ASYNC": "Async",
+      "SYNC": "Sync"
+    },
+    "enabled": {
+      "ON": "Enabled",
+      "OFF": "Disabled"
+    }
+  },
   "module": {
     "DASHBOARD": "Dashboard",
     "OPM": "Org & Personnel",

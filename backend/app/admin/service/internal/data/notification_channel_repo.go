@@ -91,8 +91,8 @@ func (r *NotificationChannelRepo) List(ctx context.Context, req *paginationV1.Pa
 		return &notificationChannelV1.ListNotificationChannelResponse{Total: 0, Items: nil}, nil
 	}
 
-	// 填充 HasPassword 标识：按批量查询密码字段有无
-	r.queryHasPasswordByIDs(ctx, ret.Items)
+	// 填充 HasPassword / HasWebhookSecret 标识：一次批量查询取两列的有无
+	r.querySecretFlagsByIDs(ctx, ret.Items)
 	// Type 回填（同 Get：mapper 无法赋入指针字段，见 Get 处注释）
 	r.queryTypeByIDs(ctx, ret.Items)
 	// Enabled 回填（实体侧为 status 枚举列，copier 字段名失配，见 Get 处注释）
@@ -104,24 +104,30 @@ func (r *NotificationChannelRepo) List(ctx context.Context, req *paginationV1.Pa
 	}, nil
 }
 
-// queryHasPasswordByIDs 为 DTO 列表填充 HasPassword 标识。
-func (r *NotificationChannelRepo) queryHasPasswordByIDs(ctx context.Context, items []*notificationChannelV1.NotificationChannel) {
+// querySecretFlagsByIDs 为 DTO 列表填充两列"是否已配置凭据"标识。
+//
+// 为什么单独查一遍而不是顺手从 mapper 拿：smtp_password / webhook_secret 都是
+// Sensitive 列且 DTO 根本没有对应字段（只有 has* 布尔），读路径不该把密文带出去。
+func (r *NotificationChannelRepo) querySecretFlagsByIDs(ctx context.Context, items []*notificationChannelV1.NotificationChannel) {
 	if len(items) == 0 {
 		return
 	}
 	entities, err := r.entClient.Client().NotificationChannel.Query().
-		Select(notificationchannel.FieldID, notificationchannel.FieldSMTPPassword).
+		Select(notificationchannel.FieldID, notificationchannel.FieldSMTPPassword, notificationchannel.FieldWebhookSecret).
 		All(ctx)
 	if err != nil {
-		r.log.Errorf(ctx, "query password flags failed: %s", err.Error())
+		r.log.Errorf(ctx, "query credential flags failed: %s", err.Error())
 		return
 	}
-	hasPwd := make(map[uint32]bool, len(entities))
+	hasSmtpPwd := make(map[uint32]bool, len(entities))
+	hasWebhookSecret := make(map[uint32]bool, len(entities))
 	for _, e := range entities {
-		hasPwd[e.ID] = e.SMTPPassword != nil
+		hasSmtpPwd[e.ID] = e.SMTPPassword != nil
+		hasWebhookSecret[e.ID] = e.WebhookSecret != nil
 	}
 	for _, it := range items {
-		it.HasPassword = trans.Ptr(hasPwd[it.GetId()])
+		it.HasPassword = trans.Ptr(hasSmtpPwd[it.GetId()])
+		it.HasWebhookSecret = trans.Ptr(hasWebhookSecret[it.GetId()])
 	}
 }
 
@@ -206,6 +212,7 @@ func (r *NotificationChannelRepo) Get(ctx context.Context, id uint32) (*notifica
 	}
 	dto := r.mapper.ToDTO(entity)
 	dto.HasPassword = trans.Ptr(entity.SMTPPassword != nil)
+	dto.HasWebhookSecret = trans.Ptr(entity.WebhookSecret != nil)
 	// Enabled 回填：写路径把 enabled 布尔落为 status 枚举列（statusFromEnabled），
 	// copier 按字段名映射 Status≠Enabled，读视图不回填则恒呈停用态。
 	dto.Enabled = trans.Ptr(entity.Status != nil && *entity.Status == notificationchannel.StatusOn)
@@ -237,6 +244,13 @@ func (r *NotificationChannelRepo) Create(ctx context.Context, req *notificationC
 		return 0, adminV1.ErrorInternalServerError("encrypt password failed")
 	}
 
+	// 签名密钥与 SMTP 密码同一条加密路径（EncryptIfNeeded：已是密文则原样存，明文则加密）。
+	secret, err := crypto.EncryptIfNeeded(req.GetWebhookSecret())
+	if err != nil {
+		r.log.Errorf(ctx, "encrypt webhook secret failed: %s", err.Error())
+		return 0, adminV1.ErrorInternalServerError("encrypt webhook secret failed")
+	}
+
 	builder := r.entClient.Client().NotificationChannel.Create().
 		SetName(req.Data.GetName()).
 		SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
@@ -245,6 +259,7 @@ func (r *NotificationChannelRepo) Create(ctx context.Context, req *notificationC
 		SetNillableSMTPUsername(req.Data.SmtpUsername).
 		SetNillableSMTPFrom(req.Data.SmtpFrom).
 		SetNillableSMTPTLS(r.tlsConverter.ToEntity(req.Data.SmtpTls)).
+		SetNillableWebhookURL(req.Data.WebhookUrl).
 		SetStatus(statusFromEnabled(req.Data.GetEnabled())).
 		SetNillableRemark(req.Data.Remark).
 		SetCreatedBy(operatorID).
@@ -252,6 +267,9 @@ func (r *NotificationChannelRepo) Create(ctx context.Context, req *notificationC
 
 	if req.GetPassword() != "" {
 		builder.SetSMTPPassword(encrypted)
+	}
+	if req.GetWebhookSecret() != "" {
+		builder.SetWebhookSecret(secret)
 	}
 
 	created, err := builder.Save(ctx)
@@ -282,6 +300,7 @@ func (r *NotificationChannelRepo) Update(ctx context.Context, req *notificationC
 				SetNillableSMTPUsername(req.Data.SmtpUsername).
 				SetNillableSMTPFrom(req.Data.SmtpFrom).
 				SetNillableSMTPTLS(r.tlsConverter.ToEntity(req.Data.SmtpTls)).
+				SetNillableWebhookURL(req.Data.WebhookUrl).
 				SetNillableStatus(r.statusFromProto(req.Data.Enabled)).
 				SetNillableRemark(req.Data.Remark).
 				SetNillableUpdatedBy(trans.Ptr(operatorID)).
@@ -293,6 +312,14 @@ func (r *NotificationChannelRepo) Update(ctx context.Context, req *notificationC
 					return
 				}
 				builder.SetSMTPPassword(encrypted)
+			}
+			if req.GetWebhookSecret() != "" {
+				secret, encErr := crypto.EncryptIfNeeded(req.GetWebhookSecret())
+				if encErr != nil {
+					r.log.Errorf(ctx, "encrypt webhook secret failed: %s", encErr.Error())
+					return
+				}
+				builder.SetWebhookSecret(secret)
 			}
 		},
 		func(s *sql.Selector) {
@@ -403,6 +430,76 @@ func (r *NotificationChannelRepo) GetDecryptedSmtpAccount(ctx context.Context, i
 		From:     derefStr(entity.SMTPFrom),
 		TlsMode:  derefStrP(entity.SMTPTLS),
 		Enabled:  entity.Status != nil && *entity.Status == notificationchannel.StatusOn,
+	}, nil
+}
+
+// WebhookAccount 投递一条 WEBHOOK 通知所需的解密后配置（仅服务层内部使用，禁止外传）。
+//
+// 与 SmtpAccount 同形：ID 是"实际用了哪条渠道配置"这条事实的来源，
+// URL 是回调地址，Secret 为空表示不签名（签名头不下发）。
+type WebhookAccount struct {
+	ID     uint32
+	URL    string
+	Secret string
+}
+
+// GetFirstEnabledWebhookChannel 取第一个启用的 WEBHOOK 渠道（事件路由未显式指定渠道时用）。
+func (r *NotificationChannelRepo) GetFirstEnabledWebhookChannel(ctx context.Context) (*WebhookAccount, error) {
+	entities, err := r.entClient.Client().NotificationChannel.Query().
+		Where(
+			notificationchannel.TypeEQ(notificationchannel.TypeWebhook),
+			notificationchannel.StatusEQ(notificationchannel.StatusOn),
+		).
+		Order(ent.Asc(notificationchannel.FieldID)).
+		Limit(1).
+		All(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "query enabled webhook channel failed: %s", err.Error())
+		return nil, adminV1.ErrorInternalServerError("query webhook channel failed")
+	}
+	if len(entities) == 0 {
+		return nil, adminV1.ErrorNotFound("no enabled webhook channel")
+	}
+
+	return r.webhookAccountOf(ctx, entities[0])
+}
+
+// GetDecryptedWebhookAccount 取指定渠道的解密 WEBHOOK 配置；类型不符即报错，
+// 免得一条 SMTP 行被当 webhook 目标使（反过来由 EmailSender.resolveAccount 挡）。
+func (r *NotificationChannelRepo) GetDecryptedWebhookAccount(ctx context.Context, id uint32) (*WebhookAccount, error) {
+	entity, err := r.entClient.Client().NotificationChannel.Query().
+		Where(notificationchannel.IDEQ(id)).
+		Only(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "get notification channel [%d] failed: %s", id, err.Error())
+		return nil, adminV1.ErrorNotFound("notification channel not found")
+	}
+	if entity.Type != notificationchannel.TypeWebhook {
+		return nil, adminV1.ErrorBadRequest("channel [%d] is not a WEBHOOK channel", id)
+	}
+
+	return r.webhookAccountOf(ctx, entity)
+}
+
+// webhookAccountOf 实体 → WebhookAccount，密钥按 DecryptIfNeeded 解出明文。
+//
+// 解密失败上抛而不是降级成"不签名发出去"：对端配置了密钥却要收不到签名，
+// 是让它把"验签失败"当成对端的故障，比这条投递直接失败更难排。
+func (r *NotificationChannelRepo) webhookAccountOf(ctx context.Context, entity *ent.NotificationChannel) (*WebhookAccount, error) {
+	secret := ""
+	if entity.WebhookSecret != nil {
+		decrypted, decErr := crypto.DecryptIfNeeded(*entity.WebhookSecret)
+		if decErr != nil {
+			r.log.Errorf(ctx, "decrypt webhook secret failed for channel [%d]: %s", entity.ID, decErr.Error())
+			return nil, adminV1.ErrorInternalServerError("decrypt webhook secret failed")
+		}
+		secret = decrypted
+	}
+
+	return &WebhookAccount{
+		ID:     entity.ID,
+		URL:    derefStr(entity.WebhookURL),
+		Secret: secret,
 	}, nil
 }
 

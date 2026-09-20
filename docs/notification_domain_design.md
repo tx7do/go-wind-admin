@@ -4,8 +4,12 @@
 > P2 已落地六块（见 §4：P2-1 站内信注册为 INTERNAL 渠道 + 定向发送改走缝 + 台账 `related_id`；
 > P2-2 收件行租户打标跟着受众走 + 修掉收件箱一处越权读；P2-3 异步投递 = 入队前同步预检 + asynq 派发 +
 > 台账 `request_id`/`attempts`；P2-4 台账 `SENDING` 超时清扫 = 系统级常驻 cron；P2-5 台账结论回写失败按出口上抛；
-> P2-6 收件箱写侧由服务端钉定收件人归属，均 2026-09-20）；P2 剩余（规则表 / WEBHOOK 渠道）与 P3 仍是设计提案，
-> 撤销消息缺对象级授权一处**已知未修**记在 §7「收件箱不钉归属」一节末尾。**
+> P2-6 收件箱写侧由服务端钉定收件人归属，均 2026-09-20）；
+> **C 已落地（2026-09-20，见 §4 C）：路由搬进 `sys_notification_rules`（两张 Go 静态表删除）+
+> WEBHOOK 渠道（`webhook_url`/`webhook_secret` 两列 + dial 时按解析 IP 的 SSRF 防线 + HMAC 签名）+
+> 规则管理页三端 + 按规则行的测试投递 RPC**。P3（偏好与模板）与 SMS 出口仍是设计提案；
+> 撤销消息缺对象级授权一处**已知未修**记在 §7「收件箱不钉归属」一节末尾，
+> C 自己留下的一处（显式 target 不落 `channel_id`）记在 §4 C。**
 > 第 2 节「现状盘点」是 P1 之前的基线（核对至 commit `29d700b9`），其中被改动的事实在就地标注；
 > 第 3~4 节的实施状态以 §4 的分期标记为准，落地验收进度在 §7。实施进度更新时改本文状态标记，不要另开文档。
 >
@@ -27,7 +31,7 @@
 | --- | --- |
 | 拆独立 notification 微服务 | admin 是单体（`backend/AGENTS.md`「当前 admin 服务为单体架构」），无服务发现与 gRPC 互联；`gow extract` 是后话 |
 | 引入 Kafka 事件总线 | 仓内无 Kafka。异步已有 asynq（`docs/task_system.md`），`pkg/eventbus` 声明了 `EventEmailSent` 等事件但全库零发布零订阅，属死脚手架，不在其上盖楼 |
-| 一期做规则引擎 / 模板管理 / 用户偏好 | 今天完全没有 → 无兼容包袱，但工作量最大。推到 P2/P3，一期用 Go 侧静态路由表 |
+| 一期做规则引擎 / 模板管理 / 用户偏好 | 今天完全没有 → 无兼容包袱，但工作量最大。推到 P2/P3，一期用 Go 侧静态路由表（**C 已把这张表整体平移进 `sys_notification_rules`，见 §3.5；规则引擎与模板/偏好仍未做**） |
 | 新增 `identity.service.v1.Module` 枚举值 | `Module` 直接挂套餐模块白名单门禁（见 `plan_billing.md`），新增值要联动已部署租户的套餐数据。通知相关服务归 `Module_SYSTEM`，站内信保持 `Module_INTERNAL_MESSAGE` |
 
 ## 2. 现状盘点
@@ -129,16 +133,16 @@ SSE 扇出与 streamID 归属校验（`HandleAuthorize` 不匹配即 403）都�
         │ 只依赖 Notifier 接口（internal/service/notifier.go）
         ▼
 NotificationService.SendDirect（internal/service/notification_service.go）
-   ├─ 事件类型 → 渠道（一期 Go 静态表 eventChannels；请求可显式覆盖；二期 notification_rules 表）
+   ├─ 事件类型 → 渠道 + 是否异步（sys_notification_rules 表，见 §3.5；请求可显式覆盖渠道）
    ├─ sys_notification_deliveries 台账：先落 SENDING（带 request_id 幂等锚），再发
-   └─ 两条出口，按事件类型分流（asyncDispatchEvents，见 §4 P2-3）：
+   └─ 两条出口，按规则行的 is_async 分流（原 asyncDispatchEvents 静态表已删）：
         ├─ 异步：sender.(Prechecker).Precheck() 通过 → asynq 入队 → 立刻回 SENDING
         │         （预检不过 → 当场结台账 SKIPPED/FAILED，回话与同步路径逐字相同）
         └─ 同步：deliver() = sendOnce() + 回写结论（渠道测试邮件、站内信、入队失败兜底）
                 │  两条出口共用 sendOnce 这一处分类，结论语义不会分叉
    ┌────────────┴──────────────────┐
    ▼                               ▼
-EmailSender                  InternalMessageSender（P2 已落地，见下）
+EmailSender / WebhookSender  InternalMessageSender（P2 已落地，见下）
 internal/data/channel/        internal/service/（成环，位置不可照抄 IM）
 （同时实现 Sender 与 Prechecker）
 ```
@@ -189,7 +193,9 @@ SKIPPED/FAILED）和非 nil error。只回 error，调用方拿不到台账行�
 | `related_id` | 可空，**按 `event_type` 解释**的业务对象 ID（`INTERNAL_MESSAGE` → `internal_messages.id`）。台账不存正文快照，这一列是"这条投递发的是什么"的唯一回跳入口 | P2 已建（`Optional().Nillable()` + 索引 `(event_type, related_id)`，启动期 ent 自动迁移加列加索引，实测已在 `gwa` 库出现） |
 | `event_type/channel/status` 三枚枚举 | 必须 `Optional().Nillable()`：值型枚举列 + 可选指针 DTO 会踩 copier 的"指针↔指点对"失配，读回恒为零值（同款坑见 `notification_channel_repo.go` 的 `queryTypeByIDs` 注释） | 已按此建 |
 | `request_id` | 幂等锚：**一次业务调用 → 若干条投递**的唯一串线抓手。调用方不传则服务端生成（GUIDv4 无连字符，32 字符）。唯一索引是 `(request_id, channel)` 复合，不是一列唯一 —— 一次调用同时发邮件 + 站内信是这条台账的**预期用法**，单列唯一会把这种调用变成插入冲突 | P2-3 已建（`Optional().Nillable()` + `uidx_sys_notification_delivery_request_channel`，实测已在 `gwa` 库出现；三个生产点今天都不传，全靠服务端生成） |
-| `attempts` | 已尝试投递的次数。异步路径由 handler 每次开拨前 `MarkAttempted` +1，配合 `status=SENDING` 就是"还在重试"；同步路径把 `attempts=1` 写在结论那一条更新里，"当场投一次就是一次"。**P2-4 之后这条判据有了时限**：超过清扫阈值仍挂在 `SENDING` 的行不是"还在重试"，而是"没人结算"（阈值下限就是按重试预算算出来的，见 §6 决策点 8）。**P2-5 之后 `attempts=0` 有了第二种成因**：结论回写失败时异步侧照样在涨（先记账再拨号），同步侧那一格却是 0 —— 信可能真的发出去了，只是这一列和结论写在同一条被挡下的更新里（实测见 §4 P2-5 表倒数第二行；不改成的理由见 §4 P2-5 第 4 条） | P2-3 已建（`Uint32().Default(0)`；预检失败/配置类 SKIPPED 的行留 0 = 一次都没真试过） |
+| `attempts` | 已尝试投递的次数。异步路径由 handler 每次开拨前 `MarkAttempted` +1，配合 `status=SENDING` 就是"还在重试"；同步路径把 `attempts=1` 写在结论那一条更新里，"当场投一次就是一次"。**P2-4 之后这条判据有了时限**：超过清扫阈值仍挂在 `SENDING` 的行不是"还在重试"，而是"没人结算"（阈值下限就是按重试预算算出来的，见 §6 决策点 8）。**P2-5 之后 `attempts=0` 有了第二种成因**：结论回写失败时异步侧照样在涨（先记账再拨号），同步侧那一格却是 0 —— 信可能真的发出去了，只是这一列和结论写在同一条被挡下的更新里（实测见 §4 P2-5 表倒数第二行；不改成的理由见 §4 P2-5 第 4 条） | P2-3 已建（`Uint32().Default(0)`；**异步预检拦下**的行留 0 = 一次都没真试过。**不是**"所有 SKIPPED 都留 0"：
+   同步出口把 `attempts=1` 写在结论那一条更新里，所以同步事件的配置类 SKIPPED 一律是 1 —— C 的 SSRF 拦截是现场证据，
+   id=19 `SKIPPED` + `attempts=1`，见 §4 C 实测表） |
 | `title` / `content` | 正文快照 | **不做**：一期三个事件里两个的正文就是验证码本身，快照进永久台账等于建了一张 OTP 明文表。P2 引入模板后按"模板 ID + 渲染参数"存，不存渲染结果 |
 | mixin | `AutoIncrementId` / `TimeAt` / `OperatorID` | 已按此建；**不挂 `TenantID`**（见 §6 决策点 3 结论），也不挂 `SwitchStatus`（台账没有"停用"语义） |
 
@@ -206,7 +212,7 @@ app/admin/service/internal/data/ent/schema/notification_delivery.go
 app/admin/service/internal/data/notification_delivery_repo.go
 app/admin/service/internal/data/channel/sender.go              Sender / SendRequest / SendReceipt / Registry + ErrChannelNotConfigured
 app/admin/service/internal/data/channel/email_sender.go        包装 pkg/mailer，持有渠道选择策略（不持 logger，见下）
-app/admin/service/internal/service/notification_service.go     SendDirect 实现 + 事件路由表 + maskTarget
+app/admin/service/internal/service/notification_service.go     SendDirect 实现 + maskTarget（原事件路由表已随 C 搬进 DB，见 §3.5）
 app/admin/service/internal/service/notifier.go                 Notifier 接口
 app/admin/service/internal/service/internal_message_sender.go  P2：INTERNAL 渠道适配器（成环分析见 §3.1）
 --- 以下为 P2-3 异步投递新增 ---
@@ -222,15 +228,34 @@ app/admin/service/internal/service/task_service.go             + startAllTask �
 --- 以下为 P2-5 结论回写上抛（同样零契约变更：只动 service 层的错误去处）---
 app/admin/service/internal/service/notification_service.go     markResult 改返回 error + 八处调用点按出口定去处
 app/admin/service/internal/service/notification_record_sqlite_test.go  回写失败注入的五条回归（一次性 ent hook）
---- 以下为 P2 剩余项，尚未建 ---
-app/admin/service/internal/data/channel/webhook_sender.go      等 §6 决策点 2 定了表结构再写
+--- 以下为 C（规则表 + WEBHOOK + 测试投递）新增/改动 ---
+api/protos/notification/service/v1/notification_rule.proto       NotificationRule + CRUD/测试投递 RPC 源域契约
+api/protos/admin/service/v1/i_notification_rule.proto            BFF：/admin/v1/notification-rules 五条路由
+app/admin/service/internal/data/ent/schema/notification_rule.go  规则表（event_type 唯一 + channel + is_async + is_enabled）
+app/admin/service/internal/data/ent/schema/notification_channel.go  + webhook_url / webhook_secret（密文列）
+app/admin/service/internal/data/notification_rule_repo.go        规则读取 + 空表播种（§3.5）
+app/admin/service/internal/service/notification_rule_service.go  规则 CRUD + TestDispatch
+app/admin/service/internal/data/channel/webhook_sender.go        WEBHOOK 出口：dial 时按解析后 IP 拦内网（§4 C）
+app/admin/service/internal/service/notification_service.go       resolveRoute 改读表，两张 Go 静态表删除
+pkg/constants/default_data.go                                    播种规则全集 + 菜单 72/73 + 平台管理员 MenuIds 补齐
+--- P2 剩余项中仍未建的只有 SMS：有枚举、无 Sender，路由到它必记 FAILED ---
 ```
 
 两处刻意偏离首稿：
 
-1. **BFF 不开放"发一条通知"的 HTTP 路由**。`SendDirect` 只由进程内业务 service 经 `Notifier` 调用；
-   开成端点等于给任意已登录操作员一个"向任意邮箱发信"的入口，而唯一的站外手动触发口
-   （渠道测试邮件）已在 `notification-channels` 路由上存在。
+1. **BFF 不开放"发一条通知"的 HTTP 路由**（首稿口径，C 之后要打折读）。`SendDirect` 仍只由进程内业务
+   service 经 `Notifier` 调用；C 加的 `POST /admin/v1/notification-rules/{id}/test-dispatch`
+   （`i_notification_rule.proto:53`）是**按规则行**试投递，不是通用发送口，收窄靠三件事：
+   - 载荷只能是服务端自己渲染的样例文案（`mailtext.RuleTestNotification`，`pkg/mailtext/mailtext.go:125`），
+     里面只有被测规则的 id 与事件类型名，**不含任何用户数据**；请求里的 `title`/`content` 可选覆盖，
+     用于"我想看这封排版"而不是"我想发这句话给这个人"。
+   - `Channel_INTERNAL` 的规则直接 400 拒绝（站内信要有真实正文，去站内信页发），所以这个口发不出站内信。
+   - `target` 留空时只有 WEBHOOK 兜得出默认值：取那条启用渠道登记的 `webhook_url`，并把 `channel_id`
+     一起钉成同一行——不钉的话 sender 会另挑一条启用的 WEBHOOK 配置，管理员在 A 行点测试、实际打到 B 行
+     （`testDispatchTarget`）。EMAIL 没有可兜的收件地址，留空即 400。
+   闸门与 `/admin/v1` 其余路由同一条链（登录态 + 角色→权限点→`sys_permission_apis` + Api 表/套餐闸门），
+   页面菜单 73 的 authority 是 `sys:platform_admin`。首稿那句"开成端点等于给任意已登录操作员一个向任意
+   邮箱发信的入口"仍然成立——上面三条就是为把它和那个入口区分开而写的，缺任何一条都退化成后者。
 2. **P1 没有 asynq 投递任务**（P2-3 已引入，见 §4）：`SendTestEmail` 的产物就是"SMTP 报错原文"，必须同步返回；
    验证码邮件同样要立刻知道"渠道没配"以便回不同文案。首稿为异步形态写的"载荷只带 delivery_id，正文由
    handler 按事件重新渲染"那条**没有采纳**，原因记在 §6 决策点 7：重渲染要 handler 重新拿一遍调用方的
@@ -240,17 +265,26 @@ app/admin/service/internal/data/channel/webhook_sender.go      等 §6 决策点
 它继续作为"渠道花名册"的 CRUD 存在，只是渠道选择策略从两个 caller 收进 `email_sender.go` 一处；
 `SendTestEmail` 改为转调 `Notifier`，自身不再碰 SMTP。
 
-### 3.5 一期路由：Go 静态表，不建规则表
+### 3.5 路由：Go 静态表已整体搬进 `sys_notification_rules`（C 已落地 2026-09-20）
 
-`event_type → 渠道`，写在 Go 里（`notification_service.go` 的 `eventChannels`）；请求可显式传
-`channel` 覆盖（覆盖优先，用于显式指定走哪一条已实现渠道的调试场景）。P1 三个事件
-（密码重置码、联系人绑定码、渠道测试邮件）全部 → EMAIL，P2 加 `INTERNAL_MESSAGE → INTERNAL`。
-路由表指向了没有注册实现的渠道 = 代码 bug，记 **FAILED** 而非 SKIPPED，并且照样留台账行。
-理由：一期事件种类个位数，DB 规则表带来的"不发版改路由"价值，在这个规模下抵不上多一张表 + 一套 BFF + 三端页面的成本。
-P2 建 `notification_rules` 时，这张 Go 表整体平移进 DB，调用方签名不变——所以不是白做的过渡态。
+首稿这一节写的是"一期不建规则表"：`event_type → 渠道` 记在 `notification_service.go` 的 `eventChannels`，
+"要不要异步"记在 `asyncDispatchEvents`，理由是个位数事件不值得多一张表 + 一套 BFF + 三端页面。
+P2 之后事件有了第四个（INTERNAL_MESSAGE）、渠道有了 WEBHOOK，"改一行路由要发版"开始真的付账，
+于是按原计划平移进 DB——**那两张 Go 表已删除**，不是并存：
 
-一条 P2 定的调用方纪律：**业务侧不显式传 `channel`**。站内信生产点只声明事件类型，渠道由这张表决定——
-否则"路由表"和"调用方自报渠道"变成两个真相源，`notification_rules` 平移进 DB 那天会有一处是摆设。
+- **表**：`sys_notification_rules`（`event_type` 唯一 + `channel` + `is_async` + `is_enabled` + `remark`）。
+  一个事件只允许一行：路由有两个以上真相源的那天，"这次到底走哪条"就没人答得清。
+- **读取**：`resolveRoute` 每次投递现读（`notification_rule_repo.go`），**进程内不缓存**。这张表的全部价值
+  就是"改完立刻生效"，加一层缓存等于把它换成"改完等重启"，而台账里那条 SENDING 的渠道归属会跟着错。
+- **播种**：只在空表时按 `pkg/constants.DefaultNotificationRules` 播一次（同 §「菜单/Api 表」的 count==0 口径）。
+  删掉一行是**决定**不是待修的缺失，所以重启不补回来；但那条事件的调用会拿到
+  `no enabled channel routing rule for event type X: configure it on the notification-rules page`
+  报错，而不是静默不发——静默丢通知是这个域最先修掉的那类 bug（§2.4）。
+  唯一的放行例外是请求自己点名了渠道：渠道由请求给、派发方式取零值即同步，这是一个完整决定，
+  放它过去；两个都没有才必须报错（`resolveRoute`）。
+- **覆盖**：请求侧显式传 `channel` 仍优先于规则行（调试场景）。业务侧不显式传渠道这条纪律不变，
+  否则"规则表"和"调用方自报渠道"是两个真相源，前者沦为摆设。
+- 路由到没有注册实现的渠道（SMS 至今如此）= 代码 bug，记 **FAILED** 并照样留台账行，不是 SKIPPED。
 
 ### 3.6 SSE 事件类型注册表（P1 已落地 2026-09-19）
 
@@ -387,7 +421,8 @@ Redis DB 的**同名队列**，谁先抢到谁处理，没有对应 handler 的�
 **P2-3（异步投递：同步预检 + asynq 派发，已完成 2026-09-20）** —— 落 §3.1 图里那条异步出口，
 把"一次 SMTP 抖动 = 一次永久 FAILED，且这句话还被回给最终用户"断掉：
 
-1. **哪些事件异步，判据是"调用方需不需要这次投递的结论"**（`asyncDispatchEvents` 白名单）：
+1. **哪些事件异步，判据是"调用方需不需要这次投递的结论"**（当时是 `asyncDispatchEvents` 白名单，
+   **C 之后是规则行的 `is_async` 列**，默认值逐字照搬下面这份）：
    `PASSWORD_RESET_CODE`、`CONTACT_BIND_CODE` 异步；`CHANNEL_TEST_EMAIL`（产物就是 SMTP 报错原文）、
    `INTERNAL_MESSAGE`（收件行 + SSE 本身就是投递，异步化只会让收件箱晚一点亮）保持同步。
 2. **入队前先做一次同步预检**（新接口 `channel.Prechecker`，实现是 `EmailSender.Precheck` → `pickAccount`，
@@ -594,13 +629,90 @@ DB 12 的 asynq 键逐个 `DEL`；mailpit 容器 `gwa-mailpit` 为本轮新起�
 `5:tenant:manager` 删不掉（"protected role cannot be deleted"，删租户也不带走），`sys_user_credentials`
 里用户 5/6 的两行 `deleted_at` 仍为空（用户删除不级联凭证）。两者都是既有缺口，本轮不修、如实记在这里。
 
-P2 剩余：`notification_rules` 表 + 管理页，替换 §3.5 的 Go 表；`sys_notification_channels` 解掉"WEBHOOK 类型
-无处存 URL"的问题（方案见 §6 决策点 2）；`webhook_sender.go` 落地。
+### C（路由规则表 + WEBHOOK 出口 + 测试投递，已完成 2026-09-20）
+
+四个决定按当轮结论落地，逐条留了可复验的现场证据：
+
+1. **路由的唯一真相搬进 `sys_notification_rules`**（表结构、读取与播种口径见 §3.5）。`eventChannels` 与
+   `asyncDispatchEvents` 两张 Go 静态表**删除**而不是并存 —— 并存那天起它们就是两个真相源。一个事件只允许
+   一行由 DB 唯一索引与 repo 前置检查共同保证：实测重复建 `CHANNEL_TEST_EMAIL` 回
+   `event type CHANNEL_TEST_EMAIL already has a routing rule`（400，表里仍是 4 行）。
+2. **WEBHOOK 的落点是两个新列**（§6 决策点 2 选 A，不用 `settings` JSON）：`webhook_url` + `webhook_secret`，
+   后者与 SMTP 密码走同一条 `crypto.EncryptIfNeeded` 路径（`notification_channel_repo.go:248`），读视图只回
+   `hasWebhookSecret` 布尔。密钥字面量在探针渠道的**创建响应**与**列表响应**里各出现 0 次（两份抓下来的 JSON
+   `grep -c` 为 0），且 `sys_notification_channels` 里今天没有任何一行还带着密钥（探针渠道已删）。
+3. **SSRF 防线默认硬禁内网、判定在 dial 时按解析后的 IP**（决策点 3）：`Transport.DialContext` 先解析，命中
+   `webhookBlockedNets` 即拒，否则**拨已校验的那个 IP**（不给"第二次解析换一个地址"留机会）。本机环回因此
+   默认发不出去；联调要显式 `NOTIFICATION_WEBHOOK_ALLOW_PRIVATE=1`，这条口子在报错文案里就写着，不靠读源码发现。
+4. **范围含测试投递入口**（决策点 4）：`POST /admin/v1/notification-rules/{id}/test-dispatch`，
+   它的形状与"为什么不是通用发送口"见 §3.4 偏离第 1 条。
+
+**运行期实测（本机实例 + 现网 `gwa` 库 + 一台 node 写的本地 webhook 收端；探针账目列在最后）**：
+
+| 观测点 | 结果 |
+| --- | --- |
+| 自动迁移 | `information_schema` 里 `sys_notification_rules`（`event_type`/`channel`/`is_async`/`is_enabled`/`remark`）与 `sys_notification_channels.webhook_url` / `.webhook_secret` 全部出现；`pg_indexes` 多出 `uidx_sys_notification_rule_event_type UNIQUE (event_type)`，无手写 DDL |
+| 播种 | 空表启动播 4 行；今天表内是 id **1/2/3/5**（`PASSWORD_RESET_CODE`/`CONTACT_BIND_CODE` 异步，`CHANNEL_TEST_EMAIL`/`INTERNAL_MESSAGE` 同步）。4→5 是探针删掉 `INTERNAL_MESSAGE` 那行后手工重建的号，**重启没有补回第 4 行** —— "删行是决定"这条口径的现场版本 |
+| **SSRF 默认拦死**（守卫开着，目标 `127.0.0.1:8099/hook`） | `test-dispatch` 空目标 → **400**，原文：`no enabled notification channel configured: Post "http://127.0.0.1:8099/hook": webhook target blocked by the ssrf guard: target "127.0.0.1" resolves to 127.0.0.1 which is inside the blocked range 127.0.0.0/8 — off-host callbacks must point at a public address (NOTIFICATION_WEBHOOK_ALLOW_PRIVATE=1 disables this check for local debugging)`；台账 id=19 `SKIPPED`、`channel_id=9`；收端 `hits.jsonl` 那一刻**一条应用请求都没有**（下一条真命中是 3 分钟后放行守卫） |
+| **放行守卫 + 空目标** | → **200 `{deliveryId:20, status:"SENT"}`**；收端 12:50:28.457 一次 `POST /hook`，载荷 `{"event_type":"CHANNEL_TEST_EMAIL","title":…,"content":…,"delivered_at":"2026-09-20T12:50:28Z"}`，`content-type: application/json; charset=utf-8`、`user-agent: go-wind-admin-notification/1.0`；台账 id=20 `SENT`、`attempts=1`、`channel_id=9`（**空目标兜底时顺手钉住了渠道行**，见 §3.4 第 3 个收窄点） |
+| **签名可被对端复算** | 载荷带 `x-gw-timestamp: 1789908628` 与 `x-gw-signature: sha256=c886dfa1…`；用登记的那把共享密钥按 `sha256=hmac(secret, "<ts>." + 原始 body)` 在 node 里复算 → **MATCH: true**（/hook 与 /redirect 两次命中各自通过，两次时间戳不同所以签名不同，符合"时间戳进签名"的防重放意图） |
+| **302 不跟随** | 显式目标指向 `/redirect`（该路径回 `302` 且 `location` 指向一台**没人监听**的 `127.0.0.1:8098`）→ **400** `send webhook via channel [9] failed: peer answered 302 Found:`，台账 id=21 `FAILED`；收端只记下 `/redirect` 这一跳，**没有**第二跳、也没有任何 8098 的拨号错误 ⇒ `CheckRedirect` 的 `http.ErrUseLastResponse` 生效，非 2xx 一律按"对端 answered <status>"定案 |
+| 台账 `target` 的脱敏 | WEBHOOK 的地址不是邮箱形态，`maskTarget` 落到"只留末 4 位"：id=20/19 为 `****hook`、id=21 为 `****rect`（`notification_service.go:570`） |
+
+**已知未修的一处**：显式传 `target` 时 `testDispatchTarget` 返回的 `channelID` 是 nil（"发去哪里由管理员这一行决定"），
+于是那次投递**实际用了哪条渠道配置**只留在 `last_error` 的 `via channel [9]` 字样里 —— id=21 的 `channel_id` 为空。
+`channel_id` 一列的设计目的是"策略结果落档便于排障"（§3.3），这一格因此是空的。没有为它改代码：
+要么在 service 层预解析渠道（把 sender 的选择策略搬出去一份，就是第二个真相源），要么让 sender 回传选中项
+（`SendReceipt` 加字段 + 台账多一次写），两者都比这一格空着贵。
+
+**三端页面**（react 先行 → ele → vben，路由一律 `/system/notification-rules`、菜单 id 73、authority `sys:platform_admin`）：
+react `pages/app/system/notification-rule/` + `api/hooks/notification-rule.ts` + `locales/{zh-CN,en-US}/_modules/notification-rule.json`；
+ele `pages/app/system/notification_rule/{index,notification-rule-drawer}.vue` + `api/composables/notification-rule.ts` + 两份 pages 文案；
+vben `views/app/system/notification_rule/index.vue` + `api/composables/notification-rule.ts` + `langs/{zh-CN,en-US}/{page,menu,enum}.json`。
+三端一致的行为：**编辑态事件类型不可改**（改事件类型等于换一条路由，删旧建新才说得清，掩码里因此也没有它）、
+更新掩码固定四列 `channel,isAsync,isEnabled,remark`、**一个事件只允许一行**由服务端唯一键挡（下拉不做"已用事件"排除，
+重复建就是 400）、`INTERNAL` 行不给测试投递按钮（后端同样拒）、异步规则测完的话术是"已排队"而不是"已送达"（回的是 `SENDING`）。
+
+**部署口径（本次踩到的种子缺口，全仓通用）**：新增一条左侧菜单要**同时**进 `DefaultMenus` 与
+`DefaultPermissions[].MenuIds`。侧边栏读的是「角色 → 权限 → `sys_permission_menus`」这条链，
+`AdminPortalService.GetNavigation` **没有超管绕过**（`MenuMeta.Authority` 后端根本不读），
+所以只加 `DefaultMenus` 的结果是连全新环境都看不见这一行。已部署实例的权限行早就存在、那段播种不会再跑，
+只能在「权限管理」里勾上 —— 本轮 `sys_apis` 侧同理，新端点靠「接口同步」全量重建才进表（`86/87/88/199/200/201` 六条 notification-rules）。
+`DefaultPermissions[].MenuIds` 这条改的是全新安装路径，本机没有干净库可验，证据只有代码 + 现网实例的等价手工勾选结果。
+
+**顺手挖出并修掉一个数据破坏 bug：编辑权限会清空它的全部授权**。排查"菜单为什么不亮"时撞上的。
+`PUT /admin/v1/permissions/{id}` 只要带 `updateMask` 且掩码里有 `menuIds`/`apiIds`（三端权限抽屉本来就是这个形状），
+链路会这样断：protojson 把掩码路径归一成蛇形 → go-crud 的 `UpdateOne` 用**过滤后的掩码**就地重写 `req.Data`
+→ 这两个字段被清零 → `AssignMenus` 收到空列表 → `CleanNotExistMenus` 的 `MenuIDNotIn()` 零参数等价 `NOT IN (NULL)`
+→ 关联**一行都不剩**，而 HTTP 回 200。修法是照 `role_repo` / `user_repo` 既有的快照模式：掩码判定先算、载荷先
+`slices.Clone`，再交给 `UpdateOne`；`hasPath` 在掩码为 nil 时返回 true（整体提交），所以"全量更新"的语义与改前逐字一致。
+回归 `TestPermissionRepoSqlite_UpdateKeepsRelationGrants` 四个子测试，其中"掩码不含关联字段不得动授权"这一条
+**对着修复前的代码 FAIL** —— 它是这个 bug 的直接证据，不是配套装饰。
+
+**探针造成的变更与复原（全部如实记账）**：
+规则 3（`CHANNEL_TEST_EMAIL`）为跑 WEBHOOK 分支改成 `WEBHOOK`/同步，测完改回 `EMAIL` 并读回确认；
+探针渠道 `c6-probe-webhook`(id=9) 建后已删，渠道表回到 1/2/3 三行、`webhook_url` 全空；
+规则 4（`INTERNAL_MESSAGE`）删除后重建，主键漂到 **5**（唯一键按 `event_type` 而不是 id，重建合法）；
+台账 id=19/20/21 三行**保留**作上表证据；本机实例为切守卫开关重启三轮，最后一轮已是不带
+`NOTIFICATION_WEBHOOK_ALLOW_PRIVATE` 的复原态；本地那台 node 收端（`:8099`）只为取证而存在，不属于本仓。
+
+另有两处**破坏性**后果，不是"改了又改回来"那么轻：
+① `POST /admin/v1/menus/sync` 传空 body 走的是 REPLACE 语义，`sys_menus` 被整表清掉过一次，
+靠重启触发 `DefaultMenus` 播种 + 「菜单同步」的 MERGE 才恢复（今天 44 行、含 72/73）；
+② 上面那个权限 bug 的现场取证：权限 2 的 `sys_permission_menus` 42→0、`sys_permission_apis` 136→0，
+随后经"不带 `updateMask` 重 PUT"恢复为 **44 / 136**。菜单侧不是原样复旧 —— 多的 2 行正是 72/73，
+由这次恢复操作顺手带进权限 2，也就是「已部署实例须在权限管理勾选」那条口径的一次手工执行。
+
+**回归测试**：`webhook_sender_sqlite_test.go`（签名载荷、无密钥时不带签名头、dial 前拦内网、`isBlockedWebhookTarget`
+网段表逐条、非 2xx→FAILED、302 不跟随、配置类→SKIPPED、URL 归一、自选跳过停用渠道）、
+`notification_rule_repo_sqlite_test.go`（CRUD + 唯一事件类型拒绝）、`notification_rule_service_sqlite_test.go`
+（空表播种、CRUD、测试投递转调缝、WEBHOOK 空目标兜底并钉 `channel_id`、INTERNAL 拒绝等守卫），
+`notification_service_sqlite_test.go` 两条断言锁住缺规则时的报错原文，加上面那条权限回归。三端 typecheck 0 错误。
 
 ### P3 偏好与模板
 
 用户通知偏好 / 分类退订 / 静音时段 + 模板管理与渲染。今天这三样全部不存在
-（`pkg/constants/default_data.go:964` 只种了 3 条密码策略配置，无通知相关；
+（`pkg/constants/default_data.go:999` 的 `DefaultConfigs` 只有 3 条等保口令阈值，无通知相关；
 提交 `9f10f789` 曾删掉 ele+vben 个人中心一个假的"消息通知" tab，理由正是"无用户通知偏好能力"）。
 这是 IM 那套里工作量最大的部分，单独排期。
 
@@ -611,7 +723,7 @@ P2 剩余：`notification_rules` 表 + 管理页，替换 §3.5 的 Go 表；`sy
 | `NotificationType` / `Priority` / `Status` / `EventType` 四枚举形状 | **抄形状**。内容重写：IM 的 `EventType` 全是 IM 业务事件（`IM_MESSAGE`、`CRM_OPPORTUNITY_STALLED`、`APP_VERSION_RELEASED`），照抄会带入一堆用不上的常量 |
 | `channel_sender.go` 的 `Sender` / `TypedSender` / `SendResult` 接口 | **抄**，去掉 `templateID` 参数（P1 无模板） |
 | `internal_message_sender.go` 在 data 层经 gRPC client 回打 | **不抄**，见 §3.1 成环分析 |
-| `notification_config.Settings` 的 11 种渠道多态信封（Email/Sms/Telegram/Wechat/APNs/FCM/华为/小米/OPPO/vivo/荣耀） | **P2 起部分采用**。admin 无移动客户端，五种厂商推送整体不适用；SMS 属 P3 |
+| `notification_config.Settings` 的 11 种渠道多态信封（Email/Sms/Telegram/Wechat/APNs/FCM/华为/小米/OPPO/vivo/荣耀） | **P2 起部分采用**。admin 无移动客户端，五种厂商推送整体不适用；SMS 属 P3。**C 明确不抄这一层**：WEBHOOK 走的是加列（`webhook_url`/`webhook_secret`）而不是往 `settings` blob 里塞 JSON，取舍见 §6 决策点 2 |
 | 独立微服务 + `kafka_server.go` 消费 `im.event.notification.send` | **不采用**，见 §1「不做什么」 |
 | `push_device` 表与设备注册 | **不适用**，admin 无 App 端 |
 
@@ -620,12 +732,26 @@ P2 剩余：`notification_rules` 表 + 管理页，替换 §3.5 的 Go 表；`sy
 1. **渠道配置的租户作用域**。`sys_notification_channels` 平台全局（`name` 全局唯一索引），
    `internal_messages` 租户级。P2 引入规则表时，规则要引用渠道——**规则表会骑在两个隔离域上**。
    倾向：P1/P2 保持平台全局，"租户 A 用哪个 SMTP" 若成为真需求再引入租户覆盖行，不做提前设计。
+   **C 已按此落地（2026-09-20）**：`sys_notification_rules` 不挂 `TenantID`，与渠道花名册同域；
+   schema 里既没有租户列也没有租户谓词，将来真要租户覆盖行是"加一列 + 一处谓词"，不是重排这张表。
 2. **`sys_notification_channels` 怎么容下非 SMTP 渠道**。今天除 `name`/`type` 外每一列都是 SMTP 形状，
    `WEBHOOK` 行没有地方存 URL 与密钥（且三端 UI 都把 type 列硬编码渲染成「邮件 (SMTP)」标签，
    API 建出的 WEBHOOK 行会显示成 EMAIL）。两个选项：
    - **A（倾向）**：为 WEBHOOK 加可空 `webhook_url` / `webhook_secret` 列。改动最小，但每加一种新渠道都要迁一次表；
    - **B**：加一个 `settings` JSON 列（加密存储），新渠道一律走它。一次解决未来所有类型，但 SMTP 会变成两种真相源，
      且 ent 自动迁移只加列不删列，`smtp_*` 会长期挂着。
+
+   **C 已定：A（2026-09-20）**。选 A 的决定性理由是 B 那句"SMTP 会变成两种真相源"——`pkg/mailer` 读的
+   就是这些列，走 B 要么把 mailer 改成会解 JSON，要么让同一张表一半按列一半按 blob 读，排障时"这条渠道到底配了啥"
+   得先看 type。B 换来的"未来所有类型一次解决"在今天只有 WEBHOOK 一个用户，而 SMS 的落点根本不是 URL（是
+   服务商 + 签名 + 模板号），它来了照样要迁一次表——那正是 A 承认的代价，不是 B 免掉的代价。
+   实测两列均 `NULL`-able（老行不受影响），`webhook_secret` 与 SMTP 密码同走 `crypto.EncryptIfNeeded`。
+   顺带把三端渠道页的 type 列改成按枚举渲染（P1 已做），这一条的前半个括号隐患因此不再成立。
+
+   **随 A 一起定的两件事**：① SSRF 默认策略取"硬禁内网 + dial 时按解析后的 IP"，**没有**做域名白名单
+   （白名单的默认放行方向相反：漏配一个后缀就是全内网可达）；环回联调靠
+   `NOTIFICATION_WEBHOOK_ALLOW_PRIVATE=1`，这条逃生口写在报错文案里。② C 的范围含测试投递入口，
+   形态与收窄见 §3.4 偏离第 1 条。
 3. **`sys_notification_deliveries` 是否挂租户谓词** —— **已定：不挂**（P1 建表时按此落地）。
    台账与渠道花名册同域：一行记的是"平台用哪条 SMTP 发给了某个地址"，收件人未必是租户用户
    （找回密码的标识符可以是任意注册邮箱）。真要按租户看用量，走 `recipient_user_id` 关联用户表即可，
@@ -786,13 +912,38 @@ gow run admin
       平台/系统上下文一律照旧读请求体，`user_id=0` 仍是 400。
       三个方法在全仓**只有 HTTP RPC 一条入口**（`internal_message_recipient_service.go:79/85/91`
       逐行确认），没有 asynq/定时任务/脚本会带一个 uid=0 的 viewer 走进来。
+- [x] C 规则表 + WEBHOOK：**契约有变更**（两张新 proto + 渠道表两个新列），所以生成链一步都不能跳：
+      `gow api`/`buf generate` → `make ts`（三端 `index.ts` 里确认 `NotificationRule` 与 `webhookUrl`/`webhookSecret`
+      都生成了）→ `make openapi` → **重启进程**（内嵌 asset 变了才算数）→ 「接口同步」全量重建 → 「菜单同步」(MERGE)。
+      实测落点：`sys_apis` 里 notification-rules 六条（`86/87/88/199/200/201`，含 test-dispatch）、
+      `sys_menus` 44 行含 72/73、`GetNavigation` 三条通知路由齐备。
+      **菜单这一格本次重做过一次才对**：`DefaultMenus` 加了 73 仍然不亮，因为侧边栏读的是「角色→权限→
+      `sys_permission_menus`」这条链、`GetNavigation` 没有超管绕过（`MenuMeta.Authority` 后端不读）。
+      全新环境靠 `DefaultPermissions[].MenuIds` 补上（本次已改），已部署环境靠「权限管理」勾选（本次手工执行）。
+      **WEBHOOK 的部署语义要写给运维**：默认拦死一张显式 CIDR 表（`0/8`、RFC1918 三段、`100.64/10` CGNAT、
+      环回、`169.254/16` 含云元数据端点、组播与保留段、IPv6 的 `::1`/`fc00::/7`/`fe80::/10`），
+      判定在 dial 时按**解析后的 IP**（不用 `net.IP.IsPrivate`，它的文档明写不得用于访问控制且漏掉 CGNAT）。
+      所以"填了个内网地址"不会在保存时报错、而是投递时 SKIPPED 并把原因写进 `last_error`；
+      本机联调用 `NOTIFICATION_WEBHOOK_ALLOW_PRIVATE=1`，生产不要开。对端要验签就按
+      `sha256=HMAC_SHA256(secret, "<x-gw-timestamp>." + 原始 body 字节)` 复算，密钥只在创建/更新时提交、读视图恒不回显。
+      302 不跟随、非 2xx 一律 FAILED（`peer answered <status>`）。
+      **已知未修**：显式 `target` 的测试投递不落 `channel_id`（见 §4 C 那条），`RevokeMessage` 的对象级授权仍未批
+      （见本节末尾），SMS 仍只有枚举没有 Sender。
 
-P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点到的地方，漏任一处都是静默不一致）：
+P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点到的地方，漏任一处都是静默不一致）。
+**C 之后第一行变了**：路由不再是 Go 表，而是"播种一行默认规则 + 页面可改"：
 
-- 后端：proto 的 `EventType` → ent schema 的 `NamedValues` → `eventChannels` 路由表 → `make openapi` / `make ts`；
+- 后端：proto 的 `EventType` → ent schema 的 `NamedValues`（台账与规则两张表的枚举列都要）→
+  `pkg/constants.DefaultNotificationRules` 加一行默认路由 → `make openapi` / `make ts`；
+  **注意播种只在空表时跑**，已部署实例加不了这一行，须在「通知路由规则」页手工建，
+  或者那条事件的调用一直拿 `no enabled channel routing rule for event type …` 报错（这是设计，不是遗漏）；
 - react：`notification-delivery/index.tsx` 的 `eventTypeOptions` + 该模块 `locales/{zh-CN,en-US}` 的 `eventTypeMap`；
 - vue-element：composable 的 `EVENT_TYPE_KEYS` + 全局 `locales/{zh-CN,en-US}/enum.json` 的 `notificationDelivery.eventType`；
 - vue-vben：composable 的 `notificationDeliveryEventTypeList` + `locales/langs/{zh-CN,en-US}/enum.json`。
+- **C 之后还多两处**（规则页自己的那份事件类型清单，与台账页各自独立）：react `notification-rule/index.tsx` 的
+  `eventTypeOptions` 里那个内联数组、ele composable 的 `EVENT_TYPE_KEYS` / `notificationRuleEventTypeList`、
+  vben composable 的 `notificationRuleEventTypeList`
+  + `langs/*/enum.json` 的 `notificationRule.eventType`；每端另要有该事件类型的中文列头文案（三端各两份 locales）。
 
 两条本次实测踩到的：
 
@@ -801,9 +952,12 @@ P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点
   接口照样 200、消息照样落库（`type`/`status` 来自服务硬编码与列默认值），但**收件人与标题全为空**，
   于是一封"发出去了但没人收到"的幽灵消息进了库。本次实测第一次就踩中，产生了 id=8 这条孤儿行（已用
   `DELETE /admin/v1/internal-message/messages/8` 清掉）。验收"发信有没有生效"不许只看 HTTP 200。
-- **台账页的渠道筛选项 = 已注册实现的渠道**（`EMAIL` + `INTERNAL`），SMS/WEBHOOK 只留展示文案：
-  路由表还没把它们分给任何事件，放进下拉只会让"筛出空表"被误读成条件写错。三端同形
-  （react `channelOptions` / ele `notificationDeliveryChannelFilterList` / vben 同名导出）。
+- **台账页的渠道筛选项 = 有 Sender 实现的渠道**（`EMAIL` + `WEBHOOK` + `INTERNAL`），只有 SMS 不进下拉：
+  它至今没有实现，路由到它的投递必然记 FAILED，放进来等于给一个筛不出的值占位。C 之前这一条是
+  "EMAIL + INTERNAL"（WEBHOOK 还没有出口），当时的理由"路由表还没把它分给任何事件"随着规则表进 DB 而失效——
+  管理员现在建一行 WEBHOOK 规则就能写出这一类台账行，下拉却筛不到就是**假阴性**。三端同形
+  （react `channelOptions` / ele `FILTERED_CHANNEL_KEYS` / vben `notificationDeliveryChannelFilterList`），
+  各自的注释都写明"路由是数据库表，不靠默认规则集决定筛什么"。
 
 ### 运行期实测发现并修掉的两个缺陷（2026-09-19，只有真发一次信才看得见）
 
@@ -930,6 +1084,16 @@ viewer 覆盖请求体。修法与两种落定语义（带 id = 空操作、空 
 | orderBy 字段名 | 必须是**数据库列名**。react 侧 ProTable 的 sorter key 是 camelCase 的 dataIndex，本页显式蛇形化；vben 侧同理用局部映射表 |
 | Tag 色系 | Element Plus 没有 purple/cyan/processing 这一档，ele 把 SENDING/EMAIL 落 primary、WEBHOOK 落 info；antd 系（react / vben）保留 blue/green/purple/cyan |
 | 导出 | ele 端每个只读页都带 `createPagedExportAction`，react 台账页没有导出——移植时按目标端惯例补齐，不算行为差异 |
+
+C 的规则页（可写 + 两个自定义动作）又添了几条，同样是"照搬组件名会错"的那种：
+
+| 差异 | 说明 |
+| --- | --- |
+| 三端骨架完全不同 | 同一张规则表：react 是 `ModalForm`（新建/编辑一个、测试投递一个），ele 是 `ProPage` + 独立抽屉 `notification-rule-drawer.vue`，vben 是 `useVbenVxeGrid` + 两个手写 `a-modal`。移植时只有 composable 层的枚举与掩码可复用 |
+| 编辑态锁死事件类型 | 三端各自 disabled（react `formMode === 'edit'` / ele `!isCreate` / vben `editMode === 'edit'`），后端更新掩码固定四列也不含它。理由是同一件事：改事件类型等于换一条路由，删旧建新才说得清 |
+| ele 的删除按钮刻意不叫 `delete` | `ProPage` 内置的删除确认只有通用文案，而这一行的后果（该事件从此不再通知、**重启也不补回**）必须当面说清楚，于是自定名 `remove` + 自己 `ElMessageBox.confirm`。取消走的是 reject("cancel")，catch 里要放行这一支、其余形态照样 `console.error` |
+| 测试投递有两种话术 | 异步规则回的是 `SENDING`，文案必须是"已排队、结论去台账看"而不是"已投递"；同步才说"已投递"。三端各两份 key（`testDispatchQueued` / `testDispatchSent`），别只补一条 |
+| `INTERNAL` 行不给测试按钮 | 三端同一处 `visible`/`v-if`/条件渲染，后端也拒 —— 前端藏按钮是体验，服务端拒才是边界 |
 
 实测过、写下来免得下次再猜的两条（sqlite 内存库 + 现网 `gwa` 库）：
 

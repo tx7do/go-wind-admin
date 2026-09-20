@@ -1,7 +1,7 @@
 // Package mailtext 收口一期邮件文案（主题 + 正文），按收件请求的语言渲染。
 //
 // 为什么文案在 Go 里而不在模板表：模板管理与渲染排在 P3（见
-// docs/notification_domain_design.md §4），一期只有三个事件，带类型的函数比引一套
+// docs/notification_domain_design.md §4），一期只有四个事件，带类型的函数比引一套
 // 模板引擎便宜，同时仍守住"邮件文案只有一个出口"这条约束——新增事件必须改这里，
 // 调用点不再各自拼中文字符串。
 //
@@ -32,8 +32,9 @@ const defaultLocale = LocaleZhCN
 // headerAcceptLanguage Kratos 侧读取的头名（大小写由 net/http 规范化，此处按线格式写）。
 const headerAcceptLanguage = "Accept-Language"
 
-// mailCopy 三个事件在某一种语言下的文案。正文里的占位符由对应的 Render 函数填充，
-// 顺序固定：验证码 %s；渠道测试邮件 %d（渠道 ID）、%d（操作人用户 ID）。
+// mailCopy 四个事件在某一种语言下的文案。正文里的占位符由对应的 Render 函数填充，
+// 顺序固定：验证码 %s；渠道测试邮件 %d（渠道 ID）、%d（操作人用户 ID）；
+// 路由测试投递 %d（规则 ID）、%s（被测事件）。
 type mailCopy struct {
 	passwordResetTitle string
 	passwordResetBody  string
@@ -41,6 +42,8 @@ type mailCopy struct {
 	contactBindBody    string
 	channelTestTitle   string
 	channelTestBody    string
+	ruleTestTitle      string
+	ruleTestBody       string
 }
 
 var tables = map[Locale]mailCopy{
@@ -51,6 +54,8 @@ var tables = map[Locale]mailCopy{
 		contactBindBody:    "您的邮箱绑定验证码是：%s\n\n10 分钟内有效。若非本人操作请忽略本邮件。\n",
 		channelTestTitle:   "GoWind Admin 通知渠道测试邮件",
 		channelTestBody:    "这是一封来自 GoWind Admin 的测试邮件。\n如果您收到了它，说明渠道 [%d] 配置可用。\n操作人用户 ID: %d\n",
+		ruleTestTitle:      "GoWind Admin 通知路由测试投递",
+		ruleTestBody:       "这是规则 [%d] 的一次测试投递，不含任何需要您处理的内容。\n被测事件: %s\n如果您收到了它，说明该事件到渠道的整条投递链是通的。\n",
 	},
 	LocaleEnUS: {
 		passwordResetTitle: "GoWind Admin password reset code",
@@ -59,6 +64,8 @@ var tables = map[Locale]mailCopy{
 		contactBindBody:    "Your email binding code is %s.\n\nIt expires in 10 minutes. Ignore this email if you did not request it.\n",
 		channelTestTitle:   "GoWind Admin notification channel test email",
 		channelTestBody:    "This is a test email from GoWind Admin.\nReceiving it means channel [%d] is configured correctly.\nOperator user ID: %d\n",
+		ruleTestTitle:      "GoWind Admin notification routing test delivery",
+		ruleTestBody:       "This is a test delivery for routing rule [%d]; nothing here needs your action.\nEvent under test: %s\nReceiving it means the whole delivery chain for that event reaches this channel.\n",
 	},
 }
 
@@ -107,4 +114,15 @@ func ContactBindCode(ctx context.Context, code string) (title, content string) {
 func ChannelTestEmail(ctx context.Context, channelID, operatorID uint32) (title, content string) {
 	t := tableOf(ctx)
 	return t.channelTestTitle, fmt.Sprintf(t.channelTestBody, channelID, operatorID)
+}
+
+// RuleTestNotification 路由测试投递（规则管理页的"测试投递"按钮），
+// 覆盖 EMAIL 与 WEBHOOK 两种渠道：出站正文只有一个出口。
+//
+// eventType 传的是**被测规则**的事件类型名（不是这条测试本身的事件类型）：
+// 管理员要一眼看出"这一发验证的是哪条路由"，而台账的 event_type 列记的也是它。
+// 用字符串而不是 proto 枚举，是为了不把 notification.service.v1 拽进文案包。
+func RuleTestNotification(ctx context.Context, ruleID uint32, eventType string) (title, content string) {
+	t := tableOf(ctx)
+	return t.ruleTestTitle, fmt.Sprintf(t.ruleTestBody, ruleID, eventType)
 }

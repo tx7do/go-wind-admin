@@ -295,6 +295,28 @@
       "SKIPPED": "未配置渠道"
     }
   },
+  "notificationRule": {
+    "eventType": {
+      "PASSWORD_RESET_CODE": "密码重置码",
+      "CONTACT_BIND_CODE": "联系人绑定码",
+      "CHANNEL_TEST_EMAIL": "渠道测试邮件",
+      "INTERNAL_MESSAGE": "站内信"
+    },
+    "channel": {
+      "EMAIL": "邮件",
+      "SMS": "短信",
+      "WEBHOOK": "Webhook",
+      "INTERNAL": "站内信"
+    },
+    "asyncMode": {
+      "ASYNC": "异步",
+      "SYNC": "同步"
+    },
+    "enabled": {
+      "ON": "已启用",
+      "OFF": "已停用"
+    }
+  },
   "module": {
     "DASHBOARD": "仪表盘",
     "OPM": "组织与人员",

@@ -33,7 +33,7 @@ func NewAsynqServer(ctx *bootstrap.Context, taskService *service.TaskService, in
 	// 注入 asynq 任务入队能力，使广播 fan-out 改走 asynq 任务（可重试、断点恢复）。
 	// asynq 未配置时本函数在上方 return nil，此行不会执行，internalMessageService.taskEnqueuer 保持 nil。
 	internalMessageService.RegisterTaskEnqueuer(taskService)
-	// 通知投递同样拿这份入队能力：命中 asyncDispatchEvents 的事件（找回密码/换绑验证码）
+	// 通知投递同样拿这份入队能力：规则行标为异步的事件（找回密码/换绑验证码）
 	// 入队后立即返回，SMTP 往返不再占住 HTTP。未配置 asynq 时保持 nil，全部事件退回同步投递。
 	notificationService.RegisterTaskEnqueuer(taskService)
 

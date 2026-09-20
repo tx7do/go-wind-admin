@@ -231,6 +231,20 @@
       "DELIVERY_STATUS_UNSPECIFIED": "未指定"
     }
   },
+  "notificationRule": {
+    "eventType": {
+      "PASSWORD_RESET_CODE": "密码重置码",
+      "CONTACT_BIND_CODE": "联系人绑定码",
+      "CHANNEL_TEST_EMAIL": "渠道测试邮件",
+      "INTERNAL_MESSAGE": "站内信"
+    },
+    "channel": {
+      "EMAIL": "邮件",
+      "SMS": "短信",
+      "WEBHOOK": "Webhook",
+      "INTERNAL": "站内信"
+    }
+  },
   "user": {
     "status": {
       "NORMAL": "正常",
