@@ -518,8 +518,44 @@ P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点
 而找回密码对最终用户只回一句 `email channel is not configured`（细节不该泄给未鉴权调用方）。
 回归测试：`data/channel/email_sender_sqlite_test.go`（自选带回真实 ID / 无可用渠道归 SKIPPED / 枚举外 tls 归不可用）、
 `pkg/mailer` 的 `TestIsSupportedTlsMode`、repo sqlite 测试补 `SmtpAccount.ID` 断言。
-`EmailSender` 与 mailer 之间"成功投递补 channel_id"这一段仍只有服务层替身测试覆盖——本机没有可控的 SMTP 服务端，
-真发一封才算闭环。
+~~`EmailSender` 与 mailer 之间"成功投递补 channel_id"这一段仍只有服务层替身测试覆盖~~ —— 已由下面的
+§7「本机跑真 SMTP 的办法」补上运行期证据（2026-09-20）。
+
+### 本机跑真 SMTP 的办法（2026-09-20，补上"成功投递"这一格的运行期证据）
+
+替身测试能证明"代码把 ID 传给了台账"，证明不了"真发出去的信长什么样"。本机不需要装 SMTP 服务，
+一条 docker 命令即可（镜像已留在本地）：
+
+```bash
+docker run -d --name gwa-mailpit -p 127.0.0.1:1025:1025 -p 127.0.0.1:8025:8025 axllent/mailpit:latest
+curl -s http://127.0.0.1:8025/api/v1/messages            # 收了哪些信
+curl -s http://127.0.0.1:8025/api/v1/message/<id>        # 正文（注意是路径参数，不是 ?id=）
+```
+
+Mailpit 在 1025 上明文接收、默认不要求 AUTH，所以渠道配置要 `smtp_tls=NONE` 且**用户名留空**
+（`pkg/mailer/smtp.go` 仅在 `Username != ""` 时才 `client.Auth`，填了就会对一个不 advertise AUTH 的服务端报错）。
+
+探针步骤与账务对照（入口仍是免鉴权的 `POST /admin/v1/forgot-password`，identifier=`tenant@company.com`）：
+
+1. 建一条指向 `127.0.0.1:1025` 的启用 EMAIL 渠道（实测拿到 id=5）。
+2. **把渠道 1、2 停用** —— 自选走 `GetFirstEnabledEmailChannel`（`type=EMAIL` + `status=ON` + `ORDER BY id ASC LIMIT 1`），
+   不停用就永远先命中 id 最小的那条，而 1 号恰好是 `SSL_TLS` 坏配置。这一步是"为什么探针要动演示数据"的答案。
+3. 触发一次找回密码 → **台账 id=8：`status=SENT`、`channel_id=5`、`last_error` 空**；
+   Mailpit 同期收到 `from d1-probe@local.test / to tenant@company.com / subject "GoWind Admin 密码重置验证码"`，
+   正文 `您的密码重置验证码是：333000 …`，与 Redis 里 `gowind:vcode:reset_password:tenant@company.com` 的值逐字一致
+   （即邮件没被编码/模板链路换掉内容）。
+4. 复旧：渠道 1、2 重新启用、删掉探针渠道。删完台账 id=8 的 `channel_id=5` 就成了悬空引用
+   （该列无外键，删除才能通过），保留这一行作为证据，读它时按此理解。
+
+| 台账行 | 路径 | `status` | `channel_id` | 说明 |
+| --- | --- | --- | --- | --- |
+| id=1 | 自选（修 `SmtpAccount.ID` 前） | FAILED | 空 | 错误文本 `channel [0]` —— 就是被补上的那一格 |
+| id=2 | 自选（修 ID 后、拨号前被拦） | SKIPPED | 空 | 配置不可用不该伪装成"发过" |
+| id=3 / id=4 | 显式指定渠道 | SKIPPED | 1 / 3 | 显式路径失败也带 ID —— 那是 `Create` 时从 `req.ChannelId` 直接落的（`notification_service.go:99`），不是回执；自选路径 `Create` 时无从得知，只能发完补（`:154` 的 `pickedChannelId`） |
+| **id=8** | **自选 + 真发成功** | **SENT** | **5** | 本次闭环：`SendReceipt.ChannelID = account.ID` 在真实投递下成立 |
+
+仍未覆盖的一段：`SendDirect` 之后**异步**补台账（D 项的 async dispatch）与 SMS/WEBHOOK 两个渠道——
+它们连实现都没接进 Registry，不是"缺测试"而是"缺代码"。
 
 ### 收件箱读侧不钉归属：一处越权读（2026-09-20，运行期实测发现并修掉）
 
