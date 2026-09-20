@@ -147,10 +147,13 @@ func mutationID(m ent.Mutation) uint32 {
 }
 
 // InvokeEntityHook 异步钩子（after）的执行入口：组装执行上下文并触发钩子点。
+// 与 before 侧同形：「该钩子点上没有脚本」是常态（登记的实体 × 三类操作远多于挂过脚本的钩子点），
+// 不是失败，返回 nil——否则每次实体变更都白记一条 ERROR。脚本真出错仍上抛，
+// 加载失败另有 Resync 阶段按脚本名逐条 ERROR，可发现性不在这条路径上丢。
 func (r *ScriptRuntime) InvokeEntityHook(hookPoint string, payload map[string]any) error {
 	eng := r.engineForHookPoint(hookPoint)
 	if eng == nil {
-		return scriptV1.ErrorNotFound("no scripts mounted on hook point: %s", hookPoint)
+		return nil
 	}
 
 	execCtx := scripting.NewContext(hookPoint)

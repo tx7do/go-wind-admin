@@ -17,7 +17,8 @@
 //   - 生产接线形态（vetoInvoker=InvokeEntityHookVeto / after=InvokeEntityHook）：
 //       · 挂载 __stop 脚本的 before 钩子否决写入（ErrScriptVetoed）；
 //       · 挂载良性脚本的 after 钩子执行并落 script_log（trigger=hook）。
-//   - InvokeEntityHook/InvokeEntityHookVeto 的无挂载 NotFound / 不视为否决分支。
+//   - InvokeEntityHook/InvokeEntityHookVeto 的无挂载返回 nil（after/before 两侧），
+//     以及"挂载脚本执行失败仍上抛 + 落 hook 执行审计"。
 //
 // 跳过项：after 钩子 invoker 自身 panic 的兜底恢复（仅进程存活可观察，断言不成立）。
 package service
@@ -32,7 +33,6 @@ import (
 	"github.com/tx7do/go-utils/trans"
 
 	dictV1 "go-wind-admin/api/gen/go/dict/service/v1"
-	scriptV1 "go-wind-admin/api/gen/go/script/service/v1"
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	entTenant "go-wind-admin/app/admin/service/internal/data/ent/tenant"
@@ -329,17 +329,46 @@ func TestEntityHooks_WiringAfterLogsExecution(t *testing.T) {
 	}, 10*time.Second, 100*time.Millisecond, "after 钩子执行应落 hook 触发方式的执行日志")
 }
 
-// TestScriptRuntime_InvokeEntityHook_NoMount 验证无挂载时的两个入口：
-// InvokeEntityHook 返回 NotFound、InvokeEntityHookVeto 不视为否决（nil）。
+// TestScriptRuntime_InvokeEntityHook_NoMount 验证无挂载时的两个入口都不算失败：
+// after 侧「这个钩子点上没脚本」是常态（每次实体变更都会问一遍），返回 nil；
+// before 侧同理不视为否决（nil）。两条一起钉住，是为了让"不报错"成为契约而不是一次偶然。
 func TestScriptRuntime_InvokeEntityHook_NoMount(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	r := newScriptRuntimeForTest(t, entClient, false)
 
-	err := r.InvokeEntityHook("tenant.before_create", map[string]any{})
-	require.Error(t, err, "无挂载的 after 钩子点应返回 NotFound")
-	require.True(t, scriptV1.IsNotFound(err), "应为 NotFound 语义错误")
-
-
+	require.NoError(t, r.InvokeEntityHook("tenant.after_create", map[string]any{}),
+		"无挂载的 after 钩子点应视为无事可做（nil），不再返回 NotFound")
 	require.NoError(t, r.InvokeEntityHookVeto("tenant.before_create", map[string]any{}),
 		"无挂载的 before 钩子点不视为否决（返回 nil）")
+}
+
+// TestScriptRuntime_InvokeEntityHook_MountedFailureStillErrors 钉住"只消噪、不消错"：
+// 真挂载了脚本且脚本执行失败时，InvokeEntityHook 必须把错误上抛（调用方才有 ERROR 日志/审计）。
+// 脚本用运行时 error 而非语法错误——语法错误会在 Resync 阶段加载失败被跳过，
+// 走到的是"无挂载"分支，测不到这里想测的那一支。
+func TestScriptRuntime_InvokeEntityHook_MountedFailureStillErrors(t *testing.T) {
+	entClient := enttest.NewEntClientForTest(t)
+	r := newScriptRuntimeForTest(t, entClient, true)
+	ctx := enttest.NewSystemViewerCtx(context.Background())
+
+	createScriptRow(t, r, ctx, "s2_failing_after_script", "tenant.after_create", "error('s2 boom')", true)
+	require.NoError(t, r.Resync(ctx), "Resync 应成功")
+
+	err := r.InvokeEntityHook("tenant.after_create", map[string]any{"entity": "Tenant"})
+	require.Error(t, err, "挂载脚本执行失败必须上抛，不能被'无挂载返回 nil'一并吞掉")
+	require.ErrorContains(t, err, "s2_failing_after_script", "错误应指名失败的脚本")
+
+	// 失败一次也要落一条执行审计（logExecution 的 err 分支），否则"消噪"顺带消掉了可追查痕迹
+	rows, qErr := entClient.Client().ScriptLog.Query().All(ctx)
+	require.NoError(t, qErr)
+	var logged bool
+	for _, row := range rows {
+		if row.TriggerType != nil && *row.TriggerType == "hook" &&
+			row.HookPoint != nil && *row.HookPoint == "tenant.after_create" {
+			require.NotNil(t, row.Error, "失败执行应记下错误信息")
+			require.NotEmpty(t, *row.Error)
+			logged = true
+		}
+	}
+	require.True(t, logged, "钩子失败应落 hook 触发方式的执行日志")
 }
