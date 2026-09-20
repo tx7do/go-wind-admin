@@ -51,6 +51,12 @@ type SendReceipt struct {
 //
 // Send 返回 error 即视为投递失败（台账记 FAILED）；返回 err 为 nil 视为渠道已接受。
 // 实现不应把"渠道未配置/未启用"降级成 nil——那是 SKIPPED 的语义，由调用方区分。
+//
+// **err 非 nil 时回执仍可以（也应该）带回来**，但只装已经确定的事实：账号既然已经
+// `pickAccount` 解析出来，那次失败究竟是"哪条渠道配置"没发出去，就是台账 channel_id
+// 这一列的设计目的（§3.3）。返回 nil 等于把这条事实只留在 error 的
+// `via channel [9]` 字样里 —— 排障时按渠道筛台账就筛不到自己刚踩的那个坑。
+// 反过来，压根没选出账号（没配 / 没启用 / 类型不对）时回执应为 nil。
 type Sender interface {
 	Channel() notificationV1.Channel
 	Send(ctx context.Context, req *SendRequest) (*SendReceipt, error)

@@ -234,7 +234,7 @@ func (s *WebhookSender) Send(ctx context.Context, req *SendRequest) (*SendReceip
 
 	endpoint, err := normalizeWebhookURL(req.Target)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", ErrChannelNotConfigured, err)
+		return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("%w: %v", ErrChannelNotConfigured, err)
 	}
 
 	body, err := json.Marshal(webhookPayload{
@@ -246,12 +246,12 @@ func (s *WebhookSender) Send(ctx context.Context, req *SendRequest) (*SendReceip
 		DeliveredAt:     time.Now().UTC().Format(time.RFC3339),
 	})
 	if err != nil {
-		return nil, fmt.Errorf("webhook: encode payload failed: %w", err)
+		return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("webhook: encode payload failed: %w", err)
 	}
 
 	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(body))
 	if err != nil {
-		return nil, fmt.Errorf("webhook: build request for channel [%d] failed: %w", account.ID, err)
+		return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("webhook: build request for channel [%d] failed: %w", account.ID, err)
 	}
 	httpReq.Header.Set("Content-Type", "application/json; charset=utf-8")
 	httpReq.Header.Set("User-Agent", "go-wind-admin-notification/1.0")
@@ -265,10 +265,10 @@ func (s *WebhookSender) Send(ctx context.Context, req *SendRequest) (*SendReceip
 	if err != nil {
 		if errors.Is(err, errBlockedTarget) {
 			// 一次都没联系对端 = 地址不合法，属"这条投递没法发"（SKIPPED），不是"发了但被拒"。
-			return nil, fmt.Errorf("%w: %v", ErrChannelNotConfigured, err)
+			return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("%w: %v", ErrChannelNotConfigured, err)
 		}
 
-		return nil, fmt.Errorf("send webhook via channel [%d] failed: %w", account.ID, err)
+		return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("send webhook via channel [%d] failed: %w", account.ID, err)
 	}
 	defer func() {
 		_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, webhookMaxResponseBytes))
@@ -277,7 +277,7 @@ func (s *WebhookSender) Send(ctx context.Context, req *SendRequest) (*SendReceip
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
 		snippet, _ := io.ReadAll(io.LimitReader(resp.Body, webhookMaxResponseBytes))
-		return nil, fmt.Errorf("send webhook via channel [%d] failed: peer answered %s: %s",
+		return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("send webhook via channel [%d] failed: peer answered %s: %s",
 			account.ID, resp.Status, string(snippet))
 	}
 

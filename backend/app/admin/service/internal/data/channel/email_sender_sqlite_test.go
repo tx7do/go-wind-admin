@@ -74,7 +74,10 @@ func TestEmailSenderSqlite_AutoPickNamesRealChannel(t *testing.T) {
 
 	receipt, err := e.sender.Send(e.ctx, req())
 	require.Error(t, err)
-	require.Nil(t, receipt)
+	// 账号已经选出，失败回执也得带回来：台账的 channel_id 只有这一个来源，
+	// 缺了它，"这条失败的邮件走的哪条 SMTP"就只能去 last_error 的文本里找。
+	require.NotNil(t, receipt)
+	require.Equal(t, id, receipt.ChannelID)
 	require.Contains(t, err.Error(), "send mail via channel ["+itoa(id)+"] failed",
 		"错误文本要指回真正用的那条渠道配置")
 	require.Contains(t, err.Error(), "smtp host/port is not configured")
@@ -119,8 +122,9 @@ func TestEmailSenderSqlite_NoUsableChannelIsSkipped(t *testing.T) {
 		Enabled: trans.Ptr(false),
 	})
 
-	_, err := e.sender.Send(e.ctx, req())
+	receipt, err := e.sender.Send(e.ctx, req())
 	require.Error(t, err)
+	require.Nil(t, receipt, "压根没选出账号时不该有回执：channel_id 空是事实，不是漏写")
 	require.True(t, errors.Is(err, ErrChannelNotConfigured), "没有可用配置：SKIPPED 而非 FAILED")
 }
 

@@ -54,7 +54,8 @@ func (s *EmailSender) Send(ctx context.Context, req *SendRequest) (*SendReceipt,
 		From:     account.From,
 		TlsMode:  account.TlsMode,
 	}, []string{req.Target}, req.Title, req.Content); err != nil {
-		return nil, fmt.Errorf("send mail via channel [%d] failed: %w", account.ID, err)
+		// 账号已选出：失败也必须把"是哪条渠道没发出去"带回给台账（见 Sender 的契约）。
+		return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("send mail via channel [%d] failed: %w", account.ID, err)
 	}
 
 	return &SendReceipt{ChannelID: account.ID}, nil

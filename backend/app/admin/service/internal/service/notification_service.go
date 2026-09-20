@@ -263,7 +263,12 @@ func (s *NotificationService) sendOnce(
 		req.GetEventType().String(), sender.Channel().String(),
 		maskTarget(sender.Channel(), req.GetTarget()), sendErr.Error())
 
-	return &data.DeliveryOutcome{Status: status, LastError: sendErr.Error()}, sendErr
+	return &data.DeliveryOutcome{
+		Status: status, LastError: sendErr.Error(),
+		// 失败也补这一格：账号已选出却发不出去，"走的哪条配置"恰恰是排障要先知道的那件事。
+		// 压根没选出账号时 receipt 是 nil，这一格继续留空 —— 那才是它该空的两种情形之一。
+		ChannelID: pickedChannelId(receipt),
+	}, sendErr
 }
 
 // dispatchAsync 把投递交给 asynq。三种出口：
@@ -398,10 +403,16 @@ func (s *NotificationService) AsyncNotificationDispatch(ctx context.Context, _ s
 	// 还有重试额度时**不**定案：状态留在 SENDING，只把这次的报错写进去。
 	// 若在这里直接写 FAILED，asynq 重投时会撞上上面那道"status 已非 SENDING"的幂等门，
 	// 于是重试额度形同虚设 —— 而 450 忙线、连接超时这类恰恰是最该重试的。
+	//
+	// channel_id 跟着一起写，两个理由：① 进程死在重试中途时，这一行最后是被清扫定案的
+	// （swept 那条 outcome 里没有任何渠道事实），不现在写就永远问不出它拨过哪条配置；
+	// ② 下一次尝试从台账读回它并显式钉住同一条配置（dispatchRequest），于是"这条投递走的
+	// 哪条 SMTP"对整行只有一个答案，不会前两次拨 A、第三次因为 A 被停用而改拨 B。
 	if attempts < notificationDispatchMaxAttempts {
 		recordErr := s.markResult(ctx, deliveryId, &data.DeliveryOutcome{
 			Status:    notificationV1.DeliveryStatus_SENDING,
 			LastError: outcome.LastError,
+			ChannelID: outcome.ChannelID,
 		})
 		// 这一格回写的正是"上一次为什么失败"，写丢了不致命（下一次尝试会带着 sendErr 再来一遍），
 		// 所以只并进返回值让 asynq 看见，不改变"继续重试"这个结论。

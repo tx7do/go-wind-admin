@@ -150,6 +150,16 @@ func TestNotificationServiceSqlite_AsyncDispatchKeepsRetryBudget(t *testing.T) {
 		require.Equal(t, notificationV1.DeliveryStatus_SENDING, got.GetStatus(),
 			"额度没用完就定案 FAILED，重投会被幂等门挡掉，额度等于没有")
 		require.Contains(t, got.GetLastError(), "i/o timeout", "没定案也要留下这次的报错，否则排障只能看到 SENDING")
+
+		// 第一次的回执把 channel_id 落进台账，之后每次重试都照着它显式钉住同一条配置：
+		// 同一次投递中途换 SMTP 账号，"到底是哪条在抖"就再也问不出来了。
+		// （渠道自选本身按 ID 升序取第一个启用的，本来也是确定性的，这里钉住的是同一个答案。）
+		wantPinned := uint32(0)
+		if attempt > 1 {
+			wantPinned = 42
+		}
+		require.Equal(t, wantPinned, e.email.calls[attempt-1].ChannelID,
+			"第 %d 次尝试钉住的渠道配置", attempt)
 	}
 	require.Len(t, e.email.calls, notificationDispatchMaxAttempts-1)
 

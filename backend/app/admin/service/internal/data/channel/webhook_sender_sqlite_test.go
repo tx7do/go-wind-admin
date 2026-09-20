@@ -178,8 +178,10 @@ func TestWebhookSenderSqlite_PrivateTargetIsBlockedBeforeDial(t *testing.T) {
 	srv := e.receiver(t, http.StatusOK, "")
 	id := e.createWebhook(t, srv.URL, "", true)
 
-	_, err := e.sender.Send(e.ctx, webhookReq(srv.URL, id))
+	receipt, err := e.sender.Send(e.ctx, webhookReq(srv.URL, id))
 	require.Error(t, err)
+	require.NotNil(t, receipt, "渠道配置已选出，失败的「是哪条」也要进台账")
+	require.Equal(t, id, receipt.ChannelID)
 	require.Empty(t, e.records, "对端压根没收到请求才算拦住了")
 	require.True(t, errors.Is(err, ErrChannelNotConfigured),
 		"拨号前就拒绝 = 一次都没联系对端，台账该记 SKIPPED 而不是 FAILED")
@@ -227,8 +229,10 @@ func TestWebhookSenderSqlite_PeerErrorIsFailed(t *testing.T) {
 	srv := e.receiver(t, http.StatusInternalServerError, "downstream queue is full")
 	id := e.createWebhook(t, srv.URL, "", true)
 
-	_, err := e.sender.Send(e.ctx, webhookReq(srv.URL, id))
+	receipt, err := e.sender.Send(e.ctx, webhookReq(srv.URL, id))
 	require.Error(t, err)
+	require.NotNil(t, receipt)
+	require.Equal(t, id, receipt.ChannelID, "FAILED 也要答得出走的哪条渠道配置")
 	require.False(t, errors.Is(err, ErrChannelNotConfigured), "发出去了但被拒：属投递失败")
 	require.Contains(t, err.Error(), "500")
 	require.Contains(t, err.Error(), "downstream queue is full")
@@ -280,8 +284,9 @@ func TestWebhookSenderSqlite_ConfigIssuesAreSkipped(t *testing.T) {
 		{"no webhook_url", noUrl},
 		{"wrong type", emailID},
 	} {
-		_, err = e.sender.Send(e.ctx, webhookReq(srv.URL, c.id))
+		receipt, err := e.sender.Send(e.ctx, webhookReq(srv.URL, c.id))
 		require.Error(t, err, c.name)
+		require.Nil(t, receipt, "%s：账号没选出，channel_id 留空才是事实", c.name)
 		require.True(t, errors.Is(err, ErrChannelNotConfigured), "%s 应归为配置不可用", c.name)
 	}
 

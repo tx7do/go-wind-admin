@@ -168,7 +168,7 @@ func TestNotificationServiceSqlite_SendSent(t *testing.T) {
 // TestNotificationServiceSqlite_SendFailed 渠道报错：FAILED + 原因，且不落 sent_at。
 func TestNotificationServiceSqlite_SendFailed(t *testing.T) {
 	e := newNotificationServiceForTest(t)
-	e.email.err = fmt.Errorf("smtp auth failed: 535")
+	e.email.err = fmt.Errorf("send mail via channel [42] failed: smtp auth failed: 535")
 
 	resp, err := e.svc.SendDirect(e.ctx, directReq(notificationV1.EventType_CONTACT_BIND_CODE))
 	require.Error(t, err, "调用方必须拿得到 error，否则会以为发出去了")
@@ -179,12 +179,19 @@ func TestNotificationServiceSqlite_SendFailed(t *testing.T) {
 	require.Equal(t, notificationV1.DeliveryStatus_FAILED, got.GetStatus())
 	require.Contains(t, got.GetLastError(), "smtp auth failed")
 	require.Nil(t, got.GetSentAt(), "没发出去就不该有完成时间")
-	require.Nil(t, got.ChannelId, "发送前就失败时渠道未确认，不得凭空补 ID")
+	// 渠道已经选出（替身带回了回执），失败的"是哪条 SMTP"因此是已知事实，必须一起落账：
+	// 只有 last_error 文本里那句 via channel [42] 是可读性，不是可查询性。
+	require.NotNil(t, got.ChannelId, "账号已选出的失败要落 channel_id")
+	require.Equal(t, uint32(42), got.GetChannelId())
 }
 
 // TestNotificationServiceSqlite_SendSkipped 渠道没配/没启用：SKIPPED，与"渠道报错"区分开。
+//
+// 替身在这里刻意不回回执——真实渠道实现在压根没选出账号时返回 nil receipt，
+// 于是台账的 channel_id 为空是"没有这回事"，与上面那条"有账号但发失败"形成对照。
 func TestNotificationServiceSqlite_SendSkipped(t *testing.T) {
 	e := newNotificationServiceForTest(t)
+	e.email.receipt = nil
 	e.email.err = fmt.Errorf("%w: no enabled EMAIL channel", channel.ErrChannelNotConfigured)
 
 	resp, err := e.svc.SendDirect(e.ctx, directReq(notificationV1.EventType_PASSWORD_RESET_CODE))
@@ -195,6 +202,7 @@ func TestNotificationServiceSqlite_SendSkipped(t *testing.T) {
 	got, getErr := e.svc.GetNotificationDelivery(e.ctx, &notificationV1.GetNotificationDeliveryRequest{Id: resp.GetDeliveryId()})
 	require.NoError(t, getErr)
 	require.Equal(t, notificationV1.DeliveryStatus_SKIPPED, got.GetStatus())
+	require.Nil(t, got.ChannelId, "没选出账号时不得凭空补 ID")
 }
 
 // TestNotificationServiceSqlite_UnregisteredChannel 路由指向没有实现的渠道：FAILED。
