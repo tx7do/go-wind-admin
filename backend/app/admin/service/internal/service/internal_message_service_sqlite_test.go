@@ -34,11 +34,22 @@ import (
 	appViewer "go-wind-admin/pkg/entgo/viewer"
 )
 
-// internalMessageServiceUserRepoStub：executeBroadcast 分页拉取用户时才会用到
-// data.UserRepo，本批次测试路径不触发，仅以空桩占位（嵌入接口获得默认方法集，
-// 未覆写方法被调用即 panic，测试即失败）。
+// internalMessageServiceUserRepoStub：List 是 executeBroadcast 分页拉取用户的入口，
+// Get 是定向路径 recipientTenantID 的数据源——没列进 tenantByUserID 的用户按"查不到"
+// 处理，于是走 viewer 租户兜底，与改动前的行为同形（不让既有测试因为新查询而改变结论）。
 type internalMessageServiceUserRepoStub struct {
 	data.UserRepo
+
+	tenantByUserID map[uint32]uint32
+}
+
+func (s *internalMessageServiceUserRepoStub) Get(_ context.Context, req *identityV1.GetUserRequest) (*identityV1.User, error) {
+	uid := req.GetId()
+	tid, ok := s.tenantByUserID[uid]
+	if !ok {
+		return nil, identityV1.ErrorNotFound("user [%d] not found", uid)
+	}
+	return &identityV1.User{Id: trans.Ptr(uid), TenantId: trans.Ptr(tid)}, nil
 }
 
 // newInternalMessageServiceForTest 白盒复刻 NewInternalMessageService 的字段初始化：
@@ -273,18 +284,18 @@ func (r *broadcastUserRepoStub) List(ctx context.Context, _ *paginationV1.Paging
 func TestInternalMessageServiceSqlite_AsyncBroadcastTenantScoping(t *testing.T) {
 	svc := newInternalMessageServiceForTest(t)
 
-	mkUsers := func(ids ...uint32) []*identityV1.User {
+	mkUsers := func(tenantID uint32, ids ...uint32) []*identityV1.User {
 		users := make([]*identityV1.User, 0, len(ids))
 		for _, id := range ids {
-			users = append(users, &identityV1.User{Id: trans.Ptr(id)})
+			users = append(users, &identityV1.User{Id: trans.Ptr(id), TenantId: trans.Ptr(tenantID)})
 		}
 		return users
 	}
 	stub := &broadcastUserRepoStub{
 		usersByTenant: map[uint32][]*identityV1.User{
-			7: mkUsers(701, 702, 703),
-			9: mkUsers(901),
-			0: mkUsers(1),
+			7: mkUsers(7, 701, 702, 703),
+			9: mkUsers(9, 901),
+			0: mkUsers(0, 1),
 		},
 	}
 	svc.userRepo = stub
@@ -325,4 +336,76 @@ func TestInternalMessageServiceSqlite_AsyncBroadcastTenantScoping(t *testing.T) 
 	other, err := svc.internalMessageRecipientRepo.List(tenantCtx(9), &paginationV1.PagingRequest{})
 	require.NoError(t, err)
 	require.Empty(t, other.GetItems(), "租户 9 不应看到别租户的广播")
+}
+
+// inboxCtx 构造"某个租户用户正在读自己的收件箱"的 ctx。
+func inboxCtx(uid, tid uint32) context.Context {
+	return viewer.WithContext(context.Background(), appViewer.NewUserViewer(uint64(uid), uint64(tid), 0, "", nil))
+}
+
+// TestInternalMessageServiceSqlite_PlatformBroadcastIsReadableByTenantUser 钉住 §6 决策点 4：
+// 平台管理员的全员广播，租户用户的收件箱必须读得到、而且读得到标题正文。
+//
+// 两条缺一不可，各自都是静默的：
+//   - 收件行按**收件用户**的租户打标 —— 否则行落在租户 0，读者的租户谓词把它滤掉（收件箱空）；
+//   - 父消息回填以 SystemViewer 读 —— 否则收件行读到了，title/content 仍是空串
+//     （公告的父消息行本身就属于租户 0，这是"平台"而不是"读者的租户"）。
+//
+// 改动前两条都不成立，所以现象是"平台发了公告、租户侧收件箱永远空"。
+func TestInternalMessageServiceSqlite_PlatformBroadcastIsReadableByTenantUser(t *testing.T) {
+	svc := newInternalMessageServiceForTest(t)
+	svc.userRepo = &broadcastUserRepoStub{
+		usersByTenant: map[uint32][]*identityV1.User{
+			7: {{Id: trans.Ptr(uint32(701)), TenantId: trans.Ptr(uint32(7))}},
+			9: {{Id: trans.Ptr(uint32(901)), TenantId: trans.Ptr(uint32(9))}},
+			0: {{Id: trans.Ptr(uint32(1)), TenantId: trans.Ptr(uint32(0))}},
+		},
+	}
+
+	// 平台公告：父消息属于租户 0（平台），广播任务 payload 的 TenantId 也是 0 → handler 用 SystemViewer。
+	msg, err := svc.internalMessageRepo.Create(enttest.NewSystemViewerCtx(context.Background()),
+		&internalMessageV1.CreateInternalMessageRequest{
+			Data: &internalMessageV1.InternalMessage{
+				Title:     trans.Ptr("平台公告"),
+				Content:   trans.Ptr("全平台可见"),
+				Status:    internalMessageV1.InternalMessage_PUBLISHED.Enum(),
+				Type:      internalMessageV1.InternalMessage_NOTIFICATION.Enum(),
+				CreatedBy: trans.Ptr(uint32(1)),
+			},
+		})
+	require.NoError(t, err)
+
+	require.NoError(t, svc.AsyncBroadcastMessage("broadcast_message", &task.BroadcastMessageTaskData{
+		MessageId: msg.GetId(),
+		TenantId:  0,
+	}))
+
+	recipientSvc := &InternalMessageRecipientService{
+		log:                          bLogger.NewHelper(bLogger.NopLogger()),
+		internalMessageRepo:          svc.internalMessageRepo,
+		internalMessageRecipientRepo: svc.internalMessageRecipientRepo,
+	}
+
+	for _, c := range []struct{ uid, tid uint32 }{{701, 7}, {901, 9}} {
+		inbox, err := recipientSvc.ListUserInbox(inboxCtx(c.uid, c.tid), &paginationV1.PagingRequest{})
+		require.NoError(t, err)
+		require.Len(t, inbox.GetItems(), 1, "收件人 %d（租户 %d）应读到且只读到自己的公告行", c.uid, c.tid)
+		require.Equal(t, c.tid, inbox.GetItems()[0].GetTenantId(), "收件行应打在收件人自己的租户上")
+		require.Equal(t, "平台公告", inbox.GetItems()[0].GetTitle(), "公告正文必须回填得到（父消息在租户 0）")
+		require.Equal(t, "全平台可见", inbox.GetItems()[0].GetContent())
+	}
+
+	// 平台读者不参与归属钉定（用户详情页要按指定用户读收件箱，见 repo.List 的豁免条件），
+	// 所以这里只要求"平台用户自己的那一行也在、打标注 0、同样回填得到正文"。
+	platformInbox, err := recipientSvc.ListUserInbox(inboxCtx(1, 0), &paginationV1.PagingRequest{})
+	require.NoError(t, err)
+	var own *internalMessageV1.InternalMessageRecipient
+	for _, item := range platformInbox.GetItems() {
+		if item.GetRecipientUserId() == 1 {
+			own = item
+		}
+	}
+	require.NotNil(t, own, "平台用户也在全员广播的受众里")
+	require.Equal(t, uint32(0), own.GetTenantId(), "平台用户的收件行属于租户 0（平台）")
+	require.Equal(t, "平台公告", own.GetTitle())
 }

@@ -52,13 +52,13 @@
 
 | 模块 | 表 |
 |---|---|
-| dict | `sys_dict_types`、`sys_dict_entries`、`sys_dict_entry_i18ns` |
-| file | `sys_files` |
-| internal_message | `sys_internal_messages`、`sys_internal_message_categories`、`sys_internal_message_recipients` |
+| dict | `sys_dict_types`、`sys_dict_entries`、`sys_dict_entry_i18n` |
+| file | `files`（同样没有 `sys_` 前缀） |
+| internal_message | `internal_messages`、`internal_message_categories`、`internal_message_recipients`（**没有 `sys_` 前缀**，2026-09-20 按 `information_schema.tables` 核对；写探针 SQL 时别照 ent schema 名加前缀） |
 | log（审计） | `sys_api_audit_logs`、`sys_data_access_audit_logs`、`sys_login_audit_logs`、`sys_operation_audit_logs`、`sys_permission_audit_logs`、`sys_policy_evaluation_logs` |
 | membership | `sys_memberships`、`sys_membership_org_units`、`sys_membership_positions`、`sys_membership_roles` |
-| opm | `sys_org_units`、`sys_positions`（数据范围试点，挂组合策略）、`sys_users`、`sys_user_credentials`、`sys_user_mfa_factors`、`sys_user_org_units`、`sys_user_positions`、`sys_user_roles`、`sys_roles`、`sys_role_metadatas`、`sys_role_org_units`、`sys_role_permissions`、`sys_role_field_permissions` |
-| system/tenant | `sys_login_policys`、`sys_tasks`、`sys_access_keys` |
+| opm | `sys_org_units`、`sys_positions`（数据范围试点，挂组合策略）、`sys_users`、`sys_user_credentials`、`sys_user_mfa_factors`、`sys_user_org_units`、`sys_user_positions`、`sys_user_roles`、`sys_roles`、`sys_role_metadata`、`sys_role_org_units`、`sys_role_permissions`、`sys_role_field_permissions` |
+| system/tenant | `sys_login_policies`、`sys_tasks`、`sys_access_keys` |
 
 > 审计日志表带 tenant_id 意味着：租户管理员只能看到本租户的审计记录；平台管理员全量。
 

@@ -77,13 +77,17 @@ func newNotifySeamEnv(t *testing.T) *notifySeamEnv {
 	pub := &payloadRecordingPublisher{}
 
 	im := &InternalMessageService{
-		log:                          bLogger.NewHelper(bLogger.NopLogger()),
-		internalMessageRepo:          data.NewInternalMessageRepoForTest(entClient),
-		internalMessageCategoryRepo:  data.NewInternalMessageCategoryRepoForTest(entClient),
+		log:                         bLogger.NewHelper(bLogger.NopLogger()),
+		internalMessageRepo:         data.NewInternalMessageRepoForTest(entClient),
+		internalMessageCategoryRepo: data.NewInternalMessageCategoryRepoForTest(entClient),
 		internalMessageRecipientRepo: data.NewInternalMessageRecipientRepoForTest(entClient),
-		userRepo:                     &internalMessageServiceUserRepoStub{},
-		internalMessagePublisher:     pub,
-		notifier:                     unwiredNotifier{},
+		userRepo: &internalMessageServiceUserRepoStub{
+			// 定向投递的收件人 1024 属于租户 5，而本测试的 ctx 是 SystemViewer（租户 0）：
+			// 收件行落在 5 才说明打标跟的是收件人，不是操作人/viewer。
+			tenantByUserID: map[uint32]uint32{1024: 5},
+		},
+		internalMessagePublisher: pub,
+		notifier:                 unwiredNotifier{},
 	}
 
 	registry := channel.NewRegistry()
@@ -144,6 +148,8 @@ func TestNotifySeamDirectedSend(t *testing.T) {
 	require.Len(t, inbox.GetItems(), 1, "缝的另一端确实落了收件行")
 	require.Equal(t, resp.GetMessageId(), inbox.GetItems()[0].GetMessageId())
 	require.Equal(t, uint32(1024), inbox.GetItems()[0].GetRecipientUserId())
+	require.Equal(t, uint32(5), inbox.GetItems()[0].GetTenantId(),
+		"收件行必须打在收件人的租户上：viewer 是租户 0 的 SystemViewer，落在 5 才证明打标跟的是受众")
 
 	payload := ssePayloadAt(t, e.pub, 0)
 	require.NotZero(t, payload["id"], "SSE 载荷必须带收件行主键")

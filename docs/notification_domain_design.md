@@ -96,10 +96,13 @@ SSE 扇出与 streamID 归属校验（`HandleAuthorize` 不匹配即 403）都�
    修复：任务载荷带 `TenantId`，handler 据此构造 `UserViewer` ctx；`executeBroadcast` 的租户
    **从 ctx 的 viewer 反取**而非另传一份，使"受众范围"与"行打标"不可能分叉。回退 goroutine 路径
    本来就带着请求 viewer，无需改。
+   （P2-2 之后这一句只对**受众范围**成立：viewer 租户决定扇出到哪，行打标改由**每个收件用户自己的**租户逐行决定，
+   因为平台上下文的扇出覆盖全平台，用它打标会把租户用户的行写进租户 0。）
    回归测试：`TestInternalMessageRecipientTenantSqlite`（钉住 go-crud 三种上下文行为）+
    `TestInternalMessageServiceSqlite_AsyncBroadcastTenantScoping`（钉住扇出只覆盖本租户、
    行可被本租户读者读到、他租户读者读到 0 行）。
-   遗留：平台管理员（tenant 0）广播的收件行仍是 `tenant_id=0`，租户用户读不到 —— 见 §6 决策点 4。
+   遗留：平台管理员（tenant 0）广播的收件行仍是 `tenant_id=0`，租户用户读不到 —— **已由 P2-2 修掉**
+   （打标改逐行跟随受众，见 §4 P2-2 与 §6 决策点 4）。
 3. **前端订阅了后端从不发布的事件** —— 成立。vue-element `components/NoticeDropdown/useNotice.ts`
    订阅 `"notification-revoke"`，全仓 `backend/` 零命中该字符串，约 20 行撤销逻辑不可达。
    已删除：撤回在库侧直接删收件行，下次拉取自然消失，不需要增量同步事件。
@@ -306,7 +309,7 @@ vben 端乐观插入拿到 `messageId:0` + Invalid Date，其去重逻辑随后�
 | --- | --- |
 | `POST /admin/v1/internal-message/send`（定向 user 2） | 200，`messageId=9` |
 | `sys_notification_deliveries` 新行 | `event_type=INTERNAL_MESSAGE`、`channel=INTERNAL`、`status=SENT`、`target="2"`（未脱敏的用户 ID，见 §3.3 例外）、`related_id=9`、`channel_id` **为空**（站内信没有渠道配置行，与 EMAIL 的"自选 SMTP 必须回填"不同形）、`created_by=1`（操作人） |
-| `internal_message_recipients` 新行 | `message_id=9`、`recipient_user_id=2`、`tenant_id=0`（= 操作人 viewer 租户，与改动前同形，见 §6 决策点 4）、`status=RECEIVED` |
+| `internal_message_recipients` 新行 | `message_id=9`、`recipient_user_id=2`、`tenant_id=0`（当时取的是**操作人** viewer 租户 —— 该缺陷已由下面的 P2-2 修掉，现在这列是收件人自己的租户）、`status=RECEIVED` |
 | 台账读回 | `GET /admin/v1/notification-deliveries?query={"eventType__contains":"INTERNAL_MESSAGE"}` → 200、total=1、枚举与 `relatedId` 如实呈现 |
 | 自动迁移 | 重启后 `pg_indexes` 多出 `idx_sys_notification_delivery_event_related`，`related_id` 列可用（无需手写 DDL） |
 | 广播 SSE 帧（订阅 `:7789/events?token=…&stream=1`） | `{"id":10,"messageId":11,…}` —— **`id` 非零**，见下 |
@@ -316,6 +319,40 @@ vben 端乐观插入拿到 `messageId:0` + Invalid Date，其去重逻辑随后�
 vue-element 的 `if (!data.id || !data.messageId) return` 把**每一条广播通知**丢掉，桌面通知与未读数
 不触发也不报错。修法：`IdsByMessageAndRecipients` 按 `(message_id, recipient_user_id)` 批量回读主键再推。
 回归测试 `internal_message_notify_seam_sqlite_test.go` 用变异验证过（删掉回填那一行即红）。
+
+**P2-2（收件行的租户打标跟着受众走，已完成 2026-09-20）** —— 落 §6 决策点 4 的第一条出路，三处一起改：
+
+1. **写侧定向路径**：`sendNotification` 的收件行租户改为查收件用户（`recipientTenantID` → `userRepo.Get`），
+   不再取操作人 viewer；查不到时回退 viewer 租户并留 error（回退成 0 会把行藏进"平台"这个谁都读不到的地方）。
+2. **写侧广播路径**：`executeBroadcast` 逐行取受众 DTO 自带的 `tenant_id`，不再整批取 viewer 租户。
+   平台管理员的广播在 SystemViewer 下跑，viewer 租户恒为 0，按它打标等于把全平台的收件行写进租户 0。
+   受众没带租户时（`tenant_id=0` 而广播方是租户）按广播方租户兜底并留 error —— 这是 go-crud DTO 映射退化的唯一可察觉窗口。
+3. **读侧**：`ListUserInbox` 回填父消息改走 SystemViewer。平台公告的父消息行落在租户 0，而收件行按读者租户过滤，
+   用读者的 viewer 读父消息 → 收件箱有行、标题正文为空（推送侧从内存 DTO 取正文，反而是全的，两条路径就此分叉）。
+   `messageIds` 全部来自已按读者租户过滤过的收件行，"能读到这条收件行"就是授权凭据，不构成跨租户读取口。
+
+**运行期实测（本机实例重启到新代码 + 现网 `gwa` 库）**：
+
+| 观测点 | 结果 |
+| --- | --- |
+| admin（平台，租户 0）广播 `target_all` | 改动前的同类广播（message 10/11）两行收件全是 `tenant_id=0`；改动后 message 12：user 2 → **`tenant_id=1`**、user 1（平台用户）→ `tenant_id=0`，逐行随受众 |
+| admin → tenant_admin(租户 1) 定向（message 13） | 收件行 `tenant_id=1`，父消息 `tenant_id=0` —— 打标跟的是收件人，不是操作人/viewer |
+| admin → 探针租户(租户 2) 用户定向（message 17） | 收件行 `tenant_id=2` |
+| **租户用户读自己的收件箱**（`probe_admin` @ 租户 2，`GET /admin/v1/internal-message/inbox`） | total=1、`tenant=2`、**`title`/`content` 回填到位**（父消息在租户 0）—— 这一行是"平台公告租户读不到"缺陷的反面证据 |
+
+租户态 token 是本次现场造出来的：`POST /admin/v1/tenants:with-admin`（租户 2 + 管理员，绑定企业版套餐 3，
+否则闸门回 `no subscription plan`）→ 登录取 token → 探针结束后按各资源的 DELETE 路由清掉。
+**残留两处没清**：`tenant:manager`（role id=4，租户 2 的模板副本）被"protected role cannot be deleted"挡住，
+删租户时也没带走它；`sys_user_credentials` 里探针用户 3/4 的两行在用户删除后仍在且 `deleted_at` 为空 ——
+**用户删除不级联凭证**是本次顺手发现的一个既有缺口（不在本次范围内，登录侧因用户已不存在而 fail-closed）。
+
+回归测试：`TestInternalMessageServiceSqlite_PlatformBroadcastIsReadableByTenantUser`（平台广播 → 两个租户的读者各读到自己的行 + 标题正文）、
+`TestNotifySeamDirectedSend`（收件行落在收件人租户而非 SystemViewer 的租户 0）。
+
+**环境发现（不是代码缺陷，但会让广播看起来"没发"**）：本机 `backend` 与兄弟项目 `go-wind-quant` 的 asynq
+共用同一个 Redis 的 **DB 1 `default` 队列**，谁先抢到谁处理，没有对应 handler 的一方报
+`handler not found for task "…"` 进退避重试。实测 `asynq:{default}:retry` 里躺着 `tenant_expiry_scan`（本仓任务类型），
+而探针的两次广播任务延迟 58 秒才被处理、后续两次干脆没被本实例处理。上表里的运行期证据因此走的是**同步的定向路径**。
 
 P2 剩余：`notification_rules` 表 + 管理页，替换 §3.5 的 Go 表；`sys_notification_channels` 解掉"WEBHOOK 类型
 无处存 URL"的问题（方案见 §6 决策点 2）；`webhook_sender.go` 落地。
@@ -357,15 +394,16 @@ P2 剩余：`notification_rules` 表 + 管理页，替换 §3.5 的 Go 表；`sy
    （找回密码的标识符可以是任意注册邮箱）。真要按租户看用量，走 `recipient_user_id` 关联用户表即可，
    不需要在写入路径上多一个可能填错的列。若 P2 的用量计量证明需要，再补列 + 回填，比现在就背
    "系统上下文里 viewer 租户为 0 → 全部落在租户 0"的坑便宜。
-4. **平台公告是否要让租户用户读到**（§2.4-2 修复后暴露）。平台管理员广播的收件行落 `tenant_id=0`，
-   而收件箱读取被 go-crud 强制过滤为 viewer 租户 → 租户用户读不到平台公告，平台侧只能靠
-   `internal_messages` 列表页看。三条出路：收件行写入时按受众租户扇出（平台上下文 `userRepo.List`
+4. **平台公告是否要让租户用户读到**（§2.4-2 修复后暴露）—— **已定并落地：第一条出路，P2-2（2026-09-20）**。
+   平台管理员广播的收件行落 `tenant_id=0`，而收件箱读取被 go-crud 强制过滤为 viewer 租户 → 租户用户读不到平台公告，
+   平台侧只能靠 `internal_messages` 列表页看。三条出路：收件行写入时按受众租户扇出（平台上下文 `userRepo.List`
    已覆盖全平台，只需把每行的 tenant 换成**收件用户自己的** `tenant_id`）、收件箱读侧对 `tenant_id=0`
    开口（要改隔离层，风险大）、或明确"平台公告不进站内信、只走站内公告栏"。
-   倾向第一条：改动局限在 `executeBroadcast`，且与"行打标跟着受众走"这条已建立的不变式同形。
+   选了第一条：改动局限在站内信的写侧与读侧，不碰隔离层。**落地比原设想多一处**——收件行按受众打标之后，
+   父消息（平台公告本体）仍在租户 0，收件箱回填必须换 SystemViewer 才读得到，否则"有行没标题"（见 §4 P2-2 第 3 条）。
    **P2 补充事实（2026-09-20 实测）**：定向路径的收件行 `tenant_id` 取的是**操作人** viewer 的租户
    （改缝前后同形，实测 admin→tenant_admin 一次投递落 `tenant_id=0`），所以"平台公告租户读不到"
-   这个缺陷在定向路径上同样存在，不止广播。真按第一条修时要一起覆盖两个入口。
+   这个缺陷在定向路径上同样存在，不止广播。已按同一规则一起覆盖两个入口。
 
 5. **站内信投递在台账里 `channel_id` 留空是否可接受** —— **P2 已定：可接受**。
    `channel_id` 的语义是"实际选中的 `sys_notification_channels` 行"，站内信压根没有配置行，
