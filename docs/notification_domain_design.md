@@ -884,10 +884,13 @@ webhook 侧三条失败用例（SSRF 拦下 / 对端 5xx / 配置不可用）按
 影响面比本轮通知域那两块大；若同时想把白名单真正接上（递归过滤叶子），那是第三次行为变化，
 得单独确认。所以这一块交成因、不交 diff。
 
-**同一处读路径的第三个症状（不必额外实验，读码即得）**：react 租户编辑抽屉
-`pages/app/tenant/tenant/components/TenantDrawer.tsx:85` 用 `planId: data.planId` 预填「订阅套餐」下拉，
-所以打开任何租户的编辑弹窗时那一栏都是空的；写侧 `tenant_repo.go:281` 是 `SetNillablePlanID`（nil 不动列），
-**不会**因此清空已绑的套餐，只是显示不出来。
+**同一处读路径的第三个症状（三端逐处读过源码，不是只看到 react）**：租户编辑抽屉的「订阅套餐」下拉在编辑态恒为空 ——
+react `pages/app/tenant/tenant/components/TenantDrawer.tsx:85` 预填 `planId: data.planId`、
+vue-element `pages/app/tenant/tenant/tenant-drawer.vue:388` 预填 `subscriptionPlan: row.planId`，两处读的都是这格恒空的 `planId`。
+vue-vben 那份更绕：`views/app/tenant/tenant/tenant-drawer.vue:340` 是整行 `setValues(row)`，表单字段名 `subscriptionPlan`（`:176`）
+对上的是 `sys_tenants.subscription_plan` 那个**遗留字符串列**（`plan_billing.md` §10 自己标着"双表示待收敛"），而写侧 `:421/:456`
+又把同一个表单项当 `planId` 提交 —— 读写用的不是同一个键。这条不影响上面的因果，但接手那一域的人该知道。
+写侧安全：`tenant_repo.go:281` 是 `SetNillablePlanID`（nil 不动列），**不会**因为前端回传空而清空已绑的套餐，只是显示不出来。
 
 **探针**：本轮为定位它只做了读操作（`psql SELECT` ×5、HTTP `GET` ×4、读服务端日志），**没写任何数据**、没动三端。
 上一轮为拿同一个事实临时建过一个测试文件 `internal/data/zz_tmp_plan_probe_test.go`，跑完即删（`git status` 已确认无残留）；
@@ -1142,7 +1145,7 @@ gow run admin
       修法是读侧补 `WithPlan()` + 手工回填 `dto.PlanId`（照 `plan_module_repo.go:112-114`），
       **但它属套餐/租户导航域**、改变的是全部租户用户可见的菜单集，所以本轮只交成因。
       同一段代码另两格顺带记下：白名单只遍历顶层节点而顶层 9 条根菜单一条都不带 `module`（实际过滤面 0/35），
-      以及 react 租户编辑抽屉的「订阅套餐」下拉因此恒为空。全在 §4 欠账 2。
+      以及**三端**租户编辑抽屉的「订阅套餐」下拉在编辑态恒为空（vben 那份还读写不同键）。全在 §4 欠账 2。
 
 P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点到的地方，漏任一处都是静默不一致）。
 **C 之后第一行变了**：路由不再是 Go 表，而是"播种一行默认规则 + 页面可改"：
