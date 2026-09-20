@@ -114,6 +114,20 @@ message NotificationDelivery {
     (gnostic.openapi.v3.property) = { description: "关联业务对象ID（按 event_type 解释）" }
   ]; // 关联业务对象ID
 
+  // 一次派发意图的标识：调用方不传则服务端生成 UUID。唯一性按 (request_id, channel) 组合，
+  // 见 §3.3 与 ent schema 注释（今天没有调用方自传，它是"同一次意图不许两行"的提前落地）。
+  optional string request_id = 11 [
+    json_name = "requestId",
+    (gnostic.openapi.v3.property) = { description: "派发请求ID（幂等锚）" }
+  ]; // 派发请求ID
+
+  // 已尝试投递次数（含首次）。同步投递恒为 1；异步投递每次尝试先加再一次拨号，
+  // 因此 attempts>0 而 status 仍为 SENDING = 拨过号但没回写结论。
+  optional uint32 attempts = 12 [
+    json_name = "attempts",
+    (gnostic.openapi.v3.property) = { description: "实际尝试投递次数（含首次）" }
+  ]; // 实际尝试次数
+
   optional uint32 created_by = 100 [json_name = "createdBy"];
   optional uint32 updated_by = 101 [json_name = "updatedBy"];
 
@@ -183,6 +197,13 @@ message SendDirectNotificationRequest {
     json_name = "relatedId",
     (gnostic.openapi.v3.property) = { description: "关联业务对象ID（按 event_type 解释）" }
   ]; // 关联业务对象ID
+
+  // 幂等锚，可选：调用方留空时服务端生成一个 UUID。调用方若自行传入（例如同一次用户提交
+  // 因网络重试而被打上两次），台账按 (request_id, channel) 唯一索引收敛。
+  optional string request_id = 10 [
+    json_name = "requestId",
+    (gnostic.openapi.v3.property) = { description: "派发请求ID（留空则服务端生成）" }
+  ]; // 派发请求ID
 }
 
 // 直发通知 - 回应

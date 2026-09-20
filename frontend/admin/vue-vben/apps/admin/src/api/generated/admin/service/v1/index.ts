@@ -5231,6 +5231,9 @@ export type notificationservicev1_ListNotificationDeliveryResponse = {
 
 // 一条通知 × 一个渠道 × 一个收件人 = 一行投递台账
 export type notificationservicev1_NotificationDelivery = {
+  // 已尝试投递次数（含首次）。同步投递恒为 1；异步投递每次尝试先加再一次拨号，
+  // 因此 attempts>0 而 status 仍为 SENDING = 拨过号但没回写结论。
+  attempts?: number;
   channel?: notificationservicev1_Channel;
   channelId?: number;
   createdAt?: wellKnownTimestamp;
@@ -5242,6 +5245,9 @@ export type notificationservicev1_NotificationDelivery = {
   // 产生本条投递的业务对象主键，含义由 event_type 决定（INTERNAL_MESSAGE → sys_internal_messages.id）。
   // 存在的理由：台账不存正文快照（见 §3.3），排障时要能跳回业务对象去看发了什么。
   relatedId?: number;
+  // 一次派发意图的标识：调用方不传则服务端生成 UUID。唯一性按 (request_id, channel) 组合，
+  // 见 §3.3 与 ent schema 注释（今天没有调用方自传，它是"同一次意图不许两行"的提前落地）。
+  requestId?: string;
   sentAt?: wellKnownTimestamp;
   status?: notificationservicev1_DeliveryStatus;
   // 脱敏后的投递目标（见 MaskTarget）：台账可查，但不得成为明文集邮地址的第二个真相源

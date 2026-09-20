@@ -41,6 +41,10 @@ const (
 	FieldStatus = "status"
 	// FieldLastError holds the string denoting the last_error field in the database.
 	FieldLastError = "last_error"
+	// FieldRequestID holds the string denoting the request_id field in the database.
+	FieldRequestID = "request_id"
+	// FieldAttempts holds the string denoting the attempts field in the database.
+	FieldAttempts = "attempts"
 	// FieldSentAt holds the string denoting the sent_at field in the database.
 	FieldSentAt = "sent_at"
 	// Table holds the table name of the notificationdelivery in the database.
@@ -64,6 +68,8 @@ var Columns = []string{
 	FieldTarget,
 	FieldStatus,
 	FieldLastError,
+	FieldRequestID,
+	FieldAttempts,
 	FieldSentAt,
 }
 
@@ -78,6 +84,10 @@ func ValidColumn(column string) bool {
 }
 
 var (
+	// RequestIDValidator is a validator for the "request_id" field. It is called by the builders before save.
+	RequestIDValidator func(string) error
+	// DefaultAttempts holds the default value on creation for the "attempts" field.
+	DefaultAttempts uint32
 	// IDValidator is a validator for the "id" field. It is called by the builders before save.
 	IDValidator func(uint32) error
 )
@@ -236,6 +246,16 @@ func ByStatus(opts ...sql.OrderTermOption) OrderOption {
 // ByLastError orders the results by the last_error field.
 func ByLastError(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldLastError, opts...).ToFunc()
+}
+
+// ByRequestID orders the results by the request_id field.
+func ByRequestID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldRequestID, opts...).ToFunc()
+}
+
+// ByAttempts orders the results by the attempts field.
+func ByAttempts(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldAttempts, opts...).ToFunc()
 }
 
 // BySentAt orders the results by the sent_at field.

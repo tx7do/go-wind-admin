@@ -109,6 +109,16 @@ func LastError(v string) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldLastError, v))
 }
 
+// RequestID applies equality check predicate on the "request_id" field. It's identical to RequestIDEQ.
+func RequestID(v string) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldEQ(FieldRequestID, v))
+}
+
+// Attempts applies equality check predicate on the "attempts" field. It's identical to AttemptsEQ.
+func Attempts(v uint32) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldEQ(FieldAttempts, v))
+}
+
 // SentAt applies equality check predicate on the "sent_at" field. It's identical to SentAtEQ.
 func SentAt(v time.Time) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldEQ(FieldSentAt, v))
@@ -802,6 +812,131 @@ func LastErrorEqualFold(v string) predicate.NotificationDelivery {
 // LastErrorContainsFold applies the ContainsFold predicate on the "last_error" field.
 func LastErrorContainsFold(v string) predicate.NotificationDelivery {
 	return predicate.NotificationDelivery(sql.FieldContainsFold(FieldLastError, v))
+}
+
+// RequestIDEQ applies the EQ predicate on the "request_id" field.
+func RequestIDEQ(v string) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldEQ(FieldRequestID, v))
+}
+
+// RequestIDNEQ applies the NEQ predicate on the "request_id" field.
+func RequestIDNEQ(v string) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldNEQ(FieldRequestID, v))
+}
+
+// RequestIDIn applies the In predicate on the "request_id" field.
+func RequestIDIn(vs ...string) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldIn(FieldRequestID, vs...))
+}
+
+// RequestIDNotIn applies the NotIn predicate on the "request_id" field.
+func RequestIDNotIn(vs ...string) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldNotIn(FieldRequestID, vs...))
+}
+
+// RequestIDGT applies the GT predicate on the "request_id" field.
+func RequestIDGT(v string) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldGT(FieldRequestID, v))
+}
+
+// RequestIDGTE applies the GTE predicate on the "request_id" field.
+func RequestIDGTE(v string) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldGTE(FieldRequestID, v))
+}
+
+// RequestIDLT applies the LT predicate on the "request_id" field.
+func RequestIDLT(v string) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldLT(FieldRequestID, v))
+}
+
+// RequestIDLTE applies the LTE predicate on the "request_id" field.
+func RequestIDLTE(v string) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldLTE(FieldRequestID, v))
+}
+
+// RequestIDContains applies the Contains predicate on the "request_id" field.
+func RequestIDContains(v string) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldContains(FieldRequestID, v))
+}
+
+// RequestIDHasPrefix applies the HasPrefix predicate on the "request_id" field.
+func RequestIDHasPrefix(v string) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldHasPrefix(FieldRequestID, v))
+}
+
+// RequestIDHasSuffix applies the HasSuffix predicate on the "request_id" field.
+func RequestIDHasSuffix(v string) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldHasSuffix(FieldRequestID, v))
+}
+
+// RequestIDIsNil applies the IsNil predicate on the "request_id" field.
+func RequestIDIsNil() predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldIsNull(FieldRequestID))
+}
+
+// RequestIDNotNil applies the NotNil predicate on the "request_id" field.
+func RequestIDNotNil() predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldNotNull(FieldRequestID))
+}
+
+// RequestIDEqualFold applies the EqualFold predicate on the "request_id" field.
+func RequestIDEqualFold(v string) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldEqualFold(FieldRequestID, v))
+}
+
+// RequestIDContainsFold applies the ContainsFold predicate on the "request_id" field.
+func RequestIDContainsFold(v string) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldContainsFold(FieldRequestID, v))
+}
+
+// AttemptsEQ applies the EQ predicate on the "attempts" field.
+func AttemptsEQ(v uint32) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldEQ(FieldAttempts, v))
+}
+
+// AttemptsNEQ applies the NEQ predicate on the "attempts" field.
+func AttemptsNEQ(v uint32) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldNEQ(FieldAttempts, v))
+}
+
+// AttemptsIn applies the In predicate on the "attempts" field.
+func AttemptsIn(vs ...uint32) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldIn(FieldAttempts, vs...))
+}
+
+// AttemptsNotIn applies the NotIn predicate on the "attempts" field.
+func AttemptsNotIn(vs ...uint32) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldNotIn(FieldAttempts, vs...))
+}
+
+// AttemptsGT applies the GT predicate on the "attempts" field.
+func AttemptsGT(v uint32) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldGT(FieldAttempts, v))
+}
+
+// AttemptsGTE applies the GTE predicate on the "attempts" field.
+func AttemptsGTE(v uint32) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldGTE(FieldAttempts, v))
+}
+
+// AttemptsLT applies the LT predicate on the "attempts" field.
+func AttemptsLT(v uint32) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldLT(FieldAttempts, v))
+}
+
+// AttemptsLTE applies the LTE predicate on the "attempts" field.
+func AttemptsLTE(v uint32) predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldLTE(FieldAttempts, v))
+}
+
+// AttemptsIsNil applies the IsNil predicate on the "attempts" field.
+func AttemptsIsNil() predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldIsNull(FieldAttempts))
+}
+
+// AttemptsNotNil applies the NotNil predicate on the "attempts" field.
+func AttemptsNotNil() predicate.NotificationDelivery {
+	return predicate.NotificationDelivery(sql.FieldNotNull(FieldAttempts))
 }
 
 // SentAtEQ applies the EQ predicate on the "sent_at" field.

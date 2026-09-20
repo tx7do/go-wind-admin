@@ -101,6 +101,26 @@ func (NotificationDelivery) Fields() []ent.Field {
 			Optional().
 			Nillable(),
 
+		// 一次派发意图的标识：调用方不传时服务端生成 UUID。它的唯一索引是"同一次意图不许变成两行
+		// 真实投递"这条契约的提前落地 —— 目前还没有调用方自己传（找回密码每次都生成新验证码，
+		// 天然不该收敛），所以今天它的作用是排障时把一次调用的所有投递串起来。
+		// 唯一性落在 (request_id, channel) 而不是单列 —— 台账的行粒度是
+		// "一条通知 × 一个渠道 × 一个收件人"（§3.3），将来一次意图若扇出到多渠道，
+		// 单列唯一会直接拒绝第二行。
+		field.String("request_id").
+			Comment("派发请求ID（幂等锚）").
+			Optional().
+			Nillable().
+			MaxLen(64),
+
+		// 已尝试次数，含首次。同步路径恒为 1；异步路径每次尝试先 +1 再拨号，
+		// 所以"attempts>0 但 status 还是 SENDING"就是"拨过号但没回写结论"的唯一线索。
+		field.Uint32("attempts").
+			Comment("实际尝试投递次数（含首次）").
+			Default(0).
+			Optional().
+			Nillable(),
+
 		field.Time("sent_at").
 			Comment("投递完成时间").
 			Optional().
@@ -133,5 +153,10 @@ func (NotificationDelivery) Indexes() []ent.Index {
 		// "这条公告/审批单到底发出去了没"——按业务对象反查投递事实
 		index.Fields("event_type", "related_id").
 			StorageKey("idx_sys_notification_delivery_event_related"),
+
+		// 幂等锚：见 request_id 字段注释。唯一而不是普通索引才是它的价值所在——
+		// 重复入队/重复调用在写入这一步就被 DB 挡下，而不是靠读侧自觉。
+		index.Fields("request_id", "channel").Unique().
+			StorageKey("uidx_sys_notification_delivery_request_channel"),
 	}
 }

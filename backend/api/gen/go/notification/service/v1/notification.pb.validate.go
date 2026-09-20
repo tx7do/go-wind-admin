@@ -126,6 +126,14 @@ func (m *NotificationDelivery) validate(all bool) error {
 		// no validation rules for RelatedId
 	}
 
+	if m.RequestId != nil {
+		// no validation rules for RequestId
+	}
+
+	if m.Attempts != nil {
+		// no validation rules for Attempts
+	}
+
 	if m.CreatedBy != nil {
 		// no validation rules for CreatedBy
 	}
@@ -574,6 +582,10 @@ func (m *SendDirectNotificationRequest) validate(all bool) error {
 
 	if m.RelatedId != nil {
 		// no validation rules for RelatedId
+	}
+
+	if m.RequestId != nil {
+		// no validation rules for RequestId
 	}
 
 	if len(errors) > 0 {

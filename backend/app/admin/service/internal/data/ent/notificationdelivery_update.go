@@ -331,6 +331,53 @@ func (_u *NotificationDeliveryUpdate) ClearLastError() *NotificationDeliveryUpda
 	return _u
 }
 
+// SetRequestID sets the "request_id" field.
+func (_u *NotificationDeliveryUpdate) SetRequestID(v string) *NotificationDeliveryUpdate {
+	_u.mutation.SetRequestID(v)
+	return _u
+}
+
+// SetNillableRequestID sets the "request_id" field if the given value is not nil.
+func (_u *NotificationDeliveryUpdate) SetNillableRequestID(v *string) *NotificationDeliveryUpdate {
+	if v != nil {
+		_u.SetRequestID(*v)
+	}
+	return _u
+}
+
+// ClearRequestID clears the value of the "request_id" field.
+func (_u *NotificationDeliveryUpdate) ClearRequestID() *NotificationDeliveryUpdate {
+	_u.mutation.ClearRequestID()
+	return _u
+}
+
+// SetAttempts sets the "attempts" field.
+func (_u *NotificationDeliveryUpdate) SetAttempts(v uint32) *NotificationDeliveryUpdate {
+	_u.mutation.ResetAttempts()
+	_u.mutation.SetAttempts(v)
+	return _u
+}
+
+// SetNillableAttempts sets the "attempts" field if the given value is not nil.
+func (_u *NotificationDeliveryUpdate) SetNillableAttempts(v *uint32) *NotificationDeliveryUpdate {
+	if v != nil {
+		_u.SetAttempts(*v)
+	}
+	return _u
+}
+
+// AddAttempts adds value to the "attempts" field.
+func (_u *NotificationDeliveryUpdate) AddAttempts(v int32) *NotificationDeliveryUpdate {
+	_u.mutation.AddAttempts(v)
+	return _u
+}
+
+// ClearAttempts clears the value of the "attempts" field.
+func (_u *NotificationDeliveryUpdate) ClearAttempts() *NotificationDeliveryUpdate {
+	_u.mutation.ClearAttempts()
+	return _u
+}
+
 // SetSentAt sets the "sent_at" field.
 func (_u *NotificationDeliveryUpdate) SetSentAt(v time.Time) *NotificationDeliveryUpdate {
 	_u.mutation.SetSentAt(v)
@@ -398,6 +445,11 @@ func (_u *NotificationDeliveryUpdate) check() error {
 	if v, ok := _u.mutation.Status(); ok {
 		if err := notificationdelivery.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "NotificationDelivery.status": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.RequestID(); ok {
+		if err := notificationdelivery.RequestIDValidator(v); err != nil {
+			return &ValidationError{Name: "request_id", err: fmt.Errorf(`ent: validator failed for field "NotificationDelivery.request_id": %w`, err)}
 		}
 	}
 	return nil
@@ -519,6 +571,21 @@ func (_u *NotificationDeliveryUpdate) sqlSave(ctx context.Context) (_node int, e
 	}
 	if _u.mutation.LastErrorCleared() {
 		_spec.ClearField(notificationdelivery.FieldLastError, field.TypeString)
+	}
+	if value, ok := _u.mutation.RequestID(); ok {
+		_spec.SetField(notificationdelivery.FieldRequestID, field.TypeString, value)
+	}
+	if _u.mutation.RequestIDCleared() {
+		_spec.ClearField(notificationdelivery.FieldRequestID, field.TypeString)
+	}
+	if value, ok := _u.mutation.Attempts(); ok {
+		_spec.SetField(notificationdelivery.FieldAttempts, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedAttempts(); ok {
+		_spec.AddField(notificationdelivery.FieldAttempts, field.TypeUint32, value)
+	}
+	if _u.mutation.AttemptsCleared() {
+		_spec.ClearField(notificationdelivery.FieldAttempts, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.SentAt(); ok {
 		_spec.SetField(notificationdelivery.FieldSentAt, field.TypeTime, value)
@@ -850,6 +917,53 @@ func (_u *NotificationDeliveryUpdateOne) ClearLastError() *NotificationDeliveryU
 	return _u
 }
 
+// SetRequestID sets the "request_id" field.
+func (_u *NotificationDeliveryUpdateOne) SetRequestID(v string) *NotificationDeliveryUpdateOne {
+	_u.mutation.SetRequestID(v)
+	return _u
+}
+
+// SetNillableRequestID sets the "request_id" field if the given value is not nil.
+func (_u *NotificationDeliveryUpdateOne) SetNillableRequestID(v *string) *NotificationDeliveryUpdateOne {
+	if v != nil {
+		_u.SetRequestID(*v)
+	}
+	return _u
+}
+
+// ClearRequestID clears the value of the "request_id" field.
+func (_u *NotificationDeliveryUpdateOne) ClearRequestID() *NotificationDeliveryUpdateOne {
+	_u.mutation.ClearRequestID()
+	return _u
+}
+
+// SetAttempts sets the "attempts" field.
+func (_u *NotificationDeliveryUpdateOne) SetAttempts(v uint32) *NotificationDeliveryUpdateOne {
+	_u.mutation.ResetAttempts()
+	_u.mutation.SetAttempts(v)
+	return _u
+}
+
+// SetNillableAttempts sets the "attempts" field if the given value is not nil.
+func (_u *NotificationDeliveryUpdateOne) SetNillableAttempts(v *uint32) *NotificationDeliveryUpdateOne {
+	if v != nil {
+		_u.SetAttempts(*v)
+	}
+	return _u
+}
+
+// AddAttempts adds value to the "attempts" field.
+func (_u *NotificationDeliveryUpdateOne) AddAttempts(v int32) *NotificationDeliveryUpdateOne {
+	_u.mutation.AddAttempts(v)
+	return _u
+}
+
+// ClearAttempts clears the value of the "attempts" field.
+func (_u *NotificationDeliveryUpdateOne) ClearAttempts() *NotificationDeliveryUpdateOne {
+	_u.mutation.ClearAttempts()
+	return _u
+}
+
 // SetSentAt sets the "sent_at" field.
 func (_u *NotificationDeliveryUpdateOne) SetSentAt(v time.Time) *NotificationDeliveryUpdateOne {
 	_u.mutation.SetSentAt(v)
@@ -930,6 +1044,11 @@ func (_u *NotificationDeliveryUpdateOne) check() error {
 	if v, ok := _u.mutation.Status(); ok {
 		if err := notificationdelivery.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "NotificationDelivery.status": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.RequestID(); ok {
+		if err := notificationdelivery.RequestIDValidator(v); err != nil {
+			return &ValidationError{Name: "request_id", err: fmt.Errorf(`ent: validator failed for field "NotificationDelivery.request_id": %w`, err)}
 		}
 	}
 	return nil
@@ -1068,6 +1187,21 @@ func (_u *NotificationDeliveryUpdateOne) sqlSave(ctx context.Context) (_node *No
 	}
 	if _u.mutation.LastErrorCleared() {
 		_spec.ClearField(notificationdelivery.FieldLastError, field.TypeString)
+	}
+	if value, ok := _u.mutation.RequestID(); ok {
+		_spec.SetField(notificationdelivery.FieldRequestID, field.TypeString, value)
+	}
+	if _u.mutation.RequestIDCleared() {
+		_spec.ClearField(notificationdelivery.FieldRequestID, field.TypeString)
+	}
+	if value, ok := _u.mutation.Attempts(); ok {
+		_spec.SetField(notificationdelivery.FieldAttempts, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedAttempts(); ok {
+		_spec.AddField(notificationdelivery.FieldAttempts, field.TypeUint32, value)
+	}
+	if _u.mutation.AttemptsCleared() {
+		_spec.ClearField(notificationdelivery.FieldAttempts, field.TypeUint32)
 	}
 	if value, ok := _u.mutation.SentAt(); ok {
 		_spec.SetField(notificationdelivery.FieldSentAt, field.TypeTime, value)

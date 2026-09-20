@@ -662,6 +662,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			notificationdelivery.FieldTarget:          {Type: field.TypeString, Column: notificationdelivery.FieldTarget},
 			notificationdelivery.FieldStatus:          {Type: field.TypeEnum, Column: notificationdelivery.FieldStatus},
 			notificationdelivery.FieldLastError:       {Type: field.TypeString, Column: notificationdelivery.FieldLastError},
+			notificationdelivery.FieldRequestID:       {Type: field.TypeString, Column: notificationdelivery.FieldRequestID},
+			notificationdelivery.FieldAttempts:        {Type: field.TypeUint32, Column: notificationdelivery.FieldAttempts},
 			notificationdelivery.FieldSentAt:          {Type: field.TypeTime, Column: notificationdelivery.FieldSentAt},
 		},
 	}
@@ -4223,6 +4225,16 @@ func (f *NotificationDeliveryFilter) WhereStatus(p entql.StringP) {
 // WhereLastError applies the entql string predicate on the last_error field.
 func (f *NotificationDeliveryFilter) WhereLastError(p entql.StringP) {
 	f.Where(p.Field(notificationdelivery.FieldLastError))
+}
+
+// WhereRequestID applies the entql string predicate on the request_id field.
+func (f *NotificationDeliveryFilter) WhereRequestID(p entql.StringP) {
+	f.Where(p.Field(notificationdelivery.FieldRequestID))
+}
+
+// WhereAttempts applies the entql uint32 predicate on the attempts field.
+func (f *NotificationDeliveryFilter) WhereAttempts(p entql.Uint32P) {
+	f.Where(p.Field(notificationdelivery.FieldAttempts))
 }
 
 // WhereSentAt applies the entql time.Time predicate on the sent_at field.

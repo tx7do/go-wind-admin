@@ -8771,6 +8771,13 @@ components:
                     type: integer
                     description: 关联业务对象ID（按 event_type 解释）
                     format: uint32
+                requestId:
+                    type: string
+                    description: 派发请求ID（幂等锚）
+                attempts:
+                    type: integer
+                    description: 实际尝试投递次数（含首次）
+                    format: uint32
                 createdBy:
                     type: integer
                     format: uint32

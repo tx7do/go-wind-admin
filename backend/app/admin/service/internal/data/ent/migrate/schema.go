@@ -1415,6 +1415,8 @@ var (
 		{Name: "target", Type: field.TypeString, Nullable: true, Comment: "投递目标（脱敏后的地址）"},
 		{Name: "status", Type: field.TypeEnum, Nullable: true, Comment: "投递状态", Enums: []string{"SENDING", "SENT", "FAILED", "SKIPPED"}, Default: "SENDING"},
 		{Name: "last_error", Type: field.TypeString, Nullable: true, Comment: "最近一次失败原因"},
+		{Name: "request_id", Type: field.TypeString, Nullable: true, Size: 64, Comment: "派发请求ID（幂等锚）"},
+		{Name: "attempts", Type: field.TypeUint32, Nullable: true, Comment: "实际尝试投递次数（含首次）", Default: 0},
 		{Name: "sent_at", Type: field.TypeTime, Nullable: true, Comment: "投递完成时间"},
 	}
 	// SysNotificationDeliveriesTable holds the schema information for the "sys_notification_deliveries" table.
@@ -1448,6 +1450,11 @@ var (
 				Name:    "idx_sys_notification_delivery_event_related",
 				Unique:  false,
 				Columns: []*schema.Column{SysNotificationDeliveriesColumns[7], SysNotificationDeliveriesColumns[11]},
+			},
+			{
+				Name:    "uidx_sys_notification_delivery_request_channel",
+				Unique:  true,
+				Columns: []*schema.Column{SysNotificationDeliveriesColumns[15], SysNotificationDeliveriesColumns[8]},
 			},
 		},
 	}

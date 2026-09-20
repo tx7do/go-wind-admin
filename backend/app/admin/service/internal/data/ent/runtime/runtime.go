@@ -624,6 +624,14 @@ func init() {
 	_ = notificationdeliveryMixinFields0
 	notificationdeliveryFields := schema.NotificationDelivery{}.Fields()
 	_ = notificationdeliveryFields
+	// notificationdeliveryDescRequestID is the schema descriptor for request_id field.
+	notificationdeliveryDescRequestID := notificationdeliveryFields[8].Descriptor()
+	// notificationdelivery.RequestIDValidator is a validator for the "request_id" field. It is called by the builders before save.
+	notificationdelivery.RequestIDValidator = notificationdeliveryDescRequestID.Validators[0].(func(string) error)
+	// notificationdeliveryDescAttempts is the schema descriptor for attempts field.
+	notificationdeliveryDescAttempts := notificationdeliveryFields[9].Descriptor()
+	// notificationdelivery.DefaultAttempts holds the default value on creation for the attempts field.
+	notificationdelivery.DefaultAttempts = notificationdeliveryDescAttempts.Default.(uint32)
 	// notificationdeliveryDescID is the schema descriptor for id field.
 	notificationdeliveryDescID := notificationdeliveryMixinFields0[0].Descriptor()
 	// notificationdelivery.IDValidator is a validator for the "id" field. It is called by the builders before save.

@@ -218,6 +218,34 @@ func (_c *NotificationDeliveryCreate) SetNillableLastError(v *string) *Notificat
 	return _c
 }
 
+// SetRequestID sets the "request_id" field.
+func (_c *NotificationDeliveryCreate) SetRequestID(v string) *NotificationDeliveryCreate {
+	_c.mutation.SetRequestID(v)
+	return _c
+}
+
+// SetNillableRequestID sets the "request_id" field if the given value is not nil.
+func (_c *NotificationDeliveryCreate) SetNillableRequestID(v *string) *NotificationDeliveryCreate {
+	if v != nil {
+		_c.SetRequestID(*v)
+	}
+	return _c
+}
+
+// SetAttempts sets the "attempts" field.
+func (_c *NotificationDeliveryCreate) SetAttempts(v uint32) *NotificationDeliveryCreate {
+	_c.mutation.SetAttempts(v)
+	return _c
+}
+
+// SetNillableAttempts sets the "attempts" field if the given value is not nil.
+func (_c *NotificationDeliveryCreate) SetNillableAttempts(v *uint32) *NotificationDeliveryCreate {
+	if v != nil {
+		_c.SetAttempts(*v)
+	}
+	return _c
+}
+
 // SetSentAt sets the "sent_at" field.
 func (_c *NotificationDeliveryCreate) SetSentAt(v time.Time) *NotificationDeliveryCreate {
 	_c.mutation.SetSentAt(v)
@@ -277,6 +305,10 @@ func (_c *NotificationDeliveryCreate) defaults() {
 		v := notificationdelivery.DefaultStatus
 		_c.mutation.SetStatus(v)
 	}
+	if _, ok := _c.mutation.Attempts(); !ok {
+		v := notificationdelivery.DefaultAttempts
+		_c.mutation.SetAttempts(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -294,6 +326,11 @@ func (_c *NotificationDeliveryCreate) check() error {
 	if v, ok := _c.mutation.Status(); ok {
 		if err := notificationdelivery.StatusValidator(v); err != nil {
 			return &ValidationError{Name: "status", err: fmt.Errorf(`ent: validator failed for field "NotificationDelivery.status": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.RequestID(); ok {
+		if err := notificationdelivery.RequestIDValidator(v); err != nil {
+			return &ValidationError{Name: "request_id", err: fmt.Errorf(`ent: validator failed for field "NotificationDelivery.request_id": %w`, err)}
 		}
 	}
 	if v, ok := _c.mutation.ID(); ok {
@@ -389,6 +426,14 @@ func (_c *NotificationDeliveryCreate) createSpec() (*NotificationDelivery, *sqlg
 	if value, ok := _c.mutation.LastError(); ok {
 		_spec.SetField(notificationdelivery.FieldLastError, field.TypeString, value)
 		_node.LastError = &value
+	}
+	if value, ok := _c.mutation.RequestID(); ok {
+		_spec.SetField(notificationdelivery.FieldRequestID, field.TypeString, value)
+		_node.RequestID = &value
+	}
+	if value, ok := _c.mutation.Attempts(); ok {
+		_spec.SetField(notificationdelivery.FieldAttempts, field.TypeUint32, value)
+		_node.Attempts = &value
 	}
 	if value, ok := _c.mutation.SentAt(); ok {
 		_spec.SetField(notificationdelivery.FieldSentAt, field.TypeTime, value)
@@ -713,6 +758,48 @@ func (u *NotificationDeliveryUpsert) UpdateLastError() *NotificationDeliveryUpse
 // ClearLastError clears the value of the "last_error" field.
 func (u *NotificationDeliveryUpsert) ClearLastError() *NotificationDeliveryUpsert {
 	u.SetNull(notificationdelivery.FieldLastError)
+	return u
+}
+
+// SetRequestID sets the "request_id" field.
+func (u *NotificationDeliveryUpsert) SetRequestID(v string) *NotificationDeliveryUpsert {
+	u.Set(notificationdelivery.FieldRequestID, v)
+	return u
+}
+
+// UpdateRequestID sets the "request_id" field to the value that was provided on create.
+func (u *NotificationDeliveryUpsert) UpdateRequestID() *NotificationDeliveryUpsert {
+	u.SetExcluded(notificationdelivery.FieldRequestID)
+	return u
+}
+
+// ClearRequestID clears the value of the "request_id" field.
+func (u *NotificationDeliveryUpsert) ClearRequestID() *NotificationDeliveryUpsert {
+	u.SetNull(notificationdelivery.FieldRequestID)
+	return u
+}
+
+// SetAttempts sets the "attempts" field.
+func (u *NotificationDeliveryUpsert) SetAttempts(v uint32) *NotificationDeliveryUpsert {
+	u.Set(notificationdelivery.FieldAttempts, v)
+	return u
+}
+
+// UpdateAttempts sets the "attempts" field to the value that was provided on create.
+func (u *NotificationDeliveryUpsert) UpdateAttempts() *NotificationDeliveryUpsert {
+	u.SetExcluded(notificationdelivery.FieldAttempts)
+	return u
+}
+
+// AddAttempts adds v to the "attempts" field.
+func (u *NotificationDeliveryUpsert) AddAttempts(v uint32) *NotificationDeliveryUpsert {
+	u.Add(notificationdelivery.FieldAttempts, v)
+	return u
+}
+
+// ClearAttempts clears the value of the "attempts" field.
+func (u *NotificationDeliveryUpsert) ClearAttempts() *NotificationDeliveryUpsert {
+	u.SetNull(notificationdelivery.FieldAttempts)
 	return u
 }
 
@@ -1097,6 +1184,55 @@ func (u *NotificationDeliveryUpsertOne) UpdateLastError() *NotificationDeliveryU
 func (u *NotificationDeliveryUpsertOne) ClearLastError() *NotificationDeliveryUpsertOne {
 	return u.Update(func(s *NotificationDeliveryUpsert) {
 		s.ClearLastError()
+	})
+}
+
+// SetRequestID sets the "request_id" field.
+func (u *NotificationDeliveryUpsertOne) SetRequestID(v string) *NotificationDeliveryUpsertOne {
+	return u.Update(func(s *NotificationDeliveryUpsert) {
+		s.SetRequestID(v)
+	})
+}
+
+// UpdateRequestID sets the "request_id" field to the value that was provided on create.
+func (u *NotificationDeliveryUpsertOne) UpdateRequestID() *NotificationDeliveryUpsertOne {
+	return u.Update(func(s *NotificationDeliveryUpsert) {
+		s.UpdateRequestID()
+	})
+}
+
+// ClearRequestID clears the value of the "request_id" field.
+func (u *NotificationDeliveryUpsertOne) ClearRequestID() *NotificationDeliveryUpsertOne {
+	return u.Update(func(s *NotificationDeliveryUpsert) {
+		s.ClearRequestID()
+	})
+}
+
+// SetAttempts sets the "attempts" field.
+func (u *NotificationDeliveryUpsertOne) SetAttempts(v uint32) *NotificationDeliveryUpsertOne {
+	return u.Update(func(s *NotificationDeliveryUpsert) {
+		s.SetAttempts(v)
+	})
+}
+
+// AddAttempts adds v to the "attempts" field.
+func (u *NotificationDeliveryUpsertOne) AddAttempts(v uint32) *NotificationDeliveryUpsertOne {
+	return u.Update(func(s *NotificationDeliveryUpsert) {
+		s.AddAttempts(v)
+	})
+}
+
+// UpdateAttempts sets the "attempts" field to the value that was provided on create.
+func (u *NotificationDeliveryUpsertOne) UpdateAttempts() *NotificationDeliveryUpsertOne {
+	return u.Update(func(s *NotificationDeliveryUpsert) {
+		s.UpdateAttempts()
+	})
+}
+
+// ClearAttempts clears the value of the "attempts" field.
+func (u *NotificationDeliveryUpsertOne) ClearAttempts() *NotificationDeliveryUpsertOne {
+	return u.Update(func(s *NotificationDeliveryUpsert) {
+		s.ClearAttempts()
 	})
 }
 
@@ -1650,6 +1786,55 @@ func (u *NotificationDeliveryUpsertBulk) UpdateLastError() *NotificationDelivery
 func (u *NotificationDeliveryUpsertBulk) ClearLastError() *NotificationDeliveryUpsertBulk {
 	return u.Update(func(s *NotificationDeliveryUpsert) {
 		s.ClearLastError()
+	})
+}
+
+// SetRequestID sets the "request_id" field.
+func (u *NotificationDeliveryUpsertBulk) SetRequestID(v string) *NotificationDeliveryUpsertBulk {
+	return u.Update(func(s *NotificationDeliveryUpsert) {
+		s.SetRequestID(v)
+	})
+}
+
+// UpdateRequestID sets the "request_id" field to the value that was provided on create.
+func (u *NotificationDeliveryUpsertBulk) UpdateRequestID() *NotificationDeliveryUpsertBulk {
+	return u.Update(func(s *NotificationDeliveryUpsert) {
+		s.UpdateRequestID()
+	})
+}
+
+// ClearRequestID clears the value of the "request_id" field.
+func (u *NotificationDeliveryUpsertBulk) ClearRequestID() *NotificationDeliveryUpsertBulk {
+	return u.Update(func(s *NotificationDeliveryUpsert) {
+		s.ClearRequestID()
+	})
+}
+
+// SetAttempts sets the "attempts" field.
+func (u *NotificationDeliveryUpsertBulk) SetAttempts(v uint32) *NotificationDeliveryUpsertBulk {
+	return u.Update(func(s *NotificationDeliveryUpsert) {
+		s.SetAttempts(v)
+	})
+}
+
+// AddAttempts adds v to the "attempts" field.
+func (u *NotificationDeliveryUpsertBulk) AddAttempts(v uint32) *NotificationDeliveryUpsertBulk {
+	return u.Update(func(s *NotificationDeliveryUpsert) {
+		s.AddAttempts(v)
+	})
+}
+
+// UpdateAttempts sets the "attempts" field to the value that was provided on create.
+func (u *NotificationDeliveryUpsertBulk) UpdateAttempts() *NotificationDeliveryUpsertBulk {
+	return u.Update(func(s *NotificationDeliveryUpsert) {
+		s.UpdateAttempts()
+	})
+}
+
+// ClearAttempts clears the value of the "attempts" field.
+func (u *NotificationDeliveryUpsertBulk) ClearAttempts() *NotificationDeliveryUpsertBulk {
+	return u.Update(func(s *NotificationDeliveryUpsert) {
+		s.ClearAttempts()
 	})
 }
 

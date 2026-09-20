@@ -46,6 +46,10 @@ type NotificationDelivery struct {
 	Status *notificationdelivery.Status `json:"status,omitempty"`
 	// 最近一次失败原因
 	LastError *string `json:"last_error,omitempty"`
+	// 派发请求ID（幂等锚）
+	RequestID *string `json:"request_id,omitempty"`
+	// 实际尝试投递次数（含首次）
+	Attempts *uint32 `json:"attempts,omitempty"`
 	// 投递完成时间
 	SentAt       *time.Time `json:"sent_at,omitempty"`
 	selectValues sql.SelectValues
@@ -56,9 +60,9 @@ func (*NotificationDelivery) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case notificationdelivery.FieldID, notificationdelivery.FieldCreatedBy, notificationdelivery.FieldUpdatedBy, notificationdelivery.FieldDeletedBy, notificationdelivery.FieldChannelID, notificationdelivery.FieldRecipientUserID, notificationdelivery.FieldRelatedID:
+		case notificationdelivery.FieldID, notificationdelivery.FieldCreatedBy, notificationdelivery.FieldUpdatedBy, notificationdelivery.FieldDeletedBy, notificationdelivery.FieldChannelID, notificationdelivery.FieldRecipientUserID, notificationdelivery.FieldRelatedID, notificationdelivery.FieldAttempts:
 			values[i] = new(sql.NullInt64)
-		case notificationdelivery.FieldEventType, notificationdelivery.FieldChannel, notificationdelivery.FieldTarget, notificationdelivery.FieldStatus, notificationdelivery.FieldLastError:
+		case notificationdelivery.FieldEventType, notificationdelivery.FieldChannel, notificationdelivery.FieldTarget, notificationdelivery.FieldStatus, notificationdelivery.FieldLastError, notificationdelivery.FieldRequestID:
 			values[i] = new(sql.NullString)
 		case notificationdelivery.FieldCreatedAt, notificationdelivery.FieldUpdatedAt, notificationdelivery.FieldDeletedAt, notificationdelivery.FieldSentAt:
 			values[i] = new(sql.NullTime)
@@ -181,6 +185,20 @@ func (_m *NotificationDelivery) assignValues(columns []string, values []any) err
 				_m.LastError = new(string)
 				*_m.LastError = value.String
 			}
+		case notificationdelivery.FieldRequestID:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field request_id", values[i])
+			} else if value.Valid {
+				_m.RequestID = new(string)
+				*_m.RequestID = value.String
+			}
+		case notificationdelivery.FieldAttempts:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field attempts", values[i])
+			} else if value.Valid {
+				_m.Attempts = new(uint32)
+				*_m.Attempts = uint32(value.Int64)
+			}
 		case notificationdelivery.FieldSentAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field sent_at", values[i])
@@ -292,6 +310,16 @@ func (_m *NotificationDelivery) String() string {
 	if v := _m.LastError; v != nil {
 		builder.WriteString("last_error=")
 		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.RequestID; v != nil {
+		builder.WriteString("request_id=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.Attempts; v != nil {
+		builder.WriteString("attempts=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
 	if v := _m.SentAt; v != nil {

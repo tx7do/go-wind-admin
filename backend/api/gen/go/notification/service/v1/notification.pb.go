@@ -210,7 +210,13 @@ type NotificationDelivery struct {
 	SentAt    *timestamppb.Timestamp `protobuf:"bytes,9,opt,name=sent_at,json=sentAt,proto3,oneof" json:"sent_at,omitempty"`                                // 投递完成时间
 	// 产生本条投递的业务对象主键，含义由 event_type 决定（INTERNAL_MESSAGE → sys_internal_messages.id）。
 	// 存在的理由：台账不存正文快照（见 §3.3），排障时要能跳回业务对象去看发了什么。
-	RelatedId     *uint32                `protobuf:"varint,10,opt,name=related_id,json=relatedId,proto3,oneof" json:"related_id,omitempty"` // 关联业务对象ID
+	RelatedId *uint32 `protobuf:"varint,10,opt,name=related_id,json=relatedId,proto3,oneof" json:"related_id,omitempty"` // 关联业务对象ID
+	// 一次派发意图的标识。异步派发下它同时是 asynq 的 TaskID，所以重复入队不会变成第二次真实投递；
+	// 唯一性按 (request_id, channel) 组合，见 §3.3 与 ent schema 注释。
+	RequestId *string `protobuf:"bytes,11,opt,name=request_id,json=requestId,proto3,oneof" json:"request_id,omitempty"` // 派发请求ID
+	// 已尝试投递次数（含首次）。同步投递恒为 1；异步投递每次尝试先加再一次拨号，
+	// 因此 attempts>0 而 status 仍为 SENDING = 拨过号但没回写结论。
+	Attempts      *uint32                `protobuf:"varint,12,opt,name=attempts,proto3,oneof" json:"attempts,omitempty"` // 实际尝试次数
 	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`
 	UpdatedBy     *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
 	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
@@ -315,6 +321,20 @@ func (x *NotificationDelivery) GetSentAt() *timestamppb.Timestamp {
 func (x *NotificationDelivery) GetRelatedId() uint32 {
 	if x != nil && x.RelatedId != nil {
 		return *x.RelatedId
+	}
+	return 0
+}
+
+func (x *NotificationDelivery) GetRequestId() string {
+	if x != nil && x.RequestId != nil {
+		return *x.RequestId
+	}
+	return ""
+}
+
+func (x *NotificationDelivery) GetAttempts() uint32 {
+	if x != nil && x.Attempts != nil {
+		return *x.Attempts
 	}
 	return 0
 }
@@ -461,7 +481,10 @@ type SendDirectNotificationRequest struct {
 	RecipientUserId *uint32  `protobuf:"varint,7,opt,name=recipient_user_id,json=recipientUserId,proto3,oneof" json:"recipient_user_id,omitempty"` // 收件用户ID（仅台账归类用）
 	OperatorUserId  *uint32  `protobuf:"varint,8,opt,name=operator_user_id,json=operatorUserId,proto3,oneof" json:"operator_user_id,omitempty"`    // 操作人用户ID（系统发起时留空）
 	// 产生本次投递的业务对象主键，原样落到台账的 related_id（含义由 event_type 决定）。
-	RelatedId     *uint32 `protobuf:"varint,9,opt,name=related_id,json=relatedId,proto3,oneof" json:"related_id,omitempty"` // 关联业务对象ID
+	RelatedId *uint32 `protobuf:"varint,9,opt,name=related_id,json=relatedId,proto3,oneof" json:"related_id,omitempty"` // 关联业务对象ID
+	// 幂等锚，可选：调用方留空时服务端生成一个 UUID。调用方若自行传入（例如同一次用户提交
+	// 因网络重试而被打上两次），台账按 (request_id, channel) 唯一索引收敛。
+	RequestId     *string `protobuf:"bytes,10,opt,name=request_id,json=requestId,proto3,oneof" json:"request_id,omitempty"` // 派发请求ID
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -559,6 +582,13 @@ func (x *SendDirectNotificationRequest) GetRelatedId() uint32 {
 	return 0
 }
 
+func (x *SendDirectNotificationRequest) GetRequestId() string {
+	if x != nil && x.RequestId != nil {
+		return *x.RequestId
+	}
+	return ""
+}
+
 // 直发通知 - 回应
 type SendNotificationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
@@ -616,7 +646,8 @@ var File_notification_service_v1_notification_proto protoreflect.FileDescriptor
 
 const file_notification_service_v1_notification_proto_rawDesc = "" +
 	"\n" +
-	"*notification/service/v1/notification.proto\x12\x17notification.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\"\xb4\t\n" +
+	"*notification/service/v1/notification.proto\x12\x17notification.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1epagination/v1/pagination.proto\"\xe9\n" +
+	"\n" +
 	"\x14NotificationDelivery\x12#\n" +
 	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b台账IDH\x00R\x02id\x88\x01\x01\x12`\n" +
 	"\n" +
@@ -632,16 +663,19 @@ const file_notification_service_v1_notification_proto_rawDesc = "" +
 	"\asent_at\x18\t \x01(\v2\x1a.google.protobuf.TimestampB\x18\xbaG\x15\x92\x02\x12投递完成时间H\bR\x06sentAt\x88\x01\x01\x12Y\n" +
 	"\n" +
 	"related_id\x18\n" +
-	" \x01(\rB5\xbaG2\x92\x02/关联业务对象ID（按 event_type 解释）H\tR\trelatedId\x88\x01\x01\x12\"\n" +
+	" \x01(\rB5\xbaG2\x92\x02/关联业务对象ID（按 event_type 解释）H\tR\trelatedId\x88\x01\x01\x12G\n" +
 	"\n" +
-	"created_by\x18d \x01(\rH\n" +
-	"R\tcreatedBy\x88\x01\x01\x12\"\n" +
+	"request_id\x18\v \x01(\tB#\xbaG \x92\x02\x1d派发请求ID（幂等锚）H\n" +
+	"R\trequestId\x88\x01\x01\x12N\n" +
+	"\battempts\x18\f \x01(\rB-\xbaG*\x92\x02'实际尝试投递次数（含首次）H\vR\battempts\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rH\vR\tupdatedBy\x88\x01\x01\x12?\n" +
+	"created_by\x18d \x01(\rH\fR\tcreatedBy\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampH\fR\tcreatedAt\x88\x01\x01\x12?\n" +
+	"updated_by\x18e \x01(\rH\rR\tupdatedBy\x88\x01\x01\x12?\n" +
 	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampH\rR\tupdatedAt\x88\x01\x01B\x05\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x0eR\tcreatedAt\x88\x01\x01\x12?\n" +
+	"\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x0fR\tupdatedAt\x88\x01\x01B\x05\n" +
 	"\x03_idB\r\n" +
 	"\v_event_typeB\n" +
 	"\n" +
@@ -654,6 +688,8 @@ const file_notification_service_v1_notification_proto_rawDesc = "" +
 	"\n" +
 	"\b_sent_atB\r\n" +
 	"\v_related_idB\r\n" +
+	"\v_request_idB\v\n" +
+	"\t_attemptsB\r\n" +
 	"\v_created_byB\r\n" +
 	"\v_updated_byB\r\n" +
 	"\v_created_atB\r\n" +
@@ -662,7 +698,7 @@ const file_notification_service_v1_notification_proto_rawDesc = "" +
 	"\x05items\x18\x01 \x03(\v2-.notification.service.v1.NotificationDeliveryR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"0\n" +
 	"\x1eGetNotificationDeliveryRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\"\xc1\a\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\"\xa8\b\n" +
 	"\x1dSendDirectNotificationRequest\x12\x82\x01\n" +
 	"\n" +
 	"event_type\x18\x01 \x01(\x0e2\".notification.service.v1.EventTypeB?\xbaG<\x92\x029业务事件类型（决定渠道路由与台账分类）R\teventType\x12E\n" +
@@ -675,13 +711,17 @@ const file_notification_service_v1_notification_proto_rawDesc = "" +
 	"\x11recipient_user_id\x18\a \x01(\rB,\xbaG)\x92\x02&收件用户ID（仅台账归类用）H\x02R\x0frecipientUserId\x88\x01\x01\x12a\n" +
 	"\x10operator_user_id\x18\b \x01(\rB2\xbaG/\x92\x02,操作人用户ID（系统发起时留空）H\x03R\x0eoperatorUserId\x88\x01\x01\x12Y\n" +
 	"\n" +
-	"related_id\x18\t \x01(\rB5\xbaG2\x92\x02/关联业务对象ID（按 event_type 解释）H\x04R\trelatedId\x88\x01\x01B\r\n" +
+	"related_id\x18\t \x01(\rB5\xbaG2\x92\x02/关联业务对象ID（按 event_type 解释）H\x04R\trelatedId\x88\x01\x01\x12V\n" +
+	"\n" +
+	"request_id\x18\n" +
+	" \x01(\tB2\xbaG/\x92\x02,派发请求ID（留空则服务端生成）H\x05R\trequestId\x88\x01\x01B\r\n" +
 	"\v_channel_idB\n" +
 	"\n" +
 	"\b_channelB\x14\n" +
 	"\x12_recipient_user_idB\x13\n" +
 	"\x11_operator_user_idB\r\n" +
-	"\v_related_id\"\xa0\x01\n" +
+	"\v_related_idB\r\n" +
+	"\v_request_id\"\xa0\x01\n" +
 	"\x18SendNotificationResponse\x12/\n" +
 	"\vdelivery_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b台账IDR\n" +
 	"deliveryId\x12S\n" +
