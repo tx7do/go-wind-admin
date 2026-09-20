@@ -3112,6 +3112,186 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/NotificationDelivery'
+    /admin/v1/notification-rules:
+        get:
+            tags:
+                - NotificationRuleService
+            description: 查询路由规则列表
+            operationId: NotificationRuleService_ListNotificationRule
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListNotificationRuleResponse'
+        post:
+            tags:
+                - NotificationRuleService
+            description: 创建路由规则
+            operationId: NotificationRuleService_CreateNotificationRule
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateNotificationRuleRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/NotificationRule'
+    /admin/v1/notification-rules/{id}:
+        get:
+            tags:
+                - NotificationRuleService
+            description: 查询路由规则详情
+            operationId: NotificationRuleService_GetNotificationRule
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/NotificationRule'
+        put:
+            tags:
+                - NotificationRuleService
+            description: 更新路由规则
+            operationId: NotificationRuleService_UpdateNotificationRule
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateNotificationRuleRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+        delete:
+            tags:
+                - NotificationRuleService
+            description: 删除路由规则
+            operationId: NotificationRuleService_DeleteNotificationRule
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/notification-rules/{id}/test-dispatch:
+        post:
+            tags:
+                - NotificationRuleService
+            description: 测试投递：按这条规则当场走一遍完整投递链
+            operationId: NotificationRuleService_TestDispatchNotification
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/TestDispatchNotificationRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/TestDispatchNotificationResponse'
     /admin/v1/online-session/force-logout:
         post:
             tags:
@@ -6583,7 +6763,16 @@ components:
                 password:
                     type: string
                     description: SMTP 密码/授权码
+                webhookSecret:
+                    type: string
+                    description: Webhook 签名密钥
             description: 创建通知渠道 - 请求
+        CreateNotificationRuleRequest:
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/NotificationRule'
+            description: 创建路由规则 - 请求
         CreateOrgUnitRequest:
             type: object
             properties:
@@ -7922,6 +8111,16 @@ components:
                 total:
                     type: string
             description: 查询投递台账列表 - 回应
+        ListNotificationRuleResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/NotificationRule'
+                total:
+                    type: string
+            description: 查询路由规则列表 - 回应
         ListOnlineSessionResponse:
             type: object
             properties:
@@ -8693,6 +8892,12 @@ components:
                     type: string
                     description: 加密方式
                     format: enum
+                webhookUrl:
+                    type: string
+                    description: Webhook 回调地址（仅 WEBHOOK 渠道）
+                hasWebhookSecret:
+                    type: boolean
+                    description: 是否已配置 Webhook 签名密钥
                 enabled:
                     type: boolean
                     description: 是否启用
@@ -8791,6 +8996,55 @@ components:
                     type: string
                     format: date-time
             description: 一条通知 × 一个渠道 × 一个收件人 = 一行投递台账
+        NotificationRule:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 规则ID
+                    format: uint32
+                eventType:
+                    enum:
+                        - EVENT_TYPE_UNSPECIFIED
+                        - PASSWORD_RESET_CODE
+                        - CONTACT_BIND_CODE
+                        - CHANNEL_TEST_EMAIL
+                        - INTERNAL_MESSAGE
+                    type: string
+                    description: 业务事件类型（一张表内唯一）
+                    format: enum
+                channel:
+                    enum:
+                        - CHANNEL_UNSPECIFIED
+                        - EMAIL
+                        - SMS
+                        - WEBHOOK
+                        - INTERNAL
+                    type: string
+                    description: 该事件投递走的渠道
+                    format: enum
+                isAsync:
+                    type: boolean
+                    description: 是否异步派发
+                isEnabled:
+                    type: boolean
+                    description: 是否启用
+                remark:
+                    type: string
+                    description: 备注
+                createdBy:
+                    type: integer
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    format: uint32
+                createdAt:
+                    type: string
+                    format: date-time
+                updatedAt:
+                    type: string
+                    format: date-time
+            description: 一条业务事件类型 → 一行规则（event_type 唯一）
         OnlineSession:
             type: object
             properties:
@@ -10402,6 +10656,46 @@ components:
                         $ref: '#/components/schemas/QuotaUsage'
                     description: 配额上限列表
             description: 租户用量与配额
+        TestDispatchNotificationRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 规则ID
+                    format: uint32
+                target:
+                    type: string
+                    description: 投递目标（收件邮箱/站内收件用户ID；WEBHOOK 留空用渠道配置的地址）
+                title:
+                    type: string
+                    description: 通知标题，留空用测试文案
+                content:
+                    type: string
+                    description: 通知正文，留空用测试文案
+            description: |-
+                测试投递 - 请求。
+
+                 target/title/content 全可空，缺省即"这条规则本来会发什么"：
+                 target 对 EMAIL/INTERNAL 是必填的投递目标，对 WEBHOOK 留空则取所选渠道配置的 webhook_url；
+                 title/content 留空由服务端按事件类型渲染一封测试文案（走 mailtext，与渠道测试邮件同一条出口）。
+        TestDispatchNotificationResponse:
+            type: object
+            properties:
+                deliveryId:
+                    type: integer
+                    description: 本次测试产生的台账ID
+                    format: uint32
+                status:
+                    enum:
+                        - DELIVERY_STATUS_UNSPECIFIED
+                        - SENDING
+                        - SENT
+                        - FAILED
+                        - SKIPPED
+                    type: string
+                    description: 投递结果
+                    format: enum
+            description: 测试投递 - 回应。台账行号一并回传：报错时拿它去投递记录页查这一条。
         TestRunScriptRequest:
             type: object
             properties:
@@ -10644,7 +10938,22 @@ components:
                 password:
                     type: string
                     description: SMTP 密码/授权码，留空不修改
+                webhookSecret:
+                    type: string
+                    description: Webhook 签名密钥，留空不修改
             description: 更新通知渠道 - 请求
+        UpdateNotificationRuleRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                data:
+                    $ref: '#/components/schemas/NotificationRule'
+                updateMask:
+                    type: string
+                    format: field-mask
+            description: 更新路由规则 - 请求
         UpdateOrgUnitRequest:
             type: object
             properties:
@@ -11189,13 +11498,16 @@ tags:
          登录挑战侧 RPC（VerifyMFAChallenge）免鉴权，加 security:{} 并加入 rest_server 白名单。
     - name: NotificationChannelService
       description: 通知渠道管理服务（平台级配置）
+    - name: NotificationRuleService
+      description: 通知路由规则管理服务（平台级配置，菜单 authority 为 sys:platform_admin）。
     - name: NotificationService
       description: |-
         通知投递台账管理服务（平台级只读视图）。
 
-         本域不含"发一条通知"的 HTTP 路由：SendDirect 只由进程内的业务 service 经 Notifier 接口调用。
-         把它开放成端点等于给任意已登录操作员一个"向任意邮箱发信"的能力，
-         而唯一的站外手动触发口（渠道测试邮件）已在 notification-channels 路由上存在。
+         本域不含"发一条通知"的通用 HTTP 路由：SendDirect 只由进程内的业务 service 经 Notifier 接口调用。
+         把它开放成端点等于给任意已登录操作员一个"向任意邮箱发信"的能力。
+         两个刻意保留的手动触发口都是平台管理员专属、且只能发"测试文案"：
+         渠道配置页的 send-test-email，与路由规则页的 notification-rules/{id}/test-dispatch。
     - name: OnlineSessionService
       description: 在线会话管理服务（在线用户列表 + 强制下线）
     - name: OperationAuditLogService

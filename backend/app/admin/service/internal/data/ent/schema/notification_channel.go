@@ -73,6 +73,18 @@ func (NotificationChannel) Fields() []ent.Field {
 			Default("START_TLS").
 			Optional().
 			Nillable(),
+
+		// WEBHOOK 渠道的两列：SMTP 那几列对它没有意义，见 docs §6 决策点 2（选 A：按渠道加列，
+		// 不上 settings JSON——SMTP 会因此变成两种真相源）。
+		field.String("webhook_url").
+			Comment("Webhook 回调地址（仅 WEBHOOK 渠道）").
+			Optional().
+			Nillable(),
+		field.String("webhook_secret").
+			Comment("Webhook 签名密钥（EncryptIfNeeded 加密存储，仅 WEBHOOK 渠道）").
+			Sensitive().
+			Optional().
+			Nillable(),
 	}
 }
 

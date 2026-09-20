@@ -31,7 +31,7 @@ type NotificationChannel_Type int32
 
 const (
 	NotificationChannel_EMAIL   NotificationChannel_Type = 0 // 邮件（SMTP）
-	NotificationChannel_WEBHOOK NotificationChannel_Type = 1 // Webhook（预留）
+	NotificationChannel_WEBHOOK NotificationChannel_Type = 1 // Webhook（HTTP 回调）
 )
 
 // Enum value maps for NotificationChannel_Type.
@@ -133,17 +133,20 @@ type NotificationChannel struct {
 	SmtpPort     *uint32                   `protobuf:"varint,11,opt,name=smtp_port,json=smtpPort,proto3,oneof" json:"smtp_port,omitempty"`                                      // SMTP 端口
 	SmtpUsername *string                   `protobuf:"bytes,12,opt,name=smtp_username,json=smtpUsername,proto3,oneof" json:"smtp_username,omitempty"`                           // SMTP 用户名
 	// 密码不回传：仅创建/更新时写入；hasPassword 标识是否已配置
-	HasPassword   *bool                        `protobuf:"varint,13,opt,name=has_password,json=hasPassword,proto3,oneof" json:"has_password,omitempty"`                                                      // 是否已配置密码
-	SmtpFrom      *string                      `protobuf:"bytes,14,opt,name=smtp_from,json=smtpFrom,proto3,oneof" json:"smtp_from,omitempty"`                                                                // 发件人地址
-	SmtpTls       *NotificationChannel_TlsMode `protobuf:"varint,15,opt,name=smtp_tls,json=smtpTls,proto3,enum=notification_channel.service.v1.NotificationChannel_TlsMode,oneof" json:"smtp_tls,omitempty"` // 加密方式
-	Enabled       *bool                        `protobuf:"varint,20,opt,name=enabled,proto3,oneof" json:"enabled,omitempty"`                                                                                 // 是否启用
-	Remark        *string                      `protobuf:"bytes,21,opt,name=remark,proto3,oneof" json:"remark,omitempty"`                                                                                    // 备注
-	CreatedBy     *uint32                      `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`
-	UpdatedBy     *uint32                      `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
-	CreatedAt     *timestamppb.Timestamp       `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp       `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	HasPassword *bool                        `protobuf:"varint,13,opt,name=has_password,json=hasPassword,proto3,oneof" json:"has_password,omitempty"`                                                      // 是否已配置密码
+	SmtpFrom    *string                      `protobuf:"bytes,14,opt,name=smtp_from,json=smtpFrom,proto3,oneof" json:"smtp_from,omitempty"`                                                                // 发件人地址
+	SmtpTls     *NotificationChannel_TlsMode `protobuf:"varint,15,opt,name=smtp_tls,json=smtpTls,proto3,enum=notification_channel.service.v1.NotificationChannel_TlsMode,oneof" json:"smtp_tls,omitempty"` // 加密方式
+	WebhookUrl  *string                      `protobuf:"bytes,16,opt,name=webhook_url,json=webhookUrl,proto3,oneof" json:"webhook_url,omitempty"`                                                          // Webhook 回调地址
+	// 密钥不回传：与 password 同一条约定，仅写入时接收
+	HasWebhookSecret *bool                  `protobuf:"varint,17,opt,name=has_webhook_secret,json=hasWebhookSecret,proto3,oneof" json:"has_webhook_secret,omitempty"` // 是否已配置 Webhook 签名密钥
+	Enabled          *bool                  `protobuf:"varint,20,opt,name=enabled,proto3,oneof" json:"enabled,omitempty"`                                             // 是否启用
+	Remark           *string                `protobuf:"bytes,21,opt,name=remark,proto3,oneof" json:"remark,omitempty"`                                                // 备注
+	CreatedBy        *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`
+	UpdatedBy        *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
+	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
+	UpdatedAt        *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *NotificationChannel) Reset() {
@@ -237,6 +240,20 @@ func (x *NotificationChannel) GetSmtpTls() NotificationChannel_TlsMode {
 		return *x.SmtpTls
 	}
 	return NotificationChannel_NONE
+}
+
+func (x *NotificationChannel) GetWebhookUrl() string {
+	if x != nil && x.WebhookUrl != nil {
+		return *x.WebhookUrl
+	}
+	return ""
+}
+
+func (x *NotificationChannel) GetHasWebhookSecret() bool {
+	if x != nil && x.HasWebhookSecret != nil {
+		return *x.HasWebhookSecret
+	}
+	return false
 }
 
 func (x *NotificationChannel) GetEnabled() bool {
@@ -384,7 +401,9 @@ type CreateNotificationChannelRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	Data  *NotificationChannel   `protobuf:"bytes,1,opt,name=data,proto3" json:"data,omitempty"`
 	// 明文密码（服务端加密存储，不落日志）
-	Password      *string `protobuf:"bytes,2,opt,name=password,proto3,oneof" json:"password,omitempty"`
+	Password *string `protobuf:"bytes,2,opt,name=password,proto3,oneof" json:"password,omitempty"`
+	// 明文签名密钥（服务端加密存储，不落日志；留空 = 不签名）
+	WebhookSecret *string `protobuf:"bytes,3,opt,name=webhook_secret,json=webhookSecret,proto3,oneof" json:"webhook_secret,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -433,6 +452,13 @@ func (x *CreateNotificationChannelRequest) GetPassword() string {
 	return ""
 }
 
+func (x *CreateNotificationChannelRequest) GetWebhookSecret() string {
+	if x != nil && x.WebhookSecret != nil {
+		return *x.WebhookSecret
+	}
+	return ""
+}
+
 // 更新通知渠道 - 请求
 type UpdateNotificationChannelRequest struct {
 	state      protoimpl.MessageState `protogen:"open.v1"`
@@ -440,7 +466,10 @@ type UpdateNotificationChannelRequest struct {
 	Data       *NotificationChannel   `protobuf:"bytes,2,opt,name=data,proto3" json:"data,omitempty"`
 	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,3,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
 	// 明文密码；留空表示不修改已存密码
-	Password      *string `protobuf:"bytes,4,opt,name=password,proto3,oneof" json:"password,omitempty"`
+	Password *string `protobuf:"bytes,4,opt,name=password,proto3,oneof" json:"password,omitempty"`
+	// 明文签名密钥；留空表示不修改已存密钥
+	// （与 password 同形：想清空只能在 data.webhookUrl 之外另走删除重建，一期不做清空口）
+	WebhookSecret *string `protobuf:"bytes,5,opt,name=webhook_secret,json=webhookSecret,proto3,oneof" json:"webhook_secret,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -499,6 +528,13 @@ func (x *UpdateNotificationChannelRequest) GetUpdateMask() *fieldmaskpb.FieldMas
 func (x *UpdateNotificationChannelRequest) GetPassword() string {
 	if x != nil && x.Password != nil {
 		return *x.Password
+	}
+	return ""
+}
+
+func (x *UpdateNotificationChannelRequest) GetWebhookSecret() string {
+	if x != nil && x.WebhookSecret != nil {
+		return *x.WebhookSecret
 	}
 	return ""
 }
@@ -605,7 +641,7 @@ var File_notification_channel_service_v1_notification_channel_proto protoreflect
 
 const file_notification_channel_service_v1_notification_channel_proto_rawDesc = "" +
 	"\n" +
-	":notification_channel/service/v1/notification_channel.proto\x12\x1fnotification_channel.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xad\t\n" +
+	":notification_channel/service/v1/notification_channel.proto\x12\x1fnotification_channel.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x8d\v\n" +
 	"\x13NotificationChannel\x12#\n" +
 	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b渠道IDH\x00R\x02id\x88\x01\x01\x12+\n" +
 	"\x04name\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f渠道名称H\x01R\x04name\x88\x01\x01\x12f\n" +
@@ -616,18 +652,21 @@ const file_notification_channel_service_v1_notification_channel_proto_rawDesc = 
 	"\rsmtp_username\x18\f \x01(\tB\x14\xbaG\x11\x92\x02\x0eSMTP 用户名H\x05R\fsmtpUsername\x88\x01\x01\x12C\n" +
 	"\fhas_password\x18\r \x01(\bB\x1b\xbaG\x18\x92\x02\x15是否已配置密码H\x06R\vhasPassword\x88\x01\x01\x127\n" +
 	"\tsmtp_from\x18\x0e \x01(\tB\x15\xbaG\x12\x92\x02\x0f发件人地址H\aR\bsmtpFrom\x88\x01\x01\x12p\n" +
-	"\bsmtp_tls\x18\x0f \x01(\x0e2<.notification_channel.service.v1.NotificationChannel.TlsModeB\x12\xbaG\x0f\x92\x02\f加密方式H\bR\asmtpTls\x88\x01\x01\x121\n" +
-	"\aenabled\x18\x14 \x01(\bB\x12\xbaG\x0f\x92\x02\f是否启用H\tR\aenabled\x88\x01\x01\x12)\n" +
-	"\x06remark\x18\x15 \x01(\tB\f\xbaG\t\x92\x02\x06备注H\n" +
-	"R\x06remark\x88\x01\x01\x12\"\n" +
+	"\bsmtp_tls\x18\x0f \x01(\x0e2<.notification_channel.service.v1.NotificationChannel.TlsModeB\x12\xbaG\x0f\x92\x02\f加密方式H\bR\asmtpTls\x88\x01\x01\x12X\n" +
+	"\vwebhook_url\x18\x10 \x01(\tB2\xbaG/\x92\x02,Webhook 回调地址（仅 WEBHOOK 渠道）H\tR\n" +
+	"webhookUrl\x88\x01\x01\x12]\n" +
+	"\x12has_webhook_secret\x18\x11 \x01(\bB*\xbaG'\x92\x02$是否已配置 Webhook 签名密钥H\n" +
+	"R\x10hasWebhookSecret\x88\x01\x01\x121\n" +
+	"\aenabled\x18\x14 \x01(\bB\x12\xbaG\x0f\x92\x02\f是否启用H\vR\aenabled\x88\x01\x01\x12)\n" +
+	"\x06remark\x18\x15 \x01(\tB\f\xbaG\t\x92\x02\x06备注H\fR\x06remark\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"created_by\x18d \x01(\rH\vR\tcreatedBy\x88\x01\x01\x12\"\n" +
+	"created_by\x18d \x01(\rH\rR\tcreatedBy\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rH\fR\tupdatedBy\x88\x01\x01\x12?\n" +
+	"updated_by\x18e \x01(\rH\x0eR\tupdatedBy\x88\x01\x01\x12?\n" +
 	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampH\rR\tcreatedAt\x88\x01\x01\x12?\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x0fR\tcreatedAt\x88\x01\x01\x12?\n" +
 	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x0eR\tupdatedAt\x88\x01\x01\"\x1e\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x10R\tupdatedAt\x88\x01\x01\"\x1e\n" +
 	"\x04Type\x12\t\n" +
 	"\x05EMAIL\x10\x00\x12\v\n" +
 	"\aWEBHOOK\x10\x01\"+\n" +
@@ -646,7 +685,9 @@ const file_notification_channel_service_v1_notification_channel_proto_rawDesc = 
 	"\r_has_passwordB\f\n" +
 	"\n" +
 	"_smtp_fromB\v\n" +
-	"\t_smtp_tlsB\n" +
+	"\t_smtp_tlsB\x0e\n" +
+	"\f_webhook_urlB\x15\n" +
+	"\x13_has_webhook_secretB\n" +
 	"\n" +
 	"\b_enabledB\t\n" +
 	"\a_remarkB\r\n" +
@@ -658,18 +699,22 @@ const file_notification_channel_service_v1_notification_channel_proto_rawDesc = 
 	"\x05items\x18\x01 \x03(\v24.notification_channel.service.v1.NotificationChannelR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"/\n" +
 	"\x1dGetNotificationChannelRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id\"\xb7\x01\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\"\x92\x02\n" +
 	" CreateNotificationChannelRequest\x12H\n" +
 	"\x04data\x18\x01 \x01(\v24.notification_channel.service.v1.NotificationChannelR\x04data\x12<\n" +
-	"\bpassword\x18\x02 \x01(\tB\x1b\xbaG\x18\x92\x02\x15SMTP 密码/授权码H\x00R\bpassword\x88\x01\x01B\v\n" +
-	"\t_password\"\x96\x02\n" +
+	"\bpassword\x18\x02 \x01(\tB\x1b\xbaG\x18\x92\x02\x15SMTP 密码/授权码H\x00R\bpassword\x88\x01\x01\x12F\n" +
+	"\x0ewebhook_secret\x18\x03 \x01(\tB\x1a\xbaG\x17\x92\x02\x14Webhook 签名密钥H\x01R\rwebhookSecret\x88\x01\x01B\v\n" +
+	"\t_passwordB\x11\n" +
+	"\x0f_webhook_secret\"\x83\x03\n" +
 	" UpdateNotificationChannelRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\rR\x02id\x12H\n" +
 	"\x04data\x18\x02 \x01(\v24.notification_channel.service.v1.NotificationChannelR\x04data\x12;\n" +
 	"\vupdate_mask\x18\x03 \x01(\v2\x1a.google.protobuf.FieldMaskR\n" +
 	"updateMask\x12N\n" +
-	"\bpassword\x18\x04 \x01(\tB-\xbaG*\x92\x02'SMTP 密码/授权码，留空不修改H\x00R\bpassword\x88\x01\x01B\v\n" +
-	"\t_password\"2\n" +
+	"\bpassword\x18\x04 \x01(\tB-\xbaG*\x92\x02'SMTP 密码/授权码，留空不修改H\x00R\bpassword\x88\x01\x01\x12X\n" +
+	"\x0ewebhook_secret\x18\x05 \x01(\tB,\xbaG)\x92\x02&Webhook 签名密钥，留空不修改H\x01R\rwebhookSecret\x88\x01\x01B\v\n" +
+	"\t_passwordB\x11\n" +
+	"\x0f_webhook_secret\"2\n" +
 	" DeleteNotificationChannelRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\rR\x02id\"q\n" +
 	"\x14SendTestEmailRequest\x12\x1e\n" +

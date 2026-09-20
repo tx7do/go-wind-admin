@@ -28,10 +28,10 @@ const (
 type Channel int32
 
 const (
-	Channel_CHANNEL_UNSPECIFIED Channel = 0 // 未指定：由 event_type 的路由表决定
+	Channel_CHANNEL_UNSPECIFIED Channel = 0 // 未指定：由 event_type 的路由规则决定
 	Channel_EMAIL               Channel = 1 // 邮件（SMTP）
-	Channel_SMS                 Channel = 2 // 短信（预留）
-	Channel_WEBHOOK             Channel = 3 // Webhook（预留）
+	Channel_SMS                 Channel = 2 // 短信（预留：注册表里没有实现，路由到它 = 台账 FAILED）
+	Channel_WEBHOOK             Channel = 3 // Webhook（HTTP 回调，P2-C 落地）
 	Channel_INTERNAL            Channel = 4 // 站内信
 )
 
@@ -80,7 +80,8 @@ func (Channel) EnumDescriptor() ([]byte, []int) {
 	return file_notification_service_v1_notification_proto_rawDescGZIP(), []int{0}
 }
 
-// 业务事件类型。路由表（事件 → 渠道集合）按此枚举建，一期为 Go 静态表。
+// 业务事件类型。路由（事件 → 渠道 / 是否异步）由 sys_notification_rules 表决定，
+// 表的初始四行由代码里那份同形常量播种（见 docs/notification_domain_design.md §3.5、§4 P2-C）。
 type EventType int32
 
 const (
@@ -211,8 +212,8 @@ type NotificationDelivery struct {
 	// 产生本条投递的业务对象主键，含义由 event_type 决定（INTERNAL_MESSAGE → sys_internal_messages.id）。
 	// 存在的理由：台账不存正文快照（见 §3.3），排障时要能跳回业务对象去看发了什么。
 	RelatedId *uint32 `protobuf:"varint,10,opt,name=related_id,json=relatedId,proto3,oneof" json:"related_id,omitempty"` // 关联业务对象ID
-	// 一次派发意图的标识。异步派发下它同时是 asynq 的 TaskID，所以重复入队不会变成第二次真实投递；
-	// 唯一性按 (request_id, channel) 组合，见 §3.3 与 ent schema 注释。
+	// 一次派发意图的标识：调用方不传则服务端生成 UUID。唯一性按 (request_id, channel) 组合，
+	// 见 §3.3 与 ent schema 注释（今天没有调用方自传，它是"同一次意图不许两行"的提前落地）。
 	RequestId *string `protobuf:"bytes,11,opt,name=request_id,json=requestId,proto3,oneof" json:"request_id,omitempty"` // 派发请求ID
 	// 已尝试投递次数（含首次）。同步投递恒为 1；异步投递每次尝试先加再一次拨号，
 	// 因此 attempts>0 而 status 仍为 SENDING = 拨过号但没回写结论。
@@ -469,8 +470,10 @@ func (x *GetNotificationDeliveryRequest) GetId() uint32 {
 type SendDirectNotificationRequest struct {
 	state     protoimpl.MessageState `protogen:"open.v1"`
 	EventType EventType              `protobuf:"varint,1,opt,name=event_type,json=eventType,proto3,enum=notification.service.v1.EventType" json:"event_type,omitempty"` // 业务事件类型
-	// 投递目标：EMAIL 为收件地址，WEBHOOK 为 URL，INTERNAL 为收件用户的十进制 ID 字符串。
-	// 直发语义即"调用方已自行解析出目标"。
+	// 投递目标：EMAIL 为收件地址，WEBHOOK 为回调 URL，INTERNAL 为收件用户的十进制 ID 字符串。
+	// 直发语义即"调用方已自行解析出目标"。WEBHOOK 的地址虽然配在渠道行上（webhook_url），
+	// 仍要求调用方把它传进这一列：台账记的是"实际发往何处"，让 sender 私自决定地址
+	// 等于把台账里唯一能回答这条问题的列交给一次不回写的解析。
 	Target  string `protobuf:"bytes,2,opt,name=target,proto3" json:"target,omitempty"`   // 投递目标
 	Title   string `protobuf:"bytes,3,opt,name=title,proto3" json:"title,omitempty"`     // 通知标题
 	Content string `protobuf:"bytes,4,opt,name=content,proto3" json:"content,omitempty"` // 通知正文

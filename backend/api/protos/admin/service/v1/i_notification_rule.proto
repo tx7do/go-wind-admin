@@ -1,0 +1,57 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "pagination/v1/pagination.proto";
+
+import "notification/service/v1/notification_rule.proto";
+
+// 通知路由规则管理服务（平台级配置，菜单 authority 为 sys:platform_admin）。
+service NotificationRuleService {
+  // 查询路由规则列表
+  rpc ListNotificationRule(pagination.PagingRequest) returns (notification.service.v1.ListNotificationRuleResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/notification-rules"
+    };
+  }
+
+  // 查询路由规则详情
+  rpc GetNotificationRule(notification.service.v1.GetNotificationRuleRequest) returns (notification.service.v1.NotificationRule) {
+    option (google.api.http) = {
+      get: "/admin/v1/notification-rules/{id}"
+    };
+  }
+
+  // 创建路由规则
+  rpc CreateNotificationRule(notification.service.v1.CreateNotificationRuleRequest) returns (notification.service.v1.NotificationRule) {
+    option (google.api.http) = {
+      post: "/admin/v1/notification-rules"
+      body: "*"
+    };
+  }
+
+  // 更新路由规则
+  rpc UpdateNotificationRule(notification.service.v1.UpdateNotificationRuleRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/admin/v1/notification-rules/{id}"
+      body: "*"
+    };
+  }
+
+  // 删除路由规则
+  rpc DeleteNotificationRule(notification.service.v1.DeleteNotificationRuleRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/notification-rules/{id}"
+    };
+  }
+
+  // 测试投递：按这条规则当场走一遍完整投递链
+  rpc TestDispatchNotification(notification.service.v1.TestDispatchNotificationRequest) returns (notification.service.v1.TestDispatchNotificationResponse) {
+    option (google.api.http) = {
+      post: "/admin/v1/notification-rules/{id}/test-dispatch"
+      body: "*"
+    };
+  }
+}

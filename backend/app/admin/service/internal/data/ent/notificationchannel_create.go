@@ -238,6 +238,34 @@ func (_c *NotificationChannelCreate) SetNillableSMTPTLS(v *notificationchannel.S
 	return _c
 }
 
+// SetWebhookURL sets the "webhook_url" field.
+func (_c *NotificationChannelCreate) SetWebhookURL(v string) *NotificationChannelCreate {
+	_c.mutation.SetWebhookURL(v)
+	return _c
+}
+
+// SetNillableWebhookURL sets the "webhook_url" field if the given value is not nil.
+func (_c *NotificationChannelCreate) SetNillableWebhookURL(v *string) *NotificationChannelCreate {
+	if v != nil {
+		_c.SetWebhookURL(*v)
+	}
+	return _c
+}
+
+// SetWebhookSecret sets the "webhook_secret" field.
+func (_c *NotificationChannelCreate) SetWebhookSecret(v string) *NotificationChannelCreate {
+	_c.mutation.SetWebhookSecret(v)
+	return _c
+}
+
+// SetNillableWebhookSecret sets the "webhook_secret" field if the given value is not nil.
+func (_c *NotificationChannelCreate) SetNillableWebhookSecret(v *string) *NotificationChannelCreate {
+	if v != nil {
+		_c.SetWebhookSecret(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *NotificationChannelCreate) SetID(v uint32) *NotificationChannelCreate {
 	_c.mutation.SetID(v)
@@ -425,6 +453,14 @@ func (_c *NotificationChannelCreate) createSpec() (*NotificationChannel, *sqlgra
 	if value, ok := _c.mutation.SMTPTLS(); ok {
 		_spec.SetField(notificationchannel.FieldSMTPTLS, field.TypeEnum, value)
 		_node.SMTPTLS = &value
+	}
+	if value, ok := _c.mutation.WebhookURL(); ok {
+		_spec.SetField(notificationchannel.FieldWebhookURL, field.TypeString, value)
+		_node.WebhookURL = &value
+	}
+	if value, ok := _c.mutation.WebhookSecret(); ok {
+		_spec.SetField(notificationchannel.FieldWebhookSecret, field.TypeString, value)
+		_node.WebhookSecret = &value
 	}
 	return _node, _spec
 }
@@ -751,6 +787,42 @@ func (u *NotificationChannelUpsert) UpdateSMTPTLS() *NotificationChannelUpsert {
 // ClearSMTPTLS clears the value of the "smtp_tls" field.
 func (u *NotificationChannelUpsert) ClearSMTPTLS() *NotificationChannelUpsert {
 	u.SetNull(notificationchannel.FieldSMTPTLS)
+	return u
+}
+
+// SetWebhookURL sets the "webhook_url" field.
+func (u *NotificationChannelUpsert) SetWebhookURL(v string) *NotificationChannelUpsert {
+	u.Set(notificationchannel.FieldWebhookURL, v)
+	return u
+}
+
+// UpdateWebhookURL sets the "webhook_url" field to the value that was provided on create.
+func (u *NotificationChannelUpsert) UpdateWebhookURL() *NotificationChannelUpsert {
+	u.SetExcluded(notificationchannel.FieldWebhookURL)
+	return u
+}
+
+// ClearWebhookURL clears the value of the "webhook_url" field.
+func (u *NotificationChannelUpsert) ClearWebhookURL() *NotificationChannelUpsert {
+	u.SetNull(notificationchannel.FieldWebhookURL)
+	return u
+}
+
+// SetWebhookSecret sets the "webhook_secret" field.
+func (u *NotificationChannelUpsert) SetWebhookSecret(v string) *NotificationChannelUpsert {
+	u.Set(notificationchannel.FieldWebhookSecret, v)
+	return u
+}
+
+// UpdateWebhookSecret sets the "webhook_secret" field to the value that was provided on create.
+func (u *NotificationChannelUpsert) UpdateWebhookSecret() *NotificationChannelUpsert {
+	u.SetExcluded(notificationchannel.FieldWebhookSecret)
+	return u
+}
+
+// ClearWebhookSecret clears the value of the "webhook_secret" field.
+func (u *NotificationChannelUpsert) ClearWebhookSecret() *NotificationChannelUpsert {
+	u.SetNull(notificationchannel.FieldWebhookSecret)
 	return u
 }
 
@@ -1124,6 +1196,48 @@ func (u *NotificationChannelUpsertOne) UpdateSMTPTLS() *NotificationChannelUpser
 func (u *NotificationChannelUpsertOne) ClearSMTPTLS() *NotificationChannelUpsertOne {
 	return u.Update(func(s *NotificationChannelUpsert) {
 		s.ClearSMTPTLS()
+	})
+}
+
+// SetWebhookURL sets the "webhook_url" field.
+func (u *NotificationChannelUpsertOne) SetWebhookURL(v string) *NotificationChannelUpsertOne {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.SetWebhookURL(v)
+	})
+}
+
+// UpdateWebhookURL sets the "webhook_url" field to the value that was provided on create.
+func (u *NotificationChannelUpsertOne) UpdateWebhookURL() *NotificationChannelUpsertOne {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.UpdateWebhookURL()
+	})
+}
+
+// ClearWebhookURL clears the value of the "webhook_url" field.
+func (u *NotificationChannelUpsertOne) ClearWebhookURL() *NotificationChannelUpsertOne {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.ClearWebhookURL()
+	})
+}
+
+// SetWebhookSecret sets the "webhook_secret" field.
+func (u *NotificationChannelUpsertOne) SetWebhookSecret(v string) *NotificationChannelUpsertOne {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.SetWebhookSecret(v)
+	})
+}
+
+// UpdateWebhookSecret sets the "webhook_secret" field to the value that was provided on create.
+func (u *NotificationChannelUpsertOne) UpdateWebhookSecret() *NotificationChannelUpsertOne {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.UpdateWebhookSecret()
+	})
+}
+
+// ClearWebhookSecret clears the value of the "webhook_secret" field.
+func (u *NotificationChannelUpsertOne) ClearWebhookSecret() *NotificationChannelUpsertOne {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.ClearWebhookSecret()
 	})
 }
 
@@ -1663,6 +1777,48 @@ func (u *NotificationChannelUpsertBulk) UpdateSMTPTLS() *NotificationChannelUpse
 func (u *NotificationChannelUpsertBulk) ClearSMTPTLS() *NotificationChannelUpsertBulk {
 	return u.Update(func(s *NotificationChannelUpsert) {
 		s.ClearSMTPTLS()
+	})
+}
+
+// SetWebhookURL sets the "webhook_url" field.
+func (u *NotificationChannelUpsertBulk) SetWebhookURL(v string) *NotificationChannelUpsertBulk {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.SetWebhookURL(v)
+	})
+}
+
+// UpdateWebhookURL sets the "webhook_url" field to the value that was provided on create.
+func (u *NotificationChannelUpsertBulk) UpdateWebhookURL() *NotificationChannelUpsertBulk {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.UpdateWebhookURL()
+	})
+}
+
+// ClearWebhookURL clears the value of the "webhook_url" field.
+func (u *NotificationChannelUpsertBulk) ClearWebhookURL() *NotificationChannelUpsertBulk {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.ClearWebhookURL()
+	})
+}
+
+// SetWebhookSecret sets the "webhook_secret" field.
+func (u *NotificationChannelUpsertBulk) SetWebhookSecret(v string) *NotificationChannelUpsertBulk {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.SetWebhookSecret(v)
+	})
+}
+
+// UpdateWebhookSecret sets the "webhook_secret" field to the value that was provided on create.
+func (u *NotificationChannelUpsertBulk) UpdateWebhookSecret() *NotificationChannelUpsertBulk {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.UpdateWebhookSecret()
+	})
+}
+
+// ClearWebhookSecret clears the value of the "webhook_secret" field.
+func (u *NotificationChannelUpsertBulk) ClearWebhookSecret() *NotificationChannelUpsertBulk {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.ClearWebhookSecret()
 	})
 }
 

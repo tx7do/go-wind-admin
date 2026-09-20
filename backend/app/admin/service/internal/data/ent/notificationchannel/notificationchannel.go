@@ -45,6 +45,10 @@ const (
 	FieldSMTPFrom = "smtp_from"
 	// FieldSMTPTLS holds the string denoting the smtp_tls field in the database.
 	FieldSMTPTLS = "smtp_tls"
+	// FieldWebhookURL holds the string denoting the webhook_url field in the database.
+	FieldWebhookURL = "webhook_url"
+	// FieldWebhookSecret holds the string denoting the webhook_secret field in the database.
+	FieldWebhookSecret = "webhook_secret"
 	// Table holds the table name of the notificationchannel in the database.
 	Table = "sys_notification_channels"
 )
@@ -68,6 +72,8 @@ var Columns = []string{
 	FieldSMTPPassword,
 	FieldSMTPFrom,
 	FieldSMTPTLS,
+	FieldWebhookURL,
+	FieldWebhookSecret,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -252,4 +258,14 @@ func BySMTPFrom(opts ...sql.OrderTermOption) OrderOption {
 // BySMTPTLS orders the results by the smtp_tls field.
 func BySMTPTLS(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldSMTPTLS, opts...).ToFunc()
+}
+
+// ByWebhookURL orders the results by the webhook_url field.
+func ByWebhookURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWebhookURL, opts...).ToFunc()
+}
+
+// ByWebhookSecret orders the results by the webhook_secret field.
+func ByWebhookSecret(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWebhookSecret, opts...).ToFunc()
 }

@@ -339,6 +339,46 @@ func (_u *NotificationChannelUpdate) ClearSMTPTLS() *NotificationChannelUpdate {
 	return _u
 }
 
+// SetWebhookURL sets the "webhook_url" field.
+func (_u *NotificationChannelUpdate) SetWebhookURL(v string) *NotificationChannelUpdate {
+	_u.mutation.SetWebhookURL(v)
+	return _u
+}
+
+// SetNillableWebhookURL sets the "webhook_url" field if the given value is not nil.
+func (_u *NotificationChannelUpdate) SetNillableWebhookURL(v *string) *NotificationChannelUpdate {
+	if v != nil {
+		_u.SetWebhookURL(*v)
+	}
+	return _u
+}
+
+// ClearWebhookURL clears the value of the "webhook_url" field.
+func (_u *NotificationChannelUpdate) ClearWebhookURL() *NotificationChannelUpdate {
+	_u.mutation.ClearWebhookURL()
+	return _u
+}
+
+// SetWebhookSecret sets the "webhook_secret" field.
+func (_u *NotificationChannelUpdate) SetWebhookSecret(v string) *NotificationChannelUpdate {
+	_u.mutation.SetWebhookSecret(v)
+	return _u
+}
+
+// SetNillableWebhookSecret sets the "webhook_secret" field if the given value is not nil.
+func (_u *NotificationChannelUpdate) SetNillableWebhookSecret(v *string) *NotificationChannelUpdate {
+	if v != nil {
+		_u.SetWebhookSecret(*v)
+	}
+	return _u
+}
+
+// ClearWebhookSecret clears the value of the "webhook_secret" field.
+func (_u *NotificationChannelUpdate) ClearWebhookSecret() *NotificationChannelUpdate {
+	_u.mutation.ClearWebhookSecret()
+	return _u
+}
+
 // Mutation returns the NotificationChannelMutation object of the builder.
 func (_u *NotificationChannelUpdate) Mutation() *NotificationChannelMutation {
 	return _u.mutation
@@ -509,6 +549,18 @@ func (_u *NotificationChannelUpdate) sqlSave(ctx context.Context) (_node int, er
 	}
 	if _u.mutation.SMTPTLSCleared() {
 		_spec.ClearField(notificationchannel.FieldSMTPTLS, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.WebhookURL(); ok {
+		_spec.SetField(notificationchannel.FieldWebhookURL, field.TypeString, value)
+	}
+	if _u.mutation.WebhookURLCleared() {
+		_spec.ClearField(notificationchannel.FieldWebhookURL, field.TypeString)
+	}
+	if value, ok := _u.mutation.WebhookSecret(); ok {
+		_spec.SetField(notificationchannel.FieldWebhookSecret, field.TypeString, value)
+	}
+	if _u.mutation.WebhookSecretCleared() {
+		_spec.ClearField(notificationchannel.FieldWebhookSecret, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -842,6 +894,46 @@ func (_u *NotificationChannelUpdateOne) ClearSMTPTLS() *NotificationChannelUpdat
 	return _u
 }
 
+// SetWebhookURL sets the "webhook_url" field.
+func (_u *NotificationChannelUpdateOne) SetWebhookURL(v string) *NotificationChannelUpdateOne {
+	_u.mutation.SetWebhookURL(v)
+	return _u
+}
+
+// SetNillableWebhookURL sets the "webhook_url" field if the given value is not nil.
+func (_u *NotificationChannelUpdateOne) SetNillableWebhookURL(v *string) *NotificationChannelUpdateOne {
+	if v != nil {
+		_u.SetWebhookURL(*v)
+	}
+	return _u
+}
+
+// ClearWebhookURL clears the value of the "webhook_url" field.
+func (_u *NotificationChannelUpdateOne) ClearWebhookURL() *NotificationChannelUpdateOne {
+	_u.mutation.ClearWebhookURL()
+	return _u
+}
+
+// SetWebhookSecret sets the "webhook_secret" field.
+func (_u *NotificationChannelUpdateOne) SetWebhookSecret(v string) *NotificationChannelUpdateOne {
+	_u.mutation.SetWebhookSecret(v)
+	return _u
+}
+
+// SetNillableWebhookSecret sets the "webhook_secret" field if the given value is not nil.
+func (_u *NotificationChannelUpdateOne) SetNillableWebhookSecret(v *string) *NotificationChannelUpdateOne {
+	if v != nil {
+		_u.SetWebhookSecret(*v)
+	}
+	return _u
+}
+
+// ClearWebhookSecret clears the value of the "webhook_secret" field.
+func (_u *NotificationChannelUpdateOne) ClearWebhookSecret() *NotificationChannelUpdateOne {
+	_u.mutation.ClearWebhookSecret()
+	return _u
+}
+
 // Mutation returns the NotificationChannelMutation object of the builder.
 func (_u *NotificationChannelUpdateOne) Mutation() *NotificationChannelMutation {
 	return _u.mutation
@@ -1042,6 +1134,18 @@ func (_u *NotificationChannelUpdateOne) sqlSave(ctx context.Context) (_node *Not
 	}
 	if _u.mutation.SMTPTLSCleared() {
 		_spec.ClearField(notificationchannel.FieldSMTPTLS, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.WebhookURL(); ok {
+		_spec.SetField(notificationchannel.FieldWebhookURL, field.TypeString, value)
+	}
+	if _u.mutation.WebhookURLCleared() {
+		_spec.ClearField(notificationchannel.FieldWebhookURL, field.TypeString)
+	}
+	if value, ok := _u.mutation.WebhookSecret(); ok {
+		_spec.SetField(notificationchannel.FieldWebhookSecret, field.TypeString, value)
+	}
+	if _u.mutation.WebhookSecretCleared() {
+		_spec.ClearField(notificationchannel.FieldWebhookSecret, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &NotificationChannel{config: _u.config}

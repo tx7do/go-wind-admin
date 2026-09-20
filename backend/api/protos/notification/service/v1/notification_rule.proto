@@ -1,0 +1,148 @@
+syntax = "proto3";
+
+package notification.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+
+import "pagination/v1/pagination.proto";
+
+// Channel / EventType / DeliveryStatus 声明在同包的 notification.proto，proto3 仍需显式 import
+import "notification/service/v1/notification.proto";
+
+// 通知路由规则服务：事件类型 → 渠道（含"要不要异步派发"）。
+//
+// 这张表是 §3.5 的 Go 静态表 `eventChannels` + `asyncDispatchEvents` 的落地形态，
+// 两列一一对应。运行时只读 DB（缺行即报错，不回落 Go 表），Go 侧只剩一份播种来源
+// （见 docs/notification_domain_design.md §4 P2-C）。
+service NotificationRuleService {
+  // 查询路由规则列表
+  rpc List (pagination.PagingRequest) returns (ListNotificationRuleResponse) {}
+
+  // 查询路由规则详情
+  rpc Get (GetNotificationRuleRequest) returns (NotificationRule) {}
+
+  // 创建路由规则
+  rpc Create (CreateNotificationRuleRequest) returns (NotificationRule) {}
+
+  // 更新路由规则
+  rpc Update (UpdateNotificationRuleRequest) returns (google.protobuf.Empty) {}
+
+  // 删除路由规则
+  rpc Delete (DeleteNotificationRuleRequest) returns (google.protobuf.Empty) {}
+
+  // 测试投递：按这条规则当场走完整投递链（规则 → 渠道 → 台账），不等异步队列
+  rpc TestDispatch (TestDispatchNotificationRequest) returns (TestDispatchNotificationResponse) {}
+}
+
+// 一条业务事件类型 → 一行规则（event_type 唯一）
+message NotificationRule {
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = { description: "规则ID" }
+  ]; // 规则ID
+
+  optional EventType event_type = 2 [
+    json_name = "eventType",
+    (gnostic.openapi.v3.property) = { description: "业务事件类型（一张表内唯一）" }
+  ]; // 业务事件类型
+
+  optional Channel channel = 3 [
+    json_name = "channel",
+    (gnostic.openapi.v3.property) = { description: "该事件投递走的渠道" }
+  ]; // 投递渠道
+
+  // 异步 = 入队 asynq、请求立刻拿到 SENDING；同步 = 当场拨号并回写结论。
+  // 判据是"调用方需不需要这次投递的结论"，与渠道无关（见 §4 P2-3）。
+  optional bool is_async = 10 [
+    json_name = "isAsync",
+    (gnostic.openapi.v3.property) = { description: "是否异步派发" }
+  ]; // 是否异步派发
+
+  optional bool is_enabled = 20 [
+    json_name = "isEnabled",
+    (gnostic.openapi.v3.property) = { description: "是否启用" }
+  ]; // 是否启用
+
+  optional string remark = 21 [
+    json_name = "remark",
+    (gnostic.openapi.v3.property) = { description: "备注" }
+  ]; // 备注
+
+  optional uint32 created_by = 100 [json_name = "createdBy"];
+  optional uint32 updated_by = 101 [json_name = "updatedBy"];
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt"];
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt"];
+}
+
+// 查询路由规则列表 - 回应
+message ListNotificationRuleResponse {
+  repeated NotificationRule items = 1;
+  uint64 total = 2;
+}
+
+// 查询路由规则详情 - 请求
+message GetNotificationRuleRequest {
+  uint32 id = 1;
+}
+
+// 创建路由规则 - 请求
+message CreateNotificationRuleRequest {
+  NotificationRule data = 1;
+}
+
+// 更新路由规则 - 请求
+message UpdateNotificationRuleRequest {
+  uint32 id = 1;
+  NotificationRule data = 2;
+  google.protobuf.FieldMask update_mask = 3 [json_name = "updateMask"];
+}
+
+// 删除路由规则 - 请求
+message DeleteNotificationRuleRequest {
+  uint32 id = 1;
+}
+
+// 测试投递 - 请求。
+//
+// target/title/content 全可空，缺省即"这条规则本来会发什么"：
+// target 对 EMAIL/INTERNAL 是必填的投递目标，对 WEBHOOK 留空则取所选渠道配置的 webhook_url；
+// title/content 留空由服务端按事件类型渲染一封测试文案（走 mailtext，与渠道测试邮件同一条出口）。
+message TestDispatchNotificationRequest {
+  uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = { description: "规则ID" }
+  ]; // 规则ID
+
+  optional string target = 2 [
+    json_name = "target",
+    (gnostic.openapi.v3.property) = { description: "投递目标（收件邮箱/站内收件用户ID；WEBHOOK 留空用渠道配置的地址）" }
+  ]; // 投递目标
+
+  optional string title = 3 [
+    json_name = "title",
+    (gnostic.openapi.v3.property) = { description: "通知标题，留空用测试文案" }
+  ]; // 通知标题
+
+  optional string content = 4 [
+    json_name = "content",
+    (gnostic.openapi.v3.property) = { description: "通知正文，留空用测试文案" }
+  ]; // 通知正文
+}
+
+// 测试投递 - 回应。台账行号一并回传：报错时拿它去投递记录页查这一条。
+message TestDispatchNotificationResponse {
+  uint32 delivery_id = 1 [
+    json_name = "deliveryId",
+    (gnostic.openapi.v3.property) = { description: "本次测试产生的台账ID" }
+  ]; // 台账ID
+
+  DeliveryStatus status = 2 [
+    json_name = "status",
+    (gnostic.openapi.v3.property) = { description: "投递结果" }
+  ]; // 投递结果
+}

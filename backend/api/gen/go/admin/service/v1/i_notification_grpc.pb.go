@@ -31,9 +31,10 @@ const (
 //
 // 通知投递台账管理服务（平台级只读视图）。
 //
-// 本域不含"发一条通知"的 HTTP 路由：SendDirect 只由进程内的业务 service 经 Notifier 接口调用。
-// 把它开放成端点等于给任意已登录操作员一个"向任意邮箱发信"的能力，
-// 而唯一的站外手动触发口（渠道测试邮件）已在 notification-channels 路由上存在。
+// 本域不含"发一条通知"的通用 HTTP 路由：SendDirect 只由进程内的业务 service 经 Notifier 接口调用。
+// 把它开放成端点等于给任意已登录操作员一个"向任意邮箱发信"的能力。
+// 两个刻意保留的手动触发口都是平台管理员专属、且只能发"测试文案"：
+// 渠道配置页的 send-test-email，与路由规则页的 notification-rules/{id}/test-dispatch。
 type NotificationServiceClient interface {
 	// 查询投递台账列表
 	ListNotificationDelivery(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*v11.ListNotificationDeliveryResponse, error)
@@ -75,9 +76,10 @@ func (c *notificationServiceClient) GetNotificationDelivery(ctx context.Context,
 //
 // 通知投递台账管理服务（平台级只读视图）。
 //
-// 本域不含"发一条通知"的 HTTP 路由：SendDirect 只由进程内的业务 service 经 Notifier 接口调用。
-// 把它开放成端点等于给任意已登录操作员一个"向任意邮箱发信"的能力，
-// 而唯一的站外手动触发口（渠道测试邮件）已在 notification-channels 路由上存在。
+// 本域不含"发一条通知"的通用 HTTP 路由：SendDirect 只由进程内的业务 service 经 Notifier 接口调用。
+// 把它开放成端点等于给任意已登录操作员一个"向任意邮箱发信"的能力。
+// 两个刻意保留的手动触发口都是平台管理员专属、且只能发"测试文案"：
+// 渠道配置页的 send-test-email，与路由规则页的 notification-rules/{id}/test-dispatch。
 type NotificationServiceServer interface {
 	// 查询投递台账列表
 	ListNotificationDelivery(context.Context, *v1.PagingRequest) (*v11.ListNotificationDeliveryResponse, error)

@@ -33,7 +33,7 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 //
-// 通知渠道服务（平台级配置；一期实现 EMAIL 渠道）
+// 通知渠道服务（平台级配置；实现 EMAIL（SMTP）与 WEBHOOK 两种渠道）
 type NotificationChannelServiceClient interface {
 	// 查询通知渠道列表
 	List(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListNotificationChannelResponse, error)
@@ -121,7 +121,7 @@ func (c *notificationChannelServiceClient) SendTestEmail(ctx context.Context, in
 // All implementations must embed UnimplementedNotificationChannelServiceServer
 // for forward compatibility.
 //
-// 通知渠道服务（平台级配置；一期实现 EMAIL 渠道）
+// 通知渠道服务（平台级配置；实现 EMAIL（SMTP）与 WEBHOOK 两种渠道）
 type NotificationChannelServiceServer interface {
 	// 查询通知渠道列表
 	List(context.Context, *v1.PagingRequest) (*ListNotificationChannelResponse, error)

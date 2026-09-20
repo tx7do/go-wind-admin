@@ -32,6 +32,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"go-wind-admin/app/admin/service/internal/data/ent/notificationchannel"
 	"go-wind-admin/app/admin/service/internal/data/ent/notificationdelivery"
+	"go-wind-admin/app/admin/service/internal/data/ent/notificationrule"
 	"go-wind-admin/app/admin/service/internal/data/ent/operationauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/orgunit"
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
@@ -115,6 +116,8 @@ type Client struct {
 	NotificationChannel *NotificationChannelClient
 	// NotificationDelivery is the client for interacting with the NotificationDelivery builders.
 	NotificationDelivery *NotificationDeliveryClient
+	// NotificationRule is the client for interacting with the NotificationRule builders.
+	NotificationRule *NotificationRuleClient
 	// OperationAuditLog is the client for interacting with the OperationAuditLog builders.
 	OperationAuditLog *OperationAuditLogClient
 	// OrgUnit is the client for interacting with the OrgUnit builders.
@@ -205,6 +208,7 @@ func (c *Client) init() {
 	c.Menu = NewMenuClient(c.config)
 	c.NotificationChannel = NewNotificationChannelClient(c.config)
 	c.NotificationDelivery = NewNotificationDeliveryClient(c.config)
+	c.NotificationRule = NewNotificationRuleClient(c.config)
 	c.OperationAuditLog = NewOperationAuditLogClient(c.config)
 	c.OrgUnit = NewOrgUnitClient(c.config)
 	c.Permission = NewPermissionClient(c.config)
@@ -347,6 +351,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Menu:                     NewMenuClient(cfg),
 		NotificationChannel:      NewNotificationChannelClient(cfg),
 		NotificationDelivery:     NewNotificationDeliveryClient(cfg),
+		NotificationRule:         NewNotificationRuleClient(cfg),
 		OperationAuditLog:        NewOperationAuditLogClient(cfg),
 		OrgUnit:                  NewOrgUnitClient(cfg),
 		Permission:               NewPermissionClient(cfg),
@@ -416,6 +421,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Menu:                     NewMenuClient(cfg),
 		NotificationChannel:      NewNotificationChannelClient(cfg),
 		NotificationDelivery:     NewNotificationDeliveryClient(cfg),
+		NotificationRule:         NewNotificationRuleClient(cfg),
 		OperationAuditLog:        NewOperationAuditLogClient(cfg),
 		OrgUnit:                  NewOrgUnitClient(cfg),
 		Permission:               NewPermissionClient(cfg),
@@ -479,12 +485,13 @@ func (c *Client) Use(hooks ...Hook) {
 		c.InternalMessageCategory, c.InternalMessageRecipient, c.Language,
 		c.LoginAuditLog, c.LoginPolicy, c.Membership, c.MembershipOrgUnit,
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.NotificationChannel,
-		c.NotificationDelivery, c.OperationAuditLog, c.OrgUnit, c.Permission,
-		c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup, c.PermissionMenu,
-		c.PermissionPolicy, c.Plan, c.PlanModule, c.PlanQuota, c.PolicyEvaluationLog,
-		c.Position, c.Role, c.RoleFieldPermission, c.RoleMetadata, c.RoleOrgUnit,
-		c.RolePermission, c.Script, c.ScriptLog, c.SysConfig, c.Task, c.Tenant, c.User,
-		c.UserCredential, c.UserMfaFactor, c.UserOrgUnit, c.UserPosition, c.UserRole,
+		c.NotificationDelivery, c.NotificationRule, c.OperationAuditLog, c.OrgUnit,
+		c.Permission, c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup,
+		c.PermissionMenu, c.PermissionPolicy, c.Plan, c.PlanModule, c.PlanQuota,
+		c.PolicyEvaluationLog, c.Position, c.Role, c.RoleFieldPermission,
+		c.RoleMetadata, c.RoleOrgUnit, c.RolePermission, c.Script, c.ScriptLog,
+		c.SysConfig, c.Task, c.Tenant, c.User, c.UserCredential, c.UserMfaFactor,
+		c.UserOrgUnit, c.UserPosition, c.UserRole,
 	} {
 		n.Use(hooks...)
 	}
@@ -499,12 +506,13 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.InternalMessageCategory, c.InternalMessageRecipient, c.Language,
 		c.LoginAuditLog, c.LoginPolicy, c.Membership, c.MembershipOrgUnit,
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.NotificationChannel,
-		c.NotificationDelivery, c.OperationAuditLog, c.OrgUnit, c.Permission,
-		c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup, c.PermissionMenu,
-		c.PermissionPolicy, c.Plan, c.PlanModule, c.PlanQuota, c.PolicyEvaluationLog,
-		c.Position, c.Role, c.RoleFieldPermission, c.RoleMetadata, c.RoleOrgUnit,
-		c.RolePermission, c.Script, c.ScriptLog, c.SysConfig, c.Task, c.Tenant, c.User,
-		c.UserCredential, c.UserMfaFactor, c.UserOrgUnit, c.UserPosition, c.UserRole,
+		c.NotificationDelivery, c.NotificationRule, c.OperationAuditLog, c.OrgUnit,
+		c.Permission, c.PermissionApi, c.PermissionAuditLog, c.PermissionGroup,
+		c.PermissionMenu, c.PermissionPolicy, c.Plan, c.PlanModule, c.PlanQuota,
+		c.PolicyEvaluationLog, c.Position, c.Role, c.RoleFieldPermission,
+		c.RoleMetadata, c.RoleOrgUnit, c.RolePermission, c.Script, c.ScriptLog,
+		c.SysConfig, c.Task, c.Tenant, c.User, c.UserCredential, c.UserMfaFactor,
+		c.UserOrgUnit, c.UserPosition, c.UserRole,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -555,6 +563,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.NotificationChannel.mutate(ctx, m)
 	case *NotificationDeliveryMutation:
 		return c.NotificationDelivery.mutate(ctx, m)
+	case *NotificationRuleMutation:
+		return c.NotificationRule.mutate(ctx, m)
 	case *OperationAuditLogMutation:
 		return c.OperationAuditLog.mutate(ctx, m)
 	case *OrgUnitMutation:
@@ -3520,6 +3530,139 @@ func (c *NotificationDeliveryClient) mutate(ctx context.Context, m *Notification
 		return (&NotificationDeliveryDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown NotificationDelivery mutation op: %q", m.Op())
+	}
+}
+
+// NotificationRuleClient is a client for the NotificationRule schema.
+type NotificationRuleClient struct {
+	config
+}
+
+// NewNotificationRuleClient returns a client for the NotificationRule from the given config.
+func NewNotificationRuleClient(c config) *NotificationRuleClient {
+	return &NotificationRuleClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `notificationrule.Hooks(f(g(h())))`.
+func (c *NotificationRuleClient) Use(hooks ...Hook) {
+	c.hooks.NotificationRule = append(c.hooks.NotificationRule, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `notificationrule.Intercept(f(g(h())))`.
+func (c *NotificationRuleClient) Intercept(interceptors ...Interceptor) {
+	c.inters.NotificationRule = append(c.inters.NotificationRule, interceptors...)
+}
+
+// Create returns a builder for creating a NotificationRule entity.
+func (c *NotificationRuleClient) Create() *NotificationRuleCreate {
+	mutation := newNotificationRuleMutation(c.config, OpCreate)
+	return &NotificationRuleCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of NotificationRule entities.
+func (c *NotificationRuleClient) CreateBulk(builders ...*NotificationRuleCreate) *NotificationRuleCreateBulk {
+	return &NotificationRuleCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *NotificationRuleClient) MapCreateBulk(slice any, setFunc func(*NotificationRuleCreate, int)) *NotificationRuleCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &NotificationRuleCreateBulk{err: fmt.Errorf("calling to NotificationRuleClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*NotificationRuleCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &NotificationRuleCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for NotificationRule.
+func (c *NotificationRuleClient) Update() *NotificationRuleUpdate {
+	mutation := newNotificationRuleMutation(c.config, OpUpdate)
+	return &NotificationRuleUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *NotificationRuleClient) UpdateOne(_m *NotificationRule) *NotificationRuleUpdateOne {
+	mutation := newNotificationRuleMutation(c.config, OpUpdateOne, withNotificationRule(_m))
+	return &NotificationRuleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *NotificationRuleClient) UpdateOneID(id uint32) *NotificationRuleUpdateOne {
+	mutation := newNotificationRuleMutation(c.config, OpUpdateOne, withNotificationRuleID(id))
+	return &NotificationRuleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for NotificationRule.
+func (c *NotificationRuleClient) Delete() *NotificationRuleDelete {
+	mutation := newNotificationRuleMutation(c.config, OpDelete)
+	return &NotificationRuleDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *NotificationRuleClient) DeleteOne(_m *NotificationRule) *NotificationRuleDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *NotificationRuleClient) DeleteOneID(id uint32) *NotificationRuleDeleteOne {
+	builder := c.Delete().Where(notificationrule.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &NotificationRuleDeleteOne{builder}
+}
+
+// Query returns a query builder for NotificationRule.
+func (c *NotificationRuleClient) Query() *NotificationRuleQuery {
+	return &NotificationRuleQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeNotificationRule},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a NotificationRule entity by its id.
+func (c *NotificationRuleClient) Get(ctx context.Context, id uint32) (*NotificationRule, error) {
+	return c.Query().Where(notificationrule.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *NotificationRuleClient) GetX(ctx context.Context, id uint32) *NotificationRule {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *NotificationRuleClient) Hooks() []Hook {
+	return c.hooks.NotificationRule
+}
+
+// Interceptors returns the client interceptors.
+func (c *NotificationRuleClient) Interceptors() []Interceptor {
+	return c.inters.NotificationRule
+}
+
+func (c *NotificationRuleClient) mutate(ctx context.Context, m *NotificationRuleMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&NotificationRuleCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&NotificationRuleUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&NotificationRuleUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&NotificationRuleDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown NotificationRule mutation op: %q", m.Op())
 	}
 }
 
@@ -7564,23 +7707,24 @@ type (
 		DictType, File, InternalMessage, InternalMessageCategory,
 		InternalMessageRecipient, Language, LoginAuditLog, LoginPolicy, Membership,
 		MembershipOrgUnit, MembershipPosition, MembershipRole, Menu,
-		NotificationChannel, NotificationDelivery, OperationAuditLog, OrgUnit,
-		Permission, PermissionApi, PermissionAuditLog, PermissionGroup, PermissionMenu,
-		PermissionPolicy, Plan, PlanModule, PlanQuota, PolicyEvaluationLog, Position,
-		Role, RoleFieldPermission, RoleMetadata, RoleOrgUnit, RolePermission, Script,
-		ScriptLog, SysConfig, Task, Tenant, User, UserCredential, UserMfaFactor,
-		UserOrgUnit, UserPosition, UserRole []ent.Hook
+		NotificationChannel, NotificationDelivery, NotificationRule, OperationAuditLog,
+		OrgUnit, Permission, PermissionApi, PermissionAuditLog, PermissionGroup,
+		PermissionMenu, PermissionPolicy, Plan, PlanModule, PlanQuota,
+		PolicyEvaluationLog, Position, Role, RoleFieldPermission, RoleMetadata,
+		RoleOrgUnit, RolePermission, Script, ScriptLog, SysConfig, Task, Tenant, User,
+		UserCredential, UserMfaFactor, UserOrgUnit, UserPosition, UserRole []ent.Hook
 	}
 	inters struct {
 		AccessKey, Api, ApiAuditLog, DataAccessAuditLog, DictEntry, DictEntryI18n,
 		DictType, File, InternalMessage, InternalMessageCategory,
 		InternalMessageRecipient, Language, LoginAuditLog, LoginPolicy, Membership,
 		MembershipOrgUnit, MembershipPosition, MembershipRole, Menu,
-		NotificationChannel, NotificationDelivery, OperationAuditLog, OrgUnit,
-		Permission, PermissionApi, PermissionAuditLog, PermissionGroup, PermissionMenu,
-		PermissionPolicy, Plan, PlanModule, PlanQuota, PolicyEvaluationLog, Position,
-		Role, RoleFieldPermission, RoleMetadata, RoleOrgUnit, RolePermission, Script,
-		ScriptLog, SysConfig, Task, Tenant, User, UserCredential, UserMfaFactor,
-		UserOrgUnit, UserPosition, UserRole []ent.Interceptor
+		NotificationChannel, NotificationDelivery, NotificationRule, OperationAuditLog,
+		OrgUnit, Permission, PermissionApi, PermissionAuditLog, PermissionGroup,
+		PermissionMenu, PermissionPolicy, Plan, PlanModule, PlanQuota,
+		PolicyEvaluationLog, Position, Role, RoleFieldPermission, RoleMetadata,
+		RoleOrgUnit, RolePermission, Script, ScriptLog, SysConfig, Task, Tenant, User,
+		UserCredential, UserMfaFactor, UserOrgUnit, UserPosition,
+		UserRole []ent.Interceptor
 	}
 )

@@ -10,7 +10,7 @@ import "google/protobuf/field_mask.proto";
 
 import "pagination/v1/pagination.proto";
 
-// 通知渠道服务（平台级配置；一期实现 EMAIL 渠道）
+// 通知渠道服务（平台级配置；实现 EMAIL（SMTP）与 WEBHOOK 两种渠道）
 service NotificationChannelService {
   // 查询通知渠道列表
   rpc List (pagination.PagingRequest) returns (ListNotificationChannelResponse) {}
@@ -36,7 +36,7 @@ message NotificationChannel {
   // 渠道类型
   enum Type {
     EMAIL = 0;    // 邮件（SMTP）
-    WEBHOOK = 1;  // Webhook（预留）
+    WEBHOOK = 1;  // Webhook（HTTP 回调）
   }
 
   // SMTP 加密方式
@@ -92,6 +92,17 @@ message NotificationChannel {
     (gnostic.openapi.v3.property) = { description: "加密方式" }
   ]; // 加密方式
 
+  optional string webhook_url = 16 [
+    json_name = "webhookUrl",
+    (gnostic.openapi.v3.property) = { description: "Webhook 回调地址（仅 WEBHOOK 渠道）" }
+  ]; // Webhook 回调地址
+
+  // 密钥不回传：与 password 同一条约定，仅写入时接收
+  optional bool has_webhook_secret = 17 [
+    json_name = "hasWebhookSecret",
+    (gnostic.openapi.v3.property) = { description: "是否已配置 Webhook 签名密钥" }
+  ]; // 是否已配置 Webhook 签名密钥
+
   optional bool enabled = 20 [
     json_name = "enabled",
     (gnostic.openapi.v3.property) = { description: "是否启用" }
@@ -128,6 +139,11 @@ message CreateNotificationChannelRequest {
     json_name = "password",
     (gnostic.openapi.v3.property) = { description: "SMTP 密码/授权码" }
   ];
+  // 明文签名密钥（服务端加密存储，不落日志；留空 = 不签名）
+  optional string webhook_secret = 3 [
+    json_name = "webhookSecret",
+    (gnostic.openapi.v3.property) = { description: "Webhook 签名密钥" }
+  ];
 }
 
 // 更新通知渠道 - 请求
@@ -139,6 +155,12 @@ message UpdateNotificationChannelRequest {
   optional string password = 4 [
     json_name = "password",
     (gnostic.openapi.v3.property) = { description: "SMTP 密码/授权码，留空不修改" }
+  ];
+  // 明文签名密钥；留空表示不修改已存密钥
+  // （与 password 同形：想清空只能在 data.webhookUrl 之外另走删除重建，一期不做清空口）
+  optional string webhook_secret = 5 [
+    json_name = "webhookSecret",
+    (gnostic.openapi.v3.property) = { description: "Webhook 签名密钥，留空不修改" }
   ];
 }
 

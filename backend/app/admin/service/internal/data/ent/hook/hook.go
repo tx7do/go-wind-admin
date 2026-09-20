@@ -260,6 +260,18 @@ func (f NotificationDeliveryFunc) Mutate(ctx context.Context, m ent.Mutation) (e
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.NotificationDeliveryMutation", m)
 }
 
+// The NotificationRuleFunc type is an adapter to allow the use of ordinary
+// function as NotificationRule mutator.
+type NotificationRuleFunc func(context.Context, *ent.NotificationRuleMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f NotificationRuleFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.NotificationRuleMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.NotificationRuleMutation", m)
+}
+
 // The OperationAuditLogFunc type is an adapter to allow the use of ordinary
 // function as OperationAuditLog mutator.
 type OperationAuditLogFunc func(context.Context, *ent.OperationAuditLogMutation) (ent.Value, error)
