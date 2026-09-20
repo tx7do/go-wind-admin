@@ -444,14 +444,19 @@ func pickedChannelId(receipt *channel.SendReceipt) *uint32 {
 const (
 	// deliverySweepDefaultStaleAfter 一行台账在 SENDING 待多久算"再也不会有结论"。
 	//
-	// 15 分钟是照着异步派发的预算放的：最多 4 次尝试 × asynq.Timeout 30s，加 asynq 默认退避
-	// （attempt^4+1 秒：2s + 17s + 82s）≈ 221 秒 ≈ 4 分钟。阈值取 4 倍，给队列积压留余量。
+	// 15 分钟是照着异步派发的预算放的：最多 4 次尝试 × asynq.Timeout 30s，加 asynq v0.26 的默认退避
+	// `n^4 + 15 + rand(0..29)*(n+1)` 秒（三次退避各落在 16~74 / 31~118 / 96~210 秒）——
+	// 退避带随机数，所以预算是一个区间而不是一个数：**最坏 ≈ 504s ≈ 8.4 分钟**，实测两抽
+	// 分别为 ~101s（P2-3 快失败路径）与 ~179s（P2-5 回写失败路径），都不能当上界用。
+	// 阈值取缺省 15 分钟 = 最坏预算的 1.8 倍，给队列积压留余量。
 	deliverySweepDefaultStaleAfter = 15 * time.Minute
 
 	// deliverySweepMinStaleAfter 环境变量允许调到的下限。
-	// 低于上面的 4 分钟预算就会把"还在重试"的投递扫成 FAILED —— 而定案的行会被
+	// 低于上面 8.4 分钟的最坏预算就会把"还在重试"的投递扫成 FAILED —— 而定案的行会被
 	// AsyncNotificationDispatch 的幂等门挡掉，等于清扫亲手取消了一次还能救的投递。宁慢不误。
-	deliverySweepMinStaleAfter = 5 * time.Minute
+	// 10 分钟这个数是 P2-5 实测退避随机项之后从 5 分钟抬上来的：原下限照着"退避 2s/17s/82s ≈ 221s"
+	// 算，那个公式属于 asynq 旧版本，v0.26 已经把同一件事换成了上面那条带随机数的式子。
+	deliverySweepMinStaleAfter = 10 * time.Minute
 
 	// deliverySweepBatch 单批上限：一次清扫不止一批时循环推进，
 	// 每批的 UPDATE 都会把行移出 SENDING 集合，所以循环必然收敛（并发定案的行返回 0 也会退出）。
@@ -473,7 +478,7 @@ const (
 // 这正是阈值要明显大于派发预算的原因，也是它可经环境变量放宽的原因；
 // 反过来，阈值太小会误伤正在重试的行，所以下限被钉死。
 //
-// 阈值走 NOTIFICATION_DELIVERY_STALE_MINUTES（分钟），缺省 15。
+// 阈值走 NOTIFICATION_DELIVERY_STALE_MINUTES（分钟），缺省 15、下限 10。
 func (s *NotificationService) AsyncDeliverySweep(taskType string, taskData *task.NotificationDeliverySweepTaskData) error {
 	// SystemViewer 与同族的两个系统级任务保持一致；台账本身没有租户列，这一层今天不改变读写范围。
 	ctx := appViewer.NewSystemViewerContext(context.Background())
