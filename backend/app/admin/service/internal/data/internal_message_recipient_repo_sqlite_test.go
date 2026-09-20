@@ -220,3 +220,151 @@ func TestInternalMessageRecipientTenantSqlite(t *testing.T) {
 			"非平台上下文传他租户会被强制覆盖为当前租户——定向路径显式传值只是冗余，不是防线")
 	})
 }
+
+// TestInternalMessageRecipientInboxWritesSqlite 钉住收件箱三个写口（标已读 / 改状态 / 从收件箱删除）
+// 的归属：user_id 是别人的时候，别人的行碰不到。
+//
+// 为什么必须跑出来而不是读代码：读侧的同形洞（repo.List 的归属谓词）正是"看着有租户隔离、
+// 其实同租户内换一个 id 就行"，而写侧后果更重——DeleteNotificationFromInbox 在 recipient_ids
+// 为空时按用户维度**整箱删除**，换一个 id 就是清空别人的收件箱。
+//
+// 钉住之后有两种语义，都写死在下面，免得下次有人当成 bug 顺手"修"成另一种：
+//   - 带 recipient_ids：条件缩成"我自己的行 ∩ 这些 id"= 空集，整个调用是空操作；
+//   - recipient_ids 为空（"全部已读"/"清空"）：作用域缩回**调用者自己**的收件箱——越权意图
+//     伤不到目标用户，但会作用在自己身上。选"缩回"而不是"报错"，是因为三端合法调用方传的
+//     都是自己的 id，加一条错误码等于给三端新增文案与分支。
+//
+// 平台/系统上下文豁免同读侧：代客操作要按指定用户执行。
+func TestInternalMessageRecipientInboxWritesSqlite(t *testing.T) {
+	// 每个子测试起一个干净库：断言读的是"另一个人的行有没有被动过"，共享库会互相污染。
+	newEnv := func(t *testing.T) (*InternalMessageRecipientRepo, uint32, uint32) {
+		t.Helper()
+
+		repo := newInternalMessageRecipientRepoSqlite(t)
+		sysCtx := enttest.NewSystemViewerCtx(context.Background())
+
+		var ownID, otherID uint32
+		for _, uid := range []uint32{201, 202} {
+			// 显式带 tenant_id=5：同租户两个用户才是本洞的前提（跨租户早有 TenantMutationGuard）。
+			created, err := repo.Create(sysCtx, &internalMessageV1.InternalMessageRecipient{
+				TenantId:        trans.Ptr(uint32(5)),
+				MessageId:       trans.Ptr(uint32(101)),
+				RecipientUserId: trans.Ptr(uid),
+				Status:          internalMessageV1.InternalMessageRecipient_RECEIVED.Enum(),
+			})
+			require.NoError(t, err)
+			if uid == 201 {
+				ownID = created.GetId()
+			} else {
+				otherID = created.GetId()
+			}
+		}
+
+		return repo, ownID, otherID
+	}
+
+	// statusOf 直读 ent 行，绕开三个被测写口自己。
+	statusOf := func(t *testing.T, repo *InternalMessageRecipientRepo, recipientRowID uint32) (entInternalMessageRecipient.Status, bool) {
+		t.Helper()
+
+		sysCtx := enttest.NewSystemViewerCtx(context.Background())
+		row, err := repo.entClient.Client().InternalMessageRecipient.Query().
+			Where(entInternalMessageRecipient.IDEQ(recipientRowID)).Only(sysCtx)
+		if ent.IsNotFound(err) {
+			return "", false
+		}
+		require.NoError(t, err)
+		require.NotNil(t, row.Status, "建行时显式写了 RECEIVED，读回应非空")
+
+		return *row.Status, true
+	}
+
+	asUser := func(uid uint32) context.Context {
+		return crudViewer.WithContext(context.Background(), appViewer.NewUserViewer(uint64(uid), 5, 0, "", nil))
+	}
+
+	t.Run("标已读碰不到别人的行", func(t *testing.T) {
+		repo, ownID, otherID := newEnv(t)
+
+		require.NoError(t, repo.MarkNotificationAsRead(asUser(201), &internalMessageV1.MarkNotificationAsReadRequest{
+			UserId: 202, RecipientIds: []uint32{otherID},
+		}))
+		status, ok := statusOf(t, repo, otherID)
+		require.True(t, ok, "别人的收件行不许被删，只许状态不变")
+		require.Equal(t, entInternalMessageRecipient.StatusReceived, status,
+			"带 recipient_ids 的跨用户标已读缩成空操作")
+		own, _ := statusOf(t, repo, ownID)
+		require.Equal(t, entInternalMessageRecipient.StatusReceived, own, "空操作不该顺手改自己的行")
+	})
+
+	t.Run("空 ids 的整箱操作缩回自己", func(t *testing.T) {
+		repo, ownID, otherID := newEnv(t)
+
+		require.NoError(t, repo.MarkNotificationAsRead(asUser(201), &internalMessageV1.MarkNotificationAsReadRequest{
+			UserId: 202,
+		}))
+		other, _ := statusOf(t, repo, otherID)
+		require.Equal(t, entInternalMessageRecipient.StatusReceived, other, "目标用户一行未动")
+		own, _ := statusOf(t, repo, ownID)
+		require.Equal(t, entInternalMessageRecipient.StatusRead, own,
+			"作用域缩回调用者自己：这是钉定的后果，不是漏网")
+	})
+
+	t.Run("改状态碰不到别人的行", func(t *testing.T) {
+		repo, _, otherID := newEnv(t)
+
+		require.NoError(t, repo.MarkNotificationsStatus(asUser(201), &internalMessageV1.MarkNotificationsStatusRequest{
+			UserId: 202, RecipientIds: []uint32{otherID},
+			NewStatus: internalMessageV1.InternalMessageRecipient_READ,
+		}))
+		other, ok := statusOf(t, repo, otherID)
+		require.True(t, ok)
+		require.Equal(t, entInternalMessageRecipient.StatusReceived, other)
+	})
+
+	t.Run("删除碰不到别人的行", func(t *testing.T) {
+		repo, _, otherID := newEnv(t)
+
+		require.NoError(t, repo.DeleteNotificationFromInbox(asUser(201), &internalMessageV1.DeleteNotificationFromInboxRequest{
+			UserId: 202, RecipientIds: []uint32{otherID},
+		}))
+		_, ok := statusOf(t, repo, otherID)
+		require.True(t, ok, "带 id 的跨用户删除是空操作，行必须还在")
+	})
+
+	t.Run("空 ids 的清空删的是自己的箱", func(t *testing.T) {
+		repo, ownID, otherID := newEnv(t)
+
+		require.NoError(t, repo.DeleteNotificationFromInbox(asUser(201), &internalMessageV1.DeleteNotificationFromInboxRequest{
+			UserId: 202,
+		}))
+		_, ok := statusOf(t, repo, otherID)
+		require.True(t, ok, "想清空别人收件箱的调用一行都没删掉")
+		_, ok = statusOf(t, repo, ownID)
+		require.False(t, ok, "而「清空」被缩回成清空自己的收件箱")
+	})
+
+	t.Run("自己的行照常可写", func(t *testing.T) {
+		repo, ownID, otherID := newEnv(t)
+
+		require.NoError(t, repo.MarkNotificationAsRead(asUser(201), &internalMessageV1.MarkNotificationAsReadRequest{
+			UserId: 201, RecipientIds: []uint32{ownID},
+		}))
+		own, _ := statusOf(t, repo, ownID)
+		require.Equal(t, entInternalMessageRecipient.StatusRead, own, "合法调用方（传自己的 id）不受影响")
+		other, _ := statusOf(t, repo, otherID)
+		require.Equal(t, entInternalMessageRecipient.StatusReceived, other, "同租户另一个人的行仍不受影响")
+	})
+
+	t.Run("平台与系统上下文仍可代客", func(t *testing.T) {
+		repo, _, otherID := newEnv(t)
+
+		require.NoError(t, repo.MarkNotificationAsRead(
+			crudViewer.WithContext(context.Background(), appViewer.NewUserViewer(1, 0, 0, "", nil)),
+			&internalMessageV1.MarkNotificationAsReadRequest{UserId: 202, RecipientIds: []uint32{otherID}},
+		))
+		other, _ := statusOf(t, repo, otherID)
+		require.Equal(t, entInternalMessageRecipient.StatusRead, other,
+			"平台上下文（租户 0）按指定用户代客操作，与读侧豁免同形")
+	})
+}

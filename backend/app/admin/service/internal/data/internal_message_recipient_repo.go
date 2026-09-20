@@ -323,18 +323,33 @@ func (r *InternalMessageRecipientRepo) Delete(ctx context.Context, id uint32) er
 	return nil
 }
 
+// inboxScopedUserID 把"这次写操作算谁的"从请求体收回服务端，与 List 的归属谓词同形。
+//
+// 三个收件箱写口的 user_id 整个来自请求体：租户隔离只保证"动不到别租户的行"，同租户内换一个
+// user_id 就能把别人的收件行标成已读，而 DeleteNotificationFromInbox 在 recipient_ids 为空时
+// 是"按用户维度整箱清空"——换一个 id 就是清空别人的收件箱。平台/系统上下文豁免同读侧：
+// 用户详情页这类"代客"场景要按指定用户操作。
+func (r *InternalMessageRecipientRepo) inboxScopedUserID(ctx context.Context, reqUserID uint32) uint32 {
+	if vc, ok := viewer.FromContext(ctx); ok && !vc.IsPlatformContext() && !vc.IsSystemContext() {
+		return uint32(vc.UserID())
+	}
+
+	return reqUserID
+}
+
 // MarkNotificationAsRead 将通知标记为已读。
 // recipient_ids 为空表示"标记该用户全部未读"——前端"全部已读"入口只加载了当前页数据，
 // 无法枚举全部 id，由服务端按用户维度兜底（status <> READ 的守卫保证已读记录不被重写）。
 func (r *InternalMessageRecipientRepo) MarkNotificationAsRead(ctx context.Context, req *internalMessageV1.MarkNotificationAsReadRequest) error {
-	if req.GetUserId() == 0 {
+	userID := r.inboxScopedUserID(ctx, req.GetUserId())
+	if userID == 0 {
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
 	}
 
 	now := time.Now()
 	builder := r.entClient.Client().InternalMessageRecipient.Update().
 		Where(
-			internalmessagerecipient.RecipientUserIDEQ(req.GetUserId()),
+			internalmessagerecipient.RecipientUserIDEQ(userID),
 			internalmessagerecipient.StatusNEQ(internalmessagerecipient.StatusRead),
 		)
 	if len(req.GetRecipientIds()) > 0 {
@@ -353,7 +368,9 @@ func (r *InternalMessageRecipientRepo) MarkNotificationsStatus(ctx context.Conte
 	if len(req.GetRecipientIds()) == 0 {
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
 	}
-	if req.GetUserId() == 0 {
+
+	userID := r.inboxScopedUserID(ctx, req.GetUserId())
+	if userID == 0 {
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
 	}
 
@@ -370,7 +387,7 @@ func (r *InternalMessageRecipientRepo) MarkNotificationsStatus(ctx context.Conte
 	_, err := r.entClient.Client().InternalMessageRecipient.Update().
 		Where(
 			internalmessagerecipient.IDIn(req.GetRecipientIds()...),
-			internalmessagerecipient.RecipientUserIDEQ(req.GetUserId()),
+			internalmessagerecipient.RecipientUserIDEQ(userID),
 			internalmessagerecipient.StatusNEQ(*r.statusConverter.ToEntity(trans.Ptr(req.GetNewStatus()))),
 		).
 		SetNillableStatus(r.statusConverter.ToEntity(trans.Ptr(req.GetNewStatus()))).
@@ -508,12 +525,13 @@ func (r *InternalMessageRecipientRepo) DeleteMessageWithRecipients(ctx context.C
 // recipient_ids 为空表示清空该用户收件箱（前端"清空"入口无法枚举全部ID，
 // 与 MarkNotificationAsRead 的空 ids 语义保持一致）。
 func (r *InternalMessageRecipientRepo) DeleteNotificationFromInbox(ctx context.Context, req *internalMessageV1.DeleteNotificationFromInboxRequest) error {
-	if req.GetUserId() == 0 {
+	userID := r.inboxScopedUserID(ctx, req.GetUserId())
+	if userID == 0 {
 		return internalMessageV1.ErrorBadRequest("invalid parameter")
 	}
 
 	builder := r.entClient.Client().InternalMessageRecipient.Delete().
-		Where(internalmessagerecipient.RecipientUserIDEQ(req.GetUserId()))
+		Where(internalmessagerecipient.RecipientUserIDEQ(userID))
 	if len(req.GetRecipientIds()) > 0 {
 		builder = builder.Where(internalmessagerecipient.IDIn(req.GetRecipientIds()...))
 	}
