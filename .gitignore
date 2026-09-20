@@ -43,3 +43,6 @@ chk-*.png
 
 # GUI e2e 扫测截图证据（会话产物不入库）
 gui-test-screenshots/
+
+# 审计日志归档任务的落盘目录（AUDIT_ARCHIVE_DIR，默认 ./data/audit-archive，按进程 CWD 生成）
+**/data/audit-archive/
