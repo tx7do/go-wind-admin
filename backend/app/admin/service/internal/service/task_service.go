@@ -376,6 +376,19 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 		} else {
 			s.log.Infof(ctx, "审计日志归档定时任务已注册（cron=%s）", task.AuditLogArchiveCronSpec)
 		}
+
+		// 通知台账超时清扫：把超期仍停在 SENDING 的投递行结算为 FAILED。
+		// handler 属通知域（NotificationService.AsyncDeliverySweep），调度项仍在这里注册，
+		// 因为只有本函数会在 RestartAllTask（先 RemoveAllPeriodicTask）之后被再次调用。
+		if _, err := s.taskScheduler.NewPeriodicTask(
+			task.NotificationDeliverySweepCronSpec,
+			task.NotificationDeliverySweepTaskType,
+			&task.NotificationDeliverySweepTaskData{},
+		); err != nil {
+			s.log.Errorf(ctx, "注册通知台账清扫定时任务失败: %s", err.Error())
+		} else {
+			s.log.Infof(ctx, "通知台账清扫定时任务已注册（cron=%s）", task.NotificationDeliverySweepCronSpec)
+		}
 	}
 
 	return count, nil

@@ -105,6 +105,14 @@ func NewAsynqServer(ctx *bootstrap.Context, taskService *service.TaskService, in
 		return nil, err
 	}
 
+	// 通知台账超时清扫 handler（系统级常驻任务，不写入 sys_tasks 表）。
+	// 周期调度在 startAllTask 末尾注册，与其他系统级任务同构。
+	// 它结算的是"再也不会有结论"的 SENDING 行（进程死在拨号中途 / 结论回写失败 / 队列没有消费者）。
+	if err = asynqServer.RegisterSubscriber(srv, task.NotificationDeliverySweepTaskType, notificationService.AsyncDeliverySweep); err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
 	// 启动所有的任务
 	if _, err = taskService.StartAllTask(appViewer.NewSystemViewerContext(ctx.Context()), &emptypb.Empty{}); err != nil {
 		log.Error(err)

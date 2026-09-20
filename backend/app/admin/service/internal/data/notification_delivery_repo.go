@@ -23,8 +23,10 @@ import (
 
 // NotificationDeliveryRepo 通知投递台账仓储。
 //
-// 台账是"投递事实"的记录，生命周期只有两步：投递前 Create(SENDING)，投递后 MarkResult。
-// 因此本仓不提供 Update/Delete——改一条已发生的投递记录等于伪造事实。
+// 台账是"投递事实"的记录，生命周期只有三步：投递前 Create(SENDING)，投递后 MarkResult，
+// 外加 SweepStaleSending 给"再也不会有结论"的行补一个终态。
+// 因此本仓不提供 Update/Delete——改一条已发生的投递记录等于伪造事实；
+// 清扫之所以不算伪造，见它的注释。
 type NotificationDeliveryRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *bLogger.Helper
@@ -223,4 +225,62 @@ func (r *NotificationDeliveryRepo) MarkAttempted(ctx context.Context, id uint32,
 	}
 
 	return nil
+}
+
+// SweepStaleSending 把 created_at 早于 before 却仍停在 SENDING 的台账行落 FAILED，返回本次清扫条数。
+//
+// 这一条为什么不算"伪造事实"：MarkResult 拒绝的是**改写已有结论**，而这里的行压根没有结论——
+// 它既没发出去也没失败记录，留着 SENDING 只会让台账页出现一排"永远在发"的行。
+// 落的是"超期未结算"这一确实发生过的事实，attempts 与 last_error 里最后一次真实报错都保留。
+//
+// 为什么用"查 ID → UpdateMany 再带 status 谓词"而不是逐行 MarkResult：
+// 逐行写法把"这一行现在是什么状态"读进内存后无条件覆盖，撞上正在收尾的异步 handler
+// 就会把刚写好的 SENT 改回 FAILED。把 status==SENDING 放进 WHERE，比较就交给 DB 在同一条
+// 语句里做，抢跑的那一行自然不命中、也就不会被扫。
+//
+// 判据用 created_at 而不是 updated_at：台账这张表的 updated_at 从来没被写过
+// （mixin 的列是 Optional 无默认，MarkResult/MarkAttempted 都不碰它），拿它当锚等于把所有行
+// 判成"从未更新"；而生成的 (status, created_at) 索引正好服务这条查询。
+// 异步派发的尝试预算本身也有界（4 次 × 30s + 退避 ≈ 4 分钟，见 NotificationService 的常量注释），
+// 从"意图产生"起算的超期阈值只要明显大于它就是安全的。
+func (r *NotificationDeliveryRepo) SweepStaleSending(ctx context.Context, before time.Time, reason string, limit int) (int, error) {
+	if limit <= 0 {
+		return 0, adminV1.ErrorBadRequest("limit must be positive")
+	}
+
+	// 比较侧统一成 UTC：created_at 是经 timestamppb 往返写进去的（渲染成 UTC），
+	// 而调用方传进来的 time.Now() 带本地时区。Postgres 的 timestamptz 按瞬间比较无所谓，
+	// 但 SQLite 驱动把时间渲染成带时区的文本，混用两种渲染就退化成了字典序比较 ——
+	// 本仓的 sqlite 回归测试里，"一分钟前"刚落的行会被判成"十五分钟前"并被扫掉。
+	before = before.UTC()
+
+	ids, err := r.entClient.Client().NotificationDelivery.Query().
+		Where(
+			notificationdelivery.StatusEQ(notificationdelivery.StatusSending),
+			notificationdelivery.CreatedAtLT(before),
+		).
+		Limit(limit).
+		IDs(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "scan stale notification deliveries failed: %s", err.Error())
+		return 0, adminV1.ErrorInternalServerError("scan stale notification deliveries failed")
+	}
+	if len(ids) == 0 {
+		return 0, nil
+	}
+
+	count, err := r.entClient.Client().NotificationDelivery.Update().
+		Where(
+			notificationdelivery.IDIn(ids...),
+			notificationdelivery.StatusEQ(notificationdelivery.StatusSending),
+		).
+		SetStatus(notificationdelivery.StatusFailed).
+		SetLastError(reason).
+		Save(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "sweep stale notification deliveries failed: %s", err.Error())
+		return 0, adminV1.ErrorInternalServerError("sweep stale notification deliveries failed")
+	}
+
+	return count, nil
 }

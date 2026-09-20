@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"os"
+	"strconv"
 	"strings"
 	"time"
 
@@ -20,6 +22,7 @@ import (
 
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/channel"
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/task"
 )
 
@@ -417,6 +420,89 @@ func pickedChannelId(receipt *channel.SendReceipt) *uint32 {
 		return nil
 	}
 	return trans.Ptr(receipt.ChannelID)
+}
+
+const (
+	// deliverySweepDefaultStaleAfter 一行台账在 SENDING 待多久算"再也不会有结论"。
+	//
+	// 15 分钟是照着异步派发的预算放的：最多 4 次尝试 × asynq.Timeout 30s，加 asynq 默认退避
+	// （attempt^4+1 秒：2s + 17s + 82s）≈ 221 秒 ≈ 4 分钟。阈值取 4 倍，给队列积压留余量。
+	deliverySweepDefaultStaleAfter = 15 * time.Minute
+
+	// deliverySweepMinStaleAfter 环境变量允许调到的下限。
+	// 低于上面的 4 分钟预算就会把"还在重试"的投递扫成 FAILED —— 而定案的行会被
+	// AsyncNotificationDispatch 的幂等门挡掉，等于清扫亲手取消了一次还能救的投递。宁慢不误。
+	deliverySweepMinStaleAfter = 5 * time.Minute
+
+	// deliverySweepBatch 单批上限：一次清扫不止一批时循环推进，
+	// 每批的 UPDATE 都会把行移出 SENDING 集合，所以循环必然收敛（并发定案的行返回 0 也会退出）。
+	deliverySweepBatch = 500
+)
+
+// AsyncDeliverySweep 清扫超期未结算的台账行：SENDING 待够久 → FAILED + 原因。
+//
+// 系统级常驻定时任务（每 5 分钟），handler 在此、周期调度在 TaskService.startAllTask 末尾注册，
+// 不写入 sys_tasks 表（与到期扫描/审计归档同构：代码常驻、管理页不可见不可停）。
+//
+// 补的洞：台账先落 SENDING 再投递，于是"进程死在拨号中途""结论回写失败（markResult 只记日志）"
+// "Redis 里有任务但没有消费者"三种情况都会留下一行永远停在 SENDING 的记录。
+// 在这之前代码里四个 SENDING 写入点全是"开始"，没有任何一处能把非终态行推向终态。
+//
+// 代价必须写清楚：清扫与"迟但会到"是互斥的。若任务只是排在队列里没被消费（服务停了半小时），
+// 清扫会先把行定案，等服务起来后幂等门会挡掉这次投递 —— 用户收不到那封验证码。
+// 这正是阈值要明显大于派发预算的原因，也是它可经环境变量放宽的原因；
+// 反过来，阈值太小会误伤正在重试的行，所以下限被钉死。
+//
+// 阈值走 NOTIFICATION_DELIVERY_STALE_MINUTES（分钟），缺省 15。
+func (s *NotificationService) AsyncDeliverySweep(taskType string, taskData *task.NotificationDeliverySweepTaskData) error {
+	// SystemViewer 与同族的两个系统级任务保持一致；台账本身没有租户列，这一层今天不改变读写范围。
+	ctx := appViewer.NewSystemViewerContext(context.Background())
+
+	staleAfter := s.deliveryStaleAfter(ctx)
+	reason := fmt.Sprintf("swept by %s: still SENDING %s after creation, no delivery conclusion written back",
+		taskType, staleAfter)
+
+	var swept int
+	for {
+		count, err := s.deliveryRepo.SweepStaleSending(ctx, time.Now().Add(-staleAfter), reason, deliverySweepBatch)
+		if err != nil {
+			s.log.Errorf(ctx, "AsyncDeliverySweep: sweep failed: %s", err.Error())
+			return err
+		}
+		swept += count
+		if count < deliverySweepBatch {
+			break
+		}
+	}
+
+	if swept > 0 {
+		s.log.Warnf(ctx, "AsyncDeliverySweep: %d stale deliveries settled as FAILED (staleAfter=%s)", swept, staleAfter)
+	}
+
+	return nil
+}
+
+// deliveryStaleAfter 解析超期阈值，坏值不静默采纳（要么按缺省、要么按下限，并且都留一条日志）。
+func (s *NotificationService) deliveryStaleAfter(ctx context.Context) time.Duration {
+	const envVar = "NOTIFICATION_DELIVERY_STALE_MINUTES"
+
+	v := strings.TrimSpace(os.Getenv(envVar))
+	if v == "" {
+		return deliverySweepDefaultStaleAfter
+	}
+
+	minutes, err := strconv.Atoi(v)
+	if err != nil || minutes <= 0 {
+		s.log.Warnf(ctx, "%s=%q 不是正整数分钟数，按缺省 %s 处理", envVar, v, deliverySweepDefaultStaleAfter)
+		return deliverySweepDefaultStaleAfter
+	}
+
+	if after := time.Duration(minutes) * time.Minute; after >= deliverySweepMinStaleAfter {
+		return after
+	}
+
+	s.log.Warnf(ctx, "%s=%d 低于异步派发的重试预算，抬到下限 %s", envVar, minutes, deliverySweepMinStaleAfter)
+	return deliverySweepMinStaleAfter
 }
 
 // markResult 回写台账结果，失败只记日志、不改投递结论。

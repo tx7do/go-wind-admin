@@ -1,9 +1,9 @@
 # 通知域（Notification Domain）设计文档
 
 > **状态：P0 + P1 已落地（后端内聚 + 三端投递台账页 + 邮件文案 i18n + SSE 事件类型注册表，2026-09-19），
-> P2 已落地三块（见 §4：P2-1 站内信注册为 INTERNAL 渠道 + 定向发送改走缝 + 台账 `related_id`；
+> P2 已落地四块（见 §4：P2-1 站内信注册为 INTERNAL 渠道 + 定向发送改走缝 + 台账 `related_id`；
 > P2-2 收件行租户打标跟着受众走 + 修掉收件箱一处越权读；P2-3 异步投递 = 入队前同步预检 + asynq 派发 +
-> 台账 `request_id`/`attempts`，均 2026-09-20）；P2 剩余（规则表 / WEBHOOK 渠道）与 P3 仍是设计提案，
+> 台账 `request_id`/`attempts`；P2-4 台账 `SENDING` 超时清扫 = 系统级常驻 cron，均 2026-09-20）；P2 剩余（规则表 / WEBHOOK 渠道）与 P3 仍是设计提案，
 > 另有一处已定位、尚未修的写侧姊妹缺陷记在 §7「收件箱读侧不钉归属」一节末尾。**
 > 第 2 节「现状盘点」是 P1 之前的基线（核对至 commit `29d700b9`），其中被改动的事实在就地标注；
 > 第 3~4 节的实施状态以 §4 的分期标记为准，落地验收进度在 §7。实施进度更新时改本文状态标记，不要另开文档。
@@ -183,17 +183,18 @@ SKIPPED/FAILED）和非 nil error。只回 error，调用方拿不到台账行�
 | `channel_id` | 可空，指向实际选中的 `sys_notification_channels` 行（策略结果落档，便于排障） | 已建 |
 | `recipient_user_id` | 可空（直发模式无 userId） | 已建 |
 | `target` | 脱敏后的投递目标（邮箱留首字符与域名，见 `maskTarget`）。**INTERNAL 例外：原样存收件用户 ID** —— 那是本平台内部主键、台账本就只对平台管理员开放，掩成 `****1024` 只会把台账里唯一可读的字段变成噪音 | 已建 |
-| `status` | `SENDING` / `SENT` / `FAILED` / `SKIPPED` | 已建 |
+| `status` | `SENDING` / `SENT` / `FAILED` / `SKIPPED`（`SENDING` 不是终态、也不许是永久态：超期未结算由 P2-4 的常驻清扫定案成 `FAILED` 并写明 `swept by …` 原因） | 已建 |
 | `last_error` / `sent_at` | 结果与完成时间（FAILED/SKIPPED 不留 `sent_at`） | 已建 |
 | `related_id` | 可空，**按 `event_type` 解释**的业务对象 ID（`INTERNAL_MESSAGE` → `internal_messages.id`）。台账不存正文快照，这一列是"这条投递发的是什么"的唯一回跳入口 | P2 已建（`Optional().Nillable()` + 索引 `(event_type, related_id)`，启动期 ent 自动迁移加列加索引，实测已在 `gwa` 库出现） |
 | `event_type/channel/status` 三枚枚举 | 必须 `Optional().Nillable()`：值型枚举列 + 可选指针 DTO 会踩 copier 的"指针↔指点对"失配，读回恒为零值（同款坑见 `notification_channel_repo.go` 的 `queryTypeByIDs` 注释） | 已按此建 |
 | `request_id` | 幂等锚：**一次业务调用 → 若干条投递**的唯一串线抓手。调用方不传则服务端生成（GUIDv4 无连字符，32 字符）。唯一索引是 `(request_id, channel)` 复合，不是一列唯一 —— 一次调用同时发邮件 + 站内信是这条台账的**预期用法**，单列唯一会把这种调用变成插入冲突 | P2-3 已建（`Optional().Nillable()` + `uidx_sys_notification_delivery_request_channel`，实测已在 `gwa` 库出现；三个生产点今天都不传，全靠服务端生成） |
-| `attempts` | 已尝试投递的次数。同步路径恒为 1（"当场投一次就是一次"，不留 0 让读的人先回忆哪条路写过这列）；异步路径由 handler 每次开拨前 +1，配合 `status=SENDING` 就是"还在重试" | P2-3 已建（`Uint32().Default(0)`；预检失败/配置类 SKIPPED 的行留 0 = 一次都没真试过） |
+| `attempts` | 已尝试投递的次数。同步路径恒为 1（"当场投一次就是一次"，不留 0 让读的人先回忆哪条路写过这列）；异步路径由 handler 每次开拨前 +1，配合 `status=SENDING` 就是"还在重试"。**P2-4 之后这条判据有了时限**：超过清扫阈值仍挂在 `SENDING` 的行不是"还在重试"，而是"没人结算"（阈值下限就是按重试预算算出来的，见 §6 决策点 8） | P2-3 已建（`Uint32().Default(0)`；预检失败/配置类 SKIPPED 的行留 0 = 一次都没真试过） |
 | `title` / `content` | 正文快照 | **不做**：一期三个事件里两个的正文就是验证码本身，快照进永久台账等于建了一张 OTP 明文表。P2 引入模板后按"模板 ID + 渲染参数"存，不存渲染结果 |
 | mixin | `AutoIncrementId` / `TimeAt` / `OperatorID` | 已按此建；**不挂 `TenantID`**（见 §6 决策点 3 结论），也不挂 `SwitchStatus`（台账没有"停用"语义） |
 
 台账**不提供 Update/Delete 业务方法**：改一条已发生的投递等于伪造事实；只有 `MarkResult`
-按主键回写结果字段。
+按主键回写结果字段。P2-4 多加的 `SweepStaleSending` 不算例外 —— 它只把 `SENDING` 定案成 `FAILED`
+（带 `status=SENDING` 谓词的批量 UPDATE），从不改写任何已有结论，也不碰 `attempts`。
 
 ### 3.4 文件清单（P1 已落地，与首稿的差异已就地标注）
 
@@ -211,6 +212,12 @@ app/admin/service/internal/service/internal_message_sender.go  P2：INTERNAL 渠
 pkg/task/notification_dispatch.go                              任务类型常量 + 载荷结构（delivery_id + 正文三件）
 app/admin/service/internal/data/channel/sender.go              新增 Prechecker 接口（配置的可用性自检，不拨号）
 app/admin/service/internal/server/asynq_server.go              订阅 notification_dispatch + 把 TaskService 注成 TaskEnqueuer
+--- 以下为 P2-4 台账 SENDING 清扫新增/改动（无契约变更：proto / ent schema 一列未动）---
+pkg/task/notification_delivery_sweep.go                        清扫任务类型 + cron 常量（载荷为空）
+app/admin/service/internal/data/notification_delivery_repo.go  + SweepStaleSending：批量 + `status=SENDING` 谓词的定案
+app/admin/service/internal/service/notification_service.go     + AsyncDeliverySweep handler + deliveryStaleAfter 阈值解析
+app/admin/service/internal/server/asynq_server.go              + 订阅 notification_delivery_sweep
+app/admin/service/internal/service/task_service.go             + startAllTask 尾部重注册这条 cron（见 §4 P2-4 第 1 条）
 --- 以下为 P2 剩余项，尚未建 ---
 app/admin/service/internal/data/channel/webhook_sender.go      等 §6 决策点 2 定了表结构再写
 ```
@@ -423,6 +430,56 @@ sqlite 测试 `AsyncDispatchHandlerSettlesLedger` 覆盖了这道门，但本机
 且额度用尽后不再拨号、配置类错误 `SkipRetry`、预检失败不入队、入队失败退回当场投、同步事件不入队、
 `request_id` 调用方优先 + `(request_id, channel)` 冲突、未知 delivery 交给重试）。
 
+**P2-4（台账 `SENDING` 超时清扫，已完成 2026-09-20）** —— 补上台账生命周期缺的最后一步。此前四个 `SENDING`
+写入点全是「开始」、没有一处「收尸」：进程死在拨号中途、Redis 里那条任务随进程一起没了，或者部署方压根没配
+asynq 消费者 —— 三种情况都会留下一行永远 `SENDING` 的台账，而台账页对"为什么还在发"这个问题给不出任何答案。
+
+1. **落点形状 = 系统级常驻任务**（这条口径的权威说明在 `docs/task_system.md` §5.6）：类型与 cron 常量在
+   `pkg/task/notification_delivery_sweep.go`（`notification_delivery_sweep` / `*/5 * * * *`），handler 是
+   `NotificationService.AsyncDeliverySweep`，订阅在 `NewAsynqServer`，cron 重注册在 `TaskService.startAllTask`
+   末尾 —— 因此它不进 `sys_tasks`，任务管理页看不见也停不掉，跑在 SystemViewer 上下文下。
+2. **年龄锚点用 `created_at`，不是 `updated_at`**：本仓没有任何一处会写 `updated_at`（mixin 列
+   `Optional().Nillable()` 且无默认值），下表里被扫过的那两行至今 `updated_at` 为空 —— 这就是证据。
+   顺带复用已有的 `(status, created_at)` 索引。代价是"一行被合法地反复推进"这种场景扫不出来，目前没有这种场景。
+3. **阈值缺省 15 分钟、下限 5 分钟**（`NOTIFICATION_DELIVERY_STALE_MINUTES` 覆盖；坏值按缺省并 WARN，不静默采纳）：
+   下限由异步派发的重试预算推出 —— 算术上界 ≈ 221s（4 次尝试 × `asynq.Timeout(30s)` + 退避 2s/17s/82s；
+   实测的快失败路径 ~101s，见 §6 决策点 8）。低于上界的阈值会把还在正常重试的投递扫死。
+   15 分钟则给"SMTP 恢复得慢一点"留余量。
+4. **写法是 DB 侧带谓词的批量更新**：先按 `status=SENDING AND created_at < cutoff` 扫出至多 500 个 id，
+   再一条 `UPDATE … WHERE id IN (…) AND status=SENDING` 落 `FAILED` + `last_error`，`attempts` 一律不动。
+   重查状态而不是逐行 `MarkResult`，是为了不跟仍在跑的 handler 抢同一行 —— 结论已经写回来的行必须原样留下。
+   满一批就再来一批，直到某轮不足一批。
+5. **代价要说清楚：这是「清扫」不是「补投」**。幂等门读的就是台账状态（P2-3 第 4 条），一行被扫成 `FAILED`
+   之后晚到的 handler 读到 `status != SENDING` 直接返回 nil —— 那封信**永远不会再发出去**。所以阈值宁松勿紧，
+   且 reason 写死 `swept by <task_type>` 前缀，排障时一眼分得开"投递失败"与"没人结算"。
+   这条代价由专门的回归测试 `SweptRowIsNeverDispatched` 钉住，不是注释里的口头承诺。取舍见 §6 决策点 8。
+
+**运行期实测（本机实例 + 现网 `gwa` 库 + asynq 独占空闲 DB 12 + `NOTIFICATION_DELIVERY_STALE_MINUTES=5`；
+探针账目列在最后）**：
+
+| 观测点 | 结果 |
+| --- | --- |
+| 注册 | 13:33:19 启动日志 `通知台账清扫定时任务已注册（cron=*/5 * * * *）` + asynq DEBUG `registered an entry`（类型 `notification_delivery_sweep`）；第一个刻度 13:35:00 即开工 |
+| **超期行落定**（直插 `SENDING`，`created_at = now() - interval '2 hours'`、`attempts=2`、`request_id=sweep-live-1`） | 13:35:00.172 WARN `AsyncDeliverySweep: 1 stale deliveries settled as FAILED (staleAfter=5m0s)`；台账 id=13 现为 **`FAILED`**、`attempts=2` **保留**、`sent_at` 为空、`updated_at` 为空、`last_error = "swept by notification_delivery_sweep: still SENDING 5m0s after creation, no delivery conclusion written back"` |
+| **未超期行不误伤**（直插 `SENDING`，`created_at = now()` = 13:36:02、`attempts=1`、`request_id=sweep-live-2`） | 13:40:00 刻度时年龄 3m58s < 5m ⇒ 13:41:52 读回**仍是 `SENDING`**；该轮**没有** WARN（扫到 0 行本就不记日志） |
+| **到点即扫** | 13:45:00.220 同一条 WARN，id=14 → `FAILED`、`attempts=1` 保留、`sent_at` 与 `updated_at` 均为空 |
+| 前端零改动 | 本次没动 proto ⇒ 无 `make ts` / `make openapi` / 接口同步；清扫原因经 `last_error` 出镜，而该列三端台账页本来就在渲染（react `pages/app/system/notification-delivery/index.tsx`、ele 与 vben 的 `notification_delivery/index.vue`） |
+
+**顺手挖出一条本仓通用的时间坑（不止清扫会踩）**：`SweepStaleSending` 的第一版在 sqlite 回归测试里把"一分钟前
+才落的行"扫掉了。根因是两侧时间呈现方式不同 —— `created_at` 经 `timestamppb` 往返后按 UTC 渲染，而谓词参数
+`time.Now()` 带 `+0800 CST`；modernc.org/sqlite 把 `time.Time` 存成 `Time.String()` 文本，于是这个比较是
+**字典序**的，一行 1 分钟前的行读起来像 8 小时前的。Postgres 的 `timestamptz` 不受影响（实测 `gwa` 库该列类型
+为 `timestamp with time zone`、会话 `TimeZone = Etc/UTC`），所以它只在测试里炸、不在现网炸。修法是在比较侧统一
+`.UTC()`（repo 里一行 + 注释），完整的边界表记在 `docs/task_system.md` §10。
+
+探针造成的变更（全部如实记账）：台账新增 id=13、14 两行**保留**作上表证据（与 id=9…12 同一处理，两行的
+`request_id` 就是 `sweep-live-1/2`，直插 SQL 造的，不经业务链路）；`configs/server.yaml` 的 `server.asynq.uri`
+临时从 DB 1 改指 DB 12（理由同 P2-3 那条「队列没有命名空间」），测完已复旧、该 DB 的 asynq 键逐个 `DEL` 清空。
+
+回归测试：`notification_sweep_sqlite_test.go` 六条（只扫超期 SENDING / 不覆盖并发写回的结论 / 被扫行不再投递 /
+批量逐轮推进 / 阈值解析含坏值与下限 / handler 崩溃后端到端闭环），另把 `TestTaskService_RestartAllTask` 的常驻
+注册计数从 3 项改 4 项并加断言。
+
 P2 剩余：`notification_rules` 表 + 管理页，替换 §3.5 的 Go 表；`sys_notification_channels` 解掉"WEBHOOK 类型
 无处存 URL"的问题（方案见 §6 决策点 2）；`webhook_sender.go` 落地。
 
@@ -490,6 +547,18 @@ P2 剩余：`notification_rules` 表 + 管理页，替换 §3.5 的 Go 表；`sy
      （至少一次投递），换掉的是"业务侧被 SMTP 抖动绑住响应时间"。
    若将来引入模板（P3），这一条应重估：载荷换成 `{delivery_id, template_id, render_params}` 才是既无明文
    又能重渲染的形态 —— 届时正文仍不落台账，与 §3.3 同构。
+8. **清扫阈值取多少、要不要给"迟但会到"留活路** —— **P2-4 已定：缺省 15 分钟、下限 5 分钟，宁可漏扫不误扫，
+   且清扫只定案不补投**。
+   下限不是拍脑袋：异步派发的重试预算上界约 221s —— 算术值（4 次尝试 × `asynq.Timeout(30s)` + 默认退避
+   2s/17s/82s，口径同 `docs/task_system.md` §5.6），实测的快失败路径（连不上端口、每次立即报错）则是
+   ~101s 后落归档（§4 P2-3 表）。5 分钟在算术值上留约 1.35 倍余量，15 分钟留约 4 倍；
+   代码里 `deliveryStaleAfter` 会把更低的配置值抬到下限并 WARN，
+   因为一个手滑填 `1` 的运维不该看见"还在重试的信被判定失败"。
+   被扫的行列不出第二种结局（幂等门读的就是状态），所以"SMTP 抖 6 分钟"确实会丢一封验证码 —— 换来的是一行
+   不会永远挂在 `SENDING` 的台账。真需要"迟到也要送到"时，正确的改法**不是**继续拉长阈值，
+   而是让清扫读 `attempts` 后**重新入队**，那要先有"下次可投递时间"这类列，属 P3+ 的量级，本次不做（也不预埋）。
+   另一个否掉的方案是用 `updated_at` 当年龄锚点：本仓没有任何代码写过这一列（§4 P2-4 表里两行 `updated_at`
+   至今为空），拿它比较等于"永远按创建时间算"，却要让人误以为有滑动窗口 —— 不如把事实写在列名上。
 
 ## 7. 落地验收清单
 
@@ -551,6 +620,14 @@ gow run admin
       `Tooltip`；ele 的 `ProPage` 与 vben 的 vxe 适配都没有列头 tooltip 机制（P2 移植记录里那条老结论，本次复核
       仍成立），ele 侧把说明写进列定义的代码注释、vben 侧同。真要在页面上给最终用户解释这两列，得先给两端
       的表格适配层加列头提示能力。
+- [x] P2-4 台账 `SENDING` 清扫：**契约与三端零改动**（没动 proto，故无 `buf generate` / `make ts` /
+      `make openapi` / 接口同步；清扫原因走既有 `last_error` 列，三端台账页本来就在渲染它）。
+      这条清单短是因为改动全在写侧：验收看三样 —— 启动日志一行
+      `通知台账清扫定时任务已注册（cron=*/5 * * * *）`、一行超期 `SENDING` 在下一个 5 分钟刻度变 `FAILED`
+      且 `attempts` 保留 / `sent_at` 为空 / `last_error` 以 `swept by ` 开头、以及一行**未超期**的 `SENDING`
+      在同一刻度不动（本次实测把阈值降到 5 分钟复现：13:36 直插的行 13:40 刻度不动、13:45 刻度才落定）。
+      **给任何"按时间比较"的 repo 方法提个醒**：谓词参数必须先 `.UTC()`，否则 sqlite 回归测试里的比较是
+      字典序的（Postgres 上不复现）—— 详见 §4 P2-4 那条时间坑与 `docs/task_system.md` §10。
 
 P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点到的地方，漏任一处都是静默不一致）：
 

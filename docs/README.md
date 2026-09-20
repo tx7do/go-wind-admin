@@ -47,7 +47,7 @@
 | [plan_billing.md](./plan_billing.md) | 套餐与计费管控：三档到期策略全链路、模块白名单、配额与用量计量、租户数据清理 | 改套餐/配额/到期处置、租户 403 排障前 |
 | [task_system.md](./task_system.md) | 任务调度系统：配置与启动链、任务数据模型、调度生命周期、系统级常驻任务、脚本任务桥、管理页、多租户语义与排障 | 加任务类型、排"任务没跑"、接新调度需求前 |
 | [sse_architecture.md](./sse_architecture.md) | SSE 推送架构：服务端配置与生命周期、流鉴权与 streamID 语义、事件生产、三端消费模块、部署拓扑与排障 | 改推送链路、加新事件类型、排"收不到通知"前 |
-| [notification_domain_design.md](./notification_domain_design.md) | 通知域：P0+P1 **已落地**（`SendDirect()`/Notifier 缝、`sys_notification_deliveries` 投递台账、三处裸发送点迁完、三端台账页、邮件文案 `pkg/mailtext`、SSE 事件类型注册表 `pkg/sseevent`），P2 第一块 **已落地 2026-09-20**（站内信注册为 INTERNAL 渠道、定向发送改走缝、台账加 `related_id`；全员广播刻意不入台账，理由与遗留决策点在 §4 P2），P2 剩余（规则表、WEBHOOK 渠道、异步投递）与 P3 仍为设计提案；含现状盘点、与 go-wind-im 的可抄性对照、运行期实测发现、移植记录与代码生成坑 | 动通知相关代码前先读；推进 P2/P3 或改台账语义前回来更新状态标记 |
+| [notification_domain_design.md](./notification_domain_design.md) | 通知域：P0+P1 **已落地**（`SendDirect()`/Notifier 缝、`sys_notification_deliveries` 投递台账、三处裸发送点迁完、三端台账页、邮件文案 `pkg/mailtext`、SSE 事件类型注册表 `pkg/sseevent`），P2 **已落地四块（2026-09-20）**：站内信注册为 INTERNAL 渠道 + 定向发送改走缝 + 台账 `related_id`（全员广播刻意不入台账，理由与遗留决策点在 §4 P2）、收件行租户打标跟着受众走 + 修掉收件箱一处越权读、异步投递（入队前同步预检 + asynq 派发 + 台账 `request_id`/`attempts`）、台账 `SENDING` 超时清扫（系统级常驻 cron）；P2 剩余（规则表、WEBHOOK 渠道）与 P3 仍为设计提案；含现状盘点、与 go-wind-im 的可抄性对照、运行期实测发现、移植记录与代码生成坑 | 动通知相关代码前先读；推进 P2/P3 或改台账语义前回来更新状态标记 |
 | [data_scope_design.md](./data_scope_design.md) | 角色级数据范围：五档语义、聚合、执行层、新表接入步骤 | 新表接入数据范围或改聚合规则前 |
 | [audit-log-producer-design.md](./audit-log-producer-design.md) | 六类审计日志的生产者设计与采集层实施状态 | 改审计采集、加新日志字段时 |
 | [script_system.md](./script_system.md) | 脚本级插件系统：五类扩展点、安全模型、运维 | 写脚本/改钩子点/接任务桥前 |
