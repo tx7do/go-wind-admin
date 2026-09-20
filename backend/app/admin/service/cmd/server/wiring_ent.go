@@ -219,6 +219,14 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	internalMessageCategoryService := service.NewInternalMessageCategoryService(ctx, internalMessageCategoryRepo)
 	internalMessageRecipientService := service.NewInternalMessageRecipientService(ctx, internalMessageRepo, internalMessageRecipientRepo)
 
+	// 站内信 ⇄ 通知域接线（两条边互为依赖，只能装配期后贴）：
+	//   NotificationService --Registry--> InternalMessageSender --> InternalMessageService（投递内核）
+	//   InternalMessageService --Notifier--> NotificationService（缝的入口）
+	// 注册放在 internalMessageService 之后是硬要求：Sender 持有服务对象本身，才能在
+	// RegisterInternalMessagePublisher（SSE 启动时）之后读到活的 publisher 而不是构造期快照。
+	channelRegistry.Register(service.NewInternalMessageSender(internalMessageService))
+	internalMessageService.RegisterNotifier(notificationService)
+
 	// 平台脚本：运行时（多语言引擎）+ 管理服务
 	scriptLogRepo := data.NewScriptLogRepo(ctx, entClient)
 	scriptRuntime := service.NewScriptRuntime(ctx, scriptRepo, redisClient, minioClient, scriptLogRepo)

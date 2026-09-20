@@ -27,7 +27,7 @@ docs/                       文档体系（总入口 docs/README.md：教程层 
 
 1. **不吞错**：任何 catch 至少二选一——`console.error/warn` 带出**原始错误对象**，或重新抛出。用户可见的通知/Message ≠ 日志（只有翻译文案）。合法裸 catch 仅限纯本地 best-effort 兜底且注释写明原因。历史教训：认证链路静默吞错曾让 bug 排查耗时数日。
 2. **vue-vben 工具链版本已钉死**（catalog 精确版本 + packageManager 匹配本机 pnpm）：禁止改回 `^` 范围、禁止顺手升级 vue/typescript/vue-tsc/pnpm。原因与升级流程见 `frontend/admin/vue-vben/AGENTS.md`「工具链与已知坑」。
-3. **搜索条件一律 contains 而非 EQ**、ID 类字段不进模糊搜索；CRUD 请求体必须包 `{ data: {...} }`——细节见 `.zcode/skills/add-crud-module/SKILL.md`。
+3. **搜索条件一律 contains 而非 EQ**、ID 类字段不进模糊搜索；CRUD 请求体必须包 `{ data: {...} }`，但**仅限 CRUD**——`body: "*"` 的自定义 RPC（如 `internal-message/send`）收的是扁平请求体，多包一层 `data` 会被 protojson 当未知字段丢掉，接口照样 200、字段全为空。细节见 `.zcode/skills/add-crud-module/SKILL.md`。
 
 ## 开发策略：react 先行，其余移植
 
@@ -37,7 +37,7 @@ docs/                       文档体系（总入口 docs/README.md：教程层 
 
 **代码生成器**：配套工具 [go-wind-toolkit/gowind-uiapp](https://github.com/tx7do/go-wind-toolkit/tree/main/gowind-uiapp)（桌面 GUI + CLI，从数据库表/SQL 生成前后端代码，含简单表单）。CLI（`gowind-cli`）非交互、JSON 输出，适合 Agent 调用。工具产物仍须按本仓铁律与约定验收补齐（`{ data: {...} }` 包裹、contains 搜索、已部署实例的新端点走管理页「接口同步」登记进 Api 表、`make ts` 生成三端 TS 等）。
 
-> 系统默认数据（admin 用户、角色、菜单、权限、语言等）由服务启动时在 Go 侧自动播种（`pkg/constants/default_data.go` + 各 service 的 count==0 守卫；Api 表仅在空表时于启动期自动同步，**已部署实例新增端点须在管理页「接口同步」手动触发全量重建**，否则租户闸门 fail-closed 403），**不要**找 SQL 种子脚本，`backend/sql/` 下只剩演示数据。
+> 系统默认数据（admin 用户、角色、菜单、权限、语言等）由服务启动时在 Go 侧自动播种（`pkg/constants/default_data.go` + 各 service 的 count==0 守卫；Api 表仅在空表时于启动期自动同步，**已部署实例新增端点须在管理页「接口同步」手动触发全量重建**，否则租户闸门 fail-closed 403；「接口同步」重建读的是**打进二进制的** `cmd/server/assets/openapi.yaml`，所以新 proto 必须先 `make openapi` 再重启进程，否则同步"成功"而新端点依旧不在表里。新菜单同理：`count==0` 守卫意味着老库要靠各端「菜单同步」(MERGE) 才会多出这一行），**不要**找 SQL 种子脚本，`backend/sql/` 下只剩演示数据。
 
 ## 后端任务：gow 优先，make 兜底
 
@@ -57,8 +57,9 @@ gow 未覆盖的任务（三端 TS 生成 `make ts`、OpenAPI `make openapi`、`
 ## 本地验证要点
 
 - 后端起在 `:7788`（`gow run admin`；启动方式见 `docs/windows-startup-guide.md` / `docs/backend_deploy.md`）；前端 dev 端口见上表，代理已配置好 API 转发。
-- 登录账号：全新环境播种为 `admin / Abcd@1234`（`pkg/constants/default_data.go` 的 `DefaultUserPassword`）；本机库现状为 `admin / admin`（历史 e2e 改密残留，以本机实际为准）。图形验证码的答案可在 Redis 中按 `gowind:captcha:<captchaId>` 直接读取，便于自动化验证。
+- 登录账号：全新环境播种为 `admin / Abcd@1234`（`pkg/constants/default_data.go` 的 `DefaultUserPassword`）；本机 `gwa` 库实测（2026-09-20）即为此值，历史备注的 `admin / admin` 已失效（登录返回 `INVALID_PASSWORD`）。图形验证码的答案可在 Redis 中按 `gowind:captcha:<captchaId>` 直接读取，便于自动化验证。
 - vue-element 在 dev 下若见 router-view 塌空/白屏：先重启 dev server 再下结论（vite 依赖优化竞态已做遏制与自愈，见其 AGENTS.md「dev 白屏处置」）。
+- `go test ./...` 偶发 `fork/exec %TEMP%\go-build...\x.test.exe: Access is denied.`（Windows 上对刚链接好的测试二进制执行被拦，疑似安全策略/杀软实时扫描）：属环境问题、**不是代码失败**。复验办法是绕开 Temp 执行——`go test -c -o <工作区内路径>/x.test.exe ./pkg/x` 后直接跑该 exe；判成"测试挂了"之前先这样确认一次。
 
 ## 文档索引
 

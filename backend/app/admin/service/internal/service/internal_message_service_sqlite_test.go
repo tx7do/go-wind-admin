@@ -18,15 +18,20 @@ import (
 	"github.com/hibiken/asynq"
 	"github.com/stretchr/testify/require"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	"github.com/tx7do/go-crud/viewer"
 	"github.com/tx7do/go-utils/trans"
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-transport/transport/sse"
 
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
+	"go-wind-admin/pkg/task"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 	internalMessageV1 "go-wind-admin/api/gen/go/internal_message/service/v1"
+
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 )
 
 // internalMessageServiceUserRepoStub：executeBroadcast 分页拉取用户时才会用到
@@ -38,7 +43,8 @@ type internalMessageServiceUserRepoStub struct {
 
 // newInternalMessageServiceForTest 白盒复刻 NewInternalMessageService 的字段初始化：
 // log 换 NopLogger，repo 用 testkit 构造器，authenticator 置 nil（HandleAuthorize 专用），
-// 默认 publisher 为 noop、taskEnqueuer 为 nil（与生产构造器一致，供注册缝测试断言）。
+// 默认 publisher 为 noop、taskEnqueuer 为 nil、notifier 为"未装配"占位（与生产构造器一致，
+// 供注册缝测试断言）。
 func newInternalMessageServiceForTest(t *testing.T) *InternalMessageService {
 	t.Helper()
 	entClient := enttest.NewEntClientForTest(t)
@@ -52,6 +58,7 @@ func newInternalMessageServiceForTest(t *testing.T) *InternalMessageService {
 		clientType:                   authenticationV1.ClientType_admin,
 		internalMessagePublisher:     noopInternalMessagePublisher{},
 		taskEnqueuer:                 nil,
+		notifier:                     unwiredNotifier{},
 	}
 }
 
@@ -223,4 +230,99 @@ func TestInternalMessageServiceSqlite_RegisterSeams(t *testing.T) {
 	gotEnqueuer, ok := svc.taskEnqueuer.(*recordingTaskEnqueuer)
 	require.True(t, ok, "注册后 taskEnqueuer 应被替换为注册实例")
 	require.Same(t, enqueuer, gotEnqueuer)
+}
+
+// broadcastUserRepoStub 是 data.UserRepo 的替身：记录 List 调用所见 viewer 的租户，
+// 并按"平台/系统上下文看全部、租户上下文只看本租户"返回用户。
+//
+// 这个过滤规则是**建模**而非证明——go-crud TenantPrivacy 真会这么注入谓词，
+// 由 data 层的 TestInternalMessageRecipientTenantSqlite 在真实 ent client + 隐私层上钉住。
+// 本替身只负责把"handler 到底贴了哪个 viewer"这一件事变成可断言的观测点。
+type broadcastUserRepoStub struct {
+	data.UserRepo
+
+	seenTenantIDs []uint64
+	usersByTenant map[uint32][]*identityV1.User
+}
+
+func (r *broadcastUserRepoStub) List(ctx context.Context, _ *paginationV1.PagingRequest) (*identityV1.ListUserResponse, error) {
+	tid := uint64(0)
+	if vc, ok := viewer.FromContext(ctx); ok {
+		tid = vc.TenantID()
+	}
+	r.seenTenantIDs = append(r.seenTenantIDs, tid)
+
+	if tid == 0 {
+		var all []*identityV1.User
+		for _, users := range r.usersByTenant {
+			all = append(all, users...)
+		}
+		return &identityV1.ListUserResponse{Items: all, Total: uint64(len(all))}, nil
+	}
+
+	users := r.usersByTenant[uint32(tid)]
+	return &identityV1.ListUserResponse{Items: users, Total: uint64(len(users))}, nil
+}
+
+// TestInternalMessageServiceSqlite_AsyncBroadcastTenantScoping 钉住全员广播的租户语义：
+// asynq handler 必须按 payload 里的发送方租户重建 viewer，并让收件行落在同一个租户上。
+//
+// 升级前的行为是两条静默缺陷：handler 一律贴 SystemViewer（平台上下文不加租户谓词），
+// 于是 (1) 租户管理员的"全员广播"把收件行写给全平台每个租户的用户；(2) 收件行 tenant_id
+// 落 0，任何租户（包括收件人自己）的收件箱都读不到——不报错、不丢日志。
+func TestInternalMessageServiceSqlite_AsyncBroadcastTenantScoping(t *testing.T) {
+	svc := newInternalMessageServiceForTest(t)
+
+	mkUsers := func(ids ...uint32) []*identityV1.User {
+		users := make([]*identityV1.User, 0, len(ids))
+		for _, id := range ids {
+			users = append(users, &identityV1.User{Id: trans.Ptr(id)})
+		}
+		return users
+	}
+	stub := &broadcastUserRepoStub{
+		usersByTenant: map[uint32][]*identityV1.User{
+			7: mkUsers(701, 702, 703),
+			9: mkUsers(901),
+			0: mkUsers(1),
+		},
+	}
+	svc.userRepo = stub
+
+	sysCtx := enttest.NewSystemViewerCtx(context.Background())
+	tenantCtx := func(tid uint32) context.Context {
+		return viewer.WithContext(context.Background(), appViewer.NewUserViewer(0, uint64(tid), 0, "", nil))
+	}
+
+	// 父消息由平台上下文显式落到租户 7（与真实链路里"租户管理员发送 → 强制覆盖为本租户"同值）。
+	msg, err := svc.internalMessageRepo.Create(sysCtx, &internalMessageV1.CreateInternalMessageRequest{
+		Data: &internalMessageV1.InternalMessage{
+			TenantId:  trans.Ptr(uint32(7)),
+			Title:     trans.Ptr("租户公告"),
+			Content:   trans.Ptr("正文"),
+			Status:    internalMessageV1.InternalMessage_PUBLISHED.Enum(),
+			Type:      internalMessageV1.InternalMessage_NOTIFICATION.Enum(),
+			CreatedBy: trans.Ptr(uint32(1)),
+		},
+	})
+	require.NoError(t, err)
+
+	require.NoError(t, svc.AsyncBroadcastMessage("broadcast_message", &task.BroadcastMessageTaskData{
+		MessageId: msg.GetId(),
+		TenantId:  7,
+	}))
+
+	require.Equal(t, []uint64{7}, stub.seenTenantIDs,
+		"handler 应以 payload 的租户重建 viewer（贴 SystemViewer 即为跨租户投递）")
+
+	inbox, err := svc.internalMessageRecipientRepo.List(tenantCtx(7), &paginationV1.PagingRequest{})
+	require.NoError(t, err)
+	require.Len(t, inbox.GetItems(), 3, "租户 7 的 3 个用户都应收到")
+	for _, item := range inbox.GetItems() {
+		require.Equal(t, uint32(7), item.GetTenantId(), "收件行必须落在收件人自己的租户上")
+	}
+
+	other, err := svc.internalMessageRecipientRepo.List(tenantCtx(9), &paginationV1.PagingRequest{})
+	require.NoError(t, err)
+	require.Empty(t, other.GetItems(), "租户 9 不应看到别租户的广播")
 }

@@ -8,7 +8,7 @@
 ## 1. 组件地图
 
 ```
-生产方    InternalMessageService（当前唯一）
+生产方    InternalMessageService（当前唯一，但 P2 起它是"被通知域调用"的一方，见第 4 节）
           └─ publishNotification：收件记录落库后 TryPublish（非阻塞、best-effort）
                      │ 事件 { id: GUIDv4, event: "notification", data: <收件记录 JSON> }
                      ▼
@@ -59,18 +59,34 @@ SSE 连接不走 REST 的 auth 中间件链——transport 自带鉴权钩子，
 
 `InternalMessageService.publishNotification`（投递链上每个收件人调用）：
 
+- **P2 之后它是 INTERNAL 渠道的投递内核，不再由业务代码直接调用**：定向发送走
+  `NotificationService.SendDirect` → `InternalMessageSender.Send` → `sendNotification` →
+  本方法（一次投递在台账里留一行）；全员广播保留批量扇出、不经缝（理由见
+  [notification_domain_design.md](./notification_domain_design.md) §4 P2）。
+  **新增"发一条站内信"的需求一律调 `Notifier`，不要自己调 `publishNotification`**——
+  绕过缝 = 台账上没有这一行，排障时"发过没发过、走的哪个渠道"就答不出来；
 - **落库优先**：收件记录先经 `internalMessageRecipientRepo.Create` 落库，
   推送是 best-effort 增强——`TryPublish` 非阻塞（流不存在=用户离线、或缓冲已满，立即跳过，
   只记 debug 日志），失败不影响投递；离线用户重连后从**收件箱接口**补取（不依赖推送）；
 - 事件结构：`{ ID: GUIDv4, Event: "notification", Data: <收件记录 JSON> }`；
   `Event` 字段即前端的事件名（三端 `on('notification', …)`）；
+- **`Data` 的编码是三端的解析契约，不是可"顺手换一个"的细节**：必须是
+  `protojson.Marshal(收件记录 DTO)`。换回 `encoding/json` 会按 struct tag 出蛇形键
+  （`message_id`/`created_at`），而三端读的是与 REST 收件箱同形的驼峰 → 静默全断
+  （ele 在 `if (!data.id || !data.messageId) return` 处直接退出，桌面通知与未读数不触发也不报错）。
+  同一条契约还有个容易漏的半边：广播路径的收件行是批量构造的，`id` 只有落库后回读才非零，
+  而 protojson **整个省略**零值 optional 字段——缺 `id` 的广播帧与上面蛇形键故障的现象一模一样。
+  2026-09-20 已在 `executeBroadcast` 修掉并补回归测试
+  （`internal_message_notify_seam_sqlite_test.go`，实测帧：`{"id":10,"messageId":11,…}`）。
+  载荷形状另有 `internal_message_sse_payload_test.go` 钉住；
 - 广播投递的落库侧（`broadcast_message` 任务、幂等约束）见
   [task_system.md](./task_system.md) 第 5.4 节。
 
 **新增事件类型**的生产端落点：持有 publisher 的 service 内调用
 `TryPublish(StreamID(userId), &sse.Event{Event: []byte("<类型名>"), …})`；
-消费端在页面 `globalSSEClient.on('<类型名>', handler)` 注册。事件类型当前无注册表/枚举约束，
-生产与消费两端字符串需人工对齐。
+消费端在页面 `globalSSEClient.on('<类型名>', handler)` 注册。类型名自 P1 起有注册表：
+后端 `pkg/sseevent`（常量值即线协议，注释钉死"不可改"）+ 三端各一个 `transport/sse/event.ts`
+（`SSE_EVENT.<Name>`），新增类型四处一起加，不要在任何一端再写裸字符串。
 
 ## 5. 前端消费（三端）
 
@@ -108,7 +124,7 @@ TLS 由外层负载均衡终止（与静态前端一致），网关仅监听 HTT
 
 | 项 | 现状 |
 |---|---|
-| 事件类型 | 仅 `notification`（站内信）；无类型注册表，新增类型靠两端字符串人工对齐 |
+| 事件类型 | 仅 `notification`（站内信）；注册表见第 4 节末（`pkg/sseevent` + 三端 `SSE_EVENT`），但**注册表是常量约定、不是运行时校验**，漏加一端仍然静默失效 |
 | 推送可靠性 | 设计即 best-effort：无重放、无 ack、离线不积压（补取靠收件箱） |
 | 慢消费者 | `TryPublish` 缓冲满即丢（debug 日志），不阻塞生产方；无背压 |
 | 观测 | 连接建立/断开（HandleSubscribe/日志）与跳过（debug 级）可查，无投递指标面板 |
