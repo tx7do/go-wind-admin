@@ -43,12 +43,15 @@
     "language": "语言管理",
     "onlineSessions": "在线用户",
     "serverMonitor": "服务监控",
-    "notificationChannels": "通知渠道",
-    "notificationDeliveries": "通知投递记录",
-    "notificationRules": "通知路由规则",
     "scripts": "脚本管理",
     "config": "参数管理",
     "accessKeys": "OpenAPI 凭证"
+  },
+  "notification": {
+    "moduleName": "通知管理",
+    "channels": "通知渠道",
+    "rules": "通知路由规则",
+    "deliveries": "通知投递记录"
   },
   "log": {
     "moduleName": "日志审计",

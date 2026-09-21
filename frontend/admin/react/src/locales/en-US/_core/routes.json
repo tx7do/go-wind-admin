@@ -45,6 +45,7 @@
   "not-found": "404",
   "home": "Home",
   "server-monitor": "Server Monitor",
+  "notification": "Notifications",
   "notification-channels": "Notification Channels",
   "notification-rules": "Notification Routing Rules",
   "notification-deliveries": "Notification Deliveries",

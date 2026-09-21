@@ -98,7 +98,7 @@ export const notificationDeliveryChannelList = computed(() => [
  *
  * 路由不写在 Go 里：后端那份静态 eventChannels 表已经删了，「事件 → 渠道 + 是否异步」现在
  * 是数据库表 sys_notification_rules——启动时只按 pkg/constants.DefaultNotificationRules
- * 播一次空表，之后在「通知路由规则」页（views/app/system/notification_rule）维护，改完立刻生效。
+ * 播一次空表，之后在「通知路由规则」页（views/app/notification/rule）维护，改完立刻生效。
  * 所以默认规则里没指向 WEBHOOK 不代表筛不到 WEBHOOK 行：管理员建一行规则它就来了。
  *
  * SMS 至今没有 Sender 实现，任何事件都路由不过去，永远不会有台账行，故不进下拉。

@@ -45,6 +45,7 @@
   "not-found": "404",
   "home": "首页",
   "server-monitor": "服务监控",
+  "notification": "通知管理",
   "notification-channels": "通知渠道",
   "notification-rules": "通知路由规则",
   "notification-deliveries": "通知投递记录",

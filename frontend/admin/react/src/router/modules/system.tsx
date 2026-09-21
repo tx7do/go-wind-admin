@@ -95,17 +95,6 @@ export const systemRoutes: AppRouteObject[] = [
         },
       },
       {
-        name: 'notification-channels',
-        path: 'notification-channels', // 相对路径，最终为 /system/notification-channels
-        element: createLazyRoute(() => import('@/pages/app/system/notification-channel')),
-        meta: {
-          title: 'routes:notification-channels',
-          icon: 'lucide:mail', // Iconify 格式
-          order: 10,
-          // permission: 'sys:platform_admin', // 仅平台管理员权限（开发阶段暂时注释）
-        },
-      },
-      {
         name: 'scripts',
         path: 'scripts', // 相对路径，最终为 /system/scripts
         element: createLazyRoute(() => import('@/pages/app/system/script')),
@@ -135,26 +124,6 @@ export const systemRoutes: AppRouteObject[] = [
           title: 'routes:accessKeys',
           icon: 'lucide:key-round',
           order: 13,
-        },
-      },
-      {
-        name: 'notification-deliveries',
-        path: 'notification-deliveries', // 相对路径，最终为 /system/notification-deliveries
-        element: createLazyRoute(() => import('@/pages/app/system/notification-delivery')),
-        meta: {
-          title: 'routes:notification-deliveries',
-          icon: 'lucide:send',
-          order: 14,
-        },
-      },
-      {
-        name: 'notification-rules',
-        path: 'notification-rules', // 相对路径，最终为 /system/notification-rules
-        element: createLazyRoute(() => import('@/pages/app/system/notification-rule')),
-        meta: {
-          title: 'routes:notification-rules',
-          icon: 'lucide:git-branch',
-          order: 15,
         },
       },
     ],

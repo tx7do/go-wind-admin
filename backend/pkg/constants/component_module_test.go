@@ -1,6 +1,7 @@
 package constants
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -57,10 +58,31 @@ func TestComponentToModule(t *testing.T) {
 	}
 }
 
+// planWhitelistExemptMenuComponents 刻意不归类的菜单组件前缀。
+//
+// 归不进模块的菜单，module 列落库为 NULL，而 admin_portal_service
+// .filterMenusByPlanWhitelist 的 m.Module == nil 分支对 NULL **一律放行**——
+// 所以这类页面不是"对租户消失"，而是"绕过套餐，只由权限码把关"。
+// 通知域三页管的是平台全局配置与台账，套餐里没有对应模块（也没有 NOTIFICATION
+// 枚举值），故走这条路：菜单挂在 sys:platform_admin 下，RPC 侧另有
+// service/notification_platform_guard.go 显式拒绝租户。
+var planWhitelistExemptMenuComponents = []string{
+	"app/notification/",
+}
+
+func isPlanWhitelistExemptComponent(component string) bool {
+	for _, prefix := range planWhitelistExemptMenuComponents {
+		if strings.HasPrefix(component, prefix) {
+			return true
+		}
+	}
+	return false
+}
+
 // TestDefaultMenusModuleBackfillInvariant 默认菜单种子数据与归类函数的
-// 一致性：非容器菜单的组件必须能归入一个已定义的业务模块，否则该菜单
-// 会被模块白名单当作 UNSPECIFIED 过滤掉，租户侧凭空丢页面；
-// 容器节点必须归为 UNSPECIFIED。
+// 一致性：容器节点必须归为 UNSPECIFIED；非容器菜单要么归入已定义模块（受套餐
+// 白名单管控），要么落在豁免清单内且带平台超管权限码（绕过套餐，由授权把关）。
+// 清单外出现 UNSPECIFIED 即失败：那等于凭空给所有租户开一个不受套餐管控的页面。
 func TestDefaultMenusModuleBackfillInvariant(t *testing.T) {
 	for _, menu := range DefaultMenus {
 		component := menu.GetComponent()
@@ -70,10 +92,18 @@ func TestDefaultMenusModuleBackfillInvariant(t *testing.T) {
 				"容器菜单 %q 的组件应归为 UNSPECIFIED", component)
 			continue
 		}
+		if module == identityV1.Module_MODULE_UNSPECIFIED {
+			assert.True(t, isPlanWhitelistExemptComponent(component),
+				"非容器菜单组件 %q 未被 ComponentToModule 登记：module 落库为 NULL，套餐白名单对 NULL 放行（不会过滤掉），"+
+					"等于给所有租户开了一个不受套餐管控的页面。请登记前缀，或确认它只由权限码把关后加进 planWhitelistExemptMenuComponents",
+				component)
+			assert.Contains(t, menu.GetMeta().GetAuthority(), SystemPlatformAdminPermissionCode,
+				"豁免套餐白名单的菜单 %q 必须由 %s 权限码兜底授权，否则等于对所有租户开放",
+				component, SystemPlatformAdminPermissionCode)
+			continue
+		}
 		_, defined := identityV1.Module_name[int32(module)]
 		assert.True(t, defined,
 			"菜单组件 %q 归类到未定义模块值 %d", component, module)
-		assert.NotEqual(t, identityV1.Module_MODULE_UNSPECIFIED, module,
-			"非容器菜单组件 %q 未被 ComponentToModule 登记，租户白名单会过滤掉该菜单；请登记前缀或修正组件路径", component)
 	}
 }

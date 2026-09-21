@@ -43,12 +43,15 @@
     "language": "Language Management",
     "onlineSessions": "Online Users",
     "serverMonitor": "Server Monitor",
-    "notificationChannels": "Notification Channels",
-    "notificationDeliveries": "Notification Deliveries",
-    "notificationRules": "Notification Routing Rules",
     "scripts": "Scripts",
     "config": "Config Management",
     "accessKeys": "OpenAPI Credentials"
+  },
+  "notification": {
+    "moduleName": "Notifications",
+    "channels": "Notification Channels",
+    "rules": "Notification Routing Rules",
+    "deliveries": "Notification Deliveries"
   },
   "log": {
     "moduleName": "Audit Logs",

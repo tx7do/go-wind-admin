@@ -100,45 +100,6 @@ const system: RouteRecordRaw[] = [
       },
 
       {
-        path: "notification-channels",
-        name: "NotificationChannelManagement",
-        meta: {
-          order: 10,
-          icon: "lucide:mail",
-          title: "routes.system.notificationChannels",
-          authority: ["sys:platform_admin"],
-        },
-        component: () => import("@/pages/app/system/notification_channel/index.vue"),
-      },
-
-      {
-        // 通知投递台账：平台级只读账本，紧跟渠道配置，排在系统菜单末位（与 react 端顺序一致）
-        path: "notification-deliveries",
-        name: "NotificationDeliveryManagement",
-        meta: {
-          order: 14,
-          icon: "lucide:send",
-          title: "routes.system.notificationDeliveries",
-          authority: ["sys:platform_admin"],
-        },
-        component: () => import("@/pages/app/system/notification_delivery/index.vue"),
-      },
-
-      {
-        // 通知路由规则：事件类型 → 渠道 + 派发方式。投递时的唯一真相，改完下一次投递立刻生效。
-        // 渠道/异步两个决定同一行，故两列并排；站内信规则不给测试投递按钮（见页面注释）。
-        path: "notification-rules",
-        name: "NotificationRuleManagement",
-        meta: {
-          order: 15,
-          icon: "lucide:git-branch",
-          title: "routes.system.notificationRules",
-          authority: ["sys:platform_admin"],
-        },
-        component: () => import("@/pages/app/system/notification_rule/index.vue"),
-      },
-
-      {
         path: "scripts",
         name: "ScriptManagement",
         meta: {

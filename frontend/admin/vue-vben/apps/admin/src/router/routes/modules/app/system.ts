@@ -102,45 +102,6 @@ const system: RouteRecordRaw[] = [
       },
 
       {
-        path: 'notification-channels',
-        name: 'NotificationChannelManagement',
-        meta: {
-          order: 10,
-          icon: 'lucide:mail',
-          title: $t('menu.system.notificationChannels'),
-          authority: ['sys:platform_admin'],
-        },
-        component: () => import('#/views/app/system/notification_channel/index.vue'),
-      },
-
-      {
-        // 投递台账：与渠道配置同域，order 取 14 与 react 端菜单位置保持一致
-        path: 'notification-deliveries',
-        name: 'NotificationDeliveryManagement',
-        meta: {
-          order: 14,
-          icon: 'lucide:send',
-          title: $t('menu.system.notificationDeliveries'),
-          authority: ['sys:platform_admin'],
-        },
-        component: () => import('#/views/app/system/notification_delivery/index.vue'),
-      },
-
-      {
-        // 路由规则（事件 → 渠道 + 派发方式）：台账读的就是这张表，order 排在台账之后
-        // 组件目录名与后端菜单种子一致（app/system/notification_rule/index.vue），改目录名要同步那边
-        path: 'notification-rules',
-        name: 'NotificationRuleManagement',
-        meta: {
-          order: 15,
-          icon: 'lucide:git-branch',
-          title: $t('menu.system.notificationRules'),
-          authority: ['sys:platform_admin'],
-        },
-        component: () => import('#/views/app/system/notification_rule/index.vue'),
-      },
-
-      {
         path: 'scripts',
         name: 'ScriptManagement',
         meta: {
