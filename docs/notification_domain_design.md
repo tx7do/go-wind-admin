@@ -57,6 +57,8 @@
 
 > **本节是 P1 之前的盘点，行号冻结在当时的形状上**（这三处已在 P1 迁完，见 §4）。
 > 留着是因为"三处各自内联同一套策略"就是这个域存在的理由，而且表里的行号是当时实测的产物。
+> 底下那段讲 `pkg/mailer` 的行号同样是冻结的：`SendMail` 现在带 ctx、在 `smtp.go:60`（加 ctx 正是 P1
+> 那条提交 `66841363` 做的），"无 ctx"只对当时成立。
 
 `grep -rn "func .*\.Notify(" app/ pkg/` → **零命中**。不存在发送抽象。全仓出站调用点穷举如下，
 每处各自内联"挑渠道"+ 字符串拼正文：
@@ -72,11 +74,13 @@
 无队列无重试。三处调用全部**同步跑在请求路径上**（`ForgotPassword` 会阻塞在 SMTP 上）。
 
 后果：无重试、无出站审计、无按收件人去重、无限流、无 HTML、无正文 i18n、主渠道坏了无回退，
-且"取 ID 最小的启用 EMAIL 渠道"这条策略（`notification_channel_repo.go:331-339`）在两个 caller 重复实现。
+且"取 ID 最小的启用 EMAIL 渠道"这条策略在两个 caller 重复实现（今天它收在
+`notification_channel_repo.go:383` 的 `GetFirstEnabledEmailChannel`，单一 caller `channel/email_sender.go:103`——
+当年那两份抄写随 P0/P1 消失了；这条策略现在按类型各一份：EMAIL `:383` / WEBHOOK `:475`）。
 
 ### 2.3 站内那半边已经是能用的
 
-`InternalMessageService.SendMessage`（`internal_message_service.go:316`）→ 父消息落库 →
+`InternalMessageService.SendMessage`（`internal_message_service.go:342`）→ 父消息落库 →
 全员广播走 asynq 任务 `broadcast_message`（`pkg/task/broadcast_message.go`，handler 注册在
 `internal/server/asynq_server.go:91`）→ `CreateBulk` 的 `ON CONFLICT DO NOTHING` 保证重试幂等 →
 落库后 `TryPublish` 推 SSE（`streamID == userId`，见 `sse_architecture.md`）。
@@ -91,8 +95,8 @@ SSE 扇出与 streamID 归属校验（`HandleAuthorize` 不匹配即 403）都�
 现网库 `docker exec citus-server-standalone psql` 查询、两个 sqlite 集成测试）。
 
 1. **`title`/`content` 不是"两种形状"，而是**正文只归父消息**的单一真相源。**
-   收件行 ent schema 上确实没有这两列，repo 的 `Create`（`internal_message_recipient_repo.go:143`）与
-   `CreateBulk`（`:177`）也不写它们；但 DTO 上带这两字段是**有意的瞬时载荷**：push 路径从内存 DTO
+   收件行 ent schema 上确实没有这两列，repo 的 `Create`（`internal_message_recipient_repo.go:158`）与
+   `CreateBulk`（`:192`）也不写它们；但 DTO 上带这两字段是**有意的瞬时载荷**：push 路径从内存 DTO
    marshal 给 SSE，pull 路径由 `ListUserInbox`（`internal_message_recipient_service.go:54-66`）
    一次 `ListByIds` 批量回填父消息正文。两侧最终形状一致。
    → 真正要守的是不变式：**任何新发送路径必须先落父消息再落收件行**，否则 pull 侧空标题、push 侧有标题。
@@ -119,7 +123,7 @@ SSE 扇出与 streamID 归属校验（`HandleAuthorize` 不匹配即 403）都�
 
 ### 2.5 名称冲突陷阱
 
-`InternalMessageService.sendNotification`（`:436`）与 `publishNotification`（`:412`）听起来像统一入口，
+`InternalMessageService.sendNotification`（`:500`）与 `publishNotification`（`:447`）听起来像统一入口，
 实际是**私有方法、只处理站内、与渠道域零依赖关系**。新域落地后这两个命名必须避开或改名。
 
 > P2 处置（2026-09-20）：没有改名，而是**把语义兑现成名字**——这两个方法现在是 INTERNAL 渠道的
@@ -291,8 +295,9 @@ P2 之后事件有了第四个（INTERNAL_MESSAGE）、渠道有了 WEBHOOK，"�
 
 ### 3.6 SSE 事件类型注册表（P1 已落地 2026-09-19）
 
-`sse_architecture.md:72` 明确记着当前**没有事件类型注册表**，生产方与消费方靠手工对齐裸字符串，
-全仓只有一个 `"notification"`。新域应 own 一个注册表（Go 常量 + 三端同步的枚举），
+`sse_architecture.md` 在 P1 之前记着**没有事件类型注册表**，生产方与消费方靠手工对齐裸字符串，
+全仓只有一个 `"notification"`（那句前提今天已经不在原文里了：同一篇的第 4 节末 `:87-88` 与 `:127`
+写的就是落地之后的样子）。新域应 own 一个注册表（Go 常量 + 三端同步的枚举），
 而不是往这个无政府命名空间里加第四个裸串。§2.4-3 的 `"notification-revoke"` 已按"删前端"处置。
 
 落地形态：后端 `pkg/sseevent`（`const Notification = "notification"`，包注释钉住"已发布事件的常量值不可改——
@@ -641,7 +646,8 @@ DB 12 的 asynq 键逐个 `DEL`；mailpit 容器 `gwa-mailpit` 为本轮新起�
    一行由 DB 唯一索引与 repo 前置检查共同保证：实测重复建 `CHANNEL_TEST_EMAIL` 回
    `event type CHANNEL_TEST_EMAIL already has a routing rule`（400，表里仍是 4 行）。
 2. **WEBHOOK 的落点是两个新列**（§6 决策点 2 选 A，不用 `settings` JSON）：`webhook_url` + `webhook_secret`，
-   后者与 SMTP 密码走同一条 `crypto.EncryptIfNeeded` 路径（`notification_channel_repo.go:248`），读视图只回
+   后者与 SMTP 密码走同一条 `crypto.EncryptIfNeeded` 路径（`notification_channel_repo.go:265` 的 Create、
+   `:338` 的 Update；SMTP 密码在 `:258` / `:330`），读视图只回
    `hasWebhookSecret` 布尔。密钥字面量在探针渠道的**创建响应**与**列表响应**里各出现 0 次（两份抓下来的 JSON
    `grep -c` 为 0），且 `sys_notification_channels` 里今天没有任何一行还带着密钥（探针渠道已删）。
 3. **SSRF 防线默认硬禁内网、判定在 dial 时按解析后的 IP**（决策点 3）：`Transport.DialContext` 先解析，命中
@@ -660,7 +666,7 @@ DB 12 的 asynq 键逐个 `DEL`；mailpit 容器 `gwa-mailpit` 为本轮新起�
 | **放行守卫 + 空目标** | → **200 `{deliveryId:20, status:"SENT"}`**；收端 12:50:28.457 一次 `POST /hook`，载荷 `{"event_type":"CHANNEL_TEST_EMAIL","title":…,"content":…,"delivered_at":"2026-09-20T12:50:28Z"}`，`content-type: application/json; charset=utf-8`、`user-agent: go-wind-admin-notification/1.0`；台账 id=20 `SENT`、`attempts=1`、`channel_id=9`（**空目标兜底时顺手钉住了渠道行**，见 §3.4 第 3 个收窄点） |
 | **签名可被对端复算** | 载荷带 `x-gw-timestamp: 1789908628` 与 `x-gw-signature: sha256=c886dfa1…`；用登记的那把共享密钥按 `sha256=hmac(secret, "<ts>." + 原始 body)` 在 node 里复算 → **MATCH: true**（/hook 与 /redirect 两次命中各自通过，两次时间戳不同所以签名不同，符合"时间戳进签名"的防重放意图） |
 | **302 不跟随** | 显式目标指向 `/redirect`（该路径回 `302` 且 `location` 指向一台**没人监听**的 `127.0.0.1:8098`）→ **400** `send webhook via channel [9] failed: peer answered 302 Found:`，台账 id=21 `FAILED`；收端只记下 `/redirect` 这一跳，**没有**第二跳、也没有任何 8098 的拨号错误 ⇒ `CheckRedirect` 的 `http.ErrUseLastResponse` 生效，非 2xx 一律按"对端 answered <status>"定案 |
-| 台账 `target` 的脱敏 | WEBHOOK 的地址不是邮箱形态，`maskTarget` 落到"只留末 4 位"：id=20/19 为 `****hook`、id=21 为 `****rect`（`notification_service.go:570`） |
+| 台账 `target` 的脱敏 | WEBHOOK 的地址不是邮箱形态，`maskTarget` 落到"只留末 4 位"：id=20/19 为 `****hook`、id=21 为 `****rect`（`notification_service.go:593`） |
 
 **当时已知未修、现已修掉的一处（见 §4 欠账 1）**：显式传 `target` 时 `testDispatchTarget` 返回的 `channelID` 是 nil
 （"发去哪里由管理员这一行决定"），于是那次投递**实际用了哪条渠道配置**只留在 `last_error` 的 `via channel [9]` 字样里
@@ -1134,7 +1140,7 @@ react 与 ele 只读渲染（tooltip / 行内 help、五个风格选项、textar
 ### P3 偏好与模板
 
 用户通知偏好 / 分类退订 / 静音时段 + 模板管理与渲染。今天这三样全部不存在
-（`pkg/constants/default_data.go:999` 的 `DefaultConfigs` 只有 3 条等保口令阈值，无通知相关；
+（`pkg/constants/default_data.go:1023` 的 `DefaultConfigs` 只有 3 条等保口令阈值，无通知相关；
 提交 `9f10f789` 曾删掉 ele+vben 个人中心一个假的"消息通知" tab，理由正是"无用户通知偏好能力"）。
 这是 IM 那套里工作量最大的部分，单独排期。
 
@@ -1292,6 +1298,7 @@ gow run admin
       枚举查，未知值回落原文 + 默认色；新增 WEBHOOK 文案 key 三端 zh/en 各一份）。
       首稿记录的三处硬编码位置（react `notification-channel/index.tsx:127`、ele `index.vue:12`、
       vben `index.vue:261`）现已全部改掉；台账页从一开始就是按枚举渲染的，没重复这个错。
+      （这三个路径是 M 块之前的旧位置，页面后来搬到 `app/notification/` 一级目录，照着跳会是死路。）
       另：react 端路由 meta 的 `permission` 是**开发阶段整体注释掉的**（`router/modules/system.tsx` 每条 system
       路由都如此，ele/vben 则带 `authority`），本页跟随同端惯例不单独启用；菜单可见性另有后端
       `Menu.meta.authority` 这条线。首稿把它记成"react 漏配 authority"是静态阅读误判，此处更正。
@@ -1304,7 +1311,7 @@ gow run admin
       实测：本机 `gwa` 的 `sys_apis` 从 203 → 205 行，两条 `notification-deliveries` 路由（GET 列表 / GET 详情）
       都在重建结果里；以 platform_admin 身份同步前后均 200。
       **坑（比铁律本身更值得记）：`SyncApis` 是 `Truncate` + 从**内嵌资源** `cmd/server/assets/openapi.yaml`
-      重建**（`api_service.go:145-162`）。所以「接口同步」只能同步到打进二进制的那份 OpenAPI——
+      重建**（`api_service.go:151-158`）。所以「接口同步」只能同步到打进二进制的那份 OpenAPI——
       加了新 proto 却没重跑 `make openapi`，同步会"成功"而新端点照样不在表里，且现象与"没点同步"完全一样。
       本次即如此：asset 落后一个功能，先 `make openapi`（+182 行，纯增量只多 `/admin/v1/notification-deliveries`）
       再重启进程，才轮得到点按钮。**顺序：改 proto → `buf generate` → `make ts` → `make openapi` → 重启 → 接口同步。**
@@ -1520,7 +1527,7 @@ Mailpit 在 1025 上明文接收、默认不要求 AUTH，所以渠道配置要 
 | --- | --- | --- | --- | --- |
 | id=1 | 自选（修 `SmtpAccount.ID` 前） | FAILED | 空 | 错误文本 `channel [0]` —— 就是被补上的那一格 |
 | id=2 | 自选（修 ID 后、拨号前被拦） | SKIPPED | 空 | 配置不可用不该伪装成"发过" |
-| id=3 / id=4 | 显式指定渠道 | SKIPPED | 1 / 3 | 显式路径失败也带 ID —— 那是 `Create` 时从 `req.ChannelId` 直接落的（`notification_service.go:99`），不是回执；自选路径 `Create` 时无从得知，只能发完补（`:154` 的 `pickedChannelId`） |
+| id=3 / id=4 | 显式指定渠道 | SKIPPED | 1 / 3 | 显式路径失败也带 ID —— 那是 `Create` 时从 `req.ChannelId` 直接落的（`notification_service.go:151`），不是回执；自选路径 `Create` 时无从得知，只能发完补（`:254` 的 `pickedChannelId`） |
 | **id=8** | **自选 + 真发成功** | **SENT** | **5** | 本次闭环：`SendReceipt.ChannelID = account.ID` 在真实投递下成立 |
 
 本节取证时仍未覆盖的一段：`SendDirect` 之后的**异步**补台账 —— 已由 §4 P2-3（2026-09-20）连运行期证据一起补上；
