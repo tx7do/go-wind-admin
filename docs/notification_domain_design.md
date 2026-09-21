@@ -987,8 +987,9 @@ id 74 `app/internal-message/inbox/index.vue` → NULL（同步按前端路由的
 **探针造成的变更与残留**：`gwa` 上菜单 75/76/77/78（同步出来的通知四页）**保留**、79 `/opm/profile`（同步顺带带出的 react 路由，
 种子从来没有这一条）**保留**；68/72/73 已删（留下上面那 3 条孤儿授权）；平台超管 permission 的 menuIds 44→48；
 `setval` 本轮之前手工跑过一次（只动序列）。`gwa_menu_probe` 上新建的那三行探针数据（菜单 76/77、API 212）已 `DELETE`，
-序列留在 77/t、213/t。`:7788` 现在是 M+序列修复的二进制（`gow run admin`，PID 58200，日志 `%TEMP%/gwa_menu_probe/main_after_fix.log`）；
-探针实例 `:17788` 仍在跑（PID 62312，同一份二进制 + `%TEMP%/gwa_menu_probe/configs`）。
+序列留在 77/t、213/t。`:7788` 当时是 M+序列修复的二进制（`gow run admin`，PID 58200，日志 `%TEMP%/gwa_menu_probe/main_after_fix.log`）；
+探针实例 `:17788` 当时仍在跑（PID 62312，同一份二进制 + `%TEMP%/gwa_menu_probe/configs`）。
+**这两个 PID 到 N 收口时都已停**：`:17788` 的探针实例按点头关掉了，`:7788` 则被 N 的实测换成了带逃生口的实例、随后又重启了一次（见 §4 N 的残留账）。
 启动日志里另有 5 条 `token authentication failed … 401`（module=internal-message/service）——是浏览器里留着的老前端页拿过期 token 每 6 秒重连，
 与本块无关。为跑"HEAD 是否已经红"的对照临时建过一个 worktree `%TEMP%/gwa_head_check`，已 `git worktree remove`。
 
@@ -1099,15 +1100,26 @@ ent 两列 `webhook_sign_style`（Enum，`Default("CUSTOM")`，Optional+Nillable
   而 mask 两组都列）⇒ `sys_notification_channels.smtp_tls` 从 `START_TLS` 被清成空串。这是 updateMask 的既有语义，
   且 HEAD 的 mask 里本来就有 `webhookUrl`（本轮只是把两列新字段加进同一口锅）；只有"把行的类型改到对面去"才会伤到有意义的数据。
   修法是按类型裁 mask，三端各一行。
-- 坏模板那条 SKIPPED 的 `last_error` 以 `no enabled notification channel configured: ` 开头，而渠道明明存在且启用——
-  `ErrChannelNotConfigured` 的措辞与"配置内容不合法"不是一回事，排障时会先去看渠道存不存在。改文案要连着看这个前缀的其它消费者，先记。
+- 配置类失败的 SKIPPED 行，`last_error` 一律以 `no enabled notification channel configured: ` 开头，而渠道明明存在且启用——
+  `ErrChannelNotConfigured` 的措辞与"配置内容不合法"不是一回事，排障时会先去看渠道存不存在。两个消费者都实测到了：
+  坏模板（id=33/34）与 SSRF 守卫拦下内网（id=40，见下面收口段）。改文案要连着看这个前缀的其它消费者，先记。
 
-**探针造成的变更与残留**（`gwa`）：渠道 12/13/14/15 建了又删——**渠道删除是硬删**，实测 `sys_notification_channels` 现在只剩
-1/2/3 三条 EMAIL 行、无软删残留，代价是序列被烧掉 4 个号；规则 3（`CHANNEL_TEST_EMAIL`）的 `channel` 两次改成 WEBHOOK、
-每次测完改回 EMAIL（`updated_at` 动了，`channel` 回到原值）；台账多了 24–39 共 16 行；出站目标是本机 sink，
-所以 **`:7788` 现在带 `NOTIFICATION_WEBHOOK_ALLOW_PRIVATE=1` 在跑（SSRF 防线整条关闭，本机联调用，不得进生产）**，
-sink 进程（PID 17296）仍在 7799 上监听，脚本与日志都在仓外 `C:\Users\yangl\gwa-probe-n5\`。
-`:17788` 上 M 块的探针实例（PID 62312）仍按上一轮的记录留着。
+**探针造成的变更与残留**（`gwa`）：渠道 12/13/14/15 建了又删、收口复验又建删一次（16）——**渠道删除是硬删**，实测
+`sys_notification_channels` 现在只剩 1/2/3 三条 EMAIL 行、无软删残留，代价是序列被烧掉 5 个号（下一个是 17）；
+规则 3（`CHANNEL_TEST_EMAIL`）的 `channel` 改 WEBHOOK 三次、每次都改回 EMAIL（`updated_at` 动了，`channel` 回到原值）；
+台账多了 24–40 共 17 行（39 之前是风格矩阵，40 是下面那条守卫复验）。
+脚本与日志都在仓外 `C:\Users\yangl\gwa-probe-n5\`（`n5-probe.mjs` / `n5-fix.mjs` / `ssrf-check.mjs` + `sink.jsonl`），
+仓内不留探针。
+
+**收口时的环境处置（按点头做完，并复验过）**：实测期间 `:7788` 是带 `NOTIFICATION_WEBHOOK_ALLOW_PRIVATE=1` 起的
+（SSRF 防线整条关闭，只为让出站打到本机 sink），收口时把进程树（`nohup`→`gow run admin`→`go run`→`server.exe`）
+整体杀掉、用 `env -u NOTIFICATION_WEBHOOK_ALLOW_PRIVATE gow run admin` 重启，并**用一次真投递复验守卫回来了**：
+临时渠道 16 指向 `http://127.0.0.1:9/hook`（discard 端口，即便守卫失效也只会 connection refused，不碰任何外部地址），
+`test-dispatch` → **400** `webhook target blocked by the ssrf guard: target "127.0.0.1" resolves to 127.0.0.1 which is
+inside the blocked range 127.0.0.0/8`，台账 id=40 `SKIPPED`、`channel_id=16`；随后渠道已删、规则 3 已改回 EMAIL。
+本机 sink（`:7799`）与 M 块留存的 `:17788` 探针实例（PID 62312）一并停掉，两个端口现在都不在监听。
+`:7788` 现在是**守卫开着的** `gow run admin` 实例。启动日志里那几条 `token authentication failed … 401`
+（module=internal-message/service）仍是浏览器里留着的老前端页拿过期 token 重连，与本块无关。
 
 **浏览器 pass 的形状要说清**：in-app browser 当时没有可见表面（截图/指针被拒），所以表单是 DOM 驱动读出来的：
 vben 走了完整的 create（`钉钉机器人` + 密钥）→ 列表列显示 → 编辑回填 → 模板改存 → 删除；
