@@ -1033,7 +1033,7 @@ ent 两列 `webhook_sign_style`（Enum，`Default("CUSTOM")`，Optional+Nillable
 生成物：`gow api` + `gow ent admin` + `make openapi` + `make ts`（proto +29 / schema +18 / openapi.yaml +13 / 三端 index.ts 各 +18）。
 `ent` 整包重写这件事在本机有个环境坑要记着：`.gitattributes` 钉了 `*.go text eol=lf`，但工作区仍有 **116 个 tracked `.go` 是 CRLF**
 （`git ls-files --eol 'backend/**/*.go' | grep w/crlf`）——对它们跑 `gofmt -w` 或任何整文件重写都会产出 100% 改动的假 diff。
-本轮 diff 里 16 个 tracked `.go` 逐文件测均 `w/lf`（按目录 glob 会把邻居的既有 CRLF 算进来，别那样数），所以 diff 是干净的。
+本轮 diff 里 18 个 `.go`（16 改 + 2 新建）逐文件测均 `w/lf`（按目录 glob 会把邻居的既有 CRLF 算进来，别那样数），所以 diff 是干净的。
 
 **落地不需要接口/菜单同步**：两列搭的是既有 CRUD 路由（`POST/PUT /admin/v1/notification-channels`），没有新 RPC、没有新菜单；
 列本身由 ent 自动迁移在重启时建出来（本机 `gwa` 实测：重启后两列就位，`webhook_sign_style` 默认 `CUSTOM`）。
@@ -1441,8 +1441,8 @@ P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点
   `buildWebhookOutbound` 的 switch（签名落点：query / body 信封 / 头）；
 - **测试两处**：签名向量钉**具体值**且用独立实现交叉算（这一层算错了只在远端报错，且报错文案指向对端）、
   出站形状钉字节序列；
-- **三端各两处 + locales 两份**：react `index.tsx:57` 的 `SIGN_STYLE_LABEL_KEY` 映射表与 `:433` 的内联选项数组、
-  ele `index.vue:134` 的映射与 drawer 的 `<ElOption>` 列表、vben `:162` 的映射与 `:492` 的 `<a-select-option>` 列表；
+- **三端各两处 + locales 两份**：react `index.tsx:57` 的 `SIGN_STYLE_LABEL_KEY` 映射表与 `:434` 的内联选项数组、
+  ele `index.vue:134` 的映射与 drawer 的 `<ElOption>` 列表、vben `:163` 的映射与 `:493` 的 `<a-select-option>` 列表；
   locales 的键名是三端共享的 `signStyle{Custom,None,Dingtalk,Feishu,Wecom}`，zh/en 各一份；
   另记得**签名密钥的提示文案要按新风格改写一句**（那一列今天对五种风格各有不同用法，写死一种就是误导）；
 - **不需要**接口同步与菜单同步：两列搭既有 CRUD 路由，列由 ent 自动迁移建出来（重启即迁移）。
