@@ -43,6 +43,13 @@ func (s *MenuService) init() {
 	if count, _ := s.menuRepo.Count(ctx, nil); count == 0 {
 		_ = s.createDefaultMenus(ctx)
 	}
+
+	// 种子是带显式 ID 插入的，PG 的 identity 序列不会因此前进；不对齐的话
+	// 「新建菜单」与菜单同步的新增分支必撞 sys_menus_pkey（HTTP 500）。
+	// 放在 count==0 守卫之外：已部署实例的序列同样落后，需要每次启动自愈。
+	if err := s.menuRepo.AlignIdentitySequence(ctx); err != nil {
+		s.log.Errorf(ctx, "菜单 id 序列对齐失败: %v", err)
+	}
 }
 
 func (s *MenuService) List(ctx context.Context, req *paginationV1.PagingRequest) (*permissionV1.ListMenuResponse, error) {

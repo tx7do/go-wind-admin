@@ -60,6 +60,12 @@ func (s *ApiService) init() {
 	if count, _ := s.repo.Count(ctx, nil); count.Count == 0 {
 		_, _ = s.SyncApis(ctx, &emptypb.Empty{})
 	}
+	// SyncApis 内部的对齐只在空表首启（或手工触发同步）时跑到；已部署实例的
+	// sys_apis 序列被上一次同步的显式 ID 留在原地，只能靠这条启动期自愈补上。
+	// 重复执行是幂等的（只前进不回退）。
+	if err := s.repo.AlignIdentitySequence(ctx); err != nil {
+		s.log.Errorf(ctx, "接口 id 序列对齐失败: %v", err)
+	}
 }
 
 func (s *ApiService) RegisterRouteWalker(routeWalker RouteWalker) {
@@ -151,6 +157,12 @@ func (s *ApiService) SyncApis(ctx context.Context, _ *emptypb.Empty) (*emptypb.E
 
 	if err := s.syncWithOpenAPI(ctx); err != nil {
 		return nil, err
+	}
+
+	// 重建是 truncate + 按显式 ID 逐行写入，PG 的序列不会跟着走；不对齐的话
+	// 之后「新建 API」必撞 sys_apis_pkey（HTTP 500）。
+	if err := s.repo.AlignIdentitySequence(ctx); err != nil {
+		s.log.Errorf(ctx, "接口 id 序列对齐失败: %v", err)
 	}
 
 	// 重置权限策略

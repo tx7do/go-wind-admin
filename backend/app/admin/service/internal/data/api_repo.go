@@ -24,8 +24,9 @@ import (
 )
 
 type ApiRepo struct {
-	entClient *entCrud.EntClient[*ent.Client]
-	log       *bLogger.Helper
+	entClient  *entCrud.EntClient[*ent.Client]
+	driverName string
+	log        *bLogger.Helper
 
 	mapper                  *mapper.CopierMapper[permissionV1.Api, ent.Api]
 	statusConverter         *mapper.EnumTypeConverter[permissionV1.Api_Status, api.Status]
@@ -44,9 +45,10 @@ type ApiRepo struct {
 
 func NewApiRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *ApiRepo {
 	repo := &ApiRepo{
-		log:       ctx.NewLoggerHelper("api/repo/admin-service"),
-		entClient: entClient,
-		mapper:    mapper.NewCopierMapper[permissionV1.Api, ent.Api](),
+		log:        ctx.NewLoggerHelper("api/repo/admin-service"),
+		entClient:  entClient,
+		driverName: driverNameOf(ctx),
+		mapper:     mapper.NewCopierMapper[permissionV1.Api, ent.Api](),
 		statusConverter: mapper.NewEnumTypeConverter[permissionV1.Api_Status, api.Status](
 			permissionV1.Api_Status_name, permissionV1.Api_Status_value,
 		),
