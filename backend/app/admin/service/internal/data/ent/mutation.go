@@ -30645,35 +30645,37 @@ func (m *MenuMutation) ResetEdge(name string) error {
 // NotificationChannelMutation represents an operation that mutates the NotificationChannel nodes in the graph.
 type NotificationChannelMutation struct {
 	config
-	op             Op
-	typ            string
-	id             *uint32
-	created_at     *time.Time
-	updated_at     *time.Time
-	deleted_at     *time.Time
-	created_by     *uint32
-	addcreated_by  *int32
-	updated_by     *uint32
-	addupdated_by  *int32
-	deleted_by     *uint32
-	adddeleted_by  *int32
-	remark         *string
-	status         *notificationchannel.Status
-	name           *string
-	_type          *notificationchannel.Type
-	smtp_host      *string
-	smtp_port      *uint32
-	addsmtp_port   *int32
-	smtp_username  *string
-	smtp_password  *string
-	smtp_from      *string
-	smtp_tls       *notificationchannel.SMTPTLS
-	webhook_url    *string
-	webhook_secret *string
-	clearedFields  map[string]struct{}
-	done           bool
-	oldValue       func(context.Context) (*NotificationChannel, error)
-	predicates     []predicate.NotificationChannel
+	op                       Op
+	typ                      string
+	id                       *uint32
+	created_at               *time.Time
+	updated_at               *time.Time
+	deleted_at               *time.Time
+	created_by               *uint32
+	addcreated_by            *int32
+	updated_by               *uint32
+	addupdated_by            *int32
+	deleted_by               *uint32
+	adddeleted_by            *int32
+	remark                   *string
+	status                   *notificationchannel.Status
+	name                     *string
+	_type                    *notificationchannel.Type
+	smtp_host                *string
+	smtp_port                *uint32
+	addsmtp_port             *int32
+	smtp_username            *string
+	smtp_password            *string
+	smtp_from                *string
+	smtp_tls                 *notificationchannel.SMTPTLS
+	webhook_url              *string
+	webhook_secret           *string
+	webhook_sign_style       *notificationchannel.WebhookSignStyle
+	webhook_payload_template *string
+	clearedFields            map[string]struct{}
+	done                     bool
+	oldValue                 func(context.Context) (*NotificationChannel, error)
+	predicates               []predicate.NotificationChannel
 }
 
 var _ ent.Mutation = (*NotificationChannelMutation)(nil)
@@ -31707,6 +31709,104 @@ func (m *NotificationChannelMutation) ResetWebhookSecret() {
 	delete(m.clearedFields, notificationchannel.FieldWebhookSecret)
 }
 
+// SetWebhookSignStyle sets the "webhook_sign_style" field.
+func (m *NotificationChannelMutation) SetWebhookSignStyle(nss notificationchannel.WebhookSignStyle) {
+	m.webhook_sign_style = &nss
+}
+
+// WebhookSignStyle returns the value of the "webhook_sign_style" field in the mutation.
+func (m *NotificationChannelMutation) WebhookSignStyle() (r notificationchannel.WebhookSignStyle, exists bool) {
+	v := m.webhook_sign_style
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWebhookSignStyle returns the old "webhook_sign_style" field's value of the NotificationChannel entity.
+// If the NotificationChannel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotificationChannelMutation) OldWebhookSignStyle(ctx context.Context) (v *notificationchannel.WebhookSignStyle, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWebhookSignStyle is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWebhookSignStyle requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWebhookSignStyle: %w", err)
+	}
+	return oldValue.WebhookSignStyle, nil
+}
+
+// ClearWebhookSignStyle clears the value of the "webhook_sign_style" field.
+func (m *NotificationChannelMutation) ClearWebhookSignStyle() {
+	m.webhook_sign_style = nil
+	m.clearedFields[notificationchannel.FieldWebhookSignStyle] = struct{}{}
+}
+
+// WebhookSignStyleCleared returns if the "webhook_sign_style" field was cleared in this mutation.
+func (m *NotificationChannelMutation) WebhookSignStyleCleared() bool {
+	_, ok := m.clearedFields[notificationchannel.FieldWebhookSignStyle]
+	return ok
+}
+
+// ResetWebhookSignStyle resets all changes to the "webhook_sign_style" field.
+func (m *NotificationChannelMutation) ResetWebhookSignStyle() {
+	m.webhook_sign_style = nil
+	delete(m.clearedFields, notificationchannel.FieldWebhookSignStyle)
+}
+
+// SetWebhookPayloadTemplate sets the "webhook_payload_template" field.
+func (m *NotificationChannelMutation) SetWebhookPayloadTemplate(s string) {
+	m.webhook_payload_template = &s
+}
+
+// WebhookPayloadTemplate returns the value of the "webhook_payload_template" field in the mutation.
+func (m *NotificationChannelMutation) WebhookPayloadTemplate() (r string, exists bool) {
+	v := m.webhook_payload_template
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldWebhookPayloadTemplate returns the old "webhook_payload_template" field's value of the NotificationChannel entity.
+// If the NotificationChannel object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *NotificationChannelMutation) OldWebhookPayloadTemplate(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldWebhookPayloadTemplate is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldWebhookPayloadTemplate requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldWebhookPayloadTemplate: %w", err)
+	}
+	return oldValue.WebhookPayloadTemplate, nil
+}
+
+// ClearWebhookPayloadTemplate clears the value of the "webhook_payload_template" field.
+func (m *NotificationChannelMutation) ClearWebhookPayloadTemplate() {
+	m.webhook_payload_template = nil
+	m.clearedFields[notificationchannel.FieldWebhookPayloadTemplate] = struct{}{}
+}
+
+// WebhookPayloadTemplateCleared returns if the "webhook_payload_template" field was cleared in this mutation.
+func (m *NotificationChannelMutation) WebhookPayloadTemplateCleared() bool {
+	_, ok := m.clearedFields[notificationchannel.FieldWebhookPayloadTemplate]
+	return ok
+}
+
+// ResetWebhookPayloadTemplate resets all changes to the "webhook_payload_template" field.
+func (m *NotificationChannelMutation) ResetWebhookPayloadTemplate() {
+	m.webhook_payload_template = nil
+	delete(m.clearedFields, notificationchannel.FieldWebhookPayloadTemplate)
+}
+
 // Where appends a list predicates to the NotificationChannelMutation builder.
 func (m *NotificationChannelMutation) Where(ps ...predicate.NotificationChannel) {
 	m.predicates = append(m.predicates, ps...)
@@ -31741,7 +31841,7 @@ func (m *NotificationChannelMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *NotificationChannelMutation) Fields() []string {
-	fields := make([]string, 0, 18)
+	fields := make([]string, 0, 20)
 	if m.created_at != nil {
 		fields = append(fields, notificationchannel.FieldCreatedAt)
 	}
@@ -31796,6 +31896,12 @@ func (m *NotificationChannelMutation) Fields() []string {
 	if m.webhook_secret != nil {
 		fields = append(fields, notificationchannel.FieldWebhookSecret)
 	}
+	if m.webhook_sign_style != nil {
+		fields = append(fields, notificationchannel.FieldWebhookSignStyle)
+	}
+	if m.webhook_payload_template != nil {
+		fields = append(fields, notificationchannel.FieldWebhookPayloadTemplate)
+	}
 	return fields
 }
 
@@ -31840,6 +31946,10 @@ func (m *NotificationChannelMutation) Field(name string) (ent.Value, bool) {
 		return m.WebhookURL()
 	case notificationchannel.FieldWebhookSecret:
 		return m.WebhookSecret()
+	case notificationchannel.FieldWebhookSignStyle:
+		return m.WebhookSignStyle()
+	case notificationchannel.FieldWebhookPayloadTemplate:
+		return m.WebhookPayloadTemplate()
 	}
 	return nil, false
 }
@@ -31885,6 +31995,10 @@ func (m *NotificationChannelMutation) OldField(ctx context.Context, name string)
 		return m.OldWebhookURL(ctx)
 	case notificationchannel.FieldWebhookSecret:
 		return m.OldWebhookSecret(ctx)
+	case notificationchannel.FieldWebhookSignStyle:
+		return m.OldWebhookSignStyle(ctx)
+	case notificationchannel.FieldWebhookPayloadTemplate:
+		return m.OldWebhookPayloadTemplate(ctx)
 	}
 	return nil, fmt.Errorf("unknown NotificationChannel field %s", name)
 }
@@ -32020,6 +32134,20 @@ func (m *NotificationChannelMutation) SetField(name string, value ent.Value) err
 		}
 		m.SetWebhookSecret(v)
 		return nil
+	case notificationchannel.FieldWebhookSignStyle:
+		v, ok := value.(notificationchannel.WebhookSignStyle)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWebhookSignStyle(v)
+		return nil
+	case notificationchannel.FieldWebhookPayloadTemplate:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetWebhookPayloadTemplate(v)
+		return nil
 	}
 	return fmt.Errorf("unknown NotificationChannel field %s", name)
 }
@@ -32146,6 +32274,12 @@ func (m *NotificationChannelMutation) ClearedFields() []string {
 	if m.FieldCleared(notificationchannel.FieldWebhookSecret) {
 		fields = append(fields, notificationchannel.FieldWebhookSecret)
 	}
+	if m.FieldCleared(notificationchannel.FieldWebhookSignStyle) {
+		fields = append(fields, notificationchannel.FieldWebhookSignStyle)
+	}
+	if m.FieldCleared(notificationchannel.FieldWebhookPayloadTemplate) {
+		fields = append(fields, notificationchannel.FieldWebhookPayloadTemplate)
+	}
 	return fields
 }
 
@@ -32204,6 +32338,12 @@ func (m *NotificationChannelMutation) ClearField(name string) error {
 		return nil
 	case notificationchannel.FieldWebhookSecret:
 		m.ClearWebhookSecret()
+		return nil
+	case notificationchannel.FieldWebhookSignStyle:
+		m.ClearWebhookSignStyle()
+		return nil
+	case notificationchannel.FieldWebhookPayloadTemplate:
+		m.ClearWebhookPayloadTemplate()
 		return nil
 	}
 	return fmt.Errorf("unknown NotificationChannel nullable field %s", name)
@@ -32266,6 +32406,12 @@ func (m *NotificationChannelMutation) ResetField(name string) error {
 		return nil
 	case notificationchannel.FieldWebhookSecret:
 		m.ResetWebhookSecret()
+		return nil
+	case notificationchannel.FieldWebhookSignStyle:
+		m.ResetWebhookSignStyle()
+		return nil
+	case notificationchannel.FieldWebhookPayloadTemplate:
+		m.ResetWebhookPayloadTemplate()
 		return nil
 	}
 	return fmt.Errorf("unknown NotificationChannel field %s", name)

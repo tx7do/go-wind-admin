@@ -5514,6 +5514,11 @@ export type notification_channelservicev1_NotificationChannel = {
   type?: notification_channelservicev1_NotificationChannel_Type;
   updatedAt?: wellKnownTimestamp;
   updatedBy?: number;
+  // 可用占位符：{{title}} {{content}} {{event_type}} {{timestamp}} {{sign}} {{nonce}}
+  // {{recipient_user_id}} {{related_id}} {{delivered_at}}；替换按 JSON 字符串转义进行，
+  // 渲染结果必须是合法 JSON。CUSTOM 风格下 {{sign}} 不可用（它要盖住正文本身）。
+  webhookPayloadTemplate?: string;
+  webhookSignStyle?: notification_channelservicev1_SignStyle;
   webhookUrl?: string;
 };
 
@@ -5526,6 +5531,19 @@ export type notification_channelservicev1_NotificationChannel_TlsMode =
   | 'NONE'
   | 'SSL'
   | 'START_TLS';
+// Webhook 出站风格：一条 webhook 请求有三个地方各家长得不一样——签名怎么算、签名放哪、
+// 以及"对端到底收下了没有"用什么判。这一格把三件事捆在一起选，因为它们是同一次决策的产物
+// （钉钉把签名放 URL query 且只看 body 的 errcode，飞书把签名放 body 里且看 code）。
+// 正文形状不在这一格里：它由 webhook_payload_template 决定，留空时回落到本风格的内置默认模板。
+// 为什么在包顶层而不成 `NotificationChannel` 里：proto3 的枚举成员名属于外层作用域而非枚举
+// 自身，嵌进消息就和 `TlsMode.NONE` 撞同一作用域。成员名则必须与 ent 列值逐字相同：
+// repo 的 EnumTypeConverter 按名字字符串配对，加前缀等于字段静默丢失。
+export type notification_channelservicev1_SignStyle =
+  | 'CUSTOM'
+  | 'DINGTALK'
+  | 'FEISHU'
+  | 'NONE'
+  | 'WECOM';
 // 查询通知渠道详情 - 请求
 export type notification_channelservicev1_GetNotificationChannelRequest = {
   id: number | undefined;

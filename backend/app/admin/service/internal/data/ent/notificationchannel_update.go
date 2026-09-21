@@ -379,6 +379,46 @@ func (_u *NotificationChannelUpdate) ClearWebhookSecret() *NotificationChannelUp
 	return _u
 }
 
+// SetWebhookSignStyle sets the "webhook_sign_style" field.
+func (_u *NotificationChannelUpdate) SetWebhookSignStyle(v notificationchannel.WebhookSignStyle) *NotificationChannelUpdate {
+	_u.mutation.SetWebhookSignStyle(v)
+	return _u
+}
+
+// SetNillableWebhookSignStyle sets the "webhook_sign_style" field if the given value is not nil.
+func (_u *NotificationChannelUpdate) SetNillableWebhookSignStyle(v *notificationchannel.WebhookSignStyle) *NotificationChannelUpdate {
+	if v != nil {
+		_u.SetWebhookSignStyle(*v)
+	}
+	return _u
+}
+
+// ClearWebhookSignStyle clears the value of the "webhook_sign_style" field.
+func (_u *NotificationChannelUpdate) ClearWebhookSignStyle() *NotificationChannelUpdate {
+	_u.mutation.ClearWebhookSignStyle()
+	return _u
+}
+
+// SetWebhookPayloadTemplate sets the "webhook_payload_template" field.
+func (_u *NotificationChannelUpdate) SetWebhookPayloadTemplate(v string) *NotificationChannelUpdate {
+	_u.mutation.SetWebhookPayloadTemplate(v)
+	return _u
+}
+
+// SetNillableWebhookPayloadTemplate sets the "webhook_payload_template" field if the given value is not nil.
+func (_u *NotificationChannelUpdate) SetNillableWebhookPayloadTemplate(v *string) *NotificationChannelUpdate {
+	if v != nil {
+		_u.SetWebhookPayloadTemplate(*v)
+	}
+	return _u
+}
+
+// ClearWebhookPayloadTemplate clears the value of the "webhook_payload_template" field.
+func (_u *NotificationChannelUpdate) ClearWebhookPayloadTemplate() *NotificationChannelUpdate {
+	_u.mutation.ClearWebhookPayloadTemplate()
+	return _u
+}
+
 // Mutation returns the NotificationChannelMutation object of the builder.
 func (_u *NotificationChannelUpdate) Mutation() *NotificationChannelMutation {
 	return _u.mutation
@@ -431,6 +471,11 @@ func (_u *NotificationChannelUpdate) check() error {
 	if v, ok := _u.mutation.SMTPTLS(); ok {
 		if err := notificationchannel.SMTPTLSValidator(v); err != nil {
 			return &ValidationError{Name: "smtp_tls", err: fmt.Errorf(`ent: validator failed for field "NotificationChannel.smtp_tls": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.WebhookSignStyle(); ok {
+		if err := notificationchannel.WebhookSignStyleValidator(v); err != nil {
+			return &ValidationError{Name: "webhook_sign_style", err: fmt.Errorf(`ent: validator failed for field "NotificationChannel.webhook_sign_style": %w`, err)}
 		}
 	}
 	return nil
@@ -561,6 +606,18 @@ func (_u *NotificationChannelUpdate) sqlSave(ctx context.Context) (_node int, er
 	}
 	if _u.mutation.WebhookSecretCleared() {
 		_spec.ClearField(notificationchannel.FieldWebhookSecret, field.TypeString)
+	}
+	if value, ok := _u.mutation.WebhookSignStyle(); ok {
+		_spec.SetField(notificationchannel.FieldWebhookSignStyle, field.TypeEnum, value)
+	}
+	if _u.mutation.WebhookSignStyleCleared() {
+		_spec.ClearField(notificationchannel.FieldWebhookSignStyle, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.WebhookPayloadTemplate(); ok {
+		_spec.SetField(notificationchannel.FieldWebhookPayloadTemplate, field.TypeString, value)
+	}
+	if _u.mutation.WebhookPayloadTemplateCleared() {
+		_spec.ClearField(notificationchannel.FieldWebhookPayloadTemplate, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -934,6 +991,46 @@ func (_u *NotificationChannelUpdateOne) ClearWebhookSecret() *NotificationChanne
 	return _u
 }
 
+// SetWebhookSignStyle sets the "webhook_sign_style" field.
+func (_u *NotificationChannelUpdateOne) SetWebhookSignStyle(v notificationchannel.WebhookSignStyle) *NotificationChannelUpdateOne {
+	_u.mutation.SetWebhookSignStyle(v)
+	return _u
+}
+
+// SetNillableWebhookSignStyle sets the "webhook_sign_style" field if the given value is not nil.
+func (_u *NotificationChannelUpdateOne) SetNillableWebhookSignStyle(v *notificationchannel.WebhookSignStyle) *NotificationChannelUpdateOne {
+	if v != nil {
+		_u.SetWebhookSignStyle(*v)
+	}
+	return _u
+}
+
+// ClearWebhookSignStyle clears the value of the "webhook_sign_style" field.
+func (_u *NotificationChannelUpdateOne) ClearWebhookSignStyle() *NotificationChannelUpdateOne {
+	_u.mutation.ClearWebhookSignStyle()
+	return _u
+}
+
+// SetWebhookPayloadTemplate sets the "webhook_payload_template" field.
+func (_u *NotificationChannelUpdateOne) SetWebhookPayloadTemplate(v string) *NotificationChannelUpdateOne {
+	_u.mutation.SetWebhookPayloadTemplate(v)
+	return _u
+}
+
+// SetNillableWebhookPayloadTemplate sets the "webhook_payload_template" field if the given value is not nil.
+func (_u *NotificationChannelUpdateOne) SetNillableWebhookPayloadTemplate(v *string) *NotificationChannelUpdateOne {
+	if v != nil {
+		_u.SetWebhookPayloadTemplate(*v)
+	}
+	return _u
+}
+
+// ClearWebhookPayloadTemplate clears the value of the "webhook_payload_template" field.
+func (_u *NotificationChannelUpdateOne) ClearWebhookPayloadTemplate() *NotificationChannelUpdateOne {
+	_u.mutation.ClearWebhookPayloadTemplate()
+	return _u
+}
+
 // Mutation returns the NotificationChannelMutation object of the builder.
 func (_u *NotificationChannelUpdateOne) Mutation() *NotificationChannelMutation {
 	return _u.mutation
@@ -999,6 +1096,11 @@ func (_u *NotificationChannelUpdateOne) check() error {
 	if v, ok := _u.mutation.SMTPTLS(); ok {
 		if err := notificationchannel.SMTPTLSValidator(v); err != nil {
 			return &ValidationError{Name: "smtp_tls", err: fmt.Errorf(`ent: validator failed for field "NotificationChannel.smtp_tls": %w`, err)}
+		}
+	}
+	if v, ok := _u.mutation.WebhookSignStyle(); ok {
+		if err := notificationchannel.WebhookSignStyleValidator(v); err != nil {
+			return &ValidationError{Name: "webhook_sign_style", err: fmt.Errorf(`ent: validator failed for field "NotificationChannel.webhook_sign_style": %w`, err)}
 		}
 	}
 	return nil
@@ -1146,6 +1248,18 @@ func (_u *NotificationChannelUpdateOne) sqlSave(ctx context.Context) (_node *Not
 	}
 	if _u.mutation.WebhookSecretCleared() {
 		_spec.ClearField(notificationchannel.FieldWebhookSecret, field.TypeString)
+	}
+	if value, ok := _u.mutation.WebhookSignStyle(); ok {
+		_spec.SetField(notificationchannel.FieldWebhookSignStyle, field.TypeEnum, value)
+	}
+	if _u.mutation.WebhookSignStyleCleared() {
+		_spec.ClearField(notificationchannel.FieldWebhookSignStyle, field.TypeEnum)
+	}
+	if value, ok := _u.mutation.WebhookPayloadTemplate(); ok {
+		_spec.SetField(notificationchannel.FieldWebhookPayloadTemplate, field.TypeString, value)
+	}
+	if _u.mutation.WebhookPayloadTemplateCleared() {
+		_spec.ClearField(notificationchannel.FieldWebhookPayloadTemplate, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &NotificationChannel{config: _u.config}

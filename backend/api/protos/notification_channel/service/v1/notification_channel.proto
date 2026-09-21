@@ -31,6 +31,22 @@ service NotificationChannelService {
   rpc SendTestEmail (SendTestEmailRequest) returns (google.protobuf.Empty) {}
 }
 
+// Webhook 出站风格：一条 webhook 请求有三个地方各家长得不一样——签名怎么算、签名放哪、
+// 以及"对端到底收下了没有"用什么判。这一格把三件事捆在一起选，因为它们是同一次决策的产物
+// （钉钉把签名放 URL query 且只看 body 的 errcode，飞书把签名放 body 里且看 code）。
+// 正文形状不在这一格里：它由 webhook_payload_template 决定，留空时回落到本风格的内置默认模板。
+//
+// 为什么在包顶层而不成 `NotificationChannel` 里：proto3 的枚举成员名属于外层作用域而非枚举
+// 自身，嵌进消息就和 `TlsMode.NONE` 撞同一作用域。成员名则必须与 ent 列值逐字相同：
+// repo 的 EnumTypeConverter 按名字字符串配对，加前缀等于字段静默丢失。
+enum SignStyle {
+  CUSTOM = 0;    // 本系统自有方案：配了密钥就带 X-Gw-Timestamp / X-Gw-Signature 头，只看 HTTP 状态码
+  NONE = 1;      // 不签名，只看 HTTP 状态码
+  DINGTALK = 2;  // 钉钉自定义机器人：sign/timestamp 拼进 URL query，HTTP 200 仍可能失败，按 body 的 errcode 判
+  FEISHU = 3;    // 飞书自定义机器人：timestamp/sign 作为 body 字段，按 body 的 code 判
+  WECOM = 4;     // 企业微信群机器人：不签名（凭据在 URL 的 key 上），按 body 的 errcode 判
+}
+
 // 通知渠道
 message NotificationChannel {
   // 渠道类型
@@ -102,6 +118,19 @@ message NotificationChannel {
     json_name = "hasWebhookSecret",
     (gnostic.openapi.v3.property) = { description: "是否已配置 Webhook 签名密钥" }
   ]; // 是否已配置 Webhook 签名密钥
+
+  optional SignStyle webhook_sign_style = 18 [
+    json_name = "webhookSignStyle",
+    (gnostic.openapi.v3.property) = { description: "Webhook 出站风格（仅 WEBHOOK 渠道）" }
+  ]; // Webhook 出站风格
+
+  // 可用占位符：{{title}} {{content}} {{event_type}} {{timestamp}} {{sign}} {{nonce}}
+  // {{recipient_user_id}} {{related_id}} {{delivered_at}}；替换按 JSON 字符串转义进行，
+  // 渲染结果必须是合法 JSON。CUSTOM 风格下 {{sign}} 不可用（它要盖住正文本身）。
+  optional string webhook_payload_template = 19 [
+    json_name = "webhookPayloadTemplate",
+    (gnostic.openapi.v3.property) = { description: "Webhook 载荷模板，留空用该风格的内置默认 JSON" }
+  ]; // Webhook 载荷模板
 
   optional bool enabled = 20 [
     json_name = "enabled",

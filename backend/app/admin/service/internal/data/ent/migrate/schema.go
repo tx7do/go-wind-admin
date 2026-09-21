@@ -1385,6 +1385,8 @@ var (
 		{Name: "smtp_tls", Type: field.TypeEnum, Nullable: true, Comment: "加密方式", Enums: []string{"NONE", "START_TLS", "SSL"}, Default: "START_TLS"},
 		{Name: "webhook_url", Type: field.TypeString, Nullable: true, Comment: "Webhook 回调地址（仅 WEBHOOK 渠道）"},
 		{Name: "webhook_secret", Type: field.TypeString, Nullable: true, Comment: "Webhook 签名密钥（EncryptIfNeeded 加密存储，仅 WEBHOOK 渠道）"},
+		{Name: "webhook_sign_style", Type: field.TypeEnum, Nullable: true, Comment: "Webhook 出站风格（签名位置/算法与应答判据，仅 WEBHOOK 渠道）", Enums: []string{"CUSTOM", "NONE", "DINGTALK", "FEISHU", "WECOM"}, Default: "CUSTOM"},
+		{Name: "webhook_payload_template", Type: field.TypeString, Nullable: true, Comment: "Webhook 载荷模板（{{占位符}} 渲染；留空则用该风格的内置默认 JSON）"},
 	}
 	// SysNotificationChannelsTable holds the schema information for the "sys_notification_channels" table.
 	SysNotificationChannelsTable = &schema.Table{

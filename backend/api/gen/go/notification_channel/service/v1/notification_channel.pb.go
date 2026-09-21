@@ -26,6 +26,69 @@ const (
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
 
+// Webhook 出站风格：一条 webhook 请求有三个地方各家长得不一样——签名怎么算、签名放哪、
+// 以及"对端到底收下了没有"用什么判。这一格把三件事捆在一起选，因为它们是同一次决策的产物
+// （钉钉把签名放 URL query 且只看 body 的 errcode，飞书把签名放 body 里且看 code）。
+// 正文形状不在这一格里：它由 webhook_payload_template 决定，留空时回落到本风格的内置默认模板。
+//
+// 为什么在包顶层而不成 `NotificationChannel` 里：proto3 的枚举成员名属于外层作用域而非枚举
+// 自身，嵌进消息就和 `TlsMode.NONE` 撞同一作用域。成员名则必须与 ent 列值逐字相同：
+// repo 的 EnumTypeConverter 按名字字符串配对，加前缀等于字段静默丢失。
+type SignStyle int32
+
+const (
+	SignStyle_CUSTOM   SignStyle = 0 // 本系统自有方案：配了密钥就带 X-Gw-Timestamp / X-Gw-Signature 头，只看 HTTP 状态码
+	SignStyle_NONE     SignStyle = 1 // 不签名，只看 HTTP 状态码
+	SignStyle_DINGTALK SignStyle = 2 // 钉钉自定义机器人：sign/timestamp 拼进 URL query，HTTP 200 仍可能失败，按 body 的 errcode 判
+	SignStyle_FEISHU   SignStyle = 3 // 飞书自定义机器人：timestamp/sign 作为 body 字段，按 body 的 code 判
+	SignStyle_WECOM    SignStyle = 4 // 企业微信群机器人：不签名（凭据在 URL 的 key 上），按 body 的 errcode 判
+)
+
+// Enum value maps for SignStyle.
+var (
+	SignStyle_name = map[int32]string{
+		0: "CUSTOM",
+		1: "NONE",
+		2: "DINGTALK",
+		3: "FEISHU",
+		4: "WECOM",
+	}
+	SignStyle_value = map[string]int32{
+		"CUSTOM":   0,
+		"NONE":     1,
+		"DINGTALK": 2,
+		"FEISHU":   3,
+		"WECOM":    4,
+	}
+)
+
+func (x SignStyle) Enum() *SignStyle {
+	p := new(SignStyle)
+	*p = x
+	return p
+}
+
+func (x SignStyle) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SignStyle) Descriptor() protoreflect.EnumDescriptor {
+	return file_notification_channel_service_v1_notification_channel_proto_enumTypes[0].Descriptor()
+}
+
+func (SignStyle) Type() protoreflect.EnumType {
+	return &file_notification_channel_service_v1_notification_channel_proto_enumTypes[0]
+}
+
+func (x SignStyle) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SignStyle.Descriptor instead.
+func (SignStyle) EnumDescriptor() ([]byte, []int) {
+	return file_notification_channel_service_v1_notification_channel_proto_rawDescGZIP(), []int{0}
+}
+
 // 渠道类型
 type NotificationChannel_Type int32
 
@@ -57,11 +120,11 @@ func (x NotificationChannel_Type) String() string {
 }
 
 func (NotificationChannel_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_notification_channel_service_v1_notification_channel_proto_enumTypes[0].Descriptor()
+	return file_notification_channel_service_v1_notification_channel_proto_enumTypes[1].Descriptor()
 }
 
 func (NotificationChannel_Type) Type() protoreflect.EnumType {
-	return &file_notification_channel_service_v1_notification_channel_proto_enumTypes[0]
+	return &file_notification_channel_service_v1_notification_channel_proto_enumTypes[1]
 }
 
 func (x NotificationChannel_Type) Number() protoreflect.EnumNumber {
@@ -107,11 +170,11 @@ func (x NotificationChannel_TlsMode) String() string {
 }
 
 func (NotificationChannel_TlsMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_notification_channel_service_v1_notification_channel_proto_enumTypes[1].Descriptor()
+	return file_notification_channel_service_v1_notification_channel_proto_enumTypes[2].Descriptor()
 }
 
 func (NotificationChannel_TlsMode) Type() protoreflect.EnumType {
-	return &file_notification_channel_service_v1_notification_channel_proto_enumTypes[1]
+	return &file_notification_channel_service_v1_notification_channel_proto_enumTypes[2]
 }
 
 func (x NotificationChannel_TlsMode) Number() protoreflect.EnumNumber {
@@ -138,15 +201,20 @@ type NotificationChannel struct {
 	SmtpTls     *NotificationChannel_TlsMode `protobuf:"varint,15,opt,name=smtp_tls,json=smtpTls,proto3,enum=notification_channel.service.v1.NotificationChannel_TlsMode,oneof" json:"smtp_tls,omitempty"` // 加密方式
 	WebhookUrl  *string                      `protobuf:"bytes,16,opt,name=webhook_url,json=webhookUrl,proto3,oneof" json:"webhook_url,omitempty"`                                                          // Webhook 回调地址
 	// 密钥不回传：与 password 同一条约定，仅写入时接收
-	HasWebhookSecret *bool                  `protobuf:"varint,17,opt,name=has_webhook_secret,json=hasWebhookSecret,proto3,oneof" json:"has_webhook_secret,omitempty"` // 是否已配置 Webhook 签名密钥
-	Enabled          *bool                  `protobuf:"varint,20,opt,name=enabled,proto3,oneof" json:"enabled,omitempty"`                                             // 是否启用
-	Remark           *string                `protobuf:"bytes,21,opt,name=remark,proto3,oneof" json:"remark,omitempty"`                                                // 备注
-	CreatedBy        *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`
-	UpdatedBy        *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
-	CreatedAt        *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
-	UpdatedAt        *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	HasWebhookSecret *bool      `protobuf:"varint,17,opt,name=has_webhook_secret,json=hasWebhookSecret,proto3,oneof" json:"has_webhook_secret,omitempty"`                                                // 是否已配置 Webhook 签名密钥
+	WebhookSignStyle *SignStyle `protobuf:"varint,18,opt,name=webhook_sign_style,json=webhookSignStyle,proto3,enum=notification_channel.service.v1.SignStyle,oneof" json:"webhook_sign_style,omitempty"` // Webhook 出站风格
+	// 可用占位符：{{title}} {{content}} {{event_type}} {{timestamp}} {{sign}} {{nonce}}
+	// {{recipient_user_id}} {{related_id}} {{delivered_at}}；替换按 JSON 字符串转义进行，
+	// 渲染结果必须是合法 JSON。CUSTOM 风格下 {{sign}} 不可用（它要盖住正文本身）。
+	WebhookPayloadTemplate *string                `protobuf:"bytes,19,opt,name=webhook_payload_template,json=webhookPayloadTemplate,proto3,oneof" json:"webhook_payload_template,omitempty"` // Webhook 载荷模板
+	Enabled                *bool                  `protobuf:"varint,20,opt,name=enabled,proto3,oneof" json:"enabled,omitempty"`                                                              // 是否启用
+	Remark                 *string                `protobuf:"bytes,21,opt,name=remark,proto3,oneof" json:"remark,omitempty"`                                                                 // 备注
+	CreatedBy              *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"`
+	UpdatedBy              *uint32                `protobuf:"varint,101,opt,name=updated_by,json=updatedBy,proto3,oneof" json:"updated_by,omitempty"`
+	CreatedAt              *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
+	UpdatedAt              *timestamppb.Timestamp `protobuf:"bytes,201,opt,name=updated_at,json=updatedAt,proto3,oneof" json:"updated_at,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *NotificationChannel) Reset() {
@@ -254,6 +322,20 @@ func (x *NotificationChannel) GetHasWebhookSecret() bool {
 		return *x.HasWebhookSecret
 	}
 	return false
+}
+
+func (x *NotificationChannel) GetWebhookSignStyle() SignStyle {
+	if x != nil && x.WebhookSignStyle != nil {
+		return *x.WebhookSignStyle
+	}
+	return SignStyle_CUSTOM
+}
+
+func (x *NotificationChannel) GetWebhookPayloadTemplate() string {
+	if x != nil && x.WebhookPayloadTemplate != nil {
+		return *x.WebhookPayloadTemplate
+	}
+	return ""
 }
 
 func (x *NotificationChannel) GetEnabled() bool {
@@ -641,7 +723,7 @@ var File_notification_channel_service_v1_notification_channel_proto protoreflect
 
 const file_notification_channel_service_v1_notification_channel_proto_rawDesc = "" +
 	"\n" +
-	":notification_channel/service/v1/notification_channel.proto\x12\x1fnotification_channel.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\x8d\v\n" +
+	":notification_channel/service/v1/notification_channel.proto\x12\x1fnotification_channel.service.v1\x1a$gnostic/openapi/v3/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/protobuf/field_mask.proto\x1a\x1epagination/v1/pagination.proto\"\xda\r\n" +
 	"\x13NotificationChannel\x12#\n" +
 	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b渠道IDH\x00R\x02id\x88\x01\x01\x12+\n" +
 	"\x04name\x18\x02 \x01(\tB\x12\xbaG\x0f\x92\x02\f渠道名称H\x01R\x04name\x88\x01\x01\x12f\n" +
@@ -656,17 +738,19 @@ const file_notification_channel_service_v1_notification_channel_proto_rawDesc = 
 	"\vwebhook_url\x18\x10 \x01(\tB2\xbaG/\x92\x02,Webhook 回调地址（仅 WEBHOOK 渠道）H\tR\n" +
 	"webhookUrl\x88\x01\x01\x12]\n" +
 	"\x12has_webhook_secret\x18\x11 \x01(\bB*\xbaG'\x92\x02$是否已配置 Webhook 签名密钥H\n" +
-	"R\x10hasWebhookSecret\x88\x01\x01\x121\n" +
-	"\aenabled\x18\x14 \x01(\bB\x12\xbaG\x0f\x92\x02\f是否启用H\vR\aenabled\x88\x01\x01\x12)\n" +
-	"\x06remark\x18\x15 \x01(\tB\f\xbaG\t\x92\x02\x06备注H\fR\x06remark\x88\x01\x01\x12\"\n" +
+	"R\x10hasWebhookSecret\x88\x01\x01\x12\x91\x01\n" +
+	"\x12webhook_sign_style\x18\x12 \x01(\x0e2*.notification_channel.service.v1.SignStyleB2\xbaG/\x92\x02,Webhook 出站风格（仅 WEBHOOK 渠道）H\vR\x10webhookSignStyle\x88\x01\x01\x12\x82\x01\n" +
+	"\x18webhook_payload_template\x18\x13 \x01(\tBC\xbaG@\x92\x02=Webhook 载荷模板，留空用该风格的内置默认 JSONH\fR\x16webhookPayloadTemplate\x88\x01\x01\x121\n" +
+	"\aenabled\x18\x14 \x01(\bB\x12\xbaG\x0f\x92\x02\f是否启用H\rR\aenabled\x88\x01\x01\x12)\n" +
+	"\x06remark\x18\x15 \x01(\tB\f\xbaG\t\x92\x02\x06备注H\x0eR\x06remark\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"created_by\x18d \x01(\rH\rR\tcreatedBy\x88\x01\x01\x12\"\n" +
+	"created_by\x18d \x01(\rH\x0fR\tcreatedBy\x88\x01\x01\x12\"\n" +
 	"\n" +
-	"updated_by\x18e \x01(\rH\x0eR\tupdatedBy\x88\x01\x01\x12?\n" +
+	"updated_by\x18e \x01(\rH\x10R\tupdatedBy\x88\x01\x01\x12?\n" +
 	"\n" +
-	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x0fR\tcreatedAt\x88\x01\x01\x12?\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x11R\tcreatedAt\x88\x01\x01\x12?\n" +
 	"\n" +
-	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x10R\tupdatedAt\x88\x01\x01\"\x1e\n" +
+	"updated_at\x18\xc9\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x12R\tupdatedAt\x88\x01\x01\"\x1e\n" +
 	"\x04Type\x12\t\n" +
 	"\x05EMAIL\x10\x00\x12\v\n" +
 	"\aWEBHOOK\x10\x01\"+\n" +
@@ -687,7 +771,9 @@ const file_notification_channel_service_v1_notification_channel_proto_rawDesc = 
 	"_smtp_fromB\v\n" +
 	"\t_smtp_tlsB\x0e\n" +
 	"\f_webhook_urlB\x15\n" +
-	"\x13_has_webhook_secretB\n" +
+	"\x13_has_webhook_secretB\x15\n" +
+	"\x13_webhook_sign_styleB\x1b\n" +
+	"\x19_webhook_payload_templateB\n" +
 	"\n" +
 	"\b_enabledB\t\n" +
 	"\a_remarkB\r\n" +
@@ -719,7 +805,15 @@ const file_notification_channel_service_v1_notification_channel_proto_rawDesc = 
 	"\x02id\x18\x01 \x01(\rR\x02id\"q\n" +
 	"\x14SendTestEmailRequest\x12\x1e\n" +
 	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b渠道IDR\x02id\x129\n" +
-	"\trecipient\x18\x02 \x01(\tB\x1b\xbaG\x18\x92\x02\x15测试收件人邮箱R\trecipient2\xb8\x05\n" +
+	"\trecipient\x18\x02 \x01(\tB\x1b\xbaG\x18\x92\x02\x15测试收件人邮箱R\trecipient*F\n" +
+	"\tSignStyle\x12\n" +
+	"\n" +
+	"\x06CUSTOM\x10\x00\x12\b\n" +
+	"\x04NONE\x10\x01\x12\f\n" +
+	"\bDINGTALK\x10\x02\x12\n" +
+	"\n" +
+	"\x06FEISHU\x10\x03\x12\t\n" +
+	"\x05WECOM\x10\x042\xb8\x05\n" +
 	"\x1aNotificationChannelService\x12e\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a@.notification_channel.service.v1.ListNotificationChannelResponse\"\x00\x12}\n" +
 	"\x03Get\x12>.notification_channel.service.v1.GetNotificationChannelRequest\x1a4.notification_channel.service.v1.NotificationChannel\"\x00\x12\x83\x01\n" +
@@ -741,49 +835,51 @@ func file_notification_channel_service_v1_notification_channel_proto_rawDescGZIP
 	return file_notification_channel_service_v1_notification_channel_proto_rawDescData
 }
 
-var file_notification_channel_service_v1_notification_channel_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_notification_channel_service_v1_notification_channel_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_notification_channel_service_v1_notification_channel_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_notification_channel_service_v1_notification_channel_proto_goTypes = []any{
-	(NotificationChannel_Type)(0),            // 0: notification_channel.service.v1.NotificationChannel.Type
-	(NotificationChannel_TlsMode)(0),         // 1: notification_channel.service.v1.NotificationChannel.TlsMode
-	(*NotificationChannel)(nil),              // 2: notification_channel.service.v1.NotificationChannel
-	(*ListNotificationChannelResponse)(nil),  // 3: notification_channel.service.v1.ListNotificationChannelResponse
-	(*GetNotificationChannelRequest)(nil),    // 4: notification_channel.service.v1.GetNotificationChannelRequest
-	(*CreateNotificationChannelRequest)(nil), // 5: notification_channel.service.v1.CreateNotificationChannelRequest
-	(*UpdateNotificationChannelRequest)(nil), // 6: notification_channel.service.v1.UpdateNotificationChannelRequest
-	(*DeleteNotificationChannelRequest)(nil), // 7: notification_channel.service.v1.DeleteNotificationChannelRequest
-	(*SendTestEmailRequest)(nil),             // 8: notification_channel.service.v1.SendTestEmailRequest
-	(*timestamppb.Timestamp)(nil),            // 9: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),            // 10: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),                 // 11: pagination.PagingRequest
-	(*emptypb.Empty)(nil),                    // 12: google.protobuf.Empty
+	(SignStyle)(0),                           // 0: notification_channel.service.v1.SignStyle
+	(NotificationChannel_Type)(0),            // 1: notification_channel.service.v1.NotificationChannel.Type
+	(NotificationChannel_TlsMode)(0),         // 2: notification_channel.service.v1.NotificationChannel.TlsMode
+	(*NotificationChannel)(nil),              // 3: notification_channel.service.v1.NotificationChannel
+	(*ListNotificationChannelResponse)(nil),  // 4: notification_channel.service.v1.ListNotificationChannelResponse
+	(*GetNotificationChannelRequest)(nil),    // 5: notification_channel.service.v1.GetNotificationChannelRequest
+	(*CreateNotificationChannelRequest)(nil), // 6: notification_channel.service.v1.CreateNotificationChannelRequest
+	(*UpdateNotificationChannelRequest)(nil), // 7: notification_channel.service.v1.UpdateNotificationChannelRequest
+	(*DeleteNotificationChannelRequest)(nil), // 8: notification_channel.service.v1.DeleteNotificationChannelRequest
+	(*SendTestEmailRequest)(nil),             // 9: notification_channel.service.v1.SendTestEmailRequest
+	(*timestamppb.Timestamp)(nil),            // 10: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),            // 11: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),                 // 12: pagination.PagingRequest
+	(*emptypb.Empty)(nil),                    // 13: google.protobuf.Empty
 }
 var file_notification_channel_service_v1_notification_channel_proto_depIdxs = []int32{
-	0,  // 0: notification_channel.service.v1.NotificationChannel.type:type_name -> notification_channel.service.v1.NotificationChannel.Type
-	1,  // 1: notification_channel.service.v1.NotificationChannel.smtp_tls:type_name -> notification_channel.service.v1.NotificationChannel.TlsMode
-	9,  // 2: notification_channel.service.v1.NotificationChannel.created_at:type_name -> google.protobuf.Timestamp
-	9,  // 3: notification_channel.service.v1.NotificationChannel.updated_at:type_name -> google.protobuf.Timestamp
-	2,  // 4: notification_channel.service.v1.ListNotificationChannelResponse.items:type_name -> notification_channel.service.v1.NotificationChannel
-	2,  // 5: notification_channel.service.v1.CreateNotificationChannelRequest.data:type_name -> notification_channel.service.v1.NotificationChannel
-	2,  // 6: notification_channel.service.v1.UpdateNotificationChannelRequest.data:type_name -> notification_channel.service.v1.NotificationChannel
-	10, // 7: notification_channel.service.v1.UpdateNotificationChannelRequest.update_mask:type_name -> google.protobuf.FieldMask
-	11, // 8: notification_channel.service.v1.NotificationChannelService.List:input_type -> pagination.PagingRequest
-	4,  // 9: notification_channel.service.v1.NotificationChannelService.Get:input_type -> notification_channel.service.v1.GetNotificationChannelRequest
-	5,  // 10: notification_channel.service.v1.NotificationChannelService.Create:input_type -> notification_channel.service.v1.CreateNotificationChannelRequest
-	6,  // 11: notification_channel.service.v1.NotificationChannelService.Update:input_type -> notification_channel.service.v1.UpdateNotificationChannelRequest
-	7,  // 12: notification_channel.service.v1.NotificationChannelService.Delete:input_type -> notification_channel.service.v1.DeleteNotificationChannelRequest
-	8,  // 13: notification_channel.service.v1.NotificationChannelService.SendTestEmail:input_type -> notification_channel.service.v1.SendTestEmailRequest
-	3,  // 14: notification_channel.service.v1.NotificationChannelService.List:output_type -> notification_channel.service.v1.ListNotificationChannelResponse
-	2,  // 15: notification_channel.service.v1.NotificationChannelService.Get:output_type -> notification_channel.service.v1.NotificationChannel
-	2,  // 16: notification_channel.service.v1.NotificationChannelService.Create:output_type -> notification_channel.service.v1.NotificationChannel
-	12, // 17: notification_channel.service.v1.NotificationChannelService.Update:output_type -> google.protobuf.Empty
-	12, // 18: notification_channel.service.v1.NotificationChannelService.Delete:output_type -> google.protobuf.Empty
-	12, // 19: notification_channel.service.v1.NotificationChannelService.SendTestEmail:output_type -> google.protobuf.Empty
-	14, // [14:20] is the sub-list for method output_type
-	8,  // [8:14] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	1,  // 0: notification_channel.service.v1.NotificationChannel.type:type_name -> notification_channel.service.v1.NotificationChannel.Type
+	2,  // 1: notification_channel.service.v1.NotificationChannel.smtp_tls:type_name -> notification_channel.service.v1.NotificationChannel.TlsMode
+	0,  // 2: notification_channel.service.v1.NotificationChannel.webhook_sign_style:type_name -> notification_channel.service.v1.SignStyle
+	10, // 3: notification_channel.service.v1.NotificationChannel.created_at:type_name -> google.protobuf.Timestamp
+	10, // 4: notification_channel.service.v1.NotificationChannel.updated_at:type_name -> google.protobuf.Timestamp
+	3,  // 5: notification_channel.service.v1.ListNotificationChannelResponse.items:type_name -> notification_channel.service.v1.NotificationChannel
+	3,  // 6: notification_channel.service.v1.CreateNotificationChannelRequest.data:type_name -> notification_channel.service.v1.NotificationChannel
+	3,  // 7: notification_channel.service.v1.UpdateNotificationChannelRequest.data:type_name -> notification_channel.service.v1.NotificationChannel
+	11, // 8: notification_channel.service.v1.UpdateNotificationChannelRequest.update_mask:type_name -> google.protobuf.FieldMask
+	12, // 9: notification_channel.service.v1.NotificationChannelService.List:input_type -> pagination.PagingRequest
+	5,  // 10: notification_channel.service.v1.NotificationChannelService.Get:input_type -> notification_channel.service.v1.GetNotificationChannelRequest
+	6,  // 11: notification_channel.service.v1.NotificationChannelService.Create:input_type -> notification_channel.service.v1.CreateNotificationChannelRequest
+	7,  // 12: notification_channel.service.v1.NotificationChannelService.Update:input_type -> notification_channel.service.v1.UpdateNotificationChannelRequest
+	8,  // 13: notification_channel.service.v1.NotificationChannelService.Delete:input_type -> notification_channel.service.v1.DeleteNotificationChannelRequest
+	9,  // 14: notification_channel.service.v1.NotificationChannelService.SendTestEmail:input_type -> notification_channel.service.v1.SendTestEmailRequest
+	4,  // 15: notification_channel.service.v1.NotificationChannelService.List:output_type -> notification_channel.service.v1.ListNotificationChannelResponse
+	3,  // 16: notification_channel.service.v1.NotificationChannelService.Get:output_type -> notification_channel.service.v1.NotificationChannel
+	3,  // 17: notification_channel.service.v1.NotificationChannelService.Create:output_type -> notification_channel.service.v1.NotificationChannel
+	13, // 18: notification_channel.service.v1.NotificationChannelService.Update:output_type -> google.protobuf.Empty
+	13, // 19: notification_channel.service.v1.NotificationChannelService.Delete:output_type -> google.protobuf.Empty
+	13, // 20: notification_channel.service.v1.NotificationChannelService.SendTestEmail:output_type -> google.protobuf.Empty
+	15, // [15:21] is the sub-list for method output_type
+	9,  // [9:15] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_notification_channel_service_v1_notification_channel_proto_init() }
@@ -799,7 +895,7 @@ func file_notification_channel_service_v1_notification_channel_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_notification_channel_service_v1_notification_channel_proto_rawDesc), len(file_notification_channel_service_v1_notification_channel_proto_rawDesc)),
-			NumEnums:      2,
+			NumEnums:      3,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   1,

@@ -129,6 +129,11 @@ func WebhookSecret(v string) predicate.NotificationChannel {
 	return predicate.NotificationChannel(sql.FieldEQ(FieldWebhookSecret, v))
 }
 
+// WebhookPayloadTemplate applies equality check predicate on the "webhook_payload_template" field. It's identical to WebhookPayloadTemplateEQ.
+func WebhookPayloadTemplate(v string) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldEQ(FieldWebhookPayloadTemplate, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.NotificationChannel {
 	return predicate.NotificationChannel(sql.FieldEQ(FieldCreatedAt, v))
@@ -1137,6 +1142,111 @@ func WebhookSecretEqualFold(v string) predicate.NotificationChannel {
 // WebhookSecretContainsFold applies the ContainsFold predicate on the "webhook_secret" field.
 func WebhookSecretContainsFold(v string) predicate.NotificationChannel {
 	return predicate.NotificationChannel(sql.FieldContainsFold(FieldWebhookSecret, v))
+}
+
+// WebhookSignStyleEQ applies the EQ predicate on the "webhook_sign_style" field.
+func WebhookSignStyleEQ(v WebhookSignStyle) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldEQ(FieldWebhookSignStyle, v))
+}
+
+// WebhookSignStyleNEQ applies the NEQ predicate on the "webhook_sign_style" field.
+func WebhookSignStyleNEQ(v WebhookSignStyle) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldNEQ(FieldWebhookSignStyle, v))
+}
+
+// WebhookSignStyleIn applies the In predicate on the "webhook_sign_style" field.
+func WebhookSignStyleIn(vs ...WebhookSignStyle) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldIn(FieldWebhookSignStyle, vs...))
+}
+
+// WebhookSignStyleNotIn applies the NotIn predicate on the "webhook_sign_style" field.
+func WebhookSignStyleNotIn(vs ...WebhookSignStyle) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldNotIn(FieldWebhookSignStyle, vs...))
+}
+
+// WebhookSignStyleIsNil applies the IsNil predicate on the "webhook_sign_style" field.
+func WebhookSignStyleIsNil() predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldIsNull(FieldWebhookSignStyle))
+}
+
+// WebhookSignStyleNotNil applies the NotNil predicate on the "webhook_sign_style" field.
+func WebhookSignStyleNotNil() predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldNotNull(FieldWebhookSignStyle))
+}
+
+// WebhookPayloadTemplateEQ applies the EQ predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateEQ(v string) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldEQ(FieldWebhookPayloadTemplate, v))
+}
+
+// WebhookPayloadTemplateNEQ applies the NEQ predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateNEQ(v string) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldNEQ(FieldWebhookPayloadTemplate, v))
+}
+
+// WebhookPayloadTemplateIn applies the In predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateIn(vs ...string) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldIn(FieldWebhookPayloadTemplate, vs...))
+}
+
+// WebhookPayloadTemplateNotIn applies the NotIn predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateNotIn(vs ...string) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldNotIn(FieldWebhookPayloadTemplate, vs...))
+}
+
+// WebhookPayloadTemplateGT applies the GT predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateGT(v string) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldGT(FieldWebhookPayloadTemplate, v))
+}
+
+// WebhookPayloadTemplateGTE applies the GTE predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateGTE(v string) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldGTE(FieldWebhookPayloadTemplate, v))
+}
+
+// WebhookPayloadTemplateLT applies the LT predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateLT(v string) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldLT(FieldWebhookPayloadTemplate, v))
+}
+
+// WebhookPayloadTemplateLTE applies the LTE predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateLTE(v string) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldLTE(FieldWebhookPayloadTemplate, v))
+}
+
+// WebhookPayloadTemplateContains applies the Contains predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateContains(v string) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldContains(FieldWebhookPayloadTemplate, v))
+}
+
+// WebhookPayloadTemplateHasPrefix applies the HasPrefix predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateHasPrefix(v string) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldHasPrefix(FieldWebhookPayloadTemplate, v))
+}
+
+// WebhookPayloadTemplateHasSuffix applies the HasSuffix predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateHasSuffix(v string) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldHasSuffix(FieldWebhookPayloadTemplate, v))
+}
+
+// WebhookPayloadTemplateIsNil applies the IsNil predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateIsNil() predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldIsNull(FieldWebhookPayloadTemplate))
+}
+
+// WebhookPayloadTemplateNotNil applies the NotNil predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateNotNil() predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldNotNull(FieldWebhookPayloadTemplate))
+}
+
+// WebhookPayloadTemplateEqualFold applies the EqualFold predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateEqualFold(v string) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldEqualFold(FieldWebhookPayloadTemplate, v))
+}
+
+// WebhookPayloadTemplateContainsFold applies the ContainsFold predicate on the "webhook_payload_template" field.
+func WebhookPayloadTemplateContainsFold(v string) predicate.NotificationChannel {
+	return predicate.NotificationChannel(sql.FieldContainsFold(FieldWebhookPayloadTemplate, v))
 }
 
 // And groups predicates with the AND operator between them.

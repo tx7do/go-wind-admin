@@ -85,6 +85,24 @@ func (NotificationChannel) Fields() []ent.Field {
 			Sensitive().
 			Optional().
 			Nillable(),
+		// 出站风格与载荷模板：同属"这一条 webhook 到底发成什么形状"，所以跟着渠道行走，
+		// 不进规则表（规则表答的是"这个事件走哪个渠道"）。见 docs §4 N。
+		field.Enum("webhook_sign_style").
+			Comment("Webhook 出站风格（签名位置/算法与应答判据，仅 WEBHOOK 渠道）").
+			NamedValues(
+				"Custom", "CUSTOM",
+				"None", "NONE",
+				"Dingtalk", "DINGTALK",
+				"Feishu", "FEISHU",
+				"Wecom", "WECOM",
+			).
+			Default("CUSTOM").
+			Optional().
+			Nillable(),
+		field.String("webhook_payload_template").
+			Comment("Webhook 载荷模板（{{占位符}} 渲染；留空则用该风格的内置默认 JSON）").
+			Optional().
+			Nillable(),
 	}
 }
 

@@ -101,6 +101,14 @@ func (m *NotificationChannel) validate(all bool) error {
 		// no validation rules for HasWebhookSecret
 	}
 
+	if m.WebhookSignStyle != nil {
+		// no validation rules for WebhookSignStyle
+	}
+
+	if m.WebhookPayloadTemplate != nil {
+		// no validation rules for WebhookPayloadTemplate
+	}
+
 	if m.Enabled != nil {
 		// no validation rules for Enabled
 	}

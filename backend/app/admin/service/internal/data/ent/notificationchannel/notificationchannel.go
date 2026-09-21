@@ -49,6 +49,10 @@ const (
 	FieldWebhookURL = "webhook_url"
 	// FieldWebhookSecret holds the string denoting the webhook_secret field in the database.
 	FieldWebhookSecret = "webhook_secret"
+	// FieldWebhookSignStyle holds the string denoting the webhook_sign_style field in the database.
+	FieldWebhookSignStyle = "webhook_sign_style"
+	// FieldWebhookPayloadTemplate holds the string denoting the webhook_payload_template field in the database.
+	FieldWebhookPayloadTemplate = "webhook_payload_template"
 	// Table holds the table name of the notificationchannel in the database.
 	Table = "sys_notification_channels"
 )
@@ -74,6 +78,8 @@ var Columns = []string{
 	FieldSMTPTLS,
 	FieldWebhookURL,
 	FieldWebhookSecret,
+	FieldWebhookSignStyle,
+	FieldWebhookPayloadTemplate,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -169,6 +175,35 @@ func SMTPTLSValidator(st SMTPTLS) error {
 		return nil
 	default:
 		return fmt.Errorf("notificationchannel: invalid enum value for smtp_tls field: %q", st)
+	}
+}
+
+// WebhookSignStyle defines the type for the "webhook_sign_style" enum field.
+type WebhookSignStyle string
+
+// WebhookSignStyleCustom is the default value of the WebhookSignStyle enum.
+const DefaultWebhookSignStyle = WebhookSignStyleCustom
+
+// WebhookSignStyle values.
+const (
+	WebhookSignStyleCustom   WebhookSignStyle = "CUSTOM"
+	WebhookSignStyleNone     WebhookSignStyle = "NONE"
+	WebhookSignStyleDingtalk WebhookSignStyle = "DINGTALK"
+	WebhookSignStyleFeishu   WebhookSignStyle = "FEISHU"
+	WebhookSignStyleWecom    WebhookSignStyle = "WECOM"
+)
+
+func (wss WebhookSignStyle) String() string {
+	return string(wss)
+}
+
+// WebhookSignStyleValidator is a validator for the "webhook_sign_style" field enum values. It is called by the builders before save.
+func WebhookSignStyleValidator(wss WebhookSignStyle) error {
+	switch wss {
+	case WebhookSignStyleCustom, WebhookSignStyleNone, WebhookSignStyleDingtalk, WebhookSignStyleFeishu, WebhookSignStyleWecom:
+		return nil
+	default:
+		return fmt.Errorf("notificationchannel: invalid enum value for webhook_sign_style field: %q", wss)
 	}
 }
 
@@ -268,4 +303,14 @@ func ByWebhookURL(opts ...sql.OrderTermOption) OrderOption {
 // ByWebhookSecret orders the results by the webhook_secret field.
 func ByWebhookSecret(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldWebhookSecret, opts...).ToFunc()
+}
+
+// ByWebhookSignStyle orders the results by the webhook_sign_style field.
+func ByWebhookSignStyle(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWebhookSignStyle, opts...).ToFunc()
+}
+
+// ByWebhookPayloadTemplate orders the results by the webhook_payload_template field.
+func ByWebhookPayloadTemplate(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldWebhookPayloadTemplate, opts...).ToFunc()
 }

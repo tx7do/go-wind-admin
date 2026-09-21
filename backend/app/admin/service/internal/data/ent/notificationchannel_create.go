@@ -266,6 +266,34 @@ func (_c *NotificationChannelCreate) SetNillableWebhookSecret(v *string) *Notifi
 	return _c
 }
 
+// SetWebhookSignStyle sets the "webhook_sign_style" field.
+func (_c *NotificationChannelCreate) SetWebhookSignStyle(v notificationchannel.WebhookSignStyle) *NotificationChannelCreate {
+	_c.mutation.SetWebhookSignStyle(v)
+	return _c
+}
+
+// SetNillableWebhookSignStyle sets the "webhook_sign_style" field if the given value is not nil.
+func (_c *NotificationChannelCreate) SetNillableWebhookSignStyle(v *notificationchannel.WebhookSignStyle) *NotificationChannelCreate {
+	if v != nil {
+		_c.SetWebhookSignStyle(*v)
+	}
+	return _c
+}
+
+// SetWebhookPayloadTemplate sets the "webhook_payload_template" field.
+func (_c *NotificationChannelCreate) SetWebhookPayloadTemplate(v string) *NotificationChannelCreate {
+	_c.mutation.SetWebhookPayloadTemplate(v)
+	return _c
+}
+
+// SetNillableWebhookPayloadTemplate sets the "webhook_payload_template" field if the given value is not nil.
+func (_c *NotificationChannelCreate) SetNillableWebhookPayloadTemplate(v *string) *NotificationChannelCreate {
+	if v != nil {
+		_c.SetWebhookPayloadTemplate(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *NotificationChannelCreate) SetID(v uint32) *NotificationChannelCreate {
 	_c.mutation.SetID(v)
@@ -319,6 +347,10 @@ func (_c *NotificationChannelCreate) defaults() {
 		v := notificationchannel.DefaultSMTPTLS
 		_c.mutation.SetSMTPTLS(v)
 	}
+	if _, ok := _c.mutation.WebhookSignStyle(); !ok {
+		v := notificationchannel.DefaultWebhookSignStyle
+		_c.mutation.SetWebhookSignStyle(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -350,6 +382,11 @@ func (_c *NotificationChannelCreate) check() error {
 	if v, ok := _c.mutation.SMTPTLS(); ok {
 		if err := notificationchannel.SMTPTLSValidator(v); err != nil {
 			return &ValidationError{Name: "smtp_tls", err: fmt.Errorf(`ent: validator failed for field "NotificationChannel.smtp_tls": %w`, err)}
+		}
+	}
+	if v, ok := _c.mutation.WebhookSignStyle(); ok {
+		if err := notificationchannel.WebhookSignStyleValidator(v); err != nil {
+			return &ValidationError{Name: "webhook_sign_style", err: fmt.Errorf(`ent: validator failed for field "NotificationChannel.webhook_sign_style": %w`, err)}
 		}
 	}
 	if v, ok := _c.mutation.ID(); ok {
@@ -461,6 +498,14 @@ func (_c *NotificationChannelCreate) createSpec() (*NotificationChannel, *sqlgra
 	if value, ok := _c.mutation.WebhookSecret(); ok {
 		_spec.SetField(notificationchannel.FieldWebhookSecret, field.TypeString, value)
 		_node.WebhookSecret = &value
+	}
+	if value, ok := _c.mutation.WebhookSignStyle(); ok {
+		_spec.SetField(notificationchannel.FieldWebhookSignStyle, field.TypeEnum, value)
+		_node.WebhookSignStyle = &value
+	}
+	if value, ok := _c.mutation.WebhookPayloadTemplate(); ok {
+		_spec.SetField(notificationchannel.FieldWebhookPayloadTemplate, field.TypeString, value)
+		_node.WebhookPayloadTemplate = &value
 	}
 	return _node, _spec
 }
@@ -823,6 +868,42 @@ func (u *NotificationChannelUpsert) UpdateWebhookSecret() *NotificationChannelUp
 // ClearWebhookSecret clears the value of the "webhook_secret" field.
 func (u *NotificationChannelUpsert) ClearWebhookSecret() *NotificationChannelUpsert {
 	u.SetNull(notificationchannel.FieldWebhookSecret)
+	return u
+}
+
+// SetWebhookSignStyle sets the "webhook_sign_style" field.
+func (u *NotificationChannelUpsert) SetWebhookSignStyle(v notificationchannel.WebhookSignStyle) *NotificationChannelUpsert {
+	u.Set(notificationchannel.FieldWebhookSignStyle, v)
+	return u
+}
+
+// UpdateWebhookSignStyle sets the "webhook_sign_style" field to the value that was provided on create.
+func (u *NotificationChannelUpsert) UpdateWebhookSignStyle() *NotificationChannelUpsert {
+	u.SetExcluded(notificationchannel.FieldWebhookSignStyle)
+	return u
+}
+
+// ClearWebhookSignStyle clears the value of the "webhook_sign_style" field.
+func (u *NotificationChannelUpsert) ClearWebhookSignStyle() *NotificationChannelUpsert {
+	u.SetNull(notificationchannel.FieldWebhookSignStyle)
+	return u
+}
+
+// SetWebhookPayloadTemplate sets the "webhook_payload_template" field.
+func (u *NotificationChannelUpsert) SetWebhookPayloadTemplate(v string) *NotificationChannelUpsert {
+	u.Set(notificationchannel.FieldWebhookPayloadTemplate, v)
+	return u
+}
+
+// UpdateWebhookPayloadTemplate sets the "webhook_payload_template" field to the value that was provided on create.
+func (u *NotificationChannelUpsert) UpdateWebhookPayloadTemplate() *NotificationChannelUpsert {
+	u.SetExcluded(notificationchannel.FieldWebhookPayloadTemplate)
+	return u
+}
+
+// ClearWebhookPayloadTemplate clears the value of the "webhook_payload_template" field.
+func (u *NotificationChannelUpsert) ClearWebhookPayloadTemplate() *NotificationChannelUpsert {
+	u.SetNull(notificationchannel.FieldWebhookPayloadTemplate)
 	return u
 }
 
@@ -1238,6 +1319,48 @@ func (u *NotificationChannelUpsertOne) UpdateWebhookSecret() *NotificationChanne
 func (u *NotificationChannelUpsertOne) ClearWebhookSecret() *NotificationChannelUpsertOne {
 	return u.Update(func(s *NotificationChannelUpsert) {
 		s.ClearWebhookSecret()
+	})
+}
+
+// SetWebhookSignStyle sets the "webhook_sign_style" field.
+func (u *NotificationChannelUpsertOne) SetWebhookSignStyle(v notificationchannel.WebhookSignStyle) *NotificationChannelUpsertOne {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.SetWebhookSignStyle(v)
+	})
+}
+
+// UpdateWebhookSignStyle sets the "webhook_sign_style" field to the value that was provided on create.
+func (u *NotificationChannelUpsertOne) UpdateWebhookSignStyle() *NotificationChannelUpsertOne {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.UpdateWebhookSignStyle()
+	})
+}
+
+// ClearWebhookSignStyle clears the value of the "webhook_sign_style" field.
+func (u *NotificationChannelUpsertOne) ClearWebhookSignStyle() *NotificationChannelUpsertOne {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.ClearWebhookSignStyle()
+	})
+}
+
+// SetWebhookPayloadTemplate sets the "webhook_payload_template" field.
+func (u *NotificationChannelUpsertOne) SetWebhookPayloadTemplate(v string) *NotificationChannelUpsertOne {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.SetWebhookPayloadTemplate(v)
+	})
+}
+
+// UpdateWebhookPayloadTemplate sets the "webhook_payload_template" field to the value that was provided on create.
+func (u *NotificationChannelUpsertOne) UpdateWebhookPayloadTemplate() *NotificationChannelUpsertOne {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.UpdateWebhookPayloadTemplate()
+	})
+}
+
+// ClearWebhookPayloadTemplate clears the value of the "webhook_payload_template" field.
+func (u *NotificationChannelUpsertOne) ClearWebhookPayloadTemplate() *NotificationChannelUpsertOne {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.ClearWebhookPayloadTemplate()
 	})
 }
 
@@ -1819,6 +1942,48 @@ func (u *NotificationChannelUpsertBulk) UpdateWebhookSecret() *NotificationChann
 func (u *NotificationChannelUpsertBulk) ClearWebhookSecret() *NotificationChannelUpsertBulk {
 	return u.Update(func(s *NotificationChannelUpsert) {
 		s.ClearWebhookSecret()
+	})
+}
+
+// SetWebhookSignStyle sets the "webhook_sign_style" field.
+func (u *NotificationChannelUpsertBulk) SetWebhookSignStyle(v notificationchannel.WebhookSignStyle) *NotificationChannelUpsertBulk {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.SetWebhookSignStyle(v)
+	})
+}
+
+// UpdateWebhookSignStyle sets the "webhook_sign_style" field to the value that was provided on create.
+func (u *NotificationChannelUpsertBulk) UpdateWebhookSignStyle() *NotificationChannelUpsertBulk {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.UpdateWebhookSignStyle()
+	})
+}
+
+// ClearWebhookSignStyle clears the value of the "webhook_sign_style" field.
+func (u *NotificationChannelUpsertBulk) ClearWebhookSignStyle() *NotificationChannelUpsertBulk {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.ClearWebhookSignStyle()
+	})
+}
+
+// SetWebhookPayloadTemplate sets the "webhook_payload_template" field.
+func (u *NotificationChannelUpsertBulk) SetWebhookPayloadTemplate(v string) *NotificationChannelUpsertBulk {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.SetWebhookPayloadTemplate(v)
+	})
+}
+
+// UpdateWebhookPayloadTemplate sets the "webhook_payload_template" field to the value that was provided on create.
+func (u *NotificationChannelUpsertBulk) UpdateWebhookPayloadTemplate() *NotificationChannelUpsertBulk {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.UpdateWebhookPayloadTemplate()
+	})
+}
+
+// ClearWebhookPayloadTemplate clears the value of the "webhook_payload_template" field.
+func (u *NotificationChannelUpsertBulk) ClearWebhookPayloadTemplate() *NotificationChannelUpsertBulk {
+	return u.Update(func(s *NotificationChannelUpsert) {
+		s.ClearWebhookPayloadTemplate()
 	})
 }
 

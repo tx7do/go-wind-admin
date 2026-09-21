@@ -620,24 +620,26 @@ var schemaGraph = func() *sqlgraph.Schema {
 		},
 		Type: "NotificationChannel",
 		Fields: map[string]*sqlgraph.FieldSpec{
-			notificationchannel.FieldCreatedAt:     {Type: field.TypeTime, Column: notificationchannel.FieldCreatedAt},
-			notificationchannel.FieldUpdatedAt:     {Type: field.TypeTime, Column: notificationchannel.FieldUpdatedAt},
-			notificationchannel.FieldDeletedAt:     {Type: field.TypeTime, Column: notificationchannel.FieldDeletedAt},
-			notificationchannel.FieldCreatedBy:     {Type: field.TypeUint32, Column: notificationchannel.FieldCreatedBy},
-			notificationchannel.FieldUpdatedBy:     {Type: field.TypeUint32, Column: notificationchannel.FieldUpdatedBy},
-			notificationchannel.FieldDeletedBy:     {Type: field.TypeUint32, Column: notificationchannel.FieldDeletedBy},
-			notificationchannel.FieldRemark:        {Type: field.TypeString, Column: notificationchannel.FieldRemark},
-			notificationchannel.FieldStatus:        {Type: field.TypeEnum, Column: notificationchannel.FieldStatus},
-			notificationchannel.FieldName:          {Type: field.TypeString, Column: notificationchannel.FieldName},
-			notificationchannel.FieldType:          {Type: field.TypeEnum, Column: notificationchannel.FieldType},
-			notificationchannel.FieldSMTPHost:      {Type: field.TypeString, Column: notificationchannel.FieldSMTPHost},
-			notificationchannel.FieldSMTPPort:      {Type: field.TypeUint32, Column: notificationchannel.FieldSMTPPort},
-			notificationchannel.FieldSMTPUsername:  {Type: field.TypeString, Column: notificationchannel.FieldSMTPUsername},
-			notificationchannel.FieldSMTPPassword:  {Type: field.TypeString, Column: notificationchannel.FieldSMTPPassword},
-			notificationchannel.FieldSMTPFrom:      {Type: field.TypeString, Column: notificationchannel.FieldSMTPFrom},
-			notificationchannel.FieldSMTPTLS:       {Type: field.TypeEnum, Column: notificationchannel.FieldSMTPTLS},
-			notificationchannel.FieldWebhookURL:    {Type: field.TypeString, Column: notificationchannel.FieldWebhookURL},
-			notificationchannel.FieldWebhookSecret: {Type: field.TypeString, Column: notificationchannel.FieldWebhookSecret},
+			notificationchannel.FieldCreatedAt:              {Type: field.TypeTime, Column: notificationchannel.FieldCreatedAt},
+			notificationchannel.FieldUpdatedAt:              {Type: field.TypeTime, Column: notificationchannel.FieldUpdatedAt},
+			notificationchannel.FieldDeletedAt:              {Type: field.TypeTime, Column: notificationchannel.FieldDeletedAt},
+			notificationchannel.FieldCreatedBy:              {Type: field.TypeUint32, Column: notificationchannel.FieldCreatedBy},
+			notificationchannel.FieldUpdatedBy:              {Type: field.TypeUint32, Column: notificationchannel.FieldUpdatedBy},
+			notificationchannel.FieldDeletedBy:              {Type: field.TypeUint32, Column: notificationchannel.FieldDeletedBy},
+			notificationchannel.FieldRemark:                 {Type: field.TypeString, Column: notificationchannel.FieldRemark},
+			notificationchannel.FieldStatus:                 {Type: field.TypeEnum, Column: notificationchannel.FieldStatus},
+			notificationchannel.FieldName:                   {Type: field.TypeString, Column: notificationchannel.FieldName},
+			notificationchannel.FieldType:                   {Type: field.TypeEnum, Column: notificationchannel.FieldType},
+			notificationchannel.FieldSMTPHost:               {Type: field.TypeString, Column: notificationchannel.FieldSMTPHost},
+			notificationchannel.FieldSMTPPort:               {Type: field.TypeUint32, Column: notificationchannel.FieldSMTPPort},
+			notificationchannel.FieldSMTPUsername:           {Type: field.TypeString, Column: notificationchannel.FieldSMTPUsername},
+			notificationchannel.FieldSMTPPassword:           {Type: field.TypeString, Column: notificationchannel.FieldSMTPPassword},
+			notificationchannel.FieldSMTPFrom:               {Type: field.TypeString, Column: notificationchannel.FieldSMTPFrom},
+			notificationchannel.FieldSMTPTLS:                {Type: field.TypeEnum, Column: notificationchannel.FieldSMTPTLS},
+			notificationchannel.FieldWebhookURL:             {Type: field.TypeString, Column: notificationchannel.FieldWebhookURL},
+			notificationchannel.FieldWebhookSecret:          {Type: field.TypeString, Column: notificationchannel.FieldWebhookSecret},
+			notificationchannel.FieldWebhookSignStyle:       {Type: field.TypeEnum, Column: notificationchannel.FieldWebhookSignStyle},
+			notificationchannel.FieldWebhookPayloadTemplate: {Type: field.TypeString, Column: notificationchannel.FieldWebhookPayloadTemplate},
 		},
 	}
 	graph.Nodes[20] = &sqlgraph.Node{
@@ -4152,6 +4154,16 @@ func (f *NotificationChannelFilter) WhereWebhookURL(p entql.StringP) {
 // WhereWebhookSecret applies the entql string predicate on the webhook_secret field.
 func (f *NotificationChannelFilter) WhereWebhookSecret(p entql.StringP) {
 	f.Where(p.Field(notificationchannel.FieldWebhookSecret))
+}
+
+// WhereWebhookSignStyle applies the entql string predicate on the webhook_sign_style field.
+func (f *NotificationChannelFilter) WhereWebhookSignStyle(p entql.StringP) {
+	f.Where(p.Field(notificationchannel.FieldWebhookSignStyle))
+}
+
+// WhereWebhookPayloadTemplate applies the entql string predicate on the webhook_payload_template field.
+func (f *NotificationChannelFilter) WhereWebhookPayloadTemplate(p entql.StringP) {
+	f.Where(p.Field(notificationchannel.FieldWebhookPayloadTemplate))
 }
 
 // addPredicate implements the predicateAdder interface.

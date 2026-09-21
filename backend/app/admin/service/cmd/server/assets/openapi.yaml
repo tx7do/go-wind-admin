@@ -8898,6 +8898,19 @@ components:
                 hasWebhookSecret:
                     type: boolean
                     description: 是否已配置 Webhook 签名密钥
+                webhookSignStyle:
+                    enum:
+                        - CUSTOM
+                        - NONE
+                        - DINGTALK
+                        - FEISHU
+                        - WECOM
+                    type: string
+                    description: Webhook 出站风格（仅 WEBHOOK 渠道）
+                    format: enum
+                webhookPayloadTemplate:
+                    type: string
+                    description: Webhook 载荷模板，留空用该风格的内置默认 JSON
                 enabled:
                     type: boolean
                     description: 是否启用
