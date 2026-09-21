@@ -669,7 +669,8 @@ DB 12 的 asynq 键逐个 `DEL`；mailpit 容器 `gwa-mailpit` 为本轮新起�
 `SendReceipt` 本来就在回传选中项（成功路径靠它落 `channel_id`），缺的只是"失败时也把已经确定的事实带回来"这一步，
 它既不引入第二个真相源、也不额外多一次写（同一条 `MarkResult`）。欠账 1 因此按第二个方案修，见 §4 欠账 1。
 
-**三端页面**（react 先行 → ele → vben，路由一律 `/system/notification-rules`、菜单 id 73、authority `sys:platform_admin`）：
+**三端页面**（react 先行 → ele → vben，路由一律 `/system/notification-rules`、菜单 id 73、authority `sys:platform_admin`；
+M 块之后这一棵挪到 `/notification/rules`，页面目录同步搬，见 §4 M）：
 react `pages/app/system/notification-rule/` + `api/hooks/notification-rule.ts` + `locales/{zh-CN,en-US}/_modules/notification-rule.json`；
 ele `pages/app/system/notification_rule/{index,notification-rule-drawer}.vue` + `api/composables/notification-rule.ts` + 两份 pages 文案；
 vben `views/app/system/notification_rule/index.vue` + `api/composables/notification-rule.ts` + `langs/{zh-CN,en-US}/{page,menu,enum}.json`。
@@ -898,6 +899,106 @@ vue-vben 那份更绕：`views/app/tenant/tenant/tenant-drawer.vue:340` 是整�
 
 **门禁**：本块无代码改动，因此不产生新的回归项；`go build ./...` 与 `go test -count=1 ./app/...` 的全绿记在欠账 1。
 
+### M（通知域提为一级菜单 + 启动期对齐 identity 序列，已完成 2026-09-21）
+
+**决策**：渠道 / 规则 / 台账三页从「系统管理」下搬出来，自成一棵一级菜单 `/notification`，**不**挂到「站内消息」下面。
+理由两条：站内信在本域里只是一个 `INTERNAL` 渠道（§3.1 的注册表里它与 EMAIL/WEBHOOK 平级），把"域的配置与台账"挂在
+"域的一个叶子渠道"之下，等于让 CATALOG 的层级去反映实现细节而不是职责边界；而且两棵树的读者不同——
+`/internal-message/*` 面向租户收件人，`/notification/*` 面向平台超管，挤在同一棵树下会让授权口径（`sys:platform_admin`
+vs 收件人权限码）在菜单层说不清。
+
+**种子**（`pkg/constants/default_data.go`）：根 **74** `/notification`（CATALOG / `BasicLayout` / redirect `/notification/channels`
+/ order 2006 / `lucide:bell-ring` / authority `sys:platform_admin`），子 **68** `channels`、**73** `rules`、**72** `deliveries`，
+组件随之改为 `app/notification/{channel,rule,delivery}/index.vue`。同一份清单里平台超管权限的 `MenuIds` 必须同步出现这四条
+（:98 的注释就是这条口径），否则干净安装会把菜单播出来却无人被授权。
+
+**`module` 留 NULL，并纠正一条本文此前写反的前提**：`ComponentToModule` 没有 `app/notification/` 前缀 ⇒
+`menu_repo.go:589 moduleForComponent` 回 nil ⇒ `sys_menus.module` 为 NULL。这是刻意的，但刻意的是"绕过套餐"，不是"被套餐过滤掉"：
+`admin_portal_service.go:232-237` 是 `if m.Module == nil { 保留 }`，**NULL 一律放行**。
+（`module_mapping.go:8-16` 那段"UNSPECIFIED 会被 fail-closed 拒绝"讲的是 Api 表的 `business_module`，与菜单的 `module` 是相反的两套语义；
+欠账 2 那段"白名单实际过滤面 0/35"是当时的现网快照，本轮之后是 47 行 / 根 10 条（带 module 0 条）/ 叶子带 module 31 条。）
+兜底不在这一层而在两处：菜单侧三端路由守卫读 `sys:platform_admin`（来源 `GET /admin/v1/perm-codes`），
+RPC 侧 `service/notification_platform_guard.go` 的 requirePlatformAdmin。
+这条口径现在由测试钉住而不是只写在注释里：`pkg/constants/component_module_test.go` 新增 `planWhitelistExemptMenuComponents`
+豁免清单——清单外的非容器菜单一旦归不进模块即测试失败，清单内的每一条还额外断言必须带 `sys:platform_admin`。
+为什么不加一个 `Module_NOTIFICATION`：套餐里没有这一档，加枚举等于要求 `sys_plan_modules` 逐条回填，而这三页压根不按套餐卖。
+
+**三端**：按"react 先行、其余移植"走。react `src/router/modules/notification.tsx` + `src/pages/app/notification/{channel,rule,delivery}/index.tsx`，
+ele `router/routes/modules/app/notification.ts` + `src/pages/app/notification/`，vben `router/routes/modules/app/notification.ts` +
+`views/app/notification/`；URL 三端同形 `/notification/{channels,rules,deliveries}`。词条按各端惯例各改各的（实测 diff）：
+ele 与 vben 把三条侧边栏标题从 `system.notificationChannels/…` 挪进新建的 `notification.{moduleName,channels,rules,deliveries}` 命名空间
+（zh/en 各一份），react 的 `_core/routes.json` 是**扁平 key**，因此只新增一行 `"notification": "通知管理"`、
+`notification-channels/-rules/-deliveries` 三行原地不动；页面正文的 `notification-*` 命名空间三端均未改名。
+vben 那份的耦合注释与 `api/composables/notification-delivery.ts` 里的路径引用一并跟着搬。
+
+**已部署实例的落地程序（本机 `gwa` 上完整走过一遍）**：
+1. 「菜单同步」页点同步 → `POST /admin/v1/menus/sync` mode=MERGE。MERGE 按**全路径**匹配（`joinMenuFullPath`），
+   命中就地更新保 id/状态、`module` 按组件重算（归不进就 `ClearModule`），未命中新增（`createMenuReturn`，`dto.Id=nil` 由序列给号），
+   库里多出来的行**不删**。整趟在一个事务里（`menu_repo.go:382` 起 `Tx` + defer `Rollback`/`Commit`），
+   所以那次撞主键的同步是**整体回滚**的——500 之后库里没有半棵树，重试即可。
+2. 陈旧行必须手工删：老的 68/72/73（挂在系统管理下、组件 `app/system/notification_*`）不在这次 MERGE 的输入里，
+   留着就是侧边栏多三条死链。本轮在 `gwa` 上删掉它们。
+3. 权限管理里把新菜单勾给平台超管那条 permission（`menuIds` 44 → 48）。部署实例的权限种子不会重跑，菜单同步也不碰
+   `sys_permission_menus`——少这一步，`/admin/v1/routes` 只有根、没有三页。
+4. 菜单删除是**硬删**，不清 `sys_permission_menus`：本轮删 68/72/73 之后留下 3 条孤儿授权（`permission_menu` 仍指向已不存在的菜单行）。
+5. MERGE 与播种**必然不同形**（不是 bug，但排障时会误判）：MERGE 写进去的 title 是当前语言**翻译后的字符串**（"通知管理"）
+   而不是 i18n key（`menu.notification.moduleName`），`name` 取前端路由名（`notification-channels`）而不是种子的
+   `NotificationChannelManagement`，id 由序列给（本轮 `gwa` 上是 75/76/77/78）而不是种子的 74/68/72/73。
+   同一份菜单在"干净安装"与"同步出来的库"上从此两个形状。
+
+**运行期实测发现并修掉的缺陷：显式 ID 播种把 identity 序列留在 1**
+
+现象（2026-09-21 现场复现，两条路径同一个因）：`POST /admin/v1/menus/sync`（MERGE 的新增分支）与 `POST /admin/v1/menus`（UI「新建菜单」）
+→ **HTTP 500** `insert menu failed: ent: constraint failed: pq: duplicate key value violates unique constraint "sys_menus_pkey" (23505)`；
+UI「新建 API」同形。全新安装与已部署实例一样中招——`default_data.go` 用 id 1..74 显式插入、`syncWithOpenAPI` 用 id 1..N 重建 `sys_apis`，
+而 **PG 的 identity 序列不因显式 ID 插入而前进**，于是两条序列停在 1，任何不带 id 的插入拿到的第一个号必撞已存在的行。
+扫全库 51 条 `*_id_seq`（`%TEMP%/gwa_menu_probe/seqsurvey.sql`），只有 `sys_menus` 与 `sys_apis` 两条 colliding。
+
+| 库 | 修复前（实测） | 修复后（同一条启动路径） |
+| --- | --- | --- |
+| `gwa_menu_probe`（干净安装） | `sys_menus_id_seq` last_value=1/is_called=t 而 `max(id)`=74；`sys_apis_id_seq` 1/f 而 max=211 | 一次启动推到 75 / 212；随后 `POST /menus`→**200** 得 id 76、`POST /menus/sync` MERGE→**200** 得 id 77、`POST /apis`→**200** 得 id 212 |
+| `gwa`（已部署，本轮之前只手工 setval 修过菜单） | `sys_apis_id_seq` 仍是 **1/f**（max=211）——「新建 API」必 500；`sys_menus_id_seq` 79/t（max=79） | 一次启动把 apis 推到 **212**；menus 保持"下一个 80"（79/t → 80/f，**没有白烧号**） |
+| 修复后复扫两库 | — | `total=51 colliding=0` |
+
+**修法**：`internal/data/identity_sequence.go` 把两张表的序列推到 `GREATEST(max(id)+1, 序列自己的下一个值)`，用
+`setval(seq, …, false)` 落进去。三条口径，每条都有测试或实测兜着：
+- **只在 PG 跑**（驱动名 `postgres`/`pgx`，来源同 `server_monitor_repo.go:39`）：MySQL/SQLite 的自增在插入更大显式 ID 时自己抬高。
+  sqlite 回归测试正反面各钉一次——非 PG 下 no-op 且"显式 id 9001 + 无 id 插入"照常成功，以 `postgres` 调用时那条 PG 语法确实会跑（在 SQLite 上必失败）。
+- **只前进不回退**：`GREATEST` 的第二项保住序列已发放的进度（含 `is_called`，漏了它每次重启白烧一个号——第一版就犯了这个错，实测到 75→76 才发现）。
+  菜单硬删后 `max(id)` 回落不会把发过的号重发：实测 `sys_apis` 删掉 id=212 那行后 max 回到 211，跑一次接口同步序列仍是"下一个 213"，没倒退去重发 212。
+- **幂等、失败只记日志不阻断启动**；多副本同时执行最坏是写入同一个值，不会倒退。
+
+调用点三条：`MenuService.init()`（在 `count==0` 守卫**之外**，老库同样要自愈）、`ApiService.init()`（同理）、
+`SyncApis` 里 `syncWithOpenAPI` 之后（每次 truncate + 显式 ID 重建都要重新对齐，这一支单独实测过：212/t → 213/f）。
+
+**顺带量到、未修（等点头）**：三端路由里的组件路径用**连字符**（`app/internal-message/inbox/index.vue`），
+而 `ComponentToModule` 登记的是**下划线**前缀（`default_data.go:306` 的 `app/internal_message/`）⇒ 凡由「菜单同步」新增/更新的行 `module` 一律落 NULL。
+现网 `gwa` 实测 47 行菜单里 6 条这样的叶子：41/42/74（站内信三页，本轮之前就在）+ 76/77/78（这次同步出来的通知三页）。
+两侧的性质不同，别混着记：**通知三页的 NULL 是上面那段的刻意决定**（不登记 `app/notification/` 前缀 = 有意绕过套餐，换别的写法也还是 NULL）；
+**站内信三页才是这一格真正咬人的地方**——同一条页面在库里两行并存、一行有 module 一行没有：
+id 6 `app/internal_message/inbox/index.vue` → `INTERNAL_MESSAGE`（种子，挂在根 5 `/inbox` 下），
+id 74 `app/internal-message/inbox/index.vue` → NULL（同步按前端路由的连字符目录写出来的，挂在根 40 `/internal-message` 下）。
+**这一格今天不改变任何行为**：`sys_menus.module` 在 Go 侧只有 `filterMenusByPlanWhitelist` 一个读者，而它只遍历顶层节点、
+叶子从不被检查（就是欠账 2 记的那一格），全仓再无第二处消费（`menu_repo.go` 其余命中都是写路径，`fillRouteItem` 也不把
+`module` 放进路由项）。所以它是**潜伏缺陷**：一旦白名单接上递归（欠账 2 修法的可选延伸），
+这些 NULL 会按"放行"分支变成"任何套餐都可见"，而站内信三页的本意是 `INTERNAL_MESSAGE`。
+要么登记连字符前缀、要么让同步按种子的组件路径写，两种都会在未来某次改动时改变租户侧可见集，先记不修（选项与代价见 §6 决策点 10）。
+
+**探针造成的变更与残留**：`gwa` 上菜单 75/76/77/78（同步出来的通知四页）**保留**、79 `/opm/profile`（同步顺带带出的 react 路由，
+种子从来没有这一条）**保留**；68/72/73 已删（留下上面那 3 条孤儿授权）；平台超管 permission 的 menuIds 44→48；
+`setval` 本轮之前手工跑过一次（只动序列）。`gwa_menu_probe` 上新建的那三行探针数据（菜单 76/77、API 212）已 `DELETE`，
+序列留在 77/t、213/t。`:7788` 现在是 M+序列修复的二进制（`gow run admin`，PID 58200，日志 `%TEMP%/gwa_menu_probe/main_after_fix.log`）；
+探针实例 `:17788` 仍在跑（PID 62312，同一份二进制 + `%TEMP%/gwa_menu_probe/configs`）。
+启动日志里另有 5 条 `token authentication failed … 401`（module=internal-message/service）——是浏览器里留着的老前端页拿过期 token 每 6 秒重连，
+与本块无关。为跑"HEAD 是否已经红"的对照临时建过一个 worktree `%TEMP%/gwa_head_check`，已 `git worktree remove`。
+
+**门禁**：`go build ./...` 通过；`go vet ./app/admin/service/internal/data/ ./app/admin/service/internal/service/` 无输出；
+`go test ./... -count=1` 全绿。其中两条**不是本轮引入的先红**：`TestServiceTagToBusinessModuleExactMapping` 在 HEAD 上就红
+（C 块登记了 `NotificationService`/`NotificationRuleService` 两个 tag 而没同步这张期望表，已按映射表补进正反两张表），
+`TestDefaultMenusModuleBackfillInvariant` 是本轮把组件改成 `app/notification/` 之后红的——它的前提（"归不进模块就会被白名单过滤掉"）
+与代码相反，已按上面的真实语义重写。三端 typecheck 重跑：react `npm run typecheck`、ele `npx vue-tsc --noEmit`、
+vben `pnpm run check:type` 退出码均 0。
+
 ### P3 偏好与模板
 
 用户通知偏好 / 分类退订 / 静音时段 + 模板管理与渲染。今天这三样全部不存在
@@ -1005,6 +1106,20 @@ vue-vben 那份更绕：`views/app/tenant/tenant/tenant-drawer.vue:340` 是整�
      "不能回错给调用方"这个结论 —— 于是它只解决了异步侧，而异步侧本来就有 asynq。
    仍然没有解决的那一半要说清楚：**"信已发出、结论写不进"这段窗口现在靠重投缩小、靠清扫兜底，
    但消除不了**（要消除得把投递与写结论拆成两态，见 §7 P2-5 那条）。
+10. **菜单同步写出来的连字符组件路径要不要归进模块** —— **未修，等点头**（M 块运行期量到，实测行号与两侧性质差异见 §4 M 末段）。
+    `ComponentToModule` 登记的是下划线前缀（`default_data.go:306` `app/internal_message/`），而三端路由的目录名用连字符
+    （`app/internal-message/inbox/index.vue`）⇒ 「菜单同步」新增/更新的行 `module` 一律落 NULL，
+    库里于是并存两行同一条页面：id 6 带 `INTERNAL_MESSAGE`、id 74 为 NULL。
+    （通知三页不在此列——它们的 NULL 是"有意绕过套餐"，见 §4 M 的 `module` 那段，改前缀不会让它们变成受管控。）
+    **今天没有任何可见差异**：这一列全仓只有一个读者 `filterMenusByPlanWhitelist`，而它只遍历顶层节点、从不检查叶子（欠账 2 记的那一格）。
+    要决定的是**将来**：白名单一旦接上递归（欠账 2 修法的可选延伸），这些 NULL 会走"放行"分支变成"任何套餐都可见"。
+    两个方向：
+    - **A** 给映射表补连字符前缀（或把前端目录名改成下划线以与种子同形）。改动最小，效果是"递归之后这些叶子按套餐判定"；
+      代价是同步出来的行与干净安装的 `module` 值从此一致只是巧合——只要目录再改一次名就会静默回到 NULL。
+    - **B** 反过来，让同步按 path/name 对齐种子来写 `module`（不读组件字符串）。
+      彻底断开"目录名拼写决定授权可见集"这条隐式耦合，但要先有一份稳定的 path→module 映射，工作量比 A 大。
+    - 无论选哪个，都应与欠账 2 的"白名单要不要递归"**同批决定**：只补前缀不改递归，等于修一列没人读的数据。
+    本轮不选任何一个：M 的范围是菜单层级与序列自愈，这一格改的是**未来的授权可见集**，量级不同。
 
 ## 7. 落地验收清单
 
@@ -1028,6 +1143,8 @@ gow run admin
 - [x] `mailer.SendMail` 全仓只命中 `data/channel/email_sender.go` 一处；
 - [x] `pkg/constants/default_data.go` 菜单种子：Id 72 / path `notification-deliveries` /
       `component: app/system/notification_delivery/index.vue` / `Authority: ["sys:platform_admin"]`（只读页，无按钮权限码）；
+      —— M 块之后这一行变成 Id 72 / path `deliveries`（挂在根 74 `/notification` 下）/ `component: app/notification/delivery/index.vue`，
+      本文其余历史块里的 `app/system/notification_*` 与 `/system/notification-*` 一律按"当时的实况"读，现行落点见 §4 M。
 - [x] 三端门禁全绿：react `npm run typecheck` / vue-element `npx vue-tsc --noEmit` / vue-vben `pnpm run check:type`
       （turbo 会 cache-hit，复跑要带 `--force`）；
 - [x] 通知渠道三处 UI 的 `type` 列改为按枚举渲染（react / ele / vben 均已接 record，色表按 `CHANNEL_TYPE_*`
@@ -1055,6 +1172,13 @@ gow run admin
       故**没有**做出"租户用户点同步前 403 / 点后 200"的对照。这一条留给有租户口令的人补测。
 - [x] 已有实例的新菜单：Go 侧种子是 `count==0` 守卫（`menu_service.go:42-46`），**老库不会自动多出这一行**，
       必须走各端管理页的「菜单同步」(SyncMenus, MERGE)。只在新建库上验证过本页菜单的人容易漏掉这一步。
+      同步之后还有两步要做，漏了症状都不是 500 而是"安静地看不见"：权限管理里把新菜单勾给对应 permission（MERGE 不碰
+      `sys_permission_menus`），以及手工删掉被 reparent 之前的陈旧行（MERGE 只按全路径匹配，旧路径的行它不删）。
+      完整一遍记在 §4 M。
+- [x] **显式 ID 播种过的库必须对齐 identity 序列**（§4 M 那条缺陷）：`sys_menus` / `sys_apis` 的序列停在 1 时，
+      「新建菜单」「新建 API」与菜单同步的新增分支必 500 `duplicate key … _pkey (23505)`。
+      已由启动期 `internal/data/identity_sequence.go` 自愈（PG-only、幂等、只前进），验收 = 重启后
+      `select last_value,is_called from "sys_menus_id_seq"` 的下一个值 > `max(id)`。
 - [x] `docs/sse_architecture.md` 已随 P2 更新（P1 那条"不改"的判断当时是对的：P1 只做了 EMAIL 渠道，
       站内 SSE 的生产方没变）。P2 之后成立的两件事写进了它：`publishNotification` 现在是**被通知域调用**的
       INTERNAL 投递内核（新增站内信一律走 `Notifier`），以及载荷格式即 protojson 驼峰 + `id` 必须非零。
@@ -1144,7 +1268,8 @@ gow run admin
       于是 `filterMenusByPlanWhitelist` 的 `t.PlanId == nil` 命中、无日志 `return nil`。
       修法是读侧补 `WithPlan()` + 手工回填 `dto.PlanId`（照 `plan_module_repo.go:112-114`），
       **但它属套餐/租户导航域**、改变的是全部租户用户可见的菜单集，所以本轮只交成因。
-      同一段代码另两格顺带记下：白名单只遍历顶层节点而顶层 9 条根菜单一条都不带 `module`（实际过滤面 0/35），
+      同一段代码另两格顺带记下：白名单只遍历顶层节点而顶层根菜单一条都不带 `module`（当时 9 条根 / 实际过滤面 0/35；
+      M 块之后重测为 47 行 / 根 10 条 / 带 module 0 条，结论不变，见 §4 M），
       以及**三端**租户编辑抽屉的「订阅套餐」下拉在编辑态恒为空（vben 那份还读写不同键）。全在 §4 欠账 2。
 
 P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点到的地方，漏任一处都是静默不一致）。
