@@ -127,6 +127,23 @@ function typeTagType(type?: string): "primary" | "info" {
   return (type && typeTagTypes[type]) || "info";
 }
 
+// 出站风格：值与后端 webhook_style.go 里的同一组字符串逐字相同（枚举按名字配对）。
+const signStyleLabels: Record<string, string> = {
+  CUSTOM: t("pages.notification_channel.signStyleCustom"),
+  NONE: t("pages.notification_channel.signStyleNone"),
+  DINGTALK: t("pages.notification_channel.signStyleDingtalk"),
+  FEISHU: t("pages.notification_channel.signStyleFeishu"),
+  WECOM: t("pages.notification_channel.signStyleWecom"),
+};
+
+// 这一列可空，读到空值时按 CUSTOM 显示——它的实际行为就是 CUSTOM。
+//（本机实测：PG 加列带 DEFAULT，存量行已被回填成 'CUSTOM'，空值只剩直接写 SQL 置 NULL 的行。）
+// 直接显示"自有方案"比显示 "-" 更像事实。EMAIL 行没有这一列，才显示 "-"。
+function signStyleLabel(row: NotificationChannel): string {
+  if (row.type !== "WEBHOOK") return "-";
+  return signStyleLabels[row.webhookSignStyle || "CUSTOM"] || "-";
+}
+
 const pageConfig = computed<ProPageConfig>(() => ({
   skeleton: true,
   exportFilename: "notification-channels",
@@ -170,6 +187,12 @@ const pageConfig = computed<ProPageConfig>(() => ({
         minWidth: 200,
         // 邮件渠道这一列恒空：显示 "-" 而不是空白，免得读成"配了但看不到"
         formatter: (row: any) => row.webhookUrl || "-",
+      },
+      {
+        prop: "webhookSignStyle",
+        label: t("pages.notification_channel.webhookSignStyle"),
+        width: 130,
+        formatter: (row: any) => signStyleLabel(row),
       },
       { prop: "hasPassword", label: t("pages.notification_channel.hasPassword"), width: 100, slotName: "hasPassword" },
       {

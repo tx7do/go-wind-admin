@@ -1,7 +1,9 @@
 // WebhookSender 的 SQLite 内存库 + 本地 httptest 测试。
 //
-// 覆盖只有真发一次 HTTP 才暴露得出的四件事：
+// 覆盖只有真发一次 HTTP 才暴露得出的几件事：
 //   - 出站 JSON 的形状与签名头（对端唯一的判据：模板渲染排在 P3，此刻正文里没有事件信息）；
+//   - 签名风格两列在真实一次出站里的落点：钉钉的签名进 URL query、飞书的进 body 顶层，
+//     以及"HTTP 200 但 body 报失败"必须判成投递失败（见 webhook_style.go）；
 //   - SSRF 防线：拨号前按**解析后的 IP** 拒绝内网，并且归成 SKIPPED 语义（没联系过对端）；
 //   - 非 2xx 与 3xx 都是"拨过号被拒"（FAILED），且报错带出对端响应片段；
 //   - 渠道选择与 SMTP 那条路同判据：停用/类型不对/没配 url 一律 ErrChannelNotConfigured。
@@ -15,6 +17,7 @@ import (
 	"context"
 	"crypto/hmac"
 	"crypto/sha256"
+	"encoding/base64"
 	"encoding/hex"
 	"encoding/json"
 	"errors"
@@ -320,4 +323,159 @@ func TestWebhookSenderSqlite_AutoPickSkipsDisabled(t *testing.T) {
 	receipt, err := e.sender.Send(e.ctx, webhookReq(srv.URL, 0))
 	require.NoError(t, err)
 	require.Equal(t, on, receipt.ChannelID)
+}
+
+// createWebhookStyle 落一条带签名风格/载荷模板的 WEBHOOK 渠道行（本块新加的两列）。
+// style 传空串表示该列不写（等价于存量行的 NULL）。
+func (e *webhookSenderEnv) createWebhookStyle(t *testing.T, url, secret, style, template string, enabled bool) uint32 {
+	t.Helper()
+
+	data := &notificationChannelV1.NotificationChannel{
+		Name:       trans.Ptr("wh-" + strconv.FormatUint(atomic.AddUint64(&webhookRowSeq, 1), 10)),
+		Type:       notificationChannelV1.NotificationChannel_WEBHOOK.Enum(),
+		WebhookUrl: trans.Ptr(url),
+		Enabled:    trans.Ptr(enabled),
+	}
+	if style != "" {
+		// 按名字查表而不是写 SignStyle_DINGTALK 常量：这几行自己也依赖"成员名与列值逐字相同"，
+		// 拼错时上面这句 require 会当场说清楚是哪一行的问题。
+		parsed, ok := notificationChannelV1.SignStyle_value[style]
+		require.True(t, ok, "测试里的风格名拼错了：%q", style)
+		data.WebhookSignStyle = notificationChannelV1.SignStyle(parsed).Enum()
+	}
+	if template != "" {
+		data.WebhookPayloadTemplate = trans.Ptr(template)
+	}
+
+	id, err := e.repo.Create(e.ctx, &notificationChannelV1.CreateNotificationChannelRequest{
+		Data:          data,
+		WebhookSecret: trans.Ptr(secret),
+	}, 1)
+	require.NoError(t, err)
+
+	return id
+}
+
+// TestWebhookSenderSqlite_DingtalkSignsUrlQuery 钉钉风格在真发一次出站里的三个落点：
+// 签名进 URL query（且不能吃掉地址原有的 access_token）、正文是钉钉的 text 形状、
+// 自定义签名头一个都不发（钉钉只认 query）。
+func TestWebhookSenderSqlite_DingtalkSignsUrlQuery(t *testing.T) {
+	const secret = "ding-secret"
+
+	e := newWebhookSenderEnv(t, true)
+	srv := e.receiver(t, http.StatusOK, `{"errcode":0,"errmsg":"ok"}`)
+	id := e.createWebhookStyle(t, srv.URL, secret, "DINGTALK", "", true)
+
+	_, err := e.sender.Send(e.ctx, webhookReq(srv.URL+"/?access_token=abc123", id))
+	require.NoError(t, err)
+	require.Len(t, e.records, 1)
+
+	q := e.records[0].URL.Query()
+	require.Equal(t, "abc123", q.Get("access_token"), "拼签名必须保留地址原有的参数，否则钉钉先报 token 无效")
+
+	ts := q.Get("timestamp")
+	require.Len(t, ts, 13, "钉钉要 13 位毫秒，10 位秒会被判成 timestamp outside validity period")
+
+	// 用 stdlib 独立复算，不调生产里的 signDingtalk：否则生产函数算错了这条断言也照样绿。
+	mac := hmac.New(sha256.New, []byte(secret))
+	mac.Write([]byte(ts + "\n" + secret))
+	require.Equal(t, base64.StdEncoding.EncodeToString(mac.Sum(nil)), q.Get("sign"))
+
+	require.Empty(t, e.records[0].Header.Get(headerSignature))
+	require.Empty(t, e.records[0].Header.Get(headerTimestamp))
+
+	require.Contains(t, e.bodies[0], `"msgtype":"text"`)
+	require.Contains(t, e.bodies[0], `重置验证码\n您的验证码是 123456`, "标题与正文之间是 JSON 转义后的 \\n")
+	require.NotContains(t, e.bodies[0], "sign", "钉钉的签名不进正文")
+}
+
+// TestWebhookSenderSqlite_FeishuEnvelopeOnTheWire 飞书把签名当正文字段：顶层两个键真实到位、
+// 且时间戳与签名成对可得（对端就是这么验的），模板渲染出来的正文不被信封并字段吃掉。
+func TestWebhookSenderSqlite_FeishuEnvelopeOnTheWire(t *testing.T) {
+	const secret = "feishu-secret"
+
+	e := newWebhookSenderEnv(t, true)
+	srv := e.receiver(t, http.StatusOK, `{"code":0,"msg":"success"}`)
+	id := e.createWebhookStyle(t, srv.URL, secret, "FEISHU", "", true)
+
+	_, err := e.sender.Send(e.ctx, webhookReq(srv.URL, id))
+	require.NoError(t, err)
+
+	var envelope struct {
+		MsgType   string `json:"msg_type"`
+		Content   struct {
+			Text string `json:"text"`
+		} `json:"content"`
+		Timestamp string `json:"timestamp"`
+		Sign      string `json:"sign"`
+	}
+	require.NoError(t, json.Unmarshal([]byte(e.bodies[0]), &envelope))
+
+	require.Equal(t, "text", envelope.MsgType)
+	require.Equal(t, "重置验证码\n您的验证码是 123456", envelope.Content.Text, "并信封字段不许丢正文")
+	require.Len(t, envelope.Timestamp, 10, "飞书是 10 位秒时间戳")
+
+	mac := hmac.New(sha256.New, []byte(envelope.Timestamp+"\n"+secret))
+	require.Equal(t, base64.StdEncoding.EncodeToString(mac.Sum(nil)), envelope.Sign)
+
+	require.Empty(t, e.records[0].Header.Get(headerSignature), "飞书不读自定义头")
+}
+
+// TestWebhookSenderSqlite_PeerRejectsWithin200IsFailed 三家都会在 HTTP 200 里报失败
+// （钉钉被安全策略拦下时给的就是 200 + errcode 310000）。只看状态码会把"对方没收"记成
+// DELIVERED，所以判据要落到 body 上；同时它仍是"拨过号被拒"= FAILED，不是 SKIPPED。
+func TestWebhookSenderSqlite_PeerRejectsWithin200IsFailed(t *testing.T) {
+	cases := []struct {
+		name      string
+		style     string
+		answer    string
+		wantCause string
+	}{
+		{"dingtalk", "DINGTALK", `{"errcode":310000,"errmsg":"keywords not in content"}`, "keywords not in content"},
+		{"wecom", "WECOM", `{"errcode":93000,"errmsg":"invalid webhook k"}`, "invalid webhook k"},
+		{"feishu", "FEISHU", `{"code":19021,"msg":"sign match fail"}`, "sign match fail"},
+		// 判据字段各认各的：钉钉看到 code 不动作，飞书看到 errcode 不动作。
+		{"field mismatch is not a verdict", "DINGTALK", `{"code":19021}`, ""},
+	}
+
+	for _, c := range cases {
+		e := newWebhookSenderEnv(t, true)
+		srv := e.receiver(t, http.StatusOK, c.answer)
+		id := e.createWebhookStyle(t, srv.URL, "k", c.style, "", true)
+
+		_, err := e.sender.Send(e.ctx, webhookReq(srv.URL, id))
+		require.Len(t, e.records, 1, c.name)
+
+		if c.wantCause == "" {
+			require.NoError(t, err, c.name)
+			continue
+		}
+
+		require.Error(t, err, c.name)
+		require.Contains(t, err.Error(), c.wantCause, c.name)
+		require.Contains(t, err.Error(), "peer answered 200", c.name)
+		require.False(t, errors.Is(err, ErrChannelNotConfigured),
+			"%s：拨过号且被对端拒 = FAILED；记成 SKIPPED 的话重投策略与台账颜色都会错", c.name)
+	}
+}
+
+// TestWebhookSenderSqlite_BrokenTemplateNeverDials 模板渲染不出合法 JSON：错在出站之前，
+// 一次都不拨号，归 SKIPPED 语义；入队自检要提前撞出同一个错，不等验证码躺在队列里失败四次。
+func TestWebhookSenderSqlite_BrokenTemplateNeverDials(t *testing.T) {
+	e := newWebhookSenderEnv(t, true)
+	srv := e.receiver(t, http.StatusOK, "")
+
+	broken := e.createWebhookStyle(t, srv.URL, "", "CUSTOM", `通知：{{title}}`, true)
+	good := e.createWebhookStyle(t, srv.URL, "", "DINGTALK", "", true)
+
+	receipt, err := e.sender.Send(e.ctx, webhookReq(srv.URL, broken))
+	require.Error(t, err)
+	require.NotNil(t, receipt, "渠道配置已选出，失败的「是哪条」要进台账")
+	require.Equal(t, broken, receipt.ChannelID)
+	require.True(t, errors.Is(err, ErrChannelNotConfigured), "配置错重试四次也不会变好")
+	require.Contains(t, err.Error(), "channel ["+itoa(broken)+"]")
+	require.Empty(t, e.records, "渲染失败发生在拨号之前")
+
+	require.ErrorIs(t, e.sender.Precheck(e.ctx, broken), ErrChannelNotConfigured, "预检要提前拦住同一条")
+	require.NoError(t, e.sender.Precheck(e.ctx, good), "内置模板的渠道预检该过")
 }

@@ -29,6 +29,10 @@ type NotificationChannelRepo struct {
 	mapper        *mapper.CopierMapper[notificationChannelV1.NotificationChannel, ent.NotificationChannel]
 	typeConverter *mapper.EnumTypeConverter[notificationChannelV1.NotificationChannel_Type, notificationchannel.Type]
 	tlsConverter  *mapper.EnumTypeConverter[notificationChannelV1.NotificationChannel_TlsMode, notificationchannel.SMTPTLS]
+	// styleConverter 按枚举名字字符串配对，所以 proto 的成员名必须与 ent 列值逐字相同
+	// （CUSTOM / NONE / DINGTALK / FEISHU / WECOM）。给任何一侧加前缀都不会报错，只会让
+	// 这一列在读路径上静默变成 nil——proto 侧的注释里钉着同一条约束。
+	styleConverter *mapper.EnumTypeConverter[notificationChannelV1.SignStyle, notificationchannel.WebhookSignStyle]
 
 	repository *entCrud.Repository[
 		ent.NotificationChannelQuery, ent.NotificationChannelSelect,
@@ -41,8 +45,17 @@ type NotificationChannelRepo struct {
 }
 
 func NewNotificationChannelRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *NotificationChannelRepo {
+	return newNotificationChannelRepo(ctx.NewLoggerHelper("notification-channel/repo/admin-service"), entClient)
+}
+
+// newNotificationChannelRepo 装配一条渠道 repo：converter 清单只此一份。
+//
+// 为什么单独拆出来：测试侧要换 NopLogger 与 SQLite client，此前各自逐字段复刻了一份，
+// 于是"加一个 converter"要在三处同步——漏一处的表现不是编译失败，而是第一次读路径
+// 在 copier 的 nil 接收者上 panic。
+func newNotificationChannelRepo(log *bLogger.Helper, entClient *entCrud.EntClient[*ent.Client]) *NotificationChannelRepo {
 	repo := &NotificationChannelRepo{
-		log:       ctx.NewLoggerHelper("notification-channel/repo/admin-service"),
+		log:       log,
 		entClient: entClient,
 		mapper:    mapper.NewCopierMapper[notificationChannelV1.NotificationChannel, ent.NotificationChannel](),
 		typeConverter: mapper.NewEnumTypeConverter[notificationChannelV1.NotificationChannel_Type, notificationchannel.Type](
@@ -50,6 +63,9 @@ func NewNotificationChannelRepo(ctx *bootstrap.Context, entClient *entCrud.EntCl
 		),
 		tlsConverter: mapper.NewEnumTypeConverter[notificationChannelV1.NotificationChannel_TlsMode, notificationchannel.SMTPTLS](
 			notificationChannelV1.NotificationChannel_TlsMode_name, notificationChannelV1.NotificationChannel_TlsMode_value,
+		),
+		styleConverter: mapper.NewEnumTypeConverter[notificationChannelV1.SignStyle, notificationchannel.WebhookSignStyle](
+			notificationChannelV1.SignStyle_name, notificationChannelV1.SignStyle_value,
 		),
 	}
 
@@ -73,6 +89,7 @@ func (r *NotificationChannelRepo) init() {
 
 	r.mapper.AppendConverters(r.typeConverter.NewConverterPair())
 	r.mapper.AppendConverters(r.tlsConverter.NewConverterPair())
+	r.mapper.AppendConverters(r.styleConverter.NewConverterPair())
 }
 
 // List 分页查询通知渠道（密码字段不出现在 DTO，靠 HasPassword 标识）。
@@ -260,6 +277,8 @@ func (r *NotificationChannelRepo) Create(ctx context.Context, req *notificationC
 		SetNillableSMTPFrom(req.Data.SmtpFrom).
 		SetNillableSMTPTLS(r.tlsConverter.ToEntity(req.Data.SmtpTls)).
 		SetNillableWebhookURL(req.Data.WebhookUrl).
+		SetNillableWebhookSignStyle(r.styleConverter.ToEntity(req.Data.WebhookSignStyle)).
+		SetNillableWebhookPayloadTemplate(req.Data.WebhookPayloadTemplate).
 		SetStatus(statusFromEnabled(req.Data.GetEnabled())).
 		SetNillableRemark(req.Data.Remark).
 		SetCreatedBy(operatorID).
@@ -301,6 +320,8 @@ func (r *NotificationChannelRepo) Update(ctx context.Context, req *notificationC
 				SetNillableSMTPFrom(req.Data.SmtpFrom).
 				SetNillableSMTPTLS(r.tlsConverter.ToEntity(req.Data.SmtpTls)).
 				SetNillableWebhookURL(req.Data.WebhookUrl).
+				SetNillableWebhookSignStyle(r.styleConverter.ToEntity(req.Data.WebhookSignStyle)).
+				SetNillableWebhookPayloadTemplate(req.Data.WebhookPayloadTemplate).
 				SetNillableStatus(r.statusFromProto(req.Data.Enabled)).
 				SetNillableRemark(req.Data.Remark).
 				SetNillableUpdatedBy(trans.Ptr(operatorID)).
@@ -441,6 +462,13 @@ type WebhookAccount struct {
 	ID     uint32
 	URL    string
 	Secret string
+
+	// SignStyle 风格列的原始值，不在 repo 里归一化：认不出的值由 sender 报错，
+	// 比悄悄换成 CUSTOM 更可排障——台账里看得出自家库里此刻写着什么。
+	SignStyle string
+
+	// PayloadTemplate 载荷模板，空串表示"用该风格的内置默认形状"。
+	PayloadTemplate string
 }
 
 // GetFirstEnabledWebhookChannel 取第一个启用的 WEBHOOK 渠道（事件路由未显式指定渠道时用）。
@@ -500,6 +528,11 @@ func (r *NotificationChannelRepo) webhookAccountOf(ctx context.Context, entity *
 		ID:     entity.ID,
 		URL:    derefStr(entity.WebhookURL),
 		Secret: secret,
+
+		// 两列都是 Optional().Nillable()：ent 迁移只补 DEFAULT 给新建行，存量行是 NULL，
+		// 所以这里必须能容忍空值（风格空 → sender 按 CUSTOM 走，模板空 → 内置默认形状）。
+		SignStyle:       derefStrP(entity.WebhookSignStyle),
+		PayloadTemplate: derefStrP(entity.WebhookPayloadTemplate),
 	}, nil
 }
 

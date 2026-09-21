@@ -38,6 +38,40 @@
           <div class="field-tip">{{ t("pages.notification_channel.webhookUrlHint") }}</div>
         </ElFormItem>
 
+        <ElFormItem :label="t('pages.notification_channel.webhookSignStyle')" prop="webhookSignStyle">
+          <ElSelect v-model="drawer.formData.webhookSignStyle">
+            <ElOption :label="t('pages.notification_channel.signStyleCustom')" value="CUSTOM" />
+            <ElOption :label="t('pages.notification_channel.signStyleNone')" value="NONE" />
+            <ElOption :label="t('pages.notification_channel.signStyleDingtalk')" value="DINGTALK" />
+            <ElOption :label="t('pages.notification_channel.signStyleFeishu')" value="FEISHU" />
+            <ElOption :label="t('pages.notification_channel.signStyleWecom')" value="WECOM" />
+          </ElSelect>
+          <div class="field-tip">
+            {{ t("pages.notification_channel.webhookSignStyleHint") }}
+          </div>
+        </ElFormItem>
+
+        <!-- 留空 = 用该风格的内置默认正文（内置形状由后端 webhook_style.go 持有，
+             这里不复制一份，否则两处会漂）。 -->
+        <ElFormItem
+          :label="t('pages.notification_channel.webhookPayloadTemplate')"
+          prop="webhookPayloadTemplate"
+        >
+          <ElInput
+            v-model="drawer.formData.webhookPayloadTemplate"
+            type="textarea"
+            :rows="3"
+            :placeholder="WEBHOOK_TEMPLATE_EXAMPLE"
+          />
+          <div class="field-tip">
+            {{
+              t("pages.notification_channel.webhookPayloadTemplateHint", {
+                vars: WEBHOOK_TEMPLATE_VARS,
+              })
+            }}
+          </div>
+        </ElFormItem>
+
         <ElFormItem :label="t('pages.notification_channel.webhookSecret')" prop="webhookSecret">
           <ElInput
             v-model="drawer.formData.webhookSecret"
@@ -148,6 +182,27 @@ const { t } = useI18n();
 const formRef = ref();
 const isCreate = ref(true);
 
+/**
+ * 载荷模板的可引用变量清单。不写进词条，两个原因：这些名字是接口契约的一部分
+ * （三种语言都不译），且 vue-i18n 会把消息里的花括号当插值语法解析。
+ */
+const WEBHOOK_TEMPLATE_VARS = [
+  "title",
+  "content",
+  "event_type",
+  "timestamp",
+  "sign",
+  "nonce",
+  "recipient_user_id",
+  "related_id",
+  "delivered_at",
+]
+  .map((name) => `{{${name}}}`)
+  .join(" ");
+
+// 输入框里的示例取自钉钉那一档的内置形状：留空时后端就发这个形状，示例只是提示可以改写。
+const WEBHOOK_TEMPLATE_EXAMPLE = '{"msgtype":"text","text":{"content":"{{title}}"}}';
+
 const drawer = useDrawerForm({
   moduleKey: "pages.notification_channel.moduleName",
   defaults: {
@@ -160,6 +215,8 @@ const drawer = useDrawerForm({
     smtpFrom: "",
     smtpTls: "START_TLS",
     webhookUrl: "",
+    webhookSignStyle: "CUSTOM",
+    webhookPayloadTemplate: "",
     webhookSecret: "",
     enabled: true,
     remark: "",
@@ -211,6 +268,10 @@ function open(options: { create: boolean; row?: any }) {
       smtpFrom: row.smtpFrom || "",
       smtpTls: row.smtpTls || "START_TLS",
       webhookUrl: row.webhookUrl || "",
+      // 存量行这两列是空的，而空值的实际行为就是 CUSTOM（后端 resolveWebhookStyle 的归一化）：
+      // 表单里摆成 CUSTOM，管理员才改得动，也不会以为"没选=没签名"。
+      webhookSignStyle: row.webhookSignStyle || "CUSTOM",
+      webhookPayloadTemplate: row.webhookPayloadTemplate || "",
       enabled: !!row.enabled,
       remark: row.remark || "",
     });

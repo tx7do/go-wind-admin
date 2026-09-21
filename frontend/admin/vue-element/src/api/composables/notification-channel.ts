@@ -44,7 +44,7 @@ export async function updateNotificationChannel(
     password: password || undefined,
     webhookSecret: webhookSecret || undefined,
     updateMask:
-      "name,type,smtpHost,smtpPort,smtpUsername,smtpFrom,smtpTls,webhookUrl,enabled,remark",
+      "name,type,smtpHost,smtpPort,smtpUsername,smtpFrom,smtpTls,webhookUrl,webhookSignStyle,webhookPayloadTemplate,enabled,remark",
   });
 }
 

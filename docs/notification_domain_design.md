@@ -999,6 +999,126 @@ id 74 `app/internal-message/inbox/index.vue` → NULL（同步按前端路由的
 与代码相反，已按上面的真实语义重写。三端 typecheck 重跑：react `npm run typecheck`、ele `npx vue-tsc --noEmit`、
 vben `pnpm run check:type` 退出码均 0。
 
+### N（WEBHOOK 的出站风格与载荷模板，已完成 2026-09-21）
+
+**动机与"为什么是两列而不是三种渠道类型"**：本域的 WEBHOOK 出口此前只会一种形状（头里 `X-Gw-Signature` + 一份固定 JSON），
+把机器人地址填进去必然被对端拒——签名不对、正文不是它要的形状。钉钉/飞书/企业微信的自定义机器人在"收请求"这一侧是同一件事
+（一个 HTTP POST + 一段 JSON），差异全在"发成什么形状"：签名怎么算、放哪、正文长什么样、用什么判成败。
+若做成三个 `Channel` 枚举值，等于按厂商把同一个出口拆成三条 sender、三套渠道选择、三套台账口径，
+而 `channel.Sender` 注册表抽象的是**出口**这一层，厂商不是出口。所以渠道类型仍只有 WEBHOOK 一种，差异落在渠道行的两列上。
+
+**N0 先核实的外部事实**（三家文档，向量由独立实现交叉算出，不凭记忆）：
+
+| 风格 | 签名 | 落点 | 时间戳 | 判"对端真收下"看 |
+| --- | --- | --- | --- | --- |
+| `DINGTALK` | `base64(hmac_sha256(key=secret, data="<ms>\n<secret>"))` | URL query `timestamp`+`sign` | 13 位毫秒 | body `errcode` |
+| `FEISHU` | `base64(hmac_sha256(key="<ts>\n<secret>", data=空))` | body 顶层 `timestamp`+`sign` | 10 位秒 | body `code` |
+| `WECOM` | 不签名（凭据是 URL 的 `key`） | — | — | body `errcode` |
+| `CUSTOM` | `sha256=<hex(hmac("<ts>.", body))>` | 头 `X-Gw-Timestamp` / `X-Gw-Signature` | 10 位秒 | 只看状态码 |
+| `NONE` | 不签名 | — | — | 只看状态码 |
+
+三家共同的坑：**被拦下时仍回 HTTP 200**，失败信息在 body（钉钉关键词拦截就是 200 + `errcode 310000`）。
+只看状态码会把"对方没收"记成 DELIVERED——这一列判据存在的全部理由。签名 key/data 的分工钉钉与飞书恰好相反，
+两种写错的对外表现都只是"sign not match"，所以向量各钉一条测试（`TestWebhookSignVectors`）。
+
+**契约**：proto 新增 `SignStyle`（`CUSTOM=0 / NONE=1 / DINGTALK=2 / FEISHU=3 / WECOM=4`）+ `payload_template`；
+ent 两列 `webhook_sign_style`（Enum，`Default("CUSTOM")`，Optional+Nillable）、`webhook_payload_template`（String，Optional+Nillable）。
+**proto 成员名与 ent 列值必须逐字相同**——`mapper.EnumTypeConverter` 按名字字符串配对，任一侧加前缀这一列就静默变 nil。
+`resolveWebhookStyle("")`→CUSTOM 这一档兜的是该列为 NULL 的行（列可空，repo 把 nil 读成空串）——
+但**别以为存量行一定是 NULL**：ent 的自动迁移把这一列带 `DEFAULT 'CUSTOM'` 建出来，PG 因此回填了已有行，
+本机 `gwa` 实测三条 EMAIL 存量行在 API 上读回的是 `"CUSTOM"`（`webhook_payload_template` 无默认，仍是 NULL/字段缺失）。
+空值兜 CUSTOM 的语义与"当时只有 CUSTOM 一种行为"一致；
+认不出的值**报错而不兜成 CUSTOM**：`DINGTALK` 拼成 `DINGTAKL` 后静默按自有方案发出去，对端只表现为"签名不对"，排查方向整个是反的。
+生成物：`gow api` + `gow ent admin` + `make openapi` + `make ts`（proto +29 / schema +18 / openapi.yaml +13 / 三端 index.ts 各 +18）。
+`ent` 整包重写这件事在本机有个环境坑要记着：`.gitattributes` 钉了 `*.go text eol=lf`，但工作区仍有 **116 个 tracked `.go` 是 CRLF**
+（`git ls-files --eol 'backend/**/*.go' | grep w/crlf`）——对它们跑 `gofmt -w` 或任何整文件重写都会产出 100% 改动的假 diff。
+本轮 diff 里 16 个 tracked `.go` 逐文件测均 `w/lf`（按目录 glob 会把邻居的既有 CRLF 算进来，别那样数），所以 diff 是干净的。
+
+**落地不需要接口/菜单同步**：两列搭的是既有 CRUD 路由（`POST/PUT /admin/v1/notification-channels`），没有新 RPC、没有新菜单；
+列本身由 ent 自动迁移在重启时建出来（本机 `gwa` 实测：重启后两列就位，`webhook_sign_style` 默认 `CUSTOM`）。
+
+**实现**（新建 `data/channel/webhook_style.go`，`webhook_sender.go` 只留"发出去"）：
+- **渲染顺序就是难点**：钉钉/飞书的签名只盖时间戳、不盖正文 ⇒ 签名能先算出来当占位符用；CUSTOM 的签名盖住正文 ⇒ 正文里不可能出现
+  `{{sign}}`，引用它就在这一步报错，而不是渲染出一个空串让对端验签失败。
+- 模板替换是**单趟**扫描：逐变量 `strings.ReplaceAll` 会让 `{{content}}` 的值里若含 `{{title}}` 时被再渲染一次。未识别占位符报错；
+  `{{` 不闭合当正文原样发出（它在 JSON 字符串里合法，不值得为它失败）。
+- 变量值一律按 JSON 字符串内容转义且**不加引号**（`SetEscapeHTML(false)`：中文正文里的 `< > &` 不该变 `\u003c`），引号归模板作者。
+  `json.Valid` 闸门在拨号之前。
+- 风格只管"签名怎么算、放哪、用什么判成败"，正文形状是另一件事：CUSTOM/NONE 的默认正文是存量那份 `webhookPayload` JSON
+  （已照它配好验签的对端不该因这次加列收到一份字段顺序不同的等价 JSON），三家各用内置 text 形状。
+- 判据只在 2xx 之后看，body 不是 JSON 时放行——对端已经用 2xx 表了态，猜它的意思比承认"看不出"更糟。
+- 坏模板在**入队前**由 `Precheck` 用一份假正文渲染出来拒掉 ⇒ 台账 SKIPPED、零次拨号：一次性验证码躺在队列里失败四次，
+  和压根没配渠道一样是没发出去，但验证码已经过期。
+
+**三端**（react 先行）：列表加「出站风格」列、表单加 5 项 select + 3 行 textarea（placeholder 是该风格的模板示例）、
+签名密钥提示按风格改写、updateMask 加两条、编辑回填。**i18n 三端各有一个坑，解法是同一个**：变量清单不进词条，
+而是放 TS 常量 `WEBHOOK_TEMPLATE_VARS`、作为 `{vars}` 插值值传进去。react 是 i18next，默认插值语法正是 `{{ }}`，
+词条里写死 `{{title}}` 会被当场插成空串；ele/vben 是 vue-i18n（`{ }`），双花括号虽不被解析，但谁"顺手改成单括号"就炸。
+实测三端渲染出的提示都带着完整的九个变量名（react 在 tooltip 里，ele/vben 是行内 help）。
+
+**运行期实测**（本机 `gwa` + 只监听 127.0.0.1:7799 的 sink；签名由 node:crypto 独立复算，与 Go 实现互不相同 ⇒ 匹配才是独立证据）：
+11/11 + 修完后补测 5/5。
+
+| # | 场景 | 期望 | 实测到的东西 | 台账 |
+| --- | --- | --- | --- | --- |
+| 1 | 钉钉签名 | SENT | query `timestamp=1789967106184`（13 位）+ `sign` 复算匹配，正文/头里无签名 | 24 SENT |
+| 2 | 钉钉 + 200 里 `errcode 310000` | FAILED | `peer answered 200 but errcode=310000: keywords not in content` | 25 |
+| 3 | 飞书签名 | SENT | body 顶层 `timestamp` 10 位 + `sign` 复算匹配 | 26 |
+| 4 | 飞书应答只带 `errcode`（判据错位） | SENT | 字段对不上不算判决，不看错位的 0 | 27 |
+| 5 | 企微配了密钥 | SENT | 一个签名都不带 | 28 |
+| 6 | 自有方案 | SENT | 头 `X-Gw-Timestamp=1789967109` + `sha256=9946977cff…` 复算匹配，正文是存量形状 | 29 |
+| 7 | 自有方案 + 对端回整页 HTML | SENT | 不猜非 JSON | 30 |
+| 8 | NONE 默认正文 | SENT | 与 CUSTOM 同形且无签名（N2 那条修法在运行期再次确认） | 31 |
+| 9 | 模板引用变量 | SENT | `[N5] … \| CHANNEL_TEST_EMAIL \| id=0 \| n=OLKWD2X7HPBSYZG6ENH2VCGSBD` | 32 |
+| 10 | 占位符拼错 | SKIPPED | **dials=0**，入队前就拒 | 33 |
+| 11 | 模板渲染出非法 JSON | SKIPPED | **dials=0** | 34 |
+| 12 | 飞书默认正文含尖括号（补） | SENT | 出站字节里 `\u003c` 消失（修前是 `"text":"… \u003c尖括号\u003e …"`） | 35 |
+| 13 | 飞书模板写 `<at user_id="all">所有人</at>`（补） | SENT | `<at>` 原样到对端，@ 人可用 | 36 |
+| 14 | CUSTOM 默认正文含尖括号（对照，补） | 仍 `\u003c` | 存量字节形状，见下面第 2 条的尾巴 | 37 |
+| 15/16 | 两条坏模板（补） | SKIPPED | `last_error` 里 `webhook: ` 恰好 1 次（修前 2 次） | 38/39 |
+
+**实测撞出来并修掉的两条**：
+1. **错误前缀垫了两次**：`webhook: channel [13] webhook: payload template uses unsupported placeholder …`。
+   修法：内层不带前缀，由 `renderWebhookBody` 统一垫一次；`TestTemplateRejections` 对每条拒绝都断言 `"webhook: "` 只出现 1 次。
+2. **飞书并信封时把 HTML 转义又做了一次**：`mergeWebhookEnvelope` 原来是 `json.Marshal(map[string]json.RawMessage)`，
+   而 Marshal 会对 `MarshalJSON` 的产物按 `escapeHTML` 再压缩一遍 ⇒ `jsonEscapeString` 里 `SetEscapeHTML(false)` 保住的
+   `< > &` 在这一步全变 `\u003c`，群里 @ 人的 `<at>` 只剩字面量。实测抓到的就是它。修法：换 `json.NewEncoder` +
+   `SetEscapeHTML(false)`（键序仍是字典序），补一条带尖括号的断言（35/36 行是它的运行期证据）。
+   **同一转义在 CUSTOM 默认正文里刻意保留**：那份字节是存量对端已经在验的形状，钉在 `TestBuildWebhookOutboundCustomKeepsLegacyBytes`
+   （第 14 行是对照），且它压根没有模板作者可言——两件事别混着改。
+
+**顺带修的一处装配**：`repo_testkit4.go` 的 `NewNotificationChannelRepoForTest` 改为委托给生产用的 `newNotificationChannelRepo(...)`，
+不再自己抄一份 mapper/转换器清单——本轮加枚举转换器时正是这份副本会静默漏掉它（测试里表现为"那一列读出来永远是 nil"）。
+
+**回归测试**：`webhook_style_test.go` 18 个测试函数（签名向量、五种风格的出站形状、模板的非递归/转义/拒绝路径、预检、判据、截断），
+真发一次 HTTP 与 SSRF 防线的部分仍在 `webhook_sender_sqlite_test.go`（本轮新增 159 行）。全部断言钉**具体值**：
+这一层错了的表现只在远端，"签名不对"这种报错会把排查方向引到对端身上。
+
+**记不修（两条，都等点头）**：
+- **mask 里有、`data` 里没有的列会被写成零值**。实测：从 vben 编辑一条 WEBHOOK 渠道（`buildChannelData` 按类型只发一组字段，
+  而 mask 两组都列）⇒ `sys_notification_channels.smtp_tls` 从 `START_TLS` 被清成空串。这是 updateMask 的既有语义，
+  且 HEAD 的 mask 里本来就有 `webhookUrl`（本轮只是把两列新字段加进同一口锅）；只有"把行的类型改到对面去"才会伤到有意义的数据。
+  修法是按类型裁 mask，三端各一行。
+- 坏模板那条 SKIPPED 的 `last_error` 以 `no enabled notification channel configured: ` 开头，而渠道明明存在且启用——
+  `ErrChannelNotConfigured` 的措辞与"配置内容不合法"不是一回事，排障时会先去看渠道存不存在。改文案要连着看这个前缀的其它消费者，先记。
+
+**探针造成的变更与残留**（`gwa`）：渠道 12/13/14/15 建了又删——**渠道删除是硬删**，实测 `sys_notification_channels` 现在只剩
+1/2/3 三条 EMAIL 行、无软删残留，代价是序列被烧掉 4 个号；规则 3（`CHANNEL_TEST_EMAIL`）的 `channel` 两次改成 WEBHOOK、
+每次测完改回 EMAIL（`updated_at` 动了，`channel` 回到原值）；台账多了 24–39 共 16 行；出站目标是本机 sink，
+所以 **`:7788` 现在带 `NOTIFICATION_WEBHOOK_ALLOW_PRIVATE=1` 在跑（SSRF 防线整条关闭，本机联调用，不得进生产）**，
+sink 进程（PID 17296）仍在 7799 上监听，脚本与日志都在仓外 `C:\Users\yangl\gwa-probe-n5\`。
+`:17788` 上 M 块的探针实例（PID 62312）仍按上一轮的记录留着。
+
+**浏览器 pass 的形状要说清**：in-app browser 当时没有可见表面（截图/指针被拒），所以表单是 DOM 驱动读出来的：
+vben 走了完整的 create（`钉钉机器人` + 密钥）→ 列表列显示 → 编辑回填 → 模板改存 → 删除；
+react 与 ele 只读渲染（tooltip / 行内 help、五个风格选项、textarea 示例），**没有写数据**。
+唯一没能用 UI 走完的是删除的 popconfirm——Ant 的弹层在隐藏页签里 transition 不挂载，所以那一行是用同一个
+`DELETE /admin/v1/notification-channels/{id}` 路由删的。另外首屏 snapshot 里同一张表出现 7 份是 **vite HMR + keep-alive**
+把每次热更的组件实例都留下来了，硬刷新后 1 份、3 行，不是产品缺陷。
+
+**门禁**：`go test ./app/admin/service/internal/data/channel/...` 通过；三端 typecheck 退出码均 0
+（react `npm run typecheck`、ele `npx vue-tsc --noEmit`、vben `pnpm run check:type`）。
+
 ### P3 偏好与模板
 
 用户通知偏好 / 分类退订 / 静音时段 + 模板管理与渲染。今天这三样全部不存在
@@ -1042,6 +1162,15 @@ vben `pnpm run check:type` 退出码均 0。
    （白名单的默认放行方向相反：漏配一个后缀就是全内网可达）；环回联调靠
    `NOTIFICATION_WEBHOOK_ALLOW_PRIVATE=1`，这条逃生口写在报错文案里。② C 的范围含测试投递入口，
    形态与收窄见 §3.4 偏离第 1 条。
+
+   **N 把 A 这条路又走了一遍，并且它没有立刻翻成 B（2026-09-21）**：接三家群机器人需要的是"出站形状"两列
+   （`webhook_sign_style` / `webhook_payload_template`），按 B 的口径这正是"该进 blob"的东西。仍然加列，理由与 C 同源而更硬：
+   这两列是**同一出口的两个参数**，不是两种渠道——渠道类型这一列回答"用哪个 Sender"，答案仍是 WEBHOOK 一个；
+   而 B 的 `settings` blob 要加密、要按类型解、读的时候先看 type，这两列既不敏感（模板与风格名不是凭据；密钥仍在
+   `webhook_secret` 那一列）也不需要按类型分支。顺带得到一条对排障有用的性质：**风格与模板在台账之外仍然可 SQL**——
+   "这台环境里有多少条钉钉形状的出站"是一句 `WHERE type='WEBHOOK' AND webhook_sign_style='DINGTALK'`，不必解 JSON
+   （本机实测：`type` 必带，因为 DEFAULT 回填让三条 EMAIL 行也带着 `CUSTOM`，数出来 `CUSTOM|EMAIL|3`）。
+   A 承认的代价照旧：SMS 来的时候还得再迁一次表（上面那段已经写明这不是 B 免掉的代价）。
 3. **`sys_notification_deliveries` 是否挂租户谓词** —— **已定：不挂**（P1 建表时按此落地）。
    台账与渠道花名册同域：一行记的是"平台用哪条 SMTP 发给了某个地址"，收件人未必是租户用户
    （找回密码的标识符可以是任意注册邮箱）。真要按租户看用量，走 `recipient_user_id` 关联用户表即可，
@@ -1287,6 +1416,25 @@ P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点
   vben composable 的 `notificationRuleEventTypeList`
   + `langs/*/enum.json` 的 `notificationRule.eventType`；每端另要有该事件类型的中文列头文案（三端各两份 locales）。
 
+新增一种 WEBHOOK 出站风格时的落点清单（N 之后；这一串里漏任一处都是静默不一致——最坏表现是"那一列读出来永远空着"）：
+
+- **契约三处，值必须逐字相同**：proto `SignStyle` 的成员名 → ent schema `field.Enum("webhook_sign_style").NamedValues`
+  的**值侧**（`mapper.EnumTypeConverter` 按名字字符串配对，加前缀不报错、只是静默变 nil）→ 迁移后 PG 里存的字符串。
+  新风格要不要 `Default` 只有一档能当默认（`CUSTOM`），所以加成员一律加在枚举尾部，别改 0 值；
+- **后端五处**（`data/channel/webhook_style.go`）：`style…` 常量 + `resolveWebhookStyle` 的 case（缺它=认不出即报错）+
+  `builtinPayloadTemplates`（该风格的内置默认正文；这一项**不给不会退化成 CUSTOM 那份 JSON**——管理员没填模板时它会渲染出空串，
+  在 `json.Valid` 闸门被拒成 SKIPPED，报错文案还写着"payload template rendered invalid JSON"，指不到"缺内置默认"这一层）
+  + `verdictFieldOf`
+  （该风格用哪个 body 字段判成败；三家机器人都要给，否则 200 里的失败会被记成 DELIVERED）+
+  `buildWebhookOutbound` 的 switch（签名落点：query / body 信封 / 头）；
+- **测试两处**：签名向量钉**具体值**且用独立实现交叉算（这一层算错了只在远端报错，且报错文案指向对端）、
+  出站形状钉字节序列；
+- **三端各两处 + locales 两份**：react `index.tsx:57` 的 `SIGN_STYLE_LABEL_KEY` 映射表与 `:433` 的内联选项数组、
+  ele `index.vue:134` 的映射与 drawer 的 `<ElOption>` 列表、vben `:162` 的映射与 `:492` 的 `<a-select-option>` 列表；
+  locales 的键名是三端共享的 `signStyle{Custom,None,Dingtalk,Feishu,Wecom}`，zh/en 各一份；
+  另记得**签名密钥的提示文案要按新风格改写一句**（那一列今天对五种风格各有不同用法，写死一种就是误导）；
+- **不需要**接口同步与菜单同步：两列搭既有 CRUD 路由，列由 ent 自动迁移建出来（重启即迁移）。
+
 两条本次实测踩到的：
 
 - **自定义 RPC 的请求体是扁平的，不包 `{ data: {...} }`**：根 `AGENTS.md` 铁律 3 那条只适用于 CRUD 路由。
@@ -1364,7 +1512,8 @@ Mailpit 在 1025 上明文接收、默认不要求 AUTH，所以渠道配置要 
 | **id=8** | **自选 + 真发成功** | **SENT** | **5** | 本次闭环：`SendReceipt.ChannelID = account.ID` 在真实投递下成立 |
 
 本节取证时仍未覆盖的一段：`SendDirect` 之后的**异步**补台账 —— 已由 §4 P2-3（2026-09-20）连运行期证据一起补上；
-SMS / WEBHOOK 两个渠道到今天**依然没有**实现（连 Registry 都没接进去，不是"缺测试"而是"缺代码"，见 §6 决策点 2）。
+WEBHOOK 出口已由 §4 C3 落地、N（2026-09-21）起带五种出站风格与载荷模板；SMS 到今天**依然只有枚举没有 Sender**
+（不是"缺测试"而是"缺代码"，见 §6 决策点 2）。
 
 ### 收件箱不钉归属：一处越权读 + 一处越权写（2026-09-20，运行期实测发现并修掉）
 

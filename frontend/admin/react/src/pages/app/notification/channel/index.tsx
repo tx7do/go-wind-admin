@@ -51,6 +51,48 @@ const CHANNEL_TYPE_COLOR: Record<NonNullable<NotificationChannel['type']>, strin
 };
 
 /**
+ * 签名风格 → 文案。列值就是后端 webhook_style.go 里的同一组字符串（枚举按名字配对），
+ * 所以这里既不换算也不加前缀。
+ */
+const SIGN_STYLE_LABEL_KEY: Record<
+  NonNullable<NotificationChannel['webhookSignStyle']>,
+  string
+> = {
+  CUSTOM: 'signStyleCustom',
+  NONE: 'signStyleNone',
+  DINGTALK: 'signStyleDingtalk',
+  FEISHU: 'signStyleFeishu',
+  WECOM: 'signStyleWecom',
+};
+
+// 这一列可空，读到空值时按 CUSTOM 显示——它的实际行为就是 CUSTOM。
+// （本机实测：PG 加列带 DEFAULT，存量行已被回填成 'CUSTOM'，所以空值只出现在直接写 SQL 置 NULL 的行。）
+// EMAIL 行没有这一列，返回 undefined 由列渲染 '-'。
+const signStyleKeyOf = (record: NotificationChannel): string | undefined =>
+  record.type === 'WEBHOOK'
+    ? SIGN_STYLE_LABEL_KEY[record.webhookSignStyle ?? 'CUSTOM']
+    : undefined;
+
+/**
+ * 载荷模板可引用的占位符清单，作为词条的 `vars` 插值值传进去，而不是把花括号写进词条：
+ * 一是这些名字属于接口契约（三种语言都不该翻译），二是 i18next 会把词条里的 `{{x}}`
+ * 当成插值语法吃掉，写进去只会渲染成一串空白。
+ */
+const WEBHOOK_TEMPLATE_VARS = [
+  'title',
+  'content',
+  'event_type',
+  'timestamp',
+  'sign',
+  'nonce',
+  'recipient_user_id',
+  'related_id',
+  'delivered_at',
+]
+  .map((name) => `{{${name}}}`)
+  .join(' ');
+
+/**
  * 通知渠道管理页面（平台级配置）
  * 两类渠道：EMAIL（SMTP 账号）与 WEBHOOK（回调地址 + 可选签名密钥）。
  */
@@ -111,7 +153,7 @@ const NotificationChannelManagement = () => {
           password: password || undefined,
           webhookSecret: webhookSecret || undefined,
           updateMask:
-            'name,type,smtpHost,smtpPort,smtpUsername,smtpFrom,smtpTls,webhookUrl,enabled,remark',
+            'name,type,smtpHost,smtpPort,smtpUsername,smtpFrom,smtpTls,webhookUrl,webhookSignStyle,webhookPayloadTemplate,enabled,remark',
         };
         await updateMutation.mutateAsync(req);
         message.success(t('updateSuccess'));
@@ -201,6 +243,15 @@ const NotificationChannelManagement = () => {
       width: 200,
       ellipsis: true,
       render: (_, record) => record.webhookUrl || '-',
+    },
+    {
+      title: t('webhookSignStyle'),
+      dataIndex: 'webhookSignStyle',
+      width: 140,
+      render: (_, record) => {
+        const key = signStyleKeyOf(record);
+        return key ? <Tag>{t(key)}</Tag> : '-';
+      },
     },
     {
       title: t('hasPassword'),
@@ -319,7 +370,7 @@ const NotificationChannelManagement = () => {
           ]}
           size="middle"
           bordered
-          scroll={{ y: tableScrollY, x: 1640 }}
+          scroll={{ y: tableScrollY, x: 1780 }}
         />
       </div>
 
@@ -333,8 +384,14 @@ const NotificationChannelManagement = () => {
         onFinish={handleSubmit}
         initialValues={
           drawerMode === 'create'
-            ? { type: 'EMAIL', smtpTls: 'START_TLS', smtpPort: 587, enabled: true }
-            : { ...selected, password: undefined, webhookSecret: undefined }
+            ? { type: 'EMAIL', smtpTls: 'START_TLS', smtpPort: 587, webhookSignStyle: 'CUSTOM', enabled: true }
+            : {
+                ...selected,
+                password: undefined,
+                webhookSecret: undefined,
+                // 同列表列：该列为空时按 CUSTOM 摆进表单，否则这一项是空的、改不动
+                webhookSignStyle: selected?.webhookSignStyle ?? 'CUSTOM',
+              }
         }
       >
         <ProFormText
@@ -368,6 +425,24 @@ const NotificationChannelManagement = () => {
                       ? [{ required: true, message: t('requiredWebhookUrl') }]
                       : []
                   }
+                />
+                <ProFormSelect
+                  name="webhookSignStyle"
+                  label={t('webhookSignStyle')}
+                  tooltip={t('webhookSignStyleHint')}
+                  options={(
+                    ['CUSTOM', 'NONE', 'DINGTALK', 'FEISHU', 'WECOM'] as const
+                  ).map((value) => ({ value, label: t(SIGN_STYLE_LABEL_KEY[value]) }))}
+                  rules={[{ required: true, message: t('requiredSignStyle') }]}
+                />
+                {/* 留空 = 用该风格的内置默认正文（内置形状由后端 webhook_style.go 持有，
+                    这里不复制一份，否则两处会漂）。 */}
+                <ProFormTextArea
+                  name="webhookPayloadTemplate"
+                  label={t('webhookPayloadTemplate')}
+                  tooltip={t('webhookPayloadTemplateHint', { vars: WEBHOOK_TEMPLATE_VARS })}
+                  placeholder='{"msgtype":"text","text":{"content":"{{title}}"}}'
+                  fieldProps={{ rows: 3, style: { fontFamily: 'var(--font-mono, monospace)' } }}
                 />
                 <ProFormText.Password
                   name="webhookSecret"

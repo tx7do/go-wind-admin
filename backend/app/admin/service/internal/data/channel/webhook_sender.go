@@ -6,7 +6,6 @@ import (
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
@@ -14,7 +13,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"strconv"
 	"time"
 
 	notificationV1 "go-wind-admin/api/gen/go/notification/service/v1"
@@ -34,13 +32,19 @@ const (
 	// 只用于排障（"对方 403 说了什么"），所以刻意小：对端可能返回一整页 HTML。
 	webhookMaxResponseBytes = 512
 
+	// webhookAnswerBytes 读对端应答的上限：判"200 但其实没收"要看 body，
+	// 而三家的结论都是一个几百字节的小 JSON。留 4KB 是给带中文 errmsg 的余量，
+	// 再多就当它不是 JSON 放过（checkProviderResponse 不猜）。
+	webhookAnswerBytes = 4 * 1024
+
 	// EnvAllowPrivateWebhook 放行内网/环回地址的开关，仅供本机联调。
 	// 值 "1" 时整条 SSRF 防线关闭（连环回都能发），生产部署不得设置。
 	EnvAllowPrivateWebhook = "NOTIFICATION_WEBHOOK_ALLOW_PRIVATE"
 
-	// 签名头：对端用 webhook_secret 按 `sha256=<hex(hmac("<timestamp>.", body))>` 复算比对。
-	// 把时间戳折进签名而不是只签 body，是为了让"同一份 body 重放"必须同时重放时间戳，
+	// CUSTOM 风格的签名头：对端用 webhook_secret 按 `sha256=<hex(hmac("<timestamp>.", body))>`
+	// 复算比对。把时间戳折进签名而不是只签 body，是为了让"同一份 body 重放"必须同时重放时间戳，
 	// 对端据此拒收旧消息；只签 body 的话重放是逐字节免费的。
+	// 其余风格不把签名放头里（见 webhook_style.go 的 buildWebhookOutbound）。
 	headerSignature = "X-Gw-Signature"
 	headerTimestamp = "X-Gw-Timestamp"
 )
@@ -78,6 +82,9 @@ var webhookBlockedNets = mustParseNets(
 // "这条到底发去了哪里"，让 sender 私自解析地址等于把这一列的来源挪到一个不回写的地方。
 // webhook_url 的作用域因此是"这条渠道该发到哪"的登记值 + 预检门槛，
 // 并由测试投递入口在管理员留空时兜出来（见 service/notification_rule_service.go）。
+//
+// 发成什么形状（签名怎么算、放哪、正文长什么样、用什么判成败）不在这儿写死：
+// 由渠道行的 webhook_sign_style / webhook_payload_template 两列决定，见 webhook_style.go。
 type WebhookSender struct {
 	channel *data.NotificationChannelRepo
 	client  *http.Client
@@ -215,9 +222,16 @@ func (s *WebhookSender) Channel() notificationV1.Channel {
 }
 
 // Precheck 只解析渠道配置并自检可用性，不拨号。见 channel.Prechecker。
+//
+// 自检包含"这条渠道的模板渲染得出合法 JSON"：一次性验证码躺在队列里等四次重试
+// 才失败，和压根没配渠道一样是没发出去，但台账会记成 FAILED 且验证码已经过期。
 func (s *WebhookSender) Precheck(ctx context.Context, channelID uint32) error {
-	_, err := s.pickAccount(ctx, channelID)
-	return err
+	account, err := s.pickAccount(ctx, channelID)
+	if err != nil {
+		return err
+	}
+
+	return precheckWebhookAccount(account)
 }
 
 // Send 投递一次回调。返回 error 一律是"投递失败"（含渠道不可用），
@@ -237,28 +251,42 @@ func (s *WebhookSender) Send(ctx context.Context, req *SendRequest) (*SendReceip
 		return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("%w: %v", ErrChannelNotConfigured, err)
 	}
 
-	body, err := json.Marshal(webhookPayload{
-		EventType:       req.EventType.String(),
-		Title:           req.Title,
-		Content:         req.Content,
-		RecipientUserID: req.RecipientUserID,
-		RelatedID:       req.RelatedID,
-		DeliveredAt:     time.Now().UTC().Format(time.RFC3339),
-	})
+	style, err := resolveWebhookStyle(account.SignStyle)
 	if err != nil {
-		return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("webhook: encode payload failed: %w", err)
+		return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("%w: %v", ErrChannelNotConfigured, err)
 	}
 
-	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(body))
+	outbound, err := buildWebhookOutbound(style, account, req)
+	if err != nil {
+		return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("%w: %v", ErrChannelNotConfigured, err)
+	}
+
+	if outbound.query != nil {
+		// 钉钉把签名拼在 URL query 上：保留对端原本要看的 access_token 等参数，只追加两个键。
+		u, parseErr := url.Parse(endpoint)
+		if parseErr != nil {
+			return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("%w: %v", ErrChannelNotConfigured, parseErr)
+		}
+		q := u.Query()
+		for key, values := range outbound.query {
+			q.Del(key)
+			for _, v := range values {
+				q.Add(key, v)
+			}
+		}
+		u.RawQuery = q.Encode()
+		endpoint = u.String()
+	}
+
+	httpReq, err := http.NewRequestWithContext(ctx, http.MethodPost, endpoint, bytes.NewReader(outbound.body))
 	if err != nil {
 		return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("webhook: build request for channel [%d] failed: %w", account.ID, err)
 	}
 	httpReq.Header.Set("Content-Type", "application/json; charset=utf-8")
 	httpReq.Header.Set("User-Agent", "go-wind-admin-notification/1.0")
-	if account.Secret != "" {
-		ts := strconv.FormatInt(time.Now().Unix(), 10)
-		httpReq.Header.Set(headerTimestamp, ts)
-		httpReq.Header.Set(headerSignature, "sha256="+signWebhookBody(account.Secret, ts, body))
+	if outbound.signatureHeader != "" {
+		httpReq.Header.Set(headerTimestamp, outbound.timestampHeader)
+		httpReq.Header.Set(headerSignature, outbound.signatureHeader)
 	}
 
 	resp, err := s.client.Do(httpReq)
@@ -271,14 +299,26 @@ func (s *WebhookSender) Send(ctx context.Context, req *SendRequest) (*SendReceip
 		return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("send webhook via channel [%d] failed: %w", account.ID, err)
 	}
 	defer func() {
-		_, _ = io.Copy(io.Discard, io.LimitReader(resp.Body, webhookMaxResponseBytes))
 		_ = resp.Body.Close()
 	}()
 
+	// 读满一个足够装下"对端那句结论"的量：三家的应答都是几百字节的小 JSON。
+	// 只读不排空就 Close，keep-alive 连接会作废——但回调是低频出站，不值得为它多读一整页 HTML。
+	snippet, readErr := io.ReadAll(io.LimitReader(resp.Body, webhookAnswerBytes))
+
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		snippet, _ := io.ReadAll(io.LimitReader(resp.Body, webhookMaxResponseBytes))
 		return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("send webhook via channel [%d] failed: peer answered %s: %s",
-			account.ID, resp.Status, string(snippet))
+			account.ID, resp.Status, truncateForError(snippet))
+	}
+
+	// 2xx 之后才轮到 body 说话：钉钉/飞书/企微在拦下消息时给的仍然是 200。
+	if verdictFieldOf(style) != "" {
+		if readErr != nil && readErr != io.EOF {
+			return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("send webhook via channel [%d] failed: read peer answer: %w", account.ID, readErr)
+		}
+		if verdictErr := checkProviderResponse(style, snippet); verdictErr != nil {
+			return &SendReceipt{ChannelID: account.ID}, fmt.Errorf("send webhook via channel [%d] failed: %w", account.ID, verdictErr)
+		}
 	}
 
 	return &SendReceipt{ChannelID: account.ID}, nil

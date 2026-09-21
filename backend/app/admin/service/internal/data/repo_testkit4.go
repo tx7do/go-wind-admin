@@ -24,10 +24,8 @@ import (
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/accesskey"
-	"go-wind-admin/app/admin/service/internal/data/ent/notificationchannel"
 
 	accesskeyV1 "go-wind-admin/api/gen/go/access_key/service/v1"
-	notificationChannelV1 "go-wind-admin/api/gen/go/notification_channel/service/v1"
 )
 
 // NewAccessKeyRepoForTest 与生产 NewAccessKeyRepo 逐字段一致（log 换 NopLogger），并调用 init()。
@@ -47,24 +45,8 @@ func NewAccessKeyRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *AccessK
 	return repo
 }
 
-// NewNotificationChannelRepoForTest 与生产 NewNotificationChannelRepo 逐字段一致
-// （log 换 NopLogger），并调用 init()。
+// NewNotificationChannelRepoForTest 与生产 NewNotificationChannelRepo 走同一条装配路径
+// （log 换 NopLogger），converter 清单因此不会与生产漂移。
 func NewNotificationChannelRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *NotificationChannelRepo {
-	repo := &NotificationChannelRepo{
-		log:       bLogger.NewHelper(bLogger.NopLogger()),
-		entClient: entClient,
-		mapper:    mapper.NewCopierMapper[notificationChannelV1.NotificationChannel, ent.NotificationChannel](),
-		typeConverter: mapper.NewEnumTypeConverter[notificationChannelV1.NotificationChannel_Type, notificationchannel.Type](
-			notificationChannelV1.NotificationChannel_Type_name,
-			notificationChannelV1.NotificationChannel_Type_value,
-		),
-		tlsConverter: mapper.NewEnumTypeConverter[notificationChannelV1.NotificationChannel_TlsMode, notificationchannel.SMTPTLS](
-			notificationChannelV1.NotificationChannel_TlsMode_name,
-			notificationChannelV1.NotificationChannel_TlsMode_value,
-		),
-	}
-
-	repo.init()
-
-	return repo
+	return newNotificationChannelRepo(bLogger.NewHelper(bLogger.NopLogger()), entClient)
 }

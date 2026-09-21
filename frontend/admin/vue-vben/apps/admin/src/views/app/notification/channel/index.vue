@@ -86,6 +86,12 @@ const gridOptions: VxeGridProps<NotificationChannel> = {
       showOverflow: 'tooltip',
     },
     {
+      title: $t('page.notificationChannel.webhookSignStyle'),
+      field: 'webhookSignStyle',
+      width: 130,
+      slots: { default: 'signStyle' },
+    },
+    {
       title: $t('page.notificationChannel.hasPassword'),
       field: 'hasPassword',
       width: 100,
@@ -145,6 +151,43 @@ function typeColor(type?: string): string {
   return (type && map[type]) || 'default';
 }
 
+// 出站风格：值与后端 webhook_style.go 里的同一组字符串逐字相同（枚举按名字配对）。
+// 这一列可空，读到空值时按 CUSTOM 显示——它的实际行为就是 CUSTOM，写"自有方案"比 "-" 更像事实；
+//（本机实测：PG 加列带 DEFAULT，存量行已被回填成 'CUSTOM'，空值只剩直接写 SQL 置 NULL 的行。）
+// EMAIL 行没有这一列，才显示 "-"。
+function signStyleLabel(row: NotificationChannel): string {
+  if (row.type !== 'WEBHOOK') return '-';
+  const map: Record<string, string> = {
+    CUSTOM: $t('page.notificationChannel.signStyleCustom'),
+    NONE: $t('page.notificationChannel.signStyleNone'),
+    DINGTALK: $t('page.notificationChannel.signStyleDingtalk'),
+    FEISHU: $t('page.notificationChannel.signStyleFeishu'),
+    WECOM: $t('page.notificationChannel.signStyleWecom'),
+  };
+  return map[row.webhookSignStyle || 'CUSTOM'] || '-';
+}
+
+/**
+ * 载荷模板的可引用变量清单。不写进词条：这些名字是接口契约的一部分（三种语言都不译），
+ * 而且 vue-i18n 会把消息里的花括号当插值语法解析。
+ */
+const WEBHOOK_TEMPLATE_VARS = [
+  'title',
+  'content',
+  'event_type',
+  'timestamp',
+  'sign',
+  'nonce',
+  'recipient_user_id',
+  'related_id',
+  'delivered_at',
+]
+  .map((name) => `{{${name}}}`)
+  .join(' ');
+
+// 示例取自钉钉那一档的内置形状：留空时后端就发这个形状，示例只是提示"可以改写"。
+const WEBHOOK_TEMPLATE_EXAMPLE = '{"msgtype":"text","text":{"content":"{{title}}"}}';
+
 // ============ 创建/编辑 ============
 const editOpen = ref(false);
 const editMode = ref<'create' | 'edit'>('create');
@@ -160,6 +203,8 @@ const form = reactive({
   smtpFrom: '',
   smtpTls: 'START_TLS',
   webhookUrl: '',
+  webhookSignStyle: 'CUSTOM',
+  webhookPayloadTemplate: '',
   webhookSecret: '',
   enabled: true,
   remark: '',
@@ -171,7 +216,8 @@ function openCreate() {
   Object.assign(form, {
     name: '', type: 'EMAIL', smtpHost: '', smtpPort: 587, smtpUsername: '',
     password: '', smtpFrom: '', smtpTls: 'START_TLS',
-    webhookUrl: '', webhookSecret: '',
+    webhookUrl: '', webhookSignStyle: 'CUSTOM', webhookPayloadTemplate: '',
+    webhookSecret: '',
     enabled: true, remark: '',
   });
   editOpen.value = true;
@@ -191,6 +237,8 @@ function openEdit(row: NotificationChannel) {
     smtpFrom: row.smtpFrom || '',
     smtpTls: row.smtpTls || 'START_TLS',
     webhookUrl: row.webhookUrl || '',
+    webhookSignStyle: row.webhookSignStyle || 'CUSTOM',
+    webhookPayloadTemplate: row.webhookPayloadTemplate || '',
     webhookSecret: '',
     enabled: !!row.enabled,
     remark: row.remark || '',
@@ -211,6 +259,8 @@ function buildChannelData(): Record<string, any> {
   };
   if (form.type === 'WEBHOOK') {
     data.webhookUrl = form.webhookUrl;
+    data.webhookSignStyle = form.webhookSignStyle;
+    data.webhookPayloadTemplate = form.webhookPayloadTemplate;
   } else {
     data.smtpHost = form.smtpHost;
     data.smtpPort = form.smtpPort;
@@ -253,7 +303,7 @@ async function handleSave() {
         password,
         webhookSecret,
         updateMask:
-          'name,type,smtpHost,smtpPort,smtpUsername,smtpFrom,smtpTls,webhookUrl,enabled,remark',
+          'name,type,smtpHost,smtpPort,smtpUsername,smtpFrom,smtpTls,webhookUrl,webhookSignStyle,webhookPayloadTemplate,enabled,remark',
       });
       message.success($t('page.notificationChannel.updateSuccess'));
     }
@@ -343,6 +393,10 @@ async function handleTestSend() {
         <template v-else>-</template>
       </template>
       <template #tls="{ row }">{{ tlsLabel(row.smtpTls) }}</template>
+      <template #signStyle="{ row }">
+        <a-tag v-if="row.type === 'WEBHOOK'">{{ signStyleLabel(row) }}</a-tag>
+        <template v-else>-</template>
+      </template>
       <template #hasPassword="{ row }">
         <a-tag v-if="row.hasPassword" color="success">
           {{ $t('page.notificationChannel.passwordSet') }}
@@ -423,6 +477,41 @@ async function handleTestSend() {
             <a-input
               v-model:value="form.webhookUrl"
               placeholder="https://example.com/hooks/notification"
+            />
+          </a-form-item>
+          <a-form-item
+            :label="$t('page.notificationChannel.webhookSignStyle')"
+            :help="$t('page.notificationChannel.webhookSignStyleHint')"
+          >
+            <a-select v-model:value="form.webhookSignStyle">
+              <a-select-option value="CUSTOM">
+                {{ $t('page.notificationChannel.signStyleCustom') }}
+              </a-select-option>
+              <a-select-option value="NONE">
+                {{ $t('page.notificationChannel.signStyleNone') }}
+              </a-select-option>
+              <a-select-option value="DINGTALK">
+                {{ $t('page.notificationChannel.signStyleDingtalk') }}
+              </a-select-option>
+              <a-select-option value="FEISHU">
+                {{ $t('page.notificationChannel.signStyleFeishu') }}
+              </a-select-option>
+              <a-select-option value="WECOM">
+                {{ $t('page.notificationChannel.signStyleWecom') }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+          <!-- 留空 = 用该风格的内置默认正文（内置形状由后端 webhook_style.go 持有，
+               这里不复制一份，否则两处会漂）。 -->
+          <a-form-item
+            :label="$t('page.notificationChannel.webhookPayloadTemplate')"
+            :help="$t('page.notificationChannel.webhookPayloadTemplateHint', { vars: WEBHOOK_TEMPLATE_VARS })"
+          >
+            <a-textarea
+              v-model:value="form.webhookPayloadTemplate"
+              :rows="3"
+              :placeholder="WEBHOOK_TEMPLATE_EXAMPLE"
+              class="font-mono"
             />
           </a-form-item>
           <a-form-item

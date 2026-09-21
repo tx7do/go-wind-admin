@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -20,26 +19,11 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/enttest"
 )
 
-// newNotificationChannelRepoSqlite 白盒构造 NotificationChannelRepo：
-// 逐字段复刻 NewNotificationChannelRepo 的 mapper/converter 初始化并调用 init()，
+// newNotificationChannelRepoSqlite 白盒构造 NotificationChannelRepo：与生产走同一条装配路径，
 // 仅将 log 换为 NopLogger、entClient 换为 SQLite 内存库测试 client。
 func newNotificationChannelRepoSqlite(t *testing.T, entClient *entCrud.EntClient[*ent.Client]) *NotificationChannelRepo {
 	t.Helper()
-	repo := &NotificationChannelRepo{
-		entClient: entClient,
-		log:       bLogger.NewHelper(bLogger.NopLogger()),
-		mapper:    mapper.NewCopierMapper[notificationChannelV1.NotificationChannel, ent.NotificationChannel](),
-		typeConverter: mapper.NewEnumTypeConverter[notificationChannelV1.NotificationChannel_Type, notificationchannel.Type](
-			notificationChannelV1.NotificationChannel_Type_name,
-			notificationChannelV1.NotificationChannel_Type_value,
-		),
-		tlsConverter: mapper.NewEnumTypeConverter[notificationChannelV1.NotificationChannel_TlsMode, notificationchannel.SMTPTLS](
-			notificationChannelV1.NotificationChannel_TlsMode_name,
-			notificationChannelV1.NotificationChannel_TlsMode_value,
-		),
-	}
-	repo.init()
-	return repo
+	return newNotificationChannelRepo(bLogger.NewHelper(bLogger.NopLogger()), entClient)
 }
 
 // TestNotificationChannelRepoSqlite_Create 验证 Create 的字段级落库：
@@ -674,6 +658,153 @@ func TestNotificationChannelRepoSqlite_WebhookColumns(t *testing.T) {
 	require.Equal(t, "https://hooks.example.test/rotated", *row2.WebhookURL, "掩码外的 webhook_url 应保持原值")
 	require.Equal(t, "wh-secret-2", *row2.WebhookSecret, "未携带密钥时不该清空已存密钥")
 	require.Equal(t, "只改备注", *row2.Remark)
+}
+
+// TestNotificationChannelRepoSqlite_WebhookSignStyleColumns 验证本块新加两列的全链路读写：
+// 写侧枚举落成列值字符串、读侧经 converter 回到 DTO 成员，以及投递侧唯一取数口
+// （GetDecryptedWebhookAccount / GetFirstEnabledWebhookChannel）有没有把两列带进 WebhookAccount。
+//
+// 枚举这一趟必须实测而不能靠看一眼：repo 的 EnumTypeConverter 按**名字字符串**配对，
+// proto 成员名与 ent 列值只要有一侧被加前缀，编译与 vet 都不报错，读写各自静默退化成
+// nil / 列默认值——线上表现是"管理员选了钉钉，出去的一直是 CUSTOM 那份 JSON"。
+func TestNotificationChannelRepoSqlite_WebhookSignStyleColumns(t *testing.T) {
+	entClient := enttest.NewEntClientForTest(t)
+	repo := newNotificationChannelRepoSqlite(t, entClient)
+	ctx := enttest.NewSystemViewerCtx(context.Background())
+
+	const dingTemplate = `{"msgtype":"text","text":{"content":"{{title}}\n{{content}}"}}`
+
+	idDing, err := repo.Create(ctx, &notificationChannelV1.CreateNotificationChannelRequest{
+		Data: &notificationChannelV1.NotificationChannel{
+			Name:                   trans.Ptr("wh-style-ding"),
+			Type:                   notificationChannelV1.NotificationChannel_WEBHOOK.Enum(),
+			WebhookUrl:             trans.Ptr("https://oapi.example.test/robot?access_token=t"),
+			Enabled:                trans.Ptr(true),
+			WebhookSignStyle:       notificationChannelV1.SignStyle_DINGTALK.Enum(),
+			WebhookPayloadTemplate: trans.Ptr(dingTemplate),
+		},
+	}, 1)
+	require.NoError(t, err)
+
+	row, err := entClient.Client().NotificationChannel.Get(ctx, idDing)
+	require.NoError(t, err)
+	require.NotNil(t, row.WebhookSignStyle)
+	require.Equal(t, notificationchannel.WebhookSignStyleDingtalk, *row.WebhookSignStyle,
+		"枚举要落成列值字符串（不是数字）：converter 就是按名字配对的")
+	require.NotNil(t, row.WebhookPayloadTemplate)
+	require.Equal(t, dingTemplate, *row.WebhookPayloadTemplate, "模板原样入库——校验与渲染是 sender 的事")
+
+	dto, err := repo.Get(ctx, idDing)
+	require.NoError(t, err)
+	require.Equal(t, notificationChannelV1.SignStyle_DINGTALK, dto.GetWebhookSignStyle())
+	require.Equal(t, dingTemplate, dto.GetWebhookPayloadTemplate())
+
+	items, err := repo.List(ctx, &paginationV1.PagingRequest{})
+	require.NoError(t, err)
+	require.Len(t, items.GetItems(), 1)
+	require.Equal(t, notificationChannelV1.SignStyle_DINGTALK, items.GetItems()[0].GetWebhookSignStyle(),
+		"列表列与编辑表单回填读的是 List 这一条路径，与 Get 共用 converter 但值得各钉一次")
+
+	acct, err := repo.GetDecryptedWebhookAccount(ctx, idDing)
+	require.NoError(t, err)
+	require.Equal(t, "DINGTALK", acct.SignStyle, "sender 只看 WebhookAccount，两列必须在这儿落地")
+	require.Equal(t, dingTemplate, acct.PayloadTemplate)
+
+	first, err := repo.GetFirstEnabledWebhookChannel(ctx)
+	require.NoError(t, err)
+	require.Equal(t, idDing, first.ID)
+	require.Equal(t, "DINGTALK", first.SignStyle)
+	require.Equal(t, dingTemplate, first.PayloadTemplate)
+
+	// 未传风格：SetNillable 跳过该列 → 落 ent 的列默认值（新建行不会是 NULL，
+	// NULL 只代表这两列加进来之前就存在的存量行）。
+	idPlain, err := repo.Create(ctx, &notificationChannelV1.CreateNotificationChannelRequest{
+		Data: &notificationChannelV1.NotificationChannel{
+			Name:       trans.Ptr("wh-style-plain"),
+			Type:       notificationChannelV1.NotificationChannel_WEBHOOK.Enum(),
+			WebhookUrl: trans.Ptr("https://plain.example.test/hook"),
+			Enabled:    trans.Ptr(true),
+		},
+	}, 1)
+	require.NoError(t, err)
+
+	rowPlain, err := entClient.Client().NotificationChannel.Get(ctx, idPlain)
+	require.NoError(t, err)
+	require.NotNil(t, rowPlain.WebhookSignStyle)
+	require.Equal(t, notificationchannel.WebhookSignStyleCustom, *rowPlain.WebhookSignStyle)
+	require.Nil(t, rowPlain.WebhookPayloadTemplate, "模板没有默认值：留空即 NULL，由 sender 按风格取内置形状")
+
+	// 越界的枚举数值（protojson 允许数字形式的枚举字段）：converter 查不到名字就返回 nil，
+	// 于是这一列按没传处理。记在这儿是因为它是**静默**的——将来若加校验，这条断言会先响。
+	idJunk, err := repo.Create(ctx, &notificationChannelV1.CreateNotificationChannelRequest{
+		Data: &notificationChannelV1.NotificationChannel{
+			Name:             trans.Ptr("wh-style-junk"),
+			Type:             notificationChannelV1.NotificationChannel_WEBHOOK.Enum(),
+			Enabled:          trans.Ptr(true),
+			WebhookSignStyle: notificationChannelV1.SignStyle(999).Enum(),
+		},
+	}, 1)
+	require.NoError(t, err)
+	rowJunk, err := entClient.Client().NotificationChannel.Get(ctx, idJunk)
+	require.NoError(t, err)
+	require.Equal(t, notificationchannel.WebhookSignStyleCustom, *rowJunk.WebhookSignStyle,
+		"认不出的枚举值落列默认值 CUSTOM，而不是把 999 塞进 enum 列（ent 的列校验会 500）")
+
+	// 存量行：把两列清成 NULL，验读取链路对"迁移前就存在的行"的表现。
+	require.NoError(t, entClient.Client().NotificationChannel.UpdateOneID(idPlain).
+		ClearWebhookSignStyle().ClearWebhookPayloadTemplate().Exec(ctx))
+
+	dtoLegacy, err := repo.Get(ctx, idPlain)
+	require.NoError(t, err)
+	require.Equal(t, notificationChannelV1.SignStyle_CUSTOM, dtoLegacy.GetWebhookSignStyle(),
+		"NULL 读回来是零值，而零值恰好就是 CUSTOM：读侧不必判空")
+
+	acctLegacy, err := repo.GetDecryptedWebhookAccount(ctx, idPlain)
+	require.NoError(t, err)
+	require.Empty(t, acctLegacy.SignStyle, "账号结构里保留 NULL 的原样（空串），归一化留给 sender 报错/兜默认")
+	require.Empty(t, acctLegacy.PayloadTemplate)
+
+	// 掩码内只改风格：模板不在掩码里，必须保持原值。
+	require.NoError(t, repo.Update(ctx, &notificationChannelV1.UpdateNotificationChannelRequest{
+		Id:            idDing,
+		UpdateMask:    &fieldmaskpb.FieldMask{Paths: []string{"webhook_sign_style"}},
+		Data:          &notificationChannelV1.NotificationChannel{WebhookSignStyle: notificationChannelV1.SignStyle_FEISHU.Enum()},
+		WebhookSecret: trans.Ptr("ding-rotated-secret"),
+	}, 2))
+	row, err = entClient.Client().NotificationChannel.Get(ctx, idDing)
+	require.NoError(t, err)
+	require.Equal(t, notificationchannel.WebhookSignStyleFeishu, *row.WebhookSignStyle)
+	require.Equal(t, dingTemplate, *row.WebhookPayloadTemplate, "改风格不该顺手清空模板")
+
+	dto, err = repo.Get(ctx, idDing)
+	require.NoError(t, err)
+	require.Equal(t, notificationChannelV1.SignStyle_FEISHU, dto.GetWebhookSignStyle())
+
+	// 只动备注：两列都保持。
+	require.NoError(t, repo.Update(ctx, &notificationChannelV1.UpdateNotificationChannelRequest{
+		Id:         idDing,
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"remark"}},
+		Data:       &notificationChannelV1.NotificationChannel{Remark: trans.Ptr("只改备注")},
+	}, 3))
+	row, err = entClient.Client().NotificationChannel.Get(ctx, idDing)
+	require.NoError(t, err)
+	require.Equal(t, notificationchannel.WebhookSignStyleFeishu, *row.WebhookSignStyle, "掩码外的风格应保持原值")
+	require.Equal(t, dingTemplate, *row.WebhookPayloadTemplate, "掩码外的模板应保持原值")
+
+	// 模板清空：写进去的是空串而不是 NULL —— 空串的语义是"用该风格的内置默认形状"。
+	require.NoError(t, repo.Update(ctx, &notificationChannelV1.UpdateNotificationChannelRequest{
+		Id:         idDing,
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"webhook_payload_template"}},
+		Data:       &notificationChannelV1.NotificationChannel{WebhookPayloadTemplate: trans.Ptr("")},
+	}, 4))
+	row, err = entClient.Client().NotificationChannel.Get(ctx, idDing)
+	require.NoError(t, err)
+	require.NotNil(t, row.WebhookPayloadTemplate)
+	require.Equal(t, "", *row.WebhookPayloadTemplate)
+	acct, err = repo.GetDecryptedWebhookAccount(ctx, idDing)
+	require.NoError(t, err)
+	require.Empty(t, acct.PayloadTemplate)
+	require.Equal(t, "FEISHU", acct.SignStyle, "改模板也不该动风格")
 }
 
 // TestNotificationChannelRepoSqlite_GetFirstEnabledWebhookChannel 验证自选 WEBHOOK 账号
