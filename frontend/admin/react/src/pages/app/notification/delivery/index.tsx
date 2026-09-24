@@ -59,9 +59,9 @@ const eventTypeOptions = (t: (key: string) => string) =>
 const channelOptions = (t: (key: string) => string) =>
   (['EMAIL', 'WEBHOOK', 'INTERNAL'] as const).map((value) => ({ value, label: t(`channelMap.${value}`) }));
 
-// ProTable 的 sorter key 来自 dataIndex（camelCase），而 orderBy 要的是数据库列名。
-// 直接透传 "createdAt" 在 sqlite 上实测为"静默不参与排序"（go-crud 的列白名单对本仓表
-// fail-open，非法列不报错也不生效），换成蛇形才真按投递时间排。
+// ProTable 的 sorter key 来自 dataIndex（camelCase），这里显式转成数据库列名，与台账列口径对齐。
+// （后端 orderBy 的 JSON 数组形自己会做 camel→snake 归一，透传驼峰也排得动；但拼错的列名
+//   不会被静默丢掉，而是整条查询报错 —— 两形差异与实测见 docs/list_query_rule.md）
 const toSnakeCase = (key: string) => key.replace(/[A-Z]/g, (c) => `_${c.toLowerCase()}`);
 
 const NotificationDeliveryPage = () => {
