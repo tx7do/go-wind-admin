@@ -67,9 +67,9 @@ func decodeJWTHeader(t *testing.T, headerSeg string) string {
 
 func TestNewAdminAuthenticator_RS256(t *testing.T) {
 	jwtCfg := &conf.Authentication_Jwt{
-		Method:      "RS256",
-		PrivateKey:  ptrString(testRSAPrivateKey),
-		PublicKey:   ptrString(testRSAPublicKey),
+		Method:     "RS256",
+		PrivateKey: ptrString(testRSAPrivateKey),
+		PublicKey:  ptrString(testRSAPublicKey),
 	}
 
 	auth, err := newAdminAuthenticator(jwtCfg)

@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	crudViewer "github.com/tx7do/go-crud/viewer"
@@ -58,8 +58,8 @@ func TestInternalMessageRecipientRepoSqlite_EnumReadback(t *testing.T) {
 	type enumCase struct {
 		marker    uint32
 		status    *internalMessageV1.InternalMessageRecipient_Status // nil=未指定 → 落 NULL
-		wantNil   bool                                              // 未指定行：ent/DTO 侧 status 堆 nil
-		wantProto internalMessageV1.InternalMessageRecipient_Status // 显式行：读回期望
+		wantNil   bool                                               // 未指定行：ent/DTO 侧 status 堆 nil
+		wantProto internalMessageV1.InternalMessageRecipient_Status  // 显式行：读回期望
 		wantEnt   entInternalMessageRecipient.Status
 	}
 	cases := []enumCase{}

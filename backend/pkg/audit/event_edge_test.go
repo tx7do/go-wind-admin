@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func contextBackground() context.Context       { return context.Background() }
+func contextBackground() context.Context { return context.Background() }
 func contextWithValue(ctx context.Context, k, v any) context.Context {
 	return context.WithValue(ctx, k, v)
 }

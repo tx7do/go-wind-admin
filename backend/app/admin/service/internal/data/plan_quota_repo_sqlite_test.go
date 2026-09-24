@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"testing"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -28,7 +28,7 @@ func newPlanQuotaRepoSqlite(t *testing.T, entClient *entCrud.EntClient[*ent.Clie
 	repo := &PlanQuotaRepo{
 		entClient: entClient,
 		log:       bLogger.NewHelper(bLogger.NopLogger()),
-		mapper:     mapper.NewCopierMapper[identityV1.PlanQuota, ent.PlanQuota](),
+		mapper:    mapper.NewCopierMapper[identityV1.PlanQuota, ent.PlanQuota](),
 		quotaTypeConv: mapper.NewEnumTypeConverter[identityV1.PlanQuota_QuotaType, planquota.QuotaType](
 			identityV1.PlanQuota_QuotaType_name, identityV1.PlanQuota_QuotaType_value,
 		),
@@ -177,7 +177,7 @@ func TestPlanQuotaRepoSqlite_Get(t *testing.T) {
 //
 // 枚举字段读视图机制注记：实体侧 quota_type 为可空指针枚举列
 // （*planquota.QuotaType），DTO 侧为可选指针字段。mapper 的枚举转换对
-//（经 &srcType/&dstType 取址注册）恰为指针↔指针形态的键，指针对字段能被
+// （经 &srcType/&dstType 取址注册）恰为指针↔指针形态的键，指针对字段能被
 // copier 直接转换赋值——与值型实体枚举列（如 position.type、
 // notification_channel.type）读侧被丢弃的情形不同。本测试将该读视图行为钉死。
 // 注：PLAN_QUOTA_TYPE_UNSPECIFIED 为 ent schema 未声明的值，直传会触发

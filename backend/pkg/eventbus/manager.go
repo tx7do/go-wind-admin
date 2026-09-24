@@ -9,10 +9,10 @@ import (
 
 // Manager manages multiple event buses and provides a global interface
 type Manager struct {
-	mu       sync.RWMutex
-	buses    map[string]EventBus
-	global   EventBus
-	logger   *bLogger.Helper
+	mu     sync.RWMutex
+	buses  map[string]EventBus
+	global EventBus
+	logger *bLogger.Helper
 }
 
 // NewManager creates a new event bus manager

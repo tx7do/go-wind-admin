@@ -1,11 +1,11 @@
 // Package password 提供等保要求的口令策略：复杂度、有效期、历史口令。
 // 阈值不再读环境变量，统一从 sys_config 平台参数（参数管理页可改）读取：
 //
-//	r.configRepo.GetConfigInt(ctx, passwordPolicy.ConfigKeyMinLen, passwordPolicy.DefaultMinLen)
+//		r.configRepo.GetConfigInt(ctx, passwordPolicy.ConfigKeyMinLen, passwordPolicy.DefaultMinLen)
 //
-//   - sys.password.minLen       最小长度，默认 DefaultMinLen
-//   - sys.password.maxAgeDays   有效期天数，默认 DefaultMaxAgeDays；<=0 表示不启用有效期
-//   - sys.password.historyCount 历史口令保留条数，默认 DefaultHistoryCount；<=0 表示不启用历史检查
+//	  - sys.password.minLen       最小长度，默认 DefaultMinLen
+//	  - sys.password.maxAgeDays   有效期天数，默认 DefaultMaxAgeDays；<=0 表示不启用有效期
+//	  - sys.password.historyCount 历史口令保留条数，默认 DefaultHistoryCount；<=0 表示不启用历史检查
 //
 // 内置键随服务启动播种进 sys_configs（is_built_in，可改不可删），
 // 修改经参数管理页落库后即时生效（ConfigRepo 缓存写路径同步失效）。

@@ -39,11 +39,11 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	crudViewer "github.com/tx7do/go-crud/viewer"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	crudViewer "github.com/tx7do/go-crud/viewer"
 
-	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	taskV1 "go-wind-admin/api/gen/go/task/service/v1"
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/ent"
@@ -103,13 +103,13 @@ func newTaskServiceForTest(t *testing.T, scheduler TaskScheduler, withTenantUsag
 	t.Helper()
 	entClient := enttest.NewEntClientForTest(t)
 	svc := &TaskService{
-		log:                bLogger.NewHelper(bLogger.NopLogger()),
-		taskRepo:           data.NewTaskRepoForTest(entClient),
-		userRepo:           nil,
-		backupRepo:         nil,
-		tenantUsageRepo:    nil,
+		log:                 bLogger.NewHelper(bLogger.NopLogger()),
+		taskRepo:            data.NewTaskRepoForTest(entClient),
+		userRepo:            nil,
+		backupRepo:          nil,
+		tenantUsageRepo:     nil,
 		auditLogArchiveRepo: nil,
-		mc:                 nil,
+		mc:                  nil,
 	}
 	if withTenantUsage {
 		svc.tenantUsageRepo = data.NewTenantUsageRepoForTest(entClient, nil)

@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
@@ -35,26 +35,26 @@ func seedOneRowPerAuditTable(t *testing.T, client *ent.Client, ctx context.Conte
 	t.Helper()
 	require.NoError(t, client.ApiAuditLog.Create().
 		SetCreatedAt(time.Now()).
-		SetNillableUsername(trans.Ptr("archive_user_" + suffix)).
+		SetNillableUsername(trans.Ptr("archive_user_"+suffix)).
 		Exec(ctx), "直插 sys_api_audit_logs 应成功")
 	require.NoError(t, client.LoginAuditLog.Create().
 		SetCreatedAt(time.Now()).
-		SetNillableUsername(trans.Ptr("archive_user_" + suffix)).
+		SetNillableUsername(trans.Ptr("archive_user_"+suffix)).
 		Exec(ctx), "直插 sys_login_audit_logs 应成功")
 	require.NoError(t, client.OperationAuditLog.Create().
 		SetCreatedAt(time.Now()).
-		SetNillableResourceType(trans.Ptr("archive_res_" + suffix)).
+		SetNillableResourceType(trans.Ptr("archive_res_"+suffix)).
 		Exec(ctx), "直插 sys_operation_audit_logs 应成功")
 	require.NoError(t, client.PermissionAuditLog.Create().
 		SetCreatedAt(time.Now()).
 		SetIPAddress("10.9.9.9").
 		SetRequestID("req-archive-"+suffix).
 		SetReason("archive reason "+suffix).
-		SetNillableTargetType(trans.Ptr("archive_tgt_" + suffix)).
+		SetNillableTargetType(trans.Ptr("archive_tgt_"+suffix)).
 		Exec(ctx), "直插 sys_permission_audit_logs 应成功")
 	require.NoError(t, client.DataAccessAuditLog.Create().
 		SetCreatedAt(time.Now()).
-		SetNillableDataSource(trans.Ptr("archive_ds_" + suffix)).
+		SetNillableDataSource(trans.Ptr("archive_ds_"+suffix)).
 		Exec(ctx), "直插 sys_data_access_audit_logs 应成功")
 	require.NoError(t, client.PolicyEvaluationLog.Create().
 		SetCreatedAt(time.Now()).
@@ -62,7 +62,7 @@ func seedOneRowPerAuditTable(t *testing.T, client *ent.Client, ctx context.Conte
 		SetMembershipID(1).
 		SetPermissionID(1).
 		SetIPAddress("10.9.9.9").
-		SetNillableRequestPath(trans.Ptr("/archive/" + suffix)).
+		SetNillableRequestPath(trans.Ptr("/archive/"+suffix)).
 		Exec(ctx), "直插 sys_policy_evaluation_logs 应成功")
 }
 
@@ -97,12 +97,12 @@ func TestAuditLogArchiveRepoSqlite_ArchiveExpiredBeforeNow(t *testing.T) {
 
 	seedOneRowPerAuditTable(t, client, ctx, "future")
 	require.Equal(t, map[string]int{
-		"sys_api_audit_logs":           1,
-		"sys_login_audit_logs":         1,
-		"sys_operation_audit_logs":     1,
-		"sys_permission_audit_logs":    1,
-		"sys_data_access_audit_logs":   1,
-		"sys_policy_evaluation_logs":   1,
+		"sys_api_audit_logs":         1,
+		"sys_login_audit_logs":       1,
+		"sys_operation_audit_logs":   1,
+		"sys_permission_audit_logs":  1,
+		"sys_data_access_audit_logs": 1,
+		"sys_policy_evaluation_logs": 1,
 	}, auditTableCounts(t, client, ctx), "六张审计表应各含 1 行")
 
 	outDir := filepath.Join(t.TempDir(), "archive")
@@ -119,14 +119,13 @@ func TestAuditLogArchiveRepoSqlite_ArchiveExpiredBeforeNow(t *testing.T) {
 	}, results, "六张表各归档 1 行")
 
 	require.Equal(t, map[string]int{
-		"sys_api_audit_logs":           0,
-		"sys_login_audit_logs":         0,
-		"sys_operation_audit_logs":     0,
-		"sys_permission_audit_logs":    0,
-		"sys_data_access_audit_logs":   0,
-		"sys_policy_evaluation_logs":   0,
+		"sys_api_audit_logs":         0,
+		"sys_login_audit_logs":       0,
+		"sys_operation_audit_logs":   0,
+		"sys_permission_audit_logs":  0,
+		"sys_data_access_audit_logs": 0,
+		"sys_policy_evaluation_logs": 0,
 	}, auditTableCounts(t, client, ctx), "归档后六张表计数应归零")
-
 
 	// 落盘校验：每张表一份 JSONL，各含 1 行合法 JSON。
 	// 文件名为 <表名>-<stamp>.jsonl（stamp 形如 20060102-150405，自带连字符）。
@@ -179,12 +178,12 @@ func TestAuditLogArchiveRepoSqlite_ArchiveExpiredAfterNow(t *testing.T) {
 	require.Empty(t, results, "过去时间阈值应无归档行")
 
 	require.Equal(t, map[string]int{
-		"sys_api_audit_logs":           1,
-		"sys_login_audit_logs":         1,
-		"sys_operation_audit_logs":     1,
-		"sys_permission_audit_logs":    1,
-		"sys_data_access_audit_logs":   1,
-		"sys_policy_evaluation_logs":   1,
+		"sys_api_audit_logs":         1,
+		"sys_login_audit_logs":       1,
+		"sys_operation_audit_logs":   1,
+		"sys_permission_audit_logs":  1,
+		"sys_data_access_audit_logs": 1,
+		"sys_policy_evaluation_logs": 1,
 	}, auditTableCounts(t, client, ctx), "空跑后六张表行数应保留")
 
 	entries, err := os.ReadDir(outDir)

@@ -24,16 +24,16 @@ func TestMenuConvertCodeEdges(t *testing.T) {
 func TestButtonActionArms(t *testing.T) {
 	c := NewMenuPermissionConverter()
 	for title, want := range map[string]string{
-		"   ":  "act",
-		"新增":   "create",
-		"添加":   "create",
-		"保存":   "edit",
-		"更新":   "edit",
-		"删除":   "delete",
-		"移除":   "delete",
-		"导入":   "import",
-		"导出":   "export",
-		"下载":   "export",
+		"   ": "act",
+		"新增":  "create",
+		"添加":  "create",
+		"保存":  "edit",
+		"更新":  "edit",
+		"删除":  "delete",
+		"移除":  "delete",
+		"导入":  "import",
+		"导出":  "export",
+		"下载":  "export",
 		"无关词": "act",
 	} {
 		require.Equal(t, want, c.buttonAction(title), "buttonAction(%q)", title)

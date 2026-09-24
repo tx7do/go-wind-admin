@@ -12,8 +12,8 @@ import (
 	"reflect"
 	"testing"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 )
 
 // TestConvertForFormatVal 直测 float64 整数 → int 的转换与其余类型的透传。

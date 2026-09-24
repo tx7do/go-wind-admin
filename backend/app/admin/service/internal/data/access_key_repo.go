@@ -6,13 +6,13 @@ import (
 
 	"entgo.io/ent/dialect/sql"
 	entCrud "github.com/tx7do/go-crud/entgo"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/go-utils/copierutil"
-	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	"github.com/tx7do/go-utils/mapper"
+	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
-	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	accesskeyV1 "go-wind-admin/api/gen/go/access_key/service/v1"
@@ -202,8 +202,8 @@ func (r *AccessKeyRepo) Update(ctx context.Context, req *accesskeyV1.UpdateAcces
 
 			if dto.Status != nil {
 				if stEnt := r.statusConverter.ToEntity(dto.Status); stEnt != nil {
-				builder.SetStatus(*stEnt)
-			}
+					builder.SetStatus(*stEnt)
+				}
 			}
 			if dto.ExpiresAt != nil {
 				builder.SetExpiresAt(dto.ExpiresAt.AsTime())

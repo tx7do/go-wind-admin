@@ -38,11 +38,11 @@ func TestContentTypeToBucketName_OfficeSubstringsAndFallbacks(t *testing.T) {
 		// 带 MIME 参数：参数被剥离
 		{"image with params", "image/png; name=\"foo.png\"", BucketImages},
 
-	// 解析成功（标准库 TrimSpace 归一空白）后命中 image 主类型
-	{"whitespace padded image", "  image/png  ", BucketImages},
+		// 解析成功（标准库 TrimSpace 归一空白）后命中 image 主类型
+		{"whitespace padded image", "  image/png  ", BucketImages},
 
-	// 解析失败（无子类型）：畸形串不再推断主类型，直接落默认 files 桶
-	{"trailing slash parse failure defaults to files", "image/", BucketFiles},
+		// 解析失败（无子类型）：畸形串不再推断主类型，直接落默认 files 桶
+		{"trailing slash parse failure defaults to files", "image/", BucketFiles},
 
 		// multipart 等其它主类型落入默认 files
 		{"multipart main type", "multipart/form-data", BucketFiles},
@@ -177,15 +177,15 @@ func TestContentTypeToFileExtension_ExplicitArms(t *testing.T) {
 		{"vnd.ms-powerpoint", "application/vnd.ms-powerpoint", "ppt"},
 		{"presentationml presentation", "application/vnd.openxmlformats-officedocument.presentationml.presentation", "pptx"},
 
-	// 解析成功（标准库 TrimSpace 归一空白）后命中映射
-	{"whitespace padded image", "  image/png  ", "png"},
+		// 解析成功（标准库 TrimSpace 归一空白）后命中映射
+		{"whitespace padded image", "  image/png  ", "png"},
 
-	// 解析失败（无子类型）：mt 回退保留 "image/"，无任何映射命中，返回空串
-	{"trailing slash parse failure", "image/", ""},
+		// 解析失败（无子类型）：mt 回退保留 "image/"，无任何映射命中，返回空串
+		{"trailing slash parse failure", "image/", ""},
 
-	// 不在显式 switch、但 mime.ExtensionsByType 有映射的回退路径
-	//（标准库返回恒带点，函数统一剥点后返回）
-	{"image/tiff via mime fallback", "image/tiff", "tif"},
+		// 不在显式 switch、但 mime.ExtensionsByType 有映射的回退路径
+		//（标准库返回恒带点，函数统一剥点后返回）
+		{"image/tiff via mime fallback", "image/tiff", "tif"},
 
 		// 无映射：返回空串
 		{"unmapped application subtype", "application/x-custom-unknown", ""},

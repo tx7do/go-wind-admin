@@ -36,8 +36,8 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
 
-	notificationChannelV1 "go-wind-admin/api/gen/go/notification_channel/service/v1"
 	notificationV1 "go-wind-admin/api/gen/go/notification/service/v1"
+	notificationChannelV1 "go-wind-admin/api/gen/go/notification_channel/service/v1"
 )
 
 // webhookRowSeq 只给测试内的渠道名用，理由见 createWebhook。
@@ -402,8 +402,8 @@ func TestWebhookSenderSqlite_FeishuEnvelopeOnTheWire(t *testing.T) {
 	require.NoError(t, err)
 
 	var envelope struct {
-		MsgType   string `json:"msg_type"`
-		Content   struct {
+		MsgType string `json:"msg_type"`
+		Content struct {
 			Text string `json:"text"`
 		} `json:"content"`
 		Timestamp string `json:"timestamp"`

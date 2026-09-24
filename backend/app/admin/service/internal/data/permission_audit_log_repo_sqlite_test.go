@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"entgo.io/ent/dialect/sql"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 
@@ -27,7 +27,7 @@ func newPermissionAuditLogRepoSqlite(t *testing.T) *PermissionAuditLogRepo {
 	repo := &PermissionAuditLogRepo{
 		entClient: enttest.NewEntClientForTest(t),
 		log:       bLogger.NewHelper(bLogger.NopLogger()),
-		mapper:     mapper.NewCopierMapper[auditV1.PermissionAuditLog, ent.PermissionAuditLog](),
+		mapper:    mapper.NewCopierMapper[auditV1.PermissionAuditLog, ent.PermissionAuditLog](),
 		actionTypeConverter: mapper.NewEnumTypeConverter[auditV1.PermissionAuditLog_ActionType, entPermissionAuditLog.Action](
 			auditV1.PermissionAuditLog_ActionType_name, auditV1.PermissionAuditLog_ActionType_value,
 		),
@@ -44,19 +44,19 @@ func TestPermissionAuditLogRepoSqlite_Create(t *testing.T) {
 
 	err := repo.Create(ctx, &auditV1.CreatePermissionAuditLogRequest{
 		Data: &auditV1.PermissionAuditLog{
-			OperatorId:    trans.Ptr(uint32(11)),
-			OperatorName:  trans.Ptr("sqlite_perm_op"),
-			TargetType:    trans.Ptr("role"),
-			TargetId:      trans.Ptr("3"),
-			TargetName:    trans.Ptr("role-x"),
-			Action:        auditV1.PermissionAuditLog_GRANT.Enum(),
-			OldValue:      trans.Ptr(`{"perms":[]}`),
-			NewValue:      trans.Ptr(`{"perms":[1]}`),
-			IpAddress:     trans.Ptr("10.0.0.5"),
-			RequestId:     trans.Ptr("req-sqlite-pal-create-1"),
-			Reason:        trans.Ptr("业务需要"),
-			LogHash:       trans.Ptr("hash-sqlite-pal-create-1"),
-			Signature:     []byte{0x0e},
+			OperatorId:   trans.Ptr(uint32(11)),
+			OperatorName: trans.Ptr("sqlite_perm_op"),
+			TargetType:   trans.Ptr("role"),
+			TargetId:     trans.Ptr("3"),
+			TargetName:   trans.Ptr("role-x"),
+			Action:       auditV1.PermissionAuditLog_GRANT.Enum(),
+			OldValue:     trans.Ptr(`{"perms":[]}`),
+			NewValue:     trans.Ptr(`{"perms":[1]}`),
+			IpAddress:    trans.Ptr("10.0.0.5"),
+			RequestId:    trans.Ptr("req-sqlite-pal-create-1"),
+			Reason:       trans.Ptr("业务需要"),
+			LogHash:      trans.Ptr("hash-sqlite-pal-create-1"),
+			Signature:    []byte{0x0e},
 		},
 	})
 	require.NoError(t, err, "repo.Create 写入 SQLite 应成功")
@@ -137,7 +137,7 @@ func TestPermissionAuditLogRepoSqlite_ListFilterAndPaging(t *testing.T) {
 		require.NoError(t, repo.Create(ctx, &auditV1.CreatePermissionAuditLogRequest{
 			Data: &auditV1.PermissionAuditLog{
 				OperatorName: trans.Ptr(marker + "_op"),
-				Reason:        trans.Ptr(fmt.Sprintf("list-pal-%d", i)),
+				Reason:       trans.Ptr(fmt.Sprintf("list-pal-%d", i)),
 			},
 		}), "写入第 %d 行应成功", i)
 	}

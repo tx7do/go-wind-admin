@@ -24,8 +24,8 @@ import (
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 
-	notificationChannelV1 "go-wind-admin/api/gen/go/notification_channel/service/v1"
 	notificationV1 "go-wind-admin/api/gen/go/notification/service/v1"
+	notificationChannelV1 "go-wind-admin/api/gen/go/notification_channel/service/v1"
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
 	"go-wind-admin/pkg/constants"

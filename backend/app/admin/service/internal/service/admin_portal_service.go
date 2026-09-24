@@ -28,12 +28,12 @@ type AdminPortalService struct {
 
 	log *bLogger.Helper
 
-	menuRepo        *data.MenuRepo
-	roleRepo        *data.RoleRepo
-	userRepo        data.UserRepo
-	permissionRepo  *data.PermissionRepo
-	planModuleRepo  *data.PlanModuleRepo
-	tenantRepo      *data.TenantRepo
+	menuRepo       *data.MenuRepo
+	roleRepo       *data.RoleRepo
+	userRepo       data.UserRepo
+	permissionRepo *data.PermissionRepo
+	planModuleRepo *data.PlanModuleRepo
+	tenantRepo     *data.TenantRepo
 }
 
 func NewAdminPortalService(
@@ -52,7 +52,7 @@ func NewAdminPortalService(
 		userRepo:       userRepo,
 		permissionRepo: permissionRepo,
 		planModuleRepo: planModuleRepo,
-		tenantRepo:      tenantRepo,
+		tenantRepo:     tenantRepo,
 	}
 }
 

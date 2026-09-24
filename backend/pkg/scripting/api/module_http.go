@@ -17,11 +17,11 @@ import (
 // 白名单为空 = 全部出站被拒（fail-closed）；管理员经
 // SCRIPT_HTTP_ALLOWED_DOMAINS（逗号分隔，如 "hooks.slack.com,oapi.dingtalk.com"）放行域名。
 const (
-	defaultHTTPTimeout     = 10 * time.Second
-	maxHTTPResponseBody    = 1 << 20 // 1MB
-	maxHTTPRequestBody     = 1 << 20 // 1MB
-	defaultUserAgent       = "go-wind-admin-script/1.0"
-	maxRedirects           = 3
+	defaultHTTPTimeout  = 10 * time.Second
+	maxHTTPResponseBody = 1 << 20 // 1MB
+	maxHTTPRequestBody  = 1 << 20 // 1MB
+	defaultUserAgent    = "go-wind-admin-script/1.0"
+	maxRedirects        = 3
 )
 
 // HTTPOptions 约束 http 模块的出站行为（跨语言共享，Lua/JS 同一套护栏）。

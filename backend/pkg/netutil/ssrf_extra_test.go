@@ -119,10 +119,10 @@ func (s *fakeDNSServer) buildResponse(query []byte) []byte {
 	}
 	if hasAnswer {
 		rh := dnsmessage.ResourceHeader{
-			Name:   q.Name,
-			Type:   dnsmessage.TypeA,
-			Class:  dnsmessage.ClassINET,
-			TTL:    60,
+			Name:  q.Name,
+			Type:  dnsmessage.TypeA,
+			Class: dnsmessage.ClassINET,
+			TTL:   60,
 		}
 		if err := b.AResource(rh, dnsmessage.AResource{A: answerIP}); err != nil {
 			return nil

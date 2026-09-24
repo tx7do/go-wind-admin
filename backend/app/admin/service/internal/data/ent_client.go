@@ -58,8 +58,8 @@ func NewEntClient(ctx *bootstrap.Context) (*entCrud.EntClient[*ent.Client], func
 	}
 
 	return cli, func() {
-			if cleanErr := cli.Close(); cleanErr != nil {
-				l.Errorf(context.Background(), "[ENT] failed closing ent client: %v", cleanErr)
-			}
+		if cleanErr := cli.Close(); cleanErr != nil {
+			l.Errorf(context.Background(), "[ENT] failed closing ent client: %v", cleanErr)
+		}
 	}, nil
 }

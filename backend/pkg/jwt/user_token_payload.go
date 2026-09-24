@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	authn "github.com/tx7do/kratos-authn/engine"
 

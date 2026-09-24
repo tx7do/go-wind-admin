@@ -13,9 +13,9 @@ import (
 	"math"
 	"testing"
 
+	"github.com/stretchr/testify/require"
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	lua "github.com/yuin/gopher-lua"
-	"github.com/stretchr/testify/require"
 )
 
 // recLogEntry 记录一次日志调用的等级与消息。

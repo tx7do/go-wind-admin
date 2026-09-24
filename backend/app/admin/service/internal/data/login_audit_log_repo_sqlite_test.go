@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"entgo.io/ent/dialect/sql"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 
@@ -27,7 +27,7 @@ func newLoginAuditLogRepoSqlite(t *testing.T) *LoginAuditLogRepo {
 	repo := &LoginAuditLogRepo{
 		entClient: enttest.NewEntClientForTest(t),
 		log:       bLogger.NewHelper(bLogger.NopLogger()),
-		mapper:     mapper.NewCopierMapper[auditV1.LoginAuditLog, ent.LoginAuditLog](),
+		mapper:    mapper.NewCopierMapper[auditV1.LoginAuditLog, ent.LoginAuditLog](),
 		statusConverter: mapper.NewEnumTypeConverter[auditV1.LoginAuditLog_Status, entLoginAuditLog.Status](
 			auditV1.LoginAuditLog_Status_name, auditV1.LoginAuditLog_Status_value,
 		),
@@ -53,22 +53,22 @@ func TestLoginAuditLogRepoSqlite_Create(t *testing.T) {
 
 	err := repo.Create(ctx, &auditV1.CreateLoginAuditLogRequest{
 		Data: &auditV1.LoginAuditLog{
-			UserId:         trans.Ptr(uint32(7)),
-			Username:       trans.Ptr("sqlite_login_user"),
-			IpAddress:      trans.Ptr("10.0.0.3"),
-			SessionId:      trans.Ptr("sess-sqlite-1"),
-			RequestId:      trans.Ptr("req-sqlite-login-create-1"),
-			TraceId:        trans.Ptr("trace-sqlite-login-create-1"),
-			ActionType:     auditV1.LoginAuditLog_LOGIN.Enum(),
-			Status:         auditV1.LoginAuditLog_FAILED.Enum(),
-			LoginMethod:    auditV1.LoginAuditLog_PASSWORD.Enum(),
-			FailureReason:  trans.Ptr("密码错误"),
-			MfaStatus:      trans.Ptr("NOT_REQUIRED"),
-			RiskScore:      trans.Ptr(uint32(35)),
-			RiskLevel:      auditV1.LoginAuditLog_MEDIUM.Enum(),
-			RiskFactors:    []string{"weak_password", "new_device"},
-			LogHash:        trans.Ptr("hash-sqlite-login-create-1"),
-			Signature:      []byte{0x0c},
+			UserId:        trans.Ptr(uint32(7)),
+			Username:      trans.Ptr("sqlite_login_user"),
+			IpAddress:     trans.Ptr("10.0.0.3"),
+			SessionId:     trans.Ptr("sess-sqlite-1"),
+			RequestId:     trans.Ptr("req-sqlite-login-create-1"),
+			TraceId:       trans.Ptr("trace-sqlite-login-create-1"),
+			ActionType:    auditV1.LoginAuditLog_LOGIN.Enum(),
+			Status:        auditV1.LoginAuditLog_FAILED.Enum(),
+			LoginMethod:   auditV1.LoginAuditLog_PASSWORD.Enum(),
+			FailureReason: trans.Ptr("密码错误"),
+			MfaStatus:     trans.Ptr("NOT_REQUIRED"),
+			RiskScore:     trans.Ptr(uint32(35)),
+			RiskLevel:     auditV1.LoginAuditLog_MEDIUM.Enum(),
+			RiskFactors:   []string{"weak_password", "new_device"},
+			LogHash:       trans.Ptr("hash-sqlite-login-create-1"),
+			Signature:     []byte{0x0c},
 		},
 	})
 	require.NoError(t, err, "repo.Create 写入 SQLite 应成功")
@@ -278,8 +278,8 @@ func TestLoginAuditLogRepoSqlite_ListFilterAndPaging(t *testing.T) {
 	for i, marker := range []string{"MARKEREPSILON", "MARKERZETA"} {
 		require.NoError(t, repo.Create(ctx, &auditV1.CreateLoginAuditLogRequest{
 			Data: &auditV1.LoginAuditLog{
-				Username:     trans.Ptr(marker + " 用户"),
-				RequestId:    trans.Ptr(fmt.Sprintf("req-sqlite-login-list-%d", i)),
+				Username:      trans.Ptr(marker + " 用户"),
+				RequestId:     trans.Ptr(fmt.Sprintf("req-sqlite-login-list-%d", i)),
 				FailureReason: trans.Ptr(fmt.Sprintf("list-login-%d", i)),
 			},
 		}), "写入第 %d 行应成功", i)

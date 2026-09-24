@@ -42,7 +42,8 @@ func (DataScopeQueryPolicy) EvalMutation(_ context.Context, _ ent.Mutation) erro
 // TenantAndDataScopePolicy 组合策略：链式评估租户变更防护与数据范围查询过滤。
 // 语义与 ent 隐私规则链一致：任一子策略返回错误即整体拒绝，全 nil 放行。
 // 查询侧 = TenantMutationGuard（透传，查询隔离由库 TenantPrivacy 负责）
-//         + DataScopeQuery（行级数据范围过滤）；
+//   - DataScopeQuery（行级数据范围过滤）；
+//
 // 变更侧 = TenantMutationGuard（跨租户篡改/删除防护）。
 type TenantAndDataScopePolicy struct{}
 

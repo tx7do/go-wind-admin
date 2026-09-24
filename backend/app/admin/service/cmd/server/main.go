@@ -11,9 +11,9 @@ import (
 	"github.com/tx7do/kratos-transport/transport/asynq"
 	"github.com/tx7do/kratos-transport/transport/sse"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	//_ "github.com/tx7do/kratos-bootstrap/config/consul"
 	//_ "github.com/tx7do/kratos-bootstrap/config/etcd"
 	//_ "github.com/tx7do/kratos-bootstrap/config/kubernetes"

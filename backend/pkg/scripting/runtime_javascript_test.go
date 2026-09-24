@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"github.com/alicebob/miniredis/v2"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/redis/go-redis/v9"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	gsEngine "github.com/tx7do/go-scripts"
 

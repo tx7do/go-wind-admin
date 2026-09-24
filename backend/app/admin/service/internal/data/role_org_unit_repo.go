@@ -4,8 +4,8 @@ import (
 	"context"
 	"time"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	entCrud "github.com/tx7do/go-crud/entgo"
 

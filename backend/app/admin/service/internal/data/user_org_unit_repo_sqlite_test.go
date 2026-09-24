@@ -5,15 +5,15 @@ import (
 	"testing"
 	"time"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
-	"go-wind-admin/app/admin/service/internal/data/enttest"
 	entUserOrgUnit "go-wind-admin/app/admin/service/internal/data/ent/userorgunit"
+	"go-wind-admin/app/admin/service/internal/data/enttest"
 )
 
 // newUserOrgUnitRepoSqlite 用 enttest helper 构造一个可直接做关联 CRUD 的 UserOrgUnitRepo。
@@ -51,9 +51,9 @@ func TestUserOrgUnitRepoSqlite_AssignListAndClean(t *testing.T) {
 	// 断言失败（Goexit）时回滚，避免残留写锁阻塞后续测试。
 	defer func() { _ = tx.Rollback() }()
 	require.NoError(t, repo.AssignUserOrgUnit(ctx, tx, &identityV1.UserOrgUnit{
-		UserId:     trans.Ptr(testUserID),
-		OrgUnitId:  trans.Ptr(testUnitA),
-		Status:     trans.Ptr(identityV1.UserOrgUnit_ACTIVE),
+		UserId:    trans.Ptr(testUserID),
+		OrgUnitId: trans.Ptr(testUnitA),
+		Status:    trans.Ptr(identityV1.UserOrgUnit_ACTIVE),
 	}))
 	require.NoError(t, tx.Commit())
 

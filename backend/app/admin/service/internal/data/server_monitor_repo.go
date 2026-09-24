@@ -51,8 +51,8 @@ func NewServerMonitorRepo(
 // 任一子项失败不影响其它子项（分别兜底为空段并记录错误）。
 func (r *ServerMonitorRepo) GetInfo(ctx context.Context) (*serverMonitorV1.ServerMonitorInfo, error) {
 	info := &serverMonitorV1.ServerMonitorInfo{
-		Go:         r.goRuntimeInfo(),
-		Host:       r.hostInfo(),
+		Go:          r.goRuntimeInfo(),
+		Host:        r.hostInfo(),
 		CollectedAt: timestamppb.Now(),
 	}
 	info.Database = r.databaseInfo(ctx)
@@ -64,13 +64,13 @@ func (r *ServerMonitorRepo) goRuntimeInfo() *serverMonitorV1.GoRuntimeInfo {
 	runtime.ReadMemStats(&ms)
 
 	return &serverMonitorV1.GoRuntimeInfo{
-		Version:        strPtr(runtime.Version()),
-		NumGoroutine:   u32Ptr(uint32(runtime.NumGoroutine())),
-		MemAllocBytes:  u64Ptr(ms.Alloc),
-		MemSysBytes:    u64Ptr(ms.Sys),
-		GcCycles:       u32Ptr(uint32(ms.NumGC)),
-		UptimeSeconds:  u64Ptr(uint64(time.Since(r.startTime).Seconds())),
-		StartedAt:      timestamppb.New(r.startTime),
+		Version:       strPtr(runtime.Version()),
+		NumGoroutine:  u32Ptr(uint32(runtime.NumGoroutine())),
+		MemAllocBytes: u64Ptr(ms.Alloc),
+		MemSysBytes:   u64Ptr(ms.Sys),
+		GcCycles:      u32Ptr(uint32(ms.NumGC)),
+		UptimeSeconds: u64Ptr(uint64(time.Since(r.startTime).Seconds())),
+		StartedAt:     timestamppb.New(r.startTime),
 	}
 }
 
@@ -113,7 +113,7 @@ func (r *ServerMonitorRepo) hostInfo() *serverMonitorV1.HostInfo {
 	}
 }
 
-func strPtr(s string) *string                { return &s }
-func boolPtr(b bool) *bool                   { return &b }
-func u32Ptr(v uint32) *uint32                { return &v }
-func u64Ptr(v uint64) *uint64                { return &v }
+func strPtr(s string) *string { return &s }
+func boolPtr(b bool) *bool    { return &b }
+func u32Ptr(v uint32) *uint32 { return &v }
+func u64Ptr(v uint64) *uint64 { return &v }

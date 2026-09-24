@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
@@ -168,7 +168,7 @@ func (r *PositionRepo) Get(ctx context.Context, req *identityV1.GetPositionReque
 //
 // 枚举转换机制注记：mapper 经 EnumTypeConverter.NewConverterPair 注册的
 // 是**指针↔指针对**（*ent枚举 → *proto枚举）——实体侧可空指针枚举列
-//（Optional+Nillable，如本仓 status）在 copier 的转换查表里精确命中、
+// （Optional+Nillable，如本仓 status）在 copier 的转换查表里精确命中、
 // 读路径本就如实流通，无需回填。被丢弃的是**混合形态**：实体侧为值型
 // 枚举列（带 Default 且无 Nillable，如本仓 type）而 DTO 侧为可选指针
 // 字段——值型源与指针对键失配，copier 转而给 DTO 指针分配零值。故此处

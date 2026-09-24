@@ -77,9 +77,9 @@ func newNotifySeamEnv(t *testing.T) *notifySeamEnv {
 	pub := &payloadRecordingPublisher{}
 
 	im := &InternalMessageService{
-		log:                         bLogger.NewHelper(bLogger.NopLogger()),
-		internalMessageRepo:         data.NewInternalMessageRepoForTest(entClient),
-		internalMessageCategoryRepo: data.NewInternalMessageCategoryRepoForTest(entClient),
+		log:                          bLogger.NewHelper(bLogger.NopLogger()),
+		internalMessageRepo:          data.NewInternalMessageRepoForTest(entClient),
+		internalMessageCategoryRepo:  data.NewInternalMessageCategoryRepoForTest(entClient),
 		internalMessageRecipientRepo: data.NewInternalMessageRecipientRepoForTest(entClient),
 		userRepo: &internalMessageServiceUserRepoStub{
 			// 定向投递的收件人 1024 属于租户 5，而本测试的 ctx 是 SystemViewer（租户 0）：

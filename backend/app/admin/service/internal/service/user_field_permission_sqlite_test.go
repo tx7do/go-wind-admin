@@ -20,8 +20,8 @@ import (
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 
-	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 	"go-wind-admin/pkg/middleware/auth"
 )
@@ -85,7 +85,7 @@ func (s *innerUserServiceStub) EditUserPassword(_ context.Context, in *identityV
 // hiddenCtx 构造带 User.email 隐藏字段声明的令牌上下文。
 func hiddenCtx(ctx context.Context) context.Context {
 	return auth.NewContext(ctx, &authenticationV1.UserTokenPayload{
-		UserId:        7,
+		UserId:       7,
 		HiddenFields: []string{"User.email", "NotUser.email", "User."},
 	})
 }

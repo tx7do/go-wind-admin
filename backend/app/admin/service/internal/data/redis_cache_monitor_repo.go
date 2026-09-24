@@ -4,9 +4,9 @@ import (
 	"context"
 	"strings"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/redis/go-redis/v9"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	redisCacheV1 "go-wind-admin/api/gen/go/redis_cache/service/v1"
 
@@ -78,12 +78,12 @@ func mapSlowLogEntries(in []redis.SlowLog) []*redisCacheV1.SlowLogEntry {
 	for i := range in {
 		s := &in[i]
 		out = append(out, &redisCacheV1.SlowLogEntry{
-			Id:            s.ID,
-			CreatedAt:     timestamppb.New(s.Time),
-			DurationUsec:  s.Duration.Microseconds(),
-			Args:          sanitizeSlowLogArgs(s.Args),
-			ClientAddr:    s.ClientAddr,
-			ClientName:    strings.ToValidUTF8(s.ClientName, "\uFFFD"),
+			Id:           s.ID,
+			CreatedAt:    timestamppb.New(s.Time),
+			DurationUsec: s.Duration.Microseconds(),
+			Args:         sanitizeSlowLogArgs(s.Args),
+			ClientAddr:   s.ClientAddr,
+			ClientName:   strings.ToValidUTF8(s.ClientName, "\uFFFD"),
 		})
 	}
 	return out

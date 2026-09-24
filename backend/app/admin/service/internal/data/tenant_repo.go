@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
@@ -274,13 +274,13 @@ func (r *TenantRepo) Update(ctx context.Context, req *identityV1.UpdateTenantReq
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 				SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
 				SetNillableAuditStatus(r.auditStatusConverter.ToEntity(req.Data.AuditStatus)).
-		SetNillableSubscriptionPlan(req.Data.SubscriptionPlan).
-		SetNillableExpiredAt(timeutil.TimestamppbToTime(req.Data.ExpiredAt)).
-		SetNillableSubscriptionAt(timeutil.TimestamppbToTime(req.Data.SubscriptionAt)).
-		SetNillableUnsubscribeAt(timeutil.TimestamppbToTime(req.Data.UnsubscribeAt)).
-		SetNillablePlanID(req.Data.PlanId).
-		SetNillableUpdatedBy(req.Data.UpdatedBy).
-		SetUpdatedAt(time.Now())
+				SetNillableSubscriptionPlan(req.Data.SubscriptionPlan).
+				SetNillableExpiredAt(timeutil.TimestamppbToTime(req.Data.ExpiredAt)).
+				SetNillableSubscriptionAt(timeutil.TimestamppbToTime(req.Data.SubscriptionAt)).
+				SetNillableUnsubscribeAt(timeutil.TimestamppbToTime(req.Data.UnsubscribeAt)).
+				SetNillablePlanID(req.Data.PlanId).
+				SetNillableUpdatedBy(req.Data.UpdatedBy).
+				SetUpdatedAt(time.Now())
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(tenant.FieldID, req.GetId()))

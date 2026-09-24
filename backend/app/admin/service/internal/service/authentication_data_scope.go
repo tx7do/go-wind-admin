@@ -21,9 +21,9 @@ const maxDataScopeUnitIds = 256
 //   - 否则活动类型取并集（SELF 与 UNIT_* 可共存），UNIT_* 的单元目标集为
 //     各角色贡献的并集，全部按令牌租户过滤（登录上下文为 privacy.Allow，
 //     绕过租户隐私层，显式租户谓词是唯一防线）：
-//       UNIT_ONLY      → 用户所属单元（限本租户）
-//       UNIT_AND_CHILD → 用户所属单元及其全部后代（path 前缀展开，限本租户）
-//       SELECTED_UNITS → 角色配置的自定义单元集（纵深防御：二次租户过滤）
+//     UNIT_ONLY      → 用户所属单元（限本租户）
+//     UNIT_AND_CHILD → 用户所属单元及其全部后代（path 前缀展开，限本租户）
+//     SELECTED_UNITS → 角色配置的自定义单元集（纵深防御：二次租户过滤）
 //   - 退化（目标集超上限 / 无任何有效活动类型）→ [UNSPECIFIED]：
 //     viewer 构建侧将其剔除为空集，库规则按 "no data scope defined"
 //     fail-closed 拒绝，而非放行。

@@ -6,8 +6,8 @@ import (
 	"sync"
 	"time"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/go-utils/id"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 )
 
 // Context represents the execution context for a Lua script
@@ -17,7 +17,7 @@ type Context struct {
 	Data       map[string]interface{} // Input/output data
 	User       *UserContext           // Current user info
 	Request    *HTTPContext           // HTTP request info
-	Logger     *bLogger.Helper            // Logger instance
+	Logger     *bLogger.Helper        // Logger instance
 	Cancel     context.Context        // Cancellation context
 	Stopped    bool                   // Set to true if script calls stop()
 	StopReason string                 // Reason for stopping

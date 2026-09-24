@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"entgo.io/ent/dialect/sql"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 
@@ -27,7 +27,7 @@ func newOperationAuditLogRepoSqlite(t *testing.T) *OperationAuditLogRepo {
 	repo := &OperationAuditLogRepo{
 		entClient: enttest.NewEntClientForTest(t),
 		log:       bLogger.NewHelper(bLogger.NopLogger()),
-		mapper:     mapper.NewCopierMapper[auditV1.OperationAuditLog, ent.OperationAuditLog](),
+		mapper:    mapper.NewCopierMapper[auditV1.OperationAuditLog, ent.OperationAuditLog](),
 		actionTypeConverter: mapper.NewEnumTypeConverter[auditV1.OperationAuditLog_ActionType, entOperationAuditLog.Action](
 			auditV1.OperationAuditLog_ActionType_name, auditV1.OperationAuditLog_ActionType_value,
 		),
@@ -156,7 +156,7 @@ func TestOperationAuditLogRepoSqlite_EnumPairs(t *testing.T) {
 		expectedProto[value] = 1
 		require.NoError(t, repo.Create(ctx, &auditV1.CreateOperationAuditLogRequest{
 			Data: &auditV1.OperationAuditLog{
-				FailureReason: trans.Ptr(nextMarker()),
+				FailureReason:  trans.Ptr(nextMarker()),
 				SensitiveLevel: auditV1.SensitiveLevel(value).Enum(),
 			},
 		}), "sensitive_level=%s 建行应成功", name)

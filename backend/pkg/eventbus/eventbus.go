@@ -109,7 +109,7 @@ func (eb *DefaultEventBus) Publish(ctx context.Context, event *Event) error {
 	defer eb.mu.RUnlock()
 
 	if eb.closed {
-			eb.logger.Warnf(ctx, "❌ Event bus is closed, cannot publish event: %s", event.Type)
+		eb.logger.Warnf(ctx, "❌ Event bus is closed, cannot publish event: %s", event.Type)
 		return fmt.Errorf("event bus is closed")
 	}
 
@@ -126,7 +126,7 @@ func (eb *DefaultEventBus) Publish(ctx context.Context, event *Event) error {
 	// Execute regular handlers
 	for _, handler := range handlers {
 		if err := handler.Handle(ctx, event); err != nil {
-				eb.logger.Errorf(ctx, "Handler error for event %s: %v", event.Type, err)
+			eb.logger.Errorf(ctx, "Handler error for event %s: %v", event.Type, err)
 			// Continue with other handlers even if one fails
 		}
 	}
@@ -134,7 +134,7 @@ func (eb *DefaultEventBus) Publish(ctx context.Context, event *Event) error {
 	// Execute once handlers
 	for _, handler := range onceHandlers {
 		if err := handler.Handle(ctx, event); err != nil {
-				eb.logger.Errorf(ctx, "Once handler error for event %s: %v", event.Type, err)
+			eb.logger.Errorf(ctx, "Once handler error for event %s: %v", event.Type, err)
 		}
 	}
 

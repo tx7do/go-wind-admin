@@ -28,9 +28,9 @@ import (
 
 // planFields 是参与测试的三个字段的 protojson 键名（均为 json_name 拼写）。
 var (
-	keyCreatedBy    = "createdBy"    // created_by 的 json_name（与 proto 名拼写不同）
-	keyDescription  = "description"  // 两种拼写一致
-	keyRemark       = "remark"       // 两种拼写一致
+	keyCreatedBy    = "createdBy"   // created_by 的 json_name（与 proto 名拼写不同）
+	keyDescription  = "description" // 两种拼写一致
+	keyRemark       = "remark"      // 两种拼写一致
 	allPlanJsonKeys = []string{keyCreatedBy, keyDescription, keyRemark}
 )
 

@@ -18,9 +18,9 @@ const (
 )
 
 var (
-	ErrInvalidKey       = errors.New("encryption key must be at least 32 bytes")
+	ErrInvalidKey        = errors.New("encryption key must be at least 32 bytes")
 	ErrInvalidCiphertext = errors.New("invalid ciphertext")
-	ErrDecryptionFailed = errors.New("decryption failed")
+	ErrDecryptionFailed  = errors.New("decryption failed")
 )
 
 // Encryptor provides AES-256-GCM encryption/decryption functionality

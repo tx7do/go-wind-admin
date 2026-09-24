@@ -6,8 +6,8 @@ import (
 	"reflect"
 	"testing"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	"go-wind-admin/app/admin/service/internal/data/enttest"
 )
@@ -102,14 +102,14 @@ func TestBackupRepoSqlite_ExportSeededTables(t *testing.T) {
 		Exec(ctx), "直插 position 行应成功")
 
 	expected := map[string]int{
-		"tenants":      1,
-		"users":        2,
-		"roles":        1,
-		"permissions":  1,
-		"memberships":  0,
-		"org_units":    1,
-		"positions":    1,
-		"menus":        0,
+		"tenants":     1,
+		"users":       2,
+		"roles":       1,
+		"permissions": 1,
+		"memberships": 0,
+		"org_units":   1,
+		"positions":   1,
+		"menus":       0,
 	}
 
 	exported, err := repo.ExportCoreTables(ctx)

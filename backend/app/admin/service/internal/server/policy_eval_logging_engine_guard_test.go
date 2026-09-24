@@ -23,8 +23,8 @@ import (
 
 	authzEngine "github.com/tx7do/kratos-authz/engine"
 
-	"go-wind-admin/app/admin/service/internal/data"
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+	"go-wind-admin/app/admin/service/internal/data"
 )
 
 // stubAuthzEngine 实现 authzEngine.Authorizer 的桩：只关心 Name()。
@@ -51,9 +51,9 @@ func (s *stubAuthzEngine) FilterAuthorizedProjects(context.Context, authzEngine.
 // fakeHeader map 底座的 transport.Header 假件。
 type fakeHeader map[string]string
 
-func (h fakeHeader) Get(key string) string       { return h[key] }
-func (h fakeHeader) Set(key, value string)       { h[key] = value }
-func (h fakeHeader) Add(key, value string)       { h[key] = value }
+func (h fakeHeader) Get(key string) string { return h[key] }
+func (h fakeHeader) Set(key, value string) { h[key] = value }
+func (h fakeHeader) Add(key, value string) { h[key] = value }
 func (h fakeHeader) Keys() []string {
 	keys := make([]string, 0, len(h))
 	for k := range h {
@@ -106,8 +106,8 @@ func TestEvalLoggingEngine_Describe(t *testing.T) {
 		contains []string
 		missing  []string
 	}{
-		"允许":      {"", nil, true, []string{"engine=stub-engine subject=role-x", "latency=", "; allowed"}, []string{"project=", "error:", "denied"}},
-		"拒绝":      {"", nil, false, []string{"engine=stub-engine subject=role-x", "; denied"}, []string{"project=", "error:", "; allowed"}},
+		"允许":       {"", nil, true, []string{"engine=stub-engine subject=role-x", "latency=", "; allowed"}, []string{"project=", "error:", "denied"}},
+		"拒绝":       {"", nil, false, []string{"engine=stub-engine subject=role-x", "; denied"}, []string{"project=", "error:", "; allowed"}},
 		"引擎错误":     {"", errors.New("boom"), true, []string{"engine=stub-engine subject=role-x", "; error: boom"}, []string{"project=", "; allowed", "denied"}},
 		"带project": {"proj-1", nil, true, []string{"engine=stub-engine subject=role-x", " project=proj-1", "; allowed"}, []string{"error:", "denied"}},
 	} {

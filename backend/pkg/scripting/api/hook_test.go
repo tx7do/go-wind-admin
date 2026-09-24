@@ -14,9 +14,9 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/stretchr/testify/require"
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	lua "github.com/yuin/gopher-lua"
-	"github.com/stretchr/testify/require"
 )
 
 // fakeRegisterCall 记录一次 RegisterHook 调用。

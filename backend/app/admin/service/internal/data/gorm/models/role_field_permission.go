@@ -12,14 +12,14 @@ import (
 type RoleFieldPermission struct {
 	mixin.AutoIncrementID
 
-	RoleId    *uint32 `gorm:"column:role_id;type:int unsigned;comment:角色 ID（关联 sys_roles.id）"`
-	Resource  *string `gorm:"column:resource;type:varchar(128);comment:资源名（proto 消息名，如 User）"`
-	FieldName *string `gorm:"column:field_name;type:varchar(128);comment:字段名（proto 字段 json_name，如 email）"`
-	CreatedBy *uint32 `gorm:"column:created_by;type:int unsigned;comment:创建者 ID"`
-	UpdatedBy *uint32 `gorm:"column:updated_by;type:int unsigned;comment:更新者 ID"`
+	RoleId    *uint32    `gorm:"column:role_id;type:int unsigned;comment:角色 ID（关联 sys_roles.id）"`
+	Resource  *string    `gorm:"column:resource;type:varchar(128);comment:资源名（proto 消息名，如 User）"`
+	FieldName *string    `gorm:"column:field_name;type:varchar(128);comment:字段名（proto 字段 json_name，如 email）"`
+	CreatedBy *uint32    `gorm:"column:created_by;type:int unsigned;comment:创建者 ID"`
+	UpdatedBy *uint32    `gorm:"column:updated_by;type:int unsigned;comment:更新者 ID"`
 	CreatedAt *time.Time `gorm:"column:created_at;type:datetime;comment:创建时间"`
 	UpdatedAt *time.Time `gorm:"column:updated_at;type:datetime;comment:更新时间"`
-	TenantId  *uint32 `gorm:"column:tenant_id;type:int unsigned;comment:租户 ID；多租户隔离键"`
+	TenantId  *uint32    `gorm:"column:tenant_id;type:int unsigned;comment:租户 ID；多租户隔离键"`
 }
 
 // TableName 指定表名

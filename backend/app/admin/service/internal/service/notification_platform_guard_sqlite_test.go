@@ -16,13 +16,13 @@ import (
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 
-	notificationChannelV1 "go-wind-admin/api/gen/go/notification_channel/service/v1"
 	notificationV1 "go-wind-admin/api/gen/go/notification/service/v1"
+	notificationChannelV1 "go-wind-admin/api/gen/go/notification_channel/service/v1"
 
 	"go-wind-admin/app/admin/service/internal/data/enttest"
 
-	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 
 	"go-wind-admin/pkg/middleware/auth"
 )

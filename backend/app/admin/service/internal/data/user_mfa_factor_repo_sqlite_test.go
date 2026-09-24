@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	entUserMfaFactor "go-wind-admin/app/admin/service/internal/data/ent/usermfafactor"
@@ -105,8 +105,8 @@ func TestUserMfaFactorRepoSqlite_ListByUserMapping(t *testing.T) {
 			SetUserID(10).
 			SetMethod(method).
 			SetStatus(status).
-			SetSecretHash("secret-" + string(method)).
-			SetDisplayName("display-" + string(method)).
+			SetSecretHash("secret-"+string(method)).
+			SetDisplayName("display-"+string(method)).
 			Exec(ctx), "建 %s 行应成功", method)
 		methodRows[string(method)] = true
 	}

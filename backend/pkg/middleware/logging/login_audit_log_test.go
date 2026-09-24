@@ -186,7 +186,7 @@ func TestLoginAuditLogHandleLogoutAction(t *testing.T) {
 func TestLoginAuditLogHandleReplyHeaderFallbackUsername(t *testing.T) {
 	env := newAuditServer(t)
 	env.fire(nethttp.MethodPost, "/case/5", map[string]string{
-		"X-Test-Operation":   adminV1.OperationAuthenticationServiceLogin,
+		"X-Test-Operation":      adminV1.OperationAuthenticationServiceLogin,
 		"X-Test-Reply-Username": "audit-user",
 	}, "", "8.8.8.8:1234")
 

@@ -17,10 +17,10 @@ import (
 	"testing"
 
 	"github.com/alicebob/miniredis/v2"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/redis/go-redis/v9"
-	lua "github.com/yuin/gopher-lua"
 	"github.com/stretchr/testify/require"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
+	lua "github.com/yuin/gopher-lua"
 )
 
 // newCacheLuaState 构造绑定 miniredis 的、注册了 kratos_cache 模块的 LState。

@@ -6,9 +6,9 @@ import (
 	"time"
 
 	"github.com/alicebob/miniredis/v2"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/redis/go-redis/v9"
 	"github.com/stretchr/testify/assert"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"

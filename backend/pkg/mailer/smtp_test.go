@@ -28,10 +28,10 @@ import (
 
 // fakeServerOptions 控制假服务器在各协议节点的脚本化行为。
 type fakeServerOptions struct {
-	badGreeting      bool   // 用 421 问候并断开：驱动 smtp.NewClient 读问候失败
-	advertiseStartTLS bool  // EHLO 应答广告 STARTTLS 扩展，但从不真正做 TLS
-	authReply        string // AUTH 命令的应答（如 "235 ok\r\n" 表示接受）；空串=以 502 拒绝
-	rejectCommand    string // 需要以 5xx 拒绝的会话命令（AUTH/MAIL/RCPT/DATA/TERM）；空串=全部接受
+	badGreeting       bool   // 用 421 问候并断开：驱动 smtp.NewClient 读问候失败
+	advertiseStartTLS bool   // EHLO 应答广告 STARTTLS 扩展，但从不真正做 TLS
+	authReply         string // AUTH 命令的应答（如 "235 ok\r\n" 表示接受）；空串=以 502 拒绝
+	rejectCommand     string // 需要以 5xx 拒绝的会话命令（AUTH/MAIL/RCPT/DATA/TERM）；空串=全部接受
 }
 
 // fakeSMTPServer 是一个只服务于单元测试的明文 SMTP 假服务器：
@@ -466,9 +466,9 @@ func TestSendMail_PlaintextSessionSucceeds(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
-		name        string
-		from        string
-		fromLine    string
+		name     string
+		from     string
+		fromLine string
 	}{
 		{
 			name:     "explicit from",

@@ -152,11 +152,11 @@ func TestApiAuditLogHandleFieldMapping(t *testing.T) {
 // 500/空 reason 处理，二者 success 均为 false。
 func TestApiAuditLogHandleErrorStatusMapping(t *testing.T) {
 	cases := []struct {
-		name         string
-		errFlag      string
-		wantStatus   uint32
-		wantReason   string
-		wantSuccess  bool
+		name        string
+		errFlag     string
+		wantStatus  uint32
+		wantReason  string
+		wantSuccess bool
 	}{
 		{"kratos错误透传code与reason", "kratos", 403, "TEST_FORBIDDEN", false},
 		{"普通错误映射为500空reason", "plain", 500, "", false},
@@ -248,8 +248,8 @@ func TestApiAuditLogHandleInputSanitization(t *testing.T) {
 	t.Run("XFF跳过非法项取首个合法IP", func(t *testing.T) {
 		env := newAuditServer(t)
 		env.fire(nethttp.MethodPost, "/case/5", map[string]string{
-			"X-Test-Operation":  "/demo.v1.GadgetService/Update",
-			"X-Forwarded-For":   "garbage, 10.0.0.5",
+			"X-Test-Operation": "/demo.v1.GadgetService/Update",
+			"X-Forwarded-For":  "garbage, 10.0.0.5",
 		}, "", "8.8.8.8:1234")
 		require.Len(t, env.capture.api, 1)
 		rec := env.capture.api[0]

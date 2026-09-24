@@ -7,10 +7,10 @@ import (
 
 	"google.golang.org/genproto/protobuf/field_mask"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 
@@ -21,7 +21,7 @@ import (
 )
 
 // newConfigRepoSqlite 用 enttest helper 白盒构造一个可直接做 CRUD 的 ConfigRepo
-//（同 position_repo_sqlite_test.go 的套路）。
+// （同 position_repo_sqlite_test.go 的套路）。
 func newConfigRepoSqlite(t *testing.T) *ConfigRepo {
 	t.Helper()
 	entClient := enttest.NewEntClientForTest(t)
@@ -88,7 +88,7 @@ func TestConfigRepoSqlite_AccessorTypedReads(t *testing.T) {
 // 呈现 STRING。同时联动断言读取器（带缓存）不受影响。
 //
 // 枚举字段读视图机制注记：实体侧 value_type 为可空指针枚举列
-//（*sysconfig.ValueType，schema 默认 STRING），DTO 侧为可选指针字段。
+// （*sysconfig.ValueType，schema 默认 STRING），DTO 侧为可选指针字段。
 // mapper 的枚举转换对（经 &srcType/&dstType 取址注册）恰为指针↔指针形态
 // 的键，指针对字段能被 copier 直接转换赋值——与值型实体枚举列（如
 // position.type、notification_channel.type）读侧被丢弃的情形不同。

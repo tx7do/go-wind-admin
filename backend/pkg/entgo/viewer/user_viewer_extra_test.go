@@ -172,7 +172,7 @@ func TestBuildDataScopes_EdgeCombinations(t *testing.T) {
 			scopes: []identityV1.DataScope{
 				identityV1.DataScope_UNIT_AND_CHILD,
 			},
-			units: nil,
+			units:  nil,
 			legacy: identityV1.DataScope_DATA_SCOPE_UNSPECIFIED,
 			want:   []viewer.DataScope{{ScopeType: viewer.ScopeTypeUnit, TargetIDs: nil}},
 		},

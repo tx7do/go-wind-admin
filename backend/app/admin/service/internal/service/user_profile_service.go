@@ -4,9 +4,9 @@ import (
 	"context"
 	"encoding/base64"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -28,9 +28,9 @@ type UserProfileService struct {
 	userCredentialRepo *data.UserCredentialRepo
 	authenticator      *data.Authenticator
 	// notifier 是唯一的对外通知出口（邮箱绑定验证码邮件），渠道选择与 SMTP 细节不外泄。
-	notifier     Notifier
-	vcodeCache   *data.VCodeCache
-	mc           *oss.MinIOClient
+	notifier   Notifier
+	vcodeCache *data.VCodeCache
+	mc         *oss.MinIOClient
 
 	log *bLogger.Helper
 }
@@ -215,5 +215,3 @@ func (s *UserProfileService) UploadAvatar(ctx context.Context, req *identityV1.U
 		Url: avatarURL,
 	}, nil
 }
-
-

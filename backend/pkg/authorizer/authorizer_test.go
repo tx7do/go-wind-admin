@@ -23,11 +23,11 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	authzEngine "github.com/tx7do/kratos-authz/engine"
+	casbinPolicy "github.com/tx7do/kratos-authz/engine/casbin"
 	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
-	authzEngine "github.com/tx7do/kratos-authz/engine"
-	casbinPolicy "github.com/tx7do/kratos-authz/engine/casbin"
 )
 
 // ---------------------------------------------------------------------------
@@ -274,8 +274,8 @@ func TestGenerateCasbinPolicies_EmptyInput(t *testing.T) {
 	a := newTestAuthorizer(&stubProvider{})
 
 	for name, data := range map[string]PermissionDataMap{
-		"nil map":    nil,
-		"empty map":  {},
+		"nil map":   nil,
+		"empty map": {},
 	} {
 		t.Run(name, func(t *testing.T) {
 			policies, err := a.generateCasbinPolicies(data)

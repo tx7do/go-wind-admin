@@ -65,7 +65,7 @@ func TestDecryptPayload_EncryptedConfigUndecryptable(t *testing.T) {
 	require.NoError(t, InitGlobalEncryptor("hmac-test-key", true))
 
 	payload := map[string]interface{}{
-		IsEncryptedKey:  true,
+		IsEncryptedKey:     true,
 		EncryptedConfigKey: "enc:!!!not-base64!!!",
 	}
 	out, err := DecryptPayload(payload)

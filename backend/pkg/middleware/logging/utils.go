@@ -1,8 +1,8 @@
 package logging
 
 import (
-	"context"
 	"bytes"
+	"context"
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
@@ -16,11 +16,11 @@ import (
 	"net/url"
 
 	"github.com/go-kratos/kratos/v2/errors"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/tx7do/go-utils/geoip"
 	"github.com/tx7do/go-utils/id"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	"github.com/mileusna/useragent"
 	"github.com/tx7do/go-utils/geoip/geolite"
@@ -183,6 +183,7 @@ func getStatusCode(err error) (uint32, string, bool) {
 		return 200, "", true
 	}
 }
+
 var reUsername = regexp.MustCompile(`"username"\s*:\s*"([^"]+)"`)
 
 // parseUsernameFromBytes 从请求体中解析用户名。
@@ -238,6 +239,7 @@ func clientIpToLocation(ip string) *geoip.Result {
 	}
 	return &res
 }
+
 // generateECDSAKeyPair 生成 ECDSA 密钥对（secp256r1 曲线）
 func generateECDSAKeyPair() (*ecdsa.PrivateKey, *ecdsa.PublicKey, error) {
 	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)

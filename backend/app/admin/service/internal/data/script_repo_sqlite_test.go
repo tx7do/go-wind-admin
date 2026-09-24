@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -24,9 +24,9 @@ import (
 func newScriptRepoSqlite(t *testing.T, entClient *entCrud.EntClient[*ent.Client]) *ScriptRepo {
 	t.Helper()
 	repo := &ScriptRepo{
-		entClient:         entClient,
-		log:               bLogger.NewHelper(bLogger.NopLogger()),
-		mapper:            mapper.NewCopierMapper[scriptV1.Script, ent.Script](),
+		entClient: entClient,
+		log:       bLogger.NewHelper(bLogger.NopLogger()),
+		mapper:    mapper.NewCopierMapper[scriptV1.Script, ent.Script](),
 		languageConverter: mapper.NewEnumTypeConverter[scriptV1.Language, script.Language](
 			scriptV1.Language_name, scriptV1.Language_value,
 		),
@@ -236,7 +236,7 @@ func TestScriptRepoSqlite_IsNameExist(t *testing.T) {
 // schema 默认 LUA 落库并在读视图如实呈现。
 //
 // 枚举字段读视图机制注记：实体侧 language 为可空指针枚举列
-//（*script.Language，schema 带 Default("LUA")），DTO 侧为可选指针字段。
+// （*script.Language，schema 带 Default("LUA")），DTO 侧为可选指针字段。
 // mapper 的枚举转换对（经 &srcType/&dstType 取址注册）恰为指针↔指针形态
 // 的键，指针对字段能被 copier 直接转换赋值——与值型实体枚举列（如
 // position.type、notification_channel.type，值型字段读侧被 copier 丢弃）

@@ -25,7 +25,6 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/enttest"
 )
 
-
 // newScriptLogServiceForTest 白盒复刻 NewScriptLogService 的字段初始化
 // （log 换 NopLogger helper；repo 用 testkit 构造器）。
 func newScriptLogServiceForTest(t *testing.T) (*ScriptLogService, *ent.Client) {
@@ -127,4 +126,3 @@ func TestScriptLogService_Purge(t *testing.T) {
 	require.NoError(t, err)
 	require.Zero(t, cnt.GetCount(), "清理后日志表应清空")
 }
-

@@ -5,8 +5,8 @@ import (
 	"errors"
 	"time"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/minio/minio-go/v7"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	"go-wind-admin/pkg/oss"
 )

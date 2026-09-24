@@ -33,9 +33,9 @@ import (
 // NewScriptRepoForTest 与生产 NewScriptRepo 逐字段一致（log 换 NopLogger），并调用 init()。
 func NewScriptRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *ScriptRepo {
 	repo := &ScriptRepo{
-		log:               bLogger.NewHelper(bLogger.NopLogger()),
-		entClient:         entClient,
-		mapper:            mapper.NewCopierMapper[scriptV1.Script, ent.Script](),
+		log:       bLogger.NewHelper(bLogger.NopLogger()),
+		entClient: entClient,
+		mapper:    mapper.NewCopierMapper[scriptV1.Script, ent.Script](),
 		languageConverter: mapper.NewEnumTypeConverter[scriptV1.Language, entScript.Language](
 			scriptV1.Language_name, scriptV1.Language_value,
 		),

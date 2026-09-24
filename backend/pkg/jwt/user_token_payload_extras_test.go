@@ -66,10 +66,10 @@ func TestNewUserTokenAuthClaims_OmittedOptionals(t *testing.T) {
 func TestNewUserTokenPayloadWithClaims_OptionalFieldsRoundTrip(t *testing.T) {
 	t.Run("all set", func(t *testing.T) {
 		claims := &authn.AuthClaims{
-			authn.ClaimFieldJwtID:       "jti-456",
-			ClaimFieldHiddenFields:      []string{"user.email"},
-			ClaimFieldIsPlatformAdmin:   true,
-			ClaimFieldIsTenantAdmin:     true,
+			authn.ClaimFieldJwtID:     "jti-456",
+			ClaimFieldHiddenFields:    []string{"user.email"},
+			ClaimFieldIsPlatformAdmin: true,
+			ClaimFieldIsTenantAdmin:   true,
 		}
 		payload, err := NewUserTokenPayloadWithClaims(claims)
 		require.NoError(t, err)
@@ -130,18 +130,18 @@ func TestNewUserTokenPayloadWithClaims_DataScopesFiltering(t *testing.T) {
 // 必须逐字段跳过而非整体失败。
 func TestNewUserTokenPayloadWithClaims_MalformedClaimTypes(t *testing.T) {
 	claims := &authn.AuthClaims{
-		authn.ClaimFieldSubject:        42,
-		authn.ClaimFieldJwtID:          42,
-		ClaimFieldUserID:               "not-uid",
-		ClaimFieldTenantID:             "not-tid",
-		ClaimFieldClientID:             42,
-		ClaimFieldDeviceID:             42,
-		ClaimFieldRoleCodes:            []interface{}{42},
-		ClaimFieldDataScope:            42,
-		ClaimFieldDataScopes:           []interface{}{42},
-		ClaimFieldDataScopeUnits:       42,
-		ClaimFieldHiddenFields:         []interface{}{42},
-		ClaimFieldOrgUnitID:            "not-ouid",
+		authn.ClaimFieldSubject:  42,
+		authn.ClaimFieldJwtID:    42,
+		ClaimFieldUserID:         "not-uid",
+		ClaimFieldTenantID:       "not-tid",
+		ClaimFieldClientID:       42,
+		ClaimFieldDeviceID:       42,
+		ClaimFieldRoleCodes:      []interface{}{42},
+		ClaimFieldDataScope:      42,
+		ClaimFieldDataScopes:     []interface{}{42},
+		ClaimFieldDataScopeUnits: 42,
+		ClaimFieldHiddenFields:   []interface{}{42},
+		ClaimFieldOrgUnitID:      "not-ouid",
 	}
 	payload, err := NewUserTokenPayloadWithClaims(claims)
 	require.NoError(t, err, "类型不符应逐字段跳过而非整体失败")

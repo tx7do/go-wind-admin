@@ -92,7 +92,7 @@ func TestStripVersionPrefixEdgeCases(t *testing.T) {
 }
 
 // TestConvertCodeByOperationIDActionArms 动作归一化的 create/delete 臂
-//（view/edit 臂已由上文与既有测试覆盖）。
+// （view/edit 臂已由上文与既有测试覆盖）。
 func TestConvertCodeByOperationIDActionArms(t *testing.T) {
 	c := NewApiPermissionConverter()
 	for in, want := range map[string]string{

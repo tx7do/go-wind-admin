@@ -44,10 +44,10 @@ func TestOperationAuditLogMiddlewareNameAndConstructor(t *testing.T) {
 // （无斜杠/尾斜杠/无点/尾点）返回 UNSPECIFIED。
 func TestParseResourceAndAction(t *testing.T) {
 	cases := []struct {
-		name          string
-		operation     string
-		wantResource  string
-		wantAction    auditV1.OperationAuditLog_ActionType
+		name         string
+		operation    string
+		wantResource string
+		wantAction   auditV1.OperationAuditLog_ActionType
 	}{
 		{"标准更新", "/admin.service.v1.RoleService/Update", "role", auditV1.OperationAuditLog_UPDATE},
 		{"创建", "/x.YService/Create", "y", auditV1.OperationAuditLog_CREATE},

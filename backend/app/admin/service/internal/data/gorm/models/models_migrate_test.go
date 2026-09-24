@@ -3,8 +3,8 @@ package models
 import (
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	gormsqlite "github.com/glebarez/sqlite"
+	"github.com/stretchr/testify/require"
 	"gorm.io/gorm"
 )
 

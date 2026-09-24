@@ -9,16 +9,16 @@ import (
 	"strconv"
 	"time"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	ktransport "github.com/go-kratos/kratos/v2/transport"
+	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
 	"go-wind-admin/app/admin/service/internal/data/ent/usermfafactor"
-	khttp "github.com/go-kratos/kratos/v2/transport/http"
-	ktransport "github.com/go-kratos/kratos/v2/transport"
 
 	"go-wind-admin/pkg/middleware/auth"
 	"go-wind-admin/pkg/netutil"
@@ -294,7 +294,6 @@ func (s *MfaService) VerifyMFAChallenge(ctx context.Context, req *authentication
 	if s.rateLimiter != nil {
 		s.rateLimiter.Reset(ctx, netutil.ClientIPFromContext(ctx), payload.GetUsername())
 	}
-
 
 	accessToken, refreshToken, err := s.authenticator.CreateUserToken(ctx, challengeCtx.ClientType, payload)
 	if err != nil {

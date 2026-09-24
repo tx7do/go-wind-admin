@@ -5,8 +5,8 @@ import (
 	"testing"
 	"time"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	entLoginAuditLog "go-wind-admin/app/admin/service/internal/data/ent/loginauditlog"
 	entOperationAuditLog "go-wind-admin/app/admin/service/internal/data/ent/operationauditlog"
@@ -122,7 +122,7 @@ func TestDashboardRepoSqlite_LoginTrend(t *testing.T) {
 	require.Len(t, trend, 3, "days=3 应返回 3 个桶")
 	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
 	for i, row := range trend {
-		require.Equal(t, today.AddDate(0, 0, -(2 - i)).Format("2006-01-02"), row.Date,
+		require.Equal(t, today.AddDate(0, 0, -(2-i)).Format("2006-01-02"), row.Date,
 			"第 %d 个桶的日期应自最早日升序到今日", i)
 		expected := 0
 		if i == 2 {
@@ -136,7 +136,7 @@ func TestDashboardRepoSqlite_LoginTrend(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, trend, 7, "days<=0 应默认 7 天窗口")
 	for i, row := range trend {
-		require.Equal(t, today.AddDate(0, 0, -(6 - i)).Format("2006-01-02"), row.Date,
+		require.Equal(t, today.AddDate(0, 0, -(6-i)).Format("2006-01-02"), row.Date,
 			"第 %d 个桶的日期应自最早日升序到今日", i)
 		expected := 0
 		if i == 6 {

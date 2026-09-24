@@ -4,11 +4,11 @@ import (
 	"context"
 	"testing"
 
-	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
@@ -24,7 +24,7 @@ import (
 // 白盒构造逐字段复刻 NewUserRepo 的 mapper/converter 初始化，仅将 log 换为
 // NopLogger、entClient 换为 SQLite 内存库测试 client。
 // Get/List 途经的 ListUserRelationIDs 会触达三个关系子仓
-//（userRoleRepo/userOrgUnitRepo/userPositionRepo），在同一 entclient 上
+// （userRoleRepo/userOrgUnitRepo/userPositionRepo），在同一 entclient 上
 // 内联白盒构造（逐字段复刻各自 New* 构造器）；默认关联模式为 OneToOne，
 // membershipRepo 在该模式下不被触及、保持 nil。
 func newUserRepoSqlite(t *testing.T) *userRepo {

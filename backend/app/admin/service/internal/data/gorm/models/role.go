@@ -8,10 +8,10 @@ import (
 type Role struct {
 	mixin.AutoIncrementID
 
-	Name         *string `gorm:"column:name;type:varchar(255);comment:角色名称"`
-	Code         *string `gorm:"column:code;type:varchar(128);comment:角色标识"`
-	IsProtected  *bool   `gorm:"column:is_protected;type:boolean;comment:是否受保护"`
-	Type         *string `gorm:"column:type;type:varchar(128);comment:类型"`
+	Name        *string `gorm:"column:name;type:varchar(255);comment:角色名称"`
+	Code        *string `gorm:"column:code;type:varchar(128);comment:角色标识"`
+	IsProtected *bool   `gorm:"column:is_protected;type:boolean;comment:是否受保护"`
+	Type        *string `gorm:"column:type;type:varchar(128);comment:类型"`
 
 	mixin.TimeAt
 	mixin.OperatorID

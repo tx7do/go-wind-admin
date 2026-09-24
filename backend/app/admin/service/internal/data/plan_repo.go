@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
@@ -25,9 +25,9 @@ type PlanRepo struct {
 	entClient *entCrud.EntClient[*ent.Client]
 	log       *bLogger.Helper
 
-	mapper             *mapper.CopierMapper[identityV1.Plan, ent.Plan]
-	versionConverter   *mapper.EnumTypeConverter[identityV1.Plan_Version, plan.Version]
-	expiryPolicyConv   *mapper.EnumTypeConverter[identityV1.Plan_ExpiryPolicy, plan.ExpiryPolicy]
+	mapper           *mapper.CopierMapper[identityV1.Plan, ent.Plan]
+	versionConverter *mapper.EnumTypeConverter[identityV1.Plan_Version, plan.Version]
+	expiryPolicyConv *mapper.EnumTypeConverter[identityV1.Plan_ExpiryPolicy, plan.ExpiryPolicy]
 
 	repository *entCrud.Repository[
 		ent.PlanQuery, ent.PlanSelect,

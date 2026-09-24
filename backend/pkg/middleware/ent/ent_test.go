@@ -70,11 +70,11 @@ func TestServer_InjectsUserViewerFromOperatorMetadata(t *testing.T) {
 		{
 			name: "aggregated ALL scope with unit ids ignored",
 			op: &authenticationV1.OperatorMetadata{
-				UserId:            42,
-				TenantId:          7,
-				OrgUnitId:         9,
-				DataScopes:        []identityV1.DataScope{identityV1.DataScope_ALL},
-				DataScopeUnitIds:  []uint64{7, 8},
+				UserId:           42,
+				TenantId:         7,
+				OrgUnitId:        9,
+				DataScopes:       []identityV1.DataScope{identityV1.DataScope_ALL},
+				DataScopeUnitIds: []uint64{7, 8},
 			},
 			wantUID:      42,
 			wantTID:      7,
@@ -102,11 +102,11 @@ func TestServer_InjectsUserViewerFromOperatorMetadata(t *testing.T) {
 		{
 			name: "unit scope carries unit targets",
 			op: &authenticationV1.OperatorMetadata{
-				UserId:            1,
-				TenantId:          2,
-				OrgUnitId:         3,
-				DataScopes:        []identityV1.DataScope{identityV1.DataScope_UNIT_ONLY},
-				DataScopeUnitIds:  []uint64{5},
+				UserId:           1,
+				TenantId:         2,
+				OrgUnitId:        3,
+				DataScopes:       []identityV1.DataScope{identityV1.DataScope_UNIT_ONLY},
+				DataScopeUnitIds: []uint64{5},
 			},
 			wantUID:      1,
 			wantTID:      2,
@@ -118,11 +118,11 @@ func TestServer_InjectsUserViewerFromOperatorMetadata(t *testing.T) {
 		{
 			name: "mixed scopes mapped in order with unspecified dropped",
 			op: &authenticationV1.OperatorMetadata{
-				UserId:            1,
-				TenantId:          2,
-				OrgUnitId:         3,
-				DataScopes:        []identityV1.DataScope{identityV1.DataScope_DATA_SCOPE_UNSPECIFIED, identityV1.DataScope_SELF, identityV1.DataScope_UNIT_AND_CHILD},
-				DataScopeUnitIds:  []uint64{3},
+				UserId:           1,
+				TenantId:         2,
+				OrgUnitId:        3,
+				DataScopes:       []identityV1.DataScope{identityV1.DataScope_DATA_SCOPE_UNSPECIFIED, identityV1.DataScope_SELF, identityV1.DataScope_UNIT_AND_CHILD},
+				DataScopeUnitIds: []uint64{3},
 			},
 			wantUID:      1,
 			wantTID:      2,
@@ -197,10 +197,10 @@ func TestServer_PropagatesOtelTraceID(t *testing.T) {
 	// SpanContext 与 operator 元数据必须能同时存在于同一个 ctx
 	ctx := trace.ContextWithSpanContext(context.Background(), sc)
 	ctx = withOperatorMetadata(t, ctx, &authenticationV1.OperatorMetadata{
-		UserId:      1,
-		TenantId:    2,
-		OrgUnitId:   3,
-		DataScopes:  []identityV1.DataScope{identityV1.DataScope_SELF},
+		UserId:     1,
+		TenantId:   2,
+		OrgUnitId:  3,
+		DataScopes: []identityV1.DataScope{identityV1.DataScope_SELF},
 	})
 
 	var captured context.Context

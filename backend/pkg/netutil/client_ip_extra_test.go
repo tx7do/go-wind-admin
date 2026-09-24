@@ -29,34 +29,34 @@ func restoreTrustedProxies(t *testing.T) {
 // 空串/纯空白/非法 IP/非法 CIDR 条目被跳过且不影响其余条目。
 func TestSetTrustedProxies_ParsingRules(t *testing.T) {
 	cases := []struct {
-		name        string
-		config      []string
-		trusted     []string
-		untrusted   []string
+		name      string
+		config    []string
+		trusted   []string
+		untrusted []string
 	}{
 		{
-			name:        "cidr with surrounding whitespace",
-			config:      []string{"  172.16.0.0/12  "},
-			trusted:     []string{"172.16.16.16"},
-			untrusted:   []string{"10.0.0.1", "192.168.1.1", "8.8.8.8"},
+			name:      "cidr with surrounding whitespace",
+			config:    []string{"  172.16.0.0/12  "},
+			trusted:   []string{"172.16.16.16"},
+			untrusted: []string{"10.0.0.1", "192.168.1.1", "8.8.8.8"},
 		},
 		{
-			name:        "bare IPv4 acts as /32",
-			config:      []string{"8.8.8.8"},
-			trusted:     []string{"8.8.8.8"},
-			untrusted:   []string{"8.8.8.9", "10.0.0.1"},
+			name:      "bare IPv4 acts as /32",
+			config:    []string{"8.8.8.8"},
+			trusted:   []string{"8.8.8.8"},
+			untrusted: []string{"8.8.8.9", "10.0.0.1"},
 		},
 		{
-			name:        "bare IPv6 acts as /128",
-			config:      []string{"::1"},
-			trusted:     []string{"::1"},
-			untrusted:   []string{"::2", "fe80::1", "10.0.0.1"},
+			name:      "bare IPv6 acts as /128",
+			config:    []string{"::1"},
+			trusted:   []string{"::1"},
+			untrusted: []string{"::2", "fe80::1", "10.0.0.1"},
 		},
 		{
-			name:        "invalid entries skipped, valid kept",
-			config:      []string{"", "   ", "999.999.1.1", "not-an-ip", "10.0.0.0/33", "10.0.0.0/8"},
-			trusted:     []string{"10.0.0.1"},
-			untrusted:   []string{"192.168.1.1", "172.16.0.1"},
+			name:      "invalid entries skipped, valid kept",
+			config:    []string{"", "   ", "999.999.1.1", "not-an-ip", "10.0.0.0/33", "10.0.0.0/8"},
+			trusted:   []string{"10.0.0.1"},
+			untrusted: []string{"192.168.1.1", "172.16.0.1"},
 		},
 	}
 	for _, tc := range cases {
@@ -101,9 +101,9 @@ func TestSetTrustedProxies_AllInvalidYieldsEmptyTrust(t *testing.T) {
 // 字面量与多冒号串。
 func TestIPFromRemoteAddr(t *testing.T) {
 	cases := []struct {
-		name        string
-		remoteAddr  string
-		want        string
+		name       string
+		remoteAddr string
+		want       string
 	}{
 		{"empty", "", ""},
 		{"bare host without port", "8.8.8.8", "8.8.8.8"},

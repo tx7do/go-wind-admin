@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/go-crud/viewer"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	entCrud "github.com/tx7do/go-crud/entgo"
@@ -23,8 +23,8 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 
-	passwordPolicy "go-wind-admin/pkg/password"
 	"go-wind-admin/app/admin/service/internal/data/ent/usercredential"
+	passwordPolicy "go-wind-admin/pkg/password"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 )

@@ -28,15 +28,15 @@ import (
 	"strings"
 	"testing"
 
+	"crypto/elliptic"
 	kerrors "github.com/go-kratos/kratos/v2/errors"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/trans"
-	"crypto/elliptic"
 
-	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 )
 
 // newHeaderOnlyRequest 构造仅带指定头的轻量请求（无 body）。
@@ -53,11 +53,11 @@ func newHeaderOnlyRequest(headers map[string]string) *nethttp.Request {
 // X-Real-IP → RemoteAddr（host:port 拆解）。所有来源不可用时归一空串。
 func TestGetClientRealIP(t *testing.T) {
 	cases := []struct {
-		name        string
-		xff         string
-		xri         string
-		remoteAddr  string
-		want        string
+		name       string
+		xff        string
+		xri        string
+		remoteAddr string
+		want       string
 	}{
 		{"单级XFF", "1.2.3.4", "", "", "1.2.3.4"},
 		{"多级XFF取首个", "1.2.3.4, 5.6.7.8", "", "", "1.2.3.4"},
@@ -175,10 +175,10 @@ func TestGetStatusCode(t *testing.T) {
 // （JSON 引号形式含空白容忍、表单编码）与 CR/LF 剥离。
 func TestParseUsernameFromBytes(t *testing.T) {
 	cases := []struct {
-		name       string
-		body       string
-		wantName   string
-		wantErr    bool
+		name     string
+		body     string
+		wantName string
+		wantErr  bool
 	}{
 		{"JSON载体", `{"username":"bob"}`, "bob", false},
 		{"JSON空白容忍", "{\"username\"  :  \"bob\"}", "bob", false},
@@ -433,10 +433,10 @@ func TestGenerateECDSAKeyPair(t *testing.T) {
 // 前缀、零值空整数。字节布局为外部验证方依赖的稳定契约。
 func TestEncodeDER(t *testing.T) {
 	cases := []struct {
-		name   string
-		r      int64
-		s      int64
-		want   []byte
+		name string
+		r    int64
+		s    int64
+		want []byte
 	}{
 		{"小整数", 1, 2, []byte{0x30, 0x06, 0x02, 0x01, 0x01, 0x02, 0x01, 0x02}},
 		{"r高位补零", 0x80, 1, []byte{0x30, 0x07, 0x02, 0x02, 0x00, 0x80, 0x02, 0x01, 0x01}},

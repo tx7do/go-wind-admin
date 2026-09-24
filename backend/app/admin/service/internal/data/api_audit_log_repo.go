@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/jinzhu/copier"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/durationpb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"

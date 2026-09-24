@@ -4,10 +4,10 @@ import (
 	"context"
 	"testing"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -24,9 +24,9 @@ import (
 func newPlanRepoSqlite(t *testing.T, entClient *entCrud.EntClient[*ent.Client]) *PlanRepo {
 	t.Helper()
 	repo := &PlanRepo{
-		entClient:       entClient,
-		log:             bLogger.NewHelper(bLogger.NopLogger()),
-		mapper:          mapper.NewCopierMapper[identityV1.Plan, ent.Plan](),
+		entClient: entClient,
+		log:       bLogger.NewHelper(bLogger.NopLogger()),
+		mapper:    mapper.NewCopierMapper[identityV1.Plan, ent.Plan](),
 		versionConverter: mapper.NewEnumTypeConverter[identityV1.Plan_Version, plan.Version](
 			identityV1.Plan_Version_name, identityV1.Plan_Version_value,
 		),
@@ -214,11 +214,11 @@ func TestPlanRepoSqlite_EnumReadView(t *testing.T) {
 	ctx := enttest.NewSystemViewerCtx(context.Background())
 
 	cases := []struct {
-		protoVersion    identityV1.Plan_Version
+		protoVersion   identityV1.Plan_Version
 		wantEntVersion plan.Version
-		protoPolicy     identityV1.Plan_ExpiryPolicy
-		wantEntPolicy   plan.ExpiryPolicy
-		marker          string
+		protoPolicy    identityV1.Plan_ExpiryPolicy
+		wantEntPolicy  plan.ExpiryPolicy
+		marker         string
 	}{
 		{
 			identityV1.Plan_FREE, plan.VersionFree,

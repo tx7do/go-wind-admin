@@ -199,7 +199,7 @@ func TestAccessKeyServiceSqlite_UpdateNilMaskKeepsImmutableFields(t *testing.T) 
 
 // TestAccessKeyServiceSqlite_UpdateWithMaskImmutableStripped 修复后语义：
 // 服务层把不可变字段（access_key/tenant_id）从掩码剔除而非追加进白名单
-//（追加 "secret_hash" 曾致一切带掩码更新整体失败），合法路径（name）正常
+// （追加 "secret_hash" 曾致一切带掩码更新整体失败），合法路径（name）正常
 // 更新、AK/摘要/租户归属保持原值；掩码只含不可变字段时为仅盖章的空操作。
 func TestAccessKeyServiceSqlite_UpdateWithMaskImmutableStripped(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)

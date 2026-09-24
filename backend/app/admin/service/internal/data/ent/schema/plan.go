@@ -82,7 +82,7 @@ func (Plan) Mixin() []ent.Mixin {
 }
 
 // Edges of the Plan.
-	func (Plan) Edges() []ent.Edge {
+func (Plan) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("tenants", Tenant.Type).
 			StorageKey(edge.Column("plan_id")),

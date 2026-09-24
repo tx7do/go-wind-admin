@@ -73,8 +73,8 @@ type options struct {
 
 	accessTokenChecker                AccessTokenChecker // 访问令牌检查器
 	tenantAccessChecker               TenantAccessChecker
-	enableCheckRefreshTokenExpiration bool               // 是否启用刷新令牌过期检查
-	enableCheckScopes                 bool               // 是否启用作用域检查
+	enableCheckRefreshTokenExpiration bool // 是否启用刷新令牌过期检查
+	enableCheckScopes                 bool // 是否启用作用域检查
 
 	enableAuthz bool // 是否启用鉴权
 

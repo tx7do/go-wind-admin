@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"entgo.io/ent/dialect/sql"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -27,7 +27,7 @@ func newFileRepoSqlite(t *testing.T) *FileRepo {
 	repo := &FileRepo{
 		entClient: enttest.NewEntClientForTest(t),
 		log:       bLogger.NewHelper(bLogger.NopLogger()),
-		mapper:     mapper.NewCopierMapper[storageV1.File, ent.File](),
+		mapper:    mapper.NewCopierMapper[storageV1.File, ent.File](),
 		providerConverter: mapper.NewEnumTypeConverter[storageV1.OSSProvider, entFile.Provider](
 			storageV1.OSSProvider_name, storageV1.OSSProvider_value,
 		),
@@ -410,13 +410,13 @@ func TestFileRepoSqlite_CountAndIsExist(t *testing.T) {
 
 	require.NoError(t, repo.Create(ctx, &storageV1.CreateFileRequest{
 		Data: &storageV1.File{
-			FileGuid: trans.Ptr("guid-sqlite-file-count-1"),
+			FileGuid:  trans.Ptr("guid-sqlite-file-count-1"),
 			Extension: trans.Ptr("png"),
 		},
 	}))
 	require.NoError(t, repo.Create(ctx, &storageV1.CreateFileRequest{
 		Data: &storageV1.File{
-			FileGuid: trans.Ptr("guid-sqlite-file-count-2"),
+			FileGuid:  trans.Ptr("guid-sqlite-file-count-2"),
 			Extension: trans.Ptr("jpg"),
 		},
 	}))

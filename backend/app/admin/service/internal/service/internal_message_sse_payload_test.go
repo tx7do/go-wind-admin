@@ -6,10 +6,10 @@ import (
 	"testing"
 	"time"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
-	"github.com/tx7do/kratos-transport/transport/sse"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
+	"github.com/tx7do/kratos-transport/transport/sse"
 
 	internalMessageV1 "go-wind-admin/api/gen/go/internal_message/service/v1"
 

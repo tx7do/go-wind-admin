@@ -8,12 +8,12 @@ import (
 	"testing"
 
 	"entgo.io/ent/dialect/sql"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/crypto"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/password"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -39,7 +39,7 @@ func newUserCredentialRepoSqlite(t *testing.T) *UserCredentialRepo {
 	configRepo := &ConfigRepo{
 		entClient: entClient,
 		log:       bLogger.NewHelper(bLogger.NopLogger()),
-		mapper:     mapper.NewCopierMapper[configV1.Config, ent.SysConfig](),
+		mapper:    mapper.NewCopierMapper[configV1.Config, ent.SysConfig](),
 		valueTypeConverter: mapper.NewEnumTypeConverter[configV1.Config_ConfigValueType, entSysConfig.ValueType](
 			configV1.Config_ConfigValueType_name, configV1.Config_ConfigValueType_value,
 		),
@@ -48,14 +48,14 @@ func newUserCredentialRepoSqlite(t *testing.T) *UserCredentialRepo {
 	configRepo.init()
 
 	repo := &UserCredentialRepo{
-		entClient: entClient,
-		log:       bLogger.NewHelper(bLogger.NopLogger()),
-		mapper:                     mapper.NewCopierMapper[authenticationV1.UserCredential, ent.UserCredential](),
-		statusConverter:             mapper.NewEnumTypeConverter[authenticationV1.UserCredential_Status, entUserCredential.Status](authenticationV1.UserCredential_Status_name, authenticationV1.UserCredential_Status_value),
-		identityTypeConverter:       mapper.NewEnumTypeConverter[authenticationV1.UserCredential_IdentityType, entUserCredential.IdentityType](authenticationV1.UserCredential_IdentityType_name, authenticationV1.UserCredential_IdentityType_value),
-		credentialTypeConverter:     mapper.NewEnumTypeConverter[authenticationV1.UserCredential_CredentialType, entUserCredential.CredentialType](authenticationV1.UserCredential_CredentialType_name, authenticationV1.UserCredential_CredentialType_value),
-		passwordCrypto:              password.NewSHA256Crypto(),
-		configRepo:                  configRepo,
+		entClient:               entClient,
+		log:                     bLogger.NewHelper(bLogger.NopLogger()),
+		mapper:                  mapper.NewCopierMapper[authenticationV1.UserCredential, ent.UserCredential](),
+		statusConverter:         mapper.NewEnumTypeConverter[authenticationV1.UserCredential_Status, entUserCredential.Status](authenticationV1.UserCredential_Status_name, authenticationV1.UserCredential_Status_value),
+		identityTypeConverter:   mapper.NewEnumTypeConverter[authenticationV1.UserCredential_IdentityType, entUserCredential.IdentityType](authenticationV1.UserCredential_IdentityType_name, authenticationV1.UserCredential_IdentityType_value),
+		credentialTypeConverter: mapper.NewEnumTypeConverter[authenticationV1.UserCredential_CredentialType, entUserCredential.CredentialType](authenticationV1.UserCredential_CredentialType_name, authenticationV1.UserCredential_CredentialType_value),
+		passwordCrypto:          password.NewSHA256Crypto(),
+		configRepo:              configRepo,
 	}
 	repo.init()
 	return repo
@@ -538,7 +538,6 @@ func TestUserCredentialRepoSqlite_PasswordLifecycle(t *testing.T) {
 	require.NoError(t, err, "正确口令应命中")
 	require.Equal(t, uint32(77), uid, "应返回落库 user_id")
 
-
 	// FindUserCredential：错误口令
 	_, err = repo.FindUserCredential(ctx, 0, authenticationV1.UserCredential_USERNAME,
 		"sqlite_pw_user", "Wr0ng!Passw0rd#00", false)
@@ -738,8 +737,7 @@ func TestUserCredentialRepoSqlite_UpdateMaskAndAllowMissing(t *testing.T) {
 	// 掩码外的该字段本就不参与更新，故省略以走纯 identifier 掩码路径。
 	err = repo.Update(ctx, &authenticationV1.UpdateUserCredentialRequest{
 		Id:         createdID,
-		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"identifier"},
-		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"identifier"}},
 		Data: &authenticationV1.UserCredential{
 			Identifier: trans.Ptr("update_after@x"),
 			Status:     authenticationV1.UserCredential_DISABLED.Enum(),

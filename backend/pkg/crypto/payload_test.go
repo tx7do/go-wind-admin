@@ -150,9 +150,9 @@ func TestHasEncryptedPayload(t *testing.T) {
 			want: false,
 		},
 		{
-			name: "empty payload",
+			name:    "empty payload",
 			payload: map[string]interface{}{},
-			want: false,
+			want:    false,
 		},
 	}
 

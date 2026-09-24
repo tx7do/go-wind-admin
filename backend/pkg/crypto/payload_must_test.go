@@ -19,7 +19,7 @@ import (
 // 必须报错，而不是产出半加密的残缺载荷。
 func TestEncryptPayload_MarshalFailure(t *testing.T) {
 	payload := map[string]interface{}{
-		"host":      "imap.example.com",
+		"host":           "imap.example.com",
 		"unserializable": func() {},
 	}
 	out, err := EncryptPayload(payload)
@@ -45,7 +45,7 @@ func TestDecryptPayload_MarkerFalsePassthrough(t *testing.T) {
 // 错误，静默直通会把内部结构当业务数据使用。
 func TestDecryptPayload_InvalidEncryptedConfigType(t *testing.T) {
 	payload := map[string]interface{}{
-		IsEncryptedKey:  true,
+		IsEncryptedKey:     true,
 		EncryptedConfigKey: 42,
 	}
 	out, err := DecryptPayload(payload)
@@ -57,7 +57,7 @@ func TestDecryptPayload_InvalidEncryptedConfigType(t *testing.T) {
 // 时必须报错（无论加密能力启用与否，直通或解密后都不是合法载荷）。
 func TestDecryptPayload_GarbageConfigUnmarshalFailure(t *testing.T) {
 	payload := map[string]interface{}{
-		IsEncryptedKey:  true,
+		IsEncryptedKey:     true,
 		EncryptedConfigKey: "definitely not json at all",
 	}
 	out, err := DecryptPayload(payload)
@@ -102,7 +102,7 @@ func TestMustDecryptPayload_Success(t *testing.T) {
 func TestMustDecryptPayload_PanicsOnUndecryptableConfig(t *testing.T) {
 	assert.Panics(t, func() {
 		_ = MustDecryptPayload(map[string]interface{}{
-			IsEncryptedKey:  true,
+			IsEncryptedKey:     true,
 			EncryptedConfigKey: "still not json",
 		})
 	}, "非法 JSON 的载荷必须 panic")

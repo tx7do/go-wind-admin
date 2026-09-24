@@ -4,20 +4,20 @@ import (
 	"context"
 	"testing"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
 )
 
 // newMenuRepoSqlite 用 enttest helper 白盒构造一个可直接做 CRUD 的 MenuRepo
-//（同 position_repo_sqlite_test.go 的套路）。
+// （同 position_repo_sqlite_test.go 的套路）。
 func newMenuRepoSqlite(t *testing.T) *MenuRepo {
 	t.Helper()
 	entClient := enttest.NewEntClientForTest(t)
@@ -34,7 +34,7 @@ func newMenuRepoSqlite(t *testing.T) *MenuRepo {
 }
 
 // TestMenuRepoSyncMenus_MergePreservesIDs 增量合并：按全路径匹配，已存在菜单原位更新
-//（ID 与 status 保留），缺失才新增——这是"同步不废角色-菜单授权"的关键语义。
+// （ID 与 status 保留），缺失才新增——这是"同步不废角色-菜单授权"的关键语义。
 func TestMenuRepoSyncMenus_MergePreservesIDs(t *testing.T) {
 	repo := newMenuRepoSqlite(t)
 	ctx := enttest.NewSystemViewerCtx(context.Background())

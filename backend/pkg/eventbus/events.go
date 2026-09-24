@@ -3,32 +3,32 @@ package eventbus
 // Common event types
 const (
 	// Email events
-	EventEmailReceived   = "email.received"
-	EventEmailSent       = "email.sent"
-	EventEmailDeleted    = "email.deleted"
-	EventEmailRead       = "email.read"
-	EventEmailFlagged    = "email.flagged"
-	EventEmailProcessed  = "email.processed"
-	EventEmailFailed     = "email.failed"
+	EventEmailReceived  = "email.received"
+	EventEmailSent      = "email.sent"
+	EventEmailDeleted   = "email.deleted"
+	EventEmailRead      = "email.read"
+	EventEmailFlagged   = "email.flagged"
+	EventEmailProcessed = "email.processed"
+	EventEmailFailed    = "email.failed"
 
 	// User events
-	EventUserCreated     = "user.created"
-	EventUserUpdated     = "user.updated"
-	EventUserDeleted     = "user.deleted"
-	EventUserLoggedIn    = "user.logged_in"
-	EventUserLoggedOut   = "user.logged_out"
+	EventUserCreated   = "user.created"
+	EventUserUpdated   = "user.updated"
+	EventUserDeleted   = "user.deleted"
+	EventUserLoggedIn  = "user.logged_in"
+	EventUserLoggedOut = "user.logged_out"
 
 	// Task events
-	EventTaskCreated     = "task.created"
-	EventTaskStarted     = "task.started"
-	EventTaskCompleted   = "task.completed"
-	EventTaskFailed      = "task.failed"
-	EventTaskCancelled   = "task.cancelled"
+	EventTaskCreated   = "task.created"
+	EventTaskStarted   = "task.started"
+	EventTaskCompleted = "task.completed"
+	EventTaskFailed    = "task.failed"
+	EventTaskCancelled = "task.cancelled"
 
 	// System events
-	EventSystemStarted   = "system.started"
-	EventSystemStopped   = "system.stopped"
-	EventSystemError     = "system.error"
+	EventSystemStarted = "system.started"
+	EventSystemStopped = "system.stopped"
+	EventSystemError   = "system.error"
 )
 
 // EmailReceivedEvent represents an email received event
@@ -60,12 +60,12 @@ type UserCreatedEvent struct {
 
 // TaskCompletedEvent represents a task completed event
 type TaskCompletedEvent struct {
-	TaskID     string                 `json:"task_id"`
-	TaskType   string                 `json:"task_type"`
-	Success    bool                   `json:"success"`
-	Error      string                 `json:"error,omitempty"`
-	Result     map[string]interface{} `json:"result,omitempty"`
-	Duration   int64                  `json:"duration_ms"`
+	TaskID   string                 `json:"task_id"`
+	TaskType string                 `json:"task_type"`
+	Success  bool                   `json:"success"`
+	Error    string                 `json:"error,omitempty"`
+	Result   map[string]interface{} `json:"result,omitempty"`
+	Duration int64                  `json:"duration_ms"`
 }
 
 // SystemErrorEvent represents a system error event

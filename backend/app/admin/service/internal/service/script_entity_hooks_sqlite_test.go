@@ -7,16 +7,16 @@
 //     default 分支的 ToLower(String()) 语义钉死）。
 //   - mutationID 的尽力提取（带 ID() 的 mutation 取值，无 ID() 的取 0）。
 //   - AttachEntityHooks 桥：
-//       · 映射实体（Tenant）before 钩子同步触发，vetoInvoker 返回错误时
-//         写入被拒且错误包裹 scripting.ErrScriptVetoed（errors.Is 可判）；
-//       · vetoInvoker panic 时 fail-open（写入放行）；
-//       · 写入成功后 after 钩子异步触发（独立 goroutine + 超时上下文），
-//         payload 携带 entity/op/id；
-//       · 非映射实体（Language）两类钩子均不触发；
-//       · 双 nil invoker 时全部跳过，写入正常。
+//     · 映射实体（Tenant）before 钩子同步触发，vetoInvoker 返回错误时
+//     写入被拒且错误包裹 scripting.ErrScriptVetoed（errors.Is 可判）；
+//     · vetoInvoker panic 时 fail-open（写入放行）；
+//     · 写入成功后 after 钩子异步触发（独立 goroutine + 超时上下文），
+//     payload 携带 entity/op/id；
+//     · 非映射实体（Language）两类钩子均不触发；
+//     · 双 nil invoker 时全部跳过，写入正常。
 //   - 生产接线形态（vetoInvoker=InvokeEntityHookVeto / after=InvokeEntityHook）：
-//       · 挂载 __stop 脚本的 before 钩子否决写入（ErrScriptVetoed）；
-//       · 挂载良性脚本的 after 钩子执行并落 script_log（trigger=hook）。
+//     · 挂载 __stop 脚本的 before 钩子否决写入（ErrScriptVetoed）；
+//     · 挂载良性脚本的 after 钩子执行并落 script_log（trigger=hook）。
 //   - InvokeEntityHook/InvokeEntityHookVeto 的无挂载返回 nil（after/before 两侧），
 //     以及"挂载脚本执行失败仍上抛 + 落 hook 执行审计"。
 //
@@ -60,9 +60,9 @@ func TestMutationOpName(t *testing.T) {
 		{ent.OpUpdate | ent.OpUpdateOne, "update"},
 		{ent.OpDelete, "delete"},
 		{ent.OpDeleteOne, "delete"},
-		{ent.OpUpdate, "opupdate"},               // default 分支：单值 OpUpdate 不命中组合 case
-		{ent.OpUpdateOne, "opupdateone"},         // default 分支：单值 OpUpdateOne 不命中组合 case
-		{ent.OpCreate | ent.OpDelete, "op(9)"},   // default 分支：未知组合的数值名
+		{ent.OpUpdate, "opupdate"},             // default 分支：单值 OpUpdate 不命中组合 case
+		{ent.OpUpdateOne, "opupdateone"},       // default 分支：单值 OpUpdateOne 不命中组合 case
+		{ent.OpCreate | ent.OpDelete, "op(9)"}, // default 分支：未知组合的数值名
 	}
 	for _, c := range cases {
 		require.Equal(t, c.want, mutationOpName(c.op), "Op(%d) 的映射", c.op)

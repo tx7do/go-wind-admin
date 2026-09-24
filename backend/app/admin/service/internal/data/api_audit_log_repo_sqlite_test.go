@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"entgo.io/ent/dialect/sql"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 
@@ -26,7 +26,7 @@ func newApiAuditLogRepoSqlite(t *testing.T) *ApiAuditLogRepo {
 	repo := &ApiAuditLogRepo{
 		entClient: enttest.NewEntClientForTest(t),
 		log:       bLogger.NewHelper(bLogger.NopLogger()),
-		mapper:     mapper.NewCopierMapper[auditV1.ApiAuditLog, ent.ApiAuditLog](),
+		mapper:    mapper.NewCopierMapper[auditV1.ApiAuditLog, ent.ApiAuditLog](),
 	}
 	repo.init()
 	return repo
@@ -40,28 +40,28 @@ func TestApiAuditLogRepoSqlite_Create(t *testing.T) {
 
 	err := repo.Create(ctx, &auditV1.CreateApiAuditLogRequest{
 		Data: &auditV1.ApiAuditLog{
-			Username:      trans.Ptr("sqlite_user_alpha"),
-			IpAddress:     trans.Ptr("10.0.0.1"),
-			Referer:       trans.Ptr("https://referer.example/sqlite"),
-			AppVersion:    trans.Ptr("1.0.0-sqlite"),
-			HttpMethod:    trans.Ptr("GET"),
-			Path:          trans.Ptr("/sqlite/api-audit/create"),
-			RequestUri:    trans.Ptr("/sqlite/api-audit/create?q=1"),
-			ApiModule:     trans.Ptr("sqlite-module"),
-			ApiOperation:  trans.Ptr("sqlite-op"),
+			Username:       trans.Ptr("sqlite_user_alpha"),
+			IpAddress:      trans.Ptr("10.0.0.1"),
+			Referer:        trans.Ptr("https://referer.example/sqlite"),
+			AppVersion:     trans.Ptr("1.0.0-sqlite"),
+			HttpMethod:     trans.Ptr("GET"),
+			Path:           trans.Ptr("/sqlite/api-audit/create"),
+			RequestUri:     trans.Ptr("/sqlite/api-audit/create?q=1"),
+			ApiModule:      trans.Ptr("sqlite-module"),
+			ApiOperation:   trans.Ptr("sqlite-op"),
 			ApiDescription: trans.Ptr("sqlite 描述"),
-			RequestId:     trans.Ptr("req-sqlite-create-1"),
-			TraceId:       trans.Ptr("trace-sqlite-create-1"),
-			SpanId:        trans.Ptr("span-sqlite-create-1"),
-			LatencyMs:     trans.Ptr(uint32(42)),
-			Success:       trans.Ptr(true),
-			StatusCode:    trans.Ptr(uint32(200)),
-			Reason:        trans.Ptr("ok"),
-			RequestHeader: trans.Ptr(`{"X-Sqlite":"1"}`),
-			RequestBody:   trans.Ptr(`{"k":"v"}`),
-			Response:      trans.Ptr(`{"r":"v"}`),
-			LogHash:       trans.Ptr("hash-sqlite-create-1"),
-			Signature:     []byte{0x01, 0x02, 0x03},
+			RequestId:      trans.Ptr("req-sqlite-create-1"),
+			TraceId:        trans.Ptr("trace-sqlite-create-1"),
+			SpanId:         trans.Ptr("span-sqlite-create-1"),
+			LatencyMs:      trans.Ptr(uint32(42)),
+			Success:        trans.Ptr(true),
+			StatusCode:     trans.Ptr(uint32(200)),
+			Reason:         trans.Ptr("ok"),
+			RequestHeader:  trans.Ptr(`{"X-Sqlite":"1"}`),
+			RequestBody:    trans.Ptr(`{"k":"v"}`),
+			Response:       trans.Ptr(`{"r":"v"}`),
+			LogHash:        trans.Ptr("hash-sqlite-create-1"),
+			Signature:      []byte{0x01, 0x02, 0x03},
 		},
 	})
 	require.NoError(t, err, "repo.Create 写入 SQLite 应成功")

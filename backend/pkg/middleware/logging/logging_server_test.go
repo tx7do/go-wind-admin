@@ -43,8 +43,8 @@ func (h *fakeHeader) Get(key string) string {
 	return ""
 }
 
-func (h *fakeHeader) Set(key, value string)   { h.m[key] = []string{value} }
-func (h *fakeHeader) Add(key, value string)   { h.m[key] = append(h.m[key], value) }
+func (h *fakeHeader) Set(key, value string) { h.m[key] = []string{value} }
+func (h *fakeHeader) Add(key, value string) { h.m[key] = append(h.m[key], value) }
 func (h *fakeHeader) Keys() []string {
 	out := make([]string, 0, len(h.m))
 	for k := range h.m {
@@ -58,11 +58,15 @@ func (h *fakeHeader) Values(key string) []string { return h.m[key] }
 // Server() 对它必须跳过全部审计（快照与落库两个阶段各有一处类型断言）。
 type fakeTransporter struct{ op string }
 
-func (f *fakeTransporter) Kind() transport.Kind         { return transport.KindHTTP }
-func (f *fakeTransporter) Endpoint() string             { return "fake://endpoint" }
-func (f *fakeTransporter) Operation() string            { return f.op }
-func (f *fakeTransporter) RequestHeader() transport.Header { return &fakeHeader{m: map[string][]string{}} }
-func (f *fakeTransporter) ReplyHeader() transport.Header  { return &fakeHeader{m: map[string][]string{} } }
+func (f *fakeTransporter) Kind() transport.Kind { return transport.KindHTTP }
+func (f *fakeTransporter) Endpoint() string     { return "fake://endpoint" }
+func (f *fakeTransporter) Operation() string    { return f.op }
+func (f *fakeTransporter) RequestHeader() transport.Header {
+	return &fakeHeader{m: map[string][]string{}}
+}
+func (f *fakeTransporter) ReplyHeader() transport.Header {
+	return &fakeHeader{m: map[string][]string{}}
+}
 
 // ---------------------------------------------------------------------------
 // handler 透传与审计跳过
@@ -181,38 +185,38 @@ func TestServerDispatchMatrix(t *testing.T) {
 		},
 		{
 			name: "GET读请求只进API审计", method: nethttp.MethodGet, path: "/case/5",
-			op: "/demo.v1.GadgetService/Update",
+			op:        "/demo.v1.GadgetService/Update",
 			expectAPI: 1,
 		},
 		{
 			name: "登录端点仅登录审计", method: nethttp.MethodPost, path: "/case/5",
-			op: adminV1.OperationAuthenticationServiceLogin,
+			op:          adminV1.OperationAuthenticationServiceLogin,
 			expectLogin: 1,
 		},
 		{
 			name: "MFA验证端点仅登录审计", method: nethttp.MethodPost, path: "/case/5",
-			op: adminV1.OperationMfaServiceVerifyMFAChallenge,
+			op:          adminV1.OperationMfaServiceVerifyMFAChallenge,
 			expectLogin: 1,
 		},
 		{
 			name: "登出端点进API与登录审计", method: nethttp.MethodPost, path: "/case/5",
-			op: adminV1.OperationAuthenticationServiceLogout,
+			op:        adminV1.OperationAuthenticationServiceLogout,
 			expectAPI: 1, expectLogin: 1,
 		},
 		{
 			name: "SQL事件进数据访问审计且与写操作并存", method: nethttp.MethodPost, path: "/case/5",
-			op: "/demo.v1.GadgetService/Update",
-			headers: map[string]string{"X-Test-Data-Access": "all", "Content-Type": "application/json"},
+			op:        "/demo.v1.GadgetService/Update",
+			headers:   map[string]string{"X-Test-Data-Access": "all", "Content-Type": "application/json"},
 			expectAPI: 1, expectOp: 1, expectPerm: 1, expectDA: 4,
 		},
 		{
 			name: "解析不出资源的operation仅API审计", method: nethttp.MethodPost, path: "/case/5",
-			op: "plain-bad-op",
+			op:        "plain-bad-op",
 			expectAPI: 1,
 		},
 		{
 			name: "未注册方法PATCH零审计", method: nethttp.MethodPatch, path: "/case/5",
-			op: "/demo.v1.GadgetService/Update",
+			op:        "/demo.v1.GadgetService/Update",
 			expect404: true,
 		},
 		{

@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	"github.com/getkin/kin-openapi/openapi3"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -246,6 +246,7 @@ func (s *ApiService) syncWithOpenAPI(ctx context.Context) error {
 
 	return nil
 }
+
 // GetWalkRouteData 获取通过 WalkRoute 获取的路由数据，用于调试
 func (s *ApiService) GetWalkRouteData(_ context.Context, _ *emptypb.Empty) (*permissionV1.ListApiResponse, error) {
 	if s.routeWalker == nil {

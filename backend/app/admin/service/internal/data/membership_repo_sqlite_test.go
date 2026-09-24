@@ -5,10 +5,10 @@ import (
 	"testing"
 	"time"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
@@ -59,9 +59,9 @@ func newMembershipRepoSqlite(t *testing.T) *MembershipRepo {
 	}
 
 	repo := &MembershipRepo{
-		log:             bLogger.NewHelper(bLogger.NopLogger()),
-		entClient:       entClient,
-		mapper:          mapper.NewCopierMapper[identityV1.Membership, ent.Membership](),
+		log:       bLogger.NewHelper(bLogger.NopLogger()),
+		entClient: entClient,
+		mapper:    mapper.NewCopierMapper[identityV1.Membership, ent.Membership](),
 		statusConverter: mapper.NewEnumTypeConverter[identityV1.Membership_Status, entMembership.Status](
 			identityV1.Membership_Status_name,
 			identityV1.Membership_Status_value,

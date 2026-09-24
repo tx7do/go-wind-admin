@@ -5,16 +5,16 @@ import (
 	"fmt"
 	"testing"
 
-	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
+	dictV1 "go-wind-admin/api/gen/go/dict/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
-	dictV1 "go-wind-admin/api/gen/go/dict/service/v1"
 )
 
 // newLanguageRepoSqlite 用 enttest helper 构造一个可直接做 CRUD 的 LanguageRepo。
@@ -150,7 +150,7 @@ func TestLanguageRepoSqlite_Update(t *testing.T) {
 	// 非 nillable Set + NotEmpty 校验，掩码清掉任一字段都会以空串触发校验失败，
 	// 因此可用的最小掩码必须同时覆盖两者；language_code 不在掩码内且更新路径根本不写它。
 	err = repo.Update(ctx, &dictV1.UpdateLanguageRequest{
-		Id:   createdID,
+		Id: createdID,
 		Data: &dictV1.Language{
 			LanguageName: trans.Ptr("更新后语言名"),
 			NativeName:   trans.Ptr("更新前本地名"),

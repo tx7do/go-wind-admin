@@ -13,16 +13,16 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
-	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
-	accesskeyV1 "go-wind-admin/api/gen/go/access_key/service/v1"
-	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	"go-wind-admin/app/admin/service/internal/data/ent/accesskey"
-	"go-wind-admin/app/admin/service/internal/data"
-	"github.com/tx7do/kratos-bootstrap/bootstrap"
-	"go-wind-admin/pkg/netutil"
-	"go-wind-admin/pkg/middleware/auth"
 	"github.com/tx7do/go-utils/trans"
+	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	accesskeyV1 "go-wind-admin/api/gen/go/access_key/service/v1"
+	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
+	"go-wind-admin/app/admin/service/internal/data"
+	"go-wind-admin/app/admin/service/internal/data/ent/accesskey"
+	"go-wind-admin/pkg/middleware/auth"
+	"go-wind-admin/pkg/netutil"
 )
 
 // AK 前缀与长度：AK 公开可见（16 字节 hex），SK 高熵（32 字节 hex）只在创建响应中出现一次。

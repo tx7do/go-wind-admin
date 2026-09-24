@@ -20,19 +20,18 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/trans"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	entOrgUnit "go-wind-admin/app/admin/service/internal/data/ent/orgunit"
 	entRole "go-wind-admin/app/admin/service/internal/data/ent/role"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
-	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
-	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 )
-
 
 // dataScopeUserRepoStub 是 data.UserRepo 的本地桩：
 // 嵌入接口获得默认方法集（未覆写方法一旦被调用即 nil 接口 panic），

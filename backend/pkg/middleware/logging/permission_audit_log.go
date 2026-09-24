@@ -245,16 +245,16 @@ func (p *PermissionAuditLogMiddleware) signature(permissionAuditLog *auditV1.Per
 	createdAt := permissionAuditLog.GetCreatedAt()
 
 	type signContent struct {
-		TenantID  uint32 `json:"tenant_id"`
+		TenantID   uint32 `json:"tenant_id"`
 		OperatorID uint32 `json:"operator_id"`
-		Sec      int64  `json:"sec"`
-		Nanos    int32  `json:"nanos"`
-		LogHash  string `json:"log_hash"`
+		Sec        int64  `json:"sec"`
+		Nanos      int32  `json:"nanos"`
+		LogHash    string `json:"log_hash"`
 	}
 	sc := signContent{
-		TenantID:  tenantID,
+		TenantID:   tenantID,
 		OperatorID: operatorID,
-		LogHash:   logHash,
+		LogHash:    logHash,
 	}
 	if createdAt != nil {
 		sc.Sec = createdAt.Seconds

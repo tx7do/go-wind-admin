@@ -29,24 +29,23 @@ import (
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	conf "github.com/tx7do/kratos-bootstrap/api/gen/go/conf/v1"
+	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
+	crudViewer "github.com/tx7do/go-crud/viewer"
+	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	"go-wind-admin/app/admin/service/cmd/server/assets"
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
-	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
-	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
-	"go-wind-admin/pkg/constants"
-	crudViewer "github.com/tx7do/go-crud/viewer"
-	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/authorizer"
+	"go-wind-admin/pkg/constants"
+	appViewer "go-wind-admin/pkg/entgo/viewer"
 	"go-wind-admin/pkg/middleware/auth"
 	"go-wind-admin/pkg/utils/converter"
 )
-
 
 // newPermissionServiceForTest 白盒构造 PermissionService，逐字段对齐
 // NewPermissionService 的装配（log 用 NopLogger helper；除 PermissionRepo 外

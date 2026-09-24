@@ -47,10 +47,10 @@ func TestPermissionAuditLogMiddlewareNameAndConstructor(t *testing.T) {
 // 二者归 OTHER；畸形串归 UNSPECIFIED。
 func TestParseTargetAndAction(t *testing.T) {
 	cases := []struct {
-		name         string
-		operation    string
-		wantTarget   string
-		wantAction   auditV1.PermissionAuditLog_ActionType
+		name       string
+		operation  string
+		wantTarget string
+		wantAction auditV1.PermissionAuditLog_ActionType
 	}{
 		{"标准更新", "/admin.service.v1.RoleService/Update", "role", auditV1.PermissionAuditLog_UPDATE},
 		{"创建", "/x.YService/Create", "y", auditV1.PermissionAuditLog_CREATE},

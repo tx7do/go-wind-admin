@@ -10,16 +10,16 @@ func TestValidateComplexity(t *testing.T) {
 		pw   string
 		want error
 	}{
-		{"Abc12345", nil},                  // 大写+小写+数字
-		{"abcd1234", nil},                  // 小写+数字... 只两类，应拒绝
-		{"Abc12345", nil},                  // 重复占位
-		{"Aa1!aaaa", nil},                  // 三类含符号
-		{"12345678", nil},                  // 仅数字一类，拒绝
-		{"Ab1", errors.New("too short")},   // 过短
-		{"abcdefgh", nil},                  // 仅小写，拒绝
-		{"Abcdefg1", nil},                  // 大小写+数字
-		{"Aaaaaaaaa1", nil},                // 大小写+数字
-		{"aaaaaaaa1!", nil},                // 小写+数字+符号
+		{"Abc12345", nil},                // 大写+小写+数字
+		{"abcd1234", nil},                // 小写+数字... 只两类，应拒绝
+		{"Abc12345", nil},                // 重复占位
+		{"Aa1!aaaa", nil},                // 三类含符号
+		{"12345678", nil},                // 仅数字一类，拒绝
+		{"Ab1", errors.New("too short")}, // 过短
+		{"abcdefgh", nil},                // 仅小写，拒绝
+		{"Abcdefg1", nil},                // 大小写+数字
+		{"Aaaaaaaaa1", nil},              // 大小写+数字
+		{"aaaaaaaa1!", nil},              // 小写+数字+符号
 	}
 	for _, c := range cases {
 		// 修正期望：按四类计数重新判断

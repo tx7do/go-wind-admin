@@ -83,9 +83,9 @@ func (s *userProfileUserRepoStub) Update(_ context.Context, req *identityV1.Upda
 // entClient 供落库断言，tokenCache 即注入 authenticator 的同一实例
 // （跨包私有字段无法直接取，供改密吊销链路的令牌键断言）。
 type userProfileServiceTestEnv struct {
-	svc       *UserProfileService
-	stub      *userProfileUserRepoStub
-	entClient *entCrud.EntClient[*ent.Client]
+	svc        *UserProfileService
+	stub       *userProfileUserRepoStub
+	entClient  *entCrud.EntClient[*ent.Client]
 	tokenCache *data.UserTokenCache
 }
 

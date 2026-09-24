@@ -47,7 +47,6 @@ func newScriptServiceForTest(t *testing.T) (*ScriptService, *ent.Client) {
 	}, entClient.Client()
 }
 
-
 // TestScriptService_CreateValidation 验证 Create 的参数校验分支：
 // nil 请求、nil Data、空名、空源码、不支持语言均拒绝且不落库。
 func TestScriptService_CreateValidation(t *testing.T) {
@@ -175,8 +174,8 @@ func TestScriptService_CrudLifecycle(t *testing.T) {
 		Id:         rowID,
 		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name"}},
 		Data: &scriptV1.Script{
-			Name:    trans.Ptr("svc_crud_row_renamed"),
-			Source:  trans.Ptr("return 1"),
+			Name:     trans.Ptr("svc_crud_row_renamed"),
+			Source:   trans.Ptr("return 1"),
 			Language: scriptV1.Language_LUA.Enum(),
 		},
 	})

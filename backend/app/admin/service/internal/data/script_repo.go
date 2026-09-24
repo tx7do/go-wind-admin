@@ -40,9 +40,9 @@ type ScriptRepo struct {
 
 func NewScriptRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *ScriptRepo {
 	repo := &ScriptRepo{
-		log:               ctx.NewLoggerHelper("script/repo/admin-service"),
-		entClient:         entClient,
-		mapper:            mapper.NewCopierMapper[scriptV1.Script, ent.Script](),
+		log:       ctx.NewLoggerHelper("script/repo/admin-service"),
+		entClient: entClient,
+		mapper:    mapper.NewCopierMapper[scriptV1.Script, ent.Script](),
 		languageConverter: mapper.NewEnumTypeConverter[scriptV1.Language, script.Language](
 			scriptV1.Language_name, scriptV1.Language_value,
 		),

@@ -10,9 +10,9 @@ import (
 	"github.com/stretchr/testify/require"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/ent/usermfafactor"
-	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 )
 
 // TestTotpGenerateAndValidate 验证 StartEnrollMethod/VerifyMFAChallenge 共用的

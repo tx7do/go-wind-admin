@@ -27,21 +27,21 @@ import (
 // stubHeader 实现 transport.Header 的空实现。
 type stubHeader struct{}
 
-func (stubHeader) Get(string) string          { return "" }
-func (stubHeader) Set(string, string)         {}
-func (stubHeader) Add(string, string)         {}
-func (stubHeader) Keys() []string             { return nil }
-func (stubHeader) Values(string) []string     { return nil }
+func (stubHeader) Get(string) string      { return "" }
+func (stubHeader) Set(string, string)     {}
+func (stubHeader) Add(string, string)     {}
+func (stubHeader) Keys() []string         { return nil }
+func (stubHeader) Values(string) []string { return nil }
 
 // stubNonHTTPTransporter 以 gRPC 形态实现 transport.Transporter，
 // 用于覆盖"传输层非 HTTP"的分支。
 type stubNonHTTPTransporter struct{}
 
-func (stubNonHTTPTransporter) Kind() transport.Kind                 { return transport.KindGRPC }
-func (stubNonHTTPTransporter) Endpoint() string                     { return "" }
-func (stubNonHTTPTransporter) Operation() string                    { return "" }
-func (stubNonHTTPTransporter) RequestHeader() transport.Header      { return stubHeader{} }
-func (stubNonHTTPTransporter) ReplyHeader() transport.Header        { return stubHeader{} }
+func (stubNonHTTPTransporter) Kind() transport.Kind            { return transport.KindGRPC }
+func (stubNonHTTPTransporter) Endpoint() string                { return "" }
+func (stubNonHTTPTransporter) Operation() string               { return "" }
+func (stubNonHTTPTransporter) RequestHeader() transport.Header { return stubHeader{} }
+func (stubNonHTTPTransporter) ReplyHeader() transport.Header   { return stubHeader{} }
 
 // stubHTTPTransporter 实现 khttp.Transporter（含 Request/PathTemplate），
 // 用于覆盖 HTTP 传输层的分支；req 可为 nil 以覆盖空 request 分支。
@@ -49,13 +49,13 @@ type stubHTTPTransporter struct {
 	req *http.Request
 }
 
-func (*stubHTTPTransporter) Kind() transport.Kind                { return transport.KindHTTP }
-func (*stubHTTPTransporter) Endpoint() string                    { return "" }
-func (*stubHTTPTransporter) Operation() string                   { return "" }
-func (*stubHTTPTransporter) RequestHeader() transport.Header     { return stubHeader{} }
-func (*stubHTTPTransporter) ReplyHeader() transport.Header       { return stubHeader{} }
-func (s *stubHTTPTransporter) Request() *http.Request            { return s.req }
-func (*stubHTTPTransporter) PathTemplate() string                { return "" }
+func (*stubHTTPTransporter) Kind() transport.Kind            { return transport.KindHTTP }
+func (*stubHTTPTransporter) Endpoint() string                { return "" }
+func (*stubHTTPTransporter) Operation() string               { return "" }
+func (*stubHTTPTransporter) RequestHeader() transport.Header { return stubHeader{} }
+func (*stubHTTPTransporter) ReplyHeader() transport.Header   { return stubHeader{} }
+func (s *stubHTTPTransporter) Request() *http.Request        { return s.req }
+func (*stubHTTPTransporter) PathTemplate() string            { return "" }
 
 // 编译期断言：桩确实实现了目标接口（否则测试失真）。
 var _ khttp.Transporter = (*stubHTTPTransporter)(nil)

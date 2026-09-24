@@ -11,11 +11,11 @@ import (
 	"strconv"
 	"time"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/hibiken/asynq"
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"go-wind-admin/app/admin/service/internal/data"
@@ -53,12 +53,12 @@ type TaskService struct {
 
 	taskScheduler TaskScheduler
 
-	userRepo        data.UserRepo
-	taskRepo        *data.TaskRepo
-	backupRepo      *data.BackupRepo
-	tenantUsageRepo *data.TenantUsageRepo
+	userRepo            data.UserRepo
+	taskRepo            *data.TaskRepo
+	backupRepo          *data.BackupRepo
+	tenantUsageRepo     *data.TenantUsageRepo
 	auditLogArchiveRepo *data.AuditLogArchiveRepo
-	mc              *oss.MinIOClient
+	mc                  *oss.MinIOClient
 }
 
 func NewTaskService(
@@ -71,13 +71,13 @@ func NewTaskService(
 	mc *oss.MinIOClient,
 ) *TaskService {
 	svc := &TaskService{
-		log:             ctx.NewLoggerHelper("task/service/admin-service"),
-		taskRepo:        taskRepo,
-		userRepo:        userRepo,
-		backupRepo:      backupRepo,
-		tenantUsageRepo: tenantUsageRepo,
+		log:                 ctx.NewLoggerHelper("task/service/admin-service"),
+		taskRepo:            taskRepo,
+		userRepo:            userRepo,
+		backupRepo:          backupRepo,
+		tenantUsageRepo:     tenantUsageRepo,
 		auditLogArchiveRepo: auditLogArchiveRepo,
-		mc:              mc,
+		mc:                  mc,
 	}
 
 	return svc

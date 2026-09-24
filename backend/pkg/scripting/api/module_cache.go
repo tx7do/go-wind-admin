@@ -5,8 +5,8 @@ import (
 	"encoding/json"
 	"time"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/redis/go-redis/v9"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 )
 
 // ModuleCache 构建语言无关的 cache 模块（JS 等基于 map[string]any 桥接的语言使用）。

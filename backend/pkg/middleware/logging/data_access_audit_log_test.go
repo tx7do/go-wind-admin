@@ -180,10 +180,10 @@ func TestDataAccessAuditLogHandleViaServer(t *testing.T) {
 	t.Run("事件落库与请求字段映射", func(t *testing.T) {
 		env := newAuditServer(t)
 		env.fire(nethttp.MethodPost, "/case/5", map[string]string{
-			"X-Test-Operation":  "/demo.v1.GadgetService/Update",
+			"X-Test-Operation":   "/demo.v1.GadgetService/Update",
 			"X-Test-Data-Access": "all",
-			"X-Request-ID":      "req-da-1",
-			"Authorization":     "Bearer " + mintTestToken(t),
+			"X-Request-ID":       "req-da-1",
+			"Authorization":      "Bearer " + mintTestToken(t),
 		}, "", "127.0.0.1:1234")
 
 		require.Len(t, env.capture.dataAccess, 4, "四条注入事件应各落一条记录")
@@ -208,7 +208,7 @@ func TestDataAccessAuditLogHandleViaServer(t *testing.T) {
 	t.Run("空事件注入零落库", func(t *testing.T) {
 		env := newAuditServer(t)
 		env.fire(nethttp.MethodPost, "/case/5", map[string]string{
-			"X-Test-Operation":  "/demo.v1.GadgetService/Update",
+			"X-Test-Operation":   "/demo.v1.GadgetService/Update",
 			"X-Test-Data-Access": "empty",
 		}, "", "127.0.0.1:1234")
 		assert.Empty(t, env.capture.dataAccess, "空 accumulator 必须零落库")
@@ -217,13 +217,13 @@ func TestDataAccessAuditLogHandleViaServer(t *testing.T) {
 
 // TestDataAccessAuditLogHandleWriteFuncNil 验证写入函数为 nil 时：
 // 记录构造前的早退跳过落库，但 accumulator 仍被清空
-//（与落库路径的清空语义一致，防残留事件被后续复用）。
+// （与落库路径的清空语义一致，防残留事件被后续复用）。
 func TestDataAccessAuditLogHandleWriteFuncNil(t *testing.T) {
 	env := newAuditServer(t, WithWriteDataAccessAuditLogFunc(nil))
 	env.fire(nethttp.MethodPost, "/case/5", map[string]string{
-		"X-Test-Operation":  "/demo.v1.GadgetService/Update",
+		"X-Test-Operation":   "/demo.v1.GadgetService/Update",
 		"X-Test-Data-Access": "all",
-		"Content-Type":      "application/json",
+		"Content-Type":       "application/json",
 	}, `{"data":{"name":"x"}}`, "127.0.0.1:1234")
 
 	assert.Empty(t, env.capture.dataAccess, "空写入函数时数据访问审计不得落库")

@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"testing"
 
-	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
+	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
@@ -45,9 +45,9 @@ func newRoleRepoSqlite(t *testing.T) *RoleRepo {
 
 	// 内联依赖 3/5：PermissionRepo（复刻 NewPermissionRepo 及其 init）
 	permissionRepo := &PermissionRepo{
-		log:             bLogger.NewHelper(bLogger.NopLogger()),
-		entClient:       entClient,
-		mapper:          mapper.NewCopierMapper[permissionV1.Permission, ent.Permission](),
+		log:       bLogger.NewHelper(bLogger.NopLogger()),
+		entClient: entClient,
+		mapper:    mapper.NewCopierMapper[permissionV1.Permission, ent.Permission](),
 		statusConverter: mapper.NewEnumTypeConverter[permissionV1.Permission_Status, entPermission.Status](
 			permissionV1.Permission_Status_name,
 			permissionV1.Permission_Status_value,
@@ -102,9 +102,9 @@ func newRoleRepoSqlite(t *testing.T) *RoleRepo {
 	}
 
 	repo := &RoleRepo{
-		log:             bLogger.NewHelper(bLogger.NopLogger()),
-		entClient:       entClient,
-		mapper:          mapper.NewCopierMapper[permissionV1.Role, ent.Role](),
+		log:       bLogger.NewHelper(bLogger.NopLogger()),
+		entClient: entClient,
+		mapper:    mapper.NewCopierMapper[permissionV1.Role, ent.Role](),
 		statusConverter: mapper.NewEnumTypeConverter[permissionV1.Role_Status, entRole.Status](
 			permissionV1.Role_Status_name,
 			permissionV1.Role_Status_value,
@@ -117,10 +117,10 @@ func newRoleRepoSqlite(t *testing.T) *RoleRepo {
 			identityV1.DataScope_name,
 			identityV1.DataScope_value,
 		),
-		permissionRepo:         permissionRepo,
-		rolePermissionRepo:     rolePermissionRepo,
-		roleOrgUnitRepo:        roleOrgUnitRepo,
-		roleMetadataRepo:       roleMetadataRepo,
+		permissionRepo:          permissionRepo,
+		rolePermissionRepo:      rolePermissionRepo,
+		roleOrgUnitRepo:         roleOrgUnitRepo,
+		roleMetadataRepo:        roleMetadataRepo,
 		roleFieldPermissionRepo: roleFieldPermissionRepo,
 	}
 

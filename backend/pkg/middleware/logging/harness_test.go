@@ -29,10 +29,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
-	"github.com/stretchr/testify/require"
 	kerrors "github.com/go-kratos/kratos/v2/errors"
 	khttp "github.com/go-kratos/kratos/v2/transport/http"
+	"github.com/golang-jwt/jwt/v5"
+	"github.com/stretchr/testify/require"
 	crudviewer "github.com/tx7do/go-crud/viewer"
 	authn "github.com/tx7do/kratos-authn/engine"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -212,22 +212,22 @@ func (e *auditServerEnv) fire(method, path string, headers map[string]string, bo
 func testDAEvents() []audit.AuditEvent {
 	return []audit.AuditEvent{
 		{
-			SqlText: "SELECT id, username FROM sys_users WHERE id = $1",
+			SqlText:   "SELECT id, username FROM sys_users WHERE id = $1",
 			SqlDigest: "digest-select-users", Latency: 12, Dialect: "postgres",
 			AffectedRows: -1, DataMasked: true, MaskingRules: "rule-a",
 		},
 		{
-			SqlText: "INSERT INTO sys_roles (name) VALUES ('x')",
+			SqlText:   "INSERT INTO sys_roles (name) VALUES ('x')",
 			SqlDigest: "digest-insert-roles", Latency: 34, Dialect: "mysql",
 			AffectedRows: 2, DataMasked: false, MaskingRules: "",
 		},
 		{
-			SqlText: "SELECT * FROM sys_users a JOIN sys_plan_quotas b ON a.id = b.user_id",
+			SqlText:   "SELECT * FROM sys_users a JOIN sys_plan_quotas b ON a.id = b.user_id",
 			SqlDigest: "digest-join", Latency: 56, Dialect: "postgres",
 			AffectedRows: 0, DataMasked: false, MaskingRules: "",
 		},
 		{
-			SqlText: "SELECT 1",
+			SqlText:   "SELECT 1",
 			SqlDigest: "digest-constant", Latency: 7, Dialect: "postgres",
 			AffectedRows: 0, DataMasked: false, MaskingRules: "",
 		},
@@ -241,8 +241,8 @@ func testDAEvents() []audit.AuditEvent {
 func mintTestToken(t *testing.T) string {
 	t.Helper()
 	claims := jwt.MapClaims{
-		authn.ClaimFieldSubject:  "alice",
-		pkgjwt.ClaimFieldUserID:  float64(42),
+		authn.ClaimFieldSubject:   "alice",
+		pkgjwt.ClaimFieldUserID:   float64(42),
 		pkgjwt.ClaimFieldTenantID: float64(7),
 		pkgjwt.ClaimFieldClientID: "test-client-id",
 	}
@@ -256,7 +256,7 @@ func mintTestToken(t *testing.T) string {
 func mintTestTokenWithoutSubject(t *testing.T) string {
 	t.Helper()
 	claims := jwt.MapClaims{
-		pkgjwt.ClaimFieldUserID:  float64(42),
+		pkgjwt.ClaimFieldUserID:   float64(42),
 		pkgjwt.ClaimFieldTenantID: float64(7),
 	}
 	tok, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte("test-signing-secret"))

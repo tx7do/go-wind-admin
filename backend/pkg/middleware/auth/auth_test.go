@@ -19,8 +19,8 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/go-kratos/kratos/v2/encoding"
-	"github.com/go-kratos/kratos/v2/transport"
 	kmeta "github.com/go-kratos/kratos/v2/metadata"
+	"github.com/go-kratos/kratos/v2/transport"
 
 	"github.com/tx7do/go-crud/viewer"
 	"github.com/tx7do/go-utils/trans"
@@ -40,9 +40,9 @@ import (
 // fakeHeader map 底座的 transport.Header 假件。
 type fakeHeader map[string]string
 
-func (h fakeHeader) Get(key string) string       { return h[key] }
-func (h fakeHeader) Set(key, value string)       { h[key] = value }
-func (h fakeHeader) Add(key, value string)       { h[key] = value }
+func (h fakeHeader) Get(key string) string { return h[key] }
+func (h fakeHeader) Set(key, value string) { h[key] = value }
+func (h fakeHeader) Add(key, value string) { h[key] = value }
 func (h fakeHeader) Keys() []string {
 	keys := make([]string, 0, len(h))
 	for k := range h {
@@ -147,7 +147,7 @@ func TestServer_BearerToken_MissingOrMalformed(t *testing.T) {
 	for name, header := range map[string]string{
 		"无 Authorization 头": "",
 		"非 Bearer scheme":   "Basic sometoken",
-		"Bearer 后无令牌":        "Bearer",
+		"Bearer 后无令牌":       "Bearer",
 	} {
 		t.Run(name, func(t *testing.T) {
 			reached, _, err := runAuthMiddleware(t, newTransportCtx(header), nil)
@@ -189,10 +189,10 @@ func TestServer_InvalidToken_Rejected(t *testing.T) {
 // Ent ViewerContext / OperatorMetadata / authz AuthClaims 必须按令牌 payload 注入。
 func TestServer_ValidToken_ContextInjection(t *testing.T) {
 	payload := &authenticationV1.UserTokenPayload{
-		UserId:      42,
-		OrgUnitId:   trans.Ptr(uint32(9)),
-		Roles:       []string{"ROLE_ADMIN"},
-		DataScopes:  []identityV1.DataScope{identityV1.DataScope_ALL},
+		UserId:     42,
+		OrgUnitId:  trans.Ptr(uint32(9)),
+		Roles:      []string{"ROLE_ADMIN"},
+		DataScopes: []identityV1.DataScope{identityV1.DataScope_ALL},
 	}
 	reached, handlerCtx, err := runAuthMiddleware(t, newTransportCtx("Bearer good-token"), nil, validChecker(payload))
 	require.NoError(t, err)

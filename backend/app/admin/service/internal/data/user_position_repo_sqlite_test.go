@@ -5,15 +5,15 @@ import (
 	"testing"
 	"time"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
-	"go-wind-admin/app/admin/service/internal/data/enttest"
 	entUserPosition "go-wind-admin/app/admin/service/internal/data/ent/userposition"
+	"go-wind-admin/app/admin/service/internal/data/enttest"
 )
 
 // newUserPositionRepoSqlite 用 enttest helper 构造一个可直接做关联 CRUD 的 UserPositionRepo。

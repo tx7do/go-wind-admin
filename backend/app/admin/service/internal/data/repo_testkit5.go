@@ -4,24 +4,24 @@
 // 说明：
 //   - 本文件为批 3c（AuthenticationService / UserService 测试）所需的构造器，分三类：
 //     1) 纯 ent 构造（LoginPolicyRepo / UserMfaFactorRepo / PermissionRepo /
-//        RoleOrgUnitRepo / RoleFieldPermissionRepo）：字段与生产构造器逐字段对齐
-//        （含 mapper/converter 初始化与 init() 调用），唯一差异是 log 一律
-//        bLogger.NewHelper(bLogger.NopLogger())；entClient 由调用方传入（测试场景
-//        为 enttest.NewEntClientForTest 的 SQLite 内存库）。PermissionRepo /
-//        RoleOrgUnitRepo / RoleFieldPermissionRepo 与 repo_testkit.go 内同名
-//        testkit 私有构造器逻辑一致，此处为跨包（service 层）可见的导出副本。
+//     RoleOrgUnitRepo / RoleFieldPermissionRepo）：字段与生产构造器逐字段对齐
+//     （含 mapper/converter 初始化与 init() 调用），唯一差异是 log 一律
+//     bLogger.NewHelper(bLogger.NopLogger())；entClient 由调用方传入（测试场景
+//     为 enttest.NewEntClientForTest 的 SQLite 内存库）。PermissionRepo /
+//     RoleOrgUnitRepo / RoleFieldPermissionRepo 与 repo_testkit.go 内同名
+//     testkit 私有构造器逻辑一致，此处为跨包（service 层）可见的导出副本。
 //     2) redis 依赖构造（ConfigRepo / UserTokenCache / LoginRateLimiter /
-//        MfaChallengeCache）：redis 客户端由调用方注入，测试场景一律传
-//        miniredis 假 client（与 data 包内 authenticator_test.go /
-//        user_token_cache_test.go 的注入范式一致）。ConfigRepo 生产构造器中的
-//        subscribeInvalidations 常驻 goroutine 是跨实例失效广播订阅（运行期副作用
-//        而非字段初始化），测试场景单实例无广播需求，此处不启动。
+//     MfaChallengeCache）：redis 客户端由调用方注入，测试场景一律传
+//     miniredis 假 client（与 data 包内 authenticator_test.go /
+//     user_token_cache_test.go 的注入范式一致）。ConfigRepo 生产构造器中的
+//     subscribeInvalidations 常驻 goroutine 是跨实例失效广播订阅（运行期副作用
+//     而非字段初始化），测试场景单实例无广播需求，此处不启动。
 //     3) UserCredentialRepo：生产构造器参数（passwordCrypto / configRepo）原样保留，
-//        由调用方传 bCrypt 实现与 miniredis 注入的 ConfigRepo，装配关系与生产一致。
+//     由调用方传 bCrypt 实现与 miniredis 注入的 ConfigRepo，装配关系与生产一致。
 //     4) Authenticator：对齐 NewAuthenticator 的字段装配（jwtCfg +
-//        userTokenCache + newAdminAuthenticator），但省去 applyJwtKeyOverrides
-//        （环境变量密钥覆盖——测试直接传显式密钥）并把启动失败 panic 改为返回
-//        error，便于测试用临时密钥构造。
+//     userTokenCache + newAdminAuthenticator），但省去 applyJwtKeyOverrides
+//     （环境变量密钥覆盖——测试直接传显式密钥）并把启动失败 panic 改为返回
+//     error，便于测试用临时密钥构造。
 //   - 依赖 minio/smtp/短信等外部件的构造器不在此导出。
 package data
 
@@ -196,10 +196,10 @@ func NewAuthenticatorForTest(jwtCfg *conf.Authentication_Jwt, userTokenCache *Us
 	}
 
 	a := Authenticator{
-		log:                 bLogger.NewHelper(bLogger.NopLogger()),
+		log:                bLogger.NewHelper(bLogger.NopLogger()),
 		AdminAuthenticator: adminAuth,
-		jwtCfg:              jwtCfg,
-		userTokenCache:      userTokenCache,
+		jwtCfg:             jwtCfg,
+		userTokenCache:     userTokenCache,
 	}
 
 	return &a, nil

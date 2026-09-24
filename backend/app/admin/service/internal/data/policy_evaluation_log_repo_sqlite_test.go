@@ -6,10 +6,10 @@ import (
 	"testing"
 
 	"entgo.io/ent/dialect/sql"
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 
@@ -26,7 +26,7 @@ func newPolicyEvaluationLogRepoSqlite(t *testing.T) *PolicyEvaluationLogRepo {
 	repo := &PolicyEvaluationLogRepo{
 		entClient: enttest.NewEntClientForTest(t),
 		log:       bLogger.NewHelper(bLogger.NopLogger()),
-		mapper:     mapper.NewCopierMapper[permissionV1.PolicyEvaluationLog, ent.PolicyEvaluationLog](),
+		mapper:    mapper.NewCopierMapper[permissionV1.PolicyEvaluationLog, ent.PolicyEvaluationLog](),
 	}
 	repo.init()
 	return repo
@@ -171,7 +171,7 @@ func TestPolicyEvaluationLogRepoSqlite_Get(t *testing.T) {
 
 	require.NoError(t, repo.Create(ctx, &permissionV1.CreatePolicyEvaluationLogRequest{
 		Data: &permissionV1.PolicyEvaluationLog{
-			RequestPath:  trans.Ptr("/sqlite/policy-eval/get"),
+			RequestPath:   trans.Ptr("/sqlite/policy-eval/get"),
 			RequestMethod: trans.Ptr("GET"),
 		},
 	}))
@@ -203,13 +203,13 @@ func TestPolicyEvaluationLogRepoSqlite_CountAndIsExist(t *testing.T) {
 
 	require.NoError(t, repo.Create(ctx, &permissionV1.CreatePolicyEvaluationLogRequest{
 		Data: &permissionV1.PolicyEvaluationLog{
-			RequestPath:  trans.Ptr("/a/count"),
+			RequestPath:   trans.Ptr("/a/count"),
 			RequestMethod: trans.Ptr("GET"),
 		},
 	}))
 	require.NoError(t, repo.Create(ctx, &permissionV1.CreatePolicyEvaluationLogRequest{
 		Data: &permissionV1.PolicyEvaluationLog{
-			RequestPath:  trans.Ptr("/b/count"),
+			RequestPath:   trans.Ptr("/b/count"),
 			RequestMethod: trans.Ptr("POST"),
 		},
 	}))

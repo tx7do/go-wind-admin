@@ -5,10 +5,10 @@ import (
 	"fmt"
 	"testing"
 
-	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -26,7 +26,7 @@ func newAccessKeyRepoSqlite(t *testing.T) *AccessKeyRepo {
 	repo := &AccessKeyRepo{
 		entClient: enttest.NewEntClientForTest(t),
 		log:       bLogger.NewHelper(bLogger.NopLogger()),
-		mapper:     mapper.NewCopierMapper[accesskeyV1.AccessKey, ent.AccessKey](),
+		mapper:    mapper.NewCopierMapper[accesskeyV1.AccessKey, ent.AccessKey](),
 		statusConverter: mapper.NewEnumTypeConverter[accesskeyV1.AccessKey_Status, entAccessKey.Status](
 			accesskeyV1.AccessKey_Status_name, accesskeyV1.AccessKey_Status_value,
 		),
@@ -113,7 +113,7 @@ func TestAccessKeyRepoSqlite_StatusEnumPairs(t *testing.T) {
 // 落库后，在读路径（Get 按主键 / List）的 DTO 视图如实呈现。
 //
 // 枚举字段读视图机制注记：实体侧 status 为可空指针枚举列
-//（*entAccessKey.Status，schema 默认 ON），DTO 侧为可选指针字段。mapper
+// （*entAccessKey.Status，schema 默认 ON），DTO 侧为可选指针字段。mapper
 // 的枚举转换对（经 &srcType/&dstType 取址注册）恰为指针↔指针形态的键，
 // 指针对字段能被 copier 直接转换赋值——与值型实体枚举列（如
 // position.type、notification_channel.type）读侧被丢弃的情形不同。

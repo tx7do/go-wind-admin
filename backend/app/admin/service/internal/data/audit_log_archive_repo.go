@@ -13,8 +13,8 @@ import (
 	entCrud "github.com/tx7do/go-crud/entgo"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 
-	apiauditlog "go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent"
+	apiauditlog "go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	dataaccessauditlog "go-wind-admin/app/admin/service/internal/data/ent/dataaccessauditlog"
 	loginauditlog "go-wind-admin/app/admin/service/internal/data/ent/loginauditlog"
 	operationauditlog "go-wind-admin/app/admin/service/internal/data/ent/operationauditlog"
