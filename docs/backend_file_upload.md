@@ -75,7 +75,7 @@ UploadFileRequest.Source
 
 ### directUploadFile（服务端中转，当前生效）
 
-流程（`file_transfer_service.go:142-227`）：
+流程（`internal/service/file_transfer_service.go` 的 `directUploadFile`，146-245 行）：
 
 1. **参数校验**：storageObject / file / mime / sourceFileName 非空。
 2. **大小校验**：`len(file) > MaxUploadSize`（50 MiB）则拒绝，防 DoS。
@@ -106,7 +106,7 @@ return nil, storageV1.ErrorUploadFailed(
 
 ## 元数据落库机制
 
-`recordFile`（`file_transfer_service.go:104-139`）在 directUploadFile 成功后，将文件元数据写入 `storage.File` 表（经 `FileRepo.Create`）。
+`recordFile`（同文件 108-143 行）在 directUploadFile 成功后，将文件元数据写入 `storage.File` 表（经 `FileRepo.Create`）。
 
 写入字段及其来源：
 
@@ -125,7 +125,7 @@ return nil, storageV1.ErrorUploadFailed(
 
 > 标 **需...** 的四项（sourceFileName / tenantId / userId / sha256）只能在上传时由服务端取得，无法从 MinIO 事件通知或对象 key 反推。这是预签名路径无法简单复用 recordFile 的根本原因。
 
-元数据落库失败的处理（`file_transfer_service.go:217-222`）：对象已入 OSS 但 DB 写入失败时（孤儿对象），记录 error 日志并返回错误，不掩盖问题，便于上层感知与后续清理。
+元数据落库失败的处理（同文件 215-226 行的孤儿对象分支）：对象已入 OSS 但 DB 写入失败时（孤儿对象），记录 error 日志并返回错误，不掩盖问题，便于上层感知与后续清理。
 
 ---
 
@@ -135,7 +135,7 @@ directUploadFile 在上传前施加多层校验，定义见 `pkg/oss/constants.g
 
 | 校验 | 位置 | 说明 |
 |---|---|---|
-| 文件大小上限 | `file_transfer_service.go:160` | `MaxUploadSize = 50 MiB`，超限拒绝 |
+| 文件大小上限 | `file_transfer_service.go:164-165` | `MaxUploadSize = 50 MiB`，超限拒绝 |
 | MIME 白名单 | `oss.IsAllowedMimeType` | 仅允许 image/* / video/* / audio/* 前缀及一批精确文档类型（pdf/zip/office 等） |
 | 真实 MIME 嗅探 | `oss.DetectFileType` | 按文件内容（非客户端声明）判定，防止伪装扩展名绕过 bucket 路由 |
 | 目录穿越校验 | `oss.IsFileDirectorySafe` | 拒绝 `..`、绝对路径、非法字符；仅允许 `[a-zA-Z0-9_/-]` |
@@ -213,8 +213,8 @@ sig = HMAC-SHA256(GOWIND_CRYPTO_KEY, "{path}|{expires}")   // hex
 | `oss.minio.endpoint` | `configs/oss.yaml` | MinIO API 地址（容器内为 `minio:9000`，本地开发改为 `localhost:9000`） |
 | `oss.minio.upload_host` / `download_host` | `configs/oss.yaml` | 对 MinIO 返回的 URL 做主机替换，指向客户端可达地址 |
 | `oss.minio.access_key` / `secret_key` | `configs/oss.yaml` | MinIO 凭证（生产环境务必修改） |
-| `MaxUploadSize` | `pkg/oss/constants.go:10` | 单次直传上限（50 MiB），改常量需重新编译 |
-| `AllowedMimePrefixes` / `AllowedExactMimeTypes` | `pkg/oss/constants.go:18,26` | 上传 MIME 白名单 |
+| `MaxUploadSize` | `pkg/oss/constants.go:13` | 单次直传上限（50 MiB），改常量需重新编译 |
+| `AllowedMimePrefixes` / `AllowedExactMimeTypes` | `pkg/oss/constants.go:21,29` | 上传 MIME 白名单 |
 | `MINIO_DEFAULT_BUCKETS` | `docker-compose.libs.yaml` | 启动时自动创建的 bucket |
 | `MINIO_ROOT_USER` / `MINIO_ROOT_PASSWORD` | `docker-compose.libs.yaml` | MinIO 根凭证（生产环境务必修改） |
 | `GOWIND_CRYPTO_KEY` | 环境变量 | 签名公开 URL 的 HMAC 密钥（`pkg/crypto/hmac.go`）；未配置则 `PublicUrl` 恒为空串，富文本内嵌预览不可用；轮换=全部存量公开 URL 作废 |

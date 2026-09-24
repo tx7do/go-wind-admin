@@ -22,9 +22,9 @@ Admin 是产品线之一（另有 CMS / UBA / IM / Quant 量化等），因此�
 |---|---|---|---|---|
 | A 阵风 Gust | `gust.svg` | `gust-tile.svg` | `gust-favicon.svg` | `gust-lockup.svg` |
 | B 旋涡 Vortex ✅ **已选定 v3** | `vortex.svg` | `vortex-tile.svg` | `vortex-favicon.svg` | `vortex-lockup.svg` |
+| C W 字标 Monogram | `wmark.svg` | `wmark-tile.svg` | `wmark-favicon.svg` | `wmark-lockup.svg` |
 
 > v3 几何（2026-09-10 二次迭代）：双粗臂涡旋（外臂 r176/宽 84 扫 295°，内臂 r58/宽 54 扫 235°，缺口错位 ~125° 形成 S 形负空间气道），替代原三细弧版——16px favicon 与 32px 侧栏下辨识度显著更高。
-| C W 字标 Monogram | `wmark.svg` | `wmark-tile.svg` | `wmark-favicon.svg` | `wmark-lockup.svg` |
 
 公共资产：`wordmark.svg`（GOWIND + 风行 两行式几何字标）、`preview.html`、`vortex-login.svg`（登录页品牌插画 v2：旋涡主标 **24s/圈 缓旋**（SMIL animateTransform，以字形局部坐标为轴）+ 双层对旋虚线环流 + 轨道光点 + 四向漂移风痕 + GOWIND 几何字标签名；CSS 动效尊重 prefers-reduced-motion；已入三端代码）、`brand-render.html`（PNG 导出画布，改资产后可经 Playwright 截图重新生成）。
 
@@ -48,8 +48,8 @@ vue-element / react / vben 三端 typecheck 门禁全部通过（2026-09-10）�
 - 最小留白：图形标四周预留 ≥ 1/4 高度的净空。
 - 产品线命名：「GoWind + 产品名」（GoWind Admin / GoWind CMS / GoWind UBA / GoWind IM / GoWind Quant），图形标不变，产品名用系统字体作后缀。
 
-## 落地替换点（选定方案后）
+## 落点核对（已落地，改资产时按这几处回归）
 
-- react：`frontend/admin/react/public/logo.png`（200×200，由 tile SVG 导出 PNG）+ `src/core/preferences/config/default.ts` 的 `logo.source`
+- react：`frontend/admin/react/public/logo.png`（200×200，由 tile SVG 导出 PNG）+ `src/core/preferences/config/default.ts:52-54` 的 `logo.source`（实测值为 `/logo.png`）
 - favicon：三端 `public/favicon.ico`（react / vue-element / vue-vben）
 - 登录页品牌区：按 `docs/design-language.md` 认证页规范（画布深底 + 表面卡 + float 动效）

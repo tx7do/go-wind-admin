@@ -45,7 +45,7 @@ import { useQuery, useMutation, type UseQueryOptions, type UseMutationOptions } 
 import { i18n } from '@vben/locales';
 import { apiClient } from '#/api/client';
 import { PaginationQuery, makeUpdateMask } from '#/transport/rest';
-import { queryClient } from '#/plugins/vue-query';   // adjust to project's real export
+import { queryClient } from '#/plugins/vue-query';   // verified: apps/admin/src/plugins/vue-query.ts
 import type {
   identityservicev1_List<Entity>Response,
   identityservicev1_<Entity>,
@@ -129,10 +129,15 @@ Path: `apps/admin/src/views/app/<group>/<entity>/index.vue`. Mirror `position/in
       <template #status="scope"> <!-- slot name matches column slots.default -->
         <a-tag :color="statusToColor(scope.row.status)">{{ statusToName(scope.row.status) }}</a-tag>
       </template>
-      <template #action="scope">
-        <a-button type="link" :icon="h(LucideFilePenLine)" @click="handleEdit(scope.row)">{{ $t('ui.button.ok') }}</a-button>
-        <a-popconfirm :title="$t('ui.text.do_you_want_delete')" @confirm="handleDelete(scope.row)">
-          <a-button type="link" danger :icon="h(LucideTrash2)">{{ $t('ui.button.ok') }}</a-button>
+      <template #action="{ row }">
+        <a-button type="link" :icon="h(LucideFilePenLine)" @click.stop="handleEdit(row)" />
+        <a-popconfirm
+          :cancel-text="$t('ui.button.cancel')"
+          :ok-text="$t('ui.button.ok')"
+          :title="$t('ui.text.do_you_want_delete', { moduleName: $t('page.<entity>.moduleName') })"
+          @confirm="handleDelete(row)"
+        >
+          <a-button danger type="link" :icon="h(LucideTrash2)" />
         </a-popconfirm>
       </template>
     </Grid>
@@ -216,6 +221,7 @@ Rules:
 - **Icons must be `h()`-wrapped**: `:icon="h(LucideFilePenLine)"`. Icons come from `@vben/icons` (lucide series). Never pass a bare component.
 - **Templates use `a-*` global components** (`a-tag`, `a-button`, `a-popconfirm`). Do NOT `import { Tag } from 'ant-design-vue'` and use `<Tag>`.
 - **Confirm deletes with `<a-popconfirm>`**, never `window.confirm`.
+- **Action-column buttons stay icon-only** (as in `position/index.vue`). `ui.button.edit` / `ui.button.delete` are templates (`编辑{moduleName}` / `删除{moduleName}`) that need a `moduleName` param, and `ui.button.ok` means "确定" — it belongs in the popconfirm's `ok-text`, never as a button label.
 
 ## Step 5 — Drawer form
 
@@ -230,7 +236,8 @@ Path: `apps/admin/src/views/app/<group>/<entity>/<entity>-drawer.vue`. Mirror `p
 
 <script setup lang="ts">
 import { computed, h, ref } from 'vue';
-import { useVbenDrawer, useVbenForm } from '@vben/common-ui';  // adjust import to real path
+import { useVbenDrawer } from '@vben/common-ui';
+import { useVbenForm } from '#/adapter/form';       // note: the form adapter, not @vben/common-ui
 import { $t } from '#/locales';
 import { useCreate<Entity>, useUpdate<Entity> } from '#/api';
 

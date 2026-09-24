@@ -38,7 +38,8 @@ brew install --cask visual-studio-code goland
 
 ## 安装插件
 
-后端需要的插件主要是Protobuf的插件：
+后端需要的插件主要是 Protobuf 的插件。**唯一权威清单是 `backend/Makefile` 的 `plugin` 目标**，
+本文档只是索引——新增/下线插件改那个目标即可，不要在这里加第 N 条 `go install`：
 
 - [protoc-gen-go](https://google.golang.org/protobuf/cmd/protoc-gen-go)
 - [protoc-gen-go-grpc](https://google.golang.org/grpc/cmd/protoc-gen-go-grpc)
@@ -46,8 +47,17 @@ brew install --cask visual-studio-code goland
 - [protoc-gen-go-errors](https://github.com/go-kratos/kratos/cmd/protoc-gen-go-errors)
 - [protoc-gen-openapi](https://github.com/google/gnostic/cmd/protoc-gen-openapi)
 - [protoc-gen-validate](https://github.com/envoyproxy/protoc-gen-validate)
+- [protoc-gen-go-redact](https://github.com/tx7do/go-wind-toolkit)（生成脱敏字段）
+- [protoc-gen-typescript-http](https://github.com/tx7do/go-wind-toolkit)（**三端 TS 客户端就靠它**，`make ts` 用）
 
-安装方法：
+一条命令全装（**注意目录：仓库根目录没有 Makefile，须在 `backend/` 下执行**）：
+
+```shell
+cd backend
+make plugin
+```
+
+等价的手动安装（与 `plugin` 目标内容一致）：
 
 ```shell
 go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
@@ -56,13 +66,27 @@ go install github.com/go-kratos/kratos/cmd/protoc-gen-go-http/v2@latest
 go install github.com/go-kratos/kratos/cmd/protoc-gen-go-errors/v2@latest
 go install github.com/google/gnostic/cmd/protoc-gen-openapi@latest
 go install github.com/envoyproxy/protoc-gen-validate@latest
+go install github.com/tx7do/go-wind-toolkit/protoc-gen-go-redact@latest
+go install github.com/tx7do/go-wind-toolkit/protoc-gen-typescript-http@latest
 ```
 
-或者你可以在项目的根目录下执行make，该命令会把前后端的插件都装好的：
+CLI 工具（buf、ent、gow、golangci-lint 等）在另一个目标里，`make init` = `plugin` + `cli`，
+首次搭建直接跑 `make init` 即可（同样在 `backend/` 下）。
+
+## 装完之后：跑起来
+
+代理与插件都配好后，最短路径两条命令（完整版见
+[教程 02 · 从零跑起来](./tutorial/02-get-it-running.md)、
+[Windows 本地开发启动指南](./windows-startup-guide.md)与
+[后端项目部署](./backend_deploy.md)）：
 
 ```shell
-make plugin
+cd backend
+docker compose -f docker-compose.libs.yaml up -d   # 起 PostgreSQL / Redis / MinIO
+gow run admin                                      # 起后端，HTTP :7788
 ```
+
+前端侧的三端命令见 [如何搭建前端开发环境](./frontend_development_environment_preparation.md)。
 
 ## Golang设置网络代理
 
@@ -94,12 +118,14 @@ go env -w GOPRIVATE=git.mycompany.com,github.com/my/private
 
 #### 国内常用代理列表
 
+> 可用性会变，**以下单实测为准**（2026-09-25 各拉一次 `.../gin-gonic/gin/@v/list`：
+> 官方全球代理、七牛云、阿里云、goproxy.io、百度均 200；GoCenter 域名已无法访问，故从下表删除）。
+
 | 提供者      | 地址                                  |
 |----------|-------------------------------------|
 | 官方全球代理   | https://proxy.golang.com.cn         |
 | 七牛云      | https://goproxy.cn                  |
 | 阿里云      | https://mirrors.aliyun.com/goproxy/ |
-| GoCenter | https://gocenter.io                 |
 | 百度       | https://goproxy.bj.bcebos.com/      |
 
 **“direct”** 为特殊指示符，用于指示 Go 回源到模块版本的源地址去抓取(比如 GitHub 等)，当值列表中上一个 Go module proxy 返回
@@ -124,21 +150,21 @@ go env -w GOSUMDB=gosum.io+ce6e7565+AY5qEHUk/qmHc5btzW45JVoENfazw8LielDsaI+lEbq6
 
 ```shell
 go env -w GOPROXY=https://goproxy.cn,direct
-go env -w GOSUMDB=goproxy.cn/sumdb/sum.golang.org
+go env -w GOSUMDB=sum.golang.org
 ```
+
+> `GOSUMDB` 的合法取值只有三种形态：`off`、已知校验库名（如 `sum.golang.org`、`sum.golang.google.cn`）、
+> 或 `库名+Base64公钥`（可再跟一个 URL 字段）。旧文档里常见的
+> `GOSUMDB=goproxy.cn/sumdb/sum.golang.org` **不是合法取值**——Go 会把第一个字段当公钥名解析并直接报
+> `invalid GOSUMDB`（见 `$GOROOT/src/cmd/go/internal/modfetch/sumdb.go` 的 `dbDial`）。
+> `sum.golang.org` 本就是 Go 的默认值，通常无需改动；离线/内网环境可 `GOSUMDB=off`
+> （关闭校验，自担风险）。
 
 #### 阿里云
 
 ```shell
 go env -w GOPROXY=https://mirrors.aliyun.com/goproxy/,direct
 # GOSUMDB 不支持
-```
-
-#### GoCenter
-
-```shell
-go env -w GOPROXY=https://gocenter.io,direct
-# 不支持 GOSUMDB
 ```
 
 #### 百度

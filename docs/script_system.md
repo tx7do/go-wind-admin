@@ -27,7 +27,7 @@ GoWind Admin 内置一套以 **Lua / JavaScript** 为载体的脚本级插件系
 
 平台在实体的写路径上暴露同步/异步钩子点，命名 `<entity>.before_<op>` / `<entity>.after_<op>`
 （op = create / update / delete）。已登记实体：`user`、`tenant`、`role`、
-`internal_message`、`notification_channel`（见 `internal/service/script_entity_hooks.go` 的 `EntityHooksMapping`，
+`internal_message`、`notification_channel`（见 `backend/app/admin/service/internal/service/script_entity_hooks.go` 的 `EntityHooksMapping`，
 新增实体登记一行即生效）。
 
 | 类型 | 时机 | 语义 |
@@ -45,12 +45,13 @@ GoWind Admin 内置一套以 **Lua / JavaScript** 为载体的脚本级插件系
 
 ### 2. 定时任务
 
-脚本顶层调用 `task.register_handler(name, description, fn, opts)` 注册处理器，
-再在「任务管理」新建一条调度记录即可周期执行：
+脚本顶层调用 `task.register_handler(name, description, fn, opts)` 注册处理器（**当前仅 Lua 侧可实现**，
+JS 的 `task` 模块为空占位，见「脚本编写约定」），再在「任务管理」新建一条调度记录即可周期执行：
 
 - 任务记录：`type = PERIODIC`，`typeName = "script_task"`，`cron_spec` 任意合法 cron，
   `task_payload`：`{"handler": "<处理器名>", "params": {...}}`
-- `opts`（可选）：`optional`（参数默认值表）、`required`（必填参数）、`timeout_secs`（默认 30）、`max_retries`（默认 2）
+- `opts`（可选）：`optional`（参数默认值表）、`required`（必填参数）、`timeout_secs`（默认 30）、
+  `max_retries`（默认 2）、`priority`（默认 5，普通优先级）
 
 执行链：asynq 调度 → 固定分发订阅（`script_task`）→ 按载荷 `handler` 字段分发到对应语言引擎 →
 参数合并默认值、校验必填后以单一 params 表调用。脚本删除/禁用后，其处理器在下次
@@ -73,15 +74,28 @@ Resync 时按代际自动清理。
 
 - **域名白名单**：环境变量 `SCRIPT_HTTP_ALLOWED_DOMAINS`（逗号分隔，
   支持 `*.example.com` 通配一级子域）；未设置 = 全部出站拒绝
-- 环回 / 云元数据地址（localhost、127.0.0.1、169.254.169.254 等）硬禁
+- **环回 / 云元数据地址硬禁**：仅拦截精确命中的 5 个字面量
+  （`localhost`、`127.0.0.1`、`0.0.0.0`、`::1`、`169.254.169.254`，见
+  `backend/pkg/scripting/api/module_http.go` 的 `checkAllowedURL`），且是 host 字符串比较而非 IP 段判断。
+  **已知边界**：私有网段不在拦截范围内——白名单里写入 `127.0.0.2`、`10.x.x.x`、`192.168.x.x`、
+  云厂商元数据备用地址（如阿里云 `100.100.100.200`）等仍会放行。因此白名单本身即安全边界，
+  配置时只填确实需要的外网域名，不要填内网 IP。
 - 重定向逐跳复检白名单（≤3 跳）；单请求超时 ≤30s；请求 / 响应体 ≤1MB
 - 脚本不可覆盖 `Host` / `User-Agent` 头
 
 ### 5. 试运行（TestRun）
 
 管理页行内「试运行」：已保存脚本按 id 在**一次性隔离引擎**中执行（不污染常驻
-引擎的 VM 与注册），支持传入上下文初始数据（JSON 键值对），返回执行后的上下文快照
-与耗时。也可直接运行未保存的草稿。
+引擎的 VM 与注册），支持传入上下文初始数据（JSON 键值对），返回执行后的上下文快照。
+也可直接运行未保存的草稿。
+
+> **耗时看「执行日志」，不看试运行弹窗**：响应体 `TestRunScriptResponse.duration_ms` 有定义但
+> 服务端从未赋值（`backend/app/admin/service/internal/service/script_service.go` 的 `TestRun` 只回填
+> `Success` / `Error` / `Context`），三端弹窗读 `result.durationMs ?? 0` 因而恒显示 `0ms`。
+> 同一次试运行会以 `trigger_type=test_run` 落一条执行日志
+> （`backend/app/admin/service/internal/service/script_runtime.go` 的 `logExecution`），需要耗时就去「执行日志」查。
+> 注意该列是 `time.Since(started).Milliseconds()` 的整数毫秒：跑不满 1ms 的脚本仍会记成 `0`
+> （本机库 5 条 hook 日志实测全为 0，即此原因），要看量级请挑有循环或 I/O 的脚本试。
 
 ## 脚本编写约定
 
@@ -122,7 +136,12 @@ end, { optional = { older_than = 86400 }, timeout_secs = 60 })
 ```
 
 JavaScript 与 Lua 的模块能力一致（`log` / `crypto` / `util` / `cache` / `eventbus` / `oss` /
-`http` / `hook` / `task` + `__get_ctx / __set_ctx / __stop`），语法差异外 API 同名。
+`http` / `hook` + `__get_ctx / __set_ctx / __stop`），语法差异外 API 同名。
+
+> **唯一例外：`task` 是 Lua 独有的。** JS 侧的 `task` 模块只是一个**空表占位、无实现**
+> （`backend/pkg/scripting/runtime_javascript.go:100-104` 注册的是 `map[string]any{}`，注释即写明
+> in-script 任务注册 API 尚未实现），其上没有任何 `register_handler` 可用。
+> 任务处理器当前只能用 Lua 编写；asynq 任务桥与执行链路本身与语言无关，已通。
 
 ### 语言与沙箱
 
@@ -143,7 +162,7 @@ JavaScript 与 Lua 的模块能力一致（`log` / `crypto` / `util` / `cache` /
 - 脚本 CRUD、启停（行内开关，即时生效）、按名称 / 语言 / 钩子点搜索
 - 编辑抽屉：Monaco 源码编辑器（Lua / JS 高亮）、语言切换骨架（未编辑时自动换，
   已编辑则确认后切换）、钩子点自动补全
-- 试运行：输入 JSON 键值 → 查看成功 / 失败、错误详情、上下文快照、耗时
+- 试运行：输入 JSON 键值 → 查看成功 / 失败、错误详情、上下文快照（耗时见「执行日志」，见上文 TestRun 注）
 - 钩子点概览：当前已注册的全部钩子点与挂载数、引擎支持的语言
 - 执行日志：触发方式 / 结果筛选、错误详情、清理 90 天前日志
 

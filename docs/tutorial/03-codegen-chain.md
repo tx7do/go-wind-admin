@@ -7,9 +7,9 @@
 | 链 | 输入 | 输出 | 命令（`backend/` 下） |
 |---|---|---|---|
 | proto → Go | `api/protos/**/*.proto` | `api/gen/go/**`（message 类型、HTTP server 注册函数、错误码） | `gow api`（等价 `make api`） |
-| proto → OpenAPI | 同上 | OpenAPI 文档（`cmd/server/assets` 内嵌，`/docs` 挂 Swagger） | `make openapi` |
+| proto → OpenAPI | 同上 | `app/admin/service/cmd/server/assets/openapi.yaml`（编译期内嵌，`/docs` 挂 Swagger，受 `configs/server.yaml:5` 的 `enable_swagger` 开关控制） | `make openapi` |
 | BFF proto → TS | `api/protos/admin/service/v1/i_*.proto` | 三端的 `api/generated/**`（含 `apiClient.<Entity>Service` 客户端） | `make ts`（一次生成三端） |
-| ent schema → ORM | `internal/data/ent/schema/*.go` | `internal/data/ent/**`（除 schema 外全部：client、predicate、迁移） | `gow ent` |
+| ent schema → ORM | `app/admin/service/internal/data/ent/schema/*.go` | 同目录下除 `schema/` 外全部（client、predicate、迁移） | `gow ent admin` |
 
 另有一条**反向链**：从数据库表生成 CRUD 代码（DSN 驱动，`gow generate`，`--proto-only` 只出 proto）。
 这是配套工具链（[gowind-uiapp](https://github.com/tx7do/go-wind-toolkit/tree/main/gowind-uiapp) 桌面端/CLI）的
@@ -53,14 +53,18 @@ internal/data/ent/<entity>/**            🤖 gow ent 生成：查询构建器�
 
 手写 schema 的三个要点（样例 `schema/api.go`、带租户与边的 `schema/dict_type.go`）：
 
-- **Mixin 装配公共列**：`AutoIncrementId` / `TimeAt`（created_at 等）/ `OperatorID`（created_by 等）/
-  `SwitchStatus`；可选 `TenantID[uint32]{}`（租户表）、`SortOrder`、`IsEnabled`。
-  mixin 提供的列名与 proto 审计字段一一对应，mapper 按名接线；
+- **Mixin 装配公共列**（全仓实际用到的）：`AutoIncrementId` / `TimeAt`（created_at 等）/
+  `OperatorID`（created_by 等）/ `SwitchStatus`（status 枚举，默认 ON）/ `IsEnabled` / `SortOrder` /
+  `Remark` / `Description` / `TenantID[uint32]{}`（租户表）/ `Tree[<Entity>]{}`（树表：给 `parent_id`
+  与 children/parent 边）/ `TreePath{}`（给 `path` 列）。mixin 提供的列名与 proto 审计字段一一对应，
+  mapper 按名接线；
 - **枚举列**：`field.Enum(...).NamedValues(...)` + proto 枚举**两端命名逐字一致**
   （不一致会在运行时 500，转换器按名字直传）；
 - `Indexes()` 里不能引用 edge 外键列（ent 报 unknown index field）。
 
 `gow ent` **不会清目录、不会冲掉 schema/ 里的手写文件**——只重写固定的生成文件名集合，放心跑。
+不是嘴上说安全：`internal/data/ent/` 根下就有三个手写的 `*_test.go`（`data_scope_guard_test.go` 等），
+和生成物同目录共存至今。
 
 ## 5. 生成物边界（背下来）
 

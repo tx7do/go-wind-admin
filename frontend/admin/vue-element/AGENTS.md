@@ -16,8 +16,8 @@
 | 状态 | Pinia 3 + @tanstack/vue-query 5 |
 | 路由 | vue-router 5 |
 | 国际化 | vue-i18n 11 |
-| CSS | UnoCSS + SCSS |
-| 表单 | vee-validate + zod |
+| CSS | Tailwind CSS 4 (`@tailwindcss/vite`) + SCSS（原 UnoCSS 已迁移，见 `src/styles/tailwind.css`） |
+| 表单 | CRUD 表单用 Element Plus 原生 `:rules` + `formRef.validate()`；`vee-validate` + `zod` 作为依赖存在但 CRUD 未使用 |
 | HTTP | axios（封装 gRPC-Web 风格 API） |
 | 包管理 | pnpm |
 
@@ -38,7 +38,7 @@ src/
 │   └── access/             # 权限控制
 ├── pages/app/              # 业务页面（按模块分目录）
 ├── locales/                # 翻译资源（zh-CN / en-US）
-│   └── zh-CN/              # common.json, enum.json, routes.json, pages/*.json
+│   └── zh-CN/              # app.json, common.json, core.json, enum.json, preferences.json, routes.json, validation.json, pages/*.json
 ├── router/routes/modules/app/  # ⭐ 动态路由（自动扫描）
 ├── constants/index.ts      # 全局常量（DRAWER_WIDTH 等）
 ├── layouts/                # 布局组件
@@ -115,7 +115,7 @@ import type {
 } from "@/api/generated/admin/service/v1";
 import { makeUpdateMask, type PaginationQuery } from "@/core/transport/rest";
 import { apiClient } from "@/api/client";
-import { queryClient } from "@plugins/vue-query";
+import { queryClient } from "@/plugins/vue-query";
 import { i18n } from "@/core/i18n";
 
 const t = i18n.global.t;
@@ -173,11 +173,19 @@ export function xxxStatusToName(status: string) {
   const matched = xxxStatusList.value.find((item) => item.value === status);
   return matched ? matched.label : "";
 }
-const XXX_STATUS_COLOR_MAP: Record<string, string> = { ON: "#52C41A", OFF: "#8C8C8C", DEFAULT: "#C9CDD4" };
-export function xxxStatusToColor(status: string) {
-  return XXX_STATUS_COLOR_MAP[status] || XXX_STATUS_COLOR_MAP.DEFAULT;
+// 语义色只走 Element Plus 的 tag type（TagType 联合类型定义在 src/api/composables/shared.ts）。
+// 本端没有任何 *ToColor / *_COLOR_MAP 十六进制写法（2026-09-25 实测 0 处），
+// 颜色由 effect="plain" + _dark-mode.scss 的柔化路径统一产出，别在页面里写死色值。
+const XXX_STATUS_TAG_TYPE_MAP: Record<string, TagType> = { ON: "success", OFF: "info", DEFAULT: "info" };
+export function xxxStatusToType(status: string): TagType {
+  return XXX_STATUS_TAG_TYPE_MAP[status] || XXX_STATUS_TAG_TYPE_MAP.DEFAULT;
 }
 ```
+
+参照实现：`src/api/composables/internal-message.ts:251-295`（list + ToName + ToType 三件套）、
+`src/api/composables/shared.ts:63-79`（全局 `statusList` / `statusToName` / `statusToType`）。
+全仓此类函数 33 个，命名固定为 `xxxToName` / `xxxToType`（`internal-message.ts` 里的
+`internalMessageStatusLabel` 是个历史别名，新代码别跟）。
 
 **Composable 层规则：**
 - 从 `generated/` **只导入类型**（`type` import），运行时调用通过 `apiClient`
@@ -275,7 +283,7 @@ interface ProPageConfig<T = any, Q = any> {
 
 ## 新建 CRUD 模块清单
 
-创建新业务模块时，按以下顺序生成 **9 个文件**（以 product 为例）：
+创建新业务模块时，按以下顺序处理 **9 个文件**（新建 6 个、编辑 3 处既有文件；以 product 为例）：
 
 | # | 文件 | 用途 |
 |---|------|------|
@@ -287,7 +295,7 @@ interface ProPageConfig<T = any, Q = any> {
 | 6 | `src/locales/zh-CN/routes.json` | 追加路由标题 |
 | 7 | `src/router/routes/modules/app/product.ts` | 路由配置 |
 | 8 | `src/pages/app/product/index.vue` | 列表页（ProPage 配置） |
-| 9 | `src/pages/app/product/product-drawer.vue` | 弹窗组件（defineExpose + ref 模式） |
+| 9 | `src/pages/app/product/product-drawer.vue` | 抽屉表单（ProModal + ElForm `:rules` + useDrawerForm，`defineExpose({ open })`） |
 
 ### 路由模板
 
@@ -303,7 +311,7 @@ const routes: RouteRecordRaw[] = [
     redirect: "/product/list",
     meta: {
       order: 5000,                          // 菜单排序（数字越大越靠后）
-      icon: "lucide:package",               // UnoCSS lucide 图标
+      icon: "lucide:package",               // Iconify lucide 图标
       title: "routes.product.moduleName",   // i18n key
       authority: ["sys:product_admin"],     // 权限标识
     },
@@ -329,7 +337,7 @@ export default routes;
   <div class="app-container h-full flex flex-1 flex-col">
     <ProPage ref="pageRef" :config="pageConfig" @add="handleAdd" @edit="handleEdit">
       <template #status="scope: any">
-        <ElTag size="small" effect="dark" round :color="productStatusToColor(scope.row.status)">
+        <ElTag size="small" round effect="plain" :type="productStatusToType(scope.row.status)">
           {{ productStatusToName(scope.row.status) }}
         </ElTag>
       </template>
@@ -344,7 +352,7 @@ import { ElTag } from "element-plus";
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import ProductDrawer from "./product-drawer.vue";
-import { fetchListProducts, useDeleteProduct, productStatusToName, productStatusToColor, productStatusList } from "@/api/composables";
+import { fetchListProducts, useDeleteProduct, productStatusToName, productStatusToType, productStatusList } from "@/api/composables";
 import { PaginationQuery } from "@/core/transport/rest";
 import { $t } from "@/core/i18n";
 
@@ -391,75 +399,66 @@ function handleSuccess() { pageRef.value?.refresh(); }
 
 ### 抽屉弹窗骨架 (`product-drawer.vue`)
 
+**默认走 `ProModal` + `useDrawerForm`**（`src/components/Pro/composables/useDrawerForm.ts`）：它托管 `visible`/`isCreate`/`currentId`/`pageLoading`/`submitLoading`/`formData`/`title`/`drawerWidth`、`open`/`close`/`resetForm`，以及 `handleSubmit`（校验 → create/update → 成功提示 → onSuccess → 关闭，失败兜底提示）。抽屉外壳统一是 `ProModal`（配 `config.component: 'drawer'`；2026-09-25 实测 33 个文件在用它，`grep -rl '<ProModal' src | wc -l` 可复测，`src/pages/` 下已无裸 `ElDrawer` 骨架），业务表单抽屉里 9 个已用 `useDrawerForm`，列表页只负责 `defineExpose({ open: drawer.open })`：
+
 ```vue
 <template>
-  <ElDrawer v-model="visible" :title="title" :size="DRAWER_WIDTH" :close-on-click-modal="false" :append-to-body="true" :destroy-on-close="true" @close="handleClose">
-    <ElForm ref="formRef" :model="formData" :rules="formRules" label-width="120px" class="drawer-form">
+  <ProModal
+    v-model:visible="drawer.visible.value"
+    :title="drawer.title.value"
+    :loading="drawer.pageLoading.value"
+    :config="{ component: 'drawer', drawer: { size: drawer.drawerWidth, closeOnClickModal: false } }"
+  >
+    <ElForm ref="formRef" :model="drawer.formData" :rules="formRules" label-width="120px" class="drawer-form">
+      <ElDivider content-position="left">{{ $t("common.section.basic") }}</ElDivider>
       <ElFormItem :label="$t('pages.product.name')" prop="name">
-        <ElInput v-model="formData.name" :placeholder="$t('common.placeholder.input')" clearable />
+        <ElInput v-model="drawer.formData.name" :placeholder="$t('common.placeholder.input')" clearable />
       </ElFormItem>
       <!-- ...其余字段 -->
     </ElForm>
     <template #footer>
       <div class="drawer-footer">
-        <ElButton @click="handleClose">{{ $t("common.button.cancel") }}</ElButton>
-        <ElButton type="primary" :loading="submitLoading" @click="handleSubmit">{{ $t("common.button.confirm") }}</ElButton>
+        <ElButton @click="drawer.close">{{ $t("common.button.cancel") }}</ElButton>
+        <ElButton type="primary" :loading="drawer.submitLoading.value"
+          @click="drawer.handleSubmit(formRef, () => emit('success'))">
+          {{ $t("common.button.confirm") }}
+        </ElButton>
       </div>
     </template>
-  </ElDrawer>
+  </ProModal>
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref } from "vue";
-import { ElMessage } from "element-plus";
-import { useCreateProduct, useUpdateProduct, productStatusList } from "@/api/composables";
+import { ref } from "vue";
+import ProModal from "@/components/Pro/ProModal/index.vue";
+import { useDrawerForm } from "@/components/Pro/composables/useDrawerForm";
+import { useCreateProduct, useUpdateProduct } from "@/api/composables";
 import { $t } from "@/core/i18n";
-import { DRAWER_WIDTH } from "@/constants";
 
 const emit = defineEmits<{ success: [] }>();
 const { mutateAsync: createProduct } = useCreateProduct();
 const { mutateAsync: updateProduct } = useUpdateProduct();
-
-const visible = ref(false);
-const submitLoading = ref(false);
-const isCreate = ref(true);
-const currentId = ref<number>();
 const formRef = ref();
-const formData = reactive({ name: "", status: "ON" /* ... */ });
+
+const drawer = useDrawerForm({
+  moduleKey: "pages.product.moduleName",              // 标题自动取 common.modal.create/update
+  defaults: { name: "", status: "ON" /* ... */ },
+  createFn: createProduct,
+  updateFn: (id, values) => updateProduct({ id, values }),
+  asyncSetup: async () => { /* 可选：打开时加载下拉数据 */ },
+});
+
+// 校验走 Element Plus 原生 rules（不是 vee-validate）
 const formRules = {
   name: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
   status: [{ required: true, message: $t("common.validation.selectRequired"), trigger: "change" }],
 };
-const title = computed(() => isCreate.value
-  ? $t("common.modal.create", { moduleName: $t("pages.product.moduleName") })
-  : $t("common.modal.update", { moduleName: $t("pages.product.moduleName") }));
 
-async function open(data?: { create: boolean; row?: any }) {
-  visible.value = true;
-  isCreate.value = data?.create ?? true;
-  currentId.value = data?.row?.id;
-  resetForm();
-  if (!isCreate.value && data?.row) Object.assign(formData, data.row);
-}
-function handleClose() { visible.value = false; resetForm(); }
-function resetForm() { formData.name = ""; formData.status = "ON"; formRef.value?.clearValidate(); }
-
-async function handleSubmit() {
-  if (!formRef.value) return;
-  try {
-    await formRef.value.validate();
-    submitLoading.value = true;
-    const values = { ...formData };
-    if (isCreate.value) { await createProduct(values); ElMessage.success($t("common.notification.createSuccess")); }
-    else { await updateProduct({ id: currentId.value!, values }); ElMessage.success($t("common.notification.updateSuccess")); }
-    emit("success"); handleClose();
-  } catch (error) {
-    if (error !== false) ElMessage.error(isCreate.value ? $t("common.notification.createFailed") : $t("common.notification.updateFailed"));
-  } finally { submitLoading.value = false; }
-}
-defineExpose({ open });
+defineExpose({ open: drawer.open });
 </script>
 ```
+
+**例外**：表单需要自定义转换逻辑（如 `role-drawer.vue` 的树 checkedKeys → 叶子 id 列表、多步流程）时才不用 `useDrawerForm`，改为自管 `visible`/`submitLoading` 手写 `handleSubmit`（外壳仍用 `ProModal`）。此时 catch 里要先判 `if (error !== false)` 再报错——`validate()` 校验失败时 reject 的是 `false`，否则缺字段会误弹"创建失败"。（若确实要裸用 `ElDrawer`，必须带 `:append-to-body="true"` 与 `:destroy-on-close="true"`，见上文「组件规范」。）
 
 ---
 
@@ -495,7 +494,7 @@ import { $t } from "@/core/i18n";
 import { DRAWER_WIDTH } from "@/constants";
 
 // 通用枚举（已内置 shared.ts）
-import { statusList, statusToName, statusToColor, enableList } from "@/api/composables";
+import { statusList, statusToName, statusToType, enableList } from "@/api/composables";
 ```
 
 ---
@@ -528,7 +527,9 @@ import { statusList, statusToName, statusToColor, enableList } from "@/api/compo
 
 ## 白屏（router-view 塌空）真因与处置
 
-2026-09-08 已定位真因：**`<transition mode="out-in">` + vue-router 5 懒加载路由的竞态**，与 vite 依赖优化/HMR 无关（此前归因有误）。懒 chunk 在导航期间解析完成时，旧页被直接移除而新页永不挂载，且此后 router-view 整体僵死（零报错、dev/prod 均可复现，dev 因 chunk 解析慢数百倍而高发；连续导航 5~7 次必现，vue 3.5.34/3.5.42 均复现）。修复：`LayoutMain.vue` 去掉 `mode="out-in"` 改同帧交叉淡入淡出（150ms 时长不变）；顺带修复 wrapper 闭包固化 vue-router 5 slot vnode（v5 的 `Component` 是预构建 vnode 而非 v4 的组件定义，闭包缓存会渲染过期 vnode）。验证：连续 ~100 次导航零塌空 + keep-alive 状态保留正常。
+**规则（照做即可，不必读下面的归档背景）**：`LayoutMain.vue` 的页面过渡**不得改回 `mode="out-in"`**（改同帧交叉淡入淡出）；`app.config.errorHandler` + `router.onError` 观测、动态导入失败的一次性整页刷新自愈、`optimizeDeps.include` 预打包**都别删**；判回归前先重启 dev server，若再现白页按「懒 chunk 解析竞态」方向排查，**不要**再归因 vite 依赖优化/HMR。
+
+「背景（2026-09-08，归档）」已定位真因：**`<transition mode="out-in">` + vue-router 5 懒加载路由的竞态**，与 vite 依赖优化/HMR 无关（此前归因有误）。懒 chunk 在导航期间解析完成时，旧页被直接移除而新页永不挂载，且此后 router-view 整体僵死（零报错、dev/prod 均可复现，dev 因 chunk 解析慢数百倍而高发；连续导航 5~7 次必现，vue 3.5.34/3.5.42 均复现）。修复：`LayoutMain.vue` 去掉 `mode="out-in"` 改同帧交叉淡入淡出（150ms 时长不变）；顺带修复 wrapper 闭包固化 vue-router 5 slot vnode（v5 的 `Component` 是预构建 vnode 而非 v4 的组件定义，闭包缓存会渲染过期 vnode）。验证：连续 ~100 次导航零塌空 + keep-alive 状态保留正常。
 
 仍保留的防御（别删）：`app.config.errorHandler` + `router.onError` 全局观测（[AppErrorHandler]/[RouterError] 前缀）；懒加载路由动态导入失败自动一次性整页刷新自愈；`vite:preloadError` 事件自愈刷新。重依赖（echarts/vxe-table/@tanstack/vue-query）已进 `optimizeDeps.include` 预打包。
 

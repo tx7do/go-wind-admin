@@ -16,7 +16,7 @@
 |---|---|---|
 | Go | 以 `backend/go.mod` 为准（当前钉 `1.26.4`） | 后端 |
 | Docker Desktop | 最新 | 中间件容器 |
-| Node.js | 以各前端 `package.json` 的 `engines` 为准（当前约束交集 ≥ 20.19.0） | 前端 |
+| Node.js | 以各前端 `package.json` 的 `engines` 为准（react 未声明；交集为 `^20.19.0 \|\| >=22.12.0`，即 21.x 不满足） | 前端 |
 | pnpm | 仅 vue-vben 由其 `packageManager` 钉死 `pnpm@11.18.0`；react / vue-element 未钉定 | 前端包管理 |
 
 一键安装脚本（含 Go 代码生成工具链，**在项目根目录执行**）：
@@ -68,7 +68,7 @@ docker compose -f docker-compose.libs.yaml ps   # 应看到 postgres / redis / m
 ```bash
 cd backend
 go mod download
-gow ent && gow api     # ent ORM + proto Go 代码（首次必跑；gow 的安装见 windows-startup-guide）
+gow ent admin && gow api  # ent ORM + proto Go 代码（首次必跑；gow 的安装见 windows-startup-guide）
 ```
 
 ```bash
@@ -98,8 +98,13 @@ cd backend/app/admin/service && go run ./cmd/server -c ./configs
 | Vue Element | `frontend/admin/vue-element` | `pnpm install && pnpm dev` | 5777 |
 | React | `frontend/admin/react` | `pnpm install && pnpm dev` | 5888 |
 
-端口以 `apps/admin/.env.development`/`.env.development` 的 `VITE_*_PORT` 为准；被占用时 vite 会
-自动顺延一个端口，**启动日志里有实际端口**，别按记忆硬连。
+端口写在 `.env.development` 里但键名三端各异（react `VITE_SERVER_PORT` / vue-element `VITE_APP_PORT`
+/ vue-vben `VITE_PORT`，见第 01 章）；被占用时 vite 会自动顺延一个端口，**启动日志里有实际端口**，
+别按记忆硬连。
+
+> **只打算长期维护其中一端？** 三端互不依赖、可以整目录删掉另外两端，但有三处会"悄悄回流"的耦合点
+> （`make ts` 重建已删目录、CORS 白名单、菜单表没有"端"这个维度）——动手前读
+> [只保留一个前端：裁剪步骤与代价](../adopt-one-frontend.md)。
 
 登录账号：`admin` / `Abcd@1234`（首启播种的默认口令，来源
 `backend/pkg/constants/default_data.go` 的 `DefaultUserPassword`）。
@@ -122,7 +127,7 @@ cd backend/app/admin/service && go run ./cmd/server -c ./configs
 | 后端连不上 DB | 配置里主机名没改 `localhost`（第 4 节） |
 | `gow`/`buf` 命令找不到 | `%USERPROFILE%\go\bin` 不在 PATH；手动 `go install`（见参考文档命令） |
 | vben `pnpm dev` 报 `turbo-run` 找不到 | Windows 已知问题，按参考文档补两个 bin shim |
-| 页面白屏 / 路由塌空（vue-element） | 先重启 dev server 再下结论（vite dev 竞态，生产不复现） |
+| 页面白屏 / 路由塌空（vue-element） | 已修复的历史问题：真因是 `<transition mode="out-in">` 与 vue-router 5 懒加载路由的竞态（**不是** vite 依赖优化，dev/prod 都能复现）。别把 `mode="out-in"` 改回去；判回归先重启 dev server，细节见该端 AGENTS.md「白屏（router-view 塌空）真因与处置」 |
 | 前端请求全部 401/无法登录 | 确认后端 7788 在跑；验证码答案可在 Redis 按 `gowind:captcha:<captchaId>` 读（自动化调试用） |
 
 ## 9. 日常开发工作流
@@ -135,7 +140,7 @@ cd backend/app/admin/service && go run ./cmd/server -c ./configs
 终端 3：cd frontend/admin/<选择端> && pnpm dev[:antd]
 ```
 
-改了 proto → `gow api`（前端 TS：后端根目录 `make ts`）；改了 ent schema → `gow ent`。
+改了 proto → `gow api`（前端 TS：后端根目录 `make ts`）；改了 ent schema → `gow ent admin`。
 完整命令速查见 windows-startup-guide「日常开发工作流」。
 
 ## 深读

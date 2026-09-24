@@ -176,10 +176,12 @@ const user = await fetchUser({ id: 1 });
 #### 枚举工具 — 状态映射函数
 
 ```ts
-import { userStatusToColor, userStatusToName, genderToName } from "@/api";
+import { userStatusToType, userStatusToName, genderToType, genderToName } from "@/api";
 
-const color = userStatusToColor("NORMAL");  // "#4096FF"
-const label = userStatusToName("NORMAL");   // "正常"
+// 本端枚举映射成 Element Plus 的 tag type，不是色值（见「通用枚举工具」一节）
+userStatusToType("NORMAL");   // "success" —— 配 <ElTag :type="..."> 用
+userStatusToName("NORMAL");   // $t("enum.user.status.NORMAL") 的文案
+genderToName("MALE");         // 同上，走 i18n
 ```
 
 ---
@@ -315,25 +317,47 @@ await mutateAsync({ ids: [1, 2, 3] });
 
 ---
 
-## 通用枚举工具（shared.ts）
+## 通用枚举工具（`src/api/composables/shared.ts`）
 
-提供全局通用的状态映射函数，可直接在模板中使用：
+枚举 → 文案 / 语义色的公共映射，经 `@/api` 桶文件（`src/api/index.ts:7` → `./composables`）导出，
+可直接在模板里用。**注意：本端不用十六进制色值，统一返回 Element Plus 的 tag `type`**
+（`TagType = "primary" | "success" | "warning" | "danger" | "info"`），配 `effect="plain"`
+由 `_dark-mode.scss` 做半透明柔化——写死颜色的旧写法在本端没有对应函数。
 
 ```ts
-import { enableBoolToColor, enableBoolToName, statusToColor, statusToName } from "@/api";
+import {
+  enableBoolToName, statusToName, statusToType,
+  successToName, successToType, httpMethodTagTypeMap,
+  enableList, statusList, methodList,
+} from "@/api";
 
-// 启用/禁用
-enableBoolToColor(true);    // "#52C41A"
-enableBoolToName(false);    // "禁用"
+// ON/OFF：文案走 i18n（enum.status.ON/OFF），type 只给两档
+statusToType("ON");        // "success"
+statusToType("OFF");       // "info"（缺省/未设也归 info，避免与启用态混淆）
+statusToName("OFF");       // $t("enum.status.OFF") 的文案
 
-// ON/OFF 状态
-statusToColor("ON");        // "#52C41A"
-statusToName("OFF");        // "已关闭"
+// 布尔启用位：入参兼容 true / "true" / "TRUE" / "True"
+enableBoolToName(false);   // $t("enum.enable.false")
 
-// HTTP 方法列表
-import { methodList } from "@/api";
-// [{ value: "GET", label: "GET" }, { value: "POST", ... }]
+// 成功/失败（HTTP 结果、任务结果类列表页用）
+successToType(false);      // "danger"
+
+// HTTP 方法：下拉数据源 + tag 语义色
+methodList;                // [{ value: "GET", label: "GET" }, ...]
+httpMethodTagTypeMap.DELETE; // "danger"
+
+// 下拉数据源是 computed(() => [...])，取用要带 .value（模板里自动解包）
+statusList.value;          // [{ value: "ON", label: ... }, { value: "OFF", label: ... }]
 ```
+
+模板里的标准用法：
+
+```vue
+<ElTag :type="statusToType(row.status)" size="small" effect="plain" round>
+  {{ statusToName(row.status) }}
+</ElTag>
+```
+
 
 ---
 

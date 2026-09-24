@@ -28,10 +28,12 @@
 ### 按角色的推荐路线
 
 - **全栈采用者**（拿脚手架做自己产品）：01 → 02 → 03 → 04 → 05 → 06 → 09；07/08 按需。
+- **只维护一套前端的采用者**：01 → 02 → [只保留一个前端](./adopt-one-frontend.md)（**在动手写业务之前**先裁掉另外两端）→ 03 → 04（只做你那一端）→ 05 → 09。
 - **后端开发者**：01 → 02 → 03 → 04 → 06 → 07，再按子系统读参考层。
 - **前端开发者**：01 → 02 → 03（重点 TS 生成链）→ 04（前端半）→ 05，再读对应端 `frontend/admin/*/AGENTS.md`。
 - **运维 / 安全**：01 → 02 → 07 → 09，参考层 `backend_deploy.md`、`audit-log-producer-design.md`。
 - **给本仓提 PR 的贡献者**：全部教程 + 根 `AGENTS.md` 与对应端 `AGENTS.md`（仓库约定以 AGENTS.md 为准）。
+- **不开新模块、只改已有资源字段**（日常最高频）：直接读 [改一个字段速查](./field_change_guide.md)，它自带"你要跑几条命令"的判档，不必按序读教程；判到 D 档再回 04 章。
 
 ---
 
@@ -41,7 +43,9 @@
 |---|---|---|
 | [backend_project_struct.md](./backend_project_struct.md) | backend 目录结构与各目录职责 | 改动涉及新目录/新文件位置时 |
 | [list_query_rule.md](./list_query_rule.md) | 列表查询协议：分页、排序、过滤操作符、字段掩码 | 写列表/搜索前后端时 |
+| [field_change_guide.md](./field_change_guide.md) | **改一个字段速查**：A/B/C/D 四档要跑哪几条命令、碰哪几个文件；哪些事明确不用做（接口同步/菜单/SQL/字段权限）；两个"接口 200 但结果是错的" | 给已有资源加字段、只调自己那一端之前——日常最高频的活，02 与 04 之间的空档 |
 | [frontend_authority.md](./frontend_authority.md) | 前端权限：路由访问模式、按钮权限码/角色、字段级权限 V1 | 改路由/按钮可见性/受控字段时 |
+| [adopt-one-frontend.md](./adopt-one-frontend.md) | 只保留一个前端的裁剪：三端独立性实测、`make ts` 回流、CORS、菜单表无"端"维度的后果 | 决定只用 react / vue-element / vue-vben 之一、要删掉另外两端之前 |
 | [authentication.md](./authentication.md) | 认证与令牌链路：登录全流程、令牌结构与配置、刷新轮换与 Cookie、机器令牌、MFA、限流/策略/验证码、会话吊销 | 改登录/令牌/刷新/MFA/限流/策略前 |
 | [tenant_isolation.md](./tenant_isolation.md) | 多租户隔离：上下文链路、HTTP 闸门、数据层读写隔离、套餐联动、覆盖边界、接入与排障 | 改隔离层/Api 表/套餐门禁、新表接租户前 |
 | [plan_billing.md](./plan_billing.md) | 套餐与计费管控：三档到期策略全链路、模块白名单、配额与用量计量、租户数据清理 | 改套餐/配额/到期处置、租户 403 排障前 |

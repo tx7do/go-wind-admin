@@ -24,8 +24,9 @@
 ./scripts/deploy/pm2_service.sh
 ```
 
-注意：**Shell 脚本要先赋执行权限** `chmod +x ./scripts/**/*.sh`。
-完整模式下宿主机访问容器服务要改 hosts（postgres/redis/minio/consul 映射 127.0.0.1，
+注意：**Shell 脚本要先赋执行权限**，且 `scripts/` 下有三层子目录，`chmod +x ./scripts/**/*.sh`
+会漏掉 `env/lib` 与 `deploy/sse`——用 `find ./scripts -name '*.sh' -exec chmod +x {} +` 一次到位。
+完整模式下宿主机访问容器服务要改 hosts（`postgres` / `redis` / `minio` 三个主机名映射 127.0.0.1，
 清单见 [backend_deploy.md](../backend_deploy.md)）。
 
 ## 2. 网络拓扑与职责边界

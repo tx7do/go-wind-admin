@@ -17,7 +17,7 @@
 |------|---------|------|
 | Go | 1.26+（`backend/go.mod` 当前钉 `go 1.26.4`，低于该版本无法构建） | 后端编译运行 |
 | Docker Desktop | 最新版 | 运行 PostgreSQL、Redis、MinIO |
-| Node.js | 以各前端 `package.json` 的 `engines` 为准（当前约束交集为 ≥ 20.19.0） | 前端编译运行 |
+| Node.js | 以各前端 `package.json` 的 `engines` 为准：react **未声明** engines，vue-element `^20.19.0 \|\| >=22.12.0`，vue-vben `>=20.10.0`（另要求 pnpm `>=9.12.0`）——三端同时满足即取 vue-element 的约束 `^20.19.0 \|\| >=22.12.0`（21.x 不在内） | 前端编译运行 |
 | pnpm | 仅 vue-vben 钉定（其 `packageManager` 字段为 `pnpm@11.18.0`，corepack 自动路由）；react / vue-element 未钉定版本 | Vue 前端包管理 |
 | Git | 最新版 | 版本控制 |
 
@@ -30,9 +30,14 @@
 powershell -ExecutionPolicy Bypass -File backend\scripts\env\install_windows_dev.ps1
 ```
 
+在 `backend/` 目录下执行 `.\scripts\env\install_windows_dev.ps1` 等价——脚本用 `$MyInvocation` 解析自身目录来加载
+`scripts/env/lib/*.ps1`（`install_windows_dev.ps1:13`），**工作目录不影响行为**。
+
 该脚本通过 Scoop 自动安装 Go、Docker Desktop、Node.js、Git、Make 等，并安装所有 Go 代码生成工具（buf、ent、gow 等）。
 
-> **注意**：非管理员运行也可以，但 Docker 服务自动启动配置会被跳过。
+> **注意**：非管理员运行也可以，但**需要管理员权限的两步会被跳过**：Docker 服务自动启动配置，
+> 以及 hosts 写入（`install_windows_dev.ps1:44-45` 的提示原文即
+> "Docker auto-start and hosts configuration will be skipped"，52-54 行另有一条跳过告警）。
 
 ### 手动启用 corepack
 
@@ -168,11 +173,12 @@ cd backend
 # 下载 Go 模块依赖
 go mod download
 
-# 首次搭建：安装代码生成工具（buf、ent 等）
+# 首次搭建：安装代码生成工具（buf、ent、gow 等）
+# make init = make plugin + make cli，cli 目标里已含 gow（backend/Makefile:48），无需单独再装
 make init
 
-# 安装 gow CLI（本项目后端命令统一入口，优先于 make）
-go install github.com/tx7do/go-wind-toolkit/gowind/cmd/gow@latest
+# （可选）只想装 gow 时用；已跑过 make init 则这条是重复
+# go install github.com/tx7do/go-wind-toolkit/gowind/cmd/gow@latest
 
 # 生成全部代码（Ent ORM + Protobuf API）
 gow ent && gow api
@@ -265,24 +271,34 @@ pnpm dev:antd
 
 ### 首次 `pnpm install` 后 `pnpm dev` 报错 `turbo-run` 找不到？
 
-这是 Windows 上的已知问题。`scripts/turbo-run/bin/turbo-run.mjs` 和 `scripts/vsh/bin/vsh.mjs` 这两个 bin shim 文件可能缺失。
+这是 Windows 上的已知问题。`scripts/turbo-run/bin/turbo-run.mjs` 和 `scripts/vsh/bin/vsh.mjs` 这两个 bin shim
+可能缺失——它们各自是 `scripts/turbo-run/package.json` / `scripts/vsh/package.json` 里 `bin` 字段指向的入口，
+而仓库根 `.gitignore` 的 `bin/` 规则（第 29 行）把这两个目录整个忽略了，**所以它们不在 git 索引里，
+新克隆的仓库天然缺这两个文件**（`git ls-files frontend/admin/vue-vben/scripts` 查不到 `bin/*.mjs` 即为佐证）。
 
-手动创建：
+在 **`frontend/admin/vue-vben` 目录下**手动创建（内容与实际磁盘上的 shim 一致：shebang + 空行 + 动态 import）：
 
 ```bash
+cd frontend/admin/vue-vben   # 已在该目录则跳过
+
 # 创建 turbo-run shim
 mkdir -p scripts/turbo-run/bin
-echo '#!/usr/bin/env node
-import "../dist/index.mjs";' > scripts/turbo-run/bin/turbo-run.mjs
+printf '#!/usr/bin/env node\n\nimport('"'"'../dist/index.mjs'"'"');\n' > scripts/turbo-run/bin/turbo-run.mjs
 
 # 创建 vsh shim
 mkdir -p scripts/vsh/bin
-echo '#!/usr/bin/env node
-import "../dist/index.mjs";' > scripts/vsh/bin/vsh.mjs
+printf '#!/usr/bin/env node\n\nimport('"'"'../dist/index.mjs'"'"');\n' > scripts/vsh/bin/vsh.mjs
 
 # 重新安装以链接 bin
 pnpm install
 ```
+
+> `../dist/index.mjs` 是这两个包自己的产物，同样不进 git（`frontend/admin/vue-vben/.gitignore:3` 的 `dist` 规则），
+> 由根 `package.json` 的 `postinstall`（`pnpm -r run stub --if-present`，各包 `stub` = `pnpm unbuild --stub`）生成——
+> 所以顺序是**先补 `bin/*.mjs`，再 `pnpm install`**，install 会一并补上 dist 与 bin 链接。
+> 只想立刻起 dev server 的话，根目录的 `dev:antd`（= `pnpm -F @vben/web-antd run dev`，见 `package.json:21`）
+> 不经过 turbo-run / vsh；根目录的 `dev`（`:20` = `turbo-run dev`）才会用到它们。
+> PowerShell 下不要用上面的 `printf`/引号转义写法，改用 `Set-Content` 写同样三行内容。
 
 之后再执行 `pnpm dev` 即可。
 
@@ -336,13 +352,15 @@ pnpm install
 
 ### Q: `make gen` / `make init` 报错找不到 `buf` / `ent`
 
-确保 `%USERPROFILE%\go\bin` 已加入系统 PATH。验证：
+确保 Go 的 bin 目录已加入系统 PATH（Windows 上默认是 `%USERPROFILE%\go\bin`，PowerShell 与 cmd 用这个写法）。
+**下面这段是 Git Bash 语法**（PowerShell 里 `grep` / `$()` 行为不同）：
 
 ```bash
-echo $GOPATH
+# 取生效的 GOPATH（`echo $GOPATH` 可能为空——Go 有默认值但不一定是环境变量）
+go env GOPATH
 # 应输出类似 C:\Users\你的用户名\go
 
-ls $GOPATH/bin/
+ls "$(go env GOPATH)/bin/"
 # 应能看到 buf.exe、gow.exe 等
 ```
 

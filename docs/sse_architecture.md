@@ -71,11 +71,19 @@ SSE 连接不走 REST 的 auth 中间件链——transport 自带鉴权钩子，
 - 事件结构：`{ ID: GUIDv4, Event: "notification", Data: <收件记录 JSON> }`；
   `Event` 字段即前端的事件名（三端 `on('notification', …)`）；
 - **`Data` 的编码是三端的解析契约，不是可"顺手换一个"的细节**：必须是
-  `protojson.Marshal(收件记录 DTO)`。换回 `encoding/json` 会按 struct tag 出蛇形键
-  （`message_id`/`created_at`），而三端读的是与 REST 收件箱同形的驼峰 → 静默全断
+  `protojson.Marshal(收件记录 DTO)`。换回 `encoding/json` 会一次坏掉三处
+  （2026-09-25 同一条消息两跑对照，见 `pkg/sseevent/sseevent.go` 注释）：
+
+  | | 帧样例 |
+  |---|---|
+  | protojson（现行） | `{"id":10,"messageId":11,"status":"RECEIVED","createdAt":"2023-11-14T22:13:20.000000123Z"}` |
+  | encoding/json | `{"id":10,"message_id":11,"status":1,"created_at":{"seconds":1700000000,"nanos":123}}` |
+
+  生成的 `pb.go` 带 `json:"message_id,omitempty"` 一类蛇形 tag，所以键名变蛇形、枚举变数字、
+  时间戳变成 `{seconds,nanos}` 对象，而三端读的是与 REST 收件箱同形的驼峰 → 静默全断
   （ele 在 `if (!data.id || !data.messageId) return` 处直接退出，桌面通知与未读数不触发也不报错）。
   同一条契约还有个容易漏的半边：广播路径的收件行是批量构造的，`id` 只有落库后回读才非零，
-  而 protojson **整个省略**零值 optional 字段——缺 `id` 的广播帧与上面蛇形键故障的现象一模一样。
+  而 protojson **整个省略**零值 optional 字段——缺 `id` 的广播帧与上面键名故障的现象一模一样。
   2026-09-20 已在 `executeBroadcast` 修掉并补回归测试
   （`internal_message_notify_seam_sqlite_test.go`，实测帧：`{"id":10,"messageId":11,…}`）。
   载荷形状另有 `internal_message_sse_payload_test.go` 钉住；
@@ -94,9 +102,9 @@ SSE 连接不走 REST 的 auth 中间件链——transport 自带鉴权钩子，
 |---|---|---|---|
 | 模块 | `src/core/transport/sse/`（`sse_client.ts` + `index.ts` 单例 `globalSSEClient`） | `src/core/transport/sse/`（同构） | `apps/admin/src/transport/sse/`（路径不同，同构） |
 | 传输 | `@microsoft/fetch-event-source`（支持自定义 headers 携带凭证；原生 EventSource 不支持） | 同左 | 同左 |
-| URL 构造 | `${VITE_SSE_URL}?stream=${userInfo.id}`（`useTokenRefresh.ts`；id 取自登录用户信息） | 同构（`VITE_APP_SSE_URL`） | 同构（`VITE_GLOB_SSE_URL`） |
-| 重连 | 内置，`reconnectDelay` 5000ms | 同左 | 同左 |
-| 现有消费 | `HeaderContent.tsx`：`on('notification')` 刷新顶栏铃铛未读数（卸载时 `off`） | 同构（顶栏通知组件） | 同构 |
+| URL 构造 | `${VITE_SSE_URL}?stream=${userInfo.id}`（`hooks/useTokenRefresh.ts:188`；env 缺失时回落 `/api/sse`，另两端无此回落） | 同构（`VITE_APP_SSE_URL`，`composables/use-token-refresh.ts:271`） | 同构（`VITE_GLOB_SSE_URL`，`stores/authentication.store.ts:502`） |
+| 重连 | 内置，`reconnectDelay` 取单例配置值 5000ms（`core/transport/sse/index.ts:10`；`SSEClient` 的类默认是 3000ms，`sse_client.ts:29`，未被单例覆盖时才生效） | 同左 | 同左 |
+| 订阅落点 | 收到事件即刷新顶栏铃铛未读数：`layouts/MainLayout/components/HeaderContent.tsx:272` `on(SSE_EVENT.Notification)`，卸载时 `off`（`:274`） | 同构（`components/NoticeDropdown/useNotice.ts:221`，`off` 见 `:241`） | 同构（`layouts/basic.vue:219`） |
 
 订阅生命周期：仅登录会话内；登出/会话吊销后连接鉴权失效（下次重连被拒）。
 收件数据补取一律走收件箱查询接口（`internal_message` 域），

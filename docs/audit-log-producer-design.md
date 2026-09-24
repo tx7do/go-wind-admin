@@ -37,7 +37,10 @@ HTTP 可得字段（IP、UA、auth token、路径、成败、归属地等）由 
 **operation 名解析**（operation / permission 两类的 `resource_type`/`target_type` 与 `action` 来源）：
 
 - kratos operation 字符串全命名空间统一为 `/<package>.<ServiceName>/<Method>`——
-  设计期核查全部 162 个 admin 命名空间 operation 均遵循此格式，无例外；
+  设计期核查全部 admin 命名空间 operation（其时 162 个）均遵循此格式，无例外。
+  **162 只是历史快照，别当基线**：接口只增不减（2026-09-25 实测
+  `grep -rho "option (google.api.http)" backend/api/protos/admin/service/v1/*.proto | wc -l` 已是 206），
+  需要核实就现场数一遍，不要引用文档里的数字；
 - `<ServiceName>` 去 "Service" 后缀转小写 → `resource_type` / `target_type`（`RoleService`→`role`）；
 - `<Method>` → ActionType 映射：Create/BatchCreate→CREATE、Update→UPDATE、Delete→DELETE、
   Export→EXPORT、Import→IMPORT、Assign→ASSIGN、Unassign→UNASSIGN、其余→OTHER；
@@ -69,16 +72,16 @@ schema 无 `geo_location`/`success` 字段，故不采集这两项。
 3. **transport 中间件**（`data_access_audit_log.go`）：post-handler 取累积器逐条调
    `writeDataAccessAuditLogFunc`（即 repo.Create）落库。落库前植入 `SinkKey` 防递归标记。
 
-`affected_rows == -1` 时跳过落库（uint32 溓出隐患）。
+`affected_rows == -1` 时跳过落库（uint32 溢出隐患）。
 
 ## 3. 生产者字段索引（proto 定义点）
 
-| 审计类型 | 生产者字段 | proto 定义 |
+| 审计类型 | 生产者字段 | proto 定义（仓库根相对路径） |
 |---|---|---|
-| ApiAuditLog | `api_module` | `audit/service/v1/api_audit_log.proto:101` |
-| OperationAuditLog | `resource_type` / `resource_id` / `action` / `before_data` / `after_data` | `audit/service/v1/operation_audit_log.proto:72,77,82,87,92` |
-| DataAccessAuditLog | `data_source` / `table_name` / `data_id` / `access_type` / `sql_text` / `sql_digest` / `affected_rows` / `db_user` | `audit/service/v1/data_access_audit_log.proto:97,102,107,112,117,122,127,172` |
-| PermissionAuditLog | `target_type` / `target_id` / `target_name` / `action` / `old_value` / `new_value` | `audit/service/v1/permission_audit_log.proto:72,77,82,88,94,99` |
+| ApiAuditLog | `api_module` | `backend/api/protos/audit/service/v1/api_audit_log.proto:101` |
+| OperationAuditLog | `resource_type` / `resource_id` / `action` / `before_data` / `after_data` | `backend/api/protos/audit/service/v1/operation_audit_log.proto:72,77,82,87,92` |
+| DataAccessAuditLog | `data_source` / `table_name` / `data_id` / `access_type` / `sql_digest` / `sql_text` / `affected_rows` / `db_user` | `backend/api/protos/audit/service/v1/data_access_audit_log.proto:97,102,107,112,117,122,127,172`<br>（117 = `sql_digest`、122 = `sql_text`，按升序对应，别写反） |
+| PermissionAuditLog | `target_type` / `target_id` / `target_name` / `action` / `old_value` / `new_value` | `backend/api/protos/audit/service/v1/permission_audit_log.proto:72,77,82,88,94,99` |
 
 字段语义边界见第 9 节（哪些字段当前留空）。
 
@@ -102,8 +105,12 @@ schema 无 `geo_location`/`success` 字段，故不采集这两项。
 
 ## 6. 管理页与归档
 
-- **查询页**：六类各有独立页面（三端齐备，当前形态为列表 + 筛选 + CSV 导出，
-  导出按筛选分页聚合、上限 1 万行）。
+- **查询页**：六类各有独立页面（三端齐备），形态为列表 + 筛选 + 导出，导出按筛选分页聚合、
+  上限 1 万行。**格式不止 CSV**：react 六类页面均提供 CSV / XLSX 两个导出项（公共实现
+  `frontend/admin/react/src/utils/csv.ts`，下拉项见
+  `frontend/admin/react/src/pages/app/log/api-audit-log/index.tsx:241-242`）；vue-element 走
+  `frontend/admin/vue-element/src/components/Pro/ProPage/ExportModal.vue` 的导出弹窗
+  （csv / html / xml / txt / xlsx）；vue-vben 六类页面同样带 xlsx 导出。
 - **归档**：系统级 asynq 周期任务（每日 03:30，`audit_log_archive`）：超保留期行导出
   JSONL 归档文件后从库删除。调度/注册机制见 [task_system.md](./task_system.md) 第 5.2 节；
   参数：`AUDIT_ARCHIVE_DIR`（默认 `./data/audit-archive`）、`AUDIT_RETENTION_DAYS`
@@ -146,8 +153,10 @@ schema 无 `geo_location`/`success` 字段，故不采集这两项。
 
 | 字段 | 状态 |
 |---|---|
-| `before_data` / `after_data`（操作审计改前/后快照） | 留空待评估——需 ent hook 过滤策略（白名单/审计表短路），见 §7.2 |
-| `target_id` / `old_value` / `new_value`（权限审计目标与值变化） | 留空待评估——需 handler 上下文来源 |
-| `table_name` / `db_user`（数据访问审计表名/库用户） | 留空待评估——需 SQL/DSN 解析 |
+| `before_data` / `after_data`（操作审计改前/后快照） | **实测全空**（2026-09-25 本机库 209/209 行）——留空待评估，需 ent hook 过滤策略（白名单/审计表短路），见 §7.2 |
+| `old_value` / `new_value`（权限审计值变化） | **实测全空**（209/209 行）——留空待评估，需 handler 上下文来源 |
+| `target_id`（权限审计目标） | **已采集，但不是每行都有**：实测 130 / 209 行有值——设计即"能拿到目标 id 的变更才填"（如角色授权到具体角色），批量/无明确目标的操作只有 `target_type`。`reason` 209/209 全填 |
+| `db_user`（数据访问审计库用户） | **实测全空**（34,369/34,369 行）——仓储层 `SetNillableDbUser` 只做透传，没有任何生产者赋值，需 DSN 解析 |
+| `table_name` / `data_category`（数据访问审计表名/分类） | **已采集，实测两列 34,369 / 34,369 全有值**：从脱敏 SQL 抽表名（多表按 `/` 连接）、首表映射数据分类（`backend/pkg/middleware/logging/data_access_audit_log.go:88-92`）。本文早稿把这三列与 `db_user` 一并记为"留空待 SQL 解析"，已失效 |
 | 非写操作的审计 | 设计即跳过（Get/List 等不产生操作/权限审计行） |
-| 六类查询页的详情形态 | 当前为列表 + 筛选 + 导出，无详情抽屉 |
+| 六类查询页的详情形态 | **三端并不对称**（2026-09-25 实测目录）：vue-element 六类各有 `pages/app/log/<type>/detail-drawer.vue`；vue-vben 五类有 `views/app/log/<type>/<type>-detail-drawer.vue`，仅 `api_audit_log` 没有；react 只有 `pages/app/log/login-audit-log/DetailDrawer.tsx` 一处，其余五类仍是纯列表。本文早稿的"三端均无详情抽屉"已失效 |

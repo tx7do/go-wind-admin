@@ -154,14 +154,14 @@ func (<Entity>) Indexes() []ent.Index {
 
 **Mixin field names (verified from `go-crud/entgo/mixin/`):** `OperatorID` → `created_by`/`updated_by`/`deleted_by` (uint32 nillable); `TimeAt` → `created_at`/`updated_at`/`deleted_at` (Time nillable); `SwitchStatus` → `status` enum default ON. These match the proto audit fields (100/101/102, 200/201/202) — the `CopierMapper` wires them by name.
 
-For tree shape: `edge.To("children", <Entity>.Type).From("parent").Field("parent_id")` plus a `parent_id` uint32 field.
+For tree shape: add `mixin.Tree[<Entity>]{}` — it supplies both the `parent_id` (uint32, optional+nillable) field and the self-referential edge `edge.To("children", T.Type).From("parent").Unique().Field("parent_id")`. Do not hand-write either; no schema in this repo does. Precedent: `menu.go` / `org_unit.go` / `permission_group.go`. Two follow-ups: the mixin adds no index, so write `index.Fields("parent_id")` yourself (`menu.go:150`); `mixin.TreePath{}` optionally adds a `path` column (`/1/2/3/`), and `menu.go:106` has it commented out because Menu already owns a `path` field (the frontend route path) — the two names collide. Nothing outside generated ent code loads the edge (zero `WithChildren` usages), so the API returns a flat list and each frontend rebuilds the tree from `parentId`.
 
 ## Step 5 — Generate Ent code
 
 ```bash
-cd backend/app/admin/service && make ent
+cd backend && gow ent admin
 ```
-Must run from the service directory (schema path is relative). Produces `internal/data/ent/<entity>/`, `internal/data/ent/<entity>_create.go`, etc., and the `predicate.<Entity>` type — all referenced by the repo's 10 generic params.
+`gow` resolves the service path itself, so no `cd` into the service dir is needed (the fallback `make ent` does require it — its `ent generate ./internal/data/ent/schema` path is relative, and the target is guarded by that directory existing). Produces `internal/data/ent/<entity>/`, `internal/data/ent/<entity>_create.go`, etc., and the `predicate.<Entity>` type — all referenced by the repo's 10 generic params.
 
 ## Step 6 — Repository
 
@@ -178,20 +178,20 @@ import (
 
     "entgo.io/ent/dialect/sql"
     entCrud "github.com/tx7do/go-crud/entgo"
-    "github.com/tx7do/go-crud/entgo/mapper"
-    "github.com/tx7do/go-utils/mapper/copierutil"
-    "github.com/go-kratos/kratos/v2/log"
+    "github.com/tx7do/go-utils/mapper"
+    "github.com/tx7do/go-utils/copierutil"
+    bLogger "github.com/tx7do/kratos-bootstrap/logger"
+    "github.com/tx7do/kratos-bootstrap/bootstrap"
 
     "go-wind-admin/api/gen/go/<domain>/service/v1"   // domain types, alias as <domain>V1
     "go-wind-admin/app/admin/service/internal/data/ent"
     "go-wind-admin/app/admin/service/internal/data/ent/<entity>"  // predicates + field consts
     "go-wind-admin/app/admin/service/internal/data/ent/predicate"
-    "go-wind-admin/pkg/bootstrap"
 )
 
 type <Entity>Repo struct {
     entClient *entCrud.EntClient[*ent.Client]
-    log       *log.Helper
+    log       *bLogger.Helper
     mapper    *mapper.CopierMapper[<domain>V1.<Entity>, ent.<Entity>]
     // enumConverter *mapper.EnumTypeConverter[<domain>V1.<Entity>_Scope, <entity>.Scope] // only if enum field
     repository *entCrud.Repository[
@@ -217,7 +217,7 @@ func New<Entity>Repo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.C
 func (r *<Entity>Repo) init() {
     r.repository = entCrud.NewRepository[ /* same 10 params as the struct field */ ](r.mapper)
     // REQUIRED for every repo — time <-> timestamppb conversion:
-    r.mapper.AppendConverters(copierutil.NewTimeStringConvertPair())
+    r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
     r.mapper.AppendConverters(copierutil.NewTimeTimestamppbConverterPair())
     // For each enum field:
     // r.mapper.AppendConverters(r.enumConverter.NewConverterPair())
@@ -264,21 +264,22 @@ package service
 
 import (
     "context"
-    "github.com/go-kratos/kratos/v2/log"
+
+    bLogger "github.com/tx7do/kratos-bootstrap/logger"
+    "github.com/tx7do/kratos-bootstrap/bootstrap"
+    "github.com/tx7do/go-utils/trans"
     "google.golang.org/protobuf/types/known/emptypb"
 
     adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
     <domain>V1 "go-wind-admin/api/gen/go/<domain>/service/v1"
-    paginationV1 "go-wind-admin/api/gen/go/pagination/v1"
+    paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
     "go-wind-admin/app/admin/service/internal/data"
-    "go-wind-admin/pkg/bootstrap"
     "go-wind-admin/pkg/middleware/auth"
-    "go-wind-admin/pkg/utils/trans"
 )
 
 type <Entity>Service struct {
     adminV1.<Entity>ServiceHTTPServer   // embed the BFF-generated HTTP server interface
-    log  *log.Helper
+    log  *bLogger.Helper
     repo *data.<Entity>Repo
 }
 
@@ -400,7 +401,7 @@ Consequences for a new module:
 
 2. **The repo's generic signature has 10 type params, not 9.** Order: Query, Select, Create, CreateBulk, Update, UpdateOne, Delete, Predicate, DTO, Entity. Swapping any two breaks compilation in confusing ways. Copy the exact order from `api_repo.go`.
 
-3. **Time converters are mandatory in `init()`.** Without `copierutil.NewTimeStringConvertPair()` + `NewTimeTimestamppbConverterPair()`, Ent's `time.Time` won't map to proto's `google.protobuf.Timestamp`, and you'll see silent zero values or runtime panics on Create/Update of audit fields.
+3. **Time converters are mandatory in `init()`.** Without `copierutil.NewTimeStringConverterPair()` + `NewTimeTimestamppbConverterPair()`, Ent's `time.Time` won't map to proto's `google.protobuf.Timestamp`, and you'll see silent zero values or runtime panics on Create/Update of audit fields.
 
 4. **`allow_missing` upsert in `UpdateX`.** When the proto carries `allow_missing: true`, UpdateX may Create if the row doesn't exist. Make sure your Create path is correct before relying on this.
 

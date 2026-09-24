@@ -2,7 +2,7 @@
 
 Stack: Vue 3.5 + Vite + TypeScript + Element Plus 2 + vxe-table 4 + Pinia 3 + @tanstack/vue-query 5 + vue-router 5 + vue-i18n 11 + axios (gRPC-Web style). Path root: `frontend/admin/vue-element/src/`.
 
-**Prerequisite:** backend proto + `protoc-gen-typescript-http` regeneration done, so `apiClient.<entity>Service` exists in `src/api/generated/admin/service/v1/index.ts`.
+**Prerequisite:** backend proto + `protoc-gen-typescript-http` regeneration done (`cd backend && make ts`, or `buf generate --template buf.vue-element.admin.typescript.gen.yaml` from `backend/api/`), so `apiClient.<entity>Service` exists in `src/api/generated/admin/service/v1/index.ts`.
 
 **Mirror these real samples — read them before writing:**
 - Composables: `src/api/composables/position.ts` (canonical 5-hook + enum utils)
@@ -41,10 +41,10 @@ Path: `src/api/composables/<entity>.ts`. Mirror `position.ts`. **Use `const t = 
 ```ts
 import { computed } from 'vue';
 import { useQuery, useMutation, type UseQueryOptions, type UseMutationOptions } from '@tanstack/vue-query';
-import { i18n } from 'vue-i18n';                  // or whatever the project imports from
+import { i18n } from '@/core/i18n';
 import { apiClient } from '@/api/client';
 import { PaginationQuery, makeUpdateMask } from '@/core/transport/rest';
-import { queryClient } from '@/core';             // adjust import to project's real path
+import { queryClient } from '@/plugins/vue-query';
 import type { /* generated types */ } from '@/api/generated/admin/service/v1';
 
 const t = i18n.global.t;
@@ -81,12 +81,14 @@ export const <entity>TypeList = computed(() => [
   { value: 'SPECIAL', label: t('enum.<entity>.type.SPECIAL') },
 ]);
 export function <entity>TypeToName(type: string) { /* lookup label */ }
-export function <entity>TypeToColor(type: string, theme?: 'light' | 'dark') { /* return element-plus type */ }
+export function <entity>TypeToType(type: string): TagType { /* return element-plus tag type, e.g. 'success' | 'info' */ }
 ```
+
+(Real naming: `position.ts` exports `positionTypeToName` + `positionTypeToType` (return type `TagType`, imported as `import type { TagType } from './shared';`); there is **no** `*ToColor` in this end — ElTag takes `:type`, not `:color`.)
 
 **No `invalidateQueries` in mutations** — the project refreshes via `pageRef.value?.refresh()` after the drawer emits `success` (see Step 3). If you write invalidate, it won't fire because list data comes from `fetchQuery`, not a reactive `useQuery` subscription.
 
-**Status/enable enums** are shared across modules in `composables/shared.ts` (statusList, statusToColor, etc.) — reuse, don't redefine.
+**Status/enable enums** are shared across modules in `composables/shared.ts` (`statusList`, `statusToName`, `statusToType`, `enableList`, … — note it is `statusToType`, returning `"success" | "info"`, not `statusToColor`) — reuse, don't redefine.
 
 ## Step 2 — Register composables export
 
@@ -104,7 +106,7 @@ Path: `src/pages/app/<group>/<entity>/index.vue`. Mirror `position/index.vue`. U
 <template>
   <div class="app-container h-full flex flex-1 flex-col">
     <ProPage ref="pageRef" :config="pageConfig" @add="handleAdd" @edit="handleEdit">
-      <template #status="scope: any"><ElTag :type="statusToColor(scope.row.status)">{{ statusToName(scope.row.status) }}</ElTag></template>
+      <template #status="scope: any"><ElTag :type="statusToType(scope.row.status)">{{ statusToName(scope.row.status) }}</ElTag></template>
     </ProPage>
     <<Entity>Drawer ref="drawerRef" @success="handleSuccess" />
   </div>
@@ -114,10 +116,11 @@ Path: `src/pages/app/<group>/<entity>/index.vue`. Mirror `position/index.vue`. U
 import { ref } from 'vue';
 import { ProPage, type ProPageConfig } from '@/components/Pro';
 import { useAccess } from '@/core/access';   // optional
-import { PaginationQuery, fetchList<Entity>s, useDelete<Entity>, statusList, statusToColor, statusToName } from '@/api/composables';
+import { PaginationQuery, fetchList<Entity>s, useDelete<Entity>, statusList, statusToType, statusToName } from '@/api/composables';
+import { $t } from '@/core/i18n';
 import <Entity>Drawer from './<entity>-drawer.vue';
 
-const { $t } = useI18n(); // or however the project accesses the global $t in <script setup>
+// `$t` is imported from '@/core/i18n' (see above) — `useI18n()` returns `t`, not `$t`.
 const pageRef = ref();
 const drawerRef = ref();
 const { mutateAsync: delete<Entity> } = useDelete<Entity>();
@@ -201,9 +204,11 @@ Path: `src/pages/app/<group>/<entity>/<entity>-drawer.vue`. Mirror `position-dra
 <script setup lang="ts">
 import { ref } from 'vue';
 import { ElForm, ElFormItem, ElInput, ElDivider, ElButton, type FormInstance, type FormRules } from 'element-plus';
-import { ProModal, useDrawerForm } from '@/components/Pro';
+import ProModal from '@/components/Pro/ProModal/index.vue';
+import { useDrawerForm } from '@/components/Pro/composables/useDrawerForm';
 import { useCreate<Entity>, useUpdate<Entity>, fetchListXxx } from '@/api/composables';
 import { PaginationQuery } from '@/core/transport/rest';
+import { $t } from '@/core/i18n';
 
 const emit = defineEmits<{ success: [] }>();
 const { mutateAsync: create<Entity> } = useCreate<Entity>();

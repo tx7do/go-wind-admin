@@ -26,11 +26,13 @@ pnpm dev
 pnpm build
 ```
 
-- 查看ESlint
+- 代码检查（在 monorepo 根目录执行）
 
 ```bash
-npx eslint --inspect-config
+pnpm lint
 ```
+
+> `pnpm lint`（= `vsh lint`）是日常入口。`npx eslint --inspect-config` 只用于**诊断** ESLint 配置本身是否被正确加载，不是检查代码的命令。
 
 ## API文档
 

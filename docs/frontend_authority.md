@@ -25,26 +25,34 @@
 VITE_ROUTER_ACCESS_MODE=backend
 ```
 
-前端的核心代码在`src/router/access.ts`：
+前端的核心代码在 `apps/admin/src/router/access.ts`（以下为现状，不是示意）：菜单来自
+`fetchNavigation()`（`#/api` 的 admin-portal 封装，后端 RPC 是 `GetNavigation`，其响应消息名叫
+`ListRouteResponse`——**别把消息名当成 RPC 名去找 `ListRoute`，那个端点不存在**）：
 
 ```typescript
-async function generateAccess(options: GenerateMenuAndRoutesOptions) {
-  ...
-
-  return await generateAccessible(preferences.app.accessMode, {
-    ...options,
-    fetchMenuListAsync: async () => {
-      message.loading({
-        content: `${$t('common.loadingMenu')}...`,
-        duration: 1.5,
-      });
-      const data = (await defRouterService.ListRoute({})) ?? [];
-      return data.items ?? [];
-    },
-    ...
-  });
+// apps/admin/src/router/access.ts
+async function getAllMenusApi(): Promise<RouteRecordStringComponent[]> {
+  const data = (await fetchNavigation()) ?? [];
+  const unwrapped = (data as any)?.data ?? data;   // 兼容 {items} 与 {data:{items}} 两种包装
+  return unwrapped?.items ?? [];
 }
+
+// 后端模式：先预取路由；拿到空列表或请求失败，则把 effectiveMode 降级成 'frontend'
+let effectiveMode = preferences.app.accessMode;
+if (effectiveMode === 'backend') {
+  try {
+    cachedBackendRoutes = await getAllMenusApi();
+    if (cachedBackendRoutes.length === 0) effectiveMode = 'frontend';
+  } catch {
+    effectiveMode = 'frontend';
+  }
+}
+const result = await generateAccessible(effectiveMode, { ...options, fetchMenuListAsync: ... });
 ```
+
+> **降级要知道**：`backend` 模式下菜单为空或接口报错时，vben 会静默退回前端模式，用本地固定路由表
+> 生成菜单。也就是说"配了 backend 却看着像 frontend"是可能的，排障时先看网络面板有没有 `GetNavigation`
+> 请求，再看是不是被降级了。react / vue-element 无此降级（后端模式失败即空菜单）。
 
 ### 前端访问控制
 
@@ -63,7 +71,7 @@ async function generateAccess(options: GenerateMenuAndRoutesOptions) {
 VITE_ROUTER_ACCESS_MODE=frontend
 ```
 
-然后，我们需要在本地的固定路由里面写入`authority`字段，里边填写的是后端配置的角色码，如果该字段不填写，则为所有人可见，如果为字段数据为空，则为所有人不可见：
+然后，我们需要在本地的固定路由里面写入`authority`字段，里边填写的是后端配置的角色码：
 
 ```typescript
  {
@@ -72,6 +80,13 @@ VITE_ROUTER_ACCESS_MODE=frontend
     },
 },
 ```
+
+> **`authority: []`（空数组）三端语义不一致，别当成通用写法**：vue-vben 与 vue-element 的
+> `hasAuthority` 判的是 `if (!authority) return true`——空数组在 JS 里是 truthy，于是继续走匹配、
+> 必然落空，结果**谁都看不见**；react 判的是 `if (!meta?.authority?.length) return true`
+> （`src/core/router/generators/generate-routes-frontend.ts:59-60`），空数组等于**无权限要求、所有人可见**，
+> 语义正好相反。**结论**：要"所有人可见"就把 `authority` 整个省略，别写空数组；
+> 要"锁死"就用一个没人持有的码。这是端间差异、不是配置技巧。
 
 根据`src/store/auth`里面的代码显示：
 
@@ -273,7 +288,8 @@ const { hasAccessByRoles } = useAccess();
 | Hook 式 | `hasAccessByRoles` / `hasAccessByCodes` | `hasAccessByRoles` / `hasAccessByCodes` / `hasAccessByAuthority`（roles ∪ codes 混合判定，对应路由 `meta.authority`） | `hasAccessByRoles` / `hasAccessByCodes` / `hasAccess`（roles ∪ codes 并集） |
 | 指令式 | `v-access:code` / `v-access:role` | 无（React 无指令机制） | `v-access`（混合判定，无权限 `el.remove()`） |
 | 权限码匹配语义 | **精确匹配**；注意 vben 的 accessCodes 实为 roles∪codes 并集（authentication.store 的 getUserPermissionCodes 把角色码并入），按钮级判定同样吃角色码 | **精确匹配** | **精确 + 前缀授权**：用户持 `sys:a` 即判过 `sys:a:b`（`requiredCode.startsWith(userCode + ":")`）——**比另两端宽** |
-| 路由双模式 | `@vben/router` + `VITE_ROUTER_ACCESS_MODE`（env） | `src/core/router/generators/generate-routes-{frontend,backend}.ts` + `preferences.app.accessMode`（运行时偏好；react 无 UI 开关也无 toggleAccessMode，改偏好即生效） | 同 react 结构，另有 `useAccess().toggleAccessMode()` 运行时切换 |
+| 路由双模式 | `@vben/access` 的 `generateAccessible` + `VITE_ROUTER_ACCESS_MODE`（env）；后端模式菜单为空/失败**静默降级**为前端模式 | `src/core/router/generators/generate-routes-{frontend,backend}.ts` + `preferences.app.accessMode`（运行时偏好；react 无 UI 开关也无 toggleAccessMode，改偏好即生效）；后端模式失败只 `console.error` 并返回空路由，**不降级** | 同 react 结构，另有 `useAccess().toggleAccessMode()` 运行时切换；后端模式失败同样返回 `[]` 不降级 |
+| `meta.authority: []` 语义 | 空数组 = 所有人不可见（`if (!authority) return true`，空数组是 truthy） | **空数组 = 所有人可见**（`if (!meta?.authority?.length) return true`）——与另两端相反 | 空数组 = 所有人不可见（同 vben） |
 | 路由生成防线 | `effects/access/accessible.ts` 生成前 `cloneDeep(options.routes)`（2026-09 实证必要：filterTree 会就地改写 node.children，未登录空权限预构建会把带 authority 路由从共享单例永久剔除、登录后找不回） | `generate-routes-frontend.ts` 纯过滤：递归构造新节点、element 按引用共享、零回写共享单例（react 路由带活的 React 元素，不宜整树 cloneDeep） | `core/router/accessible.ts` 生成前 `cloneDeep(options.routes)`（同 vben） |
 | 权限码/菜单端点 | 权限码三端统一 `adminPortalService.GetMyPermissionCode`（codes+hiddenFields）；后端模式的菜单下发经同域 `GetNavigation`（返回 `ListRouteResponse` 菜单路由） | 同左 | 同左 |
 
@@ -285,8 +301,13 @@ const { hasAccessByRoles } = useAccess();
 
 字段级权限是路由与按钮之外的第三个权限轴：角色可配置一组「黑名单字段」，受限用户在界面上看不到这些字段，服务端响应中这些字段同样被裁剪。当前试点资源为用户表。
 
-* **服务端强制**：角色配置的黑名单字段集在登录 / 刷新令牌时聚合进令牌的 `hfs` claim；服务端响应包装器对读路径按黑名单清值（字段自响应中消失），对写路径清值并从 `field_mask` 中剔除对应字段（越权字段被静默剥离，不会因显式置零覆盖原值）。`/me` 端点刻意不裁剪（自编辑需要全字段）。
-* **前端消费**：`ListPermissionCode`（perm-codes）响应在权限码之外同时下发 `hiddenFields`（按资源分组的黑名单字段清单）；三端 access store 持久化该清单，列表列与搜索项按其过滤、详情页条件渲染、编辑抽屉隐藏受控字段并从提交载荷中剔除对应键。
+* **服务端强制**：角色配置的黑名单字段集在登录 / 刷新令牌时聚合进令牌的 `hfs` claim；服务端在读路径按黑名单清值（字段自响应中消失），对写路径清值并从 `field_mask` 中剔除对应字段（越权字段被静默剥离，不会因显式置零覆盖原值）。落点是 service 层切面 `internal/service/user_field_permission.go`（`fieldperm.ApplyReadMask*` / `StripWriteFields`，工具在 `pkg/fieldperm/`），不在 ent 隐私层——所以它只覆盖接了这个切面的资源。`/me` 端点刻意不裁剪（自编辑需要全字段）。
+* **前端消费**：`ListPermissionCode`（perm-codes）响应在权限码之外同时下发 `hiddenFields`——
+  **一条扁平的 `repeated string`，每项是 `"资源.字段"` 串**（如 `User.phone`；proto 见
+  `admin/service/v1/i_admin_portal.proto:42`），不是按资源分组的对象。分组是各端自己做的
+  （react `src/core/access/field-permission.ts` 的 `parseResourceHiddenFields` / `isFieldHidden`，
+  按前缀切回资源维度）。三端 access store 持久化该清单，列表列与搜索项按其过滤、详情页条件渲染、
+  编辑抽屉隐藏受控字段并从提交载荷中剔除对应键。
 * **注意**：前端裁剪只是体验层，服务端裁剪才是权威——绕过前端直接调接口，受控字段同样不可读、不可写。
 
 ## 项目代码

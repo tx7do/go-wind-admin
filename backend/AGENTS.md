@@ -99,8 +99,8 @@ Proto (API 定义) → Service (业务逻辑) → Data/Repo (数据访问)
   - **Ent** (主要): `go-crud/entgo` 泛型 Repository，用于所有 CRUD 操作
   - **GORM** (辅助): `go-crud/gorm` Client，当前主要用于自动迁移 (`gorm/models/`)
 - 通过 `go-utils/mapper.CopierMapper` 做 Entity ↔ DTO 自动转换（注册 copierutil 转换器处理类型差异）
-- Repository 泛型签名包含 Ent 的 9 种类型（Query, Select, Create, CreateBulk, Update, UpdateOne, Delete, Predicate, Entity）
-- 必须注册时间转换器: `TimeStringConvertedPair` + `TimeTimestamppbConverterPair`
+- Repository 泛型签名包含 **10** 个类型参数，顺序固定：Query, Select, Create, CreateBulk, Update, UpdateOne, Delete, Predicate, **DTO**, Entity（照 `internal/data/api_repo.go:36-46` 抄）
+- 必须注册时间转换器: `copierutil.NewTimeStringConverterPair()` + `copierutil.NewTimeTimestamppbConverterPair()`（注意是 **Converter** Pair，不是 Converted）
 - enum 字段需用 `mapper.NewEnumTypeConverter` 注册
 - `ListWithPaging` 传入 builder 和 builder.Clone()，自动处理分页/排序/搜索
 - `UpdateX` 支持 FieldMask 部分更新
@@ -254,7 +254,7 @@ cd app/admin/service && make ent
 
 ### Step 6: 创建 Repository
 
-在 `app/admin/service/internal/data/` 下创建 `*_repo.go`。**关键**: 使用自封装的 `go-crud/entgo` 泛型 Repository，泛型签名包含 Ent 生成的 9 种类型。骨架（参照现有 `api_repo.go`）:
+在 `app/admin/service/internal/data/` 下创建 `*_repo.go`。**关键**: 使用自封装的 `go-crud/entgo` 泛型 Repository，泛型签名包含 10 个类型参数。骨架（参照现有 `api_repo.go`）:
 
 ```go
 type ProductRepo struct {
@@ -262,7 +262,7 @@ type ProductRepo struct {
     log       *log.Helper
     mapper     *mapper.CopierMapper[pb.Product, ent.Product]
     repository *entCrud.Repository[
-        // Ent 生成的 9 种泛型类型，顺序固定不可调换
+        // 10 个泛型类型参数，顺序固定不可调换
         ent.ProductQuery, ent.ProductSelect,       // Query, Select
         ent.ProductCreate, ent.ProductCreateBulk,   // Create, CreateBulk
         ent.ProductUpdate, ent.ProductUpdateOne,    // Update, UpdateOne
@@ -278,9 +278,9 @@ func NewProductRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Cl
         log:       ctx.NewLoggerHelper("repo/product"),
         mapper:    mapper.NewCopierMapper[pb.Product, ent.Product](),
     }
-    r.repository = entCrud.NewRepository[ /* 9 个类型... */ ](r.mapper)
+    r.repository = entCrud.NewRepository[ /* 上面那 10 个类型参数 */ ](r.mapper)
     // 注册时间类型转换器 (必须)
-    r.mapper.AppendConverters(copierutil.NewTimeStringConvertedPair())
+    r.mapper.AppendConverters(copierutil.NewTimeStringConverterPair())
     r.mapper.AppendConverters(copierutil.NewTimeTimestamppbConverterPair())
     // 有 enum 字段时: r.mapper.AppendConverters(mapper.NewEnumTypeConverter(...))
     return r

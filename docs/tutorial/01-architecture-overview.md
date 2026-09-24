@@ -17,11 +17,16 @@ frontend/admin/
 docs/                       本文档体系（教程层 + 参考层，见 [docs/README.md](../README.md)）
 ```
 
-三套前端功能同构、技术栈各异，共用同一套后端契约（第 3 章展开）。后端目录的逐项说明见
+三套前端功能同构、技术栈各异，共用同一套后端契约（第 3 章展开）。**它们是给不同技术栈团队的三个并列选项，
+不是"同时要 React 和 Vue"的一套交付**——一个团队选一套，一次部署只跑一套；选定后可以把另外两个目录删掉
+（改动点见 [adopt-one-frontend.md](../adopt-one-frontend.md)）。本仓同时维护三端是**上游维护者的负担**。
+后端目录的逐项说明见
 [backend_project_struct.md](../backend_project_struct.md)——它是目录职责的权威参考。
 
-**三个前端端口约定（本地开发）**：react `5888`、vue-element `5777`、vue-vben `5666`
-（`apps/admin/.env.development` 的 `VITE_PORT`；若端口被占用 vite 会自动顺延，启动日志里有实际端口）。
+**三个前端端口约定（本地开发）**：react `5888`、vue-element `5777`、vue-vben `5666`。
+端口写在各自的 dev 环境变量里，键名不统一：react `.env.development` 的 `VITE_SERVER_PORT`、
+vue-element `.env.development` 的 `VITE_APP_PORT`、vue-vben `apps/admin/.env.development` 的 `VITE_PORT`
+（若端口被占用 vite 会自动顺延，启动日志里有实际端口）。
 
 ## 2. 一次请求的完整路径
 
@@ -32,10 +37,11 @@ docs/                       本文档体系（教程层 + 参考层，见 [docs/
   │  GET /admin/v1/users?...（后端路由本身带 /admin/v1 前缀；前端经 TanStack Query / vue-query 发起）
   ▼
 开发态接线（三端两种形态，由各端 .env.development 与 vite 配置决定）：
-  │  react —— baseURL 为相对路径，请求打到 dev server，由 vite 代理按 /admin
-  │           前缀转发到 7788（避免跨域）
-  │  vue-element / vue-vben —— baseURL 直接指向 http://localhost:7788，
-  │           开发态跨域直连（后端 CORS 放行）
+  │  react —— `VITE_API_URL=/` + `VITE_PROXY='[["/admin","http://127.0.0.1:7788/"]]'`：
+  │           请求打到 dev server，由 vite 代理按 /admin 前缀转发到 7788（避免跨域，
+  │           且因后端路由自带 /admin/v1 前缀，代理不做 rewrite）
+  │  vue-element / vue-vben —— baseURL 直接指向 http://localhost:7788
+  │           （`VITE_APP_API_URL` / `VITE_GLOB_API_URL`），开发态跨域直连（后端 CORS 放行）
   ▼
 Kratos HTTP transport（:7788）
   │  1. 路由匹配：由 BFF proto 的 google.api.http 注解生成的路由表
@@ -49,7 +55,7 @@ Repo 层（internal/data/）
   │  DTO↔entity 映射（CopierMapper + 字段转换器）；Update 走 FilterByFieldMask
   ▼
 ent 隐私层（internal/data/ent/，代码生成）
-  │  租户隔离（TenantPrivacy）、数据范围谓词、字段黑名单裁剪
+  │  租户隔离（TenantPrivacy）、数据范围谓词
   ▼
 PostgreSQL / MySQL
   │
@@ -77,7 +83,7 @@ PostgreSQL / MySQL
 | 授权（接口级） | authz 引擎判定"该用户能否调该接口"，策略存 DB 可热更新 | `pkg/middleware/auth` 引擎接入 | 第 5 章 |
 | 租户隔离 | 行级 `tenant_id` 谓词，读写在数据层强制；HTTP 层另有 Api 表 `(path,method)` 闸门 | ent 隐私层 + `pkg/middleware` | 第 6 章 |
 | 数据范围 | 角色级行过滤（五档），令牌承载聚合结果 | ent 隐私层（逐表 opt-in） | [data_scope_design.md](../data_scope_design.md) |
-| 字段级权限 | 角色黑名单字段，服务端响应裁剪 + 前端隐藏 | 响应包装器 + 三端 access store | [frontend_authority.md](../frontend_authority.md) |
+| 字段级权限 | 角色黑名单字段，服务端响应裁剪 + 前端隐藏 | service 层切面（当前仅 `user`）+ 三端 access store | [frontend_authority.md](../frontend_authority.md) |
 | 审计日志 | 六类日志全覆盖，含 SQL 级 data access 采集与词法脱敏 | `pkg/middleware/logging`、driver 包装器 | [audit-log-producer-design.md](../audit-log-producer-design.md) |
 | 异步任务 | asynq 调度（cron/周期），Redis 队列 | `internal/service` 任务桥 | [task_system.md](../task_system.md) |
 | 脚本系统 | Lua/JS 脚本级插件：实体钩子/定时任务/事件/HTTP 出站 | `pkg/scripting` + 管理页 | [script_system.md](../script_system.md) |

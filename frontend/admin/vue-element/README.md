@@ -23,7 +23,7 @@
 | UI | Element Plus | 2.13.5+ |
 | 表格 | VXE Table | 4.6.25+ |
 | 编辑器 | TipTap | 3.20.0+ |
-| CSS | UnoCSS + SCSS | — |
+| CSS | Tailwind CSS 4 + SCSS | 4.3.0+ |
 | 状态 | Pinia + Vue Query | — |
 | 路由 | Vue Router | 5.0+ |
 | 国际化 | vue-i18n | 11.3+ |
@@ -38,7 +38,7 @@
 | 环境 | 版本 |
 |---|---|
 | Node.js | `^20.19.0` 或 `>=22.12.0` |
-| 包管理器 | `pnpm >= 8.0.0` |
+| 包管理器 | `pnpm`（`preinstall` 已用 `only-allow pnpm` 强制；lockfile 为 9.0，本仓在 pnpm 11.x 验证） |
 
 ### 安装与启动
 
@@ -116,13 +116,12 @@ src/
 │   ├── use-sortable.ts     #   拖拽排序
 │   └── ...                 #   其他
 │
-├── stores/                 # Pinia 状态管理
+├── stores/                 # Pinia 状态管理（index.ts + setup.ts）
 │   └── modules/
 │       ├── access.store.ts #   权限（accessCodes/accessRoutes/accessMenus）
 │       ├── app-user.store.ts # 当前用户信息
-│       ├── tabbar.store.ts #   标签页管理
-│       ├── tags-view.store.ts # 标签页视图
-│       └── lock.store.ts   #   锁屏
+│       ├── lock.store.ts   #   锁屏
+│       └── index.ts        #   统一导出（标签页状态在 layouts/useLayout.ts + LayoutTagsView.vue，无独立 store）
 │
 ├── core/                   # 核心模块（可跨项目复用）
 │   ├── access/             #   权限控制
@@ -141,10 +140,10 @@ src/
 │   └── components/         #   布局子组件（侧边栏/顶栏/标签栏/面包屑等）
 │
 ├── router/                 # 路由业务绑定
-│   ├── index.ts            #   路由实例
-│   ├── guard.ts            #   路由守卫
-│   ├── auth.guard.ts           #   权限路由入口
-│   └── routes/modules/app/ #   业务路由模块文件
+│   ├── index.ts            #   路由实例（createRouter + 挂载 guards）
+│   ├── route-generator.ts  #   generateAccess：前后端两种权限模式的统一入口
+│   ├── guards/             #   路由守卫（auth.guard.ts + common.guard.ts + index.ts）
+│   └── routes/             #   路由表：core.routes.ts + index.ts（glob 合并 modules/app/*.ts）
 │
 ├── styles/                 # 全局样式
 ├── plugins/                # 插件（ECharts/VXE Table/Vue Query/NProgress）
@@ -250,17 +249,24 @@ composables/ ←── 面向组件的 Vue Query hooks（通过 apiClient 调用
 **1. 路由定义** — `src/router/routes/modules/app/xxx.ts`
 
 ```ts
-export default {
-  path: "/app/xxx",
-  name: "Xxx",
-  component: () => import("@/pages/app/xxx/index.vue"),
-  meta: {
-    title: "routes.xxx",           // i18n key
-    icon: "lucide:folder",         // Iconify 图标
-    authority: ["permission_code"], // 权限码
+import type { RouteRecordRaw } from "vue-router";
+
+const xxx: RouteRecordRaw[] = [
+  {
+    path: "/app/xxx",
+    name: "Xxx",
+    component: () => import("@/pages/app/xxx/index.vue"),
+    meta: {
+      title: "routes.xxx",            // i18n key（routes.json 里的点号键）
+      icon: "lucide:folder",          // Iconify 图标
+      authority: ["permission_code"], // 权限码
+    },
   },
-} satisfies RouteRecordRaw;
+];
+export default xxx;
 ```
+
+> `default` 必须是 **数组**：`src/router/routes/index.ts` 用 `mergeRouteModules`（`src/core/router/utils/merge-route-modules.ts`）把每个模块的 `default` 当 `RouteRecordRaw[]` 展开，导出单个对象会让路由静默丢失。业务模块通常再包一层 `component: Layout` + `redirect` + `children`，参见 `routes/modules/app/opm.ts`。
 
 **2. 翻译文本** — `src/locales/zh-CN/routes.json` 和 `src/locales/en-US/routes.json`
 
@@ -309,7 +315,7 @@ const users = await fetchListUsers(query);
 // 编程式权限检查
 import { useAccess } from "@/core/access";
 const { hasAccessByCodes } = useAccess();
-if (hasAccessByCodes("user:create")) { /* ... */ }
+if (hasAccessByCodes(["user:create"])) { /* ... */ }
 ```
 
 ### 偏好设置

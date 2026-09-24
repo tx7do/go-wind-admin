@@ -40,7 +40,8 @@ Create 强制覆盖 tenant_id 防伪造；显式改 tenant_id 值仅放行"同�
 数据范围查询过滤链在一起——任一子策略拒绝即整体拒绝。
 
 **接新表**：`Mixin()` 加 `mixin.TenantID[uint32]{}`（库层全形态隔离自动生效），
-且 `Policy()` 返回 `&TenantMutationGuardPolicy{}`（与其余 32 张一致的冗余层），
+且 `Policy()` 返回 `&TenantMutationGuardPolicy{}`——现有 33 张租户表**无一例外**都挂了
+（其中岗位表 `position.go:188` 返的是组合策略 `TenantAndDataScopePolicy{}`，见第 4 节）。
 完整步骤与守卫单测范式见参考文档第 7 节。
 
 ## 4. 数据范围（行级第二维）
@@ -73,7 +74,7 @@ Create 强制覆盖 tenant_id 防伪造；显式改 tenant_id 值仅放行"同�
 
 ## 深读
 
-- [tenant_isolation.md](../tenant_isolation.md) —— 租户隔离唯一权威：上下文链路、HTTP 闸门、数据层读写隔离全形态、覆盖边界（含 access_keys 缺冗余层记录）、接入步骤、租户 403 排障决策树
+- [tenant_isolation.md](../tenant_isolation.md) —— 租户隔离唯一权威：上下文链路、HTTP 闸门、数据层读写隔离全形态、覆盖边界（含 `sys_access_keys` 曾缺冗余层守卫、2026-09-13 补挂的修复记录）、接入步骤、租户 403 排障决策树
 - [plan_billing.md](../plan_billing.md) —— 套餐与计费管控唯一权威：三档到期策略全链路、模块白名单上线 checklist、配额与用量计量、租户数据清理
 - [data_scope_design.md](../data_scope_design.md) —— 数据范围唯一权威（五档/聚合/接入/运维/边界）
 - [frontend_authority.md](../frontend_authority.md) —— 字段级权限（字段轴，与本章行级轴正交）

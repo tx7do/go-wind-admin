@@ -63,7 +63,8 @@
 ## 4. 调度生命周期（TaskService）
 
 - **Create（H8 守卫）**：`type_name` 必须已在调度器注册（`TaskTypeExists`），否则 400
-  "task type is not registered"——防止无 handler 的幽灵任务（每个 cron tick 报错）。
+  `task type [xxx] is not registered`（`task_service.go:131-132`，Update 走同一条判定 `:181-182`）
+  ——防止无 handler 的幽灵任务（每个 cron tick 报错）。
   落库后按 `enable` 决定是否装载；装载失败**不掩盖**（DB 已建但任务不会跑，显式报错）。
 - **Update**：改 `cron_spec`/`payload`/`options` 时先 `stopTask` 再 `startTask`（旧 entry
   注销、新 entry 重建）；`type`/`type_name` 变更需走删除重建。
@@ -136,18 +137,25 @@ cron `*/5 * * * *`（`pkg/task/notification_delivery_sweep.go`）。把 `sys_not
 补的是 5.5 的收口问题：台账先落 SENDING 再投递，于是"进程死在握手中途"、"结论回写失败
 （通知域 P2-5 之后这一条会上抛给 asynq 重投，但同步侧不能因此回错给业务调用方、两支 `SkipRetry`
 也不为重投 —— 留在账上的仍是没有结论的那一行）"、"Redis 里有任务但没有消费者"三种情况都会
-留下一行永远停在 SENDING 的记录，而代码里四个 SENDING 写入点全是"开始"、没有一处"收尸"。
+留下一行永远停在 SENDING 的记录。代码里给这一行写 SENDING 的地方有四处（ent 列默认值
+`notification_delivery.go:95`、同步与异步两条建账路径 `notification_service.go:156,:333`，
+以及"还有重试额度时故意不写终态"的 `:413`），**没有一处会把它推向终态**。
 
 - **handler 在通知域、调度项在这里注册**：与 5.1/5.2 同因——只有 `startAllTask` 会在
   `RestartAllTask`（先 `RemoveAllPeriodicTask`）之后被再次调用，调度项放别处就会在那条路径上丢失。
-- **阈值** `NOTIFICATION_DELIVERY_STALE_MINUTES`（分钟，默认 15，下限 10）。默认值照着 5.5 的预算放：
-  最多 4 次尝试 × 30s + asynq **v0.26** 的默认退避 `n^4 + 15 + rand(0..29)×(n+1)` 秒
-  （三次退避 16~74 / 31~118 / 96~210）⇒ 预算区间 ≈143~504 秒，**最坏 8.4 分钟**，默认值取约 1.8 倍余量。
+- **阈值** `NOTIFICATION_DELIVERY_STALE_MINUTES`（分钟，默认 15，下限 10）。默认值照着 5.5 的预算放。
+  预算 = 最多 4 次尝试 × asynq **v0.26** 的 `Timeout(30s)`，加上默认退避 `n^4 + 15 + rand(0..29)×(n+1)` 秒。
+  **`n` 取的是 `msg.Retried`，而 asynq 只在写 retry 状态时才自增它**，所以第一次失败用的是 `n=0`：
+  三次退避落在 15~44 / 16~74 / 31~118 秒（第 4 次失败时 `Retried` 已等于 `MaxRetry(3)`，直接归档、
+  不再退避）⇒ **退避合计 62~236 秒**，再叠满 4×30s 的处理时间 ⇒ **预算 182~356 秒，最坏 ≈5.9 分钟**。
+  缺省 15 分钟 = 最坏预算的 2.5 倍，多出来的余量是给队列积压的。
   **下限不许更低**：阈值小于预算会把"还在重试"的行定案，而定案的行会被 5.5 的幂等门挡掉，等于清扫亲手取消了
   一次还能救的投递。坏值按缺省、低于下限的值抬到下限，两种都会留一条 WARN。
-  （下限首稿是 5 分钟，照着旧版 asynq 的"2s/17s/82s ≈ 221 秒"算 —— 那个公式没有随机项，v0.26 已换。
-  通知域 P2-5 实测 4 次尝试跨了 178.9 秒，才把这条式子连同下限一起改正；两次实测值 ~101s / ~179s
-  都只是这一区间的抽样，**别拿单次实测当上界**。）
+  （下限首稿是 5 分钟：它当时照着旧版 asynq 的"2s/17s/82s ≈ 221 秒"算，那个公式没有随机项。
+  通知域 P2-5 实测 4 次尝试跨 178.9 秒后抬到 10 分钟——按上式重算，5 分钟(300s) 也确实落在 356s 之内，
+  结论不变。中间一版把 `n` 当成从 1 起算，得出"96~210 秒 ⇒ 最坏 504s ≈ 8.4 分钟"，两个上界都偏高。
+  两次实测值 ~101s / ~179s 都落在"退避合计 62~236s"里（说明那两次尝试本身很快），
+  **别拿单次实测当上界**。）
 - **代价**：与"迟但会到"互斥。队列积压超过阈值时，清扫先定案、消费者后到达 → 那封通知不会发。
   运维上正确姿势是**放宽阈值**（或修队列），不是关掉清扫。
 - **并发安全**：写入是一条带 `status = SENDING` 谓词的批量 UPDATE（先取候选 ID 再更新），
@@ -162,7 +170,8 @@ asynq mux 的"Start 后不能注册 handler"约束 vs 脚本处理器运行期�
 **一个固定分发类型**，处理器名放载荷 `handler` 字段，由 `ScriptRuntime.RunScriptTaskHandler`
 按名分发。sys_tasks 行写法：`type=PERIODIC`、`type_name="script_task"`、`task_payload=
 {"handler":"<名>","params":{...}}`。脚本删除/禁用后处理器在 Resync 时按代际清理。
-完整 API 与安全模型见 [script_system.md](./script_system.md) 第 2 节。
+`task.register_handler` 的签名与 `opts` 默认值见 [script_system.md](./script_system.md)
+「五类扩展点 → 2. 定时任务」，沙箱与资源限制在「语言与沙箱」一节（不是同一节，别只点前者）。
 
 ## 7. 管理页（三端 `system/task`）
 
@@ -184,7 +193,7 @@ asynq mux 的"Start 后不能注册 handler"约束 vs 脚本处理器运行期�
 
 | 症状 | 核对顺序 |
 |---|---|
-| 任务没跑 | ① `enable` 位；② typeName 是否在注册面（ListTaskTypeName / 启动日志"系统级…已注册"）；③ H8 拒绝创建的报错（未注册类型）；④ 调度器是否配置（`server.asynq.uri`，未配置整个子系统静默缺失）；⑤ 同名任务被 startAllTask 去重跳过的告警日志 |
+| 任务没跑 | ① `enable` 位；② typeName 是否在注册面（ListTaskTypeName / 启动日志里三条 `…定时任务已注册（cron=…）`：三条前后缀并不一致，只有到期扫描那条带"系统级"字样，检索请用 `定时任务已注册` 而不是 `系统级`）；③ H8 拒绝创建的报错（未注册类型）；④ 调度器是否配置（`server.asynq.uri`，未配置整个子系统静默缺失）；⑤ 同名任务被 startAllTask 去重跳过的告警日志 |
 | StopAllTask 后系统任务还在 | 正常——StartAllTask 末尾自动重注册；要彻底停系统任务只能停服务或改代码 |
 | 备份对象 | MinIO `backups` 桶，日期分层对象名；恢复 = 下载 JSON 反序列化（当前无自动恢复流程） |
 | 归档目录/保留期 | `AUDIT_ARCHIVE_DIR` / `AUDIT_RETENTION_DAYS`（改后下个 03:30 周期生效） |

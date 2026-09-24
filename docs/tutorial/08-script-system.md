@@ -20,7 +20,7 @@
 | 实体生命周期钩子 `after_<op>` | 变更成功后，**异步** | 只读旁路：独立 goroutine + 30s 超时 + panic 兜底 |
 | 定时任务 | asynq 调度 | 脚本注册 handler，任务管理页建 `script_task` 型 PERIODIC 记录（cron + 载荷 `{handler, params}`） |
 | 事件订阅/发布 | 进程内事件总线 | `eventbus.subscribe/publish`（跨实例 Resync 走 Redis pub/sub，见运维节） |
-| HTTP 出站（Webhook） | 脚本内主动外呼 | 域名白名单 fail-closed、回环/云元数据硬禁、≤3 跳重定向复检、30s 超时、1MB 体积上限 |
+| HTTP 出站（Webhook） | 脚本内主动外呼 | 域名白名单 fail-closed、回环/云元数据硬禁、≤3 跳重定向逐跳复检、超时默认 10s（可配、上限 30s）、请求/响应体各 ≤1MB |
 
 已登记钩子实体：`user`、`tenant`、`role`、`internal_message`、`notification_channel`
 （登记表在 `internal/service/script_entity_hooks.go`，新增实体一行即生效）。

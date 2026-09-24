@@ -389,7 +389,9 @@ export function useCreateUser() {
 
 1. **生成 API 代码**（后端提供 proto 文件后）
    ```bash
-   npm run generate:api
+   # 本端 package.json 没有 generate:api 脚本；TS 代码由后端 Makefile 的 ts 目标生成
+   # （backend/api/buf.react.admin.typescript.gen.yaml 输出到 src/api/generated/）
+   cd backend && make ts
    ```
 
 2. **创建 Hooks 文件** (`src/api/hooks/xxx.ts`)

@@ -36,25 +36,37 @@ POST /admin/v1/login（grant_type=password）
   ├─ 5  identifier 反查：输入含 @ → email、纯数字 → mobile，反查真实 username；多行歧义拒绝
   ├─ 6  凭证校验（user_credential_repo.FindUserCredential）：
   │      AES 解密（DefaultAESKey）→ 按 (tenant, USERNAME, username) 查凭证 → bcrypt 比对；
-  │      用户不存在时跑一次假 bcrypt（恒定时间防枚举）；凭证行 tenant 与用户行 tenant 必须一致
+  │      用户不存在时跑一次假 bcrypt（恒定时间防枚举）
   │      失败 → 限流计数自增 + 统一 INVALID_PASSWORD 文案（防用户名枚举，真实原因进日志/审计）
-  ├─ 7  用户状态检查：user.status != NORMAL 拒；取用户行
-  ├─ 8  登录策略·用户定向段：target_id = 该 userId 的策略条目
-  ├─ 9  授权丰富（authorizeAndEnrich*，一对一/一对多按 DefaultUserTenantRelationType）：
+  ├─ 7  取用户行：按凭证返回的 user_id 精确 Get（避免同 identifier 多租户歧义）
+  ├─ 8  纵深防御：凭证行 tenant 必须等于用户行 tenant，否则 "invalid tenant"
+  │      （`authentication_service.go:549-554`——它在取到用户行之后，不在凭证库里）
+  ├─ 9  登录策略·用户定向段：target_id = 该 userId 的策略条目（`:558-563`，命中即 Forbidden）
+  ├─ 10 授权丰富（`resolveUserAuthority`，调用点 `:574`）：
+  │      **先**查 `user.status != NORMAL` 即拒（`:451-455`，Forbidden "user is disabled"——
+  │      所以状态检查实际发生在策略段**之后**，不是之前）；
+  │      再 authorizeAndEnrich*（一对一/一对多按 DefaultUserTenantRelationType）：
   │      角色链（user→role / membership→role）→ 权限码集合须含 SystemAccessBackendPermissionCode
   │      → 角色 codes 进 token；fillAdminFlags（平台/租户管理员旗标）；
   │      聚合数据范围（dss/dsu）与字段黑名单（hfs）进 token（见对应设计文档）
-  ├─ 10a MFA 闸门：用户绑有 ENABLED TOTP → 不发 token，签发 operation_id（挑战缓存），
+  ├─ 11a MFA 闸门：用户绑有 ENABLED TOTP → 不发 token，签发 operation_id（挑战缓存），
   │      前端走 /admin/v1/mfa/challenge 二次验证（见第 5 章）——限流计数此时不清零
-  └─ 10b 签发：CreateUserToken（access + refresh，jti，Redis 令牌对入缓存）
+  └─ 11b 签发：CreateUserToken（access + refresh，jti，Redis 令牌对入缓存）
          → 会话元数据记录 + last_login 记录（均 best-effort）
          → 限流计数清零
          → refresh 经 HttpOnly Cookie 下发（见第 4 章），响应体只回 access + expires_in
 ```
 
-错误语义统一化（防枚举）：`normalizeLoginVerifyError` 把 USER_NOT_FOUND / USER_FREEZE /
-INVALID_PASSWORD 归并为同文案；租户编号错误同文案；忘记密码对不存在邮箱同返回成功。
+错误语义统一化（防枚举）：`normalizeLoginVerifyError`（`authentication_service.go:149-158`）把
+USER_NOT_FOUND / USER_FREEZE / INVALID_PASSWORD 归并为同文案；租户编号错误同文案；忘记密码对不存在邮箱同返回成功。
 真实原因保留在服务端日志与登录审计的 FailureReason。
+
+⚠ **一处已知的归并缺口**：口令有效期到期时 `FindUserCredential` 返回的是
+`ErrorBadRequest("password expired, please reset your password")`（`user_credential_repo.go:458-465`，
+阈值取 sys_config `passwordPolicy.ConfigKeyMaxAgeDays`），而 `normalizeLoginVerifyError` 的 `switch`
+只认上面三类，`default` 原样上抛。由于这条错误发生在 bcrypt **比对成功之后**，它实际上告诉调用方
+"这个账号的口令是对的、只是过期了"——防枚举在该场景下被削弱。要补的话就是把这条 reason 也纳入归并
+（并保留日志侧的真实原因）。
 
 `grant_type=refresh_token` 在 login 端点被拒（引导到专用刷新端点）；
 `grant_type=client_credentials` 被拒（机器令牌只走 AK/SK 交换，第 6 章）。
@@ -79,15 +91,24 @@ INVALID_PASSWORD 归并为同文案；租户编号错误同文案；忘记密码
 ### 3.2 配置（`configs/auth.yaml`）与引擎
 
 - `authn.type: jwt`（oidc / preshared_key 配置节为预留，未接线）；
-- `authn.jwt.method`：RS256（默认），支持 HS256-512/RS/ES/Ed25519 全家族；对称走 `key`，
+- `authn.jwt.method`：本仓 `configs/auth.yaml:8` 配的是 **RS256**；代码里的兜底值才是 HS256
+  （`method` 为空时，`authenticator.go:126-129`）。取值直接用字面量：`WithSigningMethod` 走
+  `jwtV5.GetSigningMethod(alg)`（`kratos-authn/engine/jwt v1.1.11` 的 `options.go:16-18`），
+  所以合法拼写就是 golang-jwt 注册名——HS/RS/PS/ES 各 256/384/512 与 **`EdDSA`**。
+  ⚠ `auth.yaml:5` 的注释把最后一个写成 `Ed25519`，那不是注册名，照抄会得到不支持的算法；
+  本仓的 `isAsymmetricMethod`（`:169-174`）也只认 `EDDSA`；对称走 `key`，
   非对称走 PEM `private_key`/`public_key`；
 - TTL：`access_token_expires: 5400s`（1.5h）、`refresh_token_expires: 43200s`（12h）——
   protobuf Duration 串，未配置用代码默认；
 - **生产密钥注入**：环境变量 `GWA_AUTH_JWT_PRIVATE_KEY` / `GWA_AUTH_JWT_PUBLIC_KEY` /
   `GWA_AUTH_JWT_KEY` 优先于 yaml（yaml 内置开发示例密钥，`authenticator.go`
   `applyJwtKeyOverrides` 应用覆盖并告警）；轮换命令见 [backend_deploy.md](./backend_deploy.md)；
-- 引擎按 clientType 实例化（admin/app 两套 Authenticator，`newAdminAuthenticator` 等）；
-  刷新端点强制 `ClientType_admin`，登录请求的 client_type 由前端传值。
+- **引擎只装配了 admin 一套**（`Authenticator.AdminAuthenticator`，`authenticator.go:71` / 构造于 `:110`）。
+  `getAuthenticator`（`:662-673`）里 `case ClientType_app:` 是**空分支**：不报错、也不赋引擎，返回
+  `(nil, nil)`——而调用方一律只判 `err`（如 `:252-255`、`:486-492`），拿到 nil 引擎后直接调方法即
+  **运行期空指针**。装配侧 `NewClientType()` 恒返回 admin（`internal/data/data.go:21-23`），所以
+  只有**请求显式带 `client_type: app`** 才会走到这条路（登录入参的 client_type 由前端传值，刷新端点强制 admin）。
+  → **app 端未实现**：前端/配置不要传 app；要接 app 必须先补这个分支。
 
 ### 3.3 签发与吊销模型（`internal/data/authenticator.go`）
 
@@ -175,14 +196,16 @@ SameSite=Lax 按站点判断——localhost 不同端口同站，dev 直连后�
 ### 7.2 登录限流（`login_rate_limiter.go`）
 
 - 双维度键：`gowind:login:fail:ip:<ip>` / `gowind:login:fail:user:<username>`（机器令牌交换复用，user 维度=AK）；
-- 阈值 5 次 / 锁定窗口 15 分钟 / 计数 TTL=锁定窗口（滑动）；`CheckAndIncr` 为 Lua 原子
+- 阈值 5 次 / 锁定窗口 15 分钟 / 计数 TTL=锁定窗口（**固定窗口，不是滑动**：Lua 只在 `INCR` 结果为 1 时
+  `EXPIRE`，`login_rate_limiter.go:46-49`，所以 TTL 从**首次失败**起算、后续失败不续期——该文件 `:19-20`
+  的注释写成"滑动窗口"是错的）；`CheckAndIncr` 为 Lua 原子
   （锁定判定→自增→TTL）；任一维度达阈值即锁；
 - Redis 不可用 → **fail-open**（防御性增强不阻断登录可用性），仅告警；
 - 成功（含 MFA 通过）→ `Reset` 清零两维度。
 
 ### 7.3 登录策略（`login_policy_service` + `login_policy_checker.go`）
 
-- 存储：`sys_login_policys`（租户级表），条目含 TargetID（0=全局/否则定向用户）、
+- 存储：`sys_login_policies`（租户级表，`ent/schema/login_policy.go:21`），条目含 TargetID（0=全局/否则定向用户）、
   Method（IP/TIME/DEVICE）、Type（黑/白名单）、Value；
 - 匹配（纯函数 `MatchLoginPolicy`，含单测）：黑名单任一命中→拒；白名单存在约束
   （全局或定向当前用户）且当前值未命中任何白名单→拒。IP 支持精确与 CIDR；
@@ -201,7 +224,8 @@ SameSite=Lax 按站点判断——localhost 不同端口同站，dev 直连后�
 
 ## 8. 会话管理与在线用户（`online_session_service.go` + `session_meta.go`）
 
-- 会话元数据（签发/刷新时记录，Redis，键 uid+jti）：登录时间（轮换继承）、
+- 会话元数据（签发/刷新时记录，Redis，键 `us:{ct}:{uid}:{jti}`，`user_token_cache.go:33-34`；
+  另有刷新令牌 `rt:{ct}:{uid}:{jti}`、黑名单 `bl:{jti}`）：登录时间（轮换继承）、
   clientType、ip/ua 等——「在线用户」「我的会话」两页的数据源；
 - ListOnlineSession（平台侧全量）/ ListMyOnlineSession（本人）；
   RevokeMyOnlineSession（自撤销单会话）；**ForceLogoutSession（平台侧强制下线单会话，
@@ -221,8 +245,13 @@ SameSite=Lax 按站点判断——localhost 不同端口同站，dev 直连后�
 | ForgotPassword / ResetPasswordByCode | vcode 单次 10min + 防枚举 + 重置后全吊销 |
 | AccessKeyService.IssueToken | AK/SK 恒定时间比对 + 限流 + 机器 token 最小面 |
 
-白名单仅跳过 auth 中间件；**参数校验中间件对所有路由生效**，且白名单路由仍过
-登录/API 审计与租户闸门（机器 token tid>0 时走全套租户检查）。
+白名单**跳过的是整个 `auth.Server` 中间件**——租户闸门就在这个中间件内部
+（`pkg/middleware/auth/auth.go:120-132` 的 `CheckTenantAccess`），而 selector 的语义是
+"命中白名单 ⇒ 返回 false ⇒ 不执行该中间件"（`kratos-bootstrap/rpc v0.1.3` 的
+`whitelist.go:132-144`，装配点 `rest_server.go:110`）。所以**白名单端点不过租户闸门**，
+机器 token（tid>0）在该类端点上也不例外——它后续访问的业务端点才过。
+
+不受影响的两项：**参数校验中间件对所有路由生效**（`validate.Validator()` 放在 selector 之外，`rest_server.go:77`，注释写明了理由），**登录/API 审计照记**（`applogging.Server` 在 selector 之前）。
 
 ## 10. 运维
 
@@ -240,7 +269,7 @@ SameSite=Lax 按站点判断——localhost 不同端口同站，dev 直连后�
 
 | 项 | 现状 | 影响 |
 |---|---|---|
-| ~~MFA 登录成功路径 refresh token 走响应体~~ | **已修复（2026-09-12）**：`VerifyMFAChallenge` 改调 `setRefreshCookies`，响应体不再携带 refresh 字段，与主登录路径一致 | 修复前：refresh 暴露在 JS 可读响应体 + MFA 用户会话静默续期丢失（前端只认 Cookie）。修复后 MFA 用户获得与其他用户一致的续期链路 |
+| ~~MFA 登录成功路径 refresh token 走响应体~~ | **已修复（2026-09-13）**：`VerifyMFAChallenge` 改调 `setRefreshCookies`，响应体不再携带 refresh 字段，与主登录路径一致 | 修复前：refresh 暴露在 JS 可读响应体 + MFA 用户会话静默续期丢失（前端只认 Cookie）。修复后 MFA 用户获得与其他用户一致的续期链路 |
 | `LoginResponse.RefreshToken`/`RefreshExpiresIn` 字段残留 | proto 字段仍在（历史形态），当前**所有路径均不再赋值** | 字段级清理（proto 删字段 + `make api`/`make ts` 三端重生成）属可选跟进，不影响行为 |
 | oidc / preshared_key / oauth proto | 配置节与 proto 预留，未接线 | 接入前勿在生产配置里误以为已启用 |
 | MAC / REGION 登录策略维度 | 未实现（7.3） | 管理页如已展示该选项需对齐 |

@@ -315,6 +315,30 @@ vben 端乐观插入拿到 `messageId:0` + Invalid Date，其去重逻辑随后�
 
 ## 4. 实施阶段
 
+**状态总表**（这一块文档是"边做边写"的，进度散在各小节标题里；下表是唯一的进度视图，
+下面的小节只讲"怎么做与为什么"，不再各自复述现在还剩什么。§7 是**验收证据**清单，与这张表分工不同）：
+
+| 块 | 状态 | 落地的日期 | 做了什么（细节在小节里） |
+|---|---|---|---|
+| P0 前置修复 | 已完成 | 见 §2.4 | `title`/`content` 归属定死、收件行 `tenant_id` 按 viewer 打标、删掉前端 `"notification-revoke"` 订阅 |
+| P1 核心内聚 | 已完成 | 2026-09-19 | 缝 + 台账表 + 三处裸发送点迁完 + `ErrChannelNotConfigured` 哨兵 + SSE 事件类型注册表 |
+| P2-1 站内信接入缝 | 已完成 | 2026-09-20 | `INTERNAL_MESSAGE` 事件类型、`related_id`、`InternalMessageSender` 注册进 Registry |
+| P2-2 收件行租户打标跟受众走 | 已完成 | 2026-09-20 | 扇出时按受众所在租户打标（只修了读侧，另一半在 P2-6） |
+| P2-3 异步投递 | 已完成 | 2026-09-20 | 同步预检 + asynq 派发 |
+| P2-4 `SENDING` 超时清扫 | 已完成 | 2026-09-20 | 常驻清扫任务补台账生命周期最后一步 |
+| P2-5 结论回写失败上抛 | 已完成 | 2026-09-20 | `markResult` 从"只记日志"改成把事实交给还能补救的一方 |
+| P2-6 收件箱写侧钉归属 | 已完成 | 2026-09-20 | 写侧由服务端钉定收件人（§7 末尾"不钉归属"那条实测即它的动因） |
+| C 路由规则表 + WEBHOOK 出口 | 已完成 | 2026-09-20 | `sys_notification_rules`、WEBHOOK 渠道、测试投递 |
+| C7 全新安装链路 + 平台侧授权 | 已完成 | 2026-09-20 | 装到没装过的库上跑一遍、通知域补 `requirePlatformAdmin` |
+| 欠账 1 失败路径也落 `channel_id` | 已完成 | 2026-09-21 | 失败行不再空挂渠道 |
+| 欠账 2 租户侧边栏整箱被清空 | **未修** | — | 成因已实测定位，修法写在同一节里，差在"等点头"（改的是全部租户的可见菜单集） |
+| M 通知域提为一级菜单 | 已完成 | 2026-09-21 | 菜单树重排 + 启动期 identity 序列自愈 |
+| N WEBHOOK 出站风格与载荷模板 | 已完成 | 2026-09-21 | 五种签名风格 + 载荷模板 |
+| P3 偏好与模板 | **未开始** | — | 用户通知偏好 / 分类退订 / 静音时段 + 模板管理，单独排期 |
+
+> 各小节里"今天/现在还剩 X"的措辞都是**写下那一段时的现场快照**，别拿来当当前进度读；进度只看上表。
+> §7 里带日期的实测记录同理：它记的是"当时那一格验过什么"，不随后续改动回写。
+
 ### P0 前置修复（已完成，见 §2.4）
 
 1. 定 `title`/`content` 归属：正文只归 `internal_messages`，收件行 DTO 上两字段作为瞬时载荷，
@@ -343,7 +367,8 @@ vben 端乐观插入拿到 `messageId:0` + Invalid Date，其去重逻辑随后�
   因此不是"改成 i18n key 交给前端翻译"——邮件正文的读者是邮箱客户端，前端根本不在链路上。
   实际做法是新增 `pkg/mailtext`：单一文案出口 + 按请求 `Accept-Language` 选中/英文案表
   （`netutil.HeaderFromContext` 读头，与全仓其余读头方式一致），三个生产点（找回密码 / 绑定码 / 测试邮件）
-  只调它拿 `title/content`。zh 文案与迁移前逐字节相同，en 为新增。
+  只调它拿 `title/content`。zh 文案与迁移前逐字节相同，en 为新增。C 之后是**四个**生产点
+  （多一条 `mailtext.RuleTestNotification`，规则页的试投递也走这同一个出口）。
   **未做**：用户偏好级语言（用户表无 locale 字段），找回密码这类免鉴权入口只能按请求头判。
 - **SSE 事件类型注册表**：见 §3.6，落地时顺带修掉一个静默失效（同节）。
 
@@ -454,7 +479,7 @@ Redis DB 的**同名队列**，谁先抢到谁处理，没有对应 handler 的�
 | 自动迁移 | 重启后 `request_id`(varchar, nullable) + `attempts`(bigint default 0) + `uidx_sys_notification_delivery_request_channel` 三项在 `information_schema` / `pg_indexes` 里出现，无需手写 DDL |
 | **预检失败路径**（自选命中演示渠道 1 的 `SSL_TLS` 坏配置） | `POST /admin/v1/forgot-password` → **71ms** 内 500 `email channel is not configured`（与异步化之前逐字相同）；台账 id=9 **当场即 `SKIPPED`**、`attempts=0`、`last_error` 带原始原因；该 Redis DB 里 `pending`/`active`/`retry`/`archived`/`processed` 一个键都不存在 ⇒ **一条任务都没入队** |
 | **异步成功路径**（自选命中指向 mailpit 的探针渠道 id=7） | `forgot-password` → **200 / 61ms**，请求全程没有拨号；台账 id=11 `SENT`、`channel_id=7`、`attempts=1`、`request_id=81b0607a…`、`target=t***@company.com`（脱敏）；mailpit 里唯一一封 `subject "GoWind Admin 密码重置验证码"`，正文验证码 **455900** 与 Redis `gowind:vcode:reset_password:tenant@company.com` 逐字一致 |
-| **重试额度真的走完**（探针渠道 id=6 = `127.0.0.1:1099`，无监听） | `forgot-password` → 200 / 64ms，台账 id=10 先 `SENDING/attempts=1`（`asynq:{default}:retry` 的 score 显示退避 +2s），+25s 读到 `SENDING/2`，终态 **`FAILED/attempts=4`**（`asynq` 侧单次运行计数亦为 4）；额度用尽后任务落入 `asynq:{default}:archived`=1、`retry` 清空。中间每一次只写 `last_error` + `attempts` 而**不改状态** —— 这正是幂等门放行重试的原因 |
+| **重试额度真的走完**（探针渠道 id=6 = `127.0.0.1:1099`，无监听） | `forgot-password` → 200 / 64ms，台账 id=10 先 `SENDING/attempts=1`（`asynq:{default}:retry` 的 score 在那一刻距现在 +2s 才到点；退避**时长**由默认公式给，首次不会低于 15s，见 §6 决策点 8），+25s 读到 `SENDING/2`，终态 **`FAILED/attempts=4`**（`asynq` 侧单次运行计数亦为 4）；额度用尽后任务落入 `asynq:{default}:archived`=1、`retry` 清空。中间每一次只写 `last_error` + `attempts` 而**不改状态** —— 这正是幂等门放行重试的原因 |
 | **同步事件不入队** | `POST /notification-channels/7/send-test-email` → 200 用时 **1246ms**（SMTP 握手发生在请求内），台账 id=12 `CHANNEL_TEST_EMAIL` / `SENT` / `attempts=1`；调用前后队列键数不变（仍只有上面那条归档任务）。同一台机器上"当场投"与"入队投"的响应时间差就是 1246ms vs 61ms |
 | `attempts` 的两义 | `0` = 一次都没真投过（预检拦截 / 配置类 SKIPPED），`≥1` = 拨过号 |
 
@@ -490,8 +515,8 @@ asynq 消费者 —— 三种情况都会留下一行永远 `SENDING` 的台账�
    顺带复用已有的 `(status, created_at)` 索引。代价是"一行被合法地反复推进"这种场景扫不出来，目前没有这种场景。
 3. **阈值缺省 15 分钟、下限 10 分钟**（`NOTIFICATION_DELIVERY_STALE_MINUTES` 覆盖；坏值按缺省并 WARN，不静默采纳）：
    下限由异步派发的重试预算推出 —— 预算在 v0.26 的 asynq 下是一个**区间**而非一个数
-   （`n^4 + 15 + rand(0..29)*(n+1)` 秒的退避：16~74 / 31~118 / 96~210，加 4 次 × 30s 拨号超时
-   ⇒ 最坏 ≈ 504s ≈ 8.4 分钟；见 §6 决策点 8）。低于上界的阈值会把还在正常重试的投递扫死。
+   （`n^4 + 15 + rand(0..29)*(n+1)` 秒的退避，`n` 从 0 起算 ⇒ 15~44 / 16~74 / 31~118，
+   加 4 次 × 30s 拨号超时 ⇒ 最坏 ≈ 356s ≈ 5.9 分钟；见 §6 决策点 8）。低于该预算的阈值会把还在正常重试的投递扫死。
    15 分钟则给"SMTP 恢复得慢一点"留余量。
    **本条的下限在 P2-5 实测后从 5 分钟抬到 10 分钟**：首稿的"≈221s"公式来自 asynq 旧版本，
    v0.26 已换成上面那条带随机项的式子，5 分钟落到了最坏预算之内。下面表格里 `staleAfter=5m0s`
@@ -587,7 +612,7 @@ DB 12 的 asynq 键逐个 `DEL`；mailpit 容器 `gwa-mailpit` 为本轮新起�
 配套把 `notificationSvcEnv` 加了一个 `client *ent.Client` 字段（只给测试注入故障用，生产代码不从这里走）。
 
 **本次实测顺带改掉了 P2-4 的一个常量**（`deliverySweepMinStaleAfter` 5 分钟 → 10 分钟）：原下限照着
-"退避 2s/17s/82s ⇒ 预算 ≈221s"算，而 asynq v0.26 的默认退避带随机项，最坏预算 ≈504s —— 5 分钟落在预算之内。
+"退避 2s/17s/82s ⇒ 预算 ≈221s"算，而 asynq v0.26 的默认退避带随机项，最坏预算 ≈356s —— 5 分钟落在预算之内。
 算术口径与后果见 §6 决策点 8。
 
 **P2-6（收件箱写侧由服务端钉定收件人归属，已完成 2026-09-20）** —— 补上 P2-2 只修了读侧留下的另一半。
@@ -666,7 +691,7 @@ DB 12 的 asynq 键逐个 `DEL`；mailpit 容器 `gwa-mailpit` 为本轮新起�
 | **放行守卫 + 空目标** | → **200 `{deliveryId:20, status:"SENT"}`**；收端 12:50:28.457 一次 `POST /hook`，载荷 `{"event_type":"CHANNEL_TEST_EMAIL","title":…,"content":…,"delivered_at":"2026-09-20T12:50:28Z"}`，`content-type: application/json; charset=utf-8`、`user-agent: go-wind-admin-notification/1.0`；台账 id=20 `SENT`、`attempts=1`、`channel_id=9`（**空目标兜底时顺手钉住了渠道行**，见 §3.4 第 3 个收窄点） |
 | **签名可被对端复算** | 载荷带 `x-gw-timestamp: 1789908628` 与 `x-gw-signature: sha256=c886dfa1…`；用登记的那把共享密钥按 `sha256=hmac(secret, "<ts>." + 原始 body)` 在 node 里复算 → **MATCH: true**（/hook 与 /redirect 两次命中各自通过，两次时间戳不同所以签名不同，符合"时间戳进签名"的防重放意图） |
 | **302 不跟随** | 显式目标指向 `/redirect`（该路径回 `302` 且 `location` 指向一台**没人监听**的 `127.0.0.1:8098`）→ **400** `send webhook via channel [9] failed: peer answered 302 Found:`，台账 id=21 `FAILED`；收端只记下 `/redirect` 这一跳，**没有**第二跳、也没有任何 8098 的拨号错误 ⇒ `CheckRedirect` 的 `http.ErrUseLastResponse` 生效，非 2xx 一律按"对端 answered <status>"定案 |
-| 台账 `target` 的脱敏 | WEBHOOK 的地址不是邮箱形态，`maskTarget` 落到"只留末 4 位"：id=20/19 为 `****hook`、id=21 为 `****rect`（`notification_service.go:593`） |
+| 台账 `target` 的脱敏 | WEBHOOK 的地址不是邮箱形态，`maskTarget` 落到"只留末 4 位"（`notification_service.go:607-610`）：id=20/19 为 `****hook`、id=21 为 `****rect` |
 
 **当时已知未修、现已修掉的一处（见 §4 欠账 1）**：显式传 `target` 时 `testDispatchTarget` 返回的 `channelID` 是 nil
 （"发去哪里由管理员这一行决定"），于是那次投递**实际用了哪条渠道配置**只留在 `last_error` 的 `via channel [9]` 字样里
@@ -710,7 +735,8 @@ vben `views/app/system/notification_rule/index.vue` + `api/composables/notificat
 
 另有两处**破坏性**后果，不是"改了又改回来"那么轻：
 ① `POST /admin/v1/menus/sync` 传空 body 走的是 REPLACE 语义，`sys_menus` 被整表清掉过一次，
-靠重启触发 `DefaultMenus` 播种 + 「菜单同步」的 MERGE 才恢复（今天 44 行、含 72/73）；
+靠重启触发 `DefaultMenus` 播种 + 「菜单同步」的 MERGE 才恢复（当时 44 行、含 72/73 —— 这两行到 M 块已被删，
+通知那一棵改由 75/76/77/78 四行（根 + 三页）承担，见 §4 M）；
 ② 上面那个权限 bug 的现场取证：权限 2 的 `sys_permission_menus` 42→0、`sys_permission_apis` 136→0，
 随后经"不带 `updateMask` 重 PUT"恢复为 **44 / 136**。菜单侧不是原样复旧 —— 多的 2 行正是 72/73，
 由这次恢复操作顺手带进权限 2，也就是「已部署实例须在权限管理勾选」那条口径的一次手工执行。
@@ -732,7 +758,7 @@ C 的收尾欠着一格：那条"全新安装会不会真的把通知域播种�
 | 观测点 | 结果 |
 | --- | --- |
 | 规则播种 | `sys_notification_rules` 空表启动播 **4 行 id 1/2/3/4**：`PASSWORD_RESET_CODE`/`CONTACT_BIND_CODE` 异步 EMAIL，`CHANNEL_TEST_EMAIL` 同步 EMAIL，`INTERNAL_MESSAGE` 同步 INTERNAL；`created_by` 为空（系统视角写入，没有"主人"可记） |
-| 菜单 + 授权 | `sys_menus` 44 行含 68/72/73；`sys_permission_menus` 里 **68/72/73 三行只授予 permission 2**（全新安装与现网 `gwa` 一致），即 C 那条"菜单要同时进 `DefaultMenus` 与 `DefaultPermissions[].MenuIds`"的口径在安装路径上成立 |
+| 菜单 + 授权 | `sys_menus` 44 行含当时的 68/72/73（M 块把种子改成 `/notification` 一棵，今日全新安装落的是那四行，见 §4 M）；`sys_permission_menus` 里 **68/72/73 三行只授予 permission 2**（全新安装与现网 `gwa` 一致），即 C 那条"菜单要同时进 `DefaultMenus` 与 `DefaultPermissions[].MenuIds`"的口径在安装路径上成立 |
 | 侧边栏（活的，不是查表） | 全新实例以 `admin` 登录后 `GET /admin/v1/routes` 回 44 个节点，`NotificationChannelManagement`/`NotificationDeliveryManagement`/`NotificationRuleManagement` 三条都在；`GET /admin/v1/perm-codes` 含 `sys:platform_admin` |
 | Api 表 | `sys_apis` 211 行**空表自动全量同步**（`api_service.go:58-63` 的 `count==0 → SyncApis`），14 条 notification 端点（channels 6 / rules 6 / deliveries 2）全在、`business_module` 一律 `SYSTEM` —— 全新安装不需要点「接口同步」，那条铁律只针对已部署实例 |
 | 三个读接口 | platform admin 打 `:17788` 三个 List 全 200（channels/deliveries 空列表、rules 4 行） |
@@ -835,8 +861,13 @@ webhook 侧三条失败用例（SSRF 拦下 / 对端 5xx / 配置不可用）按
 
 **探针造成的变更与残留**：通道 1/2 探测期 OFF、结束已恢复 ON（通道 3 本来就 OFF，未碰）；探针通道 11 建后已删；
 台账新增 id=22/23 两行**保留** —— 台账不提供删除（改一条已发生的投递等于伪造事实），
-且上一轮 C/P2 的探针行 16~21 同样在表里。`:7788` 现在是欠账 1 二进制、仍在跑（日志 `%TEMP%/gwa_d1/server_d1.log`）；
+且上一轮 C/P2 的探针行 16~21 同样在表里。当时 `:7788` 上跑的是欠账 1 的二进制（日志 `%TEMP%/gwa_d1/server_d1.log`）；
 `%TEMP%/gwa_d1/configs` 被仓库默认配置覆盖过一次（原先那份是 D1 块的 mailpit 探针配置，已不需要）。
+
+> 2026-09-25 复查：本机 7788/7789/7799 均已无监听，上面那台探针实例已停；
+> `%TEMP%/gwa_d1` 目录（探针脚本、`server.exe`、各次日志、`configs/`）与库里的探针行**都还在**，
+> 那份 `configs/` 已确认是仓库默认配置（九个 yaml 里搜不到任何 smtp/mailpit 项）。
+> 本节所有"现在/仍在跑"的措辞都是当时的现场快照，不是当前状态。
 
 **门禁**：本块纯后端 + 文档，三端未动。`go build ./...` 通过，`go vet ./app/admin/service/internal/data/... ./app/admin/service/internal/service/...` 无输出，
 `go test -count=1 ./app/...` 六个包全绿。
@@ -865,7 +896,7 @@ webhook 侧三条失败用例（SSRF 拦下 / 对端 5xx / 配置不可用）按
 实体上也没有 getter（只有 `QueryPlan()`）。`TenantRepo` 用的是
 `mapper.NewCopierMapper[identityV1.Tenant, ent.Tenant]()`（`tenant_repo.go:48`，反射按字段名拷，读不到非导出字段），
 而 proto DTO 那侧 `PlanId *uint32` 是实打实存在的（`api/gen/go/identity/service/v1/tenant.pb.go:211`）。
-`Get`（`tenant_repo.go:126-152`）与 `List`（:93-113）都是裸 `Tenant.Query()`、没有 `WithPlan()`；
+`Get`（`tenant_repo.go:126-152`）与 `List`（:94-113）都是裸 `Tenant.Query()`、没有 `WithPlan()`；
 服务层 `TenantService.Get`（`tenant_service.go:161-171`）只 `enrichRelations` 补管理员用户名与成员数、不碰 planId，
 所以"HTTP 缺这一格"就等于"DTO 缺这一格"，中间没有别的可能丢的地方。
 
@@ -882,6 +913,8 @@ webhook 侧三条失败用例（SSRF 拦下 / 对端 5xx / 配置不可用）按
 （`admin_portal_service.go:231-241` 一个平铺 for，`fillRouteItem` 才对 `Children` 递归），
 而现网 `sys_menus` 44 行里根节点 9 条、**其中带 `module` 的 0 条**（带 `module` 的 35 条全是叶子）。
 也就是说：这条白名单对侧边栏的**实际过滤面是 0/35**，它今天唯一的有效行为就是"plan_id 拿不到 → 整箱清空"这一支。
+（行数与 module 分布到 M 块之后变了：2026-09-25 复核为 47 行 / 10 条根 / 带 `module` 的 31 条全是叶子 ⇒ 过滤面 0/31，
+**根节点一条都不带 `module` 这一条不变**，故结论照旧；同一格数字在 §4 M 末也记了一次。）
 模块门禁真正生效的地方是 Api 表闸门（§4 C7 那两格 403 `module not allowed` 就是它），所以这一格属显示层缺陷、
 不构成数据越权 —— 但"套餐白名单已经管不住菜单"这件事必须记下来，否则改完 `plan_id` 会以为门禁在生效。
 
@@ -920,7 +953,7 @@ vs 收件人权限码）在菜单层说不清。
 
 **`module` 留 NULL，并纠正一条本文此前写反的前提**：`ComponentToModule` 没有 `app/notification/` 前缀 ⇒
 `menu_repo.go:589 moduleForComponent` 回 nil ⇒ `sys_menus.module` 为 NULL。这是刻意的，但刻意的是"绕过套餐"，不是"被套餐过滤掉"：
-`admin_portal_service.go:232-237` 是 `if m.Module == nil { 保留 }`，**NULL 一律放行**。
+`admin_portal_service.go:233-237` 是 `if m.Module == nil { 保留 }`，**NULL 一律放行**。
 （`module_mapping.go:8-16` 那段"UNSPECIFIED 会被 fail-closed 拒绝"讲的是 Api 表的 `business_module`，与菜单的 `module` 是相反的两套语义；
 欠账 2 那段"白名单实际过滤面 0/35"是当时的现网快照，本轮之后是 47 行 / 根 10 条（带 module 0 条）/ 叶子带 module 31 条。）
 兜底不在这一层而在两处：菜单侧三端路由守卫读 `sys:platform_admin`（来源 `GET /admin/v1/perm-codes`），
@@ -977,8 +1010,11 @@ UI「新建 API」同形。全新安装与已部署实例一样中招——`defa
 调用点三条：`MenuService.init()`（在 `count==0` 守卫**之外**，老库同样要自愈）、`ApiService.init()`（同理）、
 `SyncApis` 里 `syncWithOpenAPI` 之后（每次 truncate + 显式 ID 重建都要重新对齐，这一支单独实测过：212/t → 213/f）。
 
-**顺带量到、未修（等点头）**：三端路由里的组件路径用**连字符**（`app/internal-message/inbox/index.vue`），
-而 `ComponentToModule` 登记的是**下划线**前缀（`default_data.go:306` 的 `app/internal_message/`）⇒ 凡由「菜单同步」新增/更新的行 `module` 一律落 NULL。
+**顺带量到、未修（等点头）**：**react 端**路由里的组件路径用**连字符**（`app/internal-message/inbox/index.vue`，
+它的页面目录本身就是连字符，`api/hooks/menu.ts:99-109` 直接从目录名反推出 component），
+而 `ComponentToModule` 登记的是**下划线**前缀（`default_data.go:306` 的 `app/internal_message/`）⇒ 凡由 react 跑「菜单同步」
+新增/更新的行 `module` 一律落 NULL。ele 与 vben 的对应目录是下划线（`pages/app/internal_message/`、`views/app/internal_message/`），
+从这两端同步不会踩到——所以这一列的取值实际取决于"这台环境最后一次是拿哪一端同步的"。
 现网 `gwa` 实测 47 行菜单里 6 条这样的叶子：41/42/74（站内信三页，本轮之前就在）+ 76/77/78（这次同步出来的通知三页）。
 两侧的性质不同，别混着记：**通知三页的 NULL 是上面那段的刻意决定**（不登记 `app/notification/` 前缀 = 有意绕过套餐，换别的写法也还是 NULL）；
 **站内信三页才是这一格真正咬人的地方**——同一条页面在库里两行并存、一行有 module 一行没有：
@@ -1123,9 +1159,11 @@ ent 两列 `webhook_sign_style`（Enum，`Default("CUSTOM")`，Optional+Nillable
 临时渠道 16 指向 `http://127.0.0.1:9/hook`（discard 端口，即便守卫失效也只会 connection refused，不碰任何外部地址），
 `test-dispatch` → **400** `webhook target blocked by the ssrf guard: target "127.0.0.1" resolves to 127.0.0.1 which is
 inside the blocked range 127.0.0.0/8`，台账 id=40 `SKIPPED`、`channel_id=16`；随后渠道已删、规则 3 已改回 EMAIL。
-本机 sink（`:7799`）与 M 块留存的 `:17788` 探针实例（PID 62312）一并停掉，两个端口现在都不在监听。
-`:7788` 现在是**守卫开着的** `gow run admin` 实例。启动日志里那几条 `token authentication failed … 401`
-（module=internal-message/service）仍是浏览器里留着的老前端页拿过期 token 重连，与本块无关。
+本机 sink（`:7799`）与 M 块留存的 `:17788` 探针实例（PID 62312）一并停掉，两个端口当时都不在监听。
+`:7788` 收口时留下的是**守卫开着的** `gow run admin` 实例（2026-09-25 复查：本机 7788/7789 已无监听，那轮取证
+留下来的进程不在了 —— 本节所有端口/PID 叙述都是当时的现场快照，不是当前状态）。
+启动日志里那几条 `token authentication failed … 401`（module=internal-message/service）是浏览器里留着的老前端页
+拿过期 token 重连，与本块无关。
 
 **浏览器 pass 的形状要说清**：in-app browser 当时没有可见表面（截图/指针被拒），所以表单是 DOM 驱动读出来的：
 vben 走了完整的 create（`钉钉机器人` + 密钥）→ 列表列显示 → 编辑回填 → 模板改存 → 删除；
@@ -1220,21 +1258,31 @@ react 与 ele 只读渲染（tooltip / 行内 help、五个风格选项、textar
      要让 handler 拿得到，等于把码写进台账或另建一张明文表 —— 比"载荷在 Redis 里躺一会儿"更糟。
    - **台账故意没有正文列**（§3.3 的 `title`/`content` 不做）：永久表 + 正文快照 = 一张 OTP 明文表，
      异步路径不该反过来破坏这条边界。
-   - **代价有边界**：明文验证码进的是 Redis（asynq 载荷）而不是 Postgres，存活期由
-     `MaxRetry(3)` + 4 次尝试封顶（退避带随机数，最坏 ≈ 8.4 分钟，见决策点 8），且入队前的同步预检已经把
+   - **代价有边界**：明文验证码进的是 Redis（asynq 载荷）而不是 Postgres，走满 `MaxRetry(3)` 的
+     重试跨度约 3 分钟到 5.9 分钟（退避带随机数，见决策点 8），任务被正常消费后即从 Redis 删除；
+     且入队前的同步预检已经把
      "配置不可用"这类注定失败的载荷挡在队列外，配置类错误还额外 `SkipRetry`。接受的是"一次崩溃窗口内可能重发一封"
      （至少一次投递），换掉的是"业务侧被 SMTP 抖动绑住响应时间"。
+     ⚠ 唯一不封顶的是**归档分支**：重试走完后 asynq 把消息移进 `asynq:{<queue>}:archived`，
+     本仓没有任何清理归档集的代码（`grep Archiv` 只命中审计日志归档任务，与 asynq 无关），
+     所以那条载荷会一直躺在 Redis 里，直到有人用 inspector 删它 —— 台账行反过来会被决策点 8 的清扫定案，
+     两边不同步。这一条是"载荷不落 Postgres 但确实落 Redis"的实际含义，别读成"最多几分钟"。
    若将来引入模板（P3），这一条应重估：载荷换成 `{delivery_id, template_id, render_params}` 才是既无明文
    又能重渲染的形态 —— 届时正文仍不落台账，与 §3.3 同构。
 8. **清扫阈值取多少、要不要给"迟但会到"留活路** —— **P2-4 已定：缺省 15 分钟、下限 10 分钟，宁可漏扫不误扫，
    且清扫只定案不补投**。
-   下限不是拍脑袋，是从异步派发的重试预算推出来的，而这个预算在 P2-5 实测时被算错过一次：asynq v0.26 的
+   下限不是拍脑袋，是从异步派发的重试预算推出来的，而这个预算在实测复核时被算错过**两次**：asynq v0.26 的
    `DefaultRetryDelayFunc` 是 `n^4 + 15 + rand.IntN(30)*(n+1)` 秒（`hibiken/asynq@v0.26.0/server.go:401`），
-   三次退避分别落在 16~74 / 31~118 / 96~210 秒，加最多 4 次 × `asynq.Timeout(30s)` 的拨号
-   ⇒ **预算区间 ≈ 143s ~ 504s，最坏 8.4 分钟**。首稿写的"2s/17s/82s ≈ 221s"是 asynq 旧版公式（无随机项），
+   **`n` 传的是 `msg.Retried`，而计数只在写入 retry 状态时自增**（`processor.go:358` 读的是**自增前**的值、
+   `internal/rdb/rdb.go:809` 的 `modified.Retried++` 才是自增处），所以第 1/2/3 次失败用的是 n=0/1/2，退避落在
+   15~44 / 16~74 / 31~118 秒（第 4 次失败时 `msg.Retried >= MaxRetry` 直接归档，`processor.go:343`）
+   ⇒ **退避合计 62~236s**，加最多 4 次 × `asynq.Timeout(30s)` 的拨号
+   ⇒ **预算区间 ≈ 182s ~ 356s，最坏 5.9 分钟**。两次算错的产物：首稿"2s/17s/82s ≈ 221s"（旧版公式、无随机项），
+   以及 P2-5 之后那版"16~74 / 31~118 / 96~210 ⇒ 最坏 504s"（把 n 当成从 1 起算，且 3^4+15+116 也应为 212 而非 210）。
    两次实测各是它的一个抽样：P2-3 的快失败路径 ~101s、P2-5 的回写失败路径 ~179s（§4 两张表）——
-   所以实测值只能证伪"上界"，不能当上界用。**因此下限从 5 分钟抬到 10 分钟**：5 分钟落在了最坏预算之内，
-   一个手滑填 5 的运维就会看见"还在重试的信被判定失败"，而这正是这条下限要防的事。缺省 15 分钟是最坏预算的 1.8 倍。
+   都在"退避合计 62~236s"之内，说明那两次尝试本身耗时很短，
+   所以实测值只能证伪"上界"，不能当上界用。**因此下限从 5 分钟抬到 10 分钟**：5 分钟(300s)落在了最坏预算之内，
+   一个手滑填 5 的运维就会看见"还在重试的信被判定失败"，而这正是这条下限要防的事。缺省 15 分钟是最坏预算的 2.5 倍。
    代码里 `deliveryStaleAfter` 会把更低的配置值抬到下限并 WARN。
    被扫的行列不出第二种结局（幂等门读的就是状态），所以"SMTP 抖 6 分钟"确实会丢一封验证码 —— 换来的是一行
    不会永远挂在 `SENDING` 的台账。真需要"迟到也要送到"时，正确的改法**不是**继续拉长阈值，
@@ -1254,9 +1302,11 @@ react 与 ele 只读渲染（tooltip / 行内 help、五个风格选项、textar
    仍然没有解决的那一半要说清楚：**"信已发出、结论写不进"这段窗口现在靠重投缩小、靠清扫兜底，
    但消除不了**（要消除得把投递与写结论拆成两态，见 §7 P2-5 那条）。
 10. **菜单同步写出来的连字符组件路径要不要归进模块** —— **未修，等点头**（M 块运行期量到，实测行号与两侧性质差异见 §4 M 末段）。
-    `ComponentToModule` 登记的是下划线前缀（`default_data.go:306` `app/internal_message/`），而三端路由的目录名用连字符
-    （`app/internal-message/inbox/index.vue`）⇒ 「菜单同步」新增/更新的行 `module` 一律落 NULL，
-    库里于是并存两行同一条页面：id 6 带 `INTERNAL_MESSAGE`、id 74 为 NULL。
+    `ComponentToModule` 登记的是下划线前缀（`default_data.go:306` `app/internal_message/`），而**只有 react 端**的页面目录用连字符
+    （`src/pages/app/internal-message/`，`api/hooks/menu.ts:99-109` 按 glob 反查目录名写出 component）⇒ 从 react 跑「菜单同步」
+    新增/更新的行 `module` 一律落 NULL。ele 与 vben 的同一页在下划线目录下（`pages/app/internal_message/`、
+    `views/app/internal_message/`），**从它们同步出来的同一条页面能正常归类**——也就是说这一列的值取决于"这台环境最后是谁同步的"，
+    现网 `gwa` 因此并存两行同一条页面：id 6 带 `INTERNAL_MESSAGE`（种子）、id 74 为 NULL（react 同步出来的）。
     （通知三页不在此列——它们的 NULL 是"有意绕过套餐"，见 §4 M 的 `module` 那段，改前缀不会让它们变成受管控。）
     **今天没有任何可见差异**：这一列全仓只有一个读者 `filterMenusByPlanWhitelist`，而它只遍历顶层节点、从不检查叶子（欠账 2 记的那一格）。
     要决定的是**将来**：白名单一旦接上递归（欠账 2 修法的可选延伸），这些 NULL 会走"放行"分支变成"任何套餐都可见"。
@@ -1273,8 +1323,10 @@ react 与 ele 只读渲染（tooltip / 行内 help、五个风格选项、textar
 后端生成链（按根 `AGENTS.md`，gow 优先）。P1 实测有两处要走不通，记下来免得下次重踩：
 
 ```bash
-gow api      # ✗ 本机当前会 abort：它先跑 go mod tidy，而未跟踪的 backend/cmd/server/main_ent.go
-             #   import 了 kratos v2.9.2 里不存在的 middleware/auth。等价替代：cd api && buf generate
+gow api      # 当时（2026-09-19）在本机 abort：它先跑 go mod tidy，而工作区里有一个未跟踪的
+             #   app/admin/service/cmd/server/main_ent.go，import 了 kratos v2.9.2 里不存在的 middleware/auth。
+             #   那个草稿文件后来清掉了，所以这一条现在未必还成立（本文这次没有重跑 gow api 复验）。
+             #   再撞上同样先 `git status --porcelain backend/` 找未跟踪的坏文件；等价替代：cd api && buf generate
 gow ent      # ✓（Windows 下偶发 "user-mapped section open" 中断并留下半截生成树：
              #   确认未跟踪文件只有自己的新 schema 后 git checkout -- .../data/ent/ 重跑即可）
 make register ENTITY=notification_delivery   # ✗ 不适用：只覆盖 New<entity>Repo(ctx, entClient) /
@@ -1368,7 +1420,9 @@ gow run admin
       ③ 三端不回归：整箱"全部已读/清空"与单条已读/删除都传的是 viewer 自己的 id，
       逐处核过（react `HeaderContent.tsx:285`、react inbox 页 `:93`/`:233`、ele `useNotice.ts:75`/`:106`/`:140`
       与 inbox 页 `:251`、vben `basic.vue:144`/`:176`、vben inbox 页 `:166`/`:188` 与详情抽屉 `:87`），
-      所以**不需要**给三端补错误文案，也没有新增错误码。
+      所以**不需要**给三端补错误文案，也没有新增错误码。（唯一取值来源不是"当前登录者"的是 react inbox 页 `:93` 的
+      `record.recipientUserId` —— 它仍等于 viewer，因为那份列表本身被 §4 P2-2 的读谓词限制在 viewer 名下；
+      若哪天读侧放开，这一处会变成"点别人的行就替别人标已读"，改读侧时要连着看它。）
       **对调用方可见的行为变化只有两条**（实测 F/F2）：① 非平台上下文传别人的 `user_id` 不再动别人的行
       （带 `recipient_ids` = 空操作，空 `recipient_ids` = 作用在自己身上）；② 非平台上下文传 `user_id=0`
       从"方法开头就 400"变成"按 viewer 自己的收件箱操作"（viewer 覆盖了请求体，0 只是"没填"）。
@@ -1379,7 +1433,8 @@ gow run admin
       `gow api`/`buf generate` → `make ts`（三端 `index.ts` 里确认 `NotificationRule` 与 `webhookUrl`/`webhookSecret`
       都生成了）→ `make openapi` → **重启进程**（内嵌 asset 变了才算数）→ 「接口同步」全量重建 → 「菜单同步」(MERGE)。
       实测落点：`sys_apis` 里 notification-rules 六条（`86/87/88/199/200/201`，含 test-dispatch）、
-      `sys_menus` 44 行含 72/73、`GetNavigation` 三条通知路由齐备。
+      `sys_menus` 当时 44 行含 72/73、`GetNavigation` 三条通知路由齐备。（"通知页挂在哪一棵"到 M 块变了：现网 `gwa` 47 行、
+      通知那一棵是 75/76/77/78，干净安装的种子也换成 `/notification`，见 §4 M——这一格记的是 C 当时的落点，不是当前形态。）
       **菜单这一格本次重做过一次才对**：`DefaultMenus` 加了 73 仍然不亮，因为侧边栏读的是「角色→权限→
       `sys_permission_menus`」这条链、`GetNavigation` 没有超管绕过（`MenuMeta.Authority` 后端不读）。
       全新环境靠 `DefaultPermissions[].MenuIds` 补上（本次已改），已部署环境靠「权限管理」勾选（本次手工执行）。
@@ -1449,7 +1504,8 @@ P2 新增事件类型时的落点清单（一枚 `INTERNAL_MESSAGE` 要逐个点
 - **测试两处**：签名向量钉**具体值**且用独立实现交叉算（这一层算错了只在远端报错，且报错文案指向对端）、
   出站形状钉字节序列；
 - **三端各两处 + locales 两份**：react `index.tsx:57` 的 `SIGN_STYLE_LABEL_KEY` 映射表与 `:434` 的内联选项数组、
-  ele `index.vue:134` 的映射与 drawer 的 `<ElOption>` 列表、vben `:163` 的映射与 `:493` 的 `<a-select-option>` 列表；
+  ele `index.vue:131` 的映射与 drawer `notification-channel-drawer.vue:43-47` 的 `<ElOption>` 列表、
+  vben `index.vue:160` 的映射与 `:486` 起的 `<a-select-option>` 列表；
   locales 的键名是三端共享的 `signStyle{Custom,None,Dingtalk,Feishu,Wecom}`，zh/en 各一份；
   另记得**签名密钥的提示文案要按新风格改写一句**（那一列今天对五种风格各有不同用法，写死一种就是误导）；
 - **不需要**接口同步与菜单同步：两列搭既有 CRUD 路由，列由 ent 自动迁移建出来（重启即迁移）。
@@ -1564,7 +1620,8 @@ viewer 覆盖请求体。修法与两种落定语义（带 id = 空操作、空 
 **没有**做运行期撤销越权取证（需要先造两个同租户用户 + 一条消息，属独立一轮）。它是"按人归属"这个洞的
 第三块拼图，但语义与收件箱不同（撤销是发件方/管理员动作），要不要收、收到哪一层（仅创建者 / 平台管理员 /
 菜单权限即够）是一个产品决策，不该由一次归属修复顺手定。
-`RevokeMessage`（`:402`，不带消息本体的旧签名）至今**零调用方**（service 走的是 `RevokeMessageWithMessage`），
+`RevokeMessage`（`internal_message_recipient_repo.go:402`，不带消息本体的旧签名）至今**零调用方**
+（service 走的是 `RevokeMessageWithMessage`），
 属可删的死代码，同样不在本次范围内。
 
 同一批实测里另有一处**不是缺陷但值得记**：每次创建实体都回一条
@@ -1591,7 +1648,7 @@ viewer 覆盖请求体。修法与两种落定语义（带 id = 空操作、空 
 | 枚举文案的 i18n 落点 | react 用页面自己的命名空间嵌套 map（`statusMap.*`）；ele / vben 按各自约定放进全局 `enum.json`（`enum.notificationDelivery.status.*`）。移植时**不能**照搬 key 路径 |
 | 列头 tooltip | 三端只有 react 的 ProTable 能挂列头 tooltip；ele 挪进搜索项 `tips`，vben 挪进 VbenForm schema 的 `help` |
 | 服务端排序 | ele 的 `ProPage` 不绑 vxe 的 `sort-change`（全仓没有任何页面用列排序），本页固定 `-created_at`；vben 需同时给 `sortable` 与 `sortConfig.remote: true`（vxe 默认 remote=false，否则只对当页排序） |
-| orderBy 字段名 | 必须是**数据库列名**。react 侧 ProTable 的 sorter key 是 camelCase 的 dataIndex，本页显式蛇形化；vben 侧同理用局部映射表 |
+| orderBy 字段名 | 用**数据库列名**。react 侧 ProTable 的 sorter key 是 camelCase 的 dataIndex，本页显式蛇形化；vben 侧同理用局部映射表。（"必须蛇形才生效"这句在本仓并不成立：三端发的是 JSON 数组形、会被归一，见 §7 末那条实测——映射表留着是统一口径，不是修 bug） |
 | Tag 色系 | Element Plus 没有 purple/cyan/processing 这一档，ele 把 SENDING/EMAIL 落 primary、WEBHOOK 落 info；antd 系（react / vben）保留 blue/green/purple/cyan |
 | 导出 | ele 端每个只读页都带 `createPagedExportAction`，react 台账页没有导出——移植时按目标端惯例补齐，不算行为差异 |
 
@@ -1605,14 +1662,33 @@ C 的规则页（可写 + 两个自定义动作）又添了几条，同样是"�
 | 测试投递有两种话术 | 异步规则回的是 `SENDING`，文案必须是"已排队、结论去台账看"而不是"已投递"；同步才说"已投递"。三端各两份 key（`testDispatchQueued` / `testDispatchSent`），别只补一条 |
 | `INTERNAL` 行不给测试按钮 | 三端同一处 `visible`/`v-if`/条件渲染，后端也拒 —— 前端藏按钮是体验，服务端拒才是边界 |
 
-实测过、写下来免得下次再猜的两条（sqlite 内存库 + 现网 `gwa` 库）：
+实测过、写下来免得下次再猜的几条（sqlite 内存库 + 现网 `gwa` 库）：
 
 - **枚举列可以直接 `__contains` 过滤**：`query={"status__contains":"SKIPPED"}` 打到真实 HTTP 端点，
   既不被过滤器拒绝、也确实把 FAILED 行筛掉了（首稿只验证到"不报错"，那半边是假阴性风险——见 §7 那条实测）；
   且现网 `gwa` 库里 ent 枚举列（`internal_messages.status` / `.type` 等）实测是 `character varying` 而非 PG 原生 enum，
   所以"LIKE 作用在 enum 上会找不到操作符"这个担心在本仓不成立。
-- **orderBy 传非法列不报错**：go-crud 的标识符正则只挡 SQL 元字符，列白名单 `CheckColumn` 只登记了它自带的
-  `user` / `menu` 两张表，对本仓所有表 fail-open → 拼错的列名静默失效，不会 500。列表页排序"点了没反应"时先查列名。
+- **orderBy 传不存在的列会报错，不是"点了没反应"**（2026-09-25 探针，直调 `NotificationChannelRepo.List`；
+  本条纠正本文旧版写的"拼错的列名静默失效、不会 500"，那句是错的）：
+  `orderBy=["noSuchColumn"]`（三端序列化器发的 JSON 数组形）与 `orderBy=no_such_column`（AIP 裸串形）都回 `query list failed`；
+  裸串形里再带 `;` 会更早失败——在 AIP 解析那一步回 `unmarshal order by …: invalid character ';'`，
+  而这一支的 error 是 `repository.go:366-369` 少数**会上抛**的。三条都沿 service 原样上抛
+  （`notification_channel_service.go:52` 是 `return s.repo.List(...)`，没有兜错），所以 HTTP 侧是错误响应。
+  PG 侧同形：`order by "no_such_column"` 直接 `column "no_such_column" does not exist`（42703，本机库直查实测）。
+  成因：go-crud 的列白名单只登记它自带的 `menu` / `user` 两张表（`go-crud/entgo@v0.0.55/ent/ent.go:74-82`），
+  本仓 51 张表全走"表未登记 ⇒ fail-open"这一支（`sorting/structured_sorting.go:14-23`），
+  坏列因此**不被丢掉**、原样拼进 `ORDER BY`，由数据库来报错。
+  这正是上面「移植记录」里"orderBy 必须是数据库列名"那条的代价：症状是错误响应，排查时别按"排序没生效"找。
+  **但那条"必须蛇形"本身要说清**：JSON 数组形会逐项 `ToSnakeCase`（`sorting/order_by_string_converter.go:78`），
+  实测 `["smtpHost"]` 正常按 `smtp_host` 出序 ⇒ 前端 dataIndex 忘蛇形化**不会**报错；真正不接受驼峰的是裸串形
+  （它同时也拒绝 `-field` 降序写法）。写蛇形仍是更稳的约定，理由与两形差异以
+  [list_query_rule.md](./list_query_rule.md)「坏列名与坏后缀是两种失败」为唯一权威。
+- **同一张表的 `query` 侧要分三种情况**（同一次探针）：camelCase 键**能用**（`smtpHost__contains` 被转换器归一成
+  `smtp_host` ⇒ 命中 0 行、不报错）；snake 写法但不存在的列**与 orderBy 同形报错**（`no_such_column__contains` ⇒ `query list failed`）；
+  真正静默的是**操作符后缀写错**——`name__badop` 让整个 `FilterExpr` 变 nil ⇒ 全量数据，该请求所有过滤条件一起失效。
+  （上面几条里的"5xx / 200"都是从"有没有 error 上抛"推出来的：探针只测到仓储层，没逐个打 HTTP 请求坐实状态码。
+  机制、四格实测与例外以 [list_query_rule.md](./list_query_rule.md) 的「坏列名与坏后缀是两种失败」为唯一权威；
+  这一条与 [field_change_guide.md](./field_change_guide.md) §5 同因，那边的旧表述也在本轮改过。）
 
 ## 8. 相关文档
 

@@ -3,6 +3,10 @@
 > **定位**：react / vue-element / vue-vben 三端共享的视觉语言权威值表。
 > **唯一权威**：任何颜色、圆角、尺寸、动效的调整，先改本文档，再同步三端代码；禁止只改代码不改文档。
 > **参照实现**：vben 端的主题体系（preferences → CSS 变量 → 组件库 token 派生）是视觉基准与架构参照；react / vue-element 按第 3 章映射表落地。
+> **三选一口径**：三端是"三选一"（见 [adopt-one-frontend.md](./adopt-one-frontend.md)）——采用者只在自己选定的那一端设值、跑那一端的门禁；
+> "改本文档 + 同步三端"是**上游维护者**的义务，不是使用者的负担。
+> **现状**：第 3 章原为"现值 → 目标"迁移清单，2026-09-25 逐端复核后确认**规范值已落到三端代码里**，
+> 故该章改写为**落点索引**（要改哪个值去哪个文件），退役旧值只留在各节末的「沿革」里。
 
 ---
 
@@ -13,8 +17,8 @@
 | 主题模型 | vben | HSL token 三元组 + CSS 变量下发 + 组件库 token 派生，三端 preferences schema 已同构 |
 | 主色 / 语义色 | vben 默认值 | `hsl(212 100% 45%)` 深蓝更"企业级"，且 vben/语义色三端 config 本就同源 |
 | 圆角体系 | vben | `--radius: 0.5rem`（控件 8px），卡片/浮层 12px |
-| **暗色中性色** | **react 六轮定稿（2026-08-24）** | 近黑蓝 `#0B0F19` 系。vue-element 现行暗色（`#0C0E13/#14171C`）与之同族，**三端中两端已趋同**；vben 的浅炭暗色列为备选（见 2.3，切换成本 4 个值） |
-| 布局尺寸 | vben（ele 顶栏已一致） | 侧栏 224 / 折叠 48 / 顶栏 50 / 页签 38 |
+| **暗色中性色** | **react 六轮定稿（2026-08-24）** | 近黑蓝 `#0B0F19` 系。**三端均已落在该系**：react `core/preferences/config/darkTheme.ts:37,39`、vue-element `styles/_dark-mode.scss:33-36,54,72`、vben `packages/@core/base/design/src/design-tokens/dark.css:4-11`（该文件注释即写明对齐本规范 2.3）。vben 原"浅炭暗色"降为沿革，见 2.3 末 |
+| 布局尺寸 | vben（react / ele 已同步，落点见 2.6） | 侧栏 224 / 折叠 48 / 顶栏 50 / 页签 38 |
 
 **谁向谁对齐**：vben 提供视觉语言与主题系统；react / vue-element 提供工程实现。不移植 vben 的代码，只移植它的"语言"。
 
@@ -37,6 +41,13 @@
 **色阶派生规则**：由基准色程序化生成 -50 ～ -900 阶梯（vben / vue-element 已有 `generatorColorVariables`；react 端由 antd `defaultAlgorithm/darkAlgorithm` 自动派生 hover/active）。交互态规则：**hover 取亮一阶、active 取暗一阶，禁止手工挑色**。EP 侧 `light-3/5/7/8/9`、`dark-2` 一律由脚本生成，不手写。
 
 ### 2.2 中性色 · 浅色模式
+
+> **落地状态按端不同**（2026-09-25 复核）：vue-element ✓（`styles/vendors/_element-plus.scss:31` 页面画布
+> `#F1F3F6`、`:52` 边框 `#E4E4E7`）、vue-vben ✓（`packages/@core/base/design/src/design-tokens/default.css:10`
+> `--background-deep: 216 20.11% 95.47%` = `#F1F3F6`）、**react ✗**——react 端只有
+> `core/preferences/config/darkTheme.ts` 一套 token 覆盖，**浅色模式没有任何 token 覆写**，
+> 画布/边框走 antd `defaultAlgorithm` 的默认派生值，与本表并不严格相等。
+> 本表因此对 react 是"目标值"而非"现值"；要 react 浅色严格对齐本表，需要新增一套 light tokens（未做，属新工作）。
 
 | Token | 值 | ≈HEX | 说明 |
 |---|---|---|---|
@@ -72,7 +83,7 @@
 - **主色 α 衍生**（随 2.1 主色联动）：行 hover `rgba(0,107,230,.08)`、选中 `rgba(0,107,230,.15)`、focus 柔光 `0 0 0 3px rgba(0,107,230,.12)`。
 - 卡片/抽屉大圆角 12（`borderRadiusLG`），见 2.4。
 
-> **备选方案（vben 浅炭暗色）**：大底 `#14161A`（`hsl(220 13.06% 9%)`）+ 表面 `#1C1E23`（`hsl(222.34 10.43% 12.27%)`）。若观感偏好"更柔和不近黑"，整体切换只需替换上表 L0/L1 与浮层三个值 + 文字基色改 `#F2F2F2`，三端各改一处。
+> **沿革 · 未采纳的备选方案（vben 浅炭暗色）**：大底 `#14161A`（`hsl(220 13.06% 9%)`）+ 表面 `#1C1E23`（`hsl(222.34 10.43% 12.27%)`）。当时评估"若观感偏好更柔和不近黑，整体切换只需替换上表 L0/L1 与浮层三个值 + 文字基色改 `#F2F2F2`，三端各改一处"；**最终未采纳**——vben 已直接落在上表的 react 系（`dark.css:4-5` 的对齐注释为证），此段仅作比选记录。
 
 ### 2.4 圆角
 
@@ -85,24 +96,42 @@
 
 ### 2.5 字体
 
-```
--apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue',
-Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif
-```
+**字体栈按端实测记录，本节不再挂"权威栈"**（2026-09-25 复核：原先列在此处的
+`-apple-system … 'PingFang SC' … 'Microsoft YaHei'` 栈**没有任何一端按原样实现**，
+故改为逐端记实值。真要统一字体栈是一项待议的新工作，别把现状当成"某端跑偏"）：
+
+| 端 | 落点 | 实测值 |
+|---|---|---|
+| react | `frontend/admin/react/src/styles/global.css:18-20` | `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'`（无 PingFang / 雅黑，CJK 由 `Noto Sans` 与系统兜底） |
+| vue-element | `frontend/admin/vue-element/src/styles/index.scss:43-44` | `'Noto Sans SC', 'Noto Sans JP', 'Noto Sans KR', sans-serif`（自托管 CJK 优先） |
+| vue-vben | `packages/@core/base/design/src/design-tokens/default.css:2-4` | 与 react 同族、仅大小写写法不同：`-apple-system, blinkmacsystemfont, 'Segoe UI', roboto, 'Helvetica Neue', arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'` |
 
 - 字号：控件 14 / 表格 13 / 卡片标题 16 / 页面标题 18；rem 基准 16。
-- 字重：正文 400、标题与强调 600（vue-element 现全局 500，迁移时对齐本表；其自托管 Noto Sans SC 可保留作为 CJK 渲染增强，但字号字重须遵循本表）。
+- 字重：正文 400、标题与强调 600。vue-element 已按此落地（`src/styles/index.scss:46`
+  `--el-font-weight-primary: 400`；旧值全局 500 见本节沿革）。
 - 表格数字列建议 `font-variant-numeric: tabular-nums`。
+
+> 沿革：vue-element 的全局字重旧值 500、以及本小节旧版那条"含 PingFang SC / Hiragino Sans GB /
+> Microsoft YaHei 的权威栈"都已退役——后者从未被任何一端按原样实现，保留在表外的参考写法里即可。
 
 ### 2.6 布局尺寸
 
-| 项 | 值 | 三端现状 |
+规范值即三端现值（2026-09-25 逐端实测，落点如下）：
+
+| 项 | 值 | 三端落点（现值 = 规范值） |
 |---|---|---|
-| 侧栏宽度 | **224px** | 三端一致 ✓ |
-| 侧栏折叠 | **48px** | vben 48 ✓；react 60、ele 54 → 迁移 |
-| 顶栏高度 | **50px** | vben 50 ✓、ele 50 ✓；react 56 → 迁移 |
-| 页签栏高度 | **38px** | 三端一致 ✓（chrome 形态） |
-| 内容边距 | **16px** | 由各端页面容器统一施加；ele `app-container` 15px → 迁移 |
+| 侧栏宽度 | **224px** | vben `packages/@core/preferences/src/config.ts:73`；ele `src/core/preferences/config/default.ts:75`（消费点 `src/layouts/LeftLayout.vue:93`）；react `src/layouts/MainLayout/components/SiderMenu/index.tsx:99` 的 224 兜底 |
+| 侧栏折叠 | **48px** | react 同文件 `:99`（`isCollapsed ? 48 : …`）；ele `src/layouts/LeftLayout.vue:57` 与 `src/layouts/MixLayout.vue:123` 的 `SIDEBAR_COLLAPSED_WIDTH = 48`；vben 48 ✓ |
+| 顶栏高度 | **50px** | react `src/layouts/MainLayout/index.tsx:300`；ele `src/styles/_variables.scss:16` `$navbar-height: 50px`；vben 50 ✓ |
+| 页签栏高度 | **38px** | vben `config.ts:78`；ele `core/preferences/config/default.ts:80`；react `core/preferences/config/default.ts:80`（chrome 形态） |
+| 内容边距 | **16px** | 由各端页面容器统一施加；ele `src/styles/_layouts.scss:9-10` `.app-container { padding: 16px }` |
+
+> **ele 那两个 SCSS 常量别当布局尺寸读**：`src/styles/_variables.scss:14-15` 的
+> `$sidebar-width: 210px` / `$sidebar-width-collapsed: 54px` 只服务 logo 与菜单项图标对齐；
+> 侧栏真正的展开/折叠宽度是上表的 224 与 48。
+>
+> **沿革（退役旧值）**：react 顶栏 56 / 折叠 60、ele 折叠 54、ele `app-container` 15px——这些是
+> 2026-09 之前的现值，迁移已完成，不要再按"待办"读。
 
 ### 2.7 动效
 
@@ -123,37 +152,55 @@ Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif
 机制：`preferences`（`packages/@core/preferences`）→ `update-css-variables.ts` 写 `--primary` 等 HSL 三元组 + `html.dark`/`data-theme` → `useAntdDesignTokens()` / `useElementPlusDesignTokens()` 派生组件库 token。
 
 - 本项目 override 仅 `app.name` / `accessMode`（`apps/admin/src/preferences.ts`），默认主题即本规范基准，**无强制迁移项**。
-- 唯一开放项：若最终采纳 2.3 的 react 系暗色（而非 vben 浅炭），改 `packages/@core/base/design/src/design-tokens/dark.css` 中 default 主题的 `--background` / `--background-deep` / `--popover` / `--foreground` 四个值。
+- 曾经的"唯一开放项"已关闭：2.3 的 react 系暗色已被采纳——`packages/@core/base/design/src/design-tokens/dark.css:4-11`
+  的 `--background` / `--background-deep` / `--popover` / `--foreground` 已是近黑蓝系，该文件头注释（2026-09-08）
+  即写明"暗色中性色对齐设计语言规范（docs/design-language.md §2.3，近黑蓝系，与 react 端定稿一致）"。
 
 ### 3.2 react（antd 6）—— 映射机制与迁移清单
 
 机制：preferences store（`src/core/preferences/store`）→ `useThemeConfig.ts` 组装 ConfigProvider token（`darkAlgorithm` + `darkThemeTokens` + `darkThemeComponents`）；自定义 CSS 一律引用 antd 生成的 `--ant-*` 变量，禁止裸色值。
 
-| 本规范 | 落点文件 | 现值 → 目标 |
+| 本规范 | 落点文件:行（2026-09-25 实测） | 现值（= 规范值） |
 |---|---|---|
-| 主色 2.1 | `src/core/preferences/config/default.ts` | `colorPrimary: "#3B82F6"` → `"hsl(212 100% 45%)"` |
-| 圆角 2.4 | 同上 + `useThemeConfig.ts` | `radius: "6"` → `"8"`（`borderRadiusLG: 12` 保持） |
-| 暗色 2.3 | `src/core/preferences/config/darkTheme.ts` | 色板已即权威值 ✓；主色 α 三处随主色联动：`rowHoverBg/rowSelectedBg/activeShadow` 的 `rgba(59,130,246,…)` → `rgba(0,107,230,…)`，注释中 `accentBlue` 同步 |
-| 顶栏 50 | `src/layouts/MainLayout/index.tsx`（内联 56px） | 56 → 50 |
-| 折叠 48 | `src/layouts/MainLayout/components/SiderMenu/index.tsx` | 60 → 48 |
+| 主色 / 语义色 2.1 | `src/core/preferences/config/default.ts:91`（success `:92`、warning `:93`、destructive `:90`） | `colorPrimary: "hsl(212 100% 45%)"` |
+| 圆角 2.4 | 同上 `:95`；大圆角在 `config/darkTheme.ts:67` | `radius: "8"`、`borderRadiusLG: 12` |
+| 暗色分层 2.3 | `config/darkTheme.ts:36,37,39,41` | `colorBgBase/colorBgLayout: '#0B0F19'`、`colorBgContainer: '#111827'`、`colorBgElevated: '#1C2128'` |
+| 主色 α（暗色） | `config/darkTheme.ts:86,102,103,104` | `activeShadow …0.12`、`rowHoverBg …0.08`、`rowSelectedBg …0.15`、`rowSelectedHoverBg …0.2`，全为 `rgba(0, 107, 230, …)` |
+| 顶栏 50 | `src/layouts/MainLayout/index.tsx:300` | `height: 50` |
+| 折叠 48 / 展开 224 | `src/layouts/MainLayout/components/SiderMenu/index.tsx:99` | `isCollapsed ? 48 : (sidebarConfig?.width ?? 224)` |
 
-注意：主色三处同步（token、暗色 α、文档），且改完要清 localStorage 旧偏好验证首屏；`localStorage` 残留旧 `#3B82F6` 属预期现象。
+> **一处与 2.3 有意的偏差**：react 不覆写表头色——`darkTheme.ts:99-100` 注释说明
+> `colorHeaderBg` 不是合法 antd Token（原值 `'#1F2937'` 已移除），表头由 `colorBgContainer/colorFillAlter`
+> 派生。2.3 表里的"表头 `#1F2937`"对 react 端只是**观感目标**，不是可直接填的 token。
+
+**沿革（退役旧值，别再去代码里找）**：主色 `#3B82F6`、`radius: "6"`、顶栏 56、折叠 60、暗色主色 α 的
+`rgba(59,130,246,…)`。改主色仍要三处同步（token、暗色 α、本文档），且 `localStorage` 残留旧偏好属预期现象，
+验证首屏前先清一次。
 
 ### 3.3 vue-element（Element Plus + vxe-table）—— 映射机制与迁移清单
 
 机制：preferences（`src/core/preferences`，schema 与 vben 同构）→ `update-css-variables.ts` 运行时注入 `--el-color-primary(-light-N/-dark-2)` 全阶梯 + `--radius`；SCSS（`src/styles/vendors/_element-plus.scss`）为编译期兜底，两处值必须一致。
 
-| 本规范 | 落点文件 | 现值 → 目标 |
+| 本规范 | 落点文件:行（2026-09-25 实测） | 现值（= 规范值） |
 |---|---|---|
-| 主色 2.1 | `src/core/preferences/config/default.ts` + `constants.ts` + `_element-plus.scss` | `hsl(220 100% 55%)`/`#165DFF` → `hsl(212 100% 45%)` |
-| 语义色 2.1 | 同上 | success/warning/danger → `hsl(144 57% 58%)` / `hsl(42 84% 61%)` / `hsl(348 100% 61%)` |
-| 暗色 2.3 | `src/styles/_dark-mode.scss` + `_variables.scss` | 大底 `#0C0E13`→`#0B0F19`、画布/表格 `#14171C`→`#111827`、输入 `#14161a`→`#161F33`、浮层/抽屉 `#1e2026`→`#1C2128`、表头 `#1f2329`→`#1F2937`、边框 `#2e3440`→2.3 的 α 边框方案；菜单/顶栏 `#0D0F14`→`#111827` |
-| 浅色 canvas 2.2 | `_element-plus.scss` `$bg-color.page` | `#F7F8FA` → `#F1F3F6` |
-| 浅色边框 2.2 | 同上 | `#E5E6EB` → `#E4E4E7` |
-| 圆角 2.4 | `_element-plus.scss` + `--radius` | base 8px ✓ 保持 |
-| 字重 2.5 | `src/styles/index.scss`（`--el-font-weight-primary: 500`） | 500 → 400 |
-| 顶栏/折叠/边距 2.6 | `LayoutNavbar` / `useLayout` / `_layouts.scss` | 顶栏 50 ✓；折叠 54 → 48；`app-container` 15px → 16px |
-| vxe 暗色 | `src/styles/vendors/_vxe-table.scss` | 表体 `#14161a`→`#111827`、表头 `#1f2329`→`#1F2937`、hover/斑马纹按 2.3 α 方案换算 |
+| 主色 2.1 | `src/core/preferences/config/default.ts:91` + `constants.ts:12` + `styles/vendors/_element-plus.scss:13` | `hsl(212 100% 45%)` / SCSS `#006BE6`（`info` 亦同值，见 `_element-plus.scss:24-27`） |
+| 语义色 2.1 | `default.ts:92,93,90`（运行时注入） | success/warning/destructive 三个 HSL 与本表逐字一致 |
+| 暗色 2.3 | `src/styles/_dark-mode.scss:33-36,42-45,54,72` | 大底 `#0B0F19`、表面/输入/抽屉 `#111827`、表头 `#1F2937`、浮层 `#1C2128`——旧 Arco 灰（`#0C0E13/#14171C/#14161a/#1e2026/#1f2329/#2e3440/#0D0F14`）已全部清除 |
+| 浅色 canvas / 边框 2.2 | `styles/vendors/_element-plus.scss:31` / `:52` | `#F1F3F6` / `#E4E4E7` |
+| 圆角 2.4 | `_element-plus.scss` + `--radius`（`default.ts:95` 为 `"0.5"` = 8px） | base 8px |
+| 字重 2.5 | `src/styles/index.scss:46` | `--el-font-weight-primary: 400` |
+| 顶栏 / 折叠 / 边距 2.6 | `_variables.scss:16`（50px）/ `LeftLayout.vue:57`、`MixLayout.vue:123`（48）/ `_layouts.scss:9-10`（16px） | 与 2.6 一致 |
+| vxe 暗色 | `styles/vendors/_vxe-table.scss:180,183,185,187` | 表头 `#1F2937`、表体/布局底 `#111827`、斑马纹 `rgba(255,255,255,.03)` |
+
+**沿革（退役旧值）**：主色 `hsl(220 100% 55%)` / `#165DFF`、浅色 canvas `#F7F8FA`、浅色边框 `#E5E6EB`、
+字重 500、折叠 54、`app-container` 15px，以及上面括号里那一整列 Arco 暗色灰。
+运行时注入（`update-css-variables.ts`）与 SCSS 兜底两处必须同值，改一处就要同步另一处。
+
+> **实测到的不一致（待修代码，不是待修文档）**：SCSS 兜底里的 success / warning 仍是 2.1 勘误前的
+> `#57D1A0` / `#EF7A48`（`styles/vendors/_element-plus.scss:16,19`），与规范值
+> `hsl(144 57% 58%)`≈`#57D188` / `hsl(42 84% 61%)`≈`#EFBD48` 不同；运行时注入走的是规范值，
+> 所以只有"运行时注入未覆盖到的场景"（首屏前 / 未执行主题脚本时）会露出旧色。按上面的"两处必须同值"规则，
+> 这两行 SCSS 值应对齐 2.1。
 
 ---
 
@@ -185,8 +232,11 @@ Arial, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif
 
 ## 6. 迁移顺序建议
 
+> 三端迁移**已完成**（2026-09-25 逐端复核，落点见 §3.2 / §3.3）。本节保留为"未来跨端视觉变更"的
+> 工序参考，不再是待办清单。
+
 1. **react 先行**（行为基准端）：主色 + 圆角 + 顶栏/折叠尺寸，一次小 PR，浏览器暗/浅两态验证。
 2. **vue-element 跟进**：主色/语义色 + 暗色底统一 + 尺寸，改动集中在 4 个样式/配置文件。
-3. **vben 收尾**：按最终决议决定是否把暗色 default 主题对齐 react 系 4 个值。
+3. **vben 收尾**：按最终决议决定是否把暗色 default 主题对齐 react 系 4 个值（**已决**：采纳 react 系，见 §3.1 与 `dark.css:4-11`）。
 
-> 维护记录：2026-09-08 首版定稿（基准取 vben 视觉语言 + react 暗色中性色定稿）；2026-09-13 勘误 2.1 表 success/warning ≈HEX，并补记 vue-element 端收尾迁移（暗色文字层次/抽屉输入同层化/Tag 与图表色板对齐 react/浅色 Arco 灰清除）；2026-09-16 新增 §4 错误/兜底页 `--fb-*` 插画语义变量与两态色板（react/ele 已迁移并暗浅两态实测，vben 维持 `--primary/--foreground` 现状）。
+> 维护记录：2026-09-08 首版定稿（基准取 vben 视觉语言 + react 暗色中性色定稿）；2026-09-13 勘误 2.1 表 success/warning ≈HEX，并补记 vue-element 端收尾迁移（暗色文字层次/抽屉输入同层化/Tag 与图表色板对齐 react/浅色 Arco 灰清除）；2026-09-16 新增 §4 错误/兜底页 `--fb-*` 插画语义变量与两态色板（react/ele 已迁移并暗浅两态实测，vben 维持 `--primary/--foreground` 现状）；2026-09-25 复核：确认 §2.6/§3.2/§3.3 的"现值 → 目标"清单**已落地**，改写为落点索引（逐条 file:line）+ 沿革，§2.5 字体栈改记三端实测值，§2.2 标注 react 浅色无 token 覆写，并补"三选一口径"说明。

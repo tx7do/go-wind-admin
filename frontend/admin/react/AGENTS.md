@@ -16,7 +16,7 @@ GoWind React Admin 是基于 React 19 的企业级后台管理脚手架，采用
 - **国际化**: i18next + react-i18next
 - **样式**: Less + Tailwind v4
 - **图标**: Iconify (lucide 图标集)
-- **包管理**: pnpm
+- **包管理**: pnpm 或 npm 均可 —— 本端 `package.json` 未声明 `packageManager`，也没有 `only-allow` 守卫（另两端强制 pnpm）；仓库三端门禁统一跑 `npm run typecheck`，用 pnpm 时对应 `pnpm typecheck`。
 
 ## 目录结构
 
@@ -93,11 +93,14 @@ export function useCreateXxx(options?: UseMutationOptions<...>) {
 
 | 场景 | 方式 | 示例 |
 |------|------|------|
-| React 组件 | `useXxx()` | `const m = useListUsers(); m.mutateAsync(query)` |
+| React 组件 | `useXxx()` | `const { data, isLoading } = useListUsers(new PaginationQuery({ paging: { page: 1, pageSize: 20 } }))` |
+| React 组件（写操作） | `useXxx().mutateAsync` | `const { mutateAsync: createUser } = useCreateUser(); await createUser({ data: values });` |
 | Zustand Store | `fetchXxx()` | `await fetchUser(id)` |
 | 路由守卫 | `fetchXxx()` | `await fetchNavigation()` |
 
 **命名规范**: Hooks 层 `useListXxx` / `useGetXxx` + `fetchListXxx` / `fetchXxx`。
+
+**注意**: `useListXxx` / `useGetXxx` 返回的是 `useQuery` 结果（`data` / `isLoading`），没有 `mutateAsync`；`mutateAsync` 只属于 `useCreateXxx` / `useUpdateXxx` / `useDeleteXxx`。
 
 ## 路由系统
 
@@ -105,9 +108,9 @@ export function useCreateXxx(options?: UseMutationOptions<...>) {
 
 | 路由 | 位置 | 说明 |
 |------|------|------|
-| 静态路由 | `router/config/static.ts` | 主布局 + 根路由 |
-| 认证路由 | `router/config/auth.ts` | 登录/注册页 |
-| 错误路由 | `router/config/error-routes.ts` | 403/404/500 |
+| 静态路由 | `router/config/static.tsx` | 主布局 + 根路由 |
+| 认证路由 | `router/config/auth.tsx` | 登录/注册页 |
+| 错误路由 | `router/config/error-routes.tsx` | 403/404/500 |
 | 业务路由 | `router/modules/*.tsx` | 自动被 `import.meta.glob` 导入 |
 
 ### 路由配置模板
@@ -258,7 +261,7 @@ i18n.t('key', { ns: 'common' });
 
 ## 关键注意事项
 
-1. **PaginationQuery 必须用 new**: `new PaginationQuery({ page, pageSize })`
+1. **PaginationQuery 必须用 new**: `new PaginationQuery({ paging: { page, pageSize }, formValues })`（构造参数是 `paging` 对象，直接传 `{ page, pageSize }` 不会分页）
 2. **非组件环境禁用 useXxx Hook**: Store/路由守卫/工具函数中只能用 `fetchXxx()` 或 `apiClient` 直调
 3. **国际化插值**: `{{var}}` 而非 `#{var}`
 4. **meta.title 格式**: `'routes:xxx'`

@@ -414,13 +414,15 @@ export default routes;
 - `vue: 3.5.13` — `^` 范围会让 apps 与 packages 解析出两个 vue patch 版本，vue-router 等 peer 包随之产生两份实例，typecheck 出现大批 `Two different types with this name exist` 假错。
 - `typescript: 5.6.3` / `vue-tsc: 2.1.10` — 此配对经全量验证；`^` 会因镜像源元数据漂移解析到不可预期的组合（vue-tsc 2.1.x 与 TS 5.7 不兼容，会崩 `Search string not found`）。
 
-`packageManager: pnpm@11.18.0` 必须与本机 pnpm 主版本一致：pnpm 的版本自举切换在 npmmirror 下会下载残缺的 `@pnpm/exe`（缺 pnpm.exe），导致 turbo 嵌套的 `pnpm run` 报 `ERR_PNPM_ENGINE_BIN_MISSING` 且项目级 `.npmrc` 无法阻止（切换决策只读用户/全局配置）。
+**已知例外（别照这条规则去"顺手修正"）**：根 `package.json` 的 devDependencies 里 `"vue": "^3.5.22"` 确实是范围写法，但 `pnpm-workspace.yaml` 的 `overrides: vue: catalog:` 会把全仓所有 vue 请求强制收敛到 catalog 的 `3.5.13`，单实例保证仍然成立——所以既不要动那个 `^`，也不要删 `overrides` 里的这一行。
+
+`packageManager: pnpm@11.18.0` 必须与本机 pnpm 主版本一致：pnpm 的版本自举切换在 npmmirror 下会下载残缺的 `@pnpm/exe`（缺 pnpm.exe），导致 turbo 嵌套的 `pnpm run` 报 `ERR_PNPM_ENGINE_BIN_MISSING`。本仓已在项目级 `.npmrc` 里写 `manage-package-manager-versions=false` 关掉自举（直接用本机 pnpm，版本一致时行为完全相同）——**别删这一行**，删了才会撞上上述错误。
 
 ### TS2589（Type instantiation is excessively deep）
 
 vxe-table 的巨型递归类型与 `DeepPartial` 展开做结构比较时极易超深。已做两层防御：
 
-1. `DeepPartial`（`@vben-core/typings/helper.d.ts`）已改为**深度 6 层封顶**，请勿改回无界递归。
+1. `DeepPartial`（`packages/@core/base/typings/src/helper.d.ts`）已改为**深度 6 层封顶**，请勿改回无界递归。
 2. `use-vxe-grid.vue` 中向 `setState`/`mergeWithArrayOverride` 传 vxe 大类型处有显式断言截断。
 
 新增页面若再遇 TS2589：优先在调用点按目标类型断言收窄，**不要**升级 TS/vue-tsc 去碰运气。
@@ -437,9 +439,11 @@ vxe-table 的巨型递归类型与 `DeepPartial` 展开做结构比较时极易�
 
 `$t(undefined)` 或不存在的 key 会直接抛错崩页面（曾致菜单页白屏崩溃）。用 `$t()` 前确认 key 已在 `locales/langs/`（zh-CN + en-US 同步）登记；key 来自变量时先保证非空。
 
-### 开发策略：移植优先
+### 上游维护者的工序：移植优先（不是对采用者的要求）
 
-新功能/新模块以 **react 端为行为基准先做**，再移植到 vben。vben 框架变体（vben 5.x monorepo）在训练语料中占比低，AI 直接首创容易产出框架级错误（`$t` 误用、忘记离线图标、component 未用注册名等）；移植是有参照的翻译，便宜得多。
+三端是并列的**三选一**选项（见仓库根 `AGENTS.md` 与 `docs/adopt-one-frontend.md`）：采用者只取一端，不需要也不应该被要求跟另两端。下面这条只约束**本仓上游维护者 / 向本仓贡献代码的人**：
+
+新功能/新模块由上游以 **react 端为行为基准先实现并验证**，再由维护者移植到 vben。vben 框架变体（vben 5.x monorepo）在训练语料中占比低，AI 直接首创容易产出框架级错误（`$t` 误用、忘记离线图标、component 未用注册名等）；移植是有参照的翻译，便宜得多。
 
 ---
 

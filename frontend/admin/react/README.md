@@ -13,7 +13,7 @@
 | 状态管理 | Zustand 5 | 轻量，支持 persist 中间件 |
 | 数据请求 | Axios + TanStack Query 5 | 统一拦截封装，接口缓存/自动状态管理 |
 | 国际化 | i18next + react-i18next | 命名空间分离，静态全量预加载 |
-| 样式 | UnoCSS + Less + AntD Token | 原子化 CSS + 主题变量 |
+| 样式 | Tailwind CSS 4 + Less + AntD Token | 原子化 CSS + 主题变量 |
 | 图表 | ECharts 6 + echarts-for-react | 数据可视化 |
 | 富文本 | Tiptap 3 | 可扩展的富文本编辑器 |
 | 工程化 | ESLint + Prettier + Husky + Commitlint | 代码质量 + Git 提交规范 |
@@ -24,8 +24,8 @@
 
 ### 环境要求
 
-- Node.js >= 18
-- pnpm（项目使用 pnpm 管理）
+- Node.js `^20.19.0` 或 `>=22.12.0`（Vite 8 的 engines 要求）
+- pnpm 或 npm（本端未钉 `packageManager`，两种都可以；下文以 pnpm 为例）
 
 ### 安装与运行
 
@@ -33,7 +33,7 @@
 # 安装依赖
 pnpm install
 
-# 启动开发服务器（默认端口 7000）
+# 启动开发服务器（默认端口 5888，取自 .env.development 的 VITE_SERVER_PORT）
 pnpm dev
 
 # 类型检查
@@ -54,19 +54,21 @@ pnpm preview
 | 文件 | 用途 |
 |------|------|
 | `.env` | 公共配置（应用标题、命名空间、AES 密钥等） |
-| `.env.development` | 开发环境（API 地址 `localhost:7788`，代理配置） |
+| `.env.development` | 开发环境（`VITE_API_URL=/` + `VITE_PROXY` 代理到 `127.0.0.1:7788`） |
 | `.env.production` | 生产环境（API 地址 `api.demo.admin.gowind.cloud`） |
 
 关键变量：
 
 | 变量 | 说明 | 示例 |
 |------|------|------|
-| `VITE_API_URL` | API 基础地址 | `http://localhost:7788` |
+| `VITE_API_URL` | API 基础地址 | dev: `/`（走代理）· prod: `https://api.demo.admin.gowind.cloud` |
 | `VITE_SSE_URL` | SSE 推送地址 | `http://localhost:7789/events` |
 | `VITE_SERVER_PORT` | 开发服务器端口 | `5888` |
 | `VITE_PROXY` | 开发代理配置 | `[["/admin", "http://127.0.0.1:7788/"]]` |
 | `VITE_APP_TITLE` | 应用标题 | `GoWind Admin` |
 | `VITE_MOCK` | 是否启用 Mock | `false` |
+
+> dev 下 `VITE_API_URL` 取 `/` 而非后端地址：请求以绝对路径 `/admin/v1/...` 发出，由 vite dev server 按 `VITE_PROXY` 原样转发到 `http://127.0.0.1:7788`（不做 rewrite，后端路由自带 `/admin/v1` 前缀），既避开 CORS，也避免生成代码里无前导 `/` 的 path 被浏览器按当前页面目录相对解析。
 
 ---
 
@@ -74,10 +76,11 @@ pnpm preview
 
 ```
 src/
-├── api/                        # API 层
-│   ├── generated/              # 后端 Proto 生成的类型定义
-│   ├── service/                # 服务函数（对 axios 的直接封装）
+├── api/                        # API 层（两层架构，不存在 service/ 目录）
+│   ├── generated/              # 后端 Proto 生成的类型 + Service Client（禁止手改）
+│   ├── client.ts               # apiClient 单例（懒加载各 Service）
 │   ├── hooks/                  # React Query Hooks（组件内使用）
+│   ├── README.md               # 本层详细文档
 │   └── index.ts
 │
 ├── core/                       # 核心模块（通用、可复用）
@@ -179,7 +182,7 @@ import type { AppRouteObject } from '@/core/router';
 1. **创建页面组件**：`src/pages/app/<module>/<page>/index.tsx`
 2. **添加路由配置**：在 `src/router/modules/` 下对应文件中添加路由（使用 `createLazyRoute` 懒加载）
 3. **添加翻译文件**：在 `src/locales/zh-CN/_modules/` 和 `en-US/_modules/` 下添加对应 JSON
-4. **添加 API Hook**（如需）：在 `src/api/hooks/` 和 `src/api/service/` 下封装
+4. **添加 API Hook**（如需）：在 `src/api/hooks/` 下封装（内部直调 `apiClient`），并在 `src/api/hooks/index.ts` 导出
 
 ### 代码提交规范
 
@@ -253,20 +256,40 @@ main.tsx
 ### API 调用模式
 
 ```typescript
-// 1. Service 层：封装 Axios 请求（src/api/service/）
-export const listUsers = (params: PaginationQuery) =>
-  requestClient.get('/admin/v1/users', { params });
+// 1. Generated 层（src/api/generated/）产出类型与 Service Client；src/api/client.ts 的 apiClient
+//    单例以懒加载 getter 聚合它们。**没有独立的 service/ 层**，请求由 apiClient 直发。
 
-// 2. Hook 层：封装 React Query（src/api/hooks/）
-export function useListUsers(query: PaginationQuery) {
+// 2. Hook 层：封装 React Query（src/api/hooks/user.ts:39）
+export function useListUsers(
+  query: PaginationQuery,
+  options?: UseQueryOptions<identityservicev1_ListUserResponse, Error>,
+) {
   return useQuery({
     queryKey: ['listUsers', query],
     queryFn: () => listUsers(query),
+    ...options,
   });
 }
 
-// 3. 页面中使用
-const { data, isLoading } = useListUsers({ page: 1, pageSize: 20 });
+// 同文件内的私有函数才是真正发请求的地方：PaginationQuery.toRawParams() 摊平成
+// 后端认识的扁平参数，再显式剥掉本接口用不到的键（user.ts:23-34）。
+function listUsers(query: PaginationQuery) {
+  const params = query.toRawParams();
+  return apiClient.userService.List({
+    ...params,
+    sorting: undefined, offset: undefined, limit: undefined,
+    token: undefined, filter: undefined, filterExpr: undefined,
+  });
+}
+
+// 3. 页面中使用：必须 new PaginationQuery，分页参数在 paging 里
+const { data, isLoading } = useListUsers(
+  new PaginationQuery({ paging: { page: 1, pageSize: 20 }, formValues: { username: 'a' } }),
+);
+
+// 4. 写操作走 useMutation 的 mutateAsync（请求体须包 { data: {...} }）
+const { mutateAsync: createUser } = useCreateUser();
+await createUser({ data: values });
 ```
 
 ### 路由模式
@@ -323,9 +346,9 @@ Vite 的 HMR 通常能自动刷新。如果遇到状态残留，尝试手动刷�
 
 ### Q: 如何新增一个后端接口的 API 调用？
 
-1. 在 `src/api/service/` 下创建 service 函数（使用 `requestClient`）
-2. 在 `src/api/hooks/` 下创建对应的 React Query Hook
-3. 在页面组件中 import Hook 使用
+1. 后端 proto 就位后执行 `cd backend && make ts`，刷新 `src/api/generated/`（本端 `package.json` 无 `generate:api` 脚本）
+2. 在 `src/api/hooks/` 下创建 React Query Hook，内部直调 `apiClient.xxxService.Method()`（无 service 层）
+3. 在 `src/api/hooks/index.ts` 追加 `export * from './xxx';`，页面组件 import Hook 使用
 
 ### Q: 生产构建如何分析包体积？
 

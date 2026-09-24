@@ -1,14 +1,18 @@
 # 后端项目部署
 
+> **执行目录约定**：本文所有相对路径命令（`./scripts/...`、`make ...`、`docker compose ...`、`gow ...`）
+> 一律在 **`backend/` 目录**下执行——仓库根目录没有 Makefile，脚本也不在根目录。
+
 - 所有的Docker配置文件都在`backend`目录下。
 - 所有的部署脚本都在`backend/scripts`目录下。
 
 > 详细的脚本使用说明请参考：[scripts/README.md](../backend/scripts/README.md)
 
-Shell脚本需要赋予执行权限：
+Shell脚本需要赋予执行权限（`scripts/` 下含多级子目录，`**` 在多数 shell 里不会递归，用 `find`）：
 
 ```bash
-chmod +x ./scripts/**/*.sh
+cd backend
+find ./scripts -name '*.sh' -exec chmod +x {} +
 ```
 
 ## 初始化操作系统环境
@@ -36,6 +40,11 @@ chmod +x ./scripts/**/*.sh
 ```powershell
 .\scripts\env\install_windows_dev.ps1
 ```
+
+> 脚本用 `$MyInvocation` 解析自身所在目录来加载 `scripts/env/lib/*.ps1`（见 `install_windows_dev.ps1:13`），
+> 因此**在哪个目录调用都一样**——从 `backend/` 用上面的相对路径，或从仓库根目录用
+> `powershell -ExecutionPolicy Bypass -File backend\scripts\env\install_windows_dev.ps1`
+> （[windows-startup-guide.md](./windows-startup-guide.md) 的方式）都成立。
 
 ## Docker 两种部署模式
 
@@ -92,12 +101,22 @@ SSE 推送链路在生产拓扑中由一个独立的 nginx 反向代理网关承
 
 ```bash
 bash scripts/deploy/sse/build-local-docker-image.sh
-docker run -d -p 8013:8080 --network app-tier --name sse-gateway-local sse-gateway-local
+
+# 先查出网络的真名（见下），再用它启动
+docker network ls --filter name=app-tier
+docker run -d -p 8013:8080 --network <上面查到的网络名> --name sse-gateway-local sse-gateway-local
 ```
 
 说明：
 
-- 网关必须与 admin-service 共处同一 Docker 网络（如 `app-tier`）才能访问后端。
+- 网关必须与 admin-service 共处同一 Docker 网络才能访问后端。
+- **`--network app-tier` 不能照抄**：`backend/docker-compose.yaml:1-3` 只声明了
+  `networks: app-tier: {driver: bridge}`，没写 `name:`，所以 Compose 建出的真实网络名带项目名前缀
+  （默认项目名取 compose 文件所在目录名，即形如 `<目录名>_app-tier`；用了 `-p` / `COMPOSE_PROJECT_NAME`
+  则是另一个前缀）。**具体名字无法凭文档断定，用 `docker network ls --filter name=app-tier` 现场查**。
+  想钉死成 `app-tier`，在 compose 的该网络下加一行 `name: app-tier` 后 `docker compose up -d` 重建。
+  同样的照抄问题也存在于 `scripts/deploy/sse/build-local-docker-image.sh` 结尾打印的示例命令里
+  （脚本只是 echo 一个 sample，不代为执行），以本节为准。
 - 配置文件 `scripts/deploy/sse/nginx.conf` 已针对 SSE 关闭 gzip 与一切代理缓冲（`proxy_buffering off` / `proxy_cache off` / `proxy_request_buffering off`），并使用 HTTP/1.1 与长连接保活；这些是 SSE 实时性的必要配置，勿随意回退。
 - TLS 终止由外层负载均衡负责，与前端静态站点部署一致，网关自身仅监听 HTTP。
 - 独立部署时如后端地址变更，需修改 `nginx.conf` 中的 `upstream`。
@@ -139,23 +158,24 @@ openssl pkey -in jwt_private_key.pem -pubout -out jwt_public_key.pem
 - MacOS：`/private/etc/hosts`
 - Windows：`C:\Windows\System32\drivers\etc\hosts`
 
-增加以下内容：
+增加以下内容——只对应 `docker-compose.yaml` 里**实际存在**的服务（postgres / redis / minio）：
 
 ```ini
 127.0.0.1 postgres
 127.0.0.1 redis
 127.0.0.1 minio
-127.0.0.1 consul
-127.0.0.1 jaeger
 ```
 
-> **注意**：如果注册中心使用Consul，consul的地址填写为`consul`会返回`502`，使用`localhost`或者`127.0.0.1`都可以。
-> ```yaml
-> registry:
->   type: "consul"
+> **沿革**：此处早期还列过 `consul` 与 `jaeger`，本仓现状没有这两种部署——`docker-compose.yaml` 里
+> jaeger 整段（86 行起）是注释掉的，配置与代码里 `grep -i consul` 零命中，注册中心也未接入。
+> 若二次开发自行引入 Consul，再按当时的形态补 hosts 与 `registry` 配置（历史坑：`consul` 作主机名会 502，
+> 地址要写 `localhost:8500`）。
 >
->   consul:
->     address: "localhost:8500"
-> ```
+> **推荐做法**：本地开发使用依赖模式（libs_only），配置文件中直接使用`localhost`即可，无需修改 hosts
+> （见 [windows-startup-guide.md](./windows-startup-guide.md) 第三步：改的就是 `localhost`）。
 >
-> **推荐做法**：本地开发使用依赖模式（libs_only），配置文件中直接使用`localhost`即可，无需修改 hosts。
+> **与一键脚本的差异**：`scripts/env/install_windows_dev.ps1` 以管理员运行时写的是**带 `.local` 后缀**的
+> 域名（其 50-51 行 `$services = @('postgres','mysql','redis','minio')` + `-DomainSuffix ".local"`，
+> 由 `scripts/env/lib/host-utils.ps1:111,119-120` 拼成 `postgres.local` 等），与上面的裸主机名清单不一致；
+> 其中 `mysql` 一项当前 compose 也未启用。两种写法各自自洽即可，**不要混用**：走脚本就在配置里写
+> `postgres.local`，走本文清单就写 `postgres`，用 `localhost` 则两条都不需要。

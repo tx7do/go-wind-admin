@@ -4,7 +4,7 @@
 
 # GoWind Admin
 
-**Out-of-the-box, enterprise-grade full-stack admin scaffold (Go + three frontends)**
+**Out-of-the-box, enterprise-grade full-stack admin scaffold (Go backend + one of three frontends)**
 
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Go Version](https://img.shields.io/badge/Go-1.26+-00ADD8?logo=go)](https://go.dev/)
@@ -20,16 +20,26 @@
 
 ## Project Highlights
 
-- **Multi-Frontend**: Ships with `Vue3 Vben` (Ant Design Vue), `Vue3 Element Plus`, and `React19 Antd` — pick whichever fits your team
-- **Enterprise-grade RBAC**: Multi-tenant, multi-role, multi-department, menu / button / data-level permission control (Casbin / OPA / Zanzibar)
+- **Three frontends, pick one — not three in one**: `Vue3 Vben` (Ant Design Vue), `Vue3 Element Plus` and `React19 Antd` are **three parallel implementations of the same backend**, so that teams on different stacks each get the one they are fluent in — **one team takes one, one deployment runs one**. Each has its own package root, its own deploy scripts, and they share no dependencies; once you choose, the other two directories can be deleted (steps in [docs/adopt-one-frontend.md](./docs/adopt-one-frontend.md))
+- **Enterprise-grade RBAC**: Multi-tenant, multi-role, multi-department, menu / button / data-level permission control (switchable policy engine: Casbin / OPA)
 - **Security & MLPS Compliance**: Designed against China MLPS 2.0 (Level 2/3) technical requirements — 180-day audit log retention & archiving, password policy trio, TOTP MFA, application-layer password encryption, dynamic RBAC and tenant isolation, scheduled backup rotation. See [Security & Compliance](#security--compliance-mlps-20)
 - **Microservice + Monolith**: Built on the go-kratos microservice framework, yet supports monolith-mode development and deployment — flexible for any team size
 - **Full-stack Code Generation**: Protobuf → Go API / TypeScript clients, Ent Schema → ORM, one-click CRUD scaffolding; companion desktop GUI generator and CLI ([go-wind-toolkit](https://github.com/tx7do/go-wind-toolkit/tree/main/gowind-uiapp), see [Companion Tools](#companion-tools))
-- **Production-ready**: JWT auth, SSE push, async task scheduling, distributed tracing, Swagger docs, one-click Docker deployment
+- **Production-ready**: JWT auth, SSE push, async task scheduling, Swagger docs, one-click Docker deployment
+
+### Why three frontends
+
+**Because teams work in different stacks — not because one team needs React and Vue at the same time.**
+
+One backend, one API contract, three frontend implementations: React teams take `react`, Vue teams take `vue-vben` or `vue-element`. Nobody has to switch stacks just to adopt this scaffold.
+
+Keeping all three usable is a cost borne **upstream**; as an adopter you maintain only the one you picked and delete the other two directories (what to adjust: [docs/adopt-one-frontend.md](./docs/adopt-one-frontend.md)).
 
 ---
 
 ## Demo
+
+Three URLs, three parallel demos of the same backend capabilities — **open each, compare, you will want only one**:
 
 | Frontend Edition | Demo |
 |------------------|------|
@@ -48,10 +58,11 @@
 <tr><th>Layer</th><th>Technologies</th></tr>
 <tr><td><strong>Backend Framework</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Protobuf / Buf</code></td></tr>
 <tr><td><strong>ORM</strong></td><td><code>Ent</code> (primary) · <code>GORM</code> (auxiliary) · <code>MySQL</code> · <code>PostgreSQL</code></td></tr>
-<tr><td><strong>Middleware</strong></td><td><code>Redis 8.0+</code> · <code>MinIO</code> (S3-compatible object storage) · <code>Jaeger</code> (tracing)</td></tr>
-<tr><td><strong>Authentication & Authorization</strong></td><td><code>JWT</code> · <code>Casbin</code> · <code>OPA</code> · <code>Zanzibar</code></td></tr>
+<tr><td><strong>Middleware</strong></td><td><code>Redis 8.0+</code> · <code>MinIO</code> (S3-compatible object storage)</td></tr>
+<tr><td><strong>Authentication & Authorization</strong></td><td><code>JWT</code> · <code>Casbin</code> · <code>OPA</code></td></tr>
 <tr><td><strong>Realtime</strong></td><td><code>SSE</code> (server push) · <code>Asynq</code> (async tasks)</td></tr>
 <tr><td><strong>Scripting Engine</strong></td><td><code>go-scripts</code> · <code>Lua</code> (gopher-lua) · <code>JavaScript</code> (goja) · multi-language hook plugin system</td></tr>
+<tr><td><strong>Frontend</strong></td><td><strong>Pick one</strong> — the three rows below are parallel options, not something to adopt together</td></tr>
 <tr><td><strong>Vue Vben Edition</strong></td><td><code>Vue 3</code> · <code>TypeScript</code> · <code>Vite</code> · <code>Ant Design Vue</code> · <code>Vben Admin</code></td></tr>
 <tr><td><strong>Vue Element Edition</strong></td><td><code>Vue 3</code> · <code>TypeScript</code> · <code>Vite</code> · <code>Element Plus</code> (lightweight pure edition)</td></tr>
 <tr><td><strong>React Edition</strong></td><td><code>React 19</code> · <code>TypeScript</code> · <code>Vite</code> · <code>Zustand</code> · <code>Ant Design V6</code> (no UMI)</td></tr>
@@ -66,13 +77,13 @@ Security capabilities are designed with reference to the technical requirements 
 
 | Requirement | Implementation |
 |------------|----------------|
-| **Security Audit** | Full coverage of six audit log types: login / operation / API / data access / permission change / policy evaluation, recording IP geolocation and trace_id. Daily scheduled archiving via asynq: 180-day in-database retention (`AUDIT_RETENTION_DAYS`, adjustable); expired rows are exported to JSONL archive files for long-term traceability |
+| **Security Audit** | Full coverage of six audit log types: login / operation / API / data access / permission change / policy evaluation, recording the client IP (login / operation / API additionally resolve geolocation) and the `X-Request-ID` request id sent by the frontend. Daily scheduled archiving via asynq: 180-day in-database retention (`AUDIT_RETENTION_DAYS`, adjustable); expired rows are exported to JSONL archive files for long-term traceability |
 | **Identity Authentication** | Password complexity (≥8 chars, at least 3 of 4 character classes), password history reuse check (last 3 by default), password validity period (90 days by default) — thresholds are adjusted via the "Parameter Management" platform parameters (built-in keys seeded at startup; environment-variable configuration is deprecated); TOTP multi-factor authentication (MFA); image captcha; Redis login failure rate limiting (IP + username dual dimensions); configurable login restriction policies |
-| **Access Control** | Dynamic RBAC engine (Casbin / OPA / Zanzibar switchable); role–permission–API mappings stored in the database with instant hot-reload on changes; menu / button level permission control, plus role-scoped row-level data scope (V1 pilot: position table) and field-level permissions (V1 pilot: user table, blacklisted fields pruned from responses); every authorization decision is logged to policy evaluation logs for traceability |
+| **Access Control** | Dynamic RBAC engine (switchable policy engine: Casbin / OPA); role–permission–API mappings stored in the database with instant hot-reload on changes; menu / button level permission control, plus role-scoped row-level data scope (V1 pilot: position table) and field-level permissions (V1 pilot: user table, blacklisted fields pruned from responses); every authorization decision is logged to policy evaluation logs for traceability |
 | **Multi-Tenant Isolation** | Compile-time ent Privacy data isolation: read queries get automatic tenant filtering; Create guards against forged tenants, Update / Delete inject tenant predicates (cross-tenant mutations match 0 rows); tenant requests are fail-closed validated against the Api table by `(path, method)`; plan module whitelists and expiry read-only policy |
 | **Data Confidentiality** | Login passwords encrypted at the application layer (AES) in transit and bcrypt-hashed at rest; sensitive task configs encrypted at rest with AES-256-GCM (transparent via Ent hooks); JWT RS256 asymmetric signing; refresh token in HttpOnly Cookie; transport-layer TLS enabled at deployment (backend `server.rest.tls` config, or nginx / load balancer termination) |
 | **Data Backup & Recovery** | [`scripts/backup/pg_backup.sh`](./backend/scripts/backup/pg_backup.sh) scheduled full backups (pg_dump, 30 copies auto-rotation by default), Docker container / local direct-connect dual modes, with recovery documentation |
-| **Frontend Security** | All three frontend production builds enable security response headers such as CSP, X-Frame-Options, and HSTS |
+| **Frontend Security** | Each of the three frontends ships its own `scripts/deploy/nginx.conf`, setting X-Frame-Options / HSTS / Content-Security-Policy response headers in production; react and vue-element additionally inject a CSP `<meta>` into `index.html` at build time (inline scripts allowlisted by sha256), so one layer survives a different web server |
 
 > **Note**: MLPS evaluation covers more than technical requirements — management policies, physical environment, personnel organization, etc. This project covers the technical measures portion, providing direct support for evaluation preparation in private deployments, but it does not replace the full MLPS certification process.
 
@@ -85,8 +96,8 @@ Security capabilities are designed with reference to the technical requirements 
 | Tool | Version |
 |------|---------|
 | Go | 1.26+ (follow `backend/go.mod`) |
-| Node.js | follow the `engines` field of each frontend `package.json` (current constraint intersection: >= 20.19.0) |
-| pnpm | >= 10.0.0 |
+| Node.js | `^20.19.0 \|\| >=22.12.0` — the intersection of the three `engines` fields is set by vue-element (vue-vben only asks `>=20.10.0`, react declares none). **21.x is not covered**, nor is anything below 20.19 |
+| pnpm | `>= 9.12.0` (floor from vue-vben's `engines.pnpm`). vue-vben additionally pins `pnpm@11.18.0` via `packageManager`: enable corepack (`corepack enable`) to switch automatically, otherwise install 11.x yourself |
 | Docker | 20.0+ |
 
 ### Environment Scripts
@@ -107,8 +118,12 @@ Security capabilities are designed with reference to the technical requirements 
 **Linux / macOS:**
 
 ```shell
+# All commands below run inside backend/ (scripts/ lives there)
+cd backend
+
 # Grant script execution permissions
-chmod +x scripts/**/*.sh
+# scripts/ nests three levels; a glob misses env/lib and deploy/sse, so use find
+find ./scripts -name '*.sh' -exec chmod +x {} +
 
 # Development (Recommended)
 ./scripts/env/install_unix_dev.sh
@@ -126,6 +141,9 @@ gow run admin
 **Windows (PowerShell as Administrator):**
 
 ```powershell
+# All commands below run inside backend/ (scripts/ lives there)
+cd backend
+
 # Allow script execution (only needed once)
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
@@ -142,7 +160,7 @@ gow run admin
 
 ### Frontend Startup
 
-All frontends live under the `frontend/admin` directory and share the same dependency installation:
+All three live under the `frontend/admin` directory — **pick one**, install it the usual way, and ignore the other two:
 
 | Frontend Edition | Directory | Command | Port |
 |------------------|-----------|---------|------|
@@ -151,18 +169,19 @@ All frontends live under the `frontend/admin` directory and share the same depen
 | Vue Vben | `frontend/admin/vue-vben` | `pnpm dev:antd` | 5666 |
 
 ```shell
-# Install dependencies
+# Pick ONE: cd into that frontend first, then install and start.
+# There is no package.json at the repo root or under frontend/admin/,
+# so running `pnpm install` there only fails with ENOENT.
+cd frontend/admin/react
 pnpm install
+pnpm dev                    # port 5888
 
-# React Edition
-cd frontend/admin/react && pnpm dev
-
-# Vue3 Element Edition
-cd frontend/admin/vue-element && pnpm dev
-
-# Vue3 Vben Edition
-cd frontend/admin/vue-vben && pnpm dev:antd
+# The other two ends:
+cd frontend/admin/vue-element && pnpm install && pnpm dev            # port 5777
+cd frontend/admin/vue-vben   && pnpm install && pnpm dev:antd        # port 5666
 ```
+
+> vue-vben is itself a pnpm workspace (`pnpm-workspace.yaml` + `apps/` + `packages/`), so dependencies must be installed at **its** root; `pnpm dev:antd` then selects the `@vben/web-antd` app from the workspace. Installing inside `apps/admin` bypasses the catalog version pins.
 
 ---
 
@@ -244,7 +263,7 @@ go-wind-admin/
 │   │   └── ...                     # Other utility packages
 │   ├── scripts/                    # Deployment & backup scripts (env/docker/deploy/backup)
 │   └── sql/                        # Demo data SQL (default data is seeded automatically at service startup)
-├── frontend/admin/                 # Frontend projects
+├── frontend/admin/                 # Frontend projects (pick one — you only maintain that one)
 │   ├── react/                      # React 19 + Ant Design V6
 │   ├── vue-element/                # Vue 3 + Element Plus
 │   └── vue-vben/                   # Vue 3 + Ant Design Vue + Vben Admin

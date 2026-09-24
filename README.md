@@ -18,16 +18,26 @@
 
 ## 项目亮点
 
-- **多前端适配**：同时提供 `Vue3 Vben`（Ant Design Vue）、`Vue3 Element Plus`、`React19 Antd` 三套前端，满足不同团队偏好
-- **企业级 RBAC**：支持多租户、多角色、多部门、菜单/按钮/数据级权限控制（Casbin / OPA / Zanzibar）
+- **前端三选一，不是三合一**：`Vue3 Vben`（Ant Design Vue）、`Vue3 Element Plus`、`React19 Antd` 是同一套后端的**三个并列实现**，为的是让用不同技术栈的团队都能拿到自己顺手的那一套——**每个团队只取一套，一次部署只跑一套**。三端各自独立包根、独立部署脚本、互不依赖，选定后另外两个目录可以直接删（改动点见 [docs/adopt-one-frontend.md](./docs/adopt-one-frontend.md)）
+- **企业级 RBAC**：支持多租户、多角色、多部门、菜单/按钮/数据级权限控制（策略引擎可切换：Casbin / OPA）
 - **安全与等保合规**：按等保 2.0 技术要求内置 180 天审计日志留存归档、口令策略三件套、TOTP MFA、口令应用层加密、动态 RBAC 与多租户隔离、定时备份轮换，详见[安全与等保合规](#安全与等保合规)
 - **微服务 + 单体自由切换**：基于 go-kratos 微服务框架，但支持单体架构模式开发与部署，灵活适配团队规模
 - **全栈代码生成**：Protobuf → Go API / TypeScript 客户端，Ent Schema → ORM，一键 CRUD 脚手架；配套桌面端可视化代码生成器与 CLI（[go-wind-toolkit](https://github.com/tx7do/go-wind-toolkit/tree/main/gowind-uiapp)，见[配套工具](#配套工具)）
-- **生产就绪**：JWT 鉴权、SSE 消息推送、异步任务调度、分布式链路追踪、Swagger 文档、Docker 一键部署
+- **生产就绪**：JWT 鉴权、SSE 消息推送、异步任务调度、Swagger 文档、Docker 一键部署
+
+### 为什么是三套前端
+
+**因为不同团队的技术栈不一样——而不是为了服务"同时需要 React 和 Vue 的某一个团队"。**
+
+一套后端、一份接口契约、三种前端实现：用 React 的团队拿 `react` 那套，用 Vue 的团队拿 `vue-vben` 或 `vue-element` 那套。谁都不必为了用这个脚手架去换自己熟练的技术栈。
+
+把三套都维护到可用，这个成本由**上游**承担；你作为采用者只维护选中的那一套，另外两个目录删掉即可（改动点见 [docs/adopt-one-frontend.md](./docs/adopt-one-frontend.md)）。
 
 ---
 
 ## 演示地址
+
+三个地址是同一套后端能力的三个并列演示——**逐个点开对比，你只会要其中一套**：
 
 | 前端版本 | 演示地址 |
 |---------|--------|
@@ -46,10 +56,11 @@
 <tr><th>层级</th><th>技术</th></tr>
 <tr><td><strong>后端框架</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Protobuf / Buf</code></td></tr>
 <tr><td><strong>ORM</strong></td><td><code>Ent</code>（主要） · <code>GORM</code>（辅助） · <code>MySQL</code> · <code>PostgreSQL</code></td></tr>
-<tr><td><strong>中间件</strong></td><td><code>Redis 8.0+</code> · <code>MinIO</code>（S3 兼容对象存储） · <code>Jaeger</code>（链路追踪）</td></tr>
-<tr><td><strong>认证授权</strong></td><td><code>JWT</code> · <code>Casbin</code> · <code>OPA</code> · <code>Zanzibar</code></td></tr>
+<tr><td><strong>中间件</strong></td><td><code>Redis 8.0+</code> · <code>MinIO</code>（S3 兼容对象存储）</td></tr>
+<tr><td><strong>认证授权</strong></td><td><code>JWT</code> · <code>Casbin</code> · <code>OPA</code></td></tr>
 <tr><td><strong>实时通信</strong></td><td><code>SSE</code>（服务端推送） · <code>Asynq</code>（异步任务）</td></tr>
 <tr><td><strong>脚本引擎</strong></td><td><code>go-scripts</code> · <code>Lua</code>（gopher-lua） · <code>JavaScript</code>（goja） · 多语言 Hook 插件系统</td></tr>
+<tr><td><strong>前端</strong></td><td><strong>三选一</strong>——下面三行是并列选项，各取其一，不需要同时采用</td></tr>
 <tr><td><strong>Vue Vben 版</strong></td><td><code>Vue 3</code> · <code>TypeScript</code> · <code>Vite</code> · <code>Ant Design Vue</code> · <code>Vben Admin</code></td></tr>
 <tr><td><strong>Vue Element 版</strong></td><td><code>Vue 3</code> · <code>TypeScript</code> · <code>Vite</code> · <code>Element Plus</code>（轻量纯净版）</td></tr>
 <tr><td><strong>React 版</strong></td><td><code>React 19</code> · <code>TypeScript</code> · <code>Vite</code> · <code>Zustand</code> · <code>Ant Design V6</code>（无 UMI）</td></tr>
@@ -64,13 +75,13 @@
 
 | 等保技术要求 | 落地实现 |
 |------------|---------|
-| **安全审计** | 六类审计日志全覆盖：登录 / 操作 / API / 数据访问 / 权限变更 / 策略评估，记录 IP 归属地与 trace_id。asynq 每日定时归档：库内留存 180 天（`AUDIT_RETENTION_DAYS` 可调），超期数据导出 JSONL 归档文件留痕，库瘦身与日志留存两不误 |
+| **安全审计** | 六类审计日志全覆盖：登录 / 操作 / API / 数据访问 / 权限变更 / 策略评估，记录客户端 IP（登录 / 操作 / API 三类另解析归属地）与前端下发的 `X-Request-ID` 请求号。asynq 每日定时归档：库内留存 180 天（`AUDIT_RETENTION_DAYS` 可调），超期数据导出 JSONL 归档文件留痕，库瘦身与日志留存两不误 |
 | **身份鉴别** | 口令复杂度（≥8 位、小写/大写/数字/符号四类取三）、历史口令复用检查（默认近 3 条）、口令有效期（默认 90 天），阈值经「参数管理」平台参数调整（内置参数启动时播种，环境变量配置已废弃）；TOTP 多因素认证（MFA）；图形验证码；Redis 登录失败限流（IP + 用户名双维度）；可配置登录限制策略 |
-| **访问控制** | 动态 RBAC 权限引擎（Casbin / OPA / Zanzibar 可切换），角色—权限—接口映射存于数据库，权限变更即时热更新生效；菜单/按钮级权限控制，角色级行数据权限范围（V1 试点：岗位表）与字段级权限（V1 试点：用户表，黑名单字段自响应裁剪）；每次鉴权判定落策略评估日志可追溯 |
+| **访问控制** | 动态 RBAC 权限引擎（策略引擎可切换：Casbin / OPA），角色—权限—接口映射存于数据库，权限变更即时热更新生效；菜单/按钮级权限控制，角色级行数据权限范围（V1 试点：岗位表）与字段级权限（V1 试点：用户表，黑名单字段自响应裁剪）；每次鉴权判定落策略评估日志可追溯 |
 | **多租户隔离** | ent Privacy 策略编译级数据隔离：读查询自动注入租户过滤，Create 防伪造租户、Update / Delete 注入租户谓词（跨租户变更命中 0 行）；租户请求按 `(path, method)` 经 Api 表 fail-closed 校验（缺权限点即拒绝）；套餐模块白名单与到期只读策略 |
 | **数据保密性** | 登录口令应用层 AES 加密传输、bcrypt 哈希存储；敏感任务配置 AES-256-GCM 静态加密（Ent Hook 透明加解密）；JWT RS256 非对称签名；refresh token 走 HttpOnly Cookie；传输层 TLS 由部署层启用（后端 `server.rest.tls` 配置或 nginx / 负载均衡终止） |
 | **数据备份恢复** | [`scripts/backup/pg_backup.sh`](./backend/scripts/backup/pg_backup.sh) 定时全量备份（pg_dump，默认保留 30 份自动轮换），支持 Docker 容器 / 本地直连双模式，附恢复操作文档 |
-| **前端安全** | 三套前端生产构建均启用 CSP、X-Frame-Options、HSTS 等安全响应头 |
+| **前端安全** | 三端各自附带 `scripts/deploy/nginx.conf`，生产侧下发 X-Frame-Options / HSTS / Content-Security-Policy 响应头；react 与 vue-element 另在构建期向 index.html 注入 CSP `<meta>`（内联脚本按 sha256 白名单放行），换掉 web server 也仍有一层防护 |
 
 > **说明**：等保测评除技术要求外，还包含管理制度、物理环境、人员组织等非软件范畴的内容。本项目覆盖的是技术措施部分，可为私有化部署的等保测评准备提供直接支撑，但不能替代完整的等保测评流程。
 
@@ -83,8 +94,8 @@
 | 工具 | 版本 |
 |------|------|
 | Go | 1.26+（以 `backend/go.mod` 为准） |
-| Node.js | 以各前端 `package.json` 的 `engines` 为准（当前约束交集 ≥ 20.19.0） |
-| pnpm | >= 10.0.0 |
+| Node.js | `^20.19.0 \|\| >=22.12.0`——三端 `engines` 的交集由 vue-element 决定（vue-vben 只要求 `>=20.10.0`，react 未声明）。**21.x 不满足**，20.18 及以下也不满足 |
+| pnpm | `>= 9.12.0`（下限来自 vue-vben 的 `engines.pnpm`）。vue-vben 另用 `packageManager` 钉死 `pnpm@11.18.0`：启用 corepack（`corepack enable`）即自动切换，未启用则手动 `npm i -g pnpm@11.18.0` 或至少对齐 major |
 | Docker | 20.0+ |
 
 ### 环境脚本选型
@@ -105,8 +116,12 @@
 **Linux / macOS：**
 
 ```shell
+# 以下命令均在 backend/ 目录下执行（scripts/ 只在 backend/ 下）
+cd backend
+
 # 赋予脚本执行权限
-chmod +x scripts/**/*.sh
+# scripts 下有三层子目录，glob 会漏掉 env/lib 与 deploy/sse，用 find 一次到位
+find ./scripts -name '*.sh' -exec chmod +x {} +
 
 # 开发环境（推荐）
 ./scripts/env/install_unix_dev.sh
@@ -124,6 +139,9 @@ gow run admin
 **Windows（PowerShell 管理员）：**
 
 ```powershell
+# 以下命令均在 backend/ 目录下执行（scripts/ 只在 backend/ 下）
+cd backend
+
 # 放行脚本策略（首次仅需执行一次）
 Set-ExecutionPolicy RemoteSigned -Scope CurrentUser
 
@@ -140,7 +158,7 @@ gow run admin
 
 ### 前端启动
 
-前端统一存放于 `frontend/admin` 目录，三版前端共享依赖安装命令：
+前端统一存放于 `frontend/admin` 目录。**下表与下面的启动命令都是"三选一"**：任选你团队顺手的一套执行即可（三套的依赖安装命令都是 `pnpm install`）：
 
 | 前端版本 | 目录 | 启动命令 | 端口 |
 |---------|------|---------|------|
@@ -149,18 +167,19 @@ gow run admin
 | Vue Vben | `frontend/admin/vue-vben` | `pnpm dev:antd` | 5666 |
 
 ```shell
-# 安装依赖
+# 三选一：先 cd 进你选的那一端，再装依赖、再启动。
+# 仓库根目录和 frontend/admin/ 下都没有 package.json，
+# 在这两处跑 pnpm install 只会得到 ENOENT 报错。
+cd frontend/admin/react
 pnpm install
+pnpm dev                    # 端口 5888
 
-# React 版本
-cd frontend/admin/react && pnpm dev
-
-# Vue3 Element 版本
-cd frontend/admin/vue-element && pnpm dev
-
-# Vue3 Vben 版本
-cd frontend/admin/vue-vben && pnpm dev:antd
+# 换成另外两端：
+cd frontend/admin/vue-element && pnpm install && pnpm dev            # 端口 5777
+cd frontend/admin/vue-vben   && pnpm install && pnpm dev:antd        # 端口 5666
 ```
+
+> vue-vben 本身是个 pnpm workspace（`pnpm-workspace.yaml` + `apps/` + `packages/`），所以必须在它的**根目录**装依赖，`pnpm dev:antd` 再从 workspace 里挑出 `@vben/web-antd` 这个 app 启动——在 `apps/admin` 下单独 `pnpm install` 会破坏 catalog 版本锁定。
 
 ---
 
@@ -242,7 +261,7 @@ go-wind-admin/
 │   │   └── ...                     # 其他工具包
 │   ├── scripts/                    # 部署与备份脚本（env/docker/deploy/backup）
 │   └── sql/                        # 演示数据 SQL（默认数据由服务启动自动播种）
-├── frontend/admin/                 # 前端项目
+├── frontend/admin/                 # 前端项目（三选一，只需维护你选中的那一套）
 │   ├── react/                      # React 19 + Ant Design V6
 │   ├── vue-element/                # Vue 3 + Element Plus
 │   └── vue-vben/                   # Vue 3 + Ant Design Vue + Vben Admin
