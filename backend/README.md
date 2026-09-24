@@ -26,7 +26,7 @@
 
 | 中间件        | 版本要求          | 说明                                 |
 |------------|---------------|------------------------------------|
-| Redis      | 8.0+          | 必须 ≥8.0，项目使用 `HExpire`、`HSETEX` 命令 |
+| Redis      | 未固定         | compose 拉 `bitnami/redis:latest`。旧版本此处写"必须 ≥8.0，使用 `HExpire`/`HSETEX`"——两条命令在 `backend/**` 与本仓依赖树里均 **0 命中**（2026-09-25 实测，命令见下方"Redis 命令报错"一节），实际只用到 `Set`/`Expire`/`Publish`/`HSet` 一类长期命令 |
 | Postgresql | 14+           | 关系型数据库，支持 JSON / 事务                |
 | MinIO      | RELEASE.2024+ | 兼容 S3 协议的对象存储服务                    |
 | Jaeger     | 1.40+         | 分布式链路追踪，可视化请求耗时                    |
@@ -251,7 +251,14 @@ go mod tidy
 > address: "localhost:8500"
 > ```
 
-# Redis 认证失败 / 命令报错
+# Redis 命令报错 / 版本过低
 
-- **原因**：项目使用`HExpire`命令，仅支持 Redis 8.0+
-- **解决**：升级 Redis 到 8.0 及以上版本
+- **本仓不要求 Redis 8**：旧版本文档写的"项目使用 `HExpire` 命令，仅支持 Redis 8.0+"没有代码依据——
+  `grep -rnE "\.HExpire\(|\.HPExpire\(|\.HExpireAt\(|\.HTTL\(" --include=*.go app pkg` 在本仓 **0 命中**，
+  在 `hibiken` / `go-kratos` / `tx7do` / `go-redsync` 四个依赖目录下同样 **0 命中**（2026-09-25 实测）。
+  应用实际用到的是 `Set` / `Expire` / `Publish` / `HSet` 一类的长期命令（同口径 837 处调用）。
+- **仍然报"unknown command"时**：compose 拉的是 `bitnami/redis:latest`，未在配置里固定版本，
+  因此报错一般来自**你自己指向的旧服务端**（例如自建 6.x/7.x 或云厂商锁定版本）。
+  按报错的那条命令去查它的最低服务端版本，再决定升级——不要照搬"必须 8.0+"。
+- **认证失败**（与版本无关）：`data.yaml` / `server.yaml` 里的 `password` 要与服务端一致，
+  开发库默认 `*Abcd123456`。

@@ -20,7 +20,7 @@
 
 ## Project Highlights
 
-- **Three frontends, pick one — not three in one**: `Vue3 Vben` (Ant Design Vue), `Vue3 Element Plus` and `React19 Antd` are **three parallel implementations of the same backend**, so that teams on different stacks each get the one they are fluent in — **one team takes one, one deployment runs one**. Each has its own package root, its own deploy scripts, and they share no dependencies; once you choose, the other two directories can be deleted (steps in [docs/adopt-one-frontend.md](./docs/adopt-one-frontend.md))
+- **Three frontends, pick one — not three in one**: `Vue3 Vben` (Ant Design Vue), `Vue3 Element Plus` and `React19 Antd` are **three parallel implementations of the same backend**, so that teams on different stacks each get the one they are fluent in — **one team takes one, one deployment runs one**. Each has its own package root, its own deploy scripts, and they share no dependencies; once you choose, the other two directories can be deleted (steps in [docs/adopt-one-frontend.md](./docs/adopt-one-frontend.md), Chinese only)
 - **Enterprise-grade RBAC**: Multi-tenant, multi-role, multi-department, menu / button / data-level permission control (switchable policy engine: Casbin / OPA)
 - **Security & MLPS Compliance**: Designed against China MLPS 2.0 (Level 2/3) technical requirements — 180-day audit log retention & archiving, password policy trio, TOTP MFA, application-layer password encryption, dynamic RBAC and tenant isolation, scheduled backup rotation. See [Security & Compliance](#security--compliance-mlps-20)
 - **Microservice + Monolith**: Built on the go-kratos microservice framework, yet supports monolith-mode development and deployment — flexible for any team size
@@ -33,7 +33,7 @@
 
 One backend, one API contract, three frontend implementations: React teams take `react`, Vue teams take `vue-vben` or `vue-element`. Nobody has to switch stacks just to adopt this scaffold.
 
-Keeping all three usable is a cost borne **upstream**; as an adopter you maintain only the one you picked and delete the other two directories (what to adjust: [docs/adopt-one-frontend.md](./docs/adopt-one-frontend.md)).
+Keeping all three usable is a cost borne **upstream**; as an adopter you maintain only the one you picked and delete the other two directories (what to adjust: [docs/adopt-one-frontend.md](./docs/adopt-one-frontend.md), Chinese only).
 
 ---
 
@@ -58,7 +58,7 @@ Three URLs, three parallel demos of the same backend capabilities — **open eac
 <tr><th>Layer</th><th>Technologies</th></tr>
 <tr><td><strong>Backend Framework</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Protobuf / Buf</code></td></tr>
 <tr><td><strong>ORM</strong></td><td><code>Ent</code> (primary) · <code>GORM</code> (auxiliary) · <code>MySQL</code> · <code>PostgreSQL</code></td></tr>
-<tr><td><strong>Middleware</strong></td><td><code>Redis 8.0+</code> · <code>MinIO</code> (S3-compatible object storage)</td></tr>
+<tr><td><strong>Middleware</strong></td><td><code>Redis</code> (compose pulls <code>bitnami/redis:latest</code>, no version pin; the codebase uses only long-standing commands such as Set/Expire/Publish — nothing Redis-8-specific) · <code>MinIO</code> (S3-compatible object storage)</td></tr>
 <tr><td><strong>Authentication & Authorization</strong></td><td><code>JWT</code> · <code>Casbin</code> · <code>OPA</code></td></tr>
 <tr><td><strong>Realtime</strong></td><td><code>SSE</code> (server push) · <code>Asynq</code> (async tasks)</td></tr>
 <tr><td><strong>Scripting Engine</strong></td><td><code>go-scripts</code> · <code>Lua</code> (gopher-lua) · <code>JavaScript</code> (goja) · multi-language hook plugin system</td></tr>
@@ -96,8 +96,8 @@ Security capabilities are designed with reference to the technical requirements 
 | Tool | Version |
 |------|---------|
 | Go | 1.26+ (follow `backend/go.mod`) |
-| Node.js | `^20.19.0 \|\| >=22.12.0` — the intersection of the three `engines` fields is set by vue-element (vue-vben only asks `>=20.10.0`, react declares none). **21.x is not covered**, nor is anything below 20.19 |
-| pnpm | `>= 9.12.0` (floor from vue-vben's `engines.pnpm`). vue-vben additionally pins `pnpm@11.18.0` via `packageManager`: enable corepack (`corepack enable`) to switch automatically, otherwise install 11.x yourself |
+| Node.js | `^20.19.0 \|\| >=22.12.0` — the intersection of the three `engines` fields is set by vue-element (vue-vben only asks `>=20.10.0`, react declares none). **21.x is not covered**, nor is 20.18 and below |
+| pnpm | `>= 9.12.0` (floor from vue-vben's `engines.pnpm`). vue-vben additionally pins `pnpm@11.18.0` via `packageManager`: enable corepack (`corepack enable`) to switch automatically, otherwise `npm i -g pnpm@11.18.0` — or at least match the major version |
 | Docker | 20.0+ |
 
 ### Environment Scripts
@@ -199,7 +199,7 @@ cd frontend/admin/vue-vben   && pnpm install && pnpm dev:antd        # port 5666
 | Role Management | Manage roles and role groups; user selection by role; menu grants, data-scope configuration (five levels / custom organization-unit sets), and field-level permissions (blacklisted field sets); batch add/remove employees. |
 | Permission Management | Manage permission groups, menus, and permission points with tree-view listing. |
 | Organization Management | Manage organizations with tree-view listing. |
-| Position Management | Manage user positions; positions can serve as user labels. Excel import is supported: client-side template download, row-by-row processing through the existing create API with row-level error reporting, and the organization column is resolved by exact organization-name match. |
+| Position Management | Manage user positions; positions can serve as user labels. Excel import is supported: client-side template download, row-by-row processing through the existing create API with row-level error reporting. **The "organization" column is resolved only by the vue-element importer** (exact organization-name match; a miss is reported as that row's error) — the react and vue-vben field lists deliberately exclude `orgUnitId`, their comments mark foreign-key name resolution as future work. |
 | Menu Management | Configure system menus, operation permissions, and button permission identifiers — directories, menus, and buttons. Menu synchronization (available on all three frontends) supports two modes: transactional truncate-rebuild, or incremental merge, which matches existing entries by full path and updates them in place while preserving existing menu IDs and role grants. |
 
 ### System Features
@@ -214,7 +214,7 @@ cd frontend/admin/vue-vben   && pnpm install && pnpm dev:antd        # port 5666
 | Account Login | Sign in with username / email / phone number, combinable with image captcha, login policies, and TOTP MFA. |
 | Multi-Factor Authentication (MFA) | TOTP-based MFA: login challenge, personal binding management, and admin rescue reset of a user's MFA. |
 | Password Recovery | Reset password via a code sent to the bound email: 10-minute single-use code, all sessions revoked on success, silent handling prevents user enumeration. |
-| Notification Channels | Manage notification channels (EMAIL / SMTP); encrypted password storage, masked in lists; enable/disable and test sending. |
+| Notification Channels | Manage notification channels, one of two types: `EMAIL` (over SMTP; password stored encrypted, masked in lists) or `WEBHOOK` (HTTP callback, five sign styles: NONE / DINGTALK / FEISHU / WECOM / CUSTOM); enable/disable and test sending supported. |
 | Server Monitoring | Read-only view of runtime metrics (CPU cores, memory, goroutines, uptime, etc.) with auto refresh. |
 | Script System | Script-based plugin system (Lua / JavaScript, database as the source of truth, admin-UI changes take effect immediately): entity lifecycle hooks (before can veto / after is async), scheduled tasks (asynq), HTTP egress (domain allowlist, fail-closed), test runs and execution logs. See [docs/script_system.md](./docs/script_system.md). |
 | Parameter Management | Manage platform-wide system parameters as key/value pairs (distinct from business dictionaries); built-in parameters are seeded at startup and cannot be deleted; reads go through a server-side caching accessor, and in multi-instance deployments changes are broadcast over Redis pub/sub to invalidate every instance's cache. |
@@ -225,7 +225,7 @@ cd frontend/admin/vue-vben   && pnpm install && pnpm dev:antd        # port 5666
 
 | Feature | Description |
 |---------|-------------|
-| Message Categories | Manage message categories (2-level custom categories) used in message management. |
+| Message Categories | Manage the message categories offered in message management. They are **flat, one level deep** (`sys_internal_message_categories` has no parent_id column, and deletion removes only the row — no tree cascade). |
 | Message Management | Send by scope (all users / specified users) with revocation; broadcast fan-out runs on an async task queue (resumable, idempotent); view read status and read time. |
 | Internal Mail | Manage internal messages: view details, delete, mark as read, mark all as read. |
 | Login Logs | Query login logs for successful and failed logins; supports IP geolocation. |

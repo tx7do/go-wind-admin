@@ -4,6 +4,8 @@
 
 # GoWind Admin｜风行
 
+**开箱即用的企业级前后端一体管理脚手架（Go 后端 + 三选一前端）**
+
 [![License](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
 [![Go Version](https://img.shields.io/badge/Go-1.26+-00ADD8?logo=go)](https://go.dev/)
 [![Vue](https://img.shields.io/badge/Vue-3.x-4FC08D?logo=vuedotjs)](https://vuejs.org/)
@@ -56,7 +58,7 @@
 <tr><th>层级</th><th>技术</th></tr>
 <tr><td><strong>后端框架</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Protobuf / Buf</code></td></tr>
 <tr><td><strong>ORM</strong></td><td><code>Ent</code>（主要） · <code>GORM</code>（辅助） · <code>MySQL</code> · <code>PostgreSQL</code></td></tr>
-<tr><td><strong>中间件</strong></td><td><code>Redis 8.0+</code> · <code>MinIO</code>（S3 兼容对象存储）</td></tr>
+<tr><td><strong>中间件</strong></td><td><code>Redis</code>（compose 拉 <code>bitnami/redis:latest</code>，未固定版本；代码只用到 Set/Expire/Publish 一类的长期命令，未使用 Redis 8 专属命令） · <code>MinIO</code>（S3 兼容对象存储）</td></tr>
 <tr><td><strong>认证授权</strong></td><td><code>JWT</code> · <code>Casbin</code> · <code>OPA</code></td></tr>
 <tr><td><strong>实时通信</strong></td><td><code>SSE</code>（服务端推送） · <code>Asynq</code>（异步任务）</td></tr>
 <tr><td><strong>脚本引擎</strong></td><td><code>go-scripts</code> · <code>Lua</code>（gopher-lua） · <code>JavaScript</code>（goja） · 多语言 Hook 插件系统</td></tr>
@@ -81,7 +83,7 @@
 | **多租户隔离** | ent Privacy 策略编译级数据隔离：读查询自动注入租户过滤，Create 防伪造租户、Update / Delete 注入租户谓词（跨租户变更命中 0 行）；租户请求按 `(path, method)` 经 Api 表 fail-closed 校验（缺权限点即拒绝）；套餐模块白名单与到期只读策略 |
 | **数据保密性** | 登录口令应用层 AES 加密传输、bcrypt 哈希存储；敏感任务配置 AES-256-GCM 静态加密（Ent Hook 透明加解密）；JWT RS256 非对称签名；refresh token 走 HttpOnly Cookie；传输层 TLS 由部署层启用（后端 `server.rest.tls` 配置或 nginx / 负载均衡终止） |
 | **数据备份恢复** | [`scripts/backup/pg_backup.sh`](./backend/scripts/backup/pg_backup.sh) 定时全量备份（pg_dump，默认保留 30 份自动轮换），支持 Docker 容器 / 本地直连双模式，附恢复操作文档 |
-| **前端安全** | 三端各自附带 `scripts/deploy/nginx.conf`，生产侧下发 X-Frame-Options / HSTS / Content-Security-Policy 响应头；react 与 vue-element 另在构建期向 index.html 注入 CSP `<meta>`（内联脚本按 sha256 白名单放行），换掉 web server 也仍有一层防护 |
+| **前端安全** | 三端各自附带 `scripts/deploy/nginx.conf`，生产侧下发 X-Frame-Options / HSTS / Content-Security-Policy 响应头；react 与 vue-element 另在构建期向 `index.html` 注入 CSP `<meta>`（内联脚本按 sha256 白名单放行），换掉 web server 也仍有一层防护 |
 
 > **说明**：等保测评除技术要求外，还包含管理制度、物理环境、人员组织等非软件范畴的内容。本项目覆盖的是技术措施部分，可为私有化部署的等保测评准备提供直接支撑，但不能替代完整的等保测评流程。
 
@@ -197,7 +199,7 @@ cd frontend/admin/vue-vben   && pnpm install && pnpm dev:antd        # 端口 56
 | 角色管理 | 管理角色和角色分组，支持按角色联动用户，设置菜单授权、数据权限范围（五档 / 自定义组织单元集）与字段级权限（黑名单字段集），批量添加和移除员工 |
 | 权限管理 | 管理权限分组、菜单、权限点，支持树形列表展示 |
 | 组织管理 | 管理组织，支持树形列表展示 |
-| 职位管理 | 用户职务管理，职务可作为用户的一个标签；支持 Excel 导入（客户端模板下载、逐行走既有创建接口、行级错误回报，所属组织列按组织名称精确匹配回填组织单元） |
+| 职位管理 | 用户职务管理，职务可作为用户的一个标签；支持 Excel 导入（客户端模板下载、逐行走既有创建接口、行级错误回报）。**"所属组织"列只有 vue-element 的导入器解析**（按组织名称精确匹配回填组织单元，未命中记该行错误）；react 与 vue-vben 的导入字段清单里排除了 `orgUnitId`，代码注释标为"外键需名称解析，属后续演进" |
 | 菜单管理 | 配置系统菜单，操作权限，按钮权限标识等，包括目录、菜单、按钮；支持菜单同步（三端齐备，事务化清空重建或增量合并两种模式，合并模式按全路径匹配原位更新并保留既有菜单 ID 与角色授权） |
 
 ### 系统功能
@@ -212,7 +214,7 @@ cd frontend/admin/vue-vben   && pnpm install && pnpm dev:antd        # 端口 56
 | 账号登录 | 支持用户名 / 邮箱 / 手机号多标识登录，可叠加图形验证码、登录策略与 TOTP 多因素认证 |
 | 多因素认证（MFA） | 基于 TOTP 的多因素认证，含登录挑战、个人中心绑定管理，以及管理员救援重置用户 MFA 的解锁路径 |
 | 找回密码 | 绑定邮箱验证码找回密码：验证码 10 分钟单次有效、重置成功即吊销全部会话，静默处理防用户枚举 |
-| 通知渠道 | 管理通知渠道（EMAIL / SMTP），密码加密存储、列表脱敏展示，支持启用 / 停用与测试发送 |
+| 通知渠道 | 管理通知渠道，类型两选一：`EMAIL`（走 SMTP，密码加密存储、列表脱敏展示）或 `WEBHOOK`（HTTP 回调，签名风格五档：NONE / DINGTALK / FEISHU / WECOM / CUSTOM）；支持启用 / 停用与测试发送 |
 | 服务监控 | 只读展示服务运行时指标（CPU 核数、内存、goroutine 数、运行时长等），自动刷新 |
 | 脚本系统 | 脚本级插件系统（Lua / JavaScript，数据库为事实源，管理页增改即时生效）：实体生命周期钩子（before 可否决 / after 异步）、定时任务（asynq 调度）、HTTP 出站（域名白名单 fail-closed）、试运行与执行日志；详见 [docs/script_system.md](./docs/script_system.md) |
 | 参数管理 | 平台全局系统参数的键值管理（区别于业务字典），内置参数启动时播种、禁删可改；服务侧经缓存 accessor 读取，多实例部署下参数变更经 Redis 发布订阅广播失效各实例缓存 |
@@ -223,7 +225,7 @@ cd frontend/admin/vue-vben   && pnpm install && pnpm dev:antd        # 端口 56
 
 | 功能 | 说明 |
 |------|-----|
-| 消息分类 | 管理消息分类，支持 2 级自定义消息分类，用于消息管理消息分类选择 |
+| 消息分类 | 管理消息分类，用于消息管理里的分类选择。分类是**平铺的一层**（`sys_internal_message_categories` 无 parent_id 列，删除也只删本行、不做树形级联） |
 | 消息管理 | 管理消息，支持按发送范围（全员 / 指定用户）发送与消息撤销，全员广播走异步任务队列投递（断点恢复、幂等），可查看用户是否已读和已读时间 |
 | 站内信 | 站内消息管理，支持消息详细查看、删除、标为已读、全部已读功能 |
 | 登录日志 | 登录日志列表查询，记录用户登录成功和失败日志，支持 IP 归属地记录 |
