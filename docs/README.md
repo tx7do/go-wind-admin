@@ -44,6 +44,7 @@
 | [backend_project_struct.md](./backend_project_struct.md) | backend 目录结构与各目录职责 | 改动涉及新目录/新文件位置时 |
 | [list_query_rule.md](./list_query_rule.md) | 列表查询协议：分页、排序、过滤操作符、字段掩码 | 写列表/搜索前后端时 |
 | [field_change_guide.md](./field_change_guide.md) | **改一个字段速查**：A/B/C/D 四档要跑哪几条命令、碰哪几个文件；哪些事明确不用做（接口同步/菜单/SQL/字段权限）；两个"接口 200 但结果是错的" | 给已有资源加字段、只调自己那一端之前——日常最高频的活，02 与 04 之间的空档 |
+| [crud_module_guide/](./crud_module_guide/) | 新增完整 CRUD 业务模块的端到端手册：README 跨端编排与通用陷阱、backend.md 后端全流程与样例镜像索引、三端各自的页面实现参考（正文为英文原稿） | 接到「新增模块/新增资源/新建管理页」需求、动工新增整个模块之前；只给已有资源加字段先看 field_change_guide.md |
 | [frontend_authority.md](./frontend_authority.md) | 前端权限：路由访问模式、按钮权限码/角色、字段级权限 V1 | 改路由/按钮可见性/受控字段时 |
 | [adopt-one-frontend.md](./adopt-one-frontend.md) | 只保留一个前端的裁剪：三端独立性实测、`make ts` 回流、CORS、菜单表无"端"维度的后果 | 决定只用 react / vue-element / vue-vben 之一、要删掉另外两端之前 |
 | [authentication.md](./authentication.md) | 认证与令牌链路：登录全流程、令牌结构与配置、刷新轮换与 Cookie、机器令牌、MFA、限流/策略/验证码、会话吊销 | 改登录/令牌/刷新/MFA/限流/策略前 |

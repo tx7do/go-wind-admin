@@ -4,8 +4,8 @@
 > **顺序是铁律：先后端、后前端**——前端的 `apiClient.<Entity>Service` 由后端 BFF proto 生成，后端没走完第 3 步，前端无从谈起。
 
 本章是**路线图**，每步的逐条约定、样例文件索引、边界情形在仓库的 CRUD 手册里：
-[`.zcode/skills/add-crud-module/references/backend.md`](../../.zcode/skills/add-crud-module/references/backend.md)
-与三个框架各自的 `references/<framework>.md`。写代码前先读对应章节。
+[crud_module_guide/backend.md](../crud_module_guide/backend.md)
+与同目录的 `react.md` / `vue-element.md` / `vue-vben.md`。写代码前先读对应章节。
 
 > **先确认你需不需要本章。** 本章是"从零加一个资源"。如果你只是给**已有**资源加一个字段、而且只动自己那一端，
 > 命令数与文件清单都在 [改一个字段速查](../field_change_guide.md) 里（四档判定，A 档一条命令都不用跑）。
@@ -146,9 +146,9 @@ i18n：页面文案全部走 `$t`/`t` + locale JSON（`import.meta.glob` 自动�
 
 ## 深读
 
-- [`.zcode/skills/add-crud-module/references/backend.md`](../../.zcode/skills/add-crud-module/references/backend.md)
+- [crud_module_guide/backend.md](../crud_module_guide/backend.md)
   —— 后端十步完整手册（样例索引、关联表模式、陷阱清单）
-- 同目录 `references/react.md` / `vue-element.md` / `vue-vben.md` —— 三端各自的页面实现手册
+- 同目录 `react.md` / `vue-element.md` / `vue-vben.md` —— 三端各自的页面实现手册
 - [field_change_guide.md](../field_change_guide.md) —— **只给已有资源加一个字段**时的速查（本章是新增整个资源）
 - [list_query_rule.md](../list_query_rule.md) —— List 请求的过滤/排序/字段掩码协议
 - [backend_project_struct.md](../backend_project_struct.md) —— 目录职责

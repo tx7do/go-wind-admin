@@ -1,13 +1,15 @@
----
-name: add-crud-module
-description: End-to-end guide for adding a new CRUD business module to the go-wind-admin monorepo — backend (Go + Kratos + Ent, hand-written wiring) plus one or more frontends (react / vue-element / vue-vben). Use whenever the user wants to add a new module, resource, entity, or management page; create a CRUD feature; scaffold a new admin page with list + create + edit + delete; or says things like "新增模块/新增CRUD/加一个 xxx 管理/新建管理页/新增资源/新增功能/add a module/create CRUD entity". Trigger even when the user only mentions the frontend page (the backend proto + generated types are a hard prerequisite, so this skill always coordinates both sides). Do NOT trigger for bug fixes, refactors, or changes to an existing module's logic.
----
-
 # Add CRUD Module (go-wind-admin)
 
-This skill scaffolds a **complete CRUD business module** across the backend and one or more frontends of the go-wind-admin monorepo, following the project's real (not documented-aspirational) patterns.
+> **定位**：本目录是「新增完整 CRUD 业务模块」的参考层手册：跨端编排、执行顺序与通用陷阱在本页；
+> 后端全流程与样例镜像索引在 [backend.md](./backend.md)，三端各自的页面实现在
+> [react.md](./react.md)、[vue-element.md](./vue-element.md)、[vue-vben.md](./vue-vben.md)。
+> 范围划界：给**已有**资源加字段走 [field_change_guide.md](../field_change_guide.md)；修 bug、重构、
+> 改既有模块逻辑不在本手册范围。教程层[第 4 章](../tutorial/04-first-crud-module.md)是本手册的路线图视角。
+> 正文为英文原稿，保留原文以避免转译失真。
 
-The monorepo has one backend and three frontends — **three parallel alternatives for teams on different stacks, not a bundle anyone must consume whole** (an adopter typically keeps exactly one; see `docs/adopt-one-frontend.md`). They differ enough in their list/form/refresh mechanisms that each has its own reference. **This file is the orchestrator — it does not contain the per-framework code templates.** Read the matching reference file(s) before writing any code.
+This guide walks through scaffolding a **complete CRUD business module** across the backend and one or more frontends of the go-wind-admin monorepo, following the project's real (not documented-aspirational) patterns.
+
+The monorepo has one backend and three frontends — **three parallel alternatives for teams on different stacks, not a bundle anyone must consume whole** (an adopter typically keeps exactly one; see [docs/adopt-one-frontend.md](../adopt-one-frontend.md)). They differ enough in their list/form/refresh mechanisms that each has its own chapter file. **This file is the orchestrator — it does not contain the per-framework code templates.** Read the matching chapter file(s) in this directory before writing any code.
 
 ## The three-layer architecture in one breath
 
@@ -20,24 +22,24 @@ Frontend (depends on generated types):  generated → hooks/composables → page
 
 ## Step 0 — Clarify requirements (once, up front)
 
-Before writing anything, ask the user (use AskUserQuestion, batch into one call) for:
+Before writing anything, ask the requester (batch all of them into one round) for:
 
 1. **Entity name** in three forms: PascalCase (`Product`), snake_case (`product`), and Chinese label (`商品`).
 2. **Core fields** — a list of `{name, type, enum?, required?}`. Distinguish business fields from the audit fields (created_by/updated_by/deleted_by + timestamps) which are added automatically by Ent mixins and need not be listed.
 3. **Functional domain** — does it belong to an existing domain (`permission`, `dict`, `identity`, `opm`, `system`, `tenant`, `log`, …) or is it a brand-new domain? This decides whether you edit an existing proto package / route file or create a new one.
-4. **Which frontends** — react, vue-element, vue-vben (multi-select). Backend is always included.
-5. **Module shape** — plain CRUD, tree (parent_id), master-detail (two linked tables like dict_type+dict_entry), or tenant-scoped. Plain CRUD is the default; the other shapes extend the reference templates.
+4. **Which frontends** — react, vue-element, vue-vben (pick one or more). Backend is always included.
+5. **Module shape** — plain CRUD, tree (parent_id), master-detail (two linked tables like dict_type+dict_entry), or tenant-scoped. Plain CRUD is the default; the other shapes extend the chapter templates.
 
 Only proceed once you have these answers. Guessing leads to rework across all four ends.
 
 ## Step 1 — Execution order (the rule that prevents 80% of mistakes)
 
 ```
-1. Backend  →  read references/backend.md, execute Steps 1–11
+1. Backend  →  read backend.md, execute Steps 1–11
                  (ends with `make api` having produced generated/*.pb.go AND,
                   for the chosen frontend(s), `make ts` having regenerated the
                   frontend generated/ TypeScript)
-2. Frontend →  for each chosen framework, read references/<framework>.md and execute its steps
+2. Frontend →  for each chosen framework, read <framework>.md and execute its steps
                  frontend steps DEPEND on the regenerated apiClient.<entity>Service existing
 ```
 
@@ -45,7 +47,7 @@ If the user insists on frontend-only for an entity that has no backend proto yet
 
 ## Step 2 — Backend
 
-Read **`references/backend.md`** in full before touching backend files. It covers the 11-step flow with real sample references:
+Read **`backend.md`** in full before touching backend files. It covers the 11-step flow with real sample references:
 
 ```
 1. domain proto  → 2. BFF proto  → 3. make api (+openapi)
@@ -71,15 +73,15 @@ Each template writes only into its own end (`frontend/admin/react/src/api/genera
 
 ## Step 3 — Frontend(s)
 
-For **each** chosen framework, read its reference and follow its step list. They are not interchangeable:
+For **each** chosen framework, read its chapter file and follow its step list. They are not interchangeable:
 
-| Framework | Reference | List component | Form | Refresh mechanism |
+| Framework | Chapter | List component | Form | Refresh mechanism |
 |---|---|---|---|---|
-| react | `references/react.md` | ProTable | DrawerForm + formRef | `queryClient.invalidateQueries(['listXxx'])` |
-| vue-element | `references/vue-element.md` | ProPage (config-driven) | ProModal + ElForm + useDrawerForm | `pageRef.value?.refresh()` (NOT invalidate) |
-| vue-vben | `references/vue-vben.md` | VxeGrid + proxyConfig | useVbenDrawer + useVbenForm | `gridApi.reload()` on drawer close |
+| react | `react.md` | ProTable | DrawerForm + formRef | `queryClient.invalidateQueries(['listXxx'])` |
+| vue-element | `vue-element.md` | ProPage (config-driven) | ProModal + ElForm + useDrawerForm | `pageRef.value?.refresh()` (NOT invalidate) |
+| vue-vben | `vue-vben.md` | VxeGrid + proxyConfig | useVbenDrawer + useVbenForm | `gridApi.reload()` on drawer close |
 
-**Critical:** each reference documents the *actual* project pattern, including places where the repo's `AGENTS.md` is aspirational/out-of-date. Trust the reference over the AGENTS.md when they disagree (e.g. vue-element uses ElForm `:rules`, not vee-validate+zod; vue-vben routes are grouped by functional domain in one file, not one file per module).
+**Critical:** each chapter file documents the *actual* project pattern, including places where the repo's `AGENTS.md` is aspirational/out-of-date. Trust the chapter file over the AGENTS.md when they disagree (e.g. vue-element uses ElForm `:rules`, not vee-validate+zod; vue-vben routes are grouped by functional domain in one file, not one file per module).
 
 ## Step 4 — Completion checklist
 
@@ -92,17 +94,17 @@ Before declaring done, verify cross-cutting concerns:
 - [ ] `apiClient.<entity>Service` getter exists in the frontend generated index (proves proto round-trip worked)
 - [ ] i18n: no hardcoded Chinese/English in pages — everything goes through `$t`/`t` with keys in the locale JSONs
 - [ ] Update operations carry `updateMask` (frontend `useUpdateXxx` does this automatically via `makeUpdateMask`; do not hand-build the mask)
-- [ ] If the entity carries association ID lists (M2M/O2M edges): repo Update follows the snapshot + blacklist + Replace pattern from `references/backend.md` Step 6, and association edits round-trip in the UI (add / clear-all / re-add)
+- [ ] If the entity carries association ID lists (M2M/O2M edges): repo Update follows the snapshot + blacklist + Replace pattern from `backend.md` Step 6, and association edits round-trip in the UI (add / clear-all / re-add)
 - [ ] Api registry: on a **fresh** DB the Api table auto-syncs at first boot; on an **existing** deployment trigger 管理页「接口管理 → 接口同步」 after deploying — otherwise the tenant gate `(path, method)` check 403s the new routes (fail-closed)
-- [ ] Menu entries for the new module: on an existing deployment add them via the 菜单管理 admin page — editing `pkg/constants/default_data.go` (`DefaultMenus`) only affects empty-DB fresh installs (all seeds are `count == 0` guarded, see `references/backend.md` Step 11)
+- [ ] Menu entries for the new module: on an existing deployment add them via the 菜单管理 admin page — editing `pkg/constants/default_data.go` (`DefaultMenus`) only affects empty-DB fresh installs (all seeds are `count == 0` guarded, see `backend.md` Step 11)
 
 ## Step 5 — Cross-framework pitfalls (memorize these)
 
-These recur on every module regardless of framework. Read them once here, then the per-framework reference adds framework-specific ones.
+These recur on every module regardless of framework. Read them once here, then the per-framework chapter adds framework-specific ones.
 
 1. **`PaginationQuery` must be instantiated with `new`.** All three frontends have a `PaginationQuery` class whose `.toRawParams()` depends on instance getters. Passing a plain object literal and calling `.toRawParams()` crashes. Always `new PaginationQuery({ paging, formValues })`.
 
-2. **Every Update call must carry `updateMask`.** The backend's `UpdateX` runs the DTO through `FilterByFieldMask` first, which **clears every field not listed in the mask** — only surviving fields reach the `SetNillable*` mapping and the SQL SET clause. An omitted/nil mask therefore means **no filtering at all: every populated field in the submitted DTO gets written**, so a stale or partial form round-trip silently corrupts untouched columns. All three frontends provide a `useUpdateXxx` mutation that calls `makeUpdateMask(Object.keys(values))` internally. Use it; do not call `apiClient.<entity>Service.Update` directly with a hand-built mask. If the entity carries association ID lists (M2M/O2M edges), the repo additionally needs the snapshot + blacklist + Replace pattern — see `references/backend.md` Step 6 before writing the repo.
+2. **Every Update call must carry `updateMask`.** The backend's `UpdateX` runs the DTO through `FilterByFieldMask` first, which **clears every field not listed in the mask** — only surviving fields reach the `SetNillable*` mapping and the SQL SET clause. An omitted/nil mask therefore means **no filtering at all: every populated field in the submitted DTO gets written**, so a stale or partial form round-trip silently corrupts untouched columns. All three frontends provide a `useUpdateXxx` mutation that calls `makeUpdateMask(Object.keys(values))` internally. Use it; do not call `apiClient.<entity>Service.Update` directly with a hand-built mask. If the entity carries association ID lists (M2M/O2M edges), the repo additionally needs the snapshot + blacklist + Replace pattern — see `backend.md` Step 6 before writing the repo.
 
 3. **Never hand-edit `generated/`.** Backend `api/gen/go/` and each frontend's `api/generated/` are produced by codegen. If a type or service is missing, the fix is to regenerate (fix the proto, rerun `make api` for Go / `make ts` for the frontend TypeScript), not to edit the generated file.
 
@@ -120,12 +122,12 @@ These recur on every module regardless of framework. Read them once here, then t
 
 7. **No error swallowing — in any framework.** Every `catch` must either log the **original error object** (`console.error(...)`/`console.warn(...)`) or rethrow it. A user-visible notification/Message is NOT logging (it carries only translated text; debugging needs the raw error in the console). Bare `catch {}` is acceptable only for pure local best-effort fallbacks, with a comment explaining why. The composables/mutation layer generated for a new module must not swallow mutation errors — surface them via notification + console, or rethrow.
 
-## When to read which reference
+## When to read which chapter
 
 | Situation | Read |
 |---|---|
-| Any backend work | `references/backend.md` |
-| User chose react | `references/react.md` |
-| User chose vue-element | `references/vue-element.md` |
-| User chose vue-vben | `references/vue-vben.md` |
-| Tree / master-detail / tenant shape | The base reference for that framework, plus inspect a real sample of that shape (e.g. `system/dict/` for master-detail, menu module for tree) |
+| Any backend work | `backend.md` |
+| User chose react | `react.md` |
+| User chose vue-element | `vue-element.md` |
+| User chose vue-vben | `vue-vben.md` |
+| Tree / master-detail / tenant shape | The base chapter for that framework, plus inspect a real sample of that shape (e.g. `system/dict/` for master-detail, menu module for tree) |

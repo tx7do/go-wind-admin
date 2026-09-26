@@ -35,7 +35,7 @@ api/protos/admin/service/v1/i_<entity>.proto         BFF 层：只声明 HTTP �
 样例（写新 proto 前照抄结构）：`dict/service/v1/dict_type.proto`（domain）+
 `admin/service/v1/i_dict_type.proto`（BFF）。字段约定（全部 `optional`、审计字段固定编号
 100/101/102 与 200/201/202、`json_name` camelCase）在[第 4 章](./04-first-crud-module.md)与
-`add-crud-module` 参考手册里有逐条说明。
+[crud_module_guide/backend.md](../crud_module_guide/backend.md) 里有逐条说明。
 
 ## 3. buf 配置文件家族
 
@@ -82,7 +82,7 @@ internal/data/ent/<entity>/**            🤖 gow ent 生成：查询构建器�
 ## 深读
 
 - [backend_project_struct.md](../backend_project_struct.md) —— 目录与 buf 配置清单权威说明
-- [`.zcode/skills/add-crud-module/references/backend.md`](../../.zcode/skills/add-crud-module/references/backend.md)
+- [crud_module_guide/backend.md](../crud_module_guide/backend.md)
   Step 1–5 —— proto/ent 两阶段的逐条约定与样例索引（本仓内最详尽的 CRUD 手册）
 - [list_query_rule.md](../list_query_rule.md) —— 生成物 `PagingRequest` 的查询协议语义（分页/排序/过滤操作符/字段掩码）
 

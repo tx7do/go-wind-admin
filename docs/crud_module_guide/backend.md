@@ -94,7 +94,7 @@ Route prefix is always `/admin/v1/<entities>`. For batch delete the path drops `
 ```bash
 cd backend && make api && make openapi
 ```
-Produces `api/gen/go/<domain>/service/v1/*.pb.go` and `api/gen/go/admin/service/v1/i_<entity>*.pb.go` (the latter contains `Register<Entity>ServiceHTTPServer`). If a frontend is in scope, also regenerate the frontend generated types now (see SKILL.md Step 2).
+Produces `api/gen/go/<domain>/service/v1/*.pb.go` and `api/gen/go/admin/service/v1/i_<entity>*.pb.go` (the latter contains `Register<Entity>ServiceHTTPServer`). If a frontend is in scope, also regenerate the frontend generated types now (see README.md, Step 2).
 
 ## Step 4 — Ent schema
 
