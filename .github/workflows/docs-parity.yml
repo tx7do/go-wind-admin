@@ -1,0 +1,14 @@
+name: docs-parity
+
+on:
+  push:
+    paths: ['README.md', 'README.en-US.md', 'README.ja-JP.md']
+  pull_request:
+    paths: ['README.md', 'README.en-US.md', 'README.ja-JP.md']
+
+jobs:
+  readme-parity:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: node scripts/check-readme-parity.mjs
