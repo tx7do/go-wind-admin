@@ -4,6 +4,8 @@ Stack: Vue 3.5 + Vite + TypeScript + Element Plus 2 + vxe-table 4 + Pinia 3 + @t
 
 **Prerequisite:** backend proto + `protoc-gen-typescript-http` regeneration done (`cd backend && make ts`, or `buf generate --template buf.vue-element.admin.typescript.gen.yaml` from `backend/api/`), so `apiClient.<entity>Service` exists in `src/api/generated/admin/service/v1/index.ts`.
 
+**Search filter convention:** list filters use contains-suffix operators, never plain `EQ`; ID fields are excluded from fuzzy search; keys already carrying an operator suffix (`__not`, `__gte`, …) must not add `__contains` on top — the query serializers guard this. Full protocol: [../list_query_rule.md](../list_query_rule.md).
+
 **Mirror these real samples — read them before writing:**
 - Composables: `src/api/composables/position.ts` (canonical 5-hook + enum utils)
 - List page: `src/pages/app/opm/position/index.vue` (ProPage config-driven)

@@ -167,11 +167,6 @@ install-prod:
 	echo "Installing production environment..."
 	bash scripts/env/install_unix_prod.sh
 
-# install golang only
-install-golang:
-	echo "Installing Golang..."
-	bash scripts/env/install_golang.sh
-
 # start all services with docker compose (application + dependencies)
 docker-up:
 	echo "Starting all services (application + dependencies)..."

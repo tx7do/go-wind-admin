@@ -118,24 +118,14 @@ HOSTS_SERVICES="postgres mysql redis" \
 
 ---
 
-### install_golang.sh
+### Go 运行时安装（并入环境脚本）
 
-**用途：** 独立的 Go 运行时安装脚本
+Go 安装不再是独立脚本：`lib/go-utils.sh` 的 `install_golang()` 函数由
+`install_unix_dev.sh` / `install_unix_prod.sh` 调用执行——检测当前 Go 版本，
+未安装时下载最新稳定版、解压并配置 PATH。
 
-**功能：**
-
-- 检测当前 Go 版本
-- 下载最新稳定版
-- 解压到指定位置
-- 配置 PATH
-
-**使用方式：**
-
-```bash
-./scripts/env/install_golang.sh
-```
-
-**支持：** macOS 和 Linux（自动检测 ARM64/AMD64）
+**安全策略：** 已安装则跳过、不升级；下载失败不影响旧版本。
+**支持：** macOS 和 Linux（自动检测 ARM64/AMD64）。
 
 ---
 

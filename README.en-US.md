@@ -72,9 +72,9 @@ Three URLs, three parallel demos of the same backend capabilities — **open eac
 
 ### Environment Scripts
 
-- Linux / macOS Development: `scripts/env/install_unix_dev.sh`
-- Linux / macOS Production: `scripts/env/install_unix_prod.sh`
-- Windows Development: `scripts/env/install_windows_dev.ps1`
+- Linux / macOS Development: `backend/scripts/env/install_unix_dev.sh`
+- Linux / macOS Production: `backend/scripts/env/install_unix_prod.sh`
+- Windows Development: `backend/scripts/env/install_windows_dev.ps1`
 
 ### Docker Deployment Modes
 
@@ -222,7 +222,10 @@ Security capabilities are designed with reference to the technical requirements 
 | Multi-Factor Authentication (MFA) | TOTP-based MFA: login challenge, personal binding management, and admin rescue reset of a user's MFA. |
 | Password Recovery | Reset password via a code sent to the bound email: 10-minute single-use code, all sessions revoked on success, silent handling prevents user enumeration. |
 | Notification Channels | Manage notification channels, one of two types: `EMAIL` (over SMTP; password stored encrypted, masked in lists) or `WEBHOOK` (HTTP callback, five sign styles: NONE / DINGTALK / FEISHU / WECOM / CUSTOM); enable/disable and test sending supported. |
+| Notification Rules | Manage notification routing rules (which event is delivered to which channel); enable/disable and per-rule test dispatch supported; built-in default rules are seeded at startup (empty-table re-seed only), deleting a row takes effect immediately. |
+| Delivery Ledger | Inspect per-notification, per-channel delivery results (status / channel / attempts / failure reason / request ID), filterable by recipient and status. |
 | Server Monitoring | Read-only view of runtime metrics (CPU cores, memory, goroutines, uptime, etc.) with auto refresh. |
+| Online Sessions | View currently online sessions (user, tenant, client type, login IP, User-Agent, device ID, login time), with keyword filtering, pagination (login time desc) and per-session forced logout; auto-refresh every 30s. |
 | Script System | Script-based plugin system (Lua / JavaScript, database as the source of truth, admin-UI changes take effect immediately): entity lifecycle hooks (before can veto / after is async), scheduled tasks (asynq), HTTP egress (domain allowlist, fail-closed), test runs and execution logs. See [docs/script_system.md](./docs/script_system.md). |
 | Parameter Management | Manage platform-wide system parameters as key/value pairs (distinct from business dictionaries); built-in parameters are seeded at startup and cannot be deleted; reads go through a server-side caching accessor, and in multi-instance deployments changes are broadcast over Redis pub/sub to invalidate every instance's cache. |
 | Machine Credentials (AK/SK) | Tenant-scoped AccessKey / SecretKey management: the Secret is shown exactly once at creation; enable/disable, delete, and secret rotation are supported (rotation immediately invalidates the previous Secret). An AK / Secret pair can be exchanged at the token-exchange endpoint for a tenant-scoped machine JWT (machine role, access token only); the exchange endpoint applies per-IP + per-AK failure rate limiting. |
@@ -248,6 +251,7 @@ Security capabilities are designed with reference to the technical requirements 
 | Feature | Description |
 |---------|-------------|
 | Personal Center | View and edit personal info, check last-login info, change password, bind / rebind email (verification code), etc. |
+| My Active Sessions | View your own currently active sessions (login IP, device, login time, etc.); the current session is view-only, any other session can be signed out individually. |
 
 ---
 

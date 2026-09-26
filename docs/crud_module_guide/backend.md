@@ -1,6 +1,6 @@
 # Backend: add a CRUD resource (Go + Kratos + Ent, hand-written wiring)
 
-The backend is the source of truth. Frontends depend on the types generated here. Follow the 10 steps in order; each `make` target is a verifiable checkpoint.
+The backend is the source of truth. Frontends depend on the types generated here. Follow the 11 steps in order; each `make` target is a verifiable checkpoint.
 
 **Mirror these real samples — read them before writing your version:**
 - Cleanest CRUD: `backend/api/protos/dict/service/v1/dict_type.proto` (domain) + `backend/api/protos/admin/service/v1/i_dict_type.proto` (BFF) + `backend/app/admin/service/internal/service/dict_type_service.go` + `backend/app/admin/service/internal/data/dict_type_repo.go`
@@ -19,7 +19,7 @@ The backend is the source of truth. Frontends depend on the types generated here
 
 **Edit (2, or 0 with `make register`):**
 7. `backend/app/admin/service/cmd/server/wiring_ent.go` — `make register ENTITY=<entity>` (Step 9) injects the repo line, service line, and `NewRestServer` arg at the `register:*` markers; or add them by hand
-8. `backend/app/admin/service/internal/server/rest_server.go` — param + `Register<Entity>HTTPServer` call; also injected by `make register`
+8. `backend/app/admin/service/internal/server/rest_server.go` — param + `Register<Entity>ServiceHTTPServer` call; also injected by `make register`
 9. `backend/api/buf.gen.yaml` — **only if** you created a brand-new domain (not permission/dict/identity/...). Add a `go_package` override entry.
 
 **Never hand-edit (regenerated):** `api/gen/go/**`, `internal/data/ent/**` (except `schema/`). Dependency wiring in `cmd/server/wiring_ent.go` is hand-written — no codegen step exists for it; a missing wire-up is a compile error at the call site.
@@ -87,12 +87,12 @@ service <Entity>Service {
 
 Route prefix is always `/admin/v1/<entities>`. For batch delete the path drops `{id}` (see `i_dict_type.proto`). The BFF can expose fewer RPCs than the domain (e.g. omit Count).
 
-**If you introduced a NEW domain** (one not already present in `buf.gen.yaml`'s overrides), add a `go_package` override entry there pointing `<domain>/service/v1` → `go-wind-admin/api/gen/go/<domain>/service/v1;<domain>pb`. Otherwise `make api` won't know where to emit the domain package.
+**If you introduced a NEW domain** (one not already present in `buf.gen.yaml`'s overrides), add a `go_package` override entry there pointing `<domain>/service/v1` → `go-wind-admin/api/gen/go/<domain>/service/v1;<domain>pb`. Otherwise `gow api` won't know where to emit the domain package.
 
 ## Step 3 — Generate proto code
 
 ```bash
-cd backend && make api && make openapi
+cd backend && gow api && make openapi
 ```
 Produces `api/gen/go/<domain>/service/v1/*.pb.go` and `api/gen/go/admin/service/v1/i_<entity>*.pb.go` (the latter contains `Register<Entity>ServiceHTTPServer`). If a frontend is in scope, also regenerate the frontend generated types now (see README.md, Step 2).
 
@@ -227,6 +227,8 @@ func (r *<Entity>Repo) init() {
 Five methods (mirror `api_repo.go` lines noted):
 
 - **List** — `r.repository.ListWithPaging(ctx, builder, builder.Clone(), req)`. Note you pass `builder` AND `builder.Clone()` — the clone is used for count.
+
+**List filter conventions (repo-wide iron rules):** search conditions use contains-suffix operators, never plain `EQ`; ID fields are excluded from fuzzy search (precedent: `permission_repo.go`'s `clearFilterExprByFieldNames(filterExpr, "id"...)`); a key already carrying an operator suffix (`__not`, `__gte`, …) must never gain `__contains` on top — go-crud would flip the semantics or error out (the three frontend serializers guard this). Full protocol: [../list_query_rule.md](../list_query_rule.md).
 - **Get** — `switch req.QueryBy.(type)` to build `[]func(s *sql.Selector)` where-conds, then `r.repository.Get(ctx, builder, req.GetViewMask(), whereCond...)`. The view_mask controls which fields are returned.
 - **Create** — build via `r.entClient.Client().<Entity>.Create().SetNillable*(...).SetNillableCreatedBy(...).SetCreatedAt(time.Now()).Exec(ctx)`. `CreatedBy` is injected by the Service from `auth.FromContext`.
 - **Update** — `r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(), setCallback, whereCallback)`. The setCallback applies FieldMask-passed fields via `SetNillable*`; whereCallback sets `sql.EQ(<entity>.FieldID, req.GetId())`. `allow_missing` triggers a Create-if-absent (upsert) inside UpdateX. If the entity carries association ID lists (edges), the subsection below is mandatory before writing this method.

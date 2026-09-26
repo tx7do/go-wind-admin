@@ -79,6 +79,7 @@ SQL 级字段只有数据库执行层知道，所以数据访问审计走 driver
 ## 深读
 
 - [audit-log-producer-design.md](../audit-log-producer-design.md) —— 六类日志的采集层设计、字段索引、实施状态（唯一权威）
+- [sys_config.md](../sys_config.md) —— 平台参数（口令策略三件套阈值的存放处）：缓存读取器、多实例失效广播、内置参数补种
 - 根 [README.md](../../README.md)「安全与等保合规」—— 能力矩阵总表（对外口径）
 - [backend_deploy.md](../backend_deploy.md) —— 生产部署时与审计相关的配置（留存天数、备份）
 

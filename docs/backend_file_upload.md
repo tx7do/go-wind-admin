@@ -65,6 +65,8 @@ oss:
 
 上传入口：`POST /admin/v1/file/upload`、`PUT /admin/v1/file/upload`（在 `internal/server/i_file_transfer_http.pb.go` 手动注册，因为 multipart 表单无法由 proto 生成器处理）。
 
+**请求体形态（2026-09-17 起，三端一致）**：前端以 **JSON** 提交——`file` 字段为 base64 编码的文件字节（kratos 未注册 form-data codec，multipart 表单对生成的服务桩不可用）。handler 保留双模式兼容：先尝试 multipart `FormFile("file")`，取不到再 `Bind` JSON 请求体；新调用方一律走 JSON。前端封装：`frontend/admin/react/src/api/hooks/file-transfer.ts`（vue-element / vue-vben 为 `src/api/composables/file-transfer.ts` 同型实现）。
+
 请求进入 `FileTransferService.UploadFile`（`internal/service/file_transfer_service.go`），该函数按 `req.Source` 的 oneof 类型分流：
 
 ```
@@ -188,7 +190,7 @@ sig = HMAC-SHA256(GOWIND_CRYPTO_KEY, "{path}|{expires}")   // hex
 1. **元数据无法可靠落库**：该路径服务端不接触文件字节，`recordFile` 所需的 sourceFileName / tenantId / userId / sha256 四个字段无法取得——前三个未编码进对象 key（key 仅由 UUID/SHA/HMAC/时间戳+扩展名生成），sha256 需原始字节。
 2. **客户端不可信**：把 tenantId/userId 放进 `x-amz-meta-*` 对象元数据的方案不可行——浏览器请求可被篡改，恶意用户可伪造 `x-amz-meta-user-id` 冒充他人上传，破坏 directUploadFile 从认证上下文取身份的安全语义。
 3. **当前无刚需**：业务无大文件直传需求（`MaxUploadSize = 50 MiB`，前端无分片上传），服务端中转零问题且安全语义完整。
-4. **当前无调用方**：前端上传实际走 multipart（对应 directUploadFile），presign 分支无人调用。
+4. **当前无调用方**：前端上传实际走 JSON+base64（对应 directUploadFile），presign 分支无人调用。
 
 ### 启用条件
 
@@ -226,7 +228,7 @@ sig = HMAC-SHA256(GOWIND_CRYPTO_KEY, "{path}|{expires}")   // hex
 | 文件 | 说明 |
 |---|---|
 | `backend/app/admin/service/internal/service/file_transfer_service.go` | 上传/下载业务逻辑（directUploadFile / presignedUploadFile / recordFile / DownloadFile） |
-| `backend/app/admin/service/internal/server/i_file_transfer_http.pb.go` | 手动注册的上传/下载 HTTP 端点（处理 multipart）；含签名图片代理路由的免鉴权手动注册块 |
+| `backend/app/admin/service/internal/server/i_file_transfer_http.pb.go` | 手动注册的上传/下载 HTTP 端点（multipart `FormFile` 与 JSON `Bind` 双模式兼容，前端实际走 JSON+base64）；含签名图片代理路由的免鉴权手动注册块 |
 | `backend/pkg/crypto/hmac.go` | 签名公开 URL 的 HMAC-SHA256 签发/恒定时间验签（`GOWIND_CRYPTO_KEY`） |
 | `backend/pkg/oss/minio.go` | MinIO 客户端封装（UploadFile / DownloadFile / GetUploadPresignedUrl 等） |
 | `backend/pkg/oss/constants.go` | 安全常量与校验函数（大小上限、MIME 白名单、目录校验） |

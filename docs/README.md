@@ -51,6 +51,7 @@
 | [tenant_isolation.md](./tenant_isolation.md) | 多租户隔离：上下文链路、HTTP 闸门、数据层读写隔离、套餐联动、覆盖边界、接入与排障 | 改隔离层/Api 表/套餐门禁、新表接租户前 |
 | [plan_billing.md](./plan_billing.md) | 套餐与计费管控：三档到期策略全链路、模块白名单、配额与用量计量、租户数据清理 | 改套餐/配额/到期处置、租户 403 排障前 |
 | [task_system.md](./task_system.md) | 任务调度系统：配置与启动链、任务数据模型、调度生命周期、系统级常驻任务、脚本任务桥、管理页、多租户语义与排障 | 加任务类型、排"任务没跑"、接新调度需求前 |
+| [sys_config.md](./sys_config.md) | 参数管理（sys_config）：平台全局动态参数的键值模型、缓存读取器（GetConfigBool/Int/String 与负缓存）、写路径与多实例 Redis 失效广播、内置参数按键补种、新参数接入步骤 | 接入新的运行时参数、改口令策略阈值链路、排"改了参数没生效"前 |
 | [sse_architecture.md](./sse_architecture.md) | SSE 推送架构：服务端配置与生命周期、流鉴权与 streamID 语义、事件生产、三端消费模块、部署拓扑与排障 | 改推送链路、加新事件类型、排"收不到通知"前 |
 | [notification_domain_design.md](./notification_domain_design.md) | 通知域：现状盘点、与 go-wind-im 的可抄性对照、运行期实测发现、移植记录与代码生成坑。各阶段（P0–P2 / C / C7 / M / N 及遗留欠账）的落地状态以文内状态标记与验收清单（§4、§7）为准，本索引不转载状态史 | 动通知相关代码前先读；推进 P3、改台账或路由规则语义前回来更新文内状态标记 |
 | [data_scope_design.md](./data_scope_design.md) | 角色级数据范围：五档语义、聚合、执行层、新表接入步骤 | 新表接入数据范围或改聚合规则前 |

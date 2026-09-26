@@ -29,11 +29,26 @@
 │           ├── server
 │           └── service
 ├── pkg
-│   ├── middleware
-│   │   ├── auth
-│   │   ├── ent
-│   │   └── logging
-│   └── ...
+│   ├── audit          # 审计域共享常量与 SQL 词法脱敏规则
+│   ├── authorizer     # 策略引擎（Casbin / OPA / noop 可切换）
+│   ├── constants      # 全仓常量 + 启动播种默认数据
+│   ├── crypto         # 应用层 AES 加解密与 HMAC 签名
+│   ├── entgo          # Ent 查看者上下文（SystemViewer / UserViewer）
+│   ├── eventbus       # 进程内事件总线
+│   ├── fieldperm      # 字段级权限消息裁剪原语
+│   ├── jwt            # JWT 签发与校验（RS256）
+│   ├── mailer         # SMTP 邮件发送
+│   ├── mailtext       # 邮件文案（按语言渲染）
+│   ├── metadata       # 操作者元数据解析
+│   ├── middleware     # auth / ent / logging 中间件
+│   ├── netutil        # 网络安全工具（SSRF 防护）
+│   ├── oss            # MinIO 对象存储封装
+│   ├── password       # 口令策略三件套（阈值经参数管理）
+│   ├── scripting      # 多语言脚本引擎（Lua / JavaScript）
+│   ├── serviceid      # 服务标识与 Redis 键前缀
+│   ├── sseevent       # SSE 事件类型注册表
+│   ├── task           # asynq 任务类型与调度常量
+│   └── utils          # 通用工具函数
 ├── scripts
 │   ├── backup
 │   ├── deploy
@@ -75,7 +90,26 @@
             - `service`：存放 Admin 服务的业务逻辑代码
         - 注：中间件不在 `internal` 下，公共中间件位于 `pkg/middleware/`（`auth` / `ent` / `logging`）。
 3. `pkg`：存放通用公共包代码
+    - `audit`：审计域共享常量与 SQL 词法脱敏规则（数据访问日志的 sql_text 脱敏）
+    - `authorizer`：策略引擎抽象，Casbin / OPA / noop 三实现可切换（默认 noop，见根 AGENTS.md）
+    - `constants`：全仓常量与启动播种的默认数据（admin 用户、菜单、角色、权限、语言等，`count == 0` 守卫）
+    - `crypto`：应用层 AES 加解密（`enc:` 前缀）与 HMAC-SHA256 签名（`GOWIND_CRYPTO_KEY`）
+    - `entgo`：Ent 查看者上下文（SystemViewer / UserViewer，供 Privacy 层判定系统态/用户态）
+    - `eventbus`：进程内事件总线（如 `email.received`），支持异步 handler
+    - `fieldperm`：字段级权限的通用消息裁剪原语（黑名单字段集）
+    - `jwt`：JWT 签发与校验（RS256 非对称签名）
+    - `mailer`：基于 net/smtp 的邮件发送（STARTTLS 与隐式 SSL 双模式，PLAIN 认证）
+    - `mailtext`：邮件文案收口，按收件请求的语言渲染主题与正文
+    - `metadata`：操作者元数据（OperatorMetadata）解析
     - `middleware`：跨服务复用的中间件——`auth`（认证）、`ent`（Ent 租户/数据范围注入）、`logging`（各类审计日志采集）
+    - `netutil`：网络安全工具（当前主要服务 SSRF 防护：内网判定、DNS rebinding 防护）
+    - `oss`：MinIO 对象存储封装（上传/下载/预签名）与 MIME 嗅探、大小/目录安全校验
+    - `password`：等保口令策略三件套（复杂度/有效期/历史口令），阈值经 sys_config 平台参数读取
+    - `scripting`：多语言脚本引擎（Lua / JavaScript，go-scripts 封装；HTTP 出站域名白名单等）
+    - `serviceid`：服务标识与 Redis 键前缀（`gowind:captcha` 等键的 `gowind` 前缀来源）
+    - `sseevent`：全仓 SSE 事件类型注册表
+    - `task`：asynq 任务类型与调度常量（审计归档、租户到期扫描、通知派发等系统级任务）
+    - `utils`：通用工具函数（`FilterBlacklist` 等）
 4. `scripts`：存放部署脚本代码，用于项目的构建、部署、环境配置等。
     - `env/`：存放环境初始化脚本（支持 Ubuntu/CentOS/Rocky/macOS/Windows）
     - `docker/`：存放 Docker 部署脚本（full_deploy、libs_only）

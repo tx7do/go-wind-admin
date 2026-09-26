@@ -2,7 +2,9 @@
 
 Stack: React 19 + Ant Design v6 + ProComponents 2 + TanStack React Query 5 + Zustand + i18next + React Router v6. Path root: `frontend/admin/react/src/`.
 
-**Prerequisite:** the backend proto + codegen has run — `cd backend && make api` (Go) then `cd backend && make ts` (this end's TypeScript; there is **no** `generate:api` script in this frontend) — so `apiClient.<entity>Service` exists in `src/api/generated/admin/service/v1/index.ts`. If it doesn't, stop — do the backend first.
+**Prerequisite:** the backend proto + codegen has run — `cd backend && gow api` (Go) then `cd backend && make ts` (this end's TypeScript; there is **no** `generate:api` script in this frontend) — so `apiClient.<entity>Service` exists in `src/api/generated/admin/service/v1/index.ts`. If it doesn't, stop — do the backend first.
+
+**Search filter convention:** list filters use contains-suffix operators, never plain `EQ`; ID fields are excluded from fuzzy search; keys already carrying an operator suffix (`__not`, `__gte`, …) must not add `__contains` on top — the query serializers guard this. Full protocol: [../list_query_rule.md](../list_query_rule.md).
 
 **Mirror these real samples — read them before writing:**
 - Hooks layer: `src/api/hooks/role.ts` (canonical 6-hook set)

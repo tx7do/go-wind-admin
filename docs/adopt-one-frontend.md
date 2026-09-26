@@ -17,7 +17,7 @@
 |---|---|
 | 包根 | 各端是独立 pnpm 根 + 独立 lockfile（`frontend/admin/react/package.json`、`.../vue-element/`、`.../vue-vben/`）；仓库根、`frontend/`、`frontend/admin/` **都没有** `package.json` 或 `pnpm-workspace.yaml` → 删任一端不影响另一端安装 |
 | 部署 | 各端自带 `frontend/admin/<端>/scripts/deploy/{Dockerfile,nginx.conf,build-local-docker-image.sh}`，随目录一起消失；`backend/docker-compose.yaml` 与 `backend/docker-compose.libs.yaml` 对前端**零引用** |
-| CI | 仓库没有任何 workflow（`.github/` 下只有 issue / PR 模板）→ 没有写死三端的流水线要改 |
+| CI | `.github/workflows/` 下仅有一个 docs-parity workflow（校验三语 README 行级一致），不涉及三端 → 没有写死三端的流水线要改 |
 | 后端代码生成 | `make api` / `make openapi` / `make ent` 都不碰前端目录；只有 `make ts` 会（见 §3） |
 
 唯一例外：`frontend/admin/vue-vben` 本身是个 monorepo（`pnpm-workspace.yaml:1-12` 含 `internal/* packages/* apps/* scripts/*`），但它的边界在自己目录内，删它不影响别人、删别人不影响它。

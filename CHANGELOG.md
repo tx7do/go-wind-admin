@@ -15,6 +15,23 @@
 - `docs/README.md`：通知域条目不再于索引内转载分阶段实施状态史，
   各阶段落地状态以 `notification_domain_design.md` 文内状态标记与验收清单为准
   （对齐该文档「实施进度更新时改本文状态标记、不另开文档」的单一事实源约定）。
+- 全仓文档审计修订：`backend_file_upload.md` 上传请求体改记 JSON+base64 现状
+  （2026-09-17 三端切换，multipart 保留为兼容回退）；`crud_module_guide` 步数 10→11、
+  生成的注册函数名更正为 `Register<Entity>ServiceHTTPServer`、代码生成命令统一 gow-first、
+  List 过滤补 contains/ID 排除约定并链 `list_query_rule.md`；`adopt-one-frontend.md`
+  workflow 表述跟进 docs-parity CI；`backend_project_struct.md` 补全 pkg 20 个子包清单；
+  三语 README 环境脚本路径加 `backend/` 前缀，功能列表补在线用户 / 我的活跃会话 /
+  通知规则 / 通知投递台账四行（三语同步，parity CI 通过）。
+- 移除失效的 `make install-golang` 目标（原指向的 `install_golang.sh` 已在脚本模块化
+  重构中并入 `install_unix_dev/prod`，由 `lib/go-utils.sh` 的 `install_golang()` 承担），
+  `backend/scripts/README.md` 对应段落改记现状；修正 `config_repo.go` 两处滞后于
+  多实例失效广播的注释。
+
+### 新增
+
+- `docs/sys_config.md`：参数管理（sys_config）参考文档——键值模型、缓存读取器
+  （负缓存 / 类型回退）、写路径与多实例 Redis 失效广播、内置参数按键补种、新参数接入
+  步骤；接入 docs/README.md 参考层索引与教程 07 深读。
 
 ## [1.0.0] - 2026-09-24
 

@@ -72,9 +72,9 @@
 
 ### 环境脚本选型
 
-- Linux / macOS 开发环境：`scripts/env/install_unix_dev.sh`
-- Linux / macOS 生产环境：`scripts/env/install_unix_prod.sh`
-- Windows 开发环境：`scripts/env/install_windows_dev.ps1`
+- Linux / macOS 开发环境：`backend/scripts/env/install_unix_dev.sh`
+- Linux / macOS 生产环境：`backend/scripts/env/install_unix_prod.sh`
+- Windows 开发环境：`backend/scripts/env/install_windows_dev.ps1`
 
 ### Docker 两种部署模式
 
@@ -222,7 +222,10 @@ cd frontend/admin/vue-vben   && pnpm install && pnpm dev:antd        # 端口 56
 | 多因素认证（MFA） | 基于 TOTP 的多因素认证，含登录挑战、个人中心绑定管理，以及管理员救援重置用户 MFA 的解锁路径 |
 | 找回密码 | 绑定邮箱验证码找回密码：验证码 10 分钟单次有效、重置成功即吊销全部会话，静默处理防用户枚举 |
 | 通知渠道 | 管理通知渠道，类型两选一：`EMAIL`（走 SMTP，密码加密存储、列表脱敏展示）或 `WEBHOOK`（HTTP 回调，签名风格五档：NONE / DINGTALK / FEISHU / WECOM / CUSTOM）；支持启用 / 停用与测试发送 |
+| 通知规则 | 管理通知路由规则（哪类事件投递到哪个渠道），支持启用 / 停用与按规则行的测试投递；内置默认规则随启动播种（仅空表补种），删行即生效 |
+| 通知投递台账 | 查看每条通知对每个渠道的投递结果（状态 / 渠道 / 尝试次数 / 失败原因 / 请求号），支持按接收人与状态筛选 |
 | 服务监控 | 只读展示服务运行时指标（CPU 核数、内存、goroutine 数、运行时长等），自动刷新 |
+| 在线用户 | 查看当前在线会话（用户、租户、客户端类型、登录 IP、User-Agent、设备 ID、登录时间），支持关键词过滤、分页（登录时间倒序）与单会话强制下线，30 秒自动刷新 |
 | 脚本系统 | 脚本级插件系统（Lua / JavaScript，数据库为事实源，管理页增改即时生效）：实体生命周期钩子（before 可否决 / after 异步）、定时任务（asynq 调度）、HTTP 出站（域名白名单 fail-closed）、试运行与执行日志；详见 [docs/script_system.md](./docs/script_system.md) |
 | 参数管理 | 平台全局系统参数的键值管理（区别于业务字典），内置参数启动时播种、禁删可改；服务侧经缓存 accessor 读取，多实例部署下参数变更经 Redis 发布订阅广播失效各实例缓存 |
 | 机器凭证（AK/SK） | 租户级 AccessKey / SecretKey 管理：创建时 Secret 一次性展示，支持启停、删除与密钥轮换重置（轮换后旧 Secret 立即失效）；AK / Secret 可经令牌交换端点换取租户作用域机器 JWT（machine 角色、仅签发 access 令牌），交换端点按 IP + AK 接入尝试限流 |
@@ -248,6 +251,7 @@ cd frontend/admin/vue-vben   && pnpm install && pnpm dev:antd        # 端口 56
 | 功能 | 说明 |
 |------|-----|
 | 个人中心 | 个人信息展示和修改，查看最后登录信息，密码修改、邮箱绑定 / 换绑（验证码校验）等功能 |
+| 我的活跃会话 | 查看本人当前在线的会话列表（登录 IP、设备、登录时间等），当前会话仅展示不可下线，其余会话可单独下线 |
 
 ---
 

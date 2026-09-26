@@ -58,8 +58,9 @@ type ConfigRepo struct {
 		configV1.Config, ent.SysConfig,
 	]
 
-	// 参数读取器（accessor）的进程内缓存：key → 条目，写路径（Create/Update/Delete）同步失效。
-	// 依赖“全部写路径都经本 repo、单进程持有写权”的假设；多实例部署需改造为共享缓存。
+	// 参数读取器（accessor）的进程内缓存：key → 条目。写路径（Create/Update/Delete）先失效本地，
+	// 再经 Redis 广播（configInvalidateChannel）让其他实例清各自缓存——多实例部署下参数变更即时全局生效。
+	// 该链路假设全部写路径都经本 repo：绕过 repo 直改表的写入不会触发失效。
 	cacheMu sync.RWMutex
 	cache   map[string]sysConfigCacheEntry
 }
@@ -354,8 +355,9 @@ func (r *ConfigRepo) SeedDefaults(ctx context.Context, defaults []*configV1.Conf
 //	showCaptcha := s.configRepo.GetConfigBool(ctx, "sys.login.captchaEnabled", true)
 //
 // 缓存语义：进程内 per-key 懒加载 + 负缓存（键不存在也缓存，防不存在的键反复打库）；
-// Create/Update/Delete 同步失效受影响键。依赖“全部写路径都经本 repo、单进程持有写权”的
-// 假设，多实例部署需改造为共享缓存（Redis 等）后再放开消费方。
+// Create/Update/Delete 先失效本地缓存、再向 Redis 广播（见 configInvalidateChannel），
+// 其他实例订阅后清各自缓存，多实例部署下参数变更即时全局生效。该链路假设全部写路径都经
+// 本 repo：绕过 repo 直改表的写入不会触发失效。
 
 // invalidateCacheKey 失效单个键的本地缓存并向 Redis 广播（空键 no-op）。
 // 广播为尽力而为：Redis 不可用时仅告警，本地失效不受影响。
