@@ -6,7 +6,8 @@
     "refresh": "Refresh",
     "search": "Search",
     "batchImport": "Batch Import",
-    "batchExport": "Batch Export"
+    "batchExport": "Batch Export",
+    "fullscreen": "Fullscreen"
   },
   "search": {
     "expand": "Expand",

@@ -44,15 +44,16 @@
         <!-- 工具栏图标按钮区前插槽 -->
         <slot name="before-tools" />
 
-        <!-- 默认工具栏图标按钮 -->
+        <!-- 默认工具栏图标按钮（全部带 Tooltip，对齐 react ProTable options 惯例） -->
         <template v-for="(tool, idx) in defaultToolbar" :key="'tool-' + idx">
           <!-- 刷新 -->
-          <ElButton
+          <ElTooltip
             v-if="tool === 'refresh'"
-            circle
-            :icon="Refresh"
-            @click="handleDefaultTool('refresh')"
-          />
+            :content="t('pages.curd.toolbar.refresh')"
+            placement="top"
+          >
+            <ElButton circle :icon="Refresh" @click="handleDefaultTool('refresh')" />
+          </ElTooltip>
           <!-- 筛选 -->
           <ElPopover
             v-else-if="tool === 'filter' && hasFilterContent"
@@ -70,33 +71,37 @@
             />
           </ElPopover>
           <!-- 搜索 -->
-          <ElButton
+          <ElTooltip
             v-else-if="tool === 'search'"
-            circle
-            :icon="Search"
-            @click="handleDefaultTool('search')"
-          />
+            :content="t('pages.curd.toolbar.search')"
+            placement="top"
+          >
+            <ElButton circle :icon="Search" @click="handleDefaultTool('search')" />
+          </ElTooltip>
           <!-- 导出 -->
-          <ElButton
+          <ElTooltip
             v-else-if="tool === 'exports'"
-            circle
-            :icon="Download"
-            @click="handleDefaultTool('export')"
-          />
+            :content="t('pages.curd.toolbar.batchExport')"
+            placement="top"
+          >
+            <ElButton circle :icon="Download" @click="handleDefaultTool('export')" />
+          </ElTooltip>
           <!-- 导入 -->
-          <ElButton
+          <ElTooltip
             v-else-if="tool === 'imports'"
-            circle
-            :icon="Upload"
-            @click="handleDefaultTool('import')"
-          />
+            :content="t('pages.curd.toolbar.batchImport')"
+            placement="top"
+          >
+            <ElButton circle :icon="Upload" @click="handleDefaultTool('import')" />
+          </ElTooltip>
           <!-- 全屏 -->
-          <ElButton
+          <ElTooltip
             v-else-if="tool === 'zoom'"
-            circle
-            :icon="isFullscreen ? Aim : FullScreen"
-            @click="handleZoom"
-          />
+            :content="t('pages.curd.toolbar.fullscreen')"
+            placement="top"
+          >
+            <ElButton circle :icon="isFullscreen ? Aim : FullScreen" @click="handleZoom" />
+          </ElTooltip>
           <!-- 自定义工具栏按钮 -->
           <AccessControl
             v-else-if="typeof tool === 'object'"
@@ -123,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import { ElButton, ElIcon, ElPopover } from "element-plus";
+import { ElButton, ElIcon, ElPopover, ElTooltip } from "element-plus";
 import {
   Refresh,
   Operation,
@@ -135,6 +140,7 @@ import {
 } from "@element-plus/icons-vue";
 import ColumnFilter from "./ColumnFilter.vue";
 import { AccessControl } from "@/core/access";
+import { useI18n } from "@/core/i18n";
 import type {
   ProToolbarProps,
   ProToolbarEmits,
@@ -156,6 +162,7 @@ const props = withDefaults(defineProps<ProToolbarProps>(), {
 
 const emit = defineEmits<ProToolbarEmits>();
 const slots = useSlots();
+const { t } = useI18n();
 
 // === 全屏状态 ===
 const isFullscreen = ref(false);
@@ -360,18 +367,20 @@ defineExpose({
     border-radius: 50%;
     background-color: transparent;
     border: none;
-    color: var(--el-text-color-secondary);
+    // 颜色用主文本色阶对齐 react（antd colorText）：EP 图标字形墨迹仅占
+    // viewBox 75%（antd ≈90%），16px 名义尺寸下实际观感比 react 小一截，
+    // 故图标放大到 18px 补偿 + 主文本色提精神（暗 #F8FAFC / 亮 #1F2937）。
+    color: var(--el-text-color-primary);
     transition: all 0.2s ease;
-    font-size: 16px;
+    font-size: 18px;
 
     // 增大图标尺寸
     .el-icon {
-      font-size: 16px !important;
+      font-size: 18px !important;
     }
 
     &:hover {
       background-color: var(--el-fill-color-light);
-      color: var(--el-text-color-primary);
     }
 
     &:active {

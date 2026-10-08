@@ -6,7 +6,8 @@
     "refresh": "刷新",
     "search": "搜索",
     "batchImport": "批量导入",
-    "batchExport": "批量导出"
+    "batchExport": "批量导出",
+    "fullscreen": "全屏"
   },
   "search": {
     "expand": "展开",
