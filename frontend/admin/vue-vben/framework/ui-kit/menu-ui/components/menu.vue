@@ -653,6 +653,10 @@ $namespace: vben;
       transition: all 0.3s;
 
       &.is-active {
+        // 收起态激活（含父级 sub-menu-content）：主色实底药丸 + 白字（design-language.md §4）。
+        // color 缺失时 sub-menu-content 会落回 --menu-submenu-active-color（is-light 下同为
+        // 主色），蓝底蓝字图标隐形；!important 对齐上方 background 的覆盖强度。
+        color: hsl(var(--primary-foreground)) !important;
         background: var(--menu-item-active-background-color) !important;
         border-radius: var(--menu-item-radius);
       }
@@ -662,7 +666,6 @@ $namespace: vben;
       .#{$namespace}-sub-menu-content,
       .#{$namespace}-menu-item {
         &.is-active {
-          // color: hsl(var(--primary-foreground)) !important;
           background: var(--menu-item-active-background-color) !important;
         }
       }
