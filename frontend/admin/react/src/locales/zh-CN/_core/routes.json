@@ -63,5 +63,81 @@
   "unauthorized": "未授权",
   "user-detail": "用户详情",
   "user-profile": "个人中心",
-  "users": "用户管理"
+  "users": "用户管理",
+  "menu": {
+    "profile": {
+      "settings": "个人中心",
+      "internalMessage": "收件箱"
+    },
+    "tenant": {
+      "moduleName": "租户管理",
+      "member": "租户列表",
+      "plan": "套餐管理"
+    },
+    "opm": {
+      "moduleName": "组织人员",
+      "orgUnit": "组织架构",
+      "position": "职位管理",
+      "user": "用户管理",
+      "userDetail": "用户详情"
+    },
+    "permission": {
+      "moduleName": "权限管理",
+      "permission": "权限点管理",
+      "role": "角色管理",
+      "menu": "菜单管理",
+      "api": "API管理"
+    },
+    "internalMessage": {
+      "moduleName": "站内消息",
+      "internalMessage": "消息管理",
+      "internalMessageCategory": "消息分类"
+    },
+    "log": {
+      "moduleName": "日志审计",
+      "loginAuditLog": "登录日志",
+      "apiAuditLog": "API日志",
+      "operationAuditLog": "操作日志",
+      "dataAccessAuditLog": "数据日志",
+      "permissionAuditLog": "权限日志",
+      "policyEvaluationLog": "策略评估日志",
+      "redisCacheMonitor": "Redis缓存监控"
+    },
+    "system": {
+      "moduleName": "系统管理",
+      "dict": "字典管理",
+      "file": "文件管理",
+      "task": "任务管理",
+      "loginPolicy": "登录策略",
+      "language": "语言管理",
+      "accessKeys": "OpenAPI 凭证",
+      "config": "参数管理",
+      "scripts": "脚本管理",
+      "onlineSessions": "在线用户",
+      "serverMonitor": "服务监控",
+      "monitorAlerts": "监控告警"
+    },
+    "notification": {
+      "moduleName": "通知管理",
+      "channels": "通知渠道",
+      "rules": "通知路由规则",
+      "deliveries": "通知投递记录",
+      "templates": "通知模板"
+    },
+    "ai": {
+      "moduleName": "AI 助手",
+      "chat": "AI 助手",
+      "query": "智能问数",
+      "providers": "AI 提供商",
+      "knowledge": "知识库",
+      "usage": "用量统计"
+    }
+  },
+  "page": {
+    "dashboard": {
+      "title": "概览",
+      "analytics": "分析页",
+      "workspace": "工作台"
+    }
+  }
 }

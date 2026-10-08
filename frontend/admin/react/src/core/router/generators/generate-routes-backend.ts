@@ -33,7 +33,8 @@ export async function generateRoutesByBackend(
             }
         }
 
-        // 3. 递归转换路由树
+        // 3. 归位嵌套绝对子路径 + 补目录组缺省重定向，再递归转换路由树
+        rebaseBackendTree(menuRoutes);
         return convertRoutes(menuRoutes, layoutMap, normalizedPageMap);
     } catch (error) {
         console.error('Failed to generate routes from backend:', error);
@@ -127,6 +128,50 @@ function convertRoutes(
 }
 
 /**
+ * 归位后端菜单树中的嵌套绝对子路径，并为缺省目录组注入重定向。
+ *
+ * 后端菜单树是 vue-router 风格：目录组内子项常带绝对路径（/dashboard →
+ * /analytics、/profile → /profile）。vue-router 允许嵌套绝对子路径，而
+ * react-router 禁止（除非以父路径全路径为前缀），createBrowserRouter 会直接
+ * 抛错卡死路由创建。这里把绝对子路径归位为父目录组内的相对路径：
+ * - 前缀与父路径匹配者剥掉父前缀（/profile → 空路径 index）；
+ * - 其余剥掉开头斜杠（/analytics → analytics），URL 随父路径延伸为
+ *   /dashboard/analytics，与前端模式静态路由的 URL 空间保持一致。
+ */
+function rebaseBackendTree(nodes: BackendRoute[], parentPath = ''): void {
+    for (const node of nodes) {
+        const fullPath = node.path ? resolveRoutePath(parentPath, node.path) : parentPath;
+
+        if (parentPath && node.path?.startsWith('/')) {
+            node.path = node.path === parentPath || node.path.startsWith(`${parentPath}/`)
+                ? node.path.slice(parentPath.length).replace(/^\/+/, '')
+                : node.path.replace(/^\/+/, '');
+        }
+
+        // 目录组缺省重定向：convertRoutes 会将其转成 index <Navigate>，否则
+        // 直访目录组路径（/dashboard）只渲染出空布局。首个子路径为空（归位成
+        // index 的 /profile 组）或重定向目标等于自身（自指死循环）时不注入。
+        const firstChild = node.children?.[0];
+        if (parentPath && node.children?.length && !node.redirect && firstChild?.path) {
+            const target = resolveRoutePath(fullPath, firstChild.path);
+            if (target !== fullPath) {
+                node.redirect = target;
+            }
+        }
+
+        if (node.children?.length) {
+            rebaseBackendTree(node.children, fullPath);
+        }
+    }
+}
+
+function resolveRoutePath(parentPath: string, childPath: string): string {
+    if (!childPath) return parentPath;
+    if (childPath.startsWith('/')) return childPath;
+    return `${parentPath.replace(/\/+$/, '')}/${childPath}`;
+}
+
+/**
  * 标准化视图路径（适配 React 目录结构）
  * @param path - 后端返回的组件路径，如 "./views/system/user" 或 "/views/dashboard"
  */
@@ -138,8 +183,14 @@ export function normalizeViewPath(path: string): string {
     const withSlash = normalized.startsWith('/') ? normalized : `/${normalized}`;
 
     // 3. 去除目录前缀（适配 React 项目结构）
-    // 支持多种常见目录：/views, /pages, /src/pages 等
+    // 支持多种常见目录：/views, /pages, /src/pages 等；后端组件路径带 app/ 段
+    // （如 app/opm/user/list/index.vue），而 React pageMap 键不含 app/，一并剥掉；
+    // 后端种子用下划线目录（vue-element 端约定，如 internal_message），React
+    // 页面目录统一横线，归一化时转换
     return withSlash
         .replace(/^\/(src\/)?(views|pages)\//i, '/')  // 去除 /views/ 或 /pages/
+        .replace(/^\/app\//, '/')                     // 去除 /app/ 段
+        .replace(/\.(vue|tsx|jsx|ts)$/i, '')          // 去除组件文件扩展名（后端下发的是 vue 端路径 xxx/index.vue）
+        .replace(/_/g, '-')                           // 下划线 → 横线（React 页面目录约定）
         .replace(/\/+$/, '');                          // 去除末尾斜杠
 }

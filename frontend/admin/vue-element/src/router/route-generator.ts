@@ -1,6 +1,6 @@
 import { ElMessage } from "element-plus";
 
-import { BasicLayout, Layout } from "@/layouts";
+import { Layout } from "@/layouts";
 import { generateAccessible } from "@/core/router";
 import { preferences } from "@/core/preferences";
 import { fetchNavigation } from "@/api/composables";
@@ -29,7 +29,10 @@ async function generateAccess(options: GenerateMenuAndRoutesOptions) {
   const pageMap: ComponentRecordType = import.meta.glob("../pages/**/*.vue");
 
   const layoutMap: ComponentRecordType = {
-    BasicLayout,
+    // BasicLayout（菜单种子的目录布局组件）必须映射到 Layout 选择器：其内部按
+    // 偏好组装侧栏/导航栏/内容区。BaseLayout 只是 Left/Top/Mix 布局共用的
+    // 空壳（仅渲染 slot），直接挂到路由上会得到一个没有内容的空布局
+    BasicLayout: Layout,
     Layout,
   };
 

@@ -97,7 +97,7 @@ export const systemRoutes: AppRouteObject[] = [
       {
         name: 'monitor-alerts',
         path: 'monitor-alerts', // 相对路径，最终为 /system/monitor-alerts
-        element: createLazyRoute(() => import('@/pages/app/system/monitor_alert')),
+        element: createLazyRoute(() => import('@/pages/app/system/monitor-alert')),
         meta: {
           title: 'routes:monitor-alerts',
           icon: 'lucide:bell-plus', // Iconify 格式

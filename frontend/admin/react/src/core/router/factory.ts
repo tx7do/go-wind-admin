@@ -1,4 +1,7 @@
-import { createBrowserRouter, type RouteObject } from 'react-router-dom';
+import { createElement } from 'react';
+import { createBrowserRouter, Navigate, type RouteObject } from 'react-router-dom';
+
+import { ROUTES } from '@/config/constants';
 import { injectRedirects } from './utils/inject-redirect';
 import { sortRoutes } from './utils/sort-routes';
 import { transformRoutesWithHandle } from './utils/transform-meta-to-handle';
@@ -26,15 +29,42 @@ function separateRoutes(routes: AppRouteObject[]) {
   return { layoutRoutes, otherRoutes };
 }
 
+/**
+ * 取排序后首个可见菜单的落地路径：优先目录组 redirect（后端生成器已为缺省
+ * 目录注入首个子路由全路径），无 redirect 则取首个子路由全路径；目录组子级
+ * 全隐藏时递归下钻。全部落空返回 null（调用方回退 DEFAULT_HOME）。
+ */
+function pickFirstMenuPath(routes: AppRouteObject[]): string | null {
+  for (const route of routes) {
+    if (route.meta?.hideInMenu) continue;
+    if (route.redirect) return route.redirect;
+    const firstChild =
+      route.children?.find((c) => c.path && !c.meta?.hideInMenu) ??
+      route.children?.find((c) => c.path);
+    if (firstChild?.path) {
+      return firstChild.path.startsWith('/')
+        ? firstChild.path
+        : `${route.path}/${firstChild.path}`;
+    }
+    if (route.children?.length) {
+      const nested = pickFirstMenuPath(route.children);
+      if (nested) return nested;
+    }
+  }
+  return null;
+}
+
 export const createAccessibleRouter = async (
   mode: AccessModeType,
   options: GenerateMenuAndRoutesOptions,
 ): Promise<{ router: ReturnType<typeof createBrowserRouter>; routes: AppRouteObject[] }> => {
   let routes: AppRouteObject[] = [...options.routes];
+  let isBackendMode = false;
 
   // 根据模式生成路由
   switch (mode) {
     case 'backend': {
+      isBackendMode = true;
       // 后端模式：从 API 获取路由树，动态转换组件
       if (!options.fetchMenuListAsync) {
         console.warn('[Router] Backend mode requires fetchMenuListAsync, falling back to frontend mode');
@@ -76,6 +106,20 @@ export const createAccessibleRouter = async (
     routes = injectRedirects(routes as unknown as AppRoute[]) as unknown as AppRouteObject[];
   if (options.autoSort !== false)
     routes = sortRoutes(routes as unknown as AppRoute[]) as unknown as AppRouteObject[];
+
+  // 后端模式没有 '/' 主布局容器（目录组各自挂实路径），补根落地路由重定向到
+  // 首个可用菜单，对齐前端模式 '/' index Navigate（DEFAULT_HOME）的登录落地语义
+  if (isBackendMode) {
+    const homeTarget = pickFirstMenuPath(routes) ?? ROUTES.DEFAULT_HOME;
+    routes = [
+      {
+        path: '/',
+        element: createElement(Navigate, { to: homeTarget, replace: true }),
+        meta: { title: 'routes:home', hideInMenu: true, hideInTab: true },
+      },
+      ...routes,
+    ];
+  }
 
   // 将 meta 转换为 handle，使 useMatches() 能获取路由元数据
   routes = transformRoutesWithHandle(routes);

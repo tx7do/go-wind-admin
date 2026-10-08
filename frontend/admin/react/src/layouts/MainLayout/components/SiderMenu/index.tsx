@@ -58,7 +58,11 @@ export const Index = ({
         return tRoutes(keyName, { defaultValue: label });
       }
       // 否则直接尝试翻译（可能已经是简化的 key）
-      return t(label, label);
+      const commonHit = t(label, label);
+      if (commonHit !== label) return commonHit;
+      // 后端菜单 meta.title 无前缀、用 vue 端种子键位（menu.* / page.*），
+      // 按 routes 命名空间的嵌套种子键兜底（routes.json 的 menu/page 段）
+      return tRoutes(label, { defaultValue: label });
     };
 
     const transformItem = (items: any[]): any[] => {

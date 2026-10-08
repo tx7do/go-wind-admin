@@ -78,7 +78,12 @@ async function loadLocaleMessages(lang: string) {
 function translateRouteTitle(title: string): string {
   if (!title) return "";
   // 直接尝试翻译，如果不存在则返回原文
-  return i18n.global.te(title) ? i18n.global.t(title) : title;
+  if (i18n.global.te(title)) return i18n.global.t(title);
+  // 后端菜单种子键带 menu./page. 前缀，而本端路由文案都在 routes 命名空间下
+  // 按去前缀的嵌套键存放（menu.ai.moduleName → routes.ai.moduleName），换前缀再查
+  const prefixed = title.replace(/^(menu|page)\./, "routes.");
+  if (prefixed !== title && i18n.global.te(prefixed)) return i18n.global.t(prefixed);
+  return title;
 }
 
 const $t = i18n.global.t;

@@ -39,8 +39,9 @@ export const usePageTitle = ({
         const keyName = title.substring(7);
         return tMenu(keyName, { defaultValue: title });
       } else if (title.startsWith('menu.')) {
-        const keyName = title.substring(5);
-        return tMenu(keyName, { defaultValue: title });
+        // 后端菜单种子键（menu.*）在 routes 命名空间按全键嵌套存放（routes.json
+        // 的 menu 段），不剥前缀——剥掉的形态会撞上根级扁平键（如 ai/system）
+        return tMenu(title, { defaultValue: title });
       } else if (title.startsWith('routes.')) {
         const keyName = title.substring(7);
         return tMenu(keyName, { defaultValue: title });

@@ -63,5 +63,81 @@
   "unauthorized": "Unauthorized",
   "user-detail": "User Details",
   "user-profile": "Profile Center",
-  "users": "User Management"
+  "users": "User Management",
+  "menu": {
+    "profile": {
+      "settings": "Profile Center",
+      "internalMessage": "Inbox"
+    },
+    "tenant": {
+      "moduleName": "Tenant Management",
+      "member": "Tenant List",
+      "plan": "Subscription Plans"
+    },
+    "opm": {
+      "moduleName": "Organization & Personnel",
+      "orgUnit": "Organization Structure",
+      "position": "Position Management",
+      "user": "User Management",
+      "userDetail": "User Details"
+    },
+    "permission": {
+      "moduleName": "Permission Management",
+      "permission": "Permission Codes",
+      "role": "Role Management",
+      "menu": "Menu Management",
+      "api": "API Management"
+    },
+    "internalMessage": {
+      "moduleName": "Internal Messages",
+      "internalMessage": "Message Management",
+      "internalMessageCategory": "Message Categories"
+    },
+    "log": {
+      "moduleName": "Audit Logs",
+      "loginAuditLog": "Login Logs",
+      "apiAuditLog": "API Logs",
+      "operationAuditLog": "Operation Logs",
+      "dataAccessAuditLog": "Data Logs",
+      "permissionAuditLog": "Permission Logs",
+      "policyEvaluationLog": "Policy Evaluation Logs",
+      "redisCacheMonitor": "Redis Cache Monitor"
+    },
+    "system": {
+      "moduleName": "System Management",
+      "dict": "Dictionary Management",
+      "file": "File Management",
+      "task": "Task Management",
+      "loginPolicy": "Login Policy",
+      "language": "Language Management",
+      "accessKeys": "OpenAPI Credentials",
+      "config": "Config Management",
+      "scripts": "Scripts",
+      "onlineSessions": "Online Users",
+      "serverMonitor": "Server Monitor",
+      "monitorAlerts": "Monitor Alerts"
+    },
+    "notification": {
+      "moduleName": "Notifications",
+      "channels": "Notification Channels",
+      "rules": "Notification Routing Rules",
+      "deliveries": "Notification Deliveries",
+      "templates": "Templates"
+    },
+    "ai": {
+      "moduleName": "AI Assistant",
+      "chat": "AI Assistant",
+      "query": "AI Query",
+      "providers": "AI Providers",
+      "knowledge": "Knowledge Bases",
+      "usage": "Usage"
+    }
+  },
+  "page": {
+    "dashboard": {
+      "title": "Overview",
+      "analytics": "Analytics",
+      "workspace": "Workbench"
+    }
+  }
 }

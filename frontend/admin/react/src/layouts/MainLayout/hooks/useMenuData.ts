@@ -22,9 +22,13 @@ export const useMenuData = ({
     // 菜单源：优先实际挂载的路由树（AccessibleRoutesContext：后端模式=后端下发，
     // 前端模式=权限过滤后），统一从主布局容器（path='/'）提取子路由，保证侧栏
     // 镜像真实挂载路由而非静态全量表；后端根节点不是 '/'（BasicLayout 目录各有
-    // 实路径）时退回整树，形态对齐 vue-vben / vue-element 的后端菜单
+    // 实路径）时退回整树，形态对齐 vue-vben / vue-element 的后端菜单。
+    // '/' 容器必须带可见子路由才认：后端模式树尾还有 errorRoutes 的 '/' 容器
+    // （404 通配组，子项全 hideInMenu），误匹配会把侧栏清空
     const source = dynamicRoutes?.length ? dynamicRoutes : staticRoutes;
-    const layoutRoute = source.find((route) => route.path === '/' && route.children);
+    const layoutRoute = source.find(
+      (route) => route.path === '/' && route.children?.some((child) => !child.meta?.hideInMenu),
+    );
     if (layoutRoute?.children?.length) {
       return layoutRoute.children;
     }
