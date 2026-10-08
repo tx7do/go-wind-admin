@@ -9,6 +9,162 @@
       ],
       "$/*": [
         "./generated/*"
+      ],
+      "@vben-core/shared": [
+        "../../framework/base/shared/index.ts"
+      ],
+      "@vben-core/shared/*": [
+        "../../framework/base/shared/*"
+      ],
+      "@vben-core/typings": [
+        "../../framework/base/typings/index.ts"
+      ],
+      "@vben-core/typings/*": [
+        "../../framework/base/typings/*"
+      ],
+      "@vben-core/icons": [
+        "../../framework/base/icons/index.ts"
+      ],
+      "@vben-core/icons/*": [
+        "../../framework/base/icons/*"
+      ],
+      "@vben-core/design": [
+        "../../framework/base/design/index.ts"
+      ],
+      "@vben-core/design/*": [
+        "../../framework/base/design/*"
+      ],
+      "@vben-core/composables": [
+        "../../framework/core/composables/index.ts"
+      ],
+      "@vben-core/composables/*": [
+        "../../framework/core/composables/*"
+      ],
+      "@vben-core/preferences": [
+        "../../framework/core/preferences/index.ts"
+      ],
+      "@vben-core/preferences/*": [
+        "../../framework/core/preferences/*"
+      ],
+      "@vben-core/shadcn-ui": [
+        "../../framework/ui-kit/shadcn-ui/index.ts"
+      ],
+      "@vben-core/shadcn-ui/*": [
+        "../../framework/ui-kit/shadcn-ui/*"
+      ],
+      "@vben-core/form-ui": [
+        "../../framework/ui-kit/form-ui/index.ts"
+      ],
+      "@vben-core/form-ui/*": [
+        "../../framework/ui-kit/form-ui/*"
+      ],
+      "@vben-core/popup-ui": [
+        "../../framework/ui-kit/popup-ui/index.ts"
+      ],
+      "@vben-core/popup-ui/*": [
+        "../../framework/ui-kit/popup-ui/*"
+      ],
+      "@vben-core/menu-ui": [
+        "../../framework/ui-kit/menu-ui/index.ts"
+      ],
+      "@vben-core/menu-ui/*": [
+        "../../framework/ui-kit/menu-ui/*"
+      ],
+      "@vben-core/layout-ui": [
+        "../../framework/ui-kit/layout-ui/index.ts"
+      ],
+      "@vben-core/layout-ui/*": [
+        "../../framework/ui-kit/layout-ui/*"
+      ],
+      "@vben-core/tabs-ui": [
+        "../../framework/ui-kit/tabs-ui/index.ts"
+      ],
+      "@vben-core/tabs-ui/*": [
+        "../../framework/ui-kit/tabs-ui/*"
+      ],
+      "@vben/access": [
+        "../../framework/effects/access/index.ts"
+      ],
+      "@vben/access/*": [
+        "../../framework/effects/access/*"
+      ],
+      "@vben/common-ui": [
+        "../../framework/effects/common-ui/index.ts"
+      ],
+      "@vben/common-ui/*": [
+        "../../framework/effects/common-ui/*"
+      ],
+      "@vben/hooks": [
+        "../../framework/effects/hooks/index.ts"
+      ],
+      "@vben/hooks/*": [
+        "../../framework/effects/hooks/*"
+      ],
+      "@vben/layouts": [
+        "../../framework/effects/layouts/index.ts"
+      ],
+      "@vben/layouts/*": [
+        "../../framework/effects/layouts/*"
+      ],
+      "@vben/plugins": [
+        "../../framework/effects/plugins/index.ts"
+      ],
+      "@vben/plugins/*": [
+        "../../framework/effects/plugins/*"
+      ],
+      "@vben/request": [
+        "../../framework/effects/request/index.ts"
+      ],
+      "@vben/request/*": [
+        "../../framework/effects/request/*"
+      ],
+      "@vben/constants": [
+        "../../framework/constants/index.ts"
+      ],
+      "@vben/constants/*": [
+        "../../framework/constants/*"
+      ],
+      "@vben/icons": [
+        "../../framework/icons/index.ts"
+      ],
+      "@vben/icons/*": [
+        "../../framework/icons/*"
+      ],
+      "@vben/locales": [
+        "../../framework/locales/index.ts"
+      ],
+      "@vben/locales/*": [
+        "../../framework/locales/*"
+      ],
+      "@vben/preferences": [
+        "../../framework/preferences/index.ts"
+      ],
+      "@vben/preferences/*": [
+        "../../framework/preferences/*"
+      ],
+      "@vben/stores": [
+        "../../framework/stores/index.ts"
+      ],
+      "@vben/stores/*": [
+        "../../framework/stores/*"
+      ],
+      "@vben/styles": [
+        "../../framework/styles/index.ts"
+      ],
+      "@vben/styles/*": [
+        "../../framework/styles/*"
+      ],
+      "@vben/types": [
+        "../../framework/types/index.ts"
+      ],
+      "@vben/types/*": [
+        "../../framework/types/*"
+      ],
+      "@vben/utils": [
+        "../../framework/utils/index.ts"
+      ],
+      "@vben/utils/*": [
+        "../../framework/utils/*"
       ]
     }
   },
@@ -22,5 +178,11 @@
     "src/**/*.tsx",
     "src/**/*.vue",
     "generated/**/*.ts",
+    "../../framework/**/*.ts",
+    "../../framework/**/*.tsx",
+    "../../framework/**/*.vue"
+  ],
+  "exclude": [
+    "../../framework/**/__tests__/**"
   ]
 }

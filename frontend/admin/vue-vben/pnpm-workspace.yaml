@@ -1,15 +1,13 @@
 packages:
   - internal/*
   - internal/lint-configs/*
-  - packages/*
-  - packages/@core/base/*
-  - packages/@core/ui-kit/*
-  - packages/@core/forward/*
-  - packages/@core/*
-  - packages/effects/*
-  - packages/business/*
   - apps/*
   - scripts/*
+
+# framework/ 与 apps/ 平级，其源码向上解析 node_modules 不经过 apps/admin，
+# 依赖全部提升到根 node_modules 供 framework 解析（单包化后 npm 风格扁平无副作用）。
+publicHoistPattern:
+  - '*'
 
 # 这些依赖的 postinstall 从未参与构建（pnpm 10 时代即被默认拦截），显式 false 保持行为一致。
 allowBuilds:

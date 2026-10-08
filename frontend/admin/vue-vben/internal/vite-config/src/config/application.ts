@@ -102,6 +102,11 @@ function defineApplicationConfig(userConfigPromise?: DefineApplicationOptions) {
 
 function createCssOptions(injectGlobalScss = true) {
   const root = findMonorepoRoot();
+  // 框架层已并入根 framework/ 目录（非 workspace 包），sass 层不能用包名解析，
+  // 注入改为绝对路径（正斜杠，Windows 下 sass 对反斜杠按转义处理会解析失败）。
+  const globalScss = path
+    .join(root, 'framework/styles/global/index.scss')
+    .replaceAll('\\', '/');
   return {
     preprocessorOptions: injectGlobalScss
       ? {
@@ -110,7 +115,7 @@ function createCssOptions(injectGlobalScss = true) {
               const relativePath = relative(root, filepath);
               // apps下的包注入全局样式
               if (relativePath.startsWith(`apps${path.sep}`)) {
-                return `@use "@vben/styles/global" as *;\n${content}`;
+                return `@use "${globalScss}" as *;\n${content}`;
               }
               return content;
             },

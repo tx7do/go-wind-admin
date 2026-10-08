@@ -11,7 +11,7 @@ import { enterAnimationPlugin } from './plugins/entry';
 
 // import defaultTheme from 'tailwindcss/defaultTheme';
 
-const { packages } = getPackagesSync(process.cwd());
+const { packages, rootDir } = getPackagesSync(process.cwd());
 
 const tailwindPackages: string[] = [];
 
@@ -21,6 +21,11 @@ packages.forEach((pkg) => {
   tailwindPackages.push(pkg.dir);
   // }
 });
+
+// 框架层已并入根 framework/ 目录（非 workspace 包），content 需显式补扫
+const frameworkContent = `${path
+  .join(rootDir, 'framework')
+  .replaceAll('\\', '/')}/**/*.{vue,js,ts,jsx,tsx,svelte,astro,html}`;
 
 const shadcnUiColors = {
   accent: {
@@ -118,6 +123,7 @@ const customColors = {
 export default {
   content: [
     './index.html',
+    frameworkContent,
     ...tailwindPackages.map((item) =>
       path.join(item, 'src/**/*.{vue,js,ts,jsx,tsx,svelte,astro,html}'),
     ),

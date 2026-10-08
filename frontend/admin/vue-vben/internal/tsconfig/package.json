@@ -19,7 +19,6 @@
     "web.json"
   ],
   "dependencies": {
-    "@vben/types": "workspace:*",
     "vite": "catalog:"
   }
 }
