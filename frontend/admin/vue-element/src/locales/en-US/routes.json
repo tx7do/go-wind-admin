@@ -1,7 +1,8 @@
 {
   "dashboard": {
     "title": "Overview",
-    "analytics": "Analytics"
+    "analytics": "Analytics",
+    "workspace": "Workbench"
   },
   "opm": {
     "moduleName": "Organization & Personnel",

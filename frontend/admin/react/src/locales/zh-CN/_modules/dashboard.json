@@ -89,5 +89,35 @@
       }
     },
     "generatedAt": "生成于 {{time}}"
+  },
+  "workspace": {
+    "greeting": {
+      "morning": "早上好",
+      "afternoon": "下午好",
+      "evening": "晚上好",
+      "night": "夜深了",
+      "morningWith": "早上好，{{name}}",
+      "afternoonWith": "下午好，{{name}}",
+      "eveningWith": "晚上好，{{name}}",
+      "nightWith": "夜深了，{{name}}"
+    },
+    "today": "今天是 {{date}}",
+    "quickAccess": {
+      "title": "快捷入口",
+      "subtitle": "常用管理页面一键直达"
+    },
+    "myMessages": {
+      "title": "我的站内信",
+      "unreadCount": "{{count}} 条未读",
+      "viewAll": "查看全部",
+      "empty": "暂无消息"
+    },
+    "mySessions": {
+      "title": "我的活跃会话",
+      "subtitle": "当前账号在线设备",
+      "manage": "管理会话",
+      "empty": "暂无活跃会话",
+      "current": "当前设备"
+    }
   }
 }

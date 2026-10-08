@@ -27,6 +27,16 @@ const routes: RouteRecordRaw[] = [
           authority: ['sys:platform_admin', 'sys:tenant_manager'],
         },
       },
+      {
+        name: 'Workspace',
+        path: '/workspace',
+        component: () => import('#/views/dashboard/workspace/index.vue'),
+        meta: {
+          icon: 'lucide:armchair',
+          title: $t('page.dashboard.workspace'),
+          authority: ['sys:platform_admin', 'sys:tenant_manager'],
+        },
+      },
     ],
   },
 ];

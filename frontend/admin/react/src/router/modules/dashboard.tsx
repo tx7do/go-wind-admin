@@ -35,6 +35,16 @@ export const dashboardRoutes: AppRouteObject[] = [
           affixTab: true, // 与 ele/vben 及种子菜单一致：分析页固定标签
         },
       },
+      {
+        name: 'workspace',
+        path: 'workspace', // /dashboard/workspace
+        element: createLazyRoute(() => import('@/pages/app/dashboard/workspace')),
+        meta: {
+          title: 'routes:dashboard-workspace',
+          icon: 'lucide:armchair',
+          order: 2,
+        },
+      },
     ],
   },
 ];

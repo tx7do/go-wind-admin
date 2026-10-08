@@ -57,5 +57,32 @@
     "failedOpsTitle": "操作失败集中：账号 {username} 24h 内失败操作 {count} 次（共 {total} 次）",
     "failedOpsDetail": "连续失败可能意味着权限不足或越权尝试，建议在操作日志中核对失败资源与原因。",
     "sensitiveOpsTitle": "存在 {count} 条敏感操作（删除/导出/授权变更）"
+  },
+  "workspace": {
+    "greeting": {
+      "morning": "早上好",
+      "afternoon": "下午好",
+      "evening": "晚上好",
+      "night": "夜深了",
+      "morningWith": "早上好，{name}",
+      "afternoonWith": "下午好，{name}",
+      "eveningWith": "晚上好，{name}",
+      "nightWith": "夜深了，{name}"
+    },
+    "today": "今天是 {date}",
+    "quickAccess": {
+      "title": "快捷入口",
+      "subtitle": "常用管理页面一键直达"
+    },
+    "myMessages": {
+      "title": "我的站内信",
+      "viewAll": "查看全部",
+      "empty": "暂无消息"
+    },
+    "mySessions": {
+      "title": "我的活跃会话",
+      "manage": "管理会话",
+      "empty": "暂无活跃会话"
+    }
   }
 }

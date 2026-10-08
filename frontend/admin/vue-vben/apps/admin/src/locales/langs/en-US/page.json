@@ -1132,5 +1132,32 @@
   },
   "branding": {
     "tenantName": "Tenant"
+  },
+  "workspace": {
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening",
+      "night": "Working late",
+      "morningWith": "Good morning, {name}",
+      "afternoonWith": "Good afternoon, {name}",
+      "eveningWith": "Good evening, {name}",
+      "nightWith": "Working late, {name}"
+    },
+    "today": "Today is {date}",
+    "quickAccess": {
+      "title": "Quick Access",
+      "subtitle": "One-click access to common pages"
+    },
+    "myMessages": {
+      "title": "My Messages",
+      "viewAll": "View all",
+      "empty": "No messages"
+    },
+    "mySessions": {
+      "title": "My Active Sessions",
+      "manage": "Manage sessions",
+      "empty": "No active sessions"
+    }
   }
 }

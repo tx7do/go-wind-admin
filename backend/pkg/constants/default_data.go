@@ -97,7 +97,7 @@ var DefaultPermissions = []*permissionV1.Permission{
 		// 所以 DefaultMenus 里加一行还不够，新菜单必须同时出现在这里，否则播种出来的平台管理员看不见它。
 		// 已部署实例的权限行早已存在、这段不会再跑，须在「权限管理」里勾上新菜单。
 		MenuIds: []uint32{
-			1, 2, 3, 4, 5, 6,
+			1, 2, 103, 3, 4, 5, 6,
 			10, 11, 12,
 			20, 21, 22, 23, 24,
 			30, 31, 32, 33, 34,
@@ -133,7 +133,7 @@ var DefaultPermissions = []*permissionV1.Permission{
 		Code:        trans.Ptr(SystemTenantManagerPermissionCode),
 		Status:      trans.Ptr(permissionV1.Permission_ON),
 		MenuIds: []uint32{
-			1, 2,
+			1, 2, 103,
 			20, 21, 22, 23, 24,
 			30, 32, 33, 34,
 			40, 41,
@@ -348,6 +348,21 @@ var DefaultMenus = []*permissionV1.Menu{
 			Icon:      trans.Ptr("lucide:area-chart"),
 			Authority: []string{"sys:platform_admin", "sys:tenant_manager"},
 			AffixTab:  trans.Ptr(true),
+		},
+	},
+	{
+		Id:        trans.Ptr(uint32(103)),
+		ParentId:  trans.Ptr(uint32(1)),
+		Type:      permissionV1.Menu_MENU.Enum(),
+		Name:      trans.Ptr("Workspace"),
+		Path:      trans.Ptr("/workspace"),
+		Component: trans.Ptr("dashboard/workspace/index.vue"),
+		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
+		Meta: &permissionV1.MenuMeta{
+			Order:     trans.Ptr(int32(-1)),
+			Title:     trans.Ptr("page.dashboard.workspace"),
+			Icon:      trans.Ptr("lucide:armchair"),
+			Authority: []string{"sys:platform_admin", "sys:tenant_manager"},
 		},
 	},
 

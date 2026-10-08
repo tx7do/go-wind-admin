@@ -12,6 +12,7 @@
   "configs": "Config Management",
   "dashboard": "Overview",
   "dashboard-analytics": "Analytics",
+  "dashboard-workspace": "Workbench",
   "data-access-audit-log": "Data Logs",
   "dict": "Dictionary Management",
   "error-pages": "Error",
