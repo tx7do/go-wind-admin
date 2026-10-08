@@ -2,7 +2,8 @@
   <!-- 品牌标识「旋涡 Vortex」v2（docs/brand/ 选定方案）：
        旋涡主标 + 双层对旋虚线环流 + 轨道光点 + 四向漂移风痕 + GOWIND 几何字标签名，
        色板同源 docs/design-language.md 主色 hsl(212 100% 45%)。
-       动效尊重 prefers-reduced-motion；外层 .slogan-icon 的 float 浮动由父级提供。 -->
+       动效尊重 prefers-reduced-motion；外层不做整体浮动（与慢旋体系不搭），
+       生命感由光晕呼吸承担。 -->
   <svg
     class="gw-slogan"
     viewBox="0 0 560 560"
@@ -28,7 +29,7 @@
         <stop offset="1" stop-color="#0d74f2" stop-opacity="0" />
       </radialGradient>
     </defs>
-    <circle cx="280" cy="268" r="252" fill="url(#gw-slogan-glow)" />
+    <circle class="gw-glow" cx="280" cy="268" r="252" fill="url(#gw-slogan-glow)" />
     <circle
       class="gw-ring2"
       cx="280"
@@ -143,6 +144,11 @@
 </template>
 
 <style scoped>
+.gw-glow {
+  transform-box: view-box;
+  transform-origin: 280px 268px;
+  animation: gw-breathe 9s ease-in-out infinite alternate;
+}
 .gw-ring1,
 .gw-ring2,
 .gw-orbit,
@@ -190,7 +196,18 @@
     transform: translateX(16px);
   }
 }
+@keyframes gw-breathe {
+  from {
+    transform: scale(1);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.05);
+    opacity: 0.72;
+  }
+}
 @media (prefers-reduced-motion: reduce) {
+  .gw-glow,
   .gw-ring1,
   .gw-ring2,
   .gw-orbit,

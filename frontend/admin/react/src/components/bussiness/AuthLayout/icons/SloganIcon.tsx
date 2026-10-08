@@ -4,10 +4,12 @@ import type React from 'react';
  * 品牌标识「旋涡 Vortex」v2（docs/brand/ 选定方案，2026-09-10）：
  * 旋涡主标 + 双层对旋虚线环流 + 轨道光点 + 四向漂移风痕 + GOWIND 几何字标签名，
  * 色板同源 docs/design-language.md 主色 hsl(212 100% 45%)。
- * 动效尊重 prefers-reduced-motion；浮动动效由父级样式提供。
+ * 动效尊重 prefers-reduced-motion；外层不做整体浮动（与慢旋体系不搭），
+ * 生命感由光晕呼吸承担。
  * 注：SVG 内嵌 <style> 为文档级作用域，keyframes/类名均带 gw- 前缀防碰撞。
  */
 const ANIMATION_CSS = `
+.gw-glow{transform-box:view-box;transform-origin:280px 268px;animation:gw-breathe 9s ease-in-out infinite alternate}
 .gw-ring1,.gw-ring2,.gw-orbit,.gw-orbit2{transform-box:view-box;transform-origin:280px 268px}
 .gw-ring1{animation:gw-spin 48s linear infinite}
 .gw-ring2{animation:gw-spin 70s linear infinite reverse}
@@ -19,8 +21,9 @@ const ANIMATION_CSS = `
 .gw-s4{animation-duration:13s;animation-delay:-6s}
 @keyframes gw-spin{to{transform:rotate(360deg)}}
 @keyframes gw-drift{from{transform:translateX(-16px)}to{transform:translateX(16px)}}
+@keyframes gw-breathe{from{transform:scale(1);opacity:1}to{transform:scale(1.05);opacity:0.72}}
 @media (prefers-reduced-motion:reduce){
-.gw-ring1,.gw-ring2,.gw-orbit,.gw-orbit2,.gw-streak{animation:none}
+.gw-glow,.gw-ring1,.gw-ring2,.gw-orbit,.gw-orbit2,.gw-streak{animation:none}
 }
 `;
 
@@ -53,7 +56,7 @@ const SloganIcon: React.FC<React.SVGProps<SVGSVGElement>> = (props) => (
         <stop offset="1" stopColor="#0D74F2" stopOpacity="0" />
       </radialGradient>
     </defs>
-    <circle cx="280" cy="268" r="252" fill="url(#gw-slogan-glow)" />
+    <circle className="gw-glow" cx="280" cy="268" r="252" fill="url(#gw-slogan-glow)" />
     <circle
       className="gw-ring2"
       cx="280"

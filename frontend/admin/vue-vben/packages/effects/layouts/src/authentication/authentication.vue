@@ -86,7 +86,9 @@ const { authPanelCenter, authPanelLeft, authPanelRight, isDark } =
               class="animate-float h-64 w-2/5"
             />
           </template>
-          <SloganIcon v-else :alt="appName" class="animate-float h-64 w-2/5" />
+          <!-- 不加 animate-float：整只上下跳动与旋涡 SVG 内部慢速旋转体系不搭，
+               生命感由 SVG 内光晕呼吸（gw-breathe）承担 -->
+          <SloganIcon v-else :alt="appName" class="h-64 w-2/5" />
           <div class="text-1xl text-foreground mt-6 font-sans lg:text-2xl">
             {{ pageTitle }}
           </div>

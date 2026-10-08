@@ -216,25 +216,6 @@
   }
 }
 
-/* 品牌插画：vben 同款浮动动效（float 5s，translateY -20px 循环） */
-@keyframes slogan-float {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-  100% {
-    transform: translateY(0);
-  }
-}
-
-.user-brand-icon {
-  animation: slogan-float 5s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .user-brand-icon {
-    animation: none;
-  }
-}
+/* 品牌插画：外层不再整体浮动——vben 遗留的 5s 上下 20px 跳动与 SVG 内部
+   24s~70s 慢速旋转体系不搭（快、大幅、linear 两端顿挫）；生命感由 SVG 内
+   光晕呼吸（gw-breathe）承担，整组动效统一在慢速一个频率上。 */

@@ -189,14 +189,12 @@ const formComponents = {
       width: 360px;
       height: 360px;
       filter: drop-shadow(0 8px 32px rgba(0, 107, 230, 0.3));
-      animation: slogan-float 5s linear infinite;
+
+      /* 外层不再整体浮动：vben 遗留的 5s 上下 20px 跳动与 SVG 内部
+         24s~70s 慢速旋转体系不搭；生命感由 SVG 内光晕呼吸承担。 */
 
       html:not(.dark) & {
         filter: drop-shadow(0 8px 32px rgba(0, 107, 230, 0.2));
-      }
-
-      @media (prefers-reduced-motion: reduce) {
-        animation: none;
       }
     }
   }
@@ -334,19 +332,6 @@ const formComponents = {
         }
       }
     }
-  }
-}
-
-// 品牌插画：vben 同款浮动动效（float 5s，translateY -20px 循环）
-@keyframes slogan-float {
-  0% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-  100% {
-    transform: translateY(0);
   }
 }
 
