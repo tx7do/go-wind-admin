@@ -20,6 +20,22 @@
 .ant-pro-table .ant-table-tbody > tr:hover > td {
   background-color: var(--ant-color-fill-secondary) !important;
 }
+/* 固定列（右侧操作列 / 左侧固定列）hover 时必须仍是不透明底色。
+   上面这条 hover 底色是半透明 token（--ant-color-fill-secondary 暗色即
+   rgba(255,255,255,.09)），而固定列是 sticky + z-index，横向滚动时它底下压着
+   别的单元格文字：底色一旦只剩这层半透明色，下面的文字就透出来与操作按钮叠字
+   （列表页滚到日期列时最明显）。把「不透明容器底色 + 半透明高亮」画在同一个元素上
+   —— background-image 叠在 background-color 之上——观感与行 hover 一致但不透。
+   选择器刻意用 .ant-table-wrapper 而非 .ant-pro-table：antd 自身的行 hover token
+   （--ant-table-row-hover-bg）同样半透明，普通 Table 的固定列也一样会漏字。 */
+.ant-table-wrapper .ant-table-tbody > tr:hover > td.ant-table-cell-fix {
+  background-color: var(--ant-color-bg-container) !important;
+  background-image: linear-gradient(
+    var(--ant-color-fill-secondary),
+    var(--ant-color-fill-secondary)
+  );
+  background-repeat: no-repeat;
+}
 
 /* 表格单元格超长文本省略号 */
 .ant-pro-table .ant-table-cell {
