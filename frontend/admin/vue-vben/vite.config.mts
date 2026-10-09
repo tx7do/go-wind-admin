@@ -1,6 +1,6 @@
 import { fileURLToPath } from 'node:url';
 
-import { defineConfig } from '@vben/vite-config';
+import { defineConfig } from './internal/vite-config/src';
 
 // 框架层源码位于 monorepo 根 framework/（非 workspace 包），按原包名做前缀别名，
 // 业务代码与框架内部互引的 '@vben/*'、'@vben-core/*' 导入保持原样零改动。

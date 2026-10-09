@@ -1,4 +1,3 @@
-export default {
-  extends: ['@vben/stylelint-config'],
-  root: true,
-};
+import config from './internal/lint-configs/stylelint-config/index.mjs';
+
+export default { ...config, root: true };

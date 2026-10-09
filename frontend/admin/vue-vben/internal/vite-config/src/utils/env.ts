@@ -3,7 +3,7 @@ import type { ApplicationPluginOptions } from '../typing';
 import { existsSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { fs } from '@vben/node-utils';
+import { fs } from '../../../node-utils/src';
 
 import dotenv from 'dotenv';
 

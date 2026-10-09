@@ -2,7 +2,7 @@ import type { ConfigEnv, UserConfig } from 'vite';
 
 import type { DefineLibraryOptions } from '../typing';
 
-import { readPackageJSON } from '@vben/node-utils';
+import { readPackageJSON } from '../../../node-utils/src';
 
 import { defineConfig, mergeConfig } from 'vite';
 

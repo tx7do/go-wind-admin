@@ -1,6 +1,3 @@
-packages:
-  - internal/*
-  - internal/lint-configs/*
 
 # 这些依赖的 postinstall 从未参与构建（pnpm 10 时代即被默认拦截），显式 false 保持行为一致。
 allowBuilds:

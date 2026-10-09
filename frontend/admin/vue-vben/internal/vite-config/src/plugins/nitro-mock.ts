@@ -2,7 +2,7 @@ import type { PluginOption } from 'vite';
 
 import type { NitroMockPluginOptions } from '../typing';
 
-import { colors, consola, getPackage } from '@vben/node-utils';
+import { colors, consola, getPackage } from '../../../node-utils/src';
 
 import getPort from 'get-port';
 import { build, createDevServer, createNitro, prepare } from 'nitropack';

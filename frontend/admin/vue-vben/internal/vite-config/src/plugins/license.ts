@@ -7,7 +7,7 @@ import type { PluginOption } from 'vite';
 
 import { EOL } from 'node:os';
 
-import { dateUtil, readPackageJSON } from '@vben/node-utils';
+import { dateUtil, readPackageJSON } from '../../../node-utils/src';
 
 /**
  * 用于注入版权信息
