@@ -8,7 +8,7 @@
 
 **核心技术栈**: Vue 3.5, Ant Design Vue 4.2, Tailwind CSS, Shadcn-ui, Pinia, Vue Router, Vue Query (TanStack Query), VxeTable, i18n, Axios
 
-**应用入口**: `apps/admin/src/`
+**应用入口**: `src/`（工程根，单包结构——原 apps/admin 已削平）
 
 ## Vben 框架核心机制
 
@@ -47,10 +47,30 @@ Mentions, Rate, Divider, Space, DefaultButton, PrimaryButton, ApiTree
 | 表单赋值/取值 | `baseFormApi.setValues()` / `baseFormApi.getValues()` | 直接操作 DOM 或 ref |
 | 表单校验 | `baseFormApi.validate()` | 手动检查每个字段 |
 
-## 目录结构
+## 工程结构（单包化后，2026-10 起）
+
+原 Vben 5 monorepo 的 26 个 packages/* 已并入 `framework/`，apps/ 已削平：
 
 ```
-apps/admin/src/
+vue-vben/
+├── framework/            # 框架壳（原 26 包源码，保留包边界子目录，勿打平）
+│   ├── base/ core/ ui-kit/ effects/ + 根级(constants/icons/locales/preferences/stores/styles/types/utils)
+│   └── node_modules/     # junction 兼容层（@vue/compiler-sfc 类型解析用，勿删；prepare 钩子自动重建）
+├── src/                  # 业务层（页面/路由/stores/api/adapter，见下）
+├── internal/             # 工具链 workspace（vite-config/tailwind-config/tsconfig/node-utils/lint-configs）
+├── node_modules/         # 唯一依赖源（应用依赖全在根 package.json）
+└── vite.config.mts / tsconfig.json / index.html / .env*
+```
+
+- **框架包名即别名**：`@vben/*`、`@vben-core/*` 按 26 条映射解析到 framework/ 子目录（vite resolve.alias + tsconfig paths 双份，改包名/加子路径要两处同步）。子路径如 `@vben/styles/antd`、`@vben/plugins/echarts` 自然解析
+- **命令从工程根跑且必须经 `pnpm run`**：`pnpm dev` / `pnpm build` / `pnpm typecheck`。env.ts 靠 `npm_lifecycle_script` 正则解析 `--mode`，直接调 `.bin/vite` 会丢 mode（端口回落 5173）
+- **改 internal/tailwind-config、vite-config 的 src 后必须重建 dist**：`pnpm --filter @vben/tailwind-config run stub`（入口是 dist 产物，改 src 不重建 = 静默不生效）
+- 主题色/暗亮的 CSS 变量由 `framework/core/preferences/update-css-variables.ts` 运行时注入；design-tokens 在 `framework/base/design/design-tokens/`
+
+### src/ 业务层结构
+
+```
+src/
 ├── api/                  # API 层（两层架构）
 │   ├── generated/        # ← protobuf 自动生成，禁止手动编辑
 │   ├── client.ts         # ← ApiClient 单例（ClientTransport 适配器）
@@ -422,7 +442,7 @@ export default routes;
 
 vxe-table 的巨型递归类型与 `DeepPartial` 展开做结构比较时极易超深。已做两层防御：
 
-1. `DeepPartial`（`packages/@core/base/typings/src/helper.d.ts`）已改为**深度 6 层封顶**，请勿改回无界递归。
+1. `DeepPartial`（`framework/base/typings/helper.d.ts`）已改为**深度 6 层封顶**，请勿改回无界递归。
 2. `use-vxe-grid.vue` 中向 `setState`/`mergeWithArrayOverride` 传 vxe 大类型处有显式断言截断。
 
 新增页面若再遇 TS2589：优先在调用点按目标类型断言收窄，**不要**升级 TS/vue-tsc 去碰运气。
