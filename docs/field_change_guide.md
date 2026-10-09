@@ -50,7 +50,7 @@ A 档纯前端，直接跳 §3。B/C 档先看 §1 的三条前提，能省掉�
 gow api        # proto -> *.pb.go / *.pb.validate.go
 make openapi   # -> openapi.yaml（这份是打进二进制的，「接口同步」读它）
 gow ent admin  # schema -> ent CRUD 代码（含 migrate/schema.go）
-make ts        # -> 各端 src/api/generated/（vben 在 apps/admin/src/ 下）
+make ts        # -> 各端 src/api/generated/（vben 在 src/ 下）
 ```
 
 两条注意：
@@ -97,7 +97,7 @@ Create/Update 两处**仍然是 `SetNillable<字段>(…)`，只是实参要过�
 |---|---|---|---|
 | **react** | `src/pages/app/system/dict/DictTypeList.tsx:50` `columns` 数组 | 同目录 `DictTypeDrawer.tsx`：表单项 `:126+`、编辑回填 `:45-48`、新建默认值 `:109` | `src/locales/{zh-CN,en-US}/_modules/dict-type.json` |
 | **vue-element** | `src/pages/app/system/dict/dict-type-list.vue`：`table.columns:85`（`prop` camelCase）、需要可搜时 `search.fields:49` | 同目录 `dict-type-drawer.vue`：`ElFormItem` 区 `:17-52`、新建默认值 `defaults:88-93`、**编辑回填 `:113-116`（逐字段手写）**、校验 `formRules:99-106` | `src/locales/{zh-CN,en-US}/pages/dict.json` |
-| **vue-vben** | `apps/admin/src/views/app/system/dict/dict-type-list.vue:73` `columns`（`field` camelCase） | 同目录 `dict-type-drawer.vue:33` `useVbenForm` 的 `schema` | `apps/admin/src/locales/langs/{zh-CN,en-US}/page.json` |
+| **vue-vben** | `src/views/app/system/dict/dict-type-list.vue:73` `columns`（`field` camelCase） | 同目录 `dict-type-drawer.vue:33` `useVbenForm` 的 `schema` | `src/locales/langs/{zh-CN,en-US}/page.json` |
 
 四处容易漏的：
 

@@ -1,17 +1,17 @@
 # Vue Vben frontend: add a CRUD module
 
-Stack: Vben Admin monorepo (pnpm + turbo) — Vue 3.5 + Ant Design Vue 4.2 + Tailwind + Shadcn + Pinia + Vue Router + **TanStack Vue Query** + **VxeTable** + i18n + Axios. Path root: `frontend/admin/vue-vben/apps/admin/src/` (the only app — there is no web-antd/web-naive/web-ele multi-UI variant here).
+Stack: Vben Admin single-package (single-package pnpm project) — Vue 3.5 + Ant Design Vue 4.2 + Tailwind + Shadcn + Pinia + Vue Router + **TanStack Vue Query** + **VxeTable** + i18n + Axios. Path root: `frontend/admin/vue-vben/src/` (the only app — there is no web-antd/web-naive/web-ele multi-UI variant here).
 
-**Prerequisite:** backend proto + regeneration done, so `apiClient.<entity>Service` getter exists in `apps/admin/src/api/generated/admin/service/v1/index.ts`.
+**Prerequisite:** backend proto + regeneration done, so `apiClient.<entity>Service` getter exists in `src/api/generated/admin/service/v1/index.ts`.
 
 **Search filter convention:** list filters use contains-suffix operators, never plain `EQ`; ID fields are excluded from fuzzy search; keys already carrying an operator suffix (`__not`, `__gte`, …) must not add `__contains` on top — the query serializers guard this. Full protocol: [../list_query_rule.md](../list_query_rule.md).
 
 **Mirror these real samples — read them before writing:**
-- Composables: `apps/admin/src/api/composables/position.ts` (canonical 5-hook + enum utils)
-- List page: `apps/admin/src/views/app/opm/position/index.vue` (VxeGrid + proxyConfig)
-- Drawer form: `apps/admin/src/views/app/opm/position/position-drawer.vue` (useVbenDrawer + useVbenForm)
-- Shared enums: `apps/admin/src/api/composables/shared.ts` (statusList, statusToColor, etc.)
-- Route: `apps/admin/src/router/routes/modules/app/opm.ts`
+- Composables: `src/api/composables/position.ts` (canonical 5-hook + enum utils)
+- List page: `src/views/app/opm/position/index.vue` (VxeGrid + proxyConfig)
+- Drawer form: `src/views/app/opm/position/position-drawer.vue` (useVbenDrawer + useVbenForm)
+- Shared enums: `src/api/composables/shared.ts` (statusList, statusToColor, etc.)
+- Route: `src/router/routes/modules/app/opm.ts`
 - Coding conventions: `frontend/admin/vue-vben/AGENTS.md`
 
 > **AGENTS.md divergences (verified):** (1) routes are **grouped by functional domain in ONE file** (`opm.ts`, `permission.ts`, …), not one file per module as the doc literally says — add to the existing group file unless it's a brand-new domain. (2) Access control uses **role-based `authority` arrays in route meta**, NOT `v-access`/`useAccess` button-level codes — `views/app/` has zero `v-access` usages.
@@ -19,19 +19,19 @@ Stack: Vben Admin monorepo (pnpm + turbo) — Vue 3.5 + Ant Design Vue 4.2 + Tai
 ## Files you will create or edit
 
 **Create (4):**
-1. `apps/admin/src/api/composables/<entity>.ts` — hooks + enum utils
-2. `apps/admin/src/views/app/<group>/<entity>/index.vue` — list page
-3. `apps/admin/src/views/app/<group>/<entity>/<entity>-drawer.vue` — drawer form
-4. `apps/admin/src/router/routes/modules/app/<group>.ts` — **only if new domain**; otherwise edit the existing group file
+1. `src/api/composables/<entity>.ts` — hooks + enum utils
+2. `src/views/app/<group>/<entity>/index.vue` — list page
+3. `src/views/app/<group>/<entity>/<entity>-drawer.vue` — drawer form
+4. `src/router/routes/modules/app/<group>.ts` — **only if new domain**; otherwise edit the existing group file
 
 **Edit (5):**
-5. `apps/admin/src/api/composables/index.ts` — add `export * from './<entity>';` (only manual registration)
-6. `apps/admin/src/locales/langs/zh-CN/menu.json` + `en-US/menu.json` — menu title
-7. `apps/admin/src/locales/langs/zh-CN/page.json` + `en-US/page.json` — page copy
-8. `apps/admin/src/locales/langs/zh-CN/enum.json` + `en-US/enum.json` — per-module enums (if any)
+5. `src/api/composables/index.ts` — add `export * from './<entity>';` (only manual registration)
+6. `src/locales/langs/zh-CN/menu.json` + `en-US/menu.json` — menu title
+7. `src/locales/langs/zh-CN/page.json` + `en-US/page.json` — page copy
+8. `src/locales/langs/zh-CN/enum.json` + `en-US/enum.json` — per-module enums (if any)
 9. `ui.json` is **usually untouched** — `ui.notification.*_success/failed`, `ui.modal.create/update`, `ui.button.ok/cancel` already exist.
 
-`apps/admin/src/api/client.ts` is **never edited** — `apiClient.<entity>Service` is generated.
+`src/api/client.ts` is **never edited** — `apiClient.<entity>Service` is generated.
 
 i18n and routes auto-discover via `import.meta.glob`:
 - locales: `langs/<lang>/*.json` → 4 namespaces (`menu`, `enum`, `page`, `ui`). Path flat, no nesting.
@@ -39,7 +39,7 @@ i18n and routes auto-discover via `import.meta.glob`:
 
 ## Step 1 — Composables (hooks + enum utils)
 
-Path: `apps/admin/src/api/composables/<entity>.ts`. Mirror `position.ts`. Import types directly from `#/api/generated/admin/service/v1` (allowed inside composables even though business code should go via `#/api`). Use `const t = i18n.global.t;` for enum `computed`s (composables have no setup context).
+Path: `src/api/composables/<entity>.ts`. Mirror `position.ts`. Import types directly from `#/api/generated/admin/service/v1` (allowed inside composables even though business code should go via `#/api`). Use `const t = i18n.global.t;` for enum `computed`s (composables have no setup context).
 
 ```ts
 import { computed } from 'vue';
@@ -47,7 +47,7 @@ import { useQuery, useMutation, type UseQueryOptions, type UseMutationOptions } 
 import { i18n } from '@vben/locales';
 import { apiClient } from '#/api/client';
 import { PaginationQuery, makeUpdateMask } from '#/transport/rest';
-import { queryClient } from '#/plugins/vue-query';   // verified: apps/admin/src/plugins/vue-query.ts
+import { queryClient } from '#/plugins/vue-query';   // verified: src/plugins/vue-query.ts
 import type {
   identityservicev1_List<Entity>Response,
   identityservicev1_<Entity>,
@@ -94,7 +94,7 @@ export function <entity>TypeToColor(v: string, theme?: 'light' | 'dark') { /* re
 
 ## Step 2 — Register composables export
 
-Edit `apps/admin/src/api/composables/index.ts`, add (alphabetical within the group):
+Edit `src/api/composables/index.ts`, add (alphabetical within the group):
 ```ts
 export * from './<entity>';
 ```
@@ -117,7 +117,7 @@ Without this, `#/api` won't expose the hooks or enum utils.
 
 ## Step 4 — List page
 
-Path: `apps/admin/src/views/app/<group>/<entity>/index.vue`. Mirror `position/index.vue`. Three pieces: `formOptions` (search schema), `gridOptions` (VxeTable + proxyConfig), and the assembled `[Grid, gridApi]` + `[Drawer, drawerApi]`.
+Path: `src/views/app/<group>/<entity>/index.vue`. Mirror `position/index.vue`. Three pieces: `formOptions` (search schema), `gridOptions` (VxeTable + proxyConfig), and the assembled `[Grid, gridApi]` + `[Drawer, drawerApi]`.
 
 ```vue
 <template>
@@ -227,7 +227,7 @@ Rules:
 
 ## Step 5 — Drawer form
 
-Path: `apps/admin/src/views/app/<group>/<entity>/<entity>-drawer.vue`. Mirror `position-drawer.vue`. Two Vben composables: `useVbenForm` for the form schema, `useVbenDrawer` for the drawer shell.
+Path: `src/views/app/<group>/<entity>/<entity>-drawer.vue`. Mirror `position-drawer.vue`. Two Vben composables: `useVbenForm` for the form schema, `useVbenDrawer` for the drawer shell.
 
 ```vue
 <template>
@@ -293,14 +293,14 @@ const getTitle = computed(() =>
 ```
 
 Rules:
-- `schema[].component` uses the **registered name** (`Input`, `InputNumber`, `Select`, `ApiSelect`, `ApiTreeSelect`, `RadioGroup`, `Switch`, `DatePicker`, …) — see `apps/admin/src/adapter/component/index.ts` `ComponentType` union. Writing `AInput`/`ASelect` breaks.
+- `schema[].component` uses the **registered name** (`Input`, `InputNumber`, `Select`, `ApiSelect`, `ApiTreeSelect`, `RadioGroup`, `Switch`, `DatePicker`, …) — see `src/adapter/component/index.ts` `ComponentType` union. Writing `AInput`/`ASelect` breaks.
 - `rules: 'required'` for inputs, `'selectRequired'` for dropdowns.
 - Loading state via `drawerApi.setState({ loading })` — NOT `ref(false)`.
 - `onConfirm` validates → getValues → branch on `data.value.create` → mutate → close. Errors caught here (or globally).
 
 ## Step 6 — Route
 
-`apps/admin/src/router/routes/modules/app/<group>.ts`. **Add to the existing group file** unless it's a brand-new domain. Auto-discovered via `import.meta.glob` — no registration.
+`src/router/routes/modules/app/<group>.ts`. **Add to the existing group file** unless it's a brand-new domain. Auto-discovered via `import.meta.glob` — no registration.
 
 For a brand-new domain, mirror `opm.ts`:
 ```ts

@@ -69,7 +69,7 @@ buf generate --template buf.vue-element.admin.typescript.gen.yaml
 buf generate --template buf.vue-vben.admin.typescript.gen.yaml
 ```
 
-Each template writes only into its own end (`frontend/admin/react/src/api/generated/`, `frontend/admin/vue-element/src/api/generated/`, `frontend/admin/vue-vben/apps/admin/src/api/generated/`). Afterwards check the generated index (`src/api/generated/admin/service/v1/index.ts`) has the new `get <entity>Service()` getter.
+Each template writes only into its own end (`frontend/admin/react/src/api/generated/`, `frontend/admin/vue-element/src/api/generated/`, `frontend/admin/vue-vben/src/api/generated/`). Afterwards check the generated index (`src/api/generated/admin/service/v1/index.ts`) has the new `get <entity>Service()` getter.
 
 ## Step 3 — Frontend(s)
 
@@ -118,7 +118,7 @@ These recur on every module regardless of framework. Read them once here, then t
 6. **i18n files auto-register via `import.meta.glob` — do not manually register them.** Adding a new locale JSON under the right folder is enough. But the *route menu title* lives in a separate file, and each end addresses it differently — copy the wrong style and the menu renders the raw key:
    - react: `meta.title: 'routes:xxx'` — the colon is the i18next **namespace** separator; keys live in `src/locales/<lang>/_core/routes.json`.
    - vue-element: `meta.title: 'routes.<group>.<page>'` — a plain vue-i18n dotted key (no namespace prefix, no `routes:` colon), resolved from `src/locales/zh-CN/routes.json`.
-   - vue-vben: `meta.title: $t('menu.<group>.<page>')` — translated eagerly with `$t` imported from `#/locales` in the route file, keys in `apps/admin/src/locales/langs/<lang>/menu.json`.
+   - vue-vben: `meta.title: $t('menu.<group>.<page>')` — translated eagerly with `$t` imported from `#/locales` in the route file, keys in `src/locales/langs/<lang>/menu.json`.
 
 7. **No error swallowing — in any framework.** Every `catch` must either log the **original error object** (`console.error(...)`/`console.warn(...)`) or rethrow it. A user-visible notification/Message is NOT logging (it carries only translated text; debugging needs the raw error in the console). Bare `catch {}` is acceptable only for pure local best-effort fallbacks, with a comment explaining why. The composables/mutation layer generated for a new module must not swallow mutation errors — surface them via notification + console, or rethrow.
 

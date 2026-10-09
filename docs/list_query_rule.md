@@ -173,7 +173,7 @@
 ## 三端序列化器行为与守卫
 
 三端列表页的查询参数经 `PaginationQuery.toRawParams()` 序列化（react / vue-element：
-`src/core/transport/rest/pagination.ts`；vue-vben：`apps/admin/src/transport/rest/pagination.ts`。
+`src/core/transport/rest/pagination.ts`；vue-vben：`src/transport/rest/pagination.ts`。
 **三份行为一致但不是同一份文件**：vben 把守卫写成模块级函数、注释与行序也各自漂移过，改一处记得同步另两处），行为约定：
 
 - **字符串值统一转 `__contains`**（裸键 EQ→模糊匹配；contains 是完整值精确匹配的超集）；

@@ -13,7 +13,7 @@ backend/                    Go 后端（kratos 微服务框架 + ent ORM）
 frontend/admin/
 ├── react/                  React 19 + antd 6 + ProComponents + TanStack Query + zustand
 ├── vue-element/            Vue 3 + Element Plus + vxe-table + TanStack vue-query + Pinia
-└── vue-vben/               Vben Admin 5.x monorepo（apps/admin + packages/*）+ Ant Design Vue
+└── vue-vben/               Vue 3.5 + Ant Design Vue 4.2 单包（framework/ 壳 + src/ 业务）
 docs/                       本文档体系（教程层 + 参考层，见 [docs/README.md](../README.md)）
 ```
 
@@ -25,7 +25,7 @@ docs/                       本文档体系（教程层 + 参考层，见 [docs/
 
 **三个前端端口约定（本地开发）**：react `15888`、vue-element `15777`、vue-vben `15666`。
 端口写在各自的 dev 环境变量里，键名不统一：react `.env.development` 的 `VITE_SERVER_PORT`、
-vue-element `.env.development` 的 `VITE_APP_PORT`、vue-vben `apps/admin/.env.development` 的 `VITE_PORT`
+vue-element `.env.development` 的 `VITE_APP_PORT`、vue-vben `.env.development` 的 `VITE_PORT`
 （若端口被占用 vite 会自动顺延，启动日志里有实际端口）。
 
 ## 2. 一次请求的完整路径

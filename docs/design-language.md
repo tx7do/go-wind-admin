@@ -17,7 +17,7 @@
 | 主题模型 | vben | HSL token 三元组 + CSS 变量下发 + 组件库 token 派生，三端 preferences schema 已同构 |
 | 主色 / 语义色 | vben 默认值 | `hsl(212 100% 45%)` 深蓝更"企业级"，且 vben/语义色三端 config 本就同源 |
 | 圆角体系 | vben | `--radius: 0.5rem`（控件 8px），卡片/浮层 12px |
-| **暗色中性色** | **react 六轮定稿（2026-08-24）** | 近黑蓝 `#0B0F19` 系。**三端均已落在该系**：react `core/preferences/config/darkTheme.ts:37,39`、vue-element `styles/_dark-mode.scss:33-36,54,72`、vben `packages/@core/base/design/src/design-tokens/dark.css:4-11`（该文件注释即写明对齐本规范 2.3）。vben 原"浅炭暗色"降为沿革，见 2.3 末 |
+| **暗色中性色** | **react 六轮定稿（2026-08-24）** | 近黑蓝 `#0B0F19` 系。**三端均已落在该系**：react `core/preferences/config/darkTheme.ts:37,39`、vue-element `styles/_dark-mode.scss:33-36,54,72`、vben `framework/base/design/design-tokens/dark.css:4-11`（该文件注释即写明对齐本规范 2.3）。vben 原"浅炭暗色"降为沿革，见 2.3 末 |
 | 布局尺寸 | vben（react / ele 已同步，落点见 2.6） | 侧栏 224 / 折叠 48 / 顶栏 50 / 页签 38 |
 
 **谁向谁对齐**：vben 提供视觉语言与主题系统；react / vue-element 提供工程实现。不移植 vben 的代码，只移植它的"语言"。
@@ -80,7 +80,7 @@ vben 任务页"启动全部任务"= `#FAFAFA` on `#57D188` **1.85:1**；react �
 ### 2.2 中性色 · 浅色模式
 
 > **落地状态按端不同**（2026-09-25 复核，2026-09-29 补文字档一层）：vue-element ✓（`styles/vendors/_element-plus.scss:31` 页面画布
-> `#F1F3F6`、`:52` 边框 `#E4E4E7`）、vue-vben ✓（`packages/@core/base/design/src/design-tokens/default.css:10`
+> `#F1F3F6`、`:52` 边框 `#E4E4E7`）、vue-vben ✓（`framework/base/design/design-tokens/default.css:10`
 > `--background-deep: 216 20.11% 95.47%` = `#F1F3F6`）、**react 半 ✓**——react 端只有
 > `core/preferences/config/darkTheme.ts` 一套 token 覆盖，**浅色模式的画布/边框仍走 antd `defaultAlgorithm`
 > 的默认派生值**，与本表不严格相等（要严格对齐需新增一套 light tokens，未做，属新工作）；
@@ -155,7 +155,7 @@ vben 任务页"启动全部任务"= `#FAFAFA` on `#57D188` **1.85:1**；react �
 |---|---|---|
 | react | `frontend/admin/react/src/styles/global.css:18-20` | `-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'`（无 PingFang / 雅黑，CJK 由 `Noto Sans` 与系统兜底） |
 | vue-element | `frontend/admin/vue-element/src/styles/index.scss:43-44` | `'Noto Sans SC', 'Noto Sans JP', 'Noto Sans KR', sans-serif`（自托管 CJK 优先） |
-| vue-vben | `packages/@core/base/design/src/design-tokens/default.css:2-4` | 与 react 同族、仅大小写写法不同：`-apple-system, blinkmacsystemfont, 'Segoe UI', roboto, 'Helvetica Neue', arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'` |
+| vue-vben | `framework/base/design/design-tokens/default.css:2-4` | 与 react 同族、仅大小写写法不同：`-apple-system, blinkmacsystemfont, 'Segoe UI', roboto, 'Helvetica Neue', arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji'` |
 
 - 字号：控件 14 / 表格 13 / 卡片标题 16 / 页面标题 18；rem 基准 16。
 - 字重：正文 400、标题与强调 600。vue-element 已按此落地（`src/styles/index.scss:46`
@@ -171,7 +171,7 @@ vben 任务页"启动全部任务"= `#FAFAFA` on `#57D188` **1.85:1**；react �
 
 | 项 | 值 | 三端落点（现值 = 规范值） |
 |---|---|---|
-| 侧栏宽度 | **224px** | vben `packages/@core/preferences/src/config.ts:73`；ele `src/core/preferences/config/default.ts:75`（消费点 `src/layouts/LeftLayout.vue:93`）；react `src/layouts/MainLayout/components/SiderMenu/index.tsx:99` 的 224 兜底 |
+| 侧栏宽度 | **224px** | vben `framework/core/preferences/config.ts:73`；ele `src/core/preferences/config/default.ts:75`（消费点 `src/layouts/LeftLayout.vue:93`）；react `src/layouts/MainLayout/components/SiderMenu/index.tsx:99` 的 224 兜底 |
 | 侧栏折叠 | **48px** | react 同文件 `:99`（`isCollapsed ? 48 : …`）；ele `src/layouts/LeftLayout.vue:57` 与 `src/layouts/MixLayout.vue:123` 的 `SIDEBAR_COLLAPSED_WIDTH = 48`；vben 48 ✓ |
 | 顶栏高度 | **50px** | react `src/layouts/MainLayout/index.tsx:300`；ele `src/styles/_variables.scss:16` `$navbar-height: 50px`；vben 50 ✓ |
 | 页签栏高度 | **38px** | vben `config.ts:78`；ele `core/preferences/config/default.ts:80`；react `core/preferences/config/default.ts:80`（chrome 形态） |
@@ -200,13 +200,13 @@ vben 任务页"启动全部任务"= `#FAFAFA` on `#57D188` **1.85:1**；react �
 
 ### 3.1 vue-vben —— 参照实现（视觉基准）
 
-机制：`preferences`（`packages/@core/preferences`）→ `update-css-variables.ts` 写 `--primary` 等 HSL 三元组 + `html.dark`/`data-theme` → `useAntdDesignTokens()` / `useElementPlusDesignTokens()` 派生组件库 token。
+机制：`preferences`（`framework/core/preferences`）→ `update-css-variables.ts` 写 `--primary` 等 HSL 三元组 + `html.dark`/`data-theme` → `useAntdDesignTokens()` / `useElementPlusDesignTokens()` 派生组件库 token。
 
-- 本项目 override 仅 `app.name` / `accessMode`（`apps/admin/src/preferences.ts`），默认主题即本规范基准，**无强制迁移项**。
+- 本项目 override 仅 `app.name` / `accessMode`（`src/preferences.ts`），默认主题即本规范基准，**无强制迁移项**。
 - 2.1 的语义色文字档 + 2.2/2.3 的次要档落点：`packages/styles/src/antd/index.css` 末尾的 `--gowind-*-text` 段
   （变量由 `hsl(var(--primary|success|warning|destructive))` 混色，跟随主题预设；规则带 `!important`，理由见 2.1 第 2 条）。
   **这一层是纯 CSS 且经 postcss 处理，注释只能写 `/* */`，写 `//` 会在 dev 直接 500（`Unknown word …`）。**
-- 曾经的"唯一开放项"已关闭：2.3 的 react 系暗色已被采纳——`packages/@core/base/design/src/design-tokens/dark.css:4-11`
+- 曾经的"唯一开放项"已关闭：2.3 的 react 系暗色已被采纳——`framework/base/design/design-tokens/dark.css:4-11`
   的 `--background` / `--background-deep` / `--popover` / `--foreground` 已是近黑蓝系，该文件头注释（2026-09-08）
   即写明"暗色中性色对齐设计语言规范（docs/design-language.md §2.3，近黑蓝系，与 react 端定稿一致）"。
 
@@ -293,7 +293,7 @@ vben 任务页"启动全部任务"= `#FAFAFA` on `#57D188` **1.85:1**；react �
   **边界**：`is-loading` ≠ `is-disabled`（EP 只把 loading 记进 `ariaDisabled`/`disabled` 属性，类名不带 `is-disabled`），实测发送中按钮仍是 `#006BE6` 实底 + spinner，"去实底"不会把加载态一起画灰；`is-plain/is-text/is-link` 的禁用态走 EP 自己的淡档（light-9 底 + light-5 字，是显式声明不是变量），本次未接管（全仓仅 1 处 `plain` 按钮：`system/script/script-log-dialog.vue:37`）。
 - **认证页（登录/注册）**：画布深底 + 实底表面卡（24px 大圆角、主色柔影）；品牌插画带 vben 同款 float 动效（`translateY 0→-20px→0`，5s 循环，尊重 `prefers-reduced-motion`）。
 - **页签栏**：chrome 形态、38px。选中页签走"温和配方"（2026-09-16 修订，基准 = vben）：暗色 = 中性灰底（fill ≈ 白 10%）+ 正常亮文字，浅色 = 主色 15% 底 + 主色文字；**禁用主色描边 / 发光阴影 / 底部指示线 / 字重加粗**（形状本身即指示）；悬停 = 中性微底，关闭按钮跟随文字色不用主色。
-- **默认头像**（2026-09-16 统一）：三端统一使用橘猫插画 `default-avatar.png`（react/ele public 同文件，vben 经 `apps/admin/src/preferences.ts` 覆盖框架默认的 webp——带 Vben 品牌字样已弃用）；用于导航栏当前用户、通知、锁屏等无头像兜底；用户列表/详情的"姓名首字 + 底色"兜底保留（承载身份信息）。
+- **默认头像**（2026-09-16 统一）：三端统一使用橘猫插画 `default-avatar.png`（react/ele public 同文件，vben 经 `src/preferences.ts` 覆盖框架默认的 webp——带 Vben 品牌字样已弃用）；用于导航栏当前用户、通知、锁屏等无头像兜底；用户列表/详情的"姓名首字 + 底色"兜底保留（承载身份信息）。
 - **侧边栏菜单交互态（2026-09-16 定稿，基准 = react antd Menu）**：悬停 = 中性灰遮罩（浅 `#F5F7FA` 系 / 暗 `rgba(255,255,255,.05~.08)`，8px 圆角）；选中 = 主色实底 + 白字（`--primary-foreground`）+ 8px 圆角药丸，不得用左侧竖条 / 淡色底 / 字重加粗来区分选中（vben 旧"选中与悬停同灰"、ele 旧"inset 蓝条 + light-9 淡底"均废弃）；父级展开链路只做文字/图标提亮，不铺底色。折叠后的弹出子菜单选中态同规则。横向顶部菜单暂不约束。
 - **实底主色标"位置"，不标"次级动作"（2026-09-29 定稿，基准 = react）**：实底主色块留给状态标识（上一条的导航选中、列表/分页的当前选中）与页面级主行动（提交、发送）；
   **列表面板里的"新建 X"这类次级动作按钮一律中性描边**——它和导航选中同色同形时，用户分不清哪个是菜单高亮、哪个是按钮。
@@ -369,7 +369,7 @@ vben 端另修 `registerGlobComp.ts` 漏注册 Radio（AI 问数页 `a-radio-gro
 `transition.loading` 从此有消费者、表内 spinner 加 250ms 阈值（注入 900ms 延迟实测 mask 在 273ms/275ms 两把量具同值出现）、
 失败态无数据整块换 `el-empty`+重试（实测首屏失败 → 内联「网络连接错误,请检查网络设置后重试」，点重试 rows 0→20）、有数据在表格上方挂 `el-alert` 且保留旧行；
 delivery/rule 两页的 `listAction` 自 catch 一并剥掉；`locales/{en-US,zh-CN}/common.json` 加 `common.button.retry`；骨架保持 8 行（理由见 §4「以可见区为准」条）。
-**vben**（2026-09-29 续）接在 `packages/effects/plugins/src/vxe-table/`（新增 `table-skeleton.vue`，改 `use-vxe-grid.vue`/`extends.ts`/`api.ts`/`style.css`，
+**vben**（2026-09-29 续）接在 `framework/effects/plugins/src/vxe-table/`（新增 `table-skeleton.vue`，改 `use-vxe-grid.vue`/`extends.ts`/`api.ts`/`style.css`，
 `packages/locales` 两语各加 `common.loadDataFailed`/`common.retry`，`views/app/notification/{delivery,rule}/index.vue` 的 `query` 不再自 catch），
 六个场景 live 实测通过、数值记在 §4 该条内；`apps/admin` 下 `npx vue-tsc --noEmit --skipLibCheck` 退出码 0
 （阳性对照：往新文件塞一行类型错误后同一条命令报 2 处并指向该文件，确认它真在检查范围内，不是"看不见所以没错"）。

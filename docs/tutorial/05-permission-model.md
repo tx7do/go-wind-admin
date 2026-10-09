@@ -60,9 +60,9 @@
 |---|---|---|
 | react | `src/core/preferences/config/default.ts:5` 的 `accessMode`（消费点 `src/router/index.tsx:97`） | `frontend` |
 | vue-element | 同位置的 `src/core/preferences/config/default.ts:5` | `frontend` |
-| vue-vben | `.env` 的 `VITE_ROUTER_ACCESS_MODE`（`apps/admin/src/preferences.ts:12` 读入）——**只有这一端走环境变量** | `frontend` |
+| vue-vben | `.env` 的 `VITE_ROUTER_ACCESS_MODE`（`src/preferences.ts:12` 读入）——**只有这一端走环境变量** | `frontend` |
 
-> vue-vben 这一端还有一层坑：preferences 会被写进浏览器缓存，`apps/admin/src/preferences.ts` 文件头
+> vue-vben 这一端还有一层坑：preferences 会被写进浏览器缓存，`src/preferences.ts` 文件头
 > 就写着「更改配置后请清空缓存，否则可能不生效」。改了 `.env` 却没变行为，先清 localStorage 再排查代码。
 
 | 模式 | 原理 | 适用 |

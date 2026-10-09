@@ -47,7 +47,7 @@ corepack enable
 |---|---|---|
 | react | `buf.react.admin.typescript.gen.yaml` | `frontend/admin/react/src/api/generated/` |
 | vue-element | `buf.vue-element.admin.typescript.gen.yaml` | `frontend/admin/vue-element/src/api/generated/` |
-| vue-vben | `buf.vue-vben.admin.typescript.gen.yaml` | `frontend/admin/vue-vben/apps/admin/src/api/generated/` |
+| vue-vben | `buf.vue-vben.admin.typescript.gen.yaml` | `frontend/admin/vue-vben/src/api/generated/` |
 
 三份模板用的都是同一个 buf 本地插件 `protoc-gen-typescript-http`，它由 `make plugin` 安装
 （见 [如何搭建后端开发环境](./backend_development_environment_preparation.md)）。生成三端 TS 的命令是

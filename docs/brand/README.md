@@ -32,10 +32,10 @@ Admin 是产品线之一（另有 CMS / UBA / IM / Quant 量化等），因此�
 
 | 资产 | 目标 |
 |---|---|
-| `logo.png`（tile 200×200 透明底） | `react/public/`、`vue-element/public/`（补齐原 404）、`vue-element/src/assets/images/`（登录页头部 24px + 侧栏 LayoutLogo 32px）、`vue-vben/apps/admin/public/`（侧栏 + 认证页经 `preferences.logo.source`） |
+| `logo.png`（tile 200×200 透明底） | `react/public/`、`vue-element/public/`（补齐原 404）、`vue-element/src/assets/images/`（登录页头部 24px + 侧栏 LayoutLogo 32px）、`vue-vben/public/`（侧栏 + 认证页经 `preferences.logo.source`） |
 | `favicon.ico`（16/32/48 多尺寸） | 三端 `public/favicon.ico` |
-| `pwa-icon-192/512.png` | `vue-vben/apps/admin/public/` |
-| `vortex-login.svg` | 登录页品牌插画，三端同款：`vue-element/src/pages/core/login/icons/slogan.vue`、`react/src/components/bussiness/AuthLayout/icons/SloganIcon.tsx`（AuthLayout + UserLayout 共用）、`vue-vben/packages/effects/layouts/src/authentication/icons/slogan.vue`（替换原库存占位插画 87667-SVG8，float 动效保留） |
+| `pwa-icon-192/512.png` | `vue-vben/public/` |
+| `vortex-login.svg` | 登录页品牌插画，三端同款：`vue-element/src/pages/core/login/icons/slogan.vue`、`react/src/components/bussiness/AuthLayout/icons/SloganIcon.tsx`（AuthLayout + UserLayout 共用）、`vue-vben/framework/effects/layouts/src/authentication/icons/slogan.vue`（替换原库存占位插画 87667-SVG8，float 动效保留） |
 
 vue-element / react / vben 三端 typecheck 门禁全部通过（2026-09-10）。PNG 导出管线：`brand-render.html` + Playwright 截图（omitBackground 保透明）+ Pillow 打包 ICO。
 

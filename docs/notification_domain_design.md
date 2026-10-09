@@ -1362,7 +1362,7 @@ gow run admin
       —— M 块之后这一行变成 Id 72 / path `deliveries`（挂在根 74 `/notification` 下）/ `component: app/notification/delivery/index.vue`，
       本文其余历史块里的 `app/system/notification_*` 与 `/system/notification-*` 一律按"当时的实况"读，现行落点见 §4 M。
 - [x] 三端门禁全绿：react `npm run typecheck` / vue-element `npx vue-tsc --noEmit` / vue-vben `pnpm run check:type`
-      （turbo 会 cache-hit，复跑要带 `--force`）；
+      ；
 - [x] 通知渠道三处 UI 的 `type` 列改为按枚举渲染（react / ele / vben 均已接 record，色表按 `CHANNEL_TYPE_*`
       枚举查，未知值回落原文 + 默认色；新增 WEBHOOK 文案 key 三端 zh/en 各一份）。
       首稿记录的三处硬编码位置（react `notification-channel/index.tsx:127`、ele `index.vue:12`、

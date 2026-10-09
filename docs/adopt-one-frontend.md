@@ -8,7 +8,7 @@
 > 页面文件数 react 96 / vue-element 102 / vue-vben 89；复测：
 > `find frontend/admin/react/src/pages -name '*.tsx' | wc -l`、
 > `find frontend/admin/vue-element/src/pages -name '*.vue' | wc -l`、
-> `find frontend/admin/vue-vben/apps/admin/src/views -name '*.vue' | wc -l`），
+> `find frontend/admin/vue-vben/src/views -name '*.vue' | wc -l`），
 > 所以这不涉及"哪一端功能不全"，只涉及"你要维护几端"。
 
 ## 1. 三端互不依赖，可以放心删
@@ -20,7 +20,7 @@
 | CI | `.github/workflows/` 下仅有一个 docs-parity workflow（校验三语 README 行级一致），不涉及三端 → 没有写死三端的流水线要改 |
 | 后端代码生成 | `make api` / `make openapi` / `make ent` 都不碰前端目录；只有 `make ts` 会（见 §3） |
 
-唯一例外：`frontend/admin/vue-vben` 本身是个 monorepo（`pnpm-workspace.yaml:1-12` 含 `internal/* packages/* apps/* scripts/*`），但它的边界在自己目录内，删它不影响别人、删别人不影响它。
+唯一例外：`frontend/admin/vue-vben` 有自己的 pnpm-lock 与 node_modules（自包含单包），但它的边界在自己目录内，删它不影响别人、删别人不影响它。
 
 ## 2. 选哪一端
 
@@ -28,11 +28,11 @@
 |---|---|---|---|---|
 | react | 96 / 5.7 万（`react/src` 的 ts+tsx+css） | ProTable + DrawerForm + TanStack Query | `npm run typecheck` | 15888 |
 | vue-element | 102 / 7.1 万（`vue-element/src` 的 ts+vue+样式） | ProPage 配置驱动 + vxe-table + ElForm | `npx vue-tsc --noEmit` | 15777 |
-| vue-vben | 89 / 9.7 万（**整个 monorepo**：apps + packages + internal；只算 `apps/admin/src` 是 4.6 万） | VxeGrid + useVbenDrawer，Vben 5.x monorepo | `pnpm run check:type` | 15666 |
+| vue-vben | 89 / 9.6 万（单包：framework 壳 3.8 万 + src 业务 5.5 万 + build-config 0.4 万） | VxeGrid + useVbenDrawer，Vben 5.x（已单包化） | `pnpm run check:type` | 15666 |
 
 复测（在 `frontend/admin/` 下）：
 `find react/src -type f \( -name '*.ts' -o -name '*.tsx' \) | wc -l` 一类命令即可；vben 的规模要按
-"你要不要连框架包一起维护"来读——留 vben 就等于收下它整个 `packages/`。
+"你要不要连框架包一起维护"来读——留 vben 就等于收下它整个 `framework/`。
 
 两条选择依据：
 
@@ -78,12 +78,12 @@ vite 端口被占用时会自动 +1（教程 02 第 6 节），**实际监听的
 机制：
 
 - `sys_menu` 只有 `type / path / redirect / alias / name / component / meta / module` 八列（`backend/app/admin/service/internal/data/ent/schema/menu.go:32-98`，其余列来自 mixin：`parent_id` 与审计字段）。其中 `module` 是**业务模块**枚举（套餐白名单靠它过滤），**不是端标识**；`GetNavigation` 也只按角色 + 套餐白名单过滤，没有任何"哪个前端"的维度。
-- 三端的「菜单同步」都写死 `mode: 'MERGE'`（`frontend/admin/react/src/api/hooks/menu.ts:201`、`frontend/admin/vue-element/src/api/composables/menu.ts:176`、`frontend/admin/vue-vben/apps/admin/src/api/composables/menu.ts:193`），而 MERGE 的定义就是"**数据库多出的菜单保留**"（`backend/api/protos/permission/service/v1/menu.proto:450`）。
+- 三端的「菜单同步」都写死 `mode: 'MERGE'`（`frontend/admin/react/src/api/hooks/menu.ts:201`、`frontend/admin/vue-element/src/api/composables/menu.ts:176`、`frontend/admin/vue-vben/src/api/composables/menu.ts:193`），而 MERGE 的定义就是"**数据库多出的菜单保留**"（`backend/api/protos/permission/service/v1/menu.proto:450`）。
 - ⇒ 你删掉的两端此前同步进库的菜单行**不会因为删目录而消失**。
 
 影响：
 
-- **默认不咬**：三端 `accessMode` 默认都是 `frontend`（`frontend/admin/react/src/core/preferences/config/default.ts:5`、`frontend/admin/vue-element/src/core/preferences/config/default.ts:5`、`frontend/admin/vue-vben/apps/admin/.env.development:25`），侧边栏渲染的是本地路由，孤儿菜单只躺在「菜单管理」表里。
+- **默认不咬**：三端 `accessMode` 默认都是 `frontend`（`frontend/admin/react/src/core/preferences/config/default.ts:5`、`frontend/admin/vue-element/src/core/preferences/config/default.ts:5`、`frontend/admin/vue-vben/.env.development:25`），侧边栏渲染的是本地路由，孤儿菜单只躺在「菜单管理」表里。
 - **切到 `backend` 模式就会咬**：孤儿行会进侧边栏，点进去没有对应组件。两条处置：
   - 手工删掉孤儿行（安全）；
   - 或在菜单管理页触发 REPLACE 全量重建——**代价很大**：`menu.proto:449` 明确写了"菜单 ID 全部变化，角色-菜单授权失效"（实现见 `menu_repo.go:410` 的先 `Delete()` 再插），重建后要重新给角色授权。别顺手点。
@@ -91,7 +91,7 @@ vite 端口被占用时会自动 +1（教程 02 第 6 节），**实际监听的
 对裁剪有利的一条性质：MERGE 按全路径匹配并**覆盖 `component`**（`menu_repo.go:483` 的 `SetNillableComponent`），
 而三端同步时写的 `component` 串形状一致（都是相对 `pages/`／`views/` 的 `app/<模块>/<页>/index.vue`，
 顶层布局写 `BasicLayout`；见 `react/src/api/hooks/menu.ts:150-151`、`vue-element/src/api/composables/menu.ts:112-135`、
-`vue-vben/apps/admin/src/api/composables/menu.ts:131-160`）。所以裁剪后**让保留的那一端最后同步一次**，
+`vue-vben/src/api/composables/menu.ts:131-160`）。所以裁剪后**让保留的那一端最后同步一次**，
 库里就统一成它认识的写法。两处例外要手工处理：`IFrameView` 只有 vben 会产出（另两端认不出这个串），
 以及同一路径在某一端确实没有对应页面文件时，那一行本来就是孤儿。
 

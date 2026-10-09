@@ -25,12 +25,12 @@
 VITE_ROUTER_ACCESS_MODE=backend
 ```
 
-前端的核心代码在 `apps/admin/src/router/access.ts`（以下为现状，不是示意）：菜单来自
+前端的核心代码在 `src/router/access.ts`（以下为现状，不是示意）：菜单来自
 `fetchNavigation()`（`#/api` 的 admin-portal 封装，后端 RPC 是 `GetNavigation`，其响应消息名叫
 `ListRouteResponse`——**别把消息名当成 RPC 名去找 `ListRoute`，那个端点不存在**）：
 
 ```typescript
-// apps/admin/src/router/access.ts
+// src/router/access.ts
 async function getAllMenusApi(): Promise<RouteRecordStringComponent[]> {
   const data = (await fetchNavigation()) ?? [];
   const unwrapped = (data as any)?.data ?? data;   // 兼容 {items} 与 {data:{items}} 两种包装

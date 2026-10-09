@@ -100,7 +100,7 @@ SSE 连接不走 REST 的 auth 中间件链——transport 自带鉴权钩子，
 
 | | react | vue-element | vue-vben |
 |---|---|---|---|
-| 模块 | `src/core/transport/sse/`（`sse_client.ts` + `index.ts` 单例 `globalSSEClient`） | `src/core/transport/sse/`（同构） | `apps/admin/src/transport/sse/`（路径不同，同构） |
+| 模块 | `src/core/transport/sse/`（`sse_client.ts` + `index.ts` 单例 `globalSSEClient`） | `src/core/transport/sse/`（同构） | `src/transport/sse/`（路径不同，同构） |
 | 传输 | `@microsoft/fetch-event-source`（支持自定义 headers 携带凭证；原生 EventSource 不支持） | 同左 | 同左 |
 | URL 构造 | `${VITE_SSE_URL}?stream=${userInfo.id}`（`hooks/useTokenRefresh.ts:188`；env 缺失时回落 `/api/sse`，另两端无此回落） | 同构（`VITE_APP_SSE_URL`，`composables/use-token-refresh.ts:271`） | 同构（`VITE_GLOB_SSE_URL`，`stores/authentication.store.ts:502`） |
 | 重连 | 内置，`reconnectDelay` 取单例配置值 5000ms（`core/transport/sse/index.ts:10`；`SSEClient` 的类默认是 3000ms，`sse_client.ts:29`，未被单例覆盖时才生效） | 同左 | 同左 |
