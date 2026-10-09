@@ -12,7 +12,7 @@
     "clean": "node ./scripts/clean.mjs",
     "commit": "czg",
     "preinstall": "npx only-allow pnpm",
-    "prepare": "node scripts/rebuild-framework-links.mjs && (is-ci || husky)",
+    "prepare": "is-ci || husky",
     "reinstall": "pnpm clean --del-lock && pnpm install",
     "test:unit": "vitest run --dom",
     "update:deps": "npx taze -r -w",
