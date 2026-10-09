@@ -1,3 +1,3 @@
-import config from './internal/lint-configs/commitlint-config/index.mjs';
+import config from './build-config/lint-configs/commitlint-config/index.mjs';
 
 export default config;

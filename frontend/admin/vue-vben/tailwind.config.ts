@@ -1,3 +1,3 @@
-import config from './internal/tailwind-config/src';
+import config from './build-config/tailwind-config/src';
 
 export default config;

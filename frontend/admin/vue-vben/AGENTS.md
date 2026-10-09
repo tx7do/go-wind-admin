@@ -56,7 +56,7 @@ vue-vben/
 ├── framework/            # 框架壳（原 26 包源码，保留包边界子目录，勿打平）
 │   ├── base/ core/ ui-kit/ effects/ + 根级(constants/icons/locales/preferences/stores/styles/types/utils)
 ├── src/                  # 业务层（页面/路由/stores/api/adapter，见下）
-├── internal/             # 工具链 workspace（vite-config/tailwind-config/tsconfig/node-utils/lint-configs）
+├── build-config/             # 工具链 workspace（vite-config/tailwind-config/tsconfig/node-utils/lint-configs）
 ├── node_modules/         # 唯一依赖源（应用依赖全在根 package.json）
 └── vite.config.mts / tsconfig.json / index.html / .env*
 ```
@@ -64,7 +64,8 @@ vue-vben/
 - **framework/node_modules 已删除**：早期为 compiler-sfc 类型解析建的 junction 兼容层，实测（dev+build 双验证）已不需要——vite root 在工程根后 tsconfck 命中根 tsconfig 的 paths 供类型解析。若未来某天 dev 白屏报 Failed to resolve extends base type，从 git 历史恢复 scripts/rebuild-framework-links.mjs 跑一次即可。
 - **框架包名即别名**：`@vben/*`、`@vben-core/*` 按 26 条映射解析到 framework/ 子目录（vite resolve.alias + tsconfig paths 双份，改包名/加子路径要两处同步）。子路径如 `@vben/styles/antd`、`@vben/plugins/echarts` 自然解析
 - **命令从工程根跑且必须经 `pnpm run`**：`pnpm dev` / `pnpm build` / `pnpm typecheck`。env.ts 靠 `npm_lifecycle_script` 正则解析 `--mode`，直接调 `.bin/vite` 会丢 mode（端口回落 5173）
-- **改 internal/tailwind-config、vite-config 的 src 后必须重建 dist**：`pnpm --filter @vben/tailwind-config run stub`（入口是 dist 产物，改 src 不重建 = 静默不生效）
+- **build-config/ 是纯源码目录**（去微服务后无 package.json/dist）：vite.config.mts、tailwind.config.ts、eslint.config.ts 经 esbuild/jiti 直接吃 TS 源，改完即生效无需构建
+- **node ≥ 20.11 硬要求**（unplugin 顶层 import.meta.dirname）：本机 PATH 默认 node 20.10 会崩，dev/build 前置 scoop node：`export PATH="$HOME/scoop/apps/nodejs/current:$PATH"`
 - 主题色/暗亮的 CSS 变量由 `framework/core/preferences/update-css-variables.ts` 运行时注入；design-tokens 在 `framework/base/design/design-tokens/`
 
 ### src/ 业务层结构
@@ -453,7 +454,7 @@ vxe-table 的巨型递归类型与 `DeepPartial` 展开做结构比较时极易�
 
 ### 构建目标
 
-`build.target` 必须 **es2022+**（`internal/vite-config/src/config/application.ts`）。降到 es2015 会因依赖中 jiti 的顶层 await 直接断构建。
+`build.target` 必须 **es2022+**（`build-config/vite-config/src/config/application.ts`）。降到 es2015 会因依赖中 jiti 的顶层 await 直接断构建。
 
 ### `$t()` 空键崩溃
 

@@ -1,3 +1,3 @@
-import config from './internal/lint-configs/prettier-config/index.mjs';
+import config from './build-config/lint-configs/prettier-config/index.mjs';
 
 export default config;
