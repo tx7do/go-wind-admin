@@ -4,7 +4,7 @@ import { defineConfig } from '@vben/vite-config';
 
 // 框架层源码位于 monorepo 根 framework/（非 workspace 包），按原包名做前缀别名，
 // 业务代码与框架内部互引的 '@vben/*'、'@vben-core/*' 导入保持原样零改动。
-const fw = (p: string) => fileURLToPath(new URL(`../../framework/${p}`, import.meta.url));
+const fw = (p: string) => fileURLToPath(new URL(`./framework/${p}`, import.meta.url));
 
 const frameworkAliases: Array<{ find: string; replacement: string }> = [
   // @vben-core（原 packages/@core）

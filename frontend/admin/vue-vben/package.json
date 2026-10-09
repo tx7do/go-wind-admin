@@ -18,11 +18,11 @@
     "test:unit": "vitest run --dom",
     "update:deps": "npx taze -r -w",
     "version": "pnpm exec changeset version && pnpm install --no-frozen-lockfile",
-    "dev": "cd apps/admin && vite --mode development",
-    "build": "cd apps/admin && vite build --mode production",
-    "build:analyze": "cd apps/admin && vite build --mode analyze",
-    "preview": "cd apps/admin && vite preview",
-    "typecheck": "cd apps/admin && vue-tsc --noEmit --skipLibCheck"
+    "dev": "vite --mode development",
+    "build": "vite build --mode production",
+    "build:analyze": "vite build --mode analyze",
+    "preview": "vite preview",
+    "typecheck": "vue-tsc --noEmit --skipLibCheck"
   },
   "devDependencies": {
     "@changesets/changelog-github": "catalog:",
@@ -188,5 +188,13 @@
     "@intlify/core-base": "catalog:",
     "vue-i18n": "catalog:",
     "pinia-plugin-persistedstate": "catalog:"
+  },
+  "imports": {
+    "#/*": [
+      "./src/*"
+    ],
+    "$/*": [
+      "./generated/*"
+    ]
   }
 }
