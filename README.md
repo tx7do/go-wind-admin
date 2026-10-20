@@ -360,6 +360,7 @@ go-wind-admin/
 - [更新日志](./CHANGELOG.md) —— 版本变更记录
 - Issue 模板：[Bug 报告](./.github/ISSUE_TEMPLATE/bug_report.md) · [功能请求](./.github/ISSUE_TEMPLATE/feature_request.md)
 - [PR 模板](./.github/PULL_REQUEST_TEMPLATE.md)
+- 国内[AtomGit](https://atomgit.com/tx7do/go-wind-admin)托管，便于国内开发者访问。
 
 ## 联系我们
 
