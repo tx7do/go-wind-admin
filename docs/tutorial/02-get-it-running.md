@@ -126,7 +126,6 @@ cd backend/app/admin/service && go run ./cmd/server -c ./configs
 | Docker 拉镜像 `TLS handshake timeout` | 配置 Docker 镜像加速并重启 Docker Desktop |
 | 后端连不上 DB | 配置里主机名没改 `localhost`（第 4 节） |
 | `gow`/`buf` 命令找不到 | `%USERPROFILE%\go\bin` 不在 PATH；手动 `go install`（见参考文档命令） |
-| vben `pnpm dev` 报 `turbo-run` 找不到 | Windows 已知问题，按参考文档补两个 bin shim |
 | 页面白屏 / 路由塌空（vue-element） | 已修复的历史问题：真因是 `<transition mode="out-in">` 与 vue-router 5 懒加载路由的竞态（**不是** vite 依赖优化，dev/prod 都能复现）。别把 `mode="out-in"` 改回去；判回归先重启 dev server，细节见该端 AGENTS.md「白屏（router-view 塌空）真因与处置」 |
 | 前端请求全部 401/无法登录 | 确认后端 7788 在跑；验证码答案可在 Redis 按 `gowind:captcha:<captchaId>` 读（自动化调试用） |
 

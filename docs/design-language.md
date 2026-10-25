@@ -438,7 +438,7 @@ Tailwind 灰阶（`slate-400` 在白底 2.60、在 `#F5F5F5` 上 2.38，`zinc-50
 
 - 本项目 override 仅 `app.name` / `app.accessMode` / `app.defaultAvatar`（`src/preferences.ts`，2026-10-17 复核；
   头像是为了与 react/ele 用同一张 `/default-avatar.png`，与视觉规范无关），默认主题即本规范基准，**无强制迁移项**。
-- 2.1 的语义色文字档 + 2.2/2.3 的次要档落点：`packages/styles/src/antd/index.css` 末尾的 `--gowind-*-text` 段
+- 2.1 的语义色文字档 + 2.2/2.3 的次要档落点：`framework/styles/antd/index.css` 末尾的 `--gowind-*-text` 段
   （变量由 `hsl(var(--primary|success|warning|destructive))` 混色，跟随主题预设；规则带 `!important`，理由见 2.1 第 2 条）。
   **这一层是纯 CSS 且经 postcss 处理，注释只能写 `/* */`，写 `//` 会在 dev 直接 500（`Unknown word …`）。**
 - 曾经的"唯一开放项"已关闭：2.3 的 react 系暗色已被采纳——`framework/base/design/design-tokens/dark.css:4-11`

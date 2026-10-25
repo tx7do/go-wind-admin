@@ -26,13 +26,13 @@ pnpm dev
 pnpm build
 ```
 
-- 代码检查（在 monorepo 根目录执行）
+- 代码检查
 
 ```bash
-pnpm lint
+pnpm check
 ```
 
-> `pnpm lint`（= `vsh lint`）是日常入口。`npx eslint --inspect-config` 只用于**诊断** ESLint 配置本身是否被正确加载，不是检查代码的命令。
+> `pnpm check`（= `vue-tsc --noEmit --skipLibCheck`）是本端类型门禁；ESLint / Stylelint 配置在工程根（`eslint.config.ts` / `stylelint.config.mjs`），未配聚合 lint 脚本。
 
 ## API文档
 
@@ -49,7 +49,7 @@ https://apifoxmock.com/m1/5619700-5299226-default/admin/v1
 
 ## 环境变量
 
-> 以下仅列出与运行时地址相关的关键项，完整配置见 `apps/admin/.env.development` / `.env.production`。
+> 以下仅列出与运行时地址相关的关键项，完整配置见工程根 `.env.development` / `.env.production`。
 
 | 变量 | 说明 | 开发默认值 |
 |------|------|-----------|
