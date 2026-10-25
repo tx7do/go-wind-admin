@@ -79,7 +79,7 @@
 | ツール | バージョン |
 |--------|-----------|
 | Go | 1.26+（`backend/go.mod` に従う） |
-| Node.js | `^20.19.0 \|\| >=22.12.0` — 3 系の `engines` 共通範囲は vue-element が決める（vue-vben は `>=20.10.0`、react は未宣言）。**21.x は対象外**、20.18 以下も同様 |
+| Node.js | `^20.19.0 \|\| >=22.12.0` — 3 系の `engines` 共通範囲は vue-element が決める（vue-vben は `>=20.11.0`、react は未宣言）。**21.x は対象外**、20.18 以下も同様 |
 | pnpm | `>= 9.12.0`（下限は vue-vben の `engines.pnpm`）。vue-vben はさらに `packageManager` で `pnpm@11.18.0` を固定：corepack を有効化（`corepack enable`）すれば自動で切り替わる。有効化しない場合は `npm i -g pnpm@11.18.0` で手動インストール、少なくとも major を合わせる |
 | Docker | 20.0+ |
 
@@ -149,7 +149,7 @@ gow run admin
 |------------------|--------------|--------------|--------|
 | React | `frontend/admin/react` | `pnpm dev` | 15888 |
 | Vue Element | `frontend/admin/vue-element` | `pnpm dev` | 15777 |
-| Vue Vben | `frontend/admin/vue-vben` | `pnpm dev:antd` | 15666 |
+| Vue Vben | `frontend/admin/vue-vben` | `pnpm dev` | 15666 |
 
 ```shell
 # 3 つのうち 1 つを選ぶ：まずそのフロントエンドへ cd してから install → 起動。
@@ -161,10 +161,10 @@ pnpm dev                    # ポート 15888
 
 # 残り 2 系：
 cd frontend/admin/vue-element && pnpm install && pnpm dev            # ポート 15777
-cd frontend/admin/vue-vben   && pnpm install && pnpm dev:antd        # ポート 15666
+cd frontend/admin/vue-vben   && pnpm install && pnpm dev             # ポート 15666
 ```
 
-> vue-vben 自体が pnpm workspace（`pnpm-workspace.yaml` + `apps/` + `packages/`）なので、依存インストールは必ず**そのルート**で行う。`pnpm dev:antd` は workspace から `@vben/web-antd` app を選んで起動するだけ。`apps/admin` で単独 install すると catalog のバージョン固定を迂回する。
+> vue-vben は上流 Vben 5 のマルチパッケージ monorepo（`apps/` + `packages/`）を**単一パッケージ構成**へ統合済みです：アプリ本体は `src/`、フレームワーク殻は `framework/` にあり、`pnpm dev` で唯一のアプリを直接起動します。依存インストールは引き続き**そのルート**で行ってください——`pnpm-workspace.yaml` が catalog によるバージョン固定を保持しています。
 
 ---
 

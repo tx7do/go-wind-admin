@@ -17,7 +17,7 @@
 |------|---------|------|
 | Go | 1.26+（`backend/go.mod` 当前钉 `go 1.26.4`，低于该版本无法构建） | 后端编译运行 |
 | Docker Desktop | 最新版 | 运行 PostgreSQL、Redis、MinIO |
-| Node.js | 以各前端 `package.json` 的 `engines` 为准：react **未声明** engines，vue-element `^20.19.0 \|\| >=22.12.0`，vue-vben `>=20.10.0`（另要求 pnpm `>=9.12.0`）——三端同时满足即取 vue-element 的约束 `^20.19.0 \|\| >=22.12.0`（21.x 不在内） | 前端编译运行 |
+| Node.js | 以各前端 `package.json` 的 `engines` 为准：react **未声明** engines，vue-element `^20.19.0 \|\| >=22.12.0`，vue-vben `>=20.11.0`（另要求 pnpm `>=9.12.0`）——三端同时满足即取 vue-element 的约束 `^20.19.0 \|\| >=22.12.0`（21.x 不在内） | 前端编译运行 |
 | pnpm | 仅 vue-vben 钉定（其 `packageManager` 字段为 `pnpm@11.18.0`，corepack 自动路由）；react / vue-element 未钉定版本 | Vue 前端包管理 |
 | Git | 最新版 | 版本控制 |
 
@@ -249,7 +249,7 @@ make run
 
 | 版本 | 目录 | 启动命令 | 本地端口 |
 |------|------|---------|--------|
-| Vue Vben | `frontend/admin/vue-vben` | `pnpm dev:antd` | 15666 |
+| Vue Vben | `frontend/admin/vue-vben` | `pnpm dev` | 15666 |
 | Vue Element | `frontend/admin/vue-element` | `pnpm dev` | 15777 |
 | React | `frontend/admin/react` | `pnpm dev` | 15888 |
 
@@ -262,45 +262,12 @@ cd frontend/admin/vue-vben
 pnpm install
 
 # 启动开发服务器
-pnpm dev:antd
+pnpm dev
 ```
 
 启动成功后访问 http://localhost:15666
 
 默认登录账号：`admin`，密码：`Abcd@1234`
-
-### 首次 `pnpm install` 后 `pnpm dev` 报错 `turbo-run` 找不到？
-
-这是 Windows 上的已知问题。`scripts/turbo-run/bin/turbo-run.mjs` 和 `scripts/vsh/bin/vsh.mjs` 这两个 bin shim
-可能缺失——它们各自是 `scripts/turbo-run/package.json` / `scripts/vsh/package.json` 里 `bin` 字段指向的入口，
-而仓库根 `.gitignore` 的 `bin/` 规则（第 29 行）把这两个目录整个忽略了，**所以它们不在 git 索引里，
-新克隆的仓库天然缺这两个文件**（`git ls-files frontend/admin/vue-vben/scripts` 查不到 `bin/*.mjs` 即为佐证）。
-
-在 **`frontend/admin/vue-vben` 目录下**手动创建（内容与实际磁盘上的 shim 一致：shebang + 空行 + 动态 import）：
-
-```bash
-cd frontend/admin/vue-vben   # 已在该目录则跳过
-
-# 创建 turbo-run shim
-mkdir -p scripts/turbo-run/bin
-printf '#!/usr/bin/env node\n\nimport('"'"'../dist/index.mjs'"'"');\n' > scripts/turbo-run/bin/turbo-run.mjs
-
-# 创建 vsh shim
-mkdir -p scripts/vsh/bin
-printf '#!/usr/bin/env node\n\nimport('"'"'../dist/index.mjs'"'"');\n' > scripts/vsh/bin/vsh.mjs
-
-# 重新安装以链接 bin
-pnpm install
-```
-
-> `../dist/index.mjs` 是这两个包自己的产物，同样不进 git（`frontend/admin/vue-vben/.gitignore:3` 的 `dist` 规则），
-> 由根 `package.json` 的 `postinstall`（`pnpm -r run stub --if-present`，各包 `stub` = `pnpm unbuild --stub`）生成——
-> 所以顺序是**先补 `bin/*.mjs`，再 `pnpm install`**，install 会一并补上 dist 与 bin 链接。
-> 只想立刻起 dev server 的话，根目录的 `dev:antd`（= `pnpm -F @vben/web-antd run dev`，见 `package.json:21`）
-> 不经过 turbo-run / vsh；根目录的 `dev`（`:20` = `turbo-run dev`）才会用到它们。
-> PowerShell 下不要用上面的 `printf`/引号转义写法，改用 `Set-Content` 写同样三行内容。
-
-之后再执行 `pnpm dev` 即可。
 
 ---
 
@@ -326,7 +293,7 @@ pnpm install
 ```
 终端 1：cd backend && docker compose -f docker-compose.libs.yaml up -d
 终端 2：cd backend/app/admin/service && go run ./cmd/server -c ./configs
-终端 3：cd frontend/admin/vue-vben && pnpm dev:antd
+终端 3：cd frontend/admin/vue-vben && pnpm dev
 ```
 
 代码生成命令速查（在 `backend/` 目录下执行）：

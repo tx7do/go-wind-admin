@@ -79,7 +79,7 @@ Three URLs, three parallel demos of the same backend capabilities — **open eac
 | Tool | Version |
 |------|---------|
 | Go | 1.26+ (follow `backend/go.mod`) |
-| Node.js | `^20.19.0 \|\| >=22.12.0` — the intersection of the three `engines` fields is set by vue-element (vue-vben only asks `>=20.10.0`, react declares none). **21.x is not covered**, nor is 20.18 and below |
+| Node.js | `^20.19.0 \|\| >=22.12.0` — the intersection of the three `engines` fields is set by vue-element (vue-vben only asks `>=20.11.0`, react declares none). **21.x is not covered**, nor is 20.18 and below |
 | pnpm | `>= 9.12.0` (floor from vue-vben's `engines.pnpm`). vue-vben additionally pins `pnpm@11.18.0` via `packageManager`: enable corepack (`corepack enable`) to switch automatically, otherwise `npm i -g pnpm@11.18.0` — or at least match the major version |
 | Docker | 20.0+ |
 
@@ -149,7 +149,7 @@ All three live under the `frontend/admin` directory — **pick one**, install it
 |------------------|-----------|---------|------|
 | React | `frontend/admin/react` | `pnpm dev` | 15888 |
 | Vue Element | `frontend/admin/vue-element` | `pnpm dev` | 15777 |
-| Vue Vben | `frontend/admin/vue-vben` | `pnpm dev:antd` | 15666 |
+| Vue Vben | `frontend/admin/vue-vben` | `pnpm dev` | 15666 |
 
 ```shell
 # Pick ONE: cd into that frontend first, then install and start.
@@ -161,10 +161,10 @@ pnpm dev                    # port 15888
 
 # The other two ends:
 cd frontend/admin/vue-element && pnpm install && pnpm dev            # port 15777
-cd frontend/admin/vue-vben   && pnpm install && pnpm dev:antd        # port 15666
+cd frontend/admin/vue-vben   && pnpm install && pnpm dev             # port 15666
 ```
 
-> vue-vben is itself a pnpm workspace (`pnpm-workspace.yaml` + `apps/` + `packages/`), so dependencies must be installed at **its** root; `pnpm dev:antd` then selects the `@vben/web-antd` app from the workspace. Installing inside `apps/admin` bypasses the catalog version pins.
+> vue-vben has been merged from the upstream Vben 5 multi-package monorepo (`apps/` + `packages/`) into a **single-package** structure: app source lives in `src/`, the framework shell in `framework/`, and `pnpm dev` starts the single app directly. Dependencies still install at **its** root — `pnpm-workspace.yaml` keeps the catalog version pins.
 
 ---
 

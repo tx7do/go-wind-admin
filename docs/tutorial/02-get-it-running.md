@@ -94,7 +94,7 @@ cd backend/app/admin/service && go run ./cmd/server -c ./configs
 
 | 端 | 目录 | 启动 | 端口 |
 |---|---|---|---|
-| Vue Vben | `frontend/admin/vue-vben` | `pnpm install && pnpm dev:antd` | 15666 |
+| Vue Vben | `frontend/admin/vue-vben` | `pnpm install && pnpm dev` | 15666 |
 | Vue Element | `frontend/admin/vue-element` | `pnpm install && pnpm dev` | 15777 |
 | React | `frontend/admin/react` | `pnpm install && pnpm dev` | 15888 |
 

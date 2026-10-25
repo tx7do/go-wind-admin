@@ -14,7 +14,7 @@ backend/                    Go + Kratos + Ent（DI 手写装配 wiring_*.go，�
 frontend/admin/
 ├── react/                  React 19 + antd 6 + ProComponents + TanStack Query + zustand
 ├── vue-element/            Vue 3 + Element Plus + vxe-table + TanStack vue-query + Pinia
-└── vue-vben/               Vben Admin 5.x monorepo（apps/admin + packages/*）+ Ant Design Vue
+└── vue-vben/               Vben Admin 5.x 单包结构（src/ 应用 + framework/ 框架壳，原 apps/packages 已并入）+ Ant Design Vue
 docs/                       文档体系（总入口 docs/README.md：教程层 docs/tutorial/ + 参考层专题文档）
 ```
 

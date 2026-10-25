@@ -79,7 +79,7 @@
 | 工具 | 版本 |
 |------|------|
 | Go | 1.26+（以 `backend/go.mod` 为准） |
-| Node.js | `^20.19.0 \|\| >=22.12.0`——三端 `engines` 的交集由 vue-element 决定（vue-vben 只要求 `>=20.10.0`，react 未声明）。**21.x 不满足**，20.18 及以下也不满足 |
+| Node.js | `^20.19.0 \|\| >=22.12.0`——三端 `engines` 的交集由 vue-element 决定（vue-vben 只要求 `>=20.11.0`，react 未声明）。**21.x 不满足**，20.18 及以下也不满足 |
 | pnpm | `>= 9.12.0`（下限来自 vue-vben 的 `engines.pnpm`）。vue-vben 另用 `packageManager` 钉死 `pnpm@11.18.0`：启用 corepack（`corepack enable`）即自动切换，未启用则手动 `npm i -g pnpm@11.18.0` 或至少对齐 major |
 | Docker | 20.0+ |
 
@@ -149,7 +149,7 @@ gow run admin
 |---------|------|---------|------|
 | React | `frontend/admin/react` | `pnpm dev` | 15888 |
 | Vue Element | `frontend/admin/vue-element` | `pnpm dev` | 15777 |
-| Vue Vben | `frontend/admin/vue-vben` | `pnpm dev:antd` | 15666 |
+| Vue Vben | `frontend/admin/vue-vben` | `pnpm dev` | 15666 |
 
 ```shell
 # 三选一：先 cd 进你选的那一端，再装依赖、再启动。
@@ -161,10 +161,10 @@ pnpm dev                    # 端口 15888
 
 # 换成另外两端：
 cd frontend/admin/vue-element && pnpm install && pnpm dev            # 端口 15777
-cd frontend/admin/vue-vben   && pnpm install && pnpm dev:antd        # 端口 15666
+cd frontend/admin/vue-vben   && pnpm install && pnpm dev             # 端口 15666
 ```
 
-> vue-vben 本身是个 pnpm workspace（`pnpm-workspace.yaml` + `apps/` + `packages/`），所以必须在它的**根目录**装依赖，`pnpm dev:antd` 再从 workspace 里挑出 `@vben/web-antd` 这个 app 启动——在 `apps/admin` 下单独 `pnpm install` 会破坏 catalog 版本锁定。
+> vue-vben 已由 Vben 5 官方的多包 monorepo（`apps/` + `packages/`）合并为**单包结构**：应用源码在 `src/`，框架壳在 `framework/`，`pnpm dev` 直接启动唯一应用。依赖仍必须装在它的**根目录**——`pnpm-workspace.yaml` 仍保留 catalog 版本锁定。
 
 ---
 
