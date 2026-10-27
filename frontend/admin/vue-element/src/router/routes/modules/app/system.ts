@@ -147,6 +147,18 @@ const system: RouteRecordRaw[] = [
         },
         component: () => import("@/pages/app/system/access_key/index.vue"),
       },
+
+      {
+        path: "print-templates",
+        name: "PrintTemplateManagement",
+        meta: {
+          order: 12,
+          icon: "lucide:printer",
+          title: "routes.system.printTemplates",
+          authority: ["sys:platform_admin"],
+        },
+        component: () => import("@/pages/app/system/print_template/index.vue"),
+      },
     ],
   },
 ];

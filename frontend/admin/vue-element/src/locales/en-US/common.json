@@ -23,7 +23,8 @@
     "detail": "Detail",
     "expand": "Expand",
     "collapse": "Collapse",
-    "more": "More"
+    "more": "More",
+    "copy": "Copy"
   },
   "status": {
     "enabled": "Enabled",

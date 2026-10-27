@@ -23,7 +23,8 @@
     "detail": "详情",
     "expand": "展开",
     "collapse": "收起",
-    "more": "更多"
+    "more": "更多",
+    "copy": "复制"
   },
   "status": {
     "enabled": "启用",

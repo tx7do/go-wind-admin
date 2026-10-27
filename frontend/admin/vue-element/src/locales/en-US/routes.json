@@ -53,6 +53,7 @@
     "serverMonitor": "Server Monitor",
     "scripts": "Scripts",
     "config": "Config Management",
+      "printTemplates": "Print Templates",
     "accessKeys": "OpenAPI Credentials",
     "monitorAlerts": "Monitor Alerts"
   },

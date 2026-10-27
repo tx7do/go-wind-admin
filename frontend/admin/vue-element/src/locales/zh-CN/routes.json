@@ -53,6 +53,7 @@
     "serverMonitor": "服务监控",
     "scripts": "脚本管理",
     "config": "参数管理",
+      "printTemplates": "打印模板",
     "accessKeys": "OpenAPI 凭证",
     "monitorAlerts": "监控告警"
   },
