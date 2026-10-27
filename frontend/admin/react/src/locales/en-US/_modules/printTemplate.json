@@ -35,5 +35,8 @@
   "sampleDataTip": "JSON object: the field panel derives from it; preview/print use it as data source. Row printing uses real row data.",
   "requiredSuffix": " is required",
   "portrait": "Portrait",
-  "landscape": "Landscape"
+  "landscape": "Landscape",
+  "printTitle": "Print Preview",
+  "noTemplate": "No print template available for this resource",
+  "noTemplateHint": "Create one under System → Print Templates bound to this resource, or copy a generic template"
 }

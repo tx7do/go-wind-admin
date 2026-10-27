@@ -4,10 +4,12 @@ import TableExportButton from '@/components/common/TableExportButton';
 import TableActions from '@/components/common/TableActions';
 import ListTable from '@/components/common/ListTable';
 import { Button, Tag, App } from 'antd';
-import { EditOutlined, DeleteOutlined, PlusOutlined, InfoCircleOutlined , SafetyOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, PlusOutlined, InfoCircleOutlined , SafetyOutlined, PrinterOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
+
+import { usePrintTemplateDialog } from '@/components/common/PrintTemplatePrint';
 
 import { PaginationQuery } from '@/core';
 import { TABLE } from '@/config/constants';
@@ -39,6 +41,9 @@ const UserList: React.FC<UserListProps> = ({ tenantId, orgUnitId }) => {
   const { message } = App.useApp();
 
   const navigate = useNavigate();
+
+  // 行打印定式（docs/print_template.md §5）：模板按 resourceKey 匹配，无绑定回退通用模板
+  const { node: printDialogNode, print: printRow } = usePrintTemplateDialog();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMode, setDrawerMode] = useState<'create' | 'edit'>('create');
   const [editingUser, setEditingUser] = useState<any>(null);
@@ -206,6 +211,12 @@ const UserList: React.FC<UserListProps> = ({ tenantId, orgUnitId }) => {
               onClick: () => navigate(`/opm/users/detail/${record.id}`),
             },
             {
+              key: 'print',
+              label: t('printTemplate:print'),
+              icon: <PrinterOutlined />,
+              onClick: () => printRow('system/user', record),
+            },
+            {
               key: 'edit',
               label: t('common:button.edit'),
               icon: <EditOutlined />,
@@ -340,6 +351,8 @@ const UserList: React.FC<UserListProps> = ({ tenantId, orgUnitId }) => {
           actionRef.current?.reload();
         }}
       />
+
+      {printDialogNode}
     </>
   );
 };
