@@ -98,6 +98,26 @@ Before declaring done, verify cross-cutting concerns:
 - [ ] Api registry: on a **fresh** DB the Api table auto-syncs at first boot; on an **existing** deployment trigger 管理页「接口管理 → 接口同步」 after deploying — otherwise the tenant gate `(path, method)` check 403s the new routes (fail-closed)
 - [ ] Menu entries for the new module: on an existing deployment add them via the 菜单管理 admin page — editing `pkg/constants/default_data.go` (`DefaultMenus`) only affects empty-DB fresh installs (all seeds are `count == 0` guarded, see `backend.md` Step 11)
 
+## Optional — row printing for your module (print templates)
+
+Once your module's list page works, you can wire row printing in minutes using the platform's print-template engine (full design doc: [print_template.md](../print_template.md)). Users design templates in 系统管理 → 打印模板 (drag-drop canvas, bound fields like `{username}`, mm-precise layout), and your list rows render through any matching template.
+
+**Wiring (one action + one component per page):**
+
+1. **Bind templates to your resource**: templates carry a `resourceKey` — set it to your list's resource key (e.g. `system/user`, `biz.order`). Templates with an empty `resourceKey` are *generic* and match every resource as a fallback. Create one via the 打印模板 admin page (design on canvas, or 复制 an existing template and edit).
+
+2. **Add the row action** — printing is a high-frequency inline action (not folded into the "more" dropdown):
+
+   - react: `const { node, print } = usePrintTemplateDialog();` (`@/components/common/PrintTemplatePrint`), render `{ node }` next to your drawers, and add the action `{ key: 'print', label: t('printTemplate:print'), icon: <PrinterOutlined />, onClick: () => print('<your-resource-key>', record) }`. Reference implementation: `src/pages/app/opm/user/list/UserList.tsx`.
+   - vue-element: drop `PrintTemplatePrint.vue` (`@/components/PrintTemplatePrint.vue`) into the page with `ref="printRef"`, add a tool button `{ name: "print", label: $t("pages.printTemplate.print"), icon: "lucide:printer" }`, and handle it in `handleOperate`: `printRef.value?.print('<key>', data.row)`.
+   - vue-vben: same component idea (`#/components/PrintTemplatePrint.vue`, `defineExpose({ print })`), add a `TableAction` `{ key: 'print', label: $t('page.printTemplate.print'), icon: h(LucidePrinter), onClick: (row) => printRef.value?.print('<key>', row) }`.
+
+3. **Data contract**: the whole row object is the print data — design templates with field paths matching your row (`{customer.name}`, array paths `items[].sku` for detail tables). The designer's field panel derives from the same shape when authors use 示例数据.
+
+**Matching semantics** (same across all frontends): enabled templates with `resourceKey` exactly equal to the passed key win; otherwise generic templates (empty `resourceKey`) are offered; multiple matches render a template switcher with live preview; none → empty state linking to the print-template admin page. Rendering runs client-side through the print kernel's isomorphic pipeline (bind → paginate → HTML → iframe → browser print). Server-side PDF/batch is a later phase (see print_template.md M3).
+
+**Gotcha**: the print kernel's canvas API differs by host — `getTemplateJson()` returns an **object** on the Vue canvas but a **string** on the react custom element. Normalize before putting it into the `payload` string column, or protojson rejects the create/update with `invalid value for string field payload`.
+
 ## Step 5 — Cross-framework pitfalls (memorize these)
 
 These recur on every module regardless of framework. Read them once here, then the per-framework chapter adds framework-specific ones.
