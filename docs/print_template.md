@@ -172,7 +172,16 @@ dev 策略例外说明：本模块**内核三端同一份**（设计器交互一
 声明）。暗色同方案（.designer-container 亮色定义压过继承→注入 !important 覆盖块；ele/vben 画布是 light DOM，
 document 级 style + html.dark MutationObserver）。三端 typecheck 全绿。**运行时冒烟结论**：ele 全链过（UI 登录→列表→设计器→保存落库）；vben 列表/画布挂载过、保存链被
 IAB 环境噪声阻断待人工复点；菜单 MERGE 同步过（存量库走前端树 MERGE，种子 Id87 仅新装播种）。
-**画布 API 差异重要**：getTemplateJson() 在 Vue 画布返回对象（react CE 返回字符串），payload 落库前须归一化。：管理页照 config 定式（TableActions/导出/列设置）+ 设计器全屏抽屉
+**画布 API 差异重要**：getTemplateJson() 在 Vue 画布返回对象（react CE 返回字符串），payload 落库前须归一化。
+
+**M2 行打印定式（2026-10-28，react 参考实现 652893dc + 双端移植 a205aabb）**：
+- 宿主列表接打印的统一入口：react `usePrintTemplateDialog() → { node, print(resourceKey, row) }`；
+  ele/vben 为 `PrintTemplatePrint` 组件 `defineExpose({ print })`，行动作里 `print('system/user', row)`。
+- 模板匹配：resourceKey 精确相等且启用优先，回退通用模板（resourceKey 为空的行）；多模板 Select 可切实时重渲染；
+  空态引导到打印模板页。渲染数据=行对象本身（设计器字段面板由示例数据派生同构，见 fieldsFromSample）。
+- 演示模板 `demo.user.badge`（用户工牌，resourceKey=system/user，A4 文本绑定版式）经 API 创建；
+  react IAB 实测：用户行打印 → 预览渲染真实行数据（resourceKey 精确匹配优先生效）。
+- 打印动作语义：行内高频动作（TableActions 定式，不入「更多」）；动作 label 用 printTemplate 命名空间的 print 键。：管理页照 config 定式（TableActions/导出/列设置）+ 设计器全屏抽屉
 （width:100%）+ 复制内置派生 + 示例数据派生字段面板（fieldsFromSample，M2 行打印复用同函数）；IAB 实测
 设计器挂载/保存落库/冗余列同步全过。i18n 教训：命名空间=文件名（printTemplate.json 非 print-template.json）、
 嵌套点键会被 keySeparator 吃掉须用扁平键、common.button 需补 save/copy。**暗色**：内核亮色值定义在 shadow 内
