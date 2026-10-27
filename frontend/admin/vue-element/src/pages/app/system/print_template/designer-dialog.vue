@@ -324,7 +324,11 @@ function safeParse(text: string): TemplateData | MultiPageTemplateData {
 
 function currentTemplateJson(): string | null {
   try {
-    return canvasRef.value?.getTemplateJson() ?? null;
+    // 注意：Vue 画布的 getTemplateJson() 返回对象（单页裸 TemplateData，多页 {version,pages}），
+    // 与 react CE（字符串）不同——统一归一化成字符串再进 payload
+    const raw = canvasRef.value?.getTemplateJson();
+    if (raw === null || raw === undefined) return null;
+    return typeof raw === "string" ? raw : JSON.stringify(raw);
   } catch {
     return null;
   }

@@ -341,7 +341,11 @@ function markCanvasDirty() {
 
 function currentTemplateJson(): string | null {
   try {
-    return canvasRef.value?.getTemplateJson() ?? null;
+    // 注意：Vue 画布的 getTemplateJson() 返回对象（单页裸 TemplateData，多页 {version,pages}），
+    // 与 react CE（字符串）不同——统一归一化成字符串再进 payload
+    const raw = canvasRef.value?.getTemplateJson();
+    if (raw === null || raw === undefined) return null;
+    return typeof raw === 'string' ? raw : JSON.stringify(raw);
   } catch {
     return null;
   }
@@ -380,14 +384,72 @@ async function handlePreview() {
 function handlePreviewPrint() {
   previewFrameRef.value?.contentWindow?.print();
 }
+
+/** 内容区保存（不依赖框架 footer 接线）；成功后先清脏再关，触发 onBeforeClose 直通 */
+const submitLoading = ref(false);
+
+async function handleSave() {
+  const validate = await baseFormApi.validate();
+  if (!validate.valid) {
+    return;
+  }
+  const json = currentTemplateJson();
+  if (!json) {
+    notification.warning({ message: $t('page.printTemplate.designerNotReady') });
+    return;
+  }
+
+  submitLoading.value = true;
+  try {
+    const values = await baseFormApi.getValues();
+    let redundant: any = {};
+    try {
+      const tpl = JSON.parse(json);
+      redundant = { paperSize: tpl.paperSize, orientation: tpl.orientation };
+    } catch {
+      // 保底走表单值
+    }
+    const payloadValues: Record<string, any> = {
+      ...values,
+      payload: json,
+      paperSize: redundant.paperSize || values.paperSize,
+      orientation: redundant.orientation || values.orientation,
+      resourceKey: values.resourceKey || '',
+    };
+
+    if (mode.value === 'edit' && data.value?.row?.id) {
+      await updateTemplate({ id: data.value.row.id, values: payloadValues });
+      notification.success({ message: $t('ui.notification.update_success') });
+    } else {
+      await createTemplate({ data: { ...payloadValues, isBuiltIn: false } as any });
+      notification.success({ message: $t('ui.notification.create_success') });
+    }
+    closeGuard.markClean();
+    canvasDirty.value = false;
+    drawerApi.close();
+  } catch (error) {
+    console.error('save print template failed:', error);
+    notification.error({
+      message:
+        mode.value === 'edit'
+          ? $t('ui.notification.update_failed')
+          : $t('ui.notification.create_failed'),
+    });
+  } finally {
+    submitLoading.value = false;
+  }
+}
 </script>
 
 <template>
   <Drawer :title="getTitle">
-    <div class="flex flex-col gap-3">
+    <div class="flex min-w-0 max-w-full flex-col gap-3 overflow-x-hidden">
       <BaseForm />
       <div class="mb-2 flex items-center gap-2">
         <a-button @click="handlePreview">{{ $t('page.printTemplate.preview') }}</a-button>
+        <a-button type="primary" :loading="submitLoading" @click="handleSave">
+          {{ $t('common.save') }}
+        </a-button>
       </div>
       <div
         class="designer-host overflow-hidden rounded-lg border"
@@ -404,20 +466,21 @@ function handlePreviewPrint() {
         />
       </div>
     </div>
-  </Drawer>
 
-  <Modal v-model:open="previewVisible" :title="$t('page.printTemplate.previewTitle')" width="82%">
-    <div class="preview-body">
-      <div v-if="previewLoading" class="preview-loading">{{ $t('page.printTemplate.rendering') }}</div>
-      <iframe ref="previewFrameRef" title="print-preview" class="preview-frame" />
-    </div>
-    <template #footer>
-      <a-button @click="previewVisible = false">{{ $t('common.close') }}</a-button>
-      <a-button type="primary" @click="handlePreviewPrint">
-        {{ $t('page.printTemplate.print') }}
-      </a-button>
-    </template>
-  </Modal>
+    <!-- 打印预览：放在 Drawer 内部保持单根（vben connectedComponent 对多根组件的绑定会错乱） -->
+    <Modal v-model:open="previewVisible" :title="$t('page.printTemplate.previewTitle')" width="82%">
+      <div class="preview-body">
+        <div v-if="previewLoading" class="preview-loading">{{ $t('page.printTemplate.rendering') }}</div>
+        <iframe ref="previewFrameRef" title="print-preview" class="preview-frame" />
+      </div>
+      <template #footer>
+        <a-button @click="previewVisible = false">{{ $t('common.close') }}</a-button>
+        <a-button type="primary" @click="handlePreviewPrint">
+          {{ $t('page.printTemplate.print') }}
+        </a-button>
+      </template>
+    </Modal>
+  </Drawer>
 </template>
 
 <style scoped>
