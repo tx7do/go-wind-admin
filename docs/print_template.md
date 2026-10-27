@@ -164,7 +164,14 @@ dev 策略例外说明：本模块**内核三端同一份**（设计器交互一
 | **M0 尖刺**（✅ 2026-10-27 完成，结论见 §8.1） | ① fork 建仓 + 构建链/CI/测试跑通；② 双 Vue 端 canvas 最小接入 demo；③ **react 19 + common 实测**（挂载/property/事件/Shadow DOM 隔离/卸载）；④ 浏览器打印实测（中文/条码二维码/分页）；⑤ 接管成本评估 → 定稿 fork 落点与包名 | 三端各一张样例单据从设计到打印闭环（mock 数据）；react 通道定案（common 或自研画布兜底） |
 | **M1 模板域全栈**（后端已落地并运行时 e2e 通过；react 管理页已落地并 IAB 实测；双 Vue 管理页待做） | §4 全部：实体 CRUD、种子模板、权限点、接口同步、菜单 | crud guide 造演示模块，后端链路全绿；三端 typecheck 门禁保持 0 错误 |
 
-**M2 前半 react 端记录（2026-10-27）**：管理页照 config 定式（TableActions/导出/列设置）+ 设计器全屏抽屉
+| **M1 模板域全栈**（后端已落地并运行时 e2e 通过；react 管理页已落地并 IAB 实测） | §4 全部：实体 CRUD、种子模板、权限点、接口同步、菜单 | crud guide 造演示模块，后端链路全绿；三端 typecheck 门禁保持 0 错误 |
+
+**M2 前半双 Vue 端记录（2026-10-27）**：ele/vben 均已落地（09a13862/a0a841f2）——print-canvas Vue3 组件直挂
+（initial-template/fields props + getTemplateJson()），比 react 的 CE 通道简单；ele=ProPage+ProModal(size 100%)
++copy 走 operate 透传；vben=useVbenVxeGrid+useVbenDrawer(class w-full)+TableActions 行内 copy（新增 LucideCopy
+声明）。暗色同方案（.designer-container 亮色定义压过继承→注入 !important 覆盖块；ele/vben 画布是 light DOM，
+document 级 style + html.dark MutationObserver）。三端 typecheck 全绿。**待运行时验证**：双 Vue 管理页 IAB
+冒烟 + 菜单同步（菜单种子 Id87 已入 DefaultMenus，需管理页 MERGE 一次）。：管理页照 config 定式（TableActions/导出/列设置）+ 设计器全屏抽屉
 （width:100%）+ 复制内置派生 + 示例数据派生字段面板（fieldsFromSample，M2 行打印复用同函数）；IAB 实测
 设计器挂载/保存落库/冗余列同步全过。i18n 教训：命名空间=文件名（printTemplate.json 非 print-template.json）、
 嵌套点键会被 keySeparator 吃掉须用扁平键、common.button 需补 save/copy。**暗色**：内核亮色值定义在 shadow 内
