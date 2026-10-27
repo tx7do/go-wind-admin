@@ -181,7 +181,13 @@ IAB 环境噪声阻断待人工复点；菜单 MERGE 同步过（存量库走前
   空态引导到打印模板页。渲染数据=行对象本身（设计器字段面板由示例数据派生同构，见 fieldsFromSample）。
 - 演示模板 `demo.user.badge`（用户工牌，resourceKey=system/user，A4 文本绑定版式）经 API 创建；
   react IAB 实测：用户行打印 → 预览渲染真实行数据（resourceKey 精确匹配优先生效）。
-- 打印动作语义：行内高频动作（TableActions 定式，不入「更多」）；动作 label 用 printTemplate 命名空间的 print 键。：管理页照 config 定式（TableActions/导出/列设置）+ 设计器全屏抽屉
+- 打印动作语义：行内高频动作（TableActions 定式，不入「更多」）；动作 label 用 printTemplate 命名空间的 print 键。
+- 定式文档入口：docs/crud_module_guide/README.md「Optional — row printing」节（2026-10-28 增）。
+
+**双 Vue 端行打印移植说明（a205aabb）**：组件/按钮/匹配语义与 react 同构，vue-tsc 0 错误；IAB 交互冒烟
+受阻于环境（TanStack devtools 遮罩 + HMR 僵尸抽屉 + vben dev server 长跑后抽屉挂载失效——**参考实现
+参数管理抽屉同样失效**，已按既定教训重启 dev server 验证；保存链留人工复点：dev 起后登录 admin，打印模板页
+新增→填名称/编码→内容区保存，看「创建成功」与列表刷新即可）。：管理页照 config 定式（TableActions/导出/列设置）+ 设计器全屏抽屉
 （width:100%）+ 复制内置派生 + 示例数据派生字段面板（fieldsFromSample，M2 行打印复用同函数）；IAB 实测
 设计器挂载/保存落库/冗余列同步全过。i18n 教训：命名空间=文件名（printTemplate.json 非 print-template.json）、
 嵌套点键会被 keySeparator 吃掉须用扁平键、common.button 需补 save/copy。**暗色**：内核亮色值定义在 shadow 内
