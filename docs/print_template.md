@@ -1,6 +1,6 @@
 # 打印模板（单据打印设计器）设计文档
 
-> **状态：方案定稿（2026-10-27），代码未实施。** 本文档是打印模板模块的唯一权威说明：
+> **状态：M0 尖刺已验证通过（2026-10-27 实测），内核选型定案；M1 起未实施。** 本文档是打印模板模块的唯一权威说明：
 > 定位边界、选型决策记录、总体架构、数据模型、三端接入、输出链与分期计划。
 > 动打印模板相关代码前先读本文；实施后各阶段状态以文内标记为准。
 
@@ -53,10 +53,9 @@
    是 react 端的预期通道。
 3. **文档与工程化成熟**：中文文档全套（快速开始 / API / 表达式引擎 / 渲染管线 / 三端一致性 /
    静默打印）、32 项 UI 验收脚本、架构守卫脚本、诚实标注的已知限制。
-4. 上游私有件是"可重建的私有"而非黑盒：Electron 静默打印客户端不发源码但 **WebSocket 协议与
-   SDK 开放**（`core/client`，端口探测自 127.0.0.1:17521，`connect/listPrinters/print/pair`，
-   错误码齐全），客户端二进制挂其 GitHub Releases；服务端 PDF 微服务私有但 `generateHtml`
-   开放，Go 侧 headless Chromium 渲染该 HTML 即为自有实现（§6）。
+4. 上游"私有件"经克隆实测**源码全在公开仓库里**（不发 npm 而已）：Electron 静默打印客户端
+   （约 3.6k 行）与 Playwright PDF 微服务（约 1.7k 行）都在 workspace 源码树中，协议与 SDK
+   （`core/client`，端口探测自 127.0.0.1:17521）开放——fork 即 100% 自有，无任何黑盒。
 
 ## 3. 总体架构
 
@@ -123,7 +122,7 @@ dev 策略例外说明：本模块**内核三端同一份**（设计器交互一
 | 端 | 设计器画布 | 说明 |
 |---|---|---|
 | vue-element / vue-vben | `@go-wind/print-canvas` 组件直用 | 成熟路径：`<PrintDesigner :fields :initial-template @save @preview>` + `PrintHtmlPreview`；注意 canvas 的 style.css 全局引入一次 |
-| react | 优先 `@go-wind/print-common`（Custom Element） | **M0 实测 react 19 + Custom Element**（property/事件桥接、Shadow DOM 与 antd6 样式互扰、卸载清理）；fork 内负责把它做到稳定（上游已有 PARITY.md 追踪 canvas/common 视差）；实测有硬伤则兜底自研 react 画布（引擎全部复用 core，只重写编辑器外壳） |
+| react | `@go-wind/print-common`（Custom Element）✅ M0 已定案可行 | react 19.3.1 实测通过（见 §8.1）；两条接入铁律：`registerAll()` 必须在 mount 之前、对象入参走 ref 赋 property。fork 内继续维护稳定性（上游有 PARITY.md 追踪 canvas/common 视差） |
 
 统一约定：
 
@@ -162,13 +161,39 @@ dev 策略例外说明：本模块**内核三端同一份**（设计器交互一
 
 | 阶段 | 内容 | 验收标准 |
 |---|---|---|
-| **M0 尖刺**（先行，约 1 周） | ① fork 建仓 + 构建链/CI/测试跑通；② 双 Vue 端 canvas 最小接入 demo；③ **react 19 + common 实测**（挂载/property/事件/Shadow DOM 隔离/卸载）；④ 浏览器打印实测（中文/条码二维码/分页）；⑤ 接管成本评估 → 定稿 fork 落点与包名 | 三端各一张样例单据从设计到打印闭环（mock 数据）；react 通道定案（common 或自研画布兜底） |
+| **M0 尖刺**（✅ 2026-10-27 完成，结论见 §8.1） | ① fork 建仓 + 构建链/CI/测试跑通；② 双 Vue 端 canvas 最小接入 demo；③ **react 19 + common 实测**（挂载/property/事件/Shadow DOM 隔离/卸载）；④ 浏览器打印实测（中文/条码二维码/分页）；⑤ 接管成本评估 → 定稿 fork 落点与包名 | 三端各一张样例单据从设计到打印闭环（mock 数据）；react 通道定案（common 或自研画布兜底） |
 | **M1 模板域全栈** | §4 全部：实体 CRUD、种子模板、权限点、接口同步、菜单 | crud guide 造演示模块，后端链路全绿；三端 typecheck 门禁保持 0 错误 |
 | **M2 三端接入 + 浏览器打印** | §5 全部：管理页、绑定面板、行打印、预览抽屉 | 三端各自对同一模板完成"设计→绑定→行打印"闭环；视觉过 design-language；暗/亮两模式实测 |
 | **M3 输出链补全** | 服务端 PDF + 批量合并；静默打印对接文档化；部署文档补字体同源约束 | 批量 100 行合并 PDF 成功且权限按当前用户收敛；SSE 网关部署形态不受影响 |
 | **M4 差异化** | §7 按序另立任务 | 各自验收另附 |
 
 文档随行：本模块启用时补 `docs/crud_module_guide/` 「给你的模块接打印」一章；本文档同步实施状态。
+
+### 8.1 M0 尖刺结论（2026-10-27 实测，全部通过）
+
+- **环境**：本机 node 20.10 起不动 vite 7，构建/测试/dev 统一切 nvm node 20.20（scoop nvm 根
+  `~/scoop/persist/nvm/nodejs`）；上游无 engines 声明，fork 应补 `engines.node >=20.19`。
+- **构建与测试**：core（tsup）/ canvas（vite 7 + vue-tsc，产物 353KB/gzip 97KB + 65KB css）/
+  common 全部构建通过；测试 core 1147、canvas 688、common 323，**仅 1 例失败且是上游测试脚手架
+  的 Windows bug**（`executor-bundle.spec.ts` 子进程 `import()` 传裸 `D:\` 路径未转 file:// URL），
+  非产品缺陷——列为 fork 后第一个修复项。
+- **react 19 定案：common（Custom Element）通道可行**。react 19.3.1 实测：`registerAll()` 后
+  Shadow DOM 完整渲染设计器、9 个中文字段注入 store、`save` 事件携带完整 TemplateData JSON
+  回流 React state、卸载后元素数归零、重挂重注入正常（StrictMode 双跑无泄漏）。接入铁律：
+  ① `registerAll()` 必须在 mount 之前——未升级元素上的 property 赋值会以自有属性遮蔽升级后的
+  类访问器（CE 经典坑）；② 对象入参（fields/template/fonts/uploadImage）走 ref 赋 property，
+  字符串开关（is-edit/show-help）才写 JSX 属性，事件 addEventListener + cleanup——该口径与
+  react 版本无关。注意：上游自带的 react 宿主 demo 是 react 18，react 19 为本仓 M0 首证。
+- **vue3 canvas 实测（上游 demo）**：综合样例模板全过——A4 横向、20 条明细自动分 5 页且跨页
+  重复多级表头、表格内图片/条形码/二维码逐行渲染、`{MONEY(SUM(amount))}` 合计、页脚页码表达式、
+  三款中文字体同页直显；纸张档位覆盖 A4/A3/标签（80×60 等）/连续纸（57/80/110mm）/针式等分纸；
+  拼版打印（标签铺大纸）与套打设计背景在列。
+- **源码规模**（fork 接管面）：core 22.4k / canvas 24.3k / common 14.7k / render 1.7k /
+  client 3.6k 行，合计约 6.7 万行；运行时依赖极薄（core 仅 jsbarcode + qrcode；canvas 加
+  dompurify + lucide-vue-next）。
+- **遗留到 M1 开工前**：fork 建仓定名（建议 `go-wind-print`，npm 包 `@go-wind/print-*`）、
+  以上游 v1.3.11 打 fork 基线 tag、修 Windows 测试脚手架、搭 CI。
+
 
 ## 9. 风险与对冲
 
