@@ -27,6 +27,10 @@ service PrintTemplateService {
 
   // 删除打印模板
   rpc Delete (DeletePrintTemplateRequest) returns (google.protobuf.Empty) {}
+
+  // 服务端 PDF 渲染：前端内核产出的最终 HTML → 本机 Chromium 打印成 PDF（M3 输出链）。
+  // 批量=前端把多行渲染合并为单个 HTML（数据数组）后一次调用。
+  rpc RenderPdf (RenderPrintTemplateRequest) returns (RenderPrintTemplateResponse) {}
 }
 
 // 打印模板（单据打印设计器的 TemplateData 载体；租户隔离，内置模板禁删可复制）
@@ -148,4 +152,50 @@ message DeletePrintTemplateRequest {
       json_name = "id"
     ]; // ID
   }
+}
+
+// 服务端 PDF 渲染 - 请求
+message RenderPrintTemplateRequest {
+  string html = 1 [
+    json_name = "html",
+    (gnostic.openapi.v3.property) = {description: "前端内核产出的最终文档（已完成分页的完整 HTML）"}
+  ]; // 最终文档 HTML
+
+  string filename = 2 [
+    json_name = "filename",
+    (gnostic.openapi.v3.property) = {description: "下载文件名（不含扩展名，默认 print）"}
+  ]; // 下载文件名
+
+  double paper_width_mm = 3 [
+    json_name = "paperWidthMm",
+    (gnostic.openapi.v3.property) = {description: "纸张宽（毫米，按模板 paperSize 解析）"}
+  ]; // 纸张宽
+
+  double paper_height_mm = 4 [
+    json_name = "paperHeightMm",
+    (gnostic.openapi.v3.property) = {description: "纸张高（毫米）"}
+  ]; // 纸张高
+
+  bool landscape = 5 [
+    json_name = "landscape",
+    (gnostic.openapi.v3.property) = {description: "横向（前端已交换宽高时传 false）"}
+  ]; // 横向
+
+  bool background = 6 [
+    json_name = "background",
+    (gnostic.openapi.v3.property) = {description: "打印背景色/背景图"}
+  ]; // 打印背景
+}
+
+// 服务端 PDF 渲染 - 回应（pdf 为 base64；前端解码为 Blob 下载）
+message RenderPrintTemplateResponse {
+  bytes pdf = 1 [
+    json_name = "pdf",
+    (gnostic.openapi.v3.property) = {description: "PDF 字节（protojson 下为 base64 字符串）"}
+  ]; // PDF 字节
+
+  string filename = 2 [
+    json_name = "filename",
+    (gnostic.openapi.v3.property) = {description: "回显下载文件名（含 .pdf 扩展名）"}
+  ]; // 下载文件名
 }

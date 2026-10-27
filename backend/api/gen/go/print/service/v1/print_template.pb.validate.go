@@ -991,3 +991,224 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = DeletePrintTemplateRequestValidationError{}
+
+// Validate checks the field values on RenderPrintTemplateRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *RenderPrintTemplateRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on RenderPrintTemplateRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// RenderPrintTemplateRequestMultiError, or nil if none found.
+func (m *RenderPrintTemplateRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *RenderPrintTemplateRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Html
+
+	// no validation rules for Filename
+
+	// no validation rules for PaperWidthMm
+
+	// no validation rules for PaperHeightMm
+
+	// no validation rules for Landscape
+
+	// no validation rules for Background
+
+	if len(errors) > 0 {
+		return RenderPrintTemplateRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// RenderPrintTemplateRequestMultiError is an error wrapping multiple
+// validation errors returned by RenderPrintTemplateRequest.ValidateAll() if
+// the designated constraints aren't met.
+type RenderPrintTemplateRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RenderPrintTemplateRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RenderPrintTemplateRequestMultiError) AllErrors() []error { return m }
+
+// RenderPrintTemplateRequestValidationError is the validation error returned
+// by RenderPrintTemplateRequest.Validate if the designated constraints aren't met.
+type RenderPrintTemplateRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RenderPrintTemplateRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RenderPrintTemplateRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RenderPrintTemplateRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RenderPrintTemplateRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RenderPrintTemplateRequestValidationError) ErrorName() string {
+	return "RenderPrintTemplateRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e RenderPrintTemplateRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRenderPrintTemplateRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RenderPrintTemplateRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RenderPrintTemplateRequestValidationError{}
+
+// Validate checks the field values on RenderPrintTemplateResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *RenderPrintTemplateResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on RenderPrintTemplateResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// RenderPrintTemplateResponseMultiError, or nil if none found.
+func (m *RenderPrintTemplateResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *RenderPrintTemplateResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Pdf
+
+	// no validation rules for Filename
+
+	if len(errors) > 0 {
+		return RenderPrintTemplateResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// RenderPrintTemplateResponseMultiError is an error wrapping multiple
+// validation errors returned by RenderPrintTemplateResponse.ValidateAll() if
+// the designated constraints aren't met.
+type RenderPrintTemplateResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RenderPrintTemplateResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RenderPrintTemplateResponseMultiError) AllErrors() []error { return m }
+
+// RenderPrintTemplateResponseValidationError is the validation error returned
+// by RenderPrintTemplateResponse.Validate if the designated constraints
+// aren't met.
+type RenderPrintTemplateResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RenderPrintTemplateResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RenderPrintTemplateResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RenderPrintTemplateResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RenderPrintTemplateResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RenderPrintTemplateResponseValidationError) ErrorName() string {
+	return "RenderPrintTemplateResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e RenderPrintTemplateResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRenderPrintTemplateResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RenderPrintTemplateResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RenderPrintTemplateResponseValidationError{}

@@ -47,4 +47,12 @@ service PrintTemplateService {
       delete: "/admin/v1/print-templates/{id}"
     };
   }
+
+  // 服务端 PDF 渲染（前端内核 HTML → 后端 Chromium 打印）
+  rpc RenderPdf (print.service.v1.RenderPrintTemplateRequest) returns (print.service.v1.RenderPrintTemplateResponse) {
+    option (google.api.http) = {
+      post: "/admin/v1/print-templates:render-pdf"
+      body: "*"
+    };
+  }
 }

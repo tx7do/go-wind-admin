@@ -147,6 +147,22 @@ dev 策略例外说明：本模块**内核三端同一份**（设计器交互一
 三端一致性约束（继承上游结论，写入部署文档）：像素级一致要求**字体与 Chromium 内核同源**——
 服务端渲染容器需安装与客户端约定一致的字体集；不做此承诺时降级为"版式一致、像素不承诺"。
 
+### 6.1 服务端 PDF 实现说明（M3 已落地，2026-10-28）
+
+- **渲染器**：`backend/pkg/printrender`（chromedp 池，自动探测 Chrome→Edge，`CHROME_PATH` 可覆盖；
+  `SetRenderer` 留接口可切 worm 生态 print-render 伴生容器）。只做 HTML → PDF（PrintToPDF），
+  分页/布局全部由前端内核完成——**预览即所得**，后端不重排。
+- **端点**：`POST /admin/v1/print-templates:render-pdf`（PrintTemplateService.RenderPdf）。
+  请求 `{html, filename, paperWidthMm, paperHeightMm, landscape, background}`；响应 `{pdf(bytes=base64),
+  filename}`。HTML 上限 8 MiB；纸张毫米必须传。**批量** = 前端把多行渲染合并为单个 HTML 一次调用。
+- **部署要求**：后端所在机器/镜像需 Chrome 或 Edge（含 CJK 字体集）；无浏览器时接口报
+  `render pdf failed`（日志含原因）。打印服务无网络需求（启动 flag 已收窄攻击面）。
+- **安全边界**：HTML 来自已鉴权的管理端（权限点走 Api 表闸门），内容经内核 dompurify 消毒；
+  headless 实例无网络/存储访问需求。
+- **静默打印**：采用者在打印客户端机器安装 worm 官方 electron-hiprint 客户端（GitHub Releases
+  下载，SHA256 校验），前端经 `@worm-vue3-print/core/client` SDK（WebSocket 127.0.0.1:17521，
+  `connect/listPrinters/print/pair`）直连打印；无需后端参与。
+
 ## 7. 差异化能力（M4，按序另立任务）
 
 1. **AI 一句话生成模板**（采 openprint 点子、接本仓 AI 模块）：描述单据要素 → LLM 产出

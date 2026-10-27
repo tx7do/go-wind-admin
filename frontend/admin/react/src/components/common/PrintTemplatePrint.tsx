@@ -1,10 +1,12 @@
 import { useRef, useState } from 'react';
 import { App, Button, Empty, Modal, Select, Space, Spin } from 'antd';
-import { PrinterOutlined } from '@ant-design/icons';
+import { PrinterOutlined, FilePdfOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import type { printservicev1_PrintTemplate as PrintTemplate } from '@/api/generated/admin/service/v1';
+import { apiClient } from '@/api/client';
 import { fetchListPrintTemplates } from '@/api/hooks/print-template';
 import { renderHtmlPages, browserCodeRenderer } from '@worm-vue3-print/core/browser';
+import { getPaperDimensions } from '@worm-vue3-print/core/designer';
 import { PaginationQuery } from '@/core';
 
 /**
@@ -24,6 +26,8 @@ export function usePrintTemplateDialog() {
   const [selectedId, setSelectedId] = useState<number | undefined>();
   const [rendering, setRendering] = useState(false);
   const frameRef = useRef<HTMLIFrameElement>(null);
+  const lastHtmlRef = useRef<string>('');
+  const lastTemplateRef = useRef<PrintTemplate | null>(null);
   const printDataRef = useRef<Record<string, unknown>>({});
 
   const { t } = useTranslation('printTemplate');
@@ -39,7 +43,7 @@ export function usePrintTemplateDialog() {
     return [...exact, ...generic];
   };
 
-  /** 渲染当前选中模板到 iframe（两遍渲染：测量→分页→HTML） */
+  /** 渲染当前选中模板到 iframe（两遍渲染：测量→分页→HTML），产物留存供服务端 PDF 复用 */
   const renderPreview = async (tpl: PrintTemplate) => {
     setRendering(true);
     try {
@@ -49,6 +53,8 @@ export function usePrintTemplateDialog() {
         window.location.origin,
         browserCodeRenderer,
       );
+      lastHtmlRef.current = result.html;
+      lastTemplateRef.current = tpl;
       // 等 iframe 挂载完成再写文档
       window.setTimeout(() => {
         const doc = frameRef.current?.contentWindow?.document;
@@ -95,6 +101,44 @@ export function usePrintTemplateDialog() {
     frameRef.current?.contentWindow?.print();
   };
 
+  /** 服务端 PDF（M3 输出链）：当前预览 HTML → 后端 Chromium PrintToPDF → 下载。
+   *  与浏览器打印同源同引擎（同一份 HTML），纸张按模板 paperSize 结算。 */
+  const handleServerPdf = async () => {
+    const html = lastHtmlRef.current;
+    const tpl = lastTemplateRef.current;
+    if (!html || !tpl) return;
+    try {
+      let payloadTpl: any = {};
+      try {
+        payloadTpl = JSON.parse(tpl.payload || '{}');
+      } catch {
+        /* 保底 A4 */
+      }
+      const dims = getPaperDimensions(payloadTpl);
+      const resp = await apiClient.printTemplateService.RenderPdf({
+        html,
+        filename: (tpl.code || 'print') + '-' + Date.now(),
+        paperWidthMm: dims.width,
+        paperHeightMm: dims.height,
+        landscape: false,
+        background: true,
+      });
+      // protojson：bytes 字段为 base64 字符串
+      const bin = atob(resp.pdf as unknown as string);
+      const bytes = new Uint8Array(bin.length);
+      for (let i = 0; i < bin.length; i += 1) bytes[i] = bin.charCodeAt(i);
+      const blob = new Blob([bytes], { type: 'application/pdf' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = resp.filename || 'print.pdf';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      modal.error({ title: t('serverPdfFailed'), content: (e as Error).message });
+    }
+  };
+
   const node = (
     <Modal
       title={t('printTitle')}
@@ -121,6 +165,13 @@ export function usePrintTemplateDialog() {
             onClick={handlePrint}
           >
             {t('print')}
+          </Button>
+          <Button
+            icon={<FilePdfOutlined />}
+            disabled={templates.length === 0 || rendering}
+            onClick={handleServerPdf}
+          >
+            {t('serverPdf')}
           </Button>
         </Space>
       }

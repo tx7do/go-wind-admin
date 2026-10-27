@@ -6549,6 +6549,25 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/print-templates:render-pdf:
+        post:
+            tags:
+                - PrintTemplateService
+            description: 服务端 PDF 渲染（前端内核 HTML → 后端 Chromium 打印）
+            operationId: PrintTemplateService_RenderPdf
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RenderPrintTemplateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/RenderPrintTemplateResponse'
     /admin/v1/redis-cache-monitor:
         get:
             tags:
@@ -13024,6 +13043,41 @@ components:
                     type: string
                 content:
                     type: string
+        RenderPrintTemplateRequest:
+            type: object
+            properties:
+                html:
+                    type: string
+                    description: 前端内核产出的最终文档（已完成分页的完整 HTML）
+                filename:
+                    type: string
+                    description: 下载文件名（不含扩展名，默认 print）
+                paperWidthMm:
+                    type: number
+                    description: 纸张宽（毫米，按模板 paperSize 解析）
+                    format: double
+                paperHeightMm:
+                    type: number
+                    description: 纸张高（毫米）
+                    format: double
+                landscape:
+                    type: boolean
+                    description: 横向（前端已交换宽高时传 false）
+                background:
+                    type: boolean
+                    description: 打印背景色/背景图
+            description: 服务端 PDF 渲染 - 请求
+        RenderPrintTemplateResponse:
+            type: object
+            properties:
+                pdf:
+                    type: string
+                    description: PDF 字节（protojson 下为 base64 字符串）
+                    format: bytes
+                filename:
+                    type: string
+                    description: 回显下载文件名（含 .pdf 扩展名）
+            description: 服务端 PDF 渲染 - 回应（pdf 为 base64；前端解码为 Blob 下载）
         ResetAccessKeySecretRequest:
             type: object
             properties:

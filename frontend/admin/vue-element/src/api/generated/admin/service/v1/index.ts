@@ -9606,6 +9606,10 @@ export interface PrintTemplateService {
   Delete(
     request: printservicev1_DeletePrintTemplateRequest,
   ): Promise<wellKnownEmpty>;
+  // 服务端 PDF 渲染（前端内核 HTML → 后端 Chromium 打印）
+  RenderPdf(
+    request: printservicev1_RenderPrintTemplateRequest,
+  ): Promise<printservicev1_RenderPrintTemplateResponse>;
 }
 
 export function createPrintTemplateServiceClient(
@@ -9733,6 +9737,14 @@ export function createPrintTemplateServiceClient(
         method: 'Delete',
       }) as Promise<wellKnownEmpty>;
     },
+    RenderPdf(request) {
+      const path = `/admin/v1/print-templates:render-pdf`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'PrintTemplateService',
+        method: 'RenderPdf',
+      }) as Promise<printservicev1_RenderPrintTemplateResponse>;
+    },
   };
 }
 // 查询打印模板列表 - 回应
@@ -9783,6 +9795,22 @@ export type printservicev1_UpdatePrintTemplateRequest = {
 // 删除打印模板 - 请求
 export type printservicev1_DeletePrintTemplateRequest = {
   id?: number;
+};
+
+// 服务端 PDF 渲染 - 请求
+export type printservicev1_RenderPrintTemplateRequest = {
+  background: boolean | undefined;
+  filename: string | undefined;
+  html: string | undefined;
+  landscape: boolean | undefined;
+  paperHeightMm: number | undefined;
+  paperWidthMm: number | undefined;
+};
+
+// 服务端 PDF 渲染 - 回应（pdf 为 base64；前端解码为 Blob 下载）
+export type printservicev1_RenderPrintTemplateResponse = {
+  filename: string | undefined;
+  pdf: string | undefined;
 };
 
 // Redis缓存监控管理服务（只读）

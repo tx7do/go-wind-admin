@@ -500,6 +500,144 @@ type DeletePrintTemplateRequest_Id struct {
 
 func (*DeletePrintTemplateRequest_Id) isDeletePrintTemplateRequest_QueryBy() {}
 
+// 服务端 PDF 渲染 - 请求
+type RenderPrintTemplateRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Html          string                 `protobuf:"bytes,1,opt,name=html,proto3" json:"html,omitempty"`                                            // 最终文档 HTML
+	Filename      string                 `protobuf:"bytes,2,opt,name=filename,proto3" json:"filename,omitempty"`                                    // 下载文件名
+	PaperWidthMm  float64                `protobuf:"fixed64,3,opt,name=paper_width_mm,json=paperWidthMm,proto3" json:"paper_width_mm,omitempty"`    // 纸张宽
+	PaperHeightMm float64                `protobuf:"fixed64,4,opt,name=paper_height_mm,json=paperHeightMm,proto3" json:"paper_height_mm,omitempty"` // 纸张高
+	Landscape     bool                   `protobuf:"varint,5,opt,name=landscape,proto3" json:"landscape,omitempty"`                                 // 横向
+	Background    bool                   `protobuf:"varint,6,opt,name=background,proto3" json:"background,omitempty"`                               // 打印背景
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RenderPrintTemplateRequest) Reset() {
+	*x = RenderPrintTemplateRequest{}
+	mi := &file_print_service_v1_print_template_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RenderPrintTemplateRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RenderPrintTemplateRequest) ProtoMessage() {}
+
+func (x *RenderPrintTemplateRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_print_service_v1_print_template_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RenderPrintTemplateRequest.ProtoReflect.Descriptor instead.
+func (*RenderPrintTemplateRequest) Descriptor() ([]byte, []int) {
+	return file_print_service_v1_print_template_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *RenderPrintTemplateRequest) GetHtml() string {
+	if x != nil {
+		return x.Html
+	}
+	return ""
+}
+
+func (x *RenderPrintTemplateRequest) GetFilename() string {
+	if x != nil {
+		return x.Filename
+	}
+	return ""
+}
+
+func (x *RenderPrintTemplateRequest) GetPaperWidthMm() float64 {
+	if x != nil {
+		return x.PaperWidthMm
+	}
+	return 0
+}
+
+func (x *RenderPrintTemplateRequest) GetPaperHeightMm() float64 {
+	if x != nil {
+		return x.PaperHeightMm
+	}
+	return 0
+}
+
+func (x *RenderPrintTemplateRequest) GetLandscape() bool {
+	if x != nil {
+		return x.Landscape
+	}
+	return false
+}
+
+func (x *RenderPrintTemplateRequest) GetBackground() bool {
+	if x != nil {
+		return x.Background
+	}
+	return false
+}
+
+// 服务端 PDF 渲染 - 回应（pdf 为 base64；前端解码为 Blob 下载）
+type RenderPrintTemplateResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Pdf           []byte                 `protobuf:"bytes,1,opt,name=pdf,proto3" json:"pdf,omitempty"`           // PDF 字节
+	Filename      string                 `protobuf:"bytes,2,opt,name=filename,proto3" json:"filename,omitempty"` // 下载文件名
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RenderPrintTemplateResponse) Reset() {
+	*x = RenderPrintTemplateResponse{}
+	mi := &file_print_service_v1_print_template_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RenderPrintTemplateResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RenderPrintTemplateResponse) ProtoMessage() {}
+
+func (x *RenderPrintTemplateResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_print_service_v1_print_template_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RenderPrintTemplateResponse.ProtoReflect.Descriptor instead.
+func (*RenderPrintTemplateResponse) Descriptor() ([]byte, []int) {
+	return file_print_service_v1_print_template_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *RenderPrintTemplateResponse) GetPdf() []byte {
+	if x != nil {
+		return x.Pdf
+	}
+	return nil
+}
+
+func (x *RenderPrintTemplateResponse) GetFilename() string {
+	if x != nil {
+		return x.Filename
+	}
+	return ""
+}
+
 var File_print_service_v1_print_template_proto protoreflect.FileDescriptor
 
 const file_print_service_v1_print_template_proto_rawDesc = "" +
@@ -574,13 +712,26 @@ const file_print_service_v1_print_template_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\rB\n" +
 	"\xbaG\a\x18\x01\x92\x02\x02IDH\x00R\x02idB\n" +
 	"\n" +
-	"\bquery_by2\xb3\x03\n" +
+	"\bquery_by\"\x8c\x04\n" +
+	"\x1aRenderPrintTemplateRequest\x12^\n" +
+	"\x04html\x18\x01 \x01(\tBJ\xbaGG\x92\x02D前端内核产出的最终文档（已完成分页的完整 HTML）R\x04html\x12U\n" +
+	"\bfilename\x18\x02 \x01(\tB9\xbaG6\x92\x023下载文件名（不含扩展名，默认 print）R\bfilename\x12^\n" +
+	"\x0epaper_width_mm\x18\x03 \x01(\x01B8\xbaG5\x92\x022纸张宽（毫米，按模板 paperSize 解析）R\fpaperWidthMm\x12C\n" +
+	"\x0fpaper_height_mm\x18\x04 \x01(\x01B\x1b\xbaG\x18\x92\x02\x15纸张高（毫米）R\rpaperHeightMm\x12Q\n" +
+	"\tlandscape\x18\x05 \x01(\bB3\xbaG0\x92\x02-横向（前端已交换宽高时传 false）R\tlandscape\x12?\n" +
+	"\n" +
+	"background\x18\x06 \x01(\bB\x1f\xbaG\x1c\x92\x02\x19打印背景色/背景图R\n" +
+	"background\"\xb9\x01\n" +
+	"\x1bRenderPrintTemplateResponse\x12I\n" +
+	"\x03pdf\x18\x01 \x01(\fB7\xbaG4\x92\x021PDF 字节（protojson 下为 base64 字符串）R\x03pdf\x12O\n" +
+	"\bfilename\x18\x02 \x01(\tB3\xbaG0\x92\x02-回显下载文件名（含 .pdf 扩展名）R\bfilename2\x9f\x04\n" +
 	"\x14PrintTemplateService\x12P\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a+.print.service.v1.ListPrintTemplateResponse\"\x00\x12S\n" +
 	"\x03Get\x12).print.service.v1.GetPrintTemplateRequest\x1a\x1f.print.service.v1.PrintTemplate\"\x00\x12P\n" +
 	"\x06Create\x12,.print.service.v1.CreatePrintTemplateRequest\x1a\x16.google.protobuf.Empty\"\x00\x12P\n" +
 	"\x06Update\x12,.print.service.v1.UpdatePrintTemplateRequest\x1a\x16.google.protobuf.Empty\"\x00\x12P\n" +
-	"\x06Delete\x12,.print.service.v1.DeletePrintTemplateRequest\x1a\x16.google.protobuf.Empty\"\x00B\xc3\x01\n" +
+	"\x06Delete\x12,.print.service.v1.DeletePrintTemplateRequest\x1a\x16.google.protobuf.Empty\"\x00\x12j\n" +
+	"\tRenderPdf\x12,.print.service.v1.RenderPrintTemplateRequest\x1a-.print.service.v1.RenderPrintTemplateResponse\"\x00B\xc3\x01\n" +
 	"\x14com.print.service.v1B\x12PrintTemplateProtoP\x01Z3go-wind-admin/api/gen/go/print/service/v1;servicev1\xa2\x02\x03PSX\xaa\x02\x10Print.Service.V1\xca\x02\x11Print_\\Service\\V1\xe2\x02\x1dPrint_\\Service\\V1\\GPBMetadata\xea\x02\x12Print::Service::V1b\x06proto3"
 
 var (
@@ -595,40 +746,44 @@ func file_print_service_v1_print_template_proto_rawDescGZIP() []byte {
 	return file_print_service_v1_print_template_proto_rawDescData
 }
 
-var file_print_service_v1_print_template_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
+var file_print_service_v1_print_template_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_print_service_v1_print_template_proto_goTypes = []any{
-	(*PrintTemplate)(nil),              // 0: print.service.v1.PrintTemplate
-	(*ListPrintTemplateResponse)(nil),  // 1: print.service.v1.ListPrintTemplateResponse
-	(*GetPrintTemplateRequest)(nil),    // 2: print.service.v1.GetPrintTemplateRequest
-	(*CreatePrintTemplateRequest)(nil), // 3: print.service.v1.CreatePrintTemplateRequest
-	(*UpdatePrintTemplateRequest)(nil), // 4: print.service.v1.UpdatePrintTemplateRequest
-	(*DeletePrintTemplateRequest)(nil), // 5: print.service.v1.DeletePrintTemplateRequest
-	(*timestamppb.Timestamp)(nil),      // 6: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),      // 7: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),           // 8: pagination.PagingRequest
-	(*emptypb.Empty)(nil),              // 9: google.protobuf.Empty
+	(*PrintTemplate)(nil),               // 0: print.service.v1.PrintTemplate
+	(*ListPrintTemplateResponse)(nil),   // 1: print.service.v1.ListPrintTemplateResponse
+	(*GetPrintTemplateRequest)(nil),     // 2: print.service.v1.GetPrintTemplateRequest
+	(*CreatePrintTemplateRequest)(nil),  // 3: print.service.v1.CreatePrintTemplateRequest
+	(*UpdatePrintTemplateRequest)(nil),  // 4: print.service.v1.UpdatePrintTemplateRequest
+	(*DeletePrintTemplateRequest)(nil),  // 5: print.service.v1.DeletePrintTemplateRequest
+	(*RenderPrintTemplateRequest)(nil),  // 6: print.service.v1.RenderPrintTemplateRequest
+	(*RenderPrintTemplateResponse)(nil), // 7: print.service.v1.RenderPrintTemplateResponse
+	(*timestamppb.Timestamp)(nil),       // 8: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),       // 9: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),            // 10: pagination.PagingRequest
+	(*emptypb.Empty)(nil),               // 11: google.protobuf.Empty
 }
 var file_print_service_v1_print_template_proto_depIdxs = []int32{
-	6,  // 0: print.service.v1.PrintTemplate.created_at:type_name -> google.protobuf.Timestamp
-	6,  // 1: print.service.v1.PrintTemplate.updated_at:type_name -> google.protobuf.Timestamp
-	6,  // 2: print.service.v1.PrintTemplate.deleted_at:type_name -> google.protobuf.Timestamp
+	8,  // 0: print.service.v1.PrintTemplate.created_at:type_name -> google.protobuf.Timestamp
+	8,  // 1: print.service.v1.PrintTemplate.updated_at:type_name -> google.protobuf.Timestamp
+	8,  // 2: print.service.v1.PrintTemplate.deleted_at:type_name -> google.protobuf.Timestamp
 	0,  // 3: print.service.v1.ListPrintTemplateResponse.items:type_name -> print.service.v1.PrintTemplate
-	7,  // 4: print.service.v1.GetPrintTemplateRequest.view_mask:type_name -> google.protobuf.FieldMask
+	9,  // 4: print.service.v1.GetPrintTemplateRequest.view_mask:type_name -> google.protobuf.FieldMask
 	0,  // 5: print.service.v1.CreatePrintTemplateRequest.data:type_name -> print.service.v1.PrintTemplate
 	0,  // 6: print.service.v1.UpdatePrintTemplateRequest.data:type_name -> print.service.v1.PrintTemplate
-	7,  // 7: print.service.v1.UpdatePrintTemplateRequest.update_mask:type_name -> google.protobuf.FieldMask
-	8,  // 8: print.service.v1.PrintTemplateService.List:input_type -> pagination.PagingRequest
+	9,  // 7: print.service.v1.UpdatePrintTemplateRequest.update_mask:type_name -> google.protobuf.FieldMask
+	10, // 8: print.service.v1.PrintTemplateService.List:input_type -> pagination.PagingRequest
 	2,  // 9: print.service.v1.PrintTemplateService.Get:input_type -> print.service.v1.GetPrintTemplateRequest
 	3,  // 10: print.service.v1.PrintTemplateService.Create:input_type -> print.service.v1.CreatePrintTemplateRequest
 	4,  // 11: print.service.v1.PrintTemplateService.Update:input_type -> print.service.v1.UpdatePrintTemplateRequest
 	5,  // 12: print.service.v1.PrintTemplateService.Delete:input_type -> print.service.v1.DeletePrintTemplateRequest
-	1,  // 13: print.service.v1.PrintTemplateService.List:output_type -> print.service.v1.ListPrintTemplateResponse
-	0,  // 14: print.service.v1.PrintTemplateService.Get:output_type -> print.service.v1.PrintTemplate
-	9,  // 15: print.service.v1.PrintTemplateService.Create:output_type -> google.protobuf.Empty
-	9,  // 16: print.service.v1.PrintTemplateService.Update:output_type -> google.protobuf.Empty
-	9,  // 17: print.service.v1.PrintTemplateService.Delete:output_type -> google.protobuf.Empty
-	13, // [13:18] is the sub-list for method output_type
-	8,  // [8:13] is the sub-list for method input_type
+	6,  // 13: print.service.v1.PrintTemplateService.RenderPdf:input_type -> print.service.v1.RenderPrintTemplateRequest
+	1,  // 14: print.service.v1.PrintTemplateService.List:output_type -> print.service.v1.ListPrintTemplateResponse
+	0,  // 15: print.service.v1.PrintTemplateService.Get:output_type -> print.service.v1.PrintTemplate
+	11, // 16: print.service.v1.PrintTemplateService.Create:output_type -> google.protobuf.Empty
+	11, // 17: print.service.v1.PrintTemplateService.Update:output_type -> google.protobuf.Empty
+	11, // 18: print.service.v1.PrintTemplateService.Delete:output_type -> google.protobuf.Empty
+	7,  // 19: print.service.v1.PrintTemplateService.RenderPdf:output_type -> print.service.v1.RenderPrintTemplateResponse
+	14, // [14:20] is the sub-list for method output_type
+	8,  // [8:14] is the sub-list for method input_type
 	8,  // [8:8] is the sub-list for extension type_name
 	8,  // [8:8] is the sub-list for extension extendee
 	0,  // [0:8] is the sub-list for field type_name
@@ -653,7 +808,7 @@ func file_print_service_v1_print_template_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_print_service_v1_print_template_proto_rawDesc), len(file_print_service_v1_print_template_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   6,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

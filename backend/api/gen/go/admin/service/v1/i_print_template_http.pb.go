@@ -26,6 +26,7 @@ const OperationPrintTemplateServiceCreate = "/admin.service.v1.PrintTemplateServ
 const OperationPrintTemplateServiceDelete = "/admin.service.v1.PrintTemplateService/Delete"
 const OperationPrintTemplateServiceGet = "/admin.service.v1.PrintTemplateService/Get"
 const OperationPrintTemplateServiceList = "/admin.service.v1.PrintTemplateService/List"
+const OperationPrintTemplateServiceRenderPdf = "/admin.service.v1.PrintTemplateService/RenderPdf"
 const OperationPrintTemplateServiceUpdate = "/admin.service.v1.PrintTemplateService/Update"
 
 type PrintTemplateServiceHTTPServer interface {
@@ -37,6 +38,8 @@ type PrintTemplateServiceHTTPServer interface {
 	Get(context.Context, *v11.GetPrintTemplateRequest) (*v11.PrintTemplate, error)
 	// List 查询打印模板列表
 	List(context.Context, *v1.PagingRequest) (*v11.ListPrintTemplateResponse, error)
+	// RenderPdf 服务端 PDF 渲染（前端内核 HTML → 后端 Chromium 打印）
+	RenderPdf(context.Context, *v11.RenderPrintTemplateRequest) (*v11.RenderPrintTemplateResponse, error)
 	// Update 更新打印模板
 	Update(context.Context, *v11.UpdatePrintTemplateRequest) (*emptypb.Empty, error)
 }
@@ -48,6 +51,7 @@ func RegisterPrintTemplateServiceHTTPServer(s *http.Server, srv PrintTemplateSer
 	r.POST("/admin/v1/print-templates", _PrintTemplateService_Create20_HTTP_Handler(srv))
 	r.PUT("/admin/v1/print-templates/{id}", _PrintTemplateService_Update21_HTTP_Handler(srv))
 	r.DELETE("/admin/v1/print-templates/{id}", _PrintTemplateService_Delete22_HTTP_Handler(srv))
+	r.POST("/admin/v1/print-templates:render-pdf", _PrintTemplateService_RenderPdf0_HTTP_Handler(srv))
 }
 
 func _PrintTemplateService_List29_HTTP_Handler(srv PrintTemplateServiceHTTPServer) func(ctx http.Context) error {
@@ -160,6 +164,28 @@ func _PrintTemplateService_Delete22_HTTP_Handler(srv PrintTemplateServiceHTTPSer
 	}
 }
 
+func _PrintTemplateService_RenderPdf0_HTTP_Handler(srv PrintTemplateServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.RenderPrintTemplateRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationPrintTemplateServiceRenderPdf)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RenderPdf(ctx, req.(*v11.RenderPrintTemplateRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v11.RenderPrintTemplateResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type PrintTemplateServiceHTTPClient interface {
 	// Create 创建打印模板
 	Create(ctx context.Context, req *v11.CreatePrintTemplateRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
@@ -169,6 +195,8 @@ type PrintTemplateServiceHTTPClient interface {
 	Get(ctx context.Context, req *v11.GetPrintTemplateRequest, opts ...http.CallOption) (rsp *v11.PrintTemplate, err error)
 	// List 查询打印模板列表
 	List(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListPrintTemplateResponse, err error)
+	// RenderPdf 服务端 PDF 渲染（前端内核 HTML → 后端 Chromium 打印）
+	RenderPdf(ctx context.Context, req *v11.RenderPrintTemplateRequest, opts ...http.CallOption) (rsp *v11.RenderPrintTemplateResponse, err error)
 	// Update 更新打印模板
 	Update(ctx context.Context, req *v11.UpdatePrintTemplateRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
@@ -231,6 +259,20 @@ func (c *PrintTemplateServiceHTTPClientImpl) List(ctx context.Context, in *v1.Pa
 	opts = append(opts, http.Operation(OperationPrintTemplateServiceList))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// RenderPdf 服务端 PDF 渲染（前端内核 HTML → 后端 Chromium 打印）
+func (c *PrintTemplateServiceHTTPClientImpl) RenderPdf(ctx context.Context, in *v11.RenderPrintTemplateRequest, opts ...http.CallOption) (*v11.RenderPrintTemplateResponse, error) {
+	var out v11.RenderPrintTemplateResponse
+	pattern := "/admin/v1/print-templates:render-pdf"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationPrintTemplateServiceRenderPdf))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

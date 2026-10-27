@@ -34,5 +34,7 @@
   "sortOrder": "Sort Order",
   "printTitle": "Print Preview",
   "noTemplate": "No print template available for this resource",
-  "noTemplateHint": "Create one under System → Print Templates bound to this resource, or copy a generic template"
+  "noTemplateHint": "Create one under System → Print Templates bound to this resource, or copy a generic template",
+  "serverPdf": "Server PDF",
+  "serverPdfFailed": "Server PDF failed"
 }

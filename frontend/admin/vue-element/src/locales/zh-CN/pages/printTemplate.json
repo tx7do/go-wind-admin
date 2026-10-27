@@ -34,5 +34,7 @@
   "sortOrder": "排序",
   "printTitle": "打印预览",
   "noTemplate": "该资源暂无可用打印模板",
-  "noTemplateHint": "可到「系统管理 → 打印模板」新建并绑定该资源，或将通用模板复制派生"
+  "noTemplateHint": "可到「系统管理 → 打印模板」新建并绑定该资源，或将通用模板复制派生",
+  "serverPdf": "服务端 PDF",
+  "serverPdfFailed": "服务端 PDF 生成失败"
 }

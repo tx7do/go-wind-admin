@@ -25,6 +25,15 @@
       <ElButton type="primary" :disabled="templates.length === 0" @click="handlePrint">
         {{ $t("pages.printTemplate.print") }}
       </ElButton>
+      <ElButton
+        type="primary"
+        plain
+        :loading="serverPdfLoading"
+        :disabled="templates.length === 0"
+        @click="handleServerPdf"
+      >
+        {{ $t("pages.printTemplate.serverPdf") }}
+      </ElButton>
     </template>
   </ElDialog>
 </template>
@@ -40,6 +49,8 @@ import {
   ElSelect,
 } from "element-plus";
 import { renderHtmlPages, browserCodeRenderer } from "@worm-vue3-print/core/browser";
+import { getPaperDimensions } from "@worm-vue3-print/core/designer";
+import { apiClient } from "@/api/client";
 
 import { fetchListPrintTemplates } from "@/api/composables/print_template";
 import { PaginationQuery } from "@/core/transport/rest";
@@ -54,6 +65,8 @@ const templates = ref<any[]>([]);
 const selectedId = ref<number>();
 const frameRef = ref<HTMLIFrameElement | null>(null);
 const printData = ref<Record<string, unknown>>({});
+const lastHtml = ref("");
+const lastTemplate = ref<any>(null);
 
 async function loadTemplates(resourceKey: string) {
   const resp = await fetchListPrintTemplates(
@@ -74,6 +87,8 @@ async function renderPreview(tpl: any) {
       window.location.origin,
       browserCodeRenderer
     );
+    lastHtml.value = result.html;
+    lastTemplate.value = tpl;
     window.setTimeout(() => {
       const doc = frameRef.value?.contentWindow?.document;
       if (doc) {
@@ -117,6 +132,45 @@ function handleSelect(id: number) {
 
 function handlePrint() {
   frameRef.value?.contentWindow?.print();
+}
+
+/** 服务端 PDF（M3 输出链）：当前预览 HTML → 后端 Chromium PrintToPDF → 下载 */
+const serverPdfLoading = ref(false);
+
+async function handleServerPdf() {
+  if (!lastHtml.value || !lastTemplate.value) return;
+  serverPdfLoading.value = true;
+  try {
+    let payloadTpl: any = {};
+    try {
+      payloadTpl = JSON.parse(lastTemplate.value.payload || "{}");
+    } catch {
+      /* 保底 A4 */
+    }
+    const dims = getPaperDimensions(payloadTpl);
+    const resp = await apiClient.printTemplateService.RenderPdf({
+      html: lastHtml.value,
+      filename: (lastTemplate.value.code || "print") + "-" + Date.now(),
+      paperWidthMm: dims.width,
+      paperHeightMm: dims.height,
+      landscape: false,
+      background: true,
+    });
+    const bin = atob(resp.pdf as unknown as string);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i += 1) bytes[i] = bin.charCodeAt(i);
+    const blob = new Blob([bytes], { type: "application/pdf" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = resp.filename || "print.pdf";
+    a.click();
+    URL.revokeObjectURL(url);
+  } catch (e) {
+    ElMessage.error((e as Error).message || $t("pages.printTemplate.serverPdfFailed"));
+  } finally {
+    serverPdfLoading.value = false;
+  }
 }
 
 defineExpose({ print });

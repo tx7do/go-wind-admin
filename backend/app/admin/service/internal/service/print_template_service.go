@@ -17,12 +17,52 @@ import (
 	"github.com/tx7do/go-crud/viewer"
 	"go-wind-admin/pkg/constants"
 	"go-wind-admin/pkg/middleware/auth"
+	"go-wind-admin/pkg/printrender"
 )
+
+// printRenderMaxHTML 服务端 PDF 渲染的 HTML 上限：前端内核产物（多行合并批量）通常
+// 几百 KB 级，超限视为滥用直接拒绝，防 headless Chrome 被超大文档拖垮。
+const printRenderMaxHTML = 8 << 20 // 8 MiB
+
+func (s *PrintTemplateService) RenderPdf(ctx context.Context, req *printV1.RenderPrintTemplateRequest) (*printV1.RenderPrintTemplateResponse, error) {
+	if req == nil || req.GetHtml() == "" {
+		return nil, adminV1.ErrorBadRequest("invalid parameter: html is required")
+	}
+	if req.GetPaperWidthMm() <= 0 || req.GetPaperHeightMm() <= 0 {
+		return nil, adminV1.ErrorBadRequest("invalid parameter: paper size (mm) is required")
+	}
+	if len(req.GetHtml()) > printRenderMaxHTML {
+		return nil, adminV1.ErrorBadRequest("html too large")
+	}
+
+	pdf, err := printrender.RenderPDF(ctx, printrender.Options{
+		HTML:          req.GetHtml(),
+		PaperWidthMm:  req.GetPaperWidthMm(),
+		PaperHeightMm: req.GetPaperHeightMm(),
+		Landscape:     req.GetLandscape(),
+		Background:    req.GetBackground(),
+	})
+	if err != nil {
+		s.log.Errorf(ctx, "render print template pdf failed: %s", err.Error())
+		return nil, adminV1.ErrorInternalServerError("render pdf failed")
+	}
+
+	filename := req.GetFilename()
+	if filename == "" {
+		filename = "print"
+	}
+	filename += ".pdf"
+
+	return &printV1.RenderPrintTemplateResponse{
+		Pdf:      pdf,
+		Filename: filename,
+	}, nil
+}
 
 type PrintTemplateService struct {
 	adminV1.PrintTemplateServiceHTTPServer
 
-	log             *bLogger.Helper
+	log               *bLogger.Helper
 	printTemplateRepo *data.PrintTemplateRepo
 }
 
