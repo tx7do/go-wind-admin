@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import type { VxeGridProps } from '#/adapter/vxe-table';
 
-import { h } from 'vue';
+import { h, ref } from 'vue';
 
-import { Page, useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
+import { Page, type VbenFormProps } from '@vben/common-ui';
 import { LucideCopy, LucideFilePenLine, LucideTrash2 } from '@vben/icons';
 
 import { notification } from 'ant-design-vue';
@@ -128,34 +128,25 @@ const exportFetcher = (page: number, pageSize: number) =>
 
 const [Grid, gridApi] = useVbenVxeGrid({ gridOptions, formOptions });
 
-const [Drawer, drawerApi] = useVbenDrawer({
-  connectedComponent: DesignerDrawer,
+const designerRef = ref();
 
-  onOpenChange(isOpen: boolean) {
-    if (!isOpen) {
-      gridApi.reload();
-    }
-  },
-});
-
-function openDrawer(options: { create?: boolean; copy?: boolean; row?: any }) {
-  drawerApi.setData(options);
-  drawerApi.open();
+function handleSuccess() {
+  gridApi.reload();
 }
 
 /* 创建 */
 function handleCreate() {
-  openDrawer({ create: true });
+  designerRef.value?.open({ create: true });
 }
 
 /* 编辑 */
 function handleEdit(row: any) {
-  openDrawer({ row });
+  designerRef.value?.open({ row });
 }
 
 /* 复制派生（预填，保存走新建） */
 function handleCopy(row: any) {
-  openDrawer({ copy: true, row });
+  designerRef.value?.open({ copy: true, row });
 }
 
 /* 删除 */
@@ -240,6 +231,6 @@ function rowActions(row: PrintTemplate): TableAction[] {
         <TableActions :row="row" :actions="rowActions(row)" />
       </template>
     </Grid>
-    <Drawer />
+    <DesignerDrawer ref="designerRef" @success="handleSuccess" />
   </Page>
 </template>

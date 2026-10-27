@@ -26,6 +26,8 @@ import { renderHtmlPages, browserCodeRenderer } from '@worm-vue3-print/core/brow
 const { mutateAsync: createTemplate } = useCreatePrintTemplate();
 const { mutateAsync: updateTemplate } = useUpdatePrintTemplate();
 
+const emit = defineEmits<{ success: [] }>();
+
 const data = ref();
 
 const mode = ref<'create' | 'edit' | 'copy'>('create');
@@ -52,7 +54,7 @@ const [BaseForm, baseFormApi] = useVbenForm({
   showDefaultActions: false,
   commonConfig: {
     componentProps: {
-      class: 'w-full',
+      class: 'w-[96%]',
     },
   },
   schema: [
@@ -228,7 +230,7 @@ function safeParseTemplate(text: string): TemplateData | MultiPageTemplateData {
 }
 
 const [Drawer, drawerApi] = useVbenDrawer({
-  class: 'w-full',
+  class: 'w-[96%]',
   confirmText: $t('common.save') || $t('common.button.save'),
   cancelText: $t('common.cancel') || $t('common.button.cancel'),
   onBeforeClose: () => onBeforeClose(),
@@ -335,6 +337,19 @@ function setLoading(loading: boolean) {
   drawerApi.setState({ loading });
 }
 
+/** 打开设计器（create / edit / copy 三态）；页面持 ref 直接调用，不再走 connectedComponent 双实例 */
+function open(options: { create?: boolean; copy?: boolean; row?: any }) {
+  mode.value = options?.copy ? 'copy' : options?.create ? 'create' : 'edit';
+  drawerApi.setData({
+    create: !!options?.create,
+    copy: !!options?.copy,
+    row: options?.row,
+  });
+  drawerApi.open();
+}
+
+defineExpose({ open });
+
 function markCanvasDirty() {
   canvasDirty.value = true;
 }
@@ -426,6 +441,7 @@ async function handleSave() {
     }
     closeGuard.markClean();
     canvasDirty.value = false;
+    emit('success');
     drawerApi.close();
   } catch (error) {
     console.error('save print template failed:', error);
