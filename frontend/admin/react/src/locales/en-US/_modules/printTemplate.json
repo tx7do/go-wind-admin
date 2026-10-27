@@ -5,8 +5,6 @@
   "resourceKey": "Bound Resource",
   "paperSize": "Paper Size",
   "orientation": "Orientation",
-  "orientation.portrait": "Portrait",
-  "orientation.landscape": "Landscape",
   "isEnabled": "Enabled",
   "enabledTag": "Enabled",
   "disabledTag": "Disabled",
@@ -35,5 +33,7 @@
   "designerNotReady": "Designer is not ready yet, please retry",
   "sampleData": "Sample Data",
   "sampleDataTip": "JSON object: the field panel derives from it; preview/print use it as data source. Row printing uses real row data.",
-  "requiredSuffix": " is required"
+  "requiredSuffix": " is required",
+  "portrait": "Portrait",
+  "landscape": "Landscape"
 }

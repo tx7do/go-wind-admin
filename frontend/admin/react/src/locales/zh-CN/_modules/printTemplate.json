@@ -5,8 +5,6 @@
   "resourceKey": "绑定资源",
   "paperSize": "纸张尺寸",
   "orientation": "纸张方向",
-  "orientation.portrait": "纵向",
-  "orientation.landscape": "横向",
   "isEnabled": "启用",
   "enabledTag": "启用",
   "disabledTag": "停用",
@@ -35,5 +33,7 @@
   "designerNotReady": "设计器尚未就绪，请稍候重试",
   "sampleData": "示例数据",
   "sampleDataTip": "JSON 对象：字段面板由它派生，预览/打印以它为数据源；列表行打印时使用真实行数据。",
-  "requiredSuffix": "不能为空"
+  "requiredSuffix": "不能为空",
+  "portrait": "纵向",
+  "landscape": "横向"
 }

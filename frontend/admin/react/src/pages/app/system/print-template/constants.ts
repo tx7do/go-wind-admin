@@ -6,8 +6,8 @@ export const PAPER_SIZE_OPTIONS = ['A4', 'A3', 'A5', 'Letter', 'Legal', '80x60',
 export const ORIENTATION_OPTIONS = ['portrait', 'landscape'] as const;
 
 export function orientationLabel(t: (k: string) => string, value?: string | null): string {
-  if (value === 'landscape') return t('orientation.landscape');
-  return t('orientation.portrait');
+  if (value === 'landscape') return t('landscape');
+  return t('portrait');
 }
 
 /** 由示例数据对象派生设计器字段面板（PrintBusinessField）：

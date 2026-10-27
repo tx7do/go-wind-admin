@@ -11,7 +11,10 @@
     "submit": "Submit",
     "reset": "Reset",
     "retry": "Retry",
-    "more": "More"
+    "more": "More",
+    "copy": "Copy",
+    "save": "Save",
+    "close": "Close"
   },
   "header": {
     "profile": "Profile",

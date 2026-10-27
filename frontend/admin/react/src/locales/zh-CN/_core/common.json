@@ -11,7 +11,10 @@
     "submit": "确定",
     "reset": "取消",
     "retry": "重试",
-    "more": "更多"
+    "more": "更多",
+    "copy": "复制",
+    "save": "保存",
+    "close": "关闭"
   },
   "home": "首页",
   "header": {
