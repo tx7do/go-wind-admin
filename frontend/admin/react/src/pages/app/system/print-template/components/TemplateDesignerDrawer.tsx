@@ -23,6 +23,8 @@ import { renderHtmlPages, browserCodeRenderer } from '@worm-vue3-print/core/brow
 import { writeHtmlToFrame } from './previewRender';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';
 import { useCreatePrintTemplate, useUpdatePrintTemplate } from '@/api/hooks/print-template';
+import { usePreferencesStore } from '@/core/preferences';
+import { applyPrintDesignerTheme } from '../printDesignerTheme';
 import {
   extractRedundant,
   fieldsFromSample,
@@ -67,6 +69,16 @@ const TemplateDesignerDrawer: React.FC<TemplateDesignerDrawerProps> = ({
   const [previewLoading, setPreviewLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
+  // 暗色主题：preferences.theme.mode（auto 跟系统）；CSS 变量穿透 shadow 边界，宿主覆盖即生效
+  const themeMode = usePreferencesStore((s) => s.preferences.theme.mode);
+  const isDark =
+    themeMode === 'dark' ||
+    (themeMode !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+
+  useEffect(() => {
+    applyPrintDesignerTheme(designerRef.current, isDark);
+  }, [isDark, open]);
+
   const createMutation = useCreatePrintTemplate({
     onSuccess: () => {
       message.success(t('createSuccess'));
@@ -104,10 +116,11 @@ const TemplateDesignerDrawer: React.FC<TemplateDesignerDrawerProps> = ({
           };
     form.setFieldsValue(initial);
 
-    // 等自定义元素挂载完成再注入（对象入参必须走 property，不能写 JSX 属性）
+      // 等自定义元素挂载完成再注入（对象入参必须走 property，不能写 JSX 属性）
     const timer = window.setTimeout(() => {
       const el = designerRef.current;
       if (!el) return;
+      applyPrintDesignerTheme(el, isDark);
       let tpl: unknown;
       try {
         tpl = mode === 'create' ? createDefaultTemplate() : JSON.parse(data?.payload || '');
@@ -216,7 +229,7 @@ const TemplateDesignerDrawer: React.FC<TemplateDesignerDrawerProps> = ({
         title={templateTitle(t, mode)}
         open={open}
         onClose={guardClose}
-        width="1100px"
+        width="100%"
         destroyOnHidden
         footer={
           <Space style={{ float: 'right' }}>
