@@ -50,6 +50,7 @@
   "permission-codes": "权限点管理",
   "policy-evaluation-log": "策略评估日志",
   "positions": "职位管理",
+  "print-templates": "打印模板",
   "redis-cache-monitor": "Redis缓存监控",
   "roles": "角色管理",
   "scripts": "脚本管理",
@@ -114,6 +115,7 @@
       "accessKeys": "OpenAPI 凭证",
       "config": "参数管理",
       "scripts": "脚本管理",
+      "printTemplates": "打印模板",
       "onlineSessions": "在线用户",
       "serverMonitor": "服务监控",
       "monitorAlerts": "监控告警"

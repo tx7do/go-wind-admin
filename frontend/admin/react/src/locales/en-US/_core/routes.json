@@ -50,6 +50,7 @@
   "permission-codes": "Permission Codes",
   "policy-evaluation-log": "Policy Evaluation Logs",
   "positions": "Position Management",
+  "print-templates": "Print Templates",
   "redis-cache-monitor": "Redis Cache Monitor",
   "roles": "Role Management",
   "scripts": "Scripts",
@@ -114,6 +115,7 @@
       "accessKeys": "OpenAPI Credentials",
       "config": "Config Management",
       "scripts": "Scripts",
+      "printTemplates": "Print Templates",
       "onlineSessions": "Online Users",
       "serverMonitor": "Server Monitor",
       "monitorAlerts": "Monitor Alerts"

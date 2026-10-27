@@ -7,5 +7,7 @@ allowBuilds:
   json-editor-vue: false
   rolldown: true
   vue-demi: false
+minimumReleaseAgeExclude:
+  - '@worm-vue3-print/core@1.3.11'
 patchedDependencies:
   '@ant-design/pro-form@2.32.0': patches/@ant-design__pro-form@2.32.0.patch

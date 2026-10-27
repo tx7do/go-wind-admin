@@ -137,6 +137,16 @@ export const systemRoutes: AppRouteObject[] = [
           order: 11,
         },
       },
+      {
+        name: 'print-templates',
+        path: 'print-templates', // 相对路径，最终为 /system/print-templates
+        element: createLazyRoute(() => import('@/pages/app/system/print-template')),
+        meta: {
+          title: 'routes:print-templates',
+          icon: 'lucide:printer',
+          order: 12,
+        },
+      },
     ],
   },
 ];

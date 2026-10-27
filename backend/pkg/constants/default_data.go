@@ -1160,22 +1160,38 @@ var DefaultMenus = []*permissionV1.Menu{
 			KeepAlive: trans.Ptr(true),
 		},
 	},
-	{
-		// AI 用量：当前用户 tokens 汇总与流水，登录即可用
-		Id:        trans.Ptr(uint32(85)),
-		ParentId:  trans.Ptr(uint32(80)),
-		Type:      permissionV1.Menu_MENU.Enum(),
-		Name:      trans.Ptr("AiUsage"),
-		Path:      trans.Ptr("usage"),
-		Component: trans.Ptr("app/ai/usage/index.vue"),
-		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
-		Meta: &permissionV1.MenuMeta{
-			Title: trans.Ptr("menu.ai.usage"),
-			Icon:  trans.Ptr("lucide:bar-chart-3"),
-			Order: trans.Ptr(int32(4)),
+		{
+			// AI 用量：当前用户 tokens 汇总与流水，登录即可用
+			Id:        trans.Ptr(uint32(85)),
+			ParentId:  trans.Ptr(uint32(80)),
+			Type:      permissionV1.Menu_MENU.Enum(),
+			Name:      trans.Ptr("AiUsage"),
+			Path:      trans.Ptr("usage"),
+			Component: trans.Ptr("app/ai/usage/index.vue"),
+			CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
+			Meta: &permissionV1.MenuMeta{
+				Title: trans.Ptr("menu.ai.usage"),
+				Icon:  trans.Ptr("lucide:bar-chart-3"),
+				Order: trans.Ptr(int32(4)),
+			},
 		},
-	},
-}
+		{
+			// 打印模板：单据打印设计器的模板管理页（内置模板禁删，可复制派生）
+			Id:        trans.Ptr(uint32(87)),
+			ParentId:  trans.Ptr(uint32(60)),
+			Type:      permissionV1.Menu_MENU.Enum(),
+			Name:      trans.Ptr("PrintTemplateManagement"),
+			Path:      trans.Ptr("print-templates"),
+			Component: trans.Ptr("app/system/print_template/index.vue"),
+			CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
+			Meta: &permissionV1.MenuMeta{
+				Title:     trans.Ptr("menu.system.printTemplates"),
+				Icon:      trans.Ptr("lucide:printer"),
+				Order:     trans.Ptr(int32(12)),
+				Authority: []string{"sys:platform_admin"},
+			},
+		},
+	}
 
 // DefaultConfigs 系统初始化内置平台参数（等保口令策略阈值）。
 // 键与默认值单�源定义于本包，保证种子行与 accessor 缺省回退一致；
