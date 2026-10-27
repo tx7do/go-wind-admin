@@ -162,7 +162,15 @@ dev 策略例外说明：本模块**内核三端同一份**（设计器交互一
 | 阶段 | 内容 | 验收标准 |
 |---|---|---|
 | **M0 尖刺**（✅ 2026-10-27 完成，结论见 §8.1） | ① fork 建仓 + 构建链/CI/测试跑通；② 双 Vue 端 canvas 最小接入 demo；③ **react 19 + common 实测**（挂载/property/事件/Shadow DOM 隔离/卸载）；④ 浏览器打印实测（中文/条码二维码/分页）；⑤ 接管成本评估 → 定稿 fork 落点与包名 | 三端各一张样例单据从设计到打印闭环（mock 数据）；react 通道定案（common 或自研画布兜底） |
-| **M1 模板域全栈**（后端已落地 2026-10-27，运行时 e2e 与三端管理页待做） | §4 全部：实体 CRUD、种子模板、权限点、接口同步、菜单 | crud guide 造演示模块，后端链路全绿；三端 typecheck 门禁保持 0 错误 |
+| **M1 模板域全栈**（后端已落地并运行时 e2e 通过 2026-10-27；三端管理页待做） | §4 全部：实体 CRUD、种子模板、权限点、接口同步、菜单 | crud guide 造演示模块，后端链路全绿；三端 typecheck 门禁保持 0 错误 |
+
+**M1 运行时 e2e 记录（2026-10-27，临时端口实例 + gwa 库）**：启动自动建表 ✅；种子 builtin.generic.a4/a5 落库 ✅；
+captcha+Redis+AES 登录 → List/Create（中文名往返）/Update（FieldMask）/Get/Delete 全链 ✅；内置禁删 400 ✅；
+`POST /admin/v1/apis/sync` 后 Api 表 270→276，print-templates 五路由全部入表（租户闸门放行）✅。
+curl 纯 API e2e 三坑：中文 body 必须走 `--data-binary @file`（Windows 控制台 GBK 会改写 argv 编码，protojson 报 invalid UTF-8）；
+FieldMask 的 protojson JSON 形态是逗号分隔字符串（`"updateMask":"name"`，对象形态报 unexpected token）；
+空 body 的 POST 也要 `Content-Type: application/json`（缺头报 unregister Content-Type）。
+菜单行随管理页阶段一起加（种子 DefaultMenus + 三端 meta.order），接口同步已就绪、菜单同步待管理页落地后执行。
 | **M2 三端接入 + 浏览器打印** | §5 全部：管理页、绑定面板、行打印、预览抽屉 | 三端各自对同一模板完成"设计→绑定→行打印"闭环；视觉过 design-language；暗/亮两模式实测 |
 | **M3 输出链补全** | 服务端 PDF + 批量合并；静默打印对接文档化；部署文档补字体同源约束 | 批量 100 行合并 PDF 成功且权限按当前用户收敛；SSE 网关部署形态不受影响 |
 | **M4 差异化** | §7 按序另立任务 | 各自验收另附 |
