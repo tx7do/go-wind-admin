@@ -28,7 +28,8 @@ export function usePrintTemplateDialog() {
   const frameRef = useRef<HTMLIFrameElement>(null);
   const lastHtmlRef = useRef<string>('');
   const lastTemplateRef = useRef<PrintTemplate | null>(null);
-  const printDataRef = useRef<Record<string, unknown>>({});
+  const printDataRef = useRef<any>({});
+  const batchCountRef = useRef(1);
 
   const { t } = useTranslation('printTemplate');
 
@@ -71,8 +72,11 @@ export function usePrintTemplateDialog() {
     }
   };
 
-  const print = async (resourceKey: string, rowData: Record<string, unknown>) => {
-    printDataRef.current = rowData || {};
+  const print = async (resourceKey: string, rowsOrRow: Record<string, unknown> | Record<string, unknown>[]) => {
+    // 单行与批量（数组）同入口：内核 renderHtmlPages 原生支持数据数组（份间分页合并单文档）
+    const isArray = Array.isArray(rowsOrRow);
+    printDataRef.current = isArray ? rowsOrRow : { ...(rowsOrRow as Record<string, unknown>) };
+    batchCountRef.current = isArray ? rowsOrRow.length : 1;
     setOpen(true);
     setLoading(true);
     setTemplates([]);
@@ -141,7 +145,7 @@ export function usePrintTemplateDialog() {
 
   const node = (
     <Modal
-      title={t('printTitle')}
+      title={batchCountRef.current > 1 ? `${t('printTitle')} · ${t('batchCount', { count: batchCountRef.current })}` : t('printTitle')}
       open={open}
       onCancel={() => setOpen(false)}
       width="78%"

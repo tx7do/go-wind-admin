@@ -42,8 +42,10 @@ const UserList: React.FC<UserListProps> = ({ tenantId, orgUnitId }) => {
 
   const navigate = useNavigate();
 
-  // 行打印定式（docs/print_template.md §5）：模板按 resourceKey 匹配，无绑定回退通用模板
+  // 行打印定式（docs/print_template.md §5）：模板按 resourceKey 匹配，无绑定回退通用模板；
+  // print 入参传数组即批量（内核份数合并单文档）
   const { node: printDialogNode, print: printRow } = usePrintTemplateDialog();
+  const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMode, setDrawerMode] = useState<'create' | 'edit'>('create');
   const [editingUser, setEditingUser] = useState<any>(null);
@@ -300,6 +302,10 @@ const UserList: React.FC<UserListProps> = ({ tenantId, orgUnitId }) => {
             };
           }}
           rowKey="id"
+          rowSelection={{
+            onChange: (_keys, rows) => setSelectedRows(rows),
+            selections: true,
+          }}
           search={{ optionRender: searchOptionRender,
             labelWidth: 'auto',
             defaultCollapsed: true,
@@ -311,6 +317,14 @@ const UserList: React.FC<UserListProps> = ({ tenantId, orgUnitId }) => {
           }}
           toolBarRender={() => [
             <TableExportButton key="export" fetcher={fetchListUsers} columns={columns} filename="users" />,
+            <Button
+              key="print-batch"
+              icon={<PrinterOutlined />}
+              disabled={selectedRows.length === 0}
+              onClick={() => printRow('system/user', selectedRows)}
+            >
+              {t('printTemplate:batchPrint')}
+            </Button>,
             <Button
               key="create"
               color="primary"

@@ -36,5 +36,7 @@
   "noTemplate": "该资源暂无可用打印模板",
   "noTemplateHint": "可到「系统管理 → 打印模板」新建并绑定该资源，或将通用模板复制派生",
   "serverPdf": "服务端 PDF",
-  "serverPdfFailed": "服务端 PDF 生成失败"
+  "serverPdfFailed": "服务端 PDF 生成失败",
+  "batchPrint": "批量打印",
+  "noSelection": "请先勾选要打印的行"
 }

@@ -6,6 +6,7 @@
       @add="handleAdd"
       @edit="handleEdit"
       @operate="handleOperate"
+      @toolbar="handleToolbarEvent"
     >
       <!-- 状态 -->
       <template #status="scope: any">
@@ -221,11 +222,18 @@ const pageConfig = computed<ProPageConfig>(() => ({
     deleteAction: async (ids: string) => {
       await deleteUser(ids as any);
     },
-    toolbar: [],
+    toolbar: [
+      {
+        name: "printBatch",
+        label: $t("pages.printTemplate.batchPrint"),
+        icon: "lucide:printer",
+      },
+    ],
     toolbarRight: ["add"],
     defaultToolbar: ["exports", "refresh", "zoom", "filter"],
     tableAttrs: { border: true, stripe: true, height: "auto" },
     columns: ([
+      { type: "selection", width: 44 },
       { type: "index", label: $t("common.table.seq"), width: 60 },
       { prop: "username", label: $t("pages.user.table.username"), width: 120 },
       { prop: "realname", label: $t("pages.user.table.realname"), width: 100 },
@@ -315,11 +323,25 @@ function handleEdit(row: any) {
   drawerRef.value?.open({ create: false, row });
 }
 
+/** ProPage 工具栏自定义钮（ToolsButton.name）走 toolbar 事件透传 */
+function handleToolbarEvent(name: string) {
+  if (name === "printBatch") {
+    handleOperate({ name: "printBatch", row: null });
+  }
+}
+
 function handleOperate(data: { name: string; row: any }) {
   if (data.name === "detail") {
     router.push(`/opm/users/detail/${data.row.id}`);
   } else if (data.name === "print") {
     printRef.value?.print("system/user", data.row);
+  } else if (data.name === "printBatch") {
+    const records: any[] = (pageRef.value?.tableRef?.getCheckboxRecords?.() || []) as any[];
+    if (records.length === 0) {
+      ElMessage.warning($t("pages.printTemplate.noSelection"));
+      return;
+    }
+    printRef.value?.print("system/user", records);
   } else if (data.name === "resetMfa") {
     handleResetMfa(data.row);
   }

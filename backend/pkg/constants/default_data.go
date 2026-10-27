@@ -1160,38 +1160,38 @@ var DefaultMenus = []*permissionV1.Menu{
 			KeepAlive: trans.Ptr(true),
 		},
 	},
-		{
-			// AI 用量：当前用户 tokens 汇总与流水，登录即可用
-			Id:        trans.Ptr(uint32(85)),
-			ParentId:  trans.Ptr(uint32(80)),
-			Type:      permissionV1.Menu_MENU.Enum(),
-			Name:      trans.Ptr("AiUsage"),
-			Path:      trans.Ptr("usage"),
-			Component: trans.Ptr("app/ai/usage/index.vue"),
-			CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
-			Meta: &permissionV1.MenuMeta{
-				Title: trans.Ptr("menu.ai.usage"),
-				Icon:  trans.Ptr("lucide:bar-chart-3"),
-				Order: trans.Ptr(int32(4)),
-			},
+	{
+		// AI 用量：当前用户 tokens 汇总与流水，登录即可用
+		Id:        trans.Ptr(uint32(85)),
+		ParentId:  trans.Ptr(uint32(80)),
+		Type:      permissionV1.Menu_MENU.Enum(),
+		Name:      trans.Ptr("AiUsage"),
+		Path:      trans.Ptr("usage"),
+		Component: trans.Ptr("app/ai/usage/index.vue"),
+		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
+		Meta: &permissionV1.MenuMeta{
+			Title: trans.Ptr("menu.ai.usage"),
+			Icon:  trans.Ptr("lucide:bar-chart-3"),
+			Order: trans.Ptr(int32(4)),
 		},
-		{
-			// 打印模板：单据打印设计器的模板管理页（内置模板禁删，可复制派生）
-			Id:        trans.Ptr(uint32(87)),
-			ParentId:  trans.Ptr(uint32(60)),
-			Type:      permissionV1.Menu_MENU.Enum(),
-			Name:      trans.Ptr("PrintTemplateManagement"),
-			Path:      trans.Ptr("print-templates"),
-			Component: trans.Ptr("app/system/print_template/index.vue"),
-			CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
-			Meta: &permissionV1.MenuMeta{
-				Title:     trans.Ptr("menu.system.printTemplates"),
-				Icon:      trans.Ptr("lucide:printer"),
-				Order:     trans.Ptr(int32(12)),
-				Authority: []string{"sys:platform_admin"},
-			},
+	},
+	{
+		// 打印模板：单据打印设计器的模板管理页（内置模板禁删，可复制派生）
+		Id:        trans.Ptr(uint32(87)),
+		ParentId:  trans.Ptr(uint32(60)),
+		Type:      permissionV1.Menu_MENU.Enum(),
+		Name:      trans.Ptr("PrintTemplateManagement"),
+		Path:      trans.Ptr("print-templates"),
+		Component: trans.Ptr("app/system/print_template/index.vue"),
+		CreatedAt: timeutil.TimeToTimestamppb(trans.Ptr(time.Now())),
+		Meta: &permissionV1.MenuMeta{
+			Title:     trans.Ptr("menu.system.printTemplates"),
+			Icon:      trans.Ptr("lucide:printer"),
+			Order:     trans.Ptr(int32(12)),
+			Authority: []string{"sys:platform_admin"},
 		},
-	}
+	},
+}
 
 // DefaultConfigs 系统初始化内置平台参数（等保口令策略阈值）。
 // 键与默认值单�源定义于本包，保证种子行与 accessor 缺省回退一致；
@@ -1252,6 +1252,30 @@ var DefaultPrintTemplates = []*printV1.PrintTemplate{
 		Orientation: trans.Ptr("portrait"),
 		IsEnabled:   trans.Ptr(true),
 		SortOrder:   trans.Ptr(uint32(2)),
+	},
+	{
+		// 用户工牌演示：绑定 system/user 资源（行打印定式的参考样例，
+		// 元素 options.formatter 内 {field} 绑定用户行字段）。
+		Code:        trans.Ptr("demo.user.badge"),
+		Name:        trans.Ptr("用户工牌（A4）"),
+		ResourceKey: trans.Ptr("system/user"),
+		Payload: trans.Ptr(`{"unit":"mm","paperSize":"A4","orientation":"portrait","schemaVersion":1,` +
+			`"margins":{"top":10,"right":10,"bottom":10,"left":10},` +
+			`"header":{"height":10,"elements":[]},"footer":{"height":10,"elements":[]},` +
+			`"watermark":{},"guides":[],"name":"页面 1","elements":[` +
+			`{"id":"el-badge-title","type":"text","options":{"left":55,"top":35,"width":100,"height":12,"formatter":"GoWind Admin 用户工牌","fontSize":20,"textAlign":"center","fontWeight":"bold"},"printElementType":{"type":"text","title":"文本"}},` +
+			`{"id":"el-badge-u1","type":"text","options":{"left":40,"top":80,"width":130,"height":8,"formatter":"用户名：{username}","fontSize":13,"textAlign":"left"},"printElementType":{"type":"text","title":"文本"}},` +
+			`{"id":"el-badge-u2","type":"text","options":{"left":40,"top":95,"width":130,"height":8,"formatter":"姓名：{realname}","fontSize":13,"textAlign":"left"},"printElementType":{"type":"text","title":"文本"}},` +
+			`{"id":"el-badge-u3","type":"text","options":{"left":40,"top":110,"width":130,"height":8,"formatter":"昵称：{nickname}","fontSize":13,"textAlign":"left"},"printElementType":{"type":"text","title":"文本"}},` +
+			`{"id":"el-badge-u4","type":"text","options":{"left":40,"top":125,"width":130,"height":8,"formatter":"邮箱：{email}","fontSize":13,"textAlign":"left"},"printElementType":{"type":"text","title":"文本"}},` +
+			`{"id":"el-badge-u5","type":"text","options":{"left":40,"top":140,"width":130,"height":8,"formatter":"手机：{mobile}","fontSize":13,"textAlign":"left"},"printElementType":{"type":"text","title":"文本"}},` +
+			`{"id":"el-badge-u6","type":"text","options":{"left":40,"top":155,"width":130,"height":8,"formatter":"组织：{orgUnitNames}","fontSize":13,"textAlign":"left"},"printElementType":{"type":"text","title":"文本"}},` +
+			`{"id":"el-badge-u7","type":"text","options":{"left":40,"top":170,"width":130,"height":8,"formatter":"创建时间：{createdAt}","fontSize":13,"textAlign":"left"},"printElementType":{"type":"text","title":"文本"}}]}`),
+		IsBuiltIn:   trans.Ptr(true),
+		PaperSize:   trans.Ptr("A4"),
+		Orientation: trans.Ptr("portrait"),
+		IsEnabled:   trans.Ptr(true),
+		SortOrder:   trans.Ptr(uint32(3)),
 	},
 }
 

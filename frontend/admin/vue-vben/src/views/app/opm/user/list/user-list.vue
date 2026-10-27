@@ -204,6 +204,7 @@ const gridOptions: VxeGridProps<User> = {
   },
 
   columns: ([
+    { type: 'checkbox', width: 44 },
     { title: $t('ui.table.seq'), type: 'seq', width: 50 },
     { title: $t('page.user.table.username'), field: 'username', width: 120 },
     { title: $t('page.user.table.realname'), field: 'realname', width: 100 },
@@ -279,6 +280,16 @@ const [Grid, gridApi] = useVbenVxeGrid({
   formOptions,
   gridEvents,
 });
+
+/** 批量打印：勾选行合并渲染为单文档（内核份数分页），走行打印同一定式入口 */
+function handleBatchPrint() {
+  const records: any[] = (gridApi.grid.getCheckboxRecords() || []) as any[];
+  if (records.length === 0) {
+    notification.warning({ message: $t('page.printTemplate.noSelection') });
+    return;
+  }
+  printRef.value?.print('system/user', records);
+}
 
 const [Drawer, drawerApi] = useVbenDrawer({
   // 连接抽离的组件
@@ -416,6 +427,12 @@ watch(
 <template>
   <Grid :table-title="$t('menu.opm.user')">
     <template #toolbar-tools>
+        <a-button
+          class="mr-2"
+          @click="handleBatchPrint"
+        >
+          {{ $t('page.printTemplate.batchPrint') }}
+        </a-button>
           <TableExportButton :fetcher="exportFetcher" :columns="gridOptions.columns" filename="export" />
           <TableAddButton @click="handleCreate" />
     </template>

@@ -1410,6 +1410,8 @@
     "noTemplate": "No print template available for this resource",
     "noTemplateHint": "Create one under System → Print Templates bound to this resource, or copy a generic template",
     "serverPdf": "Server PDF",
-    "serverPdfFailed": "Server PDF failed"
+    "serverPdfFailed": "Server PDF failed",
+    "batchPrint": "Batch Print",
+    "noSelection": "Select rows to print first"
   }
 }

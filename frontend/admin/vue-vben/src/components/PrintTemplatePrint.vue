@@ -21,7 +21,7 @@ const rendering = ref(false);
 const templates = ref<any[]>([]);
 const selectedId = ref<number>();
 const frameRef = ref<HTMLIFrameElement | null>(null);
-const printData = ref<Record<string, unknown>>({});
+const printData = ref<any>({});
 const lastHtml = ref('');
 const lastTemplate = ref<any>(null);
 const serverPdfLoading = ref(false);
@@ -62,8 +62,9 @@ async function renderPreview(tpl: any) {
   }
 }
 
-async function print(resourceKey: string, rowData: Record<string, unknown>) {
-  printData.value = rowData || {};
+async function print(resourceKey: string, rowData: Record<string, unknown> | Record<string, unknown>[]) {
+  // 单行与批量（数组）同入口：内核 renderHtmlPages 原生支持数据数组（份间分页合并单文档）
+  printData.value = Array.isArray(rowData) ? rowData : rowData || {};
   visible.value = true;
   loading.value = true;
   templates.value = [];
