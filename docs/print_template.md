@@ -162,7 +162,14 @@ dev 策略例外说明：本模块**内核三端同一份**（设计器交互一
 | 阶段 | 内容 | 验收标准 |
 |---|---|---|
 | **M0 尖刺**（✅ 2026-10-27 完成，结论见 §8.1） | ① fork 建仓 + 构建链/CI/测试跑通；② 双 Vue 端 canvas 最小接入 demo；③ **react 19 + common 实测**（挂载/property/事件/Shadow DOM 隔离/卸载）；④ 浏览器打印实测（中文/条码二维码/分页）；⑤ 接管成本评估 → 定稿 fork 落点与包名 | 三端各一张样例单据从设计到打印闭环（mock 数据）；react 通道定案（common 或自研画布兜底） |
-| **M1 模板域全栈**（后端已落地并运行时 e2e 通过 2026-10-27；三端管理页待做） | §4 全部：实体 CRUD、种子模板、权限点、接口同步、菜单 | crud guide 造演示模块，后端链路全绿；三端 typecheck 门禁保持 0 错误 |
+| **M1 模板域全栈**（后端已落地并运行时 e2e 通过；react 管理页已落地并 IAB 实测；双 Vue 管理页待做） | §4 全部：实体 CRUD、种子模板、权限点、接口同步、菜单 | crud guide 造演示模块，后端链路全绿；三端 typecheck 门禁保持 0 错误 |
+
+**M2 前半 react 端记录（2026-10-27）**：管理页照 config 定式（TableActions/导出/列设置）+ 设计器全屏抽屉
+（width:100%）+ 复制内置派生 + 示例数据派生字段面板（fieldsFromSample，M2 行打印复用同函数）；IAB 实测
+设计器挂载/保存落库/冗余列同步全过。i18n 教训：命名空间=文件名（printTemplate.json 非 print-template.json）、
+嵌套点键会被 keySeparator 吃掉须用扁平键、common.button 需补 save/copy。**暗色**：内核亮色值定义在 shadow 内
+.designer-container 上（压过宿主继承），宿主向 shadowRoot 注入 !important 变量块实现暗色（取值对齐暗色六轮
+定稿，画纸恒白），与钉死的 1.3.11 类名耦合——**fork 内核应加正式 data-theme 块替代（TODO）**。
 
 **M1 运行时 e2e 记录（2026-10-27，临时端口实例 + gwa 库）**：启动自动建表 ✅；种子 builtin.generic.a4/a5 落库 ✅；
 captcha+Redis+AES 登录 → List/Create（中文名往返）/Update（FieldMask）/Get/Delete 全链 ✅；内置禁删 400 ✅；
