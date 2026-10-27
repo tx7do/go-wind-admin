@@ -159,6 +159,8 @@ dev 策略例外说明：本模块**内核三端同一份**（设计器交互一
   `render pdf failed`（日志含原因）。打印服务无网络需求（启动 flag 已收窄攻击面）。
 - **安全边界**：HTML 来自已鉴权的管理端（权限点走 Api 表闸门），内容经内核 dompurify 消毒；
   headless 实例无网络/存储访问需求。
+- **IAB 实测（2026-10-28）**：用户行打印 → 对话框「服务端 PDF」→ 下载事件到达（全栈：前端 HTML →
+  chromedp PrintToPDF → base64 → Blob 下载）。
 - **静默打印**：采用者在打印客户端机器安装 worm 官方 electron-hiprint 客户端（GitHub Releases
   下载，SHA256 校验），前端经 `@worm-vue3-print/core/client` SDK（WebSocket 127.0.0.1:17521，
   `connect/listPrinters/print/pair`）直连打印；无需后端参与。
