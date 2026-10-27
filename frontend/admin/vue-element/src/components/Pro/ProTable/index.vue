@@ -225,14 +225,17 @@ let resizeObserver: ResizeObserver | null = null;
 
 function updateTableHeight() {
   if (!tableWrapperRef.value) return;
-  const wrapperHeight = tableWrapperRef.value.clientHeight;
+  // clientHeight 是取整值：高分屏/浏览器缩放下 flex 高度常是分数（如 514.67px → 515），
+  // 表格会比包裹层高出零点几像素，外框 border-line 的底边被 .pro-table 的 overflow:hidden
+  // 裁掉——空数据（无分页器）时列表底线随之消失。取分数高度并向下取整，保证表格不高于包裹层。
+  const wrapperHeight = tableWrapperRef.value.getBoundingClientRect().height;
   if (wrapperHeight <= 0) return;
   // 减去分页器高度（如果存在）。offsetHeight 已含分页器自己的 padding-top，
   // 那 16px 就是 §2.6 的「表格 → 分页器」间距，唯一来源在 CSS（ProPagination 的 .pro-pagination）；
   // 原先这里还额外 +20，与分页器 padding 叠成上 36 的实测间距——两处各写一份。
   const pagerEl = tableWrapperRef.value.querySelector(".pro-pagination") as HTMLElement | null;
-  const pagerHeight = pagerEl ? pagerEl.offsetHeight : 0;
-  vxeTableHeight.value = wrapperHeight - pagerHeight;
+  const pagerHeight = pagerEl ? pagerEl.getBoundingClientRect().height : 0;
+  vxeTableHeight.value = Math.floor(wrapperHeight - pagerHeight);
 }
 
 onMounted(() => {
