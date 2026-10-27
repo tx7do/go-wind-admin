@@ -16,6 +16,7 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"runtime"
 	"sync"
 	"time"
 
@@ -124,6 +125,12 @@ func (c *ChromeRenderer) allocator(ctx context.Context) (context.Context, contex
 		chromedp.Flag("no-first-run", true),
 		chromedp.Flag("no-default-browser-check", true),
 	)
+	// Linux 容器常以 root 运行：Chrome 无 --no-sandbox 时直接拒启
+	// （"Running as root without --no-sandbox is not supported"）。
+	// PRINTRENDER_NO_SANDBOX=0 可强制关闭该行为。
+	if runtime.GOOS == "linux" && runningAsRoot() && os.Getenv("PRINTRENDER_NO_SANDBOX") != "0" {
+		opts = append(opts, chromedp.Flag("no-sandbox", true))
+	}
 	allocCtx, cancel := chromedp.NewExecAllocator(ctx, opts...)
 	c.allocCtx, c.cancel = allocCtx, cancel
 	return allocCtx, cancel, nil
@@ -176,7 +183,7 @@ func (c *ChromeRenderer) RenderPDF(ctx context.Context, opts Options) ([]byte, e
 		chromedp.Navigate("about:blank"),
 		// html 经 JSON 编码内嵌表达式（json.Marshal 默认转义 <>& 与 U+2028/29，JS 字符串安全）
 		chromedp.Evaluate[chromedp.Void](
-			`document.open(); document.write(` + string(htmlJSON) + `); document.close();`,
+			`document.open(); document.write(`+string(htmlJSON)+`); document.close();`,
 		),
 		chromedp.WaitReady("body"),
 		chromedp.Sleep(300*time.Millisecond),
@@ -191,4 +198,12 @@ func (c *ChromeRenderer) RenderPDF(ctx context.Context, opts Options) ([]byte, e
 		return nil, errors.New("printrender: empty pdf")
 	}
 	return pdf, nil
+}
+
+// runningAsRoot Linux 下检测当前进程是否 root（容器默认用户）。
+func runningAsRoot() bool {
+	if runtime.GOOS != "linux" {
+		return false
+	}
+	return os.Geteuid() == 0
 }

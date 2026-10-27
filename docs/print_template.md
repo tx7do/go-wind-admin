@@ -159,6 +159,16 @@ dev 策略例外说明：本模块**内核三端同一份**（设计器交互一
   `render pdf failed`（日志含原因）。打印服务无网络需求（启动 flag 已收窄攻击面）。
 - **安全边界**：HTML 来自已鉴权的管理端（权限点走 Api 表闸门），内容经内核 dompurify 消毒；
   headless 实例无网络/存储访问需求。
+- **Linux 部署清单**（功能可用，三个运行条件）：
+  1. **浏览器二进制**：`chromium` / `google-chrome-stable` / `microsoft-edge` 任一（探测路径已覆盖
+     /usr/bin 标准位置 + `CHROME_PATH`）；Alpine 装 `chromium`（musl 自带包，路径同为 /usr/bin/chromium）。
+  2. **系统库与沙箱**：最小镜像缺 Chrome 共享库（libnss3/libgbm1/libasound2 等，Debian 系
+     `apt-get install -y libnss3 libgbm1 libasound2 libatk-bridge2.0-0 libgtk-3-0`）；容器以 root 运行时
+     渲染器自动追加 `--no-sandbox`（`PRINTRENDER_NO_SANDBOX=0` 可关），非 root 运行不加。
+  3. **CJK 字体**：无中文字体的 Linux 上 PDF 中文会变豆腐块——镜像装 `fonts-noto-cjk`（Debian 系）；
+     要"预览即所得"再对齐客户端字体集（见上文同源约束）。
+  镜像骨架：`FROM base → apt 安装上述三类 → COPY backend → ENTRYPOINT`；验证容器内可用：
+  `curl -X POST :7788/admin/v1/print-templates:render-pdf ...` 返回 `%PDF-` 头即通。
 - **IAB 实测（2026-10-28）**：用户行打印 → 对话框「服务端 PDF」→ 下载事件到达（全栈：前端 HTML →
   chromedp PrintToPDF → base64 → Blob 下载）。
 - **静默打印**：采用者在打印客户端机器安装 worm 官方 electron-hiprint 客户端（GitHub Releases
