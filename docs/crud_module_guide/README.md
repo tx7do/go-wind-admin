@@ -114,7 +114,9 @@ Once your module's list page works, you can wire row printing in minutes using t
 
 3. **Data contract**: the whole row object is the print data — design templates with field paths matching your row (`{customer.name}`, array paths `items[].sku` for detail tables). The designer's field panel derives from the same shape when authors use 示例数据.
 
-**Matching semantics** (same across all frontends): enabled templates with `resourceKey` exactly equal to the passed key win; otherwise generic templates (empty `resourceKey`) are offered; multiple matches render a template switcher with live preview; none → empty state linking to the print-template admin page. Rendering runs client-side through the print kernel's isomorphic pipeline (bind → paginate → HTML → iframe → browser print). Server-side PDF/batch is a later phase (see print_template.md M3).
+**Matching semantics** (same across all frontends): enabled templates with `resourceKey` exactly equal to the passed key win; otherwise generic templates (empty `resourceKey`) are offered; multiple matches render a template switcher with live preview; none → empty state linking to the print-template admin page. Rendering runs client-side through the print kernel's isomorphic pipeline (bind → paginate → HTML → iframe → browser print).
+
+**Batch printing**: pass an **array of rows** to the same entry (`print(key, selectedRows)`) — the kernel merges them into a single paginated document (copy-per-page). Wire a toolbar button to your grid's checked records (vxe `getCheckboxRecords()` / ProTable `rowSelection.onChange`). Server-side PDF of the same merged document: the print dialog's 「服务端 PDF」 button POSTs the HTML to `POST /admin/v1/print-templates:render-pdf` and downloads the result (requires Chromium/Edge + CJK fonts on the backend host — see print_template.md §6.1).
 
 **Gotcha**: the print kernel's canvas API differs by host — `getTemplateJson()` returns an **object** on the Vue canvas but a **string** on the react custom element. Normalize before putting it into the `payload` string column, or protojson rejects the create/update with `invalid value for string field payload`.
 
