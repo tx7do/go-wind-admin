@@ -58,6 +58,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/planquota"
 	"go-wind-admin/app/admin/service/internal/data/ent/policyevaluationlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/position"
+	"go-wind-admin/app/admin/service/internal/data/ent/printtemplate"
 	"go-wind-admin/app/admin/service/internal/data/ent/role"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolefieldpermission"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolemetadata"
@@ -180,6 +181,8 @@ type Client struct {
 	PolicyEvaluationLog *PolicyEvaluationLogClient
 	// Position is the client for interacting with the Position builders.
 	Position *PositionClient
+	// PrintTemplate is the client for interacting with the PrintTemplate builders.
+	PrintTemplate *PrintTemplateClient
 	// Role is the client for interacting with the Role builders.
 	Role *RoleClient
 	// RoleFieldPermission is the client for interacting with the RoleFieldPermission builders.
@@ -270,6 +273,7 @@ func (c *Client) init() {
 	c.PlanQuota = NewPlanQuotaClient(c.config)
 	c.PolicyEvaluationLog = NewPolicyEvaluationLogClient(c.config)
 	c.Position = NewPositionClient(c.config)
+	c.PrintTemplate = NewPrintTemplateClient(c.config)
 	c.Role = NewRoleClient(c.config)
 	c.RoleFieldPermission = NewRoleFieldPermissionClient(c.config)
 	c.RoleMetadata = NewRoleMetadataClient(c.config)
@@ -425,6 +429,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		PlanQuota:                NewPlanQuotaClient(cfg),
 		PolicyEvaluationLog:      NewPolicyEvaluationLogClient(cfg),
 		Position:                 NewPositionClient(cfg),
+		PrintTemplate:            NewPrintTemplateClient(cfg),
 		Role:                     NewRoleClient(cfg),
 		RoleFieldPermission:      NewRoleFieldPermissionClient(cfg),
 		RoleMetadata:             NewRoleMetadataClient(cfg),
@@ -507,6 +512,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		PlanQuota:                NewPlanQuotaClient(cfg),
 		PolicyEvaluationLog:      NewPolicyEvaluationLogClient(cfg),
 		Position:                 NewPositionClient(cfg),
+		PrintTemplate:            NewPrintTemplateClient(cfg),
 		Role:                     NewRoleClient(cfg),
 		RoleFieldPermission:      NewRoleFieldPermissionClient(cfg),
 		RoleMetadata:             NewRoleMetadataClient(cfg),
@@ -562,10 +568,10 @@ func (c *Client) Use(hooks ...Hook) {
 		c.NotificationPreference, c.NotificationRule, c.NotificationTemplate,
 		c.OperationAuditLog, c.OrgUnit, c.Permission, c.PermissionApi,
 		c.PermissionAuditLog, c.PermissionGroup, c.PermissionMenu, c.PermissionPolicy,
-		c.Plan, c.PlanModule, c.PlanQuota, c.PolicyEvaluationLog, c.Position, c.Role,
-		c.RoleFieldPermission, c.RoleMetadata, c.RoleOrgUnit, c.RolePermission,
-		c.Script, c.ScriptLog, c.SysConfig, c.Task, c.Tenant, c.User, c.UserCredential,
-		c.UserMfaFactor, c.UserOrgUnit, c.UserPosition, c.UserRole,
+		c.Plan, c.PlanModule, c.PlanQuota, c.PolicyEvaluationLog, c.Position,
+		c.PrintTemplate, c.Role, c.RoleFieldPermission, c.RoleMetadata, c.RoleOrgUnit,
+		c.RolePermission, c.Script, c.ScriptLog, c.SysConfig, c.Task, c.Tenant, c.User,
+		c.UserCredential, c.UserMfaFactor, c.UserOrgUnit, c.UserPosition, c.UserRole,
 	} {
 		n.Use(hooks...)
 	}
@@ -585,10 +591,10 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 		c.NotificationPreference, c.NotificationRule, c.NotificationTemplate,
 		c.OperationAuditLog, c.OrgUnit, c.Permission, c.PermissionApi,
 		c.PermissionAuditLog, c.PermissionGroup, c.PermissionMenu, c.PermissionPolicy,
-		c.Plan, c.PlanModule, c.PlanQuota, c.PolicyEvaluationLog, c.Position, c.Role,
-		c.RoleFieldPermission, c.RoleMetadata, c.RoleOrgUnit, c.RolePermission,
-		c.Script, c.ScriptLog, c.SysConfig, c.Task, c.Tenant, c.User, c.UserCredential,
-		c.UserMfaFactor, c.UserOrgUnit, c.UserPosition, c.UserRole,
+		c.Plan, c.PlanModule, c.PlanQuota, c.PolicyEvaluationLog, c.Position,
+		c.PrintTemplate, c.Role, c.RoleFieldPermission, c.RoleMetadata, c.RoleOrgUnit,
+		c.RolePermission, c.Script, c.ScriptLog, c.SysConfig, c.Task, c.Tenant, c.User,
+		c.UserCredential, c.UserMfaFactor, c.UserOrgUnit, c.UserPosition, c.UserRole,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -691,6 +697,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.PolicyEvaluationLog.mutate(ctx, m)
 	case *PositionMutation:
 		return c.Position.mutate(ctx, m)
+	case *PrintTemplateMutation:
+		return c.PrintTemplate.mutate(ctx, m)
 	case *RoleMutation:
 		return c.Role.mutate(ctx, m)
 	case *RoleFieldPermissionMutation:
@@ -7344,6 +7352,140 @@ func (c *PositionClient) mutate(ctx context.Context, m *PositionMutation) (Value
 	}
 }
 
+// PrintTemplateClient is a client for the PrintTemplate schema.
+type PrintTemplateClient struct {
+	config
+}
+
+// NewPrintTemplateClient returns a client for the PrintTemplate from the given config.
+func NewPrintTemplateClient(c config) *PrintTemplateClient {
+	return &PrintTemplateClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `printtemplate.Hooks(f(g(h())))`.
+func (c *PrintTemplateClient) Use(hooks ...Hook) {
+	c.hooks.PrintTemplate = append(c.hooks.PrintTemplate, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `printtemplate.Intercept(f(g(h())))`.
+func (c *PrintTemplateClient) Intercept(interceptors ...Interceptor) {
+	c.inters.PrintTemplate = append(c.inters.PrintTemplate, interceptors...)
+}
+
+// Create returns a builder for creating a PrintTemplate entity.
+func (c *PrintTemplateClient) Create() *PrintTemplateCreate {
+	mutation := newPrintTemplateMutation(c.config, OpCreate)
+	return &PrintTemplateCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of PrintTemplate entities.
+func (c *PrintTemplateClient) CreateBulk(builders ...*PrintTemplateCreate) *PrintTemplateCreateBulk {
+	return &PrintTemplateCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *PrintTemplateClient) MapCreateBulk(slice any, setFunc func(*PrintTemplateCreate, int)) *PrintTemplateCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &PrintTemplateCreateBulk{err: fmt.Errorf("calling to PrintTemplateClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*PrintTemplateCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &PrintTemplateCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for PrintTemplate.
+func (c *PrintTemplateClient) Update() *PrintTemplateUpdate {
+	mutation := newPrintTemplateMutation(c.config, OpUpdate)
+	return &PrintTemplateUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *PrintTemplateClient) UpdateOne(_m *PrintTemplate) *PrintTemplateUpdateOne {
+	mutation := newPrintTemplateMutation(c.config, OpUpdateOne, withPrintTemplate(_m))
+	return &PrintTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *PrintTemplateClient) UpdateOneID(id uint32) *PrintTemplateUpdateOne {
+	mutation := newPrintTemplateMutation(c.config, OpUpdateOne, withPrintTemplateID(id))
+	return &PrintTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for PrintTemplate.
+func (c *PrintTemplateClient) Delete() *PrintTemplateDelete {
+	mutation := newPrintTemplateMutation(c.config, OpDelete)
+	return &PrintTemplateDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *PrintTemplateClient) DeleteOne(_m *PrintTemplate) *PrintTemplateDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *PrintTemplateClient) DeleteOneID(id uint32) *PrintTemplateDeleteOne {
+	builder := c.Delete().Where(printtemplate.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &PrintTemplateDeleteOne{builder}
+}
+
+// Query returns a query builder for PrintTemplate.
+func (c *PrintTemplateClient) Query() *PrintTemplateQuery {
+	return &PrintTemplateQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypePrintTemplate},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a PrintTemplate entity by its id.
+func (c *PrintTemplateClient) Get(ctx context.Context, id uint32) (*PrintTemplate, error) {
+	return c.Query().Where(printtemplate.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *PrintTemplateClient) GetX(ctx context.Context, id uint32) *PrintTemplate {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *PrintTemplateClient) Hooks() []Hook {
+	hooks := c.hooks.PrintTemplate
+	return append(hooks[:len(hooks):len(hooks)], printtemplate.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *PrintTemplateClient) Interceptors() []Interceptor {
+	return c.inters.PrintTemplate
+}
+
+func (c *PrintTemplateClient) mutate(ctx context.Context, m *PrintTemplateMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&PrintTemplateCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&PrintTemplateUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&PrintTemplateUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&PrintTemplateDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown PrintTemplate mutation op: %q", m.Op())
+	}
+}
+
 // RoleClient is a client for the Role schema.
 type RoleClient struct {
 	config
@@ -9512,9 +9654,10 @@ type (
 		NotificationPreference, NotificationRule, NotificationTemplate,
 		OperationAuditLog, OrgUnit, Permission, PermissionApi, PermissionAuditLog,
 		PermissionGroup, PermissionMenu, PermissionPolicy, Plan, PlanModule, PlanQuota,
-		PolicyEvaluationLog, Position, Role, RoleFieldPermission, RoleMetadata,
-		RoleOrgUnit, RolePermission, Script, ScriptLog, SysConfig, Task, Tenant, User,
-		UserCredential, UserMfaFactor, UserOrgUnit, UserPosition, UserRole []ent.Hook
+		PolicyEvaluationLog, Position, PrintTemplate, Role, RoleFieldPermission,
+		RoleMetadata, RoleOrgUnit, RolePermission, Script, ScriptLog, SysConfig, Task,
+		Tenant, User, UserCredential, UserMfaFactor, UserOrgUnit, UserPosition,
+		UserRole []ent.Hook
 	}
 	inters struct {
 		AccessKey, AiAgentApp, AiAgentRun, AiChunk, AiConversation, AiDoc,
@@ -9526,9 +9669,9 @@ type (
 		NotificationPreference, NotificationRule, NotificationTemplate,
 		OperationAuditLog, OrgUnit, Permission, PermissionApi, PermissionAuditLog,
 		PermissionGroup, PermissionMenu, PermissionPolicy, Plan, PlanModule, PlanQuota,
-		PolicyEvaluationLog, Position, Role, RoleFieldPermission, RoleMetadata,
-		RoleOrgUnit, RolePermission, Script, ScriptLog, SysConfig, Task, Tenant, User,
-		UserCredential, UserMfaFactor, UserOrgUnit, UserPosition,
+		PolicyEvaluationLog, Position, PrintTemplate, Role, RoleFieldPermission,
+		RoleMetadata, RoleOrgUnit, RolePermission, Script, ScriptLog, SysConfig, Task,
+		Tenant, User, UserCredential, UserMfaFactor, UserOrgUnit, UserPosition,
 		UserRole []ent.Interceptor
 	}
 )

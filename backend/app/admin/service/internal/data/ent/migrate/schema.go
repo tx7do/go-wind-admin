@@ -2733,6 +2733,50 @@ var (
 			},
 		},
 	}
+	// PrintTemplatesColumns holds the columns for the "print_templates" table.
+	PrintTemplatesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "is_enabled", Type: field.TypeBool, Nullable: true, Comment: "是否启用", Default: true},
+		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "模板名称（展示用）"},
+		{Name: "code", Type: field.TypeString, Nullable: true, Comment: "模板编码，租户内唯一，业务侧按编码取模板"},
+		{Name: "resource_key", Type: field.TypeString, Nullable: true, Comment: "绑定资源标识（对应菜单/资源的 generated service 键，字段面板据其拉字段 schema）"},
+		{Name: "payload", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "模板 JSON（go-wind-print TemplateData：毫米布局 + schemaVersion，服务端不解析只透传）"},
+		{Name: "is_built_in", Type: field.TypeBool, Nullable: true, Comment: "是否系统内置模板（内置禁删，可复制派生）", Default: false},
+		{Name: "paper_size", Type: field.TypeString, Nullable: true, Comment: "纸张尺寸冗余列（A4/A5/80mm 等，来自 payload.paperSize，列表页直显免解析 JSON）"},
+		{Name: "orientation", Type: field.TypeString, Nullable: true, Comment: "纸张方向冗余列（portrait/landscape，来自 payload.orientation）"},
+	}
+	// PrintTemplatesTable holds the schema information for the "print_templates" table.
+	PrintTemplatesTable = &schema.Table{
+		Name:       "print_templates",
+		Comment:    "单据打印模板表（设计器 TemplateData JSON；租户隔离，内置模板禁删可复制）",
+		Columns:    PrintTemplatesColumns,
+		PrimaryKey: []*schema.Column{PrintTemplatesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "uidx_print_templates_code_tenant",
+				Unique:  true,
+				Columns: []*schema.Column{PrintTemplatesColumns[11], PrintTemplatesColumns[9]},
+			},
+			{
+				Name:    "idx_print_templates_resource_key",
+				Unique:  false,
+				Columns: []*schema.Column{PrintTemplatesColumns[12]},
+			},
+			{
+				Name:    "idx_print_templates_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{PrintTemplatesColumns[1]},
+			},
+		},
+	}
 	// SysRolesColumns holds the columns for the "sys_roles" table.
 	SysRolesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -3766,6 +3810,7 @@ var (
 		SysPlanQuotasTable,
 		SysPolicyEvaluationLogsTable,
 		SysPositionsTable,
+		PrintTemplatesTable,
 		SysRolesTable,
 		SysRoleFieldPermissionsTable,
 		SysRoleMetadataTable,
@@ -4028,6 +4073,11 @@ func init() {
 	}
 	SysPositionsTable.Annotation = &entsql.Annotation{
 		Table:     "sys_positions",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	PrintTemplatesTable.Annotation = &entsql.Annotation{
+		Table:     "print_templates",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

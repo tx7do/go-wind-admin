@@ -13,6 +13,7 @@ import (
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 	notificationV1 "go-wind-admin/api/gen/go/notification/service/v1"
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
+	printV1 "go-wind-admin/api/gen/go/print/service/v1"
 )
 
 const (
@@ -1200,6 +1201,41 @@ var DefaultConfigs = []*configV1.Config{
 		Value:     trans.Ptr(strconv.Itoa(DefaultPasswordHistoryCount)),
 		ValueType: configV1.Config_INT.Enum(),
 		IsBuiltIn: trans.Ptr(true),
+	},
+}
+
+// DefaultPrintTemplates 内置打印模板种子（基线版式，M1 起用；M2 管理页提供
+// "复制内置模板派生本租户行"）。payload 为 go-wind-print 设计器 TemplateData JSON
+// （毫米布局），elements 留空——内置行只保证编码/纸张元数据与链路可用，真实版式随 M2 沉淀。
+// 启动期按 code 缺一补一（PrintTemplateService.init → SeedDefaults），已存在不覆盖。
+var DefaultPrintTemplates = []*printV1.PrintTemplate{
+	{
+		Code:        trans.Ptr("builtin.generic.a4"),
+		Name:        trans.Ptr("通用单据模板（A4）"),
+		ResourceKey: trans.Ptr(""),
+		Payload: trans.Ptr(`{"unit":"mm","paperSize":"A4","orientation":"portrait","schemaVersion":1,` +
+			`"margins":{"top":10,"right":10,"bottom":10,"left":10},` +
+			`"header":{"height":10,"elements":[]},"footer":{"height":10,"elements":[]},` +
+			`"elements":[],"watermark":{},"guides":[],"name":"页面 1"}`),
+		IsBuiltIn:   trans.Ptr(true),
+		PaperSize:   trans.Ptr("A4"),
+		Orientation: trans.Ptr("portrait"),
+		IsEnabled:   trans.Ptr(true),
+		SortOrder:   trans.Ptr(uint32(1)),
+	},
+	{
+		Code:        trans.Ptr("builtin.generic.a5"),
+		Name:        trans.Ptr("通用单据模板（A5）"),
+		ResourceKey: trans.Ptr(""),
+		Payload: trans.Ptr(`{"unit":"mm","paperSize":"A5","orientation":"portrait","schemaVersion":1,` +
+			`"margins":{"top":8,"right":8,"bottom":8,"left":8},` +
+			`"header":{"height":8,"elements":[]},"footer":{"height":8,"elements":[]},` +
+			`"elements":[],"watermark":{},"guides":[],"name":"页面 1"}`),
+		IsBuiltIn:   trans.Ptr(true),
+		PaperSize:   trans.Ptr("A5"),
+		Orientation: trans.Ptr("portrait"),
+		IsEnabled:   trans.Ptr(true),
+		SortOrder:   trans.Ptr(uint32(2)),
 	},
 }
 

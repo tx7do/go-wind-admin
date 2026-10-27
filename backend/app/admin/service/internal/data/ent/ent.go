@@ -53,6 +53,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/planquota"
 	"go-wind-admin/app/admin/service/internal/data/ent/policyevaluationlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/position"
+	"go-wind-admin/app/admin/service/internal/data/ent/printtemplate"
 	"go-wind-admin/app/admin/service/internal/data/ent/role"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolefieldpermission"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolemetadata"
@@ -182,6 +183,7 @@ func checkColumn(t, c string) error {
 			planquota.Table:                planquota.ValidColumn,
 			policyevaluationlog.Table:      policyevaluationlog.ValidColumn,
 			position.Table:                 position.ValidColumn,
+			printtemplate.Table:            printtemplate.ValidColumn,
 			role.Table:                     role.ValidColumn,
 			rolefieldpermission.Table:      rolefieldpermission.ValidColumn,
 			rolemetadata.Table:             rolemetadata.ValidColumn,

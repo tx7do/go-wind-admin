@@ -52,6 +52,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/planquota"
 	"go-wind-admin/app/admin/service/internal/data/ent/policyevaluationlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/position"
+	"go-wind-admin/app/admin/service/internal/data/ent/printtemplate"
 	"go-wind-admin/app/admin/service/internal/data/ent/role"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolefieldpermission"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolemetadata"
@@ -1268,6 +1269,46 @@ func init() {
 	positionDescID := positionMixinFields0[0].Descriptor()
 	// position.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	position.IDValidator = positionDescID.Validators[0].(func(uint32) error)
+	printtemplateMixin := schema.PrintTemplate{}.Mixin()
+	printtemplate.Policy = privacy.NewPolicies(printtemplateMixin[5], schema.PrintTemplate{})
+	printtemplate.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := printtemplate.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	printtemplateMixinFields0 := printtemplateMixin[0].Fields()
+	_ = printtemplateMixinFields0
+	printtemplateMixinFields3 := printtemplateMixin[3].Fields()
+	_ = printtemplateMixinFields3
+	printtemplateMixinFields4 := printtemplateMixin[4].Fields()
+	_ = printtemplateMixinFields4
+	printtemplateMixinFields5 := printtemplateMixin[5].Fields()
+	_ = printtemplateMixinFields5
+	printtemplateFields := schema.PrintTemplate{}.Fields()
+	_ = printtemplateFields
+	// printtemplateDescIsEnabled is the schema descriptor for is_enabled field.
+	printtemplateDescIsEnabled := printtemplateMixinFields3[0].Descriptor()
+	// printtemplate.DefaultIsEnabled holds the default value on creation for the is_enabled field.
+	printtemplate.DefaultIsEnabled = printtemplateDescIsEnabled.Default.(bool)
+	// printtemplateDescSortOrder is the schema descriptor for sort_order field.
+	printtemplateDescSortOrder := printtemplateMixinFields4[0].Descriptor()
+	// printtemplate.DefaultSortOrder holds the default value on creation for the sort_order field.
+	printtemplate.DefaultSortOrder = printtemplateDescSortOrder.Default.(uint32)
+	// printtemplateDescTenantID is the schema descriptor for tenant_id field.
+	printtemplateDescTenantID := printtemplateMixinFields5[0].Descriptor()
+	// printtemplate.DefaultTenantID holds the default value on creation for the tenant_id field.
+	printtemplate.DefaultTenantID = printtemplateDescTenantID.Default.(uint32)
+	// printtemplateDescIsBuiltIn is the schema descriptor for is_built_in field.
+	printtemplateDescIsBuiltIn := printtemplateFields[4].Descriptor()
+	// printtemplate.DefaultIsBuiltIn holds the default value on creation for the is_built_in field.
+	printtemplate.DefaultIsBuiltIn = printtemplateDescIsBuiltIn.Default.(bool)
+	// printtemplateDescID is the schema descriptor for id field.
+	printtemplateDescID := printtemplateMixinFields0[0].Descriptor()
+	// printtemplate.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	printtemplate.IDValidator = printtemplateDescID.Validators[0].(func(uint32) error)
 	roleMixin := schema.Role{}.Mixin()
 	role.Policy = privacy.NewPolicies(roleMixin[6], schema.Role{})
 	role.Hooks[0] = func(next ent.Mutator) ent.Mutator {

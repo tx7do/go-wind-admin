@@ -152,6 +152,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	scriptRepo := data.NewScriptRepo(ctx, entClient)
 
 	// ── register:repo ── 新模块仓储在此行后注册(make register 工具锚点,勿删)
+	printTemplateRepo := data.NewPrintTemplateRepo(ctx, entClient)
 	notificationRuleRepo := data.NewNotificationRuleRepo(ctx, entClient)
 	notificationTemplateRepo := data.NewNotificationTemplateRepo(ctx, entClient)
 	transactionalMailer := &service.TransactionMailer{TemplateRepo: notificationTemplateRepo}
@@ -307,6 +308,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	aiContentService := service.NewAiContentService(ctx, aiProviderRepo, aiUsageLogRepo, menuRepo, roleRepo, userRepo, entClient)
 
 	// ── register:service ── 新模块服务在此行后注册(make register 工具锚点,勿删)
+	printTemplateService := service.NewPrintTemplateService(ctx, printTemplateRepo)
 	notificationRuleService := service.NewNotificationRuleService(ctx, notificationRuleRepo, notificationChannelRepo, notificationService)
 	accessKeyService := service.NewAccessKeyService(ctx, accessKeyRepo, authenticator, loginRateLimiter)
 	configService := service.NewConfigService(ctx, configRepo)
@@ -340,6 +342,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 		internalMessageService, internalMessageCategoryService, internalMessageRecipientService,
 		scriptService, scriptLogService,
 		// register:rest-arg ── 新模块服务实参在此行后追加(make register 工具锚点,勿删)
+		printTemplateService,
 		notificationRuleService,
 		notificationPreferenceService,
 		notificationTemplateService,

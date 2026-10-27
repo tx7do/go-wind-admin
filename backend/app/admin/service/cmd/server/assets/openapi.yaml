@@ -6393,6 +6393,162 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/print-templates:
+        get:
+            tags:
+                - PrintTemplateService
+            description: 查询打印模板列表
+            operationId: PrintTemplateService_List
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListPrintTemplateResponse'
+        post:
+            tags:
+                - PrintTemplateService
+            description: 创建打印模板
+            operationId: PrintTemplateService_Create
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreatePrintTemplateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/print-templates/{id}:
+        get:
+            tags:
+                - PrintTemplateService
+            description: 查询打印模板详情
+            operationId: PrintTemplateService_Get
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: viewMask
+                  in: query
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/PrintTemplate'
+        put:
+            tags:
+                - PrintTemplateService
+            description: 更新打印模板
+            operationId: PrintTemplateService_Update
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdatePrintTemplateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+        delete:
+            tags:
+                - PrintTemplateService
+            description: 删除打印模板
+            operationId: PrintTemplateService_Delete
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /admin/v1/redis-cache-monitor:
         get:
             tags:
@@ -9143,6 +9299,12 @@ components:
                 data:
                     $ref: '#/components/schemas/Position'
             description: 创建职位 - 请求
+        CreatePrintTemplateRequest:
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/PrintTemplate'
+            description: 创建打印模板 - 请求
         CreateRoleRequest:
             type: object
             properties:
@@ -10825,6 +10987,16 @@ components:
                 total:
                     type: string
             description: 获取职位列表 - 答复
+        ListPrintTemplateResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/PrintTemplate'
+                total:
+                    type: string
+            description: 查询打印模板列表 - 回应
         ListRoleResponse:
             type: object
             properties:
@@ -12720,6 +12892,66 @@ components:
                     type: string
                     description: 预签名约束的 Content-Type（可选）
             description: 预签名选项
+        PrintTemplate:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 模板ID
+                    format: uint32
+                name:
+                    type: string
+                    description: 模板名称（展示用）
+                code:
+                    type: string
+                    description: 模板编码，租户内唯一，业务侧按编码取模板
+                resourceKey:
+                    type: string
+                    description: 绑定资源标识（对应菜单/资源的 generated service 键，设计器字段面板据其拉字段 schema）
+                payload:
+                    type: string
+                    description: 模板 JSON（设计器 TemplateData：毫米布局 + schemaVersion，服务端不解析只透传）
+                isBuiltIn:
+                    type: boolean
+                    description: 是否系统内置模板（内置禁删，可复制派生）
+                paperSize:
+                    type: string
+                    description: 纸张尺寸冗余列（A4/A5/80mm 等，列表页直显免解析 JSON）
+                orientation:
+                    type: string
+                    description: 纸张方向冗余列（portrait/landscape）
+                isEnabled:
+                    type: boolean
+                    description: 是否启用，停用的模板不出现在业务打印入口
+                sortOrder:
+                    type: integer
+                    description: 排序序号
+                    format: uint32
+                createdBy:
+                    type: integer
+                    description: 创建者ID
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    description: 更新者ID
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    description: 删除者用户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: 更新时间
+                    format: date-time
+                deletedAt:
+                    type: string
+                    description: 删除时间
+                    format: date-time
+            description: 打印模板（单据打印设计器的 TemplateData 载体；租户隔离，内置模板禁删可复制）
         PurgeScriptLogsRequest:
             type: object
             properties:
@@ -14171,6 +14403,23 @@ components:
                     type: boolean
                     description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
             description: 更新职位 - 请求
+        UpdatePrintTemplateRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                data:
+                    $ref: '#/components/schemas/PrintTemplate'
+                updateMask:
+                    example: id,name,payload
+                    type: string
+                    description: 要更新的字段列表
+                    format: field-mask
+                allowMissing:
+                    type: boolean
+                    description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
+            description: 更新打印模板 - 请求
         UpdateRoleRequest:
             type: object
             properties:
@@ -14714,6 +14963,8 @@ tags:
       description: 策略评估日志服务
     - name: PositionService
       description: 职位管理服务
+    - name: PrintTemplateService
+      description: 打印模板管理服务
     - name: RedisCacheMonitorService
       description: Redis缓存监控管理服务（只读）
     - name: RoleService

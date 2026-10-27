@@ -1,0 +1,50 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+import "pagination/v1/pagination.proto";
+import "print/service/v1/print_template.proto";
+
+
+// 打印模板管理服务
+service PrintTemplateService {
+  // 查询打印模板列表
+  rpc List (pagination.PagingRequest) returns (print.service.v1.ListPrintTemplateResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/print-templates"
+    };
+  }
+
+  // 查询打印模板详情
+  rpc Get (print.service.v1.GetPrintTemplateRequest) returns (print.service.v1.PrintTemplate) {
+    option (google.api.http) = {
+      get: "/admin/v1/print-templates/{id}"
+    };
+  }
+
+  // 创建打印模板
+  rpc Create (print.service.v1.CreatePrintTemplateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/print-templates"
+      body: "*"
+    };
+  }
+
+  // 更新打印模板
+  rpc Update (print.service.v1.UpdatePrintTemplateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/admin/v1/print-templates/{id}"
+      body: "*"
+    };
+  }
+
+  // 删除打印模板
+  rpc Delete (print.service.v1.DeletePrintTemplateRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/print-templates/{id}"
+    };
+  }
+}

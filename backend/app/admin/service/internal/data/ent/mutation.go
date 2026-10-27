@@ -57,6 +57,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/policyevaluationlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/position"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
+	"go-wind-admin/app/admin/service/internal/data/ent/printtemplate"
 	"go-wind-admin/app/admin/service/internal/data/ent/role"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolefieldpermission"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolemetadata"
@@ -136,6 +137,7 @@ const (
 	TypePlanQuota                = "PlanQuota"
 	TypePolicyEvaluationLog      = "PolicyEvaluationLog"
 	TypePosition                 = "Position"
+	TypePrintTemplate            = "PrintTemplate"
 	TypeRole                     = "Role"
 	TypeRoleFieldPermission      = "RoleFieldPermission"
 	TypeRoleMetadata             = "RoleMetadata"
@@ -73071,6 +73073,1628 @@ func (m *PositionMutation) ClearEdge(name string) error {
 // It returns an error if the edge is not defined in the schema.
 func (m *PositionMutation) ResetEdge(name string) error {
 	return fmt.Errorf("unknown Position edge %s", name)
+}
+
+// PrintTemplateMutation represents an operation that mutates the PrintTemplate nodes in the graph.
+type PrintTemplateMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uint32
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	created_by    *uint32
+	addcreated_by *int32
+	updated_by    *uint32
+	addupdated_by *int32
+	deleted_by    *uint32
+	adddeleted_by *int32
+	is_enabled    *bool
+	sort_order    *uint32
+	addsort_order *int32
+	tenant_id     *uint32
+	addtenant_id  *int32
+	name          *string
+	code          *string
+	resource_key  *string
+	payload       *string
+	is_built_in   *bool
+	paper_size    *string
+	orientation   *string
+	clearedFields map[string]struct{}
+	done          bool
+	oldValue      func(context.Context) (*PrintTemplate, error)
+	predicates    []predicate.PrintTemplate
+}
+
+var _ ent.Mutation = (*PrintTemplateMutation)(nil)
+
+// printtemplateOption allows management of the mutation configuration using functional options.
+type printtemplateOption func(*PrintTemplateMutation)
+
+// newPrintTemplateMutation creates new mutation for the PrintTemplate entity.
+func newPrintTemplateMutation(c config, op Op, opts ...printtemplateOption) *PrintTemplateMutation {
+	m := &PrintTemplateMutation{
+		config:        c,
+		op:            op,
+		typ:           TypePrintTemplate,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withPrintTemplateID sets the ID field of the mutation.
+func withPrintTemplateID(id uint32) printtemplateOption {
+	return func(m *PrintTemplateMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *PrintTemplate
+		)
+		m.oldValue = func(ctx context.Context) (*PrintTemplate, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().PrintTemplate.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withPrintTemplate sets the old PrintTemplate of the mutation.
+func withPrintTemplate(node *PrintTemplate) printtemplateOption {
+	return func(m *PrintTemplateMutation) {
+		m.oldValue = func(context.Context) (*PrintTemplate, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m PrintTemplateMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m PrintTemplateMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of PrintTemplate entities.
+func (m *PrintTemplateMutation) SetID(id uint32) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *PrintTemplateMutation) ID() (id uint32, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *PrintTemplateMutation) IDs(ctx context.Context) ([]uint32, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint32{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().PrintTemplate.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *PrintTemplateMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *PrintTemplateMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *PrintTemplateMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[printtemplate.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *PrintTemplateMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldCreatedAt]
+	return ok
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *PrintTemplateMutation) ResetCreatedAt() {
+	m.created_at = nil
+	delete(m.clearedFields, printtemplate.FieldCreatedAt)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *PrintTemplateMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *PrintTemplateMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (m *PrintTemplateMutation) ClearUpdatedAt() {
+	m.updated_at = nil
+	m.clearedFields[printtemplate.FieldUpdatedAt] = struct{}{}
+}
+
+// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
+func (m *PrintTemplateMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldUpdatedAt]
+	return ok
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *PrintTemplateMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	delete(m.clearedFields, printtemplate.FieldUpdatedAt)
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *PrintTemplateMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *PrintTemplateMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *PrintTemplateMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[printtemplate.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *PrintTemplateMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *PrintTemplateMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, printtemplate.FieldDeletedAt)
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *PrintTemplateMutation) SetCreatedBy(u uint32) {
+	m.created_by = &u
+	m.addcreated_by = nil
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *PrintTemplateMutation) CreatedBy() (r uint32, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// AddCreatedBy adds u to the "created_by" field.
+func (m *PrintTemplateMutation) AddCreatedBy(u int32) {
+	if m.addcreated_by != nil {
+		*m.addcreated_by += u
+	} else {
+		m.addcreated_by = &u
+	}
+}
+
+// AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
+func (m *PrintTemplateMutation) AddedCreatedBy() (r int32, exists bool) {
+	v := m.addcreated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (m *PrintTemplateMutation) ClearCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	m.clearedFields[printtemplate.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
+func (m *PrintTemplateMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *PrintTemplateMutation) ResetCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	delete(m.clearedFields, printtemplate.FieldCreatedBy)
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (m *PrintTemplateMutation) SetUpdatedBy(u uint32) {
+	m.updated_by = &u
+	m.addupdated_by = nil
+}
+
+// UpdatedBy returns the value of the "updated_by" field in the mutation.
+func (m *PrintTemplateMutation) UpdatedBy() (r uint32, exists bool) {
+	v := m.updated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedBy returns the old "updated_by" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
+	}
+	return oldValue.UpdatedBy, nil
+}
+
+// AddUpdatedBy adds u to the "updated_by" field.
+func (m *PrintTemplateMutation) AddUpdatedBy(u int32) {
+	if m.addupdated_by != nil {
+		*m.addupdated_by += u
+	} else {
+		m.addupdated_by = &u
+	}
+}
+
+// AddedUpdatedBy returns the value that was added to the "updated_by" field in this mutation.
+func (m *PrintTemplateMutation) AddedUpdatedBy() (r int32, exists bool) {
+	v := m.addupdated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (m *PrintTemplateMutation) ClearUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	m.clearedFields[printtemplate.FieldUpdatedBy] = struct{}{}
+}
+
+// UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
+func (m *PrintTemplateMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldUpdatedBy]
+	return ok
+}
+
+// ResetUpdatedBy resets all changes to the "updated_by" field.
+func (m *PrintTemplateMutation) ResetUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	delete(m.clearedFields, printtemplate.FieldUpdatedBy)
+}
+
+// SetDeletedBy sets the "deleted_by" field.
+func (m *PrintTemplateMutation) SetDeletedBy(u uint32) {
+	m.deleted_by = &u
+	m.adddeleted_by = nil
+}
+
+// DeletedBy returns the value of the "deleted_by" field in the mutation.
+func (m *PrintTemplateMutation) DeletedBy() (r uint32, exists bool) {
+	v := m.deleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedBy returns the old "deleted_by" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
+	}
+	return oldValue.DeletedBy, nil
+}
+
+// AddDeletedBy adds u to the "deleted_by" field.
+func (m *PrintTemplateMutation) AddDeletedBy(u int32) {
+	if m.adddeleted_by != nil {
+		*m.adddeleted_by += u
+	} else {
+		m.adddeleted_by = &u
+	}
+}
+
+// AddedDeletedBy returns the value that was added to the "deleted_by" field in this mutation.
+func (m *PrintTemplateMutation) AddedDeletedBy() (r int32, exists bool) {
+	v := m.adddeleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (m *PrintTemplateMutation) ClearDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	m.clearedFields[printtemplate.FieldDeletedBy] = struct{}{}
+}
+
+// DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
+func (m *PrintTemplateMutation) DeletedByCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldDeletedBy]
+	return ok
+}
+
+// ResetDeletedBy resets all changes to the "deleted_by" field.
+func (m *PrintTemplateMutation) ResetDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	delete(m.clearedFields, printtemplate.FieldDeletedBy)
+}
+
+// SetIsEnabled sets the "is_enabled" field.
+func (m *PrintTemplateMutation) SetIsEnabled(b bool) {
+	m.is_enabled = &b
+}
+
+// IsEnabled returns the value of the "is_enabled" field in the mutation.
+func (m *PrintTemplateMutation) IsEnabled() (r bool, exists bool) {
+	v := m.is_enabled
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsEnabled returns the old "is_enabled" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldIsEnabled(ctx context.Context) (v *bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsEnabled is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsEnabled requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsEnabled: %w", err)
+	}
+	return oldValue.IsEnabled, nil
+}
+
+// ClearIsEnabled clears the value of the "is_enabled" field.
+func (m *PrintTemplateMutation) ClearIsEnabled() {
+	m.is_enabled = nil
+	m.clearedFields[printtemplate.FieldIsEnabled] = struct{}{}
+}
+
+// IsEnabledCleared returns if the "is_enabled" field was cleared in this mutation.
+func (m *PrintTemplateMutation) IsEnabledCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldIsEnabled]
+	return ok
+}
+
+// ResetIsEnabled resets all changes to the "is_enabled" field.
+func (m *PrintTemplateMutation) ResetIsEnabled() {
+	m.is_enabled = nil
+	delete(m.clearedFields, printtemplate.FieldIsEnabled)
+}
+
+// SetSortOrder sets the "sort_order" field.
+func (m *PrintTemplateMutation) SetSortOrder(u uint32) {
+	m.sort_order = &u
+	m.addsort_order = nil
+}
+
+// SortOrder returns the value of the "sort_order" field in the mutation.
+func (m *PrintTemplateMutation) SortOrder() (r uint32, exists bool) {
+	v := m.sort_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSortOrder returns the old "sort_order" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldSortOrder(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSortOrder is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSortOrder requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSortOrder: %w", err)
+	}
+	return oldValue.SortOrder, nil
+}
+
+// AddSortOrder adds u to the "sort_order" field.
+func (m *PrintTemplateMutation) AddSortOrder(u int32) {
+	if m.addsort_order != nil {
+		*m.addsort_order += u
+	} else {
+		m.addsort_order = &u
+	}
+}
+
+// AddedSortOrder returns the value that was added to the "sort_order" field in this mutation.
+func (m *PrintTemplateMutation) AddedSortOrder() (r int32, exists bool) {
+	v := m.addsort_order
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearSortOrder clears the value of the "sort_order" field.
+func (m *PrintTemplateMutation) ClearSortOrder() {
+	m.sort_order = nil
+	m.addsort_order = nil
+	m.clearedFields[printtemplate.FieldSortOrder] = struct{}{}
+}
+
+// SortOrderCleared returns if the "sort_order" field was cleared in this mutation.
+func (m *PrintTemplateMutation) SortOrderCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldSortOrder]
+	return ok
+}
+
+// ResetSortOrder resets all changes to the "sort_order" field.
+func (m *PrintTemplateMutation) ResetSortOrder() {
+	m.sort_order = nil
+	m.addsort_order = nil
+	delete(m.clearedFields, printtemplate.FieldSortOrder)
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (m *PrintTemplateMutation) SetTenantID(u uint32) {
+	m.tenant_id = &u
+	m.addtenant_id = nil
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *PrintTemplateMutation) TenantID() (r uint32, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// AddTenantID adds u to the "tenant_id" field.
+func (m *PrintTemplateMutation) AddTenantID(u int32) {
+	if m.addtenant_id != nil {
+		*m.addtenant_id += u
+	} else {
+		m.addtenant_id = &u
+	}
+}
+
+// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
+func (m *PrintTemplateMutation) AddedTenantID() (r int32, exists bool) {
+	v := m.addtenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *PrintTemplateMutation) ClearTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	m.clearedFields[printtemplate.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *PrintTemplateMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldTenantID]
+	return ok
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *PrintTemplateMutation) ResetTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	delete(m.clearedFields, printtemplate.FieldTenantID)
+}
+
+// SetName sets the "name" field.
+func (m *PrintTemplateMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *PrintTemplateMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldName(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ClearName clears the value of the "name" field.
+func (m *PrintTemplateMutation) ClearName() {
+	m.name = nil
+	m.clearedFields[printtemplate.FieldName] = struct{}{}
+}
+
+// NameCleared returns if the "name" field was cleared in this mutation.
+func (m *PrintTemplateMutation) NameCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldName]
+	return ok
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *PrintTemplateMutation) ResetName() {
+	m.name = nil
+	delete(m.clearedFields, printtemplate.FieldName)
+}
+
+// SetCode sets the "code" field.
+func (m *PrintTemplateMutation) SetCode(s string) {
+	m.code = &s
+}
+
+// Code returns the value of the "code" field in the mutation.
+func (m *PrintTemplateMutation) Code() (r string, exists bool) {
+	v := m.code
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCode returns the old "code" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldCode(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCode is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCode requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCode: %w", err)
+	}
+	return oldValue.Code, nil
+}
+
+// ClearCode clears the value of the "code" field.
+func (m *PrintTemplateMutation) ClearCode() {
+	m.code = nil
+	m.clearedFields[printtemplate.FieldCode] = struct{}{}
+}
+
+// CodeCleared returns if the "code" field was cleared in this mutation.
+func (m *PrintTemplateMutation) CodeCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldCode]
+	return ok
+}
+
+// ResetCode resets all changes to the "code" field.
+func (m *PrintTemplateMutation) ResetCode() {
+	m.code = nil
+	delete(m.clearedFields, printtemplate.FieldCode)
+}
+
+// SetResourceKey sets the "resource_key" field.
+func (m *PrintTemplateMutation) SetResourceKey(s string) {
+	m.resource_key = &s
+}
+
+// ResourceKey returns the value of the "resource_key" field in the mutation.
+func (m *PrintTemplateMutation) ResourceKey() (r string, exists bool) {
+	v := m.resource_key
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldResourceKey returns the old "resource_key" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldResourceKey(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldResourceKey is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldResourceKey requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldResourceKey: %w", err)
+	}
+	return oldValue.ResourceKey, nil
+}
+
+// ClearResourceKey clears the value of the "resource_key" field.
+func (m *PrintTemplateMutation) ClearResourceKey() {
+	m.resource_key = nil
+	m.clearedFields[printtemplate.FieldResourceKey] = struct{}{}
+}
+
+// ResourceKeyCleared returns if the "resource_key" field was cleared in this mutation.
+func (m *PrintTemplateMutation) ResourceKeyCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldResourceKey]
+	return ok
+}
+
+// ResetResourceKey resets all changes to the "resource_key" field.
+func (m *PrintTemplateMutation) ResetResourceKey() {
+	m.resource_key = nil
+	delete(m.clearedFields, printtemplate.FieldResourceKey)
+}
+
+// SetPayload sets the "payload" field.
+func (m *PrintTemplateMutation) SetPayload(s string) {
+	m.payload = &s
+}
+
+// Payload returns the value of the "payload" field in the mutation.
+func (m *PrintTemplateMutation) Payload() (r string, exists bool) {
+	v := m.payload
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPayload returns the old "payload" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldPayload(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPayload is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPayload requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPayload: %w", err)
+	}
+	return oldValue.Payload, nil
+}
+
+// ClearPayload clears the value of the "payload" field.
+func (m *PrintTemplateMutation) ClearPayload() {
+	m.payload = nil
+	m.clearedFields[printtemplate.FieldPayload] = struct{}{}
+}
+
+// PayloadCleared returns if the "payload" field was cleared in this mutation.
+func (m *PrintTemplateMutation) PayloadCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldPayload]
+	return ok
+}
+
+// ResetPayload resets all changes to the "payload" field.
+func (m *PrintTemplateMutation) ResetPayload() {
+	m.payload = nil
+	delete(m.clearedFields, printtemplate.FieldPayload)
+}
+
+// SetIsBuiltIn sets the "is_built_in" field.
+func (m *PrintTemplateMutation) SetIsBuiltIn(b bool) {
+	m.is_built_in = &b
+}
+
+// IsBuiltIn returns the value of the "is_built_in" field in the mutation.
+func (m *PrintTemplateMutation) IsBuiltIn() (r bool, exists bool) {
+	v := m.is_built_in
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldIsBuiltIn returns the old "is_built_in" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldIsBuiltIn(ctx context.Context) (v *bool, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldIsBuiltIn is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldIsBuiltIn requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldIsBuiltIn: %w", err)
+	}
+	return oldValue.IsBuiltIn, nil
+}
+
+// ClearIsBuiltIn clears the value of the "is_built_in" field.
+func (m *PrintTemplateMutation) ClearIsBuiltIn() {
+	m.is_built_in = nil
+	m.clearedFields[printtemplate.FieldIsBuiltIn] = struct{}{}
+}
+
+// IsBuiltInCleared returns if the "is_built_in" field was cleared in this mutation.
+func (m *PrintTemplateMutation) IsBuiltInCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldIsBuiltIn]
+	return ok
+}
+
+// ResetIsBuiltIn resets all changes to the "is_built_in" field.
+func (m *PrintTemplateMutation) ResetIsBuiltIn() {
+	m.is_built_in = nil
+	delete(m.clearedFields, printtemplate.FieldIsBuiltIn)
+}
+
+// SetPaperSize sets the "paper_size" field.
+func (m *PrintTemplateMutation) SetPaperSize(s string) {
+	m.paper_size = &s
+}
+
+// PaperSize returns the value of the "paper_size" field in the mutation.
+func (m *PrintTemplateMutation) PaperSize() (r string, exists bool) {
+	v := m.paper_size
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPaperSize returns the old "paper_size" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldPaperSize(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPaperSize is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPaperSize requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPaperSize: %w", err)
+	}
+	return oldValue.PaperSize, nil
+}
+
+// ClearPaperSize clears the value of the "paper_size" field.
+func (m *PrintTemplateMutation) ClearPaperSize() {
+	m.paper_size = nil
+	m.clearedFields[printtemplate.FieldPaperSize] = struct{}{}
+}
+
+// PaperSizeCleared returns if the "paper_size" field was cleared in this mutation.
+func (m *PrintTemplateMutation) PaperSizeCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldPaperSize]
+	return ok
+}
+
+// ResetPaperSize resets all changes to the "paper_size" field.
+func (m *PrintTemplateMutation) ResetPaperSize() {
+	m.paper_size = nil
+	delete(m.clearedFields, printtemplate.FieldPaperSize)
+}
+
+// SetOrientation sets the "orientation" field.
+func (m *PrintTemplateMutation) SetOrientation(s string) {
+	m.orientation = &s
+}
+
+// Orientation returns the value of the "orientation" field in the mutation.
+func (m *PrintTemplateMutation) Orientation() (r string, exists bool) {
+	v := m.orientation
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldOrientation returns the old "orientation" field's value of the PrintTemplate entity.
+// If the PrintTemplate object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PrintTemplateMutation) OldOrientation(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldOrientation is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldOrientation requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldOrientation: %w", err)
+	}
+	return oldValue.Orientation, nil
+}
+
+// ClearOrientation clears the value of the "orientation" field.
+func (m *PrintTemplateMutation) ClearOrientation() {
+	m.orientation = nil
+	m.clearedFields[printtemplate.FieldOrientation] = struct{}{}
+}
+
+// OrientationCleared returns if the "orientation" field was cleared in this mutation.
+func (m *PrintTemplateMutation) OrientationCleared() bool {
+	_, ok := m.clearedFields[printtemplate.FieldOrientation]
+	return ok
+}
+
+// ResetOrientation resets all changes to the "orientation" field.
+func (m *PrintTemplateMutation) ResetOrientation() {
+	m.orientation = nil
+	delete(m.clearedFields, printtemplate.FieldOrientation)
+}
+
+// Where appends a list predicates to the PrintTemplateMutation builder.
+func (m *PrintTemplateMutation) Where(ps ...predicate.PrintTemplate) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the PrintTemplateMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *PrintTemplateMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.PrintTemplate, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *PrintTemplateMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *PrintTemplateMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (PrintTemplate).
+func (m *PrintTemplateMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *PrintTemplateMutation) Fields() []string {
+	fields := make([]string, 0, 16)
+	if m.created_at != nil {
+		fields = append(fields, printtemplate.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, printtemplate.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, printtemplate.FieldDeletedAt)
+	}
+	if m.created_by != nil {
+		fields = append(fields, printtemplate.FieldCreatedBy)
+	}
+	if m.updated_by != nil {
+		fields = append(fields, printtemplate.FieldUpdatedBy)
+	}
+	if m.deleted_by != nil {
+		fields = append(fields, printtemplate.FieldDeletedBy)
+	}
+	if m.is_enabled != nil {
+		fields = append(fields, printtemplate.FieldIsEnabled)
+	}
+	if m.sort_order != nil {
+		fields = append(fields, printtemplate.FieldSortOrder)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, printtemplate.FieldTenantID)
+	}
+	if m.name != nil {
+		fields = append(fields, printtemplate.FieldName)
+	}
+	if m.code != nil {
+		fields = append(fields, printtemplate.FieldCode)
+	}
+	if m.resource_key != nil {
+		fields = append(fields, printtemplate.FieldResourceKey)
+	}
+	if m.payload != nil {
+		fields = append(fields, printtemplate.FieldPayload)
+	}
+	if m.is_built_in != nil {
+		fields = append(fields, printtemplate.FieldIsBuiltIn)
+	}
+	if m.paper_size != nil {
+		fields = append(fields, printtemplate.FieldPaperSize)
+	}
+	if m.orientation != nil {
+		fields = append(fields, printtemplate.FieldOrientation)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *PrintTemplateMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case printtemplate.FieldCreatedAt:
+		return m.CreatedAt()
+	case printtemplate.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case printtemplate.FieldDeletedAt:
+		return m.DeletedAt()
+	case printtemplate.FieldCreatedBy:
+		return m.CreatedBy()
+	case printtemplate.FieldUpdatedBy:
+		return m.UpdatedBy()
+	case printtemplate.FieldDeletedBy:
+		return m.DeletedBy()
+	case printtemplate.FieldIsEnabled:
+		return m.IsEnabled()
+	case printtemplate.FieldSortOrder:
+		return m.SortOrder()
+	case printtemplate.FieldTenantID:
+		return m.TenantID()
+	case printtemplate.FieldName:
+		return m.Name()
+	case printtemplate.FieldCode:
+		return m.Code()
+	case printtemplate.FieldResourceKey:
+		return m.ResourceKey()
+	case printtemplate.FieldPayload:
+		return m.Payload()
+	case printtemplate.FieldIsBuiltIn:
+		return m.IsBuiltIn()
+	case printtemplate.FieldPaperSize:
+		return m.PaperSize()
+	case printtemplate.FieldOrientation:
+		return m.Orientation()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *PrintTemplateMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case printtemplate.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case printtemplate.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case printtemplate.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case printtemplate.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case printtemplate.FieldUpdatedBy:
+		return m.OldUpdatedBy(ctx)
+	case printtemplate.FieldDeletedBy:
+		return m.OldDeletedBy(ctx)
+	case printtemplate.FieldIsEnabled:
+		return m.OldIsEnabled(ctx)
+	case printtemplate.FieldSortOrder:
+		return m.OldSortOrder(ctx)
+	case printtemplate.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case printtemplate.FieldName:
+		return m.OldName(ctx)
+	case printtemplate.FieldCode:
+		return m.OldCode(ctx)
+	case printtemplate.FieldResourceKey:
+		return m.OldResourceKey(ctx)
+	case printtemplate.FieldPayload:
+		return m.OldPayload(ctx)
+	case printtemplate.FieldIsBuiltIn:
+		return m.OldIsBuiltIn(ctx)
+	case printtemplate.FieldPaperSize:
+		return m.OldPaperSize(ctx)
+	case printtemplate.FieldOrientation:
+		return m.OldOrientation(ctx)
+	}
+	return nil, fmt.Errorf("unknown PrintTemplate field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PrintTemplateMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case printtemplate.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case printtemplate.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case printtemplate.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case printtemplate.FieldCreatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case printtemplate.FieldUpdatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedBy(v)
+		return nil
+	case printtemplate.FieldDeletedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedBy(v)
+		return nil
+	case printtemplate.FieldIsEnabled:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsEnabled(v)
+		return nil
+	case printtemplate.FieldSortOrder:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSortOrder(v)
+		return nil
+	case printtemplate.FieldTenantID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case printtemplate.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case printtemplate.FieldCode:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCode(v)
+		return nil
+	case printtemplate.FieldResourceKey:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetResourceKey(v)
+		return nil
+	case printtemplate.FieldPayload:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPayload(v)
+		return nil
+	case printtemplate.FieldIsBuiltIn:
+		v, ok := value.(bool)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetIsBuiltIn(v)
+		return nil
+	case printtemplate.FieldPaperSize:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPaperSize(v)
+		return nil
+	case printtemplate.FieldOrientation:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetOrientation(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PrintTemplate field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *PrintTemplateMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_by != nil {
+		fields = append(fields, printtemplate.FieldCreatedBy)
+	}
+	if m.addupdated_by != nil {
+		fields = append(fields, printtemplate.FieldUpdatedBy)
+	}
+	if m.adddeleted_by != nil {
+		fields = append(fields, printtemplate.FieldDeletedBy)
+	}
+	if m.addsort_order != nil {
+		fields = append(fields, printtemplate.FieldSortOrder)
+	}
+	if m.addtenant_id != nil {
+		fields = append(fields, printtemplate.FieldTenantID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *PrintTemplateMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case printtemplate.FieldCreatedBy:
+		return m.AddedCreatedBy()
+	case printtemplate.FieldUpdatedBy:
+		return m.AddedUpdatedBy()
+	case printtemplate.FieldDeletedBy:
+		return m.AddedDeletedBy()
+	case printtemplate.FieldSortOrder:
+		return m.AddedSortOrder()
+	case printtemplate.FieldTenantID:
+		return m.AddedTenantID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *PrintTemplateMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case printtemplate.FieldCreatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedBy(v)
+		return nil
+	case printtemplate.FieldUpdatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedBy(v)
+		return nil
+	case printtemplate.FieldDeletedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedBy(v)
+		return nil
+	case printtemplate.FieldSortOrder:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddSortOrder(v)
+		return nil
+	case printtemplate.FieldTenantID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTenantID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown PrintTemplate numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *PrintTemplateMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(printtemplate.FieldCreatedAt) {
+		fields = append(fields, printtemplate.FieldCreatedAt)
+	}
+	if m.FieldCleared(printtemplate.FieldUpdatedAt) {
+		fields = append(fields, printtemplate.FieldUpdatedAt)
+	}
+	if m.FieldCleared(printtemplate.FieldDeletedAt) {
+		fields = append(fields, printtemplate.FieldDeletedAt)
+	}
+	if m.FieldCleared(printtemplate.FieldCreatedBy) {
+		fields = append(fields, printtemplate.FieldCreatedBy)
+	}
+	if m.FieldCleared(printtemplate.FieldUpdatedBy) {
+		fields = append(fields, printtemplate.FieldUpdatedBy)
+	}
+	if m.FieldCleared(printtemplate.FieldDeletedBy) {
+		fields = append(fields, printtemplate.FieldDeletedBy)
+	}
+	if m.FieldCleared(printtemplate.FieldIsEnabled) {
+		fields = append(fields, printtemplate.FieldIsEnabled)
+	}
+	if m.FieldCleared(printtemplate.FieldSortOrder) {
+		fields = append(fields, printtemplate.FieldSortOrder)
+	}
+	if m.FieldCleared(printtemplate.FieldTenantID) {
+		fields = append(fields, printtemplate.FieldTenantID)
+	}
+	if m.FieldCleared(printtemplate.FieldName) {
+		fields = append(fields, printtemplate.FieldName)
+	}
+	if m.FieldCleared(printtemplate.FieldCode) {
+		fields = append(fields, printtemplate.FieldCode)
+	}
+	if m.FieldCleared(printtemplate.FieldResourceKey) {
+		fields = append(fields, printtemplate.FieldResourceKey)
+	}
+	if m.FieldCleared(printtemplate.FieldPayload) {
+		fields = append(fields, printtemplate.FieldPayload)
+	}
+	if m.FieldCleared(printtemplate.FieldIsBuiltIn) {
+		fields = append(fields, printtemplate.FieldIsBuiltIn)
+	}
+	if m.FieldCleared(printtemplate.FieldPaperSize) {
+		fields = append(fields, printtemplate.FieldPaperSize)
+	}
+	if m.FieldCleared(printtemplate.FieldOrientation) {
+		fields = append(fields, printtemplate.FieldOrientation)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *PrintTemplateMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *PrintTemplateMutation) ClearField(name string) error {
+	switch name {
+	case printtemplate.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case printtemplate.FieldUpdatedAt:
+		m.ClearUpdatedAt()
+		return nil
+	case printtemplate.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case printtemplate.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	case printtemplate.FieldUpdatedBy:
+		m.ClearUpdatedBy()
+		return nil
+	case printtemplate.FieldDeletedBy:
+		m.ClearDeletedBy()
+		return nil
+	case printtemplate.FieldIsEnabled:
+		m.ClearIsEnabled()
+		return nil
+	case printtemplate.FieldSortOrder:
+		m.ClearSortOrder()
+		return nil
+	case printtemplate.FieldTenantID:
+		m.ClearTenantID()
+		return nil
+	case printtemplate.FieldName:
+		m.ClearName()
+		return nil
+	case printtemplate.FieldCode:
+		m.ClearCode()
+		return nil
+	case printtemplate.FieldResourceKey:
+		m.ClearResourceKey()
+		return nil
+	case printtemplate.FieldPayload:
+		m.ClearPayload()
+		return nil
+	case printtemplate.FieldIsBuiltIn:
+		m.ClearIsBuiltIn()
+		return nil
+	case printtemplate.FieldPaperSize:
+		m.ClearPaperSize()
+		return nil
+	case printtemplate.FieldOrientation:
+		m.ClearOrientation()
+		return nil
+	}
+	return fmt.Errorf("unknown PrintTemplate nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *PrintTemplateMutation) ResetField(name string) error {
+	switch name {
+	case printtemplate.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case printtemplate.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case printtemplate.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case printtemplate.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case printtemplate.FieldUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	case printtemplate.FieldDeletedBy:
+		m.ResetDeletedBy()
+		return nil
+	case printtemplate.FieldIsEnabled:
+		m.ResetIsEnabled()
+		return nil
+	case printtemplate.FieldSortOrder:
+		m.ResetSortOrder()
+		return nil
+	case printtemplate.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case printtemplate.FieldName:
+		m.ResetName()
+		return nil
+	case printtemplate.FieldCode:
+		m.ResetCode()
+		return nil
+	case printtemplate.FieldResourceKey:
+		m.ResetResourceKey()
+		return nil
+	case printtemplate.FieldPayload:
+		m.ResetPayload()
+		return nil
+	case printtemplate.FieldIsBuiltIn:
+		m.ResetIsBuiltIn()
+		return nil
+	case printtemplate.FieldPaperSize:
+		m.ResetPaperSize()
+		return nil
+	case printtemplate.FieldOrientation:
+		m.ResetOrientation()
+		return nil
+	}
+	return fmt.Errorf("unknown PrintTemplate field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *PrintTemplateMutation) AddedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *PrintTemplateMutation) AddedIDs(name string) []ent.Value {
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *PrintTemplateMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *PrintTemplateMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *PrintTemplateMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 0)
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *PrintTemplateMutation) EdgeCleared(name string) bool {
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *PrintTemplateMutation) ClearEdge(name string) error {
+	return fmt.Errorf("unknown PrintTemplate unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *PrintTemplateMutation) ResetEdge(name string) error {
+	return fmt.Errorf("unknown PrintTemplate edge %s", name)
 }
 
 // RoleMutation represents an operation that mutates the Role nodes in the graph.

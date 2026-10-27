@@ -29,10 +29,10 @@ type ServerMonitorServiceHTTPServer interface {
 
 func RegisterServerMonitorServiceHTTPServer(s *http.Server, srv ServerMonitorServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/server-monitor", _ServerMonitorService_Get30_HTTP_Handler(srv))
+	r.GET("/admin/v1/server-monitor", _ServerMonitorService_Get31_HTTP_Handler(srv))
 }
 
-func _ServerMonitorService_Get30_HTTP_Handler(srv ServerMonitorServiceHTTPServer) func(ctx http.Context) error {
+func _ServerMonitorService_Get31_HTTP_Handler(srv ServerMonitorServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.GetServerMonitorRequest
 		if err := ctx.BindQuery(&in); err != nil {
