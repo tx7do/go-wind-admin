@@ -1,10 +1,10 @@
 ﻿<script lang="ts" setup>
 import type { VxeGridListeners, VxeGridProps } from '#/adapter/vxe-table';
 
-import { computed, h, watch } from 'vue';
+import { computed, h, ref, watch } from 'vue';
 
 import { useVbenDrawer, type VbenFormProps } from '@vben/common-ui';
-import { LucideFilePenLine, LucideInfo, LucideShieldOff, LucideTrash2 } from '@vben/icons';
+import { LucideFilePenLine, LucideInfo, LucidePrinter, LucideShieldOff, LucideTrash2 } from '@vben/icons';
 import { isEqual } from '@vben/utils';
 
 import { Modal, notification } from 'ant-design-vue';
@@ -28,6 +28,7 @@ import {
 } from '#/api';
 import { $t } from '#/locales';
 import TableActions from '#/components/TableActions.vue';
+import PrintTemplatePrint from '#/components/PrintTemplatePrint.vue';
 import type { TableAction } from '#/components/TableActions.vue';
 import { router } from '#/router';
 import { parseResourceHiddenFields } from '#/utils';
@@ -270,7 +271,10 @@ const gridEvents: VxeGridListeners<User> = {
 const exportFetcher = (page: number, pageSize: number) =>
   userViewStore.fetchUserList(page, pageSize, {});
 
+const printRef = ref();
+
 const [Grid, gridApi] = useVbenVxeGrid({
+
   gridOptions,
   formOptions,
   gridEvents,
@@ -368,6 +372,12 @@ function buildRowActions(): TableAction[] {
       onClick: handleDetail,
     },
     {
+      key: 'print',
+      label: $t('page.printTemplate.print'),
+      icon: h(LucidePrinter),
+      onClick: (row: any) => printRef.value?.print('system/user', row),
+    },
+    {
       key: 'edit',
       label: $t('common.edit'),
       icon: h(LucideFilePenLine),
@@ -459,6 +469,7 @@ watch(
       <TableActions :row="row" :actions="buildRowActions()" />
     </template>
   </Grid>
+  <PrintTemplatePrint ref="printRef" />
   <Drawer />
 </template>
 

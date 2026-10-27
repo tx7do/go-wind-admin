@@ -66,6 +66,9 @@
       </template>
     </ProPage>
 
+    <!-- 行打印定式：模板按 resourceKey 匹配，无绑定回退通用模板 -->
+    <PrintTemplatePrint ref="printRef" />
+
     <!-- 新增/编辑抽屉 -->
     <UserDrawer ref="drawerRef" @success="handleSuccess" />
   </div>
@@ -76,6 +79,7 @@ import { computed, ref, watch } from "vue";
 import { ElMessageBox, ElNotification, ElTag } from "element-plus";
 
 import ProPage from "@/components/Pro/ProPage/index.vue";
+import PrintTemplatePrint from "@/components/PrintTemplatePrint.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import type { ProFormField } from "@/components/Pro/ProForm/types";
 import type { ProTableColumn } from "@/components/Pro/ProTable/types";
@@ -102,6 +106,7 @@ const { mutateAsync: deleteUser } = useDeleteUser();
 const userViewStore = useUserViewStore();
 
 const pageRef = ref();
+const printRef = ref();
 const drawerRef = ref();
 
 // 监听组织和租户变化，重新加载数据
@@ -274,6 +279,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
         cellType: "tool",
         buttons: [
           { name: "detail", label: $t("common.button.detail"), icon: "lucide:eye" },
+          { name: "print", label: $t("pages.printTemplate.print"), icon: "lucide:printer" },
           { name: "edit", label: $t("common.button.edit"), icon: "lucide:pen-line" },
           ...(isPlatformSide.value
             ? [{ name: "resetMfa", label: $t("pages.user.resetMfa"), icon: "lucide:shield-off" }]
@@ -312,6 +318,8 @@ function handleEdit(row: any) {
 function handleOperate(data: { name: string; row: any }) {
   if (data.name === "detail") {
     router.push(`/opm/users/detail/${data.row.id}`);
+  } else if (data.name === "print") {
+    printRef.value?.print("system/user", data.row);
   } else if (data.name === "resetMfa") {
     handleResetMfa(data.row);
   }

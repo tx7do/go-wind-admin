@@ -1405,6 +1405,9 @@
     "designerNotReady": "设计器尚未就绪，请稍候重试",
     "sampleData": "示例数据",
     "sampleDataTip": "JSON 对象：字段面板由它派生，预览/打印以它为数据源；列表行打印时使用真实行数据。",
-    "sortOrder": "排序"
+    "sortOrder": "排序",
+    "printTitle": "打印预览",
+    "noTemplate": "该资源暂无可用打印模板",
+    "noTemplateHint": "可到「系统管理 → 打印模板」新建并绑定该资源，或将通用模板复制派生"
   }
 }
