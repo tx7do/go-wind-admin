@@ -46,7 +46,8 @@
     "scripts": "Scripts",
     "config": "Config Management",
     "accessKeys": "OpenAPI Credentials",
-    "monitorAlerts": "Monitor Alerts"
+    "monitorAlerts": "Monitor Alerts",
+    "printTemplates": "Print Templates"
   },
   "notification": {
     "moduleName": "Notifications",

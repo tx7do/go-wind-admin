@@ -1380,5 +1380,30 @@
       "create": "Create Language",
       "update": "Update Language"
     }
+  },
+  "printTemplate": {
+    "moduleName": "Print Template",
+    "name": "Template Name",
+    "code": "Code",
+    "resourceKey": "Bound Resource",
+    "paperSize": "Paper Size",
+    "orientation": "Orientation",
+    "portrait": "Portrait",
+    "landscape": "Landscape",
+    "isEnabled": "Enabled",
+    "enabledTag": "Enabled",
+    "disabledTag": "Disabled",
+    "isBuiltIn": "Type",
+    "builtInTag": "Built-in",
+    "customTag": "Custom",
+    "copySuffix": "Copy",
+    "preview": "Preview",
+    "previewTitle": "Print Preview",
+    "print": "Print",
+    "rendering": "Rendering…",
+    "renderFailed": "Render failed",
+    "designerNotReady": "Designer is not ready yet, please retry",
+    "sampleData": "Sample Data",
+    "sampleDataTip": "JSON object: the field panel derives from it; preview/print use it as data source. Row printing uses real row data."
   }
 }

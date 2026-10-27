@@ -30,6 +30,8 @@ export const LucideLogOut = createIconifyIcon('lucide:log-out');
 export const LucidePencil = createIconifyIcon('lucide:pencil');
 export const LucidePencilOff = createIconifyIcon('lucide:pencil-off');
 
+export const LucideCopy = createIconifyIcon('lucide:copy');
+
 export const LucideNotebookPen = createIconifyIcon('lucide:notebook-pen');
 export const LucideFilePenLine = createIconifyIcon('lucide:file-pen-line');
 

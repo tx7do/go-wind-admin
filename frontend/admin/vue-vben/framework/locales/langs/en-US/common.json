@@ -19,5 +19,9 @@
   "exitFullscreen": "Exit Fullscreen",
   "language": "Language",
   "download": "Download",
-  "columnSetting": "Column Settings"
+  "columnSetting": "Column Settings",
+  "save": "Save",
+  "copy": "Copy",
+  "close": "Close",
+  "discardButton": "Discard changes"
 }

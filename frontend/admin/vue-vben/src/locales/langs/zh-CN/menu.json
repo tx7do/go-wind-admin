@@ -46,7 +46,8 @@
     "scripts": "脚本管理",
     "config": "参数管理",
     "accessKeys": "OpenAPI 凭证",
-    "monitorAlerts": "监控告警"
+    "monitorAlerts": "监控告警",
+    "printTemplates": "打印模板"
   },
   "notification": {
     "moduleName": "通知管理",

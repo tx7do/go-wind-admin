@@ -19,5 +19,9 @@
   "exitFullscreen": "退出全屏",
   "language": "语言",
   "download": "下载",
-  "columnSetting": "列设置"
+  "columnSetting": "列设置",
+  "save": "保存",
+  "copy": "复制",
+  "close": "关闭",
+  "discardButton": "确定放弃"
 }
