@@ -44,6 +44,15 @@ ARG SERVICE_NAME=app
 # 安装必要的证书（如果应用程序需要进行 HTTPS 请求）
 RUN apk --no-cache add ca-certificates
 
+# 打印模块服务端 PDF（可选）：WITH_PRINT_BROWSER=1 时安装 Chromium 与 CJK 字体。
+# 体积代价约 +400MB；不加时打印模块管理页可用，render-pdf 端点返回错误（日志提示装浏览器）。
+# 详见 docs/print_template.md §6.1。
+ARG WITH_PRINT_BROWSER=0
+RUN if [ "$WITH_PRINT_BROWSER" = "1" ]; then       apk --no-cache add chromium font-noto-cjk;     fi
+
+# Chromium 以非 root 用户运行时的可写目录（chromedp 默认 user-data-dir 在 /tmp）
+RUN mkdir -p /tmp/printrender && chown -R appuser:appuser /tmp 2>/dev/null || true
+
 # 设置工作目录
 WORKDIR /app
 
