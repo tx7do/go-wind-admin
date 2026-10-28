@@ -117,6 +117,18 @@ html.dark {
     background-color: var(--el-bg-color);
   }
 
+  // border-card 标签盒（el-tabs--border-card）同病同修：
+  // EP 把标签盒与激活页签背景都映射到 --el-bg-color-overlay（浮层色 #1C2128 中性灰），
+  // 在 #111827 冷调表面上是「死灰大面板」。标签盒是容器 = L1 表面不是浮层；
+  // 激活页签背景必须与内容区同色，保住 border-card「文件夹页签」的连通视觉。
+  .el-tabs--border-card {
+    background-color: var(--el-bg-color);
+
+    > .el-tabs__header .el-tabs__item.is-active {
+      background-color: var(--el-bg-color);
+    }
+  }
+
   // ============================================
   // 全局暗色滚动条（浏览器默认亮灰滚动条在暗底上刺眼）
   // 与 Drawer 内滚动条（6px 细条）保持同一形态
