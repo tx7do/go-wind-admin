@@ -8,6 +8,18 @@
 
 ## [Unreleased]
 
+### 新增
+
+- **打印模板（单据打印设计器）**：可视化拖拽设计打印模板（文本 / 表格 / 条码 / 二维码，毫米精确
+  布局，多页跨页表头），内核 fork 自 worm-vue3-print（MIT，go-wind-print 仓自维护）。模板按资源
+  绑定（resourceKey），任意列表行可一键打印——模板匹配精确绑定优先、通用模板（未绑定）兜底；
+  支持勾选行批量打印（合并为单文档，份间自动分页）。输出链：浏览器打印 / 服务端 PDF
+  （`POST /admin/v1/print-templates:render-pdf`，后端 Chromium 渲染，Docker 构建参数
+  `WITH_PRINT_BROWSER=1` 启用浏览器层）/ 静默打印（对接 worm 客户端）。三端管理页齐备
+  （暗色适配、复制内置模板派生），内置种子含通用 A4/A5 模板与用户工牌演示。设计/部署详见
+  [docs/print_template.md](./docs/print_template.md)；采用者给自己的模块接打印见
+  [docs/crud_module_guide](./docs/crud_module_guide/README.md) 行打印节。
+
 ### 变更
 
 - 亮色模式首次拥有自己的设计 token（react）：此前浅色整端只有暗色一套 token，亮色全走

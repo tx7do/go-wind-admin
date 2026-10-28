@@ -243,6 +243,7 @@ Security capabilities are designed with reference to the technical requirements 
 | Parameter Management | Manage platform-wide system parameters as key/value pairs (distinct from business dictionaries); built-in parameters are seeded at startup and cannot be deleted; reads go through a server-side caching accessor, and in multi-instance deployments changes are broadcast over Redis pub/sub to invalidate every instance's cache. |
 | Machine Credentials (AK/SK) | Tenant-scoped AccessKey / SecretKey management: the Secret is shown exactly once at creation; enable/disable, delete, and secret rotation are supported (rotation immediately invalidates the previous Secret). An AK / Secret pair can be exchanged at the token-exchange endpoint for a tenant-scoped machine JWT (machine role, access token only); the exchange endpoint applies per-IP + per-AK failure rate limiting. |
 | Language Management | Manage supported languages: name, code, native name, enabled and default status. |
+| Print Templates | Document print designer: drag-drop visual template design (text / table / barcode / QR code, millimeter-precise layout, multi-page with repeated headers across pages). Templates bind to resources, and any list row can be printed individually or in batch (checked rows merged into one document). Supports browser printing and server-side PDF (backend Chromium rendering; enable the print-browser image layer at deploy time — see [docs/print_template.md](./docs/print_template.md)). |
 
 ### Messaging & Logs
 
