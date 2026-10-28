@@ -659,6 +659,30 @@ html[data-theme='dark'] .ant-form .ant-input:not(.ant-input-affix-wrapper .ant-i
   border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 
+/* ========== Modal / 弹窗内输入类控件与弹窗面同层 ========== */
+/* 弹窗面是 L3 浮层色 #1C2128（colorBgElevated），而输入类控件的全局底是 L1
+   #111827（上文「暗黑模式：表单控件」三条 !important 规则）：放进抽屉（面同为
+   #111827）正好同层，放进弹窗就成了比面深一档的凹陷黑洞。此处让弹窗域内输入类
+   控件与弹窗面同层、仍靠边框区分（与 2026-09-08「控件与所在表面同层」定稿同一
+   教义）。必须 !important + html 前缀提特异性：对手是同文件上文同样带 !important
+   的三条规则（.ant-form 域那条达 (0,5,1)），非 important 规则特异性再高也整条
+   输掉；本段落居文件更后，平特异性靠后者胜。
+   :not() 守卫沿用上文口径——affix-wrapper 内层 input 仍保持透明（避免双边框）。
+   全局搜索输入的 transparent 形态由其 (0,4,0)!important 压过本条 (0,3,1)，
+   特异性天然正确。
+   antd v6 面载体实测（2026-10-28）：Select 的面就是根元素 .ant-select（v6 已无
+   .ant-select-selector），Input/TextArea 面在 .ant-input，带前后缀时面移到
+   .ant-input-affix-wrapper。下拉浮层挂 body portal、不在 .ant-modal 域内，
+   本就取 #1C2128 浮层色，不受影响。Picker/InputNumber 当下无弹窗使用，随同族
+   一并覆盖防后患。 */
+html[data-theme='dark'] .ant-modal .ant-input:not(.ant-input-affix-wrapper .ant-input),
+html[data-theme='dark'] .ant-modal .ant-input-affix-wrapper,
+html[data-theme='dark'] .ant-modal .ant-select:not(.ant-select-disabled),
+html[data-theme='dark'] .ant-modal .ant-picker,
+html[data-theme='dark'] .ant-modal .ant-input-number {
+  background-color: #1c2128 !important;
+}
+
 /* ========== 暗黑模式：权限树/包裹区域背景 ========== */
 [data-theme='dark'] .ant-tree {
   background: transparent !important;

@@ -101,6 +101,11 @@ export const darkThemeComponents: ThemeConfig['components'] = {
     colorBgMask: 'rgba(0, 0, 0, 0.6)',
     paddingLG: 24,
   },
+  Modal: {
+    // 遮罩与 Drawer 同档（0.6）：弹窗是模态重交互面，背后的页面要压得更暗
+    // 才衬得出悬浮层；antd 默认 0.45 在 L0 深色大底上几乎不可感
+    colorBgMask: 'rgba(0, 0, 0, 0.6)',
+  },
   Table: {
     // colorHeaderBg 非合法 antd Token（Table 表头色由 colorBgContainer/colorFillAlter 派生），原值 '#1F2937' 移除
     // 行悬停/选中用主色微底，行状态一眼可辨（默认派生的 5% 白在暗色下不可察）
