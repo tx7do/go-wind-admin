@@ -127,12 +127,17 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
 
     // 标记主题模式，供 CSS 选择器使用
     root.setAttribute('data-theme', effectiveMode);
+    // 同时维护标准的 html.dark class：本应用自己的样式一律读 data-theme，
+    // 但第三方组件（@go-wind/editor-react、@go-wind/bi-vue 等）按 html.dark 判暗色，
+    // 只给 data-theme 它们会退回去跟随系统偏好，出现"应用亮色、组件暗色"。
+    root.classList.toggle('dark', effectiveMode === 'dark');
 
     return () => {
       root.style.backgroundColor = '';
       body.style.backgroundColor = '';
       root.style.color = '';
       root.removeAttribute('data-theme');
+      root.classList.remove('dark');
     };
   }, [effectiveMode]);
 

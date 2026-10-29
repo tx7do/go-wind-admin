@@ -1,0 +1,48 @@
+/**
+ * @go-wind/editor-react@0.2.3 兼容垫片（0.2.4 发布后可整文件删除）
+ *
+ * 1) 暗色判定：0.2.3 只看 `html.dark` class 和系统偏好，不认识本应用的 `data-theme`。
+ *    应用选亮色、而操作系统是暗色时，编辑器仍被判成暗色 → 亮色页面里冒出一块黑。
+ *    库侧已改为 data-theme 优先（go-wind-ui 提交），这之前由本文件把暗色变量压回亮色档。
+ * 2) 边线：0.2.3 的基类写死 `border: none !important`，暗色块只改 border-color、
+ *    不给 style/width，于是编辑器贴在 L1 卡片上完全没有可见边界。库侧已改为
+ *    `1px solid var(--tte-border-primary)`，这里先补上同样的边框。
+ */
+
+/* ---- 亮色主题下强制亮色档（覆盖 .tiptap-editor-dark 的变量） ---- */
+html[data-theme='light'] .tiptap-editor-dark {
+  --tte-bg-primary: #ffffff !important;
+  --tte-bg-secondary: #f8fafc !important;
+  --tte-bg-tertiary: #f1f5f9 !important;
+  --tte-text-primary: #1f2937 !important;
+  --tte-text-secondary: #4b5563 !important;
+  --tte-text-muted: #9ca3af !important;
+  --tte-border-primary: #e5e7eb !important;
+  --tte-border-secondary: #eef2f7 !important;
+  --tte-code-bg: #f1f5f9 !important;
+  --tte-code-text: #b91c1c !important;
+  --tte-blockquote-border: #e5e7eb !important;
+  --tte-blockquote-text: #6b7280 !important;
+  --tte-link: #1677ff !important;
+  --tte-link-hover: #4096ff !important;
+  --tte-toolbar-bg: #f8fafc !important;
+  --tte-toolbar-btn: #4b5563 !important;
+  --tte-toolbar-btn-hover: #f1f5f9 !important;
+  --tte-toolbar-btn-active: #1677ff !important;
+  --tte-statusbar-bg: #f8fafc !important;
+  background-color: var(--tte-bg-primary) !important;
+  border-color: var(--tte-border-primary) !important;
+}
+
+/* 暗色块里少数写死的子规则在"强制亮色"下会变成浅字浅底，单独纠正 */
+html[data-theme='light'] .tiptap-editor-dark .ProseMirror pre .code-block-language-selector select {
+  color: #475569 !important;
+  background-color: #eef2f7 !important;
+  border-color: #cbd5e1 !important;
+}
+
+/* ---- 可见边界：亮/暗两态都补 1px 描边（暗色用 --tte-border-primary 的暗档值） ---- */
+html[data-theme] .tiptap-editor-wrapper {
+  border: 1px solid var(--tte-border-primary, #e5e7eb) !important;
+  border-radius: 8px !important;
+}
