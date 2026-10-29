@@ -18,11 +18,11 @@ importers:
         specifier: 0.2.3
         version: 0.2.3
       '@go-wind/bi-vue':
-        specifier: 0.2.3
-        version: 0.2.3(vue@3.5.44(typescript@5.9.3))
+        specifier: 0.3.0
+        version: 0.3.0(vue@3.5.44(typescript@5.9.3))
       '@go-wind/editor-vue':
-        specifier: 0.2.3
-        version: 0.2.3(@element-plus/icons-vue@2.3.2(vue@3.5.44(typescript@5.9.3)))(@floating-ui/dom@1.8.0)(@tiptap/extension-code-block@3.32.1(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1))(@tiptap/extension-list@3.32.1(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1))(@tiptap/extensions@3.32.1(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1)(@typescript-eslint/types@8.72.1)(element-plus@2.14.7(vue@3.5.44(typescript@5.9.3)))(vue@3.5.44(typescript@5.9.3))
+        specifier: 0.2.4
+        version: 0.2.4(@element-plus/icons-vue@2.3.2(vue@3.5.44(typescript@5.9.3)))(@floating-ui/dom@1.8.0)(@tiptap/extension-code-block@3.32.1(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1))(@tiptap/extension-list@3.32.1(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1))(@tiptap/extensions@3.32.1(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1)(@typescript-eslint/types@8.72.1)(element-plus@2.14.7(vue@3.5.44(typescript@5.9.3)))(vue@3.5.44(typescript@5.9.3))
       '@go-wind/print-canvas':
         specifier: 1.3.12
         version: 1.3.12(vue@3.5.44(typescript@5.9.3))
@@ -926,13 +926,13 @@ packages:
   '@go-wind/bi-core@0.2.3':
     resolution: {integrity: sha512-q/PYuCds04f5v5ohBHiVpOE/Nhi7tvHlPiQT8QvrewhuP4ejfcN8Z7gZ8GTR1my/dsiskgQ0GWFl63lQPPl6cg==}
 
-  '@go-wind/bi-vue@0.2.3':
-    resolution: {integrity: sha512-WMfhzCdOnuDF5iC4T5itEFqrYke08sp6ccN7F7aggukpTh0Km+beIy2Yy9uclYG76LQt7terkjWcTLnh95tGDg==}
+  '@go-wind/bi-vue@0.3.0':
+    resolution: {integrity: sha512-uDjUmBgXf+qHr11/9AwqEsosUHucNcCBBSMUw3LfpXaUDIfJ31wt/u6fUiB2yLFsec7653tRoc+1O+IorVDZYA==}
     peerDependencies:
       vue: '>=3.5.0'
 
-  '@go-wind/editor-vue@0.2.3':
-    resolution: {integrity: sha512-XqExm70nTnDhXwrNyIZWe8lyB/jEVd+qK22OJ51oZJogv2wHl7/gN3Dc2+9pJ7y0IeRTi1ZxpQ3SorUgpiextw==}
+  '@go-wind/editor-vue@0.2.4':
+    resolution: {integrity: sha512-zbhYjDzv5iai5vP/xYwZKrJ9bHvzckLL55kl29VwYEQorqKVAZzd10ZDOGUx3tssABYKaoE/xZSCaMOjlOOCVA==}
     peerDependencies:
       '@element-plus/icons-vue': '>=2.3.0'
       element-plus: '>=2.13.0'
@@ -6016,13 +6016,13 @@ snapshots:
     dependencies:
       echarts: 6.1.0
 
-  '@go-wind/bi-vue@0.2.3(vue@3.5.44(typescript@5.9.3))':
+  '@go-wind/bi-vue@0.3.0(vue@3.5.44(typescript@5.9.3))':
     dependencies:
       '@go-wind/bi-core': 0.2.3
       '@go-wind/locale': 0.2.3(vue@3.5.44(typescript@5.9.3))
       vue: 3.5.44(typescript@5.9.3)
 
-  '@go-wind/editor-vue@0.2.3(@element-plus/icons-vue@2.3.2(vue@3.5.44(typescript@5.9.3)))(@floating-ui/dom@1.8.0)(@tiptap/extension-code-block@3.32.1(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1))(@tiptap/extension-list@3.32.1(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1))(@tiptap/extensions@3.32.1(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1)(@typescript-eslint/types@8.72.1)(element-plus@2.14.7(vue@3.5.44(typescript@5.9.3)))(vue@3.5.44(typescript@5.9.3))':
+  '@go-wind/editor-vue@0.2.4(@element-plus/icons-vue@2.3.2(vue@3.5.44(typescript@5.9.3)))(@floating-ui/dom@1.8.0)(@tiptap/extension-code-block@3.32.1(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1))(@tiptap/extension-list@3.32.1(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1))(@tiptap/extensions@3.32.1(@tiptap/core@3.32.1(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1))(@tiptap/pm@3.32.1)(@typescript-eslint/types@8.72.1)(element-plus@2.14.7(vue@3.5.44(typescript@5.9.3)))(vue@3.5.44(typescript@5.9.3))':
     dependencies:
       '@element-plus/icons-vue': 2.3.2(vue@3.5.44(typescript@5.9.3))
       '@go-wind/locale': 0.2.3(vue@3.5.44(typescript@5.9.3))

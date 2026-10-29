@@ -23,14 +23,14 @@ importers:
         specifier: 0.2.3
         version: 0.2.3
       '@go-wind/bi-react':
-        specifier: 0.2.3
-        version: 0.2.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vue@3.5.34(typescript@6.0.3))
+        specifier: 0.3.0
+        version: 0.3.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vue@3.5.34(typescript@6.0.3))
       '@go-wind/bi-vue':
-        specifier: 0.2.3
-        version: 0.2.3(vue@3.5.34(typescript@6.0.3))
+        specifier: 0.3.0
+        version: 0.3.0(vue@3.5.34(typescript@6.0.3))
       '@go-wind/editor-react':
-        specifier: 0.2.3
-        version: 0.2.3(@ant-design/icons@5.6.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@floating-ui/dom@1.7.6)(@tiptap/extension-code-block@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/extensions@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@types/react-dom@19.2.4(@types/react@19.2.15))(@types/react@19.2.15)(antd@6.4.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+        specifier: 0.2.4
+        version: 0.2.4(@ant-design/icons@5.6.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@floating-ui/dom@1.7.6)(@tiptap/extension-code-block@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/extensions@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@types/react-dom@19.2.4(@types/react@19.2.15))(@types/react@19.2.15)(antd@6.4.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@go-wind/print-common':
         specifier: 1.3.8-beta.0
         version: 1.3.8-beta.0
@@ -1077,20 +1077,20 @@ packages:
   '@go-wind/bi-core@0.2.3':
     resolution: {integrity: sha512-q/PYuCds04f5v5ohBHiVpOE/Nhi7tvHlPiQT8QvrewhuP4ejfcN8Z7gZ8GTR1my/dsiskgQ0GWFl63lQPPl6cg==}
 
-  '@go-wind/bi-react@0.2.3':
-    resolution: {integrity: sha512-fEqNLX1d5z1BzAxYl8zYyrAkFTHwWRW3YpfiDIP39V5gV+cwK9CMpgXYfYyE9iNOcOIwCp0j2fniLIKJembnfQ==}
+  '@go-wind/bi-react@0.3.0':
+    resolution: {integrity: sha512-IyHD4psNsNpsMaDdbO6knTF4Lp5wUG00yTpF2mnWADh+8hkQIt4yo4UMRz9g4Kh+V2G681bpqelAf1OqmOeY8Q==}
     peerDependencies:
       react: '>=19.0.0'
       react-dom: '>=19.0.0'
       vue: '>=3.5.0'
 
-  '@go-wind/bi-vue@0.2.3':
-    resolution: {integrity: sha512-WMfhzCdOnuDF5iC4T5itEFqrYke08sp6ccN7F7aggukpTh0Km+beIy2Yy9uclYG76LQt7terkjWcTLnh95tGDg==}
+  '@go-wind/bi-vue@0.3.0':
+    resolution: {integrity: sha512-uDjUmBgXf+qHr11/9AwqEsosUHucNcCBBSMUw3LfpXaUDIfJ31wt/u6fUiB2yLFsec7653tRoc+1O+IorVDZYA==}
     peerDependencies:
       vue: '>=3.5.0'
 
-  '@go-wind/editor-react@0.2.3':
-    resolution: {integrity: sha512-eXRg11r/3J5wuT/4r1d7od4vSJ5o68U9Q2LhvNUy2HPbib4Saqf0yOQ6pkEgoOe0aFca+k9WZeFR2LVY8fZWgw==}
+  '@go-wind/editor-react@0.2.4':
+    resolution: {integrity: sha512-TBdkkhAK+qrk/9XnadtrYpf+HLM0ixEd2zyfIMl4FqWaMh7/vY2G3UsG7rWh7/9knxTF2s4+MSXX6lPpqWbG5A==}
     peerDependencies:
       '@ant-design/icons': '>=5.6.0'
       antd: '>=6.0.0'
@@ -7466,21 +7466,21 @@ snapshots:
     dependencies:
       echarts: 6.1.0
 
-  '@go-wind/bi-react@0.2.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vue@3.5.34(typescript@6.0.3))':
+  '@go-wind/bi-react@0.3.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vue@3.5.34(typescript@6.0.3))':
     dependencies:
       '@go-wind/bi-core': 0.2.3
-      '@go-wind/bi-vue': 0.2.3(vue@3.5.34(typescript@6.0.3))
+      '@go-wind/bi-vue': 0.3.0(vue@3.5.34(typescript@6.0.3))
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
       vue: 3.5.34(typescript@6.0.3)
 
-  '@go-wind/bi-vue@0.2.3(vue@3.5.34(typescript@6.0.3))':
+  '@go-wind/bi-vue@0.3.0(vue@3.5.34(typescript@6.0.3))':
     dependencies:
       '@go-wind/bi-core': 0.2.3
       '@go-wind/locale': 0.2.3(vue@3.5.34(typescript@6.0.3))
       vue: 3.5.34(typescript@6.0.3)
 
-  '@go-wind/editor-react@0.2.3(@ant-design/icons@5.6.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@floating-ui/dom@1.7.6)(@tiptap/extension-code-block@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/extensions@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@types/react-dom@19.2.4(@types/react@19.2.15))(@types/react@19.2.15)(antd@6.4.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@go-wind/editor-react@0.2.4(@ant-design/icons@5.6.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@floating-ui/dom@1.7.6)(@tiptap/extension-code-block@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/extensions@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@types/react-dom@19.2.4(@types/react@19.2.15))(@types/react@19.2.15)(antd@6.4.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@ant-design/icons': 5.6.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@tiptap/core': 3.23.6(@tiptap/pm@3.23.6)

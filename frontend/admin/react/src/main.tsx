@@ -23,8 +23,6 @@ import './styles/pro-layout-overrides.css';
 import './styles/pro-components-dark.css';
 import './styles/semantic-text.css';
 import './styles/list-table.css';
-// @go-wind/editor-react 0.2.3 的暗色判定 / 边线兜底（库侧已修，0.2.4 发布后可删）
-import './styles/compat-go-wind-editor.css';
 
 import './index.css';
 import App from './app.tsx';
