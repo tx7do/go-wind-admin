@@ -244,6 +244,7 @@ cd frontend/admin/vue-vben   && pnpm install && pnpm dev             # 端口 15
 | 机器凭证（AK/SK） | 租户级 AccessKey / SecretKey 管理：创建时 Secret 一次性展示，支持启停、删除与密钥轮换重置（轮换后旧 Secret 立即失效）；AK / Secret 可经令牌交换端点换取租户作用域机器 JWT（machine 角色、仅签发 access 令牌），交换端点按 IP + AK 接入尝试限流 |
 | 语言管理 | 管理系统支持的多语言，配置语言名称、语言代码、本地名称、启用与默认状态 |
 | 打印模板 | 单据打印设计器：可视化拖拽设计打印模板（文本/表格/条码/二维码，毫米精确布局，多页跨页表头），模板按资源绑定，任意列表行可一键打印或批量打印（勾选行合并为单文档）；支持浏览器打印与服务端 PDF（后端 Chromium 渲染，部署需启用打印浏览器层，见 [docs/print_template.md](./docs/print_template.md)） |
+| BI 仪表盘 | BI 设计器（@go-wind/bi-*，拖拽画布、跨图联动、下钻、主题预设），仪表盘/大屏持久化入库（`bi_dashboards`，乐观锁防并发覆盖、内置禁删可复制派生）；三端同构：仪表盘渲染、设计器编辑（管理抽屉或独立页 `?id=`）、管理页列表；演示数据 static 内嵌，真实业务由宿主注入数据集 resolver；详见 [docs/bi_dashboard.md](./docs/bi_dashboard.md) |
 
 ### 消息与日志
 

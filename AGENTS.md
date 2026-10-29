@@ -91,4 +91,5 @@ gow 未覆盖的任务（三端 TS 生成 `make ts`、OpenAPI `make openapi`、`
 - 设计语言规范：`docs/design-language.md`（三端视觉唯一权威值表，改颜色/圆角/布局尺寸先改这里再同步三端）
 - AI 模块：`docs/ai_module.md`（模型提供商/流式对话/用量配额/知识库 RAG/脚本 ai 模块/安全洞察/智能问数的架构与部署要求；改 AI 相关代码、接新模型、部署 pgvector 或排租户 AI 403 前先读它）
 - 打印模板：`docs/print_template.md`（单据打印设计器：定位边界/fork 接管 MIT 内核选型/三端接入/输出链与 M0–M4 分期；动打印模板相关代码前先读它）
+- BI 仪表盘：`docs/bi_dashboard.md`（BI 设计器+大屏渲染：定位边界/数据模型（乐观锁）/三端入口/主题跟随语义/宿主集成注意；动 BI 模块相关代码前先读它）
 - 教程第 10 章：`docs/tutorial/10-ai-module.md`（AI 功能的采用者上手路径：配置三步/使用/集成）

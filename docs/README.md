@@ -69,6 +69,7 @@
 | [ai_agent_orchestration.md](./ai_agent_orchestration.md) | AI Agent 编排：图 DSL（五种节点）、执行语义、数据模型、M1/M2 分期；复用 AI 模块的提供商/知识库/配额链路 | 做 Agent 编排相关改动（画布/引擎/运行台账）前 |
 | [ai_module.md](./ai_module.md) | AI 模块：流式对话语义、提供商密钥、AI_TOKENS 配额与白名单、知识库 RAG（含文件上传/重索引任务）、脚本 ai 模块、审计日报、安全洞察（告警零文案 i18n 架构）、智能问数（双白名单+租户谓词）与 pgvector 部署要求 | 改 AI 相关代码（对话/提供商/知识库/配额/脚本 ai）前 |
 | [print_template.md](./print_template.md) | 打印模板（单据打印设计器）：定位边界、选型决策（fork 接管 MIT 内核 worm-vue3-print）、总体架构、数据模型、三端接入、输出链（浏览器打印/服务端 PDF/静默打印）与 M0–M4 分期 | 动打印模板相关代码、接列表行打印按钮或改模板数据模型前 |
+| [bi_dashboard.md](./bi_dashboard.md) | BI 仪表盘（设计器+大屏渲染）：定位边界、bi_dashboards 数据模型（乐观锁/内置种子/租户隔离）、三端入口（仪表盘/设计器/管理页）、主题跟随语义（auto vs 钉死）、全屏、库依赖与宿主集成注意 | 动 BI 模块（图表/设计器/持久化/主题）相关代码、接 api 数据集 resolver 前 |
 | [brand/](./brand/) | 品牌资产（logo / favicon / 锁版 / wordmark） | 换品牌或引用素材时 |
 
 另：仓库级开发约定（铁律、门禁、工具链）在根 [`AGENTS.md`](../AGENTS.md) 与各端 `AGENTS.md`，属于维护层文档，不在本目录。
