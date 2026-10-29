@@ -133,14 +133,14 @@ import {
   ElSwitch,
 } from "element-plus";
 // go-wind-print 设计器画布（Vue3 组件，无 UI 库依赖）；样式全局引一次
-import { PrintDesigner, createDefaultTemplate } from "@worm-vue3-print/canvas";
-import "@worm-vue3-print/canvas/style.css";
+import { PrintDesigner, createDefaultTemplate } from "@go-wind/print-canvas";
+import "@go-wind/print-canvas/style.css";
 import type {
   MultiPageTemplateData,
   PrintBusinessField,
   TemplateData,
-} from "@worm-vue3-print/core/designer";
-import { renderHtmlPages, browserCodeRenderer } from "@worm-vue3-print/core/browser";
+} from "@go-wind/print-core/designer";
+import { renderHtmlPages, browserCodeRenderer } from "@go-wind/print-core/browser";
 
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import {

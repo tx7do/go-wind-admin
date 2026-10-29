@@ -209,8 +209,6 @@
     "@vue/shared": "catalog:",
     "@vueuse/core": "catalog:",
     "@vueuse/integrations": "catalog:",
-    "@worm-vue3-print/canvas": "1.3.11",
-    "@worm-vue3-print/core": "1.3.11",
     "ant-design-vue": "catalog:",
     "axios": "catalog:",
     "axios-mock-adapter": "catalog:",
@@ -252,7 +250,9 @@
     "vxe-table": "catalog:",
     "watermark-js-plus": "catalog:",
     "zod": "catalog:",
-    "zod-defaults": "catalog:"
+    "zod-defaults": "catalog:",
+    "@go-wind/print-core": "1.3.12",
+    "@go-wind/print-canvas": "1.3.12"
   },
   "imports": {
     "#/*": [

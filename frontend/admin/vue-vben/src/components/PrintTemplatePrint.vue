@@ -10,8 +10,8 @@ import {
 } from '#/api/composables/print_template';
 import { PaginationQuery } from '#/transport/rest';
 import { apiClient } from '#/api/client';
-import { renderHtmlPages, browserCodeRenderer } from '@worm-vue3-print/core/browser';
-import { getPaperDimensions } from '@worm-vue3-print/core/designer';
+import { renderHtmlPages, browserCodeRenderer } from '@go-wind/print-core/browser';
+import { getPaperDimensions } from '@go-wind/print-core/designer';
 
 // 行打印定式（docs/print_template.md §5）：宿主列表持本组件引用，
 // 行动作里 print(resourceKey, row)——模板按 resourceKey 精确匹配优先，回退通用（resourceKey 空）。

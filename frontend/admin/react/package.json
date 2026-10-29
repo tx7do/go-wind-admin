@@ -41,8 +41,6 @@
     "@tiptap/pm": "^3.23.6",
     "@tiptap/react": "^3.23.6",
     "@tiptap/starter-kit": "^3.23.6",
-    "@worm-vue3-print/common": "1.3.7-beta.0",
-    "@worm-vue3-print/core": "1.3.11",
     "@xyflow/react": "^12.12.0",
     "antd": "^6.4.3",
     "axios": "^1.16.1",
@@ -73,7 +71,9 @@
     "react-markdown": "^10.1.0",
     "react-router-dom": "^6.26.0",
     "remark-gfm": "^4.0.1",
-    "zustand": "^5.0.13"
+    "zustand": "^5.0.13",
+    "@go-wind/print-core": "1.3.12",
+    "@go-wind/print-common": "1.3.8-beta.0"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

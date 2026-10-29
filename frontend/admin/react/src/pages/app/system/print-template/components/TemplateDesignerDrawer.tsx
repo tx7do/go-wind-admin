@@ -18,8 +18,8 @@ import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 // registerAll 必须在任何 mount 之前执行：未升级元素上的 property 赋值会以自有属性
 // 遮蔽升级后的类访问器（Custom Element 经典坑，docs/print_template.md §8.1）。
-import { registerAll, createDefaultTemplate } from '@worm-vue3-print/common';
-import { renderHtmlPages, browserCodeRenderer } from '@worm-vue3-print/core/browser';
+import { registerAll, createDefaultTemplate } from '@go-wind/print-common';
+import { renderHtmlPages, browserCodeRenderer } from '@go-wind/print-core/browser';
 import { writeHtmlToFrame } from './previewRender';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';
 import { useCreatePrintTemplate, useUpdatePrintTemplate } from '@/api/hooks/print-template';

@@ -5,8 +5,8 @@ import { useTranslation } from 'react-i18next';
 import type { printservicev1_PrintTemplate as PrintTemplate } from '@/api/generated/admin/service/v1';
 import { apiClient } from '@/api/client';
 import { fetchListPrintTemplates } from '@/api/hooks/print-template';
-import { renderHtmlPages, browserCodeRenderer } from '@worm-vue3-print/core/browser';
-import { getPaperDimensions } from '@worm-vue3-print/core/designer';
+import { renderHtmlPages, browserCodeRenderer } from '@go-wind/print-core/browser';
+import { getPaperDimensions } from '@go-wind/print-core/designer';
 import { PaginationQuery } from '@/core';
 
 /**

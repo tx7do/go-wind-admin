@@ -48,8 +48,8 @@ import {
   ElOption,
   ElSelect,
 } from "element-plus";
-import { renderHtmlPages, browserCodeRenderer } from "@worm-vue3-print/core/browser";
-import { getPaperDimensions } from "@worm-vue3-print/core/designer";
+import { renderHtmlPages, browserCodeRenderer } from "@go-wind/print-core/browser";
+import { getPaperDimensions } from "@go-wind/print-core/designer";
 import { apiClient } from "@/api/client";
 
 import { fetchListPrintTemplates } from "@/api/composables/print_template";
