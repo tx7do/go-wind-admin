@@ -5,13 +5,13 @@ on:
     paths:
       - 'frontend/admin/react/src/**'
       - 'frontend/admin/vue-element/src/**'
-      - 'frontend/admin/vue-vben/apps/admin/src/**'
+      - 'frontend/admin/vue-vben/src/**'
       - 'scripts/check-update-mask-allowlists.mjs'
   pull_request:
     paths:
       - 'frontend/admin/react/src/**'
       - 'frontend/admin/vue-element/src/**'
-      - 'frontend/admin/vue-vben/apps/admin/src/**'
+      - 'frontend/admin/vue-vben/src/**'
       - 'scripts/check-update-mask-allowlists.mjs'
 
 jobs:

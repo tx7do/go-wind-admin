@@ -48,10 +48,19 @@ import { existsSync, readFileSync, readdirSync } from 'node:fs';
 const MASKS = {
   // Notification channel form: the editable fields of the channel data
   // object. The SMTP/webhook credentials ride as dedicated request fields
-  // (password / webhookSecret) with empty-means-keep server semantics and
-  // must never enter the mask.
+  // (password / webhookSecret / smsAccessSecret) with empty-means-keep
+  // server semantics and must never enter the mask.
+  //
+  // Two shapes coexist since schema-driven EXT channels landed:
+  //   - legacy typed channels (EMAIL/WEBHOOK/SMS/...): the full field list
+  //   - EXT channels (schema-driven settings JSON): envelope + settings only
+  // react and vben branch on isExtType(); vue-element has not ported EXT
+  // channels yet and always sends the legacy list (registered as such).
   notificationChannel:
-    'name,type,smtpHost,smtpPort,smtpUsername,smtpFrom,smtpTls,webhookUrl,webhookSignStyle,webhookPayloadTemplate,enabled,remark',
+    'name,type,smtpHost,smtpPort,smtpUsername,smtpFrom,smtpFromName,smtpTls,webhookUrl,webhookSignStyle,webhookPayloadTemplate,smsProvider,smsAccessKeyId,smsSignName,smsTemplateCode,smsAppId,smsRegion,enabled,remark',
+  // Schema-driven (EXT) channel: only the settings bag plus the envelope
+  // fields are writable; the legacy per-channel columns are never sent.
+  notificationChannelSettings: 'name,type,settings,enabled,remark',
   // vben-local inline enable switch on the channel page: a narrow update
   // that only toggles enabled. react and vue-element edit enabled through
   // the drawer form instead. A deliberate three-frontend difference,
@@ -69,6 +78,12 @@ const MASKS = {
   // three frontends.
   monitorAlert:
     'name,metric,op,threshold,cooldownMinutes,channel,target,isEnabled,remark',
+  // AI agent edit form: the prompt/tool fields are edited through the
+  // canvas page, so the list page only writes the envelope + enabled.
+  aiAgent: 'name,description,enabled',
+  // AI agent canvas: full-graph persistence (nodes/edges JSON), a narrow
+  // single-field update by design.
+  aiAgentGraph: 'graph',
 };
 
 // Registered allowlist sites. Each entry pins, for one file, the complete
@@ -82,25 +97,28 @@ const MASKS = {
 const REGISTRY = [
   // --- notification channel ---
   {
-    // react drawer form, inline literal.
+    // react drawer form: legacy / EXT channels branch on isExtType().
     path: 'frontend/admin/react/src/pages/app/notification/channel/index.tsx',
-    expectStrings: [MASKS.notificationChannel],
-    expectIdents: [],
+    expectStrings: [MASKS.notificationChannel, MASKS.notificationChannelSettings],
+    expectIdents: ['isExtType'],
     defs: [],
   },
   {
-    // vben drawer form (inline literal) plus the vben-local inline enable
-    // switch (narrow enabled-only update; see MASKS note).
-    path: 'frontend/admin/vue-vben/apps/admin/src/views/app/notification/channel/index.vue',
+    // vben drawer form (same isExtType() branch, inline literals) plus the
+    // vben-local inline enable switch (narrow enabled-only update; see
+    // MASKS note).
+    path: 'frontend/admin/vue-vben/src/views/app/notification/channel/index.vue',
     expectStrings: [
       MASKS.notificationChannel,
+      MASKS.notificationChannelSettings,
       MASKS.notificationChannelEnabledToggle,
     ],
-    expectIdents: [],
+    expectIdents: ['isExtType'],
     defs: [],
   },
   {
-    // vue-element composable, inline literal.
+    // vue-element composable, inline literal. EXT channels not ported yet:
+    // always the legacy list, never the settings variant.
     path: 'frontend/admin/vue-element/src/api/composables/notification-channel.ts',
     expectStrings: [MASKS.notificationChannel],
     expectIdents: [],
@@ -118,7 +136,7 @@ const REGISTRY = [
   {
     // vben edit form, references the constant defined in the vben
     // composable (registered there).
-    path: 'frontend/admin/vue-vben/apps/admin/src/views/app/notification/rule/index.vue',
+    path: 'frontend/admin/vue-vben/src/views/app/notification/rule/index.vue',
     expectStrings: [],
     expectIdents: ['NOTIFICATION_RULE_UPDATE_MASK'],
     defs: [],
@@ -134,7 +152,7 @@ const REGISTRY = [
   {
     // vben composable: defines the constant referenced by the vben edit
     // form.
-    path: 'frontend/admin/vue-vben/apps/admin/src/api/composables/notification-rule.ts',
+    path: 'frontend/admin/vue-vben/src/api/composables/notification-rule.ts',
     expectStrings: [],
     expectIdents: [],
     defs: [{ name: 'NOTIFICATION_RULE_UPDATE_MASK', value: MASKS.notificationRule }],
@@ -151,7 +169,7 @@ const REGISTRY = [
   {
     // vben edit form, references the constant defined in the vben
     // composable (registered there).
-    path: 'frontend/admin/vue-vben/apps/admin/src/views/app/notification/template/index.vue',
+    path: 'frontend/admin/vue-vben/src/views/app/notification/template/index.vue',
     expectStrings: [],
     expectIdents: ['NOTIFICATION_TEMPLATE_UPDATE_MASK'],
     defs: [],
@@ -177,7 +195,7 @@ const REGISTRY = [
   {
     // vben composable: defines the constant referenced by the vben edit
     // form.
-    path: 'frontend/admin/vue-vben/apps/admin/src/api/composables/notification-template.ts',
+    path: 'frontend/admin/vue-vben/src/api/composables/notification-template.ts',
     expectStrings: [],
     expectIdents: [],
     defs: [{ name: 'NOTIFICATION_TEMPLATE_UPDATE_MASK', value: MASKS.notificationTemplate }],
@@ -186,14 +204,14 @@ const REGISTRY = [
   // --- monitor alert ---
   {
     // react edit form, inline literal.
-    path: 'frontend/admin/react/src/pages/app/system/monitor_alert/index.tsx',
+    path: 'frontend/admin/react/src/pages/app/system/monitor-alert/index.tsx',
     expectStrings: [MASKS.monitorAlert],
     expectIdents: [],
     defs: [],
   },
   {
     // vben edit form, inline literal.
-    path: 'frontend/admin/vue-vben/apps/admin/src/views/app/system/monitor_alert/index.vue',
+    path: 'frontend/admin/vue-vben/src/views/app/system/monitor_alert/index.vue',
     expectStrings: [MASKS.monitorAlert],
     expectIdents: [],
     defs: [],
@@ -205,13 +223,30 @@ const REGISTRY = [
     expectIdents: [],
     defs: [],
   },
+
+  // --- AI agent ---
+  {
+    // react list page edit form: envelope + enabled only (prompt/tools are
+    // edited on the canvas page).
+    path: 'frontend/admin/react/src/pages/app/ai/agent/index.tsx',
+    expectStrings: [MASKS.aiAgent],
+    expectIdents: [],
+    defs: [],
+  },
+  {
+    // react canvas page: persists the whole graph through one narrow field.
+    path: 'frontend/admin/react/src/pages/app/ai/agent/agent-canvas.tsx',
+    expectStrings: [MASKS.aiAgentGraph],
+    expectIdents: [],
+    defs: [],
+  },
 ];
 
 // The three application source trees.
 const ROOTS = [
   'frontend/admin/react/src',
   'frontend/admin/vue-element/src',
-  'frontend/admin/vue-vben/apps/admin/src',
+  'frontend/admin/vue-vben/src',
 ];
 
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.turbo', 'coverage']);
@@ -222,6 +257,15 @@ const SCANNABLE_RE = /\.(ts|tsx|vue|js|jsx|mjs)$/;
 const STRING_USAGE_RE = /updateMask\s*:\s*(['"`])([^'"`\n]*)\1/g;
 const IDENT_USAGE_RE = /updateMask\s*:\s*([A-Za-z_$][A-Za-z0-9_$]*)/g;
 const UPDATEMASK_BINDING_RE = /\b(?:const|let|var)\s+updateMask\s*=/g;
+
+// Conditional masks: `updateMask: cond ? '<a>' : '<b>'` (notification
+// channel branches legacy vs schema-driven EXT channels). Neither branch
+// matches STRING_USAGE_RE, so without this pattern both literals would be
+// invisible — exactly where a mask silently lost a field (vben shipped
+// without smtpFromName). Captures the two branch literals; the condition
+// identifier is already picked up by IDENT_USAGE_RE.
+const TERNARY_USAGE_RE =
+  /updateMask\s*:\s*[\s\S]{0,160}?\?\s*(['"`])([^'"`\n]*)\1\s*:\s*(['"`])([^'"`\n]*)\3/g;
 
 function defPattern(name) {
   return new RegExp(
@@ -292,6 +336,9 @@ for (const root of ROOTS) {
       continue;
     }
     const stringHits = [...content.matchAll(STRING_USAGE_RE)].map((m) => m[2]);
+    for (const m of content.matchAll(TERNARY_USAGE_RE)) {
+      stringHits.push(m[2], m[4]);
+    }
     const identHits = [...content.matchAll(IDENT_USAGE_RE)]
       .map((m) => m[1])
       .filter((name) => name !== 'makeUpdateMask');

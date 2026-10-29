@@ -461,7 +461,7 @@ async function handleSave() {
         smsAccessSecret,
         updateMask: isExtType(form.type)
           ? 'name,type,settings,enabled,remark'
-          : 'name,type,smtpHost,smtpPort,smtpUsername,smtpFrom,smtpTls,webhookUrl,webhookSignStyle,webhookPayloadTemplate,smsProvider,smsAccessKeyId,smsSignName,smsTemplateCode,smsAppId,smsRegion,enabled,remark',
+          : 'name,type,smtpHost,smtpPort,smtpUsername,smtpFrom,smtpFromName,smtpTls,webhookUrl,webhookSignStyle,webhookPayloadTemplate,smsProvider,smsAccessKeyId,smsSignName,smsTemplateCode,smsAppId,smsRegion,enabled,remark',
       });
       message.success($t('page.notificationChannel.updateSuccess'));
     }
