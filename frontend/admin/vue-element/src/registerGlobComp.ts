@@ -1,6 +1,6 @@
 import { App } from "vue";
 
-import { ElDialog, ElDrawer } from "element-plus";
+import { ElButton, ElDialog, ElDrawer } from "element-plus";
 import * as ElementPlusIcons from "@element-plus/icons-vue";
 
 import { configureVxeTable } from "@/plugins/vxe-table";
@@ -25,4 +25,10 @@ export function registerGlobComp(app: App) {
 
   // 全局组件（Element Plus 图标）
   Object.entries(ElementPlusIcons).forEach(([name, comp]) => app.component(name, comp));
+
+  // ElButton 全局注册：@go-wind/editor-vue@0.2.3 的 Tiptap 工具栏模板用了 <el-button> 但未 import，
+  // 产物里是 resolveComponent("el-button")，而本应用是 ElementPlusResolver 按需导入（不全局 use），
+  // 因此在消息抽屉等用到富文本的地方会报 "Failed to resolve component: el-button"。
+  // 库里已改为显式 import 并重新构建，等 0.2.4 发布后可以删掉这行。
+  app.component("ElButton", ElButton);
 }
