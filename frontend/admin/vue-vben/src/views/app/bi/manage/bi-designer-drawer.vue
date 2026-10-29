@@ -221,9 +221,9 @@ defineExpose({ open });
     <div class="flex h-full flex-col gap-2">
       <BaseForm />
       <!-- 画布容器：任何指针/键盘交互视为脏 -->
+      <!-- flex:1 吃满抽屉剩余高度（表单收缩、画布撑满），不再用 calc 魔法数 -->
       <div
-        class="min-h-[420px] flex-1"
-        style="height: calc(100vh - 320px)"
+        class="min-h-0 flex-1"
         @pointerdown.capture="canvasDirty = true"
         @keydown.capture="canvasDirty = true"
       >

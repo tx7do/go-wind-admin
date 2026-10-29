@@ -5,7 +5,13 @@
     :title="title"
     :config="{
       component: 'drawer',
-      drawer: { size: '100%' },
+      drawer: {
+        size: '100%',
+        // class 走 EP $attrs 合并到 .el-drawer 面板（供全局样式把 body 变 flex 撑满）；
+        // EP 的 DrawerProps 类型漏声明了该 attr，运行时有效
+        // @ts-expect-error class 未在 EP DrawerProps 类型中声明
+        class: 'bi-designer-drawer',
+      },
     }"
   >
     <ElForm
@@ -276,7 +282,27 @@ defineExpose({ open });
 }
 
 .designer-host {
-  height: calc(100vh - 240px);
-  min-height: 420px;
+  flex: 1;
+  min-height: 0;
+}
+</style>
+
+<style lang="scss">
+// 抽屉 body 高度链（全局块：抽屉 appendToBody 后脱离本组件子树，scoped 够不到）。
+// ProModal 的 v-loading 包裹 div 无类名，只能按 body 直子代选中。
+// canvas 由 .designer-host flex:1 撑满剩余高度（不再用 calc 魔法数）。
+.bi-designer-drawer {
+  .el-drawer__body {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .el-drawer__body > div {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+  }
 }
 </style>

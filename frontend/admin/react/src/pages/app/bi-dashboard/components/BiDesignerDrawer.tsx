@@ -166,6 +166,7 @@ const BiDesignerDrawer: React.FC<BiDesignerDrawerProps> = ({
       onClose={guardClose}
       width="100%"
       destroyOnHidden
+      styles={{ body: { display: 'flex', flexDirection: 'column', overflow: 'hidden' } }}
       footer={
         <Space style={{ float: 'right' }}>
           <Button onClick={guardClose}>{t('common:button.cancel')}</Button>
@@ -180,7 +181,7 @@ const BiDesignerDrawer: React.FC<BiDesignerDrawerProps> = ({
         </Space>
       }
     >
-      <Form form={form} layout="vertical" onValuesChange={handleValuesChange}>
+      <Form form={form} layout="vertical" onValuesChange={handleValuesChange} style={{ flexShrink: 0 }}>
         <div style={{ display: 'flex', gap: 16, marginBottom: 12 }}>
           <Form.Item
             name="name"
@@ -210,7 +211,8 @@ const BiDesignerDrawer: React.FC<BiDesignerDrawerProps> = ({
         </div>
       </Form>
 
-      <div style={{ height: 'calc(100vh - 220px)' }}>
+      {/* flex:1 吃满抽屉剩余高度（表单收缩、画布撑满），不再用 calc 魔法数 */}
+      <div style={{ flex: 1, minHeight: 0 }}>
         <BiDesignerReact
           // key 带行 id：换行编辑强制重挂载（initialSchema 是挂载快照，不回灌）
           key={`${mode}-${data?.id ?? 'new'}`}
