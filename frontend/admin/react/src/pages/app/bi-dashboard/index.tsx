@@ -1,3 +1,4 @@
+import "@go-wind/bi-react/style.css";
 import { useMemo } from 'react';
 import { BiProvider, BiDashboard } from '@go-wind/bi-react';
 import type { BiDashboardSchema } from '@go-wind/bi-core';

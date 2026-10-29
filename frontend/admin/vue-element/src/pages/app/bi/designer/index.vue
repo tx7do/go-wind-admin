@@ -17,6 +17,7 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { ElMessage } from "element-plus";
 import { BiDesigner, provideBiEnv, setBiLocale } from "@go-wind/bi-vue";
+import "@go-wind/bi-vue/style.css";
 import type { BiDashboardSchema } from "@go-wind/bi-core";
 import { useI18n } from "@/core/i18n";
 

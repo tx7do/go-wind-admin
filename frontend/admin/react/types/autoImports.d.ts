@@ -15,8 +15,9 @@ declare global {
   const CustomCodeBlockLowlight: typeof import('../src/components/common/Editor/src/TiptapEditor/index').CustomCodeBlockLowlight
   const CustomIframe: typeof import('../src/components/common/Editor/src/TiptapEditor/nodes').CustomIframe
   const CustomVideo: typeof import('../src/components/common/Editor/src/TiptapEditor/nodes').CustomVideo
-  const Editor: typeof import('../src/components/common/Editor/src/Editor').default
-  const EditorType: typeof import('../src/components/common/Editor/types').EditorType
+  const Editor: typeof import('../src/components/common/Editor/index').Editor
+  const EditorProvider: typeof import('../src/components/common/Editor/index').EditorProvider
+  const EditorType: typeof import('../src/components/common/Editor/index').EditorType
   const Fragment: typeof import('react').Fragment
   const IframeModal: typeof import('../src/components/common/Editor/src/TiptapEditor/modals').IframeModal
   const ImportModal: typeof import('../src/components/common/ImportModal/index').default
@@ -51,6 +52,7 @@ declare global {
   const createContext: typeof import('react').createContext
   const createRef: typeof import('react').createRef
   const defaultImageUpload: typeof import('../src/components/common/Editor/src/TiptapEditor/defaultImageUpload').defaultImageUpload
+  const defaultUploadImage: typeof import('../src/components/common/Editor/index').defaultUploadImage
   const disconnectSSEServer: typeof import('../src/hooks/useTokenRefresh').disconnectSSEServer
   const extractImageFiles: typeof import('../src/components/common/Editor/src/TiptapEditor/defaultImageUpload').extractImageFiles
   const fetchAllDictEntries: typeof import('../src/hooks/useDictCache').fetchAllDictEntries
@@ -61,7 +63,7 @@ declare global {
   const getDictEntryLabelByValue: typeof import('../src/hooks/useDictCache').getDictEntryLabelByValue
   const getDictTypes: typeof import('../src/hooks/useDictCache').getDictTypes
   const initMonacoWorkers: typeof import('../src/components/common/Editor/src/monaco-loader').initMonacoWorkers
-  const isDarkMode: typeof import('../src/components/common/Editor/src/utils').isDarkMode
+  const isDarkMode: typeof import('../src/components/common/Editor/index').isDarkMode
   const languages: typeof import('../src/components/common/Editor/src/TiptapEditor/index').languages
   const lazy: typeof import('react').lazy
   const memo: typeof import('react').memo
@@ -69,6 +71,7 @@ declare global {
   const reconnectSSEServer: typeof import('../src/hooks/useTokenRefresh').reconnectSSEServer
   const resetDictCache: typeof import('../src/hooks/useDictCache').resetDictCache
   const searchOptionRender: typeof import('../src/components/common/searchSubmitter').searchOptionRender
+  const setEditorLocale: typeof import('../src/components/common/Editor/index').setEditorLocale
   const startRefreshTimer: typeof import('../src/hooks/useTokenRefresh').startRefreshTimer
   const startTransition: typeof import('react').startTransition
   const stopRefreshTimer: typeof import('../src/hooks/useTokenRefresh').stopRefreshTimer
@@ -126,6 +129,6 @@ declare global {
 // for type re-export
 declare global {
   // @ts-ignore
-  export type { ResizableCellProps, TableActionConfirm, TableAction, FC, ECOption, AuthLayoutProps, EditorProps, CodeEditorProps, JsonEditorProps, MarkdownEditorProps, PlainTextEditorProps, TiptapEditorProps, CodeBlockModalProps, VideoModalProps, IframeModalProps, ImportModalProps, TableSkeletonProps, ThemeLoadingProps, TableExportServerExport, TableExportButtonProps, TokenPayload, AuthState, UserState, TabItem } from './autoImports.d'
+  export type { EditorEnv, ResizableCellProps, TableActionConfirm, TableAction, FC, ECOption, AuthLayoutProps, EditorProps, CodeEditorProps, JsonEditorProps, MarkdownEditorProps, PlainTextEditorProps, TiptapEditorProps, CodeBlockModalProps, VideoModalProps, IframeModalProps, ImportModalProps, TableSkeletonProps, ThemeLoadingProps, TableExportServerExport, TableExportButtonProps, TokenPayload, AuthState, UserState, TabItem } from './autoImports.d'
   import('./autoImports.d')
 }

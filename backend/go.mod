@@ -5,6 +5,7 @@ go 1.26.4
 require (
 	entgo.io/ent v0.14.6
 	github.com/alicebob/miniredis/v2 v2.39.0
+	github.com/chromedp/chromedp v0.21.0
 	github.com/envoyproxy/protoc-gen-validate v1.3.3
 	github.com/expr-lang/expr v1.17.8
 	github.com/getkin/kin-openapi v0.149.0
@@ -82,7 +83,6 @@ require (
 
 require (
 	github.com/chromedp/cdproto v0.157.8 // indirect
-	github.com/chromedp/chromedp v0.21.0 // indirect
 	github.com/go-json-experiment/json v0.0.0-20260213210345-44df1a37e875 // indirect
 	github.com/tx7do/go-crud/vector v0.0.1 // indirect
 	github.com/tx7do/kratos-authz/engine/casbin v1.1.12 // indirect
