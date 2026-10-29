@@ -318,8 +318,9 @@ function handleVxeCurrentChange({ row }: { row: T }) {
   emit("row-click", row);
 }
 
-function handleElCurrentChange(row: T) {
-  emit("row-click", row);
+function handleElCurrentChange(row: T | null) {
+  // ElTable 的 current-change 取消选中时会传 null
+  if (row) emit("row-click", row);
 }
 
 function handleSortChange(data: any) {

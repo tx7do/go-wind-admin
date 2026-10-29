@@ -1,6 +1,7 @@
 import "@go-wind/bi-react/style.css";
-import { useMemo } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { BiProvider, BiDashboard } from '@go-wind/bi-react';
+import { layoutCharts } from '@go-wind/bi-core';
 import type { BiDashboardSchema } from '@go-wind/bi-core';
 
 const SCHEMA: Partial<BiDashboardSchema> = {
@@ -55,13 +56,47 @@ const SCHEMA: Partial<BiDashboardSchema> = {
   ] as BiDashboardSchema["charts"],
 };
 
+/** 内容高度（设计单位）：直接复用渲染器的布局函数，避免公式重复走样 */
+function contentHeightOf(value: Partial<BiDashboardSchema>): number {
+  return layoutCharts(value.charts ?? [], value.grid, 1920).height;
+}
+
 export default function BiDashboardPage() {
   const schema = useMemo(() => SCHEMA, []);
+
+  // 视口填充：BiDashboard 的 fit=width 只按容器宽等比缩放，高度随内容（8 行 ≈ 644 设计px），
+  // 容器偏矮时会缩成半屏、下方留白。按容器宽高比反推设计宽：
+  // 缩放比 = 容器宽/设计宽，令 内容高×缩放比 = 容器高 → designWidth = 内容高 × W/H。
+  const bodyRef = useRef<HTMLDivElement | null>(null);
+  const [designWidth, setDesignWidth] = useState(1920);
+
+  useEffect(() => {
+    const el = bodyRef.current;
+    if (!el) return;
+    const sync = () => {
+      const width = el.clientWidth;
+      // 留 2px 余量，避免取整误差把内容顶出滚动条
+      const height = el.clientHeight - 2;
+      const contentHeight = contentHeightOf(schema);
+      if (width <= 0 || height <= 0 || contentHeight <= 0) return;
+      setDesignWidth(
+        Math.min(3840, Math.max(960, Math.round((contentHeight * width) / height))),
+      );
+    };
+    const observer = new ResizeObserver(sync);
+    observer.observe(el);
+    sync();
+    return () => observer.disconnect();
+  }, [schema]);
+
   return (
-    <div style={{ height: "100%", padding: "16px 20px", boxSizing: "border-box" }}>
-      <BiProvider env={{ emptyText: "暂无数据" }}>
-        <BiDashboard schema={schema} view={{ designWidth: 1920, fit: "width" }} />
-      </BiProvider>
+    <div style={{ height: '100%', padding: '12px 16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
+      {/* overflow:hidden 断掉"出滚动条→容器变窄→重算"的反馈环：设计宽已按可视区精确反推 */}
+      <div ref={bodyRef} style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
+        <BiProvider env={{ emptyText: '暂无数据' }}>
+          <BiDashboard schema={schema} view={{ designWidth, fit: 'width' }} />
+        </BiProvider>
+      </div>
     </div>
   );
 }

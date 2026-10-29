@@ -9,6 +9,8 @@
   "api-audit-log": "API Logs",
   "apis": "API Management",
   "auth": "Authentication",
+  "bi": "BI Analytics",
+  "bi-dashboard": "BI Dashboard",
   "coming-soon": "Coming Soon",
   "configs": "Config Management",
   "dashboard": "Overview",

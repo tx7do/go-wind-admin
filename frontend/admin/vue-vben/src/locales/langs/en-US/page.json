@@ -1413,5 +1413,10 @@
     "serverPdfFailed": "Server PDF failed",
     "batchPrint": "Batch Print",
     "noSelection": "Select rows to print first"
+  },
+  "bi": {
+    "title": "BI Analytics",
+    "dashboard": "Dashboard",
+    "dashboardTitle": "BI Dashboard"
   }
 }

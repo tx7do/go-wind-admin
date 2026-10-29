@@ -75,7 +75,17 @@ export class ProPageApi {
 
   constructor(config?: ProPageConfig) {
     const defaultState = getDefaultState();
-    this.store = reactive(mergeWithArrayOverride({ config }, defaultState) as ProPageState);
+    // defu 与 reactive 的类型都是递归推导的（Defu<...> / UnwrapNestedRefs<...>），
+    // ProPageState 这类深层配置会连续触发 TS2589（excessively deep）。
+    // 运行时行为不变：合并仍是深合并，响应式仍是同一个 reactive 代理，
+    // 这里只把类型推导的中间态宽化，最后收回声明类型。
+    const mergeState = mergeWithArrayOverride as unknown as (
+      source: Partial<ProPageState>,
+      defaults: ProPageState
+    ) => ProPageState;
+    this.store = reactive(
+      mergeState({ config }, defaultState) as Record<string, unknown>
+    ) as ProPageState;
 
     this.stateHandler = new StateHandler();
     bindMethods(this);

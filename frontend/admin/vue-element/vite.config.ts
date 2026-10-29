@@ -216,9 +216,18 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     ] as PluginOption[],
     // 预加载项目必需的组件（精简列表，Vite 8 + ElementPlusResolver 自动处理组件样式）
     optimizeDeps: {
-    // 库产物含 monaco ?worker 导入，依赖优化器处理不了——排除走源码链路
-    exclude: ["@go-wind/editor-vue", "@go-wind/editor-react"],
+      // 库产物含 monaco ?worker 导入，依赖优化器处理不了——排除走源码链路
+      exclude: ["@go-wind/editor-vue"],
       include: [
+        // 被 exclude 的子树其传递依赖同样不预构建，其中几类是裸 CJS，浏览器解析不了具名导出：
+        //   - lowlight 深引 highlight.js/lib/*（es/*.js 只是转发到 lib/*.js 的 CJS 实现）
+        // 显式纳入预构建，让优化器把它们转成 ESM 并补齐 default/具名导出
+        "lowlight",
+        "highlight.js",
+        "highlight.js/lib/core",
+        // json-editor-vue 的 ESM 产物 import json-source-map（纯 CJS、无 default 导出）
+        "json-editor-vue",
+        "json-source-map",
         "vue",
         "vue-router",
         "element-plus",

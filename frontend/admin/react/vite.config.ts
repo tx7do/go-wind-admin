@@ -13,9 +13,23 @@ export default defineConfig(({mode}) => {
         base: '/',
         plugins: createVitePlugins(),
         optimizeDeps: {
-    exclude: ["@go-wind/editor-vue", "@go-wind/editor-react"],
-  },
-  resolve: {
+            // editor-react 产物含 monaco 的 `?worker` 导入，依赖优化器处理不了，必须走源码链路。
+            // 被 exclude 的子树其传递依赖同样不预构建，其中两类是裸 CJS、浏览器解析不了具名导出：
+            //   - @tiptap/react 从 use-sync-external-store/shim 具名导入 useSyncExternalStore
+            //   - lowlight 深引 highlight.js/lib/*（es/*.js 只是转发到 lib/*.js 的 CJS 实现）
+            // 显式纳入预构建即可，预构建会把这些 CJS 转成 ESM 并补齐 default/具名导出。
+            exclude: ['@go-wind/editor-react'],
+            include: [
+                'lowlight',
+                'highlight.js',
+                'highlight.js/lib/core',
+                'use-sync-external-store/shim',
+                'use-sync-external-store/shim/index.js',
+                'use-sync-external-store/shim/with-selector',
+                'use-sync-external-store/shim/with-selector.js',
+            ],
+        },
+        resolve: {
             alias: {
                 '@': '/src',
                 '#': '/types',
