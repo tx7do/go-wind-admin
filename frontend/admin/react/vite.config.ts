@@ -12,7 +12,10 @@ export default defineConfig(({mode}) => {
     return {
         base: '/',
         plugins: createVitePlugins(),
-        resolve: {
+        optimizeDeps: {
+    exclude: ["@go-wind/editor-vue", "@go-wind/editor-react"],
+  },
+  resolve: {
             alias: {
                 '@': '/src',
                 '#': '/types',

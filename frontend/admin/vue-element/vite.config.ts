@@ -146,6 +146,10 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     resolve: {
       // Vite 8 新特性：自动读取 tsconfig.json 中的 paths 别名
       tsconfigPaths: true,
+      // SCSS 预处理器不走 tsconfigPaths——显式补 @ 别名
+      alias: {
+        "@": resolve(__dirname, "src"),
+      },
     },
     css: {
       preprocessorOptions: {
@@ -212,6 +216,8 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
     ] as PluginOption[],
     // 预加载项目必需的组件（精简列表，Vite 8 + ElementPlusResolver 自动处理组件样式）
     optimizeDeps: {
+    // 库产物含 monaco ?worker 导入，依赖优化器处理不了——排除走源码链路
+    exclude: ["@go-wind/editor-vue", "@go-wind/editor-react"],
       include: [
         "vue",
         "vue-router",
