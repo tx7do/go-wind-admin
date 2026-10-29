@@ -51,13 +51,16 @@
       @pointerdown.capture="markDirty"
       @keydown.capture="markDirty"
     >
-      <BiDesigner
-        :key="canvasKey"
-        :demo="mode === 'create'"
-        :initial-schema="initialSchema"
-        style="display: block; height: 100%"
-        @change="handleSchemaChange"
-      />
+        <!-- 不能写 display:block：会压过组件 scoped 的 display:flex，
+             内部 __body flex:1 失效 → 画布塌成内容高、无法滚动、抽屉里不撑满 -->
+        <BiDesigner
+          :key="canvasKey"
+          :demo="mode === 'create'"
+          :initial-schema="initialSchema"
+          style="height: 100%"
+          @change="handleSchemaChange"
+          />
+
     </div>
 
     <template #footer>

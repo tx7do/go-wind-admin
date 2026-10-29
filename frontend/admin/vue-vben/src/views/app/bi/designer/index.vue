@@ -39,14 +39,17 @@
     <div class="bi-designer-page__canvas">
       <!-- ready 门：取数完成前不挂画布——BiDesigner 不回灌运行期 props，先挂会以演示 schema
            落地且不随加载结果重挂（key 相同），自动保存会把演示内容覆盖进库 -->
+      <!-- 不能写 display:block：会压过组件 scoped 的 display:flex，
+           内部 __body flex:1 失效 → 画布塌成内容高、无法滚动、抽屉里不撑满 -->
       <BiDesigner
         v-if="ready"
         :key="canvasKey"
         :demo="!initialSchema"
         :initial-schema="initialSchema"
-        style="display: block; height: 100%"
+        style="height: 100%"
         @change="onSchemaChange"
-      />
+        />
+
     </div>
   </div>
 </template>

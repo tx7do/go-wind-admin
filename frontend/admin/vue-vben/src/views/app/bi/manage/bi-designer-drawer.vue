@@ -11,7 +11,7 @@ import { computed, ref, watch } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { notification } from 'ant-design-vue';
+import { Modal, notification } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
 import {
@@ -115,8 +115,21 @@ const [Drawer, drawerApi] = useVbenDrawer({
   confirmText: $t('common.save') || $t('common.button.save'),
   cancelText: $t('common.cancel') || $t('common.button.cancel'),
   onBeforeClose() {
+    // 关闭守卫（docs/form_drawer_close_guard.md）：无脏数据直通；脏数据弹确认，
+    // 放弃才关。此前脏时恒 return false 且无出口——编辑过一次抽屉就永远关不上。
     if (!canvasDirty.value) return true;
-    return false;
+    return new Promise<boolean>((resolve) => {
+      Modal.confirm({
+        title: $t('ui.drawer.unsavedMessage'),
+        okText: $t('ui.drawer.discardButton'),
+        cancelText: $t('ui.button.cancel'),
+        onOk: () => {
+          canvasDirty.value = false;
+          resolve(true);
+        },
+        onCancel: () => resolve(false),
+      });
+    });
   },
   onCancel() {
     drawerApi.close();
@@ -227,13 +240,16 @@ defineExpose({ open });
         @pointerdown.capture="canvasDirty = true"
         @keydown.capture="canvasDirty = true"
       >
+        <!-- 不能写 display:block：会压过组件 scoped 的 display:flex，
+             内部 __body flex:1 失效 → 画布塌成内容高、无法滚动、抽屉里不撑满 -->
         <BiDesigner
           :key="canvasKey"
           :demo="mode === 'create'"
           :initial-schema="initialSchema"
-          style="display: block; height: 100%"
+          style="height: 100%"
           @change="handleSchemaChange"
-        />
+          />
+
       </div>
     </div>
   </Drawer>
