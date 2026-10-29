@@ -51,7 +51,9 @@ const MessageDrawer: React.FC<MessageDrawerProps> = ({ open, mode, data, onClose
   // 加载分类列表
   useEffect(() => {
     if (open) {
-      fetchListMessageCategories(new PaginationQuery({ formValues: { isEnabled: 'true' } }))
+      // isEnabled 是布尔列：必须传布尔值走 EQ。传字符串 'true' 会被查询序列化器
+      // 当成模糊搜索拼成 isEnabled__contains=true，后端对布尔列 contains 直接 500。
+      fetchListMessageCategories(new PaginationQuery({ formValues: { isEnabled: true } }))
         .then((res) => {
           const items = res?.items || [];
           // 分类是平级列表，转为 select 选项

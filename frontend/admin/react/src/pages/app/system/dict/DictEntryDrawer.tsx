@@ -73,7 +73,8 @@ const DictEntryDrawer: React.FC<DictEntryDrawerProps> = ({
   // 加载字典类型下拉数据
   useEffect(() => {
     if (open) {
-      fetchListDictTypes(new PaginationQuery({ formValues: { is_enabled: 'true' } }))
+      // is_enabled 是布尔列：传布尔值走 EQ；字符串会被序列化成 __contains，后端报 500
+      fetchListDictTypes(new PaginationQuery({ formValues: { is_enabled: true } }))
         .then((res) => {
           const options = (res.items || []).map((item: any) => ({
             label: item.typeName,
