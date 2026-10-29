@@ -50,3 +50,7 @@ gui-test-screenshots/
 
 # 依赖目录兜底（各端自己的 .gitignore 之外，防在错误目录跑包管理器把依赖带进仓）
 node_modules/
+
+# 本地调试残留（含登录响应/token）
+login-resp.json
+*-login-resp.json
