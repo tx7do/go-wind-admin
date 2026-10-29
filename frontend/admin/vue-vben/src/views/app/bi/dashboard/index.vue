@@ -6,9 +6,30 @@
       <a-button v-if="dashboardId" size="small" @click="goDesigner">
         {{ $t('common.edit') }}
       </a-button>
-      <a-button size="small" @click="toggleFullscreen">
+      <VbenTooltip side="bottom">
+        <template #trigger>
+          <VbenIconButton @click="toggleFullscreen">
+            <!-- 图标与框架顶栏 FullScreen 同款：Maximize 进 / 手抄 Minimize 出 -->
+            <svg
+              v-if="isFullscreen"
+              class="text-foreground size-4"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <path d="M8 3v3a2 2 0 0 1-2 2H3" />
+              <path d="M21 8h-3a2 2 0 0 1-2-2V3" />
+              <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+              <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+            </svg>
+            <Maximize v-else class="text-foreground size-4" />
+          </VbenIconButton>
+        </template>
         {{ isFullscreen ? $t('page.bi.exitFullscreen') : $t('page.bi.fullscreen') }}
-      </a-button>
+      </VbenTooltip>
     </div>
     <div ref="bodyRef" class="bi-dashboard-page__body">
       <BiDashboard
@@ -30,6 +51,8 @@ import { layoutCharts } from '@go-wind/bi-core';
 import type { BiDashboardSchema } from '@go-wind/bi-core';
 import { useRoute, useRouter } from 'vue-router';
 import { useFullscreen } from '@vueuse/core';
+import { VbenIconButton, VbenTooltip } from '@vben-core/shadcn-ui';
+import { Maximize } from '@vben/icons';
 import { fetchBiDashboard } from '#/api/composables/bi_dashboard';
 import { usePreferences } from '@vben/preferences';
 
