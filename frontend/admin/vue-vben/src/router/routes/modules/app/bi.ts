@@ -26,6 +26,17 @@ const routes: RouteRecordRaw[] = [
           authority: ['sys:platform_admin', 'sys:tenant_manager'],
         },
       },
+      {
+        name: 'BiDesigner',
+        path: '/bi/designer',
+        component: () => import('#/views/app/bi/designer/index.vue'),
+        meta: {
+          order: 2,
+          icon: 'lucide:pencil-ruler',
+          title: $t('page.bi.designer'),
+          authority: ['sys:platform_admin', 'sys:tenant_manager'],
+        },
+      },
     ],
   },
 ];

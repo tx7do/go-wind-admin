@@ -25,6 +25,16 @@ export const biRoutes: AppRouteObject[] = [
           order: 1,
         },
       },
+      {
+        name: 'bi-designer',
+        path: 'designer', // /bi/designer
+        element: createLazyRoute(() => import('@/pages/app/bi-designer')),
+        meta: {
+          title: 'routes:bi-designer',
+          icon: 'lucide:pencil-ruler',
+          order: 2,
+        },
+      },
     ],
   },
 ];

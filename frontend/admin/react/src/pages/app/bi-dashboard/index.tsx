@@ -1,8 +1,11 @@
 import "@go-wind/bi-react/style.css";
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { BiProvider, BiDashboard } from '@go-wind/bi-react';
 import { layoutCharts } from '@go-wind/bi-core';
 import type { BiDashboardSchema } from '@go-wind/bi-core';
+
+/** 与 /bi/designer 共用：设计器落盘、仪表盘读取 */
+const BI_SCHEMA_STORAGE_KEY = "bi:schema:default";
 
 const SCHEMA: Partial<BiDashboardSchema> = {
   name: "default",
@@ -62,7 +65,20 @@ function contentHeightOf(value: Partial<BiDashboardSchema>): number {
 }
 
 export default function BiDashboardPage() {
-  const schema = useMemo(() => SCHEMA, []);
+  // 优先渲染设计器保存的 schema（与 /bi/designer 共用这个 localStorage 键），
+  // 没有保存过才回落到内置演示。读取放在首帧后的 effect 里：SSR/首屏无需等待。
+  const [schema, setSchema] = useState<Partial<BiDashboardSchema>>(SCHEMA);
+
+  useEffect(() => {
+    const saved = localStorage.getItem(BI_SCHEMA_STORAGE_KEY);
+    if (!saved) return;
+    try {
+      setSchema(JSON.parse(saved));
+    } catch (error) {
+      // 脏数据不阻塞页面：记原始错误，继续用演示 schema
+      console.error("[bi-dashboard] 本地 schema 解析失败，改用演示 schema", error);
+    }
+  }, []);
 
   // 视口填充：BiDashboard 的 fit=width 只按容器宽等比缩放，高度随内容（8 行 ≈ 644 设计px），
   // 容器偏矮时会缩成半屏、下方留白。按容器宽高比反推设计宽：

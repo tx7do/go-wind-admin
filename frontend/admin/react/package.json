@@ -18,6 +18,7 @@
     "@ant-design/pro-components": "^2.8.10",
     "@go-wind/bi-core": "0.2.3",
     "@go-wind/bi-react": "0.2.3",
+    "@go-wind/bi-vue": "0.2.3",
     "@go-wind/editor-react": "0.2.3",
     "@go-wind/print-common": "1.3.8-beta.0",
     "@go-wind/print-core": "1.3.12",
@@ -76,6 +77,7 @@
     "react-markdown": "^10.1.0",
     "react-router-dom": "^6.26.0",
     "remark-gfm": "^4.0.1",
+    "vue": "^3.5.34",
     "zustand": "^5.0.13"
   },
   "devDependencies": {

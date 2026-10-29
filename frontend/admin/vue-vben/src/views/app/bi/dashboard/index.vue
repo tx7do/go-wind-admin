@@ -25,6 +25,9 @@ import { usePreferences } from '@vben/preferences';
 
 defineOptions({ name: 'BiDashboardPage' });
 
+/** 与 /bi/designer 共用：设计器落盘、仪表盘读取 */
+const BI_SCHEMA_STORAGE_KEY = 'bi:schema:default';
+
 const { isDark, locale: appLocale } = usePreferences();
 const biLocale = computed(() =>
   (appLocale.value ?? 'zh-CN').startsWith('zh') ? 'zh-CN' : 'en-US',
@@ -56,6 +59,16 @@ function syncDesignWidth() {
 
 onMounted(() => {
   setBiLocale(biLocale.value);
+  // 设计器保存过的 schema 优先于内置演示（两页共用一个键）
+  const saved = localStorage.getItem(BI_SCHEMA_STORAGE_KEY);
+  if (saved) {
+    try {
+      schema.value = JSON.parse(saved);
+    } catch (error) {
+      // 脏数据不阻塞页面：记原始错误，继续用演示 schema
+      console.error('[bi-dashboard] 本地 schema 解析失败，改用演示 schema', error);
+    }
+  }
   if (!bodyRef.value) return;
   // 容器尺寸变化（窗口缩放 / 侧栏折叠）都要重算设计宽
   resizeObserver = new ResizeObserver(syncDesignWidth);

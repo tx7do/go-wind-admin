@@ -1417,6 +1417,7 @@
   "bi": {
     "title": "BI Analytics",
     "dashboard": "Dashboard",
-    "dashboardTitle": "BI Dashboard"
+    "dashboardTitle": "BI Dashboard",
+    "designer": "Designer"
   }
 }
