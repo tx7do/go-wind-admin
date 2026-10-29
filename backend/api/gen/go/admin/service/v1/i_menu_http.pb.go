@@ -46,15 +46,15 @@ type MenuServiceHTTPServer interface {
 
 func RegisterMenuServiceHTTPServer(s *http.Server, srv MenuServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/menus", _MenuService_List18_HTTP_Handler(srv))
-	r.GET("/admin/v1/menus/{id}", _MenuService_Get16_HTTP_Handler(srv))
-	r.POST("/admin/v1/menus", _MenuService_Create12_HTTP_Handler(srv))
-	r.PUT("/admin/v1/menus/{id}", _MenuService_Update13_HTTP_Handler(srv))
-	r.DELETE("/admin/v1/menus/{id}", _MenuService_Delete14_HTTP_Handler(srv))
+	r.GET("/admin/v1/menus", _MenuService_List19_HTTP_Handler(srv))
+	r.GET("/admin/v1/menus/{id}", _MenuService_Get17_HTTP_Handler(srv))
+	r.POST("/admin/v1/menus", _MenuService_Create13_HTTP_Handler(srv))
+	r.PUT("/admin/v1/menus/{id}", _MenuService_Update14_HTTP_Handler(srv))
+	r.DELETE("/admin/v1/menus/{id}", _MenuService_Delete15_HTTP_Handler(srv))
 	r.POST("/admin/v1/menus/sync", _MenuService_SyncMenus0_HTTP_Handler(srv))
 }
 
-func _MenuService_List18_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.Context) error {
+func _MenuService_List19_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.PagingRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -73,7 +73,7 @@ func _MenuService_List18_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.C
 	}
 }
 
-func _MenuService_Get16_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.Context) error {
+func _MenuService_Get17_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.GetMenuRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -95,7 +95,7 @@ func _MenuService_Get16_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.Co
 	}
 }
 
-func _MenuService_Create12_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.Context) error {
+func _MenuService_Create13_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.CreateMenuRequest
 		if err := ctx.Bind(&in); err != nil {
@@ -117,7 +117,7 @@ func _MenuService_Create12_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http
 	}
 }
 
-func _MenuService_Update13_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.Context) error {
+func _MenuService_Update14_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.UpdateMenuRequest
 		if err := ctx.Bind(&in); err != nil {
@@ -142,7 +142,7 @@ func _MenuService_Update13_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http
 	}
 }
 
-func _MenuService_Delete14_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.Context) error {
+func _MenuService_Delete15_HTTP_Handler(srv MenuServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.DeleteMenuRequest
 		if err := ctx.BindQuery(&in); err != nil {

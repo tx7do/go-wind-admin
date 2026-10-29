@@ -93,4 +93,5 @@ export * from './user-profile';
 export * from './script';
 
 // 打印模板
+export * from './bi_dashboard';
 export * from './print_template';

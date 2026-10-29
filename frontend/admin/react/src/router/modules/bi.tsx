@@ -35,6 +35,16 @@ export const biRoutes: AppRouteObject[] = [
           order: 2,
         },
       },
+      {
+        name: 'bi-manage',
+        path: 'manage', // /bi/manage
+        element: createLazyRoute(() => import('@/pages/app/bi-dashboard/manage')),
+        meta: {
+          title: 'routes:bi-manage',
+          icon: 'lucide:layout-dashboard',
+          order: 3,
+        },
+      },
     ],
   },
 ];

@@ -512,6 +512,54 @@ var (
 			},
 		},
 	}
+	// BiDashboardsColumns holds the columns for the "bi_dashboards" table.
+	BiDashboardsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "is_enabled", Type: field.TypeBool, Nullable: true, Comment: "是否启用", Default: true},
+		{Name: "sort_order", Type: field.TypeUint32, Nullable: true, Comment: "排序值（越小越靠前）", Default: 0},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "名称（展示用）"},
+		{Name: "code", Type: field.TypeString, Nullable: true, Comment: "编码，租户内唯一，业务侧按编码取仪表盘"},
+		{Name: "kind", Type: field.TypeEnum, Nullable: true, Comment: "种类（DASHBOARD=仪表盘 SCREEN=大屏 TEMPLATE=可复用模板）", Enums: []string{"DASHBOARD", "SCREEN", "TEMPLATE"}, Default: "DASHBOARD"},
+		{Name: "remark", Type: field.TypeString, Nullable: true, Comment: "备注"},
+		{Name: "payload", Type: field.TypeString, Nullable: true, Comment: "仪表盘 JSON（设计器 schema：数据集 + 图表布局 + 主题；服务端不解析只透传）", SchemaType: map[string]string{"mysql": "json", "postgres": "jsonb"}},
+		{Name: "chart_count", Type: field.TypeUint32, Nullable: true, Comment: "图表数量冗余列（来自 payload.charts，列表页直显免解析 JSON）", Default: 0},
+		{Name: "theme_key", Type: field.TypeString, Nullable: true, Comment: "主题预设冗余列（来自 payload.theme.key）"},
+		{Name: "thumbnail", Type: field.TypeString, Nullable: true, Comment: "缩略图 URL（设计器导出 PNG 后上传，列表页预览用）"},
+		{Name: "is_built_in", Type: field.TypeBool, Nullable: true, Comment: "是否系统内置（内置禁删，可复制派生）", Default: false},
+		{Name: "is_public", Type: field.TypeBool, Nullable: true, Comment: "是否租户内共享（false 仅创建者可见）", Default: false},
+		{Name: "version", Type: field.TypeUint32, Nullable: true, Comment: "版本号（乐观锁：更新需回传读到的版本，成功后 +1）", Default: 1},
+	}
+	// BiDashboardsTable holds the schema information for the "bi_dashboards" table.
+	BiDashboardsTable = &schema.Table{
+		Name:       "bi_dashboards",
+		Comment:    "BI 仪表盘表（设计器 schema JSON；租户隔离，内置禁删可复制，version 乐观锁）",
+		Columns:    BiDashboardsColumns,
+		PrimaryKey: []*schema.Column{BiDashboardsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "uidx_bi_dashboards_code_tenant",
+				Unique:  true,
+				Columns: []*schema.Column{BiDashboardsColumns[11], BiDashboardsColumns[9]},
+			},
+			{
+				Name:    "idx_bi_dashboards_kind",
+				Unique:  false,
+				Columns: []*schema.Column{BiDashboardsColumns[12]},
+			},
+			{
+				Name:    "idx_bi_dashboards_created_at",
+				Unique:  false,
+				Columns: []*schema.Column{BiDashboardsColumns[1]},
+			},
+		},
+	}
 	// SysDataAccessAuditLogsColumns holds the columns for the "sys_data_access_audit_logs" table.
 	SysDataAccessAuditLogsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -3775,6 +3823,7 @@ var (
 		SysAiUsageLogsTable,
 		SysApisTable,
 		SysAPIAuditLogsTable,
+		BiDashboardsTable,
 		SysDataAccessAuditLogsTable,
 		SysDictEntriesTable,
 		SysDictEntryI18nTable,
@@ -3891,6 +3940,11 @@ func init() {
 	}
 	SysAPIAuditLogsTable.Annotation = &entsql.Annotation{
 		Table:     "sys_api_audit_logs",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	BiDashboardsTable.Annotation = &entsql.Annotation{
+		Table:     "bi_dashboards",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

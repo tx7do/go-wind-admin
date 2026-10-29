@@ -76,6 +76,7 @@
   "bi": {
     "title": "BI Analytics",
     "dashboard": "Dashboard",
-    "designer": "Designer"
+    "designer": "Designer",
+    "manage": "Dashboard Manager"
   }
 }

@@ -1,0 +1,58 @@
+syntax = "proto3";
+
+package admin.service.v1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+import "pagination/v1/pagination.proto";
+import "bi/service/v1/bi_dashboard.proto";
+
+
+// BI 仪表盘管理服务
+service BiDashboardService {
+  // 查询 BI 仪表盘列表
+  rpc List (pagination.PagingRequest) returns (bi.service.v1.ListBiDashboardResponse) {
+    option (google.api.http) = {
+      get: "/admin/v1/bi-dashboards"
+    };
+  }
+
+  // 查询 BI 仪表盘详情
+  rpc Get (bi.service.v1.GetBiDashboardRequest) returns (bi.service.v1.BiDashboard) {
+    option (google.api.http) = {
+      get: "/admin/v1/bi-dashboards/{id}"
+    };
+  }
+
+  // 创建 BI 仪表盘
+  rpc Create (bi.service.v1.CreateBiDashboardRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/bi-dashboards"
+      body: "*"
+    };
+  }
+
+  // 更新 BI 仪表盘
+  rpc Update (bi.service.v1.UpdateBiDashboardRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      put: "/admin/v1/bi-dashboards/{id}"
+      body: "*"
+    };
+  }
+
+  // 删除 BI 仪表盘
+  rpc Delete (bi.service.v1.DeleteBiDashboardRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      delete: "/admin/v1/bi-dashboards/{id}"
+    };
+  }
+
+  // 复制 BI 仪表盘（模板派生 / 另存为）
+  rpc Copy (bi.service.v1.CopyBiDashboardRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/bi-dashboards/{id}:copy"
+      body: "*"
+    };
+  }
+}

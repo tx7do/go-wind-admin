@@ -1636,6 +1636,185 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/bi-dashboards:
+        get:
+            tags:
+                - BiDashboardService
+            description: 查询 BI 仪表盘列表
+            operationId: BiDashboardService_List
+            parameters:
+                - name: page
+                  in: query
+                  description: 当前页码（从1开始，默认1）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: pageSize
+                  in: query
+                  description: 每页条数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: offset
+                  in: query
+                  description: 跳过的记录数（从0开始，默认0）
+                  schema:
+                    type: string
+                - name: limit
+                  in: query
+                  description: 最多返回的记录数（默认10，建议设置上限如100）
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: token
+                  in: query
+                  description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                  schema:
+                    type: string
+                - name: noPaging
+                  in: query
+                  description: 是否不分页，如果为true，则page和pageSize参数无效。
+                  schema:
+                    type: boolean
+                - name: query
+                  in: query
+                  description: JSON字符串过滤条件，基础语法：{"field1":"val1", "field2___icontains":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                  schema:
+                    type: string
+                - name: filter
+                  in: query
+                  description: Google AIP规范字符串过滤条件
+                  schema:
+                    type: string
+                - name: filterExpr.type
+                  in: query
+                  description: 过滤表达式类型
+                  schema:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    format: enum
+                - name: orderBy
+                  in: query
+                  description: 排序条件
+                  schema:
+                    type: string
+                - name: fieldMask
+                  in: query
+                  description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListBiDashboardResponse'
+        post:
+            tags:
+                - BiDashboardService
+            description: 创建 BI 仪表盘
+            operationId: BiDashboardService_Create
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateBiDashboardRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/bi-dashboards/{id}:
+        get:
+            tags:
+                - BiDashboardService
+            description: 查询 BI 仪表盘详情
+            operationId: BiDashboardService_Get
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+                - name: viewMask
+                  in: query
+                  schema:
+                    type: string
+                    format: field-mask
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/BiDashboard'
+        put:
+            tags:
+                - BiDashboardService
+            description: 更新 BI 仪表盘
+            operationId: BiDashboardService_Update
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateBiDashboardRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+        delete:
+            tags:
+                - BiDashboardService
+            description: 删除 BI 仪表盘
+            operationId: BiDashboardService_Delete
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/bi-dashboards/{id}:copy:
+        post:
+            tags:
+                - BiDashboardService
+            description: 复制 BI 仪表盘（模板派生 / 另存为）
+            operationId: BiDashboardService_Copy
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CopyBiDashboardRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
     /admin/v1/captcha:
         get:
             tags:
@@ -8927,6 +9106,85 @@ components:
                     type: array
                     items:
                         $ref: '#/components/schemas/Language'
+        BiDashboard:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 仪表盘ID
+                    format: uint32
+                name:
+                    type: string
+                    description: 名称（展示用）
+                code:
+                    type: string
+                    description: 编码，租户内唯一，业务侧按编码取仪表盘
+                kind:
+                    enum:
+                        - DASHBOARD
+                        - SCREEN
+                        - TEMPLATE
+                    type: string
+                    description: 种类：DASHBOARD 仪表盘 / SCREEN 大屏 / TEMPLATE 模板
+                    format: enum
+                remark:
+                    type: string
+                    description: 备注
+                payload:
+                    type: string
+                    description: 仪表盘 JSON（设计器 schema：数据集 + 图表布局 + 主题，含 schemaVersion；服务端不解析只透传）
+                chartCount:
+                    type: integer
+                    description: 图表数量冗余列（来自 payload.charts，列表页直显免解析 JSON）
+                    format: uint32
+                themeKey:
+                    type: string
+                    description: 主题预设冗余列（来自 payload.theme.key，列表页直显）
+                thumbnail:
+                    type: string
+                    description: 缩略图 URL（设计器导出 PNG 后上传，列表页预览用）
+                isBuiltIn:
+                    type: boolean
+                    description: 是否系统内置（内置禁删，可复制派生）
+                isPublic:
+                    type: boolean
+                    description: 是否租户内共享（false 仅创建者可见）
+                version:
+                    type: integer
+                    description: 版本号（乐观锁：更新时回传读到的版本，冲突拒绝；保存成功后 +1）
+                    format: uint32
+                isEnabled:
+                    type: boolean
+                    description: 是否启用，停用的仪表盘不出现在业务入口
+                sortOrder:
+                    type: integer
+                    description: 排序序号
+                    format: uint32
+                createdBy:
+                    type: integer
+                    description: 创建者ID
+                    format: uint32
+                updatedBy:
+                    type: integer
+                    description: 更新者ID
+                    format: uint32
+                deletedBy:
+                    type: integer
+                    description: 删除者用户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 创建时间
+                    format: date-time
+                updatedAt:
+                    type: string
+                    description: 更新时间
+                    format: date-time
+                deletedAt:
+                    type: string
+                    description: 删除时间
+                    format: date-time
+            description: BI 仪表盘
         BindContactRequest:
             type: object
             properties:
@@ -9146,6 +9404,20 @@ components:
                     type: string
                     description: 任务执行类型名，例如 "send_email"、"generate_report" 等，用于区分不同类型的任务
             description: 控制调度任务 - 请求
+        CopyBiDashboardRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 源仪表盘ID
+                    format: uint32
+                name:
+                    type: string
+                    description: 副本名称（缺省在原名后追加 -copy）
+                code:
+                    type: string
+                    description: 副本编码（缺省自动生成，租户内唯一）
+            description: 复制 BI 仪表盘 - 请求
         CountScriptLogsResponse:
             type: object
             properties:
@@ -9194,6 +9466,12 @@ components:
                 data:
                     $ref: '#/components/schemas/Api'
             description: 创建 - 请求
+        CreateBiDashboardRequest:
+            type: object
+            properties:
+                data:
+                    $ref: '#/components/schemas/BiDashboard'
+            description: 创建 BI 仪表盘 - 请求
         CreateConfigRequest:
             type: object
             properties:
@@ -10683,6 +10961,16 @@ components:
                 total:
                     type: string
             description: 查询列表 - 回应
+        ListBiDashboardResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/BiDashboard'
+                total:
+                    type: string
+            description: 查询 BI 仪表盘列表 - 回应
         ListChannelSchemasResponse:
             type: object
             properties:
@@ -14109,6 +14397,23 @@ components:
                     type: boolean
                     description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
             description: 更新 - 请求
+        UpdateBiDashboardRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                data:
+                    $ref: '#/components/schemas/BiDashboard'
+                updateMask:
+                    example: id,name,payload
+                    type: string
+                    description: 要更新的字段列表
+                    format: field-mask
+                allowMissing:
+                    type: boolean
+                    description: 如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。
+            description: 更新 BI 仪表盘 - 请求
         UpdateConfigRequest:
             type: object
             properties:
@@ -14938,6 +15243,8 @@ tags:
       description: API资源管理服务
     - name: AuthenticationService
       description: 用户后台登录认证服务
+    - name: BiDashboardService
+      description: BI 仪表盘管理服务
     - name: ConfigService
       description: 系统参数管理服务
     - name: DashboardService

@@ -1,8 +1,10 @@
 import "@go-wind/bi-react/style.css";
 import { useEffect, useRef, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { BiProvider, BiDashboard } from '@go-wind/bi-react';
 import { layoutCharts } from '@go-wind/bi-core';
 import type { BiDashboardSchema } from '@go-wind/bi-core';
+import { apiClient } from '@/api/client';
 
 /** 与 /bi/designer 共用：设计器落盘、仪表盘读取 */
 const BI_SCHEMA_STORAGE_KEY = "bi:schema:default";
@@ -65,20 +67,43 @@ function contentHeightOf(value: Partial<BiDashboardSchema>): number {
 }
 
 export default function BiDashboardPage() {
-  // 优先渲染设计器保存的 schema（与 /bi/designer 共用这个 localStorage 键），
-  // 没有保存过才回落到内置演示。读取放在首帧后的 effect 里：SSR/首屏无需等待。
+  // schema 来源优先级：?id= 后端行 > localStorage（设计器草稿）> 内置演示。
+  // 列表页「预览」跳 /bi/dashboard?id=N；无 id 时仍读本地草稿兼容旧链路。
+  const [searchParams] = useSearchParams();
+  const idParam = searchParams.get('id');
+  const dashboardId = idParam ? Number(idParam) : undefined;
+
   const [schema, setSchema] = useState<Partial<BiDashboardSchema>>(SCHEMA);
 
   useEffect(() => {
-    const saved = localStorage.getItem(BI_SCHEMA_STORAGE_KEY);
-    if (!saved) return;
-    try {
-      setSchema(JSON.parse(saved));
-    } catch (error) {
-      // 脏数据不阻塞页面：记原始错误，继续用演示 schema
-      console.error("[bi-dashboard] 本地 schema 解析失败，改用演示 schema", error);
+    if (dashboardId) {
+      // 后端行：拉 payload
+      apiClient.biDashboardService
+        .Get({ id: dashboardId })
+        .then((row) => {
+          if (row.payload) {
+            try {
+              setSchema(JSON.parse(row.payload));
+            } catch (error) {
+              console.error('[bi-dashboard] 服务端 payload 解析失败，改用演示 schema', error);
+            }
+          }
+        })
+        .catch((error: unknown) => {
+          console.error('[bi-dashboard] 拉取仪表盘失败，改用演示 schema', error);
+        })
+      return;
     }
-  }, []);
+    const saved = localStorage.getItem(BI_SCHEMA_STORAGE_KEY);
+    if (saved) {
+      try {
+        setSchema(JSON.parse(saved));
+      } catch (error) {
+        // 脏数据不阻塞页面：记原始错误，继续用演示 schema
+        console.error("[bi-dashboard] 本地 schema 解析失败，改用演示 schema", error);
+      }
+    }
+  }, [dashboardId]);
 
   // 视口填充：BiDashboard 的 fit=width 只按容器宽等比缩放，高度随内容（8 行 ≈ 644 设计px），
   // 容器偏矮时会缩成半屏、下方留白。按容器宽高比反推设计宽：

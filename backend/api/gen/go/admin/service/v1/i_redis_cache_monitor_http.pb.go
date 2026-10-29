@@ -29,10 +29,10 @@ type RedisCacheMonitorServiceHTTPServer interface {
 
 func RegisterRedisCacheMonitorServiceHTTPServer(s *http.Server, srv RedisCacheMonitorServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/redis-cache-monitor", _RedisCacheMonitorService_Get27_HTTP_Handler(srv))
+	r.GET("/admin/v1/redis-cache-monitor", _RedisCacheMonitorService_Get28_HTTP_Handler(srv))
 }
 
-func _RedisCacheMonitorService_Get27_HTTP_Handler(srv RedisCacheMonitorServiceHTTPServer) func(ctx http.Context) error {
+func _RedisCacheMonitorService_Get28_HTTP_Handler(srv RedisCacheMonitorServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.GetRedisCacheMonitorRequest
 		if err := ctx.BindQuery(&in); err != nil {

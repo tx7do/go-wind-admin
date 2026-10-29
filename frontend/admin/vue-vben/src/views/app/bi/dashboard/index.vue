@@ -21,6 +21,8 @@ import { BiDashboard, setBiLocale } from '@go-wind/bi-vue';
 import '@go-wind/bi-vue/style.css';
 import { layoutCharts } from '@go-wind/bi-core';
 import type { BiDashboardSchema } from '@go-wind/bi-core';
+import { useRoute } from 'vue-router';
+import { fetchBiDashboard } from '#/api/composables/bi_dashboard';
 import { usePreferences } from '@vben/preferences';
 
 defineOptions({ name: 'BiDashboardPage' });
@@ -28,6 +30,7 @@ defineOptions({ name: 'BiDashboardPage' });
 /** 与 /bi/designer 共用：设计器落盘、仪表盘读取 */
 const BI_SCHEMA_STORAGE_KEY = 'bi:schema:default';
 
+const route = useRoute();
 const { isDark, locale: appLocale } = usePreferences();
 const biLocale = computed(() =>
   (appLocale.value ?? 'zh-CN').startsWith('zh') ? 'zh-CN' : 'en-US',
@@ -40,6 +43,33 @@ const biLocale = computed(() =>
 const bodyRef = ref<HTMLElement | null>(null);
 const designWidth = ref(1920);
 let resizeObserver: ResizeObserver | null = null;
+
+// schema 来源优先级：?id= 后端行 > localStorage 草稿 > 内置演示
+async function loadSchema() {
+  const id = Number(route.query.id);
+  if (id > 0) {
+    try {
+      const row = await fetchBiDashboard(id);
+      if (row.payload) {
+        schema.value = JSON.parse(row.payload);
+        syncDesignWidth();
+        return;
+      }
+    } catch (error) {
+      console.error('[bi-dashboard] 拉取仪表盘失败，改用演示 schema', error);
+    }
+  }
+  // 设计器保存过的 schema 优先于内置演示（两页共用一个键）
+  const saved = localStorage.getItem(BI_SCHEMA_STORAGE_KEY);
+  if (saved) {
+    try {
+      schema.value = JSON.parse(saved);
+    } catch (error) {
+      console.error('[bi-dashboard] 本地 schema 解析失败，改用演示 schema', error);
+    }
+  }
+  syncDesignWidth();
+}
 
 /** 内容高度（设计单位）：直接复用渲染器的布局函数，避免公式重复走样 */
 function contentHeightOf(value: Partial<BiDashboardSchema>): number {
@@ -59,16 +89,7 @@ function syncDesignWidth() {
 
 onMounted(() => {
   setBiLocale(biLocale.value);
-  // 设计器保存过的 schema 优先于内置演示（两页共用一个键）
-  const saved = localStorage.getItem(BI_SCHEMA_STORAGE_KEY);
-  if (saved) {
-    try {
-      schema.value = JSON.parse(saved);
-    } catch (error) {
-      // 脏数据不阻塞页面：记原始错误，继续用演示 schema
-      console.error('[bi-dashboard] 本地 schema 解析失败，改用演示 schema', error);
-    }
-  }
+  void loadSchema();
   if (!bodyRef.value) return;
   // 容器尺寸变化（窗口缩放 / 侧栏折叠）都要重算设计宽
   resizeObserver = new ResizeObserver(syncDesignWidth);

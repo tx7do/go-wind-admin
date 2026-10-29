@@ -2970,6 +2970,243 @@ export type authenticationservicev1_GetTenantBrandingResponse = {
   name: string | undefined;
 };
 
+// BI 仪表盘管理服务
+export interface BiDashboardService {
+  // 查询 BI 仪表盘列表
+  List(
+    request: pagination_PagingRequest,
+  ): Promise<biservicev1_ListBiDashboardResponse>;
+  // 查询 BI 仪表盘详情
+  Get(
+    request: biservicev1_GetBiDashboardRequest,
+  ): Promise<biservicev1_BiDashboard>;
+  // 创建 BI 仪表盘
+  Create(
+    request: biservicev1_CreateBiDashboardRequest,
+  ): Promise<wellKnownEmpty>;
+  // 更新 BI 仪表盘
+  Update(
+    request: biservicev1_UpdateBiDashboardRequest,
+  ): Promise<wellKnownEmpty>;
+  // 删除 BI 仪表盘
+  Delete(
+    request: biservicev1_DeleteBiDashboardRequest,
+  ): Promise<wellKnownEmpty>;
+  // 复制 BI 仪表盘（模板派生 / 另存为）
+  Copy(
+    request: biservicev1_CopyBiDashboardRequest,
+  ): Promise<wellKnownEmpty>;
+}
+
+export function createBiDashboardServiceClient(
+  transport: ClientTransport,
+): BiDashboardService {
+  return {
+    List(request) {
+      const path = `/admin/v1/bi-dashboards`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.page) {
+        queryParams.push(
+          `page=${encodeURIComponent(request.page.toString())}`,
+        );
+      }
+      if (request.pageSize) {
+        queryParams.push(
+          `pageSize=${encodeURIComponent(request.pageSize.toString())}`,
+        );
+      }
+      if (request.offset) {
+        queryParams.push(
+          `offset=${encodeURIComponent(request.offset.toString())}`,
+        );
+      }
+      if (request.limit) {
+        queryParams.push(
+          `limit=${encodeURIComponent(request.limit.toString())}`,
+        );
+      }
+      if (request.token) {
+        queryParams.push(
+          `token=${encodeURIComponent(request.token.toString())}`,
+        );
+      }
+      if (request.noPaging) {
+        queryParams.push(
+          `noPaging=${encodeURIComponent(request.noPaging.toString())}`,
+        );
+      }
+      if (request.query) {
+        queryParams.push(
+          `query=${encodeURIComponent(request.query.toString())}`,
+        );
+      }
+      if (request.filter) {
+        queryParams.push(
+          `filter=${encodeURIComponent(request.filter.toString())}`,
+        );
+      }
+      if (request.filterExpr?.type) {
+        queryParams.push(
+          `filterExpr.type=${encodeURIComponent(request.filterExpr.type.toString())}`,
+        );
+      }
+      if (request.orderBy) {
+        queryParams.push(
+          `orderBy=${encodeURIComponent(request.orderBy.toString())}`,
+        );
+      }
+      if (request.fieldMask) {
+        queryParams.push(
+          `fieldMask=${encodeURIComponent(request.fieldMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'BiDashboardService',
+        method: 'List',
+      }) as Promise<biservicev1_ListBiDashboardResponse>;
+    },
+    Get(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `/admin/v1/bi-dashboards/${request.id}`;
+      const body = null;
+      const queryParams: string[] = [];
+      if (request.viewMask) {
+        queryParams.push(
+          `viewMask=${encodeURIComponent(request.viewMask.toString())}`,
+        );
+      }
+      let uri = path;
+      if (queryParams.length > 0) {
+        uri += `?${queryParams.join('&')}`;
+      }
+      return transport.unary(uri, 'GET', body, {
+        service: 'BiDashboardService',
+        method: 'Get',
+      }) as Promise<biservicev1_BiDashboard>;
+    },
+    Create(request) {
+      const path = `/admin/v1/bi-dashboards`;
+      const body = JSON.stringify(request);
+      return transport.unary(path, 'POST', body, {
+        service: 'BiDashboardService',
+        method: 'Create',
+      }) as Promise<wellKnownEmpty>;
+    },
+    Update(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `/admin/v1/bi-dashboards/${request.id}`;
+      const bodyMap = { ...request } as Record<string, unknown>;
+      delete bodyMap["id"];
+      const body = JSON.stringify(bodyMap);
+      return transport.unary(path, 'PUT', body, {
+        service: 'BiDashboardService',
+        method: 'Update',
+      }) as Promise<wellKnownEmpty>;
+    },
+    Delete(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `/admin/v1/bi-dashboards/${request.id}`;
+      const body = null;
+      return transport.unary(path, 'DELETE', body, {
+        service: 'BiDashboardService',
+        method: 'Delete',
+      }) as Promise<wellKnownEmpty>;
+    },
+    Copy(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `/admin/v1/bi-dashboards/${request.id}:copy`;
+      const bodyMap = { ...request } as Record<string, unknown>;
+      delete bodyMap["id"];
+      const body = JSON.stringify(bodyMap);
+      return transport.unary(path, 'POST', body, {
+        service: 'BiDashboardService',
+        method: 'Copy',
+      }) as Promise<wellKnownEmpty>;
+    },
+  };
+}
+// 查询 BI 仪表盘列表 - 回应
+export type biservicev1_ListBiDashboardResponse = {
+  items: biservicev1_BiDashboard[] | undefined;
+  total: number | undefined;
+};
+
+// BI 仪表盘
+export type biservicev1_BiDashboard = {
+  chartCount?: number;
+  code?: string;
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  deletedAt?: wellKnownTimestamp;
+  deletedBy?: number;
+  id?: number;
+  isBuiltIn?: boolean;
+  isEnabled?: boolean;
+  isPublic?: boolean;
+  kind?: biservicev1_BiDashboardKind;
+  name?: string;
+  payload?: string;
+  remark?: string;
+  sortOrder?: number;
+  themeKey?: string;
+  thumbnail?: string;
+  updatedAt?: wellKnownTimestamp;
+  updatedBy?: number;
+  version?: number;
+};
+
+// BI 仪表盘种类
+export type biservicev1_BiDashboardKind =
+  // 仪表盘（管理页内嵌展示）
+  | 'DASHBOARD'
+  // 大屏（投屏展示，按设计稿等比缩放）
+  | 'SCREEN'
+  // 可复用模板（列表页"从模板新建"派生用）
+  | 'TEMPLATE';
+// 查询 BI 仪表盘 - 请求
+export type biservicev1_GetBiDashboardRequest = {
+  id?: number;
+  viewMask?: wellKnownFieldMask;
+};
+
+// 创建 BI 仪表盘 - 请求
+export type biservicev1_CreateBiDashboardRequest = {
+  data: biservicev1_BiDashboard | undefined;
+};
+
+// 更新 BI 仪表盘 - 请求
+export type biservicev1_UpdateBiDashboardRequest = {
+  allowMissing?: boolean;
+  data: biservicev1_BiDashboard | undefined;
+  id: number | undefined;
+  updateMask: undefined | wellKnownFieldMask;
+};
+
+// 删除 BI 仪表盘 - 请求
+export type biservicev1_DeleteBiDashboardRequest = {
+  id?: number;
+};
+
+// 复制 BI 仪表盘 - 请求
+export type biservicev1_CopyBiDashboardRequest = {
+  code?: string;
+  id: number | undefined;
+  name?: string;
+};
+
 // 系统参数管理服务
 export interface ConfigService {
   // 查询系统参数列表
@@ -12088,6 +12325,7 @@ export class ApiClient {
   private _apiAuditLogService?: ApiAuditLogService;
   private _apiService?: ApiService;
   private _authenticationService?: AuthenticationService;
+  private _biDashboardService?: BiDashboardService;
   private _configService?: ConfigService;
   private _dashboardService?: DashboardService;
   private _dataAccessAuditLogService?: DataAccessAuditLogService;
@@ -12192,6 +12430,10 @@ export class ApiClient {
 
   get authenticationService(): AuthenticationService {
     return this._authenticationService ??= createAuthenticationServiceClient(this._transport);
+  }
+
+  get biDashboardService(): BiDashboardService {
+    return this._biDashboardService ??= createBiDashboardServiceClient(this._transport);
   }
 
   get configService(): ConfigService {

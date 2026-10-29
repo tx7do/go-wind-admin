@@ -46,15 +46,15 @@ type PrintTemplateServiceHTTPServer interface {
 
 func RegisterPrintTemplateServiceHTTPServer(s *http.Server, srv PrintTemplateServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/print-templates", _PrintTemplateService_List29_HTTP_Handler(srv))
-	r.GET("/admin/v1/print-templates/{id}", _PrintTemplateService_Get26_HTTP_Handler(srv))
-	r.POST("/admin/v1/print-templates", _PrintTemplateService_Create20_HTTP_Handler(srv))
-	r.PUT("/admin/v1/print-templates/{id}", _PrintTemplateService_Update21_HTTP_Handler(srv))
-	r.DELETE("/admin/v1/print-templates/{id}", _PrintTemplateService_Delete22_HTTP_Handler(srv))
+	r.GET("/admin/v1/print-templates", _PrintTemplateService_List30_HTTP_Handler(srv))
+	r.GET("/admin/v1/print-templates/{id}", _PrintTemplateService_Get27_HTTP_Handler(srv))
+	r.POST("/admin/v1/print-templates", _PrintTemplateService_Create21_HTTP_Handler(srv))
+	r.PUT("/admin/v1/print-templates/{id}", _PrintTemplateService_Update22_HTTP_Handler(srv))
+	r.DELETE("/admin/v1/print-templates/{id}", _PrintTemplateService_Delete23_HTTP_Handler(srv))
 	r.POST("/admin/v1/print-templates:render-pdf", _PrintTemplateService_RenderPdf0_HTTP_Handler(srv))
 }
 
-func _PrintTemplateService_List29_HTTP_Handler(srv PrintTemplateServiceHTTPServer) func(ctx http.Context) error {
+func _PrintTemplateService_List30_HTTP_Handler(srv PrintTemplateServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.PagingRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -73,7 +73,7 @@ func _PrintTemplateService_List29_HTTP_Handler(srv PrintTemplateServiceHTTPServe
 	}
 }
 
-func _PrintTemplateService_Get26_HTTP_Handler(srv PrintTemplateServiceHTTPServer) func(ctx http.Context) error {
+func _PrintTemplateService_Get27_HTTP_Handler(srv PrintTemplateServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.GetPrintTemplateRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -95,7 +95,7 @@ func _PrintTemplateService_Get26_HTTP_Handler(srv PrintTemplateServiceHTTPServer
 	}
 }
 
-func _PrintTemplateService_Create20_HTTP_Handler(srv PrintTemplateServiceHTTPServer) func(ctx http.Context) error {
+func _PrintTemplateService_Create21_HTTP_Handler(srv PrintTemplateServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.CreatePrintTemplateRequest
 		if err := ctx.Bind(&in); err != nil {
@@ -117,7 +117,7 @@ func _PrintTemplateService_Create20_HTTP_Handler(srv PrintTemplateServiceHTTPSer
 	}
 }
 
-func _PrintTemplateService_Update21_HTTP_Handler(srv PrintTemplateServiceHTTPServer) func(ctx http.Context) error {
+func _PrintTemplateService_Update22_HTTP_Handler(srv PrintTemplateServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.UpdatePrintTemplateRequest
 		if err := ctx.Bind(&in); err != nil {
@@ -142,7 +142,7 @@ func _PrintTemplateService_Update21_HTTP_Handler(srv PrintTemplateServiceHTTPSer
 	}
 }
 
-func _PrintTemplateService_Delete22_HTTP_Handler(srv PrintTemplateServiceHTTPServer) func(ctx http.Context) error {
+func _PrintTemplateService_Delete23_HTTP_Handler(srv PrintTemplateServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.DeletePrintTemplateRequest
 		if err := ctx.BindQuery(&in); err != nil {

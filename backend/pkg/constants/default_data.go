@@ -8,6 +8,7 @@ import (
 	"github.com/tx7do/go-utils/trans"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
+	biV1 "go-wind-admin/api/gen/go/bi/service/v1"
 	configV1 "go-wind-admin/api/gen/go/config/service/v1"
 	dictV1 "go-wind-admin/api/gen/go/dict/service/v1"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
@@ -1319,5 +1320,30 @@ var DefaultNotificationRules = []*notificationV1.NotificationRule{
 		IsAsync:   trans.Ptr(false),
 		IsEnabled: trans.Ptr(true),
 		Remark:    trans.Ptr("站内信：收件行主键要在同一趟里回给调用方（SSE 载荷依赖它）"),
+	},
+}
+
+// DefaultBiDashboards 内置 BI 模板种子（启动期按 code 缺一补一，已存在不覆盖）。
+// payload 是设计器（@go-wind/bi-core）schema 的 JSON 原文，服务端不解析。
+// 内置行 is_built_in=true：禁删、可复制派生到本租户。
+var DefaultBiDashboards = []*biV1.BiDashboard{
+	{
+		Code:       trans.Ptr("builtin.bi.basic"),
+		Name:       trans.Ptr("基础仪表盘模板"),
+		Kind:       biV1.BiDashboardKind_TEMPLATE.Enum(),
+		Remark:     trans.Ptr("内置基线：一张柱状图，复制后换成自己的数据集即可"),
+		ChartCount: trans.Ptr(uint32(1)),
+		ThemeKey:   trans.Ptr("tech-blue"),
+		Payload: trans.Ptr(`{"schemaVersion":2,"name":"builtin.bi.basic",` +
+			`"grid":{"columns":12,"rowHeight":80,"gap":8},` +
+			`"theme":{"key":"tech-blue"},` +
+			`"datasets":[{"id":"ds_sales","name":"月度销售额","type":"static","rows":[` +
+			`{"month":"1月","sales":120},{"month":"2月","sales":180},{"month":"3月","sales":150}]}],` +
+			`"charts":[{"id":"c_bar","title":"月度销售额","datasetId":"ds_sales","type":"bar",` +
+			`"x":0,"y":0,"w":6,"h":4,"encoding":{"dimension":"month","measure":"sales"},` +
+			`"aggregation":"sum"}]}`),
+		IsBuiltIn: trans.Ptr(true),
+		IsEnabled: trans.Ptr(true),
+		SortOrder: trans.Ptr(uint32(1)),
 	},
 }

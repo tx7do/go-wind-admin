@@ -43,14 +43,14 @@ type LoginPolicyServiceHTTPServer interface {
 
 func RegisterLoginPolicyServiceHTTPServer(s *http.Server, srv LoginPolicyServiceHTTPServer) {
 	r := s.Route("/")
-	r.GET("/admin/v1/login-policies", _LoginPolicyService_List17_HTTP_Handler(srv))
-	r.GET("/admin/v1/login-policies/{id}", _LoginPolicyService_Get15_HTTP_Handler(srv))
-	r.POST("/admin/v1/login-policies", _LoginPolicyService_Create11_HTTP_Handler(srv))
-	r.PUT("/admin/v1/login-policies/{id}", _LoginPolicyService_Update12_HTTP_Handler(srv))
-	r.DELETE("/admin/v1/login-policies/{id}", _LoginPolicyService_Delete13_HTTP_Handler(srv))
+	r.GET("/admin/v1/login-policies", _LoginPolicyService_List18_HTTP_Handler(srv))
+	r.GET("/admin/v1/login-policies/{id}", _LoginPolicyService_Get16_HTTP_Handler(srv))
+	r.POST("/admin/v1/login-policies", _LoginPolicyService_Create12_HTTP_Handler(srv))
+	r.PUT("/admin/v1/login-policies/{id}", _LoginPolicyService_Update13_HTTP_Handler(srv))
+	r.DELETE("/admin/v1/login-policies/{id}", _LoginPolicyService_Delete14_HTTP_Handler(srv))
 }
 
-func _LoginPolicyService_List17_HTTP_Handler(srv LoginPolicyServiceHTTPServer) func(ctx http.Context) error {
+func _LoginPolicyService_List18_HTTP_Handler(srv LoginPolicyServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v1.PagingRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -69,7 +69,7 @@ func _LoginPolicyService_List17_HTTP_Handler(srv LoginPolicyServiceHTTPServer) f
 	}
 }
 
-func _LoginPolicyService_Get15_HTTP_Handler(srv LoginPolicyServiceHTTPServer) func(ctx http.Context) error {
+func _LoginPolicyService_Get16_HTTP_Handler(srv LoginPolicyServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.GetLoginPolicyRequest
 		if err := ctx.BindQuery(&in); err != nil {
@@ -91,7 +91,7 @@ func _LoginPolicyService_Get15_HTTP_Handler(srv LoginPolicyServiceHTTPServer) fu
 	}
 }
 
-func _LoginPolicyService_Create11_HTTP_Handler(srv LoginPolicyServiceHTTPServer) func(ctx http.Context) error {
+func _LoginPolicyService_Create12_HTTP_Handler(srv LoginPolicyServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.CreateLoginPolicyRequest
 		if err := ctx.Bind(&in); err != nil {
@@ -113,7 +113,7 @@ func _LoginPolicyService_Create11_HTTP_Handler(srv LoginPolicyServiceHTTPServer)
 	}
 }
 
-func _LoginPolicyService_Update12_HTTP_Handler(srv LoginPolicyServiceHTTPServer) func(ctx http.Context) error {
+func _LoginPolicyService_Update13_HTTP_Handler(srv LoginPolicyServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.UpdateLoginPolicyRequest
 		if err := ctx.Bind(&in); err != nil {
@@ -138,7 +138,7 @@ func _LoginPolicyService_Update12_HTTP_Handler(srv LoginPolicyServiceHTTPServer)
 	}
 }
 
-func _LoginPolicyService_Delete13_HTTP_Handler(srv LoginPolicyServiceHTTPServer) func(ctx http.Context) error {
+func _LoginPolicyService_Delete14_HTTP_Handler(srv LoginPolicyServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.DeleteLoginPolicyRequest
 		if err := ctx.BindQuery(&in); err != nil {

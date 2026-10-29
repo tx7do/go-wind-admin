@@ -37,6 +37,17 @@ const routes: RouteRecordRaw[] = [
           authority: ['sys:platform_admin', 'sys:tenant_manager'],
         },
       },
+      {
+        name: 'BiManage',
+        path: '/bi/manage',
+        component: () => import('#/views/app/bi/manage/index.vue'),
+        meta: {
+          order: 3,
+          icon: 'lucide:layout-dashboard',
+          title: $t('page.bi.moduleName'),
+          authority: ['sys:platform_admin', 'sys:tenant_manager'],
+        },
+      },
     ],
   },
 ];

@@ -1,0 +1,200 @@
+syntax = "proto3";
+
+package bi.service.v1;
+
+import "gnostic/openapi/v3/annotations.proto";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/field_mask.proto";
+
+import "pagination/v1/pagination.proto";
+
+
+// BI 仪表盘服务：管理设计器产出的仪表盘 / 大屏 / 模板。
+// schema 存 payload 列（JSON 原文），服务端不解析只透传——与打印模板同口径。
+service BiDashboardService {
+  // 分页查询 BI 仪表盘列表
+  rpc List (pagination.PagingRequest) returns (ListBiDashboardResponse) {}
+
+  // 查询 BI 仪表盘详情
+  rpc Get (GetBiDashboardRequest) returns (BiDashboard) {}
+
+  // 创建 BI 仪表盘
+  rpc Create (CreateBiDashboardRequest) returns (google.protobuf.Empty) {}
+
+  // 更新 BI 仪表盘（带 version 时按乐观锁校验，冲突返回 BadRequest）
+  rpc Update (UpdateBiDashboardRequest) returns (google.protobuf.Empty) {}
+
+  // 删除 BI 仪表盘（内置行禁删）
+  rpc Delete (DeleteBiDashboardRequest) returns (google.protobuf.Empty) {}
+
+  // 复制 BI 仪表盘（模板派生 / 另存为）：整份复制 payload 成一行新记录
+  rpc Copy (CopyBiDashboardRequest) returns (google.protobuf.Empty) {}
+}
+
+// BI 仪表盘种类
+enum BiDashboardKind {
+  // 仪表盘（管理页内嵌展示）
+  DASHBOARD = 0;
+  // 大屏（投屏展示，按设计稿等比缩放）
+  SCREEN = 1;
+  // 可复用模板（列表页"从模板新建"派生用）
+  TEMPLATE = 2;
+}
+
+// BI 仪表盘
+message BiDashboard {
+  optional uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = {description: "仪表盘ID"}
+  ]; // 仪表盘ID
+
+  optional string name = 2 [
+    json_name = "name",
+    (gnostic.openapi.v3.property) = {description: "名称（展示用）"}
+  ]; // 名称
+
+  optional string code = 3 [
+    json_name = "code",
+    (gnostic.openapi.v3.property) = {description: "编码，租户内唯一，业务侧按编码取仪表盘"}
+  ]; // 编码
+
+  optional BiDashboardKind kind = 4 [
+    json_name = "kind",
+    (gnostic.openapi.v3.property) = {description: "种类：DASHBOARD 仪表盘 / SCREEN 大屏 / TEMPLATE 模板"}
+  ]; // 种类
+
+  optional string remark = 5 [
+    json_name = "remark",
+    (gnostic.openapi.v3.property) = {description: "备注"}
+  ]; // 备注
+
+  optional string payload = 6 [
+    json_name = "payload",
+    (gnostic.openapi.v3.property) = {description: "仪表盘 JSON（设计器 schema：数据集 + 图表布局 + 主题，含 schemaVersion；服务端不解析只透传）"}
+  ]; // 仪表盘 JSON
+
+  optional uint32 chart_count = 7 [
+    json_name = "chartCount",
+    (gnostic.openapi.v3.property) = {description: "图表数量冗余列（来自 payload.charts，列表页直显免解析 JSON）"}
+  ]; // 图表数量
+
+  optional string theme_key = 8 [
+    json_name = "themeKey",
+    (gnostic.openapi.v3.property) = {description: "主题预设冗余列（来自 payload.theme.key，列表页直显）"}
+  ]; // 主题预设
+
+  optional string thumbnail = 9 [
+    json_name = "thumbnail",
+    (gnostic.openapi.v3.property) = {description: "缩略图 URL（设计器导出 PNG 后上传，列表页预览用）"}
+  ]; // 缩略图
+
+  optional bool is_built_in = 10 [
+    json_name = "isBuiltIn",
+    (gnostic.openapi.v3.property) = {description: "是否系统内置（内置禁删，可复制派生）"}
+  ]; // 是否系统内置
+
+  optional bool is_public = 11 [
+    json_name = "isPublic",
+    (gnostic.openapi.v3.property) = {description: "是否租户内共享（false 仅创建者可见）"}
+  ]; // 是否租户内共享
+
+  optional uint32 version = 12 [
+    json_name = "version",
+    (gnostic.openapi.v3.property) = {description: "版本号（乐观锁：更新时回传读到的版本，冲突拒绝；保存成功后 +1）"}
+  ]; // 版本号
+
+  optional bool is_enabled = 13 [
+    json_name = "isEnabled",
+    (gnostic.openapi.v3.property) = {description: "是否启用，停用的仪表盘不出现在业务入口"}
+  ]; // 是否启用
+
+  optional uint32 sort_order = 14 [
+    json_name = "sortOrder",
+    (gnostic.openapi.v3.property) = {description: "排序序号"}
+  ]; // 排序序号
+
+  optional uint32 created_by = 100 [json_name = "createdBy", (gnostic.openapi.v3.property) = {description: "创建者ID"}]; // 创建者ID
+  optional uint32 updated_by = 101 [json_name = "updatedBy", (gnostic.openapi.v3.property) = {description: "更新者ID"}]; // 更新者ID
+  optional uint32 deleted_by = 102 [json_name = "deletedBy", (gnostic.openapi.v3.property) = {description: "删除者用户ID"}]; // 删除者用户ID
+
+  optional google.protobuf.Timestamp created_at = 200 [json_name = "createdAt", (gnostic.openapi.v3.property) = {description: "创建时间"}];// 创建时间
+  optional google.protobuf.Timestamp updated_at = 201 [json_name = "updatedAt", (gnostic.openapi.v3.property) = {description: "更新时间"}];// 更新时间
+  optional google.protobuf.Timestamp deleted_at = 202 [json_name = "deletedAt", (gnostic.openapi.v3.property) = {description: "删除时间"}];// 删除时间
+}
+
+// 查询 BI 仪表盘列表 - 回应
+message ListBiDashboardResponse {
+  repeated BiDashboard items = 1;
+  uint64 total = 2;
+}
+
+// 查询 BI 仪表盘 - 请求
+message GetBiDashboardRequest {
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+      json_name = "id"
+    ]; // ID
+  }
+
+  optional google.protobuf.FieldMask view_mask = 100 [
+    json_name = "viewMask",
+    (gnostic.openapi.v3.property) = {
+      description: "视图字段过滤器，用于控制返回的字段"
+    }
+  ]; // 视图字段过滤器，用于控制返回的字段
+}
+
+// 创建 BI 仪表盘 - 请求
+message CreateBiDashboardRequest {
+  BiDashboard data = 1;
+}
+
+// 更新 BI 仪表盘 - 请求
+message UpdateBiDashboardRequest {
+  uint32 id = 1;
+
+  BiDashboard data = 2;
+
+  google.protobuf.FieldMask update_mask = 3 [
+    (gnostic.openapi.v3.property) = {
+      description: "要更新的字段列表",
+      example: {yaml : "id,name,payload"}
+    },
+    json_name = "updateMask"
+  ]; // 要更新的字段列表
+
+  optional bool allow_missing = 4 [
+    (gnostic.openapi.v3.property) = {description: "如果设置为true的时候，资源不存在则会新增(插入)，并且在这种情况下`updateMask`字段将会被忽略。"},
+    json_name = "allowMissing"
+  ]; // 资源不存在则新增
+}
+
+// 删除 BI 仪表盘 - 请求
+message DeleteBiDashboardRequest {
+  oneof query_by {
+    uint32 id = 1 [
+      (gnostic.openapi.v3.property) = {description: "ID", read_only: true},
+      json_name = "id"
+    ]; // ID
+  }
+}
+
+// 复制 BI 仪表盘 - 请求
+message CopyBiDashboardRequest {
+  uint32 id = 1 [
+    (gnostic.openapi.v3.property) = {description: "源仪表盘ID"}
+  ]; // 源仪表盘ID
+
+  optional string name = 2 [
+    json_name = "name",
+    (gnostic.openapi.v3.property) = {description: "副本名称（缺省在原名后追加 -copy）"}
+  ]; // 副本名称
+
+  optional string code = 3 [
+    json_name = "code",
+    (gnostic.openapi.v3.property) = {description: "副本编码（缺省自动生成，租户内唯一）"}
+  ]; // 副本编码
+}

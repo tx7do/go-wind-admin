@@ -2,7 +2,7 @@
   <div class="bi-dashboard-page">
     <!-- 工具栏：主题切换 + 数据集刷新 -->
     <div class="bi-dashboard-page__toolbar">
-      <span class="bi-dashboard-page__title">{{ $t("pages.bi.dashboardTitle") }}</span>
+      <span class="bi-dashboard-page__title">{{ $t("pages.biDashboard.dashboardTitle") }}</span>
       <ElButton size="small" @click="refresh">
         {{ $t("common.button.retry") }}
       </ElButton>
@@ -31,6 +31,7 @@ import { BiDashboard, provideBiEnv, setBiLocale } from "@go-wind/bi-vue";
 import "@go-wind/bi-vue/style.css";
 import { layoutCharts } from "@go-wind/bi-core";
 import type { BiDashboardSchema } from "@go-wind/bi-core";
+import { fetchBiDashboard } from "@/api/composables/bi_dashboard";
 import { useI18n } from "@/core/i18n";
 
 
@@ -56,7 +57,21 @@ onMounted(() => {
   loadSchema();
 });
 
-function loadSchema() {
+// schema 来源优先级：?id= 后端行 > localStorage 草稿 > 内置演示
+async function loadSchema() {
+  const id = Number(route.query.id);
+  if (id > 0) {
+    try {
+      const row = await fetchBiDashboard(id);
+      if (row.payload) {
+        schema.value = JSON.parse(row.payload);
+        syncDesignWidth();
+        return;
+      }
+    } catch (error) {
+      console.error("[bi-dashboard] 拉取仪表盘失败，改用演示 schema", error);
+    }
+  }
   const saved = localStorage.getItem(`bi:schema:${route.query.id ?? "default"}`);
   if (saved) {
     try {
