@@ -14,6 +14,15 @@ importers:
       '@fontsource/noto-sans-sc':
         specifier: ^5.2.9
         version: 5.2.9
+      '@go-wind/bi-core':
+        specifier: 0.2.0
+        version: 0.2.0
+      '@go-wind/bi-vue':
+        specifier: 0.2.0
+        version: 0.2.0(vue@3.5.42(typescript@5.9.3))
+      '@go-wind/editor-vue':
+        specifier: 0.2.0
+        version: 0.2.0(@element-plus/icons-vue@2.3.2(vue@3.5.42(typescript@5.9.3)))(@floating-ui/dom@1.7.6)(@tiptap/extension-code-block@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))(@tiptap/extension-list@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))(@tiptap/extensions@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)(@typescript-eslint/types@8.59.3)(element-plus@2.14.0(vue@3.5.42(typescript@5.9.3)))(vue@3.5.42(typescript@5.9.3))
       '@go-wind/print-canvas':
         specifier: 1.3.12
         version: 1.3.12(vue@3.5.42(typescript@5.9.3))
@@ -928,6 +937,26 @@ packages:
   '@fortawesome/free-solid-svg-icons@7.2.0':
     resolution: {integrity: sha512-YTVITFGN0/24PxzXrwqCgnyd7njDuzp5ZvaCx5nq/jg55kUYd94Nj8UTchBdBofi/L0nwRfjGOg0E41d2u9T1w==}
     engines: {node: '>=6'}
+
+  '@go-wind/bi-core@0.2.0':
+    resolution: {integrity: sha512-eEI3xJY+lPDXQH8guNwrvxSggJIsec5OegEADcS4afkPXAgmhE6Ox0Hgq4YmSw8hoS9zwVb0G35HBzRW0VKxSQ==, tarball: https://registry.npmjs.org/@go-wind/bi-core/-/bi-core-0.2.0.tgz}
+
+  '@go-wind/bi-vue@0.2.0':
+    resolution: {integrity: sha512-8ufUjx1+cHKv1G0mLx9E+77SZIXYkdEgGVaDXhV9rM+H9ypY00hcIReiFIPEdymvyWJiY82jH/61l3Slp9LMsQ==, tarball: https://registry.npmjs.org/@go-wind/bi-vue/-/bi-vue-0.2.0.tgz}
+    peerDependencies:
+      vue: '>=3.5.0'
+
+  '@go-wind/editor-vue@0.2.0':
+    resolution: {integrity: sha512-/toO36XslUiC5P0PCNXJkC5NYvXYuOPcSm78B+iAk7EUtpGSqnJoBgSNceLQcnrpgKsvy9u//1B20lKjlhGWqA==, tarball: https://registry.npmjs.org/@go-wind/editor-vue/-/editor-vue-0.2.0.tgz}
+    peerDependencies:
+      '@element-plus/icons-vue': '>=2.3.0'
+      element-plus: '>=2.13.0'
+      vue: '>=3.5.0'
+
+  '@go-wind/locale@0.2.0':
+    resolution: {integrity: sha512-hO6mYzZkM0ZZ9GJb8hbeeRjkHvOD1NusLGn1zNexkjSeFwgIvTNC9VTzaIlI0FHKqlf9sIdshCV3/qLqR1qWUw==, tarball: https://registry.npmjs.org/@go-wind/locale/-/locale-0.2.0.tgz}
+    peerDependencies:
+      vue: '>=3.5.0'
 
   '@go-wind/print-canvas@1.3.12':
     resolution: {integrity: sha512-MvWSevn+Gpfu0PJ7Seo25FZAoutDhCAS0onLYblX1oFXP0w01cDforySrRlyIT+dxdxILzsE7XmSf38y51s1sg==, tarball: https://registry.npmjs.org/@go-wind/print-canvas/-/print-canvas-1.3.12.tgz}
@@ -5602,6 +5631,64 @@ snapshots:
   '@fortawesome/free-solid-svg-icons@7.2.0':
     dependencies:
       '@fortawesome/fontawesome-common-types': 7.2.0
+
+  '@go-wind/bi-core@0.2.0':
+    dependencies:
+      echarts: 6.1.0
+
+  '@go-wind/bi-vue@0.2.0(vue@3.5.42(typescript@5.9.3))':
+    dependencies:
+      '@go-wind/bi-core': 0.2.0
+      '@go-wind/locale': 0.2.0(vue@3.5.42(typescript@5.9.3))
+      vue: 3.5.42(typescript@5.9.3)
+
+  '@go-wind/editor-vue@0.2.0(@element-plus/icons-vue@2.3.2(vue@3.5.42(typescript@5.9.3)))(@floating-ui/dom@1.7.6)(@tiptap/extension-code-block@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))(@tiptap/extension-list@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))(@tiptap/extensions@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)(@typescript-eslint/types@8.59.3)(element-plus@2.14.0(vue@3.5.42(typescript@5.9.3)))(vue@3.5.42(typescript@5.9.3))':
+    dependencies:
+      '@element-plus/icons-vue': 2.3.2(vue@3.5.42(typescript@5.9.3))
+      '@go-wind/locale': 0.2.0(vue@3.5.42(typescript@5.9.3))
+      '@tiptap/core': 3.23.4(@tiptap/pm@3.23.4)
+      '@tiptap/extension-code-block-lowlight': 3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/extension-code-block@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)(highlight.js@11.12.0)(lowlight@3.3.0)
+      '@tiptap/extension-color': 3.23.4(@tiptap/extension-text-style@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4)))
+      '@tiptap/extension-heading': 3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
+      '@tiptap/extension-highlight': 3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
+      '@tiptap/extension-horizontal-rule': 3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)
+      '@tiptap/extension-image': 3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
+      '@tiptap/extension-link': 3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)
+      '@tiptap/extension-placeholder': 3.23.4(@tiptap/extensions@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))
+      '@tiptap/extension-subscript': 3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)
+      '@tiptap/extension-superscript': 3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)
+      '@tiptap/extension-table': 3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)
+      '@tiptap/extension-table-cell': 3.23.4(@tiptap/extension-table@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))
+      '@tiptap/extension-table-header': 3.23.4(@tiptap/extension-table@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))
+      '@tiptap/extension-table-row': 3.23.4(@tiptap/extension-table@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))
+      '@tiptap/extension-task-item': 3.23.4(@tiptap/extension-list@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))
+      '@tiptap/extension-task-list': 3.23.4(@tiptap/extension-list@3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4))
+      '@tiptap/extension-text-align': 3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
+      '@tiptap/extension-text-style': 3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
+      '@tiptap/extension-underline': 3.23.4(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))
+      '@tiptap/starter-kit': 3.23.4
+      '@tiptap/vue-3': 3.23.4(@floating-ui/dom@1.7.6)(@tiptap/core@3.23.4(@tiptap/pm@3.23.4))(@tiptap/pm@3.23.4)(vue@3.5.42(typescript@5.9.3))
+      element-plus: 2.14.0(vue@3.5.42(typescript@5.9.3))
+      highlight.js: 11.12.0
+      json-editor-vue: 0.18.1(@typescript-eslint/types@8.59.3)(vue@3.5.42(typescript@5.9.3))
+      jsoneditor: 10.4.3
+      lowlight: 3.3.0
+      marked: 18.0.3
+      md-editor-v3: 6.5.0(vue@3.5.42(typescript@5.9.3))
+      monaco-editor: 0.55.1
+      vue: 3.5.42(typescript@5.9.3)
+    transitivePeerDependencies:
+      - '@floating-ui/dom'
+      - '@tiptap/extension-code-block'
+      - '@tiptap/extension-list'
+      - '@tiptap/extensions'
+      - '@tiptap/pm'
+      - '@typescript-eslint/types'
+      - '@vue/composition-api'
+
+  '@go-wind/locale@0.2.0(vue@3.5.42(typescript@5.9.3))':
+    dependencies:
+      vue: 3.5.42(typescript@5.9.3)
 
   '@go-wind/print-canvas@1.3.12(vue@3.5.42(typescript@5.9.3))':
     dependencies:

@@ -19,6 +19,15 @@ importers:
       '@ant-design/pro-components':
         specifier: ^2.8.10
         version: 2.8.10(antd@6.4.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(rc-field-form@2.7.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@go-wind/bi-core':
+        specifier: 0.2.0
+        version: 0.2.0
+      '@go-wind/bi-react':
+        specifier: 0.2.0
+        version: 0.2.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vue@3.5.34(typescript@6.0.3))
+      '@go-wind/editor-react':
+        specifier: 0.2.0
+        version: 0.2.0(@ant-design/icons@5.6.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@floating-ui/dom@1.7.6)(@tiptap/extension-code-block@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/extensions@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@types/react-dom@19.2.4(@types/react@19.2.15))(@types/react@19.2.15)(antd@6.4.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@go-wind/print-common':
         specifier: 1.3.8-beta.0
         version: 1.3.8-beta.0
@@ -1038,6 +1047,34 @@ packages:
   '@fortawesome/free-solid-svg-icons@7.2.0':
     resolution: {integrity: sha512-YTVITFGN0/24PxzXrwqCgnyd7njDuzp5ZvaCx5nq/jg55kUYd94Nj8UTchBdBofi/L0nwRfjGOg0E41d2u9T1w==}
     engines: {node: '>=6'}
+
+  '@go-wind/bi-core@0.2.0':
+    resolution: {integrity: sha512-eEI3xJY+lPDXQH8guNwrvxSggJIsec5OegEADcS4afkPXAgmhE6Ox0Hgq4YmSw8hoS9zwVb0G35HBzRW0VKxSQ==, tarball: https://registry.npmjs.org/@go-wind/bi-core/-/bi-core-0.2.0.tgz}
+
+  '@go-wind/bi-react@0.2.0':
+    resolution: {integrity: sha512-LXUZQDujqFM9qQXluxsWiHTbRbtqBgkkivyHM2WpGW9nhtayvEeE6P/7crz0XY6kPUGiqHMg0K7GpLaGzGXA5A==, tarball: https://registry.npmjs.org/@go-wind/bi-react/-/bi-react-0.2.0.tgz}
+    peerDependencies:
+      react: '>=19.0.0'
+      react-dom: '>=19.0.0'
+      vue: '>=3.5.0'
+
+  '@go-wind/bi-vue@0.2.0':
+    resolution: {integrity: sha512-8ufUjx1+cHKv1G0mLx9E+77SZIXYkdEgGVaDXhV9rM+H9ypY00hcIReiFIPEdymvyWJiY82jH/61l3Slp9LMsQ==, tarball: https://registry.npmjs.org/@go-wind/bi-vue/-/bi-vue-0.2.0.tgz}
+    peerDependencies:
+      vue: '>=3.5.0'
+
+  '@go-wind/editor-react@0.2.0':
+    resolution: {integrity: sha512-DqKDHGVP6VBl5jpODr8PO3EM+LxwFHhRUYeyE8QdpgyOYOmDWA0xajV9Rtt1gSjE4jYNSye26R3Infv7g4ShaA==, tarball: https://registry.npmjs.org/@go-wind/editor-react/-/editor-react-0.2.0.tgz}
+    peerDependencies:
+      '@ant-design/icons': '>=5.6.0'
+      antd: '>=6.0.0'
+      react: '>=19.0.0'
+      react-dom: '>=19.0.0'
+
+  '@go-wind/locale@0.2.0':
+    resolution: {integrity: sha512-hO6mYzZkM0ZZ9GJb8hbeeRjkHvOD1NusLGn1zNexkjSeFwgIvTNC9VTzaIlI0FHKqlf9sIdshCV3/qLqR1qWUw==, tarball: https://registry.npmjs.org/@go-wind/locale/-/locale-0.2.0.tgz}
+    peerDependencies:
+      vue: '>=3.5.0'
 
   '@go-wind/print-common@1.3.8-beta.0':
     resolution: {integrity: sha512-notU12V5d8lhGxmhevSHHi2RWcAxL07Z/NODSiTR7sQEmul3igl52C+iqlCb2cniToy8zFjfWHwgepMyyu0Icg==, tarball: https://registry.npmjs.org/@go-wind/print-common/-/print-common-1.3.8-beta.0.tgz}
@@ -7405,6 +7442,70 @@ snapshots:
   '@fortawesome/free-solid-svg-icons@7.2.0':
     dependencies:
       '@fortawesome/fontawesome-common-types': 7.2.0
+
+  '@go-wind/bi-core@0.2.0':
+    dependencies:
+      echarts: 6.1.0
+
+  '@go-wind/bi-react@0.2.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(vue@3.5.34(typescript@6.0.3))':
+    dependencies:
+      '@go-wind/bi-core': 0.2.0
+      '@go-wind/bi-vue': 0.2.0(vue@3.5.34(typescript@6.0.3))
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
+      vue: 3.5.34(typescript@6.0.3)
+
+  '@go-wind/bi-vue@0.2.0(vue@3.5.34(typescript@6.0.3))':
+    dependencies:
+      '@go-wind/bi-core': 0.2.0
+      '@go-wind/locale': 0.2.0(vue@3.5.34(typescript@6.0.3))
+      vue: 3.5.34(typescript@6.0.3)
+
+  '@go-wind/editor-react@0.2.0(@ant-design/icons@5.6.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(@floating-ui/dom@1.7.6)(@tiptap/extension-code-block@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/extensions@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@types/react-dom@19.2.4(@types/react@19.2.15))(@types/react@19.2.15)(antd@6.4.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+    dependencies:
+      '@ant-design/icons': 5.6.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@tiptap/core': 3.23.6(@tiptap/pm@3.23.6)
+      '@tiptap/extension-code-block-lowlight': 3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/extension-code-block@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(highlight.js@11.12.0)(lowlight@3.3.0)
+      '@tiptap/extension-color': 3.23.6(@tiptap/extension-text-style@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6)))
+      '@tiptap/extension-heading': 3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))
+      '@tiptap/extension-highlight': 3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))
+      '@tiptap/extension-horizontal-rule': 3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+      '@tiptap/extension-image': 3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))
+      '@tiptap/extension-link': 3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+      '@tiptap/extension-placeholder': 3.23.6(@tiptap/extensions@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))
+      '@tiptap/extension-subscript': 3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+      '@tiptap/extension-superscript': 3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+      '@tiptap/extension-table': 3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)
+      '@tiptap/extension-table-cell': 3.23.6(@tiptap/extension-table@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))
+      '@tiptap/extension-table-header': 3.23.6(@tiptap/extension-table@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))
+      '@tiptap/extension-table-row': 3.23.6(@tiptap/extension-table@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))
+      '@tiptap/extension-task-item': 3.23.6(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))
+      '@tiptap/extension-task-list': 3.23.6(@tiptap/extension-list@3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6))
+      '@tiptap/extension-text-align': 3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))
+      '@tiptap/extension-text-style': 3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))
+      '@tiptap/extension-underline': 3.23.6(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))
+      '@tiptap/pm': 3.23.6
+      '@tiptap/react': 3.23.6(@floating-ui/dom@1.7.6)(@tiptap/core@3.23.6(@tiptap/pm@3.23.6))(@tiptap/pm@3.23.6)(@types/react-dom@19.2.4(@types/react@19.2.15))(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@tiptap/starter-kit': 3.23.6
+      antd: 6.4.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      highlight.js: 11.12.0
+      lowlight: 3.3.0
+      marked: 18.0.4
+      md-editor-rt: 6.5.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      monaco-editor: 0.55.1
+      react: 19.2.6
+      react-dom: 19.2.6(react@19.2.6)
+    transitivePeerDependencies:
+      - '@floating-ui/dom'
+      - '@tiptap/extension-code-block'
+      - '@tiptap/extension-list'
+      - '@tiptap/extensions'
+      - '@types/react'
+      - '@types/react-dom'
+
+  '@go-wind/locale@0.2.0(vue@3.5.34(typescript@6.0.3))':
+    dependencies:
+      vue: 3.5.34(typescript@6.0.3)
 
   '@go-wind/print-common@1.3.8-beta.0':
     dependencies:

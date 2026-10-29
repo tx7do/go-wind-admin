@@ -16,6 +16,11 @@
   "dependencies": {
     "@ant-design/icons": "^5.6.1",
     "@ant-design/pro-components": "^2.8.10",
+    "@go-wind/bi-core": "0.2.0",
+    "@go-wind/bi-react": "0.2.0",
+    "@go-wind/editor-react": "0.2.0",
+    "@go-wind/print-common": "1.3.8-beta.0",
+    "@go-wind/print-core": "1.3.12",
     "@microsoft/fetch-event-source": "^2.0.1",
     "@tanstack/react-query": "^5.100.11",
     "@tiptap/core": "^3.23.6",
@@ -71,9 +76,7 @@
     "react-markdown": "^10.1.0",
     "react-router-dom": "^6.26.0",
     "remark-gfm": "^4.0.1",
-    "zustand": "^5.0.13",
-    "@go-wind/print-core": "1.3.12",
-    "@go-wind/print-common": "1.3.8-beta.0"
+    "zustand": "^5.0.13"
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",

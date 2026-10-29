@@ -125,7 +125,7 @@ import "md-editor-v3/lib/preview.css";
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import ProModal from "@/components/Pro/ProModal/index.vue";
 import SvgIcon from "@/components/SvgIcon/index.vue";
-import { isDarkMode } from "@/components/Editor/src/utils";
+import { isDarkMode } from "@/components/Editor";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 
 import { $t } from "@/core/i18n";
