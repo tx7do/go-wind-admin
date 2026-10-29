@@ -44,7 +44,7 @@ const routes: RouteRecordRaw[] = [
         meta: {
           order: 3,
           icon: 'lucide:layout-dashboard',
-          title: $t('page.bi.moduleName'),
+          title: $t('page.bi.manage'),
           authority: ['sys:platform_admin', 'sys:tenant_manager'],
         },
       },

@@ -220,7 +220,7 @@ function rowActions(row: BiDashboard): TableAction[] {
 
 <template>
   <Page auto-content-height>
-    <Grid :table-title="$t('page.bi.moduleName')">
+    <Grid :table-title="$t('page.bi.manage')">
       <template #toolbar-tools>
         <TableExportButton :fetcher="exportFetcher" :columns="gridOptions.columns" filename="bi-dashboards" />
         <TableAddButton @click="handleCreate" />

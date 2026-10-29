@@ -112,7 +112,6 @@ function handleSchemaChange(schema: BiDashboardSchema) {
 }
 
 const [Drawer, drawerApi] = useVbenDrawer({
-  class: 'w-[96%]',
   confirmText: $t('common.save') || $t('common.button.save'),
   cancelText: $t('common.cancel') || $t('common.button.cancel'),
   onBeforeClose() {
@@ -218,7 +217,7 @@ defineExpose({ open });
 </script>
 
 <template>
-  <Drawer :title="title" class="flex flex-col">
+  <Drawer :title="title" class="w-full flex flex-col">
     <div class="flex h-full flex-col gap-2">
       <BaseForm />
       <!-- 画布容器：任何指针/键盘交互视为脏 -->
