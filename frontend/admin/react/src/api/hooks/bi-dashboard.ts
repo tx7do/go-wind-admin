@@ -23,6 +23,15 @@ export async function fetchListBiDashboards(params: PaginationQuery) {
   });
 }
 
+/** 按 id 取详情（命令式；独立设计器页加载用） */
+export async function fetchBiDashboard(id: number) {
+  return queryClient.fetchQuery({
+    queryKey: ['biDashboard', id],
+    queryFn: () => apiClient.biDashboardService.Get({ id }),
+    retry: 0,
+  });
+}
+
 /** 按 id 取详情（仪表盘页/设计器抽屉打开时拉 payload） */
 export function useBiDashboard(id: number | undefined, enabled = true) {
   return useQuery({

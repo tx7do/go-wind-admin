@@ -1444,6 +1444,14 @@
     "copySuccess": "Copied",
     "copyFailed": "Copy failed",
     "saveConflict": "Dashboard was modified by another session, please reload",
-    "designerNotReady": "Designer not ready"
+    "designerNotReady": "Designer not ready",
+    "preview": "Preview",
+    "localDraft": "Local Draft",
+    "statusSaving": "Saving…",
+    "statusSaved": "Saved",
+    "statusConflict": "Save conflict, version refreshed",
+    "loadFailed": "Load failed, switched to local draft",
+    "fullscreen": "Fullscreen",
+    "exitFullscreen": "Exit Fullscreen"
   }
 }

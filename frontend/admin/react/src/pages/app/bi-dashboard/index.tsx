@@ -1,10 +1,17 @@
 import "@go-wind/bi-react/style.css";
 import { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { Button, Tooltip } from 'antd';
+import {
+  FullscreenExitOutlined,
+  FullscreenOutlined,
+} from '@ant-design/icons';
 import { BiProvider, BiDashboard } from '@go-wind/bi-react';
 import { layoutCharts } from '@go-wind/bi-core';
 import type { BiDashboardSchema } from '@go-wind/bi-core';
 import { apiClient } from '@/api/client';
+import { useI18n } from '@/core/i18n';
+import { usePageFullscreen } from '@/hooks/usePageFullscreen';
 
 /** 与 /bi/designer 共用：设计器落盘、仪表盘读取 */
 const BI_SCHEMA_STORAGE_KEY = "bi:schema:default";
@@ -67,6 +74,7 @@ function contentHeightOf(value: Partial<BiDashboardSchema>): number {
 }
 
 export default function BiDashboardPage() {
+  const { t } = useI18n('biDashboard');
   // schema 来源优先级：?id= 后端行 > localStorage（设计器草稿）> 内置演示。
   // 列表页「预览」跳 /bi/dashboard?id=N；无 id 时仍读本地草稿兼容旧链路。
   const [searchParams] = useSearchParams();
@@ -130,8 +138,42 @@ export default function BiDashboardPage() {
     return () => observer.disconnect();
   }, [schema]);
 
+  const { rootRef, isFullscreen, toggle } = usePageFullscreen<HTMLDivElement>();
+
   return (
-    <div style={{ height: '100%', padding: '12px 16px', boxSizing: 'border-box', display: 'flex', flexDirection: 'column' }}>
+    <div
+      ref={rootRef}
+      style={{
+        height: '100%',
+        padding: '12px 16px',
+        boxSizing: 'border-box',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
+    >
+      {/* 工具条：编辑目标 + 全屏（进入时由 hook 补页面底色） */}
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexShrink: 0, paddingBottom: 8 }}>
+        <span style={{ fontSize: 15, fontWeight: 600 }}>{t('dashboardTitle')}</span>
+        <span style={{ flex: 1 }} />
+        {dashboardId && (
+          <Button
+            size="small"
+            onClick={() => {
+              window.location.href = `/bi/designer?id=${dashboardId}`;
+            }}
+          >
+            {t('editInDesigner')}
+          </Button>
+        )}
+        <Tooltip title={isFullscreen ? t('exitFullscreen') : t('fullscreen')}>
+          <Button
+            size="small"
+            icon={isFullscreen ? <FullscreenExitOutlined /> : <FullscreenOutlined />}
+            onClick={toggle}
+          />
+        </Tooltip>
+      </div>
+
       {/* overflow:hidden 断掉"出滚动条→容器变窄→重算"的反馈环：设计宽已按可视区精确反推 */}
       <div ref={bodyRef} style={{ flex: 1, minHeight: 0, overflow: 'hidden' }}>
         <BiProvider env={{ emptyText: '暂无数据' }}>

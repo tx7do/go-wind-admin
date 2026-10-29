@@ -1,7 +1,14 @@
 <template>
-  <div class="bi-dashboard-page">
+  <div ref="rootRef" class="bi-dashboard-page">
     <div class="bi-dashboard-page__toolbar">
       <span class="bi-dashboard-page__title">{{ $t('page.bi.dashboardTitle') }}</span>
+      <span class="bi-dashboard-page__spacer"></span>
+      <a-button v-if="dashboardId" size="small" @click="goDesigner">
+        {{ $t('common.edit') }}
+      </a-button>
+      <a-button size="small" @click="toggleFullscreen">
+        {{ isFullscreen ? $t('page.bi.exitFullscreen') : $t('page.bi.fullscreen') }}
+      </a-button>
     </div>
     <div ref="bodyRef" class="bi-dashboard-page__body">
       <BiDashboard
@@ -21,7 +28,8 @@ import { BiDashboard, setBiLocale } from '@go-wind/bi-vue';
 import '@go-wind/bi-vue/style.css';
 import { layoutCharts } from '@go-wind/bi-core';
 import type { BiDashboardSchema } from '@go-wind/bi-core';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
+import { useFullscreen } from '@vueuse/core';
 import { fetchBiDashboard } from '#/api/composables/bi_dashboard';
 import { usePreferences } from '@vben/preferences';
 
@@ -31,7 +39,30 @@ defineOptions({ name: 'BiDashboardPage' });
 const BI_SCHEMA_STORAGE_KEY = 'bi:schema:default';
 
 const route = useRoute();
+const router = useRouter();
 const { isDark, locale: appLocale } = usePreferences();
+
+const dashboardId = computed(() =>
+  Number(route.query.id) > 0 ? Number(route.query.id) : undefined,
+);
+
+// 全屏：进入时补页面底色（fullscreen 元素透出 UA 黑底）
+const rootRef = ref<HTMLElement | null>(null);
+const { isFullscreen, toggle: toggleFs } = useFullscreen(rootRef);
+
+function toggleFullscreen() {
+  if (!rootRef.value) return;
+  if (!isFullscreen.value) {
+    rootRef.value.style.background = getComputedStyle(document.documentElement).backgroundColor;
+  } else {
+    rootRef.value.style.background = '';
+  }
+  void toggleFs();
+}
+
+function goDesigner() {
+  void router.push({ path: '/bi/designer', query: { id: String(dashboardId.value) } });
+}
 const biLocale = computed(() =>
   (appLocale.value ?? 'zh-CN').startsWith('zh') ? 'zh-CN' : 'en-US',
 );
@@ -165,12 +196,20 @@ const schema = ref<Partial<BiDashboardSchema>>({
   padding: 12px 16px;
   box-sizing: border-box;
 
+  &:fullscreen {
+    background: hsl(var(--background));
+  }
+
   &__toolbar {
     display: flex;
     align-items: center;
     justify-content: space-between;
     flex-shrink: 0;
     padding-bottom: 10px;
+  }
+
+  &__spacer {
+    flex: 1;
   }
 
   &__title {

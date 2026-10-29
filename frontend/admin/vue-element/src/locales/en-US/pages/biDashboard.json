@@ -28,5 +28,11 @@
   "saveConflict": "Dashboard was modified by another session, please reload",
   "designerNotReady": "Designer not ready",
   "deleteFailed": "Delete failed",
-  "copyFailed": "Copy failed"
+  "copyFailed": "Copy failed",
+  "preview": "Preview",
+  "localDraft": "Local Draft",
+  "statusSaving": "Saving…",
+  "statusSaved": "Saved",
+  "statusConflict": "Save conflict, version refreshed",
+  "loadFailed": "Load failed, switched to local draft"
 }

@@ -38,5 +38,13 @@
   "saveConflict": "Dashboard was modified by another session, please reload",
   "invalidSchema": "Dashboard schema is not valid JSON",
   "dashboardTitle": "BI Dashboard",
-  "designerNotReady": "Designer not ready"
+  "designerNotReady": "Designer not ready",
+  "preview": "Preview",
+  "localDraft": "Local Draft",
+  "statusSaving": "Saving…",
+  "statusSaved": "Saved",
+  "statusConflict": "Save conflict, version refreshed",
+  "fullscreen": "Fullscreen",
+  "exitFullscreen": "Exit Fullscreen",
+  "editInDesigner": "Edit in Designer"
 }

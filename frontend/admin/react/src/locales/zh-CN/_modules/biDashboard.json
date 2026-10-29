@@ -38,5 +38,13 @@
   "saveConflict": "仪表盘已被其他会话修改，请刷新后重试",
   "invalidSchema": "仪表盘 schema 不是合法 JSON",
   "dashboardTitle": "BI 仪表盘",
-  "designerNotReady": "设计器尚未就绪"
+  "designerNotReady": "设计器尚未就绪",
+  "preview": "预览",
+  "localDraft": "本地草稿",
+  "statusSaving": "保存中…",
+  "statusSaved": "已保存",
+  "statusConflict": "保存冲突，已刷新版本",
+  "fullscreen": "全屏",
+  "exitFullscreen": "退出全屏",
+  "editInDesigner": "在设计器打开"
 }

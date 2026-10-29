@@ -1,71 +1,263 @@
 <template>
-  <div class="bi-designer-page">
-    <BiDesigner
-      :demo="true"
-      :initial-schema="loadedSchema"
-      @change="onSchemaChange"
-    />
+  <div ref="rootRef" class="bi-designer-page">
+    <!-- 页级工具条：编辑目标 + 保存状态 + 预览/全屏 -->
+    <div class="bi-designer-page__bar">
+      <span class="bi-designer-page__target">{{ targetLabel }}</span>
+      <span v-if="dashboardId" class="bi-designer-page__status" :class="`is-${saveStatus}`">
+        {{ statusText }}
+      </span>
+      <span class="bi-designer-page__spacer"></span>
+      <ElButton v-if="dashboardId" size="small" @click="goPreview">
+        {{ $t("pages.biDashboard.preview") }}
+      </ElButton>
+      <ElTooltip :content="$t('pages.curd.toolbar.fullscreen')" placement="top">
+        <ElButton circle @click="toggleFullscreen">
+          <SvgIcon :icon="isFullscreen ? 'fullscreen-exit' : 'fullscreen'" />
+        </ElButton>
+      </ElTooltip>
+    </div>
+
+    <div class="bi-designer-page__canvas">
+      <!-- ready 门：取数完成前不挂画布——BiDesigner 不回灌运行期 props，先挂会以演示 schema
+           落地且不随加载结果重挂（key 相同），自动保存会把演示内容覆盖进库 -->
+      <BiDesigner
+        v-if="ready"
+        :key="canvasKey"
+        :demo="!initialSchema"
+        :initial-schema="initialSchema"
+        style="display: block; height: 100%"
+        @change="onSchemaChange"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 /**
- * BI 设计器页面：@go-wind/bi-vue BiDesigner 画布。
- * 变更落 localStorage（MVP 存储）；后续接后端 dashboard CRUD。
+ * BI 独立设计器页：
+ * - ?id=N：加载库中仪表盘，画布改动防抖自动保存回写（version 乐观锁，409 后自动刷新版本）；
+ *   「预览」跳仪表盘渲染页
+ * - 无 id：本地草稿（localStorage），保存落草稿，不进服务端
+ * - 全屏：@vueuse/core useFullscreen，进入时把页面底色刷成布局底色（fullscreen 元素透出黑底）
  */
-import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
-import { ElMessage } from "element-plus";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { ElButton, ElMessage, ElTooltip } from "element-plus";
+import { useFullscreen } from "@vueuse/core";
 import { BiDesigner, provideBiEnv, setBiLocale } from "@go-wind/bi-vue";
 import "@go-wind/bi-vue/style.css";
 import type { BiDashboardSchema } from "@go-wind/bi-core";
+
+import {
+  fetchBiDashboard,
+  useSaveBiDashboardPayload,
+} from "@/api/composables/bi_dashboard";
 import { useI18n } from "@/core/i18n";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 
 defineOptions({ name: "BiDesignerPage" });
 
+/** 本地草稿键（无 id 模式） */
+const DRAFT_KEY = "bi:schema:default";
+/** 自动保存防抖 */
+const SAVE_DEBOUNCE_MS = 1200;
+
+const route = useRoute();
 const router = useRouter();
-const { locale } = useI18n();
+const { t, locale } = useI18n();
+const { mutateAsync: savePayload } = useSaveBiDashboardPayload();
 
 provideBiEnv({});
 
-onMounted(() => {
-  setBiLocale(locale.value.startsWith("zh") ? "zh-CN" : "en-US");
-});
+const rootRef = ref<HTMLElement | null>(null);
+const { isFullscreen, toggle: toggleFs } = useFullscreen(rootRef);
 
-const loadedSchema = ref<Partial<BiDashboardSchema> | undefined>(undefined);
+const dashboardId = Number(route.query.id) > 0 ? Number(route.query.id) : undefined;
 
-onMounted(() => {
-  const saved = localStorage.getItem("bi:schema:default");
-  if (saved) {
-    try {
-      loadedSchema.value = JSON.parse(saved);
-    } catch {
-      loadedSchema.value = undefined;
-    }
+const initialSchema = ref<Partial<BiDashboardSchema> | undefined>(undefined);
+const targetName = ref("");
+/** 内容基线：首帧回显（normalizeSchema 会补默认值，与服务端原文永不字符串相等）
+ *  定为画布首次 emit 的规范化串；此后内容与基线相同（如 select 类无内容变更）跳过保存 */
+const baselinePayload = ref<string | null>(null);
+/** 乐观锁本地持有版本：保存成功后 +1，409 后从服务端刷新 */
+const versionRef = ref(1);
+const saveStatus = ref<"idle" | "saving" | "saved" | "conflict">("idle");
+/** 取数完成前不挂画布（见模板注释） */
+const ready = ref(false);
+
+const canvasKey = computed(() => `${dashboardId ?? "draft"}`);
+
+const targetLabel = computed(() =>
+  dashboardId ? targetName.value || `#${dashboardId}` : t("pages.biDashboard.localDraft"),
+);
+
+const statusText = computed(() => {
+  switch (saveStatus.value) {
+    case "saving": return t("pages.biDashboard.statusSaving");
+    case "saved": return t("pages.biDashboard.statusSaved");
+    case "conflict": return t("pages.biDashboard.statusConflict");
+    default: return "";
   }
 });
 
+// ============ 全屏：进入时补页面底色（fullscreen 元素透出 UA 黑底） ============
+function toggleFullscreen() {
+  if (!isFullscreen.value) {
+    rootRef.value!.style.background = getComputedStyle(document.documentElement).backgroundColor;
+  } else {
+    rootRef.value!.style.background = "";
+  }
+  void toggleFs();
+}
+
+// ============ 加载 ============
+onMounted(async () => {
+  setBiLocale(locale.value.startsWith("zh") ? "zh-CN" : "en-US");
+
+  if (dashboardId) {
+    try {
+      const row = await fetchBiDashboard(dashboardId);
+      targetName.value = row.name || "";
+      versionRef.value = row.version ?? 1;
+      if (row.payload) {
+        initialSchema.value = JSON.parse(row.payload);
+      }
+    } catch (error) {
+      console.error("[bi-designer] 加载仪表盘失败，切换为本地草稿", error);
+      ElMessage.error(t("pages.biDashboard.loadFailed"));
+      loadDraft();
+    }
+    ready.value = true;
+  } else {
+    loadDraft();
+    ready.value = true;
+  }
+});
+
+function loadDraft() {
+  const saved = localStorage.getItem(DRAFT_KEY);
+  if (saved) {
+    try {
+      initialSchema.value = JSON.parse(saved);
+    } catch (error) {
+      console.error("[bi-designer] 本地草稿解析失败", error);
+      initialSchema.value = undefined;
+    }
+  }
+}
+
+// ============ 自动保存 ============
 let saveTimer: ReturnType<typeof setTimeout> | null = null;
+let conflictToasted = false;
 
 function onSchemaChange(schema: BiDashboardSchema) {
-  // 防抖 1s 落盘
+  const payloadStr = JSON.stringify(schema);
+
+  if (dashboardId) {
+    // 首帧 emit = 加载内容的规范化形态，定为基线（原文与规范化串字符串永不相等，不能当基线）
+    if (baselinePayload.value === null) {
+      baselinePayload.value = payloadStr;
+      return;
+    }
+    if (payloadStr === baselinePayload.value) return;
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => void saveToServer(schema, payloadStr), SAVE_DEBOUNCE_MS);
+  } else {
+    if (saveTimer) clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => {
+      localStorage.setItem(DRAFT_KEY, payloadStr);
+    }, SAVE_DEBOUNCE_MS);
+  }
+}
+
+async function saveToServer(schema: BiDashboardSchema, payloadStr: string) {
+  saveStatus.value = "saving";
+  try {
+    await savePayload({
+      id: dashboardId!,
+      version: versionRef.value,
+      payload: payloadStr,
+      chartCount: schema.charts?.length ?? 0,
+      themeKey: schema.theme?.key ?? "",
+    });
+    versionRef.value += 1;
+    baselinePayload.value = payloadStr;
+    saveStatus.value = "saved";
+  } catch (error: any) {
+    const msg = String(error?.message || "");
+    if (msg.includes("modified by another session") || msg.includes("CONFLICT")) {
+      // 他人已保存：刷新版本后继续自动保存（后续编辑会用新版本落盘）
+      saveStatus.value = "conflict";
+      if (!conflictToasted) {
+        conflictToasted = true;
+        ElMessage.warning(t("pages.biDashboard.saveConflict"));
+      }
+      try {
+        const row = await fetchBiDashboard(dashboardId!);
+        versionRef.value = row.version ?? versionRef.value;
+        saveStatus.value = "idle";
+      } catch (refreshError) {
+        console.error("[bi-designer] 冲突后刷新版本失败", refreshError);
+      }
+    } else {
+      console.error("[bi-designer] 自动保存失败", error);
+      saveStatus.value = "idle";
+    }
+  }
+}
+
+function goPreview() {
+  void router.push({ path: "/bi/dashboard", query: { id: String(dashboardId) } });
+}
+
+onBeforeUnmount(() => {
   if (saveTimer) clearTimeout(saveTimer);
-  saveTimer = setTimeout(() => {
-    localStorage.setItem("bi:schema:default", JSON.stringify(schema));
-  }, 1000);
-}
-
-function goDashboard() {
-  void router.push("/bi/dashboard");
-}
-
-defineExpose({ goDashboard });
+  saveTimer = null;
+});
 </script>
 
 <style scoped lang="scss">
 .bi-designer-page {
+  display: flex;
+  flex-direction: column;
   height: 100%;
   padding: 12px 16px;
   box-sizing: border-box;
+
+  // 全屏元素默认透出 UA 黑底，进入时由脚本补布局底色
+  &:fullscreen {
+    background: var(--el-bg-color);
+  }
+
+  &__bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+    padding-bottom: 8px;
+  }
+
+  &__target {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+  }
+
+  &__status {
+    font-size: 12px;
+
+    &.is-saving { color: var(--el-text-color-secondary); }
+    &.is-saved { color: var(--el-color-success); }
+    &.is-conflict { color: var(--el-color-danger); }
+  }
+
+  &__spacer {
+    flex: 1;
+  }
+
+  &__canvas {
+    flex: 1;
+    min-height: 0;
+  }
 }
 </style>

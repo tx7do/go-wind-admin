@@ -1,11 +1,17 @@
 <template>
-  <div class="bi-dashboard-page">
+  <div ref="rootRef" class="bi-dashboard-page">
     <!-- 工具栏：主题切换 + 数据集刷新 -->
     <div class="bi-dashboard-page__toolbar">
       <span class="bi-dashboard-page__title">{{ $t("pages.biDashboard.dashboardTitle") }}</span>
-      <ElButton size="small" @click="refresh">
-        {{ $t("common.button.retry") }}
+      <span class="bi-dashboard-page__spacer"></span>
+      <ElButton v-if="dashboardId" size="small" @click="goDesigner">
+        {{ $t("common.button.edit") }}
       </ElButton>
+      <ElTooltip :content="$t('pages.curd.toolbar.fullscreen')" placement="top">
+        <ElButton circle @click="toggleFullscreen">
+          <SvgIcon :icon="isFullscreen ? 'fullscreen-exit' : 'fullscreen'" />
+        </ElButton>
+      </ElTooltip>
     </div>
 
     <!-- 渲染器：schema 驱动（数据集 static 内嵌 / api 走注入的 resolver） -->
@@ -25,20 +31,44 @@
  * BI 仪表盘页面：@go-wind/bi-vue 渲染器消费。
  * schema 落 localStorage（MVP 存储；后续接后端 dashboard CRUD）。
  */
-import { onBeforeUnmount, onMounted, ref } from "vue";
-import { useRoute } from "vue-router";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { ElButton, ElTooltip } from "element-plus";
+import { useFullscreen } from "@vueuse/core";
 import { BiDashboard, provideBiEnv, setBiLocale } from "@go-wind/bi-vue";
 import "@go-wind/bi-vue/style.css";
 import { layoutCharts } from "@go-wind/bi-core";
 import type { BiDashboardSchema } from "@go-wind/bi-core";
 import { fetchBiDashboard } from "@/api/composables/bi_dashboard";
 import { useI18n } from "@/core/i18n";
+import SvgIcon from "@/components/SvgIcon/index.vue";
 
 
 defineOptions({ name: "BiDashboardPage" });
 
 const route = useRoute();
+const router = useRouter();
 const { t, locale } = useI18n();
+
+const dashboardId = computed(() => (Number(route.query.id) > 0 ? Number(route.query.id) : undefined));
+
+// 全屏：进入时补页面底色（fullscreen 元素透出 UA 黑底）
+const rootRef = ref<HTMLElement | null>(null);
+const { isFullscreen, toggle: toggleFs } = useFullscreen(rootRef);
+
+function toggleFullscreen() {
+  if (!rootRef.value) return;
+  if (!isFullscreen.value) {
+    rootRef.value.style.background = getComputedStyle(document.documentElement).backgroundColor;
+  } else {
+    rootRef.value.style.background = "";
+  }
+  void toggleFs();
+}
+
+function goDesigner() {
+  void router.push({ path: "/bi/designer", query: { id: String(dashboardId.value) } });
+}
 const dashboardRef = ref<InstanceType<typeof BiDashboard>>();
 
 // env 注入：api 型数据集 resolver（演示接 IoT 设备列表）
@@ -214,10 +244,18 @@ const DEMO_SCHEMA: Partial<BiDashboardSchema> = {
     padding-bottom: 10px;
   }
 
+  &__spacer {
+    flex: 1;
+  }
+
   &__title {
     font-size: 15px;
     font-weight: 600;
     color: var(--el-text-color-primary);
+  }
+
+  &:fullscreen {
+    background: var(--el-bg-color);
   }
 
   &__body {

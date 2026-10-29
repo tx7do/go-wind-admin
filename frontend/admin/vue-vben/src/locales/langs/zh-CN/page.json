@@ -1444,6 +1444,14 @@
     "copySuccess": "复制成功",
     "copyFailed": "复制失败",
     "saveConflict": "仪表盘已被其他会话修改，请刷新后重试",
-    "designerNotReady": "设计器尚未就绪，请稍候重试"
+    "designerNotReady": "设计器尚未就绪，请稍候重试",
+    "preview": "预览",
+    "localDraft": "本地草稿",
+    "statusSaving": "保存中…",
+    "statusSaved": "已保存",
+    "statusConflict": "保存冲突，已刷新版本",
+    "loadFailed": "加载失败，已切换为本地草稿",
+    "fullscreen": "全屏",
+    "exitFullscreen": "退出全屏"
   }
 }
