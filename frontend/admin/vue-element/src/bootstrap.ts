@@ -6,6 +6,8 @@ import "element-plus/theme-chalk/dark/css-vars.css";
 import "vxe-table/lib/style.css";
 import "@/styles/index.scss";
 import "@/styles/tailwind.css";
+// @go-wind/editor-vue 0.2.3 的 Tiptap 布局兜底（库侧已修，0.2.4 发布后可删）
+import "@/styles/compat-go-wind-editor.scss";
 import "animate.css";
 
 import { setupDirective } from "@/directives";

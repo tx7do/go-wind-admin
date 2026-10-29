@@ -1,0 +1,59 @@
+/**
+ * @go-wind/editor-vue@0.2.3 兼容垫片
+ *
+ * 该版本的 Tiptap 编辑器把排版交给了 Tailwind 工具类：状态栏是
+ * `absolute bottom-3 right-4`、工具栏是 `flex flex-wrap gap-1 px-3 py-2`。
+ * 本应用的 Tailwind 只生成了源码里实际用到的类，`bottom-3`/`right-4`/`gap-1` 这些
+ * 并没有产物，于是状态栏退化成静态定位跑到编辑器顶部、工具栏也丢间距。
+ *
+ * 库侧已改成自包含的 scoped CSS（不为宿主引入 Tailwind 依赖），并给
+ * `.tiptap-editor-wrapper` 加了 position: relative 作为状态栏锚点。
+ * 这里按同一套定义兜底，等 @go-wind/editor-vue 0.2.4 发布后整块可删。
+ */
+.tiptap-editor-wrapper {
+  position: relative !important;
+}
+
+.tiptap-toolbar {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 4px !important;
+  padding: 8px 12px !important;
+  user-select: none;
+}
+
+.tiptap-toolbar > div {
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+}
+
+.tiptap-toolbar .toolbar-divider {
+  width: 1px !important;
+  height: 16px !important;
+  margin: 0 6px !important;
+}
+
+.tiptap-toolbar input[type="file"] {
+  display: none !important;
+}
+
+.tiptap-statusbar {
+  position: absolute !important;
+  right: 16px !important;
+  bottom: 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  font-size: 12px !important;
+  line-height: 1 !important;
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+.tiptap-statusbar .statusbar-badge {
+  padding: 2px 8px !important;
+  font-size: 11px !important;
+  border-radius: 4px !important;
+}
