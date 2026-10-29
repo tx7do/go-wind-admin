@@ -164,7 +164,7 @@ function onChartClick(event: unknown) {
 const DEMO_SCHEMA: Partial<BiDashboardSchema> = {
   name: "default",
   linkage: { enabled: true },
-  theme: { key: "tech-blue" },
+  // 不钉主题预设：跟随宿主亮暗（大屏需要钉死时在设计器主题下拉里选预设）
   datasets: [
     {
       id: "ds_month",

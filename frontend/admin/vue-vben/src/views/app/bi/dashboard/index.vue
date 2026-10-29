@@ -40,7 +40,7 @@ const BI_SCHEMA_STORAGE_KEY = 'bi:schema:default';
 
 const route = useRoute();
 const router = useRouter();
-const { isDark, locale: appLocale } = usePreferences();
+const { locale: appLocale } = usePreferences();
 
 const dashboardId = computed(() =>
   Number(route.query.id) > 0 ? Number(route.query.id) : undefined,
@@ -138,7 +138,7 @@ onBeforeUnmount(() => {
 const schema = ref<Partial<BiDashboardSchema>>({
   name: 'default',
   linkage: { enabled: true },
-  theme: isDark.value ? { key: 'tech-blue' } : { key: 'paper' },
+  // 不钉主题预设：跟随宿主亮暗（大屏需要钉死时在设计器主题下拉里选预设）
   datasets: [
     {
       id: 'ds_month',

@@ -1333,10 +1333,8 @@ var DefaultBiDashboards = []*biV1.BiDashboard{
 		Kind:       biV1.BiDashboardKind_TEMPLATE.Enum(),
 		Remark:     trans.Ptr("内置基线：一张柱状图，复制后换成自己的数据集即可"),
 		ChartCount: trans.Ptr(uint32(1)),
-		ThemeKey:   trans.Ptr("tech-blue"),
 		Payload: trans.Ptr(`{"schemaVersion":2,"name":"builtin.bi.basic",` +
 			`"grid":{"columns":12,"rowHeight":80,"gap":8},` +
-			`"theme":{"key":"tech-blue"},` +
 			`"datasets":[{"id":"ds_sales","name":"月度销售额","type":"static","rows":[` +
 			`{"month":"1月","sales":120},{"month":"2月","sales":180},{"month":"3月","sales":150}]}],` +
 			`"charts":[{"id":"c_bar","title":"月度销售额","datasetId":"ds_sales","type":"bar",` +

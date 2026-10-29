@@ -105,6 +105,7 @@ declare global {
   const useOptimistic: typeof import('react').useOptimistic
   const useOutlet: typeof import('react-router-dom').useOutlet
   const useOutletContext: typeof import('react-router-dom').useOutletContext
+  const usePageFullscreen: typeof import('../src/hooks/usePageFullscreen').usePageFullscreen
   const usePageRefreshStore: typeof import('../src/stores/pageRefresh').usePageRefreshStore
   const useParams: typeof import('react-router-dom').useParams
   const usePrintTemplateDialog: typeof import('../src/components/common/PrintTemplatePrint').usePrintTemplateDialog
