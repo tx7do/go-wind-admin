@@ -288,17 +288,45 @@ onMounted(() => {
         color 0.2s ease;
     }
 
-    // 二级菜单项：缩进 + 与一级菜单同字号
-    .el-menu--inline {
-      .el-menu-item {
-        padding-left: 44px !important; // 一级图标18px + 间距8px + 额外缩进18px
-        font-size: 14px !important; // 与一级菜单相同字号
-        font-weight: 400 !important;
+    // ============================================
+    // 多级菜单层级视觉（三级及以上分组菜单不再与一级菜单视觉混淆）
+    // ============================================
+    &:not(.el-menu--collapse) {
+      // 缩进交给 Element Plus 的 --el-menu-level 计算（每级 +20px）。
+      // 不能写死 padding-left，否则所有层级顶格平铺，分组菜单与一级菜单无法区分
+      .el-menu-item,
+      .el-sub-menu__title {
+        padding-left: calc(
+          var(--el-menu-base-level-padding) + var(--el-menu-level, 0) * var(--el-menu-level-padding)
+        ) !important;
+      }
 
-        .el-icon {
-          width: 16px !important;
-          height: 16px !important;
-          font-size: 16px !important;
+      // 二级及更深：图标缩小一档，强化从属关系
+      // （SvgIcon 渲染为裸 svg.iconify，不命中 .el-icon/[class^="i-"]，需一并覆盖）
+      .el-menu--inline {
+        .el-menu-item,
+        .el-sub-menu > .el-sub-menu__title {
+          > svg,
+          .el-icon,
+          [class^="i-"] {
+            width: 16px !important;
+            height: 16px !important;
+            font-size: 16px !important;
+          }
+        }
+
+        // 三级及更深：图标再小一档
+        .el-menu--inline {
+          .el-menu-item,
+          .el-sub-menu > .el-sub-menu__title {
+            > svg,
+            .el-icon,
+            [class^="i-"] {
+              width: 14px !important;
+              height: 14px !important;
+              font-size: 14px !important;
+            }
+          }
         }
       }
     }
