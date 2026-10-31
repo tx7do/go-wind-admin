@@ -68,6 +68,17 @@
 
 $border: 1px solid var(--el-border-color-light);
 
+/* ---------- 表格行背景过渡：全局禁用 ---------- */
+/* EP 给 .el-table--enable-row-transition td 挂了 `transition: background-color .25s`
+   （行背景渐变装饰）。主题切换（html.dark 增删）时行背景由 CSS 变量驱动变化，
+   Chromium 会把这个过渡的终帧画丢——computed 已是新主题值、paint 停在旧主题值：
+   暗→亮整行残留暗底、亮→暗斑马纹残留 #FAFAFA 白条，重载页面才自愈
+   （2026-10-31 go-wind-shop 端 hover 场景像素级实测，含暗色悬停中切换）。
+   该渐变纯属装饰，直接全局禁用；不影响 hover 高亮本身（那是变量即时切换）。 */
+.el-table--enable-row-transition .el-table__body td.el-table__cell {
+  transition: none !important;
+}
+
 /* ---------- 表格变量 ---------- */
 /* 表格的 --el-table-* 变量由 Element Plus 主题系统（含 dark/css-vars.css）
    按亮/暗模式自动提供，此处不再硬编码覆盖，避免亮/暗覆盖不全导致暗黑下出现
