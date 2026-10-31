@@ -174,7 +174,7 @@ cd frontend/admin/vue-vben   && pnpm install && pnpm dev             # 端口 15
 <tr><th>层级</th><th>技术</th></tr>
 <tr><td><strong>后端框架</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Protobuf / Buf</code></td></tr>
 <tr><td><strong>ORM</strong></td><td><code>Ent</code> / <code>GORM</code>（二选一，构建标签切换，默认 Ent） · <code>MySQL</code> · <code>PostgreSQL</code></td></tr>
-<tr><td><strong>中间件</strong></td><td><code>Redis</code>（compose 拉 <code>bitnami/redis:latest</code>，未固定版本；代码只用到 Set/Expire/Publish 一类的长期命令，未使用 Redis 8 专属命令） · <code>MinIO</code>（S3 兼容对象存储）</td></tr>
+<tr><td><strong>中间件</strong></td><td><code>Redis</code>（compose 拉 <code>bitnami/redis:latest</code>，未固定版本；代码只用到 Set/Expire/Publish 一类的长期命令，未使用 Redis 8 专属命令） · <code>SeaweedFS</code>（S3 兼容对象存储，MinIO 社区版停维护后的替代，容器服务名沿用 minio）</td></tr>
 <tr><td><strong>认证授权</strong></td><td><code>JWT</code>（认证） · <code>Casbin</code> / <code>OPA</code>（鉴权引擎，二选一，默认 noop 全放行）</td></tr>
 <tr><td><strong>实时通信</strong></td><td><code>SSE</code>（服务端推送） · <code>Asynq</code>（异步任务）</td></tr>
 <tr><td><strong>脚本引擎</strong></td><td><code>go-scripts</code> · <code>Lua</code>（gopher-lua） · <code>JavaScript</code>（goja） · 多语言 Hook 插件系统</td></tr>
@@ -284,7 +284,7 @@ go-wind-admin/
 │   │   └── internal/               # 业务核心（data/service/server）
 │   ├── pkg/                        # 公共包
 │   │   ├── scripting/              # 多语言脚本引擎（Lua + JavaScript）
-│   │   ├── oss/                    # 对象存储（MinIO）
+│   │   ├── oss/                    # 对象存储（S3 兼容：SeaweedFS）
 │   │   ├── eventbus/               # 事件总线
 │   │   └── ...                     # 其他工具包
 │   ├── scripts/                    # 部署与备份脚本（env/docker/deploy/backup）

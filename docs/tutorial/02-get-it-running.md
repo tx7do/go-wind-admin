@@ -7,7 +7,7 @@
 
 ## 1. 拓扑：依赖模式
 
-本地开发用**依赖模式（libs_only）**：只有三方中间件（PostgreSQL / Redis / MinIO）跑在 Docker 里，
+本地开发用**依赖模式（libs_only）**：只有三方中间件（PostgreSQL / Redis / SeaweedFS）跑在 Docker 里，
 后端服务与前端都在本地 IDE/终端运行调试。这与生产部署（第 9 章）是两回事。
 
 ## 2. 工具前置
@@ -116,7 +116,7 @@ cd backend/app/admin/service && go run ./cmd/server -c ./configs
 | 后端 REST API | <http://localhost:7788> | 所有管理接口 + Swagger（`/docs`） |
 | 后端 SSE | <http://localhost:7789/events> | 服务端推送 |
 | React / Vue Element / Vue Vben | 15888 / 15777 / 15666 | Vite dev server |
-| MinIO Console | <http://localhost:9001> | 对象存储管理界面（root / \*Abcd123456） |
+| SeaweedFS Web UI | <http://localhost:9333> | 对象存储管理界面（服务名沿用 minio，root / \*Abcd123456） |
 | PostgreSQL / Redis | 5432 / 6379 | 仅本机后端使用 |
 
 ## 8. 常见坑速查（细节见 windows-startup-guide「常见问题」）

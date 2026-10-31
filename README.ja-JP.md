@@ -174,7 +174,7 @@ cd frontend/admin/vue-vben   && pnpm install && pnpm dev             # ポート
 <tr><th>レイヤー</th><th>技術</th></tr>
 <tr><td><strong>バックエンドフレームワーク</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Protobuf / Buf</code></td></tr>
 <tr><td><strong>ORM</strong></td><td><code>Ent</code> / <code>GORM</code>（2 択 1、ビルドタグで切替、デフォルトは Ent） · <code>MySQL</code> · <code>PostgreSQL</code></td></tr>
-<tr><td><strong>ミドルウェア</strong></td><td><code>Redis</code>（compose は <code>bitnami/redis:latest</code> を取得、バージョン固定なし。コード側は Set/Expire/Publish などの長期コマンドのみで、Redis 8 専用コマンドは不使用） · <code>MinIO</code>（S3 互換オブジェクトストレージ）</td></tr>
+<tr><td><strong>ミドルウェア</strong></td><td><code>Redis</code>（compose は <code>bitnami/redis:latest</code> を取得、バージョン固定なし。コード側は Set/Expire/Publish などの長期コマンドのみで、Redis 8 専用コマンドは不使用） · <code>SeaweedFS</code>（S3 互換オブジェクトストレージ。MinIO コミュニティ版の保守終了後の代替で、コンテナサービス名は minio を継続使用）</td></tr>
 <tr><td><strong>認証・認可</strong></td><td><code>JWT</code>（認証） · <code>Casbin</code> / <code>OPA</code>（認可エンジン、2 択 1、デフォルトは全許可の noop）</td></tr>
 <tr><td><strong>リアルタイム通信</strong></td><td><code>SSE</code>（サーバープッシュ） · <code>Asynq</code>（非同期タスク）</td></tr>
 <tr><td><strong>スクリプトエンジン</strong></td><td><code>go-scripts</code> · <code>Lua</code>（gopher-lua） · <code>JavaScript</code>（goja） · 多言語 Hook プラグインシステム</td></tr>
@@ -284,7 +284,7 @@ go-wind-admin/
 │   │   └── internal/               # ビジネスコア（data/service/server）
 │   ├── pkg/                        # 共通パッケージ
 │   │   ├── scripting/              # 多言語スクリプトエンジン（Lua + JavaScript）
-│   │   ├── oss/                    # オブジェクトストレージ（MinIO）
+│   │   ├── oss/                    # オブジェクトストレージ（S3 互換：SeaweedFS）
 │   │   ├── eventbus/               # イベントバス
 │   │   └── ...                     # その他ユーティリティパッケージ
 │   ├── scripts/                    # デプロイ・バックアップスクリプト（env/docker/deploy/backup）

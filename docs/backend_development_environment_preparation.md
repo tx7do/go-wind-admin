@@ -82,7 +82,7 @@ CLI 工具（buf、ent、gow、golangci-lint 等）在另一个目标里，`make
 
 ```shell
 cd backend
-docker compose -f docker-compose.libs.yaml up -d   # 起 PostgreSQL / Redis / MinIO
+docker compose -f docker-compose.libs.yaml up -d   # 起 PostgreSQL / Redis / SeaweedFS
 gow run admin                                      # 起后端，HTTP :7788
 ```
 

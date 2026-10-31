@@ -8,6 +8,18 @@
 
 ## [Unreleased]
 
+### 变更
+
+- **对象存储 MinIO → SeaweedFS**：MinIO 社区版已于 2026-04 停止维护并归档仓库，compose 依赖切换为
+  SeaweedFS（`chrislusf/seaweedfs:4.51`，S3 兼容网关单进程）。容器服务名/主机名沿用 `minio`、
+  S3 API 端口仍为 9000——`oss.yaml` 与 hosts 映射零改动；代码侧仍走 minio-go SDK 的标准 S3 语义，
+  Go 代码零改动。配套调整：凭证从镜像环境变量改为 compose 挂载的
+  `backend/scripts/docker/seaweedfs/s3.json`（identities，须与 `oss.yaml` 凭证一致）；Web UI 从
+  9001 迁至 9333；bucket 由应用侧 `EnsureBucketExists` 自动创建（`MINIO_DEFAULT_BUCKETS` 移除）。
+  全链路经 `pkg/oss` live test（19 用例，含真实 PutObject 流式签名、Range 直读、建桶后回读）与
+  预签名 PUT/GET 真实网络回放验证通过。存量 MinIO 数据用任意 S3 客户端按桶镜像迁移（如
+  `mc mirror`），详见 [docs/backend_file_upload.md](./docs/backend_file_upload.md)。
+
 ## [1.5.0] - 2026-10-29
 
 ### 新增

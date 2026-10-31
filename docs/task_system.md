@@ -96,7 +96,7 @@ cron `30 3 * * *`。把超过保留期的六类审计行导出 JSONL 归档文�
 
 ### 5.3 备份（`backup`，一次性）
 
-`AsyncBackup`：SystemContext 全量导出核心表 → JSON 序列化 → gzip → 上传 MinIO 桶
+`AsyncBackup`：SystemContext 全量导出核心表 → JSON 序列化 → gzip → 上传对象存储（SeaweedFS）桶
 `backups`（对象名 `<日期>/<名称>-<时间>.json.gz`）。**这是应用级逻辑备份**，
 与 `scripts/backup/pg_backup.sh`（pg_dump 物理备份，30 份轮换）互补、互不替代。
 桶内对象的保留/清理策略当前无自动化（见第 10 节）。
@@ -209,7 +209,7 @@ asynq mux 的"Start 后不能注册 handler"约束 vs 脚本处理器运行期�
 |---|---|
 | 任务没跑 | ① `enable` 位；② typeName 是否在注册面（ListTaskTypeName / 启动日志里三条 `…定时任务已注册（cron=…）`：三条前后缀并不一致，只有到期扫描那条带"系统级"字样，检索请用 `定时任务已注册` 而不是 `系统级`）；③ H8 拒绝创建的报错（未注册类型）；④ 调度器是否配置（`server.asynq.uri`，未配置整个子系统静默缺失）；⑤ 同名任务被 startAllTask 去重跳过的告警日志 |
 | StopAllTask 后系统任务还在 | 正常——StartAllTask 末尾自动重注册；要彻底停系统任务只能停服务或改代码 |
-| 备份对象 | MinIO `backups` 桶，日期分层对象名；恢复 = 下载 JSON 反序列化（当前无自动恢复流程） |
+| 备份对象 | 对象存储 `backups` 桶（SeaweedFS），日期分层对象名；恢复 = 下载 JSON 反序列化（当前无自动恢复流程） |
 | 归档目录/保留期 | `AUDIT_ARCHIVE_DIR` / `AUDIT_RETENTION_DAYS`（改后下个 03:30 周期生效） |
 | 改了 cron 没生效 | Update 走 stop→start 重装载；确认后看管理页行内状态与调度器日志 |
 | 通知台账一直 `SENDING` / 验证码邮件迟迟不来 | ① 先确认还在不在阈值内（默认 15 分钟）：超期的行会被 5.6 扫成 `FAILED`，`last_error` 里带 `swept by notification_delivery_sweep` 就说明"没人给它结论"已经是既成事实，重点转向②③；② `server.asynq.uri` 是否配置（没配 ⇒ 通知整体退回同步投递，属预期不是故障）；③ 任务有没有被同机的别的项目抢走（第 10 节"队列无命名空间"）：`asynq:{default}:retry` / `:archived` 里躺着它，而 `asynq:servers:*` 心跳里有多个进程 ⇒ 就是这个；④ 读台账的 `attempts` 与 `last_error`：`attempts=0` 且 `SKIPPED` = 入队前的配置预检就没过，是渠道配置问题，与队列无关；`attempts>0` 而状态被扫定案 = 拨过号但结论没写回来 |

@@ -30,7 +30,7 @@ Points to the dependencies-only Compose config
 Services started (dependencies only):
   - PostgreSQL database
   - Redis cache
-  - MinIO object storage
+  - SeaweedFS object storage (S3-compatible, service name kept as minio)
   - Jaeger distributed tracing
 
 Services NOT started:

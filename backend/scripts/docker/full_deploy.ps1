@@ -31,7 +31,7 @@ Services started (full):
   - Main application service (as defined in docker-compose.yml)
   - PostgreSQL database
   - Redis cache
-  - MinIO object storage
+  - SeaweedFS object storage (S3-compatible, service name kept as minio)
   - Jaeger distributed tracing
 
 Compose file:

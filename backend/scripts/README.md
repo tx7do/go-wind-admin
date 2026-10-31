@@ -175,7 +175,7 @@ Go 安装不再是独立脚本：`lib/go-utils.sh` 的 `install_golang()` 函数
 - PostgreSQL 数据库
 - Redis 缓存
 - Etcd 服务发现
-- MinIO 对象存储
+- SeaweedFS 对象存储（S3 兼容，服务名沿用 minio）
 - Jaeger 分布式追踪
 
 **使用方式：**
@@ -225,7 +225,7 @@ APP_ROOT=/opt/app ./scripts/docker/full_deploy.sh
 
 - PostgreSQL 数据库
 - Redis 缓存
-- MinIO 对象存储
+- SeaweedFS 对象存储（S3 兼容，服务名沿用 minio）
 - Jaeger 分布式追踪
 
 **不启动：** 主应用服务（应在本地运行）

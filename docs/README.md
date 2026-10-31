@@ -58,7 +58,7 @@
 | [data_scope_design.md](./data_scope_design.md) | 角色级数据范围：五档语义、聚合、执行层、新表接入步骤 | 新表接入数据范围或改聚合规则前 |
 | [audit-log-producer-design.md](./audit-log-producer-design.md) | 六类审计日志的生产者设计与采集层实施状态 | 改审计采集、加新日志字段时 |
 | [script_system.md](./script_system.md) | 脚本级插件系统：五类扩展点、安全模型、运维 | 写脚本/改钩子点/接任务桥前 |
-| [backend_file_upload.md](./backend_file_upload.md) | 文件上传链路：MinIO 部署、`oss.yaml`、安全校验 | 涉及上传/下载/对象存储部署时 |
+| [backend_file_upload.md](./backend_file_upload.md) | 文件上传链路：对象存储部署（SeaweedFS）、`oss.yaml`、安全校验 | 涉及上传/下载/对象存储部署时 |
 | [backend_deploy.md](./backend_deploy.md) | 部署：Docker 两模式、PM2、SSE 网关、生产密钥、hosts | 部署或改部署脚本时 |
 | [backend_development_environment_preparation.md](./backend_development_environment_preparation.md) | 后端开发工具安装、Go 模块代理配置 | 新机器搭后端环境时 |
 | [frontend_development_environment_preparation.md](./frontend_development_environment_preparation.md) | 前端开发工具安装、npm 镜像源 | 新机器搭前端环境时 |

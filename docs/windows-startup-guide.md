@@ -16,7 +16,7 @@
 | 软件 | 版本要求 | 用途 |
 |------|---------|------|
 | Go | 1.26+（`backend/go.mod` 当前钉 `go 1.26.4`，低于该版本无法构建） | 后端编译运行 |
-| Docker Desktop | 最新版 | 运行 PostgreSQL、Redis、MinIO |
+| Docker Desktop | 最新版 | 运行 PostgreSQL、Redis、SeaweedFS（对象存储） |
 | Node.js | 以各前端 `package.json` 的 `engines` 为准：react **未声明** engines，vue-element `^20.19.0 \|\| >=22.12.0`，vue-vben `>=20.11.0`（另要求 pnpm `>=9.12.0`）——三端同时满足即取 vue-element 的约束 `^20.19.0 \|\| >=22.12.0`（21.x 不在内） | 前端编译运行 |
 | pnpm | 仅 vue-vben 钉定（其 `packageManager` 字段为 `pnpm@11.18.0`，corepack 自动路由）；react / vue-element 未钉定版本 | Vue 前端包管理 |
 | Git | 最新版 | 版本控制 |
@@ -84,7 +84,7 @@ docker info | grep OSType
 
 ---
 
-## 第二步：启动依赖服务（PostgreSQL、Redis、MinIO）
+## 第二步：启动依赖服务（PostgreSQL、Redis、SeaweedFS）
 
 ```bash
 cd backend
@@ -118,7 +118,7 @@ docker compose -f docker-compose.libs.yaml ps
 |------|------|------|------|
 | PostgreSQL | 5432 | postgres | *Abcd123456 |
 | Redis | 6379 | - | *Abcd123456 |
-| MinIO | 9000 (API) / 9001 (Console) | root | *Abcd123456 |
+| SeaweedFS（服务名 minio） | 9000 (S3 API) / 9333 (Web UI) | root | *Abcd123456 |
 
 ---
 
@@ -280,7 +280,7 @@ pnpm dev
 | React 前端 | http://localhost:15888 | Vite 开发服务器（React 版） |
 | 后端 REST API | http://localhost:7788 | HTTP 接口 |
 | 后端 SSE | http://localhost:7789/events | 服务端推送事件 |
-| MinIO Console | http://localhost:9001 | 对象存储管理界面 |
+| SeaweedFS Web UI | http://localhost:9333 | 对象存储管理界面（服务名沿用 minio） |
 | PostgreSQL | localhost:5432 | 数据库 |
 | Redis | localhost:6379 | 缓存 |
 

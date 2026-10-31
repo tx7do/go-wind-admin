@@ -66,7 +66,7 @@ make ts
 [Windows 本地开发启动指南](./windows-startup-guide.md)）：
 
 ```shell
-# 1. 起依赖服务（PostgreSQL / Redis / MinIO）
+# 1. 起依赖服务（PostgreSQL / Redis / SeaweedFS）
 cd backend && docker compose -f docker-compose.libs.yaml up -d
 
 # 2. 起后端（HTTP :7788）

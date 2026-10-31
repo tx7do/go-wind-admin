@@ -174,7 +174,7 @@ cd frontend/admin/vue-vben   && pnpm install && pnpm dev             # port 1566
 <tr><th>Layer</th><th>Technologies</th></tr>
 <tr><td><strong>Backend Framework</strong></td><td><code>Golang</code> · <code>go-kratos v2</code> · <code>Protobuf / Buf</code></td></tr>
 <tr><td><strong>ORM</strong></td><td><code>Ent</code> / <code>GORM</code> (choose one — switched by build tag, Ent by default) · <code>MySQL</code> · <code>PostgreSQL</code></td></tr>
-<tr><td><strong>Middleware</strong></td><td><code>Redis</code> (compose pulls <code>bitnami/redis:latest</code>, no version pin; the codebase uses only long-standing commands such as Set/Expire/Publish — nothing Redis-8-specific) · <code>MinIO</code> (S3-compatible object storage)</td></tr>
+<tr><td><strong>Middleware</strong></td><td><code>Redis</code> (compose pulls <code>bitnami/redis:latest</code>, no version pin; the codebase uses only long-standing commands such as Set/Expire/Publish — nothing Redis-8-specific) · <code>SeaweedFS</code> (S3-compatible object storage — the replacement after MinIO Community went unmaintained; the container service name stays <code>minio</code>)</td></tr>
 <tr><td><strong>Authentication & Authorization</strong></td><td><code>JWT</code> (authentication) · <code>Casbin</code> / <code>OPA</code> (authorization engine — choose one; defaults to allow-all noop)</td></tr>
 <tr><td><strong>Realtime</strong></td><td><code>SSE</code> (server push) · <code>Asynq</code> (async tasks)</td></tr>
 <tr><td><strong>Scripting Engine</strong></td><td><code>go-scripts</code> · <code>Lua</code> (gopher-lua) · <code>JavaScript</code> (goja) · multi-language hook plugin system</td></tr>
@@ -284,7 +284,7 @@ go-wind-admin/
 │   │   └── internal/               # Business core (data/service/server)
 │   ├── pkg/                        # Shared packages
 │   │   ├── scripting/              # Multi-language scripting engine (Lua + JavaScript)
-│   │   ├── oss/                    # Object storage (MinIO)
+│   │   ├── oss/                    # Object storage (S3-compatible: SeaweedFS)
 │   │   ├── eventbus/               # Event bus
 │   │   └── ...                     # Other utility packages
 │   ├── scripts/                    # Deployment & backup scripts (env/docker/deploy/backup)

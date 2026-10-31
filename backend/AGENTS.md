@@ -16,7 +16,7 @@ Go 模块路径: `go-wind-admin`
 | ORM    | entgo.io/ent (Ent)            |
 | DB     | MySQL / PostgreSQL / SQLite   |
 | 缓存     | Redis (go-redis/v9)           |
-| 对象存储   | MinIO                         |
+| 对象存储   | SeaweedFS（S3 兼容，服务名沿用 minio） |
 | API 定义 | Protocol Buffers 3 (buf 工具链)  |
 | 依赖注入   | 手写构造注入 (cmd/server/wiring_ent.go) |
 | 认证     | JWT (kratos-authn)            |
@@ -376,7 +376,7 @@ gow run        # 无需先构建
 | `make test`       | 运行测试                              |
 | `make cover`      | 覆盖率测试                             |
 | `make lint`       | golangci-lint                     |
-| `make docker-libs`| 启动 MySQL/Redis/MinIO 等基础服务         |
+| `make docker-libs`| 启动 MySQL/Redis/SeaweedFS 等基础服务        |
 
 ### 配置文件
 

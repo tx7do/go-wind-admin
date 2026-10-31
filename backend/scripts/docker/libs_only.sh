@@ -8,7 +8,7 @@
 ## 启动的服务（仅依赖）：
 ##   - PostgreSQL 数据库
 ##   - Redis 缓存
-##   - MinIO 对象存储
+##   - SeaweedFS 对象存储（S3 兼容，服务名沿用 minio）
 ##   - Jaeger 分布式追踪
 ##
 ## 不启动的服务：

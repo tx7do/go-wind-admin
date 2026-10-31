@@ -58,7 +58,7 @@ Create 强制覆盖 tenant_id 防伪造；显式改 tenant_id 值仅放行"同�
 行级隔离覆盖的是 **ent 数据层**。以下路径**不自动注入租户谓词**，业务侧必须自己携带并校验租户维度：
 
 - 应用层自有缓存（Redis key 构造）；
-- 对象存储路径（OSS / MinIO 对象 key）；
+- 对象存储路径（OSS / S3 对象 key）；
 - 异步任务载荷（asynq 任务体）；
 - 任何绕过 ent 的直连 SQL / GORM 路径。
 

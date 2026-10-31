@@ -3,7 +3,7 @@
 本项目是基于 Go + `gow` 脚手架 构建的**微服务后端架构**，支持：
 
 - 多协议：RESTful API + gRPC
-- 多存储：MySQL/PostgreSQL、Redis、MinIO
+- 多存储：MySQL/PostgreSQL、Redis、SeaweedFS（S3 兼容对象存储）
 - 服务治理：Etcd 注册发现、Jaeger 链路追踪
 - 代码生成：Ent ORM、Wire 依赖注入、Protobuf 自动生成、TypeScript 客户端
 - 容器化：Docker + Docker Compose 一键部署
@@ -28,7 +28,7 @@
 |------------|---------------|------------------------------------|
 | Redis      | 未固定         | compose 拉 `bitnami/redis:latest`。旧版本此处写"必须 ≥8.0，使用 `HExpire`/`HSETEX`"——两条命令在 `backend/**` 与本仓依赖树里均 **0 命中**（2026-09-25 实测，命令见下方"Redis 命令报错"一节），实际只用到 `Set`/`Expire`/`Publish`/`HSet` 一类长期命令 |
 | Postgresql | 14+           | 关系型数据库，支持 JSON / 事务                |
-| MinIO      | RELEASE.2024+ | 兼容 S3 协议的对象存储服务                    |
+| SeaweedFS  | 4.51          | S3 兼容对象存储（MinIO 社区版停维护后的替代，容器服务名沿用 minio） |
 | Jaeger     | 1.40+         | 分布式链路追踪，可视化请求耗时                    |
 
 ## 内置API文档

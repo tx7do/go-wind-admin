@@ -65,23 +65,21 @@ services:
 #    volumes:
 #      - /${APP_ROOT:-/root/app}/redis/data:/bitnami/redis/data
 
+  # 对象存储：SeaweedFS（S3 兼容网关；MinIO 社区版已于 2026-04 停止维护、仓库归档）。
+  # 服务名沿用 minio：oss.yaml 的 endpoint 与 hosts 映射零改动。
+  # 桶由应用侧 EnsureBucketExists 自动创建，无需预建。
   minio:
-    image: docker.io/minio/minio:latest
+    image: docker.io/chrislusf/seaweedfs:4.51
     restart: always
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "9000:9000"   # S3 兼容 API（原 MinIO API 端口）
+      - "9333:9333"   # Master Web UI（原 MinIO Console :9001 的替代入口）
     networks:
       - app-tier
-    environment:
-      - MINIO_ROOT_USER=root
-      - MINIO_ROOT_PASSWORD=*Abcd123456
-      - MINIO_DEFAULT_BUCKETS=images
-      - MINIO_FORCE_NEW_KEYS=yes
-      - BITNAMI_DEBUG=true
-#    volumes:
-#      - ${APP_ROOT:-/root/app}/minio/data:/data
-    command: server /data --console-address ':9001'
+    volumes:
+      - ./scripts/docker/seaweedfs/s3.json:/etc/seaweedfs/s3.json:ro
+#      - ${APP_ROOT:-/root/app}/seaweedfs/data:/data
+    command: server -dir=/data -filer -s3 -s3.port=9000 -s3.config=/etc/seaweedfs/s3.json
 
 #  jaeger:
 #    image: docker.io/jaegertracing/all-in-one:latest

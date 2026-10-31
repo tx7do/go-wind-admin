@@ -63,8 +63,8 @@ openssl pkey -in jwt_private_key.pem -pubout -out jwt_public_key.pem
 
 其他生产前核对项：
 
-- **MinIO**：`configs/oss.yaml` 的 `endpoint`/`upload_host`/`download_host` 指向客户端可达入口，
-  并替换 root 凭证（见 [backend_file_upload.md](../backend_file_upload.md)）；
+- **对象存储（SeaweedFS）**：`configs/oss.yaml` 的 `endpoint`/`upload_host`/`download_host` 指向客户端可达入口，
+  并替换 root 凭证（compose 挂载的 `scripts/docker/seaweedfs/s3.json` 同步改，见 [backend_file_upload.md](../backend_file_upload.md)）；
 - **authz 引擎**：`configs/auth.yaml` 的 `authz.type` 从 `noop` 切到 casbin/opa（第 05 章）；
 - **审计留存**：`AUDIT_RETENTION_DAYS` 按合规要求核对（第 07 章）；
 - **脚本出站**：`SCRIPT_HTTP_ALLOWED_DOMAINS` 按需配置（第 08 章）。
@@ -77,7 +77,7 @@ openssl pkey -in jwt_private_key.pem -pubout -out jwt_public_key.pem
 
 ## 5. 上线检查单
 
-1. 密钥注入（JWT、MinIO 凭证、DB 口令）；
+1. 密钥注入（JWT、对象存储凭证、DB 口令）；
 2. TLS 在外层负载均衡启用，后端只听内网；
 3. authz 引擎切非 noop；审计留存天数核对；
 4. 新端点做了「接口同步」、新菜单进了菜单管理（第 04/06 章）；

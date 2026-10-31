@@ -42,7 +42,7 @@
 │   ├── metadata       # 操作者元数据解析
 │   ├── middleware     # auth / ent / logging 中间件
 │   ├── netutil        # 网络安全工具（SSRF 防护）
-│   ├── oss            # MinIO 对象存储封装
+│   ├── oss            # 对象存储封装（S3 兼容：SeaweedFS）
 │   ├── password       # 口令策略三件套（阈值经参数管理）
 │   ├── scripting      # 多语言脚本引擎（Lua / JavaScript）
 │   ├── serviceid      # 服务标识与 Redis 键前缀
@@ -103,7 +103,7 @@
     - `metadata`：操作者元数据（OperatorMetadata）解析
     - `middleware`：跨服务复用的中间件——`auth`（认证）、`ent`（Ent 租户/数据范围注入）、`logging`（各类审计日志采集）
     - `netutil`：网络安全工具（当前主要服务 SSRF 防护：内网判定、DNS rebinding 防护）
-    - `oss`：MinIO 对象存储封装（上传/下载/预签名）与 MIME 嗅探、大小/目录安全校验
+    - `oss`：对象存储封装（S3 兼容，minio-go SDK，服务端 SeaweedFS；上传/下载/预签名）与 MIME 嗅探、大小/目录安全校验
     - `password`：等保口令策略三件套（复杂度/有效期/历史口令），阈值经 sys_config 平台参数读取
     - `scripting`：多语言脚本引擎（Lua / JavaScript，go-scripts 封装；HTTP 出站域名白名单等）
     - `serviceid`：服务标识与 Redis 键前缀（`gowind:captcha` 等键的 `gowind` 前缀来源）
