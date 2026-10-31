@@ -54,3 +54,6 @@ node_modules/
 # 本地调试残留（含登录响应/token）
 login-resp.json
 *-login-resp.json
+
+# SeaweedFS 本机容器数据卷（docker bind mount，仅本机开发环境）
+.seaweedfs-data/
