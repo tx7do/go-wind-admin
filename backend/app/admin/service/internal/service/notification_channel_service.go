@@ -227,7 +227,7 @@ func (s *NotificationChannelService) sendTest(ctx context.Context, id uint32, re
 		sendReq.EventType = notificationV1.EventType_CHANNEL_TEST_EXT
 		sendReq.Channel = trans.Ptr(notificationV1.Channel_EXT)
 		sendReq.Title, sendReq.Content = mailtext.ChannelTestExt(ctx, operator.UserId)
-	
+
 	}
 
 	if _, err = s.notifier.SendDirect(ctx, sendReq); err != nil {

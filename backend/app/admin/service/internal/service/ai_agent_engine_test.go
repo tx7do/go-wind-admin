@@ -146,7 +146,7 @@ func TestRenderAgentTemplate(t *testing.T) {
 }
 
 // TestRenderAgentTemplateNotRecursive 值里的 "{{...}}" 不得被当模板再渲染一轮
-//（单趟扫描的直接后果，钉住防有人改回逐变量 ReplaceAll）。
+// （单趟扫描的直接后果，钉住防有人改回逐变量 ReplaceAll）。
 func TestRenderAgentTemplateNotRecursive(t *testing.T) {
 	vars := map[string]map[string]string{
 		"a": {"v": "{{b.v}}"},

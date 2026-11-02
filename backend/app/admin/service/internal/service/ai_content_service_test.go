@@ -29,12 +29,12 @@ func TestCollectMenuIndexDocs(t *testing.T) {
 		return m
 	}
 	items := []*permissionV1.Menu{
-		mk(1, "/a", "", "标题A"),  // 正常：meta.title
-		mk(2, "/b", "名字B", ""),  // 标题回退：name
-		mk(0, "/c", "x", "t"),    // 无 id → 跳过
-		mk(3, "", "x", "t"),      // 无 path → 跳过
-		mk(4, "/d", "", ""),      // 无标题 → 跳过
-		nil,                       // nil（getter 零值 → 按 id=0 跳过）
+		mk(1, "/a", "", "标题A"), // 正常：meta.title
+		mk(2, "/b", "名字B", ""), // 标题回退：name
+		mk(0, "/c", "x", "t"),  // 无 id → 跳过
+		mk(3, "", "x", "t"),    // 无 path → 跳过
+		mk(4, "/d", "", ""),    // 无标题 → 跳过
+		nil,                    // nil（getter 零值 → 按 id=0 跳过）
 	}
 	got := collectMenuIndexDocs(items)
 	if len(got) != 2 {

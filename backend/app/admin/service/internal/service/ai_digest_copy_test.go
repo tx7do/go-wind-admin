@@ -11,7 +11,7 @@ import (
 
 func digestStatsFixture() *data.AuditDigestStats {
 	return &data.AuditDigestStats{
-		Total: 7,
+		Total:  7,
 		Failed: 2,
 		Users:  3,
 		TopActions: []data.AuditActionCount{

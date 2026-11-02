@@ -11,9 +11,9 @@ import (
 // 这里断言表头集合，防列被误删或误加。
 func TestDataExportColumnHeaders(t *testing.T) {
 	cases := []struct {
-		name  string
-		cols  []string
-		want  []string
+		name string
+		cols []string
+		want []string
 	}{
 		{"ai_usage", headersOf(aiUsageExportColumns()), []string{
 			"createdAt", "modelName", "promptTokens", "completionTokens", "totalTokens", "durationMs",

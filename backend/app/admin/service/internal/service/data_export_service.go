@@ -138,10 +138,18 @@ func notificationDeliveryExportColumns() []exportColumn[*notificationV1.Notifica
 		{header: "channel", value: func(r *notificationV1.NotificationDelivery) string { return r.GetChannel().String() }},
 		{header: "status", value: func(r *notificationV1.NotificationDelivery) string { return r.GetStatus().String() }},
 		{header: "target", value: func(r *notificationV1.NotificationDelivery) string { return r.GetTarget() }},
-		{header: "attempts", value: func(r *notificationV1.NotificationDelivery) string { return strconv.FormatUint(uint64(r.GetAttempts()), 10) }},
-		{header: "recipientUserId", value: func(r *notificationV1.NotificationDelivery) string { return strconv.FormatUint(uint64(r.GetRecipientUserId()), 10) }},
-		{header: "channelId", value: func(r *notificationV1.NotificationDelivery) string { return strconv.FormatUint(uint64(r.GetChannelId()), 10) }},
-		{header: "relatedId", value: func(r *notificationV1.NotificationDelivery) string { return strconv.FormatUint(uint64(r.GetRelatedId()), 10) }},
+		{header: "attempts", value: func(r *notificationV1.NotificationDelivery) string {
+			return strconv.FormatUint(uint64(r.GetAttempts()), 10)
+		}},
+		{header: "recipientUserId", value: func(r *notificationV1.NotificationDelivery) string {
+			return strconv.FormatUint(uint64(r.GetRecipientUserId()), 10)
+		}},
+		{header: "channelId", value: func(r *notificationV1.NotificationDelivery) string {
+			return strconv.FormatUint(uint64(r.GetChannelId()), 10)
+		}},
+		{header: "relatedId", value: func(r *notificationV1.NotificationDelivery) string {
+			return strconv.FormatUint(uint64(r.GetRelatedId()), 10)
+		}},
 		{header: "requestId", value: func(r *notificationV1.NotificationDelivery) string { return r.GetRequestId() }},
 		{header: "lastError", value: func(r *notificationV1.NotificationDelivery) string { return r.GetLastError() }},
 	}
