@@ -40,7 +40,7 @@ func (s *DictEntryService) List(ctx context.Context, req *paginationV1.PagingReq
 }
 
 func (s *DictEntryService) Create(ctx context.Context, req *dictV1.CreateDictEntryRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, dictV1.ErrorBadRequest("invalid parameter")
 	}
 
@@ -60,7 +60,7 @@ func (s *DictEntryService) Create(ctx context.Context, req *dictV1.CreateDictEnt
 }
 
 func (s *DictEntryService) Update(ctx context.Context, req *dictV1.UpdateDictEntryRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, dictV1.ErrorBadRequest("invalid parameter")
 	}
 

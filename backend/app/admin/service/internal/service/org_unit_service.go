@@ -164,7 +164,7 @@ func (s *OrgUnitService) Get(ctx context.Context, req *identityV1.GetOrgUnitRequ
 }
 
 func (s *OrgUnitService) Create(ctx context.Context, req *identityV1.CreateOrgUnitRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 
@@ -184,7 +184,7 @@ func (s *OrgUnitService) Create(ctx context.Context, req *identityV1.CreateOrgUn
 }
 
 func (s *OrgUnitService) Update(ctx context.Context, req *identityV1.UpdateOrgUnitRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 

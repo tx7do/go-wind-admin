@@ -61,7 +61,7 @@ func (s *PermissionGroupService) Get(ctx context.Context, req *permissionV1.GetP
 }
 
 func (s *PermissionGroupService) Create(ctx context.Context, req *permissionV1.CreatePermissionGroupRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 
@@ -81,7 +81,7 @@ func (s *PermissionGroupService) Create(ctx context.Context, req *permissionV1.C
 }
 
 func (s *PermissionGroupService) Update(ctx context.Context, req *permissionV1.UpdatePermissionGroupRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 

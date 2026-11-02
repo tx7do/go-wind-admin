@@ -79,9 +79,9 @@ func joinCSV(fields []string, escape func(string) string) string {
 func buildXLSX(sheet string, headers []string, rows [][]string) ([]byte, error) {
 	f := excelize.NewFile()
 	defer func() { _ = f.Close() }()
-	if _, err := f.NewSheet(sheet); err != nil {
-		return nil, err
-	}
+	// NewFile 自带 "Sheet1"，直接改名成目标表名即可；先 NewSheet(sheet) 再改名
+	// 会得到两张同名工作表，随后的按名写入会落到解析不唯一的位置——导出产物
+	// 变成"表头行数都对不上"的空簿（实测 2026-11）。
 	if err := f.SetSheetName("Sheet1", sheet); err != nil {
 		return nil, err
 	}
@@ -89,9 +89,11 @@ func buildXLSX(sheet string, headers []string, rows [][]string) ([]byte, error) 
 	if err := f.SetSheetRow(sheet, cell, &headers); err != nil {
 		return nil, err
 	}
-	if len(rows) > 0 {
-		cell, _ = excelize.CoordinatesToCellName(1, 2)
-		if err := f.SetSheetRow(sheet, cell, &rows); err != nil {
+	// SetSheetRow 一次只写一行（slice 元素=单元格）：把整个 rows 矩阵塞给它
+	// 会把每行当成一个单元格序列化成 "[a b]" 字符串——导出文件全部数据挤在一行乱码里。
+	for i, row := range rows {
+		cell, _ = excelize.CoordinatesToCellName(1, i+2)
+		if err := f.SetSheetRow(sheet, cell, &row); err != nil {
 			return nil, err
 		}
 	}

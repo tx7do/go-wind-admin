@@ -113,7 +113,9 @@ func applyOne(p patch) error {
 		return err
 	}
 	content := string(raw)
-	if strings.Contains(content, p.skipIf) {
+	// 空 skipIf 表示"无幂等哨兵"，不能当成"已登记"跳过——
+	// strings.Contains(x, "") 恒为 true，会让没写 skipIf 的 patch 静默不生效还假报成功。
+	if p.skipIf != "" && strings.Contains(content, p.skipIf) {
 		return nil // 已登记,幂等跳过
 	}
 

@@ -348,7 +348,7 @@ func (s *UserService) Get(ctx context.Context, req *identityV1.GetUserRequest) (
 }
 
 func (s *UserService) Create(ctx context.Context, req *identityV1.CreateUserRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 
@@ -471,7 +471,7 @@ func (s *UserService) Create(ctx context.Context, req *identityV1.CreateUserRequ
 }
 
 func (s *UserService) Update(ctx context.Context, req *identityV1.UpdateUserRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 

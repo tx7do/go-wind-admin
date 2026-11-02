@@ -240,7 +240,9 @@ func (r *FileRepo) Update(ctx context.Context, req *storageV1.UpdateFileRequest)
 				SetNillableSizeFormat(req.Data.SizeFormat).
 				SetNillableLinkURL(req.Data.LinkUrl).
 				SetNillableContentHash(req.Data.ContentHash).
-				SetNillableCreatedBy(req.Data.UpdatedBy).
+				// 更新人只能盖 updated_by：此前误写 SetNillableCreatedBy，
+				// 每次更新都会把"谁上传的"改写成"谁改的"，且 updated_by 恒为空。
+				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetUpdatedAt(time.Now())
 		},
 		func(s *sql.Selector) {

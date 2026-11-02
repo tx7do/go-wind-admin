@@ -105,7 +105,9 @@ func (s *ApiAuditLogService) Get(ctx context.Context, req *auditV1.GetApiAuditLo
 }
 
 func (s *ApiAuditLogService) Create(ctx context.Context, req *auditV1.CreateApiAuditLogRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	// req 本体也要判空：其余审计服务均为 `req == nil || req.Data == nil` 守卫，
+	// 这里漏了前半句，RPC 侧传 nil 请求会直接 panic 而非 BadRequest。
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 

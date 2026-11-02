@@ -43,7 +43,7 @@ func (s *AiProviderService) Get(ctx context.Context, req *aiV1.GetAiProviderRequ
 // Create 创建提供商；api_key 明文经全局加密器（GOWIND_CRYPTO_KEY，未配置则明文落库——
 // 与全局加密既有语义一致）加密后落库，hint 只存脱敏形态。
 func (s *AiProviderService) Create(ctx context.Context, req *aiV1.CreateAiProviderRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 	operator, err := auth.FromContext(ctx)
@@ -64,7 +64,7 @@ func (s *AiProviderService) Create(ctx context.Context, req *aiV1.CreateAiProvid
 }
 
 func (s *AiProviderService) Update(ctx context.Context, req *aiV1.UpdateAiProviderRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 	operator, err := auth.FromContext(ctx)

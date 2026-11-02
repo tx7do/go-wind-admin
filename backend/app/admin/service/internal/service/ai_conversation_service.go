@@ -56,7 +56,7 @@ func (s *AiConversationService) Get(ctx context.Context, req *aiV1.GetAiConversa
 }
 
 func (s *AiConversationService) Update(ctx context.Context, req *aiV1.UpdateAiConversationRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 	operator, err := auth.FromContext(ctx)

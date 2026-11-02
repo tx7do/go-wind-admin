@@ -3,9 +3,9 @@ package service
 import (
 	"context"
 	"fmt"
-	"time"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
+	"github.com/tx7do/go-utils/id"
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
@@ -137,8 +137,10 @@ func (s *BiDashboardService) Copy(ctx context.Context, req *biV1.CopyBiDashboard
 	}
 	code := req.GetCode()
 	if code == "" {
-		// 时间戳后缀保证租户内唯一，避免"复制两次同名冲突"
-		code = fmt.Sprintf("%s-copy-%d", source.GetCode(), time.Now().Unix())
+		// 短随机后缀保证租户内唯一：时间戳后缀不可靠——秒级在"同一秒内复制两次"
+		//（双击另存为、批量派生）必撞；纳秒级在 Windows 上因时钟粒度仍可能连续
+		// 两次取到同一读数（实测整包并发跑测试时复现）。
+		code = fmt.Sprintf("%s-copy-%s", source.GetCode(), id.NewShortUUID())
 	}
 
 	createReq := &biV1.CreateBiDashboardRequest{

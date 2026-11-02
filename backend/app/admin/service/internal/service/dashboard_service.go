@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-wind-admin/pkg/middleware/auth"
 	"strings"
+	"unicode/utf8"
 
 	"context"
 
@@ -255,26 +256,36 @@ func (s *DashboardService) GetAiInsights(ctx context.Context, req *adminV1.AiIns
 // splitInsightPoints 把模型输出的要点文本拆成结构化条目：
 // 识别 "- "/"* "/数字序号前缀；无多行时按句号拆分。最多 5 条。
 func splitInsightPoints(summary string) []string {
-	var points []string
-	for _, line := range strings.Split(summary, "\n") {
+	// stripPointPrefix 剥离单条要点的列表前缀与数字序号。
+	stripPointPrefix := func(line string) string {
 		line = strings.TrimSpace(line)
 		line = strings.TrimPrefix(line, "- ")
 		line = strings.TrimPrefix(line, "* ")
 		line = strings.TrimPrefix(line, "• ")
-		// 去数字序号（"1. " / "1、"）
+		// 去数字序号（"1. " / "1、"）。分隔符含多字节字符（"、"占 3 字节），
+		// 必须按 rune 宽度切：此前按字节偏移 +1 切会把中文顿号拦腰斩断，
+		// 产出非法 UTF-8（"1、要点" → "\x80\x81要点"）。
 		if idx := strings.IndexAny(line, ".、"); idx > 0 && idx <= 2 {
-			rest := strings.TrimSpace(line[idx+1:])
-			if rest != "" {
+			_, size := utf8.DecodeRuneInString(line[idx:])
+			if rest := strings.TrimSpace(line[idx+size:]); rest != "" {
 				line = rest
 			}
 		}
-		if line != "" {
+		return line
+	}
+
+	var points []string
+	for _, line := range strings.Split(summary, "\n") {
+		if line = stripPointPrefix(line); line != "" {
 			points = append(points, line)
 		}
 	}
+	// 无多行时按句号拆分。覆盖（而非追加）行解析结果：行解析只会把整段当一个
+	// 要点，不重置会把同一内容以列表形态和句号形态重复出两份。
 	if len(points) <= 1 && summary != "" {
+		points = nil
 		for _, s := range strings.Split(summary, "。") {
-			if s = strings.TrimSpace(s); s != "" {
+			if s = strings.TrimSpace(stripPointPrefix(s)); s != "" {
 				points = append(points, s+"。")
 			}
 		}

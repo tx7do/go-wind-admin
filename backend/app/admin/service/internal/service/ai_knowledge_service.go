@@ -83,7 +83,7 @@ func (s *AiKnowledgeService) Get(ctx context.Context, req *aiV1.GetAiKnowledgeBa
 }
 
 func (s *AiKnowledgeService) Create(ctx context.Context, req *aiV1.CreateAiKnowledgeBaseRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 	operator, err := auth.FromContext(ctx)
@@ -109,7 +109,7 @@ func (s *AiKnowledgeService) Create(ctx context.Context, req *aiV1.CreateAiKnowl
 }
 
 func (s *AiKnowledgeService) Update(ctx context.Context, req *aiV1.UpdateAiKnowledgeBaseRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 	operator, err := auth.FromContext(ctx)

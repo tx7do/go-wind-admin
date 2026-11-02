@@ -51,7 +51,7 @@ func (s *PolicyEvaluationLogService) Get(ctx context.Context, req *permissionV1.
 }
 
 func (s *PolicyEvaluationLogService) Create(ctx context.Context, req *permissionV1.CreatePolicyEvaluationLogRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 

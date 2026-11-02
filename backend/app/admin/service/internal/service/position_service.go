@@ -133,7 +133,7 @@ func (s *PositionService) Get(ctx context.Context, req *identityV1.GetPositionRe
 }
 
 func (s *PositionService) Create(ctx context.Context, req *identityV1.CreatePositionRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 
@@ -153,7 +153,7 @@ func (s *PositionService) Create(ctx context.Context, req *identityV1.CreatePosi
 }
 
 func (s *PositionService) Update(ctx context.Context, req *identityV1.UpdatePositionRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 

@@ -153,7 +153,7 @@ func (s *RoleService) Get(ctx context.Context, req *permissionV1.GetRoleRequest)
 }
 
 func (s *RoleService) Create(ctx context.Context, req *permissionV1.CreateRoleRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 
@@ -181,7 +181,7 @@ func (s *RoleService) Create(ctx context.Context, req *permissionV1.CreateRoleRe
 }
 
 func (s *RoleService) Update(ctx context.Context, req *permissionV1.UpdateRoleRequest) (*emptypb.Empty, error) {
-	if req.Data == nil {
+	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
 	}
 
