@@ -69,6 +69,58 @@ func tenantIDPatternFor(tenantID uint32) *regexp.Regexp {
 	return regexp.MustCompile(`(?i)\btenant_id\s*=\s*` + fmt.Sprintf("%d", tenantID) + `\b`)
 }
 
+// rejectDisjunctionOrComments 租户路径的析取/注释拒绝：
+//   - 字符串字面量外的结构 OR（析取可让"tenant_id = 5"出现性检查形同虚设）；
+//   - 任何 SQL 注释——"-- tenant_id = 5" 式注释能骗过存在性正则而谓词实际不生效。
+func rejectDisjunctionOrComments(sqlText string) error {
+	stripped, hasComment := stripSQLStringsAndComments(sqlText)
+	if hasComment {
+		return fmt.Errorf("sql comments are not allowed for tenant queries")
+	}
+	if regexp.MustCompile(`(?i)\bor\b`).MatchString(stripped) {
+		return fmt.Errorf("disjunction (OR) is not allowed for tenant queries")
+	}
+	return nil
+}
+
+// stripSQLStringsAndComments 去掉单引号字符串字面量与注释，留下 SQL 结构骨架。
+// 返回值 hasComment 标记原文是否含注释（注释本身是拒绝理由，不能只是剥掉）。
+func stripSQLStringsAndComments(sqlText string) (string, bool) {
+	var b strings.Builder
+	inString := false
+	hasComment := false
+	for i := 0; i < len(sqlText); i++ {
+		ch := sqlText[i]
+		switch {
+		case inString:
+			if ch == '\'' {
+				if i+1 < len(sqlText) && sqlText[i+1] == '\'' {
+					i++ // '' 转义仍在字符串内
+					continue
+				}
+				inString = false
+			}
+		case ch == '\'':
+			inString = true
+		case ch == '-' && i+1 < len(sqlText) && sqlText[i+1] == '-':
+			hasComment = true
+			for i < len(sqlText) && sqlText[i] != '\n' {
+				i++
+			}
+		case ch == '/' && i+1 < len(sqlText) && sqlText[i+1] == '*':
+			hasComment = true
+			i += 2
+			for i+1 < len(sqlText) && !(sqlText[i] == '*' && sqlText[i+1] == '/') {
+				i++
+			}
+			i++
+		default:
+			b.WriteByte(ch)
+		}
+	}
+	return b.String(), hasComment
+}
+
 // aiQueryForbiddenPatterns 生成 SQL 的硬拒绝模式：写操作与危险语句。
 var aiQueryForbiddenPatterns = []*regexp.Regexp{
 	regexp.MustCompile(`(?i)\b(INSERT|UPDATE|DELETE|DROP|TRUNCATE|ALTER|CREATE|GRANT|REVOKE|COPY|VACUUM|REINDEX|CALL|DO|SET)\b`),
@@ -120,6 +172,13 @@ func (s *AiQueryService) Ask(ctx context.Context, req *aiV1.AskAiQueryRequest) (
 	if err != nil {
 		return nil, err
 	}
+
+	// P1 修复：Ask 的两次 LLM 调用此前不记用量、不受 AI_TOKENS 配额约束
+	//（chat/agent 有闸而问数没有，配额与计费口径被绕过）。接入同款月度配额。
+	if err = checkAiTokenQuota(ctx, s.usageRepo, s.log, operator); err != nil {
+		return nil, err
+	}
+
 	// 双白名单：平台用户查全平台表；租户用户查本租户数据表子集，
 	// 且生成的 SQL 必须自带 tenant_id = 自身租户 过滤（后置校验 fail-closed）。
 	tenantID := operator.GetTenantId()
@@ -149,11 +208,20 @@ func (s *AiQueryService) Ask(ctx context.Context, req *aiV1.AskAiQueryRequest) (
 	}
 
 	// 1. NL → SQL（携带对话历史以消解追问里的指代，如"那只看 admin 的"）
+	// P1 修复：历史 Sql 原样进 assistant 消息可被攻击者当作指令样本——故意提交
+	// "…WHERE tenant_id = 5 OR 1=1" 的历史让模型模仿该形态绕过护栏。历史 SQL
+	// 过同款护栏，不合格的剔除 SQL 只留问题与结果摘要。
 	history := make([]aiV1.AiQueryHistoryItem, 0, len(req.GetHistory()))
 	for _, h := range req.GetHistory() {
+		hSql := h.GetSql()
+		if hSql != "" {
+			if _, serr := sanitizeSQLFor(hSql, whitelist, tenantPattern); serr != nil {
+				hSql = ""
+			}
+		}
 		history = append(history, aiV1.AiQueryHistoryItem{
 			Question:      h.GetQuestion(),
-			Sql:           h.GetSql(),
+			Sql:           hSql,
 			ResultSummary: h.GetResultSummary(),
 		})
 	}
@@ -196,6 +264,21 @@ func (s *AiQueryService) Ask(ctx context.Context, req *aiV1.AskAiQueryRequest) (
 	}
 
 	resp.TotalTokens = genTokens + answerTokens
+
+	// P1 修复：用量落库（此前 usageRepo 注入但零调用，Ask 全程不记用量）。
+	if s.usageRepo != nil && resp.TotalTokens > 0 {
+		modelName := ptrStrOr(provider.ModelName, "gpt-4o-mini")
+		totalTokens := uint32(resp.TotalTokens)
+		if uerr := s.usageRepo.Create(ctx, &aiV1.AiUsageLog{
+			UserId:      trans.Ptr(operator.GetUserId()),
+			TenantId:    trans.Ptr(operator.GetTenantId()),
+			ModelName:   &modelName,
+			TotalTokens: &totalTokens,
+		}); uerr != nil {
+			s.log.Errorf(ctx, "record ai query usage failed: %v", uerr)
+		}
+	}
+
 	return resp, nil
 }
 
@@ -327,8 +410,15 @@ func sanitizeSQLFor(raw string, whitelist map[string]string, tenantPattern *rege
 			return corrected
 		})
 	}
-	if tenantPattern != nil && !tenantPattern.MatchString(sqlText) {
-		return "", fmt.Errorf("missing mandatory tenant_id filter")
+	if tenantPattern != nil {
+		if !tenantPattern.MatchString(sqlText) {
+			return "", fmt.Errorf("missing mandatory tenant_id filter")
+		}
+		// P1 修复：租户路径仅允许合取谓词——"tenant_id = 5 OR 1=1" 这类析取让
+		// 出现性检查形同虚设；注释（-- 与块注释）可把谓词移出有效过滤面，一并拒绝。
+		if err := rejectDisjunctionOrComments(sqlText); err != nil {
+			return "", err
+		}
 	}
 	// LIMIT 钳制：无 LIMIT 补 aiQueryRowLimit；LIMIT N>N 上限改写
 	lower := strings.ToLower(sqlText)
