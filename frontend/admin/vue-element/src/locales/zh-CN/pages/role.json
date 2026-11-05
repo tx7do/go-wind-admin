@@ -2,6 +2,7 @@
   "moduleName": "角色",
   "name": "角色名称",
   "code": "角色编码",
+  "reservedCode": "该角色编码为系统保留（platform: / template: / tenant:manager），禁止使用",
   "tenantName": "所属租户",
   "permissions": "权限配置",
   "sortOrder": "排序",

@@ -41,6 +41,13 @@ interface RoleDrawerProps {
   onSuccess: () => void;
 }
 
+// 保留角色码：platform: / template: 命名空间与内置租户管理员码承载登录态
+// 身份判定语义（后端按码值精确匹配填管理员标志），禁止用户自建角色占用。
+// 前端拦截只是即时反馈，后端 Create/Update 仍有一道校验兜底。
+const RESERVED_ROLE_CODE_PATTERN = /^(platform:|template:)/;
+const isReservedRoleCode = (v: string) =>
+  RESERVED_ROLE_CODE_PATTERN.test(v) || v === 'tenant:manager';
+
 /**
  * 角色编辑/创建抽屉组件
  */
@@ -332,7 +339,15 @@ const RoleDrawer: React.FC<RoleDrawerProps> = ({ open, mode, data, onClose, onSu
         name="code"
         label={t('code')}
         placeholder={t('codePlaceholder')}
-        rules={[{ required: true, message: t('requiredCode') }]}
+        rules={[
+          { required: true, message: t('requiredCode') },
+          {
+            validator: (_, value: string) =>
+              !value || !isReservedRoleCode(value)
+                ? Promise.resolve()
+                : Promise.reject(new Error(t('reservedCode'))),
+          },
+        ]}
         fieldProps={{ allowClear: true }}
       />
 

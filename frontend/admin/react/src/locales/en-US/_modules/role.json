@@ -8,6 +8,7 @@
   "code": "Role Code",
   "codePlaceholder": "Enter role code",
   "requiredCode": "Please enter role code",
+  "reservedCode": "This role code is reserved by the system (platform: / template: / tenant:manager)",
   "tenantName": "Tenant",
   "parentId": "Parent Role",
   "parentIdPlaceholder": "Select parent role (optional)",

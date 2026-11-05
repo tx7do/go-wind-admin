@@ -2,6 +2,7 @@
   "moduleName": "Role",
   "name": "Role Name",
   "code": "Role Code",
+  "reservedCode": "This role code is reserved by the system (platform: / template: / tenant:manager)",
   "tenantName": "Tenant",
   "permissions": "Permissions",
   "sortOrder": "Sort Order",

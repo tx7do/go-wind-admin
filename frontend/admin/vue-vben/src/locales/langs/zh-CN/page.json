@@ -202,6 +202,7 @@
     "moduleName": "角色",
     "name": "角色名称",
     "code": "角色值",
+    "reservedCode": "该角色值为系统保留（platform: / template: / tenant:manager），禁止使用",
     "description": "角色描述",
     "isProtected": "内置角色",
     "apis": "分配API",

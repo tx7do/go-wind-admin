@@ -5,6 +5,8 @@
 //     平台级角色（TenantId 未设置）不回填。
 //   - Create / Delete 基本路径：Create 走 auth.FromContext 操作人注入（CreatedBy 回填）
 //     与默认角色播种；Delete 走非保护角色删除 + 关联清理。
+//   - 保留角色码校验：内置身份码（platform:* / template:* / tenant:manager）
+//     不可经 Create/Update 占用（防伪装内置身份越权）。
 //
 // 桩说明：Create/Update/Delete 尾部会调 authorizer.ResetPolicies，nil 会 panic，
 // 按 NewAuthorizer 的 noop 引擎形态构造最小可用 authorizer（Provider 桩返回空策略，
@@ -29,6 +31,7 @@ import (
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
 	"github.com/tx7do/go-utils/authorizer"
+	"go-wind-admin/pkg/constants"
 	"go-wind-admin/pkg/middleware/auth"
 )
 
@@ -398,4 +401,77 @@ func TestRoleServiceSqlite_ParentNameEnrichment(t *testing.T) {
 	require.NoError(t, err)
 	require.Equal(t, "富集父角色名", got.GetParentName(),
 		"Get 应回填子角色的父角色名")
+}
+
+// TestRoleServiceSqlite_ReservedRoleCodeRejected 验证角色码保留字校验：
+// 内置身份码（platform:* / template:* / tenant:manager）不可经 Create/Update
+// API 占用——登录链路按码值精确匹配填充管理员标志，自建同码角色即可伪装
+// 内置身份越权；普通码（含 tenant: 前缀的非内置值）不受影响。
+func TestRoleServiceSqlite_ReservedRoleCodeRejected(t *testing.T) {
+	svc := newRoleServiceForTest(t)
+	baseCtx := enttest.NewSystemContext(context.Background())
+	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242})
+
+	// Create：全部保留码形态被拒。
+	reservedCodes := []string{
+		constants.PlatformAdminRoleCode,      // platform:admin
+		constants.TenantAdminRoleCode,        // tenant:manager
+		constants.TenantAdminTemplateRoleCode, // template:tenant:manager
+		"platform:custom",                    // 保留命名空间
+		"template:foo",                       // 保留命名空间
+	}
+	for _, code := range reservedCodes {
+		_, err := svc.Create(opCtx, &permissionV1.CreateRoleRequest{
+			Data: &permissionV1.Role{
+				Name:   trans.Ptr("保留码角色 " + code),
+				Code:   trans.Ptr(code),
+				Status: permissionV1.Role_ON.Enum(),
+				Type:   permissionV1.Role_TENANT.Enum(),
+			},
+		})
+		require.Error(t, err, "保留角色码 %s 的 Create 应被拒绝", code)
+	}
+
+	// Create：非内置的 tenant: 前缀普通码不受影响。
+	_, err := svc.Create(opCtx, &permissionV1.CreateRoleRequest{
+		Data: &permissionV1.Role{
+			Name:   trans.Ptr("普通租户角色"),
+			Code:   trans.Ptr("tenant:sales"),
+			Status: permissionV1.Role_ON.Enum(),
+			Type:   permissionV1.Role_TENANT.Enum(),
+		},
+	})
+	require.NoError(t, err, "非内置的 tenant:sales 应可正常创建")
+
+	// Update：把普通角色 code 改成保留码被拒。
+	listResp, err := svc.List(baseCtx, &paginationV1.PagingRequest{})
+	require.NoError(t, err)
+	var targetID uint32
+	for _, item := range listResp.GetItems() {
+		if item.GetCode() == "tenant:sales" {
+			targetID = item.GetId()
+		}
+	}
+	require.NotZero(t, targetID, "应能反查到 tenant:sales 角色")
+
+	mask, err := fieldmaskpb.New(&permissionV1.Role{}, "code")
+	require.NoError(t, err)
+	_, err = svc.Update(opCtx, &permissionV1.UpdateRoleRequest{
+		Id: targetID,
+		Data: &permissionV1.Role{
+			Code: trans.Ptr(constants.PlatformAdminRoleCode),
+		},
+		UpdateMask: mask,
+	})
+	require.Error(t, err, "把已有角色 code 改成保留码的 Update 应被拒绝")
+
+	// Update：改成普通码不受影响。
+	_, err = svc.Update(opCtx, &permissionV1.UpdateRoleRequest{
+		Id: targetID,
+		Data: &permissionV1.Role{
+			Code: trans.Ptr("tenant:sales2"),
+		},
+		UpdateMask: mask,
+	})
+	require.NoError(t, err, "把 code 改成普通码的 Update 应成功")
 }

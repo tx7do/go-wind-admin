@@ -379,10 +379,29 @@ const fieldPermOptions = [
   { value: "lastLoginIp", label: $t("pages.role.fieldPerm.field.lastLoginIp") },
 ];
 
+// 保留角色码：platform: / template: 命名空间与内置租户管理员码承载登录态
+// 身份判定语义（后端按码值精确匹配填管理员标志），禁止用户自建角色占用。
+// 前端拦截只是即时反馈，后端 Create/Update 仍有一道校验兜底。
+const RESERVED_ROLE_CODE_PATTERN = /^(platform:|template:)/;
+const isReservedRoleCode = (v: string) =>
+  RESERVED_ROLE_CODE_PATTERN.test(v) || v === "tenant:manager";
+
 // 表单验证规则
 const formRules = {
   name: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
-  code: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
+  code: [
+    { required: true, message: $t("common.validation.required"), trigger: "blur" },
+    {
+      validator: (_rule: any, value: string, callback: (err?: Error) => void) => {
+        if (value && isReservedRoleCode(value)) {
+          callback(new Error($t("pages.role.reservedCode")));
+          return;
+        }
+        callback();
+      },
+      trigger: "blur",
+    },
+  ],
   sortOrder: [{ required: true, message: $t("common.validation.required"), trigger: "blur" }],
   status: [{ required: true, message: $t("common.validation.selectRequired"), trigger: "change" }],
   dataScope: [{ required: true, message: $t("common.validation.selectRequired"), trigger: "change" }],
