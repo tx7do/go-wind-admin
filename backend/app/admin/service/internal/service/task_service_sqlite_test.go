@@ -10,9 +10,11 @@
 //   - Update：启用开关单字段提交时 typeName 从旧行回填；未注册回填名拒绝；
 //     启用/停用分别触发注册/注销。
 //   - Delete：PERIODIC 任务删除时同步注销调度项。
-//   - ControlTask：Stop/Start/Restart 的调度调用（租户上下文按 typeName 取行）、
-//     未知控制类型拒绝、平台上下文按名查询的租户闸门、停用任务与一次性任务的
-//     停止语义拒绝。
+//   - ControlTask：Stop/Start/Restart 的调度调用（平台管理员 + 具名租户作用域按
+//     typeName 取行）、平台闸门（非平台管理员/无操作者拒绝）、未知控制类型拒绝、
+//     停用任务与一次性任务的停止语义拒绝。
+//   - 全部写入口（Create/Update/Delete/Control/StartAll/StopAll/RestartAll）的
+//     requirePlatformAdmin 平台闸门。
 //   - StartAllTask/RestartAllTask：跨租户同名 PERIODIC 去重、DELAY 一次性投递、
 //     系统级常驻任务（到期扫描 + 审计归档）注册；StopAllTask 全量注销。
 //   - 纯函数：convertTaskOption（载荷 JSON 解析/空载荷兜底/选项转换）、
@@ -136,6 +138,26 @@ func seedTaskRow(t *testing.T, svc *TaskService, ctx context.Context, tenantID u
 	require.NoError(t, err, "落任务行 %s 应成功", typeName)
 }
 
+// taskPlatformOpCtx 平台管理员操作者上下文（viewer 保持传入 ctx 原样）：
+// 任务写入口已统一加 requirePlatformAdmin 闸门，写路径用例一律以此上下文调用。
+func taskPlatformOpCtx(ctx context.Context) context.Context {
+	return auth.NewContext(ctx, &authenticationV1.UserTokenPayload{
+		UserId:          7,
+		IsPlatformAdmin: trans.Ptr(true),
+	})
+}
+
+// taskPlatformTenantOpCtx 平台管理员操作者 + 具名租户 viewer 的组合上下文：
+// ControlTask 按 type_name 取行要求具名租户作用域（task_repo.Get 的租户闸门），
+// 平台闸门又要求操作者旗标，二者叠加才可通过。
+func taskPlatformTenantOpCtx(ctx context.Context, tenantID uint32) context.Context {
+	vctx := crudViewer.WithContext(ctx, crudViewer.NewUserContext(1, uint64(tenantID), 0, "", nil))
+	return auth.NewContext(vctx, &authenticationV1.UserTokenPayload{
+		UserId:          7,
+		IsPlatformAdmin: trans.Ptr(true),
+	})
+}
+
 // ── 调度器未配置守卫 ───────────────────────────────────────────────────────
 
 // TestTaskService_NoSchedulerGuards 验证调度器未配置时的各守卫分支。
@@ -148,7 +170,7 @@ func TestTaskService_NoSchedulerGuards(t *testing.T) {
 	require.Empty(t, resp.GetTypeNames())
 
 	require.Error(t, svc.NewTask("any", nil), "未配置调度器时 NewTask 应报错")
-	require.NotPanics(t, func() { svc.StopAllTask(ctx, &emptypb.Empty{}) },
+	require.NotPanics(t, func() { svc.StopAllTask(taskPlatformOpCtx(ctx), &emptypb.Empty{}) },
 		"未配置调度器时 StopAllTask 应 no-op 不 panic")
 
 	require.EqualError(t, svc.startTask(nil), "task is nil")
@@ -194,7 +216,7 @@ func TestTaskService_AsyncTenantExpiryScan_EmptyDb(t *testing.T) {
 func TestTaskService_CreateValidation(t *testing.T) {
 	svc, _ := newTaskServiceForTest(t, newTaskSchedulerStub("tasksvc_reg_type"), false)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := taskPlatformOpCtx(ctx)
 
 	_, err := svc.Create(opCtx, &taskV1.CreateTaskRequest{})
 	require.Error(t, err, "nil Data 应拒绝")
@@ -227,7 +249,7 @@ func TestTaskService_CreateDisabledSkipsScheduler(t *testing.T) {
 	stub := newTaskSchedulerStub("tasksvc_reg_type")
 	svc, client := newTaskServiceForTest(t, stub, false)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := taskPlatformOpCtx(ctx)
 
 	_, err := svc.Create(opCtx, &taskV1.CreateTaskRequest{
 		Data: &taskV1.Task{
@@ -252,7 +274,7 @@ func TestTaskService_CreateEnabledEntersScheduler(t *testing.T) {
 	stub := newTaskSchedulerStub("tasksvc_periodic_type", "tasksvc_delay_type", "tasksvc_wait_type")
 	svc, _ := newTaskServiceForTest(t, stub, false)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := taskPlatformOpCtx(ctx)
 
 	for _, tc := range []struct {
 		typ  taskV1.Task_Type
@@ -288,7 +310,7 @@ func TestTaskService_UpdateEnableToggleBackfillsTypeName(t *testing.T) {
 	stub := newTaskSchedulerStub("tasksvc_reg_type")
 	svc, _ := newTaskServiceForTest(t, stub, false)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := taskPlatformOpCtx(ctx)
 
 	seedTaskRow(t, svc, ctx, 0, "tasksvc_reg_type", taskV1.Task_PERIODIC, "0 */5 * * * *", false)
 	rows, err := svc.taskRepo.List(ctx, &paginationV1.PagingRequest{NoPaging: trans.Ptr(true)})
@@ -324,7 +346,7 @@ func TestTaskService_UpdateUnregisteredBackfillRejected(t *testing.T) {
 	stub := newTaskSchedulerStub("tasksvc_other_type")
 	svc, _ := newTaskServiceForTest(t, stub, false)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := taskPlatformOpCtx(ctx)
 
 	seedTaskRow(t, svc, ctx, 0, "tasksvc_unreg_backfill", taskV1.Task_PERIODIC, "0 */5 * * * *", false)
 	rows, err := svc.taskRepo.List(ctx, &paginationV1.PagingRequest{NoPaging: trans.Ptr(true)})
@@ -344,7 +366,7 @@ func TestTaskService_UpdateUnregisteredBackfillRejected(t *testing.T) {
 func TestTaskService_UpdateDeleteMissingId(t *testing.T) {
 	svc, _ := newTaskServiceForTest(t, newTaskSchedulerStub("tasksvc_reg_type"), false)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := taskPlatformOpCtx(ctx)
 
 	_, err := svc.Update(opCtx, &taskV1.UpdateTaskRequest{
 		Id:   9999999,
@@ -352,7 +374,7 @@ func TestTaskService_UpdateDeleteMissingId(t *testing.T) {
 	})
 	require.Error(t, err, "不存在的任务 ID 更新应报错")
 
-	_, err = svc.Delete(ctx, &taskV1.DeleteTaskRequest{
+	_, err = svc.Delete(opCtx, &taskV1.DeleteTaskRequest{
 		QueryBy: &taskV1.DeleteTaskRequest_Id{Id: 88888888},
 	})
 	require.Error(t, err, "删除不存在的任务应报错")
@@ -370,7 +392,7 @@ func TestTaskService_DeleteRemovesSchedulerEntry(t *testing.T) {
 	require.NoError(t, err)
 	rowID := rows.GetItems()[0].GetId()
 
-	_, err = svc.Delete(ctx, &taskV1.DeleteTaskRequest{
+	_, err = svc.Delete(taskPlatformOpCtx(ctx), &taskV1.DeleteTaskRequest{
 		QueryBy: &taskV1.DeleteTaskRequest_Id{Id: rowID},
 	})
 	require.NoError(t, err, "删除已存在任务应成功")
@@ -384,40 +406,53 @@ func TestTaskService_DeleteRemovesSchedulerEntry(t *testing.T) {
 // ── ControlTask ───────────────────────────────────────────────────────────
 
 // TestTaskService_ControlTaskGuards 验证 ControlTask 的守卫分支：
-// 未知控制类型拒绝、平台上下文按名查询被租户闸门拒绝、
-// 停用任务停止拒绝、一次性任务停止语义拒绝。
+// 平台闸门（非平台管理员/无操作者拒绝）、具名租户作用域要求、
+// 未知控制类型拒绝、停用任务停止拒绝、一次性任务停止语义拒绝。
 func TestTaskService_ControlTaskGuards(t *testing.T) {
 	stub := newTaskSchedulerStub("tasksvc_ctl_type", "tasksvc_delay_ctl")
 	svc, _ := newTaskServiceForTest(t, stub, false)
 	sysCtx := enttest.NewSystemContext(context.Background())
-	tenantCtx := crudViewer.WithContext(sysCtx, crudViewer.NewUserContext(1, 42, 0, "", nil))
+	// 平台管理员 + 具名租户 viewer：同时通过平台闸门与 repo 的租户作用域闸门
+	opCtx := taskPlatformTenantOpCtx(sysCtx, 42)
 
-	// 未知控制类型（先于取行）
-	_, err := svc.ControlTask(sysCtx, &taskV1.ControlTaskRequest{
+	// 平台闸门：租户操作者（无平台旗标）拒绝
+	tenantOnlyCtx := auth.NewContext(
+		crudViewer.WithContext(sysCtx, crudViewer.NewUserContext(1, 42, 0, "", nil)),
+		&authenticationV1.UserTokenPayload{UserId: 8},
+	)
+	_, err := svc.ControlTask(tenantOnlyCtx, &taskV1.ControlTaskRequest{
+		TypeName:    "tasksvc_ctl_type",
+		ControlType: taskV1.ControlTaskRequest_Stop,
+	})
+	require.Error(t, err, "非平台管理员的任务控制应被平台闸门拒绝")
+
+	// 平台闸门：无操作者上下文拒绝
+	_, err = svc.ControlTask(sysCtx, &taskV1.ControlTaskRequest{
+		TypeName:    "tasksvc_ctl_type",
+		ControlType: taskV1.ControlTaskRequest_Stop,
+	})
+	require.Error(t, err, "无操作者上下文应被平台闸门拒绝")
+
+	// 未知控制类型（平台管理员：先按名取行成功，再进控制类型分支校验）
+	seedTaskRow(t, svc, sysCtx, 42, "tasksvc_ctl_type", taskV1.Task_PERIODIC, "0 */5 * * * *", true)
+	_, err = svc.ControlTask(opCtx, &taskV1.ControlTaskRequest{
 		TypeName:    "tasksvc_ctl_type",
 		ControlType: taskV1.ControlTaskRequest_ControlType(99),
 	})
 	require.Error(t, err, "未知控制类型应拒绝")
 	require.True(t, adminV1.IsBadRequest(err))
 
-	// 平台上下文（tid=0）按名查询：租户闸门拒绝
-	_, err = svc.ControlTask(sysCtx, &taskV1.ControlTaskRequest{
+	// 平台管理员但 viewer 无具名租户（system viewer）：按名查询要求租户作用域
+	_, err = svc.ControlTask(taskPlatformOpCtx(sysCtx), &taskV1.ControlTaskRequest{
 		TypeName:    "tasksvc_ctl_type",
 		ControlType: taskV1.ControlTaskRequest_Stop,
 	})
-	require.Error(t, err, "平台上下文按名查询任务应被租户闸门拒绝")
+	require.Error(t, err, "按名查询任务要求具名租户作用域")
 	require.True(t, adminV1.IsBadRequest(err))
-
-	// 租户上下文按不存在的名查询：报错
-	_, err = svc.ControlTask(tenantCtx, &taskV1.ControlTaskRequest{
-		TypeName:    "tasksvc_no_such_type",
-		ControlType: taskV1.ControlTaskRequest_Stop,
-	})
-	require.Error(t, err, "租户上下文查询不存在的任务名应报错")
 
 	// 停用任务：stopTask 拒绝
 	seedTaskRow(t, svc, sysCtx, 42, "tasksvc_disabled_ctl", taskV1.Task_PERIODIC, "0 */5 * * * *", false)
-	_, err = svc.ControlTask(tenantCtx, &taskV1.ControlTaskRequest{
+	_, err = svc.ControlTask(opCtx, &taskV1.ControlTaskRequest{
 		TypeName:    "tasksvc_disabled_ctl",
 		ControlType: taskV1.ControlTaskRequest_Stop,
 	})
@@ -425,7 +460,7 @@ func TestTaskService_ControlTaskGuards(t *testing.T) {
 
 	// 一次性任务（DELAY）停止语义拒绝
 	seedTaskRow(t, svc, sysCtx, 42, "tasksvc_delay_ctl", taskV1.Task_DELAY, "0 */5 * * * *", true)
-	_, err = svc.ControlTask(tenantCtx, &taskV1.ControlTaskRequest{
+	_, err = svc.ControlTask(opCtx, &taskV1.ControlTaskRequest{
 		TypeName:    "tasksvc_delay_ctl",
 		ControlType: taskV1.ControlTaskRequest_Stop,
 	})
@@ -433,24 +468,24 @@ func TestTaskService_ControlTaskGuards(t *testing.T) {
 		"DELAY 任务停止应被语义拒绝")
 }
 
-// TestTaskService_ControlTaskDispatch 租户上下文下启用 PERIODIN 任务的
-// Stop/Start/Restart 调度分发。
+// TestTaskService_ControlTaskDispatch 平台管理员（具名租户作用域）下启用
+// PERIODIC 任务的 Stop/Start/Restart 调度分发。
 func TestTaskService_ControlTaskDispatch(t *testing.T) {
 	stub := newTaskSchedulerStub("tasksvc_ctl_dispatch")
 	svc, _ := newTaskServiceForTest(t, stub, false)
 	sysCtx := enttest.NewSystemContext(context.Background())
-	tenantCtx := crudViewer.WithContext(sysCtx, crudViewer.NewUserContext(1, 42, 0, "", nil))
+	opCtx := taskPlatformTenantOpCtx(sysCtx, 42)
 
 	seedTaskRow(t, svc, sysCtx, 42, "tasksvc_ctl_dispatch", taskV1.Task_PERIODIC, "0 */5 * * * *", true)
 
-	_, err := svc.ControlTask(tenantCtx, &taskV1.ControlTaskRequest{
+	_, err := svc.ControlTask(opCtx, &taskV1.ControlTaskRequest{
 		TypeName:    "tasksvc_ctl_dispatch",
 		ControlType: taskV1.ControlTaskRequest_Stop,
 	})
 	require.NoError(t, err, "Stop 应成功（桩注销返回 nil）")
 	require.Equal(t, []string{"tasksvc_ctl_dispatch"}, stub.removedPeriodic, "Stop 应注销调度项")
 
-	_, err = svc.ControlTask(tenantCtx, &taskV1.ControlTaskRequest{
+	_, err = svc.ControlTask(opCtx, &taskV1.ControlTaskRequest{
 		TypeName:    "tasksvc_ctl_dispatch",
 		ControlType: taskV1.ControlTaskRequest_Start,
 	})
@@ -459,7 +494,7 @@ func TestTaskService_ControlTaskDispatch(t *testing.T) {
 
 	stub.removedPeriodic = nil
 	stub.newPeriodicTask = nil
-	_, err = svc.ControlTask(tenantCtx, &taskV1.ControlTaskRequest{
+	_, err = svc.ControlTask(opCtx, &taskV1.ControlTaskRequest{
 		TypeName:    "tasksvc_ctl_dispatch",
 		ControlType: taskV1.ControlTaskRequest_Restart,
 	})
@@ -483,7 +518,7 @@ func TestTaskService_RestartAllTask(t *testing.T) {
 	seedTaskRow(t, svc, sysCtx, 43, "tasksvc_dup_type", taskV1.Task_PERIODIC, "0 */5 * * * *", true)
 	seedTaskRow(t, svc, sysCtx, 0, "tasksvc_delay_all_type", taskV1.Task_DELAY, "0 */5 * * * *", true)
 
-	resp, err := svc.RestartAllTask(sysCtx, &emptypb.Empty{})
+	resp, err := svc.RestartAllTask(taskPlatformOpCtx(sysCtx), &emptypb.Empty{})
 	require.NoError(t, err, "RestartAllTask 应成功")
 	require.Equal(t, int32(2), resp.GetCount(),
 		"成功计数应为 2（同名 PERIODIC 去重后 1 + DELAY 1；系统级常驻注册不计入返回值）")
@@ -506,7 +541,7 @@ func TestTaskService_StopAllTask(t *testing.T) {
 	svc, _ := newTaskServiceForTest(t, stub, false)
 	ctx := enttest.NewSystemContext(context.Background())
 
-	_, err := svc.StopAllTask(ctx, &emptypb.Empty{})
+	_, err := svc.StopAllTask(taskPlatformOpCtx(ctx), &emptypb.Empty{})
 	require.NoError(t, err)
 	require.Equal(t, 1, stub.removeAllCount, "StopAllTask 应调用全量注销")
 }

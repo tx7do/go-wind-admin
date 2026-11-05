@@ -5,12 +5,15 @@ import (
 	"time"
 
 	entCrud "github.com/tx7do/go-crud/entgo"
+	"github.com/tx7do/go-crud/viewer"
 	"github.com/tx7do/go-utils/mapper"
+	"github.com/tx7do/go-utils/sliceutil"
 	"github.com/tx7do/go-utils/timeutil"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
+	"go-wind-admin/app/admin/service/internal/data/ent/role"
 	"go-wind-admin/app/admin/service/internal/data/ent/userrole"
 
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
@@ -122,10 +125,47 @@ func (r *UserRoleRepo) RemoveRolesFromUser(ctx context.Context, userID uint32, r
 	return nil
 }
 
+// validateRoleBindingOwnership 角色归属校验（纵深防御）。
+//
+// user_role join 行只落调用者租户的 tenant_id，但 role_id 此前不做任何校验——本租户行
+// 可以挂任意角色的 id（platform:admin 种子数据恒为 id=1），配合 /me 这类无字段白名单
+// 的入口即可自绑平台管理员，刷新令牌后所有平台闸门失效。这里对常规租户上下文强制
+// 校验每个角色真实存在且可见：TenantPrivacy 按 viewer 租户过滤，租户 viewer 查不到
+// platform/SYSTEM 角色与其他租户的角色（0 行即拒绝）。平台视图/系统上下文（种子/
+// 引导/后台任务）按 TenantPrivacy 同一信任边界跳过。
+func (r *UserRoleRepo) validateRoleBindingOwnership(ctx context.Context, tx *ent.Tx, roleIds []uint32) error {
+	if len(roleIds) == 0 {
+		return nil
+	}
+
+	if vc, ok := viewer.FromContext(ctx); ok && (vc.IsPlatformContext() || vc.IsSystemContext()) {
+		return nil
+	}
+
+	ids := sliceutil.Unique(roleIds)
+
+	roles, err := tx.Role.Query().Where(role.IDIn(ids...)).All(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "validate role bindings query failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("validate role bindings failed")
+	}
+	if len(roles) != len(ids) {
+		r.log.Errorf(ctx, "some role bindings not found or not accessible for operator, requested [%v] visible [%d]",
+			ids, len(roles))
+		return permissionV1.ErrorBadRequest("some roles not found or not accessible")
+	}
+
+	return nil
+}
+
 // AssignUserRole 分配角色
 func (r *UserRoleRepo) AssignUserRole(ctx context.Context, tx *ent.Tx, data *permissionV1.UserRole) error {
 	if data == nil {
 		return nil
+	}
+
+	if err := r.validateRoleBindingOwnership(ctx, tx, []uint32{data.GetRoleId()}); err != nil {
+		return err
 	}
 
 	now := time.Now()
@@ -158,6 +198,15 @@ func (r *UserRoleRepo) AssignUserRoles(ctx context.Context, tx *ent.Tx, userID u
 	}
 
 	var err error
+
+	// 先校验再清理：角色归属校验不过时不动现有关联
+	roleIds := make([]uint32, 0, len(datas))
+	for _, data := range datas {
+		roleIds = append(roleIds, data.GetRoleId())
+	}
+	if err = r.validateRoleBindingOwnership(ctx, tx, roleIds); err != nil {
+		return err
+	}
 
 	// 删除该用户的所有旧关联
 	if err = r.CleanRelationsByUserID(ctx, tx, userID); err != nil {

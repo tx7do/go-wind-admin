@@ -122,9 +122,25 @@ func (s *TaskService) ListTaskTypeName(_ context.Context, _ *emptypb.Empty) (*ta
 	}, nil
 }
 
+// requireTaskPlatformAdmin 任务写入口的平台闸门。
+//
+// asynq 注册表里的任务全部是平台级 handler（backup/广播/审计归档/到期扫描/配额水位/
+// 脚本桥……见 asynq_server.go），租户上下文只约束 sys_tasks 行归属，不约束 handler 以
+// 什么身份执行——handler 内部自建 SystemContext。此前无闸门时，租户用户可建
+// type_name:"backup" 的任务让 AsyncBackup 以 SystemContext 导出全平台核心表，或以
+// broadcast_message(payload 可控) 读任意租户站内信并广播、StopAllTask 停摆平台全部
+// 周期调度（到期处置/配额水位随之失效）。故全部写入口统一挡在平台管理员之内。
+func (s *TaskService) requireTaskPlatformAdmin(ctx context.Context, action string) error {
+	return requirePlatformAdmin(ctx, s.log, "task "+action)
+}
+
 func (s *TaskService) Create(ctx context.Context, req *taskV1.CreateTaskRequest) (*emptypb.Empty, error) {
 	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
+	}
+
+	if err := s.requireTaskPlatformAdmin(ctx, "create"); err != nil {
+		return nil, err
 	}
 
 	// H8：校验 typeName 已在调度器注册，防止创建无 handler 的幽灵任务（每个 cron tick 报错）
@@ -162,6 +178,10 @@ func (s *TaskService) Create(ctx context.Context, req *taskV1.CreateTaskRequest)
 func (s *TaskService) Update(ctx context.Context, req *taskV1.UpdateTaskRequest) (*emptypb.Empty, error) {
 	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
+	}
+
+	if err := s.requireTaskPlatformAdmin(ctx, "update"); err != nil {
+		return nil, err
 	}
 
 	// 获取更新前的任务，用于判断调度器中是否有正在运行的注册项。
@@ -225,6 +245,10 @@ func (s *TaskService) Update(ctx context.Context, req *taskV1.UpdateTaskRequest)
 }
 
 func (s *TaskService) Delete(ctx context.Context, req *taskV1.DeleteTaskRequest) (*emptypb.Empty, error) {
+	if err := s.requireTaskPlatformAdmin(ctx, "delete"); err != nil {
+		return nil, err
+	}
+
 	var err error
 	var t *taskV1.Task
 	// 获取待删除任务用于清理调度项。失败必须返回：否则 t==nil 会跳过调度清理，
@@ -252,6 +276,10 @@ func (s *TaskService) Delete(ctx context.Context, req *taskV1.DeleteTaskRequest)
 
 // ControlTask 控制调度任务
 func (s *TaskService) ControlTask(ctx context.Context, req *taskV1.ControlTaskRequest) (*emptypb.Empty, error) {
+	if err := s.requireTaskPlatformAdmin(ctx, "control"); err != nil {
+		return nil, err
+	}
+
 	t, err := s.taskRepo.Get(ctx, &taskV1.GetTaskRequest{QueryBy: &taskV1.GetTaskRequest_TypeName{TypeName: req.GetTypeName()}})
 	if err != nil {
 		s.log.Errorf(ctx, "获取任务失败[%s]", err.Error())
@@ -285,13 +313,21 @@ func (s *TaskService) ControlTask(ctx context.Context, req *taskV1.ControlTaskRe
 }
 
 // StopAllTask 停止所有的调度任务
-func (s *TaskService) StopAllTask(_ context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+func (s *TaskService) StopAllTask(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+	if err := s.requireTaskPlatformAdmin(ctx, "stop-all"); err != nil {
+		return nil, err
+	}
+
 	s.stopAllTask()
 	return &emptypb.Empty{}, nil
 }
 
 // StartAllTask 启动所有的调度任务
 func (s *TaskService) StartAllTask(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+	if err := s.requireTaskPlatformAdmin(ctx, "start-all"); err != nil {
+		return nil, err
+	}
+
 	_, err := s.startAllTask(ctx)
 	if err != nil {
 		return nil, err
@@ -300,8 +336,20 @@ func (s *TaskService) StartAllTask(ctx context.Context, _ *emptypb.Empty) (*empt
 	return &emptypb.Empty{}, nil
 }
 
+// BootstrapStartAllTask 服务启动期装载全部周期任务的内部入口（不经 HTTP、无操作者上下文）。
+// StartAllTask 已加平台管理员闸门，启动装配（asynq_server.go）改走本方法，
+// 避免闸门把无操作者的系统内部调用一并拒绝。
+func (s *TaskService) BootstrapStartAllTask(ctx context.Context) error {
+	_, err := s.startAllTask(ctx)
+	return err
+}
+
 // RestartAllTask 重启所有的调度任务
 func (s *TaskService) RestartAllTask(ctx context.Context, _ *emptypb.Empty) (*taskV1.RestartAllTaskResponse, error) {
+	if err := s.requireTaskPlatformAdmin(ctx, "restart-all"); err != nil {
+		return nil, err
+	}
+
 	// 停止所有的任务
 	s.stopAllTask()
 

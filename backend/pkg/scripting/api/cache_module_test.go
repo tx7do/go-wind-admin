@@ -284,3 +284,47 @@ func TestRegisterCache_NilClient(t *testing.T) {
 	`)
 	require.NoError(t, err)
 }
+
+// TestCacheAPI_NamespaceIsolation 命名空间隔离回归（P0 修复钉住）：
+// 脚本侧任意 key 都被自动归一进 script: 命名空间——读不到/写不进/删不掉平台资产键
+// （at:/mfa: 等前缀下存放访问令牌明文与 TOTP 密钥），keys("*") 也扫不出命名空间外的键。
+func TestCacheAPI_NamespaceIsolation(t *testing.T) {
+	L, mr := newCacheLuaState(t)
+
+	// 直接在 Redis 侧预置平台资产键（模拟真实环境：这些前缀下存放令牌/MFA 密钥）
+	require.NoError(t, mr.Set("at:web:42:fake-jti", "stolen-access-token"))
+	require.NoError(t, mr.Set("mfa:enroll:42", "TOTP-SECRET"))
+
+	err := L.DoString(`
+		local cache = require "kratos_cache"
+
+		-- 试图读取平台资产键 → 归一后落在 script:at:... 上，读不到真实令牌
+		local v = cache.get("at:web:42:fake-jti")
+		assert(v == nil, "script must not read platform token keys, got " .. tostring(v))
+		local v2 = cache.get("mfa:enroll:42")
+		assert(v2 == nil, "script must not read mfa secrets, got " .. tostring(v2))
+
+		-- 试图覆盖平台资产键 → set 应成功但落进命名空间，原键不受影响
+		assert(cache.set("at:web:42:fake-jti", "evil") == true, "set should land in namespace")
+
+		-- 试图删除平台资产键 → 删的是 script: 下的归一键，原键仍在
+		assert(cache.delete("at:web:42:fake-jti") == true, "delete should only touch namespace")
+
+		-- keys("*") 只扫命名空间内的键（上面的键已被 delete 清掉，应为 0 个）
+		local all = cache.keys("*")
+		assert(#all == 0, "keys(*) must not expose platform keys, got " .. tostring(#all))
+	`)
+	require.NoError(t, err)
+
+	// 平台资产键原样保留
+	got, err := mr.Get("at:web:42:fake-jti")
+	require.NoError(t, err)
+	require.Equal(t, "stolen-access-token", got)
+	got2, err := mr.Get("mfa:enroll:42")
+	require.NoError(t, err)
+	require.Equal(t, "TOTP-SECRET", got2)
+
+	// 脚本 set 的键确实落在命名空间内（随后被脚本 delete 清掉，应不存在）
+	_, err = mr.Get("script:at:web:42:fake-jti")
+	require.Error(t, err, "namespaced key should be gone after script delete")
+}

@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/redis/go-redis/v9"
@@ -20,6 +21,9 @@ func RegisterCache(L *lua.LState, rdb *redis.Client, logger *bLogger.Helper) {
 
 // LoaderCache 返回 cache 模块（kratos_cache）的 loader，供 go-scripts 引擎 RegisterModule 使用。
 // rdb 为 nil 时返回空模块。
+//
+// 所有 key 均经 scriptCacheKey 自动归一到 script: 命名空间（见 cache_namespace.go）：
+// Redis 里另存着平台令牌/MFA 密钥/验证码等资产键，脚本不得触及。
 func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 	return func(L *lua.LState) int {
 		if rdb == nil {
@@ -31,7 +35,12 @@ func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 
 		// cache.get(key)
 		cacheModule.RawSetString("get", L.NewFunction(func(L *lua.LState) int {
-			key := L.CheckString(1)
+			key, kerr := scriptCacheKey(L.CheckString(1))
+			if kerr != nil {
+				L.Push(lua.LNil)
+				L.Push(lua.LString(kerr.Error()))
+				return 2
+			}
 
 			val, err := rdb.Get(context.Background(), key).Result()
 			if err != nil {
@@ -60,7 +69,12 @@ func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 
 		// cache.set(key, value, ttl_seconds)
 		cacheModule.RawSetString("set", L.NewFunction(func(L *lua.LState) int {
-			key := L.CheckString(1)
+			key, kerr := scriptCacheKey(L.CheckString(1))
+			if kerr != nil {
+				L.Push(lua.LBool(false))
+				L.Push(lua.LString(kerr.Error()))
+				return 2
+			}
 			value := L.Get(2)
 			ttl := L.OptInt(3, 0) // Default: no expiration
 
@@ -86,6 +100,13 @@ func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 				strVal = string(jsonBytes)
 			}
 
+			// 写入值限额：防止脚本向 Redis 灌大对象撑爆内存
+			if len(strVal) > scriptCacheMaxValueSize {
+				L.Push(lua.LBool(false))
+				L.Push(lua.LString(fmt.Sprintf("cache value exceeds %d bytes", scriptCacheMaxValueSize)))
+				return 2
+			}
+
 			// Set with expiration
 			var err error
 			if ttl > 0 {
@@ -107,7 +128,12 @@ func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 
 		// cache.delete(key)
 		cacheModule.RawSetString("delete", L.NewFunction(func(L *lua.LState) int {
-			key := L.CheckString(1)
+			key, kerr := scriptCacheKey(L.CheckString(1))
+			if kerr != nil {
+				L.Push(lua.LBool(false))
+				L.Push(lua.LString(kerr.Error()))
+				return 2
+			}
 
 			err := rdb.Del(context.Background(), key).Err()
 			if err != nil {
@@ -123,7 +149,11 @@ func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 
 		// cache.exists(key)
 		cacheModule.RawSetString("exists", L.NewFunction(func(L *lua.LState) int {
-			key := L.CheckString(1)
+			key, kerr := scriptCacheKey(L.CheckString(1))
+			if kerr != nil {
+				L.Push(lua.LBool(false))
+				return 1
+			}
 
 			count, err := rdb.Exists(context.Background(), key).Result()
 			if err != nil {
@@ -138,7 +168,12 @@ func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 
 		// cache.expire(key, ttl_seconds)
 		cacheModule.RawSetString("expire", L.NewFunction(func(L *lua.LState) int {
-			key := L.CheckString(1)
+			key, kerr := scriptCacheKey(L.CheckString(1))
+			if kerr != nil {
+				L.Push(lua.LBool(false))
+				L.Push(lua.LString(kerr.Error()))
+				return 2
+			}
 			ttl := L.CheckInt(2)
 
 			ok, err := rdb.Expire(context.Background(), key, time.Duration(ttl)*time.Second).Result()
@@ -155,7 +190,12 @@ func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 
 		// cache.incr(key)
 		cacheModule.RawSetString("incr", L.NewFunction(func(L *lua.LState) int {
-			key := L.CheckString(1)
+			key, kerr := scriptCacheKey(L.CheckString(1))
+			if kerr != nil {
+				L.Push(lua.LNil)
+				L.Push(lua.LString(kerr.Error()))
+				return 2
+			}
 
 			val, err := rdb.Incr(context.Background(), key).Result()
 			if err != nil {
@@ -171,7 +211,12 @@ func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 
 		// cache.decr(key)
 		cacheModule.RawSetString("decr", L.NewFunction(func(L *lua.LState) int {
-			key := L.CheckString(1)
+			key, kerr := scriptCacheKey(L.CheckString(1))
+			if kerr != nil {
+				L.Push(lua.LNil)
+				L.Push(lua.LString(kerr.Error()))
+				return 2
+			}
 
 			val, err := rdb.Decr(context.Background(), key).Result()
 			if err != nil {
@@ -187,7 +232,12 @@ func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 
 		// cache.incrby(key, increment)
 		cacheModule.RawSetString("incrby", L.NewFunction(func(L *lua.LState) int {
-			key := L.CheckString(1)
+			key, kerr := scriptCacheKey(L.CheckString(1))
+			if kerr != nil {
+				L.Push(lua.LNil)
+				L.Push(lua.LString(kerr.Error()))
+				return 2
+			}
 			increment := L.CheckInt(2)
 
 			val, err := rdb.IncrBy(context.Background(), key, int64(increment)).Result()
@@ -204,7 +254,11 @@ func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 
 		// cache.ttl(key) - Get remaining TTL in seconds
 		cacheModule.RawSetString("ttl", L.NewFunction(func(L *lua.LState) int {
-			key := L.CheckString(1)
+			key, kerr := scriptCacheKey(L.CheckString(1))
+			if kerr != nil {
+				L.Push(lua.LNumber(-2)) // Key doesn't exist
+				return 1
+			}
 
 			duration, err := rdb.TTL(context.Background(), key).Result()
 			if err != nil {
@@ -225,10 +279,11 @@ func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 		}))
 
 		// cache.keys(pattern) - Find keys by pattern
+		// 模式同样归一到 script: 命名空间，且走 SCAN 限量（KEYS 会阻塞整个实例）。
 		cacheModule.RawSetString("keys", L.NewFunction(func(L *lua.LState) int {
 			pattern := L.CheckString(1)
 
-			keys, err := rdb.Keys(context.Background(), pattern).Result()
+			keys, err := scriptCacheScanKeys(context.Background(), rdb, pattern)
 			if err != nil {
 				logger.Errorf(context.Background(), "cache.keys error: %v", err)
 				L.Push(lua.LNil)
@@ -248,7 +303,12 @@ func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 
 		// cache.hget(key, field) - Get hash field
 		cacheModule.RawSetString("hget", L.NewFunction(func(L *lua.LState) int {
-			key := L.CheckString(1)
+			key, kerr := scriptCacheKey(L.CheckString(1))
+			if kerr != nil {
+				L.Push(lua.LNil)
+				L.Push(lua.LString(kerr.Error()))
+				return 2
+			}
 			field := L.CheckString(2)
 
 			val, err := rdb.HGet(context.Background(), key, field).Result()
@@ -269,9 +329,20 @@ func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 
 		// cache.hset(key, field, value) - Set hash field
 		cacheModule.RawSetString("hset", L.NewFunction(func(L *lua.LState) int {
-			key := L.CheckString(1)
+			key, kerr := scriptCacheKey(L.CheckString(1))
+			if kerr != nil {
+				L.Push(lua.LBool(false))
+				L.Push(lua.LString(kerr.Error()))
+				return 2
+			}
 			field := L.CheckString(2)
 			value := L.CheckString(3)
+
+			if len(value) > scriptCacheMaxValueSize {
+				L.Push(lua.LBool(false))
+				L.Push(lua.LString(fmt.Sprintf("cache value exceeds %d bytes", scriptCacheMaxValueSize)))
+				return 2
+			}
 
 			err := rdb.HSet(context.Background(), key, field, value).Err()
 			if err != nil {
@@ -287,7 +358,12 @@ func LoaderCache(rdb *redis.Client, logger *bLogger.Helper) lua.LGFunction {
 
 		// cache.hgetall(key) - Get all hash fields
 		cacheModule.RawSetString("hgetall", L.NewFunction(func(L *lua.LState) int {
-			key := L.CheckString(1)
+			key, kerr := scriptCacheKey(L.CheckString(1))
+			if kerr != nil {
+				L.Push(lua.LNil)
+				L.Push(lua.LString(kerr.Error()))
+				return 2
+			}
 
 			vals, err := rdb.HGetAll(context.Background(), key).Result()
 			if err != nil {

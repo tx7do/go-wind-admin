@@ -89,6 +89,16 @@ func (s *UserProfileService) GetUser(ctx context.Context, _ *emptypb.Empty) (*id
 	return user, err
 }
 
+// UpdateUser 自服务资料更新（/me）。
+//
+// /me 是全仓唯一"任何登录用户都能调"的写入口，而它复用的 UpdateUserRequest.Data 是完整
+// User 消息（含 RoleIds/Status/LockedUntil/TenantId 等特权字段），repo 层"无 field-mask
+// 视为全量更新"（user_repo.go maskPathInUpdate）。此前无字段白名单，任意用户可通过
+// {"data":{"roleId":1}} 给自己绑定任意角色（platform:admin 种子数据恒为 id=1），刷新令牌
+// 后 fillAdminFlags 置 IsPlatformAdmin，全部平台闸门形同虚设。故这里显式重建仅含资料
+// 字段的 Data 并强制 field-mask，关联/状态/租户字段一律剥离——对齐 DeleteAvatar/
+// UploadAvatar 的显式 mask 写法。另有 repo 层 AssignUserRole(s) 的角色归属校验兜底
+// （见 user_role_repo.go validateRoleBindingOwnership）。
 func (s *UserProfileService) UpdateUser(ctx context.Context, req *identityV1.UpdateUserRequest) (*emptypb.Empty, error) {
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
@@ -96,10 +106,47 @@ func (s *UserProfileService) UpdateUser(ctx context.Context, req *identityV1.Upd
 		return nil, err
 	}
 
-	req.Data.Id = trans.Ptr(operator.UserId)
-	req.Id = operator.UserId
+	data := &identityV1.User{
+		Id: trans.Ptr(operator.UserId),
+	}
+	mask := &field_mask.FieldMask{}
+	addField := func(path string, set bool) {
+		if set {
+			mask.Paths = append(mask.Paths, path)
+		}
+	}
+	if src := req.GetData(); src != nil {
+		data.Nickname = src.Nickname
+		addField("nickname", src.Nickname != nil)
+		data.Realname = src.Realname
+		addField("realname", src.Realname != nil)
+		data.Avatar = src.Avatar
+		addField("avatar", src.Avatar != nil)
+		data.Email = src.Email
+		addField("email", src.Email != nil)
+		data.Mobile = src.Mobile
+		addField("mobile", src.Mobile != nil)
+		data.Telephone = src.Telephone
+		addField("telephone", src.Telephone != nil)
+		data.Gender = src.Gender
+		addField("gender", src.Gender != nil)
+		data.Region = src.Region
+		addField("region", src.Region != nil)
+		data.Locale = src.Locale
+		addField("locale", src.Locale != nil)
+		data.Address = src.Address
+		addField("address", src.Address != nil)
+		data.Description = src.Description
+		addField("description", src.Description != nil)
+		data.Remark = src.Remark
+		addField("remark", src.Remark != nil)
+	}
 
-	if err = s.userRepo.Update(ctx, req); err != nil {
+	if err = s.userRepo.Update(ctx, &identityV1.UpdateUserRequest{
+		Id:         operator.UserId,
+		Data:       data,
+		UpdateMask: mask,
+	}); err != nil {
 		return nil, err
 	}
 

@@ -246,6 +246,34 @@ func TestUserProfileServiceSqlite_UpdateUser_OperatorInjection(t *testing.T) {
 	require.Len(t, env.stub.capturedUpdates, 1, "被拒绝的更新不应触达仓储层")
 }
 
+// TestUserProfileServiceSqlite_UpdateUser_ProfileFieldWhitelist 回归（P0 修复钉住）：
+// /me 更新请求即使混入 RoleId/RoleIds/Status 等特权字段，也必须被剥离——透传仓储层
+// 的 Data 仅含资料字段、掩码仅含白名单内且请求中出现的路径。此前无白名单且 repo 层
+// "无掩码视为全量更新"，任意用户可 {"data":{"roleId":1}} 自绑 platform:admin（种子
+// 数据恒为 id=1），刷新令牌后全部平台闸门失效。
+func TestUserProfileServiceSqlite_UpdateUser_ProfileFieldWhitelist(t *testing.T) {
+	env := newUserProfileServiceForTest(t)
+	ctx := enttest.NewSystemContext(context.Background())
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 4242})
+
+	_, err := env.svc.UpdateUser(opCtx, &identityV1.UpdateUserRequest{
+		Data: &identityV1.User{
+			Nickname: trans.Ptr("合法昵称"),
+			RoleId:   trans.Ptr(uint32(1)), // platform:admin 种子恒为 id=1
+			RoleIds:  []uint32{1},
+			Status:   identityV1.User_NORMAL.Enum(),
+		},
+	})
+	require.NoError(t, err)
+	require.Len(t, env.stub.capturedUpdates, 1)
+	captured := env.stub.capturedUpdates[0]
+	require.Nil(t, captured.Data.RoleId, "RoleId 必须被剥离")
+	require.Empty(t, captured.Data.RoleIds, "RoleIds 必须被剥离")
+	require.Nil(t, captured.Data.Status, "Status 必须被剥离")
+	require.Equal(t, []string{"nickname"}, captured.UpdateMask.GetPaths(),
+		"掩码应仅含白名单内且请求中出现的字段")
+}
+
 // TestUserProfileServiceSqlite_DeleteAvatar_ClearsAvatar 验证 DeleteAvatar
 // 透传的更新：掩码仅含 avatar、头像值清空、目标 ID 为操作人；
 // 缺操作人声明报错且不触达仓储层。

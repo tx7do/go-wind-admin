@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/go-kratos/kratos/v2/log"
-	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	bootstrapAsynq "github.com/tx7do/kratos-bootstrap/transport/asynq"
@@ -147,8 +146,9 @@ func NewAsynqServer(ctx *bootstrap.Context, taskService *service.TaskService, in
 		return nil, err
 	}
 
-	// 启动所有的任务
-	if _, err = taskService.StartAllTask(viewer.WithSystemContext(ctx.Context()), &emptypb.Empty{}); err != nil {
+	// 启动所有的任务：启动期无操作者上下文，走内部入口，
+	// 不经过 StartAllTask 的平台管理员闸门（HTTP RPC 才需要闸）。
+	if err = taskService.BootstrapStartAllTask(viewer.WithSystemContext(ctx.Context())); err != nil {
 		log.Error(err)
 		return nil, err
 	}

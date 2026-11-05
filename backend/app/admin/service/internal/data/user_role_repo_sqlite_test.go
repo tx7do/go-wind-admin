@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	crudViewer "github.com/tx7do/go-crud/viewer"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/trans"
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
@@ -249,4 +250,59 @@ func TestUserRoleRepoSqlite_ExcludeExpired(t *testing.T) {
 	rowCount, err := repo.entClient.Client().UserRole.Query().Count(ctx)
 	require.NoError(t, err)
 	require.Zero(t, rowCount, "清理后 sys_user_roles 计数应归零")
+}
+
+// TestUserRoleRepoSqlite_BindingOwnershipValidation 回归（P0 修复钉住）：
+// 常规租户上下文下 validateRoleBindingOwnership 必须拒绝当前 viewer 不可见的角色
+// ——platform:admin 等平台角色（tenant_id=0）与外租户角色对本租户 viewer 均不可见，
+// 0 行命中即拒绝；同租户角色正常通过；系统上下文按 TenantPrivacy 同一信任边界跳过。
+func TestUserRoleRepoSqlite_BindingOwnershipValidation(t *testing.T) {
+	repo := newUserRoleRepoSqlite(t)
+	sysCtx := enttest.NewSystemContext(context.Background())
+
+	const tenantID = uint32(42)
+
+	tenantRole, err := repo.entClient.Client().Role.Create().
+		SetName("租户可见角色").
+		SetCode("TENANT_VISIBLE_ROLE").
+		SetTenantID(tenantID).
+		Save(sysCtx)
+	require.NoError(t, err, "播种本租户角色应成功")
+	platformRole, err := repo.entClient.Client().Role.Create().
+		SetName("平台角色").
+		SetCode("PLATFORM_ROLE").
+		SetTenantID(0).
+		Save(sysCtx)
+	require.NoError(t, err, "播种平台角色应成功")
+	const ghostRoleID = uint32(4290000000) // 不存在的角色
+
+	tenantCtx := crudViewer.WithContext(sysCtx, crudViewer.NewUserContext(999, uint64(tenantID), 0, "", nil))
+
+	tx, err := repo.entClient.Client().Tx(tenantCtx)
+	require.NoError(t, err)
+	defer func() { _ = tx.Rollback() }()
+
+	// 本租户角色：通过
+	require.NoError(t, repo.validateRoleBindingOwnership(tenantCtx, tx, []uint32{tenantRole.ID}),
+		"本租户可见角色应通过归属校验")
+
+	// 平台角色（tenant_id=0）：租户 viewer 不可见，拒绝——/me 自绑 platform:admin 的主攻路径
+	err = repo.validateRoleBindingOwnership(tenantCtx, tx, []uint32{platformRole.ID})
+	require.Error(t, err, "平台角色对租户 viewer 不可见，必须拒绝")
+	require.True(t, permissionV1.IsBadRequest(err))
+
+	// 不存在的角色：拒绝
+	err = repo.validateRoleBindingOwnership(tenantCtx, tx, []uint32{ghostRoleID})
+	require.Error(t, err, "不存在的角色必须拒绝")
+
+	// 混合：一个可见一个不可见 → 整体拒绝
+	err = repo.validateRoleBindingOwnership(tenantCtx, tx, []uint32{tenantRole.ID, platformRole.ID})
+	require.Error(t, err, "混合绑定应整体拒绝")
+
+	// 系统上下文：跳过校验（种子/引导信任边界）
+	tx2, err := repo.entClient.Client().Tx(sysCtx)
+	require.NoError(t, err)
+	defer func() { _ = tx2.Rollback() }()
+	require.NoError(t, repo.validateRoleBindingOwnership(sysCtx, tx2, []uint32{platformRole.ID, ghostRoleID}),
+		"系统上下文应跳过归属校验")
 }
