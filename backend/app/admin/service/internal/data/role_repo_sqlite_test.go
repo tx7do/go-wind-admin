@@ -454,7 +454,20 @@ func TestRoleRepoSqlite_TemplateInstantiation(t *testing.T) {
 	repo := newRoleRepoSqlite(t)
 	ctx := enttest.NewSystemContext(context.Background())
 
-	// 造一个与生产播种同构的租户管理员模板角色
+	// 造一个与生产播种同构的租户管理员模板角色（挂平台侧父角色，验证实例化剥离）
+	require.NoError(t, repo.Create(ctx, &permissionV1.CreateRoleRequest{
+		Data: &permissionV1.Role{
+			Name:        trans.Ptr("平台侧父角色"),
+			Code:        trans.Ptr("TPL_PARENT_ANCHOR"),
+			Status:      permissionV1.Role_ON.Enum(),
+			Type:        permissionV1.Role_TENANT.Enum(),
+		},
+	}))
+	anchorRoles, err := repo.entClient.Client().Role.Query().
+		Where(entRole.CodeEQ("TPL_PARENT_ANCHOR")).
+		All(ctx)
+	require.NoError(t, err)
+	require.Len(t, anchorRoles, 1)
 	require.NoError(t, repo.Create(ctx, &permissionV1.CreateRoleRequest{
 		Data: &permissionV1.Role{
 			Name:        trans.Ptr(constants.DefaultTenantManagerRoleName + "模板"),
@@ -462,6 +475,7 @@ func TestRoleRepoSqlite_TemplateInstantiation(t *testing.T) {
 			Status:      permissionV1.Role_ON.Enum(),
 			Type:        permissionV1.Role_TEMPLATE.Enum(),
 			IsProtected: trans.Ptr(true),
+			ParentId:    trans.Ptr(uint32(anchorRoles[0].ID)),
 		},
 	}))
 
@@ -502,13 +516,14 @@ func TestRoleRepoSqlite_TemplateInstantiation(t *testing.T) {
 	require.Equal(t, constants.TenantAdminRoleCode, *clones[0].Code, "实例化角色编码应为去前缀后的租户管理员编码")
 	require.Equal(t, constants.DefaultTenantManagerRoleName, *clones[0].Name, "实例化角色名称应为默认租户管理员名")
 	require.Equal(t, entRole.TypeTenant, *clones[0].Type, "实例化角色类型应为 TENANT")
+	require.Nil(t, clones[0].ParentID, "模板副本应剥离 parent_id（永远是根角色，不携带平台侧父引用）")
 
-	// 模板本体仍在平台侧：经 repo 创建的行 tenant_id 落默认值 0（列默认，非 NULL）
+	// 模板本体仍在平台侧（模板 + 其父角色锚点）
 	platformRoles, err := repo.entClient.Client().Role.Query().
 		Where(entRole.TenantIDEQ(0)).
 		All(ctx)
 	require.NoError(t, err)
-	require.Len(t, platformRoles, 1, "平台侧应仍只有模板本体")
+	require.Len(t, platformRoles, 2, "平台侧应有模板本体与其父角色锚点")
 }
 
 // TestRoleRepoSqlite_ParentIDThreeState 验证 parent_id 的更新三态：

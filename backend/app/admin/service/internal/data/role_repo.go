@@ -406,6 +406,10 @@ func (r *RoleRepo) CreateTenantRoleFromTemplate(ctx context.Context, tx *ent.Tx,
 	roleTemplate.IsProtected = trans.Ptr(true)
 	roleTemplate.TenantId = trans.Ptr(tenantID)
 	roleTemplate.CreatedBy = trans.Ptr(operatorID)
+	// 模板副本永远是根角色：模板本体可能挂了平台侧父角色（权限继承的上限约束），
+	// 若把 parent_id 带进租户副本，会形成跨租户父引用——既不受本租户管理，
+	// 也会因租户不一致永远过不了 service 层的父子绑定校验，副本一编辑即被拒。
+	roleTemplate.ParentId = nil
 	roleTemplate.CreatedAt = nil
 	roleTemplate.UpdatedBy = nil
 	roleTemplate.UpdatedAt = nil
