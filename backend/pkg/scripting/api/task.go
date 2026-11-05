@@ -13,6 +13,12 @@ import (
 	"github.com/tx7do/go-scripts/lua/convert"
 )
 
+// scriptTaskMaxTimeoutSecs 脚本任务 timeout_secs 上限。
+// 任务执行全程持引擎全局 execMu（与实体钩子共用一把锁），脚本自报
+// timeout_secs=86400 即可让单任务占锁一天，冻结平台全部实体写路径
+//（before 钩子同步跑在业务写事务前）。注册与消费两处都钳制。
+const scriptTaskMaxTimeoutSecs = 300
+
 // TaskHandlerRegistry stores Lua-based task handlers
 type TaskHandlerRegistry struct {
 	handlers map[string]*LuaTaskHandler
@@ -170,6 +176,10 @@ func registerTaskHandler(L *lua.LState) int {
 	if timeout := options.RawGetString("timeout_secs"); timeout.Type() == lua.LTNumber {
 		timeoutSecs = int(timeout.(lua.LNumber))
 	}
+	// P1 修复：上限钳制——execMu 全局锁被长任务占住会冻结全部实体写路径
+	if timeoutSecs > scriptTaskMaxTimeoutSecs {
+		timeoutSecs = scriptTaskMaxTimeoutSecs
+	}
 
 	maxRetries := 2 // Default: 2 retries
 	if retries := options.RawGetString("max_retries"); retries.Type() == lua.LTNumber {
@@ -268,6 +278,10 @@ func InvokeHandler(ctx context.Context, name string, params map[string]any) erro
 	timeoutSecs := handler.TimeoutSecs
 	if timeoutSecs <= 0 {
 		timeoutSecs = 30
+	}
+	// P1 修复：消费侧同样钳制（直接改库/旧注册行可能带着超限值）
+	if timeoutSecs > scriptTaskMaxTimeoutSecs {
+		timeoutSecs = scriptTaskMaxTimeoutSecs
 	}
 	timeoutCtx, cancel := context.WithTimeout(ctx, time.Duration(timeoutSecs)*time.Second)
 	defer cancel()

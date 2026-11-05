@@ -81,7 +81,9 @@ func (b *LuaBinder) Bind(eng gsEngine.Engine, deps *RuntimeDeps) error {
 		builder lua.LGFunction
 	}{
 		{"kratos_logger", host.LoaderLogger(deps.Logger)},
-		{"kratos_crypto", host.LoaderCrypto(deps.Logger)},
+		// P1 修复：用受限版替代库版 crypto——库版把全局主密钥的 decrypt 原语暴露给
+		// 脚本（同一把钥匙加密着 AI key/SMTP 密码/MFA secret），见 api/crypto_safe.go。
+		{"kratos_crypto", api.LoaderCryptoSafe(deps.Logger)},
 		{"kratos_util", host.LoaderUtil(deps.Logger, sleepCap)},
 		{"kratos_http", host.LoaderHTTP(b.httpOpts())},
 	}

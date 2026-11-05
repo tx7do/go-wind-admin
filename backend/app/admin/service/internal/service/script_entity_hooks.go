@@ -181,9 +181,16 @@ func (r *ScriptRuntime) InvokeEntityHookVeto(hookPoint string, payload map[strin
 		execCtx.Set(k, v)
 	}
 
+	started := time.Now()
 	err := eng.ExecuteHook(context.Background(), hookPoint, execCtx)
+	r.logExecution("hook", hookPoint, hookPoint, "", 0, started, err)
 	if err != nil {
-		return err
+		// P1 修复：脚本执行错误（Lua 栈/引擎内部消息/panic 细节）不得原文回给业务
+		// 调用方（经 ErrScriptVetoed 包装后会以 400 透传）——原文只留服务端日志与
+		// 脚本执行台账；显式否决（ctx.stop）的 reason 是脚本作者有意的业务文案，
+		// 走下方 Stopped 分支保持透传。
+		r.log.Errorf(context.Background(), "script hook [%s] execution error (vetoed): %v", hookPoint, err)
+		return scriptV1.ErrorBadRequest("script veto: script execution failed at hook [%s]", hookPoint)
 	}
 	if execCtx.Stopped {
 		return scriptV1.ErrorBadRequest("script veto: %s", execCtx.StopReason)

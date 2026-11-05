@@ -1,6 +1,8 @@
 package service
 
 import (
+	"archive/zip"
+	"bytes"
 	"context"
 	"fmt"
 	"path/filepath"
@@ -158,6 +160,25 @@ func (s *AiKnowledgeService) UploadDoc(ctx context.Context, req *aiV1.UploadAiDo
 	return &aiV1.UploadAiDocResponse{Doc: doc, ChunkCount: doc.GetChunkCount()}, nil
 }
 
+// maxDocxEntryUncompressedSize docx 单条目解压后大小上限。
+const maxDocxEntryUncompressedSize = 64 << 20 // 64MB
+
+// checkDocxEntrySizes 预检 docx（zip）各条目解压后大小，超限即拒。
+// 非 zip/损坏包返回原错误交给 doctext.Extract 给出语义化报错。
+func checkDocxEntrySizes(data []byte) error {
+	zr, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
+	if err != nil {
+		return err
+	}
+	for _, f := range zr.File {
+		if f.UncompressedSize64 > maxDocxEntryUncompressedSize {
+			return fmt.Errorf("docx entry %q uncompressed size %d exceeds limit %d",
+				f.Name, f.UncompressedSize64, maxDocxEntryUncompressedSize)
+		}
+	}
+	return nil
+}
+
 // UploadDocFile 文件入库入口：按扩展名抽取文本（txt/md/.../docx/pdf）后走同一入库链。
 func (s *AiKnowledgeService) UploadDocFile(ctx context.Context, req *aiV1.UploadAiDocFileRequest) (*aiV1.UploadAiDocResponse, error) {
 	operator, err := auth.FromContext(ctx)
@@ -171,6 +192,15 @@ func (s *AiKnowledgeService) UploadDocFile(ctx context.Context, req *aiV1.Upload
 	base, err := s.repo.GetEntityByID(ctx, req.GetBaseId())
 	if err != nil {
 		return nil, err
+	}
+
+	// P1 修复：docx(zip bomb) 预检——10MB 压缩包可声称解出数 GB 的
+	// word/document.xml，而 doctext.Extract 内部 io.ReadAll 无上限。
+	// 这里在解压前用 zip 目录头的 Uncompressed64（无需解压即可读）预判拒收。
+	if strings.EqualFold(filepath.Ext(req.GetFileName()), ".docx") {
+		if zerr := checkDocxEntrySizes(req.GetContentBase64()); zerr != nil {
+			return nil, adminV1.ErrorBadRequest("extract text failed: %v", zerr)
+		}
 	}
 
 	content, err := doctext.Extract(req.GetFileName(), req.GetContentBase64())
@@ -197,8 +227,17 @@ func (s *AiKnowledgeService) ingestDoc(ctx context.Context, operator *authentica
 		return nil, adminV1.ErrorBadRequest("knowledge base embedding config is incomplete")
 	}
 
-	// 1. 切片
+	// P1 修复：入库与对话同受 AI_TOKENS 月度配额约束——此前 chat 有配额闸而入库没有
+	//（记账≠限额），单次大文档即可在平台 API key 上打出百万级 token 计费且可循环刷量。
+	if err := checkAiTokenQuota(ctx, s.usageLogRepo, s.log, operator); err != nil {
+		return nil, err
+	}
+
+	// 1. 切片（带数量上限：防大文档把向量库/费用打爆）
 	chunks := splitIntoChunks(content, ragChunkRunes, ragChunkOverlap)
+	if len(chunks) > maxIngestChunkCount {
+		return nil, adminV1.ErrorBadRequest("document too large: %d chunks exceeds limit %d", len(chunks), maxIngestChunkCount)
+	}
 
 	// 2. 建文档行（先 READY 假设成功，失败置 FAILED）
 	doc, err := s.repo.CreateDoc(ctx, &aiV1.AiDoc{
@@ -212,12 +251,21 @@ func (s *AiKnowledgeService) ingestDoc(ctx context.Context, operator *authentica
 		return nil, err
 	}
 
-	// 3. 向量化（逐批：一次请求全部切片，OpenAI 兼容 /v1/embeddings；消耗记入用量流水）
-	vectors, err := embedTextsForBase(ctx, s.providerRepo, s.usageLogRepo, s.log, operator.UserId, operator.GetTenantId(), base, chunks)
-	if err != nil {
-		errMsg := err.Error()
-		_ = s.repo.UpdateDocStatus(ctx, doc.ID, "FAILED", uint32(0), errMsg)
-		return nil, adminV1.ErrorInternalServerError("embed doc failed: %v", err)
+	// 3. 向量化（逐批对齐 reindex 口径：此前一次性提交全部切片，OpenAI 兼容
+	// /v1/embeddings；消耗记入用量流水）
+	vectors := make([]string, 0, len(chunks))
+	for start := 0; start < len(chunks); start += reindexEmbedBatchSize {
+		end := start + reindexEmbedBatchSize
+		if end > len(chunks) {
+			end = len(chunks)
+		}
+		batchVectors, embedErr := embedTextsForBase(ctx, s.providerRepo, s.usageLogRepo, s.log, operator.UserId, operator.GetTenantId(), base, chunks[start:end])
+		if embedErr != nil {
+			errMsg := embedErr.Error()
+			_ = s.repo.UpdateDocStatus(ctx, doc.ID, "FAILED", uint32(0), errMsg)
+			return nil, adminV1.ErrorInternalServerError("embed doc failed: %v", embedErr)
+		}
+		vectors = append(vectors, batchVectors...)
 	}
 
 	// 4. 切片落库
@@ -425,6 +473,11 @@ func derefUint32(p *uint32) uint32 {
 
 // reindexEmbedBatchSize 每批送 /v1/embeddings 的切片数。
 const reindexEmbedBatchSize = 32
+
+// maxIngestChunkCount 单文档入库切片数上限：ragChunkRunes=500 字符/片，4000 片
+// ≈2M 字符 ≈50 万 token 一次入库。此前无上限（10MB 文本 ≈2.3 万片）且一次请求
+// 全量送 embeddings，单文档即可在平台 API key 上打出百万级 token 计费。
+const maxIngestChunkCount = 4000
 
 // AsyncAiDocReindex 重索引任务 handler：对指定（或全部）知识库的既有切片
 // 用当前 embedding 模型重算向量。切片文本不变，只换 embedding 列——

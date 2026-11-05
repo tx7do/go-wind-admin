@@ -71,7 +71,9 @@ func (b *JSBinder) Bind(eng gsEngine.Engine, deps *RuntimeDeps) error {
 	// 注入无依赖模块
 	modules := []hostmodule.ModuleDef{
 		hostmodule.ModuleLogger(deps.Logger),
-		hostmodule.ModuleCrypto(),
+		// P1 修复：用受限版替代库版 crypto——库版把全局主密钥的 decrypt 原语暴露给
+		// 脚本（同一把钥匙加密着 AI key/SMTP 密码/MFA secret），见 api/crypto_safe.go。
+		{Name: "crypto", Funcs: api.ModuleCryptoSafe()},
 		hostmodule.ModuleUtil(sleepCap),
 		hostmodule.ModuleHTTP(b.httpOpts()), // fail-closed：未配置白名单时调用即报错
 	}
