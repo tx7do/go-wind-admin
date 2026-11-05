@@ -493,6 +493,36 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 	// 剥离 CR/LF，防止含换行的用户名注入文本日志行（伪造条目/行内注入）。
 	username := strings.NewReplacer("\r", "", "\n", "").Replace(req.GetUsername())
 
+	// ===== 租户解析（提前到限流预检之前）：tenant_code 留空视为平台（tenant 0）， =====
+	// ===== 非空则按编号定位租户。解析后的 tenantID 限定后续凭证查询范围， =====
+	// ===== 消除同名 identifier 跨租户歧义；identifier 反查依赖它，必须先行。 =====
+	var tenantID uint32 = 0
+	if code := req.GetTenantCode(); strings.TrimSpace(code) != "" {
+		tenant, _ := s.tenantRepo.Get(ctx, &identityV1.GetTenantRequest{
+			QueryBy: &identityV1.GetTenantRequest_Code{Code: code},
+		})
+		// 查不到、或租户非启用状态，统一返回同一文案，防止通过返回差异枚举有效租户编号
+		if tenant == nil || tenant.GetStatus() != identityV1.Tenant_ON {
+			return nil, authenticationV1.ErrorBadRequest("invalid tenant")
+		}
+		tenantID = tenant.GetId()
+	}
+
+	// ===== identifier 智能解析（提前到限流预检之前）：输入含 @ 视为 email、 =====
+	// ===== 纯数字视为 mobile，经 user 表反查得到真实 username 后仍走 USERNAME =====
+	// ===== 维度凭证校验。未命中时原样返回，交由凭证校验走统一失败路径（防枚举）；
+	// ===== mobile 多行歧义直接拒绝。
+	// P2 修复：解析必须先于限流预检——此前 IsLocked 用原始输入、CheckAndIncr 用
+	// 解析后 username，预检与计数的账号键不一致：admin 被锁后改用 admin@victim.com
+	//（或大小写变体经 ci collation 命中同一用户）发起请求，预检查的是未锁的变体键
+	// 照常放行，用户维度锁形同虚设。统一用解析后的 username 作限流键，让 email/
+	// 手机号/大小写变体全部落到同一个账号键上。
+	if resolved, _, rerr := s.userRepo.FindUsernameByIdentifier(ctx, tenantID, username); rerr != nil {
+		return nil, rerr
+	} else if resolved != username {
+		username = resolved
+	}
+
 	// ===== H5 闸门 1：登录限流预检（按 IP + 用户名双维度）=====
 	if s.rateLimiter != nil {
 		if locked, lerr := s.rateLimiter.IsLocked(ctx, clientIP, username); lerr != nil {
@@ -508,37 +538,14 @@ func (s *AuthenticationService) doGrantTypePassword(ctx context.Context, req *au
 		return nil, authenticationV1.ErrorBadRequest("invalid or missing captcha")
 	}
 
-	// ===== 租户解析：tenant_code 留空视为平台（tenant 0），非空则按编号定位租户 =====
-	// 解析后的 tenantID 限定后续凭证查询范围，消除同名 identifier 跨租户歧义。
-	var tenantID uint32 = 0
-	if code := req.GetTenantCode(); strings.TrimSpace(code) != "" {
-		tenant, _ := s.tenantRepo.Get(ctx, &identityV1.GetTenantRequest{
-			QueryBy: &identityV1.GetTenantRequest_Code{Code: code},
-		})
-		// 查不到、或租户非启用状态，统一返回同一文案，防止通过返回差异枚举有效租户编号
-		if tenant == nil || tenant.GetStatus() != identityV1.Tenant_ON {
-			return nil, authenticationV1.ErrorBadRequest("invalid tenant")
-		}
-		tenantID = tenant.GetId()
-	}
-
 	// ===== 登录策略闸门（全局部分）：target_id 为空的策略不依赖用户身份， =====
-	// ===== 在 identifier 反查与密码校验之前拦截，被封锁的 IP 连 user 表查询都省掉。
+	// ===== 在密码校验之前拦截，被封锁的 IP 连 user 表查询都省掉。 =====
 	// ===== 用户定向策略（target_id = userId）在取到 user 后二次检查。
 	if s.loginPolicyRepo != nil {
 		if blocked, reason := s.checkLoginPolicies(ctx, tenantID, 0, clientIP, req.GetDeviceId()); blocked {
 			s.log.Warnf(ctx, "login blocked by policy: ip=%s username=%s reason=%s", clientIP, username, reason)
 			return nil, authenticationV1.ErrorForbidden("login blocked by security policy")
 		}
-	}
-
-	// ===== identifier 智能解析：输入含 @ 视为 email、纯数字视为 mobile， =====
-	// ===== 经 user 表反查得到真实 username 后仍走 USERNAME 维度凭证校验。
-	// 未命中时原样返回，交由凭证校验走统一失败路径（防枚举）；mobile 多行歧义直接拒绝。
-	if resolved, _, rerr := s.userRepo.FindUsernameByIdentifier(ctx, tenantID, username); rerr != nil {
-		return nil, rerr
-	} else if resolved != username {
-		username = resolved
 	}
 
 	// ===== 凭证校验：在解析出的 tenant 范围内查单条凭证并校验密码 =====

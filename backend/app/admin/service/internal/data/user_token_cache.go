@@ -311,14 +311,20 @@ func (r *UserTokenCache) RevokeUserAllAccessToken(
 	return r.delByPattern(ctx, pattern)
 }
 
-// RevokeUserAllRefreshToken 删除刷新令牌
+// RevokeUserAllRefreshToken 删除刷新令牌。
+// P2 修复：宽限集合 rtg:{ct}:{uid} 一并清除——此前只删 rt: 键，刚轮换进宽限窗
+// （60s）的旧 RT 在吊销/改密/强踢后仍可经 IsGraceRefreshToken 兑换全新会话，
+// 「踢即全灭」语义被打洞。
 func (r *UserTokenCache) RevokeUserAllRefreshToken(
 	ctx context.Context,
 	clientType authenticationV1.ClientType,
 	userId uint32,
 ) error {
 	pattern := r.makeRefreshTokenKey(clientType, userId) + ":*"
-	return r.delByPattern(ctx, pattern)
+	if err := r.delByPattern(ctx, pattern); err != nil {
+		return err
+	}
+	return r.del(ctx, r.makeRefreshTokenGraceKey(clientType, userId))
 }
 
 // VerifyAndRevokeTokenPair 原子验证并轮换刷新令牌。使用 Lua 脚本保证
@@ -410,6 +416,13 @@ func (r *UserTokenCache) RevokeTokenByJti(ctx context.Context, clientType authen
 			r.log.Errorf(ctx, "remove lineage access token failed: [%v]", err)
 		}
 		prev = parent
+	}
+
+	// P2 修复：宽限集合一并清除。宽限集合按 (ct,uid) 组织、成员是 RT 原值，
+	// 无法按 jti 精确摘除单条——整集合删除的附带代价是同用户其他并发轮换中的
+	// 会话失去 60s 宽限（表现为此轮换被判死登出），对强踢语义可接受。
+	if gerr := r.del(ctx, r.makeRefreshTokenGraceKey(clientType, userId)); gerr != nil {
+		r.log.Errorf(ctx, "remove refresh token grace set failed: [%v]", gerr)
 	}
 
 	return err

@@ -236,6 +236,24 @@ func (s *AuthenticationService) SsoLogin(ctx context.Context, req *authenticatio
 		return nil, authenticationV1.ErrorUnauthorized("sso userinfo has no email claim")
 	}
 
+	// P2 修复：email_verified 校验——email 是本地账号映射的锚（含 AutoCreate
+	// 自动建号）。IdP 侧允许用户自填且不强制验证邮箱时（不少企业 IdP 的默认
+	// 策略、或自建 Keycloak 域配置疏漏），攻击者把 IdP 账号邮箱改成受害者邮箱
+	// 即可登录成本地对应账号（含平台管理员，若其邮箱被填入 IdP）。
+	// 口径：claim 存在且为 false → 拒绝；不存在 → 放行但告警（兼容不发该
+	// claim 的 IdP，运维应改配 IdP 强制验证邮箱）。
+	if ev, ok := claims["email_verified"]; ok {
+		switch strings.ToLower(strings.TrimSpace(ev)) {
+		case "true", "1", "yes":
+			// 已验证：放行
+		default:
+			s.log.Warnf(ctx, "sso login: email [%s] not verified at IdP (email_verified=%q), rejected", email, ev)
+			return nil, authenticationV1.ErrorUnauthorized("sso email not verified")
+		}
+	} else {
+		s.log.Warnf(ctx, "sso login: IdP userinfo has no email_verified claim for [%s]; configure the IdP to verify emails", email)
+	}
+
 	// 4. 定位/预置用户
 	tenantID := uint32(0)
 	if cfg.TenantCode != "" {
