@@ -246,29 +246,42 @@ func TestFileTransfer_DownloadFileDispatcher(t *testing.T) {
 	require.Error(t, err, "文件元数据不存在应失败")
 	require.Contains(t, err.Error(), "file not found")
 
+	// DownloadUrl 分支已收归平台管理员：普通操作者先被闸门拒绝
+	plainCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 42})
+	_, err = svc.DownloadFile(plainCtx, &storageV1.DownloadFileRequest{
+		Selector: &storageV1.DownloadFileRequest_DownloadUrl{},
+	})
+	require.Error(t, err, "非平台管理员的代取 URL 下载应被闸门拒绝")
+
+	// DownloadUrl 各校验分支（平台管理员上下文）
+	adminCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{
+		UserId:          1,
+		IsPlatformAdmin: trans.Ptr(true),
+	})
+
 	// DownloadUrl：空 URL
-	_, err = svc.DownloadFile(ctx, &storageV1.DownloadFileRequest{
+	_, err = svc.DownloadFile(adminCtx, &storageV1.DownloadFileRequest{
 		Selector: &storageV1.DownloadFileRequest_DownloadUrl{},
 	})
 	require.Error(t, err, "空下载地址应被拒绝")
 	require.Contains(t, err.Error(), "empty download url")
 
 	// DownloadUrl：非 http(s) scheme
-	_, err = svc.DownloadFile(ctx, &storageV1.DownloadFileRequest{
+	_, err = svc.DownloadFile(adminCtx, &storageV1.DownloadFileRequest{
 		Selector: &storageV1.DownloadFileRequest_DownloadUrl{DownloadUrl: "ftp://example.com/file"},
 	})
 	require.Error(t, err, "非法 scheme 应被拒绝")
 	require.Contains(t, err.Error(), "invalid download url")
 
 	// DownloadUrl：带用户信息的混淆 URL
-	_, err = svc.DownloadFile(ctx, &storageV1.DownloadFileRequest{
+	_, err = svc.DownloadFile(adminCtx, &storageV1.DownloadFileRequest{
 		Selector: &storageV1.DownloadFileRequest_DownloadUrl{DownloadUrl: "http://user:pass@example.com/file"},
 	})
 	require.Error(t, err, "携带用户信息的 URL 应被拒绝")
 	require.Contains(t, err.Error(), "invalid download url")
 
 	// DownloadUrl：内网回环地址（SSRF 闸，无需真实网络）
-	_, err = svc.DownloadFile(ctx, &storageV1.DownloadFileRequest{
+	_, err = svc.DownloadFile(adminCtx, &storageV1.DownloadFileRequest{
 		Selector: &storageV1.DownloadFileRequest_DownloadUrl{DownloadUrl: "http://127.0.0.1/secret"},
 	})
 	require.Error(t, err, "内网地址应被 SSRF 闸拦截")

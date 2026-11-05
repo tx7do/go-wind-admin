@@ -203,21 +203,20 @@ func (s *FileTransferService) directUploadFile(ctx context.Context, req *storage
 		return nil, err
 	}
 
-	if req.StorageObject.BucketName == nil {
-		req.StorageObject.BucketName = trans.Ptr(ossutil.ContentTypeToBucketName(req.GetMime()))
-	}
-
-	if req.StorageObject.ObjectName == nil {
-		req.StorageObject.ObjectName = trans.Ptr(
-			ossutil.EnsureObjectName(
-				req.GetStorageObject().GetFileDirectory(),
-				req.GetSourceFileName(),
-				req.GetMime(),
-				req.GetFile(),
-				ossutil.GenerateFileNameTypeUUID,
-			),
-		)
-	}
+	// P1 修复：上传落点完全由服务端决定——桶按内容嗅探 MIME 映射、对象名服务端
+	// 生成 UUID。此前客户端可指定任意 bucketName/objectName 且桶不存在会自动建桶：
+	// 可覆写 backups 桶内可预测名（backup-YYYYMMDD-HHMMSS）的灾备对象、跨租户覆盖
+	// 他人对象、绕过租户存储配额。
+	req.StorageObject.BucketName = trans.Ptr(ossutil.ContentTypeToBucketName(req.GetMime()))
+	req.StorageObject.ObjectName = trans.Ptr(
+		ossutil.EnsureObjectName(
+			req.GetStorageObject().GetFileDirectory(),
+			req.GetSourceFileName(),
+			req.GetMime(),
+			req.GetFile(),
+			ossutil.GenerateFileNameTypeUUID,
+		),
+	)
 
 	info, storagePath, downloadUrl, err := s.mc.UploadFile(
 		ctx,
@@ -460,9 +459,19 @@ func (s *FileTransferService) DownloadFile(ctx context.Context, req *storageV1.D
 		return s.mc.DownloadFile(ctx, req)
 
 	case *storageV1.DownloadFileRequest_StorageObject:
+		// P1 修复：直取桶+键的选择器此前无任何归属校验，租户用户可读任意桶任意对象
+		//（含 backups 桶的全平台灾备导出，对象名时间戳可预测）。业务文件下载一律走
+		// file_id（file 表按 viewer 租户过滤）；直取桶/键收归平台管理员。
+		if err := requirePlatformAdmin(ctx, s.log, "storage object download"); err != nil {
+			return nil, err
+		}
 		return s.mc.DownloadFile(ctx, req)
 
 	case *storageV1.DownloadFileRequest_DownloadUrl:
+		// 服务端代取任意 URL（虽有内网校验但本质仍是代理原语），同样收归平台管理员。
+		if err := requirePlatformAdmin(ctx, s.log, "remote url download"); err != nil {
+			return nil, err
+		}
 		return s.downloadFileFromURL(ctx, req.GetDownloadUrl())
 
 	default:
