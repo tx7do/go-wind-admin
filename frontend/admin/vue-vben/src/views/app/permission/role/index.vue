@@ -106,6 +106,7 @@ const gridOptions: VxeGridProps<Role> = {
     { title: $t('ui.table.seq'), type: 'seq', width: 50 },
     { title: $t('page.role.name'), field: 'name' },
     { title: $t('page.role.code'), field: 'code' },
+    { title: $t('page.role.parentName'), field: 'parentName' },
     { title: $t('page.role.tenantName'), field: 'tenantName' },
     {
       title: $t('ui.table.status'),

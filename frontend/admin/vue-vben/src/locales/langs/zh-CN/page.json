@@ -227,7 +227,13 @@
         "lastLoginIp": "最后登录 IP",
         "permissions": "权限集（角色绑定的权限列表）"
       }
-    }
+    },
+    "parentName": "父角色",
+    "parentId": "父角色",
+    "parentIdPlaceholder": "选择父角色（可选）",
+    "permCapHint": "可选权限已收窄为父角色的授权范围",
+    "permTrimConfirmTitle": "权限收敛确认",
+    "permTrimConfirmContent": "该角色有 {count} 个权限点超出父角色的授权范围，保存后将被移除。是否继续？"
   },
   "permission": {
     "moduleName": "权限",

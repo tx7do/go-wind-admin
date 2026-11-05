@@ -21,6 +21,7 @@ import { Button, Space, Spin, Tree } from 'ant-design-vue';
  */
 interface Props {
   emptyText?: string;
+  hint?: string;
   loading?: boolean;
   title?: string;
   treeData?: any[];
@@ -28,6 +29,7 @@ interface Props {
 
 const props = withDefaults(defineProps<Props>(), {
   emptyText: '',
+  hint: '',
   loading: false,
   title: '',
   treeData: () => [],
@@ -78,6 +80,7 @@ function uncheckAll() {
 <template>
   <div class="w-full">
     <div class="mb-1 text-sm font-medium">{{ title }}</div>
+    <div v-if="hint" class="mb-1 text-xs text-muted-foreground">{{ hint }}</div>
     <Spin :spinning="!!loading">
       <template v-if="treeData.length > 0">
         <Space :size="4" class="mb-1">

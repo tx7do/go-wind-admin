@@ -96,6 +96,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
       { type: "index", label: $t("common.table.seq"), width: 60 },
       { prop: "name", label: $t("pages.role.name"), minWidth: 120 },
       { prop: "code", label: $t("pages.role.code"), minWidth: 120 },
+      { prop: "parentName", label: $t("pages.role.parentName"), minWidth: 120 },
       { prop: "tenantName", label: $t("pages.role.tenantName"), minWidth: 120 },
       {
         prop: "status",

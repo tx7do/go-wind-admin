@@ -227,7 +227,13 @@
         "lastLoginIp": "Last Login IP",
         "permissions": "Permission set"
       }
-    }
+    },
+    "parentName": "Parent Role",
+    "parentId": "Parent Role",
+    "parentIdPlaceholder": "Select parent role (optional)",
+    "permCapHint": "Selectable permissions are limited to the parent role's grant",
+    "permTrimConfirmTitle": "Permission Trim Confirmation",
+    "permTrimConfirmContent": "{count} permission(s) of this role exceed the parent role's grant and will be removed on save. Continue?"
   },
   "permission": {
     "moduleName": "Permission",
