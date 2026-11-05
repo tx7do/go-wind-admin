@@ -656,7 +656,13 @@ func TestUserServiceSqlite_EditUserPassword(t *testing.T) {
 	require.Nil(t, resp)
 
 	// 跨租户：租户甲管理员改租户乙用户 → 403。
-	tenantOpA := opCtx(e.ctx, 9003, tenantA, false)
+	// EditUserPassword 已加 requireTenantOrPlatformAdmin 服务内闸门，
+	// 操作者必须带租户管理员旗标（改密是管理员动作）。
+	tenantOpA := auth.NewContext(e.ctx, &authenticationV1.UserTokenPayload{
+		UserId:        9003,
+		TenantId:      trans.Ptr(tenantA),
+		IsTenantAdmin: trans.Ptr(true),
+	})
 	resp, err = e.svc.EditUserPassword(tenantOpA, &identityV1.EditUserPasswordRequest{
 		UserId:      10603,
 		NewPassword: encryptLoginPassword(t, "HackedP@ss888"),

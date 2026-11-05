@@ -208,7 +208,10 @@ func (s *NotificationChannelService) sendTest(ctx context.Context, id uint32, re
 		// 显式点名 Channel=SMS，测试不依赖路由表。
 		sendReq.EventType = notificationV1.EventType_CHANNEL_TEST_SMS
 		sendReq.Channel = trans.Ptr(notificationV1.Channel_SMS)
-		code := generateVCode()
+		code, gErr := generateVCode()
+		if gErr != nil {
+			return nil, adminV1.ErrorInternalServerError("generate verification code failed")
+		}
 		sendReq.Title, sendReq.Content = mailtext.ChannelTestSms(ctx, id, operator.UserId)
 		sendReq.Params = map[string]string{"code": code}
 

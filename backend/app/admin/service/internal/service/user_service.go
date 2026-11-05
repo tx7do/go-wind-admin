@@ -555,6 +555,17 @@ func (s *UserService) Update(ctx context.Context, req *identityV1.UpdateUserRequ
 		return nil, err
 	}
 
+	// 处置类状态变更即时吊销存量会话（P2 修复）：状态检查只发生在登录/刷新，
+	// 冻结/禁用后其未过期的 access token（TTL 1.5h）此前仍全功能可用。
+	// 仅在请求显式携带 Status 且非 NORMAL 时触发（部分更新的 nil 不可当作
+	// "改为未指定状态"），幂等：目标已是该状态时重复吊销无副作用。
+	if req.Data.Status != nil && req.Data.GetStatus() != identityV1.User_NORMAL {
+		if revErr := s.authenticator.RevokeUserTokenAllClientTypes(ctx, req.GetId()); revErr != nil {
+			s.log.Errorf(ctx, "revoke tokens after status change to [%s] failed for user [%d]: %v",
+				req.Data.GetStatus().String(), req.GetId(), revErr)
+		}
+	}
+
 	if len(req.GetPassword()) > 0 {
 		// 跨租户防护：非平台超级管理员重置密码前，校验目标用户真实租户
 		// 注意：此处不能用 req.Data.GetTenantId()，因为上方已将其覆盖为操作者租户
@@ -649,9 +660,17 @@ func (s *UserService) Delete(ctx context.Context, req *identityV1.DeleteUserRequ
 	}
 
 	// 删除用户
-	err = s.userRepo.Delete(ctx, req)
+	if err = s.userRepo.Delete(ctx, req); err != nil {
+		return nil, err
+	}
 
-	return &emptypb.Empty{}, err
+	// 删除成功即吊销该用户全部存量会话：删除路径此前与状态处置一样没有吊销，
+	// 被删用户的未过期 access token 仍可用最长 1.5h。
+	if revErr := s.authenticator.RevokeUserTokenAllClientTypes(ctx, req.GetId()); revErr != nil {
+		s.log.Errorf(ctx, "revoke tokens after user delete failed for user [%d]: %v", req.GetId(), revErr)
+	}
+
+	return &emptypb.Empty{}, nil
 }
 
 func (s *UserService) UserExists(ctx context.Context, req *identityV1.UserExistsRequest) (*identityV1.UserExistsResponse, error) {
@@ -663,6 +682,13 @@ func (s *UserService) EditUserPassword(ctx context.Context, req *identityV1.Edit
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
+		return nil, err
+	}
+
+	// 服务内管理闸门（纵深防御，authz 出厂 noop）：改他人密码是管理员动作，
+	// 用户改自己的密码走个人中心的 ChangePassword。此前无闸门，任意租户普通用户
+	// 可重置本租户管理员（含 tenant:manager）的密码完成租户接管。
+	if err = requireTenantOrPlatformAdmin(ctx, s.log, "edit user password"); err != nil {
 		return nil, err
 	}
 

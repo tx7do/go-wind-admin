@@ -42,6 +42,21 @@ func NewOnlineSessionService(
 // ListOnlineSession 返回当前在线会话列表，支持按用户名/IP 关键词过滤，
 // 按登录时间倒序排序后在内存中分页。
 func (s *OnlineSessionService) ListOnlineSession(ctx context.Context, req *onlineSessionV1.ListOnlineSessionRequest) (*onlineSessionV1.ListOnlineSessionResponse, error) {
+	// 服务内管理闸门（纵深防御，authz 出厂 noop）：在线会话台账含全平台用户的
+	// IP/UA/设备指纹，此前无任何权限判断，任意租户普通用户可枚举全平台在线用户。
+	operator, err := auth.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err = requireTenantOrPlatformAdmin(ctx, s.log, "online session list"); err != nil {
+		return nil, err
+	}
+	// 租户管理员只看本租户会话；平台管理员看全量
+	tenantFilter := uint32(0)
+	if !operator.GetIsPlatformAdmin() {
+		tenantFilter = operator.GetTenantId()
+	}
+
 	entries, err := s.authenticator.ListSessionEntries(ctx)
 	if err != nil {
 		s.log.Errorf(ctx, "list session entries failed: %v", err)
@@ -54,6 +69,9 @@ func (s *OnlineSessionService) ListOnlineSession(ctx context.Context, req *onlin
 	for _, entry := range entries {
 		meta := entry.Meta
 		if meta == nil {
+			continue
+		}
+		if tenantFilter != 0 && meta.TenantId != tenantFilter {
 			continue
 		}
 		if keyword != "" &&
@@ -194,6 +212,29 @@ func (s *OnlineSessionService) ForceLogoutSession(ctx context.Context, req *onli
 	jti := req.GetJti()
 	if userId == 0 || jti == "" {
 		return nil, adminV1.ErrorBadRequest("user id and jti are required")
+	}
+
+	// 服务内管理闸门（纵深防御，authz 出厂 noop）：强踢是管理员动作。
+	operator, err := auth.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+	if err = requireTenantOrPlatformAdmin(ctx, s.log, "force logout session"); err != nil {
+		return nil, err
+	}
+
+	// 跨租户防护：非平台管理员只能强踢本租户用户的会话（会话元数据按
+	// userId+jti 存 Redis，不经数据层租户隔离，必须显式校验归属）。
+	if !operator.GetIsPlatformAdmin() {
+		meta, mErr := s.authenticator.GetSessionMeta(ctx, req.GetClientType(), userId, jti)
+		if mErr != nil {
+			return nil, mErr
+		}
+		if meta == nil || meta.TenantId != operator.GetTenantId() {
+			s.log.Errorf(ctx, "operator [%d] (tenant %d) attempted to force logout session [%s] of user [%d] outside tenant",
+				operator.GetUserId(), operator.GetTenantId(), jti, userId)
+			return nil, adminV1.ErrorForbidden("no permission to force logout session of user in other tenant")
+		}
 	}
 
 	if err := s.authenticator.RevokeTokenByJti(ctx, trans.Ptr(req.GetClientType()), userId, jti); err != nil {

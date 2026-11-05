@@ -74,6 +74,13 @@ func (s *AccessKeyService) Create(ctx context.Context, req *accesskeyV1.CreateAc
 		return nil, err
 	}
 
+	// 服务内管理闸门（纵深防御，authz 出厂 noop）：AK/SK 是租户级机器凭证，
+	// 签发/轮换/吊销是管理员动作（机器令牌绕过登录验证码与 MFA，不得由普通
+	// 用户自助铸造）。
+	if err = requireTenantOrPlatformAdmin(ctx, s.log, "access key create"); err != nil {
+		return nil, err
+	}
+
 	// 凭证归属创建者的租户：机器令牌将继承该租户的隔离与 Api 表闸门
 	tenantId := operator.GetTenantId()
 	req.Data.TenantId = trans.Ptr(tenantId)
@@ -123,6 +130,9 @@ func (s *AccessKeyService) Update(ctx context.Context, req *accesskeyV1.UpdateAc
 	if err != nil {
 		return nil, err
 	}
+	if err = requireTenantOrPlatformAdmin(ctx, s.log, "access key update"); err != nil {
+		return nil, err
+	}
 	req.Data.UpdatedBy = trans.Ptr(operator.UserId)
 	if req.UpdateMask != nil {
 		// 强制盖章操作人（与其他服务一致的掩码追加语义）
@@ -148,6 +158,9 @@ func (s *AccessKeyService) Update(ctx context.Context, req *accesskeyV1.UpdateAc
 }
 
 func (s *AccessKeyService) Delete(ctx context.Context, req *accesskeyV1.DeleteAccessKeyRequest) (*emptypb.Empty, error) {
+	if err := requireTenantOrPlatformAdmin(ctx, s.log, "access key delete"); err != nil {
+		return nil, err
+	}
 	if err := s.repo.Delete(ctx, req); err != nil {
 		return nil, err
 	}
@@ -224,6 +237,10 @@ func (s *AccessKeyService) IssueToken(ctx context.Context, req *accesskeyV1.Issu
 func (s *AccessKeyService) ResetSecret(ctx context.Context, req *accesskeyV1.ResetAccessKeySecretRequest) (*accesskeyV1.CreateAccessKeyResponse, error) {
 	if req == nil || req.GetId() == 0 {
 		return nil, adminV1.ErrorBadRequest("id is required")
+	}
+
+	if err := requireTenantOrPlatformAdmin(ctx, s.log, "access key reset secret"); err != nil {
+		return nil, err
 	}
 
 	secret, err := randomToken(secretPrefix, secretBytes)

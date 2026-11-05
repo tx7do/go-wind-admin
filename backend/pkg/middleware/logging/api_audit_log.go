@@ -2,9 +2,11 @@ package logging
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/url"
+	"strings"
 
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/tx7do/go-utils/auditutil"
@@ -14,6 +16,78 @@ import (
 
 	"github.com/tx7do/go-crud/viewer"
 )
+
+// sensitiveRequestBodyKeys 请求体脱敏的键名（小写包含匹配）。
+// API 审计此前全量落请求体且无长度上限：CreateAiProvider 的明文 api_key、
+// 通知渠道的 SMTP 密码/webhook secret、用户创建/改密的密码字段、知识库上传的
+// ≤10MB contentBase64 全部进了 sys_api_audit_logs——任何能读该表的入口
+// （列表/详情查询、库备份泄露）都能拿到这些明文凭据，超长体还会灌爆审计表。
+var sensitiveRequestBodyKeys = []string{
+	"password", "passwd", "secret", "token", "apikey", "api_key",
+	"authorization", "credential", "contentbase64", "private_key",
+}
+
+const redactedMarker = "[REDACTED]"
+
+// sanitizeAuditRequestBody 对落审计的请求体做脱敏 + 64KB 限长
+// （与操作/权限审计的 maxBodySnapshot 快照口径对齐）。
+// JSON 体按键名递归遮蔽；非 JSON 体原样截断。截断处补标记。
+func sanitizeAuditRequestBody(body []byte) string {
+	if len(body) == 0 {
+		return ""
+	}
+	truncated := false
+	snap := body
+	if len(body) > maxBodySnapshot {
+		snap = body[:maxBodySnapshot]
+		truncated = true
+	}
+
+	var out any
+	if err := json.Unmarshal(snap, &out); err == nil {
+		maskSensitiveJSON(out)
+		if b, jerr := json.Marshal(out); jerr == nil {
+			s := string(b)
+			if truncated {
+				s += "...[truncated]"
+			}
+			return s
+		}
+	}
+
+	s := string(snap)
+	if truncated {
+		s += "...[truncated]"
+	}
+	return s
+}
+
+func isSensitiveRequestBodyKey(key string) bool {
+	lk := strings.ToLower(key)
+	for _, s := range sensitiveRequestBodyKeys {
+		if strings.Contains(lk, s) {
+			return true
+		}
+	}
+	return false
+}
+
+func maskSensitiveJSON(node any) {
+	switch v := node.(type) {
+	case map[string]any:
+		for k, val := range v {
+			if isSensitiveRequestBodyKey(k) {
+				v[k] = redactedMarker
+				continue
+			}
+			maskSensitiveJSON(val)
+		}
+	case []any:
+		for _, item := range v {
+			maskSensitiveJSON(item)
+		}
+	}
+}
 
 type ApiAuditLogMiddleware struct {
 	op *options
@@ -51,7 +125,7 @@ func (a *ApiAuditLogMiddleware) Handle(ctx context.Context, htr *http.Transport,
 	apiAuditLog.IpAddress = trans.Ptr(clientIp)
 	apiAuditLog.RequestId = trans.Ptr(auditutil.RequestID(htr.Request()))
 	apiAuditLog.RequestUri = trans.Ptr(requestUri)
-	apiAuditLog.RequestBody = trans.Ptr(string(bodyBytes))
+	apiAuditLog.RequestBody = trans.Ptr(sanitizeAuditRequestBody(bodyBytes))
 
 	ut := extractAuthToken(htr)
 	if ut != nil {

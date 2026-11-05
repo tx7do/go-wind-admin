@@ -27,9 +27,17 @@ const (
 //
 // 手机号一路显式点名 Channel=SMS：存量库没有 PHONE_BIND_CODE 的路由规则行
 // （播种只发生 在空表时），依赖路由等于让手机绑定在老实例上必失败。
+// 发码频控（同联系方式 60s 冷却）：该端点已鉴权，超频直接告知调用方而非静默。
 func (s *UserProfileService) sendContactVCode(ctx context.Context, kind, contact string) error {
-	code := generateVCode()
-	if err := s.vcodeCache.Save("bind_contact", contact, code, 10*time.Minute); err != nil {
+	if s.vcodeCache != nil && !s.vcodeCache.Throttle("bind_contact", contact, time.Minute) {
+		return authenticationV1.ErrorBadRequest("verification code sent too frequently, please retry later")
+	}
+
+	code, err := generateVCode()
+	if err != nil {
+		return authenticationV1.ErrorInternalServerError("generate verification code failed")
+	}
+	if err = s.vcodeCache.Save("bind_contact", contact, code, 10*time.Minute); err != nil {
 		return authenticationV1.ErrorInternalServerError("save verification code failed")
 	}
 

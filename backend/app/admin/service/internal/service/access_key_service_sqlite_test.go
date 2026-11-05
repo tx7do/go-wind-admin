@@ -45,6 +45,15 @@ import (
 	"go-wind-admin/pkg/middleware/auth"
 )
 
+// akAdminCtx 造平台管理员操作者上下文：AK 写入口已加
+// requireTenantOrPlatformAdmin 服务内闸门，写路径用例一律以此调用。
+func akAdminCtx(ctx context.Context, userId uint32) context.Context {
+	return auth.NewContext(ctx, &authenticationV1.UserTokenPayload{
+		UserId:          userId,
+		IsPlatformAdmin: trans.Ptr(true),
+	})
+}
+
 // newAccessKeyServiceForTest 白盒复刻 NewAccessKeyService 的字段初始化：
 // log 换 NopLogger；repo 走 data.NewAccessKeyRepoForTest；authenticator 与
 // rateLimiter 按 repo_testkit5.go 的注入式构造（redis 走 miniredis 假 client，
@@ -95,7 +104,7 @@ func TestAccessKeyServiceSqlite_CreateAndGetAndCount(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newAccessKeyServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 81})
+	opCtx := akAdminCtx(ctx, 81)
 
 	idA, akA, skA := createAccessKeyViaService(t, svc, opCtx, "服务层凭证甲")
 	_, akB, _ := createAccessKeyViaService(t, svc, opCtx, "服务层凭证乙")
@@ -167,7 +176,7 @@ func TestAccessKeyServiceSqlite_UpdateNilMaskKeepsImmutableFields(t *testing.T) 
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newAccessKeyServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 82})
+	opCtx := akAdminCtx(ctx, 82)
 
 	id, ak, sk := createAccessKeyViaService(t, svc, opCtx, "更新前凭证名")
 
@@ -205,7 +214,7 @@ func TestAccessKeyServiceSqlite_UpdateWithMaskImmutableStripped(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newAccessKeyServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 82})
+	opCtx := akAdminCtx(ctx, 82)
 
 	maskedID, origAK, _ := createAccessKeyViaService(t, svc, opCtx, "掩码更新凭证名")
 	before, err := entClient.Client().AccessKey.Query().Only(ctx)
@@ -250,7 +259,7 @@ func TestAccessKeyServiceSqlite_DisabledKeyIssueTokenRejected(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newAccessKeyServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 83})
+	opCtx := akAdminCtx(ctx, 83)
 
 	resp, err := svc.Create(opCtx, &accesskeyV1.CreateAccessKeyRequest{
 		Data: &accesskeyV1.AccessKey{Name: trans.Ptr("停用凭证"), Status: accesskeyV1.AccessKey_OFF.Enum()},
@@ -275,7 +284,7 @@ func TestAccessKeyServiceSqlite_ExpiredKeyIssueTokenRejected(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newAccessKeyServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 83})
+	opCtx := akAdminCtx(ctx, 83)
 
 	resp, err := svc.Create(opCtx, &accesskeyV1.CreateAccessKeyRequest{
 		Data: &accesskeyV1.AccessKey{
@@ -300,7 +309,7 @@ func TestAccessKeyServiceSqlite_IssueTokenFlow(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newAccessKeyServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 84})
+	opCtx := akAdminCtx(ctx, 84)
 
 	_, ak, sk := createAccessKeyViaService(t, svc, opCtx, "换发流程凭证")
 
@@ -358,7 +367,7 @@ func TestAccessKeyServiceSqlite_WrongSecretLockout(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newAccessKeyServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 84})
+	opCtx := akAdminCtx(ctx, 84)
 
 	_, ak, _ := createAccessKeyViaService(t, svc, opCtx, "锁定流程凭证")
 
@@ -383,11 +392,11 @@ func TestAccessKeyServiceSqlite_ResetSecretRotation(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newAccessKeyServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 85})
+	opCtx := akAdminCtx(ctx, 85)
 
 	id, ak, oldSecret := createAccessKeyViaService(t, svc, opCtx, "轮换凭证")
 
-	rotated, err := svc.ResetSecret(ctx, &accesskeyV1.ResetAccessKeySecretRequest{Id: id})
+	rotated, err := svc.ResetSecret(opCtx, &accesskeyV1.ResetAccessKeySecretRequest{Id: id})
 	require.NoError(t, err, "密钥轮换应成功")
 	require.NotEmpty(t, rotated.GetSecret())
 	require.True(t, strings.HasPrefix(rotated.GetSecret(), "sk-"), "新 SK 应带 sk- 前缀")
@@ -418,11 +427,11 @@ func TestAccessKeyServiceSqlite_Delete(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newAccessKeyServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 85})
+	opCtx := akAdminCtx(ctx, 85)
 
 	id, _, _ := createAccessKeyViaService(t, svc, opCtx, "待删除凭证")
 
-	_, err := svc.Delete(ctx, &accesskeyV1.DeleteAccessKeyRequest{Id: id})
+	_, err := svc.Delete(opCtx, &accesskeyV1.DeleteAccessKeyRequest{Id: id})
 	require.NoError(t, err, "删除已存在凭证应成功")
 
 	cnt, err := entClient.Client().AccessKey.Query().Count(ctx)
@@ -434,7 +443,7 @@ func TestAccessKeyServiceSqlite_Delete(t *testing.T) {
 	})
 	require.Error(t, err, "删除后的凭证应查询不到")
 
-	_, err = svc.Delete(ctx, nil)
+	_, err = svc.Delete(opCtx, nil)
 	require.Error(t, err, "nil 请求体应被拒绝")
 	require.Contains(t, err.Error(), "invalid parameter")
 }

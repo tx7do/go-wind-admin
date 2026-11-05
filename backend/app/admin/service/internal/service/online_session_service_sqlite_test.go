@@ -82,6 +82,15 @@ func seedOnlineSession(
 	require.NoError(t, tokenCache.AddAccessToken(ctx, ct, uid, jti, "tok-"+jti, time.Hour), "培养访问令牌键应成功")
 }
 
+// onlineAdminOpCtx 平台管理员操作者上下文：在线会话台账/强踢已加
+// requireTenantOrPlatformAdmin 服务内闸门，相关用例以此调用。
+func onlineAdminOpCtx(ctx context.Context) context.Context {
+	return auth.NewContext(ctx, &authenticationV1.UserTokenPayload{
+		UserId:          1,
+		IsPlatformAdmin: trans.Ptr(true),
+	})
+}
+
 // TestOnlineSessionServiceSqlite_ListSortsAndPaginates 验证全量视图按登录时间
 // 倒序、字段映射（用户名/IP/UA/设备/租户/客户端类型）、内存分页与越界清空。
 func TestOnlineSessionServiceSqlite_ListSortsAndPaginates(t *testing.T) {
@@ -93,7 +102,7 @@ func TestOnlineSessionServiceSqlite_ListSortsAndPaginates(t *testing.T) {
 	seedOnlineSession(t, svc, tokenCache, ctx, authenticationV1.ClientType_app, 101, "jti-101b", "user-101", "10.1.1.3", 3000)
 
 	// 全量：按登录时间倒序（3000 → 2000 → 1000），字段按元数据映射。
-	all, err := svc.ListOnlineSession(ctx, &onlineSessionV1.ListOnlineSessionRequest{})
+	all, err := svc.ListOnlineSession(onlineAdminOpCtx(ctx), &onlineSessionV1.ListOnlineSessionRequest{})
 	require.NoError(t, err)
 	require.Equal(t, uint64(3), all.GetTotal())
 	require.Len(t, all.GetItems(), 3, "缺省分页应返回前 20 条，此处共 3 条")
@@ -109,7 +118,7 @@ func TestOnlineSessionServiceSqlite_ListSortsAndPaginates(t *testing.T) {
 	require.EqualValues(t, authenticationV1.ClientType_app, all.GetItems()[0].GetClientType(), "客户端类型应按键名还原")
 
 	// 分页：page=1/pageSize=2 取前两条（倒序后最新的两条）。
-	page1, err := svc.ListOnlineSession(ctx, &onlineSessionV1.ListOnlineSessionRequest{
+	page1, err := svc.ListOnlineSession(onlineAdminOpCtx(ctx), &onlineSessionV1.ListOnlineSessionRequest{
 		Page:     trans.Ptr(uint32(1)),
 		PageSize: trans.Ptr(uint32(2)),
 	})
@@ -120,7 +129,7 @@ func TestOnlineSessionServiceSqlite_ListSortsAndPaginates(t *testing.T) {
 	require.Equal(t, "jti-102", page1.GetItems()[1].GetJti())
 
 	// page=2/pageSize=2 取末一条。
-	page2, err := svc.ListOnlineSession(ctx, &onlineSessionV1.ListOnlineSessionRequest{
+	page2, err := svc.ListOnlineSession(onlineAdminOpCtx(ctx), &onlineSessionV1.ListOnlineSessionRequest{
 		Page:     trans.Ptr(uint32(2)),
 		PageSize: trans.Ptr(uint32(2)),
 	})
@@ -129,7 +138,7 @@ func TestOnlineSessionServiceSqlite_ListSortsAndPaginates(t *testing.T) {
 	require.Equal(t, "jti-101a", page2.GetItems()[0].GetJti())
 
 	// 越界页：条目清空但总数保持。
-	page3, err := svc.ListOnlineSession(ctx, &onlineSessionV1.ListOnlineSessionRequest{
+	page3, err := svc.ListOnlineSession(onlineAdminOpCtx(ctx), &onlineSessionV1.ListOnlineSessionRequest{
 		Page:     trans.Ptr(uint32(3)),
 		PageSize: trans.Ptr(uint32(2)),
 	})
@@ -147,7 +156,7 @@ func TestOnlineSessionServiceSqlite_ListKeywordFilter(t *testing.T) {
 	seedOnlineSession(t, svc, tokenCache, ctx, authenticationV1.ClientType_admin, 201, "jti-201a", "user-201", "10.3.3.1", 1000)
 	seedOnlineSession(t, svc, tokenCache, ctx, authenticationV1.ClientType_admin, 202, "jti-202", "user-202", "10.4.4.4", 2000)
 
-	byUser, err := svc.ListOnlineSession(ctx, &onlineSessionV1.ListOnlineSessionRequest{
+	byUser, err := svc.ListOnlineSession(onlineAdminOpCtx(ctx), &onlineSessionV1.ListOnlineSessionRequest{
 		Keyword: trans.Ptr("user-201"),
 	})
 	require.NoError(t, err)
@@ -155,7 +164,7 @@ func TestOnlineSessionServiceSqlite_ListKeywordFilter(t *testing.T) {
 	require.Len(t, byUser.GetItems(), 1)
 	require.Equal(t, "jti-201a", byUser.GetItems()[0].GetJti())
 
-	byIp, err := svc.ListOnlineSession(ctx, &onlineSessionV1.ListOnlineSessionRequest{
+	byIp, err := svc.ListOnlineSession(onlineAdminOpCtx(ctx), &onlineSessionV1.ListOnlineSessionRequest{
 		Keyword: trans.Ptr("10.4.4.4"),
 	})
 	require.NoError(t, err)
@@ -163,13 +172,13 @@ func TestOnlineSessionServiceSqlite_ListKeywordFilter(t *testing.T) {
 	require.Len(t, byIp.GetItems(), 1)
 	require.Equal(t, "jti-202", byIp.GetItems()[0].GetJti())
 
-	byBlank, err := svc.ListOnlineSession(ctx, &onlineSessionV1.ListOnlineSessionRequest{
+	byBlank, err := svc.ListOnlineSession(onlineAdminOpCtx(ctx), &onlineSessionV1.ListOnlineSessionRequest{
 		Keyword: trans.Ptr("   "),
 	})
 	require.NoError(t, err)
 	require.Equal(t, uint64(2), byBlank.GetTotal(), "纯空白关键字等效无过滤")
 
-	byMiss, err := svc.ListOnlineSession(ctx, &onlineSessionV1.ListOnlineSessionRequest{
+	byMiss, err := svc.ListOnlineSession(onlineAdminOpCtx(ctx), &onlineSessionV1.ListOnlineSessionRequest{
 		Keyword: trans.Ptr("nobody-here"),
 	})
 	require.NoError(t, err)
@@ -285,7 +294,18 @@ func TestOnlineSessionServiceSqlite_ForceLogoutSession(t *testing.T) {
 	const uid = 501
 	seedOnlineSession(t, svc, tokenCache, ctx, authenticationV1.ClientType_app, uid, "jti-501", "user-501", "10.9.9.9", 1000)
 
-	resp, err := svc.ForceLogoutSession(ctx, &onlineSessionV1.ForceLogoutSessionRequest{
+	// 平台闸门：非管理员的强踢拒绝
+	plainCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: uid})
+	_, err := svc.ForceLogoutSession(plainCtx, &onlineSessionV1.ForceLogoutSessionRequest{
+		ClientType: authenticationV1.ClientType_app.Enum(),
+		UserId:     trans.Ptr(uint32(uid)),
+		Jti:        trans.Ptr("jti-501"),
+	})
+	require.Error(t, err, "非租户/平台管理员的强踢应被拒绝")
+
+	// 平台管理员：强踢成功
+	adminCtx := onlineAdminOpCtx(ctx)
+	resp, err := svc.ForceLogoutSession(adminCtx, &onlineSessionV1.ForceLogoutSessionRequest{
 		ClientType: authenticationV1.ClientType_app.Enum(),
 		UserId:     trans.Ptr(uint32(uid)),
 		Jti:        trans.Ptr("jti-501"),

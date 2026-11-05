@@ -2,11 +2,13 @@ package service
 
 import (
 	"context"
+	"crypto/rand"
 	"fmt"
-	"github.com/tx7do/go-crud/viewer"
+	"math/big"
 	"strings"
 	"time"
 
+	"github.com/tx7do/go-crud/viewer"
 	"github.com/tx7do/go-utils/trans"
 	"google.golang.org/protobuf/types/known/emptypb"
 
@@ -19,11 +21,16 @@ import (
 	"github.com/tx7do/go-utils/notify/sms"
 )
 
-// generateVCode 生成 6 位数字验证码。
-// 使用纳秒时间取模：验证码仅用于一次性校验，安全强度由
-// 「单次有效 + 10 分钟 TTL + 服务端比对」保证，不依赖密码学随机。
-func generateVCode() string {
-	return fmt.Sprintf("%06d", time.Now().UnixNano()%1000000)
+// generateVCode 生成 6 位数字验证码（crypto/rand）。
+// 此前用纳秒时间取模——攻击者按发包时刻即可把候选集缩到极小，等于半公开。
+// 空间强度由「密码学随机 + 单次有效 + 失败锁定（vcodeMaxVerifyAttempts）+
+// 发码频控」共同保证。
+func generateVCode() (string, error) {
+	n, err := rand.Int(rand.Reader, big.NewInt(1000000))
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%06d", n.Int64()), nil
 }
 
 // resetIdentityTypeOf 按.identifier 的形态选凭证类型：像手机号（无 @ 且能归一）→ PHONE 走短信，
@@ -40,11 +47,18 @@ func resetIdentityTypeOf(identifier string) authenticationV1.UserCredential_Iden
 // ForgotPassword 忘记密码：向 identifier（已绑定的邮箱凭证或手机号凭证）发送
 // 重置验证码——邮箱走 SMTP，手机号走 SMS（显式点名，不经路由表）。
 // 用户不存在时同样返回成功，防止通过接口枚举有效账号。
+// 发码频控（同标识 60s 冷却）：超频的请求一律静默 200——既压住把发码端点当
+// 短信/邮件轰炸器的滥用，也不给爆破者任何「该标识被限流」的可观测差异。
 func (s *AuthenticationService) ForgotPassword(ctx context.Context, req *authenticationV1.ForgotPasswordRequest) (*emptypb.Empty, error) {
 	ctx = viewer.WithSystemContext(ctx)
 	identifier := strings.TrimSpace(req.GetIdentifier())
 	if identifier == "" {
 		return nil, authenticationV1.ErrorBadRequest("identifier is required")
+	}
+
+	if s.vcodeCache != nil && !s.vcodeCache.Throttle("reset_password", identifier, time.Minute) {
+		s.log.Infof(ctx, "forgot-password: send throttled for [%s] (silent ok)", identifier)
+		return &emptypb.Empty{}, nil
 	}
 
 	identityType := resetIdentityTypeOf(identifier)
@@ -58,7 +72,12 @@ func (s *AuthenticationService) ForgotPassword(ctx context.Context, req *authent
 		return &emptypb.Empty{}, nil
 	}
 
-	code := generateVCode()
+	code, gErr := generateVCode()
+	if gErr != nil {
+		// 熵源故障极罕见：宁拒绝发码也不降级为可预测的时间戳码
+		s.log.Errorf(ctx, "forgot-password: generate vcode failed: %s", gErr.Error())
+		return nil, authenticationV1.ErrorInternalServerError("generate verification code failed")
+	}
 	if err := s.vcodeCache.Save("reset_password", identifier, code, 10*time.Minute); err != nil {
 		return nil, authenticationV1.ErrorInternalServerError("save verification code failed")
 	}
