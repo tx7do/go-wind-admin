@@ -280,6 +280,13 @@ func (s *RoleService) Create(ctx context.Context, req *permissionV1.CreateRoleRe
 		return nil, err
 	}
 
+	// 服务内管理闸门（纵深防御，authz 出厂 noop）：角色是权限的载体，此前无任何
+	// 管理权限判断，租户普通用户可创建携带全量 permission id 的根角色再自授
+	//（配合 /me 或 UserService.Update 即成租户管理员）。
+	if err = requireTenantOrPlatformAdmin(ctx, s.log, "role create"); err != nil {
+		return nil, err
+	}
+
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
 
 	if operator.GetTenantId() > 0 && req.Data.GetType() != permissionV1.Role_TENANT {
@@ -323,6 +330,11 @@ func (s *RoleService) Update(ctx context.Context, req *permissionV1.UpdateRoleRe
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
 		s.log.Errorf(ctx, "get operator from context error: %v", err)
+		return nil, err
+	}
+
+	// 服务内管理闸门（纵深防御，同 Create）：改角色权限即改权限边界。
+	if err = requireTenantOrPlatformAdmin(ctx, s.log, "role update"); err != nil {
 		return nil, err
 	}
 
@@ -385,7 +397,9 @@ func (s *RoleService) Update(ctx context.Context, req *permissionV1.UpdateRoleRe
 		}
 	}
 
-	// 保护角色字段不可修改
+	// 保护角色字段不可修改：permissions 与 parent_id 一并纳入黑名单——
+	// 此前租户普通用户（甚至管理员）可给自己的 tenant:manager 副本追加全量权限
+	// 或改其继承链，等于把"受保护"架空（P1 审计）。
 	if r.GetIsProtected() {
 		if len(req.GetUpdateMask().Paths) > 0 {
 			req.GetUpdateMask().Paths = sliceutil.FilterBlacklist(req.GetUpdateMask().Paths, []string{
@@ -393,12 +407,17 @@ func (s *RoleService) Update(ctx context.Context, req *permissionV1.UpdateRoleRe
 				"type",
 				"status",
 				"code",
+				"permissions",
+				"parent_id",
+				"parentId",
 			})
 		} else {
 			req.Data.IsProtected = nil
 			req.Data.Type = nil
 			req.Data.Status = nil
 			req.Data.Code = nil
+			req.Data.Permissions = nil
+			req.Data.ParentId = nil
 		}
 	}
 
@@ -415,6 +434,11 @@ func (s *RoleService) Update(ctx context.Context, req *permissionV1.UpdateRoleRe
 }
 
 func (s *RoleService) Delete(ctx context.Context, req *permissionV1.DeleteRoleRequest) (*emptypb.Empty, error) {
+	// 服务内管理闸门（纵深防御，同 Create）。
+	if err := requireTenantOrPlatformAdmin(ctx, s.log, "role delete"); err != nil {
+		return nil, err
+	}
+
 	var err error
 
 	if err = s.roleRepo.Delete(ctx, req); err != nil {

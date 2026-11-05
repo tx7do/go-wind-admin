@@ -358,6 +358,12 @@ func (s *UserService) Create(ctx context.Context, req *identityV1.CreateUserRequ
 		return nil, err
 	}
 
+	// 服务内管理闸门（纵深防御，authz 出厂 noop）：建号即授权（Create 必带角色），
+	// 此前无任何管理权限判断，租户普通用户可建号自授 tenant:manager。
+	if err = requireTenantOrPlatformAdmin(ctx, s.log, "user create"); err != nil {
+		return nil, err
+	}
+
 	// 获取操作者的用户信息
 	_, err = s.userRepo.Get(ctx, &identityV1.GetUserRequest{
 		QueryBy: &identityV1.GetUserRequest_Id{
@@ -478,6 +484,11 @@ func (s *UserService) Update(ctx context.Context, req *identityV1.UpdateUserRequ
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
+		return nil, err
+	}
+
+	// 服务内管理闸门（纵深防御，同 Create）：改角色关联/状态/密码都是管理动作。
+	if err = requireTenantOrPlatformAdmin(ctx, s.log, "user update"); err != nil {
 		return nil, err
 	}
 
@@ -621,6 +632,11 @@ func (s *UserService) Delete(ctx context.Context, req *identityV1.DeleteUserRequ
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
+		return nil, err
+	}
+
+	// 服务内管理闸门（纵深防御，同 Create）。
+	if err = requireTenantOrPlatformAdmin(ctx, s.log, "user delete"); err != nil {
 		return nil, err
 	}
 

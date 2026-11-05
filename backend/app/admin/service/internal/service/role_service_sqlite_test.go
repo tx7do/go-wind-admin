@@ -165,7 +165,7 @@ func TestRoleServiceSqlite_GetEnrichment(t *testing.T) {
 func TestRoleServiceSqlite_CreateAndDelete(t *testing.T) {
 	svc := newRoleServiceForTest(t)
 	baseCtx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242})
+	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242, IsTenantAdmin: trans.Ptr(true)})
 
 	// Create：操作人注入 CreatedBy，角色本体与角色元数据同事务落库。
 	_, err := svc.Create(opCtx, &permissionV1.CreateRoleRequest{
@@ -193,7 +193,7 @@ func TestRoleServiceSqlite_CreateAndDelete(t *testing.T) {
 	require.True(t, found, "创建后列表应包含新角色")
 
 	// Delete：非保护角色应删除成功（含关联行清理）。
-	_, err = svc.Delete(baseCtx, &permissionV1.DeleteRoleRequest{
+	_, err = svc.Delete(opCtx, &permissionV1.DeleteRoleRequest{
 		QueryBy: &permissionV1.DeleteRoleRequest_Id{Id: createdID},
 	})
 	require.NoError(t, err, "非保护角色的 service.Delete 应成功")
@@ -241,7 +241,7 @@ func createServiceRoleForTest(t *testing.T, svc *RoleService, opCtx context.Cont
 func TestRoleServiceSqlite_ParentBindingValidation(t *testing.T) {
 	svc := newRoleServiceForTest(t)
 	baseCtx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242})
+	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242, IsTenantAdmin: trans.Ptr(true)})
 
 	parentID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_PB_PARENT", "继承父角色", 0, []uint32{101, 102})
 
@@ -282,7 +282,7 @@ func TestRoleServiceSqlite_ParentBindingValidation(t *testing.T) {
 func TestRoleServiceSqlite_UpdateParentCycleAndSubset(t *testing.T) {
 	svc := newRoleServiceForTest(t)
 	baseCtx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242})
+	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242, IsTenantAdmin: trans.Ptr(true)})
 
 	roleAID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_CYC_A", "环检测角色甲", 0, []uint32{101, 102})
 	roleBID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_CYC_B", "环检测角色乙", 0, []uint32{101})
@@ -355,12 +355,12 @@ func TestRoleServiceSqlite_UpdateParentCycleAndSubset(t *testing.T) {
 func TestRoleServiceSqlite_DeleteParentDetachesChildren(t *testing.T) {
 	svc := newRoleServiceForTest(t)
 	baseCtx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242})
+	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242, IsTenantAdmin: trans.Ptr(true)})
 
 	parentID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_DET_PARENT", "待删除父角色", 0, []uint32{101, 102})
 	childID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_DET_CHILD", "挂父子角色", parentID, []uint32{101})
 
-	_, err := svc.Delete(baseCtx, &permissionV1.DeleteRoleRequest{
+	_, err := svc.Delete(opCtx, &permissionV1.DeleteRoleRequest{
 		QueryBy: &permissionV1.DeleteRoleRequest_Id{Id: parentID},
 	})
 	require.NoError(t, err, "删除有子角色的父角色应成功（自动解除）")
@@ -378,7 +378,7 @@ func TestRoleServiceSqlite_DeleteParentDetachesChildren(t *testing.T) {
 func TestRoleServiceSqlite_ParentNameEnrichment(t *testing.T) {
 	svc := newRoleServiceForTest(t)
 	baseCtx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242})
+	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242, IsTenantAdmin: trans.Ptr(true)})
 
 	parentID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_NAME_PARENT", "富集父角色名", 0, nil)
 	childID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_NAME_CHILD", "富集子角色", parentID, nil)
@@ -410,7 +410,7 @@ func TestRoleServiceSqlite_ParentNameEnrichment(t *testing.T) {
 func TestRoleServiceSqlite_ReservedRoleCodeRejected(t *testing.T) {
 	svc := newRoleServiceForTest(t)
 	baseCtx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242})
+	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242, IsTenantAdmin: trans.Ptr(true)})
 
 	// Create：全部保留码形态被拒。
 	reservedCodes := []string{

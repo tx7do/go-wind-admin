@@ -237,6 +237,9 @@ func opCtx(ctx context.Context, userID, tenantID uint32, platformAdmin bool) con
 	payload := &authenticationV1.UserTokenPayload{UserId: userID, IsPlatformAdmin: trans.Ptr(platformAdmin)}
 	if tenantID > 0 {
 		payload.TenantId = trans.Ptr(tenantID)
+		// 租户上下文默认携带租户管理员旗标：user/role 写入口已加
+		// requireTenantOrPlatformAdmin 服务内闸门，测试里的租户操作人均为管理流。
+		payload.IsTenantAdmin = trans.Ptr(true)
 	}
 	return auth.NewContext(ctx, payload)
 }
@@ -712,7 +715,7 @@ func TestUserServiceSqlite_DeleteGuards(t *testing.T) {
 
 	// 操作人占位行（下方操作人分支用）。
 	e.registerOperator(9001)
-	platformOp := opCtx(e.ctx, 9001, 0, false)
+	platformOp := opCtx(e.ctx, 9001, 0, true)
 
 	// 操作人用户行缺失。
 	missingOp := auth.NewContext(base, &authenticationV1.UserTokenPayload{UserId: 99999})
