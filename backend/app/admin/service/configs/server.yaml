@@ -2,8 +2,11 @@ server:
   rest:
     addr: ":7788"
     timeout: 10s
-    enable_swagger: true
-    enable_pprof: true
+    # P2 修复：默认关闭——Swagger 向未认证者暴露全量 API 面（侦察成本极低），
+    # pprof 路由不经任何中间件（无 auth/recovery/限流，内存快照/goroutine 栈
+    # 即信息泄露，profile 可被用作 CPU DoS）。本地调试按需改回 true。
+    enable_swagger: false
+    enable_pprof: false
     cors:
       # 前端 refresh token 走 HttpOnly Cookie（withCredentials=true），
       # 预检响应必须带 Access-Control-Allow-Credentials: true

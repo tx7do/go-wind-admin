@@ -229,7 +229,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 
 	// 字典与多语言
 	dictTypeService := service.NewDictTypeService(ctx, dictTypeRepo)
-	dictEntryService := service.NewDictEntryService(ctx, dictEntryRepo)
+	dictEntryService := service.NewDictEntryService(ctx, dictEntryRepo, dictTypeRepo)
 	languageService := service.NewLanguageService(ctx, languageRepo)
 
 	// 文件与任务

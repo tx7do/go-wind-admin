@@ -29,6 +29,7 @@ func newDictEntryServiceForTest(t *testing.T, entClient *entCrud.EntClient[*ent.
 	return &DictEntryService{
 		log:           bLogger.NewHelper(bLogger.NopLogger()),
 		dictEntryRepo: data.NewDictEntryRepoForTest(entClient),
+		dictTypeRepo:  data.NewDictTypeRepoForTest(entClient),
 	}
 }
 

@@ -43,9 +43,21 @@ func (s *ScriptLogService) Purge(ctx context.Context, req *scriptV1.PurgeScriptL
 		return nil, scriptV1.ErrorBadRequest("invalid parameter")
 	}
 
+	// P2 修复：sys_script_logs 无租户隔离（全平台共表），脚本执行台账是钩子/
+	// 任务/test_run 的审计痕迹——清理入口此前无闸门，传 before=<未来> 即一键
+	// 清空全平台脚本日志。显式挡在平台管理员之内（对齐服务注释自述的口径）。
+	if err := requirePlatformAdmin(ctx, s.log, "script log purge"); err != nil {
+		return nil, err
+	}
+
 	before := time.Now().AddDate(0, 0, -90)
 	if req.GetBefore() != nil {
 		before = req.GetBefore().AsTime()
+	}
+
+	// 钳制：before 至少保留最近 1 天，防误传未来时间清空全部台账
+	if minBefore := time.Now().AddDate(0, 0, -1); before.After(minBefore) {
+		before = minBefore
 	}
 
 	deleted, err := s.repo.Purge(ctx, before)

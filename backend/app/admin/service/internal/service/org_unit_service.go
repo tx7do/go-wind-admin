@@ -163,6 +163,23 @@ func (s *OrgUnitService) Get(ctx context.Context, req *identityV1.GetOrgUnitRequ
 	return resp, nil
 }
 
+// validateOrgUnitParent 父部门归属校验（P2 修复）：org_unit 行级隔离由
+// TenantPrivacy 承担，但 parent_id 此前不做归属校验——本租户部门可挂到他租户
+// 部门树下（数据范围 UNIT/UNIT_AND_CHILD 的 path 前缀语义被污染 + 外租户 id
+// 存在性探测）。经 tenant 过滤的 Get 查 0 行即拒绝；与角色父子绑定同口径。
+func (s *OrgUnitService) validateOrgUnitParent(ctx context.Context, parentId uint32) error {
+	if parentId == 0 {
+		return nil
+	}
+	_, err := s.orgUnitRepo.Get(ctx, &identityV1.GetOrgUnitRequest{
+		QueryBy: &identityV1.GetOrgUnitRequest_Id{Id: parentId},
+	})
+	if err != nil {
+		return adminV1.ErrorBadRequest("parent org unit not found or not accessible")
+	}
+	return nil
+}
+
 func (s *OrgUnitService) Create(ctx context.Context, req *identityV1.CreateOrgUnitRequest) (*emptypb.Empty, error) {
 	if req == nil || req.Data == nil {
 		return nil, adminV1.ErrorBadRequest("invalid parameter")
@@ -171,6 +188,10 @@ func (s *OrgUnitService) Create(ctx context.Context, req *identityV1.CreateOrgUn
 	// 获取操作人信息
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
+		return nil, err
+	}
+
+	if err = s.validateOrgUnitParent(ctx, req.Data.GetParentId()); err != nil {
 		return nil, err
 	}
 
@@ -192,6 +213,13 @@ func (s *OrgUnitService) Update(ctx context.Context, req *identityV1.UpdateOrgUn
 	operator, err := auth.FromContext(ctx)
 	if err != nil {
 		return nil, err
+	}
+
+	// 仅在请求显式携带 parentId 时校验（repo SetNillableParentID 口径一致）
+	if req.Data.ParentId != nil {
+		if err = s.validateOrgUnitParent(ctx, req.Data.GetParentId()); err != nil {
+			return nil, err
+		}
 	}
 
 	req.Data.Id = trans.Ptr(req.GetId())

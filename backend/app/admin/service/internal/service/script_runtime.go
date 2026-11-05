@@ -114,6 +114,11 @@ func NewScriptRuntime(ctx *bootstrap.Context, repo *data.ScriptRepo, redisClient
 	// http 出站护栏：域名白名单走环境变量 SCRIPT_HTTP_ALLOWED_DOMAINS
 	// （逗号分隔，支持 *.example.com 通配一级子域；未设置 = 全部拒绝，fail-closed）。
 	r.cfg.HTTPOptions = hostmodule.HTTPAllowlistFromEnv()
+	// P2 修复：库版 HTTPAllowlistFromEnv/NormalizeHTTPOptions 都没补默认值，
+	// DenyLoopback 注释声称"默认 true"但 bool 零值是 false——环回硬禁
+	//（localhost/127.0.0.1/0.0.0.0/::1/169.254.169.254）在真实装配下从不生效。
+	// 这里显式开启；确实需要打本机的联调场景在白名单里显式写明。
+	r.cfg.HTTPOptions.DenyLoopback = true
 
 	for _, t := range scripting.SupportedTypes() {
 		cfg := *r.cfg

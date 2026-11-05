@@ -11,10 +11,8 @@ package channel
 import (
 	"context"
 	"fmt"
-	"net/http"
 	"strconv"
 	"strings"
-	"time"
 
 	notificationV1 "go-wind-admin/api/gen/go/notification/service/v1"
 	notificationChannelV1 "go-wind-admin/api/gen/go/notification_channel/service/v1"
@@ -24,8 +22,13 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 )
 
-// settingsHTTPTimeout 扩展渠道共享的出站 HTTP 超时（与 webhook/sms 同量级）。
-var settingsHTTPClient = &http.Client{Timeout: 10 * time.Second}
+// settingsHTTPClient 扩展渠道共享的出站 HTTP 客户端。
+// P2 修复：此前是裸 http.Client——39 种 EXT 渠道（钉钉/飞书/Telegram/Matrix/
+// Mattermost/……）的 webhookUrl/serverUrl 无任何 SSRF 防线，而 WEBHOOK 渠道反而
+// 有 GuardedClient（拨号级内网拦截）。对齐 WEBHOOK 口径换 GuardedClient；
+// 自建内网渠道（自托管 Matrix/Mattermost 等）经 EnvAllowPrivateWebhook=1 显式放行
+// （与 WEBHOOK 渠道同一开关、同一风险声明）。
+var settingsHTTPClient = notify.NewGuardedClient(allowPrivateWebhook())
 
 // SettingsField 字段声明（构造 proto ChannelField 的原料）。
 type SettingsField struct {

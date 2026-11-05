@@ -427,8 +427,11 @@ func (s *UserService) Create(ctx context.Context, req *identityV1.CreateUserRequ
 	req.Data.RoleIds = roleIds
 
 	// 套餐 USER_LIMIT 硬限制：租户用户创建前检查配额（平台用户/计量失败 fail-open）
+	// P2 修复：判定租户以操作者为准——此前 DTO 里塞任意 tenantId 即以该租户判定，
+	// 判定租户与 ent 落库租户（强制 viewer 租户）不一致：配额硬限制失效，顺带
+	// 获得他家租户"是否达用户上限"的 oracle。仅平台管理员允许按参数指定租户。
 	targetTenantID := req.Data.GetTenantId()
-	if targetTenantID == 0 {
+	if operator.GetTenantId() > 0 {
 		targetTenantID = operator.GetTenantId()
 	}
 	if targetTenantID > 0 && s.usageRepo != nil {

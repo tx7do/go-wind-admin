@@ -13,16 +13,19 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/require"
+	"github.com/tx7do/go-utils/trans"
 
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 
+	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	scriptV1 "go-wind-admin/api/gen/go/script/service/v1"
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
+	"go-wind-admin/pkg/middleware/auth"
 )
 
 // newScriptLogServiceForTest 白盒复刻 NewScriptLogService 的字段初始化
@@ -87,42 +90,56 @@ func TestScriptLogService_ListAndCount(t *testing.T) {
 	require.Equal(t, uint64(2), cntResp.GetCount(), "计数应等于落库行数")
 }
 
-// TestScriptLogService_Purge 验证 Purge 的三分支：
-// nil 请求拒绝、未来时间点全量清理、过去时间点与默认 90 天阈值不清理近期行。
+// TestScriptLogService_Purge 验证 Purge 的守卫与钳制（P2 修复后口径）：
+// nil 请求拒绝、非平台管理员拒绝（sys_script_logs 全平台共表，Purge 是审计
+// 清理动作）、未来时间点被钳制为"至少保留最近 1 天"（近期行不可一键清空）、
+// 过去时间点与默认 90 天阈值不清理近期行。
 func TestScriptLogService_Purge(t *testing.T) {
 	svc, _ := newScriptLogServiceForTest(t)
 	ctx := enttest.NewSystemContext(context.Background())
+	adminCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{
+		UserId:          1,
+		IsPlatformAdmin: trans.Ptr(true),
+	})
 
 	_, err := svc.Purge(ctx, nil)
 	require.Error(t, err, "nil 请求应拒绝")
 	require.True(t, scriptV1.IsBadRequest(err))
 
+	// 平台闸门：无操作者上下文拒绝
+	_, err = svc.Purge(ctx, &scriptV1.PurgeScriptLogsRequest{})
+	require.Error(t, err, "无操作者上下文的清理应被平台闸门拒绝")
+
+	// 平台闸门：非平台管理员拒绝
+	plainCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 2})
+	_, err = svc.Purge(plainCtx, &scriptV1.PurgeScriptLogsRequest{})
+	require.Error(t, err, "非平台管理员的清理应被平台闸门拒绝")
+
 	// 过去时间点：近期行不受影响
 	recordLogRows(t, svc, ctx)
-	resp, err := svc.Purge(ctx, &scriptV1.PurgeScriptLogsRequest{
+	resp, err := svc.Purge(adminCtx, &scriptV1.PurgeScriptLogsRequest{
 		Before: timestamppb.New(time.Now().Add(-24 * time.Hour)),
 	})
 	require.NoError(t, err)
 	require.Zero(t, resp.GetDeleted(), "过去时间点不应清理近期行")
 
 	// 省略 Before：默认 90 天前阈值，同样不清理近期行
-	resp, err = svc.Purge(ctx, &scriptV1.PurgeScriptLogsRequest{})
+	resp, err = svc.Purge(adminCtx, &scriptV1.PurgeScriptLogsRequest{})
 	require.NoError(t, err)
 	require.Zero(t, resp.GetDeleted(), "默认 90 天阈值不应清理近期行")
 	cnt, err := svc.repo.CountLog(ctx)
 	require.NoError(t, err)
 	require.Equal(t, uint64(2), cnt.GetCount(), "两次 Purge 后行数应保持 2")
 
-	// 未来时间点：近期行全量清理。
-	// 注：取 +10 年而非 +1 小时——SQLite 的时间列按各时区格式化成字符串做
-	// 词法比较，timestamppb.AsTime 归一为 UTC 后小时段在不同时区下词法序不稳定，
-	// 年份段在任何时区下词法序稳定（2036… > 2026…），跨时区可复现。
-	resp, err = svc.Purge(ctx, &scriptV1.PurgeScriptLogsRequest{
+	// 未来时间点：被钳制为"至少保留最近 1 天"，近期行不可一键清空（P2 修复）。
+	// 注：此前口径是未来 before 全量清理——sys_script_logs 是钩子/任务审计痕迹，
+	// 不允许一键清空全平台台账。
+	resp, err = svc.Purge(adminCtx, &scriptV1.PurgeScriptLogsRequest{
 		Before: timestamppb.New(time.Now().AddDate(10, 0, 0)),
 	})
 	require.NoError(t, err)
-	require.Equal(t, uint64(2), resp.GetDeleted(), "远未来时间点应清理全部近期行")
+	require.Zero(t, resp.GetDeleted(), "未来时间点应被钳制，近期行保留")
 	cnt, err = svc.repo.CountLog(ctx)
 	require.NoError(t, err)
-	require.Zero(t, cnt.GetCount(), "清理后日志表应清空")
+	require.Equal(t, uint64(2), cnt.GetCount(), "钳制后近期行应全部保留")
 }

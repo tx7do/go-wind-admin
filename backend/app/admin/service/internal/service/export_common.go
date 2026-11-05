@@ -51,6 +51,15 @@ func writeCSV(w http.ResponseWriter, headers []string, rows [][]string) error {
 		return err
 	}
 	escape := func(v string) string {
+		// P2 修复：公式注入中和——以 =+-@\t\r 开头的单元格前置 ' ，
+		// 防导出文件在 Excel/Sheets 打开时把用户可控值（username/reason 等）
+		// 当公式执行（外带/DDE）。XLSX 路径按字符串写不受影响。
+		if v != "" {
+			switch v[0] {
+			case '=', '+', '-', '@', '\t', '\r':
+				v = "'" + v
+			}
+		}
 		if strings.ContainsAny(v, ",\"\n\r") {
 			return `"` + strings.ReplaceAll(v, `"`, `""`) + `"`
 		}
