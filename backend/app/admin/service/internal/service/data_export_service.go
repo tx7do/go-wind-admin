@@ -33,6 +33,10 @@ type DataExportService struct {
 	// tokenChecker 手动路由的鉴权锚：:export 不穿 kratos middleware，
 	// auth 中间件的一套在此补齐（见 export_common.go 公共样板）。
 	tokenChecker auth.AccessTokenChecker
+
+	// tenantAccessChecker 手动路由的租户闸（P1 修复补齐）：:export 游离在
+	// kratos 中间件链之外，此前套餐模块白名单/租户状态/配额四段语义全部失效。
+	tenantAccessChecker auth.TenantAccessChecker
 }
 
 func NewDataExportService(
@@ -40,21 +44,31 @@ func NewDataExportService(
 	aiUsageRepo *data.AiUsageLogRepo,
 	deliveryRepo *data.NotificationDeliveryRepo,
 	tokenChecker auth.AccessTokenChecker,
+	tenantAccessChecker auth.TenantAccessChecker,
 ) *DataExportService {
 	return &DataExportService{
-		aiUsageRepo:  aiUsageRepo,
-		deliveryRepo: deliveryRepo,
-		log:          ctx.NewLoggerHelper("data-export/service/admin-service"),
-		tokenChecker: tokenChecker,
+		aiUsageRepo:         aiUsageRepo,
+		deliveryRepo:        deliveryRepo,
+		log:                 ctx.NewLoggerHelper("data-export/service/admin-service"),
+		tokenChecker:        tokenChecker,
+		tenantAccessChecker: tenantAccessChecker,
 	}
 }
 
 // ServeAiUsageExport GET /admin/v1/ai/usage-logs:export —— AI 用量流水导出。
 // 列与用量页展示列一致（"导出的就是页面看到的"）；行范围由 viewer 收窄语义决定。
+// 租户操作者须经租户闸（按同源列表端点 /admin/v1/ai/usage-logs 的 Api 行带出
+// 模块白名单/状态/配额语义）——此前套餐不含 AI 模块的租户也能导出且不占配额。
 func (s *DataExportService) ServeAiUsageExport(w http.ResponseWriter, r *http.Request) error {
-	ctx, _, ok := authorizeExportRequest(w, r, s.tokenChecker)
+	ctx, operator, ok := authorizeExportRequest(w, r, s.tokenChecker)
 	if !ok {
 		return nil
+	}
+	if operator.GetTenantId() > 0 {
+		if !requireExportTenantModule(w, s.tenantAccessChecker, ctx, operator,
+			"/admin/v1/ai/usage-logs", "GET") {
+			return nil
+		}
 	}
 
 	format, req, pok := parseExportRequest(w, r, dataExportMaxRows)

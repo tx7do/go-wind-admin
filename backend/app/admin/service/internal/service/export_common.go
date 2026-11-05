@@ -169,6 +169,32 @@ func requireExportPlatformAdmin(w http.ResponseWriter, operator *authenticationV
 	return true
 }
 
+// requireExportTenantModule 手动导出路由的租户闸（P1 修复补齐）。
+//
+// :export 手动路由游离在 kratos 中间件链之外，此前套餐模块白名单/租户状态/
+// 到期处置/API_CALL 配额四段语义全部失效（套餐不含 AI 模块的租户也能导出）。
+// 手动路由自身不在 Api 表（无法以自身 path 判定模块归属），故按其同源列表
+// 端点的 (path,method) 复用 HTTP 中间件的 TenantAccessChecker 判定——该行在
+// Api 表内，完整带出四段语义。
+func requireExportTenantModule(
+	w http.ResponseWriter,
+	checker auth.TenantAccessChecker,
+	ctx context.Context,
+	operator *authenticationV1.UserTokenPayload,
+	listPath, method string,
+) bool {
+	if checker == nil {
+		// checker 未装配：fail-closed（与中间件"未归类即拒"口径一致）
+		http.Error(w, "forbidden: tenant access checker unavailable", http.StatusForbidden)
+		return false
+	}
+	if err := checker.CheckTenantAccess(ctx, operator.GetTenantId(), listPath, method); err != nil {
+		http.Error(w, "forbidden: tenant access denied", http.StatusForbidden)
+		return false
+	}
+	return true
+}
+
 // parseExportRequest 解析导出参数：format（xlsx/csv，缺省 xlsx）与行数上限
 // （cap 为该资源的硬顶，maxRows 只能往下调）。
 // query JSON（列表页同源条件）原样透传给 repo List，"导出的就是当前搜索看到的"。

@@ -24,6 +24,10 @@ import (
 // 几百 KB 级，超限视为滥用直接拒绝，防 headless Chrome 被超大文档拖垮。
 const printRenderMaxHTML = 8 << 20 // 8 MiB
 
+// printRenderSem 渲染并发信号量（进程级）：每请求一个 Chrome tab，无并发限制时
+// 循环提交大文档可耗尽 CPU/内存（60s 超时 × 无限并发）。
+var printRenderSem = make(chan struct{}, 2)
+
 func (s *PrintTemplateService) RenderPdf(ctx context.Context, req *printV1.RenderPrintTemplateRequest) (*printV1.RenderPrintTemplateResponse, error) {
 	if req == nil || req.GetHtml() == "" {
 		return nil, adminV1.ErrorBadRequest("invalid parameter: html is required")
@@ -35,8 +39,25 @@ func (s *PrintTemplateService) RenderPdf(ctx context.Context, req *printV1.Rende
 		return nil, adminV1.ErrorBadRequest("html too large")
 	}
 
+	// P1-11 修复：清洗后再送 Chromium——此前任意用户 HTML 直送 headless Chrome，
+	// <iframe src=http://169.254.169.254/> 的响应会渲染进 PDF 返还（可读 SSRF 原语），
+	// <script> 在无 CSP 的 about:blank 照常执行。清洗剥除脚本面并拒收私网/元数据
+	// 资源 URL；发现被禁内容直接 400（不静默改写，避免渲染结果悄悄变样）。
+	cleanHTML, err := sanitizePrintHTML(req.GetHtml())
+	if err != nil {
+		s.log.Warnf(ctx, "print template html blocked: %s", err.Error())
+		return nil, adminV1.ErrorBadRequest("html contains blocked content: %v", err)
+	}
+
+	select {
+	case printRenderSem <- struct{}{}:
+		defer func() { <-printRenderSem }()
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	}
+
 	pdf, err := printrender.RenderPDF(ctx, printrender.Options{
-		HTML:          req.GetHtml(),
+		HTML:          cleanHTML,
 		PaperWidthMm:  req.GetPaperWidthMm(),
 		PaperHeightMm: req.GetPaperHeightMm(),
 		Landscape:     req.GetLandscape(),
