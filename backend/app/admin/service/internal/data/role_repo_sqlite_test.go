@@ -510,3 +510,159 @@ func TestRoleRepoSqlite_TemplateInstantiation(t *testing.T) {
 	require.NoError(t, err)
 	require.Len(t, platformRoles, 1, "平台侧应仍只有模板本体")
 }
+
+// TestRoleRepoSqlite_ParentIDThreeState 验证 parent_id 的更新三态：
+//   - 载荷显式 0（mask 声明 parentId）⇒ 降级为根角色（落库 0）；
+//   - 载荷 nil 且 mask 声明 parentId ⇒ 显式清空（ClearParentID，NULL）；
+//   - mask 未声明 parentId ⇒ 维持原值。
+func TestRoleRepoSqlite_ParentIDThreeState(t *testing.T) {
+	repo := newRoleRepoSqlite(t)
+	ctx := enttest.NewSystemContext(context.Background())
+
+	require.NoError(t, repo.Create(ctx, &permissionV1.CreateRoleRequest{
+		Data: &permissionV1.Role{
+			Name:     trans.Ptr("三态父角色"),
+			Code:     trans.Ptr("ROLE_SQLITE_PARENT_TS"),
+			Status:   permissionV1.Role_ON.Enum(),
+			Type:     permissionV1.Role_TENANT.Enum(),
+			ParentId: nil,
+		},
+	}))
+	require.NoError(t, repo.Create(ctx, &permissionV1.CreateRoleRequest{
+		Data: &permissionV1.Role{
+			Name:     trans.Ptr("三态子角色"),
+			Code:     trans.Ptr("ROLE_SQLITE_CHILD_TS"),
+			Status:   permissionV1.Role_ON.Enum(),
+			Type:     permissionV1.Role_TENANT.Enum(),
+		},
+	}))
+
+	roles, err := repo.entClient.Client().Role.Query().All(ctx)
+	require.NoError(t, err)
+	require.Len(t, roles, 2)
+	var parentID, childID uint32
+	for _, r := range roles {
+		switch *r.Code {
+		case "ROLE_SQLITE_PARENT_TS":
+			parentID = uint32(r.ID)
+		case "ROLE_SQLITE_CHILD_TS":
+			childID = uint32(r.ID)
+		}
+	}
+	require.NotZero(t, parentID)
+	require.NotZero(t, childID)
+
+	// 1) 建立父子关系
+	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
+		Id:         childID,
+		Data:       &permissionV1.Role{ParentId: trans.Ptr(parentID)},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"parent_id"}},
+	}))
+	child, err := repo.entClient.Client().Role.Query().Where(entRole.IDEQ(childID)).Only(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, child.ParentID, "设置父角色后 parent_id 应落库")
+	require.EqualValues(t, parentID, *child.ParentID)
+
+	// 2) 载荷显式 0 ⇒ 降级为根角色（落库 0，非 NULL）
+	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
+		Id:         childID,
+		Data:       &permissionV1.Role{ParentId: trans.Ptr(uint32(0))},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"parent_id"}},
+	}))
+	child, err = repo.entClient.Client().Role.Query().Where(entRole.IDEQ(childID)).Only(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, child.ParentID, "显式 0 应落库为 0 而非维持旧值")
+	require.Zero(t, *child.ParentID)
+
+	// 3) 载荷 nil 且 mask 声明 parent_id ⇒ 显式清空（ClearParentID → NULL）
+	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
+		Id:         childID,
+		Data:       &permissionV1.Role{ParentId: trans.Ptr(parentID)},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"parent_id"}},
+	}))
+	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
+		Id:         childID,
+		Data:       &permissionV1.Role{Name: trans.Ptr("三态子角色改")},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"parent_id"}},
+	}))
+	child, err = repo.entClient.Client().Role.Query().Where(entRole.IDEQ(childID)).Only(ctx)
+	require.NoError(t, err)
+	require.Nil(t, child.ParentID, "mask 声明 parent_id 而载荷为 nil 应清空父角色")
+
+	// 4) mask 未声明 parent_id ⇒ 维持原值（重新挂父后只改名字）
+	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
+		Id:         childID,
+		Data:       &permissionV1.Role{ParentId: trans.Ptr(parentID)},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"parent_id"}},
+	}))
+	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
+		Id:         childID,
+		Data:       &permissionV1.Role{Name: trans.Ptr("三态子角色再改")},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name"}},
+	}))
+	child, err = repo.entClient.Client().Role.Query().Where(entRole.IDEQ(childID)).Only(ctx)
+	require.NoError(t, err)
+	require.NotNil(t, child.ParentID, "mask 未声明 parent_id 不应动父角色")
+	require.EqualValues(t, parentID, *child.ParentID)
+}
+
+// TestRoleRepoSqlite_DeleteDetachesChildren 验证删除父角色时子角色自动解除
+// 父子关系（parent_id 置空），子角色本体与绑定权限保持不变。
+func TestRoleRepoSqlite_DeleteDetachesChildren(t *testing.T) {
+	repo := newRoleRepoSqlite(t)
+	ctx := enttest.NewSystemContext(context.Background())
+
+	require.NoError(t, repo.Create(ctx, &permissionV1.CreateRoleRequest{
+		Data: &permissionV1.Role{
+			Name:        trans.Ptr("待删除父角色"),
+			Code:        trans.Ptr("ROLE_SQLITE_DEL_PARENT"),
+			Status:      permissionV1.Role_ON.Enum(),
+			Type:        permissionV1.Role_TENANT.Enum(),
+			Permissions: []uint32{101, 102},
+		},
+	}))
+	require.NoError(t, repo.Create(ctx, &permissionV1.CreateRoleRequest{
+		Data: &permissionV1.Role{
+			Name:        trans.Ptr("挂在父下的子角色"),
+			Code:        trans.Ptr("ROLE_SQLITE_DEL_CHILD"),
+			Status:      permissionV1.Role_ON.Enum(),
+			Type:        permissionV1.Role_TENANT.Enum(),
+			Permissions: []uint32{101},
+		},
+	}))
+
+	roles, err := repo.entClient.Client().Role.Query().All(ctx)
+	require.NoError(t, err)
+	require.Len(t, roles, 2)
+	var parentID, childID uint32
+	for _, r := range roles {
+		switch *r.Code {
+		case "ROLE_SQLITE_DEL_PARENT":
+			parentID = uint32(r.ID)
+		case "ROLE_SQLITE_DEL_CHILD":
+			childID = uint32(r.ID)
+		}
+	}
+	require.NotZero(t, parentID)
+	require.NotZero(t, childID)
+
+	// 挂父子关系
+	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
+		Id:         childID,
+		Data:       &permissionV1.Role{ParentId: trans.Ptr(parentID)},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"parent_id"}},
+	}))
+
+	// 删除父角色
+	require.NoError(t, repo.Delete(ctx, &permissionV1.DeleteRoleRequest{
+		QueryBy: &permissionV1.DeleteRoleRequest_Id{Id: parentID},
+	}), "删除父角色应成功且不被子角色阻塞")
+
+	// 子角色仍在、parent_id 已清空、绑定权限保持
+	child, err := repo.entClient.Client().Role.Query().Where(entRole.IDEQ(childID)).Only(ctx)
+	require.NoError(t, err)
+	require.Nil(t, child.ParentID, "删除父角色后子角色 parent_id 应被解除")
+	permIDs, err := repo.ListPermissionIDsByRoleIDs(ctx, []uint32{childID})
+	require.NoError(t, err)
+	require.ElementsMatch(t, []uint32{101}, permIDs, "子角色绑定权限应保持不变")
+}

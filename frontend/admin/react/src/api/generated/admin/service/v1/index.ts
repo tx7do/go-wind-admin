@@ -10286,6 +10286,8 @@ export type permissionservicev1_Role = {
   isProtected?: boolean;
   name?: string;
   orgUnits: number[] | undefined;
+  parentId?: number;
+  parentName?: string;
   permissions: number[] | undefined;
   sortOrder?: number;
   status?: permissionservicev1_Role_Status;

@@ -130,6 +130,14 @@ func (m *Role) validate(all bool) error {
 		// no validation rules for DataScope
 	}
 
+	if m.ParentId != nil {
+		// no validation rules for ParentId
+	}
+
+	if m.ParentName != nil {
+		// no validation rules for ParentName
+	}
+
 	if m.TenantId != nil {
 		// no validation rules for TenantId
 	}

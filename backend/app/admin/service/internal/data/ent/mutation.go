@@ -76708,6 +76708,8 @@ type RoleMutation struct {
 	is_protected  *bool
 	_type         *role.Type
 	data_scope    *role.DataScope
+	parent_id     *uint32
+	addparent_id  *int32
 	clearedFields map[string]struct{}
 	done          bool
 	oldValue      func(context.Context) (*Role, error)
@@ -77655,6 +77657,76 @@ func (m *RoleMutation) ResetDataScope() {
 	m.data_scope = nil
 }
 
+// SetParentID sets the "parent_id" field.
+func (m *RoleMutation) SetParentID(u uint32) {
+	m.parent_id = &u
+	m.addparent_id = nil
+}
+
+// ParentID returns the value of the "parent_id" field in the mutation.
+func (m *RoleMutation) ParentID() (r uint32, exists bool) {
+	v := m.parent_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldParentID returns the old "parent_id" field's value of the Role entity.
+// If the Role object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *RoleMutation) OldParentID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldParentID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldParentID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldParentID: %w", err)
+	}
+	return oldValue.ParentID, nil
+}
+
+// AddParentID adds u to the "parent_id" field.
+func (m *RoleMutation) AddParentID(u int32) {
+	if m.addparent_id != nil {
+		*m.addparent_id += u
+	} else {
+		m.addparent_id = &u
+	}
+}
+
+// AddedParentID returns the value that was added to the "parent_id" field in this mutation.
+func (m *RoleMutation) AddedParentID() (r int32, exists bool) {
+	v := m.addparent_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (m *RoleMutation) ClearParentID() {
+	m.parent_id = nil
+	m.addparent_id = nil
+	m.clearedFields[role.FieldParentID] = struct{}{}
+}
+
+// ParentIDCleared returns if the "parent_id" field was cleared in this mutation.
+func (m *RoleMutation) ParentIDCleared() bool {
+	_, ok := m.clearedFields[role.FieldParentID]
+	return ok
+}
+
+// ResetParentID resets all changes to the "parent_id" field.
+func (m *RoleMutation) ResetParentID() {
+	m.parent_id = nil
+	m.addparent_id = nil
+	delete(m.clearedFields, role.FieldParentID)
+}
+
 // Where appends a list predicates to the RoleMutation builder.
 func (m *RoleMutation) Where(ps ...predicate.Role) {
 	m.predicates = append(m.predicates, ps...)
@@ -77689,7 +77761,7 @@ func (m *RoleMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *RoleMutation) Fields() []string {
-	fields := make([]string, 0, 16)
+	fields := make([]string, 0, 17)
 	if m.created_at != nil {
 		fields = append(fields, role.FieldCreatedAt)
 	}
@@ -77738,6 +77810,9 @@ func (m *RoleMutation) Fields() []string {
 	if m.data_scope != nil {
 		fields = append(fields, role.FieldDataScope)
 	}
+	if m.parent_id != nil {
+		fields = append(fields, role.FieldParentID)
+	}
 	return fields
 }
 
@@ -77778,6 +77853,8 @@ func (m *RoleMutation) Field(name string) (ent.Value, bool) {
 		return m.GetType()
 	case role.FieldDataScope:
 		return m.DataScope()
+	case role.FieldParentID:
+		return m.ParentID()
 	}
 	return nil, false
 }
@@ -77819,6 +77896,8 @@ func (m *RoleMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldType(ctx)
 	case role.FieldDataScope:
 		return m.OldDataScope(ctx)
+	case role.FieldParentID:
+		return m.OldParentID(ctx)
 	}
 	return nil, fmt.Errorf("unknown Role field %s", name)
 }
@@ -77940,6 +78019,13 @@ func (m *RoleMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetDataScope(v)
 		return nil
+	case role.FieldParentID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetParentID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Role field %s", name)
 }
@@ -77963,6 +78049,9 @@ func (m *RoleMutation) AddedFields() []string {
 	if m.addtenant_id != nil {
 		fields = append(fields, role.FieldTenantID)
 	}
+	if m.addparent_id != nil {
+		fields = append(fields, role.FieldParentID)
+	}
 	return fields
 }
 
@@ -77981,6 +78070,8 @@ func (m *RoleMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedSortOrder()
 	case role.FieldTenantID:
 		return m.AddedTenantID()
+	case role.FieldParentID:
+		return m.AddedParentID()
 	}
 	return nil, false
 }
@@ -78025,6 +78116,13 @@ func (m *RoleMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddTenantID(v)
 		return nil
+	case role.FieldParentID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddParentID(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Role numeric field %s", name)
 }
@@ -78068,6 +78166,9 @@ func (m *RoleMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(role.FieldCode) {
 		fields = append(fields, role.FieldCode)
+	}
+	if m.FieldCleared(role.FieldParentID) {
+		fields = append(fields, role.FieldParentID)
 	}
 	return fields
 }
@@ -78118,6 +78219,9 @@ func (m *RoleMutation) ClearField(name string) error {
 		return nil
 	case role.FieldCode:
 		m.ClearCode()
+		return nil
+	case role.FieldParentID:
+		m.ClearParentID()
 		return nil
 	}
 	return fmt.Errorf("unknown Role nullable field %s", name)
@@ -78174,6 +78278,9 @@ func (m *RoleMutation) ResetField(name string) error {
 		return nil
 	case role.FieldDataScope:
 		m.ResetDataScope()
+		return nil
+	case role.FieldParentID:
+		m.ResetParentID()
 		return nil
 	}
 	return fmt.Errorf("unknown Role field %s", name)

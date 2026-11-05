@@ -13489,6 +13489,13 @@ components:
                     items:
                         $ref: '#/components/schemas/RoleFieldPermission'
                     description: 字段权限配置（角色在各资源上隐藏的字段集，黑名单语义）
+                parentId:
+                    type: integer
+                    description: 父角色ID，0表示无父级（根角色）
+                    format: uint32
+                parentName:
+                    type: string
+                    description: 父角色名称（响应回填）
                 tenantId:
                     type: integer
                     description: 租户ID，0代表系统全局角色

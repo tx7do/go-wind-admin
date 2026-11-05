@@ -109,6 +109,97 @@ export function extractLeafIds(checkedKeys: any[], treeData: any[]): number[] {
     .map((v) => Number(v));
 }
 
+// ========== 权限继承（父子角色） ==========
+
+/**
+ * 按父角色权限上限集（cap）过滤权限树数据源——在 buildPermissionTree 之前调用。
+ * 只保留 cap 内的权限点，以及（递归）仍含至少一个保留权限点的权限组。
+ * cap 为 null/undefined/空数组表示无父角色（根角色），原样返回全量。
+ */
+export function filterPermissionsByCap(
+  groups: any[],
+  permissions: any[],
+  capIds: number[] | null | undefined,
+): { groups: any[]; permissions: any[] } {
+  if (!capIds || capIds.length === 0) return { groups, permissions };
+  const cap = new Set(capIds.map(Number));
+  const kept = (permissions || []).filter((p) => cap.has(Number(p.id)));
+  const filterGroups = (list: any[]): any[] =>
+    (list || [])
+      .map((g) => ({ ...g, children: filterGroups(g.children || []) }))
+      .filter(
+        (g) => g.children.length > 0 || kept.some((p) => String(p.groupId) === String(g.id)),
+      );
+  return { groups: filterGroups(groups), permissions: kept };
+}
+
+/**
+ * 收集自身及其全部后代角色 ID（按 parentId 嵌套关系）。
+ * 父角色候选下拉用它排除自身与后代，防止在前端就构造出环（后端另有兜底校验）。
+ */
+export function collectSelfAndDescendantIds(items: any[], selfId?: number): number[] {
+  if (!selfId) return [];
+  const byParent = new Map<number, number[]>();
+  for (const it of items || []) {
+    const pid = Number(it.parentId || 0);
+    if (!byParent.has(pid)) byParent.set(pid, []);
+    byParent.get(pid)!.push(Number(it.id));
+  }
+  const result = new Set<number>([Number(selfId)]);
+  const stack = [Number(selfId)];
+  while (stack.length > 0) {
+    const cur = stack.pop()!;
+    for (const child of byParent.get(cur) || []) {
+      if (!result.has(child)) {
+        result.add(child);
+        stack.push(child);
+      }
+    }
+  }
+  return [...result];
+}
+
+/**
+ * 把角色列表按 parentId 嵌套为 TreeSelect 数据（森林，缺父的孤行落为根节点），
+ * 排除 excludeIds（自身及后代）。
+ */
+export function buildRoleTreeOptions(
+  items: any[],
+  excludeIds: number[],
+): { value: number; title: string; children?: any[] }[] {
+  const excluded = new Set(excludeIds.map(Number));
+  const nodes = new Map<number, { value: number; title: string; children?: any[]; pid: number }>();
+  for (const it of items || []) {
+    const id = Number(it.id);
+    if (excluded.has(id)) continue;
+    nodes.set(id, {
+      value: id,
+      title: it.name || it.code || String(id),
+      pid: Number(it.parentId || 0),
+    });
+  }
+  const roots: { value: number; title: string; children?: any[] }[] = [];
+  for (const node of nodes.values()) {
+    const parent = node.pid > 0 ? nodes.get(node.pid) : undefined;
+    if (parent) {
+      (parent.children ??= []).push(node);
+    } else {
+      roots.push(node);
+    }
+  }
+  const strip = (list: any[]): any[] =>
+    list.map((n) => {
+      const { pid: _pid, ...rest } = n;
+      if (rest.children?.length > 0) {
+        rest.children = strip(rest.children);
+      } else {
+        delete rest.children;
+      }
+      return rest;
+    });
+  return strip(roots) as { value: number; title: string; children?: any[] }[];
+}
+
 // ========== 数据权限范围（角色级，五档） ==========
 
 // Tag 颜色语义与 vue-vben/vue-element 既有映射一致：

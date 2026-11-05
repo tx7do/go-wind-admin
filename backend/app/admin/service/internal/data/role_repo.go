@@ -464,6 +464,7 @@ func (r *RoleRepo) CreateWithTx(ctx context.Context, tx *ent.Tx, data *permissio
 		SetNillableType(r.typeConverter.ToEntity(data.Type)).
 		SetNillableStatus(r.statusConverter.ToEntity(data.Status)).
 		SetNillableDescription(data.Description).
+		SetNillableParentID(data.ParentId).
 		SetNillableCreatedBy(data.CreatedBy).
 		SetCreatedAt(time.Now())
 
@@ -598,6 +599,8 @@ func (r *RoleRepo) Update(ctx context.Context, req *permissionV1.UpdateRoleReque
 	// json_name（camelCase）会被规范化，因此过滤与探测都要按 proto 名；
 	// camelCase 拼写仅为兼容未走 protojson 规范化的调用方，双写兜底。
 	updatePermissions := req.UpdateMask != nil && hasPath("permissions", req.UpdateMask)
+	updateParentID := req.UpdateMask != nil &&
+		(hasPath("parent_id", req.UpdateMask) || hasPath("parentId", req.UpdateMask))
 	updateOrgUnits := req.UpdateMask != nil &&
 		(hasPath("org_units", req.UpdateMask) || hasPath("orgUnits", req.UpdateMask))
 	updateFieldPermissions := req.UpdateMask != nil &&
@@ -647,6 +650,16 @@ func (r *RoleRepo) Update(ctx context.Context, req *permissionV1.UpdateRoleReque
 			// 未指定即维持原值。
 			if req.Data.DataScope != nil && *req.Data.DataScope != identityV1.DataScope_DATA_SCOPE_UNSPECIFIED {
 				builder.SetNillableDataScope(r.dataScopeConverter.ToEntity(req.Data.DataScope))
+			}
+
+			// parent_id 三态：mask 声明了 parentId 而载荷为 nil ⇒ 显式清空（解除父子
+			// 关系，照 menu_repo 的 ClearParentID 先例）——SetNillable 对 nil 不动旧值，
+			// 不特殊处理会导致"清空父角色"静默失效；载荷显式 0 表示降级为根角色，
+			// 照常落库（本表无自引用外键，0 不会违约）。
+			if updateParentID && req.Data.ParentId == nil {
+				builder.ClearParentID()
+			} else {
+				builder.SetNillableParentID(req.Data.ParentId)
 			}
 		},
 		func(s *sql.Selector) {
@@ -741,6 +754,16 @@ func (r *RoleRepo) Delete(ctx context.Context, req *permissionV1.DeleteRoleReque
 		Exec(ctx); err != nil {
 		r.log.Errorf(ctx, "delete role failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete role failed")
+	}
+
+	// 子角色自动解除父子关系（parent_id 置空），绑定权限保持不变——编辑时校验
+	// 语义下子角色既有权限不因父角色删除而扩大，删除父角色无需先处理子角色。
+	if _, err = tx.Role.Update().
+		Where(role.ParentIDEQ(req.GetId())).
+		ClearParentID().
+		Save(ctx); err != nil {
+		r.log.Errorf(ctx, "detach child roles failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("detach child roles failed")
 	}
 
 	if err = r.rolePermissionRepo.CleanPermissions(ctx, tx, req.GetId()); err != nil {

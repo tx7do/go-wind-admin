@@ -46,6 +46,8 @@ const (
 	FieldType = "type"
 	// FieldDataScope holds the string denoting the data_scope field in the database.
 	FieldDataScope = "data_scope"
+	// FieldParentID holds the string denoting the parent_id field in the database.
+	FieldParentID = "parent_id"
 	// Table holds the table name of the role in the database.
 	Table = "sys_roles"
 )
@@ -69,6 +71,7 @@ var Columns = []string{
 	FieldIsProtected,
 	FieldType,
 	FieldDataScope,
+	FieldParentID,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -271,4 +274,9 @@ func ByType(opts ...sql.OrderTermOption) OrderOption {
 // ByDataScope orders the results by the data_scope field.
 func ByDataScope(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDataScope, opts...).ToFunc()
+}
+
+// ByParentID orders the results by the parent_id field.
+func ByParentID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldParentID, opts...).ToFunc()
 }

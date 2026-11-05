@@ -246,6 +246,20 @@ func (_c *RoleCreate) SetNillableDataScope(v *role.DataScope) *RoleCreate {
 	return _c
 }
 
+// SetParentID sets the "parent_id" field.
+func (_c *RoleCreate) SetParentID(v uint32) *RoleCreate {
+	_c.mutation.SetParentID(v)
+	return _c
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (_c *RoleCreate) SetNillableParentID(v *uint32) *RoleCreate {
+	if v != nil {
+		_c.SetParentID(*v)
+	}
+	return _c
+}
+
 // SetID sets the "id" field.
 func (_c *RoleCreate) SetID(v uint32) *RoleCreate {
 	_c.mutation.SetID(v)
@@ -456,6 +470,10 @@ func (_c *RoleCreate) createSpec() (*Role, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.DataScope(); ok {
 		_spec.SetField(role.FieldDataScope, field.TypeEnum, value)
 		_node.DataScope = &value
+	}
+	if value, ok := _c.mutation.ParentID(); ok {
+		_spec.SetField(role.FieldParentID, field.TypeUint32, value)
+		_node.ParentID = &value
 	}
 	return _node, _spec
 }
@@ -758,6 +776,30 @@ func (u *RoleUpsert) SetDataScope(v role.DataScope) *RoleUpsert {
 // UpdateDataScope sets the "data_scope" field to the value that was provided on create.
 func (u *RoleUpsert) UpdateDataScope() *RoleUpsert {
 	u.SetExcluded(role.FieldDataScope)
+	return u
+}
+
+// SetParentID sets the "parent_id" field.
+func (u *RoleUpsert) SetParentID(v uint32) *RoleUpsert {
+	u.Set(role.FieldParentID, v)
+	return u
+}
+
+// UpdateParentID sets the "parent_id" field to the value that was provided on create.
+func (u *RoleUpsert) UpdateParentID() *RoleUpsert {
+	u.SetExcluded(role.FieldParentID)
+	return u
+}
+
+// AddParentID adds v to the "parent_id" field.
+func (u *RoleUpsert) AddParentID(v uint32) *RoleUpsert {
+	u.Add(role.FieldParentID, v)
+	return u
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (u *RoleUpsert) ClearParentID() *RoleUpsert {
+	u.SetNull(role.FieldParentID)
 	return u
 }
 
@@ -1106,6 +1148,34 @@ func (u *RoleUpsertOne) SetDataScope(v role.DataScope) *RoleUpsertOne {
 func (u *RoleUpsertOne) UpdateDataScope() *RoleUpsertOne {
 	return u.Update(func(s *RoleUpsert) {
 		s.UpdateDataScope()
+	})
+}
+
+// SetParentID sets the "parent_id" field.
+func (u *RoleUpsertOne) SetParentID(v uint32) *RoleUpsertOne {
+	return u.Update(func(s *RoleUpsert) {
+		s.SetParentID(v)
+	})
+}
+
+// AddParentID adds v to the "parent_id" field.
+func (u *RoleUpsertOne) AddParentID(v uint32) *RoleUpsertOne {
+	return u.Update(func(s *RoleUpsert) {
+		s.AddParentID(v)
+	})
+}
+
+// UpdateParentID sets the "parent_id" field to the value that was provided on create.
+func (u *RoleUpsertOne) UpdateParentID() *RoleUpsertOne {
+	return u.Update(func(s *RoleUpsert) {
+		s.UpdateParentID()
+	})
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (u *RoleUpsertOne) ClearParentID() *RoleUpsertOne {
+	return u.Update(func(s *RoleUpsert) {
+		s.ClearParentID()
 	})
 }
 
@@ -1620,6 +1690,34 @@ func (u *RoleUpsertBulk) SetDataScope(v role.DataScope) *RoleUpsertBulk {
 func (u *RoleUpsertBulk) UpdateDataScope() *RoleUpsertBulk {
 	return u.Update(func(s *RoleUpsert) {
 		s.UpdateDataScope()
+	})
+}
+
+// SetParentID sets the "parent_id" field.
+func (u *RoleUpsertBulk) SetParentID(v uint32) *RoleUpsertBulk {
+	return u.Update(func(s *RoleUpsert) {
+		s.SetParentID(v)
+	})
+}
+
+// AddParentID adds v to the "parent_id" field.
+func (u *RoleUpsertBulk) AddParentID(v uint32) *RoleUpsertBulk {
+	return u.Update(func(s *RoleUpsert) {
+		s.AddParentID(v)
+	})
+}
+
+// UpdateParentID sets the "parent_id" field to the value that was provided on create.
+func (u *RoleUpsertBulk) UpdateParentID() *RoleUpsertBulk {
+	return u.Update(func(s *RoleUpsert) {
+		s.UpdateParentID()
+	})
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (u *RoleUpsertBulk) ClearParentID() *RoleUpsertBulk {
+	return u.Update(func(s *RoleUpsert) {
+		s.ClearParentID()
 	})
 }
 

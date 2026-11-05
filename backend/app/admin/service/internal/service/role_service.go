@@ -9,6 +9,7 @@ import (
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	"go-wind-admin/app/admin/service/internal/data"
 
@@ -62,10 +63,14 @@ func (s *RoleService) init() {
 func (s *RoleService) extractRelationIDs(
 	roles []*permissionV1.Role,
 	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
+	roleSet aggregator.ResourceMap[uint32, *permissionV1.Role],
 ) {
 	for _, p := range roles {
 		if p.GetTenantId() > 0 {
 			tenantSet[p.GetTenantId()] = nil
+		}
+		if p.GetParentId() > 0 {
+			roleSet[p.GetParentId()] = nil
 		}
 	}
 }
@@ -73,6 +78,7 @@ func (s *RoleService) extractRelationIDs(
 func (s *RoleService) fetchRelationInfo(
 	ctx context.Context,
 	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
+	roleSet aggregator.ResourceMap[uint32, *permissionV1.Role],
 ) error {
 	if len(tenantSet) > 0 {
 		tenantIds := make([]uint32, 0, len(tenantSet))
@@ -91,12 +97,30 @@ func (s *RoleService) fetchRelationInfo(
 		}
 	}
 
+	if len(roleSet) > 0 {
+		roleIds := make([]uint32, 0, len(roleSet))
+		for id := range roleSet {
+			roleIds = append(roleIds, id)
+		}
+
+		parents, err := s.roleRepo.ListRolesByRoleIds(ctx, roleIds)
+		if err != nil {
+			s.log.Errorf(ctx, "query parent roles err: %v", err)
+			return err
+		}
+
+		for _, parent := range parents {
+			roleSet[parent.GetId()] = parent
+		}
+	}
+
 	return nil
 }
 
 func (s *RoleService) bindRelations(
 	roles []*permissionV1.Role,
 	tenantSet aggregator.ResourceMap[uint32, *identityV1.Tenant],
+	roleSet aggregator.ResourceMap[uint32, *permissionV1.Role],
 ) {
 	aggregator.Populate(
 		roles,
@@ -106,15 +130,108 @@ func (s *RoleService) bindRelations(
 			ou.TenantName = r.Name
 		},
 	)
+	aggregator.Populate(
+		roles,
+		roleSet,
+		func(ou *permissionV1.Role) uint32 { return ou.GetParentId() },
+		func(ou *permissionV1.Role, r *permissionV1.Role) {
+			ou.ParentName = trans.Ptr(r.GetName())
+		},
+	)
 }
 
 func (s *RoleService) enrichRelations(ctx context.Context, roles []*permissionV1.Role) error {
 	var tenantSet = make(aggregator.ResourceMap[uint32, *identityV1.Tenant])
-	s.extractRelationIDs(roles, tenantSet)
-	if err := s.fetchRelationInfo(ctx, tenantSet); err != nil {
+	var roleSet = make(aggregator.ResourceMap[uint32, *permissionV1.Role])
+	s.extractRelationIDs(roles, tenantSet, roleSet)
+	if err := s.fetchRelationInfo(ctx, tenantSet, roleSet); err != nil {
 		return err
 	}
-	s.bindRelations(roles, tenantSet)
+	s.bindRelations(roles, tenantSet, roleSet)
+	return nil
+}
+
+// hasMaskPath 探测 updateMask 是否声明了给定字段（proto 字段名与 json_name 双探测）。
+// mask 为 nil 视为全字段写入（FilterByFieldMask 语义），返回 true。
+func hasMaskPath(mask *fieldmaskpb.FieldMask, names ...string) bool {
+	if mask == nil {
+		return true
+	}
+	for _, p := range mask.GetPaths() {
+		for _, n := range names {
+			if p == n {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// validateParentBinding 校验父子角色绑定的合法性（权限继承核心约束，编辑时校验语义）。
+// parentID 为 0 表示根角色，直接放行。校验：
+//  1. 父角色存在；
+//  2. 父角色与本角色同租户（tenantID 为本角色归属租户，Create 侧以操作者上下文折算）；
+//  3. wantPerms ⊆ 父角色已绑定权限集。
+//
+// roleID 为 0 表示 Create 场景（尚无自身 ID）。
+func (s *RoleService) validateParentBinding(ctx context.Context, roleID, parentID, tenantID uint32, wantPerms []uint32) error {
+	if parentID == 0 {
+		return nil
+	}
+
+	parent, err := s.roleRepo.Get(ctx, &permissionV1.GetRoleRequest{
+		QueryBy: &permissionV1.GetRoleRequest_Id{Id: parentID},
+	})
+	if err != nil {
+		s.log.Errorf(ctx, "get parent role failed: %v", err)
+		return adminV1.ErrorBadRequest("parent role not found")
+	}
+
+	if parent.GetTenantId() != tenantID {
+		return adminV1.ErrorForbidden("parent role must belong to the same tenant")
+	}
+
+	if len(wantPerms) == 0 {
+		return nil
+	}
+
+	capSet := make(map[uint32]struct{}, len(parent.GetPermissions()))
+	for _, id := range parent.GetPermissions() {
+		capSet[id] = struct{}{}
+	}
+
+	var exceeding int
+	for _, id := range wantPerms {
+		if _, ok := capSet[id]; !ok {
+			exceeding++
+		}
+	}
+	if exceeding > 0 {
+		return adminV1.ErrorForbidden(
+			"%d permission(s) exceed the parent role's granted permission set", exceeding)
+	}
+	return nil
+}
+
+// ensureNoRoleCycle 沿候选父角色上溯检测层级环（Update 改父时调用）：
+// 若从候选父出发能回到自身，说明会成环，拒绝。上溯深度设上限防脏数据死循环。
+func (s *RoleService) ensureNoRoleCycle(ctx context.Context, roleID, parentID uint32) error {
+	const maxDepth = 32
+
+	current := parentID
+	for depth := 0; current != 0 && depth < maxDepth; depth++ {
+		if current == roleID {
+			return adminV1.ErrorForbidden("circular role hierarchy detected")
+		}
+		parent, err := s.roleRepo.Get(ctx, &permissionV1.GetRoleRequest{
+			QueryBy: &permissionV1.GetRoleRequest_Id{Id: current},
+		})
+		if err != nil {
+			// 上溯链断裂（父角色不存在）不在此处报错，交给 validateParentBinding
+			return nil
+		}
+		current = parent.GetParentId()
+	}
 	return nil
 }
 
@@ -169,6 +286,16 @@ func (s *RoleService) Create(ctx context.Context, req *permissionV1.CreateRoleRe
 		req.Data.Type = trans.Ptr(permissionV1.Role_TENANT)
 	}
 
+	// 父角色绑定校验（权限继承）。租户操作者的归属租户以操作者上下文为准
+	// （与上方类型强转同口径），载荷里的 tenant_id 不可信。
+	roleTenantID := req.Data.GetTenantId()
+	if operator.GetTenantId() > 0 {
+		roleTenantID = operator.GetTenantId()
+	}
+	if err = s.validateParentBinding(ctx, 0, req.Data.GetParentId(), roleTenantID, req.Data.GetPermissions()); err != nil {
+		return nil, err
+	}
+
 	if err = s.roleRepo.Create(ctx, req); err != nil {
 		return nil, err
 	}
@@ -215,6 +342,34 @@ func (s *RoleService) Update(ctx context.Context, req *permissionV1.UpdateRoleRe
 	// 非系统管理员禁止修改系统角色
 	if r.GetType() == permissionV1.Role_SYSTEM && operator.GetTenantId() > 0 {
 		return nil, adminV1.ErrorForbidden("no permission to update system role")
+	}
+
+	// 父角色绑定校验（权限继承，编辑时校验语义）：本次请求生效的父角色与权限集
+	// 分别按"mask 是否声明"取舍——声明了取载荷，未声明取库中现值（改权限不动父、
+	// 或换父不动权限，都要重新对齐约束）。
+	parentIDChanged := hasMaskPath(req.UpdateMask, "parent_id", "parentId")
+	permsChanged := hasMaskPath(req.UpdateMask, "permissions")
+	var effectiveParentID uint32
+	var effectivePerms []uint32
+	if parentIDChanged {
+		effectiveParentID = req.Data.GetParentId()
+	} else {
+		effectiveParentID = r.GetParentId()
+	}
+	if permsChanged {
+		effectivePerms = req.Data.GetPermissions()
+	} else {
+		effectivePerms = r.GetPermissions()
+	}
+	if effectiveParentID > 0 {
+		if parentIDChanged {
+			if err = s.ensureNoRoleCycle(ctx, req.GetId(), effectiveParentID); err != nil {
+				return nil, err
+			}
+		}
+		if err = s.validateParentBinding(ctx, req.GetId(), effectiveParentID, r.GetTenantId(), effectivePerms); err != nil {
+			return nil, err
+		}
 	}
 
 	// 保护角色字段不可修改

@@ -313,6 +313,33 @@ func (_u *RoleUpdate) SetNillableDataScope(v *role.DataScope) *RoleUpdate {
 	return _u
 }
 
+// SetParentID sets the "parent_id" field.
+func (_u *RoleUpdate) SetParentID(v uint32) *RoleUpdate {
+	_u.mutation.ResetParentID()
+	_u.mutation.SetParentID(v)
+	return _u
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (_u *RoleUpdate) SetNillableParentID(v *uint32) *RoleUpdate {
+	if v != nil {
+		_u.SetParentID(*v)
+	}
+	return _u
+}
+
+// AddParentID adds value to the "parent_id" field.
+func (_u *RoleUpdate) AddParentID(v int32) *RoleUpdate {
+	_u.mutation.AddParentID(v)
+	return _u
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (_u *RoleUpdate) ClearParentID() *RoleUpdate {
+	_u.mutation.ClearParentID()
+	return _u
+}
+
 // Mutation returns the RoleMutation object of the builder.
 func (_u *RoleUpdate) Mutation() *RoleMutation {
 	return _u.mutation
@@ -482,6 +509,15 @@ func (_u *RoleUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.DataScope(); ok {
 		_spec.SetField(role.FieldDataScope, field.TypeEnum, value)
+	}
+	if value, ok := _u.mutation.ParentID(); ok {
+		_spec.SetField(role.FieldParentID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedParentID(); ok {
+		_spec.AddField(role.FieldParentID, field.TypeUint32, value)
+	}
+	if _u.mutation.ParentIDCleared() {
+		_spec.ClearField(role.FieldParentID, field.TypeUint32)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -789,6 +825,33 @@ func (_u *RoleUpdateOne) SetNillableDataScope(v *role.DataScope) *RoleUpdateOne 
 	return _u
 }
 
+// SetParentID sets the "parent_id" field.
+func (_u *RoleUpdateOne) SetParentID(v uint32) *RoleUpdateOne {
+	_u.mutation.ResetParentID()
+	_u.mutation.SetParentID(v)
+	return _u
+}
+
+// SetNillableParentID sets the "parent_id" field if the given value is not nil.
+func (_u *RoleUpdateOne) SetNillableParentID(v *uint32) *RoleUpdateOne {
+	if v != nil {
+		_u.SetParentID(*v)
+	}
+	return _u
+}
+
+// AddParentID adds value to the "parent_id" field.
+func (_u *RoleUpdateOne) AddParentID(v int32) *RoleUpdateOne {
+	_u.mutation.AddParentID(v)
+	return _u
+}
+
+// ClearParentID clears the value of the "parent_id" field.
+func (_u *RoleUpdateOne) ClearParentID() *RoleUpdateOne {
+	_u.mutation.ClearParentID()
+	return _u
+}
+
 // Mutation returns the RoleMutation object of the builder.
 func (_u *RoleUpdateOne) Mutation() *RoleMutation {
 	return _u.mutation
@@ -988,6 +1051,15 @@ func (_u *RoleUpdateOne) sqlSave(ctx context.Context) (_node *Role, err error) {
 	}
 	if value, ok := _u.mutation.DataScope(); ok {
 		_spec.SetField(role.FieldDataScope, field.TypeEnum, value)
+	}
+	if value, ok := _u.mutation.ParentID(); ok {
+		_spec.SetField(role.FieldParentID, field.TypeUint32, value)
+	}
+	if value, ok := _u.mutation.AddedParentID(); ok {
+		_spec.AddField(role.FieldParentID, field.TypeUint32, value)
+	}
+	if _u.mutation.ParentIDCleared() {
+		_spec.ClearField(role.FieldParentID, field.TypeUint32)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &Role{config: _u.config}

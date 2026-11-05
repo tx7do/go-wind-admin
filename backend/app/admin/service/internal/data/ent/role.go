@@ -49,7 +49,9 @@ type Role struct {
 	// 角色类型
 	Type *role.Type `json:"type,omitempty"`
 	// 数据权限范围
-	DataScope    *role.DataScope `json:"data_scope,omitempty"`
+	DataScope *role.DataScope `json:"data_scope,omitempty"`
+	// 父角色ID，0表示无父级
+	ParentID     *uint32 `json:"parent_id,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -60,7 +62,7 @@ func (*Role) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case role.FieldIsProtected:
 			values[i] = new(sql.NullBool)
-		case role.FieldID, role.FieldCreatedBy, role.FieldUpdatedBy, role.FieldDeletedBy, role.FieldSortOrder, role.FieldTenantID:
+		case role.FieldID, role.FieldCreatedBy, role.FieldUpdatedBy, role.FieldDeletedBy, role.FieldSortOrder, role.FieldTenantID, role.FieldParentID:
 			values[i] = new(sql.NullInt64)
 		case role.FieldRemark, role.FieldDescription, role.FieldStatus, role.FieldName, role.FieldCode, role.FieldType, role.FieldDataScope:
 			values[i] = new(sql.NullString)
@@ -199,6 +201,13 @@ func (_m *Role) assignValues(columns []string, values []any) error {
 				_m.DataScope = new(role.DataScope)
 				*_m.DataScope = role.DataScope(value.String)
 			}
+		case role.FieldParentID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field parent_id", values[i])
+			} else if value.Valid {
+				_m.ParentID = new(uint32)
+				*_m.ParentID = uint32(value.Int64)
+			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
 		}
@@ -312,6 +321,11 @@ func (_m *Role) String() string {
 	builder.WriteString(", ")
 	if v := _m.DataScope; v != nil {
 		builder.WriteString("data_scope=")
+		builder.WriteString(fmt.Sprintf("%v", *v))
+	}
+	builder.WriteString(", ")
+	if v := _m.ParentID; v != nil {
+		builder.WriteString("parent_id=")
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteByte(')')

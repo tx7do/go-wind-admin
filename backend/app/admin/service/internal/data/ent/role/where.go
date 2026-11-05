@@ -119,6 +119,11 @@ func IsProtected(v bool) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldIsProtected, v))
 }
 
+// ParentID applies equality check predicate on the "parent_id" field. It's identical to ParentIDEQ.
+func ParentID(v uint32) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldParentID, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Role {
 	return predicate.Role(sql.FieldEQ(FieldCreatedAt, v))
@@ -887,6 +892,56 @@ func DataScopeIn(vs ...DataScope) predicate.Role {
 // DataScopeNotIn applies the NotIn predicate on the "data_scope" field.
 func DataScopeNotIn(vs ...DataScope) predicate.Role {
 	return predicate.Role(sql.FieldNotIn(FieldDataScope, vs...))
+}
+
+// ParentIDEQ applies the EQ predicate on the "parent_id" field.
+func ParentIDEQ(v uint32) predicate.Role {
+	return predicate.Role(sql.FieldEQ(FieldParentID, v))
+}
+
+// ParentIDNEQ applies the NEQ predicate on the "parent_id" field.
+func ParentIDNEQ(v uint32) predicate.Role {
+	return predicate.Role(sql.FieldNEQ(FieldParentID, v))
+}
+
+// ParentIDIn applies the In predicate on the "parent_id" field.
+func ParentIDIn(vs ...uint32) predicate.Role {
+	return predicate.Role(sql.FieldIn(FieldParentID, vs...))
+}
+
+// ParentIDNotIn applies the NotIn predicate on the "parent_id" field.
+func ParentIDNotIn(vs ...uint32) predicate.Role {
+	return predicate.Role(sql.FieldNotIn(FieldParentID, vs...))
+}
+
+// ParentIDGT applies the GT predicate on the "parent_id" field.
+func ParentIDGT(v uint32) predicate.Role {
+	return predicate.Role(sql.FieldGT(FieldParentID, v))
+}
+
+// ParentIDGTE applies the GTE predicate on the "parent_id" field.
+func ParentIDGTE(v uint32) predicate.Role {
+	return predicate.Role(sql.FieldGTE(FieldParentID, v))
+}
+
+// ParentIDLT applies the LT predicate on the "parent_id" field.
+func ParentIDLT(v uint32) predicate.Role {
+	return predicate.Role(sql.FieldLT(FieldParentID, v))
+}
+
+// ParentIDLTE applies the LTE predicate on the "parent_id" field.
+func ParentIDLTE(v uint32) predicate.Role {
+	return predicate.Role(sql.FieldLTE(FieldParentID, v))
+}
+
+// ParentIDIsNil applies the IsNil predicate on the "parent_id" field.
+func ParentIDIsNil() predicate.Role {
+	return predicate.Role(sql.FieldIsNull(FieldParentID))
+}
+
+// ParentIDNotNil applies the NotNil predicate on the "parent_id" field.
+func ParentIDNotNil() predicate.Role {
+	return predicate.Role(sql.FieldNotNull(FieldParentID))
 }
 
 // And groups predicates with the AND operator between them.

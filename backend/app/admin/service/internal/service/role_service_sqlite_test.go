@@ -19,6 +19,7 @@ import (
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
 	"github.com/tx7do/go-utils/trans"
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
@@ -200,4 +201,201 @@ func TestRoleServiceSqlite_CreateAndDelete(t *testing.T) {
 		require.NotEqual(t, "ROLESVC_CREATE_A", item.GetCode(),
 			"删除后列表不应再包含该角色")
 	}
+}
+
+// createServiceRoleForTest 经 svc.Create 建角色并反查 ID（按唯一 code 定位）。
+// operatorCtx 走平台操作人（tenant 0），角色默认落平台侧。
+func createServiceRoleForTest(t *testing.T, svc *RoleService, opCtx context.Context, code, name string, parentID uint32, perms []uint32) uint32 {
+	t.Helper()
+	data := &permissionV1.Role{
+		Name:   trans.Ptr(name),
+		Code:   trans.Ptr(code),
+		Status: permissionV1.Role_ON.Enum(),
+		Type:   permissionV1.Role_TENANT.Enum(),
+	}
+	if parentID > 0 {
+		data.ParentId = trans.Ptr(parentID)
+	}
+	if len(perms) > 0 {
+		data.Permissions = perms
+	}
+	_, err := svc.Create(opCtx, &permissionV1.CreateRoleRequest{Data: data})
+	require.NoError(t, err, "创建角色 %s 应成功", code)
+
+	listResp, err := svc.List(enttest.NewSystemContext(context.Background()), &paginationV1.PagingRequest{})
+	require.NoError(t, err)
+	for _, item := range listResp.GetItems() {
+		if item.GetCode() == code {
+			return item.GetId()
+		}
+	}
+	t.Fatalf("创建后列表应包含角色 %s", code)
+	return 0
+}
+
+// TestRoleServiceSqlite_ParentBindingValidation 验证权限继承核心约束（编辑时校验）：
+// 子角色权限 ⊆ 父角色已绑定权限集，越界被拒、子集放行、父不存在被拒。
+func TestRoleServiceSqlite_ParentBindingValidation(t *testing.T) {
+	svc := newRoleServiceForTest(t)
+	baseCtx := enttest.NewSystemContext(context.Background())
+	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242})
+
+	parentID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_PB_PARENT", "继承父角色", 0, []uint32{101, 102})
+
+	// 子集：放行
+	childID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_PB_CHILD_OK", "合法子角色", parentID, []uint32{101})
+	require.NotZero(t, childID)
+
+	// 越界：拒绝
+	_, err := svc.Create(opCtx, &permissionV1.CreateRoleRequest{
+		Data: &permissionV1.Role{
+			Name:        trans.Ptr("越界子角色"),
+			Code:        trans.Ptr("ROLESVC_PB_CHILD_BAD"),
+			Status:      permissionV1.Role_ON.Enum(),
+			Type:        permissionV1.Role_TENANT.Enum(),
+			ParentId:    trans.Ptr(parentID),
+			Permissions: []uint32{101, 999},
+		},
+	})
+	require.Error(t, err, "子角色权限超出父角色应被拒绝")
+	require.Contains(t, err.Error(), "exceed", "越界错误应包含超集提示")
+
+	// 父角色不存在：拒绝
+	_, err = svc.Create(opCtx, &permissionV1.CreateRoleRequest{
+		Data: &permissionV1.Role{
+			Name:     trans.Ptr("孤儿父引用角色"),
+			Code:     trans.Ptr("ROLESVC_PB_ORPHAN"),
+			Status:   permissionV1.Role_ON.Enum(),
+			Type:     permissionV1.Role_TENANT.Enum(),
+			ParentId: trans.Ptr(uint32(999999)),
+		},
+	})
+	require.Error(t, err, "父角色不存在应被拒绝")
+	require.Contains(t, err.Error(), "parent role not found")
+}
+
+// TestRoleServiceSqlite_UpdateParentCycleAndSubset 验证 Update 侧的环检测与
+// 换父/改权限两个维度上的约束重新对齐。
+func TestRoleServiceSqlite_UpdateParentCycleAndSubset(t *testing.T) {
+	svc := newRoleServiceForTest(t)
+	baseCtx := enttest.NewSystemContext(context.Background())
+	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242})
+
+	roleAID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_CYC_A", "环检测角色甲", 0, []uint32{101, 102})
+	roleBID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_CYC_B", "环检测角色乙", 0, []uint32{101})
+	roleCID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_CYC_C", "环检测角色丙", 0, []uint32{101, 102})
+	roleDID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_CYC_D", "环检测角色丁", 0, nil)
+
+	var err error
+
+	// 甲 → 丙：合法（甲 [101,102] ⊆ 丙 [101,102]）
+	_, err = svc.Update(opCtx, &permissionV1.UpdateRoleRequest{
+		Id:         roleAID,
+		Data:       &permissionV1.Role{ParentId: trans.Ptr(roleCID)},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"parent_id"}},
+	})
+	require.NoError(t, err, "设置无环父角色应成功")
+
+	// 乙 → 甲：合法（乙 [101] ⊆ 甲 [101,102]）
+	_, err = svc.Update(opCtx, &permissionV1.UpdateRoleRequest{
+		Id:         roleBID,
+		Data:       &permissionV1.Role{ParentId: trans.Ptr(roleAID)},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"parent_id"}},
+	})
+	require.NoError(t, err, "设置无环父子链应成功")
+
+	// 甲 → 乙：成环——此时甲的父是丙、乙的父是甲；把甲的父改为乙会形成
+	// 甲→乙→甲 环，应拒绝（环检测先于子集校验触发）
+	_, err = svc.Update(opCtx, &permissionV1.UpdateRoleRequest{
+		Id:         roleAID,
+		Data:       &permissionV1.Role{ParentId: trans.Ptr(roleBID)},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"parent_id"}},
+	})
+	require.Error(t, err, "换父成环应被拒绝")
+	require.Contains(t, err.Error(), "circular")
+
+	// 自环：把乙的父设为乙自己，应拒绝
+	_, err = svc.Update(opCtx, &permissionV1.UpdateRoleRequest{
+		Id:         roleBID,
+		Data:       &permissionV1.Role{ParentId: trans.Ptr(roleBID)},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"parent_id"}},
+	})
+	require.Error(t, err, "自引用成环应被拒绝")
+
+	// 改权限越界：乙的父是甲（cap=101,102），改权限为 [101,999] 应拒绝
+	_, err = svc.Update(opCtx, &permissionV1.UpdateRoleRequest{
+		Id:         roleBID,
+		Data:       &permissionV1.Role{Permissions: []uint32{101, 999}},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"permissions"}},
+	})
+	require.Error(t, err, "子角色改权限越出父角色上限应被拒绝")
+
+	// 改权限子集：应放行
+	_, err = svc.Update(opCtx, &permissionV1.UpdateRoleRequest{
+		Id:         roleBID,
+		Data:       &permissionV1.Role{Permissions: []uint32{101}},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"permissions"}},
+	})
+	require.NoError(t, err, "子角色改权限仍在父角色上限内应放行")
+
+	// 换更严格的父不改权限：乙权限 [101]，换父到丁（cap 空）应拒绝
+	_, err = svc.Update(opCtx, &permissionV1.UpdateRoleRequest{
+		Id:         roleBID,
+		Data:       &permissionV1.Role{ParentId: trans.Ptr(roleDID)},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"parent_id"}},
+	})
+	require.Error(t, err, "换父后存量权限越出父角色上限应被拒绝")
+}
+
+// TestRoleServiceSqlite_DeleteParentDetachesChildren 验证删除父角色后子角色
+// 自动解除父子关系且绑定权限保持不变。
+func TestRoleServiceSqlite_DeleteParentDetachesChildren(t *testing.T) {
+	svc := newRoleServiceForTest(t)
+	baseCtx := enttest.NewSystemContext(context.Background())
+	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242})
+
+	parentID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_DET_PARENT", "待删除父角色", 0, []uint32{101, 102})
+	childID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_DET_CHILD", "挂父子角色", parentID, []uint32{101})
+
+	_, err := svc.Delete(baseCtx, &permissionV1.DeleteRoleRequest{
+		QueryBy: &permissionV1.DeleteRoleRequest_Id{Id: parentID},
+	})
+	require.NoError(t, err, "删除有子角色的父角色应成功（自动解除）")
+
+	after, err := svc.Get(baseCtx, &permissionV1.GetRoleRequest{
+		QueryBy: &permissionV1.GetRoleRequest_Id{Id: childID},
+	})
+	require.NoError(t, err, "子角色应仍可查询")
+	require.Equal(t, uint32(0), after.GetParentId(), "删除父角色后子角色 parent_id 应解除为 0")
+	require.Empty(t, after.GetParentName(), "解除后不应再回填父角色名")
+	require.ElementsMatch(t, []uint32{101}, after.GetPermissions(), "子角色绑定权限应保持不变")
+}
+
+// TestRoleServiceSqlite_ParentNameEnrichment 验证 List / Get 的 ParentName 回填。
+func TestRoleServiceSqlite_ParentNameEnrichment(t *testing.T) {
+	svc := newRoleServiceForTest(t)
+	baseCtx := enttest.NewSystemContext(context.Background())
+	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242})
+
+	parentID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_NAME_PARENT", "富集父角色名", 0, nil)
+	childID := createServiceRoleForTest(t, svc, opCtx, "ROLESVC_NAME_CHILD", "富集子角色", parentID, nil)
+
+	listResp, err := svc.List(baseCtx, &paginationV1.PagingRequest{})
+	require.NoError(t, err)
+	var sawChild bool
+	for _, item := range listResp.GetItems() {
+		if item.GetCode() == "ROLESVC_NAME_CHILD" {
+			sawChild = true
+			require.Equal(t, "富集父角色名", item.GetParentName(),
+				"列表应回填子角色的父角色名")
+		}
+	}
+	require.True(t, sawChild, "列表应包含子角色")
+
+	got, err := svc.Get(baseCtx, &permissionV1.GetRoleRequest{
+		QueryBy: &permissionV1.GetRoleRequest_Id{Id: childID},
+	})
+	require.NoError(t, err)
+	require.Equal(t, "富集父角色名", got.GetParentName(),
+		"Get 应回填子角色的父角色名")
 }

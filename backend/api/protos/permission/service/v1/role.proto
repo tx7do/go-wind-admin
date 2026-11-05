@@ -122,6 +122,16 @@ message Role {
     (gnostic.openapi.v3.property) = {description: "字段权限配置（角色在各资源上隐藏的字段集，黑名单语义）"}
   ]; // 字段权限配置（角色在各资源上隐藏的字段集，黑名单语义）
 
+  optional uint32 parent_id = 13 [
+    json_name = "parentId",
+    (gnostic.openapi.v3.property) = {description: "父角色ID，0表示无父级（根角色）"}
+  ]; // 父角色ID，0表示无父级（根角色）；子角色的权限集不得超出父角色已绑定的权限集
+
+  optional string parent_name = 14 [
+    json_name = "parentName",
+    (gnostic.openapi.v3.property) = {description: "父角色名称（响应回填）"}
+  ]; // 父角色名称（响应回填）
+
   optional uint32 tenant_id = 40 [
     json_name = "tenantId",
     (gnostic.openapi.v3.property) = {description: "租户ID，0代表系统全局角色"}

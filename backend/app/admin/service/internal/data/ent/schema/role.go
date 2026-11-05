@@ -72,6 +72,13 @@ func (Role) Fields() []ent.Field {
 			).
 			Default("ALL").
 			Nillable(),
+
+		// 父角色ID，0表示无父级（根角色）。不做自引用 edge（无需 FK 约束），
+		// 层级语义（子角色权限 ⊆ 父角色已绑定权限集）在 service 层校验。
+		field.Uint32("parent_id").
+			Comment("父角色ID，0表示无父级").
+			Optional().
+			Nillable(),
 	}
 }
 
@@ -117,6 +124,10 @@ func (Role) Indexes() []ent.Index {
 			StorageKey("idx_sys_roles_is_protected"),
 		index.Fields("status").
 			StorageKey("idx_sys_roles_status"),
+
+		// 父角色查询（子角色列表/删除父角色时解除引用）
+		index.Fields("parent_id").
+			StorageKey("idx_sys_roles_parent_id"),
 
 		// 排序/范围查询优化
 		index.Fields("sort_order").
