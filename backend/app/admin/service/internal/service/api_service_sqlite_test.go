@@ -132,7 +132,7 @@ func TestApiServiceSqlite_CreateGetUpdateDelete(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newApiServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &permissionV1.CreateApiRequest{
 		Data: &permissionV1.Api{
@@ -185,7 +185,7 @@ func TestApiServiceSqlite_CreateGetUpdateDelete(t *testing.T) {
 	require.Equal(t, "更新后的接口描述", *after.Description, "掩码内字段 description 应被更新")
 	require.Equal(t, "/svc/test-path", *after.Path, "掩码外字段 path 应保持原值")
 
-	_, err = svc.Delete(ctx, &permissionV1.DeleteApiRequest{
+	_, err = svc.Delete(auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)}), &permissionV1.DeleteApiRequest{
 		QueryBy: &permissionV1.DeleteApiRequest_Id{Id: after.ID},
 	})
 	require.NoError(t, err, "删除已存在记录应成功")

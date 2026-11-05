@@ -76,7 +76,7 @@ func TestPermissionGroupServiceSqlite_CreateAndGet(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPermissionGroupServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	svc.init()
 
@@ -143,7 +143,7 @@ func TestPermissionGroupServiceSqlite_Update(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPermissionGroupServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &permissionV1.CreatePermissionGroupRequest{
 		Data: &permissionV1.PermissionGroup{

@@ -36,3 +36,11 @@ var ProtectedPermissionCodes = []string{
 	SystemPlatformAdminPermissionCode,
 	SystemTenantManagerPermissionCode,
 }
+
+// IsReservedPermissionCode 判断权限码是否为系统保留，不可通过权限 CRUD API 创建/修改。
+// sys: 命名空间在服务端承载判定语义（sys:access_backend 是登录后台的闸门码，
+// 登录链路按码值精确匹配），用户自建权限一旦占用即可伪造登录资格等权限语义。
+func IsReservedPermissionCode(code string) bool {
+	return len(code) >= len(SystemPermissionCodePrefix) &&
+		code[:len(SystemPermissionCodePrefix)] == SystemPermissionCodePrefix
+}

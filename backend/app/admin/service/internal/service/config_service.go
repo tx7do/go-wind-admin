@@ -71,6 +71,11 @@ func (s *ConfigService) Create(ctx context.Context, req *configV1.CreateConfigRe
 
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
 
+	// 系统参数是全局配置（含等保口令策略阈值等安全语义），仅平台管理员可改。
+	if err = requirePlatformAdmin(ctx, s.log, "system config management"); err != nil {
+		return nil, err
+	}
+
 	if err = s.configRepo.Create(ctx, req); err != nil {
 		return nil, err
 	}
@@ -96,6 +101,11 @@ func (s *ConfigService) Update(ctx context.Context, req *configV1.UpdateConfigRe
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}
 
+	// 与 Create 同口径：全局系统参数仅平台管理员可改。
+	if err = requirePlatformAdmin(ctx, s.log, "system config management"); err != nil {
+		return nil, err
+	}
+
 	if err = s.configRepo.Update(ctx, req); err != nil {
 		return nil, err
 	}
@@ -104,6 +114,10 @@ func (s *ConfigService) Update(ctx context.Context, req *configV1.UpdateConfigRe
 }
 
 func (s *ConfigService) Delete(ctx context.Context, req *configV1.DeleteConfigRequest) (*emptypb.Empty, error) {
+	if err := requirePlatformAdmin(ctx, s.log, "system config management"); err != nil {
+		return nil, err
+	}
+
 	if err := s.configRepo.Delete(ctx, req); err != nil {
 		return nil, err
 	}

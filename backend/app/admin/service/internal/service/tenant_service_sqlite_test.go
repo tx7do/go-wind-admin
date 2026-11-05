@@ -182,7 +182,7 @@ func TestTenantServiceSqlite_CreateAndDelete(t *testing.T) {
 	svc := newTenantServiceForTest(t)
 	baseCtx := enttest.NewSystemContext(context.Background())
 	// 操作人上下文：Create 走 auth.FromContext 取 operator.UserId 注入 CreatedBy。
-	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242})
+	opCtx := auth.NewContext(baseCtx, &authenticationV1.UserTokenPayload{UserId: 4242, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &identityV1.CreateTenantRequest{
 		Data: &identityV1.Tenant{
@@ -205,7 +205,7 @@ func TestTenantServiceSqlite_CreateAndDelete(t *testing.T) {
 	require.EqualValues(t, 4242, item.GetCreatedBy(),
 		"CreatedBy 应为操作人注入的 ID")
 
-	_, err = svc.Delete(baseCtx, &identityV1.DeleteTenantRequest{
+	_, err = svc.Delete(opCtx, &identityV1.DeleteTenantRequest{
 		QueryBy: &identityV1.DeleteTenantRequest_Id{Id: createdID},
 	})
 	require.NoError(t, err, "service.Delete 应删除该租户")

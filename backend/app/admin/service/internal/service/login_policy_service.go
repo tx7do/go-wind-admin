@@ -53,6 +53,11 @@ func (s *LoginPolicyService) Create(ctx context.Context, req *authenticationV1.C
 
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
 
+	// 登录策略是全平台认证安全语义（限流/白名单/MFA 要求），仅平台管理员可改。
+	if err = requirePlatformAdmin(ctx, s.log, "login policy management"); err != nil {
+		return nil, err
+	}
+
 	// 值格式校验：配错格式会让匹配器静默不命中（白名单 = 全员被锁）
 	if verr := data.ValidateLoginPolicyValue(req.Data.GetMethod().String(), req.Data.GetValue()); verr != nil {
 		return nil, adminV1.ErrorBadRequest("%s", verr.Error())
@@ -88,6 +93,11 @@ func (s *LoginPolicyService) Update(ctx context.Context, req *authenticationV1.U
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}
 
+	// 与 Create 同口径：登录策略仅平台管理员可改。
+	if err = requirePlatformAdmin(ctx, s.log, "login policy management"); err != nil {
+		return nil, err
+	}
+
 	if err = s.repo.Update(ctx, req); err != nil {
 		return nil, err
 	}
@@ -98,6 +108,10 @@ func (s *LoginPolicyService) Update(ctx context.Context, req *authenticationV1.U
 func (s *LoginPolicyService) Delete(ctx context.Context, req *authenticationV1.DeleteLoginPolicyRequest) (*emptypb.Empty, error) {
 	if req == nil {
 		return nil, adminV1.ErrorBadRequest("invalid request")
+	}
+
+	if err := requirePlatformAdmin(ctx, s.log, "login policy management"); err != nil {
+		return nil, err
 	}
 
 	if err := s.repo.Delete(ctx, req); err != nil {

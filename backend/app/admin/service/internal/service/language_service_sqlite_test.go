@@ -69,7 +69,7 @@ func TestLanguageServiceSqlite_InitGuardSkipsReseedWhenNonEmpty(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newLanguageServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	svc.init()
 	seeded := len(constants.DefaultLanguages)
@@ -155,7 +155,7 @@ func TestLanguageServiceSqlite_Update_OnlyMaskedFields(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newLanguageServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	svc.init()
 
@@ -205,7 +205,7 @@ func TestLanguageServiceSqlite_Delete(t *testing.T) {
 	require.Len(t, rows, len(constants.DefaultLanguages))
 	delID := uint32(rows[0].ID)
 
-	_, err = svc.Delete(ctx, &dictV1.DeleteLanguageRequest{
+	_, err = svc.Delete(auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)}), &dictV1.DeleteLanguageRequest{
 		QueryBy: &dictV1.DeleteLanguageRequest_Id{Id: delID},
 	})
 	require.NoError(t, err, "删除已存在记录应成功")

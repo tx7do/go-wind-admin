@@ -73,6 +73,11 @@ func (s *PermissionGroupService) Create(ctx context.Context, req *permissionV1.C
 
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
 
+	// 权限组是全局定义，租户操作者不可增删改（角色抽屉按需读树即可）。
+	if err = requirePlatformAdmin(ctx, s.log, "permission group management"); err != nil {
+		return nil, err
+	}
+
 	if _, err = s.permissionGroupRepo.Create(ctx, req); err != nil {
 		return nil, err
 	}
@@ -98,6 +103,10 @@ func (s *PermissionGroupService) Update(ctx context.Context, req *permissionV1.U
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}
 
+	if err = requirePlatformAdmin(ctx, s.log, "permission group management"); err != nil {
+		return nil, err
+	}
+
 	if err = s.permissionGroupRepo.Update(ctx, req); err != nil {
 		return nil, err
 	}
@@ -107,6 +116,10 @@ func (s *PermissionGroupService) Update(ctx context.Context, req *permissionV1.U
 
 func (s *PermissionGroupService) Delete(ctx context.Context, req *permissionV1.DeletePermissionGroupRequest) (*emptypb.Empty, error) {
 	var err error
+
+	if err = requirePlatformAdmin(ctx, s.log, "permission group management"); err != nil {
+		return nil, err
+	}
 
 	// 先清理组内权限点，再删分组本身（两 repo 无共享事务，顺序保证失败可重试：
 	// 权限点清理成功而分组删除失败时，组仍保留，重试删除不会产生孤儿数据）。

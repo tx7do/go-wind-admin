@@ -52,7 +52,7 @@ func TestMenuServiceSqlite_CreateAndGet_ParentChild(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newMenuServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &permissionV1.CreateMenuRequest{
 		Data: &permissionV1.Menu{
@@ -111,7 +111,7 @@ func TestMenuServiceSqlite_List_FlatWithContainsFilter(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newMenuServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	for _, name := range []string{"MARKERMENUALPHA 菜单", "无关菜单乙"} {
 		_, err := svc.Create(opCtx, &permissionV1.CreateMenuRequest{
@@ -159,7 +159,7 @@ func TestMenuServiceSqlite_Update(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newMenuServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &permissionV1.CreateMenuRequest{
 		Data: &permissionV1.Menu{
@@ -195,7 +195,7 @@ func TestMenuServiceSqlite_Delete_ParentRowOnlyUnderSqlite(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newMenuServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &permissionV1.CreateMenuRequest{
 		Data: &permissionV1.Menu{
@@ -241,7 +241,7 @@ func TestMenuServiceSqlite_SyncMenus_MergeInsertsTree(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newMenuServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.SyncMenus(opCtx, &permissionV1.SyncMenusRequest{
 		Mode: trans.Ptr(permissionV1.SyncMenusRequest_MERGE),

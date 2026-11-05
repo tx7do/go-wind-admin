@@ -62,7 +62,15 @@ func NewApiService(
 func (s *ApiService) init() {
 	ctx := viewer.WithSystemContext(context.Background())
 	if count, _ := s.repo.Count(ctx, nil); count.Count == 0 {
-		_, _ = s.SyncApis(ctx, &emptypb.Empty{})
+		// 启动期播种走内部函数而非 HTTP 方法 SyncApis：后者已加平台管理员闸门，
+		// 系统上下文没有操作者，会被自家闸门挡掉。空表场景 Truncate 无意义，略去。
+		_ = s.repo.Truncate(ctx)
+		if err := s.syncWithOpenAPI(ctx); err != nil {
+			s.log.Errorf(ctx, "启动期接口同步失败: %v", err)
+		}
+		if err := s.authorizer.ResetPolicies(ctx); err != nil {
+			s.log.Errorf(ctx, "reset policies error: %v", err)
+		}
 	}
 	// SyncApis 内部的对齐只在空表首启（或手工触发同步）时跑到；已部署实例的
 	// sys_apis 序列被上一次同步的显式 ID 留在原地，只能靠这条启动期自愈补上。
@@ -97,6 +105,12 @@ func (s *ApiService) Create(ctx context.Context, req *permissionV1.CreateApiRequ
 
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
 
+	// Api 表是租户闸门（套餐模块白名单）的数据源，增删改等于改闸门本身，
+	// 仅平台管理员可操作。
+	if err = requirePlatformAdmin(ctx, s.log, "api management"); err != nil {
+		return nil, err
+	}
+
 	if err = s.repo.Create(ctx, req); err != nil {
 		return nil, err
 	}
@@ -127,6 +141,11 @@ func (s *ApiService) Update(ctx context.Context, req *permissionV1.UpdateApiRequ
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}
 
+	// 与 Create 同口径：改 Api 行可把任意端点归入已白名单模块，仅平台管理员。
+	if err = requirePlatformAdmin(ctx, s.log, "api management"); err != nil {
+		return nil, err
+	}
+
 	if err = s.repo.Update(ctx, req); err != nil {
 		return nil, err
 	}
@@ -140,6 +159,10 @@ func (s *ApiService) Update(ctx context.Context, req *permissionV1.UpdateApiRequ
 }
 
 func (s *ApiService) Delete(ctx context.Context, req *permissionV1.DeleteApiRequest) (*emptypb.Empty, error) {
+	if err := requirePlatformAdmin(ctx, s.log, "api management"); err != nil {
+		return nil, err
+	}
+
 	if err := s.repo.Delete(ctx, req); err != nil {
 		return nil, err
 	}
@@ -153,6 +176,12 @@ func (s *ApiService) Delete(ctx context.Context, req *permissionV1.DeleteApiRequ
 }
 
 func (s *ApiService) SyncApis(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
+	// 全量重建会短暂清空 Api 表（租户闸门 fail-closed 期间全租户 403），
+	// 是平台级运维操作，仅平台管理员可触发。
+	if err := requirePlatformAdmin(ctx, s.log, "api management"); err != nil {
+		return nil, err
+	}
+
 	_ = s.repo.Truncate(ctx)
 
 	//if err := s.syncWithWalkRoute(ctx); err != nil {

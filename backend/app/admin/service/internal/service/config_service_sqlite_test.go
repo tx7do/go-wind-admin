@@ -53,7 +53,7 @@ func newConfigServiceForTest(t *testing.T) (*ConfigService, *entCrud.EntClient[*
 		configRepo: data.NewConfigRepoForTest(entClient, rdb),
 	}
 	sysCtx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(sysCtx, &authenticationV1.UserTokenPayload{UserId: 71})
+	opCtx := auth.NewContext(sysCtx, &authenticationV1.UserTokenPayload{UserId: 71, IsPlatformAdmin: trans.Ptr(true)})
 	return svc, entClient, opCtx
 }
 

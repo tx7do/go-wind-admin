@@ -80,6 +80,11 @@ func (s *LanguageService) Create(ctx context.Context, req *dictV1.CreateLanguage
 
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
 
+	// 语言是全局数据（登录页/全平台 i18n 源），仅平台管理员可改。
+	if err = requirePlatformAdmin(ctx, s.log, "language management"); err != nil {
+		return nil, err
+	}
+
 	if err = s.languageRepo.Create(ctx, req); err != nil {
 		return nil, err
 	}
@@ -105,6 +110,11 @@ func (s *LanguageService) Update(ctx context.Context, req *dictV1.UpdateLanguage
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}
 
+	// 与 Create 同口径：全局语言仅平台管理员可改。
+	if err = requirePlatformAdmin(ctx, s.log, "language management"); err != nil {
+		return nil, err
+	}
+
 	if err = s.languageRepo.Update(ctx, req); err != nil {
 		return nil, err
 	}
@@ -113,6 +123,10 @@ func (s *LanguageService) Update(ctx context.Context, req *dictV1.UpdateLanguage
 }
 
 func (s *LanguageService) Delete(ctx context.Context, req *dictV1.DeleteLanguageRequest) (*emptypb.Empty, error) {
+	if err := requirePlatformAdmin(ctx, s.log, "language management"); err != nil {
+		return nil, err
+	}
+
 	if err := s.languageRepo.Delete(ctx, req); err != nil {
 		return nil, err
 	}

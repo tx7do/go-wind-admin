@@ -55,6 +55,12 @@ func (s *PlanQuotaService) Create(ctx context.Context, req *identityV1.CreatePla
 
 	req.Data.CreatedBy = trans.Ptr(operator.UserId)
 
+	// 套餐/配额/白名单定义是计费与租户闸门的源头数据，与租户管理同登记在
+	// MODULE_TENANT（租户自助用量使其常态在白名单内），仅平台管理员可改。
+	if err = requirePlatformAdmin(ctx, s.log, "plan management"); err != nil {
+		return nil, err
+	}
+
 	if err = s.planQuotaRepo.Create(ctx, req); err != nil {
 		return nil, err
 	}
@@ -80,6 +86,12 @@ func (s *PlanQuotaService) Update(ctx context.Context, req *identityV1.UpdatePla
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}
 
+	// 套餐/配额/白名单定义是计费与租户闸门的源头数据，与租户管理同登记在
+	// MODULE_TENANT（租户自助用量使其常态在白名单内），仅平台管理员可改。
+	if err = requirePlatformAdmin(ctx, s.log, "plan management"); err != nil {
+		return nil, err
+	}
+
 	if err = s.planQuotaRepo.Update(ctx, req); err != nil {
 		return nil, err
 	}
@@ -88,6 +100,10 @@ func (s *PlanQuotaService) Update(ctx context.Context, req *identityV1.UpdatePla
 }
 
 func (s *PlanQuotaService) Delete(ctx context.Context, req *identityV1.DeletePlanQuotaRequest) (*emptypb.Empty, error) {
+	if err := requirePlatformAdmin(ctx, s.log, "plan management"); err != nil {
+		return nil, err
+	}
+
 	if err := s.planQuotaRepo.Delete(ctx, req.GetId()); err != nil {
 		return nil, err
 	}

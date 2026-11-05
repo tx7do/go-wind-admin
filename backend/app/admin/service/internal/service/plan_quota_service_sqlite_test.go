@@ -39,7 +39,7 @@ func TestPlanQuotaServiceSqlite_Create_AssociatesPlan(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanQuotaServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	parent, err := entClient.Client().Plan.Create().
 		SetName("父套餐-配额关联").
@@ -79,7 +79,7 @@ func TestPlanQuotaServiceSqlite_List_BackfillsPlanId(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanQuotaServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	parent, err := entClient.Client().Plan.Create().
 		SetName("父套餐-配额列表").
@@ -126,7 +126,7 @@ func TestPlanQuotaServiceSqlite_Get(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanQuotaServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &identityV1.CreatePlanQuotaRequest{
 		Data: &identityV1.PlanQuota{
@@ -159,7 +159,7 @@ func TestPlanQuotaServiceSqlite_Update(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanQuotaServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &identityV1.CreatePlanQuotaRequest{
 		Data: &identityV1.PlanQuota{
@@ -192,7 +192,7 @@ func TestPlanQuotaServiceSqlite_Delete(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanQuotaServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &identityV1.CreatePlanQuotaRequest{
 		Data: &identityV1.PlanQuota{
@@ -207,7 +207,7 @@ func TestPlanQuotaServiceSqlite_Delete(t *testing.T) {
 	require.Len(t, rows, 1)
 	createdID := rows[0].ID
 
-	_, err = svc.Delete(ctx, &identityV1.DeletePlanQuotaRequest{
+	_, err = svc.Delete(auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)}), &identityV1.DeletePlanQuotaRequest{
 		QueryBy: &identityV1.DeletePlanQuotaRequest_Id{Id: createdID},
 	})
 	require.NoError(t, err, "删除已存在记录应成功")

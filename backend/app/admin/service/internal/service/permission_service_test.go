@@ -145,9 +145,10 @@ func TestPermissionService_syncWithOpenAPI_EmptyPaths(t *testing.T) {
 	require.NoError(t, qerr)
 	require.Zero(t, cnt, "空集同步不应落行")
 
-	// 真实内嵌文档：SyncApis 全链路播种接口表
+	// 真实内嵌文档：SyncApis 全链路播种接口表（SyncApis 已是平台管理员闸门，
+	// 用平台管理员上下文调用）
 	assets.OpenApiData = orig
-	_, err = apiSvc.SyncApis(ctx, &emptypb.Empty{})
+	_, err = apiSvc.SyncApis(auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)}), &emptypb.Empty{})
 	require.NoError(t, err, "真实文档的 SyncApis 应成功")
 	cnt, qerr = entClient.Client().Api.Query().Count(ctx)
 	require.NoError(t, qerr)
@@ -165,7 +166,7 @@ func TestPermissionService_syncWithOpenAPI_EmptyPaths(t *testing.T) {
 func TestPermissionService_SyncPermissions_MenuAndApiDerived(t *testing.T) {
 	svc, client := newPermissionServiceForTest(t)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	// 目录菜单（根）与页面菜单（子）
 	require.NoError(t, svc.menuRepo.Create(ctx, &permissionV1.CreateMenuRequest{
@@ -250,7 +251,7 @@ func TestPermissionService_SyncPermissions_MenuAndApiDerived(t *testing.T) {
 func TestPermissionService_SyncPermissions_DuplicateCodeDeduped(t *testing.T) {
 	svc, client := newPermissionServiceForTest(t)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	// 扁平旧菜单（id 小）：/profile 独段成码 profile
 	require.NoError(t, svc.menuRepo.Create(ctx, &permissionV1.CreateMenuRequest{
@@ -313,7 +314,7 @@ func TestPermissionService_ListAndGetTenantScoping(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 	seedPermissionGroups(t, svc, ctx, 5)
 	svc.init()
-	platformCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	platformCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 	// 租户操作人：查看器须与令牌租户一致（生产由认证中间件成对注入）
 	tenantCtx := auth.NewContext(
 		crudViewer.WithContext(ctx, crudViewer.NewUserContext(8, 42, 0, "", nil)),
@@ -372,7 +373,7 @@ func TestPermissionService_ListAndGetTenantScoping(t *testing.T) {
 func TestPermissionService_CreateUpdateDelete(t *testing.T) {
 	svc, client := newPermissionServiceForTest(t)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &permissionV1.CreatePermissionRequest{})
 	require.Error(t, err, "nil Data 应拒绝")
@@ -407,7 +408,7 @@ func TestPermissionService_CreateUpdateDelete(t *testing.T) {
 	require.Equal(t, "PermSvc 测试权限", *after.Name, "掩码外字段 name 应保持原值")
 	require.Equal(t, uint32(7), *after.UpdatedBy, "更新行应盖入操作人 ID")
 
-	_, err = svc.Delete(ctx, &permissionV1.DeletePermissionRequest{
+	_, err = svc.Delete(auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)}), &permissionV1.DeletePermissionRequest{
 		QueryBy: &permissionV1.DeletePermissionRequest_Id{Id: rowID},
 	})
 	require.NoError(t, err, "删除应成功")

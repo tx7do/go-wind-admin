@@ -42,8 +42,9 @@ func newAiProviderServiceForTest(t *testing.T, entClient *entCrud.EntClient[*ent
 }
 
 // aiProviderOperator 构造指定用户的操作者上下文。
+// Provider 管理已是平台管理员闸门，测试统一以平台管理员身份执行。
 func aiProviderOperator(ctx context.Context, userID uint32) context.Context {
-	return auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: userID})
+	return auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: userID, IsPlatformAdmin: trans.Ptr(true)})
 }
 
 // aiProviderCreateViaService 经服务层创建一个提供商，返回其落库 ID。

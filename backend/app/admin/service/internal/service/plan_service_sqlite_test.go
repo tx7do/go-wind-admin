@@ -38,7 +38,7 @@ func TestPlanServiceSqlite_Create(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &identityV1.CreatePlanRequest{
 		Data: &identityV1.Plan{
@@ -78,7 +78,7 @@ func TestPlanServiceSqlite_CreateGuards(t *testing.T) {
 		_, _ = svc.Create(ctx, nil)
 	}, "nil 请求应被守卫拦下而不 panic")
 
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 	_, err = svc.Create(opCtx, &identityV1.CreatePlanRequest{
 		Data: &identityV1.Plan{Name: trans.Ptr("守卫套餐")},
 	})
@@ -95,7 +95,7 @@ func TestPlanServiceSqlite_List(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	for i, name := range []string{"MARKERALPHA 套餐", "MARKERBETA 套餐"} {
 		_, err := svc.Create(opCtx, &identityV1.CreatePlanRequest{
@@ -134,7 +134,7 @@ func TestPlanServiceSqlite_Get(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &identityV1.CreatePlanRequest{
 		Data: &identityV1.Plan{Name: trans.Ptr("服务层查询套餐"), Version: identityV1.Plan_ENTERPRISE.Enum()},
@@ -165,7 +165,7 @@ func TestPlanServiceSqlite_Update(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &identityV1.CreatePlanRequest{
 		Data: &identityV1.Plan{
@@ -202,7 +202,7 @@ func TestPlanServiceSqlite_Delete(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &identityV1.CreatePlanRequest{
 		Data: &identityV1.Plan{Name: trans.Ptr("待删除套餐"), Version: identityV1.Plan_FREE.Enum()},
@@ -214,7 +214,7 @@ func TestPlanServiceSqlite_Delete(t *testing.T) {
 	require.Len(t, rows, 1)
 	createdID := rows[0].ID
 
-	_, err = svc.Delete(ctx, &identityV1.DeletePlanRequest{
+	_, err = svc.Delete(auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)}), &identityV1.DeletePlanRequest{
 		QueryBy: &identityV1.DeletePlanRequest_Id{Id: createdID},
 	})
 	require.NoError(t, err, "删除已存在记录应成功")

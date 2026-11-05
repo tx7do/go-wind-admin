@@ -31,7 +31,7 @@ func newLoginPolicyServiceForTest(t *testing.T) (*LoginPolicyService, context.Co
 		log:  bLogger.NewHelper(bLogger.NopLogger()),
 		repo: data.NewLoginPolicyRepoForTest(enttest.NewEntClientForTest(t)),
 	}, auth.NewContext(enttest.NewSystemContext(context.Background()),
-		&authenticationV1.UserTokenPayload{UserId: 91})
+		&authenticationV1.UserTokenPayload{UserId: 91, IsPlatformAdmin: trans.Ptr(true)})
 }
 
 func TestLoginPolicyService_CreateValidatesValueFormat(t *testing.T) {
@@ -93,7 +93,7 @@ func TestLoginPolicyService_UpdateValidatesBeforeOperator(t *testing.T) {
 	// 值校验先于操作人解析：无身份上下文时格式错误仍应稳定 400（而非 panic）。
 	// 先落一行真实策略（repo.Update 对不存在行报 NotFound）。
 	opCtxSeed := auth.NewContext(enttest.NewSystemContext(context.Background()),
-		&authenticationV1.UserTokenPayload{UserId: 91})
+		&authenticationV1.UserTokenPayload{UserId: 91, IsPlatformAdmin: trans.Ptr(true)})
 	_, err := svc.Create(opCtxSeed, &authenticationV1.CreateLoginPolicyRequest{
 		Data: &authenticationV1.LoginPolicy{
 			Method: authenticationV1.LoginPolicy_IP.Enum(),

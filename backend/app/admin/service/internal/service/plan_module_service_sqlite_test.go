@@ -12,6 +12,7 @@ import (
 	entCrud "github.com/tx7do/go-crud/entgo"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
+	"github.com/tx7do/go-utils/trans"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/ent"
@@ -38,7 +39,7 @@ func TestPlanModuleServiceSqlite_Create_AssociatesPlan(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanModuleServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	parent, err := entClient.Client().Plan.Create().
 		SetName("父套餐-白名单关联").
@@ -76,7 +77,7 @@ func TestPlanModuleServiceSqlite_List_BackfillsPlanId(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanModuleServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	parent, err := entClient.Client().Plan.Create().
 		SetName("父套餐-列表回填").
@@ -122,7 +123,7 @@ func TestPlanModuleServiceSqlite_Get(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanModuleServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	parent, err := entClient.Client().Plan.Create().
 		SetName("父套餐-Get路径").
@@ -160,7 +161,7 @@ func TestPlanModuleServiceSqlite_Update(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanModuleServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	parent, err := entClient.Client().Plan.Create().
 		SetName("父套餐-更新路径").
@@ -206,7 +207,7 @@ func TestPlanModuleServiceSqlite_Delete(t *testing.T) {
 	entClient := enttest.NewEntClientForTest(t)
 	svc := newPlanModuleServiceForTest(t, entClient)
 	ctx := enttest.NewSystemContext(context.Background())
-	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7})
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 
 	_, err := svc.Create(opCtx, &identityV1.CreatePlanModuleRequest{
 		Data: &identityV1.PlanModule{Module: identityV1.Module_SYSTEM.Enum()},
@@ -218,7 +219,7 @@ func TestPlanModuleServiceSqlite_Delete(t *testing.T) {
 	require.Len(t, rows, 1)
 	createdID := rows[0].ID
 
-	_, err = svc.Delete(ctx, &identityV1.DeletePlanModuleRequest{
+	_, err = svc.Delete(auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)}), &identityV1.DeletePlanModuleRequest{
 		QueryBy: &identityV1.DeletePlanModuleRequest_Id{Id: createdID},
 	})
 	require.NoError(t, err, "删除已存在记录应成功")
