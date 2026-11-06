@@ -10,6 +10,8 @@ import (
 
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/tx7do/go-utils/auditutil"
+
+	"go-wind-admin/pkg/netutil"
 	"github.com/tx7do/go-utils/trans"
 
 	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
@@ -113,7 +115,7 @@ func (a *ApiAuditLogMiddleware) Handle(ctx context.Context, htr *http.Transport,
 
 	apiAuditLog := &auditV1.ApiAuditLog{}
 
-	clientIp := auditutil.ClientRealIP(htr.Request())
+	clientIp := netutil.ClientRealIPFromRequest(htr.Request())
 	referer, _ := url.QueryUnescape(htr.RequestHeader().Get(HeaderKeyReferer))
 	requestUri, _ := url.QueryUnescape(htr.Request().RequestURI)
 	bodyBytes, _ := io.ReadAll(htr.Request().Body)

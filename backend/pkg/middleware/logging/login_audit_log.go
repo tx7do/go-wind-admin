@@ -9,6 +9,8 @@ import (
 
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/tx7do/go-utils/auditutil"
+
+	"go-wind-admin/pkg/netutil"
 	"github.com/tx7do/go-utils/timeutil"
 	"github.com/tx7do/go-utils/trans"
 
@@ -78,7 +80,7 @@ func (l *LoginAuditLogMiddleware) Handle(ctx context.Context, htr *http.Transpor
 	// 回传挑战上下文中的用户名（见 MfaService.VerifyMFAChallenge）。
 	auditUsername := htr.ReplyHeader().Get("X-Audit-Username")
 
-	clientIp := auditutil.ClientRealIP(htr.Request())
+	clientIp := netutil.ClientRealIPFromRequest(htr.Request())
 
 	loginAuditLog.IpAddress = trans.Ptr(clientIp)
 	loginAuditLog.CreatedAt = timeutil.TimeToTimestamppb(trans.Ptr(time.Now()))

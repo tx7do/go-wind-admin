@@ -39,6 +39,7 @@ import (
 	//_ "github.com/tx7do/kratos-bootstrap/tracer"
 
 	appCrypto "github.com/tx7do/go-utils/crypto"
+	"go-wind-admin/pkg/netutil"
 	"go-wind-admin/pkg/serviceid"
 )
 
@@ -72,6 +73,9 @@ func runApp() error {
 	// 注意：EncryptPayload 只在真正加密时才标记 IsEncryptedKey，因此未配置密钥
 	// 时 payload 以明文存储且不会被误判为已加密——调用方无需额外处理。
 	initGlobalEncryptorFromEnv()
+	// 可信代理链（P2 修复）：审计 IP 与登录限流取真实客户端 IP 的依据。
+	// 未配置 GOWIND_TRUSTED_PROXIES 时 XFF 一律不信任（直连部署防伪造）。
+	netutil.SetTrustedProxiesFromEnv()
 
 	ctx := bootstrap.NewContext(
 		context.Background(),
