@@ -466,7 +466,7 @@ func TestUserProfileServiceSqlite_ChangePassword_BadCredentials(t *testing.T) {
 		NewPassword: profileEncCredential(t, "NewPass@5678"),
 	})
 	require.Error(t, err, "旧口令密文格式非法应被拒绝")
-	require.Contains(t, err.Error(), "invalid old credential format")
+	require.Contains(t, err.Error(), "decrypt old credential failed")
 
 	// 新口令密文非 base64。
 	_, err = env.svc.ChangePassword(opCtx, &identityV1.ChangePasswordRequest{
@@ -474,7 +474,7 @@ func TestUserProfileServiceSqlite_ChangePassword_BadCredentials(t *testing.T) {
 		NewPassword: "###not-base64###",
 	})
 	require.Error(t, err, "新口令密文格式非法应被拒绝")
-	require.Contains(t, err.Error(), "invalid new credential format")
+	require.Contains(t, err.Error(), "decrypt new credential failed")
 
 	// 旧口令错误。
 	_, err = env.svc.ChangePassword(opCtx, &identityV1.ChangePasswordRequest{

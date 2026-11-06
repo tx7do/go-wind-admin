@@ -4,7 +4,7 @@
  */
 import { ref } from "vue";
 import { apiClient } from "@/api/client";
-import { encryptPassword } from "@/utils";
+import { encryptPasswordEnvelope } from "@/utils";
 import { router } from "@/router";
 
 import { DEFAULT_HOME_PATH } from "@/constants";
@@ -104,7 +104,7 @@ async function login(
 
     const resp = await authLogin({
       username: params.username,
-      password: encryptPassword(params.password),
+      password: await encryptPasswordEnvelope(params.password),
       tenant_code: params.tenant_code,
       grant_type: "password",
     });

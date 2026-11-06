@@ -4,7 +4,7 @@ import {
   useQuery,
   type UseQueryOptions,
 } from "@tanstack/vue-query";
-import { encryptPassword } from "@/utils";
+import { encryptPasswordEnvelope } from "@/utils";
 import type {
   identityservicev1_User,
   identityservicev1_ChangePasswordRequest,
@@ -61,10 +61,10 @@ export function useChangePassword(
 ) {
   return useMutation({
     // 后端 NeedDecrypt 要求 AES 密文传输（与登录同规），明文会被当密文解密导致校验必败
-    mutationFn: (data) =>
+    mutationFn: async (data) =>
       apiClient.userProfileService.ChangePassword({
-        oldPassword: encryptPassword(data.oldPassword ?? ""),
-        newPassword: encryptPassword(data.newPassword ?? ""),
+        oldPassword: await encryptPasswordEnvelope(data.oldPassword ?? ""),
+        newPassword: await encryptPasswordEnvelope(data.newPassword ?? ""),
       }),
     ...options,
   });

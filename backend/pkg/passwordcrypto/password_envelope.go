@@ -155,9 +155,9 @@ func EncryptPasswordEnvelope(plain string) (string, error) {
 	}
 
 	return EnvelopePrefix +
-		base64.RawStdEncoding.EncodeToString(wrapped) + ":" +
-		base64.RawStdEncoding.EncodeToString(nonce) + ":" +
-		base64.RawStdEncoding.EncodeToString(cipherText), nil
+		base64.StdEncoding.EncodeToString(wrapped) + ":" +
+		base64.StdEncoding.EncodeToString(nonce) + ":" +
+		base64.StdEncoding.EncodeToString(cipherText), nil
 }
 
 // DecryptTransferPassword 统一口令传输解密入口：
@@ -175,9 +175,9 @@ func DecryptTransferPassword(v string) (string, error) {
 		if len(parts) != 3 {
 			return "", errors.New("passwordcrypto: malformed envelope")
 		}
-		wrapped, err1 := base64.RawStdEncoding.DecodeString(parts[0])
-		nonce, err2 := base64.RawStdEncoding.DecodeString(parts[1])
-		cipherText, err3 := base64.RawStdEncoding.DecodeString(parts[2])
+		wrapped, err1 := base64.StdEncoding.DecodeString(parts[0])
+		nonce, err2 := base64.StdEncoding.DecodeString(parts[1])
+		cipherText, err3 := base64.StdEncoding.DecodeString(parts[2])
 		if err1 != nil || err2 != nil || err3 != nil {
 			return "", errors.New("passwordcrypto: malformed envelope base64")
 		}

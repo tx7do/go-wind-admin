@@ -155,10 +155,10 @@ func (m *LoginRequest) validate(all bool) error {
 
 	if m.Password != nil {
 
-		if utf8.RuneCountInString(m.GetPassword()) > 128 {
+		if utf8.RuneCountInString(m.GetPassword()) > 1024 {
 			err := LoginRequestValidationError{
 				field:  "Password",
-				reason: "value length must be at most 128 runes",
+				reason: "value length must be at most 1024 runes",
 			}
 			if !all {
 				return err

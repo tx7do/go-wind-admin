@@ -14,7 +14,7 @@ import {
 } from '@/api/generated/admin/service/v1';
 import { apiClient } from '@/api/client';
 import { makeUpdateMask, queryClient } from '@/core';
-import { encryptPassword } from '@/utils';
+import { encryptPasswordEnvelope } from '@/utils';
 
 /**
  * 获取当前用户
@@ -61,10 +61,10 @@ export function useChangePassword(
 ) {
   return useMutation({
     // 后端 NeedDecrypt 要求 AES 密文传输（与登录同规），明文会被当密文解密导致校验必败
-    mutationFn: (data) =>
+    mutationFn: async (data) =>
       apiClient.userProfileService.ChangePassword({
-        oldPassword: encryptPassword(data.oldPassword ?? ''),
-        newPassword: encryptPassword(data.newPassword ?? ''),
+        oldPassword: await encryptPasswordEnvelope(data.oldPassword ?? ''),
+        newPassword: await encryptPasswordEnvelope(data.newPassword ?? ''),
       }),
     ...options,
   });
@@ -78,7 +78,7 @@ export function useUploadAvatar(
   >,
 ) {
   return useMutation({
-    mutationFn: (data) => apiClient.userProfileService.UploadAvatar(data),
+    mutationFn: async (data) => apiClient.userProfileService.UploadAvatar(data),
     ...options,
   });
 }
@@ -94,7 +94,7 @@ export function useBindContact(
   options?: UseMutationOptions<{}, Error, identityservicev1_BindContactRequest>,
 ) {
   return useMutation({
-    mutationFn: (data) => apiClient.userProfileService.BindContact(data),
+    mutationFn: async (data) => apiClient.userProfileService.BindContact(data),
     ...options,
   });
 }
@@ -103,7 +103,7 @@ export function useVerifyContact(
   options?: UseMutationOptions<{}, Error, identityservicev1_VerifyContactRequest>,
 ) {
   return useMutation({
-    mutationFn: (data) => apiClient.userProfileService.VerifyContact(data),
+    mutationFn: async (data) => apiClient.userProfileService.VerifyContact(data),
     ...options,
   });
 }

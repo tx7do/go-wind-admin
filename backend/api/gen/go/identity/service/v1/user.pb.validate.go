@@ -1735,10 +1735,10 @@ func (m *EditUserPasswordRequest) validate(all bool) error {
 
 	// no validation rules for UserId
 
-	if l := utf8.RuneCountInString(m.GetNewPassword()); l < 8 || l > 128 {
+	if l := utf8.RuneCountInString(m.GetNewPassword()); l < 8 || l > 1024 {
 		err := EditUserPasswordRequestValidationError{
 			field:  "NewPassword",
-			reason: "value length must be between 8 and 128 runes, inclusive",
+			reason: "value length must be between 8 and 1024 runes, inclusive",
 		}
 		if !all {
 			return err
@@ -1848,10 +1848,10 @@ func (m *ChangePasswordRequest) validate(all bool) error {
 
 	var errors []error
 
-	if utf8.RuneCountInString(m.GetOldPassword()) > 128 {
+	if utf8.RuneCountInString(m.GetOldPassword()) > 1024 {
 		err := ChangePasswordRequestValidationError{
 			field:  "OldPassword",
-			reason: "value length must be at most 128 runes",
+			reason: "value length must be at most 1024 runes",
 		}
 		if !all {
 			return err
@@ -1859,10 +1859,10 @@ func (m *ChangePasswordRequest) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if l := utf8.RuneCountInString(m.GetNewPassword()); l < 8 || l > 128 {
+	if l := utf8.RuneCountInString(m.GetNewPassword()); l < 8 || l > 1024 {
 		err := ChangePasswordRequestValidationError{
 			field:  "NewPassword",
-			reason: "value length must be between 8 and 128 runes, inclusive",
+			reason: "value length must be between 8 and 1024 runes, inclusive",
 		}
 		if !all {
 			return err

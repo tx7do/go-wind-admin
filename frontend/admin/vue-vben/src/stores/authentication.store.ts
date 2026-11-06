@@ -1,5 +1,5 @@
 import type { Recordable, UserInfo } from '@vben/types';
-import { encryptPassword } from '#/utils';
+import { encryptPasswordEnvelope } from '#/utils';
 
 import { ref } from 'vue';
 
@@ -76,7 +76,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       const resp = await loginMutation.execute({
         username: params.username,
-        password: encryptPassword(params.password),
+        password: await encryptPasswordEnvelope(params.password),
         tenant_code: params.tenant_code,
         grant_type: 'password',
       });

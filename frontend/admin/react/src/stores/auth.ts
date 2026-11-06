@@ -2,7 +2,7 @@ import { create, type StoreApi } from 'zustand';
 import { persist } from 'zustand/middleware';
 import i18next from 'i18next';
 
-import { encryptPassword } from '@/utils';
+import { encryptPasswordEnvelope } from '@/utils';
 import { apiClient } from '@/api/client';
 import {
   type authenticationservicev1_LoginRequest,
@@ -158,7 +158,7 @@ export const useAuthStore = create<AuthState>()(
           }
           const response = await loginMutation.execute({
             ...params,
-            password: encryptPassword(params.password || ''),
+            password: await encryptPasswordEnvelope(params.password || ''),
           });
 
           console.log('🔐 Login response:', {

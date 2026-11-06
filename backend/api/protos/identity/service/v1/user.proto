@@ -352,7 +352,7 @@ message EditUserPasswordRequest {
     (gnostic.openapi.v3.property) = {
       description: "新密码"
     },
-    (validate.rules).string = {min_len: 8, max_len: 128}
+    (validate.rules).string = {min_len: 8, max_len: 1024}
   ]; // 新密码
 }
 
@@ -364,7 +364,7 @@ message ChangePasswordRequest {
     (gnostic.openapi.v3.property) = {
           description: "旧密码"
         },
-    (validate.rules).string.max_len = 128
+    (validate.rules).string.max_len = 1024
   ]; // 旧密码
 
   string new_password = 2 [
@@ -372,7 +372,7 @@ message ChangePasswordRequest {
     (gnostic.openapi.v3.property) = {
           description: "新密码"
         },
-    (validate.rules).string = {min_len: 8, max_len: 128}
+    (validate.rules).string = {min_len: 8, max_len: 1024}
   ]; // 新密码
 }
 
