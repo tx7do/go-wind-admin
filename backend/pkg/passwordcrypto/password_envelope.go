@@ -121,6 +121,33 @@ func loadPrivateKey(pemStr string) {
 // ReloadFromEnv 重新装载私钥（env 热变更/测试用）。
 func ReloadFromEnv() { loadPrivateKey(os.Getenv(EnvPrivateKey)) }
 
+// UsingDevPrivateKey 是否仍在使用内置开发私钥（部署侧据此打启动告警：
+// 生产必须以 env 覆盖，否则任何持有本仓源码者可解密口令信封）。
+func UsingDevPrivateKey() bool {
+	key := privateKey()
+	if key == nil {
+		return false
+	}
+	dev, err := parseDevPrivateKey()
+	if err != nil {
+		return false
+	}
+	return key.Equal(dev)
+}
+
+func parseDevPrivateKey() (*rsa.PrivateKey, error) {
+	block, _ := pem.Decode([]byte(devPrivatePEM))
+	if block == nil {
+		return nil, errors.New("dev pem decode failed")
+	}
+	key, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+	if err != nil {
+		return x509.ParsePKCS1PrivateKey(block.Bytes)
+	}
+	rsaKey, _ := key.(*rsa.PrivateKey)
+	return rsaKey, nil
+}
+
 func privateKey() *rsa.PrivateKey {
 	mu.RLock()
 	defer mu.RUnlock()
