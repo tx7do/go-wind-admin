@@ -57,9 +57,15 @@ func (s *tenantServiceUserRepoStub) CountByTenantIDs(_ context.Context, tenantID
 	return counts, nil
 }
 
+// tenantAdminCtx 平台管理员操作者上下文（四读口已收平台闸）。
+func tenantPlatAdminCtx(ctx context.Context) context.Context {
+	return auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 4242, IsPlatformAdmin: trans.Ptr(true)})
+}
+
 // newTenantServiceForTest 白盒复刻 NewTenantService 的字段初始化：
 // log 换 NopLogger，repo 用 testkit 构造器，userRepo 用本文件桩；
 // userCredentialsRepo / authorizer 仅 CreateTenantWithAdminUser 使用，置 nil。
+
 func newTenantServiceForTest(t *testing.T) *TenantService {
 	t.Helper()
 	entClient := enttest.NewEntClientForTest(t)
@@ -101,7 +107,7 @@ func TestTenantServiceSqlite_ListEnrichment(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, withoutAdmin)
 
-	resp, err := svc.List(ctx, &paginationV1.PagingRequest{})
+	resp, err := svc.List(tenantPlatAdminCtx(ctx), &paginationV1.PagingRequest{})
 	require.NoError(t, err)
 	require.Equal(t, uint64(2), resp.GetTotal(), "两条租户都应出现在列表中")
 	require.Len(t, resp.GetItems(), 2)
@@ -138,7 +144,7 @@ func TestTenantServiceSqlite_GetEnrichment(t *testing.T) {
 	require.NoError(t, err)
 	require.NotNil(t, created.Id)
 
-	resp, err := svc.Get(ctx, &identityV1.GetTenantRequest{
+	resp, err := svc.Get(tenantPlatAdminCtx(ctx), &identityV1.GetTenantRequest{
 		QueryBy: &identityV1.GetTenantRequest_Id{Id: created.GetId()},
 	})
 	require.NoError(t, err)
@@ -163,15 +169,15 @@ func TestTenantServiceSqlite_TenantExists(t *testing.T) {
 	})
 	require.NoError(t, err)
 
-	byCode, err := svc.TenantExists(ctx, &identityV1.TenantExistsRequest{Code: "TENANTSVC_EXISTS_A"})
+	byCode, err := svc.TenantExists(tenantPlatAdminCtx(ctx), &identityV1.TenantExistsRequest{Code: "TENANTSVC_EXISTS_A"})
 	require.NoError(t, err)
 	require.True(t, byCode.GetExist(), "按已存在 code 查询应返回存在")
 
-	byName, err := svc.TenantExists(ctx, &identityV1.TenantExistsRequest{Name: "TenantSvc 存在性租户甲"})
+	byName, err := svc.TenantExists(tenantPlatAdminCtx(ctx), &identityV1.TenantExistsRequest{Name: "TenantSvc 存在性租户甲"})
 	require.NoError(t, err)
 	require.True(t, byName.GetExist(), "按已存在 name 查询应返回存在")
 
-	byAbsent, err := svc.TenantExists(ctx, &identityV1.TenantExistsRequest{Code: "TENANTSVC_EXISTS_NOT_EXIST"})
+	byAbsent, err := svc.TenantExists(tenantPlatAdminCtx(ctx), &identityV1.TenantExistsRequest{Code: "TENANTSVC_EXISTS_NOT_EXIST"})
 	require.NoError(t, err)
 	require.False(t, byAbsent.GetExist(), "按不存在的 code 查询应返回不存在")
 }
@@ -196,7 +202,7 @@ func TestTenantServiceSqlite_CreateAndDelete(t *testing.T) {
 	require.NoError(t, err, "service.Create 应走完操作人注入与事务创建")
 
 	var createdID uint32
-	listResp, err := svc.List(baseCtx, &paginationV1.PagingRequest{})
+	listResp, err := svc.List(tenantPlatAdminCtx(baseCtx), &paginationV1.PagingRequest{})
 	require.NoError(t, err)
 	require.Equal(t, uint64(1), listResp.GetTotal(), "创建后列表应恰好包含该租户")
 	require.Len(t, listResp.GetItems(), 1)
@@ -210,7 +216,7 @@ func TestTenantServiceSqlite_CreateAndDelete(t *testing.T) {
 	})
 	require.NoError(t, err, "service.Delete 应删除该租户")
 
-	after, err := svc.List(baseCtx, &paginationV1.PagingRequest{})
+	after, err := svc.List(tenantPlatAdminCtx(baseCtx), &paginationV1.PagingRequest{})
 	require.NoError(t, err)
 	require.Equal(t, uint64(0), after.GetTotal(), "删除后列表应为空")
 	require.Empty(t, after.GetItems())

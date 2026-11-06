@@ -12,12 +12,48 @@ import (
 	"sync"
 	"time"
 
+	ktransport "github.com/go-kratos/kratos/v2/transport"
+	khttp "github.com/go-kratos/kratos/v2/transport/http"
+
 	"github.com/tx7do/go-utils/id"
 	"github.com/tx7do/go-utils/trans"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
+
+// ssoStateCookieName state 浏览器绑定 cookie 名（login CSRF 防线）。
+const (
+	ssoStateCookieName = "sso_state"
+	ssoStateCookiePath = "/admin/v1"
+)
+
+// setSsoStateCookie 把 state 以 HttpOnly cookie 绑定到发起浏览器。
+// SameSite=Lax + 短时效（10 分钟足够走完 IdP 授权跳转）；REST 入口才种
+// （非 HTTP 传输无 cookie 通道）。Secure 由 TLS 形态自适应。
+func setSsoStateCookie(ctx context.Context, state string) {
+	tr, ok := ktransport.FromServerContext(ctx)
+	if !ok {
+		return
+	}
+	htr, hok := tr.(*khttp.Transport)
+	if !hok || htr.Response() == nil {
+		return
+	}
+	secure := false
+	if htr.Request() != nil && htr.Request().TLS != nil {
+		secure = true
+	}
+	http.SetCookie(htr.Response(), &http.Cookie{
+		Name:     ssoStateCookieName,
+		Value:    state,
+		Path:     ssoStateCookiePath,
+		MaxAge:   600,
+		Secure:   secure,
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+	})
+}
 
 // ==== OIDC SSO 配置（环境变量，opt-in）====
 
@@ -165,6 +201,9 @@ func (s *AuthenticationService) GetSsoLoginUrl(ctx context.Context, _ *authentic
 	if err := s.ssoStateCache.Put(ctx, state); err != nil {
 		return nil, authenticationV1.ErrorInternalServerError("store sso state failed")
 	}
+	// login CSRF 防线（P2 修复）：state 以 HttpOnly cookie 绑定到发起浏览器，
+	// 回调（SsoLogin）时双向比对——仅持有 state 值的攻击者无法替受害者完成登录。
+	setSsoStateCookie(ctx, state)
 
 	authURL := fmt.Sprintf("%s?response_type=code&client_id=%s&redirect_uri=%s&scope=%s&state=%s",
 		discovery.AuthorizationEndpoint,
@@ -203,7 +242,30 @@ func (s *AuthenticationService) SsoLogin(ctx context.Context, req *authenticatio
 	//（此时无 viewer，TenantPrivacy 会拒绝查询）。SSO 是登录入口，同权。
 	ctx = s.resetContextForLogin(ctx)
 
-	// 1. state 单次验证取删（防 CSRF 与回调重放）
+	// 1. state 浏览器绑定校验（P2 修复，login CSRF 防线）：
+	// REST 入口强制比对 cookie 与 query 中的 state——攻击者诱导受害者回调自己
+	// 的 state+code 时，受害者浏览器没有对应 cookie，即 403。
+	// 非 HTTP 传输（内部调用/单测）无 cookie 通道，跳过。
+	if tr, tok := ktransport.FromServerContext(ctx); tok {
+		if htr, hok := tr.(*khttp.Transport); hok {
+			cookie, cerr := htr.Request().Cookie(ssoStateCookieName)
+			if cerr != nil || cookie.Value != req.GetState() {
+				s.log.Warnf(ctx, "sso login: state browser binding mismatch")
+				return nil, authenticationV1.ErrorForbidden("sso state browser binding mismatch")
+			}
+			// 用后即清（一次浏览器绑定只服务一次回调）
+			http.SetCookie(htr.Response(), &http.Cookie{
+				Name:     ssoStateCookieName,
+				Value:    "",
+				Path:     ssoStateCookiePath,
+				MaxAge:   -1,
+				HttpOnly: true,
+				SameSite: http.SameSiteLaxMode,
+			})
+		}
+	}
+
+	// 2. state 单次验证取删（防 CSRF 与回调重放）
 	ok, err := s.ssoStateCache.Take(ctx, req.GetState())
 	if err != nil {
 		return nil, authenticationV1.ErrorInternalServerError("validate sso state failed")

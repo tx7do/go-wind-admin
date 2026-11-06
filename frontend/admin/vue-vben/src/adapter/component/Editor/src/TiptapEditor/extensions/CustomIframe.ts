@@ -1,6 +1,27 @@
 import { mergeAttributes, Node } from '@tiptap/core';
 
 /**
+ * P2 修复：校验 iframe src（对齐 react 端 sanitizeIframeSrc 口径）。
+ * 允许同源相对路径或 https 绝对 URL；拒绝 javascript:/data:/http:/协议相对
+ * `//` 等——富文本内容可能来自他人，`javascript:` src 会在编辑者浏览器执行。
+ */
+function sanitizeIframeSrc(raw: unknown): string {
+  if (typeof raw !== 'string' || !raw) return '';
+  const trimmed = raw.trim();
+  if (trimmed.startsWith('/') && !trimmed.startsWith('//')) {
+    return trimmed;
+  }
+  try {
+    const u = new URL(trimmed);
+    if (u.protocol === 'https:') return trimmed;
+  } catch {
+    // 非合法 URL
+  }
+  return '';
+}
+
+
+/**
  * 自定义 Iframe 扩展
  * - 支持嵌入外部页面
  * - 自定义宽、高、标题、全屏属性
@@ -15,10 +36,11 @@ export const CustomIframe = Node.create({
     return {
       src: {
         default: null,
-        parseHTML: (element) => element.getAttribute('src'),
+        parseHTML: (element) => sanitizeIframeSrc(element.getAttribute('src')) || null,
         renderHTML: (attributes) => {
-          if (!attributes.src) return {};
-          return { src: attributes.src };
+          const safe = sanitizeIframeSrc(attributes.src);
+          if (!safe) return {};
+          return { src: safe };
         },
       },
       width: {

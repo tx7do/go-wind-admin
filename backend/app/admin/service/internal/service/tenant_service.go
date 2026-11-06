@@ -137,6 +137,11 @@ func (s *TenantService) enrichRelations(ctx context.Context, tenants []*identity
 }
 
 func (s *TenantService) List(ctx context.Context, req *paginationV1.PagingRequest) (*identityV1.ListTenantResponse, error) {
+	// 读口同写口收平台管理员（P2 修复）：租户名录含全平台客户名称/状态/到期/套餐，
+	// 租户侧自查走 MyTenantUsageService，不经本服务。
+	if err := requirePlatformAdmin(ctx, s.log, "tenant list"); err != nil {
+		return nil, err
+	}
 	resp, err := s.tenantRepo.List(ctx, req)
 	if err != nil {
 		return nil, err
@@ -159,6 +164,9 @@ func (s *TenantService) Count(ctx context.Context, req *paginationV1.PagingReque
 }
 
 func (s *TenantService) Get(ctx context.Context, req *identityV1.GetTenantRequest) (*identityV1.Tenant, error) {
+	if err := requirePlatformAdmin(ctx, s.log, "tenant detail"); err != nil {
+		return nil, err
+	}
 	resp, err := s.tenantRepo.Get(ctx, req)
 	if err != nil {
 		return nil, err
@@ -239,6 +247,10 @@ func (s *TenantService) Delete(ctx context.Context, req *identityV1.DeleteTenant
 }
 
 func (s *TenantService) TenantExists(ctx context.Context, req *identityV1.TenantExistsRequest) (*identityV1.TenantExistsResponse, error) {
+	// 唯一消费方是平台管理员的租户抽屉 code/name 查重，随读口一并收闸。
+	if err := requirePlatformAdmin(ctx, s.log, "tenant exists"); err != nil {
+		return nil, err
+	}
 	return s.tenantRepo.TenantExists(ctx, req)
 }
 

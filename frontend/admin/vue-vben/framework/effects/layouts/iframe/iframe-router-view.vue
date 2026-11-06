@@ -10,6 +10,27 @@ import { VbenSpinner } from '@vben-core/shadcn-ui';
 
 defineOptions({ name: 'IFrameRouterView' });
 
+/**
+ * P2 修复：校验 iframe src 是否安全（对齐 react 端 IFrameLayout 的
+ * sanitizeIframeSrc）。允许同源相对路径（以 / 开头且不以 // 开头）或 https
+ * 绝对 URL；拒绝 http、//、javascript:、data: 及任意 scheme——iframeSrc 来自
+ * 后端菜单 meta，能配菜单的角色可借 javascript: 在管理员浏览器执行脚本。
+ */
+function sanitizeIframeSrc(raw: string | undefined | null): string {
+  if (!raw) return '';
+  const trimmed = raw.trim();
+  if (trimmed.startsWith('/') && !trimmed.startsWith('//')) {
+    return trimmed;
+  }
+  try {
+    const u = new URL(trimmed);
+    if (u.protocol === 'https:') return trimmed;
+  } catch {
+    // 非合法 URL
+  }
+  return '';
+}
+
 const spinningList = ref<boolean[]>([]);
 const tabbarStore = useTabbarStore();
 const route = useRoute();
@@ -75,7 +96,8 @@ function showSpinning(index: number) {
       >
         <VbenSpinner :spinning="showSpinning(index)" />
         <iframe
-          :src="item.meta.iframeSrc as string"
+          v-if="sanitizeIframeSrc(item.meta.iframeSrc as string)"
+          :src="sanitizeIframeSrc(item.meta.iframeSrc as string)"
           class="size-full"
           @load="hideLoading(index)"
         ></iframe>
