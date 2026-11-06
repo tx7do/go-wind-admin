@@ -47,6 +47,11 @@ type RuntimeDeps struct {
 	OSSClient       *oss.MinIOClient  // 可为 nil，nil 时跳过 oss 模块
 	AI              api.AICompleter   // 可为 nil，nil 时跳过 ai 模块
 	Orchestrator    *Engine           // 用于 hook.register 反向回调注册
+
+	// Serialize 在引擎全局执行锁（execMu）保护下运行 fn（P2 修复）。
+	// 事件总线处理器等"从外部 goroutine 触碰共享 VM"的入口必须经它串行——
+	// 编排器单 VM 串行化是正确性前提；实现自带防重入（已持锁时排队）。
+	Serialize func(fn func())
 }
 
 // RuntimeBinder 负责将业务 API、执行上下文函数、hook.register 等

@@ -2,6 +2,8 @@ package server
 
 import (
 	"context"
+	nethttp "net/http"
+	"strings"
 
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/go-kratos/kratos/v2/middleware"
@@ -9,6 +11,7 @@ import (
 	"github.com/go-kratos/kratos/v2/middleware/recovery"
 	"github.com/go-kratos/kratos/v2/middleware/selector"
 	"github.com/go-kratos/kratos/v2/middleware/validate"
+	"github.com/go-kratos/kratos/v2/transport"
 	"github.com/go-kratos/kratos/v2/transport/http"
 
 	authz "github.com/tx7do/kratos-authz/middleware"
@@ -28,6 +31,7 @@ import (
 
 	"github.com/tx7do/go-crud/viewer"
 	"github.com/tx7do/go-utils/authorizer"
+	"github.com/tx7do/go-utils/ossutil"
 	"go-wind-admin/pkg/middleware/auth"
 	applogging "go-wind-admin/pkg/middleware/logging"
 )
@@ -49,6 +53,10 @@ func NewRestMiddleware(
 	// recovery 必须置于链首：任何中间件/handler 的 panic（如审计日志解析畸形 JWT）
 	// 兜底为 500，避免崩溃请求 goroutine、被用作未认证 DoS。
 	ms = append(ms, recovery.Recovery())
+	// P2 修复：上传路由请求体上限——生成代码的 multipart 解码先全量 io.Copy 进
+	// 内存再校验大小，且 REST 服务端此前无任何 body 上限，单请求数 GB body 即可
+	// 令进程内存暴涨（并发即 OOM）。上限 = MaxUploadSize + 1MB（multipart 编码余量）。
+	ms = append(ms, uploadBodyLimit())
 	ms = append(ms, logging.Server(bLogger.AsKratosLogger(ctx.GetLogger())))
 
 	ms = append(ms, applogging.Server(
@@ -119,6 +127,29 @@ func NewRestMiddleware(
 	)
 
 	return ms
+}
+
+// uploadBodyLimit 上传路由的请求体上限中间件（P2 修复）。
+// kratos 中间件先于 handler 执行，此处替换 http.Request.Body 后，生成代码的
+// multipart 解码（io.Copy 全量入内存）读到的是被限流的流。
+func uploadBodyLimit() middleware.Middleware {
+	const uploadPathSuffix = "/file/upload"
+	const maxUploadBody = ossutil.MaxUploadSize + 1<<20 // 50MiB + multipart 编码余量
+
+	return func(handler middleware.Handler) middleware.Handler {
+		return func(ctx context.Context, req interface{}) (interface{}, error) {
+			if tr, ok := transport.FromServerContext(ctx); ok {
+				if htr, ok := tr.(*http.Transport); ok && htr.Request() != nil {
+					r := htr.Request()
+					if (r.Method == "POST" || r.Method == "PUT") &&
+						strings.HasSuffix(r.URL.Path, uploadPathSuffix) {
+						r.Body = nethttp.MaxBytesReader(htr.Response(), r.Body, maxUploadBody)
+					}
+				}
+			}
+			return handler(ctx, req)
+		}
+	}
 }
 
 // NewRestServer new an REST server.

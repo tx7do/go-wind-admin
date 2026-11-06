@@ -211,6 +211,22 @@ func (e *Engine) buildBindHook(binder RuntimeBinder) gsEngine.RuntimeHook {
 			OSSClient:       e.ossClient,
 			AI:              e.aiCompleter,
 			Orchestrator:    e,
+			// P2 修复：外部 goroutine（事件总线处理器）触碰共享 VM 必须经
+			// execMu 串行——此前的直调路径与钩子/任务执行并发操作同一 VM，
+			// 是数据竞争与未定义行为。TryLock 已持锁（脚本内同步 publish）
+			// 时排队到独立 goroutine，避免可重入死锁。
+			Serialize: func(fn func()) {
+				if e.execMu.TryLock() {
+					fn()
+					e.execMu.Unlock()
+					return
+				}
+				go func() {
+					e.execMu.Lock()
+					defer e.execMu.Unlock()
+					fn()
+				}()
+			},
 		}
 		return binder.Bind(e.scriptEngine, deps)
 	}

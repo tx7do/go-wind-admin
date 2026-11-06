@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -17,6 +18,26 @@ import (
 func RegisterOSS(L *lua.LState, ossClient *oss.MinIOClient, logger *bLogger.Helper) {
 	// Register in package.preload so it can be required
 	L.PreloadModule("kratos_oss", LoaderOSS(ossClient, logger))
+}
+
+// scriptAllowedBuckets 脚本 oss 模块允许操作的桶白名单（MIME 映射的业务桶集合）。
+// P2 修复：脚本此前可对任意桶 list/upload/delete/ensure（平台全局 MinIO 凭据）——
+// 可枚举 backups 桶的灾备导出文件名、覆盖/删除他租户对象、随意建桶。平台系统桶
+//（backups 等）与任意新建桶一律拒绝。
+var scriptAllowedBuckets = map[string]bool{
+	ossutil.BucketImages: true,
+	ossutil.BucketVideos: true,
+	ossutil.BucketAudios: true,
+	ossutil.BucketDocs:   true,
+	ossutil.BucketFiles:  true,
+}
+
+// checkScriptBucket 脚本侧桶名白名单校验。
+func checkScriptBucket(bucketName string) error {
+	if !scriptAllowedBuckets[bucketName] {
+		return fmt.Errorf("bucket %q is not allowed for scripts", bucketName)
+	}
+	return nil
 }
 
 // LoaderOSS 返回 oss 模块（kratos_oss）的 loader，供 go-scripts 引擎 RegisterModule 使用。
@@ -75,6 +96,10 @@ func LoaderOSS(ossClient *oss.MinIOClient, logger *bLogger.Helper) lua.LGFunctio
 			} else {
 				finalBucketName = ossutil.ContentTypeToBucketName(contentType)
 			}
+			if gerr := checkScriptBucket(finalBucketName); gerr != nil {
+				L.RaiseError("%v", gerr)
+				return 0
+			}
 
 			// Generate object name
 			objectName, _ := ossutil.JoinObjectName(contentType, filePath, fileName)
@@ -115,6 +140,10 @@ func LoaderOSS(ossClient *oss.MinIOClient, logger *bLogger.Helper) lua.LGFunctio
 			bucketName := options.RawGetString("bucket_name").String()
 			if bucketName == "" {
 				L.RaiseError("bucket_name is required")
+				return 0
+			}
+			if gerr := checkScriptBucket(bucketName); gerr != nil {
+				L.RaiseError("%v", gerr)
 				return 0
 			}
 
@@ -164,6 +193,10 @@ func LoaderOSS(ossClient *oss.MinIOClient, logger *bLogger.Helper) lua.LGFunctio
 		ossModule.RawSetString("delete_file", L.NewFunction(func(L *lua.LState) int {
 			bucketName := L.CheckString(1)
 			objectName := L.CheckString(2)
+			if gerr := checkScriptBucket(bucketName); gerr != nil {
+				L.RaiseError("%v", gerr)
+				return 0
+			}
 
 			ctx := context.Background()
 			err := ossClient.GetClient().RemoveObject(ctx, bucketName, objectName, minio.RemoveObjectOptions{})
@@ -184,6 +217,10 @@ func LoaderOSS(ossClient *oss.MinIOClient, logger *bLogger.Helper) lua.LGFunctio
 			bucketName := L.CheckString(1)
 			objectName := L.CheckString(2)
 			content := L.CheckString(3)
+			if gerr := checkScriptBucket(bucketName); gerr != nil {
+				L.RaiseError("%v", gerr)
+				return 0
+			}
 
 			ctx := context.Background()
 			_, _, downloadURL, err := ossClient.UploadFile(ctx, bucketName, objectName, "", []byte(content))
@@ -202,6 +239,10 @@ func LoaderOSS(ossClient *oss.MinIOClient, logger *bLogger.Helper) lua.LGFunctio
 		// Ensure a bucket exists, create if it doesn't
 		ossModule.RawSetString("ensure_bucket", L.NewFunction(func(L *lua.LState) int {
 			bucketName := L.CheckString(1)
+			if gerr := checkScriptBucket(bucketName); gerr != nil {
+				L.RaiseError("%v", gerr)
+				return 0
+			}
 
 			ctx := context.Background()
 			err := ossClient.EnsureBucketExists(ctx, bucketName)

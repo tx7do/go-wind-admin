@@ -18,10 +18,29 @@ type LuaEventHandler struct {
 	function *lua.LFunction
 	logger   *bLogger.Helper
 	mu       sync.Mutex
+
+	// serialize 引擎全局执行锁（execMu）串行入口（P2 修复注入）：
+	// 事件分发在独立 goroutine 上运行，直调 PCall 会与钩子/任务执行并发操作
+	// 同一 LState（数据竞争/状态破坏）。实现自带防重入：脚本内同步 publish
+	// 时已持锁，排队到独立 goroutine 执行。
+	serialize func(fn func())
 }
 
 // Handle executes the Lua function when an event is received
 func (h *LuaEventHandler) Handle(ctx context.Context, event *eventbus.Event) error {
+	if h.serialize == nil {
+		// 无串行入口（旧装配/测试桩）：保持原直调语义
+		return h.invoke(ctx, event)
+	}
+	var runErr error
+	h.serialize(func() {
+		runErr = h.invoke(ctx, event)
+	})
+	return runErr
+}
+
+// invoke 在（调用方保证的）引擎串行保护内执行处理器。
+func (h *LuaEventHandler) invoke(ctx context.Context, event *eventbus.Event) error {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
@@ -61,17 +80,17 @@ func (h *LuaEventHandler) Handle(ctx context.Context, event *eventbus.Event) err
 }
 
 // RegisterEventBus registers the EventBus API for Lua
-func RegisterEventBus(L *lua.LState, manager *eventbus.Manager, logger *bLogger.Helper) {
+func RegisterEventBus(L *lua.LState, manager *eventbus.Manager, logger *bLogger.Helper, serialize func(fn func())) {
 	// Store manager in registry for later access (kept as internal global)
 	L.SetGlobal("_eventbus_manager", lua.LString("internal"))
 
 	// Register in package.preload so it can be required
-	L.PreloadModule("kratos_eventbus", LoaderEventBus(manager, logger))
+	L.PreloadModule("kratos_eventbus", LoaderEventBus(manager, logger, serialize))
 }
 
 // LoaderEventBus 返回 eventbus 模块（kratos_eventbus）的 loader，供 go-scripts 引擎 RegisterModule 使用。
 // manager 为 nil 时返回空模块。
-func LoaderEventBus(manager *eventbus.Manager, logger *bLogger.Helper) lua.LGFunction {
+func LoaderEventBus(manager *eventbus.Manager, logger *bLogger.Helper, serialize func(fn func())) lua.LGFunction {
 	return func(L *lua.LState) int {
 		if manager == nil {
 			L.Push(L.NewTable())
@@ -98,9 +117,10 @@ func LoaderEventBus(manager *eventbus.Manager, logger *bLogger.Helper) lua.LGFun
 
 			// Create Lua handler wrapper
 			handler := &LuaEventHandler{
-				L:        L,
-				function: handlerFunc,
-				logger:   logger,
+				L:         L,
+				function:  handlerFunc,
+				logger:    logger,
+				serialize: serialize,
 			}
 
 			err := bus.Subscribe(eventType, handler)
@@ -125,9 +145,10 @@ func LoaderEventBus(manager *eventbus.Manager, logger *bLogger.Helper) lua.LGFun
 			bus := getBus(L, busName)
 
 			handler := &LuaEventHandler{
-				L:        L,
-				function: handlerFunc,
-				logger:   logger,
+				L:         L,
+				function:  handlerFunc,
+				logger:    logger,
+				serialize: serialize,
 			}
 
 			err := bus.SubscribeAsync(eventType, handler)
@@ -152,9 +173,10 @@ func LoaderEventBus(manager *eventbus.Manager, logger *bLogger.Helper) lua.LGFun
 			bus := getBus(L, busName)
 
 			handler := &LuaEventHandler{
-				L:        L,
-				function: handlerFunc,
-				logger:   logger,
+				L:         L,
+				function:  handlerFunc,
+				logger:    logger,
+				serialize: serialize,
 			}
 
 			err := bus.SubscribeOnce(eventType, handler)

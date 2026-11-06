@@ -100,7 +100,7 @@ func (b *LuaBinder) Bind(eng gsEngine.Engine, deps *RuntimeDeps) error {
 		registrations = append(registrations, struct {
 			name    string
 			builder lua.LGFunction
-		}{"kratos_eventbus", api.LoaderEventBus(deps.EventBusManager, deps.Logger)})
+		}{"kratos_eventbus", api.LoaderEventBus(deps.EventBusManager, deps.Logger, deps.Serialize)})
 	}
 	if deps.OSSClient != nil {
 		registrations = append(registrations, struct {

@@ -22,7 +22,7 @@ func TestEventBusAPI_PublishSubscribe(t *testing.T) {
 
 	logger := bLogger.NewHelper(bLogger.NopLogger())
 	host.RegisterLogger(L, logger)
-	RegisterEventBus(L, manager, logger)
+	RegisterEventBus(L, manager, logger, nil)
 
 	script := `
 		local log = require("kratos_logger")
@@ -74,7 +74,7 @@ func TestEventBusAPI_MultipleSubscribers(t *testing.T) {
 
 	logger := bLogger.NewHelper(bLogger.NopLogger())
 	host.RegisterLogger(L, logger)
-	RegisterEventBus(L, manager, logger)
+	RegisterEventBus(L, manager, logger, nil)
 
 	script := `
 		local log = require("kratos_logger")
@@ -123,7 +123,7 @@ func TestEventBusAPI_SubscribeOnce(t *testing.T) {
 
 	logger := bLogger.NewHelper(bLogger.NopLogger())
 	host.RegisterLogger(L, logger)
-	RegisterEventBus(L, manager, logger)
+	RegisterEventBus(L, manager, logger, nil)
 
 	script := `
 		local log = require("kratos_logger")
@@ -167,7 +167,7 @@ func TestEventBusAPI_EventData(t *testing.T) {
 
 	logger := bLogger.NewHelper(bLogger.NopLogger())
 	host.RegisterLogger(L, logger)
-	RegisterEventBus(L, manager, logger)
+	RegisterEventBus(L, manager, logger, nil)
 
 	script := `
 		local log = require("kratos_logger")
@@ -220,7 +220,7 @@ func TestEventBusAPI_FullEventObject(t *testing.T) {
 
 	logger := bLogger.NewHelper(bLogger.NopLogger())
 	host.RegisterLogger(L, logger)
-	RegisterEventBus(L, manager, logger)
+	RegisterEventBus(L, manager, logger, nil)
 
 	script := `
 		local eventbus = require("kratos_eventbus")
@@ -283,7 +283,7 @@ func TestEventBusAPI_NamedBuses(t *testing.T) {
 
 	logger := bLogger.NewHelper(bLogger.NopLogger())
 	host.RegisterLogger(L, logger)
-	RegisterEventBus(L, manager, logger)
+	RegisterEventBus(L, manager, logger, nil)
 
 	script := `
 		local eventbus = require("kratos_eventbus")
@@ -336,7 +336,7 @@ func TestEventBusAPI_AsyncPublish(t *testing.T) {
 
 	logger := bLogger.NewHelper(bLogger.NopLogger())
 	host.RegisterLogger(L, logger)
-	RegisterEventBus(L, manager, logger)
+	RegisterEventBus(L, manager, logger, nil)
 
 	var wg sync.WaitGroup
 	wg.Add(1)
@@ -387,7 +387,7 @@ func TestEventBusAPI_CreateEvent(t *testing.T) {
 
 	logger := bLogger.NewHelper(bLogger.NopLogger())
 	host.RegisterLogger(L, logger)
-	RegisterEventBus(L, manager, logger)
+	RegisterEventBus(L, manager, logger, nil)
 
 	script := `
 		local eventbus = require("kratos_eventbus")
@@ -435,7 +435,7 @@ func TestEventBusAPI_CrossBusIsolation(t *testing.T) {
 
 	logger := bLogger.NewHelper(bLogger.NopLogger())
 	host.RegisterLogger(L, logger)
-	RegisterEventBus(L, manager, logger)
+	RegisterEventBus(L, manager, logger, nil)
 
 	script := `
 		local eventbus = require("kratos_eventbus")
