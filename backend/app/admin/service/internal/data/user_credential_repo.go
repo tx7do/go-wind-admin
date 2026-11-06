@@ -2,7 +2,6 @@ package data
 
 import (
 	"context"
-	"encoding/base64"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 	"time"
 
@@ -15,10 +14,11 @@ import (
 	entCrud "github.com/tx7do/go-crud/entgo"
 
 	"github.com/tx7do/go-utils/copierutil"
-	"github.com/tx7do/go-utils/crypto"
 	"github.com/tx7do/go-utils/mapper"
 	"github.com/tx7do/go-utils/password"
 	"github.com/tx7do/go-utils/trans"
+
+	"go-wind-admin/pkg/passwordcrypto"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
@@ -408,17 +408,13 @@ func (r *UserCredentialRepo) performDummyVerify(plainCredential string) {
 // 返回匹配到的用户 ID，调用方可据此通过 ID 查找用户。
 func (r *UserCredentialRepo) FindUserCredential(ctx context.Context, tenantID uint32, identityType authenticationV1.UserCredential_IdentityType, identifier, plainCredential string, needDecrypt bool) (uint32, error) {
 	if needDecrypt {
-		bytesPass, err := base64.StdEncoding.DecodeString(plainCredential)
-		if err != nil {
-			r.log.Errorf(ctx, "decode base64 credential failed: %s", err.Error())
-			return 0, authenticationV1.ErrorBadRequest("invalid credential format")
-		}
-		decrypted, err := crypto.AesDecrypt(bytesPass, crypto.DefaultAESKey, nil)
+		// 统一口令传输解密（rsa-v1 信封优先，旧 base64+AES 过渡兼容）
+		plain, err := passwordcrypto.DecryptTransferPassword(plainCredential)
 		if err != nil {
 			r.log.Errorf(ctx, "decrypt credential failed: %s", err.Error())
 			return 0, authenticationV1.ErrorBadRequest("decrypt credential failed")
 		}
-		plainCredential = string(decrypted)
+		plainCredential = plain
 	}
 
 	entity, err := r.entClient.Client().UserCredential.Query().
@@ -527,32 +523,22 @@ func (r *UserCredentialRepo) prepareCredential(ctx context.Context, credentialTy
 // ChangeCredential 修改认证信息
 func (r *UserCredentialRepo) ChangeCredential(ctx context.Context, req *authenticationV1.ChangeCredentialRequest) error {
 	if req.GetNeedDecrypt() {
-		// 解密旧密码
-		oldBytes, err := base64.StdEncoding.DecodeString(req.GetOldCredential())
-		if err != nil {
-			r.log.Errorf(ctx, "decode base64 old credential failed: %s", err.Error())
-			return authenticationV1.ErrorBadRequest("invalid old credential format")
-		}
-		oldPlain, err := crypto.AesDecrypt(oldBytes, crypto.DefaultAESKey, nil)
+		// 旧/新口令统一走 rsa-v1 信封优先的传输解密（旧 base64+AES 兼容）。
+		// 此前解密错误被吞掉（_），解密失败会把空串/垃圾串当成新口令哈希存储，
+		// 导致后续登录恒失败且难以排查——解密失败即报错。
+		oldPlain, err := passwordcrypto.DecryptTransferPassword(req.GetOldCredential())
 		if err != nil {
 			r.log.Errorf(ctx, "decrypt old credential failed: %s", err.Error())
 			return authenticationV1.ErrorBadRequest("decrypt old credential failed")
 		}
-		req.OldCredential = string(oldPlain)
+		req.OldCredential = oldPlain
 
-		// 解密新密码。此前 base64/AES 错误被吞掉（_），解密失败会把空串/垃圾串当成新口令
-		// 哈希存储，导致后续登录恒失败且难以排查。这里与 VerifyCredential 对齐：解密失败即报错。
-		newBytes, err := base64.StdEncoding.DecodeString(req.GetNewCredential())
-		if err != nil {
-			r.log.Errorf(ctx, "decode base64 new credential failed: %s", err.Error())
-			return authenticationV1.ErrorBadRequest("invalid new credential format")
-		}
-		newPlain, err := crypto.AesDecrypt(newBytes, crypto.DefaultAESKey, nil)
+		newPlain, err := passwordcrypto.DecryptTransferPassword(req.GetNewCredential())
 		if err != nil {
 			r.log.Errorf(ctx, "decrypt new credential failed: %s", err.Error())
 			return authenticationV1.ErrorBadRequest("decrypt new credential failed")
 		}
-		req.NewCredential = string(newPlain)
+		req.NewCredential = newPlain
 	}
 
 	// 租户范围 where 条件（平台管理员 tenant_id=0 不限定）
@@ -627,18 +613,14 @@ func (r *UserCredentialRepo) ChangeCredential(ctx context.Context, req *authenti
 // ResetCredential 修改认证信息
 func (r *UserCredentialRepo) ResetCredential(ctx context.Context, req *authenticationV1.ResetCredentialRequest) error {
 	if req.GetNeedDecrypt() {
-		// 解密新密码（base64/AES 错误不可吞：吞错会把空串/垃圾串哈希存为新口令）
-		bytesPass, err := base64.StdEncoding.DecodeString(req.GetNewCredential())
-		if err != nil {
-			r.log.Errorf(ctx, "decode base64 new credential failed: %s", err.Error())
-			return authenticationV1.ErrorBadRequest("invalid new credential format")
-		}
-		plainPassword, err := crypto.AesDecrypt(bytesPass, crypto.DefaultAESKey, nil)
+		// 解密新密码（统一入口：rsa-v1 信封优先，旧 base64+AES 兼容；
+		// 错误不可吞——吞错会把空串/垃圾串哈希存为新口令）
+		plainPassword, err := passwordcrypto.DecryptTransferPassword(req.GetNewCredential())
 		if err != nil {
 			r.log.Errorf(ctx, "decrypt new credential failed: %s", err.Error())
 			return authenticationV1.ErrorBadRequest("decrypt new credential failed")
 		}
-		req.NewCredential = string(plainPassword)
+		req.NewCredential = plainPassword
 	}
 
 	// 租户范围 where 条件（平台管理员 tenant_id=0 不限定）
