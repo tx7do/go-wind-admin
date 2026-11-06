@@ -215,7 +215,7 @@ func (s *AiQueryService) Ask(ctx context.Context, req *aiV1.AskAiQueryRequest) (
 	for _, h := range req.GetHistory() {
 		hSql := h.GetSql()
 		if hSql != "" {
-			if _, serr := sanitizeSQLFor(hSql, whitelist, tenantPattern); serr != nil {
+			if _, serr := sanitizeSQLForTenant(hSql, whitelist, tenantPattern, tenantID); serr != nil {
 				hSql = ""
 			}
 		}
@@ -231,7 +231,7 @@ func (s *AiQueryService) Ask(ctx context.Context, req *aiV1.AskAiQueryRequest) (
 	}
 
 	// 2. 四重护栏：只读语句 / 白名单表 / LIMIT 钳制 / 二次正则复核
-	cleaned, err := sanitizeSQLFor(sqlGenerated, whitelist, tenantPattern)
+	cleaned, err := sanitizeSQLForTenant(sqlGenerated, whitelist, tenantPattern, tenantID)
 	if err != nil {
 		return nil, adminV1.ErrorBadRequest("generated sql rejected: %v", err)
 	}
@@ -345,6 +345,14 @@ func (s *AiQueryService) generateSQL(ctx context.Context, client *openai.Client,
 	// 下标访问而非按值 range：AiQueryHistoryItem 内嵌 protoimpl.MessageState
 	// （含 sync.Mutex），按值拷贝会连带复制锁。
 	for i := range history {
+		// SQL 被护栏剔空的 history 项不发 assistant 消息（空 content 会被
+		// provider 以 400 拒绝）——仅保留用户问题轮次，模型无前文可模仿。
+		if strings.TrimSpace(history[i].GetSql()) == "" {
+			messages = append(messages,
+				openai.ChatCompletionMessage{Role: openai.ChatMessageRoleUser, Content: history[i].GetQuestion()},
+			)
+			continue
+		}
 		messages = append(messages,
 			openai.ChatCompletionMessage{Role: openai.ChatMessageRoleUser, Content: history[i].GetQuestion()},
 			openai.ChatCompletionMessage{Role: openai.ChatMessageRoleAssistant, Content: history[i].GetSql()},
@@ -378,6 +386,12 @@ func sanitizeSQL(raw string) (string, error) {
 // sanitizeSQLFor 带白名单与租户谓词校验的护栏。tenantPattern 非 nil 时要求
 // SQL 中出现 tenant_id = {租户ID}（租户路径 fail-closed）。
 func sanitizeSQLFor(raw string, whitelist map[string]string, tenantPattern *regexp.Regexp) (string, error) {
+	return sanitizeSQLForTenant(raw, whitelist, tenantPattern, 0)
+}
+
+// sanitizeSQLForTenant 同 sanitizeSQLFor，租户路径额外携带租户 ID 供结构化
+// 逐块强制校验（P1-5 深层：条件数须覆盖每块白名单表引用数）。
+func sanitizeSQLForTenant(raw string, whitelist map[string]string, tenantPattern *regexp.Regexp, tenantID uint32) (string, error) {
 	sqlText := extractSQL(raw)
 	if sqlText == "" {
 		return "", fmt.Errorf("no SQL statement found in model output")
@@ -417,6 +431,12 @@ func sanitizeSQLFor(raw string, whitelist map[string]string, tenantPattern *rege
 		// P1 修复：租户路径仅允许合取谓词——"tenant_id = 5 OR 1=1" 这类析取让
 		// 出现性检查形同虚设；注释（-- 与块注释）可把谓词移出有效过滤面，一并拒绝。
 		if err := rejectDisjunctionOrComments(sqlText); err != nil {
+			return "", err
+		}
+		// P1-5 深层：结构化逐块强制——多表 JOIN 只过滤一张、子查询内表不过滤
+		// 等出现性穿透形态在此拒绝（每块条件数须覆盖该块白名单表引用数）。
+		stripped, _ := stripSQLStringsAndComments(sqlText)
+		if err := enforcePerBlockTenantFilter(stripped, whitelist, tenantID); err != nil {
 			return "", err
 		}
 	}
