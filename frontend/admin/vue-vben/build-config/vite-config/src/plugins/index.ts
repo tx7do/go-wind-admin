@@ -16,6 +16,7 @@ import viteDtsPlugin from 'vite-plugin-dts';
 import { createHtmlPlugin as viteHtmlPlugin } from 'vite-plugin-html';
 import { VitePWA } from 'vite-plugin-pwa';
 
+import { cspMetaPlugin } from './csp';
 import { viteArchiverPlugin } from './archiver';
 import { viteExtraAppConfigPlugin } from './extra-app-config';
 import { viteImportMapPlugin } from './importmap';
@@ -117,6 +118,15 @@ async function loadApplicationPlugins(
 
   return await loadConditionPlugins([
     ...commonPlugins,
+    {
+      // P3 加固：构建期向 index.html 注入 CSP meta（script-src 'self' +
+      // 内联脚本 sha256 白名单，自动覆盖 importmap 注入的内联 JSON；
+      // dev 跳过避免拦截 HMR）。base-uri/object-src 同步收口。
+      condition: true,
+      plugins: async () => {
+        return [cspMetaPlugin()];
+      },
+    },
     {
       condition: i18n,
       plugins: async () => {

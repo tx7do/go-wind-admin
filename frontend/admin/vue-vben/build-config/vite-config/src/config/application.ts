@@ -71,7 +71,7 @@ function defineApplicationConfig(userConfigPromise?: DefineApplicationOptions) {
       esbuild: {
         drop: isBuild
           ? [
-              // 'console',
+              'console',
               'debugger',
             ]
           : [],

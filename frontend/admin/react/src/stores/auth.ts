@@ -100,21 +100,12 @@ async function applySuccessfulLogin(
     accessTokenExpireAt: accessTokenPayload.expiresAt,
   });
 
-  console.log('💾 Access token saved:', {
-    value: accessTokenPayload.value ? '***' + accessTokenPayload.value.slice(-8) : 'empty',
-    expiresAt: accessTokenPayload.expiresAt
-      ? new Date(accessTokenPayload.expiresAt).toISOString()
-      : 'N/A',
-  });
-
   // refresh token 通过 HttpOnly Cookie 传输，前端不可读也不存内存。
   // 页面刷新后由 bootstrap 静默恢复（凭 cookie 调 /refresh-token 换新 access token）。
 
   // 获取用户信息（交给 React Query 处理缓存，这里只更新 Zustand）
-  console.log('👤 Fetching user info...');
   const userInfo = (await fetchUserProfile()) as unknown as UserInfo;
   set({ userInfo });
-  console.log('✅ User info fetched:', userInfo);
 
   // 启动定时刷新 token
   startRefreshTimer();
@@ -159,11 +150,6 @@ export const useAuthStore = create<AuthState>()(
           const response = await loginMutation.execute({
             ...params,
             password: await encryptPasswordEnvelope(params.password || ''),
-          });
-
-          console.log('🔐 Login response:', {
-            hasAccessToken: !!response.access_token,
-            expiresIn: response.expires_in,
           });
 
           // ===== MFA 闸门：后端在密码校验通过、需二次验证时返回 mfa_operation_id，=====
