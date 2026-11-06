@@ -359,6 +359,10 @@ func (r *AiKnowledgeRepo) SearchChunks(ctx context.Context, tenantId, baseId uin
 	if topK <= 0 {
 		topK = 3
 	}
+	// P3 加固：上限钳制（pgvector 全表距离排序 + 大结果集物化的资源面）。
+	if topK > 50 {
+		topK = 50
+	}
 	db := r.entClient.DB()
 	rows, err := db.QueryContext(ctx,
 		`SELECT c.content, c.chunk_index, c.doc_id, 1 - (c.embedding <=> $1::vector) AS score

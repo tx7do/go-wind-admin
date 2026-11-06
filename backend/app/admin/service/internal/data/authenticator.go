@@ -669,9 +669,11 @@ func (a *Authenticator) RevokeUserTokenAllClientTypes(ctx context.Context, userI
 	// 哪几类取决于运行时顺序」的部分吊销——对改密强制下线这一安全语义不可
 	// 接受。改为逐类全部尝试、汇总错误：任一类失败不阻断其余类别的吊销。
 	var errs []error
+	// P3：枚举只含真实装配的客户端类型——app 认证器不存在（getAuthenticator
+	// 已显式拒绝），不会有 app 令牌被签发；枚举它只会让吊销循环报
+	// "client type [app] is not supported" 且该类型无事可做。
 	for _, ct := range []authenticationV1.ClientType{
 		authenticationV1.ClientType_admin,
-		authenticationV1.ClientType_app,
 	} {
 		if err := a.RevokeUserToken(ctx, ct, userId); err != nil {
 			a.log.Errorf(ctx, "revoke user [%d] tokens of client type [%d] failed: %v", userId, ct, err)
@@ -688,6 +690,10 @@ func (a *Authenticator) getAuthenticator(clientType authenticationV1.ClientType)
 	case authenticationV1.ClientType_admin:
 		authenticator = a.AdminAuthenticator
 	case authenticationV1.ClientType_app:
+		// P3 加固：app 认证器从未装配（Authenticator 无该字段），此前空分支
+		// 返回 nil authenticator + nil error，后续 CreateUserToken 解引用 panic
+		//（客户端类型由前端入参控制，不能让它崩服务端）。显式拒绝。
+		return nil, authenticationV1.ErrorBadRequest("client type [app] is not supported")
 	default:
 		a.log.Error(context.Background(), "invalid client type: [%v]", clientType)
 		return nil, authenticationV1.ErrorBadRequest("invalid client type")

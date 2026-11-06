@@ -371,11 +371,10 @@ func TestUserProfileServiceSqlite_ChangePassword_HappyPath(t *testing.T) {
 	const uid = 4242
 	seedProfileUserCredential(t, env.entClient, ctx, uid, "profile-user-a", "OldPass@1234")
 
-	// 预置两个客户端类型下的访问令牌，验证改密后的全端吊销。
+	// 预置访问令牌，验证改密后的全端吊销（P3：app 认证器未装配已显式拒绝，
+	// 真实系统不存在 app 端令牌，断言收敛到 admin 端）。
 	require.NoError(t, env.tokenCache.AddAccessToken(ctx, authenticationV1.ClientType_admin, uid, "jti-prof-a", "tok-prof-a", time.Hour))
-	require.NoError(t, env.tokenCache.AddAccessToken(ctx, authenticationV1.ClientType_app, uid, "jti-prof-b", "tok-prof-b", time.Hour))
 	require.Len(t, env.tokenCache.GetAccessTokens(ctx, authenticationV1.ClientType_admin, uid), 1)
-	require.Len(t, env.tokenCache.GetAccessTokens(ctx, authenticationV1.ClientType_app, uid), 1)
 
 	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{
 		UserId:   uid,
@@ -401,9 +400,8 @@ func TestUserProfileServiceSqlite_ChangePassword_HappyPath(t *testing.T) {
 	require.NotNil(t, extraInfo, "改密成功应追加历史口令记录")
 	require.Contains(t, *extraInfo, "password_history", "extra_info 应携带历史口令列表键")
 
-	// 改密强制下线：两个客户端类型下的访问令牌全部清空。
+	// 改密强制下线：访问令牌全部清空。
 	require.Empty(t, env.tokenCache.GetAccessTokens(ctx, authenticationV1.ClientType_admin, uid), "改密后 admin 端令牌应全部吊销")
-	require.Empty(t, env.tokenCache.GetAccessTokens(ctx, authenticationV1.ClientType_app, uid), "改密后 app 端令牌应全部吊销")
 }
 
 // TestUserProfileServiceSqlite_ChangePassword_RejectsWeakNewPassword 验证

@@ -77,7 +77,6 @@ type Engine struct {
 type Config struct {
 	MaxVMs         int           // 最大并发 VM 数（默认 10）
 	VMTimeout      time.Duration // 单脚本执行超时（默认 5s）
-	MaxMemory      int64         // 单 VM 内存上限（字节，默认 50MB）
 	EnableDebug    bool          // 启用调试日志
 	ScriptDir      string        // 文件脚本目录
 	AllowedModules []string      // 允许的模块
@@ -94,7 +93,6 @@ func DefaultConfig() *Config {
 	return &Config{
 		MaxVMs:         10,
 		VMTimeout:      5 * time.Second,
-		MaxMemory:      50 * 1024 * 1024, // 50MB
 		EnableDebug:    false,
 		ScriptDir:      "scripts",
 		AllowedModules: []string{},

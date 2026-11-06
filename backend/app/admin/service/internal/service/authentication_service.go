@@ -724,7 +724,15 @@ func (s *AuthenticationService) verifyLoginCaptcha(ctx context.Context) bool {
 	ok, err := s.captchaClient.Verify(ctx, captchaID, captchaValue)
 	if err != nil {
 		s.log.Errorf(ctx, "verify captcha failed: %s", err.Error())
+		// P3 加固：校验异常也销毁该验证码（图穷匕见——不可信状态下让单码
+		// 不再可用，缩小在线试猜窗口）。
+		_ = s.captchaClient.Delete(ctx, captchaID)
 		return false
+	}
+	if !ok {
+		// P3 加固：校验失败（含不匹配/过期不存在）销毁验证码——失败后单码
+		// 仍可用会在 10 分钟 TTL 内形成在线试猜窗口。
+		_ = s.captchaClient.Delete(ctx, captchaID)
 	}
 	return ok
 }

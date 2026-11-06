@@ -138,9 +138,20 @@ func (s *ScriptService) Delete(ctx context.Context, req *scriptV1.DeleteScriptRe
 }
 
 // TestRun 试运行脚本：已保存的按 id 取源码，或直接运行草稿。
+// testRunSemaphore 试运行并发信号量（P3 加固）：TestRun 每次新建一次性引擎
+// 不受全局串行化约束，并发 N 路各 5s 全速分配内存会形成内存尖峰 DoS。
+var testRunSemaphore = make(chan struct{}, 4)
+
 func (s *ScriptService) TestRun(ctx context.Context, req *scriptV1.TestRunScriptRequest) (*scriptV1.TestRunScriptResponse, error) {
 	if req == nil {
 		return nil, scriptV1.ErrorBadRequest("invalid parameter")
+	}
+
+	select {
+	case testRunSemaphore <- struct{}{}:
+		defer func() { <-testRunSemaphore }()
+	case <-ctx.Done():
+		return nil, scriptV1.ErrorBadRequest("request cancelled")
 	}
 
 	var language, name, source string

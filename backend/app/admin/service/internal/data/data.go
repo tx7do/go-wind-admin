@@ -45,11 +45,10 @@ func NewMinIoClient(ctx *bootstrap.Context) *oss.MinIOClient {
 }
 
 func NewPasswordCrypto() password.Crypto {
-	crypto, err := password.CreateCrypto("bcrypt")
-	if err != nil {
-		panic(err)
-	}
-	return crypto
+	// P3 加固：cost 10 → 12（2026 年离线 GPU 撞库背景下 10 偏弱）。
+	// bcrypt 哈希自带 cost 字段，Verify 兼容旧 cost=10 存量哈希（校验按哈希
+	// 内嵌 cost 执行）；新口令/改密一律落 12。
+	return password.NewBCryptCrypto(12)
 }
 
 func NewCaptcha(rdb *redis.Client) *captcha.Captcha {

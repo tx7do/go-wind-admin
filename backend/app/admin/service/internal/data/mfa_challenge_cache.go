@@ -174,6 +174,19 @@ func (c *MfaChallengeCache) TakeLoginChallengeAtomic(ctx context.Context, opId s
 
 // TryAcquireEnrollCooldown 注册频控：同一用户冷却期内只允许发起一次 StartEnroll。
 // 防止已登录用户循环 Start 塞满 Redis（每条 5 分钟 TTL）的低成本 DoS。
+// TryAcquireUsedTotpCode 同码重放防线（P3 加固）：记录 (uid, code) 组合，
+// 90 秒内（TOTP ±skew 窗口）重复出现即拒绝。Redis 异常放行（防御性优化，
+// 不阻断正常登录；主防线是挑战一次性消耗）。
+func (c *MfaChallengeCache) TryAcquireUsedTotpCode(ctx context.Context, userID uint32, code string) bool {
+	key := fmt.Sprintf("mfa:usedcode:%d:%s", userID, code)
+	ok, err := c.rdb.SetNX(ctx, key, 1, 90*time.Second).Result()
+	if err != nil {
+		c.log.Errorf(ctx, "acquire used totp code failed: %s", err.Error())
+		return true
+	}
+	return ok
+}
+
 func (c *MfaChallengeCache) TryAcquireEnrollCooldown(ctx context.Context, tenantID, userID uint32) bool {
 	key := fmt.Sprintf("mfa:enrollcd:%d:%d", tenantID, userID)
 	ok, err := c.rdb.SetNX(ctx, key, 1, mfaEnrollCooldown).Result()

@@ -261,8 +261,10 @@ func (s *FileTransferService) directUploadFile(ctx context.Context, req *storage
 	}, err
 }
 
-// mediaURLTTL 签名图片 URL 有效期：1 年。历史富文本中的图片链接需在该期限内可访问。
-const mediaURLTTL = 365 * 24 * time.Hour
+// mediaURLTTL 签名图片 URL 有效期：30 天（P3 收敛，原 1 年——不可吊销的
+// 长效匿名访问凭证与租户处置语义冲突）。历史富文本中的存量旧签名 URL 验签
+// 规则不变、自然过期；新签发一律 30 天，富文本重存时自动刷新。
+const mediaURLTTL = 30 * 24 * time.Hour
 
 func itoa64(v int64) string {
 	return strconv.FormatInt(v, 10)

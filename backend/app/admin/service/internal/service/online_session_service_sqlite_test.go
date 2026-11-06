@@ -292,12 +292,12 @@ func TestOnlineSessionServiceSqlite_ForceLogoutSession(t *testing.T) {
 	ctx := enttest.NewSystemContext(context.Background())
 
 	const uid = 501
-	seedOnlineSession(t, svc, tokenCache, ctx, authenticationV1.ClientType_app, uid, "jti-501", "user-501", "10.9.9.9", 1000)
+	seedOnlineSession(t, svc, tokenCache, ctx, authenticationV1.ClientType_admin, uid, "jti-501", "user-501", "10.9.9.9", 1000)
 
 	// 平台闸门：非管理员的强踢拒绝
 	plainCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: uid})
 	_, err := svc.ForceLogoutSession(plainCtx, &onlineSessionV1.ForceLogoutSessionRequest{
-		ClientType: authenticationV1.ClientType_app.Enum(),
+		ClientType: authenticationV1.ClientType_admin.Enum(),
 		UserId:     trans.Ptr(uint32(uid)),
 		Jti:        trans.Ptr("jti-501"),
 	})
@@ -306,21 +306,21 @@ func TestOnlineSessionServiceSqlite_ForceLogoutSession(t *testing.T) {
 	// 平台管理员：强踢成功
 	adminCtx := onlineAdminOpCtx(ctx)
 	resp, err := svc.ForceLogoutSession(adminCtx, &onlineSessionV1.ForceLogoutSessionRequest{
-		ClientType: authenticationV1.ClientType_app.Enum(),
+		ClientType: authenticationV1.ClientType_admin.Enum(),
 		UserId:     trans.Ptr(uint32(uid)),
 		Jti:        trans.Ptr("jti-501"),
 	})
 	require.NoError(t, err, "强制下线已存在会话应成功")
 	require.NotNil(t, resp)
 
-	meta, err := svc.authenticator.GetSessionMeta(ctx, authenticationV1.ClientType_app, uid, "jti-501")
+	meta, err := svc.authenticator.GetSessionMeta(ctx, authenticationV1.ClientType_admin, uid, "jti-501")
 	require.NoError(t, err)
 	require.Nil(t, meta, "强制下线后会话元数据应消失")
-	require.Empty(t, tokenCache.GetAccessTokens(ctx, authenticationV1.ClientType_app, uid), "强制下线后访问令牌应清理")
+	require.Empty(t, tokenCache.GetAccessTokens(ctx, authenticationV1.ClientType_admin, uid), "强制下线后访问令牌应清理")
 
 	// 入参守卫：userId/jti 缺失。
 	_, err = svc.ForceLogoutSession(ctx, &onlineSessionV1.ForceLogoutSessionRequest{
-		ClientType: authenticationV1.ClientType_app.Enum(),
+		ClientType: authenticationV1.ClientType_admin.Enum(),
 		UserId:     trans.Ptr(uint32(0)),
 		Jti:        trans.Ptr("jti-501"),
 	})
@@ -328,7 +328,7 @@ func TestOnlineSessionServiceSqlite_ForceLogoutSession(t *testing.T) {
 	require.Contains(t, err.Error(), "user id and jti are required")
 
 	_, err = svc.ForceLogoutSession(ctx, &onlineSessionV1.ForceLogoutSessionRequest{
-		ClientType: authenticationV1.ClientType_app.Enum(),
+		ClientType: authenticationV1.ClientType_admin.Enum(),
 		UserId:     trans.Ptr(uint32(uid)),
 		Jti:        trans.Ptr(""),
 	})

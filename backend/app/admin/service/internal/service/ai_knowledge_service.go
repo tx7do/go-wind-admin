@@ -388,7 +388,11 @@ func embedTextsForBase(ctx context.Context, providerRepo *data.AiProviderRepo, u
 	}
 
 	callStart := time.Now()
-	resp, err := client.CreateEmbeddings(ctx, openai.EmbeddingRequest{
+	// P3 加固：embeddings 调用补 per-call deadline（此前继承请求 ctx，Agent/
+	// 重索引等无 deadline 场景下 provider 挂起会永久占用 goroutine）。
+	callCtx, cancel := context.WithTimeout(ctx, 2*time.Minute)
+	defer cancel()
+	resp, err := client.CreateEmbeddings(callCtx, openai.EmbeddingRequest{
 		Model: openai.EmbeddingModel(ptrStrOr(base.EmbeddingModel, "text-embedding-3-small")),
 		Input: texts,
 	})

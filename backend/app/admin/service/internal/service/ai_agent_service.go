@@ -338,6 +338,11 @@ func (s *AiAgentService) runLLMForAgent(operator *authenticationV1.UserTokenPayl
 		}
 		messages = append(messages, openai.ChatCompletionMessage{Role: openai.ChatMessageRoleUser, Content: user})
 
+		// P3 加固：Agent 画布执行补 per-call deadline（上游无超时兜底时，
+		// provider 端点挂起会让请求 goroutine 悬挂累积）。
+		callCtx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+		defer cancel()
+
 		loop := &aiToolLoop{
 			client:      client,
 			model:       model,
@@ -348,7 +353,7 @@ func (s *AiAgentService) runLLMForAgent(operator *authenticationV1.UserTokenPayl
 		}
 
 		start := time.Now()
-		answer, usage, err := loop.run(ctx, messages)
+		answer, usage, err := loop.run(callCtx, messages)
 		durationMs := uint32(time.Since(start).Milliseconds())
 
 		// 逐 LLM 节点记一条用量流水：agent 运行在用量台账里是"非对话调用"，

@@ -57,6 +57,7 @@ func NewRestMiddleware(
 	// 内存再校验大小，且 REST 服务端此前无任何 body 上限，单请求数 GB body 即可
 	// 令进程内存暴涨（并发即 OOM）。上限 = MaxUploadSize + 1MB（multipart 编码余量）。
 	ms = append(ms, uploadBodyLimit())
+	ms = append(ms, securityHeaders())
 	ms = append(ms, logging.Server(bLogger.AsKratosLogger(ctx.GetLogger())))
 
 	ms = append(ms, applogging.Server(
@@ -127,6 +128,30 @@ func NewRestMiddleware(
 	)
 
 	return ms
+}
+
+// securityHeaders 全站安全响应头（P3 加固）：
+//   - nosniff：防 MIME 嗅探把上传内容当 HTML 执行；
+//   - DENY：管理后台不允许被 iframe 嵌套（点击劫持）；
+//   - Referrer-Policy：防 URL 中的令牌类参数经 Referer 外泄；
+//   - HSTS：TLS 部署下强制 HTTPS（明文 HTTP 下浏览器忽略该头，无害）。
+func securityHeaders() middleware.Middleware {
+	return func(handler middleware.Handler) middleware.Handler {
+		return func(ctx context.Context, req interface{}) (interface{}, error) {
+			if tr, ok := transport.FromServerContext(ctx); ok {
+				if htr, ok := tr.(*http.Transport); ok {
+					h := htr.ReplyHeader()
+					if h != nil {
+						h.Set("X-Content-Type-Options", "nosniff")
+						h.Set("X-Frame-Options", "DENY")
+						h.Set("Referrer-Policy", "strict-origin-when-cross-origin")
+						h.Set("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+					}
+				}
+			}
+			return handler(ctx, req)
+		}
+	}
 }
 
 // uploadBodyLimit 上传路由的请求体上限中间件（P2 修复）。

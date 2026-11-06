@@ -29,6 +29,7 @@ import (
 	otpTotp "github.com/pquerna/otp/totp"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 )
 
 const (
@@ -286,6 +287,27 @@ func (s *MfaService) VerifyMFAChallenge(ctx context.Context, req *authentication
 	if !s.mfaChallengeCache.TakeLoginChallengeAtomic(ctx, req.GetOperationId()) {
 		return nil, authenticationV1.ErrorForbidden("mfa challenge already consumed")
 	}
+
+	// P3 加固：同码重放防线——TOTP 在 ±skew 窗口内同一码值有效 ~90s，攻击者
+	// 截获一次提交可在窗口内对多个 operation_id 重放同码。SETNX 记录
+	// (uid, code)，已存在即拒绝。挑战消耗后码值不再可用，窗口期天然封死。
+	if s.mfaChallengeCache != nil {
+		if !s.mfaChallengeCache.TryAcquireUsedTotpCode(ctx, uid, req.GetTotpCode()) {
+			return nil, authenticationV1.ErrorForbidden("mfa code already used")
+		}
+	}
+
+	// P3 加固：挑战通过后复核用户状态——密码验证到 TOTP 通过存在时间窗，
+	// 冻结/禁用发生在窗口内时此轮登录不应签发令牌。
+	if s.userRepo != nil {
+		if u, uerr := s.userRepo.Get(ctx, &identityV1.GetUserRequest{
+			QueryBy: &identityV1.GetUserRequest_Id{Id: uid},
+		}); uerr == nil && u != nil && u.GetStatus() != identityV1.User_NORMAL {
+			s.log.Warnf(ctx, "mfa challenge passed but user [%d] status is %s, denying token", uid, u.GetStatus().String())
+			return nil, authenticationV1.ErrorForbidden("account is frozen")
+		}
+	}
+
 	_ = s.mfaFactorRepo.UpdateLastUsed(ctx, tid, uid, factorId, time.Now())
 
 	// 兑现登录 MFA 闸门的承诺："限流清零在 VerifyMFAChallenge 通过后"。
