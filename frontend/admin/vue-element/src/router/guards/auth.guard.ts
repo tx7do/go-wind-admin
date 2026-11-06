@@ -10,6 +10,22 @@ import { generateAccess } from "@/router/route-generator";
 import { fetchAllDictEntries } from "@/composables/use-dict-cache";
 
 /**
+ * P2 修复：redirect 同源校验（对齐 react 端 GuestGuard 口径）。
+ * redirect 直接来自 URL query，未校验时攻击者可构造 ?redirect=//evil.com
+ * 诱导登录后跳转外站（开放重定向）。必须是站内相对路径（以 / 开头且不以
+ * // 开头），否则回退默认首页。
+ */
+function safeRedirectPath(raw: string | undefined | null, fallback: string): string {
+  let decoded = "";
+  try {
+    decoded = raw ? decodeURIComponent(raw) : "";
+  } catch {
+    decoded = "";
+  }
+  return decoded.startsWith("/") && !decoded.startsWith("//") ? decoded : fallback;
+}
+
+/**
  * 权限访问守卫配置
  * @param router
  */
@@ -34,8 +50,9 @@ function setupAccessGuard(router: Router) {
     if (coreRouteNames.includes(to.name as string)) {
       // 已经有效登录且访问登录页面，重定向到首页（token 过期则放行到登录页）
       if (to.path === LOGIN_PATH && accessStore.accessToken && !tokenExpired) {
-        return decodeURIComponent(
-          (to.query?.redirect as string) || userStore.userInfo?.homePath || DEFAULT_HOME_PATH
+        return safeRedirectPath(
+          to.query?.redirect as string | undefined,
+          userStore.userInfo?.homePath || DEFAULT_HOME_PATH
         );
       }
       return true;
@@ -118,7 +135,7 @@ function setupAccessGuard(router: Router) {
         : to.fullPath)) as string;
 
     return {
-      ...router.resolve(decodeURIComponent(redirectPath)),
+      ...router.resolve(safeRedirectPath(redirectPath, DEFAULT_HOME_PATH)),
       replace: true,
     };
   });

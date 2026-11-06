@@ -13,7 +13,11 @@ interface AppState {
 
 export const useLockStore = defineStore("core-lock", {
   actions: {
-    $reset() {},
+    // P2 修复：真正清空——此前空实现使 resetAllStores（登出链路）清不掉锁屏态，
+    // 明文密码跨账号残留在存储里。
+    $reset() {
+      this.$patch({ isLockScreen: false, lockScreenPassword: undefined });
+    },
 
     lockScreen(password: string) {
       this.isLockScreen = true;
@@ -27,6 +31,10 @@ export const useLockStore = defineStore("core-lock", {
   },
   persist: {
     pick: ["isLockScreen", "lockScreenPassword"],
+    // P2 修复：密码改存 sessionStorage——此前明文落 localStorage 持久盘，共用机器
+    // 的下一个使用者/任何 XSS 都能直接读走。sessionStorage 按标签页隔离、关标签
+    // /浏览器即清，刷新（同标签）锁屏态与密码仍可用，UX 不变。
+    storage: sessionStorage,
   },
   state: (): AppState => ({
     isLockScreen: false,

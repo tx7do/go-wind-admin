@@ -50,6 +50,7 @@ import {
 } from "element-plus";
 import { renderHtmlPages, browserCodeRenderer } from "@go-wind/print-core/browser";
 import { getPaperDimensions } from "@go-wind/print-core/designer";
+import DOMPurify from "dompurify";
 import { apiClient } from "@/api/client";
 
 import { fetchListPrintTemplates } from "@/api/composables/print_template";
@@ -93,7 +94,7 @@ async function renderPreview(tpl: any) {
       const doc = frameRef.value?.contentWindow?.document;
       if (doc) {
         doc.open();
-        doc.write(result.html);
+        doc.write(DOMPurify.sanitize(result.html));
         doc.close();
       }
       rendering.value = false;

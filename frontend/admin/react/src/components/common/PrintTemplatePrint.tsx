@@ -8,6 +8,7 @@ import { fetchListPrintTemplates } from '@/api/hooks/print-template';
 import { renderHtmlPages, browserCodeRenderer } from '@go-wind/print-core/browser';
 import { getPaperDimensions } from '@go-wind/print-core/designer';
 import { PaginationQuery } from '@/core';
+import DOMPurify from 'dompurify';
 
 /**
  * 行打印定式（docs/print_template.md §5）：任意列表行接入打印能力的统一入口。
@@ -61,7 +62,7 @@ export function usePrintTemplateDialog() {
         const doc = frameRef.current?.contentWindow?.document;
         if (doc) {
           doc.open();
-          doc.write(result.html);
+          doc.write(DOMPurify.sanitize(result.html));
           doc.close();
         }
         setRendering(false);

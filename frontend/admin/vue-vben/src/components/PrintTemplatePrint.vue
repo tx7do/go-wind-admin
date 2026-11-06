@@ -10,6 +10,7 @@ import {
 } from '#/api/composables/print_template';
 import { PaginationQuery } from '#/transport/rest';
 import { apiClient } from '#/api/client';
+import DOMPurify from 'dompurify';
 import { renderHtmlPages, browserCodeRenderer } from '@go-wind/print-core/browser';
 import { getPaperDimensions } from '@go-wind/print-core/designer';
 
@@ -51,7 +52,7 @@ async function renderPreview(tpl: any) {
       const doc = frameRef.value?.contentWindow?.document;
       if (doc) {
         doc.open();
-        doc.write(result.html);
+        doc.write(DOMPurify.sanitize(result.html));
         doc.close();
       }
       rendering.value = false;

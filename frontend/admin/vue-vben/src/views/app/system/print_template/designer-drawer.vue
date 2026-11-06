@@ -7,6 +7,7 @@ import { $t } from '@vben/locales';
 import { Modal, notification } from 'ant-design-vue';
 
 import { useVbenForm } from '#/adapter/form';
+import DOMPurify from 'dompurify';
 import {
   useCreatePrintTemplate,
   useUpdatePrintTemplate,
@@ -385,7 +386,7 @@ async function handlePreview() {
       const doc = previewFrameRef.value?.contentWindow?.document;
       if (doc) {
         doc.open();
-        doc.write(result.html);
+        doc.write(DOMPurify.sanitize(result.html));
         doc.close();
       }
       previewLoading.value = false;
