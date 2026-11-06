@@ -54,6 +54,35 @@
 
 ### 变更
 
+- **角色编辑改权限保存不生效修复**：角色更新链路的权限/组织单元/字段权限关联此前只认
+  显式 field-mask 声明——前端编辑抽屉整表单提交（无 mask）时关联载荷被静默丢弃，
+  保存 200 但权限不落库。现全量更新语义下载荷非 nil 即处理（显式空数组=清空、
+  未设置=保持原值）；角色删除遇行不存在改 404。
+- **AI 智能问数租户谓词结构化强制**：租户路径新增逐查询块校验——每个查询块的
+  `tenant_id = <本租户>` 合取条件数必须覆盖该块白名单表引用数，多表 JOIN 漏滤
+  主表、子查询/派生表内表不过滤、CASE 内藏谓词等穿透形态全部拒绝；对话历史中
+  被判不合规的 SQL 不再回传模型（防指令模仿）。
+- **口令传输加密重构**：登录/改密/建用户/重置的口令改为混合信封传输
+  （随机 AES-256-GCM 会话密钥 + RSA-2048 OAEP 包裹，公钥静态内置前端无分发
+  替换面；私钥服务端 env `GOWIND_PASSWORD_RSA_PRIVATE_KEY` 配置，内置开发对
+  仅限本地）。旧 AES 形态过渡兼容（前端切换完成前双格式并存）。
+  **生产部署**：设置 `GOWIND_PASSWORD_RSA_PRIVATE_KEY` 并将前端
+  `VITE_PASSWORD_RSA_PUB` 替换为同对公钥（构建期注入）。
+- **可观测与运维加固**：五类审计与登录限流的客户端 IP 支持可信代理链解析
+  （env `GOWIND_TRUSTED_PROXIES`，未配置时 X-Forwarded-For 一律不信任，
+  直连部署防伪造）；bcrypt 口令哈希 cost 10 → 12（存量哈希兼容）；全站安全
+  响应头（nosniff/X-Frame-Options DENY/Referrer-Policy/HSTS）；图形验证码
+  校验失败即销毁（堵在线试猜窗口）；AI 出站调用补超时与检索 topK 钳制；
+  签名媒体 URL 有效期 1 年 → 30 天（存量旧签名自然过期）。
+- **三端前端加固**：vue-vben 构建期注入 CSP meta（对齐 react/vue-element）；
+  vue-vben 生产构建剥离 console；MFA 登录挑战补同码重放防线与用户状态复核；
+  登录令牌相关源码日志清理。
+- **依赖升级**：kratos-bootstrap rpc v0.1.4（enable_pprof 开关修复，详见上文
+  安全性节）；下游家族（cms/quant/im/iot/shortplay/shop/oa/erp/kanban/ledger/
+  uba/admin-template）同步该依赖升级与角色修复。
+
+### 变更
+
 - **对象存储 MinIO → SeaweedFS**：MinIO 社区版已于 2026-04 停止维护并归档仓库，compose 依赖切换为
   SeaweedFS（`chrislusf/seaweedfs:4.51`，S3 兼容网关单进程）。容器服务名/主机名沿用 `minio`、
   S3 API 端口仍为 9000——`oss.yaml` 与 hosts 映射零改动；代码侧仍走 minio-go SDK 的标准 S3 语义，
