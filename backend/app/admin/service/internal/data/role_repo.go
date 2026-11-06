@@ -602,13 +602,21 @@ func (r *RoleRepo) Update(ctx context.Context, req *permissionV1.UpdateRoleReque
 	// 注意：mask 路径经 protojson 解析后一律是 proto 字段名（snake_case），
 	// json_name（camelCase）会被规范化，因此过滤与探测都要按 proto 名；
 	// camelCase 拼写仅为兼容未走 protojson 规范化的调用方，双写兜底。
-	updatePermissions := req.UpdateMask != nil && hasPath("permissions", req.UpdateMask)
+	//
+	// 全量更新语义（mask 为空）：关联字段载荷非 nil 即处理（显式空数组=清空，
+	// 未设置=保持原值）。此前仅认 mask 声明，全量表单提交（前端编辑抽屉不带
+	// mask 的形态）改权限会被静默丢弃——保存 200 但关联不落库。
+	fullUpdate := req.UpdateMask == nil || len(req.UpdateMask.GetPaths()) == 0
+	updatePermissions := fullUpdate && req.Data.Permissions != nil ||
+		(req.UpdateMask != nil && hasPath("permissions", req.UpdateMask))
 	updateParentID := req.UpdateMask != nil &&
 		(hasPath("parent_id", req.UpdateMask) || hasPath("parentId", req.UpdateMask))
-	updateOrgUnits := req.UpdateMask != nil &&
-		(hasPath("org_units", req.UpdateMask) || hasPath("orgUnits", req.UpdateMask))
-	updateFieldPermissions := req.UpdateMask != nil &&
-		(hasPath("field_permissions", req.UpdateMask) || hasPath("fieldPermissions", req.UpdateMask))
+	updateOrgUnits := fullUpdate && req.Data.OrgUnits != nil ||
+		(req.UpdateMask != nil &&
+			(hasPath("org_units", req.UpdateMask) || hasPath("orgUnits", req.UpdateMask)))
+	updateFieldPermissions := fullUpdate && req.Data.FieldPermissions != nil ||
+		(req.UpdateMask != nil &&
+			(hasPath("field_permissions", req.UpdateMask) || hasPath("fieldPermissions", req.UpdateMask)))
 	if req.UpdateMask != nil {
 		req.UpdateMask.Paths = sliceutil.FilterBlacklist(req.UpdateMask.GetPaths(), []string{
 			"permissions",
@@ -743,6 +751,11 @@ func (r *RoleRepo) Delete(ctx context.Context, req *permissionV1.DeleteRoleReque
 
 	ret, err := tx.Role.Query().Where(role.IDEQ(req.GetId())).Only(ctx)
 	if err != nil {
+		// 行不存在（ent NotOnlyError）按 404 语义返回，而非 500——
+		// 并发删除/重复删除是正常时序，不是服务端故障。
+		if ent.IsNotFound(err) {
+			return permissionV1.ErrorNotFound("role not found")
+		}
 		r.log.Errorf(ctx, "get role failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("get role failed")
 	}

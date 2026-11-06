@@ -681,3 +681,70 @@ func TestRoleRepoSqlite_DeleteDetachesChildren(t *testing.T) {
 	require.NoError(t, err)
 	require.ElementsMatch(t, []uint32{101}, permIDs, "子角色绑定权限应保持不变")
 }
+
+// TestRoleRepoSqlite_UpdatePermissionsAssociation 回归（Update 关联落库修复）：
+// ① 全量更新（mask 为空）且载荷带 permissions → 关联落库（此前被静默丢弃，
+//    保存 200 但权限不生效）；② 全量更新未带 permissions → 保持原值；
+// ③ mask 声明 permissions → 落库（既有路径）；④ 显式空数组 → 清空。
+func TestRoleRepoSqlite_UpdatePermissionsAssociation(t *testing.T) {
+	repo := newRoleRepoSqlite(t)
+	ctx := enttest.NewSystemContext(context.Background())
+
+	p1, err := repo.entClient.Client().Permission.Create().
+		SetName("perm-a").SetCode("PERM_A").Save(ctx)
+	require.NoError(t, err, "播种权限 A 应成功")
+	p2, err := repo.entClient.Client().Permission.Create().
+		SetName("perm-b").SetCode("PERM_B").Save(ctx)
+	require.NoError(t, err, "播种权限 B 应成功")
+
+	// 建角色：Create 带权限 [p1]
+	require.NoError(t, repo.Create(ctx, &permissionV1.CreateRoleRequest{
+		Data: &permissionV1.Role{
+			Name:        trans.Ptr("关联更新角色"),
+			Code:        trans.Ptr("ROLE_ASSOC_UPD"),
+			Status:      permissionV1.Role_ON.Enum(),
+			Type:        permissionV1.Role_TENANT.Enum(),
+			Permissions: []uint32{p1.ID},
+		},
+	}), "带权限创建应成功")
+	role, err := repo.entClient.Client().Role.Query().Only(ctx)
+	require.NoError(t, err)
+
+	listPerms := func() []uint32 {
+		ids, lerr := repo.ListPermissionIDsByRoleIDs(ctx, []uint32{role.ID})
+		require.NoError(t, lerr)
+		return ids
+	}
+	require.Equal(t, []uint32{p1.ID}, listPerms(), "Create 侧权限应已落库")
+
+	// ① 全量更新（无 mask）带 permissions=[p1,p2] → 替换落库
+	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
+		Id:   role.ID,
+		Data: &permissionV1.Role{Name: trans.Ptr("关联更新角色"), Permissions: []uint32{p1.ID, p2.ID}},
+	}), "全量更新带权限应成功")
+	require.ElementsMatch(t, []uint32{p1.ID, p2.ID}, listPerms(),
+		"全量更新的权限载荷应落库（此前被静默丢弃）")
+
+	// ② 全量更新未带 permissions（nil）→ 保持原值
+	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
+		Id:   role.ID,
+		Data: &permissionV1.Role{Name: trans.Ptr("关联更新角色二")},
+	}), "全量更新不带权限应成功")
+	require.ElementsMatch(t, []uint32{p1.ID, p2.ID}, listPerms(), "未声明权限时应保持原值")
+
+	// ③ mask 声明 permissions=[p2] → 替换落库
+	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
+		Id:         role.ID,
+		Data:       &permissionV1.Role{Permissions: []uint32{p2.ID}},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"permissions"}},
+	}), "掩码声明权限应成功")
+	require.Equal(t, []uint32{p2.ID}, listPerms(), "掩码路径权限应落库")
+
+	// ④ mask 声明 permissions + 显式空数组 → 清空
+	require.NoError(t, repo.Update(ctx, &permissionV1.UpdateRoleRequest{
+		Id:         role.ID,
+		Data:       &permissionV1.Role{Permissions: []uint32{}},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"permissions"}},
+	}), "掩码清空权限应成功")
+	require.Empty(t, listPerms(), "显式空数组应清空关联")
+}
