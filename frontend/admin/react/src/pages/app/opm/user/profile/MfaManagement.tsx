@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import type { InputRef } from 'antd';
 import { Alert, Button, Input, Modal, Spin, Tag, App } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
@@ -92,14 +93,39 @@ const MfaManagement = () => {
     }
   };
 
+  // P3 step-up：解绑须提供当前有效 TOTP 码——会话被劫持者拿不到 TOTP
+  // secret，无法通过验证，封死"解绑→重绑自己的认证器"的持久化路径。
+  const unbindCodeRef = useRef<InputRef>(null);
+
   const handleUnbind = (credentialId: string) => {
     modal.confirm({
       title: t('mfa.unbindConfirmTitle'),
-      content: t('mfa.unbindConfirmContent'),
+      content: (
+        <div>
+          <p>{t('mfa.unbindConfirmContent')}</p>
+          <Input
+            ref={unbindCodeRef}
+            placeholder={t('mfa.unbindCodePlaceholder')}
+            autoComplete="one-time-code"
+          />
+        </div>
+      ),
       okText: t('mfa.unbind'),
       okType: 'danger',
       cancelText: t('mfa.cancel'),
-      onOk: () => disableMfa.mutate({ credentialId: credentialId, method: 'TOTP' }),
+      onOk: async () => {
+        const code = unbindCodeRef.current?.input?.value?.trim() ?? '';
+        if (!code) {
+          message.error(t('mfa.unbindCodeRequired'));
+          return Promise.reject();
+        }
+        await disableMfa.mutateAsync({
+          credentialId: credentialId,
+          method: 'TOTP',
+          totpCode: code,
+        });
+        unbindCodeRef.current = null;
+      },
     });
   };
 

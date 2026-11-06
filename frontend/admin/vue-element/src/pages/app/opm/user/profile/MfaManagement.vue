@@ -68,8 +68,13 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref } from "vue";
-import { ElMessageBox, ElNotification } from "element-plus";
+import { computed, h, ref } from "vue";
+import {
+  ElInput,
+  ElMessage,
+  ElMessageBox,
+  ElNotification,
+} from "element-plus";
 
 import {
   useGetMfaStatus,
@@ -154,9 +159,12 @@ const closeEnroll = () => {
   confirmCode.value = "";
 };
 
+// P3 step-up：解绑须提供当前有效 TOTP 码——会话被劫持者拿不到 TOTP
+// secret，无法通过验证，封死"解绑→重绑自己的认证器"的持久化路径。
 const handleUnbind = () => {
   const target = totpItems.value[0];
   if (!target) return;
+  let code = "";
   ElMessageBox.confirm(
     $t("pages.user.secureSetting.mfaUnbindConfirmContent"),
     $t("pages.user.secureSetting.mfaUnbindConfirmTitle"),
@@ -164,10 +172,28 @@ const handleUnbind = () => {
       confirmButtonText: $t("pages.user.secureSetting.mfaUnbind"),
       cancelButtonText: $t("core.login.mfaCancel"),
       type: "warning",
+      // step-up 输入：当前验证器 6 位码
+      message: h("div", null, [
+        h("p", null, $t("pages.user.secureSetting.mfaUnbindConfirmContent")),
+        h(ElInput, {
+          modelValue: code,
+          "onUpdate:modelValue": (v: string) => (code = v),
+          placeholder: $t("pages.user.secureSetting.mfaUnbindCodePlaceholder"),
+          autocomplete: "one-time-code",
+        }),
+      ]),
+      showCancelButton: true,
     }
-  ).then(() => {
-    disableMfa.mutate({ credentialId: target.id, method: "TOTP" } as any);
-  });
+  )
+    .then(() => {
+      code = code.trim();
+      if (!code) {
+        ElMessage.error($t("pages.user.secureSetting.mfaUnbindCodeRequired"));
+        return;
+      }
+      disableMfa.mutate({ credentialId: target.id, method: "TOTP", totpCode: code } as any);
+    })
+    .catch(() => {});
 };
 </script>
 

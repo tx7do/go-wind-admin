@@ -91,5 +91,7 @@
   "mfaUnbindSuccess": "TOTP unbound successfully",
   "mfaUnbindFailed": "Failed to unbind TOTP",
   "mfaUnbindConfirmTitle": "Unbind TOTP?",
-  "mfaUnbindConfirmContent": "After unbinding, login will no longer require a verification code. This reduces account security."
+  "mfaUnbindConfirmContent": "After unbinding, login will no longer require a verification code. This reduces account security.",
+  "mfaUnbindCodePlaceholder": "Enter the 6-digit code from your authenticator app",
+  "mfaUnbindCodeRequired": "Current TOTP code is required to unbind"
 }

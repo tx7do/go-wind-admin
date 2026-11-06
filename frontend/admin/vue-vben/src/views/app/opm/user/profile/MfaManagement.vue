@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref } from 'vue';
+import { computed, ref , h} from 'vue';
 
 import { Button, Image, Input, Modal, notification } from 'ant-design-vue';
 
@@ -92,14 +92,31 @@ const closeEnroll = () => {
 const handleUnbind = () => {
   const target = totpItems.value[0];
   if (!target) return;
+  // P3 step-up：解绑须提供当前有效 TOTP 码（会话劫持者无 TOTP secret，
+  // 无法生成有效码，封死"解绑→重绑"持久化路径）。
+  let code = '';
   Modal.confirm({
     title: $t('authentication.mfaUnbindConfirmTitle'),
-    content: $t('authentication.mfaUnbindConfirmContent'),
+    content: () =>
+      h('div', null, [
+        h('p', null, $t('authentication.mfaUnbindConfirmContent')),
+        h(Input, {
+          value: code,
+          'onUpdate:value': (v: string) => (code = v),
+          placeholder: $t('authentication.mfaUnbindCodePlaceholder'),
+          autocomplete: 'one-time-code',
+        }),
+      ]),
     okText: $t('authentication.mfaUnbind'),
     okType: 'danger',
     cancelText: $t('authentication.mfaCancel'),
     onOk: () => {
-      disableMfa.mutate({ credentialId: target.id, method: 'TOTP' } as any);
+      code = code.trim();
+      if (!code) {
+        notification.error({ message: $t('authentication.mfaUnbindCodeRequired') });
+        return Promise.reject();
+      }
+      disableMfa.mutate({ credentialId: target.id, method: 'TOTP', totpCode: code } as any);
     },
   });
 };

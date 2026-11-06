@@ -91,5 +91,7 @@
   "mfaUnbindSuccess": "TOTP 解绑成功",
   "mfaUnbindFailed": "TOTP 解绑失败",
   "mfaUnbindConfirmTitle": "确定解绑 TOTP？",
-  "mfaUnbindConfirmContent": "解绑后，登录将不再要求验证码，会降低账号安全性。"
+  "mfaUnbindConfirmContent": "解绑后，登录将不再要求验证码，会降低账号安全性。",
+  "mfaUnbindCodePlaceholder": "请输入当前验证器 App 中的 6 位验证码",
+  "mfaUnbindCodeRequired": "解绑前需验证当前 TOTP 验证码"
 }
