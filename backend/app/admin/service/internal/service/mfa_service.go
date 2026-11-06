@@ -395,6 +395,36 @@ func (s *MfaService) DisableMFA(ctx context.Context, req *authenticationV1.Disab
 		return &emptypb.Empty{}, nil
 	}
 
+	// 本人路径 step-up（P3-1 修复）：拆掉第二因子是高价值目标——会话被劫持的
+	// 攻击者可先 Disable 再绑定自己的 TOTP 持久化。proto 的 verifier oneof
+	// 此前从未被消费：现强制要求当前有效 TOTP 码（劫持会话不含 TOTP secret，
+	// 无法生成有效码）或登录口令二选一。管理端救援路径不受限（场景即
+	// "认证器丢失"，且已有平台管理员闸门）。
+	if req.GetTotpCode() != "" {
+		factorId, plainSecret, serr := s.mfaFactorRepo.FindEnabledTotpForUser(ctx, operator.GetTenantId(), operator.GetUserId())
+		if serr != nil || factorId == 0 {
+			return nil, authenticationV1.ErrorForbidden("no enabled totp factor to verify")
+		}
+		ok, verr := otpTotp.ValidateCustom(req.GetTotpCode(), plainSecret, time.Now(), otpTotp.ValidateOpts{
+			Period:    30,
+			Skew:      mfaTotpSkew,
+			Digits:    otp.DigitsSix,
+			Algorithm: otp.AlgorithmSHA1,
+		})
+		// 同码重放防线与登录挑战同款
+		if ok && s.mfaChallengeCache != nil {
+			ok = s.mfaChallengeCache.TryAcquireUsedTotpCode(ctx, operator.GetUserId(), req.GetTotpCode())
+		}
+		if verr != nil || !ok {
+			return nil, authenticationV1.ErrorForbidden("invalid mfa code")
+		}
+	} else {
+		// 刻意只接受 TOTP：口令可能已随会话被劫持者掌握，TOTP 码才是劫持者
+		// 缺失的一环（第二因子的本义）。
+		return nil, authenticationV1.ErrorBadRequest(
+			"step-up verification required: current totp_code is required to disable mfa")
+	}
+
 	// 本人路径：按 credential_id 精确解绑；未传 credential_id 时按 method 清空
 	// 本人该方法全部因子（兑现 proto 注释"指定凭证 id 或仅按方法禁用全部"的契约）
 	if req.GetCredentialId() == "" {

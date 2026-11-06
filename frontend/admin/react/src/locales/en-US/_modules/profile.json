@@ -80,7 +80,7 @@
     "unbindConfirmTitle": "Unbind TOTP?",
     "unbindConfirmContent": "After unbinding, login will no longer require a verification code. This reduces account security.",
     "unbindCodePlaceholder": "Enter the 6-digit code from your authenticator app",
-    "unbindCodeRequired": "Current TOTP code is required to unbind"
+    "unbindCodeRequired": "Current TOTP code is required to unbind",
     "cancel": "Cancel",
     "totpDevice": "TOTP device"
   },

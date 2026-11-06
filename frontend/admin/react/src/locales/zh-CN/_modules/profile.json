@@ -80,7 +80,7 @@
     "unbindConfirmTitle": "确定解绑 TOTP？",
     "unbindConfirmContent": "解绑后，登录将不再要求验证码，会降低账号安全性。",
     "unbindCodePlaceholder": "请输入当前验证器 App 中的 6 位验证码",
-    "unbindCodeRequired": "解绑前需验证当前 TOTP 验证码"
+    "unbindCodeRequired": "解绑前需验证当前 TOTP 验证码",
     "cancel": "取消",
     "totpDevice": "TOTP 设备"
   },
