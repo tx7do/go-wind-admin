@@ -63,7 +63,7 @@ require (
 	github.com/tx7do/kratos-bootstrap/database/ent v0.1.6
 	github.com/tx7do/kratos-bootstrap/logger v0.1.3
 	github.com/tx7do/kratos-bootstrap/oss/minio v0.1.3
-	github.com/tx7do/kratos-bootstrap/rpc v0.1.3
+	github.com/tx7do/kratos-bootstrap/rpc v0.1.4
 	github.com/tx7do/kratos-bootstrap/transport/asynq v0.0.7
 	github.com/tx7do/kratos-bootstrap/transport/sse v0.0.5
 	github.com/tx7do/kratos-swagger-ui v0.0.1

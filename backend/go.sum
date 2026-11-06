@@ -816,8 +816,8 @@ github.com/tx7do/kratos-bootstrap/oss/minio v0.1.3 h1:C3dNTNHR005wAXY/rGxTo18Tl3
 github.com/tx7do/kratos-bootstrap/oss/minio v0.1.3/go.mod h1:xOz+UPzeREFgyMS+IgJBbfRqV0/45H3IFQPxbYjr6oI=
 github.com/tx7do/kratos-bootstrap/registry v0.2.3 h1:Me74a2teHn++v3NMFB9sgHhVkEasN7iOSyGpIsxP2OY=
 github.com/tx7do/kratos-bootstrap/registry v0.2.3/go.mod h1:PHnu829N5l68X0E89rQfYWryat4A6HdBfgiE1taLS6Q=
-github.com/tx7do/kratos-bootstrap/rpc v0.1.3 h1:B/aifjU4VMWH+R1nqwoQhdSblO9N1jvtfP05SdKQEGA=
-github.com/tx7do/kratos-bootstrap/rpc v0.1.3/go.mod h1:BoWr7//y/2lIgEhgCp4sxNxGJ0U6GqWxN4FoyTTxpHw=
+github.com/tx7do/kratos-bootstrap/rpc v0.1.4 h1:h8+bQQEhsf1Fv5eCbPdJ/UDjo7BSqOWA1DudyKdq+BQ=
+github.com/tx7do/kratos-bootstrap/rpc v0.1.4/go.mod h1:i1lo4jiGJNSxyz7G5vOw1ckCHS28hBgftFeIuDIFh5Y=
 github.com/tx7do/kratos-bootstrap/tracer v0.1.5 h1:2cDSLSyZS9lynX2xlq1P6MX0DUeAdvNFmEdLghdyqiM=
 github.com/tx7do/kratos-bootstrap/tracer v0.1.5/go.mod h1:apPFnTo4r+6/swsm/yctHKu1/U1x1kcaNqEJ+SLj6Ac=
 github.com/tx7do/kratos-bootstrap/transport/asynq v0.0.7 h1:aB5+3tghb1+/BrJm1/p6OH41PM9A1Hx29tj5Nr4/stU=
