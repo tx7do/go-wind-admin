@@ -4,7 +4,7 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 import { h, ref } from 'vue';
 
 import { Page, type VbenFormProps } from '@vben/common-ui';
-import { LucideCopy, LucideFilePenLine, LucideTrash2 } from '@vben/icons';
+import { LucideBot, LucideCopy, LucideFilePenLine, LucideTrash2 } from '@vben/icons';
 
 import { notification } from 'ant-design-vue';
 
@@ -22,6 +22,7 @@ import TableAddButton from '#/components/TableAddButton.vue';
 import TableExportButton from '#/components/TableExportButton.vue';
 
 import DesignerDrawer from './designer-drawer.vue';
+import AiGenerateDrawer from './ai-generate-drawer.vue';
 
 const { mutateAsync: deleteTemplate } = useDeletePrintTemplate();
 
@@ -129,6 +130,12 @@ const exportFetcher = (page: number, pageSize: number) =>
 const [Grid, gridApi] = useVbenVxeGrid({ gridOptions, formOptions });
 
 const designerRef = ref();
+const aiDialogRef = ref();
+
+/* AI 生成成功：伪模板（payload+基础信息）交给设计器 ai 模式预览确认 */
+function handleAiGenerated(template: any) {
+  designerRef.value?.open({ ai: true, row: template });
+}
 
 function handleSuccess() {
   gridApi.reload();
@@ -212,6 +219,10 @@ function rowActions(row: PrintTemplate): TableAction[] {
     <Grid :table-title="$t('menu.system.printTemplates')">
       <template #toolbar-tools>
         <TableExportButton :fetcher="exportFetcher" :columns="gridOptions.columns" filename="print-templates" />
+        <a-button class="ml-2" @click="aiDialogRef?.open()">
+          <template #icon><LucideBot /></template>
+          {{ $t('page.printTemplate.aiGenerate') }}
+        </a-button>
         <TableAddButton @click="handleCreate" />
       </template>
       <template #orientation="{ row }">
@@ -232,5 +243,6 @@ function rowActions(row: PrintTemplate): TableAction[] {
       </template>
     </Grid>
     <DesignerDrawer ref="designerRef" @success="handleSuccess" />
+    <AiGenerateDrawer ref="aiDialogRef" @generated="handleAiGenerated" />
   </Page>
 </template>

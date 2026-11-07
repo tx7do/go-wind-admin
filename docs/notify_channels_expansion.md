@@ -82,4 +82,5 @@ factory 表 `map[类型]func(settings) notify.Service`，39 份各 5~15 行；HT
 
 - **M1（本期）**：基建（settings/schema/sender/proto/ent）+ 39 渠道全量声明 + react 动态表单
   + e2e（本地 ntfy mock 全链路：建渠道 → 测试发送 → mock 收到 POST）。
-- **M2（未排期）**：ele/vben 渠道页移植（动态表单组件同构）；剩余细节（各渠道 Target 提示打磨）。
+- **M2（已落地，fd708496 三端收口 + 后续 ele 抽屉交互修复）**：ele/vben 渠道页移植
+  （动态表单组件同构，vben 937 行 / ele 抽屉 580 行）；剩余尾巴仅各渠道 Target 提示打磨。

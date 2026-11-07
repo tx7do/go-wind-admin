@@ -31,7 +31,8 @@ const emit = defineEmits<{ success: [] }>();
 
 const data = ref();
 
-const mode = ref<'create' | 'edit' | 'copy'>('create');
+// ai = AI 生成确认态（画布注入 AI 产物 payload，保存走新建；与 create 同为新建语义）
+const mode = ref<'create' | 'edit' | 'copy' | 'ai'>('create');
 const canvasRef = ref<any>(null);
 const canvasDirty = ref(false);
 const previewVisible = ref(false);
@@ -46,9 +47,11 @@ const sampleText = ref('');
 const moduleName = computed(() => $t('page.printTemplate.moduleName'));
 
 const getTitle = computed(() =>
-  mode.value === 'edit'
-    ? $t('ui.modal.update', { moduleName: moduleName.value })
-    : $t('ui.modal.create', { moduleName: moduleName.value }),
+  mode.value === 'ai'
+    ? $t('page.printTemplate.aiGenerateTitle')
+    : mode.value === 'edit'
+      ? $t('ui.modal.update', { moduleName: moduleName.value })
+      : $t('ui.modal.create', { moduleName: moduleName.value }),
 );
 
 const [BaseForm, baseFormApi] = useVbenForm({
@@ -295,7 +298,13 @@ const [Drawer, drawerApi] = useVbenDrawer({
   async onOpenChange(isOpen) {
     if (isOpen) {
       data.value = drawerApi.getData<Record<string, any>>();
-      mode.value = data.value?.copy ? 'copy' : data.value?.create ? 'create' : 'edit';
+      mode.value = data.value?.ai
+        ? 'ai'
+        : data.value?.copy
+          ? 'copy'
+          : data.value?.create
+            ? 'create'
+            : 'edit';
       canvasDirty.value = false;
 
       syncDarkStyle();
@@ -313,8 +322,9 @@ const [Drawer, drawerApi] = useVbenDrawer({
         code: mode.value === 'copy' ? '' : row?.code ?? '',
         paperSize: row?.paperSize ?? 'A4',
         orientation: row?.orientation ?? 'portrait',
-        isEnabled: row?.isEnabled ?? true,
-        sortOrder: row?.sortOrder ?? 100,
+        // ai-generate 新建：启用与排序走默认（其余模式保留行值）
+        isEnabled: mode.value === 'ai' ? true : row?.isEnabled ?? true,
+        sortOrder: mode.value === 'ai' ? 100 : row?.sortOrder ?? 100,
         resourceKey: row?.resourceKey ?? '',
         sampleData: '',
       });
@@ -338,12 +348,19 @@ function setLoading(loading: boolean) {
   drawerApi.setState({ loading });
 }
 
-/** 打开设计器（create / edit / copy 三态）；页面持 ref 直接调用，不再走 connectedComponent 双实例 */
-function open(options: { create?: boolean; copy?: boolean; row?: any }) {
-  mode.value = options?.copy ? 'copy' : options?.create ? 'create' : 'edit';
+/** 打开设计器（create / edit / copy / ai 四态）；页面持 ref 直接调用，不再走 connectedComponent 双实例 */
+function open(options: { create?: boolean; copy?: boolean; ai?: boolean; row?: any }) {
+  mode.value = options?.ai
+    ? 'ai'
+    : options?.copy
+      ? 'copy'
+      : options?.create
+        ? 'create'
+        : 'edit';
   drawerApi.setData({
     create: !!options?.create,
     copy: !!options?.copy,
+    ai: !!options?.ai,
     row: options?.row,
   });
   drawerApi.open();

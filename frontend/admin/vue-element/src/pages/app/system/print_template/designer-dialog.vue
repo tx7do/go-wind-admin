@@ -157,7 +157,8 @@ const { mutateAsync: createTemplate } = useCreatePrintTemplate();
 const { mutateAsync: updateTemplate } = useUpdatePrintTemplate();
 
 const visible = ref(false);
-const mode = ref<"create" | "edit" | "copy">("create");
+// ai = AI 生成确认态（画布注入 AI 产物 payload，保存走新建；与 create 同为新建语义）
+const mode = ref<"create" | "edit" | "copy" | "ai">("create");
 const currentRow = ref<any>(null);
 const formRef = ref();
 const canvasRef = ref<any>(null);
@@ -192,7 +193,9 @@ const title = computed(() =>
     ? $t("pages.printTemplate.createTitle")
     : mode.value === "copy"
       ? $t("pages.printTemplate.copyTitle")
-      : $t("pages.printTemplate.editTitle")
+      : mode.value === "ai"
+        ? $t("pages.printTemplate.aiGenerateTitle")
+        : $t("pages.printTemplate.editTitle")
 );
 
 function markDirty() {
@@ -297,13 +300,17 @@ watch(visible, (v) => {
           ? (createDefaultTemplate() as any)
           : safeParse((currentRow.value?.payload || "") as string);
       formData.value = {
-        name: mode.value === "copy" ? `${currentRow.value?.name || ""} ` + $t("pages.printTemplate.copySuffix") : currentRow.value?.name || "",
+        name: mode.value === "copy"
+          ? `${currentRow.value?.name || ""} ` + $t("pages.printTemplate.copySuffix")
+          // ai-generate：预填名来自 AI 弹窗（描述首行），无行数据时兜底空串
+          : currentRow.value?.name || "",
         code: mode.value === "copy" ? "" : currentRow.value?.code || "",
         resourceKey: currentRow.value?.resourceKey || "",
         paperSize: currentRow.value?.paperSize || "A4",
         orientation: currentRow.value?.orientation || "portrait",
-        isEnabled: currentRow.value?.isEnabled ?? true,
-        sortOrder: currentRow.value?.sortOrder ?? 100,
+        // ai-generate 新建：启用与排序走默认（其余模式保留行值）
+        isEnabled: mode.value === "ai" ? true : currentRow.value?.isEnabled ?? true,
+        sortOrder: mode.value === "ai" ? 100 : currentRow.value?.sortOrder ?? 100,
         sampleData: "",
       };
       fields.value = [];
@@ -410,9 +417,12 @@ async function handleSave() {
   }
 }
 
-/** 打开设计器（create / edit / copy 三态；copy 预填并在保存时走新建） */
-function open(data?: { create?: boolean; row?: any; copy?: boolean }) {
-  if (data?.copy && data.row) {
+/** 打开设计器（create / edit / copy / ai 四态；copy/ai 预填并在保存时走新建） */
+function open(data?: { create?: boolean; row?: any; copy?: boolean; ai?: boolean }) {
+  if (data?.ai && data.row) {
+    mode.value = "ai";
+    currentRow.value = data.row;
+  } else if (data?.copy && data.row) {
     mode.value = "copy";
     currentRow.value = data.row;
   } else if (!data?.create && data?.row) {

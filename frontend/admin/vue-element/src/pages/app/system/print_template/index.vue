@@ -6,6 +6,7 @@
       @add="handleAdd"
       @edit="handleEdit"
       @operate="handleOperate"
+      @toolbar="handleToolbar"
     >
       <!-- 纸张方向 -->
       <template #orientation="scope: any">
@@ -27,8 +28,11 @@
       </template>
     </ProPage>
 
-    <!-- 设计器对话框（create/edit/copy 三态） -->
+    <!-- 设计器对话框（create/edit/copy/ai 四态） -->
     <DesignerDialog ref="designerRef" @success="handleSuccess" />
+
+    <!-- AI 一句话生成（M4-1）：产物确认交给设计器（ai 模式），保存走 Create -->
+    <AiGenerateDialog ref="aiDialogRef" @generated="handleAiGenerated" />
   </div>
 </template>
 
@@ -39,6 +43,7 @@ import { ElTag } from "element-plus";
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import DesignerDialog from "./designer-dialog.vue";
+import AiGenerateDialog from "./ai-generate-dialog.vue";
 
 import {
   fetchListPrintTemplates,
@@ -51,6 +56,7 @@ const { mutateAsync: deleteTemplate } = useDeletePrintTemplate();
 
 const pageRef = ref();
 const designerRef = ref();
+const aiDialogRef = ref();
 
 const pageConfig = computed<ProPageConfig>(() => ({
   skeleton: true,
@@ -87,7 +93,14 @@ const pageConfig = computed<ProPageConfig>(() => ({
       await deleteTemplate({ id: ids as any });
     },
     toolbar: [],
-    toolbarRight: ["add"],
+    toolbarRight: [
+      "add",
+      {
+        name: "ai-generate",
+        label: $t("pages.printTemplate.aiGenerate"),
+        icon: "lucide:bot",
+      },
+    ],
     defaultToolbar: ["exports", "refresh", "zoom", "filter"],
     tableAttrs: { border: true, stripe: true },
     emptyActionText: "common.button.add",
@@ -157,6 +170,21 @@ function handleOperate(data: { name: string; row: any }) {
   if (data.name === "copy") {
     designerRef.value?.open({ copy: true, row: data.row });
   }
+  if (data.name === "ai-generate") {
+    aiDialogRef.value?.open();
+  }
+}
+
+/** ProPage 工具栏自定义按钮走 toolbar 透传（operate 是行内按钮的通道） */
+function handleToolbar(name: string) {
+  if (name === "ai-generate") {
+    aiDialogRef.value?.open();
+  }
+}
+
+/** AI 生成成功：伪模板（payload+基础信息）交给设计器 ai 模式预览确认 */
+function handleAiGenerated(template: any) {
+  designerRef.value?.open({ ai: true, row: template });
 }
 
 function handleSuccess() {

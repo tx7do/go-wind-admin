@@ -92,6 +92,32 @@
   全链路经 `pkg/oss` live test（19 用例，含真实 PutObject 流式签名、Range 直读、建桶后回读）与
   预签名 PUT/GET 真实网络回放验证通过。存量 MinIO 数据用任意 S3 客户端按桶镜像迁移（如
   `mc mirror`），详见 [docs/backend_file_upload.md](./docs/backend_file_upload.md)。
+- **套餐欠账三件套**（[docs/plan_billing.md](./docs/plan_billing.md) §10）：
+  ① 菜单层的套餐模块白名单接上递归——`filterMenusByPlanWhitelist` 此前只遍历顶层节点，
+  而 `sys_menus` 根节点全不带 `module`、带 `module` 的全是叶子 ⇒ 白名单实际过滤面为 0；
+  现递归过滤整棵树（不在白名单的叶子连子树剔除、未归类放行、容器子项全被剔时一并丢弃）。
+  ② `ComponentToModule` 前缀匹配前归一化连字符→下划线——react 端页面目录
+  `app/internal-message/` 跑「菜单同步」不再让 `module` 漂成 NULL（决策点 10 方案 A 变体）。
+  **升级注意：白名单真正生效后，租户侧边栏可见集按套餐白名单收缩——此前依赖
+  "白名单从未过滤"的部署，升级后未归入套餐的模块叶子会从侧边栏消失；存量 NULL 行跑一次
+  「菜单同步」即可按新归类归位。**
+  ③ `CleanupTenantData` 删表清单对齐 ent 中全部 43 张带 `tenant_id` 的表——此前少删
+  4 张（AK/SK、角色字段权限、角色-组织单元、用户 MFA 因子），AI/BI/打印模块落地后又
+  静默涨到 14 张；新增源扫描守卫测试钉住清单完整性。
+
+### 新增
+
+- **打印模板 AI 一句话生成（M4-1，react 先行）**（[docs/print_template.md](./docs/print_template.md) §7）：
+  `POST /admin/v1/print-templates:generate`——描述单据要素（如"出库单，含明细表/合计/签字区"）
+  → 默认 AI provider 产出 TemplateData → 服务端护栏校验（payload/元素类型/嵌套深度上限、
+  顶层键与元素键白名单、`{field}` 占位符格式校验、几何与边距钳制，html 元素类型 fail-closed
+  拒绝）→ 返回未入库，前端预览确认后走既有创建链保存。走 AI_TOKENS 月度配额与用量记账
+  （与智能问数同款链路）。三端同批接入：打印模板管理页新增「AI 生成」入口（react/ele/vben），
+  产物载入设计器确认后保存。**部署注意：新端点须 `make openapi` 重建二进制内 openapi.yaml
+  并重启后在管理页「接口同步」登记 Api 表，否则租户闸门 fail-closed 403。**
+- **文档勘误**：Agent 编排 ele/vben 画布（c6504f7a）与通知渠道 M2 三端移植（fd708496）
+  此前已完成，`ai_agent_orchestration.md`/`notify_channels_expansion.md` 的"未排期"状态
+  标记已同步。
 
 ## [1.5.0] - 2026-10-29
 
