@@ -16,7 +16,7 @@ import {
   useEdgesState,
   useNodesState,
 } from '@xyflow/react';
-import { Drawer, Button, Space, Form, Input, InputNumber, Select, Switch, App, Tag, Timeline, Descriptions, Popconfirm } from 'antd';
+import { Drawer, Button, Space, Form, Input, InputNumber, Select, Switch, App, Tag, Timeline, Descriptions, Popconfirm, Typography } from 'antd';
 import { SaveOutlined, PlayCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import type { aiservicev1_AiAgentApp as AiAgentApp } from '@/api/generated/admin/service/v1';
@@ -35,9 +35,9 @@ import { PaginationQuery } from '@/core';
  * - 试运行面板就地展示 output + trace 时间线 + token 用量；运行台账浏览归 M2。
  */
 
-type AgentNodeType = 'start' | 'knowledge' | 'llm' | 'condition' | 'end';
+type AgentNodeType = 'start' | 'knowledge' | 'llm' | 'http' | 'condition' | 'end';
 
-const NODE_TYPE_ORDER: AgentNodeType[] = ['start', 'knowledge', 'llm', 'condition', 'end'];
+const NODE_TYPE_ORDER: AgentNodeType[] = ['start', 'knowledge', 'llm', 'http', 'condition', 'end'];
 
 // 节点色走 styles/semantic-text.css 的主题档：原先写死的 #52c41a/#1677ff/#8c8c8c
 // 是"填充档"，当图标文字用在暗色节点底上只有 2~3:1，且 #1677ff 是已退役的旧主色。
@@ -45,6 +45,7 @@ const NODE_META: Record<AgentNodeType, { color: string; icon: string }> = {
   start: { color: 'var(--gowind-node-start)', icon: '▶' },
   knowledge: { color: 'var(--gowind-node-knowledge)', icon: '📚' },
   llm: { color: 'var(--gowind-primary-text)', icon: '✦' },
+  http: { color: 'var(--gowind-node-http, #4a8dff)', icon: '⇋' },
   condition: { color: 'var(--gowind-node-condition)', icon: '⑃' },
   end: { color: 'var(--gowind-node-end)', icon: '■' },
 };
@@ -92,6 +93,8 @@ function configSummary(nodeType: AgentNodeType, config: Record<string, any> | un
       return config.baseId ? `kb#${config.baseId} topK=${config.topK ?? 4}` : '';
     case 'llm':
       return config.model || (config.providerId ? `provider#${config.providerId}` : '');
+    case 'http':
+      return config.url ? `${config.method ?? 'GET'} ${String(config.url).slice(0, 36)}` : '';
     case 'condition':
       return config.expression || '';
     case 'end':
@@ -366,6 +369,8 @@ function defaultConfig(nodeType: AgentNodeType): Record<string, any> {
       return { topK: 4 };
     case 'llm':
       return { temperature: 0.3 };
+    case 'http':
+      return { method: 'GET', timeoutSeconds: 15 };
     case 'condition':
       return { expression: '' };
     case 'end':
@@ -373,6 +378,34 @@ function defaultConfig(nodeType: AgentNodeType): Record<string, any> {
     default:
       return {};
   }
+}
+
+
+/** http 节点 headers 键值对编辑（存 [{key,value}] 数组，引擎侧两种形态都收） */
+function HeadersList() {
+  const { t } = useTranslation('ai-agent');
+  return (
+    <Form.List name="headers">
+      {(fields, { add, remove }) => (
+        <>
+          {fields.map((field) => (
+            <Space key={field.key} style={{ display: 'flex', marginBottom: 4 }} align="baseline">
+              <Form.Item name={[field.name, 'key']} style={{ marginBottom: 0 }}>
+                <Input placeholder="Content-Type" style={{ width: 150 }} />
+              </Form.Item>
+              <Form.Item name={[field.name, 'value']} style={{ marginBottom: 0 }}>
+                <Input placeholder="application/json" style={{ width: 180 }} />
+              </Form.Item>
+              <Button type="text" danger onClick={() => remove(field.name)}>{t('canvas.remove')}</Button>
+            </Space>
+          ))}
+          <Button type="dashed" size="small" icon={<PlusOutlined />} onClick={() => add({ key: '', value: '' })}>
+            {t('canvas.httpAddHeader')}
+          </Button>
+        </>
+      )}
+    </Form.List>
+  );
 }
 
 // ============ 节点配置抽屉 ============
@@ -505,6 +538,42 @@ function NodeConfigDrawer({
           >
             <Input.TextArea rows={3} placeholder={'llm_1.output contains "退款"'} style={{ fontFamily: 'monospace' }} />
           </Form.Item>
+        )}
+
+                {nodeType === 'http' && (
+          <>
+            <Form.Item name="url" label={t('canvas.httpUrl')} rules={[{ required: true, message: t('canvas.requiredHttpUrl') }]}>
+              <Input.TextArea
+                rows={2}
+                placeholder="https://api.example.com/orders/{{start_1.orderId}}"
+                style={{ fontFamily: 'monospace' }}
+              />
+            </Form.Item>
+            <Form.Item name="method" label={t('canvas.httpMethod')} initialValue="GET">
+              <Select
+                options={['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD'].map((m) => ({ value: m, label: m }))}
+              />
+            </Form.Item>
+            <Form.Item label={t('canvas.httpHeaders')} style={{ marginBottom: 4 }}>
+              <HeadersList />
+            </Form.Item>
+            <Form.Item shouldUpdate={(prev, cur) => prev.method !== cur.method} style={{ marginBottom: 0 }}>
+              {({ getFieldValue }) => {
+                const method = getFieldValue('method');
+                return method !== 'GET' && method !== 'HEAD' ? (
+                  <Form.Item name="body" label={t('canvas.httpBody')} tooltip={t('canvas.templateHint')}>
+                    <Input.TextArea rows={4} placeholder='{"orderId": "{{start_1.orderId}}"}' style={{ fontFamily: 'monospace' }} />
+                  </Form.Item>
+                ) : null;
+              }}
+            </Form.Item>
+            <Form.Item name="timeoutSeconds" label={t('canvas.httpTimeout')}>
+              <InputNumber min={1} max={60} precision={0} style={{ width: '100%' }} />
+            </Form.Item>
+            <Typography.Paragraph type="warning" style={{ fontSize: 12, marginBottom: 0 }}>
+              {t('canvas.httpSsrHint')}
+            </Typography.Paragraph>
+          </>
         )}
 
         {nodeType === 'end' && (

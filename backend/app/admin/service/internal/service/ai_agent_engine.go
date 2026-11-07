@@ -28,6 +28,7 @@ const agentMaxSteps = 50
 // agentNodeTypes 合法节点类型集。
 var agentNodeTypes = map[string]bool{
 	"start": true, "knowledge": true, "llm": true, "condition": true, "end": true,
+	"http": true,
 }
 
 // agentGraphNode 图节点。data 保持无类型 map：五种节点各自的键在执行处按需取，
@@ -132,6 +133,10 @@ func validateAgentGraph(g *agentGraph) error {
 			startCount++
 		case "end":
 			endCount++
+		case "http":
+			if err := validateAgentHTTPNode(n); err != nil {
+				return err
+			}
 		}
 	}
 	if startCount != 1 {
@@ -376,6 +381,18 @@ func executeAgentGraph(
 			usage.add(llmUsage)
 			vars[node.ID] = map[string]string{"output": answer}
 			summary = truncateRunes(answer, 120)
+
+		case "http":
+			status, body, contentType, herr := runAgentHTTPNode(ctx, node, vars)
+			if herr != nil {
+				return "", trace, usage, agentStepError(node, herr)
+			}
+			vars[node.ID] = map[string]string{
+				"status":      status,
+				"body":        body,
+				"contentType": contentType,
+			}
+			summary = fmt.Sprintf("status=%s, %d bytes", status, len(body))
 
 		case "condition":
 			approved, cerr := evalAgentCondition(agentDataString(node.Data, "expression"), vars)

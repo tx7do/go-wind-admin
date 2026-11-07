@@ -2,7 +2,9 @@
 
 > **状态：M1 已落地（2026-10-15，见 §5 分期）**：图执行引擎 + 应用 CRUD + 同步试运行 + 运行台账 + react 画布先行。
 > **M2 画布移植已落地**：ele/vben 画布编辑器（vue-flow 版）随 c6504f7a 补齐、d765b75e 真机修正——三端编排齐平。
-> M2+ 剩余（SSE 流式、脚本/HTTP 节点、版本与发布、对外 API、循环/子图/并行）未排期，需求驱动。
+> M2+ 进展（2026-11-08）：**SSE 流式与 ele/vben 画布早已落地**（后者随 c6504f7a）；
+> **HTTP 节点已落地**（后端 + 三端画布，见 §2.1）。剩余（脚本节点、版本与发布、
+> 对外 API、循环/子图/并行）未排期，需求驱动。
 >
 > 立项依据：JeecgBoot 对标时"AI 应用平台（编排）"按品类边界归档，触发条件为需求驱动；
 > 2026-10-15 用户明确立项，归档项按条款重开。**这是 AI 模块内的编排能力，不是 OA 工作流**——
@@ -58,15 +60,22 @@
 }
 ```
 
-### 2.1 节点集（M1 五种）
+### 2.1 节点集（M1 五种 + M2 http）
 
 | type | data 键 | 写入上下文 |
 | --- | --- | --- |
 | `start` | `inputVars: [{name,label,required}]`（运行入参声明） | 每个输入变量按名直挂自己（`start_1.question`） |
 | `knowledge` | `baseId, topK(默认4), query(模板)` | `context`（命中片段拼接）、`hits`（命中条数） |
 | `llm` | `providerId, model, systemPrompt?(模板), userPrompt(模板), temperature?` | `output`（最终答案文本） |
+| `http` **（M2，2026-11-08）** | `url`(必填,模板), `method`(白名单 GET/POST/PUT/DELETE/PATCH/HEAD, 默认 GET), `headers`(`[{key,value}]` 或 map，键值均可模板), `body`(模板，非 GET/HEAD), `timeoutSeconds`(1-60, 默认 15) | `status`（状态码）、`body`（响应体，读上限 64KB、入上下文截断 8KB）、`contentType` |
 | `condition` | `expression`（[expr-lang](https://expr-lang.org) 语法，变量即节点命名空间） | 无（分流由带 `branch` 的出边承接） |
 | `end` | `output`(模板，可空) | 运行产出 = 到达的 end 节点渲染值 |
+
+**http 节点的 SSRF 防线（2026-11-08）**：与 RenderPdf（`print_template_sanitize.go`）同源——
+scheme 白名单（http/https）、主机字面量/后缀判定（localhost/.local/.internal）、解析后逐 IP
+复核（私网/回环/链路本地/CGNAT 段）；`ai_agent_http_node.go` 的 `validateAgentOutboundURL`。
+与那条线同样存在解析与请求两次解析之间的 TOCTOU 窗口（DNS 重绑定），强度一致、接受同一权衡。
+静态校验（Run 前）：url 必填、method 白名单、timeoutSeconds 钳制；校验不过 400、不建运行行。
 
 ### 2.2 模板与表达式
 

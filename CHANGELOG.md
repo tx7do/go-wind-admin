@@ -107,6 +107,12 @@
 
 ### 新增
 
+- **AI Agent 编排 HTTP 节点（M2，三端齐平）**（[docs/ai_agent_orchestration.md](./docs/ai_agent_orchestration.md) §2.1）：
+  图 DSL 新增 `http` 节点——URL/方法/请求头/请求体全部支持模板（引用上游节点输出），
+  出站请求的 `status/body/contentType` 写入节点上下文供下游 LLM/条件节点引用；
+  SSRF 防线与 RenderPdf 同源（scheme 白名单 + 私网/回环/云元数据拒绝 + 解析后逐 IP 复核），
+  方法白名单、响应体 64KB 读上限、入上下文 8KB 截断、超时 1-60s 钳制。
+  三端画布同步（节点面板/配置表单/卡片摘要），i18n 中英。**部署注意：与既有端点同服务，无需接口同步。**
 - **BI 仪表盘版本历史**（[docs/bi_dashboard.md](./docs/bi_dashboard.md)）：新增
   `sys_bi_dashboard_revisions` 快照表——每次成功保存把保存前的 payload/name/version 留一行
   （随主表级联删除、入租户清理清单）；`ListRevisions`/`RestoreRevision` RPC，恢复前先留底

@@ -32,12 +32,13 @@ import AgentFlowNode from './agent-flow-node.vue';
  * - 试运行面板就地展示 output + trace 时间线 + token 用量。
  */
 
-type AgentNodeType = 'start' | 'knowledge' | 'llm' | 'condition' | 'end';
+type AgentNodeType = 'start' | 'knowledge' | 'llm' | 'http' | 'condition' | 'end';
 
 const NODE_TYPE_ORDER: AgentNodeType[] = [
   'start',
   'knowledge',
   'llm',
+  'http',
   'condition',
   'end',
 ];
@@ -118,6 +119,22 @@ const selectedNode = computed(() =>
   selectedId.value ? nodes.value.find((n) => n.id === selectedId.value) : undefined,
 );
 
+const HTTP_METHODS = ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD'].map((m) => ({ value: m, label: m }));
+
+/** http 节点 headers 行（模板深链收口到 computed，v-model 绑迭代变量） */
+const httpHeaderRows = computed<any[]>(() => ((selectedNode.value?.data.config as any)?.headers ?? []));
+
+function addHttpHeader() {
+  const node = selectedNode.value;
+  if (!node) return;
+  const config = node.data.config as Record<string, any>;
+  config.headers = [...(config.headers || []), { key: '', value: '' }];
+}
+
+function removeHttpHeader(index: number | string) {
+  selectedNode.value?.data.config?.headers?.splice(Number(index), 1);
+}
+
 const configTitle = computed(() =>
   `${$t('page.aiAgent.canvas.config')} · ${selectedId.value ?? ''}`,
 );
@@ -190,6 +207,9 @@ function defaultConfig(nodeType: AgentNodeType): Record<string, any> {
     }
     case 'llm': {
       return { temperature: 0.3 };
+    }
+    case 'http': {
+      return { method: 'GET', timeoutSeconds: 15 };
     }
     case 'condition': {
       return { expression: '' };
@@ -490,8 +510,58 @@ async function handleRun() {
           </div>
         </template>
 
+        <!-- http -->
+        <template v-if="selectedNode.data.nodeType === 'http'">
+          <div class="pb-4">
+            <div class="pb-1">{{ $t('page.aiAgent.canvas.httpUrl') }}</div>
+            <a-textarea
+              v-model:value="selectedNode.data.config.url"
+              :rows="2"
+              style="font-family: monospace"
+              placeholder="https://api.example.com/orders/{{start_1.orderId}}"
+            />
+          </div>
+          <div class="pb-4">
+            <div class="pb-1">{{ $t('page.aiAgent.canvas.httpMethod') }}</div>
+            <a-select v-model:value="selectedNode.data.config.method" :options="HTTP_METHODS" />
+          </div>
+          <div class="pb-4">
+            <div class="pb-1">{{ $t('page.aiAgent.canvas.httpHeaders') }}</div>
+            <div
+              v-for="(h, i) in httpHeaderRows"
+              :key="i"
+              class="mb-1.5 flex gap-1.5"
+            >
+              <a-input v-model:value="h.key" placeholder="Content-Type" class="w-[150px]" />
+              <a-input v-model:value="h.value" placeholder="application/json" class="flex-1" />
+              <a-button danger type="text" size="small" @click="removeHttpHeader(i)">
+                {{ $t('page.aiAgent.canvas.remove') }}
+              </a-button>
+            </div>
+            <a-button dashed size="small" class="w-full" @click="addHttpHeader">
+              {{ $t('page.aiAgent.canvas.httpAddHeader') }}
+            </a-button>
+          </div>
+          <div v-if="selectedNode.data.config.method !== 'GET' && selectedNode.data.config.method !== 'HEAD'" class="pb-4">
+            <div class="pb-1">{{ $t('page.aiAgent.canvas.httpBody') }}</div>
+            <a-textarea
+              v-model:value="selectedNode.data.config.body"
+              :rows="4"
+              style="font-family: monospace"
+              placeholder='{"orderId": "{{start_1.orderId}}"}'
+            />
+          </div>
+          <div class="pb-4">
+            <div class="pb-1">{{ $t('page.aiAgent.canvas.httpTimeout') }}</div>
+            <a-input-number v-model:value="selectedNode.data.config.timeoutSeconds" :min="1" :max="60" class="w-full" />
+          </div>
+          <div class="pt-1 text-xs text-muted-foreground">{{ $t('page.aiAgent.canvas.httpSsrHint') }}</div>
+        </template>
+
         <!-- end -->
-        <template v-if="selectedNode.data.nodeType === 'end'">
+        <!-- v-if 显式非空：render 函数顺序收窄会因前面兄弟块内的表达式失效，
+             补一层让本块重新成为收窄起点（语义等价，外层 v-if 本就保证非空） -->
+        <template v-if="selectedNode && selectedNode.data.nodeType === 'end'">
           <div class="pb-4">
             <div class="pb-1">{{ $t('page.aiAgent.canvas.endOutput') }}</div>
             <a-textarea

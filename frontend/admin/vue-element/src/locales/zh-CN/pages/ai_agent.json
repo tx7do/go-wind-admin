@@ -71,6 +71,14 @@
     "varLabel": "显示名",
     "addVar": "添加输入变量",
     "remove": "删除",
-    "configAutoSaved": "配置修改即时写入画布，点「保存画布」才落库"
+    "configAutoSaved": "配置修改即时写入画布，点「保存画布」才落库",
+    "httpUrl": "请求 URL",
+    "requiredHttpUrl": "请填写请求 URL",
+    "httpMethod": "方法",
+    "httpHeaders": "请求头",
+    "httpAddHeader": "加请求头",
+    "httpBody": "请求体",
+    "httpTimeout": "超时（秒，1-60）",
+    "httpSsrHint": "仅允许 http/https 出站；私网/回环/云元数据地址会被服务端拒绝"
   }
 }

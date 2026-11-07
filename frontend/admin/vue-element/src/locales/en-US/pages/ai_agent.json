@@ -71,6 +71,14 @@
     "varLabel": "Display Label",
     "addVar": "Add Input Variable",
     "remove": "Remove",
-    "configAutoSaved": "Edits write into the canvas immediately; click \"Save Canvas\" to persist"
+    "configAutoSaved": "Edits write into the canvas immediately; click \"Save Canvas\" to persist",
+    "httpUrl": "Request URL",
+    "requiredHttpUrl": "URL is required",
+    "httpMethod": "Method",
+    "httpHeaders": "Headers",
+    "httpAddHeader": "Add header",
+    "httpBody": "Request body",
+    "httpTimeout": "Timeout (s, 1-60)",
+    "httpSsrHint": "Only http/https outbound; private/loopback/metadata addresses are rejected server-side"
   }
 }

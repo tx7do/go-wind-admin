@@ -175,8 +175,59 @@
           </ElFormItem>
         </template>
 
+        <!-- http -->
+        <template v-if="selectedNode.data.nodeType === 'http'">
+          <ElFormItem :label="t('pages.ai_agent.canvas.httpUrl')" required>
+            <ElInput
+              v-model="selectedNode.data.config.url"
+              type="textarea"
+              :rows="2"
+              style="font-family: monospace"
+              placeholder="https://api.example.com/orders/{{start_1.orderId}}"
+            />
+          </ElFormItem>
+          <ElFormItem :label="t('pages.ai_agent.canvas.httpMethod')">
+            <ElSelect v-model="selectedNode.data.config.method">
+              <ElOption v-for="m in ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'HEAD']" :key="m" :label="m" :value="m" />
+            </ElSelect>
+          </ElFormItem>
+          <ElFormItem :label="t('pages.ai_agent.canvas.httpHeaders')">
+            <div style="width: 100%">
+              <div
+                v-for="(h, i) in httpHeaderRows"
+                :key="i"
+                style="display: flex; gap: 6px; margin-bottom: 6px"
+              >
+                <ElInput v-model="h.key" placeholder="Content-Type" style="width: 150px" />
+                <ElInput v-model="h.value" placeholder="application/json" style="flex: 1" />
+                <ElButton type="danger" text @click="removeHttpHeader(i)">
+                  {{ t("pages.ai_agent.canvas.remove") }}
+                </ElButton>
+              </div>
+              <ElButton dashed style="width: 100%" @click="addHttpHeader()">
+                {{ t("pages.ai_agent.canvas.httpAddHeader") }}
+              </ElButton>
+            </div>
+          </ElFormItem>
+          <ElFormItem v-if="selectedNode.data.config.method !== 'GET' && selectedNode.data.config.method !== 'HEAD'" :label="t('pages.ai_agent.canvas.httpBody')">
+            <ElInput
+              v-model="selectedNode.data.config.body"
+              type="textarea"
+              :rows="4"
+              style="font-family: monospace"
+              placeholder='{"orderId": "{{start_1.orderId}}"}'
+            />
+          </ElFormItem>
+          <ElFormItem :label="t('pages.ai_agent.canvas.httpTimeout')">
+            <ElInputNumber v-model="selectedNode.data.config.timeoutSeconds" :min="1" :max="60" style="width: 100%" controls-position="right" />
+          </ElFormItem>
+          <div class="config-tip">{{ t("pages.ai_agent.canvas.httpSsrHint") }}</div>
+        </template>
+
         <!-- end -->
-        <template v-if="selectedNode.data.nodeType === 'end'">
+        <!-- v-if 显式非空：render 函数顺序收窄会因前面兄弟块内的表达式失效，
+             补一层让本块重新成为收窄起点（语义等价，外层 div v-if 本就保证非空） -->
+        <template v-if="selectedNode && selectedNode.data.nodeType === 'end'">
           <ElFormItem :label="t('pages.ai_agent.canvas.endOutput')">
             <ElInput
               v-model="selectedNode.data.config.output"
@@ -313,9 +364,9 @@ import AiAgentFlowNode from "./ai-agent-flow-node.vue";
  * - 试运行面板就地展示 output + trace 时间线 + token 用量。
  */
 
-type AgentNodeType = "start" | "knowledge" | "llm" | "condition" | "end";
+type AgentNodeType = "start" | "knowledge" | "llm" | "http" | "condition" | "end";
 
-const NODE_TYPE_ORDER: AgentNodeType[] = ["start", "knowledge", "llm", "condition", "end"];
+const NODE_TYPE_ORDER: AgentNodeType[] = ["start", "knowledge", "llm", "http", "condition", "end"];
 
 // markRaw 防 nodeTypes 进响应式 store 后对组件做深度响应式代理（Vue warn 且拖性能）；
 // NodeComponent 类型要求完整 NodeProps 形状，自定义节点只声明用到的字段，再断言收编
@@ -362,6 +413,9 @@ const providers = ref<any[]>([]);
 const canvasTitle = computed(() => `${t("pages.ai_agent.canvas.title")} · ${app.value?.name || ""}`);
 
 const selectedNode = computed(() => (selectedId.value ? nodes.value.find((n) => n.id === selectedId.value) : undefined));
+
+/** http 节点 headers 行（模板深链收口到 computed，v-model 绑迭代变量） */
+const httpHeaderRows = computed<any[]>(() => ((selectedNode.value?.data.config as any)?.headers ?? []));
 
 const configTitle = computed(() => `${t("pages.ai_agent.canvas.config")} · ${selectedId.value ?? ""}`);
 
@@ -432,6 +486,9 @@ function defaultConfig(nodeType: AgentNodeType): Record<string, any> {
     case "llm": {
       return { temperature: 0.3 };
     }
+    case "http": {
+      return { method: "GET", timeoutSeconds: 15 };
+    }
     case "condition": {
       return { expression: "" };
     }
@@ -442,6 +499,18 @@ function defaultConfig(nodeType: AgentNodeType): Record<string, any> {
       return {};
     }
   }
+}
+
+/** http 节点 headers 行操作（@click 内联表达式拿不到 v-if 的非空收窄，集中到方法里判空） */
+function addHttpHeader() {
+  const node = selectedNode.value;
+  if (!node) return;
+  const config = node.data.config as Record<string, any>;
+  config.headers = [...(config.headers || []), { key: "", value: "" }];
+}
+
+function removeHttpHeader(index: number | string) {
+  selectedNode.value?.data.config?.headers?.splice(Number(index), 1);
 }
 
 function nextNodeId(nodeType: AgentNodeType): string {
