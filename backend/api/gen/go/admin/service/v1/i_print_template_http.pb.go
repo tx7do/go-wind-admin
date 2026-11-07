@@ -24,6 +24,7 @@ const _ = http.SupportPackageIsVersion1
 
 const OperationPrintTemplateServiceCreate = "/admin.service.v1.PrintTemplateService/Create"
 const OperationPrintTemplateServiceDelete = "/admin.service.v1.PrintTemplateService/Delete"
+const OperationPrintTemplateServiceGenerateTemplate = "/admin.service.v1.PrintTemplateService/GenerateTemplate"
 const OperationPrintTemplateServiceGet = "/admin.service.v1.PrintTemplateService/Get"
 const OperationPrintTemplateServiceList = "/admin.service.v1.PrintTemplateService/List"
 const OperationPrintTemplateServiceRenderPdf = "/admin.service.v1.PrintTemplateService/RenderPdf"
@@ -34,6 +35,9 @@ type PrintTemplateServiceHTTPServer interface {
 	Create(context.Context, *v11.CreatePrintTemplateRequest) (*emptypb.Empty, error)
 	// Delete 删除打印模板
 	Delete(context.Context, *v11.DeletePrintTemplateRequest) (*emptypb.Empty, error)
+	// GenerateTemplate AI 一句话生成模板：描述单据要素 → LLM 产出 TemplateData → 护栏校验后返回
+	// （未入库；前端预览确认后走 Create 保存）。走 AI_TOKENS 配额与用量记账。
+	GenerateTemplate(context.Context, *v11.GeneratePrintTemplateRequest) (*v11.GeneratePrintTemplateResponse, error)
 	// Get 查询打印模板详情
 	Get(context.Context, *v11.GetPrintTemplateRequest) (*v11.PrintTemplate, error)
 	// List 查询打印模板列表
@@ -52,6 +56,7 @@ func RegisterPrintTemplateServiceHTTPServer(s *http.Server, srv PrintTemplateSer
 	r.PUT("/admin/v1/print-templates/{id}", _PrintTemplateService_Update22_HTTP_Handler(srv))
 	r.DELETE("/admin/v1/print-templates/{id}", _PrintTemplateService_Delete23_HTTP_Handler(srv))
 	r.POST("/admin/v1/print-templates:render-pdf", _PrintTemplateService_RenderPdf0_HTTP_Handler(srv))
+	r.POST("/admin/v1/print-templates:generate", _PrintTemplateService_GenerateTemplate0_HTTP_Handler(srv))
 }
 
 func _PrintTemplateService_List30_HTTP_Handler(srv PrintTemplateServiceHTTPServer) func(ctx http.Context) error {
@@ -186,11 +191,36 @@ func _PrintTemplateService_RenderPdf0_HTTP_Handler(srv PrintTemplateServiceHTTPS
 	}
 }
 
+func _PrintTemplateService_GenerateTemplate0_HTTP_Handler(srv PrintTemplateServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.GeneratePrintTemplateRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationPrintTemplateServiceGenerateTemplate)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.GenerateTemplate(ctx, req.(*v11.GeneratePrintTemplateRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v11.GeneratePrintTemplateResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type PrintTemplateServiceHTTPClient interface {
 	// Create 创建打印模板
 	Create(ctx context.Context, req *v11.CreatePrintTemplateRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// Delete 删除打印模板
 	Delete(ctx context.Context, req *v11.DeletePrintTemplateRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
+	// GenerateTemplate AI 一句话生成模板：描述单据要素 → LLM 产出 TemplateData → 护栏校验后返回
+	// （未入库；前端预览确认后走 Create 保存）。走 AI_TOKENS 配额与用量记账。
+	GenerateTemplate(ctx context.Context, req *v11.GeneratePrintTemplateRequest, opts ...http.CallOption) (rsp *v11.GeneratePrintTemplateResponse, err error)
 	// Get 查询打印模板详情
 	Get(ctx context.Context, req *v11.GetPrintTemplateRequest, opts ...http.CallOption) (rsp *v11.PrintTemplate, err error)
 	// List 查询打印模板列表
@@ -231,6 +261,21 @@ func (c *PrintTemplateServiceHTTPClientImpl) Delete(ctx context.Context, in *v11
 	opts = append(opts, http.Operation(OperationPrintTemplateServiceDelete))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "DELETE", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GenerateTemplate AI 一句话生成模板：描述单据要素 → LLM 产出 TemplateData → 护栏校验后返回
+// （未入库；前端预览确认后走 Create 保存）。走 AI_TOKENS 配额与用量记账。
+func (c *PrintTemplateServiceHTTPClientImpl) GenerateTemplate(ctx context.Context, in *v11.GeneratePrintTemplateRequest, opts ...http.CallOption) (*v11.GeneratePrintTemplateResponse, error) {
+	var out v11.GeneratePrintTemplateResponse
+	pattern := "/admin/v1/print-templates:generate"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationPrintTemplateServiceGenerateTemplate))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

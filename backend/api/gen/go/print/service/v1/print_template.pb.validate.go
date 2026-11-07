@@ -1212,3 +1212,221 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = RenderPrintTemplateResponseValidationError{}
+
+// Validate checks the field values on GeneratePrintTemplateRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GeneratePrintTemplateRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GeneratePrintTemplateRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GeneratePrintTemplateRequestMultiError, or nil if none found.
+func (m *GeneratePrintTemplateRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GeneratePrintTemplateRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Description
+
+	// no validation rules for PaperSize
+
+	// no validation rules for Orientation
+
+	// no validation rules for ResourceKey
+
+	if len(errors) > 0 {
+		return GeneratePrintTemplateRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GeneratePrintTemplateRequestMultiError is an error wrapping multiple
+// validation errors returned by GeneratePrintTemplateRequest.ValidateAll() if
+// the designated constraints aren't met.
+type GeneratePrintTemplateRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GeneratePrintTemplateRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GeneratePrintTemplateRequestMultiError) AllErrors() []error { return m }
+
+// GeneratePrintTemplateRequestValidationError is the validation error returned
+// by GeneratePrintTemplateRequest.Validate if the designated constraints
+// aren't met.
+type GeneratePrintTemplateRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GeneratePrintTemplateRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GeneratePrintTemplateRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GeneratePrintTemplateRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GeneratePrintTemplateRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GeneratePrintTemplateRequestValidationError) ErrorName() string {
+	return "GeneratePrintTemplateRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GeneratePrintTemplateRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGeneratePrintTemplateRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GeneratePrintTemplateRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GeneratePrintTemplateRequestValidationError{}
+
+// Validate checks the field values on GeneratePrintTemplateResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GeneratePrintTemplateResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GeneratePrintTemplateResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// GeneratePrintTemplateResponseMultiError, or nil if none found.
+func (m *GeneratePrintTemplateResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GeneratePrintTemplateResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Payload
+
+	// no validation rules for TotalTokens
+
+	if len(errors) > 0 {
+		return GeneratePrintTemplateResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GeneratePrintTemplateResponseMultiError is an error wrapping multiple
+// validation errors returned by GeneratePrintTemplateResponse.ValidateAll()
+// if the designated constraints aren't met.
+type GeneratePrintTemplateResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GeneratePrintTemplateResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GeneratePrintTemplateResponseMultiError) AllErrors() []error { return m }
+
+// GeneratePrintTemplateResponseValidationError is the validation error
+// returned by GeneratePrintTemplateResponse.Validate if the designated
+// constraints aren't met.
+type GeneratePrintTemplateResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GeneratePrintTemplateResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GeneratePrintTemplateResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GeneratePrintTemplateResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GeneratePrintTemplateResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GeneratePrintTemplateResponseValidationError) ErrorName() string {
+	return "GeneratePrintTemplateResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GeneratePrintTemplateResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGeneratePrintTemplateResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GeneratePrintTemplateResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GeneratePrintTemplateResponseValidationError{}

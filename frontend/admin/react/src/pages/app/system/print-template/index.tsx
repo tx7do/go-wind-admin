@@ -9,6 +9,7 @@ import {
   DeleteOutlined,
   CopyOutlined,
   PlusOutlined,
+  RobotOutlined,
 } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -20,6 +21,7 @@ import { useProTableScrollY } from '@/hooks/useProTableScrollY';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import { orientationLabel } from './constants';
 import TemplateDesignerDrawer from './components/TemplateDesignerDrawer';
+import AiGenerateModal from './components/AiGenerateModal';
 import { searchOptionRender } from '@/components/common/searchSubmitter';
 import { ColumnSlidersIcon } from '@/components/common/columnSettingIcon';
 
@@ -37,8 +39,9 @@ const PrintTemplateManagement = () => {
 
   // Drawer 状态管理
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [drawerMode, setDrawerMode] = useState<'create' | 'edit' | 'copy'>('create');
+  const [drawerMode, setDrawerMode] = useState<'create' | 'edit' | 'copy' | 'ai-generate'>('create');
   const [selectedTemplate, setSelectedTemplate] = useState<PrintTemplate | undefined>();
+  const [aiModalOpen, setAiModalOpen] = useState(false);
 
   // 删除操作
   const deleteMutation = useDeletePrintTemplate({
@@ -238,6 +241,15 @@ const PrintTemplateManagement = () => {
               >
                 {t('common:button.add')}
               </Button>,
+              <Button
+                key="ai-generate"
+                color="primary"
+                variant="outlined"
+                icon={<RobotOutlined />}
+                onClick={() => setAiModalOpen(true)}
+              >
+                {t('aiGenerate')}
+              </Button>,
             ]}
             options={{
               density: true,
@@ -256,7 +268,7 @@ const PrintTemplateManagement = () => {
         </div>
       </ContentContainer>
 
-      {/* 模板设计器 Drawer（create/edit/copy 三态） */}
+      {/* 模板设计器 Drawer（create/edit/copy/ai-generate 四态） */}
       <TemplateDesignerDrawer
         open={drawerOpen}
         mode={drawerMode}
@@ -267,6 +279,17 @@ const PrintTemplateManagement = () => {
         }}
         onSuccess={() => {
           actionRef.current?.reload();
+        }}
+      />
+
+      {/* AI 一句话生成（M4-1）：产物确认交给设计器抽屉（ai-generate 模式），保存走 Create */}
+      <AiGenerateModal
+        open={aiModalOpen}
+        onClose={() => setAiModalOpen(false)}
+        onGenerated={(template) => {
+          setDrawerMode('ai-generate');
+          setSelectedTemplate(template);
+          setDrawerOpen(true);
         }}
       />
     </>

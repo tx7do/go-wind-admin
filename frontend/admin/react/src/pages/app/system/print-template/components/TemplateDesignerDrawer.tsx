@@ -102,18 +102,28 @@ const TemplateDesignerDrawer: React.FC<TemplateDesignerDrawerProps> = ({
   // 打开时回填表单 + 注入画布（注入走 effect，不置脏）
   useEffect(() => {
     if (!open) return;
+    // ai-generate：基础信息从 AI 产物预填（画布注入下方走 data.payload），保存走 Create
     const initial =
       mode === 'create'
         ? { isEnabled: true, sortOrder: 100 }
-        : {
-            name: mode === 'copy' ? `${data?.name || ''} ${t('copySuffix')}` : data?.name,
-            code: mode === 'copy' ? undefined : data?.code,
-            resourceKey: data?.resourceKey || undefined,
-            paperSize: data?.paperSize || 'A4',
-            orientation: data?.orientation || 'portrait',
-            isEnabled: data?.isEnabled ?? true,
-            sortOrder: data?.sortOrder ?? 100,
-          };
+        : mode === 'ai-generate'
+          ? {
+              name: data?.name,
+              resourceKey: data?.resourceKey || undefined,
+              paperSize: data?.paperSize || 'A4',
+              orientation: data?.orientation || 'portrait',
+              isEnabled: true,
+              sortOrder: 100,
+            }
+          : {
+              name: mode === 'copy' ? `${data?.name || ''} ${t('copySuffix')}` : data?.name,
+              code: mode === 'copy' ? undefined : data?.code,
+              resourceKey: data?.resourceKey || undefined,
+              paperSize: data?.paperSize || 'A4',
+              orientation: data?.orientation || 'portrait',
+              isEnabled: data?.isEnabled ?? true,
+              sortOrder: data?.sortOrder ?? 100,
+            };
     form.setFieldsValue(initial);
 
       // 等自定义元素挂载完成再注入（对象入参必须走 property，不能写 JSX 属性）
@@ -123,6 +133,7 @@ const TemplateDesignerDrawer: React.FC<TemplateDesignerDrawerProps> = ({
       applyPrintDesignerTheme(el, isDark);
       let tpl: unknown;
       try {
+        // create 用默认空模板；ai-generate/copy/edit 都注入各自 payload
         tpl = mode === 'create' ? createDefaultTemplate() : JSON.parse(data?.payload || '');
       } catch {
         tpl = createDefaultTemplate();

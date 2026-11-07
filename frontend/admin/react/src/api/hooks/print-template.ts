@@ -5,6 +5,8 @@ import {
 import {
   type printservicev1_CreatePrintTemplateRequest,
   type printservicev1_DeletePrintTemplateRequest,
+  type printservicev1_GeneratePrintTemplateRequest,
+  type printservicev1_GeneratePrintTemplateResponse,
 } from '@/api/generated/admin/service/v1';
 import { makeUpdateMask, type PaginationQuery, queryClient } from '@/core';
 import { apiClient } from '@/api/client';
@@ -49,6 +51,22 @@ export function useDeletePrintTemplate(
 ) {
   return useMutation({
     mutationFn: (req) => apiClient.printTemplateService.Delete(req),
+    ...options,
+  });
+}
+
+// useGeneratePrintTemplate AI 一句话生成模板（M4-1）：描述单据要素 →
+// 后端 LLM 产出 TemplateData（护栏校验后返回，未入库）。调用方拿到 payload
+// 后预览确认，再走 useCreatePrintTemplate 保存。
+export function useGeneratePrintTemplate(
+  options?: UseMutationOptions<
+    printservicev1_GeneratePrintTemplateResponse,
+    Error,
+    printservicev1_GeneratePrintTemplateRequest
+  >,
+) {
+  return useMutation({
+    mutationFn: (req) => apiClient.printTemplateService.GenerateTemplate(req),
     ...options,
   });
 }

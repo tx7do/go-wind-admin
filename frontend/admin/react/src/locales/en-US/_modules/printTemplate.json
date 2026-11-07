@@ -42,5 +42,14 @@
   "serverPdf": "Server PDF",
   "serverPdfFailed": "Server PDF failed",
   "batchCount": "Batch of {count}",
-  "batchPrint": "Batch Print"
+  "batchPrint": "Batch Print",
+  "aiGenerateTitle": "AI Generate Template",
+  "aiGenerate": "AI Generate",
+  "aiDescription": "Document description",
+  "aiDescriptionPlaceholder": "e.g. Outbound order with order no., date, warehouse, item table (name/qty/price/subtotal), total amount, and signature area",
+  "aiResourceKey": "Bound resource (optional)",
+  "aiGenerating": "Generating, may take ~10s...",
+  "aiGenerateSuccess": "Generated. Loaded into designer, review before saving",
+  "aiGenerateFailed": "AI generation failed",
+  "aiDescriptionRequired": "Please enter the document description"
 }

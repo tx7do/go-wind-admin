@@ -42,5 +42,14 @@
   "serverPdf": "服务端 PDF",
   "serverPdfFailed": "服务端 PDF 生成失败",
   "batchCount": "批量 {count} 条",
-  "batchPrint": "批量打印"
+  "batchPrint": "批量打印",
+  "aiGenerateTitle": "AI 生成打印模板",
+  "aiGenerate": "AI 生成",
+  "aiDescription": "单据要素描述",
+  "aiDescriptionPlaceholder": "例：出库单，含单号、出库日期、仓库、明细表（物品名称/数量/单价/小计）、合计金额、仓管签字区",
+  "aiResourceKey": "绑定资源（可选）",
+  "aiGenerating": "生成中，约需十几秒…",
+  "aiGenerateSuccess": "生成完成，已载入设计器，请确认后保存",
+  "aiGenerateFailed": "AI 生成失败",
+  "aiDescriptionRequired": "请填写单据要素描述"
 }

@@ -50,11 +50,12 @@ export function extractRedundant(payload: string): { paperSize?: string; orienta
   }
 }
 
-export type PrintTemplateMode = 'create' | 'edit' | 'copy';
+export type PrintTemplateMode = 'create' | 'edit' | 'copy' | 'ai-generate';
 
 export function templateTitle(t: (k: string) => string, mode: PrintTemplateMode): string {
   if (mode === 'create') return t('createTitle');
   if (mode === 'copy') return t('copyTitle');
+  if (mode === 'ai-generate') return t('aiGenerateTitle');
   return t('editTitle');
 }
 

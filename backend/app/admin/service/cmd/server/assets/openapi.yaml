@@ -6728,6 +6728,27 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/print-templates:generate:
+        post:
+            tags:
+                - PrintTemplateService
+            description: |-
+                AI 一句话生成模板：描述单据要素 → LLM 产出 TemplateData → 护栏校验后返回
+                 （未入库；前端预览确认后走 Create 保存）。走 AI_TOKENS 配额与用量记账。
+            operationId: PrintTemplateService_GenerateTemplate
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/GeneratePrintTemplateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/GeneratePrintTemplateResponse'
     /admin/v1/print-templates:render-pdf:
         post:
             tags:
@@ -10066,7 +10087,9 @@ components:
                     type: string
                 userId:
                     type: integer
-                    description: "管理端重置：指定目标用户（不传=操作当前登录用户）。\r\n 仅平台管理员可指定他人，用于用户认证器丢失时的救援解绑（按 method 清空该用户全部因子）。"
+                    description: |-
+                        管理端重置：指定目标用户（不传=操作当前登录用户）。
+                         仅平台管理员可指定他人，用于用户认证器丢失时的救援解绑（按 method 清空该用户全部因子）。
                     format: uint32
             description: Disable / remove
         DistributionItem:
@@ -10353,6 +10376,40 @@ components:
                     type: integer
                     format: uint32
             description: 内容生成 - 回应
+        GeneratePrintTemplateRequest:
+            type: object
+            properties:
+                description:
+                    type: string
+                    description: 单据要素的自然语言描述（必填，如：出库单，含单号/日期/物品明细表/合计）
+                paperSize:
+                    type: string
+                    description: 纸张（A4/A5/A3，缺省 A4）
+                orientation:
+                    type: string
+                    description: 方向（portrait/landscape，缺省 portrait）
+                resourceKey:
+                    type: string
+                    description: 绑定资源标识（可选，供提示词参考字段语义）
+            description: AI 一句话生成模板 - 请求（描述单据要素 → LLM 产出 TemplateData）
+        GeneratePrintTemplateResponse:
+            type: object
+            properties:
+                payload:
+                    type: string
+                    description: TemplateData JSON（已过 schema/白名单/钳制校验）
+                fields:
+                    type: array
+                    items:
+                        type: string
+                    description: payload 中引用的 {field} 绑定字段集合（供数据绑定面板参考）
+                totalTokens:
+                    type: integer
+                    description: 本次生成消耗的 token 用量（已落 AI 用量流水）
+                    format: uint32
+            description: |-
+                AI 一句话生成模板 - 回应（payload 为护栏校验通过的 TemplateData JSON，未入库；
+                 前端预览确认后走既有 Create 保存）
         GeoLocation:
             type: object
             properties:

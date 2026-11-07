@@ -85,15 +85,21 @@ type PrintTemplateService struct {
 
 	log               *bLogger.Helper
 	printTemplateRepo *data.PrintTemplateRepo
+	aiProviderRepo    *data.AiProviderRepo
+	aiUsageRepo       *data.AiUsageLogRepo
 }
 
 func NewPrintTemplateService(
 	ctx *bootstrap.Context,
 	printTemplateRepo *data.PrintTemplateRepo,
+	aiProviderRepo *data.AiProviderRepo,
+	aiUsageRepo *data.AiUsageLogRepo,
 ) *PrintTemplateService {
 	svc := &PrintTemplateService{
 		log:               ctx.NewLoggerHelper("print-template/service/admin-service"),
 		printTemplateRepo: printTemplateRepo,
+		aiProviderRepo:    aiProviderRepo,
+		aiUsageRepo:       aiUsageRepo,
 	}
 
 	svc.init()

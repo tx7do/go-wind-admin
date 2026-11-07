@@ -22,12 +22,13 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	PrintTemplateService_List_FullMethodName      = "/admin.service.v1.PrintTemplateService/List"
-	PrintTemplateService_Get_FullMethodName       = "/admin.service.v1.PrintTemplateService/Get"
-	PrintTemplateService_Create_FullMethodName    = "/admin.service.v1.PrintTemplateService/Create"
-	PrintTemplateService_Update_FullMethodName    = "/admin.service.v1.PrintTemplateService/Update"
-	PrintTemplateService_Delete_FullMethodName    = "/admin.service.v1.PrintTemplateService/Delete"
-	PrintTemplateService_RenderPdf_FullMethodName = "/admin.service.v1.PrintTemplateService/RenderPdf"
+	PrintTemplateService_List_FullMethodName             = "/admin.service.v1.PrintTemplateService/List"
+	PrintTemplateService_Get_FullMethodName              = "/admin.service.v1.PrintTemplateService/Get"
+	PrintTemplateService_Create_FullMethodName           = "/admin.service.v1.PrintTemplateService/Create"
+	PrintTemplateService_Update_FullMethodName           = "/admin.service.v1.PrintTemplateService/Update"
+	PrintTemplateService_Delete_FullMethodName           = "/admin.service.v1.PrintTemplateService/Delete"
+	PrintTemplateService_RenderPdf_FullMethodName        = "/admin.service.v1.PrintTemplateService/RenderPdf"
+	PrintTemplateService_GenerateTemplate_FullMethodName = "/admin.service.v1.PrintTemplateService/GenerateTemplate"
 )
 
 // PrintTemplateServiceClient is the client API for PrintTemplateService service.
@@ -48,6 +49,9 @@ type PrintTemplateServiceClient interface {
 	Delete(ctx context.Context, in *v11.DeletePrintTemplateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 服务端 PDF 渲染（前端内核 HTML → 后端 Chromium 打印）
 	RenderPdf(ctx context.Context, in *v11.RenderPrintTemplateRequest, opts ...grpc.CallOption) (*v11.RenderPrintTemplateResponse, error)
+	// AI 一句话生成模板：描述单据要素 → LLM 产出 TemplateData → 护栏校验后返回
+	// （未入库；前端预览确认后走 Create 保存）。走 AI_TOKENS 配额与用量记账。
+	GenerateTemplate(ctx context.Context, in *v11.GeneratePrintTemplateRequest, opts ...grpc.CallOption) (*v11.GeneratePrintTemplateResponse, error)
 }
 
 type printTemplateServiceClient struct {
@@ -118,6 +122,16 @@ func (c *printTemplateServiceClient) RenderPdf(ctx context.Context, in *v11.Rend
 	return out, nil
 }
 
+func (c *printTemplateServiceClient) GenerateTemplate(ctx context.Context, in *v11.GeneratePrintTemplateRequest, opts ...grpc.CallOption) (*v11.GeneratePrintTemplateResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v11.GeneratePrintTemplateResponse)
+	err := c.cc.Invoke(ctx, PrintTemplateService_GenerateTemplate_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // PrintTemplateServiceServer is the server API for PrintTemplateService service.
 // All implementations must embed UnimplementedPrintTemplateServiceServer
 // for forward compatibility.
@@ -136,6 +150,9 @@ type PrintTemplateServiceServer interface {
 	Delete(context.Context, *v11.DeletePrintTemplateRequest) (*emptypb.Empty, error)
 	// 服务端 PDF 渲染（前端内核 HTML → 后端 Chromium 打印）
 	RenderPdf(context.Context, *v11.RenderPrintTemplateRequest) (*v11.RenderPrintTemplateResponse, error)
+	// AI 一句话生成模板：描述单据要素 → LLM 产出 TemplateData → 护栏校验后返回
+	// （未入库；前端预览确认后走 Create 保存）。走 AI_TOKENS 配额与用量记账。
+	GenerateTemplate(context.Context, *v11.GeneratePrintTemplateRequest) (*v11.GeneratePrintTemplateResponse, error)
 	mustEmbedUnimplementedPrintTemplateServiceServer()
 }
 
@@ -163,6 +180,9 @@ func (UnimplementedPrintTemplateServiceServer) Delete(context.Context, *v11.Dele
 }
 func (UnimplementedPrintTemplateServiceServer) RenderPdf(context.Context, *v11.RenderPrintTemplateRequest) (*v11.RenderPrintTemplateResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method RenderPdf not implemented")
+}
+func (UnimplementedPrintTemplateServiceServer) GenerateTemplate(context.Context, *v11.GeneratePrintTemplateRequest) (*v11.GeneratePrintTemplateResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GenerateTemplate not implemented")
 }
 func (UnimplementedPrintTemplateServiceServer) mustEmbedUnimplementedPrintTemplateServiceServer() {}
 func (UnimplementedPrintTemplateServiceServer) testEmbeddedByValue()                              {}
@@ -293,6 +313,24 @@ func _PrintTemplateService_RenderPdf_Handler(srv interface{}, ctx context.Contex
 	return interceptor(ctx, in, info, handler)
 }
 
+func _PrintTemplateService_GenerateTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v11.GeneratePrintTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(PrintTemplateServiceServer).GenerateTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: PrintTemplateService_GenerateTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(PrintTemplateServiceServer).GenerateTemplate(ctx, req.(*v11.GeneratePrintTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // PrintTemplateService_ServiceDesc is the grpc.ServiceDesc for PrintTemplateService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -323,6 +361,10 @@ var PrintTemplateService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RenderPdf",
 			Handler:    _PrintTemplateService_RenderPdf_Handler,
+		},
+		{
+			MethodName: "GenerateTemplate",
+			Handler:    _PrintTemplateService_GenerateTemplate_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

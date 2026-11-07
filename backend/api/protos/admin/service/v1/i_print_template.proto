@@ -55,4 +55,13 @@ service PrintTemplateService {
       body: "*"
     };
   }
+
+  // AI 一句话生成模板：描述单据要素 → LLM 产出 TemplateData → 护栏校验后返回
+  // （未入库；前端预览确认后走 Create 保存）。走 AI_TOKENS 配额与用量记账。
+  rpc GenerateTemplate (print.service.v1.GeneratePrintTemplateRequest) returns (print.service.v1.GeneratePrintTemplateResponse) {
+    option (google.api.http) = {
+      post: "/admin/v1/print-templates:generate"
+      body: "*"
+    };
+  }
 }

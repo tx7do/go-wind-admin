@@ -199,3 +199,45 @@ message RenderPrintTemplateResponse {
     (gnostic.openapi.v3.property) = {description: "回显下载文件名（含 .pdf 扩展名）"}
   ]; // 下载文件名
 }
+
+// AI 一句话生成模板 - 请求（描述单据要素 → LLM 产出 TemplateData）
+message GeneratePrintTemplateRequest {
+  string description = 1 [
+    json_name = "description",
+    (gnostic.openapi.v3.property) = {description: "单据要素的自然语言描述（必填，如：出库单，含单号/日期/物品明细表/合计）"}
+  ]; // 单据要素描述
+
+  string paper_size = 2 [
+    json_name = "paperSize",
+    (gnostic.openapi.v3.property) = {description: "纸张（A4/A5/A3，缺省 A4）"}
+  ]; // 纸张
+
+  string orientation = 3 [
+    json_name = "orientation",
+    (gnostic.openapi.v3.property) = {description: "方向（portrait/landscape，缺省 portrait）"}
+  ]; // 方向
+
+  string resource_key = 4 [
+    json_name = "resourceKey",
+    (gnostic.openapi.v3.property) = {description: "绑定资源标识（可选，供提示词参考字段语义）"}
+  ]; // 绑定资源标识
+}
+
+// AI 一句话生成模板 - 回应（payload 为护栏校验通过的 TemplateData JSON，未入库；
+// 前端预览确认后走既有 Create 保存）
+message GeneratePrintTemplateResponse {
+  string payload = 1 [
+    json_name = "payload",
+    (gnostic.openapi.v3.property) = {description: "TemplateData JSON（已过 schema/白名单/钳制校验）"}
+  ]; // TemplateData JSON
+
+  repeated string fields = 2 [
+    json_name = "fields",
+    (gnostic.openapi.v3.property) = {description: "payload 中引用的 {field} 绑定字段集合（供数据绑定面板参考）"}
+  ]; // 引用字段集合
+
+  uint32 total_tokens = 3 [
+    json_name = "totalTokens",
+    (gnostic.openapi.v3.property) = {description: "本次生成消耗的 token 用量（已落 AI 用量流水）"}
+  ]; // token 用量
+}
