@@ -10,7 +10,17 @@ import (
 	entCrud "github.com/tx7do/go-crud/entgo"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
+	"go-wind-admin/app/admin/service/internal/data/ent/accesskey"
+	"go-wind-admin/app/admin/service/internal/data/ent/aiagentapp"
+	"go-wind-admin/app/admin/service/internal/data/ent/aiagentrun"
+	"go-wind-admin/app/admin/service/internal/data/ent/aichunk"
+	"go-wind-admin/app/admin/service/internal/data/ent/aiconversation"
+	"go-wind-admin/app/admin/service/internal/data/ent/aidoc"
+	"go-wind-admin/app/admin/service/internal/data/ent/aiknowledgebase"
+	"go-wind-admin/app/admin/service/internal/data/ent/aimessage"
+	"go-wind-admin/app/admin/service/internal/data/ent/aiusagelog"
 	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
+	"go-wind-admin/app/admin/service/internal/data/ent/bidashboard"
 	"go-wind-admin/app/admin/service/internal/data/ent/dataaccessauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentryi18n"
@@ -32,13 +42,17 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/planquota"
 	"go-wind-admin/app/admin/service/internal/data/ent/policyevaluationlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/position"
+	"go-wind-admin/app/admin/service/internal/data/ent/printtemplate"
 	"go-wind-admin/app/admin/service/internal/data/ent/role"
+	"go-wind-admin/app/admin/service/internal/data/ent/rolefieldpermission"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolemetadata"
+	"go-wind-admin/app/admin/service/internal/data/ent/roleorgunit"
 	"go-wind-admin/app/admin/service/internal/data/ent/rolepermission"
 	"go-wind-admin/app/admin/service/internal/data/ent/task"
 	"go-wind-admin/app/admin/service/internal/data/ent/tenant"
 	"go-wind-admin/app/admin/service/internal/data/ent/user"
 	"go-wind-admin/app/admin/service/internal/data/ent/usercredential"
+	"go-wind-admin/app/admin/service/internal/data/ent/usermfafactor"
 	"go-wind-admin/app/admin/service/internal/data/ent/userorgunit"
 	"go-wind-admin/app/admin/service/internal/data/ent/userposition"
 	"go-wind-admin/app/admin/service/internal/data/ent/userrole"
@@ -218,13 +232,27 @@ func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint32
 	}
 
 	// 以下每个闭包删除一张带 tenant_id 的业务表。
-	// 列表对齐 ent.Client/Tx 中所有拥有 TenantIDEQ 谓词的包（共 29 张表）。
+	// 列表对齐 ent.Client/Tx 中所有拥有 TenantIDEQ 谓词的包（共 43 张表）。
+	// 库级外键全部为 OnDelete Cascade（AI 链/字典链/菜单树/套餐链），删除顺序不敏感。
 	// 注意：Tx 层的 Delete.Exec 返回 (int, error)，需丢弃 int 仅返回 error。
 	deleteFns := []func() error{
+		func() error { _, e := tx.AccessKey.Delete().Where(accesskey.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
+		func() error { _, e := tx.AiAgentApp.Delete().Where(aiagentapp.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
+		func() error { _, e := tx.AiAgentRun.Delete().Where(aiagentrun.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
+		func() error { _, e := tx.AiChunk.Delete().Where(aichunk.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
+		func() error { _, e := tx.AiConversation.Delete().Where(aiconversation.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
+		func() error { _, e := tx.AiDoc.Delete().Where(aidoc.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
+		func() error {
+			_, e := tx.AiKnowledgeBase.Delete().Where(aiknowledgebase.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error { _, e := tx.AiMessage.Delete().Where(aimessage.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
+		func() error { _, e := tx.AiUsageLog.Delete().Where(aiusagelog.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
 		func() error {
 			_, e := tx.ApiAuditLog.Delete().Where(apiauditlog.TenantIDEQ(tenantId)).Exec(sysCtx)
 			return e
 		},
+		func() error { _, e := tx.BiDashboard.Delete().Where(bidashboard.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
 		func() error {
 			_, e := tx.DataAccessAuditLog.Delete().Where(dataaccessauditlog.TenantIDEQ(tenantId)).Exec(sysCtx)
 			return e
@@ -289,9 +317,21 @@ func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint32
 			return e
 		},
 		func() error { _, e := tx.Position.Delete().Where(position.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
+		func() error {
+			_, e := tx.PrintTemplate.Delete().Where(printtemplate.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
 		func() error { _, e := tx.Role.Delete().Where(role.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
 		func() error {
+			_, e := tx.RoleFieldPermission.Delete().Where(rolefieldpermission.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
 			_, e := tx.RoleMetadata.Delete().Where(rolemetadata.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.RoleOrgUnit.Delete().Where(roleorgunit.TenantIDEQ(tenantId)).Exec(sysCtx)
 			return e
 		},
 		func() error {
@@ -302,6 +342,10 @@ func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint32
 		func() error { _, e := tx.User.Delete().Where(user.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
 		func() error {
 			_, e := tx.UserCredential.Delete().Where(usercredential.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
+		func() error {
+			_, e := tx.UserMfaFactor.Delete().Where(usermfafactor.TenantIDEQ(tenantId)).Exec(sysCtx)
 			return e
 		},
 		func() error {

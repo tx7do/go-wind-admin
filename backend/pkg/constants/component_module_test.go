@@ -34,6 +34,11 @@ func TestComponentToModule(t *testing.T) {
 		{"log bare prefix", "app/log/", identityV1.Module_LOG},
 		{"internal message page", "app/internal_message/inbox/index.vue", identityV1.Module_INTERNAL_MESSAGE},
 		{"internal message bare prefix", "app/internal_message/", identityV1.Module_INTERNAL_MESSAGE},
+		// react 端页面目录用连字符（app/internal-message/），菜单同步按前端路由
+		// 写出的组件路径曾因前缀表只有下划线而让 module 漂成 NULL——
+		// 前缀匹配前先归一化连字符→下划线，两侧同归类（决策点 10 方案 A 变体）。
+		{"react hyphen dir page", "app/internal-message/inbox/index.vue", identityV1.Module_INTERNAL_MESSAGE},
+		{"react hyphen dir bare prefix", "app/internal-message/", identityV1.Module_INTERNAL_MESSAGE},
 		{"file page", "app/file/list/index.vue", identityV1.Module_FILE},
 		{"task page", "app/task/list/index.vue", identityV1.Module_TASK},
 

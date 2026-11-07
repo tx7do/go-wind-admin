@@ -208,7 +208,8 @@ func (s *AdminPortalService) GetNavigation(ctx context.Context, _ *emptypb.Empty
 }
 
 // filterMenusByPlanWhitelist 按当前租户订阅套餐的模块白名单过滤菜单。
-// 菜单的 module 字段不在白名单内（或套餐无白名单）则剔除。
+// 递归过滤整棵树：module 不在白名单内的节点（含其子树）剔除，未归类（nil）
+// 一律放行；容器在全部子项被剔除后一并丢弃，不留空目录。
 func (s *AdminPortalService) filterMenusByPlanWhitelist(ctx context.Context, items []*permissionV1.Menu, tenantId uint32) []*permissionV1.Menu {
 	// 查租户的 plan_id
 	t, err := s.tenantRepo.Get(ctx, &identityV1.GetTenantRequest{
@@ -230,14 +231,40 @@ func (s *AdminPortalService) filterMenusByPlanWhitelist(ctx context.Context, ite
 
 	filtered := make([]*permissionV1.Menu, 0, len(items))
 	for _, m := range items {
-		if m.Module == nil {
-			// catalog 容器或未归类：保留（容器本身无业务功能，其子项会被各自过滤）
-			filtered = append(filtered, m)
-			continue
-		}
-		if allowed[*m.Module] {
-			filtered = append(filtered, m)
+		if kept := filterMenuTree(m, allowed); kept != nil {
+			filtered = append(filtered, kept)
 		}
 	}
 	return filtered
+}
+
+// filterMenuTree 递归按白名单过滤菜单树，返回 nil 表示整枝剔除。
+// module 非空且不在白名单内 → 剔除；未归类（nil）→ 放行（与种子口径一致：
+// 通知等平台页刻意不登记 module，不参与套餐过滤）。
+// 容器（无 module）在子项全被剔除时一并丢弃——侧边栏不留空目录。
+//
+// 历史缺陷（notification_domain_design.md §4 欠账 2 后半）：这里曾只遍历
+// 顶层平铺 for，而 sys_menus 的根节点一条都不带 module、带 module 的全是
+// 叶子，白名单实际过滤面为 0；接上递归后叶子才真正按套餐判定。
+func filterMenuTree(m *permissionV1.Menu, allowed map[identityV1.Module]bool) *permissionV1.Menu {
+	if m == nil {
+		return nil
+	}
+	if m.Module != nil && !allowed[*m.Module] {
+		return nil
+	}
+	if len(m.Children) == 0 {
+		return m
+	}
+	kept := make([]*permissionV1.Menu, 0, len(m.Children))
+	for _, c := range m.Children {
+		if k := filterMenuTree(c, allowed); k != nil {
+			kept = append(kept, k)
+		}
+	}
+	if len(kept) == 0 {
+		return nil
+	}
+	m.Children = kept
+	return m
 }

@@ -5,7 +5,12 @@ import (
 	"testing"
 
 	"github.com/getkin/kin-openapi/openapi3"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"github.com/tx7do/go-utils/trans"
 
+	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
+	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	"go-wind-admin/app/admin/service/cmd/server/assets"
 )
 
@@ -81,4 +86,81 @@ func TestOpenAPI(t *testing.T) {
 			}
 		}
 	}
+}
+
+// TestFilterMenuTree 钉住套餐白名单的递归过滤语义（欠账 2 后半回归）：
+// 历史缺陷是只遍历顶层平铺 for——sys_menus 根节点全不带 module、带 module 的
+// 全是叶子，白名单实际过滤面为 0；递归接上后叶子才真正按套餐判定。
+func TestFilterMenuTree(t *testing.T) {
+	mod := func(m identityV1.Module) *identityV1.Module { return &m }
+	allowed := map[identityV1.Module]bool{
+		identityV1.Module_OPM:  true,
+		identityV1.Module_TASK: true,
+	}
+
+	leaf := func(name string, m *identityV1.Module) *permissionV1.Menu {
+		return &permissionV1.Menu{Name: trans.Ptr(name), Module: m}
+	}
+
+	t.Run("叶子在白名单内保留、不在则剔除", func(t *testing.T) {
+		assert.NotNil(t, filterMenuTree(leaf("用户", mod(identityV1.Module_OPM)), allowed))
+		assert.Nil(t, filterMenuTree(leaf("字典", mod(identityV1.Module_DICT)), allowed))
+	})
+
+	t.Run("未归类叶子放行（通知等平台页刻意不登记 module）", func(t *testing.T) {
+		assert.NotNil(t, filterMenuTree(leaf("通知", nil), allowed))
+	})
+
+	t.Run("nil 输入剔除", func(t *testing.T) {
+		assert.Nil(t, filterMenuTree(nil, allowed))
+	})
+
+	t.Run("容器保留白名单子树剔除其余", func(t *testing.T) {
+		root := &permissionV1.Menu{
+			Name: trans.Ptr("运营管理"),
+			Children: []*permissionV1.Menu{
+				leaf("用户", mod(identityV1.Module_OPM)),
+				leaf("任务", mod(identityV1.Module_TASK)),
+				leaf("字典", mod(identityV1.Module_DICT)),
+			},
+		}
+		kept := filterMenuTree(root, allowed)
+		require.NotNil(t, kept, "仍有白名单子项，容器应保留")
+		require.Len(t, kept.Children, 2)
+		names := []string{*kept.Children[0].Name, *kept.Children[1].Name}
+		assert.ElementsMatch(t, []string{"用户", "任务"}, names)
+	})
+
+	t.Run("容器子项全被剔除时一并丢弃不留空目录", func(t *testing.T) {
+		root := &permissionV1.Menu{
+			Name: trans.Ptr("字典"),
+			Children: []*permissionV1.Menu{
+				leaf("字典类型", mod(identityV1.Module_DICT)),
+				leaf("字典项", mod(identityV1.Module_DICT)),
+			},
+		}
+		assert.Nil(t, filterMenuTree(root, allowed), "全部子项被剔，容器应整枝剔除")
+	})
+
+	t.Run("深层嵌套逐层收缩", func(t *testing.T) {
+		root := &permissionV1.Menu{
+			Name: trans.Ptr("根"),
+			Children: []*permissionV1.Menu{
+				{
+					Name: trans.Ptr("中间层"),
+					Children: []*permissionV1.Menu{
+						leaf("任务列表", mod(identityV1.Module_TASK)),
+						leaf("日志", mod(identityV1.Module_LOG)),
+					},
+				},
+				leaf("AI", mod(identityV1.Module_AI)),
+			},
+		}
+		kept := filterMenuTree(root, allowed)
+		require.NotNil(t, kept)
+		require.Len(t, kept.Children, 1, "AI 叶子被剔")
+		mid := kept.Children[0]
+		require.Len(t, mid.Children, 1, "中间层只剩任务子树")
+		assert.Equal(t, "任务列表", *mid.Children[0].Name)
+	})
 }

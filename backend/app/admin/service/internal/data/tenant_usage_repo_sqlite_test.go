@@ -163,6 +163,11 @@ func TestTenantUsageRepoSqlite_CleanupTenantData(t *testing.T) {
 	require.NoError(t, client.ApiAuditLog.Create().SetCreatedAt(now).SetTenantID(tid).Exec(ctx))
 	require.NoError(t, client.OperationAuditLog.Create().SetCreatedAt(now).SetTenantID(tid).Exec(ctx))
 	require.NoError(t, client.User.Create().SetUsername("sqlite_usage_user_cleanup").SetTenantID(tid).Exec(ctx))
+	// AccessKey 是套餐清理欠账 4 表之一（2026-11 欠账补齐前一直漏删），
+	// 专门播种钉住：租户清理必须连带清掉 AK/SK。
+	require.NoError(t, client.AccessKey.Create().SetTenantID(tid).
+		SetNillableName(trans.Ptr("sqlite_cleanup_ak")).SetNillableAccessKey(trans.Ptr("AK-CLEANUP-PROBE")).
+		SetNillableSecretHash(trans.Ptr("hash-probe")).Exec(ctx))
 
 	// 无关租户的数据应保留
 	otherTenant, err := client.Tenant.Create().
@@ -194,6 +199,9 @@ func TestTenantUsageRepoSqlite_CleanupTenantData(t *testing.T) {
 	userCount, err := client.User.Query().Count(ctx)
 	require.NoError(t, err)
 	require.Zero(t, userCount, "该租户的用户行应被删除")
+	akCount, err := client.AccessKey.Query().Count(ctx)
+	require.NoError(t, err)
+	require.Zero(t, akCount, "该租户的 AK/SK 行应被删除（欠账 4 表之一，曾漏删）")
 
 	after, err := client.Tenant.Query().Where(entTenant.IDEQ(tid)).Only(ctx)
 	require.NoError(t, err)

@@ -2,6 +2,7 @@ package constants
 
 import (
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/tx7do/go-utils/timeutil"
@@ -288,6 +289,11 @@ var DefaultLanguages = []*dictV1.Language{
 // 用于默认菜单和存量菜单的 module 字段回填（套餐白名单依赖此字段过滤）。
 // catalog 容器节点（component 为 "BasicLayout" 或空）返回 UNSPECIFIED，不参与白名单过滤。
 func ComponentToModule(component string) identityV1.Module {
+	// react 端页面目录用连字符（app/internal-message/），种子与另两端用下划线
+	// （app/internal_message/）——同一页面按"哪端最后跑菜单同步"落不同拼写，
+	// module 因此漂成 NULL（notification_domain_design.md §6 决策点 10 的 A 方案
+	// 归一化变体：不登记第二套前缀，前缀匹配前先统一连字符→下划线）。
+	component = strings.ReplaceAll(component, "-", "_")
 	switch {
 	case component == "BasicLayout" || component == "":
 		return identityV1.Module_MODULE_UNSPECIFIED
