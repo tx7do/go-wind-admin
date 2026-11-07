@@ -188,8 +188,14 @@ dev 策略例外说明：本模块**内核三端同一份**（设计器交互一
    模式，保存走 Create）。ele/vben 已同批移植（2026-11-07：ele `ai-generate-dialog.vue` +
    设计器 `ai` 模式 / vben `ai-generate-drawer.vue` + 设计器 `ai` 模式，工具栏入口与 react
    同构；ele 工具栏自定义按钮走 ProPage `@toolbar` 透传）。护栏单测 `print_template_generate_test.go`。
-2. **脚本渲染前钩子**：脚本系统新增 hook 点类型（渲染前数据加工，如 `print_template.render`，
-   可改写 printData）；与实体生命周期钩子并列登记，安全模型不变。
+2. **脚本渲染前钩子**（`print_template.render`）—— **2026-11-07 挂点分析：当前架构下不成立，需先立输出链 v2**。
+   渲染前改写 printData 的执行位置在浏览器内核 `bindData` 之前，而 printData（行数据）完全在
+   前端（`PrintTemplatePrint.tsx` 的 `renderHtmlPages(payload, printData, …)`），服务端 RenderPdf
+   只收成品 HTML——后端脚本钩子够不着数据。唯一可硬做的位置是"脚本改写成品 HTML"，那既要在
+   `sanitizePrintHTML` 清洗之后执行（等于给脚本开 HTML 注入面直送 Chromium），又没有真实调用方
+   （数据本就来自列表页，前端加工无需脚本）。**成立条件**：批量/服务端渲染演进为"行数据 + 模板
+   code 上送 → 服务端 bindData/generateHtml（内核 Go 移植或 headless 预处理）"的输出链 v2，
+   printData 届时经过后端，钩子才有正确挂点；需求驱动再立项。
 3. **套餐配额**：模板数纳入套餐配额四类体系（若运营上值得）。
 4. 云打印队列 / 多门店远程打印（openprint 点子，仅存目）。
 
