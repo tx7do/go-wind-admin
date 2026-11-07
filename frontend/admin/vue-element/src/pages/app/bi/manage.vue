@@ -31,6 +31,9 @@
 
     <!-- 设计器抽屉（create/edit 两态） -->
     <DesignerDialog ref="designerRef" @success="handleSuccess" />
+
+    <!-- 版本历史：每次保存留旧版快照，恢复可逆（恢复前服务端先留底当前版本） -->
+    <RevisionsDialog ref="revisionsRef" />
   </div>
 </template>
 
@@ -45,6 +48,7 @@ import { ElTag } from "element-plus";
 import ProPage from "@/components/Pro/ProPage/index.vue";
 import type { ProPageConfig } from "@/components/Pro/ProPage/types";
 import DesignerDialog from "./designer-dialog.vue";
+import RevisionsDialog from "./revisions-dialog.vue";
 
 import {
   fetchListBiDashboards,
@@ -59,6 +63,7 @@ const { mutateAsync: copyDashboard } = useCopyBiDashboard();
 
 const pageRef = ref();
 const designerRef = ref();
+const revisionsRef = ref();
 
 const KIND_MAP: Record<string, { label: string; type: "primary" | "warning" | "success" }> = {
   DASHBOARD: { label: "pages.biDashboard.kindDashboard", type: "primary" },
@@ -148,6 +153,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
         cellType: "tool",
         buttons: [
           { name: "design", label: $t("pages.biDashboard.openDesigner"), icon: "lucide:pencil-ruler" },
+          { name: "revisions", label: $t("pages.biDashboard.revisionHistory"), icon: "lucide:history" },
           { name: "copy", label: $t("common.button.copy"), icon: "lucide:copy" },
           {
             name: "delete",
@@ -180,6 +186,9 @@ function handleOperate(data: { name: string; row: any }) {
   // design 与 edit 同义（更醒目的入口）
   if (data.name === "design") {
     designerRef.value?.open({ row: data.row });
+  }
+  if (data.name === "revisions" && data.row?.id) {
+    revisionsRef.value?.open(data.row.id);
   }
 }
 

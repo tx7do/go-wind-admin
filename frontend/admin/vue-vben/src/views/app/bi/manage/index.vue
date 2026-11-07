@@ -4,7 +4,7 @@ import type { VxeGridProps } from '#/adapter/vxe-table';
 import { h, ref } from 'vue';
 
 import { Page, type VbenFormProps } from '@vben/common-ui';
-import { LucideCopy, LucidePencil, LucideTrash2 } from '@vben/icons';
+import { LucideCopy, LucidePencil, LucideTrash2 , LucideHistory } from '@vben/icons';
 
 import { notification } from 'ant-design-vue';
 
@@ -24,6 +24,7 @@ import TableAddButton from '#/components/TableAddButton.vue';
 import TableExportButton from '#/components/TableExportButton.vue';
 
 import BiDesignerDrawer from './bi-designer-drawer.vue';
+import RevisionsDrawer from '../revisions-drawer.vue';
 
 const { mutateAsync: deleteDashboard } = useDeleteBiDashboard();
 const { mutateAsync: copyDashboard } = useCopyBiDashboard();
@@ -133,6 +134,7 @@ const exportFetcher = (page: number, pageSize: number) =>
 const [Grid, gridApi] = useVbenVxeGrid({ gridOptions, formOptions });
 
 const designerRef = ref();
+const revisionsRef = ref();
 
 function handleSuccess() {
   gridApi.reload();
@@ -186,6 +188,12 @@ function buildRowActions(): TableAction[] {
       label: $t('page.bi.openDesigner'),
       icon: h(LucidePencil),
       onClick: handleEdit,
+    },
+    {
+      key: 'revisions',
+      label: $t('page.bi.revisionHistory'),
+      icon: h(LucideHistory),
+      onClick: (row: any) => revisionsRef.value?.open(row.id),
     },
     {
       key: 'copy',
@@ -245,5 +253,6 @@ function rowActions(row: BiDashboard): TableAction[] {
       </template>
     </Grid>
     <BiDesignerDrawer ref="designerRef" @success="handleSuccess" />
+    <RevisionsDrawer ref="revisionsRef" />
   </Page>
 </template>

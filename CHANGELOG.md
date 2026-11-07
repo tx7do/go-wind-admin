@@ -110,7 +110,7 @@
 - **BI 仪表盘版本历史**（[docs/bi_dashboard.md](./docs/bi_dashboard.md)）：新增
   `sys_bi_dashboard_revisions` 快照表——每次成功保存把保存前的 payload/name/version 留一行
   （随主表级联删除、入租户清理清单）；`ListRevisions`/`RestoreRevision` RPC，恢复前先留底
-  当前版本（可逆）。react 端管理页行内「版本历史」弹窗（列表 + 恢复）；ele/vben 移植未做。
+  当前版本（可逆）。三端管理页行内「版本历史」弹窗（列表 + 恢复，react 先行、ele/vben 同批移植）。
 - **打印模板 AI 一句话生成（M4-1，react 先行）**（[docs/print_template.md](./docs/print_template.md) §7）：
   `POST /admin/v1/print-templates:generate`——描述单据要素（如"出库单，含明细表/合计/签字区"）
   → 默认 AI provider 产出 TemplateData → 服务端护栏校验（payload/元素类型/嵌套深度上限、

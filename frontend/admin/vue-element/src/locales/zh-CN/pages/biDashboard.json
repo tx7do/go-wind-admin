@@ -34,5 +34,14 @@
   "statusSaving": "保存中…",
   "statusSaved": "已保存",
   "statusConflict": "保存冲突，已刷新版本",
-  "loadFailed": "加载失败，已切换为本地草稿"
+  "loadFailed": "加载失败，已切换为本地草稿",
+  "revisionHistory": "版本历史",
+  "revisionTitle": "版本历史",
+  "revisionVersion": "版本",
+  "revisionSource": "来源",
+  "revisionSourceSave": "保存",
+  "revisionSourceRestore": "恢复留底",
+  "revisionRestore": "恢复",
+  "revisionRestoreSuccess": "已恢复，可继续编辑保存",
+  "revisionRestoreFailed": "恢复失败"
 }

@@ -1468,6 +1468,15 @@
     "statusConflict": "Save conflict, version refreshed",
     "loadFailed": "Load failed, switched to local draft",
     "fullscreen": "Fullscreen",
-    "exitFullscreen": "Exit Fullscreen"
+    "exitFullscreen": "Exit Fullscreen",
+    "revisionHistory": "Revisions",
+    "revisionTitle": "Revision History",
+    "revisionVersion": "Version",
+    "revisionSource": "Source",
+    "revisionSourceSave": "Save",
+    "revisionSourceRestore": "Before restore",
+    "revisionRestore": "Restore",
+    "revisionRestoreSuccess": "Restored; keep editing and save",
+    "revisionRestoreFailed": "Restore failed"
   }
 }
