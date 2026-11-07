@@ -47,19 +47,32 @@ function bytesToBase64(bytes: Uint8Array): string {
   return btoa(bin);
 }
 
+/** 解析 SPKI DER：容忍完整 PEM 头尾与换行空白，统一为裸 base64 再解码。 */
+function parseSpkiDer(b64: string): ArrayBuffer {
+  const compact = b64
+    .replace(/-----BEGIN PUBLIC KEY-----/g, '')
+    .replace(/-----END PUBLIC KEY-----/g, '')
+    .replace(/\s+/g, '');
+  return base64ToBytes(compact).slice().buffer as ArrayBuffer;
+}
+
 /** 信封加密。公钥未配置时抛错（构建期必须注入 VITE_PASSWORD_RSA_PUB）。 */
 export async function encryptPasswordEnvelope(password: string): Promise<string> {
   if (!PASSWORD_RSA_PUB_B64) {
     throw new Error('VITE_PASSWORD_RSA_PUB is not set in environment');
   }
-  const der = base64ToBytes(PASSWORD_RSA_PUB_B64).slice().buffer as ArrayBuffer;
+  const der = parseSpkiDer(PASSWORD_RSA_PUB_B64);
+  // RSA 公钥只能以 'spki' 格式导入：'raw' 仅为对称密钥格式，
+  // 传入 RSA-OAEP 会抛 Unsupported import key format for algorithm。
   const key = await crypto.subtle.importKey(
-    'raw', der,
+    'spki', der,
     { name: 'RSA-OAEP', hash: 'SHA-256' },
     false, ['encrypt'],
   );
 
-  const aesKey = crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, false, ['encrypt']);
+  // 会话密钥必须声明为可导出（extractable=true）：随后要 exportKey('raw')
+  // 取出原始字节交 RSA 包裹；false 会导致 exportKey 抛 key is not extractable。
+  const aesKey = crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt']);
   const keyObj = await aesKey;
   const nonce = crypto.getRandomValues(new Uint8Array(12));
   const cipher = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: nonce }, keyObj, new TextEncoder().encode(password));
