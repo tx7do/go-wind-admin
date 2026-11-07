@@ -65,3 +65,11 @@ func NewPermissionMenuRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *Pe
 		entClient: entClient,
 	}
 }
+
+// NewBiDashboardRevisionRepoForTest 版本快照薄仓储的测试构造（无 init 逻辑，直连 SQLite）。
+func NewBiDashboardRevisionRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *BiDashboardRevisionRepo {
+	return &BiDashboardRevisionRepo{
+		log:       bLogger.NewHelper(bLogger.NopLogger()),
+		entClient: entClient,
+	}
+}

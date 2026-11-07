@@ -9,6 +9,7 @@ import {
   CopyOutlined,
   PlusOutlined,
   BgColorsOutlined,
+  HistoryOutlined,
 } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +24,7 @@ import {
 import { useProTableScrollY } from '@/hooks/useProTableScrollY';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import BiDesignerDrawer from './components/BiDesignerDrawer';
+import RevisionsDrawer from './components/RevisionsDrawer';
 import { searchOptionRender } from '@/components/common/searchSubmitter';
 import { ColumnSlidersIcon } from '@/components/common/columnSettingIcon';
 
@@ -45,6 +47,7 @@ const BiDashboardManagement = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const tableScrollY = useProTableScrollY(containerRef);
 
+  const [revisionsFor, setRevisionsFor] = useState<BiDashboard | undefined>();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [drawerMode, setDrawerMode] = useState<'create' | 'edit'>('create');
   const [selected, setSelected] = useState<BiDashboard | undefined>();
@@ -176,6 +179,12 @@ const BiDashboardManagement = () => {
               },
             },
             {
+              key: 'revisions',
+              label: t('revisionHistory'),
+              icon: <HistoryOutlined />,
+              onClick: () => setRevisionsFor(record),
+            },
+            {
               key: 'copy',
               label: t('common:button.copy'),
               icon: <CopyOutlined />,
@@ -281,6 +290,11 @@ const BiDashboardManagement = () => {
         </div>
       </ContentContainer>
 
+      <RevisionsDrawer
+        open={!!revisionsFor}
+        dashboardId={revisionsFor?.id}
+        onClose={() => setRevisionsFor(undefined)}
+      />
       <BiDesignerDrawer
         open={drawerOpen}
         mode={drawerMode}

@@ -55,4 +55,20 @@ service BiDashboardService {
       body: "*"
     };
   }
+
+  // 版本历史（每次保存留旧版快照，新快照在前）
+  rpc ListRevisions (bi.service.v1.ListBiDashboardRevisionsRequest) returns (bi.service.v1.ListBiDashboardRevisionsResponse) {
+    option (google.api.http) = {
+      post: "/admin/v1/bi-dashboards/{dashboard_id}/revisions"
+      body: "*"
+    };
+  }
+
+  // 恢复版本（快照 payload/name 写回主表，版本 +1；恢复前先快照当前版本，可逆）
+  rpc RestoreRevision (bi.service.v1.RestoreBiDashboardRevisionRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/admin/v1/bi-dashboards/revisions/{id}:restore"
+      body: "*"
+    };
+  }
 }

@@ -7,6 +7,7 @@ import {
   type biservicev1_CopyBiDashboardRequest,
   type biservicev1_CreateBiDashboardRequest,
   type biservicev1_DeleteBiDashboardRequest,
+  type biservicev1_RestoreBiDashboardRevisionRequest,
 } from '@/api/generated/admin/service/v1';
 import { makeUpdateMask, type PaginationQuery, queryClient } from '@/core';
 import { apiClient } from '@/api/client';
@@ -97,6 +98,34 @@ export function useCopyBiDashboard(
 ) {
   return useMutation({
     mutationFn: (req) => apiClient.biDashboardService.Copy(req),
+    ...options,
+  });
+}
+
+// ==============================
+// 版本历史（每次保存留旧版快照；恢复 = 快照写回主表，可逆）
+// ==============================
+
+export function useBiDashboardRevisions(
+  dashboardId: number | undefined,
+  enabled = true,
+) {
+  return useQuery({
+    queryKey: ['biDashboardRevisions', dashboardId],
+    queryFn: () =>
+      apiClient.biDashboardService.ListRevisions({
+        dashboardId: dashboardId!,
+        page: { page: 1, pageSize: 50 },
+      } as any),
+    enabled: enabled && !!dashboardId,
+  });
+}
+
+export function useRestoreBiDashboardRevision(
+  options?: UseMutationOptions<{}, Error, biservicev1_RestoreBiDashboardRevisionRequest>,
+) {
+  return useMutation({
+    mutationFn: (req) => apiClient.biDashboardService.RestoreRevision(req),
     ...options,
   });
 }

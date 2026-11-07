@@ -646,6 +646,259 @@ func (x *CopyBiDashboardRequest) GetCode() string {
 	return ""
 }
 
+// 仪表盘版本快照（每次成功保存把保存前的 payload/name/version 留一行；
+// 恢复 = 快照写回主表，恢复动作本身先快照当前版本）
+type BiDashboardRevision struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`                                      // 快照ID
+	DashboardId   uint32                 `protobuf:"varint,2,opt,name=dashboard_id,json=dashboardId,proto3" json:"dashboard_id,omitempty"` // 所属仪表盘ID
+	Version       uint32                 `protobuf:"varint,3,opt,name=version,proto3" json:"version,omitempty"`                            // 仪表盘版本号
+	Name          *string                `protobuf:"bytes,4,opt,name=name,proto3,oneof" json:"name,omitempty"`                             // 名称快照
+	Payload       *string                `protobuf:"bytes,5,opt,name=payload,proto3,oneof" json:"payload,omitempty"`                       // 仪表盘 JSON 快照
+	Source        *string                `protobuf:"bytes,6,opt,name=source,proto3,oneof" json:"source,omitempty"`                         // 快照来源
+	CreatedBy     *uint32                `protobuf:"varint,7,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"` // 触发者
+	CreatedAt     *string                `protobuf:"bytes,8,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`  // 快照时间
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *BiDashboardRevision) Reset() {
+	*x = BiDashboardRevision{}
+	mi := &file_bi_service_v1_bi_dashboard_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BiDashboardRevision) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BiDashboardRevision) ProtoMessage() {}
+
+func (x *BiDashboardRevision) ProtoReflect() protoreflect.Message {
+	mi := &file_bi_service_v1_bi_dashboard_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BiDashboardRevision.ProtoReflect.Descriptor instead.
+func (*BiDashboardRevision) Descriptor() ([]byte, []int) {
+	return file_bi_service_v1_bi_dashboard_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *BiDashboardRevision) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *BiDashboardRevision) GetDashboardId() uint32 {
+	if x != nil {
+		return x.DashboardId
+	}
+	return 0
+}
+
+func (x *BiDashboardRevision) GetVersion() uint32 {
+	if x != nil {
+		return x.Version
+	}
+	return 0
+}
+
+func (x *BiDashboardRevision) GetName() string {
+	if x != nil && x.Name != nil {
+		return *x.Name
+	}
+	return ""
+}
+
+func (x *BiDashboardRevision) GetPayload() string {
+	if x != nil && x.Payload != nil {
+		return *x.Payload
+	}
+	return ""
+}
+
+func (x *BiDashboardRevision) GetSource() string {
+	if x != nil && x.Source != nil {
+		return *x.Source
+	}
+	return ""
+}
+
+func (x *BiDashboardRevision) GetCreatedBy() uint32 {
+	if x != nil && x.CreatedBy != nil {
+		return *x.CreatedBy
+	}
+	return 0
+}
+
+func (x *BiDashboardRevision) GetCreatedAt() string {
+	if x != nil && x.CreatedAt != nil {
+		return *x.CreatedAt
+	}
+	return ""
+}
+
+// 版本历史 - 请求
+type ListBiDashboardRevisionsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	DashboardId   uint32                 `protobuf:"varint,1,opt,name=dashboard_id,json=dashboardId,proto3" json:"dashboard_id,omitempty"` // 仪表盘ID
+	Page          *v1.PagingRequest      `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`                                   // 分页参数
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListBiDashboardRevisionsRequest) Reset() {
+	*x = ListBiDashboardRevisionsRequest{}
+	mi := &file_bi_service_v1_bi_dashboard_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListBiDashboardRevisionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListBiDashboardRevisionsRequest) ProtoMessage() {}
+
+func (x *ListBiDashboardRevisionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_bi_service_v1_bi_dashboard_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListBiDashboardRevisionsRequest.ProtoReflect.Descriptor instead.
+func (*ListBiDashboardRevisionsRequest) Descriptor() ([]byte, []int) {
+	return file_bi_service_v1_bi_dashboard_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ListBiDashboardRevisionsRequest) GetDashboardId() uint32 {
+	if x != nil {
+		return x.DashboardId
+	}
+	return 0
+}
+
+func (x *ListBiDashboardRevisionsRequest) GetPage() *v1.PagingRequest {
+	if x != nil {
+		return x.Page
+	}
+	return nil
+}
+
+// 版本历史 - 回应（新快照在前）
+type ListBiDashboardRevisionsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*BiDashboardRevision `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`  // 快照列表
+	Total         uint32                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"` // 总数
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListBiDashboardRevisionsResponse) Reset() {
+	*x = ListBiDashboardRevisionsResponse{}
+	mi := &file_bi_service_v1_bi_dashboard_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListBiDashboardRevisionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListBiDashboardRevisionsResponse) ProtoMessage() {}
+
+func (x *ListBiDashboardRevisionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_bi_service_v1_bi_dashboard_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListBiDashboardRevisionsResponse.ProtoReflect.Descriptor instead.
+func (*ListBiDashboardRevisionsResponse) Descriptor() ([]byte, []int) {
+	return file_bi_service_v1_bi_dashboard_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ListBiDashboardRevisionsResponse) GetItems() []*BiDashboardRevision {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *ListBiDashboardRevisionsResponse) GetTotal() uint32 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+// 恢复版本 - 请求（把快照的 payload/name 写回主表，版本号 +1；恢复前先快照当前版本）
+type RestoreBiDashboardRevisionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` // 快照ID
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RestoreBiDashboardRevisionRequest) Reset() {
+	*x = RestoreBiDashboardRevisionRequest{}
+	mi := &file_bi_service_v1_bi_dashboard_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RestoreBiDashboardRevisionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RestoreBiDashboardRevisionRequest) ProtoMessage() {}
+
+func (x *RestoreBiDashboardRevisionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_bi_service_v1_bi_dashboard_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RestoreBiDashboardRevisionRequest.ProtoReflect.Descriptor instead.
+func (*RestoreBiDashboardRevisionRequest) Descriptor() ([]byte, []int) {
+	return file_bi_service_v1_bi_dashboard_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *RestoreBiDashboardRevisionRequest) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
 var File_bi_service_v1_bi_dashboard_proto protoreflect.FileDescriptor
 
 const file_bi_service_v1_bi_dashboard_proto_rawDesc = "" +
@@ -738,7 +991,32 @@ const file_bi_service_v1_bi_dashboard_proto_rawDesc = "" +
 	"\x04name\x18\x02 \x01(\tB6\xbaG3\x92\x020副本名称（缺省在原名后追加 -copy）H\x00R\x04name\x88\x01\x01\x12U\n" +
 	"\x04code\x18\x03 \x01(\tB<\xbaG9\x92\x026副本编码（缺省自动生成，租户内唯一）H\x01R\x04code\x88\x01\x01B\a\n" +
 	"\x05_nameB\a\n" +
-	"\x05_code*:\n" +
+	"\x05_code\"\xe9\x04\n" +
+	"\x13BiDashboardRevision\x12\x1e\n" +
+	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b快照IDR\x02id\x12:\n" +
+	"\fdashboard_id\x18\x02 \x01(\rB\x17\xbaG\x14\x92\x02\x11所属仪表盘IDR\vdashboardId\x12\\\n" +
+	"\aversion\x18\x03 \x01(\rBB\xbaG?\x92\x02<快照对应的仪表盘版本号（保存前的旧版本）R\aversion\x127\n" +
+	"\x04name\x18\x04 \x01(\tB\x1e\xbaG\x1b\x92\x02\x18保存前的名称快照H\x00R\x04name\x88\x01\x01\x12F\n" +
+	"\apayload\x18\x05 \x01(\tB'\xbaG$\x92\x02!保存前的仪表盘 JSON 快照H\x01R\apayload\x88\x01\x01\x12^\n" +
+	"\x06source\x18\x06 \x01(\tBA\xbaG>\x92\x02;快照来源（SAVE=常规保存 RESTORE=恢复前留底）H\x02R\x06source\x88\x01\x01\x12A\n" +
+	"\n" +
+	"created_by\x18\a \x01(\rB\x1d\xbaG\x1a\x92\x02\x17快照触发者用户IDH\x03R\tcreatedBy\x88\x01\x01\x126\n" +
+	"\n" +
+	"created_at\x18\b \x01(\tB\x12\xbaG\x0f\x92\x02\f快照时间H\x04R\tcreatedAt\x88\x01\x01B\a\n" +
+	"\x05_nameB\n" +
+	"\n" +
+	"\b_payloadB\t\n" +
+	"\a_sourceB\r\n" +
+	"\v_created_byB\r\n" +
+	"\v_created_at\"\x9a\x01\n" +
+	"\x1fListBiDashboardRevisionsRequest\x124\n" +
+	"\fdashboard_id\x18\x01 \x01(\rB\x11\xbaG\x0e\x92\x02\v仪表盘IDR\vdashboardId\x12A\n" +
+	"\x04page\x18\x02 \x01(\v2\x19.pagination.PagingRequestB\x12\xbaG\x0f\x92\x02\f分页参数R\x04page\"\x94\x01\n" +
+	" ListBiDashboardRevisionsResponse\x12L\n" +
+	"\x05items\x18\x01 \x03(\v2\".bi.service.v1.BiDashboardRevisionB\x12\xbaG\x0f\x92\x02\f快照列表R\x05items\x12\"\n" +
+	"\x05total\x18\x02 \x01(\rB\f\xbaG\t\x92\x02\x06总数R\x05total\"C\n" +
+	"!RestoreBiDashboardRevisionRequest\x12\x1e\n" +
+	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b快照IDR\x02id*:\n" +
 	"\x0fBiDashboardKind\x12\r\n" +
 	"\tDASHBOARD\x10\x00\x12\n" +
 	"\n" +
@@ -766,48 +1044,54 @@ func file_bi_service_v1_bi_dashboard_proto_rawDescGZIP() []byte {
 }
 
 var file_bi_service_v1_bi_dashboard_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_bi_service_v1_bi_dashboard_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_bi_service_v1_bi_dashboard_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_bi_service_v1_bi_dashboard_proto_goTypes = []any{
-	(BiDashboardKind)(0),             // 0: bi.service.v1.BiDashboardKind
-	(*BiDashboard)(nil),              // 1: bi.service.v1.BiDashboard
-	(*ListBiDashboardResponse)(nil),  // 2: bi.service.v1.ListBiDashboardResponse
-	(*GetBiDashboardRequest)(nil),    // 3: bi.service.v1.GetBiDashboardRequest
-	(*CreateBiDashboardRequest)(nil), // 4: bi.service.v1.CreateBiDashboardRequest
-	(*UpdateBiDashboardRequest)(nil), // 5: bi.service.v1.UpdateBiDashboardRequest
-	(*DeleteBiDashboardRequest)(nil), // 6: bi.service.v1.DeleteBiDashboardRequest
-	(*CopyBiDashboardRequest)(nil),   // 7: bi.service.v1.CopyBiDashboardRequest
-	(*timestamppb.Timestamp)(nil),    // 8: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),    // 9: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),         // 10: pagination.PagingRequest
-	(*emptypb.Empty)(nil),            // 11: google.protobuf.Empty
+	(BiDashboardKind)(0),                      // 0: bi.service.v1.BiDashboardKind
+	(*BiDashboard)(nil),                       // 1: bi.service.v1.BiDashboard
+	(*ListBiDashboardResponse)(nil),           // 2: bi.service.v1.ListBiDashboardResponse
+	(*GetBiDashboardRequest)(nil),             // 3: bi.service.v1.GetBiDashboardRequest
+	(*CreateBiDashboardRequest)(nil),          // 4: bi.service.v1.CreateBiDashboardRequest
+	(*UpdateBiDashboardRequest)(nil),          // 5: bi.service.v1.UpdateBiDashboardRequest
+	(*DeleteBiDashboardRequest)(nil),          // 6: bi.service.v1.DeleteBiDashboardRequest
+	(*CopyBiDashboardRequest)(nil),            // 7: bi.service.v1.CopyBiDashboardRequest
+	(*BiDashboardRevision)(nil),               // 8: bi.service.v1.BiDashboardRevision
+	(*ListBiDashboardRevisionsRequest)(nil),   // 9: bi.service.v1.ListBiDashboardRevisionsRequest
+	(*ListBiDashboardRevisionsResponse)(nil),  // 10: bi.service.v1.ListBiDashboardRevisionsResponse
+	(*RestoreBiDashboardRevisionRequest)(nil), // 11: bi.service.v1.RestoreBiDashboardRevisionRequest
+	(*timestamppb.Timestamp)(nil),             // 12: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),             // 13: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),                  // 14: pagination.PagingRequest
+	(*emptypb.Empty)(nil),                     // 15: google.protobuf.Empty
 }
 var file_bi_service_v1_bi_dashboard_proto_depIdxs = []int32{
 	0,  // 0: bi.service.v1.BiDashboard.kind:type_name -> bi.service.v1.BiDashboardKind
-	8,  // 1: bi.service.v1.BiDashboard.created_at:type_name -> google.protobuf.Timestamp
-	8,  // 2: bi.service.v1.BiDashboard.updated_at:type_name -> google.protobuf.Timestamp
-	8,  // 3: bi.service.v1.BiDashboard.deleted_at:type_name -> google.protobuf.Timestamp
+	12, // 1: bi.service.v1.BiDashboard.created_at:type_name -> google.protobuf.Timestamp
+	12, // 2: bi.service.v1.BiDashboard.updated_at:type_name -> google.protobuf.Timestamp
+	12, // 3: bi.service.v1.BiDashboard.deleted_at:type_name -> google.protobuf.Timestamp
 	1,  // 4: bi.service.v1.ListBiDashboardResponse.items:type_name -> bi.service.v1.BiDashboard
-	9,  // 5: bi.service.v1.GetBiDashboardRequest.view_mask:type_name -> google.protobuf.FieldMask
+	13, // 5: bi.service.v1.GetBiDashboardRequest.view_mask:type_name -> google.protobuf.FieldMask
 	1,  // 6: bi.service.v1.CreateBiDashboardRequest.data:type_name -> bi.service.v1.BiDashboard
 	1,  // 7: bi.service.v1.UpdateBiDashboardRequest.data:type_name -> bi.service.v1.BiDashboard
-	9,  // 8: bi.service.v1.UpdateBiDashboardRequest.update_mask:type_name -> google.protobuf.FieldMask
-	10, // 9: bi.service.v1.BiDashboardService.List:input_type -> pagination.PagingRequest
-	3,  // 10: bi.service.v1.BiDashboardService.Get:input_type -> bi.service.v1.GetBiDashboardRequest
-	4,  // 11: bi.service.v1.BiDashboardService.Create:input_type -> bi.service.v1.CreateBiDashboardRequest
-	5,  // 12: bi.service.v1.BiDashboardService.Update:input_type -> bi.service.v1.UpdateBiDashboardRequest
-	6,  // 13: bi.service.v1.BiDashboardService.Delete:input_type -> bi.service.v1.DeleteBiDashboardRequest
-	7,  // 14: bi.service.v1.BiDashboardService.Copy:input_type -> bi.service.v1.CopyBiDashboardRequest
-	2,  // 15: bi.service.v1.BiDashboardService.List:output_type -> bi.service.v1.ListBiDashboardResponse
-	1,  // 16: bi.service.v1.BiDashboardService.Get:output_type -> bi.service.v1.BiDashboard
-	11, // 17: bi.service.v1.BiDashboardService.Create:output_type -> google.protobuf.Empty
-	11, // 18: bi.service.v1.BiDashboardService.Update:output_type -> google.protobuf.Empty
-	11, // 19: bi.service.v1.BiDashboardService.Delete:output_type -> google.protobuf.Empty
-	11, // 20: bi.service.v1.BiDashboardService.Copy:output_type -> google.protobuf.Empty
-	15, // [15:21] is the sub-list for method output_type
-	9,  // [9:15] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	13, // 8: bi.service.v1.UpdateBiDashboardRequest.update_mask:type_name -> google.protobuf.FieldMask
+	14, // 9: bi.service.v1.ListBiDashboardRevisionsRequest.page:type_name -> pagination.PagingRequest
+	8,  // 10: bi.service.v1.ListBiDashboardRevisionsResponse.items:type_name -> bi.service.v1.BiDashboardRevision
+	14, // 11: bi.service.v1.BiDashboardService.List:input_type -> pagination.PagingRequest
+	3,  // 12: bi.service.v1.BiDashboardService.Get:input_type -> bi.service.v1.GetBiDashboardRequest
+	4,  // 13: bi.service.v1.BiDashboardService.Create:input_type -> bi.service.v1.CreateBiDashboardRequest
+	5,  // 14: bi.service.v1.BiDashboardService.Update:input_type -> bi.service.v1.UpdateBiDashboardRequest
+	6,  // 15: bi.service.v1.BiDashboardService.Delete:input_type -> bi.service.v1.DeleteBiDashboardRequest
+	7,  // 16: bi.service.v1.BiDashboardService.Copy:input_type -> bi.service.v1.CopyBiDashboardRequest
+	2,  // 17: bi.service.v1.BiDashboardService.List:output_type -> bi.service.v1.ListBiDashboardResponse
+	1,  // 18: bi.service.v1.BiDashboardService.Get:output_type -> bi.service.v1.BiDashboard
+	15, // 19: bi.service.v1.BiDashboardService.Create:output_type -> google.protobuf.Empty
+	15, // 20: bi.service.v1.BiDashboardService.Update:output_type -> google.protobuf.Empty
+	15, // 21: bi.service.v1.BiDashboardService.Delete:output_type -> google.protobuf.Empty
+	15, // 22: bi.service.v1.BiDashboardService.Copy:output_type -> google.protobuf.Empty
+	17, // [17:23] is the sub-list for method output_type
+	11, // [11:17] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_bi_service_v1_bi_dashboard_proto_init() }
@@ -824,13 +1108,14 @@ func file_bi_service_v1_bi_dashboard_proto_init() {
 		(*DeleteBiDashboardRequest_Id)(nil),
 	}
 	file_bi_service_v1_bi_dashboard_proto_msgTypes[6].OneofWrappers = []any{}
+	file_bi_service_v1_bi_dashboard_proto_msgTypes[7].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_bi_service_v1_bi_dashboard_proto_rawDesc), len(file_bi_service_v1_bi_dashboard_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   7,
+			NumMessages:   11,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

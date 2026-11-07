@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/bidashboard"
+	"go-wind-admin/app/admin/service/internal/data/ent/bidashboardrevision"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"time"
 
@@ -431,9 +432,45 @@ func (_u *BiDashboardUpdate) ClearVersion() *BiDashboardUpdate {
 	return _u
 }
 
+// AddRevisionIDs adds the "revisions" edge to the BiDashboardRevision entity by IDs.
+func (_u *BiDashboardUpdate) AddRevisionIDs(ids ...uint32) *BiDashboardUpdate {
+	_u.mutation.AddRevisionIDs(ids...)
+	return _u
+}
+
+// AddRevisions adds the "revisions" edges to the BiDashboardRevision entity.
+func (_u *BiDashboardUpdate) AddRevisions(v ...*BiDashboardRevision) *BiDashboardUpdate {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddRevisionIDs(ids...)
+}
+
 // Mutation returns the BiDashboardMutation object of the builder.
 func (_u *BiDashboardUpdate) Mutation() *BiDashboardMutation {
 	return _u.mutation
+}
+
+// ClearRevisions clears all "revisions" edges to the BiDashboardRevision entity.
+func (_u *BiDashboardUpdate) ClearRevisions() *BiDashboardUpdate {
+	_u.mutation.ClearRevisions()
+	return _u
+}
+
+// RemoveRevisionIDs removes the "revisions" edge to BiDashboardRevision entities by IDs.
+func (_u *BiDashboardUpdate) RemoveRevisionIDs(ids ...uint32) *BiDashboardUpdate {
+	_u.mutation.RemoveRevisionIDs(ids...)
+	return _u
+}
+
+// RemoveRevisions removes "revisions" edges to BiDashboardRevision entities.
+func (_u *BiDashboardUpdate) RemoveRevisions(v ...*BiDashboardRevision) *BiDashboardUpdate {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveRevisionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -622,6 +659,51 @@ func (_u *BiDashboardUpdate) sqlSave(ctx context.Context) (_node int, err error)
 	}
 	if _u.mutation.VersionCleared() {
 		_spec.ClearField(bidashboard.FieldVersion, field.TypeUint32)
+	}
+	if _u.mutation.RevisionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   bidashboard.RevisionsTable,
+			Columns: []string{bidashboard.RevisionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint32),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedRevisionsIDs(); len(nodes) > 0 && !_u.mutation.RevisionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   bidashboard.RevisionsTable,
+			Columns: []string{bidashboard.RevisionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RevisionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   bidashboard.RevisionsTable,
+			Columns: []string{bidashboard.RevisionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -1047,9 +1129,45 @@ func (_u *BiDashboardUpdateOne) ClearVersion() *BiDashboardUpdateOne {
 	return _u
 }
 
+// AddRevisionIDs adds the "revisions" edge to the BiDashboardRevision entity by IDs.
+func (_u *BiDashboardUpdateOne) AddRevisionIDs(ids ...uint32) *BiDashboardUpdateOne {
+	_u.mutation.AddRevisionIDs(ids...)
+	return _u
+}
+
+// AddRevisions adds the "revisions" edges to the BiDashboardRevision entity.
+func (_u *BiDashboardUpdateOne) AddRevisions(v ...*BiDashboardRevision) *BiDashboardUpdateOne {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddRevisionIDs(ids...)
+}
+
 // Mutation returns the BiDashboardMutation object of the builder.
 func (_u *BiDashboardUpdateOne) Mutation() *BiDashboardMutation {
 	return _u.mutation
+}
+
+// ClearRevisions clears all "revisions" edges to the BiDashboardRevision entity.
+func (_u *BiDashboardUpdateOne) ClearRevisions() *BiDashboardUpdateOne {
+	_u.mutation.ClearRevisions()
+	return _u
+}
+
+// RemoveRevisionIDs removes the "revisions" edge to BiDashboardRevision entities by IDs.
+func (_u *BiDashboardUpdateOne) RemoveRevisionIDs(ids ...uint32) *BiDashboardUpdateOne {
+	_u.mutation.RemoveRevisionIDs(ids...)
+	return _u
+}
+
+// RemoveRevisions removes "revisions" edges to BiDashboardRevision entities.
+func (_u *BiDashboardUpdateOne) RemoveRevisions(v ...*BiDashboardRevision) *BiDashboardUpdateOne {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveRevisionIDs(ids...)
 }
 
 // Where appends a list predicates to the BiDashboardUpdate builder.
@@ -1268,6 +1386,51 @@ func (_u *BiDashboardUpdateOne) sqlSave(ctx context.Context) (_node *BiDashboard
 	}
 	if _u.mutation.VersionCleared() {
 		_spec.ClearField(bidashboard.FieldVersion, field.TypeUint32)
+	}
+	if _u.mutation.RevisionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   bidashboard.RevisionsTable,
+			Columns: []string{bidashboard.RevisionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint32),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedRevisionsIDs(); len(nodes) > 0 && !_u.mutation.RevisionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   bidashboard.RevisionsTable,
+			Columns: []string{bidashboard.RevisionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RevisionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   bidashboard.RevisionsTable,
+			Columns: []string{bidashboard.RevisionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &BiDashboard{config: _u.config}

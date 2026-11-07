@@ -5,6 +5,7 @@ import (
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 
@@ -134,5 +135,16 @@ func (BiDashboard) Indexes() []ent.Index {
 		// 创建时间索引用于列表分页与时间区间查询
 		index.Fields("created_at").
 			StorageKey("idx_bi_dashboards_created_at"),
+	}
+}
+
+// Edges of the BiDashboard.
+func (BiDashboard) Edges() []ent.Edge {
+	return []ent.Edge{
+		// 版本快照：删除仪表盘时级联清理其全部快照
+		edge.To("revisions", BiDashboardRevision.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 	}
 }

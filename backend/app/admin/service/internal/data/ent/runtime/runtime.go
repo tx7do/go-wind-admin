@@ -18,6 +18,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/bidashboard"
+	"go-wind-admin/app/admin/service/internal/data/ent/bidashboardrevision"
 	"go-wind-admin/app/admin/service/internal/data/ent/dataaccessauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentryi18n"
@@ -428,6 +429,34 @@ func init() {
 	bidashboardDescID := bidashboardMixinFields0[0].Descriptor()
 	// bidashboard.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	bidashboard.IDValidator = bidashboardDescID.Validators[0].(func(uint32) error)
+	bidashboardrevisionMixin := schema.BiDashboardRevision{}.Mixin()
+	bidashboardrevision.Policy = privacy.NewPolicies(bidashboardrevisionMixin[3], schema.BiDashboardRevision{})
+	bidashboardrevision.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := bidashboardrevision.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	bidashboardrevisionMixinFields0 := bidashboardrevisionMixin[0].Fields()
+	_ = bidashboardrevisionMixinFields0
+	bidashboardrevisionMixinFields3 := bidashboardrevisionMixin[3].Fields()
+	_ = bidashboardrevisionMixinFields3
+	bidashboardrevisionFields := schema.BiDashboardRevision{}.Fields()
+	_ = bidashboardrevisionFields
+	// bidashboardrevisionDescTenantID is the schema descriptor for tenant_id field.
+	bidashboardrevisionDescTenantID := bidashboardrevisionMixinFields3[0].Descriptor()
+	// bidashboardrevision.DefaultTenantID holds the default value on creation for the tenant_id field.
+	bidashboardrevision.DefaultTenantID = bidashboardrevisionDescTenantID.Default.(uint32)
+	// bidashboardrevisionDescVersion is the schema descriptor for version field.
+	bidashboardrevisionDescVersion := bidashboardrevisionFields[1].Descriptor()
+	// bidashboardrevision.DefaultVersion holds the default value on creation for the version field.
+	bidashboardrevision.DefaultVersion = bidashboardrevisionDescVersion.Default.(uint32)
+	// bidashboardrevisionDescID is the schema descriptor for id field.
+	bidashboardrevisionDescID := bidashboardrevisionMixinFields0[0].Descriptor()
+	// bidashboardrevision.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	bidashboardrevision.IDValidator = bidashboardrevisionDescID.Validators[0].(func(uint32) error)
 	dataaccessauditlogMixin := schema.DataAccessAuditLog{}.Mixin()
 	dataaccessauditlog.Policy = privacy.NewPolicies(dataaccessauditlogMixin[2], schema.DataAccessAuditLog{})
 	dataaccessauditlog.Hooks[0] = func(next ent.Mutator) ent.Mutator {

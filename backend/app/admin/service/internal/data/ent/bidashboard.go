@@ -57,8 +57,29 @@ type BiDashboard struct {
 	// 是否租户内共享（false 仅创建者可见）
 	IsPublic *bool `json:"is_public,omitempty"`
 	// 版本号（乐观锁：更新需回传读到的版本，成功后 +1）
-	Version      *uint32 `json:"version,omitempty"`
+	Version *uint32 `json:"version,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the BiDashboardQuery when eager-loading is set.
+	Edges        BiDashboardEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// BiDashboardEdges holds the relations/edges for other nodes in the graph.
+type BiDashboardEdges struct {
+	// Revisions holds the value of the revisions edge.
+	Revisions []*BiDashboardRevision `json:"revisions,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// RevisionsOrErr returns the Revisions value or an error if the edge
+// was not loaded in eager-loading.
+func (e BiDashboardEdges) RevisionsOrErr() ([]*BiDashboardRevision, error) {
+	if e.loadedTypes[0] {
+		return e.Revisions, nil
+	}
+	return nil, &NotLoadedError{edge: "revisions"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -246,6 +267,11 @@ func (_m *BiDashboard) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (_m *BiDashboard) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
+}
+
+// QueryRevisions queries the "revisions" edge of the BiDashboard entity.
+func (_m *BiDashboard) QueryRevisions() *BiDashboardRevisionQuery {
+	return NewBiDashboardClient(_m.config).QueryRevisions(_m)
 }
 
 // Update returns a builder for updating this BiDashboard.

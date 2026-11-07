@@ -22,6 +22,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/bidashboard"
+	"go-wind-admin/app/admin/service/internal/data/ent/bidashboardrevision"
 	"go-wind-admin/app/admin/service/internal/data/ent/dataaccessauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentryi18n"
@@ -104,6 +105,7 @@ const (
 	TypeAPI                      = "Api"
 	TypeApiAuditLog              = "ApiAuditLog"
 	TypeBiDashboard              = "BiDashboard"
+	TypeBiDashboardRevision      = "BiDashboardRevision"
 	TypeDataAccessAuditLog       = "DataAccessAuditLog"
 	TypeDictEntry                = "DictEntry"
 	TypeDictEntryI18n            = "DictEntryI18n"
@@ -18428,40 +18430,43 @@ func (m *ApiAuditLogMutation) ResetEdge(name string) error {
 // BiDashboardMutation represents an operation that mutates the BiDashboard nodes in the graph.
 type BiDashboardMutation struct {
 	config
-	op             Op
-	typ            string
-	id             *uint32
-	created_at     *time.Time
-	updated_at     *time.Time
-	deleted_at     *time.Time
-	created_by     *uint32
-	addcreated_by  *int32
-	updated_by     *uint32
-	addupdated_by  *int32
-	deleted_by     *uint32
-	adddeleted_by  *int32
-	is_enabled     *bool
-	sort_order     *uint32
-	addsort_order  *int32
-	tenant_id      *uint32
-	addtenant_id   *int32
-	name           *string
-	code           *string
-	kind           *bidashboard.Kind
-	remark         *string
-	payload        *string
-	chart_count    *uint32
-	addchart_count *int32
-	theme_key      *string
-	thumbnail      *string
-	is_built_in    *bool
-	is_public      *bool
-	version        *uint32
-	addversion     *int32
-	clearedFields  map[string]struct{}
-	done           bool
-	oldValue       func(context.Context) (*BiDashboard, error)
-	predicates     []predicate.BiDashboard
+	op               Op
+	typ              string
+	id               *uint32
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	created_by       *uint32
+	addcreated_by    *int32
+	updated_by       *uint32
+	addupdated_by    *int32
+	deleted_by       *uint32
+	adddeleted_by    *int32
+	is_enabled       *bool
+	sort_order       *uint32
+	addsort_order    *int32
+	tenant_id        *uint32
+	addtenant_id     *int32
+	name             *string
+	code             *string
+	kind             *bidashboard.Kind
+	remark           *string
+	payload          *string
+	chart_count      *uint32
+	addchart_count   *int32
+	theme_key        *string
+	thumbnail        *string
+	is_built_in      *bool
+	is_public        *bool
+	version          *uint32
+	addversion       *int32
+	clearedFields    map[string]struct{}
+	revisions        map[uint32]struct{}
+	removedrevisions map[uint32]struct{}
+	clearedrevisions bool
+	done             bool
+	oldValue         func(context.Context) (*BiDashboard, error)
+	predicates       []predicate.BiDashboard
 }
 
 var _ ent.Mutation = (*BiDashboardMutation)(nil)
@@ -19695,6 +19700,60 @@ func (m *BiDashboardMutation) ResetVersion() {
 	delete(m.clearedFields, bidashboard.FieldVersion)
 }
 
+// AddRevisionIDs adds the "revisions" edge to the BiDashboardRevision entity by ids.
+func (m *BiDashboardMutation) AddRevisionIDs(ids ...uint32) {
+	if m.revisions == nil {
+		m.revisions = make(map[uint32]struct{})
+	}
+	for i := range ids {
+		m.revisions[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRevisions clears the "revisions" edge to the BiDashboardRevision entity.
+func (m *BiDashboardMutation) ClearRevisions() {
+	m.clearedrevisions = true
+}
+
+// RevisionsCleared reports if the "revisions" edge to the BiDashboardRevision entity was cleared.
+func (m *BiDashboardMutation) RevisionsCleared() bool {
+	return m.clearedrevisions
+}
+
+// RemoveRevisionIDs removes the "revisions" edge to the BiDashboardRevision entity by IDs.
+func (m *BiDashboardMutation) RemoveRevisionIDs(ids ...uint32) {
+	if m.removedrevisions == nil {
+		m.removedrevisions = make(map[uint32]struct{})
+	}
+	for i := range ids {
+		delete(m.revisions, ids[i])
+		m.removedrevisions[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRevisions returns the removed IDs of the "revisions" edge to the BiDashboardRevision entity.
+func (m *BiDashboardMutation) RemovedRevisionsIDs() (ids []uint32) {
+	for id := range m.removedrevisions {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RevisionsIDs returns the "revisions" edge IDs in the mutation.
+func (m *BiDashboardMutation) RevisionsIDs() (ids []uint32) {
+	for id := range m.revisions {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRevisions resets all changes to the "revisions" edge.
+func (m *BiDashboardMutation) ResetRevisions() {
+	m.revisions = nil
+	m.clearedrevisions = false
+	m.removedrevisions = nil
+}
+
 // Where appends a list predicates to the BiDashboardMutation builder.
 func (m *BiDashboardMutation) Where(ps ...predicate.BiDashboard) {
 	m.predicates = append(m.predicates, ps...)
@@ -20361,50 +20420,1470 @@ func (m *BiDashboardMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BiDashboardMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.revisions != nil {
+		edges = append(edges, bidashboard.EdgeRevisions)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *BiDashboardMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case bidashboard.EdgeRevisions:
+		ids := make([]ent.Value, 0, len(m.revisions))
+		for id := range m.revisions {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BiDashboardMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedrevisions != nil {
+		edges = append(edges, bidashboard.EdgeRevisions)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *BiDashboardMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case bidashboard.EdgeRevisions:
+		ids := make([]ent.Value, 0, len(m.removedrevisions))
+		for id := range m.removedrevisions {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BiDashboardMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedrevisions {
+		edges = append(edges, bidashboard.EdgeRevisions)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *BiDashboardMutation) EdgeCleared(name string) bool {
+	switch name {
+	case bidashboard.EdgeRevisions:
+		return m.clearedrevisions
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *BiDashboardMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown BiDashboard unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *BiDashboardMutation) ResetEdge(name string) error {
+	switch name {
+	case bidashboard.EdgeRevisions:
+		m.ResetRevisions()
+		return nil
+	}
 	return fmt.Errorf("unknown BiDashboard edge %s", name)
+}
+
+// BiDashboardRevisionMutation represents an operation that mutates the BiDashboardRevision nodes in the graph.
+type BiDashboardRevisionMutation struct {
+	config
+	op               Op
+	typ              string
+	id               *uint32
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	created_by       *uint32
+	addcreated_by    *int32
+	updated_by       *uint32
+	addupdated_by    *int32
+	deleted_by       *uint32
+	adddeleted_by    *int32
+	tenant_id        *uint32
+	addtenant_id     *int32
+	version          *uint32
+	addversion       *int32
+	name             *string
+	payload          *string
+	source           *bidashboardrevision.Source
+	clearedFields    map[string]struct{}
+	dashboard        *uint32
+	cleareddashboard bool
+	done             bool
+	oldValue         func(context.Context) (*BiDashboardRevision, error)
+	predicates       []predicate.BiDashboardRevision
+}
+
+var _ ent.Mutation = (*BiDashboardRevisionMutation)(nil)
+
+// bidashboardrevisionOption allows management of the mutation configuration using functional options.
+type bidashboardrevisionOption func(*BiDashboardRevisionMutation)
+
+// newBiDashboardRevisionMutation creates new mutation for the BiDashboardRevision entity.
+func newBiDashboardRevisionMutation(c config, op Op, opts ...bidashboardrevisionOption) *BiDashboardRevisionMutation {
+	m := &BiDashboardRevisionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeBiDashboardRevision,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withBiDashboardRevisionID sets the ID field of the mutation.
+func withBiDashboardRevisionID(id uint32) bidashboardrevisionOption {
+	return func(m *BiDashboardRevisionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *BiDashboardRevision
+		)
+		m.oldValue = func(ctx context.Context) (*BiDashboardRevision, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().BiDashboardRevision.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withBiDashboardRevision sets the old BiDashboardRevision of the mutation.
+func withBiDashboardRevision(node *BiDashboardRevision) bidashboardrevisionOption {
+	return func(m *BiDashboardRevisionMutation) {
+		m.oldValue = func(context.Context) (*BiDashboardRevision, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m BiDashboardRevisionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m BiDashboardRevisionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of BiDashboardRevision entities.
+func (m *BiDashboardRevisionMutation) SetID(id uint32) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *BiDashboardRevisionMutation) ID() (id uint32, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *BiDashboardRevisionMutation) IDs(ctx context.Context) ([]uint32, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint32{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().BiDashboardRevision.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *BiDashboardRevisionMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *BiDashboardRevisionMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the BiDashboardRevision entity.
+// If the BiDashboardRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BiDashboardRevisionMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *BiDashboardRevisionMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[bidashboardrevision.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *BiDashboardRevisionMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[bidashboardrevision.FieldCreatedAt]
+	return ok
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *BiDashboardRevisionMutation) ResetCreatedAt() {
+	m.created_at = nil
+	delete(m.clearedFields, bidashboardrevision.FieldCreatedAt)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *BiDashboardRevisionMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *BiDashboardRevisionMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the BiDashboardRevision entity.
+// If the BiDashboardRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BiDashboardRevisionMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (m *BiDashboardRevisionMutation) ClearUpdatedAt() {
+	m.updated_at = nil
+	m.clearedFields[bidashboardrevision.FieldUpdatedAt] = struct{}{}
+}
+
+// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
+func (m *BiDashboardRevisionMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[bidashboardrevision.FieldUpdatedAt]
+	return ok
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *BiDashboardRevisionMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	delete(m.clearedFields, bidashboardrevision.FieldUpdatedAt)
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *BiDashboardRevisionMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *BiDashboardRevisionMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the BiDashboardRevision entity.
+// If the BiDashboardRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BiDashboardRevisionMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *BiDashboardRevisionMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[bidashboardrevision.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *BiDashboardRevisionMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[bidashboardrevision.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *BiDashboardRevisionMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, bidashboardrevision.FieldDeletedAt)
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *BiDashboardRevisionMutation) SetCreatedBy(u uint32) {
+	m.created_by = &u
+	m.addcreated_by = nil
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *BiDashboardRevisionMutation) CreatedBy() (r uint32, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the BiDashboardRevision entity.
+// If the BiDashboardRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BiDashboardRevisionMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// AddCreatedBy adds u to the "created_by" field.
+func (m *BiDashboardRevisionMutation) AddCreatedBy(u int32) {
+	if m.addcreated_by != nil {
+		*m.addcreated_by += u
+	} else {
+		m.addcreated_by = &u
+	}
+}
+
+// AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
+func (m *BiDashboardRevisionMutation) AddedCreatedBy() (r int32, exists bool) {
+	v := m.addcreated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (m *BiDashboardRevisionMutation) ClearCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	m.clearedFields[bidashboardrevision.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
+func (m *BiDashboardRevisionMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[bidashboardrevision.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *BiDashboardRevisionMutation) ResetCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	delete(m.clearedFields, bidashboardrevision.FieldCreatedBy)
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (m *BiDashboardRevisionMutation) SetUpdatedBy(u uint32) {
+	m.updated_by = &u
+	m.addupdated_by = nil
+}
+
+// UpdatedBy returns the value of the "updated_by" field in the mutation.
+func (m *BiDashboardRevisionMutation) UpdatedBy() (r uint32, exists bool) {
+	v := m.updated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedBy returns the old "updated_by" field's value of the BiDashboardRevision entity.
+// If the BiDashboardRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BiDashboardRevisionMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
+	}
+	return oldValue.UpdatedBy, nil
+}
+
+// AddUpdatedBy adds u to the "updated_by" field.
+func (m *BiDashboardRevisionMutation) AddUpdatedBy(u int32) {
+	if m.addupdated_by != nil {
+		*m.addupdated_by += u
+	} else {
+		m.addupdated_by = &u
+	}
+}
+
+// AddedUpdatedBy returns the value that was added to the "updated_by" field in this mutation.
+func (m *BiDashboardRevisionMutation) AddedUpdatedBy() (r int32, exists bool) {
+	v := m.addupdated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (m *BiDashboardRevisionMutation) ClearUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	m.clearedFields[bidashboardrevision.FieldUpdatedBy] = struct{}{}
+}
+
+// UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
+func (m *BiDashboardRevisionMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[bidashboardrevision.FieldUpdatedBy]
+	return ok
+}
+
+// ResetUpdatedBy resets all changes to the "updated_by" field.
+func (m *BiDashboardRevisionMutation) ResetUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	delete(m.clearedFields, bidashboardrevision.FieldUpdatedBy)
+}
+
+// SetDeletedBy sets the "deleted_by" field.
+func (m *BiDashboardRevisionMutation) SetDeletedBy(u uint32) {
+	m.deleted_by = &u
+	m.adddeleted_by = nil
+}
+
+// DeletedBy returns the value of the "deleted_by" field in the mutation.
+func (m *BiDashboardRevisionMutation) DeletedBy() (r uint32, exists bool) {
+	v := m.deleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedBy returns the old "deleted_by" field's value of the BiDashboardRevision entity.
+// If the BiDashboardRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BiDashboardRevisionMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
+	}
+	return oldValue.DeletedBy, nil
+}
+
+// AddDeletedBy adds u to the "deleted_by" field.
+func (m *BiDashboardRevisionMutation) AddDeletedBy(u int32) {
+	if m.adddeleted_by != nil {
+		*m.adddeleted_by += u
+	} else {
+		m.adddeleted_by = &u
+	}
+}
+
+// AddedDeletedBy returns the value that was added to the "deleted_by" field in this mutation.
+func (m *BiDashboardRevisionMutation) AddedDeletedBy() (r int32, exists bool) {
+	v := m.adddeleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (m *BiDashboardRevisionMutation) ClearDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	m.clearedFields[bidashboardrevision.FieldDeletedBy] = struct{}{}
+}
+
+// DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
+func (m *BiDashboardRevisionMutation) DeletedByCleared() bool {
+	_, ok := m.clearedFields[bidashboardrevision.FieldDeletedBy]
+	return ok
+}
+
+// ResetDeletedBy resets all changes to the "deleted_by" field.
+func (m *BiDashboardRevisionMutation) ResetDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	delete(m.clearedFields, bidashboardrevision.FieldDeletedBy)
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (m *BiDashboardRevisionMutation) SetTenantID(u uint32) {
+	m.tenant_id = &u
+	m.addtenant_id = nil
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *BiDashboardRevisionMutation) TenantID() (r uint32, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the BiDashboardRevision entity.
+// If the BiDashboardRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BiDashboardRevisionMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// AddTenantID adds u to the "tenant_id" field.
+func (m *BiDashboardRevisionMutation) AddTenantID(u int32) {
+	if m.addtenant_id != nil {
+		*m.addtenant_id += u
+	} else {
+		m.addtenant_id = &u
+	}
+}
+
+// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
+func (m *BiDashboardRevisionMutation) AddedTenantID() (r int32, exists bool) {
+	v := m.addtenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *BiDashboardRevisionMutation) ClearTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	m.clearedFields[bidashboardrevision.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *BiDashboardRevisionMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[bidashboardrevision.FieldTenantID]
+	return ok
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *BiDashboardRevisionMutation) ResetTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	delete(m.clearedFields, bidashboardrevision.FieldTenantID)
+}
+
+// SetDashboardID sets the "dashboard_id" field.
+func (m *BiDashboardRevisionMutation) SetDashboardID(u uint32) {
+	m.dashboard = &u
+}
+
+// DashboardID returns the value of the "dashboard_id" field in the mutation.
+func (m *BiDashboardRevisionMutation) DashboardID() (r uint32, exists bool) {
+	v := m.dashboard
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDashboardID returns the old "dashboard_id" field's value of the BiDashboardRevision entity.
+// If the BiDashboardRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BiDashboardRevisionMutation) OldDashboardID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDashboardID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDashboardID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDashboardID: %w", err)
+	}
+	return oldValue.DashboardID, nil
+}
+
+// ClearDashboardID clears the value of the "dashboard_id" field.
+func (m *BiDashboardRevisionMutation) ClearDashboardID() {
+	m.dashboard = nil
+	m.clearedFields[bidashboardrevision.FieldDashboardID] = struct{}{}
+}
+
+// DashboardIDCleared returns if the "dashboard_id" field was cleared in this mutation.
+func (m *BiDashboardRevisionMutation) DashboardIDCleared() bool {
+	_, ok := m.clearedFields[bidashboardrevision.FieldDashboardID]
+	return ok
+}
+
+// ResetDashboardID resets all changes to the "dashboard_id" field.
+func (m *BiDashboardRevisionMutation) ResetDashboardID() {
+	m.dashboard = nil
+	delete(m.clearedFields, bidashboardrevision.FieldDashboardID)
+}
+
+// SetVersion sets the "version" field.
+func (m *BiDashboardRevisionMutation) SetVersion(u uint32) {
+	m.version = &u
+	m.addversion = nil
+}
+
+// Version returns the value of the "version" field in the mutation.
+func (m *BiDashboardRevisionMutation) Version() (r uint32, exists bool) {
+	v := m.version
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldVersion returns the old "version" field's value of the BiDashboardRevision entity.
+// If the BiDashboardRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BiDashboardRevisionMutation) OldVersion(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldVersion is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldVersion requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldVersion: %w", err)
+	}
+	return oldValue.Version, nil
+}
+
+// AddVersion adds u to the "version" field.
+func (m *BiDashboardRevisionMutation) AddVersion(u int32) {
+	if m.addversion != nil {
+		*m.addversion += u
+	} else {
+		m.addversion = &u
+	}
+}
+
+// AddedVersion returns the value that was added to the "version" field in this mutation.
+func (m *BiDashboardRevisionMutation) AddedVersion() (r int32, exists bool) {
+	v := m.addversion
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearVersion clears the value of the "version" field.
+func (m *BiDashboardRevisionMutation) ClearVersion() {
+	m.version = nil
+	m.addversion = nil
+	m.clearedFields[bidashboardrevision.FieldVersion] = struct{}{}
+}
+
+// VersionCleared returns if the "version" field was cleared in this mutation.
+func (m *BiDashboardRevisionMutation) VersionCleared() bool {
+	_, ok := m.clearedFields[bidashboardrevision.FieldVersion]
+	return ok
+}
+
+// ResetVersion resets all changes to the "version" field.
+func (m *BiDashboardRevisionMutation) ResetVersion() {
+	m.version = nil
+	m.addversion = nil
+	delete(m.clearedFields, bidashboardrevision.FieldVersion)
+}
+
+// SetName sets the "name" field.
+func (m *BiDashboardRevisionMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *BiDashboardRevisionMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the BiDashboardRevision entity.
+// If the BiDashboardRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BiDashboardRevisionMutation) OldName(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ClearName clears the value of the "name" field.
+func (m *BiDashboardRevisionMutation) ClearName() {
+	m.name = nil
+	m.clearedFields[bidashboardrevision.FieldName] = struct{}{}
+}
+
+// NameCleared returns if the "name" field was cleared in this mutation.
+func (m *BiDashboardRevisionMutation) NameCleared() bool {
+	_, ok := m.clearedFields[bidashboardrevision.FieldName]
+	return ok
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *BiDashboardRevisionMutation) ResetName() {
+	m.name = nil
+	delete(m.clearedFields, bidashboardrevision.FieldName)
+}
+
+// SetPayload sets the "payload" field.
+func (m *BiDashboardRevisionMutation) SetPayload(s string) {
+	m.payload = &s
+}
+
+// Payload returns the value of the "payload" field in the mutation.
+func (m *BiDashboardRevisionMutation) Payload() (r string, exists bool) {
+	v := m.payload
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPayload returns the old "payload" field's value of the BiDashboardRevision entity.
+// If the BiDashboardRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BiDashboardRevisionMutation) OldPayload(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPayload is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPayload requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPayload: %w", err)
+	}
+	return oldValue.Payload, nil
+}
+
+// ClearPayload clears the value of the "payload" field.
+func (m *BiDashboardRevisionMutation) ClearPayload() {
+	m.payload = nil
+	m.clearedFields[bidashboardrevision.FieldPayload] = struct{}{}
+}
+
+// PayloadCleared returns if the "payload" field was cleared in this mutation.
+func (m *BiDashboardRevisionMutation) PayloadCleared() bool {
+	_, ok := m.clearedFields[bidashboardrevision.FieldPayload]
+	return ok
+}
+
+// ResetPayload resets all changes to the "payload" field.
+func (m *BiDashboardRevisionMutation) ResetPayload() {
+	m.payload = nil
+	delete(m.clearedFields, bidashboardrevision.FieldPayload)
+}
+
+// SetSource sets the "source" field.
+func (m *BiDashboardRevisionMutation) SetSource(b bidashboardrevision.Source) {
+	m.source = &b
+}
+
+// Source returns the value of the "source" field in the mutation.
+func (m *BiDashboardRevisionMutation) Source() (r bidashboardrevision.Source, exists bool) {
+	v := m.source
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSource returns the old "source" field's value of the BiDashboardRevision entity.
+// If the BiDashboardRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BiDashboardRevisionMutation) OldSource(ctx context.Context) (v *bidashboardrevision.Source, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSource is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSource requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSource: %w", err)
+	}
+	return oldValue.Source, nil
+}
+
+// ClearSource clears the value of the "source" field.
+func (m *BiDashboardRevisionMutation) ClearSource() {
+	m.source = nil
+	m.clearedFields[bidashboardrevision.FieldSource] = struct{}{}
+}
+
+// SourceCleared returns if the "source" field was cleared in this mutation.
+func (m *BiDashboardRevisionMutation) SourceCleared() bool {
+	_, ok := m.clearedFields[bidashboardrevision.FieldSource]
+	return ok
+}
+
+// ResetSource resets all changes to the "source" field.
+func (m *BiDashboardRevisionMutation) ResetSource() {
+	m.source = nil
+	delete(m.clearedFields, bidashboardrevision.FieldSource)
+}
+
+// ClearDashboard clears the "dashboard" edge to the BiDashboard entity.
+func (m *BiDashboardRevisionMutation) ClearDashboard() {
+	m.cleareddashboard = true
+	m.clearedFields[bidashboardrevision.FieldDashboardID] = struct{}{}
+}
+
+// DashboardCleared reports if the "dashboard" edge to the BiDashboard entity was cleared.
+func (m *BiDashboardRevisionMutation) DashboardCleared() bool {
+	return m.DashboardIDCleared() || m.cleareddashboard
+}
+
+// DashboardIDs returns the "dashboard" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// DashboardID instead. It exists only for internal usage by the builders.
+func (m *BiDashboardRevisionMutation) DashboardIDs() (ids []uint32) {
+	if id := m.dashboard; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetDashboard resets all changes to the "dashboard" edge.
+func (m *BiDashboardRevisionMutation) ResetDashboard() {
+	m.dashboard = nil
+	m.cleareddashboard = false
+}
+
+// Where appends a list predicates to the BiDashboardRevisionMutation builder.
+func (m *BiDashboardRevisionMutation) Where(ps ...predicate.BiDashboardRevision) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the BiDashboardRevisionMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *BiDashboardRevisionMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.BiDashboardRevision, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *BiDashboardRevisionMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *BiDashboardRevisionMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (BiDashboardRevision).
+func (m *BiDashboardRevisionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *BiDashboardRevisionMutation) Fields() []string {
+	fields := make([]string, 0, 12)
+	if m.created_at != nil {
+		fields = append(fields, bidashboardrevision.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, bidashboardrevision.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, bidashboardrevision.FieldDeletedAt)
+	}
+	if m.created_by != nil {
+		fields = append(fields, bidashboardrevision.FieldCreatedBy)
+	}
+	if m.updated_by != nil {
+		fields = append(fields, bidashboardrevision.FieldUpdatedBy)
+	}
+	if m.deleted_by != nil {
+		fields = append(fields, bidashboardrevision.FieldDeletedBy)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, bidashboardrevision.FieldTenantID)
+	}
+	if m.dashboard != nil {
+		fields = append(fields, bidashboardrevision.FieldDashboardID)
+	}
+	if m.version != nil {
+		fields = append(fields, bidashboardrevision.FieldVersion)
+	}
+	if m.name != nil {
+		fields = append(fields, bidashboardrevision.FieldName)
+	}
+	if m.payload != nil {
+		fields = append(fields, bidashboardrevision.FieldPayload)
+	}
+	if m.source != nil {
+		fields = append(fields, bidashboardrevision.FieldSource)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *BiDashboardRevisionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case bidashboardrevision.FieldCreatedAt:
+		return m.CreatedAt()
+	case bidashboardrevision.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case bidashboardrevision.FieldDeletedAt:
+		return m.DeletedAt()
+	case bidashboardrevision.FieldCreatedBy:
+		return m.CreatedBy()
+	case bidashboardrevision.FieldUpdatedBy:
+		return m.UpdatedBy()
+	case bidashboardrevision.FieldDeletedBy:
+		return m.DeletedBy()
+	case bidashboardrevision.FieldTenantID:
+		return m.TenantID()
+	case bidashboardrevision.FieldDashboardID:
+		return m.DashboardID()
+	case bidashboardrevision.FieldVersion:
+		return m.Version()
+	case bidashboardrevision.FieldName:
+		return m.Name()
+	case bidashboardrevision.FieldPayload:
+		return m.Payload()
+	case bidashboardrevision.FieldSource:
+		return m.Source()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *BiDashboardRevisionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case bidashboardrevision.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case bidashboardrevision.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case bidashboardrevision.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case bidashboardrevision.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case bidashboardrevision.FieldUpdatedBy:
+		return m.OldUpdatedBy(ctx)
+	case bidashboardrevision.FieldDeletedBy:
+		return m.OldDeletedBy(ctx)
+	case bidashboardrevision.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case bidashboardrevision.FieldDashboardID:
+		return m.OldDashboardID(ctx)
+	case bidashboardrevision.FieldVersion:
+		return m.OldVersion(ctx)
+	case bidashboardrevision.FieldName:
+		return m.OldName(ctx)
+	case bidashboardrevision.FieldPayload:
+		return m.OldPayload(ctx)
+	case bidashboardrevision.FieldSource:
+		return m.OldSource(ctx)
+	}
+	return nil, fmt.Errorf("unknown BiDashboardRevision field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *BiDashboardRevisionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case bidashboardrevision.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case bidashboardrevision.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case bidashboardrevision.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case bidashboardrevision.FieldCreatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case bidashboardrevision.FieldUpdatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedBy(v)
+		return nil
+	case bidashboardrevision.FieldDeletedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedBy(v)
+		return nil
+	case bidashboardrevision.FieldTenantID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case bidashboardrevision.FieldDashboardID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDashboardID(v)
+		return nil
+	case bidashboardrevision.FieldVersion:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetVersion(v)
+		return nil
+	case bidashboardrevision.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	case bidashboardrevision.FieldPayload:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPayload(v)
+		return nil
+	case bidashboardrevision.FieldSource:
+		v, ok := value.(bidashboardrevision.Source)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSource(v)
+		return nil
+	}
+	return fmt.Errorf("unknown BiDashboardRevision field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *BiDashboardRevisionMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_by != nil {
+		fields = append(fields, bidashboardrevision.FieldCreatedBy)
+	}
+	if m.addupdated_by != nil {
+		fields = append(fields, bidashboardrevision.FieldUpdatedBy)
+	}
+	if m.adddeleted_by != nil {
+		fields = append(fields, bidashboardrevision.FieldDeletedBy)
+	}
+	if m.addtenant_id != nil {
+		fields = append(fields, bidashboardrevision.FieldTenantID)
+	}
+	if m.addversion != nil {
+		fields = append(fields, bidashboardrevision.FieldVersion)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *BiDashboardRevisionMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case bidashboardrevision.FieldCreatedBy:
+		return m.AddedCreatedBy()
+	case bidashboardrevision.FieldUpdatedBy:
+		return m.AddedUpdatedBy()
+	case bidashboardrevision.FieldDeletedBy:
+		return m.AddedDeletedBy()
+	case bidashboardrevision.FieldTenantID:
+		return m.AddedTenantID()
+	case bidashboardrevision.FieldVersion:
+		return m.AddedVersion()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *BiDashboardRevisionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case bidashboardrevision.FieldCreatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedBy(v)
+		return nil
+	case bidashboardrevision.FieldUpdatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedBy(v)
+		return nil
+	case bidashboardrevision.FieldDeletedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedBy(v)
+		return nil
+	case bidashboardrevision.FieldTenantID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTenantID(v)
+		return nil
+	case bidashboardrevision.FieldVersion:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddVersion(v)
+		return nil
+	}
+	return fmt.Errorf("unknown BiDashboardRevision numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *BiDashboardRevisionMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(bidashboardrevision.FieldCreatedAt) {
+		fields = append(fields, bidashboardrevision.FieldCreatedAt)
+	}
+	if m.FieldCleared(bidashboardrevision.FieldUpdatedAt) {
+		fields = append(fields, bidashboardrevision.FieldUpdatedAt)
+	}
+	if m.FieldCleared(bidashboardrevision.FieldDeletedAt) {
+		fields = append(fields, bidashboardrevision.FieldDeletedAt)
+	}
+	if m.FieldCleared(bidashboardrevision.FieldCreatedBy) {
+		fields = append(fields, bidashboardrevision.FieldCreatedBy)
+	}
+	if m.FieldCleared(bidashboardrevision.FieldUpdatedBy) {
+		fields = append(fields, bidashboardrevision.FieldUpdatedBy)
+	}
+	if m.FieldCleared(bidashboardrevision.FieldDeletedBy) {
+		fields = append(fields, bidashboardrevision.FieldDeletedBy)
+	}
+	if m.FieldCleared(bidashboardrevision.FieldTenantID) {
+		fields = append(fields, bidashboardrevision.FieldTenantID)
+	}
+	if m.FieldCleared(bidashboardrevision.FieldDashboardID) {
+		fields = append(fields, bidashboardrevision.FieldDashboardID)
+	}
+	if m.FieldCleared(bidashboardrevision.FieldVersion) {
+		fields = append(fields, bidashboardrevision.FieldVersion)
+	}
+	if m.FieldCleared(bidashboardrevision.FieldName) {
+		fields = append(fields, bidashboardrevision.FieldName)
+	}
+	if m.FieldCleared(bidashboardrevision.FieldPayload) {
+		fields = append(fields, bidashboardrevision.FieldPayload)
+	}
+	if m.FieldCleared(bidashboardrevision.FieldSource) {
+		fields = append(fields, bidashboardrevision.FieldSource)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *BiDashboardRevisionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *BiDashboardRevisionMutation) ClearField(name string) error {
+	switch name {
+	case bidashboardrevision.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case bidashboardrevision.FieldUpdatedAt:
+		m.ClearUpdatedAt()
+		return nil
+	case bidashboardrevision.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case bidashboardrevision.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	case bidashboardrevision.FieldUpdatedBy:
+		m.ClearUpdatedBy()
+		return nil
+	case bidashboardrevision.FieldDeletedBy:
+		m.ClearDeletedBy()
+		return nil
+	case bidashboardrevision.FieldTenantID:
+		m.ClearTenantID()
+		return nil
+	case bidashboardrevision.FieldDashboardID:
+		m.ClearDashboardID()
+		return nil
+	case bidashboardrevision.FieldVersion:
+		m.ClearVersion()
+		return nil
+	case bidashboardrevision.FieldName:
+		m.ClearName()
+		return nil
+	case bidashboardrevision.FieldPayload:
+		m.ClearPayload()
+		return nil
+	case bidashboardrevision.FieldSource:
+		m.ClearSource()
+		return nil
+	}
+	return fmt.Errorf("unknown BiDashboardRevision nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *BiDashboardRevisionMutation) ResetField(name string) error {
+	switch name {
+	case bidashboardrevision.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case bidashboardrevision.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case bidashboardrevision.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case bidashboardrevision.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case bidashboardrevision.FieldUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	case bidashboardrevision.FieldDeletedBy:
+		m.ResetDeletedBy()
+		return nil
+	case bidashboardrevision.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case bidashboardrevision.FieldDashboardID:
+		m.ResetDashboardID()
+		return nil
+	case bidashboardrevision.FieldVersion:
+		m.ResetVersion()
+		return nil
+	case bidashboardrevision.FieldName:
+		m.ResetName()
+		return nil
+	case bidashboardrevision.FieldPayload:
+		m.ResetPayload()
+		return nil
+	case bidashboardrevision.FieldSource:
+		m.ResetSource()
+		return nil
+	}
+	return fmt.Errorf("unknown BiDashboardRevision field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *BiDashboardRevisionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.dashboard != nil {
+		edges = append(edges, bidashboardrevision.EdgeDashboard)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *BiDashboardRevisionMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case bidashboardrevision.EdgeDashboard:
+		if id := m.dashboard; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *BiDashboardRevisionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *BiDashboardRevisionMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *BiDashboardRevisionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.cleareddashboard {
+		edges = append(edges, bidashboardrevision.EdgeDashboard)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *BiDashboardRevisionMutation) EdgeCleared(name string) bool {
+	switch name {
+	case bidashboardrevision.EdgeDashboard:
+		return m.cleareddashboard
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *BiDashboardRevisionMutation) ClearEdge(name string) error {
+	switch name {
+	case bidashboardrevision.EdgeDashboard:
+		m.ClearDashboard()
+		return nil
+	}
+	return fmt.Errorf("unknown BiDashboardRevision unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *BiDashboardRevisionMutation) ResetEdge(name string) error {
+	switch name {
+	case bidashboardrevision.EdgeDashboard:
+		m.ResetDashboard()
+		return nil
+	}
+	return fmt.Errorf("unknown BiDashboardRevision edge %s", name)
 }
 
 // DataAccessAuditLogMutation represents an operation that mutates the DataAccessAuditLog nodes in the graph.

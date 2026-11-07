@@ -560,6 +560,49 @@ var (
 			},
 		},
 	}
+	// SysBiDashboardRevisionsColumns holds the columns for the "sys_bi_dashboard_revisions" table.
+	SysBiDashboardRevisionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "version", Type: field.TypeUint32, Nullable: true, Comment: "快照对应的仪表盘版本号（保存前的旧版本）", Default: 0},
+		{Name: "name", Type: field.TypeString, Nullable: true, Comment: "保存前的名称快照（恢复时一并写回）"},
+		{Name: "payload", Type: field.TypeString, Nullable: true, Comment: "保存前的仪表盘 JSON 快照", SchemaType: map[string]string{"mysql": "json", "postgres": "jsonb"}},
+		{Name: "source", Type: field.TypeEnum, Nullable: true, Comment: "快照来源（SAVE=常规保存触发 RESTORE=恢复前留底）", Enums: []string{"SAVE", "RESTORE"}, Default: "SAVE"},
+		{Name: "dashboard_id", Type: field.TypeUint32, Nullable: true, Comment: "所属仪表盘 ID"},
+	}
+	// SysBiDashboardRevisionsTable holds the schema information for the "sys_bi_dashboard_revisions" table.
+	SysBiDashboardRevisionsTable = &schema.Table{
+		Name:       "sys_bi_dashboard_revisions",
+		Comment:    "BI 仪表盘版本快照表（每次保存留旧版快照；只增不更新，随主表级联删除）",
+		Columns:    SysBiDashboardRevisionsColumns,
+		PrimaryKey: []*schema.Column{SysBiDashboardRevisionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "sys_bi_dashboard_revisions_bi_dashboards_revisions",
+				Columns:    []*schema.Column{SysBiDashboardRevisionsColumns[12]},
+				RefColumns: []*schema.Column{BiDashboardsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "uidx_bi_revisions_dash_version",
+				Unique:  true,
+				Columns: []*schema.Column{SysBiDashboardRevisionsColumns[12], SysBiDashboardRevisionsColumns[8]},
+			},
+			{
+				Name:    "idx_bi_revisions_dash_created",
+				Unique:  false,
+				Columns: []*schema.Column{SysBiDashboardRevisionsColumns[12], SysBiDashboardRevisionsColumns[1]},
+			},
+		},
+	}
 	// SysDataAccessAuditLogsColumns holds the columns for the "sys_data_access_audit_logs" table.
 	SysDataAccessAuditLogsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -3830,6 +3873,7 @@ var (
 		SysApisTable,
 		SysAPIAuditLogsTable,
 		BiDashboardsTable,
+		SysBiDashboardRevisionsTable,
 		SysDataAccessAuditLogsTable,
 		SysDictEntriesTable,
 		SysDictEntryI18nTable,
@@ -3951,6 +3995,12 @@ func init() {
 	}
 	BiDashboardsTable.Annotation = &entsql.Annotation{
 		Table:     "bi_dashboards",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	SysBiDashboardRevisionsTable.ForeignKeys[0].RefTable = BiDashboardsTable
+	SysBiDashboardRevisionsTable.Annotation = &entsql.Annotation{
+		Table:     "sys_bi_dashboard_revisions",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

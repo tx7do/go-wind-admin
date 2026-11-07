@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/bidashboard"
+	"go-wind-admin/app/admin/service/internal/data/ent/bidashboardrevision"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -308,6 +309,21 @@ func (_c *BiDashboardCreate) SetID(v uint32) *BiDashboardCreate {
 	return _c
 }
 
+// AddRevisionIDs adds the "revisions" edge to the BiDashboardRevision entity by IDs.
+func (_c *BiDashboardCreate) AddRevisionIDs(ids ...uint32) *BiDashboardCreate {
+	_c.mutation.AddRevisionIDs(ids...)
+	return _c
+}
+
+// AddRevisions adds the "revisions" edges to the BiDashboardRevision entity.
+func (_c *BiDashboardCreate) AddRevisions(v ...*BiDashboardRevision) *BiDashboardCreate {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddRevisionIDs(ids...)
+}
+
 // Mutation returns the BiDashboardMutation object of the builder.
 func (_c *BiDashboardCreate) Mutation() *BiDashboardMutation {
 	return _c.mutation
@@ -504,6 +520,22 @@ func (_c *BiDashboardCreate) createSpec() (*BiDashboard, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Version(); ok {
 		_spec.SetField(bidashboard.FieldVersion, field.TypeUint32, value)
 		_node.Version = &value
+	}
+	if nodes := _c.mutation.RevisionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   bidashboard.RevisionsTable,
+			Columns: []string{bidashboard.RevisionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(bidashboardrevision.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

@@ -423,6 +423,30 @@ func (f BiDashboardMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mut
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.BiDashboardMutation", m)
 }
 
+// The BiDashboardRevisionQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type BiDashboardRevisionQueryRuleFunc func(context.Context, *ent.BiDashboardRevisionQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f BiDashboardRevisionQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.BiDashboardRevisionQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.BiDashboardRevisionQuery", q)
+}
+
+// The BiDashboardRevisionMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type BiDashboardRevisionMutationRuleFunc func(context.Context, *ent.BiDashboardRevisionMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f BiDashboardRevisionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.BiDashboardRevisionMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.BiDashboardRevisionMutation", m)
+}
+
 // The DataAccessAuditLogQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type DataAccessAuditLogQueryRuleFunc func(context.Context, *ent.DataAccessAuditLogQuery) error
@@ -1732,6 +1756,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.BiDashboardQuery:
 		return q.Filter(), nil
+	case *ent.BiDashboardRevisionQuery:
+		return q.Filter(), nil
 	case *ent.DataAccessAuditLogQuery:
 		return q.Filter(), nil
 	case *ent.DictEntryQuery:
@@ -1868,6 +1894,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.ApiAuditLogMutation:
 		return m.Filter(), nil
 	case *ent.BiDashboardMutation:
+		return m.Filter(), nil
+	case *ent.BiDashboardRevisionMutation:
 		return m.Filter(), nil
 	case *ent.DataAccessAuditLogMutation:
 		return m.Filter(), nil

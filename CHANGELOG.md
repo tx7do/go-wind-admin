@@ -107,6 +107,10 @@
 
 ### 新增
 
+- **BI 仪表盘版本历史**（[docs/bi_dashboard.md](./docs/bi_dashboard.md)）：新增
+  `sys_bi_dashboard_revisions` 快照表——每次成功保存把保存前的 payload/name/version 留一行
+  （随主表级联删除、入租户清理清单）；`ListRevisions`/`RestoreRevision` RPC，恢复前先留底
+  当前版本（可逆）。react 端管理页行内「版本历史」弹窗（列表 + 恢复）；ele/vben 移植未做。
 - **打印模板 AI 一句话生成（M4-1，react 先行）**（[docs/print_template.md](./docs/print_template.md) §7）：
   `POST /admin/v1/print-templates:generate`——描述单据要素（如"出库单，含明细表/合计/签字区"）
   → 默认 AI provider 产出 TemplateData → 服务端护栏校验（payload/元素类型/嵌套深度上限、
@@ -118,6 +122,14 @@
 - **文档勘误**：Agent 编排 ele/vben 画布（c6504f7a）与通知渠道 M2 三端移植（fd708496）
   此前已完成，`ai_agent_orchestration.md`/`notify_channels_expansion.md` 的"未排期"状态
   标记已同步。
+- **SSE 事件契约收口**：`TestPublishedEventsReachAllFrontends` 源扫描守护——Go 注册表的每个
+  事件字面值必须出现在三端事件名常量表里，新增事件漏改某一端 CI 即红（此前"漏加一端静默
+  失效"的已知问题收口）；`sse_architecture.md` §8 同步（事件实为四个，Agent 试运行推送
+  `ai_agent_run` 早已三端落地）。
+- **打印 M4-2 脚本渲染前钩子挂点分析**：printData（行数据）完全在浏览器侧绑定，
+  服务端脚本钩子够不着——唯一可硬做的"脚本改写成品 HTML"既开 HTML 注入面直送 Chromium
+  又无真实调用方，判为当前架构下不成立，成立条件（输出链 v2：行数据上送服务端
+  bindData）已记入 [docs/print_template.md](./docs/print_template.md) §7，需求驱动再立项。
 
 ## [1.5.0] - 2026-10-29
 

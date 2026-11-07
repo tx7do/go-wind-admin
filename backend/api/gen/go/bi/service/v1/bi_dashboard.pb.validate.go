@@ -1118,3 +1118,513 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = CopyBiDashboardRequestValidationError{}
+
+// Validate checks the field values on BiDashboardRevision with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *BiDashboardRevision) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on BiDashboardRevision with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// BiDashboardRevisionMultiError, or nil if none found.
+func (m *BiDashboardRevision) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *BiDashboardRevision) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	// no validation rules for DashboardId
+
+	// no validation rules for Version
+
+	if m.Name != nil {
+		// no validation rules for Name
+	}
+
+	if m.Payload != nil {
+		// no validation rules for Payload
+	}
+
+	if m.Source != nil {
+		// no validation rules for Source
+	}
+
+	if m.CreatedBy != nil {
+		// no validation rules for CreatedBy
+	}
+
+	if m.CreatedAt != nil {
+		// no validation rules for CreatedAt
+	}
+
+	if len(errors) > 0 {
+		return BiDashboardRevisionMultiError(errors)
+	}
+
+	return nil
+}
+
+// BiDashboardRevisionMultiError is an error wrapping multiple validation
+// errors returned by BiDashboardRevision.ValidateAll() if the designated
+// constraints aren't met.
+type BiDashboardRevisionMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m BiDashboardRevisionMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m BiDashboardRevisionMultiError) AllErrors() []error { return m }
+
+// BiDashboardRevisionValidationError is the validation error returned by
+// BiDashboardRevision.Validate if the designated constraints aren't met.
+type BiDashboardRevisionValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e BiDashboardRevisionValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e BiDashboardRevisionValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e BiDashboardRevisionValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e BiDashboardRevisionValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e BiDashboardRevisionValidationError) ErrorName() string {
+	return "BiDashboardRevisionValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e BiDashboardRevisionValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sBiDashboardRevision.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = BiDashboardRevisionValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = BiDashboardRevisionValidationError{}
+
+// Validate checks the field values on ListBiDashboardRevisionsRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListBiDashboardRevisionsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListBiDashboardRevisionsRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ListBiDashboardRevisionsRequestMultiError, or nil if none found.
+func (m *ListBiDashboardRevisionsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListBiDashboardRevisionsRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for DashboardId
+
+	if all {
+		switch v := interface{}(m.GetPage()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ListBiDashboardRevisionsRequestValidationError{
+					field:  "Page",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ListBiDashboardRevisionsRequestValidationError{
+					field:  "Page",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPage()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListBiDashboardRevisionsRequestValidationError{
+				field:  "Page",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return ListBiDashboardRevisionsRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListBiDashboardRevisionsRequestMultiError is an error wrapping multiple
+// validation errors returned by ListBiDashboardRevisionsRequest.ValidateAll()
+// if the designated constraints aren't met.
+type ListBiDashboardRevisionsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListBiDashboardRevisionsRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListBiDashboardRevisionsRequestMultiError) AllErrors() []error { return m }
+
+// ListBiDashboardRevisionsRequestValidationError is the validation error
+// returned by ListBiDashboardRevisionsRequest.Validate if the designated
+// constraints aren't met.
+type ListBiDashboardRevisionsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListBiDashboardRevisionsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListBiDashboardRevisionsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListBiDashboardRevisionsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListBiDashboardRevisionsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListBiDashboardRevisionsRequestValidationError) ErrorName() string {
+	return "ListBiDashboardRevisionsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListBiDashboardRevisionsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListBiDashboardRevisionsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListBiDashboardRevisionsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListBiDashboardRevisionsRequestValidationError{}
+
+// Validate checks the field values on ListBiDashboardRevisionsResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *ListBiDashboardRevisionsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListBiDashboardRevisionsResponse with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// ListBiDashboardRevisionsResponseMultiError, or nil if none found.
+func (m *ListBiDashboardRevisionsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListBiDashboardRevisionsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetItems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListBiDashboardRevisionsResponseValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListBiDashboardRevisionsResponseValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListBiDashboardRevisionsResponseValidationError{
+					field:  fmt.Sprintf("Items[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return ListBiDashboardRevisionsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListBiDashboardRevisionsResponseMultiError is an error wrapping multiple
+// validation errors returned by
+// ListBiDashboardRevisionsResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ListBiDashboardRevisionsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListBiDashboardRevisionsResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListBiDashboardRevisionsResponseMultiError) AllErrors() []error { return m }
+
+// ListBiDashboardRevisionsResponseValidationError is the validation error
+// returned by ListBiDashboardRevisionsResponse.Validate if the designated
+// constraints aren't met.
+type ListBiDashboardRevisionsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListBiDashboardRevisionsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListBiDashboardRevisionsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListBiDashboardRevisionsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListBiDashboardRevisionsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListBiDashboardRevisionsResponseValidationError) ErrorName() string {
+	return "ListBiDashboardRevisionsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListBiDashboardRevisionsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListBiDashboardRevisionsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListBiDashboardRevisionsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListBiDashboardRevisionsResponseValidationError{}
+
+// Validate checks the field values on RestoreBiDashboardRevisionRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the first error encountered is returned, or nil if there are
+// no violations.
+func (m *RestoreBiDashboardRevisionRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on RestoreBiDashboardRevisionRequest
+// with the rules defined in the proto definition for this message. If any
+// rules are violated, the result is a list of violation errors wrapped in
+// RestoreBiDashboardRevisionRequestMultiError, or nil if none found.
+func (m *RestoreBiDashboardRevisionRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *RestoreBiDashboardRevisionRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return RestoreBiDashboardRevisionRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// RestoreBiDashboardRevisionRequestMultiError is an error wrapping multiple
+// validation errors returned by
+// RestoreBiDashboardRevisionRequest.ValidateAll() if the designated
+// constraints aren't met.
+type RestoreBiDashboardRevisionRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RestoreBiDashboardRevisionRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RestoreBiDashboardRevisionRequestMultiError) AllErrors() []error { return m }
+
+// RestoreBiDashboardRevisionRequestValidationError is the validation error
+// returned by RestoreBiDashboardRevisionRequest.Validate if the designated
+// constraints aren't met.
+type RestoreBiDashboardRevisionRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RestoreBiDashboardRevisionRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RestoreBiDashboardRevisionRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RestoreBiDashboardRevisionRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RestoreBiDashboardRevisionRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RestoreBiDashboardRevisionRequestValidationError) ErrorName() string {
+	return "RestoreBiDashboardRevisionRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e RestoreBiDashboardRevisionRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRestoreBiDashboardRevisionRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RestoreBiDashboardRevisionRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RestoreBiDashboardRevisionRequestValidationError{}

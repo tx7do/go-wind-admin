@@ -38,6 +38,8 @@ type Tx struct {
 	ApiAuditLog *ApiAuditLogClient
 	// BiDashboard is the client for interacting with the BiDashboard builders.
 	BiDashboard *BiDashboardClient
+	// BiDashboardRevision is the client for interacting with the BiDashboardRevision builders.
+	BiDashboardRevision *BiDashboardRevisionClient
 	// DataAccessAuditLog is the client for interacting with the DataAccessAuditLog builders.
 	DataAccessAuditLog *DataAccessAuditLogClient
 	// DictEntry is the client for interacting with the DictEntry builders.
@@ -286,6 +288,7 @@ func (tx *Tx) init() {
 	tx.Api = NewAPIClient(tx.config)
 	tx.ApiAuditLog = NewApiAuditLogClient(tx.config)
 	tx.BiDashboard = NewBiDashboardClient(tx.config)
+	tx.BiDashboardRevision = NewBiDashboardRevisionClient(tx.config)
 	tx.DataAccessAuditLog = NewDataAccessAuditLogClient(tx.config)
 	tx.DictEntry = NewDictEntryClient(tx.config)
 	tx.DictEntryI18n = NewDictEntryI18nClient(tx.config)

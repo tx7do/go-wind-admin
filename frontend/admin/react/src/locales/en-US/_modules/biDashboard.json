@@ -46,5 +46,14 @@
   "statusConflict": "Save conflict, version refreshed",
   "fullscreen": "Fullscreen",
   "exitFullscreen": "Exit Fullscreen",
-  "editInDesigner": "Edit in Designer"
+  "editInDesigner": "Edit in Designer",
+  "revisionHistory": "Revisions",
+  "revisionTitle": "Revision History",
+  "revisionVersion": "Version",
+  "revisionSource": "Source",
+  "revisionSourceSave": "Save",
+  "revisionSourceRestore": "Before restore",
+  "revisionRestore": "Restore",
+  "revisionRestoreSuccess": "Restored; keep editing and save",
+  "revisionRestoreFailed": "Restore failed"
 }

@@ -24,6 +24,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/bidashboard"
+	"go-wind-admin/app/admin/service/internal/data/ent/bidashboardrevision"
 	"go-wind-admin/app/admin/service/internal/data/ent/dataaccessauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentryi18n"
@@ -114,6 +115,8 @@ type Client struct {
 	ApiAuditLog *ApiAuditLogClient
 	// BiDashboard is the client for interacting with the BiDashboard builders.
 	BiDashboard *BiDashboardClient
+	// BiDashboardRevision is the client for interacting with the BiDashboardRevision builders.
+	BiDashboardRevision *BiDashboardRevisionClient
 	// DataAccessAuditLog is the client for interacting with the DataAccessAuditLog builders.
 	DataAccessAuditLog *DataAccessAuditLogClient
 	// DictEntry is the client for interacting with the DictEntry builders.
@@ -242,6 +245,7 @@ func (c *Client) init() {
 	c.Api = NewAPIClient(c.config)
 	c.ApiAuditLog = NewApiAuditLogClient(c.config)
 	c.BiDashboard = NewBiDashboardClient(c.config)
+	c.BiDashboardRevision = NewBiDashboardRevisionClient(c.config)
 	c.DataAccessAuditLog = NewDataAccessAuditLogClient(c.config)
 	c.DictEntry = NewDictEntryClient(c.config)
 	c.DictEntryI18n = NewDictEntryI18nClient(c.config)
@@ -399,6 +403,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Api:                      NewAPIClient(cfg),
 		ApiAuditLog:              NewApiAuditLogClient(cfg),
 		BiDashboard:              NewBiDashboardClient(cfg),
+		BiDashboardRevision:      NewBiDashboardRevisionClient(cfg),
 		DataAccessAuditLog:       NewDataAccessAuditLogClient(cfg),
 		DictEntry:                NewDictEntryClient(cfg),
 		DictEntryI18n:            NewDictEntryI18nClient(cfg),
@@ -483,6 +488,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Api:                      NewAPIClient(cfg),
 		ApiAuditLog:              NewApiAuditLogClient(cfg),
 		BiDashboard:              NewBiDashboardClient(cfg),
+		BiDashboardRevision:      NewBiDashboardRevisionClient(cfg),
 		DataAccessAuditLog:       NewDataAccessAuditLogClient(cfg),
 		DictEntry:                NewDictEntryClient(cfg),
 		DictEntryI18n:            NewDictEntryI18nClient(cfg),
@@ -566,8 +572,8 @@ func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
 		c.AccessKey, c.AiAgentApp, c.AiAgentRun, c.AiChunk, c.AiConversation, c.AiDoc,
 		c.AiKnowledgeBase, c.AiMessage, c.AiProvider, c.AiUsageLog, c.Api,
-		c.ApiAuditLog, c.BiDashboard, c.DataAccessAuditLog, c.DictEntry,
-		c.DictEntryI18n, c.DictType, c.File, c.InternalMessage,
+		c.ApiAuditLog, c.BiDashboard, c.BiDashboardRevision, c.DataAccessAuditLog,
+		c.DictEntry, c.DictEntryI18n, c.DictType, c.File, c.InternalMessage,
 		c.InternalMessageCategory, c.InternalMessageRecipient, c.Language,
 		c.LoginAuditLog, c.LoginPolicy, c.Membership, c.MembershipOrgUnit,
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.MonitorAlertRule,
@@ -590,8 +596,8 @@ func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
 		c.AccessKey, c.AiAgentApp, c.AiAgentRun, c.AiChunk, c.AiConversation, c.AiDoc,
 		c.AiKnowledgeBase, c.AiMessage, c.AiProvider, c.AiUsageLog, c.Api,
-		c.ApiAuditLog, c.BiDashboard, c.DataAccessAuditLog, c.DictEntry,
-		c.DictEntryI18n, c.DictType, c.File, c.InternalMessage,
+		c.ApiAuditLog, c.BiDashboard, c.BiDashboardRevision, c.DataAccessAuditLog,
+		c.DictEntry, c.DictEntryI18n, c.DictType, c.File, c.InternalMessage,
 		c.InternalMessageCategory, c.InternalMessageRecipient, c.Language,
 		c.LoginAuditLog, c.LoginPolicy, c.Membership, c.MembershipOrgUnit,
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.MonitorAlertRule,
@@ -637,6 +643,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.ApiAuditLog.mutate(ctx, m)
 	case *BiDashboardMutation:
 		return c.BiDashboard.mutate(ctx, m)
+	case *BiDashboardRevisionMutation:
+		return c.BiDashboardRevision.mutate(ctx, m)
 	case *DataAccessAuditLogMutation:
 		return c.DataAccessAuditLog.mutate(ctx, m)
 	case *DictEntryMutation:
@@ -2556,6 +2564,22 @@ func (c *BiDashboardClient) GetX(ctx context.Context, id uint32) *BiDashboard {
 	return obj
 }
 
+// QueryRevisions queries the revisions edge of a BiDashboard.
+func (c *BiDashboardClient) QueryRevisions(_m *BiDashboard) *BiDashboardRevisionQuery {
+	query := (&BiDashboardRevisionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(bidashboard.Table, bidashboard.FieldID, id),
+			sqlgraph.To(bidashboardrevision.Table, bidashboardrevision.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, bidashboard.RevisionsTable, bidashboard.RevisionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *BiDashboardClient) Hooks() []Hook {
 	hooks := c.hooks.BiDashboard
@@ -2579,6 +2603,156 @@ func (c *BiDashboardClient) mutate(ctx context.Context, m *BiDashboardMutation) 
 		return (&BiDashboardDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown BiDashboard mutation op: %q", m.Op())
+	}
+}
+
+// BiDashboardRevisionClient is a client for the BiDashboardRevision schema.
+type BiDashboardRevisionClient struct {
+	config
+}
+
+// NewBiDashboardRevisionClient returns a client for the BiDashboardRevision from the given config.
+func NewBiDashboardRevisionClient(c config) *BiDashboardRevisionClient {
+	return &BiDashboardRevisionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `bidashboardrevision.Hooks(f(g(h())))`.
+func (c *BiDashboardRevisionClient) Use(hooks ...Hook) {
+	c.hooks.BiDashboardRevision = append(c.hooks.BiDashboardRevision, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `bidashboardrevision.Intercept(f(g(h())))`.
+func (c *BiDashboardRevisionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.BiDashboardRevision = append(c.inters.BiDashboardRevision, interceptors...)
+}
+
+// Create returns a builder for creating a BiDashboardRevision entity.
+func (c *BiDashboardRevisionClient) Create() *BiDashboardRevisionCreate {
+	mutation := newBiDashboardRevisionMutation(c.config, OpCreate)
+	return &BiDashboardRevisionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of BiDashboardRevision entities.
+func (c *BiDashboardRevisionClient) CreateBulk(builders ...*BiDashboardRevisionCreate) *BiDashboardRevisionCreateBulk {
+	return &BiDashboardRevisionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *BiDashboardRevisionClient) MapCreateBulk(slice any, setFunc func(*BiDashboardRevisionCreate, int)) *BiDashboardRevisionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &BiDashboardRevisionCreateBulk{err: fmt.Errorf("calling to BiDashboardRevisionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*BiDashboardRevisionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &BiDashboardRevisionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for BiDashboardRevision.
+func (c *BiDashboardRevisionClient) Update() *BiDashboardRevisionUpdate {
+	mutation := newBiDashboardRevisionMutation(c.config, OpUpdate)
+	return &BiDashboardRevisionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *BiDashboardRevisionClient) UpdateOne(_m *BiDashboardRevision) *BiDashboardRevisionUpdateOne {
+	mutation := newBiDashboardRevisionMutation(c.config, OpUpdateOne, withBiDashboardRevision(_m))
+	return &BiDashboardRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *BiDashboardRevisionClient) UpdateOneID(id uint32) *BiDashboardRevisionUpdateOne {
+	mutation := newBiDashboardRevisionMutation(c.config, OpUpdateOne, withBiDashboardRevisionID(id))
+	return &BiDashboardRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for BiDashboardRevision.
+func (c *BiDashboardRevisionClient) Delete() *BiDashboardRevisionDelete {
+	mutation := newBiDashboardRevisionMutation(c.config, OpDelete)
+	return &BiDashboardRevisionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *BiDashboardRevisionClient) DeleteOne(_m *BiDashboardRevision) *BiDashboardRevisionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *BiDashboardRevisionClient) DeleteOneID(id uint32) *BiDashboardRevisionDeleteOne {
+	builder := c.Delete().Where(bidashboardrevision.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &BiDashboardRevisionDeleteOne{builder}
+}
+
+// Query returns a query builder for BiDashboardRevision.
+func (c *BiDashboardRevisionClient) Query() *BiDashboardRevisionQuery {
+	return &BiDashboardRevisionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeBiDashboardRevision},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a BiDashboardRevision entity by its id.
+func (c *BiDashboardRevisionClient) Get(ctx context.Context, id uint32) (*BiDashboardRevision, error) {
+	return c.Query().Where(bidashboardrevision.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *BiDashboardRevisionClient) GetX(ctx context.Context, id uint32) *BiDashboardRevision {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryDashboard queries the dashboard edge of a BiDashboardRevision.
+func (c *BiDashboardRevisionClient) QueryDashboard(_m *BiDashboardRevision) *BiDashboardQuery {
+	query := (&BiDashboardClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(bidashboardrevision.Table, bidashboardrevision.FieldID, id),
+			sqlgraph.To(bidashboard.Table, bidashboard.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, bidashboardrevision.DashboardTable, bidashboardrevision.DashboardColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *BiDashboardRevisionClient) Hooks() []Hook {
+	hooks := c.hooks.BiDashboardRevision
+	return append(hooks[:len(hooks):len(hooks)], bidashboardrevision.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *BiDashboardRevisionClient) Interceptors() []Interceptor {
+	return c.inters.BiDashboardRevision
+}
+
+func (c *BiDashboardRevisionClient) mutate(ctx context.Context, m *BiDashboardRevisionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&BiDashboardRevisionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&BiDashboardRevisionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&BiDashboardRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&BiDashboardRevisionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown BiDashboardRevision mutation op: %q", m.Op())
 	}
 }
 
@@ -9791,31 +9965,32 @@ type (
 	hooks struct {
 		AccessKey, AiAgentApp, AiAgentRun, AiChunk, AiConversation, AiDoc,
 		AiKnowledgeBase, AiMessage, AiProvider, AiUsageLog, Api, ApiAuditLog,
-		BiDashboard, DataAccessAuditLog, DictEntry, DictEntryI18n, DictType, File,
-		InternalMessage, InternalMessageCategory, InternalMessageRecipient, Language,
-		LoginAuditLog, LoginPolicy, Membership, MembershipOrgUnit, MembershipPosition,
-		MembershipRole, Menu, MonitorAlertRule, NotificationChannel,
-		NotificationDelivery, NotificationPreference, NotificationRule,
-		NotificationTemplate, OperationAuditLog, OrgUnit, Permission, PermissionApi,
-		PermissionAuditLog, PermissionGroup, PermissionMenu, PermissionPolicy, Plan,
-		PlanModule, PlanQuota, PolicyEvaluationLog, Position, PrintTemplate, Role,
-		RoleFieldPermission, RoleMetadata, RoleOrgUnit, RolePermission, Script,
-		ScriptLog, SysConfig, Task, Tenant, User, UserCredential, UserMfaFactor,
-		UserOrgUnit, UserPosition, UserRole []ent.Hook
+		BiDashboard, BiDashboardRevision, DataAccessAuditLog, DictEntry, DictEntryI18n,
+		DictType, File, InternalMessage, InternalMessageCategory,
+		InternalMessageRecipient, Language, LoginAuditLog, LoginPolicy, Membership,
+		MembershipOrgUnit, MembershipPosition, MembershipRole, Menu, MonitorAlertRule,
+		NotificationChannel, NotificationDelivery, NotificationPreference,
+		NotificationRule, NotificationTemplate, OperationAuditLog, OrgUnit, Permission,
+		PermissionApi, PermissionAuditLog, PermissionGroup, PermissionMenu,
+		PermissionPolicy, Plan, PlanModule, PlanQuota, PolicyEvaluationLog, Position,
+		PrintTemplate, Role, RoleFieldPermission, RoleMetadata, RoleOrgUnit,
+		RolePermission, Script, ScriptLog, SysConfig, Task, Tenant, User,
+		UserCredential, UserMfaFactor, UserOrgUnit, UserPosition, UserRole []ent.Hook
 	}
 	inters struct {
 		AccessKey, AiAgentApp, AiAgentRun, AiChunk, AiConversation, AiDoc,
 		AiKnowledgeBase, AiMessage, AiProvider, AiUsageLog, Api, ApiAuditLog,
-		BiDashboard, DataAccessAuditLog, DictEntry, DictEntryI18n, DictType, File,
-		InternalMessage, InternalMessageCategory, InternalMessageRecipient, Language,
-		LoginAuditLog, LoginPolicy, Membership, MembershipOrgUnit, MembershipPosition,
-		MembershipRole, Menu, MonitorAlertRule, NotificationChannel,
-		NotificationDelivery, NotificationPreference, NotificationRule,
-		NotificationTemplate, OperationAuditLog, OrgUnit, Permission, PermissionApi,
-		PermissionAuditLog, PermissionGroup, PermissionMenu, PermissionPolicy, Plan,
-		PlanModule, PlanQuota, PolicyEvaluationLog, Position, PrintTemplate, Role,
-		RoleFieldPermission, RoleMetadata, RoleOrgUnit, RolePermission, Script,
-		ScriptLog, SysConfig, Task, Tenant, User, UserCredential, UserMfaFactor,
-		UserOrgUnit, UserPosition, UserRole []ent.Interceptor
+		BiDashboard, BiDashboardRevision, DataAccessAuditLog, DictEntry, DictEntryI18n,
+		DictType, File, InternalMessage, InternalMessageCategory,
+		InternalMessageRecipient, Language, LoginAuditLog, LoginPolicy, Membership,
+		MembershipOrgUnit, MembershipPosition, MembershipRole, Menu, MonitorAlertRule,
+		NotificationChannel, NotificationDelivery, NotificationPreference,
+		NotificationRule, NotificationTemplate, OperationAuditLog, OrgUnit, Permission,
+		PermissionApi, PermissionAuditLog, PermissionGroup, PermissionMenu,
+		PermissionPolicy, Plan, PlanModule, PlanQuota, PolicyEvaluationLog, Position,
+		PrintTemplate, Role, RoleFieldPermission, RoleMetadata, RoleOrgUnit,
+		RolePermission, Script, ScriptLog, SysConfig, Task, Tenant, User,
+		UserCredential, UserMfaFactor, UserOrgUnit, UserPosition,
+		UserRole []ent.Interceptor
 	}
 )

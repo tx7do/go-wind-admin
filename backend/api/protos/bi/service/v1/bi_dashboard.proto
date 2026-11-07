@@ -198,3 +198,81 @@ message CopyBiDashboardRequest {
     (gnostic.openapi.v3.property) = {description: "副本编码（缺省自动生成，租户内唯一）"}
   ]; // 副本编码
 }
+
+// 仪表盘版本快照（每次成功保存把保存前的 payload/name/version 留一行；
+// 恢复 = 快照写回主表，恢复动作本身先快照当前版本）
+message BiDashboardRevision {
+  uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = {description: "快照ID"}
+  ]; // 快照ID
+
+  uint32 dashboard_id = 2 [
+    json_name = "dashboardId",
+    (gnostic.openapi.v3.property) = {description: "所属仪表盘ID"}
+  ]; // 所属仪表盘ID
+
+  uint32 version = 3 [
+    json_name = "version",
+    (gnostic.openapi.v3.property) = {description: "快照对应的仪表盘版本号（保存前的旧版本）"}
+  ]; // 仪表盘版本号
+
+  optional string name = 4 [
+    json_name = "name",
+    (gnostic.openapi.v3.property) = {description: "保存前的名称快照"}
+  ]; // 名称快照
+
+  optional string payload = 5 [
+    json_name = "payload",
+    (gnostic.openapi.v3.property) = {description: "保存前的仪表盘 JSON 快照"}
+  ]; // 仪表盘 JSON 快照
+
+  optional string source = 6 [
+    json_name = "source",
+    (gnostic.openapi.v3.property) = {description: "快照来源（SAVE=常规保存 RESTORE=恢复前留底）"}
+  ]; // 快照来源
+
+  optional uint32 created_by = 7 [
+    json_name = "createdBy",
+    (gnostic.openapi.v3.property) = {description: "快照触发者用户ID"}
+  ]; // 触发者
+
+  optional string created_at = 8 [
+    json_name = "createdAt",
+    (gnostic.openapi.v3.property) = {description: "快照时间"}
+  ]; // 快照时间
+}
+
+// 版本历史 - 请求
+message ListBiDashboardRevisionsRequest {
+  uint32 dashboard_id = 1 [
+    json_name = "dashboardId",
+    (gnostic.openapi.v3.property) = {description: "仪表盘ID"}
+  ]; // 仪表盘ID
+
+  pagination.PagingRequest page = 2 [
+    json_name = "page",
+    (gnostic.openapi.v3.property) = {description: "分页参数"}
+  ]; // 分页参数
+}
+
+// 版本历史 - 回应（新快照在前）
+message ListBiDashboardRevisionsResponse {
+  repeated BiDashboardRevision items = 1 [
+    json_name = "items",
+    (gnostic.openapi.v3.property) = {description: "快照列表"}
+  ]; // 快照列表
+
+  uint32 total = 2 [
+    json_name = "total",
+    (gnostic.openapi.v3.property) = {description: "总数"}
+  ]; // 总数
+}
+
+// 恢复版本 - 请求（把快照的 payload/name 写回主表，版本号 +1；恢复前先快照当前版本）
+message RestoreBiDashboardRevisionRequest {
+  uint32 id = 1 [
+    json_name = "id",
+    (gnostic.openapi.v3.property) = {description: "快照ID"}
+  ]; // 快照ID
+}

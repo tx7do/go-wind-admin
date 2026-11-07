@@ -21,6 +21,10 @@ const transport: ClientTransport = {
     // SSE 流由 transport/sse 模块独立管理，此处不应被调用
     throw new Error(`serverStream not supported via ApiClient: ${path}`);
   },
+  byteStream(path, _meta) {
+    // google.api.HttpBody 字节流（二进制流不走请求适配层）
+    throw new Error(`byteStream not supported via ApiClient: ${path}`);
+  },
   duplexStream(path, _meta) {
     throw new Error(`duplexStream not supported via ApiClient: ${path}`);
   },

@@ -22,12 +22,14 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BiDashboardService_List_FullMethodName   = "/admin.service.v1.BiDashboardService/List"
-	BiDashboardService_Get_FullMethodName    = "/admin.service.v1.BiDashboardService/Get"
-	BiDashboardService_Create_FullMethodName = "/admin.service.v1.BiDashboardService/Create"
-	BiDashboardService_Update_FullMethodName = "/admin.service.v1.BiDashboardService/Update"
-	BiDashboardService_Delete_FullMethodName = "/admin.service.v1.BiDashboardService/Delete"
-	BiDashboardService_Copy_FullMethodName   = "/admin.service.v1.BiDashboardService/Copy"
+	BiDashboardService_List_FullMethodName            = "/admin.service.v1.BiDashboardService/List"
+	BiDashboardService_Get_FullMethodName             = "/admin.service.v1.BiDashboardService/Get"
+	BiDashboardService_Create_FullMethodName          = "/admin.service.v1.BiDashboardService/Create"
+	BiDashboardService_Update_FullMethodName          = "/admin.service.v1.BiDashboardService/Update"
+	BiDashboardService_Delete_FullMethodName          = "/admin.service.v1.BiDashboardService/Delete"
+	BiDashboardService_Copy_FullMethodName            = "/admin.service.v1.BiDashboardService/Copy"
+	BiDashboardService_ListRevisions_FullMethodName   = "/admin.service.v1.BiDashboardService/ListRevisions"
+	BiDashboardService_RestoreRevision_FullMethodName = "/admin.service.v1.BiDashboardService/RestoreRevision"
 )
 
 // BiDashboardServiceClient is the client API for BiDashboardService service.
@@ -48,6 +50,10 @@ type BiDashboardServiceClient interface {
 	Delete(ctx context.Context, in *v11.DeleteBiDashboardRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// 复制 BI 仪表盘（模板派生 / 另存为）
 	Copy(ctx context.Context, in *v11.CopyBiDashboardRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// 版本历史（每次保存留旧版快照，新快照在前）
+	ListRevisions(ctx context.Context, in *v11.ListBiDashboardRevisionsRequest, opts ...grpc.CallOption) (*v11.ListBiDashboardRevisionsResponse, error)
+	// 恢复版本（快照 payload/name 写回主表，版本 +1；恢复前先快照当前版本，可逆）
+	RestoreRevision(ctx context.Context, in *v11.RestoreBiDashboardRevisionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type biDashboardServiceClient struct {
@@ -118,6 +124,26 @@ func (c *biDashboardServiceClient) Copy(ctx context.Context, in *v11.CopyBiDashb
 	return out, nil
 }
 
+func (c *biDashboardServiceClient) ListRevisions(ctx context.Context, in *v11.ListBiDashboardRevisionsRequest, opts ...grpc.CallOption) (*v11.ListBiDashboardRevisionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(v11.ListBiDashboardRevisionsResponse)
+	err := c.cc.Invoke(ctx, BiDashboardService_ListRevisions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *biDashboardServiceClient) RestoreRevision(ctx context.Context, in *v11.RestoreBiDashboardRevisionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, BiDashboardService_RestoreRevision_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // BiDashboardServiceServer is the server API for BiDashboardService service.
 // All implementations must embed UnimplementedBiDashboardServiceServer
 // for forward compatibility.
@@ -136,6 +162,10 @@ type BiDashboardServiceServer interface {
 	Delete(context.Context, *v11.DeleteBiDashboardRequest) (*emptypb.Empty, error)
 	// 复制 BI 仪表盘（模板派生 / 另存为）
 	Copy(context.Context, *v11.CopyBiDashboardRequest) (*emptypb.Empty, error)
+	// 版本历史（每次保存留旧版快照，新快照在前）
+	ListRevisions(context.Context, *v11.ListBiDashboardRevisionsRequest) (*v11.ListBiDashboardRevisionsResponse, error)
+	// 恢复版本（快照 payload/name 写回主表，版本 +1；恢复前先快照当前版本，可逆）
+	RestoreRevision(context.Context, *v11.RestoreBiDashboardRevisionRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedBiDashboardServiceServer()
 }
 
@@ -163,6 +193,12 @@ func (UnimplementedBiDashboardServiceServer) Delete(context.Context, *v11.Delete
 }
 func (UnimplementedBiDashboardServiceServer) Copy(context.Context, *v11.CopyBiDashboardRequest) (*emptypb.Empty, error) {
 	return nil, status.Error(codes.Unimplemented, "method Copy not implemented")
+}
+func (UnimplementedBiDashboardServiceServer) ListRevisions(context.Context, *v11.ListBiDashboardRevisionsRequest) (*v11.ListBiDashboardRevisionsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListRevisions not implemented")
+}
+func (UnimplementedBiDashboardServiceServer) RestoreRevision(context.Context, *v11.RestoreBiDashboardRevisionRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method RestoreRevision not implemented")
 }
 func (UnimplementedBiDashboardServiceServer) mustEmbedUnimplementedBiDashboardServiceServer() {}
 func (UnimplementedBiDashboardServiceServer) testEmbeddedByValue()                            {}
@@ -293,6 +329,42 @@ func _BiDashboardService_Copy_Handler(srv interface{}, ctx context.Context, dec 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BiDashboardService_ListRevisions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v11.ListBiDashboardRevisionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BiDashboardServiceServer).ListRevisions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BiDashboardService_ListRevisions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BiDashboardServiceServer).ListRevisions(ctx, req.(*v11.ListBiDashboardRevisionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BiDashboardService_RestoreRevision_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(v11.RestoreBiDashboardRevisionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BiDashboardServiceServer).RestoreRevision(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BiDashboardService_RestoreRevision_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BiDashboardServiceServer).RestoreRevision(ctx, req.(*v11.RestoreBiDashboardRevisionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // BiDashboardService_ServiceDesc is the grpc.ServiceDesc for BiDashboardService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -323,6 +395,14 @@ var BiDashboardService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Copy",
 			Handler:    _BiDashboardService_Copy_Handler,
+		},
+		{
+			MethodName: "ListRevisions",
+			Handler:    _BiDashboardService_ListRevisions_Handler,
+		},
+		{
+			MethodName: "RestoreRevision",
+			Handler:    _BiDashboardService_RestoreRevision_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

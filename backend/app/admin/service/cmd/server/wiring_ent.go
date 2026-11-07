@@ -153,6 +153,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 
 	// ── register:repo ── 新模块仓储在此行后注册(make register 工具锚点,勿删)
 	biDashboardRepo := data.NewBiDashboardRepo(ctx, entClient)
+	biDashboardRevisionRepo := data.NewBiDashboardRevisionRepo(ctx, entClient)
 	printTemplateRepo := data.NewPrintTemplateRepo(ctx, entClient)
 	notificationRuleRepo := data.NewNotificationRuleRepo(ctx, entClient)
 	notificationTemplateRepo := data.NewNotificationTemplateRepo(ctx, entClient)
@@ -309,7 +310,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	aiContentService := service.NewAiContentService(ctx, aiProviderRepo, aiUsageLogRepo, menuRepo, roleRepo, userRepo, entClient)
 
 	// ── register:service ── 新模块服务在此行后注册(make register 工具锚点,勿删)
-	biDashboardService := service.NewBiDashboardService(ctx, biDashboardRepo)
+	biDashboardService := service.NewBiDashboardService(ctx, biDashboardRepo, biDashboardRevisionRepo)
 	printTemplateService := service.NewPrintTemplateService(ctx, printTemplateRepo, aiProviderRepo, aiUsageLogRepo)
 	notificationRuleService := service.NewNotificationRuleService(ctx, notificationRuleRepo, notificationChannelRepo, notificationService)
 	accessKeyService := service.NewAccessKeyService(ctx, accessKeyRepo, authenticator, loginRateLimiter)

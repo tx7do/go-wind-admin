@@ -21,6 +21,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/aiusagelog"
 	"go-wind-admin/app/admin/service/internal/data/ent/apiauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/bidashboard"
+	"go-wind-admin/app/admin/service/internal/data/ent/bidashboardrevision"
 	"go-wind-admin/app/admin/service/internal/data/ent/dataaccessauditlog"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentry"
 	"go-wind-admin/app/admin/service/internal/data/ent/dictentryi18n"
@@ -232,7 +233,7 @@ func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint32
 	}
 
 	// 以下每个闭包删除一张带 tenant_id 的业务表。
-	// 列表对齐 ent.Client/Tx 中所有拥有 TenantIDEQ 谓词的包（共 43 张表）。
+	// 列表对齐 ent.Client/Tx 中所有拥有 TenantIDEQ 谓词的包（共 44 张表）。
 	// 库级外键全部为 OnDelete Cascade（AI 链/字典链/菜单树/套餐链），删除顺序不敏感。
 	// 注意：Tx 层的 Delete.Exec 返回 (int, error)，需丢弃 int 仅返回 error。
 	deleteFns := []func() error{
@@ -253,6 +254,10 @@ func (r *TenantUsageRepo) CleanupTenantData(ctx context.Context, tenantId uint32
 			return e
 		},
 		func() error { _, e := tx.BiDashboard.Delete().Where(bidashboard.TenantIDEQ(tenantId)).Exec(sysCtx); return e },
+		func() error {
+			_, e := tx.BiDashboardRevision.Delete().Where(bidashboardrevision.TenantIDEQ(tenantId)).Exec(sysCtx)
+			return e
+		},
 		func() error {
 			_, e := tx.DataAccessAuditLog.Delete().Where(dataaccessauditlog.TenantIDEQ(tenantId)).Exec(sysCtx)
 			return e

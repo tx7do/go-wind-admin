@@ -1729,6 +1729,55 @@ paths:
                 "200":
                     description: OK
                     content: {}
+    /admin/v1/bi-dashboards/revisions/{id}:restore:
+        post:
+            tags:
+                - BiDashboardService
+            description: 恢复版本（快照 payload/name 写回主表，版本 +1；恢复前先快照当前版本，可逆）
+            operationId: BiDashboardService_RestoreRevision
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RestoreBiDashboardRevisionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/bi-dashboards/{dashboardId}/revisions:
+        post:
+            tags:
+                - BiDashboardService
+            description: 版本历史（每次保存留旧版快照，新快照在前）
+            operationId: BiDashboardService_ListRevisions
+            parameters:
+                - name: dashboardId
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListBiDashboardRevisionsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListBiDashboardRevisionsResponse'
     /admin/v1/bi-dashboards/{id}:
         get:
             tags:
@@ -9206,6 +9255,40 @@ components:
                     description: 删除时间
                     format: date-time
             description: BI 仪表盘
+        BiDashboardRevision:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 快照ID
+                    format: uint32
+                dashboardId:
+                    type: integer
+                    description: 所属仪表盘ID
+                    format: uint32
+                version:
+                    type: integer
+                    description: 快照对应的仪表盘版本号（保存前的旧版本）
+                    format: uint32
+                name:
+                    type: string
+                    description: 保存前的名称快照
+                payload:
+                    type: string
+                    description: 保存前的仪表盘 JSON 快照
+                source:
+                    type: string
+                    description: 快照来源（SAVE=常规保存 RESTORE=恢复前留底）
+                createdBy:
+                    type: integer
+                    description: 快照触发者用户ID
+                    format: uint32
+                createdAt:
+                    type: string
+                    description: 快照时间
+            description: |-
+                仪表盘版本快照（每次成功保存把保存前的 payload/name/version 留一行；
+                 恢复 = 快照写回主表，恢复动作本身先快照当前版本）
         BindContactRequest:
             type: object
             properties:
@@ -10302,6 +10385,104 @@ components:
                     description: 删除时间
                     format: date-time
             description: 文件
+        FilterCondition:
+            type: object
+            properties:
+                field:
+                    type: string
+                    description: 过滤字段名
+                op:
+                    enum:
+                        - OPERATOR_UNSPECIFIED
+                        - EQ
+                        - NEQ
+                        - GT
+                        - GTE
+                        - LT
+                        - LTE
+                        - LIKE
+                        - ILIKE
+                        - NOT_LIKE
+                        - IN
+                        - NIN
+                        - IS_NULL
+                        - IS_NOT_NULL
+                        - BETWEEN
+                        - REGEXP
+                        - IREGEXP
+                        - CONTAINS
+                        - STARTS_WITH
+                        - ENDS_WITH
+                        - ICONTAINS
+                        - ISTARTS_WITH
+                        - IENDS_WITH
+                        - JSON_CONTAINS
+                        - ARRAY_CONTAINS
+                        - EXISTS
+                        - SEARCH
+                        - EXACT
+                        - IEXACT
+                    type: string
+                    description: 过滤操作符
+                    format: enum
+                value:
+                    type: string
+                    description: 过滤值（单值）
+                jsonValue:
+                    allOf:
+                        - $ref: '#/components/schemas/GoogleProtobufValue'
+                    description: "当需要使用非字符串类型的比较值（对象/数组/数字/布尔）时使用此字段，\r\n 使用 google.protobuf.Value 能表达任意 JSON 值。"
+                values:
+                    type: array
+                    items:
+                        type: string
+                    description: 过滤值（多值，如IN操作符）
+                datePart:
+                    enum:
+                        - DATE_PART_UNSPECIFIED
+                        - DATE
+                        - YEAR
+                        - ISO_YEAR
+                        - QUARTER
+                        - MONTH
+                        - WEEK
+                        - WEEK_DAY
+                        - ISO_WEEK_DAY
+                        - DAY
+                        - TIME
+                        - HOUR
+                        - MINUTE
+                        - SECOND
+                        - MICROSECOND
+                    type: string
+                    description: 日期时间部分（可选，仅在字段为日期时间类型时使用）
+                    format: enum
+                jsonPath:
+                    type: string
+                    description: "当字段为 JSON/JSONB 类型时，可指定要抽取的子路径（例如: \"meta.user.name\" 或 JSONPath）\r\n 服务端应把此路径用于 JSON_EXTRACT / -> 操作，再对抽取结果应用 op。"
+            description: 过滤条件
+        FilterExpr:
+            type: object
+            properties:
+                type:
+                    enum:
+                        - EXPR_TYPE_UNSPECIFIED
+                        - AND
+                        - OR
+                    type: string
+                    description: 过滤表达式类型
+                    format: enum
+                conditions:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/FilterCondition'
+                    description: 条件列表
+                groups:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/FilterExpr'
+                    description: 子表达式列表
+            description: 过滤表达式
         ForceLogoutSessionRequest:
             type: object
             properties:
@@ -10518,6 +10699,8 @@ components:
                     description: 进程启动时间
                     format: date-time
             description: Go 运行时信息
+        GoogleProtobufValue:
+            description: Represents a dynamically typed value which can be either null, a number, a string, a boolean, a recursive struct value, or a list of values.
         HookPoint:
             type: object
             properties:
@@ -11028,6 +11211,29 @@ components:
                 total:
                     type: string
             description: 查询 BI 仪表盘列表 - 回应
+        ListBiDashboardRevisionsRequest:
+            type: object
+            properties:
+                dashboardId:
+                    type: integer
+                    description: 仪表盘ID
+                    format: uint32
+                page:
+                    $ref: '#/components/schemas/PagingRequest'
+            description: 版本历史 - 请求
+        ListBiDashboardRevisionsResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/BiDashboardRevision'
+                    description: 快照列表
+                total:
+                    type: integer
+                    description: 总数
+                    format: uint32
+            description: 版本历史 - 回应（新快照在前）
         ListChannelSchemasResponse:
             type: object
             properties:
@@ -12684,6 +12890,60 @@ components:
                     description: 删除时间
                     format: date-time
             description: 组织单元
+        PagingRequest:
+            type: object
+            properties:
+                page:
+                    type: integer
+                    default: !!float 1
+                    description: 当前页码（从1开始，默认1）
+                    format: uint32
+                pageSize:
+                    type: integer
+                    default: !!float 10
+                    description: 每页条数（默认10，建议设置上限如100）
+                    format: uint32
+                offset:
+                    type: string
+                    default: !!float 0
+                    description: 跳过的记录数（从0开始，默认0）
+                limit:
+                    type: integer
+                    default: !!float 10
+                    description: 最多返回的记录数（默认10，建议设置上限如100）
+                    format: uint32
+                token:
+                    type: string
+                    description: 上一页最后一条记录的游标（如ID/时间戳+ID，首次请求为空）
+                noPaging:
+                    type: boolean
+                    description: 是否不分页，如果为true，则page和pageSize参数无效。
+                query:
+                    example: {"field1": "val1", "field2___icontains": "val2"}
+                    type: string
+                    description: JSON字符串过滤条件，基础语法：{"key1":"val1","key2":"val2"}，具体请参见：https://github.com/tx7do/go-crud/tree/main/pagination/filter/README.md
+                filter:
+                    type: string
+                    description: Google AIP规范字符串过滤条件。
+                filterExpr:
+                    allOf:
+                        - $ref: '#/components/schemas/FilterExpr'
+                    description: 复杂过滤表达式，优先于已弃用的 query/or_query。服务端应以此为准并执行严格校验与参数化。
+                orderBy:
+                    example: {"val1": '', "-val2": ''}
+                    type: string
+                    description: 排序条件
+                sorting:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Sorting'
+                    description: 排序规则
+                fieldMask:
+                    example: id,realName,userName
+                    type: string
+                    description: 字段掩码，其作用为SELECT中的字段，其语法为使用逗号分隔字段名，例如：id,realName,userName。如果为空则选中所有字段，即SELECT *。
+                    format: field-mask
+            description: "------------------------------\r\n 分页通用请求\r\n ------------------------------"
         Permission:
             type: object
             properties:
@@ -13450,6 +13710,14 @@ components:
                     type: integer
                     format: int32
             description: 重启调度任务 - 回应
+        RestoreBiDashboardRevisionRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 快照ID
+                    format: uint32
+            description: 恢复版本 - 请求（把快照的 payload/name 写回主表，版本号 +1；恢复前先快照当前版本）
         RevokeMessageRequest:
             type: object
             properties:
@@ -13882,6 +14150,20 @@ components:
                 clientName:
                     type: string
             description: SLOWLOG GET 返回的单条慢日志
+        Sorting:
+            type: object
+            properties:
+                field:
+                    type: string
+                    description: 排序字段（如"id"、"create_time"）
+                direction:
+                    enum:
+                        - ASC
+                        - DESC
+                    type: string
+                    description: 排序方向
+                    format: enum
+            description: 排序规则（分页场景通常需配合排序保证结果稳定）
         SsoLoginRequest:
             type: object
             properties:

@@ -95,7 +95,7 @@ ele 圆形 SVG 图标钮 / vben 框架 `VbenIconButton` + Maximize/Minimize 图�
 - 独立设计器无 id 时仍是 localStorage 草稿（`bi:schema:default`），换设备/换人不可见；
   若草稿模式要彻底退场，把默认入口改为 `/bi/manage` 的“新建”即可。
 - 缩略图列预留未实现（设计器导出 PNG 上传后即可挂列表预览）。
-- 版本历史（每次保存留快照）未做；`version` 已就位，后续可加 revisions 表。
+- ~~版本历史未做~~ → **已落地（2026-11-07，后端 + react）**：`sys_bi_dashboard_revisions` 快照表（每次成功保存把**保存前**的 payload/name/version 留一行，(dashboard_id,version) 唯一、随主表级联删除、租户隔离并已入 CleanupTenantData 清单）；`ListRevisions`/`RestoreRevision` 两个 RPC——恢复 = 快照 payload/name 写回主表并 version+1，**恢复动作本身先以 RESTORE 来源留底当前版本（可逆）**。react 端：管理页行内「版本历史」弹窗（版本/名称/来源/时间 + 恢复）。ele/vben 移植未做。功能回归 `bi_dashboard_revision_sqlite_test.go`。
 - 数据集 resolver 注入与业务绑定（api 型数据集）是宿主职责，演示期未接。
 
 ## 验证过的链路

@@ -46,5 +46,14 @@
   "statusConflict": "保存冲突，已刷新版本",
   "fullscreen": "全屏",
   "exitFullscreen": "退出全屏",
-  "editInDesigner": "在设计器打开"
+  "editInDesigner": "在设计器打开",
+  "revisionHistory": "版本历史",
+  "revisionTitle": "版本历史",
+  "revisionVersion": "版本",
+  "revisionSource": "来源",
+  "revisionSourceSave": "保存",
+  "revisionSourceRestore": "恢复留底",
+  "revisionRestore": "恢复",
+  "revisionRestoreSuccess": "已恢复，可继续编辑保存",
+  "revisionRestoreFailed": "恢复失败"
 }

@@ -9,6 +9,7 @@ import (
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
+	"google.golang.org/protobuf/types/known/fieldmaskpb"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	"go-wind-admin/app/admin/service/internal/data"
@@ -26,15 +27,18 @@ type BiDashboardService struct {
 
 	log             *bLogger.Helper
 	biDashboardRepo *data.BiDashboardRepo
+	revisionRepo    *data.BiDashboardRevisionRepo
 }
 
 func NewBiDashboardService(
 	ctx *bootstrap.Context,
 	biDashboardRepo *data.BiDashboardRepo,
+	revisionRepo *data.BiDashboardRevisionRepo,
 ) *BiDashboardService {
 	svc := &BiDashboardService{
 		log:             ctx.NewLoggerHelper("bi-dashboard/service/admin-service"),
 		biDashboardRepo: biDashboardRepo,
+		revisionRepo:    revisionRepo,
 	}
 
 	svc.init()
@@ -97,8 +101,32 @@ func (s *BiDashboardService) Update(ctx context.Context, req *biV1.UpdateBiDashb
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}
 
+	// 版本快照（docs/bi_dashboard.md 后续项）：保存成功把**保存前**的
+	// payload/name/version 留一行。快照失败不阻断保存（Errorf 留痕）——
+	// 主功能不应被辅功能拖死，但丢快照必须可观测。
+	current, getErr := s.biDashboardRepo.Get(ctx, &biV1.GetBiDashboardRequest{
+		QueryBy: &biV1.GetBiDashboardRequest_Id{Id: req.GetId()},
+	})
+	if getErr != nil {
+		s.log.Warnf(ctx, "snapshot before update: load dashboard %d failed: %s", req.GetId(), getErr.Error())
+	}
+
 	if err = s.biDashboardRepo.Update(ctx, req); err != nil {
 		return nil, err
+	}
+
+	if current != nil && s.revisionRepo != nil {
+		snapshot := &biV1.BiDashboardRevision{
+			DashboardId: req.GetId(),
+			Version:     current.GetVersion(),
+			Name:        current.Name,
+			Payload:     current.Payload,
+			Source:      trans.Ptr("SAVE"),
+			CreatedBy:   trans.Ptr(operator.UserId),
+		}
+		if serr := s.revisionRepo.Create(ctx, snapshot); serr != nil {
+			s.log.Errorf(ctx, "snapshot before update dashboard %d failed: %s", req.GetId(), serr.Error())
+		}
 	}
 
 	return &emptypb.Empty{}, nil
@@ -163,6 +191,76 @@ func (s *BiDashboardService) Copy(ctx context.Context, req *biV1.CopyBiDashboard
 	}
 
 	if err = s.biDashboardRepo.Create(ctx, createReq); err != nil {
+		return nil, err
+	}
+
+	return &emptypb.Empty{}, nil
+}
+
+// ListRevisions 版本历史（新快照在前）。
+func (s *BiDashboardService) ListRevisions(ctx context.Context, req *biV1.ListBiDashboardRevisionsRequest) (*biV1.ListBiDashboardRevisionsResponse, error) {
+	if req == nil || req.GetDashboardId() == 0 {
+		return nil, adminV1.ErrorBadRequest("dashboardId is required")
+	}
+	items, total, err := s.revisionRepo.List(ctx, req.GetDashboardId(), req.GetPage())
+	if err != nil {
+		return nil, err
+	}
+	return &biV1.ListBiDashboardRevisionsResponse{
+		Items: items,
+		Total: total,
+	}, nil
+}
+
+// RestoreRevision 恢复版本：快照 payload/name 写回主表，版本号 +1。
+// 恢复动作本身先把**当前版本**快照（RESTORE 来源），恢复可逆。
+func (s *BiDashboardService) RestoreRevision(ctx context.Context, req *biV1.RestoreBiDashboardRevisionRequest) (*emptypb.Empty, error) {
+	if req == nil || req.GetId() == 0 {
+		return nil, adminV1.ErrorBadRequest("id is required")
+	}
+	operator, err := auth.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	revision, err := s.revisionRepo.Get(ctx, req.GetId())
+	if err != nil {
+		return nil, err
+	}
+
+	dashboardId := revision.GetDashboardId()
+	current, err := s.biDashboardRepo.Get(ctx, &biV1.GetBiDashboardRequest{
+		QueryBy: &biV1.GetBiDashboardRequest_Id{Id: dashboardId},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	// 恢复前留底当前版本（失败不阻断恢复，Errorf 留痕）
+	if s.revisionRepo != nil {
+		snapshot := &biV1.BiDashboardRevision{
+			DashboardId: dashboardId,
+			Version:     current.GetVersion(),
+			Name:        current.Name,
+			Payload:     current.Payload,
+			Source:      trans.Ptr("RESTORE"),
+			CreatedBy:   trans.Ptr(operator.UserId),
+		}
+		if serr := s.revisionRepo.Create(ctx, snapshot); serr != nil {
+			s.log.Errorf(ctx, "snapshot before restore dashboard %d failed: %s", dashboardId, serr.Error())
+		}
+	}
+
+	// 写回走普通更新（无 CAS——恢复是明确的人为决定，以快照为准整份覆盖），版本号 +1
+	if err = s.biDashboardRepo.Update(ctx, &biV1.UpdateBiDashboardRequest{
+		Id: dashboardId,
+		Data: &biV1.BiDashboard{
+			Name:      revision.Name,
+			Payload:   revision.Payload,
+			UpdatedBy: trans.Ptr(operator.UserId),
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "payload", "updated_by"}},
+	}); err != nil {
 		return nil, err
 	}
 

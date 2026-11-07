@@ -45,6 +45,9 @@ type ApiAuditLog func(*sql.Selector)
 // BiDashboard is the predicate function for bidashboard builders.
 type BiDashboard func(*sql.Selector)
 
+// BiDashboardRevision is the predicate function for bidashboardrevision builders.
+type BiDashboardRevision func(*sql.Selector)
+
 // DataAccessAuditLog is the predicate function for dataaccessauditlog builders.
 type DataAccessAuditLog func(*sql.Selector)
 

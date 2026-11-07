@@ -28,45 +28,54 @@ var File_admin_service_v1_i_bi_dashboard_proto protoreflect.FileDescriptor
 
 const file_admin_service_v1_i_bi_dashboard_proto_rawDesc = "" +
 	"\n" +
-	"%admin/service/v1/i_bi_dashboard.proto\x12\x10admin.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1epagination/v1/pagination.proto\x1a bi/service/v1/bi_dashboard.proto2\xb8\x05\n" +
+	"%admin/service/v1/i_bi_dashboard.proto\x12\x10admin.service.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1epagination/v1/pagination.proto\x1a bi/service/v1/bi_dashboard.proto2\x81\b\n" +
 	"\x12BiDashboardService\x12j\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a&.bi.service.v1.ListBiDashboardResponse\"\x1f\x82\xd3\xe4\x93\x02\x19\x12\x17/admin/v1/bi-dashboards\x12m\n" +
 	"\x03Get\x12$.bi.service.v1.GetBiDashboardRequest\x1a\x1a.bi.service.v1.BiDashboard\"$\x82\xd3\xe4\x93\x02\x1e\x12\x1c/admin/v1/bi-dashboards/{id}\x12m\n" +
 	"\x06Create\x12'.bi.service.v1.CreateBiDashboardRequest\x1a\x16.google.protobuf.Empty\"\"\x82\xd3\xe4\x93\x02\x1c:\x01*\"\x17/admin/v1/bi-dashboards\x12r\n" +
 	"\x06Update\x12'.bi.service.v1.UpdateBiDashboardRequest\x1a\x16.google.protobuf.Empty\"'\x82\xd3\xe4\x93\x02!:\x01*\x1a\x1c/admin/v1/bi-dashboards/{id}\x12o\n" +
 	"\x06Delete\x12'.bi.service.v1.DeleteBiDashboardRequest\x1a\x16.google.protobuf.Empty\"$\x82\xd3\xe4\x93\x02\x1e*\x1c/admin/v1/bi-dashboards/{id}\x12s\n" +
-	"\x04Copy\x12%.bi.service.v1.CopyBiDashboardRequest\x1a\x16.google.protobuf.Empty\",\x82\xd3\xe4\x93\x02&:\x01*\"!/admin/v1/bi-dashboards/{id}:copyB\xbe\x01\n" +
+	"\x04Copy\x12%.bi.service.v1.CopyBiDashboardRequest\x1a\x16.google.protobuf.Empty\",\x82\xd3\xe4\x93\x02&:\x01*\"!/admin/v1/bi-dashboards/{id}:copy\x12\xad\x01\n" +
+	"\rListRevisions\x12..bi.service.v1.ListBiDashboardRevisionsRequest\x1a/.bi.service.v1.ListBiDashboardRevisionsResponse\";\x82\xd3\xe4\x93\x025:\x01*\"0/admin/v1/bi-dashboards/{dashboard_id}/revisions\x12\x96\x01\n" +
+	"\x0fRestoreRevision\x120.bi.service.v1.RestoreBiDashboardRevisionRequest\x1a\x16.google.protobuf.Empty\"9\x82\xd3\xe4\x93\x023:\x01*\"./admin/v1/bi-dashboards/revisions/{id}:restoreB\xbe\x01\n" +
 	"\x14com.admin.service.v1B\x11IBiDashboardProtoP\x01Z1go-wind-admin/api/gen/go/admin/service/v1;adminpb\xa2\x02\x03ASX\xaa\x02\x10Admin.Service.V1\xca\x02\x10Admin\\Service\\V1\xe2\x02\x1cAdmin\\Service\\V1\\GPBMetadata\xea\x02\x12Admin::Service::V1b\x06proto3"
 
 var file_admin_service_v1_i_bi_dashboard_proto_goTypes = []any{
-	(*v1.PagingRequest)(nil),             // 0: pagination.PagingRequest
-	(*v11.GetBiDashboardRequest)(nil),    // 1: bi.service.v1.GetBiDashboardRequest
-	(*v11.CreateBiDashboardRequest)(nil), // 2: bi.service.v1.CreateBiDashboardRequest
-	(*v11.UpdateBiDashboardRequest)(nil), // 3: bi.service.v1.UpdateBiDashboardRequest
-	(*v11.DeleteBiDashboardRequest)(nil), // 4: bi.service.v1.DeleteBiDashboardRequest
-	(*v11.CopyBiDashboardRequest)(nil),   // 5: bi.service.v1.CopyBiDashboardRequest
-	(*v11.ListBiDashboardResponse)(nil),  // 6: bi.service.v1.ListBiDashboardResponse
-	(*v11.BiDashboard)(nil),              // 7: bi.service.v1.BiDashboard
-	(*emptypb.Empty)(nil),                // 8: google.protobuf.Empty
+	(*v1.PagingRequest)(nil),                      // 0: pagination.PagingRequest
+	(*v11.GetBiDashboardRequest)(nil),             // 1: bi.service.v1.GetBiDashboardRequest
+	(*v11.CreateBiDashboardRequest)(nil),          // 2: bi.service.v1.CreateBiDashboardRequest
+	(*v11.UpdateBiDashboardRequest)(nil),          // 3: bi.service.v1.UpdateBiDashboardRequest
+	(*v11.DeleteBiDashboardRequest)(nil),          // 4: bi.service.v1.DeleteBiDashboardRequest
+	(*v11.CopyBiDashboardRequest)(nil),            // 5: bi.service.v1.CopyBiDashboardRequest
+	(*v11.ListBiDashboardRevisionsRequest)(nil),   // 6: bi.service.v1.ListBiDashboardRevisionsRequest
+	(*v11.RestoreBiDashboardRevisionRequest)(nil), // 7: bi.service.v1.RestoreBiDashboardRevisionRequest
+	(*v11.ListBiDashboardResponse)(nil),           // 8: bi.service.v1.ListBiDashboardResponse
+	(*v11.BiDashboard)(nil),                       // 9: bi.service.v1.BiDashboard
+	(*emptypb.Empty)(nil),                         // 10: google.protobuf.Empty
+	(*v11.ListBiDashboardRevisionsResponse)(nil),  // 11: bi.service.v1.ListBiDashboardRevisionsResponse
 }
 var file_admin_service_v1_i_bi_dashboard_proto_depIdxs = []int32{
-	0, // 0: admin.service.v1.BiDashboardService.List:input_type -> pagination.PagingRequest
-	1, // 1: admin.service.v1.BiDashboardService.Get:input_type -> bi.service.v1.GetBiDashboardRequest
-	2, // 2: admin.service.v1.BiDashboardService.Create:input_type -> bi.service.v1.CreateBiDashboardRequest
-	3, // 3: admin.service.v1.BiDashboardService.Update:input_type -> bi.service.v1.UpdateBiDashboardRequest
-	4, // 4: admin.service.v1.BiDashboardService.Delete:input_type -> bi.service.v1.DeleteBiDashboardRequest
-	5, // 5: admin.service.v1.BiDashboardService.Copy:input_type -> bi.service.v1.CopyBiDashboardRequest
-	6, // 6: admin.service.v1.BiDashboardService.List:output_type -> bi.service.v1.ListBiDashboardResponse
-	7, // 7: admin.service.v1.BiDashboardService.Get:output_type -> bi.service.v1.BiDashboard
-	8, // 8: admin.service.v1.BiDashboardService.Create:output_type -> google.protobuf.Empty
-	8, // 9: admin.service.v1.BiDashboardService.Update:output_type -> google.protobuf.Empty
-	8, // 10: admin.service.v1.BiDashboardService.Delete:output_type -> google.protobuf.Empty
-	8, // 11: admin.service.v1.BiDashboardService.Copy:output_type -> google.protobuf.Empty
-	6, // [6:12] is the sub-list for method output_type
-	0, // [0:6] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: admin.service.v1.BiDashboardService.List:input_type -> pagination.PagingRequest
+	1,  // 1: admin.service.v1.BiDashboardService.Get:input_type -> bi.service.v1.GetBiDashboardRequest
+	2,  // 2: admin.service.v1.BiDashboardService.Create:input_type -> bi.service.v1.CreateBiDashboardRequest
+	3,  // 3: admin.service.v1.BiDashboardService.Update:input_type -> bi.service.v1.UpdateBiDashboardRequest
+	4,  // 4: admin.service.v1.BiDashboardService.Delete:input_type -> bi.service.v1.DeleteBiDashboardRequest
+	5,  // 5: admin.service.v1.BiDashboardService.Copy:input_type -> bi.service.v1.CopyBiDashboardRequest
+	6,  // 6: admin.service.v1.BiDashboardService.ListRevisions:input_type -> bi.service.v1.ListBiDashboardRevisionsRequest
+	7,  // 7: admin.service.v1.BiDashboardService.RestoreRevision:input_type -> bi.service.v1.RestoreBiDashboardRevisionRequest
+	8,  // 8: admin.service.v1.BiDashboardService.List:output_type -> bi.service.v1.ListBiDashboardResponse
+	9,  // 9: admin.service.v1.BiDashboardService.Get:output_type -> bi.service.v1.BiDashboard
+	10, // 10: admin.service.v1.BiDashboardService.Create:output_type -> google.protobuf.Empty
+	10, // 11: admin.service.v1.BiDashboardService.Update:output_type -> google.protobuf.Empty
+	10, // 12: admin.service.v1.BiDashboardService.Delete:output_type -> google.protobuf.Empty
+	10, // 13: admin.service.v1.BiDashboardService.Copy:output_type -> google.protobuf.Empty
+	11, // 14: admin.service.v1.BiDashboardService.ListRevisions:output_type -> bi.service.v1.ListBiDashboardRevisionsResponse
+	10, // 15: admin.service.v1.BiDashboardService.RestoreRevision:output_type -> google.protobuf.Empty
+	8,  // [8:16] is the sub-list for method output_type
+	0,  // [0:8] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_admin_service_v1_i_bi_dashboard_proto_init() }

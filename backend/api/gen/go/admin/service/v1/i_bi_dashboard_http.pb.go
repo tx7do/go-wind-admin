@@ -27,6 +27,8 @@ const OperationBiDashboardServiceCreate = "/admin.service.v1.BiDashboardService/
 const OperationBiDashboardServiceDelete = "/admin.service.v1.BiDashboardService/Delete"
 const OperationBiDashboardServiceGet = "/admin.service.v1.BiDashboardService/Get"
 const OperationBiDashboardServiceList = "/admin.service.v1.BiDashboardService/List"
+const OperationBiDashboardServiceListRevisions = "/admin.service.v1.BiDashboardService/ListRevisions"
+const OperationBiDashboardServiceRestoreRevision = "/admin.service.v1.BiDashboardService/RestoreRevision"
 const OperationBiDashboardServiceUpdate = "/admin.service.v1.BiDashboardService/Update"
 
 type BiDashboardServiceHTTPServer interface {
@@ -40,6 +42,10 @@ type BiDashboardServiceHTTPServer interface {
 	Get(context.Context, *v11.GetBiDashboardRequest) (*v11.BiDashboard, error)
 	// List 查询 BI 仪表盘列表
 	List(context.Context, *v1.PagingRequest) (*v11.ListBiDashboardResponse, error)
+	// ListRevisions 版本历史（每次保存留旧版快照，新快照在前）
+	ListRevisions(context.Context, *v11.ListBiDashboardRevisionsRequest) (*v11.ListBiDashboardRevisionsResponse, error)
+	// RestoreRevision 恢复版本（快照 payload/name 写回主表，版本 +1；恢复前先快照当前版本，可逆）
+	RestoreRevision(context.Context, *v11.RestoreBiDashboardRevisionRequest) (*emptypb.Empty, error)
 	// Update 更新 BI 仪表盘
 	Update(context.Context, *v11.UpdateBiDashboardRequest) (*emptypb.Empty, error)
 }
@@ -52,6 +58,8 @@ func RegisterBiDashboardServiceHTTPServer(s *http.Server, srv BiDashboardService
 	r.PUT("/admin/v1/bi-dashboards/{id}", _BiDashboardService_Update6_HTTP_Handler(srv))
 	r.DELETE("/admin/v1/bi-dashboards/{id}", _BiDashboardService_Delete7_HTTP_Handler(srv))
 	r.POST("/admin/v1/bi-dashboards/{id}:copy", _BiDashboardService_Copy0_HTTP_Handler(srv))
+	r.POST("/admin/v1/bi-dashboards/{dashboard_id}/revisions", _BiDashboardService_ListRevisions0_HTTP_Handler(srv))
+	r.POST("/admin/v1/bi-dashboards/revisions/{id}:restore", _BiDashboardService_RestoreRevision0_HTTP_Handler(srv))
 }
 
 func _BiDashboardService_List9_HTTP_Handler(srv BiDashboardServiceHTTPServer) func(ctx http.Context) error {
@@ -189,6 +197,56 @@ func _BiDashboardService_Copy0_HTTP_Handler(srv BiDashboardServiceHTTPServer) fu
 	}
 }
 
+func _BiDashboardService_ListRevisions0_HTTP_Handler(srv BiDashboardServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.ListBiDashboardRevisionsRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationBiDashboardServiceListRevisions)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListRevisions(ctx, req.(*v11.ListBiDashboardRevisionsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v11.ListBiDashboardRevisionsResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _BiDashboardService_RestoreRevision0_HTTP_Handler(srv BiDashboardServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.RestoreBiDashboardRevisionRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationBiDashboardServiceRestoreRevision)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RestoreRevision(ctx, req.(*v11.RestoreBiDashboardRevisionRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 type BiDashboardServiceHTTPClient interface {
 	// Copy 复制 BI 仪表盘（模板派生 / 另存为）
 	Copy(ctx context.Context, req *v11.CopyBiDashboardRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
@@ -200,6 +258,10 @@ type BiDashboardServiceHTTPClient interface {
 	Get(ctx context.Context, req *v11.GetBiDashboardRequest, opts ...http.CallOption) (rsp *v11.BiDashboard, err error)
 	// List 查询 BI 仪表盘列表
 	List(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListBiDashboardResponse, err error)
+	// ListRevisions 版本历史（每次保存留旧版快照，新快照在前）
+	ListRevisions(ctx context.Context, req *v11.ListBiDashboardRevisionsRequest, opts ...http.CallOption) (rsp *v11.ListBiDashboardRevisionsResponse, err error)
+	// RestoreRevision 恢复版本（快照 payload/name 写回主表，版本 +1；恢复前先快照当前版本，可逆）
+	RestoreRevision(ctx context.Context, req *v11.RestoreBiDashboardRevisionRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// Update 更新 BI 仪表盘
 	Update(ctx context.Context, req *v11.UpdateBiDashboardRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 }
@@ -276,6 +338,34 @@ func (c *BiDashboardServiceHTTPClientImpl) List(ctx context.Context, in *v1.Pagi
 	opts = append(opts, http.Operation(OperationBiDashboardServiceList))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// ListRevisions 版本历史（每次保存留旧版快照，新快照在前）
+func (c *BiDashboardServiceHTTPClientImpl) ListRevisions(ctx context.Context, in *v11.ListBiDashboardRevisionsRequest, opts ...http.CallOption) (*v11.ListBiDashboardRevisionsResponse, error) {
+	var out v11.ListBiDashboardRevisionsResponse
+	pattern := "/admin/v1/bi-dashboards/{dashboard_id}/revisions"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationBiDashboardServiceListRevisions))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// RestoreRevision 恢复版本（快照 payload/name 写回主表，版本 +1；恢复前先快照当前版本，可逆）
+func (c *BiDashboardServiceHTTPClientImpl) RestoreRevision(ctx context.Context, in *v11.RestoreBiDashboardRevisionRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/bi-dashboards/revisions/{id}:restore"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationBiDashboardServiceRestoreRevision))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

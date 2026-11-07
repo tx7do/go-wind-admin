@@ -22,7 +22,7 @@ var expectedTenantCleanupTables = []string{
 	"AccessKey",
 	"AiAgentApp", "AiAgentRun", "AiChunk", "AiConversation", "AiDoc",
 	"AiKnowledgeBase", "AiMessage", "AiUsageLog",
-	"ApiAuditLog", "BiDashboard", "DataAccessAuditLog",
+	"ApiAuditLog", "BiDashboard", "BiDashboardRevision", "DataAccessAuditLog",
 	"DictEntry", "DictEntryI18n", "DictType", "File",
 	"InternalMessage", "InternalMessageCategory", "InternalMessageRecipient",
 	"LoginAuditLog", "LoginPolicy",
