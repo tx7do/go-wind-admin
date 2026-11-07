@@ -7,7 +7,10 @@
 package sseevent
 
 import (
+	"os"
+	"path/filepath"
 	"regexp"
+	"runtime"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -54,4 +57,35 @@ func TestPublishedEventValues(t *testing.T) {
 		"AIChatTool 的线上契约值已被三端订阅；改值=静默断流")
 	require.Equal(t, "ai_agent_run", AgentRun,
 		"AgentRun 的线上契约值已被三端订阅；改值=静默断流")
+}
+
+// 三端 SSE 事件名常量表的仓库相对路径（自本包 backend/pkg/sseevent 起）。
+// 前端按字面值注册回调，Go 侧新增事件而漏改某一端 = 该端用户静默收不到推送，
+// 且没有任何编译期检查能兜住（前端类型带 `| string` 等于不约束）——
+// docs/sse_architecture.md §8 那格"注册表是常量约定、不是运行时校验"由本测试收口。
+var frontendEventTables = []string{
+	"../../../frontend/admin/react/src/core/transport/sse/event.ts",
+	"../../../frontend/admin/vue-element/src/core/transport/sse/event.ts",
+	"../../../frontend/admin/vue-vben/src/transport/sse/event.ts",
+}
+
+// TestPublishedEventsReachAllFrontends 源扫描守护：publishedEvents 登记的每个
+// 字面值必须出现在三端事件名常量表里，漏一端即失败。新增事件的操作顺序因此
+// 被钉成"Go 常量 + publishedEvents 登记行 + 三端 event.ts 各一行"，少一步就红。
+func TestPublishedEventsReachAllFrontends(t *testing.T) {
+	for _, rel := range frontendEventTables {
+		path := filepath.Join(thisDir(t), rel)
+		src, err := os.ReadFile(path)
+		require.NoError(t, err, "应能读取前端事件表 %s——若文件被移动，请同步更新 frontendEventTables", rel)
+		for value, goName := range publishedEvents {
+			require.Contains(t, string(src), value,
+				"事件 %s（%q）未在前端事件表 %s 登记——该端用户将静默收不到此推送", goName, value, rel)
+		}
+	}
+}
+
+func thisDir(t testing.TB) string {
+	_, file, _, ok := runtime.Caller(0)
+	require.True(t, ok, "runtime.Caller 应能取到本测试文件路径")
+	return filepath.Dir(file)
 }

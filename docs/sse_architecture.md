@@ -132,7 +132,7 @@ TLS 由外层负载均衡终止（与静态前端一致），网关仅监听 HTT
 
 | 项 | 现状 |
 |---|---|
-| 事件类型 | 仅 `notification`（站内信）；注册表见第 4 节末（`pkg/sseevent` + 三端 `SSE_EVENT`），但**注册表是常量约定、不是运行时校验**，漏加一端仍然静默失效 |
+| 事件类型 | 四个：`notification`（站内信）、`ai_chat_chunk`、`ai_chat_tool`、`ai_agent_run`（Agent 试运行逐节点 trace）；注册表见第 4 节末（`pkg/sseevent` + 三端 `SSE_EVENT`，vben 现为 `src/transport/sse/event.ts`）。~~注册表是常量约定、不是运行时校验~~ → **已收口（2026-11-07）**：发布侧 4 个发布点全部走 sseevent 常量（散字符串为零），契约守护测试钉住字面值与格式，`TestPublishedEventsReachAllFrontends` 源扫描守护「Go 注册表 ⊆ 三端常量表」——新增事件漏改某一端 CI 即红 |
 | 推送可靠性 | 设计即 best-effort：无重放、无 ack、离线不积压（补取靠收件箱） |
 | 慢消费者 | `TryPublish` 缓冲满即丢（debug 日志），不阻塞生产方；无背压 |
 | 观测 | 连接建立/断开（HandleSubscribe/日志）与跳过（debug 级）可查，无投递指标面板 |

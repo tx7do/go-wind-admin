@@ -7,7 +7,8 @@
 //
 // 新增事件：在本包加常量，并同步三端的事件名常量表——
 // react `src/core/transport/sse/event.ts`、vue-element `src/core/transport/sse/event.ts`、
-// vue-vben `apps/admin/src/transport/sse/event.ts`。
+// vue-vben `src/transport/sse/event.ts`（单包迁移后不在 apps/ 下）。三端覆盖由
+// sseevent_test.go 的 TestPublishedEventsReachAllFrontends 源扫描守护——漏一端 CI 即红。
 // 已发布事件的常量值不可改：线上前端按字面值订阅，改名等于静默断流。
 package sseevent
 
