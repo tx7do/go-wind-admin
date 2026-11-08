@@ -776,6 +776,8 @@ github.com/tx7do/go-utils/ossutil v0.1.0 h1:DaE5GBlfJdGlYVY7JvrX01TkPSpsCZYI9Qf+
 github.com/tx7do/go-utils/ossutil v0.1.0/go.mod h1:Cd1Lu8yqVEEGTX5vA9IA1n7QFy1CYifzBQz9LWNyGTA=
 github.com/tx7do/go-utils/password v0.1.0 h1:2lV/F/xEgQ1oxzZG7zi4zwcDuLY/6F3JbYrxA4BHlv8=
 github.com/tx7do/go-utils/password v0.1.0/go.mod h1:bjbs03ND6Bm5EM5zLGsfAWC9XOARNOT2g5Gkq4/MOcg=
+github.com/tx7do/go-utils/printrender v0.1.1 h1:hDk6t+NDgkPWSf3iheizHtQ0nD/3wk4x5zU/jhn5ArM=
+github.com/tx7do/go-utils/printrender v0.1.1/go.mod h1:+3B4dAppke5h7g9hr7NZl96G4vIA4jMkGUpof8H5afg=
 github.com/tx7do/go-utils/sqlutil v0.1.0 h1:Z1TEEWzM1lHV++eDXUxaWR2WtVLrMilRI5OZxt9Crl4=
 github.com/tx7do/go-utils/sqlutil v0.1.0/go.mod h1:X/3JwkNtK2hPKGg40/SqC9CHnh3PfbexWla9Lk8ky68=
 github.com/tx7do/go-wind v0.0.2 h1:kuI2QpwGacfROQpugPFWIcrtztv7qwFwQ4ts+LTsq2k=

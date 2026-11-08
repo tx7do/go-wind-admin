@@ -15,9 +15,9 @@ import (
 	printV1 "go-wind-admin/api/gen/go/print/service/v1"
 
 	"github.com/tx7do/go-crud/viewer"
+	"github.com/tx7do/go-utils/printrender"
 	"go-wind-admin/pkg/constants"
 	"go-wind-admin/pkg/middleware/auth"
-	"go-wind-admin/pkg/printrender"
 )
 
 // printRenderMaxHTML 服务端 PDF 渲染的 HTML 上限：前端内核产物（多行合并批量）通常
