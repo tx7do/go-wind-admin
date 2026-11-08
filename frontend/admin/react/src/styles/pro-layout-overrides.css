@@ -105,3 +105,57 @@
         transition: none !important;
     }
 }
+
+/* ========== 面包屑：窄屏单行化 ========== */
+/* antd 把 Breadcrumb 的 ol 写死 flex-wrap:wrap（antd/es/breadcrumb/style/index.js:20），
+   顶栏/页头可用宽一窄，每项就各自掉一行、竖排成"首页 >/ 系统管理 >/ 在线用户"三条。
+   这里全局改单行：首项与分隔符钉死不缩，其余项等比收缩、文本溢出出省略号。
+   空间充足时本组规则零视觉变化。选择器全挂 nav.ant-breadcrumb 前缀，
+   特异性压过 antd 的 ol 规则，不依赖 cssinjs 注入顺序。顶栏（HeaderContent）、
+   页头（PageContainer）与菜单抽屉的路径预览共用同一组件，一并覆盖。 */
+nav.ant-breadcrumb {
+    min-width: 0;
+    overflow: hidden;
+}
+
+nav.ant-breadcrumb ol {
+    flex-wrap: nowrap;
+}
+
+nav.ant-breadcrumb ol > li {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+    white-space: nowrap;
+}
+
+/* 项的省略号药丸下限：图标 14 + gap 4 + "…" ~10 + link 左右 padding 8。
+   保证被挤压的项收成"图标 + …"而不是直接消失（消失会让前后两个分隔符
+   邻接成 "> >"），末项的当前页名因此能撑到最后。极端窄档
+   （nav 可分宽 < 135px）由 nav 的 overflow:hidden 硬裁兜住。 */
+nav.ant-breadcrumb ol > li.ant-breadcrumb-item {
+    min-width: 36px;
+}
+
+nav.ant-breadcrumb ol > li:first-child,
+nav.ant-breadcrumb ol > li.ant-breadcrumb-separator {
+    flex-shrink: 0;
+}
+
+/* 收缩链路逐层放行：li → link → title 包装层 → 文本。中间层不裁剪，
+   省略号只在文本层渲染（图标在文本前面，是 span.anticon，:last-child 恒为文本）。 */
+nav.ant-breadcrumb ol > li > .ant-breadcrumb-link {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+}
+
+nav.ant-breadcrumb ol > li > .ant-breadcrumb-link > * {
+    min-width: 0;
+}
+
+nav.ant-breadcrumb ol > li > .ant-breadcrumb-link > * > span:last-child {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

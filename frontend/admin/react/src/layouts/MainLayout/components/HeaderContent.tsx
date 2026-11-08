@@ -900,7 +900,7 @@ export const HeaderContent = ({
                 }}
               >
                 {item.icon}
-                {item.title}
+                <span>{item.title}</span>
               </a>
             ) : (
               <span
@@ -922,7 +922,7 @@ export const HeaderContent = ({
                 }}
               >
                 {item.icon}
-                {item.title}
+                <span>{item.title}</span>
               </span>
             ),
           }))}
