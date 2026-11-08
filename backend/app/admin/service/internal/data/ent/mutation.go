@@ -11,6 +11,7 @@ import (
 	taskpb "go-wind-admin/api/gen/go/task/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/accesskey"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiagentapp"
+	"go-wind-admin/app/admin/service/internal/data/ent/aiagentrevision"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiagentrun"
 	"go-wind-admin/app/admin/service/internal/data/ent/aichunk"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiconversation"
@@ -94,6 +95,7 @@ const (
 	// Node types.
 	TypeAccessKey                = "AccessKey"
 	TypeAiAgentApp               = "AiAgentApp"
+	TypeAiAgentRevision          = "AiAgentRevision"
 	TypeAiAgentRun               = "AiAgentRun"
 	TypeAiChunk                  = "AiChunk"
 	TypeAiConversation           = "AiConversation"
@@ -1513,28 +1515,31 @@ func (m *AccessKeyMutation) ResetEdge(name string) error {
 // AiAgentAppMutation represents an operation that mutates the AiAgentApp nodes in the graph.
 type AiAgentAppMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *uint32
-	created_at    *time.Time
-	updated_at    *time.Time
-	deleted_at    *time.Time
-	created_by    *uint32
-	addcreated_by *int32
-	updated_by    *uint32
-	addupdated_by *int32
-	deleted_by    *uint32
-	adddeleted_by *int32
-	tenant_id     *uint32
-	addtenant_id  *int32
-	name          *string
-	description   *string
-	graph         *string
-	enabled       *bool
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*AiAgentApp, error)
-	predicates    []predicate.AiAgentApp
+	op               Op
+	typ              string
+	id               *uint32
+	created_at       *time.Time
+	updated_at       *time.Time
+	deleted_at       *time.Time
+	created_by       *uint32
+	addcreated_by    *int32
+	updated_by       *uint32
+	addupdated_by    *int32
+	deleted_by       *uint32
+	adddeleted_by    *int32
+	tenant_id        *uint32
+	addtenant_id     *int32
+	name             *string
+	description      *string
+	graph            *string
+	enabled          *bool
+	clearedFields    map[string]struct{}
+	revisions        map[uint32]struct{}
+	removedrevisions map[uint32]struct{}
+	clearedrevisions bool
+	done             bool
+	oldValue         func(context.Context) (*AiAgentApp, error)
+	predicates       []predicate.AiAgentApp
 }
 
 var _ ent.Mutation = (*AiAgentAppMutation)(nil)
@@ -2238,6 +2243,60 @@ func (m *AiAgentAppMutation) ResetEnabled() {
 	m.enabled = nil
 }
 
+// AddRevisionIDs adds the "revisions" edge to the AiAgentRevision entity by ids.
+func (m *AiAgentAppMutation) AddRevisionIDs(ids ...uint32) {
+	if m.revisions == nil {
+		m.revisions = make(map[uint32]struct{})
+	}
+	for i := range ids {
+		m.revisions[ids[i]] = struct{}{}
+	}
+}
+
+// ClearRevisions clears the "revisions" edge to the AiAgentRevision entity.
+func (m *AiAgentAppMutation) ClearRevisions() {
+	m.clearedrevisions = true
+}
+
+// RevisionsCleared reports if the "revisions" edge to the AiAgentRevision entity was cleared.
+func (m *AiAgentAppMutation) RevisionsCleared() bool {
+	return m.clearedrevisions
+}
+
+// RemoveRevisionIDs removes the "revisions" edge to the AiAgentRevision entity by IDs.
+func (m *AiAgentAppMutation) RemoveRevisionIDs(ids ...uint32) {
+	if m.removedrevisions == nil {
+		m.removedrevisions = make(map[uint32]struct{})
+	}
+	for i := range ids {
+		delete(m.revisions, ids[i])
+		m.removedrevisions[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedRevisions returns the removed IDs of the "revisions" edge to the AiAgentRevision entity.
+func (m *AiAgentAppMutation) RemovedRevisionsIDs() (ids []uint32) {
+	for id := range m.removedrevisions {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// RevisionsIDs returns the "revisions" edge IDs in the mutation.
+func (m *AiAgentAppMutation) RevisionsIDs() (ids []uint32) {
+	for id := range m.revisions {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetRevisions resets all changes to the "revisions" edge.
+func (m *AiAgentAppMutation) ResetRevisions() {
+	m.revisions = nil
+	m.clearedrevisions = false
+	m.removedrevisions = nil
+}
+
 // Where appends a list predicates to the AiAgentAppMutation builder.
 func (m *AiAgentAppMutation) Where(ps ...predicate.AiAgentApp) {
 	m.predicates = append(m.predicates, ps...)
@@ -2649,50 +2708,1290 @@ func (m *AiAgentAppMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *AiAgentAppMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.revisions != nil {
+		edges = append(edges, aiagentapp.EdgeRevisions)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *AiAgentAppMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case aiagentapp.EdgeRevisions:
+		ids := make([]ent.Value, 0, len(m.revisions))
+		for id := range m.revisions {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *AiAgentAppMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedrevisions != nil {
+		edges = append(edges, aiagentapp.EdgeRevisions)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *AiAgentAppMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case aiagentapp.EdgeRevisions:
+		ids := make([]ent.Value, 0, len(m.removedrevisions))
+		for id := range m.removedrevisions {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *AiAgentAppMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedrevisions {
+		edges = append(edges, aiagentapp.EdgeRevisions)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *AiAgentAppMutation) EdgeCleared(name string) bool {
+	switch name {
+	case aiagentapp.EdgeRevisions:
+		return m.clearedrevisions
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *AiAgentAppMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown AiAgentApp unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *AiAgentAppMutation) ResetEdge(name string) error {
+	switch name {
+	case aiagentapp.EdgeRevisions:
+		m.ResetRevisions()
+		return nil
+	}
 	return fmt.Errorf("unknown AiAgentApp edge %s", name)
+}
+
+// AiAgentRevisionMutation represents an operation that mutates the AiAgentRevision nodes in the graph.
+type AiAgentRevisionMutation struct {
+	config
+	op            Op
+	typ           string
+	id            *uint32
+	created_at    *time.Time
+	updated_at    *time.Time
+	deleted_at    *time.Time
+	created_by    *uint32
+	addcreated_by *int32
+	updated_by    *uint32
+	addupdated_by *int32
+	deleted_by    *uint32
+	adddeleted_by *int32
+	tenant_id     *uint32
+	addtenant_id  *int32
+	graph         *string
+	source        *aiagentrevision.Source
+	clearedFields map[string]struct{}
+	app           *uint32
+	clearedapp    bool
+	done          bool
+	oldValue      func(context.Context) (*AiAgentRevision, error)
+	predicates    []predicate.AiAgentRevision
+}
+
+var _ ent.Mutation = (*AiAgentRevisionMutation)(nil)
+
+// aiagentrevisionOption allows management of the mutation configuration using functional options.
+type aiagentrevisionOption func(*AiAgentRevisionMutation)
+
+// newAiAgentRevisionMutation creates new mutation for the AiAgentRevision entity.
+func newAiAgentRevisionMutation(c config, op Op, opts ...aiagentrevisionOption) *AiAgentRevisionMutation {
+	m := &AiAgentRevisionMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeAiAgentRevision,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withAiAgentRevisionID sets the ID field of the mutation.
+func withAiAgentRevisionID(id uint32) aiagentrevisionOption {
+	return func(m *AiAgentRevisionMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *AiAgentRevision
+		)
+		m.oldValue = func(ctx context.Context) (*AiAgentRevision, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().AiAgentRevision.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withAiAgentRevision sets the old AiAgentRevision of the mutation.
+func withAiAgentRevision(node *AiAgentRevision) aiagentrevisionOption {
+	return func(m *AiAgentRevisionMutation) {
+		m.oldValue = func(context.Context) (*AiAgentRevision, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m AiAgentRevisionMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m AiAgentRevisionMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// SetID sets the value of the id field. Note that this
+// operation is only accepted on creation of AiAgentRevision entities.
+func (m *AiAgentRevisionMutation) SetID(id uint32) {
+	m.id = &id
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *AiAgentRevisionMutation) ID() (id uint32, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *AiAgentRevisionMutation) IDs(ctx context.Context) ([]uint32, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []uint32{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().AiAgentRevision.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *AiAgentRevisionMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *AiAgentRevisionMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the AiAgentRevision entity.
+// If the AiAgentRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AiAgentRevisionMutation) OldCreatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ClearCreatedAt clears the value of the "created_at" field.
+func (m *AiAgentRevisionMutation) ClearCreatedAt() {
+	m.created_at = nil
+	m.clearedFields[aiagentrevision.FieldCreatedAt] = struct{}{}
+}
+
+// CreatedAtCleared returns if the "created_at" field was cleared in this mutation.
+func (m *AiAgentRevisionMutation) CreatedAtCleared() bool {
+	_, ok := m.clearedFields[aiagentrevision.FieldCreatedAt]
+	return ok
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *AiAgentRevisionMutation) ResetCreatedAt() {
+	m.created_at = nil
+	delete(m.clearedFields, aiagentrevision.FieldCreatedAt)
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *AiAgentRevisionMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *AiAgentRevisionMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the AiAgentRevision entity.
+// If the AiAgentRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AiAgentRevisionMutation) OldUpdatedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ClearUpdatedAt clears the value of the "updated_at" field.
+func (m *AiAgentRevisionMutation) ClearUpdatedAt() {
+	m.updated_at = nil
+	m.clearedFields[aiagentrevision.FieldUpdatedAt] = struct{}{}
+}
+
+// UpdatedAtCleared returns if the "updated_at" field was cleared in this mutation.
+func (m *AiAgentRevisionMutation) UpdatedAtCleared() bool {
+	_, ok := m.clearedFields[aiagentrevision.FieldUpdatedAt]
+	return ok
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *AiAgentRevisionMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+	delete(m.clearedFields, aiagentrevision.FieldUpdatedAt)
+}
+
+// SetDeletedAt sets the "deleted_at" field.
+func (m *AiAgentRevisionMutation) SetDeletedAt(t time.Time) {
+	m.deleted_at = &t
+}
+
+// DeletedAt returns the value of the "deleted_at" field in the mutation.
+func (m *AiAgentRevisionMutation) DeletedAt() (r time.Time, exists bool) {
+	v := m.deleted_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedAt returns the old "deleted_at" field's value of the AiAgentRevision entity.
+// If the AiAgentRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AiAgentRevisionMutation) OldDeletedAt(ctx context.Context) (v *time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedAt: %w", err)
+	}
+	return oldValue.DeletedAt, nil
+}
+
+// ClearDeletedAt clears the value of the "deleted_at" field.
+func (m *AiAgentRevisionMutation) ClearDeletedAt() {
+	m.deleted_at = nil
+	m.clearedFields[aiagentrevision.FieldDeletedAt] = struct{}{}
+}
+
+// DeletedAtCleared returns if the "deleted_at" field was cleared in this mutation.
+func (m *AiAgentRevisionMutation) DeletedAtCleared() bool {
+	_, ok := m.clearedFields[aiagentrevision.FieldDeletedAt]
+	return ok
+}
+
+// ResetDeletedAt resets all changes to the "deleted_at" field.
+func (m *AiAgentRevisionMutation) ResetDeletedAt() {
+	m.deleted_at = nil
+	delete(m.clearedFields, aiagentrevision.FieldDeletedAt)
+}
+
+// SetCreatedBy sets the "created_by" field.
+func (m *AiAgentRevisionMutation) SetCreatedBy(u uint32) {
+	m.created_by = &u
+	m.addcreated_by = nil
+}
+
+// CreatedBy returns the value of the "created_by" field in the mutation.
+func (m *AiAgentRevisionMutation) CreatedBy() (r uint32, exists bool) {
+	v := m.created_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedBy returns the old "created_by" field's value of the AiAgentRevision entity.
+// If the AiAgentRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AiAgentRevisionMutation) OldCreatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedBy: %w", err)
+	}
+	return oldValue.CreatedBy, nil
+}
+
+// AddCreatedBy adds u to the "created_by" field.
+func (m *AiAgentRevisionMutation) AddCreatedBy(u int32) {
+	if m.addcreated_by != nil {
+		*m.addcreated_by += u
+	} else {
+		m.addcreated_by = &u
+	}
+}
+
+// AddedCreatedBy returns the value that was added to the "created_by" field in this mutation.
+func (m *AiAgentRevisionMutation) AddedCreatedBy() (r int32, exists bool) {
+	v := m.addcreated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearCreatedBy clears the value of the "created_by" field.
+func (m *AiAgentRevisionMutation) ClearCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	m.clearedFields[aiagentrevision.FieldCreatedBy] = struct{}{}
+}
+
+// CreatedByCleared returns if the "created_by" field was cleared in this mutation.
+func (m *AiAgentRevisionMutation) CreatedByCleared() bool {
+	_, ok := m.clearedFields[aiagentrevision.FieldCreatedBy]
+	return ok
+}
+
+// ResetCreatedBy resets all changes to the "created_by" field.
+func (m *AiAgentRevisionMutation) ResetCreatedBy() {
+	m.created_by = nil
+	m.addcreated_by = nil
+	delete(m.clearedFields, aiagentrevision.FieldCreatedBy)
+}
+
+// SetUpdatedBy sets the "updated_by" field.
+func (m *AiAgentRevisionMutation) SetUpdatedBy(u uint32) {
+	m.updated_by = &u
+	m.addupdated_by = nil
+}
+
+// UpdatedBy returns the value of the "updated_by" field in the mutation.
+func (m *AiAgentRevisionMutation) UpdatedBy() (r uint32, exists bool) {
+	v := m.updated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedBy returns the old "updated_by" field's value of the AiAgentRevision entity.
+// If the AiAgentRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AiAgentRevisionMutation) OldUpdatedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedBy: %w", err)
+	}
+	return oldValue.UpdatedBy, nil
+}
+
+// AddUpdatedBy adds u to the "updated_by" field.
+func (m *AiAgentRevisionMutation) AddUpdatedBy(u int32) {
+	if m.addupdated_by != nil {
+		*m.addupdated_by += u
+	} else {
+		m.addupdated_by = &u
+	}
+}
+
+// AddedUpdatedBy returns the value that was added to the "updated_by" field in this mutation.
+func (m *AiAgentRevisionMutation) AddedUpdatedBy() (r int32, exists bool) {
+	v := m.addupdated_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearUpdatedBy clears the value of the "updated_by" field.
+func (m *AiAgentRevisionMutation) ClearUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	m.clearedFields[aiagentrevision.FieldUpdatedBy] = struct{}{}
+}
+
+// UpdatedByCleared returns if the "updated_by" field was cleared in this mutation.
+func (m *AiAgentRevisionMutation) UpdatedByCleared() bool {
+	_, ok := m.clearedFields[aiagentrevision.FieldUpdatedBy]
+	return ok
+}
+
+// ResetUpdatedBy resets all changes to the "updated_by" field.
+func (m *AiAgentRevisionMutation) ResetUpdatedBy() {
+	m.updated_by = nil
+	m.addupdated_by = nil
+	delete(m.clearedFields, aiagentrevision.FieldUpdatedBy)
+}
+
+// SetDeletedBy sets the "deleted_by" field.
+func (m *AiAgentRevisionMutation) SetDeletedBy(u uint32) {
+	m.deleted_by = &u
+	m.adddeleted_by = nil
+}
+
+// DeletedBy returns the value of the "deleted_by" field in the mutation.
+func (m *AiAgentRevisionMutation) DeletedBy() (r uint32, exists bool) {
+	v := m.deleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldDeletedBy returns the old "deleted_by" field's value of the AiAgentRevision entity.
+// If the AiAgentRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AiAgentRevisionMutation) OldDeletedBy(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldDeletedBy is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldDeletedBy requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldDeletedBy: %w", err)
+	}
+	return oldValue.DeletedBy, nil
+}
+
+// AddDeletedBy adds u to the "deleted_by" field.
+func (m *AiAgentRevisionMutation) AddDeletedBy(u int32) {
+	if m.adddeleted_by != nil {
+		*m.adddeleted_by += u
+	} else {
+		m.adddeleted_by = &u
+	}
+}
+
+// AddedDeletedBy returns the value that was added to the "deleted_by" field in this mutation.
+func (m *AiAgentRevisionMutation) AddedDeletedBy() (r int32, exists bool) {
+	v := m.adddeleted_by
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearDeletedBy clears the value of the "deleted_by" field.
+func (m *AiAgentRevisionMutation) ClearDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	m.clearedFields[aiagentrevision.FieldDeletedBy] = struct{}{}
+}
+
+// DeletedByCleared returns if the "deleted_by" field was cleared in this mutation.
+func (m *AiAgentRevisionMutation) DeletedByCleared() bool {
+	_, ok := m.clearedFields[aiagentrevision.FieldDeletedBy]
+	return ok
+}
+
+// ResetDeletedBy resets all changes to the "deleted_by" field.
+func (m *AiAgentRevisionMutation) ResetDeletedBy() {
+	m.deleted_by = nil
+	m.adddeleted_by = nil
+	delete(m.clearedFields, aiagentrevision.FieldDeletedBy)
+}
+
+// SetTenantID sets the "tenant_id" field.
+func (m *AiAgentRevisionMutation) SetTenantID(u uint32) {
+	m.tenant_id = &u
+	m.addtenant_id = nil
+}
+
+// TenantID returns the value of the "tenant_id" field in the mutation.
+func (m *AiAgentRevisionMutation) TenantID() (r uint32, exists bool) {
+	v := m.tenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldTenantID returns the old "tenant_id" field's value of the AiAgentRevision entity.
+// If the AiAgentRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AiAgentRevisionMutation) OldTenantID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldTenantID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldTenantID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldTenantID: %w", err)
+	}
+	return oldValue.TenantID, nil
+}
+
+// AddTenantID adds u to the "tenant_id" field.
+func (m *AiAgentRevisionMutation) AddTenantID(u int32) {
+	if m.addtenant_id != nil {
+		*m.addtenant_id += u
+	} else {
+		m.addtenant_id = &u
+	}
+}
+
+// AddedTenantID returns the value that was added to the "tenant_id" field in this mutation.
+func (m *AiAgentRevisionMutation) AddedTenantID() (r int32, exists bool) {
+	v := m.addtenant_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ClearTenantID clears the value of the "tenant_id" field.
+func (m *AiAgentRevisionMutation) ClearTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	m.clearedFields[aiagentrevision.FieldTenantID] = struct{}{}
+}
+
+// TenantIDCleared returns if the "tenant_id" field was cleared in this mutation.
+func (m *AiAgentRevisionMutation) TenantIDCleared() bool {
+	_, ok := m.clearedFields[aiagentrevision.FieldTenantID]
+	return ok
+}
+
+// ResetTenantID resets all changes to the "tenant_id" field.
+func (m *AiAgentRevisionMutation) ResetTenantID() {
+	m.tenant_id = nil
+	m.addtenant_id = nil
+	delete(m.clearedFields, aiagentrevision.FieldTenantID)
+}
+
+// SetAppID sets the "app_id" field.
+func (m *AiAgentRevisionMutation) SetAppID(u uint32) {
+	m.app = &u
+}
+
+// AppID returns the value of the "app_id" field in the mutation.
+func (m *AiAgentRevisionMutation) AppID() (r uint32, exists bool) {
+	v := m.app
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldAppID returns the old "app_id" field's value of the AiAgentRevision entity.
+// If the AiAgentRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AiAgentRevisionMutation) OldAppID(ctx context.Context) (v *uint32, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldAppID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldAppID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldAppID: %w", err)
+	}
+	return oldValue.AppID, nil
+}
+
+// ClearAppID clears the value of the "app_id" field.
+func (m *AiAgentRevisionMutation) ClearAppID() {
+	m.app = nil
+	m.clearedFields[aiagentrevision.FieldAppID] = struct{}{}
+}
+
+// AppIDCleared returns if the "app_id" field was cleared in this mutation.
+func (m *AiAgentRevisionMutation) AppIDCleared() bool {
+	_, ok := m.clearedFields[aiagentrevision.FieldAppID]
+	return ok
+}
+
+// ResetAppID resets all changes to the "app_id" field.
+func (m *AiAgentRevisionMutation) ResetAppID() {
+	m.app = nil
+	delete(m.clearedFields, aiagentrevision.FieldAppID)
+}
+
+// SetGraph sets the "graph" field.
+func (m *AiAgentRevisionMutation) SetGraph(s string) {
+	m.graph = &s
+}
+
+// Graph returns the value of the "graph" field in the mutation.
+func (m *AiAgentRevisionMutation) Graph() (r string, exists bool) {
+	v := m.graph
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldGraph returns the old "graph" field's value of the AiAgentRevision entity.
+// If the AiAgentRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AiAgentRevisionMutation) OldGraph(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldGraph is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldGraph requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldGraph: %w", err)
+	}
+	return oldValue.Graph, nil
+}
+
+// ClearGraph clears the value of the "graph" field.
+func (m *AiAgentRevisionMutation) ClearGraph() {
+	m.graph = nil
+	m.clearedFields[aiagentrevision.FieldGraph] = struct{}{}
+}
+
+// GraphCleared returns if the "graph" field was cleared in this mutation.
+func (m *AiAgentRevisionMutation) GraphCleared() bool {
+	_, ok := m.clearedFields[aiagentrevision.FieldGraph]
+	return ok
+}
+
+// ResetGraph resets all changes to the "graph" field.
+func (m *AiAgentRevisionMutation) ResetGraph() {
+	m.graph = nil
+	delete(m.clearedFields, aiagentrevision.FieldGraph)
+}
+
+// SetSource sets the "source" field.
+func (m *AiAgentRevisionMutation) SetSource(a aiagentrevision.Source) {
+	m.source = &a
+}
+
+// Source returns the value of the "source" field in the mutation.
+func (m *AiAgentRevisionMutation) Source() (r aiagentrevision.Source, exists bool) {
+	v := m.source
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSource returns the old "source" field's value of the AiAgentRevision entity.
+// If the AiAgentRevision object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *AiAgentRevisionMutation) OldSource(ctx context.Context) (v *aiagentrevision.Source, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSource is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSource requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSource: %w", err)
+	}
+	return oldValue.Source, nil
+}
+
+// ClearSource clears the value of the "source" field.
+func (m *AiAgentRevisionMutation) ClearSource() {
+	m.source = nil
+	m.clearedFields[aiagentrevision.FieldSource] = struct{}{}
+}
+
+// SourceCleared returns if the "source" field was cleared in this mutation.
+func (m *AiAgentRevisionMutation) SourceCleared() bool {
+	_, ok := m.clearedFields[aiagentrevision.FieldSource]
+	return ok
+}
+
+// ResetSource resets all changes to the "source" field.
+func (m *AiAgentRevisionMutation) ResetSource() {
+	m.source = nil
+	delete(m.clearedFields, aiagentrevision.FieldSource)
+}
+
+// ClearApp clears the "app" edge to the AiAgentApp entity.
+func (m *AiAgentRevisionMutation) ClearApp() {
+	m.clearedapp = true
+	m.clearedFields[aiagentrevision.FieldAppID] = struct{}{}
+}
+
+// AppCleared reports if the "app" edge to the AiAgentApp entity was cleared.
+func (m *AiAgentRevisionMutation) AppCleared() bool {
+	return m.AppIDCleared() || m.clearedapp
+}
+
+// AppIDs returns the "app" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// AppID instead. It exists only for internal usage by the builders.
+func (m *AiAgentRevisionMutation) AppIDs() (ids []uint32) {
+	if id := m.app; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetApp resets all changes to the "app" edge.
+func (m *AiAgentRevisionMutation) ResetApp() {
+	m.app = nil
+	m.clearedapp = false
+}
+
+// Where appends a list predicates to the AiAgentRevisionMutation builder.
+func (m *AiAgentRevisionMutation) Where(ps ...predicate.AiAgentRevision) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the AiAgentRevisionMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *AiAgentRevisionMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.AiAgentRevision, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *AiAgentRevisionMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *AiAgentRevisionMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (AiAgentRevision).
+func (m *AiAgentRevisionMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *AiAgentRevisionMutation) Fields() []string {
+	fields := make([]string, 0, 10)
+	if m.created_at != nil {
+		fields = append(fields, aiagentrevision.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, aiagentrevision.FieldUpdatedAt)
+	}
+	if m.deleted_at != nil {
+		fields = append(fields, aiagentrevision.FieldDeletedAt)
+	}
+	if m.created_by != nil {
+		fields = append(fields, aiagentrevision.FieldCreatedBy)
+	}
+	if m.updated_by != nil {
+		fields = append(fields, aiagentrevision.FieldUpdatedBy)
+	}
+	if m.deleted_by != nil {
+		fields = append(fields, aiagentrevision.FieldDeletedBy)
+	}
+	if m.tenant_id != nil {
+		fields = append(fields, aiagentrevision.FieldTenantID)
+	}
+	if m.app != nil {
+		fields = append(fields, aiagentrevision.FieldAppID)
+	}
+	if m.graph != nil {
+		fields = append(fields, aiagentrevision.FieldGraph)
+	}
+	if m.source != nil {
+		fields = append(fields, aiagentrevision.FieldSource)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *AiAgentRevisionMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case aiagentrevision.FieldCreatedAt:
+		return m.CreatedAt()
+	case aiagentrevision.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case aiagentrevision.FieldDeletedAt:
+		return m.DeletedAt()
+	case aiagentrevision.FieldCreatedBy:
+		return m.CreatedBy()
+	case aiagentrevision.FieldUpdatedBy:
+		return m.UpdatedBy()
+	case aiagentrevision.FieldDeletedBy:
+		return m.DeletedBy()
+	case aiagentrevision.FieldTenantID:
+		return m.TenantID()
+	case aiagentrevision.FieldAppID:
+		return m.AppID()
+	case aiagentrevision.FieldGraph:
+		return m.Graph()
+	case aiagentrevision.FieldSource:
+		return m.Source()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *AiAgentRevisionMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case aiagentrevision.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case aiagentrevision.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case aiagentrevision.FieldDeletedAt:
+		return m.OldDeletedAt(ctx)
+	case aiagentrevision.FieldCreatedBy:
+		return m.OldCreatedBy(ctx)
+	case aiagentrevision.FieldUpdatedBy:
+		return m.OldUpdatedBy(ctx)
+	case aiagentrevision.FieldDeletedBy:
+		return m.OldDeletedBy(ctx)
+	case aiagentrevision.FieldTenantID:
+		return m.OldTenantID(ctx)
+	case aiagentrevision.FieldAppID:
+		return m.OldAppID(ctx)
+	case aiagentrevision.FieldGraph:
+		return m.OldGraph(ctx)
+	case aiagentrevision.FieldSource:
+		return m.OldSource(ctx)
+	}
+	return nil, fmt.Errorf("unknown AiAgentRevision field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AiAgentRevisionMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case aiagentrevision.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case aiagentrevision.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case aiagentrevision.FieldDeletedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedAt(v)
+		return nil
+	case aiagentrevision.FieldCreatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedBy(v)
+		return nil
+	case aiagentrevision.FieldUpdatedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedBy(v)
+		return nil
+	case aiagentrevision.FieldDeletedBy:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetDeletedBy(v)
+		return nil
+	case aiagentrevision.FieldTenantID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetTenantID(v)
+		return nil
+	case aiagentrevision.FieldAppID:
+		v, ok := value.(uint32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetAppID(v)
+		return nil
+	case aiagentrevision.FieldGraph:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetGraph(v)
+		return nil
+	case aiagentrevision.FieldSource:
+		v, ok := value.(aiagentrevision.Source)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSource(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AiAgentRevision field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *AiAgentRevisionMutation) AddedFields() []string {
+	var fields []string
+	if m.addcreated_by != nil {
+		fields = append(fields, aiagentrevision.FieldCreatedBy)
+	}
+	if m.addupdated_by != nil {
+		fields = append(fields, aiagentrevision.FieldUpdatedBy)
+	}
+	if m.adddeleted_by != nil {
+		fields = append(fields, aiagentrevision.FieldDeletedBy)
+	}
+	if m.addtenant_id != nil {
+		fields = append(fields, aiagentrevision.FieldTenantID)
+	}
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *AiAgentRevisionMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case aiagentrevision.FieldCreatedBy:
+		return m.AddedCreatedBy()
+	case aiagentrevision.FieldUpdatedBy:
+		return m.AddedUpdatedBy()
+	case aiagentrevision.FieldDeletedBy:
+		return m.AddedDeletedBy()
+	case aiagentrevision.FieldTenantID:
+		return m.AddedTenantID()
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *AiAgentRevisionMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	case aiagentrevision.FieldCreatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddCreatedBy(v)
+		return nil
+	case aiagentrevision.FieldUpdatedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUpdatedBy(v)
+		return nil
+	case aiagentrevision.FieldDeletedBy:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddDeletedBy(v)
+		return nil
+	case aiagentrevision.FieldTenantID:
+		v, ok := value.(int32)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddTenantID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown AiAgentRevision numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *AiAgentRevisionMutation) ClearedFields() []string {
+	var fields []string
+	if m.FieldCleared(aiagentrevision.FieldCreatedAt) {
+		fields = append(fields, aiagentrevision.FieldCreatedAt)
+	}
+	if m.FieldCleared(aiagentrevision.FieldUpdatedAt) {
+		fields = append(fields, aiagentrevision.FieldUpdatedAt)
+	}
+	if m.FieldCleared(aiagentrevision.FieldDeletedAt) {
+		fields = append(fields, aiagentrevision.FieldDeletedAt)
+	}
+	if m.FieldCleared(aiagentrevision.FieldCreatedBy) {
+		fields = append(fields, aiagentrevision.FieldCreatedBy)
+	}
+	if m.FieldCleared(aiagentrevision.FieldUpdatedBy) {
+		fields = append(fields, aiagentrevision.FieldUpdatedBy)
+	}
+	if m.FieldCleared(aiagentrevision.FieldDeletedBy) {
+		fields = append(fields, aiagentrevision.FieldDeletedBy)
+	}
+	if m.FieldCleared(aiagentrevision.FieldTenantID) {
+		fields = append(fields, aiagentrevision.FieldTenantID)
+	}
+	if m.FieldCleared(aiagentrevision.FieldAppID) {
+		fields = append(fields, aiagentrevision.FieldAppID)
+	}
+	if m.FieldCleared(aiagentrevision.FieldGraph) {
+		fields = append(fields, aiagentrevision.FieldGraph)
+	}
+	if m.FieldCleared(aiagentrevision.FieldSource) {
+		fields = append(fields, aiagentrevision.FieldSource)
+	}
+	return fields
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *AiAgentRevisionMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *AiAgentRevisionMutation) ClearField(name string) error {
+	switch name {
+	case aiagentrevision.FieldCreatedAt:
+		m.ClearCreatedAt()
+		return nil
+	case aiagentrevision.FieldUpdatedAt:
+		m.ClearUpdatedAt()
+		return nil
+	case aiagentrevision.FieldDeletedAt:
+		m.ClearDeletedAt()
+		return nil
+	case aiagentrevision.FieldCreatedBy:
+		m.ClearCreatedBy()
+		return nil
+	case aiagentrevision.FieldUpdatedBy:
+		m.ClearUpdatedBy()
+		return nil
+	case aiagentrevision.FieldDeletedBy:
+		m.ClearDeletedBy()
+		return nil
+	case aiagentrevision.FieldTenantID:
+		m.ClearTenantID()
+		return nil
+	case aiagentrevision.FieldAppID:
+		m.ClearAppID()
+		return nil
+	case aiagentrevision.FieldGraph:
+		m.ClearGraph()
+		return nil
+	case aiagentrevision.FieldSource:
+		m.ClearSource()
+		return nil
+	}
+	return fmt.Errorf("unknown AiAgentRevision nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *AiAgentRevisionMutation) ResetField(name string) error {
+	switch name {
+	case aiagentrevision.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case aiagentrevision.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case aiagentrevision.FieldDeletedAt:
+		m.ResetDeletedAt()
+		return nil
+	case aiagentrevision.FieldCreatedBy:
+		m.ResetCreatedBy()
+		return nil
+	case aiagentrevision.FieldUpdatedBy:
+		m.ResetUpdatedBy()
+		return nil
+	case aiagentrevision.FieldDeletedBy:
+		m.ResetDeletedBy()
+		return nil
+	case aiagentrevision.FieldTenantID:
+		m.ResetTenantID()
+		return nil
+	case aiagentrevision.FieldAppID:
+		m.ResetAppID()
+		return nil
+	case aiagentrevision.FieldGraph:
+		m.ResetGraph()
+		return nil
+	case aiagentrevision.FieldSource:
+		m.ResetSource()
+		return nil
+	}
+	return fmt.Errorf("unknown AiAgentRevision field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *AiAgentRevisionMutation) AddedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.app != nil {
+		edges = append(edges, aiagentrevision.EdgeApp)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *AiAgentRevisionMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case aiagentrevision.EdgeApp:
+		if id := m.app; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *AiAgentRevisionMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 1)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *AiAgentRevisionMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *AiAgentRevisionMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 1)
+	if m.clearedapp {
+		edges = append(edges, aiagentrevision.EdgeApp)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *AiAgentRevisionMutation) EdgeCleared(name string) bool {
+	switch name {
+	case aiagentrevision.EdgeApp:
+		return m.clearedapp
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *AiAgentRevisionMutation) ClearEdge(name string) error {
+	switch name {
+	case aiagentrevision.EdgeApp:
+		m.ClearApp()
+		return nil
+	}
+	return fmt.Errorf("unknown AiAgentRevision unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *AiAgentRevisionMutation) ResetEdge(name string) error {
+	switch name {
+	case aiagentrevision.EdgeApp:
+		m.ResetApp()
+		return nil
+	}
+	return fmt.Errorf("unknown AiAgentRevision edge %s", name)
 }
 
 // AiAgentRunMutation represents an operation that mutates the AiAgentRun nodes in the graph.

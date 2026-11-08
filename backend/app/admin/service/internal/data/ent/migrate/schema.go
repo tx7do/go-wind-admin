@@ -74,6 +74,42 @@ var (
 			},
 		},
 	}
+	// SysAiAgentRevisionsColumns holds the columns for the "sys_ai_agent_revisions" table.
+	SysAiAgentRevisionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
+		{Name: "created_at", Type: field.TypeTime, Nullable: true, Comment: "创建时间"},
+		{Name: "updated_at", Type: field.TypeTime, Nullable: true, Comment: "更新时间"},
+		{Name: "deleted_at", Type: field.TypeTime, Nullable: true, Comment: "删除时间"},
+		{Name: "created_by", Type: field.TypeUint32, Nullable: true, Comment: "创建者ID"},
+		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
+		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
+		{Name: "tenant_id", Type: field.TypeUint32, Nullable: true, Comment: "租户ID", Default: 0},
+		{Name: "graph", Type: field.TypeString, Nullable: true, Size: 2147483647, Comment: "更新前的图 DSL 快照"},
+		{Name: "source", Type: field.TypeEnum, Nullable: true, Comment: "快照来源（SAVE=常规更新触发 RESTORE=恢复前留底）", Enums: []string{"SAVE", "RESTORE"}, Default: "SAVE"},
+		{Name: "app_id", Type: field.TypeUint32, Nullable: true, Comment: "所属应用 ID"},
+	}
+	// SysAiAgentRevisionsTable holds the schema information for the "sys_ai_agent_revisions" table.
+	SysAiAgentRevisionsTable = &schema.Table{
+		Name:       "sys_ai_agent_revisions",
+		Comment:    "AI Agent 应用版本快照表（每次更新留旧版 graph；只增不更新，随主表级联删除）",
+		Columns:    SysAiAgentRevisionsColumns,
+		PrimaryKey: []*schema.Column{SysAiAgentRevisionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "sys_ai_agent_revisions_sys_ai_agent_apps_revisions",
+				Columns:    []*schema.Column{SysAiAgentRevisionsColumns[10]},
+				RefColumns: []*schema.Column{SysAiAgentAppsColumns[0]},
+				OnDelete:   schema.Cascade,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "idx_ai_revisions_app_created",
+				Unique:  false,
+				Columns: []*schema.Column{SysAiAgentRevisionsColumns[10], SysAiAgentRevisionsColumns[1]},
+			},
+		},
+	}
 	// SysAiAgentRunsColumns holds the columns for the "sys_ai_agent_runs" table.
 	SysAiAgentRunsColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeUint32, Increment: true, Comment: "id"},
@@ -3858,6 +3894,7 @@ var (
 	Tables = []*schema.Table{
 		SysAccessKeysTable,
 		SysAiAgentAppsTable,
+		SysAiAgentRevisionsTable,
 		SysAiAgentRunsTable,
 		SysAiChunksTable,
 		SysAiConversationsTable,
@@ -3933,6 +3970,12 @@ func init() {
 	}
 	SysAiAgentAppsTable.Annotation = &entsql.Annotation{
 		Table:     "sys_ai_agent_apps",
+		Charset:   "utf8mb4",
+		Collation: "utf8mb4_bin",
+	}
+	SysAiAgentRevisionsTable.ForeignKeys[0].RefTable = SysAiAgentAppsTable
+	SysAiAgentRevisionsTable.Annotation = &entsql.Annotation{
+		Table:     "sys_ai_agent_revisions",
 		Charset:   "utf8mb4",
 		Collation: "utf8mb4_bin",
 	}

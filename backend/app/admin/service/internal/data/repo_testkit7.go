@@ -81,3 +81,12 @@ func NewAiAgentRunRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *AiAgen
 	repo.init()
 	return repo
 }
+
+// NewAiAgentRevisionRepoForTest 逐字段复刻 ai_agent_revision_repo.go 的
+// NewAiAgentRevisionRepo（log 换 NopLogger；薄仓无 mapper/converter）。
+func NewAiAgentRevisionRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *AiAgentRevisionRepo {
+	return &AiAgentRevisionRepo{
+		log:       bLogger.NewHelper(bLogger.NopLogger()),
+		entClient: entClient,
+	}
+}

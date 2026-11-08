@@ -4,6 +4,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/entsql"
 	"entgo.io/ent/schema"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 	"github.com/tx7do/go-crud/entgo/mixin"
@@ -53,5 +54,15 @@ func (AiAgentApp) Indexes() []ent.Index {
 	return []ent.Index{
 		index.Fields("tenant_id", "name").Unique().
 			StorageKey("uidx_sys_ai_agent_apps_tenant_name"),
+	}
+}
+
+func (AiAgentApp) Edges() []ent.Edge {
+	return []ent.Edge{
+		// 版本快照：删除应用时级联清理其全部快照（docs/ai_agent_orchestration.md「版本化」）
+		edge.To("revisions", AiAgentRevision.Type).
+			Annotations(entsql.Annotation{
+				OnDelete: entsql.Cascade,
+			}),
 	}
 }

@@ -831,6 +831,244 @@ func (x *GetAiAgentRunRequest) GetId() uint32 {
 	return 0
 }
 
+// Agent 应用版本快照（每次成功更新把更新前的 graph 留一行；
+// 恢复 = 快照写回主表，恢复动作本身先快照当前版本，可逆）
+type AiAgentRevision struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Id    *uint32                `protobuf:"varint,1,opt,name=id,proto3,oneof" json:"id,omitempty"`                    // 快照ID
+	AppId *uint32                `protobuf:"varint,2,opt,name=app_id,json=appId,proto3,oneof" json:"app_id,omitempty"` // 所属应用ID
+	// 更新前的图 DSL 快照
+	Graph         *string                `protobuf:"bytes,3,opt,name=graph,proto3,oneof" json:"graph,omitempty"`                             // 图 DSL 快照
+	Source        *string                `protobuf:"bytes,4,opt,name=source,proto3,oneof" json:"source,omitempty"`                           // SAVE | RESTORE
+	CreatedBy     *uint32                `protobuf:"varint,100,opt,name=created_by,json=createdBy,proto3,oneof" json:"created_by,omitempty"` // 触发留底的操作人
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,200,opt,name=created_at,json=createdAt,proto3,oneof" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AiAgentRevision) Reset() {
+	*x = AiAgentRevision{}
+	mi := &file_ai_service_v1_ai_agent_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AiAgentRevision) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AiAgentRevision) ProtoMessage() {}
+
+func (x *AiAgentRevision) ProtoReflect() protoreflect.Message {
+	mi := &file_ai_service_v1_ai_agent_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AiAgentRevision.ProtoReflect.Descriptor instead.
+func (*AiAgentRevision) Descriptor() ([]byte, []int) {
+	return file_ai_service_v1_ai_agent_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *AiAgentRevision) GetId() uint32 {
+	if x != nil && x.Id != nil {
+		return *x.Id
+	}
+	return 0
+}
+
+func (x *AiAgentRevision) GetAppId() uint32 {
+	if x != nil && x.AppId != nil {
+		return *x.AppId
+	}
+	return 0
+}
+
+func (x *AiAgentRevision) GetGraph() string {
+	if x != nil && x.Graph != nil {
+		return *x.Graph
+	}
+	return ""
+}
+
+func (x *AiAgentRevision) GetSource() string {
+	if x != nil && x.Source != nil {
+		return *x.Source
+	}
+	return ""
+}
+
+func (x *AiAgentRevision) GetCreatedBy() uint32 {
+	if x != nil && x.CreatedBy != nil {
+		return *x.CreatedBy
+	}
+	return 0
+}
+
+func (x *AiAgentRevision) GetCreatedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return nil
+}
+
+// 版本历史 - 请求
+type ListAiAgentRevisionsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	AppId         uint32                 `protobuf:"varint,1,opt,name=app_id,json=appId,proto3" json:"app_id,omitempty"` // 应用ID
+	Page          *v1.PagingRequest      `protobuf:"bytes,2,opt,name=page,proto3" json:"page,omitempty"`                 // 分页参数
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAiAgentRevisionsRequest) Reset() {
+	*x = ListAiAgentRevisionsRequest{}
+	mi := &file_ai_service_v1_ai_agent_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAiAgentRevisionsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAiAgentRevisionsRequest) ProtoMessage() {}
+
+func (x *ListAiAgentRevisionsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ai_service_v1_ai_agent_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAiAgentRevisionsRequest.ProtoReflect.Descriptor instead.
+func (*ListAiAgentRevisionsRequest) Descriptor() ([]byte, []int) {
+	return file_ai_service_v1_ai_agent_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *ListAiAgentRevisionsRequest) GetAppId() uint32 {
+	if x != nil {
+		return x.AppId
+	}
+	return 0
+}
+
+func (x *ListAiAgentRevisionsRequest) GetPage() *v1.PagingRequest {
+	if x != nil {
+		return x.Page
+	}
+	return nil
+}
+
+// 版本历史 - 回应（新快照在前）
+type ListAiAgentRevisionsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Items         []*AiAgentRevision     `protobuf:"bytes,1,rep,name=items,proto3" json:"items,omitempty"`
+	Total         uint64                 `protobuf:"varint,2,opt,name=total,proto3" json:"total,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAiAgentRevisionsResponse) Reset() {
+	*x = ListAiAgentRevisionsResponse{}
+	mi := &file_ai_service_v1_ai_agent_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAiAgentRevisionsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAiAgentRevisionsResponse) ProtoMessage() {}
+
+func (x *ListAiAgentRevisionsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ai_service_v1_ai_agent_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAiAgentRevisionsResponse.ProtoReflect.Descriptor instead.
+func (*ListAiAgentRevisionsResponse) Descriptor() ([]byte, []int) {
+	return file_ai_service_v1_ai_agent_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *ListAiAgentRevisionsResponse) GetItems() []*AiAgentRevision {
+	if x != nil {
+		return x.Items
+	}
+	return nil
+}
+
+func (x *ListAiAgentRevisionsResponse) GetTotal() uint64 {
+	if x != nil {
+		return x.Total
+	}
+	return 0
+}
+
+// 恢复版本 - 请求（把快照 graph 写回主表；恢复前先快照当前版本）
+type RestoreAiAgentRevisionRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            uint32                 `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"` // 快照ID
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RestoreAiAgentRevisionRequest) Reset() {
+	*x = RestoreAiAgentRevisionRequest{}
+	mi := &file_ai_service_v1_ai_agent_proto_msgTypes[14]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RestoreAiAgentRevisionRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RestoreAiAgentRevisionRequest) ProtoMessage() {}
+
+func (x *RestoreAiAgentRevisionRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ai_service_v1_ai_agent_proto_msgTypes[14]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RestoreAiAgentRevisionRequest.ProtoReflect.Descriptor instead.
+func (*RestoreAiAgentRevisionRequest) Descriptor() ([]byte, []int) {
+	return file_ai_service_v1_ai_agent_proto_rawDescGZIP(), []int{14}
+}
+
+func (x *RestoreAiAgentRevisionRequest) GetId() uint32 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
 var File_ai_service_v1_ai_agent_proto protoreflect.FileDescriptor
 
 const file_ai_service_v1_ai_agent_proto_rawDesc = "" +
@@ -933,7 +1171,30 @@ const file_ai_service_v1_ai_agent_proto_rawDesc = "" +
 	"\x05items\x18\x01 \x03(\v2\x19.ai.service.v1.AiAgentRunR\x05items\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x04R\x05total\"&\n" +
 	"\x14GetAiAgentRunRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\rR\x02id2\xf3\x04\n" +
+	"\x02id\x18\x01 \x01(\rR\x02id\"\xc6\x02\n" +
+	"\x0fAiAgentRevision\x12\x13\n" +
+	"\x02id\x18\x01 \x01(\rH\x00R\x02id\x88\x01\x01\x12\x1a\n" +
+	"\x06app_id\x18\x02 \x01(\rH\x01R\x05appId\x88\x01\x01\x12;\n" +
+	"\x05graph\x18\x03 \x01(\tB \xbaG\x1d\x92\x02\x1a更新前的图 DSL 快照H\x02R\x05graph\x88\x01\x01\x12\x1b\n" +
+	"\x06source\x18\x04 \x01(\tH\x03R\x06source\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"created_by\x18d \x01(\rH\x04R\tcreatedBy\x88\x01\x01\x12?\n" +
+	"\n" +
+	"created_at\x18\xc8\x01 \x01(\v2\x1a.google.protobuf.TimestampH\x05R\tcreatedAt\x88\x01\x01B\x05\n" +
+	"\x03_idB\t\n" +
+	"\a_app_idB\b\n" +
+	"\x06_graphB\t\n" +
+	"\a_sourceB\r\n" +
+	"\v_created_byB\r\n" +
+	"\v_created_at\"\x87\x01\n" +
+	"\x1bListAiAgentRevisionsRequest\x12%\n" +
+	"\x06app_id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b应用IDR\x05appId\x12A\n" +
+	"\x04page\x18\x02 \x01(\v2\x19.pagination.PagingRequestB\x12\xbaG\x0f\x92\x02\f分页参数R\x04page\"j\n" +
+	"\x1cListAiAgentRevisionsResponse\x124\n" +
+	"\x05items\x18\x01 \x03(\v2\x1e.ai.service.v1.AiAgentRevisionR\x05items\x12\x14\n" +
+	"\x05total\x18\x02 \x01(\x04R\x05total\"?\n" +
+	"\x1dRestoreAiAgentRevisionRequest\x12\x1e\n" +
+	"\x02id\x18\x01 \x01(\rB\x0e\xbaG\v\x92\x02\b快照IDR\x02id2\xba\x06\n" +
 	"\x0eAiAgentService\x12K\n" +
 	"\x04List\x12\x19.pagination.PagingRequest\x1a&.ai.service.v1.ListAiAgentAppsResponse\"\x00\x12G\n" +
 	"\x03Get\x12#.ai.service.v1.GetAiAgentAppRequest\x1a\x19.ai.service.v1.AiAgentApp\"\x00\x12M\n" +
@@ -942,7 +1203,9 @@ const file_ai_service_v1_ai_agent_proto_rawDesc = "" +
 	"\x06Delete\x12&.ai.service.v1.DeleteAiAgentAppRequest\x1a\x16.google.protobuf.Empty\"\x00\x12G\n" +
 	"\x03Run\x12#.ai.service.v1.RunAiAgentAppRequest\x1a\x19.ai.service.v1.AiAgentRun\"\x00\x12O\n" +
 	"\bListRuns\x12\x19.pagination.PagingRequest\x1a&.ai.service.v1.ListAiAgentRunsResponse\"\x00\x12J\n" +
-	"\x06GetRun\x12#.ai.service.v1.GetAiAgentRunRequest\x1a\x19.ai.service.v1.AiAgentRun\"\x00B\xa4\x01\n" +
+	"\x06GetRun\x12#.ai.service.v1.GetAiAgentRunRequest\x1a\x19.ai.service.v1.AiAgentRun\"\x00\x12j\n" +
+	"\rListRevisions\x12*.ai.service.v1.ListAiAgentRevisionsRequest\x1a+.ai.service.v1.ListAiAgentRevisionsResponse\"\x00\x12Y\n" +
+	"\x0fRestoreRevision\x12,.ai.service.v1.RestoreAiAgentRevisionRequest\x1a\x16.google.protobuf.Empty\"\x00B\xa4\x01\n" +
 	"\x11com.ai.service.v1B\fAiAgentProtoP\x01Z+go-wind-admin/api/gen/go/ai/service/v1;aipb\xa2\x02\x03ASX\xaa\x02\rAi.Service.V1\xca\x02\rAi\\Service\\V1\xe2\x02\x19Ai\\Service\\V1\\GPBMetadata\xea\x02\x0fAi::Service::V1b\x06proto3"
 
 var (
@@ -958,58 +1221,69 @@ func file_ai_service_v1_ai_agent_proto_rawDescGZIP() []byte {
 }
 
 var file_ai_service_v1_ai_agent_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_ai_service_v1_ai_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_ai_service_v1_ai_agent_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
 var file_ai_service_v1_ai_agent_proto_goTypes = []any{
-	(AiAgentRun_Status)(0),          // 0: ai.service.v1.AiAgentRun.Status
-	(*AiAgentApp)(nil),              // 1: ai.service.v1.AiAgentApp
-	(*AgentRunEvent)(nil),           // 2: ai.service.v1.AgentRunEvent
-	(*AiAgentRun)(nil),              // 3: ai.service.v1.AiAgentRun
-	(*ListAiAgentAppsResponse)(nil), // 4: ai.service.v1.ListAiAgentAppsResponse
-	(*GetAiAgentAppRequest)(nil),    // 5: ai.service.v1.GetAiAgentAppRequest
-	(*CreateAiAgentAppRequest)(nil), // 6: ai.service.v1.CreateAiAgentAppRequest
-	(*UpdateAiAgentAppRequest)(nil), // 7: ai.service.v1.UpdateAiAgentAppRequest
-	(*DeleteAiAgentAppRequest)(nil), // 8: ai.service.v1.DeleteAiAgentAppRequest
-	(*RunAiAgentAppRequest)(nil),    // 9: ai.service.v1.RunAiAgentAppRequest
-	(*ListAiAgentRunsResponse)(nil), // 10: ai.service.v1.ListAiAgentRunsResponse
-	(*GetAiAgentRunRequest)(nil),    // 11: ai.service.v1.GetAiAgentRunRequest
-	nil,                             // 12: ai.service.v1.RunAiAgentAppRequest.InputEntry
-	(*timestamppb.Timestamp)(nil),   // 13: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),   // 14: google.protobuf.FieldMask
-	(*v1.PagingRequest)(nil),        // 15: pagination.PagingRequest
-	(*emptypb.Empty)(nil),           // 16: google.protobuf.Empty
+	(AiAgentRun_Status)(0),                // 0: ai.service.v1.AiAgentRun.Status
+	(*AiAgentApp)(nil),                    // 1: ai.service.v1.AiAgentApp
+	(*AgentRunEvent)(nil),                 // 2: ai.service.v1.AgentRunEvent
+	(*AiAgentRun)(nil),                    // 3: ai.service.v1.AiAgentRun
+	(*ListAiAgentAppsResponse)(nil),       // 4: ai.service.v1.ListAiAgentAppsResponse
+	(*GetAiAgentAppRequest)(nil),          // 5: ai.service.v1.GetAiAgentAppRequest
+	(*CreateAiAgentAppRequest)(nil),       // 6: ai.service.v1.CreateAiAgentAppRequest
+	(*UpdateAiAgentAppRequest)(nil),       // 7: ai.service.v1.UpdateAiAgentAppRequest
+	(*DeleteAiAgentAppRequest)(nil),       // 8: ai.service.v1.DeleteAiAgentAppRequest
+	(*RunAiAgentAppRequest)(nil),          // 9: ai.service.v1.RunAiAgentAppRequest
+	(*ListAiAgentRunsResponse)(nil),       // 10: ai.service.v1.ListAiAgentRunsResponse
+	(*GetAiAgentRunRequest)(nil),          // 11: ai.service.v1.GetAiAgentRunRequest
+	(*AiAgentRevision)(nil),               // 12: ai.service.v1.AiAgentRevision
+	(*ListAiAgentRevisionsRequest)(nil),   // 13: ai.service.v1.ListAiAgentRevisionsRequest
+	(*ListAiAgentRevisionsResponse)(nil),  // 14: ai.service.v1.ListAiAgentRevisionsResponse
+	(*RestoreAiAgentRevisionRequest)(nil), // 15: ai.service.v1.RestoreAiAgentRevisionRequest
+	nil,                                   // 16: ai.service.v1.RunAiAgentAppRequest.InputEntry
+	(*timestamppb.Timestamp)(nil),         // 17: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),         // 18: google.protobuf.FieldMask
+	(*v1.PagingRequest)(nil),              // 19: pagination.PagingRequest
+	(*emptypb.Empty)(nil),                 // 20: google.protobuf.Empty
 }
 var file_ai_service_v1_ai_agent_proto_depIdxs = []int32{
-	13, // 0: ai.service.v1.AiAgentApp.created_at:type_name -> google.protobuf.Timestamp
-	13, // 1: ai.service.v1.AiAgentApp.updated_at:type_name -> google.protobuf.Timestamp
+	17, // 0: ai.service.v1.AiAgentApp.created_at:type_name -> google.protobuf.Timestamp
+	17, // 1: ai.service.v1.AiAgentApp.updated_at:type_name -> google.protobuf.Timestamp
 	0,  // 2: ai.service.v1.AiAgentRun.status:type_name -> ai.service.v1.AiAgentRun.Status
-	13, // 3: ai.service.v1.AiAgentRun.created_at:type_name -> google.protobuf.Timestamp
+	17, // 3: ai.service.v1.AiAgentRun.created_at:type_name -> google.protobuf.Timestamp
 	1,  // 4: ai.service.v1.ListAiAgentAppsResponse.items:type_name -> ai.service.v1.AiAgentApp
 	1,  // 5: ai.service.v1.CreateAiAgentAppRequest.data:type_name -> ai.service.v1.AiAgentApp
 	1,  // 6: ai.service.v1.UpdateAiAgentAppRequest.data:type_name -> ai.service.v1.AiAgentApp
-	14, // 7: ai.service.v1.UpdateAiAgentAppRequest.update_mask:type_name -> google.protobuf.FieldMask
-	12, // 8: ai.service.v1.RunAiAgentAppRequest.input:type_name -> ai.service.v1.RunAiAgentAppRequest.InputEntry
+	18, // 7: ai.service.v1.UpdateAiAgentAppRequest.update_mask:type_name -> google.protobuf.FieldMask
+	16, // 8: ai.service.v1.RunAiAgentAppRequest.input:type_name -> ai.service.v1.RunAiAgentAppRequest.InputEntry
 	3,  // 9: ai.service.v1.ListAiAgentRunsResponse.items:type_name -> ai.service.v1.AiAgentRun
-	15, // 10: ai.service.v1.AiAgentService.List:input_type -> pagination.PagingRequest
-	5,  // 11: ai.service.v1.AiAgentService.Get:input_type -> ai.service.v1.GetAiAgentAppRequest
-	6,  // 12: ai.service.v1.AiAgentService.Create:input_type -> ai.service.v1.CreateAiAgentAppRequest
-	7,  // 13: ai.service.v1.AiAgentService.Update:input_type -> ai.service.v1.UpdateAiAgentAppRequest
-	8,  // 14: ai.service.v1.AiAgentService.Delete:input_type -> ai.service.v1.DeleteAiAgentAppRequest
-	9,  // 15: ai.service.v1.AiAgentService.Run:input_type -> ai.service.v1.RunAiAgentAppRequest
-	15, // 16: ai.service.v1.AiAgentService.ListRuns:input_type -> pagination.PagingRequest
-	11, // 17: ai.service.v1.AiAgentService.GetRun:input_type -> ai.service.v1.GetAiAgentRunRequest
-	4,  // 18: ai.service.v1.AiAgentService.List:output_type -> ai.service.v1.ListAiAgentAppsResponse
-	1,  // 19: ai.service.v1.AiAgentService.Get:output_type -> ai.service.v1.AiAgentApp
-	1,  // 20: ai.service.v1.AiAgentService.Create:output_type -> ai.service.v1.AiAgentApp
-	16, // 21: ai.service.v1.AiAgentService.Update:output_type -> google.protobuf.Empty
-	16, // 22: ai.service.v1.AiAgentService.Delete:output_type -> google.protobuf.Empty
-	3,  // 23: ai.service.v1.AiAgentService.Run:output_type -> ai.service.v1.AiAgentRun
-	10, // 24: ai.service.v1.AiAgentService.ListRuns:output_type -> ai.service.v1.ListAiAgentRunsResponse
-	3,  // 25: ai.service.v1.AiAgentService.GetRun:output_type -> ai.service.v1.AiAgentRun
-	18, // [18:26] is the sub-list for method output_type
-	10, // [10:18] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	17, // 10: ai.service.v1.AiAgentRevision.created_at:type_name -> google.protobuf.Timestamp
+	19, // 11: ai.service.v1.ListAiAgentRevisionsRequest.page:type_name -> pagination.PagingRequest
+	12, // 12: ai.service.v1.ListAiAgentRevisionsResponse.items:type_name -> ai.service.v1.AiAgentRevision
+	19, // 13: ai.service.v1.AiAgentService.List:input_type -> pagination.PagingRequest
+	5,  // 14: ai.service.v1.AiAgentService.Get:input_type -> ai.service.v1.GetAiAgentAppRequest
+	6,  // 15: ai.service.v1.AiAgentService.Create:input_type -> ai.service.v1.CreateAiAgentAppRequest
+	7,  // 16: ai.service.v1.AiAgentService.Update:input_type -> ai.service.v1.UpdateAiAgentAppRequest
+	8,  // 17: ai.service.v1.AiAgentService.Delete:input_type -> ai.service.v1.DeleteAiAgentAppRequest
+	9,  // 18: ai.service.v1.AiAgentService.Run:input_type -> ai.service.v1.RunAiAgentAppRequest
+	19, // 19: ai.service.v1.AiAgentService.ListRuns:input_type -> pagination.PagingRequest
+	11, // 20: ai.service.v1.AiAgentService.GetRun:input_type -> ai.service.v1.GetAiAgentRunRequest
+	13, // 21: ai.service.v1.AiAgentService.ListRevisions:input_type -> ai.service.v1.ListAiAgentRevisionsRequest
+	15, // 22: ai.service.v1.AiAgentService.RestoreRevision:input_type -> ai.service.v1.RestoreAiAgentRevisionRequest
+	4,  // 23: ai.service.v1.AiAgentService.List:output_type -> ai.service.v1.ListAiAgentAppsResponse
+	1,  // 24: ai.service.v1.AiAgentService.Get:output_type -> ai.service.v1.AiAgentApp
+	1,  // 25: ai.service.v1.AiAgentService.Create:output_type -> ai.service.v1.AiAgentApp
+	20, // 26: ai.service.v1.AiAgentService.Update:output_type -> google.protobuf.Empty
+	20, // 27: ai.service.v1.AiAgentService.Delete:output_type -> google.protobuf.Empty
+	3,  // 28: ai.service.v1.AiAgentService.Run:output_type -> ai.service.v1.AiAgentRun
+	10, // 29: ai.service.v1.AiAgentService.ListRuns:output_type -> ai.service.v1.ListAiAgentRunsResponse
+	3,  // 30: ai.service.v1.AiAgentService.GetRun:output_type -> ai.service.v1.AiAgentRun
+	14, // 31: ai.service.v1.AiAgentService.ListRevisions:output_type -> ai.service.v1.ListAiAgentRevisionsResponse
+	20, // 32: ai.service.v1.AiAgentService.RestoreRevision:output_type -> google.protobuf.Empty
+	23, // [23:33] is the sub-list for method output_type
+	13, // [13:23] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_ai_service_v1_ai_agent_proto_init() }
@@ -1019,13 +1293,14 @@ func file_ai_service_v1_ai_agent_proto_init() {
 	}
 	file_ai_service_v1_ai_agent_proto_msgTypes[0].OneofWrappers = []any{}
 	file_ai_service_v1_ai_agent_proto_msgTypes[2].OneofWrappers = []any{}
+	file_ai_service_v1_ai_agent_proto_msgTypes[11].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ai_service_v1_ai_agent_proto_rawDesc), len(file_ai_service_v1_ai_agent_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   12,
+			NumMessages:   16,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -21,14 +21,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	AiAgentService_List_FullMethodName     = "/ai.service.v1.AiAgentService/List"
-	AiAgentService_Get_FullMethodName      = "/ai.service.v1.AiAgentService/Get"
-	AiAgentService_Create_FullMethodName   = "/ai.service.v1.AiAgentService/Create"
-	AiAgentService_Update_FullMethodName   = "/ai.service.v1.AiAgentService/Update"
-	AiAgentService_Delete_FullMethodName   = "/ai.service.v1.AiAgentService/Delete"
-	AiAgentService_Run_FullMethodName      = "/ai.service.v1.AiAgentService/Run"
-	AiAgentService_ListRuns_FullMethodName = "/ai.service.v1.AiAgentService/ListRuns"
-	AiAgentService_GetRun_FullMethodName   = "/ai.service.v1.AiAgentService/GetRun"
+	AiAgentService_List_FullMethodName            = "/ai.service.v1.AiAgentService/List"
+	AiAgentService_Get_FullMethodName             = "/ai.service.v1.AiAgentService/Get"
+	AiAgentService_Create_FullMethodName          = "/ai.service.v1.AiAgentService/Create"
+	AiAgentService_Update_FullMethodName          = "/ai.service.v1.AiAgentService/Update"
+	AiAgentService_Delete_FullMethodName          = "/ai.service.v1.AiAgentService/Delete"
+	AiAgentService_Run_FullMethodName             = "/ai.service.v1.AiAgentService/Run"
+	AiAgentService_ListRuns_FullMethodName        = "/ai.service.v1.AiAgentService/ListRuns"
+	AiAgentService_GetRun_FullMethodName          = "/ai.service.v1.AiAgentService/GetRun"
+	AiAgentService_ListRevisions_FullMethodName   = "/ai.service.v1.AiAgentService/ListRevisions"
+	AiAgentService_RestoreRevision_FullMethodName = "/ai.service.v1.AiAgentService/RestoreRevision"
 )
 
 // AiAgentServiceClient is the client API for AiAgentService service.
@@ -56,6 +58,10 @@ type AiAgentServiceClient interface {
 	ListRuns(ctx context.Context, in *v1.PagingRequest, opts ...grpc.CallOption) (*ListAiAgentRunsResponse, error)
 	// 查询运行详情（含 trace JSON）
 	GetRun(ctx context.Context, in *GetAiAgentRunRequest, opts ...grpc.CallOption) (*AiAgentRun, error)
+	// 版本历史（每次更新留旧版 graph 快照，新快照在前）
+	ListRevisions(ctx context.Context, in *ListAiAgentRevisionsRequest, opts ...grpc.CallOption) (*ListAiAgentRevisionsResponse, error)
+	// 恢复版本（快照 graph 写回主表；恢复前先快照当前版本，可逆）
+	RestoreRevision(ctx context.Context, in *RestoreAiAgentRevisionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
 type aiAgentServiceClient struct {
@@ -146,6 +152,26 @@ func (c *aiAgentServiceClient) GetRun(ctx context.Context, in *GetAiAgentRunRequ
 	return out, nil
 }
 
+func (c *aiAgentServiceClient) ListRevisions(ctx context.Context, in *ListAiAgentRevisionsRequest, opts ...grpc.CallOption) (*ListAiAgentRevisionsResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListAiAgentRevisionsResponse)
+	err := c.cc.Invoke(ctx, AiAgentService_ListRevisions_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *aiAgentServiceClient) RestoreRevision(ctx context.Context, in *RestoreAiAgentRevisionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, AiAgentService_RestoreRevision_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // AiAgentServiceServer is the server API for AiAgentService service.
 // All implementations must embed UnimplementedAiAgentServiceServer
 // for forward compatibility.
@@ -171,6 +197,10 @@ type AiAgentServiceServer interface {
 	ListRuns(context.Context, *v1.PagingRequest) (*ListAiAgentRunsResponse, error)
 	// 查询运行详情（含 trace JSON）
 	GetRun(context.Context, *GetAiAgentRunRequest) (*AiAgentRun, error)
+	// 版本历史（每次更新留旧版 graph 快照，新快照在前）
+	ListRevisions(context.Context, *ListAiAgentRevisionsRequest) (*ListAiAgentRevisionsResponse, error)
+	// 恢复版本（快照 graph 写回主表；恢复前先快照当前版本，可逆）
+	RestoreRevision(context.Context, *RestoreAiAgentRevisionRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedAiAgentServiceServer()
 }
 
@@ -204,6 +234,12 @@ func (UnimplementedAiAgentServiceServer) ListRuns(context.Context, *v1.PagingReq
 }
 func (UnimplementedAiAgentServiceServer) GetRun(context.Context, *GetAiAgentRunRequest) (*AiAgentRun, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetRun not implemented")
+}
+func (UnimplementedAiAgentServiceServer) ListRevisions(context.Context, *ListAiAgentRevisionsRequest) (*ListAiAgentRevisionsResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ListRevisions not implemented")
+}
+func (UnimplementedAiAgentServiceServer) RestoreRevision(context.Context, *RestoreAiAgentRevisionRequest) (*emptypb.Empty, error) {
+	return nil, status.Error(codes.Unimplemented, "method RestoreRevision not implemented")
 }
 func (UnimplementedAiAgentServiceServer) mustEmbedUnimplementedAiAgentServiceServer() {}
 func (UnimplementedAiAgentServiceServer) testEmbeddedByValue()                        {}
@@ -370,6 +406,42 @@ func _AiAgentService_GetRun_Handler(srv interface{}, ctx context.Context, dec fu
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AiAgentService_ListRevisions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAiAgentRevisionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AiAgentServiceServer).ListRevisions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AiAgentService_ListRevisions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AiAgentServiceServer).ListRevisions(ctx, req.(*ListAiAgentRevisionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AiAgentService_RestoreRevision_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RestoreAiAgentRevisionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AiAgentServiceServer).RestoreRevision(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AiAgentService_RestoreRevision_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AiAgentServiceServer).RestoreRevision(ctx, req.(*RestoreAiAgentRevisionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // AiAgentService_ServiceDesc is the grpc.ServiceDesc for AiAgentService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -408,6 +480,14 @@ var AiAgentService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetRun",
 			Handler:    _AiAgentService_GetRun_Handler,
+		},
+		{
+			MethodName: "ListRevisions",
+			Handler:    _AiAgentService_ListRevisions_Handler,
+		},
+		{
+			MethodName: "RestoreRevision",
+			Handler:    _AiAgentService_RestoreRevision_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

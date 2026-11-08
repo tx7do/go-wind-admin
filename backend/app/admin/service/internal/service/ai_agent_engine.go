@@ -28,7 +28,7 @@ const agentMaxSteps = 50
 // agentNodeTypes 合法节点类型集。
 var agentNodeTypes = map[string]bool{
 	"start": true, "knowledge": true, "llm": true, "condition": true, "end": true,
-	"http": true,
+	"http": true, "script": true,
 }
 
 // agentGraphNode 图节点。data 保持无类型 map：五种节点各自的键在执行处按需取，
@@ -135,6 +135,10 @@ func validateAgentGraph(g *agentGraph) error {
 			endCount++
 		case "http":
 			if err := validateAgentHTTPNode(n); err != nil {
+				return err
+			}
+		case "script":
+			if err := validateAgentScriptNode(n); err != nil {
 				return err
 			}
 		}
@@ -287,6 +291,9 @@ type agentEngineDeps struct {
 	searchKnowledge func(ctx context.Context, node *agentGraphNode, query string) (contextText string, hits int, err error)
 	// runLLM 执行 LLM 节点（含工具调用循环），返回最终答案与用量。
 	runLLM func(ctx context.Context, node *agentGraphNode, system, user string) (string, agentUsage, error)
+	// runScript 执行 script 节点：一次性隔离沙箱跑完返回上下文数据（真实现 =
+	// ScriptRuntime.TestRun，见 runScriptForAgent）；引擎本体不触沙箱，测试注桩。
+	runScript func(ctx context.Context, node *agentGraphNode, vars map[string]map[string]string) (map[string]any, error)
 	// onStep 节点执行阶段回调（node_start / node_end），SSE 流式观感用；nil = 不推。
 	// 推帧失败（订阅端慢）不影响执行——回调实现方自己保证尽力而为语义。
 	onStep func(phase, nodeID, summary, status string)
@@ -405,6 +412,17 @@ func executeAgentGraph(
 				branchTaken = "false"
 			}
 			summary = fmt.Sprintf("branch=%t", approved)
+
+		case "script":
+			if deps.runScript == nil {
+				return "", trace, usage, agentStepError(node, fmt.Errorf("script node %q unavailable: script runtime not wired", node.ID))
+			}
+			data, serr := deps.runScript(ctx, node, vars)
+			if serr != nil {
+				return "", trace, usage, agentStepError(node, serr)
+			}
+			vars[node.ID] = agentScriptOutputs(data)
+			summary = agentScriptSummary(vars[node.ID])
 
 		case "end":
 			outText, rerr := renderAgentTemplate(agentDataString(node.Data, "output"), vars)

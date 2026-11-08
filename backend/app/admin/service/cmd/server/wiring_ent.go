@@ -172,6 +172,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	aiKnowledgeRepo := data.NewAiKnowledgeRepo(ctx, entClient)
 	aiAgentAppRepo := data.NewAiAgentAppRepo(ctx, entClient)
 	aiAgentRunRepo := data.NewAiAgentRunRepo(ctx, entClient)
+	aiAgentRevisionRepo := data.NewAiAgentRevisionRepo(ctx, entClient)
 
 	// ═══════════════════════ 三、认证与鉴权 ═══════════════════════
 
@@ -328,7 +329,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	aiUsageLogService := service.NewAiUsageLogService(ctx, aiUsageLogRepo)
 	aiKnowledgeService := service.NewAiKnowledgeService(ctx, aiKnowledgeRepo, aiProviderRepo, aiUsageLogRepo)
 	aiChatService := service.NewAiChatService(ctx, aiConversationRepo, aiMessageRepo, aiProviderRepo, aiUsageLogRepo, aiKnowledgeRepo)
-	aaAiAgentService := service.NewAiAgentService(ctx, aiAgentAppRepo, aiAgentRunRepo, aiProviderRepo, aiKnowledgeRepo, aiUsageLogRepo)
+	aaAiAgentService := service.NewAiAgentService(ctx, aiAgentAppRepo, aiAgentRunRepo, aiProviderRepo, aiKnowledgeRepo, aiUsageLogRepo, scriptRuntime, aiAgentRevisionRepo)
 
 	// ═══════════════════════ 五、传输层(internal/server) ═══════════════════════
 

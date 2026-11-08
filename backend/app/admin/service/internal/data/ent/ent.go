@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/accesskey"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiagentapp"
+	"go-wind-admin/app/admin/service/internal/data/ent/aiagentrevision"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiagentrun"
 	"go-wind-admin/app/admin/service/internal/data/ent/aichunk"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiconversation"
@@ -140,6 +141,7 @@ func checkColumn(t, c string) error {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
 			accesskey.Table:                accesskey.ValidColumn,
 			aiagentapp.Table:               aiagentapp.ValidColumn,
+			aiagentrevision.Table:          aiagentrevision.ValidColumn,
 			aiagentrun.Table:               aiagentrun.ValidColumn,
 			aichunk.Table:                  aichunk.ValidColumn,
 			aiconversation.Table:           aiconversation.ValidColumn,

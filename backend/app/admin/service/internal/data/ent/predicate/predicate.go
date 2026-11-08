@@ -12,6 +12,9 @@ type AccessKey func(*sql.Selector)
 // AiAgentApp is the predicate function for aiagentapp builders.
 type AiAgentApp func(*sql.Selector)
 
+// AiAgentRevision is the predicate function for aiagentrevision builders.
+type AiAgentRevision func(*sql.Selector)
+
 // AiAgentRun is the predicate function for aiagentrun builders.
 type AiAgentRun func(*sql.Selector)
 

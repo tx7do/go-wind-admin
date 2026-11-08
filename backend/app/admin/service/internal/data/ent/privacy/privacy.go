@@ -159,6 +159,30 @@ func (f AiAgentAppMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Muta
 	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AiAgentAppMutation", m)
 }
 
+// The AiAgentRevisionQueryRuleFunc type is an adapter to allow the use of ordinary
+// functions as a query rule.
+type AiAgentRevisionQueryRuleFunc func(context.Context, *ent.AiAgentRevisionQuery) error
+
+// EvalQuery return f(ctx, q).
+func (f AiAgentRevisionQueryRuleFunc) EvalQuery(ctx context.Context, q ent.Query) error {
+	if q, ok := q.(*ent.AiAgentRevisionQuery); ok {
+		return f(ctx, q)
+	}
+	return Denyf("ent/privacy: unexpected query type %T, expect *ent.AiAgentRevisionQuery", q)
+}
+
+// The AiAgentRevisionMutationRuleFunc type is an adapter to allow the use of ordinary
+// functions as a mutation rule.
+type AiAgentRevisionMutationRuleFunc func(context.Context, *ent.AiAgentRevisionMutation) error
+
+// EvalMutation calls f(ctx, m).
+func (f AiAgentRevisionMutationRuleFunc) EvalMutation(ctx context.Context, m ent.Mutation) error {
+	if m, ok := m.(*ent.AiAgentRevisionMutation); ok {
+		return f(ctx, m)
+	}
+	return Denyf("ent/privacy: unexpected mutation type %T, expect *ent.AiAgentRevisionMutation", m)
+}
+
 // The AiAgentRunQueryRuleFunc type is an adapter to allow the use of ordinary
 // functions as a query rule.
 type AiAgentRunQueryRuleFunc func(context.Context, *ent.AiAgentRunQuery) error
@@ -1734,6 +1758,8 @@ func queryFilter(q ent.Query) (Filter, error) {
 		return q.Filter(), nil
 	case *ent.AiAgentAppQuery:
 		return q.Filter(), nil
+	case *ent.AiAgentRevisionQuery:
+		return q.Filter(), nil
 	case *ent.AiAgentRunQuery:
 		return q.Filter(), nil
 	case *ent.AiChunkQuery:
@@ -1872,6 +1898,8 @@ func mutationFilter(m ent.Mutation) (Filter, error) {
 	case *ent.AccessKeyMutation:
 		return m.Filter(), nil
 	case *ent.AiAgentAppMutation:
+		return m.Filter(), nil
+	case *ent.AiAgentRevisionMutation:
 		return m.Filter(), nil
 	case *ent.AiAgentRunMutation:
 		return m.Filter(), nil

@@ -27,7 +27,9 @@ const OperationAiAgentServiceDelete = "/admin.service.v1.AiAgentService/Delete"
 const OperationAiAgentServiceGet = "/admin.service.v1.AiAgentService/Get"
 const OperationAiAgentServiceGetRun = "/admin.service.v1.AiAgentService/GetRun"
 const OperationAiAgentServiceList = "/admin.service.v1.AiAgentService/List"
+const OperationAiAgentServiceListRevisions = "/admin.service.v1.AiAgentService/ListRevisions"
 const OperationAiAgentServiceListRuns = "/admin.service.v1.AiAgentService/ListRuns"
+const OperationAiAgentServiceRestoreRevision = "/admin.service.v1.AiAgentService/RestoreRevision"
 const OperationAiAgentServiceRun = "/admin.service.v1.AiAgentService/Run"
 const OperationAiAgentServiceUpdate = "/admin.service.v1.AiAgentService/Update"
 
@@ -42,8 +44,12 @@ type AiAgentServiceHTTPServer interface {
 	GetRun(context.Context, *v11.GetAiAgentRunRequest) (*v11.AiAgentRun, error)
 	// List 分页查询 Agent 应用列表
 	List(context.Context, *v1.PagingRequest) (*v11.ListAiAgentAppsResponse, error)
+	// ListRevisions 版本历史（每次更新留旧版 graph 快照，新快照在前）
+	ListRevisions(context.Context, *v11.ListAiAgentRevisionsRequest) (*v11.ListAiAgentRevisionsResponse, error)
 	// ListRuns 查询运行台账（appId eq 过滤走 PagingRequest；独立集合路径，避免与 /{id} 参数路由抢配）
 	ListRuns(context.Context, *v1.PagingRequest) (*v11.ListAiAgentRunsResponse, error)
+	// RestoreRevision 恢复版本（快照 graph 写回主表；恢复前先快照当前版本，可逆）
+	RestoreRevision(context.Context, *v11.RestoreAiAgentRevisionRequest) (*emptypb.Empty, error)
 	// Run 试运行（同步执行图，返回含 trace 的运行记录）
 	Run(context.Context, *v11.RunAiAgentAppRequest) (*v11.AiAgentRun, error)
 	// Update 更新 Agent 应用
@@ -60,6 +66,8 @@ func RegisterAiAgentServiceHTTPServer(s *http.Server, srv AiAgentServiceHTTPServ
 	r.POST("/admin/v1/ai/agents/{id}/run", _AiAgentService_Run0_HTTP_Handler(srv))
 	r.GET("/admin/v1/ai/agent-runs", _AiAgentService_ListRuns0_HTTP_Handler(srv))
 	r.GET("/admin/v1/ai/agent-runs/{id}", _AiAgentService_GetRun0_HTTP_Handler(srv))
+	r.POST("/admin/v1/ai/agents/{app_id}/revisions", _AiAgentService_ListRevisions0_HTTP_Handler(srv))
+	r.POST("/admin/v1/ai/agents/revisions/{id}:restore", _AiAgentService_RestoreRevision0_HTTP_Handler(srv))
 }
 
 func _AiAgentService_List1_HTTP_Handler(srv AiAgentServiceHTTPServer) func(ctx http.Context) error {
@@ -238,6 +246,56 @@ func _AiAgentService_GetRun0_HTTP_Handler(srv AiAgentServiceHTTPServer) func(ctx
 	}
 }
 
+func _AiAgentService_ListRevisions0_HTTP_Handler(srv AiAgentServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.ListAiAgentRevisionsRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAiAgentServiceListRevisions)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.ListRevisions(ctx, req.(*v11.ListAiAgentRevisionsRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*v11.ListAiAgentRevisionsResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _AiAgentService_RestoreRevision0_HTTP_Handler(srv AiAgentServiceHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in v11.RestoreAiAgentRevisionRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindVars(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationAiAgentServiceRestoreRevision)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.RestoreRevision(ctx, req.(*v11.RestoreAiAgentRevisionRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*emptypb.Empty)
+		return ctx.Result(200, reply)
+	}
+}
+
 type AiAgentServiceHTTPClient interface {
 	// Create 创建 Agent 应用
 	Create(ctx context.Context, req *v11.CreateAiAgentAppRequest, opts ...http.CallOption) (rsp *v11.AiAgentApp, err error)
@@ -249,8 +307,12 @@ type AiAgentServiceHTTPClient interface {
 	GetRun(ctx context.Context, req *v11.GetAiAgentRunRequest, opts ...http.CallOption) (rsp *v11.AiAgentRun, err error)
 	// List 分页查询 Agent 应用列表
 	List(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListAiAgentAppsResponse, err error)
+	// ListRevisions 版本历史（每次更新留旧版 graph 快照，新快照在前）
+	ListRevisions(ctx context.Context, req *v11.ListAiAgentRevisionsRequest, opts ...http.CallOption) (rsp *v11.ListAiAgentRevisionsResponse, err error)
 	// ListRuns 查询运行台账（appId eq 过滤走 PagingRequest；独立集合路径，避免与 /{id} 参数路由抢配）
 	ListRuns(ctx context.Context, req *v1.PagingRequest, opts ...http.CallOption) (rsp *v11.ListAiAgentRunsResponse, err error)
+	// RestoreRevision 恢复版本（快照 graph 写回主表；恢复前先快照当前版本，可逆）
+	RestoreRevision(ctx context.Context, req *v11.RestoreAiAgentRevisionRequest, opts ...http.CallOption) (rsp *emptypb.Empty, err error)
 	// Run 试运行（同步执行图，返回含 trace 的运行记录）
 	Run(ctx context.Context, req *v11.RunAiAgentAppRequest, opts ...http.CallOption) (rsp *v11.AiAgentRun, err error)
 	// Update 更新 Agent 应用
@@ -335,6 +397,20 @@ func (c *AiAgentServiceHTTPClientImpl) List(ctx context.Context, in *v1.PagingRe
 	return &out, nil
 }
 
+// ListRevisions 版本历史（每次更新留旧版 graph 快照，新快照在前）
+func (c *AiAgentServiceHTTPClientImpl) ListRevisions(ctx context.Context, in *v11.ListAiAgentRevisionsRequest, opts ...http.CallOption) (*v11.ListAiAgentRevisionsResponse, error) {
+	var out v11.ListAiAgentRevisionsResponse
+	pattern := "/admin/v1/ai/agents/{app_id}/revisions"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationAiAgentServiceListRevisions))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
 // ListRuns 查询运行台账（appId eq 过滤走 PagingRequest；独立集合路径，避免与 /{id} 参数路由抢配）
 func (c *AiAgentServiceHTTPClientImpl) ListRuns(ctx context.Context, in *v1.PagingRequest, opts ...http.CallOption) (*v11.ListAiAgentRunsResponse, error) {
 	var out v11.ListAiAgentRunsResponse
@@ -343,6 +419,20 @@ func (c *AiAgentServiceHTTPClientImpl) ListRuns(ctx context.Context, in *v1.Pagi
 	opts = append(opts, http.Operation(OperationAiAgentServiceListRuns))
 	opts = append(opts, http.PathTemplate(pattern))
 	err := c.cc.Invoke(ctx, "GET", path, nil, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// RestoreRevision 恢复版本（快照 graph 写回主表；恢复前先快照当前版本，可逆）
+func (c *AiAgentServiceHTTPClientImpl) RestoreRevision(ctx context.Context, in *v11.RestoreAiAgentRevisionRequest, opts ...http.CallOption) (*emptypb.Empty, error) {
+	var out emptypb.Empty
+	pattern := "/admin/v1/ai/agents/revisions/{id}:restore"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationAiAgentServiceRestoreRevision))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
 	if err != nil {
 		return nil, err
 	}

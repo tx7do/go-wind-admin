@@ -301,3 +301,123 @@ func TestExecuteAgentGraphMissingRequired(t *testing.T) {
 		t.Fatalf("err = %v, want missing required input", err)
 	}
 }
+
+// ── script 节点 ────────────────────────────────────────────────────────────
+
+// TestValidateAgentScriptNode script 节点静态校验：语言白名单、source 非空且 ≤32KB。
+func TestValidateAgentScriptNode(t *testing.T) {
+	node := func(data map[string]any) *agentGraphNode {
+		return &agentGraphNode{ID: "scr_1", Type: "script", Data: data}
+	}
+	if err := validateAgentScriptNode(node(map[string]any{"language": "lua", "source": "return {ok=1}"})); err != nil {
+		t.Fatalf("valid lua rejected: %v", err)
+	}
+	if err := validateAgentScriptNode(node(map[string]any{"language": "python", "source": "print(1)"})); err == nil || !strings.Contains(err.Error(), "unsupported language") {
+		t.Fatalf("python err = %v", err)
+	}
+	if err := validateAgentScriptNode(node(map[string]any{"language": "lua", "source": "  "})); err == nil || !strings.Contains(err.Error(), "empty source") {
+		t.Fatalf("empty source err = %v", err)
+	}
+	big := strings.Repeat("a", 32<<10+1)
+	if err := validateAgentScriptNode(node(map[string]any{"language": "lua", "source": big})); err == nil || !strings.Contains(err.Error(), "exceeds") {
+		t.Fatalf("oversize err = %v", err)
+	}
+	// graph 级校验同样要拦（validateAgentGraph 的 per-type 分支）
+	raw := `{"nodes":[{"id":"a","type":"start","data":{}},{"id":"s","type":"script","data":{"language":"ruby","source":"1"}},{"id":"e","type":"end","data":{}}],"edges":[{"id":"x","source":"a","target":"s"},{"id":"y","source":"s","target":"e"}]}`
+	if err := validateAgentGraph(agentTestGraph(t, raw)); err == nil || !strings.Contains(err.Error(), "unsupported language") {
+		t.Fatalf("graph-level err = %v", err)
+	}
+}
+
+// TestAgentScriptOutputs 返回值收口：字符串直通、标量转写、嵌套值 JSON、nil 跳过。
+func TestAgentScriptOutputs(t *testing.T) {
+	outs := agentScriptOutputs(map[string]any{
+		"text":  "hello",
+		"count": 3,
+		"score": float64(2.5),
+		"ok":    true,
+		"list":  []any{"a", "b"},
+		"skip":  nil,
+	})
+	if outs["text"] != "hello" || outs["count"] != "3" || outs["score"] != "2.5" || outs["ok"] != "true" {
+		t.Fatalf("scalar outputs = %+v", outs)
+	}
+	if outs["list"] != `["a","b"]` {
+		t.Fatalf("list output = %q", outs["list"])
+	}
+	if _, ok := outs["skip"]; ok {
+		t.Fatal("nil value should be skipped (脚本显式 set nil = 不产出)")
+	}
+}
+
+// TestExecuteAgentGraphScript script 节点执行：全图上下文透传、source 原样
+// （不过模板——代码里的 {{...}} 是脚本自身语法）、产出写回节点命名空间供下游模板消费。
+func TestExecuteAgentGraphScript(t *testing.T) {
+	raw := `{
+	  "nodes": [
+	    {"id": "start_1", "type": "start", "position": {"x":0,"y":0}, "data": {"inputVars": [{"name": "question", "required": true}]}},
+	    {"id": "scr_1", "type": "script", "position": {"x":0,"y":0}, "data": {"language": "lua", "source": "return {answer = start_1.question .. \"!\"} -- {{not_a_template}}"}},
+	    {"id": "end_1", "type": "end", "position": {"x":0,"y":0}, "data": {"output": "答:{{scr_1.answer}}"}}
+	  ],
+	  "edges": [
+	    {"id": "e1", "source": "start_1", "target": "scr_1"},
+	    {"id": "e2", "source": "scr_1", "target": "end_1"}
+	  ]
+	}`
+	g := agentTestGraph(t, raw)
+
+	var gotSource string
+	var gotVars map[string]map[string]string
+	deps := &agentEngineDeps{
+		runScript: func(ctx context.Context, node *agentGraphNode, vars map[string]map[string]string) (map[string]any, error) {
+			gotSource = agentDataString(node.Data, "source")
+			gotVars = vars
+			return map[string]any{"answer": "七天无理由"}, nil
+		},
+	}
+	output, trace, _, err := executeAgentGraph(context.Background(), g, map[string]string{"question": "退货"}, deps)
+	if err != nil {
+		t.Fatalf("execute: %v", err)
+	}
+	if gotSource != `return {answer = start_1.question .. "!"} -- {{not_a_template}}` {
+		t.Fatalf("source was templated or mangled: %q", gotSource)
+	}
+	if gotVars == nil || gotVars["start_1"]["question"] != "退货" {
+		t.Fatalf("context not passed through: %+v", gotVars)
+	}
+	if output != "答:七天无理由" {
+		t.Fatalf("output = %q", output)
+	}
+	scriptStep := trace[1]
+	if scriptStep.NodeID != "scr_1" || scriptStep.Summary != "keys=answer" {
+		t.Fatalf("script trace step = %+v", scriptStep)
+	}
+}
+
+// TestExecuteAgentGraphScriptNotWired 图里有 script 节点但 runScript 未装配（nil）
+// 必须报错并留 trace，不得静默跳过——静默不执行只会让用户看到"输出是空的"。
+func TestExecuteAgentGraphScriptNotWired(t *testing.T) {
+	raw := `{
+	  "nodes": [
+	    {"id": "start_1", "type": "start", "data": {}},
+	    {"id": "scr_1", "type": "script", "data": {"language": "lua", "source": "return {}"}},
+	    {"id": "end_1", "type": "end", "data": {}}
+	  ],
+	  "edges": [
+	    {"id": "e1", "source": "start_1", "target": "scr_1"},
+	    {"id": "e2", "source": "scr_1", "target": "end_1"}
+	  ]
+	}`
+	g := agentTestGraph(t, raw)
+	_, trace, _, err := executeAgentGraph(context.Background(), g, nil, &agentEngineDeps{})
+	if err == nil || !strings.Contains(err.Error(), "script runtime not wired") {
+		t.Fatalf("err = %v, want script runtime not wired", err)
+	}
+	// 引擎既有语义：失败步不追加 trace（错误进运行行 error 列），trace 只留失败前的 ok 步
+	if err == nil || !strings.Contains(err.Error(), "node scr_1[script]") {
+		t.Fatalf("err should locate the failing node: %v", err)
+	}
+	if len(trace) != 1 || trace[0].NodeID != "start_1" || trace[0].Status != "ok" {
+		t.Fatalf("trace = %+v, want only prior ok steps", trace)
+	}
+}

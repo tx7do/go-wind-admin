@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiagentapp"
+	"go-wind-admin/app/admin/service/internal/data/ent/aiagentrevision"
 	"time"
 
 	"entgo.io/ent/dialect/sql"
@@ -174,6 +175,21 @@ func (_c *AiAgentAppCreate) SetID(v uint32) *AiAgentAppCreate {
 	return _c
 }
 
+// AddRevisionIDs adds the "revisions" edge to the AiAgentRevision entity by IDs.
+func (_c *AiAgentAppCreate) AddRevisionIDs(ids ...uint32) *AiAgentAppCreate {
+	_c.mutation.AddRevisionIDs(ids...)
+	return _c
+}
+
+// AddRevisions adds the "revisions" edges to the AiAgentRevision entity.
+func (_c *AiAgentAppCreate) AddRevisions(v ...*AiAgentRevision) *AiAgentAppCreate {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddRevisionIDs(ids...)
+}
+
 // Mutation returns the AiAgentAppMutation object of the builder.
 func (_c *AiAgentAppCreate) Mutation() *AiAgentAppMutation {
 	return _c.mutation
@@ -316,6 +332,22 @@ func (_c *AiAgentAppCreate) createSpec() (*AiAgentApp, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Enabled(); ok {
 		_spec.SetField(aiagentapp.FieldEnabled, field.TypeBool, value)
 		_node.Enabled = value
+	}
+	if nodes := _c.mutation.RevisionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   aiagentapp.RevisionsTable,
+			Columns: []string{aiagentapp.RevisionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(aiagentrevision.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

@@ -1508,3 +1508,534 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = GetAiAgentRunRequestValidationError{}
+
+// Validate checks the field values on AiAgentRevision with the rules defined
+// in the proto definition for this message. If any rules are violated, the
+// first error encountered is returned, or nil if there are no violations.
+func (m *AiAgentRevision) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AiAgentRevision with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AiAgentRevisionMultiError, or nil if none found.
+func (m *AiAgentRevision) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AiAgentRevision) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if m.Id != nil {
+		// no validation rules for Id
+	}
+
+	if m.AppId != nil {
+		// no validation rules for AppId
+	}
+
+	if m.Graph != nil {
+		// no validation rules for Graph
+	}
+
+	if m.Source != nil {
+		// no validation rules for Source
+	}
+
+	if m.CreatedBy != nil {
+		// no validation rules for CreatedBy
+	}
+
+	if m.CreatedAt != nil {
+
+		if all {
+			switch v := interface{}(m.GetCreatedAt()).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, AiAgentRevisionValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, AiAgentRevisionValidationError{
+						field:  "CreatedAt",
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(m.GetCreatedAt()).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return AiAgentRevisionValidationError{
+					field:  "CreatedAt",
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return AiAgentRevisionMultiError(errors)
+	}
+
+	return nil
+}
+
+// AiAgentRevisionMultiError is an error wrapping multiple validation errors
+// returned by AiAgentRevision.ValidateAll() if the designated constraints
+// aren't met.
+type AiAgentRevisionMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AiAgentRevisionMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AiAgentRevisionMultiError) AllErrors() []error { return m }
+
+// AiAgentRevisionValidationError is the validation error returned by
+// AiAgentRevision.Validate if the designated constraints aren't met.
+type AiAgentRevisionValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AiAgentRevisionValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AiAgentRevisionValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AiAgentRevisionValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AiAgentRevisionValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AiAgentRevisionValidationError) ErrorName() string { return "AiAgentRevisionValidationError" }
+
+// Error satisfies the builtin error interface
+func (e AiAgentRevisionValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAiAgentRevision.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AiAgentRevisionValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AiAgentRevisionValidationError{}
+
+// Validate checks the field values on ListAiAgentRevisionsRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListAiAgentRevisionsRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListAiAgentRevisionsRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListAiAgentRevisionsRequestMultiError, or nil if none found.
+func (m *ListAiAgentRevisionsRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListAiAgentRevisionsRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for AppId
+
+	if all {
+		switch v := interface{}(m.GetPage()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ListAiAgentRevisionsRequestValidationError{
+					field:  "Page",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ListAiAgentRevisionsRequestValidationError{
+					field:  "Page",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetPage()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListAiAgentRevisionsRequestValidationError{
+				field:  "Page",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return ListAiAgentRevisionsRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListAiAgentRevisionsRequestMultiError is an error wrapping multiple
+// validation errors returned by ListAiAgentRevisionsRequest.ValidateAll() if
+// the designated constraints aren't met.
+type ListAiAgentRevisionsRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListAiAgentRevisionsRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListAiAgentRevisionsRequestMultiError) AllErrors() []error { return m }
+
+// ListAiAgentRevisionsRequestValidationError is the validation error returned
+// by ListAiAgentRevisionsRequest.Validate if the designated constraints
+// aren't met.
+type ListAiAgentRevisionsRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListAiAgentRevisionsRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListAiAgentRevisionsRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListAiAgentRevisionsRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListAiAgentRevisionsRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListAiAgentRevisionsRequestValidationError) ErrorName() string {
+	return "ListAiAgentRevisionsRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListAiAgentRevisionsRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListAiAgentRevisionsRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListAiAgentRevisionsRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListAiAgentRevisionsRequestValidationError{}
+
+// Validate checks the field values on ListAiAgentRevisionsResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListAiAgentRevisionsResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListAiAgentRevisionsResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListAiAgentRevisionsResponseMultiError, or nil if none found.
+func (m *ListAiAgentRevisionsResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListAiAgentRevisionsResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetItems() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListAiAgentRevisionsResponseValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListAiAgentRevisionsResponseValidationError{
+						field:  fmt.Sprintf("Items[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListAiAgentRevisionsResponseValidationError{
+					field:  fmt.Sprintf("Items[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	// no validation rules for Total
+
+	if len(errors) > 0 {
+		return ListAiAgentRevisionsResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListAiAgentRevisionsResponseMultiError is an error wrapping multiple
+// validation errors returned by ListAiAgentRevisionsResponse.ValidateAll() if
+// the designated constraints aren't met.
+type ListAiAgentRevisionsResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListAiAgentRevisionsResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListAiAgentRevisionsResponseMultiError) AllErrors() []error { return m }
+
+// ListAiAgentRevisionsResponseValidationError is the validation error returned
+// by ListAiAgentRevisionsResponse.Validate if the designated constraints
+// aren't met.
+type ListAiAgentRevisionsResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListAiAgentRevisionsResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListAiAgentRevisionsResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListAiAgentRevisionsResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListAiAgentRevisionsResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListAiAgentRevisionsResponseValidationError) ErrorName() string {
+	return "ListAiAgentRevisionsResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListAiAgentRevisionsResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListAiAgentRevisionsResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListAiAgentRevisionsResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListAiAgentRevisionsResponseValidationError{}
+
+// Validate checks the field values on RestoreAiAgentRevisionRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *RestoreAiAgentRevisionRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on RestoreAiAgentRevisionRequest with
+// the rules defined in the proto definition for this message. If any rules
+// are violated, the result is a list of violation errors wrapped in
+// RestoreAiAgentRevisionRequestMultiError, or nil if none found.
+func (m *RestoreAiAgentRevisionRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *RestoreAiAgentRevisionRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for Id
+
+	if len(errors) > 0 {
+		return RestoreAiAgentRevisionRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// RestoreAiAgentRevisionRequestMultiError is an error wrapping multiple
+// validation errors returned by RestoreAiAgentRevisionRequest.ValidateAll()
+// if the designated constraints aren't met.
+type RestoreAiAgentRevisionRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m RestoreAiAgentRevisionRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m RestoreAiAgentRevisionRequestMultiError) AllErrors() []error { return m }
+
+// RestoreAiAgentRevisionRequestValidationError is the validation error
+// returned by RestoreAiAgentRevisionRequest.Validate if the designated
+// constraints aren't met.
+type RestoreAiAgentRevisionRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e RestoreAiAgentRevisionRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e RestoreAiAgentRevisionRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e RestoreAiAgentRevisionRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e RestoreAiAgentRevisionRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e RestoreAiAgentRevisionRequestValidationError) ErrorName() string {
+	return "RestoreAiAgentRevisionRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e RestoreAiAgentRevisionRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sRestoreAiAgentRevisionRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = RestoreAiAgentRevisionRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = RestoreAiAgentRevisionRequestValidationError{}

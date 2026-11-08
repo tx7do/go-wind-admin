@@ -7,6 +7,7 @@ import (
 	permissionpb "go-wind-admin/api/gen/go/permission/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent/accesskey"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiagentapp"
+	"go-wind-admin/app/admin/service/internal/data/ent/aiagentrevision"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiagentrun"
 	"go-wind-admin/app/admin/service/internal/data/ent/aichunk"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiconversation"
@@ -139,6 +140,30 @@ func init() {
 	aiagentappDescID := aiagentappMixinFields0[0].Descriptor()
 	// aiagentapp.IDValidator is a validator for the "id" field. It is called by the builders before save.
 	aiagentapp.IDValidator = aiagentappDescID.Validators[0].(func(uint32) error)
+	aiagentrevisionMixin := schema.AiAgentRevision{}.Mixin()
+	aiagentrevision.Policy = privacy.NewPolicies(aiagentrevisionMixin[3], schema.AiAgentRevision{})
+	aiagentrevision.Hooks[0] = func(next ent.Mutator) ent.Mutator {
+		return ent.MutateFunc(func(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+			if err := aiagentrevision.Policy.EvalMutation(ctx, m); err != nil {
+				return nil, err
+			}
+			return next.Mutate(ctx, m)
+		})
+	}
+	aiagentrevisionMixinFields0 := aiagentrevisionMixin[0].Fields()
+	_ = aiagentrevisionMixinFields0
+	aiagentrevisionMixinFields3 := aiagentrevisionMixin[3].Fields()
+	_ = aiagentrevisionMixinFields3
+	aiagentrevisionFields := schema.AiAgentRevision{}.Fields()
+	_ = aiagentrevisionFields
+	// aiagentrevisionDescTenantID is the schema descriptor for tenant_id field.
+	aiagentrevisionDescTenantID := aiagentrevisionMixinFields3[0].Descriptor()
+	// aiagentrevision.DefaultTenantID holds the default value on creation for the tenant_id field.
+	aiagentrevision.DefaultTenantID = aiagentrevisionDescTenantID.Default.(uint32)
+	// aiagentrevisionDescID is the schema descriptor for id field.
+	aiagentrevisionDescID := aiagentrevisionMixinFields0[0].Descriptor()
+	// aiagentrevision.IDValidator is a validator for the "id" field. It is called by the builders before save.
+	aiagentrevision.IDValidator = aiagentrevisionDescID.Validators[0].(func(uint32) error)
 	aiagentrunMixin := schema.AiAgentRun{}.Mixin()
 	aiagentrun.Policy = privacy.NewPolicies(aiagentrunMixin[3], schema.AiAgentRun{})
 	aiagentrun.Hooks[0] = func(next ent.Mutator) ent.Mutator {

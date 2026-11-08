@@ -16,6 +16,8 @@ type Tx struct {
 	AccessKey *AccessKeyClient
 	// AiAgentApp is the client for interacting with the AiAgentApp builders.
 	AiAgentApp *AiAgentAppClient
+	// AiAgentRevision is the client for interacting with the AiAgentRevision builders.
+	AiAgentRevision *AiAgentRevisionClient
 	// AiAgentRun is the client for interacting with the AiAgentRun builders.
 	AiAgentRun *AiAgentRunClient
 	// AiChunk is the client for interacting with the AiChunk builders.
@@ -277,6 +279,7 @@ func (tx *Tx) Client() *Client {
 func (tx *Tx) init() {
 	tx.AccessKey = NewAccessKeyClient(tx.config)
 	tx.AiAgentApp = NewAiAgentAppClient(tx.config)
+	tx.AiAgentRevision = NewAiAgentRevisionClient(tx.config)
 	tx.AiAgentRun = NewAiAgentRunClient(tx.config)
 	tx.AiChunk = NewAiChunkClient(tx.config)
 	tx.AiConversation = NewAiConversationClient(tx.config)

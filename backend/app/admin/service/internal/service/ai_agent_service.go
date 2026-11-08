@@ -53,7 +53,11 @@ type AiAgentService struct {
 	providerRepo  *data.AiProviderRepo
 	knowledgeRepo *data.AiKnowledgeRepo
 	usageLogRepo  *data.AiUsageLogRepo
+	revisionRepo  *data.AiAgentRevisionRepo
 	runPublisher  AiAgentRunPublisher
+
+	// scriptRuntime script 节点的沙箱执行能力（wiring 装配；nil = script 节点不可用并报错）。
+	scriptRuntime *ScriptRuntime
 }
 
 // RegisterAiAgentRunPublisher 接线 SSE 发布者（sse_server 装配期调用；幂等覆盖）。
@@ -70,6 +74,8 @@ func NewAiAgentService(
 	providerRepo *data.AiProviderRepo,
 	knowledgeRepo *data.AiKnowledgeRepo,
 	usageLogRepo *data.AiUsageLogRepo,
+	scriptRuntime *ScriptRuntime,
+	revisionRepo *data.AiAgentRevisionRepo,
 ) *AiAgentService {
 	return &AiAgentService{
 		log:           ctx.NewLoggerHelper("ai-agent/service/admin-service"),
@@ -78,6 +84,8 @@ func NewAiAgentService(
 		providerRepo:  providerRepo,
 		knowledgeRepo: knowledgeRepo,
 		usageLogRepo:  usageLogRepo,
+		scriptRuntime: scriptRuntime,
+		revisionRepo:  revisionRepo,
 	}
 }
 
@@ -129,6 +137,14 @@ func (s *AiAgentService) Update(ctx context.Context, req *aiV1.UpdateAiAgentAppR
 	}
 	req.Data.UpdatedBy = trans.Ptr(operator.UserId)
 
+	// 版本快照（docs/ai_agent_orchestration.md「版本化」，BI 同款口径）：更新成功把
+	// **更新前**的 graph 留一行（SAVE，仅 graph 实际变化时）。快照失败不阻断更新
+	// （Errorf 留痕）——主功能不应被辅功能拖死，但丢快照必须可观测。
+	current, getErr := s.appRepo.GetEntityByID(ctx, req.GetId())
+	if getErr != nil {
+		s.log.Warnf(ctx, "snapshot before update: load agent app %d failed: %s", req.GetId(), getErr.Error())
+	}
+
 	var mask []string
 	if req.UpdateMask != nil {
 		mask = req.UpdateMask.Paths
@@ -136,6 +152,19 @@ func (s *AiAgentService) Update(ctx context.Context, req *aiV1.UpdateAiAgentAppR
 	if err = s.appRepo.Update(ctx, req.GetId(), req.Data, mask, operator.UserId); err != nil {
 		return nil, err
 	}
+
+	if current != nil && s.revisionRepo != nil && ptrStrOr(current.Graph, "") != req.Data.GetGraph() {
+		snapshot := &aiV1.AiAgentRevision{
+			AppId:     trans.Ptr(req.GetId()),
+			Graph:     current.Graph,
+			Source:    trans.Ptr("SAVE"),
+			CreatedBy: trans.Ptr(operator.UserId),
+		}
+		if serr := s.revisionRepo.Create(ctx, snapshot); serr != nil {
+			s.log.Errorf(ctx, "snapshot before update agent app %d failed: %s", req.GetId(), serr.Error())
+		}
+	}
+
 	return &emptypb.Empty{}, nil
 }
 
@@ -230,6 +259,7 @@ func (s *AiAgentService) Run(ctx context.Context, req *aiV1.RunAiAgentAppRequest
 	output, trace, usage, execErr := executeAgentGraph(ctx, g, req.GetInput(), &agentEngineDeps{
 		searchKnowledge: s.searchKnowledgeForAgent(operator),
 		runLLM:          s.runLLMForAgent(operator),
+		runScript:       s.runScriptForAgent,
 		onStep:          publishFrame,
 	})
 	durationMs := uint32(time.Since(start).Milliseconds())
@@ -268,6 +298,67 @@ func (s *AiAgentService) GetRun(ctx context.Context, req *aiV1.GetAiAgentRunRequ
 		return nil, adminV1.ErrorBadRequest("id is required")
 	}
 	return s.runRepo.Get(ctx, req.GetId())
+}
+
+// ListRevisions 版本历史（新快照在前）。
+func (s *AiAgentService) ListRevisions(ctx context.Context, req *aiV1.ListAiAgentRevisionsRequest) (*aiV1.ListAiAgentRevisionsResponse, error) {
+	if req == nil || req.GetAppId() == 0 {
+		return nil, adminV1.ErrorBadRequest("appId is required")
+	}
+	items, total, err := s.revisionRepo.List(ctx, req.GetAppId(), req.GetPage())
+	if err != nil {
+		return nil, err
+	}
+	return &aiV1.ListAiAgentRevisionsResponse{Items: items, Total: uint64(total)}, nil
+}
+
+// RestoreRevision 恢复版本：快照 graph 写回主表。恢复动作本身先把**当前 graph**
+// 快照（RESTORE 来源），恢复可逆（BI 同款口径）。
+// 快照 graph 先过静态校验，非法 400 且不落任何痕迹——历史快照可能早于校验规则演进。
+func (s *AiAgentService) RestoreRevision(ctx context.Context, req *aiV1.RestoreAiAgentRevisionRequest) (*emptypb.Empty, error) {
+	if req == nil || req.GetId() == 0 {
+		return nil, adminV1.ErrorBadRequest("id is required")
+	}
+	operator, err := auth.FromContext(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	revision, err := s.revisionRepo.Get(ctx, req.GetId())
+	if err != nil {
+		return nil, err
+	}
+	if err = s.validateGraphOrBadRequest(revision.GetGraph()); err != nil {
+		return nil, err
+	}
+
+	appID := revision.GetAppId()
+	current, err := s.appRepo.GetEntityByID(ctx, appID)
+	if err != nil {
+		return nil, err
+	}
+
+	// 恢复前留底当前 graph（失败不阻断恢复，Errorf 留痕）
+	if s.revisionRepo != nil {
+		snapshot := &aiV1.AiAgentRevision{
+			AppId:     trans.Ptr(appID),
+			Graph:     current.Graph,
+			Source:    trans.Ptr("RESTORE"),
+			CreatedBy: trans.Ptr(operator.UserId),
+		}
+		if serr := s.revisionRepo.Create(ctx, snapshot); serr != nil {
+			s.log.Errorf(ctx, "snapshot before restore agent app %d failed: %s", appID, serr.Error())
+		}
+	}
+
+	// 写回走普通更新（mask 只点 graph；恢复是明确的人为决定，以快照为准整份覆盖 graph）
+	if err = s.appRepo.Update(ctx, appID, &aiV1.AiAgentApp{Graph: revision.Graph},
+		[]string{"graph"}, operator.UserId); err != nil {
+		return nil, err
+	}
+
+	s.log.Infof(ctx, "ai agent app [%d] graph restored to revision [%d] by user [%d]", appID, req.GetId(), operator.UserId)
+	return &emptypb.Empty{}, nil
 }
 
 // searchKnowledgeForAgent 知识检索节点的真实现：复用 chat 同一条 RAG 链路

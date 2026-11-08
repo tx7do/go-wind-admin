@@ -4,9 +4,11 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiagentapp"
+	"go-wind-admin/app/admin/service/internal/data/ent/aiagentrevision"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"math"
 
@@ -20,11 +22,12 @@ import (
 // AiAgentAppQuery is the builder for querying AiAgentApp entities.
 type AiAgentAppQuery struct {
 	config
-	ctx        *QueryContext
-	order      []aiagentapp.OrderOption
-	inters     []Interceptor
-	predicates []predicate.AiAgentApp
-	modifiers  []func(*sql.Selector)
+	ctx           *QueryContext
+	order         []aiagentapp.OrderOption
+	inters        []Interceptor
+	predicates    []predicate.AiAgentApp
+	withRevisions *AiAgentRevisionQuery
+	modifiers     []func(*sql.Selector)
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -59,6 +62,28 @@ func (_q *AiAgentAppQuery) Unique(unique bool) *AiAgentAppQuery {
 func (_q *AiAgentAppQuery) Order(o ...aiagentapp.OrderOption) *AiAgentAppQuery {
 	_q.order = append(_q.order, o...)
 	return _q
+}
+
+// QueryRevisions chains the current query on the "revisions" edge.
+func (_q *AiAgentAppQuery) QueryRevisions() *AiAgentRevisionQuery {
+	query := (&AiAgentRevisionClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(aiagentapp.Table, aiagentapp.FieldID, selector),
+			sqlgraph.To(aiagentrevision.Table, aiagentrevision.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, aiagentapp.RevisionsTable, aiagentapp.RevisionsColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first AiAgentApp entity from the query.
@@ -248,16 +273,28 @@ func (_q *AiAgentAppQuery) Clone() *AiAgentAppQuery {
 		return nil
 	}
 	return &AiAgentAppQuery{
-		config:     _q.config,
-		ctx:        _q.ctx.Clone(),
-		order:      append([]aiagentapp.OrderOption{}, _q.order...),
-		inters:     append([]Interceptor{}, _q.inters...),
-		predicates: append([]predicate.AiAgentApp{}, _q.predicates...),
+		config:        _q.config,
+		ctx:           _q.ctx.Clone(),
+		order:         append([]aiagentapp.OrderOption{}, _q.order...),
+		inters:        append([]Interceptor{}, _q.inters...),
+		predicates:    append([]predicate.AiAgentApp{}, _q.predicates...),
+		withRevisions: _q.withRevisions.Clone(),
 		// clone intermediate query.
 		sql:       _q.sql.Clone(),
 		path:      _q.path,
 		modifiers: append([]func(*sql.Selector){}, _q.modifiers...),
 	}
+}
+
+// WithRevisions tells the query-builder to eager-load the nodes that are connected to
+// the "revisions" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *AiAgentAppQuery) WithRevisions(opts ...func(*AiAgentRevisionQuery)) *AiAgentAppQuery {
+	query := (&AiAgentRevisionClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withRevisions = query
+	return _q
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -342,8 +379,11 @@ func (_q *AiAgentAppQuery) prepareQuery(ctx context.Context) error {
 
 func (_q *AiAgentAppQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*AiAgentApp, error) {
 	var (
-		nodes = []*AiAgentApp{}
-		_spec = _q.querySpec()
+		nodes       = []*AiAgentApp{}
+		_spec       = _q.querySpec()
+		loadedTypes = [1]bool{
+			_q.withRevisions != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*AiAgentApp).scanValues(nil, columns)
@@ -351,6 +391,7 @@ func (_q *AiAgentAppQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*A
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &AiAgentApp{config: _q.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	if len(_q.modifiers) > 0 {
@@ -365,7 +406,48 @@ func (_q *AiAgentAppQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*A
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := _q.withRevisions; query != nil {
+		if err := _q.loadRevisions(ctx, query, nodes,
+			func(n *AiAgentApp) { n.Edges.Revisions = []*AiAgentRevision{} },
+			func(n *AiAgentApp, e *AiAgentRevision) { n.Edges.Revisions = append(n.Edges.Revisions, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (_q *AiAgentAppQuery) loadRevisions(ctx context.Context, query *AiAgentRevisionQuery, nodes []*AiAgentApp, init func(*AiAgentApp), assign func(*AiAgentApp, *AiAgentRevision)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[uint32]*AiAgentApp)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(aiagentrevision.FieldAppID)
+	}
+	query.Where(predicate.AiAgentRevision(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(aiagentapp.RevisionsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.AppID
+		if fk == nil {
+			return fmt.Errorf(`foreign-key "app_id" is nil for node %v`, n.ID)
+		}
+		node, ok := nodeids[*fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "app_id" returned %v for node %v`, *fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (_q *AiAgentAppQuery) sqlCount(ctx context.Context) (int, error) {

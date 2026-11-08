@@ -418,6 +418,55 @@ paths:
                         application/json:
                             schema:
                                 $ref: '#/components/schemas/AiAgentApp'
+    /admin/v1/ai/agents/revisions/{id}:restore:
+        post:
+            tags:
+                - AiAgentService
+            description: 恢复版本（快照 graph 写回主表；恢复前先快照当前版本，可逆）
+            operationId: AiAgentService_RestoreRevision
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/RestoreAiAgentRevisionRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content: {}
+    /admin/v1/ai/agents/{appId}/revisions:
+        post:
+            tags:
+                - AiAgentService
+            description: 版本历史（每次更新留旧版 graph 快照，新快照在前）
+            operationId: AiAgentService_ListRevisions
+            parameters:
+                - name: appId
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: uint32
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/ListAiAgentRevisionsRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListAiAgentRevisionsResponse'
     /admin/v1/ai/agents/{id}:
         get:
             tags:
@@ -8499,6 +8548,29 @@ components:
                     type: string
                     format: date-time
             description: Agent 编排应用
+        AiAgentRevision:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    format: uint32
+                appId:
+                    type: integer
+                    format: uint32
+                graph:
+                    type: string
+                    description: 更新前的图 DSL 快照
+                source:
+                    type: string
+                createdBy:
+                    type: integer
+                    format: uint32
+                createdAt:
+                    type: string
+                    format: date-time
+            description: |-
+                Agent 应用版本快照（每次成功更新把更新前的 graph 留一行；
+                 恢复 = 快照写回主表，恢复动作本身先快照当前版本，可逆）
         AiAgentRun:
             type: object
             properties:
@@ -10170,9 +10242,7 @@ components:
                     type: string
                 userId:
                     type: integer
-                    description: |-
-                        管理端重置：指定目标用户（不传=操作当前登录用户）。
-                         仅平台管理员可指定他人，用于用户认证器丢失时的救援解绑（按 method 清空该用户全部因子）。
+                    description: "管理端重置：指定目标用户（不传=操作当前登录用户）。\r\n 仅平台管理员可指定他人，用于用户认证器丢失时的救援解绑（按 method 清空该用户全部因子）。"
                     format: uint32
             description: Disable / remove
         DistributionItem:
@@ -11111,6 +11181,26 @@ components:
                 total:
                     type: string
             description: 查询列表 - 回应
+        ListAiAgentRevisionsRequest:
+            type: object
+            properties:
+                appId:
+                    type: integer
+                    description: 应用ID
+                    format: uint32
+                page:
+                    $ref: '#/components/schemas/PagingRequest'
+            description: 版本历史 - 请求
+        ListAiAgentRevisionsResponse:
+            type: object
+            properties:
+                items:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/AiAgentRevision'
+                total:
+                    type: string
+            description: 版本历史 - 回应（新快照在前）
         ListAiAgentRunsResponse:
             type: object
             properties:
@@ -13710,6 +13800,14 @@ components:
                     type: integer
                     format: int32
             description: 重启调度任务 - 回应
+        RestoreAiAgentRevisionRequest:
+            type: object
+            properties:
+                id:
+                    type: integer
+                    description: 快照ID
+                    format: uint32
+            description: 恢复版本 - 请求（把快照 graph 写回主表；恢复前先快照当前版本）
         RestoreBiDashboardRevisionRequest:
             type: object
             properties:

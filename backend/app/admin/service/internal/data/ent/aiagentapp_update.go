@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiagentapp"
+	"go-wind-admin/app/admin/service/internal/data/ent/aiagentrevision"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 	"time"
 
@@ -218,9 +219,45 @@ func (_u *AiAgentAppUpdate) SetNillableEnabled(v *bool) *AiAgentAppUpdate {
 	return _u
 }
 
+// AddRevisionIDs adds the "revisions" edge to the AiAgentRevision entity by IDs.
+func (_u *AiAgentAppUpdate) AddRevisionIDs(ids ...uint32) *AiAgentAppUpdate {
+	_u.mutation.AddRevisionIDs(ids...)
+	return _u
+}
+
+// AddRevisions adds the "revisions" edges to the AiAgentRevision entity.
+func (_u *AiAgentAppUpdate) AddRevisions(v ...*AiAgentRevision) *AiAgentAppUpdate {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddRevisionIDs(ids...)
+}
+
 // Mutation returns the AiAgentAppMutation object of the builder.
 func (_u *AiAgentAppUpdate) Mutation() *AiAgentAppMutation {
 	return _u.mutation
+}
+
+// ClearRevisions clears all "revisions" edges to the AiAgentRevision entity.
+func (_u *AiAgentAppUpdate) ClearRevisions() *AiAgentAppUpdate {
+	_u.mutation.ClearRevisions()
+	return _u
+}
+
+// RemoveRevisionIDs removes the "revisions" edge to AiAgentRevision entities by IDs.
+func (_u *AiAgentAppUpdate) RemoveRevisionIDs(ids ...uint32) *AiAgentAppUpdate {
+	_u.mutation.RemoveRevisionIDs(ids...)
+	return _u
+}
+
+// RemoveRevisions removes "revisions" edges to AiAgentRevision entities.
+func (_u *AiAgentAppUpdate) RemoveRevisions(v ...*AiAgentRevision) *AiAgentAppUpdate {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveRevisionIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -340,6 +377,51 @@ func (_u *AiAgentAppUpdate) sqlSave(ctx context.Context) (_node int, err error) 
 	}
 	if value, ok := _u.mutation.Enabled(); ok {
 		_spec.SetField(aiagentapp.FieldEnabled, field.TypeBool, value)
+	}
+	if _u.mutation.RevisionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   aiagentapp.RevisionsTable,
+			Columns: []string{aiagentapp.RevisionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(aiagentrevision.FieldID, field.TypeUint32),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedRevisionsIDs(); len(nodes) > 0 && !_u.mutation.RevisionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   aiagentapp.RevisionsTable,
+			Columns: []string{aiagentapp.RevisionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(aiagentrevision.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RevisionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   aiagentapp.RevisionsTable,
+			Columns: []string{aiagentapp.RevisionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(aiagentrevision.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -552,9 +634,45 @@ func (_u *AiAgentAppUpdateOne) SetNillableEnabled(v *bool) *AiAgentAppUpdateOne 
 	return _u
 }
 
+// AddRevisionIDs adds the "revisions" edge to the AiAgentRevision entity by IDs.
+func (_u *AiAgentAppUpdateOne) AddRevisionIDs(ids ...uint32) *AiAgentAppUpdateOne {
+	_u.mutation.AddRevisionIDs(ids...)
+	return _u
+}
+
+// AddRevisions adds the "revisions" edges to the AiAgentRevision entity.
+func (_u *AiAgentAppUpdateOne) AddRevisions(v ...*AiAgentRevision) *AiAgentAppUpdateOne {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddRevisionIDs(ids...)
+}
+
 // Mutation returns the AiAgentAppMutation object of the builder.
 func (_u *AiAgentAppUpdateOne) Mutation() *AiAgentAppMutation {
 	return _u.mutation
+}
+
+// ClearRevisions clears all "revisions" edges to the AiAgentRevision entity.
+func (_u *AiAgentAppUpdateOne) ClearRevisions() *AiAgentAppUpdateOne {
+	_u.mutation.ClearRevisions()
+	return _u
+}
+
+// RemoveRevisionIDs removes the "revisions" edge to AiAgentRevision entities by IDs.
+func (_u *AiAgentAppUpdateOne) RemoveRevisionIDs(ids ...uint32) *AiAgentAppUpdateOne {
+	_u.mutation.RemoveRevisionIDs(ids...)
+	return _u
+}
+
+// RemoveRevisions removes "revisions" edges to AiAgentRevision entities.
+func (_u *AiAgentAppUpdateOne) RemoveRevisions(v ...*AiAgentRevision) *AiAgentAppUpdateOne {
+	ids := make([]uint32, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveRevisionIDs(ids...)
 }
 
 // Where appends a list predicates to the AiAgentAppUpdate builder.
@@ -704,6 +822,51 @@ func (_u *AiAgentAppUpdateOne) sqlSave(ctx context.Context) (_node *AiAgentApp, 
 	}
 	if value, ok := _u.mutation.Enabled(); ok {
 		_spec.SetField(aiagentapp.FieldEnabled, field.TypeBool, value)
+	}
+	if _u.mutation.RevisionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   aiagentapp.RevisionsTable,
+			Columns: []string{aiagentapp.RevisionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(aiagentrevision.FieldID, field.TypeUint32),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedRevisionsIDs(); len(nodes) > 0 && !_u.mutation.RevisionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   aiagentapp.RevisionsTable,
+			Columns: []string{aiagentapp.RevisionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(aiagentrevision.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RevisionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   aiagentapp.RevisionsTable,
+			Columns: []string{aiagentapp.RevisionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(aiagentrevision.FieldID, field.TypeUint32),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &AiAgentApp{config: _u.config}

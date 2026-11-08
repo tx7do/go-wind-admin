@@ -13,6 +13,7 @@ import (
 
 	"go-wind-admin/app/admin/service/internal/data/ent/accesskey"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiagentapp"
+	"go-wind-admin/app/admin/service/internal/data/ent/aiagentrevision"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiagentrun"
 	"go-wind-admin/app/admin/service/internal/data/ent/aichunk"
 	"go-wind-admin/app/admin/service/internal/data/ent/aiconversation"
@@ -93,6 +94,8 @@ type Client struct {
 	AccessKey *AccessKeyClient
 	// AiAgentApp is the client for interacting with the AiAgentApp builders.
 	AiAgentApp *AiAgentAppClient
+	// AiAgentRevision is the client for interacting with the AiAgentRevision builders.
+	AiAgentRevision *AiAgentRevisionClient
 	// AiAgentRun is the client for interacting with the AiAgentRun builders.
 	AiAgentRun *AiAgentRunClient
 	// AiChunk is the client for interacting with the AiChunk builders.
@@ -234,6 +237,7 @@ func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.AccessKey = NewAccessKeyClient(c.config)
 	c.AiAgentApp = NewAiAgentAppClient(c.config)
+	c.AiAgentRevision = NewAiAgentRevisionClient(c.config)
 	c.AiAgentRun = NewAiAgentRunClient(c.config)
 	c.AiChunk = NewAiChunkClient(c.config)
 	c.AiConversation = NewAiConversationClient(c.config)
@@ -392,6 +396,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		config:                   cfg,
 		AccessKey:                NewAccessKeyClient(cfg),
 		AiAgentApp:               NewAiAgentAppClient(cfg),
+		AiAgentRevision:          NewAiAgentRevisionClient(cfg),
 		AiAgentRun:               NewAiAgentRunClient(cfg),
 		AiChunk:                  NewAiChunkClient(cfg),
 		AiConversation:           NewAiConversationClient(cfg),
@@ -477,6 +482,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		config:                   cfg,
 		AccessKey:                NewAccessKeyClient(cfg),
 		AiAgentApp:               NewAiAgentAppClient(cfg),
+		AiAgentRevision:          NewAiAgentRevisionClient(cfg),
 		AiAgentRun:               NewAiAgentRunClient(cfg),
 		AiChunk:                  NewAiChunkClient(cfg),
 		AiConversation:           NewAiConversationClient(cfg),
@@ -570,12 +576,12 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.AccessKey, c.AiAgentApp, c.AiAgentRun, c.AiChunk, c.AiConversation, c.AiDoc,
-		c.AiKnowledgeBase, c.AiMessage, c.AiProvider, c.AiUsageLog, c.Api,
-		c.ApiAuditLog, c.BiDashboard, c.BiDashboardRevision, c.DataAccessAuditLog,
-		c.DictEntry, c.DictEntryI18n, c.DictType, c.File, c.InternalMessage,
-		c.InternalMessageCategory, c.InternalMessageRecipient, c.Language,
-		c.LoginAuditLog, c.LoginPolicy, c.Membership, c.MembershipOrgUnit,
+		c.AccessKey, c.AiAgentApp, c.AiAgentRevision, c.AiAgentRun, c.AiChunk,
+		c.AiConversation, c.AiDoc, c.AiKnowledgeBase, c.AiMessage, c.AiProvider,
+		c.AiUsageLog, c.Api, c.ApiAuditLog, c.BiDashboard, c.BiDashboardRevision,
+		c.DataAccessAuditLog, c.DictEntry, c.DictEntryI18n, c.DictType, c.File,
+		c.InternalMessage, c.InternalMessageCategory, c.InternalMessageRecipient,
+		c.Language, c.LoginAuditLog, c.LoginPolicy, c.Membership, c.MembershipOrgUnit,
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.MonitorAlertRule,
 		c.NotificationChannel, c.NotificationDelivery, c.NotificationPreference,
 		c.NotificationRule, c.NotificationTemplate, c.OperationAuditLog, c.OrgUnit,
@@ -594,12 +600,12 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.AccessKey, c.AiAgentApp, c.AiAgentRun, c.AiChunk, c.AiConversation, c.AiDoc,
-		c.AiKnowledgeBase, c.AiMessage, c.AiProvider, c.AiUsageLog, c.Api,
-		c.ApiAuditLog, c.BiDashboard, c.BiDashboardRevision, c.DataAccessAuditLog,
-		c.DictEntry, c.DictEntryI18n, c.DictType, c.File, c.InternalMessage,
-		c.InternalMessageCategory, c.InternalMessageRecipient, c.Language,
-		c.LoginAuditLog, c.LoginPolicy, c.Membership, c.MembershipOrgUnit,
+		c.AccessKey, c.AiAgentApp, c.AiAgentRevision, c.AiAgentRun, c.AiChunk,
+		c.AiConversation, c.AiDoc, c.AiKnowledgeBase, c.AiMessage, c.AiProvider,
+		c.AiUsageLog, c.Api, c.ApiAuditLog, c.BiDashboard, c.BiDashboardRevision,
+		c.DataAccessAuditLog, c.DictEntry, c.DictEntryI18n, c.DictType, c.File,
+		c.InternalMessage, c.InternalMessageCategory, c.InternalMessageRecipient,
+		c.Language, c.LoginAuditLog, c.LoginPolicy, c.Membership, c.MembershipOrgUnit,
 		c.MembershipPosition, c.MembershipRole, c.Menu, c.MonitorAlertRule,
 		c.NotificationChannel, c.NotificationDelivery, c.NotificationPreference,
 		c.NotificationRule, c.NotificationTemplate, c.OperationAuditLog, c.OrgUnit,
@@ -621,6 +627,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.AccessKey.mutate(ctx, m)
 	case *AiAgentAppMutation:
 		return c.AiAgentApp.mutate(ctx, m)
+	case *AiAgentRevisionMutation:
+		return c.AiAgentRevision.mutate(ctx, m)
 	case *AiAgentRunMutation:
 		return c.AiAgentRun.mutate(ctx, m)
 	case *AiChunkMutation:
@@ -996,6 +1004,22 @@ func (c *AiAgentAppClient) GetX(ctx context.Context, id uint32) *AiAgentApp {
 	return obj
 }
 
+// QueryRevisions queries the revisions edge of a AiAgentApp.
+func (c *AiAgentAppClient) QueryRevisions(_m *AiAgentApp) *AiAgentRevisionQuery {
+	query := (&AiAgentRevisionClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(aiagentapp.Table, aiagentapp.FieldID, id),
+			sqlgraph.To(aiagentrevision.Table, aiagentrevision.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, aiagentapp.RevisionsTable, aiagentapp.RevisionsColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *AiAgentAppClient) Hooks() []Hook {
 	hooks := c.hooks.AiAgentApp
@@ -1019,6 +1043,156 @@ func (c *AiAgentAppClient) mutate(ctx context.Context, m *AiAgentAppMutation) (V
 		return (&AiAgentAppDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown AiAgentApp mutation op: %q", m.Op())
+	}
+}
+
+// AiAgentRevisionClient is a client for the AiAgentRevision schema.
+type AiAgentRevisionClient struct {
+	config
+}
+
+// NewAiAgentRevisionClient returns a client for the AiAgentRevision from the given config.
+func NewAiAgentRevisionClient(c config) *AiAgentRevisionClient {
+	return &AiAgentRevisionClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `aiagentrevision.Hooks(f(g(h())))`.
+func (c *AiAgentRevisionClient) Use(hooks ...Hook) {
+	c.hooks.AiAgentRevision = append(c.hooks.AiAgentRevision, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `aiagentrevision.Intercept(f(g(h())))`.
+func (c *AiAgentRevisionClient) Intercept(interceptors ...Interceptor) {
+	c.inters.AiAgentRevision = append(c.inters.AiAgentRevision, interceptors...)
+}
+
+// Create returns a builder for creating a AiAgentRevision entity.
+func (c *AiAgentRevisionClient) Create() *AiAgentRevisionCreate {
+	mutation := newAiAgentRevisionMutation(c.config, OpCreate)
+	return &AiAgentRevisionCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of AiAgentRevision entities.
+func (c *AiAgentRevisionClient) CreateBulk(builders ...*AiAgentRevisionCreate) *AiAgentRevisionCreateBulk {
+	return &AiAgentRevisionCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *AiAgentRevisionClient) MapCreateBulk(slice any, setFunc func(*AiAgentRevisionCreate, int)) *AiAgentRevisionCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &AiAgentRevisionCreateBulk{err: fmt.Errorf("calling to AiAgentRevisionClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*AiAgentRevisionCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &AiAgentRevisionCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for AiAgentRevision.
+func (c *AiAgentRevisionClient) Update() *AiAgentRevisionUpdate {
+	mutation := newAiAgentRevisionMutation(c.config, OpUpdate)
+	return &AiAgentRevisionUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *AiAgentRevisionClient) UpdateOne(_m *AiAgentRevision) *AiAgentRevisionUpdateOne {
+	mutation := newAiAgentRevisionMutation(c.config, OpUpdateOne, withAiAgentRevision(_m))
+	return &AiAgentRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *AiAgentRevisionClient) UpdateOneID(id uint32) *AiAgentRevisionUpdateOne {
+	mutation := newAiAgentRevisionMutation(c.config, OpUpdateOne, withAiAgentRevisionID(id))
+	return &AiAgentRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for AiAgentRevision.
+func (c *AiAgentRevisionClient) Delete() *AiAgentRevisionDelete {
+	mutation := newAiAgentRevisionMutation(c.config, OpDelete)
+	return &AiAgentRevisionDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *AiAgentRevisionClient) DeleteOne(_m *AiAgentRevision) *AiAgentRevisionDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *AiAgentRevisionClient) DeleteOneID(id uint32) *AiAgentRevisionDeleteOne {
+	builder := c.Delete().Where(aiagentrevision.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &AiAgentRevisionDeleteOne{builder}
+}
+
+// Query returns a query builder for AiAgentRevision.
+func (c *AiAgentRevisionClient) Query() *AiAgentRevisionQuery {
+	return &AiAgentRevisionQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeAiAgentRevision},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a AiAgentRevision entity by its id.
+func (c *AiAgentRevisionClient) Get(ctx context.Context, id uint32) (*AiAgentRevision, error) {
+	return c.Query().Where(aiagentrevision.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *AiAgentRevisionClient) GetX(ctx context.Context, id uint32) *AiAgentRevision {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QueryApp queries the app edge of a AiAgentRevision.
+func (c *AiAgentRevisionClient) QueryApp(_m *AiAgentRevision) *AiAgentAppQuery {
+	query := (&AiAgentAppClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(aiagentrevision.Table, aiagentrevision.FieldID, id),
+			sqlgraph.To(aiagentapp.Table, aiagentapp.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, aiagentrevision.AppTable, aiagentrevision.AppColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *AiAgentRevisionClient) Hooks() []Hook {
+	hooks := c.hooks.AiAgentRevision
+	return append(hooks[:len(hooks):len(hooks)], aiagentrevision.Hooks[:]...)
+}
+
+// Interceptors returns the client interceptors.
+func (c *AiAgentRevisionClient) Interceptors() []Interceptor {
+	return c.inters.AiAgentRevision
+}
+
+func (c *AiAgentRevisionClient) mutate(ctx context.Context, m *AiAgentRevisionMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&AiAgentRevisionCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&AiAgentRevisionUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&AiAgentRevisionUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&AiAgentRevisionDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown AiAgentRevision mutation op: %q", m.Op())
 	}
 }
 
@@ -9963,8 +10137,8 @@ func (c *UserRoleClient) mutate(ctx context.Context, m *UserRoleMutation) (Value
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		AccessKey, AiAgentApp, AiAgentRun, AiChunk, AiConversation, AiDoc,
-		AiKnowledgeBase, AiMessage, AiProvider, AiUsageLog, Api, ApiAuditLog,
+		AccessKey, AiAgentApp, AiAgentRevision, AiAgentRun, AiChunk, AiConversation,
+		AiDoc, AiKnowledgeBase, AiMessage, AiProvider, AiUsageLog, Api, ApiAuditLog,
 		BiDashboard, BiDashboardRevision, DataAccessAuditLog, DictEntry, DictEntryI18n,
 		DictType, File, InternalMessage, InternalMessageCategory,
 		InternalMessageRecipient, Language, LoginAuditLog, LoginPolicy, Membership,
@@ -9978,8 +10152,8 @@ type (
 		UserCredential, UserMfaFactor, UserOrgUnit, UserPosition, UserRole []ent.Hook
 	}
 	inters struct {
-		AccessKey, AiAgentApp, AiAgentRun, AiChunk, AiConversation, AiDoc,
-		AiKnowledgeBase, AiMessage, AiProvider, AiUsageLog, Api, ApiAuditLog,
+		AccessKey, AiAgentApp, AiAgentRevision, AiAgentRun, AiChunk, AiConversation,
+		AiDoc, AiKnowledgeBase, AiMessage, AiProvider, AiUsageLog, Api, ApiAuditLog,
 		BiDashboard, BiDashboardRevision, DataAccessAuditLog, DictEntry, DictEntryI18n,
 		DictType, File, InternalMessage, InternalMessageCategory,
 		InternalMessageRecipient, Language, LoginAuditLog, LoginPolicy, Membership,

@@ -32,6 +32,18 @@ func (f AiAgentAppFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, 
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AiAgentAppMutation", m)
 }
 
+// The AiAgentRevisionFunc type is an adapter to allow the use of ordinary
+// function as AiAgentRevision mutator.
+type AiAgentRevisionFunc func(context.Context, *ent.AiAgentRevisionMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f AiAgentRevisionFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.AiAgentRevisionMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.AiAgentRevisionMutation", m)
+}
+
 // The AiAgentRunFunc type is an adapter to allow the use of ordinary
 // function as AiAgentRun mutator.
 type AiAgentRunFunc func(context.Context, *ent.AiAgentRunMutation) (ent.Value, error)

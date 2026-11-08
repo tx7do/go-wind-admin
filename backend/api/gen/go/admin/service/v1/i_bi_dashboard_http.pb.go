@@ -58,8 +58,8 @@ func RegisterBiDashboardServiceHTTPServer(s *http.Server, srv BiDashboardService
 	r.PUT("/admin/v1/bi-dashboards/{id}", _BiDashboardService_Update6_HTTP_Handler(srv))
 	r.DELETE("/admin/v1/bi-dashboards/{id}", _BiDashboardService_Delete7_HTTP_Handler(srv))
 	r.POST("/admin/v1/bi-dashboards/{id}:copy", _BiDashboardService_Copy0_HTTP_Handler(srv))
-	r.POST("/admin/v1/bi-dashboards/{dashboard_id}/revisions", _BiDashboardService_ListRevisions0_HTTP_Handler(srv))
-	r.POST("/admin/v1/bi-dashboards/revisions/{id}:restore", _BiDashboardService_RestoreRevision0_HTTP_Handler(srv))
+	r.POST("/admin/v1/bi-dashboards/{dashboard_id}/revisions", _BiDashboardService_ListRevisions1_HTTP_Handler(srv))
+	r.POST("/admin/v1/bi-dashboards/revisions/{id}:restore", _BiDashboardService_RestoreRevision1_HTTP_Handler(srv))
 }
 
 func _BiDashboardService_List9_HTTP_Handler(srv BiDashboardServiceHTTPServer) func(ctx http.Context) error {
@@ -197,7 +197,7 @@ func _BiDashboardService_Copy0_HTTP_Handler(srv BiDashboardServiceHTTPServer) fu
 	}
 }
 
-func _BiDashboardService_ListRevisions0_HTTP_Handler(srv BiDashboardServiceHTTPServer) func(ctx http.Context) error {
+func _BiDashboardService_ListRevisions1_HTTP_Handler(srv BiDashboardServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.ListBiDashboardRevisionsRequest
 		if err := ctx.Bind(&in); err != nil {
@@ -222,7 +222,7 @@ func _BiDashboardService_ListRevisions0_HTTP_Handler(srv BiDashboardServiceHTTPS
 	}
 }
 
-func _BiDashboardService_RestoreRevision0_HTTP_Handler(srv BiDashboardServiceHTTPServer) func(ctx http.Context) error {
+func _BiDashboardService_RestoreRevision1_HTTP_Handler(srv BiDashboardServiceHTTPServer) func(ctx http.Context) error {
 	return func(ctx http.Context) error {
 		var in v11.RestoreBiDashboardRevisionRequest
 		if err := ctx.Bind(&in); err != nil {
