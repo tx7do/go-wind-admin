@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
-import { Button, Drawer, Segmented } from 'antd';
+import { Button, Drawer, Segmented, message } from 'antd';
 import { ReloadOutlined, CloseOutlined, CopyOutlined, LogoutOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 
 import { usePreferencesStore } from '../../store';
+import { defaultPreferences } from '../../config/default';
+import { diffDeep } from '../../utils/diff';
 import { useAuthStore } from '@/stores';
 import { AppearancePanel } from './AppearancePanel';
 import { LayoutPanel } from './LayoutPanel';
@@ -43,9 +45,18 @@ export const PreferencesPanel: React.FC<PreferencesPanelProps> = ({ open, onClos
     resetPreferences();
   };
 
-  const handleCopy = () => {
-    // TODO: 实现复制偏好设置功能
-    console.log('复制偏好设置');
+  // 对齐 vben preferences-drawer 的 handleCopy：复制「与出厂默认的增量」而非全量快照，
+  // 产物是可回贴的 overrides 对象（diffDeep 语义见 core/preferences/utils/diff.ts）。
+  const handleCopy = async () => {
+    const { preferences } = usePreferencesStore.getState();
+    const overrides = diffDeep(defaultPreferences, preferences);
+    try {
+      await navigator.clipboard.writeText(JSON.stringify(overrides, null, 2));
+      message.success(t('actions.copyPreferencesSuccess'));
+    } catch (error) {
+      console.error('[PreferencesPanel] 复制偏好设置失败:', error);
+      message.error(t('actions.copyPreferencesFailed'));
+    }
   };
 
   const handleLogout = async () => {

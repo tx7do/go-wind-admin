@@ -11,6 +11,8 @@
     "reset": "Reset",
     "close": "Close",
     "copySettings": "Copy Settings",
+    "copyPreferencesSuccess": "Copied: preference diff is now on your clipboard",
+    "copyPreferencesFailed": "Copy failed: clipboard unavailable",
     "clearCacheAndLogout": "Clear Cache & Logout"
   },
   "appearance": {

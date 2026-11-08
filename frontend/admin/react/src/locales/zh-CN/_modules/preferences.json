@@ -11,6 +11,8 @@
     "reset": "重置",
     "close": "关闭",
     "copySettings": "复制偏好设置",
+    "copyPreferencesSuccess": "复制成功，偏好增量已写入剪贴板",
+    "copyPreferencesFailed": "复制失败，剪贴板不可用",
     "clearCacheAndLogout": "清空缓存 & 退出登录"
   },
   "appearance": {
