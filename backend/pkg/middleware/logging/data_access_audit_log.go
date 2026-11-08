@@ -7,7 +7,7 @@ import (
 	"github.com/go-kratos/kratos/v2/transport/http"
 	"github.com/tx7do/go-utils/auditutil"
 
-	"go-wind-admin/pkg/netutil"
+	"github.com/tx7do/go-utils/netutil"
 	"github.com/tx7do/go-utils/trans"
 
 	"github.com/tx7do/go-crud/viewer"
@@ -68,7 +68,7 @@ func (d *DataAccessAuditLogMiddleware) Handle(ctx context.Context, htr *http.Tra
 		return
 	}
 
-	clientIp := netutil.ClientRealIPFromRequest(htr.Request())
+	clientIp := netutil.ClientIPFromRequest(htr.Request())
 	reqId := auditutil.RequestID(htr.Request())
 	ut := extractAuthToken(htr)
 

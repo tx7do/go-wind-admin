@@ -22,7 +22,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/ent/accesskey"
 	"go-wind-admin/pkg/middleware/auth"
-	"go-wind-admin/pkg/netutil"
+	"github.com/tx7do/go-utils/netutil"
 )
 
 // AK 前缀与长度：AK 公开可见（16 字节 hex），SK 高熵（32 字节 hex）只在创建响应中出现一次。

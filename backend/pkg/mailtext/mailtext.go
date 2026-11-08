@@ -15,7 +15,7 @@ import (
 	"fmt"
 	"strings"
 
-	"go-wind-admin/pkg/netutil"
+	"github.com/tx7do/go-utils/netutil"
 )
 
 // Locale 邮件语言。取值与前端 locale 同名，便于排障时按语言直接对上文案。

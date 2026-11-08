@@ -768,8 +768,8 @@ github.com/tx7do/go-utils/mailer v0.1.1 h1:7TkLvJsn033w3qfWU8j/GW8o/W/nZqJDgdIT1
 github.com/tx7do/go-utils/mailer v0.1.1/go.mod h1:fGyj/DTiwqFXhzbAfUdKuPz6tL0PdRj2tj7KCMhdmMg=
 github.com/tx7do/go-utils/mapper v0.0.3 h1:Z7YoPVsa6I3lfWGSUoa9atujHWeF3kP+yKfS6Rkx5SM=
 github.com/tx7do/go-utils/mapper v0.0.3/go.mod h1:zziBbtoqCt8pRw+jmK9Ic9sRD7a2yCLWG40Hy2UCSCs=
-github.com/tx7do/go-utils/netutil v0.1.0 h1:4td4aoKeTSasO7XSbaPS9DvtsFsTqgWLVS3q6SMtiUM=
-github.com/tx7do/go-utils/netutil v0.1.0/go.mod h1:Ov5r41CbvGLfDanD9EBIUbzfSYcplSBVYr1APldnZuU=
+github.com/tx7do/go-utils/netutil v0.2.0 h1:xZ2zzeUH9//3iArlYY1ZPAiZH3nffW168FsxfwaxXhU=
+github.com/tx7do/go-utils/netutil v0.2.0/go.mod h1:sirHff3sFQp2iH4M622mkgd2KXxTPG2gb6dXWrYQfBQ=
 github.com/tx7do/go-utils/notify v0.0.6 h1:L9YzFVgfr04RT/EH5XJ8LBqUhpYVWd7Zxoh9AJ4Hxes=
 github.com/tx7do/go-utils/notify v0.0.6/go.mod h1:+tHcq+FOV2ClWIFOsdFIB1Y+yDT6eEFy/6CJuVPOF84=
 github.com/tx7do/go-utils/ossutil v0.1.0 h1:DaE5GBlfJdGlYVY7JvrX01TkPSpsCZYI9Qf+Fn/YaZI=

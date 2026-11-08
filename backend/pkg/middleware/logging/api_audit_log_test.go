@@ -21,7 +21,6 @@ import (
 	"crypto/ecdsa"
 	"crypto/sha256"
 	"encoding/json"
-	"net"
 	nethttp "net/http"
 	"testing"
 
@@ -31,7 +30,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/auditutil"
 
-	"go-wind-admin/pkg/netutil"
+	"github.com/tx7do/go-utils/netutil"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
@@ -266,11 +265,9 @@ func TestApiAuditLogHandleInputSanitization(t *testing.T) {
 
 	t.Run("可信代理链下XFF右向左取首个非代理IP", func(t *testing.T) {
 		// RemoteAddr 是可信代理：沿 XFF 由右向左，第一个非代理条目即客户端；
-		// 非法条目（garbage）按"到此为止"处理，取其右侧最近的可信值之前的判定。
-		_, proxyCIDR, err := net.ParseCIDR("10.9.0.0/24")
-		require.NoError(t, err)
+		// 非法条目按库侧语义跳过(net.ParseIP 失败的条目不参与判定)。
 		t.Cleanup(func() { netutil.SetTrustedProxies(nil) })
-		netutil.SetTrustedProxies([]*net.IPNet{proxyCIDR})
+		netutil.SetTrustedProxies([]string{"10.9.0.0/24"})
 		env := newAuditServer(t)
 		// 代理 10.9.0.7 追加了 10.0.0.5：客户端即 10.0.0.5（私网地理归一）
 		env.fire(nethttp.MethodPost, "/case/5", map[string]string{

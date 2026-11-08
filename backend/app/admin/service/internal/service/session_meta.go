@@ -7,7 +7,7 @@ import (
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
-	"go-wind-admin/pkg/netutil"
+	"github.com/tx7do/go-utils/netutil"
 
 	"go-wind-admin/app/admin/service/internal/data"
 )

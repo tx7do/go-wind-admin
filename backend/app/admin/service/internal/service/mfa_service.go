@@ -21,7 +21,7 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/usermfafactor"
 
 	"go-wind-admin/pkg/middleware/auth"
-	"go-wind-admin/pkg/netutil"
+	"github.com/tx7do/go-utils/netutil"
 
 	"github.com/tx7do/go-crud/viewer"
 

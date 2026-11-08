@@ -40,7 +40,7 @@ import (
 	//_ "github.com/tx7do/kratos-bootstrap/tracer"
 
 	appCrypto "github.com/tx7do/go-utils/crypto"
-	"go-wind-admin/pkg/netutil"
+	"github.com/tx7do/go-utils/netutil"
 	"go-wind-admin/pkg/passwordcrypto"
 	"go-wind-admin/pkg/serviceid"
 )
@@ -77,7 +77,7 @@ func runApp() error {
 	initGlobalEncryptorFromEnv()
 	// 可信代理链（P2 修复）：审计 IP 与登录限流取真实客户端 IP 的依据。
 	// 未配置 GOWIND_TRUSTED_PROXIES 时 XFF 一律不信任（直连部署防伪造）。
-	netutil.SetTrustedProxiesFromEnv()
+	netutil.SetTrustedProxiesFromEnvVar("GOWIND_TRUSTED_PROXIES")
 	// P3 加固：口令信封私钥若仍是内置开发对，打显著启动告警——
 	// 任何持有本仓源码者可解密口令信封。生产必须 env 覆盖。
 	if passwordcrypto.UsingDevPrivateKey() {
