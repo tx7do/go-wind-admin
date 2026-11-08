@@ -1328,6 +1328,18 @@
     "testRun": "试运行",
     "runsTitle": "运行台账",
     "openCanvas": "画布",
+    "openRevisions": "版本历史",
+    "revisions": {
+      "empty": "还没有版本快照（保存画布且图有改动时自动留底）",
+      "sourceSave": "保存留底",
+      "sourceRestore": "恢复留底",
+      "restore": "恢复",
+      "restoreConfirm": "把该快照的图写回应用？当前图会先自动留底，可再恢复",
+      "restored": "已恢复",
+      "restoreFailed": "恢复失败",
+      "viewGraph": "查看图",
+      "collapse": "收起"
+    },
     "runs": {
       "testTitle": "试运行（{name}）",
       "requiredInput": "该项必填",
@@ -1356,6 +1368,8 @@
         "start": "开始",
         "knowledge": "知识检索",
         "llm": "LLM",
+        "http": "HTTP 请求",
+        "script": "脚本",
         "condition": "条件分支",
         "end": "结束"
       },
@@ -1392,7 +1406,11 @@
       "httpAddHeader": "加请求头",
       "httpBody": "请求体",
       "httpTimeout": "超时（秒，1-60）",
-      "httpSsrHint": "仅允许 http/https 出站；私网/回环/云元数据地址会被服务端拒绝"
+      "httpSsrHint": "仅允许 http/https 出站；私网/回环/云元数据地址会被服务端拒绝",
+      "scriptLanguage": "脚本语言",
+      "scriptSource": "脚本源码",
+      "scriptHint": "必须定义 execute()；上下文经 __get_ctx() 取（各节点 id 为命名的表），产出用 __set_ctx(k, v) 写回本节点命名空间（{'{{'}节点id.字段{'}'} 可引用）",
+      "scriptSandboxHint": "脚本在服务端沙箱内执行（超时 5 秒、受限模块）；源码不是模板，{'{{'}...{'}'} 按脚本语法原样执行"
     }
   },
   "printTemplate": {

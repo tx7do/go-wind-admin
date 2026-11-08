@@ -35,9 +35,9 @@ import { PaginationQuery } from '@/core';
  * - 试运行面板就地展示 output + trace 时间线 + token 用量；运行台账浏览归 M2。
  */
 
-type AgentNodeType = 'start' | 'knowledge' | 'llm' | 'http' | 'condition' | 'end';
+type AgentNodeType = 'start' | 'knowledge' | 'llm' | 'http' | 'script' | 'condition' | 'end';
 
-const NODE_TYPE_ORDER: AgentNodeType[] = ['start', 'knowledge', 'llm', 'http', 'condition', 'end'];
+const NODE_TYPE_ORDER: AgentNodeType[] = ['start', 'knowledge', 'llm', 'http', 'script', 'condition', 'end'];
 
 // 节点色走 styles/semantic-text.css 的主题档：原先写死的 #52c41a/#1677ff/#8c8c8c
 // 是"填充档"，当图标文字用在暗色节点底上只有 2~3:1，且 #1677ff 是已退役的旧主色。
@@ -46,6 +46,7 @@ const NODE_META: Record<AgentNodeType, { color: string; icon: string }> = {
   knowledge: { color: 'var(--gowind-node-knowledge)', icon: '📚' },
   llm: { color: 'var(--gowind-primary-text)', icon: '✦' },
   http: { color: 'var(--gowind-node-http, #4a8dff)', icon: '⇋' },
+  script: { color: 'var(--gowind-node-script, #9254de)', icon: '📜' },
   condition: { color: 'var(--gowind-node-condition)', icon: '⑃' },
   end: { color: 'var(--gowind-node-end)', icon: '■' },
 };
@@ -95,6 +96,8 @@ function configSummary(nodeType: AgentNodeType, config: Record<string, any> | un
       return config.model || (config.providerId ? `provider#${config.providerId}` : '');
     case 'http':
       return config.url ? `${config.method ?? 'GET'} ${String(config.url).slice(0, 36)}` : '';
+    case 'script':
+      return config.language ? String(config.language).toUpperCase() : '';
     case 'condition':
       return config.expression || '';
     case 'end':
@@ -572,6 +575,31 @@ function NodeConfigDrawer({
             </Form.Item>
             <Typography.Paragraph type="warning" style={{ fontSize: 12, marginBottom: 0 }}>
               {t('canvas.httpSsrHint')}
+            </Typography.Paragraph>
+          </>
+        )}
+
+        {nodeType === 'script' && (
+          <>
+            <Form.Item name="language" label={t('canvas.scriptLanguage')} initialValue="lua" rules={[{ required: true, message: t('canvas.requiredScriptLanguage') }]}>
+              <Select
+                options={['lua', 'javascript'].map((l) => ({ value: l, label: l }))}
+              />
+            </Form.Item>
+            <Form.Item
+              name="source"
+              label={t('canvas.scriptSource')}
+              tooltip={t('canvas.scriptHint')}
+              rules={[{ required: true, message: t('canvas.requiredScriptSource') }]}
+            >
+              <Input.TextArea
+                rows={10}
+                placeholder={'-- 上下文经 __get_ctx() 取（各节点 id 为命名的表），产出用 __set_ctx(k, v) 写回\nfunction execute()\n  local c = __get_ctx()\n  local q = c.start_1 and c.start_1.question or ""\n  __set_ctx("answer", "已收到: " .. q)\n  return true\nend'}
+                style={{ fontFamily: 'monospace', fontSize: 12 }}
+              />
+            </Form.Item>
+            <Typography.Paragraph type="warning" style={{ fontSize: 12, marginBottom: 0 }}>
+              {t('canvas.scriptSandboxHint')}
             </Typography.Paragraph>
           </>
         )}

@@ -754,6 +754,14 @@ export interface AiAgentService {
   GetRun(
     request: aiservicev1_GetAiAgentRunRequest,
   ): Promise<aiservicev1_AiAgentRun>;
+  // 版本历史（每次更新留旧版 graph 快照，新快照在前）
+  ListRevisions(
+    request: aiservicev1_ListAiAgentRevisionsRequest,
+  ): Promise<aiservicev1_ListAiAgentRevisionsResponse>;
+  // 恢复版本（快照 graph 写回主表；恢复前先快照当前版本，可逆）
+  RestoreRevision(
+    request: aiservicev1_RestoreAiAgentRevisionRequest,
+  ): Promise<wellKnownEmpty>;
 }
 
 export function createAiAgentServiceClient(
@@ -963,6 +971,32 @@ export function createAiAgentServiceClient(
         method: 'GetRun',
       }) as Promise<aiservicev1_AiAgentRun>;
     },
+    ListRevisions(request) {
+      if (request.appId === undefined || request.appId === null) {
+        throw new Error('missing required field request.app_id');
+      }
+      const path = `/admin/v1/ai/agents/${request.appId}/revisions`;
+      const bodyMap = { ...request } as Record<string, unknown>;
+      delete bodyMap["appId"];
+      const body = JSON.stringify(bodyMap);
+      return transport.unary(path, 'POST', body, {
+        service: 'AiAgentService',
+        method: 'ListRevisions',
+      }) as Promise<aiservicev1_ListAiAgentRevisionsResponse>;
+    },
+    RestoreRevision(request) {
+      if (request.id === undefined || request.id === null) {
+        throw new Error('missing required field request.id');
+      }
+      const path = `/admin/v1/ai/agents/revisions/${request.id}:restore`;
+      const bodyMap = { ...request } as Record<string, unknown>;
+      delete bodyMap["id"];
+      const body = JSON.stringify(bodyMap);
+      return transport.unary(path, 'POST', body, {
+        service: 'AiAgentService',
+        method: 'RestoreRevision',
+      }) as Promise<wellKnownEmpty>;
+    },
   };
 }
 // 查询列表 - 回应
@@ -1048,6 +1082,35 @@ export type aiservicev1_ListAiAgentRunsResponse = {
 
 // 运行详情 - 请求
 export type aiservicev1_GetAiAgentRunRequest = {
+  id: number | undefined;
+};
+
+// 版本历史 - 请求
+export type aiservicev1_ListAiAgentRevisionsRequest = {
+  appId: number | undefined;
+  page: pagination_PagingRequest | undefined;
+};
+
+// 版本历史 - 回应（新快照在前）
+export type aiservicev1_ListAiAgentRevisionsResponse = {
+  items: aiservicev1_AiAgentRevision[] | undefined;
+  total: number | undefined;
+};
+
+// Agent 应用版本快照（每次成功更新把更新前的 graph 留一行；
+// 恢复 = 快照写回主表，恢复动作本身先快照当前版本，可逆）
+export type aiservicev1_AiAgentRevision = {
+  appId?: number;
+  createdAt?: wellKnownTimestamp;
+  createdBy?: number;
+  // 更新前的图 DSL 快照
+  graph?: string;
+  id?: number;
+  source?: string;
+};
+
+// 恢复版本 - 请求（把快照 graph 写回主表；恢复前先快照当前版本）
+export type aiservicev1_RestoreAiAgentRevisionRequest = {
   id: number | undefined;
 };
 

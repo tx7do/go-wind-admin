@@ -42,3 +42,18 @@ export async function runAiAgentApp(id: number, input: Record<string, string>) {
 export async function fetchListAiAgentRuns(query: PaginationQuery) {
   return apiClient.aiAgentService.ListRuns(query.toRawParams());
 }
+
+/** 版本历史（每次更新留旧版 graph 快照，新快照在前） */
+export async function listAiAgentRevisions(appId: number, page?: { page: number; pageSize: number }) {
+  return apiClient.aiAgentService.ListRevisions({
+    appId,
+    page: new PaginationQuery({
+      paging: page ? { page: page.page, pageSize: page.pageSize } : { page: 1, pageSize: 50 },
+    }).toRawParams(),
+  });
+}
+
+/** 恢复版本（快照 graph 写回主表；恢复前先快照当前版本，可逆） */
+export async function restoreAiAgentRevision(id: number) {
+  return apiClient.aiAgentService.RestoreRevision({ id });
+}

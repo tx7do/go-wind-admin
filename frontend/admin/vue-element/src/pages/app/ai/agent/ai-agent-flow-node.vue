@@ -28,6 +28,7 @@ const NODE_META: Record<string, { color: string; icon: string }> = {
   knowledge: { color: "#722ed1", icon: "📚" },
   llm: { color: "#1677ff", icon: "✦" },
   http: { color: "#4a8dff", icon: "⇋" },
+  script: { color: "#9254de", icon: "📜" },
   condition: { color: "#fa8c16", icon: "⑃" },
   end: { color: "#8c8c8c", icon: "■" },
 };
@@ -47,6 +48,8 @@ function configSummary(nodeType: string, config?: Record<string, any>): string {
       return config.model || (config.providerId ? `provider#${config.providerId}` : "");
     case "http":
       return config.url ? `${config.method ?? "GET"} ${String(config.url).slice(0, 36)}` : "";
+    case "script":
+      return config.language ? String(config.language).toUpperCase() : "";
     case "condition":
       return config.expression || "";
     case "end":

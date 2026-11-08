@@ -32,13 +32,14 @@ import AgentFlowNode from './agent-flow-node.vue';
  * - 试运行面板就地展示 output + trace 时间线 + token 用量。
  */
 
-type AgentNodeType = 'start' | 'knowledge' | 'llm' | 'http' | 'condition' | 'end';
+type AgentNodeType = 'start' | 'knowledge' | 'llm' | 'http' | 'script' | 'condition' | 'end';
 
 const NODE_TYPE_ORDER: AgentNodeType[] = [
   'start',
   'knowledge',
   'llm',
   'http',
+  'script',
   'condition',
   'end',
 ];
@@ -210,6 +211,9 @@ function defaultConfig(nodeType: AgentNodeType): Record<string, any> {
     }
     case 'http': {
       return { method: 'GET', timeoutSeconds: 15 };
+    }
+    case 'script': {
+      return { language: 'lua', source: '' };
     }
     case 'condition': {
       return { expression: '' };
@@ -556,6 +560,33 @@ async function handleRun() {
             <a-input-number v-model:value="selectedNode.data.config.timeoutSeconds" :min="1" :max="60" class="w-full" />
           </div>
           <div class="pt-1 text-xs text-muted-foreground">{{ $t('page.aiAgent.canvas.httpSsrHint') }}</div>
+        </template>
+
+        <!-- script -->
+        <template v-if="selectedNode.data.nodeType === 'script'">
+          <div class="pb-4">
+            <div class="pb-1">{{ $t('page.aiAgent.canvas.scriptLanguage') }}</div>
+            <a-select
+              v-model:value="selectedNode.data.config.language"
+              :options="['lua', 'javascript'].map((l) => ({ value: l, label: l }))"
+            />
+          </div>
+          <div class="pb-4">
+            <div class="pb-1">{{ $t('page.aiAgent.canvas.scriptSource') }}</div>
+            <a-textarea
+              v-model:value="selectedNode.data.config.source"
+              :rows="10"
+              style="font-family: monospace; font-size: 12px"
+              placeholder="-- 上下文经 __get_ctx() 取（各节点 id 为命名的表），产出用 __set_ctx(k, v) 写回
+function execute()
+  local c = __get_ctx()
+  local q = c.start_1 and c.start_1.question or &quot;&quot;
+  __set_ctx(&quot;answer&quot;, &quot;已收到: &quot; .. q)
+  return true
+end"
+            />
+          </div>
+          <div class="pt-1 text-xs text-muted-foreground">{{ $t('page.aiAgent.canvas.scriptSandboxHint') }}</div>
         </template>
 
         <!-- end -->

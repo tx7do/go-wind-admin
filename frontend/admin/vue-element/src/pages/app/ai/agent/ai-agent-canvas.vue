@@ -224,6 +224,32 @@
           <div class="config-tip">{{ t("pages.ai_agent.canvas.httpSsrHint") }}</div>
         </template>
 
+        <!-- script -->
+        <!-- v-if 显式非空：同 end 块的理由，http 块内层 v-if 已破坏收窄，本块需自证非空 -->
+        <template v-if="selectedNode && selectedNode.data.nodeType === 'script'">
+          <ElFormItem :label="t('pages.ai_agent.canvas.scriptLanguage')" required>
+            <ElSelect v-model="selectedNode.data.config.language">
+              <ElOption v-for="l in ['lua', 'javascript']" :key="l" :label="l" :value="l" />
+            </ElSelect>
+          </ElFormItem>
+          <ElFormItem :label="t('pages.ai_agent.canvas.scriptSource')" required>
+            <ElInput
+              v-model="selectedNode.data.config.source"
+              type="textarea"
+              :rows="10"
+              style="font-family: monospace; font-size: 12px"
+              placeholder="-- 上下文经 __get_ctx() 取（各节点 id 为命名的表），产出用 __set_ctx(k, v) 写回
+function execute()
+  local c = __get_ctx()
+  local q = c.start_1 and c.start_1.question or &quot;&quot;
+  __set_ctx(&quot;answer&quot;, &quot;已收到: &quot; .. q)
+  return true
+end"
+            />
+          </ElFormItem>
+          <div class="config-tip">{{ t("pages.ai_agent.canvas.scriptSandboxHint") }}</div>
+        </template>
+
         <!-- end -->
         <!-- v-if 显式非空：render 函数顺序收窄会因前面兄弟块内的表达式失效，
              补一层让本块重新成为收窄起点（语义等价，外层 div v-if 本就保证非空） -->
@@ -364,9 +390,9 @@ import AiAgentFlowNode from "./ai-agent-flow-node.vue";
  * - 试运行面板就地展示 output + trace 时间线 + token 用量。
  */
 
-type AgentNodeType = "start" | "knowledge" | "llm" | "http" | "condition" | "end";
+type AgentNodeType = "start" | "knowledge" | "llm" | "http" | "script" | "condition" | "end";
 
-const NODE_TYPE_ORDER: AgentNodeType[] = ["start", "knowledge", "llm", "http", "condition", "end"];
+const NODE_TYPE_ORDER: AgentNodeType[] = ["start", "knowledge", "llm", "http", "script", "condition", "end"];
 
 // markRaw 防 nodeTypes 进响应式 store 后对组件做深度响应式代理（Vue warn 且拖性能）；
 // NodeComponent 类型要求完整 NodeProps 形状，自定义节点只声明用到的字段，再断言收编

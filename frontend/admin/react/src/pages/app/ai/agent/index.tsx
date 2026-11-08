@@ -10,7 +10,7 @@ import {
   ProFormSwitch,
 } from '@ant-design/pro-components';
 import { Button, Tag, App } from 'antd';
-import { EditOutlined, DeleteOutlined, PlusOutlined, ApartmentOutlined, HistoryOutlined } from '@ant-design/icons';
+import { EditOutlined, DeleteOutlined, PlusOutlined, ApartmentOutlined, HistoryOutlined, RollbackOutlined } from '@ant-design/icons';
 import { useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 import type { aiservicev1_AiAgentApp as AiAgentApp } from '@/api/generated/admin/service/v1';
@@ -26,6 +26,7 @@ import { useProTableScrollY } from '@/hooks/useProTableScrollY';
 import ContentContainer from '@/layouts/components/PageContainer/ContentContainer';
 import AgentCanvas from './agent-canvas';
 import AgentRunsDrawer from './agent-runs-drawer';
+import AgentRevisionsDrawer from './agent-revisions-drawer';
 import { ColumnSlidersIcon } from '@/components/common/columnSettingIcon';
 import { useDrawerCloseGuard } from '@/components/common/use-drawer-close-guard';
 
@@ -49,6 +50,7 @@ const AiAgentAppManagement = () => {
   const [editing, setEditing] = useState<AiAgentApp | undefined>();
   const [canvasApp, setCanvasApp] = useState<AiAgentApp | undefined>();
   const [runsApp, setRunsApp] = useState<AiAgentApp | undefined>();
+  const [revisionsApp, setRevisionsApp] = useState<AiAgentApp | undefined>();
 
   const refresh = () => {
     actionRef.current?.reload();
@@ -120,8 +122,8 @@ const AiAgentAppManagement = () => {
     {
       title: t('actions'),
       valueType: 'option',
-      // 画布/编辑/运行台账/更多四个按钮实测约 341px（en 335），窄了必截断
-      width: 310,
+      // 画布/编辑/运行台账/版本历史/删除五个按钮：五项约 420px，窄了必截断
+      width: 420,
       fixed: 'right',
       render: (_, record) => (
         <TableActions
@@ -147,6 +149,12 @@ const AiAgentAppManagement = () => {
               label: t('openRuns'),
               icon: <HistoryOutlined />,
               onClick: () => setRunsApp(record),
+            },
+            {
+              key: 'revisions',
+              label: t('openRevisions'),
+              icon: <RollbackOutlined />,
+              onClick: () => setRevisionsApp(record),
             },
             {
               key: 'delete',
@@ -233,6 +241,7 @@ const AiAgentAppManagement = () => {
 
       <AgentCanvas open={!!canvasApp} app={canvasApp} onClose={() => { setCanvasApp(undefined); refresh(); }} />
       <AgentRunsDrawer open={!!runsApp} app={runsApp} onClose={() => setRunsApp(undefined)} />
+      <AgentRevisionsDrawer open={!!revisionsApp} app={revisionsApp} onClose={() => setRevisionsApp(undefined)} />
     </ContentContainer>
   );
 };

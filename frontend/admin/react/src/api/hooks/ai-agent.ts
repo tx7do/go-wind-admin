@@ -6,7 +6,9 @@ import {
   type aiservicev1_DeleteAiAgentAppRequest,
   type aiservicev1_GetAiAgentRunRequest,
   type aiservicev1_ListAiAgentAppsResponse,
+  type aiservicev1_ListAiAgentRevisionsResponse,
   type aiservicev1_ListAiAgentRunsResponse,
+  type aiservicev1_RestoreAiAgentRevisionRequest,
   type aiservicev1_RunAiAgentAppRequest,
   type aiservicev1_UpdateAiAgentAppRequest,
 } from '@/api/generated/admin/service/v1';
@@ -19,6 +21,7 @@ import { apiClient } from '@/api/client';
 
 const LIST_KEY = 'listAiAgentApps';
 const RUNS_KEY = 'listAiAgentRuns';
+const REVISIONS_KEY = 'listAiAgentRevisions';
 
 export function useListAiAgentApps(
   query: PaginationQuery,
@@ -106,6 +109,37 @@ export function useGetAiAgentRun(
 ) {
   return useMutation({
     mutationFn: (req) => apiClient.aiAgentService.GetRun(req),
+    ...options,
+  });
+}
+
+export function useListAiAgentRevisions(
+  appId: number | undefined,
+  options?: UseQueryOptions<aiservicev1_ListAiAgentRevisionsResponse, Error>,
+) {
+  return useQuery({
+    queryKey: [REVISIONS_KEY, appId],
+    queryFn: () =>
+      apiClient.aiAgentService.ListRevisions({
+        appId,
+        page: new PaginationQuery({ paging: { page: 1, pageSize: 50 } }).toRawParams(),
+      }),
+    enabled: !!appId,
+    ...options,
+  });
+}
+
+export function useRestoreAiAgentRevision(
+  appId: number | undefined,
+  options?: UseMutationOptions<{}, Error, aiservicev1_RestoreAiAgentRevisionRequest>,
+) {
+  const queryClientRef = useQueryClient();
+  return useMutation({
+    mutationFn: (req) => apiClient.aiAgentService.RestoreRevision(req),
+    onSuccess: () => {
+      queryClientRef.invalidateQueries({ queryKey: [REVISIONS_KEY, appId] });
+      queryClientRef.invalidateQueries({ queryKey: [LIST_KEY] });
+    },
     ...options,
   });
 }

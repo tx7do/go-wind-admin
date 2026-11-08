@@ -27,6 +27,9 @@
 
   <!-- 运行台账抽屉 -->
   <AiAgentRunsDrawer ref="runsRef" />
+
+  <!-- 版本历史抽屉 -->
+  <AiAgentRevisionsDrawer ref="revisionsRef" />
   </div>
 </template>
 
@@ -40,6 +43,7 @@ import AiAgentDrawer from "./ai-agent-drawer.vue";
 import AiAgentCanvas from "./ai-agent-canvas.vue";
 import AiAgentRunDrawer from "./ai-agent-run-drawer.vue";
 import AiAgentRunsDrawer from "./ai-agent-runs-drawer.vue";
+import AiAgentRevisionsDrawer from "./ai-agent-revisions-drawer.vue";
 import { useI18n } from "@/core/i18n";
 import { PaginationQuery } from "@/core/transport/rest";
 import { deleteAiAgentApp, fetchListAiAgentApps } from "@/api/composables";
@@ -48,9 +52,10 @@ const { t } = useI18n();
 
 const pageRef = ref();
 const drawerRef = ref();
-const canvasRef = ref();
-const runRef = ref();
-const runsRef = ref();
+  const canvasRef = ref();
+  const runRef = ref();
+  const runsRef = ref();
+  const revisionsRef = ref();
 
 const pageConfig = computed<ProPageConfig>(() => ({
   skeleton: true,
@@ -85,13 +90,14 @@ const pageConfig = computed<ProPageConfig>(() => ({
         prop: "action",
         label: t("common.table.action"),
         fixed: "right",
-        width: 220,
+        width: 280,
         cellType: "tool",
         buttons: [
           { name: "canvas", label: t("pages.ai_agent.openCanvas"), icon: "lucide:network" },
           { name: "edit", label: t("common.button.edit"), icon: "lucide:pen-line" },
           { name: "run", label: t("pages.ai_agent.testRun"), icon: "lucide:play" },
           { name: "runs", label: t("pages.ai_agent.runsTitle"), icon: "lucide:history" },
+          { name: "revisions", label: t("pages.ai_agent.openRevisions"), icon: "lucide:undo-2" },
           {
             name: "delete",
             label: t("common.button.delete"),
@@ -116,6 +122,7 @@ function handleOperate(data: { name: string; row: any }) {
   if (data.name === "canvas") canvasRef.value?.open(data.row);
   if (data.name === "run") runRef.value?.open(data.row);
   if (data.name === "runs") runsRef.value?.open(data.row);
+  if (data.name === "revisions") revisionsRef.value?.open(data.row);
 }
 
 function handleSuccess() {

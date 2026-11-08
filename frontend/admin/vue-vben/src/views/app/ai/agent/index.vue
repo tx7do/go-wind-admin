@@ -7,6 +7,7 @@ import {
   LucideFilePenLine,
   LucideHistory,
   LucideNetwork,
+  LucideRotateCcw,
   LucideTrash2,
 } from '@vben/icons';
 import { $t } from '@vben/locales';
@@ -29,14 +30,16 @@ import type {
 } from '#/api/generated/admin/service/v1';
 import AgentCanvas from './agent-canvas.vue';
 import AgentEditDrawer from './agent-edit-drawer.vue';
+import AgentRevisionsDrawer from './agent-revisions-drawer.vue';
 import AgentRunDrawer from './agent-run-drawer.vue';
 import AgentRunsDrawer from './agent-runs-drawer.vue';
 
-// 抽屉们：画布（全屏编辑器）/ 编辑（表单）/ 试运行（输入表单+运行）/ 运行台账（只读列表）
+// 抽屉们：画布（全屏编辑器）/ 编辑（表单）/ 试运行（输入表单+运行）/ 运行台账（只读列表）/ 版本历史
 const [CanvasDrawer, canvasDrawerApi] = useVbenDrawer({ connectedComponent: AgentCanvas });
 const [EditDrawer, editDrawerApi] = useVbenDrawer({ connectedComponent: AgentEditDrawer });
 const [RunDrawer, runDrawerApi] = useVbenDrawer({ connectedComponent: AgentRunDrawer });
 const [RunsDrawer, runsDrawerApi] = useVbenDrawer({ connectedComponent: AgentRunsDrawer });
+const [RevisionsDrawer, revisionsDrawerApi] = useVbenDrawer({ connectedComponent: AgentRevisionsDrawer });
 
 const gridOptions: VxeGridProps<AiAgentApp> = {
   toolbarConfig: {
@@ -120,6 +123,11 @@ function openRuns(row: AiAgentApp) {
   runsDrawerApi.open();
 }
 
+function openRevisions(row: AiAgentApp) {
+  revisionsDrawerApi.setData({ row });
+  revisionsDrawerApi.open();
+}
+
 /* 「更多」下拉里的删除走 Modal 确认（下拉里放不下 Popconfirm） */
 function confirmDelete(row: AiAgentApp) {
   Modal.confirm({
@@ -152,6 +160,12 @@ function buildRowActions(): TableAction[] {
       label: $t('page.aiAgent.runsTitle'),
       icon: h(LucideHistory),
       onClick: (row) => openRuns(row),
+    },
+    {
+      key: 'revisions',
+      label: $t('page.aiAgent.openRevisions'),
+      icon: h(LucideRotateCcw),
+      onClick: (row) => openRevisions(row),
     },
     {
       key: 'test-run',
@@ -202,5 +216,6 @@ async function handleDelete(row: AiAgentApp) {
     <EditDrawer />
     <RunDrawer />
     <RunsDrawer />
+    <RevisionsDrawer />
   </Page>
 </template>

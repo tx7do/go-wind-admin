@@ -1316,6 +1316,18 @@
     "testRun": "Test Run",
     "runsTitle": "Run History",
     "openCanvas": "Canvas",
+    "openRevisions": "Revisions",
+    "revisions": {
+      "empty": "No snapshots yet (saved automatically when the graph changes)",
+      "sourceSave": "Saved",
+      "sourceRestore": "Pre-restore",
+      "restore": "Restore",
+      "restoreConfirm": "Write this snapshot's graph back? The current graph is snapshotted first and remains restorable",
+      "restored": "Restored",
+      "restoreFailed": "Restore failed",
+      "viewGraph": "View graph",
+      "collapse": "Collapse"
+    },
     "runs": {
       "testTitle": "Test Run ({name})",
       "requiredInput": "This field is required",
@@ -1344,6 +1356,8 @@
         "start": "Start",
         "knowledge": "Knowledge",
         "llm": "LLM",
+        "http": "HTTP Request",
+        "script": "Script",
         "condition": "Condition",
         "end": "End"
       },
@@ -1380,7 +1394,11 @@
       "httpAddHeader": "Add header",
       "httpBody": "Request body",
       "httpTimeout": "Timeout (s, 1-60)",
-      "httpSsrHint": "Only http/https outbound; private/loopback/metadata addresses are rejected server-side"
+      "httpSsrHint": "Only http/https outbound; private/loopback/metadata addresses are rejected server-side",
+      "scriptLanguage": "Language",
+      "scriptSource": "Script Source",
+      "scriptHint": "Define execute(); read the context via __get_ctx() (tables keyed by node id) and write outputs via __set_ctx(k, v) (refer as {'{{'}nodeId.field{'}'})",
+      "scriptSandboxHint": "Runs in a server-side sandbox (5s timeout, restricted modules); source is NOT a template — {'{{'}...{'}'} executes as script syntax"
     }
   },
   "language": {
