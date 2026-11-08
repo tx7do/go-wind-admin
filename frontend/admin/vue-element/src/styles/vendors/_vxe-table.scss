@@ -46,7 +46,11 @@
   /* table */
   --vxe-table-header-font-color: var(--el-text-color-regular);
   --vxe-table-footer-font-color: var(--el-text-color-regular);
-  --vxe-table-border-color: var(--el-border-color);
+  /* 表格线跟表格 token 走（§2.2 边框档 #E4E4E7）：原先绑 --el-border-color 基准档，
+   * 运行时是 EP 出厂 #DCDFE6，比权威档深一级；改绑 --el-table-border-color 后
+   * 级联到 _element-plus.scss html:not(.dark) 块的 #e4e4e7 覆盖（列表页实际渲染的
+   * 就是 vxe 线，el-table token 不落在这里等于没修）。暗色档（:213）独立接管，不受影响。 */
+  --vxe-table-border-color: var(--el-table-border-color);
   --vxe-table-header-background-color: var(--el-bg-color);
   --vxe-table-body-background-color: var(--el-bg-color);
   --vxe-table-footer-background-color: var(--el-bg-color);

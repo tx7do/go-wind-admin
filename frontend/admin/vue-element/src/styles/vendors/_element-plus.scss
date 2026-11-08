@@ -577,6 +577,13 @@ body,
  * LayoutMain（:132 用 var(--el-bg-color-page)）整片刷成浅色——实测踩过。 */
 html:not(.dark) {
   --el-bg-color-page: #f1f3f6 !important;
+
+  /* 表格线（§2.2 边框档 #E4E4E7）：上面注释里说的 `$table: ("border-color")` 从未落地的
+   * 那一档，2026-11-08 补齐。只覆写表格 token、不动全局 --el-border-color-lighter
+   * （后者使用者众多，影响面不可控；表格线是 design-language.md 复测判定的唯一欠账）。
+   * !important 与画布条同理压预编译 base.css 的 :root 注入顺序；必须限定 html:not(.dark)——
+   * 暗色表格线已由 _dark-mode.scss:660 的 var(--dark-border) 接管，不能被浅色档外溢盖掉。 */
+  --el-table-border-color: #e4e4e7 !important;
 }
 
 html.dark {
