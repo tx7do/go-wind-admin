@@ -36,7 +36,7 @@ require (
 	github.com/tx7do/go-utils/aggregator v0.0.5
 	github.com/tx7do/go-utils/captcha v0.0.4
 	github.com/tx7do/go-utils/copierutil v0.0.8
-	github.com/tx7do/go-utils/crypto v0.0.4
+	github.com/tx7do/go-utils/crypto v0.0.6
 	github.com/tx7do/go-utils/doctext v0.1.0
 	github.com/tx7do/go-utils/eventbus v0.1.0
 	github.com/tx7do/go-utils/fieldperm v0.1.0

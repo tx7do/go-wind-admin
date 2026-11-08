@@ -750,8 +750,8 @@ github.com/tx7do/go-utils/converter v0.1.0 h1:KxWLZNHW+oM5vzUBrK4iNlmYKDWuw65HhW
 github.com/tx7do/go-utils/converter v0.1.0/go.mod h1:YxBeM8VyB0W5JdhiGt99dzuuauoPyYS8pLHl8w1Xz00=
 github.com/tx7do/go-utils/copierutil v0.0.8 h1:zH1qAEuJMO1xrO4A5A3xZllS4o6/E0F5q7xuaHHnRko=
 github.com/tx7do/go-utils/copierutil v0.0.8/go.mod h1:bCTuve4AbL++mRTmMCsizZy5M6eNG9qiwQz5Hs+pd54=
-github.com/tx7do/go-utils/crypto v0.0.4 h1:a6hV3uw3YjjuQ0iw0yh6ksRllZ9XxkmOO2N91ugqn3U=
-github.com/tx7do/go-utils/crypto v0.0.4/go.mod h1:acjesnMEiwadfDDTZQhyG3R3Q6Y0GX/sZQpGBApK7Gc=
+github.com/tx7do/go-utils/crypto v0.0.6 h1:3MOdTkEaHAAayotkz077A83c3usbvtZOFmto0zHrpFg=
+github.com/tx7do/go-utils/crypto v0.0.6/go.mod h1:acjesnMEiwadfDDTZQhyG3R3Q6Y0GX/sZQpGBApK7Gc=
 github.com/tx7do/go-utils/doctext v0.1.0 h1:8jSBW3j5EJoQAnG5PogeovwOX9al1YklgAo1Tegho7k=
 github.com/tx7do/go-utils/doctext v0.1.0/go.mod h1:+aqtuHUU8tsi4hd8hgGg1vcAe64DQMZgjyJ7Rms7g4A=
 github.com/tx7do/go-utils/eventbus v0.1.0 h1:ysEumjqE2zSP0tOQLkkQiNijOei6tX9da8kmMnHPJug=

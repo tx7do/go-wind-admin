@@ -5,22 +5,22 @@
 //
 //	"rsa-v1:<base64(wrappedKey)>:<base64(nonce)>:<base64(cipher)>"
 //
+// 信封编解码已下沉 go-utils/crypto（EnvelopeCodec 注入制，格式由裸原语
+// 测试锁定）；本包只保留应用侧的部署契约：私钥装载（env 覆盖/开发默认
+// 密钥对）、旧形态（base64(AES-128-CBC, key=IV DefaultAESKey)）过渡兼容、
+// 统一解密入口 DecryptTransferPassword 的分发。
 // 公钥静态内置前端（公开值不降低安全性，无分发/替换通道），私钥仅服务端
 // 持有：env GOWIND_PASSWORD_RSA_PRIVATE_KEY（PEM，支持 \n 转义单行）覆盖，
 // 未配置时使用内置开发密钥对（与旧 DefaultAESKey 同一公开语义，生产必须
-// 覆盖）。旧形态（base64(AES-128-CBC, key=IV DefaultAESKey)）仍被接受——
-// 前端分批切换的过渡兼容；全部前端切换完成后可移除。
+// 覆盖）。旧形态仍被接受——前端分批切换的过渡兼容；全部前端切换完成后
+// 可移除。
 package passwordcrypto
 
 import (
 	"crypto/aes"
 	"crypto/cipher"
-	"crypto/rand"
 	"crypto/rsa"
-	"crypto/sha256"
-	"crypto/x509"
 	"encoding/base64"
-	"encoding/pem"
 	"errors"
 	"os"
 	"strings"
@@ -30,8 +30,8 @@ import (
 )
 
 const (
-	// EnvelopePrefix 信封格式版本前缀。
-	EnvelopePrefix = "rsa-v1:"
+	// EnvelopePrefix 信封格式版本前缀（库侧格式契约的本地别名）。
+	EnvelopePrefix = gocrypto.EnvelopePrefix
 	// EnvPrivateKey 覆盖开发默认私钥的环境变量名。
 	EnvPrivateKey = "GOWIND_PASSWORD_RSA_PRIVATE_KEY"
 )
@@ -66,7 +66,7 @@ F85pT2iSzOmoLYzg2x4QNH7tNuqn8yjsX/4voNqXkrT1g7t/Tpm64Kps+13s77gG
 T8jcwfRVNn0lhIFj7g2mLFagec8G7Q5mlzumDTzXRj+Sw3SPOVip6a9p7wn24TG9
 imwTPhL0crfiqbxJJAu6
 -----END PRIVATE KEY-----`
-	devPublicPEM  = `-----BEGIN PUBLIC KEY-----
+	devPublicPEM = `-----BEGIN PUBLIC KEY-----
 MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAokP/jWVwJFzdxUlb6vno
 NO7MStZysy4067GhGei25fJiyBkJCZlwH6LlctBbyGlqwvcg5kg+LfsQx9du4edc
 MqtvSBieqJjpjrIBNqg3DGdtWdDt4SPtQ1lkni5dxwB1TH4waLb8TnVjpJ2v5cBk
@@ -96,27 +96,16 @@ func loadPrivateKey(pemStr string) {
 		pemStr = devPrivatePEM
 	} else {
 		// env 单行形态支持 \n 转义换行
-		pemStr = strings.ReplaceAll(pemStr, "\n", "\n")
+		pemStr = strings.ReplaceAll(pemStr, "\\n", "\n")
 	}
-	block, _ := pem.Decode([]byte(pemStr))
-	if block == nil {
+	key, err := gocrypto.ParsePrivateKeyPEM(pemStr)
+	if err != nil {
 		return
 	}
-	if key, err := x509.ParsePKCS8PrivateKey(block.Bytes); err == nil {
-		if rsaKey, ok := key.(*rsa.PrivateKey); ok {
-			mu.Lock()
-			privateK = rsaKey
-			mu.Unlock()
-		}
-		return
-	}
-	if rsaKey, err := x509.ParsePKCS1PrivateKey(block.Bytes); err == nil {
-		mu.Lock()
-		privateK = rsaKey
-		mu.Unlock()
-	}
+	mu.Lock()
+	privateK = key
+	mu.Unlock()
 }
-
 
 // ReloadFromEnv 重新装载私钥（env 热变更/测试用）。
 func ReloadFromEnv() { loadPrivateKey(os.Getenv(EnvPrivateKey)) }
@@ -128,24 +117,11 @@ func UsingDevPrivateKey() bool {
 	if key == nil {
 		return false
 	}
-	dev, err := parseDevPrivateKey()
+	dev, err := gocrypto.ParsePrivateKeyPEM(devPrivatePEM)
 	if err != nil {
 		return false
 	}
 	return key.Equal(dev)
-}
-
-func parseDevPrivateKey() (*rsa.PrivateKey, error) {
-	block, _ := pem.Decode([]byte(devPrivatePEM))
-	if block == nil {
-		return nil, errors.New("dev pem decode failed")
-	}
-	key, err := x509.ParsePKCS8PrivateKey(block.Bytes)
-	if err != nil {
-		return x509.ParsePKCS1PrivateKey(block.Bytes)
-	}
-	rsaKey, _ := key.(*rsa.PrivateKey)
-	return rsaKey, nil
 }
 
 func privateKey() *rsa.PrivateKey {
@@ -156,39 +132,17 @@ func privateKey() *rsa.PrivateKey {
 
 // EncryptPasswordEnvelope 混合信封加密（服务端参考实现/单测/运维工具用；
 // 前端在 WebCrypto 里独立实现同格式：RSA-OAEP(SHA-256) 包裹 AES-256-GCM 密钥）。
+// 编解码本体在 go-utils/crypto，此处只做私钥注入。
 func EncryptPasswordEnvelope(plain string) (string, error) {
 	key := privateKey()
 	if key == nil {
 		return "", errors.New("passwordcrypto: private key not loaded")
 	}
-
-	aesKey := make([]byte, 32)
-	if _, err := rand.Read(aesKey); err != nil {
-		return "", err
-	}
-	gcm, err := cipher.NewGCM(aesToBlock(aesKey))
-	if err != nil {
-		return "", err
-	}
-	nonce := make([]byte, gcm.NonceSize())
-	if _, err := rand.Read(nonce); err != nil {
-		return "", err
-	}
-	cipherText := gcm.Seal(nil, nonce, []byte(plain), nil)
-
-	wrapped, err := rsa.EncryptOAEP(sha256.New(), rand.Reader, &key.PublicKey, aesKey, nil)
-	if err != nil {
-		return "", err
-	}
-
-	return EnvelopePrefix +
-		base64.StdEncoding.EncodeToString(wrapped) + ":" +
-		base64.StdEncoding.EncodeToString(nonce) + ":" +
-		base64.StdEncoding.EncodeToString(cipherText), nil
+	return gocrypto.NewEnvelopeCodecFromKey(key).Encrypt(plain)
 }
 
 // DecryptTransferPassword 统一口令传输解密入口：
-//   - "rsa-v1:" 前缀 → 混合信封解密；
+//   - "rsa-v1:" 前缀 → 混合信封解密（go-utils/crypto EnvelopeCodec）；
 //   - 其余 → 旧 base64+AES-128-CBC(DefaultAESKey, key=IV) 过渡兼容。
 //
 // 返回明文口令；格式/解密失败返回错误（调用方以 400 语义透传）。
@@ -198,29 +152,7 @@ func DecryptTransferPassword(v string) (string, error) {
 		if key == nil {
 			return "", errors.New("passwordcrypto: private key not loaded")
 		}
-		parts := strings.Split(strings.TrimPrefix(v, EnvelopePrefix), ":")
-		if len(parts) != 3 {
-			return "", errors.New("passwordcrypto: malformed envelope")
-		}
-		wrapped, err1 := base64.StdEncoding.DecodeString(parts[0])
-		nonce, err2 := base64.StdEncoding.DecodeString(parts[1])
-		cipherText, err3 := base64.StdEncoding.DecodeString(parts[2])
-		if err1 != nil || err2 != nil || err3 != nil {
-			return "", errors.New("passwordcrypto: malformed envelope base64")
-		}
-		aesKey, err := rsa.DecryptOAEP(sha256.New(), rand.Reader, key, wrapped, nil)
-		if err != nil {
-			return "", errors.New("passwordcrypto: envelope unwrap failed")
-		}
-		gcm, err := cipher.NewGCM(aesToBlock(aesKey))
-		if err != nil {
-			return "", err
-		}
-		plain, err := gcm.Open(nil, nonce, cipherText, nil)
-		if err != nil {
-			return "", errors.New("passwordcrypto: envelope open failed")
-		}
-		return string(plain), nil
+		return gocrypto.NewEnvelopeCodecFromKey(key).Decrypt(v)
 	}
 	return decryptLegacy(v)
 }
@@ -258,9 +190,4 @@ func unpadPKCS7(data []byte, blockSize int) []byte {
 		}
 	}
 	return data[:len(data)-pad]
-}
-
-func aesToBlock(key []byte) cipher.Block {
-	block, _ := aes.NewCipher(key)
-	return block
 }
