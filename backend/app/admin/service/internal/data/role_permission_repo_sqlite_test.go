@@ -110,3 +110,81 @@ func TestRolePermissionRepoSqlite_EnumReadViewBackfill(t *testing.T) {
 		require.Equal(t, exp.effect, row.GetEffect(), "权限 %d 关联行的读视图应回显 effect", permID)
 	}
 }
+
+
+// seedRoleBinding 直建一条角色授权绑定（绕过 service 层），返回绑定行 id。
+func seedRoleBinding(t *testing.T, client *ent.Client, ctx context.Context,
+	roleID, tenantID, permissionID uint32) int {
+	t.Helper()
+	row, err := client.RolePermission.Create().
+		SetRoleID(roleID).
+		SetTenantID(tenantID).
+		SetPermissionID(permissionID).
+		Save(ctx)
+	require.NoError(t, err, "直建角色授权绑定应成功")
+	return int(row.ID)
+}
+
+func countRolePermissionBindingsByPerm(t *testing.T, client *ent.Client, ctx context.Context, permissionID uint32) int {
+	t.Helper()
+	cnt, err := client.RolePermission.Query().
+		Where(rolepermission.PermissionIDEQ(permissionID)).
+		Count(ctx)
+	require.NoError(t, err)
+	return cnt
+}
+
+// TestRolePermissionRepoSqlite_DeleteByPermissionIDs 验证按 permission_id 集合
+// 清理角色授权（权限删除级联的关键一环）：目标权限的绑定全清（跨角色跨租户）、
+// 无关权限保留、空集合与重复清理静默成功（幂等删除语义）。
+// 回归背景：权限行删除流程（管理页单删/权限同步 MERGE 删除段）此前不清角色
+// 授权，角色手里的业务权限授权在权限同步后静默清零（悬空授权）。
+func TestRolePermissionRepoSqlite_DeleteByPermissionIDs(t *testing.T) {
+	entClient := enttest.NewEntClientForTest(t)
+	repo := newRolePermissionRepoSqlite(t, entClient)
+	client := entClient.Client()
+	ctx := enttest.NewSystemContext(context.Background())
+
+	doomed := uint32(900)   // 将被级联清理的权限
+	survivor := uint32(901) // 无关权限（不得被牵连）
+
+	seedRoleBinding(t, client, ctx, 10, 1, doomed)
+	seedRoleBinding(t, client, ctx, 11, 2, doomed)
+	seedRoleBinding(t, client, ctx, 10, 1, survivor)
+	require.Equal(t, 2, countRolePermissionBindingsByPerm(t, client, ctx, doomed))
+	require.Equal(t, 1, countRolePermissionBindingsByPerm(t, client, ctx, survivor))
+
+	// 空集合：no-op（重试与并发清理依赖幂等语义）
+	require.NoError(t, repo.DeleteByPermissionIDs(ctx, nil), "空集合应静默成功")
+	require.Equal(t, 2, countRolePermissionBindingsByPerm(t, client, ctx, doomed), "空集合不得误删")
+
+	// 级联：doomed 的全部绑定清掉（跨角色跨租户）、survivor 保留
+	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []uint32{doomed}), "按权限集合清理应成功")
+	require.Zero(t, countRolePermissionBindingsByPerm(t, client, ctx, doomed), "目标权限的角色授权应全清")
+	require.Equal(t, 1, countRolePermissionBindingsByPerm(t, client, ctx, survivor), "无关权限的绑定不得被牵连")
+
+	// 已清理的集合再清一次：静默成功（幂等）
+	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []uint32{doomed}), "重复清理应静默成功")
+}
+
+// TestRolePermissionRepoSqlite_DeleteByPermissionIDs_CrossTenant 防漂移：
+// 级联按 permission_id 判定，不受租户隔离影响——权限行删除是全平台事件，
+// 任何租户角色手里的该权限授权都必须清（漏清=悬空授权=越权残留）。
+func TestRolePermissionRepoSqlite_DeleteByPermissionIDs_CrossTenant(t *testing.T) {
+	entClient := enttest.NewEntClientForTest(t)
+	repo := newRolePermissionRepoSqlite(t, entClient)
+	client := entClient.Client()
+	ctx := enttest.NewSystemContext(context.Background())
+
+	permID := uint32(910)
+	tenants := []uint32{0, 1, 42, 777}
+	for _, tid := range tenants {
+		seedRoleBinding(t, client, ctx, 100+tid, tid, permID)
+	}
+
+	require.NoError(t, repo.DeleteByPermissionIDs(ctx, []uint32{permID}))
+	for _, tid := range tenants {
+		require.Zero(t, countRolePermissionBindingsByPerm(t, client, ctx, permID),
+			"租户 %d 的该权限授权也应被级联清理", tid)
+	}
+}
