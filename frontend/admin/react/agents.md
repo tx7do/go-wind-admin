@@ -273,6 +273,7 @@ i18n.t('key', { ns: 'common' });
 10. **角色码和权限码分离存储**: `userRoles` + `accessCodes`，不混合
 11. **不要使用 `userInfo?.permissions`**: 该字段不存在
 12. **错误处理铁律（不吞错）**: 任何 catch 至少二选一——`console.error/warn` 带出**原始错误对象**，或重新抛出。用户可见的 message/notification 不等于日志（只有翻译文案，排查靠控制台原始错误）。合法裸 catch 仅限纯本地 best-effort 兜底且注释写明原因。历史教训：静默吞错曾让认证链路 bug 排查数日（每层都被上一层话术掩盖）
+13. **scroll.x 必须 ≥ 列宽总和**: 手写 `scroll={{ x: N }}` 时 N 小于各列 width 之和会让 rc-table 给表头/表体不一致的宽度基准，固定右列（fixed:'right'）的表头会比表体左偏一个滚动条宽度（2026-11-08 实测于打印模板页：x:1200 < 列总和 1460 → 表头左偏 15px）。改列宽时同步改 x，或直接删掉 x 让 `ListTable` 自动补
 
 ## 新增完整功能模块清单
 
