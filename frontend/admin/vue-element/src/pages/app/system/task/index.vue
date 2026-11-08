@@ -178,7 +178,9 @@ const pageConfig = computed<ProPageConfig>(() => ({
         prop: "action",
         label: $t("common.table.action"),
         fixed: "right",
-        width: 300,
+        // 行内 3 钮（编辑/启动/停止）+ 图标「更多」实测 186px；300 是按全量四钮给的，
+        // 第 4 钮收进下拉后列内 dead space 100px+，按钮视觉上偏在一边
+        width: 200,
         cellType: "tool",
         buttons: [
           { name: "edit", label: $t("common.button.edit"), icon: "lucide:pen-line" },
