@@ -525,12 +525,13 @@ func TestTaskService_RestartAllTask(t *testing.T) {
 	require.Equal(t, 1, stub.removeAllCount, "RestartAllTask 应先全量注销")
 	require.Equal(t, []string{"tasksvc_delay_all_type"}, stub.newTask,
 		"DELAY 任务应经一次性投递入口")
-	require.Len(t, stub.newPeriodicTask, 7,
-		"周期注册应为 7 次：同名 PERIODIC 去重后 1 次 + 系统级常驻 6 次（到期扫描/审计归档/台账清扫/监控告警扫描/AI 日报/配额水位扫描）")
+	require.Len(t, stub.newPeriodicTask, 8,
+		"周期注册应为 8 次：同名 PERIODIC 去重后 1 次 + 系统级常驻 7 次（到期扫描/审计归档/台账清扫/归档清理/监控告警扫描/AI 日报/配额水位扫描）")
 	require.Contains(t, stub.newPeriodicTask, "tasksvc_dup_type", "同名 PERIODIC 应恰好注册一次")
 	require.Contains(t, stub.newPeriodicTask, task.TenantExpiryScanTaskType, "系统级到期扫描应被注册")
 	require.Contains(t, stub.newPeriodicTask, task.AuditLogArchiveTaskType, "系统级审计归档应被注册")
 	require.Contains(t, stub.newPeriodicTask, task.NotificationDeliverySweepTaskType, "通知台账清扫应被注册")
+	require.Contains(t, stub.newPeriodicTask, task.NotificationArchivedCleanupTaskType, "通知归档集清理应被注册")
 	require.Contains(t, stub.newPeriodicTask, task.MonitorAlertScanTaskType, "监控告警扫描应被注册")
 	require.Contains(t, stub.newPeriodicTask, task.PlanQuotaWatermarkTaskType, "系统级配额水位扫描应被注册")
 }

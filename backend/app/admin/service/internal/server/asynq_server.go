@@ -146,6 +146,15 @@ func NewAsynqServer(ctx *bootstrap.Context, taskService *service.TaskService, in
 		return nil, err
 	}
 
+	// 通知归档集清理 handler（系统级常驻任务，每小时）。
+	// 重试耗尽的派发任务会被 asynq 移进归档集后无人再碰，载荷带明文验证码，
+	// 由本任务按保留期删除（只删 notification_dispatch 一个类型，不越界代删别的生产者的任务）。
+	// 周期调度同样在 startAllTask 末尾注册。
+	if err = asynqServer.RegisterSubscriber(srv, task.NotificationArchivedCleanupTaskType, notificationService.AsyncArchivedCleanup); err != nil {
+		log.Error(err)
+		return nil, err
+	}
+
 	// 启动所有的任务：启动期无操作者上下文，走内部入口，
 	// 不经过 StartAllTask 的平台管理员闸门（HTTP RPC 才需要闸）。
 	if err = taskService.BootstrapStartAllTask(viewer.WithSystemContext(ctx.Context())); err != nil {

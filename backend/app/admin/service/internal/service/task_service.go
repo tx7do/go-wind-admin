@@ -473,6 +473,19 @@ func (s *TaskService) startAllTask(ctx context.Context) (int32, error) {
 		} else {
 			s.log.Infof(ctx, "套餐配额水位扫描定时任务已注册（cron=%s）", task.PlanQuotaWatermarkCronSpec)
 		}
+
+		// 通知归档集清理：把归档集里超保留期的 notification_dispatch 任务删掉
+		// （载荷带明文验证码，不能永久躺在 Redis）。handler 属通知域
+		// （NotificationService.AsyncArchivedCleanup），调度项在此注册（同上理由）。
+		if _, err := s.taskScheduler.NewPeriodicTask(
+			task.NotificationArchivedCleanupCronSpec,
+			task.NotificationArchivedCleanupTaskType,
+			&task.NotificationArchivedCleanupTaskData{},
+		); err != nil {
+			s.log.Errorf(ctx, "注册通知归档集清理定时任务失败: %s", err.Error())
+		} else {
+			s.log.Infof(ctx, "通知归档集清理定时任务已注册（cron=%s）", task.NotificationArchivedCleanupCronSpec)
+		}
 	}
 
 	return count, nil

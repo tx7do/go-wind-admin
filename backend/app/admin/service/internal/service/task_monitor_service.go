@@ -49,14 +49,7 @@ func NewTaskMonitorService(ctx *bootstrap.Context) *TaskMonitorService {
 	var queue string
 	if cfg != nil && cfg.GetServer() != nil && cfg.GetServer().GetAsynq() != nil {
 		asynqUri = cfg.GetServer().GetAsynq().GetUri()
-		// NewPeriodicTask 未指定队列即落 asynq 默认队列；配置里的多队列是权重而非路由
-		queue = "default"
-		if queues := cfg.GetServer().GetAsynq().GetQueues(); len(queues) > 0 {
-			if _, ok := queues[queue]; !ok {
-				// 队列改名场景：取配置里权重最高的一个
-				queue = highestWeightQueue(queues)
-			}
-		}
+		queue = asynqQueueName(cfg.GetServer().GetAsynq().GetQueues())
 	}
 
 	return &TaskMonitorService{
@@ -64,6 +57,19 @@ func NewTaskMonitorService(ctx *bootstrap.Context) *TaskMonitorService {
 		queue:    queue,
 		log:      ctx.NewLoggerHelper("task-monitor/service/admin-service"),
 	}
+}
+
+// asynqQueueName 推导本实例的队列名：NewPeriodicTask 未指定队列即落 asynq 默认队列，
+// 配置里的多队列是权重而非路由；队列改名场景取配置里权重最高的一个。
+// TaskMonitorService 与 NotificationService（归档清理）共用同一口径。
+func asynqQueueName(queues map[string]int32) string {
+	if len(queues) == 0 {
+		return "default"
+	}
+	if _, ok := queues["default"]; ok {
+		return "default"
+	}
+	return highestWeightQueue(queues)
 }
 
 // highestWeightQueue 取权重最高的队列名（配置改掉 default 时的兜底）。

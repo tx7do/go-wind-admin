@@ -43,6 +43,14 @@ type NotificationService struct {
 	// taskEnqueuer 异步派发能力。默认 nil（asynq 未配置）＝全部事件走同步投递；
 	// 配置后由 asynq_server.go 的 RegisterTaskEnqueuer 注入。
 	taskEnqueuer TaskEnqueuer
+
+	// 归档集清理（AsyncArchivedCleanup）用的连接信息，与 TaskMonitorService 同源同口径；
+	// asynq 未配置时 asynqUri 为空串，清理 handler 直接 no-op（同步投递形态不会产生归档任务）。
+	asynqUri string
+	queue    string
+
+	// archivedInspector 懒构造：Redis 不可达不拒启，每轮清理重试。
+	archivedInspector *asynq.Inspector
 }
 
 func NewNotificationService(
@@ -52,12 +60,20 @@ func NewNotificationService(
 	templateRepo *data.NotificationTemplateRepo,
 	channelRegistry *channel.Registry,
 ) *NotificationService {
+	var asynqUri, queue string
+	if cfg := ctx.GetConfig(); cfg != nil && cfg.GetServer() != nil && cfg.GetServer().GetAsynq() != nil {
+		asynqUri = cfg.GetServer().GetAsynq().GetUri()
+		queue = asynqQueueName(cfg.GetServer().GetAsynq().GetQueues())
+	}
+
 	return &NotificationService{
 		log:          ctx.NewLoggerHelper("notification/service/admin-service"),
 		deliveryRepo: deliveryRepo,
 		ruleRepo:     ruleRepo,
 		templateRepo: templateRepo,
 		channels:     channelRegistry,
+		asynqUri:     asynqUri,
+		queue:        queue,
 	}
 }
 
@@ -532,6 +548,22 @@ const (
 	// deliverySweepBatch 单批上限：一次清扫不止一批时循环推进，
 	// 每批的 UPDATE 都会把行移出 SENDING 集合，所以循环必然收敛（并发定案的行返回 0 也会退出）。
 	deliverySweepBatch = 500
+
+	// archivedCleanupDefaultRetention 归档任务的保留期缺省 24h。
+	// 归档意味着台账侧早已被 notification_delivery_sweep 定案（最坏 ~16 分钟），
+	// 这里的周期只影响"明文 OTP 载荷在 Redis 里躺多久"；24h 是"足够能查证"与"不留敏感载荷"的折中。
+	archivedCleanupDefaultRetention = 24 * time.Hour
+
+	// archivedCleanupMinRetention 环境变量允许调到的下限 1h：清理 cron 本身是每小时，
+	// 更低的保留期等不到下一轮执行就过期了，没有意义。
+	archivedCleanupMinRetention = 1 * time.Hour
+
+	// archivedCleanupPageSize 归档集分页大小（asynq 单页上限 100）。
+	archivedCleanupPageSize = 100
+
+	// archivedCleanupMaxPages 分页收集的页数上限（100 页 × 100 条），
+	// 防异常堆积的归档集把一轮清理拖成无限循环。
+	archivedCleanupMaxPages = 100
 )
 
 // AsyncDeliverySweep 清扫超期未结算的台账行：SENDING 待够久 → FAILED + 原因。
@@ -599,6 +631,125 @@ func (s *NotificationService) deliveryStaleAfter(ctx context.Context) time.Durat
 
 	s.log.Warnf(ctx, "%s=%d 低于异步派发的重试预算，抬到下限 %s", envVar, minutes, deliverySweepMinStaleAfter)
 	return deliverySweepMinStaleAfter
+}
+
+// AsyncArchivedCleanup 清理 asynq 归档集里超保留期的通知派发任务（决策点 7 的收尾）。
+//
+// 系统级常驻定时任务（每小时整点），handler 在此、周期调度在 TaskService.startAllTask 末尾注册，
+// 不写入 sys_tasks 表（与台账清扫同构）。它收的尾：重试耗尽的任务被 asynq 移进
+// asynq:{<queue>}:archived 后没有任何代码再碰它，而派发载荷带明文一次性验证码——
+// 台账侧那条线由 notification_delivery_sweep 结算，两边不同步是有意的（Redis 载荷有保留期、
+// Postgres 台账是永久结论），本任务负责把前者的窗口钉死。
+//
+// 只删 NotificationDispatchTaskType 一个类型：队列无命名空间，共库部署下归档集里可能躺着
+// 别的生产者的任务，不能越界代删。先分页收集再统一删除，避免"边删边翻页"的游标漂移；
+// 单条删除失败不中断整轮（可能已被并发取走），错误逐条留痕。
+func (s *NotificationService) AsyncArchivedCleanup(taskType string, taskData *task.NotificationArchivedCleanupTaskData) error {
+	ctx := viewer.WithSystemContext(context.Background())
+
+	inspector, err := s.getArchivedInspector()
+	if err != nil {
+		s.log.Errorf(ctx, "AsyncArchivedCleanup: build inspector failed: %s", err.Error())
+		return err
+	}
+	if inspector == nil {
+		// asynq 未配置：全部事件走同步投递，归档集根本不会产生任务，无事可做。
+		return nil
+	}
+
+	retention := s.archivedRetention(ctx)
+	cutoff := time.Now().Add(-retention)
+
+	var victims []*asynq.TaskInfo
+	for page := 1; page <= archivedCleanupMaxPages; page++ {
+		tasks, err := inspector.ListArchivedTasks(s.queue, asynq.PageSize(archivedCleanupPageSize), asynq.Page(page))
+		if err != nil {
+			if errors.Is(err, asynq.ErrQueueNotFound) {
+				// 队列还没建（没有任何任务投过）：不是错误，是"无事可清"。
+				return nil
+			}
+			s.log.Errorf(ctx, "AsyncArchivedCleanup: list archived tasks failed (queue=%s, page=%d): %s", s.queue, page, err.Error())
+			return err
+		}
+		for _, ti := range tasks {
+			if shouldDeleteArchivedNotification(ti, task.NotificationDispatchTaskType, cutoff) {
+				victims = append(victims, ti)
+			}
+		}
+		if len(tasks) < archivedCleanupPageSize {
+			break
+		}
+	}
+
+	deleted := 0
+	for _, ti := range victims {
+		if err := inspector.DeleteTask(s.queue, ti.ID); err != nil {
+			s.log.Errorf(ctx, "AsyncArchivedCleanup: delete archived task %s failed: %s", ti.ID, err.Error())
+			continue
+		}
+		deleted++
+	}
+
+	if deleted > 0 {
+		s.log.Warnf(ctx, "AsyncArchivedCleanup: removed %d archived %s tasks (queue=%s, retention=%s)",
+			deleted, task.NotificationDispatchTaskType, s.queue, retention)
+	}
+
+	return nil
+}
+
+// getArchivedInspector 懒构造 Inspector（口径同 TaskMonitorService.getInspector）。
+// asynq 未配置（asynqUri 为空）返回 (nil, nil)，handler 据此 no-op。
+func (s *NotificationService) getArchivedInspector() (*asynq.Inspector, error) {
+	if s.archivedInspector != nil {
+		return s.archivedInspector, nil
+	}
+	if s.asynqUri == "" {
+		return nil, nil
+	}
+	connOpt, err := asynq.ParseRedisURI(s.asynqUri)
+	if err != nil {
+		return nil, fmt.Errorf("parse asynq redis uri failed: %w", err)
+	}
+	s.archivedInspector = asynq.NewInspector(connOpt)
+	return s.archivedInspector, nil
+}
+
+// archivedRetention 解析归档保留期（env NOTIFICATION_ARCHIVED_RETENTION_HOURS，小时），
+// 坏值不静默采纳（口径同 deliveryStaleAfter：要么按缺省、要么按下限，都留日志）。
+func (s *NotificationService) archivedRetention(ctx context.Context) time.Duration {
+	const envVar = "NOTIFICATION_ARCHIVED_RETENTION_HOURS"
+
+	v := strings.TrimSpace(os.Getenv(envVar))
+	if v == "" {
+		return archivedCleanupDefaultRetention
+	}
+
+	hours, err := strconv.Atoi(v)
+	if err != nil || hours <= 0 {
+		s.log.Warnf(ctx, "%s=%q 不是正整数小时数，按缺省 %s 处理", envVar, v, archivedCleanupDefaultRetention)
+		return archivedCleanupDefaultRetention
+	}
+
+	if d := time.Duration(hours) * time.Hour; d >= archivedCleanupMinRetention {
+		return d
+	}
+
+	s.log.Warnf(ctx, "%s=%d 低于清理周期粒度，抬到下限 %s", envVar, hours, archivedCleanupMinRetention)
+	return archivedCleanupMinRetention
+}
+
+// shouldDeleteArchivedNotification 判断一条归档任务是否该删：类型匹配且最后失败时间早于 cutoff。
+// LastFailedAt 为零值（异常态）不删——宁可漏删不误删；排序按 LastFailedAt 降序，
+// 超保留期的都在队尾，分页收集天然把新失败留在前几页。
+func shouldDeleteArchivedNotification(ti *asynq.TaskInfo, wantType string, cutoff time.Time) bool {
+	if ti == nil || ti.Type != wantType {
+		return false
+	}
+	if ti.LastFailedAt.IsZero() {
+		return false
+	}
+	return ti.LastFailedAt.Before(cutoff)
 }
 
 // markResult 回写台账结果，并把失败**上抛**给调用方：结论落没落库是事实，不该只活在日志里。
