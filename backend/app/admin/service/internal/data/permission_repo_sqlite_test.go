@@ -34,6 +34,10 @@ func newPermissionRepoSqlite(t *testing.T, entClient *entCrud.EntClient[*ent.Cli
 		log:       bLogger.NewHelper(bLogger.NopLogger()),
 		entClient: entClient,
 	}
+	rolePermissionRepo := &RolePermissionRepo{
+		log:       bLogger.NewHelper(bLogger.NopLogger()),
+		entClient: entClient,
+	}
 	repo := &PermissionRepo{
 		entClient: entClient,
 		log:       bLogger.NewHelper(bLogger.NopLogger()),
@@ -43,6 +47,7 @@ func newPermissionRepoSqlite(t *testing.T, entClient *entCrud.EntClient[*ent.Cli
 		),
 		permissionApiRepo:  permissionApiRepo,
 		permissionMenuRepo: permissionMenuRepo,
+		rolePermissionRepo: rolePermissionRepo,
 	}
 	repo.init()
 	return repo

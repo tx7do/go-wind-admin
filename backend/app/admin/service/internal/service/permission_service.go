@@ -434,11 +434,18 @@ func menuPathToModuleName(menuPath string) string {
 	return module
 }
 
-// SyncPermissions 同步权限点
+// SyncPermissions 同步权限点。
+//
+// 按自然键 code 的 **MERGE 增量对齐**（与接口同步/菜单同步 MERGE 同一教义，仓内
+// 已不存在删除重建型同步）：派生集（菜单/接口 → 权限码）里 code 已存在的权限行
+// 原位更新（**保 id**——sys_role_permissions 角色授权、sys_permission_policies
+// 策略联动、租户模板副本引用全部因此免于漂移），缺失才插入；库里有、派生集没有
+// 的业务权限删除并级联清理其角色授权/端点/菜单绑定/策略行。管理端手工停用的
+// 权限 status 不被同步触碰（与菜单同步 MERGE 同口径）。
+// 分组行无授权绑定引用，保持原重建语义（TruncateBizGroup + 重插）。
+// 注：init() 的启动期自动同步本就以系统上下文无操作者而静默跳过（播种走
+// createDefaultPermissions），此处加闸门不改变启动期行为。
 func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
-	// 权限同步会清空重建全局业务权限树（Truncate 两表），是平台级运维操作。
-	// 注：init() 的启动期自动同步本就以系统上下文无操作者而静默跳过（播种走
-	// createDefaultPermissions），此处加闸门不改变启动期行为。
 	if err := requirePlatformAdmin(ctx, s.log, "permission management"); err != nil {
 		return nil, err
 	}
@@ -449,13 +456,11 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 		return nil, err
 	}
 
-	// 清理菜单相关权限；清不干净就继续插入必然撞唯一约束整批失败，必须快速失败
-	if err := s.permissionRepo.TruncateBizPermissions(ctx); err != nil {
-		return nil, err
-	}
-	if err := s.permissionGroupRepo.TruncateBizGroup(ctx); err != nil {
-		return nil, err
-	}
+	// 同步是系统级全量操作，数据读写统一走 SystemContext：平台管理员的用户
+	// viewer 会把基线查询（ListBizPermissions 等）按租户过滤成空——首轮表空
+	// 不可见，二轮起基线恒空、派生集全判"新增"而撞 code 唯一约束（实测）。
+	// 与 authorizer.RequirePolicies 的"装载统一以 SystemContext 跑"同一教义。
+	ctx = viewer.WithSystemContext(ctx)
 
 	// 查询所有启用的菜单
 	menus, err := s.menuRepo.List(ctx, &paginationV1.PagingRequest{
@@ -540,14 +545,6 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 		s.log.Errorf(ctx, "batch create permission groups failed: %s", err.Error())
 		return nil, err
 	}
-	//for _, pg := range permissionGroups {
-	//	var npg *permissionV1.PermissionGroup
-	//	if npg, err = s.permissionGroupRepo.Create(ctx, &permissionV1.CreatePermissionGroupRequest{Data: pg}); err != nil {
-	//		s.log.Errorf(ctx, "batch create permission groups failed: %s", err.Error())
-	//		return nil, err
-	//	}
-	//	finalPermissionGroups = append(finalPermissionGroups, npg)
-	//}
 
 	// 为权限分配权限组 ID
 	for _, pg := range finalPermissionGroups {
@@ -557,10 +554,80 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 		}
 	}
 
-	if err = s.permissionRepo.BatchCreate(ctx, permissions); err != nil {
-		s.log.Errorf(ctx, "batch create permissions failed: %s", err.Error())
+	// —— MERGE 分段：按 code 对齐派生集与库存 ——
+	derivedByCode := make(map[string]*permissionV1.Permission, len(permissions))
+	for _, p := range permissions {
+		derivedByCode[p.GetCode()] = p
+	}
+
+	existing, err := s.permissionRepo.ListBizPermissions(ctx)
+	if err != nil {
 		return nil, err
 	}
+	existingByCode := make(map[string]*permissionV1.Permission, len(existing))
+	for _, e := range existing {
+		existingByCode[e.GetCode()] = e
+	}
+	// 更新段：code 已存在 → 原位更新（**保 id**：角色授权/策略联动/租户模板副本
+	// 引用全部因此免于漂移）。不触碰 status（与菜单同步 MERGE 同口径：管理端
+	// 手工停用的权限不被同步重新启用）；绑定（端点/菜单快照）按派生集整体替换
+	//（AssignApis/AssignMenus 自带替换语义）。
+	// mergeHit 记录已消化码：插入段与删除段都以它判定，不能复用被清空的
+	// existingByCode（清空后插入段会把全部派生码误判为"库没有"而必然撞码）。
+	updated, added, removed := 0, 0, 0
+	mergeHit := make(map[string]struct{}, len(derivedByCode))
+	goneIDs := make([]uint32, 0)
+	for code, d := range derivedByCode {
+		exist, ok := existingByCode[code]
+		if !ok {
+			continue
+		}
+		if err = s.permissionRepo.UpdateForSync(ctx, exist.GetId(), d); err != nil {
+			s.log.Errorf(ctx, "sync permissions update [%s] failed: %s", code, err.Error())
+			return nil, err
+		}
+		if err = s.permissionRepo.AssignSyncBindings(ctx, exist.GetId(), d.GetApiIds(), d.GetMenuIds()); err != nil {
+			return nil, err
+		}
+		updated++
+		mergeHit[code] = struct{}{}
+	}
+
+	// 插入段：派生集有、库没有
+	toInsert := make([]*permissionV1.Permission, 0, len(derivedByCode))
+	for _, d := range derivedByCode {
+		if _, hit := mergeHit[d.GetCode()]; hit {
+			continue
+		}
+		if _, inDB := existingByCode[d.GetCode()]; inDB {
+			continue // 防御：理论不可达（命中必进更新段），保留护栏
+		}
+		toInsert = append(toInsert, d)
+		added++
+	}
+	if len(toInsert) > 0 {
+		if err = s.permissionRepo.BatchCreate(ctx, toInsert); err != nil {
+			s.log.Errorf(ctx, "batch create permissions failed: %s", err.Error())
+			return nil, err
+		}
+	}
+
+	// 删除段：库有、派生集没有 → 删行并级联清角色授权/端点/菜单绑定/策略行
+	//（角色授权此前漏清会留悬空授权，是本轮彻底化的最后一块）。放最后：
+	// 中途失败残留的是"本该删的旧码"，重跑同步即自愈，好过删多了。
+	for code, e := range existingByCode {
+		if _, hit := mergeHit[code]; hit {
+			continue
+		}
+		goneIDs = append(goneIDs, e.GetId())
+		removed++
+	}
+	if len(goneIDs) > 0 {
+		if err = s.permissionRepo.DeleteByIDs(ctx, goneIDs); err != nil {
+			return nil, err
+		}
+	}
+	s.log.Infof(ctx, "权限同步完成：新增 %d、更新 %d、移除 %d", added, updated, removed)
 
 	// 重置权限策略
 	if err = s.authorizer.ResetPolicies(ctx); err != nil {

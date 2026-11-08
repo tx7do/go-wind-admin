@@ -40,6 +40,10 @@ import (
 	"go-wind-admin/app/admin/service/internal/data"
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
+	"go-wind-admin/app/admin/service/internal/data/ent/menu"
+	"go-wind-admin/app/admin/service/internal/data/ent/permission"
+	"go-wind-admin/app/admin/service/internal/data/ent/permissionpolicy"
+	"go-wind-admin/app/admin/service/internal/data/ent/rolepermission"
 	"go-wind-admin/pkg/constants"
 	"go-wind-admin/pkg/middleware/auth"
 	"go-wind-admin/pkg/utils/converter"
@@ -432,4 +436,126 @@ func TestPermissionService_CreateUpdateDelete(t *testing.T) {
 	cnt, err := client.Permission.Query().Count(ctx)
 	require.NoError(t, err)
 	require.Zero(t, cnt, "删除后权限表应清空")
+}
+
+
+// TestPermissionService_SyncPermissions_MergeKeepsIDsAndRoleBindings 权限同步
+// MERGE 化的零漂移回归：派生集内已存在的业务权限**原位更新保 id**——挂在它身上
+// 的角色授权（sys_role_permissions）与策略联动行（sys_permission_policies）必须
+// 原样存活；派生集消失的权限删行并级联清全部从属绑定。
+func TestPermissionService_SyncPermissions_MergeKeepsIDsAndRoleBindings(t *testing.T) {
+	svc, client := newPermissionServiceForTest(t)
+	ctx := enttest.NewSystemContext(context.Background())
+	opCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
+
+	// 两个可派生权限的菜单（MENU 类型 + 可转换 path）
+	menuA, err := client.Menu.Create().
+		SetName("SvcSyncDemoA").
+		SetPath("/svc-sync/demo-a").
+		SetType(menu.TypeMenu).
+		Save(ctx)
+	require.NoError(t, err, "直建菜单 A 应成功")
+	menuB, err := client.Menu.Create().
+		SetName("SvcSyncDemoB").
+		SetPath("/svc-sync/demo-b").
+		SetType(menu.TypeMenu).
+		Save(ctx)
+	require.NoError(t, err, "直建菜单 B 应成功")
+	codeA := svc.menuPermissionConverter.ConvertCode(*menuA.Path, *menuA.Name, permissionV1.Menu_MENU)
+	codeB := svc.menuPermissionConverter.ConvertCode(*menuB.Path, *menuB.Name, permissionV1.Menu_MENU)
+	require.NotEmpty(t, codeA, "菜单 A 应可派生权限码")
+	require.NotEmpty(t, codeB, "菜单 B 应可派生权限码")
+
+	// 首轮同步：全量插入
+	t.Logf("probe codes: codeA=%q codeB=%q", codeA, codeB)
+	_, err = svc.SyncPermissions(opCtx, &emptypb.Empty{})
+	require.NoError(t, err, "首轮同步应成功")
+	for _, row := range mustListAllPermissions(t, client, ctx) {
+		t.Logf("seeded permission: id=%d code=%q name=%q", row.ID, derefStrPerm(row.Code), derefStrPerm(row.Name))
+	}
+	permA, err := client.Permission.Query().Where(permission.CodeEQ(codeA)).Only(ctx)
+	require.NoError(t, err, "派生权限 A 应落库")
+	permB, err := client.Permission.Query().Where(permission.CodeEQ(codeB)).Only(ctx)
+	require.NoError(t, err, "派生权限 B 应落库")
+
+	// 挂角色授权与策略联动行（漂移观测点）
+
+	roleRow, err := client.Role.Create().
+		SetName("同步保号角色").
+		SetCode("SYNC_MERGE_ROLE").
+		SetNillableTenantID(trans.Ptr(uint32(42))).
+		Save(ctx)
+	require.NoError(t, err)
+
+	require.NoError(t, client.RolePermission.Create().
+		SetRoleID(roleRow.ID).
+		SetTenantID(42).
+		SetPermissionID(permA.ID).
+		Exec(ctx), "角色绑定派生权限 A 应成功")
+
+	policyRow, err := client.PermissionPolicy.Create().
+		SetPermissionID(permB.ID).
+		SetEvalOrder(1).
+		Save(ctx)
+	require.NoError(t, err, "直建策略联动行应成功")
+
+	// 二轮同步：同一派生集 → 原位更新保 id
+	_, err = svc.SyncPermissions(opCtx, &emptypb.Empty{})
+	require.NoError(t, err, "二轮同步应成功")
+	permA2, err := client.Permission.Query().Where(permission.CodeEQ(codeA)).Only(ctx)
+	require.NoError(t, err)
+	require.Equal(t, permA.ID, permA2.ID, "MERGE 后同 code 权限 id 必须不变")
+	permB2, err := client.Permission.Query().Where(permission.CodeEQ(codeB)).Only(ctx)
+	require.NoError(t, err)
+	require.Equal(t, permB.ID, permB2.ID, "MERGE 后同 code 权限 id 必须不变（B）")
+
+	// 角色授权与策略联动原样存活
+	rpCnt, err := client.RolePermission.Query().
+		Where(rolepermission.PermissionIDEQ(permA.ID)).
+		Count(ctx)
+	require.NoError(t, err)
+	require.Equal(t, 1, rpCnt, "权限 id 保号后角色授权必须原样存活（旧 truncate 语义下此绑定成孤儿）")
+	polCnt, err := client.PermissionPolicy.Query().
+		Where(permissionpolicy.PermissionIDEQ(permB.ID)).
+		Count(ctx)
+	require.NoError(t, err)
+	require.Equal(t, 1, polCnt, "策略联动行应原样存活")
+
+	// 删除菜单 B → 三轮同步：B 的权限行删除并级联清角色授权/策略/菜单绑定
+	require.NoError(t, client.Menu.DeleteOneID(menuB.ID).Exec(ctx))
+	_, err = svc.SyncPermissions(opCtx, &emptypb.Empty{})
+	require.NoError(t, err, "三轮同步应成功")
+	bCnt, err := client.Permission.Query().Where(permission.CodeEQ(codeB)).Count(ctx)
+	require.NoError(t, err)
+	require.Zero(t, bCnt, "派生集消失的权限应被删除")
+	aCnt, err := client.Permission.Query().Where(permission.CodeEQ(codeA)).Count(ctx)
+	require.NoError(t, err)
+	require.Equal(t, 1, aCnt, "派生集内的权限不得被牵连")
+	require.Equal(t, permA.ID, permA2.ID)
+	rpGone, err := client.RolePermission.Query().
+		Where(rolepermission.PermissionIDEQ(permB.ID)).
+		Count(ctx)
+	require.NoError(t, err)
+	require.Zero(t, rpGone, "被删权限的角色授权必须级联清理，不得留悬空授权")
+	polGone, err := client.PermissionPolicy.Query().
+		Where(permissionpolicy.PermissionIDEQ(permB.ID)).
+		Count(ctx)
+	require.NoError(t, err)
+	require.Zero(t, polGone, "被删权限的策略联动行必须级联清理")
+	_ = policyRow
+}
+
+
+func mustListAllPermissions(t *testing.T, client *ent.Client, ctx context.Context) []*ent.Permission {
+	t.Helper()
+	rows, err := client.Permission.Query().All(ctx)
+	require.NoError(t, err)
+	return rows
+}
+
+func derefStrPerm(p *string) string {
+	if p == nil {
+		return "<nil>"
+	}
+	return *p
 }

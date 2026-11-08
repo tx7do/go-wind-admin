@@ -5,6 +5,7 @@ package gorm
 
 import (
 	"context"
+	"time"
 
 	gormDB "gorm.io/gorm"
 
@@ -17,6 +18,7 @@ import (
 	paginationFilter "github.com/tx7do/go-crud/pagination/filter"
 
 	"github.com/tx7do/go-utils/copierutil"
+	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/go-utils/mapper"
 
 	"go-wind-admin/app/admin/service/internal/data/gorm/models"
@@ -33,10 +35,11 @@ type PermissionRepo struct {
 	structuredFilter *gormCrudFilter.StructuredFilter
 	statusConverter  *mapper.EnumTypeConverter[permissionV1.Permission_Status, string]
 
-	// permissionApiRepo / permissionMenuRepo 绑定子 repo：端点与菜单全路径快照
-	// 反查用（与 data 栈同构）。
+	// permissionApiRepo / permissionMenuRepo / rolePermissionRepo 绑定子 repo：
+	// 端点与菜单全路径快照反查、删除级联用（与 data 栈同构）。
 	permissionApiRepo  *PermissionApiRepo
 	permissionMenuRepo *PermissionMenuRepo
+	rolePermissionRepo *RolePermissionRepo
 }
 
 func NewPermissionRepo(
@@ -44,6 +47,7 @@ func NewPermissionRepo(
 	client *gormCrud.Client,
 	permissionApiRepo *PermissionApiRepo,
 	permissionMenuRepo *PermissionMenuRepo,
+	rolePermissionRepo *RolePermissionRepo,
 ) *PermissionRepo {
 	repo := &PermissionRepo{
 		log:                ctx.NewLoggerHelper("permission/gorm-repo/admin-service"),
@@ -53,6 +57,7 @@ func NewPermissionRepo(
 		statusConverter:    mapper.NewEnumTypeConverter[permissionV1.Permission_Status, string](permissionV1.Permission_Status_name, permissionV1.Permission_Status_value),
 		permissionApiRepo:  permissionApiRepo,
 		permissionMenuRepo: permissionMenuRepo,
+		rolePermissionRepo: rolePermissionRepo,
 	}
 
 	repo.init()
@@ -179,12 +184,86 @@ func (r *PermissionRepo) Truncate(ctx context.Context) error {
 	return permissionV1.ErrorInternalServerError("gorm scaffold: Truncate not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/permission_repo.go")
 }
 
-func (r *PermissionRepo) CleanApiPermissions(ctx context.Context) error {
-	return permissionV1.ErrorInternalServerError("gorm scaffold: CleanApiPermissions not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/permission_repo.go")
+// ListBizPermissions 列出全部业务权限行（code 非 sys: 前缀）的最小视图。
+// 与 data 栈同名方法语义一致。
+func (r *PermissionRepo) ListBizPermissions(ctx context.Context) ([]*permissionV1.Permission, error) {
+	var rows []*models.Permission
+	if err := r.client.DB.WithContext(ctx).Model(&models.Permission{}).
+		Where("code IS NOT NULL AND code <> '' AND code NOT LIKE ?", "sys:%").
+		Find(&rows).Error; err != nil {
+		r.log.Errorf(ctx, "list biz permissions failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("list biz permissions failed")
+	}
+	dtos := make([]*permissionV1.Permission, 0, len(rows))
+	for _, row := range rows {
+		dtos = append(dtos, &permissionV1.Permission{Id: trans.Ptr(row.ID), Code: row.Code, Name: row.Name})
+	}
+	return dtos, nil
 }
 
-func (r *PermissionRepo) CleanMenuPermissions(ctx context.Context) error {
-	return permissionV1.ErrorInternalServerError("gorm scaffold: CleanMenuPermissions not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/permission_repo.go")
+// UpdateForSync 权限同步 MERGE 的更新段：原位更新名称/分组，不触碰 status。
+// 与 data 栈同名方法语义一致。
+func (r *PermissionRepo) UpdateForSync(ctx context.Context, id uint32, derived *permissionV1.Permission) error {
+	updates := map[string]any{"updated_at": time.Now()}
+	if derived.Name != nil {
+		updates["name"] = *derived.Name
+	}
+	if derived.GroupId != nil {
+		updates["group_id"] = *derived.GroupId
+	}
+	if err := r.client.DB.WithContext(ctx).Model(&models.Permission{}).
+		Where("id = ?", id).Updates(updates).Error; err != nil {
+		r.log.Errorf(ctx, "sync update permission failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("sync update permission failed")
+	}
+	return nil
+}
+
+// AssignSyncBindings 权限同步 MERGE 的绑定替换段：按派生集整体替换端点/菜单
+// 快照绑定。与 data 栈同名方法语义一致。
+func (r *PermissionRepo) AssignSyncBindings(ctx context.Context, id uint32, apiIDs, menuIDs []uint32) error {
+	if err := r.permissionApiRepo.AssignApis(ctx, id, apiIDs); err != nil {
+		return err
+	}
+	return r.permissionMenuRepo.AssignMenus(ctx, id, menuIDs)
+}
+
+// DeleteByIDs 按 id 集合删除权限行并级联清理全部从属绑定。与 data 栈同名方法
+// 语义一致。
+func (r *PermissionRepo) DeleteByIDs(ctx context.Context, permissionIDs []uint32) error {
+	if len(permissionIDs) == 0 {
+		return nil
+	}
+	if err := r.client.DB.WithContext(ctx).Where("id IN ?", permissionIDs).
+		Delete(&models.Permission{}).Error; err != nil {
+		r.log.Errorf(ctx, "delete permissions by ids failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("delete permissions by ids failed")
+	}
+	return r.cascadeCleanByPermissionIDs(ctx, permissionIDs)
+}
+
+// cascadeCleanByPermissionIDs 权限行删除后的级联清理：接口/菜单快照绑定、
+// 角色授权绑定、策略联动行（sys_permission_policies）。与 data 栈同构。
+func (r *PermissionRepo) cascadeCleanByPermissionIDs(ctx context.Context, permissionIDs []uint32) error {
+	if len(permissionIDs) == 0 {
+		return nil
+	}
+	if err := r.permissionApiRepo.DeleteByPermissionIDs(ctx, permissionIDs); err != nil {
+		return err
+	}
+	if err := r.permissionMenuRepo.DeleteByPermissionIDs(ctx, permissionIDs); err != nil {
+		return err
+	}
+	if err := r.rolePermissionRepo.DeleteByPermissionIDs(ctx, permissionIDs); err != nil {
+		return err
+	}
+	if err := r.client.DB.WithContext(ctx).Exec(
+		"DELETE FROM sys_permission_policies WHERE permission_id IN ?", permissionIDs,
+	).Error; err != nil {
+		r.log.Errorf(ctx, "delete permission policies failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("delete permission policies failed")
+	}
+	return nil
 }
 
 // ListApiEndpointsByPermissionIDs 列出权限关联的端点快照（(path, method)，

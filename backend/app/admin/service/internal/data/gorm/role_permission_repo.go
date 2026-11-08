@@ -193,6 +193,22 @@ func (r *RolePermissionRepo) RemovePermissions(ctx context.Context, tenantID, ro
 	return nil
 }
 
+// DeleteByPermissionIDs 按 permission_id 集合清理角色授权绑定：权限行被删除
+// （管理页单删 / 权限同步 MERGE 的删除段）时级联调用，消灭悬空的角色授权。
+// 与 data 栈同名方法语义一致。
+func (r *RolePermissionRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint32) error {
+	if len(permissionIDs) == 0 {
+		return nil
+	}
+	if err := r.client.DB.WithContext(ctx).
+		Where("permission_id IN ?", permissionIDs).
+		Delete(&models.RolePermission{}).Error; err != nil {
+		r.log.Errorf(ctx, "delete role permissions by permission ids failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("delete role permissions by permission ids failed")
+	}
+	return nil
+}
+
 func (r *RolePermissionRepo) ListPermissionsByRoleID(ctx context.Context, roleID uint32) ([]*permissionV1.RolePermission, error) {
 	var entities []*models.RolePermission
 	if err := r.client.DB.WithContext(ctx).

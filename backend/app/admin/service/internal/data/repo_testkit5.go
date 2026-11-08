@@ -89,6 +89,7 @@ func NewPermissionRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *Permis
 		),
 		permissionApiRepo:  testkitPermissionApiRepo(entClient),
 		permissionMenuRepo: testkitPermissionMenuRepo(entClient),
+		rolePermissionRepo: testkitRolePermissionRepo(entClient),
 	}
 
 	repo.init()

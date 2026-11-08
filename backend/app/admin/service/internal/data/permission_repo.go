@@ -16,6 +16,7 @@ import (
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
+	"go-wind-admin/app/admin/service/internal/data/ent/permissionpolicy"
 	"go-wind-admin/app/admin/service/internal/data/ent/predicate"
 
 	"github.com/tx7do/go-utils/copierutil"
@@ -24,6 +25,7 @@ import (
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 
 	"github.com/tx7do/go-utils/sliceutil"
+	"github.com/tx7do/go-utils/trans"
 	"go-wind-admin/pkg/constants"
 )
 
@@ -45,6 +47,7 @@ type PermissionRepo struct {
 
 	permissionApiRepo  *PermissionApiRepo
 	permissionMenuRepo *PermissionMenuRepo
+	rolePermissionRepo *RolePermissionRepo
 }
 
 func NewPermissionRepo(
@@ -52,6 +55,7 @@ func NewPermissionRepo(
 	entClient *entCrud.EntClient[*ent.Client],
 	permissionApiRepo *PermissionApiRepo,
 	permissionMenuRepo *PermissionMenuRepo,
+	rolePermissionRepo *RolePermissionRepo,
 ) *PermissionRepo {
 	repo := &PermissionRepo{
 		log:       ctx.NewLoggerHelper("permission/repo/admin-service"),
@@ -62,6 +66,7 @@ func NewPermissionRepo(
 		),
 		permissionApiRepo:  permissionApiRepo,
 		permissionMenuRepo: permissionMenuRepo,
+		rolePermissionRepo: rolePermissionRepo,
 	}
 
 	repo.init()
@@ -92,6 +97,7 @@ func (r *PermissionRepo) Count(ctx context.Context, req *paginationV1.PagingRequ
 	if len(whereSelectors) != 0 {
 		builder.Modify(whereSelectors...)
 	}
+
 
 	count, err := builder.Count(ctx)
 	if err != nil {
@@ -366,7 +372,8 @@ func (r *PermissionRepo) BatchCreate(ctx context.Context, permissions []*permiss
 	var entities []*ent.Permission
 	if entities, err = builder.Save(ctx); err != nil {
 		r.log.Errorf(ctx, "batch insert permissions failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("batch insert permissions failed")
+		// 带出底层原因（唯一约束/必填缺失各有排障方向），不吞成同文案
+		return permissionV1.ErrorInternalServerError("batch insert permissions failed: %s", err.Error())
 	}
 
 	for i, perm := range permissions {
@@ -532,20 +539,114 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 		return permissionV1.ErrorInternalServerError("delete permission failed")
 	}
 
-	if err = r.permissionApiRepo.DeleteByPermissionIDs(ctx, permissionIDs); err != nil {
-		return err
-	}
-
-	if err = r.permissionMenuRepo.DeleteByPermissionIDs(ctx, permissionIDs); err != nil {
+	// 级联清理全部从属绑定：接口/菜单快照、角色授权（sys_role_permissions，
+	// 此前漏清会留悬空授权）、策略联动行
+	if err = r.cascadeCleanByPermissionIDs(ctx, permissionIDs); err != nil {
 		return err
 	}
 
 	return nil
 }
 
+// ListBizPermissions 列出全部业务权限行（code 非 sys: 前缀）的最小视图
+//（id+code+name），权限同步 MERGE 的 diff 基线用；规模有界，无分页必要。
+func (r *PermissionRepo) ListBizPermissions(ctx context.Context) ([]*permissionV1.Permission, error) {
+	rows, err := r.entClient.Client().Permission.Query().
+		Where(
+			permission.CodeNEQ(""),
+			permission.Not(permission.CodeHasPrefix(constants.SystemPermissionCodePrefix)),
+		).
+		All(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "list biz permissions failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("list biz permissions failed")
+	}
+
+	dtos := make([]*permissionV1.Permission, 0, len(rows))
+	for _, row := range rows {
+		dtos = append(dtos, &permissionV1.Permission{
+			Id:   trans.Ptr(row.ID),
+			Code: row.Code,
+			Name: row.Name,
+		})
+	}
+	return dtos, nil
+}
+
+// DeleteByIDs 按 id 集合删除权限行并级联清理全部从属绑定（权限同步 MERGE 的
+// 删除段用）。
+func (r *PermissionRepo) DeleteByIDs(ctx context.Context, permissionIDs []uint32) error {
+	if len(permissionIDs) == 0 {
+		return nil
+	}
+
+	builder := r.entClient.Client().Permission.Delete().
+		Where(permission.IDIn(permissionIDs...))
+	if _, err := builder.Exec(ctx); err != nil {
+		r.log.Errorf(ctx, "delete permissions by ids failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("delete permissions by ids failed")
+	}
+
+	return r.cascadeCleanByPermissionIDs(ctx, permissionIDs)
+}
+
+// UpdateForSync 权限同步 MERGE 的更新段：原位更新派生集字段（名称/分组），
+// **不触碰 status**——管理端手工停用的权限不被同步重新启用（与菜单同步 MERGE
+// 同口径）。
+func (r *PermissionRepo) UpdateForSync(ctx context.Context, id uint32, derived *permissionV1.Permission) error {
+	builder := r.entClient.Client().Permission.UpdateOneID(id).
+		SetNillableName(derived.Name).
+		SetNillableGroupID(derived.GroupId).
+		SetUpdatedAt(time.Now())
+	if err := builder.Exec(ctx); err != nil {
+		r.log.Errorf(ctx, "sync update permission failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("sync update permission failed")
+	}
+	return nil
+}
+
+// AssignSyncBindings 权限同步 MERGE 的绑定替换段：按派生集整体替换端点/菜单
+// 快照绑定（AssignApis/AssignMenus 自带替换语义，空派生 = 清空该权限的绑定）。
+func (r *PermissionRepo) AssignSyncBindings(ctx context.Context, id uint32, apiIDs, menuIDs []uint32) error {
+	if err := r.permissionApiRepo.AssignApis(ctx, id, apiIDs); err != nil {
+		return err
+	}
+	return r.permissionMenuRepo.AssignMenus(ctx, id, menuIDs)
+}
+
+// cascadeCleanByPermissionIDs 权限行删除后的级联清理：接口/菜单快照绑定、
+// 角色授权绑定（sys_role_permissions）、策略联动行（sys_permission_policies）。
+// 授权链上不允许残留指向已删权限行的绑定——"权限行重建换 id 后旧绑定悬空"
+// 的最后残留就此终结。
+func (r *PermissionRepo) cascadeCleanByPermissionIDs(ctx context.Context, permissionIDs []uint32) error {
+	if len(permissionIDs) == 0 {
+		return nil
+	}
+
+	if err := r.permissionApiRepo.DeleteByPermissionIDs(ctx, permissionIDs); err != nil {
+		return err
+	}
+	if err := r.permissionMenuRepo.DeleteByPermissionIDs(ctx, permissionIDs); err != nil {
+		return err
+	}
+	if err := r.rolePermissionRepo.DeleteByPermissionIDs(ctx, permissionIDs); err != nil {
+		return err
+	}
+
+	// 策略联动行（PermissionPolicyRepo 为空壳，策略行走裸 ent client）
+	if _, err := r.entClient.Client().PermissionPolicy.Delete().
+		Where(permissionpolicy.PermissionIDIn(permissionIDs...)).
+		Exec(ctx); err != nil {
+		r.log.Errorf(ctx, "delete permission policies by permission ids failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("delete permission policies failed")
+	}
+
+	return nil
+}
+
 // listSystemPermissionIDs 按 code 前缀解析系统种子权限 id 集合（绑定表清理的
-// 保留集）。权限行自身由 TruncateBizPermissions 按 code 前缀保护，绑定保护集
-// 与之同源，不再依赖"种子权限=1/2/3"的硬编码 id 假设。
+// 保留集）。权限行自身由权限同步 MERGE 按 code 前缀保护，绑定保护集与之同源，
+// 不再依赖"种子权限=1/2/3"的硬编码 id 假设。
 func (r *PermissionRepo) listSystemPermissionIDs(ctx context.Context) ([]uint32, error) {
 	return r.entClient.Client().Permission.Query().
 		Where(permission.CodeHasPrefix(constants.SystemPermissionCodePrefix)).
@@ -571,63 +672,8 @@ func (r *PermissionRepo) Truncate(ctx context.Context) error {
 	return nil
 }
 
-// CleanPermissionsByCodes 清理指定权限代码的权限
-func (r *PermissionRepo) CleanPermissionsByCodes(ctx context.Context, codes []string) error {
-	builder := r.entClient.Client().Permission.Delete().
-		Where(
-			permission.CodeIn(codes...),
-		)
-
-	_, err := builder.Exec(ctx)
-	if err != nil {
-		r.log.Errorf(ctx, "delete permissions by codes failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("delete permissions by codes failed")
-	}
-
-	return nil
-}
-
-// CleanApiPermissions 清理API相关权限绑定：保留系统种子权限（按 code 前缀解析）
-// 的绑定——业务权限的绑定由权限同步按代码转换重建，种子权限的绑定不动。
-func (r *PermissionRepo) CleanApiPermissions(ctx context.Context) error {
-	systemIDs, err := r.listSystemPermissionIDs(ctx)
-	if err != nil {
-		return err
-	}
-	return r.permissionApiRepo.TruncateExcept(ctx, systemIDs)
-}
-
 // CleanDataPermissions 清理数据权限
 func (r *PermissionRepo) CleanDataPermissions(ctx context.Context) error {
-	return nil
-}
-
-// CleanMenuPermissions 清理菜单相关权限绑定：保留系统种子权限（按 code 前缀
-// 解析）的绑定，语义同 CleanApiPermissions。
-func (r *PermissionRepo) CleanMenuPermissions(ctx context.Context) error {
-	systemIDs, err := r.listSystemPermissionIDs(ctx)
-	if err != nil {
-		return err
-	}
-	return r.permissionMenuRepo.TruncateExcept(ctx, systemIDs)
-}
-
-// TruncateBizPermissions 清理业务权限
-func (r *PermissionRepo) TruncateBizPermissions(ctx context.Context) error {
-	builder := r.entClient.Client().Permission.Delete().
-		Where(
-			permission.Not(permission.CodeHasPrefix(constants.SystemPermissionCodePrefix)),
-		)
-
-	_, err := builder.Exec(ctx)
-	if err != nil {
-		r.log.Errorf(ctx, "truncate biz permissions failed: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("truncate biz permissions failed")
-	}
-
-	_ = r.CleanApiPermissions(ctx)
-	_ = r.CleanMenuPermissions(ctx)
-
 	return nil
 }
 

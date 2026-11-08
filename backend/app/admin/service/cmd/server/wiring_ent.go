@@ -106,7 +106,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	roleOrgUnitRepo := data.NewRoleOrgUnitRepo(ctx, entClient)
 	roleFieldPermissionRepo := data.NewRoleFieldPermissionRepo(ctx, entClient)
 	roleMetadataRepo := data.NewRoleMetadataRepo(ctx, entClient)
-	permissionRepo := data.NewPermissionRepo(ctx, entClient, permissionApiRepo, permissionMenuRepo)
+	permissionRepo := data.NewPermissionRepo(ctx, entClient, permissionApiRepo, permissionMenuRepo, rolePermissionRepo)
 	roleRepo := data.NewRoleRepo(ctx, entClient, rolePermissionRepo, roleOrgUnitRepo, permissionRepo, roleMetadataRepo, roleFieldPermissionRepo)
 	permissionGroupRepo := data.NewPermissionGroupRepo(ctx, entClient)
 	apiRepo := data.NewApiRepo(ctx, entClient, permissionApiRepo)
