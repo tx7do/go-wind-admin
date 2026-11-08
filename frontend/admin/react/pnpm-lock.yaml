@@ -5,9 +5,8 @@ settings:
   excludeLinksFromLockfile: false
 
 patchedDependencies:
-  '@ant-design/pro-form@2.32.0':
-    hash: 8f26f169a2559fa68bdabbf1217235c1e9e49ec3ec412e44653a9cb3bee9853e
-    path: patches/@ant-design__pro-form@2.32.0.patch
+  '@ant-design/pro-form@2.32.0': 8f26f169a2559fa68bdabbf1217235c1e9e49ec3ec412e44653a9cb3bee9853e
+  '@rc-component/table@1.10.0': aa7e99a7fb2905306ddf95dd738c8e1fde84e979a60d29b7f9b47fa56423d372
 
 importers:
 
@@ -8017,7 +8016,7 @@ snapshots:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
 
-  '@rc-component/table@1.10.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
+  '@rc-component/table@1.10.0(patch_hash=aa7e99a7fb2905306ddf95dd738c8e1fde84e979a60d29b7f9b47fa56423d372)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
       '@rc-component/context': 2.0.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@rc-component/resize-observer': 1.1.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
@@ -9125,7 +9124,7 @@ snapshots:
       '@rc-component/slider': 1.0.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@rc-component/steps': 1.2.2(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@rc-component/switch': 1.0.3(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      '@rc-component/table': 1.10.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      '@rc-component/table': 1.10.0(patch_hash=aa7e99a7fb2905306ddf95dd738c8e1fde84e979a60d29b7f9b47fa56423d372)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@rc-component/tabs': 1.9.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@rc-component/tooltip': 1.4.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@rc-component/tour': 2.4.0(react-dom@19.2.6(react@19.2.6))(react@19.2.6)

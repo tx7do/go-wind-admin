@@ -1,0 +1,82 @@
+diff --git a/es/Table.d.ts b/es/Table.d.ts
+index d2715dc5d7ac8e01ad80350d30fe8b66966f6091..cc3f9cd3eba9a512cd987daccf664d5cc2b4051e 100644
+--- a/es/Table.d.ts
++++ b/es/Table.d.ts
+@@ -89,6 +89,12 @@ export interface TableProps<RecordType = any> extends Omit<LegacyExpandableProps
+      * !!! DO NOT USE IN PRODUCTION ENVIRONMENT !!!
+      */
+     tailor?: boolean;
++    /**
++     * Override the mount-time scrollbar measurement with the live scrollbar
++     * width (pass `0` while the body scrollbar is hidden). Feeds the header
++     * gutter column and the fixed-cell sticky offsets.
++     */
++    scrollbarSize?: number;
+     /**
+      * @private Internal usage, may remove by refactor.
+      *
+diff --git a/es/Table.js b/es/Table.js
+index 68ff186bb60709399e80fb5f92effed8082fcfb1..35278a964843a4f48d1875388acc6291480a180d 100644
+--- a/es/Table.js
++++ b/es/Table.js
+@@ -106,6 +106,7 @@ const Table = (tableProps, ref) => {
+     transformColumns,
+     internalRefs,
+     tailor,
++    scrollbarSize: customizeScrollbarSize,
+     getContainerWidth,
+     sticky,
+     rowHoverable = true
+@@ -386,7 +387,10 @@ const Table = (tableProps, ref) => {
+   }, []);
+ 
+   // ===================== Effects ======================
+-  const [scrollbarSize, setScrollbarSize] = React.useState(0);
++  const [measuredScrollbarSize, setScrollbarSize] = React.useState(0);
++  // Callers may pass the live scrollbar width (0 while hidden) — the mount-time
++  // measurement goes stale when the body scrollbar is toggled at runtime.
++  const scrollbarSize = customizeScrollbarSize ?? measuredScrollbarSize;
+   useLayoutEffect(() => {
+     if (!tailor || !useInternalHooks) {
+       if (scrollBodyRef.current instanceof Element) {
+diff --git a/lib/Table.d.ts b/lib/Table.d.ts
+index d2715dc5d7ac8e01ad80350d30fe8b66966f6091..cc3f9cd3eba9a512cd987daccf664d5cc2b4051e 100644
+--- a/lib/Table.d.ts
++++ b/lib/Table.d.ts
+@@ -89,6 +89,12 @@ export interface TableProps<RecordType = any> extends Omit<LegacyExpandableProps
+      * !!! DO NOT USE IN PRODUCTION ENVIRONMENT !!!
+      */
+     tailor?: boolean;
++    /**
++     * Override the mount-time scrollbar measurement with the live scrollbar
++     * width (pass `0` while the body scrollbar is hidden). Feeds the header
++     * gutter column and the fixed-cell sticky offsets.
++     */
++    scrollbarSize?: number;
+     /**
+      * @private Internal usage, may remove by refactor.
+      *
+diff --git a/lib/Table.js b/lib/Table.js
+index bb05a4e2367de95f8623f15be32ee6bec8aaecb9..cfba4bb36c27be6559c0e8e9d4a4d4ada96365e3 100644
+--- a/lib/Table.js
++++ b/lib/Table.js
+@@ -113,6 +113,7 @@ const Table = (tableProps, ref) => {
+     transformColumns,
+     internalRefs,
+     tailor,
++    scrollbarSize: customizeScrollbarSize,
+     getContainerWidth,
+     sticky,
+     rowHoverable = true
+@@ -393,7 +394,10 @@ const Table = (tableProps, ref) => {
+   }, []);
+ 
+   // ===================== Effects ======================
+-  const [scrollbarSize, setScrollbarSize] = React.useState(0);
++  const [measuredScrollbarSize, setScrollbarSize] = React.useState(0);
++  // Callers may pass the live scrollbar width (0 while hidden) — the mount-time
++  // measurement goes stale when the body scrollbar is toggled at runtime.
++  const scrollbarSize = customizeScrollbarSize ?? measuredScrollbarSize;
+   (0, _useLayoutEffect.default)(() => {
+     if (!tailor || !useInternalHooks) {
+       if (scrollBodyRef.current instanceof Element) {
