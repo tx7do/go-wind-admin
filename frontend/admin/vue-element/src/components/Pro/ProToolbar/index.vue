@@ -24,7 +24,8 @@
       </div>
 
       <!-- 右侧工具按钮 -->
-      <div class="toolbar-right flex items-center gap-y-2.5 gap-x-1 md:gap-x-1.5 flex-wrap">
+      <!-- 窄屏（<md）列间距 0.5：保证筛选圆钮不因 1px 差孤行悬在第三行（2026-11-08 实测） -->
+      <div class="toolbar-right flex items-center gap-y-2.5 gap-x-0.5 md:gap-x-1.5 flex-wrap">
         <!-- 工具栏图标按钮区前插槽（导出全部下拉在此落地，位于页面配置按钮左侧，与 react/vben 同位） -->
         <slot name="before-tools" />
 
