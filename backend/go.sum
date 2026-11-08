@@ -762,8 +762,8 @@ github.com/tx7do/go-utils/geoip v1.1.8 h1:8t5xei9UIlEO4wPDRpgk3ZTOA6CBPc+JyxPr+B
 github.com/tx7do/go-utils/geoip v1.1.8/go.mod h1:0K8YEDGtvOLJtdwRbiILEtIWiYnGwi6dN9tkOvcr3G8=
 github.com/tx7do/go-utils/id v0.0.6 h1:AFGGf5uxXrclOj//ZCwnkorfLcrhbGqyrVzHG3stuR8=
 github.com/tx7do/go-utils/id v0.0.6/go.mod h1:0jomL+PRLctsA5VA0C6D7EMB4NVKfZMuLPv8HeWih2w=
-github.com/tx7do/go-utils/jwtutil v0.0.3 h1:HaNjYY9NjskvbKlrGli5hPPxoL1JLBOJsOM03WF11Zg=
-github.com/tx7do/go-utils/jwtutil v0.0.3/go.mod h1:ds6CFEDu7tz3NEI6daDkcLwZ5ZD/FMOE8EBaSouId3E=
+github.com/tx7do/go-utils/jwtutil v0.0.5 h1:KpNxry354QAHJu4Jo8DmwC9GBwBXtcbKZQG+NgJRadA=
+github.com/tx7do/go-utils/jwtutil v0.0.5/go.mod h1:ds6CFEDu7tz3NEI6daDkcLwZ5ZD/FMOE8EBaSouId3E=
 github.com/tx7do/go-utils/mailer v0.1.1 h1:7TkLvJsn033w3qfWU8j/GW8o/W/nZqJDgdIT1kNr2n8=
 github.com/tx7do/go-utils/mailer v0.1.1/go.mod h1:fGyj/DTiwqFXhzbAfUdKuPz6tL0PdRj2tj7KCMhdmMg=
 github.com/tx7do/go-utils/mapper v0.0.3 h1:Z7YoPVsa6I3lfWGSUoa9atujHWeF3kP+yKfS6Rkx5SM=
