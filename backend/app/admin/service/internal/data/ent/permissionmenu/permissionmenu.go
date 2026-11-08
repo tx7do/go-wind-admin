@@ -25,8 +25,8 @@ const (
 	FieldDeletedBy = "deleted_by"
 	// FieldPermissionID holds the string denoting the permission_id field in the database.
 	FieldPermissionID = "permission_id"
-	// FieldMenuID holds the string denoting the menu_id field in the database.
-	FieldMenuID = "menu_id"
+	// FieldFullPath holds the string denoting the full_path field in the database.
+	FieldFullPath = "full_path"
 	// Table holds the table name of the permissionmenu in the database.
 	Table = "sys_permission_menus"
 )
@@ -41,7 +41,7 @@ var Columns = []string{
 	FieldUpdatedBy,
 	FieldDeletedBy,
 	FieldPermissionID,
-	FieldMenuID,
+	FieldFullPath,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -102,7 +102,7 @@ func ByPermissionID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPermissionID, opts...).ToFunc()
 }
 
-// ByMenuID orders the results by the menu_id field.
-func ByMenuID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldMenuID, opts...).ToFunc()
+// ByFullPath orders the results by the full_path field.
+func ByFullPath(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldFullPath, opts...).ToFunc()
 }

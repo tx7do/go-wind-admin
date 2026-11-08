@@ -15,6 +15,7 @@ import (
 
 	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
 	"go-wind-admin/app/admin/service/internal/data/ent"
+	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionmenu"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
@@ -279,53 +280,78 @@ func TestPermissionRepoSqlite_UpdateKeepsRelationGrants(t *testing.T) {
 		return row.ID
 	}
 
-	newPerm := func(t *testing.T, code string) (*PermissionRepo, context.Context, uint32, uint32, uint32) {
+	// newMenuRow 直建一条根菜单行（path 即全路径）并返回 id：菜单绑定入参同样是
+	// 菜单引用，落库前会解析成全路径快照——引用必须真实存在
+	newMenuRow := func(t *testing.T, repo *PermissionRepo, ctx context.Context, name, fullPath string) uint32 {
+		t.Helper()
+		row, err := repo.entClient.Client().Menu.Create().
+			SetName(name).
+			SetPath(fullPath).
+			SetType(menu.TypeMenu).
+			Save(ctx)
+		require.NoError(t, err, "直建菜单行应成功")
+		return row.ID
+	}
+
+	newPerm := func(t *testing.T, code string) (*PermissionRepo, context.Context, uint32, uint32, uint32, uint32, uint32, uint32) {
 		t.Helper()
 		entClient := enttest.NewEntClientForTest(t)
 		repo := newPermissionRepoSqlite(t, entClient)
 		ctx := enttest.NewSystemContext(context.Background())
 		apiA := newApiRow(t, repo, ctx, "/sqlite/rel/a", "GET")
 		apiB := newApiRow(t, repo, ctx, "/sqlite/rel/b", "POST")
+		menu1 := newMenuRow(t, repo, ctx, "RelMenu1", "/relm/one")
+		menu2 := newMenuRow(t, repo, ctx, "RelMenu2", "/relm/two")
+		menu3 := newMenuRow(t, repo, ctx, "RelMenu3", "/relm/three")
 		require.NoError(t, repo.Create(ctx, &permissionV1.CreatePermissionRequest{
 			Data: &permissionV1.Permission{
 				Name:    trans.Ptr("sqlite权限点-关联保持"),
 				Code:    trans.Ptr(code),
-				MenuIds: []uint32{1, 2, 3},
+				MenuIds: []uint32{menu1, menu2, menu3},
 				ApiIds:  []uint32{apiA, apiB},
 			},
 		}))
 		rows, err := repo.entClient.Client().Permission.Query().All(ctx)
 		require.NoError(t, err)
 		require.Len(t, rows, 1)
-		return repo, ctx, rows[0].ID, apiA, apiB
+		return repo, ctx, rows[0].ID, apiA, apiB, menu1, menu2, menu3
 	}
 
-	menuIDs := func(t *testing.T, repo *PermissionRepo, ctx context.Context, permID uint32) []uint32 {
+	menuPaths := func(t *testing.T, repo *PermissionRepo, ctx context.Context, permID uint32) map[string]struct{} {
 		t.Helper()
 		links, err := repo.entClient.Client().PermissionMenu.Query().
 			Where(permissionmenu.PermissionIDEQ(permID)).All(ctx)
 		require.NoError(t, err)
-		ids := make([]uint32, 0, len(links))
+		paths := make(map[string]struct{}, len(links))
 		for _, l := range links {
-			require.NotNil(t, l.MenuID, "关联行的 menu_id 不应为 NULL")
-			ids = append(ids, *l.MenuID)
+			require.NotNil(t, l.FullPath, "关联行的 full_path 快照不应为 NULL")
+			paths[*l.FullPath] = struct{}{}
 		}
-		return ids
+		return paths
 	}
 
 	t.Run("掩码带关联字段（三端权限抽屉的形状）应落新集", func(t *testing.T) {
-		repo, ctx, id, _, old := newPerm(t, "sqlite_perm_rel_mask")
+		repo, ctx, id, _, old, m1, m2, m3 := newPerm(t, "sqlite_perm_rel_mask")
 		apiC := newApiRow(t, repo, ctx, "/sqlite/rel/c", "PUT")
+		newMenuA := newMenuRow(t, repo, ctx, "RelMenuA", "/relm/a")
+		newMenuB := newMenuRow(t, repo, ctx, "RelMenuB", "/relm/b")
+		newMenuC := newMenuRow(t, repo, ctx, "RelMenuC", "/relm/c")
 		require.NoError(t, repo.Update(ctx, &permissionV1.UpdatePermissionRequest{
 			Id:         id,
 			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name", "menu_ids", "api_ids"}},
 			Data: &permissionV1.Permission{
 				Name:    trans.Ptr("sqlite权限点-关联改写"),
-				MenuIds: []uint32{3, 72, 73},
+				MenuIds: []uint32{newMenuA, newMenuB, newMenuC},
 				ApiIds:  []uint32{apiC},
 			},
 		}))
-		require.ElementsMatch(t, []uint32{3, 72, 73}, menuIDs(t, repo, ctx, id), "提交的菜单集应整体替换旧的")
+		paths := menuPaths(t, repo, ctx, id)
+		require.Len(t, paths, 3, "提交的菜单集应整体替换旧的")
+		require.Contains(t, paths, "/relm/a", "绑定应落新菜单的全路径快照")
+		require.NotContains(t, paths, "/relm/one", "旧菜单集应被清掉")
+		require.NotEqual(t, m1, newMenuA)
+		require.NotEqual(t, m2, newMenuB)
+		require.NotEqual(t, m3, newMenuC)
 		endpoints, err := repo.permissionApiRepo.ListEndpoints(ctx, []uint32{id})
 		require.NoError(t, err)
 		require.Len(t, endpoints, 1, "提交的接口集应整体替换旧的")
@@ -334,37 +360,44 @@ func TestPermissionRepoSqlite_UpdateKeepsRelationGrants(t *testing.T) {
 	})
 
 	t.Run("掩码不含关联字段（只改名）不得动授权", func(t *testing.T) {
-		repo, ctx, id, _, _ := newPerm(t, "sqlite_perm_rel_rename")
+		repo, ctx, id, _, _, _, _, _ := newPerm(t, "sqlite_perm_rel_rename")
 		require.NoError(t, repo.Update(ctx, &permissionV1.UpdatePermissionRequest{
 			Id:         id,
 			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"name"}},
 			Data:       &permissionV1.Permission{Name: trans.Ptr("sqlite权限点-仅改名")},
 		}))
-		require.ElementsMatch(t, []uint32{1, 2, 3}, menuIDs(t, repo, ctx, id), "没提交 menu_ids 就该维持原授权")
+		paths := menuPaths(t, repo, ctx, id)
+		require.Len(t, paths, 3, "没提交 menu_ids 就该维持原授权")
+		require.Contains(t, paths, "/relm/one")
+		require.Contains(t, paths, "/relm/two")
+		require.Contains(t, paths, "/relm/three")
 	})
 
 	t.Run("camelCase 掩码路径同样受保护", func(t *testing.T) {
 		// protojson 会把 json_name 规范成 snake_case，但直连 gRPC/测试的调用方给什么就是什么，
 		// 两种拼写都得认出，否则同样的清空只在 HTTP 侧消失。
-		repo, ctx, id, _, _ := newPerm(t, "sqlite_perm_rel_camel")
+		repo, ctx, id, _, _, _, _, _ := newPerm(t, "sqlite_perm_rel_camel")
 		apiD := newApiRow(t, repo, ctx, "/sqlite/rel/d", "PATCH")
 		apiE := newApiRow(t, repo, ctx, "/sqlite/rel/e", "DELETE")
+		newMenuD := newMenuRow(t, repo, ctx, "RelMenuD", "/relm/d")
 		require.NoError(t, repo.Update(ctx, &permissionV1.UpdatePermissionRequest{
 			Id:         id,
 			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"menuIds", "apiIds"}},
 			Data: &permissionV1.Permission{
-				MenuIds: []uint32{4},
+				MenuIds: []uint32{newMenuD},
 				ApiIds:  []uint32{apiD, apiE},
 			},
 		}))
-		require.Equal(t, []uint32{4}, menuIDs(t, repo, ctx, id))
+		paths := menuPaths(t, repo, ctx, id)
+		require.Len(t, paths, 1, "camelCase 掩码路径的菜单集替换应同样生效")
+		require.Contains(t, paths, "/relm/d")
 		endpoints, err := repo.permissionApiRepo.ListEndpoints(ctx, []uint32{id})
 		require.NoError(t, err)
 		require.Len(t, endpoints, 2, "camelCase 掩码路径的接口集替换应同样生效")
 	})
 
 	t.Run("显式提交空集仍是清空", func(t *testing.T) {
-		repo, ctx, id, _, _ := newPerm(t, "sqlite_perm_rel_clear")
+		repo, ctx, id, _, _, _, _, _ := newPerm(t, "sqlite_perm_rel_clear")
 		require.NoError(t, repo.Update(ctx, &permissionV1.UpdatePermissionRequest{
 			Id:         id,
 			UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"menu_ids", "api_ids"}},
@@ -374,7 +407,7 @@ func TestPermissionRepoSqlite_UpdateKeepsRelationGrants(t *testing.T) {
 				ApiIds:  []uint32{},
 			},
 		}))
-		require.Empty(t, menuIDs(t, repo, ctx, id), "全不勾是合法操作：提交了就该清空")
+		require.Empty(t, menuPaths(t, repo, ctx, id), "全不勾是合法操作：提交了就该清空")
 	})
 }
 

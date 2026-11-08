@@ -110,7 +110,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	roleRepo := data.NewRoleRepo(ctx, entClient, rolePermissionRepo, roleOrgUnitRepo, permissionRepo, roleMetadataRepo, roleFieldPermissionRepo)
 	permissionGroupRepo := data.NewPermissionGroupRepo(ctx, entClient)
 	apiRepo := data.NewApiRepo(ctx, entClient, permissionApiRepo)
-	menuRepo := data.NewMenuRepo(ctx, entClient)
+	menuRepo := data.NewMenuRepo(ctx, entClient, permissionMenuRepo)
 
 	// 审计日志
 	apiAuditLogRepo := data.NewApiAuditLogRepo(ctx, entClient)
@@ -216,10 +216,13 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	orgUnitService := service.NewOrgUnitService(ctx, orgUnitRepo, userRepo)
 
 	// RBAC
-	roleService := service.NewRoleService(ctx, authz, roleRepo, tenantRepo)
+	// 构造顺序即启动播种顺序（各 service 的 init 在构造时立即执行）：
+	// 菜单/接口先播种，权限再播种（引用菜单与端点、并内聚播种默认权限组），
+	// 角色最后播种（DefaultRolePermissionCodes 按 code 解析权限 id，依赖权限先行）。
 	menuService := service.NewMenuService(ctx, menuRepo)
 	apiService := service.NewApiService(ctx, apiRepo, authz)
 	permissionService := service.NewPermissionService(ctx, permissionRepo, permissionGroupRepo, menuRepo, apiRepo, roleRepo, authz)
+	roleService := service.NewRoleService(ctx, authz, roleRepo, tenantRepo, permissionRepo)
 	permissionGroupService := service.NewPermissionGroupService(ctx, permissionGroupRepo, permissionRepo)
 
 	// 租户与套餐

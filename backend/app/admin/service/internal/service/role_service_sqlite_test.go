@@ -53,10 +53,11 @@ func newRoleServiceForTest(t *testing.T) *RoleService {
 	entClient := enttest.NewEntClientForTest(t)
 	// noop 引擎形态：EngineConfig 空类型按 noop 分支处理，日志用 NopLogger。
 	svc := &RoleService{
-		log:        bLogger.NewHelper(bLogger.NopLogger()),
-		authorizer: authorizer.NewAuthorizer(context.Background(), bLogger.NopLogger(), &authorizer.EngineConfig{}, roleServiceAuthProviderStub{}),
-		roleRepo:   data.NewRoleRepoForTest(entClient),
-		tenantRepo: data.NewTenantRepoForTest(entClient),
+		log:            bLogger.NewHelper(bLogger.NopLogger()),
+		authorizer:     authorizer.NewAuthorizer(context.Background(), bLogger.NopLogger(), &authorizer.EngineConfig{}, roleServiceAuthProviderStub{}),
+		roleRepo:       data.NewRoleRepoForTest(entClient),
+		tenantRepo:     data.NewTenantRepoForTest(entClient),
+		permissionRepo: data.NewPermissionRepoForTest(entClient),
 	}
 	svc.init()
 	return svc

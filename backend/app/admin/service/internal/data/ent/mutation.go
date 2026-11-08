@@ -66996,8 +66996,7 @@ type PermissionMenuMutation struct {
 	adddeleted_by    *int32
 	permission_id    *uint32
 	addpermission_id *int32
-	menu_id          *uint32
-	addmenu_id       *int32
+	full_path        *string
 	clearedFields    map[string]struct{}
 	done             bool
 	oldValue         func(context.Context) (*PermissionMenu, error)
@@ -67521,60 +67520,53 @@ func (m *PermissionMenuMutation) ResetPermissionID() {
 	m.addpermission_id = nil
 }
 
-// SetMenuID sets the "menu_id" field.
-func (m *PermissionMenuMutation) SetMenuID(u uint32) {
-	m.menu_id = &u
-	m.addmenu_id = nil
+// SetFullPath sets the "full_path" field.
+func (m *PermissionMenuMutation) SetFullPath(s string) {
+	m.full_path = &s
 }
 
-// MenuID returns the value of the "menu_id" field in the mutation.
-func (m *PermissionMenuMutation) MenuID() (r uint32, exists bool) {
-	v := m.menu_id
+// FullPath returns the value of the "full_path" field in the mutation.
+func (m *PermissionMenuMutation) FullPath() (r string, exists bool) {
+	v := m.full_path
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldMenuID returns the old "menu_id" field's value of the PermissionMenu entity.
+// OldFullPath returns the old "full_path" field's value of the PermissionMenu entity.
 // If the PermissionMenu object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionMenuMutation) OldMenuID(ctx context.Context) (v *uint32, err error) {
+func (m *PermissionMenuMutation) OldFullPath(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldMenuID is only allowed on UpdateOne operations")
+		return v, errors.New("OldFullPath is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldMenuID requires an ID field in the mutation")
+		return v, errors.New("OldFullPath requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldMenuID: %w", err)
+		return v, fmt.Errorf("querying old value for OldFullPath: %w", err)
 	}
-	return oldValue.MenuID, nil
+	return oldValue.FullPath, nil
 }
 
-// AddMenuID adds u to the "menu_id" field.
-func (m *PermissionMenuMutation) AddMenuID(u int32) {
-	if m.addmenu_id != nil {
-		*m.addmenu_id += u
-	} else {
-		m.addmenu_id = &u
-	}
+// ClearFullPath clears the value of the "full_path" field.
+func (m *PermissionMenuMutation) ClearFullPath() {
+	m.full_path = nil
+	m.clearedFields[permissionmenu.FieldFullPath] = struct{}{}
 }
 
-// AddedMenuID returns the value that was added to the "menu_id" field in this mutation.
-func (m *PermissionMenuMutation) AddedMenuID() (r int32, exists bool) {
-	v := m.addmenu_id
-	if v == nil {
-		return
-	}
-	return *v, true
+// FullPathCleared returns if the "full_path" field was cleared in this mutation.
+func (m *PermissionMenuMutation) FullPathCleared() bool {
+	_, ok := m.clearedFields[permissionmenu.FieldFullPath]
+	return ok
 }
 
-// ResetMenuID resets all changes to the "menu_id" field.
-func (m *PermissionMenuMutation) ResetMenuID() {
-	m.menu_id = nil
-	m.addmenu_id = nil
+// ResetFullPath resets all changes to the "full_path" field.
+func (m *PermissionMenuMutation) ResetFullPath() {
+	m.full_path = nil
+	delete(m.clearedFields, permissionmenu.FieldFullPath)
 }
 
 // Where appends a list predicates to the PermissionMenuMutation builder.
@@ -67633,8 +67625,8 @@ func (m *PermissionMenuMutation) Fields() []string {
 	if m.permission_id != nil {
 		fields = append(fields, permissionmenu.FieldPermissionID)
 	}
-	if m.menu_id != nil {
-		fields = append(fields, permissionmenu.FieldMenuID)
+	if m.full_path != nil {
+		fields = append(fields, permissionmenu.FieldFullPath)
 	}
 	return fields
 }
@@ -67658,8 +67650,8 @@ func (m *PermissionMenuMutation) Field(name string) (ent.Value, bool) {
 		return m.DeletedBy()
 	case permissionmenu.FieldPermissionID:
 		return m.PermissionID()
-	case permissionmenu.FieldMenuID:
-		return m.MenuID()
+	case permissionmenu.FieldFullPath:
+		return m.FullPath()
 	}
 	return nil, false
 }
@@ -67683,8 +67675,8 @@ func (m *PermissionMenuMutation) OldField(ctx context.Context, name string) (ent
 		return m.OldDeletedBy(ctx)
 	case permissionmenu.FieldPermissionID:
 		return m.OldPermissionID(ctx)
-	case permissionmenu.FieldMenuID:
-		return m.OldMenuID(ctx)
+	case permissionmenu.FieldFullPath:
+		return m.OldFullPath(ctx)
 	}
 	return nil, fmt.Errorf("unknown PermissionMenu field %s", name)
 }
@@ -67743,12 +67735,12 @@ func (m *PermissionMenuMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPermissionID(v)
 		return nil
-	case permissionmenu.FieldMenuID:
-		v, ok := value.(uint32)
+	case permissionmenu.FieldFullPath:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetMenuID(v)
+		m.SetFullPath(v)
 		return nil
 	}
 	return fmt.Errorf("unknown PermissionMenu field %s", name)
@@ -67770,9 +67762,6 @@ func (m *PermissionMenuMutation) AddedFields() []string {
 	if m.addpermission_id != nil {
 		fields = append(fields, permissionmenu.FieldPermissionID)
 	}
-	if m.addmenu_id != nil {
-		fields = append(fields, permissionmenu.FieldMenuID)
-	}
 	return fields
 }
 
@@ -67789,8 +67778,6 @@ func (m *PermissionMenuMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedDeletedBy()
 	case permissionmenu.FieldPermissionID:
 		return m.AddedPermissionID()
-	case permissionmenu.FieldMenuID:
-		return m.AddedMenuID()
 	}
 	return nil, false
 }
@@ -67828,13 +67815,6 @@ func (m *PermissionMenuMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddPermissionID(v)
 		return nil
-	case permissionmenu.FieldMenuID:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddMenuID(v)
-		return nil
 	}
 	return fmt.Errorf("unknown PermissionMenu numeric field %s", name)
 }
@@ -67860,6 +67840,9 @@ func (m *PermissionMenuMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(permissionmenu.FieldDeletedBy) {
 		fields = append(fields, permissionmenu.FieldDeletedBy)
+	}
+	if m.FieldCleared(permissionmenu.FieldFullPath) {
+		fields = append(fields, permissionmenu.FieldFullPath)
 	}
 	return fields
 }
@@ -67893,6 +67876,9 @@ func (m *PermissionMenuMutation) ClearField(name string) error {
 	case permissionmenu.FieldDeletedBy:
 		m.ClearDeletedBy()
 		return nil
+	case permissionmenu.FieldFullPath:
+		m.ClearFullPath()
+		return nil
 	}
 	return fmt.Errorf("unknown PermissionMenu nullable field %s", name)
 }
@@ -67922,8 +67908,8 @@ func (m *PermissionMenuMutation) ResetField(name string) error {
 	case permissionmenu.FieldPermissionID:
 		m.ResetPermissionID()
 		return nil
-	case permissionmenu.FieldMenuID:
-		m.ResetMenuID()
+	case permissionmenu.FieldFullPath:
+		m.ResetFullPath()
 		return nil
 	}
 	return fmt.Errorf("unknown PermissionMenu field %s", name)

@@ -33,22 +33,26 @@ type PermissionRepo struct {
 	structuredFilter *gormCrudFilter.StructuredFilter
 	statusConverter  *mapper.EnumTypeConverter[permissionV1.Permission_Status, string]
 
-	// permissionApiRepo 绑定子 repo：端点快照反查用（与 data 栈同构）。
-	permissionApiRepo *PermissionApiRepo
+	// permissionApiRepo / permissionMenuRepo 绑定子 repo：端点与菜单全路径快照
+	// 反查用（与 data 栈同构）。
+	permissionApiRepo  *PermissionApiRepo
+	permissionMenuRepo *PermissionMenuRepo
 }
 
 func NewPermissionRepo(
 	ctx *bootstrap.Context,
 	client *gormCrud.Client,
 	permissionApiRepo *PermissionApiRepo,
+	permissionMenuRepo *PermissionMenuRepo,
 ) *PermissionRepo {
 	repo := &PermissionRepo{
-		log:               ctx.NewLoggerHelper("permission/gorm-repo/admin-service"),
-		client:            client,
-		mapper:            mapper.NewCopierMapper[permissionV1.Permission, models.Permission](),
-		structuredFilter:  gormCrudFilter.NewStructuredFilter(),
-		statusConverter:   mapper.NewEnumTypeConverter[permissionV1.Permission_Status, string](permissionV1.Permission_Status_name, permissionV1.Permission_Status_value),
-		permissionApiRepo: permissionApiRepo,
+		log:                ctx.NewLoggerHelper("permission/gorm-repo/admin-service"),
+		client:             client,
+		mapper:             mapper.NewCopierMapper[permissionV1.Permission, models.Permission](),
+		structuredFilter:   gormCrudFilter.NewStructuredFilter(),
+		statusConverter:    mapper.NewEnumTypeConverter[permissionV1.Permission_Status, string](permissionV1.Permission_Status_name, permissionV1.Permission_Status_value),
+		permissionApiRepo:  permissionApiRepo,
+		permissionMenuRepo: permissionMenuRepo,
 	}
 
 	repo.init()
@@ -189,6 +193,8 @@ func (r *PermissionRepo) ListApiEndpointsByPermissionIDs(ctx context.Context, pe
 	return r.permissionApiRepo.ListEndpoints(ctx, permissionIDs)
 }
 
-func (r *PermissionRepo) ListMenuIDsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {
-	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: ListMenuIDsByPermissionIDs not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/permission_repo.go")
+// ListMenuFullPathsByPermissionIDs 列出权限关联的菜单全路径快照（菜单身份键；
+// 绑定表即真相，导航/回显链路自行反解回 id）。与 data 栈同名方法语义一致。
+func (r *PermissionRepo) ListMenuFullPathsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]string, error) {
+	return r.permissionMenuRepo.ListMenuFullPaths(ctx, permissionIDs)
 }

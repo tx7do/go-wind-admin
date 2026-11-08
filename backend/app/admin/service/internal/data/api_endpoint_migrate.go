@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strconv"
+	"strings"
 )
 
 // API 授权绑定键从 api_id 迁移到 (path, method) 快照的一次性数据迁移。
@@ -197,6 +198,253 @@ func dropIndexIfExists(ctx context.Context, db *sql.DB, dialect string, name str
 		// MySQL 上失败属预期（语法不支持），其余方言失败也不值得断启动
 		_ = dialect
 		return nil
+	}
+	return nil
+}
+
+// migratePlaceholder SQL 占位符方言：PG 驱动（lib/pq / pgx stdlib）只认 $N，不认问号。
+func migratePlaceholder(dialect string, i int) string {
+	if endpointDialect(dialect) == dialectPostgres {
+		return "$" + strconv.Itoa(i)
+	}
+	return "?"
+}
+
+// MigratePermissionMenuFullPaths 菜单授权绑定键从 menu_id 迁移到 full_path 快照
+// 的一次性数据迁移（与 MigratePermissionApiEndpoints 同批次挂 ent_client 建库回调）。
+//
+// 背景：sys_permission_menus 旧版按 menu_id 绑定，菜单同步 REPLACE 会清空重建
+// sys_menus——全部菜单换 id，授权整批漂没。新版绑定存菜单全路径（父链拼接，
+// 与 menu_repo.buildMenuFullPathIndex 的身份键完全同规则），REPLACE 重建后同
+// 路径新行照常命中，授权存续。
+//
+// 步骤（旧 menu_id 列还在才执行；幂等，已迁移则零操作）：
+//  1. 读全量 sys_menus 行，按 joinMenuFullPath 同规则树遍历算出 id→全路径映射
+//     （含空 path 行——运行期索引对它们同样按机械拼接处理，两侧必须逐字一致，
+//     否则回填的快照反查不命中）；
+//  2. 按 menu_id→全路径回填绑定；(permission_id, full_path) 撞唯一键的重复组
+//     只留最小绑定 id（两组菜单行同路径的脏数据场景）；menu_id 无主的孤儿删除；
+//  3. 摘除旧列与旧索引（best-effort，失败不阻断启动）。
+func MigratePermissionMenuFullPaths(ctx context.Context, db *sql.DB, dialect string) error {
+	if db == nil {
+		return nil
+	}
+
+	hasLegacy, err := columnExists(ctx, db, dialect, "sys_permission_menus", "menu_id")
+	if err != nil {
+		return fmt.Errorf("probe legacy menu_id column: %w", err)
+	}
+	if hasLegacy {
+		if err = backfillPermissionMenuFullPaths(ctx, db, dialect); err != nil {
+			return err
+		}
+		if err = dropLegacyPermissionMenuColumn(ctx, db, dialect); err != nil {
+			return err
+		}
+	}
+
+	// 摘除 ent 自动迁移不会删的历史索引（幂等）
+	for _, idx := range []string{
+		"uix_perm_menu_permission_menu_id", // 旧绑定唯一键 (permission_id,menu_id)
+		"idx_perm_menu_menu_id",            // 旧绑定单列索引
+	} {
+		if err = dropIndexIfExists(ctx, db, dialect, idx); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// backfillPermissionMenuFullPaths 见 MigratePermissionMenuFullPaths。
+func backfillPermissionMenuFullPaths(ctx context.Context, db *sql.DB, dialect string) error {
+	// —— 1. 全量菜单行 → id→全路径映射（树遍历，规则与 buildMenuFullPathIndex 逐字一致）——
+	rows, err := db.QueryContext(ctx, `SELECT id, parent_id, path FROM sys_menus`)
+	if err != nil {
+		return fmt.Errorf("query menus for full path walk: %w", err)
+	}
+	var menus []migrateMenuRow
+	for rows.Next() {
+		var (
+			id       sql.NullInt64
+			parentID sql.NullInt64
+			path     sql.NullString
+		)
+		if err = rows.Scan(&id, &parentID, &path); err != nil {
+			_ = rows.Close()
+			return fmt.Errorf("scan menu row: %w", err)
+		}
+		menus = append(menus, migrateMenuRow{
+			id:       uint32(id.Int64),
+			parentID: uint32(parentID.Int64),
+			path:     path.String,
+		})
+	}
+	if err = rows.Err(); err != nil {
+		_ = rows.Close()
+		return fmt.Errorf("iterate menus: %w", err)
+	}
+	_ = rows.Close()
+
+	pathByID := walkMenuFullPaths(menus)
+
+	// —— 2. 绑定分组：待回填 / 重复组淘汰 / 孤儿删除 ——
+	rows, err = db.QueryContext(ctx, `
+SELECT id, permission_id, menu_id FROM sys_permission_menus
+WHERE full_path IS NULL OR full_path = ''`)
+	if err != nil {
+		return fmt.Errorf("query menu bindings to backfill: %w", err)
+	}
+	type binding struct {
+		id           int64
+		permissionID uint32
+		menuID       uint32
+	}
+	var bindings []binding
+	for rows.Next() {
+		var (
+			id   sql.NullInt64
+			perm sql.NullInt64
+			mid  sql.NullInt64
+		)
+		if err = rows.Scan(&id, &perm, &mid); err != nil {
+			_ = rows.Close()
+			return fmt.Errorf("scan menu binding row: %w", err)
+		}
+		bindings = append(bindings, binding{
+			id:           id.Int64,
+			permissionID: uint32(perm.Int64),
+			menuID:       uint32(mid.Int64),
+		})
+	}
+	if err = rows.Err(); err != nil {
+		_ = rows.Close()
+		return fmt.Errorf("iterate menu bindings: %w", err)
+	}
+	_ = rows.Close()
+
+	ph := func(i int) string { return migratePlaceholder(dialect, i) }
+
+	type pendingUpdate struct {
+		id   int64
+		path string
+	}
+	var updates []pendingUpdate
+	keepPath := make(map[string]struct{}, len(bindings)) // "perm\x00path" → 已保留
+	var deadIDs []int64
+	for _, b := range bindings {
+		p, ok := pathByID[b.menuID]
+		if !ok || p == "" {
+			// 孤儿：菜单已不存在（历史 REPLACE/删重建残留），快照无从谈起
+			deadIDs = append(deadIDs, b.id)
+			continue
+		}
+		key := fmt.Sprintf("%d\x00%s", b.permissionID, p)
+		if _, dup := keepPath[key]; dup {
+			// (permission, full_path) 撞唯一键：两组菜单行同路径的脏数据，只留首条
+			deadIDs = append(deadIDs, b.id)
+			continue
+		}
+		keepPath[key] = struct{}{}
+		updates = append(updates, pendingUpdate{id: b.id, path: p})
+	}
+
+	for _, u := range updates {
+		if _, err = db.ExecContext(ctx,
+			`UPDATE sys_permission_menus SET full_path = `+ph(1)+` WHERE id = `+ph(2),
+			u.path, u.id,
+		); err != nil {
+			return fmt.Errorf("backfill menu binding id=%d: %w", u.id, err)
+		}
+	}
+	for _, id := range deadIDs {
+		if _, err = db.ExecContext(ctx,
+			`DELETE FROM sys_permission_menus WHERE id = `+ph(1), id,
+		); err != nil {
+			return fmt.Errorf("delete dead menu binding id=%d: %w", id, err)
+		}
+	}
+
+	return nil
+}
+
+// migrateMenuRow 迁移期菜单行的最小字段集。
+type migrateMenuRow struct {
+	id       uint32
+	parentID uint32
+	path     string
+}
+
+// joinMenuFullPathCanonical 迁移期的菜单全路径拼接：与 menu_repo.joinMenuFullPath
+// 逐字一致（身份键两侧同源，规则漂移=绑定反查错位）。注意**绝对路径分支**：
+// path 以 "/" 开头时直接脱离父链（如 /dashboard 下的 /analytics、/workspace
+// 是顶层绝对路由），漏掉会把子菜单拼成 //parent//child 的错位路径。
+func joinMenuFullPathCanonical(parentFullPath, path string) string {
+	path = strings.TrimSpace(path)
+	if path == "" {
+		return parentFullPath
+	}
+	if strings.HasPrefix(path, "/") {
+		return path
+	}
+	if parentFullPath == "" || parentFullPath == "/" {
+		return "/" + path
+	}
+	return strings.TrimRight(parentFullPath, "/") + "/" + path
+}
+
+// walkMenuFullPaths 对原始菜单行做树遍历，产出 id→全路径映射。
+// 拼接规则必须与 menu_repo.joinMenuFullPath 逐字一致（身份键两侧同源）。
+// 成环脏数据防护同款（visited 集合）。
+func walkMenuFullPaths(rows []migrateMenuRow) map[uint32]string {
+	childrenOf := make(map[uint32][]int, len(rows))
+	var rootIdx []int
+	for i, r := range rows {
+		if r.parentID == 0 {
+			rootIdx = append(rootIdx, i)
+		} else {
+			childrenOf[r.parentID] = append(childrenOf[r.parentID], i)
+		}
+	}
+
+	byID := make(map[uint32]string, len(rows))
+	visited := make(map[uint32]bool, len(rows))
+	var walk func(idx []int, parentFullPath string)
+	walk = func(idx []int, parentFullPath string) {
+		for _, i := range idx {
+			row := rows[i]
+			if visited[row.id] {
+				continue
+			}
+			visited[row.id] = true
+			fullPath := joinMenuFullPathCanonical(parentFullPath, row.path)
+			byID[row.id] = fullPath
+			walk(childrenOf[row.id], fullPath)
+		}
+	}
+	walk(rootIdx, "")
+	return byID
+}
+
+// dropLegacyPermissionMenuColumn 摘除旧 menu_id 列（先摘引用它的索引，方言差异
+// 不阻断启动——语义同 dropLegacyPermissionApiColumn）。
+func dropLegacyPermissionMenuColumn(ctx context.Context, db *sql.DB, dialect string) error {
+	for _, idx := range []string{"uix_perm_menu_permission_menu_id", "idx_perm_menu_menu_id"} {
+		if _, err := db.ExecContext(ctx, "DROP INDEX IF EXISTS "+idx); err != nil {
+			return fmt.Errorf("drop legacy menu index %s: %w", idx, err)
+		}
+	}
+
+	switch endpointDialect(dialect) {
+	case dialectPostgres:
+		if _, err := db.ExecContext(ctx, `ALTER TABLE sys_permission_menus DROP COLUMN IF EXISTS menu_id`); err != nil {
+			return fmt.Errorf("drop legacy menu_id column: %w", err)
+		}
+	default:
+		// SQLite / MySQL：列存在性已在调用方确认过，直接摘
+		if _, err := db.ExecContext(ctx, `ALTER TABLE sys_permission_menus DROP COLUMN menu_id`); err != nil {
+			return fmt.Errorf("drop legacy menu_id column: %w", err)
+		}
 	}
 	return nil
 }

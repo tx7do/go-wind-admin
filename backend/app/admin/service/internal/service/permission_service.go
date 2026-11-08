@@ -573,39 +573,92 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 func (s *PermissionService) createDefaultPermissions(ctx context.Context) error {
 	var err error
 
-	// 模板权限种子里的 ApiIds 语义是"播种当下的端点全量/子集快照"。旧实现按
-	// 硬编码 id 段（1..N）绑定，只有配合旧的 Truncate+顺序重编号同步才碰巧成立，
-	// 且每次同步全表洗牌后漂成随机集合。绑定键换成端点快照后，这里先把引用收敛
-	// 到当下真实存在的端点再落库：缺失引用剔除并 WARN（引导期 best-effort，非
-	// 用户操作，不走 fail-closed——测试/最小安装里 sys_apis 可能为空或规模不同）。
-	// 必须克隆后改写：DefaultPermissions 是包级常量，原地改会污染全局。
-	existingApiIDs, err := s.apiRepo.ListAllIDs(ctx)
+	// —— 组就位（B4）：权限种子的 GroupName 要解析成组 id，先确保默认组已播种。
+	// 旧时序里组播种晚于权限播种（wiring 顺序），GroupId=2/3/4 全靠"组恰好按序
+	// 补位 1..5"的约定成立；现把组播种内聚到这里（组 service 的 count==0 播种
+	// 与此幂等互斥，谁先跑都一样）。
+	groupCount, err := s.permissionGroupRepo.Count(ctx, []func(*sql.Selector){})
 	if err != nil {
 		return err
 	}
-	apiIDSet := make(map[uint32]struct{}, len(existingApiIDs))
-	for _, id := range existingApiIDs {
-		apiIDSet[id] = struct{}{}
+	if groupCount == 0 {
+		if _, err = s.permissionGroupRepo.BatchCreate(ctx, constants.DefaultPermissionGroups); err != nil {
+			s.log.Errorf(ctx, "seed default permission groups failed: %v", err)
+			return err
+		}
+	}
+	// 平铺列表（treeTravel=false）：树形遍历会把子组嵌进 Children，平铺才能按 name 建全量索引
+groups, err := s.permissionGroupRepo.List(ctx, &paginationV1.PagingRequest{NoPaging: trans.Ptr(true)}, false)
+	if err != nil {
+		return err
+	}
+	groupIDByName := make(map[string]uint32, len(groups.GetItems()))
+	for _, g := range groups.GetItems() {
+		groupIDByName[g.GetName()] = g.GetId()
+	}
+
+	// —— 菜单引用收敛（B1）：菜单 id 在已有库中可能被菜单同步/重建改变，
+	// 种子引用一律收敛到真实存在的行；超管的菜单集 = 当前全量（语义：
+	// 平台管理员看得见一切，DefaultMenus 新增行自动跟上，不再手工维护清单）。
+	menuIDs, err := s.menuRepo.ListAllIDs(ctx)
+	if err != nil {
+		return err
+	}
+	menuIDSet := make(map[uint32]struct{}, len(menuIDs))
+	for _, id := range menuIDs {
+		menuIDSet[id] = struct{}{}
+	}
+
+	// —— 端点引用语义化（A）：超管 = 全部端点；租户管理员 = 全部端点 −
+	// 平台专属黑名单（path 前缀，见 constants.TenantManagerDeniedApiPrefixes）。
+	// 旧硬编码 id 段（1..128）在接口表长到 280+ 条且 id 按 map 随机序发放的
+	// 现实里早已是"随机子集抽签"，与本意（全集减平台端点）对不上。
+	apis, err := s.apiRepo.ListAll(ctx)
+	if err != nil {
+		return err
+	}
+	allApiIDs := make([]uint32, 0, len(apis))
+	tenantApiIDs := make([]uint32, 0, len(apis))
+	for _, a := range apis {
+		allApiIDs = append(allApiIDs, a.GetId())
+		if !constants.IsTenantManagerDeniedApiPath(a.GetPath()) {
+			tenantApiIDs = append(tenantApiIDs, a.GetId())
+		}
 	}
 
 	for _, d := range constants.DefaultPermissions {
 		data := proto.Clone(d).(*permissionV1.Permission)
-		if data.GetCode() == constants.SystemPlatformAdminPermissionCode {
-			// 平台管理员 = 全部端点：意图显式化，规模随当前 spec 走，
-			// 不再依赖种子里的硬编码 id 段
-			data.ApiIds = append(data.ApiIds[:0:0], existingApiIDs...)
-		} else if len(data.ApiIds) > 0 {
-			kept := make([]uint32, 0, len(data.ApiIds))
-			for _, id := range data.GetApiIds() {
-				if _, ok := apiIDSet[id]; ok {
+
+		// GroupName → GroupId：解析不到软降级（组名留空、权限落"未分组"）+ WARN，
+		// 不中止播种——引导期可能存在管理员自建分组体系，种子分组只是初值
+		//（与"关联资源缺失不中止"的播种既有口径一致）。
+		if data.GroupName != nil {
+			if gid, ok := groupIDByName[data.GetGroupName()]; ok {
+				data.GroupId = trans.Ptr(gid)
+			} else {
+				s.log.Warnf(ctx, "default permission [%s] references unknown group [%s]; seeding ungrouped",
+					d.GetCode(), d.GetGroupName())
+				data.GroupId = nil
+			}
+		}
+
+		switch data.GetCode() {
+		case constants.SystemPlatformAdminPermissionCode:
+			data.MenuIds = append(data.MenuIds[:0:0], menuIDs...)
+			data.ApiIds = append(data.ApiIds[:0:0], allApiIDs...)
+		case constants.SystemTenantManagerPermissionCode:
+			kept := make([]uint32, 0, len(data.GetMenuIds()))
+			for _, id := range data.GetMenuIds() {
+				if _, ok := menuIDSet[id]; ok {
 					kept = append(kept, id)
 				}
 			}
-			if dropped := len(data.GetApiIds()) - len(kept); dropped > 0 {
-				s.log.Warnf(ctx, "default permission [%s] drops %d stale api id refs (seed binds existing endpoints only)",
+			if dropped := len(data.GetMenuIds()) - len(kept); dropped > 0 {
+				s.log.Warnf(ctx, "default permission [%s] drops %d stale menu id refs (seed binds existing menus only)",
 					d.GetCode(), dropped)
 			}
-			data.ApiIds = kept
+			data.MenuIds = kept
+			data.ApiIds = tenantApiIDs
 		}
 
 		if err = s.permissionRepo.Create(ctx, &permissionV1.CreatePermissionRequest{

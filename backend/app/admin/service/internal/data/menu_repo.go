@@ -35,6 +35,10 @@ type MenuRepo struct {
 	driverName string
 	log        *bLogger.Helper
 
+	// permissionMenu 菜单绑定 repo：菜单删除时按全路径快照级联清理授权绑定
+	//（绑定存 full_path 后，菜单行删除而绑定残留会让授权反查悬空）。
+	permissionMenu *PermissionMenuRepo
+
 	mapper          *mapper.CopierMapper[permissionV1.Menu, ent.Menu]
 	statusConverter *mapper.EnumTypeConverter[permissionV1.Menu_Status, menu.Status]
 	typeConverter   *mapper.EnumTypeConverter[permissionV1.Menu_Type, menu.Type]
@@ -50,11 +54,12 @@ type MenuRepo struct {
 	]
 }
 
-func NewMenuRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client]) *MenuRepo {
+func NewMenuRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client], permissionMenu *PermissionMenuRepo) *MenuRepo {
 	repo := &MenuRepo{
 		log:             ctx.NewLoggerHelper("menu/repo/admin-service"),
 		entClient:       entClient,
 		driverName:      driverNameOf(ctx),
+		permissionMenu:  permissionMenu,
 		mapper:          mapper.NewCopierMapper[permissionV1.Menu, ent.Menu](),
 		statusConverter: mapper.NewEnumTypeConverter[permissionV1.Menu_Status, menu.Status](permissionV1.Menu_Status_name, permissionV1.Menu_Status_value),
 		typeConverter:   mapper.NewEnumTypeConverter[permissionV1.Menu_Type, menu.Type](permissionV1.Menu_Type_name, permissionV1.Menu_Type_value),
@@ -550,10 +555,19 @@ func joinMenuFullPath(parentFullPath, path string) string {
 
 // buildMenuFullPathMap 加载现有菜单并建立 全路径 → 实体 映射（MERGE 匹配用）
 func (r *MenuRepo) buildMenuFullPathMap(ctx context.Context, client *ent.Client) (map[string]*ent.Menu, error) {
+	byPath, _, err := r.buildMenuFullPathIndex(ctx, client)
+	return byPath, err
+}
+
+// buildMenuFullPathIndex 加载现有菜单做一次树遍历，同时产出两个身份键索引：
+// 全路径 → 实体（MERGE 匹配/反查菜单行用）与 id → 全路径（绑定快照解析用）。
+// 全路径是菜单的身份键：菜单同步 MERGE 按它保号，权限-菜单授权绑定存它的
+// 快照（sys_permission_menus.full_path）。
+func (r *MenuRepo) buildMenuFullPathIndex(ctx context.Context, client *ent.Client) (byPath map[string]*ent.Menu, byID map[uint32]string, err error) {
 	rows, err := client.Menu.Query().All(ctx)
 	if err != nil {
 		r.log.Errorf(ctx, "query existing menus failed: %s", err.Error())
-		return nil, permissionV1.ErrorInternalServerError("query existing menus failed")
+		return nil, nil, permissionV1.ErrorInternalServerError("query existing menus failed")
 	}
 
 	childrenOf := make(map[uint32][]*ent.Menu, len(rows))
@@ -566,7 +580,8 @@ func (r *MenuRepo) buildMenuFullPathMap(ctx context.Context, client *ent.Client)
 		}
 	}
 
-	existing := make(map[string]*ent.Menu, len(rows))
+	byPath = make(map[string]*ent.Menu, len(rows))
+	byID = make(map[uint32]string, len(rows))
 	visited := make(map[uint32]bool, len(rows))
 	var walk func(rows []*ent.Menu, parentFullPath string)
 	walk = func(rows []*ent.Menu, parentFullPath string) {
@@ -576,13 +591,61 @@ func (r *MenuRepo) buildMenuFullPathMap(ctx context.Context, client *ent.Client)
 			}
 			visited[row.ID] = true
 			fullPath := joinMenuFullPath(parentFullPath, derefStrP(row.Path))
-			existing[fullPath] = row
+			byPath[fullPath] = row
+			byID[row.ID] = fullPath
 			walk(childrenOf[row.ID], fullPath)
 		}
 	}
 	walk(roots, "")
 
-	return existing, nil
+	return byPath, byID, nil
+}
+
+// ResolveMenuIDsByFullPaths 把授权绑定的菜单全路径快照反解回当前 sys_menus 的 id，
+// 供导航/回显链路使用。路径已不存在的快照（菜单被删除且无同路径重建）解析不出
+// id，防御性跳过。
+func (r *MenuRepo) ResolveMenuIDsByFullPaths(ctx context.Context, fullPaths []string) ([]uint32, error) {
+	if len(fullPaths) == 0 {
+		return nil, nil
+	}
+	_, byID, err := r.buildMenuFullPathIndex(ctx, r.entClient.Client())
+	if err != nil {
+		return nil, err
+	}
+	// 索引是 id→path，反着用：path→id
+	pathToID := make(map[string]uint32, len(byID))
+	for id, p := range byID {
+		pathToID[p] = id
+	}
+	ids := make([]uint32, 0, len(fullPaths))
+	seen := make(map[uint32]struct{}, len(fullPaths))
+	for _, p := range fullPaths {
+		if id, ok := pathToID[p]; ok {
+			if _, dup := seen[id]; dup {
+				continue
+			}
+			seen[id] = struct{}{}
+			ids = append(ids, id)
+		}
+	}
+	return ids, nil
+}
+
+// ListAllIDs 列出全部菜单行 id（模板权限播种期收敛引用用；菜单规模有界，
+// 全量拉取无分页必要）。
+func (r *MenuRepo) ListAllIDs(ctx context.Context) ([]uint32, error) {
+	intIDs, err := r.entClient.Client().Menu.Query().
+		Select(menu.FieldID).
+		Ints(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "list all menu ids failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("list all menu ids failed")
+	}
+	ids := make([]uint32, len(intIDs))
+	for i, v := range intIDs {
+		ids[i] = uint32(v)
+	}
+	return ids, nil
 }
 
 // moduleForComponent 由组件路径归类业务模块；未声明组件或无法归类时返回 nil（等价不写）
@@ -616,6 +679,19 @@ func (r *MenuRepo) Delete(ctx context.Context, req *permissionV1.DeleteMenuReque
 		ids = append(ids, id)
 	}
 
+	// 删除前先取整棵子树的全路径快照：删行后按它级联清理授权绑定，
+	// 消灭悬空绑定（与 API 删除级联同构）
+	_, byID, err := r.buildMenuFullPathIndex(ctx, r.entClient.Client())
+	if err != nil {
+		return err
+	}
+	deadPaths := make([]string, 0, len(childrenIds))
+	for _, id := range childrenIds {
+		if p, ok := byID[uint32(id)]; ok {
+			deadPaths = append(deadPaths, p)
+		}
+	}
+
 	builder := r.entClient.Client().Menu.Delete()
 
 	_, err = r.repository.Delete(ctx, builder, func(s *sql.Selector) {
@@ -624,6 +700,13 @@ func (r *MenuRepo) Delete(ctx context.Context, req *permissionV1.DeleteMenuReque
 	if err != nil {
 		r.log.Errorf(ctx, "delete menu failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete menu failed")
+	}
+
+	// 级联清绑定（路径没了 = 授权该跟着没；同路径重建走重新授权，明账）
+	if len(deadPaths) > 0 && r.permissionMenu != nil {
+		if err = r.permissionMenu.DeleteByFullPaths(ctx, r.entClient.Client(), deadPaths); err != nil {
+			return err
+		}
 	}
 
 	return nil

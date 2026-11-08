@@ -89,9 +89,9 @@ func PermissionID(v uint32) predicate.PermissionMenu {
 	return predicate.PermissionMenu(sql.FieldEQ(FieldPermissionID, v))
 }
 
-// MenuID applies equality check predicate on the "menu_id" field. It's identical to MenuIDEQ.
-func MenuID(v uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldEQ(FieldMenuID, v))
+// FullPath applies equality check predicate on the "full_path" field. It's identical to FullPathEQ.
+func FullPath(v string) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldEQ(FieldFullPath, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -434,44 +434,79 @@ func PermissionIDLTE(v uint32) predicate.PermissionMenu {
 	return predicate.PermissionMenu(sql.FieldLTE(FieldPermissionID, v))
 }
 
-// MenuIDEQ applies the EQ predicate on the "menu_id" field.
-func MenuIDEQ(v uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldEQ(FieldMenuID, v))
+// FullPathEQ applies the EQ predicate on the "full_path" field.
+func FullPathEQ(v string) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldEQ(FieldFullPath, v))
 }
 
-// MenuIDNEQ applies the NEQ predicate on the "menu_id" field.
-func MenuIDNEQ(v uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldNEQ(FieldMenuID, v))
+// FullPathNEQ applies the NEQ predicate on the "full_path" field.
+func FullPathNEQ(v string) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldNEQ(FieldFullPath, v))
 }
 
-// MenuIDIn applies the In predicate on the "menu_id" field.
-func MenuIDIn(vs ...uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldIn(FieldMenuID, vs...))
+// FullPathIn applies the In predicate on the "full_path" field.
+func FullPathIn(vs ...string) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldIn(FieldFullPath, vs...))
 }
 
-// MenuIDNotIn applies the NotIn predicate on the "menu_id" field.
-func MenuIDNotIn(vs ...uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldNotIn(FieldMenuID, vs...))
+// FullPathNotIn applies the NotIn predicate on the "full_path" field.
+func FullPathNotIn(vs ...string) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldNotIn(FieldFullPath, vs...))
 }
 
-// MenuIDGT applies the GT predicate on the "menu_id" field.
-func MenuIDGT(v uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldGT(FieldMenuID, v))
+// FullPathGT applies the GT predicate on the "full_path" field.
+func FullPathGT(v string) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldGT(FieldFullPath, v))
 }
 
-// MenuIDGTE applies the GTE predicate on the "menu_id" field.
-func MenuIDGTE(v uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldGTE(FieldMenuID, v))
+// FullPathGTE applies the GTE predicate on the "full_path" field.
+func FullPathGTE(v string) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldGTE(FieldFullPath, v))
 }
 
-// MenuIDLT applies the LT predicate on the "menu_id" field.
-func MenuIDLT(v uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldLT(FieldMenuID, v))
+// FullPathLT applies the LT predicate on the "full_path" field.
+func FullPathLT(v string) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldLT(FieldFullPath, v))
 }
 
-// MenuIDLTE applies the LTE predicate on the "menu_id" field.
-func MenuIDLTE(v uint32) predicate.PermissionMenu {
-	return predicate.PermissionMenu(sql.FieldLTE(FieldMenuID, v))
+// FullPathLTE applies the LTE predicate on the "full_path" field.
+func FullPathLTE(v string) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldLTE(FieldFullPath, v))
+}
+
+// FullPathContains applies the Contains predicate on the "full_path" field.
+func FullPathContains(v string) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldContains(FieldFullPath, v))
+}
+
+// FullPathHasPrefix applies the HasPrefix predicate on the "full_path" field.
+func FullPathHasPrefix(v string) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldHasPrefix(FieldFullPath, v))
+}
+
+// FullPathHasSuffix applies the HasSuffix predicate on the "full_path" field.
+func FullPathHasSuffix(v string) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldHasSuffix(FieldFullPath, v))
+}
+
+// FullPathIsNil applies the IsNil predicate on the "full_path" field.
+func FullPathIsNil() predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldIsNull(FieldFullPath))
+}
+
+// FullPathNotNil applies the NotNil predicate on the "full_path" field.
+func FullPathNotNil() predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldNotNull(FieldFullPath))
+}
+
+// FullPathEqualFold applies the EqualFold predicate on the "full_path" field.
+func FullPathEqualFold(v string) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldEqualFold(FieldFullPath, v))
+}
+
+// FullPathContainsFold applies the ContainsFold predicate on the "full_path" field.
+func FullPathContainsFold(v string) predicate.PermissionMenu {
+	return predicate.PermissionMenu(sql.FieldContainsFold(FieldFullPath, v))
 }
 
 // And groups predicates with the AND operator between them.

@@ -7,6 +7,7 @@ import (
 
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/trans"
+	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
@@ -15,21 +16,26 @@ import (
 	"go-wind-admin/pkg/middleware/auth"
 
 	"go-wind-admin/app/admin/service/internal/data"
+	entCrud "github.com/tx7do/go-crud/entgo"
+	"go-wind-admin/app/admin/service/internal/data/ent"
+	"go-wind-admin/app/admin/service/internal/data/ent/menu"
+	enttest "go-wind-admin/app/admin/service/internal/data/enttest"
 )
 
-// roleStubRepo / userStubRepo：仅覆写 visibleMenuIDs 链路用到的两个方法，
+// roleStubRepo / userStubRepo：仅覆写 visibleMenuIDs 链路用到的方法，
 // 其余方法嵌入接口零值（不会被调用）。
+// 菜单授权绑定存全路径快照后，roleRepo 产路径、真 MenuRepo 反解回 id。
 type roleStubRepo struct {
 	data.RoleRepo
-	menuIDsByRoles map[string][]uint32 // key: roleIDs 逗号串
+	pathsByRoles map[string][]string // key: roleIDs 逗号串
 }
 
-func (r *roleStubRepo) GetRolesPermissionMenuIDs(_ context.Context, roleIDs []uint32) ([]uint32, error) {
+func (r *roleStubRepo) GetRolesPermissionMenuFullPaths(_ context.Context, roleIDs []uint32) ([]string, error) {
 	key := fmt.Sprintf("%v", roleIDs)
-	if ids, ok := r.menuIDsByRoles[key]; ok {
-		return ids, nil
+	if paths, ok := r.pathsByRoles[key]; ok {
+		return paths, nil
 	}
-	return []uint32{}, nil
+	return []string{}, nil
 }
 
 type userStubRepo struct {
@@ -44,18 +50,49 @@ func (r *userStubRepo) Get(_ context.Context, req *identityV1.GetUserRequest) (*
 	return nil, identityV1.ErrorNotFound("user not found")
 }
 
-// TestVisibleMenuIDs 平台管理员不过滤；租户用户按角色解析；无角色返回空集。
+// newVisibleMenuTestFixture 造真 MenuRepo（SQLite 内存库）+ 按路径预置菜单，
+// 返回 svc 装配、path→id 期望映射与 ent 客户端（删菜单用例需要）。
+func newVisibleMenuTestFixture(t *testing.T, paths ...string) (*AiContentService, map[string]uint32, *entCrud.EntClient[*ent.Client]) {
+	t.Helper()
+	entClient := enttest.NewEntClientForTest(t)
+	menuRepo := data.NewMenuRepoForTest(entClient)
+	ctx := enttest.NewSystemContext(context.Background())
+
+	pathToID := make(map[string]uint32, len(paths))
+	for i, p := range paths {
+		row, err := entClient.Client().Menu.Create().
+			SetName(fmt.Sprintf("Menu%d", i)).
+			SetPath(p).
+			SetType(menu.TypeMenu).
+			Save(ctx)
+		require.NoError(t, err, "预置菜单应成功")
+		pathToID[p] = row.ID
+	}
+
+	svc := &AiContentService{
+		log:       bLogger.NewHelper(bLogger.NopLogger()),
+		menuRepo:  menuRepo,
+		entClient: entClient,
+	}
+	return svc, pathToID, entClient
+}
+
+// TestVisibleMenuIDs 平台管理员不过滤；租户用户按角色解析（全路径快照反解回 id）；
+// 无角色返回空集；已删除菜单的快照被反解跳过。
 func TestVisibleMenuIDs(t *testing.T) {
-	roleRepo := &roleStubRepo{menuIDsByRoles: map[string][]uint32{
-		"[1 2]": {10, 20, 30},
-		"[1]":   {10, 20},
-		"[2]":   {20, 30},
+	svc, pathToID, entClient := newVisibleMenuTestFixture(t, "/vis/a", "/vis/b", "/vis/c", "/vis/gone")
+	ctx := enttest.NewSystemContext(context.Background())
+
+	roleRepo := &roleStubRepo{pathsByRoles: map[string][]string{
+		"[1 2]": {"/vis/a", "/vis/b", "/vis/c"},
+		"[1]":   {"/vis/a", "/vis/b"},
+		"[2]":   {"/vis/b", "/vis/c", "/vis/gone"},
 	}}
-	userRepo := &userStubRepo{usersByID: map[uint32]*identityV1.User{
+	svc.roleRepo = roleRepo
+	svc.userRepo = &userStubRepo{usersByID: map[uint32]*identityV1.User{
 		7: {Id: trans.Ptr(uint32(7)), RoleIds: []uint32{1, 2}},
 		8: {Id: trans.Ptr(uint32(8)), RoleIds: nil},
 	}}
-	svc := &AiContentService{roleRepo: roleRepo, userRepo: userRepo}
 
 	// 平台管理员：nil = 调用方不过滤
 	ids, err := svc.visibleMenuIDs(context.Background(), &authenticationV1.UserTokenPayload{
@@ -64,12 +101,13 @@ func TestVisibleMenuIDs(t *testing.T) {
 	require.NoError(t, err)
 	require.Nil(t, ids, "平台管理员应返回 nil（不过滤）")
 
-	// 租户用户：两角色并集去重
+	// 租户用户：两角色并集去重（全路径反解回当前菜单 id）
 	ids, err = svc.visibleMenuIDs(context.Background(), &authenticationV1.UserTokenPayload{
 		UserId: 7, TenantId: trans.Ptr(uint32(5)),
 	})
 	require.NoError(t, err)
-	require.ElementsMatch(t, []uint32{10, 20, 30}, ids, "应取角色菜单并集")
+	require.ElementsMatch(t, []uint32{pathToID["/vis/a"], pathToID["/vis/b"], pathToID["/vis/c"]},
+		ids, "应取角色菜单并集（反解回当前 id）")
 
 	// 无角色用户：空集
 	ids, err = svc.visibleMenuIDs(context.Background(), &authenticationV1.UserTokenPayload{
@@ -77,6 +115,18 @@ func TestVisibleMenuIDs(t *testing.T) {
 	})
 	require.NoError(t, err)
 	require.Empty(t, ids, "无角色用户应返回空集（AI 搜索不返回任何菜单）")
+
+	// 已删除菜单的快照：反解时跳过，不虚报可见性（角色 [2] 持有 /vis/gone 路径）
+	require.NoError(t, entClient.Client().Menu.DeleteOneID(pathToID["/vis/gone"]).Exec(ctx))
+	svc.userRepo = &userStubRepo{usersByID: map[uint32]*identityV1.User{
+		10: {Id: trans.Ptr(uint32(10)), RoleIds: []uint32{2}},
+	}}
+	ids, err = svc.visibleMenuIDs(context.Background(), &authenticationV1.UserTokenPayload{
+		UserId: 10, TenantId: trans.Ptr(uint32(5)),
+	})
+	require.NoError(t, err)
+	require.ElementsMatch(t, []uint32{pathToID["/vis/b"], pathToID["/vis/c"]},
+		ids, "已删除菜单的路径快照应被反解跳过，其余照常命中")
 }
 
 // TestSemanticSearchEmptyVisibleMenus 非平台用户且无可见菜单 → 直接空结果（不查库、不泄露）。

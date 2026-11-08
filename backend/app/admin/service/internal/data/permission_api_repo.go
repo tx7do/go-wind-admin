@@ -303,12 +303,14 @@ func (r *PermissionApiRepo) DeleteByEndpoints(ctx context.Context, client *ent.C
 	return nil
 }
 
-// Truncate 清空绑定表（保留种子权限 1/2/3 的绑定）——权限同步重建流程专用。
-func (r *PermissionApiRepo) Truncate(ctx context.Context) error {
-	builder := r.entClient.Client().PermissionApi.Delete().
-		Where(
-			permissionapi.PermissionIDNotIn(1, 2, 3),
-		)
+// TruncateExcept 清空绑定表但保留指定权限的绑定。keepPermissionIDs 由调用方按
+// 系统权限 code 前缀解析（不再依赖"种子权限=1/2/3"的硬编码 id 假设）；为空 =
+// 全清（权限表整体重建场景）。
+func (r *PermissionApiRepo) TruncateExcept(ctx context.Context, keepPermissionIDs []uint32) error {
+	builder := r.entClient.Client().PermissionApi.Delete()
+	if len(keepPermissionIDs) > 0 {
+		builder = builder.Where(permissionapi.PermissionIDNotIn(keepPermissionIDs...))
+	}
 
 	if _, err := builder.Exec(ctx); err != nil {
 		r.log.Errorf(ctx, "failed to truncate permission api table: %s", err.Error())

@@ -318,7 +318,18 @@ func TestPermissionService_SyncPermissions_DuplicateCodeDeduped(t *testing.T) {
 func TestPermissionService_ListAndGetTenantScoping(t *testing.T) {
 	svc, _ := newPermissionServiceForTest(t)
 	ctx := enttest.NewSystemContext(context.Background())
-	seedPermissionGroups(t, svc, ctx, 5)
+	// 预置与种子 GroupName 同名的组：GroupNames 是权限种子的分组引用键，
+	// 命中时每条权限的组引用都应落上并在 List 时经富集回填组名
+	for _, name := range []string{"系统权限", "租户管理", "审计管理"} {
+		_, err := svc.permissionGroupRepo.Create(ctx, &permissionV1.CreatePermissionGroupRequest{
+			Data: &permissionV1.PermissionGroup{
+				Name:   trans.Ptr(name),
+				Module: trans.Ptr(constants.SystemPermissionModule),
+				Status: permissionV1.PermissionGroup_ON.Enum(),
+			},
+		})
+		require.NoError(t, err, "预置种子同名组 %s 应成功", name)
+	}
 	svc.init()
 	platformCtx := auth.NewContext(ctx, &authenticationV1.UserTokenPayload{UserId: 7, IsPlatformAdmin: trans.Ptr(true)})
 	// 租户操作人：查看器须与令牌租户一致（生产由认证中间件成对注入）
@@ -335,8 +346,8 @@ func TestPermissionService_ListAndGetTenantScoping(t *testing.T) {
 		"平台操作人应看到全部播种的默认权限")
 	require.Len(t, listResp.GetItems(), len(constants.DefaultPermissions))
 	for _, item := range listResp.GetItems() {
-		require.Equal(t, "PermSvcGroup", item.GetGroupName(),
-			"组存在时组名应经富集回填（占位组的名称）")
+		require.Contains(t, []string{"系统权限", "租户管理", "审计管理"}, item.GetGroupName(),
+			"组名命中种子引用时组名应经富集回填")
 	}
 	item := listResp.GetItems()[0]
 

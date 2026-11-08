@@ -1288,7 +1288,7 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permissionmenu.FieldUpdatedBy:    {Type: field.TypeUint32, Column: permissionmenu.FieldUpdatedBy},
 			permissionmenu.FieldDeletedBy:    {Type: field.TypeUint32, Column: permissionmenu.FieldDeletedBy},
 			permissionmenu.FieldPermissionID: {Type: field.TypeUint32, Column: permissionmenu.FieldPermissionID},
-			permissionmenu.FieldMenuID:       {Type: field.TypeUint32, Column: permissionmenu.FieldMenuID},
+			permissionmenu.FieldFullPath:     {Type: field.TypeString, Column: permissionmenu.FieldFullPath},
 		},
 	}
 	graph.Nodes[43] = &sqlgraph.Node{
@@ -7447,9 +7447,9 @@ func (f *PermissionMenuFilter) WherePermissionID(p entql.Uint32P) {
 	f.Where(p.Field(permissionmenu.FieldPermissionID))
 }
 
-// WhereMenuID applies the entql uint32 predicate on the menu_id field.
-func (f *PermissionMenuFilter) WhereMenuID(p entql.Uint32P) {
-	f.Where(p.Field(permissionmenu.FieldMenuID))
+// WhereFullPath applies the entql string predicate on the full_path field.
+func (f *PermissionMenuFilter) WhereFullPath(p entql.StringP) {
+	f.Where(p.Field(permissionmenu.FieldFullPath))
 }
 
 // addPredicate implements the predicateAdder interface.

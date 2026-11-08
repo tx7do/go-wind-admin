@@ -171,24 +171,23 @@ func (_u *PermissionMenuUpdate) AddPermissionID(v int32) *PermissionMenuUpdate {
 	return _u
 }
 
-// SetMenuID sets the "menu_id" field.
-func (_u *PermissionMenuUpdate) SetMenuID(v uint32) *PermissionMenuUpdate {
-	_u.mutation.ResetMenuID()
-	_u.mutation.SetMenuID(v)
+// SetFullPath sets the "full_path" field.
+func (_u *PermissionMenuUpdate) SetFullPath(v string) *PermissionMenuUpdate {
+	_u.mutation.SetFullPath(v)
 	return _u
 }
 
-// SetNillableMenuID sets the "menu_id" field if the given value is not nil.
-func (_u *PermissionMenuUpdate) SetNillableMenuID(v *uint32) *PermissionMenuUpdate {
+// SetNillableFullPath sets the "full_path" field if the given value is not nil.
+func (_u *PermissionMenuUpdate) SetNillableFullPath(v *string) *PermissionMenuUpdate {
 	if v != nil {
-		_u.SetMenuID(*v)
+		_u.SetFullPath(*v)
 	}
 	return _u
 }
 
-// AddMenuID adds value to the "menu_id" field.
-func (_u *PermissionMenuUpdate) AddMenuID(v int32) *PermissionMenuUpdate {
-	_u.mutation.AddMenuID(v)
+// ClearFullPath clears the value of the "full_path" field.
+func (_u *PermissionMenuUpdate) ClearFullPath() *PermissionMenuUpdate {
+	_u.mutation.ClearFullPath()
 	return _u
 }
 
@@ -287,11 +286,11 @@ func (_u *PermissionMenuUpdate) sqlSave(ctx context.Context) (_node int, err err
 	if value, ok := _u.mutation.AddedPermissionID(); ok {
 		_spec.AddField(permissionmenu.FieldPermissionID, field.TypeUint32, value)
 	}
-	if value, ok := _u.mutation.MenuID(); ok {
-		_spec.SetField(permissionmenu.FieldMenuID, field.TypeUint32, value)
+	if value, ok := _u.mutation.FullPath(); ok {
+		_spec.SetField(permissionmenu.FieldFullPath, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.AddedMenuID(); ok {
-		_spec.AddField(permissionmenu.FieldMenuID, field.TypeUint32, value)
+	if _u.mutation.FullPathCleared() {
+		_spec.ClearField(permissionmenu.FieldFullPath, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -457,24 +456,23 @@ func (_u *PermissionMenuUpdateOne) AddPermissionID(v int32) *PermissionMenuUpdat
 	return _u
 }
 
-// SetMenuID sets the "menu_id" field.
-func (_u *PermissionMenuUpdateOne) SetMenuID(v uint32) *PermissionMenuUpdateOne {
-	_u.mutation.ResetMenuID()
-	_u.mutation.SetMenuID(v)
+// SetFullPath sets the "full_path" field.
+func (_u *PermissionMenuUpdateOne) SetFullPath(v string) *PermissionMenuUpdateOne {
+	_u.mutation.SetFullPath(v)
 	return _u
 }
 
-// SetNillableMenuID sets the "menu_id" field if the given value is not nil.
-func (_u *PermissionMenuUpdateOne) SetNillableMenuID(v *uint32) *PermissionMenuUpdateOne {
+// SetNillableFullPath sets the "full_path" field if the given value is not nil.
+func (_u *PermissionMenuUpdateOne) SetNillableFullPath(v *string) *PermissionMenuUpdateOne {
 	if v != nil {
-		_u.SetMenuID(*v)
+		_u.SetFullPath(*v)
 	}
 	return _u
 }
 
-// AddMenuID adds value to the "menu_id" field.
-func (_u *PermissionMenuUpdateOne) AddMenuID(v int32) *PermissionMenuUpdateOne {
-	_u.mutation.AddMenuID(v)
+// ClearFullPath clears the value of the "full_path" field.
+func (_u *PermissionMenuUpdateOne) ClearFullPath() *PermissionMenuUpdateOne {
+	_u.mutation.ClearFullPath()
 	return _u
 }
 
@@ -603,11 +601,11 @@ func (_u *PermissionMenuUpdateOne) sqlSave(ctx context.Context) (_node *Permissi
 	if value, ok := _u.mutation.AddedPermissionID(); ok {
 		_spec.AddField(permissionmenu.FieldPermissionID, field.TypeUint32, value)
 	}
-	if value, ok := _u.mutation.MenuID(); ok {
-		_spec.SetField(permissionmenu.FieldMenuID, field.TypeUint32, value)
+	if value, ok := _u.mutation.FullPath(); ok {
+		_spec.SetField(permissionmenu.FieldFullPath, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.AddedMenuID(); ok {
-		_spec.AddField(permissionmenu.FieldMenuID, field.TypeUint32, value)
+	if _u.mutation.FullPathCleared() {
+		_spec.ClearField(permissionmenu.FieldFullPath, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &PermissionMenu{config: _u.config}

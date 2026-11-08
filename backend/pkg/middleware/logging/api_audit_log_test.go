@@ -21,6 +21,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/sha256"
 	"encoding/json"
+	"net"
 	nethttp "net/http"
 	"testing"
 
@@ -29,6 +30,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/tx7do/go-utils/auditutil"
+
+	"go-wind-admin/pkg/netutil"
 
 	adminV1 "go-wind-admin/api/gen/go/admin/service/v1"
 	auditV1 "go-wind-admin/api/gen/go/audit/service/v1"
@@ -246,7 +249,11 @@ func TestApiAuditLogHandleInputSanitization(t *testing.T) {
 		assert.Empty(t, rec.GetUsername())
 	})
 
-	t.Run("XFF跳过非法项取首个合法IP", func(t *testing.T) {
+	t.Run("未配置可信代理时XFF一律不信任", func(t *testing.T) {
+		// 可信代理链语义（netutil P2 修复）：直连客户端自带的 XFF 任何条目都
+		// 不可信——未配置 GOWIND_TRUSTED_PROXIES 时直接取 RemoteAddr。
+		t.Cleanup(func() { netutil.SetTrustedProxies(nil) })
+		netutil.SetTrustedProxies(nil)
 		env := newAuditServer(t)
 		env.fire(nethttp.MethodPost, "/case/5", map[string]string{
 			"X-Test-Operation": "/demo.v1.GadgetService/Update",
@@ -254,8 +261,36 @@ func TestApiAuditLogHandleInputSanitization(t *testing.T) {
 		}, "", "8.8.8.8:1234")
 		require.Len(t, env.capture.api, 1)
 		rec := env.capture.api[0]
-		assert.Equal(t, "10.0.0.5", rec.GetIpAddress(), "XFF 中首个可解析 IP 优先于 RemoteAddr")
+		assert.Equal(t, "8.8.8.8", rec.GetIpAddress(), "无可信代理时 XFF 必须整体忽略，取 RemoteAddr")
+	})
+
+	t.Run("可信代理链下XFF右向左取首个非代理IP", func(t *testing.T) {
+		// RemoteAddr 是可信代理：沿 XFF 由右向左，第一个非代理条目即客户端；
+		// 非法条目（garbage）按"到此为止"处理，取其右侧最近的可信值之前的判定。
+		_, proxyCIDR, err := net.ParseCIDR("10.9.0.0/24")
+		require.NoError(t, err)
+		t.Cleanup(func() { netutil.SetTrustedProxies(nil) })
+		netutil.SetTrustedProxies([]*net.IPNet{proxyCIDR})
+		env := newAuditServer(t)
+		// 代理 10.9.0.7 追加了 10.0.0.5：客户端即 10.0.0.5（私网地理归一）
+		env.fire(nethttp.MethodPost, "/case/5", map[string]string{
+			"X-Test-Operation": "/demo.v1.GadgetService/Update",
+			"X-Forwarded-For":  "10.0.0.5",
+		}, "", "10.9.0.7:1234")
+		require.Len(t, env.capture.api, 1)
+		rec := env.capture.api[0]
+		assert.Equal(t, "10.0.0.5", rec.GetIpAddress(), "可信代理追加的 XFF 才参与解析")
 		assert.Equal(t, "局域网", rec.GetGeoLocation().GetCountryCode(), "私网 IP 的地理归一")
+
+		// RemoteAddr 不是可信代理：直连客户端自带的 XFF 不可信，取 RemoteAddr
+		env2 := newAuditServer(t)
+		env2.fire(nethttp.MethodPost, "/case/5", map[string]string{
+			"X-Test-Operation": "/demo.v1.GadgetService/Update",
+			"X-Forwarded-For":  "10.0.0.5",
+		}, "", "8.8.8.8:1234")
+		require.Len(t, env2.capture.api, 1)
+		assert.Equal(t, "8.8.8.8", env2.capture.api[0].GetIpAddress(),
+			"非可信来源的 XFF 声明必须忽略（防伪造）")
 	})
 }
 

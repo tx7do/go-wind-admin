@@ -8,6 +8,7 @@ import (
 	"github.com/tx7do/go-utils/trans"
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 	"google.golang.org/protobuf/types/known/fieldmaskpb"
 
@@ -31,8 +32,9 @@ type RoleService struct {
 
 	authorizer *authorizer.Authorizer
 
-	roleRepo   *data.RoleRepo
-	tenantRepo *data.TenantRepo
+	roleRepo       *data.RoleRepo
+	tenantRepo     *data.TenantRepo
+	permissionRepo *data.PermissionRepo
 }
 
 func NewRoleService(
@@ -40,12 +42,14 @@ func NewRoleService(
 	authorizer *authorizer.Authorizer,
 	roleRepo *data.RoleRepo,
 	tenantRepo *data.TenantRepo,
+	permissionRepo *data.PermissionRepo,
 ) *RoleService {
 	svc := &RoleService{
-		log:        ctx.NewLoggerHelper("role/service/admin-service"),
-		authorizer: authorizer,
-		roleRepo:   roleRepo,
-		tenantRepo: tenantRepo,
+		log:            ctx.NewLoggerHelper("role/service/admin-service"),
+		authorizer:     authorizer,
+		roleRepo:       roleRepo,
+		tenantRepo:     tenantRepo,
+		permissionRepo: permissionRepo,
 	}
 
 	svc.init()
@@ -487,13 +491,33 @@ func (s *RoleService) GetRolesByRoleIds(ctx context.Context, req *permissionV1.G
 	}, nil
 }
 
-// createDefaultRoles 创建默认角色(包括超级管理员)
+// createDefaultRoles 创建默认角色(包括超级管理员)。
+// 权限引用按 code 解析（constants.DefaultRolePermissionCodes）：权限 id 是播种
+// 顺序产物，旧种子按 id（1,2,4 / 1,3）引用只在"权限恰好按切片序落 1..5"时碰巧
+// 成立。code 是稳定键；生产 wiring 保证权限先于角色播种。解析出多少绑多少、
+// 缺失 WARN（软降级，引导期 best-effort——测试/嵌入式场景无此时序保证时不中止
+// 播种，与组名解析的口径一致）。
 func (s *RoleService) createDefaultRoles(ctx context.Context) error {
 	var err error
 
 	for _, d := range constants.DefaultRoles {
+		data := proto.Clone(d).(*permissionV1.Role)
+
+		codes := constants.DefaultRolePermissionCodes[data.GetCode()]
+		if len(codes) > 0 {
+			ids, rerr := s.permissionRepo.GetPermissionIDsByCodes(ctx, codes)
+			if rerr != nil {
+				return rerr
+			}
+			if len(ids) < len(codes) {
+				s.log.Warnf(ctx, "default role [%s] resolved %d/%d permission codes (permissions must seed before roles); binding resolved subset",
+					data.GetCode(), len(ids), len(codes))
+			}
+			data.Permissions = ids
+		}
+
 		err = s.roleRepo.Create(ctx, &permissionV1.CreateRoleRequest{
-			Data: d,
+			Data: data,
 		})
 		if err != nil {
 			return err

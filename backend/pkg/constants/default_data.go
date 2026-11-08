@@ -79,62 +79,102 @@ var DefaultPermissionGroups = []*permissionV1.PermissionGroup{
 	},
 }
 
-// DefaultPermissions 系统初始化默认权限数据
+// TenantManagerDeniedApiPrefixes 租户管理员模板权限的端点黑名单（path 前缀匹配）。
+//
+// 语义：租户管理员（sys:tenant_manager 模板权限）= 全部端点 − 平台专属端点。
+// 旧种子曾按硬编码 id 段（1..128）表达同一意图，但接口 id 自旧实现起就按 map
+// 随机序发放、接口表也从 136 条长到 280+ 条，id 段早已退化为"随机子集抽签"；
+// 改为按 path 前缀（身份键的一部分，免疫 id 与顺序）显式声明。
+//
+// 黑名单口径 = 菜单种子（DefaultMenus）里 Authority 仅 sys:platform_admin 的域：
+// 租户管理/套餐计费、权限管理（角色管理除外，/roles 不在列）、审计日志族、
+// 通知域管理页、系统管理域的平台专属页（字典/登录策略/参数/脚本/在线会话/
+// AK/SK/服务器监控/监控告警/打印模板/Redis 监控/系统任务巡检）、AI 平台页
+// （模型提供商/智能问数）。
+//
+// 注意：新增端点默认对租户管理员模板可见（fail-open，与旧种子"全集减黑名单"
+// 的意图一致）；平台专属新端点务必把前缀加进这里。
+var TenantManagerDeniedApiPrefixes = []string{
+	"/admin/v1/tenants",                     // 租户管理（含 :exists/:with-admin）
+	"/admin/v1/plans",                       // 套餐
+	"/admin/v1/plan-modules",                // 套餐模块白名单
+	"/admin/v1/plan-quotas",                 // 套餐配额
+	"/admin/v1/permissions",                 // 权限点管理
+	"/admin/v1/perm-codes",                  // 权限码
+	"/admin/v1/permission-groups",           // 权限分组
+	"/admin/v1/menus",                       // 菜单管理
+	"/admin/v1/apis",                        // 接口管理
+	"/admin/v1/login-audit-logs",            // 登录审计
+	"/admin/v1/api-audit-logs",              // 接口审计
+	"/admin/v1/operation-audit-logs",        // 操作审计
+	"/admin/v1/permission-audit-logs",       // 权限审计
+	"/admin/v1/data-access-audit-logs",      // 数据访问审计
+	"/admin/v1/policy-evaluation-logs",      // 策略评估日志
+	"/admin/v1/notification-channels",       // 通知渠道管理
+	"/admin/v1/notification-channel-schemas",// 渠道 schema
+	"/admin/v1/notification-rules",          // 通知路由规则
+	"/admin/v1/notification-templates",      // 通知模板
+	"/admin/v1/notification-deliveries",     // 投递台账
+	"/admin/v1/dict",                        // 字典管理
+	"/admin/v1/login-policies",              // 登录策略
+	"/admin/v1/configs",                     // 系统参数
+	"/admin/v1/access-keys",                 // AK/SK
+	"/admin/v1/scripts",                     // 脚本管理
+	"/admin/v1/script",                      // 脚本运行时（exec 等）
+	"/admin/v1/online-session",              // 在线会话
+	"/admin/v1/server-monitor",              // 服务器监控
+	"/admin/v1/monitor-alert-rules",         // 监控告警规则（含 :evaluate）
+	"/admin/v1/redis-cache-monitor",         // Redis 缓存监控
+	"/admin/v1/print-templates",             // 打印模板（含 :generate/:render-pdf）
+	"/admin/v1/system-tasks",                // 系统级常驻任务巡检
+	"/admin/v1/ai/providers",                // AI 模型提供商
+	"/admin/v1/ai/query",                    // 智能问数（SQL 直触全平台原生表）
+}
+
+// IsTenantManagerDeniedApiPath 判定端点是否在租户管理员模板黑名单内（path 前缀匹配）。
+func IsTenantManagerDeniedApiPath(path string) bool {
+	for _, p := range TenantManagerDeniedApiPrefixes {
+		if strings.HasPrefix(path, p) {
+			return true
+		}
+	}
+	return false
+}
+
+// DefaultPermissions 系统初始化默认权限数据。
+//
+// 模板权限（平台管理员/租户管理员）的 MenuIds/ApiIds 不再硬编码 id——id 是
+// 顺序产物不是身份：超管的菜单/端点集在播种期动态取"当前全量"，租户管理员的
+// 端点集按 TenantManagerDeniedApiPrefixes 黑名单过滤、菜单集按本列表收敛到
+// 真实存在的行。解析逻辑见 permission_service.createDefaultPermissions。
 var DefaultPermissions = []*permissionV1.Permission{
 	{
-		//Id:          trans.Ptr(uint32(1)),
-		GroupId:     trans.Ptr(uint32(2)),
 		Name:        trans.Ptr("访问后台"),
 		Description: trans.Ptr("允许用户访问系统后台管理界面"),
+		GroupName:   trans.Ptr("系统权限"),
 		Code:        trans.Ptr(SystemAccessBackendPermissionCode),
 		Status:      trans.Ptr(permissionV1.Permission_ON),
 	},
 	{
-		//Id:          trans.Ptr(uint32(2)),
-		GroupId:     trans.Ptr(uint32(2)),
 		Name:        trans.Ptr("平台管理员权限"),
 		Description: trans.Ptr("拥有系统所有功能的操作权限，可管理租户、用户、角色及所有资源"),
+		GroupName:   trans.Ptr("系统权限"),
 		Code:        trans.Ptr(SystemPlatformAdminPermissionCode),
 		Status:      trans.Ptr(permissionV1.Permission_ON),
-		// 后台左侧菜单读的是「角色 → 权限 → sys_permission_menus」这条链（GetNavigation 无超管绕过），
-		// 所以 DefaultMenus 里加一行还不够，新菜单必须同时出现在这里，否则播种出来的平台管理员看不见它。
-		// 已部署实例的权限行早已存在、这段不会再跑，须在「权限管理」里勾上新菜单。
-		MenuIds: []uint32{
-			1, 2, 103, 3, 4, 5, 6,
-			10, 11, 12,
-			20, 21, 22, 23, 24,
-			30, 31, 32, 33, 34,
-			40, 41, 42,
-			50, 51, 52, 53, 54, 55, 56, 57,
-			60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
-			72, 73, 74,
-			80, 81, 82, 83, 84,
-			101, 102,
-		},
-		ApiIds: []uint32{
-			1, 2, 3, 4, 5, 6, 7, 8, 9,
-			10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-			20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-			30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-			40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
-			50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
-			60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
-			70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
-			80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
-			90, 91, 92, 93, 94, 95, 96, 97, 98, 99,
-			100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
-			110, 111, 112, 113, 114, 115, 116, 117, 118, 119,
-			120, 121, 122, 123, 124, 125, 126, 127, 128, 129,
-			130, 131, 132, 133, 134, 135, 136,
-		},
+		// MenuIds/ApiIds 播种期动态填充：全部当前菜单 + 全部当前端点。
+		// 后台左侧菜单读的是「角色 → 权限 → sys_permission_menus」这条链
+		//（GetNavigation 无超管绕过），DefaultMenus 新增行即自动跟上，
+		// 不再需要同步维护这份清单；已部署实例的权限行早已存在、这段不会再跑，
+		// 新菜单须在「权限管理」里勾上。
 	},
 	{
-		//Id:          trans.Ptr(uint32(3)),
-		GroupId:     trans.Ptr(uint32(3)),
 		Name:        trans.Ptr("租户管理员权限"),
 		Description: trans.Ptr("拥有租户内所有功能的操作权限，可管理用户、角色及租户内所有资源"),
+		GroupName:   trans.Ptr("租户管理"),
 		Code:        trans.Ptr(SystemTenantManagerPermissionCode),
 		Status:      trans.Ptr(permissionV1.Permission_ON),
+		// 菜单集：租户管理员可见的菜单子集（引用 DefaultMenus 的显式 id，
+		// 播种期收敛到真实存在的行）；端点集 = 全部端点 − TenantManagerDeniedApiPrefixes。
 		MenuIds: []uint32{
 			1, 2, 103,
 			20, 21, 22, 23, 24,
@@ -143,42 +183,27 @@ var DefaultPermissions = []*permissionV1.Permission{
 			50, 51,
 			60, 61, 62, 63,
 		},
-		ApiIds: []uint32{
-			1, 2, 3, 4, 5, 6, 7, 8, 9,
-			10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-			20, 21, 22, 23, 24, 25, 26, 27, 28, 29,
-			30, 31, 32, 33, 34, 35, 36, 37, 38, 39,
-			40, 41, 42, 43, 44, 45, 46, 47, 48, 49,
-			50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
-			60, 61, 62, 63, 64, 65, 66, 67, 68, 69,
-			70, 71, 72, 73, 74, 75, 76, 77, 78, 79,
-			80, 81, 82, 83, 84, 85, 86, 87, 88, 89,
-			90, 91, 92, 93, 94, 95, 96, 97, 98, 99,
-			100, 101, 102, 103, 104, 105, 106, 107, 108, 109,
-			110, 111, 112, 113, 114, 115, 116, 117, 118, 119,
-			120, 121, 122, 123, 124, 125, 126, 127, 128,
-		},
 	},
 
 	{
-		//Id:          trans.Ptr(uint32(4)),
-		GroupId:     trans.Ptr(uint32(3)),
 		Name:        trans.Ptr("管理租户"),
 		Description: trans.Ptr("允许创建/修改/删除租户"),
+		GroupName:   trans.Ptr("租户管理"),
 		Code:        trans.Ptr(SystemManageTenantsPermissionCode),
 		Status:      trans.Ptr(permissionV1.Permission_ON),
 	},
 	{
-		//Id:          trans.Ptr(uint32(5)),
-		GroupId:     trans.Ptr(uint32(4)),
 		Name:        trans.Ptr("查看审计日志"),
 		Description: trans.Ptr("允许查看系统操作日志"),
+		GroupName:   trans.Ptr("审计管理"),
 		Code:        trans.Ptr(SystemAuditLogsPermissionCode),
 		Status:      trans.Ptr(permissionV1.Permission_ON),
 	},
 }
 
-// DefaultRoles 系统初始化默认角色数据
+// DefaultRoles 系统初始化默认角色数据。
+// 权限引用按 code（稳定键）而非 id——id 是播种顺序产物；角色播种前权限必已
+// 播种（wiring 时序保证），解析逻辑见 role_service.createDefaultRoles。
 var DefaultRoles = []*permissionV1.Role{
 	{
 		//Id:          trans.Ptr(uint32(1)),
@@ -189,7 +214,6 @@ var DefaultRoles = []*permissionV1.Role{
 		IsProtected: trans.Ptr(true),
 		Type:        trans.Ptr(permissionV1.Role_SYSTEM),
 		SortOrder:   trans.Ptr(uint32(1)),
-		Permissions: []uint32{1, 2, 4},
 	},
 	{
 		//Id:          trans.Ptr(uint32(2)),
@@ -200,7 +224,21 @@ var DefaultRoles = []*permissionV1.Role{
 		IsProtected: trans.Ptr(true),
 		Type:        trans.Ptr(permissionV1.Role_TEMPLATE),
 		SortOrder:   trans.Ptr(uint32(2)),
-		Permissions: []uint32{1, 3},
+	},
+}
+
+// DefaultRolePermissionCodes 默认角色关联的权限 code 集合（与 DefaultRoles 按
+// Role.Code 对应）。旧版按权限 id（1,2,4 / 1,3）引用——那只在"权限恰好按切片序
+// 落 1..5"时碰巧成立；code 是权限的稳定键。
+var DefaultRolePermissionCodes = map[string][]string{
+	PlatformAdminRoleCode: {
+		SystemAccessBackendPermissionCode,
+		SystemPlatformAdminPermissionCode,
+		SystemManageTenantsPermissionCode,
+	},
+	TenantAdminTemplateRoleCode: {
+		SystemAccessBackendPermissionCode,
+		SystemTenantManagerPermissionCode,
 	},
 }
 

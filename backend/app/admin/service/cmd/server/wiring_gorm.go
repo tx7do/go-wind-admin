@@ -104,7 +104,7 @@ func newGormRepos(ctx *bootstrap.Context) (*gormRepos, *gormCrud.Client, error) 
 		permissionApiRepo:   permissionApiRepo,
 		permissionMenuRepo:  gormData.NewPermissionMenuRepo(ctx, client),
 		rolePermissionRepo:  gormData.NewRolePermissionRepo(ctx, client),
-		permissionRepo:      gormData.NewPermissionRepo(ctx, client, permissionApiRepo),
+		permissionRepo:      gormData.NewPermissionRepo(ctx, client, permissionApiRepo, permissionMenuRepo),
 		roleRepo:            gormData.NewRoleRepo(ctx, client),
 		permissionGroupRepo: gormData.NewPermissionGroupRepo(ctx, client),
 		apiRepo:             gormData.NewApiRepo(ctx, client, permissionApiRepo),

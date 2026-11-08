@@ -189,12 +189,12 @@ func (r *RoleRepo) GetRolePermissionApiEndpoints(ctx context.Context, roleID uin
 	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: GetRolePermissionApiEndpoints not implemented — ent cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
-func (r *RoleRepo) GetRolePermissionMenuIDs(ctx context.Context, roleID uint32) ([]uint32, error) {
-	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: GetRolePermissionMenuIDs not implemented — ent cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
+func (r *RoleRepo) GetRolePermissionMenuFullPaths(ctx context.Context, roleID uint32) ([]string, error) {
+	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: GetRolePermissionMenuFullPaths not implemented — ent cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
-func (r *RoleRepo) GetRolesPermissionMenuIDs(ctx context.Context, roleIDs []uint32) ([]uint32, error) {
-	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: GetRolesPermissionMenuIDs not implemented — ent cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
+func (r *RoleRepo) GetRolesPermissionMenuFullPaths(ctx context.Context, roleIDs []uint32) ([]string, error) {
+	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: GetRolesPermissionMenuFullPaths not implemented — ent cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
 func (r *RoleRepo) CanAssignRole(ctx context.Context, roleID uint32) (bool, error) {

@@ -843,34 +843,35 @@ func (r *RoleRepo) GetRolePermissionApiEndpoints(ctx context.Context, roleID uin
 	return endpoints, nil
 }
 
-// GetRolePermissionMenuIDs 获取角色关联的权限菜单ID列表
-func (r *RoleRepo) GetRolePermissionMenuIDs(ctx context.Context, roleID uint32) ([]uint32, error) {
+// GetRolePermissionMenuFullPaths 获取角色关联的权限菜单全路径快照列表。
+// 绑定存全路径快照后，导航链路反解回菜单 id 由调用方完成（菜单重建同路径即命中）。
+func (r *RoleRepo) GetRolePermissionMenuFullPaths(ctx context.Context, roleID uint32) ([]string, error) {
 	permissionIDs, err := r.rolePermissionRepo.ListPermissionIDs(ctx, roleID)
 	if err != nil {
 		return nil, err
 	}
 
-	menuIDs, err := r.permissionRepo.ListMenuIDsByPermissionIDs(ctx, permissionIDs)
+	paths, err := r.permissionRepo.ListMenuFullPathsByPermissionIDs(ctx, permissionIDs)
 	if err != nil {
 		return nil, err
 	}
 
-	return menuIDs, nil
+	return paths, nil
 }
 
-// GetRolesPermissionMenuIDs 获取多个角色关联的权限菜单ID列表
-func (r *RoleRepo) GetRolesPermissionMenuIDs(ctx context.Context, roleIDs []uint32) ([]uint32, error) {
+// GetRolesPermissionMenuFullPaths 获取多个角色关联的权限菜单全路径快照列表
+func (r *RoleRepo) GetRolesPermissionMenuFullPaths(ctx context.Context, roleIDs []uint32) ([]string, error) {
 	permissionIDs, err := r.rolePermissionRepo.ListPermissionIDsByRoleIDs(ctx, roleIDs)
 	if err != nil {
 		return nil, err
 	}
 
-	menuIDs, err := r.permissionRepo.ListMenuIDsByPermissionIDs(ctx, permissionIDs)
+	paths, err := r.permissionRepo.ListMenuFullPathsByPermissionIDs(ctx, permissionIDs)
 	if err != nil {
 		return nil, err
 	}
 
-	return menuIDs, nil
+	return paths, nil
 }
 
 // CanAssignRole 判断角色是否可以被分配（非保护且启用状态）

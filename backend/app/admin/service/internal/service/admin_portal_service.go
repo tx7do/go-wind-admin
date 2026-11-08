@@ -80,16 +80,21 @@ func (s *AdminPortalService) menuListToQueryString(menus []uint32, onlyButton bo
 	return string(queryStr)
 }
 
-// queryMultipleRolesMenusByRoleCodes 使用RoleCodes查询菜单，即多个角色的菜单
+// queryMultipleRolesMenusByRoleCodes 使用RoleCodes查询菜单，即多个角色的菜单。
+// 菜单授权绑定存全路径快照（菜单身份键，免疫菜单重建换 id），这里把多角色的
+// 绑定快照反解回当前菜单 id 再走原有的 id__in 菜单查询。
 func (s *AdminPortalService) queryMultipleRolesMenusByRoleCodes(ctx context.Context, roleIDs []uint32) ([]uint32, error) {
-	var menuIDs []uint32
-	var err error
-	menuIDs, err = s.roleRepo.GetRolesPermissionMenuIDs(ctx, roleIDs)
+	paths, err := s.roleRepo.GetRolesPermissionMenuFullPaths(ctx, roleIDs)
 	if err != nil {
-		return nil, adminV1.ErrorInternalServerError("query roles menuIDs failed")
+		return nil, adminV1.ErrorInternalServerError("query roles menu full paths failed")
 	}
 
-	s.log.Infof(ctx, "queryMultipleRolesMenusByRoleCodes menuIDs: %+v", menuIDs)
+	s.log.Infof(ctx, "queryMultipleRolesMenusByRoleCodes menuPaths: %+v", paths)
+
+	menuIDs, err := s.menuRepo.ResolveMenuIDsByFullPaths(ctx, paths)
+	if err != nil {
+		return nil, err
+	}
 
 	menuIDs = sliceutil.Unique(menuIDs)
 

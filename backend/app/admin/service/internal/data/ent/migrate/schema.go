@@ -2429,7 +2429,7 @@ var (
 		{Name: "updated_by", Type: field.TypeUint32, Nullable: true, Comment: "更新者ID"},
 		{Name: "deleted_by", Type: field.TypeUint32, Nullable: true, Comment: "删除者ID"},
 		{Name: "permission_id", Type: field.TypeUint32, Comment: "权限ID（关联sys_permissions.id）"},
-		{Name: "menu_id", Type: field.TypeUint32, Comment: "菜单ID（关联sys_menus.id）"},
+		{Name: "full_path", Type: field.TypeString, Nullable: true, Comment: "菜单全路径（菜单身份键绑定快照）"},
 	}
 	// SysPermissionMenusTable holds the schema information for the "sys_permission_menus" table.
 	SysPermissionMenusTable = &schema.Table{
@@ -2439,7 +2439,7 @@ var (
 		PrimaryKey: []*schema.Column{SysPermissionMenusColumns[0]},
 		Indexes: []*schema.Index{
 			{
-				Name:    "uix_perm_menu_permission_menu_id",
+				Name:    "uix_perm_menu_permission_full_path",
 				Unique:  true,
 				Columns: []*schema.Column{SysPermissionMenusColumns[7], SysPermissionMenusColumns[8]},
 			},
@@ -2449,7 +2449,7 @@ var (
 				Columns: []*schema.Column{SysPermissionMenusColumns[7]},
 			},
 			{
-				Name:    "idx_perm_menu_menu_id",
+				Name:    "idx_perm_menu_full_path",
 				Unique:  false,
 				Columns: []*schema.Column{SysPermissionMenusColumns[8]},
 			},

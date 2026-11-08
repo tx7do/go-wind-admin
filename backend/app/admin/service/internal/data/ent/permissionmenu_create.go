@@ -112,9 +112,17 @@ func (_c *PermissionMenuCreate) SetPermissionID(v uint32) *PermissionMenuCreate 
 	return _c
 }
 
-// SetMenuID sets the "menu_id" field.
-func (_c *PermissionMenuCreate) SetMenuID(v uint32) *PermissionMenuCreate {
-	_c.mutation.SetMenuID(v)
+// SetFullPath sets the "full_path" field.
+func (_c *PermissionMenuCreate) SetFullPath(v string) *PermissionMenuCreate {
+	_c.mutation.SetFullPath(v)
+	return _c
+}
+
+// SetNillableFullPath sets the "full_path" field if the given value is not nil.
+func (_c *PermissionMenuCreate) SetNillableFullPath(v *string) *PermissionMenuCreate {
+	if v != nil {
+		_c.SetFullPath(*v)
+	}
 	return _c
 }
 
@@ -160,9 +168,6 @@ func (_c *PermissionMenuCreate) ExecX(ctx context.Context) {
 func (_c *PermissionMenuCreate) check() error {
 	if _, ok := _c.mutation.PermissionID(); !ok {
 		return &ValidationError{Name: "permission_id", err: errors.New(`ent: missing required field "PermissionMenu.permission_id"`)}
-	}
-	if _, ok := _c.mutation.MenuID(); !ok {
-		return &ValidationError{Name: "menu_id", err: errors.New(`ent: missing required field "PermissionMenu.menu_id"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := permissionmenu.IDValidator(v); err != nil {
@@ -230,9 +235,9 @@ func (_c *PermissionMenuCreate) createSpec() (*PermissionMenu, *sqlgraph.CreateS
 		_spec.SetField(permissionmenu.FieldPermissionID, field.TypeUint32, value)
 		_node.PermissionID = &value
 	}
-	if value, ok := _c.mutation.MenuID(); ok {
-		_spec.SetField(permissionmenu.FieldMenuID, field.TypeUint32, value)
-		_node.MenuID = &value
+	if value, ok := _c.mutation.FullPath(); ok {
+		_spec.SetField(permissionmenu.FieldFullPath, field.TypeString, value)
+		_node.FullPath = &value
 	}
 	return _node, _spec
 }
@@ -412,21 +417,21 @@ func (u *PermissionMenuUpsert) AddPermissionID(v uint32) *PermissionMenuUpsert {
 	return u
 }
 
-// SetMenuID sets the "menu_id" field.
-func (u *PermissionMenuUpsert) SetMenuID(v uint32) *PermissionMenuUpsert {
-	u.Set(permissionmenu.FieldMenuID, v)
+// SetFullPath sets the "full_path" field.
+func (u *PermissionMenuUpsert) SetFullPath(v string) *PermissionMenuUpsert {
+	u.Set(permissionmenu.FieldFullPath, v)
 	return u
 }
 
-// UpdateMenuID sets the "menu_id" field to the value that was provided on create.
-func (u *PermissionMenuUpsert) UpdateMenuID() *PermissionMenuUpsert {
-	u.SetExcluded(permissionmenu.FieldMenuID)
+// UpdateFullPath sets the "full_path" field to the value that was provided on create.
+func (u *PermissionMenuUpsert) UpdateFullPath() *PermissionMenuUpsert {
+	u.SetExcluded(permissionmenu.FieldFullPath)
 	return u
 }
 
-// AddMenuID adds v to the "menu_id" field.
-func (u *PermissionMenuUpsert) AddMenuID(v uint32) *PermissionMenuUpsert {
-	u.Add(permissionmenu.FieldMenuID, v)
+// ClearFullPath clears the value of the "full_path" field.
+func (u *PermissionMenuUpsert) ClearFullPath() *PermissionMenuUpsert {
+	u.SetNull(permissionmenu.FieldFullPath)
 	return u
 }
 
@@ -628,24 +633,24 @@ func (u *PermissionMenuUpsertOne) UpdatePermissionID() *PermissionMenuUpsertOne 
 	})
 }
 
-// SetMenuID sets the "menu_id" field.
-func (u *PermissionMenuUpsertOne) SetMenuID(v uint32) *PermissionMenuUpsertOne {
+// SetFullPath sets the "full_path" field.
+func (u *PermissionMenuUpsertOne) SetFullPath(v string) *PermissionMenuUpsertOne {
 	return u.Update(func(s *PermissionMenuUpsert) {
-		s.SetMenuID(v)
+		s.SetFullPath(v)
 	})
 }
 
-// AddMenuID adds v to the "menu_id" field.
-func (u *PermissionMenuUpsertOne) AddMenuID(v uint32) *PermissionMenuUpsertOne {
+// UpdateFullPath sets the "full_path" field to the value that was provided on create.
+func (u *PermissionMenuUpsertOne) UpdateFullPath() *PermissionMenuUpsertOne {
 	return u.Update(func(s *PermissionMenuUpsert) {
-		s.AddMenuID(v)
+		s.UpdateFullPath()
 	})
 }
 
-// UpdateMenuID sets the "menu_id" field to the value that was provided on create.
-func (u *PermissionMenuUpsertOne) UpdateMenuID() *PermissionMenuUpsertOne {
+// ClearFullPath clears the value of the "full_path" field.
+func (u *PermissionMenuUpsertOne) ClearFullPath() *PermissionMenuUpsertOne {
 	return u.Update(func(s *PermissionMenuUpsert) {
-		s.UpdateMenuID()
+		s.ClearFullPath()
 	})
 }
 
@@ -1012,24 +1017,24 @@ func (u *PermissionMenuUpsertBulk) UpdatePermissionID() *PermissionMenuUpsertBul
 	})
 }
 
-// SetMenuID sets the "menu_id" field.
-func (u *PermissionMenuUpsertBulk) SetMenuID(v uint32) *PermissionMenuUpsertBulk {
+// SetFullPath sets the "full_path" field.
+func (u *PermissionMenuUpsertBulk) SetFullPath(v string) *PermissionMenuUpsertBulk {
 	return u.Update(func(s *PermissionMenuUpsert) {
-		s.SetMenuID(v)
+		s.SetFullPath(v)
 	})
 }
 
-// AddMenuID adds v to the "menu_id" field.
-func (u *PermissionMenuUpsertBulk) AddMenuID(v uint32) *PermissionMenuUpsertBulk {
+// UpdateFullPath sets the "full_path" field to the value that was provided on create.
+func (u *PermissionMenuUpsertBulk) UpdateFullPath() *PermissionMenuUpsertBulk {
 	return u.Update(func(s *PermissionMenuUpsert) {
-		s.AddMenuID(v)
+		s.UpdateFullPath()
 	})
 }
 
-// UpdateMenuID sets the "menu_id" field to the value that was provided on create.
-func (u *PermissionMenuUpsertBulk) UpdateMenuID() *PermissionMenuUpsertBulk {
+// ClearFullPath clears the value of the "full_path" field.
+func (u *PermissionMenuUpsertBulk) ClearFullPath() *PermissionMenuUpsertBulk {
 	return u.Update(func(s *PermissionMenuUpsert) {
-		s.UpdateMenuID()
+		s.ClearFullPath()
 	})
 }
 

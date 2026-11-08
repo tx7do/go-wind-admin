@@ -543,6 +543,15 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 	return nil
 }
 
+// listSystemPermissionIDs 按 code 前缀解析系统种子权限 id 集合（绑定表清理的
+// 保留集）。权限行自身由 TruncateBizPermissions 按 code 前缀保护，绑定保护集
+// 与之同源，不再依赖"种子权限=1/2/3"的硬编码 id 假设。
+func (r *PermissionRepo) listSystemPermissionIDs(ctx context.Context) ([]uint32, error) {
+	return r.entClient.Client().Permission.Query().
+		Where(permission.CodeHasPrefix(constants.SystemPermissionCodePrefix)).
+		IDs(ctx)
+}
+
 // Truncate 清空表数据
 func (r *PermissionRepo) Truncate(ctx context.Context) error {
 	if _, err := r.entClient.Client().Permission.Delete().Exec(ctx); err != nil {
@@ -550,11 +559,12 @@ func (r *PermissionRepo) Truncate(ctx context.Context) error {
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
 
-	if err := r.permissionApiRepo.Truncate(ctx); err != nil {
+	// 权限行已全清，绑定全清（不再保留任何权限的绑定）
+	if err := r.permissionApiRepo.TruncateExcept(ctx, nil); err != nil {
 		return err
 	}
 
-	if err := r.permissionMenuRepo.Truncate(ctx); err != nil {
+	if err := r.permissionMenuRepo.TruncateExcept(ctx, nil); err != nil {
 		return err
 	}
 
@@ -577,9 +587,14 @@ func (r *PermissionRepo) CleanPermissionsByCodes(ctx context.Context, codes []st
 	return nil
 }
 
-// CleanApiPermissions 清理API相关权限
+// CleanApiPermissions 清理API相关权限绑定：保留系统种子权限（按 code 前缀解析）
+// 的绑定——业务权限的绑定由权限同步按代码转换重建，种子权限的绑定不动。
 func (r *PermissionRepo) CleanApiPermissions(ctx context.Context) error {
-	return r.permissionApiRepo.Truncate(ctx)
+	systemIDs, err := r.listSystemPermissionIDs(ctx)
+	if err != nil {
+		return err
+	}
+	return r.permissionApiRepo.TruncateExcept(ctx, systemIDs)
 }
 
 // CleanDataPermissions 清理数据权限
@@ -587,9 +602,14 @@ func (r *PermissionRepo) CleanDataPermissions(ctx context.Context) error {
 	return nil
 }
 
-// CleanMenuPermissions 清理菜单相关权限
+// CleanMenuPermissions 清理菜单相关权限绑定：保留系统种子权限（按 code 前缀
+// 解析）的绑定，语义同 CleanApiPermissions。
 func (r *PermissionRepo) CleanMenuPermissions(ctx context.Context) error {
-	return r.permissionMenuRepo.Truncate(ctx)
+	systemIDs, err := r.listSystemPermissionIDs(ctx)
+	if err != nil {
+		return err
+	}
+	return r.permissionMenuRepo.TruncateExcept(ctx, systemIDs)
 }
 
 // TruncateBizPermissions 清理业务权限
@@ -622,12 +642,13 @@ func (r *PermissionRepo) ListApiEndpointsByPermissionIDs(ctx context.Context, pe
 	return endpoints, nil
 }
 
-// ListMenuIDsByPermissionIDs 列出权限关联的菜单ID列表
-func (r *PermissionRepo) ListMenuIDsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {
-	apiIDs, err := r.permissionMenuRepo.ListMenuIDs(ctx, permissionIDs)
+// ListMenuFullPathsByPermissionIDs 列出权限关联的菜单全路径快照（菜单身份键；
+// 绑定表即真相，导航/回显链路自行反解回 id）
+func (r *PermissionRepo) ListMenuFullPathsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]string, error) {
+	paths, err := r.permissionMenuRepo.ListMenuFullPaths(ctx, permissionIDs)
 	if err != nil {
 		return nil, err
 	}
 
-	return apiIDs, nil
+	return paths, nil
 }

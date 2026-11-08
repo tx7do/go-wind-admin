@@ -279,9 +279,9 @@ func TestRoleRepoSqlite_ListAndGet(t *testing.T) {
 	endpoints, err := repo.GetRolePermissionApiEndpoints(ctx, roleAID)
 	require.NoError(t, err)
 	require.Empty(t, endpoints, "未关联权限的角色应无 API 端点快照")
-	menuIDs, err := repo.GetRolePermissionMenuIDs(ctx, roleAID)
+	menuPaths, err := repo.GetRolePermissionMenuFullPaths(ctx, roleAID)
 	require.NoError(t, err)
-	require.Empty(t, menuIDs, "未关联权限的角色应无菜单 ID")
+	require.Empty(t, menuPaths, "未关联权限的角色应无菜单全路径快照")
 }
 
 // TestRoleRepoSqlite_Update 验证 RoleRepo.Update 在单字段 updateMask 下

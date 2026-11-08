@@ -32,8 +32,8 @@ type PermissionMenu struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 权限ID（关联sys_permissions.id）
 	PermissionID *uint32 `json:"permission_id,omitempty"`
-	// 菜单ID（关联sys_menus.id）
-	MenuID       *uint32 `json:"menu_id,omitempty"`
+	// 菜单全路径（菜单身份键绑定快照）
+	FullPath     *string `json:"full_path,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -42,8 +42,10 @@ func (*PermissionMenu) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case permissionmenu.FieldID, permissionmenu.FieldCreatedBy, permissionmenu.FieldUpdatedBy, permissionmenu.FieldDeletedBy, permissionmenu.FieldPermissionID, permissionmenu.FieldMenuID:
+		case permissionmenu.FieldID, permissionmenu.FieldCreatedBy, permissionmenu.FieldUpdatedBy, permissionmenu.FieldDeletedBy, permissionmenu.FieldPermissionID:
 			values[i] = new(sql.NullInt64)
+		case permissionmenu.FieldFullPath:
+			values[i] = new(sql.NullString)
 		case permissionmenu.FieldCreatedAt, permissionmenu.FieldUpdatedAt, permissionmenu.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
@@ -116,12 +118,12 @@ func (_m *PermissionMenu) assignValues(columns []string, values []any) error {
 				_m.PermissionID = new(uint32)
 				*_m.PermissionID = uint32(value.Int64)
 			}
-		case permissionmenu.FieldMenuID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field menu_id", values[i])
+		case permissionmenu.FieldFullPath:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field full_path", values[i])
 			} else if value.Valid {
-				_m.MenuID = new(uint32)
-				*_m.MenuID = uint32(value.Int64)
+				_m.FullPath = new(string)
+				*_m.FullPath = value.String
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -194,9 +196,9 @@ func (_m *PermissionMenu) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.MenuID; v != nil {
-		builder.WriteString("menu_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
+	if v := _m.FullPath; v != nil {
+		builder.WriteString("full_path=")
+		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')
 	return builder.String()

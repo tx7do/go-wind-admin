@@ -301,6 +301,20 @@ func (r *ApiRepo) ListAllIDs(ctx context.Context) ([]uint32, error) {
 	return ids, nil
 }
 
+// ListAll 列出全部 API 行。与 data 栈同名方法语义一致。
+func (r *ApiRepo) ListAll(ctx context.Context) ([]*permissionV1.Api, error) {
+	var entities []*models.Api
+	if err := r.client.DB.WithContext(ctx).Model(&models.Api{}).Find(&entities).Error; err != nil {
+		r.log.Errorf(ctx, "list all apis failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("list all apis failed")
+	}
+	dtos := make([]*permissionV1.Api, 0, len(entities))
+	for _, e := range entities {
+		dtos = append(dtos, r.mapper.ToDTO(e))
+	}
+	return dtos, nil
+}
+
 // CascadeDeleteBindings 按 (path, method) 级联清理权限绑定快照：API 行删除后
 // 调用，消灭孤儿绑定。与 data 栈同名方法语义一致。
 func (r *ApiRepo) CascadeDeleteBindings(ctx context.Context, path, method string) error {

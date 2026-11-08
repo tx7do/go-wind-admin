@@ -46,7 +46,7 @@ type AiContentService struct {
 	usageRepo    *data.AiUsageLogRepo
 	menuRepo     *data.MenuRepo
 	roleRepo     interface {
-		GetRolesPermissionMenuIDs(ctx context.Context, roleIDs []uint32) ([]uint32, error)
+		GetRolesPermissionMenuFullPaths(ctx context.Context, roleIDs []uint32) ([]string, error)
 	}
 	userRepo interface {
 		Get(ctx context.Context, req *identityV1.GetUserRequest) (*identityV1.User, error)
@@ -475,7 +475,12 @@ func (s *AiContentService) visibleMenuIDs(ctx context.Context, operator *authent
 	if user == nil || len(user.GetRoleIds()) == 0 {
 		return []uint32{}, nil
 	}
-	return s.roleRepo.GetRolesPermissionMenuIDs(ctx, user.GetRoleIds())
+	// 菜单授权绑定存全路径快照：先取路径，再反解回当前菜单 id
+	paths, err := s.roleRepo.GetRolesPermissionMenuFullPaths(ctx, user.GetRoleIds())
+	if err != nil {
+		return nil, err
+	}
+	return s.menuRepo.ResolveMenuIDsByFullPaths(ctx, paths)
 }
 
 // RebuildSearchIndex 重建搜索索引 RPC。

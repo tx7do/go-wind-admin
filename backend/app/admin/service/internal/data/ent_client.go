@@ -67,6 +67,11 @@ func NewEntClient(ctx *bootstrap.Context) (*entCrud.EntClient[*ent.Client], func
 					// 权限页重新勾选保存即自愈；旧列残留不影响新键运行。
 					l.Errorf(context.Background(), "[ENT] permission api endpoint backfill failed: %v", err)
 				}
+				if err := MigratePermissionMenuFullPaths(ctx.Context(), db, drv.Dialect()); err != nil {
+					// 不阻断（温和迁移原则）：回填失败的绑定 full_path 为空，导航
+					// 反查时跳过、权限页重新勾选保存即自愈；旧列残留不影响新键运行。
+					l.Errorf(context.Background(), "[ENT] permission menu full path backfill failed: %v", err)
+				}
 			}
 		}
 

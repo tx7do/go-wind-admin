@@ -281,11 +281,17 @@ func (r *PermissionApiRepo) DeleteByEndpoints(ctx context.Context, tx *gormDB.DB
 	return nil
 }
 
-// Truncate 清空绑定表（保留种子权限 1/2/3 的绑定）——权限同步重建流程专用。
-func (r *PermissionApiRepo) Truncate(ctx context.Context) error {
-	if err := r.client.DB.WithContext(ctx).
-		Where("permission_id NOT IN ?", []uint32{1, 2, 3}).
-		Delete(&models.PermissionApi{}).Error; err != nil {
+// TruncateExcept 清空绑定表但保留指定权限的绑定。keepPermissionIDs 由调用方按
+// 系统权限 code 前缀解析（不再依赖"种子权限=1/2/3"的硬编码 id 假设）；为空 =
+// 全清。与 data 栈同名方法语义一致。
+func (r *PermissionApiRepo) TruncateExcept(ctx context.Context, keepPermissionIDs []uint32) error {
+	db := r.client.DB.WithContext(ctx)
+	if len(keepPermissionIDs) > 0 {
+		db = db.Where("permission_id NOT IN ?", keepPermissionIDs)
+	} else {
+		db = db.Where("1 = 1")
+	}
+	if err := db.Delete(&models.PermissionApi{}).Error; err != nil {
 		r.log.Errorf(ctx, "failed to truncate permission api table: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("truncate failed")
 	}
