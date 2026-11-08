@@ -62,10 +62,12 @@
 
 <script setup lang="ts">
 import { ref, type Component } from "vue";
-import { ElDrawer, ElButton } from "element-plus";
+import { ElDrawer, ElButton, ElMessage } from "element-plus";
 import { RefreshRight, Close, CopyDocument, SwitchButton } from "@element-plus/icons-vue";
 import { useI18n } from "@/core/i18n";
-import { resetPreferences } from "../../index";
+import { preferencesManager, resetPreferences } from "../../index";
+import { defaultPreferences } from "../../config/default";
+import { diffDeep } from "../../utils/diff";
 import { useAuth } from "@/composables/use-auth";
 import { DRAWER_WIDTH } from "@/constants";
 
@@ -111,9 +113,18 @@ function handleReset() {
   resetPreferences();
 }
 
-function handleCopy() {
-  // TODO: 实现复制偏好设置功能
-  console.log("复制偏好设置");
+// 对齐 react/vben 的复制语义：复制「与出厂默认的增量」而非全量快照，
+// 产物是可回贴的 overrides 对象（diffDeep 见 core/preferences/utils/diff.ts）。
+async function handleCopy() {
+  const current = preferencesManager.getPreferences();
+  const overrides = diffDeep(defaultPreferences, current);
+  try {
+    await navigator.clipboard.writeText(JSON.stringify(overrides, null, 2));
+    ElMessage.success(t("preferences.actions.copyPreferencesSuccess"));
+  } catch (error) {
+    console.error("[PreferencesPanel] 复制偏好设置失败:", error);
+    ElMessage.error(t("preferences.actions.copyPreferencesFailed"));
+  }
 }
 
 async function handleLogout() {

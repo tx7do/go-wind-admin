@@ -9,7 +9,9 @@
   "actions": {
     "reset": "重置偏好",
     "close": "关闭",
-    "copySettings": "复制设置",
+    "copySettings": "复制偏好设置",
+    "copyPreferencesSuccess": "复制成功，偏好增量已写入剪贴板",
+    "copyPreferencesFailed": "复制失败，剪贴板不可用",
     "clearCacheAndLogout": "清除缓存并退出"
   },
   "tabs": {

@@ -9,7 +9,9 @@
   "actions": {
     "reset": "Reset Preferences",
     "close": "Close",
-    "copySettings": "Copy Settings",
+    "copySettings": "Copy Preferences",
+    "copyPreferencesSuccess": "Copied: preference diff is now on your clipboard",
+    "copyPreferencesFailed": "Copy failed: clipboard unavailable",
     "clearCacheAndLogout": "Clear Cache & Logout"
   },
   "tabs": {
