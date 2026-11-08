@@ -258,6 +258,22 @@ const handleInputKeydown: (evt: KeyboardEvent | Event) => any = (evt) => {
   background: var(--el-fill-color-lighter);
 }
 
+/* 窄视口收成纯图标（2026-11-08）：胶囊全宽 ~166px 是头部最贵的大件，挤出空间时
+   面包屑被压到「图标+单字」药丸（用户截图的「概览📊 分」）。文本+kbd 隐藏后胶囊
+   ~40px，面包屑拿回自然宽度（三项全显）。aria-label 已有，可发现性不受影响。
+   头部横跨全视口，视口 MQ ≈ 头部宽度（侧栏展开时会提前触发，属可接受近似）。 */
+@media (max-width: 1000px) {
+  .command-palette-trigger {
+    padding: 0 9px;
+    gap: 0;
+  }
+
+  .command-palette-trigger__text,
+  .command-palette-trigger__kbd {
+    display: none;
+  }
+}
+
 .command-palette-dialog {
   display: flex;
   flex-direction: column;

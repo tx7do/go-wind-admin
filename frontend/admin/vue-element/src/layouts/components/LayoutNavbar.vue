@@ -142,29 +142,31 @@ function handleSettingsClick() {
     align-items: center;
     flex: 1;
     min-width: 0;
+    gap: 4px;
   }
 
   &__right {
     display: flex;
     align-items: center;
     flex-shrink: 0;
+    gap: 4px; // 对齐 react 间距基准：24px 按钮 + 4px 间隔 = pitch 28
   }
 }
 
 // ==================== 通用操作按钮 ====================
+// 尺寸/间距基准对齐 react 顶栏（2026-11-08 实测：24×24 按钮、图标 14、pitch 28 = 24+gap4）
 .navbar-action {
   position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 40px;
-  height: 32px; // 与面包屑高度匹配
-  padding: 0 8px;
+  min-width: 24px;
+  height: 24px;
+  padding: 0;
   cursor: pointer;
   border-radius: 8px;
   transition: all 0.2s ease;
   background: transparent;
-  margin-top: 2px; // 微调按钮位置，与面包屑视觉对齐
 
   > * {
     display: flex;
@@ -178,20 +180,19 @@ function handleSettingsClick() {
     align-items: center;
     justify-content: center;
     width: 100%;
-    height: 40px;
+    height: 24px;
   }
 
   :deep(.svg-local-icon) {
-    font-size: 18px;
+    font-size: 14px;
     line-height: 1;
     color: var(--el-text-color-regular);
     transition: all 0.2s ease;
   }
 
-  // hover 态：柔和背景 + 图标主色高亮 + 轻微放大
+  // hover 态：柔和背景 + 图标主色高亮（react 同款，无缩放跳动）
   &:hover {
     background: rgba(0, 0, 0, 0.04);
-    transform: scale(1.05);
 
     :deep(.svg-local-icon) {
       color: var(--gowind-primary-text);
