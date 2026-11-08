@@ -1,6 +1,6 @@
 <template>
   <div ref="wrapRef" v-show="visible && !hiddenByWidth" class="breadcrumb-wrap">
-    <el-breadcrumb class="breadcrumb" :class="breadcrumbClass">
+    <el-breadcrumb class="breadcrumb" :class="breadcrumbClass" separator=">">
     <!-- 首页图标 -->
     <el-breadcrumb-item
       v-if="breadcrumbPrefs.showHome"
@@ -10,7 +10,7 @@
       <SvgIcon
         v-if="breadcrumbPrefs.showIcon"
         icon="lucide:house"
-        :size="16"
+        :size="14"
         class="breadcrumb__icon"
       />
       <span class="breadcrumb__text">{{ $t("common.breadcrumb.home") }}</span>
@@ -23,7 +23,7 @@
         <SvgIcon
           v-if="breadcrumbPrefs.showIcon && item.meta?.icon"
           :icon="item.meta.icon as string"
-          :size="16"
+          :size="14"
           class="breadcrumb__item-icon"
         />
         <span class="breadcrumb__text">{{
@@ -34,7 +34,7 @@
         <SvgIcon
           v-if="breadcrumbPrefs.showIcon && item.meta?.icon"
           :icon="item.meta.icon as string"
-          :size="16"
+          :size="14"
           class="breadcrumb__item-icon"
         />
         <span class="breadcrumb__text">{{
@@ -168,9 +168,11 @@ onBeforeMount(() => {
 </script>
 
 <style lang="scss" scoped>
-// 过窄隐藏的测量壳：可收缩到头部分配宽，内部 el-breadcrumb 溢出量即「自然宽 − 可用宽」
+// 过窄隐藏的测量壳：可收缩到头部分配宽，内部 el-breadcrumb 溢出量即「自然宽 − 可用宽」；
+// align-items:center 修正 EP 根元素行高把壳撑高后内容顶在上方的不居中（实测 dy −4.3px）
 .breadcrumb-wrap {
   display: flex;
+  align-items: center;
   min-width: 0;
   overflow: hidden;
 }
@@ -178,7 +180,7 @@ onBeforeMount(() => {
 .breadcrumb {
   display: flex;
   align-items: center;
-  font-size: 14px;
+  font-size: 13px;
 
   // background 风格
   &--background {
@@ -208,8 +210,8 @@ onBeforeMount(() => {
 
   &__icon,
   &__item-icon {
-    width: 16px;
-    height: 16px;
+    width: 14px;
+    height: 14px;
     flex-shrink: 0;
     color: currentColor;
   }
@@ -224,6 +226,11 @@ onBeforeMount(() => {
 .breadcrumb {
   // 与按钮高度匹配，line-height: normal 让 flex 的 align-items: center 负责垂直居中
   line-height: normal !important;
+
+  // 垂直居中修正（2026-11-08）：_layouts.scss 给 .breadcrumb 留了 margin-bottom 8px
+  // （筛选区旧排版遗产），flex 头部按 margin 盒居中 → 可见盒顶在上沿（实测 dy −4.3px）。
+  // 归零后可见盒与按钮同中心。
+  margin-bottom: 0 !important;
 
   // ======== 窄屏单行化（2026-11-08，react 3223e3f5 同款根修） ========
   // 头部可用宽一窄时，EP 面包屑的项被压到两字符宽、CJK 逐字换行竖排成
@@ -280,12 +287,12 @@ onBeforeMount(() => {
     align-items: center;
     gap: 4px;
     font-weight: 400 !important;
-    font-size: 15px !important; // 从 14px 增大到 15px
+    font-size: 13px !important; // 对齐 react 面包屑基准字号（2026-11-08，原 15px）
     color: var(--el-text-color-regular) !important;
     transition: color 0.2s ease;
     line-height: normal !important;
     height: auto !important;
-    padding: 0 4px; // 与按钮视觉对齐
+    padding: 0; // 间距交给分隔符 margin，对齐 react（antd 分隔符 padding 0 8px）
   }
 
   // 当前页（最后一项）：主文字色 + 半粗体，视觉焦点
@@ -307,6 +314,7 @@ onBeforeMount(() => {
 
   // 分隔符
   .el-breadcrumb__separator {
+    margin: 0 8px; // 对齐 react（antd 分隔符 padding 0 8px，原 EP 默认 0 9px）
     color: var(--el-text-color-secondary);
   }
 

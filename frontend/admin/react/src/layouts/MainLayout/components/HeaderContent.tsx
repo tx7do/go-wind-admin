@@ -256,6 +256,54 @@ export const HeaderContent = ({
   const breadcrumbPreferences = usePreferencesStore((state) => state.preferences.breadcrumb);
   const breadcrumbStyleType = breadcrumbPreferences?.styleType ?? 'normal';
 
+  // ======== 面包屑过窄整体隐藏（对齐 vben：宁可无面包屑，不要挤压/截断） ========
+  // 自然宽（wrap.scrollWidth）> 头部分配宽（wrap.clientWidth）→ 整体隐藏
+  // （visibility:hidden + width:0，不占位）；容器变宽到能容纳上次自然宽 → 恢复。
+  // 隐藏态下 scrollWidth 仍等于自然宽，测量链路不断。双观测：自身 + 父容器。
+  const breadcrumbWrapRef = useRef<HTMLDivElement | null>(null);
+  const breadcrumbHiddenRef = useRef(false);
+  const breadcrumbNaturalRef = useRef(0);
+  const breadcrumbCheckRef = useRef<(() => void) | null>(null);
+  const [breadcrumbHidden, setBreadcrumbHidden] = useState(false);
+
+  useEffect(() => {
+    const el = breadcrumbWrapRef.current;
+    if (!el || typeof ResizeObserver === 'undefined') return;
+    const check = () => {
+      // 判据 = 「文本层是否被截断」：内层面包屑自带收缩+省略号（3223e3f5），挤压会被
+      // 它吸收，wrap/内层的 scrollWidth 永不溢出——只要任一文案 span 被截断
+      // （scrollWidth > clientWidth），就整体隐藏（对齐 vben：宁可无面包屑）
+      const inner = el.querySelector('nav.ant-breadcrumb') ?? el;
+      const textSpans = Array.from(inner.querySelectorAll('.ant-breadcrumb-link span'));
+      const truncated = textSpans.some((s) => s.scrollWidth > s.clientWidth + 1);
+      const overflows = inner.scrollWidth > el.clientWidth + 1;
+      const natural = Math.max(
+        inner.scrollWidth,
+        el.scrollWidth,
+        ...textSpans.map((s) => s.scrollWidth),
+        1
+      );
+      if (!breadcrumbHiddenRef.current) {
+        if (truncated || overflows) {
+          breadcrumbNaturalRef.current = natural;
+          breadcrumbHiddenRef.current = true;
+          setBreadcrumbHidden(true);
+        }
+      } else {
+        const parentW = el.parentElement?.clientWidth ?? natural;
+        if (parentW >= natural - 1) {
+          breadcrumbHiddenRef.current = false;
+          setBreadcrumbHidden(false);
+        }
+      }
+    };
+    breadcrumbCheckRef.current = check;
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    if (el.parentElement) ro.observe(el.parentElement);
+    return () => ro.disconnect();
+  }, []);
+
   // 默认头像（与 ele/vben 三端统一，取 preferences.app.defaultAvatar）
   const defaultAvatar = usePreferencesStore((state) => state.preferences.app.defaultAvatar);
 
@@ -329,6 +377,12 @@ export const HeaderContent = ({
     breadcrumbPreferences?.showIcon,
     breadcrumbPreferences?.showHome,
   ]);
+
+  // 路由切换 → 项文案变化 → 自然宽变化：显式复检（ResizeObserver 不感知文本变化，
+  // 隐藏标签页里它也不推进，靠这条兜底）
+  useEffect(() => {
+    breadcrumbCheckRef.current?.();
+  }, [breadcrumbItems]);
 
   // 语言切换
   const toggleLocale = (newLocale: SupportedLanguagesType) => {
@@ -863,7 +917,18 @@ export const HeaderContent = ({
           }}
         />
 
-        {/* 面包屑 */}
+        {/* 面包屑（过窄整体隐藏，见上方 hook 注释） */}
+        <div
+          ref={breadcrumbWrapRef}
+          style={{
+            display: 'flex',
+            minWidth: 0,
+            overflow: 'hidden',
+            ...(breadcrumbHidden
+              ? { visibility: 'hidden', width: 0, flexShrink: 0 }
+              : {}),
+          }}
+        >
         <Breadcrumb
           separator={breadcrumbStyleType === 'background' ? '/' : '>'}
           style={
@@ -927,6 +992,7 @@ export const HeaderContent = ({
             ),
           }))}
         />
+        </div>
       </div>
 
       {/* ========== 右侧区域：搜索 + 设置 + 主题 + 语言 + 全屏 + 通知 + 头像 ========== */}
