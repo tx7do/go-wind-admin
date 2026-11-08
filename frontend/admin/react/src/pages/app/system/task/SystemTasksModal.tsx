@@ -1,6 +1,7 @@
-import { Modal, Table, Tag, Typography } from 'antd';
-import type { ColumnsType } from 'antd/es/table';
+import { Modal, Tag, Typography } from 'antd';
+import type { ProColumns } from '@ant-design/pro-components';
 import { useTranslation } from 'react-i18next';
+import ListTable from '@/components/common/ListTable';
 import { useInspectSystemTasks } from '@/api/hooks/task-monitor';
 import { formatDateTime } from '@/utils/date';
 
@@ -26,37 +27,38 @@ const SystemTasksModal = ({
   const { t } = useTranslation('task');
   const inspectQuery = useInspectSystemTasks({ enabled: open });
 
-  const scheduleColumns: ColumnsType<Record<string, any>> = [
+  const scheduleColumns: ProColumns<Record<string, any>>[] = [
     {
       title: t('sysTaskType'),
       dataIndex: 'taskType',
-      render: (v: string) => <Tag color="geekblue">{v}</Tag>,
+      render: (_, record) => <Tag color="geekblue">{record.taskType}</Tag>,
     },
     { title: t('sysTaskCron'), dataIndex: 'cronSpec', width: 130 },
     {
       title: t('sysTaskNext'),
       dataIndex: 'nextEnqueueAt',
       width: 170,
-      render: (v?: string) => (v ? formatDateTime(v) : '-'),
+      render: (_, record) =>
+        record.nextEnqueueAt ? formatDateTime(record.nextEnqueueAt) : '-',
     },
     {
       title: t('sysTaskPrev'),
       dataIndex: 'prevEnqueueAt',
       width: 170,
-      render: (v?: string) =>
-        v ? (
-          formatDateTime(v)
+      render: (_, record) =>
+        record.prevEnqueueAt ? (
+          formatDateTime(record.prevEnqueueAt)
         ) : (
           <Text type="secondary">{t('sysTaskNeverRun')}</Text>
         ),
     },
   ];
 
-  const summaryColumns: ColumnsType<Record<string, any>> = [
+  const summaryColumns: ProColumns<Record<string, any>>[] = [
     {
       title: t('sysTaskType'),
       dataIndex: 'taskType',
-      render: (v: string) => <Tag color="geekblue">{v}</Tag>,
+      render: (_, record) => <Tag color="geekblue">{record.taskType}</Tag>,
     },
     { title: t('sysTaskActive'), dataIndex: 'active', width: 70, align: 'center' },
     { title: t('sysTaskPending'), dataIndex: 'pending', width: 80, align: 'center' },
@@ -65,25 +67,27 @@ const SystemTasksModal = ({
       dataIndex: 'retry',
       width: 70,
       align: 'center',
-      render: (v: number) => (v > 0 ? <Tag color="warning">{v}</Tag> : v),
+      render: (_, record) =>
+        record.retry > 0 ? <Tag color="warning">{record.retry}</Tag> : record.retry,
     },
     {
       title: t('sysTaskArchived'),
       dataIndex: 'archived',
       width: 80,
       align: 'center',
-      render: (v: number) => (v > 0 ? <Tag color="error">{v}</Tag> : v),
+      render: (_, record) =>
+        record.archived > 0 ? <Tag color="error">{record.archived}</Tag> : record.archived,
     },
   ];
 
-  const failureColumns: ColumnsType<Record<string, any>> = [
+  const failureColumns: ProColumns<Record<string, any>>[] = [
     { title: t('sysTaskType'), dataIndex: 'taskType', width: 160 },
     {
       title: t('sysTaskState'),
       dataIndex: 'state',
       width: 90,
-      render: (v: string) => (
-        <Tag color={v === 'archived' ? 'error' : 'warning'}>{v}</Tag>
+      render: (_, record) => (
+        <Tag color={record.state === 'archived' ? 'error' : 'warning'}>{record.state}</Tag>
       ),
     },
     { title: t('sysTaskLastError'), dataIndex: 'lastError', ellipsis: true },
@@ -91,14 +95,15 @@ const SystemTasksModal = ({
       title: t('sysTaskFailedAt'),
       dataIndex: 'lastFailedAt',
       width: 170,
-      render: (v?: string) => (v ? formatDateTime(v) : '-'),
+      render: (_, record) =>
+        record.lastFailedAt ? formatDateTime(record.lastFailedAt) : '-',
     },
     {
       title: t('sysTaskRetried'),
       key: 'retried',
       width: 90,
       align: 'center',
-      render: (_: unknown, r: any) => `${r.retried ?? 0}/${r.maxRetry ?? 0}`,
+      render: (_, record) => `${record.retried ?? 0}/${record.maxRetry ?? 0}`,
     },
   ];
 
@@ -130,9 +135,12 @@ const SystemTasksModal = ({
               {t('sysTaskQueueHint', { queue: inspectQuery.data.queue ?? '' })}
             </Text>
           </Typography.Title>
-          <Table
+          <ListTable
             columns={scheduleColumns}
             dataSource={(inspectQuery.data.schedules ?? []) as Record<string, any>[]}
+            search={false}
+            options={false}
+            toolBarRender={false}
             pagination={false}
             rowKey="taskType"
             size="small"
@@ -142,9 +150,12 @@ const SystemTasksModal = ({
           <Typography.Title level={5} style={{ margin: '20px 0 8px' }}>
             {t('sysTaskStates')}
           </Typography.Title>
-          <Table
+          <ListTable
             columns={summaryColumns}
             dataSource={summaries as Record<string, any>[]}
+            search={false}
+            options={false}
+            toolBarRender={false}
             pagination={false}
             rowKey="taskType"
             size="small"
@@ -157,9 +168,12 @@ const SystemTasksModal = ({
           {failures.length === 0 ? (
             <Text type="secondary">{t('sysTaskNoFailures')}</Text>
           ) : (
-            <Table
+            <ListTable
               columns={failureColumns}
               dataSource={failures as Record<string, any>[]}
+              search={false}
+              options={false}
+              toolBarRender={false}
               pagination={false}
               rowKey={(r: any) =>
                 `${r.taskType}-${r.state}-${r.lastFailedAt ?? ''}-${r.retried ?? 0}`

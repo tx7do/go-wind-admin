@@ -133,7 +133,9 @@ const PrintTemplateManagement = () => {
     {
       title: t('action'),
       valueType: 'option',
-      width: 200,
+      // 编辑+复制+删除 三个图标+文字按钮实测需 212px，200 会被单元格 ellipsis
+      // 把「删除」裁成省略号（视觉上像多了个「…」触发器）
+      width: 220,
       fixed: 'right',
       render: (_, record) => (
         <TableActions
@@ -262,7 +264,10 @@ const PrintTemplateManagement = () => {
             cardBordered={false}
             scroll={{
               y: tableScrollY,
-              x: 1200,
+              // 与列宽总和保持一致（80+200+200+160+110+110+100+100+180+220）：声明值
+              // 小于实际列宽时，rc-table 给表头/表体的宽度基准不一致，固定右列的
+              // sticky 落点会差出一个滚动条宽度（表头比表体左偏，用户截图的「错位」）
+              x: 1460,
             }}
           />
         </div>

@@ -473,7 +473,7 @@ export function ListTable<
       components={mergedComponents}
       tableLayout={mergedTableLayout}
       actionRef={ownActionRef}
-      request={wrappedRequest}
+      request={request ? wrappedRequest : undefined}
       rowClassName={composedRowClassName}
       loading={{ ...(typeof loading === 'object' ? loading : {}), delay: LOADING_DELAY }}
       tableViewRender={tableViewRender}
