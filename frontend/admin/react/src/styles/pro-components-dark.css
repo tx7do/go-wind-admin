@@ -683,6 +683,41 @@ html[data-theme='dark'] .ant-modal .ant-input-number {
   background-color: #1c2128 !important;
 }
 
+/* 弹窗域默认（取消/次要）按钮：与弹窗面同层 #1C2128，仅靠边框区分——与上方输入类
+   控件同一教义。全局版本的重涂块原在「默认/取消按钮」节，已随其死亡一并移除
+   （死亡原因与抽屉/页面场景为何不需要补档，见该节留下的注释）。 */
+html[data-theme='dark'] .ant-modal .ant-btn-default {
+  background-color: #1c2128 !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  color: #f8fafc !important;
+}
+html[data-theme='dark'] .ant-modal .ant-btn-default:hover {
+  background-color: #262c36 !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  color: #f0f6fc !important;
+}
+
+/* 弹窗域内嵌表格（ListTable/ProTable 与原生 Table 通用）：面与弹窗面同层 #1C2128，
+   亮色无需这档（亮色 colorBgContainer=白=弹窗面，天然同层）。
+   特异度 (0,3,1) 压过同文件上文 `.ant-pro-table .ant-table` 的 (0,2,0)（两侧同
+   !important，按特异度分胜负）；占位行（暂无数据）随面同层。 */
+html[data-theme='dark'] .ant-modal .ant-table,
+html[data-theme='dark'] .ant-modal .ant-table-placeholder {
+  background-color: #1c2128 !important;
+}
+
+/* 弹窗域内 ProTable 不套列表卡壳：宿主卡描边/12px 圆角/20px 内缩是列表页
+   「搜索卡 + 列表卡」版式的产物，弹窗里叠排多张表时只留表格本体的四边框。
+   !important 对手是同文件上文的卡片描边色与卡体 padding 两条规则。 */
+.ant-modal .ant-pro-table > .ant-pro-card:not(.ant-pro-table-search) {
+  border: none !important;
+  border-radius: 0 !important;
+  overflow: visible;
+}
+.ant-modal .ant-pro-table > .ant-pro-card:not(.ant-pro-table-search) > .ant-pro-card-body {
+  padding: 0 !important;
+}
+
 /* ========== 暗黑模式：权限树/包裹区域背景 ========== */
 [data-theme='dark'] .ant-tree {
   background: transparent !important;
@@ -715,24 +750,14 @@ html[data-theme='dark'] .ant-modal .ant-input-number {
   border-color: var(--ant-color-primary) !important;
 }
 
-/* ========== 暗黑模式：默认/取消按钮（#1C2128 浮层色底） ==========
-   排除链同时覆盖旧 type API 类名（ant-btn-primary/danger/link/text）与
-   v6 color/variant API 类名——后者是 color="primary|orange|..." variant="outlined"
-   新增钮的载体，漏排除会被本规则连边框带文字盖成中性灰（暗色下与导出钮无法
-   区分）。用 [class*='ant-btn-color-'] 一网打尽全部预设色，新增色板不再回头改这里。 */
-[data-theme='dark'] .ant-btn-default:not([class*='ant-btn-color-']),
-[data-theme='dark'] .ant-btn:not(.ant-btn-primary):not(.ant-btn-danger):not(.ant-btn-link):not(.ant-btn-text):not([class*='ant-btn-color-']) {
-  background-color: #1c2128 !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  color: #f8fafc !important;
-}
-
-[data-theme='dark'] .ant-btn-default:not([class*='ant-btn-color-']):hover,
-[data-theme='dark'] .ant-btn:not(.ant-btn-primary):not(.ant-btn-danger):not(.ant-btn-link):not(.ant-btn-text):not([class*='ant-btn-color-']):hover {
-  background-color: #262c36 !important;
-  border-color: rgba(255, 255, 255, 0.22) !important;
-  color: #f0f6fc !important;
-}
+/* ========== 暗黑模式：默认/取消按钮 ==========
+   历史版本这里有一条全局重涂规则（默认按钮 → #1C2128 浮层色底），其排除守卫
+   `:not([class*='ant-btn-color-'])` 意图放过 color="primary|orange|..." 等预设色钮，
+   但 antd v6 给**每个**按钮都发 ant-btn-color-default/primary/... 类 ⇒ 两条选择器
+   恒不命中，整块规则死亡（2026-11-08 暗色 5 弹窗实测：取消钮读到 token
+   colorBgContainer #111827）。按钮回落 token 后，抽屉/页面场景 #111827 恰为所在
+   表面、与"控件与所在表面同层"教义一致，唯独弹窗域（面 #1C2128）成了更暗一档的
+   倒置内嵌——已在下方「Modal / 弹窗」节补弹窗作用域的同层规则，死块移除。 */
 
 
 /* ========== Input 文字垂直居中 ========== */
