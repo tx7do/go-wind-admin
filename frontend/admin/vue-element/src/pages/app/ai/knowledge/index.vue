@@ -69,7 +69,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
         prop: "action",
         label: t("pages.ai_knowledge.action"),
         fixed: "right",
-        width: 240,
+        width: 170,
         cellType: "tool",
         buttons: [
           { name: "docs", label: t("pages.ai_knowledge.docs"), icon: "lucide:file-text" },

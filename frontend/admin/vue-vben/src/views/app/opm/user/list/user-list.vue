@@ -256,7 +256,7 @@ const gridOptions: VxeGridProps<User> = {
       fixed: 'right',
       slots: { default: 'action' },
       // 平台侧最多 4 项（详情/编辑/重置MFA/更多），文本+图标实测约 250px
-      width: 310,
+      width: 220,
     },
   ] satisfies VxeGridProps<User>['columns']).filter(
     (col) => !userHiddenFields.has(col.field as string),

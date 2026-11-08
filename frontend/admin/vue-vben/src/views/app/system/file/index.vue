@@ -112,7 +112,7 @@ const gridOptions: VxeGridProps<File> = {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      width: 180,
+      width: 135,
     },
   ],
 };

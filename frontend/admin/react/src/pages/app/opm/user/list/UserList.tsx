@@ -201,7 +201,7 @@ const UserList: React.FC<UserListProps> = ({ tenantId, orgUnitId }) => {
     {
       title: t('action'),
       valueType: 'option',
-      width: 370,
+      width: 280,
       render: (_, record) => (
         <TableActions
           record={record}

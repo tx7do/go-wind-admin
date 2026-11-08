@@ -210,7 +210,7 @@ const gridOptions: VxeGridProps<InternalMessageRecipient> = {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      width: 220,
+      width: 175,
     },
   ],
 };

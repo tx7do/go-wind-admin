@@ -83,7 +83,7 @@ const gridOptions: VxeGridProps<AiAgentApp> = {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      width: 360,
+      width: 250,
     },
   ],
 };

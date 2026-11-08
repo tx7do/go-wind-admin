@@ -121,7 +121,7 @@ const AiAgentAppManagement = () => {
       title: t('actions'),
       valueType: 'option',
       // 画布/编辑/运行台账/更多四个按钮实测约 341px（en 335），窄了必截断
-      width: 350,
+      width: 310,
       fixed: 'right',
       render: (_, record) => (
         <TableActions

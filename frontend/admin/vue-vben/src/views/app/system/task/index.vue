@@ -160,7 +160,7 @@ const gridOptions: VxeGridProps<Task> = {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      width: 280,
+      width: 220,
     },
   ],
 };

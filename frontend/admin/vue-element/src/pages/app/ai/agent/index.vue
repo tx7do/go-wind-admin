@@ -85,7 +85,7 @@ const pageConfig = computed<ProPageConfig>(() => ({
         prop: "action",
         label: t("common.table.action"),
         fixed: "right",
-        width: 300,
+        width: 220,
         cellType: "tool",
         buttons: [
           { name: "canvas", label: t("pages.ai_agent.openCanvas"), icon: "lucide:network" },
