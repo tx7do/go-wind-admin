@@ -158,10 +158,11 @@ function menuItems() {
     </template>
   </template>
   <a-dropdown v-if="overflow.length > 0">
-    <a-button type="link" size="small" @click.prevent>
-      {{ $t('ui.button.more') }}
-      <LucideChevronDown class="ml-1 size-4" />
-    </a-button>
+    <a-tooltip :title="$t('ui.button.more')">
+      <a-button type="link" size="small" @click.prevent>
+        <LucideChevronDown class="size-4" />
+      </a-button>
+    </a-tooltip>
     <template #overlay>
       <a-menu :items="menuItems()" />
     </template>

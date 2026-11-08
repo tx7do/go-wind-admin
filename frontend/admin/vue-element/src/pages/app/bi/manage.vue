@@ -149,7 +149,8 @@ const pageConfig = computed<ProPageConfig>(() => ({
         prop: "action",
         label: $t("common.table.action"),
         fixed: "right",
-        width: 210,
+        // 设计+版本历史+复制 三钮 + 图标「更多」触发，实测需 218px，210 会截断
+        width: 230,
         cellType: "tool",
         buttons: [
           { name: "design", label: $t("pages.biDashboard.openDesigner"), icon: "lucide:pencil-ruler" },

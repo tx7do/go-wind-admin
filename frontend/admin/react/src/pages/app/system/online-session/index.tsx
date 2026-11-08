@@ -130,7 +130,8 @@ const OnlineSessionPage = () => {
     {
       title: t('actions'),
       valueType: 'option',
-      width: 110,
+      // 实测需 109px，110 仅剩 1px 余量，抬到 120 留字体渲染误差空间
+      width: 120,
       fixed: 'right',
       render: (_, record) => (
         <TableActions

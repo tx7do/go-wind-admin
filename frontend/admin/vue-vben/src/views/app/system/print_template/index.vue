@@ -119,7 +119,8 @@ const gridOptions: VxeGridProps<PrintTemplate> = {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      width: 180,
+      // 编辑+复制+删除 三钮实测 159px + 单元格开销 21px = 180 贴边，留 10px 余量
+      width: 190,
     },
   ],
 };

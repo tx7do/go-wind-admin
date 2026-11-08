@@ -134,10 +134,11 @@ export default function TableActions({ record, actions, maxInline = 3 }: TableAc
           })),
         }}
       >
-        <Button type="link" size="small" onClick={(e) => e.stopPropagation()}>
-          {t('button.more')}
-          <MoreOutlined style={{ marginInlineStart: 4 }} />
-        </Button>
+        <Tooltip title={t('button.more')}>
+          <Button type="link" size="small" onClick={(e) => e.stopPropagation()}>
+            <MoreOutlined />
+          </Button>
+        </Tooltip>
       </Dropdown>,
     );
   }

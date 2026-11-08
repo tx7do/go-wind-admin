@@ -123,7 +123,8 @@ const gridOptions: VxeGridProps<BiDashboard> = {
       field: 'action',
       fixed: 'right',
       slots: { default: 'action' },
-      width: 190,
+      // 设计+版本历史+复制 三钮 + 图标「更多」触发，实测需 236px，190 会截断
+      width: 240,
     },
   ],
 };

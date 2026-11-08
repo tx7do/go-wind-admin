@@ -181,7 +181,8 @@ const pageConfig = computed<ProPageConfig>(() => ({
         prop: "action",
         label: $t("common.table.action"),
         fixed: "right",
-        width: 170,
+        // 试运行+编辑+删除 实测需 171px，170 贴边只差 1px
+        width: 180,
         cellType: "tool",
         buttons: [
           {

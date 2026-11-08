@@ -162,7 +162,8 @@ const BiDashboardManagement = () => {
     {
       title: t('action'),
       valueType: 'option',
-      width: 220,
+      // 设计+版本历史+复制 三钮 239px + 图标「更多」触发 30px，实测需 269px，220 会截断
+      width: 280,
       fixed: 'right',
       render: (_, record) => (
         <TableActions

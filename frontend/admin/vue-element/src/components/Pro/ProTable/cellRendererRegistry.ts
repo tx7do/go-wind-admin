@@ -142,7 +142,9 @@ const ToolCell = defineComponent({
         return !codes || hasAccess(codes);
       });
 
-      // 操作列定式：>3 个操作不堆行内，行内只留前 3 个，「更多」下拉收其余（图标+文本，与行内同款）。
+      // 操作列定式：>3 个操作不堆行内，行内只留前 3 个，「更多」下拉收其余（行内图标+文本；
+      // 触发器只留图标，文案由原生 title 兜底——EP 的 ElTooltip 与 ElDropdown 默认插槽的
+      // ElOnlyChild 单子节点约束嵌套不稳，不冒险）。
       const inline = buttons.slice(0, 3);
       const overflow = buttons.slice(3);
 
@@ -179,10 +181,16 @@ const ToolCell = defineComponent({
             {
               // 触发器独占默认插槽（ElOnlyChild 要求恰好一个子节点），菜单走具名 #dropdown 插槽
               default: () =>
-                h(ElButton, { link: true, type: "primary", size: "small" }, () => [
-                  $t("common.button.more"),
-                  h(SvgIcon, { icon: "lucide:chevron-down", size: 14 }),
-                ]),
+                h(
+                  ElButton,
+                  {
+                    link: true,
+                    type: "primary",
+                    size: "small",
+                    title: $t("common.button.more"),
+                  },
+                  () => [h(SvgIcon, { icon: "lucide:chevron-down", size: 14 })]
+                ),
               dropdown: () =>
                 h(ElDropdownMenu, null, () =>
                   overflow.map((btn: any) => {
