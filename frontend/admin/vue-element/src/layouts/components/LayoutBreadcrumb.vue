@@ -280,7 +280,7 @@ onBeforeMount(() => {
     align-items: center !important;
   }
 
-  // 非当前页：中灰 + 常规字重
+  // 非当前页：次级灰 + 常规字重（对齐 react colorTextSecondary / vben muted-foreground 的层级）
   .el-breadcrumb__inner,
   .el-breadcrumb__inner a {
     display: inline-flex;
@@ -288,23 +288,23 @@ onBeforeMount(() => {
     gap: 4px;
     font-weight: 400 !important;
     font-size: 13px !important; // 对齐 react 面包屑基准字号（2026-11-08，原 15px）
-    color: var(--el-text-color-regular) !important;
+    color: var(--el-text-color-secondary) !important;
     transition: color 0.2s ease;
     line-height: normal !important;
     height: auto !important;
     padding: 0; // 间距交给分隔符 margin，对齐 react（antd 分隔符 padding 0 8px）
   }
 
-  // 当前页（最后一项）：主文字色 + 半粗体，视觉焦点
+  // 当前页（最后一项）：主文字色 + 半粗体（react 基准 500），视觉焦点
   .el-breadcrumb__item:last-child .el-breadcrumb__inner {
     color: var(--el-text-color-primary) !important;
-    font-weight: 600 !important;
+    font-weight: 500 !important;
   }
 
   // 当前页（最后一项）内部 .breadcrumb__current span 也必须与 inner 同色
   .el-breadcrumb__item:last-child .breadcrumb__current {
     color: var(--el-text-color-primary) !important;
-    font-weight: 600 !important;
+    font-weight: 500 !important;
   }
 
   // 可点击链接 hover
