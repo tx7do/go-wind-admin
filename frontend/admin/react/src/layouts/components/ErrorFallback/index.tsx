@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { CopyOutlined, BugOutlined, ReloadOutlined, HomeOutlined } from '@ant-design/icons';
 import { useI18n } from '@/core/i18n';
+import { reportError } from './utils/report';
 
 const { Text, Paragraph } = Typography;
 
@@ -31,14 +32,11 @@ export const ErrorFallback = ({
   const [copied, setCopied] = useState(false);
   const { t } = useI18n('common');
 
-  // 生产环境自动上报错误（接入 Sentry/自研监控）
+  // 生产环境自动上报错误（收集端点由 .env 的 VITE_ERROR_REPORT_ENDPOINT 配置，见 utils/report.ts）
   useEffect(() => {
     if (!import.meta.env.DEV) {
       console.error('[ErrorFallback] Caught error:', error);
-      // TODO: 接入错误监控系统
-      // import('@/components/ErrorFallback/utils/report').then(m =>
-      //   m.reportError(error, componentStack)
-      // );
+      reportError(error, componentStack);
     }
   }, [error, componentStack]);
 

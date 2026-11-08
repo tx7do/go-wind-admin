@@ -12,6 +12,9 @@ interface ImportMetaEnv {
 
     readonly VITE_ENV: string
 
+    /** 错误上报收集端点（留空 = 未接入监控，见 ErrorFallback/utils/report.ts） */
+    readonly VITE_ERROR_REPORT_ENDPOINT: string
+
     readonly VITE_MOCK: boolean
     readonly VITE_ANALYZE: boolean
 }
