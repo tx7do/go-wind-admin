@@ -166,7 +166,9 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
       proxy: {
         [env.VITE_APP_BASE_API]: {
           changeOrigin: true,
-          target: env.VITE_APP_API_URL,
+          // 兜底常量：VITE_APP_API_URL 改空（走同源代理）后代理目标不能跟着空——
+          // 客户端 baseURL 与代理 target 共用这一个变量，此处必须钉住真实后端地址
+          target: env.VITE_APP_API_URL || "http://localhost:7788",
           // 后端按 /admin/v1 前缀注册路由（剥前缀会全量 404），前缀原样透传
         },
       },
