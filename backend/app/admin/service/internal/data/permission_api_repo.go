@@ -334,7 +334,16 @@ func (r *PermissionApiRepo) Delete(ctx context.Context, permissionID uint32) err
 }
 
 func (r *PermissionApiRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint32) error {
-	if _, err := r.entClient.Client().PermissionApi.Delete().
+	return r.DeleteByPermissionIDsOnClient(ctx, r.entClient.Client(), permissionIDs)
+}
+
+// DeleteByPermissionIDsOnClient DeleteByPermissionIDs 的 client 形参变体：
+// 权限行删除+级联清理同事务执行时传事务 client。
+func (r *PermissionApiRepo) DeleteByPermissionIDsOnClient(ctx context.Context, client *ent.Client, permissionIDs []uint32) error {
+	if len(permissionIDs) == 0 {
+		return nil
+	}
+	if _, err := client.PermissionApi.Delete().
 		Where(
 			permissionapi.PermissionIDIn(permissionIDs...),
 		).

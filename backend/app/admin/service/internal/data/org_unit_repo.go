@@ -32,6 +32,7 @@ type OrgUnitRepo struct {
 	log       *bLogger.Helper
 
 	userOrgUnitRepo *UserOrgUnitRepo
+	roleOrgUnitRepo *RoleOrgUnitRepo
 
 	mapper          *mapper.CopierMapper[identityV1.OrgUnit, ent.OrgUnit]
 	typeConverter   *mapper.EnumTypeConverter[identityV1.OrgUnit_Type, orgunit.Type]
@@ -47,11 +48,12 @@ type OrgUnitRepo struct {
 	]
 }
 
-func NewOrgUnitRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client], userOrgUnitRepo *UserOrgUnitRepo) *OrgUnitRepo {
+func NewOrgUnitRepo(ctx *bootstrap.Context, entClient *entCrud.EntClient[*ent.Client], userOrgUnitRepo *UserOrgUnitRepo, roleOrgUnitRepo *RoleOrgUnitRepo) *OrgUnitRepo {
 	repo := &OrgUnitRepo{
 		log:             ctx.NewLoggerHelper("org-unit/repo/admin-service"),
 		entClient:       entClient,
 		userOrgUnitRepo: userOrgUnitRepo,
+		roleOrgUnitRepo: roleOrgUnitRepo,
 		mapper:          mapper.NewCopierMapper[identityV1.OrgUnit, ent.OrgUnit](),
 		typeConverter:   mapper.NewEnumTypeConverter[identityV1.OrgUnit_Type, orgunit.Type](identityV1.OrgUnit_Type_name, identityV1.OrgUnit_Type_value),
 		statusConverter: mapper.NewEnumTypeConverter[identityV1.OrgUnit_Status, orgunit.Status](identityV1.OrgUnit_Status_name, identityV1.OrgUnit_Status_value),
@@ -254,7 +256,6 @@ func (r *OrgUnitRepo) Create(ctx context.Context, req *identityV1.CreateOrgUnitR
 		SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 		SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
 		SetNillablePath(req.Data.Path).
-		SetNillableParentID(req.Data.ParentId).
 		SetNillableSortOrder(req.Data.SortOrder).
 		SetNillableLeaderID(req.Data.LeaderId).
 		SetNillableDescription(req.Data.Description).
@@ -276,6 +277,11 @@ func (r *OrgUnitRepo) Create(ctx context.Context, req *identityV1.CreateOrgUnitR
 		SetNillableContactUserID(req.Data.ContactUserId).
 		SetNillableCreatedBy(req.Data.CreatedBy).
 		SetCreatedAt(time.Now())
+
+	// parent_id=0 与未设置同义（挂根）：自引用 FK 不接受 0，必须跳过不设
+	if p := req.Data.ParentId; p != nil && *p > 0 {
+		builder.SetParentID(*p)
+	}
 
 	if req.Data.BusinessScopes == nil {
 		builder.SetBusinessScopes(req.Data.GetBusinessScopes())
@@ -323,6 +329,15 @@ func (r *OrgUnitRepo) Update(ctx context.Context, req *identityV1.UpdateOrgUnitR
 		}
 	}
 
+	// 换父前置校验：目标父不得是自身或自身后代（成环）。环检测必须发生在
+	// 更新落库之前——此前检测在 relocateSubtree（更新后）才做，拒得了请求
+	// 却拦不住落库，环真实存在。
+	if req.Data.ParentId != nil && *req.Data.ParentId > 0 {
+		if err := r.ensureUnitAcyclicParent(ctx, req.GetId(), *req.Data.ParentId); err != nil {
+			return err
+		}
+	}
+
 	builder := r.entClient.Client().OrgUnit.Update()
 	err := r.repository.UpdateX(ctx, builder, req.Data, req.GetUpdateMask(),
 		func(dto *identityV1.OrgUnit) {
@@ -332,7 +347,6 @@ func (r *OrgUnitRepo) Update(ctx context.Context, req *identityV1.UpdateOrgUnitR
 				SetNillableStatus(r.statusConverter.ToEntity(req.Data.Status)).
 				SetNillableType(r.typeConverter.ToEntity(req.Data.Type)).
 				SetNillablePath(req.Data.Path).
-				SetNillableParentID(req.Data.ParentId).
 				SetNillableSortOrder(req.Data.SortOrder).
 				SetNillableLeaderID(req.Data.LeaderId).
 				SetNillableDescription(req.Data.Description).
@@ -354,6 +368,17 @@ func (r *OrgUnitRepo) Update(ctx context.Context, req *identityV1.UpdateOrgUnitR
 				SetNillableContactUserID(req.Data.ContactUserId).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetUpdatedAt(time.Now())
+
+			// 挂载关系三态：未设置（nil）= 不改；显式 >0 = 挂到该父级；显式 0 =
+			// 移到根级，落 NULL（自引用 FK 不接受 0）。此前 0 直接写库触发 FK
+			// 违约报 500，"移回根级"做不到。
+			if p := req.Data.ParentId; p != nil {
+				if *p > 0 {
+					builder.SetParentID(*p)
+				} else {
+					builder.ClearParentID()
+				}
+			}
 
 			if req.Data.BusinessScopes == nil {
 				builder.SetBusinessScopes(req.Data.GetBusinessScopes())
@@ -379,6 +404,40 @@ func (r *OrgUnitRepo) Update(ctx context.Context, req *identityV1.UpdateOrgUnitR
 	}
 
 	return err
+}
+
+// ensureUnitAcyclicParent 校验把 nodeID 挂到 newParentID 下不会成环：从新父沿
+// parent 链上行，命中 nodeID 即拒绝。visited 防护让存量环脏数据也不死循环。
+func (r *OrgUnitRepo) ensureUnitAcyclicParent(ctx context.Context, nodeID, newParentID uint32) error {
+	if newParentID == nodeID {
+		return identityV1.ErrorBadRequest("cannot move org unit under itself")
+	}
+	rows, err := r.entClient.Client().OrgUnit.Query().
+		Select(orgunit.FieldID, orgunit.FieldParentID).
+		All(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "query org units for parent acyclicity check failed: %s", err.Error())
+		return identityV1.ErrorInternalServerError("query org units failed")
+	}
+	parentOf := make(map[uint32]uint32, len(rows))
+	for _, row := range rows {
+		if row.ParentID != nil && *row.ParentID != 0 {
+			parentOf[row.ID] = *row.ParentID
+		}
+	}
+	visited := make(map[uint32]struct{}, len(rows))
+	cur := newParentID
+	for cur != 0 {
+		if cur == nodeID {
+			return identityV1.ErrorBadRequest("cannot move org unit under its own descendant")
+		}
+		if _, seen := visited[cur]; seen {
+			break // 存量环（与本节点无关）：放行但不死循环
+		}
+		visited[cur] = struct{}{}
+		cur = parentOf[cur]
+	}
+	return nil
 }
 
 // relocateSubtree 以 parent_id 链为准，BFS 重算 node 及其全部后代的物化路径。
@@ -419,6 +478,9 @@ func (r *OrgUnitRepo) relocateSubtree(ctx context.Context, nodeID uint32) error 
 		id         uint32
 		parentPath string
 	}
+	// visited 防护：存量环脏数据（外部导入/直改库）下 BFS 正常收敛，不会
+	// 死循环挂死 goroutine（permission_group 版本同款防线）
+	visited := map[uint32]bool{nodeID: true}
 	queue := []queueItem{{id: nodeID, parentPath: parentPath}}
 	for len(queue) > 0 {
 		it := queue[0]
@@ -449,6 +511,10 @@ func (r *OrgUnitRepo) relocateSubtree(ctx context.Context, nodeID uint32) error 
 			return identityV1.ErrorInternalServerError("query org unit children failed")
 		}
 		for _, ch := range children {
+			if visited[ch.ID] {
+				continue
+			}
+			visited[ch.ID] = true
 			queue = append(queue, queueItem{id: ch.ID, parentPath: newPath})
 		}
 	}
@@ -461,12 +527,23 @@ func (r *OrgUnitRepo) Delete(ctx context.Context, req *identityV1.DeleteOrgUnitR
 		return identityV1.ErrorBadRequest("invalid parameter")
 	}
 
-	childrenIds, err := entCrud.QueryAllChildrenIds(ctx, r.entClient, "sys_org_units", req.GetId())
+	// 子树 id 按 parent 链内存收集（visited 防护，存量环脏数据正常收敛）。
+	// 不走 QueryAllChildrenIds：其递归 CTE 只有 MySQL/Postgres 分支，其余方言
+	// 静默返回空集会让删除只删根、整条子树变孤儿。
+	rows, err := r.entClient.Client().OrgUnit.Query().
+		Select(orgunit.FieldID, orgunit.FieldParentID).
+		All(ctx)
 	if err != nil {
-		r.log.Errorf(ctx, "query child orgUnits failed: %s", err.Error())
-		return identityV1.ErrorInternalServerError("query child orgUnits failed")
+		r.log.Errorf(ctx, "query org units for subtree collection failed: %s", err.Error())
+		return identityV1.ErrorInternalServerError("query org units failed")
 	}
-	childrenIds = append(childrenIds, req.GetId())
+	childrenOf := make(map[uint32][]uint32, len(rows))
+	for _, row := range rows {
+		if row.ParentID != nil && *row.ParentID != 0 {
+			childrenOf[*row.ParentID] = append(childrenOf[*row.ParentID], row.ID)
+		}
+	}
+	childrenIds := collectTreeIDs(childrenOf, func(id uint32) uint32 { return id }, req.GetId())
 
 	//r.log.Info(ctx, "orgunits childrenIds to delete: ", childrenIds)
 
@@ -510,6 +587,12 @@ func (r *OrgUnitRepo) Delete(ctx context.Context, req *identityV1.DeleteOrgUnitR
 
 	// 用户↔单元是纯绑定关系：随子树删除清理绑定行，用户本身不受影响
 	if err = r.userOrgUnitRepo.CleanRelationsByOrgUnitIDs(ctx, tx, childrenIds); err != nil {
+		return err
+	}
+
+	// 角色↔单元授权绑定（数据范围 SELECTED_UNITS 档）随子树清理，避免角色
+	// 配置里残留指向已删单元的 stale 行（与权限删除级联清角色授权同一教义）
+	if err = r.roleOrgUnitRepo.DeleteByOrgUnitIDs(ctx, tx, childrenIds); err != nil {
 		return err
 	}
 

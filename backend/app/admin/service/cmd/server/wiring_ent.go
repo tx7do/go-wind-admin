@@ -94,7 +94,10 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	loginPolicyRepo := data.NewLoginPolicyRepo(ctx, entClient)
 
 	// 组织架构与租户
-	orgUnitRepo := data.NewOrgUnitRepo(ctx, entClient, userOrgUnitRepo)
+	// roleOrgUnitRepo 先于 orgUnitRepo 构造：orgUnitRepo 删除级联清角色↔单元
+	// 授权绑定，依赖它（无依赖环，仅构造顺序要求）。
+	roleOrgUnitRepo := data.NewRoleOrgUnitRepo(ctx, entClient)
+	orgUnitRepo := data.NewOrgUnitRepo(ctx, entClient, userOrgUnitRepo, roleOrgUnitRepo)
 	positionRepo := data.NewPositionRepo(ctx, entClient)
 	tenantRepo := data.NewTenantRepo(ctx, entClient)
 	tenantUsageRepo := data.NewTenantUsageRepo(ctx, entClient, authenticator)
@@ -103,7 +106,6 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	permissionApiRepo := data.NewPermissionApiRepo(ctx, entClient)
 	permissionMenuRepo := data.NewPermissionMenuRepo(ctx, entClient)
 	rolePermissionRepo := data.NewRolePermissionRepo(ctx, entClient)
-	roleOrgUnitRepo := data.NewRoleOrgUnitRepo(ctx, entClient)
 	roleFieldPermissionRepo := data.NewRoleFieldPermissionRepo(ctx, entClient)
 	roleMetadataRepo := data.NewRoleMetadataRepo(ctx, entClient)
 	permissionRepo := data.NewPermissionRepo(ctx, entClient, permissionApiRepo, permissionMenuRepo, rolePermissionRepo)

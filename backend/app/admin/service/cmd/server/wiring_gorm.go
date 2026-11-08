@@ -87,6 +87,8 @@ func newGormRepos(ctx *bootstrap.Context) (*gormRepos, *gormCrud.Client, error) 
 	// 绑定子仓储先行构造：permission_repo / api_repo（端点级联）都依赖它，
 	// 字面量内无法自引用，先落局部变量再填进结构体。
 	permissionApiRepo := gormData.NewPermissionApiRepo(ctx, client)
+	permissionMenuRepo := gormData.NewPermissionMenuRepo(ctx, client)
+	rolePermissionRepo := gormData.NewRolePermissionRepo(ctx, client)
 
 	r := &gormRepos{
 		// 身份与账号
@@ -102,9 +104,9 @@ func newGormRepos(ctx *bootstrap.Context) (*gormRepos, *gormCrud.Client, error) 
 		tenantUsageRepo: gormData.NewTenantUsageRepo(ctx),
 		// RBAC
 		permissionApiRepo:   permissionApiRepo,
-		permissionMenuRepo:  gormData.NewPermissionMenuRepo(ctx, client),
-		rolePermissionRepo:  gormData.NewRolePermissionRepo(ctx, client),
-		permissionRepo:      gormData.NewPermissionRepo(ctx, client, permissionApiRepo, permissionMenuRepo),
+		permissionMenuRepo:  permissionMenuRepo,
+		rolePermissionRepo:  rolePermissionRepo,
+		permissionRepo:      gormData.NewPermissionRepo(ctx, client, permissionApiRepo, permissionMenuRepo, rolePermissionRepo),
 		roleRepo:            gormData.NewRoleRepo(ctx, client),
 		permissionGroupRepo: gormData.NewPermissionGroupRepo(ctx, client),
 		apiRepo:             gormData.NewApiRepo(ctx, client, permissionApiRepo),

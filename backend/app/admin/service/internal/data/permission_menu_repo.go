@@ -46,7 +46,7 @@ func (r *PermissionMenuRepo) resolveFullPaths(ctx context.Context, menuIDs []uin
 		return nil, nil, nil
 	}
 
-	_, byID, err := r.menuRepoForIndex(r.log).buildMenuFullPathIndex(ctx, r.entClient.Client())
+	_, byID, _, err := r.menuRepoForIndex(r.log).buildMenuFullPathIndex(ctx, r.entClient.Client())
 	if err != nil {
 		return nil, nil, err
 	}
@@ -220,6 +220,49 @@ func (r *PermissionMenuRepo) cleanNotExistMenusWithClient(
 	return nil
 }
 
+// UpdateFullPaths 菜单移动/改名后按"旧全路径 → 新全路径"改写绑定快照：
+// 绑定以全路径为身份键，菜单行的全路径变了绑定必须随行，否则角色授权静默
+// 失效（DeleteByFullPaths 的更新侧对称语义）。整个改写单事务执行，撞
+// (permission_id, full_path) 唯一约束即整体回滚并报错（明账，不静默吞）。
+func (r *PermissionMenuRepo) UpdateFullPaths(ctx context.Context, rewrites map[string]string) error {
+	if len(rewrites) == 0 {
+		return nil
+	}
+
+	var tx *ent.Tx
+	var err error
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf(context.Background(), "transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf(context.Background(), "transaction commit failed: %s", commitErr.Error())
+			err = permissionV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	for oldPath, newPath := range rewrites {
+		if uerr := tx.PermissionMenu.Update().
+			Where(permissionmenu.FullPathEQ(oldPath)).
+			SetFullPath(newPath).
+			Exec(ctx); uerr != nil {
+			r.log.Errorf(ctx, "rewrite permission menu full path [%s -> %s] failed: %s", oldPath, newPath, uerr.Error())
+			err = permissionV1.ErrorInternalServerError("update permission menu full paths failed")
+			return err
+		}
+	}
+
+	return nil
+}
+
 // DeleteByFullPaths 按菜单全路径级联清理授权绑定：菜单行（含子树）被删除时
 // 调用，消灭悬空绑定。注意：菜单同步 REPLACE 的清空重建**不走这里**——
 // 重建后同路径新行照常命中快照，授权存续正是快照绑定的意义所在。
@@ -270,7 +313,16 @@ func (r *PermissionMenuRepo) Delete(ctx context.Context, permissionID uint32) er
 }
 
 func (r *PermissionMenuRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint32) error {
-	if _, err := r.entClient.Client().PermissionMenu.Delete().
+	return r.DeleteByPermissionIDsOnClient(ctx, r.entClient.Client(), permissionIDs)
+}
+
+// DeleteByPermissionIDsOnClient DeleteByPermissionIDs 的 client 形参变体：
+// 权限行删除+级联清理同事务执行时传事务 client。
+func (r *PermissionMenuRepo) DeleteByPermissionIDsOnClient(ctx context.Context, client *ent.Client, permissionIDs []uint32) error {
+	if len(permissionIDs) == 0 {
+		return nil
+	}
+	if _, err := client.PermissionMenu.Delete().
 		Where(
 			permissionmenu.PermissionIDIn(permissionIDs...),
 		).

@@ -440,8 +440,9 @@ func menuPathToModuleName(menuPath string) string {
 // 已不存在删除重建型同步）：派生集（菜单/接口 → 权限码）里 code 已存在的权限行
 // 原位更新（**保 id**——sys_role_permissions 角色授权、sys_permission_policies
 // 策略联动、租户模板副本引用全部因此免于漂移），缺失才插入；库里有、派生集没有
-// 的业务权限删除并级联清理其角色授权/端点/菜单绑定/策略行。管理端手工停用的
-// 权限 status 不被同步触碰（与菜单同步 MERGE 同口径）。
+// **且码已无法从任何现存菜单派生**（含停用菜单）的业务权限才删除并级联清理其
+// 角色授权/端点/菜单绑定/策略行——管理员临时停用菜单不触发删权限。管理端手工
+// 停用的权限 status 不被同步触碰（与菜单同步 MERGE 同口径）。
 // 分组行无授权绑定引用，保持原重建语义（TruncateBizGroup + 重插）。
 // 注：init() 的启动期自动同步本就以系统上下文无操作者而静默跳过（播种走
 // createDefaultPermissions），此处加闸门不改变启动期行为。
@@ -540,6 +541,13 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 	// 为权限追加对应的 API 资源 ID 列表
 	_ = s.appendAPis(ctx, &permissions, &mapPermissions, operator.UserId)
 
+	// 组表保持"截断重建"语义（组行无授权绑定引用，权限行的 group_id 会在下方
+	// MERGE 更新段原位改写到新组 id）。**必须先截断再重插**：name 只有普通索引
+	// 没有唯一约束，不截断的话每跑一次同步整个组表翻倍一份。
+	if err = s.permissionGroupRepo.TruncateBizGroup(ctx); err != nil {
+		return nil, err
+	}
+
 	var finalPermissionGroups []*permissionV1.PermissionGroup
 	if finalPermissionGroups, err = s.permissionGroupRepo.BatchCreate(ctx, permissionGroups); err != nil {
 		s.log.Errorf(ctx, "batch create permission groups failed: %s", err.Error())
@@ -612,11 +620,35 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 		}
 	}
 
-	// 删除段：库有、派生集没有 → 删行并级联清角色授权/端点/菜单绑定/策略行
-	//（角色授权此前漏清会留悬空授权，是本轮彻底化的最后一块）。放最后：
-	// 中途失败残留的是"本该删的旧码"，重跑同步即自愈，好过删多了。
+	// 删除段防误杀基线：全部菜单（**含停用**）可派生的权限码集合。派生集只取
+	// 启用菜单，若管理员临时停用某菜单，同步会把其权限码误判为"已消失"而删行
+	// 并级联清全部角色授权；重新启用+再同步后权限重建换 id，授权全丢——MERGE
+	// 的保 id 教义被 status 过滤击穿。码仍可从任何现存菜单派生的权限行不删
+	//（绑定保持现状，启用后再同步收敛）。
+	allMenus, err := s.menuRepo.List(ctx, &paginationV1.PagingRequest{
+		NoPaging: trans.Ptr(true),
+		OrderBy:  trans.Ptr("id desc"),
+	}, false)
+	if err != nil {
+		return nil, err
+	}
+	s.menuPermissionConverter.ComposeMenuPaths(allMenus.Items)
+	aliveCodes := make(map[string]struct{}, len(allMenus.Items))
+	for _, m := range allMenus.Items {
+		if c := s.menuPermissionConverter.ConvertCode(m.GetPath(), m.GetName(), m.GetType()); c != "" {
+			aliveCodes[c] = struct{}{}
+		}
+	}
+
+	// 删除段：库有、派生集没有且码已无法从任何现存菜单派生 → 删行并级联清
+	// 角色授权/端点/菜单绑定/策略行（角色授权此前漏清会留悬空授权，是本轮
+	// 彻底化的最后一块）。放最后：中途失败残留的是"本该删的旧码"，重跑同步
+	// 即自愈，好过删多了。
 	for code, e := range existingByCode {
 		if _, hit := mergeHit[code]; hit {
+			continue
+		}
+		if _, alive := aliveCodes[code]; alive {
 			continue
 		}
 		goneIDs = append(goneIDs, e.GetId())

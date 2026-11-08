@@ -496,6 +496,27 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 		return permissionV1.ErrorBadRequest("invalid parameter")
 	}
 
+	// 行删除与级联清理同一事务：删了行清不掉绑定会留悬空授权，反之亦然；
+	// id 基线与行删除同事务内取，按 code/组删除时不存在两查询间的竞态窗口
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
+			err = permissionV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
 	var permissionIDs []uint32
 	switch req.QueryBy.(type) {
 	default:
@@ -504,7 +525,7 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 
 	case *permissionV1.DeletePermissionRequest_Code:
 		// 注意：Query.IDs/Ints 内部已追加字段选择，外层再 Select 会重复列导致 scan 失败。
-		permissionIDs, err = r.entClient.Client().Permission.Query().
+		permissionIDs, err = tx.Permission.Query().
 			Where(permission.CodeEQ(req.GetCode())).
 			IDs(ctx)
 		if err != nil {
@@ -513,7 +534,7 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 		}
 
 	case *permissionV1.DeletePermissionRequest_GroupId:
-		permissionIDs, err = r.entClient.Client().Permission.Query().
+		permissionIDs, err = tx.Permission.Query().
 			Where(permission.GroupIDEQ(req.GetGroupId())).
 			IDs(ctx)
 		if err != nil {
@@ -522,7 +543,7 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 		}
 	}
 
-	builder := r.entClient.Client().Permission.Delete()
+	builder := tx.Permission.Delete()
 	switch req.QueryBy.(type) {
 	default:
 	case *permissionV1.DeletePermissionRequest_Id:
@@ -541,7 +562,7 @@ func (r *PermissionRepo) Delete(ctx context.Context, req *permissionV1.DeletePer
 
 	// 级联清理全部从属绑定：接口/菜单快照、角色授权（sys_role_permissions，
 	// 此前漏清会留悬空授权）、策略联动行
-	if err = r.cascadeCleanByPermissionIDs(ctx, permissionIDs); err != nil {
+	if err = r.cascadeCleanByPermissionIDsWithClient(ctx, tx.Client(), permissionIDs); err != nil {
 		return err
 	}
 
@@ -574,20 +595,39 @@ func (r *PermissionRepo) ListBizPermissions(ctx context.Context) ([]*permissionV
 }
 
 // DeleteByIDs 按 id 集合删除权限行并级联清理全部从属绑定（权限同步 MERGE 的
-// 删除段用）。
-func (r *PermissionRepo) DeleteByIDs(ctx context.Context, permissionIDs []uint32) error {
+// 删除段用）。行删除与级联清理同一事务，中途失败整体回滚不留半删状态。
+func (r *PermissionRepo) DeleteByIDs(ctx context.Context, permissionIDs []uint32) (err error) {
 	if len(permissionIDs) == 0 {
 		return nil
 	}
 
-	builder := r.entClient.Client().Permission.Delete().
-		Where(permission.IDIn(permissionIDs...))
-	if _, err := builder.Exec(ctx); err != nil {
+	var tx *ent.Tx
+	tx, err = r.entClient.Client().Tx(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "start transaction failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("start transaction failed")
+	}
+	defer func() {
+		if err != nil {
+			if rollbackErr := tx.Rollback(); rollbackErr != nil {
+				r.log.Errorf(ctx, "transaction rollback failed: %s", rollbackErr.Error())
+			}
+			return
+		}
+		if commitErr := tx.Commit(); commitErr != nil {
+			r.log.Errorf(ctx, "transaction commit failed: %s", commitErr.Error())
+			err = permissionV1.ErrorInternalServerError("transaction commit failed")
+		}
+	}()
+
+	if _, err = tx.Permission.Delete().
+		Where(permission.IDIn(permissionIDs...)).
+		Exec(ctx); err != nil {
 		r.log.Errorf(ctx, "delete permissions by ids failed: %s", err.Error())
 		return permissionV1.ErrorInternalServerError("delete permissions by ids failed")
 	}
 
-	return r.cascadeCleanByPermissionIDs(ctx, permissionIDs)
+	return r.cascadeCleanByPermissionIDsWithClient(ctx, tx.Client(), permissionIDs)
 }
 
 // UpdateForSync 权限同步 MERGE 的更新段：原位更新派生集字段（名称/分组），
@@ -614,27 +654,27 @@ func (r *PermissionRepo) AssignSyncBindings(ctx context.Context, id uint32, apiI
 	return r.permissionMenuRepo.AssignMenus(ctx, id, menuIDs)
 }
 
-// cascadeCleanByPermissionIDs 权限行删除后的级联清理：接口/菜单快照绑定、
-// 角色授权绑定（sys_role_permissions）、策略联动行（sys_permission_policies）。
+// cascadeCleanByPermissionIDsWithClient 权限行删除后的级联清理：接口/菜单快照
+// 绑定、角色授权绑定（sys_role_permissions）、策略联动行（sys_permission_policies）。
 // 授权链上不允许残留指向已删权限行的绑定——"权限行重建换 id 后旧绑定悬空"
-// 的最后残留就此终结。
-func (r *PermissionRepo) cascadeCleanByPermissionIDs(ctx context.Context, permissionIDs []uint32) error {
+// 的最后残留就此终结。client 形参使级联与行删除可同事务执行。
+func (r *PermissionRepo) cascadeCleanByPermissionIDsWithClient(ctx context.Context, client *ent.Client, permissionIDs []uint32) error {
 	if len(permissionIDs) == 0 {
 		return nil
 	}
 
-	if err := r.permissionApiRepo.DeleteByPermissionIDs(ctx, permissionIDs); err != nil {
+	if err := r.permissionApiRepo.DeleteByPermissionIDsOnClient(ctx, client, permissionIDs); err != nil {
 		return err
 	}
-	if err := r.permissionMenuRepo.DeleteByPermissionIDs(ctx, permissionIDs); err != nil {
+	if err := r.permissionMenuRepo.DeleteByPermissionIDsOnClient(ctx, client, permissionIDs); err != nil {
 		return err
 	}
-	if err := r.rolePermissionRepo.DeleteByPermissionIDs(ctx, permissionIDs); err != nil {
+	if err := r.rolePermissionRepo.DeleteByPermissionIDsOnClient(ctx, client, permissionIDs); err != nil {
 		return err
 	}
 
 	// 策略联动行（PermissionPolicyRepo 为空壳，策略行走裸 ent client）
-	if _, err := r.entClient.Client().PermissionPolicy.Delete().
+	if _, err := client.PermissionPolicy.Delete().
 		Where(permissionpolicy.PermissionIDIn(permissionIDs...)).
 		Exec(ctx); err != nil {
 		r.log.Errorf(ctx, "delete permission policies by permission ids failed: %s", err.Error())

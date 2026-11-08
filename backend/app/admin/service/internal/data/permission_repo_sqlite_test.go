@@ -17,7 +17,10 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent"
 	"go-wind-admin/app/admin/service/internal/data/ent/menu"
 	"go-wind-admin/app/admin/service/internal/data/ent/permission"
+	"go-wind-admin/app/admin/service/internal/data/ent/permissionapi"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionmenu"
+	"go-wind-admin/app/admin/service/internal/data/ent/permissionpolicy"
+	"go-wind-admin/app/admin/service/internal/data/ent/rolepermission"
 	"go-wind-admin/app/admin/service/internal/data/enttest"
 )
 
@@ -452,4 +455,103 @@ func TestPermissionRepoSqlite_Delete(t *testing.T) {
 	cnt, err = repo.entClient.Client().Permission.Query().Count(ctx)
 	require.NoError(t, err)
 	require.Zero(t, cnt, "按 code 删除后表内行数应为 0")
+}
+
+// TestPermissionRepoSqlite_DeleteCascadesAllBindings 权限行删除的全链级联回归：
+// 角色授权（sys_role_permissions）、端点快照（sys_permission_apis）、菜单快照
+// （sys_permission_menus）、策略联动行（sys_permission_policies）随行同删，
+// 授权链上不留指向已删权限行的悬空绑定；按 ID / 按 code / DeleteByIDs 三个
+// 入口同一语义。
+func TestPermissionRepoSqlite_DeleteCascadesAllBindings(t *testing.T) {
+	entClient := enttest.NewEntClientForTest(t)
+	repo := newPermissionRepoSqlite(t, entClient)
+	ctx := enttest.NewSystemContext(context.Background())
+	client := repo.entClient.Client()
+
+	require.NoError(t, repo.Create(ctx, &permissionV1.CreatePermissionRequest{
+		Data: &permissionV1.Permission{
+			Name: trans.Ptr("级联删除权限甲"),
+			Code: trans.Ptr("sqlite_perm_cascade_a"),
+		},
+	}))
+	require.NoError(t, repo.Create(ctx, &permissionV1.CreatePermissionRequest{
+		Data: &permissionV1.Permission{
+			Name: trans.Ptr("级联删除权限乙"),
+			Code: trans.Ptr("sqlite_perm_cascade_b"),
+		},
+	}))
+	permA, err := client.Permission.Query().Where(permission.CodeEQ("sqlite_perm_cascade_a")).Only(ctx)
+	require.NoError(t, err)
+	permB, err := client.Permission.Query().Where(permission.CodeEQ("sqlite_perm_cascade_b")).Only(ctx)
+	require.NoError(t, err)
+
+	roleRow, err := client.Role.Create().
+		SetName("级联删除角色").
+		SetCode("CASCADE_DEL_ROLE").
+		SetNillableTenantID(trans.Ptr(uint32(42))).
+		Save(ctx)
+	require.NoError(t, err)
+	require.NoError(t, client.RolePermission.Create().
+		SetRoleID(roleRow.ID).SetTenantID(42).SetPermissionID(permA.ID).
+		Exec(ctx), "直建角色授权应成功")
+	require.NoError(t, client.PermissionApi.Create().
+		SetPermissionID(permA.ID).SetPath("/cascade/a").SetMethod("GET").
+		Exec(ctx), "直建端点快照绑定应成功")
+	require.NoError(t, client.PermissionMenu.Create().
+		SetPermissionID(permA.ID).SetFullPath("/cascade-a").
+		Exec(ctx), "直建菜单快照绑定应成功")
+	require.NoError(t, client.PermissionPolicy.Create().
+		SetPermissionID(permA.ID).SetEvalOrder(1).
+		Exec(ctx), "直建策略联动行应成功")
+	// 权限乙只挂角色授权（删除甲不得牵连乙的绑定）
+	require.NoError(t, client.RolePermission.Create().
+		SetRoleID(roleRow.ID).SetTenantID(42).SetPermissionID(permB.ID).
+		Exec(ctx), "直建乙的角色授权应成功")
+
+	// 按 ID 删除甲 → 四类从属绑定全部级联清掉
+	require.NoError(t, repo.Delete(ctx, &permissionV1.DeletePermissionRequest{
+		QueryBy: &permissionV1.DeletePermissionRequest_Id{Id: permA.ID},
+	}), "按 ID 删除甲应成功")
+
+	rpCnt, err := client.RolePermission.Query().Where(rolepermission.PermissionIDEQ(permA.ID)).Count(ctx)
+	require.NoError(t, err)
+	require.Zero(t, rpCnt, "角色授权必须级联清理")
+	paCnt, err := client.PermissionApi.Query().Where(permissionapi.PermissionIDEQ(permA.ID)).Count(ctx)
+	require.NoError(t, err)
+	require.Zero(t, paCnt, "端点快照绑定必须级联清理")
+	pmCnt, err := client.PermissionMenu.Query().Where(permissionmenu.PermissionIDEQ(permA.ID)).Count(ctx)
+	require.NoError(t, err)
+	require.Zero(t, pmCnt, "菜单快照绑定必须级联清理")
+	ppCnt, err := client.PermissionPolicy.Query().Where(permissionpolicy.PermissionIDEQ(permA.ID)).Count(ctx)
+	require.NoError(t, err)
+	require.Zero(t, ppCnt, "策略联动行必须级联清理")
+
+	bCnt, err := client.RolePermission.Query().Where(rolepermission.PermissionIDEQ(permB.ID)).Count(ctx)
+	require.NoError(t, err)
+	require.Equal(t, 1, bCnt, "删除甲不得牵连权限乙的绑定")
+
+	// DeleteByIDs 删除乙 → 同样的级联语义
+	require.NoError(t, repo.DeleteByIDs(ctx, []uint32{permB.ID}), "DeleteByIDs 应成功")
+	rpCnt, err = client.RolePermission.Query().Where(rolepermission.PermissionIDEQ(permB.ID)).Count(ctx)
+	require.NoError(t, err)
+	require.Zero(t, rpCnt, "DeleteByIDs 同样必须级联清角色授权")
+
+	// 按 code 建丙 → 按 code 删除 → 级联同样生效
+	require.NoError(t, repo.Create(ctx, &permissionV1.CreatePermissionRequest{
+		Data: &permissionV1.Permission{
+			Name: trans.Ptr("级联删除权限丙"),
+			Code: trans.Ptr("sqlite_perm_cascade_c"),
+		},
+	}))
+	permC, err := client.Permission.Query().Where(permission.CodeEQ("sqlite_perm_cascade_c")).Only(ctx)
+	require.NoError(t, err)
+	require.NoError(t, client.PermissionMenu.Create().
+		SetPermissionID(permC.ID).SetFullPath("/cascade-c").
+		Exec(ctx), "直建丙的菜单快照绑定应成功")
+	require.NoError(t, repo.Delete(ctx, &permissionV1.DeletePermissionRequest{
+		QueryBy: &permissionV1.DeletePermissionRequest_Code{Code: "sqlite_perm_cascade_c"},
+	}), "按 code 删除丙应成功")
+	pmCnt, err = client.PermissionMenu.Query().Where(permissionmenu.PermissionIDEQ(permC.ID)).Count(ctx)
+	require.NoError(t, err)
+	require.Zero(t, pmCnt, "按 code 删除同样必须级联清菜单快照绑定")
 }

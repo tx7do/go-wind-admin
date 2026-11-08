@@ -317,3 +317,63 @@ func TestPermissionGroupRepoSqlite_ListByIDs(t *testing.T) {
 	// 读视图（ListByIDs 路径）：同上，列默认 status 如实回显。
 	require.Equal(t, permissionV1.PermissionGroup_ON, partial[0].GetStatus(), "读视图应回填列默认 status")
 }
+
+// TestPermissionGroupRepoSqlite_ExplicitZeroParentAsRoot parent_id 显式 0 与
+// 未设置同义（挂根，落 NULL）：此前 0 直接写库触发自引用 FK 违约。
+func TestPermissionGroupRepoSqlite_ExplicitZeroParentAsRoot(t *testing.T) {
+	entClient := enttest.NewEntClientForTest(t)
+	repo := newPermissionGroupRepoSqlite(t, entClient)
+	ctx := enttest.NewSystemContext(context.Background())
+
+	dto, err := repo.Create(ctx, &permissionV1.CreatePermissionGroupRequest{
+		Data: &permissionV1.PermissionGroup{
+			Name:     trans.Ptr("零父根分组"),
+			ParentId: trans.Ptr(uint32(0)),
+		},
+	})
+	require.NoError(t, err, "显式 parent_id=0 的创建应按挂根处理而非 FK 违约")
+
+	row, err := entClient.Client().PermissionGroup.Get(ctx, dto.GetId())
+	require.NoError(t, err)
+	require.Nil(t, row.ParentID, "parent_id=0 应落 NULL（根）")
+	require.NotNil(t, row.Path)
+	require.Equal(t, "/"+strconv.FormatUint(uint64(row.ID), 10)+"/", *row.Path, "根节点物化路径应为 /<自身ID>/")
+}
+
+// TestPermissionGroupRepoSqlite_UpdateExplicitZeroParentMovesToRoot 显式 0 更新
+// = 移到根级，物化路径从父链前缀重算为根路径（此前被静默忽略或 FK 500）。
+func TestPermissionGroupRepoSqlite_UpdateExplicitZeroParentMovesToRoot(t *testing.T) {
+	entClient := enttest.NewEntClientForTest(t)
+	repo := newPermissionGroupRepoSqlite(t, entClient)
+	ctx := enttest.NewSystemContext(context.Background())
+
+	parent, err := repo.Create(ctx, &permissionV1.CreatePermissionGroupRequest{
+		Data: &permissionV1.PermissionGroup{Name: trans.Ptr("移根父分组")},
+	})
+	require.NoError(t, err)
+	child, err := repo.Create(ctx, &permissionV1.CreatePermissionGroupRequest{
+		Data: &permissionV1.PermissionGroup{
+			Name:     trans.Ptr("移根子分组"),
+			ParentId: trans.Ptr(parent.GetId()),
+		},
+	})
+	require.NoError(t, err)
+
+	// 前置确认子节点带父前缀路径
+	childRow, err := entClient.Client().PermissionGroup.Get(ctx, child.GetId())
+	require.NoError(t, err)
+	require.NotNil(t, childRow.Path)
+	require.Contains(t, *childRow.Path, "/"+strconv.FormatUint(uint64(parent.GetId()), 10)+"/")
+
+	require.NoError(t, repo.Update(ctx, &permissionV1.UpdatePermissionGroupRequest{
+		Id:   child.GetId(),
+		Data: &permissionV1.PermissionGroup{ParentId: trans.Ptr(uint32(0))},
+	}), "显式 parent_id=0 的更新应把分组移到根级")
+
+	childRow, err = entClient.Client().PermissionGroup.Get(ctx, child.GetId())
+	require.NoError(t, err)
+	require.Nil(t, childRow.ParentID, "移根后 parent_id 应落 NULL")
+	require.NotNil(t, childRow.Path)
+	require.Equal(t, "/"+strconv.FormatUint(uint64(child.GetId()), 10)+"/", *childRow.Path,
+		"移根后物化路径应重算为根路径 /<自身ID>/")
+}

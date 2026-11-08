@@ -271,9 +271,13 @@ func (r *PermissionGroupRepo) newPermissionCreateWithBuilder(builder *ent.Permis
 		SetNillableModule(permissionGroup.Module).
 		SetNillableSortOrder(permissionGroup.SortOrder).
 		SetNillableDescription(permissionGroup.Description).
-		SetNillableParentID(permissionGroup.ParentId).
 		SetNillableCreatedBy(permissionGroup.CreatedBy).
 		SetCreatedAt(time.Now())
+
+	// parent_id=0 与未设置同义（挂根）：自引用 FK 不接受 0，必须跳过不设
+	if p := permissionGroup.ParentId; p != nil && *p > 0 {
+		builder.SetParentID(*p)
+	}
 
 	if permissionGroup.Id != nil {
 		builder.SetID(permissionGroup.GetId())
@@ -306,6 +310,14 @@ func (r *PermissionGroupRepo) Update(ctx context.Context, req *permissionV1.Upda
 		}
 	}
 
+	// 换父前置校验：目标父不得是自身或自身后代（成环）。环检测必须发生在
+	// 更新落库之前——relocateSubtree 的检测在更新后，拒得了请求却拦不住落库。
+	if req.Data.ParentId != nil && *req.Data.ParentId > 0 {
+		if err := r.ensureGroupAcyclicParent(ctx, req.GetId(), *req.Data.ParentId); err != nil {
+			return err
+		}
+	}
+
 	builder := r.entClient.Client().PermissionGroup.UpdateOneID(req.GetId())
 	_, err := r.repository.UpdateOne(ctx, builder, req.Data, req.GetUpdateMask(),
 		func(dto *permissionV1.PermissionGroup) {
@@ -315,9 +327,19 @@ func (r *PermissionGroupRepo) Update(ctx context.Context, req *permissionV1.Upda
 				SetNillableModule(req.Data.Module).
 				SetNillableSortOrder(req.Data.SortOrder).
 				SetNillableDescription(req.Data.Description).
-				SetNillableParentID(req.Data.ParentId).
 				SetNillableUpdatedBy(req.Data.UpdatedBy).
 				SetUpdatedAt(time.Now())
+
+			// 挂载关系三态：未设置（nil）= 不改；显式 >0 = 挂到该父级；显式 0 =
+			// 移到根级，落 NULL（自引用 FK 不接受 0）。此前 0 直接写库触发 FK
+			// 违约报 500，"移回根级"做不到。
+			if p := req.Data.ParentId; p != nil {
+				if *p > 0 {
+					builder.SetParentID(*p)
+				} else {
+					builder.ClearParentID()
+				}
+			}
 		},
 		func(s *sql.Selector) {
 			s.Where(sql.EQ(permissiongroup.FieldID, req.GetId()))
@@ -510,6 +532,40 @@ func (r *PermissionGroupRepo) computeGroupTreePath(parentPath string, nodeID uin
 		return "/" + strconv.FormatUint(uint64(nodeID), 10) + "/"
 	}
 	return entCrud.ComputeTreePath(parentPath, nodeID)
+}
+
+// ensureGroupAcyclicParent 校验把 nodeID 挂到 newParentID 下不会成环：从新父沿
+// parent 链上行，命中 nodeID 即拒绝。visited 防护让存量环脏数据也不死循环。
+func (r *PermissionGroupRepo) ensureGroupAcyclicParent(ctx context.Context, nodeID, newParentID uint32) error {
+	if newParentID == nodeID {
+		return permissionV1.ErrorBadRequest("cannot move permission group under itself")
+	}
+	rows, err := r.entClient.Client().PermissionGroup.Query().
+		Select(permissiongroup.FieldID, permissiongroup.FieldParentID).
+		All(ctx)
+	if err != nil {
+		r.log.Errorf(ctx, "query permission groups for parent acyclicity check failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("query permission groups failed")
+	}
+	parentOf := make(map[uint32]uint32, len(rows))
+	for _, row := range rows {
+		if row.ParentID != nil && *row.ParentID != 0 {
+			parentOf[row.ID] = *row.ParentID
+		}
+	}
+	visited := make(map[uint32]struct{}, len(rows))
+	cur := newParentID
+	for cur != 0 {
+		if cur == nodeID {
+			return permissionV1.ErrorBadRequest("cannot move permission group under its own descendant")
+		}
+		if _, seen := visited[cur]; seen {
+			break // 存量环（与本节点无关）：放行但不死循环
+		}
+		visited[cur] = struct{}{}
+		cur = parentOf[cur]
+	}
+	return nil
 }
 
 // relocateSubtree 以 parent_id 链为准，BFS 重算 node 及其全部后代的物化路径。

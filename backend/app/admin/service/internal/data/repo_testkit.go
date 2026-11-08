@@ -95,12 +95,13 @@ func NewRoleRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *RoleRepo {
 }
 
 // NewOrgUnitRepoForTest 逐字段复刻 org_unit_repo.go 的 NewOrgUnitRepo
-// （log 换 NopLogger；userOrgUnitRepo 由 testkit 私有构造器组装）。
+// （log 换 NopLogger；userOrgUnitRepo / roleOrgUnitRepo 由 testkit 私有构造器组装）。
 func NewOrgUnitRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *OrgUnitRepo {
 	repo := &OrgUnitRepo{
 		log:             bLogger.NewHelper(bLogger.NopLogger()),
 		entClient:       entClient,
 		userOrgUnitRepo: testkitUserOrgUnitRepo(entClient),
+		roleOrgUnitRepo: testkitRoleOrgUnitRepo(entClient),
 		mapper:          mapper.NewCopierMapper[identityV1.OrgUnit, ent.OrgUnit](),
 		typeConverter:   mapper.NewEnumTypeConverter[identityV1.OrgUnit_Type, orgunit.Type](identityV1.OrgUnit_Type_name, identityV1.OrgUnit_Type_value),
 		statusConverter: mapper.NewEnumTypeConverter[identityV1.OrgUnit_Status, orgunit.Status](identityV1.OrgUnit_Status_name, identityV1.OrgUnit_Status_value),

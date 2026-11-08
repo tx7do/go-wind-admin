@@ -145,10 +145,13 @@ func NewPermissionGroupRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *P
 }
 
 // NewMenuRepoForTest 与生产 NewMenuRepo 逐字段一致（log 换 NopLogger），并调用 init()。
+// permissionMenu 绑定子 repo 由本文件内私有构造器组装（菜单删除级联清授权绑定、
+// 移动/改名改写绑定快照依赖它），装配关系对齐生产。
 func NewMenuRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *MenuRepo {
 	repo := &MenuRepo{
 		log:             bLogger.NewHelper(bLogger.NopLogger()),
 		entClient:       entClient,
+		permissionMenu:  testkitPermissionMenuRepo(entClient),
 		mapper:          mapper.NewCopierMapper[permissionV1.Menu, ent.Menu](),
 		statusConverter: mapper.NewEnumTypeConverter[permissionV1.Menu_Status, entMenu.Status](permissionV1.Menu_Status_name, permissionV1.Menu_Status_value),
 		typeConverter:   mapper.NewEnumTypeConverter[permissionV1.Menu_Type, entMenu.Type](permissionV1.Menu_Type_name, permissionV1.Menu_Type_value),

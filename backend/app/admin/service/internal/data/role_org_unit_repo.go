@@ -76,6 +76,24 @@ func (r *RoleOrgUnitRepo) CleanOrgUnits(
 	return nil
 }
 
+// DeleteByOrgUnitIDs 按单元 id 集合清理角色授权绑定：组织单元子树被删除时
+// 级联调用（OrgUnitRepo.Delete 事务内），消灭角色数据范围配置里指向已删
+// 单元的 stale 引用（与权限删除级联清角色授权同一教义）。
+func (r *RoleOrgUnitRepo) DeleteByOrgUnitIDs(ctx context.Context, tx *ent.Tx, orgUnitIDs []uint32) error {
+	if len(orgUnitIDs) == 0 {
+		return nil
+	}
+	if _, err := tx.RoleOrgUnit.Delete().
+		Where(
+			roleorgunit.OrgUnitIDIn(orgUnitIDs...),
+		).
+		Exec(ctx); err != nil {
+		r.log.Errorf(ctx, "delete role org units by org unit ids failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("delete role org units by org unit ids failed")
+	}
+	return nil
+}
+
 // AssignOrgUnits 给角色分配组织单元授权（upsert，不删除既有）
 func (r *RoleOrgUnitRepo) AssignOrgUnits(ctx context.Context, tx *ent.Tx,
 	tenantID, operatorID uint32,

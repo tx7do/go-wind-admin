@@ -283,10 +283,16 @@ func (r *RolePermissionRepo) RemovePermissions(ctx context.Context, tenantID, ro
 // （管理页单删 / 权限同步 MERGE 的删除段）时级联调用，消灭悬空的角色授权——
 // 权限行重建换 id 后旧绑定指向死行的时代就此终结。
 func (r *RolePermissionRepo) DeleteByPermissionIDs(ctx context.Context, permissionIDs []uint32) error {
+	return r.DeleteByPermissionIDsOnClient(ctx, r.entClient.Client(), permissionIDs)
+}
+
+// DeleteByPermissionIDsOnClient DeleteByPermissionIDs 的 client 形参变体：
+// 权限行删除+级联清理同事务执行时传事务 client。
+func (r *RolePermissionRepo) DeleteByPermissionIDsOnClient(ctx context.Context, client *ent.Client, permissionIDs []uint32) error {
 	if len(permissionIDs) == 0 {
 		return nil
 	}
-	if _, err := r.entClient.Client().RolePermission.Delete().
+	if _, err := client.RolePermission.Delete().
 		Where(
 			rolepermission.PermissionIDIn(permissionIDs...),
 		).
