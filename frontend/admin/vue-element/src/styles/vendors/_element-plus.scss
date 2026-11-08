@@ -302,12 +302,17 @@ body,
 .el-card {
   border-radius: 12px;
   border: 1px solid var(--el-border-color-lighter);
-  box-shadow: var(--el-box-shadow-light);
   transition: box-shadow 0.25s ease;
+}
 
-  &:hover {
-    box-shadow: var(--el-box-shadow-base);
-  }
+/* 亮色静止档（§2.2）：与四张 Pro 卡 / .chat-card 同取 --gowind-card-shadow。投影不能写在上面那块裸
+ * .el-card 里——EP 的 .el-card.is-always-shadow 特异性 (0,2,0) 且组件 CSS 后加载，裸选择器写什么都
+ * 压不住（旧版那行 box-shadow 对 always 卡从来是死规则，2026-11-09 改前实测 profile 卡仍吃 12px 晕）；
+ * 借 html:not(.dark) 前缀抬到 (0,2,1) 才赢。暗色同机制由 _dark-mode.scss 的 html.dark .el-card 定档
+ * （.36 黑轻投影是本端有意的定稿，见 design-language.md §2.2 末注）。hover 卡 hover 瞬间的 12px 晕是
+ * 悬浮反馈档（.is-hover-shadow:hover (0,3,0) 压不住也不该压），保留不动。 */
+html:not(.dark) .el-card {
+  box-shadow: var(--gowind-card-shadow);
 }
 
 /* ---------- 表格高级感 ---------- */
@@ -555,11 +560,12 @@ body,
    * 悬浮才是 `0 4px 12px rgba(0,0,0,.08)`）。原先 Pro 卡/骨架卡直接吃 `--el-box-shadow-light`，
    * 运行时实测是出厂值 `0 0 12px rgba(0,0,0,.12)`——比本端的**悬浮档还重**（.12 > .08），
    * 且没有 Y 偏移（全向扩散），静止态读起来像"发一圈灰光飘着"，层级语言是反的。
-   * 不复用 `--el-box-shadow-light`：它剩下的使用者里**只有两处是页面卡**，其余是浮层
+   * 不复用 `--el-box-shadow-light`：它的使用者全是浮层
    * （下拉 `.el-select-dropdown`/`.el-popper.is-light`、`.el-notification`、通知面板、页签右键菜单、
-   * hover 展开的侧栏覆盖层 —— 这些要的就是那圈 12px 晕，保持不动）。两处页面卡：
-   * 聊天页 `.chat-card`（2026-10-18 已改走本对变量）与 `.el-card`（:282，**亮色仍吃 12px 晕、
-   * 暗色已被 _dark-mode.scss:110 覆成静止档 —— 同一组件两态不同档，属已知待决，未批不动**）。
+   * hover 展开的侧栏覆盖层 —— 这些要的就是那圈 12px 晕，保持不动）。原先两处页面卡均已收编进本对
+   * 变量：聊天页 `.chat-card`（2026-10-18）、`.el-card`（2026-11-09，"卡片精致化"段以
+   * `html:not(.dark) .el-card` 走 `--gowind-card-shadow`——裸 .el-card 压不住 EP 的 .is-always-shadow，
+   * 旧写法本是死规则；暗色 _dark-mode.scss 的 html.dark .el-card 同步换 var，值不变）。
    * 描边同理走 `--gowind-card-border`（§2.2 = #E4E4E7）：EP 的 `--el-border-color-lighter`
    * 运行时实测是出厂 #EBEEF5，比权威淡一档；本文件顶部 `@forward ... with (...)` 那张 map
    * 里的 `#E4E4E7` 到不了运行时（机制同下面那段"页面画布"注释——bootstrap.ts:4 引的是预编译 dist/index.css，

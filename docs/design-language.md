@@ -181,7 +181,8 @@ Tailwind 灰阶（`slate-400` 在白底 2.60、在 `#F5F5F5` 上 2.38，`zinc-50
 > 并删掉一条实测被 antd 规则整体压过、从未生效的 `.ant-pro-table .ant-table-tbody > tr > td { border-bottom: 1px solid }`
 > ——亮/暗两态的行分隔线一直是 antd 的 colorSplit（亮 `#F0F0F0`、暗 6% 白），不是 currentColor 派生的近白色。
 
-> **同一档在 vue-element 的落点**（2026-10-17 已落，明暗两态 + 骨架态实测）：本端四张卡——`ProSearch/.pro-search`、
+> **同一档在 vue-element 的落点**（2026-10-17 已落，明暗两态 + 骨架态实测；2026-10-18 起 `.chat-card`、
+> 2026-11-09 起 `.el-card` 亦同取此档，见下与 §3 核对表）：本端四张卡——`ProSearch/.pro-search`、
 > `ProPage/.pro-page__content`，加骨架镜像 `ProPage/TableSkeleton.vue` 的 `.ts-search` / `.ts-table-card`——原先吃
 > `--el-box-shadow-light`，运行时实测 `0 0 12px rgba(0,0,0,.12)`：**全向、无 Y 偏移，α 比 §2.2 的悬浮档还重**
 > （.12 > .08），静止态读起来"发一圈灰光飘着"，层级语言正好是反的。现统一走本端自建
@@ -193,24 +194,28 @@ Tailwind 灰阶（`slate-400` 在白底 2.60、在 `#F5F5F5` 上 2.38，`zinc-50
 > （`.el-select-dropdown` 与 `.el-popper.is-light` `_element-plus.scss:380`、`.el-notification` `:422`、
 > `NoticeDropdown/index.vue:165`、
 > `LayoutTagsView.vue:1128` 右键菜单、`LeftLayout.vue:118` hover 展开的侧栏覆盖层）；**页面卡两处**——
-> `pages/app/ai/chat/index.vue` 的 `.chat-card` 与 `_element-plus.scss:282` 的 `.el-card`。
+> `pages/app/ai/chat/index.vue` 的 `.chat-card` 与 `_element-plus.scss:302` 的 `.el-card`。
 > **`.chat-card` 已于 2026-10-18 改走 `--gowind-card-shadow` / `--gowind-card-border`**（明暗两态实测：
 > 亮 `0 1px 2px .05` + `#E4E4E7`、暗 `0 1px 2px .36` + 8% 白）。它原先暗色实测是 `0 0 12px rgba(0,0,0,.72)`
 > （EP 暗色把 `--el-box-shadow-light` 覆成 `#000000b8`），正是 ②里 `.el-card` 那一版点名"会在窄间距卡片间叠出黑缝"
-> 的同一档，而会话列表卡与对话卡之间正是窄间距。**`.el-card` 亮色仍是那圈 12px 晕**（暗色已被 `_dark-mode.scss:110`
-> 覆成静止档 ⇒ 同一组件两态不同档），属已知待决、本轮未批不动。
+> 的同一档，而会话列表卡与对话卡之间正是窄间距。**`.el-card` 亮色已于 2026-11-09 批准后同取静止档**：
+> `_element-plus.scss`「卡片精致化」段以 `html:not(.dark) .el-card` 走 `--gowind-card-shadow`（裸 `.el-card`
+> 特异性 (0,1,0) 压不住 EP `.is-always-shadow` 的 (0,2,0)——旧的那行 box-shadow 本是死规则，连同对 hover 卡
+> 生效的 `.el-card:hover` 死块一并删除；暗色 `_dark-mode.scss:111` 同步换 var，值不变）。改前实测：亮色 hover 卡
+> 与 always 卡静止态都吃那圈 `0 0 12px rgba(0,0,0,.12)` 晕（前者来自裸 `.el-card` 无人竞争、后者来自 EP 自带规则），
+> 本轮一并归入静止档；hover 瞬间的 12px 晕（`.is-hover-shadow:hover`）属悬浮反馈档，保留。
 > **另记一条工序教训**：react 的聊天卡在 2026-10-17 就由 `b903f8515` 落到静止档，而本端同一轮只覆盖了四张 Pro 卡，
 > 于是"文档说聊天页是浮层、react 代码把它当静止卡"这对矛盾当天就产生了、没人发现。**判"某处属于哪一档"要看那个元素
 > 是不是页面容器，不能看它吃的是哪个变量**——按变量名归类，等于把"谁还在用旧值"当成"谁该用旧值"。
-> ② **暗色那一档不是新发明**：`_dark-mode.scss:110` 的 `.el-card` 早已采用同一条值，注释原话是 EP 暗色
+> ② **暗色那一档不是新发明**：`_dark-mode.scss:111` 的 `.el-card` 早已采用同一条值，注释原话是 EP 暗色
 > `--el-box-shadow` 为 72% 黑晕、会在窄间距卡片间叠出"黑缝"——那一版已经判过它不对，只是 Pro 卡没跟。
 > ③ **描边抬一档**：`--el-border-color-lighter` 亮 `#EBEEF5`、暗 6% 白，各比权威淡一档，暗侧那 6% 正落在
 > §2.3 点名的"卡片与大底糊成一片"那一档。
 > **暗色两端的档不同是有意的**：react 暗色靠 L1 面 + 8% 白描边分离、投影 `none`；ele 沿用本端 `.el-card`
 > 那一版定稿的黑 α 轻投影（同一端内 `.el-card` 与 Pro 卡必须同档）。描边抬到 8% 白之后两者并存，
 > 若下一轮实测判定暗色投影在 ele 也不显形，可一并收成 `none`——**待决，本轮不动**。
-> 另两条待决：`.el-card`（EP 组件卡）亮侧仍走 12px 晕、暗侧走静止档，同一组件两态不同档；
-> 骨架卡内部线 `.ts-thead` 与真表格线都还是 `#EBEEF5`（同一条 EP 变量），要抬到权威 `#E4E4E7` 得另做一轮。
+> 待决收口一条（2026-11-09）：`.el-card`（EP 组件卡）亮侧已落静止档、两态同取 `--gowind-card-shadow`（见 §2.2 末注）。
+> 余下待决：骨架卡内部线 `.ts-thead` 与真表格线都还是 `#EBEEF5`（同一条 EP 变量），要抬到权威 `#E4E4E7` 得另做一轮。
 
 ### 2.3 中性色 · 暗色模式（权威 = react 六轮定稿）
 
@@ -494,7 +499,7 @@ Tailwind 灰阶（`slate-400` 在白底 2.60、在 `#F5F5F5` 上 2.38，`zinc-50
 | 搜索卡内缩 / 卡间距 / 表格→分页 2.6（2026-10-17 跟齐 react） | `src/components/Pro/ProSearch/index.vue`（`padding: 20px`）、`Pro/ProPage/index.vue`（`gap: 16px` + `__content { padding: 20px }`）、`Pro/ProPagination/index.vue`（`padding: 16px 0 0`，暗色副本在 `_dark-mode.scss:763` 的 `!important`，两处必须一起改） | 实测字段/工具条/表头同落 21px；间距来源**还有一条藏在 JS**：`Pro/ProTable/index.vue` 的高度计算原先 `offsetHeight + 20` 与 CSS padding 叠成 36px，现只减 `offsetHeight`（详见 §2.6 该条注） |
 | vxe 暗色 | `styles/vendors/_vxe-table.scss:180,183,185,187` | 表头 `#1F2937`、表体/布局底 `#111827`、斑马纹 `rgba(255,255,255,.03)` |
 | 卡片圆角 2.4（2026-10-17 由 8 抬到 12，明暗两态实测） | `ProSearch/index.vue`、`ProPage/index.vue` 的 `__content`；骨架镜像 `ProPage/TableSkeleton.vue` 的 `.ts-search` / `.ts-table-card` | 12px（控件仍 8、内层表格面按 `proTableConfig.ts:13` 的 6px；实测外 12 > 输入 8 > 按钮 6 > 表格面 6） |
-| 卡片静止档投影 + 描边 2.2 / 2.3（2026-10-17 落地，明暗两态 + 骨架态实测） | 变量定义 `_element-plus.scss` 的 `:root`（亮）与 `html.dark`（暗）里那两条 `--gowind-card-*`；使用者同上四张卡（`ProSearch/.pro-search`、`ProPage/.pro-page__content`、`TableSkeleton/.ts-search`、`.ts-table-card`） | 亮 `0 1px 2px rgba(0,0,0,.05)` + `#E4E4E7`、暗 `0 1px 2px rgba(0,0,0,.36)` + `rgba(255,255,255,.08)`。**不再吃 `--el-box-shadow-light`**（出厂 12px 全向晕，α 比悬浮档还重），改后它剩下的 7 处使用者全是浮层；`.el-card` 亮侧仍走那条晕，待决。理由与"暗色两端不同档是有意的"见 §2.2 末注 |
+| 卡片静止档投影 + 描边 2.2 / 2.3（2026-10-17 落地，明暗两态 + 骨架态实测；2026-11-09 扩 `.el-card`） | 变量定义 `_element-plus.scss` 的 `:root`（亮）与 `html.dark`（暗）里那两条 `--gowind-card-*`；使用者四张卡（`ProSearch/.pro-search`、`ProPage/.pro-page__content`、`TableSkeleton/.ts-search`、`.ts-table-card`）+ `.chat-card` + `.el-card`（2026-11-09 起，亮 `html:not(.dark) .el-card`、暗 `_dark-mode.scss` 的 `html.dark .el-card`，同走变量） | 亮 `0 1px 2px rgba(0,0,0,.05)` + `#E4E4E7`、暗 `0 1px 2px rgba(0,0,0,.36)` + `rgba(255,255,255,.08)`。**不再吃 `--el-box-shadow-light`**（出厂 12px 全向晕，α 比悬浮档还重），它剩下的使用者全是浮层（hover 卡 hover 瞬间那圈是悬浮反馈档，保留）。理由与"暗色两端不同档是有意的"见 §2.2 末注 |
 | 语义色文字档 2.1 + 次要档 2.2 | `styles/vendors/_element-plus.scss` 的 `--gowind-*-text` 段 | 把 EP 的 `--el-button-text-color` / `--el-tag-text-color` 指到文字档（`.el-button--{type}` 的 `is-link/is-text/is-plain` 三变体 + `.el-tag--{type}`），带 `!important`——unplugin-element-plus 把组件 CSS 追加在本文件之后，不带就输；次要档 `--el-text-color-secondary: #676E7C` |
 
 **沿革（退役旧值）**：主色 `hsl(220 100% 55%)` / `#165DFF`、浅色 canvas `#F7F8FA`、浅色边框 `#E5E6EB`、
@@ -510,7 +515,7 @@ Tailwind 灰阶（`slate-400` 在白底 2.60、在 `#F5F5F5` 上 2.38，`zinc-50
 
 ## 4. 组件级视觉惯例（跨端一致）
 
-- **页面容器**：三端各自容器（react `PageContainer` / ele `ProPage` / vben `Page`），结构统一为：canvas 大底 → 搜索卡片（surface）→ 工具栏 → 表格卡片（surface + 阴影）。**两处口径本轮核准**：① 阴影按 §2.2 只在亮色铺卡片静止档，react 暗色实测 `none`（§2.3 暗色投影须黑 α，白 α 那条已从 `chat-page.css` 清掉）；ele 2026-10-17 起四张卡同取该档、暗色沿用本端 `.el-card` 的黑 α 轻投影——**暗色一端 `none`、一端有轻投影，是两端各自内部一致造成的差异，不是漂移**，理由见 §2.2 末注；② 卡片圆角曾是 ele 离群（它写 8、react/vben 写 12），**2026-10-17 已抬 ele 到 §2.4 的 12px 档并实测明暗两态**，落点与"骨架卡是真卡镜像"这条约束见 §2.4 注。
+- **页面容器**：三端各自容器（react `PageContainer` / ele `ProPage` / vben `Page`），结构统一为：canvas 大底 → 搜索卡片（surface）→ 工具栏 → 表格卡片（surface + 阴影）。**两处口径本轮核准**：① 阴影按 §2.2 只在亮色铺卡片静止档，react 暗色实测 `none`（§2.3 暗色投影须黑 α，白 α 那条已从 `chat-page.css` 清掉）；ele 2026-10-17 起四张卡同取该档（2026-11-09 起 `.el-card` 亦同）、暗色沿用本端 `.el-card` 的黑 α 轻投影——**暗色一端 `none`、一端有轻投影，是两端各自内部一致造成的差异，不是漂移**，理由见 §2.2 末注；② 卡片圆角曾是 ele 离群（它写 8、react/vben 写 12），**2026-10-17 已抬 ele 到 §2.4 的 12px 档并实测明暗两态**，落点与"骨架卡是真卡镜像"这条约束见 §2.4 注。
 - **表格**：无边框 + 斑马纹可选；表头独立色（浅 `#F0F2F5` 系 / 暗 `#1F2937`）；行 hover 用主色 8% α；行高紧凑（≤40px，ele 30px 现状可保留）。**斑马纹值表（2026-10-18 定稿，明暗两态实测）**：ele/vben 的 vxe 全局默认开（ele `proTableConfig.ts:12` `stripe: true` 是共享 ProTable 默认值），react 原先全端唯一没条纹的一端，同日起 `ListTable` 加 `striped` **默认开**（`rowClassName` 挂 `ant-table-row-striped`，页面可显式关）。色值：亮 `var(--ant-color-fill-quaternary)`（≈`#FAFAFA`，与 vxe 亮档 `#F8F8F9` 同档，token 优先）；暗 `rgba(255,255,255,.03)` = §3 vxe 暗色斑马纹既有权威值——antd 同名 token 暗色是 `.06`、重一倍，故暗色显式落规范值不走 token。占位行（暂无数据）不吃条纹；固定列（sticky）的半透明条纹会透出压在下层的文字，与行 hover 透字同一处理：容器底色打底 + 条纹色走 `background-image`，hover 时 `background-image: none` 清掉（react 落点 `pro-components-dark.css`）。
 - **表格工具栏右侧图标钮（2026-10-08 定稿，react ProTable options 为基准 / ele 已对齐）**：无边框裸图标（hover 才铺 fill 底），颜色 = **主文本色阶**（react `colorText` / ele `--el-text-color-primary`，暗 `#F8FAFC` / 亮 `#1F2937`），不用 secondary——次级灰是为次要文字设计的，做图标唯一内容会显虚。**每枚图标必须带 Tooltip**（刷新/密度/列设置/全屏……）。图标名义 16px 是 antd 口径：antd 图标墨迹占 viewBox ≈90%，EP 图标仅 ≈75%，故 ele 的 EP 图标要放到 **18px** 补偿（等效墨迹 13.5px ≈ antd 16px），vben 若用 lucide 同理注意留白差异。
 - **列表操作列（2026-10-21 定稿，react 基准 / ele / vben 三端已全量落地）**：

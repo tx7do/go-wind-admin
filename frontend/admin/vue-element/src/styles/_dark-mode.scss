@@ -107,7 +107,8 @@ html.dark {
     // 暗色分层：EP dark 的 --el-box-shadow 是 72% 黑晕（窄间距卡片间叠出「黑缝」），
     // 但完全无投影又会因卡片(9%L)与画布(7%L)色差过小而边界感塌陷、缝隙成「黑沟」。
     // 取静默态轻投影，保持克制不发光（§2.2 投影精神的暗色对应）。
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.36);
+    // 2026-11-09 起走共享变量（_element-plus.scss html.dark 块定义，值同前），亮暗两侧同一机制。
+    box-shadow: var(--gowind-card-shadow);
   }
 
   // 描述表（el-descriptions，bordered）body 同理归位表面色：
