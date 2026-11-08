@@ -11,8 +11,6 @@ import (
 
 	"go-wind-admin/app/admin/service/cmd/server/assets"
 
-	permissionV1 "go-wind-admin/api/gen/go/permission/service/v1"
-
 	"github.com/tx7do/go-crud/viewer"
 	"github.com/tx7do/go-utils/authorizer"
 	"go-wind-admin/pkg/constants"
@@ -23,18 +21,15 @@ type AuthorizerProvider struct {
 	log *bLogger.Helper
 
 	roleRepo *RoleRepo
-	apiRepo  *ApiRepo
 }
 
 func NewAuthorizerProvider(
 	ctx *bootstrap.Context,
 	roleRepo *RoleRepo,
-	apiRepo *ApiRepo,
 ) authorizer.Provider {
 	return &AuthorizerProvider{
 		log:      ctx.NewLoggerHelper("authorizer-data-provider/data/admin-service"),
 		roleRepo: roleRepo,
-		apiRepo:  apiRepo,
 	}
 }
 
@@ -63,10 +58,8 @@ func (p *AuthorizerProvider) ProvidePolicies(_ context.Context) (authorizer.Perm
 	}
 
 	result := make(authorizer.PermissionDataMap)
-	var apiIDs []uint32
-	var apis []*permissionV1.Api
+	var endpoints []Endpoint
 	for _, role := range roles.Items {
-		//p.log.Infof(context.Background(), _, "processing role: %s", role.GetCode())
 		if role == nil {
 			continue
 		}
@@ -77,37 +70,29 @@ func (p *AuthorizerProvider) ProvidePolicies(_ context.Context) (authorizer.Perm
 			continue
 		}
 
-		apiIDs, err = p.roleRepo.GetRolePermissionApiIDs(ctx, role.GetId())
+		// 绑定存 (path, method) 快照：绑定即策略，直接装载，不再回查 sys_apis。
+		// 端点的删除/重建（API id 漂移）不影响策略有效性。
+		endpoints, err = p.roleRepo.GetRolePermissionApiEndpoints(ctx, role.GetId())
 		if err != nil {
-			p.log.Errorf(context.Background(), "failed to get role [%d] permission api ids: %v", role.GetId(), err)
+			p.log.Errorf(context.Background(), "failed to get role [%d] permission api endpoints: %v", role.GetId(), err)
 			continue
 		}
 
-		// 角色未绑定任何 API 时直接跳过：GetApiByIDs 对空集合返回 400，
-		// 逐角色刷 ERROR 日志纯属误导。
-		if len(apiIDs) == 0 {
-			continue
-		}
-
-		apis, err = p.apiRepo.GetApiByIDs(ctx, apiIDs)
-		if err != nil {
-			p.log.Errorf(context.Background(), "failed to list apis by ids: %v", err)
+		// 角色未绑定任何 API 时直接跳过，逐角色刷 ERROR 日志纯属误导。
+		if len(endpoints) == 0 {
 			continue
 		}
 
 		var authorizerDataArray authorizer.PermissionDataArray
-		for _, api := range apis {
-			if api == nil {
-				continue
-			}
-			if api.GetPath() == "" || api.GetMethod() == "" {
+		for _, e := range endpoints {
+			if e.Path == "" || e.Method == "" {
 				continue
 			}
 
 			var data = authorizer.PermissionData{
 				Domain: strconv.FormatUint(uint64(role.GetTenantId()), 10),
-				Path:   api.GetPath(),
-				Method: api.GetMethod(),
+				Path:   e.Path,
+				Method: e.Method,
 			}
 			authorizerDataArray = append(authorizerDataArray, data)
 		}

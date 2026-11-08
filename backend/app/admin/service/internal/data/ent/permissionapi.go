@@ -32,8 +32,10 @@ type PermissionApi struct {
 	DeletedBy *uint32 `json:"deleted_by,omitempty"`
 	// 权限ID（关联sys_permissions.id）
 	PermissionID *uint32 `json:"permission_id,omitempty"`
-	// API资源ID（关联sys_apis.id）
-	APIID        *uint32 `json:"api_id,omitempty"`
+	// 接口路径（API身份键绑定快照）
+	Path *string `json:"path,omitempty"`
+	// 请求方法（API身份键绑定快照）
+	Method       *string `json:"method,omitempty"`
 	selectValues sql.SelectValues
 }
 
@@ -42,8 +44,10 @@ func (*PermissionApi) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case permissionapi.FieldID, permissionapi.FieldCreatedBy, permissionapi.FieldUpdatedBy, permissionapi.FieldDeletedBy, permissionapi.FieldPermissionID, permissionapi.FieldAPIID:
+		case permissionapi.FieldID, permissionapi.FieldCreatedBy, permissionapi.FieldUpdatedBy, permissionapi.FieldDeletedBy, permissionapi.FieldPermissionID:
 			values[i] = new(sql.NullInt64)
+		case permissionapi.FieldPath, permissionapi.FieldMethod:
+			values[i] = new(sql.NullString)
 		case permissionapi.FieldCreatedAt, permissionapi.FieldUpdatedAt, permissionapi.FieldDeletedAt:
 			values[i] = new(sql.NullTime)
 		default:
@@ -116,12 +120,19 @@ func (_m *PermissionApi) assignValues(columns []string, values []any) error {
 				_m.PermissionID = new(uint32)
 				*_m.PermissionID = uint32(value.Int64)
 			}
-		case permissionapi.FieldAPIID:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field api_id", values[i])
+		case permissionapi.FieldPath:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field path", values[i])
 			} else if value.Valid {
-				_m.APIID = new(uint32)
-				*_m.APIID = uint32(value.Int64)
+				_m.Path = new(string)
+				*_m.Path = value.String
+			}
+		case permissionapi.FieldMethod:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field method", values[i])
+			} else if value.Valid {
+				_m.Method = new(string)
+				*_m.Method = value.String
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -194,9 +205,14 @@ func (_m *PermissionApi) String() string {
 		builder.WriteString(fmt.Sprintf("%v", *v))
 	}
 	builder.WriteString(", ")
-	if v := _m.APIID; v != nil {
-		builder.WriteString("api_id=")
-		builder.WriteString(fmt.Sprintf("%v", *v))
+	if v := _m.Path; v != nil {
+		builder.WriteString("path=")
+		builder.WriteString(*v)
+	}
+	builder.WriteString(", ")
+	if v := _m.Method; v != nil {
+		builder.WriteString("method=")
+		builder.WriteString(*v)
 	}
 	builder.WriteByte(')')
 	return builder.String()

@@ -8,12 +8,10 @@ import (
 	"github.com/tx7do/kratos-bootstrap/bootstrap"
 )
 
-// 显式 ID 写入的表：菜单与接口的种子/重建都自带 id（sys_menus 1..74、sys_apis 1..N），
+// 显式 ID 写入的表：菜单的种子自带 id（sys_menus 1..74），
 // 而 PostgreSQL 的 identity 序列不会因显式 ID 插入而前进，于是序列停在 1。
-const (
-	identityTableMenus = "sys_menus"
-	identityTableApis  = "sys_apis"
-)
+// sys_apis 已改为自然键 MERGE 同步（自增 id、不写显式 id），不再需要对齐。
+const identityTableMenus = "sys_menus"
 
 // alignIdentitySequenceSQL 把 <table>_id_seq 推到 max(id)+1，只前进不回退。
 //
@@ -79,10 +77,4 @@ func alignIdentitySequence(ctx context.Context, db *sql.DB, driver, table string
 // 种子（显式 ID）跑完之后调用，否则「新建菜单」与菜单同步的新增分支必撞 sys_menus_pkey。
 func (r *MenuRepo) AlignIdentitySequence(ctx context.Context) error {
 	return alignIdentitySequence(ctx, r.entClient.DB(), r.driverName, identityTableMenus)
-}
-
-// AlignIdentitySequence 对齐 sys_apis 的 id 序列。
-// 接口同步是 truncate + 按显式 ID 重建，每跑一次都要重新对齐。
-func (r *ApiRepo) AlignIdentitySequence(ctx context.Context) error {
-	return alignIdentitySequence(ctx, r.entClient.DB(), r.driverName, identityTableApis)
 }

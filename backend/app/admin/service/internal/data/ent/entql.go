@@ -1212,7 +1212,8 @@ var schemaGraph = func() *sqlgraph.Schema {
 			permissionapi.FieldUpdatedBy:    {Type: field.TypeUint32, Column: permissionapi.FieldUpdatedBy},
 			permissionapi.FieldDeletedBy:    {Type: field.TypeUint32, Column: permissionapi.FieldDeletedBy},
 			permissionapi.FieldPermissionID: {Type: field.TypeUint32, Column: permissionapi.FieldPermissionID},
-			permissionapi.FieldAPIID:        {Type: field.TypeUint32, Column: permissionapi.FieldAPIID},
+			permissionapi.FieldPath:         {Type: field.TypeString, Column: permissionapi.FieldPath},
+			permissionapi.FieldMethod:       {Type: field.TypeString, Column: permissionapi.FieldMethod},
 		},
 	}
 	graph.Nodes[40] = &sqlgraph.Node{
@@ -7113,9 +7114,14 @@ func (f *PermissionApiFilter) WherePermissionID(p entql.Uint32P) {
 	f.Where(p.Field(permissionapi.FieldPermissionID))
 }
 
-// WhereAPIID applies the entql uint32 predicate on the api_id field.
-func (f *PermissionApiFilter) WhereAPIID(p entql.Uint32P) {
-	f.Where(p.Field(permissionapi.FieldAPIID))
+// WherePath applies the entql string predicate on the path field.
+func (f *PermissionApiFilter) WherePath(p entql.StringP) {
+	f.Where(p.Field(permissionapi.FieldPath))
+}
+
+// WhereMethod applies the entql string predicate on the method field.
+func (f *PermissionApiFilter) WhereMethod(p entql.StringP) {
+	f.Where(p.Field(permissionapi.FieldMethod))
 }
 
 // addPredicate implements the predicateAdder interface.

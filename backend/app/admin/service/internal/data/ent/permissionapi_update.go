@@ -171,24 +171,43 @@ func (_u *PermissionApiUpdate) AddPermissionID(v int32) *PermissionApiUpdate {
 	return _u
 }
 
-// SetAPIID sets the "api_id" field.
-func (_u *PermissionApiUpdate) SetAPIID(v uint32) *PermissionApiUpdate {
-	_u.mutation.ResetAPIID()
-	_u.mutation.SetAPIID(v)
+// SetPath sets the "path" field.
+func (_u *PermissionApiUpdate) SetPath(v string) *PermissionApiUpdate {
+	_u.mutation.SetPath(v)
 	return _u
 }
 
-// SetNillableAPIID sets the "api_id" field if the given value is not nil.
-func (_u *PermissionApiUpdate) SetNillableAPIID(v *uint32) *PermissionApiUpdate {
+// SetNillablePath sets the "path" field if the given value is not nil.
+func (_u *PermissionApiUpdate) SetNillablePath(v *string) *PermissionApiUpdate {
 	if v != nil {
-		_u.SetAPIID(*v)
+		_u.SetPath(*v)
 	}
 	return _u
 }
 
-// AddAPIID adds value to the "api_id" field.
-func (_u *PermissionApiUpdate) AddAPIID(v int32) *PermissionApiUpdate {
-	_u.mutation.AddAPIID(v)
+// ClearPath clears the value of the "path" field.
+func (_u *PermissionApiUpdate) ClearPath() *PermissionApiUpdate {
+	_u.mutation.ClearPath()
+	return _u
+}
+
+// SetMethod sets the "method" field.
+func (_u *PermissionApiUpdate) SetMethod(v string) *PermissionApiUpdate {
+	_u.mutation.SetMethod(v)
+	return _u
+}
+
+// SetNillableMethod sets the "method" field if the given value is not nil.
+func (_u *PermissionApiUpdate) SetNillableMethod(v *string) *PermissionApiUpdate {
+	if v != nil {
+		_u.SetMethod(*v)
+	}
+	return _u
+}
+
+// ClearMethod clears the value of the "method" field.
+func (_u *PermissionApiUpdate) ClearMethod() *PermissionApiUpdate {
+	_u.mutation.ClearMethod()
 	return _u
 }
 
@@ -287,11 +306,17 @@ func (_u *PermissionApiUpdate) sqlSave(ctx context.Context) (_node int, err erro
 	if value, ok := _u.mutation.AddedPermissionID(); ok {
 		_spec.AddField(permissionapi.FieldPermissionID, field.TypeUint32, value)
 	}
-	if value, ok := _u.mutation.APIID(); ok {
-		_spec.SetField(permissionapi.FieldAPIID, field.TypeUint32, value)
+	if value, ok := _u.mutation.Path(); ok {
+		_spec.SetField(permissionapi.FieldPath, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.AddedAPIID(); ok {
-		_spec.AddField(permissionapi.FieldAPIID, field.TypeUint32, value)
+	if _u.mutation.PathCleared() {
+		_spec.ClearField(permissionapi.FieldPath, field.TypeString)
+	}
+	if value, ok := _u.mutation.Method(); ok {
+		_spec.SetField(permissionapi.FieldMethod, field.TypeString, value)
+	}
+	if _u.mutation.MethodCleared() {
+		_spec.ClearField(permissionapi.FieldMethod, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
@@ -457,24 +482,43 @@ func (_u *PermissionApiUpdateOne) AddPermissionID(v int32) *PermissionApiUpdateO
 	return _u
 }
 
-// SetAPIID sets the "api_id" field.
-func (_u *PermissionApiUpdateOne) SetAPIID(v uint32) *PermissionApiUpdateOne {
-	_u.mutation.ResetAPIID()
-	_u.mutation.SetAPIID(v)
+// SetPath sets the "path" field.
+func (_u *PermissionApiUpdateOne) SetPath(v string) *PermissionApiUpdateOne {
+	_u.mutation.SetPath(v)
 	return _u
 }
 
-// SetNillableAPIID sets the "api_id" field if the given value is not nil.
-func (_u *PermissionApiUpdateOne) SetNillableAPIID(v *uint32) *PermissionApiUpdateOne {
+// SetNillablePath sets the "path" field if the given value is not nil.
+func (_u *PermissionApiUpdateOne) SetNillablePath(v *string) *PermissionApiUpdateOne {
 	if v != nil {
-		_u.SetAPIID(*v)
+		_u.SetPath(*v)
 	}
 	return _u
 }
 
-// AddAPIID adds value to the "api_id" field.
-func (_u *PermissionApiUpdateOne) AddAPIID(v int32) *PermissionApiUpdateOne {
-	_u.mutation.AddAPIID(v)
+// ClearPath clears the value of the "path" field.
+func (_u *PermissionApiUpdateOne) ClearPath() *PermissionApiUpdateOne {
+	_u.mutation.ClearPath()
+	return _u
+}
+
+// SetMethod sets the "method" field.
+func (_u *PermissionApiUpdateOne) SetMethod(v string) *PermissionApiUpdateOne {
+	_u.mutation.SetMethod(v)
+	return _u
+}
+
+// SetNillableMethod sets the "method" field if the given value is not nil.
+func (_u *PermissionApiUpdateOne) SetNillableMethod(v *string) *PermissionApiUpdateOne {
+	if v != nil {
+		_u.SetMethod(*v)
+	}
+	return _u
+}
+
+// ClearMethod clears the value of the "method" field.
+func (_u *PermissionApiUpdateOne) ClearMethod() *PermissionApiUpdateOne {
+	_u.mutation.ClearMethod()
 	return _u
 }
 
@@ -603,11 +647,17 @@ func (_u *PermissionApiUpdateOne) sqlSave(ctx context.Context) (_node *Permissio
 	if value, ok := _u.mutation.AddedPermissionID(); ok {
 		_spec.AddField(permissionapi.FieldPermissionID, field.TypeUint32, value)
 	}
-	if value, ok := _u.mutation.APIID(); ok {
-		_spec.SetField(permissionapi.FieldAPIID, field.TypeUint32, value)
+	if value, ok := _u.mutation.Path(); ok {
+		_spec.SetField(permissionapi.FieldPath, field.TypeString, value)
 	}
-	if value, ok := _u.mutation.AddedAPIID(); ok {
-		_spec.AddField(permissionapi.FieldAPIID, field.TypeUint32, value)
+	if _u.mutation.PathCleared() {
+		_spec.ClearField(permissionapi.FieldPath, field.TypeString)
+	}
+	if value, ok := _u.mutation.Method(); ok {
+		_spec.SetField(permissionapi.FieldMethod, field.TypeString, value)
+	}
+	if _u.mutation.MethodCleared() {
+		_spec.ClearField(permissionapi.FieldMethod, field.TypeString)
 	}
 	_spec.AddModifiers(_u.modifiers...)
 	_node = &PermissionApi{config: _u.config}

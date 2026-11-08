@@ -112,9 +112,31 @@ func (_c *PermissionApiCreate) SetPermissionID(v uint32) *PermissionApiCreate {
 	return _c
 }
 
-// SetAPIID sets the "api_id" field.
-func (_c *PermissionApiCreate) SetAPIID(v uint32) *PermissionApiCreate {
-	_c.mutation.SetAPIID(v)
+// SetPath sets the "path" field.
+func (_c *PermissionApiCreate) SetPath(v string) *PermissionApiCreate {
+	_c.mutation.SetPath(v)
+	return _c
+}
+
+// SetNillablePath sets the "path" field if the given value is not nil.
+func (_c *PermissionApiCreate) SetNillablePath(v *string) *PermissionApiCreate {
+	if v != nil {
+		_c.SetPath(*v)
+	}
+	return _c
+}
+
+// SetMethod sets the "method" field.
+func (_c *PermissionApiCreate) SetMethod(v string) *PermissionApiCreate {
+	_c.mutation.SetMethod(v)
+	return _c
+}
+
+// SetNillableMethod sets the "method" field if the given value is not nil.
+func (_c *PermissionApiCreate) SetNillableMethod(v *string) *PermissionApiCreate {
+	if v != nil {
+		_c.SetMethod(*v)
+	}
 	return _c
 }
 
@@ -160,9 +182,6 @@ func (_c *PermissionApiCreate) ExecX(ctx context.Context) {
 func (_c *PermissionApiCreate) check() error {
 	if _, ok := _c.mutation.PermissionID(); !ok {
 		return &ValidationError{Name: "permission_id", err: errors.New(`ent: missing required field "PermissionApi.permission_id"`)}
-	}
-	if _, ok := _c.mutation.APIID(); !ok {
-		return &ValidationError{Name: "api_id", err: errors.New(`ent: missing required field "PermissionApi.api_id"`)}
 	}
 	if v, ok := _c.mutation.ID(); ok {
 		if err := permissionapi.IDValidator(v); err != nil {
@@ -230,9 +249,13 @@ func (_c *PermissionApiCreate) createSpec() (*PermissionApi, *sqlgraph.CreateSpe
 		_spec.SetField(permissionapi.FieldPermissionID, field.TypeUint32, value)
 		_node.PermissionID = &value
 	}
-	if value, ok := _c.mutation.APIID(); ok {
-		_spec.SetField(permissionapi.FieldAPIID, field.TypeUint32, value)
-		_node.APIID = &value
+	if value, ok := _c.mutation.Path(); ok {
+		_spec.SetField(permissionapi.FieldPath, field.TypeString, value)
+		_node.Path = &value
+	}
+	if value, ok := _c.mutation.Method(); ok {
+		_spec.SetField(permissionapi.FieldMethod, field.TypeString, value)
+		_node.Method = &value
 	}
 	return _node, _spec
 }
@@ -412,21 +435,39 @@ func (u *PermissionApiUpsert) AddPermissionID(v uint32) *PermissionApiUpsert {
 	return u
 }
 
-// SetAPIID sets the "api_id" field.
-func (u *PermissionApiUpsert) SetAPIID(v uint32) *PermissionApiUpsert {
-	u.Set(permissionapi.FieldAPIID, v)
+// SetPath sets the "path" field.
+func (u *PermissionApiUpsert) SetPath(v string) *PermissionApiUpsert {
+	u.Set(permissionapi.FieldPath, v)
 	return u
 }
 
-// UpdateAPIID sets the "api_id" field to the value that was provided on create.
-func (u *PermissionApiUpsert) UpdateAPIID() *PermissionApiUpsert {
-	u.SetExcluded(permissionapi.FieldAPIID)
+// UpdatePath sets the "path" field to the value that was provided on create.
+func (u *PermissionApiUpsert) UpdatePath() *PermissionApiUpsert {
+	u.SetExcluded(permissionapi.FieldPath)
 	return u
 }
 
-// AddAPIID adds v to the "api_id" field.
-func (u *PermissionApiUpsert) AddAPIID(v uint32) *PermissionApiUpsert {
-	u.Add(permissionapi.FieldAPIID, v)
+// ClearPath clears the value of the "path" field.
+func (u *PermissionApiUpsert) ClearPath() *PermissionApiUpsert {
+	u.SetNull(permissionapi.FieldPath)
+	return u
+}
+
+// SetMethod sets the "method" field.
+func (u *PermissionApiUpsert) SetMethod(v string) *PermissionApiUpsert {
+	u.Set(permissionapi.FieldMethod, v)
+	return u
+}
+
+// UpdateMethod sets the "method" field to the value that was provided on create.
+func (u *PermissionApiUpsert) UpdateMethod() *PermissionApiUpsert {
+	u.SetExcluded(permissionapi.FieldMethod)
+	return u
+}
+
+// ClearMethod clears the value of the "method" field.
+func (u *PermissionApiUpsert) ClearMethod() *PermissionApiUpsert {
+	u.SetNull(permissionapi.FieldMethod)
 	return u
 }
 
@@ -628,24 +669,45 @@ func (u *PermissionApiUpsertOne) UpdatePermissionID() *PermissionApiUpsertOne {
 	})
 }
 
-// SetAPIID sets the "api_id" field.
-func (u *PermissionApiUpsertOne) SetAPIID(v uint32) *PermissionApiUpsertOne {
+// SetPath sets the "path" field.
+func (u *PermissionApiUpsertOne) SetPath(v string) *PermissionApiUpsertOne {
 	return u.Update(func(s *PermissionApiUpsert) {
-		s.SetAPIID(v)
+		s.SetPath(v)
 	})
 }
 
-// AddAPIID adds v to the "api_id" field.
-func (u *PermissionApiUpsertOne) AddAPIID(v uint32) *PermissionApiUpsertOne {
+// UpdatePath sets the "path" field to the value that was provided on create.
+func (u *PermissionApiUpsertOne) UpdatePath() *PermissionApiUpsertOne {
 	return u.Update(func(s *PermissionApiUpsert) {
-		s.AddAPIID(v)
+		s.UpdatePath()
 	})
 }
 
-// UpdateAPIID sets the "api_id" field to the value that was provided on create.
-func (u *PermissionApiUpsertOne) UpdateAPIID() *PermissionApiUpsertOne {
+// ClearPath clears the value of the "path" field.
+func (u *PermissionApiUpsertOne) ClearPath() *PermissionApiUpsertOne {
 	return u.Update(func(s *PermissionApiUpsert) {
-		s.UpdateAPIID()
+		s.ClearPath()
+	})
+}
+
+// SetMethod sets the "method" field.
+func (u *PermissionApiUpsertOne) SetMethod(v string) *PermissionApiUpsertOne {
+	return u.Update(func(s *PermissionApiUpsert) {
+		s.SetMethod(v)
+	})
+}
+
+// UpdateMethod sets the "method" field to the value that was provided on create.
+func (u *PermissionApiUpsertOne) UpdateMethod() *PermissionApiUpsertOne {
+	return u.Update(func(s *PermissionApiUpsert) {
+		s.UpdateMethod()
+	})
+}
+
+// ClearMethod clears the value of the "method" field.
+func (u *PermissionApiUpsertOne) ClearMethod() *PermissionApiUpsertOne {
+	return u.Update(func(s *PermissionApiUpsert) {
+		s.ClearMethod()
 	})
 }
 
@@ -1012,24 +1074,45 @@ func (u *PermissionApiUpsertBulk) UpdatePermissionID() *PermissionApiUpsertBulk 
 	})
 }
 
-// SetAPIID sets the "api_id" field.
-func (u *PermissionApiUpsertBulk) SetAPIID(v uint32) *PermissionApiUpsertBulk {
+// SetPath sets the "path" field.
+func (u *PermissionApiUpsertBulk) SetPath(v string) *PermissionApiUpsertBulk {
 	return u.Update(func(s *PermissionApiUpsert) {
-		s.SetAPIID(v)
+		s.SetPath(v)
 	})
 }
 
-// AddAPIID adds v to the "api_id" field.
-func (u *PermissionApiUpsertBulk) AddAPIID(v uint32) *PermissionApiUpsertBulk {
+// UpdatePath sets the "path" field to the value that was provided on create.
+func (u *PermissionApiUpsertBulk) UpdatePath() *PermissionApiUpsertBulk {
 	return u.Update(func(s *PermissionApiUpsert) {
-		s.AddAPIID(v)
+		s.UpdatePath()
 	})
 }
 
-// UpdateAPIID sets the "api_id" field to the value that was provided on create.
-func (u *PermissionApiUpsertBulk) UpdateAPIID() *PermissionApiUpsertBulk {
+// ClearPath clears the value of the "path" field.
+func (u *PermissionApiUpsertBulk) ClearPath() *PermissionApiUpsertBulk {
 	return u.Update(func(s *PermissionApiUpsert) {
-		s.UpdateAPIID()
+		s.ClearPath()
+	})
+}
+
+// SetMethod sets the "method" field.
+func (u *PermissionApiUpsertBulk) SetMethod(v string) *PermissionApiUpsertBulk {
+	return u.Update(func(s *PermissionApiUpsert) {
+		s.SetMethod(v)
+	})
+}
+
+// UpdateMethod sets the "method" field to the value that was provided on create.
+func (u *PermissionApiUpsertBulk) UpdateMethod() *PermissionApiUpsertBulk {
+	return u.Update(func(s *PermissionApiUpsert) {
+		s.UpdateMethod()
+	})
+}
+
+// ClearMethod clears the value of the "method" field.
+func (u *PermissionApiUpsertBulk) ClearMethod() *PermissionApiUpsertBulk {
+	return u.Update(func(s *PermissionApiUpsert) {
+		s.ClearMethod()
 	})
 }
 

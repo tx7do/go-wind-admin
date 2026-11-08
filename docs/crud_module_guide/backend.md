@@ -394,7 +394,7 @@ Consequences for a new module:
 
 - **Fresh deployment**: everything (including Api registry rows) appears automatically on first boot.
 - **Existing deployment never re-seeds.** Adding entries to `DefaultMenus` / `DefaultRoles` / etc. changes nothing on a running instance — new menus go in via the 菜单管理 admin page.
-- **New endpoints don't auto-register** into the Api table once it's non-empty. After deploying, run 接口管理 →「接口同步」(`SyncApis` RPC: truncate + full rebuild from OpenAPI). Until then the tenant access checker's `(path, method)` lookup fails closed with 403 for tenant users.
+- **New endpoints don't auto-register** into the Api table once it's non-empty. After deploying, run 接口管理 →「接口同步」(`SyncApis` RPC: single-transaction MERGE by the natural key `(path, method)` — existing rows keep their ids and permission bindings; endpoints missing from the spec are removed along with their bindings). Until then the tenant access checker's `(path, method)` lookup fails closed with 403 for tenant users.
 - If the module needs its own built-in rows (like default dict types), follow the same pattern: data in `pkg/constants/default_data.go`, seeded from the service's `init()` behind `count == 0`.
 
 ## Backend-specific pitfalls

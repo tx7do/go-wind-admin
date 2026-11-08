@@ -185,8 +185,8 @@ func (r *RoleRepo) ListPermissionIDsByRoleCodes(ctx context.Context, codes []str
 	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: ListPermissionIDsByRoleCodes not implemented — ent cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
-func (r *RoleRepo) GetRolePermissionApiIDs(ctx context.Context, roleID uint32) ([]uint32, error) {
-	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: GetRolePermissionApiIDs not implemented — ent cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
+func (r *RoleRepo) GetRolePermissionApiEndpoints(ctx context.Context, roleID uint32) ([]Endpoint, error) {
+	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: GetRolePermissionApiEndpoints not implemented — ent cross-repo delegation has no go-crud/gorm primitive; see data/role_repo.go")
 }
 
 func (r *RoleRepo) GetRolePermissionMenuIDs(ctx context.Context, roleID uint32) ([]uint32, error) {

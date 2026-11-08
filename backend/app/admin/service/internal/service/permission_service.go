@@ -8,6 +8,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"github.com/tx7do/go-utils/aggregator"
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/emptypb"
 
 	paginationV1 "github.com/tx7do/go-crud/api/gen/go/pagination/v1"
@@ -572,9 +573,43 @@ func (s *PermissionService) SyncPermissions(ctx context.Context, _ *emptypb.Empt
 func (s *PermissionService) createDefaultPermissions(ctx context.Context) error {
 	var err error
 
+	// 模板权限种子里的 ApiIds 语义是"播种当下的端点全量/子集快照"。旧实现按
+	// 硬编码 id 段（1..N）绑定，只有配合旧的 Truncate+顺序重编号同步才碰巧成立，
+	// 且每次同步全表洗牌后漂成随机集合。绑定键换成端点快照后，这里先把引用收敛
+	// 到当下真实存在的端点再落库：缺失引用剔除并 WARN（引导期 best-effort，非
+	// 用户操作，不走 fail-closed——测试/最小安装里 sys_apis 可能为空或规模不同）。
+	// 必须克隆后改写：DefaultPermissions 是包级常量，原地改会污染全局。
+	existingApiIDs, err := s.apiRepo.ListAllIDs(ctx)
+	if err != nil {
+		return err
+	}
+	apiIDSet := make(map[uint32]struct{}, len(existingApiIDs))
+	for _, id := range existingApiIDs {
+		apiIDSet[id] = struct{}{}
+	}
+
 	for _, d := range constants.DefaultPermissions {
+		data := proto.Clone(d).(*permissionV1.Permission)
+		if data.GetCode() == constants.SystemPlatformAdminPermissionCode {
+			// 平台管理员 = 全部端点：意图显式化，规模随当前 spec 走，
+			// 不再依赖种子里的硬编码 id 段
+			data.ApiIds = append(data.ApiIds[:0:0], existingApiIDs...)
+		} else if len(data.ApiIds) > 0 {
+			kept := make([]uint32, 0, len(data.ApiIds))
+			for _, id := range data.GetApiIds() {
+				if _, ok := apiIDSet[id]; ok {
+					kept = append(kept, id)
+				}
+			}
+			if dropped := len(data.GetApiIds()) - len(kept); dropped > 0 {
+				s.log.Warnf(ctx, "default permission [%s] drops %d stale api id refs (seed binds existing endpoints only)",
+					d.GetCode(), dropped)
+			}
+			data.ApiIds = kept
+		}
+
 		if err = s.permissionRepo.Create(ctx, &permissionV1.CreatePermissionRequest{
-			Data: d,
+			Data: data,
 		}); err != nil {
 			s.log.Errorf(ctx, "create default permission %s failed: %v", d.GetCode(), err)
 			return err

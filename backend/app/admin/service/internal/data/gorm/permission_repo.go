@@ -32,18 +32,23 @@ type PermissionRepo struct {
 	repository       *gormCrud.Repository[permissionV1.Permission, models.Permission]
 	structuredFilter *gormCrudFilter.StructuredFilter
 	statusConverter  *mapper.EnumTypeConverter[permissionV1.Permission_Status, string]
+
+	// permissionApiRepo 绑定子 repo：端点快照反查用（与 data 栈同构）。
+	permissionApiRepo *PermissionApiRepo
 }
 
 func NewPermissionRepo(
 	ctx *bootstrap.Context,
 	client *gormCrud.Client,
+	permissionApiRepo *PermissionApiRepo,
 ) *PermissionRepo {
 	repo := &PermissionRepo{
-		log:              ctx.NewLoggerHelper("permission/gorm-repo/admin-service"),
-		client:           client,
-		mapper:           mapper.NewCopierMapper[permissionV1.Permission, models.Permission](),
-		structuredFilter: gormCrudFilter.NewStructuredFilter(),
-		statusConverter:  mapper.NewEnumTypeConverter[permissionV1.Permission_Status, string](permissionV1.Permission_Status_name, permissionV1.Permission_Status_value),
+		log:               ctx.NewLoggerHelper("permission/gorm-repo/admin-service"),
+		client:            client,
+		mapper:            mapper.NewCopierMapper[permissionV1.Permission, models.Permission](),
+		structuredFilter:  gormCrudFilter.NewStructuredFilter(),
+		statusConverter:   mapper.NewEnumTypeConverter[permissionV1.Permission_Status, string](permissionV1.Permission_Status_name, permissionV1.Permission_Status_value),
+		permissionApiRepo: permissionApiRepo,
 	}
 
 	repo.init()
@@ -178,8 +183,10 @@ func (r *PermissionRepo) CleanMenuPermissions(ctx context.Context) error {
 	return permissionV1.ErrorInternalServerError("gorm scaffold: CleanMenuPermissions not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/permission_repo.go")
 }
 
-func (r *PermissionRepo) ListApiIDsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {
-	return nil, permissionV1.ErrorInternalServerError("gorm scaffold: ListApiIDsByPermissionIDs not implemented — ent cross-repo bridge-table delegation has no go-crud/gorm primitive; see data/permission_repo.go")
+// ListApiEndpointsByPermissionIDs 列出权限关联的端点快照（(path, method)，
+// 授权执行键；绑定表即真相，不回查 sys_apis）。与 data 栈同名方法语义一致。
+func (r *PermissionRepo) ListApiEndpointsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]Endpoint, error) {
+	return r.permissionApiRepo.ListEndpoints(ctx, permissionIDs)
 }
 
 func (r *PermissionRepo) ListMenuIDsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {

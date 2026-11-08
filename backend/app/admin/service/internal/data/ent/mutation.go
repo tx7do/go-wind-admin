@@ -63079,8 +63079,8 @@ type PermissionApiMutation struct {
 	adddeleted_by    *int32
 	permission_id    *uint32
 	addpermission_id *int32
-	api_id           *uint32
-	addapi_id        *int32
+	_path            *string
+	method           *string
 	clearedFields    map[string]struct{}
 	done             bool
 	oldValue         func(context.Context) (*PermissionApi, error)
@@ -63604,60 +63604,102 @@ func (m *PermissionApiMutation) ResetPermissionID() {
 	m.addpermission_id = nil
 }
 
-// SetAPIID sets the "api_id" field.
-func (m *PermissionApiMutation) SetAPIID(u uint32) {
-	m.api_id = &u
-	m.addapi_id = nil
+// SetPath sets the "path" field.
+func (m *PermissionApiMutation) SetPath(s string) {
+	m._path = &s
 }
 
-// APIID returns the value of the "api_id" field in the mutation.
-func (m *PermissionApiMutation) APIID() (r uint32, exists bool) {
-	v := m.api_id
+// Path returns the value of the "path" field in the mutation.
+func (m *PermissionApiMutation) Path() (r string, exists bool) {
+	v := m._path
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldAPIID returns the old "api_id" field's value of the PermissionApi entity.
+// OldPath returns the old "path" field's value of the PermissionApi entity.
 // If the PermissionApi object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *PermissionApiMutation) OldAPIID(ctx context.Context) (v *uint32, err error) {
+func (m *PermissionApiMutation) OldPath(ctx context.Context) (v *string, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldAPIID is only allowed on UpdateOne operations")
+		return v, errors.New("OldPath is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldAPIID requires an ID field in the mutation")
+		return v, errors.New("OldPath requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldAPIID: %w", err)
+		return v, fmt.Errorf("querying old value for OldPath: %w", err)
 	}
-	return oldValue.APIID, nil
+	return oldValue.Path, nil
 }
 
-// AddAPIID adds u to the "api_id" field.
-func (m *PermissionApiMutation) AddAPIID(u int32) {
-	if m.addapi_id != nil {
-		*m.addapi_id += u
-	} else {
-		m.addapi_id = &u
-	}
+// ClearPath clears the value of the "path" field.
+func (m *PermissionApiMutation) ClearPath() {
+	m._path = nil
+	m.clearedFields[permissionapi.FieldPath] = struct{}{}
 }
 
-// AddedAPIID returns the value that was added to the "api_id" field in this mutation.
-func (m *PermissionApiMutation) AddedAPIID() (r int32, exists bool) {
-	v := m.addapi_id
+// PathCleared returns if the "path" field was cleared in this mutation.
+func (m *PermissionApiMutation) PathCleared() bool {
+	_, ok := m.clearedFields[permissionapi.FieldPath]
+	return ok
+}
+
+// ResetPath resets all changes to the "path" field.
+func (m *PermissionApiMutation) ResetPath() {
+	m._path = nil
+	delete(m.clearedFields, permissionapi.FieldPath)
+}
+
+// SetMethod sets the "method" field.
+func (m *PermissionApiMutation) SetMethod(s string) {
+	m.method = &s
+}
+
+// Method returns the value of the "method" field in the mutation.
+func (m *PermissionApiMutation) Method() (r string, exists bool) {
+	v := m.method
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// ResetAPIID resets all changes to the "api_id" field.
-func (m *PermissionApiMutation) ResetAPIID() {
-	m.api_id = nil
-	m.addapi_id = nil
+// OldMethod returns the old "method" field's value of the PermissionApi entity.
+// If the PermissionApi object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *PermissionApiMutation) OldMethod(ctx context.Context) (v *string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldMethod is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldMethod requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldMethod: %w", err)
+	}
+	return oldValue.Method, nil
+}
+
+// ClearMethod clears the value of the "method" field.
+func (m *PermissionApiMutation) ClearMethod() {
+	m.method = nil
+	m.clearedFields[permissionapi.FieldMethod] = struct{}{}
+}
+
+// MethodCleared returns if the "method" field was cleared in this mutation.
+func (m *PermissionApiMutation) MethodCleared() bool {
+	_, ok := m.clearedFields[permissionapi.FieldMethod]
+	return ok
+}
+
+// ResetMethod resets all changes to the "method" field.
+func (m *PermissionApiMutation) ResetMethod() {
+	m.method = nil
+	delete(m.clearedFields, permissionapi.FieldMethod)
 }
 
 // Where appends a list predicates to the PermissionApiMutation builder.
@@ -63694,7 +63736,7 @@ func (m *PermissionApiMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *PermissionApiMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 9)
 	if m.created_at != nil {
 		fields = append(fields, permissionapi.FieldCreatedAt)
 	}
@@ -63716,8 +63758,11 @@ func (m *PermissionApiMutation) Fields() []string {
 	if m.permission_id != nil {
 		fields = append(fields, permissionapi.FieldPermissionID)
 	}
-	if m.api_id != nil {
-		fields = append(fields, permissionapi.FieldAPIID)
+	if m._path != nil {
+		fields = append(fields, permissionapi.FieldPath)
+	}
+	if m.method != nil {
+		fields = append(fields, permissionapi.FieldMethod)
 	}
 	return fields
 }
@@ -63741,8 +63786,10 @@ func (m *PermissionApiMutation) Field(name string) (ent.Value, bool) {
 		return m.DeletedBy()
 	case permissionapi.FieldPermissionID:
 		return m.PermissionID()
-	case permissionapi.FieldAPIID:
-		return m.APIID()
+	case permissionapi.FieldPath:
+		return m.Path()
+	case permissionapi.FieldMethod:
+		return m.Method()
 	}
 	return nil, false
 }
@@ -63766,8 +63813,10 @@ func (m *PermissionApiMutation) OldField(ctx context.Context, name string) (ent.
 		return m.OldDeletedBy(ctx)
 	case permissionapi.FieldPermissionID:
 		return m.OldPermissionID(ctx)
-	case permissionapi.FieldAPIID:
-		return m.OldAPIID(ctx)
+	case permissionapi.FieldPath:
+		return m.OldPath(ctx)
+	case permissionapi.FieldMethod:
+		return m.OldMethod(ctx)
 	}
 	return nil, fmt.Errorf("unknown PermissionApi field %s", name)
 }
@@ -63826,12 +63875,19 @@ func (m *PermissionApiMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetPermissionID(v)
 		return nil
-	case permissionapi.FieldAPIID:
-		v, ok := value.(uint32)
+	case permissionapi.FieldPath:
+		v, ok := value.(string)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetAPIID(v)
+		m.SetPath(v)
+		return nil
+	case permissionapi.FieldMethod:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetMethod(v)
 		return nil
 	}
 	return fmt.Errorf("unknown PermissionApi field %s", name)
@@ -63853,9 +63909,6 @@ func (m *PermissionApiMutation) AddedFields() []string {
 	if m.addpermission_id != nil {
 		fields = append(fields, permissionapi.FieldPermissionID)
 	}
-	if m.addapi_id != nil {
-		fields = append(fields, permissionapi.FieldAPIID)
-	}
 	return fields
 }
 
@@ -63872,8 +63925,6 @@ func (m *PermissionApiMutation) AddedField(name string) (ent.Value, bool) {
 		return m.AddedDeletedBy()
 	case permissionapi.FieldPermissionID:
 		return m.AddedPermissionID()
-	case permissionapi.FieldAPIID:
-		return m.AddedAPIID()
 	}
 	return nil, false
 }
@@ -63911,13 +63962,6 @@ func (m *PermissionApiMutation) AddField(name string, value ent.Value) error {
 		}
 		m.AddPermissionID(v)
 		return nil
-	case permissionapi.FieldAPIID:
-		v, ok := value.(int32)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddAPIID(v)
-		return nil
 	}
 	return fmt.Errorf("unknown PermissionApi numeric field %s", name)
 }
@@ -63943,6 +63987,12 @@ func (m *PermissionApiMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(permissionapi.FieldDeletedBy) {
 		fields = append(fields, permissionapi.FieldDeletedBy)
+	}
+	if m.FieldCleared(permissionapi.FieldPath) {
+		fields = append(fields, permissionapi.FieldPath)
+	}
+	if m.FieldCleared(permissionapi.FieldMethod) {
+		fields = append(fields, permissionapi.FieldMethod)
 	}
 	return fields
 }
@@ -63976,6 +64026,12 @@ func (m *PermissionApiMutation) ClearField(name string) error {
 	case permissionapi.FieldDeletedBy:
 		m.ClearDeletedBy()
 		return nil
+	case permissionapi.FieldPath:
+		m.ClearPath()
+		return nil
+	case permissionapi.FieldMethod:
+		m.ClearMethod()
+		return nil
 	}
 	return fmt.Errorf("unknown PermissionApi nullable field %s", name)
 }
@@ -64005,8 +64061,11 @@ func (m *PermissionApiMutation) ResetField(name string) error {
 	case permissionapi.FieldPermissionID:
 		m.ResetPermissionID()
 		return nil
-	case permissionapi.FieldAPIID:
-		m.ResetAPIID()
+	case permissionapi.FieldPath:
+		m.ResetPath()
+		return nil
+	case permissionapi.FieldMethod:
+		m.ResetMethod()
 		return nil
 	}
 	return fmt.Errorf("unknown PermissionApi field %s", name)

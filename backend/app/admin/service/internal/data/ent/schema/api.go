@@ -102,10 +102,12 @@ func (Api) Mixin() []ent.Mixin {
 // Indexes of the Api.
 func (Api) Indexes() []ent.Index {
 	return []ent.Index{
-		// 在模块范围内保持同一路径/方法/作用域唯一，防止重复注册
-		index.Fields("module", "path", "method", "scope").
+		// (path, method) 是 API 的身份键：权限绑定（sys_permission_apis）、
+		// 租户闸门、authorizer 策略都以它为键，必须全局唯一；
+		// module/scope 只是元数据，不参与身份判定。
+		index.Fields("path", "method").
 			Unique().
-			StorageKey("idx_sys_api_res_module_path_method_scope"),
+			StorageKey("uix_sys_api_res_path_method"),
 
 		// 按模块快速检索
 		index.Fields("module").
@@ -118,10 +120,6 @@ func (Api) Indexes() []ent.Index {
 		// 按业务功能模块过滤（套餐白名单）
 		index.Fields("business_module").
 			StorageKey("idx_sys_api_res_business_module"),
-
-		// 按路径 + 方法 快速定位接口
-		index.Fields("path", "method").
-			StorageKey("idx_sys_api_res_path_method"),
 
 		// 操作者 + 创建时间，用于审计回溯（时间列放末尾以利于范围扫描）
 		index.Fields("created_by", "created_at").

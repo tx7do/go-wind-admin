@@ -611,14 +611,15 @@ func (r *PermissionRepo) TruncateBizPermissions(ctx context.Context) error {
 	return nil
 }
 
-// ListApiIDsByPermissionIDs 列出权限关联的API资源ID列表
-func (r *PermissionRepo) ListApiIDsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]uint32, error) {
-	apiIDs, err := r.permissionApiRepo.ListApiIDs(ctx, permissionIDs)
+// ListApiEndpointsByPermissionIDs 列出权限关联的端点快照（(path, method)，
+// 授权执行键；绑定表即真相，不再回查 sys_apis）
+func (r *PermissionRepo) ListApiEndpointsByPermissionIDs(ctx context.Context, permissionIDs []uint32) ([]Endpoint, error) {
+	endpoints, err := r.permissionApiRepo.ListEndpoints(ctx, permissionIDs)
 	if err != nil {
 		return nil, err
 	}
 
-	return apiIDs, nil
+	return endpoints, nil
 }
 
 // ListMenuIDsByPermissionIDs 列出权限关联的菜单ID列表

@@ -105,6 +105,7 @@ func NewPositionRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *Position
 }
 
 // NewApiRepoForTest 与生产 NewApiRepo 逐字段一致（log 换 NopLogger），并调用 init()。
+// 绑定子 repo（SyncMerge/级联清理依赖）由本文件内私有构造器组装，装配关系对齐生产。
 func NewApiRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *ApiRepo {
 	repo := &ApiRepo{
 		log:       bLogger.NewHelper(bLogger.NopLogger()),
@@ -119,6 +120,7 @@ func NewApiRepoForTest(entClient *entCrud.EntClient[*ent.Client]) *ApiRepo {
 		businessModuleConverter: mapper.NewEnumTypeConverter[identityV1.Module, entApi.BusinessModule](
 			identityV1.Module_name, identityV1.Module_value,
 		),
+		permissionApi: testkitPermissionApiRepo(entClient),
 	}
 
 	repo.init()

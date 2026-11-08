@@ -130,7 +130,8 @@ func TestPermissionService_syncWithOpenAPI_EmptyPaths(t *testing.T) {
 
 	// 无 paths 键：加载成功但 Paths==nil → 内部错误
 	assets.OpenApiData = []byte("openapi: 3.0.0\ninfo:\n  title: empty-paths-test\n  version: \"1.0\"\n")
-	err := apiSvc.syncWithOpenAPI(ctx)
+	var apis []*permissionV1.Api
+	apis, err := apiSvc.loadApisFromOpenAPI(ctx)
 	require.Error(t, err, "无 paths 键的文档应触发 paths is nil 内部错误")
 	require.True(t, adminV1.IsInternalServerError(err))
 	require.ErrorContains(t, err, "paths is nil", "应命中 Paths==nil 分支")
@@ -140,7 +141,12 @@ func TestPermissionService_syncWithOpenAPI_EmptyPaths(t *testing.T) {
 
 	// 空 paths 对象：同步空集成功
 	assets.OpenApiData = []byte("openapi: 3.0.0\ninfo:\n  title: empty-paths-test\n  version: \"1.0\"\npaths: {}\n")
-	require.NoError(t, apiSvc.syncWithOpenAPI(ctx), "空 paths 对象应同步空集成功")
+	apis, err = apiSvc.loadApisFromOpenAPI(ctx)
+	require.NoError(t, err, "空 paths 对象应加载成功")
+	require.Empty(t, apis, "空 paths 对象不应产出端点")
+	added, _, _, serr := apiSvc.repo.SyncMerge(ctx, apis, 0)
+	require.NoError(t, serr, "空集合同步应成功")
+	require.Zero(t, added, "空集合同步不应新增")
 	cnt, qerr = entClient.Client().Api.Query().Count(ctx)
 	require.NoError(t, qerr)
 	require.Zero(t, cnt, "空集同步不应落行")

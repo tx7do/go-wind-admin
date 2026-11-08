@@ -24,14 +24,14 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/enttest"
 )
 
-// newAuthorizerProviderForTest 组装被测 Provider（真 RoleRepo/ApiRepo 走 SQLite 内存库）。
+// newAuthorizerProviderForTest 组装被测 Provider（真 RoleRepo 走 SQLite 内存库；
+// 绑定存端点快照后装载不再需要 ApiRepo）。
 func newAuthorizerProviderForTest(t *testing.T) (*AuthorizerProvider, *entCrud.EntClient[*ent.Client]) {
 	t.Helper()
 	entClient := enttest.NewEntClientForTest(t)
 	p := &AuthorizerProvider{
 		log:      bLogger.NewHelper(bLogger.NopLogger()),
 		roleRepo: NewRoleRepoForTest(entClient),
-		apiRepo:  NewApiRepoForTest(entClient),
 	}
 	return p, entClient
 }
@@ -58,16 +58,12 @@ func TestAuthorizerProvider_ProvidePoliciesFilters(t *testing.T) {
 	client := entClient.Client()
 
 	// —— 场景数据 ——
-	apiGet, err := client.Api.Create().
+	// sys_apis 里有这条端点（现实形态）；但装载不再回查它——绑定快照即策略
+	_, err := client.Api.Create().
 		SetNillablePath(trans.Ptr("/admin/v1/orders")).
 		SetNillableMethod(trans.Ptr("GET")).
 		Save(ctx)
 	require.NoError(t, err, "直建 api 应成功")
-
-	apiNoPath, err := client.Api.Create().
-		SetNillableMethod(trans.Ptr("POST")).
-		Save(ctx)
-	require.NoError(t, err, "缺 path 的 api 行也应能落库（脏数据在库是常态）")
 
 	perm, err := client.Permission.Create().
 		SetName("策略装载测试权限").
@@ -75,14 +71,17 @@ func TestAuthorizerProvider_ProvidePoliciesFilters(t *testing.T) {
 		Save(ctx)
 	require.NoError(t, err)
 
+	// 绑定存端点快照：正常绑定落 (path, method)；脏绑定缺 path/method（历史
+	// 数据/迁移半途的残留），装载器按空端点跳过
 	require.NoError(t, client.PermissionApi.Create().
 		SetPermissionID(perm.ID).
-		SetAPIID(apiGet.ID).
-		Exec(ctx), "权限绑定正常 api")
+		SetPath("/admin/v1/orders").
+		SetMethod("GET").
+		Exec(ctx), "权限绑定正常端点快照")
 	require.NoError(t, client.PermissionApi.Create().
 		SetPermissionID(perm.ID).
-		SetAPIID(apiNoPath.ID).
-		Exec(ctx), "权限绑定缺 path 的 api（应被装载器跳过）")
+		SetMethod("POST").
+		Exec(ctx), "权限绑定缺 path 的脏绑定行（应被装载器跳过）")
 
 	// 正常角色（租户 7）：绑定权限 → 应产出一条 policy
 	roleNormal, err := client.Role.Create().

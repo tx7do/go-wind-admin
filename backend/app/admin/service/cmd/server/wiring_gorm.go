@@ -84,6 +84,10 @@ func newGormRepos(ctx *bootstrap.Context) (*gormRepos, *gormCrud.Client, error) 
 		return nil, nil, err
 	}
 
+	// 绑定子仓储先行构造：permission_repo / api_repo（端点级联）都依赖它，
+	// 字面量内无法自引用，先落局部变量再填进结构体。
+	permissionApiRepo := gormData.NewPermissionApiRepo(ctx, client)
+
 	r := &gormRepos{
 		// 身份与账号
 		userRoleRepo:     gormData.NewUserRoleRepo(ctx, client),
@@ -97,13 +101,13 @@ func newGormRepos(ctx *bootstrap.Context) (*gormRepos, *gormCrud.Client, error) 
 		tenantRepo:      gormData.NewTenantRepo(ctx, client),
 		tenantUsageRepo: gormData.NewTenantUsageRepo(ctx),
 		// RBAC
-		permissionApiRepo:   gormData.NewPermissionApiRepo(ctx, client),
+		permissionApiRepo:   permissionApiRepo,
 		permissionMenuRepo:  gormData.NewPermissionMenuRepo(ctx, client),
 		rolePermissionRepo:  gormData.NewRolePermissionRepo(ctx, client),
-		permissionRepo:      gormData.NewPermissionRepo(ctx, client),
+		permissionRepo:      gormData.NewPermissionRepo(ctx, client, permissionApiRepo),
 		roleRepo:            gormData.NewRoleRepo(ctx, client),
 		permissionGroupRepo: gormData.NewPermissionGroupRepo(ctx, client),
-		apiRepo:             gormData.NewApiRepo(ctx, client),
+		apiRepo:             gormData.NewApiRepo(ctx, client, permissionApiRepo),
 		menuRepo:            gormData.NewMenuRepo(ctx, client),
 		// 审计日志
 		apiAuditLogRepo:         gormData.NewApiAuditLogRepo(ctx, client),

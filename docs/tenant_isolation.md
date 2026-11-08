@@ -137,14 +137,15 @@ EXPIRED / FREEZE 并吊销该租户全部用户令牌，随后由本闸门第 1 
 
 ### 4.3 Api 表的生成与同步（`internal/service/api_service.go`）
 
-- `SyncApis`：`Truncate` 全表 → `syncWithOpenAPI`（解析内嵌 OpenAPI 文档 `assets.OpenApiData`，
-  逐 (path, method) 生成行，`module`/`module_description` 取 OpenAPI **tag**，
-  `business_module` 经 `pkg/constants/module_mapping.go` 的 `ServiceTagToBusinessModule` 映射）
-  → `authorizer.ResetPolicies`（authz 策略同步重建）；
+- `SyncApis`：按自然键 `(path, method)` 的**单事务 MERGE 增量对齐**（spec 有库无→插入、
+  元数据变了才 UPDATE、库有 spec 无→删行并级联清该端点的权限绑定；已有行 id 永不漂移）
+  → `authorizer.ResetPolicies`（authz 策略同步重建）；spec 解析自内嵌 OpenAPI 文档
+  `assets.OpenApiData`，`module`/`module_description` 取 OpenAPI **tag**，
+  `business_module` 经 `pkg/constants/module_mapping.go` 的 `ServiceTagToBusinessModule` 映射；
 - **新服务的登记义务**：`ServiceTagToBusinessModule` 不登记新服务 tag ⇒ 其全部端点
   `business_module = UNSPECIFIED` ⇒ **所有租户（含挂了对应模块套餐的）一概 403**；
 - 播种时机：Api 表仅在**空表**时启动期自动同步（count==0 守卫）；已部署实例新增端点必须在
-  管理页「接口管理 → 接口同步」手动触发全量重建，否则新端点对租户 fail-closed；
+  管理页「接口管理 → 接口同步」手动触发（MERGE 增量，不动既有行），否则新端点对租户 fail-closed；
 - 同步后建议核对菜单（菜单播种同理见 `default_data.go`）。
 
 ## 5. 数据层隔离

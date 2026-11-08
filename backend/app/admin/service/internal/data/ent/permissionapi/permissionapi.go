@@ -25,8 +25,10 @@ const (
 	FieldDeletedBy = "deleted_by"
 	// FieldPermissionID holds the string denoting the permission_id field in the database.
 	FieldPermissionID = "permission_id"
-	// FieldAPIID holds the string denoting the api_id field in the database.
-	FieldAPIID = "api_id"
+	// FieldPath holds the string denoting the path field in the database.
+	FieldPath = "path"
+	// FieldMethod holds the string denoting the method field in the database.
+	FieldMethod = "method"
 	// Table holds the table name of the permissionapi in the database.
 	Table = "sys_permission_apis"
 )
@@ -41,7 +43,8 @@ var Columns = []string{
 	FieldUpdatedBy,
 	FieldDeletedBy,
 	FieldPermissionID,
-	FieldAPIID,
+	FieldPath,
+	FieldMethod,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -102,7 +105,12 @@ func ByPermissionID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldPermissionID, opts...).ToFunc()
 }
 
-// ByAPIID orders the results by the api_id field.
-func ByAPIID(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldAPIID, opts...).ToFunc()
+// ByPath orders the results by the path field.
+func ByPath(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPath, opts...).ToFunc()
+}
+
+// ByMethod orders the results by the method field.
+func ByMethod(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldMethod, opts...).ToFunc()
 }

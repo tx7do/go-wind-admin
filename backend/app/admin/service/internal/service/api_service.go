@@ -1,10 +1,6 @@
 package service
 
 import (
-	"strings"
-
-	"fmt"
-
 	"context"
 
 	"github.com/go-kratos/kratos/v2/transport/http"
@@ -63,20 +59,15 @@ func (s *ApiService) init() {
 	ctx := viewer.WithSystemContext(context.Background())
 	if count, _ := s.repo.Count(ctx, nil); count.Count == 0 {
 		// 启动期播种走内部函数而非 HTTP 方法 SyncApis：后者已加平台管理员闸门，
-		// 系统上下文没有操作者，会被自家闸门挡掉。空表场景 Truncate 无意义，略去。
-		_ = s.repo.Truncate(ctx)
-		if err := s.syncWithOpenAPI(ctx); err != nil {
+		// 系统上下文没有操作者，会被自家闸门挡掉。空表场景 MERGE 即全量插入。
+		if apis, err := s.loadApisFromOpenAPI(ctx); err != nil {
+			s.log.Errorf(ctx, "启动期接口同步失败: %v", err)
+		} else if _, _, _, err = s.repo.SyncMerge(ctx, apis, 0); err != nil {
 			s.log.Errorf(ctx, "启动期接口同步失败: %v", err)
 		}
 		if err := s.authorizer.ResetPolicies(ctx); err != nil {
 			s.log.Errorf(ctx, "reset policies error: %v", err)
 		}
-	}
-	// SyncApis 内部的对齐只在空表首启（或手工触发同步）时跑到；已部署实例的
-	// sys_apis 序列被上一次同步的显式 ID 留在原地，只能靠这条启动期自愈补上。
-	// 重复执行是幂等的（只前进不回退）。
-	if err := s.repo.AlignIdentitySequence(ctx); err != nil {
-		s.log.Errorf(ctx, "接口 id 序列对齐失败: %v", err)
 	}
 }
 
@@ -163,12 +154,27 @@ func (s *ApiService) Delete(ctx context.Context, req *permissionV1.DeleteApiRequ
 		return nil, err
 	}
 
-	if err := s.repo.Delete(ctx, req); err != nil {
+	// 先取行拿端点身份：删行后按 (path, method) 级联清理权限绑定快照，
+	// 消灭孤儿绑定（孤儿绑定曾会在 id 重编号后指到无关端点，造成越权放行）
+	api, err := s.repo.Get(ctx, &permissionV1.GetApiRequest{
+		QueryBy: &permissionV1.GetApiRequest_Id{Id: req.GetId()},
+	})
+	if err != nil {
 		return nil, err
 	}
 
+	if err = s.repo.Delete(ctx, req); err != nil {
+		return nil, err
+	}
+
+	if api.GetPath() != "" && api.GetMethod() != "" {
+		if err = s.repo.CascadeDeleteBindings(ctx, api.GetPath(), api.GetMethod()); err != nil {
+			return nil, err
+		}
+	}
+
 	// 重置权限策略
-	if err := s.authorizer.ResetPolicies(ctx); err != nil {
+	if err = s.authorizer.ResetPolicies(ctx); err != nil {
 		return nil, err
 	}
 
@@ -176,57 +182,61 @@ func (s *ApiService) Delete(ctx context.Context, req *permissionV1.DeleteApiRequ
 }
 
 func (s *ApiService) SyncApis(ctx context.Context, _ *emptypb.Empty) (*emptypb.Empty, error) {
-	// 全量重建会短暂清空 Api 表（租户闸门 fail-closed 期间全租户 403），
-	// 是平台级运维操作，仅平台管理员可触发。
+	// 同步会增删 API 行（租户闸门与授权策略的数据源），是平台级运维操作，
+	// 仅平台管理员可触发。
 	if err := requirePlatformAdmin(ctx, s.log, "api management"); err != nil {
 		return nil, err
 	}
 
-	_ = s.repo.Truncate(ctx)
-
-	//if err := s.syncWithWalkRoute(ctx); err != nil {
-	//	return nil, err
-	//}
-
-	if err := s.syncWithOpenAPI(ctx); err != nil {
+	operator, err := auth.FromContext(ctx)
+	if err != nil {
 		return nil, err
 	}
 
-	// 重建是 truncate + 按显式 ID 逐行写入，PG 的序列不会跟着走；不对齐的话
-	// 之后「新建 API」必撞 sys_apis_pkey（HTTP 500）。
-	if err := s.repo.AlignIdentitySequence(ctx); err != nil {
-		s.log.Errorf(ctx, "接口 id 序列对齐失败: %v", err)
+	var apis []*permissionV1.Api
+	if apis, err = s.loadApisFromOpenAPI(ctx); err != nil {
+		return nil, err
 	}
 
+	// MERGE 按自然键 (path, method) 单事务增量对齐。旧的 Truncate + 顺序重编号
+	// 造成过两类事故：同步窗口内租户闸门 fail-closed 全租户 403；id 全表洗牌让
+	// api_id 绑定漂移（授权悄悄换到别的端点）。现 id 稳定、绑定存端点快照，
+	// 授权零漂移；移除段同事务级联清绑定。
+	added, updated, removed, err := s.repo.SyncMerge(ctx, apis, operator.UserId)
+	if err != nil {
+		return nil, err
+	}
+	s.log.Infof(ctx, "接口同步完成：新增 %d、更新 %d、移除 %d", added, updated, removed)
+
 	// 重置权限策略
-	if err := s.authorizer.ResetPolicies(ctx); err != nil {
+	if err = s.authorizer.ResetPolicies(ctx); err != nil {
 		return nil, err
 	}
 
 	return &emptypb.Empty{}, nil
 }
 
-// syncWithOpenAPI 使用 OpenAPI 文档同步 API 资源
-func (s *ApiService) syncWithOpenAPI(ctx context.Context) error {
+// loadApisFromOpenAPI 解析打进二进制的 OpenAPI 文档为端点清单（不含 id）：
+// (path, method) 即身份，id 由 SyncMerge 插入时按自增生成。
+func (s *ApiService) loadApisFromOpenAPI(ctx context.Context) ([]*permissionV1.Api, error) {
 	loader := openapi3.NewLoader()
 	doc, err := loader.LoadFromData(assets.OpenApiData)
 	if err != nil {
 		// 此前用 log.Fatal（os.Exit 直接终止进程），其后的 return 是死代码。
 		// 启动期同步失败应返回错误由上层决定，而非杀掉整个进程。
 		s.log.Errorf(ctx, "加载 OpenAPI 文档失败: %v", err)
-		return adminV1.ErrorInternalServerError("load OpenAPI document failed")
+		return nil, adminV1.ErrorInternalServerError("load OpenAPI document failed")
 	}
 
 	if doc == nil {
 		s.log.Error(ctx, "OpenAPI 文档为空")
-		return adminV1.ErrorInternalServerError("OpenAPI document is nil")
+		return nil, adminV1.ErrorInternalServerError("OpenAPI document is nil")
 	}
 	if doc.Paths == nil {
 		s.log.Error(ctx, "OpenAPI 文档的路径为空")
-		return adminV1.ErrorInternalServerError("OpenAPI document paths is nil")
+		return nil, adminV1.ErrorInternalServerError("OpenAPI document paths is nil")
 	}
 
-	var count uint32 = 0
 	var apiList []*permissionV1.Api
 
 	// 遍历所有路径和操作
@@ -249,14 +259,8 @@ func (s *ApiService) syncWithOpenAPI(ctx context.Context) error {
 					businessModule = bm
 				}
 			}
-			if strings.Contains(path, "ai/query") {
-				fmt.Printf("[sync-debug] path=%s module=%q businessModule=%v\n", path, module, businessModule)
-			}
-
-			count++
 
 			apiList = append(apiList, &permissionV1.Api{
-				Id:                trans.Ptr(count),
 				Path:              trans.Ptr(path),
 				Method:            trans.Ptr(method),
 				Module:            trans.Ptr(module),
@@ -268,19 +272,7 @@ func (s *ApiService) syncWithOpenAPI(ctx context.Context) error {
 		}
 	}
 
-	for i, res := range apiList {
-		res.Id = trans.Ptr(uint32(i + 1))
-		// 请求自身的 id 必须同步设置：repo.Update 的 id==0 守卫在
-		// AllowMissing 分支之前，缺省时整批请求被静默弹回（历史上
-		// 接口同步因此从未写入任何行）。
-		_ = s.repo.Update(ctx, &permissionV1.UpdateApiRequest{
-			Id:           res.GetId(),
-			AllowMissing: trans.Ptr(true),
-			Data:         res,
-		})
-	}
-
-	return nil
+	return apiList, nil
 }
 
 // GetWalkRouteData 获取通过 WalkRoute 获取的路由数据，用于调试

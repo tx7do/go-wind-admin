@@ -109,7 +109,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	permissionRepo := data.NewPermissionRepo(ctx, entClient, permissionApiRepo, permissionMenuRepo)
 	roleRepo := data.NewRoleRepo(ctx, entClient, rolePermissionRepo, roleOrgUnitRepo, permissionRepo, roleMetadataRepo, roleFieldPermissionRepo)
 	permissionGroupRepo := data.NewPermissionGroupRepo(ctx, entClient)
-	apiRepo := data.NewApiRepo(ctx, entClient)
+	apiRepo := data.NewApiRepo(ctx, entClient, permissionApiRepo)
 	menuRepo := data.NewMenuRepo(ctx, entClient)
 
 	// 审计日志
@@ -174,7 +174,7 @@ func initApp(ctx *bootstrap.Context) (*kratos.App, func(), error) {
 	// ═══════════════════════ 三、认证与鉴权 ═══════════════════════
 
 	tenantAccessChecker := data.NewTenantAccessCheckerImpl(ctx, entClient)
-	authorizerProvider := data.NewAuthorizerProvider(ctx, roleRepo, apiRepo)
+	authorizerProvider := data.NewAuthorizerProvider(ctx, roleRepo)
 	var authzEngineCfg *authorizer.EngineConfig
 	if bootstrapConf := ctx.GetConfig(); bootstrapConf != nil && bootstrapConf.Authz != nil {
 		authzEngineCfg = &authorizer.EngineConfig{Type: bootstrapConf.Authz.GetType()}

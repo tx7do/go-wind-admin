@@ -275,10 +275,10 @@ func TestRoleRepoSqlite_ListAndGet(t *testing.T) {
 	_, err = repo.ListRoleIDsByRoleCodes(ctx, []string{fmt.Sprintf("ROLE_SQLITE_%d", 12001)})
 	require.Error(t, err, "平台上下文按编码列表查询角色 ID 应被拒绝")
 
-	// 无权限关联时的权限 API/菜单 ID 列表应为空
-	apiIDs, err := repo.GetRolePermissionApiIDs(ctx, roleAID)
+	// 无权限关联时的权限端点快照/菜单 ID 列表应为空
+	endpoints, err := repo.GetRolePermissionApiEndpoints(ctx, roleAID)
 	require.NoError(t, err)
-	require.Empty(t, apiIDs, "未关联权限的角色应无 API 资源 ID")
+	require.Empty(t, endpoints, "未关联权限的角色应无 API 端点快照")
 	menuIDs, err := repo.GetRolePermissionMenuIDs(ctx, roleAID)
 	require.NoError(t, err)
 	require.Empty(t, menuIDs, "未关联权限的角色应无菜单 ID")

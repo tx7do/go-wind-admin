@@ -827,19 +827,20 @@ func (r *RoleRepo) assignPermissionsToRole(ctx context.Context, tx *ent.Tx,
 	return r.rolePermissionRepo.AssignPermissions(ctx, tx, tenantID, operatorID, roleID, permissionIDs)
 }
 
-// GetRolePermissionApiIDs 获取角色关联的权限API资源ID列表
-func (r *RoleRepo) GetRolePermissionApiIDs(ctx context.Context, roleID uint32) ([]uint32, error) {
+// GetRolePermissionApiEndpoints 获取角色关联的权限端点快照列表（(path, method)）。
+// 绑定存端点快照后，策略装载不再需要 sys_apis 回查——绑定即策略。
+func (r *RoleRepo) GetRolePermissionApiEndpoints(ctx context.Context, roleID uint32) ([]Endpoint, error) {
 	permissionIDs, err := r.rolePermissionRepo.ListPermissionIDs(ctx, roleID)
 	if err != nil {
 		return nil, err
 	}
 
-	apiIDs, err := r.permissionRepo.ListApiIDsByPermissionIDs(ctx, permissionIDs)
+	endpoints, err := r.permissionRepo.ListApiEndpointsByPermissionIDs(ctx, permissionIDs)
 	if err != nil {
 		return nil, err
 	}
 
-	return apiIDs, nil
+	return endpoints, nil
 }
 
 // GetRolePermissionMenuIDs 获取角色关联的权限菜单ID列表

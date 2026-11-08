@@ -12,7 +12,6 @@ import (
 	bLogger "github.com/tx7do/kratos-bootstrap/logger"
 
 	"go-wind-admin/app/admin/service/internal/data/ent"
-	"go-wind-admin/app/admin/service/internal/data/ent/api"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionapi"
 	"go-wind-admin/app/admin/service/internal/data/ent/permissionpolicy"
 	"go-wind-admin/app/admin/service/internal/data/ent/policyevaluationlog"
@@ -171,28 +170,35 @@ func (r *PolicyEvaluationLogRepo) Create(ctx context.Context, req *permissionV1.
 }
 
 // ResolvePermissionPolicyByRoute 反查评估命中的权限点与挂接策略：
-// (角色码, 路径模板, HTTP方法) → sys_apis → sys_permission_apis → sys_permissions
-// （角色经 sys_role_permissions 持有该权限）→ sys_permission_policies 按 eval_order 首条。
-// 任一环缺数据（API 未登记 / 角色未授权 / 无策略行）对应 ID 返回 0，不报错——
+// (角色码, 路径模板, HTTP方法) → sys_permission_apis（按端点快照直查，
+// 授权绑定与策略裁决同键）→ sys_permissions（角色经 sys_role_permissions
+// 持有该权限）→ sys_permission_policies 按 eval_order 首条。
+// 任一环缺数据（端点未授权 / 角色未授权 / 无策略行）对应 ID 返回 0，不报错——
 // 评估埋点尽力而为，绝不影响鉴权主流程。调用方需自行做 TTL 缓存。
-// 四步各走索引的单表查询（曾试过一条 Modify 联表，pgx 参数类型推断 42P18）。
+// 各走索引的单表查询（曾试过一条 Modify 联表，pgx 参数类型推断 42P18）。
 func (r *PolicyEvaluationLogRepo) ResolvePermissionPolicyByRoute(ctx context.Context, roleCode, path, method string) (permissionID uint32, policyID uint32) {
 	if roleCode == "" || path == "" || method == "" {
 		return 0, 0
 	}
 	client := r.entClient.Client()
 
-	apiID, err := client.Api.Query().
-		Where(api.PathEQ(path), api.MethodEQ(strings.ToUpper(method))).
-		FirstID(ctx)
-	if err != nil {
+	// 绑定快照存的是同步时的原始方法形态（openapi 为小写），请求侧传入多为
+	// 大写：三种形态各试一查，命中即止（评估埋点，不值得为排序做 OR 谓词）。
+	var pa *ent.PermissionApi
+	var err error
+	for _, m := range []string{method, strings.ToUpper(method), strings.ToLower(method)} {
+		pa, err = client.PermissionApi.Query().
+			Where(permissionapi.PathEQ(path), permissionapi.MethodEQ(m)).
+			First(ctx)
+		if err == nil {
+			break
+		}
+		if ent.IsNotFound(err) {
+			continue
+		}
 		return 0, 0
 	}
-
-	pa, err := client.PermissionApi.Query().
-		Where(permissionapi.APIIDEQ(apiID)).
-		First(ctx)
-	if err != nil {
+	if pa == nil || err != nil {
 		return 0, 0
 	}
 	if pa.PermissionID != nil {

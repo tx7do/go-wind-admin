@@ -11,6 +11,7 @@ package gorm
 import (
 	"context"
 	"errors"
+	"time"
 
 	gormDB "gorm.io/gorm"
 
@@ -24,6 +25,7 @@ import (
 
 	"github.com/tx7do/go-utils/copierutil"
 	"github.com/tx7do/go-utils/mapper"
+	"github.com/tx7do/go-utils/trans"
 
 	"go-wind-admin/app/admin/service/internal/data/gorm/models"
 
@@ -38,6 +40,10 @@ type ApiRepo struct {
 	repository       *gormCrud.Repository[permissionV1.Api, models.Api]
 	structuredFilter *gormCrudFilter.StructuredFilter
 
+	// permissionApi 绑定 repo：接口同步/删除按 (path, method) 级联清理绑定
+	// 快照用，与 data 栈同构。
+	permissionApi *PermissionApiRepo
+
 	scopeConverter          *mapper.EnumTypeConverter[permissionV1.Api_Scope, string]
 	businessModuleConverter *mapper.EnumTypeConverter[identityV1.Module, string]
 }
@@ -45,12 +51,14 @@ type ApiRepo struct {
 func NewApiRepo(
 	ctx *bootstrap.Context,
 	client *gormCrud.Client,
+	permissionApi *PermissionApiRepo,
 ) *ApiRepo {
 	repo := &ApiRepo{
 		log:              ctx.NewLoggerHelper("api/gorm-repo/admin-service"),
 		client:           client,
 		mapper:           mapper.NewCopierMapper[permissionV1.Api, models.Api](),
 		structuredFilter: gormCrudFilter.NewStructuredFilter(),
+		permissionApi:    permissionApi,
 
 		scopeConverter:          mapper.NewEnumTypeConverter[permissionV1.Api_Scope, string](permissionV1.Api_Scope_name, permissionV1.Api_Scope_value),
 		businessModuleConverter: mapper.NewEnumTypeConverter[identityV1.Module, string](identityV1.Module_name, identityV1.Module_value),
@@ -239,6 +247,25 @@ func (r *ApiRepo) Update(ctx context.Context, req *permissionV1.UpdateApiRequest
 		}
 	}
 
+	// (path, method) 是 API 的身份键（权限绑定快照/租户闸门/authorizer 策略都
+	// 以它为裁决键），不接受改身份：要变更 = 删旧建新（或走接口同步 MERGE）。
+	// 与 data 栈同口径。
+	var existing models.Api
+	if err := r.client.DB.WithContext(ctx).Model(&models.Api{}).
+		Where("id = ?", req.GetId()).First(&existing).Error; err != nil {
+		if errors.Is(err, gormDB.ErrRecordNotFound) {
+			return permissionV1.ErrorNotFound("api not found")
+		}
+		r.log.Errorf(ctx, "query api for identity guard failed: %s", err.Error())
+		return permissionV1.ErrorInternalServerError("query api failed")
+	}
+	if req.Data.Path != nil && existing.Path != nil && *req.Data.Path != *existing.Path {
+		return permissionV1.ErrorBadRequest("api path is immutable: delete and recreate instead")
+	}
+	if req.Data.Method != nil && existing.Method != nil && *req.Data.Method != *existing.Method {
+		return permissionV1.ErrorBadRequest("api method is immutable: delete and recreate instead")
+	}
+
 	if _, err := r.repository.UpdateWithFilters(ctx, r.client.DB, []func(*gormDB.DB) *gormDB.DB{
 		func(db *gormDB.DB) *gormDB.DB { return db.Where("id = ?", req.GetId()) },
 	}, req.Data, req.GetUpdateMask()); err != nil {
@@ -264,11 +291,153 @@ func (r *ApiRepo) Delete(ctx context.Context, req *permissionV1.DeleteApiRequest
 	return nil
 }
 
-// Truncate 清空表数据
-func (r *ApiRepo) Truncate(ctx context.Context) error {
-	if err := r.client.DB.WithContext(ctx).Where("1 = 1").Delete(&models.Api{}).Error; err != nil {
-		r.log.Errorf(ctx, "failed to truncate apis table: %s", err.Error())
-		return permissionV1.ErrorInternalServerError("truncate failed")
+// ListAllIDs 列出全部 API 行 id。与 data 栈同名方法语义一致。
+func (r *ApiRepo) ListAllIDs(ctx context.Context) ([]uint32, error) {
+	var ids []uint32
+	if err := r.client.DB.WithContext(ctx).Model(&models.Api{}).Pluck("id", &ids).Error; err != nil {
+		r.log.Errorf(ctx, "list all api ids failed: %s", err.Error())
+		return nil, permissionV1.ErrorInternalServerError("list all api ids failed")
 	}
-	return nil
+	return ids, nil
+}
+
+// CascadeDeleteBindings 按 (path, method) 级联清理权限绑定快照：API 行删除后
+// 调用，消灭孤儿绑定。与 data 栈同名方法语义一致。
+func (r *ApiRepo) CascadeDeleteBindings(ctx context.Context, path, method string) error {
+	if r.permissionApi == nil {
+		return permissionV1.ErrorInternalServerError("permission api repo not wired")
+	}
+	return r.permissionApi.DeleteByEndpoints(ctx, r.client.DB.WithContext(ctx), path, method)
+}
+
+// SyncMerge 接口同步 MERGE：以 (path, method) 自然键单事务增量对齐 spec 与库存，
+// 删除段级联清绑定。与 data 栈同名方法语义一致（id 永不重排、授权零漂移）。
+// operatorId 为 0 表示系统身份（启动期播种）。
+func (r *ApiRepo) SyncMerge(ctx context.Context, apis []*permissionV1.Api, operatorID uint32) (added, updated, removed int, err error) {
+	if r.permissionApi == nil {
+		return 0, 0, 0, permissionV1.ErrorInternalServerError("permission api repo not wired")
+	}
+
+	now := time.Now()
+	txErr := r.client.DB.WithContext(ctx).Transaction(func(tx *gormDB.DB) error {
+		var existing []*models.Api
+		if err := tx.Model(&models.Api{}).Find(&existing).Error; err != nil {
+			r.log.Errorf(ctx, "query existing apis for sync failed: %s", err.Error())
+			return permissionV1.ErrorInternalServerError("query apis failed")
+		}
+
+		existingByKey := make(map[string]*models.Api, len(existing))
+		for _, row := range existing {
+			if row == nil || row.Path == nil || row.Method == nil {
+				continue
+			}
+			existingByKey[(Endpoint{Path: *row.Path, Method: *row.Method}).key()] = row
+		}
+
+		specKeys := make(map[string]struct{}, len(apis))
+		for _, dto := range apis {
+			if dto == nil || dto.GetPath() == "" || dto.GetMethod() == "" {
+				continue
+			}
+			key := (Endpoint{Path: dto.GetPath(), Method: dto.GetMethod()}).key()
+			if _, dup := specKeys[key]; dup {
+				continue
+			}
+			specKeys[key] = struct{}{}
+
+			if exist, ok := existingByKey[key]; ok {
+				if r.apiMetadataEqual(exist, dto) {
+					continue
+				}
+				updates := map[string]any{
+					"module":             dto.GetModule(),
+					"module_description": dto.GetModuleDescription(),
+					"description":        dto.GetDescription(),
+					"operation":          dto.GetOperation(),
+					"business_module":    dto.GetBusinessModule().String(),
+					"updated_at":         now,
+				}
+				if operatorID != 0 {
+					updates["updated_by"] = operatorID
+				}
+				if err := tx.Model(&models.Api{}).Where("id = ?", exist.ID).Updates(updates).Error; err != nil {
+					r.log.Errorf(ctx, "sync merge update api [%s %s] failed: %s", dto.GetMethod(), dto.GetPath(), err.Error())
+					return permissionV1.ErrorInternalServerError("sync merge update api failed")
+				}
+				updated++
+				continue
+			}
+
+			row := &models.Api{
+				Description:       dto.Description,
+				Module:            dto.Module,
+				ModuleDescription: dto.ModuleDescription,
+				Operation:         dto.Operation,
+				Path:              dto.Path,
+				Method:            dto.Method,
+				BusinessModule:    trans.Ptr(dto.GetBusinessModule().String()),
+			}
+			if operatorID != 0 {
+				row.CreatedBy.CreatedBy = trans.Ptr(operatorID)
+			}
+			// created_at/updated_at 由 mixin BeforeCreate 钩子自动填充
+			if err := tx.Create(row).Error; err != nil {
+				r.log.Errorf(ctx, "sync merge create api [%s %s] failed: %s", dto.GetMethod(), dto.GetPath(), err.Error())
+				return permissionV1.ErrorInternalServerError("sync merge create api failed")
+			}
+			added++
+		}
+
+		// 删除段：库有 spec 无 → 删行 + 级联清绑定（同事务，防孤儿绑定）
+		for key, row := range existingByKey {
+			if _, ok := specKeys[key]; ok {
+				continue
+			}
+			if err := tx.Delete(&models.Api{}, row.ID).Error; err != nil {
+				r.log.Errorf(ctx, "sync merge delete api [%s %s] failed: %s", *row.Method, *row.Path, err.Error())
+				return permissionV1.ErrorInternalServerError("sync merge delete api failed")
+			}
+			if err := r.permissionApi.DeleteByEndpoints(ctx, tx, *row.Path, *row.Method); err != nil {
+				return err
+			}
+			removed++
+		}
+
+		return nil
+	})
+	if txErr != nil {
+		return added, updated, removed, txErr
+	}
+	return added, updated, removed, nil
+}
+
+// apiMetadataEqual 判断 MERGE 更新段是否需要落库：仅比较同步会写入的元数据列。
+// 与 data 栈同口径。
+func (r *ApiRepo) apiMetadataEqual(entity *models.Api, dto *permissionV1.Api) bool {
+	if entity == nil || dto == nil {
+		return false
+	}
+	strEq := func(a, b *string) bool {
+		if a == nil && b == nil {
+			return true
+		}
+		if a == nil || b == nil {
+			return false
+		}
+		return *a == *b
+	}
+
+	wantBM := dto.GetBusinessModule().String()
+	if wantBM == identityV1.Module_MODULE_UNSPECIFIED.String() {
+		if entity.BusinessModule != nil && *entity.BusinessModule != "" {
+			return false
+		}
+	} else if entity.BusinessModule == nil || *entity.BusinessModule != wantBM {
+		return false
+	}
+
+	return strEq(entity.Module, dto.Module) &&
+		strEq(entity.ModuleDescription, dto.ModuleDescription) &&
+		strEq(entity.Description, dto.Description) &&
+		strEq(entity.Operation, dto.Operation)
 }

@@ -257,7 +257,7 @@ func TestPolicyEvaluationLogRepoSqlite_ResolvePermissionPolicyByRoute(t *testing
 	}))
 
 	// —— 场景数据：完整链路（apiFull → permFull ← roleFull，挂两条策略）——
-	apiFull, err := client.Api.Create().
+	_, err := client.Api.Create().
 		SetNillablePath(trans.Ptr("/sqlite/resolve/full")).
 		SetNillableMethod(trans.Ptr("GET")).
 		SetNillableOperation(trans.Ptr("sqliteResolveFull")).
@@ -268,10 +268,12 @@ func TestPolicyEvaluationLogRepoSqlite_ResolvePermissionPolicyByRoute(t *testing
 		SetCode("SPF").
 		Save(ctx)
 	require.NoError(t, err, "直建 permission 行应成功")
+	// 绑定存端点快照：反查链按 (path, method) 直查绑定，不再经 sys_apis
 	require.NoError(t, client.PermissionApi.Create().
-		SetAPIID(apiFull.ID).
+		SetPath("/sqlite/resolve/full").
+		SetMethod("GET").
 		SetPermissionID(permFull.ID).
-		Exec(ctx), "直建 permission_api 关联应成功")
+		Exec(ctx), "直建 permission_api 端点绑定应成功")
 	roleFull, err := client.Role.Create().
 		SetNillableName(trans.Ptr("sqlite_role_full")).
 		SetNillableCode(trans.Ptr("SQLITE_RESOLVE_ROLE_FULL")).
@@ -293,7 +295,7 @@ func TestPolicyEvaluationLogRepoSqlite_ResolvePermissionPolicyByRoute(t *testing
 	require.NoError(t, err, "直建 eval_order=1 策略应成功")
 
 	// —— 场景数据：链路无策略（apiNoPol → permNoPol ← roleNoPol，无策略行）——
-	apiNoPol, err := client.Api.Create().
+	_, err = client.Api.Create().
 		SetNillablePath(trans.Ptr("/sqlite/resolve/nopolicy")).
 		SetNillableMethod(trans.Ptr("GET")).
 		SetNillableOperation(trans.Ptr("sqliteResolveNoPolicy")).
@@ -305,7 +307,8 @@ func TestPolicyEvaluationLogRepoSqlite_ResolvePermissionPolicyByRoute(t *testing
 		Save(ctx)
 	require.NoError(t, err)
 	require.NoError(t, client.PermissionApi.Create().
-		SetAPIID(apiNoPol.ID).
+		SetPath("/sqlite/resolve/nopolicy").
+		SetMethod("GET").
 		SetPermissionID(permNoPol.ID).
 		Exec(ctx))
 	roleNoPol, err := client.Role.Create().
@@ -327,7 +330,7 @@ func TestPolicyEvaluationLogRepoSqlite_ResolvePermissionPolicyByRoute(t *testing
 	require.NoError(t, err)
 
 	// —— 场景数据：权限点挂接但角色未持有 ——
-	apiNotHeld, err := client.Api.Create().
+	_, err = client.Api.Create().
 		SetNillablePath(trans.Ptr("/sqlite/resolve/notheld")).
 		SetNillableMethod(trans.Ptr("GET")).
 		SetNillableOperation(trans.Ptr("sqliteResolveNotHeld")).
@@ -339,7 +342,8 @@ func TestPolicyEvaluationLogRepoSqlite_ResolvePermissionPolicyByRoute(t *testing
 		Save(ctx)
 	require.NoError(t, err)
 	require.NoError(t, client.PermissionApi.Create().
-		SetAPIID(apiNotHeld.ID).
+		SetPath("/sqlite/resolve/notheld").
+		SetMethod("GET").
 		SetPermissionID(permNotHeld.ID).
 		Exec(ctx))
 
