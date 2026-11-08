@@ -336,7 +336,7 @@ vben 端乐观插入拿到 `messageId:0` + Invalid Date，其去重逻辑随后�
 | 欠账 2 租户侧边栏整箱被清空 | 已完成 | 2026-10-02 | `TenantRepo` 读侧补 `WithPlan()` 边回填；vben 抽屉读写不同键一并修 |
 | M 通知域提为一级菜单 | 已完成 | 2026-09-21 | 菜单树重排 + 启动期 identity 序列自愈 |
 | N WEBHOOK 出站风格与载荷模板 | 已完成 | 2026-09-21 | 五种签名风格 + 载荷模板 |
-| P3 偏好与模板 | **已完成** | 2026-10-03 | 第一片偏好/退订/静音 + 第二片模板管理与渲染均落（见 §4 P3）；ele/vben 两块页面移植待做 |
+| P3 偏好与模板 | **已完成** | 2026-10-03 | 第一片偏好/退订/静音 + 第二片模板管理与渲染均落（见 §4 P3）；ele/vben 两块页面移植已收官（偏好 tab 9678265e、模板页 2ebb57ba） |
 
 > 各小节里"今天/现在还剩 X"的措辞都是**写下那一段时的现场快照**，别拿来当当前进度读；进度只看上表。
 > §7 里带日期的实测记录同理：它记的是"当时那一格验过什么"，不随后续改动回写。
@@ -1188,8 +1188,8 @@ react 与 ele 只读渲染（tooltip / 行内 help、五个风格选项、textar
 点对点定向发送不受退订影响）；**静音时段只抑制 SSE 实时推送**（收件行照常落库，DND 语义；定向路径 `sendNotification` 同样生效）。
 偏好层全部 fail-open（仓储未接线/查询失败 → 按无人配置处理，只影响打扰度不影响到达）。
 自助入口 `NotificationPreferenceService`（GET/POST `/admin/v1/notification-preference` + `/categories`，
-user_id 从操作人钉定，映射进 INTERNAL_MESSAGE 模块供 Api 表闸门放行）；react 先行的个人中心「通知偏好」tab 已落地
-（ele/vben 移植待做）。事务性出站（找回密码/换绑验证码邮件）不经偏好层，不受静音/退订影响。
+user_id 从操作人钉定，映射进 INTERNAL_MESSAGE 模块供 Api 表闸门放行）；个人中心「通知偏好」tab 三端已落（react 先行，ele/vben 移植收官 9678265e）。
+事务性出站（找回密码/换绑验证码邮件）不经偏好层，不受静音/退订影响。
 
 **第二片（模板管理与渲染）完成 2026-10-03**：`sys_notification_templates`（平台全局、code 全局唯一，
 与渠道/规则同域）+ 六个 RPC（CRUD + Render 试渲染），渲染内核 `renderTemplate` 单趟扫描、
@@ -1198,7 +1198,7 @@ user_id 从操作人钉定，映射进 INTERNAL_MESSAGE 模块供 Api 表闸门�
 重试不重新解析模板；模板不存在/停用/缺变量一律报错且零台账行。建/改模板**不做**空变量集试渲染
 （带占位符是模板本义），占位符拼错由渲染时报错暴露、管理页预览即可发现。
 种子菜单 id 101（/notification/templates）；已部署实例落地 = 「接口同步」+「菜单同步」+ 权限勾选。
-react 先行页面已落（/notification/templates，预览弹窗结果就地展示）；ele/vben 页面移植待做。
+react 先行页面已落（/notification/templates，预览弹窗结果就地展示）；ele/vben 页面移植已收官（2ebb57ba）。
 
 **事务性邮件已接入模板覆写（2026-10-03）**：找回密码/换绑验证码/渠道测试/规则测试通知四类出站按约定 code（pwd_reset_code / contact_bind_code / channel_test_email / rule_test_notification）查模板渲染，缺失/停用/渲染失败静默回落 mailtext 内置文案——事务性邮件是认证关键路径，模板配置问题绝不阻断发送（与 SendDirect 显式 template_code 的报错语义分级不同：隐式覆写回落、显式点名报错）。实现 transactional_mail.go，TransactionMailer 注入 AuthenticationService/UserProfileService/NotificationChannelService。
 
@@ -1329,10 +1329,13 @@ react 先行页面已落（/notification/templates，预览弹窗结果就地展
      且入队前的同步预检已经把
      "配置不可用"这类注定失败的载荷挡在队列外，配置类错误还额外 `SkipRetry`。接受的是"一次崩溃窗口内可能重发一封"
      （至少一次投递），换掉的是"业务侧被 SMTP 抖动绑住响应时间"。
-     ⚠ 唯一不封顶的是**归档分支**：重试走完后 asynq 把消息移进 `asynq:{<queue>}:archived`，
-     本仓没有任何清理归档集的代码（`grep Archiv` 只命中审计日志归档任务，与 asynq 无关），
-     所以那条载荷会一直躺在 Redis 里，直到有人用 inspector 删它 —— 台账行反过来会被决策点 8 的清扫定案，
-     两边不同步。这一条是"载荷不落 Postgres 但确实落 Redis"的实际含义，别读成"最多几分钟"。
+     ⚠ 归档分支（2026-11-08 已治理）：重试走完后 asynq 把消息移进 `asynq:{<queue>}:archived`，
+     此前本仓没有任何清理代码（`grep Archiv` 只命中审计日志归档任务，与 asynq 无关），载荷会永久躺在 Redis。
+     现由系统级常驻任务 `notification_archived_cleanup`（每小时整点，handler 属 NotificationService，
+     调度项在 startAllTask 末尾注册）按保留期删除归档集里的 `notification_dispatch` 任务：
+     env `NOTIFICATION_ARCHIVED_RETENTION_HOURS` 缺省 24h、下限 1h，只删本仓类型、
+     不越界代删共库部署下别的生产者的任务；asynq 未配置（纯同步投递）时 no-op。
+     台账行仍由决策点 8 的清扫先行定案，两边不同步是有意的：Redis 载荷有保留期、Postgres 台账是永久结论。
    若将来引入模板（P3），这一条应重估：载荷换成 `{delivery_id, template_id, render_params}` 才是既无明文
    又能重渲染的形态 —— 届时正文仍不落台账，与 §3.3 同构。
 8. **清扫阈值取多少、要不要给"迟但会到"留活路** —— **P2-4 已定：缺省 15 分钟、下限 10 分钟，宁可漏扫不误扫，

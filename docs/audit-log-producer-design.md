@@ -27,6 +27,14 @@ repo `Create` 全字段落库。全部采集在 **post-handler** 阶段执行（
 审计写入只能由进程内组件（中间件/driver 包装器回调）触发，不经 HTTP 暴露；
 audit 域 proto 有 Create RPC 但同样无 HTTP 绑定。
 
+**写入是同步形态（已知待办，2026-11-08 复核登记）**：六类的落库都发生在采集回调内——
+请求/SQL 路径上直写数据库（如 `api_audit_log.go:162-164`），无队列、无 producer，
+DB 抖动会直接放大进接口延迟。异步化（asynq 队列化 producer）仅在
+`rest_server.go:65/69` 留有 TODO 注释，从未实施、也未立项；核心待决是丢失窗口语义
+（至少一次投递 + 幂等键去重，还是接受有损换延迟上限，按等保留存要求裁决）。
+立项时从 [task_system.md](./task_system.md) 的队列形态与通知域 P2 的异步化先例
+（[notification_domain_design.md](./notification_domain_design.md) §4）起步。
+
 ## 2. 采集层机制
 
 ### 2.1 transport 中间件类（api / login / operation / permission）

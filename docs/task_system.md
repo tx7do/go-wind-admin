@@ -14,7 +14,7 @@
 启动链    NewAsynqServer（internal/server/asynq_server.go）
           ├─ 固定类型订阅注册（handler 路由表）：backup / tenant_expiry_scan /
           │  audit_log_archive / broadcast_message / notification_dispatch /
-          │  notification_delivery_sweep + script_task（桥，见第 6 节）
+          │  notification_delivery_sweep / notification_archived_cleanup + script_task（桥，见第 6 节）
           ├─ RegisterTaskScheduler：把调度器句柄注入 TaskService（后续所有调度动作经它）
           ├─ RegisterTaskEnqueuer：站内信服务（广播 fan-out）与通知域服务（异步派发）
           │  各自获得一次性任务入队能力；未注入时两处都退回同步路径
@@ -40,6 +40,7 @@
 | `broadcast_message` | `InternalMessageService.AsyncBroadcastMessage` | 一次性、幂等（见 5.4） |
 | `notification_dispatch` | `NotificationService.AsyncNotificationDispatch` | 一次性、幂等（见 5.5） |
 | `notification_delivery_sweep` | `NotificationService.AsyncDeliverySweep` | 系统级 cron，每 5 分钟（见 5.6） |
+| `notification_archived_cleanup` | `NotificationService.AsyncArchivedCleanup` | 系统级 cron，每小时（见 5.8） |
 | `monitor_alert_scan` | `MonitorAlertService.AsyncMonitorAlertScan` | 系统级 cron，每 5 分钟（评估启用的告警规则；handler 在监控告警域） |
 | `ai_audit_digest` | `AiDigestService.AsyncAiAuditDigest` | 系统级 cron，每日 08:00（见 [ai_module.md](./ai_module.md)「审计日报」） |
 | `plan_quota_watermark_scan` | `PlanQuotaWatermarkService.AsyncPlanQuotaWatermarkScan` | 系统级 cron，每日 09:00（见 5.7、[plan_billing.md](./plan_billing.md) §7.3） |
@@ -177,6 +178,23 @@ cron `*/5 * * * *`（`pkg/task/notification_delivery_sweep.go`）。把 `sys_not
 该文档 §7.1 计量完全同源；达到 80% 水位的 ON 租户按其管理员偏好语言投递站内信告警（一个租户一条消息）；
 扫描频率即告警频率上限。投递复用审计日报的站内信内核（消息行 + 收件行；单收件人失败不阻断、全部失败才
 报错重试）。判定与百分数是纯函数、有单测；扫描另有 SQLite 接线级单测与文案表双语单测。
+
+### 5.8 通知归档集清理（`notification_archived_cleanup`）
+
+系统级常驻 cron（每小时整点，`pkg/task/notification_archived_cleanup.go`），不写入 `sys_tasks`；
+调度项在 `startAllTask` 末尾与其他系统级任务同构注册，handler 在 `NewAsynqServer` 注册订阅。
+
+收的尾：重试耗尽的 `notification_dispatch` 任务被 asynq 移进 `asynq:{<queue>}:archived` 后没有任何
+代码再碰它，而派发载荷带**明文一次性验证码**——台账侧那条线由 5.6 的清扫结算，两边不同步是有意的
+（Redis 载荷有保留期、Postgres 台账是永久结论），本任务把前者的窗口钉死。
+
+语义：懒构造 Inspector（与 TaskMonitorService 同源同口径的 `server.asynq` URI + 队列名推导），
+分页列出归档集（排序按 LastFailedAt 降序，超期的都在队尾），**只删 `notification_dispatch` 一个类型**——
+队列无命名空间，共库部署下归档集里可能躺着别的生产者的任务，不越界代删；先分页收集再统一删除
+（避免边删边翻页的游标漂移），单条删除失败留痕不中断。保留期走 env
+`NOTIFICATION_ARCHIVED_RETENTION_HOURS`（小时），缺省 24、下限 1，坏值不静默采纳
+（口径同 5.6 的阈值解析）。asynq 未配置（纯同步投递）时 handler 直接 no-op——同步形态不会产生归档任务。
+谓词与队列名推导有单测（`notification_archived_cleanup_test.go`）。
 
 ## 6. 脚本任务桥（`script_task`）
 
