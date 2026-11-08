@@ -1,9 +1,9 @@
 package main
 
 import (
-	"log/slog"
 	"context"
 	"fmt"
+	"log/slog"
 	"os"
 
 	"github.com/go-kratos/kratos/v2"

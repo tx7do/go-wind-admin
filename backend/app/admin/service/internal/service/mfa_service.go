@@ -20,8 +20,8 @@ import (
 	"go-wind-admin/app/admin/service/internal/data/ent/privacy"
 	"go-wind-admin/app/admin/service/internal/data/ent/usermfafactor"
 
-	"go-wind-admin/pkg/middleware/auth"
 	"github.com/tx7do/go-utils/netutil"
+	"go-wind-admin/pkg/middleware/auth"
 
 	"github.com/tx7do/go-crud/viewer"
 

@@ -27,9 +27,9 @@ import (
 	authenticationV1 "go-wind-admin/api/gen/go/authentication/service/v1"
 	identityV1 "go-wind-admin/api/gen/go/identity/service/v1"
 
+	"github.com/tx7do/go-utils/netutil"
 	"go-wind-admin/pkg/constants"
 	"go-wind-admin/pkg/middleware/auth"
-	"github.com/tx7do/go-utils/netutil"
 )
 
 // 验证码相关请求头（H5：登录强制验证码，通过 header 传递以避免改动 proto 与三套前端生成代码）。
