@@ -275,12 +275,23 @@ func (s *PermissionService) Update(ctx context.Context, req *permissionV1.Update
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, "updated_by")
 	}
 
-	// 与 Create 同口径：全局定义仅平台管理员可改；保留权限码不可占用。
+	// 与 Create 同口径：全局定义仅平台管理员可改；保留权限码不可**占用**——
+	// 防的是把自建权限的 code 改成 sys: 等保留码（伪造登录闸门按码匹配的资格）。
+	// 本就持有保留码的系统权限行（提交 code 与库存一致）做勾菜单/接口等合法
+	// 更新必须放行——否则"权限管理页勾新菜单"的运维指引永远 400（前端走查实锤）。
 	if err = requirePlatformAdmin(ctx, s.log, "permission management"); err != nil {
 		return nil, err
 	}
 	if req.Data.Code != nil && constants.IsReservedPermissionCode(req.Data.GetCode()) {
-		return nil, adminV1.ErrorBadRequest("permission code is reserved")
+		existing, gerr := s.permissionRepo.Get(ctx, &permissionV1.GetPermissionRequest{
+			QueryBy: &permissionV1.GetPermissionRequest_Id{Id: req.GetId()},
+		})
+		if gerr != nil {
+			return nil, gerr
+		}
+		if existing.GetCode() != req.Data.GetCode() {
+			return nil, adminV1.ErrorBadRequest("permission code is reserved")
+		}
 	}
 
 	if err = s.permissionRepo.Update(ctx, req); err != nil {

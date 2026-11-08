@@ -291,7 +291,10 @@ func (r *PermissionRepo) Get(ctx context.Context, req *permissionV1.GetPermissio
 		whereCond = append(whereCond, permission.CodeEQ(req.GetCode()))
 	}
 
-	dto, err := r.repository.Get(ctx, builder, req.GetViewMask(), whereCond...)
+	// 关联字段不进 ent 投影：api_id/menu_id 是关联表字段并非 sys_permissions 的
+	// 列，透传给 entCrud 投影会 "invalid field" 500（三端权限抽屉每次打开即触发）；
+	// dto 的 ApiIds/MenuIds 由下方 ListApiIDs/ListMenuIDs 反解填充。
+	dto, err := r.repository.Get(ctx, builder, projectionViewMask(req.GetViewMask()), whereCond...)
 	if err != nil {
 		return nil, err
 	}
@@ -312,6 +315,17 @@ func (r *PermissionRepo) Get(ctx context.Context, req *permissionV1.GetPermissio
 	}
 
 	return dto, err
+}
+
+// projectionViewMask 返回摘除关联字段（api_id/menu_id）后的投影用 fieldmask
+// 副本；原 mask 不动，service 层的 hasPath 填充判定仍按原 mask。nil 安全。
+func projectionViewMask(fieldMask *fieldmaskpb.FieldMask) *fieldmaskpb.FieldMask {
+	if fieldMask == nil {
+		return nil
+	}
+	clone := &fieldmaskpb.FieldMask{Paths: slices.Clone(fieldMask.GetPaths())}
+	clone.Paths = sliceutil.FilterBlacklist(clone.GetPaths(), []string{"api_id", "menu_id"})
+	return clone
 }
 
 func hasPath(path string, fieldMask *fieldmaskpb.FieldMask) bool {
