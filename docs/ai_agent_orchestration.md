@@ -3,8 +3,10 @@
 > **状态：M1 已落地（2026-10-15，见 §5 分期）**：图执行引擎 + 应用 CRUD + 同步试运行 + 运行台账 + react 画布先行。
 > **M2 画布移植已落地**：ele/vben 画布编辑器（vue-flow 版）随 c6504f7a 补齐、d765b75e 真机修正——三端编排齐平。
 > M2+ 进展（2026-11-08）：**SSE 流式与 ele/vben 画布早已落地**（后者随 c6504f7a）；
-> **HTTP 节点已落地**（后端 + 三端画布，见 §2.1）。剩余（脚本节点、版本与发布、
-> 对外 API、循环/子图/并行）未排期，需求驱动。
+> **HTTP 节点已落地**（后端 + 三端画布，见 §2.1）。
+> **（2026-11-09）脚本节点已落地**（后端引擎 + 三端画布，见 §2.1 script 行）；
+> **版本化已落地**：revision 留底/恢复（BI 同款口径，非 draft/published，见 §4 版本化）。
+> M2 至此收官。剩余（对外 API、循环/子图/并行）未排期，需求驱动。
 >
 > 立项依据：JeecgBoot 对标时"AI 应用平台（编排）"按品类边界归档，触发条件为需求驱动；
 > 2026-10-15 用户明确立项，归档项按条款重开。**这是 AI 模块内的编排能力，不是 OA 工作流**——
@@ -28,9 +30,9 @@
 | --- | --- |
 | OA 语义节点（审批/会签/抄送/人工任务） | 品类边界，见文件头；工作流归独立业务模块 |
 | 循环/子图/并行分支 | M1 图是"确定性分流 DAG"，循环是编排器复杂度的大头，需求驱动再上 |
-| SSE 流式执行 | M1 同步执行返回完整 trace；流式在 M2（复用 ai_chat_chunk 的事件通道） |
-| 应用版本与发布流（draft/published） | M1 单 graph 列即存即得；版本化等出现"改坏了想回滚"的真实诉求再上 |
-| 对外 API（AK/SK 调用 Agent） | M1 只在管理台内运行；开放 API 等 M2+ |
+| ~~SSE 流式执行~~ | **M2 已落地**（§3.1） |
+| ~~应用版本与发布流（draft/published）~~ | **版本化已落地（2026-11-09，§4）**：revision 留底/恢复；draft/published 双态仍不做 |
+| 对外 API（AK/SK 调用 Agent） | M1 只在管理台内运行；开放 API 等 M3 |
 
 ## 2. 图 DSL（v1）
 
@@ -60,7 +62,7 @@
 }
 ```
 
-### 2.1 节点集（M1 五种 + M2 http）
+### 2.1 节点集（M1 五种 + M2 http/script）
 
 | type | data 键 | 写入上下文 |
 | --- | --- | --- |
@@ -68,6 +70,7 @@
 | `knowledge` | `baseId, topK(默认4), query(模板)` | `context`（命中片段拼接）、`hits`（命中条数） |
 | `llm` | `providerId, model, systemPrompt?(模板), userPrompt(模板), temperature?` | `output`（最终答案文本） |
 | `http` **（M2，2026-11-08）** | `url`(必填,模板), `method`(白名单 GET/POST/PUT/DELETE/PATCH/HEAD, 默认 GET), `headers`(`[{key,value}]` 或 map，键值均可模板), `body`(模板，非 GET/HEAD), `timeoutSeconds`(1-60, 默认 15) | `status`（状态码）、`body`（响应体，读上限 64KB、入上下文截断 8KB）、`contentType` |
+| `script` **（M2，2026-11-09）** | `language`(白名单 lua/javascript), `source`(脚本源码，**非模板**——代码里的 `{{...}}` 是脚本自身语法)。脚本**必须定义 `execute()`**（引擎哨兵探测该入口）：上下文经 `__get_ctx()` 取——返回带 `get/set/stop` 方法的表，`c.get("节点id")` 读上游命名空间、`__set_ctx(k, v)` 写产出、`__stop(reason)` 中止；`return false` = 中止 | 脚本新写入的键收口为字符串命名空间（字符串直通、标量转写、嵌套值 JSON 编码；**输入键回声剔除**——注入的输入命名空间不出现在产出里） |
 | `condition` | `expression`（[expr-lang](https://expr-lang.org) 语法，变量即节点命名空间） | 无（分流由带 `branch` 的出边承接） |
 | `end` | `output`(模板，可空) | 运行产出 = 到达的 end 节点渲染值 |
 
@@ -76,6 +79,18 @@ scheme 白名单（http/https）、主机字面量/后缀判定（localhost/.loc
 复核（私网/回环/链路本地/CGNAT 段）；`ai_agent_http_node.go` 的 `validateAgentOutboundURL`。
 与那条线同样存在解析与请求两次解析之间的 TOCTOU 窗口（DNS 重绑定），强度一致、接受同一权衡。
 静态校验（Run 前）：url 必填、method 白名单、timeoutSeconds 钳制；校验不过 400、不建运行行。
+
+**script 节点的执行与信任模型（2026-11-09）**：执行走 `ScriptRuntime.TestRun`——一次性隔离
+沙箱引擎（与常驻脚本引擎/钩子互不污染），依赖面与脚本系统试运行同款（redis/oss/ai 模块可用）；
+超时沿用引擎 VMTimeout 缺省 5s，节点不带 timeout 字段。入参是**全图上下文**（按节点 id 命名
+的表，脚本经 `c.get("节点id")` 读任意上游输出）。源码上限 32KB（script 节点语义是"小段数据加工"，
+不是承载完整应用的载体；超限请到脚本系统建正式脚本）。**信任口径**：能编辑 Agent 应用的用户
+（登录即可用，同知识库权限口径）即可在图里运行沙箱内脚本——这是对"脚本执行此前仅平台管理员可达"
+的有意扩展，依据是 go-scripts 沙箱本身就是为不可信代码设计的（VM 超时/受限模块）；执行留
+script_log 审计行（name 带 `agent:<节点id>` 定位）。`scriptRuntime` 未装配（单测/极简部署）时
+报错不静默跳过。静态校验（Run 前）：language 白名单、source 非空且 ≤32KB。
+e2e 实测（本机 gwa 库，2026-11-09）：lua `execute()` 读 start 入参 → `__set_ctx` 产出 →
+end 模板渲染 `{{script_1.answer}}` 全链 SUCCEEDED；Save/Restore 快照链路同批实测通过。
 
 ### 2.2 模板与表达式
 
@@ -91,6 +106,8 @@ scheme 白名单（http/https）、主机字面量/后缀判定（localhost/.loc
 唯一 start；≥1 个 end；节点 id 唯一且匹配 `[a-zA-Z_][a-zA-Z0-9_]{0,63}`；边引用存在的节点；
 condition 恰有两条出边且 `branch` 恰为 true/false 各一；其余节点出度 ≤1、end 出度 0；
 从 start 可达所有节点；无环（可达性即隐式覆盖——出度受限的图里环必然可达）。
+按节点类型的字面校验：http（url 必填/method 白名单/timeout 钳制）、script（language 白名单/
+source 非空 ≤32KB）。
 
 ## 3. 执行语义（M1 同步）
 
@@ -129,16 +146,25 @@ Run 保持同步 RPC 语义不变（M1 trace/台账路径原样），流式是**
 | --- | --- | --- |
 | `sys_ai_agent_apps` | `name`(租户内唯一) `description` `graph`(Text) `enabled`(bool) | 租户隔离 mixin（TenantID），登录即可用（同知识库权限口径） |
 | `sys_ai_agent_runs` | `app_id` `status`(RUNNING/SUCCEEDED/FAILED) `input` `output` `error` `trace` `prompt/completion/total_tokens` `duration_ms` | 租户隔离；索引 (tenant_id, app_id) |
+| `sys_ai_agent_revisions`（2026-11-09） | `app_id` `graph`(Text) `source`(SAVE/RESTORE) | 版本快照：只增不改不删，随主表级联删除；索引 (app_id, created_at) |
+
+**版本化（revision 留底/恢复，2026-11-09，BI 同款口径）**：
+每次更新且 **graph 实际变化**时，把更新前的 graph 以 `SAVE` 来源留一行快照（快照失败不阻断更新，
+Errorf 留痕——主功能不被辅功能拖死，但丢快照必须可观测）；恢复（`RestoreRevision`）先把**当前**
+graph 以 `RESTORE` 来源留底再写回，恢复可逆；恢复前快照 graph 过静态校验，非法 400 且不落任何
+痕迹（历史快照可能早于校验规则演进）。快照行不设版本号列——agent 主表无乐观锁版本号，按
+created_at 排序即可（与 BI 的 version 列形态刻意不同）。端点：`POST /admin/v1/ai/agents/{app_id}/revisions`
+（历史列表，新快照在前）、`POST /admin/v1/ai/agents/revisions/{id}:restore`。不做 draft/published
+双态发布流——留底/恢复已覆盖"改坏了想回滚"的真实诉求，发布流等真需求出现再议。
 
 ## 5. 分期
 
 - **M1（本期）**：引擎 + CRUD + 同步 Run + 运行台账 + react 画布先行
   （列表页 + 全屏画布编辑器 + 试运行面板，@xyflow/react）。门禁全绿。
-- **M2（部分落地）**：SSE 流式已落地（见 §3.1，事件名定为 `ai_agent_run`，非早期
-  设想的 `ai_agent_chunk`——推的是节点阶段帧而非 LLM token 增量）；ele/vben 画布移植
-  （vue-flow）与 script/http 节点、应用版本/发布仍未排期。
+- **M2（✅ 2026-11-09 收官）**：SSE 流式（§3.1）；ele/vben 画布移植（vue-flow，c6504f7a）；
+  http 节点（§2.1，2026-11-08）；script 节点（§2.1，2026-11-09）；版本化留底/恢复（§4，2026-11-09）。
 - **M3（设想）**：对外 OpenAPI（AK/SK 调用 Agent）、定时触发（任务桥）、工具市场
-  （把脚本引擎的钩子暴露为 LLM 工具）。
+  （把脚本引擎的钩子暴露为 LLM 工具）、循环/子图/并行。
 
 ## 6. 相关文档
 

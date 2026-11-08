@@ -149,7 +149,7 @@ dev 策略例外说明：本模块**内核三端同一份**（设计器交互一
 
 ### 6.1 服务端 PDF 实现说明（M3 已落地，2026-10-28）
 
-- **渲染器**：`backend/pkg/printrender`（chromedp 池，自动探测 Chrome→Edge，`CHROME_PATH` 可覆盖；
+- **渲染器**：外部依赖 `github.com/tx7do/go-utils/printrender`（chromedp 池，自动探测 Chrome→Edge，`CHROME_PATH` 可覆盖；
   `SetRenderer` 留接口可切 worm 生态 print-render 伴生容器）。只做 HTML → PDF（PrintToPDF），
   分页/布局全部由前端内核完成——**预览即所得**，后端不重排。
 - **端点**：`POST /admin/v1/print-templates:render-pdf`（PrintTemplateService.RenderPdf）。
@@ -175,9 +175,9 @@ dev 策略例外说明：本模块**内核三端同一份**（设计器交互一
   下载，SHA256 校验），前端经 `@worm-vue3-print/core/client` SDK（WebSocket 127.0.0.1:17521，
   `connect/listPrinters/print/pair`）直连打印；无需后端参与。
 
-## 7. 差异化能力（M4，按序另立任务）
+## 7. 差异化能力（M4——2026-11-09 评估裁决：M4-1 已闭环，其余需求驱动、已裁决暂缓）
 
-1. **AI 一句话生成模板**（采 openprint 点子、接本仓 AI 模块）—— **后端 + react 已落地（2026-11-07）**：
+1. **AI 一句话生成模板**（采 openprint 点子、接本仓 AI 模块）—— **✅ 全链闭环（后端 + 三端，2026-11-07）**：
    `POST /admin/v1/print-templates:generate`（`PrintTemplateService.GenerateTemplate`，
    `print_template_generate.go`）：描述单据要素 → 默认 provider 非流式产出 TemplateData →
    **护栏校验**（`sanitizeGeneratedTemplate`：payload 512KB / 顶层键白名单 / 元素类型白名单
@@ -188,16 +188,21 @@ dev 策略例外说明：本模块**内核三端同一份**（设计器交互一
    模式，保存走 Create）。ele/vben 已同批移植（2026-11-07：ele `ai-generate-dialog.vue` +
    设计器 `ai` 模式 / vben `ai-generate-drawer.vue` + 设计器 `ai` 模式，工具栏入口与 react
    同构；ele 工具栏自定义按钮走 ProPage `@toolbar` 透传）。护栏单测 `print_template_generate_test.go`。
-2. **脚本渲染前钩子**（`print_template.render`）—— **2026-11-07 挂点分析：当前架构下不成立，需先立输出链 v2**。
-   渲染前改写 printData 的执行位置在浏览器内核 `bindData` 之前，而 printData（行数据）完全在
-   前端（`PrintTemplatePrint.tsx` 的 `renderHtmlPages(payload, printData, …)`），服务端 RenderPdf
-   只收成品 HTML——后端脚本钩子够不着数据。唯一可硬做的位置是"脚本改写成品 HTML"，那既要在
-   `sanitizePrintHTML` 清洗之后执行（等于给脚本开 HTML 注入面直送 Chromium），又没有真实调用方
+2. **脚本渲染前钩子**（`print_template.render`）—— **2026-11-07 挂点分析：当前架构下不成立，需先立输出链 v2；
+   2026-11-09 评估裁决：暂缓**。渲染前改写 printData 的执行位置在浏览器内核 `bindData` 之前，
+   而 printData（行数据）完全在前端（`PrintTemplatePrint.tsx` 的 `renderHtmlPages(payload, printData, …)`），
+   服务端 RenderPdf 只收成品 HTML——后端脚本钩子够不着数据。唯一可硬做的位置是"脚本改写成品 HTML"，
+   那既要在 `sanitizePrintHTML` 清洗之后执行（等于给脚本开 HTML 注入面直送 Chromium），又没有真实调用方
    （数据本就来自列表页，前端加工无需脚本）。**成立条件**：批量/服务端渲染演进为"行数据 + 模板
    code 上送 → 服务端 bindData/generateHtml（内核 Go 移植或 headless 预处理）"的输出链 v2，
    printData 届时经过后端，钩子才有正确挂点；需求驱动再立项。
-3. **套餐配额**：模板数纳入套餐配额四类体系（若运营上值得）。
-4. 云打印队列 / 多门店远程打印（openprint 点子，仅存目）。
+3. **套餐配额**：模板数纳入套餐配额四类体系（若运营上值得）。**2026-11-09 评估裁决：暂缓**——
+   前置是"租户可用打印模板"的产品决策：print 端点现无 Module 归类（`ServiceTagToBusinessModule`
+   未登记 PrintTemplateService，租户闸门对 UNSPECIFIED 一律 403），菜单亦挂平台管理员专属
+   （`sys:platform_admin`）；做配额须先决定 PRINT 模块枚举（新枚举值需联动已部署租户数据）
+   并开放租户菜单/权限，属独立立项。
+4. 云打印队列 / 多门店远程打印（openprint 点子，仅存目）。**2026-11-09 评估裁决：暂缓**；
+   静默打印自研客户端（§6 的 worm 协议替代）同为独立大工程，暂不启动。
 
 ## 8. 分期计划与验收
 
