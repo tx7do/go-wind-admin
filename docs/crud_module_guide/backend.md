@@ -35,7 +35,7 @@ Mirror `dict_type.proto`. Key conventions:
 - **json_name uses camelCase** (`type_code` → `typeCode`).
 - **Get request** uses `oneof query_by` + `optional google.protobuf.FieldMask view_mask` (lets callers trim returned fields).
 - **Update request** has `id` + `data` + `update_mask` + `optional bool allow_missing` (allow_missing = upsert).
-- **Delete request** — single delete uses `oneof query_by { uint32 id = 1; }`; batch delete uses `repeated uint32 ids = 1;`. Pick one; BFF can also pick differently.
+- **Delete request** — single delete uses `oneof query_by { uint64 id = 1; }`; batch delete uses `repeated uint64 ids = 1;`. Pick one; BFF can also pick differently.
 
 Standard 5 RPCs in the domain service, all with empty `{}` bodies:
 ```proto
@@ -133,14 +133,14 @@ func (<Entity>) Fields() []ent.Field {
 
 func (<Entity>) Mixin() []ent.Mixin {
     return []ent.Mixin{
-        mixin.AutoIncrementId{},     // uint32 id (matches proto optional uint32 id = 1)
+        mixin.AutoIncrementId64{},   // uint64 id (matches proto optional uint64 id = 1)
         mixin.TimeAt{},              // created_at + updated_at + deleted_at
-        mixin.OperatorID{},          // created_by + updated_by + deleted_by (uint32, nillable)
+        mixin.OperatorID64{},        // created_by + updated_by + deleted_by (uint64, nillable)
         mixin.SwitchStatus{},        // status enum (ON/OFF, default ON) — drop if not needed
         // Optional extras:
         // mixin.IsEnabled{},         // bool is_enabled
         // mixin.SortOrder{},         // uint32 sort_order
-        // mixin.TenantID[uint32]{},  // tenant_id (multi-tenant)
+        // mixin.TenantID[uint64]{},  // tenant_id (multi-tenant)
     }
 }
 
@@ -152,9 +152,12 @@ func (<Entity>) Indexes() []ent.Index {
 }
 ```
 
-**Mixin field names (verified from `go-crud/entgo/mixin/`):** `OperatorID` → `created_by`/`updated_by`/`deleted_by` (uint32 nillable); `TimeAt` → `created_at`/`updated_at`/`deleted_at` (Time nillable); `SwitchStatus` → `status` enum default ON. These match the proto audit fields (100/101/102, 200/201/202) — the `CopierMapper` wires them by name.
+**Mixin field names (verified from `go-crud/entgo/mixin/`):** `OperatorID64` → `created_by`/`updated_by`/`deleted_by` (uint64 nillable); `TimeAt` → `created_at`/`updated_at`/`deleted_at` (Time nillable); `SwitchStatus` → `status` enum default ON. These match the proto audit fields (100/101/102, 200/201/202) — the `CopierMapper` wires them by name.
 
-For tree shape: add `mixin.Tree[<Entity>]{}` — it supplies both the `parent_id` (uint32, optional+nillable) field and the self-referential edge `edge.To("children", T.Type).From("parent").Unique().Field("parent_id")`. Do not hand-write either; no schema in this repo does. Precedent: `menu.go` / `org_unit.go` / `permission_group.go`. Two follow-ups: the mixin adds no index, so write `index.Fields("parent_id")` yourself (`menu.go:150`); `mixin.TreePath{}` optionally adds a `path` column (`/1/2/3/`), and `menu.go:106` has it commented out because Menu already owns a `path` field (the frontend route path) — the two names collide. Nothing outside generated ent code loads the edge (zero `WithChildren` usages), so the API returns a flat list and each frontend rebuilds the tree from `parentId`.
+For tree shape: add `mixin.Tree64[<Entity>]{}` — it supplies both the `parent_id` (uint64, optional+nillable) field and the self-referential edge `edge.To("children", T.Type).From("parent").Unique().Field("parent_id")`. Do not hand-write either; no schema in this repo does. Precedent: `menu.go` / `org_unit.go` / `permission_group.go`. Two follow-ups: the mixin adds no index, so write `index.Fields("parent_id")` yourself (`menu.go:150`); `mixin.TreePath{}` optionally adds a `path` column (`/1/2/3/`), and `menu.go:106` has it commented out because Menu already owns a `path` field (the frontend route path) — the two names collide. Nothing outside generated ent code loads the edge (zero `WithChildren` usages), so the API returns a flat list and each frontend rebuilds the tree from `parentId`.
+
+
+**ID width convention (repo-wide):** every entity ID is 64-bit — proto `optional uint64 id` / `repeated uint64 xxx_ids`; ent `mixin.AutoIncrementId64{}` / `OperatorID64{}` / `TenantID[uint64]{}` / `Tree64[<Entity>]{}`; SQL columns `BIGINT UNSIGNED`. Ent maps both widths to Postgres `bigint`, so PG needs no migration; MySQL columns must be created `bigint unsigned` up front. The TypeScript generator maps 64-bit ints to `string`, and protojson serializes them as JSON strings — IDs are strings end to end (JS numbers lose precision beyond 2^53).
 
 ## Step 5 — Generate Ent code
 
@@ -345,7 +348,7 @@ func (s *<Entity>Service) Delete(ctx context.Context, req *<domain>V1.Delete<Ent
 }
 ```
 
-`auth.FromContext` returns `*authenticationV1.UserTokenPayload`; `operator.UserId` is `uint32`, hence `trans.Ptr`. Validate `req.Data == nil` at entry. Use `adminV1.ErrorXxx` for errors (from `protos/admin/service/v1/admin_error.proto`) — not `errors.New`.
+`auth.FromContext` returns `*authenticationV1.UserTokenPayload`; `operator.UserId` is `uint64`, hence `trans.Ptr`. Validate `req.Data == nil` at entry. Use `adminV1.ErrorXxx` for errors (from `protos/admin/service/v1/admin_error.proto`) — not `errors.New`.
 
 ## Step 8 — Register on the server
 

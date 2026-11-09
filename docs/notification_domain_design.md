@@ -206,7 +206,7 @@ SKIPPED/FAILED）和非 nil error。只回 error，调用方拿不到台账行�
    同步出口把 `attempts=1` 写在结论那一条更新里，所以同步事件的配置类 SKIPPED 一律是 1 —— C 的 SSRF 拦截是现场证据，
    id=19 `SKIPPED` + `attempts=1`，见 §4 C 实测表） |
 | `title` / `content` | 正文快照 | **不做**：一期三个事件里两个的正文就是验证码本身，快照进永久台账等于建了一张 OTP 明文表。P2 引入模板后按"模板 ID + 渲染参数"存，不存渲染结果 |
-| mixin | `AutoIncrementId` / `TimeAt` / `OperatorID` | 已按此建；**不挂 `TenantID`**（见 §6 决策点 3 结论），也不挂 `SwitchStatus`（台账没有"停用"语义） |
+| mixin | `AutoIncrementId64` / `TimeAt` / `OperatorID64` | 已按此建；**不挂 `TenantID`**（见 §6 决策点 3 结论），也不挂 `SwitchStatus`（台账没有"停用"语义） |
 
 台账**不提供 Update/Delete 业务方法**：改一条已发生的投递等于伪造事实；只有 `MarkResult`
 按主键回写结果字段。P2-4 多加的 `SweepStaleSending` 不算例外 —— 它只把 `SENDING` 定案成 `FAILED`
@@ -892,12 +892,12 @@ webhook 侧三条失败用例（SSRF 拦下 / 对端 5xx / 配置不可用）按
 
 **为什么 `planId` 读不出来** —— 不是掩码、不是序列化，是**读路径没把边的值搬进 DTO**：
 `plan_id` 在 schema 里不是字段而是边外键（`ent/schema/tenant.go:128` `edge.From("plan", Plan.Type).Ref("tenants")`），
-生成的实体把它存在**非导出字段** `plan_id *uint32`（`ent/tenant.go:65`）。列值 SQL 侧确实读出来了
+生成的实体把它存在**非导出字段** `plan_id *uint64`（`ent/tenant.go:65`）。列值 SQL 侧确实读出来了
 （`tenant.go:101` 分配 `NullInt64`、`:263-268` 写进 `_m.plan_id`，报错文案自称 "edge-field plan_id"），
 但它不在 `tenant.Fields` 里而在 `ForeignKeys`（注释明写 "not defined as standalone fields in the schema"），
 实体上也没有 getter（只有 `QueryPlan()`）。`TenantRepo` 用的是
 `mapper.NewCopierMapper[identityV1.Tenant, ent.Tenant]()`（`tenant_repo.go:48`，反射按字段名拷，读不到非导出字段），
-而 proto DTO 那侧 `PlanId *uint32` 是实打实存在的（`api/gen/go/identity/service/v1/tenant.pb.go:211`）。
+而 proto DTO 那侧 `PlanId *uint64` 是实打实存在的（`api/gen/go/identity/service/v1/tenant.pb.go:211`）。
 `Get`（`tenant_repo.go:126-152`）与 `List`（:94-113）都是裸 `Tenant.Query()`、没有 `WithPlan()`；
 服务层 `TenantService.Get`（`tenant_service.go:161-171`）只 `enrichRelations` 补管理员用户名与成员数、不碰 planId，
 所以"HTTP 缺这一格"就等于"DTO 缺这一格"，中间没有别的可能丢的地方。

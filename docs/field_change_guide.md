@@ -35,7 +35,7 @@ A 档纯前端，直接跳 §3。B/C 档先看 §1 的三条前提，能省掉�
 
 1. **加列不需要 SQL、不需要迁移命令。** 启动时 ent 自动建列：`internal/data/ent_client.go:46-51` 在 `cfg.Data.Database.GetMigrate()` 为真时跑 `client.Schema.Create(...)`，而 `configs/data.yaml:7` 就是 `migrate: true`。→ 改完 schema 只要**重启后端进程**。
    所以业务字段照 04 章一律 `Optional().Nillable()`（本仓所有 schema 都这样，见 `ent/schema/dict_type.go:34-45`）——加非空列要自动迁移去给已有行填值，那是给自己加活。要"必填"交给前端 `rules` + proto validate。
-2. **想加的字段很可能已经在 mixin 里。** `AutoIncrementId / TimeAt / OperatorID / IsEnabled / SortOrder / TenantID` 六个 mixin（`data/ent/schema/dict_type.go:50-59`）已经贡献了 `id / created_at / updated_at / deleted_at / created_by / updated_by / deleted_by / is_enabled / sort_order / tenant_id`。先看这张表，别在 `Fields()` 里重造一个 `status`。
+2. **想加的字段很可能已经在 mixin 里。** `AutoIncrementId64 / TimeAt / OperatorID64 / IsEnabled / SortOrder / TenantID[uint64]` 六个 mixin（`data/ent/schema/dict_type.go:50-59`）已经贡献了 `id / created_at / updated_at / deleted_at / created_by / updated_by / deleted_by / is_enabled / sort_order / tenant_id`。先看这张表，别在 `Fields()` 里重造一个 `status`。
 3. **BFF proto 不定义 message，所以加字段只改一个 proto。** `api/protos/admin/service/v1/i_dict_type.proto:9` 只是 `import` domain 包再挂 `google.api.http`；43 个 `i_*.proto` 里只有 `i_admin_portal.proto`、`i_dashboard.proto` 自己声明 message，而它们不是 CRUD 资源。→ domain 那一处加完就够了。
 
 字段编号规则照 04 章：业务字段取下一个空号，审计字段固定 `100/101/102`（*By）与 `200/201/202`（*At）；全部 `optional` + `json_name` camelCase。

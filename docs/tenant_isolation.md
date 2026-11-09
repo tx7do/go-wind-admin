@@ -47,7 +47,7 @@
 | `sys_plan_quotas` | 套餐配额：闸门第 4 段经第 1 段预载读其 API_CALL 上限；其余类型在各资源入口与 AI 对话路径执行（[plan_billing.md](./plan_billing.md) §7.2、[ai_module.md](./ai_module.md)） |
 
 平台级表（无 tenant_id，跨租户可见）：`sys_tenants`/`sys_plans` 本身、`sys_apis`、菜单、权限点/权限组、
-语言等。租户表与平台表的划分**以 schema 是否装配 `mixin.TenantID[uint32]{}` 为准**，不靠命名约定。
+语言等。租户表与平台表的划分**以 schema 是否装配 `mixin.TenantID[uint64]{}` 为准**，不靠命名约定。
 
 ### 2.2 带租户列的表（当前 33 张，全量盘点）
 
@@ -67,10 +67,10 @@
 
 `mixin.TenantID`（go-crud `entgo/mixin/tenant_id.go`）做两件事：
 
-1. `Fields()` 注入 `tenant_id` 列：`Uint32`、**`Immutable()`**（ent 层禁止后续 Set 改值）、`Default(0)`、
-   `Nillable()`、`Optional()`（`entgo@v0.0.55/mixin/tenant_id.go:13-22`）。
-   注意泛型参数 `IDT uint32|uint64` **只用于 `Policy()` 的 `rule.TenantPrivacy[IDT]`**，
-   列类型是写死的 `field.Uint32`——写 `mixin.TenantID[uint64]{}` 得到的仍是 uint32 列，两者会不一致；
+1. `Fields()` 注入 `tenant_id` 列：`Uint64`（v0.1.0 起列宽随泛型参数）、**`Immutable()`**（ent 层禁止后续 Set 改值）、`Default(0)`、
+   `Nillable()`、`Optional()`（`entgo@v0.1.0/mixin/tenant_id.go`）。
+   泛型参数 `IDT uint32|uint64` 既驱动 `Policy()` 的 `rule.TenantPrivacy[IDT]`，
+   也决定列宽（旧版列写死 `field.Uint32`、`[uint64]` 会出现列/策略不一致，已修复）——`TenantID[uint64]{}` 得到 `field.Uint64` 列；
 2. `Policy()` 返回 `rule.TenantPrivacy`——ent 的代码生成把 **mixin 策略与 schema 自身 Policy()
    一起**合成进 `internal/data/ent/runtime/runtime.go` 的 `privacy.NewPolicies(<mixin>, schema.X{})`
    链（`ent.Schema` 嵌入结构体提供返回 nil 的默认 `Policy()`，nil 被跳过；schema 覆写则追加进链）。
@@ -219,7 +219,7 @@ repo 的查询/变更构造上，而不是指望调用方传对——三端各�
 
 ### 7.1 新表/新端点接入清单
 
-1. **新表带租户**：schema `Mixin()` 加 `mixin.TenantID[uint32]{}`（库层隔离自动生效）+
+1. **新表带租户**：schema `Mixin()` 加 `mixin.TenantID[uint64]{}`（库层隔离自动生效）+
    **同时** `Policy()` 返回 `&TenantMutationGuardPolicy{}`（与其余 32 张一致的第二道，
    见第 6 节 access_key 教训）→ `gow ent`；
 2. **表同时接数据范围**：另见 data_scope_design 第 4 节（两列齐备 + 组合策略 + 守卫单测）；

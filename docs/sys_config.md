@@ -20,7 +20,7 @@
 | `value` | string | 参数值（统一字符串存储，按 `value_type` 解析） |
 | `value_type` | enum | `STRING` / `BOOL` / `INT`（默认 `STRING`）；读取器按声明类型解析，类型不符回退默认值 |
 | `is_built_in` | bool | 系统内置参数标记；**内置参数禁删可改** |
-| （mixin） | — | `AutoIncrementId` / `TimeAt` / `OperatorID`（审计字段） |
+| （mixin） | — | `AutoIncrementId64` / `TimeAt` / `OperatorID64`（审计字段） |
 
 - **无租户维度**：schema 不挂 `TenantID` mixin——参数是平台全局的，不做租户隔离。
 - `created_at` 另有索引（`idx_sys_configs_created_at`）供列表分页。
